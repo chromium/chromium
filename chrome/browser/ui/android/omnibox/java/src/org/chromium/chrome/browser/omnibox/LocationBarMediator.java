@@ -1527,13 +1527,22 @@ class LocationBarMediator
         // into the omnibox after it gains focus due to hardware keyboard availability and a
         // subsequent tap will hide the suggestions dropdown shown for the typed text, while keeping
         // the scrim on the web contents, which is not desirable.
-        if (!mUrlFocusedWithoutAnimations
-                || mUrlCoordinator == null
-                || !TextUtils.isEmpty(mUrlCoordinator.getTextWithoutAutocomplete())) {
-            return;
-        }
-        handleUrlFocusAnimation(true);
+        if (!TextUtils.isEmpty(mUrlCoordinator.getTextWithoutAutocomplete())) return;
         recordOmniboxFocusReason(OmniboxFocusReason.TAP_AFTER_FOCUS_FROM_KEYBOARD);
+        completeUrlFocusAnimationAndEnableSuggestions();
+    }
+
+    /**
+     * Trigger focus animations to adequately enable Autocomplete and Suggestions. This is required
+     * only when the intention is to trigger the suggestions dropdown after the omnibox has gained
+     * focus without animations.
+     *
+     * <p>This call trusts the caller has performed all necessary verifications, and will display
+     * suggestions unconditionally.
+     */
+    /* package */ void completeUrlFocusAnimationAndEnableSuggestions() {
+        if (!mUrlFocusedWithoutAnimations || mUrlCoordinator == null) return;
+        handleUrlFocusAnimation(true);
     }
 
     // BackPressHandler implementation.
@@ -1553,18 +1562,6 @@ class LocationBarMediator
     // OnKeyListener implementation.
     @Override
     public boolean onKey(View view, int keyCode, KeyEvent event) {
-        // Trigger focus animations to adequately set system state before potentially handling the
-        // key event. This is required only when the intention is to trigger the suggestions
-        // dropdown after the omnibox has gained focus without animations and a valid key is
-        // pressed. All printing keys will be taken into account as long as CTRL is not pressed,
-        // since that may trigger special functionality.
-        if (mUrlFocusedWithoutAnimations
-                && event.getAction() == KeyEvent.ACTION_DOWN
-                && event.isPrintingKey()
-                && !event.isCtrlPressed()) {
-            handleUrlFocusAnimation(/* hasFocus= */ true);
-        }
-
         return handleKeyEvent(view, keyCode, event);
     }
 

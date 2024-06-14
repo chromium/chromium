@@ -90,6 +90,14 @@ class UrlBarMediator implements UrlBar.UrlBarTextContextMenuDelegate {
     }
 
     /**
+     * Sets a listener called when user input begins. See the {@link
+     * UrlBarCoordinator#setTypingStartedListener(Runnable)}.
+     */
+    public void setTypingStartedListener(Runnable listener) {
+        mModel.set(UrlBarProperties.TYPING_STARTED_LISTENER, listener);
+    }
+
+    /**
      * Updates the text content of the UrlBar.
      *
      * @param data The new data to be displayed.

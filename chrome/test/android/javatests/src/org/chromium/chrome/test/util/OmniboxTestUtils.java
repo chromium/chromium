@@ -236,6 +236,8 @@ public class OmniboxTestUtils {
                                 .onBackPressed();
                     }
                 });
+        // Needed to complete scrolling the UrlBar to TLD.
+        mInstrumentation.waitForIdleSync();
         checkFocus(false);
     }
 

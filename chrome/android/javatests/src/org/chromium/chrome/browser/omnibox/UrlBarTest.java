@@ -5,6 +5,10 @@
 package org.chromium.chrome.browser.omnibox;
 
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 import android.text.TextUtils;
 import android.util.TypedValue;
@@ -43,28 +47,32 @@ import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
+import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
-/** Tests for the URL bar UI component. */
+/**
+ * Tests for the URL bar UI component.
+ *
+ * <p>TODO(ender): Wrap the UrlBar in a separate standalone activity to focus testing on the
+ * component alone. This should help deflake several tests here and focus on the logic and behavior.
+ */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(Batch.PER_CLASS)
 public class UrlBarTest {
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
+    public static @ClassRule ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
-
-    @ClassRule
-    public static DisableAnimationsTestRule sIsableAnimationsRule = new DisableAnimationsTestRule();
-
+    public static @ClassRule DisableAnimationsTestRule sIsableAnimationsRule =
+            new DisableAnimationsTestRule();
     private UrlBar mUrlBar;
     private OmniboxTestUtils mOmnibox;
 
@@ -579,7 +587,7 @@ public class UrlBarTest {
     @SmallTest
     @DisabledTest(message = "Disabled because of b/333536371")
     public void testUrlTextChangeListener() {
-        Callback<String> listener = Mockito.mock(Callback.class);
+        Callback<String> listener = mock(Callback.class);
         mUrlBar.setTextChangeListener(listener);
 
         mOmnibox.setText("onomatop");
@@ -713,5 +721,109 @@ public class UrlBarTest {
                     Assert.assertEquals(10f, mUrlBar.getTextSize(), MathUtils.EPSILON);
                     mUrlBar.setTextSize(origTextSize);
                 });
+    }
+
+    @Test
+    @SmallTest
+    public void typingStarted_emittedOncePerFocus() {
+        var listener = mock(Runnable.class);
+
+        mOmnibox.clearFocus();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        mUrlBar.setTypingStartedListener(listener);
+        mOmnibox.requestFocus();
+
+        verifyNoInteractions(listener);
+
+        // Verify that UrlBar emits a single Typing Started event.
+        mOmnibox.typeText("a", false);
+        verify(listener).run();
+
+        clearInvocations(listener);
+
+        // Verify no subsequent events emitted.
+        mOmnibox.typeText("a", false);
+        verifyNoInteractions(listener);
+    }
+
+    @Test
+    @SmallTest
+    public void typingStarted_emittedOnceEveryFocus() {
+        var listener = mock(Runnable.class);
+
+        mOmnibox.clearFocus();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        mUrlBar.setTypingStartedListener(listener);
+        mOmnibox.requestFocus();
+
+        verifyNoInteractions(listener);
+
+        // Verify that UrlBar emits a single Typing Started event.
+        mOmnibox.typeText("a", false);
+        verify(listener).run();
+
+        mOmnibox.clearFocus();
+        clearInvocations(listener);
+        mOmnibox.requestFocus();
+
+        // Verify no subsequent events emitted.
+        mOmnibox.typeText("a", false);
+        verify(listener).run();
+    }
+
+    @Test
+    @SmallTest
+    public void typingStarted_notEmittedForNonTypingCharacters() {
+        var listener = mock(Runnable.class);
+
+        mOmnibox.clearFocus();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        mUrlBar.setTypingStartedListener(listener);
+        mOmnibox.requestFocus();
+
+        var nonTypingKeys =
+                List.of(
+                        KeyEvent.KEYCODE_F1,
+                        KeyEvent.KEYCODE_TAB,
+                        KeyEvent.KEYCODE_SHIFT_LEFT,
+                        KeyEvent.KEYCODE_DEL,
+                        KeyEvent.KEYCODE_PAGE_UP,
+                        KeyEvent.KEYCODE_DPAD_LEFT);
+
+        for (int key : nonTypingKeys) {
+            mOmnibox.sendKey(key);
+            verifyNoInteractions(listener);
+        }
+    }
+
+    @Test
+    @SmallTest
+    public void typingStarted_clipboardPasteTriggersTypingStarted() {
+        var listener = mock(Runnable.class);
+
+        mOmnibox.clearFocus();
+        InstrumentationRegistry.getInstrumentation().waitForIdleSync();
+        mUrlBar.setTypingStartedListener(listener);
+        mOmnibox.requestFocus();
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Clipboard.getInstance().setText("");
+                    // Paste directly. This is because Keyboard paste normally goes through an IME,
+                    // which
+                    // requires a lengthier process, rendering test flaky.
+                    mUrlBar.onTextContextMenuItem(android.R.id.paste);
+                });
+        verifyNoInteractions(listener);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Clipboard.getInstance().setText("asdf");
+                    // Paste directly. This is because Keyboard paste normally goes through an IME,
+                    // which
+                    // requires a lengthier process, rendering test flaky.
+                    mUrlBar.onTextContextMenuItem(android.R.id.paste);
+                });
+        verify(listener).run();
     }
 }

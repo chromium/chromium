@@ -140,6 +140,10 @@ class UrlBarProperties {
     public static final WritableObjectPropertyKey<Callback<String>> TEXT_CHANGE_LISTENER =
             new WritableObjectPropertyKey<>();
 
+    /** The callback to be notified when user begins typing. */
+    public static final WritableObjectPropertyKey<Runnable> TYPING_STARTED_LISTENER =
+            new WritableObjectPropertyKey<>();
+
     /** The callback to be notified on url key events. */
     public static final WritableObjectPropertyKey<View.OnKeyListener> KEY_DOWN_LISTENER =
             new WritableObjectPropertyKey<>();
@@ -181,6 +185,7 @@ class UrlBarProperties {
                 TEXT_STATE,
                 URL_DIRECTION_LISTENER,
                 TEXT_CHANGE_LISTENER,
+                TYPING_STARTED_LISTENER,
                 KEY_DOWN_LISTENER,
                 INCOGNITO_COLORS_ENABLED,
                 WINDOW_DELEGATE,

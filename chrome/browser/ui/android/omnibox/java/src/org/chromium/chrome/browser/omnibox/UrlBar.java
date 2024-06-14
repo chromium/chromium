@@ -93,6 +93,7 @@ public abstract class UrlBar extends AutocompleteEditText {
 
     private UrlBarDelegate mUrlBarDelegate;
     private Optional<Callback<String>> mTextChangeListener;
+    private @NonNull Optional<Runnable> mTypingStartedListener = Optional.empty();
     private Optional<OnKeyListener> mKeyDownListener;
     private UrlBarTextContextMenuDelegate mTextContextMenuDelegate;
     private Callback<Integer> mUrlDirectionListener;
@@ -105,6 +106,7 @@ public abstract class UrlBar extends AutocompleteEditText {
 
     private boolean mFocused;
     private boolean mAllowFocus = true;
+    private boolean mTypingStartedEventSent;
 
     private boolean mPendingScroll;
     private int mLocationBarVerticalInset;
@@ -243,6 +245,7 @@ public abstract class UrlBar extends AutocompleteEditText {
         setOnFocusChangeListener(null);
         mTextContextMenuDelegate = null;
         mTextChangeListener = Optional.empty();
+        mTypingStartedListener = Optional.empty();
     }
 
     /** Initialize the delegate that allows interaction with the Window. */
@@ -312,6 +315,7 @@ public abstract class UrlBar extends AutocompleteEditText {
     @Override
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public void onFocusChanged(boolean focused, int direction, Rect previouslyFocusedRect) {
+        mTypingStartedEventSent = false;
         mFocused = focused;
         super.onFocusChanged(focused, direction, previouslyFocusedRect);
 
@@ -397,6 +401,12 @@ public abstract class UrlBar extends AutocompleteEditText {
     @Override
     protected void onTextChanged(CharSequence text, int start, int lengthBefore, int lengthAfter) {
         super.onTextChanged(text, start, lengthBefore, lengthAfter);
+
+        if (!mTypingStartedEventSent && mFocused && lengthAfter > 0) {
+            mTypingStartedListener.ifPresent(Runnable::run);
+            mTypingStartedEventSent = true;
+        }
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // Due to crbug.com/1103555, Autofill had to be disabled on the UrlBar to work around
             // an issue on Android Q+. With Autofill disabled, the Autofill compat mode no longer
@@ -498,6 +508,14 @@ public abstract class UrlBar extends AutocompleteEditText {
      */
     public void setTextChangeListener(Callback<String> listener) {
         mTextChangeListener = Optional.ofNullable(listener);
+    }
+
+    /**
+     * Install the listener notified when the user begins typing in recently focused Omnibox for the
+     * first time. When <null>, callback is removed.
+     */
+    /* package */ void setTypingStartedListener(@Nullable Runnable r) {
+        mTypingStartedListener = Optional.ofNullable(r);
     }
 
     /**

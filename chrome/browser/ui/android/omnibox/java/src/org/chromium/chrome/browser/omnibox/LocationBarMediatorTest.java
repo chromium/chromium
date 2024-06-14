@@ -767,16 +767,13 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    public void testOnKey_triggersFocusAnimation() {
+    public void testHandleTypingStarted_triggersFocusAnimation() {
         mMediator.addUrlFocusChangeListener(mUrlCoordinator);
-        doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
-        doReturn(true).when(mAutocompleteCoordinator).handleKeyEvent(KeyEvent.KEYCODE_9, mKeyEvent);
-        doReturn(true).when(mKeyEvent).isPrintingKey();
-        doReturn(true).when(mKeyEvent).hasNoModifiers();
         mMediator.onUrlFocusChange(true);
         mMediator.setIsUrlBarFocusedWithoutAnimationsForTesting(true);
-        assertTrue(mMediator.onKey(mView, KeyEvent.KEYCODE_9, mKeyEvent));
-        verify(mAutocompleteCoordinator).handleKeyEvent(KeyEvent.KEYCODE_9, mKeyEvent);
+
+        mMediator.completeUrlFocusAnimationAndEnableSuggestions();
+
         verify(mUrlCoordinator, times(2)).onUrlFocusChange(true);
     }
 

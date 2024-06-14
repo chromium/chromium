@@ -99,6 +99,19 @@ public class UrlBarCoordinator
         mUrlBar.destroy();
     }
 
+    /**
+     * Install a listener called when the user begins typing in the Omnibox for the first time.
+     *
+     * <p>This callback is particularly relevant on Tablet devices, where the New Tab Page shows
+     * focused Omnibox, but the suggestions list is delayed until after user starts typing.
+     *
+     * <p>This callback gets invoked both when the user types text, and when content is pasted using
+     * keyboard shortcuts (Ctrl+V, Shift+Insert, Paste key etc).
+     */
+    public void setTypingStartedListener(Runnable listener) {
+        mMediator.setTypingStartedListener(listener);
+    }
+
     /** Set the callback that will be invoked each time the content of the Omnibox changes. */
     public void setTextChangeListener(Callback<String> listener) {
         mMediator.setTextChangeListener(listener);
