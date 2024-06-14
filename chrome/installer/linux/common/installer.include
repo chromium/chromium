@@ -388,6 +388,18 @@ stage_install_common() {
     exit 1
   fi
 
+  # official build should not relax permission check.
+  on_cog=
+  if [ "$IS_OFFICIAL_BUILD" -eq 0 ]; then
+    # on Cog, permission is always 0664 or 0775
+    case "$(pwd)" in
+    /google/cog/cloud/*)
+       on_cog=1
+       echo "INFO: build on Cog. relax permission for group writable" 1>&2
+       ;;
+    esac
+  fi
+
   # Verify file permissions.
   for file in $(find "${STAGEDIR}" -mindepth 1); do
     local actual_perms=$(stat -c "%a" "${file}")
@@ -425,9 +437,25 @@ stage_install_common() {
       local expected_perms=644
     fi
     if [ ${expected_perms} -ne ${actual_perms} ]; then
-      echo Expected permissions on ${base_name} to be \
-        ${expected_perms}, but they were ${actual_perms} 1>&2
-      exit 1
+      if [ -z "$on_cog" ]; then
+        echo Expected permissions on ${base_name} to be \
+          ${expected_perms}, but they were ${actual_perms} 1>&2
+        exit 1
+      fi
+      local relaxed_expected_perms=${expected_perms}
+
+      case ${expected_perms} in
+      4755) relaxed_expected_perms=775 ;;
+      644) relaxed_expected_perms=664   ;;
+      755) relaxed_expected_perms=775  ;;
+      esac
+
+      if [ ${relaxed_expected_perms} -ne ${actual_perms} ]; then
+        echo Expected permissions on ${base_name} to be \
+          ${expected_perms} or ${relaxed_expected_perms}, \
+          but they were ${actual_perms} 1>&2
+        exit 1
+      fi
     fi
   done
 }
