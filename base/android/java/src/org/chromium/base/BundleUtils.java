@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -263,6 +264,15 @@ public class BundleUtils {
                     "Mismatched ClassLoaders between Activity and context (fixing): %s",
                     activity.getClass());
             replaceClassLoader(baseContext, activityClassLoader);
+            // Also fix up the Intent's bundle extras in case of Parcelables.
+            // https://crbug.com/346709145
+            Intent intent = activity.getIntent();
+            if (intent != null) {
+                Bundle bundle = intent.getExtras();
+                if (bundle != null) {
+                    bundle.setClassLoader(activityClassLoader);
+                }
+            }
         }
     }
 
