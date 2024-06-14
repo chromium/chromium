@@ -28,6 +28,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.components.ip_protection_auth.IpProtectionAuthClient;
 import org.chromium.components.ip_protection_auth.IpProtectionAuthServiceCallback;
 import org.chromium.components.ip_protection_auth.IpProtectionByteArrayCallback;
@@ -35,6 +36,7 @@ import org.chromium.components.ip_protection_auth.IpProtectionByteArrayCallback;
 @MediumTest
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
+@DisabledTest(message = "crbug.com/347020821")
 public final class IpProtectionAuthTest {
     private static final String ACTION = "android.net.http.IpProtectionAuthService";
     private static final String MOCK_PACKAGE_NAME = "org.chromium.components.ip_protection_auth";
