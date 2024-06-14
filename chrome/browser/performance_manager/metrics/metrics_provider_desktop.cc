@@ -12,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/base_tracing.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_performance_tuning_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -36,6 +37,171 @@ uint64_t kKilobytesPerMb = 1024;
 #endif
 
 base::TimeDelta kCpuThroughputSamplingInterval = base::Minutes(5);
+
+enum class CpuThroughputEstimatedStatus {
+  kNormal,
+  kUnknown,
+  kThrottled,
+  kDescheduled,
+  kMigrated,
+};
+
+CpuThroughputEstimatedStatus EstimateCpuThroughputStatus(
+    bool migrated,
+    std::optional<double> cpu_frequency_percent,
+    std::optional<double> thread_time_percent,
+    base::TimeDelta queued_time) {
+  if (migrated) {
+    // If the task migrated from one CPU to the other, report the status as
+    // such. It's not relevant to check the thread time % in this instance,
+    // since a migrated task has by definition been descheduled. Likewise,
+    // checking the estimate vs nominal frequencies is also irrelevant, since
+    // the frequency of the original and migrated cores might be different.
+    return CpuThroughputEstimatedStatus::kMigrated;
+  }
+
+  if (!thread_time_percent) {
+    return CpuThroughputEstimatedStatus::kUnknown;
+  } else if (*thread_time_percent < 75.0) {
+    // If the task is actually running for only 75% of its wall time or less, we
+    // report it as having been descheduled
+    return CpuThroughputEstimatedStatus::kDescheduled;
+  }
+
+  if (!cpu_frequency_percent) {
+    return CpuThroughputEstimatedStatus::kUnknown;
+  } else if (*cpu_frequency_percent < 75.0) {
+    // If the task had a thread time close to its wall time, but we estimate its
+    // CPU frequency as 75% of nominal or less, we report the CPU as being
+    // throttled.
+    return CpuThroughputEstimatedStatus::kThrottled;
+  }
+
+  return CpuThroughputEstimatedStatus::kNormal;
+}
+
+constexpr char kCpuEstimationEventCategory[] = "power";
+constexpr char kCpuEstimationEvent[] = "CpuStatusSampling";
+
+constexpr char kCpuEstimationStatusNormalEvent[] =
+    "CpuStatusSampling.Status.Normal";
+constexpr char kCpuEstimationStatusUnknownEvent[] =
+    "CpuStatusSampling.Status.Unknown";
+constexpr char kCpuEstimationStatusThrottledEvent[] =
+    "CpuStatusSampling.Status.Throttled";
+constexpr char kCpuEstimationStatusDescheduledEvent[] =
+    "CpuStatusSampling.Status.Descheduled";
+constexpr char kCpuEstimationStatusMigratedEvent[] =
+    "CpuStatusSampling.Status.Migrated";
+
+constexpr char kCpuEstimationQueuedEvent[] = "CpuStatusSampling.Queued";
+constexpr char kCpuEstimationRunningEvent[] = "CpuStatusSampling.Running";
+constexpr char kCpuEstimationThreadTimeEvent[] = "CpuStatusSampling.ThreadTime";
+constexpr char kCpuEstimationDescheduledEvent[] =
+    "CpuStatusSampling.Descheduled";
+
+// This function emits trace events related to the status of the CPU throughput
+// estimation task. In a trace, these events might look like this (where CSS is
+// CpuStatusSampling):
+//
+// +-----------------------------------------------+
+// |               CpuStatusSampling               |
+// +-----------------------------------------------+
+// |          CSS.Status.{estimated_status}        |
+// +------------+----------------------------------+
+// | CSS.Queued |          CSS.Running             |
+// +------------+----------------+-----------------+
+//              | CSS.ThreadTime | CSS.Descheduled |
+//              +----------------+-----------------+
+//
+// CpuStatusSampling.Status.{estimated_status} will reflect what the estimation
+// code thinks the status of the CPU is, between Normal, Unknown, Throttled,
+// Descheduled, Migrated.
+//
+// CpuStatusSampling.Queued is the time between when the estimation task was
+// posted and when it started running.
+//
+// CpuStatusSampling.Running is the time between when the task started running
+// and when it finished
+//
+// CpuStatusSampling.ThreadTime is the CPU time of the running task
+//
+// CpuStatusSampling.Descheduled is the wall time the task spent off-cpu
+void EmitCpuStatusSamplingTraceEvents(base::TimeTicks posted_at_time,
+                                      base::TimeTicks started_running_time,
+                                      base::TimeDelta thread_time,
+                                      base::TimeDelta wall_time,
+                                      CpuThroughputEstimatedStatus status) {
+  void* id = g_metrics_provider;
+
+  base::TimeTicks end_time = started_running_time + wall_time;
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+      kCpuEstimationEventCategory, kCpuEstimationEvent, TRACE_ID_LOCAL(id),
+      posted_at_time);
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(kCpuEstimationEventCategory,
+                                                 kCpuEstimationEvent,
+                                                 TRACE_ID_LOCAL(id), end_time);
+
+  const char* selected;
+  switch (status) {
+    case CpuThroughputEstimatedStatus::kNormal:
+      selected = kCpuEstimationStatusNormalEvent;
+      break;
+
+    case CpuThroughputEstimatedStatus::kUnknown:
+      selected = kCpuEstimationStatusUnknownEvent;
+      break;
+
+    case CpuThroughputEstimatedStatus::kThrottled:
+      selected = kCpuEstimationStatusThrottledEvent;
+      break;
+
+    case CpuThroughputEstimatedStatus::kDescheduled:
+      selected = kCpuEstimationStatusDescheduledEvent;
+      break;
+
+    case CpuThroughputEstimatedStatus::kMigrated:
+      selected = kCpuEstimationStatusMigratedEvent;
+      break;
+  }
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(kCpuEstimationEventCategory,
+                                                   selected, TRACE_ID_LOCAL(id),
+                                                   posted_at_time);
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+      kCpuEstimationEventCategory, selected, TRACE_ID_LOCAL(id), end_time);
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+      kCpuEstimationEventCategory, kCpuEstimationQueuedEvent,
+      TRACE_ID_LOCAL(id), posted_at_time);
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+      kCpuEstimationEventCategory, kCpuEstimationQueuedEvent,
+      TRACE_ID_LOCAL(id), started_running_time);
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+      kCpuEstimationEventCategory, kCpuEstimationRunningEvent,
+      TRACE_ID_LOCAL(id), started_running_time);
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(kCpuEstimationEventCategory,
+                                                 kCpuEstimationRunningEvent,
+                                                 TRACE_ID_LOCAL(id), end_time);
+
+  // Emit a block for the running thread time
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+      kCpuEstimationEventCategory, kCpuEstimationThreadTimeEvent,
+      TRACE_ID_LOCAL(id), started_running_time);
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+      kCpuEstimationEventCategory, kCpuEstimationThreadTimeEvent,
+      TRACE_ID_LOCAL(id), started_running_time + thread_time);
+
+  // And then one of the wall time spent descheduled
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+      kCpuEstimationEventCategory, kCpuEstimationDescheduledEvent,
+      TRACE_ID_LOCAL(id), started_running_time + thread_time);
+  TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
+      kCpuEstimationEventCategory, kCpuEstimationDescheduledEvent,
+      TRACE_ID_LOCAL(id), started_running_time + wall_time);
+}
 
 }  // namespace
 
@@ -294,9 +460,13 @@ void MetricsProviderDesktop::ResetTrackers() {
 // static
 void MetricsProviderDesktop::RecordCpuFrequencyMetrics(
     base::TimeTicks posted_at_time) {
+  auto started_running_time = base::TimeTicks::Now();
+
+  // Check this after computing started_running_time so that
+  // started_running_time is as close to reality as possible.
   CHECK(ShouldCollectCpuFrequencyMetrics());
 
-  auto queued_time = base::TimeTicks::Now() - posted_at_time;
+  auto queued_time = started_running_time - posted_at_time;
 
   static const double kHzInMhz = 1000 * 1000;
 
@@ -340,41 +510,51 @@ void MetricsProviderDesktop::RecordCpuFrequencyMetrics(
   base::UmaHistogramBoolean("CPU.Experimental.CpuEstimationTaskMigrated",
                             cpu_throughput->migrated);
 
-  // These can be 0 in tests
-  if (!cpu_throughput->thread_time.is_zero() &&
-      !cpu_throughput->wall_time.is_zero()) {
-    base::UmaHistogramPercentage(
-        base::StrCat({"CPU.Experimental.CpuEstimationThreadTimePercent.",
-                      core_type_suffix}),
-        static_cast<int>(cpu_throughput->thread_time /
-                         cpu_throughput->wall_time * 100.0));
-  }
-
-  if (cpu_throughput->migrated) {
+  std::optional<double> cpu_frequency_percent = std::nullopt;
+  if (!cpu_throughput->migrated) {
     // Don't record frequency metrics if the code migrated from one CPU to
     // another in the middle of the estimation loop. This is because the nominal
     // frequency of the start and end cores might be different.
-    return;
+
+    double estimated_mhz = cpu_throughput->estimated_frequency / kHzInMhz;
+
+    // Max/Limit can (rarely) be 0 in the field, perhaps in virtualized or
+    // sandboxed environments.
+    if (cpu_frequency_info.max_mhz > 0UL) {
+      cpu_frequency_percent = estimated_mhz * 100.0 /
+                              static_cast<double>(cpu_frequency_info.max_mhz);
+
+      base::UmaHistogramPercentage(
+          base::StrCat({"CPU.Experimental.EstimatedFrequencyAsPercentOfMax.",
+                        core_type_suffix}),
+          static_cast<int>(*cpu_frequency_percent));
+    }
+
+    if (cpu_frequency_info.mhz_limit > 0UL) {
+      base::UmaHistogramPercentage(
+          base::StrCat({"CPU.Experimental.EstimatedFrequencyAsPercentOfLimit.",
+                        core_type_suffix}),
+          static_cast<int>(estimated_mhz * 100.0 /
+                           static_cast<double>(cpu_frequency_info.mhz_limit)));
+    }
   }
 
-  double estimated_mhz = cpu_throughput->estimated_frequency / kHzInMhz;
-
-  // Max/Limit can (rarely) be 0 in the field, perhaps in virtualized or
-  // sandboxed environments.
-  if (cpu_frequency_info.max_mhz > 0UL) {
+  // These can be 0 in tests
+  if (!cpu_throughput->thread_time.is_zero() &&
+      !cpu_throughput->wall_time.is_zero()) {
+    std::optional<double> thread_time_percent =
+        cpu_throughput->thread_time / cpu_throughput->wall_time * 100.0;
     base::UmaHistogramPercentage(
-        base::StrCat({"CPU.Experimental.EstimatedFrequencyAsPercentOfMax.",
+        base::StrCat({"CPU.Experimental.CpuEstimationThreadTimePercent.",
                       core_type_suffix}),
-        static_cast<int>(estimated_mhz * 100.0 /
-                         static_cast<double>(cpu_frequency_info.max_mhz)));
-  }
+        static_cast<int>(*thread_time_percent));
 
-  if (cpu_frequency_info.mhz_limit > 0UL) {
-    base::UmaHistogramPercentage(
-        base::StrCat({"CPU.Experimental.EstimatedFrequencyAsPercentOfLimit.",
-                      core_type_suffix}),
-        static_cast<int>(estimated_mhz * 100.0 /
-                         static_cast<double>(cpu_frequency_info.mhz_limit)));
+    CpuThroughputEstimatedStatus status = EstimateCpuThroughputStatus(
+        cpu_throughput->migrated, cpu_frequency_percent, thread_time_percent,
+        queued_time);
+    EmitCpuStatusSamplingTraceEvents(posted_at_time, started_running_time,
+                                     cpu_throughput->thread_time,
+                                     cpu_throughput->wall_time, status);
   }
 
   ScheduleCpuFrequencyTask();
