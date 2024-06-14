@@ -370,6 +370,9 @@ TEST_F(BoundSessionRegistrationFetcherParamTest,
 // is disabled.
 TEST(BoundSessionRegistrationFetcherParamListHeaderDisabledTest,
      ListHeaderIgnored) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      kBoundSessionRegistrationListHeaderSupport);
   GURL registration_request = GURL("https://www.google.com/registration");
   auto response_headers =
       net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200")

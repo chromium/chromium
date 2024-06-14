@@ -43,7 +43,7 @@ std::optional<crypto::SignatureVerifier::SignatureAlgorithm> AlgoFromString(
 // finalized.
 BASE_FEATURE(kBoundSessionRegistrationListHeaderSupport,
              "BoundSessionRegistrationListHeaderSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BoundSessionRegistrationFetcherParam::BoundSessionRegistrationFetcherParam(
     BoundSessionRegistrationFetcherParam&& other) noexcept = default;
