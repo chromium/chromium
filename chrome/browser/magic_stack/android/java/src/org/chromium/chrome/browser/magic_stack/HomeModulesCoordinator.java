@@ -124,7 +124,15 @@ public class HomeModulesCoordinator implements ModuleDelegate, OnViewCreatedCall
     private void maybeSetUpAdapter() {
         if (mAdapter != null) return;
 
-        mAdapter = new SimpleRecyclerViewAdapter(mModel);
+        mAdapter =
+                new SimpleRecyclerViewAdapter(mModel) {
+                    @Override
+                    public void onViewRecycled(ViewHolder holder) {
+                        holder.itemView.setOnLongClickListener(null);
+                        holder.itemView.setOnCreateContextMenuListener(null);
+                        super.onViewRecycled(holder);
+                    }
+                };
         mModuleRegistry.registerAdapter(mAdapter, this::onViewCreated);
         mRecyclerView.setAdapter(mAdapter);
     }
