@@ -30,7 +30,7 @@ void EchoAITextSession::DoMockExecution(const std::string& input,
   }
 
   responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kOngoing,
-                        input);
+                        "Model not available in Chomrium\n" + input);
   responder->OnResponse(blink::mojom::ModelStreamingResponseStatus::kComplete,
                         std::nullopt);
 }
