@@ -56,11 +56,11 @@ TEST(RegisteredObjectsTest, ContainerWorksAsAdvertised) {
   EXPECT_FALSE(registry->GetRegisteredObject(Bar::TypeId()));
 
   // Inserting again fails.
-  EXPECT_DCHECK_DEATH(registry->RegisterObject(&foo));
+  EXPECT_CHECK_DEATH(registry->RegisterObject(&foo));
 
   // Unregistered the wrong object fails.
   Foo foo2;
-  EXPECT_DCHECK_DEATH(registry->UnregisterObject(&foo2));
+  EXPECT_CHECK_DEATH(registry->UnregisterObject(&foo2));
 
   // Unregistering works.
   registry->UnregisterObject(&foo);
@@ -69,8 +69,8 @@ TEST(RegisteredObjectsTest, ContainerWorksAsAdvertised) {
   EXPECT_FALSE(registry->GetRegisteredObject(Bar::TypeId()));
 
   // Unregistering again fails.
-  EXPECT_DCHECK_DEATH(registry->UnregisterObject(&foo));
-  EXPECT_DCHECK_DEATH(registry->UnregisterObject(&foo2));
+  EXPECT_CHECK_DEATH(registry->UnregisterObject(&foo));
+  EXPECT_CHECK_DEATH(registry->UnregisterObject(&foo2));
 
   // Registering multiple objects works.
   Bar bar;
@@ -82,7 +82,7 @@ TEST(RegisteredObjectsTest, ContainerWorksAsAdvertised) {
   EXPECT_EQ(&bar, registry->GetRegisteredObject(Bar::TypeId()));
 
   // Expect the container to explode if deleted with objects.
-  EXPECT_DCHECK_DEATH(registry.reset());
+  EXPECT_CHECK_DEATH(registry.reset());
 
   // Empty the registry.
   registry->UnregisterObject(&bar);

@@ -14,6 +14,14 @@ Graph::~Graph() = default;
 GraphOwned::GraphOwned() = default;
 GraphOwned::~GraphOwned() = default;
 
+void GraphOwned::PassToGraphImpl(Graph* graph) {
+  OnPassedToGraph(graph);
+}
+
+void GraphOwned::TakeFromGraphImpl(Graph* graph) {
+  OnTakenFromGraph(graph);
+}
+
 GraphOwnedDefaultImpl::GraphOwnedDefaultImpl() = default;
 GraphOwnedDefaultImpl::~GraphOwnedDefaultImpl() = default;
 

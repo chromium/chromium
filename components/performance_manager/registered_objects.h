@@ -26,7 +26,7 @@ template <typename RegisteredType>
 class RegisteredObjects {
  public:
   RegisteredObjects() = default;
-  ~RegisteredObjects() { DCHECK(objects_.empty()); }
+  ~RegisteredObjects() { CHECK(objects_.empty()); }
 
   RegisteredObjects(const RegisteredObjects&) = delete;
   RegisteredObjects& operator=(const RegisteredObjects&) = delete;
@@ -34,17 +34,17 @@ class RegisteredObjects {
   // Registers an object with this container. No more than one object of a given
   // type may be registered at once.
   void RegisterObject(RegisteredType* object) {
-    DCHECK_EQ(nullptr, GetRegisteredObject(object->GetTypeId()));
+    CHECK_EQ(nullptr, GetRegisteredObject(object->GetTypeId()));
     objects_.insert(object);
     // If there are ever so many registered objects we should consider changing
     // data structures.
-    DCHECK_GT(100u, objects_.size());
+    CHECK_GT(100u, objects_.size());
   }
 
   // Unregisters an object from this container. The object must previously have
   // been registered.
   void UnregisterObject(RegisteredType* object) {
-    DCHECK_EQ(object, GetRegisteredObject(object->GetTypeId()));
+    CHECK_EQ(object, GetRegisteredObject(object->GetTypeId()));
     objects_.erase(object);
   }
 
@@ -53,7 +53,7 @@ class RegisteredObjects {
     auto it = objects_.find(type_id);
     if (it == objects_.end())
       return nullptr;
-    DCHECK_EQ((*it)->GetTypeId(), type_id);
+    CHECK_EQ((*it)->GetTypeId(), type_id);
     return *it;
   }
 

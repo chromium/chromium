@@ -262,8 +262,8 @@ class GraphImpl : public Graph {
   // flat_map.
   OwnedObjects<GraphOwned,
                /* CallbackArgType = */ Graph*,
-               &GraphOwned::OnPassedToGraph,
-               &GraphOwned::OnTakenFromGraph>
+               &GraphOwned::PassToGraphImpl,
+               &GraphOwned::TakeFromGraphImpl>
       graph_owned_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Allocated on first use.

@@ -182,6 +182,22 @@ class GraphOwned {
   // Called when the object is removed from the graph, either via an explicit
   // call to Graph::TakeFromGraph, or prior to the Graph being destroyed.
   virtual void OnTakenFromGraph(Graph* graph) = 0;
+
+ private:
+  // GraphImpl is allowed to call PassToGraphImpl and TakeFromGraphImpl.
+  friend class GraphImpl;
+
+  // GraphOwnedAndRegistered overrides PassToGraphImpl and TakeFromGraphImpl.
+  template <typename SelfType>
+  friend class GraphOwnedAndRegistered;
+
+  // Only friends can override these. The default implementations just call
+  // OnPassedToGraph() and OnTakenFromGraph(). Helper classes like
+  // GraphOwnedAndRegistered can override these to add actions, while their
+  // subclasses continue to override OnPassedToGraph and OnTakenFromGraph
+  // without having to remember to call the inherited methods.
+  virtual void PassToGraphImpl(Graph* graph);
+  virtual void TakeFromGraphImpl(Graph* graph);
 };
 
 // A default implementation of GraphOwned.

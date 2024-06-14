@@ -58,7 +58,7 @@ TEST(OwnedObjectsTest, ContainerWorksAsAdvertised) {
   raw1 = nullptr;
 
   // Expect the container to explode if deleted with objects.
-  EXPECT_DCHECK_DEATH(owner.reset());
+  EXPECT_CHECK_DEATH(owner.reset());
 
   // Ask the container to release the remaining objects.
   EXPECT_CALL(*raw2, OnTakenFrom(owner.get()));
