@@ -6,22 +6,26 @@
 
 #include <memory>
 #include <optional>
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/buildflag.h"
+#include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_pixel_test.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_search_bar_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_view_utils.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views_test_api.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -134,23 +138,70 @@ std::vector<Suggestion> CreateCreditCardSuggestions() {
   return suggestions;
 }
 
-std::vector<Suggestion> CreatePasswordSuggestions() {
+std::vector<Suggestion> CreatePasswordSuggestions(bool is_deactivated = false) {
   std::vector<Suggestion> suggestions;
   suggestions.emplace_back(u"Title suggestion", SuggestionType::kTitle);
+  suggestions.back().apply_deactivated_style = is_deactivated;
 
   suggestions.emplace_back(u"Password main text",
                            SuggestionType::kPasswordEntry);
   suggestions.back().labels = {
       {Suggestion::Text(u"example.username@gmail.com")}};
   suggestions.back().icon = Suggestion::Icon::kGlobe;
+  suggestions.back().apply_deactivated_style = is_deactivated;
 
   suggestions.emplace_back(autofill::SuggestionType::kSeparator);
 
-  suggestions.emplace_back(u"Manage passwords",
-                           SuggestionType::kAllSavedPasswordsEntry);
+  suggestions.emplace_back(
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS),
+      SuggestionType::kAllSavedPasswordsEntry);
+  suggestions.back().icon = Suggestion::Icon::kSettings;
+  suggestions.back().trailing_icon = Suggestion::Icon::kGooglePasswordManager;
+  suggestions.back().apply_deactivated_style = is_deactivated;
+
+  return suggestions;
+}
+
+std::vector<Suggestion> CreateWebAuthnSuggestions(bool is_deactivated = false) {
+  std::vector<Suggestion> suggestions;
+  suggestions.push_back(Suggestion(
+      "cool passkey",
+      {{Suggestion::Text(
+          l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE))}},
+      Suggestion::Icon::kGlobe, SuggestionType::kWebauthnCredential));
+  suggestions.back().apply_deactivated_style = is_deactivated;
+
+  suggestions.push_back(Suggestion(
+      "coolest passkey",
+      {{Suggestion::Text(l10n_util::GetStringUTF16(
+          IDS_PASSWORD_MANAGER_PASSKEY_FROM_GOOGLE_PASSWORD_MANAGER))}},
+      Suggestion::Icon::kGlobe, SuggestionType::kWebauthnCredential));
+  suggestions.back().apply_deactivated_style = is_deactivated;
+
+  suggestions.emplace_back(
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USE_DIFFERENT_PASSKEY),
+      SuggestionType::kWebauthnSignInWithAnotherDevice);
+  suggestions.back().apply_deactivated_style = is_deactivated;
+  suggestions.emplace_back(
+      l10n_util::GetStringUTF16(
+          IDS_PASSWORD_MANAGER_MANAGE_PASSWORDS_AND_PASSKEYS),
+      SuggestionType::kAllSavedPasswordsEntry);
+  suggestions.back().apply_deactivated_style = is_deactivated;
   suggestions.back().icon = Suggestion::Icon::kSettings;
   suggestions.back().trailing_icon = Suggestion::Icon::kGooglePasswordManager;
 
+  return suggestions;
+}
+
+std::vector<Suggestion> CreatePasswordAndWebAuthnSuggestions(
+    bool is_deactivated = false) {
+  std::vector<Suggestion> suggestions =
+      CreatePasswordSuggestions(is_deactivated);
+  suggestions.pop_back();
+  std::vector<Suggestion> webauthn_suggestions =
+      CreateWebAuthnSuggestions(is_deactivated);
+  suggestions.insert(suggestions.end(), webauthn_suggestions.begin(),
+                     webauthn_suggestions.end());
   return suggestions;
 }
 
@@ -307,6 +358,19 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_CreditCard) {
 
 IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest, InvokeUi_Passwords) {
   PrepareSuggestions(CreatePasswordSuggestions());
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       InvokeUi_Passwords_And_WebAuthn) {
+  PrepareSuggestions(CreatePasswordAndWebAuthnSuggestions());
+  ShowAndVerifyUi();
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       InvokeUi_Passwords_And_WebAuthn_Deactivated) {
+  PrepareSuggestions(
+      CreatePasswordAndWebAuthnSuggestions(/*is_deactivated=*/true));
   ShowAndVerifyUi();
 }
 
