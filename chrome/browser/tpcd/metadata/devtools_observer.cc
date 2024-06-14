@@ -79,8 +79,9 @@ void TpcdMetadataDevtoolsObserver::EmitMetadataGrantDevtoolsIssue(
       metadata_issue_details->opt_out_percentage =
           out_info.metadata.tpcd_metadata_elected_dtrp();
       metadata_issue_details->is_opt_out_top_level =
-          (out_info.metadata.tpcd_metadata_rule_source() ==
-           TpcdMetadataRuleSource::SOURCE_1P_DT);
+          out_info.metadata.tpcd_metadata_rule_source() ==
+              TpcdMetadataRuleSource::SOURCE_1P_DT ||
+          out_info.primary_pattern == ContentSettingsPattern::Wildcard();
     }
   }
 
