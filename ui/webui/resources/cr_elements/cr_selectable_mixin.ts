@@ -12,7 +12,7 @@ import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup
  *
  * The mixin observes click events on its children, and selects an item when
  * clicked. Items can also be selected using the select* methods, or by
- * updating the |selected| property. The mixin sets the 'iron-selected' CSS
+ * updating the |selected| property. The mixin sets the 'selected' CSS
  * class on the selected item, if any, and also sets the |selectedAttribute|
  * boolean attribute on the selected item if it is specified.
  *
@@ -201,7 +201,7 @@ export const CrSelectableMixin = <T extends Constructor<CrLitElement>>(
         return;
       }
 
-      item.classList.toggle('iron-selected', isSelected);
+      item.classList.toggle('selected', isSelected);
       if (this.selectedAttribute) {
         item.toggleAttribute(this.selectedAttribute, isSelected);
       }

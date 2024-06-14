@@ -65,7 +65,7 @@ suite('PasswordManagerAppTest', function() {
         await app.$.sidebar.$.menu.updateComplete;
         const ironItem =
             app.$.sidebar.shadowRoot!.querySelector<HTMLElement>(`#${page}`)!;
-        assertTrue(ironItem.classList.contains('iron-selected'));
+        assertTrue(ironItem.classList.contains('selected'));
         if (page === Page.CHECKUP) {
           assertEquals(
               'true',

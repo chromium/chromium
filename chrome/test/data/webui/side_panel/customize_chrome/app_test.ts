@@ -84,7 +84,7 @@ suite('AppTest', () => {
 
     // Test initial page state.
     assertTrue(
-        customizeChromeApp.$.overviewPage.classList.contains('iron-selected'));
+        customizeChromeApp.$.overviewPage.classList.contains('selected'));
     assertEquals(document.body, document.activeElement);
 
     // Send event for edit theme being clicked.
@@ -92,8 +92,8 @@ suite('AppTest', () => {
         new Event('edit-theme-click'));
     await microtasksFinished();
     // Current page should now be categories.
-    assertTrue(customizeChromeApp.$.categoriesPage.classList.contains(
-        'iron-selected'));
+    assertTrue(
+        customizeChromeApp.$.categoriesPage.classList.contains('selected'));
     assertEquals(customizeChromeApp, document.activeElement);
 
     // Send event for category selected.
@@ -102,16 +102,15 @@ suite('AppTest', () => {
             'collection-select', {detail: testCollection}));
     await microtasksFinished();
     // Current page should now be themes.
-    assertTrue(
-        customizeChromeApp.$.themesPage.classList.contains('iron-selected'));
+    assertTrue(customizeChromeApp.$.themesPage.classList.contains('selected'));
     assertEquals(customizeChromeApp, document.activeElement);
 
     // Send event for back click.
     customizeChromeApp.$.themesPage.dispatchEvent(new Event('back-click'));
     await microtasksFinished();
     // Current page should now be categories.
-    assertTrue(customizeChromeApp.$.categoriesPage.classList.contains(
-        'iron-selected'));
+    assertTrue(
+        customizeChromeApp.$.categoriesPage.classList.contains('selected'));
     assertEquals(customizeChromeApp, document.activeElement);
 
     // Send event for upload image.
@@ -120,7 +119,7 @@ suite('AppTest', () => {
     await microtasksFinished();
     // Current page should now be overview.
     assertTrue(
-        customizeChromeApp.$.overviewPage.classList.contains('iron-selected'));
+        customizeChromeApp.$.overviewPage.classList.contains('selected'));
     assertEquals(customizeChromeApp, document.activeElement);
 
     // Set page back to categories.
@@ -134,7 +133,7 @@ suite('AppTest', () => {
     await microtasksFinished();
     // Current page should now be overview.
     assertTrue(
-        customizeChromeApp.$.overviewPage.classList.contains('iron-selected'));
+        customizeChromeApp.$.overviewPage.classList.contains('selected'));
     assertEquals(customizeChromeApp, document.activeElement);
   });
 
@@ -161,7 +160,7 @@ suite('AppTest', () => {
         customizeChromeApp.shadowRoot!.querySelector('#shortcuts'),
         sectionsScrolledTo[0]);
     assertTrue(
-        customizeChromeApp.$.overviewPage.classList.contains('iron-selected'));
+        customizeChromeApp.$.overviewPage.classList.contains('selected'));
   });
 
   suite('ExtensionCard', () => {

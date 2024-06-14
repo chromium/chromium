@@ -22,7 +22,7 @@ suite('ExtensionSidebarTest', function() {
   });
 
   test('SetSelected', function() {
-    const selector = '.cr-nav-menu-item.iron-selected';
+    const selector = '.cr-nav-menu-item.selected';
     assertFalse(!!sidebar.shadowRoot!.querySelector(selector));
 
     window.history.replaceState(undefined, '', '/shortcuts');

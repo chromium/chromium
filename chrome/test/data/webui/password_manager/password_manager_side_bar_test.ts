@@ -54,7 +54,7 @@ suite('PasswordManagerSideBarTest', function() {
         await whenSelected;
         assertEquals(page, Router.getInstance().currentRoute.page);
         const selectedItem =
-            sidebar.$.menu.querySelector<HTMLElement>('.iron-selected');
+            sidebar.$.menu.querySelector<HTMLElement>('.selected');
         assertTrue(!!selectedItem);
         assertEquals(page, selectedItem.id);
       }));
@@ -64,8 +64,7 @@ suite('PasswordManagerSideBarTest', function() {
     Router.getInstance().navigateTo(Page.PASSWORD_DETAILS, 'google.com');
     await whenSelected;
     assertEquals(Page.PASSWORD_DETAILS, Router.getInstance().currentRoute.page);
-    const selectedItem =
-        sidebar.$.menu.querySelector<HTMLElement>('.iron-selected');
+    const selectedItem = sidebar.$.menu.querySelector<HTMLElement>('.selected');
     assertTrue(!!selectedItem);
     assertEquals(Page.PASSWORDS, selectedItem.id);
   });
@@ -75,8 +74,7 @@ suite('PasswordManagerSideBarTest', function() {
     Router.getInstance().navigateTo(Page.CHECKUP_DETAILS, CheckupSubpage.WEAK);
     await whenSelected;
     assertEquals(Page.CHECKUP_DETAILS, Router.getInstance().currentRoute.page);
-    const selectedItem =
-        sidebar.$.menu.querySelector<HTMLElement>('.iron-selected');
+    const selectedItem = sidebar.$.menu.querySelector<HTMLElement>('.selected');
     assertTrue(!!selectedItem);
     assertEquals(Page.CHECKUP, selectedItem.id);
   });

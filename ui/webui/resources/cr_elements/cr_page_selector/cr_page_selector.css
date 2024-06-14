@@ -11,6 +11,6 @@
   display: block;
 }
 
-:host > ::slotted(:not(slot):not(.iron-selected)) {
+:host > ::slotted(:not(slot):not(.selected)) {
   display: none !important;
 }
