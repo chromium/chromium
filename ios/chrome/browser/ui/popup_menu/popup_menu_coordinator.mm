@@ -104,8 +104,6 @@ using base::UserMetricsAction;
 @property(nonatomic, strong) PopupMenuTableViewController* viewController;
 // Handles user interaction with the popup menu items.
 @property(nonatomic, strong) PopupMenuActionHandler* actionHandler;
-// Time when the presentation of the popup menu is requested.
-@property(nonatomic, assign) NSTimeInterval requestStartTime;
 
 // Time when the tools menu opened.
 @property(nonatomic, assign) NSTimeInterval toolsMenuOpenTime;
@@ -140,7 +138,6 @@ using base::UserMetricsAction;
 
 @synthesize mediator = _mediator;
 @synthesize presenter = _presenter;
-@synthesize requestStartTime = _requestStartTime;
 @synthesize UIUpdater = _UIUpdater;
 @synthesize bubblePresenter = _bubblePresenter;
 @synthesize viewController = _viewController;
@@ -221,8 +218,6 @@ using base::UserMetricsAction;
           agentFromScene:sceneState];
   // Allow the non-modal promo scheduler to close the promo.
   [nonModalPromoScheduler logPopupMenuEntered];
-
-  self.requestStartTime = [NSDate timeIntervalSinceReferenceDate];
 
   PopupMenuTableViewController* tableViewController =
       [[PopupMenuTableViewController alloc] init];
@@ -638,15 +633,6 @@ using base::UserMetricsAction;
 - (void)containedPresenterDidPresent:(id<ContainedPresenter>)presenter {
   if (presenter != self.presenter)
     return;
-
-  if (self.requestStartTime != 0) {
-    base::TimeDelta elapsed = base::Seconds(
-        [NSDate timeIntervalSinceReferenceDate] - self.requestStartTime);
-    UMA_HISTOGRAM_TIMES("Toolbar.ShowToolsMenuResponsiveness", elapsed);
-    // Reset the start time to ensure that whatever happens, we only record
-    // this once.
-    self.requestStartTime = 0;
-  }
 }
 
 #pragma mark - PopupMenuPresenterDelegate

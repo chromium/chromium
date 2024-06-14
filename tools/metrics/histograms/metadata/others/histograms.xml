@@ -10492,17 +10492,6 @@ features through Chrome Labs. -->
   </token>
 </histogram>
 
-<histogram name="Toolbar.ShowToolsMenuResponsiveness" units="ms"
-    expires_after="M77">
-  <owner>peterlaurens@chromium.org</owner>
-  <summary>
-    Number of milliseconds passed between the event that triggers the
-    presentation of the tools menu (the main menu of actions accessed from the
-    toolbar), and the actual appearance of the menu on screen. Includes the
-    animation duration.
-  </summary>
-</histogram>
-
 <histogram name="Touchpad.HapticClickSensitivity.Changed"
     enum="HapticClickSensitivity" expires_after="2024-03-10">
   <owner>gavinwill@chromium.org</owner>
