@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/icons.html.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
+import 'chrome://resources/cr_elements/icons_lit.html.js';
 import './strings.m.js';
 
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './app.html.js';
+import {getCss} from './app.css.js';
+import {getHtml} from './app.html.js';
 import type {BrowserSwitchProxy} from './browser_switch_proxy.js';
 import {BrowserSwitchProxyImpl} from './browser_switch_proxy.js';
 
@@ -22,51 +22,45 @@ enum LaunchError {
   PROTOCOL_ERROR = 'protocolError',
 }
 
-const BrowserSwitchAppElementBase = I18nMixin(PolymerElement);
+const BrowserSwitchAppElementBase = I18nMixinLit(CrLitElement);
 
-class BrowserSwitchAppElement extends BrowserSwitchAppElementBase {
+export class BrowserSwitchAppElement extends BrowserSwitchAppElementBase {
   static get is() {
     return 'browser-switch-app';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /**
        * URL to launch in the alternative browser.
        */
-      url_: {
-        type: String,
-        value() {
-          return (new URLSearchParams(window.location.search)).get('url') || '';
-        },
-      },
+      url_: {type: String},
 
       /**
        * Error message, or empty string if no error has occurred (yet).
        */
-      error_: {
-        type: String,
-        value: '',
-      },
+      error_: {type: String},
 
       /**
        * Countdown displayed to the user, number of seconds until launching. If
        * 0 or less, doesn't get displayed at all.
        */
-      secondCounter_: {
-        type: Number,
-        value: 0,
-      },
+      secondCounter_: {type: Number},
     };
   }
 
-  private url_: string;
-  private error_: string;
-  private secondCounter_: number;
+  private url_: string =
+      new URLSearchParams(window.location.search).get('url') || '';
+  private error_: string = '';
+  private secondCounter_: number = 0;
 
   override connectedCallback() {
     super.connectedCallback();
@@ -113,7 +107,7 @@ class BrowserSwitchAppElement extends BrowserSwitchAppElementBase {
     }, 1 * MS_PER_SECOND);
   }
 
-  private computeTitle_(): string {
+  protected computeTitle_(): string {
     if (this.error_) {
       return this.i18n('errorTitle', getAltBrowserName());
     }
@@ -124,7 +118,7 @@ class BrowserSwitchAppElement extends BrowserSwitchAppElementBase {
     return this.i18n('openingTitle', getAltBrowserName());
   }
 
-  private computeDescription_(): TrustedHTML {
+  protected computeDescription_(): TrustedHTML {
     if (this.error_) {
       return this.i18nAdvanced(this.error_, {
         substitutions: [getUrlHostname(this.url_), getAltBrowserName()],
