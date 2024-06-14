@@ -341,7 +341,7 @@
 <translation id="1238293488628890871">Сменить профиль?</translation>
 <translation id="1239594683407221485">Чтобы посмотреть контент, хранящийся на устройстве, откройте приложение "Файлы".</translation>
 <translation id="1239841552505950173">Запустить приложение</translation>
-<translation id="1240903469550363138">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваше имя, адрес электронной почты и фото профиля. Ознакомьтесь с его <ph name="BEGIN_LINK1" />политикой конфиденциальности<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />условиями использования<ph name="END_LINK2" />.</translation>
+<translation id="1240903469550363138"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваше имя, адрес электронной почты и фото профиля. Ознакомьтесь с <ph name="BEGIN_LINK1" />политикой конфиденциальности<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />условиями предоставления услуг<ph name="END_LINK2" /> этого сайта.</translation>
 <translation id="1241066500170667906">Выбрать статус эксперимента "<ph name="EXPERIMENT_NAME" />"</translation>
 <translation id="124116460088058876">Другие языки</translation>
 <translation id="1241381048229838873">Показать все закладки</translation>
@@ -815,7 +815,7 @@
 <translation id="1596286373007273895">Доступно</translation>
 <translation id="1596709061955594992">Bluetooth выключен. Включите его, чтобы увидеть доступные устройства.</translation>
 <translation id="1596780725094407793">и субдомены</translation>
-<translation id="1598163867407640634">Оплачивайте покупки на <ph name="SITE_ETLD_PLUS_ONE" /> через <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
+<translation id="1598163867407640634">Вход на сайт <ph name="SITE_ETLD_PLUS_ONE" /> с учетными данными <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="1598233202702788831">Функция обновления отключена администратором.</translation>
 <translation id="1600541617401655593">Помогать повышать производительность ChromeOS Flex и улучшать функции этой ОС. Мы агрегируем собираемые данные и надежно их защищаем.</translation>
 <translation id="1600857548979126453">Доступ к работе отладчика страниц</translation>
@@ -2546,7 +2546,7 @@
 <translation id="2835547721736623118">Сервис распознавания речи</translation>
 <translation id="2835761321523638096">Чтение и изменение записей в списке для чтения</translation>
 <translation id="2836112522909777958">Чтобы удалить данные, закройте все окна в режиме инкогнито</translation>
-<translation id="2836232638504556905">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваше имя, адрес электронной почты и фото профиля. Ознакомьтесь с его <ph name="BEGIN_LINK" />политикой конфиденциальности<ph name="END_LINK" />.</translation>
+<translation id="2836232638504556905"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваше имя, адрес электронной почты и фото профиля. Ознакомьтесь с <ph name="BEGIN_LINK" />политикой конфиденциальности<ph name="END_LINK" /> этого сайта.</translation>
 <translation id="2836269494620652131">Сбой</translation>
 <translation id="283669119850230892">Для использования сети <ph name="NETWORK_ID" /> предварительно подключитесь к Интернету.</translation>
 <translation id="2838379631617906747">Установка...</translation>
@@ -4627,7 +4627,7 @@
 <translation id="4405224443901389797">Переместить в…</translation>
 <translation id="4405781821077215583">Увеличивайте или уменьшайте размер текста и элементов на экране</translation>
 <translation id="4406883609789734330">Автоматические субтитры</translation>
-<translation id="4407039574263172582">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваше имя, адрес электронной почты и фото профиля. Ознакомьтесь с его <ph name="BEGIN_LINK" />условиями предоставления услуг<ph name="END_LINK" />.</translation>
+<translation id="4407039574263172582"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваше имя, адрес электронной почты и фото профиля. Ознакомьтесь с <ph name="BEGIN_LINK" />условиями предоставления услуг<ph name="END_LINK" /> этого сайта.</translation>
 <translation id="4408599188496843485">&amp;Справка</translation>
 <translation id="4408965460206576430">Файл содержит вредоносное ПО или размещен на подозрительном сайте.</translation>
 <translation id="4409271659088619928">Ваша поисковая система – <ph name="DSE" />. Изучите инструкции по удалению истории поиска в справочных материалах указанной поисковой системы.</translation>
@@ -5895,7 +5895,7 @@
 <translation id="5398572795982417028">Размер страницы больше максимально допустимого (лимит ‒ <ph name="MAXIMUM_PAGE" />)</translation>
 <translation id="5400196580536813396">Запрещено искать и использовать принтеры, доступные для вашего устройства</translation>
 <translation id="5400836586163650660">Серый</translation>
-<translation id="5401851137404501592">Чтобы продолжить, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваше имя, адрес электронной почты и фото профиля.</translation>
+<translation id="5401851137404501592"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> передаст этому сайту ваше имя, адрес электронной почты и фото профиля.</translation>
 <translation id="5402367795255837559">Шрифт Брайля</translation>
 <translation id="5402815541704507626">Скачивание обновления по мобильной сети</translation>
 <translation id="5404740137318486384">Нажмите на переключатель или клавишу, чтобы назначить их для действия "<ph name="ACTION" />".
