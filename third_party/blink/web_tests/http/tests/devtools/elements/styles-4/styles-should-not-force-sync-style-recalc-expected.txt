@@ -1,4 +1,0 @@
-Tests that inspector doesn't force sync layout on operations with CSSOM.Bug 315885.
-
-Found 0 UpdateLayoutTree events (expecting 0).
-
