@@ -38,6 +38,7 @@ class FakeBoundSessionCookieRefreshService
   std::vector<chrome::mojom::BoundSessionThrottlerParamsPtr>
   GetBoundSessionThrottlerParams() const override;
   void HandleRequestBlockedOnCookie(
+      const GURL& untrusted_request_url,
       HandleRequestBlockedOnCookieCallback resume_blocked_request) override;
   void SetRendererBoundSessionThrottlerParamsUpdaterDelegate(
       RendererBoundSessionThrottlerParamsUpdaterDelegate renderer_updater)

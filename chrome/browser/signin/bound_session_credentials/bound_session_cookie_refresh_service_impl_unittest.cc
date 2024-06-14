@@ -523,7 +523,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   EXPECT_TRUE(cookie_controller());
   base::test::TestFuture<ResumeBlockedRequestsTrigger> future;
-  service->HandleRequestBlockedOnCookie(future.GetCallback());
+  service->HandleRequestBlockedOnCookie(kTestGoogleURL, future.GetCallback());
 
   EXPECT_FALSE(future.IsReady());
   cookie_controller()->SimulateRefreshBoundSessionCompleted();
@@ -538,7 +538,7 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
 
   // Unbound session, the callback should be called immediately.
   base::test::TestFuture<ResumeBlockedRequestsTrigger> future;
-  service->HandleRequestBlockedOnCookie(future.GetCallback());
+  service->HandleRequestBlockedOnCookie(kTestGoogleURL, future.GetCallback());
   EXPECT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get(),
             ResumeBlockedRequestsTrigger::kShutdownOrSessionTermination);
@@ -752,17 +752,19 @@ TEST_F(BoundSessionCookieRefreshServiceImplTest,
   SetupPreConditionForBoundSession();
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   ASSERT_TRUE(cookie_controller());
-  mojo::Remote<chrome::mojom::BoundSessionRequestThrottledHandler> listener_1;
-  mojo::Remote<chrome::mojom::BoundSessionRequestThrottledHandler> listener_2;
+  mojo::Remote<chrome::mojom::BoundSessionRequestThrottledHandler> handler_1;
+  mojo::Remote<chrome::mojom::BoundSessionRequestThrottledHandler> handler_2;
   service->AddBoundSessionRequestThrottledHandlerReceiver(
-      listener_1.BindNewPipeAndPassReceiver());
+      handler_1.BindNewPipeAndPassReceiver());
   service->AddBoundSessionRequestThrottledHandlerReceiver(
-      listener_2.BindNewPipeAndPassReceiver());
+      handler_2.BindNewPipeAndPassReceiver());
 
   base::test::TestFuture<ResumeBlockedRequestsTrigger> future_1;
   base::test::TestFuture<ResumeBlockedRequestsTrigger> future_2;
-  listener_1->HandleRequestBlockedOnCookie(future_1.GetCallback());
-  listener_2->HandleRequestBlockedOnCookie(future_2.GetCallback());
+  handler_1->HandleRequestBlockedOnCookie(kTestGoogleURL,
+                                          future_1.GetCallback());
+  handler_2->HandleRequestBlockedOnCookie(kTestGoogleURL,
+                                          future_2.GetCallback());
   RunUntilIdle();
 
   EXPECT_FALSE(future_1.IsReady());

@@ -34,7 +34,7 @@ class MockBoundSessionRequestThrottledInRendererManager
  public:
   MockBoundSessionRequestThrottledInRendererManager() {
     sequence_checker_.DetachFromSequence();
-    ON_CALL(*this, HandleRequestBlockedOnCookie(_))
+    ON_CALL(*this, HandleRequestBlockedOnCookie)
         .WillByDefault(testing::Invoke(
             this, &MockBoundSessionRequestThrottledInRendererManager::
                       HandleRequestBlockedOnCookieCalled));
@@ -42,8 +42,9 @@ class MockBoundSessionRequestThrottledInRendererManager
 
   MOCK_METHOD(void,
               HandleRequestBlockedOnCookie,
-              (BoundSessionRequestThrottledHandler::
-                   ResumeOrCancelThrottledRequestCallback callback),
+              (const GURL&,
+               BoundSessionRequestThrottledHandler::
+                   ResumeOrCancelThrottledRequestCallback),
               (override));
 
   void BindSequenceChecker() {
@@ -54,6 +55,7 @@ class MockBoundSessionRequestThrottledInRendererManager
   ~MockBoundSessionRequestThrottledInRendererManager() override = default;
 
   void HandleRequestBlockedOnCookieCalled(
+      const GURL& untrusted_request_url,
       ResumeOrCancelThrottledRequestCallback callback) {
     EXPECT_TRUE(sequence_checker_.CalledOnValidSequence());
     std::move(callback).Run(
@@ -91,7 +93,7 @@ TEST(BoundSessionRequestThrottledHandlerRendererImplTest,
           initialize_mock_run_loop.QuitClosure()));
   initialize_mock_run_loop.Run();
 
-  EXPECT_CALL(*manager, HandleRequestBlockedOnCookie(_));
+  EXPECT_CALL(*manager, HandleRequestBlockedOnCookie);
 
   // Used to check that the callback passed to
   // `BoundSessionRequestThrottledHandlerRendererImpl` is executed on the

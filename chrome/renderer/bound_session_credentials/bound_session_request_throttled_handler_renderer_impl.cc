@@ -12,6 +12,7 @@
 #include "base/task/task_runner.h"
 #include "chrome/renderer/bound_session_credentials/bound_session_request_throttled_in_renderer_manager.h"
 #include "content/public/child/child_thread.h"
+#include "url/gurl.h"
 
 BoundSessionRequestThrottledHandlerRendererImpl::
     BoundSessionRequestThrottledHandlerRendererImpl(
@@ -42,5 +43,6 @@ void BoundSessionRequestThrottledHandlerRendererImpl::
       FROM_HERE, base::BindOnce(&BoundSessionRequestThrottledInRendererManager::
                                     HandleRequestBlockedOnCookie,
                                 bound_session_request_throttled_manager_,
+                                untrusted_request_url,
                                 std::move(callback_bound_to_current_sequence)));
 }

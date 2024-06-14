@@ -14,6 +14,7 @@
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "net/cookies/site_for_cookies.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -32,7 +33,9 @@ class FakeBoundSessionRequestThrottledHandler
       : receiver_(this, std::move(receiver)) {}
 
   void HandleRequestBlockedOnCookie(
+      const GURL& untrusted_request_url,
       HandleRequestBlockedOnCookieCallback callback) override {
+    request_urls_.emplace_back(untrusted_request_url);
     callbacks_.push(std::move(callback));
   }
 
@@ -45,8 +48,15 @@ class FakeBoundSessionRequestThrottledHandler
 
   size_t NumberOfBlockedRequests() { return callbacks_.size(); }
 
+  std::vector<GURL> TakeRequestUrls() {
+    std::vector<GURL> args;
+    std::swap(args, request_urls_);
+    return args;
+  }
+
  private:
   std::queue<HandleRequestBlockedOnCookieCallback> callbacks_;
+  std::vector<GURL> request_urls_;
   mojo::Receiver<chrome::mojom::BoundSessionRequestThrottledHandler> receiver_;
 };
 }  // namespace
@@ -54,6 +64,10 @@ class FakeBoundSessionRequestThrottledHandler
 class BoundSessionRequestThrottledInRendererManagerTest
     : public ::testing::Test {
  public:
+  const GURL kRequestGURLs[5] = {
+      GURL("https://mail.google.com"), GURL("http://www.google.com"),
+      GURL("about:blank"), GURL("https://origin.test/"),
+      GURL("https://example.com")};
   BoundSessionRequestThrottledInRendererManagerTest() {
     mojo::PendingRemote<chrome::mojom::BoundSessionRequestThrottledHandler>
         remote;
@@ -83,10 +97,13 @@ class BoundSessionRequestThrottledInRendererManagerTest
 
 TEST_F(BoundSessionRequestThrottledInRendererManagerTest, SingleRequest) {
   base::test::TestFuture<UnblockAction, ResumeBlockedRequestsTrigger> future;
-  manager()->HandleRequestBlockedOnCookie(future.GetCallback());
+  manager()->HandleRequestBlockedOnCookie(kRequestGURLs[0],
+                                          future.GetCallback());
 
   RunUntilIdle();
   EXPECT_EQ(handler()->NumberOfBlockedRequests(), 1U);
+  EXPECT_THAT(handler()->TakeRequestUrls(),
+              testing::ElementsAre(kRequestGURLs[0]));
 
   handler()->SimulateHandleRequestBlockedOnCookieCompleted();
   EXPECT_THAT(future.Get(),
@@ -100,20 +117,25 @@ TEST_F(BoundSessionRequestThrottledInRendererManagerTest, MultipleRequests) {
       base::test::TestFuture<UnblockAction, ResumeBlockedRequestsTrigger>,
       kBlockedRequests>
       futures;
-  for (auto& future : futures) {
-    manager()->HandleRequestBlockedOnCookie(future.GetCallback());
+
+  for (size_t i = 0; i < futures.size(); ++i) {
+    manager()->HandleRequestBlockedOnCookie(kRequestGURLs[i],
+                                            futures[i].GetCallback());
   }
 
   // Allow mojo message posting to complete.
   RunUntilIdle();
   EXPECT_EQ(handler()->NumberOfBlockedRequests(), kBlockedRequests);
+  EXPECT_THAT(handler()->TakeRequestUrls(),
+              testing::ElementsAreArray(kRequestGURLs));
+
   for (auto& future : futures) {
     EXPECT_FALSE(future.IsReady());
   }
 
-  for (auto& future : futures) {
+  for (size_t i = 0; i < futures.size(); ++i) {
     handler()->SimulateHandleRequestBlockedOnCookieCompleted();
-    EXPECT_THAT(future.Get(),
+    EXPECT_THAT(futures[i].Get(),
                 FieldsAre(UnblockAction::kResume,
                           ResumeBlockedRequestsTrigger::kCookieAlreadyFresh));
   }
@@ -127,7 +149,7 @@ TEST_F(BoundSessionRequestThrottledInRendererManagerTest,
       kBlockedRequests>
       futures;
   for (auto& future : futures) {
-    manager()->HandleRequestBlockedOnCookie(future.GetCallback());
+    manager()->HandleRequestBlockedOnCookie(GURL(), future.GetCallback());
   }
 
   // Allow mojo message posting to complete.
@@ -147,7 +169,7 @@ TEST_F(BoundSessionRequestThrottledInRendererManagerTest,
   ResetHandler();
 
   base::test::TestFuture<UnblockAction, ResumeBlockedRequestsTrigger> future;
-  manager()->HandleRequestBlockedOnCookie(future.GetCallback());
+  manager()->HandleRequestBlockedOnCookie(GURL(), future.GetCallback());
 
   EXPECT_THAT(future.Get(),
               FieldsAre(UnblockAction::kCancel,
