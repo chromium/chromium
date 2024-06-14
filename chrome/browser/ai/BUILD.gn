@@ -1,0 +1,23 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("ai") {
+  sources = [
+    "ai_manager_keyed_service.cc",
+    "ai_manager_keyed_service.h",
+    "ai_manager_keyed_service_factory.cc",
+    "ai_manager_keyed_service_factory.h",
+    "ai_text_session.cc",
+    "ai_text_session.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//components/optimization_guide/core",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+  ]
+}

@@ -74,6 +74,7 @@
 #include "content/browser/xr/service/vr_service_impl.h"
 #include "content/common/input/input_injector.mojom.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/service_worker_context.h"
@@ -826,11 +827,6 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   map->Add<media::mojom::MediaPlayerObserverClient>(base::BindRepeating(
       &BindMediaPlayerObserverClientHandler, base::Unretained(host)));
 
-  if (base::FeatureList::IsEnabled(blink::features::kEnableModelExecutionAPI)) {
-    map->Add<blink::mojom::AIManager>(base::BindRepeating(
-        &RenderFrameHostImpl::BindAIManager, base::Unretained(host)));
-  }
-
   map->Add<blink::mojom::NotificationService>(base::BindRepeating(
       &RenderFrameHostImpl::CreateNotificationService, base::Unretained(host)));
 
@@ -1129,6 +1125,13 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
       base::BindRepeating(&RenderProcessHost::BindMediaCodecProvider,
                           base::Unretained(host->GetProcess())));
 #endif
+
+  if (base::FeatureList::IsEnabled(blink::features::kEnableModelExecutionAPI)) {
+    map->Add<blink::mojom::AIManager>(
+        base::BindRepeating(&ContentBrowserClient::BindAIManager,
+                            base::Unretained(GetContentClient()->browser()),
+                            host->GetBrowserContext()));
+  }
 }
 
 void PopulateBinderMapWithContext(
@@ -1148,8 +1151,6 @@ void PopulateBinderMapWithContext(
       &EmptyBinderForFrame<blink::mojom::CredentialManager>));
   map->Add<blink::mojom::LCPCriticalPathPredictorHost>(base::BindRepeating(
       &EmptyBinderForFrame<blink::mojom::LCPCriticalPathPredictorHost>));
-  map->Add<blink::mojom::AIManager>(
-      base::BindRepeating(&EmptyBinderForFrame<blink::mojom::AIManager>));
   if (base::FeatureList::IsEnabled(blink::features::kBrowsingTopics) &&
       base::FeatureList::IsEnabled(
           blink::features::kBrowsingTopicsDocumentAPI)) {
@@ -1264,6 +1265,11 @@ void PopulateBinderMapWithContext(
       base::BindRepeating(&OriginTrialStateHostImpl::Create));
   map->Add<blink::mojom::StorageAccessHandle>(
       base::BindRepeating(&StorageAccessHandle::Create));
+
+  if (base::FeatureList::IsEnabled(blink::features::kEnableModelExecutionAPI)) {
+    map->Add<blink::mojom::AIManager>(
+        base::BindRepeating(&EmptyBinderForFrame<blink::mojom::AIManager>));
+  }
 }
 
 void PopulateBinderMap(RenderFrameHostImpl* host, mojo::BinderMap* map) {
@@ -1362,10 +1368,6 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
     map->Add<device::mojom::PressureManager>(base::BindRepeating(
         &DedicatedWorkerHost::BindPressureService, base::Unretained(host)));
   }
-  if (base::FeatureList::IsEnabled(blink::features::kEnableModelExecutionAPI)) {
-    map->Add<blink::mojom::AIManager>(base::BindRepeating(
-        &DedicatedWorkerHost::BindAIManager, base::Unretained(host)));
-  }
 
   // RenderProcessHost binders
   map->Add<media::mojom::VideoDecodePerfHistory>(BindWorkerReceiver(
@@ -1391,6 +1393,13 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
       host->GetAncestorRenderFrameHostId(),
       RenderProcessHost::NotificationServiceCreatorType::kDedicatedWorker,
       host));
+
+  if (base::FeatureList::IsEnabled(blink::features::kEnableModelExecutionAPI)) {
+    map->Add<blink::mojom::AIManager>(
+        base::BindRepeating(&ContentBrowserClient::BindAIManager,
+                            base::Unretained(GetContentClient()->browser()),
+                            host->GetProcessHost()->GetBrowserContext()));
+  }
 }
 
 void PopulateBinderMapWithContext(

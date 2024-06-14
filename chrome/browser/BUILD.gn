@@ -153,10 +153,6 @@ static_library("browser") {
     "affiliations/affiliation_service_factory.h",
     "after_startup_task_utils.cc",
     "after_startup_task_utils.h",
-    "ai/ai_manager_impl.cc",
-    "ai/ai_manager_impl.h",
-    "ai/ai_text_session.cc",
-    "ai/ai_text_session.h",
     "app_mode/app_mode_utils.cc",
     "app_mode/app_mode_utils.h",
     "assist_ranker/assist_ranker_service_factory.cc",
@@ -1954,6 +1950,7 @@ static_library("browser") {
   ldflags = []
 
   allow_circular_includes_from = [
+    "//chrome/browser/ai",
     "//chrome/browser/autofill",
     "//chrome/browser/devtools",
     "//chrome/browser/favicon",
@@ -2061,6 +2058,7 @@ static_library("browser") {
     "//chrome/app/theme:theme_resources",
     "//chrome/app/vector_icons",
     "//chrome/browser/accessibility:utils",
+    "//chrome/browser/ai",
     "//chrome/browser/autofill",
     "//chrome/browser/bitmap_fetcher",
     "//chrome/browser/breadcrumbs",

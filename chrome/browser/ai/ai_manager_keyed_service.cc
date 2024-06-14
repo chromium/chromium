@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ai/ai_manager_impl.h"
+#include "chrome/browser/ai/ai_manager_keyed_service.h"
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -20,7 +20,6 @@
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
-#include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
@@ -94,25 +93,18 @@ ConvertOnDeviceModelEligibilityReasonToModelAvailabilityCheckResult(
 
 }  // namespace
 
-DOCUMENT_USER_DATA_KEY_IMPL(AIManagerImpl);
+AIManagerKeyedService::AIManagerKeyedService(
+    content::BrowserContext* browser_context)
+    : browser_context_(browser_context) {}
 
-AIManagerImpl::AIManagerImpl(content::RenderFrameHost* rfh)
-    : DocumentUserData<AIManagerImpl>(rfh) {
-  browser_context_ = rfh->GetBrowserContext()->GetWeakPtr();
-}
+AIManagerKeyedService::~AIManagerKeyedService() {}
 
-AIManagerImpl::~AIManagerImpl() = default;
-
-// static
-void AIManagerImpl::Create(
-    content::RenderFrameHost* render_frame_host,
+void AIManagerKeyedService::AddReceiver(
     mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
-  AIManagerImpl* model_manager =
-      AIManagerImpl::GetOrCreateForCurrentDocument(render_frame_host);
-  model_manager->receiver_.Bind(std::move(receiver));
+  receivers_.Add(this, std::move(receiver));
 }
 
-void AIManagerImpl::CanCreateTextSession(
+void AIManagerKeyedService::CanCreateTextSession(
     CanCreateTextSessionCallback callback) {
   auto model_path =
       optimization_guide::switches::GetOnDeviceModelExecutionOverride();
@@ -123,31 +115,23 @@ void AIManagerImpl::CanCreateTextSession(
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(IsModelPathValid, model_path.value()),
-        base::BindOnce(&AIManagerImpl::OnModelPathValidationComplete,
+        base::BindOnce(&AIManagerKeyedService::OnModelPathValidationComplete,
                        weak_factory_.GetWeakPtr(), model_path.value()));
   }
   // If the model path is not provided, we skip the model path check.
   CanOptimizationGuideKeyedServiceCreateGenericSession(std::move(callback));
 }
 
-void AIManagerImpl::CreateTextSession(
+void AIManagerKeyedService::CreateTextSession(
     mojo::PendingReceiver<blink::mojom::AITextSession> receiver,
     blink::mojom::AITextSessionSamplingParamsPtr sampling_params,
     CreateTextSessionCallback callback) {
-  content::BrowserContext* browser_context = browser_context_.get();
-  if (!browser_context) {
-    receiver_.ReportBadMessage(
-        "Caller should ensure `CanStartModelExecutionSession()` "
-        "returns true before calling this method.");
-    std::move(callback).Run(/*success=*/false);
-    return;
-  }
-
+  CHECK(browser_context_);
   OptimizationGuideKeyedService* service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context));
+          Profile::FromBrowserContext(browser_context_));
   if (!service) {
-    receiver_.ReportBadMessage(
+    receivers_.ReportBadMessage(
         "Caller should ensure `CanStartModelExecutionSession()` "
         "returns true before calling this method.");
     std::move(callback).Run(/*success=*/false);
@@ -179,20 +163,20 @@ void AIManagerImpl::CreateTextSession(
   std::move(callback).Run(/*success=*/true);
 }
 
-void AIManagerImpl::GetDefaultTextSessionSamplingParams(
+void AIManagerKeyedService::GetDefaultTextSessionSamplingParams(
     GetDefaultTextSessionSamplingParamsCallback callback) {
   std::move(callback).Run(blink::mojom::AITextSessionSamplingParams::New(
       optimization_guide::features::GetOnDeviceModelDefaultTopK(),
       optimization_guide::features::GetOnDeviceModelDefaultTemperature()));
 }
 
-void AIManagerImpl::CanOptimizationGuideKeyedServiceCreateGenericSession(
-    CanCreateTextSessionCallback callback) {
-  content::BrowserContext* browser_context = browser_context_.get();
-  CHECK(browser_context);
+void AIManagerKeyedService::
+    CanOptimizationGuideKeyedServiceCreateGenericSession(
+        CanCreateTextSessionCallback callback) {
+  CHECK(browser_context_);
   OptimizationGuideKeyedService* service =
       OptimizationGuideKeyedServiceFactory::GetForProfile(
-          Profile::FromBrowserContext(browser_context));
+          Profile::FromBrowserContext(browser_context_));
 
   // If the `OptimizationGuideKeyedService` cannot be retrieved, return false.
   if (!service) {
@@ -219,8 +203,9 @@ void AIManagerImpl::CanOptimizationGuideKeyedServiceCreateGenericSession(
       /*result=*/blink::mojom::ModelAvailabilityCheckResult::kReadily);
 }
 
-void AIManagerImpl::OnModelPathValidationComplete(const std::string& model_path,
-                                                  bool is_valid_path) {
+void AIManagerKeyedService::OnModelPathValidationComplete(
+    const std::string& model_path,
+    bool is_valid_path) {
   // TODO(crbug.com/346491542): Remove this when the error page is implemented.
   if (!is_valid_path) {
     VLOG(1) << base::StringPrintf(

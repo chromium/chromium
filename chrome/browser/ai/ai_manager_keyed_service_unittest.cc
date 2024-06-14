@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ai/ai_manager_impl.h"
+#include "chrome/browser/ai/ai_manager_keyed_service.h"
 
 #include "base/test/mock_callback.h"
+#include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -16,7 +17,7 @@
 using ::testing::AtMost;
 using ::testing::NiceMock;
 
-class AIManagerImplTest : public ChromeRenderViewHostTestHarness {
+class AIManagerKeyedServiceTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
@@ -37,7 +38,7 @@ class AIManagerImplTest : public ChromeRenderViewHostTestHarness {
 
 // Tests that involve invalid on-device model file paths should not crash when
 // the associated RFH is destroyed.
-TEST_F(AIManagerImplTest, NoUAFWithInvalidOnDeviceModelPath) {
+TEST_F(AIManagerKeyedServiceTest, NoUAFWithInvalidOnDeviceModelPath) {
   auto* command_line = base::CommandLine::ForCurrentProcess();
   command_line->AppendSwitchASCII(
       optimization_guide::switches::kOnDeviceModelExecutionOverride,
@@ -54,8 +55,9 @@ TEST_F(AIManagerImplTest, NoUAFWithInvalidOnDeviceModelPath) {
             blink::mojom::ModelAvailabilityCheckResult::kNoFeatureNotEnabled);
       }));
 
-  AIManagerImpl* ai_manager =
-      AIManagerImpl::GetOrCreateForCurrentDocument(main_rfh());
+  AIManagerKeyedService* ai_manager =
+      AIManagerKeyedServiceFactory::GetAIManagerKeyedService(
+          main_rfh()->GetBrowserContext());
   ai_manager->CanCreateTextSession(callback.Get());
 
   // The callback may still be pending, delete the WebContents and destroy the

@@ -47,7 +47,7 @@
 #include "build/chromeos_buildflags.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
 #include "chrome/browser/after_startup_task_utils.h"
-#include "chrome/browser/ai/ai_manager_impl.h"
+#include "chrome/browser/ai/ai_manager_keyed_service_factory.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/bluetooth/chrome_bluetooth_delegate_impl_client.h"
 #include "chrome/browser/browser_about_handler.h"
@@ -8522,9 +8522,11 @@ bool ChromeContentBrowserClient::ShouldSuppressAXLoadComplete(
 }
 
 void ChromeContentBrowserClient::BindAIManager(
-    content::RenderFrameHost* rfh,
+    content::BrowserContext* browser_context,
     mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
-  AIManagerImpl::Create(rfh, std::move(receiver));
+  auto* ai_manager =
+      AIManagerKeyedServiceFactory::GetAIManagerKeyedService(browser_context);
+  ai_manager->AddReceiver(std::move(receiver));
 }
 
 #if !BUILDFLAG(IS_ANDROID)

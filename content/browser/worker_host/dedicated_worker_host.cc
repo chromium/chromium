@@ -1080,18 +1080,6 @@ void DedicatedWorkerHost::BindCacheStorageInternal(
                                          bucket_locator, std::move(receiver));
 }
 
-void DedicatedWorkerHost::BindAIManager(
-    mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
-  CHECK(
-      base::FeatureList::IsEnabled(blink::features::kEnableModelExecutionAPI));
-
-  RenderFrameHostImpl* ancestor_render_frame_host =
-      RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
-  if (ancestor_render_frame_host) {
-    ancestor_render_frame_host->BindAIManager(std::move(receiver));
-  }
-}
-
 void DedicatedWorkerHost::GetSandboxedFileSystemForBucket(
     const storage::BucketInfo& bucket,
     const std::vector<std::string>& directory_path_components,

@@ -257,7 +257,6 @@
 #include "third_party/blink/public/common/runtime_feature_state/runtime_feature_state_context.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
 #include "third_party/blink/public/mojom/broadcastchannel/broadcast_channel.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
@@ -12354,14 +12353,6 @@ void RenderFrameHostImpl::BindRenderAccessibilityHost(
 void RenderFrameHostImpl::BindNonAssociatedLocalFrameHost(
     mojo::PendingReceiver<blink::mojom::NonAssociatedLocalFrameHost> receiver) {
   non_associated_local_frame_host_receiver_.Bind(std::move(receiver));
-}
-
-void RenderFrameHostImpl::BindAIManager(
-    mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
-  CHECK(
-      base::FeatureList::IsEnabled(blink::features::kEnableModelExecutionAPI));
-
-  GetContentClient()->browser()->BindAIManager(this, std::move(receiver));
 }
 
 bool RenderFrameHostImpl::CancelPrerendering(

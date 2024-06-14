@@ -5,31 +5,29 @@
 #ifndef CONTENT_BROWSER_AI_MOCK_AI_MANAGER_IMPL_H_
 #define CONTENT_BROWSER_AI_MOCK_AI_MANAGER_IMPL_H_
 
-#include "content/public/browser/document_user_data.h"
-#include "content/public/browser/render_frame_host.h"
+#include "base/no_destructor.h"
+#include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 
 namespace content {
 
 // The mock implementation of `blink::mojom::AIManager` used for testing.
-class MockAIManagerImpl : public content::DocumentUserData<MockAIManagerImpl>,
-                          public blink::mojom::AIManager {
+class MockAIManagerImpl : public blink::mojom::AIManager {
  public:
   MockAIManagerImpl(const MockAIManagerImpl&) = delete;
   MockAIManagerImpl& operator=(const MockAIManagerImpl&) = delete;
 
   ~MockAIManagerImpl() override;
 
-  static void Create(content::RenderFrameHost* render_frame_host,
+  static void Create(content::BrowserContext* browser_context,
                      mojo::PendingReceiver<blink::mojom::AIManager> receiver);
 
  private:
-  friend class DocumentUserData<MockAIManagerImpl>;
-  DOCUMENT_USER_DATA_KEY_DECL();
+  friend base::NoDestructor<MockAIManagerImpl>;
 
-  explicit MockAIManagerImpl(content::RenderFrameHost* rfh);
+  explicit MockAIManagerImpl(content::BrowserContext* browser_context);
 
   // `blink::mojom::AIManager` implementation.
   void CanCreateTextSession(CanCreateTextSessionCallback callback) override;
@@ -42,7 +40,7 @@ class MockAIManagerImpl : public content::DocumentUserData<MockAIManagerImpl>,
   void GetDefaultTextSessionSamplingParams(
       GetDefaultTextSessionSamplingParamsCallback callback) override;
 
-  mojo::Receiver<blink::mojom::AIManager> receiver_{this};
+  mojo::ReceiverSet<blink::mojom::AIManager> receivers_;
 };
 
 }  // namespace content

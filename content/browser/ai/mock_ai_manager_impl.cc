@@ -4,28 +4,25 @@
 
 #include "content/browser/ai/mock_ai_manager_impl.h"
 
+#include "base/no_destructor.h"
 #include "content/browser/ai/mock_ai_text_session.h"
-#include "content/public/browser/render_frame_host.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom-shared.h"
 #include "third_party/blink/public/mojom/ai/ai_manager.mojom.h"
 
 namespace content {
 
-DOCUMENT_USER_DATA_KEY_IMPL(MockAIManagerImpl);
-
-MockAIManagerImpl::MockAIManagerImpl(content::RenderFrameHost* rfh)
-    : DocumentUserData<MockAIManagerImpl>(rfh) {}
+MockAIManagerImpl::MockAIManagerImpl(content::BrowserContext* browser_context) {
+}
 
 MockAIManagerImpl::~MockAIManagerImpl() = default;
 
 // static
 void MockAIManagerImpl::Create(
-    content::RenderFrameHost* render_frame_host,
+    content::BrowserContext* browser_context,
     mojo::PendingReceiver<blink::mojom::AIManager> receiver) {
-  MockAIManagerImpl* ai =
-      MockAIManagerImpl::GetOrCreateForCurrentDocument(render_frame_host);
-  ai->receiver_.Bind(std::move(receiver));
+  static base::NoDestructor<MockAIManagerImpl> ai(browser_context);
+  ai->receivers_.Add(ai.get(), std::move(receiver));
 }
 
 void MockAIManagerImpl::CanCreateTextSession(

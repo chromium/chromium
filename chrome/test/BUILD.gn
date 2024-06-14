@@ -6376,7 +6376,7 @@ test("unit_tests") {
 
     # TODO(crbug.com/40753746): move p_s_d_impl_unittest.cc to the same directory
     # as presentation_service_delegate_impl.* files.
-    "../browser/ai/ai_manager_impl_unittest.cc",
+    "../browser/ai/ai_manager_keyed_service_unittest.cc",
     "../browser/commerce/browser_utils_unittest.cc",
     "../browser/commerce/product_specifications/product_specifications_service_factory_unittest.cc",
     "../browser/media/router/presentation/presentation_service_delegate_impl_unittest.cc",
@@ -6870,6 +6870,7 @@ test("unit_tests") {
     "//chrome/browser:buildflags",
     "//chrome/browser:font_pref",
     "//chrome/browser/accessibility:utils",
+    "//chrome/browser/ai",
     "//chrome/browser/apps:icon_standardizer",
     "//chrome/browser/apps:user_type_filter",
     "//chrome/browser/autofill",

@@ -2937,7 +2937,7 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldSuppressAXLoadComplete(RenderFrameHost* rfh);
 
   virtual void BindAIManager(
-      RenderFrameHost* rfh,
+      BrowserContext* browser_context,
       mojo::PendingReceiver<blink::mojom::AIManager> receiver);
 
 #if !BUILDFLAG(IS_ANDROID)
