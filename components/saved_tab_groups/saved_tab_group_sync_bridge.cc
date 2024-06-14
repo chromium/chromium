@@ -486,7 +486,7 @@ void SavedTabGroupSyncBridge::SavedTabGroupReorderedLocally() {
   store_->CommitWriteBatch(std::move(write_batch), base::DoNothing());
 }
 
-std::optional<std::string> SavedTabGroupSyncBridge::GetLocalCacheGuid() {
+std::optional<std::string> SavedTabGroupSyncBridge::GetLocalCacheGuid() const {
   if (!change_processor()->IsTrackingMetadata()) {
     return std::nullopt;
   }

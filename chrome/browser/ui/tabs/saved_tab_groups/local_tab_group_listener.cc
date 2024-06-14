@@ -88,6 +88,7 @@ void LocalTabGroupListener::UpdateVisualDataFromLocal(
   }
 
   if (*(visual_change->old_visuals) != *(visual_change->new_visuals)) {
+    service_->UpdateAttributions(local_id_);
     service_->model()->UpdateVisualData(local_id_, visual_change->new_visuals);
   }
 }
@@ -135,6 +136,8 @@ void LocalTabGroupListener::AddWebContentsFromLocal(
   }
   tab.SetLocalTabID(token);
   tab.SetPosition(relative_index_of_tab_in_group);
+  tab.SetCreatorCacheGuid(service_->GetLocalCacheGuid());
+  service_->UpdateAttributions(local_id_);
   service_->model()->AddTabToGroupLocally(saved_guid_, std::move(tab));
 
   // Link `web_contents` to `token`.
@@ -186,6 +189,7 @@ void LocalTabGroupListener::MoveWebContentsFromLocal(
   const base::Uuid& saved_tab_guid =
       saved_group()->GetTab(web_contents_listener.token())->saved_tab_guid();
 
+  service_->UpdateAttributions(local_id_, web_contents_listener.token());
   service_->model()->MoveTabInGroupTo(saved_guid_, saved_tab_guid,
                                       index_in_group);
 }
@@ -205,6 +209,8 @@ LocalTabGroupListener::MaybeRemoveWebContentsFromLocal(
       web_contents_to_tab_id_map_.at(web_contents).token();
   const base::Uuid tab_guid = saved_group()->GetTab(tab_id)->saved_tab_guid();
 
+  CHECK(saved_group()->local_group_id().has_value());
+  service_->UpdateAttributions(saved_group()->local_group_id().value());
   web_contents_to_tab_id_map_.erase(web_contents);
   service_->model()->RemoveTabFromGroupLocally(saved_guid_, tab_guid);
 

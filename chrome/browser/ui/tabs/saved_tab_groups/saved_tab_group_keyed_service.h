@@ -76,6 +76,12 @@ class SavedTabGroupKeyedService : public KeyedService,
   // group model is loaded. These groups are saved when the model is loaded.
   void SaveRestoredGroup(const tab_groups::TabGroupId& group_id);
 
+  void UpdateAttributions(
+      const LocalTabGroupID& group_id,
+      const std::optional<LocalTabID>& tab_id = std::nullopt);
+
+  std::optional<std::string> GetLocalCacheGuid() const;
+
  private:
   // Adds tabs to `tab_group` if `saved_group` was modified and has more tabs
   // than `tab_group` when a restore happens.

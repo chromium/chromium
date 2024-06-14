@@ -140,6 +140,18 @@ void SavedTabGroupKeyedService::SaveRestoredGroup(
   }
 }
 
+void SavedTabGroupKeyedService::UpdateAttributions(
+    const LocalTabGroupID& group_id,
+    const std::optional<LocalTabID>& tab_id) {
+  model_.UpdateLastUpdaterCacheGuidForGroup(bridge_.GetLocalCacheGuid(),
+                                            group_id, tab_id);
+}
+
+std::optional<std::string> SavedTabGroupKeyedService::GetLocalCacheGuid()
+    const {
+  return bridge_.GetLocalCacheGuid();
+}
+
 std::optional<tab_groups::TabGroupId>
 SavedTabGroupKeyedService::OpenSavedTabGroupInBrowser(
     Browser* browser,

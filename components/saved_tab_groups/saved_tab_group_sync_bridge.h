@@ -91,7 +91,7 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
 
   // Returns the cache guid the change processor holds if metadata is tracked.
   // otherwise returns a nullopt.
-  std::optional<std::string> GetLocalCacheGuid();
+  std::optional<std::string> GetLocalCacheGuid() const;
 
   // Whether the sync is currently enabled and syncing for saved tab groups.
   // False before bridge initialization is completed.
