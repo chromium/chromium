@@ -1876,6 +1876,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxMlUrlScoringModelName,
      flag_descriptions::kOmniboxMlUrlScoringModelDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(omnibox::kUrlScoringModel)},
+    {"default-browser-promo-ipad-experimental-string",
+     flag_descriptions::kDefaultBrowserPromoIPadExperimentalStringName,
+     flag_descriptions::kDefaultBrowserPromoIPadExperimentalStringDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kDefaultBrowserPromoIPadExperimentalString)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

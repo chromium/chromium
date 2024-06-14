@@ -827,3 +827,7 @@ bool IsPrefetchingSystemCapabilitiesOnFirstRun() {
 BASE_FEATURE(kSegmentationPlatformIosModuleRankerCaching,
              "SegmentationPlatformIosModuleRankerCaching",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDefaultBrowserPromoIPadExperimentalString,
+             "DefaultBrowserPromoIPadExperimentalString",
+             base::FEATURE_DISABLED_BY_DEFAULT);

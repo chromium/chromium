@@ -6939,6 +6939,21 @@
             ]
         }
     ],
+    "DefaultBrowserPromoIPadStudy": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DefaultBrowserPromoIPadExperimentalString"
+                    ]
+                }
+            ]
+        }
+    ],
     "DefaultBrowserPromptRefreshLaunch": [
         {
             "platforms": [

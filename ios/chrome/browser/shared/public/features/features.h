@@ -654,4 +654,7 @@ bool IsPrefetchingSystemCapabilitiesOnFirstRun();
 // Feature flag for caching the ios module ranker.
 BASE_DECLARE_FEATURE(kSegmentationPlatformIosModuleRankerCaching);
 
+// Feature flag for default browser promo experimental string for iPad.
+BASE_DECLARE_FEATURE(kDefaultBrowserPromoIPadExperimentalString);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

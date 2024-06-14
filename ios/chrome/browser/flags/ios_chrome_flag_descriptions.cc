@@ -349,6 +349,12 @@ const char kDefaultBrowserIntentsShowSettingsDescription[] =
     "When enabled, external apps can trigger the settings screen showing "
     "default browser tutorial.";
 
+const char kDefaultBrowserPromoIPadExperimentalStringName[] =
+    "Enable experimental strings for default browser promo on iPad";
+const char kDefaultBrowserPromoIPadExperimentalStringDescription[] =
+    "When enabled, the title and subtitle for default browser promo will be "
+    "tailored towards iPad users. Available on iPad only.";
+
 const char kDefaultBrowserTriggerCriteriaExperimentName[] =
     "Show default browser promo trigger criteria experiment";
 const char kDefaultBrowserTriggerCriteriaExperimentDescription[] =

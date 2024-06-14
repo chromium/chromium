@@ -30,6 +30,7 @@ source_set("default_browser_ui") {
   deps = [
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/first_run/model",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/elements",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/ui/first_run:constants",

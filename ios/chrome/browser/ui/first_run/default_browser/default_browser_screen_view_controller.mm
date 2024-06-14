@@ -4,14 +4,26 @@
 
 #import "ios/chrome/browser/ui/first_run/default_browser/default_browser_screen_view_controller.h"
 
+#import "base/feature_list.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/instruction_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/first_run/first_run_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util.h"
+
+namespace {
+// Returns `YES` if the title and subtitle should be tailored for iPad.
+BOOL UseIPadTailoredString() {
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
+         base::FeatureList::IsEnabled(
+             kDefaultBrowserPromoIPadExperimentalString);
+}
+}  // namespace
 
 @implementation DefaultBrowserScreenViewController
 
@@ -26,10 +38,14 @@
 #else
   self.bannerName = kChromiumDefaultBrowserScreenBannerImage;
 #endif
-  self.titleText =
-      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE);
-  self.subtitleText =
-      l10n_util::GetNSString(IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE);
+  self.titleText = l10n_util::GetNSString(
+      UseIPadTailoredString()
+          ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE_IPAD
+          : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_TITLE);
+  self.subtitleText = l10n_util::GetNSString(
+      UseIPadTailoredString()
+          ? IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE_IPAD
+          : IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE);
 
   self.primaryActionString = l10n_util::GetNSString(
       IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_PRIMARY_ACTION);
