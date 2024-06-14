@@ -1386,11 +1386,6 @@ deps = {
       'url': Var('chromium_git') + '/external/github.com/google/Accessibility-Test-Framework-for-Android.git' + '@' + '4a764c690353ea136c82f1a696a70bf38d1ef5fe',
   },
 
-  'src/third_party/android_protobuf/src': {
-      'url': Var('android_git') + '/platform/external/protobuf.git' + '@' + '7fca48d8ce97f7ba3ab8eea5c472f1ad3711762f',
-      'condition': 'checkout_android',
-  },
-
   'src/third_party/android_protoc': {
       'packages': [
           {

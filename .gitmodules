@@ -118,10 +118,6 @@
 [submodule "third_party/accessibility_test_framework/src"]
 	path = third_party/accessibility_test_framework/src
 	url = https://chromium.googlesource.com/external/github.com/google/Accessibility-Test-Framework-for-Android
-[submodule "third_party/android_protobuf/src"]
-	path = third_party/android_protobuf/src
-	url = https://android.googlesource.com/platform/external/protobuf
-	gclient-condition = checkout_android
 [submodule "third_party/androidx_javascriptengine/src"]
 	path = third_party/androidx_javascriptengine/src
 	url = https://chromium.googlesource.com/aosp/platform/frameworks/support/javascriptengine/javascriptengine/src
