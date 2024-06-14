@@ -68,7 +68,13 @@ InProcessFuzzer::GetChromiumCommandLineArguments() {
 }
 
 void InProcessFuzzer::SetUp() {
-  std::optional<base::test::ScopedRunLoopTimeout> scoped_timeout;
+  // Overrides the default 60s run loop timeout set by `BrowserTestBase`. See
+  // https://source.chromium.org/chromium/chromium/src/+/main:content/public/test/browser_test_base.cc?q=ScopedRunLoopTimeout.
+  // All of the fuzzing engines that we use are having timeouts features, and
+  // this timeout can vary depending on the number of tested testcases. We must
+  // let the engines handle timeouts, and set the maximum here.
+  base::test::ScopedRunLoopTimeout scoped_timeout(FROM_HERE,
+                                                  base::TimeDelta::Max());
 
   switch (options_.run_loop_timeout_behavior) {
     case RunLoopTimeoutBehavior::kContinue:
@@ -79,10 +85,6 @@ void InProcessFuzzer::SetUp() {
       break;
     case RunLoopTimeoutBehavior::kDefault:
       break;
-  }
-
-  if (options_.run_loop_timeout) {
-    scoped_timeout.emplace(FROM_HERE, *options_.run_loop_timeout);
   }
 
   // Note that browser tests are being launched by the `SetUp` method.
@@ -209,6 +211,10 @@ int InProcessFuzzer::DoFuzz(const uint8_t* data, size_t size) {
   if (exit_after_fuzz_case_) {
     LOG(INFO) << "Early exit requested - exiting after fuzz case.";
     exit(0);
+  }
+  std::optional<base::test::ScopedRunLoopTimeout> scoped_timeout;
+  if (options_.run_loop_timeout) {
+    scoped_timeout.emplace(FROM_HERE, *options_.run_loop_timeout);
   }
   return Fuzz(data, size);
 }
