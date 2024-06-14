@@ -169,7 +169,7 @@ class WebSocketSBHandshakeThrottleTest : public ::testing::Test {
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   void SetUp() override {
-    feature_list_.InitAndDisableFeature(kSafeBrowsingSkipSubresources2);
+    feature_list_.InitAndEnableFeature(kSafeBrowsingSkipSubresources2);
   }
 
   base::test::TaskEnvironment message_loop_;
@@ -190,94 +190,16 @@ class WebSocketSBHandshakeThrottleTest : public ::testing::Test {
 
 TEST_F(WebSocketSBHandshakeThrottleTest, Construction) {}
 
-TEST_F(WebSocketSBHandshakeThrottleTest, CheckArguments) {
+TEST_F(WebSocketSBHandshakeThrottleTest, DoesNotRunCheck) {
   base::HistogramTester histogram_tester;
   throttle_->ThrottleHandshake(
       GURL(kTestUrl), blink::WebSecurityOrigin::CreateFromString(kTestUrl),
       blink::WebSecurityOrigin(),
       base::BindOnce(&FakeCallback::OnCompletion,
                      base::Unretained(&fake_callback_)));
-  safe_browsing_.RunUntilCalled();
-  EXPECT_FALSE(safe_browsing_.frame_token_);
-  EXPECT_EQ(GURL(kTestUrl), safe_browsing_.url_);
-  EXPECT_EQ("GET", safe_browsing_.method_);
-  EXPECT_TRUE(safe_browsing_.headers_.GetHeaderVector().empty());
-  EXPECT_EQ(0, safe_browsing_.load_flags_);
-  EXPECT_FALSE(safe_browsing_.has_user_gesture_);
-  EXPECT_FALSE(safe_browsing_.originated_from_service_worker_);
-  EXPECT_TRUE(safe_browsing_.callback_);
-  histogram_tester.ExpectUniqueSample("SafeBrowsing.WebSocketCheck.Skipped",
-                                      false, 1);
-}
-
-TEST_F(WebSocketSBHandshakeThrottleTest, Safe) {
-  base::HistogramTester histogram_tester;
-  throttle_->ThrottleHandshake(
-      GURL(kTestUrl), blink::WebSecurityOrigin::CreateFromString(kTestUrl),
-      blink::WebSecurityOrigin(),
-      base::BindOnce(&FakeCallback::OnCompletion,
-                     base::Unretained(&fake_callback_)));
-  safe_browsing_.RunUntilCalled();
-  std::move(safe_browsing_.callback_).Run(mojo::NullReceiver(), true, false);
-  fake_callback_.RunUntilCalled();
   EXPECT_EQ(FakeCallback::RESULT_SUCCESS, fake_callback_.result_);
   histogram_tester.ExpectUniqueSample("SafeBrowsing.WebSocketCheck.Skipped",
-                                      false, 1);
-}
-
-TEST_F(WebSocketSBHandshakeThrottleTest, Unsafe) {
-  base::HistogramTester histogram_tester;
-  throttle_->ThrottleHandshake(
-      GURL(kTestUrl), blink::WebSecurityOrigin::CreateFromString(kTestUrl),
-      blink::WebSecurityOrigin(),
-      base::BindOnce(&FakeCallback::OnCompletion,
-                     base::Unretained(&fake_callback_)));
-  safe_browsing_.RunUntilCalled();
-  std::move(safe_browsing_.callback_).Run(mojo::NullReceiver(), false, false);
-  fake_callback_.RunUntilCalled();
-  EXPECT_EQ(FakeCallback::RESULT_ERROR, fake_callback_.result_);
-  EXPECT_EQ(
-      blink::WebString(
-          "WebSocket connection to wss://test/ failed safe browsing check"),
-      fake_callback_.message_);
-  histogram_tester.ExpectUniqueSample("SafeBrowsing.WebSocketCheck.Skipped",
-                                      false, 1);
-}
-
-TEST_F(WebSocketSBHandshakeThrottleTest, SlowCheckNotifier) {
-  base::HistogramTester histogram_tester;
-  throttle_->ThrottleHandshake(
-      GURL(kTestUrl), blink::WebSecurityOrigin::CreateFromString(kTestUrl),
-      blink::WebSecurityOrigin(),
-      base::BindOnce(&FakeCallback::OnCompletion,
-                     base::Unretained(&fake_callback_)));
-  safe_browsing_.RunUntilCalled();
-
-  mojo::Remote<mojom::UrlCheckNotifier> slow_check_notifier;
-  std::move(safe_browsing_.callback_)
-      .Run(slow_check_notifier.BindNewPipeAndPassReceiver(), false, false);
-  fake_callback_.RunUntilIdle();
-  EXPECT_EQ(FakeCallback::RESULT_NOT_CALLED, fake_callback_.result_);
-
-  slow_check_notifier->OnCompleteCheck(true, false);
-  fake_callback_.RunUntilCalled();
-  EXPECT_EQ(FakeCallback::RESULT_SUCCESS, fake_callback_.result_);
-  histogram_tester.ExpectUniqueSample("SafeBrowsing.WebSocketCheck.Skipped",
-                                      false, 1);
-}
-
-TEST_F(WebSocketSBHandshakeThrottleTest, MojoServiceNotThere) {
-  base::HistogramTester histogram_tester;
-  safe_browsing_receiver_.reset();
-  throttle_->ThrottleHandshake(
-      GURL(kTestUrl), blink::WebSecurityOrigin::CreateFromString(kTestUrl),
-      blink::WebSecurityOrigin(),
-      base::BindOnce(&FakeCallback::OnCompletion,
-                     base::Unretained(&fake_callback_)));
-  fake_callback_.RunUntilCalled();
-  EXPECT_EQ(FakeCallback::RESULT_SUCCESS, fake_callback_.result_);
-  histogram_tester.ExpectUniqueSample("SafeBrowsing.WebSocketCheck.Skipped",
-                                      false, 1);
+                                      true, 1);
 }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -289,6 +211,7 @@ TEST_F(WebSocketSBHandshakeThrottleTest, SendExtensionWebRequestData) {
       blink::WebSecurityOrigin(),
       base::BindOnce(&FakeCallback::OnCompletion,
                      base::Unretained(&fake_callback_)));
+  EXPECT_EQ(FakeCallback::RESULT_SUCCESS, fake_callback_.result_);
   extension_web_request_reporter_.RunUntilCalled();
 
   EXPECT_EQ(extension_web_request_reporter_.origin_extension_id_,
@@ -313,6 +236,7 @@ TEST_F(WebSocketSBHandshakeThrottleTest,
       blink::WebSecurityOrigin::CreateFromString(kTestExtensionUrl),
       base::BindOnce(&FakeCallback::OnCompletion,
                      base::Unretained(&fake_callback_)));
+  EXPECT_EQ(FakeCallback::RESULT_SUCCESS, fake_callback_.result_);
   extension_web_request_reporter_.RunUntilCalled();
 
   EXPECT_EQ(extension_web_request_reporter_.origin_extension_id_,
@@ -330,23 +254,103 @@ TEST_F(WebSocketSBHandshakeThrottleTest,
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-class WebSocketSBHandshakeThrottleNoSafeBrowsingCheckTest
+class WebSocketSBHandshakeThrottleWithSafeBrowsingCheckTest
     : public WebSocketSBHandshakeThrottleTest {
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(kSafeBrowsingSkipSubresources2);
+    feature_list_.InitAndDisableFeature(kSafeBrowsingSkipSubresources2);
   }
 };
 
-TEST_F(WebSocketSBHandshakeThrottleNoSafeBrowsingCheckTest, DoesNotRunCheck) {
+TEST_F(WebSocketSBHandshakeThrottleWithSafeBrowsingCheckTest, CheckArguments) {
   base::HistogramTester histogram_tester;
   throttle_->ThrottleHandshake(
       GURL(kTestUrl), blink::WebSecurityOrigin::CreateFromString(kTestUrl),
       blink::WebSecurityOrigin(),
       base::BindOnce(&FakeCallback::OnCompletion,
                      base::Unretained(&fake_callback_)));
+  safe_browsing_.RunUntilCalled();
+  EXPECT_FALSE(safe_browsing_.frame_token_);
+  EXPECT_EQ(GURL(kTestUrl), safe_browsing_.url_);
+  EXPECT_EQ("GET", safe_browsing_.method_);
+  EXPECT_TRUE(safe_browsing_.headers_.GetHeaderVector().empty());
+  EXPECT_EQ(0, safe_browsing_.load_flags_);
+  EXPECT_FALSE(safe_browsing_.has_user_gesture_);
+  EXPECT_FALSE(safe_browsing_.originated_from_service_worker_);
+  EXPECT_TRUE(safe_browsing_.callback_);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.WebSocketCheck.Skipped",
+                                      false, 1);
+}
+
+TEST_F(WebSocketSBHandshakeThrottleWithSafeBrowsingCheckTest, Safe) {
+  base::HistogramTester histogram_tester;
+  throttle_->ThrottleHandshake(
+      GURL(kTestUrl), blink::WebSecurityOrigin::CreateFromString(kTestUrl),
+      blink::WebSecurityOrigin(),
+      base::BindOnce(&FakeCallback::OnCompletion,
+                     base::Unretained(&fake_callback_)));
+  safe_browsing_.RunUntilCalled();
+  std::move(safe_browsing_.callback_).Run(mojo::NullReceiver(), true, false);
+  fake_callback_.RunUntilCalled();
   EXPECT_EQ(FakeCallback::RESULT_SUCCESS, fake_callback_.result_);
   histogram_tester.ExpectUniqueSample("SafeBrowsing.WebSocketCheck.Skipped",
-                                      true, 1);
+                                      false, 1);
+}
+
+TEST_F(WebSocketSBHandshakeThrottleWithSafeBrowsingCheckTest, Unsafe) {
+  base::HistogramTester histogram_tester;
+  throttle_->ThrottleHandshake(
+      GURL(kTestUrl), blink::WebSecurityOrigin::CreateFromString(kTestUrl),
+      blink::WebSecurityOrigin(),
+      base::BindOnce(&FakeCallback::OnCompletion,
+                     base::Unretained(&fake_callback_)));
+  safe_browsing_.RunUntilCalled();
+  std::move(safe_browsing_.callback_).Run(mojo::NullReceiver(), false, false);
+  fake_callback_.RunUntilCalled();
+  EXPECT_EQ(FakeCallback::RESULT_ERROR, fake_callback_.result_);
+  EXPECT_EQ(
+      blink::WebString(
+          "WebSocket connection to wss://test/ failed safe browsing check"),
+      fake_callback_.message_);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.WebSocketCheck.Skipped",
+                                      false, 1);
+}
+
+TEST_F(WebSocketSBHandshakeThrottleWithSafeBrowsingCheckTest,
+       SlowCheckNotifier) {
+  base::HistogramTester histogram_tester;
+  throttle_->ThrottleHandshake(
+      GURL(kTestUrl), blink::WebSecurityOrigin::CreateFromString(kTestUrl),
+      blink::WebSecurityOrigin(),
+      base::BindOnce(&FakeCallback::OnCompletion,
+                     base::Unretained(&fake_callback_)));
+  safe_browsing_.RunUntilCalled();
+
+  mojo::Remote<mojom::UrlCheckNotifier> slow_check_notifier;
+  std::move(safe_browsing_.callback_)
+      .Run(slow_check_notifier.BindNewPipeAndPassReceiver(), false, false);
+  fake_callback_.RunUntilIdle();
+  EXPECT_EQ(FakeCallback::RESULT_NOT_CALLED, fake_callback_.result_);
+
+  slow_check_notifier->OnCompleteCheck(true, false);
+  fake_callback_.RunUntilCalled();
+  EXPECT_EQ(FakeCallback::RESULT_SUCCESS, fake_callback_.result_);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.WebSocketCheck.Skipped",
+                                      false, 1);
+}
+
+TEST_F(WebSocketSBHandshakeThrottleWithSafeBrowsingCheckTest,
+       MojoServiceNotThere) {
+  base::HistogramTester histogram_tester;
+  safe_browsing_receiver_.reset();
+  throttle_->ThrottleHandshake(
+      GURL(kTestUrl), blink::WebSecurityOrigin::CreateFromString(kTestUrl),
+      blink::WebSecurityOrigin(),
+      base::BindOnce(&FakeCallback::OnCompletion,
+                     base::Unretained(&fake_callback_)));
+  fake_callback_.RunUntilCalled();
+  EXPECT_EQ(FakeCallback::RESULT_SUCCESS, fake_callback_.result_);
+  histogram_tester.ExpectUniqueSample("SafeBrowsing.WebSocketCheck.Skipped",
+                                      false, 1);
 }
 
 }  // namespace
