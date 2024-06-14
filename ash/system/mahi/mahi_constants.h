@@ -100,6 +100,8 @@ inline constexpr char kMahiQuestionSourceHistogramName[] =
     "Ash.Mahi.QuestionSource";
 inline constexpr char kQuestionCountPerMahiSessionHistogramName[] =
     "Ash.Mahi.QuestionCountPerMahiSession";
+inline constexpr char kTimesMahiPanelOpenedPerSessionHistogramName[] =
+    "Ash.Mahi.TimesPanelOpenedPerSession";
 
 }  // namespace ash::mahi_constants
 

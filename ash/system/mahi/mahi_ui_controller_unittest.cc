@@ -8,6 +8,10 @@
 #include <string>
 #include <utility>
 
+#include "ash/public/cpp/session/session_types.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
+#include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_ui_update.h"
 #include "ash/system/mahi/test/mahi_test_util.h"
 #include "ash/system/mahi/test/mock_mahi_manager.h"
@@ -15,8 +19,13 @@
 #include "ash/test/ash_test_base.h"
 #include "base/functional/callback_forward.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chromeos/constants/chromeos_features.h"
+#include "components/session_manager/session_manager_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/views/view.h"
 
 namespace ash {
@@ -42,6 +51,15 @@ class MockView : public views::View {
  public:
   MOCK_METHOD(void, VisibilityChanged, (views::View*, bool), (override));
 };
+
+// Utilities -------------------------------------------------------------------
+
+void ChangeLockState(bool locked) {
+  SessionInfo info;
+  info.state = locked ? session_manager::SessionState::LOCKED
+                      : session_manager::SessionState::ACTIVE;
+  Shell::Get()->session_controller()->SetSessionInfo(info);
+}
 
 }  // namespace
 
@@ -338,6 +356,113 @@ TEST_F(MahiUiControllerTest, RacingRequests) {
   ASSERT_TRUE(summary_waiter.Wait());
   ASSERT_TRUE(answer_waiter.Wait());
   Mock::VerifyAndClearExpectations(&delegate());
+}
+
+// Test suite where the UI controller and its delegate are initialized on
+// `SetUp` so ash::Shell can be initialized and the session state observed.
+class MahiUiControllerWithSessionTest : public AshTestBase {
+ protected:
+  MockView& delegate_view() { return delegate_view_; }
+  MockMahiManager& mock_mahi_manager() { return mock_mahi_manager_; }
+
+  MockMahiUiControllerDelegate* delegate() { return delegate_.get(); }
+  MahiUiController* ui_controller() { return ui_controller_.get(); }
+
+ private:
+  // AshTestBase:
+  void SetUp() override {
+    AshTestBase::SetUp();
+    scoped_feature_list_.InitAndEnableFeature(chromeos::features::kMahi);
+    ui_controller_ = std::make_unique<NiceMock<MahiUiController>>();
+    delegate_ = std::make_unique<NiceMock<MockMahiUiControllerDelegate>>(
+        ui_controller_.get());
+    scoped_setter_ = std::make_unique<chromeos::ScopedMahiManagerSetter>(
+        &mock_mahi_manager_);
+
+    ON_CALL(mock_mahi_manager_, IsEnabled).WillByDefault(Return(true));
+    ON_CALL(*delegate(), GetView).WillByDefault(Return(&delegate_view_));
+  }
+
+  void TearDown() override {
+    delegate_.reset();
+    ui_controller_.reset();
+    scoped_setter_.reset();
+    AshTestBase::TearDown();
+  }
+
+  NiceMock<MockView> delegate_view_;
+  NiceMock<MockMahiManager> mock_mahi_manager_;
+  std::unique_ptr<NiceMock<MahiUiController>> ui_controller_;
+  std::unique_ptr<NiceMock<MockMahiUiControllerDelegate>> delegate_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<chromeos::ScopedMahiManagerSetter> scoped_setter_;
+};
+
+// Tests that the `TimesPanelOpenedPerSession` metric records the amount of
+// times the panel was opened and emits when the screen is locked.
+TEST_F(MahiUiControllerWithSessionTest, TimesPanelOpenedPerSessionMetric) {
+  base::HistogramTester histogram_tester;
+  const int kTimesPanelWillOpen = 3;
+
+  // Test that locking the screen will record the amount of times the panel
+  // was opened while the session was active.
+  for (int i = 0; i < kTimesPanelWillOpen; i++) {
+    ui_controller()->OpenMahiPanel(GetPrimaryDisplay().id(), gfx::Rect());
+    // Immediately close the widget to avoid a dangling pointer.
+    ui_controller()->mahi_panel_widget()->CloseNow();
+  }
+  histogram_tester.ExpectBucketCount(
+      mahi_constants::kTimesMahiPanelOpenedPerSessionHistogramName,
+      /*sample=*/kTimesPanelWillOpen, /*expected_count=*/0);
+  ChangeLockState(/*locked=*/true);
+  histogram_tester.ExpectBucketCount(
+      mahi_constants::kTimesMahiPanelOpenedPerSessionHistogramName,
+      /*sample=*/kTimesPanelWillOpen, /*expected_count=*/1);
+
+  // Test that the metric does not get recorded if the panel was never opened.
+  ChangeLockState(/*locked=*/false);
+  ChangeLockState(/*locked=*/true);
+  histogram_tester.ExpectBucketCount(
+      mahi_constants::kTimesMahiPanelOpenedPerSessionHistogramName,
+      /*sample=*/0, /*expected_count=*/0);
+}
+
+// Tests that the metric is recorded after a state change from `ACTIVE` to
+// any other session state.
+TEST_F(MahiUiControllerWithSessionTest,
+       TimesPanelOpenedPerSessionMetric_AllSessionStates) {
+  base::HistogramTester histogram_tester;
+
+  std::vector<session_manager::SessionState> non_active_session_states = {
+      session_manager::SessionState::UNKNOWN,
+      session_manager::SessionState::OOBE,
+      session_manager::SessionState::LOGIN_PRIMARY,
+      session_manager::SessionState::LOGGED_IN_NOT_ACTIVE,
+      session_manager::SessionState::LOCKED,
+      session_manager::SessionState::LOGIN_SECONDARY,
+      session_manager::SessionState::RMA};
+
+  SessionInfo info;
+  for (size_t i = 0; i < non_active_session_states.size(); i++) {
+    // Set the session to active so the count to be recorded can be accumulated.
+    info.state = session_manager::SessionState::ACTIVE;
+    Shell::Get()->session_controller()->SetSessionInfo(info);
+
+    // Open and close the mahi panel. The metric should not be recorded yet.
+    ui_controller()->OpenMahiPanel(GetPrimaryDisplay().id(), gfx::Rect());
+    // Immediately close the widget to avoid a dangling pointer.
+    ui_controller()->mahi_panel_widget()->CloseNow();
+    histogram_tester.ExpectBucketCount(
+        mahi_constants::kTimesMahiPanelOpenedPerSessionHistogramName,
+        /*sample=*/1, /*expected_count=*/i);
+
+    // Set the session to a non-active state. The metric should be recorded.
+    info.state = non_active_session_states[i];
+    Shell::Get()->session_controller()->SetSessionInfo(info);
+    histogram_tester.ExpectBucketCount(
+        mahi_constants::kTimesMahiPanelOpenedPerSessionHistogramName,
+        /*sample=*/1, /*expected_count=*/i + 1);
+  }
 }
 
 }  // namespace ash

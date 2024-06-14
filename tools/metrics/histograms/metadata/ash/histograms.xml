@@ -5046,6 +5046,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Mahi.TimesPanelOpenedPerSession" units="count"
+    expires_after="2025-02-01">
+  <owner>kradtke@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Records the times the Mahi panel was opened in a session. The metric is
+    emitted once per session when the session is no longer active, either
+    through a session state change or on shutdown.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Mahi.UserJourneyTime" units="ms"
     expires_after="2025-02-01">
   <owner>leandre@chromium.org</owner>

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/system/mahi/mahi_ui_update.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -29,7 +30,7 @@ namespace ash {
 class MahiPanelDragController;
 
 // Communicates with `chromeos::MahiManager` and notifies delegates of updates.
-class ASH_EXPORT MahiUiController {
+class ASH_EXPORT MahiUiController : public SessionObserver {
  public:
   // Establishes the connection between `MahiUiController` and dependent views.
   class Delegate : public base::CheckedObserver {
@@ -71,7 +72,7 @@ class ASH_EXPORT MahiUiController {
   MahiUiController();
   MahiUiController(const MahiUiController&) = delete;
   MahiUiController& operator=(const MahiUiController&) = delete;
-  ~MahiUiController();
+  ~MahiUiController() override;
 
   void AddDelegate(Delegate* delegate);
   void RemoveDelegate(Delegate* delegate);
@@ -119,6 +120,13 @@ class ASH_EXPORT MahiUiController {
   // Makes sure that we update the summary after `OnAnswerLoaded` is called.
   void SetUpdateSummaryAfterAnswerQuestion();
 
+  // Records histogram that tracks the amount of times the panel was opened
+  // during an active session.
+  void RecordTimesPanelOpenedMetric();
+
+  // SessionObserver:
+  void OnSessionStateChanged(session_manager::SessionState state) override;
+
   MahiPanelDragController* drag_controller() { return drag_controller_.get(); }
 
   views::Widget* mahi_panel_widget() { return mahi_panel_widget_.get(); }
@@ -156,6 +164,11 @@ class ASH_EXPORT MahiUiController {
   base::ObserverList<Delegate> delegates_;
 
   views::UniqueWidgetPtr mahi_panel_widget_;
+
+  // Used to record metrics. The count will be increased by one every time the
+  // panel is opened, and reset to zero when the metric is recorded, which
+  // happens when the session is no longer active or on shutdown.
+  int times_panel_opened_per_session_ = 0;
 
   // Indicates the params of the most recent question.
   // Set when the controller receives a request to send a question.
