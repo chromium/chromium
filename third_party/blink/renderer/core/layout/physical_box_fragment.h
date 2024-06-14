@@ -28,6 +28,7 @@
 namespace blink {
 
 class BoxFragmentBuilder;
+class Element;
 enum class OutlineType;
 struct FrameSetLayoutData;
 
@@ -94,6 +95,13 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
   base::span<const PhysicalFragmentLink> Children() const {
     DCHECK(children_valid_);
     return base::make_span(children_);
+  }
+
+  const HeapVector<Member<Element>>* ReadingOrderElements() const {
+    if (rare_data_) {
+      return rare_data_->reading_order_elements_;
+    }
+    return nullptr;
   }
 
   // Similar to |Children()| but all children are the latest generation of

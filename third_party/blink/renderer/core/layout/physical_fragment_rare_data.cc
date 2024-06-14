@@ -23,7 +23,12 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
     BoxFragmentBuilder& builder,
     wtf_size_t num_fields)
     : table_collapsed_borders_(builder.table_collapsed_borders_),
-      mathml_paint_info_(builder.mathml_paint_info_) {
+      mathml_paint_info_(builder.mathml_paint_info_),
+      reading_order_elements_(
+          builder.reading_order_elements_.size()
+              ? MakeGarbageCollected<HeapVector<Member<Element>>>(
+                    builder.reading_order_elements_)
+              : nullptr) {
   field_list_.ReserveInitialCapacity(num_fields);
 
   // Each field should be processed in order of FieldId to avoid vector

@@ -96,6 +96,9 @@ class CORE_EXPORT FlexLayoutAlgorithm
   void HandleOutOfFlowPositionedItems(
       HeapVector<Member<LayoutBox>>& oof_children);
 
+  // Set reading order items so they can be accessed by LayoutBox.
+  void SetReadingOrderElements(const HeapVector<NGFlexLine>& flex_line_outputs);
+
   void AdjustButtonBaseline(LayoutUnit final_content_cross_size);
 
   MinMaxSizesResult ComputeMinMaxSizeOfRowContainerV3();

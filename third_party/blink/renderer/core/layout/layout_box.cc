@@ -4462,21 +4462,13 @@ bool LayoutBox::IsReadingOrderContainer() const {
   return false;
 }
 
-HeapVector<Member<Element>> LayoutBox::ReadingOrderElements() const {
-  HeapVector<Member<Element>> reading_order_elements;
-  if (!IsReadingOrderContainer()) {
-    return reading_order_elements;
+const HeapVector<Member<Element>>& LayoutBox::ReadingOrderElements() const {
+  if (const auto* elements = GetPhysicalFragment(0)->ReadingOrderElements()) {
+    return *elements;
   }
-  DCHECK_EQ(PhysicalFragmentCount(), 1u);
-  auto children = GetPhysicalFragment(0)->Children();
-  reading_order_elements.ReserveInitialCapacity(
-      base::checked_cast<wtf_size_t>(children.size()));
-  for (const PhysicalFragmentLink& fragment : children) {
-    if (Element* child = DynamicTo<Element>(fragment->GetNode())) {
-      reading_order_elements.push_back(child);
-    }
-  }
-  return reading_order_elements;
+  DEFINE_STATIC_LOCAL(Persistent<HeapVector<Member<Element>>>, empty_vector,
+                      (MakeGarbageCollected<HeapVector<Member<Element>>>()));
+  return *empty_vector;
 }
 
 }  // namespace blink

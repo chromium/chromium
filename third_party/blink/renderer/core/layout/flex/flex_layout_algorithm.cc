@@ -376,6 +376,50 @@ void FlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
   }
 }
 
+void FlexLayoutAlgorithm::SetReadingOrderElements(
+    const HeapVector<NGFlexLine>& flex_line_outputs) {
+  const auto& style = Style();
+  const EReadingOrderItems reading_order_items = style.ReadingOrderItems();
+  if (reading_order_items != EReadingOrderItems::kFlexVisual &&
+      reading_order_items != EReadingOrderItems::kFlexFlow) {
+    return;
+  }
+  HeapVector<Member<Element>> reading_order_elements;
+  // Add flex item if it is a DOM element
+  auto AddItemIfNeeded = [&](const NGFlexItem& item) {
+    if (Element* element =
+            DynamicTo<Element>(item.ng_input_node.GetDOMNode())) {
+      reading_order_elements.push_back(element);
+    }
+  };
+  // Given CSS reading-order-items, flex-flow, flex-direction; read values
+  // in correct reading order.
+  auto AddFlexItems = [&](const NGFlexLine& line) {
+    if (reading_order_items == EReadingOrderItems::kFlexFlow &&
+        (style.ResolvedIsColumnReverseFlexDirection() ||
+         style.ResolvedIsRowReverseFlexDirection())) {
+      for (const auto& item : base::Reversed(line.line_items)) {
+        AddItemIfNeeded(item);
+      }
+    } else {
+      for (const auto& item : line.line_items) {
+        AddItemIfNeeded(item);
+      }
+    }
+  };
+  if (reading_order_items == EReadingOrderItems::kFlexFlow &&
+      style.FlexWrap() == EFlexWrap::kWrapReverse) {
+    for (const auto& line : base::Reversed(flex_line_outputs)) {
+      AddFlexItems(line);
+    }
+  } else {
+    for (const auto& line : flex_line_outputs) {
+      AddFlexItems(line);
+    }
+  }
+  container_builder_.SetReadingOrderElements(std::move(reading_order_elements));
+}
+
 bool FlexLayoutAlgorithm::IsContainerCrossSizeDefinite() const {
   // A column flexbox's cross axis is an inline size, so is definite.
   if (is_column_)
@@ -1129,6 +1173,7 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
 #endif
   }
 
+  SetReadingOrderElements(flex_line_outputs);
   HandleOutOfFlowPositionedItems(oof_children);
 
   // For rows, the break-before of the first row and the break-after of the

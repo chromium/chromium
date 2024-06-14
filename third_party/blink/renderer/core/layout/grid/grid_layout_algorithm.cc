@@ -339,6 +339,8 @@ const LayoutResult* GridLayoutAlgorithm::LayoutInternal() {
   container_builder_.TransferGridLayoutData(
       std::make_unique<GridLayoutData>(layout_data));
 
+  SetReadingOrderElements(grid_sizing_tree);
+
   if (constraint_space.HasBlockFragmentation()) {
     container_builder_.SetBreakTokenData(
         MakeGarbageCollected<GridBreakTokenData>(
@@ -4212,6 +4214,66 @@ void GridLayoutAlgorithm::PlaceOutOfFlowItems(
       oof_children.emplace_back(oof_child);
     }
   }
+}
+
+void GridLayoutAlgorithm::SetReadingOrderElements(
+    const GridSizingTree& sizing_tree) {
+  const auto& style = Style();
+  const EReadingOrderItems reading_order_items = style.ReadingOrderItems();
+  if (reading_order_items != EReadingOrderItems::kGridRows &&
+      reading_order_items != EReadingOrderItems::kGridColumns &&
+      reading_order_items != EReadingOrderItems::kGridOrder) {
+    return;
+  }
+  const auto& grid_items = sizing_tree.TreeRootData().grid_items;
+  HeapVector<Member<Element>> reading_order_elements;
+  reading_order_elements.ReserveInitialCapacity(grid_items.Size());
+  // Add grid item if it is a DOM element
+  auto AddItemIfNeeded = [&](const GridItemData& grid_item) {
+    if (Element* element = DynamicTo<Element>(grid_item.node.GetDOMNode())) {
+      reading_order_elements.push_back(element);
+    }
+  };
+
+  if (reading_order_items == EReadingOrderItems::kGridRows ||
+      reading_order_items == EReadingOrderItems::kGridColumns) {
+    Vector<const GridItemData*, 16> reordered_grid_items;
+    reordered_grid_items.ReserveInitialCapacity(grid_items.Size());
+    for (const auto& grid_item : grid_items) {
+      reordered_grid_items.emplace_back(&grid_item);
+    }
+    // We reorder grid items by their row/column indices.
+    // If reading-order-items is grid-rows, we should sort by row, then column.
+    // If reading-order-items is grid-columns, we should sort by column, then
+    // row.
+    GridTrackSizingDirection reading_direction_first = kForRows;
+    GridTrackSizingDirection reading_direction_second = kForColumns;
+    if (reading_order_items == EReadingOrderItems::kGridColumns) {
+      reading_direction_first = kForColumns;
+      reading_direction_second = kForRows;
+    }
+    auto CompareGridItemsForReadingOrder =
+        [reading_direction_first, reading_direction_second](const auto& lhs,
+                                                            const auto& rhs) {
+          if (lhs->SetIndices(reading_direction_first).begin ==
+              rhs->SetIndices(reading_direction_first).begin) {
+            return lhs->SetIndices(reading_direction_second).begin <
+                   rhs->SetIndices(reading_direction_second).begin;
+          }
+          return lhs->SetIndices(reading_direction_first).begin <
+                 rhs->SetIndices(reading_direction_first).begin;
+        };
+    std::stable_sort(reordered_grid_items.begin(), reordered_grid_items.end(),
+                     CompareGridItemsForReadingOrder);
+    for (const auto& grid_item : reordered_grid_items) {
+      AddItemIfNeeded(*grid_item);
+    }
+  } else {
+    for (const auto& grid_item : grid_items) {
+      AddItemIfNeeded(grid_item);
+    }
+  }
+  container_builder_.SetReadingOrderElements(std::move(reading_order_elements));
 }
 
 namespace {

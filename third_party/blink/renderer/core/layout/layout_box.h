@@ -994,7 +994,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   bool IsReadingOrderContainer() const;
   // Returns the Element children corresponding to this LayoutBox's layout
   // children, sorted in reading order if IsReadingOrderContainer().
-  HeapVector<Member<Element>> ReadingOrderElements() const;
+  const HeapVector<Member<Element>>& ReadingOrderElements() const;
 
   // See README.md for an explanation of scroll origin.
   gfx::Vector2d OriginAdjustmentForScrollbars() const;

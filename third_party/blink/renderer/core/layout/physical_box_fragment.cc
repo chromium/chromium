@@ -330,7 +330,8 @@ PhysicalBoxFragment::PhysicalBoxFragment(
       !!builder->page_name_ + !!borders + !!scrollbar + !!padding +
       inflow_bounds.has_value() + !!builder->Style().MayHaveMargin();
 
-  if (rare_fields_size > 0 || !builder->table_column_geometries_.empty()) {
+  if (rare_fields_size > 0 || !builder->table_column_geometries_.empty() ||
+      !builder->reading_order_elements_.empty()) {
     rare_data_ = MakeGarbageCollected<PhysicalFragmentRareData>(
         has_scrollable_overflow ? &scrollable_overflow : nullptr, borders,
         scrollbar, padding, inflow_bounds, *builder, rare_fields_size);
