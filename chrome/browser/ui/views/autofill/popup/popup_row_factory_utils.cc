@@ -16,6 +16,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -41,6 +42,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/compose/core/browser/compose_features.h"
+#include "components/favicon_base/favicon_types.h"
 #include "components/password_manager/core/common/password_manager_constants.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/new_badge_controller.h"
@@ -410,12 +412,15 @@ std::vector<std::unique_ptr<views::View>> CreateAndTrackPasswordSubtextViews(
 // the icon should be loaded lazily. For this case, this method creates a
 // `LazyLoadingImageView` to be passed to `CreatePasswordPopupRowContentView()`
 // as the `icon`. Otherwise, it returns an icon created by `GetIconImageView()`.
-std::unique_ptr<views::View> GetPasswordIconView(const Suggestion& suggestion) {
+std::unique_ptr<views::View> GetPasswordIconView(
+    const Suggestion& suggestion,
+    PasswordFaviconLoader* favicon_loader) {
   if (!absl::holds_alternative<Suggestion::FaviconDetails>(
           suggestion.custom_icon)) {
     return popup_cell_utils::GetIconImageView(suggestion);
   }
 
+  CHECK(favicon_loader);
   std::optional<ui::ImageModel> suggestion_icon_model =
       popup_cell_utils::GetIconImageModelFromIcon(suggestion.icon);
   ui::ImageModel placeholder_icon =
@@ -425,14 +430,15 @@ std::unique_ptr<views::View> GetPasswordIconView(const Suggestion& suggestion) {
 
   return std::make_unique<LazyLoadingImageView>(
       gfx::Size(kCustomIconSize, kCustomIconSize), std::move(placeholder_icon),
-      // TODO(crbug.com/325246516): Pass a real loader.
-      /*loader=*/base::DoNothing());
+      base::BindOnce(
+          &PasswordFaviconLoader::Load, base::Unretained(favicon_loader),
+          absl::get<Suggestion::FaviconDetails>(suggestion.custom_icon)));
 }
 
 std::unique_ptr<PopupRowContentView> CreatePasswordPopupRowContentView(
     const Suggestion& suggestion,
-    std::optional<AutofillPopupController::SuggestionFilterMatch>
-        filter_match) {
+    std::optional<AutofillPopupController::SuggestionFilterMatch> filter_match,
+    PasswordFaviconLoader* favicon_loader) {
   auto view = std::make_unique<PopupRowContentView>();
 
   // Add the actual views.
@@ -448,7 +454,7 @@ std::unique_ptr<PopupRowContentView> CreatePasswordPopupRowContentView(
       suggestion, std::move(main_text_label), CreateMinorTextLabel(suggestion),
       CreatePasswordDescriptionLabel(suggestion),
       CreateAndTrackPasswordSubtextViews(suggestion, *view),
-      GetPasswordIconView(suggestion), *view);
+      GetPasswordIconView(suggestion, favicon_loader), *view);
 
   return view;
 }
@@ -571,8 +577,8 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
     PopupRowView::SelectionDelegate& selection_delegate,
     int line_number,
-    std::optional<AutofillPopupController::SuggestionFilterMatch>
-        filter_match) {
+    std::optional<AutofillPopupController::SuggestionFilterMatch> filter_match,
+    PasswordFaviconLoader* favicon_loader) {
   CHECK(controller);
 
   const Suggestion& suggestion = controller->GetSuggestionAt(line_number);
@@ -600,8 +606,8 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     case SuggestionType::kAccountStoragePasswordEntry:
       return std::make_unique<PopupRowView>(
           a11y_selection_delegate, selection_delegate, controller, line_number,
-          CreatePasswordPopupRowContentView(suggestion,
-                                            std::move(filter_match)));
+          CreatePasswordPopupRowContentView(suggestion, std::move(filter_match),
+                                            favicon_loader));
     case SuggestionType::kComposeResumeNudge:
     case SuggestionType::kComposeProactiveNudge: {
       // Todo (http://b/340147177): Confirm that both Compose popups should use

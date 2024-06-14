@@ -53,7 +53,8 @@ TEST_F(LazyLoadingImageViewTest, ImageLoaderProvidesContent) {
           IDR_DEFAULT_FAVICON);
   EXPECT_CALL(mock_loader, Run)
       .WillOnce(
-          [&image](LazyLoadingImageView::ImageLoaderOnLoadSuccess on_success,
+          [&image](base::CancelableTaskTracker*,
+                   LazyLoadingImageView::ImageLoaderOnLoadSuccess on_success,
                    LazyLoadingImageView::ImageLoaderOnLoadFail) {
             std::move(on_success).Run(image);
           });
@@ -71,7 +72,8 @@ TEST_F(LazyLoadingImageViewTest, ImageLoaderIsTriggerredForVisibleViewsOnly) {
   base::MockCallback<LazyLoadingImageView::ImageLoader> mock_loader;
   ON_CALL(mock_loader, Run)
       .WillByDefault(
-          [](LazyLoadingImageView::ImageLoaderOnLoadSuccess on_success,
+          [](base::CancelableTaskTracker*,
+             LazyLoadingImageView::ImageLoaderOnLoadSuccess on_success,
              LazyLoadingImageView::ImageLoaderOnLoadFail) {
             std::move(on_success).Run(gfx::Image());
           });

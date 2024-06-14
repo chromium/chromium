@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "chrome/browser/ui/views/autofill/popup/password_favicon_loader.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 
 namespace autofill {
@@ -23,7 +24,8 @@ std::unique_ptr<PopupRowView> CreatePopupRowView(
     PopupRowView::SelectionDelegate& selection_delegate,
     int line_number,
     std::optional<AutofillPopupController::SuggestionFilterMatch> filter_match =
-        std::nullopt);
+        std::nullopt,
+    PasswordFaviconLoader* favicon_loader = nullptr);
 
 }  // namespace autofill
 

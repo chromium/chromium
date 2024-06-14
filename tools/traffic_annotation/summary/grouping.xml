@@ -336,6 +336,7 @@ after discussions on the right group.
       <annotation id="dbsc_registration"/>
       <annotation id="google_calendar_page_handler"/>
       <annotation id="nearby_connections_wifi_direct"/>
+      <annotation id="autofill_password_favicon_fetch"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

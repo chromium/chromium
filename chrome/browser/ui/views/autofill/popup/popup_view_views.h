@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
+#include "chrome/browser/ui/views/autofill/popup/password_favicon_loader.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_search_bar_view.h"
@@ -241,6 +242,8 @@ class PopupViewViews : public PopupBaseView,
 
   // Parent's popup view. Present in sub-popups (non-root) only.
   std::optional<base::WeakPtr<ExpandablePopupParentView>> parent_;
+
+  std::unique_ptr<PasswordFaviconLoaderImpl> password_favicon_loader_;
 
   // The index of the row with a selected cell.
   std::optional<size_t> row_with_selected_cell_;

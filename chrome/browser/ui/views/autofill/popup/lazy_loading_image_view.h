@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_LAZY_LOADING_IMAGE_VIEW_H_
 
 #include "base/functional/callback_forward.h"
+#include "base/task/cancelable_task_tracker.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
@@ -21,8 +22,9 @@ class LazyLoadingImageView : public views::View {
   using ImageLoaderOnLoadSuccess =
       base::OnceCallback<void(const gfx::Image& image)>;
   using ImageLoaderOnLoadFail = base::OnceCallback<void()>;
-  using ImageLoader =
-      base::OnceCallback<void(ImageLoaderOnLoadSuccess, ImageLoaderOnLoadFail)>;
+  using ImageLoader = base::OnceCallback<void(base::CancelableTaskTracker*,
+                                              ImageLoaderOnLoadSuccess,
+                                              ImageLoaderOnLoadFail)>;
 
   LazyLoadingImageView(gfx::Size size,
                        const ui::ImageModel& placeholder,
@@ -42,6 +44,7 @@ class LazyLoadingImageView : public views::View {
   raw_ptr<views::ImageView> image_ = nullptr;
   ImageLoader loader_;
   bool requested_ = false;
+  base::CancelableTaskTracker request_tracker_;
 
   base::WeakPtrFactory<LazyLoadingImageView> weak_ptr_factory_{this};
 };

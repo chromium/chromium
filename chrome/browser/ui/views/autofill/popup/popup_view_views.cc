@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/check_deref.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -21,7 +22,11 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/browser/favicon/large_icon_service_factory.h"
+#include "chrome/browser/media/webrtc/desktop_capture_access_handler.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
@@ -48,10 +53,14 @@
 #include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/favicon/core/large_icon_service.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/input/native_web_keyboard_event.h"
+#include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync/service/sync_service.h"
 #include "components/user_education/common/feature_promo_controller.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -849,6 +858,14 @@ void PopupViewViews::InitViews() {
                        .SetOrientation(views::BoxLayout::Orientation::kVertical)
                        .Build());
 
+  if (Browser* browser = GetBrowser()) {
+    auto* favicon_service =
+        LargeIconServiceFactory::GetForBrowserContext(browser->profile());
+    CHECK_DEREF(favicon_service);
+    password_favicon_loader_ =
+        std::make_unique<PasswordFaviconLoaderImpl>(*favicon_service);
+  }
+
   CreateSuggestionViews();
 }
 
@@ -926,7 +943,7 @@ void PopupViewViews::CreateSuggestionViews() {
               body_container->AddChildView(CreatePopupRowView(
                   controller(), /*a11y_selection_delegate=*/*this,
                   /*selection_delegate=*/*this, current_line_number,
-                  std::move(filter_match)));
+                  std::move(filter_match), password_favicon_loader_.get()));
           rows_.push_back(row_view);
 
           const base::Feature* const feature_for_iph =

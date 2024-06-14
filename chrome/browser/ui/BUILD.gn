@@ -5248,6 +5248,8 @@ static_library("ui") {
       "views/autofill/popup/custom_cursor_suppressor.h",
       "views/autofill/popup/lazy_loading_image_view.cc",
       "views/autofill/popup/lazy_loading_image_view.h",
+      "views/autofill/popup/password_favicon_loader.cc",
+      "views/autofill/popup/password_favicon_loader.h",
       "views/autofill/popup/popup_base_view.cc",
       "views/autofill/popup/popup_base_view.h",
       "views/autofill/popup/popup_cell_utils.cc",
