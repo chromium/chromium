@@ -37,7 +37,7 @@ namespace {
 // Helper, returns dummy (but valid) VideoBufferHandlePtr.
 media::mojom::VideoBufferHandlePtr GetDummyVideoBufferHandle() {
   auto shared_image = gpu::ClientSharedImage::CreateForTesting();
-  return media::mojom::VideoBufferHandle::NewSharedImageHandles(
+  return media::mojom::VideoBufferHandle::NewSharedImageHandle(
       media::mojom::SharedImageBufferHandleSet::New(shared_image->Export(),
                                                     gpu::SyncToken()));
 }

@@ -47,17 +47,17 @@ void TextureVirtualDeviceMojoAdapter::SetReceiverDisconnectedCallback(
 
 void TextureVirtualDeviceMojoAdapter::OnNewSharedImageBufferHandle(
     int32_t buffer_id,
-    media::mojom::SharedImageBufferHandleSetPtr shared_image_handles) {
+    media::mojom::SharedImageBufferHandleSetPtr shared_image_handle) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Keep track of the buffer handles in order to be able to forward them to
+  // Keep track of the buffer handle in order to be able to forward it to
   // the Receiver when it connects. This includes cases where a new Receiver
   // connects after a previous one has disconnected.
   known_shared_image_buffer_handles_.insert(
-      std::make_pair(buffer_id, shared_image_handles->Clone()));
+      std::make_pair(buffer_id, shared_image_handle->Clone()));
 
   media::mojom::VideoBufferHandlePtr buffer_handle =
-      media::mojom::VideoBufferHandle::NewSharedImageHandles(
-          std::move(shared_image_handles));
+      media::mojom::VideoBufferHandle::NewSharedImageHandle(
+          std::move(shared_image_handle));
   if (video_frame_handler_.is_bound()) {
     video_frame_handler_->OnNewBuffer(buffer_id, std::move(buffer_handle));
   } else if (video_frame_handler_in_process_) {
@@ -128,7 +128,7 @@ void TextureVirtualDeviceMojoAdapter::Start(
 
   for (auto& entry : known_shared_image_buffer_handles_) {
     media::mojom::VideoBufferHandlePtr buffer_handle =
-        media::mojom::VideoBufferHandle::NewSharedImageHandles(
+        media::mojom::VideoBufferHandle::NewSharedImageHandle(
             entry.second->Clone());
     video_frame_handler_->OnNewBuffer(entry.first, std::move(buffer_handle));
   }
@@ -144,7 +144,7 @@ void TextureVirtualDeviceMojoAdapter::StartInProcess(
 
   for (auto& entry : known_shared_image_buffer_handles_) {
     media::mojom::VideoBufferHandlePtr buffer_handle =
-        media::mojom::VideoBufferHandle::NewSharedImageHandles(
+        media::mojom::VideoBufferHandle::NewSharedImageHandle(
             entry.second->Clone());
     video_frame_handler_in_process_->OnNewBuffer(entry.first,
                                                  std::move(buffer_handle));

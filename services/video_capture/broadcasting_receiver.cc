@@ -121,14 +121,14 @@ bool BroadcastingReceiver::BufferContext::IsStillBeingConsumed() const {
 media::mojom::VideoBufferHandlePtr
 BroadcastingReceiver::BufferContext::CloneBufferHandle(
     media::VideoCaptureBufferType target_buffer_type) {
-  // If the source uses shared image handles, i.e. textures, we pass those
+  // If the source uses a shared image handle, i.e. texture, we pass it
   // through without conversion, no matter what clients requested.
-  if (buffer_handle_->is_shared_image_handles()) {
-    return media::mojom::VideoBufferHandle::NewSharedImageHandles(
-        buffer_handle_->get_shared_image_handles()->Clone());
+  if (buffer_handle_->is_shared_image_handle()) {
+    return media::mojom::VideoBufferHandle::NewSharedImageHandle(
+        buffer_handle_->get_shared_image_handle()->Clone());
   }
 
-  // If the source uses GpuMemoryBuffer handles, we pass those through without
+  // If the source uses a GpuMemoryBuffer handle, we pass it through without
   // conversion, no matter what clients requested.
   if (buffer_handle_->is_gpu_memory_buffer_handle()) {
     return media::mojom::VideoBufferHandle::NewGpuMemoryBufferHandle(

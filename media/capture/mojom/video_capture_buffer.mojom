@@ -54,6 +54,6 @@ union VideoBufferHandle {
   // into more distinct types.
   mojo_base.mojom.UnsafeSharedMemoryRegion unsafe_shmem_region;
   mojo_base.mojom.ReadOnlySharedMemoryRegion read_only_shmem_region;
-  SharedImageBufferHandleSet shared_image_handles;
+  SharedImageBufferHandleSet shared_image_handle;
   gfx.mojom.GpuMemoryBufferHandle gpu_memory_buffer_handle;
 };

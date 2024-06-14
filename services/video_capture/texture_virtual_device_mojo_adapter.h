@@ -34,9 +34,9 @@ class TextureVirtualDeviceMojoAdapter : public mojom::TextureVirtualDevice,
   void SetReceiverDisconnectedCallback(base::OnceClosure callback);
 
   // mojom::TextureVirtualDevice implementation.
-  void OnNewSharedImageBufferHandle(int32_t buffer_id,
-                                    media::mojom::SharedImageBufferHandleSetPtr
-                                        shared_image_handles) override;
+  void OnNewSharedImageBufferHandle(
+      int32_t buffer_id,
+      media::mojom::SharedImageBufferHandleSetPtr shared_image_handle) override;
   void OnFrameAccessHandlerReady(
       mojo::PendingRemote<video_capture::mojom::VideoFrameAccessHandler>
           pending_frame_access_handler) override;

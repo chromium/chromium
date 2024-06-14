@@ -55,7 +55,7 @@ mojom::VideoBufferHandlePtr CreateBufferHandle(
       auto shared_image_set = mojom::SharedImageBufferHandleSet::New(
           shared_image->Export(), sync_token);
 
-      return mojom::VideoBufferHandle::NewSharedImageHandles(
+      return mojom::VideoBufferHandle::NewSharedImageHandle(
           std::move(shared_image_set));
     }
     case VideoCaptureBufferType::kMailboxHolder:

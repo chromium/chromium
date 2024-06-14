@@ -96,9 +96,9 @@ struct VideoCaptureImpl::BufferContext
         InitializeFromReadOnlyShmemRegion(
             std::move(buffer_handle->get_read_only_shmem_region()));
         break;
-      case VideoFrameBufferHandleType::kSharedImageHandles:
+      case VideoFrameBufferHandleType::kSharedImageHandle:
         InitializeFromSharedImage(
-            std::move(buffer_handle->get_shared_image_handles()));
+            std::move(buffer_handle->get_shared_image_handle()));
         break;
       case VideoFrameBufferHandleType::kGpuMemoryBufferHandle:
 #if !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_WIN)
@@ -211,10 +211,10 @@ struct VideoCaptureImpl::BufferContext
   }
 
   void InitializeFromSharedImage(
-      media::mojom::blink::SharedImageBufferHandleSetPtr shared_image_handles) {
+      media::mojom::blink::SharedImageBufferHandleSetPtr shared_image_handle) {
     shared_image_ = gpu::ClientSharedImage::ImportUnowned(
-        shared_image_handles->shared_image);
-    shared_image_sync_token_ = shared_image_handles->sync_token;
+        shared_image_handle->shared_image);
+    shared_image_sync_token_ = shared_image_handle->sync_token;
   }
 
   void InitializeFromGpuMemoryBufferHandle(
@@ -256,7 +256,7 @@ struct VideoCaptureImpl::BufferContext
   raw_ptr<const uint8_t> data_ = nullptr;
   size_t data_size_ = 0;
 
-  // Only valid for |buffer_type_ == SHARED_IMAGE_HANDLES|.
+  // Only valid for |buffer_type_ == SHARED_IMAGE_HANDLE|.
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
   gpu::SyncToken shared_image_sync_token_;
 
@@ -366,7 +366,7 @@ VideoCaptureImpl::CreateVideoFrameInitData(
       video_frame_init_data.frame_or_buffer = frame;
       break;
     }
-    case VideoFrameBufferHandleType::kSharedImageHandles: {
+    case VideoFrameBufferHandleType::kSharedImageHandle: {
       CHECK(buffer_context->shared_image());
       video_frame_init_data.frame_or_buffer =
           media::VideoFrame::WrapSharedImage(
