@@ -37,6 +37,7 @@ inline constexpr char16_t kStreetNameRe[] =
     u"|logradouro"                 // pt-BR
     u"|dirección"                  // es-MX
     u"|calle"                      // es-MX
+    u"|indirizzo|piazza"           // it
     u"|ulica|ulicy";               // pl
 inline constexpr char16_t kHouseNumberRe[] =
     u"(house.?|street.?|^)(number|no\\.?$)"        // en
@@ -44,6 +45,7 @@ inline constexpr char16_t kHouseNumberRe[] =
     u"|^\\*?.?número(.?\\*?$| da residência)"      // pt-BR, pt-PT
     u"|exterior|(?:no|n[úu]m(?:ero)?)\\.?\\s*ext"  // es
     u"|(?:nr|numer)[.\\s]*(?:domu|budynku)"        // pl
+    u"|civico"                                     // it
     u"|дом|номер.?дома";                           // ru
 inline constexpr char16_t kApartmentNumberRe[] =
     u"apartment"                                                  // en

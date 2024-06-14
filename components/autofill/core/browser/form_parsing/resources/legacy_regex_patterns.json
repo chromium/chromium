@@ -53,6 +53,15 @@
         "form_control_types": ["INPUT_TEXT", "INPUT_SEARCH"]
       }
     ],
+    "it" : [
+      {
+        "positive_pattern": "indirizzo|piazza",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "form_control_types": ["INPUT_TEXT", "INPUT_SEARCH"]
+      }
+    ],
     "ru" : [
       {
         "positive_pattern": "улица|название.?улицы",
@@ -205,6 +214,15 @@
         // and "ext" via "\\.?\\s+" but generates false positives
         // (e.g. "*no*te_t*ext*").
         "positive_pattern": "exterior|(?:no|n[úu]m(?:ero)?)\\.?\\s*ext",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "form_control_types": ["INPUT_TEXT", "INPUT_TELEPHONE", "INPUT_NUMBER"]
+      }
+    ],
+    "it": [
+      {
+        "positive_pattern": "civico",
         "positive_score": 1.1,
         "negative_pattern": null,
         "match_field_attributes": ["LABEL", "NAME"],
