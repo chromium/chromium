@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/ai/mock_ai_text_session.h"
+#include "content/browser/ai/echo_ai_text_session.h"
 
 #include <optional>
 
@@ -17,11 +17,11 @@
 
 namespace content {
 
-MockAITextSession::MockAITextSession() = default;
+EchoAITextSession::EchoAITextSession() = default;
 
-MockAITextSession::~MockAITextSession() = default;
+EchoAITextSession::~EchoAITextSession() = default;
 
-void MockAITextSession::DoMockExecution(const std::string& input,
+void EchoAITextSession::DoMockExecution(const std::string& input,
                                         mojo::RemoteSetElementId responder_id) {
   blink::mojom::ModelStreamingResponder* responder =
       responder_set_.Get(responder_id);
@@ -35,7 +35,7 @@ void MockAITextSession::DoMockExecution(const std::string& input,
                         std::nullopt);
 }
 
-void MockAITextSession::Prompt(
+void EchoAITextSession::Prompt(
     const std::string& input,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
@@ -52,12 +52,12 @@ void MockAITextSession::Prompt(
       responder_set_.Add(std::move(pending_responder));
   content::GetUIThreadTaskRunner()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&MockAITextSession::DoMockExecution,
+      base::BindOnce(&EchoAITextSession::DoMockExecution,
                      weak_ptr_factory_.GetWeakPtr(), input, responder_id),
       base::Seconds(1));
 }
 
-void MockAITextSession::Destroy() {
+void EchoAITextSession::Destroy() {
   is_destroyed_ = true;
 
   for (auto& responder : responder_set_) {

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_AI_MOCK_AI_MANAGER_IMPL_H_
-#define CONTENT_BROWSER_AI_MOCK_AI_MANAGER_IMPL_H_
+#ifndef CONTENT_BROWSER_AI_ECHO_AI_MANAGER_IMPL_H_
+#define CONTENT_BROWSER_AI_ECHO_AI_MANAGER_IMPL_H_
 
 #include "base/no_destructor.h"
 #include "content/public/browser/browser_context.h"
@@ -13,21 +13,22 @@
 
 namespace content {
 
-// The mock implementation of `blink::mojom::AIManager` used for testing.
-class MockAIManagerImpl : public blink::mojom::AIManager {
+// The implementation of `blink::mojom::AIManager` that creates session which
+// only echoes back the prompt text used for testing.
+class EchoAIManagerImpl : public blink::mojom::AIManager {
  public:
-  MockAIManagerImpl(const MockAIManagerImpl&) = delete;
-  MockAIManagerImpl& operator=(const MockAIManagerImpl&) = delete;
+  EchoAIManagerImpl(const EchoAIManagerImpl&) = delete;
+  EchoAIManagerImpl& operator=(const EchoAIManagerImpl&) = delete;
 
-  ~MockAIManagerImpl() override;
+  ~EchoAIManagerImpl() override;
 
   static void Create(content::BrowserContext* browser_context,
                      mojo::PendingReceiver<blink::mojom::AIManager> receiver);
 
  private:
-  friend base::NoDestructor<MockAIManagerImpl>;
+  friend base::NoDestructor<EchoAIManagerImpl>;
 
-  explicit MockAIManagerImpl(content::BrowserContext* browser_context);
+  explicit EchoAIManagerImpl(content::BrowserContext* browser_context);
 
   // `blink::mojom::AIManager` implementation.
   void CanCreateTextSession(CanCreateTextSessionCallback callback) override;
@@ -45,4 +46,4 @@ class MockAIManagerImpl : public blink::mojom::AIManager {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_AI_MOCK_AI_MANAGER_IMPL_H_
+#endif  // CONTENT_BROWSER_AI_ECHO_AI_MANAGER_IMPL_H_
