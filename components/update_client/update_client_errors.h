@@ -31,6 +31,7 @@ enum class ErrorCategory {
   kInstall,
   kService,  // Runtime errors which occur in the service itself.
   kUpdateCheck,
+  kInstaller,
 };
 
 // These errors are returned with the `kDownload` error category. This category

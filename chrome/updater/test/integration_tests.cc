@@ -3347,6 +3347,7 @@ TEST_F(IntegrationTestMsi, Upgrade) {
 struct IntegrationInstallerResultsTestCase {
   const bool interactive_install;
   const std::string command_line_args;
+  const UpdateService::ErrorCategory error_category;
   const int error_code;
   const std::string installer_text;
   const std::string installer_cmd_line;
@@ -3366,6 +3367,7 @@ INSTANTIATE_TEST_SUITE_P(
         {
             false,
             "INSTALLER_RESULT=2 INSTALLER_ERROR=1603",
+            UpdateService::ErrorCategory::kInstaller,
             1603,
             "Install error: Fatal error during installation. ",
             {},
@@ -3377,6 +3379,7 @@ INSTANTIATE_TEST_SUITE_P(
         {
             false,
             "INSTALLER_RESULT=1 INSTALLER_RESULT_UI_STRING=TestUIString",
+            UpdateService::ErrorCategory::kInstaller,
             kErrorApplicationInstallerFailed,
             "TestUIString",
             {},
@@ -3387,6 +3390,7 @@ INSTANTIATE_TEST_SUITE_P(
         {
             false,
             "INSTALLER_RESULT=3 INSTALLER_ERROR=99",
+            UpdateService::ErrorCategory::kInstaller,
             99,
             "Install error: 0x63",
             {},
@@ -3397,6 +3401,7 @@ INSTANTIATE_TEST_SUITE_P(
         {
             false,
             "INSTALLER_RESULT=0",
+            UpdateService::ErrorCategory::kNone,
             0,
             {},
             {},
@@ -3409,6 +3414,7 @@ INSTANTIATE_TEST_SUITE_P(
             false,
             "INSTALLER_RESULT=0 "
             "REGISTER_LAUNCH_COMMAND=more.com",
+            UpdateService::ErrorCategory::kNone,
             0,
             {},
             "more.com",
@@ -3420,6 +3426,7 @@ INSTANTIATE_TEST_SUITE_P(
             false,
             base::StrCat({"INSTALLER_RESULT=2 INSTALLER_ERROR=",
                           base::NumberToString(ERROR_SUCCESS_REBOOT_REQUIRED)}),
+            UpdateService::ErrorCategory::kInstaller,
             ERROR_SUCCESS_REBOOT_REQUIRED,
             "Reboot required: The requested operation is successful. Changes "
             "will not be effective until the system is rebooted. ",
@@ -3432,6 +3439,7 @@ INSTANTIATE_TEST_SUITE_P(
             false,
             base::StrCat({"INSTALLER_RESULT=2 INSTALLER_ERROR=",
                           base::NumberToString(ERROR_INSTALL_ALREADY_RUNNING)}),
+            UpdateService::ErrorCategory::kInstaller,
             GOOPDATEINSTALL_E_INSTALL_ALREADY_RUNNING,
             "Install error: Another installation is already in progress. "
             "Complete that installation before proceeding with this install. ",
@@ -3446,6 +3454,7 @@ INSTANTIATE_TEST_SUITE_P(
             true,
             "INSTALLER_RESULT=0 "
             "REGISTER_LAUNCH_COMMAND=more.com",
+            UpdateService::ErrorCategory::kNone,
             0,
             {},
             "more.com",
@@ -3459,6 +3468,7 @@ INSTANTIATE_TEST_SUITE_P(
             false,
             "INSTALLER_RESULT=0 "
             "REGISTER_LAUNCH_COMMAND=more.com",
+            UpdateService::ErrorCategory::kNone,
             0,
             {},
             "more.com",
@@ -3471,6 +3481,7 @@ INSTANTIATE_TEST_SUITE_P(
             true,
             base::StrCat({"INSTALLER_RESULT=2 INSTALLER_ERROR=",
                           base::NumberToString(ERROR_SUCCESS_REBOOT_REQUIRED)}),
+            UpdateService::ErrorCategory::kInstaller,
             ERROR_SUCCESS_REBOOT_REQUIRED,
             base::WideToUTF8(GetLocalizedStringF(IDS_TEXT_RESTART_COMPUTER_BASE,
                                                  L"")),
@@ -3483,6 +3494,7 @@ INSTANTIATE_TEST_SUITE_P(
         {
             true,
             "INSTALLER_RESULT=0",
+            UpdateService::ErrorCategory::kInstall,
             static_cast<int>(update_client::ProtocolError::UNKNOWN_APPLICATION),
             base::WideToUTF8(GetLocalizedString(IDS_UNKNOWN_APPLICATION_BASE)),
             {},
@@ -3495,6 +3507,7 @@ INSTANTIATE_TEST_SUITE_P(
         {
             true,
             "INSTALLER_RESULT=0",
+            UpdateService::ErrorCategory::kInstall,
             static_cast<int>(update_client::ProtocolError::OS_NOT_SUPPORTED),
             base::WideToUTF8(GetLocalizedString(IDS_OS_NOT_SUPPORTED_BASE)),
             {},
@@ -3507,6 +3520,7 @@ INSTANTIATE_TEST_SUITE_P(
         {
             true,
             "INSTALLER_RESULT=0",
+            UpdateService::ErrorCategory::kInstall,
             static_cast<int>(update_client::ProtocolError::HW_NOT_SUPPORTED),
             base::WideToUTF8(GetLocalizedString(IDS_HW_NOT_SUPPORTED_BASE)),
             {},
@@ -3519,6 +3533,7 @@ INSTANTIATE_TEST_SUITE_P(
         {
             true,
             "INSTALLER_RESULT=0",
+            UpdateService::ErrorCategory::kInstall,
             static_cast<int>(update_client::ProtocolError::NO_HASH),
             base::WideToUTF8(GetLocalizedString(IDS_NO_HASH_BASE)),
             {},
@@ -3531,6 +3546,7 @@ INSTANTIATE_TEST_SUITE_P(
         {
             true,
             "INSTALLER_RESULT=0",
+            UpdateService::ErrorCategory::kInstall,
             static_cast<int>(
                 update_client::ProtocolError::UNSUPPORTED_PROTOCOL),
             base::WideToUTF8(GetLocalizedString(IDS_UNSUPPORTED_PROTOCOL_BASE)),
@@ -3544,6 +3560,7 @@ INSTANTIATE_TEST_SUITE_P(
         {
             true,
             "INSTALLER_RESULT=0",
+            UpdateService::ErrorCategory::kInstall,
             static_cast<int>(update_client::ProtocolError::INTERNAL),
             base::WideToUTF8(GetLocalizedString(IDS_INTERNAL_BASE)),
             {},
@@ -3574,7 +3591,7 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
               /*is_install=*/true, should_install_successfully, false, "", "",
               crx_relative_path,
               /*always_serve_crx=*/GetParam().custom_app_response.empty(),
-              UpdateService::ErrorCategory::kInstall, GetParam().error_code,
+              GetParam().error_category, GetParam().error_code,
               /*EVENT_INSTALL_COMPLETE=*/2, GetParam().custom_app_response),
       });
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
@@ -3611,8 +3628,7 @@ TEST_P(IntegrationInstallerResultsTest, TestCases) {
                      .Set("error_category",
                           should_install_successfully
                               ? 0
-                              : static_cast<int>(
-                                    UpdateService::ErrorCategory::kInstall))
+                              : static_cast<int>(GetParam().error_category))
                      .Set("error_code", GetParam().error_code)
                      .Set("extra_code1", 0)
                      .Set("installer_text", GetParam().installer_text)
@@ -3666,7 +3682,7 @@ TEST_P(IntegrationInstallerResultsTest, OnDemandTestCases) {
               /*is_install=*/false, should_install_successfully, false, "", "",
               crx_relative_path,
               /*always_serve_crx=*/GetParam().custom_app_response.empty(),
-              UpdateService::ErrorCategory::kInstall, GetParam().error_code,
+              GetParam().error_category, GetParam().error_code,
               /*EVENT_UPDATE_COMPLETE=*/3, GetParam().custom_app_response),
       });
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));

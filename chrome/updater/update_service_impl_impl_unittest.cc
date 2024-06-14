@@ -110,7 +110,6 @@ struct UpdateServiceImplGetInstallerTextTestCase {
   const int error_code;
   const std::string expected_completion_message;
   std::optional<int> extra_code;
-  std::optional<bool> is_installer_error;
 };
 
 class UpdateServiceImplGetInstallerTextTest
@@ -398,35 +397,31 @@ INSTANTIATE_TEST_SUITE_P(
         // `update_client::InstallError::FINGERPRINT_WRITE_FAILED`, but since
         // this is coded as an "installer_error", the error will be interpreted
         // as the Windows error code for `ERROR_FILE_NOT_FOUND` instead.
-        {UpdateService::ErrorCategory::kInstall,
+        {UpdateService::ErrorCategory::kInstaller,
          2,
          base::WideToUTF8(GetLocalizedStringF(
              IDS_GENERIC_INSTALL_ERROR_BASE,
              L"The system cannot find the file specified. ")),
-         {},
-         true},
-        {UpdateService::ErrorCategory::kInstall,
+         {}},
+        {UpdateService::ErrorCategory::kInstaller,
          GOOPDATE_E_APP_INSTALL_DISABLED_BY_POLICY,
          base::WideToUTF8(
              GetLocalizedStringF(IDS_APP_INSTALL_DISABLED_BY_GROUP_POLICY_BASE,
                                  L"GOOPDATE_E_APP_INSTALL_DISABLED_BY_POLICY")),
-         {},
-         true},
-        {UpdateService::ErrorCategory::kInstall,
+         {}},
+        {UpdateService::ErrorCategory::kInstaller,
          GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY,
          base::WideToUTF8(
              GetLocalizedStringF(IDS_APP_INSTALL_DISABLED_BY_GROUP_POLICY_BASE,
                                  L"GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY")),
-         {},
-         true},
-        {UpdateService::ErrorCategory::kInstall,
+         {}},
+        {UpdateService::ErrorCategory::kInstaller,
          GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL,
          base::WideToUTF8(GetLocalizedStringF(
              IDS_APP_INSTALL_DISABLED_BY_GROUP_POLICY_BASE,
              L"GOOPDATE_E_APP_UPDATE_DISABLED_BY_POLICY_MANUAL")),
-         {},
-         true},
-        {UpdateService::ErrorCategory::kInstall,
+         {}},
+        {UpdateService::ErrorCategory::kInstaller,
          GOOPDATEINSTALL_E_FILENAME_INVALID,
          base::WideToUTF8(base::StrCat(
              {GetLocalizedString(IDS_INVALID_INSTALLER_FILENAME_BASE), L"\n",
@@ -434,46 +429,41 @@ INSTANTIATE_TEST_SUITE_P(
                                   base::UTF8ToWide(base::StringPrintf(
                                       "%#x",
                                       kErrorMissingInstallParams)))})),
-         kErrorMissingInstallParams, true},
-        {UpdateService::ErrorCategory::kInstall,
+         kErrorMissingInstallParams},
+        {UpdateService::ErrorCategory::kInstaller,
          GOOPDATEINSTALL_E_INSTALLER_FAILED_START,
          base::WideToUTF8(base::StrCat(
              {GetLocalizedString(IDS_INSTALLER_FAILED_TO_START_BASE), L"\n",
               GetLocalizedStringF(IDS_EXTRA_CODE_BASE, L"0x2")})),
-         ERROR_FILE_NOT_FOUND, true},
-        {UpdateService::ErrorCategory::kInstall,
+         ERROR_FILE_NOT_FOUND},
+        {UpdateService::ErrorCategory::kInstaller,
          GOOPDATEINSTALL_E_INSTALLER_TIMED_OUT,
          base::WideToUTF8(GetLocalizedString(IDS_INSTALLER_TIMED_OUT_BASE)),
-         {},
-         true},
+         {}},
 
-        {UpdateService::ErrorCategory::kInstall,
+        {UpdateService::ErrorCategory::kInstaller,
          ERROR_SUCCESS_REBOOT_INITIATED,
          base::WideToUTF8(GetLocalizedStringF(
              IDS_INSTALL_REBOOT_BASE,
              GetTextForSystemError(ERROR_SUCCESS_REBOOT_INITIATED))),
-         {},
-         true},
-        {UpdateService::ErrorCategory::kInstall,
+         {}},
+        {UpdateService::ErrorCategory::kInstaller,
          ERROR_SUCCESS_REBOOT_REQUIRED,
          base::WideToUTF8(GetLocalizedStringF(
              IDS_INSTALL_REBOOT_BASE,
              GetTextForSystemError(ERROR_SUCCESS_REBOOT_REQUIRED))),
-         {},
-         true},
-        {UpdateService::ErrorCategory::kInstall,
+         {}},
+        {UpdateService::ErrorCategory::kInstaller,
          ERROR_SUCCESS_RESTART_REQUIRED,
          base::WideToUTF8(GetLocalizedStringF(
              IDS_INSTALL_REBOOT_BASE,
              GetTextForSystemError(ERROR_SUCCESS_RESTART_REQUIRED))),
-         {},
-         true},
+         {}},
     }));
 
 TEST_P(UpdateServiceImplGetInstallerTextTest, TestCases) {
   ASSERT_EQ(GetInstallerText(GetParam().error_category, GetParam().error_code,
-                             GetParam().extra_code.value_or(0),
-                             GetParam().is_installer_error.value_or(false)),
+                             GetParam().extra_code.value_or(0)),
             GetParam().expected_completion_message);
 }
 #endif  // BUILDFLAG(IS_WIN)

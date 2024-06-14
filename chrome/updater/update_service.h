@@ -106,6 +106,7 @@ class UpdateService : public base::RefCountedThreadSafe<UpdateService> {
     kInstall = 3,
     kService = 4,
     kUpdateCheck = 5,
+    kInstaller = 6,
     // Update EnumTraits<UpdateService::ErrorCategory> when adding new values.
   };
 
@@ -360,7 +361,7 @@ template <>
 struct EnumTraits<UpdateService::ErrorCategory> {
   using ErrorCategory = UpdateService::ErrorCategory;
   static constexpr ErrorCategory first_elem = ErrorCategory::kNone;
-  static constexpr ErrorCategory last_elem = ErrorCategory::kUpdateCheck;
+  static constexpr ErrorCategory last_elem = ErrorCategory::kInstaller;
 };
 
 std::ostream& operator<<(std::ostream& os,

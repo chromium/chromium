@@ -132,7 +132,7 @@ void InstallComplete(scoped_refptr<base::SequencedTaskRunner> main_task_runner,
              const CrxInstaller::Result& installer_result) {
             base::DeletePathRecursively(unpack_path);
             const ErrorCategory error_category = installer_result.error
-                                                     ? ErrorCategory::kInstall
+                                                     ? ErrorCategory::kInstaller
                                                      : ErrorCategory::kNone;
             main_task_runner->PostTask(
                 FROM_HERE,

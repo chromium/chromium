@@ -204,6 +204,7 @@ import "mojo/public/mojom/base/file_path.mojom";
   // Run time errors are organized in specific categories to indicate the
   // component where such errors occurred. The category appears as a numeric
   // value in the telemetry pings. The values of this enum must be kept Stable.
+  // Next version: 2
   [Stable, Extensible]
   enum ErrorCategory {
     kNone = 0,
@@ -213,6 +214,7 @@ import "mojo/public/mojom/base/file_path.mojom";
     kService,
     kUpdateCheck,
     [Default] kUnknown,
+    [MinVersion=1] kInstaller,
   };
 
   // Urgency of the update service invocation.
