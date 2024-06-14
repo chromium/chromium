@@ -26,4 +26,8 @@ const int kTabAgeThresholdHoursDefaultValue = 168;
 const char kURLAggregateCountLimit[] = "aggregate_count_limit";
 const int kURLAggregateCountLimitDefaultValue = 50;
 
+BASE_FEATURE(kVisitedURLRankingHistoryVisibilityScoreFilter,
+             "VisitedURLRankingHistoryVisibilityScoreFilter",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace visited_url_ranking::features

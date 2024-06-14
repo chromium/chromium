@@ -337,9 +337,7 @@
       <part file="user_education_strings.grdp" />
       <part file="version_ui_strings.grdp" />
       <part file="webapps_strings.grdp" />
-      <if expr="use_blink">
-        <part file="history_clusters_strings.grdp" />
-      </if>
+      <part file="history_clusters_strings.grdp" />
       <if expr="is_android">
         <part file="android_system_error_page_strings.grdp" />
         <part file="external_intents_strings.grdp" />

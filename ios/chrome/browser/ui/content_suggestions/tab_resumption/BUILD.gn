@@ -95,6 +95,7 @@ source_set("eg2_tests") {
     "//base/test:test_support",
     "//components/sync/base:features",
     "//components/url_formatter",
+    "//components/visited_url_ranking/public",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ntp_tiles/model/tab_resumption:tab_resumption_prefs",
     "//ios/chrome/browser/shared/public/features",

@@ -40,7 +40,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
-#include "components/history_clusters/core/config.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
 #include "components/omnibox/browser/actions/omnibox_pedal_provider.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -98,6 +97,7 @@
 #endif
 
 #if !BUILDFLAG(IS_IOS)
+#include "components/history_clusters/core/config.h"  // nogncheck
 #include "components/history_embeddings/history_embeddings_features.h"  //nogncheck
 #include "components/omnibox/browser/actions/history_clusters_action.h"
 #include "components/omnibox/browser/history_cluster_provider.h"

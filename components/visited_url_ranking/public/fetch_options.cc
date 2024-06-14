@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/containers/enum_set.h"
+#include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "components/visited_url_ranking/public/features.h"
 
@@ -37,7 +38,7 @@ FetchOptions FetchOptions::CreateDefaultFetchOptionsForTabResumption() {
   int query_duration = base::GetFieldTrialParamByFeatureAsInt(
       features::kVisitedURLRankingService,
       features::kVisitedURLRankingFetchDurationInHoursParam, 24);
-  return FetchOptions(
+  FetchOptions options(
       {
 #if BUILDFLAG(IS_IOS)
           {Fetcher::kTabModel, FetchOptions::kOriginSources},
@@ -48,13 +49,14 @@ FetchOptions FetchOptions::CreateDefaultFetchOptionsForTabResumption() {
       base::Time::Now() - base::Hours(query_duration),
       {
           URLVisitAggregatesTransformType::kRecencyFilter,
-#if !BUILDFLAG(IS_IOS)
-          // components/history_clusters is not compiled on iOS.
-          // TODO(crbug/344615016): Enable on iOS.
-          URLVisitAggregatesTransformType::kHistoryVisibilityScoreFilter,
-#endif
           URLVisitAggregatesTransformType::kBookmarkData,
       });
+  if (base::FeatureList::IsEnabled(
+          features::kVisitedURLRankingHistoryVisibilityScoreFilter)) {
+    options.transforms.push_back(
+        URLVisitAggregatesTransformType::kHistoryVisibilityScoreFilter);
+  }
+  return options;
 }
 
 }  // namespace visited_url_ranking
