@@ -25,6 +25,7 @@
 #include "base/containers/adapters.h"
 #include "base/containers/checked_iterators.h"
 #include "base/debug/alias.h"
+#include "base/memory/raw_span.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/gtest_util.h"
@@ -1425,20 +1426,40 @@ TEST(SpanTest, AsBytes) {
 }
 
 TEST(SpanTest, AsWritableBytes) {
-  std::vector<int> vec = {1, 1, 2, 3, 5, 8};
-  span<int> mutable_span(vec);
-  auto writable_bytes_span = as_writable_bytes(mutable_span);
-  static_assert(
-      std::is_same_v<decltype(writable_bytes_span), base::span<uint8_t>>);
-  EXPECT_EQ(reinterpret_cast<uint8_t*>(vec.data()), writable_bytes_span.data());
-  EXPECT_EQ(sizeof(int) * vec.size(), writable_bytes_span.size());
-  EXPECT_EQ(writable_bytes_span.size(), writable_bytes_span.size_bytes());
+  {
+    std::vector<int> vec = {1, 1, 2, 3, 5, 8};
+    span<int> mutable_span(vec);
+    auto writable_bytes_span = as_writable_bytes(mutable_span);
+    static_assert(
+        std::is_same_v<decltype(writable_bytes_span), base::span<uint8_t>>);
+    EXPECT_EQ(reinterpret_cast<uint8_t*>(vec.data()),
+              writable_bytes_span.data());
+    EXPECT_EQ(sizeof(int) * vec.size(), writable_bytes_span.size());
+    EXPECT_EQ(writable_bytes_span.size(), writable_bytes_span.size_bytes());
 
-  // Set the first entry of vec by writing through the span.
-  std::fill(writable_bytes_span.data(),
-            writable_bytes_span.data() + sizeof(int), 'a');
-  static_assert(sizeof(int) == 4u);  // Otherwise char literal wrong below.
-  EXPECT_EQ('aaaa', vec[0]);
+    // Set the first entry of vec by writing through the span.
+    std::fill(writable_bytes_span.data(),
+              writable_bytes_span.data() + sizeof(int), 'a');
+    static_assert(sizeof(int) == 4u);  // Otherwise char literal wrong below.
+    EXPECT_EQ('aaaa', vec[0]);
+  }
+  {
+    std::vector<int> vec = {1, 1, 2, 3, 5, 8};
+    raw_span<int> mutable_raw_span(vec);
+    auto writable_bytes_span = as_writable_bytes(mutable_raw_span);
+    static_assert(
+        std::is_same_v<decltype(writable_bytes_span), base::span<uint8_t>>);
+    EXPECT_EQ(reinterpret_cast<uint8_t*>(vec.data()),
+              writable_bytes_span.data());
+    EXPECT_EQ(sizeof(int) * vec.size(), writable_bytes_span.size());
+    EXPECT_EQ(writable_bytes_span.size(), writable_bytes_span.size_bytes());
+
+    // Set the first entry of vec by writing through the span.
+    std::fill(writable_bytes_span.data(),
+              writable_bytes_span.data() + sizeof(int), 'a');
+    static_assert(sizeof(int) == 4u);  // Otherwise char literal wrong below.
+    EXPECT_EQ('aaaa', vec[0]);
+  }
 }
 
 TEST(SpanTest, AsChars) {
@@ -1460,23 +1481,50 @@ TEST(SpanTest, AsChars) {
     EXPECT_EQ(sizeof(int) * vec.size(), chars_span.size());
     EXPECT_EQ(chars_span.size(), chars_span.size_bytes());
   }
+  {
+    std::vector<int> vec = {1, 1, 2, 3, 5, 8};
+    raw_span<int> mutable_span(vec);
+    auto chars_span = as_chars(mutable_span);
+    static_assert(std::is_same_v<decltype(chars_span), base::span<const char>>);
+    EXPECT_EQ(reinterpret_cast<const char*>(vec.data()), chars_span.data());
+    EXPECT_EQ(sizeof(int) * vec.size(), chars_span.size());
+    EXPECT_EQ(chars_span.size(), chars_span.size_bytes());
+  }
 }
 
 TEST(SpanTest, AsWritableChars) {
-  std::vector<int> vec = {1, 1, 2, 3, 5, 8};
-  span<int> mutable_span(vec);
-  auto writable_chars_span = as_writable_chars(mutable_span);
-  static_assert(
-      std::is_same_v<decltype(writable_chars_span), base::span<char>>);
-  EXPECT_EQ(reinterpret_cast<char*>(vec.data()), writable_chars_span.data());
-  EXPECT_EQ(sizeof(int) * vec.size(), writable_chars_span.size());
-  EXPECT_EQ(writable_chars_span.size(), writable_chars_span.size_bytes());
+  {
+    std::vector<int> vec = {1, 1, 2, 3, 5, 8};
+    span<int> mutable_span(vec);
+    auto writable_chars_span = as_writable_chars(mutable_span);
+    static_assert(
+        std::is_same_v<decltype(writable_chars_span), base::span<char>>);
+    EXPECT_EQ(reinterpret_cast<char*>(vec.data()), writable_chars_span.data());
+    EXPECT_EQ(sizeof(int) * vec.size(), writable_chars_span.size());
+    EXPECT_EQ(writable_chars_span.size(), writable_chars_span.size_bytes());
 
-  // Set the first entry of vec by writing through the span.
-  std::fill(writable_chars_span.data(),
-            writable_chars_span.data() + sizeof(int), 'a');
-  static_assert(sizeof(int) == 4u);  // Otherwise char literal wrong below.
-  EXPECT_EQ('aaaa', vec[0]);
+    // Set the first entry of vec by writing through the span.
+    std::fill(writable_chars_span.data(),
+              writable_chars_span.data() + sizeof(int), 'a');
+    static_assert(sizeof(int) == 4u);  // Otherwise char literal wrong below.
+    EXPECT_EQ('aaaa', vec[0]);
+  }
+  {
+    std::vector<int> vec = {1, 1, 2, 3, 5, 8};
+    raw_span<int> mutable_span(vec);
+    auto writable_chars_span = as_writable_chars(mutable_span);
+    static_assert(
+        std::is_same_v<decltype(writable_chars_span), base::span<char>>);
+    EXPECT_EQ(reinterpret_cast<char*>(vec.data()), writable_chars_span.data());
+    EXPECT_EQ(sizeof(int) * vec.size(), writable_chars_span.size());
+    EXPECT_EQ(writable_chars_span.size(), writable_chars_span.size_bytes());
+
+    // Set the first entry of vec by writing through the span.
+    std::fill(writable_chars_span.data(),
+              writable_chars_span.data() + sizeof(int), 'a');
+    static_assert(sizeof(int) == 4u);  // Otherwise char literal wrong below.
+    EXPECT_EQ('aaaa', vec[0]);
+  }
 }
 
 TEST(SpanTest, AsByteSpan) {

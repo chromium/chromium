@@ -1145,8 +1145,8 @@ constexpr std::ostream& operator<<(std::ostream& l, span<T, N> r) {
 }
 
 // [span.objectrep], views of object representation
-template <typename T, size_t X>
-constexpr auto as_bytes(span<T, X> s) noexcept {
+template <typename T, size_t X, typename InternalPtrType>
+constexpr auto as_bytes(span<T, X, InternalPtrType> s) noexcept {
   constexpr size_t N = X == dynamic_extent ? dynamic_extent : sizeof(T) * X;
   // SAFETY: span provides that data() points to at least size_bytes() many
   // bytes. So since `uint8_t` has a size of 1 byte, the size_bytes() value is
@@ -1158,9 +1158,9 @@ constexpr auto as_bytes(span<T, X> s) noexcept {
       reinterpret_cast<const uint8_t*>(s.data()), s.size_bytes()));
 }
 
-template <typename T, size_t X>
+template <typename T, size_t X, typename InternalPtrType>
   requires(!std::is_const_v<T>)
-constexpr auto as_writable_bytes(span<T, X> s) noexcept {
+constexpr auto as_writable_bytes(span<T, X, InternalPtrType> s) noexcept {
   constexpr size_t N = X == dynamic_extent ? dynamic_extent : sizeof(T) * X;
   // SAFETY: span provides that data() points to at least size_bytes() many
   // bytes. So since `uint8_t` has a size of 1 byte, the size_bytes() value is a
@@ -1176,8 +1176,8 @@ constexpr auto as_writable_bytes(span<T, X> s) noexcept {
 // span of const char rather than const uint8_t. This non-std function is
 // added since chrome still represents many things as char arrays which
 // rightfully should be uint8_t.
-template <typename T, size_t X>
-constexpr auto as_chars(span<T, X> s) noexcept {
+template <typename T, size_t X, typename InternalPtrType>
+constexpr auto as_chars(span<T, X, InternalPtrType> s) noexcept {
   constexpr size_t N = X == dynamic_extent ? dynamic_extent : sizeof(T) * X;
   // SAFETY: span provides that data() points to at least size_bytes() many
   // bytes. So since `char` has a size of 1 byte, the size_bytes() value is a
@@ -1214,9 +1214,9 @@ constexpr std::string_view as_string_view(
 // it returns a span of char rather than uint8_t. This non-std function is
 // added since chrome still represents many things as char arrays which
 // rightfully should be uint8_t.
-template <typename T, size_t X>
+template <typename T, size_t X, typename InternalPtrType>
   requires(!std::is_const_v<T>)
-auto as_writable_chars(span<T, X> s) noexcept {
+auto as_writable_chars(span<T, X, InternalPtrType> s) noexcept {
   constexpr size_t N = X == dynamic_extent ? dynamic_extent : sizeof(T) * X;
   // SAFETY: span provides that data() points to at least size_bytes() many
   // bytes. So since `char` has a size of 1 byte, the size_bytes() value is
