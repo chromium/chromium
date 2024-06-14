@@ -394,6 +394,9 @@ bool MediaRouterDesktop::RegisterMediaSinksObserver(
     MediaSinksObserver* observer) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
+  // On Windows and macOS, where discovery might trigger a permission
+  // prompt, do not start discovery service.
   if (media_sink_service_) {
     media_sink_service_->StartDiscovery();
     GetLogger()->LogInfo(mojom::LogCategory::kDiscovery, kLoggerComponent,
@@ -401,10 +404,10 @@ bool MediaRouterDesktop::RegisterMediaSinksObserver(
                          "sink is registered for the first time.",
                          "", "", "");
   }
+#endif
 
   // Create an observer list for the media source and add `observer`
   // to it. Fail if `observer` is already registered.
-
   const MediaSource source = MediaSinksQuery::GetKey(*observer);
   std::unique_ptr<MediaSinksQuery>& sinks_query = sinks_queries_[source.id()];
   bool is_new_query = false;
