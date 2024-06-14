@@ -4680,7 +4680,6 @@ static_library("browser") {
       "//components/app_constants",
       "//components/cbor",
       "//components/commerce/core:cart_db_content_proto",
-      "//components/commerce/core:coupon_db_content_proto",
       "//components/commerce/core:discounts_db_content_proto",
       "//components/commerce/core:proto",
       "//components/commerce/core:public",
@@ -4728,6 +4727,7 @@ static_library("browser") {
     ]
     public_deps += [
       "//chrome/common:buildflags",
+      "//components/commerce/core:coupon_db_content_proto",
       "//extensions/buildflags",
     ]
     allow_circular_includes_from += [
