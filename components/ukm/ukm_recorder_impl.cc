@@ -64,13 +64,13 @@ bool IsAllowlistedSourceId(SourceId source_id) {
     case ukm::SourceIdObj::Type::REDIRECT_ID:
     case ukm::SourceIdObj::Type::WEB_IDENTITY_ID:
     case ukm::SourceIdObj::Type::CHROMEOS_WEBSITE_ID:
+    case ukm::SourceIdObj::Type::NOTIFICATION_ID:
     case ukm::SourceIdObj::Type::EXTENSION_ID: {
       return true;
     }
     case ukm::SourceIdObj::Type::DEFAULT:
     case ukm::SourceIdObj::Type::DEPRECATED_DESKTOP_WEB_APP_ID:
     case ukm::SourceIdObj::Type::WORKER_ID:
-    case ukm::SourceIdObj::Type::NOTIFICATION_ID:
       return false;
   }
 }
