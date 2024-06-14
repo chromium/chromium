@@ -13,7 +13,6 @@
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/containers/lru_cache.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/memory/scoped_refptr.h"
@@ -27,6 +26,7 @@
 #include "third_party/blink/renderer/core/html/canvas/canvas_performance_monitor.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/modules/canvas/canvas2d/cached_color.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_path.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d_state.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"  // IWYU pragma: keep (blink::Visitor)
 #include "third_party/blink/renderer/platform/heap/member.h"
@@ -552,6 +553,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   unsigned try_restore_context_attempt_count_ = 0;
 
  protected:
+  explicit BaseRenderingContext2D(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
   virtual HTMLCanvasElement* HostAsHTMLCanvasElement() const;
   virtual OffscreenCanvas* HostAsOffscreenCanvas() const;
   virtual FontSelector* GetFontSelector() const;
@@ -561,9 +565,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   virtual bool WillSetFont() const;
   virtual bool ResolveFont(const String& new_font) = 0;
   virtual bool CurrentFontResolvedAndUpToDate() const;
-
-  explicit BaseRenderingContext2D(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   ALWAYS_INLINE CanvasRenderingContext2DState& GetState() const {
     return *state_stack_.back();
@@ -667,7 +668,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
       return;
     }
 
-    color_cache_.Clear();
+    color_cache_.clear();
     color_scheme_ = color_scheme;
   }
 
@@ -679,14 +680,6 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
       CanvasRenderingContext::kNotLostContext};
 
  private:
-  struct CachedColor {
-    CachedColor(const Color& color, ColorParseResult parse_result)
-        : color(color), parse_result(parse_result) {}
-
-    Color color;
-    ColorParseResult parse_result;
-  };
-
   void DrawTextInternal(const String& text,
                         double x,
                         double y,
@@ -695,8 +688,10 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
   // Returns the color from a string. This may return a cached value as well
   // as updating the cache (if possible).
-  bool ExtractColorFromStringAndUpdateCache(const AtomicString& string,
-                                            Color& color);
+  bool ExtractColorFromV8StringAndUpdateCache(v8::Isolate* isolate,
+                                              v8::Local<v8::String> v8_string,
+                                              ExceptionState& exception_state,
+                                              Color& color);
 
   CanvasRenderingContext2DState::SaveType SaveLayerForState(
       const CanvasRenderingContext2DState& state,
@@ -830,6 +825,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   void UpdateIdentifiabilityStudyBeforeSettingStrokeOrFill(
       const V8CanvasStyle& v8_style,
       CanvasOps op);
+  void UpdateIdentifiabilityStudyBeforeSettingStrokeOrFill(
+      v8::Local<v8::String> v8_string,
+      CanvasOps op);
 
   // Parses the string as a color and returns the result of parsing.
   ColorParseResult ParseColorOrCurrentColor(const String& color_string,
@@ -845,8 +843,9 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   cc::UsePaintCache path2d_use_paint_cache_;
   int num_readbacks_performed_ = 0;
   unsigned read_count_ = 0;
-  base::HashingLRUCache<String, CachedColor> color_cache_{8};
   mojom::blink::ColorScheme color_scheme_ = mojom::blink::ColorScheme::kLight;
+  // Cache of recently used colors. Maintains LRU semantics.
+  HeapLinkedHashSet<Member<CachedColor>, CachedColorTraits> color_cache_;
   Member<GPUTexture> webgpu_access_texture_ = nullptr;
 };
 

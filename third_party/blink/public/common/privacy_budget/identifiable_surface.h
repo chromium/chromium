@@ -235,12 +235,7 @@ class IdentifiableSurface {
     // analysis.
     kReservedMetadata = 34,
 
-    // Represents a readback of a canvas. Input is the
-    // CanvasRenderingContextType.
-    //
-    // Was 2 before change to paint op serialization, then 33 before removing
-    // paint op serialization and using only direct canvas2d instrumentation.
-    kCanvasReadback = 35,
+    // Reserved 35 (was kCanvasReadback).
 
     // Represents a media feature being tested. Input is the feature name.
     // Output is the feature value
@@ -262,6 +257,15 @@ class IdentifiableSurface {
     // name. This occurs when a font-family CSS rule doesn't match any
     // @font-face rule. Input is the lookup name. Output is a bool.
     kLocalFontExistenceByUniqueOrFamilyName = 39,
+
+    // Represents a readback of a canvas. Input is the
+    // CanvasRenderingContextType.
+    //
+    // Was 2 before change to paint op serialization, then 33 before removing
+    // paint op serialization and using only direct canvas2d instrumentation,
+    // then 35 before changing color hashing functions in
+    // BaseRenderingContext2D.
+    kCanvasReadback = 40,
 
     // We can use values up to and including |kMax|.
     kMax = (1 << kTypeBits) - 1

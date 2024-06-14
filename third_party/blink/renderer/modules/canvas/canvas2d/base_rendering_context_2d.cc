@@ -228,6 +228,10 @@ BASE_FEATURE(kDisableCanvasOverdrawOptimization,
              "DisableCanvasOverdrawOptimization",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Maximum number of colors in the color cache
+// (`BaseRenderingContext2D::color_cache_`).
+constexpr size_t kColorCacheMaxSize = 8;
+
 const char BaseRenderingContext2D::kDefaultFont[] = "10px sans-serif";
 const char BaseRenderingContext2D::kInheritDirectionString[] = "inherit";
 const char BaseRenderingContext2D::kRtlDirectionString[] = "rtl";
@@ -785,32 +789,90 @@ void BaseRenderingContext2D::
   }
 }
 
-bool BaseRenderingContext2D::ExtractColorFromStringAndUpdateCache(
-    const AtomicString& string,
-    Color& color) {
-  // This should only be called for string styles.
-  auto iter = color_cache_.Get(string);
-  if (iter != color_cache_.end()) {
-    const CachedColor& cached_color = iter->second;
-    if (cached_color.parse_result == ColorParseResult::kColor) {
-      color = cached_color.color;
-      return true;
-    }
-    if (cached_color.parse_result == ColorParseResult::kCurrentColor) {
-      color = GetCurrentColor();
-      return true;
-    }
-    DCHECK_EQ(cached_color.parse_result, ColorParseResult::kParseFailed);
-    return false;
+void BaseRenderingContext2D::
+    UpdateIdentifiabilityStudyBeforeSettingStrokeOrFill(
+        v8::Local<v8::String> v8_string,
+        CanvasOps op) {
+  if (UNLIKELY(identifiability_study_helper_.ShouldUpdateBuilder())) {
+    identifiability_study_helper_.UpdateBuilder(op);
+    identifiability_study_helper_.UpdateBuilder(v8_string->GetIdentityHash());
   }
-  const ColorParseResult parse_result = ParseColorOrCurrentColor(string, color);
-  color_cache_.Put(string, CachedColor(color, parse_result));
+}
+
+bool BaseRenderingContext2D::ExtractColorFromV8StringAndUpdateCache(
+    v8::Isolate* isolate,
+    v8::Local<v8::String> v8_string,
+    ExceptionState& exception_state,
+    Color& color) {
+  if (v8_string->Length()) {
+    const auto it = color_cache_.Find<ColorCacheHashTranslator>(v8_string);
+    if (it != color_cache_.end()) {
+      color_cache_.MoveTo(it, color_cache_.begin());
+      const CachedColor* cached_color = it->Get();
+      switch (cached_color->parse_result) {
+        case ColorParseResult::kColor:
+          color = cached_color->color;
+          return true;
+        case ColorParseResult::kCurrentColor:
+          color = GetCurrentColor();
+          return true;
+        case ColorParseResult::kColorMix:
+          // ParseColorOrCurrentColor() never returns kColorMix.
+          NOTREACHED_NORETURN();
+        case ColorParseResult::kParseFailed:
+          return false;
+      }
+    }
+  }
+  // It's a bit unfortunate to create a string here, we should instead plumb
+  // through a StringView.
+  String color_string = NativeValueTraits<IDLString>::NativeValue(
+      isolate, v8_string, exception_state);
+  const ColorParseResult parse_result =
+      ParseColorOrCurrentColor(color_string, color);
+  if (v8_string->Length()) {
+    // Limit the size of the cache.
+    if (color_cache_.size() == kColorCacheMaxSize) {
+      color_cache_.pop_back();
+    }
+    auto* cached_color = MakeGarbageCollected<CachedColor>(isolate, v8_string,
+                                                           color, parse_result);
+    color_cache_.InsertBefore(color_cache_.begin(), cached_color);
+  }
   return parse_result != ColorParseResult::kParseFailed;
 }
 
 void BaseRenderingContext2D::setStrokeStyle(v8::Isolate* isolate,
                                             v8::Local<v8::Value> value,
                                             ExceptionState& exception_state) {
+  CanvasRenderingContext2DState& state = GetState();
+  // Use of a string for the stroke is very common (and parsing the color
+  // from the string is expensive) so we keep a map of string to color.
+  if (value->IsString()) {
+    v8::Local<v8::String> v8_string = value.As<v8::String>();
+    UpdateIdentifiabilityStudyBeforeSettingStrokeOrFill(
+        v8_string, CanvasOps::kSetStrokeStyle);
+    if (state.IsUnparsedStrokeColor(v8_string)) {
+      return;
+    }
+    Color parsed_color = Color::kTransparent;
+    if (!ExtractColorFromV8StringAndUpdateCache(
+            isolate, v8_string, exception_state, parsed_color)) {
+      return;
+    }
+    if (state.StrokeStyle().IsEquivalentColor(parsed_color)) {
+      state.SetUnparsedStrokeColor(isolate, v8_string);
+      return;
+    }
+    state.SetStrokeColor(parsed_color);
+    state.ClearUnparsedStrokeColor();
+    state.ClearResolvedFilter();
+    return;
+  }
+
+  // Use ExtractV8CanvasStyle to extract the other possible types. Note that
+  // a string may still be returned. This is a fallback in cases where the
+  // value can be converted to a string (such as an integer).
   V8CanvasStyle v8_style;
   if (!ExtractV8CanvasStyle(isolate, value, v8_style, exception_state))
     return;
@@ -818,7 +880,6 @@ void BaseRenderingContext2D::setStrokeStyle(v8::Isolate* isolate,
   UpdateIdentifiabilityStudyBeforeSettingStrokeOrFill(
       v8_style, CanvasOps::kSetStrokeStyle);
 
-  CanvasRenderingContext2DState& state = GetState();
   switch (v8_style.type) {
     case V8CanvasStyleType::kCSSColorValue:
       state.SetStrokeColor(v8_style.css_color_value);
@@ -832,24 +893,19 @@ void BaseRenderingContext2D::setStrokeStyle(v8::Isolate* isolate,
       state.SetStrokePattern(v8_style.pattern);
       break;
     case V8CanvasStyleType::kString: {
-      if (v8_style.string == state.UnparsedStrokeColor()) {
-        return;
-      }
       Color parsed_color = Color::kTransparent;
-      if (!ExtractColorFromStringAndUpdateCache(v8_style.string,
-                                                parsed_color)) {
+      if (ParseColorOrCurrentColor(v8_style.string, parsed_color) ==
+          ColorParseResult::kParseFailed) {
         return;
       }
-      if (state.StrokeStyle().IsEquivalentColor(parsed_color)) {
-        state.SetUnparsedStrokeColor(v8_style.string);
-        return;
+      if (!state.StrokeStyle().IsEquivalentColor(parsed_color)) {
+        state.SetStrokeColor(parsed_color);
       }
-      state.SetStrokeColor(parsed_color);
       break;
     }
   }
 
-  state.SetUnparsedStrokeColor(v8_style.string);
+  state.ClearUnparsedStrokeColor();
   state.ClearResolvedFilter();
 }
 
@@ -896,16 +952,39 @@ v8::Local<v8::Value> BaseRenderingContext2D::fillStyle(
 void BaseRenderingContext2D::setFillStyle(v8::Isolate* isolate,
                                           v8::Local<v8::Value> value,
                                           ExceptionState& exception_state) {
+  ValidateStateStack();
+
+  CanvasRenderingContext2DState& state = GetState();
+  // This block is similar to that in setStrokeStyle(), see comments there for
+  // details on this.
+  if (value->IsString()) {
+    v8::Local<v8::String> v8_string = value.As<v8::String>();
+    UpdateIdentifiabilityStudyBeforeSettingStrokeOrFill(
+        v8_string, CanvasOps::kSetFillStyle);
+    if (state.IsUnparsedFillColor(v8_string)) {
+      return;
+    }
+    Color parsed_color = Color::kTransparent;
+    if (!ExtractColorFromV8StringAndUpdateCache(
+            isolate, v8_string, exception_state, parsed_color)) {
+      return;
+    }
+    if (state.FillStyle().IsEquivalentColor(parsed_color)) {
+      state.SetUnparsedFillColor(isolate, v8_string);
+      return;
+    }
+    state.SetFillColor(parsed_color);
+    state.ClearUnparsedFillColor();
+    state.ClearResolvedFilter();
+    return;
+  }
   V8CanvasStyle v8_style;
   if (!ExtractV8CanvasStyle(isolate, value, v8_style, exception_state))
     return;
 
-  ValidateStateStack();
-
   UpdateIdentifiabilityStudyBeforeSettingStrokeOrFill(v8_style,
                                                       CanvasOps::kSetFillStyle);
 
-  CanvasRenderingContext2DState& state = GetState();
   switch (v8_style.type) {
     case V8CanvasStyleType::kCSSColorValue:
       state.SetFillColor(v8_style.css_color_value);
@@ -919,24 +998,19 @@ void BaseRenderingContext2D::setFillStyle(v8::Isolate* isolate,
       state.SetFillPattern(v8_style.pattern);
       break;
     case V8CanvasStyleType::kString: {
-      if (v8_style.string == state.UnparsedFillColor()) {
-        return;
-      }
       Color parsed_color = Color::kTransparent;
-      if (!ExtractColorFromStringAndUpdateCache(v8_style.string,
-                                                parsed_color)) {
+      if (ParseColorOrCurrentColor(v8_style.string, parsed_color) ==
+          ColorParseResult::kParseFailed) {
         return;
       }
-      if (state.FillStyle().IsEquivalentColor(parsed_color)) {
-        state.SetUnparsedFillColor(v8_style.string);
-        return;
+      if (!state.FillStyle().IsEquivalentColor(parsed_color)) {
+        state.SetFillColor(parsed_color);
       }
-      state.SetFillColor(parsed_color);
       break;
     }
   }
 
-  state.SetUnparsedFillColor(v8_style.string);
+  state.ClearUnparsedFillColor();
   state.ClearResolvedFilter();
 }
 
@@ -3013,6 +3087,7 @@ void BaseRenderingContext2D::Trace(Visitor* visitor) const {
   visitor->Trace(dispatch_context_lost_event_timer_);
   visitor->Trace(dispatch_context_restored_event_timer_);
   visitor->Trace(try_restore_context_event_timer_);
+  visitor->Trace(color_cache_);
   visitor->Trace(webgpu_access_texture_);
   CanvasPath::Trace(visitor);
 }

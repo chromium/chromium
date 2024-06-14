@@ -229,6 +229,10 @@ class LinkedHashSet {
   template <typename IncomingValueType>
   AddResult PrependOrMoveToFirst(IncomingValueType&&);
 
+  // Moves |target| right before |new_position| in a linked list. This operation
+  // is executed by just updating indices of related nodes.
+  void MoveTo(const_iterator target, const_iterator new_position);
+
   void erase(ValuePeekInType);
   void erase(const_iterator);
   void RemoveFirst();
@@ -389,6 +393,13 @@ LinkedHashSet<T, TraitsArg, Allocator>::PrependOrMoveToFirst(
     IncomingValueType&& value) {
   return InsertOrMoveBefore(begin(), std::forward<IncomingValueType>(value),
                             MoveType::kMoveIfValueExists);
+}
+
+template <typename T, typename TraitsArg, typename Allocator>
+void LinkedHashSet<T, TraitsArg, Allocator>::MoveTo(
+    const_iterator target,
+    const_iterator new_position) {
+  list_.MoveTo(target.iterator_, new_position.iterator_);
 }
 
 template <typename T, typename TraitsArg, typename Allocator>

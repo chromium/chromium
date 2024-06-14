@@ -212,6 +212,8 @@ void CanvasRenderingContext2DState::Trace(Visitor* visitor) const {
   visitor->Trace(font_);
   visitor->Trace(font_for_filter_);
   visitor->Trace(canvas_filter_);
+  visitor->Trace(unparsed_stroke_color_);
+  visitor->Trace(unparsed_fill_color_);
   FontSelectorClient::Trace(visitor);
 }
 

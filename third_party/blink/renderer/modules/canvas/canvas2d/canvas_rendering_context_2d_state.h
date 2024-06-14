@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/clip_list.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector_client.h"
@@ -289,15 +290,22 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   void SetImageSmoothingQuality(const String&);
   String ImageSmoothingQuality() const;
 
-  void SetUnparsedStrokeColor(const String& color) {
-    unparsed_stroke_color_ = color;
+  bool IsUnparsedStrokeColor(v8::Local<v8::String> string) const {
+    return unparsed_stroke_color_ == string;
   }
-  const String& UnparsedStrokeColor() const { return unparsed_stroke_color_; }
+  void SetUnparsedStrokeColor(v8::Isolate* isolate,
+                              v8::Local<v8::String> color) {
+    unparsed_stroke_color_.Reset(isolate, color);
+  }
+  void ClearUnparsedStrokeColor() { unparsed_stroke_color_.Reset(); }
 
-  void SetUnparsedFillColor(const String& color) {
-    unparsed_fill_color_ = color;
+  bool IsUnparsedFillColor(v8::Local<v8::String> string) const {
+    return unparsed_fill_color_ == string;
   }
-  const String& UnparsedFillColor() const { return unparsed_fill_color_; }
+  void SetUnparsedFillColor(v8::Isolate* isolate, v8::Local<v8::String> color) {
+    unparsed_fill_color_.Reset(isolate, color);
+  }
+  void ClearUnparsedFillColor() { unparsed_fill_color_.Reset(); }
 
   bool ShouldDrawShadows() const;
 
@@ -341,8 +349,8 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
   sk_sp<cc::DrawLooper>& ShadowOnlyDrawLooper() const;
   sk_sp<cc::DrawLooper>& ShadowAndForegroundDrawLooper() const;
 
-  String unparsed_stroke_color_;
-  String unparsed_fill_color_;
+  TraceWrapperV8Reference<v8::String> unparsed_stroke_color_;
+  TraceWrapperV8Reference<v8::String> unparsed_fill_color_;
   CanvasStyle stroke_style_;
   CanvasStyle fill_style_;
 
