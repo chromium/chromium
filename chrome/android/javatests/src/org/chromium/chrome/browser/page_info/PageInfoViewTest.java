@@ -728,13 +728,7 @@ public class PageInfoViewTest {
         mRenderTestRule.render(getPageInfoView(), "PageInfo_TrackingProtectionSubpage_Toggle_On");
     }
 
-    /** Tests the cookies page of the PageInfo UI with the 100% Tracking Protection UI enabled. */
-    @Test
-    @MediumTest
-    @Features.EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_LAUNCH)
-    @Feature({"RenderTest"})
-    public void testShowCookiesSubpageTrackingProtectionLaunch() throws IOException {
-        setBlockAll3PC(false);
+    private void launchAndCheckTrackingProtectionLaunchUI() {
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         enableTrackingProtectionFixedExpiration();
@@ -750,11 +744,103 @@ public class PageInfoViewTest {
                             UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
                                     .getBoolean(IN_CONTEXT_COOKIE_CONTROLS_OPENED));
                 });
+    }
+
+    /** Tests the cookies page of the PageInfo UI with the 100% Tracking Protection UI enabled. */
+    @Test
+    @MediumTest
+    @Features.EnableFeatures(ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_LAUNCH)
+    @Features.DisableFeatures({
+        ChromeFeatureList.IP_PROTECTION_V1,
+        ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING
+    })
+    @Feature({"RenderTest"})
+    public void testShowCookiesSubpageTrackingProtectionLaunch() throws IOException {
+        setBlockAll3PC(false);
+        launchAndCheckTrackingProtectionLaunchUI();
         mRenderTestRule.render(getPageInfoView(), "PageInfo_TrackingProtectionLaunch_Toggle_Off");
         // Check that the cookie toggle is displayed and try clicking it.
         onViewWaiting(allOf(withText(containsString("You have extra protections")), isDisplayed()));
         onView(withText(containsString("You have extra protections"))).perform(click());
         mRenderTestRule.render(getPageInfoView(), "PageInfo_TrackingProtectionLaunch_Toggle_On");
+    }
+
+    /** Same as the previous one but with IP Protection feature enabled. */
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({
+        ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_LAUNCH,
+        ChromeFeatureList.IP_PROTECTION_V1
+    })
+    @Features.DisableFeatures(ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING)
+    @Feature({"RenderTest"})
+    public void testShowCookiesSubpageTrackingProtectionLaunchIPP() throws IOException {
+        setBlockAll3PC(false);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                            .setBoolean(Pref.IP_PROTECTION_ENABLED, true);
+                });
+        launchAndCheckTrackingProtectionLaunchUI();
+        mRenderTestRule.render(
+                getPageInfoView(), "PageInfo_TrackingProtectionLaunchIPP_Toggle_Off");
+        // Check that the cookie toggle is displayed and try clicking it.
+        onViewWaiting(allOf(withText(containsString("You have extra protections")), isDisplayed()));
+        onView(withText(containsString("You have extra protections"))).perform(click());
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_TrackingProtectionLaunchIPP_Toggle_On");
+    }
+
+    /** Same as the previous one but with Fingerprinting Protection feature enabled. */
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({
+        ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_LAUNCH,
+        ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING
+    })
+    @Features.DisableFeatures(ChromeFeatureList.IP_PROTECTION_V1)
+    @Feature({"RenderTest"})
+    public void testShowCookiesSubpageTrackingProtectionLaunchFPP() throws IOException {
+        setBlockAll3PC(false);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                            .setBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED, true);
+                });
+        launchAndCheckTrackingProtectionLaunchUI();
+        mRenderTestRule.render(
+                getPageInfoView(), "PageInfo_TrackingProtectionLaunchFPP_Toggle_Off");
+        // Check that the cookie toggle is displayed and try clicking it.
+        onViewWaiting(allOf(withText(containsString("You have extra protections")), isDisplayed()));
+        onView(withText(containsString("You have extra protections"))).perform(click());
+        mRenderTestRule.render(getPageInfoView(), "PageInfo_TrackingProtectionLaunchFPP_Toggle_On");
+    }
+
+    /** Same as the previous one but with both IP and Fingerprinting Protection features enabled. */
+    @Test
+    @MediumTest
+    @Features.EnableFeatures({
+        ChromeFeatureList.TRACKING_PROTECTION_SETTINGS_LAUNCH,
+        ChromeFeatureList.IP_PROTECTION_V1,
+        ChromeFeatureList.FINGERPRINTING_PROTECTION_SETTING
+    })
+    @Feature({"RenderTest"})
+    public void testShowCookiesSubpageTrackingProtectionLaunchFPPIPP() throws IOException {
+        setBlockAll3PC(false);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                            .setBoolean(Pref.IP_PROTECTION_ENABLED, true);
+                    UserPrefs.get(ProfileManager.getLastUsedRegularProfile())
+                            .setBoolean(Pref.FINGERPRINTING_PROTECTION_ENABLED, true);
+                });
+        launchAndCheckTrackingProtectionLaunchUI();
+        mRenderTestRule.render(
+                getPageInfoView(), "PageInfo_TrackingProtectionLaunchFPPIPP_Toggle_Off");
+        // Check that the cookie toggle is displayed and try clicking it.
+        onViewWaiting(allOf(withText(containsString("You have extra protections")), isDisplayed()));
+        onView(withText(containsString("You have extra protections"))).perform(click());
+        mRenderTestRule.render(
+                getPageInfoView(), "PageInfo_TrackingProtectionLaunchFPPIPP_Toggle_On");
     }
 
     /** Tests the cookies page of the PageInfo UI with the Tracking Protection UI enabled. */
