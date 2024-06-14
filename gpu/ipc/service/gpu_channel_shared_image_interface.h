@@ -28,8 +28,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelSharedImageInterface
     : public SharedImageInterface {
  public:
   explicit GpuChannelSharedImageInterface(
-      base::WeakPtr<SharedImageStub> shared_image_stub,
-      const CommandBufferId command_buffer_id);
+      base::WeakPtr<SharedImageStub> shared_image_stub);
 
   GpuChannelSharedImageInterface(const GpuChannelSharedImageInterface&) =
       delete;
