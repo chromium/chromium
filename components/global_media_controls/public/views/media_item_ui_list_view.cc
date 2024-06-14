@@ -18,7 +18,7 @@ namespace global_media_controls {
 
 namespace {
 
-constexpr int kMediaListMaxHeight = 478;
+constexpr int kMediaListMaxHeight = 488;
 
 // Thickness of separator border.
 constexpr int kMediaListSeparatorThickness = 2;

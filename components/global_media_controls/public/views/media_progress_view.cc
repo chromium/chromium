@@ -22,8 +22,10 @@ namespace global_media_controls {
 
 namespace {
 
-// The height of the whole view.
-constexpr int kViewHeight = 32;
+// The height of the whole view based on whether the progress line is squiggly
+// or straight.
+constexpr int kSquigglyProgressViewHeight = 32;
+constexpr int kStraightProgressViewHeight = 24;
 
 // The width of stroke to paint the progress foreground and background lines,
 // and also the focus ring.
@@ -49,11 +51,9 @@ constexpr int kProgressAmplitude = 2;
 constexpr int kProgressPhaseSpeed = 28;
 
 // The size of the rounded rectangle indicator at the end of the foreground
-// squiggly progress.
-constexpr gfx::SizeF kProgressIndicatorSize = gfx::SizeF(6, 14);
-
-// The radius of the rounded rectangle indicator.
-constexpr float kProgressIndicatorRadius = 3.0;
+// squiggly or straight progress.
+constexpr gfx::SizeF kSquigglyProgressIndicatorSize = gfx::SizeF(6, 14);
+constexpr gfx::SizeF kStraightProgressIndicatorSize = gfx::SizeF(4, 16);
 
 // Defines how long the animation for progress transitioning between squiggly
 // and straight lines will take.
@@ -125,7 +125,9 @@ void MediaProgressView::AnimationProgressed(const gfx::Animation* animation) {
 
 gfx::Size MediaProgressView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  return gfx::Size(GetContentsBounds().size().width(), kViewHeight);
+  const int height = (use_squiggly_line_ ? kSquigglyProgressViewHeight
+                                         : kStraightProgressViewHeight);
+  return gfx::Size(GetContentsBounds().size().width(), height);
 }
 
 void MediaProgressView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
@@ -164,7 +166,7 @@ void MediaProgressView::AddedToWidget() {
 void MediaProgressView::OnPaint(gfx::Canvas* canvas) {
   const auto* color_provider = GetColorProvider();
   const int view_width = GetContentsBounds().width() - kWidthInset * 2;
-  const int view_height = GetContentsBounds().height();
+  const int view_height = CalculatePreferredSize({}).height();
   const int progress_width = static_cast<int>(view_width * current_value_);
 
   // Create the paint flags which will be reused for painting.
@@ -215,23 +217,24 @@ void MediaProgressView::OnPaint(gfx::Canvas* canvas) {
 
   // Paint the progress rectangle indicator.
   flags.setStyle(cc::PaintFlags::kFill_Style);
+  const gfx::SizeF indicator_size =
+      (use_squiggly_line_ ? kSquigglyProgressIndicatorSize
+                          : kStraightProgressIndicatorSize);
   canvas->DrawRoundRect(
-      gfx::RectF(
-          gfx::PointF(progress_width - kProgressIndicatorSize.width() / 2,
-                      (view_height - kProgressIndicatorSize.height()) / 2),
-          kProgressIndicatorSize),
-      kProgressIndicatorRadius, flags);
+      gfx::RectF(gfx::PointF(progress_width - indicator_size.width() / 2,
+                             (view_height - indicator_size.height()) / 2),
+                 indicator_size),
+      indicator_size.width() / 2, flags);
 
   // Paint the background straight line.
-  if (progress_width + kProgressIndicatorSize.width() / 2 < view_width) {
+  if (progress_width + indicator_size.width() / 2 < view_width) {
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setColor(
         color_provider->GetColor(is_paused_ ? paused_background_color_id_
                                             : playing_background_color_id_));
-    canvas->DrawLine(
-        gfx::PointF(progress_width + kProgressIndicatorSize.width() / 2,
-                    view_height / 2),
-        gfx::PointF(view_width, view_height / 2), flags);
+    canvas->DrawLine(gfx::PointF(progress_width + indicator_size.width() / 2,
+                                 view_height / 2),
+                     gfx::PointF(view_width, view_height / 2), flags);
   }
   canvas->Restore();
 

@@ -35,22 +35,22 @@ constexpr int kBackgroundCornerRadius = 8;
 constexpr int kArtworkCornerRadius = 8;
 
 constexpr int kBackgroundSeparator = 16;
-constexpr int kArtworkRowSeparator = 12;
+constexpr int kArtworkRowSeparator = 16;
 constexpr int kMediaInfoSeparator = 8;
 constexpr int kSourceRowSeparator = 16;
-constexpr int kSourceRowButtonContainerSeparator = 4;
+constexpr int kSourceRowButtonContainerSeparator = 8;
 constexpr int kMetadataRowSeparator = 16;
 constexpr int kMetadataColumnSeparator = 4;
 constexpr int kProgressRowSeparator = 4;
 
 constexpr int kPlayPauseButtonIconSize = 24;
-constexpr int kMediaActionButtonIconSize = 20;
+constexpr int kMediaActionButtonIconSize = 18;
 
 constexpr float kFocusRingHaloInset = -3.0f;
 
 constexpr gfx::Size kArtworkSize = gfx::Size(80, 80);
 constexpr gfx::Size kPlayPauseButtonSize = gfx::Size(48, 48);
-constexpr gfx::Size kMediaActionButtonSize = gfx::Size(24, 24);
+constexpr gfx::Size kMediaActionButtonSize = gfx::Size(20, 20);
 
 // Buttons with the following media actions should be hidden when the user is
 // dragging the progress view.
@@ -116,7 +116,10 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
           std::u16string(), views::style::CONTEXT_LABEL,
           views::style::STYLE_BODY_5));
   source_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  source_label_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
   source_label_->SetElideBehavior(gfx::ELIDE_HEAD);
+  source_label_->SetEnabledColorId(
+      media_color_theme_.secondary_foreground_color_id);
 
   // |source_row_button_container| inside |source_row| holds the start casting
   // button and picture-in-picture button.
@@ -156,10 +159,17 @@ MediaItemUIUpdatedView::MediaItemUIUpdatedView(
       std::u16string(), views::style::CONTEXT_LABEL,
       views::style::STYLE_BODY_2_BOLD));
   title_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  title_label_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
+  title_label_->SetEnabledColorId(
+      media_color_theme_.primary_foreground_color_id);
+
   artist_label_ = metadata_column->AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_LABEL,
       views::style::STYLE_BODY_2));
   artist_label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  artist_label_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
+  artist_label_->SetEnabledColorId(
+      media_color_theme_.primary_foreground_color_id);
 
   // |play_pause_button_container| inside |metadata_row| holds the play pause
   // button.
