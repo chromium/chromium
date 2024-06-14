@@ -101,20 +101,26 @@ void ComposeManagerImpl::OpenComposeWithUpdatedSelection(
   if (base::FeatureList::IsEnabled(features::kComposeTextSelection) &&
       IsWordCountWithinBounds(
           base::UTF16ToUTF8(form_field_data->selected_text()), 0, 1)) {
-    // Select all words. Consecutive calls using the same message pipe
-    // should complete in the same order it's received.
-    // Therefore, we can safely assume that the text selection will complete
-    // before the subsequent extract form call without race conditions.
+    // Select all words.
     driver->ApplyFieldAction(autofill::mojom::FieldActionType::kSelectAll,
                              autofill::mojom::ActionPersistence::kFill,
                              field_id, u"");
 
-    // Re-extract form to update to the newly selected text.
-    driver->ExtractForm(
-        form_data->global_id(),
-        base::BindOnce(&ComposeManagerImpl::OpenComposeWithFormData,
-                       weak_ptr_factory_.GetWeakPtr(), field_id,
-                       ui_entry_point));
+    // Calling `driver->ExtractForm()` here does not always pick up the newly
+    // selected text when the form is in an IFRAME. Instead, just edit form data
+    // manually to reflect the newly selected text.
+    std::optional<autofill::FormData> updated_form_data = form_data;
+    std::vector<autofill::FormFieldData> fields =
+        updated_form_data->ExtractFields();
+    for (auto& field : fields) {
+      if (field.global_id() == field_id) {
+        field.set_selected_text(field.value());
+      }
+    }
+    updated_form_data->set_fields(std::move(fields));
+
+    OpenComposeWithFormData(field_id, ui_entry_point, driver,
+                            updated_form_data);
     LogComposeSelectAllStatus(ComposeSelectAllStatus::kSelectedAll);
     return;
   }

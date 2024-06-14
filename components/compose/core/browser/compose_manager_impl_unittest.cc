@@ -10,6 +10,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/autofill/core/browser/mock_autofill_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
@@ -296,10 +297,6 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_Success) {
       .WillOnce(testing::WithArg<1>(testing::Invoke(
           [&](autofill::AutofillDriver::BrowserFormHandler callback) {
             std::move(callback).Run(&mock_autofill_driver(), form_data);
-          })))
-      .WillOnce(testing::WithArg<1>(testing::Invoke(
-          [&](autofill::AutofillDriver::BrowserFormHandler callback) {
-            std::move(callback).Run(&mock_autofill_driver(), form_data);
           })));
 
   const UiEntryPoint ui_entry_point = UiEntryPoint::kContextMenu;
@@ -338,6 +335,7 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_Success) {
       compose::ComposeContextMenuCtrEvent::kMenuItemClicked, 1);
 
   EXPECT_TRUE(selected_form_field.SameFieldAs(last_form_field_to_client()));
+  EXPECT_EQ(last_form_field_to_client().selected_text(), u"value1");
 }
 
 TEST_F(ComposeManagerImplTest, TestOpenCompose_FormDataMissing) {
