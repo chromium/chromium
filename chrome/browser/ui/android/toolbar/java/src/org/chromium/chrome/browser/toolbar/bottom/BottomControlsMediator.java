@@ -10,7 +10,10 @@ import androidx.annotation.Nullable;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.browser_controls.BottomControlsLayer;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
+import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
@@ -32,7 +35,8 @@ class BottomControlsMediator
         implements BrowserControlsStateProvider.Observer,
                 KeyboardVisibilityDelegate.KeyboardVisibilityListener,
                 LayoutStateObserver,
-                TabObscuringHandler.Observer {
+                TabObscuringHandler.Observer,
+                BottomControlsLayer {
     private static final String TAG = "BotControlsMediator";
 
     /** The model for the bottom controls component that holds all of its view state. */
@@ -135,6 +139,7 @@ class BottomControlsMediator
             mEdgeToEdgeControllerSupplier.get().registerObserver(mEdgeToEdgeChangeObserver);
         }
         mReadAloudRestoringSupplier = readAloudRestoringSupplier;
+        mBottomControlsStacker.addLayer(this);
     }
 
     void setLayoutStateProvider(LayoutStateProvider layoutStateProvider) {
@@ -156,6 +161,7 @@ class BottomControlsMediator
     void destroy() {
         mCallbackController.destroy();
         getBrowserControls().removeObserver(this);
+        mBottomControlsStacker.removeLayer(this);
         mWindowAndroid.getKeyboardDelegate().removeKeyboardVisibilityListener(this);
         if (mLayoutStateProvider != null) {
             mLayoutStateProvider.removeObserver(this);
@@ -238,8 +244,8 @@ class BottomControlsMediator
      * The composited view is the composited version of the Android View. It is used to be able to
      * scroll the bottom controls off-screen synchronously. Since the bottom controls live below the
      * webcontents we re-size the webcontents through {@link
-     * BottomControlsStacker#setBottomControlsHeight(int,int)} whenever the composited view
-     * visibility changes.
+     * BottomControlsStacker#setBottomControlsHeight(int, int, boolean)} whenever the composited
+     * view visibility changes.
      */
     private void updateCompositedViewVisibility() {
         final boolean isCompositedViewVisible = isCompositedViewVisible();
@@ -268,7 +274,9 @@ class BottomControlsMediator
 
     private void updateBrowserControlsHeight() {
         mBottomControlsStacker.setBottomControlsHeight(
-                getBrowserControlsHeight(), getBrowserControls().getBottomControlsMinHeight());
+                getBrowserControlsHeight(),
+                getBrowserControls().getBottomControlsMinHeight(),
+                false);
     }
 
     boolean isCompositedViewVisible() {
@@ -303,6 +311,28 @@ class BottomControlsMediator
 
     private BrowserControlsStateProvider getBrowserControls() {
         return mBottomControlsStacker.getBrowserControls();
+    }
+
+    // Implements BottomControlsLayer
+
+    @Override
+    public int getType() {
+        return LayerType.BOTTOM_TOOLBAR;
+    }
+
+    @Override
+    public int getHeight() {
+        return getAndroidViewHeight();
+    }
+
+    @Override
+    public @LayerScrollBehavior int getScrollBehavior() {
+        return LayerScrollBehavior.SCROLL_OFF;
+    }
+
+    @Override
+    public boolean isVisible() {
+        return isCompositedViewVisible();
     }
 
     ChangeObserver getEdgeToEdgeChangeObserverForTesting() {

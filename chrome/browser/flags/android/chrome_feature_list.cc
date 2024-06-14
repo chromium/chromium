@@ -186,6 +186,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kBackToHomeAnimation,
     &kBackgroundThreadPool,
     &kBlockIntentsWhileLocked,
+    &kBottomBrowserControlsRefactor,
     &kBrowserControlsEarlyResize,
     &kCacheActivityTaskID,
     &kCastDeviceFilter,
@@ -503,6 +504,10 @@ BASE_FEATURE(kBackgroundThreadPool,
 BASE_FEATURE(kBlockIntentsWhileLocked,
              "BlockIntentsWhileLocked",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBottomBrowserControlsRefactor,
+             "BottomBrowserControlsRefactor",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBrowserControlsEarlyResize,
              "BrowserControlsEarlyResize",
