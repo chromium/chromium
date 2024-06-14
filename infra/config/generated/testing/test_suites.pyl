@@ -7121,11 +7121,17 @@
 
     'chromeos_octopus_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
+        'mixins': [
+          'skylab-cft',
+        ],
         'variants': [
           'CROS_RELEASE_LKGM',
         ],
       },
       'chromeos_device_only_gtests': {
+        'mixins': [
+          'skylab-cft',
+        ],
         'variants': [
           'CROS_RELEASE_LKGM',
         ],
@@ -7136,17 +7142,24 @@
       'chromeos_chrome_all_tast_tests': {
         'mixins': [
           'shards-20',
+          'skylab-cft',
         ],
         'variants': [
           'CROS_RELEASE_LKGM',
         ],
       },
       'chromeos_device_only_gtests': {
+        'mixins': [
+          'skylab-cft',
+        ],
         'variants': [
           'CROS_RELEASE_LKGM',
         ],
       },
       'chromeos_integration_tests_suite': {
+        'mixins': [
+          'skylab-cft',
+        ],
         'variants': [
           'CROS_RELEASE_LKGM',
         ],
@@ -7173,26 +7186,41 @@
 
     'chromeos_volteer_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
+        'mixins': [
+          'skylab-cft',
+        ],
         'variants': [
           'CROS_RELEASE_LKGM',
         ],
       },
       'chromeos_chrome_criticalstaging_tast_tests': {
+        'mixins': [
+          'skylab-cft',
+        ],
         'variants': [
           'CROS_RELEASE_LKGM',
         ],
       },
       'chromeos_chrome_disabled_tast_tests': {
+        'mixins': [
+          'skylab-cft',
+        ],
         'variants': [
           'CROS_RELEASE_LKGM',
         ],
       },
       'chromeos_device_only_gtests': {
+        'mixins': [
+          'skylab-cft',
+        ],
         'variants': [
           'CROS_RELEASE_LKGM',
         ],
       },
       'chromeos_integration_tests_suite': {
+        'mixins': [
+          'skylab-cft',
+        ],
         'variants': [
           'CROS_RELEASE_LKGM',
         ],
@@ -7859,11 +7887,17 @@
 
     'lacros_skylab_arm64': {
       'chromeos_integration_tests_suite': {
+        'mixins': [
+          'skylab-cft',
+        ],
         'variants': [
           'CROS_STRONGBAD_RELEASE_LKGM',
         ],
       },
       'lacros_skylab_tests': {
+        'mixins': [
+          'skylab-cft',
+        ],
         'variants': [
           'CROS_STRONGBAD_RELEASE_LKGM',
         ],
@@ -7872,6 +7906,9 @@
 
     'lacros_skylab_tests_amd64_generic': {
       'lacros_skylab_tests': {
+        'mixins': [
+          'skylab-cft',
+        ],
         'variants': [
           'CROS_BRYA_RELEASE_LKGM',
           'CROS_FIZZ_RELEASE_LKGM',
@@ -7880,6 +7917,9 @@
         ],
       },
       'lacros_skylab_tests_version_skew': {
+        'mixins': [
+          'skylab-cft',
+        ],
         'variants': [
           'CROS_BRYA_RELEASE_BETA',
           'CROS_BRYA_RELEASE_DEV',
@@ -7896,6 +7936,9 @@
         ],
       },
       'lacros_skylab_tests_with_gtests': {
+        'mixins': [
+          'skylab-cft',
+        ],
         'variants': [
           'CROS_BRYA_RELEASE_LKGM',
           'CROS_FIZZ_RELEASE_LKGM',
@@ -7904,6 +7947,9 @@
         ],
       },
       'lacros_skylab_tests_with_gtests_version_skew': {
+        'mixins': [
+          'skylab-cft',
+        ],
         'variants': [
           'CROS_BRYA_RELEASE_BETA',
           'CROS_BRYA_RELEASE_DEV',

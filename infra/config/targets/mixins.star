@@ -1555,6 +1555,13 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "skylab-cft",
+    skylab = targets.skylab(
+        run_cft = True,
+    ),
+)
+
+targets.mixin(
     name = "timeout_15m",
     swarming = targets.swarming(
         hard_timeout_sec = 900,

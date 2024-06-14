@@ -303,11 +303,17 @@ targets.legacy_matrix_compound_suite(
     name = "chromeos_octopus_skylab_tests",
     basic_suites = {
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
+            mixins = [
+                "skylab-cft",
+            ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],
         ),
         "chromeos_device_only_gtests": targets.legacy_matrix_config(
+            mixins = [
+                "skylab-cft",
+            ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],
@@ -322,17 +328,24 @@ targets.legacy_matrix_compound_suite(
             mixins = [
                 # trogdor is slow. So that we use more number of shards.
                 "shards-20",
+                "skylab-cft",
             ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],
         ),
         "chromeos_device_only_gtests": targets.legacy_matrix_config(
+            mixins = [
+                "skylab-cft",
+            ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],
         ),
         "chromeos_integration_tests_suite": targets.legacy_matrix_config(
+            mixins = [
+                "skylab-cft",
+            ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],
@@ -344,26 +357,41 @@ targets.legacy_matrix_compound_suite(
     name = "chromeos_volteer_skylab_tests",
     basic_suites = {
         "chromeos_chrome_all_tast_tests": targets.legacy_matrix_config(
+            mixins = [
+                "skylab-cft",
+            ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],
         ),
         "chromeos_chrome_criticalstaging_tast_tests": targets.legacy_matrix_config(
+            mixins = [
+                "skylab-cft",
+            ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],
         ),
         "chromeos_chrome_disabled_tast_tests": targets.legacy_matrix_config(
+            mixins = [
+                "skylab-cft",
+            ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],
         ),
         "chromeos_device_only_gtests": targets.legacy_matrix_config(
+            mixins = [
+                "skylab-cft",
+            ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],
         ),
         "chromeos_integration_tests_suite": targets.legacy_matrix_config(
+            mixins = [
+                "skylab-cft",
+            ],
             variants = [
                 "CROS_RELEASE_LKGM",
             ],
@@ -1181,11 +1209,17 @@ targets.legacy_matrix_compound_suite(
     name = "lacros_skylab_arm64",
     basic_suites = {
         "lacros_skylab_tests": targets.legacy_matrix_config(
+            mixins = [
+                "skylab-cft",
+            ],
             variants = [
                 "CROS_STRONGBAD_RELEASE_LKGM",
             ],
         ),
         "chromeos_integration_tests_suite": targets.legacy_matrix_config(
+            mixins = [
+                "skylab-cft",
+            ],
             variants = [
                 "CROS_STRONGBAD_RELEASE_LKGM",
             ],
@@ -1197,6 +1231,9 @@ targets.legacy_matrix_compound_suite(
     name = "lacros_skylab_tests_amd64_generic",
     basic_suites = {
         "lacros_skylab_tests_version_skew": targets.legacy_matrix_config(
+            mixins = [
+                "skylab-cft",
+            ],
             variants = [
                 "CROS_BRYA_RELEASE_DEV",
                 "CROS_BRYA_RELEASE_BETA",
@@ -1213,6 +1250,9 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "lacros_skylab_tests": targets.legacy_matrix_config(
+            mixins = [
+                "skylab-cft",
+            ],
             variants = [
                 "CROS_BRYA_RELEASE_LKGM",
                 "CROS_FIZZ_RELEASE_LKGM",
@@ -1221,6 +1261,9 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "lacros_skylab_tests_with_gtests_version_skew": targets.legacy_matrix_config(
+            mixins = [
+                "skylab-cft",
+            ],
             variants = [
                 "CROS_BRYA_RELEASE_DEV",
                 "CROS_BRYA_RELEASE_BETA",
@@ -1237,6 +1280,9 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "lacros_skylab_tests_with_gtests": targets.legacy_matrix_config(
+            mixins = [
+                "skylab-cft",
+            ],
             variants = [
                 "CROS_BRYA_RELEASE_LKGM",
                 "CROS_FIZZ_RELEASE_LKGM",
