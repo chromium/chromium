@@ -16,16 +16,18 @@
 #include "build/build_config.h"
 #include "services/device/geolocation/network_location_provider.h"
 #include "services/device/geolocation/wifi_polling_policy.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace device {
 
-// To avoid oscillations, set this to twice the expected update interval of a
-// a GPS-type location provider (in case it misses a beat) plus a little.
-const base::TimeDelta LocationProviderManager::kFixStaleTimeoutTimeDelta =
-    base::Seconds(11);
+using ::device::mojom::LocationProviderManagerMode::kCustomOnly;
+using ::device::mojom::LocationProviderManagerMode::kHybridFallbackNetwork;
+using ::device::mojom::LocationProviderManagerMode::kHybridPlatform;
+using ::device::mojom::LocationProviderManagerMode::kNetworkOnly;
+using ::device::mojom::LocationProviderManagerMode::kPlatformOnly;
 
 LocationProviderManager::LocationProviderManager(
     CustomLocationProviderCallback custom_location_provider_getter,
@@ -45,7 +47,18 @@ LocationProviderManager::LocationProviderManager(
       position_cache_(std::move(position_cache)),
       internals_updated_closure_(std::move(internals_updated_closure)),
       network_request_callback_(std::move(network_request_callback)),
-      network_response_callback_(std::move(network_response_callback)) {}
+      network_response_callback_(std::move(network_response_callback)) {
+#if BUILDFLAG(IS_ANDROID)
+  // On Android, default to using the platform location provider.
+  provider_manager_mode_ = kPlatformOnly;
+#elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+  // On Ash / Lacros / Linux, default to using the network location provider.
+  provider_manager_mode_ = kNetworkOnly;
+#else
+  // On macOS / Windows platforms, use the mode specified by the feature flag.
+  provider_manager_mode_ = features::kLocationProviderManagerParam.Get();
+#endif
+}
 
 LocationProviderManager::~LocationProviderManager() {
   // Release the global wifi polling policy state.
@@ -58,31 +71,43 @@ bool LocationProviderManager::HasPermissionBeenGrantedForTest() const {
 
 void LocationProviderManager::OnPermissionGranted() {
   is_permission_granted_ = true;
-  for (const auto& provider : providers_)
-    provider->OnPermissionGranted();
+
+  if (network_location_provider_) {
+    network_location_provider_->OnPermissionGranted();
+  }
+
+  if (platform_location_provider_) {
+    platform_location_provider_->OnPermissionGranted();
+  }
+
+  if (custom_location_provider_) {
+    custom_location_provider_->OnPermissionGranted();
+  }
 }
 
 void LocationProviderManager::StartProvider(bool enable_high_accuracy) {
-  is_running_ = true;
-  enable_high_accuracy_ = enable_high_accuracy;
-
-  if (providers_.empty()) {
-    RegisterProviders();
-  }
-  DoStartProviders();
-}
-
-void LocationProviderManager::DoStartProviders() {
-  if (providers_.empty()) {
-    // If no providers are available, we report an error to avoid
-    // callers waiting indefinitely for a reply.
+  // Ensure a provider is created successfully before starting.
+  if (!InitializeProvider()) {
+    // If no location providers are available, report a "Position Unavailable"
+    // error.
     location_update_callback_.Run(
         this, mojom::GeopositionResult::NewError(mojom::GeopositionError::New(
                   mojom::GeopositionErrorCode::kPositionUnavailable, "", "")));
-    return;
-  }
-  for (const auto& provider : providers_) {
-    provider->StartProvider(enable_high_accuracy_);
+  } else {
+    enable_high_accuracy_ = enable_high_accuracy;
+    is_running_ = true;
+    switch (provider_manager_mode_) {
+      case kCustomOnly:
+        custom_location_provider_->StartProvider(enable_high_accuracy_);
+        break;
+      case kNetworkOnly:
+      case kHybridFallbackNetwork:
+        network_location_provider_->StartProvider(enable_high_accuracy_);
+        break;
+      case kPlatformOnly:
+      case kHybridPlatform:
+        platform_location_provider_->StartProvider(enable_high_accuracy_);
+    }
   }
 }
 
@@ -90,41 +115,63 @@ void LocationProviderManager::StopProvider() {
   // Reset the reference location state (provider+result)
   // so that future starts use fresh locations from
   // the newly constructed providers.
-  position_provider_ = nullptr;
-  result_.reset();
-
-  providers_.clear();
+  network_location_provider_result_.reset();
+  platform_location_provider_result_.reset();
+  custom_location_provider_result_.reset();
+  network_location_provider_.reset();
+  platform_location_provider_.reset();
+  custom_location_provider_.reset();
   is_running_ = false;
 }
 
-void LocationProviderManager::RegisterProvider(
-    std::unique_ptr<LocationProvider> provider) {
-  if (!provider)
-    return;
-  provider->SetUpdateCallback(base::BindRepeating(
+void LocationProviderManager::RegisterProvider(LocationProvider& provider) {
+  provider.SetUpdateCallback(base::BindRepeating(
       &LocationProviderManager::OnLocationUpdate, base::Unretained(this)));
-  if (is_permission_granted_)
-    provider->OnPermissionGranted();
-  providers_.push_back(std::move(provider));
+  if (is_permission_granted_) {
+    provider.OnPermissionGranted();
+  }
 }
 
-void LocationProviderManager::RegisterProviders() {
+bool LocationProviderManager::InitializeProvider() {
+  // Provider is already initialized, return true here to skip rest of creation
+  // process.
+  if (network_location_provider_ || platform_location_provider_ ||
+      custom_location_provider_) {
+    return true;
+  }
+
+  // If a custom location provider is injected and available, override the mode
+  // to use the custom provider exclusively.
   if (custom_location_provider_getter_) {
-    auto custom_provider = custom_location_provider_getter_.Run();
-    if (custom_provider) {
-      RegisterProvider(std::move(custom_provider));
-      return;
+    custom_location_provider_ = custom_location_provider_getter_.Run();
+    if (custom_location_provider_) {
+      provider_manager_mode_ = kCustomOnly;
     }
   }
 
-  auto system_provider = NewSystemLocationProvider();
-  if (system_provider) {
-    RegisterProvider(std::move(system_provider));
-    return;
+  switch (provider_manager_mode_) {
+    case kCustomOnly:
+      RegisterProvider(*custom_location_provider_.get());
+      break;
+    case kNetworkOnly:
+    case kHybridFallbackNetwork:
+      if (!url_loader_factory_) {
+        return false;
+      }
+      network_location_provider_ =
+          NewNetworkLocationProvider(url_loader_factory_, api_key_);
+      RegisterProvider(*network_location_provider_.get());
+      break;
+    case kPlatformOnly:
+    case kHybridPlatform:
+      platform_location_provider_ = NewSystemLocationProvider();
+      if (!platform_location_provider_) {
+        return false;
+      }
+      RegisterProvider(*platform_location_provider_.get());
   }
 
-  if (url_loader_factory_)
-    RegisterProvider(NewNetworkLocationProvider(url_loader_factory_, api_key_));
+  return true;
 }
 
 void LocationProviderManager::OnLocationUpdate(
@@ -134,28 +181,56 @@ void LocationProviderManager::OnLocationUpdate(
   DCHECK(new_result->is_error() ||
          new_result->is_position() &&
              ValidateGeoposition(*new_result->get_position()));
-  if (result_ && !IsNewPositionBetter(*result_, *new_result,
-                                      provider == position_provider_)) {
-    return;
+
+  switch (provider_manager_mode_) {
+    case kHybridPlatform:
+    // TODO(crbug.com/346842084): kHybridPlatform mode currently behaves the
+    // same as kPlatformOnly. fallback mechanism will not be added until
+    // platform provider is fully evaluated.
+    case kPlatformOnly:
+      platform_location_provider_result_ = new_result.Clone();
+      break;
+    case kNetworkOnly:
+    case kHybridFallbackNetwork:
+      network_location_provider_result_ = new_result.Clone();
+      break;
+    case kCustomOnly:
+      custom_location_provider_result_ = new_result.Clone();
+      break;
   }
-  position_provider_ = provider;
-  result_ = std::move(new_result);
-  location_update_callback_.Run(this, result_.Clone());
+
+  location_update_callback_.Run(this, std::move(new_result));
 }
 
 const mojom::GeopositionResult* LocationProviderManager::GetPosition() {
-  return result_.get();
+  switch (provider_manager_mode_) {
+    case kHybridPlatform:
+    case kPlatformOnly:
+      return platform_location_provider_result_.get();
+    case kNetworkOnly:
+    case kHybridFallbackNetwork:
+      return network_location_provider_result_.get();
+    case kCustomOnly:
+      return custom_location_provider_result_.get();
+  }
 }
 
 void LocationProviderManager::FillDiagnostics(
     mojom::GeolocationDiagnostics& diagnostics) {
-  if (!is_running_ || providers_.empty()) {
+  if (!is_running_) {
     diagnostics.provider_state =
         mojom::GeolocationDiagnostics::ProviderState::kStopped;
     return;
   }
-  for (auto& provider : providers_) {
-    provider->FillDiagnostics(diagnostics);
+  switch (provider_manager_mode_) {
+    case kHybridPlatform:
+    case kPlatformOnly:
+      return platform_location_provider_->FillDiagnostics(diagnostics);
+    case kNetworkOnly:
+    case kHybridFallbackNetwork:
+      return network_location_provider_->FillDiagnostics(diagnostics);
+    case kCustomOnly:
+      return custom_location_provider_->FillDiagnostics(diagnostics);
   }
   if (position_cache_) {
     diagnostics.position_cache_diagnostics =
@@ -205,37 +280,5 @@ LocationProviderManager::NewSystemLocationProvider() {
 #endif
 }
 
-base::Time LocationProviderManager::GetTimeNow() const {
-  return base::Time::Now();
-}
-
-bool LocationProviderManager::IsNewPositionBetter(
-    const mojom::GeopositionResult& old_result,
-    const mojom::GeopositionResult& new_result,
-    bool from_same_provider) const {
-  // Updates location_info if it's better than what we currently have,
-  // or if it's a newer update from the same provider.
-  if (old_result.is_error()) {
-    // Older location wasn't locked.
-    return true;
-  }
-  const mojom::Geoposition& old_position = *old_result.get_position();
-  if (new_result.is_position()) {
-    const mojom::Geoposition& new_position = *new_result.get_position();
-    // New location is locked, let's check if it's any better.
-    if (old_position.accuracy >= new_position.accuracy) {
-      // Accuracy is better.
-      return true;
-    } else if (from_same_provider) {
-      // Same provider, fresher location.
-      return true;
-    } else if (GetTimeNow() - old_position.timestamp >
-               kFixStaleTimeoutTimeDelta) {
-      // Existing fix is stale.
-      return true;
-    }
-  }
-  return false;
-}
 
 }  // namespace device

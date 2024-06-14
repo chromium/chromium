@@ -456,11 +456,9 @@ HRESULT LocationProviderWinrt::GetGeolocator(IGeolocator** geo_locator) {
 }
 
 std::unique_ptr<LocationProvider> NewSystemLocationProvider() {
-  // TODO(crbug.com/333294295): Move this logic into LocationProviderManager to
-  // enable mode-based selection of location providers.
-  if (features::kLocationProviderManagerParam.Get() !=
-          device::mojom::LocationProviderManagerMode::kPlatformOnly ||
-      !IsSystemLocationSettingEnabled()) {
+  // TODO: Remove IsSystemLocationSettingEnabled once
+  // system permission manager support for `LocationProviderWinrt` is ready.
+  if (!IsSystemLocationSettingEnabled()) {
     return nullptr;
   }
 

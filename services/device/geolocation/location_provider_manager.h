@@ -31,18 +31,12 @@ namespace device {
 
 class GeolocationSystemPermissionManager;
 
-// This class is responsible for handling updates from multiple underlying
-// providers and resolving them to a single 'best' location fix at any given
-// moment.
+// `LocationProviderManager` manages the selection and lifecycle of location
+// providers based on platform capabilities and feature parameters. Supports
+// mode-based selection (platform, network, custom, hybrid) and fallback
+// mechanism for error position handling.
 class LocationProviderManager : public LocationProvider {
  public:
-  // The TimeDelta newer a location provider has to be that it's worth
-  // switching to this location provider on the basis of it being fresher
-  // (regardles of relative accuracy). Public for tests.
-  static const base::TimeDelta kFixStaleTimeoutTimeDelta;
-
-  // If the |custom_location_provider_getter| callback returns nullptr, then
-  // LocationProviderManager uses the default system location provider.
   LocationProviderManager(
       CustomLocationProviderCallback custom_location_provider_getter,
       GeolocationSystemPermissionManager* geolocation_system_permission_manager,
@@ -76,32 +70,22 @@ class LocationProviderManager : public LocationProvider {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& api_key);
   virtual std::unique_ptr<LocationProvider> NewSystemLocationProvider();
-  virtual base::Time GetTimeNow() const;
 
  private:
   friend class TestingLocationProviderManager;
 
-  // Provider will either be added to |providers_| or
-  // deleted on error (e.g. it fails to start).
-  void RegisterProvider(std::unique_ptr<LocationProvider> provider);
-  void RegisterProviders();
+  void RegisterProvider(LocationProvider& provider);
 
-  // Tells all registered providers to start.
-  // If |providers_| is empty, immediately provides
-  // GeopositionErrorCode::kPositionUnavailable to the client via
-  // |location_update_callback_|.
-  void DoStartProviders();
+  // Initializes the appropriate LocationProvider based on the configured mode
+  // (network, platform, custom, or hybrid). Returns true if a provider was
+  // successfully created and registered (or already done previously), false
+  // otherwise.
+  bool InitializeProvider();
 
   // Gets called when a provider has a new position.
   void OnLocationUpdate(const LocationProvider* provider,
                         mojom::GeopositionResultPtr new_result);
 
-  // Returns true if |new_result| is an improvement over |old_result|.
-  // Set |from_same_provider| to true if both the positions came from the same
-  // provider.
-  bool IsNewPositionBetter(const mojom::GeopositionResult& old_result,
-                           const mojom::GeopositionResult& new_result,
-                           bool from_same_provider) const;
 
   const CustomLocationProviderCallback custom_location_provider_getter_;
   const raw_ptr<GeolocationSystemPermissionManager, DanglingUntriaged>
@@ -114,18 +98,29 @@ class LocationProviderManager : public LocationProvider {
   bool is_running_ = false;  // Tracks whether providers should be running.
   LocationProvider::LocationProviderUpdateCallback location_update_callback_;
   std::unique_ptr<PositionCache> position_cache_;  // must outlive `providers_`
-  std::vector<std::unique_ptr<LocationProvider>> providers_;
-  // The provider which supplied the current |result_|
-  raw_ptr<const LocationProvider> position_provider_ = nullptr;
-  // The current best estimate of our position, or `nullptr` if no estimate has
-  // been received.
-  mojom::GeopositionResultPtr result_;
+
+  // LocationProviders.
+  std::unique_ptr<LocationProvider> network_location_provider_;
+  std::unique_ptr<LocationProvider> platform_location_provider_;
+  std::unique_ptr<LocationProvider> custom_location_provider_;
+
+  // Result cache from each provider.
+  mojom::GeopositionResultPtr network_location_provider_result_;
+  mojom::GeopositionResultPtr platform_location_provider_result_;
+  mojom::GeopositionResultPtr custom_location_provider_result_;
+
   // To be called when a provider's internal diagnostics have changed.
   base::RepeatingClosure internals_updated_closure_;
   // Callbacks to be called by NetworkLocationProvider when network requests are
   // sent and received.
   NetworkLocationProvider::NetworkRequestCallback network_request_callback_;
   NetworkLocationProvider::NetworkResponseCallback network_response_callback_;
+
+  // Indicates the operating mode for LocationProviderManager and which
+  // provider is currently active (custom, network, or platform). Also
+  // determines if the fallback mechanism is used (kHybridPlatform or
+  // kHybridFallbackNetwork).
+  mojom::LocationProviderManagerMode provider_manager_mode_;
 };
 
 // Factory functions for the various types of location provider to abstract

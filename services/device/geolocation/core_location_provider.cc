@@ -82,13 +82,6 @@ void CoreLocationProvider::OnPositionError(
 
 std::unique_ptr<LocationProvider> NewSystemLocationProvider(
     SystemGeolocationSource& system_geolocation_source) {
-  // TODO(crbug.com/333294295): Move this logic into LocationProviderManager to
-  // enable mode-based selection of location providers.
-  if (features::kLocationProviderManagerParam.Get() !=
-      device::mojom::LocationProviderManagerMode::kPlatformOnly) {
-    return nullptr;
-  }
-
   return std::make_unique<CoreLocationProvider>(system_geolocation_source);
 }
 
