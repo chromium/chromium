@@ -18,12 +18,13 @@ class Label;
 
 namespace ash {
 
+class IconButton;
 class MahiUiUpdate;
 enum class VisibilityState;
 
-class ASH_EXPORT RefreshBannerView : public views::FlexLayoutView,
+class ASH_EXPORT RefreshBannerView : public views::View,
                                      public MahiUiController::Delegate {
-  METADATA_HEADER(RefreshBannerView, views::FlexLayoutView)
+  METADATA_HEADER(RefreshBannerView, views::View)
 
  public:
   explicit RefreshBannerView(MahiUiController* ui_controller);
@@ -36,7 +37,9 @@ class ASH_EXPORT RefreshBannerView : public views::FlexLayoutView,
   void Hide();
 
  private:
-  // views::FlexLayoutView:
+  std::unique_ptr<IconButton> CreateRefreshButton();
+
+  // views::View:
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   void ViewHierarchyChanged(
       const views::ViewHierarchyChangedDetails& details) override;
@@ -51,6 +54,7 @@ class ASH_EXPORT RefreshBannerView : public views::FlexLayoutView,
   const raw_ptr<MahiUiController> ui_controller_;
 
   // Owned by the views hierarchy.
+  raw_ptr<views::FlexLayoutView> main_container_ = nullptr;
   raw_ptr<views::Label> title_label_ = nullptr;
 
   base::WeakPtrFactory<RefreshBannerView> weak_ptr_factory_{this};

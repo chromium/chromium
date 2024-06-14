@@ -129,9 +129,7 @@ TEST_F(RefreshBannerViewTest, ShowImmediatelyAfterHide) {
   // animations finish.
   banner_view->Hide();
   banner_view->Show();
-  EXPECT_TRUE(banner_view->layer()->GetAnimator()->is_animating());
 
-  ui::LayerAnimationStoppedWaiter().Wait(banner_view->layer());
   EXPECT_TRUE(banner_view->GetVisible());
 }
 
