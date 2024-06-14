@@ -100,11 +100,13 @@ std::vector<uint8_t> StrToBytes(const std::string& val) {
 }  // namespace
 
 CertProvisioningClient::ProvisioningProcess::ProvisioningProcess(
+    std::string process_id,
     CertScope cert_scope,
     std::string cert_profile_id,
     std::string policy_version,
     std::vector<uint8_t> public_key)
-    : cert_scope(cert_scope),
+    : process_id(process_id),
+      cert_scope(cert_scope),
       cert_profile_id(std::move(cert_profile_id)),
       policy_version(std::move(policy_version)),
       public_key(std::move(public_key)) {}
@@ -119,8 +121,8 @@ CertProvisioningClient::ProvisioningProcess::operator=(
 
 bool CertProvisioningClient::ProvisioningProcess::operator==(
     const ProvisioningProcess& other) const {
-  static_assert(kFieldCount == 4, "Check/update operator==.");
-  return cert_scope == other.cert_scope &&
+  static_assert(kFieldCount == 5, "Check/update operator==.");
+  return process_id == other.process_id && cert_scope == other.cert_scope &&
          cert_profile_id == other.cert_profile_id &&
          policy_version == other.policy_version &&
          public_key == other.public_key;
@@ -248,6 +250,10 @@ void CertProvisioningClientImpl::DownloadCert(
 void CertProvisioningClientImpl::FillCommonRequestData(
     ProvisioningProcess provisioning_process,
     em::ClientCertificateProvisioningRequest& out_request) {
+  static_assert(ProvisioningProcess::kFieldCount == 5,
+                "Check/update this method.");
+  out_request.set_certificate_provisioning_process_id(
+      std::move(provisioning_process.process_id));
   out_request.set_certificate_scope(
       CertScopeToString(provisioning_process.cert_scope));
   out_request.set_cert_profile_id(

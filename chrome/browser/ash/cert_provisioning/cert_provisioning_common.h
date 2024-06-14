@@ -259,6 +259,11 @@ platform_keys::KeyPermissionsManager* GetKeyPermissionsManager(
     CertScope scope,
     Profile* profile);
 
+// Generates a random unique identifier for a certificate provisioning process.
+// It is used to receive invalidations (to wake up waiting workers) and for
+// consistent logging with the server-side code (see "cppId" in the logs).
+std::string GenerateCertProvisioningId();
+
 }  // namespace cert_provisioning
 }  // namespace ash
 

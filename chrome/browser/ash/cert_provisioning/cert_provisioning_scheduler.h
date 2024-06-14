@@ -147,6 +147,7 @@ class CertProvisioningSchedulerImpl
   // its final state.
   // Public so it can be called from tests.
   void OnProfileFinished(CertProfile profile,
+                         std::string process_id,
                          CertProvisioningWorkerState state);
 
   // Called when any state visible from the outside has changed.

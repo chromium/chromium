@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/cert_provisioning/cert_provisioning_client.h"
@@ -484,8 +485,9 @@ void CertProvisioningSchedulerImpl::CreateCertProvisioningWorker(
 
   std::unique_ptr<CertProvisioningWorker> worker =
       CertProvisioningWorkerFactory::Get()->Create(
-          cert_scope_, profile_, pref_service_, cert_profile,
-          cert_provisioning_client_.get(), invalidator_factory_->Create(),
+          GenerateCertProvisioningId(), cert_scope_, profile_, pref_service_,
+          cert_profile, cert_provisioning_client_.get(),
+          invalidator_factory_->Create(),
           base::BindRepeating(
               &CertProvisioningSchedulerImpl::OnVisibleStateChanged,
               weak_factory_.GetWeakPtr()),
@@ -497,24 +499,30 @@ void CertProvisioningSchedulerImpl::CreateCertProvisioningWorker(
 
 void CertProvisioningSchedulerImpl::OnProfileFinished(
     CertProfile profile,
+    std::string process_id,
     CertProvisioningWorkerState state) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto worker_iter = workers_.find(profile.profile_id);
   if (worker_iter == workers_.end()) {
     NOTREACHED_IN_MIGRATION();
-    LOG(WARNING) << "Finished worker is not found";
+    LOG(WARNING) << "Finished worker is not found"
+                 << base::StringPrintf(" [cppId: %s]", process_id.c_str());
     return;
   }
   bool recreate = false;
   switch (state) {
     case CertProvisioningWorkerState::kSucceeded:
-      VLOG(0) << "Successfully provisioned certificate for profile: "
-              << profile.profile_id;
+      VLOG(0) << "Successfully provisioned certificate"
+              << base::StringPrintf(" [cppId: %s, profileId: %s]",
+                                    process_id.c_str(),
+                                    profile.profile_id.c_str());
       break;
     case CertProvisioningWorkerState::kInconsistentDataError:
-      LOG(WARNING) << "Inconsistent data error for certificate profile: "
-                   << profile.profile_id;
+      LOG(WARNING) << "Inconsistent data error"
+                   << base::StringPrintf(" [cppId: %s, profileId: %s]",
+                                         process_id.c_str(),
+                                         profile.profile_id.c_str());
       ScheduleRetry(profile.profile_id);
       break;
     case CertProvisioningWorkerState::kCanceled:
@@ -523,8 +531,10 @@ void CertProvisioningSchedulerImpl::OnProfileFinished(
       }
       break;
     default:
-      LOG(ERROR) << "Failed to process certificate profile: "
-                 << profile.profile_id;
+      LOG(ERROR) << "Failed to process certificate"
+                 << base::StringPrintf(" [cppId: %s, profileId: %s]",
+                                       process_id.c_str(),
+                                       profile.profile_id.c_str());
       UpdateFailedCertProfiles(*(worker_iter->second));
       break;
   }
@@ -534,7 +544,7 @@ void CertProvisioningSchedulerImpl::OnProfileFinished(
     // dialogue while reseting. The ui will be updated when the new worker is
     // created.
     RemoveWorkerFromMap(worker_iter,
-                        /*send_visibile_state_changed_update=*/false);
+                        /*send_visible_state_changed_update=*/false);
     CreateCertProvisioningWorker(std::move(profile));
   } else {
     RemoveWorkerFromMap(worker_iter,

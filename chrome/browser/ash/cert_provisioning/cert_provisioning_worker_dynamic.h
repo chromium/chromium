@@ -35,6 +35,7 @@ namespace ash::cert_provisioning {
 class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
  public:
   CertProvisioningWorkerDynamic(
+      std::string cert_provisioning_process_id,
       CertScope cert_scope,
       Profile* profile,
       PrefService* pref_service,
@@ -105,6 +106,8 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   void MarkRegularKey();
   void MarkVaGeneratedKey();
   void MarkKey(CertProvisioningWorkerState target_state);
+  void MarkKeyAsCorporate();
+  void OnAllowKeyForUsageDone(chromeos::platform_keys::Status status);
   void OnMarkKeyDone(CertProvisioningWorkerState target_state,
                      chromeos::platform_keys::Status status);
 
@@ -183,6 +186,11 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   // callers should use the above overload.
   void ProcessResponseErrors(const CertProvisioningClient::Error& error);
 
+  // A convenience method to generate a string that contains some additional
+  // info and should be included in all logs.
+  std::string GetLogInfoBlock();
+
+  std::string process_id_;
   CertScope cert_scope_ = CertScope::kUser;
   raw_ptr<Profile> profile_ = nullptr;
   raw_ptr<PrefService> pref_service_ = nullptr;
@@ -259,7 +267,7 @@ class CertProvisioningWorkerDynamic : public CertProvisioningWorker {
   // Increment this when you add/change any member in
   // CertProvisioningWorkerDynamic that affects serialization (and update all
   // functions that fail to compile because of it).
-  static constexpr int kVersion = 2;
+  static constexpr int kVersion = 3;
 
   // Unowned PlatformKeysService. Note that the CertProvisioningWorker does not
   // observe the PlatformKeysService for shutdown events. Instead, it relies on

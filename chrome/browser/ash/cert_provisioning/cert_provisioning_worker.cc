@@ -38,6 +38,7 @@ CertProvisioningWorkerFactory* CertProvisioningWorkerFactory::Get() {
 }
 
 std::unique_ptr<CertProvisioningWorker> CertProvisioningWorkerFactory::Create(
+    std::string process_id,
     CertScope cert_scope,
     Profile* profile,
     PrefService* pref_service,
@@ -51,12 +52,12 @@ std::unique_ptr<CertProvisioningWorker> CertProvisioningWorkerFactory::Create(
   switch (cert_profile.protocol_version) {
     case ProtocolVersion::kStatic:
       return std::make_unique<CertProvisioningWorkerStatic>(
-          cert_scope, profile, pref_service, cert_profile,
+          process_id, cert_scope, profile, pref_service, cert_profile,
           cert_provisioning_client, std::move(invalidator),
           std::move(state_change_callback), std::move(result_callback));
     case ProtocolVersion::kDynamic:
       return std::make_unique<CertProvisioningWorkerDynamic>(
-          cert_scope, profile, pref_service, cert_profile,
+          process_id, cert_scope, profile, pref_service, cert_profile,
           cert_provisioning_client, std::move(invalidator),
           std::move(state_change_callback), std::move(result_callback));
   }
@@ -75,7 +76,7 @@ std::unique_ptr<CertProvisioningWorker> CreateAndDeserializeWorker(
   switch (protocol_version) {
     case ProtocolVersion::kStatic: {
       auto worker = std::make_unique<CertProvisioningWorkerStatic>(
-          cert_scope, profile, pref_service, CertProfile(),
+          /*process_id=*/"", cert_scope, profile, pref_service, CertProfile(),
           cert_provisioning_client, std::move(invalidator),
           std::move(state_change_callback), std::move(result_callback));
       if (!CertProvisioningSerializer::DeserializeWorker(saved_worker,
@@ -86,7 +87,7 @@ std::unique_ptr<CertProvisioningWorker> CreateAndDeserializeWorker(
     }
     case ProtocolVersion::kDynamic: {
       auto worker = std::make_unique<CertProvisioningWorkerDynamic>(
-          cert_scope, profile, pref_service, CertProfile(),
+          /*process_id=*/"", cert_scope, profile, pref_service, CertProfile(),
           cert_provisioning_client, std::move(invalidator),
           std::move(state_change_callback), std::move(result_callback));
       if (!CertProvisioningSerializer::DeserializeWorker(saved_worker,

@@ -12,6 +12,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager.h"
 #include "chrome/browser/ash/platform_keys/key_permissions/key_permissions_manager_impl.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service.h"
@@ -339,6 +340,10 @@ platform_keys::KeyPermissionsManager* GetKeyPermissionsManager(
       return platform_keys::KeyPermissionsManagerImpl::
           GetSystemTokenKeyPermissionsManager();
   }
+}
+
+std::string GenerateCertProvisioningId() {
+  return base::UnguessableToken::Create().ToString();
 }
 
 }  // namespace cert_provisioning

@@ -20,6 +20,7 @@ namespace cert_provisioning {
 
 namespace {
 
+constexpr char kKeyNameProcessId[] = "process_id";
 constexpr char kKeyNameCertScope[] = "cert_scope";
 constexpr char kKeyNameCertProfile[] = "cert_profile";
 constexpr char kKeyNameState[] = "state";
@@ -234,11 +235,12 @@ void CertProvisioningSerializer::DeleteWorkerFromPrefs(
 // }
 base::Value::Dict CertProvisioningSerializer::SerializeWorker(
     const CertProvisioningWorkerStatic& worker) {
-  static_assert(CertProvisioningWorkerStatic::kVersion == 1,
+  static_assert(CertProvisioningWorkerStatic::kVersion == 2,
                 "This function should be updated");
 
   base::Value::Dict result;
 
+  result.Set(kKeyNameProcessId, worker.process_id_);
   result.Set(kKeyNameCertProfile, SerializeCertProfile(worker.cert_profile_));
   result.Set(kKeyNameCertScope, static_cast<int>(worker.cert_scope_));
   result.Set(kKeyNameState, static_cast<int>(worker.state_));
@@ -260,11 +262,12 @@ base::Value::Dict CertProvisioningSerializer::SerializeWorker(
 // }
 base::Value::Dict CertProvisioningSerializer::SerializeWorker(
     const CertProvisioningWorkerDynamic& worker) {
-  static_assert(CertProvisioningWorkerStatic::kVersion == 1,
+  static_assert(CertProvisioningWorkerDynamic::kVersion == 3,
                 "This function should be updated");
 
   base::Value::Dict result;
 
+  result.Set(kKeyNameProcessId, worker.process_id_);
   result.Set(kKeyNameCertProfile, SerializeCertProfile(worker.cert_profile_));
   result.Set(kKeyNameCertScope, static_cast<int>(worker.cert_scope_));
   result.Set(kKeyNameState, static_cast<int>(worker.state_));
@@ -282,7 +285,7 @@ base::Value::Dict CertProvisioningSerializer::SerializeWorker(
 bool CertProvisioningSerializer::DeserializeWorker(
     const base::Value::Dict& saved_worker,
     CertProvisioningWorkerStatic* worker) {
-  static_assert(CertProvisioningWorkerStatic::kVersion == 1,
+  static_assert(CertProvisioningWorkerStatic::kVersion == 2,
                 "This function should be updated");
 
   // This will show to the scheduler that the worker is not doing anything yet
@@ -314,6 +317,10 @@ bool CertProvisioningSerializer::DeserializeWorker(
           DeserializeStringValue(saved_worker, kKeyNameInvalidationTopic,
                                  &(worker->invalidation_topic_));
 
+  is_ok = is_ok && ++error_code &&
+          DeserializeStringValue(saved_worker, kKeyNameProcessId,
+                                 &(worker->process_id_));
+
   if (!is_ok) {
     LOG(ERROR)
         << " Failed to deserialize cert provisioning worker, error code: "
@@ -329,7 +336,7 @@ bool CertProvisioningSerializer::DeserializeWorker(
 bool CertProvisioningSerializer::DeserializeWorker(
     const base::Value::Dict& saved_worker,
     CertProvisioningWorkerDynamic* worker) {
-  static_assert(CertProvisioningWorkerDynamic::kVersion == 2,
+  static_assert(CertProvisioningWorkerDynamic::kVersion == 3,
                 "This function should be updated");
 
   // This will show to the scheduler that the worker is not doing anything yet
@@ -377,6 +384,10 @@ bool CertProvisioningSerializer::DeserializeWorker(
       is_ok && ++error_code &&
       DeserializeBase64Encoded(saved_worker, kKeyNameProofOfPossessionSignature,
                                &(worker->signature_));
+
+  is_ok = is_ok && ++error_code &&
+          DeserializeStringValue(saved_worker, kKeyNameProcessId,
+                                 &(worker->process_id_));
 
   if (!is_ok) {
     LOG(ERROR)
