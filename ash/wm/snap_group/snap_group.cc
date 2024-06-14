@@ -117,6 +117,8 @@ SnapGroup::~SnapGroup() {
 void SnapGroup::Shutdown() {
   is_shutting_down_ = true;
 
+  window_to_target_snap_position_map_.clear();
+
   Shell::Get()->activation_client()->RemoveObserver(this);
   display::Screen::GetScreen()->RemoveObserver(this);
 
@@ -286,7 +288,8 @@ void SnapGroup::OnWindowBoundsChanged(aura::Window* window,
                                       const gfx::Rect& old_bounds,
                                       const gfx::Rect& new_bounds,
                                       ui::PropertyChangeReason reason) {
-  if (is_shutting_down_ || adjusting_snapped_window_bounds_) {
+  if (is_shutting_down_ || adjusting_snapped_window_bounds_ ||
+      swapping_windows_) {
     return;
   }
 
@@ -317,6 +320,10 @@ void SnapGroup::OnWindowBoundsChanged(aura::Window* window,
 
 void SnapGroup::OnPreWindowStateTypeChange(WindowState* window_state,
                                            chromeos::WindowStateType old_type) {
+  if (swapping_windows_) {
+    return;
+  }
+
   CHECK(old_type == WindowStateType::kPrimarySnapped ||
         old_type == WindowStateType::kSecondarySnapped);
   if (window_state->GetStateType() != old_type) {
@@ -324,6 +331,46 @@ void SnapGroup::OnPreWindowStateTypeChange(WindowState* window_state,
     // then destroyed asynchronously soon.
     SnapGroupController::Get()->RemoveSnapGroup(
         this, GetWindowStateChangeExitPoint(window_state));
+  }
+}
+
+void SnapGroup::OnPostWindowStateTypeChange(
+    WindowState* window_state,
+    chromeos::WindowStateType old_type) {
+  if (window_to_target_snap_position_map_.empty()) {
+    return;
+  }
+
+  aura::Window* window = window_state->window();
+  auto iter = window_to_target_snap_position_map_.find(window);
+  if (iter == window_to_target_snap_position_map_.end()) {
+    return;
+  }
+
+  const WindowState* window1_state = WindowState::Get(window1_);
+  const WindowState* window2_state = WindowState::Get(window2_);
+
+  if (window_state->GetStateType() ==
+      GetWindowStateTypeFromSnapPosition(iter->second)) {
+    window_to_target_snap_position_map_.erase(iter);
+  }
+
+  // After both windows are snapped to their target snap position, updating the
+  // member variables and adjust snapped windows bounds to account to divider
+  // width holistically.
+  if (window_to_target_snap_position_map_.empty() &&
+      window1_state->GetStateType() == WindowStateType::kSecondarySnapped &&
+      window2_state->GetStateType() == WindowStateType::kPrimarySnapped) {
+    std::swap(window1_, window2_);
+
+    auto new_window1_snap_ratio = WindowState::Get(window1_)->snap_ratio();
+    CHECK(new_window1_snap_ratio);
+
+    // `WindowState::OnWMEvent()` doesn't account for divider width. Explicitly
+    // adjust snapped window state post-event to include divider.
+    ApplyPrimarySnapRatio(*new_window1_snap_ratio);
+
+    swapping_windows_ = false;
   }
 }
 
@@ -357,8 +404,30 @@ void SnapGroup::OnResizeEnding() {}
 void SnapGroup::OnResizeEnded() {}
 
 void SnapGroup::SwapWindows() {
-  // TODO(b/326481241): Currently disabled for Snap Groups. Re-enable this after
-  // we have a holistic fix.
+  if (swapping_windows_) {
+    return;
+  }
+
+  swapping_windows_ = true;
+
+  WindowState* window1_state = WindowState::Get(window1_);
+  const auto window1_snap_ratio = window1_state->snap_ratio();
+  CHECK(window1_snap_ratio);
+
+  WindowState* window2_state = WindowState::Get(window2_);
+  const auto window2_snap_ratio = window2_state->snap_ratio();
+  CHECK(window2_snap_ratio);
+
+  window_to_target_snap_position_map_[window1_.get()] =
+      SnapPosition::kSecondary;
+  window_to_target_snap_position_map_[window2_.get()] = SnapPosition::kPrimary;
+
+  const WindowSnapWMEvent secondary_snap_event(WM_EVENT_SNAP_SECONDARY,
+                                               *window1_snap_ratio);
+  window1_state->OnWMEvent(&secondary_snap_event);
+  const WindowSnapWMEvent primary_snap_event(WM_EVENT_SNAP_PRIMARY,
+                                             *window2_snap_ratio);
+  window2_state->OnWMEvent(&primary_snap_event);
 }
 
 gfx::Rect SnapGroup::GetSnappedWindowBoundsInScreen(

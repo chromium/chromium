@@ -3705,10 +3705,98 @@ TEST_F(SnapGroupDividerTest, SnapGroupDividerEnlargedHitArea) {
             snap_group_divider_bounds_in_screen().CenterPoint());
 }
 
-// TODO(b/326481241): Currently it's not possible to swap windows since
-// `SplitViewController` still manages the windows and updates the bounds in a
-// `SnapGroup`. This will just check that double tap still works after
-// conversion.
+// Tests that a double-tap gesture on the divider handler within a Snap Group
+// successfully swaps the two snapped windows.
+TEST_F(SnapGroupDividerTest, DoubleTapDividerBasic) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  SplitViewDivider* divider = snap_group_divider();
+  auto* divider_widget = divider->divider_widget();
+  ASSERT_TRUE(divider_widget);
+  auto* divider_view = divider->divider_view_for_testing();
+  ASSERT_TRUE(divider_view);
+  auto* handler_view = divider_view->handler_view_for_testing();
+  ASSERT_TRUE(handler_view);
+
+  // A double-tap on the divider handler within a Snap Group swaps the window
+  // positions.
+  auto* event_generator = GetEventGenerator();
+  const auto handler_view_center =
+      divider_view->GetHandlerViewBoundsInScreenForTesting().CenterPoint();
+  event_generator->set_current_screen_location(handler_view_center);
+  event_generator->GestureTapAt(handler_view_center);
+  event_generator->GestureTapAt(handler_view_center);
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  SnapGroup* snap_group =
+      snap_group_controller->GetSnapGroupForGivenWindow(w1.get());
+  EXPECT_EQ(w1.get(), snap_group->window2());
+  EXPECT_EQ(w2.get(), snap_group->window1());
+  UnionBoundsEqualToWorkAreaBounds(w2.get(), w1.get(), snap_group_divider());
+}
+
+// Tests that double-tap on the Snap Group divider handler swaps the windows
+// and their bounds, and that the divider position will adjust correspondingly.
+TEST_F(SnapGroupDividerTest, DoubleTapDividerToSwapWindowsBounds) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  SplitViewDivider* divider = snap_group_divider();
+  auto* divider_widget = divider->divider_widget();
+  ASSERT_TRUE(divider_widget);
+  auto* divider_view = divider->divider_view_for_testing();
+  ASSERT_TRUE(divider_view);
+  auto* handler_view = divider_view->handler_view_for_testing();
+  ASSERT_TRUE(handler_view);
+
+  auto* event_generator = GetEventGenerator();
+  auto handler_view_center =
+      divider_view->GetHandlerViewBoundsInScreenForTesting().CenterPoint();
+  event_generator->set_current_screen_location(handler_view_center);
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(gfx::Point(100, handler_view_center.y()),
+                               /*count=*/2);
+  event_generator->ReleaseLeftButton();
+
+  const auto w1_snap_ratio_after_drag =
+      WindowState::Get(w1.get())->snap_ratio();
+  ASSERT_TRUE(w1_snap_ratio_after_drag);
+  EXPECT_NE(chromeos::kDefaultSnapRatio, *w1_snap_ratio_after_drag);
+
+  const auto w2_snap_ratio_after_drag =
+      WindowState::Get(w2.get())->snap_ratio();
+  ASSERT_TRUE(w2_snap_ratio_after_drag);
+  EXPECT_NE(chromeos::kDefaultSnapRatio, *w2_snap_ratio_after_drag);
+
+  const gfx::Rect w1_bounds_before_swap = w1->GetBoundsInScreen();
+  const gfx::Rect w2_bounds_before_swap = w2->GetBoundsInScreen();
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), divider);
+
+  // Perform double tap on the divider handler and verify that the snapped
+  // windows bounds will swap.
+  handler_view_center =
+      divider_view->GetHandlerViewBoundsInScreenForTesting().CenterPoint();
+  event_generator->GestureTapAt(handler_view_center);
+  event_generator->GestureTapAt(handler_view_center);
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  SnapGroup* snap_group =
+      snap_group_controller->GetSnapGroupForGivenWindow(w1.get());
+  EXPECT_EQ(w1.get(), snap_group->window2());
+  EXPECT_EQ(w2.get(), snap_group->window1());
+
+  EXPECT_EQ(w1_bounds_before_swap.width(),
+            snap_group->window2()->GetBoundsInScreen().width());
+  EXPECT_EQ(w2_bounds_before_swap.width(),
+            snap_group->window1()->GetBoundsInScreen().width());
+  UnionBoundsEqualToWorkAreaBounds(w2.get(), w1.get(), snap_group_divider());
+}
+
 TEST_F(SnapGroupDividerTest, DoubleTapDividerInTablet) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
@@ -7879,7 +7967,7 @@ TEST_F(SnapGroupMultiDisplayTest, AddRemovePrimaryDisplayAfterResize) {
 }
 
 // Tests that resizing via the cursor between displays works correctly.
-TEST_F(SnapGroupDividerTest, ResizeCursorBetweenDisplays) {
+TEST_F(SnapGroupMultiDisplayTest, ResizeCursorBetweenDisplays) {
   UpdateDisplay("800x700,801+0-800x700");
   const int min_width = 300;
   std::unique_ptr<aura::Window> w1(

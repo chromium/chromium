@@ -30,7 +30,8 @@ enum class WindowSnapActionSource {
   kSnapGroupWindowUpdate,
   kTest,
   kLacrosSnapButtonOrWindowLayoutMenu,
-  kMaxValue = kLacrosSnapButtonOrWindowLayoutMenu,
+  kSnapBySwapWindowsInSnapGroup,
+  kMaxValue = kSnapBySwapWindowsInSnapGroup,
 };
 
 // Used to save histogram metrics about how the user initiates window snapping.

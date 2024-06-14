@@ -210,6 +210,8 @@ const char* GetSnapActionSourceMetricComponent(
       return "Test";
     case WindowSnapActionSource::kLacrosSnapButtonOrWindowLayoutMenu:
       return "SnapByLacrosSnapButtonOrWindowLayoutMenu";
+    case WindowSnapActionSource::kSnapBySwapWindowsInSnapGroup:
+      return "SnapBySwapWindowsInSnapGroup";
   }
 }
 
@@ -387,6 +389,17 @@ void DoSplitviewClipRectAnimation(
 int GetWindowLength(aura::Window* window, bool horizontal) {
   const auto& bounds = window->GetTargetBounds();
   return horizontal ? bounds.width() : bounds.height();
+}
+
+WindowStateType GetWindowStateTypeFromSnapPosition(SnapPosition snap_position) {
+  switch (snap_position) {
+    case SnapPosition::kPrimary:
+      return WindowStateType::kPrimarySnapped;
+    case SnapPosition::kSecondary:
+      return WindowStateType::kSecondarySnapped;
+    default:
+      NOTREACHED_NORETURN();
+  }
 }
 
 bool IsPhysicallyLeftOrTop(aura::Window* window) {

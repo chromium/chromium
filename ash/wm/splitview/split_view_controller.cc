@@ -169,17 +169,6 @@ ui::InputMethod* GetCurrentInputMethod() {
   return nullptr;
 }
 
-WindowStateType GetStateTypeFromSnapPosition(SnapPosition snap_position) {
-  switch (snap_position) {
-    case SnapPosition::kPrimary:
-      return WindowStateType::kPrimarySnapped;
-    case SnapPosition::kSecondary:
-      return WindowStateType::kSecondarySnapped;
-    default:
-      NOTREACHED_NORETURN();
-  }
-}
-
 // Returns true if |window| is currently snapped.
 bool IsSnapped(aura::Window* window) {
   if (!window)
@@ -232,7 +221,7 @@ bool DidInSplitViewWindowChange(aura::Window* window,
 
   const auto* window_state = WindowState::Get(window);
   if (window_state->GetStateType() !=
-      GetStateTypeFromSnapPosition(snap_position)) {
+      GetWindowStateTypeFromSnapPosition(snap_position)) {
     return true;
   }
 
@@ -438,7 +427,7 @@ class SplitViewController::ToBeSnappedWindowsObserver
     // anyway), instead just attach the window to split screen directly.
     WindowState* window_state = WindowState::Get(window);
     if (window_state->GetStateType() ==
-        GetStateTypeFromSnapPosition(snap_position)) {
+        GetWindowStateTypeFromSnapPosition(snap_position)) {
       split_view_controller_->AttachToBeSnappedWindow(window, snap_position,
                                                       snap_action_source);
       split_view_controller_->OnWindowSnapped(window,
@@ -480,7 +469,7 @@ class SplitViewController::ToBeSnappedWindowsObserver
     // split screen. Otherwise (i.e. if the new window type is not the target
     // one) just ignore the event and keep waiting for the next event.
     if (window_state->GetStateType() ==
-        GetStateTypeFromSnapPosition(snap_position)) {
+        GetWindowStateTypeFromSnapPosition(snap_position)) {
       const auto cached_snap_action_source = iter->second.snap_action_source;
       to_be_snapped_windows_.erase(iter);
       window_state->RemoveObserver(this);

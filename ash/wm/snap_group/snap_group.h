@@ -11,6 +11,7 @@
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state_observer.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -104,6 +105,8 @@ class SnapGroup : public aura::WindowObserver,
   // WindowStateObserver:
   void OnPreWindowStateTypeChange(WindowState* window_state,
                                   chromeos::WindowStateType old_type) override;
+  void OnPostWindowStateTypeChange(WindowState* window_state,
+                                   chromeos::WindowStateType old_type) override;
 
   // LayoutDividerController:
   aura::Window* GetRootWindow() const override;
@@ -210,6 +213,14 @@ class SnapGroup : public aura::WindowObserver,
 
   // True if the snapped windows bounds are being adjusted.
   bool adjusting_snapped_window_bounds_ = false;
+
+  // True if the two windows are being swapped with double tap.
+  bool swapping_windows_ = false;
+
+  // Queues asynchronous snap events until the target position is reached.
+  // Ensures post-processing happens only after the snap is complete.
+  base::flat_map<aura::Window*, SnapPosition>
+      window_to_target_snap_position_map_;
 
   // Tracks the timestamp of the original Snap Group's creation time, preserved
   // when using 'Snap to Replace'.

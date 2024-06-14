@@ -135,6 +135,11 @@ bool IsPhysicallyLeftOrTop(aura::Window* window);
 // Returns the length of the window according to the screen orientation.
 ASH_EXPORT int GetWindowLength(aura::Window* window, bool horizontal);
 
+// Returns the corresponding `chromeos::WindowStateType` for the given
+// `snap_position`.
+chromeos::WindowStateType GetWindowStateTypeFromSnapPosition(
+    SnapPosition snap_position);
+
 // Transforms `window` based on whether it is the primary or secondary window
 // and its distance from `divider_position` during split view resizing.
 void SetWindowTransformDuringResizing(aura::Window* window,
