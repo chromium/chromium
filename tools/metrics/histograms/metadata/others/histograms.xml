@@ -8600,18 +8600,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PushMessaging.TimeToReadPersistedMessages" units="ms"
-    expires_after="M98">
-  <owner>peter@chromium.org</owner>
-  <owner>knollr@chromium.org</owner>
-  <summary>
-    When a message arrives for a lazy subscription and Chrome isn't in the
-    foreground, it is persisted on disk until next time Chrome is in the
-    foreground. This histogram measures the time spent in reading and replaying
-    persisted messages when Chrome goes to the foreground.
-  </summary>
-</histogram>
-
 <histogram name="PushMessaging.UnregistrationReason"
     enum="PushUnregistrationReason" expires_after="2024-11-03">
   <owner>peter@chromium.org</owner>
