@@ -216,9 +216,8 @@ class BubbleUmaLoggerTest : public ViewsTestBase {
 }  // namespace
 
 TEST_F(BubbleDialogDelegateViewTest, CreateDelegate) {
-  std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                       Widget::InitParams::TYPE_WINDOW);
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   TestBubbleDialogDelegateView* bubble_delegate =
       new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
   bubble_delegate->set_color(SK_ColorGREEN);
@@ -239,9 +238,8 @@ TEST_F(BubbleDialogDelegateViewTest, CreateDelegate) {
 }
 
 TEST_F(BubbleDialogDelegateViewTest, CloseAnchorWidget) {
-  std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                       Widget::InitParams::TYPE_WINDOW);
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   BubbleDialogDelegateView* bubble_delegate =
       new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
   // Preventing close on deactivate should not prevent closing with the anchor.
@@ -261,7 +259,7 @@ TEST_F(BubbleDialogDelegateViewTest, CloseAnchorWidget) {
   // TODO(msw): Remove activation hack to prevent bookkeeping errors in:
   //            aura::test::TestActivationClient::OnWindowDestroyed().
   std::unique_ptr<Widget> smoke_and_mirrors_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
                        Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   EXPECT_FALSE(bubble_observer.widget_closed());
 
@@ -276,7 +274,7 @@ TEST_F(BubbleDialogDelegateViewTest, CloseAnchorWidget) {
 TEST_F(BubbleDialogDelegateViewTest, CloseAnchorViewTest) {
   // Create an anchor widget and add a view to be used as an anchor view.
   std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
                        Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   View* anchor_view = anchor_widget->SetContentsView(std::make_unique<View>());
   TestBubbleDialogDelegateView* bubble_delegate =
@@ -309,9 +307,8 @@ TEST_F(BubbleDialogDelegateViewTest, CloseAnchorViewTest) {
 // Testing that a move of the anchor view will lead to new bubble locations.
 TEST_F(BubbleDialogDelegateViewTest, TestAnchorRectMovesWithViewTest) {
   // Create an anchor widget and add a view to be used as anchor view.
-  std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                       Widget::InitParams::TYPE_WINDOW);
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   TestBubbleDialogDelegateView* bubble_delegate =
       new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
   BubbleDialogDelegateView::CreateBubble(bubble_delegate);
@@ -325,16 +322,15 @@ TEST_F(BubbleDialogDelegateViewTest, TestAnchorRectMovesWithViewTest) {
 }
 
 TEST_F(BubbleDialogDelegateViewTest, ResetAnchorWidget) {
-  std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                       Widget::InitParams::TYPE_WINDOW);
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   BubbleDialogDelegateView* bubble_delegate =
       new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
 
   // Make sure the bubble widget is parented to a widget other than the anchor
   // widget so that closing the anchor widget does not close the bubble widget.
   std::unique_ptr<Widget> parent_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
                        Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   bubble_delegate->set_parent_window(parent_widget->GetNativeView());
   // Preventing close on deactivate should not prevent closing with the parent.
@@ -363,7 +359,7 @@ TEST_F(BubbleDialogDelegateViewTest, ResetAnchorWidget) {
   // TODO(msw): Remove activation hack to prevent bookkeeping errors in:
   //            aura::test::TestActivationClient::OnWindowDestroyed().
   std::unique_ptr<Widget> smoke_and_mirrors_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
                        Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   EXPECT_FALSE(bubble_observer.widget_closed());
 
@@ -374,7 +370,7 @@ TEST_F(BubbleDialogDelegateViewTest, ResetAnchorWidget) {
 
 TEST_F(BubbleDialogDelegateViewTest, MultipleBubbleAnchorHighlightTestInOrder) {
   std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
                        Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   LabelButton* button =
       anchor_widget->SetContentsView(std::make_unique<LabelButton>(
@@ -414,7 +410,7 @@ TEST_F(BubbleDialogDelegateViewTest, MultipleBubbleAnchorHighlightTestInOrder) {
 TEST_F(BubbleDialogDelegateViewTest,
        MultipleBubbleAnchorHighlightTestOutOfOrder) {
   std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
                        Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   LabelButton* button =
       anchor_widget->SetContentsView(std::make_unique<LabelButton>(
@@ -466,9 +462,8 @@ TEST_F(BubbleDialogDelegateViewTest, NoParentWidget) {
 }
 
 TEST_F(BubbleDialogDelegateViewTest, InitiallyFocusedView) {
-  std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                       Widget::InitParams::TYPE_WINDOW);
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   BubbleDialogDelegateView* bubble_delegate =
       new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
   Widget* bubble_widget =
@@ -480,9 +475,8 @@ TEST_F(BubbleDialogDelegateViewTest, InitiallyFocusedView) {
 }
 
 TEST_F(BubbleDialogDelegateViewTest, NonClientHitTest) {
-  std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                       Widget::InitParams::TYPE_WINDOW);
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   TestBubbleDialogDelegateView* bubble_delegate =
       new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
   BubbleDialogDelegateView::CreateBubble(bubble_delegate);
@@ -505,9 +499,8 @@ TEST_F(BubbleDialogDelegateViewTest, NonClientHitTest) {
 }
 
 TEST_F(BubbleDialogDelegateViewTest, VisibleWhenAnchorWidgetBoundsChanged) {
-  std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                       Widget::InitParams::TYPE_WINDOW);
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   BubbleDialogDelegateView* bubble_delegate =
       new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
   Widget* bubble_widget =
@@ -522,9 +515,8 @@ TEST_F(BubbleDialogDelegateViewTest, VisibleWhenAnchorWidgetBoundsChanged) {
 }
 
 TEST_F(BubbleDialogDelegateViewTest, GetPrimaryWindowWidget) {
-  std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                       Widget::InitParams::TYPE_WINDOW);
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   BubbleDialogDelegateView* bubble_delegate =
       new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
   Widget* bubble_widget =
@@ -536,9 +528,8 @@ TEST_F(BubbleDialogDelegateViewTest, GetPrimaryWindowWidget) {
 // Test that setting WidgetDelegate::SetCanActivate() to false makes the
 // widget created via BubbleDialogDelegateView::CreateBubble() not activatable.
 TEST_F(BubbleDialogDelegateViewTest, NotActivatable) {
-  std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                       Widget::InitParams::TYPE_WINDOW);
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   BubbleDialogDelegateView* bubble_delegate =
       new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
   bubble_delegate->SetCanActivate(false);
@@ -551,7 +542,7 @@ TEST_F(BubbleDialogDelegateViewTest, NotActivatable) {
 TEST_F(BubbleDialogDelegateViewTest, CloseMethods) {
   {
     std::unique_ptr<Widget> anchor_widget =
-        CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
                          Widget::InitParams::TYPE_WINDOW);
     BubbleDialogDelegateView* bubble_delegate =
         new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
@@ -565,7 +556,7 @@ TEST_F(BubbleDialogDelegateViewTest, CloseMethods) {
 
   {
     std::unique_ptr<Widget> anchor_widget =
-        CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
                          Widget::InitParams::TYPE_WINDOW);
     BubbleDialogDelegateView* bubble_delegate =
         new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
@@ -580,7 +571,7 @@ TEST_F(BubbleDialogDelegateViewTest, CloseMethods) {
 
   {
     std::unique_ptr<Widget> anchor_widget =
-        CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
                          Widget::InitParams::TYPE_WINDOW);
     TestBubbleDialogDelegateView* bubble_delegate =
         new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
@@ -600,9 +591,8 @@ TEST_F(BubbleDialogDelegateViewTest, CloseMethods) {
 }
 
 TEST_F(BubbleDialogDelegateViewTest, PinBlocksCloseOnDeactivate) {
-  std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                       Widget::InitParams::TYPE_WINDOW);
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   BubbleDialogDelegateView* bubble_delegate =
       new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
   bubble_delegate->set_close_on_deactivate(true);
@@ -625,9 +615,8 @@ TEST_F(BubbleDialogDelegateViewTest, PinBlocksCloseOnDeactivate) {
 }
 
 TEST_F(BubbleDialogDelegateViewTest, CloseOnDeactivatePinCanOutliveBubble) {
-  std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                       Widget::InitParams::TYPE_WINDOW);
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   BubbleDialogDelegateView* bubble_delegate =
       new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
   bubble_delegate->set_close_on_deactivate(true);
@@ -644,9 +633,8 @@ TEST_F(BubbleDialogDelegateViewTest, CloseOnDeactivatePinCanOutliveBubble) {
 }
 
 TEST_F(BubbleDialogDelegateViewTest, MultipleCloseOnDeactivatePins) {
-  std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                       Widget::InitParams::TYPE_WINDOW);
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   BubbleDialogDelegateView* bubble_delegate =
       new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
   bubble_delegate->set_close_on_deactivate(true);
@@ -676,9 +664,8 @@ TEST_F(BubbleDialogDelegateViewTest, MultipleCloseOnDeactivatePins) {
 }
 
 TEST_F(BubbleDialogDelegateViewTest, CustomTitle) {
-  std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                       Widget::InitParams::TYPE_WINDOW);
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   TestBubbleDialogDelegateView* bubble_delegate =
       new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
   constexpr int kTitleHeight = 20;
@@ -753,9 +740,8 @@ TEST_F(BubbleDialogDelegateViewTest, CustomTitle) {
 // Ensure the BubbleFrameView correctly resizes when the title is provided by a
 // StyledLabel.
 TEST_F(BubbleDialogDelegateViewTest, StyledLabelTitle) {
-  std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                       Widget::InitParams::TYPE_WINDOW);
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   TestBubbleDialogDelegateView* bubble_delegate =
       new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
   StyledLabel* title_view =
@@ -788,7 +774,7 @@ TEST_F(BubbleDialogDelegateViewTest, StyledLabelTitle) {
 // widget is shown or hidden respectively.
 TEST_F(BubbleDialogDelegateViewTest, AttachedWidgetShowsInkDropWhenVisible) {
   std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
                        Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   LabelButton* button =
       anchor_widget->SetContentsView(std::make_unique<LabelButton>(
@@ -820,7 +806,7 @@ TEST_F(BubbleDialogDelegateViewTest, AttachedWidgetShowsInkDropWhenVisible) {
 // widget is shown.
 TEST_F(BubbleDialogDelegateViewTest, VisibleWidgetShowsInkDropOnAttaching) {
   std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
                        Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   LabelButton* button =
       anchor_widget->SetContentsView(std::make_unique<LabelButton>(
@@ -849,9 +835,8 @@ TEST_F(BubbleDialogDelegateViewTest, VisibleWidgetShowsInkDropOnAttaching) {
 }
 
 TEST_F(BubbleDialogDelegateViewTest, VisibleAnchorChanges) {
-  std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                       Widget::InitParams::TYPE_WINDOW);
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   TestBubbleDialogDelegateView* bubble_delegate =
       new TestBubbleDialogDelegateView(nullptr);
   bubble_delegate->set_parent_window(anchor_widget->GetNativeView());
@@ -866,7 +851,7 @@ TEST_F(BubbleDialogDelegateViewTest, VisibleAnchorChanges) {
 
 TEST_F(BubbleDialogDelegateViewTest, GetThemeProvider_FromAnchorWidget) {
   std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+      CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
                        Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   TestBubbleDialogDelegateView* bubble_delegate =
       new TestBubbleDialogDelegateView(nullptr);
@@ -944,9 +929,8 @@ TEST_P(BubbleDialogDelegateViewArrowTest, AvailableScreenSpaceTest) {
     GTEST_SKIP() << "Global screen coordinates unavailable";
   }
 #endif
-  std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                       Widget::InitParams::TYPE_WINDOW);
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   auto* bubble_delegate =
       new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
   BubbleDialogDelegateView::CreateBubble(bubble_delegate);
@@ -1033,9 +1017,8 @@ INSTANTIATE_TEST_SUITE_P(AnchorAtFarScreenCorners,
 // Tests whether the BubbleDialogDelegateView will create a layer backed
 // ClientView when SetPaintClientToLayer is set to true.
 TEST_F(BubbleDialogDelegateViewTest, WithClientLayerTest) {
-  std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                       Widget::InitParams::TYPE_WINDOW);
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   auto bubble_delegate = std::make_unique<BubbleDialogDelegateView>(
       nullptr, BubbleBorder::TOP_LEFT);
   bubble_delegate->SetPaintClientToLayer(true);
@@ -1050,9 +1033,8 @@ TEST_F(BubbleDialogDelegateViewTest, WithClientLayerTest) {
 // Tests to ensure BubbleDialogDelegateView does not create a layer backed
 // ClientView when SetPaintClientToLayer is set to false.
 TEST_F(BubbleDialogDelegateViewTest, WithoutClientLayerTest) {
-  std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                       Widget::InitParams::TYPE_WINDOW);
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   auto bubble_delegate = std::make_unique<BubbleDialogDelegateView>(
       nullptr, BubbleBorder::TOP_LEFT);
   bubble_delegate->SetPaintClientToLayer(false);
@@ -1066,9 +1048,8 @@ TEST_F(BubbleDialogDelegateViewTest, WithoutClientLayerTest) {
 
 TEST_F(BubbleDialogDelegateViewTest, AlertAccessibleEvent) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
-  std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                       Widget::InitParams::TYPE_WINDOW);
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   auto bubble_delegate = std::make_unique<TestBubbleDialogDelegateView>(
       anchor_widget->GetContentsView());
 
@@ -1351,9 +1332,8 @@ TEST_F(BubbleDialogDelegateViewAnchorTest,
 TEST_F(BubbleDialogDelegateViewTest, BubbleMetrics) {
   base::HistogramTester histogram;
 
-  std::unique_ptr<Widget> anchor_widget =
-      CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                       Widget::InitParams::TYPE_WINDOW);
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   TestBubbleDialogDelegateView* bubble_delegate =
       new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
   Widget* bubble_widget =

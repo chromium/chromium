@@ -28,7 +28,7 @@ class InfoBubbleTest : public ViewsTestBase {
     ViewsTestBase::SetUp();
 
     Widget::InitParams params =
-        CreateParamsForTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        CreateParamsForTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
                                   Widget::InitParams::TYPE_WINDOW);
     anchor_widget_ = std::make_unique<Widget>();
     anchor_widget_->Init(std::move(params));

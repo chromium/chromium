@@ -73,9 +73,8 @@ class BubbleSlideAnimatorTest : public test::WidgetTest {
  public:
   void SetUp() override {
     test::WidgetTest::SetUp();
-    anchor_widget_ =
-        CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
-                         Widget::InitParams::Type::TYPE_WINDOW);
+    anchor_widget_ = CreateTestWidget(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                                      Widget::InitParams::Type::TYPE_WINDOW);
     auto* const contents_view = anchor_widget_->GetRootView()->AddChildView(
         std::make_unique<FlexLayoutView>());
     contents_view->SetOrientation(LayoutOrientation::kHorizontal);
