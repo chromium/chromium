@@ -62,7 +62,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   using ReadRTFCallback = base::OnceCallback<void(std::string result)>;
   using ReadPngCallback =
       base::OnceCallback<void(const std::vector<uint8_t>& result)>;
-  using ReadCustomDataCallback =
+  using ReadDataTransferCustomDataCallback =
       base::OnceCallback<void(std::u16string result)>;
   using ReadFilenamesCallback =
       base::OnceCallback<void(std::vector<ui::FileInfo> result)>;
@@ -222,10 +222,11 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
                        const DataTransferEndpoint* data_dst,
                        ReadPngCallback callback) const = 0;
 
-  virtual void ReadCustomData(ClipboardBuffer buffer,
-                              const std::u16string& type,
-                              const DataTransferEndpoint* data_dst,
-                              ReadCustomDataCallback callback) const;
+  virtual void ReadDataTransferCustomData(
+      ClipboardBuffer buffer,
+      const std::u16string& type,
+      const DataTransferEndpoint* data_dst,
+      ReadDataTransferCustomDataCallback callback) const;
 
   // Reads filenames from the clipboard, if available.
   virtual void ReadFilenames(ClipboardBuffer buffer,
@@ -266,10 +267,10 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void ReadRTF(ClipboardBuffer buffer,
                        const DataTransferEndpoint* data_dst,
                        std::string* result) const = 0;
-  virtual void ReadCustomData(ClipboardBuffer buffer,
-                              const std::u16string& type,
-                              const DataTransferEndpoint* data_dst,
-                              std::u16string* result) const = 0;
+  virtual void ReadDataTransferCustomData(ClipboardBuffer buffer,
+                                          const std::u16string& type,
+                                          const DataTransferEndpoint* data_dst,
+                                          std::u16string* result) const = 0;
   virtual void ReadFilenames(ClipboardBuffer buffer,
                              const DataTransferEndpoint* data_dst,
                              std::vector<ui::FileInfo>* result) const = 0;

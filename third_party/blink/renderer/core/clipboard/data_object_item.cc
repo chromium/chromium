@@ -207,7 +207,7 @@ String DataObjectItem::GetAsString() const {
     unsigned ignored;
     data = system_clipboard_->ReadHTML(ignored_source_url, ignored, ignored);
   } else {
-    data = system_clipboard_->ReadCustomData(type_);
+    data = system_clipboard_->ReadDataTransferCustomData(type_);
   }
 
   return system_clipboard_->SequenceNumber() == sequence_number_ ? data

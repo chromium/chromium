@@ -512,9 +512,10 @@ void ClipboardHostImpl::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
           std::move(result), std::move(callback)));
 }
 
-void ClipboardHostImpl::ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
-                                       const std::u16string& type,
-                                       ReadCustomDataCallback callback) {
+void ClipboardHostImpl::ReadDataTransferCustomData(
+    ui::ClipboardBuffer clipboard_buffer,
+    const std::u16string& type,
+    ReadDataTransferCustomDataCallback callback) {
   if (!IsRendererPasteAllowed(clipboard_buffer, render_frame_host())) {
     std::move(callback).Run(std::u16string());
     return;
@@ -522,7 +523,7 @@ void ClipboardHostImpl::ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
 
   ClipboardPasteData clipboard_paste_data;
   auto data_dst = CreateDataEndpoint();
-  ui::Clipboard::GetForCurrentThread()->ReadCustomData(
+  ui::Clipboard::GetForCurrentThread()->ReadDataTransferCustomData(
       clipboard_buffer, type, data_dst.get(),
       &clipboard_paste_data.custom_data[type]);
 
@@ -530,7 +531,8 @@ void ClipboardHostImpl::ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
       clipboard_buffer, ui::ClipboardFormatType::DataTransferCustomType(),
       std::move(clipboard_paste_data),
       base::BindOnce(
-          [](ReadCustomDataCallback callback, const std::u16string& type,
+          [](ReadDataTransferCustomDataCallback callback,
+             const std::u16string& type,
              std::optional<ClipboardPasteData> clipboard_paste_data) {
             std::u16string result;
             if (clipboard_paste_data) {

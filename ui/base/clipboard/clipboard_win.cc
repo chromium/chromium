@@ -541,10 +541,11 @@ void ClipboardWin::ReadPng(ClipboardBuffer buffer,
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardWin::ReadCustomData(ClipboardBuffer buffer,
-                                  const std::u16string& type,
-                                  const DataTransferEndpoint* data_dst,
-                                  std::u16string* result) const {
+void ClipboardWin::ReadDataTransferCustomData(
+    ClipboardBuffer buffer,
+    const std::u16string& type,
+    const DataTransferEndpoint* data_dst,
+    std::u16string* result) const {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kCustomData);
 

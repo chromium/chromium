@@ -133,9 +133,10 @@ class CONTENT_EXPORT ClipboardHostImpl
                ReadPngCallback callback) override;
   void ReadFiles(ui::ClipboardBuffer clipboard_buffer,
                  ReadFilesCallback callback) override;
-  void ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
-                      const std::u16string& type,
-                      ReadCustomDataCallback callback) override;
+  void ReadDataTransferCustomData(
+      ui::ClipboardBuffer clipboard_buffer,
+      const std::u16string& type,
+      ReadDataTransferCustomDataCallback callback) override;
   void ReadAvailableCustomAndStandardFormats(
       ReadAvailableCustomAndStandardFormatsCallback callback) override;
   void ReadUnsanitizedCustomFormat(

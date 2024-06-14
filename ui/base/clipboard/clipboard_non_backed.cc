@@ -785,10 +785,11 @@ void ClipboardNonBacked::ReadPng(ClipboardBuffer buffer,
 #endif
 }
 
-void ClipboardNonBacked::ReadCustomData(ClipboardBuffer buffer,
-                                        const std::u16string& type,
-                                        const DataTransferEndpoint* data_dst,
-                                        std::u16string* result) const {
+void ClipboardNonBacked::ReadDataTransferCustomData(
+    ClipboardBuffer buffer,
+    const std::u16string& type,
+    const DataTransferEndpoint* data_dst,
+    std::u16string* result) const {
   DCHECK(CalledOnValidThread());
 
   const ClipboardInternal& clipboard_internal = GetInternalClipboard(buffer);

@@ -79,7 +79,7 @@ class CORE_EXPORT SystemClipboard final
   // Read files.
   mojom::blink::ClipboardFilesPtr ReadFiles();
 
-  String ReadCustomData(const String& type);
+  String ReadDataTransferCustomData(const String& type);
   void WriteDataObject(DataObject*);
 
   // Clipboard write functions must use CommitWrite for changes to reach

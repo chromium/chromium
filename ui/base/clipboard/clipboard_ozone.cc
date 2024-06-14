@@ -578,10 +578,11 @@ void ClipboardOzone::ReadPng(ClipboardBuffer buffer,
   std::move(callback).Run(png_data);
 }
 
-void ClipboardOzone::ReadCustomData(ClipboardBuffer buffer,
-                                    const std::u16string& type,
-                                    const DataTransferEndpoint* data_dst,
-                                    std::u16string* result) const {
+void ClipboardOzone::ReadDataTransferCustomData(
+    ClipboardBuffer buffer,
+    const std::u16string& type,
+    const DataTransferEndpoint* data_dst,
+    std::u16string* result) const {
   DCHECK(CalledOnValidThread());
 
   auto custom_data = async_clipboard_ozone_->ReadClipboardDataAndWait(

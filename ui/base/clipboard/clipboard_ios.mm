@@ -262,10 +262,11 @@ void ClipboardIOS::ReadPng(ClipboardBuffer buffer,
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardIOS::ReadCustomData(ClipboardBuffer buffer,
-                                  const std::u16string& type,
-                                  const DataTransferEndpoint* data_dst,
-                                  std::u16string* result) const {
+void ClipboardIOS::ReadDataTransferCustomData(
+    ClipboardBuffer buffer,
+    const std::u16string& type,
+    const DataTransferEndpoint* data_dst,
+    std::u16string* result) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
   RecordRead(ClipboardFormatMetric::kCustomData);

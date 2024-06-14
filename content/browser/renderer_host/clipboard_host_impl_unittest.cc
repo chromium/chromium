@@ -399,12 +399,12 @@ TEST_F(ClipboardHostImplWriteTest, WriteCustomData) {
   base::test::TestFuture<const std::u16string&> future_2;
   base::test::TestFuture<const std::u16string&> future_3;
 
-  clipboard_host_impl()->ReadCustomData(ui::ClipboardBuffer::kCopyPaste,
-                                        u"text/type1", future_1.GetCallback());
-  clipboard_host_impl()->ReadCustomData(ui::ClipboardBuffer::kCopyPaste,
-                                        u"text/type2", future_2.GetCallback());
-  clipboard_host_impl()->ReadCustomData(ui::ClipboardBuffer::kCopyPaste,
-                                        u"text/type3", future_3.GetCallback());
+  clipboard_host_impl()->ReadDataTransferCustomData(
+      ui::ClipboardBuffer::kCopyPaste, u"text/type1", future_1.GetCallback());
+  clipboard_host_impl()->ReadDataTransferCustomData(
+      ui::ClipboardBuffer::kCopyPaste, u"text/type2", future_2.GetCallback());
+  clipboard_host_impl()->ReadDataTransferCustomData(
+      ui::ClipboardBuffer::kCopyPaste, u"text/type3", future_3.GetCallback());
 
   EXPECT_EQ(custom_data[u"text/type1"], future_1.Take());
   EXPECT_EQ(custom_data[u"text/type2"], future_2.Take());
@@ -421,10 +421,10 @@ TEST_F(ClipboardHostImplWriteTest, WriteCustomData_Empty) {
   base::test::TestFuture<const std::u16string&> future_1;
   base::test::TestFuture<const std::u16string&> future_2;
 
-  clipboard_host_impl()->ReadCustomData(ui::ClipboardBuffer::kCopyPaste,
-                                        u"text/type1", future_1.GetCallback());
-  clipboard_host_impl()->ReadCustomData(ui::ClipboardBuffer::kCopyPaste,
-                                        u"text/type2", future_2.GetCallback());
+  clipboard_host_impl()->ReadDataTransferCustomData(
+      ui::ClipboardBuffer::kCopyPaste, u"text/type1", future_1.GetCallback());
+  clipboard_host_impl()->ReadDataTransferCustomData(
+      ui::ClipboardBuffer::kCopyPaste, u"text/type2", future_2.GetCallback());
 
   EXPECT_TRUE(future_1.Take().empty());
   EXPECT_TRUE(future_2.Take().empty());

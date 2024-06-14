@@ -120,7 +120,7 @@ interface ClipboardHost {
   ReadFiles(ClipboardBuffer buffer) => (ClipboardFiles result);
 
   [Sync]
-  ReadCustomData(ClipboardBuffer buffer, mojo_base.mojom.String16 type) =>
+  ReadDataTransferCustomData(ClipboardBuffer buffer, mojo_base.mojom.String16 type) =>
       (mojo_base.mojom.BigString16 result);
 
   // Reads both unsanitized custom formats & standard

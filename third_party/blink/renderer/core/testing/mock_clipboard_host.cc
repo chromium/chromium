@@ -134,9 +134,10 @@ void MockClipboardHost::ReadFiles(mojom::ClipboardBuffer clipboard_buffer,
   std::move(callback).Run(std::move(files_));
 }
 
-void MockClipboardHost::ReadCustomData(mojom::ClipboardBuffer clipboard_buffer,
-                                       const String& type,
-                                       ReadCustomDataCallback callback) {
+void MockClipboardHost::ReadDataTransferCustomData(
+    mojom::ClipboardBuffer clipboard_buffer,
+    const String& type,
+    ReadDataTransferCustomDataCallback callback) {
   auto it = custom_data_.find(type);
   std::move(callback).Run(it != custom_data_.end() ? it->value
                                                    : g_empty_string);

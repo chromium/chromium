@@ -271,11 +271,11 @@ TEST_F(SystemClipboardTest, Files) {
 
 TEST_F(SystemClipboardTest, CustomData) {
   // Clipboard starts empty.
-  EXPECT_EQ(system_clipboard().ReadCustomData("a"), "");
+  EXPECT_EQ(system_clipboard().ReadDataTransferCustomData("a"), "");
 
   // Setting text in the host is visible in system.
   clipboard_host()->WriteCustomData({{"a", "first"}});
-  EXPECT_EQ(system_clipboard().ReadCustomData("a"), "first");
+  EXPECT_EQ(system_clipboard().ReadDataTransferCustomData("a"), "first");
 
   // Inside a snapshot scope, the first read from the system clipboard
   // remembers the result, even if the underlying clipboard host changes.
@@ -283,16 +283,16 @@ TEST_F(SystemClipboardTest, CustomData) {
     ScopedSystemClipboardSnapshot snapshot(system_clipboard());
 
     clipboard_host()->WriteCustomData({{"a", "second"}});
-    EXPECT_EQ(system_clipboard().ReadCustomData("a"), "second");
+    EXPECT_EQ(system_clipboard().ReadDataTransferCustomData("a"), "second");
 
     clipboard_host()->WriteCustomData({{"a", "third"}, {"b", "fourth"}});
-    EXPECT_EQ(system_clipboard().ReadCustomData("a"), "second");
-    EXPECT_EQ(system_clipboard().ReadCustomData("b"), "fourth");
+    EXPECT_EQ(system_clipboard().ReadDataTransferCustomData("a"), "second");
+    EXPECT_EQ(system_clipboard().ReadDataTransferCustomData("b"), "fourth");
   }
 
   // Now that the snapshot is out of scope, reads from the system clipboard
   // reflect the state of the clipboard host.
-  EXPECT_EQ(system_clipboard().ReadCustomData("a"), "third");
+  EXPECT_EQ(system_clipboard().ReadDataTransferCustomData("a"), "third");
 }
 
 TEST_F(SystemClipboardTest, SnapshotNesting) {

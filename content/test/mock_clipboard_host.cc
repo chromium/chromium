@@ -124,9 +124,10 @@ void MockClipboardHost::ReadFiles(ui::ClipboardBuffer clipboard_buffer,
   std::move(callback).Run(blink::mojom::ClipboardFiles::New());
 }
 
-void MockClipboardHost::ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
-                                       const std::u16string& type,
-                                       ReadCustomDataCallback callback) {
+void MockClipboardHost::ReadDataTransferCustomData(
+    ui::ClipboardBuffer clipboard_buffer,
+    const std::u16string& type,
+    ReadDataTransferCustomDataCallback callback) {
   auto it = custom_data_.find(type);
   std::move(callback).Run(it != custom_data_.end() ? it->second
                                                    : std::u16string());

@@ -449,7 +449,7 @@ TEST_F(ClipboardNonBackedMockTimeTest,
             /*url=*/std::make_unique<std::string>().get());
       }),
       base::BindLambdaForTesting([&]() {
-        clipboard->ReadCustomData(
+        clipboard->ReadDataTransferCustomData(
             ClipboardBuffer::kCopyPaste,
             /*type=*/std::u16string(), /*data_dst=*/nullptr,
             /*result=*/std::make_unique<std::u16string>().get());

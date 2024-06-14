@@ -630,10 +630,11 @@ void ClipboardAndroid::ReadPng(ClipboardBuffer buffer,
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-void ClipboardAndroid::ReadCustomData(ClipboardBuffer buffer,
-                                      const std::u16string& type,
-                                      const DataTransferEndpoint* data_dst,
-                                      std::u16string* result) const {
+void ClipboardAndroid::ReadDataTransferCustomData(
+    ClipboardBuffer buffer,
+    const std::u16string& type,
+    const DataTransferEndpoint* data_dst,
+    std::u16string* result) const {
   DCHECK(CalledOnValidThread());
   NOTIMPLEMENTED();
 }

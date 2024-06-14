@@ -342,7 +342,7 @@ mojom::blink::ClipboardFilesPtr SystemClipboard::ReadFiles() {
   return files;
 }
 
-String SystemClipboard::ReadCustomData(const String& type) {
+String SystemClipboard::ReadDataTransferCustomData(const String& type) {
   if (!IsValidBufferType(buffer_) || !clipboard_.is_bound())
     return String();
 
@@ -351,7 +351,7 @@ String SystemClipboard::ReadCustomData(const String& type) {
   }
 
   String data;
-  clipboard_->ReadCustomData(buffer_, NonNullString(type), &data);
+  clipboard_->ReadDataTransferCustomData(buffer_, NonNullString(type), &data);
   if (snapshot_) {
     snapshot_->SetCustomData(buffer_, type, data);
   }

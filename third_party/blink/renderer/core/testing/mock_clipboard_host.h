@@ -52,9 +52,10 @@ class MockClipboardHost : public mojom::blink::ClipboardHost {
                ReadPngCallback callback) override;
   void ReadFiles(mojom::ClipboardBuffer clipboard_buffer,
                  ReadFilesCallback callback) override;
-  void ReadCustomData(mojom::ClipboardBuffer clipboard_buffer,
-                      const String& type,
-                      ReadCustomDataCallback callback) override;
+  void ReadDataTransferCustomData(
+      mojom::ClipboardBuffer clipboard_buffer,
+      const String& type,
+      ReadDataTransferCustomDataCallback callback) override;
   void WriteText(const String& text) override;
   void WriteHtml(const String& markup, const KURL& url) override;
   void WriteSvg(const String& markup) override;

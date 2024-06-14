@@ -107,8 +107,8 @@ TEST_F(ClipboardWinTest, NoDataChangedNotificationOnRead) {
   ASSERT_EQ(data_changed_count(), 0);
 
   std::u16string custom_data_result;
-  clipboard->ReadCustomData(ClipboardBuffer::kCopyPaste, u"text/plain", nullptr,
-                            &custom_data_result);
+  clipboard->ReadDataTransferCustomData(
+      ClipboardBuffer::kCopyPaste, u"text/plain", nullptr, &custom_data_result);
   ASSERT_EQ(data_changed_count(), 0);
 
   std::vector<FileInfo> file_infos;

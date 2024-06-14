@@ -450,7 +450,7 @@ TEST_F(SeatTest, SetSelectionWebCustomData) {
   RunReadingTask();
 
   std::u16string result;
-  ui::Clipboard::GetForCurrentThread()->ReadCustomData(
+  ui::Clipboard::GetForCurrentThread()->ReadDataTransferCustomData(
       ui::ClipboardBuffer::kCopyPaste, u"text/uri-list", /*data_dst=*/nullptr,
       &result);
   EXPECT_EQ(result, u"data");

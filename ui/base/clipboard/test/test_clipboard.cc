@@ -244,10 +244,11 @@ void TestClipboard::ReadPng(ClipboardBuffer buffer,
   std::move(callback).Run(store.png);
 }
 
-void TestClipboard::ReadCustomData(ClipboardBuffer buffer,
-                                   const std::u16string& type,
-                                   const DataTransferEndpoint* data_dst,
-                                   std::u16string* result) const {
+void TestClipboard::ReadDataTransferCustomData(
+    ClipboardBuffer buffer,
+    const std::u16string& type,
+    const DataTransferEndpoint* data_dst,
+    std::u16string* result) const {
   const DataStore& store = GetStore(buffer);
   if (!MaybeRetrieveSyncedSourceAndCheckIfReadIsAllowed(buffer, store.data_src,
                                                         data_dst)) {
