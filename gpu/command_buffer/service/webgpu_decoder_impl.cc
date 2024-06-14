@@ -553,7 +553,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     ~SharedImageRepresentationAndAccessSkiaFallback() override {
       // If we have write access, flush any writes by uploading
       // into the SkSurface.
-      if ((usage_ & kAllowedWritableMailboxTextureUsages) != 0) {
+      if ((usage_ & kAllowedWritableMailboxTextureUsages) != 0 ||
+          (internal_usage_ & kAllowedWritableMailboxTextureUsages) != 0) {
         // Before using the shared context, ensure it is current if we're on GL.
         if (shared_context_state_->GrContextIsGL()) {
           shared_context_state_->MakeCurrent(/* gl_surface */ nullptr);
@@ -585,7 +586,8 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
           representation_(std::move(representation)),
           instance_(std::move(instance)),
           device_(std::move(device)),
-          usage_(usage) {
+          usage_(usage),
+          internal_usage_(internal_usage) {
       // Create a wgpu::Texture to hold the image contents.
       // It must be internally copyable as this class itself uses the texture as
       // the dest and source of copies for transfer back and forth between Skia
@@ -914,6 +916,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
     wgpu::Device device_;
     wgpu::Texture texture_;
     wgpu::TextureUsage usage_;
+    wgpu::TextureUsage internal_usage_;
   };
 
   // Implementation of SharedImageRepresentationAndAccess that yields an error

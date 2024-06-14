@@ -764,6 +764,116 @@ TEST_P(WebGPUMailboxTest, PassDiscardWhenAssociatingReadOnlyMailbox) {
 }
 
 // Test that an uninitialized writable shared image is lazily cleared by Dawn
+// when it is accessed with an internal write usage supporting lazy clearing.
+TEST_P(WebGPUMailboxTest,
+       ReadWritableUninitializedSharedImageWhenAccessedWithInternalWriteUsage) {
+  // Create the shared image. Note that it is uncleared by default.
+  SharedImageInterface* sii = GetSharedImageInterface();
+  scoped_refptr<gpu::ClientSharedImage> shared_image = sii->CreateSharedImage(
+      {GetParam().format,
+       {1, 1},
+       gfx::ColorSpace::CreateSRGB(),
+       // The clearing of the SharedImage will happen via Skia if the fallback
+       // adaptor is being used.
+       SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
+           SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE,
+       "TestLabel"},
+      kNullSurfaceHandle);
+  SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
+  webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
+
+  // Register the shared image as a Dawn texture in the wire.
+  gpu::webgpu::ReservedTexture reservation =
+      webgpu()->ReserveTexture(device_.Get());
+
+  // Associate the mailbox, passing a read-only usage but RenderAttachment as an
+  // internal usage.
+  webgpu()->AssociateMailbox(
+      reservation.deviceId, reservation.deviceGeneration, reservation.id,
+      reservation.generation, WGPUTextureUsage_CopySrc,
+      WGPUTextureUsage_RenderAttachment, webgpu::WEBGPU_MAILBOX_NONE,
+      shared_image->mailbox());
+  wgpu::Texture texture = wgpu::Texture::Acquire(reservation.texture);
+
+  wgpu::CommandEncoder encoder = device_.CreateCommandEncoder();
+
+  // Copy the texture in a mappable buffer.
+  wgpu::BufferDescriptor buffer_desc;
+  buffer_desc.size = BytesPerTexel(GetParam().format);
+  buffer_desc.usage = wgpu::BufferUsage::MapRead | wgpu::BufferUsage::CopyDst;
+  wgpu::Buffer readback_buffer = device_.CreateBuffer(&buffer_desc);
+
+  wgpu::ImageCopyTexture copy_src = {};
+  copy_src.texture = texture;
+  copy_src.mipLevel = 0;
+  copy_src.origin = {0, 0, 0};
+
+  wgpu::ImageCopyBuffer copy_dst = {};
+  copy_dst.buffer = readback_buffer;
+  copy_dst.layout.offset = 0;
+  copy_dst.layout.bytesPerRow = 256;
+
+  wgpu::Extent3D copy_size = {1, 1, 1};
+
+  encoder.CopyTextureToBuffer(&copy_src, &copy_dst, &copy_size);
+  wgpu::CommandBuffer commands = encoder.Finish();
+
+  wgpu::Queue queue = device_.GetQueue();
+  queue.Submit(1, &commands);
+
+  webgpu()->DissociateMailbox(reservation.id, reservation.generation);
+
+  // Map the buffer and assert the pixel is the correct value.
+  readback_buffer.MapAsync(wgpu::MapMode::Read, 0, buffer_desc.size,
+                           wgpu::CallbackMode::AllowSpontaneous,
+                           ToMockBufferMapCallback);
+  EXPECT_CALL(*mock_buffer_map_callback,
+              Call(wgpu::MapAsyncStatus::Success, nullptr))
+      .Times(1);
+
+  WaitForCompletion(device_);
+
+  const uint8_t* data = static_cast<const uint8_t*>(
+      readback_buffer.GetConstMappedRange(0, buffer_desc.size));
+  // Contents should be black because the texture was lazily cleared.
+  for (uint32_t i = 0; i < buffer_desc.size; ++i) {
+    EXPECT_EQ(data[i], uint8_t(0));
+  }
+
+  // Associate the SharedImage with a new Dawn texture in a read-only access.
+  // The SharedImage should have been cleared at the end of the previous access,
+  // and hence this read access should succeed.
+  gpu::webgpu::ReservedTexture reservation2 =
+      webgpu()->ReserveTexture(device_.Get());
+  webgpu()->AssociateMailbox(
+      reservation2.deviceId, reservation2.deviceGeneration, reservation2.id,
+      reservation2.generation, WGPUTextureUsage_CopySrc,
+      webgpu::WEBGPU_MAILBOX_NONE, shared_image->mailbox());
+  wgpu::Texture texture2 = wgpu::Texture::Acquire(reservation2.texture);
+
+  copy_src.texture = texture2;
+  wgpu::Buffer readback_buffer2 = device_.CreateBuffer(&buffer_desc);
+  copy_dst.buffer = readback_buffer2;
+  wgpu::CommandEncoder encoder2 = device_.CreateCommandEncoder();
+  encoder2.CopyTextureToBuffer(&copy_src, &copy_dst, &copy_size);
+  commands = encoder2.Finish();
+
+  queue.Submit(1, &commands);
+
+  webgpu()->DissociateMailbox(reservation2.id, reservation2.generation);
+
+  // Map the buffer.
+  readback_buffer2.MapAsync(wgpu::MapMode::Read, 0, buffer_desc.size,
+                            wgpu::CallbackMode::AllowSpontaneous,
+                            ToMockBufferMapCallback);
+  EXPECT_CALL(*mock_buffer_map_callback,
+              Call(wgpu::MapAsyncStatus::Success, nullptr))
+      .Times(1);
+
+  WaitForCompletion(device_);
+}
+
+// Test that an uninitialized writable shared image is lazily cleared by Dawn
 // when it is read.
 TEST_P(WebGPUMailboxTest, ReadWritableUninitializedSharedImage) {
   // Create the shared image.
