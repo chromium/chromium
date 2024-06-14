@@ -5343,19 +5343,3 @@ targets.legacy_basic_suite(
         ),
     },
 )
-
-targets.legacy_basic_suite(
-    name = "wpt_web_tests_android",
-    tests = {
-        "chrome_public_wpt": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 4,
-            ),
-        ),
-        "system_webview_wpt": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 4,
-            ),
-        ),
-    },
-)

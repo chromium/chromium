@@ -39,7 +39,6 @@ ci/android-13-x64-fyi-rel
 ci/android-annotator-rel
 ci/android-arm64-archive-rel
 ci/android-avd-packager
-ci/android-chrome-pie-x86-wpt-android-specific
 ci/android-chrome-pie-x86-wpt-fyi-rel
 ci/android-code-coverage
 ci/android-code-coverage-native
@@ -231,7 +230,6 @@ try/android-arm64-rel-compilator
 try/android-asan-compile-dbg
 try/android-bfcache-rel
 try/android-binary-size
-try/android-chrome-pie-x86-wpt-android-specific
 try/android-chrome-pie-x86-wpt-fyi-rel
 try/android-clang-tidy-rel
 try/android-code-coverage
