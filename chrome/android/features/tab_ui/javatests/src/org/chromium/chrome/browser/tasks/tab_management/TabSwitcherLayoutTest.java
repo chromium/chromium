@@ -56,7 +56,6 @@ import android.graphics.Bitmap.Config;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Build;
-import android.os.Build.VERSION_CODES;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -239,6 +238,8 @@ public class TabSwitcherLayoutTest {
         dismissAllModalDialogs();
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. It is migrated to
+    // TabSwitcherLayoutPTTest.java.
     @Test
     @MediumTest
     @Feature({"RenderTest"})
@@ -258,30 +259,8 @@ public class TabSwitcherLayoutTest {
         mRenderTestRule.render(cta.findViewById(R.id.tab_list_recycler_view), "3_web_tabs");
     }
 
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @DisableAnimationsTestRule.EnsureAnimationsOn
-    @CommandLineFlags.Add({BASE_PARAMS})
-    @DisableIf.Build(
-            message = "crbug.com/1473722",
-            supported_abis_includes = "x86",
-            sdk_is_less_than = VERSION_CODES.P)
-    public void testRenderGrid_3WebTabs_ThumbnailCacheRefactor() throws IOException {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        prepareTabs(3, 0, mTestServer.getURL(TEST_URL));
-        // Make sure all thumbnails are there before switching tabs.
-        enterGTSWithThumbnailRetry();
-        leaveTabSwitcher(cta);
-
-        ChromeTabUtils.switchTabInCurrentTabModel(cta, 0);
-        enterGTSWithThumbnailRetry();
-        mRenderTestRule.render(
-                cta.findViewById(R.id.tab_list_recycler_view),
-                "3_web_tabs_thumbnail_cache_refactor");
-    }
-
+    // TODO(crbug/324919909): Delete this test once Hub is launched. It is migrated to
+    // TabSwitcherLayoutPTTest.java.
     @Test
     @MediumTest
     @Feature({"RenderTest"})
@@ -300,6 +279,8 @@ public class TabSwitcherLayoutTest {
         mRenderTestRule.render(cta.findViewById(R.id.tab_list_recycler_view), "10_web_tabs");
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. It is migrated to
+    // TabSwitcherLayoutPTTest.java.
     @Test
     @MediumTest
     @Feature({"RenderTest"})
@@ -341,6 +322,8 @@ public class TabSwitcherLayoutTest {
                         });
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. It is migrated to
+    // TabSwitcherLayoutPTTest.java.
     @Test
     @MediumTest
     @Feature({"RenderTest"})
@@ -366,6 +349,8 @@ public class TabSwitcherLayoutTest {
                 cta.findViewById(R.id.tab_list_recycler_view), "3_incognito_web_tabs");
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. It is migrated to
+    // TabSwitcherLayoutPTTest.java.
     @Test
     @MediumTest
     @Feature({"RenderTest"})
@@ -390,6 +375,8 @@ public class TabSwitcherLayoutTest {
         mRenderTestRule.render(cta.findViewById(R.id.tab_list_recycler_view), "3_incognito_ntps");
     }
 
+    // TODO(crbug/324919909): Delete this test once Hub is launched. It is migrated to
+    // TabSwitcherLayoutPTTest.java.
     @Test
     @MediumTest
     @Feature({"RenderTest"})
@@ -415,32 +402,6 @@ public class TabSwitcherLayoutTest {
         mRenderTestRule.render(
                 cta.findViewById(R.id.tab_list_recycler_view),
                 "1_tab_group_GTS_card_item_color_icon");
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    @CommandLineFlags.Add({BASE_PARAMS})
-    @DisableIf.Build(
-            message = "Flaky on emulators; see https://crbug.com/1313747",
-            supported_abis_includes = "x86")
-    public void testRenderGrid_3NativeTabs_ThumbnailCacheRefactor() throws IOException {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        // Prepare some incognito native tabs and enter tab switcher.
-        // NTP in incognito mode is chosen for its consistency in look, and we don't have to mock
-        // away the MV tiles, login promo, feed, etc.
-        prepareTabs(1, 3, null);
-        assertTrue(cta.getCurrentTabModel().isIncognito());
-        // Make sure all thumbnails are there before switching tabs.
-        enterGTSWithThumbnailRetry();
-        leaveTabSwitcher(cta);
-
-        ChromeTabUtils.switchTabInCurrentTabModel(cta, 0);
-        enterTabSwitcher(cta);
-        mRenderTestRule.render(
-                cta.findViewById(R.id.tab_list_recycler_view),
-                "3_incognito_ntps_thumbnail_cache_refactor");
     }
 
     @Test
