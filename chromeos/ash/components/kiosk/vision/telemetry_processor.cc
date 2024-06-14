@@ -9,6 +9,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/containers/to_vector.h"
+#include "components/reporting/proto/synced/metric_data.pb.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-forward.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 

@@ -5,10 +5,15 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_KIOSK_VISION_INTERNAL_CAMERA_SERVICE_CONNECTOR_H_
 #define CHROMEOS_ASH_COMPONENTS_KIOSK_VISION_INTERNAL_CAMERA_SERVICE_CONNECTOR_H_
 
+#include <memory>
 #include <string>
+#include <vector>
 
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/capture_mode/camera_video_frame_handler.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
+#include "media/capture/video/video_capture_device_info.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/public/mojom/video_source_provider.mojom.h"

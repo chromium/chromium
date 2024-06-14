@@ -4,19 +4,33 @@
 
 #include "chromeos/ash/components/kiosk/vision/internal/camera_service_connector.h"
 
+#include <cstdlib>
+#include <memory>
 #include <optional>
 #include <string>
+#include <utility>
+#include <vector>
 
+#include "base/check.h"
 #include "base/check_deref.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
+#include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
+#include "components/capture_mode/camera_video_frame_handler.h"
 #include "content/public/browser/context_factory.h"
 #include "content/public/browser/video_capture_service.h"
+#include "media/base/video_frame.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-forward.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
+#include "media/capture/video/video_capture_device_info.h"
+#include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
+#include "services/video_capture/public/mojom/video_source.mojom.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"
 
 namespace ash::kiosk_vision {
