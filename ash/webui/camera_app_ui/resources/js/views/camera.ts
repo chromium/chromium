@@ -40,7 +40,6 @@ import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import {ToteMetricFormat} from '../mojo/type.js';
 import * as nav from '../nav.js';
-import {PerfLogger} from '../perf.js';
 import * as sound from '../sound.js';
 import {speak} from '../spoken_msg.js';
 import * as state from '../state.js';
@@ -157,7 +156,6 @@ export class Camera extends View implements CameraViewUI {
   constructor(
       protected readonly resultSaver: ResultSaver,
       protected readonly cameraManager: CameraManager,
-      readonly perfLogger: PerfLogger,
   ) {
     super(ViewName.CAMERA);
     this.documentReview = initializeDocumentReview(resultSaver);

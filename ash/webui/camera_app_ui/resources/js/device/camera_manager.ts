@@ -105,7 +105,6 @@ export class CameraManager implements EventListener {
   private readonly preview: Preview;
 
   constructor(
-      private readonly perfLogger: PerfLogger,
       defaultFacing: Facing|null,
       modeConstraints: ModeConstraints,
   ) {
@@ -580,11 +579,12 @@ export class CameraManager implements EventListener {
     state.set(state.State.CAMERA_CONFIGURING, true);
     this.setCameraAvailable(false);
     this.scheduler.reconfigurer.setShouldSuspend(this.shouldSuspend());
+    const perfLogger = PerfLogger.getInstance();
     if (loadTimeData.isVideoCaptureDisallowed()) {
       if (this.watchdog === null) {
         nav.open(ViewName.WARNING, WarningType.DISABLED_CAMERA);
         this.watchdog = new ResumeStateWatchdog(() => this.doReconfigure());
-        this.perfLogger.interrupt();
+        perfLogger.interrupt();
       }
       return false;
     }
@@ -602,7 +602,7 @@ export class CameraManager implements EventListener {
         }
         this.watchdog = new ResumeStateWatchdog(() => this.doReconfigure());
       }
-      this.perfLogger.interrupt();
+      perfLogger.interrupt();
       return false;
     }
 

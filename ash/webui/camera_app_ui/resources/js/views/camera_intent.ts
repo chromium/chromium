@@ -10,7 +10,6 @@ import * as metrics from '../metrics.js';
 import {FileAccessEntry} from '../models/file_system_access_entry.js';
 import {VideoSaver} from '../models/video_saver.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
-import {PerfLogger} from '../perf.js';
 import {scaleImage} from '../thumbnailer.js';
 import {Resolution} from '../type.js';
 import * as util from '../util.js';
@@ -39,7 +38,6 @@ export class CameraIntent extends Camera {
   constructor(
       private readonly intent: Intent,
       cameraManager: CameraManager,
-      perfLogger: PerfLogger,
   ) {
     super(
         {
@@ -63,7 +61,7 @@ export class CameraIntent extends Camera {
             assertNotReached();
           },
         },
-        cameraManager, perfLogger);
+        cameraManager);
   }
 
   override createVideoSaver(): Promise<VideoSaver> {
