@@ -178,6 +178,14 @@ bool ContentBrowserClient::DoesSiteRequireDedicatedProcess(
   return false;
 }
 
+bool ContentBrowserClient::ShouldAllowCrossProcessSandboxedFrameForPrecursor(
+    BrowserContext* browser_context,
+    const GURL& precursor,
+    const GURL& url) {
+  DCHECK(browser_context);
+  return true;
+}
+
 bool ContentBrowserClient::ShouldLockProcessToSite(
     BrowserContext* browser_context,
     const GURL& effective_url) {

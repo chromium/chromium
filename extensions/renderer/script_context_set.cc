@@ -290,14 +290,21 @@ mojom::ContextType ScriptContextSet::ClassifyJavaScriptContext(
 
   // We have an explicit check for sandboxed pages before checking whether the
   // extension is active in this process because:
-  // 1. Sandboxed pages run in the same process as regular extension pages, so
-  //    the extension is considered active.
+  // 1. Sandboxed extension pages which are not listed in the extension's
+  //    manifest sandbox section run in the same process as regular extension
+  //    pages, so the extension is considered active. (In contrast,
+  //    manifest-sandboxed pages run in a different process because they do not
+  //    have API access.)
   // 2. ScriptContext creation (which triggers bindings injection) happens
   //    before the SecurityContext is updated with the sandbox flags (after
   //    reading the CSP header), so the caller can't check if the context's
   //    security origin is unique yet.
-  if (ScriptContext::IsSandboxedPage(url))
+  if (ScriptContext::IsSandboxedPage(url)) {
+    // TODO(https://crbug.com/347031402): it's weird returning kWebPage if
+    // `extension` is non-null (which it is if `IsSandboxedPage` returns true).
+    // It would be better to return kUnprivileged in that case.
     return mojom::ContextType::kWebPage;
+  }
 
   if (extension && active_extension_ids_->count(extension->id()) > 0) {
     // |extension| is active in this process, but it could be either a true
@@ -310,8 +317,9 @@ mojom::ContextType ScriptContextSet::ClassifyJavaScriptContext(
       return mojom::ContextType::kPrivilegedWebPage;
     }
 
-    if (is_lock_screen_context_)
+    if (is_lock_screen_context_) {
       return mojom::ContextType::kLockscreenExtension;
+    }
 
     if (is_webview) {
 #if BUILDFLAG(ENABLE_PDF)
@@ -325,8 +333,9 @@ mojom::ContextType ScriptContextSet::ClassifyJavaScriptContext(
       return mojom::ContextType::kUnprivilegedExtension;
     }
 
-    if (view_type == mojom::ViewType::kOffscreenDocument)
+    if (view_type == mojom::ViewType::kOffscreenDocument) {
       return mojom::ContextType::kOffscreenExtension;
+    }
 
     return mojom::ContextType::kPrivilegedExtension;
   }
@@ -346,14 +355,17 @@ mojom::ContextType ScriptContextSet::ClassifyJavaScriptContext(
                : mojom::ContextType::kUnprivilegedExtension;
   }
 
-  if (!url.is_valid())
+  if (!url.is_valid()) {
     return mojom::ContextType::kUnspecified;
+  }
 
-  if (url.SchemeIs(content::kChromeUIScheme))
+  if (url.SchemeIs(content::kChromeUIScheme)) {
     return mojom::ContextType::kWebUi;
+  }
 
-  if (url.SchemeIs(content::kChromeUIUntrustedScheme))
+  if (url.SchemeIs(content::kChromeUIUntrustedScheme)) {
     return mojom::ContextType::kUntrustedWebUi;
+  }
 
   return mojom::ContextType::kWebPage;
 }

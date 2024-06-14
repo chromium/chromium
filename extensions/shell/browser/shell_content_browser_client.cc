@@ -44,6 +44,7 @@
 #include "extensions/browser/url_loader_factory_manager.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/manifest_handlers/sandboxed_page_info.h"
 #include "extensions/common/mojom/event_router.mojom.h"
 #include "extensions/common/mojom/guest_view.mojom.h"
 #include "extensions/common/mojom/renderer_host.mojom.h"
@@ -161,6 +162,10 @@ void ShellContentBrowserClient::SiteInstanceGotProcessAndSite(
   const Extension* extension = GetExtension(site_instance);
   if (!extension)
     return;
+
+  if (site_instance->IsSandboxed()) {
+    return;
+  }
 
   ProcessMap::Get(browser_main_parts_->browser_context())
       ->Insert(extension->id(), site_instance->GetProcess()->GetID());

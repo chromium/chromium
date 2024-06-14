@@ -879,6 +879,15 @@ bool SiteInstanceImpl::RequiresOriginKeyedProcess() {
   return site_info_.requires_origin_keyed_process();
 }
 
+bool SiteInstanceImpl::IsSandboxed() {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!has_site_) {
+    return false;
+  }
+
+  return site_info_.is_sandboxed();
+}
+
 void SiteInstanceImpl::IncrementRelatedActiveContentsCount() {
   browsing_instance_->IncrementActiveContentsCount();
 }

@@ -4100,8 +4100,11 @@ UrlInfo NavigationRequest::GetUrlInfo() {
         GetURL().IsAboutBlank() && source_site_instance_ &&
         source_site_instance_->GetSiteInfo().is_sandboxed();
 
-    if (has_origin_restricted_sandbox_flag ||
-        should_inherit_initiators_sandbox) {
+    // Consider isolating sandboxed frames that won't end up as downloads or
+    // 204s.
+    if ((has_origin_restricted_sandbox_flag ||
+         should_inherit_initiators_sandbox) &&
+        response_should_be_rendered_) {
       // If the URL under consideration wouldn't qualify for a dedicated process
       // without the sandbox flags, then it shouldn't qualify even with the
       // sandbox flag. This is most likely to occur when site isolation is only
@@ -4116,17 +4119,38 @@ UrlInfo NavigationRequest::GetUrlInfo() {
           current_instance->GetIsolationContext();
       if (SiteInfo::Create(isolation_context, UrlInfo(url_info_init))
               .RequiresDedicatedProcess(isolation_context)) {
-        url_info_init.WithSandbox(true);
-        // If an isolated sandbox is required, and the "per-document" grouping
-        // mode has been specified with kIsolateSandboxedIframes, then we use a
-        // unique document identifier, provided by `navigation_id_`, to
-        // guarantee that each sandboxed iframe gets its own SiteInstance, even
-        // if two or more such documents share a site/origin. Using
-        // navigation_id_ means that each new NavigationRequest (and thus each
-        // document) will get a different value.
-        if (blink::features::kIsolateSandboxedIframesGroupingParam.Get() ==
-            blink::features::IsolateSandboxedIframesGrouping::kPerDocument) {
-          url_info_init.WithUniqueSandboxId(navigation_id_);
+        // Embedders can identify, via ContentBrowserClient, cases that should
+        // not use isolated sandboxed frames.
+        ContentBrowserClient* client = GetContentClient()->browser();
+        BrowserContext* context =
+            frame_tree_node_->navigator().controller().GetBrowserContext();
+        url::SchemeHostPort precursor;
+        if (state_ < WILL_PROCESS_RESPONSE) {
+          precursor = GetTentativeOriginAtRequestTime()
+                          .GetTupleOrPrecursorTupleIfOpaque();
+        } else if (GetOriginToCommit()) {
+          precursor = GetOriginToCommit()->GetTupleOrPrecursorTupleIfOpaque();
+        } else {
+          CHECK(false) << "No origin-to-commit for sandboxed url = "
+                       << GetURL();
+        }
+
+        bool client_allows_cross_process_sandboxed_frames =
+            client->ShouldAllowCrossProcessSandboxedFrameForPrecursor(
+                context, precursor.GetURL(), GetURL());
+        if (client_allows_cross_process_sandboxed_frames) {
+          url_info_init.WithSandbox(true);
+          // If an isolated sandbox is required, and the "per-document" grouping
+          // mode has been specified with kIsolateSandboxedIframes, then we use
+          // a unique document identifier, provided by `navigation_id_`, to
+          // guarantee that each sandboxed iframe gets its own SiteInstance,
+          // even if two or more such documents share a site/origin. Using
+          // navigation_id_ means that each new NavigationRequest (and thus each
+          // document) will get a different value.
+          if (blink::features::kIsolateSandboxedIframesGroupingParam.Get() ==
+              blink::features::IsolateSandboxedIframesGrouping::kPerDocument) {
+            url_info_init.WithUniqueSandboxId(navigation_id_);
+          }
         }
       }
     }

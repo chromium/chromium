@@ -177,6 +177,10 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
   // own OriginAgentCluster.
   virtual bool RequiresOriginKeyedProcess() = 0;
 
+  // Returns true if the SiteInstance is for a process-isolated sandboxed
+  // documents only.
+  virtual bool IsSandboxed() = 0;
+
   // Return whether this SiteInstance and the provided |url| are part of the
   // same web site, for the purpose of assigning them to processes accordingly.
   // The decision is currently based on the registered domain of the URLs
