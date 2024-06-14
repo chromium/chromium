@@ -246,7 +246,7 @@ try_.builder(
     main_list_view = "try",
 )
 
-try_.orchestrator_builder(
+try_.builder(
     name = "mac13-arm64-rel",
     branch_selector = branches.selector.MAC_BRANCHES,
     mirrors = [
@@ -262,19 +262,9 @@ try_.orchestrator_builder(
             "no_symbols",
         ],
     ),
-    compilator = "mac13-arm64-rel-compilator",
-    main_list_view = "try",
-    tryjob = try_.job(
-        experiment_percentage = 100,
-    ),
-)
-
-try_.compilator_builder(
-    name = "mac13-arm64-rel-compilator",
-    branch_selector = branches.selector.MAC_BRANCHES,
+    builderless = True,
+    cores = None,
     cpu = cpu.ARM64,
-    # TODO (crbug.com/1245171): Revert when root issue is fixed
-    grace_period = 4 * time.minute,
     main_list_view = "try",
 )
 
@@ -299,10 +289,10 @@ try_.orchestrator_builder(
     contact_team_email = "bling-engprod@google.com",
     main_list_view = "try",
     tryjob = try_.job(
-        # TODO (crbug.com/338209817): change to 100,
-        # then move out of experimental CQ after,
-        # mac14-arm64-rel replaces mac13-arm64-rel on CQ.
-        experiment_percentage = 1,
+        # TODO (crbug.com/338209817): move out of
+        # experimental CQ after confirming it's consistently
+        # green and fast.
+        experiment_percentage = 100,
     ),
 )
 

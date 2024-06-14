@@ -421,7 +421,6 @@ try/mac12-tests
 try/mac12.0-blink-rel
 try/mac12.0.arm64-blink-rel
 try/mac13-arm64-rel
-try/mac13-arm64-rel-compilator
 try/mac13-blink-rel
 try/mac13-tests
 try/mac13.arm64-blink-rel

@@ -1619,6 +1619,10 @@
         # TODO(crbug.com/40868908): Fix & re-enable.
         'isolate_profile_data': False,
       },
+      'mac14-arm64-rel-tests': {
+        # TODO(crbug.com/347304858) : Remove once fixed.
+        'experiment_percentage': 100,
+      },
       'win-rel-cft': {
         # TODO(crbug.com/40868908): Fix & re-enable.
         'isolate_profile_data': False,
