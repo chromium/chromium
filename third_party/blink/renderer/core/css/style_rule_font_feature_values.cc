@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/css/cascade_layer.h"
+#include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -160,7 +161,7 @@ void StyleRuleFontFeatureValues::SetFamilies(Vector<AtomicString> families) {
 String StyleRuleFontFeatureValues::FamilyAsString() const {
   StringBuilder families;
   for (wtf_size_t i = 0; i < families_.size(); ++i) {
-    families.Append(families_[i]);
+    families.Append(SerializeFontFamily(families_[i]));
     if (i < families_.size() - 1) {
       families.Append(", ");
     }

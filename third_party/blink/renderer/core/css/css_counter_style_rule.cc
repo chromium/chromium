@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/css/css_counter_style_rule.h"
 
+#include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/parser/at_rule_descriptor_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
@@ -27,7 +28,7 @@ CSSCounterStyleRule::~CSSCounterStyleRule() = default;
 String CSSCounterStyleRule::cssText() const {
   StringBuilder result;
   result.Append("@counter-style ");
-  result.Append(name());
+  SerializeIdentifier(name(), result);
   result.Append(" {");
 
   // Note: The exact serialization isn't well specified.
