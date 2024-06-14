@@ -7,9 +7,9 @@
 
 #include <optional>
 #include <string>
-#include <vector>
 
 #include "base/component_export.h"
+#include "base/containers/flat_set.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/filters.h"
@@ -20,7 +20,7 @@ namespace attribution_reporting {
 
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) AggregatableTriggerData {
  public:
-  using Keys = std::vector<std::string>;
+  using Keys = base::flat_set<std::string>;
 
   static std::optional<AggregatableTriggerData> Create(absl::uint128 key_piece,
                                                        Keys source_keys,

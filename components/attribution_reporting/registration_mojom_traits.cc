@@ -373,7 +373,7 @@ bool StructTraits<attribution_reporting::mojom::AggregatableTriggerDataDataView,
     return false;
   }
 
-  attribution_reporting::AggregatableTriggerData::Keys source_keys;
+  std::vector<std::string> source_keys;
   if (!data.ReadSourceKeys(&source_keys)) {
     return false;
   }

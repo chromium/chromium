@@ -75,7 +75,7 @@ TEST(AggregatableTriggerDataTest, FromJSON) {
           "non_empty_source_keys",
           base::test::ParseJson(R"json({
             "key_piece": "0x1234",
-            "source_keys": ["a", "b"]
+            "source_keys": ["b", "a", "b"]
           })json"),
           ValueIs(Property(&AggregatableTriggerData::source_keys,
                            ElementsAre("a", "b"))),

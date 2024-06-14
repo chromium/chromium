@@ -2071,7 +2071,8 @@ ToAggregatableTriggerData(
             .SetKeyPiece(attribution_reporting::HexEncodeAggregationKey(
                 aggregatable_trigger.key_piece()))
             .SetSourceKeys(std::make_unique<Array<String>>(
-                aggregatable_trigger.source_keys()))
+                aggregatable_trigger.source_keys().begin(),
+                aggregatable_trigger.source_keys().end()))
             .SetFilters(ToFilterPair(aggregatable_trigger.filters()))
             .Build());
   }
