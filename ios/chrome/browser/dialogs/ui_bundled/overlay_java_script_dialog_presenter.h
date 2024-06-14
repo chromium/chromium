@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_DIALOGS_OVERLAY_JAVA_SCRIPT_DIALOG_PRESENTER_H_
-#define IOS_CHROME_BROWSER_UI_DIALOGS_OVERLAY_JAVA_SCRIPT_DIALOG_PRESENTER_H_
+#ifndef IOS_CHROME_BROWSER_DIALOGS_UI_BUNDLED_OVERLAY_JAVA_SCRIPT_DIALOG_PRESENTER_H_
+#define IOS_CHROME_BROWSER_DIALOGS_UI_BUNDLED_OVERLAY_JAVA_SCRIPT_DIALOG_PRESENTER_H_
 
 #include "ios/web/public/ui/java_script_dialog_presenter.h"
 
@@ -37,4 +37,4 @@ class OverlayJavaScriptDialogPresenter final
   void CancelDialogs(web::WebState* web_state) override;
 };
 
-#endif  // IOS_CHROME_BROWSER_UI_DIALOGS_OVERLAY_JAVA_SCRIPT_DIALOG_PRESENTER_H_
+#endif  // IOS_CHROME_BROWSER_DIALOGS_UI_BUNDLED_OVERLAY_JAVA_SCRIPT_DIALOG_PRESENTER_H_

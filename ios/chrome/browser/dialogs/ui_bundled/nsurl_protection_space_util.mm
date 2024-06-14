@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/dialogs/nsurl_protection_space_util.h"
+#import "ios/chrome/browser/dialogs/ui_bundled/nsurl_protection_space_util.h"
 
 #import "base/numerics/safe_conversions.h"
 #import "base/strings/sys_string_conversions.h"

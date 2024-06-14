@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/dialogs/overlay_java_script_dialog_presenter.h"
+#import "ios/chrome/browser/dialogs/ui_bundled/overlay_java_script_dialog_presenter.h"
 
 #import "base/functional/bind.h"
 #import "base/metrics/histogram_macros.h"
@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_alert_dialog_overlay.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_confirm_dialog_overlay.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_prompt_dialog_overlay.h"
-#import "ios/chrome/browser/ui/dialogs/java_script_dialog_blocking_state.h"
+#import "ios/chrome/browser/dialogs/ui_bundled/java_script_dialog_blocking_state.h"
 #import "ios/web/public/web_state.h"
 
 namespace {

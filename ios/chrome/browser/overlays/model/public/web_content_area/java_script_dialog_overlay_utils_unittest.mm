@@ -5,9 +5,9 @@
 #import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_dialog_overlay_utils.h"
 
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/dialogs/ui_bundled/java_script_blocking_fake_web_state.h"
+#import "ios/chrome/browser/dialogs/ui_bundled/java_script_dialog_blocking_state.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_overlay.h"
-#import "ios/chrome/browser/ui/dialogs/java_script_blocking_fake_web_state.h"
-#import "ios/chrome/browser/ui/dialogs/java_script_dialog_blocking_state.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"

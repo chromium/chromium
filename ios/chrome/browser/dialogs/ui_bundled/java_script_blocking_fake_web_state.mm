@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/dialogs/java_script_blocking_fake_web_state.h"
+#import "ios/chrome/browser/dialogs/ui_bundled/java_script_blocking_fake_web_state.h"
 
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"

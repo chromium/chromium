@@ -5,10 +5,10 @@
 #import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_alert_dialog_overlay.h"
 
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/dialogs/ui_bundled/java_script_dialog_blocking_state.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_response.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_overlay.h"
-#import "ios/chrome/browser/ui/dialogs/java_script_dialog_blocking_state.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest_mac.h"

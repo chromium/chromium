@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_DIALOGS_NSURL_PROTECTION_SPACE_UTIL_H_
-#define IOS_CHROME_BROWSER_UI_DIALOGS_NSURL_PROTECTION_SPACE_UTIL_H_
+#ifndef IOS_CHROME_BROWSER_DIALOGS_UI_BUNDLED_NSURL_PROTECTION_SPACE_UTIL_H_
+#define IOS_CHROME_BROWSER_DIALOGS_UI_BUNDLED_NSURL_PROTECTION_SPACE_UTIL_H_
 
 #import <Foundation/Foundation.h>
 
@@ -25,4 +25,4 @@ GURL RequesterOrigin(NSURLProtectionSpace* protectionSpace);
 
 }  // namespace nsurlprotectionspace_util
 
-#endif  // IOS_CHROME_BROWSER_UI_DIALOGS_NSURL_PROTECTION_SPACE_UTIL_H_
+#endif  // IOS_CHROME_BROWSER_DIALOGS_UI_BUNDLED_NSURL_PROTECTION_SPACE_UTIL_H_

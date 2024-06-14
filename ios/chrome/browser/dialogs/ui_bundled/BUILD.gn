@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("dialogs") {
+source_set("ui_bundled") {
   deps = [
     "//base",
     "//ios/web",
@@ -22,7 +22,7 @@ source_set("unit_tests") {
   sources = [ "java_script_dialog_blocking_state_unittest.mm" ]
 
   deps = [
-    ":dialogs",
+    ":ui_bundled",
     ":java_script_blocking_fake_web_state",
     "//ios/web",
     "//ios/web/public/test/fakes",
@@ -52,7 +52,7 @@ source_set("dialogs_internal") {
     "overlay_java_script_dialog_presenter.mm",
   ]
   deps = [
-    ":dialogs",
+    ":ui_bundled",
     "//base",
     "//components/strings",
     "//components/url_formatter",

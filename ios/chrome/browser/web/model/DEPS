@@ -126,11 +126,11 @@ specific_include_rules = {
     "+ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h",
   ],
   "^web_state_delegate_browser_agent.h": [
-    "+ios/chrome/browser/ui/dialogs/overlay_java_script_dialog_presenter.h",
+    "+ios/chrome/browser/dialogs/ui_bundled/overlay_java_script_dialog_presenter.h",
   ],
   "^web_state_delegate_browser_agent.mm": [
-    "+ios/chrome/browser/ui/dialogs/nsurl_protection_space_util.h",
     "+ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h",
+    "+ios/chrome/browser/dialogs/ui_bundled/nsurl_protection_space_util.h",
   ],
 
 }

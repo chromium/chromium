@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/dialogs/overlay_java_script_dialog_presenter.h"
+#import "ios/chrome/browser/dialogs/ui_bundled/overlay_java_script_dialog_presenter.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
