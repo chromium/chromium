@@ -576,6 +576,47 @@ public class TabGroupModelFilterUnitTest {
     }
 
     @Test
+    public void addTab_TabLaunchedFromLongPressBackgroundInGroup_NotRestoredToGroupOnUndo() {
+        Tab newTab = prepareTab(NEW_TAB_ID_0, NEW_TAB_ID_0, null, TAB1_ID);
+        doReturn(TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP).when(newTab).getLaunchType();
+        assertNull(mTab1.getTabGroupId());
+        assertNull(newTab.getTabGroupId());
+        assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(2));
+
+        Token tabGroupId = new Token(93L, 42L);
+        when(mTokenJniMock.createRandom()).thenReturn(tabGroupId);
+
+        // Create a new tab in the tab group via launch type.
+        addTabToTabModel(POSITION1 + 1, newTab);
+
+        assertThat(newTab.getRootId(), equalTo(TAB1_ROOT_ID));
+        assertEquals(mTab1.getTabGroupId(), tabGroupId);
+        assertEquals(mTab1.getTabGroupId(), newTab.getTabGroupId());
+        assertTrue(mTabGroupModelFilter.isTabInTabGroup(newTab));
+        verify(mTabGroupModelFilterObserver).didCreateNewGroup(newTab, mTabGroupModelFilter);
+        assertThat(mTabGroupModelFilter.getTabGroupCount(), equalTo(3));
+
+        // Move the new tab out of the tab group.
+        mTabGroupModelFilter.moveTabOutOfGroupInDirection(newTab.getId(), /* trailing= */ true);
+
+        verify(mTabGroupModelFilterObserver).didMoveTabOutOfGroup(newTab, POSITION1);
+        assertFalse(mTabGroupModelFilter.isTabInTabGroup(newTab));
+        assertThat(newTab.getRootId(), equalTo(NEW_TAB_ID_0));
+        assertTrue(mTabGroupModelFilter.isTabInTabGroup(mTab1));
+
+        // Start to close the new tab.
+        mTabGroupModelFilter.willCloseTab(newTab, /* didCloseAlone= */ true);
+
+        // Undo the closure.
+        mTabGroupModelFilter.tabClosureUndone(newTab);
+
+        // Assert on undo the new tab is not re-added to the tab group it was originally in.
+        assertThat(newTab.getRootId(), equalTo(NEW_TAB_ID_0));
+        assertFalse(mTabGroupModelFilter.isTabInTabGroup(newTab));
+        assertTrue(mTabGroupModelFilter.isTabInTabGroup(mTab1));
+    }
+
+    @Test
     public void addTab_TabLaunchedFromLongPressBackgroundInGroupToExistingGroup() {
         Tab newTab = prepareTab(NEW_TAB_ID_0, NEW_TAB_ID_0, null, TAB1_ID);
         doReturn(TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP).when(newTab).getLaunchType();
@@ -649,7 +690,7 @@ public class TabGroupModelFilterUnitTest {
         addTabToTabModel(-1, newTab);
         doReturn(false).when(mTabModel).isIncognito();
         doReturn(true).when(newTab).isIncognito();
-        mTabGroupModelFilter.addTab(newTab);
+        mTabGroupModelFilter.addTab(newTab, /* fromUndo= */ false);
     }
 
     @Test
@@ -2307,7 +2348,6 @@ public class TabGroupModelFilterUnitTest {
         doReturn(true).when(mTabGroupSyncFeaturesJniMock).isTabGroupSyncEnabled(mProfile);
 
         assertFalse(mTabGroupModelFilter.isTabGroupHiding(TAB2_TAB_GROUP_ID));
-
         List<Tab> groupWithTab2AndTab3 = List.of(mTab2, mTab3);
         // canUndo will always be true for pending tab closure, but use false just to verify it is
         // forwarded correctly.

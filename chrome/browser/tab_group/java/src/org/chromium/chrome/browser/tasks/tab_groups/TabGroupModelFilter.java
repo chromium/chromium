@@ -769,13 +769,13 @@ public class TabGroupModelFilter extends TabModelFilter {
     }
 
     @Override
-    protected void addTab(Tab tab) {
+    protected void addTab(Tab tab, boolean fromUndo) {
         if (tab.isIncognito() != isIncognito()) {
             throw new IllegalStateException("Attempting to open tab in the wrong model");
         }
 
         boolean willMergingCreateNewGroup = false;
-        if (shouldUseParentIds(tab)) {
+        if (!fromUndo && shouldUseParentIds(tab)) {
             Tab parentTab = getParentTab(tab);
             if (parentTab != null) {
                 Token oldTabGroupId = parentTab.getTabGroupId();
