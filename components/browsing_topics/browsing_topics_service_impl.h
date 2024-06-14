@@ -8,7 +8,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/timer/timer.h"
+#include "base/timer/wall_clock_timer.h"
 #include "components/browsing_topics/annotator.h"
 #include "components/browsing_topics/browsing_topics_calculator.h"
 #include "components/browsing_topics/browsing_topics_service.h"
@@ -204,7 +204,7 @@ class BrowsingTopicsServiceImpl
   std::vector<mojom::PageHandler::GetBrowsingTopicsStateCallback>
       get_state_for_webui_callbacks_;
 
-  base::OneShotTimer schedule_calculate_timer_;
+  base::WallClockTimer schedule_calculate_timer_;
 
   TopicAccessedCallback topic_accessed_callback_;
 
