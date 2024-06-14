@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_remote_suggestion_event_view_controller.h"
 
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/omnibox/popup/debugger/omnibox_remote_suggestion_event.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -12,6 +13,14 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.backgroundColor = UIColor.systemBackgroundColor;
+
+  UIButton* copyButton = [UIButton
+      systemButtonWithImage:DefaultSymbolWithPointSize(kCopyActionSymbol,
+                                                       kSymbolActionPointSize)
+                     target:self
+                     action:@selector(didTapCopyButton)];
+  copyButton.translatesAutoresizingMaskIntoConstraints = NO;
+  [copyButton setTitle:@"Copy" forState:UIControlStateNormal];
 
   UILabel* requestLabel = [[UILabel alloc] init];
   requestLabel.translatesAutoresizingMaskIntoConstraints = NO;
@@ -24,7 +33,7 @@
   responseLabel.numberOfLines = 0;
 
   UIStackView* stackView = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ requestLabel, responseLabel ]];
+      initWithArrangedSubviews:@[ copyButton, requestLabel, responseLabel ]];
   stackView.translatesAutoresizingMaskIntoConstraints = NO;
   stackView.axis = UILayoutConstraintAxisVertical;
 
@@ -40,6 +49,11 @@
   [NSLayoutConstraint activateConstraints:@[
     [stackView.widthAnchor constraintEqualToAnchor:scrollView.widthAnchor]
   ]];
+}
+
+- (void)didTapCopyButton {
+  UIPasteboard.generalPasteboard.string =
+      [self prettifyJsonString:self.event.responseBody];
 }
 
 - (NSString*)prettifyJsonString:(NSString*)jsonString {
