@@ -143,9 +143,10 @@
 /scons-2.0.1
 /screen-ai
 /shaka-player/dist/
+/siso/.versions/
+/siso/cipd/
 /siso/siso
 /siso/siso.exe
-/siso/.versions/
 /soda
 /soda-mac64
 /soda-win32

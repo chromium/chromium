@@ -2165,7 +2165,7 @@ deps = {
     'condition': 'non_git_source',
     'dep_type': 'cipd',
   },
-  'src/third_party/siso': {
+  'src/third_party/siso/cipd': {
     'packages': [
       {
         'package': 'infra/build/siso/${{platform}}',
