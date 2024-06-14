@@ -20,6 +20,8 @@
       RaisesException
   ] Promise<undefined> observe(FileSystemHandle handle,
                           optional FileSystemObserverObserveOptions options = {});
-  void unobserve(FileSystemHandle handle);
+  [
+    RuntimeEnabled=FileSystemObserverUnobserve
+  ] void unobserve(FileSystemHandle handle);
   void disconnect();
 };

@@ -205,6 +205,23 @@ class FileSystemAccessObserveWithFlagBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
+                       UnobserveDisabledByDefault) {
+  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
+
+  auto result = EvalJs(shell(),
+                       R"""(
+    (async () => {
+      const observer = new FileSystemObserver(() => {});
+      const root = await navigator.storage.getDirectory();
+      await observer.observe(root);
+      observer.unobserve(root);
+    })()
+    )""");
+  EXPECT_TRUE(result.error.find("is not a function") != std::string::npos)
+      << result.error;
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
                        CreateObserver) {
   EXPECT_TRUE(NavigateToURL(shell(), test_url_));
 
@@ -212,18 +229,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
       ExecJs(shell(),
              "(async () => {"
              "const observer = new FileSystemObserver(() => {}); })()"));
-}
-
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
-                       NothingToUnobserve) {
-  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
-
-  // Calling unobserve() without a corresponding observe() should be a no-op.
-  EXPECT_TRUE(ExecJs(shell(),
-                     "(async () => {"
-                     "const observer = new FileSystemObserver(() => {});"
-                     "const root = await navigator.storage.getDirectory();"
-                     "observer.unobserve(root); })()"));
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
@@ -236,20 +241,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
                      "const observer = new FileSystemObserver(() => {});"
                      "observer.disconnect();"
                      "observer.disconnect(); })()"));
-}
-
-IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
-                       UnobserveIsIdempotent) {
-  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
-
-  // unobserve() may be called several times without crashing.
-  EXPECT_TRUE(ExecJs(shell(),
-                     "(async () => {"
-                     "const observer = new FileSystemObserver(() => {});"
-                     "const root = await navigator.storage.getDirectory();"
-                     "observer.unobserve(root);"
-                     "observer.unobserve(root);"
-                     "observer.unobserve(root); })()"));
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
@@ -372,6 +363,44 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
   // clang-format on
   auto records = EvalJs(shell(), script).ExtractList();
   EXPECT_THAT(records.GetList(), testing::IsEmpty());
+}
+
+class FileSystemAccessObserveWithUnobserveFlagBrowserTest
+    : public FileSystemAccessObserveWithFlagBrowserTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    FileSystemAccessObserveWithFlagBrowserTest::SetUpCommandLine(command_line);
+
+    // Enable the flag to use the FileSystemObserver unobserve() function.
+    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
+                                    "FileSystemObserverUnobserve");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithUnobserveFlagBrowserTest,
+                       NothingToUnobserve) {
+  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
+
+  // Calling unobserve() without a corresponding observe() should be a no-op.
+  EXPECT_TRUE(ExecJs(shell(),
+                     "(async () => {"
+                     "const observer = new FileSystemObserver(() => {});"
+                     "const root = await navigator.storage.getDirectory();"
+                     "observer.unobserve(root); })()"));
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithUnobserveFlagBrowserTest,
+                       UnobserveIsIdempotent) {
+  EXPECT_TRUE(NavigateToURL(shell(), test_url_));
+
+  // unobserve() may be called several times without crashing.
+  EXPECT_TRUE(ExecJs(shell(),
+                     "(async () => {"
+                     "const observer = new FileSystemObserver(() => {});"
+                     "const root = await navigator.storage.getDirectory();"
+                     "observer.unobserve(root);"
+                     "observer.unobserve(root);"
+                     "observer.unobserve(root); })()"));
 }
 
 class FileSystemAccessObserverBrowserTest

@@ -1763,6 +1763,13 @@
       status: "experimental",
     },
     {
+      // The unobserve function of the FileSystemObserver.
+      // See https://crbug.com/321980469.
+      name: "FileSystemObserverUnobserve",
+      depends_on: ["FileSystemObserver"],
+      status: "experimental",
+    },
+    {
       name: "FindTextInReadonlyTextInput",
       status: "experimental",
     },
