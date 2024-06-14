@@ -5627,6 +5627,46 @@
             ]
         }
     ],
+    "ComposeProactiveNudgePosition": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_CursorNudge",
+                    "params": {
+                        "proactive_nudge_compact_ui": "true",
+                        "proactive_nudge_delay_milliseconds": "1000",
+                        "proactive_nudge_force_show_probability": "0.02",
+                        "proactive_nudge_show_probability": "0.0"
+                    },
+                    "enable_features": [
+                        "AutofillCaretExtraction",
+                        "ComposeProactiveNudge",
+                        "EnableComposeNudgeAtCursor"
+                    ]
+                },
+                {
+                    "name": "Enabled_FieldNudge",
+                    "params": {
+                        "proactive_nudge_delay_milliseconds": "1000",
+                        "proactive_nudge_force_show_probability": "0.02",
+                        "proactive_nudge_show_probability": "0.0"
+                    },
+                    "enable_features": [
+                        "ComposeProactiveNudge"
+                    ],
+                    "disable_features": [
+                        "AutofillCaretExtraction",
+                        "EnableComposeNudgeAtCursor"
+                    ]
+                }
+            ]
+        }
+    ],
     "ComposeUiRefinement": [
         {
             "platforms": [
