@@ -11324,21 +11324,6 @@
             ]
         }
     ],
-    "IOSMagicStackCollectionView": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSMagicStackCollectionView"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSMeasurementExperience": [
         {
             "platforms": [

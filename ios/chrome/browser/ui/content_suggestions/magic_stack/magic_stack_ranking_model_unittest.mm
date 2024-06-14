@@ -67,22 +67,6 @@
 using set_up_list_prefs::SetUpListItemState;
 using startup_metric_utils::FirstRunSentinelCreationResult;
 
-#define EXPECT_SET_MAGIC_STACK_ORDER(consumer, ...)                      \
-  {                                                                      \
-    id block_checker = [OCMArg checkWithBlock:^BOOL(id value) {          \
-      NSArray<NSNumber*>* magic_stack_order = (NSArray*)value;           \
-      std::vector<ContentSuggestionsModuleType> expected_order = {       \
-          __VA_ARGS__};                                                  \
-      EXPECT_EQ(magic_stack_order.count, expected_order.size());         \
-      for (unsigned int i = 0; i < expected_order.size(); i++) {         \
-        EXPECT_EQ(magic_stack_order[i].intValue, int(expected_order[i])) \
-            << "For Magic Stack order index " << i;                      \
-      }                                                                  \
-      return YES;                                                        \
-    }];                                                                  \
-    OCMExpect([consumer setMagicStackOrder:block_checker]);              \
-  }
-
 namespace {
 std::unique_ptr<KeyedService> BuildFeatureEngagementMockTracker(
     web::BrowserState* browser_state) {
@@ -320,8 +304,6 @@ class MagicStackRankingModelTest : public PlatformTest {
                       _parcelTrackingMediator, _tabResumptionMediator,
                       _mostVisitedTilesMediator
                     ]];
-    consumer_ = OCMProtocolMock(@protocol(ContentSuggestionsConsumer));
-    _magicStackRankingModel.consumer = consumer_;
 
     metrics_recorder_ = [[ContentSuggestionsMetricsRecorder alloc]
         initWithLocalState:local_state_.Get()];
@@ -374,84 +356,15 @@ class MagicStackRankingModelTest : public PlatformTest {
   ShortcutsMediator* _shortcutsMediator;
   MostVisitedTilesMediator* _mostVisitedTilesMediator;
   MagicStackRankingModel* _magicStackRankingModel;
-  id consumer_;
   id setUpListConsumer_;
   ContentSuggestionsMetricsRecorder* metrics_recorder_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
 };
 
-// Tests that the -setMagicStackOrder: consumer call is executed with the
-// correct order when fetching from the SegmentationPlatformService.
-// NOTE: do not add new module features to this test, this one ensures the
-// mediator can handle the fetched module order and filter out any extra modules
-// that aren't enabled/valid for a client. Add new modules to
-// TestMagicStackOrderSegmentationServiceCallWithNewFeatures.
-TEST_F(MagicStackRankingModelTest, TestMagicStackOrderSegmentationServiceCall) {
-  EXPECT_SET_MAGIC_STACK_ORDER(
-      consumer_, ContentSuggestionsModuleType::kCompactedSetUpList,
-      ContentSuggestionsModuleType::kMostVisited,
-      ContentSuggestionsModuleType::kShortcuts,
-      ContentSuggestionsModuleType::kTabResumption,
-      ContentSuggestionsModuleType::kParcelTracking);
-
-  [_magicStackRankingModel fetchLatestMagicStackRanking];
-
-  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      TestTimeouts::action_timeout(), true, ^bool() {
-        base::RunLoop().RunUntilIdle();
-        return _magicStackRankingModel.hasReceivedMagicStackResponse;
-      }));
-  EXPECT_OCMOCK_VERIFY(consumer_);
-  histogram_tester_->ExpectTotalCount(
-      kMagicStackNTPSegmentationRankingFetchTimeHistogram, 1);
-}
-
-// Tests that the -setMagicStackOrder: consumer call is executed with the
-// correct order with new modules enabled when fetching from the
-// SegmentationPlatformService with kHideIrrelevantModulesParam enabled. Since
-// the new features are in the back of the order ranking, verify that they are
-// ultimately not in the order passed to the consumer.
-TEST_F(MagicStackRankingModelTest,
-       TestMagicStackOrderSegmentationServiceCallWithNewFeaturesHidden) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      {{kMagicStack,
-        {{kMagicStackMostVisitedModuleParam, "true"},
-         {kHideIrrelevantModulesParam, "true"}}},
-       {kSafetyCheckMagicStack, {}}},
-      {});
-
-  EXPECT_SET_MAGIC_STACK_ORDER(
-      consumer_, ContentSuggestionsModuleType::kCompactedSetUpList,
-      ContentSuggestionsModuleType::kMostVisited,
-      ContentSuggestionsModuleType::kShortcuts,
-      ContentSuggestionsModuleType::kParcelTracking, );
-
-  [_magicStackRankingModel fetchLatestMagicStackRanking];
-
-  EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
-      TestTimeouts::action_timeout(), true, ^bool() {
-        base::RunLoop().RunUntilIdle();
-        return _magicStackRankingModel.hasReceivedMagicStackResponse;
-      }));
-  EXPECT_OCMOCK_VERIFY(consumer_);
-}
-
 TEST_F(MagicStackRankingModelTest, TestSetUpListConsumerCall) {
   setUpListConsumer_ = OCMStrictProtocolMock(@protocol(SetUpListConsumer));
-  consumer_ = OCMStrictProtocolMock(@protocol(ContentSuggestionsConsumer));
-  _magicStackRankingModel.consumer = consumer_;
-  _setUpListMediator.consumer = consumer_;
   [_setUpListMediator addConsumer:setUpListConsumer_];
-  OCMExpect([consumer_ showSetUpListModuleWithConfigs:[OCMArg any]]);
-  OCMExpect([consumer_ setShortcutTilesConfig:[OCMArg any]]);
-  OCMExpect([consumer_ showTabResumptionWithItem:[OCMArg any]]);
-  OCMExpect([consumer_ showParcelTrackingItem:[OCMArg any]]);
-  OCMExpect([consumer_ setMostVisitedTilesConfig:[OCMArg any]]);
-
   [_magicStackRankingModel fetchLatestMagicStackRanking];
-
-  EXPECT_OCMOCK_VERIFY(consumer_);
 
   OCMExpect([setUpListConsumer_ setUpListItemDidComplete:[OCMArg any]
                                        allItemsCompleted:NO

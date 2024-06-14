@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
+#import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_magic_stack_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_prefs.h"
 #import "ios/chrome/browser/ui/content_suggestions/safety_check/safety_check_state.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -27,6 +28,12 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+
+@interface SafetyCheckMagicStackMediator (Testing)
+
+- (void)addConsumer:(id<SafetyCheckMagicStackConsumer>)consumer;
+
+@end
 
 // Tests the SafetyCheckMagicStackMediator.
 class SafetyCheckMagicStackMediatorTest : public PlatformTest {
@@ -89,14 +96,14 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
 
     mock_app_state_ = OCMClassMock([AppState class]);
 
-    consumer_ = OCMProtocolMock(@protocol(ContentSuggestionsConsumer));
-
     mediator_ = [[SafetyCheckMagicStackMediator alloc]
         initWithSafetyCheckManager:safety_check_manager_.get()
                         localState:local_pref_service_.get()
                           appState:mock_app_state_];
 
-    mediator_.consumer = consumer_;
+    safety_check_magic_stack_consumer_ =
+        OCMProtocolMock(@protocol(SafetyCheckMagicStackConsumer));
+    [mediator_ addConsumer:safety_check_magic_stack_consumer_];
   }
 
   void TearDown() override {
@@ -112,8 +119,8 @@ class SafetyCheckMagicStackMediatorTest : public PlatformTest {
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   std::unique_ptr<TestingPrefServiceSimple> local_pref_service_;
-  id consumer_;
   SafetyCheckMagicStackMediator* mediator_;
+  id safety_check_magic_stack_consumer_;
   scoped_refptr<IOSChromePasswordCheckManager> password_check_manager_;
   std::unique_ptr<IOSChromeSafetyCheckManager> safety_check_manager_;
 };
@@ -127,8 +134,9 @@ TEST_F(SafetyCheckMagicStackMediatorTest, CallsConsumerWithRunningState) {
               safeBrowsingState:SafeBrowsingSafetyCheckState::kUnsafe
                    runningState:RunningSafetyCheckState::kRunning];
 
-  OCMExpect([consumer_
-      showSafetyCheck:[OCMArg checkWithBlock:^BOOL(SafetyCheckState* state) {
+  OCMExpect([safety_check_magic_stack_consumer_
+      safetyCheckStateDidChange:[OCMArg checkWithBlock:^BOOL(
+                                            SafetyCheckState* state) {
         return state.updateChromeState == expected.updateChromeState &&
                state.passwordState == expected.passwordState &&
                state.safeBrowsingState == expected.safeBrowsingState &&
@@ -137,28 +145,30 @@ TEST_F(SafetyCheckMagicStackMediatorTest, CallsConsumerWithRunningState) {
 
   safety_check_manager_->StartSafetyCheck();
 
-  EXPECT_OCMOCK_VERIFY(consumer_);
+  EXPECT_OCMOCK_VERIFY(safety_check_magic_stack_consumer_);
 }
 
 // Tests the mediator's consumer is not called when the password state changes,
 // i.e. consumer is called only when the running state changes.
 TEST_F(SafetyCheckMagicStackMediatorTest,
        DoesNotCallConsumerWithPasswordStateChange) {
-  OCMReject([consumer_ showSafetyCheck:[OCMArg any]]);
+  OCMReject([safety_check_magic_stack_consumer_
+      safetyCheckStateDidChange:[OCMArg any]]);
 
   safety_check_manager_->PasswordCheckStatusChanged(
       PasswordCheckState::kQuotaLimit);
 
-  EXPECT_OCMOCK_VERIFY(consumer_);
+  EXPECT_OCMOCK_VERIFY(safety_check_magic_stack_consumer_);
 }
 
 // Tests the mediator's consumer is not called when the Insecure Credentials
 // list changes, i.e. consumer is called only when the running state changes.
 TEST_F(SafetyCheckMagicStackMediatorTest,
        DoesNotCallConsumerWithInsecureCredentialsChange) {
-  OCMReject([consumer_ showSafetyCheck:[OCMArg any]]);
+  OCMReject([safety_check_magic_stack_consumer_
+      safetyCheckStateDidChange:[OCMArg any]]);
 
   safety_check_manager_->InsecureCredentialsChanged();
 
-  EXPECT_OCMOCK_VERIFY(consumer_);
+  EXPECT_OCMOCK_VERIFY(safety_check_magic_stack_consumer_);
 }
