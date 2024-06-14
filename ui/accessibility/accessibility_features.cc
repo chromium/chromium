@@ -292,7 +292,6 @@ bool IsLayoutExtractionEnabled() {
   return base::FeatureList::IsEnabled(::features::kLayoutExtraction);
 }
 
-// This feature is only used in tests and must not be enabled by default.
 BASE_FEATURE(kMainNodeAnnotations,
              "MainNodeAnnotations",
              base::FEATURE_DISABLED_BY_DEFAULT);

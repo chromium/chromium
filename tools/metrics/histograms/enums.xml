@@ -16333,6 +16333,7 @@ from previous Chrome versions.
   <int value="-1789077219"
       label="DownloadNotificationServiceUnifiedAPI:enabled"/>
   <int value="-1788763369" label="PrintingPpdChannel:disabled"/>
+  <int value="-1788662002" label="MainNodeAnnotations:enabled"/>
   <int value="-1787333474" label="FedCmError:disabled"/>
   <int value="-1786020274" label="AppSpecificHistory:enabled"/>
   <int value="-1784831690" label="Bento:disabled"/>
@@ -20720,6 +20721,7 @@ from previous Chrome versions.
       label="ignore-litepage-redirect-optimization-blacklist"/>
   <int value="116643273"
       label="WebAuthenticationNewDiscoverableCredentialsUi:enabled"/>
+  <int value="116666324" label="MainNodeAnnotations:disabled"/>
   <int value="116697601" label="OmniboxSuggestionButtonRow:disabled"/>
   <int value="116712802" label="AudioSelectionImprovement:enabled"/>
   <int value="117076190" label="DriveFsBidirectionalNativeMessaging:disabled"/>

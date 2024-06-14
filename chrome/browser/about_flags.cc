@@ -9818,6 +9818,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLayoutExtractionDescription,
      kOsMac | kOsLinux | kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(features::kLayoutExtraction)},
+
+    {"main-node-annotations", flag_descriptions::kMainNodeAnnotationsName,
+     flag_descriptions::kMainNodeAnnotationsDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kMainNodeAnnotations)},
 #endif
 
     {"origin-agent-cluster-default",
