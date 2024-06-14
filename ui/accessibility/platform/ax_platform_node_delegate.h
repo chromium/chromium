@@ -32,7 +32,7 @@
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
-#include "ui/accessibility/platform/ax_unique_id.h"
+#include "ui/accessibility/platform/ax_platform_node_id.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -520,7 +520,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
 
   // Returns an ID that is unique for this node across all accessibility trees
   // in the current application or desktop.
-  virtual const AXUniqueId& GetUniqueId() const;
+  virtual AXPlatformNodeId GetUniqueId() const;
 
   // Return a vector of all the descendants of this delegate's node. This method
   // is only meaningful for Windows UIA.

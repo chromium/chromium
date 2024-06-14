@@ -30,7 +30,6 @@
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
-#include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/base/layout.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/accessibility/atomic_view_ax_tree_manager.h"
@@ -874,7 +873,7 @@ bool ViewAXPlatformNodeDelegate::IsReadOnlyOrDisabled() const {
   }
 }
 
-const ui::AXUniqueId& ViewAXPlatformNodeDelegate::GetUniqueId() const {
+ui::AXPlatformNodeId ViewAXPlatformNodeDelegate::GetUniqueId() const {
   return ViewAccessibility::GetUniqueId();
 }
 

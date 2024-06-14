@@ -31,9 +31,8 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
 
   ~BrowserAccessibilityAndroid() override;
 
-  int32_t unique_id() const { return GetUniqueId().Get(); }
-
   // BrowserAccessibility Overrides.
+  using BrowserAccessibility::GetUniqueId;
   bool CanFireEvents() const override;
   void OnDataChanged() override;
   void OnLocationChanged() override;

@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/platform/ax_platform_node_id.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace ui {
@@ -100,7 +101,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNode {
   virtual bool IsDescendantOf(AXPlatformNode* ancestor) const = 0;
 
   // Return the unique ID.
-  int32_t GetUniqueId() const;
+  AXPlatformNodeId GetUniqueId() const;
 
   // Creates a string representation of this node's data.
   std::string ToString();

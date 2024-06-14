@@ -31,7 +31,6 @@
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/vector_icons/vector_icons.h"
-#include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/rect.h"
@@ -487,7 +486,7 @@ void AppListSearchView::MaybeNotifySelectedResultChanged() {
   }
 
   search_box_view_->SetA11yActiveDescendant(
-      selected_view->GetViewAccessibility().GetUniqueId().Get());
+      selected_view->GetViewAccessibility().GetUniqueId());
 }
 
 void AppListSearchView::OnSearchNotifierButtonPressed() {

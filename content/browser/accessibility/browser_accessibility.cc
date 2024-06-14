@@ -4,7 +4,8 @@
 
 #include "content/browser/accessibility/browser_accessibility.h"
 
-#include <cstddef>
+#include <stddef.h>
+
 #include <iterator>
 
 #include "base/check.h"
@@ -27,7 +28,6 @@
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
-#include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/base/buildflags.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -862,7 +862,7 @@ BrowserAccessibility::GetSourceNodesForReverseRelations(
       manager_->ax_tree()->GetReverseRelations(attr, GetData().id));
 }
 
-const ui::AXUniqueId& BrowserAccessibility::GetUniqueId() const {
+ui::AXPlatformNodeId BrowserAccessibility::GetUniqueId() const {
   // This is not the same as GetData().id which comes from Blink, because
   // those ids are only unique within the Blink process. We need one that is
   // unique per OS window.

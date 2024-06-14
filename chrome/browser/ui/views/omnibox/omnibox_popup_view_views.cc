@@ -390,7 +390,7 @@ void OmniboxPopupViewViews::AddPopupAccessibleNodeData(
   // between the omnibox and the list of suggestions, and determine which
   // suggestion is currently selected, even though focus remains here on
   // the omnibox.
-  int32_t popup_view_id = GetViewAccessibility().GetUniqueId().Get();
+  int32_t popup_view_id = GetViewAccessibility().GetUniqueId();
   node_data->AddIntListAttribute(ax::mojom::IntListAttribute::kControlsIds,
                                  {popup_view_id});
   size_t selected_line = GetSelection().line;
@@ -398,7 +398,7 @@ void OmniboxPopupViewViews::AddPopupAccessibleNodeData(
     if (OmniboxResultView* result_view = result_view_at(selected_line)) {
       node_data->AddIntAttribute(
           ax::mojom::IntAttribute::kActivedescendantId,
-          result_view->GetViewAccessibility().GetUniqueId().Get());
+          result_view->GetViewAccessibility().GetUniqueId());
     }
   }
 }
@@ -620,7 +620,7 @@ void OmniboxPopupViewViews::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   }
 
   if (omnibox_view_) {
-    int32_t view_id = omnibox_view_->GetViewAccessibility().GetUniqueId().Get();
+    int32_t view_id = omnibox_view_->GetViewAccessibility().GetUniqueId();
     node_data->AddIntAttribute(ax::mojom::IntAttribute::kPopupForId, view_id);
   }
 }

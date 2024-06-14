@@ -5,11 +5,12 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AX_FRAGMENT_ROOT_WIN_H_
 #define UI_ACCESSIBILITY_PLATFORM_AX_FRAGMENT_ROOT_WIN_H_
 
+#include <wrl/client.h>
+
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
-
-#include <wrl/client.h>
+#include "ui/accessibility/platform/ax_unique_id.h"
 
 namespace ui {
 
@@ -67,7 +68,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXFragmentRootWin
   gfx::NativeViewAccessible GetPreviousSibling() const override;
   gfx::NativeViewAccessible HitTestSync(int x, int y) const override;
   gfx::NativeViewAccessible GetFocus() const override;
-  const ui::AXUniqueId& GetUniqueId() const override;
+  AXPlatformNodeId GetUniqueId() const override;
   gfx::AcceleratedWidget GetTargetForNativeAccessibilityEvent() override;
   AXPlatformNode* GetFromTreeIDAndNodeID(const ui::AXTreeID& ax_tree_id,
                                          int32_t id) override;

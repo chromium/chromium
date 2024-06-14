@@ -247,7 +247,7 @@ const ui::AXNodeData& AXVirtualView::GetData() const {
   static ui::AXNodeData node_data;
   node_data = custom_data_;
 
-  node_data.id = GetUniqueId().Get();
+  node_data.id = GetUniqueId();
 
   if (!GetOwnerView() || !GetOwnerView()->GetEnabled())
     node_data.SetRestriction(ax::mojom::Restriction::kDisabled);
@@ -437,7 +437,7 @@ bool AXVirtualView::IsOffscreen() const {
   return false;
 }
 
-const ui::AXUniqueId& AXVirtualView::GetUniqueId() const {
+ui::AXPlatformNodeId AXVirtualView::GetUniqueId() const {
   return unique_id_;
 }
 

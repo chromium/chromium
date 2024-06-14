@@ -416,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest,
   OmniboxResultView* selected_result_view = GetResultViewAt(2);
   EXPECT_EQ(ax_node_data_omnibox.GetIntAttribute(
                 ax::mojom::IntAttribute::kActivedescendantId),
-            selected_result_view->GetViewAccessibility().GetUniqueId().Get());
+            selected_result_view->GetViewAccessibility().GetUniqueId());
   histogram_tester.ExpectUniqueSample("Omnibox.Views.PopupFirstPaint", 1, 0);
 }
 

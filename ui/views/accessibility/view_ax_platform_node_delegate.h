@@ -29,7 +29,6 @@
 namespace ui {
 
 struct AXActionData;
-class AXUniqueId;
 
 }  // namespace ui
 
@@ -117,7 +116,7 @@ class VIEWS_EXPORT ViewAXPlatformNodeDelegate
   bool IsReadOnlyOrDisabled() const override;
 
   // Also in |ViewAccessibility|.
-  const ui::AXUniqueId& GetUniqueId() const override;
+  ui::AXPlatformNodeId GetUniqueId() const override;
   std::vector<int32_t> GetColHeaderNodeIds() const override;
   std::vector<int32_t> GetColHeaderNodeIds(int col_index) const override;
   std::optional<int32_t> GetCellId(int row_index, int col_index) const override;

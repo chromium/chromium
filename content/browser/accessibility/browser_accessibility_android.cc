@@ -28,7 +28,6 @@
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/platform/ax_android_constants.h"
-#include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/strings/grit/ax_strings.h"
 
 namespace {
@@ -115,12 +114,13 @@ BrowserAccessibilityAndroid::BrowserAccessibilityAndroid(
     BrowserAccessibilityManager* manager,
     ui::AXNode* node)
     : BrowserAccessibility(manager, node) {
-  g_unique_id_map.Get()[unique_id()] = this;
+  g_unique_id_map.Get()[GetUniqueId()] = this;
 }
 
 BrowserAccessibilityAndroid::~BrowserAccessibilityAndroid() {
-  if (unique_id())
-    g_unique_id_map.Get().erase(unique_id());
+  if (auto id = GetUniqueId()) {
+    g_unique_id_map.Get().erase(id);
+  }
 }
 
 void BrowserAccessibilityAndroid::OnLocationChanged() {
@@ -2020,7 +2020,7 @@ void BrowserAccessibilityAndroid::OnDataChanged() {
 
   auto* manager =
       static_cast<BrowserAccessibilityManagerAndroid*>(this->manager());
-  manager->ClearNodeInfoCacheForGivenId(unique_id());
+  manager->ClearNodeInfoCacheForGivenId(GetUniqueId());
 }
 
 int BrowserAccessibilityAndroid::CountChildrenWithRole(
@@ -2087,7 +2087,7 @@ std::u16string
 BrowserAccessibilityAndroid::GenerateAccessibilityNodeInfoString() const {
   auto* manager =
       static_cast<BrowserAccessibilityManagerAndroid*>(this->manager());
-  return manager->GenerateAccessibilityNodeInfoString(unique_id());
+  return manager->GenerateAccessibilityNodeInfoString(GetUniqueId());
 }
 
 }  // namespace content

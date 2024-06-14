@@ -186,7 +186,7 @@ base::Value::Dict BuildTargetDescriptor(views::Widget* widget) {
   widget_data.Set(kTypeField, kWidget);
 
   // Use the Widget's root view ViewAccessibility's unique ID for lookup.
-  int id = widget->GetRootView()->GetViewAccessibility().GetUniqueId().Get();
+  int id = widget->GetRootView()->GetViewAccessibility().GetUniqueId();
   widget_data.Set(kWidgetIdField, id);
   return widget_data;
 }
@@ -769,7 +769,7 @@ void AccessibilityUIMessageHandler::RequestWidgetsTree(
     const std::vector<views::Widget*> widgets = manager_map.GetWidgets();
     for (views::Widget* widget : widgets) {
       int current_id =
-          widget->GetRootView()->GetViewAccessibility().GetUniqueId().Get();
+          widget->GetRootView()->GetViewAccessibility().GetUniqueId();
       if (current_id == widget_id) {
         ui::AXTreeID tree_id = manager_map.GetWidgetTreeID(widget);
         DCHECK_NE(tree_id, ui::AXTreeIDUnknown());

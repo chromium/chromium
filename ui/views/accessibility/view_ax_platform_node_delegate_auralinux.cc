@@ -17,6 +17,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
+#include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/aura/window.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/accessibility/views_utilities_aura.h"
@@ -102,7 +103,7 @@ class AuraLinuxApplication : public ui::AXPlatformNodeDelegate,
     return ax_platform_node_->GetNativeViewAccessible();
   }
 
-  const ui::AXUniqueId& GetUniqueId() const override { return unique_id_; }
+  ui::AXPlatformNodeId GetUniqueId() const override { return unique_id_; }
 
   // WidgetObserver:
 

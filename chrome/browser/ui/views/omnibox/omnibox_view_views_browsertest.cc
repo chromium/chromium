@@ -717,7 +717,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewViewsTest, AccessiblePopup) {
       popup_node_data_1.HasIntAttribute(ax::mojom::IntAttribute::kPopupForId));
   EXPECT_EQ(
       popup_node_data_1.GetIntAttribute(ax::mojom::IntAttribute::kPopupForId),
-      omnibox_view_views->GetViewAccessibility().GetUniqueId().Get());
+      omnibox_view_views->GetViewAccessibility().GetUniqueId());
 
   // Populate suggestions for the omnibox popup.
   AutocompleteController* autocomplete_controller =

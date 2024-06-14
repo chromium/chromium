@@ -16,6 +16,7 @@
 #include "build/chromeos_buildflags.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/platform/ax_platform_node_id.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
@@ -337,7 +338,7 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   virtual void AnnouncePolitely(const std::u16string& text);
   virtual void AnnounceText(const std::u16string& text);
 
-  virtual const ui::AXUniqueId& GetUniqueId() const;
+  virtual ui::AXPlatformNodeId GetUniqueId() const;
 
   View* view() const { return view_; }
   AXVirtualView* FocusedVirtualChild() const { return focused_virtual_child_; }

@@ -345,7 +345,7 @@ gfx::NativeViewAccessible AXFragmentRootWin::GetFocus() const {
   return nullptr;
 }
 
-const ui::AXUniqueId& AXFragmentRootWin::GetUniqueId() const {
+AXPlatformNodeId AXFragmentRootWin::GetUniqueId() const {
   return unique_id_;
 }
 

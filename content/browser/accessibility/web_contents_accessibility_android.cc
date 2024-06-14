@@ -371,7 +371,7 @@ void WebContentsAccessibilityAndroid::HandleContentChanged(int32_t unique_id) {
           root_manager->GetBrowserAccessibilityRoot());
       if (root_node) {
         Java_WebContentsAccessibilityImpl_handleContentChanged(
-            env, obj, root_node->unique_id());
+            env, obj, root_node->GetUniqueId());
       }
     }
   }
@@ -565,7 +565,7 @@ bool WebContentsAccessibilityAndroid::OnHoverEventNoRenderer(JNIEnv* env,
         root_manager->ApproximateHitTest(gfx::ToFlooredPoint(point)));
     if (hover_node &&
         hover_node != root_manager->GetBrowserAccessibilityRoot()) {
-      HandleHover(hover_node->unique_id());
+      HandleHover(hover_node->GetUniqueId());
       return true;
     }
   }
@@ -625,7 +625,7 @@ jint WebContentsAccessibilityAndroid::GetRootId(JNIEnv* env) {
     auto* root = static_cast<BrowserAccessibilityAndroid*>(
         root_manager->GetBrowserAccessibilityRoot());
     if (root)
-      return static_cast<jint>(root->unique_id());
+      return static_cast<jint>(root->GetUniqueId());
   }
   return ui::kAXAndroidInvalidViewId;
 }
@@ -785,14 +785,14 @@ jboolean WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfo(
   auto* parent_node =
       static_cast<BrowserAccessibilityAndroid*>(node->PlatformGetParent());
   if (parent_node)
-    parent_id = parent_node->unique_id();
+    parent_id = parent_node->GetUniqueId();
 
   // Build a vector of child ids
   std::vector<int> child_ids;
   for (const auto& child : node->PlatformChildren()) {
     const auto& android_node =
         static_cast<const BrowserAccessibilityAndroid&>(child);
-    child_ids.push_back(android_node.unique_id());
+    child_ids.push_back(android_node.GetUniqueId());
   }
   if (child_ids.size()) {
     Java_AccessibilityNodeInfoBuilder_addAccessibilityNodeInfoChildren(
@@ -1117,7 +1117,7 @@ jint WebContentsAccessibilityAndroid::FindElementType(
 
   auto* android_node =
       static_cast<BrowserAccessibilityAndroid*>(tree_search.GetMatchAtIndex(0));
-  int32_t element_id = android_node->unique_id();
+  int32_t element_id = android_node->GetUniqueId();
 
   // Navigate forwards to the autofill popup's proxy node if focus is currently
   // on the element hosting the autofill popup. Once within the popup, a back
@@ -1130,7 +1130,7 @@ jint WebContentsAccessibilityAndroid::FindElementType(
     g_element_after_element_hosting_autofill_popup_unique_id = element_id;
     auto* proxy_android_node =
         static_cast<BrowserAccessibilityAndroid*>(g_autofill_popup_proxy_node);
-    return proxy_android_node->unique_id();
+    return proxy_android_node->GetUniqueId();
   }
 
   return element_id;
@@ -1298,7 +1298,7 @@ void WebContentsAccessibilityAndroid::OnAutofillPopupDisplayed(JNIEnv* env) {
 
   auto* android_node = static_cast<BrowserAccessibilityAndroid*>(current_focus);
 
-  g_element_hosting_autofill_popup_unique_id = android_node->unique_id();
+  g_element_hosting_autofill_popup_unique_id = android_node->GetUniqueId();
 }
 
 void WebContentsAccessibilityAndroid::OnAutofillPopupDismissed(JNIEnv* env) {
@@ -1322,7 +1322,8 @@ jboolean WebContentsAccessibilityAndroid::IsAutofillPopupNode(JNIEnv* env,
   auto* android_node =
       static_cast<BrowserAccessibilityAndroid*>(g_autofill_popup_proxy_node);
 
-  return g_autofill_popup_proxy_node && android_node->unique_id() == unique_id;
+  return g_autofill_popup_proxy_node &&
+         android_node->GetUniqueId() == unique_id;
 }
 
 bool WebContentsAccessibilityAndroid::Scroll(JNIEnv* env,

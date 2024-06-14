@@ -5,16 +5,17 @@
 #ifndef UI_ACCESSIBILITY_PLATFORM_AX_SYSTEM_CARET_WIN_H_
 #define UI_ACCESSIBILITY_PLATFORM_AX_SYSTEM_CARET_WIN_H_
 
-#include <type_traits>
-
 #include <oleacc.h>
 #include <wrl/client.h>
+
+#include <type_traits>
 
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
+#include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -49,7 +50,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXSystemCaretWin
                           AXOffscreenResult* offscreen_result) const override;
   gfx::AcceleratedWidget GetTargetForNativeAccessibilityEvent() override;
   bool ShouldIgnoreHoveredStateForTesting() override;
-  const ui::AXUniqueId& GetUniqueId() const override;
+  AXPlatformNodeId GetUniqueId() const override;
 
   static void AXPlatformNodeWinDeleter(AXPlatformNodeWin* ptr);
 

@@ -25,7 +25,6 @@
 #include "ui/accessibility/ax_tree_data.h"
 #include "ui/accessibility/platform/ax_platform_node_base.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
-#include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/base/win/atl_module.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 

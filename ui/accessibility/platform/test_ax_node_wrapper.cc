@@ -885,7 +885,7 @@ TestAXNodeWrapper::GetSourceNodesForReverseRelations(
       tree_->GetReverseRelations(attr, GetData().id));
 }
 
-const ui::AXUniqueId& TestAXNodeWrapper::GetUniqueId() const {
+AXPlatformNodeId TestAXNodeWrapper::GetUniqueId() const {
   return unique_id_;
 }
 

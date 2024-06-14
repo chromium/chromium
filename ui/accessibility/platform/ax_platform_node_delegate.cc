@@ -11,6 +11,7 @@
 #include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
+#include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/accessibility/platform/child_iterator.h"
 #include "ui/accessibility/platform/child_iterator_base.h"
 
@@ -572,9 +573,9 @@ bool AXPlatformNodeDelegate::IsValidRelationTarget(
     // relations reported via platform APIs.
     return false;
   }
-  DCHECK_GT(GetUniqueId(), AXUniqueId::kInvalidId);
+  DCHECK_GT(GetUniqueId(), AXPlatformNodeId());
   DCHECK(target);
-  DCHECK_GT(target->GetUniqueId(), AXUniqueId::kInvalidId);
+  DCHECK_GT(target->GetUniqueId(), AXPlatformNodeId());
   // We should ignore reflexive relations.
   return GetUniqueId() != target->GetUniqueId();
 }
@@ -585,10 +586,10 @@ std::u16string AXPlatformNodeDelegate::GetAuthorUniqueId() const {
   return std::u16string();
 }
 
-const AXUniqueId& AXPlatformNodeDelegate::GetUniqueId() const {
+AXPlatformNodeId AXPlatformNodeDelegate::GetUniqueId() const {
   static const base::NoDestructor<AXUniqueId> empty_unique_id(
       AXUniqueId::Create());
-  return *empty_unique_id;
+  return empty_unique_id->Get();
 }
 
 AXPlatformNodeDelegate* AXPlatformNodeDelegate::GetParentDelegate() const {

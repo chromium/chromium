@@ -11,40 +11,34 @@
 #include <utility>
 
 #include "base/component_export.h"
+#include "ui/accessibility/ax_node_id_forward.h"
+#include "ui/accessibility/platform/ax_platform_node_id.h"
 
 namespace ui {
 
-// AXUniqueID provides IDs for accessibility objects that are guaranteed to be
-// unique for the entire Chrome instance. New IDs are generated via `Create()`,
-// and the ID is freed when the instance is destroyed.
-//
-// The unique id is guaranteed to be a positive number. Because some platforms
-// want to negate it, we ensure the range is below the signed int max.
-//
-// These ids must not be conflated with the int id, that comes with web node
-// data, which are only unique within their source frame.
-// TODO(accessibility) We should be able to get rid of this, because node IDs
-// are actually unique within their own OS-level window.
+// AXUniqueId provides IDs for accessibility objects that are guaranteed to be
+// unique for the entire Chrome instance. New values are generated via
+// `Create()`, and an instance's value is available for reuse when the instance
+// is destroyed. Instances are implicitly convertible to (but not from)
+// AXPlatformNodeId.
 class COMPONENT_EXPORT(AX_PLATFORM) AXUniqueId final {
  public:
-  static constexpr int32_t kInvalidId = 0;
-
   static AXUniqueId Create() {
     return AXUniqueId(GetNextAXUniqueId(std::numeric_limits<int32_t>::max()));
   }
 
   AXUniqueId() = delete;
   AXUniqueId(AXUniqueId&& other) noexcept
-      : id_(std::exchange(other.id_, kInvalidId)) {}
+      : id_(std::exchange(other.id_, AXPlatformNodeId())) {}
   AXUniqueId& operator=(AXUniqueId&& other) noexcept {
-    id_ = std::exchange(other.id_, kInvalidId);
+    id_ = std::exchange(other.id_, AXPlatformNodeId());
     return *this;
   }
 
   ~AXUniqueId();
 
-  int32_t Get() const { return id_; }
-  operator int32_t() const { return id_; }
+  AXPlatformNodeId Get() const { return id_; }
+  constexpr operator const AXPlatformNodeId&() const { return id_; }
 
   friend bool operator==(const AXUniqueId&, const AXUniqueId&) = default;
   friend bool operator<=>(const AXUniqueId&, const AXUniqueId&) = default;
@@ -54,12 +48,12 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXUniqueId final {
   }
 
  private:
-  explicit AXUniqueId(int32_t id) : id_(id) {}
+  explicit AXUniqueId(AXPlatformNodeId id) : id_(id) {}
 
   // Returns the next available value given a max of `max_id`.
-  static int32_t GetNextAXUniqueId(int32_t max_id);
+  static AXPlatformNodeId GetNextAXUniqueId(int32_t max_id);
 
-  int32_t id_;
+  AXPlatformNodeId id_;
 };
 
 }  // namespace ui

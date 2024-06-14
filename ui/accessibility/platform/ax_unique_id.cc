@@ -15,21 +15,24 @@ namespace ui {
 namespace {
 
 // Returns the container of assigned IDs.
-std::unordered_set<int32_t>& GetAssignedIds() {
-  static base::NoDestructor<std::unordered_set<int32_t>> assigned_ids;
+std::unordered_set<AXPlatformNodeId, typename AXPlatformNodeId::Hasher>&
+GetAssignedIds() {
+  static base::NoDestructor<
+      std::unordered_set<AXPlatformNodeId, typename AXPlatformNodeId::Hasher>>
+      assigned_ids;
   return *assigned_ids;
 }
 
 }  // namespace
 
 AXUniqueId::~AXUniqueId() {
-  if (id_ != kInvalidId) {
+  if (id_ != AXPlatformNodeId()) {
     GetAssignedIds().erase(id_);
   }
 }
 
 // static
-int32_t AXUniqueId::GetNextAXUniqueId(int32_t max_id) {
+AXPlatformNodeId AXUniqueId::GetNextAXUniqueId(int32_t max_id) {
   static int32_t current_id = 0;
   static bool has_wrapped = false;
 
@@ -47,10 +50,11 @@ int32_t AXUniqueId::GetNextAXUniqueId(int32_t max_id) {
            "cannot be equal to the most recently created ID.";
     // If it |has_wrapped| then we need to continue until we find the first
     // unassigned ID.
-  } while (has_wrapped && base::Contains(assigned_ids, current_id));
+  } while (has_wrapped &&
+           base::Contains(assigned_ids, AXPlatformNodeId(current_id)));
 
-  assigned_ids.insert(current_id);
-  return current_id;
+  assigned_ids.insert(AXPlatformNodeId(current_id));
+  return AXPlatformNodeId(current_id);
 }
 
 }  // namespace ui

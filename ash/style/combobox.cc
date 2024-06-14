@@ -486,7 +486,7 @@ void Combobox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   if (selected_button) {
     node_data->AddIntAttribute(
         ax::mojom::IntAttribute::kActivedescendantId,
-        selected_button->GetViewAccessibility().GetUniqueId().Get());
+        selected_button->GetViewAccessibility().GetUniqueId());
   }
 }
 

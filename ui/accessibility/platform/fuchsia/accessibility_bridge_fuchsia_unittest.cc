@@ -12,6 +12,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
+#include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/accessibility/platform/fuchsia/accessibility_bridge_fuchsia_impl.h"
 #include "ui/accessibility/platform/fuchsia/ax_platform_node_fuchsia.h"
 #include "ui/accessibility/platform/fuchsia/semantic_provider.h"
@@ -74,7 +75,7 @@ class FakeAXPlatformNodeDelegate : public AXPlatformNodeDelegate {
     return true;
   }
 
-  const AXUniqueId& GetUniqueId() const override { return unique_id_; }
+  AXPlatformNodeId GetUniqueId() const override { return unique_id_; }
 
   const std::optional<AXActionData>& last_action_data() {
     return last_action_data_;

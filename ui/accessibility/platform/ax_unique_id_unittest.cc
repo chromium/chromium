@@ -78,4 +78,9 @@ TEST(AXPlatformUniqueIdTest, DoesCreateCorrectId) {
   EXPECT_LE(unique_id->Get(), kMaxId);
 }
 
+TEST(AXPlatformUniqueIdTest, DefaultPlatformNodeIdIsInvalid) {
+  AXPlatformNodeId default_id;
+  ASSERT_EQ(default_id, kInvalidAXNodeID);
+}
+
 }  // namespace ui

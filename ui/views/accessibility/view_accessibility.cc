@@ -152,7 +152,7 @@ std::optional<size_t> ViewAccessibility::GetIndexOf(
 }
 
 void ViewAccessibility::GetAccessibleNodeData(ui::AXNodeData* data) const {
-  data->id = GetUniqueId().Get();
+  data->id = GetUniqueId();
   data->AddStringAttribute(ax::mojom::StringAttribute::kClassName,
                            view_->GetClassName());
 
@@ -494,9 +494,8 @@ void ViewAccessibility::SetName(View& naming_view) {
     SetName(name, ax::mojom::NameFrom::kRelatedElement);
   }
 
-  data_.AddIntListAttribute(
-      ax::mojom::IntListAttribute::kLabelledbyIds,
-      {naming_view.GetViewAccessibility().GetUniqueId().Get()});
+  data_.AddIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds,
+                            {naming_view.GetViewAccessibility().GetUniqueId()});
 }
 
 std::u16string ViewAccessibility::GetCachedName() const {
@@ -535,7 +534,7 @@ void ViewAccessibility::ClearSetSize() {
 
 void ViewAccessibility::SetActiveDescendant(views::View& view) {
   data_.AddIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
-                        view.GetViewAccessibility().GetUniqueId().Get());
+                        view.GetViewAccessibility().GetUniqueId());
 }
 
 void ViewAccessibility::ClearActiveDescendant() {
@@ -607,7 +606,7 @@ void ViewAccessibility::SetDescription(View& describing_view) {
   SetDescription(name, ax::mojom::DescriptionFrom::kRelatedElement);
   data_.AddIntListAttribute(
       ax::mojom::IntListAttribute::kDescribedbyIds,
-      {describing_view.GetViewAccessibility().GetUniqueId().Get()});
+      {describing_view.GetViewAccessibility().GetUniqueId()});
 }
 
 std::u16string ViewAccessibility::GetCachedDescription() const {
@@ -776,7 +775,7 @@ void ViewAccessibility::AnnounceText(const std::u16string& text) {
   AnnounceAlert(text);
 }
 
-const ui::AXUniqueId& ViewAccessibility::GetUniqueId() const {
+ui::AXPlatformNodeId ViewAccessibility::GetUniqueId() const {
   return unique_id_;
 }
 

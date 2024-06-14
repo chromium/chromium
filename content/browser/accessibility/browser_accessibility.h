@@ -28,6 +28,8 @@
 #include "ui/accessibility/ax_range.h"
 #include "ui/accessibility/ax_text_attributes.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
+#include "ui/accessibility/platform/ax_platform_node_id.h"
+#include "ui/accessibility/platform/ax_unique_id.h"
 #include "ui/accessibility/platform/child_iterator.h"
 #include "ui/base/buildflags.h"
 
@@ -456,11 +458,12 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   // The manager of this tree of accessibility objects. Weak, owns us.
   const raw_ptr<BrowserAccessibilityManager> manager_;
 
+  // A unique ID, needed by some platform APIs, since node IDs are frame-local.
   // Protected so that it can't be called directly on a BrowserAccessibility
   // where it could be confused with an id that comes from the node data,
   // which is only unique to the Blink process.
   // Does need to be called by subclasses such as BrowserAccessibilityAndroid.
-  const ui::AXUniqueId& GetUniqueId() const override;
+  ui::AXPlatformNodeId GetUniqueId() const override;
 
   // Returns a text attribute map indicating the offsets in the text of a leaf
   // object, such as a text field or static text, where spelling and grammar
