@@ -229,12 +229,6 @@ bool IsValidPaymentsSuggestionForFieldContents(
               std::u16string::npos);
 }
 
-Suggestion::Text GetBenefitTextWithTermsAppended(
-    const std::u16string& benefit_text) {
-  return Suggestion::Text(l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_CREDIT_CARD_BENEFIT_TEXT_FOR_SUGGESTIONS, benefit_text));
-}
-
 bool IsCreditCardExpiryData(FieldType trigger_field_type) {
   switch (trigger_field_type) {
     case CREDIT_CARD_EXP_MONTH:
@@ -269,6 +263,474 @@ Suggestion CreateManagePaymentMethodsEntry(SuggestionType suggestion_type,
     suggestion.icon = Suggestion::Icon::kSettings;
   }
   return suggestion;
+}
+
+// Removes expired local credit cards not used since `min_last_used` from
+// `cards`. The relative ordering of `cards` is maintained.
+void RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(
+    base::Time min_last_used,
+    std::vector<CreditCard*>& cards) {
+  const size_t original_size = cards.size();
+  std::erase_if(cards, [comparison_time = AutofillClock::Now(),
+                        min_last_used](const CreditCard* card) {
+    return card->IsExpired(comparison_time) &&
+           card->use_date() < min_last_used &&
+           card->record_type() == CreditCard::RecordType::kLocalCard;
+  });
+  const size_t num_cards_suppressed = original_size - cards.size();
+  AutofillMetrics::LogNumberOfCreditCardsSuppressedForDisuse(
+      num_cards_suppressed);
+}
+
+// Return a nickname for the |card| to display. This is generally the nickname
+// stored in |card|, unless |card| exists as a local and a server copy. In
+// this case, we prefer the nickname of the local if it is defined. If only
+// one copy has a nickname, take that.
+std::u16string GetDisplayNicknameForCreditCard(
+    const CreditCard& card,
+    const PaymentsDataManager& payments_data) {
+  // Always prefer a local nickname if available.
+  if (card.HasNonEmptyValidNickname() &&
+      card.record_type() == CreditCard::RecordType::kLocalCard) {
+    return card.nickname();
+  }
+  // Either the card a) has no nickname or b) is a server card and we would
+  // prefer to use the nickname of a local card.
+  for (CreditCard* candidate : payments_data.GetCreditCards()) {
+    if (candidate->guid() != card.guid() &&
+        candidate->MatchingCardDetails(card) &&
+        candidate->HasNonEmptyValidNickname()) {
+      return candidate->nickname();
+    }
+  }
+  // Fall back to nickname of |card|, which may be empty.
+  return card.nickname();
+}
+
+// Creates nested/child suggestions for `suggestion` with the `credit_card`
+// information. The number of nested suggestions added depends on the
+// information present in the `credit_card`.
+void AddPaymentsGranularFillingChildSuggestions(const CreditCard& credit_card,
+                                                Suggestion& suggestion,
+                                                const std::string& app_locale) {
+  bool has_content_above =
+      AddCreditCardNameChildSuggestion(credit_card, app_locale, suggestion);
+  has_content_above |=
+      AddCreditCardNumberChildSuggestion(credit_card, app_locale, suggestion);
+
+  if (credit_card.HasInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR)) {
+    if (has_content_above) {
+      suggestion.children.push_back(
+          PaymentsSuggestionGenerator::CreateSeparator());
+    }
+    AddCreditCardExpiryDateChildSuggestion(credit_card, app_locale, suggestion);
+  }
+}
+
+// Return the texts shown as the first line of the suggestion, based on the
+// `credit_card` and the `trigger_field_type`. The first index in the pair
+// represents the main text, and the second index represents the minor text.
+// The minor text can be empty, in which case the main text should be rendered
+// as the entire first line. If the minor text is not empty, they should be
+// combined. This splitting is implemented for situations where the first part
+// of the first line of the suggestion should be truncated.
+std::pair<Suggestion::Text, Suggestion::Text>
+GetSuggestionMainTextAndMinorTextForCard(const CreditCard& credit_card,
+                                         const AutofillClient& client,
+                                         FieldType trigger_field_type) {
+  if (IsCreditCardExpiryData(trigger_field_type) &&
+      client.ShouldFormatForLargeKeyboardAccessory()) {
+    // For large keyboard accessories, always show the full date regardless of
+    // which expiry data related field triggered the suggestion.
+    trigger_field_type = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR;
+  }
+
+  auto create_text =
+      [](std::u16string main_text,
+         std::u16string minor_text =
+             u"") -> std::pair<Suggestion::Text, Suggestion::Text> {
+    return {Suggestion::Text(main_text, Suggestion::Text::IsPrimary(true),
+                             Suggestion::Text::ShouldTruncate(
+                                 ShouldSplitCardNameAndLastFourDigits())),
+            // minor_text should also be shown in primary style, since it is
+            // also on the first line.
+            Suggestion::Text(minor_text, Suggestion::Text::IsPrimary(true))};
+  };
+
+  std::u16string nickname = GetDisplayNicknameForCreditCard(
+      credit_card, client.GetPersonalDataManager()->payments_data_manager());
+  if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard &&
+      client.ShouldFormatForLargeKeyboardAccessory()) {
+    return create_text(credit_card.CardNameForAutofillDisplay(nickname));
+  }
+
+  if (trigger_field_type == CREDIT_CARD_NUMBER) {
+    if (ShouldSplitCardNameAndLastFourDigits()) {
+      return create_text(credit_card.CardNameForAutofillDisplay(nickname),
+                         credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
+                             GetObfuscationLength()));
+    }
+
+    return create_text(credit_card.CardNameAndLastFourDigits(
+        nickname, GetObfuscationLength()));
+  }
+
+  if (trigger_field_type == CREDIT_CARD_VERIFICATION_CODE) {
+    CHECK(!credit_card.cvc().empty());
+#if BUILDFLAG(IS_ANDROID)
+    return create_text(l10n_util::GetStringFUTF16(
+        IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT,
+        credit_card.CardNameForAutofillDisplay(GetDisplayNicknameForCreditCard(
+            credit_card,
+            client.GetPersonalDataManager()->payments_data_manager()))));
+#else
+    return create_text(
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT));
+#endif
+  }
+
+  return create_text(credit_card.GetInfo(
+      trigger_field_type,
+      client.GetPersonalDataManager()->payments_data_manager().app_locale()));
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+Suggestion::Text GetBenefitTextWithTermsAppended(
+    const std::u16string& benefit_text) {
+  return Suggestion::Text(l10n_util::GetStringFUTF16(
+      IDS_AUTOFILL_CREDIT_CARD_BENEFIT_TEXT_FOR_SUGGESTIONS, benefit_text));
+}
+
+// Returns the benefit text to display in credit card suggestions if it is
+// available.
+std::optional<Suggestion::Text> GetCreditCardBenefitSuggestionLabel(
+    const CreditCard& credit_card,
+    const AutofillClient& client) {
+  const std::u16string& benefit_description =
+      client.GetPersonalDataManager()
+          ->payments_data_manager()
+          .GetApplicableBenefitDescriptionForCardAndOrigin(
+              credit_card, client.GetLastCommittedPrimaryMainFrameOrigin(),
+              client.GetAutofillOptimizationGuide());
+  return benefit_description.empty()
+             ? std::nullopt
+             : std::optional<Suggestion::Text>(
+                   GetBenefitTextWithTermsAppended(benefit_description));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+// Set the labels to be shown in the suggestion. Note that this does not
+// account for virtual cards or card-linked offers.
+// `metadata_logging_context` the instrument ids of credit cards for which
+// benefits data is available. When displaying card benefits is disabled,
+// `metadata_logging_context` will be populated but a benefit label will not
+// be shown.
+void SetSuggestionLabelsForCard(
+    const CreditCard& credit_card,
+    const AutofillClient& client,
+    FieldType trigger_field_type,
+    autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
+    Suggestion& suggestion) {
+  const std::string& app_locale =
+      client.GetPersonalDataManager()->payments_data_manager().app_locale();
+
+  if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard &&
+      client.ShouldFormatForLargeKeyboardAccessory()) {
+    suggestion.labels = {{Suggestion::Text(
+        l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE) +
+        u" • " + credit_card.GetInfo(CREDIT_CARD_TYPE, app_locale) + u" " +
+        credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
+            GetObfuscationLength()))}};
+    return;
+  }
+
+  // If the focused field is a card number field.
+  if (trigger_field_type == CREDIT_CARD_NUMBER) {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    suggestion.labels = {{Suggestion::Text(
+        credit_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale))}};
+#else
+    std::vector<std::vector<Suggestion::Text>> labels;
+    std::optional<Suggestion::Text> benefit_label =
+        GetCreditCardBenefitSuggestionLabel(credit_card, client);
+    if (benefit_label) {
+      // Keep track of which cards had eligible benefits even if the
+      // benefit is not displayed in the suggestion due to
+      // IsCardEligibleForBenefits() == false. This is to denote a control group
+      // of users with benefit-eligible cards and assess how actually
+      // displaying the benefit in the experiment influences the users autofill
+      // interactions.
+      metadata_logging_context
+          .instrument_ids_to_issuer_ids_with_benefits_available.insert(
+              {credit_card.instrument_id(), credit_card.issuer_id()});
+      if (client.GetPersonalDataManager()
+              ->payments_data_manager()
+              .IsCardEligibleForBenefits(credit_card)) {
+        labels.push_back({*benefit_label});
+      }
+      suggestion.feature_for_iph =
+          &feature_engagement::kIPHAutofillCreditCardBenefitFeature;
+    }
+    labels.push_back({Suggestion::Text(
+        ShouldSplitCardNameAndLastFourDigits()
+            ? credit_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale)
+            : credit_card.DescriptiveExpiration(app_locale))});
+    suggestion.labels = std::move(labels);
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+    return;
+  }
+
+  // If the focused field is not a card number field AND the card number is
+  // empty (i.e. local cards added via settings page).
+  std::u16string nickname = GetDisplayNicknameForCreditCard(
+      credit_card, client.GetPersonalDataManager()->payments_data_manager());
+  if (credit_card.number().empty()) {
+    DCHECK_EQ(credit_card.record_type(), CreditCard::RecordType::kLocalCard);
+
+    if (credit_card.HasNonEmptyValidNickname()) {
+      suggestion.labels = {{Suggestion::Text(nickname)}};
+    } else if (trigger_field_type != CREDIT_CARD_NAME_FULL) {
+      suggestion.labels = {{Suggestion::Text(
+          credit_card.GetInfo(CREDIT_CARD_NAME_FULL, app_locale))}};
+    }
+    return;
+  }
+
+  // If the focused field is not a card number field AND the card number is NOT
+  // empty.
+
+  if constexpr (BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)) {
+    if (client.ShouldFormatForLargeKeyboardAccessory()) {
+      suggestion.labels = {
+          {Suggestion::Text(credit_card.CardNameAndLastFourDigits(
+              nickname, GetObfuscationLength()))}};
+    } else {
+      // On Mobile, the label is formatted as either "••••1234" or "••1234",
+      // depending on the obfuscation length.
+      suggestion.labels = {{Suggestion::Text(
+          credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
+              GetObfuscationLength()))}};
+    }
+    return;
+  }
+
+  if (ShouldSplitCardNameAndLastFourDigits()) {
+    // Format the label as "Product Description/Nickname/Network  ••••1234".
+    // If the card name is too long, it will be truncated from the tail.
+    suggestion.labels = {
+        {Suggestion::Text(credit_card.CardNameForAutofillDisplay(nickname),
+                          Suggestion::Text::IsPrimary(false),
+                          Suggestion::Text::ShouldTruncate(true)),
+         Suggestion::Text(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
+             GetObfuscationLength()))}};
+    return;
+  }
+
+  // Format the label as
+  // "Product Description/Nickname/Network  ••••1234, expires on 01/25".
+  suggestion.labels = {{Suggestion::Text(
+      credit_card.CardIdentifierStringAndDescriptiveExpiration(app_locale))}};
+  return;
+}
+
+// Adjust the content of `suggestion` if it is a virtual card suggestion.
+void AdjustVirtualCardSuggestionContent(Suggestion& suggestion,
+                                        const CreditCard& credit_card,
+                                        const AutofillClient& client,
+                                        FieldType trigger_field_type) {
+  if (credit_card.record_type() == CreditCard::RecordType::kLocalCard) {
+    const CreditCard* server_duplicate_card =
+        client.GetPersonalDataManager()
+            ->payments_data_manager()
+            .GetServerCardForLocalCard(&credit_card);
+    DCHECK(server_duplicate_card);
+    suggestion.payload = Suggestion::Guid(server_duplicate_card->guid());
+  }
+
+  suggestion.type = SuggestionType::kVirtualCreditCardEntry;
+  // If a virtual card is non-acceptable, it needs to be displayed in
+  // grayed-out style.
+  suggestion.apply_deactivated_style = !suggestion.is_acceptable;
+  suggestion.feature_for_iph =
+      &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature;
+
+  // If ShouldFormatForLargeKeyboardAccessory() is true, `suggestion` has been
+  // properly formatted by `SetSuggestionLabelsForCard` and does not need
+  // further changes.
+  if (client.ShouldFormatForLargeKeyboardAccessory()) {
+    return;
+  }
+
+  // Add virtual card labelling to suggestions. For keyboard accessory, it is
+  // prefixed to the suggestion, and for the dropdown, it is shown as a label on
+  // a separate line.
+  const std::u16string& virtual_card_label = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE);
+  const std::u16string& virtual_card_disabled_label = l10n_util::GetStringUTF16(
+      IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE);
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableVirtualCardMetadata)) {
+    suggestion.minor_text.value = suggestion.main_text.value;
+    if (suggestion.is_acceptable) {
+      suggestion.main_text.value = virtual_card_label;
+    } else {
+      suggestion.main_text.value = virtual_card_disabled_label;
+    }
+  } else {
+#if BUILDFLAG(IS_ANDROID)
+    // The keyboard accessory chips can only accommodate 2 strings which are
+    // displayed on a single row. The minor_text and the labels are
+    // concatenated, so we have: String 1 = main_text, String 2 = minor_text +
+    // labels.
+    // There is a limit on the size of the keyboard accessory chips. When the
+    // suggestion content exceeds this limit, the card name or the cardholder
+    // name can be truncated, the last 4 digits should never be truncated.
+    // Contents in the main_text are automatically truncated from the right end
+    // on the Android side when the size limit is exceeded, so the card name and
+    // the cardholder name is appended to the main_text.
+    // Here we modify the `Suggestion` members to make it suitable for showing
+    // on the keyboard accessory.
+    // Card number field:
+    // Before: main_text = card name, minor_text = last 4 digits, labels =
+    // expiration date.
+    // After: main_text = virtual card label + card name, minor_text = last 4
+    // digits, labels = null.
+    // Cardholder name field:
+    // Before: main_text = cardholder name, minor_text = null, labels = last 4
+    // digits.
+    // After: main_text = virtual card label + cardholder name, minor_text =
+    // null, labels = last 4 digits.
+    if (ShouldSplitCardNameAndLastFourDigits()) {
+      suggestion.main_text.value =
+          base::StrCat({virtual_card_label, u"  ", suggestion.main_text.value});
+    } else {
+      suggestion.minor_text.value = suggestion.main_text.value;
+      suggestion.main_text.value = virtual_card_label;
+    }
+    if (trigger_field_type == CREDIT_CARD_NUMBER) {
+      // The expiration date is not shown for the card number field, so it is
+      // removed.
+      suggestion.labels = {};
+    }
+#else   // Desktop/Android dropdown.
+    if (trigger_field_type == CREDIT_CARD_NUMBER) {
+      // Reset the labels as we only show benefit and virtual card label to
+      // conserve space.
+      suggestion.labels = {};
+      std::optional<Suggestion::Text> benefit_label =
+          GetCreditCardBenefitSuggestionLabel(credit_card, client);
+      if (benefit_label && client.GetPersonalDataManager()
+                               ->payments_data_manager()
+                               .IsCardEligibleForBenefits(credit_card)) {
+        suggestion.labels.push_back({*benefit_label});
+      }
+    }
+    if (suggestion.is_acceptable) {
+      suggestion.labels.push_back(
+          std::vector<Suggestion::Text>{Suggestion::Text(virtual_card_label)});
+    } else {
+      suggestion.labels.push_back(std::vector<Suggestion::Text>{
+          Suggestion::Text(virtual_card_disabled_label)});
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
+  }
+}
+
+// Set the URL for the card art image to be shown in the `suggestion`.
+void SetCardArtURL(Suggestion& suggestion,
+                   const CreditCard& credit_card,
+                   const PaymentsDataManager& payments_data,
+                   bool virtual_card_option) {
+  const GURL card_art_url = payments_data.GetCardArtURL(credit_card);
+  // The Capital One icon for virtual cards is not card metadata, it only helps
+  // distinguish FPAN from virtual cards when metadata is unavailable. FPANs
+  // should only ever use the network logo or rich card art. The Capital One
+  // logo is reserved for virtual cards only.
+  if (!virtual_card_option && card_art_url == kCapitalOneCardArtUrl) {
+    return;
+  }
+  // Only show card art if the experiment is enabled or if it is the Capital One
+  // virtual card icon.
+  if (base::FeatureList::IsEnabled(features::kAutofillEnableCardArtImage) ||
+      card_art_url == kCapitalOneCardArtUrl) {
+#if BUILDFLAG(IS_ANDROID)
+    suggestion.custom_icon_url = card_art_url;
+#else
+    gfx::Image* image = payments_data.GetCreditCardArtImageForUrl(card_art_url);
+    if (image) {
+      suggestion.custom_icon = *image;
+    }
+#endif
+  }
+}
+
+// Returns non credit card suggestions which are displayed below credit card
+// suggestions in the Autofill popup. `should_show_scan_credit_card` is used
+// to conditionally add scan credit card suggestion,
+// `should_show_cards_from_account` - conditionally add suggestions for
+// showing cards from account. `is_autofilled` is used to conditionally add
+// suggestion for clearing all autofilled fields. `with_gpay_logo` is used to
+// conditionally add GPay logo icon to the manage payment methods suggestion.
+std::vector<Suggestion> GetCreditCardFooterSuggestions(
+    bool should_show_scan_credit_card,
+    bool should_show_cards_from_account,
+    bool is_autofilled,
+    bool with_gpay_logo) {
+  std::vector<Suggestion> footer_suggestions;
+  if (should_show_scan_credit_card) {
+    Suggestion scan_credit_card(
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_SCAN_CREDIT_CARD),
+        SuggestionType::kScanCreditCard);
+    scan_credit_card.icon = Suggestion::Icon::kScanCreditCard;
+    footer_suggestions.push_back(scan_credit_card);
+  }
+
+  if (should_show_cards_from_account) {
+    Suggestion show_card_from_account(
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_SHOW_ACCOUNT_CARDS),
+        SuggestionType::kShowAccountCards);
+    show_card_from_account.icon = Suggestion::Icon::kGoogle;
+    footer_suggestions.push_back(show_card_from_account);
+  }
+
+  footer_suggestions.push_back(PaymentsSuggestionGenerator::CreateSeparator());
+
+  if (is_autofilled) {
+    footer_suggestions.push_back(
+        PaymentsSuggestionGenerator::CreateClearFormSuggestion());
+  }
+
+  footer_suggestions.push_back(
+      PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
+          with_gpay_logo));
+
+  return footer_suggestions;
+}
+
+// Returns true if we should show a virtual card option for the server card
+// `card`, false otherwise.
+bool ShouldShowVirtualCardOptionForServerCard(const CreditCard& card,
+                                              const AutofillClient& client) {
+  // If the card is not enrolled into virtual cards, we should not show a
+  // virtual card suggestion for it.
+  if (card.virtual_card_enrollment_state() !=
+      CreditCard::VirtualCardEnrollmentState::kEnrolled) {
+    return false;
+  }
+  // We should not show a suggestion for this card if the autofill
+  // optimization guide returns that this suggestion should be blocked.
+  if (auto* autofill_optimization_guide =
+          client.GetAutofillOptimizationGuide()) {
+    return !autofill_optimization_guide->ShouldBlockFormFieldSuggestion(
+               client.GetLastCommittedPrimaryMainFrameOrigin().GetURL(),
+               card) ||
+           base::FeatureList::IsEnabled(
+               features::kAutofillEnableVcnGrayOutForMerchantOptOut);
+  }
+  // No conditions to prevent displaying a virtual card suggestion were
+  // found, so return true.
+  return true;
 }
 
 }  // namespace
@@ -623,44 +1085,6 @@ PaymentsSuggestionGenerator::GetPromoCodeSuggestionsFromPromoCodeOffers(
   return suggestions;
 }
 
-// static
-void PaymentsSuggestionGenerator::
-    RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(
-        base::Time min_last_used,
-        std::vector<CreditCard*>& cards) {
-  const size_t original_size = cards.size();
-  std::erase_if(cards, [comparison_time = AutofillClock::Now(),
-                        min_last_used](const CreditCard* card) {
-    return card->IsExpired(comparison_time) &&
-           card->use_date() < min_last_used &&
-           card->record_type() == CreditCard::RecordType::kLocalCard;
-  });
-  const size_t num_cards_suppressed = original_size - cards.size();
-  AutofillMetrics::LogNumberOfCreditCardsSuppressedForDisuse(
-      num_cards_suppressed);
-}
-
-std::u16string PaymentsSuggestionGenerator::GetDisplayNicknameForCreditCard(
-    const CreditCard& card,
-    const PaymentsDataManager& payments_data) {
-  // Always prefer a local nickname if available.
-  if (card.HasNonEmptyValidNickname() &&
-      card.record_type() == CreditCard::RecordType::kLocalCard) {
-    return card.nickname();
-  }
-  // Either the card a) has no nickname or b) is a server card and we would
-  // prefer to use the nickname of a local card.
-  for (CreditCard* candidate : payments_data.GetCreditCards()) {
-    if (candidate->guid() != card.guid() &&
-        candidate->MatchingCardDetails(card) &&
-        candidate->HasNonEmptyValidNickname()) {
-      return candidate->nickname();
-    }
-  }
-  // Fall back to nickname of |card|, which may be empty.
-  return card.nickname();
-}
-
 bool PaymentsSuggestionGenerator::IsCardAcceptable(const CreditCard& card,
                                                    const AutofillClient& client,
                                                    bool is_manual_fallback) {
@@ -782,399 +1206,6 @@ Suggestion PaymentsSuggestionGenerator::CreateCreditCardSuggestion(
   }
 
   return suggestion;
-}
-
-void PaymentsSuggestionGenerator::AddPaymentsGranularFillingChildSuggestions(
-    const CreditCard& credit_card,
-    Suggestion& suggestion,
-    const std::string& app_locale) {
-  bool has_content_above =
-      AddCreditCardNameChildSuggestion(credit_card, app_locale, suggestion);
-  has_content_above |=
-      AddCreditCardNumberChildSuggestion(credit_card, app_locale, suggestion);
-
-  if (credit_card.HasInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR)) {
-    if (has_content_above) {
-      suggestion.children.push_back(
-          PaymentsSuggestionGenerator::CreateSeparator());
-    }
-    AddCreditCardExpiryDateChildSuggestion(credit_card, app_locale, suggestion);
-  }
-}
-
-std::pair<Suggestion::Text, Suggestion::Text>
-PaymentsSuggestionGenerator::GetSuggestionMainTextAndMinorTextForCard(
-    const CreditCard& credit_card,
-    const AutofillClient& client,
-    FieldType trigger_field_type) {
-  if (IsCreditCardExpiryData(trigger_field_type) &&
-      client.ShouldFormatForLargeKeyboardAccessory()) {
-    // For large keyboard accessories, always show the full date regardless of
-    // which expiry data related field triggered the suggestion.
-    trigger_field_type = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR;
-  }
-
-  auto create_text =
-      [](std::u16string main_text,
-         std::u16string minor_text =
-             u"") -> std::pair<Suggestion::Text, Suggestion::Text> {
-    return {Suggestion::Text(main_text, Suggestion::Text::IsPrimary(true),
-                             Suggestion::Text::ShouldTruncate(
-                                 ShouldSplitCardNameAndLastFourDigits())),
-            // minor_text should also be shown in primary style, since it is
-            // also on the first line.
-            Suggestion::Text(minor_text, Suggestion::Text::IsPrimary(true))};
-  };
-
-  std::u16string nickname = GetDisplayNicknameForCreditCard(
-      credit_card, client.GetPersonalDataManager()->payments_data_manager());
-  if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard &&
-      client.ShouldFormatForLargeKeyboardAccessory()) {
-    return create_text(credit_card.CardNameForAutofillDisplay(nickname));
-  }
-
-  if (trigger_field_type == CREDIT_CARD_NUMBER) {
-    if (ShouldSplitCardNameAndLastFourDigits()) {
-      return create_text(credit_card.CardNameForAutofillDisplay(nickname),
-                         credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
-                             GetObfuscationLength()));
-    }
-
-    return create_text(credit_card.CardNameAndLastFourDigits(
-        nickname, GetObfuscationLength()));
-  }
-
-  if (trigger_field_type == CREDIT_CARD_VERIFICATION_CODE) {
-    CHECK(!credit_card.cvc().empty());
-#if BUILDFLAG(IS_ANDROID)
-    return create_text(l10n_util::GetStringFUTF16(
-        IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT,
-        credit_card.CardNameForAutofillDisplay(GetDisplayNicknameForCreditCard(
-            credit_card,
-            client.GetPersonalDataManager()->payments_data_manager()))));
-#else
-    return create_text(
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_CVC_SUGGESTION_MAIN_TEXT));
-#endif
-  }
-
-  return create_text(credit_card.GetInfo(
-      trigger_field_type,
-      client.GetPersonalDataManager()->payments_data_manager().app_locale()));
-}
-
-void PaymentsSuggestionGenerator::SetSuggestionLabelsForCard(
-    const CreditCard& credit_card,
-    const AutofillClient& client,
-    FieldType trigger_field_type,
-    autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
-    Suggestion& suggestion) {
-  const std::string& app_locale =
-      client.GetPersonalDataManager()->payments_data_manager().app_locale();
-
-  if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard &&
-      client.ShouldFormatForLargeKeyboardAccessory()) {
-    suggestion.labels = {{Suggestion::Text(
-        l10n_util::GetStringUTF16(
-            IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE) +
-        u" • " + credit_card.GetInfo(CREDIT_CARD_TYPE, app_locale) + u" " +
-        credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
-            GetObfuscationLength()))}};
-    return;
-  }
-
-  // If the focused field is a card number field.
-  if (trigger_field_type == CREDIT_CARD_NUMBER) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    suggestion.labels = {{Suggestion::Text(
-        credit_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale))}};
-#else
-    std::vector<std::vector<Suggestion::Text>> labels;
-    std::optional<Suggestion::Text> benefit_label =
-        GetCreditCardBenefitSuggestionLabel(credit_card, client);
-    if (benefit_label) {
-      // Keep track of which cards had eligible benefits even if the
-      // benefit is not displayed in the suggestion due to
-      // IsCardEligibleForBenefits() == false. This is to denote a control group
-      // of users with benefit-eligible cards and assess how actually
-      // displaying the benefit in the experiment influences the users autofill
-      // interactions.
-      metadata_logging_context
-          .instrument_ids_to_issuer_ids_with_benefits_available.insert(
-              {credit_card.instrument_id(), credit_card.issuer_id()});
-      if (client.GetPersonalDataManager()
-              ->payments_data_manager()
-              .IsCardEligibleForBenefits(credit_card)) {
-        labels.push_back({*benefit_label});
-      }
-      suggestion.feature_for_iph =
-          &feature_engagement::kIPHAutofillCreditCardBenefitFeature;
-    }
-    labels.push_back({Suggestion::Text(
-        ShouldSplitCardNameAndLastFourDigits()
-            ? credit_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale)
-            : credit_card.DescriptiveExpiration(app_locale))});
-    suggestion.labels = std::move(labels);
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    return;
-  }
-
-  // If the focused field is not a card number field AND the card number is
-  // empty (i.e. local cards added via settings page).
-  std::u16string nickname = GetDisplayNicknameForCreditCard(
-      credit_card, client.GetPersonalDataManager()->payments_data_manager());
-  if (credit_card.number().empty()) {
-    DCHECK_EQ(credit_card.record_type(), CreditCard::RecordType::kLocalCard);
-
-    if (credit_card.HasNonEmptyValidNickname()) {
-      suggestion.labels = {{Suggestion::Text(nickname)}};
-    } else if (trigger_field_type != CREDIT_CARD_NAME_FULL) {
-      suggestion.labels = {{Suggestion::Text(
-          credit_card.GetInfo(CREDIT_CARD_NAME_FULL, app_locale))}};
-    }
-    return;
-  }
-
-  // If the focused field is not a card number field AND the card number is NOT
-  // empty.
-
-  if constexpr (BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)) {
-    if (client.ShouldFormatForLargeKeyboardAccessory()) {
-      suggestion.labels = {
-          {Suggestion::Text(credit_card.CardNameAndLastFourDigits(
-              nickname, GetObfuscationLength()))}};
-    } else {
-      // On Mobile, the label is formatted as either "••••1234" or "••1234",
-      // depending on the obfuscation length.
-      suggestion.labels = {{Suggestion::Text(
-          credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
-              GetObfuscationLength()))}};
-    }
-    return;
-  }
-
-  if (ShouldSplitCardNameAndLastFourDigits()) {
-    // Format the label as "Product Description/Nickname/Network  ••••1234".
-    // If the card name is too long, it will be truncated from the tail.
-    suggestion.labels = {
-        {Suggestion::Text(credit_card.CardNameForAutofillDisplay(nickname),
-                          Suggestion::Text::IsPrimary(false),
-                          Suggestion::Text::ShouldTruncate(true)),
-         Suggestion::Text(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
-             GetObfuscationLength()))}};
-    return;
-  }
-
-  // Format the label as
-  // "Product Description/Nickname/Network  ••••1234, expires on 01/25".
-  suggestion.labels = {{Suggestion::Text(
-      credit_card.CardIdentifierStringAndDescriptiveExpiration(app_locale))}};
-  return;
-}
-
-std::optional<Suggestion::Text>
-PaymentsSuggestionGenerator::GetCreditCardBenefitSuggestionLabel(
-    const CreditCard& credit_card,
-    const AutofillClient& client) {
-  const std::u16string& benefit_description =
-      client.GetPersonalDataManager()
-          ->payments_data_manager()
-          .GetApplicableBenefitDescriptionForCardAndOrigin(
-              credit_card, client.GetLastCommittedPrimaryMainFrameOrigin(),
-              client.GetAutofillOptimizationGuide());
-  return benefit_description.empty()
-             ? std::nullopt
-             : std::optional<Suggestion::Text>(
-                   GetBenefitTextWithTermsAppended(benefit_description));
-}
-
-void PaymentsSuggestionGenerator::AdjustVirtualCardSuggestionContent(
-    Suggestion& suggestion,
-    const CreditCard& credit_card,
-    const AutofillClient& client,
-    FieldType trigger_field_type) {
-  if (credit_card.record_type() == CreditCard::RecordType::kLocalCard) {
-    const CreditCard* server_duplicate_card =
-        client.GetPersonalDataManager()
-            ->payments_data_manager()
-            .GetServerCardForLocalCard(&credit_card);
-    DCHECK(server_duplicate_card);
-    suggestion.payload = Suggestion::Guid(server_duplicate_card->guid());
-  }
-
-  suggestion.type = SuggestionType::kVirtualCreditCardEntry;
-  // If a virtual card is non-acceptable, it needs to be displayed in
-  // grayed-out style.
-  suggestion.apply_deactivated_style = !suggestion.is_acceptable;
-  suggestion.feature_for_iph =
-      &feature_engagement::kIPHAutofillVirtualCardSuggestionFeature;
-
-  // If ShouldFormatForLargeKeyboardAccessory() is true, `suggestion` has been
-  // properly formatted by `SetSuggestionLabelsForCard` and does not need
-  // further changes.
-  if (client.ShouldFormatForLargeKeyboardAccessory()) {
-    return;
-  }
-
-  // Add virtual card labelling to suggestions. For keyboard accessory, it is
-  // prefixed to the suggestion, and for the dropdown, it is shown as a label on
-  // a separate line.
-  const std::u16string& virtual_card_label = l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE);
-  const std::u16string& virtual_card_disabled_label = l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE);
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillEnableVirtualCardMetadata)) {
-    suggestion.minor_text.value = suggestion.main_text.value;
-    if (suggestion.is_acceptable) {
-      suggestion.main_text.value = virtual_card_label;
-    } else {
-      suggestion.main_text.value = virtual_card_disabled_label;
-    }
-  } else {
-#if BUILDFLAG(IS_ANDROID)
-    // The keyboard accessory chips can only accommodate 2 strings which are
-    // displayed on a single row. The minor_text and the labels are
-    // concatenated, so we have: String 1 = main_text, String 2 = minor_text +
-    // labels.
-    // There is a limit on the size of the keyboard accessory chips. When the
-    // suggestion content exceeds this limit, the card name or the cardholder
-    // name can be truncated, the last 4 digits should never be truncated.
-    // Contents in the main_text are automatically truncated from the right end
-    // on the Android side when the size limit is exceeded, so the card name and
-    // the cardholder name is appended to the main_text.
-    // Here we modify the `Suggestion` members to make it suitable for showing
-    // on the keyboard accessory.
-    // Card number field:
-    // Before: main_text = card name, minor_text = last 4 digits, labels =
-    // expiration date.
-    // After: main_text = virtual card label + card name, minor_text = last 4
-    // digits, labels = null.
-    // Cardholder name field:
-    // Before: main_text = cardholder name, minor_text = null, labels = last 4
-    // digits.
-    // After: main_text = virtual card label + cardholder name, minor_text =
-    // null, labels = last 4 digits.
-    if (ShouldSplitCardNameAndLastFourDigits()) {
-      suggestion.main_text.value =
-          base::StrCat({virtual_card_label, u"  ", suggestion.main_text.value});
-    } else {
-      suggestion.minor_text.value = suggestion.main_text.value;
-      suggestion.main_text.value = virtual_card_label;
-    }
-    if (trigger_field_type == CREDIT_CARD_NUMBER) {
-      // The expiration date is not shown for the card number field, so it is
-      // removed.
-      suggestion.labels = {};
-    }
-#else   // Desktop/Android dropdown.
-    if (trigger_field_type == CREDIT_CARD_NUMBER) {
-      // Reset the labels as we only show benefit and virtual card label to
-      // conserve space.
-      suggestion.labels = {};
-      std::optional<Suggestion::Text> benefit_label =
-          GetCreditCardBenefitSuggestionLabel(credit_card, client);
-      if (benefit_label && client.GetPersonalDataManager()
-                               ->payments_data_manager()
-                               .IsCardEligibleForBenefits(credit_card)) {
-        suggestion.labels.push_back({*benefit_label});
-      }
-    }
-    if (suggestion.is_acceptable) {
-      suggestion.labels.push_back(
-          std::vector<Suggestion::Text>{Suggestion::Text(virtual_card_label)});
-    } else {
-      suggestion.labels.push_back(std::vector<Suggestion::Text>{
-          Suggestion::Text(virtual_card_disabled_label)});
-    }
-#endif  // BUILDFLAG(IS_ANDROID)
-  }
-}
-
-void PaymentsSuggestionGenerator::SetCardArtURL(
-    Suggestion& suggestion,
-    const CreditCard& credit_card,
-    const PaymentsDataManager& payments_data,
-    bool virtual_card_option) {
-  const GURL card_art_url = payments_data.GetCardArtURL(credit_card);
-  // The Capital One icon for virtual cards is not card metadata, it only helps
-  // distinguish FPAN from virtual cards when metadata is unavailable. FPANs
-  // should only ever use the network logo or rich card art. The Capital One
-  // logo is reserved for virtual cards only.
-  if (!virtual_card_option && card_art_url == kCapitalOneCardArtUrl) {
-    return;
-  }
-  // Only show card art if the experiment is enabled or if it is the Capital One
-  // virtual card icon.
-  if (base::FeatureList::IsEnabled(features::kAutofillEnableCardArtImage) ||
-      card_art_url == kCapitalOneCardArtUrl) {
-#if BUILDFLAG(IS_ANDROID)
-    suggestion.custom_icon_url = card_art_url;
-#else
-    gfx::Image* image = payments_data.GetCreditCardArtImageForUrl(card_art_url);
-    if (image) {
-      suggestion.custom_icon = *image;
-    }
-#endif
-  }
-}
-
-std::vector<Suggestion>
-PaymentsSuggestionGenerator::GetCreditCardFooterSuggestions(
-    bool should_show_scan_credit_card,
-    bool should_show_cards_from_account,
-    bool is_autofilled,
-    bool with_gpay_logo) {
-  std::vector<Suggestion> footer_suggestions;
-  if (should_show_scan_credit_card) {
-    Suggestion scan_credit_card(
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_SCAN_CREDIT_CARD),
-        SuggestionType::kScanCreditCard);
-    scan_credit_card.icon = Suggestion::Icon::kScanCreditCard;
-    footer_suggestions.push_back(scan_credit_card);
-  }
-
-  if (should_show_cards_from_account) {
-    Suggestion show_card_from_account(
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_SHOW_ACCOUNT_CARDS),
-        SuggestionType::kShowAccountCards);
-    show_card_from_account.icon = Suggestion::Icon::kGoogle;
-    footer_suggestions.push_back(show_card_from_account);
-  }
-
-  footer_suggestions.push_back(CreateSeparator());
-
-  if (is_autofilled) {
-    footer_suggestions.push_back(CreateClearFormSuggestion());
-  }
-
-  footer_suggestions.push_back(CreateManageCreditCardsEntry(with_gpay_logo));
-
-  return footer_suggestions;
-}
-
-bool PaymentsSuggestionGenerator::ShouldShowVirtualCardOptionForServerCard(
-    const CreditCard& card,
-    const AutofillClient& client) {
-  // If the card is not enrolled into virtual cards, we should not show a
-  // virtual card suggestion for it.
-  if (card.virtual_card_enrollment_state() !=
-      CreditCard::VirtualCardEnrollmentState::kEnrolled) {
-    return false;
-  }
-  // We should not show a suggestion for this card if the autofill
-  // optimization guide returns that this suggestion should be blocked.
-  if (auto* autofill_optimization_guide =
-          client.GetAutofillOptimizationGuide()) {
-    return !autofill_optimization_guide->ShouldBlockFormFieldSuggestion(
-               client.GetLastCommittedPrimaryMainFrameOrigin().GetURL(),
-               card) ||
-           base::FeatureList::IsEnabled(
-               features::kAutofillEnableVcnGrayOutForMerchantOptOut);
-  }
-  // No conditions to prevent displaying a virtual card suggestion were
-  // found, so return true.
-  return true;
 }
 
 }  // namespace autofill

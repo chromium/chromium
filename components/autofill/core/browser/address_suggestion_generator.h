@@ -103,55 +103,6 @@ class AddressSuggestionGenerator {
       uint64_t trigger_field_max_length,
       bool is_off_the_record,
       const std::string& app_locale);
-
-  // Dedupes the given profiles based on if one is a subset of the other for
-  // suggestions represented by `field_types`. The function returns at most
-  // `kMaxDeduplicatedProfilesForSuggestion` profiles. `field_types` stores all
-  // of the FieldTypes relevant for the current suggestions, including that of
-  // the field on which the user is currently focused.
-  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-  DeduplicatedProfilesForSuggestions(
-      const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
-          matched_profiles,
-      FieldType trigger_field_type,
-      const FieldTypeSet& field_types,
-      const AutofillProfileComparator& comparator);
-
-  // Matches based on prefix search, and limits number of profiles.
-  // Returns the top matching profiles based on prefix search. At most
-  // `kMaxPrefixMatchedProfilesForSuggestion` are returned.
-  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-  GetPrefixMatchedProfiles(const std::vector<const AutofillProfile*>& profiles,
-                           FieldType trigger_field_type,
-                           const std::u16string& raw_field_contents,
-                           const std::u16string& field_contents_canon,
-                           bool field_is_autofilled,
-                           const std::string& app_locale);
-
-  // Removes profiles that haven't been used after `kDisusedDataModelTimeDelta`
-  // from `profiles`. Note that the goal of this filtering strategy is only to
-  // reduce visual noise for users that have many profiles, and therefore in
-  // some cases, some disused profiles might be kept in the list, to avoid
-  // filtering out all profiles, leading to no suggestions being shown. The
-  // relative ordering of `profiles` is maintained.
-  void RemoveDisusedSuggestions(
-      std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
-          profiles);
-
-  // Creates nested/child suggestions for `suggestion` with the `profile`
-  // information. Uses `trigger_field_type` to define what group filling
-  // suggestion to add (name, address or phone). The existence of child
-  // suggestions defines whether the autofill popup will have submenus.
-  void AddAddressGranularFillingChildSuggestions(FieldType trigger_field_type,
-                                                 const AutofillProfile& profile,
-                                                 Suggestion& suggestion,
-                                                 bool is_off_the_record,
-                                                 const std::string& app_locale);
-
-  // Returns non address suggestions which are displayed below address
-  // suggestions in the Autofill popup. `is_autofilled` is used to conditionally
-  // add suggestion for clearing all autofilled fields.
-  std::vector<Suggestion> GetAddressFooterSuggestions(bool is_autofilled);
 };
 
 }  // namespace autofill

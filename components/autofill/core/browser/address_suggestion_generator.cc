@@ -761,6 +761,210 @@ std::optional<Suggestion> GetSuggestionForTestAddresses(
   return suggestion;
 }
 
+// Dedupes the given profiles based on if one is a subset of the other for
+// suggestions represented by `field_types`. The function returns at most
+// `kMaxDeduplicatedProfilesForSuggestion` profiles. `field_types` stores all
+// of the FieldTypes relevant for the current suggestions, including that of
+// the field on which the user is currently focused.
+std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
+DeduplicatedProfilesForSuggestions(
+    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+        matched_profiles,
+    FieldType trigger_field_type,
+    const FieldTypeSet& field_types,
+    const AutofillProfileComparator& comparator) {
+  std::vector<std::u16string> suggestion_main_text;
+  for (const AutofillProfile* profile : matched_profiles) {
+    suggestion_main_text.push_back(GetProfileSuggestionMainText(
+        *profile, comparator.app_locale(), trigger_field_type));
+  }
+  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
+      unique_matched_profiles;
+  // Limit number of unique profiles as having too many makes the
+  // browser hang due to drawing calculations (and is also not
+  // very useful for the user).
+  for (size_t a = 0;
+       a < matched_profiles.size() &&
+       unique_matched_profiles.size() < kMaxDeduplicatedProfilesForSuggestion;
+       ++a) {
+    bool include = true;
+    const AutofillProfile* profile_a = matched_profiles[a];
+    for (size_t b = 0; b < matched_profiles.size(); ++b) {
+      const AutofillProfile* profile_b = matched_profiles[b];
+      if (profile_a == profile_b ||
+          !comparator.Compare(suggestion_main_text[a],
+                              suggestion_main_text[b])) {
+        continue;
+      }
+      if (!profile_a->IsSubsetOfForFieldSet(comparator, *profile_b,
+                                            field_types)) {
+        continue;
+      }
+      if (!profile_b->IsSubsetOfForFieldSet(comparator, *profile_a,
+                                            field_types)) {
+        // One-way subset. Don't include profile A.
+        include = false;
+        break;
+      }
+      // The profiles are identical and only one should be included.
+      // Prefer `kAccount` profiles over `kLocalOrSyncable` ones. In case the
+      // profiles have the same source, prefer the earlier one (since the
+      // profiles are pre-sorted by their relevance).
+      const bool prefer_a_over_b =
+          profile_a->source() == profile_b->source()
+              ? a < b
+              : profile_a->source() == AutofillProfile::Source::kAccount;
+      if (!prefer_a_over_b) {
+        include = false;
+        break;
+      }
+    }
+    if (include) {
+      unique_matched_profiles.push_back(profile_a);
+    }
+  }
+  return unique_matched_profiles;
+}
+
+// Matches based on prefix search, and limits number of profiles.
+// Returns the top matching profiles based on prefix search. At most
+// `kMaxPrefixMatchedProfilesForSuggestion` are returned.
+std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
+GetPrefixMatchedProfiles(const std::vector<const AutofillProfile*>& profiles,
+                         FieldType trigger_field_type,
+                         const std::u16string& raw_field_contents,
+                         const std::u16string& field_contents_canon,
+                         bool field_is_autofilled,
+                         const std::string& app_locale) {
+  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
+      matched_profiles;
+  for (const AutofillProfile* profile : profiles) {
+    if (matched_profiles.size() == kMaxPrefixMatchedProfilesForSuggestion) {
+      break;
+    }
+    // Don't offer to fill the exact same value again. If detailed suggestions
+    // with different secondary data is available, it would appear to offer
+    // refilling the whole form with something else. E.g. the same name with a
+    // work and a home address would appear twice but a click would be a noop.
+    // TODO(fhorschig): Consider refilling form instead (at least on Android).
+#if BUILDFLAG(IS_ANDROID)
+    if (field_is_autofilled &&
+        profile->GetRawInfo(trigger_field_type) == raw_field_contents) {
+      continue;
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
+    std::u16string main_text =
+        GetProfileSuggestionMainText(*profile, app_locale, trigger_field_type);
+    // Discard profiles that do not have a value for the trigger field.
+    if (main_text.empty()) {
+      continue;
+    }
+    std::u16string suggestion_canon =
+        NormalizeForComparisonForType(main_text, trigger_field_type);
+    if (IsValidAddressSuggestionForFieldContents(
+            suggestion_canon, field_contents_canon, trigger_field_type)) {
+      matched_profiles.push_back(profile);
+    }
+  }
+  return matched_profiles;
+}
+
+// Removes profiles that haven't been used after `kDisusedDataModelTimeDelta`
+// from `profiles`. Note that the goal of this filtering strategy is only to
+// reduce visual noise for users that have many profiles, and therefore in
+// some cases, some disused profiles might be kept in the list, to avoid
+// filtering out all profiles, leading to no suggestions being shown. The
+// relative ordering of `profiles` is maintained.
+void RemoveDisusedSuggestions(
+    std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>& profiles) {
+  const base::Time min_last_used =
+      AutofillClock::Now() - kDisusedDataModelTimeDelta;
+  auto is_profile_disused =
+      [&min_last_used](
+          const raw_ptr<const AutofillProfile, VectorExperimental>& profile) {
+        return profile->use_date() <= min_last_used;
+      };
+  if (base::ranges::count_if(profiles, is_profile_disused) == 0) {
+    AutofillMetrics::LogNumberOfAddressesSuppressedForDisuse(0);
+    return;
+  }
+  const size_t original_size = profiles.size();
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillChangeDisusedAddressSuggestionTreatment)) {
+    profiles.erase(
+        std::remove_if(profiles.begin() +
+                           std::min(features::kNumberOfIgnoredSuggestions.Get(),
+                                    static_cast<int>(profiles.size())),
+                       profiles.end(), is_profile_disused),
+        profiles.end());
+  } else {
+    std::erase_if(profiles, is_profile_disused);
+  }
+  AutofillMetrics::LogNumberOfAddressesSuppressedForDisuse(original_size -
+                                                           profiles.size());
+}
+
+// Creates nested/child suggestions for `suggestion` with the `profile`
+// information. Uses `trigger_field_type` to define what group filling
+// suggestion to add (name, address or phone). The existence of child
+// suggestions defines whether the autofill popup will have submenus.
+void AddAddressGranularFillingChildSuggestions(FieldType trigger_field_type,
+                                               const AutofillProfile& profile,
+                                               Suggestion& suggestion,
+                                               bool is_off_the_record,
+                                               const std::string& app_locale) {
+  const FieldTypeGroup trigger_field_type_group =
+      GroupTypeOfFieldType(trigger_field_type);
+  // The "Fill everything" suggestion is added at the top (even if the filling
+  // mode is full form filling), in its own section of the sub-menu, if
+  // `features::kAutofillGranularFillingAvailableWithFillEverythingAtTheBottomParam`
+  // is disabled. Otherwise, it is added in the footer.
+  //
+  // If the trigger field is not classified as an address field, then the
+  // filling was triggered from the context menu. In this scenario, the user
+  // should not be able to fill everything.
+  // TODO(crbug.com/40274514): Maybe separate this in a different function when
+  // the feature is launched.
+  if (IsAddressType(trigger_field_type) &&
+      !features::
+           kAutofillGranularFillingAvailableWithFillEverythingAtTheBottomParam
+               .Get()) {
+    suggestion.children.push_back(GetFillEverythingFromAddressProfileSuggestion(
+        Suggestion::Guid(profile.guid())));
+    suggestion.children.push_back(
+        AddressSuggestionGenerator::CreateSeparator());
+  }
+  AddNameChildSuggestions(trigger_field_type_group, profile, app_locale,
+                          suggestion);
+  AddAddressChildSuggestions(trigger_field_type_group, profile, app_locale,
+                             suggestion);
+  AddContactChildSuggestions(trigger_field_type, profile, app_locale,
+                             suggestion);
+  AddFooterChildSuggestions(profile, trigger_field_type, is_off_the_record,
+                            suggestion);
+  // In incognito mode we do not have edit and deleting options. In this
+  // situation there is a chance that no footer suggestions exist, which could
+  // lead to a leading `kSeparator` suggestion.
+  if (suggestion.children.back().type == SuggestionType::kSeparator) {
+    suggestion.children.pop_back();
+  }
+}
+
+// Returns non address suggestions which are displayed below address
+// suggestions in the Autofill popup. `is_autofilled` is used to conditionally
+// add suggestion for clearing all autofilled fields.
+std::vector<Suggestion> GetAddressFooterSuggestions(bool is_autofilled) {
+  std::vector<Suggestion> footer_suggestions;
+  footer_suggestions.push_back(AddressSuggestionGenerator::CreateSeparator());
+  if (is_autofilled) {
+    footer_suggestions.push_back(
+        AddressSuggestionGenerator::CreateClearFormSuggestion());
+  }
+  footer_suggestions.push_back(
+      AddressSuggestionGenerator::CreateManageAddressesEntry());
+  return footer_suggestions;
+}
+
 }  // namespace
 
 AddressSuggestionGenerator::AddressSuggestionGenerator() = default;
@@ -1036,183 +1240,6 @@ AddressSuggestionGenerator::CreateSuggestionsFromProfiles(
   return suggestions;
 }
 
-std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-AddressSuggestionGenerator::DeduplicatedProfilesForSuggestions(
-    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
-        matched_profiles,
-    FieldType trigger_field_type,
-    const FieldTypeSet& field_types,
-    const AutofillProfileComparator& comparator) {
-  std::vector<std::u16string> suggestion_main_text;
-  for (const AutofillProfile* profile : matched_profiles) {
-    suggestion_main_text.push_back(GetProfileSuggestionMainText(
-        *profile, comparator.app_locale(), trigger_field_type));
-  }
-  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-      unique_matched_profiles;
-  // Limit number of unique profiles as having too many makes the
-  // browser hang due to drawing calculations (and is also not
-  // very useful for the user).
-  for (size_t a = 0;
-       a < matched_profiles.size() &&
-       unique_matched_profiles.size() < kMaxDeduplicatedProfilesForSuggestion;
-       ++a) {
-    bool include = true;
-    const AutofillProfile* profile_a = matched_profiles[a];
-    for (size_t b = 0; b < matched_profiles.size(); ++b) {
-      const AutofillProfile* profile_b = matched_profiles[b];
-
-      if (profile_a == profile_b ||
-          !comparator.Compare(suggestion_main_text[a],
-                              suggestion_main_text[b])) {
-        continue;
-      }
-
-      if (!profile_a->IsSubsetOfForFieldSet(comparator, *profile_b,
-                                            field_types)) {
-        continue;
-      }
-
-      if (!profile_b->IsSubsetOfForFieldSet(comparator, *profile_a,
-                                            field_types)) {
-        // One-way subset. Don't include profile A.
-        include = false;
-        break;
-      }
-
-      // The profiles are identical and only one should be included.
-      // Prefer `kAccount` profiles over `kLocalOrSyncable` ones. In case the
-      // profiles have the same source, prefer the earlier one (since the
-      // profiles are pre-sorted by their relevance).
-      const bool prefer_a_over_b =
-          profile_a->source() == profile_b->source()
-              ? a < b
-              : profile_a->source() == AutofillProfile::Source::kAccount;
-      if (!prefer_a_over_b) {
-        include = false;
-        break;
-      }
-    }
-    if (include) {
-      unique_matched_profiles.push_back(profile_a);
-    }
-  }
-  return unique_matched_profiles;
-}
-
-std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-AddressSuggestionGenerator::GetPrefixMatchedProfiles(
-    const std::vector<const AutofillProfile*>& profiles,
-    FieldType trigger_field_type,
-    const std::u16string& raw_field_contents,
-    const std::u16string& field_contents_canon,
-    bool field_is_autofilled,
-    const std::string& app_locale) {
-  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-      matched_profiles;
-  for (const AutofillProfile* profile : profiles) {
-    if (matched_profiles.size() == kMaxPrefixMatchedProfilesForSuggestion) {
-      break;
-    }
-    // Don't offer to fill the exact same value again. If detailed suggestions
-    // with different secondary data is available, it would appear to offer
-    // refilling the whole form with something else. E.g. the same name with a
-    // work and a home address would appear twice but a click would be a noop.
-    // TODO(fhorschig): Consider refilling form instead (at least on Android).
-#if BUILDFLAG(IS_ANDROID)
-    if (field_is_autofilled &&
-        profile->GetRawInfo(trigger_field_type) == raw_field_contents) {
-      continue;
-    }
-#endif  // BUILDFLAG(IS_ANDROID)
-    std::u16string main_text =
-        GetProfileSuggestionMainText(*profile, app_locale, trigger_field_type);
-    // Discard profiles that do not have a value for the trigger field.
-    if (main_text.empty()) {
-      continue;
-    }
-    std::u16string suggestion_canon =
-        NormalizeForComparisonForType(main_text, trigger_field_type);
-    if (IsValidAddressSuggestionForFieldContents(
-            suggestion_canon, field_contents_canon, trigger_field_type)) {
-      matched_profiles.push_back(profile);
-    }
-  }
-  return matched_profiles;
-}
-
-void AddressSuggestionGenerator::RemoveDisusedSuggestions(
-    std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>& profiles) {
-  const base::Time min_last_used =
-      AutofillClock::Now() - kDisusedDataModelTimeDelta;
-  auto is_profile_disused =
-      [&min_last_used](
-          const raw_ptr<const AutofillProfile, VectorExperimental>& profile) {
-        return profile->use_date() <= min_last_used;
-      };
-  if (base::ranges::count_if(profiles, is_profile_disused) == 0) {
-    AutofillMetrics::LogNumberOfAddressesSuppressedForDisuse(0);
-    return;
-  }
-  const size_t original_size = profiles.size();
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillChangeDisusedAddressSuggestionTreatment)) {
-    profiles.erase(
-        std::remove_if(profiles.begin() +
-                           std::min(features::kNumberOfIgnoredSuggestions.Get(),
-                                    static_cast<int>(profiles.size())),
-                       profiles.end(), is_profile_disused),
-        profiles.end());
-  } else {
-    std::erase_if(profiles, is_profile_disused);
-  }
-  AutofillMetrics::LogNumberOfAddressesSuppressedForDisuse(original_size -
-                                                           profiles.size());
-}
-
-void AddressSuggestionGenerator::AddAddressGranularFillingChildSuggestions(
-    FieldType trigger_field_type,
-    const AutofillProfile& profile,
-    Suggestion& suggestion,
-    bool is_off_the_record,
-    const std::string& app_locale) {
-  const FieldTypeGroup trigger_field_type_group =
-      GroupTypeOfFieldType(trigger_field_type);
-  // The "Fill everything" suggestion is added at the top (even if the filling
-  // mode is full form filling), in its own section of the sub-menu, if
-  // `features::kAutofillGranularFillingAvailableWithFillEverythingAtTheBottomParam`
-  // is disabled. Otherwise, it is added in the footer.
-  //
-  // If the trigger field is not classified as an address field, then the
-  // filling was triggered from the context menu. In this scenario, the user
-  // should not be able to fill everything.
-  // TODO(crbug.com/40274514): Maybe separate this in a different function when
-  // the feature is launched.
-  if (IsAddressType(trigger_field_type) &&
-      !features::
-           kAutofillGranularFillingAvailableWithFillEverythingAtTheBottomParam
-               .Get()) {
-    suggestion.children.push_back(GetFillEverythingFromAddressProfileSuggestion(
-        Suggestion::Guid(profile.guid())));
-    suggestion.children.push_back(
-        AddressSuggestionGenerator::CreateSeparator());
-  }
-  AddNameChildSuggestions(trigger_field_type_group, profile, app_locale,
-                          suggestion);
-  AddAddressChildSuggestions(trigger_field_type_group, profile, app_locale,
-                             suggestion);
-  AddContactChildSuggestions(trigger_field_type, profile, app_locale,
-                             suggestion);
-  AddFooterChildSuggestions(profile, trigger_field_type, is_off_the_record,
-                            suggestion);
-  // In incognito mode we do not have edit and deleting options. In this
-  // situation there is a chance that no footer suggestions exist, which could
-  // lead to a leading `kSeparator` suggestion.
-  if (suggestion.children.back().type == SuggestionType::kSeparator) {
-    suggestion.children.pop_back();
-  }
-}
-
 // static
 Suggestion AddressSuggestionGenerator::CreateSeparator() {
   Suggestion suggestion;
@@ -1248,21 +1275,6 @@ Suggestion AddressSuggestionGenerator::CreateClearFormSuggestion() {
   suggestion.acceptance_a11y_announcement =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM);
   return suggestion;
-}
-
-std::vector<Suggestion> AddressSuggestionGenerator::GetAddressFooterSuggestions(
-    bool is_autofilled) {
-  std::vector<Suggestion> footer_suggestions;
-
-  footer_suggestions.push_back(CreateSeparator());
-
-  if (is_autofilled) {
-    footer_suggestions.push_back(CreateClearFormSuggestion());
-  }
-
-  footer_suggestions.push_back(CreateManageAddressesEntry());
-
-  return footer_suggestions;
 }
 
 }  // namespace autofill

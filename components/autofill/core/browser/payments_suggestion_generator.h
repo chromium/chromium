@@ -15,14 +15,9 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/metrics/payments/card_metadata_metrics.h"
-#include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
 #include "components/autofill/core/common/aliases.h"
-
-namespace base {
-class Time;
-}  // namespace base
 
 namespace autofill {
 
@@ -31,7 +26,6 @@ class AutofillOfferData;
 class CreditCard;
 class FormFieldData;
 class Iban;
-class PaymentsDataManager;
 
 // Helper class to generate Autofill suggestions, such as for credit card and
 // address profile Autofill.
@@ -115,14 +109,6 @@ class PaymentsSuggestionGenerator {
   static std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
       const std::vector<const AutofillOfferData*>& promo_code_offers);
 
-  // Return a nickname for the |card| to display. This is generally the nickname
-  // stored in |card|, unless |card| exists as a local and a server copy. In
-  // this case, we prefer the nickname of the local if it is defined. If only
-  // one copy has a nickname, take that.
-  std::u16string GetDisplayNicknameForCreditCard(
-      const CreditCard& card,
-      const PaymentsDataManager& payments_data);
-
   // Returns true if the suggestion created from the card is acceptable, returns
   // false when merchant does not accept the given card for example when
   // merchants opt-out of VCNs.
@@ -158,86 +144,11 @@ class PaymentsSuggestionGenerator {
       bool card_linked_offer_available,
       autofill_metrics::CardMetadataLoggingContext& metadata_logging_context);
 
-  // Removes expired local credit cards not used since `min_last_used` from
-  // `cards`. The relative ordering of `cards` is maintained.
-  void RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(
-      base::Time min_last_used,
-      std::vector<CreditCard*>& cards);
-
-  // Creates nested/child suggestions for `suggestion` with the `credit_card`
-  // information. The number of nested suggestions added depends on the
-  // information present in the `credit_card`.
-  void AddPaymentsGranularFillingChildSuggestions(
-      const CreditCard& credit_card,
-      Suggestion& suggestion,
-      const std::string& app_locale);
-
-  // Return the texts shown as the first line of the suggestion, based on the
-  // `credit_card` and the `trigger_field_type`. The first index in the pair
-  // represents the main text, and the second index represents the minor text.
-  // The minor text can be empty, in which case the main text should be rendered
-  // as the entire first line. If the minor text is not empty, they should be
-  // combined. This splitting is implemented for situations where the first part
-  // of the first line of the suggestion should be truncated.
-  std::pair<Suggestion::Text, Suggestion::Text>
-  GetSuggestionMainTextAndMinorTextForCard(const CreditCard& credit_card,
-                                           const AutofillClient& client,
-                                           FieldType trigger_field_type);
-
-  // Set the labels to be shown in the suggestion. Note that this does not
-  // account for virtual cards or card-linked offers.
-  // `metadata_logging_context` the instrument ids of credit cards for which
-  // benefits data is available. When displaying card benefits is disabled,
-  // `metadata_logging_context` will be populated but a benefit label will not
-  // be shown.
-  void SetSuggestionLabelsForCard(
-      const CreditCard& credit_card,
-      const AutofillClient& client,
-      FieldType trigger_field_type,
-      autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
-      Suggestion& suggestion);
-
-  // Returns the benefit text to display in credit card suggestions if it is
-  // available.
-  std::optional<Suggestion::Text> GetCreditCardBenefitSuggestionLabel(
-      const CreditCard& credit_card,
-      const AutofillClient& client);
-
-  // Adjust the content of `suggestion` if it is a virtual card suggestion.
-  void AdjustVirtualCardSuggestionContent(Suggestion& suggestion,
-                                          const CreditCard& credit_card,
-                                          const AutofillClient& client,
-                                          FieldType trigger_field_type);
-
-  // Set the URL for the card art image to be shown in the `suggestion`.
-  void SetCardArtURL(Suggestion& suggestion,
-                     const CreditCard& credit_card,
-                     const PaymentsDataManager& payments_data,
-                     bool virtual_card_option);
-
-  // Returns non credit card suggestions which are displayed below credit card
-  // suggestions in the Autofill popup. `should_show_scan_credit_card` is used
-  // to conditionally add scan credit card suggestion,
-  // `should_show_cards_from_account` - conditionally add suggestions for
-  // showing cards from account. `is_autofilled` is used to conditionally add
-  // suggestion for clearing all autofilled fields. `with_gpay_logo` is used to
-  // conditionally add GPay logo icon to the manage payment methods suggestion.
-  std::vector<Suggestion> GetCreditCardFooterSuggestions(
-      bool should_show_scan_credit_card,
-      bool should_show_cards_from_account,
-      bool is_autofilled,
-      bool with_gpay_logo);
-
   // Helper function to decide whether to show the virtual card option for
   // `candidate_card`.
   // TODO(b/326950201): Pass the argument by reference.
   bool ShouldShowVirtualCardOption(const CreditCard* candidate_card,
                                    const AutofillClient& client);
-
-  // Returns true if we should show a virtual card option for the server card
-  // `card`, false otherwise.
-  bool ShouldShowVirtualCardOptionForServerCard(const CreditCard& card,
-                                                const AutofillClient& client);
 };
 
 }  // namespace autofill
