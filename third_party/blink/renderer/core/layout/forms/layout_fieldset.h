@@ -27,8 +27,6 @@ class CORE_EXPORT LayoutFieldset final : public LayoutNGBlockFlow {
     return true;
   }
 
-  LayoutBlock* FindAnonymousFieldsetContentBox() const;
-
   static LayoutBox* FindInFlowLegend(const LayoutBlock& fieldset);
   LayoutBox* FindInFlowLegend() const {
     NOT_DESTROYED();

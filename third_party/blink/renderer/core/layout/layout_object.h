@@ -884,6 +884,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return false;
   }
+  virtual bool IsScrollContainerWithMarkers() const {
+    NOT_DESTROYED();
+    return false;
+  }
   virtual bool IsFrame() const {
     NOT_DESTROYED();
     return false;
@@ -1375,6 +1379,14 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
            StyleRef().StyleType() == kPseudoIdNone && IsLayoutBlock() &&
            !IsLayoutFlowThread() && !IsLayoutMultiColumnSet();
   }
+  bool HasAnonymousContentBox() const {
+    NOT_DESTROYED();
+    return IsFieldset() || IsScrollContainerWithMarkers();
+  }
+  bool IsAnonymousContentBox() const {
+    NOT_DESTROYED();
+    return IsAnonymous() && Parent() && Parent()->HasAnonymousContentBox();
+  }
 
   bool IsFloating() const {
     NOT_DESTROYED();
@@ -1699,6 +1711,16 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
 
   bool IsRenderedLegendInternal() const;
+
+  bool IsScrollMarkerGroup() const {
+    NOT_DESTROYED();
+    return GetNode() && GetNode()->IsScrollMarkerGroupPseudoElement();
+  }
+
+  bool IsScrollMarkerGroupBefore() const {
+    NOT_DESTROYED();
+    return GetNode() && GetNode()->IsScrollMarkerGroupBeforePseudoElement();
+  }
 
   // Returns true if this object represents ::marker for the first SUMMARY
   // child of a DETAILS, and list-style-type is disclosure-*.

@@ -3026,6 +3026,25 @@ bool LayoutBox::AutoWidthShouldFitContent() const {
           IsA<HTMLTextAreaElement>(*GetNode()) || IsRenderedLegend());
 }
 
+LayoutBlock* LayoutBox::FindAnonymousContentBox() const {
+  if (!IsFieldset() && !IsScrollContainerWithMarkers()) {
+    return nullptr;
+  }
+  LayoutObject* first_child = SlowFirstChild();
+  if (!first_child) {
+    return nullptr;
+  }
+  if (first_child->IsAnonymous()) {
+    return To<LayoutBlock>(first_child);
+  }
+  LayoutObject* last_child = first_child->NextSibling();
+  CHECK(!last_child || !last_child->NextSibling());
+  if (last_child && last_child->IsAnonymous()) {
+    return To<LayoutBlock>(last_child);
+  }
+  return nullptr;
+}
+
 bool LayoutBox::SkipContainingBlockForPercentHeightCalculation(
     const LayoutBox* containing_block) {
   const bool in_quirks_mode = containing_block->GetDocument().InQuirksMode();
@@ -3037,8 +3056,7 @@ bool LayoutBox::SkipContainingBlockForPercentHeightCalculation(
   // objects, such as table-cells, will be treated just as if they were
   // non-anonymous.
   if (containing_block->IsAnonymous()) {
-    if (!in_quirks_mode && containing_block->Parent() &&
-        containing_block->Parent()->IsFieldset()) {
+    if (!in_quirks_mode && containing_block->IsAnonymousContentBox()) {
       return false;
     }
     EDisplay display = containing_block->StyleRef().Display();

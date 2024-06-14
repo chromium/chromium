@@ -525,11 +525,11 @@ LayoutBoxModelObject::ComputeStickyPositionConstraints() const {
   constraints->containing_scroll_container_layer = scroll_container_layer;
   constraints->is_fixed_to_view = is_fixed_to_view;
 
-  // Skip anonymous containing blocks except for anonymous fieldset content box.
+  // Skip anonymous containing blocks except for anonymous fieldset content box
+  // and scroller container with ::scroll-marker-group's anonymous box.
   LayoutBlock* sticky_container = StickyContainer();
   while (sticky_container->IsAnonymous()) {
-    if (sticky_container->Parent() &&
-        sticky_container->Parent()->IsFieldset()) {
+    if (sticky_container->IsAnonymousContentBox()) {
       break;
     }
     sticky_container = sticky_container->ContainingBlock();

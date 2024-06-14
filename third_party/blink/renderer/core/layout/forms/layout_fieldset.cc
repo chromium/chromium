@@ -13,22 +13,6 @@ LayoutFieldset::LayoutFieldset(Element* element) : LayoutNGBlockFlow(element) {
   SetChildrenInline(false);
 }
 
-LayoutBlock* LayoutFieldset::FindAnonymousFieldsetContentBox() const {
-  LayoutObject* first_child = FirstChild();
-  if (!first_child) {
-    return nullptr;
-  }
-  if (first_child->IsAnonymous()) {
-    return To<LayoutBlock>(first_child);
-  }
-  LayoutObject* last_child = first_child->NextSibling();
-  DCHECK(!last_child || !last_child->NextSibling());
-  if (last_child && last_child->IsAnonymous()) {
-    return To<LayoutBlock>(last_child);
-  }
-  return nullptr;
-}
-
 void LayoutFieldset::AddChild(LayoutObject* new_child,
                               LayoutObject* before_child) {
   if (!new_child->IsText() && !new_child->IsAnonymous()) {
@@ -58,7 +42,7 @@ void LayoutFieldset::AddChild(LayoutObject* new_child,
     LayoutNGBlockFlow::AddChild(new_child, FirstChild());
     return;
   }
-  LayoutBlock* fieldset_content = FindAnonymousFieldsetContentBox();
+  LayoutBlock* fieldset_content = FindAnonymousContentBox();
   DCHECK(fieldset_content);
   fieldset_content->AddChild(new_child, before_child);
 }
@@ -66,7 +50,7 @@ void LayoutFieldset::AddChild(LayoutObject* new_child,
 void LayoutFieldset::InsertedIntoTree() {
   LayoutNGBlockFlow::InsertedIntoTree();
 
-  if (FindAnonymousFieldsetContentBox()) {
+  if (FindAnonymousContentBox()) {
     return;
   }
 
@@ -194,14 +178,14 @@ bool LayoutFieldset::BackgroundIsKnownToBeOpaqueInRect(
 }
 
 LayoutUnit LayoutFieldset::ScrollWidth() const {
-  if (const auto* content = FindAnonymousFieldsetContentBox()) {
+  if (const auto* content = FindAnonymousContentBox()) {
     return content->ScrollWidth();
   }
   return LayoutNGBlockFlow::ScrollWidth();
 }
 
 LayoutUnit LayoutFieldset::ScrollHeight() const {
-  if (const auto* content = FindAnonymousFieldsetContentBox()) {
+  if (const auto* content = FindAnonymousContentBox()) {
     return content->ScrollHeight();
   }
   return LayoutNGBlockFlow::ScrollHeight();

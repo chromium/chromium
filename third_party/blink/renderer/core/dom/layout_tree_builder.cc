@@ -114,7 +114,7 @@ void LayoutTreeBuilderForElement::CreateLayoutObject() {
   // ::scroll-marker-group should only be created if the originating element
   // is a scroll container.
   if (node_->IsScrollMarkerGroupPseudoElement() &&
-      !parent_layout_object->IsScrollContainer()) {
+      !parent_layout_object->IsScrollContainerWithMarkers()) {
     return;
   }
 

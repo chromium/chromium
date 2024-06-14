@@ -1,0 +1,40 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>CSS Test: ::scroll-marker-group scrolling</title>
+<link rel="author" href="mailto:sakhapov@chromium.org">
+<link rel="help" href="https://github.com/flackr/carousel/tree/main/scroll-marker">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+    #scroller {
+        background-color: green;
+        height: 200px;
+        overflow: scroll;
+        scroll-markers: before;
+    }
+
+    #scroller::scroll-marker-group {
+        background-color: red;
+        height: 100px;
+    }
+
+    .content {
+        margin-bottom: 10px;
+        background-color: black;
+        height: 400px;
+    }
+</style>
+<div id="scroller">
+    <div class="content"></div>
+    <div class="content"></div>
+</div>
+
+<script>
+    test(() => {
+        assert_equals(getComputedStyle(scroller)['overflow-x'], 'scroll');
+        assert_equals(getComputedStyle(scroller)['overflow-y'], 'scroll');
+        assert_equals(scroller.scrollHeight, 820);
+        scroller.scrollTop = 500;
+        assert_greater_than_equal(scroller.scrollTop, 200);
+    }, 'Test cssom-view API for scroller');
+</script>

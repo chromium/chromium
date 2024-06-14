@@ -187,8 +187,11 @@ LayoutBox* ScrollSnapshotTimeline::ComputeScrollContainer(
     return nullptr;
   }
 
-  if (auto* field_set = DynamicTo<LayoutFieldset>(layout_box)) {
-    layout_box = field_set->FindAnonymousFieldsetContentBox();
+  // For FieldSet and scroll container with ::scroll-marker-group,
+  // pick the anonymous content box instead, as they are just wrappers
+  // around that box.
+  if (LayoutBlock* anon_box = layout_box->FindAnonymousContentBox()) {
+    layout_box = anon_box;
   }
 
   return layout_box->IsScrollContainer() ? layout_box : nullptr;
