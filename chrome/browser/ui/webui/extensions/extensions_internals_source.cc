@@ -350,6 +350,7 @@ constexpr std::string_view kFilterKey = "filter";
 constexpr std::string_view kInternalsCreationFlagsKey = "creation_flags";
 constexpr std::string_view kInternalsDisableReasonsKey = "disable_reasons";
 constexpr std::string_view kInternalsIdKey = "id";
+constexpr std::string_view kInternalsGuidKey = "guid";
 constexpr std::string_view kInternalsNameKey = "name";
 constexpr std::string_view kInternalsVersionKey = "version";
 constexpr std::string_view kIsForServiceWorkerKey = "is_for_service_worker";
@@ -573,6 +574,7 @@ std::string ExtensionsInternalsSource::WriteToString() const {
   for (const auto& extension : extensions) {
     base::Value::Dict extension_data;
     extension_data.Set(kInternalsIdKey, extension->id());
+    extension_data.Set(kInternalsGuidKey, extension->guid());
     extension_data.Set(kInternalsCreationFlagsKey,
                        CreationFlagsToList(extension->creation_flags()));
     extension_data.Set(

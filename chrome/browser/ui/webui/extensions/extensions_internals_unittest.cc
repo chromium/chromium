@@ -41,6 +41,38 @@ std::unique_ptr<KeyedService> BuildEventRouter(
 
 }  // namespace
 
+// Test that basic fields (like extension id, guid, name, version, etc.) show up
+// correctly in the JSON returned by WriteToString.
+TEST_F(ExtensionsInternalsUnitTest, Basic) {
+  InitializeEmptyExtensionService();
+  extensions::EventRouterFactory::GetInstance()->SetTestingFactory(
+      profile(), base::BindRepeating(&BuildEventRouter));
+
+  scoped_refptr<const extensions::Extension> extension =
+      extensions::ExtensionBuilder("test")
+          .SetID("ddchlicdkolnonkihahngkmmmjnjlkkf")
+          .SetVersion("1.2.3.4")
+          .SetLocation(extensions::mojom::ManifestLocation::kExternalPref)
+          .Build();
+  service()->AddExtension(extension.get());
+
+  ExtensionsInternalsSource source(profile());
+  auto extensions_list = base::JSONReader::Read(source.WriteToString());
+  ASSERT_TRUE(extensions_list) << "Failed to parse extensions internals json.";
+  base::Value::Dict& extension_json = extensions_list->GetList()[0].GetDict();
+
+  EXPECT_THAT(extension_json.FindString("id"),
+              testing::Pointee(extension->id()));
+  EXPECT_THAT(extension_json.FindString("name"),
+              testing::Pointee(extension->name()));
+  EXPECT_THAT(extension_json.FindString("version"),
+              testing::Pointee(extension->VersionString()));
+  EXPECT_THAT(extension_json.FindString("location"),
+              testing::Pointee(std::string("EXTERNAL_PREF")));
+  EXPECT_THAT(extension_json.FindString("guid"),
+              testing::Pointee(extension->guid()));
+}
+
 // Test that active and optional permissions show up correctly in the JSON
 // returned by WriteToString.
 TEST_F(ExtensionsInternalsUnitTest, WriteToStringPermissions) {
