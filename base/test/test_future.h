@@ -547,6 +547,77 @@ class TestFuture<void> {
   TestFuture<bool> implementation_;
 };
 
+// A gmock action that when invoked will store the argument values and
+// unblock any waiters. The action must be invoked on the sequence the
+// TestFuture was created on.
+//
+// Usually the action will be used with `WillOnce()` and only invoked once,
+// but if you consume the value with `Take()` or `Clear()` it is safe to
+// invoke it again.
+//
+// Example usage:
+//   TestFuture<int> future;
+//
+//   EXPECT_CALL(delegate, OnReadComplete)
+//     .WillOnce(InvokeFuture(future));
+//
+//   object_under_test.Read(buffer, 16);
+//
+//   EXPECT_EQ(future.Take(), 16);
+//
+//
+//
+// Implementation note: this is not implemented using the MATCHER_P macro as the
+// C++03-compatible way it implements varargs would make this too verbose.
+// Instead, it takes advantage of the ability to pass a functor to .WillOnce()
+// and .WillRepeatedly().
+template <typename... Types>
+class InvokeFuture {
+ public:
+  // The TestFuture must be an lvalue. Passing an rvalue would make no sense as
+  // you wouldn't be able to call Take() on it afterwards.
+  explicit InvokeFuture(TestFuture<Types...>& future)
+      : callback_(future.GetRepeatingCallback()) {}
+
+  // GMock actions must be copyable.
+  InvokeFuture(const InvokeFuture&) = default;
+  InvokeFuture& operator=(const InvokeFuture&) = default;
+
+  // WillOnce() can take advantage of move constructors.
+  InvokeFuture(InvokeFuture&&) = default;
+  InvokeFuture& operator=(InvokeFuture&&) = default;
+
+  void operator()(Types... values) {
+    callback_.Run(std::forward<Types>(values)...);
+  }
+
+ private:
+  RepeatingCallback<void(Types...)> callback_;
+};
+
+// Specialization for TestFuture<void>.
+template <>
+class InvokeFuture<void> {
+ public:
+  explicit InvokeFuture(TestFuture<void>& future)
+      : closure_(future.GetRepeatingCallback()) {}
+
+  InvokeFuture(const InvokeFuture&) = default;
+  InvokeFuture& operator=(const InvokeFuture&) = default;
+  InvokeFuture(InvokeFuture&&) = default;
+  InvokeFuture& operator=(InvokeFuture&&) = default;
+
+  void operator()() { closure_.Run(); }
+
+ private:
+  RepeatingClosure closure_;
+};
+
+// Deduction guide so the compiler can choose the correct specialisation of
+// InvokeFuture.
+template <typename... Types>
+InvokeFuture(TestFuture<Types...>&) -> InvokeFuture<Types...>;
+
 }  // namespace base::test
 
 #endif  // BASE_TEST_TEST_FUTURE_H_

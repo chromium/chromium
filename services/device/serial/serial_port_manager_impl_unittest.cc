@@ -42,6 +42,7 @@ namespace device {
 
 namespace {
 
+using ::base::test::InvokeFuture;
 using ::base::test::RunOnceCallback;
 using ::base::test::TestFuture;
 using ::testing::_;
@@ -435,9 +436,7 @@ TEST_F(SerialPortManagerImplTest, BluetoothDeviceChanged) {
   updated_device->AddUUID(
       device::BluetoothUUID("25e97ff7-24ce-4c4c-8951-f764a708f7b5"));
   TestFuture<mojom::SerialPortInfoPtr> port_added_future;
-  EXPECT_CALL(client, OnPortAdded).WillOnce([&](mojom::SerialPortInfoPtr port) {
-    port_added_future.SetValue(std::move(port));
-  });
+  EXPECT_CALL(client, OnPortAdded).WillOnce(InvokeFuture(port_added_future));
   bluetooth_enumerator_->DeviceChangedForTesting(adapter_.get(),
                                                  updated_device.get());
   ASSERT_TRUE(port_added_future.Get());
@@ -474,9 +473,7 @@ TEST_F(SerialPortManagerImplTest, BluetoothDeviceConnectedStateChanged) {
   // Simulate the device becoming disconnected.
   TestFuture<mojom::SerialPortInfoPtr> disconnect_future;
   EXPECT_CALL(client, OnPortConnectedStateChanged)
-      .WillOnce([&disconnect_future](mojom::SerialPortInfoPtr port) {
-        disconnect_future.SetValue(std::move(port));
-      });
+      .WillOnce(InvokeFuture(disconnect_future));
   auto updated_device = CreateSerialPortProfileDevice();
   updated_device->SetConnected(false);
   bluetooth_enumerator_->DeviceChangedForTesting(adapter_.get(),

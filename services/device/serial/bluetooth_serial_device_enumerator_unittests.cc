@@ -25,6 +25,7 @@ namespace device {
 
 namespace {
 
+using ::base::test::InvokeFuture;
 using ::base::test::TestFuture;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -163,10 +164,7 @@ TEST_F(BluetoothSerialDeviceEnumeratorTest, CreateWithDevice) {
   MockSerialPortEnumeratorObserver observer;
   enumerator.AddObserver(&observer);
   TestFuture<const device::mojom::SerialPortInfo&> port_future;
-  EXPECT_CALL(observer, OnPortAdded)
-      .WillOnce([&port_future](const mojom::SerialPortInfo& port) {
-        port_future.SetValue(port);
-      });
+  EXPECT_CALL(observer, OnPortAdded).WillOnce(InvokeFuture(port_future));
   EXPECT_FALSE(port_future.Get().token.is_empty());
   EXPECT_EQ(base::FilePath::FromASCII(kTestDeviceAddress),
             port_future.Get().path);
@@ -207,9 +205,7 @@ TEST_F(BluetoothSerialDeviceEnumeratorTest, CreateWithDevice) {
   TestFuture<const mojom::SerialPortInfo&> disconnect_future;
   EXPECT_CALL(observer, OnPortConnectedStateChanged).Times(0);
   EXPECT_CALL(observer, OnPortRemoved)
-      .WillOnce([&disconnect_future](const mojom::SerialPortInfo& port) {
-        disconnect_future.SetValue(port);
-      });
+      .WillOnce(InvokeFuture(disconnect_future));
   enumerator.DeviceRemoved(kTestDeviceAddress);
   EXPECT_EQ(disconnect_future.Get().token, port_future.Get().token);
   EXPECT_FALSE(disconnect_future.Get().connected);
