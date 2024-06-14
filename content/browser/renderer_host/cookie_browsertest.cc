@@ -157,7 +157,12 @@ IN_PROC_BROWSER_TEST_F(CookieBrowserTest, Cookies) {
   } else {
     EXPECT_EQ("http://a.test/",
               web_contents_http->GetSiteInstance()->GetSiteURL().spec());
-    EXPECT_EQ("https://a.test/",
+    // Create expected site url, including port if origin isolation is enabled.
+    std::string expected_site_url =
+        base::FeatureList::IsEnabled(features::kOriginKeyedProcessesByDefault)
+            ? url::Origin::Create(https_url).GetURL().spec()
+            : std::string("https://a.test/");
+    EXPECT_EQ(expected_site_url,
               web_contents_https->GetSiteInstance()->GetSiteURL().spec());
   }
 
