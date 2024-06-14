@@ -2664,19 +2664,6 @@ targets.legacy_basic_suite(
 targets.legacy_basic_suite(
     name = "gpu_fyi_and_optional_win_specific_gtests",
     tests = {
-        "gles2_conform_d3d9_test": targets.legacy_test_config(
-            args = [
-                "--use-gpu-in-tests",
-                "--use-angle=d3d9",
-            ],
-        ),
-        "gles2_conform_gl_test": targets.legacy_test_config(
-            args = [
-                "--use-gpu-in-tests",
-                "--use-angle=gl",
-                "--disable-gpu-sandbox",
-            ],
-        ),
         # WebNN DirectML backend unit tests, which currently only run on
         # Windows OS, and require physical hardware.
         "services_webnn_unittests": targets.legacy_test_config(
@@ -2774,19 +2761,6 @@ targets.legacy_basic_suite(
             args = [
                 "--dont-restore-color-profile-after-test",
                 "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl --disable-features=SkiaGraphite",
-            ],
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "gpu_gles2_conform_gtests",
-    tests = {
-        # The gles2_conform_tests are closed-source and deliberately only
-        # run on the FYI waterfall and the optional tryservers.
-        "gles2_conform_test": targets.legacy_test_config(
-            args = [
-                "--use-gpu-in-tests",
             ],
         ),
     },

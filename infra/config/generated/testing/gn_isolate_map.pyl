@@ -854,10 +854,6 @@
     "type": "windowed_test_launcher",
     "executable": "gl_unittests",
   },
-  "gles2_conform_test": {
-    "label": "//gpu/gles2_conform_support:gles2_conform_test",
-    "type": "console_test_launcher",
-  },
   "gn_all": {
     "label": "//:gn_all",
     "type": "additional_compile_target",

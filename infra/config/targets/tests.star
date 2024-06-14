@@ -1010,22 +1010,8 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
-    name = "gles2_conform_d3d9_test",
-    binary = "gles2_conform_test",
-)
-
-targets.tests.gtest_test(
     name = "gpu_memory_buffer_impl_tests",
     binary = "gpu_unittests",
-)
-
-targets.tests.gtest_test(
-    name = "gles2_conform_test",
-)
-
-targets.tests.gtest_test(
-    name = "gles2_conform_gl_test",
-    binary = "gles2_conform_test",
 )
 
 targets.tests.isolated_script_test(

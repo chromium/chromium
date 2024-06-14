@@ -51,7 +51,6 @@
       "content/test/data/.*",
       "content/test/gpu/.*",
       "extensions/test/data/.*",
-      "gpu/gles2_conform_support/gles2_conform_test_expectations.txt",
       "media/test/data/.*",
       "mojo/tools/.*",
       "net/data/.*",

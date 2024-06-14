@@ -2785,21 +2785,6 @@
     },
 
     'gpu_fyi_and_optional_win_specific_gtests': {
-      'gles2_conform_d3d9_test': {
-        'test': 'gles2_conform_test',
-        'args': [
-          '--use-gpu-in-tests',
-          '--use-angle=d3d9',
-        ],
-      },
-      'gles2_conform_gl_test': {
-        'test': 'gles2_conform_test',
-        'args': [
-          '--use-gpu-in-tests',
-          '--use-angle=gl',
-          '--disable-gpu-sandbox',
-        ],
-      },
       'services_webnn_unittests': {
         'test': 'services_unittests',
         'args': [
@@ -2901,14 +2886,6 @@
         'args': [
           '--dont-restore-color-profile-after-test',
           '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle --use-angle=gl --disable-features=SkiaGraphite',
-        ],
-      },
-    },
-
-    'gpu_gles2_conform_gtests': {
-      'gles2_conform_test': {
-        'args': [
-          '--use-gpu-in-tests',
         ],
       },
     },
@@ -6127,7 +6104,6 @@
 
     'gpu_fyi_linux_debug_gtests': [
       'gpu_common_gtests_passthrough',
-      'gpu_gles2_conform_gtests',
     ],
 
     'gpu_fyi_linux_debug_telemetry_tests': [
@@ -6140,7 +6116,6 @@
       'gpu_angle_unit_gtests',
       'gpu_common_gtests_passthrough',
       'gpu_desktop_specific_gtests',
-      'gpu_gles2_conform_gtests',
       'gpu_memory_buffer_impl_tests_suite',
       'gpu_vulkan_gtests',
     ],
@@ -6165,7 +6140,6 @@
       'gpu_common_gtests_passthrough',
       'gpu_fyi_and_optional_non_linux_gtests',
       'gpu_fyi_mac_specific_gtests',
-      'gpu_gles2_conform_gtests',
     ],
 
     'gpu_fyi_mac_nvidia_release_telemetry_tests': [
@@ -6190,7 +6164,6 @@
       'gpu_desktop_specific_gtests',
       'gpu_fyi_and_optional_non_linux_gtests',
       'gpu_fyi_mac_specific_gtests',
-      'gpu_gles2_conform_gtests',
     ],
 
     'gpu_fyi_mac_release_telemetry_tests': [
@@ -6247,7 +6220,6 @@
       'gpu_desktop_specific_gtests',
       'gpu_fyi_and_optional_non_linux_gtests',
       'gpu_fyi_and_optional_win_specific_gtests',
-      'gpu_gles2_conform_gtests',
     ],
 
     'gpu_fyi_win_intel_release_telemetry_tests': [
@@ -7736,15 +7708,6 @@
       },
     },
 
-    'linux_optional_gpu_tests_rel_gtests': {
-      'gpu_gles2_conform_gtests': {
-        'variants': [
-          'LINUX_INTEL_UHD_630_STABLE',
-          'LINUX_NVIDIA_GTX_1660_STABLE',
-        ],
-      },
-    },
-
     'mac_optional_gpu_tests_rel_gpu_telemetry_tests': {
       'gpu_common_and_optional_telemetry_tests': {
         'variants': [
@@ -7819,13 +7782,6 @@
         ],
       },
       'gpu_fyi_mac_specific_gtests': {
-        'variants': [
-          'MAC_MINI_INTEL_GPU_STABLE',
-          'MAC_RETINA_AMD_GPU_STABLE',
-          'MAC_RETINA_NVIDIA_GPU_STABLE',
-        ],
-      },
-      'gpu_gles2_conform_gtests': {
         'variants': [
           'MAC_MINI_INTEL_GPU_STABLE',
           'MAC_RETINA_AMD_GPU_STABLE',
@@ -8008,12 +7964,6 @@
         ],
       },
       'gpu_fyi_and_optional_win_specific_gtests': {
-        'variants': [
-          'WIN10_INTEL_UHD_630_STABLE',
-          'WIN10_NVIDIA_GTX_1660_STABLE',
-        ],
-      },
-      'gpu_gles2_conform_gtests': {
         'variants': [
           'WIN10_INTEL_UHD_630_STABLE',
           'WIN10_NVIDIA_GTX_1660_STABLE',

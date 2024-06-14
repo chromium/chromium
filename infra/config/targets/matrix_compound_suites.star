@@ -1516,18 +1516,6 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "linux_optional_gpu_tests_rel_gtests",
-    basic_suites = {
-        "gpu_gles2_conform_gtests": targets.legacy_matrix_config(
-            variants = [
-                "LINUX_INTEL_UHD_630_STABLE",
-                "LINUX_NVIDIA_GTX_1660_STABLE",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
     name = "mac_optional_gpu_tests_rel_gpu_telemetry_tests",
     basic_suites = {
         "gpu_common_and_optional_telemetry_tests": targets.legacy_matrix_config(
@@ -1606,13 +1594,6 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "gpu_fyi_mac_specific_gtests": targets.legacy_matrix_config(
-            variants = [
-                "MAC_MINI_INTEL_GPU_STABLE",
-                "MAC_RETINA_AMD_GPU_STABLE",
-                "MAC_RETINA_NVIDIA_GPU_STABLE",
-            ],
-        ),
-        "gpu_gles2_conform_gtests": targets.legacy_matrix_config(
             variants = [
                 "MAC_MINI_INTEL_GPU_STABLE",
                 "MAC_RETINA_AMD_GPU_STABLE",
@@ -1826,12 +1807,6 @@ targets.legacy_matrix_compound_suite(
             ],
         ),
         "gpu_fyi_and_optional_win_specific_gtests": targets.legacy_matrix_config(
-            variants = [
-                "WIN10_INTEL_UHD_630_STABLE",
-                "WIN10_NVIDIA_GTX_1660_STABLE",
-            ],
-        ),
-        "gpu_gles2_conform_gtests": targets.legacy_matrix_config(
             variants = [
                 "WIN10_INTEL_UHD_630_STABLE",
                 "WIN10_NVIDIA_GTX_1660_STABLE",

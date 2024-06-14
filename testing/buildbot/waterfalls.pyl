@@ -7120,7 +7120,6 @@
         'os_type': 'linux',
         'browser_config': 'release',
         'test_suites': {
-          'gtest_tests': 'linux_optional_gpu_tests_rel_gtests',
           'gpu_telemetry_tests': 'linux_optional_gpu_tests_rel_gpu_telemetry_tests',
         },
       },

@@ -881,7 +881,6 @@ targets.legacy_compound_suite(
     name = "gpu_fyi_linux_debug_gtests",
     basic_suites = [
         "gpu_common_gtests_passthrough",
-        "gpu_gles2_conform_gtests",
     ],
 )
 
@@ -900,7 +899,6 @@ targets.legacy_compound_suite(
         "gpu_angle_unit_gtests",
         "gpu_common_gtests_passthrough",
         "gpu_desktop_specific_gtests",
-        "gpu_gles2_conform_gtests",
         "gpu_memory_buffer_impl_tests_suite",
         "gpu_vulkan_gtests",
     ],
@@ -938,7 +936,6 @@ targets.legacy_compound_suite(
         "gpu_common_gtests_passthrough",
         "gpu_fyi_and_optional_non_linux_gtests",
         "gpu_fyi_mac_specific_gtests",
-        "gpu_gles2_conform_gtests",
     ],
 )
 
@@ -972,7 +969,6 @@ targets.legacy_compound_suite(
         "gpu_desktop_specific_gtests",
         "gpu_fyi_and_optional_non_linux_gtests",
         "gpu_fyi_mac_specific_gtests",
-        "gpu_gles2_conform_gtests",
     ],
 )
 
@@ -1044,7 +1040,6 @@ targets.legacy_compound_suite(
         "gpu_desktop_specific_gtests",
         "gpu_fyi_and_optional_non_linux_gtests",
         "gpu_fyi_and_optional_win_specific_gtests",
-        "gpu_gles2_conform_gtests",
     ],
 )
 

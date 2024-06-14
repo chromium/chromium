@@ -910,11 +910,6 @@ targets.binaries.windowed_test_launcher(
     executable = "gl_unittests",
 )
 
-targets.binaries.console_test_launcher(
-    name = "gles2_conform_test",
-    label = "//gpu/gles2_conform_support:gles2_conform_test",
-)
-
 targets.binaries.script(
     name = "gold_common_pytype",
     label = "//build:gold_common_pytype",
