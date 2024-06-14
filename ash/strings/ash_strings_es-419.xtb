@@ -409,7 +409,6 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="2573588302192866788">No se pudo establecer la conexión con <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Se inhabilitó el acceso múltiple</translation>
 <translation id="2579264398927991698">Actualizaciones de firmware</translation>
-<translation id="2582112259361606227">Reiniciar para actualizar</translation>
 <translation id="2586657967955657006">Portapapeles</translation>
 <translation id="2595239820337756193">5 km en millas</translation>
 <translation id="2596078834055697711">Tomar captura de pantalla de la ventana</translation>
@@ -550,7 +549,6 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Tipo de trabajo en clase</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3126069444801937830">Reinicia para actualizar.</translation>
 <translation id="3139188263101386725">Usa la combinación de teclas actualizada</translation>
 <translation id="3139942575505304791">Escritorio 1</translation>
 <translation id="315116470104423982">Datos móviles</translation>
@@ -574,6 +572,7 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="3226991577105957773"><ph name="COUNT" /> más</translation>
 <translation id="3227137524299004712">Micrófono</translation>
 <translation id="3233611303007751344">Se desactivó el Ahorro de batería.</translation>
+<translation id="3238409143297336341">Establece controles parentales para apps</translation>
 <translation id="324366796737464147">Cancelación de ruido</translation>
 <translation id="3249513730522716925">La ventana <ph name="WINDOW_TITLE" /> se movió del escritorio <ph name="ACTIVE_DESK" /> al <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Tipo de trabajo en clase: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -1403,6 +1402,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6141205840878048728">¿En qué te gustaría concentrarte?</translation>
 <translation id="6141988275892716286">Confirmar la descarga</translation>
 <translation id="6143578372829139382">Compartir en YouTube</translation>
+<translation id="6147182561428020853">Ahora puedes bloquear las apps instaladas en este dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">El dispositivo periférico no es compatible</translation>
 <translation id="6156960295318603523">Configuración de idioma</translation>
 <translation id="615957422585914272">Mostrar el teclado en pantalla</translation>
@@ -1492,7 +1492,6 @@ No hay dispositivos conectados.</translation>
 <translation id="6495322433318104734">Se muestra el protector de pantalla; presiona cualquier tecla para salir</translation>
 <translation id="6495400115277918834">Se inició el modo pantalla en pantalla; presiona Alt+Mayúsculas+V para enfocar</translation>
 <translation id="6497418457565568043">La función No interrumpir está activada</translation>
-<translation id="6500896621837555595">Actualizar</translation>
 <translation id="6501401484702599040">Transmitiendo pantalla a <ph name="RECEIVER_NAME" /></translation>
 <translation id="6507042703812908515">Abre la app de Combinaciones de teclas con "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6507618042428827377">Cambiar al siguiente método de entrada disponible</translation>
@@ -1822,7 +1821,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7748275671948949022">Destacar el botón del Selector en la barra</translation>
 <translation id="7749443890790263709">Se alcanzó la cantidad máxima de escritorios.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
-<translation id="776344839111254542">Haz clic para ver los detalles de la actualización</translation>
 <translation id="7768784765476638775">Seleccionar para pronunciar</translation>
 <translation id="7769299611924763557">Tu GIF estará listo en breve</translation>
 <translation id="7773536009433685931">Activar el Wi-Fi</translation>
@@ -1957,7 +1955,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8200772114523450471">Reanudar</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> Acabas de concentrarte durante <ph name="FOCUSED_TIME" />. Abre la Configuración rápida para volver a concentrarte.</translation>
 <translation id="8203795194971602413">Clic con botón derecho</translation>
-<translation id="8209010265547628927">Restablecer</translation>
 <translation id="8214996719228530800">Canal de Canary</translation>
 <translation id="8219451629189078428">Durante ese período, la Chromebook deberá estar encendida y enchufada a una fuente de alimentación. Asegúrate de que el cable del cargador o adaptador esté conectado correctamente tanto a la Chromebook como al enchufe. No apagues la Chromebook.</translation>
 <translation id="8220076512072059941">Agregar <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -1968,7 +1965,6 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8239034820133090126">Activar el escritorio de la derecha</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, nivel de batería del teléfono: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
-<translation id="8255234195843591763">Restablecer para actualizar</translation>
 <translation id="8257510091797044096">Configura el dispositivo</translation>
 <translation id="8261506727792406068">Borrar</translation>
 <translation id="8262312463845990408">Activar o desactivar la reproducción</translation>

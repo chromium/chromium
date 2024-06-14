@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">пастелножълто</translation>
 <translation id="1056898198331236512">Предупреждение</translation>
 <translation id="1059913517121127803">Сканирането не бе стартирано</translation>
+<translation id="1061864016440983342">Използване без местоположение</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> от <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Установена е защитна стена</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Още настройки</translation>
 <translation id="2082932131694554252">Зададен клавиш на клавиатурата</translation>
 <translation id="2085089206770112532">Намаляване на яркостта на дисплея</translation>
+<translation id="2086091080968010660">Промените въз основа на часа може да не са точни. Включете достъпа до местоположението на ниво система от настройките.</translation>
 <translation id="2102231663024125441">Редактиране на текст</translation>
 <translation id="2105810540595158374">Устройството е контролер за игри.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версия <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Възстановяване на стандартните</translation>
 <translation id="2286454467119466181">Опростено</translation>
 <translation id="2287186687001756809">Няма налично изображение. За да добавите снимки, отворете <ph name="LINK" /></translation>
+<translation id="2294577623958216786">Текущият график е зададен на <ph name="SUNRISE" /> – <ph name="SUNSET" />. Ако искате графикът за залеза и изгрева да се актуализира автоматично, включете достъпа до местоположението на ниво система.</translation>
 <translation id="2305172810646967500">Черен</translation>
 <translation id="2307344026739914387">Използване на текущата двойка ключове</translation>
 <translation id="2308243864813041101">Изключете USB кабела на <ph name="DEVICE_NAME" />, за да продължите процеса на актуализиране</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">яркост на клавиатурата</translation>
 <translation id="6412715219990689313">Вградена клавиатура</translation>
 <translation id="6417265370957905582">Google Асистент</translation>
+<translation id="6419454453018688975">Включване на достъпа до местоположението на ниво система</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Слаба (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Към настройките на профила</translation>

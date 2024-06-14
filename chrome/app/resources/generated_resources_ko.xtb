@@ -552,7 +552,6 @@
 <translation id="1410797069449661718">첫 번째 탭으로 스크롤</translation>
 <translation id="1410806973194718079">정책을 확인할 수 없습니다.</translation>
 <translation id="1411400282355634827">모든 블루투스 기기 권한을 재설정하시겠습니까?</translation>
-<translation id="141163372431617064">사이트에서 포인터 잠금이 허용되지 않음</translation>
 <translation id="1414315029670184034">사이트에서 카메라를 사용하도록 허용하지 않음</translation>
 <translation id="1414648216875402825">개발 중인 기능을 포함하는 <ph name="PRODUCT_NAME" />의 불안정한 버전으로 업데이트합니다. 기기가 비정상 종료되거나 예기치 않은 버그가 발생할 수 있습니다. 주의해서 진행하시기 바랍니다.</translation>
 <translation id="1415708812149920388">클립 보드 읽기 액세스 거부됨</translation>
@@ -1412,7 +1411,6 @@
 <translation id="2010501376126504057">호환 기기</translation>
 <translation id="201217432804812273">'그룹 저장'을 사용 설정합니다.</translation>
 <translation id="2012935757369720523">파일 삭제</translation>
-<translation id="2013467735169740431">사이트에서 키보드 잠금을 요청할 수 있음</translation>
 <translation id="2013550551806600826">직접 해 보세요. 설정을 사용 설정 또는 중지한 다음 테스트 영역의 터치패드에서 두 손가락으로 스크롤합니다. 나중에 설정 &gt; 기기 &gt; 마우스 및 터치패드에서도 찾을 수 있습니다.</translation>
 <translation id="2016473077102413275">이미지가 필요한 기능이 작동하지 않습니다</translation>
 <translation id="2016574333161572915">Google Meet 하드웨어 설정 준비가 완료되었습니다</translation>
@@ -2260,7 +2258,6 @@
 <translation id="2613535083491958306"><ph name="ORIGIN" />에서 <ph name="FILENAME" /> 파일을 수정할 수 있습니다.</translation>
 <translation id="2613747923081026172">그룹 만들기</translation>
 <translation id="2615159404909536465">{FILE_COUNT,plural, =1{이 확장 프로그램에서 <ph name="FILE1" /> 파일을 열고 수정}other{이 앱에서, ... <ph name="FILE1" /> 파일을 열고 수정}}</translation>
-<translation id="2615927647449180540">포인터 잠금이 허용되지 않음</translation>
 <translation id="2616366145935564096"><ph name="WEBSITE_1" />의 데이터를 읽고 변경</translation>
 <translation id="2618797463720777311">Nearby Share 설정</translation>
 <translation id="2619340799655338321">재생/일시중지</translation>
@@ -3166,7 +3163,6 @@
 <translation id="3293644607209440645">이 페이지 전송</translation>
 <translation id="32939749466444286">Linux 컨테이너가 시작되지 않았습니다. 다시 시도해 주세요.</translation>
 <translation id="3294437725009624529">게스트</translation>
-<translation id="3294484594253557399">사이트에서 포인터 잠금을 사용하여 마우스 포인터를 숨기고 마우스 포인터가 페이지를 벗어나지 못하게 합니다.</translation>
 <translation id="3294686910656423119">사용 통계 및 비정상 종료 보고서</translation>
 <translation id="3295241308788901889">탭 전송 중</translation>
 <translation id="3297105622164376095">서드 파티 로그인 메시지 표시가 허용됨</translation>
@@ -5204,7 +5200,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4819323978093861656">{0,plural, =0{지금 종료 중입니다.}=1{1초 후 종료됨}other{#초 후 종료됨}}</translation>
 <translation id="4819607494758673676">Google 어시스턴트 알림</translation>
 <translation id="4819818293886748542">지원 도구 링크 가져오기</translation>
-<translation id="4820082996741546682">키보드 잠금이 허용됨</translation>
 <translation id="4820236583224459650">활성 티켓으로 설정</translation>
 <translation id="4820795723433418303">기능 키를 맨 위 키로 사용</translation>
 <translation id="4821935166599369261">프로파일링 사용(&amp;P)</translation>
@@ -5282,7 +5277,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4872192066608821120">비밀번호를 가져오려면 CSV 파일을 선택하세요.</translation>
 <translation id="4872212987539553601">온디바이스 암호화 설정</translation>
 <translation id="4873312501243535625">미디어 파일 검사기</translation>
-<translation id="4874705075711349931">사이트에서 키보드 잠금을 사용하여 브라우저나 운영체제에서 처리되는 키보드 입력을 캡처합니다.</translation>
 <translation id="4876273079589074638">Google 엔지니어가 이 비정상 종료를 조사하고 해결할 수 있도록 도와주세요. 가능한 경우 단계를 정확히 나열해 주세요. 자세히 설명해 주시면 큰 도움이 됩니다.</translation>
 <translation id="4876305945144899064">사용자 이름 없음</translation>
 <translation id="4876327226315760474">즉, 사이트 기능이 예상대로 작동하지만 브라우징 보호 기능이 약화될 수 있습니다.</translation>
@@ -5482,6 +5476,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5032430150487044192">QR 코드를 만들 수 없음</translation>
 <translation id="5033137252639132982">움직임 감지 센서 사용이 허용되지 않음</translation>
 <translation id="5033266061063942743">기하학적 모양</translation>
+<translation id="503441068567788948">Google 비밀번호 관리자에 사용할 새 PIN을 만드세요</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />의 자세한 정보를 확인하려면 아래의 '세부정보 더보기'를 선택하세요.</translation>
 <translation id="5037676449506322593">모두 선택</translation>
 <translation id="5038818366306248416">이전에 <ph name="ORIGIN" />의 확장 프로그램을 일체 허용하지 않았습니다.</translation>
@@ -5509,6 +5504,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5057110919553308744">확장 프로그램을 클릭할 경우</translation>
 <translation id="5057127674016624293">스캔이 예상보다 오래 걸리고 있음</translation>
 <translation id="5057480703570202545">다운로드 기록</translation>
+<translation id="5058771692413403640"><ph name="SITE" />에서 본인 인증을 요청합니다.</translation>
 <translation id="5059241099014281248">로그인 제한</translation>
 <translation id="5059429103770496207">표시 스타일</translation>
 <translation id="5059526285558225588">공유할 정보 선택</translation>
@@ -5950,6 +5946,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5390112241331447203">전송된 system_logs.txt 파일을 의견 보고서에 포함합니다.</translation>
 <translation id="5390677308841849479">진한 빨간색 및 주황색</translation>
 <translation id="5392192690789334093">알림 전송이 허용됨</translation>
+<translation id="5393330235977997602">PIN 옵션</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{링크}other{링크 #개}}</translation>
 <translation id="5394529681046491727">Wi-Fi Direct</translation>
 <translation id="5395498824851198390">기본 글꼴</translation>
@@ -6545,7 +6542,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="583431638776747">사이트를 사용할 수 없음</translation>
 <translation id="5834581999798853053">약 <ph name="TIME" />분 남음</translation>
 <translation id="5835360478055379192">{NUM_EXTENSION,plural, =1{<ph name="EXTENSION1" />에서 HID 기기에 액세스하는 중}=2{<ph name="EXTENSION1" /> 및 <ph name="EXTENSION2" /> 확장 프로그램에서 기기에 액세스하는 중}other{<ph name="EXTENSION1" />, <ph name="EXTENSION2" /> 외 {3}개의 확장 프로그램에서 기기에 액세스하는 중}}</translation>
-<translation id="5835714760577949748">키보드 잠금이 허용되지 않음</translation>
 <translation id="583673505367439042">사이트에서 기기의 파일 및 폴더 수정을 요청할 수 있음</translation>
 <translation id="5836999627049108525">출발 언어</translation>
 <translation id="583756221537636748">케이스</translation>
@@ -6684,6 +6680,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5935158534896975820">인증서 로그인 요청 준비 중(서버에서 대기 중)</translation>
 <translation id="5935656526031444304">세이프 브라우징 관리</translation>
 <translation id="5936065461722368675">전체 페이지 번역</translation>
+<translation id="5937347877659196749">다음으로, 복구 PIN을 사용해 모든 패스키를 보호하세요</translation>
 <translation id="5937977334791924341"><ph name="APP" /> 로고</translation>
 <translation id="5938002010494270685">보안 업그레이드 사용 가능</translation>
 <translation id="5939518447894949180">초기화</translation>
@@ -8132,6 +8129,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7033616203784997570">최대 62자(영문 기준)까지 입력할 수 있습니다.</translation>
 <translation id="7034692021407794547">먼저 결제 관리 권한을 보유한 관리자가 관리 콘솔의 Google Meet 하드웨어 섹션에서 Google Meet 하드웨어 서비스 약관에 동의해야 합니다.</translation>
 <translation id="7036706669646341689">Linux를 사용하려면 <ph name="DISK_SIZE" />의 여유 공간이 권장됩니다. 여유 공간을 늘리려면 기기에서 파일을 삭제하세요.</translation>
+<translation id="7037157058268992880">PIN 찾기</translation>
 <translation id="7037509989619051237">텍스트 미리보기</translation>
 <translation id="7038632520572155338">스위치 제어</translation>
 <translation id="7038710352229712897"><ph name="USER_NAME" />님의 다른 Google 계정 추가</translation>
@@ -9132,7 +9130,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 
 
 <ph name="EXTENSION_NAME" /></translation>
-<translation id="7788948939674438635">사이트에서 키보드 잠금이 허용되지 않음</translation>
 <translation id="7789963078219276159">시작 페이지 배경화면이 <ph name="CATEGORY" />(으)로 변경되었습니다.</translation>
 <translation id="7791269138074599214">입력 방법</translation>
 <translation id="7791429245559955092">이 애플리케이션이 현재 사용하는 Chrome 프로필에 설치됩니다</translation>
@@ -9546,6 +9543,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8084429490152575036">셀룰러 APN 설정</translation>
 <translation id="8084510406207562688">모든 탭 복원(&amp;E)</translation>
 <translation id="8084628902026812045">사이트에서 보안 연결을 사용하고 있지 않으며 파일이 조작되었을 수 있습니다.</translation>
+<translation id="8085701268329068646">Google 비밀번호 관리자에 사용할 PIN을 입력하세요</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> 구성 중...</translation>
 <translation id="8086121155774250556">이 탭에서 화면을 공유하는 중입니다</translation>
 <translation id="8086610718778464681">Linux 앱 및 파일을 백업할 수 없음</translation>
@@ -10693,7 +10691,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8930925309304109522">이 언어를 설치하려면 기기의 저장공간을 확보하세요</translation>
 <translation id="8931076093143205651">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 Android 사용 환경 개선에 참여합니다. 데이터는 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 설정은 소유자가 지정합니다. 소유자가 이 기기의 진단 및 사용 데이터를 Google에 전송할지 선택할 수 있습니다. 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 Google 계정에 저장될 수 있습니다.</translation>
 <translation id="8931475688782629595">동기화 관리</translation>
-<translation id="8931479761457920281">포인터 잠금이 허용됨</translation>
 <translation id="8931713990831679796">프린터가 연결되었으며 사용할 수 있습니다. 프린터에 더 간편하게 액세스할 수 있도록 프로필에 저장하세요.</translation>
 <translation id="8932654652795262306">인스턴트 테더링 세부정보</translation>
 <translation id="893298445929867520">장바구니를 숨겼습니다. 변경사항이 있을 경우 다시 표시됩니다.</translation>
@@ -11071,6 +11068,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> 검색</translation>
 <translation id="9201117361710210082">이전에 확인함</translation>
 <translation id="9201220332032049474">화면 잠금 옵션</translation>
+<translation id="9201762611758697018">복구 PIN을 사용하면 모든 기기에 저장된 패스키에 액세스할 수 있습니다.</translation>
 <translation id="9201842707396338580">문제가 발생했습니다. 기기 소유자 또는 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="9203296457393252944">적록색약, 녹색약</translation>
 <translation id="9203398526606335860">프로파일링 사용(&amp;P)</translation>
@@ -11173,7 +11171,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="978146274692397928">초기 구두점 폭을 최대로 설정</translation>
 <translation id="978978324795544535">항목을 이동하려면 항목을 두 번 탭하는데 두 번째로 탭할 때 길게 터치한 상태에서 드래그합니다.</translation>
 <translation id="97905529126098460">취소가 완료되면 이 창이 닫힙니다.</translation>
-<translation id="979345485590886759">사이트에서 마우스 포인터 잠금을 요청할 수 있음</translation>
 <translation id="980731642137034229">작업 메뉴 버튼</translation>
 <translation id="981121421437150478">오프라인</translation>
 <translation id="98235653036850093"><ph name="PROFILE_NAME" />님, 안녕하세요.</translation>

@@ -2656,13 +2656,6 @@
 
 <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
 這個行為與 <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" /> 相同，差別只在於新建立的設定檔不允許有次要帳戶。</translation>
-<translation id="3079575168312257780">如果將這項政策設為 0 (預設值)，你將可存取開發人員工具和 JavaScript 控制台，但無法在企業政策安裝的擴充功能中存取。自 114 版起，如果是受管理的使用者，也無法在瀏覽器內建的擴充功能中存取。如果將這項政策設為 1，你將可在所有情況下存取開發人員工具和 JavaScript 控制台，在由企業政策安裝的擴充功能中也能進行存取。如果將這項政策設為 2，你將無法存取開發人員工具，也無法檢查網站元素。
-
-      此外，用於開啟開發人員工具或 JavaScript 控制台的鍵盤快速鍵、選單項目或內容選單項目也會停用。
-
-      自 <ph name="PRODUCT_NAME" /> 99 版起，這項設定還可控制「查看網頁原始碼」功能的進入點。如果將這項政策設為「DeveloperToolsDisallowed」(值 2)，使用者就無法透過鍵盤快速鍵或內容選單存取原始碼檢視畫面。如要撤底封鎖原始碼檢視畫面，必須同時將「view-source:*」加入 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 政策中。
-
-      自 <ph name="PRODUCT_NAME" /> 119 版起，這項設定也會控管是否可啟用及使用隔離網頁應用程式的開發人員模式。</translation>
 <translation id="3083259245974004342">密碼保護功能</translation>
 <translation id="308356121098374167">可在不安全的環境中使用 WebSQL</translation>
 <translation id="3086995894968271156">設定「<ph name="PRODUCT_NAME" />」的 Cast 接收器</translation>
@@ -4322,17 +4315,6 @@
 如果將這項政策設為 True (預設值)，系統會啟用新行為。
 
 如果將這項政策設為 False，系統會啟用舊行為。</translation>
-<translation id="4490420545181481759">X.509 憑證可能會對限制進行編碼，例如憑證擴充功能中的名稱限制。RFC 5280 會指定是否要選擇在信任錨點憑證上強制執行這類限制。自 <ph name="PRODUCT_NAME" /> 112 起，系統將對從平台憑證商店載入的此類憑證強制執行這類限制。
-
-如果企業私密根憑證中已編碼的限制發生問題，可以使用這項政策暫時停止限制。在上述情況下，這項政策可能會在修正憑證問題期間用於暫時停止強制執行限制。
-
-如果這項政策未設定或設為啟用，<ph name="PRODUCT_NAME" /> 將對從平台信任存放區載入的信任錨點強制執行已編碼的限制。
-
-如果將這項政策設為停用，<ph name="PRODUCT_NAME" /> 就不會對從平台信任存放區載入的信任錨點強制執行已編碼的限制。
-
-在 <ph name="PRODUCT_NAME" /> 112 版中，如果將 <ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" /> 政策停用，這項政策就不會有任何作用。
-
-這項政策預計於 <ph name="PRODUCT_NAME" /> 118 版移除。</translation>
 <translation id="4491607814095953976">選擇是否可停用 <ph name="PRIVACY_SANDBOX_NAME" /> 廣告評估設定</translation>
 <translation id="4492287494009043413">停用螢幕畫面擷取功能</translation>
 <translation id="4494132853995232608">Wilco DTC</translation>
@@ -5081,11 +5063,6 @@
 
           如果將這項政策設為 False，使用者無法將內容投放至自己的裝置。如果將這項政策設為 True，則使用者可投放內容。如果未設定這項政策，則使用者無法將內容投放至已註冊的 Chrome OS 裝置，但可投放至未註冊的裝置。</translation>
 <translation id="5164141068091580679">啟用這項功能，並傳送資料協助訓練 AI 模型</translation>
-<translation id="516520353995300280">設定這項政策後，系統不會強制要求列出的舊版憑證授權單位 (CA) (由包含指定 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> 雜湊的憑證鏈所組成) 依憑證透明化規定公開憑證。此外，因為未依規定對外公開而不受信任的憑證，企業主機也可以繼續使用。不過，視為舊版 CA 的 CA 憑證必須包含 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> 雜湊，才不會遭強制要求公開憑證。舊版 CA 是受到一或多個 <ph name="PRODUCT_NAME" /> 支援的作業系統公開信任、但不受 Android 開放原始碼計畫或 <ph name="PRODUCT_OS_NAME" />信任的 CA。
-
-      指定 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> 雜湊的方法是串連雜湊演算法名稱、斜線以及套用到指定憑證 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> (採 DER 編碼) 雜湊演算法所採用的 Base64 編碼。Base64 編碼格式符合 SPKI 指紋編碼的格式。系統僅能辨識 sha256 雜湊演算法，其他雜湊演算法則會忽略。
-
-      如果未設定這項政策，凡是應依憑證透明化規定公開而未公開的憑證，<ph name="PRODUCT_NAME" /> 都會將其視為不受信任的憑證。</translation>
 <translation id="5168529971295111207">這項政策已遭淘汰，請改用 ProxyMode。
 
           這項政策可讓你指定 <ph name="PRODUCT_NAME" /> 使用的 Proxy 伺服器，並禁止使用者變更 Proxy 設定。
@@ -5897,15 +5874,6 @@
 <translation id="5775235485119094648">當電量位於特定範圍內時進行充電。</translation>
 <translation id="5776485039795852974">每當網站要顯示桌面通知時詢問我</translation>
 <translation id="5783009211970309878">列印頁首和頁尾</translation>
-<translation id="5786733040432065904">專注模式會透過計時器控制零打擾模式，避免使用者受干擾。專注模式的其中一項功能是播放特定音樂，幫助使用者專心。這項政策會控管是否允許使用這項功能。
-
-如果未設定這項政策，受管理使用者將無法播放任何音效。
-
-如果將這項政策設為啟用，系統將允許在專注模式下播放所有音效。
-
-如果將政策設為「僅允許播放專注模式音效」，系統就只能播放專注模式音效。
-
-如果將這項政策設為停用，系統將無法在專注模式下播放任何音效。</translation>
 <translation id="5790763087505467169">減少顯示受管理訪客工作階段的自動啟動通知</translation>
 <translation id="5800329278018669527">停用離線時的網路設定提示</translation>
 <translation id="5802931736499687181">停用加密報告管道</translation>

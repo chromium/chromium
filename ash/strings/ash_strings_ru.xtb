@@ -409,7 +409,6 @@
 <translation id="2573588302192866788">Не удалось подключить устройство "<ph name="NAME" />"</translation>
 <translation id="2575685495496069081">Множественный вход отключен</translation>
 <translation id="2579264398927991698">Обновления встроенного ПО</translation>
-<translation id="2582112259361606227">Перезагрузить и обновить</translation>
 <translation id="2586657967955657006">Буфер обмена</translation>
 <translation id="2595239820337756193">5 миль в км</translation>
 <translation id="2596078834055697711">Сделать скриншот окна</translation>
@@ -550,7 +549,6 @@
 <translation id="3122464029669770682">Процессор</translation>
 <translation id="3125690294288312932">Тип задания</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3126069444801937830">Перезагрузите, чтобы обновить</translation>
 <translation id="3139188263101386725">Воспользуйтесь обновленным сочетанием клавиш</translation>
 <translation id="3139942575505304791">Рабочий стол 1</translation>
 <translation id="315116470104423982">Мобильный интернет</translation>
@@ -574,6 +572,7 @@
 <translation id="3226991577105957773">Ещё <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3233611303007751344">Режим энергосбережения отключен.</translation>
+<translation id="3238409143297336341">Настраивайте родительский контроль для приложений</translation>
 <translation id="324366796737464147">Шумоподавление</translation>
 <translation id="3249513730522716925">Окно "<ph name="WINDOW_TITLE" />" перемещено с рабочего стола "<ph name="ACTIVE_DESK" />" на рабочий стол "<ph name="TARGET_DESK" />".</translation>
 <translation id="3253743281242075461">Тип задания: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -1402,6 +1401,7 @@
 <translation id="6141205840878048728">На чем вы хотите сфокусироваться?</translation>
 <translation id="6141988275892716286">Подтвердите скачивание</translation>
 <translation id="6143578372829139382">Поделиться на YouTube</translation>
+<translation id="6147182561428020853">Теперь вы можете блокировать приложения, установленные на этом <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6154006699632741460">Периферийное устройство не поддерживается</translation>
 <translation id="6156960295318603523">Языковые настройки</translation>
 <translation id="615957422585914272">Показывать экранную клавиатуру</translation>
@@ -1491,7 +1491,6 @@
 <translation id="6495322433318104734">Показывается заставка. Чтобы выйти, нажмите любую клавишу.</translation>
 <translation id="6495400115277918834">Включен режим "Картинка в картинке", чтобы переместить фокус, нажмите Alt + Shift + V</translation>
 <translation id="6497418457565568043">Режим "Не беспокоить" включен</translation>
-<translation id="6500896621837555595">Обновить</translation>
 <translation id="6501401484702599040">Трансляция содержимого экрана: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6507042703812908515">Чтобы открыть приложение "Сочетания клавиш", нажмите <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Переключиться на следующий доступный способ ввода</translation>
@@ -1821,7 +1820,6 @@
 <translation id="7748275671948949022">Выделить кнопку запуска на панели запуска</translation>
 <translation id="7749443890790263709">Достигнуто максимально допустимое количество рабочих столов.</translation>
 <translation id="7749958366403230681">Клавиша ExpressKey 4</translation>
-<translation id="776344839111254542">Нажмите, чтобы просмотреть информацию об обновлении</translation>
 <translation id="7768784765476638775">Озвучивание при нажатии</translation>
 <translation id="7769299611924763557">Файл GIF скоро будет готов</translation>
 <translation id="7773536009433685931">Включить Wi-Fi</translation>
@@ -1956,7 +1954,6 @@
 <translation id="8200772114523450471">Возобновить</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> Время в режиме концентрации внимания: <ph name="FOCUSED_TIME" />. Чтобы снова сфокусироваться на задаче, откройте быстрые настройки.</translation>
 <translation id="8203795194971602413">Нажатие правой кнопкой мыши</translation>
-<translation id="8209010265547628927">Сбросить настройки</translation>
 <translation id="8214996719228530800">Версия Canary</translation>
 <translation id="8219451629189078428">В течение этого времени устройство Chromebook должно быть включено, а кабели зарядного устройства или адаптера – надежно подсоединены к нему и подключены к сети электропитания. Не выключайте устройство Chromebook.</translation>
 <translation id="8220076512072059941">Плюс <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -1967,7 +1964,6 @@
 <translation id="8239034820133090126">Включить рабочий стол справа</translation>
 <translation id="8247060538831475781">Статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" />, заряд батареи – <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, приложение</translation>
-<translation id="8255234195843591763">Сбросить настройки и обновить ОС</translation>
 <translation id="8257510091797044096">Настроить устройство</translation>
 <translation id="8261506727792406068">Удалить</translation>
 <translation id="8262312463845990408">Воспроизвести/приостановить</translation>

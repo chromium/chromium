@@ -200,6 +200,7 @@
 <translation id="199425419756152024">Ver contrasinal</translation>
 <translation id="2010008505735295285">Volver cargar</translation>
 <translation id="2015722694326466240">Para ver os contrasinais, en primeiro lugar debes definir un código de desbloqueo no teu dispositivo.</translation>
+<translation id="201759455285471444">Despregar o grupo de pestanas.</translation>
 <translation id="2021670401941426298">En caso aplicable, consulta as instrucións do teu motor de busca para eliminar o historial de busca.</translation>
 <translation id="202292859882676807">Permitiuse o acceso ao micrófono</translation>
 <translation id="20485545164632846">novo elemento</translation>
@@ -850,6 +851,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5345660046352249607">{COUNT,plural, =1{Queres facer un seguimento deste paquete?}other{Queres facer un seguimento de {COUNT} paquetes?}}</translation>
 <translation id="5348775987281903912">Usa o botón correspondente para compartir esta páxina aquí.</translation>
 <translation id="536067926684072644">Mostrar marcadores</translation>
+<translation id="537853552771686272">Xestiona os temas e sitios que che interesan</translation>
 <translation id="5379352933722332597">{count,plural, =1{Gardouse o marcador en {title}. Está gardado só neste dispositivo.}other{Gardáronse {count} marcadores en {title}. Están gardados só neste dispositivo.}}</translation>
 <translation id="5388358297987318779">Abrir imaxe</translation>
 <translation id="5395707839134961196">Ocultar os detalles do buscador</translation>
@@ -932,6 +934,7 @@ Handoff tamén debe estar activado na sección Xeral da configuración e os teus
 <translation id="5758631781033351321">Aquí atoparás a túa lista de lecturas</translation>
 <translation id="5765456154762864099">Menú → Configuración → Navegador predeterminado</translation>
 <translation id="5777888488419460501">Gardar na conta</translation>
+<translation id="5778292857689789362">Grupo de pestanas <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> pestanas</translation>
 <translation id="5782227691023083829">Traducindo…</translation>
 <translation id="5791632441210678828">Botón Ordenar do feed Seguindo.</translation>
 <translation id="5793373065989412701">Comprobando membros da familia…</translation>
@@ -1095,6 +1098,7 @@ Non poden utilizalas para ver a túa actividade de navegación en distintos siti
 <translation id="648164694371393720">Produciuse un erro de autenticación</translation>
 <translation id="6494931198667773526">Finaliza</translation>
 <translation id="650279896687777322">Máis información…</translation>
+<translation id="6505334220040167806">Contraer o grupo de pestanas.</translation>
 <translation id="6507973708545996744">Inicia a sesión para consultar a túa lista de lectura en todos os teus dispositivos.</translation>
 <translation id="6510072653668207258">Lembrarmo máis tarde</translation>
 <translation id="651505212789431520">Queres cancelar a sincronización? Podes activala en calquera momento en Configuración.</translation>

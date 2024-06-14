@@ -80,6 +80,7 @@
 <translation id="1247519845643687288">最近使用的應用程式</translation>
 <translation id="1252999807265626933">正在使用「<ph name="POWER_SOURCE" />」充電</translation>
 <translation id="1255033239764210633">天氣如何？</translation>
+<translation id="1256734167083229794">你按下了全螢幕放大鏡的鍵盤快速鍵。按住 <ph name="ZOOM_IN_ACCELERATOR" />可放大，按住 <ph name="ZOOM_OUT_ACCELERATOR" />可縮小。如要在放大的檢視畫面中四處移動，請使用 Ctrl + Alt + 方向鍵。</translation>
 <translation id="1269405891096105529">訪客模式不支援周邊裝置</translation>
 <translation id="1270290102613614947">螢幕小鍵盤已停用</translation>
 <translation id="1272079795634619415">停止</translation>
@@ -264,6 +265,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">已移除桌面和視窗。按下 Ctrl + Z 鍵可復原動作。</translation>
 <translation id="1972950159383891558"><ph name="USERNAME" />，你好：</translation>
+<translation id="1977686871076551563">色彩反轉模式已啟用，再次按下 <ph name="ACCELERATOR" />即可停用。</translation>
 <translation id="1978498689038657292">文字輸入</translation>
 <translation id="1980808257969311265">加入「<ph name="EVENT_SUMMARY" />」</translation>
 <translation id="1982717156487272186">顯示前一週的活動</translation>
@@ -409,7 +411,6 @@
 <translation id="2573588302192866788">無法連結 <ph name="NAME" /></translation>
 <translation id="2575685495496069081">多重登入功能已停用</translation>
 <translation id="2579264398927991698">韌體更新</translation>
-<translation id="2582112259361606227">重新啟動即可更新</translation>
 <translation id="2586657967955657006">剪貼簿</translation>
 <translation id="2595239820337756193">5 公里等於多少英里</translation>
 <translation id="2596078834055697711">擷取視窗螢幕畫面</translation>
@@ -550,7 +551,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">課堂作業類型</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3126069444801937830">重新啟動即可更新</translation>
 <translation id="3139188263101386725">使用新版快速鍵</translation>
 <translation id="3139942575505304791">桌面 1</translation>
 <translation id="315116470104423982">行動數據</translation>
@@ -574,6 +574,7 @@
 <translation id="3226991577105957773">還有 <ph name="COUNT" /> 則</translation>
 <translation id="3227137524299004712">麥克風</translation>
 <translation id="3233611303007751344">省電模式已關閉</translation>
+<translation id="3238409143297336341">設定應用程式家長監護功能</translation>
 <translation id="324366796737464147">降噪</translation>
 <translation id="3249513730522716925">「<ph name="WINDOW_TITLE" />」視窗已從桌面 <ph name="ACTIVE_DESK" /> 移動到桌面 <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">課堂作業類型：<ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -1182,6 +1183,7 @@
 <translation id="5377367976106153749">要允許存取攝影機嗎？</translation>
 <translation id="5379115545237091094">嘗試次數過多</translation>
 <translation id="5391307769715781764">要取代已儲存的桌面嗎？</translation>
+<translation id="5392327145184648521">正在計算電量百分比...</translation>
 <translation id="5393156353051693207">按住任一處即可將應用程式重新排序</translation>
 <translation id="5395308026110844773">「<ph name="DRAGGED_APP_NAME" />」已拖曳到「<ph name="IN_PLACE_APP" />」上方，放開滑鼠即可建立資料夾。</translation>
 <translation id="5397578532367286026">管理員 (<ph name="MANAGER_EMAIL" />) 可以在 chrome.com 瞭解這名使用者的使用情形和記錄。</translation>
@@ -1236,6 +1238,7 @@
 <translation id="5577281275355252094">如要使用 Phone Hub，請確認手機已開啟藍牙功能</translation>
 <translation id="5578188167649348993">記憶體</translation>
 <translation id="5580000943347215299">資料庫</translation>
+<translation id="5586388332127302891">置頂放大鏡已啟用，再次按下 <ph name="ACCELERATOR" />即可停用。</translation>
 <translation id="5587506661873751671">目前下載進度：<ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">拖曳選取要擷圖的區域</translation>
 <translation id="5590609058453685222">靜音提醒已開啟。如果在靜音狀態下說話，系統會傳送通知給你。</translation>
@@ -1399,6 +1402,7 @@
 <translation id="6141205840878048728">你想專心處理什麼？</translation>
 <translation id="6141988275892716286">確認下載</translation>
 <translation id="6143578372829139382">分享至 YouTube</translation>
+<translation id="6147182561428020853">現在可以封鎖這部 <ph name="DEVICE_TYPE" /> 上安裝的應用程式</translation>
 <translation id="6154006699632741460">不支援周邊裝置</translation>
 <translation id="6156960295318603523">語言設定</translation>
 <translation id="615957422585914272">顯示螢幕小鍵盤</translation>
@@ -1446,6 +1450,7 @@
 <translation id="6319503618073410818">在瀏覽器中查看詳細資料</translation>
 <translation id="6324916366299863871">編輯捷徑</translation>
 <translation id="6330012934079202188">現在是以所有桌面模式查看視窗，按下向上鍵即可改以目前的桌面模式查看視窗</translation>
+<translation id="6337159624125741244">全螢幕放大鏡已開啟</translation>
 <translation id="6338485349199627913">「<ph name="DISPLAY_NAME" />」是由 <ph name="MANAGER" /> 管理的工作階段</translation>
 <translation id="6344138931392227467">已連結「<ph name="DEVICE_NAME" />」</translation>
 <translation id="6348449481487610270">按下 <ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> 鍵，然後按 <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> 或<ph name="KEY_THREE" />鍵</translation>
@@ -1488,7 +1493,6 @@
 <translation id="6495322433318104734">目前顯示的是螢幕保護程式，按下任一按鍵即可退出</translation>
 <translation id="6495400115277918834">已開啟子母畫面，按下 Alt+Shift+V 可聚焦</translation>
 <translation id="6497418457565568043">零打擾模式已開啟</translation>
-<translation id="6500896621837555595">更新</translation>
 <translation id="6501401484702599040">正在將畫面投放到「<ph name="RECEIVER_NAME" />」</translation>
 <translation id="6507042703812908515">使用「<ph name="NEW_SHORTCUT" />」開啟 Key Shortcuts 應用程式。</translation>
 <translation id="6507618042428827377">切換到下一個可用的輸入法</translation>
@@ -1512,6 +1516,7 @@
 <translation id="6574587113394758819">檢視防護功能已開啟，因此系統隱藏了 <ph name="APP_TITLE" /> 的通知</translation>
 <translation id="6574622320167699133">已由手機解鎖，按一下或輕觸即可繼續使用。</translation>
 <translation id="6578407462441924264">未命名</translation>
+<translation id="6582034443359256692">正在計算電池充電量。</translation>
 <translation id="6585808820553845416">這個工作階段將在 <ph name="SESSION_TIME_REMAINING" />後結束。</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />，<ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">攝影機已對齊左下角，與系統平台發生衝突。</translation>
@@ -1573,6 +1578,7 @@
 <translation id="6790428901817661496">播放</translation>
 <translation id="679368458793552943">放大鏡開啟時放大畫面</translation>
 <translation id="6794287755901682422">這個項目有：<ph name="GLANCEABLES_TASK_ITEM_METADATA" />。</translation>
+<translation id="6797745268063125932">保持開啟</translation>
 <translation id="6801878137098616817">最近編輯過</translation>
 <translation id="6802687695197837794">這將允許「<ph name="APP1_NAME" />」、「<ph name="APP2_NAME" />」與具有攝影機和麥克風權限的所有應用程式和網站存取</translation>
 <translation id="6803622936009808957">找不到系統支援的解析度，因此無法顯示鏡像。已改為進入延伸桌面。</translation>
@@ -1817,7 +1823,6 @@
 <translation id="7748275671948949022">醒目顯示檔案櫃中的啟動器按鈕</translation>
 <translation id="7749443890790263709">桌面數量已達上限。</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
-<translation id="776344839111254542">按一下即可查看更新詳細資料</translation>
 <translation id="7768784765476638775">隨選朗讀</translation>
 <translation id="7769299611924763557">GIF 很快就能使用</translation>
 <translation id="7773536009433685931">改為開啟 Wi-Fi</translation>
@@ -1885,6 +1890,7 @@
 <translation id="7947798320695032612">「<ph name="APP_NAME" />」想要使用「<ph name="DEVICE_NAME" />」</translation>
 <translation id="7951630946012935453">調暗鍵盤</translation>
 <translation id="7953994493035617347">要確認新的解析度嗎？</translation>
+<translation id="795958884516058160">全螢幕放大鏡已啟用，再次按下 <ph name="ACCELERATOR" />即可停用。</translation>
 <translation id="7963689218131240420">零打擾模式已關閉。</translation>
 <translation id="7963992254934562106">來自「<ph name="PHONE_NAME" />」</translation>
 <translation id="7968693143708939792">選取資料夾…</translation>
@@ -1952,7 +1958,6 @@
 <translation id="8200772114523450471">繼續</translation>
 <translation id="820256110035940528"><ph name="TITLE" />剛剛專心了 <ph name="FOCUSED_TIME" />。開啟快速設定即可再次啟動專注模式。</translation>
 <translation id="8203795194971602413">按右鍵</translation>
-<translation id="8209010265547628927">重設</translation>
 <translation id="8214996719228530800">Canary 版</translation>
 <translation id="8219451629189078428">在這段期間內，你的 Chromebook 需要保持開啟並接上電源。請確認充電器或變壓器電源線已完全插入 Chromebook 和電源插座。請勿將 Chromebook 關機。</translation>
 <translation id="8220076512072059941">延長 <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -1963,7 +1968,6 @@
 <translation id="8239034820133090126">啟動右側桌面</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />，訊號強度 <ph name="SIGNAL_STRENGTH" />，手機電量：<ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />，應用程式</translation>
-<translation id="8255234195843591763">重設以更新</translation>
 <translation id="8257510091797044096">設定裝置</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="8262312463845990408">切換播放</translation>
@@ -2137,6 +2141,7 @@
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> (<ph name="EMAIL" />) 的核取方塊未勾選。</translation>
 <translation id="8949925099261528566">已連線，但沒有網際網路</translation>
 <translation id="8951539504029375108">只有得到認證的 Thunderbolt 裝置能夠與 Chromebook 相容</translation>
+<translation id="8959380109429710384">你按下了全螢幕放大鏡的鍵盤快速鍵。使用 Ctrl + Alt + 方向鍵即可在放大的檢視畫面中四處移動。</translation>
 <translation id="8964525410783593407">1 小時</translation>
 <translation id="8973885907461690937">將焦點移至選單圖示</translation>
 <translation id="8980862970816311842">將應用程式圖示移入或移出應用程式排列顯示畫面中的資料夾</translation>

@@ -409,7 +409,6 @@ Je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2573588302192866788"><ph name="NAME" />: nelze se připojit</translation>
 <translation id="2575685495496069081">Vícenásobné přihlášení je zakázáno.</translation>
 <translation id="2579264398927991698">Aktualizace firmwaru</translation>
-<translation id="2582112259361606227">Restartovat a aktualizovat</translation>
 <translation id="2586657967955657006">Schránka</translation>
 <translation id="2595239820337756193">5 km v mílích</translation>
 <translation id="2596078834055697711">Pořídit snímek obrazovky okna</translation>
@@ -550,7 +549,6 @@ Je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Typ práce v kurzu</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3126069444801937830">Restartovat a aktualizovat</translation>
 <translation id="3139188263101386725">Použijte aktualizovanou zkratku</translation>
 <translation id="3139942575505304791">Plocha 1</translation>
 <translation id="315116470104423982">Mobilní datové přenosy</translation>
@@ -574,6 +572,7 @@ Je připojen tento počet zařízení: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3226991577105957773">a ještě <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233611303007751344">Spořič baterie se vypnul</translation>
+<translation id="3238409143297336341">Nastavte rodičovskou kontrolu pro aplikace</translation>
 <translation id="324366796737464147">Potlačení hluku</translation>
 <translation id="3249513730522716925">Okno <ph name="WINDOW_TITLE" /> bylo přesunuto z plochy <ph name="ACTIVE_DESK" /> na plochu <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Typ práce v kurzu: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -1402,6 +1401,7 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6141205840878048728">Na co se chcete soustředit?</translation>
 <translation id="6141988275892716286">Potvrzení stahování</translation>
 <translation id="6143578372829139382">Sdílet na YouTube</translation>
+<translation id="6147182561428020853">Teď můžete blokovat aplikace nainstalované v tomto zařízení <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">Periferní zařízení není podporováno</translation>
 <translation id="6156960295318603523">Nastavení jazyka</translation>
 <translation id="615957422585914272">Zobrazit softwarovou klávesnici</translation>
@@ -1491,7 +1491,6 @@ Nejsou připojena žádná zařízení.</translation>
 <translation id="6495322433318104734">Je zobrazen spořič obrazovky, stisknutím libovolné klávesy ho ukončíte</translation>
 <translation id="6495400115277918834">Byl spuštěn režim obrazu v obraze, výběr provedete stisknutím kláves Alt+Shift+V</translation>
 <translation id="6497418457565568043">Režim Nerušit je zapnutý</translation>
-<translation id="6500896621837555595">Aktualizovat</translation>
 <translation id="6501401484702599040">Odesílání obrazovky do zařízení <ph name="RECEIVER_NAME" /></translation>
 <translation id="6507042703812908515">Aplikaci Klávesové zkratky otevřete stisknutím kláves <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Přepnout na další dostupnou metodu zadávání</translation>
@@ -1820,7 +1819,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="7748275671948949022">Zvýraznit tlačítko Spouštěče na poličce</translation>
 <translation id="7749443890790263709">Byl dosažen maximální počet ploch.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
-<translation id="776344839111254542">Kliknutím zobrazíte podrobnosti o aktualizaci</translation>
 <translation id="7768784765476638775">Poslech vybraného textu</translation>
 <translation id="7769299611924763557">Váš GIF bude brzy připraven</translation>
 <translation id="7773536009433685931">Místo toho zapnout Wi-Fi</translation>
@@ -1955,7 +1953,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8200772114523450471">Pokračovat</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> Právě jste se <ph name="FOCUSED_TIME" /> soustředili. Pokud se chcete soustředit znovu, otevřete Rychlé nastavení.</translation>
 <translation id="8203795194971602413">Kliknutí pravým tlačítkem</translation>
-<translation id="8209010265547628927">Resetovat</translation>
 <translation id="8214996719228530800">Verze Canary</translation>
 <translation id="8219451629189078428">Chromebook po tuto dobu musí zůstat zapnutý a připojený ke zdroji napájení. Kabely adaptéru nebo nabíječky musí být správně zapojeny do Chromebooku i do zásuvky. Chromebook nevypínejte.</translation>
 <translation id="8220076512072059941">Přidat <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -1966,7 +1963,6 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="8239034820133090126">Aktivovat plochu vpravo</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" />, baterie telefonu: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplikace</translation>
-<translation id="8255234195843591763">K aktualizaci zařízení resetujte</translation>
 <translation id="8257510091797044096">Nastavení zařízení</translation>
 <translation id="8261506727792406068">Smazat</translation>
 <translation id="8262312463845990408">Spustit nebo pozastavit přehrávání</translation>

@@ -80,6 +80,7 @@
 <translation id="1247519845643687288">මෑත යෙදුම්</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> වෙතින් ආරෝපණය වෙමින්</translation>
 <translation id="1255033239764210633">කාලගුණය කෙසේද?</translation>
+<translation id="1256734167083229794">ඔබ පූර්ණ-තිර විශාලකය සඳහා යතුරු පුවරු කෙටිමඟ ඔබා ඇත. විශාලනය කිරීමට <ph name="ZOOM_IN_ACCELERATOR" /> සහ විශාලනය අඩු කිරීමට <ph name="ZOOM_OUT_ACCELERATOR" /> භාවිතා කරන්න. විශාලනය කළ දසුන වටා ගමන් කිරීමට ctrl+alt+ඊතල භාවිත කරන්න.</translation>
 <translation id="1269405891096105529">උපාංගය ආගන්තුක ප්‍රකාරය තුළ සහාය නොදක්වයි</translation>
 <translation id="1270290102613614947">තිරය මත යතුරු පුවරුව අබල කර ඇත</translation>
 <translation id="1272079795634619415">නවතන්න</translation>
@@ -266,6 +267,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">මේසය සහ කවුළු ඉවත් කර ඇත. ක්‍රියාව අහෝසි කිරීමට Control + Z ඔබන්න.</translation>
 <translation id="1972950159383891558">ආයුබෝවන්, <ph name="USERNAME" /></translation>
+<translation id="1977686871076551563">වර්ණ අපවර්තන ප්‍රකාරය සබල කර ඇත. එය ටොගල් කිරීමට නැවත <ph name="ACCELERATOR" /> ඔබන්න.</translation>
 <translation id="1978498689038657292">පාඨ ආදානය</translation>
 <translation id="1980808257969311265"><ph name="EVENT_SUMMARY" /> වෙත එක් වන්න</translation>
 <translation id="1982717156487272186">පෙර සතිය පෙන්වන්න</translation>
@@ -412,7 +414,6 @@
 <translation id="2573588302192866788"><ph name="NAME" /> හට සම්බන්ධ විය නොහැකි විය</translation>
 <translation id="2575685495496069081">බහුවිධ පුරනය අබල කර ඇත</translation>
 <translation id="2579264398927991698">නිත්‍ය මෘදුකාංග යාවත්කාලීන</translation>
-<translation id="2582112259361606227">යාවත්කාලීන කිරීමට නැවත පණගන්වන්න</translation>
 <translation id="2586657967955657006">පසුරු පුවරුව</translation>
 <translation id="2595239820337756193">සැතපුම්වලින් 5K</translation>
 <translation id="2596078834055697711">කවුළුවේ තිර රුවක් ලබා ගන්න</translation>
@@ -554,7 +555,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">පන්ති වැඩ වර්ගය</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3126069444801937830">යාවත්කාලීන කිරීමට නැවත් පණගන්වන්න</translation>
 <translation id="3139188263101386725">යාවත්කාලීන කෙටිමඟ භාවිතා කරන්න</translation>
 <translation id="3139942575505304791">1 වෙනි මේසය</translation>
 <translation id="315116470104423982">ජංගම දත්ත</translation>
@@ -1190,6 +1190,7 @@
 <translation id="5377367976106153749">කැමරා ප්‍රවේශය ක්‍රියාත්මක කරන්න ද?</translation>
 <translation id="5379115545237091094">උත්සාහයන් විශාල ප්‍රමාණයකි</translation>
 <translation id="5391307769715781764">සුරැකි මේසය ප්‍රතිස්ථාපනය කරන්නද?</translation>
+<translation id="5392327145184648521">බැටරිය ගණනය කරමින් %...</translation>
 <translation id="5393156353051693207">ඔබගේ යෙදුම් නැවත අනුපිළිවෙළට සැකසීමට ඕනෑම තැනක ස්පර්ශ කර අල්ලාගෙන සිටින්න</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> ට වඩා <ph name="DRAGGED_APP_NAME" /> , ෆෝල්ඩරය නිර්මාණ කිරීමට මුදා හරියි.</translation>
 <translation id="5397578532367286026">මෙම පරිශීලකගේ භාවිතය සහ ඉතිහාසය කළමනාකරු(<ph name="MANAGER_EMAIL" />) විසින් chrome.com මත සමාලෝචනය කළ හැක.</translation>
@@ -1244,6 +1245,7 @@
 <translation id="5577281275355252094">Phone Hub භාවිත කිරීමට ඔබගේ දුරකථනයෙහි බ්ලූටූත් සබල කර තිබේද යන්න බලන්න</translation>
 <translation id="5578188167649348993">මතකය</translation>
 <translation id="5580000943347215299">පුස්තකාලය</translation>
+<translation id="5586388332127302891">ඩොක් කළ විශාලකය සබලයි. එය ටොගල් කිරීමට නැවත <ph name="ACCELERATOR" /> ඔබන්න.</translation>
 <translation id="5587506661873751671"><ph name="DOWNLOAD_PERCENT" />% බාගනිමින්</translation>
 <translation id="558849140439112033">ග්‍රහණය කිරීමට ප්‍රදේශයක් තේරීමට අදින්න</translation>
 <translation id="5590609058453685222">නිහඬ කිරීමේ සිහිගැන්වීම ක්‍රියාත්මකයි. ඔබ නිහඬව සිටින අතරේ කතා කරන්නේ නම් ඔබට දැනුම් දෙනු ලැබේ.</translation>
@@ -1454,6 +1456,7 @@
 <translation id="6319503618073410818">බ්‍රවුසරය තුළ විස්තර බලන්න</translation>
 <translation id="6324916366299863871">කෙටිමඟ සංස්කරණය</translation>
 <translation id="6330012934079202188">සියලු මේසවලින් කවුළු පෙන්වමින්, වත්මන් මේසයෙන් කවුළු පෙන්වීමට ඉහළට ඊතලය යතුර ඔබන්න</translation>
+<translation id="6337159624125741244">පුර්ණ-තිර විශාලකය ක්‍රියාත්මකයි</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> යනු <ph name="MANAGER" /> විසින් කළමනාකරණය කරනු ලබන කළමනාකරණය කළ සැසියකි</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> සම්බන්ධිතයි</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> අනතුරුව <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> හෝ <ph name="KEY_THREE" /></translation>
@@ -1496,7 +1499,6 @@
 <translation id="6495322433318104734">තිර සුරැකුම සංදර්ශනය වේ, පිටවීමට ඕනෑම යතුරක් ඔබන්න</translation>
 <translation id="6495400115277918834">පින්තූරයක් තුළ පින්තූරයක් ආරම්භ විය, නාභිගත කිරීමට Alt+Shift+V</translation>
 <translation id="6497418457565568043">බාධා නොකරන්න ක්‍රියාත්මකයි</translation>
-<translation id="6500896621837555595">යාවත්කාලීන කරන්න</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" /> වෙත තිරය විකාශය කරමින්</translation>
 <translation id="6507042703812908515">"<ph name="NEW_SHORTCUT" />" සමග යතුරු කෙටිමං යෙදුම විවෘත කරන්න.</translation>
 <translation id="6507618042428827377">ලද හැකි මීළඟ ආදාන ක්‍රමයට මාරු වන්න</translation>
@@ -1521,6 +1523,7 @@
 <translation id="6574587113394758819"><ph name="APP_TITLE" /> දැනුම්දීම බැලීමේ ආරක්ෂාව ක්‍රියාත්මක බැවින් සඟවා ඇත</translation>
 <translation id="6574622320167699133">ඔබගේ දුරකථනය මගින් අගුලු හරින ලදි. පිවිසීමට තට්ටු කරන්න හෝ ක්ලික් කරන්න.</translation>
 <translation id="6578407462441924264">නම් නොකළ</translation>
+<translation id="6582034443359256692">බැටරි ආරෝපණ මට්ටම ගණනය කිරීම.</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" />කින් සැසිය අවසන්වේ.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">කැමරාව පහළ වම් කෙළවරට සවි කර ඇත. පද්ධති මතුපිට සමග ගැටුම.</translation>
@@ -1582,6 +1585,7 @@
 <translation id="6790428901817661496">වාදනය කරන්න</translation>
 <translation id="679368458793552943">විශාලකය සක්‍රීයව ඇති විට විශාලන කරන්න</translation>
 <translation id="6794287755901682422">මෙම අයිතමය සතුව තිබේ: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
+<translation id="6797745268063125932">එය ක්‍රියාත්මකව තබන්න</translation>
 <translation id="6801878137098616817">මෑතදී සංස්කරණය කරන ලදී</translation>
 <translation id="6802687695197837794">මෙය <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, සහ කැමරා සහ මයික්‍රෆෝන අවසර සහිත සියලු යෙදුම් සහ වෙබ් අඩවි සඳහා ප්‍රවේශ වීමට ඉඩ දෙයි</translation>
 <translation id="6803622936009808957">සහාය වන විසඳුම් හමු නොවුන නිසා ප්‍රදර්ශන කැඩපත්කරනය කළ නොහැකි විය. ඒ වෙනුවට දිගු කළ ඩෙස්ක්ටොප් එකට ඇතුළු විය.</translation>
@@ -1826,7 +1830,6 @@
 <translation id="7748275671948949022">රාක්කයේ දියත්කරණ බොත්තම උද්දීපනය කරන්න</translation>
 <translation id="7749443890790263709">උපරිම මේස ගණන ළඟා විය.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
-<translation id="776344839111254542">යාවත්කාලීන විස්තර බැලීමට ක්ලික් කරන්න</translation>
 <translation id="7768784765476638775">කීමට-තේරීම</translation>
 <translation id="7769299611924763557">ඔබේ GIF ඉක්මනින් සූදානම් වෙයි</translation>
 <translation id="7773536009433685931">ඒ වෙනුවට WiFi ක්‍රියාත්මක කරන්න</translation>
@@ -1894,6 +1897,7 @@
 <translation id="7947798320695032612"><ph name="APP_NAME" /> හට ඔබේ <ph name="DEVICE_NAME" /> භාවිතා කිරීමට අවශ්‍යයි</translation>
 <translation id="7951630946012935453">යතුරු පුවරුව අඳුරු කරන්න</translation>
 <translation id="7953994493035617347">නව විභේදනය තහවුරු කරන්න ද?</translation>
+<translation id="795958884516058160">පුර්ණ-තිර විශාලකය සබල කෙරිණි. එය ටොගල් කිරීමට නැවත <ph name="ACCELERATOR" /> ඔබන්න.</translation>
 <translation id="7963689218131240420">බාධා නොකරන්න ක්‍රියා විරහිතයි.</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> සිට</translation>
 <translation id="7968693143708939792">ෆෝල්ඩරය තෝරන්න...</translation>
@@ -1962,7 +1966,6 @@
 <translation id="8200772114523450471">කරගෙන යන්න</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> ඔබ <ph name="FOCUSED_TIME" /> සඳහා අවධානය යොමු කර ඇත. නැවත අවධානය යොමු කිරීමට ක්‍ෂණික සැකසීම් විවෘත කරන්න.</translation>
 <translation id="8203795194971602413">දකුණු ක්ලික් කිරීම</translation>
-<translation id="8209010265547628927">යළි සකසන්න</translation>
 <translation id="8214996719228530800">කැනරි නාලිකාව</translation>
 <translation id="8219451629189078428">මෙම කාලය තුළ ඔබගේ Chromebook ක්‍රියාත්මකව තිබීමට සහ බලයට සම්බන්ධ වීමට අවශ්‍යයි. චාජරය හෝ ඇඩැප්ටර කේබල ඔබගේ Chromebook සහ බල සැපයුම් බිහිදොර වෙත සම්පූර්ණයෙන්ම පේනුගත කර ඇති බවට සහතික කර ගන්න. ඔබගේ Chromebook ක්‍රියාවිරහිත නොකරන්න.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> එක් කරන්න</translation>
@@ -1973,7 +1976,6 @@
 <translation id="8239034820133090126">දකුණු පස ඇති මේසය සක්‍රිය කරන්න</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />, දුරකථන බැටරිය <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, යෙදුම</translation>
-<translation id="8255234195843591763">යාවත්කාලීන කිරීමට යළි සකසන්න</translation>
 <translation id="8257510091797044096">ඔබේ උපාංගය පිහිටුවන්න</translation>
 <translation id="8261506727792406068">මකන්න</translation>
 <translation id="8262312463845990408">පසුධාවනය ටොගල කරන්න</translation>
@@ -2149,6 +2151,7 @@
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> සලකුණු කොටුව සලකුණු කර නැත.</translation>
 <translation id="8949925099261528566">සම්බන්ධයි, අන්තර්ජාලය නැත</translation>
 <translation id="8951539504029375108">ඔබගේ Chromebook සමඟ අනුකූල වන්නේ අනුමත කළ Thunderbolt උපාංග පමණි</translation>
+<translation id="8959380109429710384">ඔබ පූර්ණ-තිර විශාලකය සඳහා යතුරු පුවරු කෙටිමඟ ඔබා ඇත. විශාලනය කළ දසුන වටා ගමන් කිරීමට ctrl + alt + ඊතල භාවිත කරන්න.</translation>
 <translation id="8964525410783593407">පැ1</translation>
 <translation id="8973885907461690937">මෙනු නිරූපකය වෙත අවධානය යොමු කරන්න</translation>
 <translation id="8980862970816311842">යෙදුම් නිරූපකයක් යෙදුම් ජාලකය තුළට සහ පිටතට ගෙන යන්න</translation>

@@ -158,7 +158,6 @@
 <translation id="1282358575813748144">डुङ्गा तथा वाटरक्राफ्ट</translation>
 <translation id="1283977499362032052">रिजुमे तथा पोर्टफोलियो</translation>
 <translation id="1285320974508926690">यो साइट कहिले पनि अनुवाद नगर्नुहोस्</translation>
-<translation id="1291249564161469503">तपाईंको किबोर्ड लक गर्ने</translation>
 <translation id="1292571435393770077">ट्रे १६</translation>
 <translation id="1292701964462482250">"तपाईंको कम्प्युटरमा रहेको सफ्टवेयरले Chrome लाई सुरक्षित रूपमा वेबमा जडान हुनबाट रोकिरहेको छ" (Windows कम्प्युटरहरू मात्र)</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 in</translation>
@@ -380,7 +379,6 @@
 <translation id="168693727862418163">यो नीतिको मान यसको स्किमासँग मिलेन। त्यसकारण यसलाई बेवास्ता गरिने छ।</translation>
 <translation id="168841957122794586">सर्भर प्रमाणपत्रले कमजोर क्रिप्टोग्राफिक कुञ्जी समावेश गर्छ।</translation>
 <translation id="1689333818294560261">उपनाम</translation>
-<translation id="1691425742011409472">पोइन्टर लक</translation>
 <translation id="1692622044604477956">चलचित्र तथा नाटकघरको समयतालिका</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />तपाईं आफ्नो जानकारी कसरी व्यवस्थापन गर्न सक्नुहुन्छ:<ph name="END_BOLD" /> Chrome ले ४ हप्ताभन्दा पुराना विषयहरू स्वतः मेटाउँछ। तपाईंले विभिन्न साइटहरू ब्राउज गरिराख्ने क्रममा कुनै विषय यो सूचीमा फेरि देखिन सक्छ। तपाईं जुनसुकै बेला Chrome का सेटिङमा गई तपाईं Chrome ले साइटहरूसँग जुन जुन विषयहरू सेयर नगरोस् भन्ने चाहनुहुन्छ ती विषय ब्लक गर्नुका साथै विज्ञापनका विषयहरू अफ गर्न पनि सक्नुहुन्छ।</translation>
 <translation id="1697532407822776718">तपाईंहरू सबैले सेट हुनभयो!</translation>
@@ -568,13 +566,13 @@
 <translation id="2036983605131262583">वैकल्पिक रोल</translation>
 <translation id="2040463897538655645">हटाउन मिल्ने भण्डारण</translation>
 <translation id="2040894699575719559">लोकेसन हेर्न रोक लगाइएको छ</translation>
+<translation id="2041788246978549610">उपलब्ध माइक्रोफोन (<ph name="MICS_COUNT" /> वटा) प्रयोग गर्न</translation>
 <translation id="2042213636306070719">ट्रे ७</translation>
 <translation id="204357726431741734">आफ्नो Google खातामा सुरक्षित गरिएका पासवर्डहरू प्रयोग गर्न साइन इन गर्नुहोस्</translation>
 <translation id="2045871135676061132">Envelope Personal</translation>
 <translation id="2046951263634619614">पुस्तकका खुद्रा बिक्रेताहरू</translation>
 <translation id="2048261947532620704">पेज अनुवाद गरिँदै छ</translation>
 <translation id="2053111141626950936"><ph name="LANGUAGE" /> भाषाका पृष्ठहरू अनुवाद गरिने छैनन्।</translation>
-<translation id="2056492565825767809">तपाईंको माउस पोइन्टर लक गर्ने</translation>
 <translation id="2056658168519009885">साइटहरूले तपाईंलाई देखाइने विज्ञापनहरू पर्सनलाइज गर्न Chrome सँग जानकारी माग्न सक्छन्।</translation>
 <translation id="2059166748188874810">नगरपालिका</translation>
 <translation id="2059202684901022309">२२ x ३४ इन्च</translation>
@@ -736,7 +734,6 @@
 <translation id="2337852623177822836">तपाईंको प्रशासकले नियन्त्रण गरेको सेटिङ</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> जोडा बनाउन चाहन्छ</translation>
 <translation id="2346319942568447007">तपाईंले प्रतिलिपि गर्नुभएको छवि</translation>
-<translation id="2349056830177284083">किबोर्ड लक</translation>
 <translation id="2349957959687031096">इन्कोग्निटो ट्याब खोल्ने बटन, गोप्य रूपमा ब्राउज गर्न यो बटन थिचेर नयाँ इन्कोग्निटो ट्याब खोल्नुहोस्</translation>
 <translation id="2350796302381711542"><ph name="HANDLER_HOSTNAME" /> लाई <ph name="REPLACED_HANDLER_TITLE" /> को सट्टामा सबै <ph name="PROTOCOL" /> लिङ्कहरू खोल्ने अनुमति दिनुहोस् ?</translation>
 <translation id="2353297238722298836">क्यामेरा तथा माइक्रोफोन प्रयोग गर्ने अनुमति छ</translation>
@@ -889,6 +886,7 @@
 <translation id="2655752832536625875">बाथरुम</translation>
 <translation id="2657637947725373811">{0,plural, =1{गोप्य फाइल ट्रान्स्फर गर्ने हो?}other{गोप्य फाइलहरू ट्रान्स्फर गर्ने हो?}}</translation>
 <translation id="2658843814961855121">श्रम र रोजगार कानुन</translation>
+<translation id="2658944305627908367">तपाईंले आफ्नो खातामा भएको रकमभन्दा बढी रकम भुक्तानी गर्नुभयो भने उक्त भुक्तानी प्रोसेस गरिने छैन</translation>
 <translation id="2660779039299703961">घटना</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{कुनै पनि होइन}=1{<ph name="DOMAIN_LIST" /> को १ पासवर्ड}=2{<ph name="DOMAIN_LIST" /> का २ पासवर्डहरू}other{<ph name="DOMAIN_LIST" /> का # पासवर्डहरू}}</translation>
 <translation id="2666092431469916601">शीर्ष</translation>
@@ -955,7 +953,6 @@
 <translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">जडान पुनः कायम भयो ।</translation>
 <translation id="2786008859124691917">साइकल तथा साइकलका पाटपुर्जाहरू</translation>
-<translation id="2791955793407772554">पोइन्टर लक</translation>
 <translation id="2792012897584536778">यस डिभाइसका प्रशासकहरूले सुरक्षासम्बन्धी प्रमाणपत्रहरू सेटअप गरिसकेका हुँदा यसले उनीहरूलाई तपाईंले भ्रमण गर्नुहुने वेबसाटइका सामग्री हेर्न दिन सक्छ।</translation>
 <translation id="2794233252405721443">साइटमाथि रोक लगाइएको छ</translation>
 <translation id="2794629552137076216">ग्लास (सर्फेस्ड)</translation>
@@ -1086,6 +1083,7 @@
 <translation id="3090667236485488075">ग्लास</translation>
 <translation id="3095940652251934233">वक्तव्य</translation>
 <translation id="3098513225387949945">अफ गर्नु पर्ने कुराहरूको सूचीमा '*' को समतुल्य प्याटर्न समावेश छ। यो प्याटर्न समावेश गर्नु भनेको नीति अफ गरे बराबर भएको हुनाले यो नीति बेवास्ता गरिएको छ।</translation>
+<translation id="3099619114405539473">उपलब्ध क्यामेरा (<ph name="CAMERAS_COUNT" /> वटा) प्रयोग गर्न</translation>
 <translation id="3102312643185441063">बचत</translation>
 <translation id="3103188521861412364">सेयर तथा बचतपत्र</translation>
 <translation id="3105172416063519923">सम्पत्ति ID:</translation>
@@ -1359,6 +1357,7 @@
 <translation id="3583757800736429874">&amp;रिडु सार्ने</translation>
 <translation id="3584299510153766161">फेदमा दुई प्वाल</translation>
 <translation id="3584755835709800788">साइन्स फिक्सन तथा फ्यान्टसी चलचित्रहरू</translation>
+<translation id="3585455899094692781">उपलब्ध क्यामेरा (<ph name="CAMERAS_COUNT" /> वटा) प्रयोग गर्न र यताउता सार्न</translation>
 <translation id="3586833803451155175">वेट फिल्म</translation>
 <translation id="3586931643579894722">विवरणहरू लुकाउनुहोस्</translation>
 <translation id="3587738293690942763">मध्य भाग</translation>
@@ -1441,7 +1440,6 @@
 <translation id="3714780639079136834">मोबाइल डेटा वा Wi-Fi लाई अन गर्नुहोस्</translation>
 <translation id="3715016660240337709">{0,plural, =1{फाइल अपलोड गर्न रोक लगाइएको छ}other{<ph name="FILE_COUNT" /> वटा फाइल अपलोड गर्न रोक लगाइएको छ}}</translation>
 <translation id="3715597595485130451">Wi-Fi मा कनेक्ट गर्नुहोस्</translation>
-<translation id="3716622997181469465">किबोर्ड लक</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />प्रोक्सी, फायरवाल र DNS को कन्फिगरेसनलाई जाँच गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="3723663469265383848">तपाईं डिभाइस अपडेट भइरहेका बेला १० मिनेटसम्म उक्त डिभाइस प्रयोग गर्न सक्नुहुन्न।</translation>
 <translation id="372429172604983730">यो त्रुटि उत्पन्न गराउन सक्ने एपहरूमा एन्टिभाइरस, फायरवाल र वेब-फिल्टर वा प्रोक्सी सफ्टवेयर पर्दछन्।</translation>

@@ -850,6 +850,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5345660046352249607">{COUNT,plural, =1{Suivre ce colis ?}one{Suivre {COUNT} colis ?}other{Suivre {COUNT} colis ?}}</translation>
 <translation id="5348775987281903912">Vous pouvez partager cette page ici à l'aide du bouton "Partager".</translation>
 <translation id="536067926684072644">Afficher les favoris</translation>
+<translation id="537853552771686272">Gérez les thèmes et les sites qui vous intéressent</translation>
 <translation id="5379352933722332597">{count,plural, =1{Favori enregistré dans "{title}". Il n'est enregistré que sur cet appareil.}one{{count} favori enregistré dans "{title}". Il n'est enregistré que sur cet appareil.}other{{count} favoris enregistrés dans "{title}". Ils ne sont enregistrés que sur cet appareil.}}</translation>
 <translation id="5388358297987318779">Ouvrir l'image</translation>
 <translation id="5395707839134961196">Masquer les informations sur le moteur de recherche</translation>
@@ -932,6 +933,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5758631781033351321">Votre liste de lecture s'affichera ici</translation>
 <translation id="5765456154762864099">Menu → Paramètres → Navigateur par défaut</translation>
 <translation id="5777888488419460501">Enregistrer dans le compte</translation>
+<translation id="5778292857689789362">Groupe d'onglets <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> onglets.</translation>
 <translation id="5782227691023083829">Traduction en cours...</translation>
 <translation id="5791632441210678828">Bouton de tri pour le flux Suivi.</translation>
 <translation id="5793373065989412701">Vérification des membres de votre famille…</translation>

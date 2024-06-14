@@ -200,6 +200,7 @@
 <translation id="199425419756152024">پاس ورڈ دیکھیں</translation>
 <translation id="2010008505735295285">دوبارہ لوڈ کریں</translation>
 <translation id="2015722694326466240">پاسورڈز دیکھنے کے لیے، آپ کو اپنے آلے پر پہلے پاس کوڈ سیٹ کرنا چاہئے۔</translation>
+<translation id="201759455285471444">ٹیب گروپ کو پھیلائیں۔</translation>
 <translation id="2021670401941426298">اگر قابل اطلاق ہو تو اپنی تلاش کی سرگزشت کو حذف کرنے کے لیے اپنے سرچ انجن کی ہدایات دیکھیں۔</translation>
 <translation id="202292859882676807">مائیکروفون تک رسائی کی اجازت ہے</translation>
 <translation id="20485545164632846">نیا آئٹم</translation>
@@ -850,6 +851,7 @@
 <translation id="5345660046352249607">{COUNT,plural, =1{اس پیکیج کو ٹریک کریں؟}other{{COUNT} پیکیجز کو ٹریک کریں؟}}</translation>
 <translation id="5348775987281903912">آپ اشتراک بٹن سے یہاں اس صفحہ کا اشتراک کر سکتے ہیں۔</translation>
 <translation id="536067926684072644">بُک مارکس دکھائیں</translation>
+<translation id="537853552771686272">ان عنوانات اور سائٹس کا نظم کریں جن میں آپ کی دلچسپی ہے</translation>
 <translation id="5379352933722332597">{count,plural, =1{بک مارکس "{title}" میں محفوظ کیے گئے۔ یہ صرف اس آلہ میں محفوظ ہے۔}other{{count} بک مارکس "{title}" میں محفوظ کیے گئے۔ یہ صرف اس آلے میں محفوظ ہے۔}}</translation>
 <translation id="5388358297987318779">تصویر کھولیں</translation>
 <translation id="5395707839134961196">سرچ انجن کی تفصیلات چھپائیں</translation>
@@ -932,6 +934,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5758631781033351321">آپ اپنی پڑھنے کی فہرست یہاں پائیں گے</translation>
 <translation id="5765456154762864099">مینیو ← ترتیبات ← ڈیفالٹ براؤزر</translation>
 <translation id="5777888488419460501">اکاؤنٹ میں محفوظ کریں</translation>
+<translation id="5778292857689789362">ٹیب گروپ، <ph name="GROUP_TITLE" />، <ph name="TABS_NUMBER" /> ٹیبز</translation>
 <translation id="5782227691023083829">ترجمہ کیا جا رہا ہے...</translation>
 <translation id="5791632441210678828">مندرجہ ذیل فیڈ کے لیے ترتیب دینے کا بٹن۔</translation>
 <translation id="5793373065989412701">آپ کے فیملی ممبرز کو چیک کیا جا رہا ہے…</translation>
@@ -1095,6 +1098,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="648164694371393720">توثیق کی خرابی</translation>
 <translation id="6494931198667773526">وقت اختتام</translation>
 <translation id="650279896687777322">مزید جانیں...</translation>
+<translation id="6505334220040167806">ٹیب گروپ کو سکیڑیں۔</translation>
 <translation id="6507973708545996744">اپنے سبھی آلات پر اپنی پڑھنے کی فہرست حاصل کرنے کے لیے سائن ان کریں۔</translation>
 <translation id="6510072653668207258">مجھے بعد میں یاد دلائیں</translation>
 <translation id="651505212789431520">مطابقت پذیری منسوخ کریں؟ آپ ترتیبات میں کسی بھی وقت مطابقت پذیری کو آن کر سکتے ہیں۔</translation>

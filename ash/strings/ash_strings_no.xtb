@@ -80,6 +80,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1247519845643687288">Nylige apper</translation>
 <translation id="1252999807265626933">Lader fra <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Hvordan er været?</translation>
+<translation id="1256734167083229794">Du har trykket på hurtigtasten for forstørrelse av hele skjermen. Bruk <ph name="ZOOM_IN_ACCELERATOR" /> for å zoome inn og <ph name="ZOOM_OUT_ACCELERATOR" /> for å zoome ut. Bruk Ctrl + Alt + piltastene for å bevege deg rundt i den innzoomede visningen.</translation>
 <translation id="1269405891096105529">Den eksterne enheten støttes ikke i Gjestemodus</translation>
 <translation id="1270290102613614947">Skjermtastaturet er deaktivert</translation>
 <translation id="1272079795634619415">Stopp</translation>
@@ -264,6 +265,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">Skrivebordet og vinduene er fjernet. Trykk på Ctrl + Z for å angre handlingen.</translation>
 <translation id="1972950159383891558">Hei, <ph name="USERNAME" /></translation>
+<translation id="1977686871076551563">Modus for fargeinvertering er slått på. Trykk på <ph name="ACCELERATOR" /> igjen for å slå den av.</translation>
 <translation id="1978498689038657292">Tekstfelt</translation>
 <translation id="1980808257969311265">Bli med i <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Vis forrige uke</translation>
@@ -409,7 +411,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2573588302192866788">Kunne ikke koble til <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Multipålogging er slått av</translation>
 <translation id="2579264398927991698">Fastvareoppdateringer</translation>
-<translation id="2582112259361606227">Start på nytt for å oppdatere</translation>
 <translation id="2586657967955657006">Utklippstavle</translation>
 <translation id="2595239820337756193">5 km i miles</translation>
 <translation id="2596078834055697711">Ta en skjermdump av vinduet</translation>
@@ -550,7 +551,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3122464029669770682">Prosessor</translation>
 <translation id="3125690294288312932">Kursarbeidstype</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3126069444801937830">Start på nytt for å oppdatere</translation>
 <translation id="3139188263101386725">Bruk den oppdaterte snarveien</translation>
 <translation id="3139942575505304791">Skrivebord 1</translation>
 <translation id="315116470104423982">Mobildata</translation>
@@ -574,6 +574,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> til</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233611303007751344">Batterisparing er slått av</translation>
+<translation id="3238409143297336341">Konfigurer foreldrekontroll for apper</translation>
 <translation id="324366796737464147">Støyreduksjon</translation>
 <translation id="3249513730522716925">Vinduet <ph name="WINDOW_TITLE" /> ble flyttet fra skrivebord <ph name="ACTIVE_DESK" /> til skrivebord <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Kursarbeidstype: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -1185,6 +1186,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5377367976106153749">Vil du slå på tilgang til kameraet?</translation>
 <translation id="5379115545237091094">For mange forsøk</translation>
 <translation id="5391307769715781764">Vil du erstatte det lagrede skrivebordet?</translation>
+<translation id="5392327145184648521">Beregner batteriprosenten …</translation>
 <translation id="5393156353051693207">Trykk og hold hvor som helst for å endre rekkefølge på appene</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> oppå <ph name="IN_PLACE_APP" /> – slipp for å opprette en mappe.</translation>
 <translation id="5397578532367286026">Bruken og loggen for denne brukeren kan gjennomgås av administratoren (<ph name="MANAGER_EMAIL" />) på chrome.com</translation>
@@ -1239,6 +1241,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="5577281275355252094">Sjekk at Bluetooth er påslått på telefonen, for å bruke Telefonstyring</translation>
 <translation id="5578188167649348993">minne</translation>
 <translation id="5580000943347215299">Bibliotek</translation>
+<translation id="5586388332127302891">Den dokkede lupen er slått på. Trykk på <ph name="ACCELERATOR" /> igjen for å slå den av.</translation>
 <translation id="5587506661873751671">Laster ned <ph name="DOWNLOAD_PERCENT" /> %</translation>
 <translation id="558849140439112033">Dra for å velge området du vil ta bilde av</translation>
 <translation id="5590609058453685222">Varsel om avslått mikrofon er på. Du blir varslet hvis du snakker mens mikrofonen er avslått.</translation>
@@ -1402,6 +1405,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6141205840878048728">Hva vil du fokusere på?</translation>
 <translation id="6141988275892716286">Bekreft nedlastingen</translation>
 <translation id="6143578372829139382">Del på YouTube</translation>
+<translation id="6147182561428020853">Nå kan du blokkere apper som er installert på denne <ph name="DEVICE_TYPE" />-enheten</translation>
 <translation id="6154006699632741460">Den eksterne enheten støttes ikke</translation>
 <translation id="6156960295318603523">Språkinnstillinger</translation>
 <translation id="615957422585914272">Vis skjermtastaturet</translation>
@@ -1449,6 +1453,7 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6319503618073410818">Se detaljer i nettleseren</translation>
 <translation id="6324916366299863871">Endre snarvei</translation>
 <translation id="6330012934079202188">Viser vinduer fra alle skrivebord. Trykk på oppoverpiltasten for å vise vinduer fra det nåværende skrivebordet</translation>
+<translation id="6337159624125741244">Forstørrelse av hele skjermen er på</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> er en administrert økt som administreres av <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> er tilkoblet</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, deretter <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> eller <ph name="KEY_THREE" /></translation>
@@ -1491,7 +1496,6 @@ Ingen enheter er tilkoblet.</translation>
 <translation id="6495322433318104734">Viser skjermspareren. Trykk på en hvilken som helst tast for å avslutte</translation>
 <translation id="6495400115277918834">Bilde-i-bilde er startet – trykk på Alt + Shift + V for å fokusere</translation>
 <translation id="6497418457565568043">Ikke forstyrr er på</translation>
-<translation id="6500896621837555595">Oppdater</translation>
 <translation id="6501401484702599040">Caster skjermen til <ph name="RECEIVER_NAME" /></translation>
 <translation id="6507042703812908515">Åpne Hurtigtaster-appen med «<ph name="NEW_SHORTCUT" />».</translation>
 <translation id="6507618042428827377">Bytt til neste tilgjengelige inndatametode</translation>
@@ -1516,6 +1520,7 @@ Nylig installert</translation>
 <translation id="6574587113394758819">Et varsel fra <ph name="APP_TITLE" /> er skjult fordi visningsbeskyttelse er på</translation>
 <translation id="6574622320167699133">Låst opp via telefonen din. Trykk eller klikk for å fortsette.</translation>
 <translation id="6578407462441924264">Uten navn</translation>
+<translation id="6582034443359256692">Beregner batterinivået.</translation>
 <translation id="6585808820553845416">Økten slutter om <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" /> <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kameraet er festet til nedre venstre hjørne. Konflikt med systemoverflaten.</translation>
@@ -1577,6 +1582,7 @@ Nylig installert</translation>
 <translation id="6790428901817661496">Spill av</translation>
 <translation id="679368458793552943">Zoom inn når forstørreren er på</translation>
 <translation id="6794287755901682422">Dette elementet har <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
+<translation id="6797745268063125932">La funksjonen være på</translation>
 <translation id="6801878137098616817">Redigert nylig</translation>
 <translation id="6802687695197837794">Dette gir tilgang til <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> og alle apper og nettsteder som har kamera- og mikrofontillatelsen</translation>
 <translation id="6803622936009808957">Kunne ikke speile skjermene fordi ingen støttede oppløsninger ble funnet. Utvidet skrivebord ble brukt i stedet.</translation>
@@ -1821,7 +1827,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7748275671948949022">Fremhev Appoversikt-knappen på hyllen</translation>
 <translation id="7749443890790263709">Maksimalt antall skrivebord er nådd.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
-<translation id="776344839111254542">Klikk for å se oppdateringsdetaljene</translation>
 <translation id="7768784765476638775">Tekstopplesing</translation>
 <translation id="7769299611924763557">GIF-en din er snart klar</translation>
 <translation id="7773536009433685931">Slå på wifi i stedet</translation>
@@ -1889,6 +1894,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="7947798320695032612"><ph name="APP_NAME" /> vil bruke <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Gjør tastaturet mørkere</translation>
 <translation id="7953994493035617347">Vil du bekrefte den nye oppløsningen?</translation>
+<translation id="795958884516058160">Forstørrelse av hele skjermen er slått på. Trykk på <ph name="ACCELERATOR" /> igjen for å slå den av.</translation>
 <translation id="7963689218131240420">Ikke forstyrr er av.</translation>
 <translation id="7963992254934562106">Fra <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Velg mappe…</translation>
@@ -1956,7 +1962,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8200772114523450471">Fortsett</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> Du har nettopp fokusert i <ph name="FOCUSED_TIME" />. Åpne hurtiginnstillingene for å starte fokus igjen.</translation>
 <translation id="8203795194971602413">Høyreklikk</translation>
-<translation id="8209010265547628927">Tilbakestill</translation>
 <translation id="8214996719228530800">Canary-kanal</translation>
 <translation id="8219451629189078428">Chromebooken må være påslått og koblet til strøm i denne perioden. Sørg for at lader- eller adapterkabelen er plugget helt inn i både Chromebooken og stikkontakten. Ikke slå av Chromebook.</translation>
 <translation id="8220076512072059941">Legg til <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -1967,7 +1972,6 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8239034820133090126">Aktiver skrivebordet til høyre</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> – telefonbatterinivå <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" /> – app</translation>
-<translation id="8255234195843591763">Tilbakestill for å oppdatere</translation>
 <translation id="8257510091797044096">Konfigurer enheten</translation>
 <translation id="8261506727792406068">Slett</translation>
 <translation id="8262312463845990408">Slå av/på avspilling</translation>
@@ -2142,6 +2146,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="894774083269346314">Det er ikke merket av for <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />).</translation>
 <translation id="8949925099261528566">Tilkoblet – ingen internettilgang</translation>
 <translation id="8951539504029375108">Kun godkjente Thunderbolt-enheter er kompatible med Chromebooken din</translation>
+<translation id="8959380109429710384">Du har trykket på hurtigtasten for forstørrelse av hele skjermen. Bruk Ctrl + Alt + piltastene for å bevege deg rundt i den innzoomede visningen.</translation>
 <translation id="8964525410783593407">1 t</translation>
 <translation id="8973885907461690937">Sett fokus på menyikonet</translation>
 <translation id="8980862970816311842">Flytt et appikon inn eller ut av en mappe i apprutenettet</translation>

@@ -80,6 +80,7 @@
 <translation id="1247519845643687288">最近用过的应用</translation>
 <translation id="1252999807265626933">正在通过“<ph name="POWER_SOURCE" />”充电</translation>
 <translation id="1255033239764210633">天气怎么样？</translation>
+<translation id="1256734167083229794">您按下了全屏放大镜的键盘快捷键。使用 <ph name="ZOOM_IN_ACCELERATOR" />即可放大，使用 <ph name="ZOOM_OUT_ACCELERATOR" />即可缩小。使用 Ctrl + Alt + 箭头键可在放大后的视图中四处移动。</translation>
 <translation id="1269405891096105529">在访客模式下，无法使用外围设备</translation>
 <translation id="1270290102613614947">屏幕键盘已停用</translation>
 <translation id="1272079795634619415">停止</translation>
@@ -264,6 +265,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">已移除桌面和窗口。按 Ctrl + Z 可撤消操作。</translation>
 <translation id="1972950159383891558"><ph name="USERNAME" />，您好！</translation>
+<translation id="1977686871076551563">已启用颜色反转模式。再按一次 <ph name="ACCELERATOR" />即可将其关闭。</translation>
 <translation id="1978498689038657292">文字输入</translation>
 <translation id="1980808257969311265">加入<ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">显示上一周的活动</translation>
@@ -409,7 +411,6 @@
 <translation id="2573588302192866788">无法连接“<ph name="NAME" />”</translation>
 <translation id="2575685495496069081">多账号登录已被停用</translation>
 <translation id="2579264398927991698">固件更新</translation>
-<translation id="2582112259361606227">重启以进行更新</translation>
 <translation id="2586657967955657006">剪贴板</translation>
 <translation id="2595239820337756193">5 公里是多少英里</translation>
 <translation id="2596078834055697711">截取窗口屏幕截图</translation>
@@ -550,7 +551,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">课业类型</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3126069444801937830">重新启动以进行更新</translation>
 <translation id="3139188263101386725">使用更新后的快捷键</translation>
 <translation id="3139942575505304791">桌面 1</translation>
 <translation id="315116470104423982">移动数据</translation>
@@ -1183,6 +1183,7 @@
 <translation id="5377367976106153749">开启摄像头使用权限？</translation>
 <translation id="5379115545237091094">尝试次数过多</translation>
 <translation id="5391307769715781764">要替换已保存的桌面吗？</translation>
+<translation id="5392327145184648521">正在计算电池电量百分比…</translation>
 <translation id="5393156353051693207">若要将您的应用重新排序，请轻触并按住任意位置</translation>
 <translation id="5395308026110844773">“<ph name="DRAGGED_APP_NAME" />”已拖至“<ph name="IN_PLACE_APP" />”上，松开即可创建文件夹。</translation>
 <translation id="5397578532367286026">管理员 (<ph name="MANAGER_EMAIL" />) 可在 chrome.com 上查看该用户的使用情况和历史记录。</translation>
@@ -1237,6 +1238,7 @@
 <translation id="5577281275355252094">请确保在手机上启用蓝牙以便使用 Phone Hub</translation>
 <translation id="5578188167649348993">内存</translation>
 <translation id="5580000943347215299">库</translation>
+<translation id="5586388332127302891">已启用固定放大镜。再按一次 <ph name="ACCELERATOR" />即可将其关闭。</translation>
 <translation id="5587506661873751671">正在下载 <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">拖动鼠标指针即可选择要截取的区域</translation>
 <translation id="5590609058453685222">静音提醒已开启。如果您在静音状态下说话，则会收到通知。</translation>
@@ -1447,6 +1449,7 @@
 <translation id="6319503618073410818">在浏览器中查看详细信息</translation>
 <translation id="6324916366299863871">修改快捷方式</translation>
 <translation id="6330012934079202188">正在显示所有桌面中的窗口，按向上键即可显示当前桌面中的窗口</translation>
+<translation id="6337159624125741244">全屏放大镜已开启</translation>
 <translation id="6338485349199627913">“<ph name="DISPLAY_NAME" />”是一个由 <ph name="MANAGER" /> 管理的受管理自助服务终端</translation>
 <translation id="6344138931392227467">已连接到“<ph name="DEVICE_NAME" />”</translation>
 <translation id="6348449481487610270">按 <ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />，然后按 <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> 或 <ph name="KEY_THREE" /></translation>
@@ -1489,7 +1492,6 @@
 <translation id="6495322433318104734">正在显示屏保，按任意键即可退出</translation>
 <translation id="6495400115277918834">已启动“画中画”模式，按 Alt+Shift+V 可聚焦</translation>
 <translation id="6497418457565568043">“勿扰”模式已开启</translation>
-<translation id="6500896621837555595">更新</translation>
 <translation id="6501401484702599040">正在将屏幕投放到“<ph name="RECEIVER_NAME" />”</translation>
 <translation id="6507042703812908515">使用“<ph name="NEW_SHORTCUT" />”打开键盘快捷键应用。</translation>
 <translation id="6507618042428827377">切换到下一种可用输入法</translation>
@@ -1514,6 +1516,7 @@
 <translation id="6574587113394758819">由于防窥探功能已开启，因此系统隐藏了<ph name="APP_TITLE" />通知</translation>
 <translation id="6574622320167699133">已通过手机解锁。点按或点击即可继续使用。</translation>
 <translation id="6578407462441924264">未命名</translation>
+<translation id="6582034443359256692">正在计算电池充电电量。</translation>
 <translation id="6585808820553845416">会话将在<ph name="SESSION_TIME_REMAINING" />后结束。</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />，<ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">相机已对准左下角。与系统界面冲突。</translation>
@@ -1575,6 +1578,7 @@
 <translation id="6790428901817661496">播放</translation>
 <translation id="679368458793552943">开启放大镜时放大</translation>
 <translation id="6794287755901682422">此项内容的其他元数据：<ph name="GLANCEABLES_TASK_ITEM_METADATA" />。</translation>
+<translation id="6797745268063125932">保持开启状态</translation>
 <translation id="6801878137098616817">最近修改过</translation>
 <translation id="6802687695197837794">这将允许“<ph name="APP1_NAME" />”“<ph name="APP2_NAME" />”以及所有具有摄像头和麦克风使用权限的应用和网站使用摄像头和麦克风</translation>
 <translation id="6803622936009808957">找不到系统支持的分辨率，因此无法镜像显示屏。已改为进入扩展桌面。</translation>
@@ -1819,7 +1823,6 @@
 <translation id="7748275671948949022">突出显示任务栏上的启动器按钮</translation>
 <translation id="7749443890790263709">已达到桌面数量上限。</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
-<translation id="776344839111254542">点击即可查看相关更新的详情</translation>
 <translation id="7768784765476638775">随选朗读</translation>
 <translation id="7769299611924763557">您的 GIF 很快便能就绪</translation>
 <translation id="7773536009433685931">改为开启 Wi-Fi</translation>
@@ -1887,6 +1890,7 @@
 <translation id="7947798320695032612"><ph name="APP_NAME" />想使用您的<ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">调暗键盘</translation>
 <translation id="7953994493035617347">确认使用新分辨率？</translation>
+<translation id="795958884516058160">已启用全屏放大镜。再按一次 <ph name="ACCELERATOR" />即可将其关闭。</translation>
 <translation id="7963689218131240420">“勿扰”模式处于关闭状态。</translation>
 <translation id="7963992254934562106">来自 <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">选择文件夹…</translation>
@@ -1954,7 +1958,6 @@
 <translation id="8200772114523450471">继续</translation>
 <translation id="820256110035940528"><ph name="TITLE" />您刚刚专注了 <ph name="FOCUSED_TIME" />。打开“快捷设置”即可再次开启专注模式。</translation>
 <translation id="8203795194971602413">点击鼠标右键</translation>
-<translation id="8209010265547628927">重置</translation>
 <translation id="8214996719228530800">Canary 渠道</translation>
 <translation id="8219451629189078428">在此期间，您的 Chromebook 需要保持开机和通电状态。请确保充电器和适配器线缆都已完全插好 - 既已连接到您的 Chromebook，也已连接到电源插座。切勿关闭您的 Chromebook。</translation>
 <translation id="8220076512072059941">增加 <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -1965,7 +1968,6 @@
 <translation id="8239034820133090126">启用右侧桌面</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />，剩余电量为 <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />，应用</translation>
-<translation id="8255234195843591763">重置以接收更新</translation>
 <translation id="8257510091797044096">设置设备</translation>
 <translation id="8261506727792406068">删除</translation>
 <translation id="8262312463845990408">播放/暂停切换按钮</translation>
@@ -2140,6 +2142,7 @@
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> 复选框未选中。</translation>
 <translation id="8949925099261528566">已连接，但无法访问互联网</translation>
 <translation id="8951539504029375108">只有已获批准的 Thunderbolt 设备能与您的 Chromebook 兼容</translation>
+<translation id="8959380109429710384">您按下了全屏放大镜的键盘快捷键。使用 Ctrl + Alt + 箭头键可在放大后的视图中四处移动。</translation>
 <translation id="8964525410783593407">1 小时</translation>
 <translation id="8973885907461690937">将焦点移至菜单图标</translation>
 <translation id="8980862970816311842">将某个应用图标移入或移出应用网格内的文件夹</translation>

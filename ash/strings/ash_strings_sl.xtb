@@ -411,7 +411,6 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2573588302192866788">Ni bilo mogoče povezati naprave <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Prijava z več računi je onemogočena</translation>
 <translation id="2579264398927991698">Posodobitve vdelane programske opreme</translation>
-<translation id="2582112259361606227">Znova zaženite za posodobitev</translation>
 <translation id="2586657967955657006">Odložišče</translation>
 <translation id="2595239820337756193">5 km v miljah</translation>
 <translation id="2596078834055697711">Ustvarjanje posnetka okna</translation>
@@ -552,7 +551,6 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3122464029669770682">CPE</translation>
 <translation id="3125690294288312932">Vrsta šolskega dela</translation>
 <translation id="3126026824346185272">CTRL</translation>
-<translation id="3126069444801937830">Znova zaženite za posodobitev</translation>
 <translation id="3139188263101386725">Uporabite posodobljeno bližnjico</translation>
 <translation id="3139942575505304791">Namizje 1</translation>
 <translation id="315116470104423982">Prenos podatkov v mobilnih omrežjih</translation>
@@ -1498,7 +1496,6 @@ Nobena naprava ni povezana.</translation>
 <translation id="6495322433318104734">Prikaz ohranjevalnika zaslona. Pritisnite poljubno tipko, če želite zapreti.</translation>
 <translation id="6495400115277918834">Začela se je slika v sliki, pritisnite Alt + Shift + V za fokus</translation>
 <translation id="6497418457565568043">Funkcija »Ne moti« je vklopljena</translation>
-<translation id="6500896621837555595">Posodobi</translation>
 <translation id="6501401484702599040">Predvajanje zaslona v napravi <ph name="RECEIVER_NAME" /></translation>
 <translation id="6507042703812908515">Odprite aplikacijo za bližnjične tipke z bližnjico »<ph name="NEW_SHORTCUT" />«.</translation>
 <translation id="6507618042428827377">Preklop na naslednji razpoložljivi način vnosa</translation>
@@ -1830,7 +1827,6 @@ Nova namestitev</translation>
 <translation id="7748275671948949022">Označevanje gumba za Zaganjalnik na polici</translation>
 <translation id="7749443890790263709">Doseženo je največje dovoljeno število namizij.</translation>
 <translation id="7749958366403230681">Hitra tipka 4</translation>
-<translation id="776344839111254542">Kliknite, če si želite ogledati podrobnosti o posodobitvi</translation>
 <translation id="7768784765476638775">Izberite in poslušajte</translation>
 <translation id="7769299611924763557">GIF bo kmalu pripravljen</translation>
 <translation id="7773536009433685931">Vklopi Wi-Fi</translation>
@@ -1966,7 +1962,6 @@ Nova namestitev</translation>
 <translation id="8200772114523450471">Nadaljuj</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> Za vami je <ph name="FOCUSED_TIME" /> osredotočanja. Odprite hitre nastavitve, če se želite znova osredotočiti.</translation>
 <translation id="8203795194971602413">Desni klik</translation>
-<translation id="8209010265547628927">Ponastavi</translation>
 <translation id="8214996719228530800">Kanal Canary</translation>
 <translation id="8219451629189078428">Chromebook mora medtem ostati vklopljen in priklopljen na vir napajanja. Poskrbite, da so kabli polnilnika ali napajalnika do konca priklopljeni v Chromebook in električno vtičnico. Chromebooka ne izklopite.</translation>
 <translation id="8220076512072059941">Dodajanje: <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -1977,7 +1972,6 @@ Nova namestitev</translation>
 <translation id="8239034820133090126">Aktiviranje namizja na desni</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" />, stanje baterije telefona je <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplikacija</translation>
-<translation id="8255234195843591763">Ponastavite, če želite posodobiti</translation>
 <translation id="8257510091797044096">Nastavitev naprave</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8262312463845990408">Preklop predvajanja</translation>

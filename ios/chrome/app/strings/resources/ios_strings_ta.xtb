@@ -850,6 +850,7 @@
 <translation id="5345660046352249607">{COUNT,plural, =1{இந்தத் தொகுப்பைக் கண்காணிக்கவா?}other{{COUNT} தொகுப்புகளைக் கண்காணிக்கவா?}}</translation>
 <translation id="5348775987281903912">பகிர் பட்டன் மூலம் இந்தப் பக்கத்தை இங்கு பகிரலாம்.</translation>
 <translation id="536067926684072644">புக்மார்க்குகளைக் காட்டு</translation>
+<translation id="537853552771686272">உங்களுக்கு ஆர்வமுள்ள தலைப்புகளையும் தளங்களையும் நிர்வகிக்கலாம்</translation>
 <translation id="5379352933722332597">{count,plural, =1{"{title}" ஃபோல்டரில் புக்மார்க் சேமிக்கப்பட்டது. இது இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்பட்டுள்ளது.}other{"{title}" ஃபோல்டரில் {count} புக்மார்க்குகள் சேமிக்கப்பட்டன. இவை இந்தச் சாதனத்தில் மட்டுமே சேமிக்கப்பட்டுள்ளன.}}</translation>
 <translation id="5388358297987318779">படத்தைத் திற</translation>
 <translation id="5395707839134961196">தேடல் இன்ஜின் விவரங்களை மறைக்கும்</translation>
@@ -932,6 +933,7 @@
 <translation id="5758631781033351321">உங்கள் வாசிப்புப் பட்டியலை இங்கே பார்ப்பீர்கள்</translation>
 <translation id="5765456154762864099">மெனு → அமைப்புகள் → இயல்பு உலாவி</translation>
 <translation id="5777888488419460501">கணக்கில் சேமி</translation>
+<translation id="5778292857689789362"><ph name="GROUP_TITLE" /> என்ற தலைப்பில் <ph name="TABS_NUMBER" /> பக்கங்கள் உள்ள பக்கக் குழு.</translation>
 <translation id="5782227691023083829">மொழிபெயர்க்கிறது...</translation>
 <translation id="5791632441210678828">பின்தொடரும் ஊட்டத்தின் தலைப்புகளை வரிசைப்படுத்துவதற்கான பட்டன்.</translation>
 <translation id="5793373065989412701">குடும்ப உறுப்பினர்களைச் சரிபார்க்கிறது…</translation>
@@ -1031,6 +1033,7 @@
 <translation id="6232329973559504466">மறைநிலையில் தேடுக</translation>
 <translation id="6236952928980352967">எச்சரிக்கையை மீட்டெடு</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
+<translation id="6251835855431997163"><ph name="VALUE" /> ஐத் தானாக நிரப்பும்</translation>
 <translation id="6254066287920239840">உலாவியில் திறப்பதற்குப் பதிலாக இணைப்புகளைப் பயன்பாட்டில் திற.</translation>
 <translation id="6255097610484507482">கடன் அட்டையைத் திருத்துக</translation>
 <translation id="6266039999629596120">நடவடிக்கை தேவை</translation>
@@ -1209,6 +1212,7 @@
 <translation id="7022197654033719543">தளம் குறித்த தகவல்கள்</translation>
 <translation id="7029809446516969842">கடவுச்சொற்கள்</translation>
 <translation id="704692552158601232">இயல்பு உலாவி ஆப்ஸ்</translation>
+<translation id="7055240621761583113">கடவுச்சொல்லைத் தானாக நிரப்பும்</translation>
 <translation id="7063811929043357292">உங்கள் கணக்கை உங்கள் பெற்றோர் நிர்வகிக்கின்றனர்.
 <ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="7069695992271320873">இந்தச் சாதனத்தில் இருந்து அகற்று</translation>

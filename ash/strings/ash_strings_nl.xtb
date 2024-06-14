@@ -411,7 +411,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2573588302192866788">Kan <ph name="NAME" /> niet koppelen</translation>
 <translation id="2575685495496069081">Toegang tot meerdere accounts is uitgezet</translation>
 <translation id="2579264398927991698">Firmware-updates</translation>
-<translation id="2582112259361606227">Opnieuw starten om updates uit te voeren</translation>
 <translation id="2586657967955657006">Klembord</translation>
 <translation id="2595239820337756193">5 km in mijl</translation>
 <translation id="2596078834055697711">Een screenshot van het venster maken</translation>
@@ -552,7 +551,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Type schoolwerk</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3126069444801937830">Opnieuw starten om updates uit te voeren</translation>
 <translation id="3139188263101386725">De geüpdatete sneltoets gebruiken</translation>
 <translation id="3139942575505304791">Bureau 1</translation>
 <translation id="315116470104423982">Mobiele data</translation>
@@ -1498,7 +1496,6 @@ Geen apparaten verbonden.</translation>
 <translation id="6495322433318104734">Screensaver wordt weergegeven, druk op een toets om af te sluiten</translation>
 <translation id="6495400115277918834">Scherm-in-scherm gestart, Alt+Shift+V om te focussen</translation>
 <translation id="6497418457565568043">Niet storen staat aan</translation>
-<translation id="6500896621837555595">Updaten</translation>
 <translation id="6501401484702599040">Scherm casten naar <ph name="RECEIVER_NAME" /></translation>
 <translation id="6507042703812908515">Open de Sneltoetsen-app met <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Overschakelen naar volgende beschikbare invoermethode</translation>
@@ -1830,7 +1827,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7748275671948949022">Launcher-knop op de plank markeren</translation>
 <translation id="7749443890790263709">Maximum aantal bureaus bereikt.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
-<translation id="776344839111254542">Klik om updategegevens te bekijken</translation>
 <translation id="7768784765476638775">Selecteer om voor te lezen</translation>
 <translation id="7769299611924763557">Je gif is bijna klaar</translation>
 <translation id="7773536009433685931">Wifi aanzetten</translation>
@@ -1966,7 +1962,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8200772114523450471">Doorgaan</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> Je hebt je net <ph name="FOCUSED_TIME" /> gefocust. Open Snelle instellingen om opnieuw te focussen.</translation>
 <translation id="8203795194971602413">Klik met rechtermuisknop</translation>
-<translation id="8209010265547628927">Resetten</translation>
 <translation id="8214996719228530800">Canary-kanaal</translation>
 <translation id="8219451629189078428">Je Chromebook moet ondertussen aan blijven en zijn aangesloten op een stopcontact. Zorg dat de kabels van de oplader of adapter goed zijn aangesloten, zowel op je Chromebook als op het stopcontact. Zet je Chromebook niet uit.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> toevoegen</translation>
@@ -1977,7 +1972,6 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8239034820133090126">Bureau aan de rechterkant activeren</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signaalsterkte <ph name="SIGNAL_STRENGTH" />, telefoonbatterij <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
-<translation id="8255234195843591763">Reset om te updaten</translation>
 <translation id="8257510091797044096">Je apparaat instellen</translation>
 <translation id="8261506727792406068">Verwijderen</translation>
 <translation id="8262312463845990408">Afspelen aan-/uitzetten</translation>

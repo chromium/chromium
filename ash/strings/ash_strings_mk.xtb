@@ -409,7 +409,6 @@
 <translation id="2573588302192866788">Не можеше да се поврзе <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Повеќекратното најавување е оневозможено</translation>
 <translation id="2579264398927991698">Ажурирања на фирмвер</translation>
-<translation id="2582112259361606227">Рестартирај за да се ажурира</translation>
 <translation id="2586657967955657006">Табла со исечоци</translation>
 <translation id="2595239820337756193">5 km во милји</translation>
 <translation id="2596078834055697711">Прави слика од екранот</translation>
@@ -550,7 +549,6 @@
 <translation id="3122464029669770682">ЦПУ</translation>
 <translation id="3125690294288312932">Тип школска работа</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3126069444801937830">Рестартирај за да се ажурира</translation>
 <translation id="3139188263101386725">Користете ја ажурираната кратенка</translation>
 <translation id="3139942575505304791">Биро 1</translation>
 <translation id="315116470104423982">Мобилен интернет</translation>
@@ -1492,7 +1490,6 @@
 <translation id="6495322433318104734">Се прикажува штедач на екран, притиснете некое од копчињата за да излезете</translation>
 <translation id="6495400115277918834">Започна „Слика во слика“, притиснете Alt + Shift + V за да фокусирате</translation>
 <translation id="6497418457565568043">„Не вознемирувај“ е вклучено</translation>
-<translation id="6500896621837555595">Ажурирај</translation>
 <translation id="6501401484702599040">Екранот се емитува на <ph name="RECEIVER_NAME" /></translation>
 <translation id="6507042703812908515">Отворете ја апликацијата „Кратенки од тастатура“ со „<ph name="NEW_SHORTCUT" />“.</translation>
 <translation id="6507618042428827377">Префрлање на следниот достапен метод за внесување</translation>
@@ -1822,7 +1819,6 @@
 <translation id="7748275671948949022">Нагласете го копчето за стартерот на полицата</translation>
 <translation id="7749443890790263709">Достигнат е максималниот број работни простори.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
-<translation id="776344839111254542">Кликнете за да ги погледнете деталите за ажурирањето</translation>
 <translation id="7768784765476638775">Изберете за говор</translation>
 <translation id="7769299611924763557">Вашата GIF-датотека ќе биде подготвена наскоро</translation>
 <translation id="7773536009433685931">Наместо тоа, вклучете Wi-Fi</translation>
@@ -1957,7 +1953,6 @@
 <translation id="8200772114523450471">Продолжи</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> Тукушто се концентриравте <ph name="FOCUSED_TIME" />. Отворете „Брзи поставки“ за да се концентрирате повторно.</translation>
 <translation id="8203795194971602413">Десен клик</translation>
-<translation id="8209010265547628927">Ресетирај</translation>
 <translation id="8214996719228530800">Canary Channel</translation>
 <translation id="8219451629189078428">Вашиот Chromebook треба да остане вклучен и поврзан на струја во текот на ова време. Проверете дали каблите на полначот или адаптерот се целосно приклучени во вашиот Chromebook и во штекерот. Не исклучувајте го вашиот Chromebook.</translation>
 <translation id="8220076512072059941">Додај <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -1968,7 +1963,6 @@
 <translation id="8239034820133090126">Активирајте работна површина оддесно</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, батерија на телефонот: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, апликација</translation>
-<translation id="8255234195843591763">Ресетирајте за ажурирање</translation>
 <translation id="8257510091797044096">Поставете го уредот</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8262312463845990408">Вклучете/исклучете ја репродукцијата</translation>

@@ -71,6 +71,7 @@
 <translation id="1235458158152011030">தெரிந்த நெட்வொர்க்குகள்autof</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> இணைக்கப்பட்டது.</translation>
 <translation id="1240638468526743569">ஆப்ஸ்</translation>
+<translation id="1242198791279543032">அறிவிப்புகள் முடக்கப்பட்டுள்ளன</translation>
 <translation id="1242883863226959074">சாதனத்தில்</translation>
 <translation id="1245644940275736236">Assistantடைத் திற</translation>
 <translation id="124678866338384709">தற்போதைய தாவலை மூடும்</translation>
@@ -408,7 +409,6 @@
 <translation id="2573588302192866788"><ph name="NAME" /> ஐ இணைக்க முடியவில்லை</translation>
 <translation id="2575685495496069081">பல உள்முழைவு முடக்கப்பட்டுள்ளது</translation>
 <translation id="2579264398927991698">நிலைபொருள் புதுப்பிப்புகள்</translation>
-<translation id="2582112259361606227">புதுப்பிக்க, மீண்டும் தொடங்குக</translation>
 <translation id="2586657967955657006">கிளிப்போர்டு</translation>
 <translation id="2595239820337756193">5 கிமீ எத்தனை மைல்?</translation>
 <translation id="2596078834055697711">சாளரத்தை ஸ்கிரீன்ஷாட் எடுக்கும்</translation>
@@ -549,7 +549,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">வகுப்புப்பாடத்தின் வகை</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3126069444801937830">புதுப்பிக்க மீண்டும் தொடங்குக</translation>
 <translation id="3139188263101386725">புதுப்பிக்கப்பட்ட ஷார்ட்கட்டைப் பயன்படுத்துங்கள்</translation>
 <translation id="3139942575505304791">மேசை 1</translation>
 <translation id="315116470104423982">மொபைல் டேட்டா</translation>
@@ -1490,7 +1489,6 @@
 <translation id="6495322433318104734">ஸ்கிரீன் சேவரைக் காட்டுகிறது, வெளியேற ஏதேனும் ஒரு பட்டனை அழுத்துங்கள்</translation>
 <translation id="6495400115277918834">பிக்ச்சர்-இன்-பிக்ச்சர் காட்டப்படுகிறது, ஃபோகஸ் செய்ய Alt+Shift+V அழுத்தவும்</translation>
 <translation id="6497418457565568043">தொந்தரவு செய்ய வேண்டாம் அம்சம் இயக்கப்பட்டுள்ளது</translation>
-<translation id="6500896621837555595">புதுப்பி</translation>
 <translation id="6501401484702599040"><ph name="RECEIVER_NAME" />க்குத் திரையை அனுப்புகிறது</translation>
 <translation id="6507042703812908515">"<ph name="NEW_SHORTCUT" />" மூலம் Key Shortcuts ஆப்ஸைத் திறக்கவும்.</translation>
 <translation id="6507618042428827377">அடுத்து கிடைக்கக்கூடிய உள்ளீட்டு முறைக்கு மாறு</translation>
@@ -1820,7 +1818,6 @@
 <translation id="7748275671948949022">ஷெல்ஃபில் ‘தொடக்கி’ பட்டனை ஹைலைட் செய்</translation>
 <translation id="7749443890790263709">டெஸ்க்குகளின் எண்ணிக்கை அதிகபட்ச வரம்பை எட்டிவிட்டது.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
-<translation id="776344839111254542">புதுப்பிப்பு விவரங்களைப் பார்க்க, கிளிக் செய்யவும்</translation>
 <translation id="7768784765476638775">பேசும் திரை</translation>
 <translation id="7769299611924763557">உங்கள் GIF விரைவில் தயாராகிவிடும்</translation>
 <translation id="7773536009433685931">அதற்குப் பதிலாக வைஃபையை இயக்கு</translation>
@@ -1955,7 +1952,6 @@
 <translation id="8200772114523450471">மீண்டும் தொடங்கு</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> நீங்கள் <ph name="FOCUSED_TIME" /> ஃபோகஸ் பயன்முறையில் இருந்துள்ளீர்கள். மீண்டும் ஃபோகஸ் பயன்முறையை இயக்க விரைவு அமைப்புகளைத் திறக்கவும்.</translation>
 <translation id="8203795194971602413">வலது கிளிக் செய்யும்</translation>
-<translation id="8209010265547628927">மீட்டமை</translation>
 <translation id="8214996719228530800">Canary சேனல்</translation>
 <translation id="8219451629189078428">இந்தச் சமயத்தின்போது உங்கள் Chromebook ஆனில் இருப்பதுடன் பிளக் பாயிண்ட்டில் செருகப்பட்டிருக்கவும் வேண்டும். சார்ஜர், அடாப்டர் கேபிள்கள் போன்றவை உங்கள் Chromebook, பிளக் பாயிண்ட் ஆகிய இரண்டிலும் சரியாகச் செருகப்பட்டிருப்பதை உறுதிசெய்துகொள்ளவும். Chromebookகை ஆஃப் செய்ய வேண்டாம்.</translation>
 <translation id="8220076512072059941"><ph name="FOCUS_DURATION_DELTA" /> ஐச் சேர்க்கும்</translation>
@@ -1966,7 +1962,6 @@
 <translation id="8239034820133090126">வலதுபுறத்தில் உள்ள டெஸ்க்கை இயக்கு</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />, மொபைல் பேட்டரி: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, ஆப்ஸ்</translation>
-<translation id="8255234195843591763">புதுப்பிக்க மீட்டமைக்கவும்</translation>
 <translation id="8257510091797044096">சாதனத்தை அமைத்தல்</translation>
 <translation id="8261506727792406068">நீக்கு</translation>
 <translation id="8262312463845990408">பிளேபேக்கை இடைநிறுத்தும்/மீண்டும் தொடங்கும்</translation>

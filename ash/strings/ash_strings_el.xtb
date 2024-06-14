@@ -409,7 +409,6 @@
 <translation id="2573588302192866788">Αδυναμία σύνδεσης <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Η σύνδεση σε πολλούς λογαριασμούς απενεργοποιήθηκε</translation>
 <translation id="2579264398927991698">Ενημερώσεις υλικολογισμικού</translation>
-<translation id="2582112259361606227">Επανεκκίνηση για ενημέρωση</translation>
 <translation id="2586657967955657006">Πρόχειρο</translation>
 <translation id="2595239820337756193">5 χλμ. σε μίλια</translation>
 <translation id="2596078834055697711">Λήψη στιγμιότυπου οθόνης παραθύρου</translation>
@@ -550,7 +549,6 @@
 <translation id="3122464029669770682">Κεντρική μονάδα επεξεργασίας</translation>
 <translation id="3125690294288312932">Τύπος εργασιών</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3126069444801937830">Επανεκκίνηση για ενημέρωση</translation>
 <translation id="3139188263101386725">Χρησιμοποιήστε την ενημερωμένη συντόμευση</translation>
 <translation id="3139942575505304791">Γραφείο 1</translation>
 <translation id="315116470104423982">Δεδομένα κινητής τηλεφωνίας</translation>
@@ -1493,7 +1491,6 @@
 <translation id="6495322433318104734">Προβάλλεται η προφύλαξη οθόνης, πατήστε οποιοδήποτε πλήκτρο για έξοδο</translation>
 <translation id="6495400115277918834">Έναρξη λειτουργίας picture-in-picture, Alt+Shift+V για εστίαση</translation>
 <translation id="6497418457565568043">Η λειτουργία Μην ενοχλείτε είναι ενεργή</translation>
-<translation id="6500896621837555595">Ενημέρωση</translation>
 <translation id="6501401484702599040">Μετάδοση οθόνης σε <ph name="RECEIVER_NAME" /></translation>
 <translation id="6507042703812908515">Ανοίξτε την εφαρμογή Συντομεύσεις πληκτρολογίου με τη συντόμευση <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Εναλλαγή στην επόμενη διαθέσιμη μέθοδο εισαγωγής</translation>
@@ -1823,7 +1820,6 @@
 <translation id="7748275671948949022">Επισήμανση κουμπιού της Λειτουργίας εκκίνησης εφαρμογών στο ράφι</translation>
 <translation id="7749443890790263709">Συμπληρώθηκε ο μέγιστος αριθμός γραφείων.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
-<translation id="776344839111254542">Κάντε κλικ, για να δείτε τις λεπτομέρειες της ενημέρωσης</translation>
 <translation id="7768784765476638775">Επιλέξτε για αυτόματη ανάγνωση</translation>
 <translation id="7769299611924763557">Το GIF θα είναι έτοιμο σύντομα</translation>
 <translation id="7773536009433685931">Εναλλακτικά, ενεργοποιήστε το Wi-Fi</translation>
@@ -1958,7 +1954,6 @@
 <translation id="8200772114523450471">Συνέχιση</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> Συγκεντρωθήκατε για <ph name="FOCUSED_TIME" />. Ανοίξτε τις Γρήγορες ρυθμίσεις για να συγκεντρωθείτε ξανά.</translation>
 <translation id="8203795194971602413">Δεξί κλικ</translation>
-<translation id="8209010265547628927">Επαναφορά</translation>
 <translation id="8214996719228530800">Κανάλι Canary</translation>
 <translation id="8219451629189078428">Το Chromebook πρέπει να παραμείνει ενεργοποιημένο και συνδεδεμένο σε παροχή ρεύματος. Βεβαιωθείτε ότι τα καλώδια του φορτιστή ή του μετασχηματιστή είναι συνδεδεμένα σωστά, τόσο στο Chromebook όσο και στην πρίζα. Μην απενεργοποιήσετε το Chromebook.</translation>
 <translation id="8220076512072059941">Προσθήκη <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -1969,7 +1964,6 @@
 <translation id="8239034820133090126">Ενεργοποίηση γραφείου στα δεξιά</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Ισχύς σήματος <ph name="SIGNAL_STRENGTH" />, Μπαταρία τηλεφώνου <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, Εφαρμογή</translation>
-<translation id="8255234195843591763">Επαναφορά στην ενημέρωση</translation>
 <translation id="8257510091797044096">Ρύθμιση της συσκευής</translation>
 <translation id="8261506727792406068">Διαγραφή</translation>
 <translation id="8262312463845990408">Εναλλαγή αναπαραγωγής</translation>

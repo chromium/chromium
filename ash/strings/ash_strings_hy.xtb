@@ -409,7 +409,6 @@
 <translation id="2573588302192866788">Չհաջողվեց զուգակցել <ph name="NAME" /> սարքը</translation>
 <translation id="2575685495496069081">Բազմակի մուտքն անջատվել է</translation>
 <translation id="2579264398927991698">Ներկառուցված ծրագրի թարմացումներ</translation>
-<translation id="2582112259361606227">Թարմացնելու համար վերագործարկեք</translation>
 <translation id="2586657967955657006">Սեղմատախտակ</translation>
 <translation id="2595239820337756193">5 հազար մղոն</translation>
 <translation id="2596078834055697711">Ստանալ պատուհանի պատկեր</translation>
@@ -550,7 +549,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Դասարանային աշխատանքի տեսակ</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3126069444801937830">Թարմացնելու համար վերագործարկեք</translation>
 <translation id="3139188263101386725">Օգտագործեք թարմացված դյուրանցումը</translation>
 <translation id="3139942575505304791">Աշխատասեղան 1</translation>
 <translation id="315116470104423982">Բջջային կապի տվյալներ</translation>
@@ -574,6 +572,7 @@
 <translation id="3226991577105957773">Եվս <ph name="COUNT" /> ծանուցում</translation>
 <translation id="3227137524299004712">Խոսափող</translation>
 <translation id="3233611303007751344">Մարտկոցի տնտեսումն անջատվեց</translation>
+<translation id="3238409143297336341">Կարգավորեք ծնողական վերահսկողությունը հավելվածների համար</translation>
 <translation id="324366796737464147">Աղմուկի նվազեցում</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> պատուհանը տեղափոխվել է աշխատասեղան <ph name="ACTIVE_DESK" />-ից աշխատասեղան <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Դասարանային աշխատանքի տեսակ՝ <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -1402,6 +1401,7 @@
 <translation id="6141205840878048728">Ինչի՞ վրա եք ուզում կենտրոնանալ</translation>
 <translation id="6141988275892716286">Հաստատեք ներբեռնումը</translation>
 <translation id="6143578372829139382">Կիսվել YouTube-ում</translation>
+<translation id="6147182561428020853">Դուք այժմ կարող եք արգելափակել հավելվածներն այս <ph name="DEVICE_TYPE" /> սարքում</translation>
 <translation id="6154006699632741460">Արտաքին սարքերը չեն աջակցվում</translation>
 <translation id="6156960295318603523">Լեզվի կարգավորումներ</translation>
 <translation id="615957422585914272">Ցույց տալ էկրանի ստեղնաշարը</translation>
@@ -1491,7 +1491,6 @@
 <translation id="6495322433318104734">Ցուցադրվում է էկրանապահը. դուրս գալու համար սեղմեք ցանկացած ստեղն</translation>
 <translation id="6495400115277918834">«Նկար նկարի մեջ» ռեժիմը միացված է։ Ֆոկուսը տեղափոխելու համար սեղմեք Alt+Shift+V։</translation>
 <translation id="6497418457565568043">«Չանհանգստացնել» ռեժիմը միացված է</translation>
-<translation id="6500896621837555595">Թարմացնել</translation>
 <translation id="6501401484702599040">Էկրանի հեռարձակում <ph name="RECEIVER_NAME" />-ին</translation>
 <translation id="6507042703812908515">«Ստեղնաշարային դյուրանցումներ» հավելվածը բացելու համար սեղմեք «<ph name="NEW_SHORTCUT" />»։</translation>
 <translation id="6507618042428827377">Անցնել ներածման հաջորդ եղանակին</translation>
@@ -1821,7 +1820,6 @@
 <translation id="7748275671948949022">Առանձնացնել գործարկիչի կոճակը դարակում</translation>
 <translation id="7749443890790263709">Աշխատասեղանների առավելագույն թույլատրելի քանակը լրացել է:</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
-<translation id="776344839111254542">Հպեք՝ թարմացման մանրամասները դիտելու համար</translation>
 <translation id="7768784765476638775">Ընտրեք և լսեք</translation>
 <translation id="7769299611924763557">GIF ֆայլը շուտով պատրաստ կլինի</translation>
 <translation id="7773536009433685931">Միացնել Wi-Fi-ը</translation>
@@ -1956,7 +1954,6 @@
 <translation id="8200772114523450471">Շարունակել</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> Առանց շեղումների ռեժիմ <ph name="FOCUSED_TIME" /> տևողությամբ։ Բացեք Արագ կարգավորումները՝ առաջադրանքի վրա նորից կենտրոնանալու համար։</translation>
 <translation id="8203795194971602413">Աջ սեղմում</translation>
-<translation id="8209010265547628927">Վերակայել</translation>
 <translation id="8214996719228530800">Canary կապուղի</translation>
 <translation id="8219451629189078428">Այս ընթացքում Chromebook-ը պետք է միացված լինի և սնուցվի հոսանքից։ Համոզվեք, որ լիցքավորիչի և ադապտերի մալուխները պատշաճ միացված են Chromebook-ին և վարդակին։ Մի՛ անջատեք Chromebook-ը։</translation>
 <translation id="8220076512072059941">Ավելացնել <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -1967,7 +1964,6 @@
 <translation id="8239034820133090126">Միացնել աջ աշխատասեղանը</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />, մարտկոցի լիցքը՝ <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, հավելված</translation>
-<translation id="8255234195843591763">Վերակայել և թարմացնել</translation>
 <translation id="8257510091797044096">Կարգավորեք ձեր սարքը</translation>
 <translation id="8261506727792406068">Ջնջել</translation>
 <translation id="8262312463845990408">Միացնել/անջատել նվագարկումը</translation>

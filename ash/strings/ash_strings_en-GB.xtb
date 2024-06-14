@@ -80,6 +80,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1247519845643687288">Recent apps</translation>
 <translation id="1252999807265626933">Charging from <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">What's the weather?</translation>
+<translation id="1256734167083229794">You pressed the keyboard shortcut for the full-screen magnifier. Use <ph name="ZOOM_IN_ACCELERATOR" /> to zoom in and <ph name="ZOOM_OUT_ACCELERATOR" /> to zoom out. Use Ctrl + Alt + arrows to move around the zoomed in view.</translation>
 <translation id="1269405891096105529">Peripheral not supported in Guest Mode</translation>
 <translation id="1270290102613614947">On-screen keyboard disabled</translation>
 <translation id="1272079795634619415">Stop</translation>
@@ -264,6 +265,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">Desk and windows have been removed. Press Control + Z to undo action.</translation>
 <translation id="1972950159383891558">Hi, <ph name="USERNAME" /></translation>
+<translation id="1977686871076551563">Colour inversion mode enabled. Press <ph name="ACCELERATOR" /> again to toggle it off.</translation>
 <translation id="1978498689038657292">Text input</translation>
 <translation id="1980808257969311265">Join <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Show previous week</translation>
@@ -409,7 +411,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2573588302192866788">Couldn't connect <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Multiple sign-in has been disabled</translation>
 <translation id="2579264398927991698">Firmware updates</translation>
-<translation id="2582112259361606227">Restart to update</translation>
 <translation id="2586657967955657006">Clipboard</translation>
 <translation id="2595239820337756193">5 K in miles</translation>
 <translation id="2596078834055697711">Take window screenshot</translation>
@@ -550,7 +551,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Classwork type</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3126069444801937830">Restart to update</translation>
 <translation id="3139188263101386725">Use the updated shortcut</translation>
 <translation id="3139942575505304791">Desk 1</translation>
 <translation id="315116470104423982">Mobile data</translation>
@@ -574,6 +574,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> more</translation>
 <translation id="3227137524299004712">Microphone</translation>
 <translation id="3233611303007751344">Battery Saver turned off</translation>
+<translation id="3238409143297336341">Set up parental controls for apps</translation>
 <translation id="324366796737464147">Noise cancellation</translation>
 <translation id="3249513730522716925">Window <ph name="WINDOW_TITLE" /> moved from Desk <ph name="ACTIVE_DESK" /> to Desk <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Classwork type: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -1185,6 +1186,7 @@ No devices connected.</translation>
 <translation id="5377367976106153749">Turn on camera access?</translation>
 <translation id="5379115545237091094">Too many attempts</translation>
 <translation id="5391307769715781764">Replace saved desk?</translation>
+<translation id="5392327145184648521">Calculating battery %…</translation>
 <translation id="5393156353051693207">Touch &amp; hold anywhere to reorder your apps</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> on top of <ph name="IN_PLACE_APP" />, release to create folder.</translation>
 <translation id="5397578532367286026">Usage and history of this user can be reviewed by the manager (<ph name="MANAGER_EMAIL" />) on chrome.com.</translation>
@@ -1239,6 +1241,7 @@ No devices connected.</translation>
 <translation id="5577281275355252094">Check that Bluetooth is enabled on your phone to use Phone Hub</translation>
 <translation id="5578188167649348993">memory</translation>
 <translation id="5580000943347215299">Library</translation>
+<translation id="5586388332127302891">Docked magnifier enabled. Press <ph name="ACCELERATOR" /> again to toggle it off.</translation>
 <translation id="5587506661873751671">Downloading <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">Drag to select an area to capture</translation>
 <translation id="5590609058453685222">Mute nudge is on. You'll get notified if you talk while muted.</translation>
@@ -1402,6 +1405,7 @@ No devices connected.</translation>
 <translation id="6141205840878048728">What would you like to focus on?</translation>
 <translation id="6141988275892716286">Confirm download</translation>
 <translation id="6143578372829139382">Share to YouTube</translation>
+<translation id="6147182561428020853">You can now block apps installed on this <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">Peripheral not supported</translation>
 <translation id="6156960295318603523">Language Settings</translation>
 <translation id="615957422585914272">Show on-screen keyboard</translation>
@@ -1449,6 +1453,7 @@ No devices connected.</translation>
 <translation id="6319503618073410818">View details in browser</translation>
 <translation id="6324916366299863871">Edit shortcut</translation>
 <translation id="6330012934079202188">Showing windows from all desks; press the Up arrow key to show windows from the current desk</translation>
+<translation id="6337159624125741244">Full-screen magnifier is on</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> is a managed session managed by <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> connected</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, then <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> or <ph name="KEY_THREE" /></translation>
@@ -1491,7 +1496,6 @@ No devices connected.</translation>
 <translation id="6495322433318104734">Displaying screen saver; press any key to exit</translation>
 <translation id="6495400115277918834">Picture-in-picture started, Alt+Shift+V to focus</translation>
 <translation id="6497418457565568043">Do Not Disturb is on</translation>
-<translation id="6500896621837555595">Update</translation>
 <translation id="6501401484702599040">Casting screen to <ph name="RECEIVER_NAME" /></translation>
 <translation id="6507042703812908515">Open the Key shortcuts app with '<ph name="NEW_SHORTCUT" />'.</translation>
 <translation id="6507618042428827377">Switch to next available input method</translation>
@@ -1516,6 +1520,7 @@ New install</translation>
 <translation id="6574587113394758819"><ph name="APP_TITLE" /> notification is hidden because viewing protection is on</translation>
 <translation id="6574622320167699133">Unlocked by your phone. Tap or click to enter.</translation>
 <translation id="6578407462441924264">Unnamed</translation>
+<translation id="6582034443359256692">Calculating battery charge level.</translation>
 <translation id="6585808820553845416">Session ends in <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" /> <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Camera snapped to the bottom-left corner. Conflict with system surface.</translation>
@@ -1577,6 +1582,7 @@ New install</translation>
 <translation id="6790428901817661496">Play</translation>
 <translation id="679368458793552943">Zoom in when magnifier is on</translation>
 <translation id="6794287755901682422">This item has: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
+<translation id="6797745268063125932">Keep it on</translation>
 <translation id="6801878137098616817">Recently edited</translation>
 <translation id="6802687695197837794">This allows access for <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> and all apps and websites with the camera and microphone permissions</translation>
 <translation id="6803622936009808957">Could not mirror displays since no supported resolutions found. Entered extended desktop instead.</translation>
@@ -1821,7 +1827,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7748275671948949022">Highlight Launcher button on shelf</translation>
 <translation id="7749443890790263709">Maximum number of desks reached.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
-<translation id="776344839111254542">Click to view update details</translation>
 <translation id="7768784765476638775">Select to Speak</translation>
 <translation id="7769299611924763557">Your GIF will be ready shortly</translation>
 <translation id="7773536009433685931">Turn on Wi-Fi instead</translation>
@@ -1889,6 +1894,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="7947798320695032612"><ph name="APP_NAME" /> wants to use your <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Dim keyboard</translation>
 <translation id="7953994493035617347">Confirm the new resolution?</translation>
+<translation id="795958884516058160">Full-screen magnifier enabled. Press <ph name="ACCELERATOR" /> again to toggle it off.</translation>
 <translation id="7963689218131240420">Do Not Disturb is off.</translation>
 <translation id="7963992254934562106">From <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Select folder…</translation>
@@ -1956,7 +1962,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8200772114523450471">Resume</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> You've just focused for <ph name="FOCUSED_TIME" />. Open Quick Settings to focus again.</translation>
 <translation id="8203795194971602413">Right click</translation>
-<translation id="8209010265547628927">Reset</translation>
 <translation id="8214996719228530800">Canary channel</translation>
 <translation id="8219451629189078428">Your Chromebook needs to stay on and connected to power during this time. Make sure that the charger or adaptor cables are completely plugged in, both to your Chromebook and the power socket. Do not turn off your Chromebook.</translation>
 <translation id="8220076512072059941">Add <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -1967,7 +1972,6 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="8239034820133090126">Activate desk on right</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />, phone battery <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, app</translation>
-<translation id="8255234195843591763">Reset to update</translation>
 <translation id="8257510091797044096">Set up your device</translation>
 <translation id="8261506727792406068">Delete</translation>
 <translation id="8262312463845990408">Toggle -playback</translation>
@@ -2142,6 +2146,7 @@ To shut down the device, press and hold the power button on the device again.</t
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> tick box not ticked.</translation>
 <translation id="8949925099261528566">Connected, no Internet</translation>
 <translation id="8951539504029375108">Only approved Thunderbolt devices are compatible with your Chromebook</translation>
+<translation id="8959380109429710384">You pressed the keyboard shortcut for the full-screen magnifier. Use Ctrl + Alt + arrows to move around the zoomed in view.</translation>
 <translation id="8964525410783593407">1 h</translation>
 <translation id="8973885907461690937">Place focus on menu icon</translation>
 <translation id="8980862970816311842">Move an app icon in/out of a folder in app grid</translation>

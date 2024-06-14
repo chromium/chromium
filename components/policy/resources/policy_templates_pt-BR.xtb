@@ -2806,13 +2806,6 @@ Se o usuário não marcar a caixa:
 
 <ph name="MANAGED_ACCOUNTS_SIGNIN_RESTRICTION_POLICY_NAME" /> = <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_STRICT_KEEP_EXISTING_DATA" />
 Esse comportamento é igual ao da <ph name="POLICY_VALUE_PRIMARY_ACCOUNT_KEEP_EXISTING_DATA" />, mas o perfil recém-criado não pode ter contas secundárias.</translation>
-<translation id="3079575168312257780">Se a política for definida como 0 (o padrão), você poderá acessar as ferramentas para desenvolvedores e o Console JavaScript, mas não no contexto de extensões instaladas por uma política da empresa ou (da versão 114 em diante), se for um usuário gerenciado, extensões integradas no navegador. Se ela for definida como 1, você poderá acessar as ferramentas para desenvolvedores e o Console JavaScript em todos os contextos, inclusive o das extensões instaladas pela política da empresa. Se ela for definida como 2, não será possível acessar as ferramentas para desenvolvedores nem inspecionar elementos de sites.
-
-      Essa definição também desativa atalhos de teclado e entradas do menu de contexto ou do menu para abrir as ferramentas para desenvolvedores e o Console JavaScript.
-
-      A partir da versão 99 do <ph name="PRODUCT_NAME" />, essa configuração também vai controlar pontos de entrada para o recurso "Exibir código-fonte da página". Se a política foi definida como "DeveloperToolsDisallowed" (valor 2), os usuários não poderão acessar a visualização do código-fonte pelo atalho do teclado nem pelo menu de contexto. Para bloquear totalmente a visualização do código-fonte, também é preciso adicionar "view-source:*" à política <ph name="URL_BLOCKLIST_POLICY_NAME" />.
-
-      A partir da versão 119 do <ph name="PRODUCT_NAME" />, essa configuração também controla se o modo de desenvolvedor para Apps Isolados da Web pode ser ativado e usado.</translation>
 <translation id="3083259245974004342">Proteção por senha</translation>
 <translation id="308356121098374167">O WebSQL em contextos não seguros vai estar disponível.</translation>
 <translation id="3086995894968271156">Configura a política Cast Receiver no <ph name="PRODUCT_NAME" />.</translation>
@@ -4569,33 +4562,6 @@ Agora, a presença desses caracteres vai fazer com que toda a string de cookies 
 Se esta política for definida como verdadeira (padrão), o novo comportamento será ativado.
 
 Se ela for definida como falsa, o comportamento antigo será ativado.</translation>
-<translation id="4490420545181481759">Os certificados X.509 podem codificar restrições, como as de nome,
-em extensões do certificado. A RFC 5280 especifica que a aplicação dessas
-restrições a certificados de âncoras de confiança é opcional. Da versão 112 em diante
-do <ph name="PRODUCT_NAME" />, essas restrições
-em certificados carregados do repositório de certificados da plataforma passam a ser
-aplicadas.
-
-Esta política existe como uma desativação temporária caso uma empresa encontre
-problemas com as restrições codificadas nas raízes particulares. Nesse caso, esta
-política pode ser usada para desativar temporariamente a aplicação das restrições
-enquanto corrige os problemas de certificado.
-
-Quando esta política for deixada sem definição ou for ativada,
-o <ph name="PRODUCT_NAME" /> vai aplicar
-restrições codificadas a âncoras carregadas pelo repositório de confiança da plataforma.
-
-Quando ela for desativada,
-o <ph name="PRODUCT_NAME" /> não vai aplicar
-restrições codificadas a âncoras carregadas do repositório de confiança da plataforma.
-
-Na versão 112 do <ph name="PRODUCT_NAME" />,
-esta política não terá efeito se a
-<ph name="CHROME_ROOT_STORE_ENABLED_POLICY_NAME" />
-for desativada.
-
-Esta política será removida na
-versão 118 do <ph name="PRODUCT_NAME" />.</translation>
 <translation id="4491607814095953976">Definir se a configuração do <ph name="PRIVACY_SANDBOX_NAME" /> para a medição de anúncios pode ser desativada</translation>
 <translation id="4492287494009043413">Desativar captura de tela</translation>
 <translation id="4494132853995232608">DTC wilco</translation>
@@ -5372,11 +5338,6 @@ Quando a política não está definida ou é desativada, os cookies e os dados p
 
           Se essa política for definida como falsa, os usuários não poderão transmitir conteúdo para o dispositivo deles. Se essa política for definida como verdadeira, os usuários poderão transmitir conteúdo. Se essa política não for definida, os usuários não poderão transmitir conteúdo para dispositivos ChromeOS inscritos, mas poderão transmitir para dispositivos não inscritos.</translation>
 <translation id="5164141068091580679">Ativar o recurso e enviar dados para treinar os modelos de IA</translation>
-<translation id="516520353995300280">A definição da política desativa a aplicação dos requisitos de divulgação da Transparência dos certificados para uma lista de autoridades de certificação (CA, na sigla em inglês) antigas relacionadas a cadeias de certificado com um hash <ph name="SUBJECT_PUBLIC_KEY_INFO" /> especificado. Os hosts comerciais podem continuar usando certificados que, de outro modo, não seriam confiáveis, já que eles não foram divulgados publicamente de maneira adequada. Para desativar a aplicação, o hash <ph name="SUBJECT_PUBLIC_KEY_INFO" /> precisa aparecer em um certificado de uma CA reconhecida como antiga. Uma CA antiga é considerada confiável por um ou mais sistemas operacionais compatíveis com o <ph name="PRODUCT_NAME" />, mas não pelo Android Open Source Project ou pelo <ph name="PRODUCT_OS_NAME" />.
-
-      Especifique um hash <ph name="SUBJECT_PUBLIC_KEY_INFO" /> vinculando o nome do algoritmo dele, uma barra e a codificação Base64 desse algoritmo de hash aplicado ao <ph name="SUBJECT_PUBLIC_KEY_INFO" /> codificado por DER do certificado especificado. O formato de codificação Base64 corresponde ao de uma impressão digital SPKI. O único algoritmo de hash reconhecido é sha256, enquanto os outros são ignorados.
-
-      Deixar esta política sem definição significa que se os certificados que precisam ser divulgados via Transparência dos certificados não o forem, o <ph name="PRODUCT_NAME" /> não confiará nesses certificados.</translation>
 <translation id="5168529971295111207">Esta política está obsoleta. Use a política ProxyMode.
 
           Permite que você especifique o servidor proxy usado pelo <ph name="PRODUCT_NAME" /> e impede os usuários de alterarem as configurações de proxy.
@@ -6261,15 +6222,6 @@ O suporte para essa configuração de política vai terminar no <ph name="PRODUC
 <translation id="5775235485119094648">Carregar a bateria enquanto ela estiver dentro de um intervalo fixo.</translation>
 <translation id="5776485039795852974">Perguntar cada vez que um site quiser exibir notificações da área de trabalho</translation>
 <translation id="5783009211970309878">Imprimir cabeçalhos e rodapés</translation>
-<translation id="5786733040432065904">O "Modo sem distrações" é um recurso que controla o "Não perturbe" com um timer e tem o objetivo de reduzir as distrações do usuário. Um recurso do "Modo sem distrações" permite que os usuários ouçam músicas específicas para se concentrar melhor. Esta política controla o acesso ao recurso.
-
-Se ela for deixada sem definição, todos os sons serão desativados para os usuários gerenciados.
-
-Se for ativada, todos os sons poderão ser acessados no "Modo sem distrações".
-
-Se for definida como "Somente sons de foco", o recurso de som será ativado apenas para sons de foco.
-
-Se a política for desativada, os sons no "Modo sem distrações" também serão.</translation>
 <translation id="5790763087505467169">Reduzir notificações de lançamento automático para sessões de visitante gerenciadas</translation>
 <translation id="5800329278018669527">Desativar a solicitação de configuração de rede quando estiver off-line</translation>
 <translation id="5802931736499687181">Desativar o pipeline de geração de relatórios criptografados</translation>

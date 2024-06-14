@@ -411,7 +411,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2573588302192866788">Tidak dapat menyambungkan <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Log masuk berbilang telah dilumpuhkan</translation>
 <translation id="2579264398927991698">Kemaskinian Perisian Tegar</translation>
-<translation id="2582112259361606227">Mulakan semula untuk mengemas kini</translation>
 <translation id="2586657967955657006">Papan Keratan</translation>
 <translation id="2595239820337756193">5000 batu</translation>
 <translation id="2596078834055697711">Ambil tangkapan skrin tetingkap</translation>
@@ -552,7 +551,6 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Jenis kerja kelas</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3126069444801937830">Mulakan semula untuk mengemas kini</translation>
 <translation id="3139188263101386725">Gunakan pintasan yang telah dikemaskinikan</translation>
 <translation id="3139942575505304791">Meja 1</translation>
 <translation id="315116470104423982">Data mudah alih</translation>
@@ -576,6 +574,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> lagi</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233611303007751344">Penjimat Bateri dimatikan</translation>
+<translation id="3238409143297336341">Sediakan kawalan ibu bapa untuk apl</translation>
 <translation id="324366796737464147">Pembatalan hingar</translation>
 <translation id="3249513730522716925">Tetingkap <ph name="WINDOW_TITLE" /> dialihkan daripada Meja <ph name="ACTIVE_DESK" /> ke Meja <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Jenis kerja kelas: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -1406,6 +1405,7 @@ Tiada peranti disambungkan.</translation>
 <translation id="6141205840878048728">Apakah yang mahu anda fokuskan?</translation>
 <translation id="6141988275892716286">Sahkan muat turun</translation>
 <translation id="6143578372829139382">Kongsi pada YouTube</translation>
+<translation id="6147182561428020853">Kini anda boleh menyekat apl yang dipasang pada <ph name="DEVICE_TYPE" /> ini</translation>
 <translation id="6154006699632741460">Peranti persisian tidak disokong</translation>
 <translation id="6156960295318603523">Tetapan Bahasa</translation>
 <translation id="615957422585914272">Paparkan papan kekunci pada skrin</translation>
@@ -1496,7 +1496,6 @@ Tiada peranti disambungkan.</translation>
 <translation id="6495322433318104734">Memaparkan penyelamat skrin, tekan sebarang kekunci untuk keluar</translation>
 <translation id="6495400115277918834">Gambar dalam gambar dimulakan, Alt+Shift+V untuk fokus</translation>
 <translation id="6497418457565568043">Jangan ganggu dihidupkan</translation>
-<translation id="6500896621837555595">Kemas kini</translation>
 <translation id="6501401484702599040">Menghantar skrin ke <ph name="RECEIVER_NAME" /></translation>
 <translation id="6507042703812908515">Buka apl Pintasan Kekunci dengan "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6507618042428827377">Beralih kepada kaedah input seterusnya yang tersedia</translation>
@@ -1828,7 +1827,6 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="7748275671948949022">Serlahkan butang Pelancar pada rak</translation>
 <translation id="7749443890790263709">Bilangan maksimum meja dicapai.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
-<translation id="776344839111254542">Klik untuk melihat butiran kemas kini</translation>
 <translation id="7768784765476638775">Pilih untuk bercakap</translation>
 <translation id="7769299611924763557">GIF anda akan tersedia tidak lama lagi</translation>
 <translation id="7773536009433685931">Hidupkan Wi-Fi</translation>
@@ -1964,7 +1962,6 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8200772114523450471">Sambung semula</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> Anda telah fokus selama <ph name="FOCUSED_TIME" />. Buka Tetapan Pantas untuk fokus sekali lagi.</translation>
 <translation id="8203795194971602413">Klik kanan</translation>
-<translation id="8209010265547628927">Tetapkan semula</translation>
 <translation id="8214996719228530800">Saluran Canary</translation>
 <translation id="8219451629189078428">Chromebook anda perlu kekal hidup dan disambungkan kepada kuasa sepanjang tempoh ini. Pastikan kabel pengecas atau penyesuai telah dipalamkan sepenuhnya pada Chromebook dan soket kuasa anda. Jangan matikan Chromebook anda.</translation>
 <translation id="8220076512072059941">Tambahkan <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -1975,7 +1972,6 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8239034820133090126">Aktifkan meja di sebelah kanan</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />, Bateri Telefon <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, Apl</translation>
-<translation id="8255234195843591763">Tetapkan semula untuk mengemas kini</translation>
 <translation id="8257510091797044096">Sediakan peranti anda</translation>
 <translation id="8261506727792406068">Padam</translation>
 <translation id="8262312463845990408">Togol main balik</translation>

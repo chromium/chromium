@@ -11,6 +11,7 @@
 <translation id="1273910660700874265">Välilehtiryhmän (<ph name="TITLE_OF_GROUP" />) vaihtoehdot</translation>
 <translation id="1322824555808364080">Kutsu muita</translation>
 <translation id="1419023007528516122">Ryhmä poistetaan laitteelta pysyvästi</translation>
+<translation id="1486715732399361704">Löydät kaikki välilehtiryhmäsi täältä</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Luotu <ph name="NUM_MINS_ONE" /> minuutti sitten}other{Luotu <ph name="NUM_MINS_MANY" /> minuuttia sitten}}</translation>
 <translation id="1499635324672558517">Suljetaanko kaikki incognito-välilehdet?</translation>
 <translation id="1501480321619201731">Poista ryhmä</translation>

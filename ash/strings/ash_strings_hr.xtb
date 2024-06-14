@@ -411,7 +411,6 @@ Povezan je sljedeći broj uređaja: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2573588302192866788">Povezivanje uređaja <ph name="NAME" /> nije uspjelo</translation>
 <translation id="2575685495496069081">Onemogućena je višestruka prijava</translation>
 <translation id="2579264398927991698">Ažuriranja opreme</translation>
-<translation id="2582112259361606227">Ponovo pokrenite da biste ažurirali</translation>
 <translation id="2586657967955657006">Međuspremnik</translation>
 <translation id="2595239820337756193">5 km u miljama</translation>
 <translation id="2596078834055697711">Snimanje snimke zaslona prozora</translation>
@@ -552,7 +551,6 @@ Povezan je sljedeći broj uređaja: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3122464029669770682">Procesor (CPU)</translation>
 <translation id="3125690294288312932">Vrsta školske zadaće</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3126069444801937830">Ponovo pokrenite za ažuriranje</translation>
 <translation id="3139188263101386725">Upotreba ažuriranog prečaca</translation>
 <translation id="3139942575505304791">Radna površina 1</translation>
 <translation id="315116470104423982">Mobilni podaci</translation>
@@ -576,6 +574,7 @@ Povezan je sljedeći broj uređaja: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3226991577105957773">Još <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233611303007751344">Isključena je Štednja baterije</translation>
+<translation id="3238409143297336341">Postavljanje roditeljskog nadzora za aplikacije</translation>
 <translation id="324366796737464147">Uklanjanje buke</translation>
 <translation id="3249513730522716925">Prozor <ph name="WINDOW_TITLE" /> premješten je s radne površine <ph name="ACTIVE_DESK" /> na radnu površinu <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Vrsta školske zadaće: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -1406,6 +1405,7 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6141205840878048728">Na što se želite koncentrirati?</translation>
 <translation id="6141988275892716286">Potvrda preuzimanja</translation>
 <translation id="6143578372829139382">Podijeli na YouTubeu</translation>
+<translation id="6147182561428020853">Sad možete blokirati aplikacije instalirane na ovom uređaju <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">Periferni uređaj nije podržan</translation>
 <translation id="6156960295318603523">Postavke jezika</translation>
 <translation id="615957422585914272">Prikaži zaslonsku tipkovnicu</translation>
@@ -1496,7 +1496,6 @@ Nije povezan nijedan uređaj.</translation>
 <translation id="6495322433318104734">Prikazuje se čuvar zaslona, pritisnite bilo koju tipku za izlaz</translation>
 <translation id="6495400115277918834">Pokrenuta je slika u slici, pritisnite Alt + Shift + V da biste fokusirali</translation>
 <translation id="6497418457565568043">Uključena je opcija Ne uznemiravaj</translation>
-<translation id="6500896621837555595">Ažuriraj</translation>
 <translation id="6501401484702599040">Emitiranje zaslona na <ph name="RECEIVER_NAME" /></translation>
 <translation id="6507042703812908515">Otvorite aplikaciju Ključni prečaci pomoću prečaca <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Prebacivanje na sljedeći dostupni način unosa</translation>
@@ -1828,7 +1827,6 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="7748275671948949022">Isticanje gumba pokretača na traci</translation>
 <translation id="7749443890790263709">Dosegnut je maksimalan broj radnih površina.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
-<translation id="776344839111254542">Kliknite da biste vidjeli pojedinosti o ažuriranju</translation>
 <translation id="7768784765476638775">Odabir za govor</translation>
 <translation id="7769299611924763557">GIF će uskoro biti spreman</translation>
 <translation id="7773536009433685931">Umjesto toga uključite Wi-Fi</translation>
@@ -1964,7 +1962,6 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8200772114523450471">Nastavi</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> Upravo ste bili u načinu rada za koncentraciju <ph name="FOCUSED_TIME" />. Otvorite Brze postavke da biste ponovo pokrenuli način rada za koncentraciju.</translation>
 <translation id="8203795194971602413">Desni klik</translation>
-<translation id="8209010265547628927">Poništi</translation>
 <translation id="8214996719228530800">Canary kanal</translation>
 <translation id="8219451629189078428">Chromebook u međuvremenu mora ostati uključen i spojen na napajanje. Provjerite je li kabel punjača ili adaptera pravilno priključen u Chromebook i utičnicu. Nemojte isključivati Chromebook.</translation>
 <translation id="8220076512072059941">Dodajte <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -1975,7 +1972,6 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8239034820133090126">Aktiviranje radne površine zdesna</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />, telefonska baterija <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplikacija</translation>
-<translation id="8255234195843591763">Vratite na zadano radi ažuriranja</translation>
 <translation id="8257510091797044096">Postavljanje uređaja</translation>
 <translation id="8261506727792406068">Izbriši</translation>
 <translation id="8262312463845990408">Uključi/isključi reprodukciju</translation>

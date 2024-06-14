@@ -11,6 +11,7 @@
 <translation id="1273910660700874265">Alternativ för flikgruppen <ph name="TITLE_OF_GROUP" /></translation>
 <translation id="1322824555808364080">Bjuda in personer</translation>
 <translation id="1419023007528516122">Detta raderar gruppen permanent från enheten</translation>
+<translation id="1486715732399361704">Du hittar alla dina flikgrupper här</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Skapades för <ph name="NUM_MINS_ONE" /> minut sedan}other{Skapades för <ph name="NUM_MINS_MANY" /> minuter sedan}}</translation>
 <translation id="1499635324672558517">Vill du stänga alla inkognitoflikar?</translation>
 <translation id="1501480321619201731">Ta bort grupp</translation>

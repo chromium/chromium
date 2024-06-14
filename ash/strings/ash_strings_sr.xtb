@@ -411,7 +411,6 @@
 <translation id="2573588302192866788">Није успело повезивање <ph name="NAME" /></translation>
 <translation id="2575685495496069081">Онемогућено је вишеструко пријављивање</translation>
 <translation id="2579264398927991698">Ажурирања фирмвера</translation>
-<translation id="2582112259361606227">Рестартујте да бисте ажурирали</translation>
 <translation id="2586657967955657006">Меморија</translation>
 <translation id="2595239820337756193">5 km у миљама</translation>
 <translation id="2596078834055697711">Направите снимак екрана прозора</translation>
@@ -552,7 +551,6 @@
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Тип школских задатака</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3126069444801937830">Покрените поново да бисте ажурирали</translation>
 <translation id="3139188263101386725">Користите ажурирану пречицу</translation>
 <translation id="3139942575505304791">Радна површина 1</translation>
 <translation id="315116470104423982">Мобилни подаци</translation>
@@ -1499,7 +1497,6 @@
 <translation id="6495322433318104734">Чувар екрана се приказује, притисните било који тастер да бисте га затворили</translation>
 <translation id="6495400115277918834">Покренута је слика у слици, Alt+Shift+V да бисте фокусирали</translation>
 <translation id="6497418457565568043">Не узнемиравај је укључено</translation>
-<translation id="6500896621837555595">Ажурирај</translation>
 <translation id="6501401484702599040">Екран се пребацује на <ph name="RECEIVER_NAME" /></translation>
 <translation id="6507042703812908515">Отворите апликацију Тастерске пречице помоћу пречице <ph name="NEW_SHORTCUT" />.</translation>
 <translation id="6507618042428827377">Пређите на следећи доступни метод уноса</translation>
@@ -1832,7 +1829,6 @@
 <translation id="7748275671948949022">Истакни дугме покретача на полици</translation>
 <translation id="7749443890790263709">Достигли сте максималан број радних површина.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
-<translation id="776344839111254542">Кликните за приказ детаља ажурирања</translation>
 <translation id="7768784765476638775">Изаберите за говор</translation>
 <translation id="7769299611924763557">GIF ће ускоро бити спреман</translation>
 <translation id="7773536009433685931">Укључи WiFi</translation>
@@ -1968,7 +1964,6 @@
 <translation id="8200772114523450471">Настави</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> Фокус у трајању од <ph name="FOCUSED_TIME" /> је управо истекао. Отворите Брза подешавања да бисте поново фокусирали.</translation>
 <translation id="8203795194971602413">Десни клик</translation>
-<translation id="8209010265547628927">Ресетуј</translation>
 <translation id="8214996719228530800">Canary канал</translation>
 <translation id="8219451629189078428">Chromebook треба да остане укључен и повезан на извор напајања током тог периода. Уверите се да су каблови пуњача или адаптера исправно прикључени, и у Chromebook и у утичницу Не искључујте Chromebook.</translation>
 <translation id="8220076512072059941">Додајте <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -1979,7 +1974,6 @@
 <translation id="8239034820133090126">Активирај радну површину на десној страни</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, јачина сигнала <ph name="SIGNAL_STRENGTH" />, батерија телефона <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, апликација</translation>
-<translation id="8255234195843591763">Ресетујте ради ажурирања</translation>
 <translation id="8257510091797044096">Подесите уређај</translation>
 <translation id="8261506727792406068">Избриши</translation>
 <translation id="8262312463845990408">Укључите/искључите репродукцију</translation>

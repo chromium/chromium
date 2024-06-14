@@ -158,7 +158,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1282358575813748144">Boats and Watercraft</translation>
 <translation id="1283977499362032052">CVs and Portfolios</translation>
 <translation id="1285320974508926690">Never translate this site</translation>
-<translation id="1291249564161469503">Lock your keyboard</translation>
 <translation id="1292571435393770077">Tray 16</translation>
 <translation id="1292701964462482250">'Software on your computer is stopping Chrome from safely connecting to the web' (Windows computers only)</translation>
 <translation id="1293797321964802402">Envelope 9 x 11 in</translation>
@@ -380,7 +379,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="168693727862418163">This policy value failed to validate against its schema and will be ignored.</translation>
 <translation id="168841957122794586">The server certificate contains a weak cryptographic key.</translation>
 <translation id="1689333818294560261">Nickname</translation>
-<translation id="1691425742011409472">pointer lock</translation>
 <translation id="1692622044604477956">Film listings and cinema showtimes</translation>
 <translation id="1697430960030447570"><ph name="BEGIN_BOLD" />How you can manage your data:<ph name="END_BOLD" /> Chrome auto-deletes topics that are older than four weeks. As you keep browsing, a topic might reappear on the list. You can also block topics that you don’t want Chrome to share with sites and turn ad topics off at any time in Chrome settings.</translation>
 <translation id="1697532407822776718">You're all set!</translation>
@@ -568,13 +566,13 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2036983605131262583">Alternative roll</translation>
 <translation id="2040463897538655645">Removable storage</translation>
 <translation id="2040894699575719559">Location blocked</translation>
+<translation id="2041788246978549610">Use available microphones (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Tray 7</translation>
 <translation id="204357726431741734">Sign in to use passwords saved in your Google Account</translation>
 <translation id="2045871135676061132">Envelope Personal</translation>
 <translation id="2046951263634619614">Book Retailers</translation>
 <translation id="2048261947532620704">Translating page</translation>
 <translation id="2053111141626950936">Pages in <ph name="LANGUAGE" /> will not be translated.</translation>
-<translation id="2056492565825767809">Lock your mouse pointer</translation>
 <translation id="2056658168519009885">Sites can ask Chrome for information to help personalise the ads that you see.</translation>
 <translation id="2059166748188874810">Municipality</translation>
 <translation id="2059202684901022309">22 in x 34 in</translation>
@@ -736,7 +734,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2337852623177822836">Setting controlled by your administrator</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> wants to pair</translation>
 <translation id="2346319942568447007">Image that you copied</translation>
-<translation id="2349056830177284083">Keyboard lock</translation>
 <translation id="2349957959687031096">Open Incognito tab button, activate to open a new Incognito tab to browse privately</translation>
 <translation id="2350796302381711542">Allow <ph name="HANDLER_HOSTNAME" /> to open all <ph name="PROTOCOL" /> links instead of <ph name="REPLACED_HANDLER_TITLE" />?</translation>
 <translation id="2353297238722298836">Camera and microphone allowed</translation>
@@ -889,6 +886,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2655752832536625875">Toilet</translation>
 <translation id="2657637947725373811">{0,plural, =1{Transfer confidential file?}other{Transfer confidential files?}}</translation>
 <translation id="2658843814961855121">Labour and Employment Law</translation>
+<translation id="2658944305627908367">Transactions that exceed your balance will not be processed</translation>
 <translation id="2660779039299703961">Event</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{None}=1{1 password (for <ph name="DOMAIN_LIST" />)}=2{2 passwords (for <ph name="DOMAIN_LIST" />)}other{# passwords (for <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Top</translation>
@@ -955,7 +953,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2784474685437057136">B5 Extra</translation>
 <translation id="2784949926578158345">The connection was reset.</translation>
 <translation id="2786008859124691917">Bicycles and Accessories</translation>
-<translation id="2791955793407772554">Pointer lock</translation>
 <translation id="2792012897584536778">Administrators of this device have set up security certificates that may allow them to see the content of websites that you visit.</translation>
 <translation id="2794233252405721443">Site blocked</translation>
 <translation id="2794629552137076216">Glass (surfaced)</translation>
@@ -1086,6 +1083,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3090667236485488075">Glass</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Ignored because the disable list contains a pattern equal to '*', which is equivalent to disabling the policy.</translation>
+<translation id="3099619114405539473">Use available cameras (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Savings</translation>
 <translation id="3103188521861412364">Stocks and bonds</translation>
 <translation id="3105172416063519923">Asset ID:</translation>
@@ -1362,6 +1360,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3583757800736429874">&amp;Redo Move</translation>
 <translation id="3584299510153766161">Dual punch bottom</translation>
 <translation id="3584755835709800788">Science Fiction and Fantasy Films</translation>
+<translation id="3585455899094692781">Use and move available cameras (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Wet film</translation>
 <translation id="3586931643579894722">Hide details</translation>
 <translation id="3587738293690942763">Middle</translation>
@@ -1444,7 +1443,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3714780639079136834">Turning on mobile data or Wi-Fi</translation>
 <translation id="3715016660240337709">{0,plural, =1{File blocked from uploading}other{<ph name="FILE_COUNT" /> files blocked from uploading}}</translation>
 <translation id="3715597595485130451">Connect to Wi-Fi</translation>
-<translation id="3716622997181469465">keyboard lock</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />Checking the proxy, firewall and DNS configuration<ph name="END_LINK" /></translation>
 <translation id="3723663469265383848">During the update, you will not be able to use your device for up to 10 minutes.</translation>
 <translation id="372429172604983730">Applications that can cause this error include antivirus, firewall and web-filtering or proxy software.</translation>

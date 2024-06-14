@@ -411,7 +411,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2573588302192866788">Não foi possível ligar ao dispositivo <ph name="NAME" /></translation>
 <translation id="2575685495496069081">O início de sessão integrado foi desativado</translation>
 <translation id="2579264398927991698">Atualizações do firmware</translation>
-<translation id="2582112259361606227">Reiniciar para atualizar</translation>
 <translation id="2586657967955657006">Área de transferência</translation>
 <translation id="2595239820337756193">5 km em milhas</translation>
 <translation id="2596078834055697711">Criar uma captura de ecrã da janela</translation>
@@ -552,7 +551,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3125690294288312932">Tipo de trabalho da turma</translation>
 <translation id="3126026824346185272">Ctrl</translation>
-<translation id="3126069444801937830">Reiniciar para atualizar</translation>
 <translation id="3139188263101386725">Use o atalho atualizado</translation>
 <translation id="3139942575505304791">Secretária 1</translation>
 <translation id="315116470104423982">Dados móveis</translation>
@@ -576,6 +574,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3226991577105957773">E mais <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Microfone</translation>
 <translation id="3233611303007751344">A Poupança de bateria está desativada</translation>
+<translation id="3238409143297336341">Configure os controlos parentais para apps</translation>
 <translation id="324366796737464147">Supressão de ruído</translation>
 <translation id="3249513730522716925">A janela <ph name="WINDOW_TITLE" /> foi movida do espaço de trabalho <ph name="ACTIVE_DESK" /> para o espaço de trabalho <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Tipo de trabalho da turma: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -1406,6 +1405,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6141205840878048728">Em que é que gostaria de se focar?</translation>
 <translation id="6141988275892716286">Confirmar transferência</translation>
 <translation id="6143578372829139382">Partilhar no YouTube</translation>
+<translation id="6147182561428020853">Já pode bloquear apps instaladas neste dispositivo <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">O periférico não é suportado</translation>
 <translation id="6156960295318603523">Definições de idioma</translation>
 <translation id="615957422585914272">Mostrar teclado no ecrã</translation>
@@ -1496,7 +1496,6 @@ Nenhum dispositivo ligado.</translation>
 <translation id="6495322433318104734">A apresentar a proteção de ecrã. Prima uma tecla para sair</translation>
 <translation id="6495400115277918834">Funcionalidade ecrã no ecrã iniciada, Alt+Shift+V para focar</translation>
 <translation id="6497418457565568043">O estado Não incomodar está ativado</translation>
-<translation id="6500896621837555595">Atualizar</translation>
 <translation id="6501401484702599040">A transmitir o ecrã para <ph name="RECEIVER_NAME" /></translation>
 <translation id="6507042703812908515">Abra a app Atalhos de teclas com "<ph name="NEW_SHORTCUT" />".</translation>
 <translation id="6507618042428827377">Mudar para o método de introdução disponível seguinte</translation>
@@ -1828,7 +1827,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="7748275671948949022">Realçar o botão do Launcher na prateleira</translation>
 <translation id="7749443890790263709">Atingiu o número máximo de espaços de trabalho.</translation>
 <translation id="7749958366403230681">ExpressKey 4</translation>
-<translation id="776344839111254542">Clique para ver os detalhes da atualização</translation>
 <translation id="7768784765476638775">Selecionar para ativar voz</translation>
 <translation id="7769299611924763557">O seu GIF vai estar pronto em breve</translation>
 <translation id="7773536009433685931">Ativar Wi-Fi em alternativa</translation>
@@ -1964,7 +1962,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8200772114523450471">Continuar</translation>
 <translation id="820256110035940528"><ph name="TITLE" /> Acabou de se focar durante <ph name="FOCUSED_TIME" />. Abra as Definições rápidas para se focar novamente.</translation>
 <translation id="8203795194971602413">Clicar com o botão direito do rato</translation>
-<translation id="8209010265547628927">Repor</translation>
 <translation id="8214996719228530800">Canal Canary</translation>
 <translation id="8219451629189078428">O Chromebook tem de permanecer ativo e ligado à alimentação durante este período. Certifique-se de que os cabos do carregador ou transformador estão completamente ligados à tomada elétrica e à respetiva entrada do Chromebook. Não desligue o Chromebook.</translation>
 <translation id="8220076512072059941">Adicionar <ph name="FOCUS_DURATION_DELTA" /></translation>
@@ -1975,7 +1972,6 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8239034820133090126">Ativar espaço de trabalho à direita</translation>
 <translation id="8247060538831475781"><ph name="CONNECTION_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />, bateria do telemóvel: <ph name="BATTERY_STATUS" /></translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplicação</translation>
-<translation id="8255234195843591763">Repor para atualizar</translation>
 <translation id="8257510091797044096">Configurar o dispositivo</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="8262312463845990408">Ativar/desativar reprodução</translation>

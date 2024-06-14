@@ -850,6 +850,7 @@
 <translation id="5345660046352249607">{COUNT,plural, =1{לעקוב אחרי החבילה הזו?}one{לעקוב אחרי {COUNT} חבילות?}two{לעקוב אחרי {COUNT} חבילות?}other{לעקוב אחרי {COUNT} חבילות?}}</translation>
 <translation id="5348775987281903912">אפשר ללחוץ על לחצן השיתוף כדי לשתף כאן את הדף הזה.</translation>
 <translation id="536067926684072644">הצגת הסימניות</translation>
+<translation id="537853552771686272">ניהול הנושאים והאתרים שמעניינים אותך</translation>
 <translation id="5379352933722332597">{count,plural, =1{הסימנייה נשמרה בתיקייה ’{title}‘. היא שמורה רק במכשיר הזה.}one{‫{count} סימניות נשמרו בתיקייה ’{title}‘. הן שמורות רק במכשיר הזה.}two{‫{count} סימניות נשמרו בתיקייה ’{title}‘. הן שמורות רק במכשיר הזה.}other{‫{count} סימניות נשמרו בתיקייה ’{title}‘. הן שמורות רק במכשיר הזה.}}</translation>
 <translation id="5388358297987318779">פתיחת תמונה</translation>
 <translation id="5395707839134961196">הסתרת הפרטים של מנוע החיפוש</translation>
@@ -932,6 +933,7 @@
 <translation id="5758631781033351321">רשימת הקריאה זמינה כאן</translation>
 <translation id="5765456154762864099">תפריט ← הגדרות ← דפדפן ברירת המחדל</translation>
 <translation id="5777888488419460501">שמירה בחשבון</translation>
+<translation id="5778292857689789362">קבוצת כרטיסיות, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> כרטיסיות.</translation>
 <translation id="5782227691023083829">מתבצע תרגום...</translation>
 <translation id="5791632441210678828">לחצן למיון של הפיד 'במעקב'.</translation>
 <translation id="5793373065989412701">חברי הקבוצה המשפחתית בבדיקה…</translation>
