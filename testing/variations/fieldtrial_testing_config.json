@@ -8534,7 +8534,7 @@
             ]
         }
     ],
-    "EnablePixDetectionStudy": [
+    "EnablePixDetectionWithDomContentLoadedStudy": [
         {
             "platforms": [
                 "android"
@@ -8543,7 +8543,8 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "EnablePixDetection"
+                        "EnablePixDetection",
+                        "EnablePixDetectionOnDomContentLoaded"
                     ]
                 }
             ]
