@@ -1,0 +1,5 @@
+include_rules = [
+  "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
+  "+ios/chrome/browser/iph_for_new_chrome_user/model/utils.h",
+  "+ios/chrome/browser/segmentation_platform/model/segmentation_platform_service_factory.h",
+]

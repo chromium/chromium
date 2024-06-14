@@ -1,6 +1,6 @@
 include_rules = [
   "+ios/chrome/browser/ui/content_suggestions",
-  "+ios/chrome/browser/ui/bubble/bubble_presenter.h",
+  "+ios/chrome/browser/bubble/ui_bundled/bubble_presenter.h",
   "+ios/chrome/browser/ui/first_run/ios_first_run_field_trials.h",
   "+ios/chrome/browser/ui/authentication",
   "+ios/chrome/browser/ui/first_run/first_run_util.h",
