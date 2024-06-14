@@ -3,7 +3,11 @@
 # found in the LICENSE file.
 
 source_set("cpp") {
-  sources = [ "ml_buffer_usage.h" ]
+  sources = [
+    "graph_validation_utils.cc",
+    "graph_validation_utils.h",
+    "ml_buffer_usage.h",
+  ]
 
   deps = [ "//base" ]
 }

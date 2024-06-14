@@ -9,7 +9,7 @@
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/expected_macros.h"
-#include "components/ml/webnn/graph_validation_utils.h"
+#include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.h"

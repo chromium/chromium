@@ -16,7 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
-#include "components/ml/webnn/graph_validation_utils.h"
+#include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 #include "services/webnn/webnn_utils.h"

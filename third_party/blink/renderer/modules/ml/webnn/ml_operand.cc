@@ -8,7 +8,7 @@
 #include <numeric>
 
 #include "base/types/expected_macros.h"
-#include "components/ml/webnn/graph_validation_utils.h"
+#include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
 

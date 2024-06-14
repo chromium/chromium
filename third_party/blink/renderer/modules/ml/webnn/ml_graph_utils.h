@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/types/expected.h"
-#include "components/ml/webnn/graph_validation_utils.h"
+#include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_filter_operand_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_transpose_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_input_operand_layout.h"

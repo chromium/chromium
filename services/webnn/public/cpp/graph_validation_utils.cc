@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/ml/webnn/graph_validation_utils.h"
+#include "services/webnn/public/cpp/graph_validation_utils.h"
 
 #include <algorithm>
 #include <numeric>

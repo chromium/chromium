@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ML_WEBNN_GRAPH_VALIDATION_UTILS_H_
-#define COMPONENTS_ML_WEBNN_GRAPH_VALIDATION_UTILS_H_
+#ifndef SERVICES_WEBNN_PUBLIC_CPP_GRAPH_VALIDATION_UTILS_H_
+#define SERVICES_WEBNN_PUBLIC_CPP_GRAPH_VALIDATION_UTILS_H_
 
 #include <optional>
 #include <vector>
@@ -648,4 +648,4 @@ bool IsDepthwiseConv2d(uint32_t input_channels,
 
 }  // namespace webnn
 
-#endif  // COMPONENTS_ML_WEBNN_GRAPH_VALIDATION_UTILS_H_
+#endif  // SERVICES_WEBNN_PUBLIC_CPP_GRAPH_VALIDATION_UTILS_H_
