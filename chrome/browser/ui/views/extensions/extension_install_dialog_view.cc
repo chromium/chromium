@@ -208,12 +208,10 @@ struct ExtensionInfoSection {
 
 // Adds a section to |sections| for permissions of |perm_type| if there are any.
 void AddPermissions(ExtensionInstallPrompt::Prompt* prompt,
-                    std::vector<ExtensionInfoSection>& sections,
-                    int available_width) {
+                    std::vector<ExtensionInfoSection>& sections) {
   DCHECK_GT(prompt->GetPermissionCount(), 0u);
 
-  auto permissions_view =
-      std::make_unique<ExtensionPermissionsView>(available_width);
+  auto permissions_view = std::make_unique<ExtensionPermissionsView>();
 
   for (size_t i = 0; i < prompt->GetPermissionCount(); ++i) {
     permissions_view->AddItem(prompt->GetPermission(i),
@@ -631,9 +629,6 @@ void ExtensionInstallDialogView::CreateContents() {
           views::BoxLayout::Orientation::kVertical, gfx::Insets(),
           provider->GetDistanceMetric(
               views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
-  const int content_width =
-      GetPreferredSize().width() -
-      extension_info_and_justification_container->GetInsets().width();
   auto* extension_info_container =
       extension_info_and_justification_container->AddChildView(
           std::make_unique<views::View>());
@@ -643,7 +638,7 @@ void ExtensionInstallDialogView::CreateContents() {
 
   std::vector<ExtensionInfoSection> sections;
   if (prompt_->GetPermissionCount() > 0) {
-    AddPermissions(prompt_.get(), sections, content_width);
+    AddPermissions(prompt_.get(), sections);
   }
 
   if (sections.empty() &&
@@ -666,7 +661,6 @@ void ExtensionInstallDialogView::CreateContents() {
         section.header, views::style::CONTEXT_DIALOG_BODY_TEXT);
     header_label->SetMultiLine(true);
     header_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    header_label->SizeToFit(content_width);
     extension_info_container->AddChildView(header_label);
 
     if (section.contents_view)
