@@ -200,4 +200,48 @@ TEST_F(PasswordFaviconLoaderTest,
       /*task_tracker=*/nullptr, on_success.Get(), on_fail.Get());
 }
 
+TEST_F(PasswordFaviconLoaderTest, ImageIsLoadedFromCache) {
+  base::MockOnceCallback<void(const gfx::Image&)> on_success;
+  base::MockOnceClosure on_fail;
+
+  // Expect one call to the favicon service, after which the result will be
+  // provided from cache.
+  EXPECT_CALL(large_icon_service(), GetLargeIconFromCacheFallbackToGoogleServer)
+      .WillOnce([](const GURL&, favicon::LargeIconService::StandardIconSize,
+                   std::optional<favicon::LargeIconService::StandardIconSize>,
+                   favicon::LargeIconService::NoBigEnoughIconBehavior, bool,
+                   const net::NetworkTrafficAnnotationTag&,
+                   base::OnceCallback<void(
+                       const favicon_base::LargeIconResult&)> result_callback,
+                   base::CancelableTaskTracker*) {
+        gfx::Image favicon =
+            ui::ResourceBundle::GetSharedInstance().GetImageNamed(IDR_DISABLE);
+        scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes());
+        gfx::PNGCodec::EncodeBGRASkBitmap(
+            /*input=*/*favicon.ToSkBitmap(),
+            /*discard_transparency=*/false, /*output=*/&data->as_vector());
+        favicon_base::FaviconRawBitmapResult bitmap_result;
+        bitmap_result.bitmap_data = data;
+
+        ASSERT_TRUE(bitmap_result.is_valid());
+
+        std::move(result_callback)
+            .Run(favicon_base::LargeIconResult(bitmap_result));
+      });
+  EXPECT_CALL(
+      on_success,
+      Run(ImagesAreEqual(
+          ui::ResourceBundle::GetSharedInstance().GetImageNamed(IDR_DISABLE))))
+      .Times(2);
+  EXPECT_CALL(on_fail, Run).Times(0);
+
+  loader().Load(
+      Suggestion::FaviconDetails(/*domain_url=*/GURL("https://google.com"),
+                                 /*can_be_requested_from_google=*/true),
+      /*task_tracker=*/nullptr, on_success.Get(), on_fail.Get());
+  loader().Load(
+      Suggestion::FaviconDetails(/*domain_url=*/GURL("https://google.com"),
+                                 /*can_be_requested_from_google=*/true),
+      /*task_tracker=*/nullptr, on_success.Get(), on_fail.Get());
+}
 }  // namespace autofill

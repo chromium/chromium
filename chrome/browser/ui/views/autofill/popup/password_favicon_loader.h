@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_PASSWORD_FAVICON_LOADER_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_PASSWORD_FAVICON_LOADER_H_
 
+#include "base/containers/lru_cache.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
 
 namespace base {
@@ -20,6 +22,13 @@ class LargeIconService;
 namespace gfx {
 class Image;
 }
+
+namespace favicon_base {
+struct LargeIconResult;
+}
+
+class GURL;
+
 namespace autofill {
 
 // This class handles the process of loading favicons for websites associated
@@ -47,9 +56,22 @@ class PasswordFaviconLoaderImpl : public PasswordFaviconLoader {
             OnLoadFail on_fail) override;
 
  private:
+  void OnFaviconResponse(const GURL& domain_url,
+                         OnLoadSuccess on_success,
+                         OnLoadFail on_fail,
+                         const favicon_base::LargeIconResult& result);
+
   const raw_ref<favicon::LargeIconService> favicon_service_;
 
-  // TODO(crbug.com/325246516): Add cache for loaded images.
+  // The in-memory cache for icons downloaded through
+  // `favicon::LargeIconService`. It allows to synchronously respond to
+  // a favicon request and avoid image blinking on filter change (for those
+  // icons that were downloaded but not filtered out). This happens because
+  // the service API is asynchronous and we recreate the row view for every
+  // filter change.
+  base::LRUCache<GURL, gfx::Image> cache_;
+
+  base::WeakPtrFactory<PasswordFaviconLoaderImpl> weak_ptr_factory_{this};
 };
 }  // namespace autofill
 

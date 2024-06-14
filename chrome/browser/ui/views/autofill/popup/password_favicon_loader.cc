@@ -16,6 +16,8 @@
 namespace autofill {
 namespace {
 
+constexpr int kFaviconCacheSize = 50;
+
 constexpr net::NetworkTrafficAnnotationTag kFaviconTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("autofill_password_favicon_fetch", R"(
           semantics {
@@ -51,7 +53,7 @@ constexpr net::NetworkTrafficAnnotationTag kFaviconTrafficAnnotation =
 
 PasswordFaviconLoaderImpl::PasswordFaviconLoaderImpl(
     favicon::LargeIconService& favicon_service)
-    : favicon_service_(favicon_service) {}
+    : favicon_service_(favicon_service), cache_(kFaviconCacheSize) {}
 PasswordFaviconLoaderImpl::~PasswordFaviconLoaderImpl() = default;
 
 void PasswordFaviconLoaderImpl::Load(
@@ -59,6 +61,12 @@ void PasswordFaviconLoaderImpl::Load(
     base::CancelableTaskTracker* task_tracker,
     OnLoadSuccess on_success,
     OnLoadFail on_fail) {
+  auto cached_image_it = cache_.Get(favicon_details.domain_url);
+  if (cached_image_it != cache_.end()) {
+    std::move(on_success).Run(cached_image_it->second);
+    return;
+  }
+
   if (!favicon_details.can_be_requested_from_google) {
     // TODO(crbug.com/325246516): Instead of fail, get favicon from website.
     std::move(on_fail).Run();
@@ -73,18 +81,25 @@ void PasswordFaviconLoaderImpl::Load(
       favicon::LargeIconService::StandardIconSize::k16x16,
       favicon::LargeIconService::NoBigEnoughIconBehavior::kReturnEmpty,
       /*should_trim_page_url_path=*/false, kFaviconTrafficAnnotation,
-      base::BindOnce(
-          [](OnLoadSuccess on_success, OnLoadFail on_fail,
-             const favicon_base::LargeIconResult& result) {
-            if (result.bitmap.is_valid()) {
-              std::move(on_success)
-                  .Run(gfx::Image::CreateFrom1xPNGBytes(
-                      result.bitmap.bitmap_data));
-            } else {
-              std::move(on_fail).Run();
-            }
-          },
-          std::move(on_success), std::move(on_fail)),
+      base::BindOnce(&PasswordFaviconLoaderImpl::OnFaviconResponse,
+                     weak_ptr_factory_.GetWeakPtr(), favicon_details.domain_url,
+                     std::move(on_success), std::move(on_fail)),
       task_tracker);
 }
+
+void PasswordFaviconLoaderImpl::OnFaviconResponse(
+    const GURL& domain_url,
+    OnLoadSuccess on_success,
+    OnLoadFail on_fail,
+    const favicon_base::LargeIconResult& result) {
+  if (result.bitmap.is_valid()) {
+    gfx::Image image =
+        gfx::Image::CreateFrom1xPNGBytes(result.bitmap.bitmap_data);
+    std::move(on_success).Run(image);
+    cache_.Put(domain_url, std::move(image));
+  } else {
+    std::move(on_fail).Run();
+  }
+}
+
 }  // namespace autofill
