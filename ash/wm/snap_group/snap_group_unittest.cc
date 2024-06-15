@@ -4466,6 +4466,38 @@ TEST_F(SnapGroupOverviewTest, OverviewGroupItemRoundedCornersInHorizontal) {
   }
 }
 
+// Tests that if two windows are both snapped before entering overview but not
+// in a Snap Group, re-snapping the windows on both sides of the screen will not
+// result in crash and two windows will be grouped. See http://b/346617565 for
+// more details
+TEST_F(SnapGroupOverviewTest, ReSnapSnappedWindowInOverview) {
+  UpdateDisplay("800x600");
+
+  std::unique_ptr<aura::Window> w1 = CreateAppWindow();
+  std::unique_ptr<aura::Window> w2 = CreateAppWindow();
+  SnapTwoTestWindows(w1.get(), w2.get());
+
+  WMEvent minimize_event(WM_EVENT_MINIMIZE);
+  WindowState::Get(w2.get())->OnWMEvent(&minimize_event);
+
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+
+  OverviewItemBase* overview_item1 = GetOverviewItemForWindow(w1.get());
+  OverviewItemBase* overview_item2 = GetOverviewItemForWindow(w2.get());
+
+  auto* event_generator = GetEventGenerator();
+  DragItemToPoint(overview_item1, gfx::Point(0, 200), event_generator);
+  DragItemToPoint(overview_item2, gfx::Point(800, 200), event_generator);
+  EXPECT_FALSE(IsInOverviewSession());
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
+}
+
 // Tests the rounded corners will be applied to the exposed corners of the
 // overview group item in vertical wndow layout.
 TEST_F(SnapGroupOverviewTest, OverviewGroupItemRoundedCornersInVertical) {
