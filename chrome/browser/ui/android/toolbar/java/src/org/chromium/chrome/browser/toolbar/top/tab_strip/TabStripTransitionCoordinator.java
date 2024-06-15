@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.toolbar.top;
+package org.chromium.chrome.browser.toolbar.top.tab_strip;
 
 import android.content.ComponentCallbacks;
 import android.content.res.Configuration;
@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityMan
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils;
 import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
@@ -29,7 +30,6 @@ import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.util.TokenHolder;
 
 /** Class used to manage tab strip visibility and height updates. */
-// TODO (crbug.com/345849359): Move this to a new package to encapsulate strip transition code.
 public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHeaderObserver {
     static Integer sMinScreenWidthForTesting;
 
@@ -109,7 +109,7 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
      * @param tabObscuringHandler Delegate object handling obscuring views.
      * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} instance.
      */
-    TabStripTransitionCoordinator(
+    public TabStripTransitionCoordinator(
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
             ControlContainer controlContainer,
             View toolbarLayout,

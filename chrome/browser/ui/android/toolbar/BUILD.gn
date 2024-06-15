@@ -80,19 +80,16 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/toolbar/optional_button/ShrinkTransition.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/ActionModeController.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/CaptureReadinessResult.java",
-    "java/src/org/chromium/chrome/browser/toolbar/top/HeightTransitionHandler.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/NavigationPopup.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/OptionalBrowsingModeButtonController.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/PhoneCaptureStateToken.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/ResourceFactory.java",
-    "java/src/org/chromium/chrome/browser/toolbar/top/ScrimTransitionHandler.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/StartSurfaceTabSwitcherActionMenuCoordinator.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/StartSurfaceToolbarCoordinator.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/StartSurfaceToolbarMediator.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/StartSurfaceToolbarProperties.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/StartSurfaceToolbarView.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/StartSurfaceToolbarViewBinder.java",
-    "java/src/org/chromium/chrome/browser/toolbar/top/TabStripTransitionCoordinator.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/TabSwitcherActionMenuCoordinator.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/TabSwitcherModeTTCoordinator.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/TabSwitcherModeTopToolbar.java",
@@ -115,6 +112,9 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarSceneLayer.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/ViewShiftingActionBarDelegate.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/VisibleUrlText.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/tab_strip/HeightTransitionHandler.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/tab_strip/ScrimTransitionHandler.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/tab_strip/TabStripTransitionCoordinator.java",
   ]
 
   deps = [
@@ -329,7 +329,6 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/toolbar/optional_button/OptionalButtonViewTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/OptionalBrowsingModeButtonControllerTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/PhoneCaptureStateTokenTest.java",
-    "java/src/org/chromium/chrome/browser/toolbar/top/TabStripTransitionCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/TabletCaptureStateTokenTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/ToggleTabStackButtonCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/ToolbarControlContainerTest.java",
@@ -337,6 +336,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarInteractabilityManagerTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarOverlayMediatorTest.java",
     "java/src/org/chromium/chrome/browser/toolbar/top/VisibleUrlTextTest.java",
+    "java/src/org/chromium/chrome/browser/toolbar/top/tab_strip/TabStripTransitionCoordinatorUnitTest.java",
   ]
 
   deps = [

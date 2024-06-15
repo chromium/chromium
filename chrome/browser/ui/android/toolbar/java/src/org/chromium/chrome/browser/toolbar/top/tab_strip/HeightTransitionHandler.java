@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.toolbar.top;
+package org.chromium.chrome.browser.toolbar.top.tab_strip;
 
 import android.os.Handler;
 import android.view.View;
@@ -21,7 +21,8 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator.TabStripHeightObserver;
+import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
+import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripHeightObserver;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceReadyOnceCallback;
 
@@ -32,7 +33,6 @@ import org.chromium.ui.resources.dynamics.DynamicResourceReadyOnceCallback;
  * into / exit from desktop windowing mode that warrants the strip height to be updated to include /
  * exclude a reserved strip top padding.
  */
-// TODO (crbug.com/345849359): Move this to a new package to encapsulate strip transition code.
 class HeightTransitionHandler {
     private static final String TAG = "DTCStripTransition";
 
