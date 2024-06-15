@@ -6858,6 +6858,9 @@ crbug.com/40280906 virtual/fenced-frame-mparch/external/wpt/fenced-frame/can-loa
 # Support position-visibility: anchors-valid.
 crbug.com/332933527 external/wpt/css/css-anchor-position/position-visibility-anchors-valid.tentative.html [ Failure ]
 
+# Failing media test within virtual suite:
+crbug.com/344680421 virtual/media-foundation-for-clear-dcomp/media/media-overflow-menu-positioning.html [ Pass Failure ]
+
 # Test infra bug
 crbug.com/326459000 virtual/view-transition-on-navigation/external/wpt/css/css-view-transitions/navigation/pageswap-push-from-click.html [ Timeout ]
 crbug.com/326459000 virtual/pageswap/external/wpt/html/browsers/browsing-the-web/history-traversal/pageswap/pageswap-push-from-click.html [ Timeout ]
