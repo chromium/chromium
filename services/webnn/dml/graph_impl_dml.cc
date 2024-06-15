@@ -533,54 +533,49 @@ struct ActivationOperatorDesc {
   }
 };
 
-// DML_OPERATOR_ELEMENT_WISE_CLIP will be supported after the DirectML version
-// upper than DML_FEATURE_LEVEL_6_0. DML_OPERATOR_ACTIVATION_GELU will be
-// supported after the DirectML version upper than DML_FEATURE_LEVEL_5_1
-// https://learn.microsoft.com/en-us/windows/ai/directml/dml-feature-level-history
-template <typename Activation>
 base::expected<ActivationOperatorDesc, mojom::ErrorPtr>
-CreateActivationOperatorDesc(const Activation* activation) {
-  CHECK(activation);
-  switch (activation->which()) {
-    case Activation::Tag::kElu:
+CreateOperatorDescForActivation(const mojom::Activation& activation) {
+  switch (activation.which()) {
+    case mojom::Activation::Tag::kElu:
       return ActivationOperatorDesc{.desc = DML_ACTIVATION_ELU_OPERATOR_DESC{
-                                        .Alpha = activation->get_elu()->alpha}};
-    case Activation::Tag::kHardSigmoid:
+                                        .Alpha = activation.get_elu()->alpha}};
+    case mojom::Activation::Tag::kHardSigmoid:
       return ActivationOperatorDesc{
           .desc = DML_ACTIVATION_HARD_SIGMOID_OPERATOR_DESC{
-              .Alpha = activation->get_hard_sigmoid()->alpha,
-              .Beta = activation->get_hard_sigmoid()->beta}};
-    case Activation::Tag::kLeakyRelu:
+              .Alpha = activation.get_hard_sigmoid()->alpha,
+              .Beta = activation.get_hard_sigmoid()->beta}};
+    case mojom::Activation::Tag::kLeakyRelu:
       return ActivationOperatorDesc{
           .desc = DML_ACTIVATION_LEAKY_RELU_OPERATOR_DESC{
-              .Alpha = activation->get_leaky_relu()->alpha}};
-    case Activation::Tag::kLinear:
-      return ActivationOperatorDesc{
-          .desc = DML_ACTIVATION_LINEAR_OPERATOR_DESC{
-              .Alpha = activation->get_linear()->alpha,
-              .Beta = activation->get_linear()->beta}};
-    case Activation::Tag::kRelu:
+              .Alpha = activation.get_leaky_relu()->alpha}};
+    case mojom::Activation::Tag::kLinear:
+      return ActivationOperatorDesc{.desc = DML_ACTIVATION_LINEAR_OPERATOR_DESC{
+                                        .Alpha = activation.get_linear()->alpha,
+                                        .Beta = activation.get_linear()->beta}};
+    case mojom::Activation::Tag::kRelu:
       return ActivationOperatorDesc{.desc =
                                         DML_ACTIVATION_RELU_OPERATOR_DESC{}};
-    case Activation::Tag::kSigmoid:
+    case mojom::Activation::Tag::kSigmoid:
       return ActivationOperatorDesc{.desc =
                                         DML_ACTIVATION_SIGMOID_OPERATOR_DESC{}};
-    case Activation::Tag::kSoftplus:
+    case mojom::Activation::Tag::kSoftplus:
       return ActivationOperatorDesc{
           .desc = DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC{.Steepness = 1.0}};
-    case Activation::Tag::kSoftsign:
+    case mojom::Activation::Tag::kSoftsign:
       return ActivationOperatorDesc{
           .desc = DML_ACTIVATION_SOFTSIGN_OPERATOR_DESC{}};
-    case Activation::Tag::kTanh:
+    case mojom::Activation::Tag::kTanh:
       return ActivationOperatorDesc{.desc =
                                         DML_ACTIVATION_TANH_OPERATOR_DESC{}};
-    // TODO(crbug.com/345640552): Fuse gelu and other operators when possible.
-    case Activation::Tag::kGelu:
+    case mojom::Activation::Tag::kGelu:
+      // DML_OPERATOR_ACTIVATION_GELU will be
+      // supported after the DirectML version upper than DML_FEATURE_LEVEL_5_1
+      // https://learn.microsoft.com/en-us/windows/ai/directml/dml-feature-level-history
+      //
+      // TODO(crbug.com/347026222): Create gelu activation for RNN operators.
       return base::unexpected(
           CreateError(mojom::Error::Code::kNotSupportedError,
                       "The activation (gelu) is not supported."));
-    default:
-      NOTREACHED_NORETURN() << "The operation is not an activation.";
   }
 }
 
@@ -660,31 +655,71 @@ bool CanFuseStandaloneActivation(const Operation* operation,
 // DML_OPERATOR_ELEMENT_WISE_CLIP will be supported after the DirectML version
 // upper than DML_FEATURE_LEVEL_6_0 according to
 // https://learn.microsoft.com/en-us/windows/ai/directml/dml-feature-level-history#dml_feature_level_6_0.
+//
+// TODO(crbug.com/345640552): Fuse clip and other operators when possible.
 std::optional<uint64_t> GetFusibleActivationOutputId(
-    const Operation* operation) {
-  switch (operation->which()) {
-    case Operation::Tag::kElu:
-      return operation->get_elu()->output_operand_id;
-    case Operation::Tag::kHardSigmoid:
-      return operation->get_hard_sigmoid()->output_operand_id;
-    case Operation::Tag::kLeakyRelu:
-      return operation->get_leaky_relu()->output_operand_id;
-    case Operation::Tag::kLinear:
-      return operation->get_linear()->output_operand_id;
-    case Operation::Tag::kRelu:
-      return operation->get_relu()->output_operand_id;
-    case Operation::Tag::kSigmoid:
-      return operation->get_sigmoid()->output_operand_id;
-    case Operation::Tag::kSoftmax:
-      return operation->get_softmax()->output_operand_id;
-    case Operation::Tag::kSoftplus:
-      return operation->get_softplus()->output_operand_id;
-    case Operation::Tag::kSoftsign:
-      return operation->get_softsign()->output_operand_id;
-    case Operation::Tag::kTanh:
-      return operation->get_tanh()->output_operand_id;
+    const mojom::Operation& operation) {
+  switch (operation.which()) {
+    case mojom::Operation::Tag::kElu:
+      return operation.get_elu()->output_operand_id;
+    case mojom::Operation::Tag::kHardSigmoid:
+      return operation.get_hard_sigmoid()->output_operand_id;
+    case mojom::Operation::Tag::kLeakyRelu:
+      return operation.get_leaky_relu()->output_operand_id;
+    case mojom::Operation::Tag::kLinear:
+      return operation.get_linear()->output_operand_id;
+    case mojom::Operation::Tag::kRelu:
+      return operation.get_relu()->output_operand_id;
+    case mojom::Operation::Tag::kSigmoid:
+      return operation.get_sigmoid()->output_operand_id;
+    case mojom::Operation::Tag::kSoftplus:
+      return operation.get_softplus()->output_operand_id;
+    case mojom::Operation::Tag::kSoftsign:
+      return operation.get_softsign()->output_operand_id;
+    case mojom::Operation::Tag::kTanh:
+      return operation.get_tanh()->output_operand_id;
     default:
       return std::optional<uint64_t>();
+  }
+}
+
+base::expected<ActivationOperatorDesc, mojom::ErrorPtr>
+CreateOperatorDescForFusibleActivation(const mojom::Operation& activation) {
+  CHECK(GetFusibleActivationOutputId(activation));
+  switch (activation.which()) {
+    case mojom::Operation::Tag::kElu:
+      return ActivationOperatorDesc{.desc = DML_ACTIVATION_ELU_OPERATOR_DESC{
+                                        .Alpha = activation.get_elu()->alpha}};
+    case mojom::Operation::Tag::kHardSigmoid:
+      return ActivationOperatorDesc{
+          .desc = DML_ACTIVATION_HARD_SIGMOID_OPERATOR_DESC{
+              .Alpha = activation.get_hard_sigmoid()->alpha,
+              .Beta = activation.get_hard_sigmoid()->beta}};
+    case mojom::Operation::Tag::kLeakyRelu:
+      return ActivationOperatorDesc{
+          .desc = DML_ACTIVATION_LEAKY_RELU_OPERATOR_DESC{
+              .Alpha = activation.get_leaky_relu()->alpha}};
+    case mojom::Operation::Tag::kLinear:
+      return ActivationOperatorDesc{.desc = DML_ACTIVATION_LINEAR_OPERATOR_DESC{
+                                        .Alpha = activation.get_linear()->alpha,
+                                        .Beta = activation.get_linear()->beta}};
+    case mojom::Operation::Tag::kRelu:
+      return ActivationOperatorDesc{.desc =
+                                        DML_ACTIVATION_RELU_OPERATOR_DESC{}};
+    case mojom::Operation::Tag::kSigmoid:
+      return ActivationOperatorDesc{.desc =
+                                        DML_ACTIVATION_SIGMOID_OPERATOR_DESC{}};
+    case mojom::Operation::Tag::kSoftplus:
+      return ActivationOperatorDesc{
+          .desc = DML_ACTIVATION_SOFTPLUS_OPERATOR_DESC{.Steepness = 1.0}};
+    case mojom::Operation::Tag::kSoftsign:
+      return ActivationOperatorDesc{
+          .desc = DML_ACTIVATION_SOFTSIGN_OPERATOR_DESC{}};
+    case mojom::Operation::Tag::kTanh:
+      return ActivationOperatorDesc{.desc =
+                                        DML_ACTIVATION_TANH_OPERATOR_DESC{}};
+    default:
+      NOTREACHED_NORETURN() << "The operation is not a fusible activation.";
   }
 }
 
@@ -1180,7 +1215,7 @@ GraphFusionInfo GetGraphFusionInfo(const mojom::GraphInfoPtr& graph_info) {
 
     // Try to find standalone activations that can be fused into preceding
     // operations.
-    if (GetFusibleActivationOutputId(operation.get())) {
+    if (GetFusibleActivationOutputId(*operation)) {
       // We found a standalone activation operation that may need to be fused
       // with a predecessor. So record its input edge to later check
       // against any fusible base operation's corresponding output edge.
@@ -1392,10 +1427,11 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBatchNormalization(
   std::optional<ActivationOperatorDesc> activation_operator_desc;
   std::optional<DML_OPERATOR_DESC> activation_dml_desc;
   if (fusible_activation) {
-    ASSIGN_OR_RETURN(activation_operator_desc,
-                     CreateActivationOperatorDesc(fusible_activation.value()));
+    ASSIGN_OR_RETURN(
+        activation_operator_desc,
+        CreateOperatorDescForFusibleActivation(*fusible_activation.value()));
     output_id =
-        GetFusibleActivationOutputId(fusible_activation.value()).value();
+        GetFusibleActivationOutputId(*fusible_activation.value()).value();
     activation_dml_desc = activation_operator_desc->GetActivationDmlDesc();
   }
 
@@ -1592,10 +1628,11 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForConv2d(
   std::optional<ActivationOperatorDesc> activation_operator_desc;
   std::optional<DML_OPERATOR_DESC> activation_dml_desc;
   if (fusible_activation) {
-    ASSIGN_OR_RETURN(activation_operator_desc,
-                     CreateActivationOperatorDesc(fusible_activation.value()));
+    ASSIGN_OR_RETURN(
+        activation_operator_desc,
+        CreateOperatorDescForFusibleActivation(*fusible_activation.value()));
     output_id =
-        GetFusibleActivationOutputId(fusible_activation.value()).value();
+        GetFusibleActivationOutputId(*fusible_activation.value()).value();
     activation_dml_desc = activation_operator_desc->GetActivationDmlDesc();
   }
 
@@ -1697,9 +1734,9 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
           GetFusibleActivationFromOperation(
               operation_to_fusible_standalone_activation_map, operation);
       if (fusible_activation) {
-        ASSIGN_OR_RETURN(
-            ActivationOperatorDesc activation_operator_desc,
-            CreateActivationOperatorDesc(fusible_activation.value()));
+        ASSIGN_OR_RETURN(ActivationOperatorDesc activation_operator_desc,
+                         CreateOperatorDescForFusibleActivation(
+                             *fusible_activation.value()));
         DML_OPERATOR_DESC activation_dml_desc =
             activation_operator_desc.GetActivationDmlDesc();
 
@@ -1712,7 +1749,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
         binary_node = graph_builder.CreateOperatorNode(
             DML_OPERATOR_ELEMENT_WISE_ADD1, &add1_operator_desc, inputs);
         output_id =
-            GetFusibleActivationOutputId(fusible_activation.value()).value();
+            GetFusibleActivationOutputId(*fusible_activation.value()).value();
       }
       // If no standalone activation need to be fused, prefer
       // `DML_OPERATOR_ELEMENT_WISE_ADD` which supports more data types than
@@ -2808,12 +2845,13 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGemm(
   std::optional<ActivationOperatorDesc> activation_operator_desc;
   std::optional<DML_OPERATOR_DESC> activation_dml_desc;
   if (fusible_activation) {
-    ASSIGN_OR_RETURN(activation_operator_desc,
-                     CreateActivationOperatorDesc(fusible_activation.value()));
+    ASSIGN_OR_RETURN(
+        activation_operator_desc,
+        CreateOperatorDescForFusibleActivation(*fusible_activation.value()));
     activation_dml_desc = activation_operator_desc->GetActivationDmlDesc();
 
     output_id =
-        GetFusibleActivationOutputId(fusible_activation.value()).value();
+        GetFusibleActivationOutputId(*fusible_activation.value()).value();
   }
 
   DML_GEMM_OPERATOR_DESC gemm_operator_desc{
@@ -3109,7 +3147,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForGru(
   activation_operator_descs.reserve(activations.size());
   for (const auto& activation : activations) {
     ASSIGN_OR_RETURN(ActivationOperatorDesc activation_operator_desc,
-                     CreateActivationOperatorDesc(activation.get()));
+                     CreateOperatorDescForActivation(*activation));
     activation_operator_descs.push_back(std::move(activation_operator_desc));
   }
   // For bidirectional, activations must be provided f() and g() for forward
@@ -3395,12 +3433,13 @@ CreateOperatorNodeForMeanVarianceNormalization(
   std::optional<ActivationOperatorDesc> activation_operator_desc;
   std::optional<DML_OPERATOR_DESC> activation_dml_desc;
   if (fusible_activation) {
-    ASSIGN_OR_RETURN(activation_operator_desc,
-                     CreateActivationOperatorDesc(fusible_activation.value()));
+    ASSIGN_OR_RETURN(
+        activation_operator_desc,
+        CreateOperatorDescForFusibleActivation(*fusible_activation.value()));
     activation_dml_desc = activation_operator_desc->GetActivationDmlDesc();
 
     output_id =
-        GetFusibleActivationOutputId(fusible_activation.value()).value();
+        GetFusibleActivationOutputId(*fusible_activation.value()).value();
   }
 
   DML_MEAN_VARIANCE_NORMALIZATION1_OPERATOR_DESC
@@ -3807,7 +3846,7 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForLstm(
   activation_operator_descs.reserve(activations.size());
   for (const auto& activation : activations) {
     ASSIGN_OR_RETURN(ActivationOperatorDesc activation_operator_desc,
-                     CreateActivationOperatorDesc(activation.get()));
+                     CreateOperatorDescForActivation(*activation));
     activation_operator_descs.push_back(std::move(activation_operator_desc));
   }
   // When the recurrent network is bidirectional, dual activations must be
@@ -3965,12 +4004,13 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForMatmul(
   std::optional<ActivationOperatorDesc> activation_operator_desc;
   std::optional<DML_OPERATOR_DESC> activation_dml_desc;
   if (fusible_activation) {
-    ASSIGN_OR_RETURN(activation_operator_desc,
-                     CreateActivationOperatorDesc(fusible_activation.value()));
+    ASSIGN_OR_RETURN(
+        activation_operator_desc,
+        CreateOperatorDescForFusibleActivation(*fusible_activation.value()));
     activation_dml_desc = activation_operator_desc->GetActivationDmlDesc();
 
     output_id =
-        GetFusibleActivationOutputId(fusible_activation.value()).value();
+        GetFusibleActivationOutputId(*fusible_activation.value()).value();
   }
 
   DML_GEMM_OPERATOR_DESC matmul_operator_desc{
