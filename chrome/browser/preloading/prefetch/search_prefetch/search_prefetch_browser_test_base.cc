@@ -79,7 +79,9 @@ void SearchPrefetchBaseBrowserTest::SetUpOnMainThread() {
   ASSERT_TRUE(model->loaded());
 
   SetDSEWithURL(
-      GetSearchServerQueryURL("{searchTerms}&{google:prefetchSource}"), false);
+      GetSearchServerQueryURL(
+          "{searchTerms}&{google:assistedQueryStats}{google:prefetchSource}"),
+      false);
 
   mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
 }
@@ -170,6 +172,14 @@ void SearchPrefetchBaseBrowserTest::WaitUntilStatusChangesTo(
     base::RunLoop run_loop;
     run_loop.RunUntilIdle();
   }
+}
+
+GURL SearchPrefetchBaseBrowserTest::GetRealPrefetchUrlForTesting(
+    const GURL& canonical_search_url) {
+  auto* search_prefetch_service =
+      SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
+  return search_prefetch_service->GetRealPrefetchUrlForTesting(
+      canonical_search_url);
 }
 
 content::WebContents* SearchPrefetchBaseBrowserTest::GetWebContents() const {

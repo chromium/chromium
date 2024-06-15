@@ -100,6 +100,11 @@ BASE_DECLARE_FEATURE(kSearchEngineChoice);
 COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
 BASE_DECLARE_FEATURE(kSearchEnginePromoDialogRewrite);
 #endif
+
+// Kill switch to revert the fix of using assistedQueryStats for prefetch source
+// component. See crbug.com/345275145.
+COMPONENT_EXPORT(SEARCH_ENGINES_SWITCHES)
+BASE_DECLARE_FEATURE(kPrefetchParameterFix);
 }  // namespace switches
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_ENGINES_SWITCHES_H_
