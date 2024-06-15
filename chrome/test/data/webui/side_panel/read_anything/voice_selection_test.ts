@@ -54,15 +54,13 @@ suite('Automatic voice selection', () => {
     app.synth.getVoices = () => voices;
 
     // Initializes some class variables needed for voice selection logic
-    // @ts-ignore
-    app.restoreEnabledLanguagesFromPref_();
+    app.restoreEnabledLanguagesFromPref();
   });
 
   suite('with no user selected voices', () => {
     setup(() => {
       chrome.readingMode.getStoredVoice = () => '';
-      // @ts-ignore
-      app.selectPreferredVoice_();
+      app.selectPreferredVoice();
     });
 
     test('it chooses the first voice with the same language', () => {
@@ -78,8 +76,7 @@ suite('Automatic voice selection', () => {
             {lang: defaultLang, name: 'Andy (Natural)'} as SpeechSynthesisVoice,
         );
       };
-      // @ts-ignore
-      app.onVoicesChanged_();
+      app.onVoicesChanged();
 
       assertEquals(app.getSpeechSynthesisVoice()?.name, 'Wall-e (Natural)');
     });
@@ -88,8 +85,7 @@ suite('Automatic voice selection', () => {
   suite('with a user selected voices', () => {
     setup(() => {
       chrome.readingMode.getStoredVoice = () => secondVoiceWithLang.name;
-      // @ts-ignore
-      app.selectPreferredVoice_();
+      app.selectPreferredVoice();
     });
     test('it chooses the user stored voice', () => {
       assertEquals(app.getSpeechSynthesisVoice(), secondVoiceWithLang);
@@ -107,8 +103,7 @@ suite('Automatic voice selection', () => {
                     SpeechSynthesisVoice,
             );
           };
-          // @ts-ignore
-          app.onVoicesChanged_();
+          app.onVoicesChanged();
 
           assertEquals(app.getSpeechSynthesisVoice(), secondVoiceWithLang);
         });

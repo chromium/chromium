@@ -54,18 +54,18 @@ const spBodyPadding = window.getComputedStyle(document.body)
 const VoiceSelectionMenuElementBase = WebUiListenerMixin(PolymerElement);
 
 export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
+  voicePackInstallStatus: {[language: string]: VoiceClientSideStatusCode};
+  selectedVoice: SpeechSynthesisVoice;
+  localeToDisplayName: {[lang: string]: string};
+  previewVoicePlaying: SpeechSynthesisVoice|null;
+  enabledLangs: string[];
+  availableVoices: SpeechSynthesisVoice[];
+
   // If Read Aloud is in the paused state. This is set from the parent element
   // via one way data binding.
   private readonly paused: boolean;
-  private readonly voicePackInstallStatus:
-      {[language: string]: VoiceClientSideStatusCode};
   private voicePlayingWhenMenuOpened_: boolean = false;
   private enabledVoices_: SpeechSynthesisVoice[];
-  private selectedVoice: SpeechSynthesisVoice;
-  private localeToDisplayName: {[lang: string]: string};
-  private previewVoicePlaying: SpeechSynthesisVoice|null;
-  private availableVoices: SpeechSynthesisVoice[];
-  private enabledLangs: string[];
 
   static get is() {
     return 'voice-selection-menu';

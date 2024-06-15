@@ -83,30 +83,21 @@ suite('RateSelection', () => {
       });
     });
 
-    suite('on option click', () => {
-      let menuOption: HTMLButtonElement;
-      let rateValue: number;
+    test('on option click', () => {
+      assertTrue(toolbar.rateOptions.length >= 1);
+      const rateValue = toolbar.rateOptions[0];
+      const menuOption = options[0]!;
+      menuOption.click();
 
-      setup(() => {
-        // Bypass Typescript compiler to allow us to get a private property
-        // @ts-ignore
-        rateValue = toolbar.rateOptions_[0];
-        menuOption = options[0]!;
-        menuOption.click();
-      });
+      // updates rate
+      assertEquals(chrome.readingMode.speechRate, rateValue);
+      assertTrue(rateEmitted);
 
-      test('updates rate', () => {
-        assertEquals(chrome.readingMode.speechRate, rateValue);
-        assertTrue(rateEmitted);
-      });
+      // updates icon on toolbar'
+      assertEquals(rateButton.ironIcon, 'voice-rate:' + rateValue);
 
-      test('updates icon on toolbar', () => {
-        assertEquals(rateButton.ironIcon, 'voice-rate:' + rateValue);
-      });
-
-      test('closes menu', () => {
-        assertFalse(toolbar.$.rateMenu.get().open);
-      });
+      // closes menu
+      assertFalse(toolbar.$.rateMenu.get().open);
     });
   });
 });

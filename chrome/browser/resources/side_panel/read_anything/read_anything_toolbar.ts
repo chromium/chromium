@@ -145,7 +145,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       letterSpacingOptions_: Array,
       lineSpacingOptions_: Array,
       colorOptions_: Array,
-      rateOptions_: Array,
+      rateOptions: Array,
       textStyleOptions_: Array,
       textStyleToggles_: Array,
       paused: Boolean,
@@ -347,7 +347,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   ];
 
 
-  private rateOptions_: number[] = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 4];
+  rateOptions: number[] = [0.5, 0.8, 1, 1.2, 1.5, 2, 3, 4];
 
   private moreOptionsButtons_: MenuButton[] = [];
 
@@ -562,7 +562,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       const speechRate = getCurrentSpeechRate();
       this.setRateIcon_(speechRate);
       this.setCheckMarkForMenu_(
-          this.$.rateMenu.getIfExists(), this.rateOptions_.indexOf(speechRate));
+          this.$.rateMenu.getIfExists(), this.rateOptions.indexOf(speechRate));
 
       this.setHighlightState_(chrome.readingMode.isHighlightOn());
     }
@@ -619,7 +619,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private isRateItemSelected_(item: number): boolean {
-    return item !== this.rateOptions_.indexOf(getCurrentSpeechRate());
+    return item !== this.rateOptions.indexOf(getCurrentSpeechRate());
   }
 
   private getCurrentLineSpacing(): number {

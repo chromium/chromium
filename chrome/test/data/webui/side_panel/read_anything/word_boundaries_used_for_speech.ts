@@ -71,10 +71,8 @@ suite('WordBoundariesUsedForSpeech', () => {
 
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
-    // @ts-ignore
     app.firstUtteranceSpoken = true;
     app.enabledLangs = ['en-US'];
-    // @ts-ignore
     app.selectedVoice = {lang: 'en', name: 'Kristi'} as SpeechSynthesisVoice;
     app.getSpeechSynthesisVoice();
     flush();

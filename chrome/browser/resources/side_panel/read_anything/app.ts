@@ -477,7 +477,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       this.clearReadAloudState();
 
       this.synth.onvoiceschanged = () => {
-        this.onVoicesChanged_();
+        this.onVoicesChanged();
       };
     }
 
@@ -1142,7 +1142,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     toast.show();
   }
 
-  private onVoicesChanged_() {
+  onVoicesChanged() {
     // Get a new list of voices. This should be done before we call
     // refreshVoicePackStatuses();
     this.getVoices(/*refresh =*/ true);
@@ -2330,8 +2330,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (this.isReadAloudEnabled_) {
       // We need to restore enabled languages prior to selecting the preferred
       // voice to ensure we have the right voices available.
-      this.restoreEnabledLanguagesFromPref_();
-      this.selectPreferredVoice_();
+      this.restoreEnabledLanguagesFromPref();
+      this.selectPreferredVoice();
     }
     this.updateLineSpacing_(chrome.readingMode.lineSpacing);
     this.updateLetterSpacing_(chrome.readingMode.letterSpacing);
@@ -2365,7 +2365,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     this.$.toolbar.restoreSettingsFromPrefs(colorSuffix);
   }
 
-  private restoreEnabledLanguagesFromPref_() {
+  restoreEnabledLanguagesFromPref() {
     // We need to make sure the languages we choose correspond to voices, so
     // refresh the list of voices and available langs
     this.getVoices();
@@ -2414,7 +2414,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     return false;
   }
 
-  private selectPreferredVoice_() {
+  selectPreferredVoice() {
     // TODO: b/40275871 - decide whether this is the behavior we want. This
     // shouldn't happen often, so just skip selecting a new voice for now.
     // Another option would be to update the voice and the call
@@ -2655,7 +2655,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         convertLangToAnAvailableLangIfPresent(lang, this.availableLangs);
     if (!availableLang ||
         !availableLang.startsWith(this.speechSynthesisLanguage.split('-')[0])) {
-      this.selectPreferredVoice_();
+      this.selectPreferredVoice();
       return;
     }
 
@@ -2679,7 +2679,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         this.enabledLangs = [...this.enabledLangs, langToEnable];
       }
     });
-    this.selectPreferredVoice_();
+    this.selectPreferredVoice();
   }
 
   // Kicks off a workflow to install a voice pack.

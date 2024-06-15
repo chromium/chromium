@@ -18,7 +18,7 @@ function stringToHtmlTestId(s: string): string {
 }
 
 suite('VoiceSelectionMenu', () => {
-  let voiceSelectionMenu: VoiceSelectionMenuElement|null;
+  let voiceSelectionMenu: VoiceSelectionMenuElement;
   let availableVoices: SpeechSynthesisVoice[];
   let myClickEvent: MouseEvent;
 
@@ -27,24 +27,19 @@ suite('VoiceSelectionMenu', () => {
 
   // If no param for enabledLangs is provided, it auto populates it with the
   // langs of the voices
-  const setAvailableVoices = (enabledLangs: string[]|undefined = undefined) => {
-    // Bypass Typescript compiler to allow us to set a private readonly
-    // property
-    // @ts-ignore
+  const setAvailableVoices = (enabledLangs?: string[]) => {
     voiceSelectionMenu.availableVoices = availableVoices;
     if (enabledLangs === undefined) {
-      // @ts-ignore
       voiceSelectionMenu.enabledLangs =
           [...new Set(availableVoices.map(({lang}) => lang))];
     } else {
-      // @ts-ignore
       voiceSelectionMenu.enabledLangs = enabledLangs;
     }
     flush();
   };
 
   const getDropdownItemForVoice = (voice: SpeechSynthesisVoice) => {
-    return voiceSelectionMenu!.$.voiceSelectionMenu.get()
+    return voiceSelectionMenu.$.voiceSelectionMenu.get()
         .querySelector<HTMLButtonElement>(`[data-test-id="${
             stringToHtmlTestId(voice.name)}"].dropdown-voice-selection-button`)!
         ;
@@ -62,7 +57,6 @@ suite('VoiceSelectionMenu', () => {
     document.body.appendChild(dots);
     myClickEvent = {target: dots} as unknown as MouseEvent;
 
-    // @ts-ignore
     voiceSelectionMenu.voicePackInstallStatus = {};
 
     flush();
@@ -162,9 +156,6 @@ suite('VoiceSelectionMenu', () => {
     });
 
     test('it shows a checkmark for the selected voice', () => {
-      // Bypass Typescript compiler to allow us to set a private readonly
-      // property
-      // @ts-ignore
       voiceSelectionMenu.selectedVoice = selectedVoice;
       flush();
 
@@ -244,9 +235,6 @@ suite('VoiceSelectionMenu', () => {
       let groupTitles: NodeListOf<HTMLElement>;
 
       setup(() => {
-        // Bypass Typescript compiler to allow us to set a private readonly
-        // property
-        // @ts-ignore
         voiceSelectionMenu.localeToDisplayName = {
           'en-US': 'English (United States)',
         };
@@ -319,11 +307,8 @@ suite('VoiceSelectionMenu', () => {
     suite('when preview starts playing', () => {
       setup(() => {
         // Display dropdown menu
-        voiceSelectionMenu!.onVoiceSelectionMenuClick(myClickEvent);
+        voiceSelectionMenu.onVoiceSelectionMenuClick(myClickEvent);
 
-        // Bypass Typescript compiler to allow us to set a private readonly
-        // property
-        // @ts-ignore
         voiceSelectionMenu.previewVoicePlaying = previewVoice;
         flush();
       });
@@ -355,9 +340,6 @@ suite('VoiceSelectionMenu', () => {
 
       suite('when preview finishes playing', () => {
         setup(() => {
-          // Bypass Typescript compiler to allow us to set a private readonly
-          // property
-          // @ts-ignore
           voiceSelectionMenu.previewVoicePlaying = null;
           flush();
         });
@@ -393,9 +375,7 @@ suite('VoiceSelectionMenu', () => {
 
   suite('with installing voices', () => {
     function setVoiceStatus(lang: string, status: VoiceClientSideStatusCode) {
-      // @ts-ignore
       voiceSelectionMenu.voicePackInstallStatus = {
-        // @ts-ignore
         ...voiceSelectionMenu.voicePackInstallStatus,
         [lang]: status,
       };

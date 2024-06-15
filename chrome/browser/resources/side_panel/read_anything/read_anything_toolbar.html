@@ -284,7 +284,7 @@
     <template>
       <cr-action-menu accessibility-label="$i18n{voiceSpeedLabel}"
                       role-description="$i18n{menu}">
-        <template is="dom-repeat" items="[[rateOptions_]]" index-as="index"
+        <template is="dom-repeat" items="[[rateOptions]]" index-as="index"
                   initial-count="8">
           <button class="dropdown-item" on-click="onRateClick_">
             <cr-icon class$="button-image check-mark

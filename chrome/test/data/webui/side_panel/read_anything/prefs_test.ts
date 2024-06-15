@@ -125,7 +125,6 @@ suite('PrefsTest', () => {
       });
 
       test('to a default voice if the stored voice is invalid', () => {
-        // @ts-ignore
         chrome.readingMode.getStoredVoice = () => 'Matt';
         app.enabledLangs = [langForDefaultVoice];
         app.restoreSettingsFromPrefs();
