@@ -14,6 +14,7 @@ import android.app.Activity;
 
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Lifecycle.State;
+import androidx.preference.Preference;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.filters.SmallTest;
 
@@ -27,26 +28,34 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.TestActivity;
 
+import java.util.concurrent.TimeUnit;
+
 /** Unit tests for {@link TabsSettings}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
+@DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
 public class TabsSettingsUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
 
     private ActivityScenario<TestActivity> mActivityScenario;
     private TestActivity mActivity;
-    private TabsSettings mTabsSettings;
 
     @Mock private Profile mProfileMock;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
@@ -131,5 +140,42 @@ public class TabsSettingsUnitTest {
         assertTrue(autoOpenSyncedTabGroupsSwitch.isChecked());
         verify(mPrefServiceMock).setBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS, true);
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
+    public void testTabGroupSyncSettingsHiddenWhenFeatureOff() {
+        TabsSettings tabsSettings = launchFragment();
+        ChromeSwitchPreference autoOpenSyncedTabGroupsSwitch =
+                tabsSettings.findPreference(TabsSettings.PREF_AUTO_OPEN_SYNCED_TAB_GROUPS_SWITCH);
+        assertFalse(autoOpenSyncedTabGroupsSwitch.isVisible());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
+    public void testArchiveSettingsHiddenWhenFeatureOff() {
+        TabsSettings tabsSettings = launchFragment();
+        Preference archiveSettinsEntryPoint =
+                tabsSettings.findPreference(TabsSettings.PREF_TAB_ARCHIVE_SETTINGS);
+        assertFalse(archiveSettinsEntryPoint.isVisible());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
+    public void testArchiveSettingsTitleAndSummary() {
+        TabArchiveSettings archiveSettings =
+                new TabArchiveSettings(ChromeSharedPreferences.getInstance());
+        archiveSettings.setArchiveTimeDeltaHours((int) TimeUnit.DAYS.toHours(14));
+
+        TabsSettings tabsSettings = launchFragment();
+        Preference archiveSettinsEntryPoint =
+                tabsSettings.findPreference(TabsSettings.PREF_TAB_ARCHIVE_SETTINGS);
+        assertTrue(archiveSettinsEntryPoint.isVisible());
+
+        assertEquals("Inactive", archiveSettinsEntryPoint.getTitle());
+        assertEquals("After 14 days", archiveSettinsEntryPoint.getSummary());
     }
 }

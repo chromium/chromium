@@ -9,12 +9,10 @@ found in the LICENSE file.
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <Preference
-        android:key="archive_settings_entrypoint"
-        android:title="@string/archive_settings_title"
-        android:fragment="org.chromium.chrome.browser.tasks.tab_management.TabArchiveSettingsFragment"
-        app:allowDividerBelow="true" />
+    <!-- TODO(crbug.com/347121324): Create radio button preference. -->
+
     <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
-        android:key="auto_open_synced_tab_groups_switch"
-        android:summary="@string/auto_open_synced_tab_groups_summary"/>
+        android:key="tab_archive_allow_autodelete"
+        android:summary="@string/archive_settings_allow_autodelete_summary"
+        app:allowDividerAbove="true"/>
 </PreferenceScreen>

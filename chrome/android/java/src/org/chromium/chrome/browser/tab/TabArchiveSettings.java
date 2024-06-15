@@ -9,6 +9,8 @@ import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 
+import java.util.concurrent.TimeUnit;
+
 /** Class to manage reading/writing preferences related to tab declutter. */
 public class TabArchiveSettings {
     static final boolean ARCHIVE_ENABLED_DEFAULT = true;
@@ -49,6 +51,16 @@ public class TabArchiveSettings {
                 ChromeFeatureList.sAndroidTabDeclutterArchiveTimeDeltaHours.getValue());
     }
 
+    /** Similar to above, but the return value is in days. */
+    public int getArchiveTimeDeltaDays() {
+        return (int)
+                TimeUnit.HOURS.toDays(
+                        mPrefsManager.readInt(
+                                ChromePreferenceKeys.TAB_DECLUTTER_ARCHIVE_TIME_DELTA_HOURS,
+                                ChromeFeatureList.sAndroidTabDeclutterArchiveTimeDeltaHours
+                                        .getValue()));
+    }
+
     /** Sets the time delta used to determine if a tab is eligible for archive. */
     public void setArchiveTimeDeltaHours(int timeDeltaHours) {
         mPrefsManager.writeInt(
@@ -74,6 +86,16 @@ public class TabArchiveSettings {
         return mPrefsManager.readInt(
                 ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS,
                 ChromeFeatureList.sAndroidTabDeclutterAutoDeleteTimeDeltaHours.getValue());
+    }
+
+    /** Similar to above, but the return value is in days. */
+    public int getAutoDeleteTimeDeltaDays() {
+        return (int)
+                TimeUnit.HOURS.toDays(
+                        mPrefsManager.readInt(
+                                ChromePreferenceKeys.TAB_DECLUTTER_AUTO_DELETE_TIME_DELTA_HOURS,
+                                ChromeFeatureList.sAndroidTabDeclutterAutoDeleteTimeDeltaHours
+                                        .getValue()));
     }
 
     /** Sets the time delta used to determine if an archived tab is eligible for auto deletion. */

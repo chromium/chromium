@@ -7,11 +7,15 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.os.Bundle;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.preference.Preference;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
+import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.prefs.PrefService;
@@ -24,17 +28,25 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
     static final String PREF_AUTO_OPEN_SYNCED_TAB_GROUPS_SWITCH =
             "auto_open_synced_tab_groups_switch";
 
+    @VisibleForTesting
+    static final String PREF_TAB_ARCHIVE_SETTINGS = "archive_settings_entrypoint";
+
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         SettingsUtils.addPreferencesFromResource(this, R.xml.tabs_settings);
         getActivity().setTitle(R.string.tabs_settings_title);
 
         configureAutoOpenSyncedTabGroupsSwitch();
+        configureTabArchiveSettings();
     }
 
     private void configureAutoOpenSyncedTabGroupsSwitch() {
         ChromeSwitchPreference autoOpenSyncedTabGroupsSwitch =
                 (ChromeSwitchPreference) findPreference(PREF_AUTO_OPEN_SYNCED_TAB_GROUPS_SWITCH);
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)) {
+            autoOpenSyncedTabGroupsSwitch.setVisible(false);
+            return;
+        }
 
         PrefService prefService = UserPrefs.get(getProfile());
         boolean isEnabled = prefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS);
@@ -47,5 +59,23 @@ public class TabsSettings extends ChromeBaseSettingsFragment {
                             "Tabs.AutoOpenSyncedTabGroupsSwitch.ToggledToState", enabled);
                     return true;
                 });
+    }
+
+    private void configureTabArchiveSettings() {
+        Preference tabArchiveSettingsPref = findPreference(PREF_TAB_ARCHIVE_SETTINGS);
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_TAB_DECLUTTER)) {
+            tabArchiveSettingsPref.setVisible(false);
+            return;
+        }
+
+        TabArchiveSettings archiveSettings =
+                new TabArchiveSettings(ChromeSharedPreferences.getInstance());
+        int tabArchiveTimeDeltaDays = archiveSettings.getArchiveTimeDeltaDays();
+        tabArchiveSettingsPref.setSummary(
+                getResources()
+                        .getQuantityString(
+                                R.plurals.archive_settings_summary,
+                                tabArchiveTimeDeltaDays,
+                                tabArchiveTimeDeltaDays));
     }
 }

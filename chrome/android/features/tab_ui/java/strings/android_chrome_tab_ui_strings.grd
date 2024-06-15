@@ -805,12 +805,29 @@
       <message name="IDS_ARCHIVED_TABS_DIALOG_CLOSE_ALL_BUTTON" desc="The button title for the archived tabs dialog. Closes all inactive tabs.">
         Close all inactive tabs
       </message>
-
       <message name="IDS_ARCHIVED_TABS_DIALOG_RESTORE_ALL_ACTION" desc="A menu item for the archived tabs dialog. Restores all archived tabs.">
         Restore all
       </message>
       <message name="IDS_ARCHIVED_TABS_DIALOG_SETTINGS_ACTION" desc="A menu item for the archived tabs dialog. Restores all archived tabs.">
         Settings
+      </message>
+      <message name="IDS_ARCHIVE_SETTINGS_TITLE" desc="The title for the entry-point to declutter settings.">
+        Inactive
+      </message>
+      <message name="IDS_ARCHIVE_SETTINGS_SUMMARY" desc="The summary for the entry-point to declutter settings.">
+        {DAY_COUNT, plural,
+          =1 {After 1 day}
+          other {After <ph name="DAY_COUNT_MANY">%1$d<ex>15</ex></ph> days}
+        }
+      </message>
+      <message name="IDS_ARCHIVE_SETTINGS_ALLOW_AUTODELETE_TITLE" desc="The title for toggle to allow tabs to be deleted automatically.">
+        {DAY_COUNT, plural,
+          =1 {Close after 1 day}
+          other {Close after <ph name="DAY_COUNT_MANY">%1$d<ex>15</ex></ph> days}
+        }
+      </message>
+      <message name="IDS_ARCHIVE_SETTINGS_ALLOW_AUTODELETE_SUMMARY" desc="The summary for toggle to allow tabs to be deleted automatically.">
+        Inactive tabs will automatically be close. You can always find them in History.
       </message>
     </messages>
   </release>

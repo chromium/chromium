@@ -970,7 +970,8 @@ public class MainSettingsFragmentTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
-    public void testTabsSettingsOn() {
+    @DisableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
+    public void testTabsSettingsOn_GroupSync() {
         launchSettingsActivity();
         assertSettingsExists(MainSettings.PREF_TABS, TabsSettings.class);
     }
@@ -978,6 +979,18 @@ public class MainSettingsFragmentTest {
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
+    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_DECLUTTER)
+    public void testTabsSettingsOn_Declutter() {
+        launchSettingsActivity();
+        assertSettingsExists(MainSettings.PREF_TABS, TabsSettings.class);
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({
+        ChromeFeatureList.ANDROID_TAB_DECLUTTER,
+        ChromeFeatureList.TAB_GROUP_SYNC_ANDROID
+    })
     public void testTabsSettingsOff() {
         launchSettingsActivity();
         Assert.assertNull(
