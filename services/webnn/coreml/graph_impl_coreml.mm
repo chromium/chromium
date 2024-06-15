@@ -33,6 +33,7 @@
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "services/webnn/coreml/graph_builder_coreml.h"
 #include "services/webnn/error.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/webnn_switches.h"
 
@@ -182,9 +183,9 @@ void GraphImplCoreml::CreateAndBuildOnBackgroundThread(
   std::vector<std::pair<std::string, CoreMLFeatureInfo>>
       input_feature_info_vector;
   input_feature_info_vector.reserve(
-      compute_resource_info.input_name_to_byte_length_map.size());
-  for (auto const& [name, size] :
-       compute_resource_info.input_name_to_byte_length_map) {
+      compute_resource_info.input_names_to_descriptors.size());
+  for (auto const& [name, _] :
+       compute_resource_info.input_names_to_descriptors) {
     std::optional<GraphImplCoreml::CoreMLFeatureInfo> coreml_feature_info =
         GetCoreMLFeatureInfo(
             build_graph_result->FindModelInputOperandInfo(name));
@@ -496,14 +497,15 @@ void GraphImplCoreml::DidPredict(base::ElapsedTimer model_predict_timer,
 
     MLMultiArray* multiarray_value = feature_value.multiArrayValue;
     [multiarray_value getBytesWithHandler:^(const void* bytes, NSInteger size) {
-      size_t expected_byte_size =
-          compute_resource_info().output_name_to_byte_length_map.at(name);
+      OperandDescriptor expected_descriptor =
+          compute_resource_info().output_names_to_descriptors.at(name);
 
       size_t number_of_items = multiarray_value.count;
-      CHECK_GT(number_of_items, 0u);
+      CHECK_EQ(number_of_items, expected_descriptor.NumberOfElements());
 
       uint32_t item_byte_size = GetDataTypeByteSize(multiarray_value.dataType);
-      CHECK_EQ(expected_byte_size, item_byte_size * number_of_items);
+      CHECK_EQ(item_byte_size, OperandDescriptor::GetBytesPerElement(
+                                   expected_descriptor.data_type()));
 
       std::vector<size_t> dimensions(multiarray_value.shape.count);
       for (size_t i = 0; i < multiarray_value.shape.count; ++i) {
@@ -519,10 +521,10 @@ void GraphImplCoreml::DidPredict(base::ElapsedTimer model_predict_timer,
       // points to at least `returned_size` valid bytes.
       auto data = UNSAFE_BUFFERS(base::span(static_cast<const uint8_t*>(bytes),
                                             base::checked_cast<size_t>(size)));
-      named_outputs_raw_ptr->push_back(std::make_pair(
-          name,
-          ExtractMaybeNonContiguousOutput(
-              data, expected_byte_size, item_byte_size, dimensions, strides)));
+      named_outputs_raw_ptr->push_back(
+          std::make_pair(name, ExtractMaybeNonContiguousOutput(
+                                   data, expected_descriptor.PackedByteLength(),
+                                   item_byte_size, dimensions, strides)));
       done_barrier.Run();
     }];
   }

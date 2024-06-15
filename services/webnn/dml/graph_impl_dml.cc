@@ -37,6 +37,7 @@
 #include "services/webnn/dml/utils.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_utils.h"
@@ -177,21 +178,20 @@ base::expected<void, mojom::ErrorPtr> CreateUnexpectedError(
 
 // Calculate the total byte length of buffers and the D3D12_RANGE for each
 // buffer, all with the required alignment.
-template <typename Map>
-std::optional<AlignedByteLength<typename Map::key_type>>
-CalculateAlignedByteLength(const Map& buffer_to_byte_length_map) {
+std::optional<AlignedByteLength<uint64_t>> CalculateAlignedByteLength(
+    const base::flat_map<uint64_t, mojo_base::BigBuffer>& ids_to_buffers) {
   base::CheckedNumeric<size_t> total_byte_length(0);
-  std::map<typename Map::key_type, D3D12_RANGE> key_to_d3d12_range_map;
+  std::map<uint64_t, D3D12_RANGE> key_to_d3d12_range_map;
 
-  for (auto& [buffer, byte_length] : buffer_to_byte_length_map) {
-    auto& d3d12_range = key_to_d3d12_range_map[buffer];
+  for (const auto& [buffer_id, buffer] : ids_to_buffers) {
+    auto& d3d12_range = key_to_d3d12_range_map[buffer_id];
     d3d12_range.Begin = total_byte_length.ValueOrDie();
 
     // The buffer has a minimum base address alignment requirement of 16 bytes
     // in the macro `DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT`:
     // https://learn.microsoft.com/en-us/windows/win32/direct3d12/direct3d-directml-constants
     total_byte_length += base::bits::AlignUp<size_t>(
-        byte_length, DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT);
+        buffer.size(), DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT);
     if (!total_byte_length.IsValid()) {
       DLOG(ERROR) << "Failed to calculate the total byte length.";
       return std::nullopt;
@@ -202,7 +202,39 @@ CalculateAlignedByteLength(const Map& buffer_to_byte_length_map) {
     d3d12_range.End = total_byte_length.ValueOrDie();
   }
 
-  return AlignedByteLength<typename Map::key_type>{
+  return AlignedByteLength<uint64_t>{
+      .total_byte_length = total_byte_length.ValueOrDie(),
+      .key_to_d3d12_range_map = std::move(key_to_d3d12_range_map)};
+}
+
+// Same as above, but given a map of names to descriptors.
+std::optional<AlignedByteLength<std::string>>
+CalculateAlignedByteLengthFromDescriptors(
+    const base::flat_map<std::string, OperandDescriptor>&
+        names_to_descriptors) {
+  base::CheckedNumeric<size_t> total_byte_length(0);
+  std::map<std::string, D3D12_RANGE> key_to_d3d12_range_map;
+
+  for (auto& [name, descriptor] : names_to_descriptors) {
+    auto& d3d12_range = key_to_d3d12_range_map[name];
+    d3d12_range.Begin = total_byte_length.ValueOrDie();
+
+    // The buffer has a minimum base address alignment requirement of 16 bytes
+    // in the macro `DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT`:
+    // https://learn.microsoft.com/en-us/windows/win32/direct3d12/direct3d-directml-constants
+    total_byte_length += base::bits::AlignUp<size_t>(
+        descriptor.PackedByteLength(), DML_MINIMUM_BUFFER_TENSOR_ALIGNMENT);
+    if (!total_byte_length.IsValid()) {
+      DLOG(ERROR) << "Failed to calculate the total byte length.";
+      return std::nullopt;
+    }
+
+    // The aligned byte length calculated with `End` sub `Begin` attribute is
+    // used to set the `SizeInBytes` field of `DML_BUFFER_BINDING`.
+    d3d12_range.End = total_byte_length.ValueOrDie();
+  }
+
+  return AlignedByteLength<std::string>{
       .total_byte_length = total_byte_length.ValueOrDie(),
       .key_to_d3d12_range_map = std::move(key_to_d3d12_range_map)};
 }
@@ -4901,8 +4933,8 @@ GraphImplDml::AllocateComputeResources(
   // GPU input buffer and upload buffer, also records the aligned D3D12_RANGE
   // for each input.
   std::optional<AlignedByteLength<std::string>> aligned_byte_length_of_inputs =
-      CalculateAlignedByteLength(
-          compute_resource_info.input_name_to_byte_length_map);
+      CalculateAlignedByteLengthFromDescriptors(
+          compute_resource_info.input_names_to_descriptors);
   if (!aligned_byte_length_of_inputs) {
     DLOG(ERROR) << "Failed to calculate the aligned byte length of inputs.";
     return base::unexpected(E_INVALIDARG);
@@ -4942,8 +4974,8 @@ GraphImplDml::AllocateComputeResources(
   // an output buffer and readback buffer, also records the aligned D3D12_RANGE
   // for each output.
   std::optional<AlignedByteLength<std::string>> aligned_byte_length_of_outputs =
-      CalculateAlignedByteLength(
-          compute_resource_info.output_name_to_byte_length_map);
+      CalculateAlignedByteLengthFromDescriptors(
+          compute_resource_info.output_names_to_descriptors);
   if (!aligned_byte_length_of_outputs) {
     DLOG(ERROR) << "Failed to calculate the aligned byte length of outputs.";
     return base::unexpected(E_INVALIDARG);
@@ -5198,14 +5230,9 @@ void GraphImplDml::OnCompilationComplete(
       graph_buffer_binding_info.input_buffer_binding_count,
       DML_BUFFER_BINDING{.Buffer = nullptr, .Offset = 0, .SizeInBytes = 0});
   if (!constant_id_to_buffer_map.empty()) {
-    std::map<uint64_t, size_t> constant_id_to_byte_length_map;
-    for (auto& [key, buffer] : constant_id_to_buffer_map) {
-      constant_id_to_byte_length_map[key] = buffer.size();
-    }
-
     std::optional<AlignedByteLength<uint64_t>>
         aligned_byte_length_of_constants =
-            CalculateAlignedByteLength(constant_id_to_byte_length_map);
+            CalculateAlignedByteLength(constant_id_to_buffer_map);
     if (!aligned_byte_length_of_constants) {
       HandleGraphCreationFailure(
           "Failed to calculate the aligned byte length of constants.",
@@ -6020,7 +6047,9 @@ void GraphImplDml::OnComputationComplete(
   for (auto& [name, d3d12_range] : graph_output_name_to_d3d12_range_map) {
     named_outputs[name] = mojo_base::BigBuffer(base::make_span(
         static_cast<const uint8_t*>(mapped_buffer) + d3d12_range.Begin,
-        compute_resource_info().output_name_to_byte_length_map.at(name)));
+        compute_resource_info()
+            .output_names_to_descriptors.at(name)
+            .PackedByteLength()));
   }
 
   buffer_to_map->Unmap(0, nullptr);
@@ -6112,10 +6141,10 @@ void GraphImplDml::DispatchImpl(
       const size_t graph_input_index =
           graph_buffer_binding_info_.graph_input_name_to_index_map.at(
               std::string(name));
-      graph_input_buffer_bindings[graph_input_index] =
-          DML_BUFFER_BINDING{.Buffer = input_buffer_impl->buffer(),
-                             .Offset = 0,
-                             .SizeInBytes = input_buffer_impl->size()};
+      graph_input_buffer_bindings[graph_input_index] = DML_BUFFER_BINDING{
+          .Buffer = input_buffer_impl->buffer(),
+          .Offset = 0,
+          .SizeInBytes = input_buffer_impl->PackedByteLength()};
       input_buffer_binding_desc[graph_input_index] = {
           DML_BINDING_TYPE_BUFFER,
           &graph_input_buffer_bindings[graph_input_index]};
@@ -6149,10 +6178,10 @@ void GraphImplDml::DispatchImpl(
       const size_t graph_output_index =
           graph_buffer_binding_info_.graph_output_name_to_index_map.at(
               std::string(name));
-      graph_output_buffer_bindings[graph_output_index] =
-          DML_BUFFER_BINDING{.Buffer = output_buffer_impl->buffer(),
-                             .Offset = 0,
-                             .SizeInBytes = output_buffer_impl->size()};
+      graph_output_buffer_bindings[graph_output_index] = DML_BUFFER_BINDING{
+          .Buffer = output_buffer_impl->buffer(),
+          .Offset = 0,
+          .SizeInBytes = output_buffer_impl->PackedByteLength()};
       output_buffer_binding_desc[graph_output_index] = {
           DML_BINDING_TYPE_BUFFER,
           &graph_output_buffer_bindings[graph_output_index]};

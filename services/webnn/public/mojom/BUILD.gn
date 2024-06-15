@@ -4,7 +4,10 @@
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
-mojom("mojom") {
+mojom_component("mojom") {
+  output_prefix = "webnn_mojom"
+  macro_prefix = "WEBNN_MOJOM"
+
   sources = [
     "webnn_buffer.mojom",
     "webnn_context_provider.mojom",
@@ -26,12 +29,36 @@ mojom("mojom") {
           cpp = "::webnn::MLBufferUsage"
           copyable_pass_by_value = true
         },
+        {
+          mojom = "webnn.mojom.OperandDescriptor"
+          cpp = "::webnn::OperandDescriptor"
+          default_constructible = false
+        },
       ]
-      traits_headers = [ "buffer_usage_mojom_traits.h" ]
-      traits_public_deps = [ "//services/webnn/public/cpp" ]
+      traits_headers = [
+        "buffer_usage_mojom_traits.h",
+        "operand_descriptor_mojom_traits.h",
+      ]
+      traits_public_deps = [ ":webnn_mojom_traits" ]
     },
   ]
 
   cpp_typemaps = shared_webnn_typemaps
   blink_cpp_typemaps = shared_webnn_typemaps
+}
+
+component("webnn_mojom_traits") {
+  sources = [
+    "operand_descriptor_mojom_traits.cc",
+    "operand_descriptor_mojom_traits.h",
+  ]
+
+  public_deps = [
+    ":mojom_shared",
+    "//base",
+    "//mojo/public/cpp/bindings:struct_traits",
+    "//services/webnn/public/cpp",
+  ]
+
+  defines = [ "IS_WEBNN_MOJOM_TRAITS_IMPL" ]
 }

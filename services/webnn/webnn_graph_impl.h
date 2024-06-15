@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 
@@ -35,8 +36,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphImpl
     ComputeResourceInfo(ComputeResourceInfo&&);
     ComputeResourceInfo& operator=(ComputeResourceInfo&&);
 
-    base::flat_map<std::string, size_t> input_name_to_byte_length_map;
-    base::flat_map<std::string, size_t> output_name_to_byte_length_map;
+    base::flat_map<std::string, OperandDescriptor> input_names_to_descriptors;
+    base::flat_map<std::string, OperandDescriptor> output_names_to_descriptors;
   };
 
   // TODO(crbug.com/333188631): remove once no GraphImpls need to be created as

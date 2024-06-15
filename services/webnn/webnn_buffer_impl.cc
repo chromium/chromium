@@ -5,6 +5,8 @@
 #include "services/webnn/webnn_buffer_impl.h"
 
 #include "services/webnn/error.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
+#include "services/webnn/public/mojom/webnn_buffer.mojom.h"
 #include "services/webnn/webnn_context_impl.h"
 
 namespace webnn {
@@ -17,7 +19,7 @@ WebNNBufferImpl::WebNNBufferImpl(
     : WebNNObjectImpl(buffer_handle),
       context_(context),
       // TODO(crbug.com/343638938): Use buffer_info->usage.
-      size_(buffer_info->size),
+      descriptor_(std::move(buffer_info->descriptor)),
       receiver_(this, std::move(receiver)) {
   // Safe to use base::Unretained because `this` owns `receiver_`.
   receiver_.set_disconnect_handler(
@@ -33,7 +35,7 @@ void WebNNBufferImpl::ReadBuffer(ReadBufferCallback callback) {
 
 void WebNNBufferImpl::WriteBuffer(mojo_base::BigBuffer src_buffer) {
   // TODO(https://crbug.com/40278771): Generate error using MLContext.
-  if (size() < src_buffer.size()) {
+  if (PackedByteLength() < src_buffer.size()) {
     receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
     return;
   }

@@ -345,11 +345,11 @@ class FakeWebNNBuffer : public blink_mojom::WebNNBuffer {
       WebNNContextHelper& helper,
       mojo::PendingAssociatedReceiver<blink_mojom::WebNNBuffer> receiver,
       const base::UnguessableToken& buffer_handle,
-      uint64_t size)
+      blink_mojom::BufferInfoPtr buffer_info)
       : helper_(helper),
         receiver_(this, std::move(receiver)),
-        handle_(buffer_handle),
-        buffer_(size) {
+        handle_(buffer_handle) {
+    buffer_ = mojo_base::BigBuffer(buffer_info->descriptor.PackedByteLength());
     receiver_.set_disconnect_handler(WTF::BindOnce(
         &FakeWebNNBuffer::OnConnectionError, WTF::Unretained(this)));
   }
@@ -415,9 +415,9 @@ class FakeWebNNContext : public blink_mojom::WebNNContext {
       blink_mojom::BufferInfoPtr buffer_info,
       const base::UnguessableToken& buffer_handle) override {
     context_helper_.ConnectWebNNBufferImpl(
-        buffer_handle,
-        std::make_unique<FakeWebNNBuffer>(context_helper_, std::move(receiver),
-                                          buffer_handle, buffer_info->size));
+        buffer_handle, std::make_unique<FakeWebNNBuffer>(
+                           context_helper_, std::move(receiver), buffer_handle,
+                           std::move(buffer_info)));
   }
 
   WebNNContextHelper context_helper_;
@@ -558,7 +558,8 @@ MLBuffer* CreateMLBufferForOperand(V8TestingScope& scope,
                                    const MLOperand* operand) {
   auto array_buffer_view = CreateArrayBufferViewForOperand(operand);
   auto* desc = MLBufferDescriptor::Create();
-  desc->setSize(array_buffer_view->byteLength());
+  desc->setDataType(operand->DataType());
+  desc->setDimensions(operand->Dimensions());
 
   MLBuffer* ml_buffer = ml_context->createBuffer(scope.GetScriptState(), desc,
                                                  scope.GetExceptionState());
@@ -583,7 +584,7 @@ Vector<uint8_t> GetMLBufferValues(V8TestingScope& scope,
   auto* array_buffer = V8ToObject<DOMArrayBuffer>(&scope, tester.Value());
   return GetArrayBufferViewValues<uint8_t>(
       NotShared<DOMArrayBufferView>(blink::DOMUint8Array::Create(
-          array_buffer, /*byte_offset=*/0, ml_buffer->size())));
+          array_buffer, /*byte_offset=*/0, ml_buffer->PackedByteLength())));
 }
 
 TEST_F(MLGraphTest, BuildTest) {
@@ -675,11 +676,11 @@ TEST_F(MLGraphTest, BuildTest) {
     const auto& inputs = graph->GetInputResourcesInfo();
     EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
     EXPECT_EQ(inputs.at("a").data_type, a->DataType());
-    EXPECT_EQ(inputs.at("a").byte_length, a->ByteLength());
+    EXPECT_EQ(inputs.at("a").shape, a->shape());
     const auto& outputs = graph->GetOutputResourcesInfo();
     EXPECT_EQ(outputs.size(), static_cast<uint32_t>(1));
     EXPECT_EQ(outputs.at("b").data_type, output->DataType());
-    EXPECT_EQ(outputs.at("b").byte_length, output->ByteLength());
+    EXPECT_EQ(outputs.at("b").shape, output->shape());
   }
   {
     // Test building a graph with two operators sharing a same input:
@@ -701,13 +702,13 @@ TEST_F(MLGraphTest, BuildTest) {
     const auto& inputs = graph->GetInputResourcesInfo();
     EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
     EXPECT_EQ(inputs.at("a").data_type, a->DataType());
-    EXPECT_EQ(inputs.at("a").byte_length, a->ByteLength());
+    EXPECT_EQ(inputs.at("a").shape, a->shape());
     const auto& outputs = graph->GetOutputResourcesInfo();
     EXPECT_EQ(outputs.size(), static_cast<uint32_t>(2));
     EXPECT_EQ(outputs.at("b").data_type, b->DataType());
-    EXPECT_EQ(outputs.at("b").byte_length, b->ByteLength());
+    EXPECT_EQ(outputs.at("b").shape, b->shape());
     EXPECT_EQ(outputs.at("c").data_type, b->DataType());
-    EXPECT_EQ(outputs.at("c").byte_length, b->ByteLength());
+    EXPECT_EQ(outputs.at("c").shape, b->shape());
   }
   {
     // Test building a fake graph with two inputs, one gemm operation and one
@@ -726,13 +727,13 @@ TEST_F(MLGraphTest, BuildTest) {
     const auto& inputs = graph->GetInputResourcesInfo();
     EXPECT_EQ(inputs.size(), static_cast<uint32_t>(2));
     EXPECT_EQ(inputs.at("a").data_type, a->DataType());
-    EXPECT_EQ(inputs.at("a").byte_length, a->ByteLength());
+    EXPECT_EQ(inputs.at("a").shape, a->shape());
     EXPECT_EQ(inputs.at("b").data_type, b->DataType());
-    EXPECT_EQ(inputs.at("b").byte_length, b->ByteLength());
+    EXPECT_EQ(inputs.at("b").shape, b->shape());
     const auto& outputs = graph->GetOutputResourcesInfo();
     EXPECT_EQ(outputs.size(), static_cast<uint32_t>(1));
     EXPECT_EQ(outputs.at("c").data_type, c->DataType());
-    EXPECT_EQ(outputs.at("c").byte_length, c->ByteLength());
+    EXPECT_EQ(outputs.at("c").shape, c->shape());
   }
   {
     // Test building a fake graph with conv2d, add and relu operations.
@@ -757,11 +758,11 @@ TEST_F(MLGraphTest, BuildTest) {
     const auto& inputs = graph->GetInputResourcesInfo();
     EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
     EXPECT_EQ(inputs.at("input").data_type, input->DataType());
-    EXPECT_EQ(inputs.at("input").byte_length, input->ByteLength());
+    EXPECT_EQ(inputs.at("input").shape, input->shape());
     const auto& outputs = graph->GetOutputResourcesInfo();
     EXPECT_EQ(outputs.size(), static_cast<uint32_t>(1));
     EXPECT_EQ(outputs.at("output").data_type, output->DataType());
-    EXPECT_EQ(outputs.at("output").byte_length, output->ByteLength());
+    EXPECT_EQ(outputs.at("output").shape, output->shape());
   }
   {
     // Testing throwing exception if the ArrayBufferView of a constant operand
@@ -1067,7 +1068,8 @@ TEST_F(MLGraphTest, CreateWebNNBufferTest) {
   MLContext* ml_context = V8ToObject<MLContext>(&scope, context_tester.Value());
 
   auto* desc = MLBufferDescriptor::Create();
-  desc->setSize(4ull);
+  desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
+  desc->setDimensions({2, 2});
 
   MLBuffer* ml_buffer =
       ml_context->createBuffer(script_state, desc, scope.GetExceptionState());
@@ -1078,7 +1080,8 @@ TEST_F(MLGraphTest, CreateWebNNBufferTest) {
   }
 
   ASSERT_THAT(ml_buffer, testing::NotNull());
-  EXPECT_EQ(ml_buffer->size(), desc->size());
+  EXPECT_EQ(ml_buffer->dataType(), desc->dataType());
+  EXPECT_EQ(ml_buffer->shape(), desc->dimensions());
 }
 
 TEST_F(MLGraphTest, WriteWebNNBufferTest) {
@@ -1097,10 +1100,12 @@ TEST_F(MLGraphTest, WriteWebNNBufferTest) {
   EXPECT_TRUE(context_tester.IsFulfilled());
   MLContext* ml_context = V8ToObject<MLContext>(&scope, context_tester.Value());
 
-  constexpr uint64_t kBufferSize = 4ull;
+  constexpr size_t kBufferSize = 4ull;
+  const Vector<uint32_t> kBufferShape{2, 2};
 
   auto* desc = MLBufferDescriptor::Create();
-  desc->setSize(kBufferSize);
+  desc->setDataType(V8MLOperandDataType::Enum::kUint8);
+  desc->setDimensions(kBufferShape);
 
   MLBuffer* ml_buffer =
       ml_context->createBuffer(script_state, desc, scope.GetExceptionState());
@@ -1191,7 +1196,8 @@ TEST_F(MLGraphTest, WriteWebNNBufferThenDestroyTest) {
   MLContext* ml_context = V8ToObject<MLContext>(&scope, context_tester.Value());
 
   auto* desc = MLBufferDescriptor::Create();
-  desc->setSize(4ull);
+  desc->setDataType(V8MLOperandDataType::Enum::kUint8);
+  desc->setDimensions({2, 2});
 
   MLBuffer* ml_buffer =
       ml_context->createBuffer(script_state, desc, scope.GetExceptionState());
@@ -1207,7 +1213,8 @@ TEST_F(MLGraphTest, WriteWebNNBufferThenDestroyTest) {
 
   ml_context->writeBuffer(
       script_state, ml_buffer,
-      CreateDOMArrayBufferView(desc->size(), V8MLOperandDataType::Enum::kUint8)
+      CreateDOMArrayBufferView(ml_buffer->PackedByteLength(),
+                               V8MLOperandDataType::Enum::kUint8)
           ->BufferBase(),
       /*src_byte_offset=*/0, scope.GetExceptionState());
 }
@@ -1230,7 +1237,8 @@ TEST_F(MLGraphTest, ReadWebNNBufferThenDestroyTest) {
   MLContext* ml_context = V8ToObject<MLContext>(&scope, context_tester.Value());
 
   auto* desc = MLBufferDescriptor::Create();
-  desc->setSize(4ull);
+  desc->setDataType(V8MLOperandDataType::Enum::kFloat32);
+  desc->setDimensions({2, 2});
 
   MLBuffer* ml_buffer =
       ml_context->createBuffer(script_state, desc, scope.GetExceptionState());
@@ -1282,21 +1290,18 @@ TEST_F(MLGraphTest, WebNNGraphDispatchTest) {
   MLContext* ml_context = builder->GetContext();
 
   // Check if MLBuffer is supported.
-  auto* desc = MLBufferDescriptor::Create();
-  desc->setSize(4ull);
-
-  MLBuffer* ml_buffer = ml_context->createBuffer(scope.GetScriptState(), desc,
-                                                 scope.GetExceptionState());
+  MLBuffer* input_buffer =
+      CreateMLBufferForOperand(scope, ml_context, lhs_operand);
 
   if (scope.GetExceptionState().Code() ==
       ToExceptionCode(DOMExceptionCode::kNotSupportedError)) {
     GTEST_SKIP() << "MLBuffer has not been implemented on this platform.";
   }
 
-  ASSERT_THAT(ml_buffer, testing::NotNull());
+  ASSERT_THAT(input_buffer, testing::NotNull());
 
   MLNamedBuffers inputs(
-      {{"lhs", CreateMLBufferForOperand(scope, ml_context, lhs_operand)},
+      {{"lhs", input_buffer},
        {"rhs", CreateMLBufferForOperand(scope, ml_context, rhs_operand)}});
   MLNamedBuffers outputs({{"output", CreateMLBufferForOperand(
                                          scope, ml_context, output_operand)}});

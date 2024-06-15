@@ -1177,7 +1177,8 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker] interface MLBuffer
 [Worker]     attribute @@toStringTag
-[Worker]     getter size
+[Worker]     getter dataType
+[Worker]     getter shape
 [Worker]     method constructor
 [Worker]     method destroy
 [Worker] interface MLContext

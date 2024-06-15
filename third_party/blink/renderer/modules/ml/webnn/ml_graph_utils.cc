@@ -300,4 +300,27 @@ webnn::Size2d<uint32_t> CalculateConvTransposeOutputSize2D(
                                  .width = output_width.value()};
 }
 
+size_t GetBytesPerElement(V8MLOperandDataType::Enum data_type) {
+  switch (data_type) {
+    case V8MLOperandDataType::Enum::kFloat32:
+      return sizeof(float);
+    case V8MLOperandDataType::Enum::kFloat16:
+      // Using Uint16Array for float16 is a workaround of WebNN spec issue:
+      // https://github.com/webmachinelearning/webnn/issues/127
+      return sizeof(uint16_t);
+    case V8MLOperandDataType::Enum::kInt32:
+      return sizeof(int32_t);
+    case V8MLOperandDataType::Enum::kUint32:
+      return sizeof(uint32_t);
+    case V8MLOperandDataType::Enum::kInt64:
+      return sizeof(int64_t);
+    case V8MLOperandDataType::Enum::kUint64:
+      return sizeof(uint64_t);
+    case V8MLOperandDataType::Enum::kInt8:
+      return sizeof(int8_t);
+    case V8MLOperandDataType::Enum::kUint8:
+      return sizeof(uint8_t);
+  }
+}
+
 }  // namespace blink

@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
 
 namespace webnn {
@@ -148,6 +149,11 @@ std::string COMPONENT_EXPORT(WEBNN_UTILS)
 std::vector<uint32_t> COMPONENT_EXPORT(WEBNN_UTILS)
     PermuteArray(base::span<const uint32_t> array,
                  base::span<const uint32_t> permutation);
+
+// TOOD(crbug.com/325598628): Remove this method once `mojom::DataType` is no
+// longer in use.
+OperandDataType COMPONENT_EXPORT(WEBNN_UTILS)
+    ToOperandDataType(mojom::DataType data_type);
 
 }  // namespace webnn
 

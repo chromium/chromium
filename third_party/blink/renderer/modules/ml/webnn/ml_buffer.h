@@ -6,8 +6,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_BUFFER_H_
 
 #include "base/types/expected.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_operand_data_type.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -26,26 +28,6 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // Represents an `MLBufferDescriptor` whose characteristics have already been
-  // validated.
-  //
-  // TODO(crbug.com/343638938): Require a data type, shape, and usage flags when
-  // creating an `MLBuffer`.
-  class ValidatedDescriptor {
-   public:
-    // Creates a ValidatedDescriptor or returns an error message which may be
-    // used to throw a TypeError if the inputs are not valid.
-    [[nodiscard]] static base::expected<ValidatedDescriptor, String> Create(
-        uint64_t size);
-
-    uint64_t size() const { return size_; }
-
-   private:
-    explicit ValidatedDescriptor(uint64_t size);
-
-    const uint64_t size_;
-  };
-
   static MLBuffer* Create(ScopedMLTrace scoped_trace,
                           ExecutionContext* execution_context,
                           MLContext* ml_context,
@@ -56,7 +38,7 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
   // `Create()` method instead.
   explicit MLBuffer(ExecutionContext* execution_context,
                     MLContext* context,
-                    ValidatedDescriptor descriptor);
+                    webnn::OperandDescriptor descriptor);
   MLBuffer(const MLBuffer&) = delete;
   MLBuffer& operator=(const MLBuffer&) = delete;
 
@@ -65,8 +47,11 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
   void Trace(Visitor* visitor) const override;
 
   // ml_buffer.idl
+  V8MLOperandDataType dataType() const;
+  Vector<uint32_t> shape() const;
   void destroy();
-  uint64_t size() const;
+
+  uint64_t PackedByteLength() const;
 
   const base::UnguessableToken& handle() const { return webnn_handle_; }
 
@@ -95,7 +80,7 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
   Member<MLContext> ml_context_;
 
   // Represents a valid MLBufferDescriptor.
-  const ValidatedDescriptor descriptor_;
+  const webnn::OperandDescriptor descriptor_;
 
   // Identifies this `WebNNBuffer` mojo instance in the service process.
   const base::UnguessableToken webnn_handle_;

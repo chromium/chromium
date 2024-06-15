@@ -10,36 +10,10 @@
 #include "base/types/expected_macros.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
 
 namespace blink {
-
-namespace {
-
-size_t GetBytesPerElement(V8MLOperandDataType::Enum operand_type) {
-  switch (operand_type) {
-    case V8MLOperandDataType::Enum::kFloat32:
-      return sizeof(float);
-    case V8MLOperandDataType::Enum::kFloat16:
-      // Using Uint16Array for float16 is a workaround of WebNN spec issue:
-      // https://github.com/webmachinelearning/webnn/issues/127
-      return sizeof(uint16_t);
-    case V8MLOperandDataType::Enum::kInt32:
-      return sizeof(int32_t);
-    case V8MLOperandDataType::Enum::kUint32:
-      return sizeof(uint32_t);
-    case V8MLOperandDataType::Enum::kInt64:
-      return sizeof(int64_t);
-    case V8MLOperandDataType::Enum::kUint64:
-      return sizeof(uint64_t);
-    case V8MLOperandDataType::Enum::kInt8:
-      return sizeof(int8_t);
-    case V8MLOperandDataType::Enum::kUint8:
-      return sizeof(uint8_t);
-  }
-}
-
-}  // namespace
 
 DOMArrayBufferView::ViewType GetArrayBufferViewType(
     V8MLOperandDataType::Enum operand_type) {
@@ -75,13 +49,13 @@ MLOperand::ValidatedDescriptor::Create(V8MLOperandDataType::Enum data_type,
       // TODO: crbug.com/329471677 - Consider supporting size 0 dimensions.
       // See spec issue: https://github.com/webmachinelearning/webnn/issues/391.
       return base::unexpected(
-          "Invalid operand descriptor: All dimensions should be positive.");
+          "Invalid descriptor: All dimensions should be positive.");
     }
     checked_number_of_elements *= dimension;
   }
   if (!checked_number_of_elements.IsValid()) {
     return base::unexpected(
-        "Invalid operand descriptor: The number of elements is too large.");
+        "Invalid descriptor: The number of elements is too large.");
   }
 
   // TODO: crbug.com/329482489 - Check the max rank of `dimensions`.

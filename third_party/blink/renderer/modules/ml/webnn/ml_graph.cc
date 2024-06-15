@@ -11,6 +11,7 @@
 #include "base/numerics/checked_math.h"
 #include "base/types/expected_macros.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -72,12 +73,15 @@ base::expected<void, String> ValidateNamedArrayBufferViews(
           array_buffer_view->TypeName(), name.Utf8().c_str(),
           V8MLOperandDataType(info.data_type).AsCStr()));
     }
-    if (array_buffer_view->byteLength() != info.byte_length) {
+    auto expected_byte_length = webnn::ValidateAndCalculateByteLength(
+        GetBytesPerElement(info.data_type), info.shape);
+    CHECK(expected_byte_length.has_value());
+    if (array_buffer_view->byteLength() != *expected_byte_length) {
       return base::unexpected(String::Format(
           "The byte length (%zu) of the array buffer view with name \"%s\" "
           "doesn't match the expected byte length (%zu).",
           array_buffer_view->byteLength(), name.Utf8().c_str(),
-          info.byte_length));
+          *expected_byte_length));
     }
   }
   return base::ok();
@@ -100,12 +104,19 @@ base::expected<void, String> ValidateNamedMLBuffers(
           "The name \"%s\" isn't part of the graph.", name.Utf8().c_str()));
     }
     const auto& info = resources_info.at(name);
-    if (buffer->size() != info.byte_length) {
-      return base::unexpected(String::Format(
-          "The size %" PRIu64
-          ", of the MLBuffer with name \"%s\" "
-          "doesn't match the expected byte length (%zu).",
-          buffer->size(), name.Utf8().c_str(), info.byte_length));
+    if (buffer->dataType() != info.data_type) {
+      return base::unexpected(
+          String::Format("The data type \"%s\""
+                         ", of the MLBuffer with name \"%s\" "
+                         "doesn't match the expected data type (%s).",
+                         buffer->dataType().AsCStr(), name.Utf8().c_str(),
+                         V8MLOperandDataType(info.data_type).AsCStr()));
+    }
+    if (buffer->shape() != info.shape) {
+      return base::unexpected(
+          String::Format("The shape of the MLBuffer with name \"%s\" "
+                         "doesn't match the expected shape.",
+                         name.Utf8().c_str()));
     }
     if (buffer->context() != context) {
       return base::unexpected(String::Format(

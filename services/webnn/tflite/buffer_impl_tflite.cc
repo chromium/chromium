@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom.h"
+#include "services/webnn/webnn_utils.h"
 
 namespace webnn::tflite {
 
@@ -17,7 +18,8 @@ std::unique_ptr<WebNNBufferImpl> BufferImplTflite::Create(
     mojom::BufferInfoPtr buffer_info,
     const base::UnguessableToken& buffer_handle) {
   // Limit to INT_MAX for security reasons (similar to PartitionAlloc).
-  if (buffer_info->size > INT_MAX) {
+  if (!base::IsValueInRangeForNumericType<int>(
+          buffer_info->descriptor.PackedByteLength())) {
     DLOG(ERROR) << "Buffer is too large to create.";
     return nullptr;
   }
@@ -35,7 +37,7 @@ BufferImplTflite::BufferImplTflite(
                       context,
                       std::move(buffer_info),
                       buffer_handle) {
-  buffer_ = base::HeapArray<uint8_t>::WithSize(size());
+  buffer_ = base::HeapArray<uint8_t>::WithSize(PackedByteLength());
 }
 
 BufferImplTflite::~BufferImplTflite() = default;

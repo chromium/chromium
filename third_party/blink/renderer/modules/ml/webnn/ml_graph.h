@@ -71,7 +71,7 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   // something like MLOperand::ValidatedDescriptor.
   struct ResourceInfo {
     V8MLOperandDataType::Enum data_type;
-    size_t byte_length;
+    Vector<uint32_t> shape;
   };
 
   // Instances should only be constructed via `MLGraphBuilder.build()`.

@@ -10,6 +10,7 @@
 
 #include "base/types/expected.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_2d_filter_operand_layout.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_conv_transpose_2d_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_input_operand_layout.h"
@@ -93,6 +94,10 @@ webnn::Size2d<uint32_t> CalculateConvTransposeOutputSize2D(
     uint32_t dilation_width,
     uint32_t output_padding_height,
     uint32_t output_padding_width);
+
+// TODO(crbug.com/325598628): Consolidate this with the method of the same name
+// in `webnn::OperandDescriptor`.
+size_t GetBytesPerElement(V8MLOperandDataType::Enum data_type);
 
 }  // namespace blink
 

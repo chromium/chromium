@@ -23,6 +23,7 @@
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/ml_buffer_usage.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
@@ -204,13 +205,16 @@ bool ValidateInputsForComputing(
 
 struct WebNNBufferInfo {
   base::UnguessableToken buffer_handle;
-  uint64_t size;
+  OperandDataType data_type;
+  std::vector<uint32_t> shape;
   bool create_buffer;
 };
 
-WebNNBufferInfo CreateWebNNBufferInfo(uint64_t size,
+WebNNBufferInfo CreateWebNNBufferInfo(OperandDataType data_type,
+                                      std::vector<uint32_t> shape,
                                       bool create_buffer = true) {
-  return {base::UnguessableToken::Create(), size, create_buffer};
+  return {base::UnguessableToken::Create(), data_type, std::move(shape),
+          create_buffer};
 }
 
 // Converts inputs and outputs to MLBuffer then dispatches them.
@@ -258,7 +262,9 @@ bool ValidateDispatch(mojom::GraphInfoPtr graph_info,
       mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer;
       webnn_context->CreateBuffer(
           webnn_buffer.BindNewEndpointAndPassReceiver(),
-          mojom::BufferInfo::New(buffer_info.size, MLBufferUsage()),
+          mojom::BufferInfo::New(*OperandDescriptor::Create(
+                                     buffer_info.data_type, buffer_info.shape),
+                                 MLBufferUsage()),
           buffer_info.buffer_handle);
       input_buffers.push_back(std::move(webnn_buffer));
     }
@@ -274,7 +280,9 @@ bool ValidateDispatch(mojom::GraphInfoPtr graph_info,
       mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer;
       webnn_context->CreateBuffer(
           webnn_buffer.BindNewEndpointAndPassReceiver(),
-          mojom::BufferInfo::New(buffer_info.size, MLBufferUsage()),
+          mojom::BufferInfo::New(*OperandDescriptor::Create(
+                                     buffer_info.data_type, buffer_info.shape),
+                                 MLBufferUsage()),
           buffer_info.buffer_handle);
       output_buffers.push_back(std::move(webnn_buffer));
     }
@@ -6578,59 +6586,60 @@ TEST_F(WebNNGraphImplTest, ValidateInputsTest) {
 
 TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
   auto context_properties = GetContextPropertiesForTesting();
-  const std::vector<uint32_t> dimensions = {3, 5};
+  // TODO(crbug.com/325598628): De-dup these data type constants.
+  const mojom::DataType kMojoDataType = mojom::DataType::kUint8;
+  const OperandDataType kDataType = OperandDataType::kUint8;
+  const std::vector<uint32_t> kShape = {3, 5};
   // Build the graph with mojo type.
   GraphInfoBuilder builder;
   const uint64_t lhs_operand_id =
-      builder.BuildInput("lhs", dimensions, mojom::DataType::kUint8);
+      builder.BuildInput("lhs", kShape, kMojoDataType);
   const uint64_t rhs_operand_id =
-      builder.BuildInput("rhs", dimensions, mojom::DataType::kUint8);
+      builder.BuildInput("rhs", kShape, kMojoDataType);
   const uint64_t output_1_operand_id =
-      builder.BuildOutput("output1", dimensions, mojom::DataType::kUint8);
+      builder.BuildOutput("output1", kShape, kMojoDataType);
   builder.BuildElementWiseBinary(mojom::ElementWiseBinary::Kind::kAdd,
                                  lhs_operand_id, rhs_operand_id,
                                  output_1_operand_id);
   const uint64_t output_2_operand_id =
-      builder.BuildOutput("output2", dimensions, mojom::DataType::kUint8);
+      builder.BuildOutput("output2", kShape, kMojoDataType);
   builder.BuildElementWiseBinary(mojom::ElementWiseBinary::Kind::kAdd,
                                  lhs_operand_id, rhs_operand_id,
                                  output_2_operand_id);
   EXPECT_TRUE(WebNNGraphImpl::ValidateGraph(*context_properties,
                                             builder.GetGraphInfo()));
 
-  const size_t byte_length =
-      ValidateAndCalculateByteLength(sizeof(uint8_t), dimensions).value();
-
   {
     // Validate the inputs match the expected.
     base::flat_map<std::string, WebNNBufferInfo> inputs;
-    inputs["lhs"] = CreateWebNNBufferInfo(byte_length);
-    inputs["rhs"] = CreateWebNNBufferInfo(byte_length);
+    inputs["lhs"] = CreateWebNNBufferInfo(kDataType, kShape);
+    inputs["rhs"] = CreateWebNNBufferInfo(kDataType, kShape);
     base::flat_map<std::string, WebNNBufferInfo> outputs;
-    outputs["output1"] = CreateWebNNBufferInfo(byte_length);
-    outputs["output2"] = CreateWebNNBufferInfo(byte_length);
+    outputs["output1"] = CreateWebNNBufferInfo(kDataType, kShape);
+    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape);
     EXPECT_TRUE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
                                  std::move(outputs)));
   }
   {
     // Test the invalid inputs for invalid input size.
     base::flat_map<std::string, WebNNBufferInfo> inputs;
-    inputs["lhs"] = CreateWebNNBufferInfo(byte_length);
+    inputs["lhs"] = CreateWebNNBufferInfo(kDataType, kShape);
     base::flat_map<std::string, WebNNBufferInfo> outputs;
-    outputs["output1"] = CreateWebNNBufferInfo(byte_length);
-    outputs["output2"] = CreateWebNNBufferInfo(byte_length);
+    outputs["output1"] = CreateWebNNBufferInfo(kDataType, kShape);
+    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape);
     EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
                                   std::move(outputs)));
   }
   {
     // Test the invalid outputs for invalid output size.
     base::flat_map<std::string, WebNNBufferInfo> inputs;
-    inputs["lhs"] = CreateWebNNBufferInfo(byte_length);
-    inputs["rhs"] = CreateWebNNBufferInfo(byte_length);
+    inputs["lhs"] = CreateWebNNBufferInfo(kDataType, kShape);
+    inputs["rhs"] = CreateWebNNBufferInfo(kDataType, kShape);
     base::flat_map<std::string, WebNNBufferInfo> outputs;
-    outputs["output1"] = CreateWebNNBufferInfo(byte_length);
-    outputs["output2"] = CreateWebNNBufferInfo(byte_length);
-    outputs["a_different_output_name"] = CreateWebNNBufferInfo(byte_length);
+    outputs["output1"] = CreateWebNNBufferInfo(kDataType, kShape);
+    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape);
+    outputs["a_different_output_name"] =
+        CreateWebNNBufferInfo(kDataType, kShape);
     EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
                                   std::move(outputs)));
   }
@@ -6638,91 +6647,105 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
     // Test the invalid inputs for invalid input name.
     base::flat_map<std::string, WebNNBufferInfo> inputs;
     inputs["a_different_input_name"] = {base::UnguessableToken::Create(),
-                                        byte_length};
-    inputs["rhs"] = CreateWebNNBufferInfo(byte_length);
+                                        kDataType, kShape};
+    inputs["rhs"] = CreateWebNNBufferInfo(kDataType, kShape);
     base::flat_map<std::string, WebNNBufferInfo> outputs;
-    outputs["output1"] = CreateWebNNBufferInfo(byte_length);
-    outputs["output2"] = CreateWebNNBufferInfo(byte_length);
+    outputs["output1"] = CreateWebNNBufferInfo(kDataType, kShape);
+    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape);
     EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
                                   std::move(outputs)));
   }
   {
     // Test the invalid outputs for invalid input name.
     base::flat_map<std::string, WebNNBufferInfo> inputs;
-    inputs["lhs"] = CreateWebNNBufferInfo(byte_length);
-    inputs["rhs"] = CreateWebNNBufferInfo(byte_length);
+    inputs["lhs"] = CreateWebNNBufferInfo(kDataType, kShape);
+    inputs["rhs"] = CreateWebNNBufferInfo(kDataType, kShape);
     base::flat_map<std::string, WebNNBufferInfo> outputs;
-    outputs["a_different_output_name"] = CreateWebNNBufferInfo(byte_length);
-    outputs["output2"] = CreateWebNNBufferInfo(byte_length);
+    outputs["a_different_output_name"] =
+        CreateWebNNBufferInfo(kDataType, kShape);
+    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape);
     EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
                                   std::move(outputs)));
   }
   {
-    // Test the invalid inputs for invalid first input byte length.
+    // Test the invalid inputs for invalid first input shape.
     base::flat_map<std::string, WebNNBufferInfo> inputs;
-    inputs["lhs"] = CreateWebNNBufferInfo(/*size=*/20);
-    inputs["rhs"] = CreateWebNNBufferInfo(byte_length);
+    inputs["lhs"] = CreateWebNNBufferInfo(kDataType, {2, 5});
+    inputs["rhs"] = CreateWebNNBufferInfo(kDataType, kShape);
     base::flat_map<std::string, WebNNBufferInfo> outputs;
-    outputs["output1"] = CreateWebNNBufferInfo(byte_length);
-    outputs["output2"] = CreateWebNNBufferInfo(byte_length);
+    outputs["output1"] = CreateWebNNBufferInfo(kDataType, kShape);
+    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape);
     EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
                                   std::move(outputs)));
   }
   {
-    // Test the invalid outputs for invalid first output byte length.
+    // Test the invalid inputs for invalid first input data type.
     base::flat_map<std::string, WebNNBufferInfo> inputs;
-    inputs["lhs"] = CreateWebNNBufferInfo(byte_length);
-    inputs["rhs"] = CreateWebNNBufferInfo(byte_length);
+    inputs["lhs"] = CreateWebNNBufferInfo(OperandDataType::kInt8, kShape);
+    inputs["rhs"] = CreateWebNNBufferInfo(kDataType, kShape);
     base::flat_map<std::string, WebNNBufferInfo> outputs;
-    outputs["output1"] = CreateWebNNBufferInfo(/*size=*/20);
-    outputs["output2"] = CreateWebNNBufferInfo(byte_length);
+    outputs["output1"] = CreateWebNNBufferInfo(kDataType, kShape);
+    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape);
     EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
                                   std::move(outputs)));
   }
   {
-    // Test the invalid inputs for invalid second input byte length.
+    // Test the invalid outputs for invalid first output shape.
     base::flat_map<std::string, WebNNBufferInfo> inputs;
-    inputs["lhs"] = CreateWebNNBufferInfo(byte_length);
-    inputs["rhs"] = CreateWebNNBufferInfo(/*size=*/20);
+    inputs["lhs"] = CreateWebNNBufferInfo(kDataType, kShape);
+    inputs["rhs"] = CreateWebNNBufferInfo(kDataType, kShape);
     base::flat_map<std::string, WebNNBufferInfo> outputs;
-    outputs["output1"] = CreateWebNNBufferInfo(byte_length);
-    outputs["output2"] = CreateWebNNBufferInfo(byte_length);
+    outputs["output1"] = CreateWebNNBufferInfo(kDataType, {3, 4});
+    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape);
     EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
                                   std::move(outputs)));
   }
   {
-    // Test the invalid outputs for invalid second output byte length.
+    // Test the invalid inputs for invalid second input data type.
     base::flat_map<std::string, WebNNBufferInfo> inputs;
-    inputs["lhs"] = CreateWebNNBufferInfo(byte_length);
-    inputs["rhs"] = CreateWebNNBufferInfo(byte_length);
+    inputs["lhs"] = CreateWebNNBufferInfo(kDataType, kShape);
+    inputs["rhs"] = CreateWebNNBufferInfo(OperandDataType::kInt32, kShape);
     base::flat_map<std::string, WebNNBufferInfo> outputs;
-    outputs["output1"] = CreateWebNNBufferInfo(byte_length);
-    outputs["output2"] = CreateWebNNBufferInfo(/*size=*/20);
+    outputs["output1"] = CreateWebNNBufferInfo(kDataType, kShape);
+    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape);
+    EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
+                                  std::move(outputs)));
+  }
+  {
+    // Test the invalid outputs for invalid second output shape.
+    base::flat_map<std::string, WebNNBufferInfo> inputs;
+    inputs["lhs"] = CreateWebNNBufferInfo(kDataType, kShape);
+    inputs["rhs"] = CreateWebNNBufferInfo(kDataType, kShape);
+    base::flat_map<std::string, WebNNBufferInfo> outputs;
+    outputs["output1"] = CreateWebNNBufferInfo(kDataType, kShape);
+    outputs["output2"] = CreateWebNNBufferInfo(kDataType, {2, 5});
     EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
                                   std::move(outputs)));
   }
   {
     // Test the inputs using the same buffer more than once.
     base::flat_map<std::string, WebNNBufferInfo> inputs;
-    const WebNNBufferInfo& input_buffer = CreateWebNNBufferInfo(byte_length);
+    const WebNNBufferInfo& input_buffer =
+        CreateWebNNBufferInfo(kDataType, kShape);
     inputs["lhs"] = input_buffer;
-    inputs["rhs"] = {input_buffer.buffer_handle, byte_length,
+    inputs["rhs"] = {input_buffer.buffer_handle, kDataType, kShape,
                      /*create_buffer=*/false};
     base::flat_map<std::string, WebNNBufferInfo> outputs;
-    outputs["output1"] = CreateWebNNBufferInfo(byte_length);
-    outputs["output2"] = CreateWebNNBufferInfo(byte_length);
+    outputs["output1"] = CreateWebNNBufferInfo(kDataType, kShape);
+    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape);
     EXPECT_TRUE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
                                  std::move(outputs)));
   }
   {
     // Test the invalid outputs when using the same buffer more than once.
     base::flat_map<std::string, WebNNBufferInfo> inputs;
-    inputs["lhs"] = CreateWebNNBufferInfo(byte_length);
-    inputs["rhs"] = CreateWebNNBufferInfo(byte_length);
+    inputs["lhs"] = CreateWebNNBufferInfo(kDataType, kShape);
+    inputs["rhs"] = CreateWebNNBufferInfo(kDataType, kShape);
     base::flat_map<std::string, WebNNBufferInfo> outputs;
-    const WebNNBufferInfo& output_buffer = CreateWebNNBufferInfo(byte_length);
+    const WebNNBufferInfo& output_buffer =
+        CreateWebNNBufferInfo(kDataType, kShape);
     outputs["output1"] = output_buffer;
-    outputs["output2"] = {output_buffer.buffer_handle, byte_length,
+    outputs["output2"] = {output_buffer.buffer_handle, kDataType, kShape,
                           /*create_buffer=*/false};
     EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
                                   std::move(outputs)));
@@ -6730,35 +6753,35 @@ TEST_F(WebNNGraphImplTest, ValidateDispatchTest) {
   {
     // Test the inputs and outputs are invalid when using the same buffer.
     const WebNNBufferInfo& input_and_output_buffer = {
-        base::UnguessableToken::Create(), byte_length};
+        base::UnguessableToken::Create(), kDataType, kShape};
     base::flat_map<std::string, WebNNBufferInfo> inputs;
     inputs["lhs"] = input_and_output_buffer;
-    inputs["rhs"] = CreateWebNNBufferInfo(byte_length);
+    inputs["rhs"] = CreateWebNNBufferInfo(kDataType, kShape);
     base::flat_map<std::string, WebNNBufferInfo> outputs;
     outputs["output1"] = input_and_output_buffer;
-    outputs["output2"] = CreateWebNNBufferInfo(byte_length);
+    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape);
     EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
                                   std::move(outputs)));
   }
   {
     // Test the inputs are invalid when using a invalid buffer.
     base::flat_map<std::string, WebNNBufferInfo> inputs;
-    inputs["lhs"] = CreateWebNNBufferInfo(byte_length, false);
-    inputs["rhs"] = CreateWebNNBufferInfo(byte_length);
+    inputs["lhs"] = CreateWebNNBufferInfo(kDataType, kShape, false);
+    inputs["rhs"] = CreateWebNNBufferInfo(kDataType, kShape);
     base::flat_map<std::string, WebNNBufferInfo> outputs;
-    outputs["output1"] = CreateWebNNBufferInfo(byte_length);
-    outputs["output2"] = CreateWebNNBufferInfo(byte_length);
+    outputs["output1"] = CreateWebNNBufferInfo(kDataType, kShape);
+    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape);
     EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
                                   std::move(outputs)));
   }
   {
     // Test the outputs are invalid when using a invalid buffer.
     base::flat_map<std::string, WebNNBufferInfo> inputs;
-    inputs["lhs"] = CreateWebNNBufferInfo(byte_length);
-    inputs["rhs"] = CreateWebNNBufferInfo(byte_length);
+    inputs["lhs"] = CreateWebNNBufferInfo(kDataType, kShape);
+    inputs["rhs"] = CreateWebNNBufferInfo(kDataType, kShape);
     base::flat_map<std::string, WebNNBufferInfo> outputs;
-    outputs["output1"] = CreateWebNNBufferInfo(byte_length);
-    outputs["output2"] = CreateWebNNBufferInfo(byte_length, false);
+    outputs["output1"] = CreateWebNNBufferInfo(kDataType, kShape);
+    outputs["output2"] = CreateWebNNBufferInfo(kDataType, kShape, false);
     EXPECT_FALSE(ValidateDispatch(builder.CloneGraphInfo(), std::move(inputs),
                                   std::move(outputs)));
   }

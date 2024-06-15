@@ -800,7 +800,7 @@ DetermineGraphResourcesFromOutputs(const MLNamedOperands& named_outputs) {
     // Setup resource info for this output operand.
     output_resources_info.insert(
         name, MLGraph::ResourceInfo({.data_type = operand->DataType(),
-                                     .byte_length = operand->ByteLength()}));
+                                     .shape = operand->shape()}));
     // Mark its dependent operator is visited.
     visited_operators.insert(operand->Operator());
     // Enqueue its dependent operator.
@@ -844,7 +844,7 @@ DetermineGraphResourcesFromOutputs(const MLNamedOperands& named_outputs) {
           input_resources_info.insert(
               operand->Name(),
               MLGraph::ResourceInfo({.data_type = operand->DataType(),
-                                     .byte_length = operand->ByteLength()}));
+                                     .shape = operand->shape()}));
           break;
         case webnn::mojom::blink::Operand::Kind::kConstant:
           // If the operand has been validated, it doesn't need to be verified

@@ -17,6 +17,7 @@
 #include "services/webnn/dml/graph_impl_dml.h"
 #include "services/webnn/dml/utils.h"
 #include "services/webnn/error.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom.h"
 
 namespace webnn::dml {
@@ -64,13 +65,14 @@ std::unique_ptr<WebNNBufferImpl> ContextImplDml::CreateBufferImpl(
   // https://learn.microsoft.com/en-us/windows/ai/directml/dml-helper-functions#dmlcalcbuffertensorsize
   constexpr uint64_t kDMLBufferAlignment = 4ull;
   if (std::numeric_limits<uint64_t>::max() - kDMLBufferAlignment <
-      buffer_info->size) {
+      static_cast<uint64_t>(buffer_info->descriptor.PackedByteLength())) {
     DLOG(ERROR) << "Buffer is too large to create.";
     return nullptr;
   }
 
-  const uint64_t aligned_buffer_byte_size =
-      base::bits::AlignUp(buffer_info->size, kDMLBufferAlignment);
+  const uint64_t aligned_buffer_byte_size = base::bits::AlignUp(
+      static_cast<uint64_t>(buffer_info->descriptor.PackedByteLength()),
+      kDMLBufferAlignment);
 
   HRESULT hr = S_OK;
 
@@ -109,29 +111,22 @@ std::unique_ptr<WebNNBufferImpl> ContextImplDml::CreateBufferImpl(
 void ContextImplDml::ReadBuffer(
     BufferImplDml* src_buffer,
     mojom::WebNNBuffer::ReadBufferCallback callback) {
-  const uint64_t src_buffer_size = src_buffer->size();
-
-  // Read size needs to be cast to size_t.
-  base::CheckedNumeric<size_t> checked_src_buffer_size(src_buffer_size);
-  if (!checked_src_buffer_size.IsValid()) {
-    receiver_.ReportBadMessage(kBadMessageInvalidBuffer);
-    return;
-  }
+  const size_t src_buffer_size = src_buffer->PackedByteLength();
 
   HRESULT hr = S_OK;
 
   // Map entire buffer to readback the output data.
   if (adapter_->IsUMA() && adapter_->command_queue()->GetCompletedValue() >=
                                src_buffer->last_submission_fence_value()) {
-    ContextImplDml::OnReadbackComplete(src_buffer->buffer(),
-                                       checked_src_buffer_size.ValueOrDie(),
+    ContextImplDml::OnReadbackComplete(src_buffer->buffer(), src_buffer_size,
                                        std::move(callback), hr);
     return;
   }
 
   // Copy the buffer into a staging buffer to readback the output data.
   ComPtr<ID3D12Resource> download_buffer;
-  hr = CreateReadbackBuffer(adapter_->d3d12_device(), src_buffer_size,
+  hr = CreateReadbackBuffer(adapter_->d3d12_device(),
+                            static_cast<uint64_t>(src_buffer_size),
                             L"WebNN_Readback_Buffer", download_buffer);
   if (FAILED(hr)) {
     LOG(ERROR) << "[WebNN] Failed to create the download buffer: "
@@ -165,8 +160,7 @@ void ContextImplDml::ReadBuffer(
   // CommandRecorder::CloseAndExecute().
   adapter_->command_queue()->WaitAsync(base::BindOnce(
       &ContextImplDml::OnReadbackComplete, weak_factory_.GetWeakPtr(),
-      std::move(download_buffer), checked_src_buffer_size.ValueOrDie(),
-      std::move(callback)));
+      std::move(download_buffer), src_buffer_size, std::move(callback)));
 }
 
 void ContextImplDml::OnReadbackComplete(

@@ -377,7 +377,7 @@ void MLContext::WriteWebNNBuffer(ScriptState* script_state,
     write_byte_size = src_element_count.value() * src_data_type_size_bytes;
   }
 
-  if (write_byte_size > dst_buffer->size()) {
+  if (write_byte_size > dst_buffer->PackedByteLength()) {
     exception_state.ThrowTypeError(
         "Number of bytes to write is too large: write size exceeded buffer "
         "size.");

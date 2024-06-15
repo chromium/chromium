@@ -342,4 +342,25 @@ std::vector<uint32_t> PermuteArray(base::span<const uint32_t> array,
   return permuted_array;
 }
 
+OperandDataType ToOperandDataType(mojom::DataType data_type) {
+  switch (data_type) {
+    case mojom::DataType::kFloat32:
+      return OperandDataType::kFloat32;
+    case mojom::DataType::kFloat16:
+      return OperandDataType::kFloat16;
+    case mojom::DataType::kInt32:
+      return OperandDataType::kInt32;
+    case mojom::DataType::kUint32:
+      return OperandDataType::kUint32;
+    case mojom::DataType::kInt64:
+      return OperandDataType::kInt64;
+    case mojom::DataType::kUint64:
+      return OperandDataType::kUint64;
+    case mojom::DataType::kInt8:
+      return OperandDataType::kInt8;
+    case mojom::DataType::kUint8:
+      return OperandDataType::kUint8;
+  }
+}
+
 }  // namespace webnn

@@ -5,6 +5,7 @@
 module webnn.mojom;
 
 import "mojo/public/mojom/base/big_buffer.mojom";
+import "services/webnn/public/mojom/webnn_graph.mojom";
 import "services/webnn/public/mojom/webnn_error.mojom";
 
 // A struct is used to represent MLBufferUsageFlags since Mojo does not have
@@ -15,9 +16,7 @@ struct BufferUsage {
 
 // Description of the WebNNBuffer to create.
 struct BufferInfo {
-  // The size of the buffer in bytes.
-  // TODO(crbug.com/343638938): Replace this with a data type and shape.
-  uint64 size;
+  OperandDescriptor descriptor;
   BufferUsage usage;
 };
 

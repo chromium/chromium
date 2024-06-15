@@ -4,13 +4,12 @@
 
 // https://www.w3.org/TR/webnn/#api-mlbuffer
 
-typedef unsigned long long MLSize64Out;
-
 [
   RuntimeEnabled=MachineLearningNeuralNetwork,
   Exposed=(Window, DedicatedWorker)
 ] interface MLBuffer {
-  readonly attribute MLSize64Out size;
+  readonly attribute MLOperandDataType dataType;
+  readonly attribute FrozenArray<unsigned long> shape;
 
   void destroy();
 };

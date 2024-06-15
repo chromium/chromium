@@ -5876,7 +5876,8 @@ interface MLActivation
     method constructor
 interface MLBuffer
     attribute @@toStringTag
-    getter size
+    getter dataType
+    getter shape
     method constructor
     method destroy
 interface MLContext

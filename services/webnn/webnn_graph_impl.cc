@@ -16,10 +16,12 @@
 #include "base/types/expected.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/webnn_buffer_impl.h"
 #include "services/webnn/webnn_context_impl.h"
+#include "services/webnn/webnn_utils.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -32,28 +34,6 @@ namespace {
 
 // Maps the id to its `mojo::Operand`.
 using IdToOperandMap = base::flat_map<uint64_t, mojom::OperandPtr>;
-
-size_t GetBytesPerElement(mojom::DataType operand_type) {
-  switch (operand_type) {
-    case mojom::DataType::kFloat32:
-      return sizeof(float);
-    case mojom::DataType::kFloat16:
-      return sizeof(uint16_t);
-    case mojom::DataType::kInt32:
-      return sizeof(int32_t);
-    case mojom::DataType::kUint32:
-      return sizeof(uint32_t);
-    case mojom::DataType::kInt64:
-      return sizeof(int64_t);
-    case mojom::DataType::kUint64:
-      return sizeof(uint64_t);
-    case mojom::DataType::kInt8:
-      return sizeof(int8_t);
-    case mojom::DataType::kUint8:
-      return sizeof(uint8_t);
-  }
-  NOTREACHED_IN_MIGRATION();
-}
 
 webnn::Operand::DataType MojoOperandTypeToComponent(mojom::DataType data_type) {
   switch (data_type) {
@@ -74,7 +54,6 @@ webnn::Operand::DataType MojoOperandTypeToComponent(mojom::DataType data_type) {
     case mojom::DataType::kUint8:
       return webnn::Operand::DataType::kUint8;
   }
-  NOTREACHED_NORETURN();
 }
 
 webnn::Operand MojoOperandToComponent(const mojom::Operand* mojo_operand) {
@@ -1940,24 +1919,26 @@ bool ValidateReduce(const IdToOperandMap& id_to_operand_map,
   return true;
 }
 
-base::flat_map<std::string, size_t> CreateByteLengthMap(
+base::flat_map<std::string, OperandDescriptor>
+GetOperandNamesAndDescriptorsFromIds(
     const std::vector<uint64_t>& operand_ids,
     const base::flat_map<uint64_t, mojom::OperandPtr>& id_to_operand_map) {
-  base::flat_map<std::string, size_t> name_to_byte_length_map;
-  name_to_byte_length_map.reserve(operand_ids.size());
+  base::flat_map<std::string, OperandDescriptor> names_to_descriptors;
+  names_to_descriptors.reserve(operand_ids.size());
+
   for (auto& operand_id : operand_ids) {
     const mojom::OperandPtr& operand = id_to_operand_map.at(operand_id);
     // The `operand` is valid and the byte length of it was already verified in
     // `ValidateGraph` function.
     CHECK(operand);
-
-    auto byte_length = ValidateAndCalculateByteLength(
-        GetBytesPerElement(operand->data_type), operand->dimensions);
-    CHECK(byte_length.has_value());
     CHECK(operand->name.has_value());
-    name_to_byte_length_map[operand->name.value()] = byte_length.value();
+
+    names_to_descriptors.emplace(
+        *operand->name,
+        *OperandDescriptor::Create(ToOperandDataType(operand->data_type),
+                                   operand->dimensions));
   }
-  return name_to_byte_length_map;
+  return names_to_descriptors;
 }
 
 bool ValidateOperation(const mojom::ContextProperties& context_properties,
@@ -2105,14 +2086,15 @@ bool ValidateOperation(const mojom::ContextProperties& context_properties,
 // graph's expectation.
 bool ValidateInputsForComputation(
     const base::flat_map<std::string, mojo_base::BigBuffer>& named_inputs,
-    const base::flat_map<std::string, size_t>& input_name_to_byte_length_map) {
+    const base::flat_map<std::string, OperandDescriptor>&
+        names_to_descriptors) {
   return base::ranges::equal(
-      named_inputs, input_name_to_byte_length_map,
+      named_inputs, names_to_descriptors,
       [](const auto& input, const auto& input_spec) {
         const auto& [input_name, input_buffer] = input;
-        const auto& [input_spec_name, input_spec_byte_length] = input_spec;
+        const auto& [input_spec_name, input_spec_descriptor] = input_spec;
         return input_name == input_spec_name &&
-               input_buffer.size() == input_spec_byte_length;
+               input_buffer.size() == input_spec_descriptor.PackedByteLength();
       });
 }
 
@@ -2120,14 +2102,16 @@ bool ValidateInputsForComputation(
 // graph's expectation.
 bool ValidateWebNNBuffers(
     const base::flat_map<std::string_view, WebNNBufferImpl*>& named_buffers,
-    const base::flat_map<std::string, size_t>& name_to_byte_length_map) {
+    const base::flat_map<std::string, OperandDescriptor>&
+        names_to_descriptors) {
   return base::ranges::equal(
-      named_buffers, name_to_byte_length_map,
+      named_buffers, names_to_descriptors,
       [](const auto& named_buffer, const auto& buffer_spec) {
         const auto& [buffer_name, buffer_impl] = named_buffer;
-        const auto& [buffer_spec_name, buffer_spec_byte_length] = buffer_spec;
+        const auto& [buffer_spec_name, buffer_spec_descriptor] = buffer_spec;
         return buffer_name == buffer_spec_name &&
-               buffer_impl->size() == buffer_spec_byte_length;
+               buffer_impl->data_type() == buffer_spec_descriptor.data_type() &&
+               buffer_impl->shape() == buffer_spec_descriptor.shape();
       });
 }
 
@@ -2159,9 +2143,9 @@ bool ValidateWebNNBuffersUsage(
 
 WebNNGraphImpl::ComputeResourceInfo::ComputeResourceInfo(
     const mojom::GraphInfoPtr& graph_info) {
-  input_name_to_byte_length_map = CreateByteLengthMap(
+  input_names_to_descriptors = GetOperandNamesAndDescriptorsFromIds(
       graph_info->input_operands, graph_info->id_to_operand_map);
-  output_name_to_byte_length_map = CreateByteLengthMap(
+  output_names_to_descriptors = GetOperandNamesAndDescriptorsFromIds(
       graph_info->output_operands, graph_info->id_to_operand_map);
 }
 
@@ -2214,8 +2198,10 @@ bool WebNNGraphImpl::ValidateGraph(
   base::flat_map<uint64_t, size_t> constant_id_to_byte_length_map;
   for (auto& [id, operand] : graph_info->id_to_operand_map) {
     base::expected<size_t, std::string> byte_length =
-        ValidateAndCalculateByteLength(GetBytesPerElement(operand->data_type),
-                                       operand->dimensions);
+        ValidateAndCalculateByteLength(
+            OperandDescriptor::GetBytesPerElement(
+                ToOperandDataType(operand->data_type)),
+            operand->dimensions);
     if (!byte_length.has_value()) {
       return false;
     }
@@ -2306,7 +2292,7 @@ void WebNNGraphImpl::Compute(
     base::flat_map<std::string, mojo_base::BigBuffer> named_inputs,
     mojom::WebNNGraph::ComputeCallback callback) {
   if (!ValidateInputsForComputation(
-          named_inputs, compute_resource_info_.input_name_to_byte_length_map)) {
+          named_inputs, compute_resource_info_.input_names_to_descriptors)) {
     mojo::ReportBadMessage(
         "The inputs for computation don't match the built graph's "
         "expectation.");
@@ -2349,7 +2335,7 @@ void WebNNGraphImpl::Dispatch(
       std::move(name_to_input_buffers));
   if (!ValidateWebNNBuffers(
           name_to_input_buffer_map,
-          compute_resource_info_.input_name_to_byte_length_map)) {
+          compute_resource_info_.input_names_to_descriptors)) {
     mojo::ReportBadMessage(kBadMessageInvalidBuffer);
     return;
   }
@@ -2372,7 +2358,7 @@ void WebNNGraphImpl::Dispatch(
       std::move(name_to_output_buffers));
   if (!ValidateWebNNBuffers(
           name_to_output_buffer_map,
-          compute_resource_info_.output_name_to_byte_length_map)) {
+          compute_resource_info_.output_names_to_descriptors)) {
     mojo::ReportBadMessage(kBadMessageInvalidBuffer);
     return;
   }
