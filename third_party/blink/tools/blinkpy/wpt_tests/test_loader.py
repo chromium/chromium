@@ -79,7 +79,7 @@ class TestLoader(testloader.TestLoader):
             self.tests[subsuite_name] = collections.defaultdict(list)
             self.disabled_tests[subsuite_name] = collections.defaultdict(list)
 
-            test_urls = subsuite.include or self._include or set(items_by_url)
+            test_urls = subsuite.include or self._include or []
             for test_url in test_urls:
                 if not test_url.startswith('/'):
                     test_url = f'/{test_url}'

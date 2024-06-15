@@ -390,3 +390,9 @@ class TestLoaderTestCase(unittest.TestCase):
             self.assertEqual(base_test.id, '/reftest.html')
             self.assertEqual(virtual_test.id, '/variant.html?foo=baz')
             self.assertEqual(loader.disabled_tests, {'': {}, 'fake-vts': {}})
+
+    def test_load_no_tests(self):
+        subsuites = {'': Subsuite('', config={})}
+        with self._make_loader(subsuites=subsuites, include=[]) as loader:
+            self.assertEqual(set(loader.tests), {''})
+            self.assertEqual(loader.tests[''], {})
