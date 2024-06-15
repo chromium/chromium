@@ -7,7 +7,6 @@
 #include <algorithm>
 
 #include "base/debug/dump_without_crashing.h"
-#include "base/debug/stack_trace.h"
 #include "components/crash/core/common/crash_key.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -141,14 +140,7 @@ void IDBRequestLoader::DidFail(FileErrorCode) {
 #endif  // DCHECK_IS_ON()
 
   // TODO(https://crbug.com/3342779913): fix bug and remove this debug code.
-  {
-    static crash_reporter::CrashKeyString<1024> trace_key(
-        "crbug/3342779913/stack");
-    crash_reporter::SetCrashKeyStringToStackTrace(&trace_key,
-                                                  base::debug::StackTrace());
-    base::debug::DumpWithoutCrashing();
-    trace_key.Clear();
-  }
+  base::debug::DumpWithoutCrashing();
 
   OnLoadComplete(/*error=*/true);
 }
