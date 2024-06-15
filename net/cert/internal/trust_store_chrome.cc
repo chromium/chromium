@@ -6,9 +6,14 @@
 
 #include <optional>
 
+#include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
+#include "crypto/sha2.h"
 #include "net/cert/root_store_proto_lite/root_store.pb.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -22,6 +27,7 @@ namespace {
 #include "net/data/ssl/chrome_root_store/chrome-root-store-inc.cc"
 }  // namespace
 
+ChromeRootCertConstraints::ChromeRootCertConstraints() = default;
 ChromeRootCertConstraints::ChromeRootCertConstraints(
     std::optional<base::Time> sct_not_after,
     std::optional<base::Time> sct_all_after,
@@ -140,13 +146,17 @@ ChromeRootStoreData::CreateChromeRootStoreData(
 }
 
 TrustStoreChrome::TrustStoreChrome()
-    : TrustStoreChrome(kChromeRootCertList,
-                       /*certs_are_static=*/true,
-                       /*version=*/CompiledChromeRootStoreVersion()) {}
+    : TrustStoreChrome(
+          kChromeRootCertList,
+          /*certs_are_static=*/true,
+          /*version=*/CompiledChromeRootStoreVersion(),
+          /*override_constraints=*/InitializeConstraintsOverrides()) {}
 
 TrustStoreChrome::TrustStoreChrome(base::span<const ChromeRootCertInfo> certs,
                                    bool certs_are_static,
-                                   int64_t version) {
+                                   int64_t version,
+                                   ConstraintOverrideMap override_constraints)
+    : override_constraints_(std::move(override_constraints)) {
   std::vector<
       std::pair<std::string_view, std::vector<ChromeRootCertConstraints>>>
       constraints;
@@ -190,7 +200,8 @@ TrustStoreChrome::TrustStoreChrome(base::span<const ChromeRootCertInfo> certs,
   version_ = version;
 }
 
-TrustStoreChrome::TrustStoreChrome(const ChromeRootStoreData& root_store_data) {
+TrustStoreChrome::TrustStoreChrome(const ChromeRootStoreData& root_store_data)
+    : override_constraints_(InitializeConstraintsOverrides()) {
   std::vector<
       std::pair<std::string_view, std::vector<ChromeRootCertConstraints>>>
       constraints;
@@ -209,6 +220,98 @@ TrustStoreChrome::TrustStoreChrome(const ChromeRootStoreData& root_store_data) {
 
 TrustStoreChrome::~TrustStoreChrome() = default;
 
+TrustStoreChrome::ConstraintOverrideMap
+TrustStoreChrome::InitializeConstraintsOverrides() {
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(kTestCrsConstraintsSwitch)) {
+    return ParseCrsConstraintsSwitch(
+        command_line->GetSwitchValueASCII(kTestCrsConstraintsSwitch));
+  }
+
+  return {};
+}
+
+TrustStoreChrome::ConstraintOverrideMap
+TrustStoreChrome::ParseCrsConstraintsSwitch(std::string_view switch_value) {
+  // This function constructs a flat_map on the fly rather than the more
+  // efficient approach of creating a vector first and then constructing the
+  // flat_map from that. It is expected that there will only be a small number
+  // of elements in the map, and that this is only used for testing, therefore
+  // simplicity of the implementation is weighted higher than theoretical
+  // efficiency.
+  ConstraintOverrideMap constraints;
+
+  base::StringPairs roots_and_constraints_pairs;
+  base::SplitStringIntoKeyValuePairs(switch_value, ':', '+',
+                                     &roots_and_constraints_pairs);
+  for (const auto& [root_hashes_hex, root_constraints] :
+       roots_and_constraints_pairs) {
+    std::vector<std::array<uint8_t, crypto::kSHA256Length>> root_hashes;
+    for (std::string_view root_hash_hex :
+         base::SplitStringPiece(root_hashes_hex, ",", base::TRIM_WHITESPACE,
+                                base::SPLIT_WANT_NONEMPTY)) {
+      std::array<uint8_t, crypto::kSHA256Length> root_hash;
+      if (!base::HexStringToSpan(root_hash_hex, root_hash)) {
+        LOG(ERROR) << "invalid root hash: " << root_hash_hex;
+        continue;
+      }
+      root_hashes.push_back(std::move(root_hash));
+    }
+    if (root_hashes.empty()) {
+      LOG(ERROR) << "skipped constraintset with no valid root hashes";
+      continue;
+    }
+    ChromeRootCertConstraints constraint;
+    base::StringPairs constraint_value_pairs;
+    base::SplitStringIntoKeyValuePairs(root_constraints, '=', ',',
+                                       &constraint_value_pairs);
+    for (const auto& [constraint_name, constraint_value] :
+         constraint_value_pairs) {
+      std::string constraint_name_lower = base::ToLowerASCII(constraint_name);
+      if (constraint_name_lower == "sctnotafter") {
+        int64_t value;
+        if (!base::StringToInt64(constraint_value, &value)) {
+          LOG(ERROR) << "invalid sctnotafter: " << constraint_value;
+          continue;
+        }
+        constraint.sct_not_after =
+            base::Time::UnixEpoch() + base::Seconds(value);
+      } else if (constraint_name_lower == "sctallafter") {
+        int64_t value;
+        if (!base::StringToInt64(constraint_value, &value)) {
+          LOG(ERROR) << "invalid sctallafter: " << constraint_value;
+          continue;
+        }
+        constraint.sct_all_after =
+            base::Time::UnixEpoch() + base::Seconds(value);
+      } else if (constraint_name_lower == "minversion") {
+        base::Version version(constraint_value);
+        if (!version.IsValid()) {
+          LOG(ERROR) << "invalid minversion: " << constraint_value;
+          continue;
+        }
+        constraint.min_version = version;
+      } else if (constraint_name_lower == "maxversionexclusive") {
+        base::Version version(constraint_value);
+        if (!version.IsValid()) {
+          LOG(ERROR) << "invalid maxversionexclusive: " << constraint_value;
+          continue;
+        }
+        constraint.max_version_exclusive = version;
+      } else {
+        LOG(ERROR) << "unrecognized constraint " << constraint_name_lower;
+      }
+      // TODO(crbug.com/40941039): add other constraint types here when they
+      // are implemented
+    }
+    for (const auto& root_hash : root_hashes) {
+      constraints[root_hash].push_back(constraint);
+    }
+  }
+
+  return constraints;
+}
+
 void TrustStoreChrome::SyncGetIssuersOf(const bssl::ParsedCertificate* cert,
                                         bssl::ParsedCertificateList* issuers) {
   trust_store_.SyncGetIssuersOf(cert, issuers);
@@ -226,6 +329,15 @@ bool TrustStoreChrome::Contains(const bssl::ParsedCertificate* cert) const {
 base::span<const ChromeRootCertConstraints>
 TrustStoreChrome::GetConstraintsForCert(
     const bssl::ParsedCertificate* cert) const {
+  if (!override_constraints_.empty()) {
+    const std::array<uint8_t, crypto::kSHA256Length> cert_hash =
+        crypto::SHA256Hash(cert->der_cert());
+    auto it = override_constraints_.find(cert_hash);
+    if (it != override_constraints_.end()) {
+      return it->second;
+    }
+  }
+
   auto it = constraints_.find(cert->der_cert().AsStringView());
   if (it != constraints_.end()) {
     return it->second;
@@ -236,10 +348,13 @@ TrustStoreChrome::GetConstraintsForCert(
 // static
 std::unique_ptr<TrustStoreChrome> TrustStoreChrome::CreateTrustStoreForTesting(
     base::span<const ChromeRootCertInfo> certs,
-    int64_t version) {
+    int64_t version,
+    ConstraintOverrideMap override_constraints) {
   // Note: wrap_unique is used because the constructor is private.
   return base::WrapUnique(new TrustStoreChrome(
-      certs, /*certs_are_static=*/false, /*version=*/version));
+      certs,
+      /*certs_are_static=*/false,
+      /*version=*/version, std::move(override_constraints)));
 }
 
 int64_t CompiledChromeRootStoreVersion() {

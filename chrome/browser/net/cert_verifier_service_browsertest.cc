@@ -4,6 +4,7 @@
 
 #include <optional>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -18,6 +19,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/features.h"
 #include "net/cert/internal/trust_store_chrome.h"
+#include "net/cert/test_root_certs.h"
 #include "net/cert/x509_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/net_buildflags.h"
@@ -116,3 +118,73 @@ INSTANTIATE_TEST_SUITE_P(All,
                          CertVerifierServiceChromeRootStoreOptionalTest,
                          ::testing::Bool());
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+class CertVerifierTestCrsConstraintsSwitchTest : public PlatformBrowserTest {
+ public:
+  void SetUpDefaultCommandLine(base::CommandLine* command_line) override {
+    net::EmbeddedTestServer::ServerCertificateConfig test_cert_config;
+    test_cert_config.dns_names = {"example.com"};
+    test_cert_config.root = net::EmbeddedTestServer::RootType::kUniqueRoot;
+    test_server1_.SetSSLConfig(test_cert_config);
+    test_server2_.SetSSLConfig(test_cert_config);
+    ASSERT_TRUE(test_server1_.InitializeAndListen());
+    ASSERT_TRUE(test_server2_.InitializeAndListen());
+
+    scoped_test_root_ =
+        net::ScopedTestRoot({test_server1_.GetRoot(), test_server2_.GetRoot()});
+
+    const std::array<uint8_t, crypto::kSHA256Length> root2_hash =
+        crypto::SHA256Hash(test_server2_.GetRoot()->cert_span());
+    const std::string switch_value =
+        base::HexEncode(root2_hash) + ":maxversionexclusive=0";
+
+    PlatformBrowserTest::SetUpDefaultCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        net::TrustStoreChrome::kTestCrsConstraintsSwitch, switch_value);
+  }
+
+  void SetUpOnMainThread() override {
+    PlatformBrowserTest::SetUpOnMainThread();
+
+    test_server1_.ServeFilesFromSourceDirectory("chrome/test/data");
+    test_server2_.ServeFilesFromSourceDirectory("chrome/test/data");
+    test_server1_.StartAcceptingConnections();
+    test_server2_.StartAcceptingConnections();
+
+    host_resolver()->AddRule("*", "127.0.0.1");
+  }
+
+ protected:
+  content::WebContents* GetActiveWebContents() {
+    return chrome_test_utils::GetActiveWebContents(this);
+  }
+
+  net::EmbeddedTestServer test_server1_{net::EmbeddedTestServer::TYPE_HTTPS};
+  net::EmbeddedTestServer test_server2_{net::EmbeddedTestServer::TYPE_HTTPS};
+  net::ScopedTestRoot scoped_test_root_;
+};
+
+// End-to-end test to verify that the --test-crs-constraints switch is honored
+// when loading webpages in the browser. (More extensive testing of the various
+// features of the switch is handled by unittests.)
+IN_PROC_BROWSER_TEST_F(CertVerifierTestCrsConstraintsSwitchTest,
+                       TestSwitchIsHonored) {
+  // First server does not have any test constraints set, and should load
+  // successfully.
+  EXPECT_TRUE(content::NavigateToURL(
+      GetActiveWebContents(),
+      test_server1_.GetURL("example.com", "/simple.html")));
+  EXPECT_FALSE(chrome_browser_interstitials::IsShowingInterstitial(
+      GetActiveWebContents()));
+
+  // Second server has test constraints set for its root with a
+  // max_version_exclusive of 0. The browser version should be greater than 0
+  // so this root will not be trusted.
+  EXPECT_FALSE(content::NavigateToURL(
+      GetActiveWebContents(),
+      test_server2_.GetURL("example.com", "/simple.html")));
+  EXPECT_TRUE(chrome_browser_interstitials::IsShowingInterstitial(
+      GetActiveWebContents()));
+}
+#endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
