@@ -517,6 +517,25 @@ struct MEDIA_EXPORT XKeyTag {
   std::optional<ResolvedSourceString> keyformat_versions;
 };
 
+struct MEDIA_EXPORT XSessionKeyTag {
+  static constexpr auto kName = MultivariantPlaylistTagName::kXSessionKey;
+  static ParseStatus::Or<XSessionKeyTag> Parse(
+      TagItem,
+      const VariableDictionary&,
+      VariableDictionary::SubstitutionBuffer&);
+
+  // the METHOD attribute MUST NOT be NONE.
+  XKeyTagMethod method;
+
+  // If an EXT-X-SESSION-KEY is used, the values of the METHOD, KEYFORMAT, and
+  // KEYFORMATVERSIONS attributes MUST match any EXT-X-KEY with the same URI
+  // value. These fields match the corresponding ones in XKeyTag.
+  ResolvedSourceString uri;
+  std::optional<XKeyTag::IVHex::Container> iv;
+  XKeyTagKeyFormat keyformat;
+  std::optional<ResolvedSourceString> keyformat_versions;
+};
+
 }  // namespace media::hls
 
 #endif  // MEDIA_FORMATS_HLS_TAGS_H_

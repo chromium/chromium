@@ -1610,6 +1610,80 @@ ParseStatus::Or<XKeyTag> XKeyTag::Parse(
       });
 }
 
+ParseStatus::Or<XSessionKeyTag> XSessionKeyTag::Parse(
+    TagItem tag,
+    const VariableDictionary& vars,
+    VariableDictionary::SubstitutionBuffer& subs) {
+  DCHECK(tag.GetName() == ToTagName(XSessionKeyTag::kName));
+  return RequireNonEmptyMap<XKeyTagAttribute>(tag.GetContent())
+      .MapValue([&](auto map) -> ParseStatus::Or<XSessionKeyTag> {
+        auto enc_method = ParseField<XKeyTagMethod>(
+            XKeyTagAttribute::kMethod, map,
+            [](SourceString content) -> ParseStatus::Or<XKeyTagMethod> {
+              if (content.Str() == "AES-128") {
+                return XKeyTagMethod::kAES128;
+              } else if (content.Str() == "SAMPLE-AES") {
+                return XKeyTagMethod::kSampleAES;
+              } else if (content.Str() == "SAMPLE-AES-CTR") {
+                return XKeyTagMethod::kSampleAESCTR;
+              } else {
+                return ParseStatusCode::kMalformedTag;
+              }
+            });
+        RETURN_IF_ERROR(enc_method);
+
+        auto enc_uri = ParseField<ResolvedSourceString>(
+            XKeyTagAttribute::kUri, map,
+            &types::parsing::Quoted<
+                types::parsing::RawStr>::ParseWithSubstitution,
+            vars, subs);
+        RETURN_IF_ERROR(enc_uri);
+
+        auto enc_ = ParseField<std::optional<XKeyTag::IVHex::Container>>(
+            XKeyTagAttribute::kIv, map,
+            &XKeyTag::IVHex::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(enc_);
+
+        if (*enc_method == XKeyTagMethod::kSampleAESCTR &&
+            (*enc_).has_value()) {
+          // The IV attribute MUST NOT be present for Sample-AES-CTR content.
+          // The IV attribute MAY be present for other encryption schemes.
+          return ParseStatusCode::kMalformedTag;
+        }
+
+        auto enc_keyformat =
+            ParseField<std::optional<ResolvedSourceString>>(
+                XKeyTagAttribute::kKeyFormat, map,
+                &types::parsing::Quoted<
+                    types::parsing::RawStr>::ParseWithoutSubstitution)
+                .MapValue(
+                    [](auto formatstr) -> ParseStatus::Or<XKeyTagKeyFormat> {
+                      if (!formatstr.has_value()) {
+                        return XKeyTagKeyFormat::kIdentity;
+                      }
+                      if (formatstr.value().Str() == "identity") {
+                        return XKeyTagKeyFormat::kIdentity;
+                      }
+                      return XKeyTagKeyFormat::kUnsupported;
+                    });
+        RETURN_IF_ERROR(enc_keyformat);
+
+        auto enc_keyformat_versions =
+            ParseField<std::optional<ResolvedSourceString>>(
+                XKeyTagAttribute::kKeyFormatVersions, map,
+                &types::parsing::RawStr::ParseWithoutSubstitution);
+        RETURN_IF_ERROR(enc_keyformat_versions);
+
+        return XSessionKeyTag{
+            .method = *enc_method,
+            .uri = std::move(enc_uri).value(),
+            .iv = std::move(enc_).value(),
+            .keyformat = std::move(enc_keyformat).value(),
+            .keyformat_versions = std::move(enc_keyformat_versions).value(),
+        };
+      });
+}
+
 #undef RETURN_IF_ERROR
 
 }  // namespace media::hls

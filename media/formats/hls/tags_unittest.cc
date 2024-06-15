@@ -1070,11 +1070,74 @@ TEST(HlsTagsTest, ParseXSessionDataTag) {
 }
 
 TEST(HlsTagsTest, ParseXSessionKeyTag) {
-  RunTagIdenficationTest(
-      ToTagName(MultivariantPlaylistTagName::kXSessionKey),
-      "#EXT-X-SESSION-KEY:METHOD=AES-128,URI=\"https://google.com/key\"\n",
-      "METHOD=AES-128,URI=\"https://google.com/key\"");
-  // TODO(crbug.com/40057824): Implement the EXT-X-SESSION-KEY tag.
+  RunTagIdenficationTest<XSessionKeyTag>("#EXT-X-SESSION-KEY:METHOD=NONE\n",
+                                         "METHOD=NONE");
+
+  VariableDictionary dict = CreateBasicDictionary();
+  VariableDictionary::SubstitutionBuffer subs;
+
+  // Invalid method
+  ErrorTest<XSessionKeyTag>("METHOD=77", dict, subs,
+                            ParseStatusCode::kMalformedTag);
+  ErrorTest<XSessionKeyTag>("METHOD=NONE", dict, subs,
+                            ParseStatusCode::kMalformedTag);
+
+  // No IV when method is SAMPLE-AES-CTR
+  ErrorTest<XSessionKeyTag>(
+      "METHOD=SAMPLE-AES-CTR,IV=0xf4d52cf0dc02329c3ad6578744590658", dict, subs,
+      ParseStatusCode::kMalformedTag);
+
+  // Invalid IV
+  ErrorTest<XSessionKeyTag>(
+      "METHOD=AES-128,IV=0xf4d52cf0dc2329c3ad6578744590658", dict, subs,
+      ParseStatusCode::kMalformedTag);
+
+  {
+    auto result = OkTest<XSessionKeyTag>(
+        "METHOD=AES-128,URI=\"https://example.com\","
+        "IV=0xf4d52cf0dc02329c3ad6578744590658",
+        dict, subs);
+    EXPECT_EQ(result.tag.method, XKeyTagMethod::kAES128);
+    EXPECT_EQ(result.tag.uri.Str(), "https://example.com");
+    EXPECT_TRUE(result.tag.iv.has_value());
+    EXPECT_EQ(std::get<0>(result.tag.iv.value()), 0xf4d52cf0dc02329cu);
+    EXPECT_EQ(std::get<1>(result.tag.iv.value()), 0x3ad6578744590658u);
+    EXPECT_EQ(result.tag.keyformat, XKeyTagKeyFormat::kIdentity);
+    EXPECT_FALSE(result.tag.keyformat_versions.has_value());
+  }
+  {
+    auto result = OkTest<XSessionKeyTag>(
+        "METHOD=AES-128,URI=\"https://example.com\","
+        "KEYFORMAT=\"supersecretcrypto\"",
+        dict, subs);
+    EXPECT_EQ(result.tag.method, XKeyTagMethod::kAES128);
+    EXPECT_EQ(result.tag.uri.Str(), "https://example.com");
+    EXPECT_FALSE(result.tag.iv.has_value());
+    EXPECT_EQ(result.tag.keyformat, XKeyTagKeyFormat::kUnsupported);
+    EXPECT_FALSE(result.tag.keyformat_versions.has_value());
+  }
+  {
+    auto result = OkTest<XSessionKeyTag>(
+        "METHOD=SAMPLE-AES,URI=\"https://example.com\","
+        "KEYFORMAT=\"supersecretcrypto\"",
+        dict, subs);
+    EXPECT_EQ(result.tag.method, XKeyTagMethod::kSampleAES);
+    EXPECT_EQ(result.tag.uri.Str(), "https://example.com");
+    EXPECT_FALSE(result.tag.iv.has_value());
+    EXPECT_EQ(result.tag.keyformat, XKeyTagKeyFormat::kUnsupported);
+    EXPECT_FALSE(result.tag.keyformat_versions.has_value());
+  }
+  {
+    auto result = OkTest<XSessionKeyTag>(
+        "METHOD=SAMPLE-AES-CTR,URI=\"https://example.com\","
+        "KEYFORMAT=\"supersecretcrypto\"",
+        dict, subs);
+    EXPECT_EQ(result.tag.method, XKeyTagMethod::kSampleAESCTR);
+    EXPECT_EQ(result.tag.uri.Str(), "https://example.com");
+    EXPECT_FALSE(result.tag.iv.has_value());
+    EXPECT_EQ(result.tag.keyformat, XKeyTagKeyFormat::kUnsupported);
+    EXPECT_FALSE(result.tag.keyformat_versions.has_value());
+  }
 }
 
 TEST(HlsTagsTest, ParseXStreamInfTag) {
