@@ -106,6 +106,7 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/base_window.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/models/menu_model.h"
@@ -116,6 +117,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
@@ -234,6 +236,25 @@ class BrowserActivationWaiter : public BrowserListObserver {
   bool observed_ = false;
   base::RunLoop run_loop_;
 };
+
+// Returns whether `window` roughly matches expected `bounds`.
+bool CheckforBounds(ui::BaseWindow* window, const gfx::Rect& bounds) {
+  const gfx::Rect& actual = window->GetBounds();
+  // Tolerances were empirically derived, and should be reduced.
+  constexpr int kOffsetTolerance = 5, kSizeTolerance = 50;
+  return (bounds.origin() - actual.origin()).Length() < kOffsetTolerance &&
+         std::abs(bounds.width() - actual.width()) < kSizeTolerance &&
+         std::abs(bounds.height() - actual.height()) < kSizeTolerance;
+}
+
+// Waits until `window` roughly matches expected `bounds`, or fails after 1s.
+bool WaitForBounds(ui::BaseWindow* window, const gfx::Rect& bounds) {
+  ui_test_utils::CheckWaiter(
+      base::BindRepeating(CheckforBounds, base::Unretained(window), bounds),
+      /*expected=*/true, base::Seconds(1))
+      .Wait();
+  return CheckforBounds(window, bounds);
+}
 
 }  // namespace
 
@@ -838,7 +859,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, PWASizeIsCorrectlyRestored) {
   NavigateViaLinkClickToURLAndWait(app_browser, app_url);
 
   const gfx::Rect bounds = gfx::Rect(50, 50, 550, 500);
-  app_browser->window()->SetBounds(bounds);
+  ui_test_utils::SetAndWaitForBounds(*app_browser, bounds);
   CloseAndWait(app_browser);
 
   Browser* const new_browser = LaunchWebAppBrowser(app_id);
@@ -1371,67 +1392,72 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_DetailedInstallDialog,
                     .GetCommandsInstallingForWebContentsForTesting());
 }
 
-// TODO(b/330221671): Deflake and re-enable.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_WindowsOffsetForMultiWindowPWA \
-  DISABLED_WindowsOffsetForMultiWindowPWA
-#else
-#define MAYBE_WindowsOffsetForMultiWindowPWA WindowsOffsetForMultiWindowPWA
-#endif
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
-                       MAYBE_WindowsOffsetForMultiWindowPWA) {
-  const GURL app_url(kExampleURL);
-  const webapps::AppId app_id = InstallPWA(app_url);
-
+// Test that a second web app window launches with similar size to the first.
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, SecondWindowSizeMatches) {
+  const webapps::AppId app_id = InstallPWA(GURL(kExampleURL));
   Browser* first_browser = LaunchWebAppBrowserAndWait(app_id);
-  // We should have the original (tabbed) browser for this BrowserTest, plus a
-  // new one for the PWA.
-  EXPECT_NE(nullptr, first_browser);
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 2u);
-
-  // Make the window small so that we don't hit the edge when creating a new
-  // one that is offset, and ensure that it is still in the working area of the
-  // window.
-  const gfx::Rect work_area =
-      display::Screen::GetScreen()
-          ->GetDisplayMatching(first_browser->window()->GetRestoredBounds())
-          .work_area();
-  ui_test_utils::SetAndWaitForBounds(
-      *first_browser, gfx::Rect(work_area.x(), work_area.y(), 50, 50));
-
+  const gfx::Size first_size = first_browser->window()->GetBounds().size();
   Browser* second_browser = LaunchWebAppBrowserAndWait(app_id);
-  EXPECT_NE(nullptr, second_browser);
-  EXPECT_EQ(BrowserList::GetInstance()->size(), 3u);
+  const gfx::Size second_size = second_browser->window()->GetBounds().size();
+  constexpr int kTolerance = 50;  // Empirically derived, should be reduced.
+  EXPECT_LT(std::abs(first_size.width() - second_size.width()), kTolerance);
+  EXPECT_LT(std::abs(first_size.height() - second_size.height()), kTolerance);
+}
 
-  auto bounds1 = first_browser->window()->GetRestoredBounds();
-  auto bounds2 = second_browser->window()->GetRestoredBounds();
+// Test that a second web app window launches with bounds offset from the first.
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, SecondWindowOffset) {
+  const webapps::AppId app_id = InstallPWA(GURL(kExampleURL));
+  Browser* first_browser = LaunchWebAppBrowserAndWait(app_id);
+  Browser* second_browser = LaunchWebAppBrowserAndWait(app_id);
+  EXPECT_NE(first_browser->window()->GetBounds().OffsetFromOrigin(),
+            second_browser->window()->GetBounds().OffsetFromOrigin());
+}
 
-  EXPECT_EQ(bounds1.x() + WindowSizer::kWindowTilePixels, bounds2.x());
-  EXPECT_EQ(bounds1.y() + WindowSizer::kWindowTilePixels, bounds2.y());
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, SetBounds) {
+  const webapps::AppId app_id = InstallPWA(GURL(kExampleURL));
+  Browser* browser = LaunchWebAppBrowserAndWait(app_id);
+  ui::BaseWindow* window = browser->window();
+  const gfx::Rect bounds = gfx::Rect(50, 50, 550, 500);
+  ui_test_utils::SetAndWaitForBounds(*browser, bounds);
+  // Expect that the window bounds roughly match the requested bounds.
+  EXPECT_TRUE(WaitForBounds(window, bounds))
+      << window->GetBounds().ToString() << " != " << bounds.ToString();
+}
 
-  // On Chrome OS and Mac we aggressively move the entire window on screen if it
-  // would otherwise be partially off-screen. On other platforms we merely make
-  // sure at least some of the window is visible, but don't force the entire
-  // window on screen. As such, only run these checks on Mac and Chrome OS.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
-  // Resize the second window larger so that subsequent new windows will hit the
+// Test that offsets for newly launched web app windows are clamped on-screen.
+// Windows OS does not enforce this constraint as strictly.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_WindowOffsetsClampedToScreen DISABLED_WindowOffsetsClampedToScreen
+#else
+#define MAYBE_WindowOffsetsClampedToScreen WindowOffsetsClampedToScreen
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, MAYBE_WindowOffsetsClampedToScreen) {
+  const webapps::AppId app_id = InstallPWA(GURL(kExampleURL));
+  Browser* browser = LaunchWebAppBrowserAndWait(app_id);
+  ui::BaseWindow* window = browser->window();
+  gfx::Rect bounds =
+      display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+  // Make the window fill the display, so subsequent new windows quickly hit the
   // edge of the screen when offset.
-  second_browser->window()->SetBounds(work_area);
+  ui_test_utils::SetAndWaitForBounds(*browser, bounds);
+  ASSERT_TRUE(WaitForBounds(window, bounds))
+      << window->GetBounds().ToString() << " != " << bounds.ToString();
 
-  // Open a windows until they start stacking.
-  bool hit_the_bottom_right = false;
-  gfx::Rect previous_bounds = second_browser->window()->GetRestoredBounds();
+  // Open windows until they yield bounds that match the prior window's bounds,
+  // which happens if windows start stacking at the bottom right of the screen.
+  bool bounds_match_prior_window = false;
+  bounds = window->GetBounds();
   for (int i = 0; i < 10; i++) {
-    Browser* next_browser = LaunchWebAppBrowserAndWait(app_id);
-    if (previous_bounds == next_browser->window()->GetRestoredBounds()) {
-      hit_the_bottom_right = true;
+    window = LaunchWebAppBrowserAndWait(app_id)->window();
+    if (bounds == window->GetBounds()) {
+      bounds_match_prior_window = true;
       break;
     }
-    previous_bounds = next_browser->window()->GetRestoredBounds();
+    bounds = window->GetBounds();
   }
 
-  EXPECT_TRUE(hit_the_bottom_right);
-#endif
+  EXPECT_TRUE(bounds_match_prior_window)
+      << window->GetBounds().ToString() << " != " << bounds.ToString();
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,

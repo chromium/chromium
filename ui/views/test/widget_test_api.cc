@@ -4,6 +4,7 @@
 
 #include "ui/views/test/widget_test_api.h"
 
+#include "base/notimplemented.h"
 #include "ui/views/widget/widget.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
@@ -69,7 +70,11 @@ void AsyncWidgetRequestWaiter::Wait() {
     // to be processed on the server side.
     wayland_extension->RoundTripQueue();
     wayland_extension->SetLatchImmediately(true);
+  } else {
+    NOTIMPLEMENTED_LOG_ONCE();
   }
+#else
+  NOTIMPLEMENTED_LOG_ONCE();
 #endif
   waited_ = true;
 }

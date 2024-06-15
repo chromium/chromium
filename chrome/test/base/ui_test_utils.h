@@ -211,7 +211,8 @@ bool WaitForMaximized(Browser* browser);
     Browser& browser);
 
 // SetAndWaitForBounds sets the given `bounds` on `browser` and waits until the
-// bounds update will be observable from all parts of the client.
+// bounds update will be observable from all parts of the client (on Wayland).
+// This does not verify the resulting bounds.
 void SetAndWaitForBounds(Browser& browser, const gfx::Rect& bounds);
 
 // Maximizes the browser window and wait until the window is maximized and all
