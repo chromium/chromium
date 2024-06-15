@@ -5000,6 +5000,12 @@ const char kReadAloudAutoVoiceSwitchingDescription[] =
     "Enables the experimental Reading Mode feature that automatically chooses "
     "the best voice in Read Aloud using page language.";
 
+const char kReadAnythingReadAloudAutomaticWordHighlightingName[] =
+    "Reading Mode Read Aloud Automatic Word Highlighting";
+const char kReadAnythingReadAloudAutomaticWordHighlightingDescription[] =
+    "Enables the experimental Reading Mode feature that switches between word "
+    "and sentence highlighting when reading aloud, depending on speech rate.";
+
 const char kReadAloudLanguagePackDownloadingName[] =
     "Reading Mode Language Downloading";
 const char kReadAloudLanguagePackDownloadingDescription[] =

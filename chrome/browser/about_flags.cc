@@ -7460,6 +7460,14 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReadAnythingReadAloudDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kReadAnythingReadAloud)},
 
+    {"read-anything-read-aloud-automatic-word-highlighting",
+     flag_descriptions::kReadAnythingReadAloudAutomaticWordHighlightingName,
+     flag_descriptions::
+         kReadAnythingReadAloudAutomaticWordHighlightingDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         features::kReadAnythingReadAloudAutomaticWordHighlighting)},
+
     {"read-anything-read-aloud-auto-voice-switching",
      flag_descriptions::kReadAloudAutoVoiceSwitchingName,
      flag_descriptions::kReadAloudAutoVoiceSwitchingDescription, kOsDesktop,

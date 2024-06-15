@@ -7523,6 +7523,11 @@
     "expiry_milestone": 133
   },
   {
+    "name": "read-anything-read-aloud-automatic-word-highlighting",
+    "owners": [ "lwinston@google.com", "kristislee@google.com", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 133
+  },
+  {
     "name": "read-anything-read-aloud-language-pack-downloading",
     "owners": [ "kristislee@google.com", "lwinston@google.com", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 133
