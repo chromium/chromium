@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 
+#include "chromeos/ash/components/dbus/shill/modem_3gpp_client.h"
 #include "chromeos/ash/components/dbus/shill/modem_messaging_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_ipconfig_client.h"
@@ -22,6 +23,7 @@ void Initialize(dbus::Bus* system_bus) {
 #endif
   DCHECK(system_bus);
   ModemMessagingClient::Initialize(system_bus);
+  Modem3gppClient::Initialize(system_bus);
   SMSClient::Initialize(system_bus);
   ShillDeviceClient::Initialize(system_bus);
   ShillIPConfigClient::Initialize(system_bus);
@@ -33,6 +35,7 @@ void Initialize(dbus::Bus* system_bus) {
 
 void InitializeFakes() {
   ModemMessagingClient::InitializeFake();
+  Modem3gppClient::InitializeFake();
   SMSClient::InitializeFake();
   ShillDeviceClient::InitializeFake();
   ShillIPConfigClient::InitializeFake();
@@ -52,6 +55,7 @@ void Shutdown() {
   ShillIPConfigClient::Shutdown();
   ShillDeviceClient::Shutdown();
   SMSClient::Shutdown();
+  Modem3gppClient::Shutdown();
   ModemMessagingClient::Shutdown();
 }
 

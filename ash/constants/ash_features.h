@@ -127,9 +127,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kCaptureModeEducationBypassLimits);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kCellularBypassESimInstallationConnectivityCheck);
-COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCellularCarrierLock);
-COMPONENT_EXPORT(ASH_CONSTANTS)
-extern const base::FeatureParam<int> kCellularCarrierLockLastConfig;
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kCellularUseSecondEuicc);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kCheckPasswordsAgainstCryptohomeHelper);
@@ -1040,7 +1037,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsBubbleCornerRadiusUpdateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeEducationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsCaptureModeEducationBypassLimitsEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCellularCarrierLockEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryLongpressEnabled();

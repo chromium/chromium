@@ -408,8 +408,6 @@ TEST_F(NetworkStateNotifierTest,
 }
 
 TEST_F(NetworkStateNotifierTest, CellularCarrierLockedSimConnectionFailure) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kCellularCarrierLock);
   Init();
   SetCellularDeviceLocked(shill::kSIMLockNetworkPin);
   TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
@@ -436,8 +434,6 @@ TEST_F(NetworkStateNotifierTest, CellularCarrierLockedSimConnectionFailure) {
 }
 
 TEST_F(NetworkStateNotifierTest, CellularCarrierUnlockNotification) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kCellularCarrierLock);
   Init();
   SetupCarrierLock();
   carrier_lock::FakeProvisioningConfigFetcher* config =
@@ -486,24 +482,5 @@ TEST_F(NetworkStateNotifierTest, CellularCarrierUnlockNotification) {
   notification->delegate()->Click(/*button_index=*/std::nullopt,
                                   /*reply=*/std::nullopt);
   EXPECT_EQ(1, test_system_tray_client_.show_mobile_data_subpage_count());
-}
-
-TEST_F(NetworkStateNotifierTest,
-       CellularCarrierLockedSimConnectionFailureFeatureFlagDisable) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(features::kCellularCarrierLock);
-  Init();
-  SetCellularDeviceLocked(shill::kSIMLockNetworkPin);
-  TestingBrowserProcess::GetGlobal()->SetSystemNotificationHelper(
-      std::make_unique<SystemNotificationHelper>());
-  NotificationDisplayServiceTester tester(nullptr /* profile */);
-  NetworkConnect::Get()->ConnectToNetworkId(kCellular1Guid);
-  base::RunLoop().RunUntilIdle();
-
-  // with feature flag disabled, failure should not show notification.
-  std::optional<message_center::Notification> notification =
-      tester.GetNotification(
-          NetworkStateNotifier::kNetworkConnectNotificationId);
-  EXPECT_FALSE(notification);
 }
 }  // namespace ash

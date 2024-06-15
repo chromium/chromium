@@ -84,8 +84,7 @@ std::u16string GetConnectErrorString(const std::string& error_name) {
   if (error_name == NetworkConnectionHandler::kErrorSimPinPukLocked) {
     return l10n_util::GetStringUTF16(IDS_NETWORK_LIST_SIM_CARD_LOCKED);
   }
-  if (features::IsCellularCarrierLockEnabled() &&
-      error_name == NetworkConnectionHandler::kErrorSimCarrierLocked) {
+  if (error_name == NetworkConnectionHandler::kErrorSimCarrierLocked) {
     return l10n_util::GetStringUTF16(IDS_NETWORK_LIST_SIM_CARD_CARRIER_LOCKED);
   }
   return std::u16string();
@@ -134,8 +133,7 @@ bool ShouldConnectFailedNotificationBeShown(const std::string& error_name,
       error_name != NetworkConnectionHandler::kErrorConfigureFailed &&
       error_name != NetworkConnectionHandler::kErrorCertLoadTimeout &&
       error_name != NetworkConnectionHandler::kErrorSimPinPukLocked &&
-      (!features::IsCellularCarrierLockEnabled() ||
-       error_name != NetworkConnectionHandler::kErrorSimCarrierLocked)) {
+      error_name != NetworkConnectionHandler::kErrorSimCarrierLocked) {
     return false;
   }
 

@@ -1051,11 +1051,9 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   multi_capture_notifications_ = std::make_unique<MultiCaptureNotifications>();
 
   // Initialize Cellular Carrier Lock provisioning manager before login
-  if (base::FeatureList::IsEnabled(features::kCellularCarrierLock)) {
-    carrier_lock_manager_ = carrier_lock::CarrierLockManager::Create(
-        g_browser_process->local_state(), g_browser_process->gcm_driver(),
-        g_browser_process->shared_url_loader_factory());
-  }
+  carrier_lock_manager_ = carrier_lock::CarrierLockManager::Create(
+      g_browser_process->local_state(), g_browser_process->gcm_driver(),
+      g_browser_process->shared_url_loader_factory());
 
   if (immediate_login) {
     const user_manager::CryptohomeId cryptohome_id(

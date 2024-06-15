@@ -426,16 +426,6 @@ BASE_FEATURE(kCellularBypassESimInstallationConnectivityCheck,
              "CellularBypassESimInstallationConnectivityCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, the Cellular Carrier Lock manager will start on every boot to
-// check state of lock configuration and setup the modem if needed.
-// This flag will be removed before launch (http://launch/4211912).
-BASE_FEATURE(kCellularCarrierLock,
-             "CellularCarrierLock",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-constexpr base::FeatureParam<int> kCellularCarrierLockLastConfig{
-    &kCellularCarrierLock, "LastConfigDateDelta", -2};
-
 // If enabled, use second the Euicc that is exposed by Hermes in Cellular Setup
 // and Settings.
 BASE_FEATURE(kCellularUseSecondEuicc,
@@ -3404,10 +3394,6 @@ bool IsCaptureModeEducationEnabled() {
 
 bool IsCaptureModeEducationBypassLimitsEnabled() {
   return base::FeatureList::IsEnabled(kCaptureModeEducationBypassLimits);
-}
-
-bool IsCellularCarrierLockEnabled() {
-  return base::FeatureList::IsEnabled(kCellularCarrierLock);
 }
 
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled() {

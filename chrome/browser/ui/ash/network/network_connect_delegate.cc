@@ -96,7 +96,6 @@ void NetworkConnectDelegate::ShowMobileActivationError(
 }
 
 void NetworkConnectDelegate::ShowCarrierUnlockNotification() {
-  CHECK(ash::features::IsCellularCarrierLockEnabled());
   if (!IsUIAvailable()) {
     return;
   }
