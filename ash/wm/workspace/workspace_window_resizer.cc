@@ -881,12 +881,14 @@ void WorkspaceWindowResizer::CompleteDrag() {
 
     // TODO(oshima): Add event source type to WMEvent and move
     // metrics recording inside WindowState::OnWMEvent.
+    // Set the target snap ratio to default for drag to snap.
+    // `SnapGroupController` will adjust the window bounds as needed.
     WMEventType type;
     switch (snap_type_) {
       case SnapType::kPrimary: {
         base::RecordAction(base::UserMetricsAction("WindowDrag_MaximizeLeft"));
         const WindowSnapWMEvent snap_primary_event(
-            WM_EVENT_SNAP_PRIMARY,
+            WM_EVENT_SNAP_PRIMARY, chromeos::kDefaultSnapRatio,
             WindowSnapActionSource::kDragWindowToEdgeToSnap);
         window_state()->OnWMEvent(&snap_primary_event);
         return;
@@ -894,7 +896,7 @@ void WorkspaceWindowResizer::CompleteDrag() {
       case SnapType::kSecondary: {
         base::RecordAction(base::UserMetricsAction("WindowDrag_MaximizeRight"));
         const WindowSnapWMEvent snap_secondary_event(
-            WM_EVENT_SNAP_SECONDARY,
+            WM_EVENT_SNAP_SECONDARY, chromeos::kDefaultSnapRatio,
             WindowSnapActionSource::kDragWindowToEdgeToSnap);
         window_state()->OnWMEvent(&snap_secondary_event);
         return;

@@ -172,7 +172,6 @@ void SnapGroup::ShowDivider() {
   // account for the divider.
   const bool account_for_divider_width =
       edge_gap < kSplitviewDividerShortSideLength;
-
   snap_group_divider_.SetDividerPosition(
       GetEquivalentDividerPosition(primary_window, account_for_divider_width));
   snap_group_divider_.SetVisible(true);

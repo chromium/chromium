@@ -49,6 +49,12 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   bool AreWindowsInSnapGroup(aura::Window* window1,
                              aura::Window* window2) const;
 
+  // Called by `SplitViewController` when `window` is snapped. Returns true if
+  // `window` was added to a group, either by normal group creation or snap
+  // to replace.
+  bool OnWindowSnapped(aura::Window* window,
+                       WindowSnapActionSource snap_action_source);
+
   // Attempts to add `window1` and `window2` as a `SnapGroup`. Returns the
   // `SnapGroup`, if the creation is successful. Returns nullptr, otherwise.
   // Currently, both windows must reside within the same parent container for
@@ -78,13 +84,6 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   // Returns the corresponding `SnapGroup` if the given `window` belongs to a
   // snap group or nullptr otherwise.
   SnapGroup* GetSnapGroupForGivenWindow(const aura::Window* window) const;
-
-  // Returns true if the attempt to replace the window within the snap group
-  // positioned directly below with the given `to_be_snapped_window` is
-  // successful, returns false otherwise. The `snap_action_source` determines
-  // the need for snap ratio difference calculations during 'snap to replace'.
-  bool OnSnappingWindow(aura::Window* to_be_snapped_window,
-                        WindowSnapActionSource snap_action_source);
 
   // Returns the topmost fully visible non-occluded snap group on `target_root`.
   SnapGroup* GetTopmostVisibleSnapGroup(const aura::Window* target_root) const;
@@ -122,6 +121,13 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   }
 
  private:
+  // Returns true if the attempt to replace the window within the snap group
+  // positioned directly below with the given `to_be_snapped_window` is
+  // successful, returns false otherwise. The `snap_action_source` determines
+  // the need for snap ratio difference calculations during 'snap to replace'.
+  bool MaybeSnapToReplace(aura::Window* to_be_snapped_window,
+                          WindowSnapActionSource snap_action_source);
+
   // Retrieves the other window that is in the same snap group if any. Returns
   // nullptr if such window can't be found i.e. the window is not in a snap
   // group.

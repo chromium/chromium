@@ -388,6 +388,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
     kWindowDragged,
     kWindowFloated,
     kWindowMovedToAnotherDisplay,
+    kAddedToSnapGroup,
   };
 
   // These functions return the snapped window in the specified snap position
@@ -420,10 +421,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
 
   // Notifies observers that the windows are swappped.
   void NotifyWindowSwapped();
-
-  // Creates a snap group and ends split view. Returns true if a snap group was
-  // created, false otherwise.
-  bool MaybeCreateSnapGroup();
 
   // Updates the black scrim layer's bounds and opacity while dragging the
   // divider. The opacity increases as the split divider gets closer to the edge

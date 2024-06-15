@@ -2677,10 +2677,9 @@ void OverviewGrid::OnSplitViewStateChanged(
       (split_view_controller->InClamshellSplitViewMode() &&
        overview_session_->IsEmpty())) {
     overview_session_->RestoreWindowActivation(false);
-    overview_controller->EndOverview(
-        state == SplitViewController::State::kBothSnapped
-            ? OverviewEndAction::kWindowActivating
-            : OverviewEndAction::kSplitView);
+    overview_controller->EndOverview(both_snapped_windows
+                                         ? OverviewEndAction::kWindowActivating
+                                         : OverviewEndAction::kSplitView);
     return;
   }
 

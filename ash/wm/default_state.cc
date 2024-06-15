@@ -12,6 +12,8 @@
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/pip/pip_controller.h"
 #include "ash/wm/screen_pinning_controller.h"
+#include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_metrics_controller.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "ash/wm/window_state_delegate.h"
@@ -393,6 +395,16 @@ void DefaultState::HandleTransitionEvents(WindowState* window_state,
   }
 
   if (next_state_type == current_state_type && window_state->IsSnapped()) {
+    if (auto* snap_group_controller = SnapGroupController::Get();
+        snap_group_controller &&
+        snap_group_controller->GetSnapGroupForGivenWindow(
+            window_state->window())) {
+      // If `window` belongs to a snap group, the snap group should manage its
+      // bounds instead.
+      // TODO(b/346624805): See if we can remove this.
+      return;
+    }
+
     DCHECK(window_state->snap_ratio());
     gfx::Rect snapped_bounds =
         GetSnappedWindowBoundsInParent(window_state->window(),
