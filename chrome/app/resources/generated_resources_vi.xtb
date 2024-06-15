@@ -410,6 +410,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1293556467332435079">Tệp</translation>
 <translation id="1294807885394205587">Quá trình này có thể mất vài phút. Đang khởi động dịch vụ quản lý vùng chứa.</translation>
 <translation id="12951065153783848">Tài khoản của bạn do tổ chức bạn quản lý</translation>
+<translation id="1296410481664942178">Không hiển thị Lịch Google</translation>
 <translation id="1296911687402551044">Ghim thẻ đã chọn</translation>
 <translation id="1297175357211070620">Máy in đích</translation>
 <translation id="129770436432446029">Gửi ý kiến phản hồi về <ph name="EXPERIMENT_NAME" /></translation>
@@ -448,6 +449,7 @@ Bạn có thể kiểm tra mật khẩu bất cứ lúc nào trong <ph name="GOO
 <translation id="1327495825214193325">Để bật tùy chọn gỡ lỗi ADB, bạn cần phải khởi động lại <ph name="DEVICE_TYPE" /> này. Để tắt tùy chọn này, bạn phải đặt lại thiết bị về trạng thái ban đầu.</translation>
 <translation id="1327527584824210101">Sử dụng khóa truy cập của bạn</translation>
 <translation id="1327794256477341646">Các tính năng cần dùng thông tin vị trí của bạn sẽ không hoạt động</translation>
+<translation id="1328364753167940710"><ph name="NUM_HR" /> giờ nữa</translation>
 <translation id="1329466763986822896">Nâng cao tính bảo mật của điểm phát sóng này</translation>
 <translation id="1331977651797684645">Đây chính là tôi.</translation>
 <translation id="1333489022424033687">Một số tính năng trên <ph name="ORIGIN" /> có thể không hoạt động cho đến khi bạn xóa dữ liệu mà các trang web khác đã lưu trữ trên thiết bị của bạn</translation>
@@ -1006,6 +1008,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1709762881904163296">Cài đặt mạng</translation>
 <translation id="1709916727352927457">Xoá khoá đăng nhập</translation>
 <translation id="1709972045049031556">Không thể chia sẻ</translation>
+<translation id="1712143791363119140">Đang diễn ra</translation>
 <translation id="1714644264617423774">Bật các tính năng hỗ trợ tiếp cận để dễ dàng sử dụng thiết bị của bạn. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464">Xoá dữ liệu trang web và quyền của <ph name="SITE_NAME" />, cũng như ứng dụng đã cài đặt của trang web này?</translation>
 <translation id="171826447717908393">Ứng dụng web tách biệt (beta)</translation>
@@ -1410,6 +1413,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="200928901437634269">Sử dụng Tài khoản Google của trẻ hoặc tài khoản trường học. Bạn cũng có thể đặt chế độ kiểm soát của cha mẹ.</translation>
 <translation id="2009590708342941694">Công cụ biểu tượng cảm xúc</translation>
 <translation id="2010501376126504057">Thiết bị tương thích</translation>
+<translation id="2010636492623189611">Đã chọn.</translation>
 <translation id="201217432804812273">Bật tuỳ chọn "Lưu nhóm"</translation>
 <translation id="2012935757369720523">Xoá tệp</translation>
 <translation id="2013467735169740431">Các trang web có thể yêu cầu khoá bàn phím</translation>
@@ -2005,6 +2009,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2435248616906486374">Mạng đã bị ngắt kết nối</translation>
 <translation id="2435457462613246316">Hiện mật khẩu</translation>
 <translation id="2436385001956947090">Sao chép &amp;đường liên kết</translation>
+<translation id="2437561292559037753">Chia sẻ dữ liệu</translation>
 <translation id="2438853563451647815">Chưa kết nối với máy in</translation>
 <translation id="2439152382014731627">Đặt lại mật khẩu <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Đang tải <ph name="WINDOW_TITLE" /></translation>
@@ -2582,6 +2587,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2843698124892775282">Đã giải phóng <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="2844169650293029770">Thiết bị USB-C (cổng phía trước, bên trái)</translation>
 <translation id="2844809857160214557">Xem và quản lý các lệnh in</translation>
+<translation id="2845276301195220700">Các thao tác khác cho Lịch Google</translation>
 <translation id="2845382757467349449">Luôn Hiển thị Thanh Dấu trang</translation>
 <translation id="2845751331501453107">Khi bạn duyệt web, thì chế độ cài đặt này, <ph name="BEGIN_LINK1" />Quảng cáo do trang web đề xuất<ph name="LINK_END1" />, <ph name="BEGIN_LINK2" />chế độ cài đặt cookie<ph name="LINK_END2" /> và khả năng cá nhân hoá quảng cáo của trang web bạn đang xem sẽ quyết định liệu quảng cáo bạn thấy có được cá nhân hoá không</translation>
 <translation id="284581348330507117">Tạo mật khẩu khác biệt</translation>
@@ -3697,6 +3703,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3694590407685276748">Đánh dấu con trỏ văn bản</translation>
 <translation id="369489984217678710">Mật khẩu và các dữ liệu đăng nhập khác</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Đã kiểm tra bảo mật xong. Dữ liệu của bạn sẽ được tải lên.}=1{Đã kiểm tra bảo mật xong. Tệp của bạn sẽ được tải lên.}other{Đã kiểm tra bảo mật xong. Các tệp của bạn sẽ được tải lên.}}</translation>
+<translation id="3695339288331169103">Từ <ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" /></translation>
 <translation id="369736917241079046">trình chạy + mũi tên trái</translation>
 <translation id="3697716475445175867">mở gần đây nhất</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{Bạn có thể ngăn trang web này gửi thông báo trong tương lai.}other{Bạn có thể ngăn các trang web này gửi thông báo trong tương lai.}}</translation>
@@ -4996,6 +5003,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="4650591383426000695">Ngắt kết nối điện thoại khỏi <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Không thể tải thành phần trực tuyến có tài nguyên chế độ minh họa.</translation>
 <translation id="4651921906638302153">Không đăng nhập được bằng tài khoản này</translation>
+<translation id="4652921642122345344">Tốc độ nói: <ph name="RATE" />x</translation>
 <translation id="4652935475563630866">Bạn cần chạy lại ứng dụng Parallels Desktop để thay đổi tùy chọn cài đặt máy ảnh. Hãy chạy lại ứng dụng Parallels Desktop để tiếp tục.</translation>
 <translation id="4653116291358041820">Bóng nhỏ</translation>
 <translation id="4653405415038586100">Lỗi khi định cấu hình Linux</translation>
@@ -5194,6 +5202,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4809927044794281115">Giao diện sáng</translation>
 <translation id="4811212958317149293">Tự động quét tìm bàn phím của tính năng Tiếp cận bằng công tắc</translation>
 <translation id="4811503964269049987">Nhóm thẻ đã chọn</translation>
+<translation id="4812073856515324252">Chọn vị trí lưu khoá truy cập cho <ph name="APP_NAME" /></translation>
 <translation id="4813512666221746211">Lỗi mạng</translation>
 <translation id="4814114628197290459">Xoá số IBAN</translation>
 <translation id="4814327014588285482">Bỏ qua và nhắc tôi sau</translation>
@@ -5660,6 +5669,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5160634252433617617">Bàn phím vật lý</translation>
 <translation id="5160857336552977725">Đăng nhập vào <ph name="DEVICE_TYPE" /> của bạn</translation>
 <translation id="5161251470972801814">Các thiết bị USB của <ph name="VENDOR_NAME" /></translation>
+<translation id="5161442190864186925">Tham gia cuộc họp</translation>
 <translation id="5161827038979306924">Điểm khác biệt giữa nhật ký duyệt web trong Chrome và nhật ký tìm kiếm là gì?</translation>
 <translation id="5162905305237671850">Thiết bị <ph name="DEVICE_TYPE" /> đã bị chặn</translation>
 <translation id="5163910114647549394">Đã di chuyển thẻ tới cuối dải thẻ</translation>
@@ -7969,6 +7979,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="6912007319859991306">Mã PIN của SIM di động</translation>
 <translation id="6912380255120084882">Thử dùng một thiết bị khác</translation>
 <translation id="691289340230098384">Tuỳ chọn phụ đề</translation>
+<translation id="6913051485529944333">Bạn sẽ không thấy Lịch Google trên trang này nữa</translation>
 <translation id="6914812290245989348">Không hiện cảnh báo trước khi truy cập vào các trang web không an toàn</translation>
 <translation id="6916590542764765824">Quản lý các tiện ích</translation>
 <translation id="6918677045355889289">Cần cập nhật ChromeOS</translation>
@@ -9173,6 +9184,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7810202088502699111">Cửa sổ bật lên đã bị chặn trên trang này.</translation>
 <translation id="7810367892333449285">Nội dung bạn nhập phải có định dạng <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ địa chỉ<ph name="LPA_2" />$<ph name="LPA_3" />mã nhận dạng để so khớp (không bắt buộc)<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">Hãy thử lại hoặc chọn một trong những giao diện đã tạo ở bên dưới.</translation>
+<translation id="7812170317334653156">Đã ẩn Lịch Google</translation>
 <translation id="7814090115158024843">Không bao giờ đề xuất hỗ trợ viết trên các trang web này</translation>
 <translation id="7814458197256864873">Sao &amp;chép</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
@@ -9231,6 +9243,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7853747251428735">Côn&amp;g cụ khác</translation>
 <translation id="7853999103056713222">Sử dụng mật khẩu an toàn hơn</translation>
 <translation id="7855678561139483478">Di chuyển thẻ sang cửa sổ mới</translation>
+<translation id="7856117067008941054">Ẩn Lịch Google</translation>
 <translation id="7857004848504343806">Máy tính của bạn chứa một mô-đun bảo mật dùng để triển khai nhiều tính năng bảo mật thiết yếu trong ChromeOS Flex. Hãy truy cập Trung tâm trợ giúp của Chromebook để tìm hiểu thêm: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Đề xuất văn bản</translation>
 <translation id="7858120906780498731">Thiết bị đầu vào đã kết nối với ChromeOS</translation>
@@ -9239,6 +9252,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="786073089922909430">Dịch vụ: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Tệp đã tải xuống</translation>
 <translation id="7861846108263890455">Ngôn ngữ trong Tài khoản Google</translation>
+<translation id="7864114920800968141"><ph name="NUM_MIN" /> phút nữa</translation>
 <translation id="7864539943188674973">Tắt bluetooth</translation>
 <translation id="7864825798076155402">Lưu vào Tài khoản Google của bạn?</translation>
 <translation id="7865127013871431856">Các lựa chọn Dịch</translation>

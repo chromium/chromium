@@ -563,6 +563,7 @@
 <translation id="2036983605131262583">ఆల్టర్నేట్ రోల్</translation>
 <translation id="2040463897538655645">తీసివేయదగిన స్టోరేజ్</translation>
 <translation id="2040894699575719559">లొకేషన్ బ్లాక్ చేయబడింది</translation>
+<translation id="2041788246978549610">అందుబాటులో ఉన్న మైక్రోఫోన్‌లను (<ph name="MICS_COUNT" />) ఉపయోగించండి</translation>
 <translation id="2042213636306070719">ట్రే 7</translation>
 <translation id="204357726431741734">మీ Google ఖాతాలో సేవ్ చేయబడిన పాస్‌వర్డ్‌లను ఉపయోగించడానికి సైన్ ఇన్ చేయండి</translation>
 <translation id="2045871135676061132">ఎన్వలప్ పర్సనల్</translation>
@@ -884,6 +885,7 @@
 <translation id="2655752832536625875">బాత్రూమ్</translation>
 <translation id="2657637947725373811">{0,plural, =1{గోప్యమైన ఫైల్‌ను బదిలీ చేయాలా?}other{గోప్యమైన ఫైల్స్‌ను బదిలీ చేయాలా?}}</translation>
 <translation id="2658843814961855121">కార్మిక &amp; ఉద్యోగ చట్టం</translation>
+<translation id="2658944305627908367">మీ బ్యాలెన్స్‌ను మించిన లావాదేవీలు ప్రాసెస్ చేయబడవు</translation>
 <translation id="2660779039299703961">ఈవెంట్</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{ఏవీ లేవు}=1{1 పాస్‌వర్డ్ (<ph name="DOMAIN_LIST" /> కోసం)}=2{2 పాస్‌వర్డ్‌లు (<ph name="DOMAIN_LIST" /> కోసం)}other{# పాస్‌వర్డ్‌లు (<ph name="DOMAIN_LIST" /> కోసం)}}</translation>
 <translation id="2666092431469916601">పైన</translation>
@@ -1081,6 +1083,7 @@
 <translation id="3090667236485488075">గ్లాస్</translation>
 <translation id="3095940652251934233">స్టేట్‌మెంట్</translation>
 <translation id="3098513225387949945">'*'కు సమానమైన ఆకృతి డిజేబుల్ లిస్ట్‌లో ఉంది, ఇది పాలసీని డిజేబుల్ చేయడానికి సమానం, అందుకే ఇది విస్మరించబడింది.</translation>
+<translation id="3099619114405539473">అందుబాటులో ఉన్న కెమెరాలను (<ph name="CAMERAS_COUNT" />) ఉపయోగించండి</translation>
 <translation id="3102312643185441063">సేవింగ్స్</translation>
 <translation id="3103188521861412364">స్టాక్‌లు &amp; బాండ్‌లు</translation>
 <translation id="3105172416063519923">అసెట్ ID:</translation>
@@ -1357,6 +1360,7 @@
 <translation id="3583757800736429874">&amp;తరలించడాన్ని రిపీట్‌ చేయి</translation>
 <translation id="3584299510153766161">దిగువ భాగంలో రెండు రంధ్రాలు</translation>
 <translation id="3584755835709800788">సైన్స్ ఫిక్షన్ &amp; ఫాంటసీ సినిమాలు</translation>
+<translation id="3585455899094692781">అందుబాటులో ఉన్న కెమెరాలను (<ph name="CAMERAS_COUNT" />) ఉపయోగించండి &amp; తరలించండి</translation>
 <translation id="3586833803451155175">వెట్ ఫిల్మ్</translation>
 <translation id="3586931643579894722">వివరాలను దాచిపెట్టు</translation>
 <translation id="3587738293690942763">మధ్యలో</translation>

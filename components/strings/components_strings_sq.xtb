@@ -568,6 +568,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2036983605131262583">Rul alternativ</translation>
 <translation id="2040463897538655645">Hapësira ruajtëse e lëvizshme</translation>
 <translation id="2040894699575719559">Vendndodhja u bllokua</translation>
+<translation id="2041788246978549610">Të përdorë mikrofonat e disponueshëm (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Tabakaja 7</translation>
 <translation id="204357726431741734">Identifikohu për të përdorur fjalëkalimet e ruajtura në "Llogarinë tënde të Google"</translation>
 <translation id="2045871135676061132">Zarf personal</translation>
@@ -889,6 +890,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2655752832536625875">Banja</translation>
 <translation id="2657637947725373811">{0,plural, =1{Të transferohet skedari konfidencial?}other{Të transferohen skedarët konfidencialë?}}</translation>
 <translation id="2658843814961855121">Ligji i punës dhe punësimit</translation>
+<translation id="2658944305627908367">Transaksionet që tejkalojnë balancën tënde nuk do të përpunohen</translation>
 <translation id="2660779039299703961">Ngjarje</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Asnjë}=1{1 fjalëkalim (për <ph name="DOMAIN_LIST" />)}=2{2 fjalëkalime (për <ph name="DOMAIN_LIST" />)}other{# fjalëkalime (për <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">I sipërm</translation>
@@ -1086,6 +1088,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3090667236485488075">Qelq</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">U shpërfill, pasi lista "çaktivizo" përmban një motiv të barabartë me "*", i cili është ekuivalent me çaktivizimin e politikës.</translation>
+<translation id="3099619114405539473">Të përdorë kamerat e disponueshme (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Kursimi</translation>
 <translation id="3103188521861412364">Aksionet dhe obligacionet</translation>
 <translation id="3105172416063519923">ID-ja e elementit:</translation>
@@ -1362,6 +1365,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3583757800736429874">&amp;Bëje përsëri zhvendosjen</translation>
 <translation id="3584299510153766161">Dy shpime poshtë</translation>
 <translation id="3584755835709800788">Filma fantastiko-shkencorë dhe me fantazi</translation>
+<translation id="3585455899094692781">Të përdorë dhe të zhvendosë kamerat e disponueshme (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Film i njomë</translation>
 <translation id="3586931643579894722">Fshih detajet</translation>
 <translation id="3587738293690942763">Mesatar</translation>

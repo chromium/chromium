@@ -568,6 +568,7 @@
 <translation id="2036983605131262583">Εναλλακτικό ρολό</translation>
 <translation id="2040463897538655645">Αφαιρούμενος αποθηκευτικός χώρος</translation>
 <translation id="2040894699575719559">Η τοποθεσία αποκλείστηκε</translation>
+<translation id="2041788246978549610">Χρήση διαθέσιμων μικροφώνων (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Δίσκος 7</translation>
 <translation id="204357726431741734">Συνδεθείτε, για να χρησιμοποιήσετε κωδικούς πρόσβασης που είναι αποθηκευμένοι στον Λογαριασμό σας Google.</translation>
 <translation id="2045871135676061132">Φάκελος Personal</translation>
@@ -889,6 +890,7 @@
 <translation id="2655752832536625875">Μπάνιο</translation>
 <translation id="2657637947725373811">{0,plural, =1{Μεταφορά εμπιστευτικού αρχείου;}other{Μεταφορά εμπιστευτικών αρχείων;}}</translation>
 <translation id="2658843814961855121">Νομοθεσία εργασίας και απασχόλησης</translation>
+<translation id="2658944305627908367">Οι συναλλαγές που υπερβαίνουν το υπόλοιπό σας δεν θα διεκπεραιωθούν</translation>
 <translation id="2660779039299703961">Συμβάν</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Κανένας}=1{1 κωδικός πρόσβασης (για <ph name="DOMAIN_LIST" />)}=2{2 κωδικοί πρόσβασης (για <ph name="DOMAIN_LIST" />)}other{# κωδικοί πρόσβασης (για <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Κορυφή</translation>
@@ -1086,6 +1088,7 @@
 <translation id="3090667236485488075">Γυαλί</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Παραβλέπεται επειδή η λίστα "απενεργοποίηση" περιέχει ένα μοτίβο που ισούται με "*", το οποίο ισοδυναμεί με την απενεργοποίηση της πολιτικής.</translation>
+<translation id="3099619114405539473">Χρήση διαθέσιμων καμερών (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Ταμιευτηρίου</translation>
 <translation id="3103188521861412364">Μετοχές και ομόλογα</translation>
 <translation id="3105172416063519923">Αναγνωριστικό στοιχείο:</translation>
@@ -1362,6 +1365,7 @@
 <translation id="3583757800736429874">&amp;Επανάληψη μετακίνησης</translation>
 <translation id="3584299510153766161">Διπλό τρύπημα στο κάτω μέρος</translation>
 <translation id="3584755835709800788">Ταινίες επιστημονικής φαντασίας και φαντασίας</translation>
+<translation id="3585455899094692781">Χρήση και μετακίνηση διαθέσιμων καμερών (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Υγρό φιλμ</translation>
 <translation id="3586931643579894722">Απόκρυψη λεπτομερειών</translation>
 <translation id="3587738293690942763">Μέσο</translation>

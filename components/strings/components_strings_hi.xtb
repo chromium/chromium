@@ -569,6 +569,7 @@
 <translation id="2036983605131262583">वैकल्पिक रोल</translation>
 <translation id="2040463897538655645">डिवाइस का निकाले जाने लायक स्टोरेज</translation>
 <translation id="2040894699575719559">जगह की जानकारी पर रोक लगाई गई</translation>
+<translation id="2041788246978549610">उपलब्ध माइक्रोफ़ोन इस्तेमाल करें (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">ट्रे 7</translation>
 <translation id="204357726431741734">अपने Google खाते में सेव किए गए पासवर्ड इस्तेमाल करने के लिए साइन इन करें</translation>
 <translation id="2045871135676061132">निजी तौर पर इस्तेमाल होने वाला लिफ़ाफ़ा</translation>
@@ -890,6 +891,7 @@
 <translation id="2655752832536625875">बाथरूम</translation>
 <translation id="2657637947725373811">{0,plural, =1{क्या आपको गोपनीय फ़ाइल ट्रांसफ़र करनी है?}one{क्या आपको गोपनीय फ़ाइल ट्रांसफ़र करनी है?}other{क्या आपको गोपनीय फ़ाइलें ट्रांसफ़र करनी हैं?}}</translation>
 <translation id="2658843814961855121">श्रम और रोज़गार कानून</translation>
+<translation id="2658944305627908367">ऐसे लेन-देन प्रोसेस नहीं किए जाएंगे जिनकी रकम आपके खाते में बाकी बैलेंस से ज़्यादा हो</translation>
 <translation id="2660779039299703961">इवेंट</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{कोई पासवर्ड नहीं है}=1{(<ph name="DOMAIN_LIST" /> के लिए) 1 पासवर्ड}=2{(<ph name="DOMAIN_LIST" /> के लिए) 2 पासवर्ड}one{(<ph name="DOMAIN_LIST" /> के लिए) # पासवर्ड}other{(<ph name="DOMAIN_LIST" /> के लिए) # पासवर्ड}}</translation>
 <translation id="2666092431469916601">शीर्ष</translation>
@@ -1087,6 +1089,7 @@
 <translation id="3090667236485488075">ग्लास</translation>
 <translation id="3095940652251934233">जानकारी</translation>
 <translation id="3098513225387949945">नज़रअंदाज़ किया गया, क्योंकि 'बंद है' वाली सूची में '*' जैसा पैटर्न शामिल है. इसका मतलब नीति को बंद करना होता है.</translation>
+<translation id="3099619114405539473">उपलब्ध कैमरे इस्तेमाल करें (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">बचत खाता</translation>
 <translation id="3103188521861412364">स्टॉक और बॉन्ड</translation>
 <translation id="3105172416063519923">एसेट आईडी:</translation>
@@ -1362,6 +1365,7 @@
 <translation id="3583757800736429874">&amp;ले जाना फिर से करें</translation>
 <translation id="3584299510153766161">नीचे की ओर ड्युएल पंच</translation>
 <translation id="3584755835709800788">साइंस फ़िक्शन और फ़ैंटेसी फ़िल्में</translation>
+<translation id="3585455899094692781">उपलब्ध कैमरे इस्तेमाल करें और उन्हें मूव करें (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">वेट फ़िल्म</translation>
 <translation id="3586931643579894722">विवरण छुपाएं</translation>
 <translation id="3587738293690942763">मिडल</translation>

@@ -568,6 +568,7 @@
 <translation id="2036983605131262583">Наизменична ролна</translation>
 <translation id="2040463897538655645">Пренослива меморија</translation>
 <translation id="2040894699575719559">Локацијата е блокирана</translation>
+<translation id="2041788246978549610">да ги користи достапните микрофони (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Фиока 7</translation>
 <translation id="204357726431741734">Најавете се за да користите лозинки зачувани во вашата сметка на Google</translation>
 <translation id="2045871135676061132">Плик Personal</translation>
@@ -889,6 +890,7 @@
 <translation id="2655752832536625875">Бања</translation>
 <translation id="2657637947725373811">{0,plural, =1{Да се префрли доверлива датотека?}one{Да се префрлат доверливи датотеки?}other{Да се префрлат доверливи датотеки?}}</translation>
 <translation id="2658843814961855121">Закон за труд и вработување</translation>
+<translation id="2658944305627908367">Трансакциите што го надминуваат вашето салдо нема да се обработуваат</translation>
 <translation id="2660779039299703961">Настан</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Ниедна}=1{1 лозинка (за <ph name="DOMAIN_LIST" />)}=2{2 лозинки (за <ph name="DOMAIN_LIST" />)}one{# лозинка (за <ph name="DOMAIN_LIST" />)}other{# лозинки (за <ph name="DOMAIN_LIST" />-}}</translation>
 <translation id="2666092431469916601">Горе</translation>
@@ -1086,6 +1088,7 @@
 <translation id="3090667236485488075">Стакло</translation>
 <translation id="3095940652251934233">Изјава</translation>
 <translation id="3098513225387949945">Игнорирано бидејќи списокот на оневозможени содржи шема еднаква на „*“, што пак е еднакво на оневозможување на правилото.</translation>
+<translation id="3099619114405539473">да ги користи достапните камери (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Штедна сметка</translation>
 <translation id="3103188521861412364">Акции и обврзници</translation>
 <translation id="3105172416063519923">ИД на средство:</translation>
@@ -1362,6 +1365,7 @@
 <translation id="3583757800736429874">&amp;Повтори преместување</translation>
 <translation id="3584299510153766161">Две дупки долу</translation>
 <translation id="3584755835709800788">Филмови од жанровите научна фантастика и фантазија</translation>
+<translation id="3585455899094692781">да ги користи и преместува достапните камери (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Влажна фолија</translation>
 <translation id="3586931643579894722">Скриј детали</translation>
 <translation id="3587738293690942763">Средна</translation>

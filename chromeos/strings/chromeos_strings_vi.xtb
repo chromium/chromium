@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">vàng nhạt</translation>
 <translation id="1056898198331236512">Cảnh báo</translation>
 <translation id="1059913517121127803">Không thể bắt đầu quét</translation>
+<translation id="1061864016440983342">Sử dụng mà không cần thông tin vị trí</translation>
 <translation id="1062823486781306604"><ph name="INDEX" />/<ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Đã phát hiện thấy tường lửa</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Chế độ cài đặt khác</translation>
 <translation id="2082932131694554252">Đã chỉ định phím trên bàn phím</translation>
 <translation id="2085089206770112532">Giảm độ sáng màn hình</translation>
+<translation id="2086091080968010660">Các thay đổi dựa trên thời gian có thể không chính xác. Hãy bật quyền truy cập thông tin vị trí của hệ thống trong phần cài đặt.</translation>
 <translation id="2102231663024125441">Chỉnh sửa văn bản</translation>
 <translation id="2105810540595158374">Thiết bị là tay điều khiển trò chơi.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, phiên bản <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Khôi phục chế độ mặc định</translation>
 <translation id="2286454467119466181">Đơn giản</translation>
 <translation id="2287186687001756809">Không có hình ảnh nào. Để thêm ảnh, hãy truy cập <ph name="LINK" /></translation>
+<translation id="2294577623958216786">Lịch biểu hiện tại là <ph name="SUNRISE" /> – <ph name="SUNSET" />. Để lịch biểu mặt trời lặn và mặt trời mọc tự động cập nhật, hãy bật quyền truy cập thông tin vị trí của hệ thống.</translation>
 <translation id="2305172810646967500">đen</translation>
 <translation id="2307344026739914387">Dùng cặp khóa hiện tại</translation>
 <translation id="2308243864813041101">Hãy rút cáp USB của <ph name="DEVICE_NAME" /> ra để tiếp tục quá trình cập nhật</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">độ sáng bàn phím</translation>
 <translation id="6412715219990689313">Bàn phím tích hợp</translation>
 <translation id="6417265370957905582">Trợ lý Google</translation>
+<translation id="6419454453018688975">Bật quyền truy cập thông tin vị trí của hệ thống</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Yếu (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Chuyển đến phần cài đặt tài khoản</translation>

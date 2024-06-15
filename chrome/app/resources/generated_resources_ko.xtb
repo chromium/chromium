@@ -632,6 +632,7 @@
 <translation id="1467432559032391204">왼쪽</translation>
 <translation id="1468368115497843240">이 프로필과 연결된 인터넷 사용 기록 및 저장된 데스크가 기기에서 완전히 삭제됩니다. <ph name="DEVICE_TYPE" />에 설치된 다른 앱에서 이 프로필의 Google 계정을 사용하고 있을 수 있습니다. 그 경우 <ph name="BEGIN_LINK" /><ph name="SETTING_SECTION" /> &gt; <ph name="ACCOUNTS_SECTION" /><ph name="END_LINK" />에서 계정을 삭제하세요.</translation>
 <translation id="1468571364034902819">이 프로필을 사용할 수 없음</translation>
+<translation id="1469702495092129863">마이크를 확인하세요.</translation>
 <translation id="1470084204649225129">{NUM_TABS,plural, =1{새 그룹에 탭 추가}other{새 그룹에 탭 추가}}</translation>
 <translation id="1470350905258700113">이 기기 사용</translation>
 <translation id="1470946456740188591">캐럿 브라우징을 사용 설정하거나 중지하려면 Ctrl+Search+7 단축키를 사용합니다.</translation>
@@ -2475,6 +2476,7 @@
 <translation id="276582196519778359">자녀 보호 기능 PIN을 입력하세요</translation>
 <translation id="2766006623206032690">붙여넣어 바로가기(&amp;S)</translation>
 <translation id="2766161002040448006">부모님에게 묻기</translation>
+<translation id="2766629385177215776">모든 기기에서 생성된 새 탭 그룹을 북마크바에 자동으로 고정</translation>
 <translation id="2767077837043621282">Chromebook을 업데이트할 수 없습니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="2767127727915954024">이 사이트의 탭을 모두 닫을 때까지 <ph name="ORIGIN" />에서 <ph name="FILENAME" /> 파일을 수정할 수 있게 됩니다.</translation>
 <translation id="2769174155451290427">업로드된 이미지</translation>
@@ -2516,6 +2518,7 @@
 <translation id="2794977172822818797">현재 사이트 추가</translation>
 <translation id="2795716239552913152">사이트에서는 일반적으로 현지 뉴스 또는 주변 상점 같은 관련 기능이나 정보에 위치를 사용합니다.</translation>
 <translation id="2798347533012571708">업데이트 유지</translation>
+<translation id="2799162042226656283">내 Chrome</translation>
 <translation id="2799223571221894425">다시 시작</translation>
 <translation id="2800309299477632167">맞춤 키맵</translation>
 <translation id="2800760947029405028">이미지 업로드</translation>
@@ -2750,6 +2753,7 @@
 <translation id="2972581237482394796">다시 실행(&amp;R)</translation>
 <translation id="2973324205039581528">사이트 음소거</translation>
 <translation id="2975761176769946178">URL을 입력해야 합니다.</translation>
+<translation id="2976547701881428815">도구 및 작업</translation>
 <translation id="2976557544729462544">일부 기기의 경우 정상 작동 또는 최적의 성능을 위해 데이터 액세스 보호를 사용 중지해야 합니다.</translation>
 <translation id="2976639738101799892">Google 검색을 비롯한 Google 제품으로 스마트하게 탐색하세요</translation>
 <translation id="2977480621796371840">그룹에서 삭제</translation>
@@ -3975,6 +3979,7 @@
 <translation id="3873423927483480833">PIN 표시</translation>
 <translation id="3873915545594852654">ARC++에 문제가 발생했습니다.</translation>
 <translation id="3874164307099183178">Google 어시스턴트 사용 설정</translation>
+<translation id="3875511946736639169">이미지 표시</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> 앱이 새 브라우저 탭에서 열리도록 설정되어 있습니다. 지원되는 링크도 브라우저에서 열립니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3876219572815410515">창 크기를 위쪽으로 조정함</translation>
 <translation id="3877075909000773256">공유에 <ph name="USER_EMAIL" /> 계정을 사용하는 <ph name="USER_NAME" />님의 기기에 관한 Nearby Share 설정입니다.</translation>
@@ -5429,6 +5434,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4988526792673242964">페이지</translation>
 <translation id="49896407730300355">반시계 방향으로 회전(&amp;O)</translation>
 <translation id="4989966318180235467">백그라운드 페이지 검사(&amp;B)</translation>
+<translation id="4990673372047946816">사용 가능한 카메라 없음</translation>
 <translation id="4991420928586866460">맨 위 키를 기능 키로 사용</translation>
 <translation id="4992443049233195791">Microsoft 365 파일 설정</translation>
 <translation id="4992458225095111526">Powerwash 확인</translation>
@@ -7040,6 +7046,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6209908325007204267">기기에 Chrome Enterprise 업그레이드가 있지만 사용자 이름이 엔터프라이즈 계정에 연결되어 있지 않았습니다. 다른 기기에서 다음 페이지를 방문하여 엔터프라이즈 계정을 만드세요. g.co/ChromeEnterpriseAccount</translation>
 <translation id="6210282067670792090">주소 표시줄에 검색엔진 및 사이트 검색의 바로가기를 입력하고 단축키를 누르세요.</translation>
 <translation id="6211067089253408231">인스턴트 핫스팟 사용 설정</translation>
+<translation id="6211659910592825123">카메라를 확인하세요.</translation>
 <translation id="621172521139737651">{COUNT,plural, =0{새 탭 그룹에서 모두 열기(&amp;N)}=1{새 탭 그룹에서 열기(&amp;N)}other{새 탭 그룹에서 {COUNT}개 모두 열기(&amp;N)}}</translation>
 <translation id="6212039847102026977">고급 네트워크 속성 표시</translation>
 <translation id="6212168817037875041">디스플레이 사용 중지</translation>
@@ -7574,6 +7581,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6624036901798307345">태블릿 모드에서 탭 카운터 툴바 버튼을 탭하여 각 탭의 썸네일을 보여주는 새로운 탭 표시줄을 엽니다.</translation>
 <translation id="6624687053722465643">달콤</translation>
 <translation id="6628328486509726751">업로드 시간: <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
+<translation id="662861173589771882">툴바 아이콘 선택</translation>
 <translation id="6630117778953264026">보안 강화</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" />에서 사용자를 대신하여 인증하기 위해 인증서에 대한 영구적인 액세스 권한을 요청합니다.</translation>
 <translation id="6635362468090274700">나를 공개하기 전에는 아무도 나와 파일을 공유할 수 없습니다.<ph name="BR" /><ph name="BR" />일시적으로 나를 공개하려면 상태 영역을 열고 Nearby 전체 공개를 사용 설정하면 됩니다.</translation>
@@ -8274,6 +8282,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7155161204362351654">우수한 화질의 동영상을 감상하고 배터리를 더 오래 사용하세요. 동영상은 Cast 지원 화면에서만 재생됩니다.</translation>
 <translation id="7159953856712257647">기본적으로 설치됨</translation>
 <translation id="7160182524506337403">이제 휴대전화의 알림을 확인할 수 있습니다.</translation>
+<translation id="7160911207516219534">측면 패널</translation>
 <translation id="7165263843655074092">이 기기에 표준 보안 보호 조치가 적용되고 있습니다.</translation>
 <translation id="716640248772308851">'<ph name="EXTENSION" />'은(는) 선택된 위치에서 이미지, 동영상 및 사운드 파일을 읽을 수 있습니다.</translation>
 <translation id="7166815366658507447">핫스팟 사용 설정됨</translation>
@@ -8300,6 +8309,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7182063559013288142">인스턴트 핫스팟</translation>
 <translation id="7182791023900310535">비밀번호 이동</translation>
 <translation id="718427252411067142">다른 사람이 내 비밀번호를 사용하지 못하도록 하려면 앱을 열어 비밀번호를 변경하세요.</translation>
+<translation id="718512729823942418">사용 가능한 마이크 없음</translation>
 <translation id="7186088072322679094">툴바에 보관</translation>
 <translation id="7186303001964993981">이 폴더에는 시스템 파일이 포함되어 있으므로 <ph name="ORIGIN" />에서 열 수 없습니다.</translation>
 <translation id="7186568385131859684">Google 서비스 전반에서 방문 기록이 다른 데이터와 함께 사용되는 방식 제어하기</translation>
@@ -9637,6 +9647,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8149564499626272569">USB 케이블로 휴대전화를 연결하여 인증</translation>
 <translation id="8149870652370242480">휴대전화에서 저장된 비밀번호를 사용하려면 iOS용 Chrome을 다운로드하고 Google 계정에 로그인하세요.</translation>
 <translation id="8150396590017071059">비밀번호 관리자 PIN 변경</translation>
+<translation id="8150841750108340884">툴바 아이콘 선택</translation>
 <translation id="8151057139207656239">빌드 세부정보가 복사되었습니다</translation>
 <translation id="815114315010033526">대신 QR 코드 사용</translation>
 <translation id="8151638057146502721">구성</translation>
@@ -9977,6 +9988,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8394212467245680403">영숫자</translation>
 <translation id="8394908167088220973">미디어 재생/일시중지</translation>
 <translation id="8396098434728053815">탭 오디오도 공유</translation>
+<translation id="8396657283886698158">도구 및 작업</translation>
 <translation id="8397825320644530257">연결된 휴대전화 연결 해제</translation>
 <translation id="8398877366907290961">무시하고 계속하기</translation>
 <translation id="8399282673057829204">비밀번호 보기</translation>
@@ -10164,6 +10176,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8541838361296720865">'<ph name="ACTION" />'에 할당할 스위치 또는 키보드 키를 누르세요.</translation>
 <translation id="8546186510985480118">기기에 저장 공간 부족</translation>
 <translation id="8546306075665861288">이미지 캐시</translation>
+<translation id="8546817377311213339">이미지 표시 안함</translation>
 <translation id="8546930481464505581">Touch Bar 맞춤설정</translation>
 <translation id="8547821378890700958"><ph name="BEGIN_PARAGRAPH1" /><ph name="USER_EMAIL" /> 계정은 <ph name="MANAGER" />에서 관리합니다. 이 이메일을 추가 계정으로 사용할 수 없습니다.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" /><ph name="USER_EMAIL" /> 계정을 사용하려면 먼저 <ph name="DEVICE_TYPE" />에서 로그아웃한 다음, 로그인 화면 하단에서 사용자 추가를 선택하세요.<ph name="END_PARAGRAPH2" /></translation>
@@ -11191,6 +11204,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="992653586748191655">추천 탭 그룹 <ph name="NUM" />개</translation>
 <translation id="992778845837390402">현재 Linux 백업이 진행 중입니다.</translation>
 <translation id="993540765962421562">설치 진행 중</translation>
+<translation id="994087375490600917">측면 패널</translation>
 <translation id="994289308992179865">연속 재생(&amp;L)</translation>
 <translation id="995755448277384931">IBAN 추가</translation>
 <translation id="995782501881226248">YouTube</translation>

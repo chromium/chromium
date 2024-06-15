@@ -568,6 +568,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2036983605131262583">Alternatīvs rullis</translation>
 <translation id="2040463897538655645">Noņemama atmiņas ierīce</translation>
 <translation id="2040894699575719559">Atrašanās vieta ir bloķēta</translation>
+<translation id="2041788246978549610">Izmantot pieejamos mikrofonus (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">7. paplāte</translation>
 <translation id="204357726431741734">Pierakstieties, lai izmantotu savā Google kontā saglabātās paroles.</translation>
 <translation id="2045871135676061132">Aploksne Personal</translation>
@@ -889,6 +890,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2655752832536625875">Vannasistaba</translation>
 <translation id="2657637947725373811">{0,plural, =1{Vai pārsūtīt konfidenciālu failu?}zero{Vai pārsūtīt konfidenciālus failus?}one{Vai pārsūtīt konfidenciālus failus?}other{Vai pārsūtīt konfidenciālus failus?}}</translation>
 <translation id="2658843814961855121">Darba un nodarbinātības likumdošana</translation>
+<translation id="2658944305627908367">Darījumi, kas pārsniedz atlikumu, netiks apstrādāti</translation>
 <translation id="2660779039299703961">Notikums</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Nav}=1{1 parole (šādam domēnam: <ph name="DOMAIN_LIST" />)}=2{2 paroles (šādiem domēniem: <ph name="DOMAIN_LIST" />)}zero{# paroļu (šādiem domēniem: <ph name="DOMAIN_LIST" />)}one{# parole (šādiem domēniem: <ph name="DOMAIN_LIST" />)}other{# paroles (šādiem domēniem: <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Augša</translation>
@@ -1086,6 +1088,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3090667236485488075">Stikls</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Tiek ignorēta, jo atspējošanas sarakstā ir ietverta aizstājējzīme “*”, kas ir līdzvērtīga politikas atspējošanai.</translation>
+<translation id="3099619114405539473">Izmantot pieejamās kameras (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Uzkrājumu konts</translation>
 <translation id="3103188521861412364">Akcijas un obligācijas</translation>
 <translation id="3105172416063519923">Līdzekļa ID:</translation>
@@ -1362,6 +1365,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3583757800736429874">&amp;Pārvietošanas atsaukuma atcelšana</translation>
 <translation id="3584299510153766161">Divi caurumi apakšdaļā</translation>
 <translation id="3584755835709800788">Zinātniskās fantastikas un fantāzijas filmas</translation>
+<translation id="3585455899094692781">Izmantot un pārvietot pieejamās kameras (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Slapja plēve</translation>
 <translation id="3586931643579894722">Slēpt detaļas</translation>
 <translation id="3587738293690942763">vidējais</translation>

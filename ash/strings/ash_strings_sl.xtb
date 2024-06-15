@@ -121,6 +121,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1383876407941801731">Išči</translation>
 <translation id="1391102559483454063">Vklopljeno</translation>
 <translation id="1394698770495054737">Polna zameglitev</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{Pred 1 dnevom}one{pred # dnevom}two{pred # dnevoma}few{pred # dnevi}other{pred # dnevi}}</translation>
 <translation id="1404963891829069586">Zvoki Osredotočenosti</translation>
 <translation id="1407069428457324124">Temna tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Za pomikanje med datumi uporabite puščične tipke.</translation>
@@ -211,6 +212,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="174102739345480129">Označevalnik je izklopljen.</translation>
 <translation id="1743570585616704562">Ni prepoznano</translation>
 <translation id="1743927604032653654">Strni obvestilo <ph name="NOTIFICATION_TITLE" /></translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{V 1 h}=1{Pred 1 h}one{Pred # h}two{Pred # h}few{Pred # h}other{Pred # h}}</translation>
 <translation id="1746730358044914197">Načine vnosa konfigurira skrbnik.</translation>
 <translation id="1747336645387973286">rok <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Zaslonska tipkovnica omogočena</translation>
@@ -348,6 +350,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2359808026110333948">Naprej</translation>
 <translation id="2360398059912971776">baterija</translation>
 <translation id="2361210043495191221">Preklop povezave Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Poslano iz naprave <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Prijava v Chromebook ni mogoča.</translation>
 <translation id="2367972762794486313">Pokaži aplikacije</translation>
 <translation id="2368828502825385061">Poišči</translation>
@@ -510,6 +513,7 @@ Povezanih je toliko naprav: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Želite vklopiti dostop do mikrofona?</translation>
 <translation id="296762781903199866">Ni bilo mogoče prenesti datotek za govor za jezik <ph name="LANGUAGE" /></translation>
+<translation id="2968761508099987738">Vaša trenutna lokacija trenutno ni podprta.</translation>
 <translation id="2970920913501714344">nameščanje aplikacij, razširitev in tem;</translation>
 <translation id="2977598380246111477">Naslednja številka</translation>
 <translation id="2985148236010982088">Prikaz vseh aplikacij</translation>
@@ -986,6 +990,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="468293128311738995">Aplikacije iz telefona</translation>
 <translation id="4690510401873698237">Polica na dnu</translation>
 <translation id="4696813013609194136">Odklepanje naprave s kodo starša</translation>
+<translation id="4697357603686181098">Pri tem vam ne moremo pomagati. Uporabite drugo zahtevo.</translation>
 <translation id="4702647871202761252">Zaslon za zasebnost je izklopljen</translation>
 <translation id="4706121060329443414">Poskus prenosa bo izveden pozneje. Za zdaj bo govor poslan Googlu v obdelavo.</translation>
 <translation id="470644585772471629">Inverzija barv</translation>
@@ -1902,6 +1907,7 @@ Nova namestitev</translation>
 <translation id="7982878511129296052">Izklapljanje …</translation>
 <translation id="7984197416080286869">Preveč poskusov odklepanja s prstnim odtisom</translation>
 <translation id="798779949890829624">To nastavitev upravlja skrbnik.</translation>
+<translation id="7989206653429884947">Pogosto odprto</translation>
 <translation id="799296642788192631">Pripnete lahko pomembne datoteke. Če želite pripeti element, premaknite miškin kazalec nanj ali odprite Datoteke in element kliknite z desnim gumbom.</translation>
 <translation id="7994370417837006925">Prijava z več računi</translation>
 <translation id="7995804128062002838">Slike zaslona ni bilo mogoče zajeti</translation>
@@ -2088,6 +2094,7 @@ Nova namestitev</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Čas je potekel. Odlično! 🎉</translation>
+<translation id="8753368202781196133">Ta jezik trenutno ni podprt.</translation>
 <translation id="8755498163081687682">Preverjanje identitete: Spletno mesto <ph name="ORIGIN_NAME" /> želi potrditi, ali ste to res vi.</translation>
 <translation id="875593634123171288">Prikaz nastavitev omrežja VPN</translation>
 <translation id="8756799553341497810">Postavitev aplikacije lahko začnete prilagajati, ko zaprete ta pogled.</translation>
