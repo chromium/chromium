@@ -396,8 +396,8 @@ class DesksOverviewFocusCyclerTest : public OverviewFocusCyclerTest {
 // Tests that we can tab through the desk mini views, new desk button and other
 // desk items in the correct order.
 TEST_P(DesksOverviewFocusCyclerTest, TabbingBasic) {
-  OverviewController::Get()->set_disable_app_id_check_for_saved_desks_for_test(
-      true);
+  base::AutoReset<bool> disable_app_id_check =
+      OverviewController::Get()->SetDisableAppIdCheckForTests();
 
   std::unique_ptr<aura::Window> window1(CreateAppWindow(gfx::Rect(200, 200)));
   std::unique_ptr<aura::Window> window2(CreateAppWindow(gfx::Rect(200, 200)));
@@ -459,16 +459,13 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingBasic) {
   PressAndReleaseKey(ui::VKEY_TAB);
   EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskForLaterButton(),
             GetFocusedView());
-
-  OverviewController::Get()->set_disable_app_id_check_for_saved_desks_for_test(
-      false);
 }
 
 // Tests that we can reverse tab through the desk mini views, new desk button
 // and overview items in the correct order.
 TEST_P(DesksOverviewFocusCyclerTest, TabbingReverse) {
-  OverviewController::Get()->set_disable_app_id_check_for_saved_desks_for_test(
-      true);
+  base::AutoReset<bool> disable_app_id_check =
+      OverviewController::Get()->SetDisableAppIdCheckForTests();
 
   std::unique_ptr<aura::Window> window1(CreateAppWindow(gfx::Rect(200, 200)));
   std::unique_ptr<aura::Window> window2(CreateAppWindow(gfx::Rect(200, 200)));
@@ -540,9 +537,6 @@ TEST_P(DesksOverviewFocusCyclerTest, TabbingReverse) {
     EXPECT_EQ(desk_bar_view->overview_grid()->GetSaveDeskAsTemplateButton(),
               GetFocusedView());
   }
-
-  OverviewController::Get()->set_disable_app_id_check_for_saved_desks_for_test(
-      false);
 }
 
 // Tests that we can tab and chromevox interchangeably through the desk mini

@@ -58,6 +58,7 @@ bool FocusOverviewWindow(const aura::Window* window,
 }
 
 const aura::Window* GetOverviewFocusedWindow() {
+  CHECK(!features::IsOverviewNewFocusEnabled());
   OverviewItemBase* item =
       GetOverviewSession()->focus_cycler_old()->GetFocusedItem();
   return item ? item->GetWindow() : nullptr;

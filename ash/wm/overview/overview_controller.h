@@ -148,11 +148,7 @@ class ASH_EXPORT OverviewController : public OverviewDelegate,
                          aura::Window* gained_active,
                          aura::Window* lost_active) override {}
 
-  void set_disable_app_id_check_for_saved_desks_for_test(
-      bool disable_app_id_check_for_saved_desks) {
-    disable_app_id_check_for_saved_desks_ =
-        disable_app_id_check_for_saved_desks;
-  }
+  base::AutoReset<bool> SetDisableAppIdCheckForTests();
 
   void set_occlusion_pause_duration_for_start_for_test(
       base::TimeDelta duration) {

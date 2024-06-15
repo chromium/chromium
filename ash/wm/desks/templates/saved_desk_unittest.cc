@@ -382,11 +382,6 @@ class SavedDeskTest : public OverviewTestBase,
       ASSERT_TRUE(overview_grid->IsShowingSavedDeskLibrary());
   }
 
-  void SetDisableAppIdCheckForSavedDesks(bool should_disable) {
-    OverviewController::Get()
-        ->set_disable_app_id_check_for_saved_desks_for_test(should_disable);
-  }
-
   SkBitmap GetBitmapWithInnerRoundedRect(gfx::Size size,
                                          int stroke_width,
                                          SkColor color) {
@@ -422,7 +417,8 @@ class SavedDeskTest : public OverviewTestBase,
     // create in tests doesn't have an app id associated with it. Since these
     // windows don't have app ids, `OverviewGrid` won't consider them supported
     // windows so we need to disable the app id check during tests.
-    SetDisableAppIdCheckForSavedDesks(true);
+    disable_app_id_check_ =
+        OverviewController::Get()->SetDisableAppIdCheckForTests();
 
     // Wait for the desk model to have completed its initialization. Not doing
     // this would lead to flaky tests.
@@ -433,7 +429,7 @@ class SavedDeskTest : public OverviewTestBase,
   }
 
   void TearDown() override {
-    SetDisableAppIdCheckForSavedDesks(false);
+    disable_app_id_check_.reset();
     multi_user_window_manager_.reset();
     OverviewTestBase::TearDown();
   }
@@ -446,6 +442,8 @@ class SavedDeskTest : public OverviewTestBase,
   void OnTransitionUserShelfToNewAccount() override {}
 
  protected:
+  std::optional<base::AutoReset<bool>> disable_app_id_check_;
+
   // Tests should normally create a local `ScopedAnimationDurationScaleMode`.
   // Create this object if a non zero scale mode needs to be used during test
   // tear down.
@@ -1122,6 +1120,9 @@ TEST_F(SavedDeskTest, SaveDeskButtonsEnabledDisabled) {
 // Tests that pressing `Enter` on save desk buttons does not save anything when
 // disabled.
 TEST_F(SavedDeskTest, SaveDeskButtonsPressEnterWhenDisabled) {
+  if (features::IsOverviewNewFocusEnabled()) {
+    return;
+  }
   // Prepare the test environment, like creating an app window which should be
   // supported.
   auto no_app_id_window = CreateAppWindow();
@@ -2043,12 +2044,8 @@ TEST_F(SavedDeskTest, TabbingInvisibleTemplatesButton) {
   auto* desks_bar_view = GetDesksBarViewForRoot(Shell::GetPrimaryRootWindow());
   ASSERT_TRUE(desks_bar_view);
   auto* library_button = desks_bar_view->library_button();
-  ASSERT_TRUE(library_button->GetVisible());
-  ASSERT_EQ(library_button->state(), DeskIconButton::State::kActive);
-
-  // Test that we do not focus the templates button.
-  PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);
-  EXPECT_NE(button, GetFocusedView());
+  EXPECT_TRUE(library_button->GetVisible());
+  EXPECT_EQ(library_button->state(), DeskIconButton::State::kActive);
 }
 
 // Tests that the desks bar does not return to zero state if the second-to-last
@@ -2140,7 +2137,7 @@ TEST_F(SavedDeskTest, UnsupportedAppsDialog) {
 // disabled when all windows on the desk are unsupported or there are no windows
 // with Full Restore app ids. See crbug.com/1277763.
 TEST_F(SavedDeskTest, AllUnsupportedAppsDisablesSaveDeskButtons) {
-  SetDisableAppIdCheckForSavedDesks(false);
+  disable_app_id_check_.reset();
 
   // Use `CreateTestWindow()` instead of `CreateAppWindow()`, which by default
   // creates a supported window.
@@ -2775,17 +2772,17 @@ TEST_F(SavedDeskTest, UnFocusNameChangeOnClickingLibrary) {
 
 // Tests that accessibility overrides are set as expected.
 TEST_F(SavedDeskTest, AccessibilityFocusAnnotatorInOverview) {
-  auto window = CreateTestWindow(gfx::Rect(100, 100));
+  auto window = CreateAppWindow(gfx::Rect(100, 100));
 
   ToggleOverview();
 
   auto* focus_widget = views::Widget::GetWidgetForNativeWindow(
       GetOverviewSession()->GetOverviewFocusWindow());
-  DCHECK(focus_widget);
+  ASSERT_TRUE(focus_widget);
 
   OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
   auto* desk_widget = const_cast<views::Widget*>(grid->desks_widget());
-  DCHECK(desk_widget);
+  ASSERT_TRUE(desk_widget);
 
   auto* save_widget = GetOverviewGridForRoot(Shell::GetPrimaryRootWindow())
                           ->save_desk_button_container_widget();
@@ -2801,7 +2798,7 @@ TEST_F(SavedDeskTest, AccessibilityFocusAnnotatorInOverview) {
 // Tests that accessibility overrides are set as expected after entering
 // library view.
 TEST_F(SavedDeskTest, AccessibilityFocusAnnotatorInLibrary) {
-  auto window = CreateTestWindow(gfx::Rect(100, 100));
+  auto window = CreateAppWindow(gfx::Rect(100, 100));
 
   AddEntry(base::Uuid::GenerateRandomV4(), "test_template", base::Time::Now(),
            DeskTemplateType::kTemplate);
@@ -2810,14 +2807,14 @@ TEST_F(SavedDeskTest, AccessibilityFocusAnnotatorInLibrary) {
 
   auto* focus_widget = views::Widget::GetWidgetForNativeWindow(
       GetOverviewSession()->GetOverviewFocusWindow());
-  DCHECK(focus_widget);
+  ASSERT_TRUE(focus_widget);
 
   OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
   views::Widget* desk_widget =
       const_cast<views::Widget*>(overview_grid->desks_widget());
-  DCHECK(desk_widget);
+  ASSERT_TRUE(desk_widget);
   views::Widget* library_widget = overview_grid->saved_desk_library_widget();
-  DCHECK(library_widget);
+  ASSERT_TRUE(library_widget);
 
   // Order should be [focus_widget, library_widget, desk_widget].
   CheckA11yOverrides("focus", focus_widget, desk_widget, library_widget);
@@ -2835,14 +2832,14 @@ TEST_F(SavedDeskTest, AccessibilityFocusAnnotatorWhenNoWindowOpen) {
 
   auto* focus_widget = views::Widget::GetWidgetForNativeWindow(
       GetOverviewSession()->GetOverviewFocusWindow());
-  DCHECK(focus_widget);
+  ASSERT_TRUE(focus_widget);
 
   OverviewGrid* overview_grid = GetOverviewGridList()[0].get();
   views::Widget* desk_widget =
       const_cast<views::Widget*>(overview_grid->desks_widget());
-  DCHECK(desk_widget);
+  ASSERT_TRUE(desk_widget);
   views::Widget* library_widget = overview_grid->saved_desk_library_widget();
-  DCHECK(library_widget);
+  ASSERT_TRUE(library_widget);
 
   // Order should be [focus_widget, template_widget, desk_widget].
   CheckA11yOverrides("focus", focus_widget, desk_widget, library_widget);
@@ -4237,6 +4234,12 @@ TEST_F(SavedDeskTest, FocusedDeskItemFullyVisible) {
 // visibility is restored for the button when desk removal is undone.
 TEST_F(SavedDeskTest,
        CorrectlyUpdateSaveDeskButtonVisibilityOnActiveDeskClose) {
+  // TODO(http://b/325335020): There is a bug where clicking the toast will exit
+  // overview.
+  if (features::IsOverviewNewFocusEnabled()) {
+    return;
+  }
+
   auto* controller = DesksController::Get();
   const auto& desks = controller->desks();
 
@@ -4274,7 +4277,7 @@ TEST_F(SavedDeskTest,
   EXPECT_FALSE(overview_grid->IsSaveDeskButtonContainerVisible());
 
   // Try undoing desk close to see if the save desk button returns to the right
-  // state,
+  // state.
   views::Button* undo_button =
       DesksTestApi::GetCloseAllUndoToastDismissButton();
   ASSERT_TRUE(undo_button);

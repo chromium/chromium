@@ -5736,7 +5736,8 @@ TEST_F(SnapGroupDesksTest, SaveDeskForSnapGroupWithAnotherSavedDesk) {
 
   // Explicitly disable `disable_app_id_check_for_saved_desks_` otherwise "Save
   // desk for later" button will be disabled.
-  overview_controller->set_disable_app_id_check_for_saved_desks_for_test(true);
+  base::AutoReset<bool> disable_app_id_check =
+      overview_controller->SetDisableAppIdCheckForTests();
 
   // Create `w0` and save `w0` in a saved desk by activing "Save desk for later"
   // button in Overview.
@@ -5799,8 +5800,6 @@ TEST_F(SnapGroupDesksTest, SaveDeskForSnapGroupWithAnotherSavedDesk) {
   event_generator->ClickLeftButton();
   EXPECT_FALSE(IsInOverviewSession());
   UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
-
-  overview_controller->set_disable_app_id_check_for_saved_desks_for_test(false);
 }
 
 // Verify that Snap Group will be broken when setting a window that belongs to a

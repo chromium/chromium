@@ -339,6 +339,10 @@ void OverviewController::OnWindowActivating(ActivationReason reason,
     overview_session_->OnWindowActivating(reason, gained_active, lost_active);
 }
 
+base::AutoReset<bool> OverviewController::SetDisableAppIdCheckForTests() {
+  return {&disable_app_id_check_for_saved_desks_, true};
+}
+
 void OverviewController::ToggleOverview(OverviewEnterExitType type) {
   // Pause raster scale updates while the overview is being toggled. This is to
   // handle the case where a mirror view is deleted then recreated when

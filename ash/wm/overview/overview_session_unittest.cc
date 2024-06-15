@@ -618,7 +618,11 @@ TEST_P(OverviewSessionTest, ActiveWindowChangedUserActionRecorded) {
   // pressing the return key.
   wm::ActivateWindow(window1.get());
   ToggleOverview();
-  ASSERT_TRUE(FocusOverviewWindow(window2.get(), GetEventGenerator()));
+  PressAndReleaseKey(ui::VKEY_TAB);
+  PressAndReleaseKey(ui::VKEY_TAB);
+  ASSERT_EQ(static_cast<OverviewItem*>(GetOverviewItemForWindow(window2.get()))
+                ->overview_item_view(),
+            GetFocusedView());
   PressAndReleaseKey(ui::VKEY_RETURN);
   EXPECT_EQ(
       3, user_action_tester.GetActionCount(kActiveWindowChangedFromOverview));
@@ -651,7 +655,10 @@ TEST_P(OverviewSessionTest, ActiveWindowChangedUserActionNotRecorded) {
   // |window1| remains active. Select using the keyboard.
   ASSERT_EQ(window1.get(), window_util::GetFocusedWindow());
   ToggleOverview();
-  ASSERT_TRUE(FocusOverviewWindow(window1.get(), GetEventGenerator()));
+  PressAndReleaseKey(ui::VKEY_TAB);
+  ASSERT_EQ(static_cast<OverviewItem*>(GetOverviewItemForWindow(window1.get()))
+                ->overview_item_view(),
+            GetFocusedView());
   PressAndReleaseKey(ui::VKEY_RETURN);
   EXPECT_EQ(
       0, user_action_tester.GetActionCount(kActiveWindowChangedFromOverview));
@@ -3001,7 +3008,7 @@ TEST_P(OverviewSessionTest, PipWindowShownButExcludedFromOverview) {
 
   // PIP window should be visible but not in the overview.
   EXPECT_TRUE(pip_window->IsVisible());
-  EXPECT_FALSE(FocusOverviewWindow(pip_window.get(), GetEventGenerator()));
+  EXPECT_FALSE(GetOverviewItemForWindow(pip_window.get()));
 }
 
 // Tests the PositionWindows function works as expected.
@@ -3298,9 +3305,12 @@ TEST_P(OverviewSessionTest, AccessibilityFocusAnnotator) {
     return;
   }
 
-  auto window3 = CreateTestWindow(gfx::Rect(100, 100));
-  auto window2 = CreateTestWindow(gfx::Rect(100, 100));
-  auto window1 = CreateTestWindow(gfx::Rect(100, 100));
+  base::AutoReset<bool> disable =
+      OverviewController::Get()->SetDisableAppIdCheckForTests();
+
+  auto window3 = CreateAppWindow(gfx::Rect(100, 100));
+  auto window2 = CreateAppWindow(gfx::Rect(100, 100));
+  auto window1 = CreateAppWindow(gfx::Rect(100, 100));
 
   ToggleOverview();
   WaitForOverviewEnterAnimation();
@@ -3351,9 +3361,12 @@ TEST_P(OverviewSessionTest, AccessibilityFocusAnnotatorNoSavedDesks) {
     return;
   }
 
-  auto window3 = CreateTestWindow(gfx::Rect(100, 100));
-  auto window2 = CreateTestWindow(gfx::Rect(100, 100));
-  auto window1 = CreateTestWindow(gfx::Rect(100, 100));
+  base::AutoReset<bool> disable =
+      OverviewController::Get()->SetDisableAppIdCheckForTests();
+
+  auto window3 = CreateAppWindow(gfx::Rect(100, 100));
+  auto window2 = CreateAppWindow(gfx::Rect(100, 100));
+  auto window1 = CreateAppWindow(gfx::Rect(100, 100));
 
   ToggleOverview();
   WaitForOverviewEnterAnimation();
