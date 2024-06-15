@@ -364,11 +364,21 @@ public abstract class SyncConsentFragmentBase extends Fragment
      */
     protected void displayDeviceLockPage(Runnable onSuccess) {
         mDeviceLockPageCallback = onSuccess;
+
+        // Getting the profile depends on the Activity, which may be gone by the time the callback
+        // runs.
+        Profile profile = getProfile();
         mAccountManagerFacade
                 .getCoreAccountInfos()
                 .then(
                         (coreAccountInfos) -> {
-                            if (getActivity() == null) return;
+                            Activity activity = getActivity();
+                            if (activity == null
+                                    || activity.isFinishing()
+                                    || activity.isDestroyed()) {
+                                return;
+                            }
+
                             CoreAccountInfo selectedCoreAccountInfo =
                                     AccountUtils.findCoreAccountInfoByEmail(
                                             coreAccountInfos, mSelectedAccountEmail);
@@ -378,8 +388,8 @@ public abstract class SyncConsentFragmentBase extends Fragment
                                     new DeviceLockCoordinator(
                                             this,
                                             getWindowAndroid(),
-                                            getProfile(),
-                                            getActivity(),
+                                            profile,
+                                            activity,
                                             CoreAccountInfo.getAndroidAccountFrom(
                                                     selectedCoreAccountInfo));
                         });
