@@ -169,6 +169,7 @@
 <translation id="3261565993776444564">با امتحان کردن رنگی جدید مرورگرتان را سفارشی‌سازی کنید</translation>
 <translation id="3282568296779691940">‏ورود به Chrome</translation>
 <translation id="3286538390144397061">راه‌اندازی مجدد اکنون</translation>
+<translation id="3292333338048274092">‏سپس باید Chrome را بازراه‌اندازی کنید.</translation>
 <translation id="3360895254066713204">‏راهنمای Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{‏Chrome هم‌اکنون راه‌اندازی مجدد می‌شود}=1{‏Chrome ‏۱ ثانیه دیگر راه‌اندازی مجدد می‌شود}one{‏Chrome ‏# ثانیه دیگر راه‌اندازی مجدد می‌شود}other{‏Chrome ‏# ثانیه دیگر راه‌اندازی مجدد می‌شود}}</translation>
 <translation id="3396977131400919238">‏هنگام نصب یک خطای سیستم‌عامل رخ داد. لطفاً دوباره Google Chrome را بارگیری کنید.</translation>
@@ -213,6 +214,7 @@
 <translation id="4035053306113201399">‏برای اعمال به‌روزرسانی، ChromeOS باید بازراه‌اندازی شود.</translation>
 <translation id="4050175100176540509">بهبودهای امنیتی مهم و ویژگی‌های جدید در جدیدترین نسخه در دسترس است.</translation>
 <translation id="4053720452172726777">‏‫سفارشی کردن و کنترل Google Chrome</translation>
+<translation id="4084404300720192944">‏برای هم‌رسانی پنجره، «ضبط‌کن صفحه‌نمایش ویژه Chrome» را در «اولویت‌های سیستم» مجاز کنید.</translation>
 <translation id="4106587138345390261">‏Chrome درحال کاوش ویژگی‌های جدیدی است که به سایت‌های امکان می‌دهد تجربه مرور یکسانی را با مصرف اطلاعات شخصی کمتر ارائه دهند</translation>
 <translation id="4110895483821904099">‏راه‌اندازی نمایه Chrome جدید</translation>
 <translation id="4111566860456076004">‏‫Chrome نمی‌تواند منبع این افزونه را تأیید کند و این افزونه ممکن است ناامن باشد. آن را از Chrome حذف کنید تا دیگر نتواند داده‌های شما را (ازجمله اطلاعات شخصی) در سایت‌هایی که بازدید می‌کنید ببیند و تغییر دهد.</translation>
@@ -347,6 +349,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6182736845697986886">نصب به‌دلیل وجود خطای داخلی در سرور به‌روزرسانی انجام نشد.</translation>
 <translation id="6200139057479872438">‏اخیراً بازدیدی نداشته‌اید. ‫Chrome ‏<ph name="PERMISSION_1" /> و <ph name="PERMISSION_2" /> را برداشت</translation>
+<translation id="621585339844629864">‏برای هم‌رسانی صفحه‌نمایش، «ضبط‌کن صفحه‌نمایش ویژه Chrome» را در «اولویت‌های سیستم» مجاز کنید.</translation>
 <translation id="6235018212288296708">‏قانون ورودی برای Google Chrome به منظور اجازه به ترافیک mDNS.</translation>
 <translation id="624230925347970731">‏Chrome به‌زودی بسته می‌شود</translation>
 <translation id="6247557882553405851">‏مدیر گذرواژه Google</translation>
