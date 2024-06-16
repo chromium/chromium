@@ -664,8 +664,6 @@ void WvrManager::WebXrTryStartAnimatingFrame() {
 
   frame_data->views = CreateViews(wvr_api_, pose);
 
-  frame_data->mojo_space_reset = true;
-
   frame_data->input_state = GetInputSourceState();
 
   frame_data->mojo_from_viewer = PoseToVRPosePtr(pose);
