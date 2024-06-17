@@ -1,6 +1,7 @@
 // Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+import {createSpeechSynthesisVoice} from './common.js';
 
 // A fake SpeechSynthesis object for testing
 export class FakeSpeechSynthesis {
@@ -46,13 +47,13 @@ export class FakeSpeechSynthesis {
 
   getVoices(): SpeechSynthesisVoice[] {
     return [
-      {lang: 'en', name: 'Lauren', default: true} as SpeechSynthesisVoice,
-      {lang: 'en', name: 'Eitan'} as SpeechSynthesisVoice,
-      {lang: 'en', name: 'Kristi'} as SpeechSynthesisVoice,
-      {lang: 'en', name: 'Shari'} as SpeechSynthesisVoice,
-      {lang: 'en', name: 'Yu'} as SpeechSynthesisVoice,
-      {lang: 'en', name: 'Xiang', localService: this.shouldUseLocalVoices} as
-          SpeechSynthesisVoice,
+      createSpeechSynthesisVoice({lang: 'en', name: 'Lauren', default: true}),
+      createSpeechSynthesisVoice({lang: 'en', name: 'Eitan'}),
+      createSpeechSynthesisVoice({lang: 'en', name: 'Kristi'}),
+      createSpeechSynthesisVoice({lang: 'en', name: 'Shari'}),
+      createSpeechSynthesisVoice({lang: 'en', name: 'Yu'}),
+      createSpeechSynthesisVoice(
+          {lang: 'en', name: 'Xiang', localService: this.shouldUseLocalVoices}),
     ];
   }
 

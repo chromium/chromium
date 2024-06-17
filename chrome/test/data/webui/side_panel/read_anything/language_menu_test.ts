@@ -11,6 +11,8 @@ import type {LanguageMenuElement} from 'chrome-untrusted://read-anything-side-pa
 import {AVAILABLE_GOOGLE_TTS_LOCALES, VoiceClientSideStatusCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
+import {createSpeechSynthesisVoice} from './common.js';
+
 suite('LanguageMenu', () => {
   let languageMenu: LanguageMenuElement;
   let availableVoices: SpeechSynthesisVoice[];
@@ -76,7 +78,7 @@ suite('LanguageMenu', () => {
 
     test('with existing available language no duplicates added', () => {
       availableVoices =
-          [{name: 'test voice 1', lang: 'en-US'} as SpeechSynthesisVoice];
+          [createSpeechSynthesisVoice({name: 'test voice 1', lang: 'en-US'})];
       const expectedLanguages =
           chrome.readingMode.isLanguagePackDownloadingEnabled &&
               chrome.readingMode.isChromeOsAsh ?
@@ -97,7 +99,7 @@ suite('LanguageMenu', () => {
 
     test('with existing available language no duplicates added', () => {
       availableVoices =
-          [{name: 'test voice 1', lang: 'en-US'} as SpeechSynthesisVoice];
+          [createSpeechSynthesisVoice({name: 'test voice 1', lang: 'en-US'})];
       setAvailableVoices();
       languageMenu.showDialog();
       assertTrue(isPositionedOnPage(languageMenu));
@@ -111,7 +113,7 @@ suite('LanguageMenu', () => {
           1 :
           0;
       availableVoices =
-          [{name: 'test voice 5', lang: 'en-es'} as SpeechSynthesisVoice];
+          [createSpeechSynthesisVoice({name: 'test voice 5', lang: 'en-es'})];
       setAvailableVoices();
       languageMenu.showDialog();
       assertTrue(isPositionedOnPage(languageMenu));
@@ -125,8 +127,8 @@ suite('LanguageMenu', () => {
           1 :
           0;
       availableVoices = [
-        {name: 'Steve', lang: 'da-dk'} as SpeechSynthesisVoice,
-        {name: 'Dustin', lang: 'bn-bd'} as SpeechSynthesisVoice,
+        createSpeechSynthesisVoice({name: 'Steve', lang: 'da-dk'}),
+        createSpeechSynthesisVoice({name: 'Dustin', lang: 'bn-bd'}),
       ];
       setAvailableVoices();
       languageMenu.showDialog();
@@ -140,7 +142,7 @@ suite('LanguageMenu', () => {
   suite('with one language', () => {
     setup(() => {
       availableVoices =
-          [{name: 'test voice 1', lang: 'en-US'} as SpeechSynthesisVoice];
+          [createSpeechSynthesisVoice({name: 'test voice 1', lang: 'en-US'})];
       setAvailableVoices();
       languageMenu.showDialog();
     });
@@ -158,8 +160,8 @@ suite('LanguageMenu', () => {
     suite('when availableVoices updates', () => {
       setup(() => {
         availableVoices = [
-          {name: 'test voice 1', lang: 'en-US'} as SpeechSynthesisVoice,
-          {name: 'test voice 2', lang: 'en-UK'} as SpeechSynthesisVoice,
+          createSpeechSynthesisVoice({name: 'test voice 1', lang: 'en-US'}),
+          createSpeechSynthesisVoice({name: 'test voice 2', lang: 'en-UK'}),
         ];
         setAvailableVoices();
       });
@@ -215,9 +217,9 @@ suite('LanguageMenu', () => {
   suite('with multiple languages', () => {
     setup(() => {
       availableVoices = [
-        {name: 'test voice 0', lang: 'en-US'} as SpeechSynthesisVoice,
-        {name: 'test voice 1', lang: 'it-IT'} as SpeechSynthesisVoice,
-        {name: 'test voice 2', lang: 'en-UK'} as SpeechSynthesisVoice,
+        createSpeechSynthesisVoice({name: 'test voice 0', lang: 'en-US'}),
+        createSpeechSynthesisVoice({name: 'test voice 1', lang: 'it-IT'}),
+        createSpeechSynthesisVoice({name: 'test voice 2', lang: 'en-UK'}),
       ];
       setAvailableVoices();
       enabledLangs = ['Italian'];
@@ -263,8 +265,8 @@ suite('LanguageMenu', () => {
 
       test('it does not groups languages with different name', () => {
         availableVoices = [
-          {name: 'test voice 0', lang: 'en-US'} as SpeechSynthesisVoice,
-          {name: 'test voice 3', lang: 'en'} as SpeechSynthesisVoice,
+          createSpeechSynthesisVoice({name: 'test voice 0', lang: 'en-US'}),
+          createSpeechSynthesisVoice({name: 'test voice 3', lang: 'en'}),
         ];
         setAvailableVoices();
         languageMenu.localeToDisplayName = {
@@ -365,8 +367,8 @@ suite('LanguageMenu', () => {
         setEnabledLanguages();
 
         availableVoices = [
-          {name: 'test voice 1', lang: 'en-us'} as SpeechSynthesisVoice,
-          {name: 'espeak voice', lang: 'es'} as SpeechSynthesisVoice,
+          createSpeechSynthesisVoice({name: 'test voice 1', lang: 'en-us'}),
+          createSpeechSynthesisVoice({name: 'espeak voice', lang: 'es'}),
         ];
         setAvailableVoices();
         languagesToNotificationMap['es'] =
@@ -438,7 +440,7 @@ suite('LanguageMenu', () => {
         setEnabledLanguages();
 
         availableVoices =
-            [{name: 'test voice 1', lang: 'en-US'} as SpeechSynthesisVoice];
+            [createSpeechSynthesisVoice({name: 'test voice 1', lang: 'en-US'})];
         setAvailableVoices();
 
         languagesToNotificationMap['it'] =
@@ -473,7 +475,7 @@ suite('LanguageMenu', () => {
         setEnabledLanguages();
 
         availableVoices =
-            [{name: 'test voice 1', lang: 'en-US'} as SpeechSynthesisVoice];
+            [createSpeechSynthesisVoice({name: 'test voice 1', lang: 'en-US'})];
         setAvailableVoices();
 
         languagesToNotificationMap['it'] =
@@ -531,12 +533,12 @@ suite('LanguageMenu', () => {
   suite('with multiple voices for the same language', () => {
     setup(() => {
       availableVoices = [
-        {name: 'test voice 0', lang: 'en-US'} as SpeechSynthesisVoice,
-        {name: 'test voice 1', lang: 'en-US'} as SpeechSynthesisVoice,
-        {name: 'test voice 2', lang: 'en-UK'} as SpeechSynthesisVoice,
-        {name: 'test voice 3', lang: 'en-UK'} as SpeechSynthesisVoice,
-        {name: 'test voice 4', lang: 'it-IT'} as SpeechSynthesisVoice,
-        {name: 'test voice 5', lang: 'zh-CN'} as SpeechSynthesisVoice,
+        createSpeechSynthesisVoice({name: 'test voice 0', lang: 'en-US'}),
+        createSpeechSynthesisVoice({name: 'test voice 1', lang: 'en-US'}),
+        createSpeechSynthesisVoice({name: 'test voice 2', lang: 'en-UK'}),
+        createSpeechSynthesisVoice({name: 'test voice 3', lang: 'en-UK'}),
+        createSpeechSynthesisVoice({name: 'test voice 4', lang: 'it-IT'}),
+        createSpeechSynthesisVoice({name: 'test voice 5', lang: 'zh-CN'}),
       ];
       setAvailableVoices();
       languageMenu.showDialog();

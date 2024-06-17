@@ -13,7 +13,7 @@ import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-pa
 import {AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, PACK_MANAGER_SUPPORTED_LANGS_AND_LOCALES, VoicePackServerStatusSuccessCode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {suppressInnocuousErrors} from './common.js';
+import {createSpeechSynthesisVoice, suppressInnocuousErrors} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
@@ -24,23 +24,24 @@ suite('LanguageChanged', () => {
   const lang3 = 'pt-br';
   const langWithNoVoices = 'elvish';
 
-  const defaultVoice = {
+  const defaultVoice = createSpeechSynthesisVoice({
     lang: langForDefaultVoice,
     name: 'Kristi',
     default: true,
-  } as SpeechSynthesisVoice;
-  const firstVoiceWithLang1 = {lang: lang1, name: 'Lauren'} as
-      SpeechSynthesisVoice;
-  const defaultVoiceWithLang1 = {lang: lang1, name: 'Eitan', default: true} as
-      SpeechSynthesisVoice;
-  const firstVoiceWithLang2 = {lang: lang2, name: 'Yu'} as SpeechSynthesisVoice;
-  const secondVoiceWithLang2 = {lang: lang2, name: 'Xiang'} as
-      SpeechSynthesisVoice;
-  const firstVoiceWithLang3 = {lang: lang3, name: 'Kristi'} as
-      SpeechSynthesisVoice;
-  const naturalVoiceWithLang3 = {lang: lang3, name: 'Kristi (Natural)'} as
-      SpeechSynthesisVoice;
-  const otherVoice = {lang: 'it', name: 'Shari'} as SpeechSynthesisVoice;
+  });
+  const firstVoiceWithLang1 =
+      createSpeechSynthesisVoice({lang: lang1, name: 'Lauren'});
+  const defaultVoiceWithLang1 =
+      createSpeechSynthesisVoice({lang: lang1, name: 'Eitan', default: true});
+  const firstVoiceWithLang2 =
+      createSpeechSynthesisVoice({lang: lang2, name: 'Yu'});
+  const secondVoiceWithLang2 =
+      createSpeechSynthesisVoice({lang: lang2, name: 'Xiang'});
+  const firstVoiceWithLang3 =
+      createSpeechSynthesisVoice({lang: lang3, name: 'Kristi'});
+  const naturalVoiceWithLang3 =
+      createSpeechSynthesisVoice({lang: lang3, name: 'Kristi (Natural)'});
+  const otherVoice = createSpeechSynthesisVoice({lang: 'it', name: 'Shari'});
   const voices = [
     defaultVoice,
     firstVoiceWithLang1,
@@ -206,8 +207,8 @@ suite('LanguageChanged', () => {
 
 
         test('to voice in different locale and same language', () => {
-          const voice = {lang: 'en-GB', name: 'British', default: true} as
-              SpeechSynthesisVoice;
+          const voice = createSpeechSynthesisVoice(
+              {lang: 'en-GB', name: 'British', default: true});
           app.enabledLangs = ['en-gb'];
           app.availableVoices = [voice];
           setInstalled('en-gb');

@@ -10,6 +10,7 @@ import {convertLangOrLocaleForVoicePackManager, VoiceClientSideStatusCode, Voice
 import type {VoicePackStatus} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
+import {createSpeechSynthesisVoice} from './common.js';
 import {FakeReadingMode} from './fake_reading_mode.js';
 import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -30,8 +31,8 @@ suite('UpdateVoicePack', () => {
     const voices = app.synth.getVoices();
     app.synth.getVoices = () => {
       return voices.concat(
-          {lang: lang, name: 'Wall-e (Natural)'} as SpeechSynthesisVoice,
-          {lang: lang, name: 'Andy (Natural)'} as SpeechSynthesisVoice,
+          createSpeechSynthesisVoice({lang: lang, name: 'Wall-e (Natural)'}),
+          createSpeechSynthesisVoice({lang: lang, name: 'Andy (Natural)'}),
       );
     };
     app.getVoices(true);
@@ -207,7 +208,7 @@ suite('UpdateVoicePack', () => {
       () => {
         const lang = 'yue';
         app.availableVoices = [
-          {lang: 'yue-hk', name: 'Cantonese'} as SpeechSynthesisVoice,
+          createSpeechSynthesisVoice({lang: 'yue-hk', name: 'Cantonese'}),
         ];
 
         app.updateVoicePackStatus(lang, 'kInstalled');
@@ -296,10 +297,10 @@ suite('UpdateVoicePack', () => {
         const lang = 'en-us';
         chrome.readingMode.isLanguagePackDownloadingEnabled = true;
         chrome.readingMode.baseLanguageForSpeech = 'pt-br';
-        const currentVoice = {
+        const currentVoice = createSpeechSynthesisVoice({
           name: 'Portuguese voice 1',
           lang: chrome.readingMode.baseLanguageForSpeech,
-        } as SpeechSynthesisVoice;
+        });
         app.selectedVoice = currentVoice;
         app.$.toolbar.updateFonts = () => {};
         chrome.readingMode.isAutoVoiceSwitchingEnabled = true;
@@ -347,7 +348,7 @@ suite('UpdateVoicePack', () => {
 
       test('and only eSpeak voices for language, disables language', () => {
         app.availableVoices = [
-          {lang: lang, name: 'eSpeak Portuguese'} as SpeechSynthesisVoice,
+          createSpeechSynthesisVoice({lang: lang, name: 'eSpeak Portuguese'}),
         ];
 
         app.updateVoicePackStatusFromInstallResponse(lang, 'kOther');
@@ -373,7 +374,7 @@ suite('UpdateVoicePack', () => {
           () => {
             app.enabledLangs.push('it-it');
             app.availableVoices = [
-              {lang: 'it', name: 'eSpeak Italian '} as SpeechSynthesisVoice,
+              createSpeechSynthesisVoice({lang: 'it', name: 'eSpeak Italian '}),
             ];
 
             app.updateVoicePackStatusFromInstallResponse('it', 'kOther');
@@ -385,10 +386,10 @@ suite('UpdateVoicePack', () => {
           'and has other Google voices for language, keeps language enabled',
           () => {
             app.availableVoices = [
-              {lang: lang, name: 'ChromeOS Portuguese 1'} as
-                  SpeechSynthesisVoice,
-              {lang: lang, name: 'ChromeOS Portuguese 2'} as
-                  SpeechSynthesisVoice,
+              createSpeechSynthesisVoice(
+                  {lang: lang, name: 'ChromeOS Portuguese 1'}),
+              createSpeechSynthesisVoice(
+                  {lang: lang, name: 'ChromeOS Portuguese 2'}),
             ];
             app.updateVoicePackStatusFromInstallResponse(lang, 'kOther');
 

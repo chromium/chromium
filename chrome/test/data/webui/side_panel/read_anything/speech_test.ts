@@ -7,7 +7,7 @@ import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-pa
 import {NEXT_GRANULARITY_EVENT, PauseActionSource, PREVIOUS_GRANULARITY_EVENT, RATE_EVENT, WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertGT, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {emitEvent, suppressInnocuousErrors, waitForPlayFromSelection} from './common.js';
+import {createSpeechSynthesisVoice, emitEvent, suppressInnocuousErrors, waitForPlayFromSelection} from './common.js';
 import {FakeSpeechSynthesis} from './fake_speech_synthesis.js';
 
 // TODO: b/323960128 - Add tests for word boundaries here or in a
@@ -508,7 +508,8 @@ suite('Speech', () => {
       test('cancels and selects default voice', () => {
         emitEvent(app, 'select-voice', {
           detail: {
-            selectedVoice: {lang: 'en', name: 'Lisie'} as SpeechSynthesisVoice,
+            selectedVoice:
+                createSpeechSynthesisVoice({lang: 'en', name: 'Lisie'}),
           },
         });
 
@@ -529,8 +530,8 @@ suite('Speech', () => {
             chrome.readingMode.setLanguageForTesting('en');
             emitEvent(app, 'select-voice', {
               detail: {
-                selectedVoice: {lang: 'en', name: 'Lauren', default:true} as
-                    SpeechSynthesisVoice,
+                selectedVoice: createSpeechSynthesisVoice(
+                    {lang: 'en', name: 'Lauren', default: true}),
               },
             });
 
@@ -552,8 +553,8 @@ suite('Speech', () => {
 
             emitEvent(app, 'select-voice', {
               detail: {
-                selectedVoice: {lang: 'en', name: 'Lauren'} as
-                    SpeechSynthesisVoice,
+                selectedVoice:
+                    createSpeechSynthesisVoice({lang: 'en', name: 'Lauren'}),
               },
             });
 
@@ -578,7 +579,8 @@ suite('Speech', () => {
         };
         emitEvent(app, 'select-voice', {
           detail: {
-            selectedVoice: {lang: 'en', name: 'Lisie'} as SpeechSynthesisVoice,
+            selectedVoice:
+                createSpeechSynthesisVoice({lang: 'en', name: 'Lisie'}),
           },
         });
 

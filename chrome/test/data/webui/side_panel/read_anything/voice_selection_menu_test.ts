@@ -11,7 +11,7 @@ import {PLAY_PREVIEW_EVENT, VoiceClientSideStatusCode} from 'chrome-untrusted://
 import type {VoiceSelectionMenuElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertStringContains, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {stubAnimationFrame} from './common.js';
+import {createSpeechSynthesisVoice, stubAnimationFrame} from './common.js';
 
 function stringToHtmlTestId(s: string): string {
   return s.replace(/\s/g, '-').replace(/[()]/g, '');
@@ -65,7 +65,7 @@ suite('VoiceSelectionMenu', () => {
   suite('with one voice', () => {
     setup(() => {
       availableVoices =
-          [{name: 'test voice 1', lang: 'lang'} as SpeechSynthesisVoice];
+          [createSpeechSynthesisVoice({name: 'test voice 1', lang: 'lang'})];
       setAvailableVoices();
     });
 
@@ -102,8 +102,8 @@ suite('VoiceSelectionMenu', () => {
     suite('when availableVoices updates', () => {
       setup(() => {
         availableVoices = [
-          {name: 'test voice 1', lang: 'lang'} as SpeechSynthesisVoice,
-          {name: 'test voice 2', lang: 'lang'} as SpeechSynthesisVoice,
+          createSpeechSynthesisVoice({name: 'test voice 1', lang: 'lang'}),
+          createSpeechSynthesisVoice({name: 'test voice 2', lang: 'lang'}),
         ];
         setAvailableVoices();
       });
@@ -141,15 +141,15 @@ suite('VoiceSelectionMenu', () => {
       // We need an additional call to voiceSelectionMenu.get() in these
       // tests to ensure the menu has been rendered.
       voiceSelectionMenu!.$.voiceSelectionMenu.get();
-      selectedVoice = {name: 'test voice 3', lang: 'en-US'} as
-          SpeechSynthesisVoice;
-      previewVoice = {name: 'test voice 1', lang: 'en-US'} as
-          SpeechSynthesisVoice;
+      selectedVoice =
+          createSpeechSynthesisVoice({name: 'test voice 3', lang: 'en-US'});
+      previewVoice =
+          createSpeechSynthesisVoice({name: 'test voice 1', lang: 'en-US'});
 
       availableVoices = [
-        {name: 'test voice 0', lang: 'en-US'} as SpeechSynthesisVoice,
+        createSpeechSynthesisVoice({name: 'test voice 0', lang: 'en-US'}),
         previewVoice,
-        {name: 'test voice 2', lang: 'it-IT'} as SpeechSynthesisVoice,
+        createSpeechSynthesisVoice({name: 'test voice 2', lang: 'it-IT'}),
         selectedVoice,
       ];
       setAvailableVoices();
@@ -203,10 +203,10 @@ suite('VoiceSelectionMenu', () => {
       setup(() => {
         availableVoices = [
           previewVoice,
-          {name: 'Google US English 1 (Natural)', lang: 'en-US'} as
-              SpeechSynthesisVoice,
-          {name: 'Google US English 2 (Natural)', lang: 'en-US'} as
-              SpeechSynthesisVoice,
+          createSpeechSynthesisVoice(
+              {name: 'Google US English 1 (Natural)', lang: 'en-US'}),
+          createSpeechSynthesisVoice(
+              {name: 'Google US English 2 (Natural)', lang: 'en-US'}),
           selectedVoice,
         ];
         setAvailableVoices();
@@ -257,9 +257,9 @@ suite('VoiceSelectionMenu', () => {
     suite('when voices have duplicate names', () => {
       setup(() => {
         availableVoices = [
-          {name: 'English', lang: 'en-US'} as SpeechSynthesisVoice,
-          {name: 'English', lang: 'en-US'} as SpeechSynthesisVoice,
-          {name: 'English', lang: 'en-UK'} as SpeechSynthesisVoice,
+          createSpeechSynthesisVoice({name: 'English', lang: 'en-US'}),
+          createSpeechSynthesisVoice({name: 'English', lang: 'en-US'}),
+          createSpeechSynthesisVoice({name: 'English', lang: 'en-UK'}),
         ];
         setAvailableVoices();
       });

@@ -62,7 +62,7 @@ export function createSpeechSynthesisVoice(
         default: false,
         name: '',
         lang: 'en-us',
-        localService: true,
+        localService: false,
         voiceURI: '',
       },
       overrides || {});

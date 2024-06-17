@@ -9,7 +9,7 @@ import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-pa
 import {LINK_TOGGLE_BUTTON_ID, NEXT_GRANULARITY_EVENT} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {emitEvent, suppressInnocuousErrors} from './common.js';
+import {createSpeechSynthesisVoice, emitEvent, suppressInnocuousErrors} from './common.js';
 
 suite('LinksToggledIntegration', () => {
   let app: ReadAnythingElement;
@@ -82,7 +82,8 @@ suite('LinksToggledIntegration', () => {
             '#play-pause')!;
     chrome.readingMode.setContentForTesting(axTree, [2, 4]);
     app.enabledLangs = ['en-US'];
-    app.selectedVoice = {lang: 'en', name: 'Kristi'} as SpeechSynthesisVoice;
+    app.selectedVoice =
+        createSpeechSynthesisVoice({lang: 'en', name: 'Kristi'});
     app.getSpeechSynthesisVoice();
 
     // No need to attempt to log a speech session in tests.

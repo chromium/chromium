@@ -10,7 +10,7 @@ import type {ReadAnythingElement, WordBoundaryState} from 'chrome-untrusted://re
 import {WordBoundaryMode} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
-import {suppressInnocuousErrors} from './common.js';
+import {createSpeechSynthesisVoice, suppressInnocuousErrors} from './common.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
 
 suite('WordBoundariesUsedForSpeech', () => {
@@ -73,7 +73,8 @@ suite('WordBoundariesUsedForSpeech', () => {
     document.body.appendChild(app);
     app.firstUtteranceSpoken = true;
     app.enabledLangs = ['en-US'];
-    app.selectedVoice = {lang: 'en', name: 'Kristi'} as SpeechSynthesisVoice;
+    app.selectedVoice =
+        createSpeechSynthesisVoice({lang: 'en', name: 'Kristi'});
     app.getSpeechSynthesisVoice();
     flush();
     playPauseButton =
