@@ -266,6 +266,10 @@ bool PolicyUI::ShouldLoadTestPage(Profile* profile) {
 
 // static
 base::Value PolicyUI::GetSchema(Profile* profile) {
+  if (!profile->GetPolicySchemaRegistryService()) {
+    return base::Value();
+  }
+
   policy::SchemaRegistry* registry =
       profile->GetPolicySchemaRegistryService()->registry();
   static const policy::PolicyDomain kDomains[] = {
