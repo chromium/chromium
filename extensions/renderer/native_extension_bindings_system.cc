@@ -384,11 +384,11 @@ std::string GetContextOwner(v8::Local<v8::Context> context) {
              : url::Origin::Create(script_context->url()).GetURL().spec();
 }
 
-// Returns true if any portion of the runtime API is available to the given
-// |context|. This is different than just checking features because runtime's
-// availability depends on the installed extensions and the active URL (in the
-// case of extensions communicating with external websites).
-bool IsRuntimeAvailableToContext(ScriptContext* context) {
+// Returns true if the `context` will need runtime for messaging APIs. This is
+// different than just checking features because runtime's availability depends
+// on the installed extensions and the active URL (in the case of extensions
+// communicating with external websites).
+bool DoesContextNeedMessagingApis(ScriptContext* context) {
   // TODO(devlin): This doesn't seem thread-safe with ServiceWorkers?
   for (const auto& extension :
        *RendererExtensionRegistry::Get()->GetMainThreadExtensionSet()) {
@@ -569,17 +569,32 @@ void NativeExtensionBindingsSystem::UpdateBindingsForContext(
     // TODO(devlin): It could be interesting to apply this same logic to all
     // context types, especially on a given platform. Something to think about
     // for when we generate features.
+    bool is_any_feature_available_to_page = false;
     for (const char* feature_name : kWebAvailableFeatures) {
-      if (context->GetAvailability(feature_name).is_available() &&
-          !set_accessor(feature_name)) {
-        LOG(ERROR) << "Failed to create API on Chrome object.";
-        return;
+      if (context->GetAvailability(feature_name).is_available()) {
+        // chrome.app is exposed to all webpages, we ignore it for this check.
+        if (strcmp(feature_name, "app") != 0) {
+          is_any_feature_available_to_page = true;
+        }
+        if (!set_accessor(feature_name)) {
+          LOG(ERROR) << "Failed to create API on Chrome object.";
+          return;
+        }
       }
     }
 
-    // Runtime is special (see IsRuntimeAvailableToContext()).
-    if (IsRuntimeAvailableToContext(context) && !set_accessor("runtime"))
-      LOG(ERROR) << "Failed to create API on Chrome object.";
+    // Runtime is special and needs to be provided in two cases:
+    //  - If any extensions have specified themselves as externally connectable
+    //  from this web page's URL.
+    //  - If any features (other than app) were made available from the above
+    //  check. We need do do this in order to have runtime.lastError provided
+    //  for reporting errors to API callbacks.
+    if (DoesContextNeedMessagingApis(context) ||
+        is_any_feature_available_to_page) {
+      if (!set_accessor("runtime")) {
+        LOG(ERROR) << "Failed to create API on Chrome object.";
+      }
+    }
 
     UpdateContentCapabilities(context);
     return;
