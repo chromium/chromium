@@ -66,6 +66,7 @@ class ASH_EXPORT DeskMiniView : public views::View,
 
   const DeskActionView* desk_action_view() const { return desk_action_view_; }
   DeskActionView* desk_action_view() { return desk_action_view_; }
+  DeskActionContextMenu* context_menu() { return context_menu_.get(); }
 
   DeskProfilesButton* desk_profiles_button() { return desk_profile_button_; }
 
@@ -176,6 +177,11 @@ class ASH_EXPORT DeskMiniView : public views::View,
   void OnSetLacrosProfileId(uint64_t lacros_profile_id);
 
   void OnDeskPreviewPressed();
+
+  // Callbacks for when a user selects the save desk options in the context
+  // menu.
+  void OnSaveDeskAsTemplateButtonPressed();
+  void OnSaveDeskForLaterButtonPressed();
 
   // Layout |desk_name_view_| given the current bounds of the desk preview.
   void LayoutDeskNameView(const gfx::Rect& preview_bounds);

@@ -80,7 +80,7 @@ DeskActionContextMenu* DesksTestApi::GetContextMenuForDesk(
 
   // The context menu is not created until it is opened, so open it first.
   mini_view->OpenContextMenu(ui::MENU_SOURCE_MOUSE);
-  return mini_view->context_menu_.get();
+  return mini_view->context_menu();
 }
 
 // static

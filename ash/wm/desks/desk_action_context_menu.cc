@@ -139,6 +139,33 @@ DeskActionContextMenu::DeskActionContextMenu(Config config)
     separator_needed = true;
   }
 
+  // Accessible names should be set on each of the following menu items to
+  // ensure the labels are read properly by screen readers.
+
+  if (config_.save_template_target_name) {
+    maybe_add_separator();
+    const std::u16string save_template_a11y = l10n_util::GetStringUTF16(
+        IDS_ASH_DESKS_TEMPLATES_SAVE_DESK_AS_TEMPLATE_BUTTON);
+    context_menu_model_.AddItemWithIcon(
+        CommandId::kSaveAsTemplate, save_template_a11y,
+        ui::ImageModel::FromVectorIcon(kSaveDeskAsTemplateIcon,
+                                       ui::kColorAshSystemUIMenuIcon));
+    context_menu_model_.SetAccessibleNameAt(
+        context_menu_model_.GetItemCount() - 1, save_template_a11y);
+  }
+
+  if (config_.save_later_target_name) {
+    maybe_add_separator();
+    const std::u16string save_later_a11y = l10n_util::GetStringUTF16(
+        IDS_ASH_DESKS_TEMPLATES_SAVE_DESK_FOR_LATER_BUTTON);
+    context_menu_model_.AddItemWithIcon(
+        CommandId::kSaveForLater, save_later_a11y,
+        ui::ImageModel::FromVectorIcon(kSaveDeskForLaterIcon,
+                                       ui::kColorAshSystemUIMenuIcon));
+    context_menu_model_.SetAccessibleNameAt(
+        context_menu_model_.GetItemCount() - 1, save_later_a11y);
+  }
+
   if (config_.combine_desks_target_name) {
     maybe_add_separator();
     const std::u16string combine_desks_a11y =
@@ -177,6 +204,12 @@ void DeskActionContextMenu::MaybeCloseMenu() {
 
 void DeskActionContextMenu::ExecuteCommand(int command_id, int event_flags) {
   switch (command_id) {
+    case CommandId::kSaveAsTemplate:
+      config_.save_template_callback.Run();
+      break;
+    case CommandId::kSaveForLater:
+      config_.save_later_callback.Run();
+      break;
     case CommandId::kCombineDesks:
       config_.combine_desks_callback.Run();
       break;

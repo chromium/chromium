@@ -23,9 +23,11 @@
 #include "ash/style/icon_button.h"
 #include "ash/utility/forest_util.h"
 #include "ash/wm/desks/desk_action_button.h"
+#include "ash/wm/desks/desk_action_context_menu.h"
 #include "ash/wm/desks/desk_action_view.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
+#include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_test_api.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/desks_util.h"
@@ -79,6 +81,7 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/base/models/simple_menu_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -87,6 +90,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 #include "ui/wm/core/cursor_manager.h"
@@ -410,7 +414,8 @@ class SavedDeskTest : public OverviewTestBase,
 
   // OverviewTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures({features::kDesksTemplates}, {});
+    scoped_feature_list_.InitWithFeatures(
+        {features::kDesksTemplates, features::kForestFeature}, {});
     OverviewTestBase::SetUp();
 
     // The `FullRestoreSaveHandler` isn't setup during tests so every window we
@@ -4828,6 +4833,126 @@ TEST_F(SavedDeskTest, NoCrashDuringGuest) {
   SimulateGuestLogin();
   ToggleOverview();
   EnterTabletMode();
+}
+
+// Tests that the layout of the desk mini view context menu is correct, and the
+// items are enabled and visible.
+TEST_F(SavedDeskTest, ContextMenuLayout) {
+  // Add a window and an empty desk.
+  auto test_window = CreateAppWindow();
+  NewDesk();
+
+  // Enter overview. There should be two mini views, one to represent the desk
+  // with the window, and one to represent the empty desk.
+  ToggleOverview();
+  ASSERT_TRUE(GetOverviewSession());
+  ASSERT_EQ(2u, GetPrimaryRootDesksBarView()->mini_views().size());
+
+  // If there are no windows, there should only be 1 option in the context menu.
+  EXPECT_EQ(1u, DesksTestApi::GetContextMenuModelForDesk(
+                    DeskBarViewBase::Type::kOverview, 1)
+                    .GetItemCount());
+
+  const ui::SimpleMenuModel& menu_model =
+      DesksTestApi::GetContextMenuModelForDesk(DeskBarViewBase::Type::kOverview,
+                                               0);
+  EXPECT_EQ(4u, menu_model.GetItemCount());
+
+  DeskActionContextMenu::CommandId expected_command[] = {
+      DeskActionContextMenu::CommandId::kSaveAsTemplate,
+      DeskActionContextMenu::CommandId::kSaveForLater,
+      DeskActionContextMenu::CommandId::kCombineDesks,
+      DeskActionContextMenu::CommandId::kCloseAll};
+  for (size_t i = 0; i < 4u; ++i) {
+    EXPECT_EQ(expected_command[i],
+              static_cast<DeskActionContextMenu::CommandId>(
+                  menu_model.GetCommandIdAt(i)));
+    EXPECT_TRUE(menu_model.IsEnabledAt(i));
+    EXPECT_TRUE(menu_model.IsVisibleAt(i));
+  }
+}
+
+// Tests that the "Save As Template" option in the desk mini view context menu
+// works as intended.
+TEST_F(SavedDeskTest, ContextMenuSaveAsTemplate) {
+  // Add a window and an empty desk.
+  auto test_window = CreateAppWindow();
+  NewDesk();
+
+  // Enter overview.
+  ToggleOverview();
+  auto* overview_session = GetOverviewSession();
+  ASSERT_TRUE(overview_session);
+
+  // There should be two mini views, one to represent the desk with the window,
+  // and one to represent the empty desk.
+  ASSERT_EQ(2u, GetPrimaryRootDesksBarView()->mini_views().size());
+
+  // Open the context menu and get the context menu item to save the desk as a
+  // template.
+  DeskMiniView* mini_view =
+      overview_session->GetGridWithRootWindow(Shell::GetPrimaryRootWindow())
+          ->desks_bar_view()
+          ->mini_views()[0];
+  ASSERT_TRUE(mini_view);
+  RightClickOn(mini_view);
+  DeskActionContextMenu* menu = mini_view->context_menu();
+  ASSERT_TRUE(menu);
+  views::MenuItemView* menu_item = DesksTestApi::GetDeskActionContextMenuItem(
+      menu, DeskActionContextMenu::CommandId::kSaveAsTemplate);
+  ASSERT_TRUE(menu_item);
+
+  // Activate the menu item.
+  LeftClickOn(menu_item);
+  WaitForSavedDeskUI();
+  WaitForSavedDeskLibrary();
+
+  // Clicking the save desk as template button selects the newly created saved
+  // desk's name field. We can press enter or escape or click to select out of
+  // it.
+  PressAndReleaseKey(ui::VKEY_RETURN);
+  EXPECT_TRUE(GetOverviewGridList()[0]->IsShowingSavedDeskLibrary());
+}
+
+// Tests that the "Save For Later" option in the desk mini view context menu
+// works as intended.
+TEST_F(SavedDeskTest, ContextMenuSaveForLater) {
+  // Create a test window that we release immediately as it will be closed
+  // automatically by the code under test. Also create an empty desk.
+  CreateAppWindow().release();
+  NewDesk();
+
+  // Enter overview.
+  ToggleOverview();
+  auto* overview_session = GetOverviewSession();
+  ASSERT_TRUE(overview_session);
+
+  // There should be two mini views, one to represent the desk with the window,
+  // and one to represent the empty desk.
+  ASSERT_EQ(2u, GetPrimaryRootDesksBarView()->mini_views().size());
+
+  // Open the context menu and get the context menu item to save the desk for
+  // later.
+  DeskMiniView* mini_view =
+      overview_session->GetGridWithRootWindow(Shell::GetPrimaryRootWindow())
+          ->desks_bar_view()
+          ->mini_views()[0];
+  ASSERT_TRUE(mini_view);
+  RightClickOn(mini_view);
+  DeskActionContextMenu* menu = mini_view->context_menu();
+  ASSERT_TRUE(menu);
+  views::MenuItemView* menu_item = DesksTestApi::GetDeskActionContextMenuItem(
+      menu, DeskActionContextMenu::CommandId::kSaveForLater);
+  ASSERT_TRUE(menu_item);
+
+  // Activate the menu item.
+  LeftClickOn(menu_item);
+
+  // Wait an extra time like in `OpenOverviewAndSaveDeskForLater` to wait for
+  // the WindowCloseObserver watcher that handles blocking dialogs.
+  WaitForSavedDeskUI();
+  WaitForSavedDeskUI();
+  EXPECT_TRUE(GetOverviewGridList()[0]->IsShowingSavedDeskLibrary());
 }
 
 }  // namespace ash

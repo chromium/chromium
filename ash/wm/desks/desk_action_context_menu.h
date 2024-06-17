@@ -46,6 +46,14 @@ class DeskActionContextMenu : public views::ContextMenuController,
     // Invoked with the lacros profile id if the user picks a profile.
     base::RepeatingCallback<void(uint64_t)> set_lacros_profile_id;
 
+    // If set, the option to save the selected desk as a template is shown.
+    std::optional<std::u16string> save_template_target_name;
+    base::RepeatingClosure save_template_callback;
+
+    // If set, the option to save the selected desk for later is shown.
+    std::optional<std::u16string> save_later_target_name;
+    base::RepeatingClosure save_later_callback;
+
     // If the menu option to combine desks is to be shown, then this, as well as
     // the callback, need to be set.
     std::optional<std::u16string> combine_desks_target_name;
@@ -62,6 +70,10 @@ class DeskActionContextMenu : public views::ContextMenuController,
   // An enum with identifiers to link context menu items to their associated
   // functions.
   enum CommandId {
+    // Saves target desk as a template that can be repeatedly opened.
+    kSaveAsTemplate = 1,
+    // Saves target desk to be restored later.
+    kSaveForLater,
     // Closes target desk and moves its windows to another desk.
     kCombineDesks,
     // Saves target desk in DesksController and gives user option to undo the
