@@ -264,7 +264,7 @@ using chrome_test_util::SettingsDoneButton;
   // Check that promo is visible.
   [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
 
   // Tap the primary button to start add account flow.
   [[EarlGrey selectElementWithMatcher:PrimarySignInButton()]
