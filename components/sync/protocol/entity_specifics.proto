@@ -107,7 +107,6 @@ message EntitySpecifics {
     AutofillSpecifics autofill = 31729;
     BookmarkSpecifics bookmark = 32904;
     PreferenceSpecifics preference = 37702;
-    TypedUrlSpecifics typed_url = 40781;
     ThemeSpecifics theme = 41210;
     PasswordSpecifics password = 45873;
     NigoriSpecifics nigori = 47745;
@@ -177,6 +176,7 @@ message EntitySpecifics {
     ManagedUserSharedSettingSpecifics managed_user_shared_setting = 202026
         [deprecated = true];
     EmptySpecifics managed_user_allowlist = 306060 [deprecated = true];
+    TypedUrlSpecifics typed_url = 40781 [deprecated = true];
   }
   reserved 218175;
   reserved "wifi_credential";
