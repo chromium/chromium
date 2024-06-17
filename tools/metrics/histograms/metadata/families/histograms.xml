@@ -945,7 +945,8 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-kids-eng@google.com</owner>
   <summary>
     The detailed reason for AuthError failures. Recorded for each request to the
-    API where {RequestType}.Status is AuthError.
+    API where Chrome was unable to get a valid access token (whether or not this
+    error was fatal).
   </summary>
   <token key="RequestType" variants="ProtoFetcherRequestType"/>
 </histogram>

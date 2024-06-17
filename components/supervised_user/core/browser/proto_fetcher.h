@@ -178,7 +178,7 @@ class Metrics {
   void RecordApiLatency(
       ProtoFetcherStatus::HttpStatusOrNetErrorType http_status_or_net_error);
   virtual void RecordStatusLatency(const ProtoFetcherStatus& status) const;
-  void RecordAuthError(const ProtoFetcherStatus& status) const;
+  void RecordAuthError(const GoogleServiceAuthError& auth_error) const;
   void RecordHttpStatusOrNetError(const ProtoFetcherStatus& status) const;
 
  protected:
@@ -293,6 +293,10 @@ class AbstractProtoFetcher {
   // followed by a request made with SimpleURLLoader. Purposely made last field
   // should it depend on other members of this class.
   ApiAccessTokenFetcher fetcher_;
+
+  // If an auth error was encountered when fetching the access token, it is
+  // stored here (whether or not it was fatal).
+  std::optional<GoogleServiceAuthError> access_token_auth_error_;
 };
 
 // Overlay over ProtoFetcher that interprets successful responses as given

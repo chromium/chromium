@@ -448,7 +448,13 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(SupervisedUserProtoFetcherStatus) -->
 
 <enum name="SupervisedUserProtoFetcherStatus">
-  <int value="0" label="NoError"/>
+  <int value="0" label="NoError">
+    The overall request was successul.
+
+    If this endpoint uses BestEffort credentials mode, it is possible there was
+    an access token error, in which case the separate {RequestType}.AuthError
+    histogram is also output (but not the AuthError bucket of this histogram).
+  </int>
   <int value="1" label="AuthError">
     The request failed due to an error fetching the access token. The
     {RequestType}.AuthError histogram contains more fine-grained error details.

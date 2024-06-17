@@ -904,6 +904,15 @@ TEST_F(BestEffortProtoFetcherTest, NoAccessToken) {
   SimulateDefaultResponseForPendingRequest(0);
 
   EXPECT_TRUE(receiver->GetResult().has_value());
+
+  // Check that both the overall Status, and the detailed AuthError metrics
+  // are recorded.
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({*GetConfig().histogram_basename, ".Status"}),
+      ProtoFetcherStatus::State::OK, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({*GetConfig().histogram_basename, ".AuthError"}),
+      GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS, 1);
 }
 
 class FetchManagerTest : public testing::Test {

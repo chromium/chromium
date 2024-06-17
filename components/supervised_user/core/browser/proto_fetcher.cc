@@ -271,11 +271,9 @@ void Metrics::RecordStatusLatency(const ProtoFetcherStatus& status) const {
                           stopwatch_.Elapsed());
 }
 
-void Metrics::RecordAuthError(const ProtoFetcherStatus& status) const {
-  CHECK_EQ(status.state(),
-           ProtoFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR);
+void Metrics::RecordAuthError(const GoogleServiceAuthError& auth_error) const {
   base::UmaHistogramEnumeration(GetFullHistogramName(MetricType::kAuthError),
-                                status.google_service_auth_error().state(),
+                                auth_error.state(),
                                 GoogleServiceAuthError::NUM_STATES);
 }
 
@@ -422,21 +420,12 @@ void AbstractProtoFetcher::RecordMetrics(const ProtoFetcherStatus& status) {
   metrics_->RecordLatency();
   metrics_->RecordStatusLatency(status);
 
-  // Record additional status-specific metrics.
-  switch (status.state()) {
-    case ProtoFetcherStatus::State::GOOGLE_SERVICE_AUTH_ERROR:
-      metrics_->RecordAuthError(status);
-      break;
+  if (access_token_auth_error_) {
+    metrics_->RecordAuthError(access_token_auth_error_.value());
+  }
 
-    case ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR:
-      metrics_->RecordHttpStatusOrNetError(status);
-      break;
-
-    case ProtoFetcherStatus::State::OK:
-    case ProtoFetcherStatus::State::INVALID_RESPONSE:
-    case ProtoFetcherStatus::State::DATA_ERROR:
-      // No additional metrics to record.
-      break;
+  if (status.state() == ProtoFetcherStatus::State::HTTP_STATUS_OR_NET_ERROR) {
+    metrics_->RecordHttpStatusOrNetError(status);
   }
 }
 
@@ -444,11 +433,13 @@ void AbstractProtoFetcher::OnAccessTokenFetchComplete(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     base::expected<signin::AccessTokenInfo, GoogleServiceAuthError>
         access_token) {
-  if (!access_token.has_value() &&
-      config_.access_token_config.credentials_requirement ==
-          AccessTokenConfig::CredentialsRequirement::kStrict) {
-    OnError(ProtoFetcherStatus::GoogleServiceAuthError(access_token.error()));
-    return;
+  if (!access_token.has_value()) {
+    access_token_auth_error_ = access_token.error();
+    if (config_.access_token_config.credentials_requirement ==
+        AccessTokenConfig::CredentialsRequirement::kStrict) {
+      OnError(ProtoFetcherStatus::GoogleServiceAuthError(access_token.error()));
+      return;
+    }
   }
 
   if (IsMetricsRecordingEnabled()) {
