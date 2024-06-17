@@ -50,6 +50,10 @@ class PerformanceInterventionButton
     return controller_.get();
   }
 
+  views::BubbleDialogModelHost* bubble_dialog_model_host() {
+    return bubble_dialog_model_host_;
+  }
+
  private:
   void OnClicked();
   void CreateBubble();
