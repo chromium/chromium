@@ -1192,14 +1192,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.PassphraseType2" enum="PassphraseTypeForMetrics"
-    expires_after="2025-04-30">
+    expires_after="2025-06-17">
   <owner>mmoskvitin@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
-    TODO(crbug.com/338027160): Remove this histogram once the new
-    PassphraseType3 reaches the stable channel. That one relies on a pref that
-    caches the passphrase type and thus can record the correct value before sync
-    engine initialization.
+    TODO(crbug.com/347711860): Remove this on 06/2025, once Sync.PassphraseType3
+    has been available for a year. That one relies on a pref that caches the
+    passphrase type and thus can record the correct value before sync engine
+    initialization.
 
     Sync passphrase type collected at each metrics upload. Also used for the
     &quot;Sync passphrase type&quot; filter in the dashboard.

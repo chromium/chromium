@@ -76,8 +76,8 @@ PassphraseTypeMetricsProvider::PassphraseTypeMetricsProvider(
 PassphraseTypeMetricsProvider::~PassphraseTypeMetricsProvider() = default;
 
 bool PassphraseTypeMetricsProvider::ProvideHistograms() {
-  // TODO(crbug.com/338027160): Remove Sync.PassphraseType2 once
-  // Sync.PassphraseType3 reaches the stable channel.
+  // TODO(crbug.com/347711860): Remove Sync.PassphraseType2 on 06/2025 once
+  // Sync.PassphraseType3 has been available for a year.
   base::UmaHistogramEnumeration(
       "Sync.PassphraseType2",
       GetPassphraseTypeForAllProfiles(get_all_sync_services_callback_.Run(),
