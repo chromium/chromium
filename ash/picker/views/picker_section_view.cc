@@ -10,8 +10,6 @@
 
 #include "ash/bubble/bubble_utils.h"
 #include "ash/picker/picker_asset_fetcher.h"
-#include "ash/picker/views/picker_emoji_item_view.h"
-#include "ash/picker/views/picker_emoticon_item_view.h"
 #include "ash/picker/views/picker_gif_view.h"
 #include "ash/picker/views/picker_icons.h"
 #include "ash/picker/views/picker_image_item_grid_view.h"
@@ -19,15 +17,14 @@
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_list_item_container_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
-#include "ash/picker/views/picker_small_item_grid_view.h"
 #include "ash/picker/views/picker_strings.h"
-#include "ash/picker/views/picker_symbol_item_view.h"
 #include "ash/picker/views/picker_traversable_item_container.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/typography.h"
 #include "base/functional/overloaded.h"
+#include "base/notreached.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
@@ -131,33 +128,6 @@ PickerListItemView* PickerSectionView::AddListItem(
   return list_item_ptr;
 }
 
-PickerEmojiItemView* PickerSectionView::AddEmojiItem(
-    std::unique_ptr<PickerEmojiItemView> emoji_item) {
-  CreateSmallItemGridIfNeeded();
-  PickerEmojiItemView* emoji_item_ptr =
-      small_item_grid_->AddEmojiItem(std::move(emoji_item));
-  item_views_.push_back(emoji_item_ptr);
-  return emoji_item_ptr;
-}
-
-PickerSymbolItemView* PickerSectionView::AddSymbolItem(
-    std::unique_ptr<PickerSymbolItemView> symbol_item) {
-  CreateSmallItemGridIfNeeded();
-  PickerSymbolItemView* symbol_item_ptr =
-      small_item_grid_->AddSymbolItem(std::move(symbol_item));
-  item_views_.push_back(symbol_item_ptr);
-  return symbol_item_ptr;
-}
-
-PickerEmoticonItemView* PickerSectionView::AddEmoticonItem(
-    std::unique_ptr<PickerEmoticonItemView> emoticon_item) {
-  CreateSmallItemGridIfNeeded();
-  PickerEmoticonItemView* emoticon_item_ptr =
-      small_item_grid_->AddEmoticonItem(std::move(emoticon_item));
-  item_views_.push_back(emoticon_item_ptr);
-  return emoticon_item_ptr;
-}
-
 PickerImageItemView* PickerSectionView::AddImageItem(
     std::unique_ptr<PickerImageItemView> image_item) {
   if (image_item_grid_ == nullptr) {
@@ -193,19 +163,13 @@ PickerItemView* PickerSectionView::AddResult(
             return AddListItem(std::move(item_view));
           },
           [&](const PickerSearchResult::EmojiData& data) -> PickerItemView* {
-            auto emoji_item = std::make_unique<PickerEmojiItemView>(
-                std::move(select_result_callback), data.emoji);
-            return AddEmojiItem(std::move(emoji_item));
+            NOTREACHED_NORETURN();
           },
           [&](const PickerSearchResult::SymbolData& data) -> PickerItemView* {
-            auto symbol_item = std::make_unique<PickerSymbolItemView>(
-                std::move(select_result_callback), data.symbol);
-            return AddSymbolItem(std::move(symbol_item));
+            NOTREACHED_NORETURN();
           },
           [&](const PickerSearchResult::EmoticonData& data) -> PickerItemView* {
-            auto emoticon_item = std::make_unique<PickerEmoticonItemView>(
-                std::move(select_result_callback), data.emoticon);
-            return AddEmoticonItem(std::move(emoticon_item));
+            NOTREACHED_NORETURN();
           },
           [&](const PickerSearchResult::ClipboardData& data)
               -> PickerItemView* {
@@ -323,9 +287,6 @@ void PickerSectionView::ClearItems() {
   if (image_item_grid_ != nullptr) {
     RemoveChildViewT(image_item_grid_.ExtractAsDangling());
   }
-  if (small_item_grid_ != nullptr) {
-    RemoveChildViewT(small_item_grid_.ExtractAsDangling());
-  }
   if (list_item_container_ != nullptr) {
     RemoveChildViewT(list_item_container_.ExtractAsDangling());
   }
@@ -362,21 +323,11 @@ views::View* PickerSectionView::GetItemRightOf(views::View* item) {
              : nullptr;
 }
 
-void PickerSectionView::CreateSmallItemGridIfNeeded() {
-  if (small_item_grid_ == nullptr) {
-    small_item_grid_ =
-        AddChildView(std::make_unique<PickerSmallItemGridView>(section_width_));
-  }
-}
-
 PickerTraversableItemContainer* PickerSectionView::GetItemContainer() {
-  if (list_item_container_ != nullptr) {
-    return list_item_container_;
-  } else if (image_item_grid_ != nullptr) {
+  if (image_item_grid_ != nullptr) {
     return image_item_grid_;
-  } else {
-    return small_item_grid_;
   }
+  return list_item_container_;
 }
 
 BEGIN_METADATA(PickerSectionView)

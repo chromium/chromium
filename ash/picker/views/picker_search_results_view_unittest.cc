@@ -602,9 +602,6 @@ INSTANTIATE_TEST_SUITE_P(
     PickerSearchResultsViewResultSelectionTest,
     testing::ValuesIn<PickerSearchResultTestCase>({
         {"Text", PickerSearchResult::Text(u"result")},
-        {"Emoji", PickerSearchResult::Emoji(u"😊")},
-        {"Symbol", PickerSearchResult::Symbol(u"♬")},
-        {"Emoticon", PickerSearchResult::Emoticon(u"¯\\_(ツ)_/¯")},
         {"Gif", PickerSearchResult::Gif(/*preview_url=*/GURL(),
                                         /*preview_image_url=*/GURL(),
                                         gfx::Size(10, 10),

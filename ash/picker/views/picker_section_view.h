@@ -23,8 +23,6 @@ class Label;
 namespace ash {
 
 class PickerAssetFetcher;
-class PickerEmojiItemView;
-class PickerEmoticonItemView;
 class PickerImageItemGridView;
 class PickerImageItemView;
 class PickerItemView;
@@ -32,8 +30,6 @@ class PickerListItemContainerView;
 class PickerListItemView;
 class PickerPreviewBubbleController;
 class PickerSearchResult;
-class PickerSmallItemGridView;
-class PickerSymbolItemView;
 class PickerTraversableItemContainer;
 enum class PickerActionType;
 
@@ -58,15 +54,6 @@ class ASH_EXPORT PickerSectionView : public views::View {
   // spanning the width of the section.
   PickerListItemView* AddListItem(
       std::unique_ptr<PickerListItemView> list_item);
-
-  // Adds a emoji, symbol or emoticon. These are treated collectively as small
-  // grid items and are displayed in rows.
-  PickerEmojiItemView* AddEmojiItem(
-      std::unique_ptr<PickerEmojiItemView> emoji_item);
-  PickerSymbolItemView* AddSymbolItem(
-      std::unique_ptr<PickerSymbolItemView> symbol_item);
-  PickerEmoticonItemView* AddEmoticonItem(
-      std::unique_ptr<PickerEmoticonItemView> emoticon_item);
 
   // Adds an image item to the section. These are displayed in a grid with two
   // columns.
@@ -125,8 +112,6 @@ class ASH_EXPORT PickerSectionView : public views::View {
   }
 
  private:
-  void CreateSmallItemGridIfNeeded();
-
   // Returns a non-null item container if the section has one, otherwise returns
   // nullptr.
   // TODO: b/322900302 - Determine whether sections can have multiple item
@@ -146,7 +131,6 @@ class ASH_EXPORT PickerSectionView : public views::View {
   raw_ptr<views::Link> title_trailing_link_ = nullptr;
 
   raw_ptr<PickerListItemContainerView> list_item_container_ = nullptr;
-  raw_ptr<PickerSmallItemGridView> small_item_grid_ = nullptr;
   raw_ptr<PickerImageItemGridView> image_item_grid_ = nullptr;
 
   // The views for each result item.
