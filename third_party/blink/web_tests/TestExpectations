@@ -7583,5 +7583,5 @@ crbug.com/346706682 http/tests/devtools/indexeddb/resources-panel.js [ Failure P
 
 crbug.com/40899458 [ Mac14 ] fast/canvas/OffscreenCanvas-copyImage.html [ Failure Pass ]
 
-crbug.com/346794458 [ Mac ] external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
-crbug.com/346794458 [ Mac ] external/wpt/permissions-policy/permissions-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
+crbug.com/342438266 external/wpt/feature-policy/feature-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
+crbug.com/342438266 external/wpt/permissions-policy/permissions-policy-frame-policy-timing.https.sub.html [ Failure Pass ]
