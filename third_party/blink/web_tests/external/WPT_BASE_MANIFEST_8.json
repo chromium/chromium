@@ -230484,6 +230484,32 @@
        {}
       ]
      ],
+     "transparent-accent-color-001.html": [
+      "219e24c1689b11dca0f22670118439d10e6b8813",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/reference/transparent-accent-color-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "transparent-accent-color-002.html": [
+      "46b9835d0c18313885e08e2d469111cb82fa841f",
+      [
+       null,
+       [
+        [
+         "/css/css-ui/reference/transparent-accent-color-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "webkit-appearance-auto-001.html": [
       "fb0261b020f6fc2b1e3bfccb3da7d899f0337f79",
       [
@@ -341871,6 +341897,14 @@
       ],
       "text-overflow-ellipsis-indent-001-ref.html": [
        "660a7c4d52e7e2a763bfffc7582469896a5835b8",
+       []
+      ],
+      "transparent-accent-color-001-ref.html": [
+       "c9d6eb720f1f8f17285014b0b7fa99f86ec6e4e7",
+       []
+      ],
+      "transparent-accent-color-002-ref.html": [
+       "819a5852460eeb295a65ac9acf8ce8683c93170f",
        []
       ]
      },
