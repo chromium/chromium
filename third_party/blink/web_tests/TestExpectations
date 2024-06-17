@@ -2574,8 +2574,8 @@ crbug.com/347045480 external/wpt/webrtc/RTCRtpReceiver-video-jitterBufferTarget-
 crbug.com/347045480 external/wpt/webrtc/RTCRtpReceiver-audio-jitterBufferTarget-stats.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/css/css-ui/transparent-accent-color-001.html [ Failure ]
-external/wpt/css/css-ui/transparent-accent-color-002.html [ Failure ]
+crbug.com/347055263 external/wpt/css/css-ui/transparent-accent-color-001.html [ Failure ]
+crbug.com/347055263 external/wpt/css/css-ui/transparent-accent-color-002.html [ Failure ]
 crbug.com/347071485 external/wpt/css/css-overflow/line-clamp/line-clamp-001.html [ Failure ]
 crbug.com/347071485 external/wpt/css/css-overflow/line-clamp/line-clamp-004.html [ Failure ]
 crbug.com/347071485 external/wpt/css/css-overflow/line-clamp/line-clamp-010.html [ Failure ]
