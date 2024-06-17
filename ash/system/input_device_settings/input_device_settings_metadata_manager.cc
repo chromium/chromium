@@ -6,6 +6,7 @@
 
 #include "ash/system/input_device_settings/input_device_settings_metadata.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
+#include "base/containers/contains.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
@@ -54,10 +55,15 @@ void InputDeviceSettingsMetadataManager::OnDeviceImageFetched(
                                               device_image.data_url());
   }
   auto it = device_callback_map_.find(device_key);
-  if (it != device_callback_map_.end()) {
-    std::move(it->second).Run(device_image);
-    device_callback_map_.erase(it);
+
+  if (it == device_callback_map_.end()) {
+    return;
   }
+
+  for (auto& callback : it->second) {
+    std::move(callback).Run(device_image);
+  }
+  device_callback_map_.erase(it);
 }
 
 std::optional<std::string>
@@ -76,7 +82,7 @@ void InputDeviceSettingsMetadataManager::GetDeviceImagePreferringCache(
     std::move(callback).Run(DeviceImage(device_key, device_image.value()));
     return;
   }
-  device_callback_map_[device_key] = std::move(callback);
+  device_callback_map_[device_key].push_back(std::move(callback));
   image_downloader_->DownloadImage(
       device_key, account_id, destination,
       base::BindOnce(&InputDeviceSettingsMetadataManager::OnDeviceImageFetched,
