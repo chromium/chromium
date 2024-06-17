@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "pdf/ink/ink_affine_transform.h"
 #include "pdf/ink/ink_brush.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_ink_brush.h"
@@ -18,10 +19,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace chrome_pdf {
 
@@ -45,6 +48,10 @@ class FakeClient : public InkModule::Client {
 
   // InkModule::Client:
   PageOrientation GetOrientation() const override { return orientation_; }
+
+  gfx::Vector2dF GetViewportOriginOffset() override {
+    return viewport_origin_offset_;
+  }
 
   gfx::Rect GetPageContentsRect(int index) override {
     CHECK_GE(index, 0);
@@ -81,12 +88,17 @@ class FakeClient : public InkModule::Client {
     orientation_ = orientation;
   }
 
+  void set_viewport_origin_offset(const gfx::Vector2dF& offset) {
+    viewport_origin_offset_ = offset;
+  }
+
   void set_zoom(float zoom) { zoom_ = zoom; }
 
  private:
   int ink_stroke_finished_count_ = 0;
   std::vector<gfx::RectF> pages_layout_;
   PageOrientation orientation_ = PageOrientation::kOriginal;
+  gfx::Vector2dF viewport_origin_offset_;
   float zoom_ = 1.0f;
 };
 
@@ -344,7 +356,7 @@ TEST_F(InkModuleStrokeTest, CanonicalAnnotationPoints) {
   // the InkModule::Client setup.
   constexpr gfx::PointF kCanonicalMouseDownPosition(47.0f, 44.5f);
   constexpr gfx::PointF kCanonicalMouseMovePosition(42.0f, 39.5f);
-  const std::vector<InkModule::InkStrokeInputPoints>& all_strokes_positions =
+  const std::vector<InkModule::InkStrokeInputPoints> all_strokes_positions =
       ink_module().GetInkStrokesInputPositionsForTesting();
   // Only one stroke.
   ASSERT_EQ(all_strokes_positions.size(), 1u);
@@ -352,6 +364,35 @@ TEST_F(InkModuleStrokeTest, CanonicalAnnotationPoints) {
   EXPECT_THAT(all_strokes_positions[0],
               testing::ElementsAre(kCanonicalMouseDownPosition,
                                    kCanonicalMouseMovePosition));
+}
+
+TEST_F(InkModuleStrokeTest, DrawRenderTransform) {
+  // Simulate a viewport that is wider than page to be rendered, and has the
+  // page centered within that.  The page is positioned at top of viewport with
+  // no vertical padding.
+  constexpr gfx::SizeF kPageSize(50.0f, 60.0f);
+  constexpr gfx::PointF kPageOrigin(0.0f, -15.0f);
+  constexpr gfx::RectF kPageLayout(kPageOrigin, kPageSize);
+  constexpr gfx::Vector2dF kViewportOrigin(5.0f, 0.0f);
+  client().set_pages_layout({kPageLayout});
+  client().set_orientation(PageOrientation::kClockwise180);
+  client().set_viewport_origin_offset(kViewportOrigin);
+
+  RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+
+  // Simulate drawing the strokes, and verify that the expected transform was
+  // used.
+  std::vector<InkAffineTransform> draw_render_transforms;
+  ink_module().SetDrawRenderTransformCallbackForTesting(
+      base::BindLambdaForTesting([&](const InkAffineTransform& transform) {
+        draw_render_transforms.push_back(transform);
+      }));
+  SkCanvas canvas;
+  ink_module().Draw(canvas);
+  const InkAffineTransform kDrawTransform = {-1.0f, 0.0f,  54.0f,
+                                             0.0f,  -1.0f, 44.0f};
+  // Just one transform provided, to match the captured stroke.
+  EXPECT_THAT(draw_render_transforms, testing::ElementsAre(kDrawTransform));
 }
 
 }  // namespace

@@ -9,10 +9,12 @@
 #include <optional>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "pdf/buildflags.h"
+#include "pdf/ink/ink_affine_transform.h"
 #include "pdf/ink/ink_stroke_input.h"
 #include "pdf/page_orientation.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -40,6 +42,8 @@ class PdfInkBrush;
 class InkModule {
  public:
   using InkStrokeInputPoints = std::vector<gfx::PointF>;
+  using RenderTransformCallback =
+      base::RepeatingCallback<void(const InkAffineTransform& transform)>;
 
   class Client {
    public:
@@ -52,6 +56,13 @@ class InkModule {
     // screen coordinates for the 0-based page index.  Must be non-empty for any
     // non-negative index returned from `VisiblePageIndexFromPoint()`.
     virtual gfx::Rect GetPageContentsRect(int index) = 0;
+
+    // Gets the offset within the rendering viewport to where the page images
+    // will be drawn.  Since the offset is a location within the viewport, it
+    // must always contain non-negative values.  Values are in scaled CSS
+    // screen coordinates, where the amount of scaling matches that of
+    // `GetZoom()`.  The page orientation does not apply to the viewport.
+    virtual gfx::Vector2dF GetViewportOriginOffset() = 0;
 
     // Gets current zoom factor.
     virtual float GetZoom() const = 0;
@@ -86,6 +97,11 @@ class InkModule {
   // For testing only. Returns the input positions used for the stroke.
   std::vector<InkStrokeInputPoints> GetInkStrokesInputPositionsForTesting()
       const;
+
+  // For testing only. Provide a callback to use whenever the rendering
+  // transform is determined for `Draw()`.
+  void SetDrawRenderTransformCallbackForTesting(
+      RenderTransformCallback callback);
 
  private:
   struct DrawingStrokeState {
@@ -157,8 +173,11 @@ class InkModule {
   // The state of the current tool that is in use.
   absl::variant<DrawingStrokeState, EraserState> current_tool_state_;
 
-  // The strokes that have been completed.
+  // The strokes that have been completed.  Coordinates for each stroke are
+  // stored in a canonical format specified in pdf_ink_transform.h.
   std::vector<std::unique_ptr<InkStroke>> ink_strokes_;
+
+  RenderTransformCallback draw_render_transform_callback_for_testing_;
 };
 
 }  // namespace chrome_pdf

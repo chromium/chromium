@@ -1988,6 +1988,10 @@ gfx::Rect PdfViewWebPlugin::GetPageContentsRect(int index) {
   return engine_->GetPageContentsRect(index);
 }
 
+gfx::Vector2dF PdfViewWebPlugin::GetViewportOriginOffset() {
+  return available_area_.OffsetFromOrigin();
+}
+
 float PdfViewWebPlugin::GetZoom() const {
   return zoom_;
 }

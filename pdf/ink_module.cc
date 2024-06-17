@@ -59,13 +59,33 @@ InkModule::InkModule(Client& client) : client_(client) {
 InkModule::~InkModule() = default;
 
 void InkModule::Draw(SkCanvas& canvas) {
-  // TODO(crbug.com/335524380): Draw `ink_strokes_` with InkSkiaRenderer.
-  // Add more parameters as needed.
+  if (!ink_strokes_.empty()) {
+    // Use an updated transform based on the page and its position in the
+    // viewport.
+    // TODO(crbug.com/335517469):  Strokes should be saved on a per-page basis.
+    // Use the page size from the identified page once it is available.  For
+    // now just assume page 0.
+    // TODO(crbug.com/335524380): Draw `ink_strokes_` with InkSkiaRenderer
+    // using the canonical-to-screen rendering transform.
+    InkAffineTransform transform = GetInkRenderTransform(
+        client_->GetViewportOriginOffset(), client_->GetOrientation(),
+        client_->GetPageContentsRect(/*index=*/0), client_->GetZoom());
+    if (draw_render_transform_callback_for_testing_) {
+      draw_render_transform_callback_for_testing_.Run(transform);
+    }
+  }
 
   auto in_progress_stroke = CreateInProgressStrokeFromInputs();
   if (in_progress_stroke) {
-    // TODO(crbug.com/335524380): Draw `in_progress_stroke` with
-    // InkSkiaRenderer.
+    DrawingStrokeState& state = drawing_stroke_state();
+    // TODO(crbug.com/335524380): Draw `in_progress_stroke` with InkSkiaRenderer
+    // using the canonical-to-screen rendering transform.
+    InkAffineTransform transform = GetInkRenderTransform(
+        client_->GetViewportOriginOffset(), client_->GetOrientation(),
+        client_->GetPageContentsRect(state.ink_page_index), client_->GetZoom());
+    if (draw_render_transform_callback_for_testing_) {
+      draw_render_transform_callback_for_testing_.Run(transform);
+    }
   }
 }
 
@@ -129,6 +149,11 @@ InkModule::GetInkStrokesInputPositionsForTesting() const {
   }
 
   return all_strokes_points;
+}
+
+void InkModule::SetDrawRenderTransformCallbackForTesting(
+    RenderTransformCallback callback) {
+  draw_render_transform_callback_for_testing_ = std::move(callback);
 }
 
 bool InkModule::OnMouseDown(const blink::WebMouseEvent& event) {
