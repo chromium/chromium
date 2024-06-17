@@ -10,11 +10,15 @@
 #include "base/check_op.h"
 #include "base/no_destructor.h"
 #include "net/base/io_buffer.h"
+#include "net/base/ip_endpoint.h"
+#include "net/base/load_timing_info.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_body_drainer.h"
 #include "net/http/http_stream_parser.h"
 #include "net/http/http_util.h"
 #include "net/socket/client_socket_handle.h"
+#include "net/ssl/ssl_info.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -41,6 +45,24 @@ void HttpBasicState::Initialize(const HttpRequestInfo* request_info,
       net_log);
 }
 
+void HttpBasicState::Close(bool not_reusable) {
+  // `parser_` is null if the owner of `this` is created by an orphaned
+  // HttpStreamFactory::Job in which case InitializeStream() will not have been
+  // called. This also protects against null dereference in the case where
+  // ReleaseConnection() has been called.
+  //
+  // TODO(mmenke):  Can these cases be handled a bit more cleanly?
+  if (!parser_) {
+    return;
+  }
+  StreamSocket* socket = connection_->socket();
+  if (not_reusable && socket) {
+    socket->Disconnect();
+  }
+  parser()->OnConnectionClose();
+  connection_->Reset();
+}
+
 std::unique_ptr<ClientSocketHandle> HttpBasicState::ReleaseConnection() {
   // The HttpStreamParser object still has a pointer to the connection. Just to
   // be extra-sure it doesn't touch the connection again, delete it here rather
@@ -61,6 +83,32 @@ std::string HttpBasicState::GenerateRequestLine() const {
 bool HttpBasicState::IsConnectionReused() const {
   return connection_->is_reused() ||
          connection_->reuse_type() == ClientSocketHandle::UNUSED_IDLE;
+}
+
+void HttpBasicState::SetConnectionReused() {
+  connection_->set_reuse_type(ClientSocketHandle::REUSED_IDLE);
+}
+
+bool HttpBasicState::CanReuseConnection() const {
+  return parser_ && connection_->socket() && parser_->CanReuseConnection();
+}
+
+bool HttpBasicState::GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const {
+  return connection_->GetLoadTimingInfo(IsConnectionReused(), load_timing_info);
+}
+
+void HttpBasicState::GetSSLInfo(SSLInfo* ssl_info) {
+  CHECK(connection_);
+  if (!connection_->socket() || !connection_->socket()->GetSSLInfo(ssl_info)) {
+    ssl_info->Reset();
+  }
+}
+
+int HttpBasicState::GetRemoteEndpoint(IPEndPoint* endpoint) {
+  if (!connection_ || !connection_->socket()) {
+    return ERR_SOCKET_NOT_CONNECTED;
+  }
+  return connection_->socket()->GetPeerAddress(endpoint);
 }
 
 const std::set<std::string>& HttpBasicState::GetDnsAliases() const {

@@ -302,15 +302,9 @@ int WebSocketBasicHandshakeStream::ReadResponseBody(
 }
 
 void WebSocketBasicHandshakeStream::Close(bool not_reusable) {
-  // This class ignores the value of |not_reusable| and never lets the socket be
+  // This class ignores the value of `not_reusable` and never lets the socket be
   // re-used.
-  if (!parser())
-    return;
-  StreamSocket* socket = state_.connection()->socket();
-  if (socket)
-    socket->Disconnect();
-  parser()->OnConnectionClose();
-  state_.connection()->Reset();
+  state_.Close(/*not_reusable=*/true);
 }
 
 bool WebSocketBasicHandshakeStream::IsResponseBodyComplete() const {
@@ -322,12 +316,11 @@ bool WebSocketBasicHandshakeStream::IsConnectionReused() const {
 }
 
 void WebSocketBasicHandshakeStream::SetConnectionReused() {
-  state_.connection()->set_reuse_type(ClientSocketHandle::REUSED_IDLE);
+  state_.SetConnectionReused();
 }
 
 bool WebSocketBasicHandshakeStream::CanReuseConnection() const {
-  return parser() && state_.connection()->socket() &&
-         parser()->CanReuseConnection();
+  return state_.CanReuseConnection();
 }
 
 int64_t WebSocketBasicHandshakeStream::GetTotalReceivedBytes() const {
@@ -345,22 +338,15 @@ bool WebSocketBasicHandshakeStream::GetAlternativeService(
 
 bool WebSocketBasicHandshakeStream::GetLoadTimingInfo(
     LoadTimingInfo* load_timing_info) const {
-  return state_.connection()->GetLoadTimingInfo(IsConnectionReused(),
-                                                load_timing_info);
+  return state_.GetLoadTimingInfo(load_timing_info);
 }
 
 void WebSocketBasicHandshakeStream::GetSSLInfo(SSLInfo* ssl_info) {
-  if (!state_.connection()->socket() ||
-      !state_.connection()->socket()->GetSSLInfo(ssl_info)) {
-    ssl_info->Reset();
-  }
+  state_.GetSSLInfo(ssl_info);
 }
 
 int WebSocketBasicHandshakeStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
-  if (!state_.connection() || !state_.connection()->socket())
-    return ERR_SOCKET_NOT_CONNECTED;
-
-  return state_.connection()->socket()->GetPeerAddress(endpoint);
+  return state_.GetRemoteEndpoint(endpoint);
 }
 
 void WebSocketBasicHandshakeStream::PopulateNetErrorDetails(

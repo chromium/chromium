@@ -80,20 +80,7 @@ int HttpBasicStream::ReadResponseBody(IOBuffer* buf,
 }
 
 void HttpBasicStream::Close(bool not_reusable) {
-  // parser() is null if |this| is created by an orphaned HttpStreamFactory::Job
-  // in which case InitializeStream() will not have been called. This also
-  // protects against null dereference in the case where
-  // state_.ReleaseConnection() has been called.
-  //
-  // TODO(mmenke):  Can these cases be handled a bit more cleanly?
-  // WebSocketHandshakeStream will need to be updated as well.
-  if (!parser())
-    return;
-  StreamSocket* socket = state_.connection()->socket();
-  if (not_reusable && socket)
-    socket->Disconnect();
-  parser()->OnConnectionClose();
-  state_.connection()->Reset();
+  state_.Close(not_reusable);
 }
 
 std::unique_ptr<HttpStream> HttpBasicStream::RenewStreamForAuth() {
@@ -112,12 +99,11 @@ bool HttpBasicStream::IsConnectionReused() const {
 }
 
 void HttpBasicStream::SetConnectionReused() {
-  state_.connection()->set_reuse_type(ClientSocketHandle::REUSED_IDLE);
+  state_.SetConnectionReused();
 }
 
 bool HttpBasicStream::CanReuseConnection() const {
-  return parser() && state_.connection()->socket() &&
-         parser()->CanReuseConnection();
+  return state_.CanReuseConnection();
 }
 
 int64_t HttpBasicStream::GetTotalReceivedBytes() const {
@@ -134,9 +120,7 @@ int64_t HttpBasicStream::GetTotalSentBytes() const {
 
 bool HttpBasicStream::GetLoadTimingInfo(
     LoadTimingInfo* load_timing_info) const {
-  if (!state_.connection()->GetLoadTimingInfo(IsConnectionReused(),
-                                              load_timing_info) ||
-      !parser()) {
+  if (!state_.GetLoadTimingInfo(load_timing_info) || !parser()) {
     return false;
   }
 
@@ -162,17 +146,11 @@ bool HttpBasicStream::GetAlternativeService(
 }
 
 void HttpBasicStream::GetSSLInfo(SSLInfo* ssl_info) {
-  if (!state_.connection()->socket() ||
-      !state_.connection()->socket()->GetSSLInfo(ssl_info)) {
-    ssl_info->Reset();
-  }
+  state_.GetSSLInfo(ssl_info);
 }
 
 int HttpBasicStream::GetRemoteEndpoint(IPEndPoint* endpoint) {
-  if (!state_.connection() || !state_.connection()->socket())
-    return ERR_SOCKET_NOT_CONNECTED;
-
-  return state_.connection()->socket()->GetPeerAddress(endpoint);
+  return state_.GetRemoteEndpoint(endpoint);
 }
 
 void HttpBasicStream::Drain(HttpNetworkSession* session) {

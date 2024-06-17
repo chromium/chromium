@@ -22,9 +22,12 @@ namespace net {
 
 class ClientSocketHandle;
 class GrowableIOBuffer;
+class IPEndPoint;
 class HttpStreamParser;
 struct HttpRequestInfo;
+struct LoadTimingInfo;
 class NetLogWithSource;
+class SSLInfo;
 
 class NET_EXPORT_PRIVATE HttpBasicState {
  public:
@@ -40,6 +43,9 @@ class NET_EXPORT_PRIVATE HttpBasicState {
   void Initialize(const HttpRequestInfo* request_info,
                   RequestPriority priority,
                   const NetLogWithSource& net_log);
+
+  // Called when the owner of `this` is closed.
+  void Close(bool not_reusable);
 
   HttpStreamParser* parser() const { return parser_.get(); }
 
@@ -67,6 +73,20 @@ class NET_EXPORT_PRIVATE HttpBasicState {
   // TODO(mmenke): Consider renaming this concept, to avoid confusion with
   // ClientSocketHandle::is_reused().
   bool IsConnectionReused() const;
+  void SetConnectionReused();
+
+  // Returns true if the connection can be "reused" as defined by
+  // HttpStreamParser.
+  //
+  // TODO(crbug.com/346835898): Consider renaming this concept, to avoid
+  // confusion with above IsConnectionReused() and ClientSocketHandle.
+  bool CanReuseConnection() const;
+
+  bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const;
+
+  void GetSSLInfo(SSLInfo* ssl_info);
+
+  int GetRemoteEndpoint(IPEndPoint* endpoint);
 
   // Retrieves any DNS aliases for the remote endpoint. Includes all known
   // aliases, e.g. from A, AAAA, or HTTPS, not just from the address used for
