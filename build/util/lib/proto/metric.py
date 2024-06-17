@@ -17,9 +17,6 @@ class Metric:
   def register(self, metric: Measure) -> None:
     self._metrics.append(metric)
 
-  # Dumping to the protobuf is mostly for testing purpose only. The real use
-  # case would dump everything into a json file for the further upload.
-  # TODO(crbug.com/343242386): May dump to a file once the file name is defined.
   def dump(self) -> TestScriptMetrics:
     result = TestScriptMetrics()
     result.metrics.extend([m.dump() for m in self._metrics])
