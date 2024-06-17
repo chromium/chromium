@@ -16,6 +16,7 @@ import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -114,10 +115,15 @@ public class FullscreenSigninCoordinator {
             Context context,
             ModalDialogManager modalDialogManager,
             Delegate delegate,
-            PrivacyPreferencesManager privacyPreferencesManager) {
+            PrivacyPreferencesManager privacyPreferencesManager,
+            @SigninAccessPoint int accessPoint) {
         mMediator =
                 new FullscreenSigninMediator(
-                        context, modalDialogManager, delegate, privacyPreferencesManager);
+                        context,
+                        modalDialogManager,
+                        delegate,
+                        privacyPreferencesManager,
+                        accessPoint);
     }
 
     /** Releases the resources used by the coordinator. */

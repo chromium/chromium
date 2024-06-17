@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninC
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninView;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
@@ -73,7 +74,8 @@ public class SigninFirstRunFragment extends Fragment
                         requireContext(),
                         mModalDialogManager,
                         this,
-                        PrivacyPreferencesManagerImpl.getInstance());
+                        PrivacyPreferencesManagerImpl.getInstance(),
+                        SigninAccessPoint.START_PAGE);
 
         if (getPageDelegate().isLaunchedFromCct()) {
             mSkipTosDialogPolicyListener =

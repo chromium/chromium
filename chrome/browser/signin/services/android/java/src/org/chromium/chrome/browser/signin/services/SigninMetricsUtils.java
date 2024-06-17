@@ -91,6 +91,8 @@ public class SigninMetricsUtils {
     public static void logSigninStartAccessPoint(@SigninAccessPoint int accessPoint) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Signin.SigninStartedAccessPoint", accessPoint, SigninAccessPoint.MAX);
+        RecordHistogram.recordEnumeratedHistogram(
+                "Signin.SignIn.Started", accessPoint, SigninAccessPoint.MAX);
     }
 
     /** Logs signin user action for a given {@link SigninAccessPoint}. */

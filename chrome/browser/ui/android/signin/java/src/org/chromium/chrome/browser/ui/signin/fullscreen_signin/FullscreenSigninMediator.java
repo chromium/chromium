@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInCallback;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignOutCallback;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.R;
@@ -87,6 +88,7 @@ public class FullscreenSigninMediator
     private final AccountManagerFacade mAccountManagerFacade;
     private final Delegate mDelegate;
     private final PrivacyPreferencesManager mPrivacyPreferencesManager;
+    private final @SigninAccessPoint int mAccessPoint;
     private final PropertyModel mModel;
     private final ProfileDataCache mProfileDataCache;
     private boolean mDestroyed;
@@ -107,11 +109,13 @@ public class FullscreenSigninMediator
             Context context,
             ModalDialogManager modalDialogManager,
             Delegate delegate,
-            PrivacyPreferencesManager privacyPreferencesManager) {
+            PrivacyPreferencesManager privacyPreferencesManager,
+            @SigninAccessPoint int accessPoint) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mDelegate = delegate;
         mPrivacyPreferencesManager = privacyPreferencesManager;
+        mAccessPoint = accessPoint;
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mContext);
         mModel =
                 FullscreenSigninProperties.createModel(
@@ -141,6 +145,7 @@ public class FullscreenSigninMediator
         updateAccounts(
                 AccountUtils.getCoreAccountInfosIfFulfilledOrEmpty(
                         mAccountManagerFacade.getCoreAccountInfos()));
+        SigninMetricsUtils.logSigninStartAccessPoint(mAccessPoint);
     }
 
     PropertyModel getModel() {
@@ -397,7 +402,7 @@ public class FullscreenSigninMediator
             final @SigninAccessPoint int accessPoint =
                     mModel.get(FullscreenSigninProperties.IS_SELECTED_ACCOUNT_SUPERVISED)
                             ? SigninAccessPoint.FORCED_SIGNIN
-                            : SigninAccessPoint.START_PAGE;
+                            : mAccessPoint;
             SigninUtils.checkAccountManagementAndSignIn(
                     selectedAccount,
                     signinManager,

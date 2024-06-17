@@ -57,6 +57,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -71,6 +72,7 @@ import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.policy.test.annotations.Policies;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -121,6 +123,19 @@ public class UpgradePromoIntegrationTest {
     @Test
     @MediumTest
     public void testWithExistingAccount_refuseSignin() {
+        HistogramWatcher accountConsistencyHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN)
+                        .expectIntRecord(
+                                "Signin.AccountConsistencyPromoAction.Shown",
+                                SigninAccessPoint.SIGNIN_PROMO)
+                        .build();
+        HistogramWatcher accountStartedHistogram =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Signin.SignIn.Started", SigninAccessPoint.SIGNIN_PROMO);
+
         launchActivity();
 
         // Verify that the fullscreen sign-in promo is shown.
@@ -130,6 +145,8 @@ public class UpgradePromoIntegrationTest {
         // Refuse sign-in.
         clickButton(R.id.signin_fre_dismiss_button);
 
+        accountConsistencyHistogram.assertExpected();
+        accountStartedHistogram.assertExpected();
         ApplicationTestUtils.waitForActivityState(mActivity, Stage.DESTROYED);
         assertNull(mSigninTestRule.getPrimaryAccount(ConsentLevel.SIGNIN));
         assertFalse(SyncTestUtil.isHistorySyncEnabled());
