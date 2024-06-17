@@ -13,54 +13,48 @@ namespace video_format_comparison {
 
 namespace {
 
-bool IsAcceptableFormat(const media::VideoCaptureFormat& format,
-                        const float minimum_frame_rate,
-                        const int view_width) {
-  return format.frame_rate >= minimum_frame_rate &&
-         format.frame_size.width() >= view_width &&
-         GetFrameAspectRatio(format.frame_size) >= kMinAspectRatio;
+constexpr float kAspectRatioFitnessWeight = 100;
+constexpr float kWidthFitnessWeight = 20;
+constexpr float kFrameRateFitnessWeight = 20;
+constexpr float kPunishmentDiscount = 0.09;
+
+// Return fitness value for aspect ratio in the range [0, 1].
+// The closer the aspect ratio value to `kDefaultAspectRatio`, the higher the
+// fitness value returned.
+float GetAspectRatioFitness(const media::VideoCaptureFormat& format) {
+  const float distance_from_default =
+      std::fabs(GetFrameAspectRatio(format.frame_size) - kDefaultAspectRatio);
+  return std::fmax(1 - distance_from_default, 0);
 }
 
-// Returns true if `other` value is better than `cur` value. If both values are
-// larger than or equal the `target`, then the lower among the two
-// values would be more suitable. On the other hand, if one or both the values
-// are less than `target`, then the higher among the two values would
-// be more suitable.
-bool IsBetterValue(const float cur, const float other, const float target) {
-  float preferred_value = std::min(cur, other);
-  if (cur < target || other < target) {
-    preferred_value = std::max(cur, other);
+// Return fitness value in the range [0, 1].
+// The closer `value` is to `target`, the higher the fitness value returned. But
+// we still favor values that are above `target` rather than values that are
+// below it. For example, a `value of 60` has higher fitness than a `value of
+// 24` when `target is 30`.
+float GetFitnessValue(const float value, const float target) {
+  if (value > target) {
+    const float fitness = 1 - value / target * kPunishmentDiscount;
+    return std::fmax(fitness, 0);
+  } else {
+    return value / target;
   }
-  return other == preferred_value;
 }
 
-// Returns true if `other` format is better than `cur` format.
-// Better here means: (1) If one format is acceptable and the other is not, then
-// the acceptable is better. (2) If both formats are acceptable or both are
-// unacceptable, then check their frame rate, width, and aspect ratio in that
-// order, and decide which suits more.
-// For suits more definition, check `IsBetterValue(..)`.
-bool IsBetterFormat(const media::VideoCaptureFormat& cur,
-                    const media::VideoCaptureFormat& other,
-                    const int view_width,
-                    const float minimum_frame_rate) {
-  const bool is_other_acceptable =
-      IsAcceptableFormat(other, minimum_frame_rate, view_width);
-  if (is_other_acceptable !=
-      IsAcceptableFormat(cur, minimum_frame_rate, view_width)) {
-    return is_other_acceptable;
-  }
+// Return the format fitness value. The higher the value returned the more fit
+// `format` is. Lowest value is 0.
+float GetFormatFitness(const media::VideoCaptureFormat& format,
+                       const int view_width,
+                       const float target_frame_rate) {
+  float aspect_ratio_fitness =
+      GetAspectRatioFitness(format) * kAspectRatioFitnessWeight;
+  float width_fitness = GetFitnessValue(format.frame_size.width(), view_width) *
+                        kWidthFitnessWeight;
+  float frame_rate_fitness =
+      GetFitnessValue(format.frame_rate, target_frame_rate) *
+      kFrameRateFitnessWeight;
 
-  if (cur.frame_rate != other.frame_rate) {
-    return IsBetterValue(cur.frame_rate, other.frame_rate, minimum_frame_rate);
-  }
-  if (cur.frame_size.width() != other.frame_size.width()) {
-    return IsBetterValue(cur.frame_size.width(), other.frame_size.width(),
-                         view_width);
-  }
-  return IsBetterValue(GetFrameAspectRatio(cur.frame_size),
-                       GetFrameAspectRatio(other.frame_size),
-                       kDefaultAspectRatio);
+  return aspect_ratio_fitness + width_fitness + frame_rate_fitness;
 }
 
 }  // namespace
@@ -73,14 +67,17 @@ media::VideoCaptureFormat GetClosestVideoFormat(
     const std::vector<media::VideoCaptureFormat>& formats,
     const int view_width,
     const float target_frame_rate) {
-  const media::VideoCaptureFormat* chosen_format = nullptr;
+  float chosen_fitness = 0;
+  media::VideoCaptureFormat chosen_format = media::VideoCaptureFormat();
   for (const auto& format : formats) {
-    if (!chosen_format ||
-        IsBetterFormat(*chosen_format, format, view_width, target_frame_rate)) {
-      chosen_format = &format;
+    const float fitness =
+        GetFormatFitness(format, view_width, target_frame_rate);
+    if (fitness > chosen_fitness) {
+      chosen_fitness = fitness;
+      chosen_format = format;
     }
   }
-  return chosen_format ? *chosen_format : media::VideoCaptureFormat();
+  return chosen_format;
 }
 
 }  // namespace video_format_comparison
