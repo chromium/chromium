@@ -1997,14 +1997,13 @@ WebGPUDecoderImpl::AssociateMailboxDawn(
 
     if (base::FeatureList::IsEnabled(
             features::kDawnSIRepsUseClientProvidedInternalUsages)) {
-      // Add the RenderAttachment usage as an internal usage, as it is needed on
-      // Vulkan to support lazy internal clearing (see crbug.com/338514133).
-      // NOTE: Even after crbug.com/338514133 is resolved it will almost
-      // certainly still make sense to pass RenderAttachment here to signify to
-      // the SharedImage that this is a write access. In particular, some
-      // SharedImage Dawn representations validate that the passed-in usages
-      // indicate a Dawn write access if the SI is not cleared.
-      internal_usage |= wgpu::TextureUsage::RenderAttachment;
+      if (!(usage & kWritableUsagesSupportingLazyClear) &&
+          !(internal_usage & kWritableUsagesSupportingLazyClear)) {
+        LOG(ERROR) << "AssociateMailbox: Using WEBGPU_MAILBOX_DISCARD to clear "
+                      "the texture requires passing a usage that supports lazy "
+                      "clearing";
+        return nullptr;
+      }
     }
   } else if (base::FeatureList::IsEnabled(
                  features::kDawnSIRepsUseClientProvidedInternalUsages) &&
@@ -2078,14 +2077,13 @@ WebGPUDecoderImpl::AssociateMailboxUsingSkiaFallback(
 
     if (base::FeatureList::IsEnabled(
             features::kDawnSIRepsUseClientProvidedInternalUsages)) {
-      // Add the RenderAttachment usage as an internal usage, as it is needed on
-      // Vulkan to support lazy internal clearing (see crbug.com/338514133).
-      // NOTE: Even after crbug.com/338514133 is resolved it will almost
-      // certainly still make sense to pass RenderAttachment here to signify to
-      // the SharedImage that this is a write access. In particular, some
-      // SharedImage Dawn representations validate that the passed-in usages
-      // indicate a Dawn write access if the SI is not cleared.
-      internal_usage |= wgpu::TextureUsage::RenderAttachment;
+      if (!(usage & kWritableUsagesSupportingLazyClear) &&
+          !(internal_usage & kWritableUsagesSupportingLazyClear)) {
+        LOG(ERROR) << "AssociateMailbox: Using WEBGPU_MAILBOX_DISCARD to clear "
+                      "the texture requires passing a usage that supports lazy "
+                      "clearing";
+        return nullptr;
+      }
     }
   } else if (base::FeatureList::IsEnabled(
                  features::kDawnSIRepsUseClientProvidedInternalUsages) &&

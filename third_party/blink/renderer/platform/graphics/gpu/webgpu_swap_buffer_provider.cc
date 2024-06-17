@@ -218,13 +218,17 @@ scoped_refptr<WebGPUMailboxTexture> WebGPUSwapBufferProvider::GetNewTexture(
       context_provider, size, alpha_mode);
 
   // Make a mailbox texture from the swap buffer.
+  // NOTE: Passing WEBGPU_MAILBOX_DISCARD to request clearing requires passing a
+  // usage that supports clearing. Swapbuffer textures will always be
+  // renderable, so we can pass RenderAttachment.
   current_swap_buffer_->mailbox_texture =
       WebGPUMailboxTexture::FromExistingMailbox(
           dawn_control_client_, device_, desc,
           current_swap_buffer_->shared_image->mailbox(),
           // Wait on the last usage of this swap buffer.
           current_swap_buffer_->access_finished_token,
-          gpu::webgpu::WEBGPU_MAILBOX_DISCARD, wgpu::TextureUsage::None,
+          gpu::webgpu::WEBGPU_MAILBOX_DISCARD,
+          wgpu::TextureUsage::RenderAttachment,
           // When the mailbox texture is dissociated, set the access finished
           // token back on the swap buffer for the next time it is used.
           base::BindOnce(

@@ -82,7 +82,9 @@ class WebGPUInterface : public InterfaceBase {
 
   // NOTE: Passing WEBGPU_MAILBOX_DISCARD is only valid if the SharedImage
   // associated with `mailbox` has been created with
-  // SHARED_IMAGE_USAGE_WEBGPU_WRITE.
+  // SHARED_IMAGE_USAGE_WEBGPU_WRITE and at least one of `usage` or
+  // `internal_usage` contains a usage supporting lazy clearing (CopyDst or
+  // RenderAttachment).
   virtual void AssociateMailbox(GLuint device_id,
                                 GLuint device_generation,
                                 GLuint id,
