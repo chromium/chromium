@@ -5,18 +5,12 @@
 #ifndef MEDIA_WEBRTC_CONSTANTS_H_
 #define MEDIA_WEBRTC_CONSTANTS_H_
 
-#include "build/build_config.h"
-#include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
+#include "base/component_export.h"
 
 namespace media {
 
 // The sample rate used by (WebRTC) audio processing algorithms.
-static constexpr int kAudioProcessingSampleRateHz =
-#if BUILDFLAG(IS_ANDROID)
-    webrtc::AudioProcessing::kSampleRate16kHz;
-#else
-    webrtc::AudioProcessing::kSampleRate48kHz;
-#endif
+COMPONENT_EXPORT(MEDIA_WEBRTC) int WebRtcAudioProcessingSampleRateHz();
 
 }  // namespace media
 

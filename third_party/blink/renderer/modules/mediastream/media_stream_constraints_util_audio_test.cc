@@ -964,13 +964,13 @@ TEST_P(MediaStreamConstraintsUtilAudioTest, SampleRate) {
   // difference on Android.
   int max_sample_rate =
       std::max(static_cast<int>(media::AudioParameters::kAudioCDSampleRate),
-               media::kAudioProcessingSampleRateHz);
+               media::WebRtcAudioProcessingSampleRateHz());
   int ideal_sample_rate = webrtc::AudioProcessing::kSampleRate8kHz;
   if (!IsDeviceCapture()) {
     exact_sample_rate = media::AudioParameters::kAudioCDSampleRate;
     min_sample_rate =
         std::min(static_cast<int>(media::AudioParameters::kAudioCDSampleRate),
-                 media::kAudioProcessingSampleRateHz);
+                 media::WebRtcAudioProcessingSampleRateHz());
     ideal_sample_rate = media::AudioParameters::kAudioCDSampleRate;
   }
 
@@ -2115,7 +2115,7 @@ TEST_P(MediaStreamConstraintsRemoteAPMTest,
   AudioCaptureSettings result;
   ResetFactory();
   constraint_factory_.basic().sample_rate.SetExact(
-      media::kAudioProcessingSampleRateHz);
+      media::WebRtcAudioProcessingSampleRateHz());
   constraint_factory_.basic().echo_cancellation.SetExact(true);
   result = SelectSettings();
 

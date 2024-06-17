@@ -83,4 +83,14 @@ BASE_FEATURE(kWebRtcAllowH265Send,
 BASE_FEATURE(kWebRtcAllowH265Receive,
              "WebRtcAllowH265Receive",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if BUILDFLAG(IS_ANDROID)
+// Kill-switch for using 48 kHz as sample rate for Audio Processing Module
+// processing on Android. When enabled, enforces a 16 kHz sample rate for audio
+// processing on Android.
+BASE_FEATURE(kWebRtcApm48kHzSampleRateOnAndroidKillSwitch,
+             "WebRtcApm48kHzSampleRateOnAndroidKillSwitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 }  // namespace features

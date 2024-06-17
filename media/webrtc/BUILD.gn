@@ -13,6 +13,7 @@ component("webrtc") {
     "audio_delay_stats_reporter.h",
     "audio_processor.cc",
     "audio_processor.h",
+    "constants.cc",
     "constants.h",
     "helpers.cc",
     "helpers.h",

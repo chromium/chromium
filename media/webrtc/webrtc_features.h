@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 #include "third_party/webrtc/modules/audio_processing/include/audio_processing.h"
 
 namespace features {
@@ -48,6 +49,12 @@ BASE_DECLARE_FEATURE(kWebRtcAllowH265Send);
 
 COMPONENT_EXPORT(MEDIA_WEBRTC)
 BASE_DECLARE_FEATURE(kWebRtcAllowH265Receive);
+
+#if BUILDFLAG(IS_ANDROID)
+COMPONENT_EXPORT(MEDIA_WEBRTC)
+BASE_DECLARE_FEATURE(kWebRtcApm48kHzSampleRateOnAndroidKillSwitch);
+#endif
+
 }  // namespace features
 
 #endif  // MEDIA_WEBRTC_WEBRTC_FEATURES_H_

@@ -765,7 +765,7 @@ class ProcessingBasedContainer {
       bool is_device_capture,
       const media::AudioParameters& device_parameters,
       bool is_reconfiguration_allowed) {
-    int sample_rate_hz = media::kAudioProcessingSampleRateHz;
+    int sample_rate_hz = media::WebRtcAudioProcessingSampleRateHz();
     if (stream_type == mojom::blink::MediaStreamType::DEVICE_AUDIO_CAPTURE &&
         !ProcessedLocalAudioSource::OutputAudioAtProcessingSampleRate()) {
       // If audio processing runs in the audio service without any mitigations
