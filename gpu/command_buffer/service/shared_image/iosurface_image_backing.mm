@@ -772,16 +772,22 @@ class IOSurfaceImageBacking::DawnRepresentation final
   const wgpu::TextureFormat wgpu_format_;
   const std::vector<wgpu::TextureFormat> view_formats_;
 
-  // NOTE: `usage_` and `texture_` are valid only within the duration of a
-  // BeginAccess()/EndAccess() pair.
+  // NOTE: `usage_`, `internal_usage_`, and `texture_` are valid only within
+  // the duration of a BeginAccess()/EndAccess() pair.
   wgpu::TextureUsage usage_;
+  wgpu::TextureUsage internal_usage_;
   wgpu::Texture texture_;
 };
 
 wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
     wgpu::TextureUsage wgpu_texture_usage,
     wgpu::TextureUsage internal_usage) {
-  const bool readonly = (wgpu_texture_usage & ~kReadOnlyUsage) == 0;
+  const bool readonly =
+      (wgpu_texture_usage & ~kReadOnlyUsage) == 0 &&
+      (!base::FeatureList::IsEnabled(
+           features::kDawnSIRepsUseClientProvidedInternalUsages) ||
+       (internal_usage & ~kReadOnlyUsage) == 0);
+
   IOSurfaceImageBacking* iosurface_backing =
       static_cast<IOSurfaceImageBacking*>(backing());
   if (!iosurface_backing->BeginAccess(readonly)) {
@@ -798,6 +804,7 @@ wgpu::Texture IOSurfaceImageBacking::DawnRepresentation::BeginAccess(
       /*device_to_exclude=*/device_);
 
   usage_ = wgpu_texture_usage;
+  internal_usage_ = internal_usage;
 
   texture_ = iosurface_backing->GetCachedWGPUTexture(device_, usage_);
   if (!texture_) {
@@ -889,7 +896,11 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
   // its state tracking.
   IOSurfaceImageBacking* iosurface_backing =
       static_cast<IOSurfaceImageBacking*>(backing());
-  const bool readonly = (usage_ & ~kReadOnlyUsage) == 0;
+  const bool readonly =
+      (usage_ & ~kReadOnlyUsage) == 0 &&
+      (!base::FeatureList::IsEnabled(
+           features::kDawnSIRepsUseClientProvidedInternalUsages) ||
+       (internal_usage_ & ~kReadOnlyUsage) == 0);
   iosurface_backing->EndAccess(readonly);
   int num_outstanding_accesses =
       iosurface_backing->TrackEndAccessToWGPUTexture(texture_);
@@ -900,7 +911,7 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
   // will happen when the last ongoing Dawn access finishes.
   if (num_outstanding_accesses > 0) {
     texture_ = nullptr;
-    usage_ = wgpu::TextureUsage::None;
+    usage_ = internal_usage_ = wgpu::TextureUsage::None;
     return;
   }
 
@@ -947,7 +958,7 @@ void IOSurfaceImageBacking::DawnRepresentation::EndAccess() {
   }
 
   texture_ = nullptr;
-  usage_ = wgpu::TextureUsage::None;
+  usage_ = internal_usage_ = wgpu::TextureUsage::None;
 }
 
 // Enabling this functionality reduces overhead in the compositor by lowering
