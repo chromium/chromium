@@ -225,7 +225,7 @@ struct TypeConverter<AutocompleteMatch::ScoringSignals, mojom::SignalsPtr> {
     MOJOM_TO_PROTO_SIGNAL(length_of_url);
     MOJOM_TO_PROTO_SIGNAL(site_engagement);
     MOJOM_TO_PROTO_SIGNAL(allowed_to_be_default_match);
-    PROTO_TO_MOJOM_SIGNAL(search_suggest_relevance);
+    MOJOM_TO_PROTO_SIGNAL(search_suggest_relevance);
 
     return signals;
   }
