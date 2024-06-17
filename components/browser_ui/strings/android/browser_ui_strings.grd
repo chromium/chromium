@@ -945,6 +945,9 @@
       <message name="IDS_WEBAPK_MAPSGO_DEPRECATION_WARNING" desc="The toast message when user trying to launch the deprecated Maps Go WebAPK.">
         '<ph name="APP_NAME">%1$s<ex>Maps Go</ex></ph>' is out of date. Please update the app.
       </message>
+      <message name="IDS_WEBAPK_DEPRECATION_WARNING" desc="The toast message when user trying to launch the deprecated WebAPKs.">
+        '<ph name="APP_NAME">%1$s<ex>Maps Go</ex></ph>' is out of date. Please re-install the app.
+      </message>
 
       <!-- Messages -->
       <message name="IDS_MESSAGE_SCREEN_POSITION" desc="Accessibility label to inform users about the Message location">

@@ -529,6 +529,7 @@ public abstract class ChromeFeatureList {
     public static final String WEB_APK_BACKUP_AND_RESTORE_BACKEND = "WebApkBackupAndRestoreBackend";
     public static final String WEB_APK_INSTALL_FAILURE_NOTIFICATION =
             "WebApkInstallFailureNotification";
+    public static final String WEB_APK_MIN_SHELL_APK_VERSION = "WebApkMinShellVersion";
     public static final String WEB_AUTHN_ENABLE_CABLE_AUTHENTICATOR =
             "WebAuthenticationEnableAndroidCableAuthenticator";
     public static final String WEB_FEED_AWARENESS = "WebFeedAwareness";
@@ -703,6 +704,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(USE_LIBUNWINDSTACK_NATIVE_UNWINDER_ANDROID, true);
     public static final CachedFlag sVerticalAutomotiveBackButtonToolbar =
             newCachedFlag(VERTICAL_AUTOMOTIVE_BACK_BUTTON_TOOLBAR, true);
+    public static final CachedFlag sWebApkMinShellApkVersion =
+            newCachedFlag(WEB_APK_MIN_SHELL_APK_VERSION, true);
 
     public static final List<CachedFlag> sFlagsCachedFullBrowser =
             List.of(
@@ -796,7 +799,8 @@ public abstract class ChromeFeatureList {
                     sTabWindowManagerReportIndicesMismatch,
                     sUseChimeAndroidSdk,
                     sUseLibunwindstackNativeUnwinderAndroid,
-                    sVerticalAutomotiveBackButtonToolbar);
+                    sVerticalAutomotiveBackButtonToolbar,
+                    sWebApkMinShellApkVersion);
 
     public static final List<CachedFlag> sFlagsCachedInMinimalBrowser =
             List.of(sExperimentsForAgsa);

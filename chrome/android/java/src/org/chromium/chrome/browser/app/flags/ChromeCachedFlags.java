@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator;
+import org.chromium.chrome.browser.webapps.WebappLauncherActivity;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.omnibox.OmniboxFeatures;
 
@@ -135,7 +136,8 @@ public class ChromeCachedFlags {
                         TabUiFeatureUtilities.ANIMATION_START_TIMEOUT_MS,
                         TabUiFeatureUtilities.ZOOMING_MIN_MEMORY,
                         TabUiFeatureUtilities.SKIP_SLOW_ZOOMING,
-                        VersionNumberGetter.MIN_SDK_VERSION);
+                        VersionNumberGetter.MIN_SDK_VERSION,
+                        WebappLauncherActivity.MIN_SHELL_APK_VERSION);
 
         tryToCatchMissingParameters(
                 fieldTrialsToCache, OmniboxFeatures.getFieldTrialParamsToCache());

@@ -11,6 +11,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.components.webapk.lib.common.WebApkMetaDataKeys.SCOPE;
+import static org.chromium.components.webapk.lib.common.WebApkMetaDataKeys.SHELL_APK_VERSION;
 import static org.chromium.components.webapk.lib.common.WebApkMetaDataKeys.START_URL;
 import static org.chromium.components.webapk.lib.common.WebApkMetaDataKeys.WEB_MANIFEST_URL;
 
@@ -54,6 +55,7 @@ public class WebApkValidatorTest {
     private static final String MAPSLITE_PACKAGE_NAME = "com.google.android.apps.mapslite";
     private static final String MAPSLITE_EXAMPLE_STARTURL = "https://www.google.com/maps";
     private static final String MANIFEST_URL = "https://www.foo.com/manifest.json";
+    private static final int SHELL_VERSION = 100;
 
     private static final byte[] EXPECTED_SIGNATURE =
             new byte[] {
@@ -202,7 +204,7 @@ public class WebApkValidatorTest {
 
             assertTrue(
                     WebApkValidator.canWebApkHandleUrl(
-                            RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME, URL_OF_WEBAPK));
+                            RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME, URL_OF_WEBAPK, 0));
         } catch (URISyntaxException e) {
             Assert.fail("URI is invalid.");
         }
@@ -226,7 +228,7 @@ public class WebApkValidatorTest {
 
             assertFalse(
                     WebApkValidator.canWebApkHandleUrl(
-                            RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME, URL_OF_WEBAPK));
+                            RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME, URL_OF_WEBAPK, 0));
         } catch (URISyntaxException e) {
             Assert.fail("URI is invalid.");
         }
@@ -249,7 +251,7 @@ public class WebApkValidatorTest {
 
             assertFalse(
                     WebApkValidator.canWebApkHandleUrl(
-                            RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME, URL_OF_WEBAPK));
+                            RuntimeEnvironment.application, WEBAPK_PACKAGE_NAME, URL_OF_WEBAPK, 0));
         } catch (URISyntaxException e) {
             Assert.fail("URI is invalid.");
         }
@@ -278,7 +280,8 @@ public class WebApkValidatorTest {
                     WebApkValidator.canWebApkHandleUrl(
                             RuntimeEnvironment.application,
                             WEBAPK_PACKAGE_NAME,
-                            URL_WITHOUT_WEBAPK));
+                            URL_WITHOUT_WEBAPK,
+                            0));
         } catch (URISyntaxException e) {
             Assert.fail("URI is invalid.");
         }
@@ -359,7 +362,8 @@ public class WebApkValidatorTest {
                 WebApkValidator.canWebApkHandleUrl(
                         RuntimeEnvironment.application,
                         MAPSLITE_PACKAGE_NAME + ".other",
-                        MAPSLITE_EXAMPLE_STARTURL));
+                        MAPSLITE_EXAMPLE_STARTURL,
+                        0));
         assertNull(ShadowToast.getLatestToast());
 
         // Valid MapsLite WebAPK returns false as "not handled" and shows a toast.
@@ -369,7 +373,8 @@ public class WebApkValidatorTest {
                 WebApkValidator.canWebApkHandleUrl(
                         RuntimeEnvironment.application,
                         MAPSLITE_PACKAGE_NAME,
-                        MAPSLITE_EXAMPLE_STARTURL));
+                        MAPSLITE_EXAMPLE_STARTURL,
+                        0));
         assertNotNull(ShadowToast.getLatestToast());
         // assertTextFromLatestToast(R.string.copied);
         TextView textView = (TextView) ShadowToast.getLatestToast().getView();
@@ -380,7 +385,44 @@ public class WebApkValidatorTest {
                 actualText);
     }
 
-    /** Tests {@link WebApkValidator.isValidWebApk} returns false when the startUrl is not correct. */
+    /**
+     * Tests {@link WebApkValidator.canWebApkHandleUrl} returns false and shows a toast when the
+     * shell version is out-of-date (older than the min_version).
+     */
+    @Test
+    public void testOldShellWebApkShowsWarning() {
+        addWebApkResolveInfoWithPackageName(URL_OF_WEBAPK, WEBAPK_PACKAGE_NAME, EXPECTED_SIGNATURE);
+
+        // Current Shell Version larger than min_version, can handle URL.
+        assertTrue(
+                WebApkValidator.canWebApkHandleUrl(
+                        RuntimeEnvironment.application,
+                        WEBAPK_PACKAGE_NAME,
+                        URL_OF_WEBAPK,
+                        SHELL_VERSION - 1));
+        assertNull(ShadowToast.getLatestToast());
+
+        // Current Shell Version smaller than min_version, returns false as "not handled" and shows
+        // a toast.
+        assertFalse(
+                WebApkValidator.canWebApkHandleUrl(
+                        RuntimeEnvironment.application,
+                        WEBAPK_PACKAGE_NAME,
+                        URL_OF_WEBAPK,
+                        SHELL_VERSION + 1));
+        assertNotNull(ShadowToast.getLatestToast());
+        // assertTextFromLatestToast(R.string.copied);
+        TextView textView = (TextView) ShadowToast.getLatestToast().getView();
+        String actualText = textView == null ? "" : textView.getText().toString();
+        assertEquals(
+                ContextUtils.getApplicationContext()
+                        .getString(R.string.webapk_deprecation_warning, ""),
+                actualText);
+    }
+
+    /**
+     * Tests {@link WebApkValidator.isValidWebApk} returns false when the startUrl is not correct.
+     */
     @Test
     public void testIsNotValidWebApkForMapsLiteBadStartUrl() {
         mPackageManager.addPackage(
@@ -710,6 +752,7 @@ public class WebApkValidatorTest {
         packageInfo.applicationInfo.metaData.putString(START_URL, startUrl + "?morestuff");
         packageInfo.applicationInfo.metaData.putString(SCOPE, startUrl);
         packageInfo.applicationInfo.metaData.putString(WEB_MANIFEST_URL, manifestUrl);
+        packageInfo.applicationInfo.metaData.putInt(SHELL_APK_VERSION, SHELL_VERSION);
         packageInfo.applicationInfo.sourceDir = sourceDir;
         return packageInfo;
     }

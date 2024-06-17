@@ -10,3 +10,7 @@ BASE_FEATURE(kWebApkShellUpdate,
 
 const base::FeatureParam<int> kWebApkTargetShellVersion{
     &kWebApkShellUpdate, "version", REQUEST_UPDATE_FOR_SHELL_APK_VERSION_VALUE};
+
+BASE_FEATURE(kWebApkMinShellVersion,
+             "WebApkMinShellVersion",
+             base::FEATURE_ENABLED_BY_DEFAULT);

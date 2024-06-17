@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/features.h"
 #include "base/no_destructor.h"
+#include "chrome/browser/android/webapk/webapk_features.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/flags/android/chrome_session_state.h"
 #include "chrome/browser/notifications/chime/android/features.h"
@@ -309,6 +310,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kVoiceSearchAudioCapturePolicy,
     &kWebOtpCrossDeviceSimpleString,
     &kWebApkAllowIconUpdate,
+    &kWebApkMinShellVersion,
     &features::kCookieDeprecationFacilitatedTesting,
     &notifications::features::kUseChimeAndroidSdk,
     &paint_preview::kPaintPreviewDemo,
