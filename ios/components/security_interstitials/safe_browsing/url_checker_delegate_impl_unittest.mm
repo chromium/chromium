@@ -120,7 +120,6 @@ TEST_F(UrlCheckerDelegateImplTest, DontProceedForDestroyedWebState) {
   // Instruct the delegate to display the blocking page.
   delegate_->StartDisplayingBlockingPageHelper(resource, /*method=*/"",
                                                net::HttpRequestHeaders(),
-                                               /*is_main_frame*/ true,
                                                /*has_user_gesture=*/true);
   EXPECT_TRUE(WaitForUnsafeResourceCallbackExecution(&callback_state));
 
@@ -142,7 +141,6 @@ TEST_F(UrlCheckerDelegateImplTest, DontProceedIfBlockedByClient) {
   // Instruct the delegate to display the blocking page.
   delegate_->StartDisplayingBlockingPageHelper(resource, /*method=*/"",
                                                net::HttpRequestHeaders(),
-                                               /*is_main_frame*/ true,
                                                /*has_user_gesture=*/true);
   EXPECT_TRUE(WaitForUnsafeResourceCallbackExecution(&callback_state));
 
@@ -169,7 +167,6 @@ TEST_F(UrlCheckerDelegateImplTest, ProceedForAllowedUnsafeNavigation) {
   // Instruct the delegate to display the blocking page.
   delegate_->StartDisplayingBlockingPageHelper(resource, /*method=*/"",
                                                net::HttpRequestHeaders(),
-                                               /*is_main_frame*/ true,
                                                /*has_user_gesture=*/true);
   EXPECT_TRUE(WaitForUnsafeResourceCallbackExecution(&callback_state));
 

@@ -28,7 +28,6 @@ WEB_CONTENTS_USER_DATA_KEY_IMPL(SafeBrowsingUserInteractionObserver);
 SafeBrowsingUserInteractionObserver::SafeBrowsingUserInteractionObserver(
     content::WebContents* web_contents,
     const security_interstitials::UnsafeResource& resource,
-    bool is_main_frame,
     scoped_refptr<SafeBrowsingUIManager> ui_manager)
     : content::WebContentsUserData<SafeBrowsingUserInteractionObserver>(
           *web_contents),
@@ -82,7 +81,6 @@ SafeBrowsingUserInteractionObserver::~SafeBrowsingUserInteractionObserver() {
 void SafeBrowsingUserInteractionObserver::CreateForWebContents(
     content::WebContents* web_contents,
     const security_interstitials::UnsafeResource& resource,
-    bool is_main_frame,
     scoped_refptr<SafeBrowsingUIManager> ui_manager) {
   // This method is called for all unsafe resources on |web_contents|. Only
   // create an observer if there isn't one.
@@ -91,7 +89,6 @@ void SafeBrowsingUserInteractionObserver::CreateForWebContents(
   content::WebContentsUserData<
       SafeBrowsingUserInteractionObserver>::CreateForWebContents(web_contents,
                                                                  resource,
-                                                                 is_main_frame,
                                                                  ui_manager);
 }
 

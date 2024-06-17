@@ -354,7 +354,7 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternalAndMaybeDeleteSelf(
       unsafe_resource.is_delayed_warning = true;
       url_checker_delegate_
           ->StartObservingInteractionsForDelayedBlockingPageHelper(
-              unsafe_resource, /*is_main_frame=*/true);
+              unsafe_resource);
       state_ = STATE_DELAYED_BLOCKING_PAGE;
     }
     // Let the navigation continue in case of delayed warnings.
@@ -405,8 +405,7 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResultInternalAndMaybeDeleteSelf(
   state_ = STATE_DISPLAYING_BLOCKING_PAGE;
 
   url_checker_delegate_->StartDisplayingBlockingPageHelper(
-      resource, urls_[next_index_].method, headers_, /*is_main_frame=*/true,
-      has_user_gesture_);
+      resource, urls_[next_index_].method, headers_, has_user_gesture_);
 }
 
 void SafeBrowsingUrlCheckerImpl::CheckUrlImplAndMaybeDeleteSelf(

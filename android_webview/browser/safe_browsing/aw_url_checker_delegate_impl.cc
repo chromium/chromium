@@ -82,11 +82,10 @@ void AwUrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
     const security_interstitials::UnsafeResource& resource,
     const std::string& method,
     const net::HttpRequestHeaders& headers,
-    bool is_outermost_main_frame,
     bool has_user_gesture) {
   AwWebResourceRequest request(resource.url.spec(), method,
-                               is_outermost_main_frame, has_user_gesture,
-                               headers);
+                               /*in_is_outermost_main_frame=*/true,
+                               has_user_gesture, headers);
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -96,8 +95,7 @@ void AwUrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
 
 void AwUrlCheckerDelegateImpl::
     StartObservingInteractionsForDelayedBlockingPageHelper(
-        const security_interstitials::UnsafeResource& resource,
-        bool is_main_frame) {
+        const security_interstitials::UnsafeResource& resource) {
   NOTREACHED_IN_MIGRATION() << "Delayed warnings not implemented for WebView";
 }
 

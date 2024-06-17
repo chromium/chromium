@@ -1105,7 +1105,7 @@ TEST_F(ChromePasswordManagerClientTest,
       base::MakeRefCounted<safe_browsing::TestSafeBrowsingUIManager>();
   security_interstitials::UnsafeResource resource;
   safe_browsing::SafeBrowsingUserInteractionObserver::CreateForWebContents(
-      test_web_contents.get(), resource, /* is_main_frame= */ true, ui_manager);
+      test_web_contents.get(), resource, ui_manager);
   autofill::ChromeAutofillClient::CreateForWebContents(test_web_contents.get());
   MockChromePasswordManagerClient* client =
       MockChromePasswordManagerClient::CreateForWebContentsAndGet(

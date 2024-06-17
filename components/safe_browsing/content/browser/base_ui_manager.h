@@ -49,7 +49,7 @@ class BaseUIManager : public base::RefCountedThreadSafe<BaseUIManager> {
   // With committed interstitials:
   // -For pre-commit navigations this will only cancel the load, the
   // interstitial will then be shown from a navigation throttle.
-  // -For post-commit this will cancel the load, then call
+  // -For post-commit navigations this will cancel the load, then call
   // LoadPostCommitErrorPage, which will show the interstitial.
   virtual void DisplayBlockingPage(const UnsafeResource& resource);
 

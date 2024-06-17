@@ -55,7 +55,6 @@ void DestroyNoStatePrefetchContents(
 
 void CreateSafeBrowsingUserInteractionObserver(
     const security_interstitials::UnsafeResource& resource,
-    bool is_main_frame,
     scoped_refptr<SafeBrowsingUIManager> ui_manager) {
   content::WebContents* web_contents =
       unsafe_resource_util::GetWebContentsForResource(resource);
@@ -75,7 +74,7 @@ void CreateSafeBrowsingUserInteractionObserver(
   }
 #endif
   SafeBrowsingUserInteractionObserver::CreateForWebContents(
-      web_contents, resource, is_main_frame, ui_manager);
+      web_contents, resource, ui_manager);
 }
 
 }  // namespace
@@ -112,7 +111,6 @@ void UrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
     const security_interstitials::UnsafeResource& resource,
     const std::string& method,
     const net::HttpRequestHeaders& headers,
-    bool is_main_frame,
     bool has_user_gesture) {
   // Keep a post task here to avoid possible reentrancy into safe browsing
   // code if it is running on the UI thread.
@@ -125,13 +123,12 @@ void UrlCheckerDelegateImpl::StartDisplayingBlockingPageHelper(
 // Starts displaying the SafeBrowsing interstitial page.
 void UrlCheckerDelegateImpl::
     StartObservingInteractionsForDelayedBlockingPageHelper(
-        const security_interstitials::UnsafeResource& resource,
-        bool is_main_frame) {
+        const security_interstitials::UnsafeResource& resource) {
   // Keep a post task here to avoid possible reentrancy into safe browsing
   // code if it is running on the UI thread.
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&CreateSafeBrowsingUserInteractionObserver,
-                                resource, is_main_frame, ui_manager_));
+                                resource, ui_manager_));
 }
 
 bool UrlCheckerDelegateImpl::IsUrlAllowlisted(const GURL& url) {
