@@ -71,6 +71,17 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="DISMISSED_SCRIM"/>
 </enum>
 
+<!-- LINT.IfChange(ExternalProtocolScheme) -->
+
+<enum name="ExternalProtocolScheme">
+  <int value="0" label="Other"/>
+  <int value="1" label="search-ms"/>
+  <int value="2" label="search"/>
+  <int value="3" label="mailto"/>
+</enum>
+
+<!-- LINT.ThenChange(/chrome/browser/external_protocol/external_protocol_handler.cc:LoggedScheme) -->
+
 <enum name="HandleStateType">
   <int value="0" label="Launch"/>
   <int value="1" label="Checked launch"/>

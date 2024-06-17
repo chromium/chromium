@@ -154,6 +154,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BrowserDialogs.ExternalProtocol.Scheme"
+    enum="ExternalProtocolScheme" expires_after="2024-09-13">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the scheme of an external protocol request. Only logs schemes listed
+    among the enum ExternalProtocolScheme. This is logged once for each request
+    to open an external protocol.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.Action" enum="PermissionAction"
     expires_after="never">
 <!-- expires-never: Primary metrics for monitoring capability usage and trends. -->
