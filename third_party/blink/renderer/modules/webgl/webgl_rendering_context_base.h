@@ -494,70 +494,49 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
 
   void uniform1f(const WebGLUniformLocation*, GLfloat x);
   void uniform1fv(const WebGLUniformLocation*, base::span<const GLfloat>);
-  void uniform1fv(const WebGLUniformLocation*, Vector<GLfloat>&);
   void uniform1i(const WebGLUniformLocation*, GLint x);
   void uniform1iv(const WebGLUniformLocation*, base::span<const GLint>);
-  void uniform1iv(const WebGLUniformLocation*, Vector<GLint>&);
   void uniform2f(const WebGLUniformLocation*, GLfloat x, GLfloat y);
   void uniform2fv(const WebGLUniformLocation*, base::span<const GLfloat>);
-  void uniform2fv(const WebGLUniformLocation*, Vector<GLfloat>&);
   void uniform2i(const WebGLUniformLocation*, GLint x, GLint y);
   void uniform2iv(const WebGLUniformLocation*, base::span<const GLint>);
-  void uniform2iv(const WebGLUniformLocation*, Vector<GLint>&);
   void uniform3f(const WebGLUniformLocation*, GLfloat x, GLfloat y, GLfloat z);
   void uniform3fv(const WebGLUniformLocation*, base::span<const GLfloat>);
-  void uniform3fv(const WebGLUniformLocation*, Vector<GLfloat>&);
   void uniform3i(const WebGLUniformLocation*, GLint x, GLint y, GLint z);
   void uniform3iv(const WebGLUniformLocation*, base::span<const GLint>);
-  void uniform3iv(const WebGLUniformLocation*, Vector<GLint>&);
   void uniform4f(const WebGLUniformLocation*,
                  GLfloat x,
                  GLfloat y,
                  GLfloat z,
                  GLfloat w);
   void uniform4fv(const WebGLUniformLocation*, base::span<const GLfloat>);
-  void uniform4fv(const WebGLUniformLocation*, Vector<GLfloat>&);
   void uniform4i(const WebGLUniformLocation*,
                  GLint x,
                  GLint y,
                  GLint z,
                  GLint w);
   void uniform4iv(const WebGLUniformLocation*, base::span<const GLint>);
-  void uniform4iv(const WebGLUniformLocation*, Vector<GLint>&);
   void uniformMatrix2fv(const WebGLUniformLocation*,
-                        GLboolean transpose,
-                        base::span<const GLfloat> value);
-  void uniformMatrix2fv(const WebGLUniformLocation*,
-                        GLboolean transpose,
-                        Vector<GLfloat>& value);
-  void uniformMatrix3fv(const WebGLUniformLocation*,
                         GLboolean transpose,
                         base::span<const GLfloat> value);
   void uniformMatrix3fv(const WebGLUniformLocation*,
                         GLboolean transpose,
-                        Vector<GLfloat>& value);
-  void uniformMatrix4fv(const WebGLUniformLocation*,
-                        GLboolean transpose,
                         base::span<const GLfloat> value);
   void uniformMatrix4fv(const WebGLUniformLocation*,
                         GLboolean transpose,
-                        Vector<GLfloat>& value);
+                        base::span<const GLfloat> value);
 
   virtual void useProgram(WebGLProgram*);
   void validateProgram(WebGLProgram*);
 
   void vertexAttrib1f(GLuint index, GLfloat x);
   void vertexAttrib1fv(GLuint index, base::span<const GLfloat> values);
-  void vertexAttrib1fv(GLuint index, const Vector<GLfloat>& values);
   void vertexAttrib2f(GLuint index, GLfloat x, GLfloat y);
   void vertexAttrib2fv(GLuint index, base::span<const GLfloat> values);
-  void vertexAttrib2fv(GLuint index, const Vector<GLfloat>& values);
   void vertexAttrib3f(GLuint index, GLfloat x, GLfloat y, GLfloat z);
   void vertexAttrib3fv(GLuint index, base::span<const GLfloat> values);
-  void vertexAttrib3fv(GLuint index, const Vector<GLfloat>& values);
   void vertexAttrib4f(GLuint index, GLfloat x, GLfloat y, GLfloat z, GLfloat w);
   void vertexAttrib4fv(GLuint index, base::span<const GLfloat> values);
-  void vertexAttrib4fv(GLuint index, const Vector<GLfloat>& values);
   void vertexAttribPointer(GLuint index,
                            GLint size,
                            GLenum type,
@@ -1620,21 +1599,6 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
   }
 
   // Helper function to validate input parameters for uniform functions.
-  template <typename T>
-  bool ValidateUniformParameters(const char* function_name,
-                                 const WebGLUniformLocation* location,
-                                 T* v,
-                                 GLsizei size,
-                                 GLsizei required_min_size,
-                                 GLuint src_offset,
-                                 GLuint src_length,
-                                 const T** out_data,
-                                 GLuint* out_length) {
-    return ValidateUniformMatrixParameters(function_name, location, false, v,
-                                           size, required_min_size, src_offset,
-                                           src_length, out_data, out_length);
-  }
-
   template <typename T>
   bool ValidateUniformMatrixParameters(const char* function_name,
                                        const WebGLUniformLocation* location,

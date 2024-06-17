@@ -685,84 +685,48 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                   base::span<const GLfloat>,
                   GLuint,
                   GLuint);
-  void uniform1fv(const WebGLUniformLocation*,
-                  Vector<GLfloat>&,
-                  GLuint,
-                  GLuint);
   void uniform2fv(const WebGLUniformLocation*,
                   base::span<const GLfloat>,
-                  GLuint,
-                  GLuint);
-  void uniform2fv(const WebGLUniformLocation*,
-                  Vector<GLfloat>&,
                   GLuint,
                   GLuint);
   void uniform3fv(const WebGLUniformLocation*,
                   base::span<const GLfloat>,
                   GLuint,
                   GLuint);
-  void uniform3fv(const WebGLUniformLocation*,
-                  Vector<GLfloat>&,
-                  GLuint,
-                  GLuint);
   void uniform4fv(const WebGLUniformLocation*,
                   base::span<const GLfloat>,
-                  GLuint,
-                  GLuint);
-  void uniform4fv(const WebGLUniformLocation*,
-                  Vector<GLfloat>&,
                   GLuint,
                   GLuint);
   void uniform1iv(const WebGLUniformLocation*,
                   base::span<const GLint>,
                   GLuint,
                   GLuint);
-  void uniform1iv(const WebGLUniformLocation*, Vector<GLint>&, GLuint, GLuint);
   void uniform2iv(const WebGLUniformLocation*,
                   base::span<const GLint>,
                   GLuint,
                   GLuint);
-  void uniform2iv(const WebGLUniformLocation*, Vector<GLint>&, GLuint, GLuint);
   void uniform3iv(const WebGLUniformLocation*,
                   base::span<const GLint>,
                   GLuint,
                   GLuint);
-  void uniform3iv(const WebGLUniformLocation*, Vector<GLint>&, GLuint, GLuint);
   void uniform4iv(const WebGLUniformLocation*,
                   base::span<const GLint>,
                   GLuint,
                   GLuint);
-  void uniform4iv(const WebGLUniformLocation*, Vector<GLint>&, GLuint, GLuint);
   void uniform1uiv(const WebGLUniformLocation*,
                    base::span<const GLuint>,
-                   GLuint,
-                   GLuint);
-  void uniform1uiv(const WebGLUniformLocation*,
-                   Vector<GLuint>&,
                    GLuint,
                    GLuint);
   void uniform2uiv(const WebGLUniformLocation*,
                    base::span<const GLuint>,
                    GLuint,
                    GLuint);
-  void uniform2uiv(const WebGLUniformLocation*,
-                   Vector<GLuint>&,
-                   GLuint,
-                   GLuint);
   void uniform3uiv(const WebGLUniformLocation*,
                    base::span<const GLuint>,
                    GLuint,
                    GLuint);
-  void uniform3uiv(const WebGLUniformLocation*,
-                   Vector<GLuint>&,
-                   GLuint,
-                   GLuint);
   void uniform4uiv(const WebGLUniformLocation*,
                    base::span<const GLuint>,
-                   GLuint,
-                   GLuint);
-  void uniform4uiv(const WebGLUniformLocation*,
-                   Vector<GLuint>&,
                    GLuint,
                    GLuint);
   void uniformMatrix2fv(const WebGLUniformLocation*,
@@ -770,19 +734,9 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                         base::span<const GLfloat>,
                         GLuint,
                         GLuint);
-  void uniformMatrix2fv(const WebGLUniformLocation*,
-                        GLboolean,
-                        Vector<GLfloat>&,
-                        GLuint,
-                        GLuint);
   void uniformMatrix3fv(const WebGLUniformLocation*,
                         GLboolean,
                         base::span<const GLfloat>,
-                        GLuint,
-                        GLuint);
-  void uniformMatrix3fv(const WebGLUniformLocation*,
-                        GLboolean,
-                        Vector<GLfloat>&,
                         GLuint,
                         GLuint);
   void uniformMatrix4fv(const WebGLUniformLocation*,
@@ -790,19 +744,9 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                         base::span<const GLfloat>,
                         GLuint,
                         GLuint);
-  void uniformMatrix4fv(const WebGLUniformLocation*,
-                        GLboolean,
-                        Vector<GLfloat>&,
-                        GLuint,
-                        GLuint);
   void uniformMatrix2x3fv(const WebGLUniformLocation*,
                           GLboolean,
                           base::span<const GLfloat>,
-                          GLuint,
-                          GLuint);
-  void uniformMatrix2x3fv(const WebGLUniformLocation*,
-                          GLboolean,
-                          Vector<GLfloat>&,
                           GLuint,
                           GLuint);
   void uniformMatrix3x2fv(const WebGLUniformLocation*,
@@ -810,19 +754,9 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                           base::span<const GLfloat>,
                           GLuint,
                           GLuint);
-  void uniformMatrix3x2fv(const WebGLUniformLocation*,
-                          GLboolean,
-                          Vector<GLfloat>&,
-                          GLuint,
-                          GLuint);
   void uniformMatrix2x4fv(const WebGLUniformLocation*,
                           GLboolean,
                           base::span<const GLfloat>,
-                          GLuint,
-                          GLuint);
-  void uniformMatrix2x4fv(const WebGLUniformLocation*,
-                          GLboolean,
-                          Vector<GLfloat>&,
                           GLuint,
                           GLuint);
   void uniformMatrix4x2fv(const WebGLUniformLocation*,
@@ -830,75 +764,41 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                           base::span<const GLfloat>,
                           GLuint,
                           GLuint);
-  void uniformMatrix4x2fv(const WebGLUniformLocation*,
-                          GLboolean,
-                          Vector<GLfloat>&,
-                          GLuint,
-                          GLuint);
   void uniformMatrix3x4fv(const WebGLUniformLocation*,
-                          GLboolean,
-                          base::span<const GLfloat>,
-                          GLuint,
-                          GLuint);
-  void uniformMatrix3x4fv(const WebGLUniformLocation*,
-                          GLboolean,
-                          Vector<GLfloat>&,
-                          GLuint,
-                          GLuint);
-  void uniformMatrix4x3fv(const WebGLUniformLocation*,
                           GLboolean,
                           base::span<const GLfloat>,
                           GLuint,
                           GLuint);
   void uniformMatrix4x3fv(const WebGLUniformLocation*,
                           GLboolean,
-                          Vector<GLfloat>&,
+                          base::span<const GLfloat>,
                           GLuint,
                           GLuint);
   // Have to re-declare/re-define the following uniform*()
   // functions from the base class. This is because the above
   // uniform*() hide the name from base class.
   void uniform1fv(const WebGLUniformLocation*, base::span<const GLfloat>);
-  void uniform1fv(const WebGLUniformLocation*, Vector<GLfloat>&);
   void uniform2fv(const WebGLUniformLocation*, base::span<const GLfloat>);
-  void uniform2fv(const WebGLUniformLocation*, Vector<GLfloat>&);
   void uniform3fv(const WebGLUniformLocation*, base::span<const GLfloat>);
-  void uniform3fv(const WebGLUniformLocation*, Vector<GLfloat>&);
   void uniform4fv(const WebGLUniformLocation*, base::span<const GLfloat>);
-  void uniform4fv(const WebGLUniformLocation*, Vector<GLfloat>&);
   void uniform1iv(const WebGLUniformLocation*, base::span<const GLint>);
-  void uniform1iv(const WebGLUniformLocation*, Vector<GLint>&);
   void uniform2iv(const WebGLUniformLocation*, base::span<const GLint>);
-  void uniform2iv(const WebGLUniformLocation*, Vector<GLint>&);
   void uniform3iv(const WebGLUniformLocation*, base::span<const GLint>);
-  void uniform3iv(const WebGLUniformLocation*, Vector<GLint>&);
   void uniform4iv(const WebGLUniformLocation*, base::span<const GLint>);
-  void uniform4iv(const WebGLUniformLocation*, Vector<GLint>&);
   void uniformMatrix2fv(const WebGLUniformLocation*,
-                        GLboolean transpose,
-                        base::span<const GLfloat> value);
-  void uniformMatrix2fv(const WebGLUniformLocation*,
-                        GLboolean transpose,
-                        Vector<GLfloat>& value);
-  void uniformMatrix3fv(const WebGLUniformLocation*,
                         GLboolean transpose,
                         base::span<const GLfloat> value);
   void uniformMatrix3fv(const WebGLUniformLocation*,
                         GLboolean transpose,
-                        Vector<GLfloat>& value);
-  void uniformMatrix4fv(const WebGLUniformLocation*,
-                        GLboolean transpose,
                         base::span<const GLfloat> value);
   void uniformMatrix4fv(const WebGLUniformLocation*,
                         GLboolean transpose,
-                        Vector<GLfloat>& value);
+                        base::span<const GLfloat> value);
 
   void vertexAttribI4i(GLuint, GLint, GLint, GLint, GLint);
   void vertexAttribI4iv(GLuint, base::span<const GLint>);
-  void vertexAttribI4iv(GLuint, const Vector<GLint>&);
   void vertexAttribI4ui(GLuint, GLuint, GLuint, GLuint, GLuint);
   void vertexAttribI4uiv(GLuint, base::span<const GLuint>);
-  void vertexAttribI4uiv(GLuint, const Vector<GLuint>&);
   void vertexAttribIPointer(GLuint index,
                             GLint size,
                             GLenum type,
@@ -919,11 +819,8 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
   /* Multiple Render Targets */
   void drawBuffers(const Vector<GLenum>&);
   void clearBufferiv(GLenum, GLint, base::span<const GLint>, GLuint);
-  void clearBufferiv(GLenum, GLint, const Vector<GLint>&, GLuint);
   void clearBufferuiv(GLenum, GLint, base::span<const GLuint>, GLuint);
-  void clearBufferuiv(GLenum, GLint, const Vector<GLuint>&, GLuint);
   void clearBufferfv(GLenum, GLint, base::span<const GLfloat>, GLuint);
-  void clearBufferfv(GLenum, GLint, const Vector<GLfloat>&, GLuint);
   void clearBufferfi(GLenum, GLint, GLfloat, GLint);
 
   /* Query Objects */

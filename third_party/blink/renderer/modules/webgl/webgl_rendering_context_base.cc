@@ -6667,18 +6667,6 @@ void WebGLRenderingContextBase::uniform1fv(const WebGLUniformLocation* location,
   ContextGL()->Uniform1fv(location->Location(), length, data);
 }
 
-void WebGLRenderingContextBase::uniform1fv(const WebGLUniformLocation* location,
-                                           Vector<GLfloat>& v) {
-  const GLfloat* data;
-  GLuint length;
-  if (isContextLost() ||
-      !ValidateUniformParameters("uniform1fv", location, v.data(), v.size(), 1,
-                                 0, v.size(), &data, &length))
-    return;
-
-  ContextGL()->Uniform1fv(location->Location(), length, data);
-}
-
 void WebGLRenderingContextBase::uniform1i(const WebGLUniformLocation* location,
                                           GLint x) {
   if (isContextLost() || !location)
@@ -6700,18 +6688,6 @@ void WebGLRenderingContextBase::uniform1iv(const WebGLUniformLocation* location,
                                  &data, &length)) {
     return;
   }
-
-  ContextGL()->Uniform1iv(location->Location(), length, data);
-}
-
-void WebGLRenderingContextBase::uniform1iv(const WebGLUniformLocation* location,
-                                           Vector<GLint>& v) {
-  const GLint* data;
-  GLuint length;
-  if (isContextLost() ||
-      !ValidateUniformParameters("uniform1iv", location, v.data(), v.size(), 1,
-                                 0, v.size(), &data, &length))
-    return;
 
   ContextGL()->Uniform1iv(location->Location(), length, data);
 }
@@ -6742,18 +6718,6 @@ void WebGLRenderingContextBase::uniform2fv(const WebGLUniformLocation* location,
   ContextGL()->Uniform2fv(location->Location(), length, data);
 }
 
-void WebGLRenderingContextBase::uniform2fv(const WebGLUniformLocation* location,
-                                           Vector<GLfloat>& v) {
-  const GLfloat* data;
-  GLuint length;
-  if (isContextLost() ||
-      !ValidateUniformParameters("uniform2fv", location, v.data(), v.size(), 2,
-                                 0, v.size(), &data, &length))
-    return;
-
-  ContextGL()->Uniform2fv(location->Location(), length, data);
-}
-
 void WebGLRenderingContextBase::uniform2i(const WebGLUniformLocation* location,
                                           GLint x,
                                           GLint y) {
@@ -6776,18 +6740,6 @@ void WebGLRenderingContextBase::uniform2iv(const WebGLUniformLocation* location,
                                  &data, &length)) {
     return;
   }
-
-  ContextGL()->Uniform2iv(location->Location(), length, data);
-}
-
-void WebGLRenderingContextBase::uniform2iv(const WebGLUniformLocation* location,
-                                           Vector<GLint>& v) {
-  const GLint* data;
-  GLuint length;
-  if (isContextLost() ||
-      !ValidateUniformParameters("uniform2iv", location, v.data(), v.size(), 2,
-                                 0, v.size(), &data, &length))
-    return;
 
   ContextGL()->Uniform2iv(location->Location(), length, data);
 }
@@ -6819,18 +6771,6 @@ void WebGLRenderingContextBase::uniform3fv(const WebGLUniformLocation* location,
   ContextGL()->Uniform3fv(location->Location(), length, data);
 }
 
-void WebGLRenderingContextBase::uniform3fv(const WebGLUniformLocation* location,
-                                           Vector<GLfloat>& v) {
-  const GLfloat* data;
-  GLuint length;
-  if (isContextLost() ||
-      !ValidateUniformParameters("uniform3fv", location, v.data(), v.size(), 3,
-                                 0, v.size(), &data, &length))
-    return;
-
-  ContextGL()->Uniform3fv(location->Location(), length, data);
-}
-
 void WebGLRenderingContextBase::uniform3i(const WebGLUniformLocation* location,
                                           GLint x,
                                           GLint y,
@@ -6854,18 +6794,6 @@ void WebGLRenderingContextBase::uniform3iv(const WebGLUniformLocation* location,
                                  &data, &length)) {
     return;
   }
-
-  ContextGL()->Uniform3iv(location->Location(), length, data);
-}
-
-void WebGLRenderingContextBase::uniform3iv(const WebGLUniformLocation* location,
-                                           Vector<GLint>& v) {
-  const GLint* data;
-  GLuint length;
-  if (isContextLost() ||
-      !ValidateUniformParameters("uniform3iv", location, v.data(), v.size(), 3,
-                                 0, v.size(), &data, &length))
-    return;
 
   ContextGL()->Uniform3iv(location->Location(), length, data);
 }
@@ -6898,18 +6826,6 @@ void WebGLRenderingContextBase::uniform4fv(const WebGLUniformLocation* location,
   ContextGL()->Uniform4fv(location->Location(), length, data);
 }
 
-void WebGLRenderingContextBase::uniform4fv(const WebGLUniformLocation* location,
-                                           Vector<GLfloat>& v) {
-  const GLfloat* data;
-  GLuint length;
-  if (isContextLost() ||
-      !ValidateUniformParameters("uniform4fv", location, v.data(), v.size(), 4,
-                                 0, v.size(), &data, &length))
-    return;
-
-  ContextGL()->Uniform4fv(location->Location(), length, data);
-}
-
 void WebGLRenderingContextBase::uniform4i(const WebGLUniformLocation* location,
                                           GLint x,
                                           GLint y,
@@ -6938,18 +6854,6 @@ void WebGLRenderingContextBase::uniform4iv(const WebGLUniformLocation* location,
   ContextGL()->Uniform4iv(location->Location(), length, data);
 }
 
-void WebGLRenderingContextBase::uniform4iv(const WebGLUniformLocation* location,
-                                           Vector<GLint>& v) {
-  const GLint* data;
-  GLuint length;
-  if (isContextLost() ||
-      !ValidateUniformParameters("uniform4iv", location, v.data(), v.size(), 4,
-                                 0, v.size(), &data, &length))
-    return;
-
-  ContextGL()->Uniform4iv(location->Location(), length, data);
-}
-
 void WebGLRenderingContextBase::uniformMatrix2fv(
     const WebGLUniformLocation* location,
     GLboolean transpose,
@@ -6961,19 +6865,6 @@ void WebGLRenderingContextBase::uniformMatrix2fv(
                                        v, 4, 0, v.size(), &data, &length)) {
     return;
   }
-  ContextGL()->UniformMatrix2fv(location->Location(), length, transpose, data);
-}
-
-void WebGLRenderingContextBase::uniformMatrix2fv(
-    const WebGLUniformLocation* location,
-    GLboolean transpose,
-    Vector<GLfloat>& v) {
-  const GLfloat* data;
-  GLuint length;
-  if (isContextLost() || !ValidateUniformMatrixParameters(
-                             "uniformMatrix2fv", location, transpose, v.data(),
-                             v.size(), 4, 0, v.size(), &data, &length))
-    return;
   ContextGL()->UniformMatrix2fv(location->Location(), length, transpose, data);
 }
 
@@ -6991,19 +6882,6 @@ void WebGLRenderingContextBase::uniformMatrix3fv(
   ContextGL()->UniformMatrix3fv(location->Location(), length, transpose, data);
 }
 
-void WebGLRenderingContextBase::uniformMatrix3fv(
-    const WebGLUniformLocation* location,
-    GLboolean transpose,
-    Vector<GLfloat>& v) {
-  const GLfloat* data;
-  GLuint length;
-  if (isContextLost() || !ValidateUniformMatrixParameters(
-                             "uniformMatrix3fv", location, transpose, v.data(),
-                             v.size(), 9, 0, v.size(), &data, &length))
-    return;
-  ContextGL()->UniformMatrix3fv(location->Location(), length, transpose, data);
-}
-
 void WebGLRenderingContextBase::uniformMatrix4fv(
     const WebGLUniformLocation* location,
     GLboolean transpose,
@@ -7015,19 +6893,6 @@ void WebGLRenderingContextBase::uniformMatrix4fv(
                                        v, 16, 0, v.size(), &data, &length)) {
     return;
   }
-  ContextGL()->UniformMatrix4fv(location->Location(), length, transpose, data);
-}
-
-void WebGLRenderingContextBase::uniformMatrix4fv(
-    const WebGLUniformLocation* location,
-    GLboolean transpose,
-    Vector<GLfloat>& v) {
-  const GLfloat* data;
-  GLuint length;
-  if (isContextLost() || !ValidateUniformMatrixParameters(
-                             "uniformMatrix4fv", location, transpose, v.data(),
-                             v.size(), 16, 0, v.size(), &data, &length))
-    return;
   ContextGL()->UniformMatrix4fv(location->Location(), length, transpose, data);
 }
 
@@ -7081,18 +6946,6 @@ void WebGLRenderingContextBase::vertexAttrib1fv(GLuint index,
   SetVertexAttribType(index, kFloat32ArrayType);
 }
 
-void WebGLRenderingContextBase::vertexAttrib1fv(GLuint index,
-                                                const Vector<GLfloat>& v) {
-  if (isContextLost())
-    return;
-  if (v.size() < 1) {
-    SynthesizeGLError(GL_INVALID_VALUE, "vertexAttrib1fv", "invalid array");
-    return;
-  }
-  ContextGL()->VertexAttrib1fv(index, v.data());
-  SetVertexAttribType(index, kFloat32ArrayType);
-}
-
 void WebGLRenderingContextBase::vertexAttrib2f(GLuint index,
                                                GLfloat v0,
                                                GLfloat v1) {
@@ -7104,18 +6957,6 @@ void WebGLRenderingContextBase::vertexAttrib2f(GLuint index,
 
 void WebGLRenderingContextBase::vertexAttrib2fv(GLuint index,
                                                 base::span<const GLfloat> v) {
-  if (isContextLost())
-    return;
-  if (v.size() < 2) {
-    SynthesizeGLError(GL_INVALID_VALUE, "vertexAttrib2fv", "invalid array");
-    return;
-  }
-  ContextGL()->VertexAttrib2fv(index, v.data());
-  SetVertexAttribType(index, kFloat32ArrayType);
-}
-
-void WebGLRenderingContextBase::vertexAttrib2fv(GLuint index,
-                                                const Vector<GLfloat>& v) {
   if (isContextLost())
     return;
   if (v.size() < 2) {
@@ -7148,18 +6989,6 @@ void WebGLRenderingContextBase::vertexAttrib3fv(GLuint index,
   SetVertexAttribType(index, kFloat32ArrayType);
 }
 
-void WebGLRenderingContextBase::vertexAttrib3fv(GLuint index,
-                                                const Vector<GLfloat>& v) {
-  if (isContextLost())
-    return;
-  if (v.size() < 3) {
-    SynthesizeGLError(GL_INVALID_VALUE, "vertexAttrib3fv", "invalid array");
-    return;
-  }
-  ContextGL()->VertexAttrib3fv(index, v.data());
-  SetVertexAttribType(index, kFloat32ArrayType);
-}
-
 void WebGLRenderingContextBase::vertexAttrib4f(GLuint index,
                                                GLfloat v0,
                                                GLfloat v1,
@@ -7173,18 +7002,6 @@ void WebGLRenderingContextBase::vertexAttrib4f(GLuint index,
 
 void WebGLRenderingContextBase::vertexAttrib4fv(GLuint index,
                                                 base::span<const GLfloat> v) {
-  if (isContextLost())
-    return;
-  if (v.size() < 4) {
-    SynthesizeGLError(GL_INVALID_VALUE, "vertexAttrib4fv", "invalid array");
-    return;
-  }
-  ContextGL()->VertexAttrib4fv(index, v.data());
-  SetVertexAttribType(index, kFloat32ArrayType);
-}
-
-void WebGLRenderingContextBase::vertexAttrib4fv(GLuint index,
-                                                const Vector<GLfloat>& v) {
   if (isContextLost())
     return;
   if (v.size() < 4) {

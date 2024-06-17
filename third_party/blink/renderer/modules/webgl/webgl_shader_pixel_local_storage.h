@@ -34,20 +34,11 @@ class WebGLShaderPixelLocalStorage final : public WebGLExtension {
   void framebufferPixelLocalClearValuefvWEBGL(GLint plane,
                                               base::span<const GLfloat>,
                                               GLuint src_offset);
-  void framebufferPixelLocalClearValuefvWEBGL(GLint plane,
-                                              const Vector<GLfloat>& value,
-                                              GLuint src_offset);
   void framebufferPixelLocalClearValueivWEBGL(GLint plane,
                                               base::span<const GLint>,
                                               GLuint src_offset);
-  void framebufferPixelLocalClearValueivWEBGL(GLint plane,
-                                              const Vector<GLint>& value,
-                                              GLuint src_offset);
   void framebufferPixelLocalClearValueuivWEBGL(GLint plane,
                                                base::span<const GLuint>,
-                                               GLuint src_offset);
-  void framebufferPixelLocalClearValueuivWEBGL(GLint plane,
-                                               const Vector<GLuint>& value,
                                                GLuint src_offset);
   void beginPixelLocalStorageWEBGL(const Vector<GLenum>& loadops);
   void endPixelLocalStorageWEBGL(const Vector<GLenum>& storeops);

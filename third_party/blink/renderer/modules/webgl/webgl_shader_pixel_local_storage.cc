@@ -144,25 +144,6 @@ void WebGLShaderPixelLocalStorage::framebufferPixelLocalClearValuefvWEBGL(
       plane, value.data() + src_offset);
 }
 
-void WebGLShaderPixelLocalStorage::framebufferPixelLocalClearValuefvWEBGL(
-    GLint plane,
-    const Vector<GLfloat>& value,
-    GLuint src_offset) {
-  WebGLExtensionScopedContext scoped(this);
-  if (scoped.IsLost()) {
-    return;
-  }
-  constexpr static char function_name[] =
-      "framebufferPixelLocalClearValuefvWEBGL";
-  WebGLRenderingContextBase* context = scoped.Context();
-  if (!ValidatePLSClearCommand(context, function_name, plane, value.size(),
-                               src_offset)) {
-    return;
-  }
-  context->ContextGL()->FramebufferPixelLocalClearValuefvANGLE(
-      plane, value.data() + src_offset);
-}
-
 void WebGLShaderPixelLocalStorage::framebufferPixelLocalClearValueivWEBGL(
     GLint plane,
     base::span<const GLint> value,
@@ -182,47 +163,9 @@ void WebGLShaderPixelLocalStorage::framebufferPixelLocalClearValueivWEBGL(
       plane, value.data() + src_offset);
 }
 
-void WebGLShaderPixelLocalStorage::framebufferPixelLocalClearValueivWEBGL(
-    GLint plane,
-    const Vector<GLint>& value,
-    GLuint src_offset) {
-  WebGLExtensionScopedContext scoped(this);
-  if (scoped.IsLost()) {
-    return;
-  }
-  constexpr static char function_name[] =
-      "framebufferPixelLocalClearValueivWEBGL";
-  WebGLRenderingContextBase* context = scoped.Context();
-  if (!ValidatePLSClearCommand(context, function_name, plane, value.size(),
-                               src_offset)) {
-    return;
-  }
-  context->ContextGL()->FramebufferPixelLocalClearValueivANGLE(
-      plane, value.data() + src_offset);
-}
-
 void WebGLShaderPixelLocalStorage::framebufferPixelLocalClearValueuivWEBGL(
     GLint plane,
     base::span<const GLuint> value,
-    GLuint src_offset) {
-  WebGLExtensionScopedContext scoped(this);
-  if (scoped.IsLost()) {
-    return;
-  }
-  constexpr static char function_name[] =
-      "framebufferPixelLocalClearValueuivWEBGL";
-  WebGLRenderingContextBase* context = scoped.Context();
-  if (!ValidatePLSClearCommand(context, function_name, plane, value.size(),
-                               src_offset)) {
-    return;
-  }
-  context->ContextGL()->FramebufferPixelLocalClearValueuivANGLE(
-      plane, value.data() + src_offset);
-}
-
-void WebGLShaderPixelLocalStorage::framebufferPixelLocalClearValueuivWEBGL(
-    GLint plane,
-    const Vector<GLuint>& value,
     GLuint src_offset) {
   WebGLExtensionScopedContext scoped(this);
   if (scoped.IsLost()) {
