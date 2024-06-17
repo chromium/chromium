@@ -2176,7 +2176,19 @@ FindFormAndFieldForFormControlElement(
       it != form->fields().end()) {
     return std::make_optional(std::make_pair(std::move(*form), raw_ref(*it)));
   }
-  NOTREACHED(base::NotFatalUntil::M129);
+
+  // This is not reachable if the following holds:
+  // `base::Contains(GetFormControlElements(GetOwningForm(element)), element)`.
+  // This does not hold if `element` is an unowned element in a shadow DOM and
+  // kAutofillIncludeShadowDomInUnassociatedListedElements is disabled. Then
+  // `GetOwningForm(element)` returns the unowned form, but
+  // GetFormControlElements() does not include the field.
+  // See crbug.com/347059988 for more details.
+  if (base::FeatureList::IsEnabled(
+          blink::features::
+              kAutofillIncludeShadowDomInUnassociatedListedElements)) {
+    NOTREACHED(base::NotFatalUntil::M129);
+  }
   return std::nullopt;
 }
 
