@@ -224,6 +224,8 @@ public class TabGroupListMediator {
         List<SavedTabGroup> groupList = new ArrayList<>();
         for (String syncGroupId : mTabGroupSyncService.getAllGroupIds()) {
             SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(syncGroupId);
+            assert !savedTabGroup.savedTabs.isEmpty();
+
             // To simplify interactions, do not include any groups currently open in other windows.
             if (getState(savedTabGroup) != TabGroupState.IN_ANOTHER) {
                 groupList.add(savedTabGroup);

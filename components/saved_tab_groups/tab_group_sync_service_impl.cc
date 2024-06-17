@@ -227,7 +227,15 @@ void TabGroupSyncServiceImpl::MoveTab(const LocalTabGroupID& group_id,
 
 std::vector<SavedTabGroup> TabGroupSyncServiceImpl::GetAllGroups() {
   VLOG(2) << __func__;
-  return model_->saved_tab_groups();
+  std::vector<SavedTabGroup> non_empty_groups;
+  for (const auto& group : model_->saved_tab_groups()) {
+    if (group.saved_tabs().empty()) {
+      continue;
+    }
+    non_empty_groups.push_back(group);
+  }
+
+  return non_empty_groups;
 }
 
 std::optional<SavedTabGroup> TabGroupSyncServiceImpl::GetGroup(
@@ -252,7 +260,7 @@ std::vector<LocalTabGroupID> TabGroupSyncServiceImpl::GetDeletedGroupIds() {
   // Deleted groups are groups that have been deleted from sync, but we haven't
   // deleted them from mapping, since the local tab group still exists.
   std::set<base::Uuid> ids_from_sync;
-  for (const auto& group : GetAllGroups()) {
+  for (const auto& group : model_->saved_tab_groups()) {
     ids_from_sync.insert(group.saved_guid());
   }
 
@@ -437,7 +445,7 @@ void TabGroupSyncServiceImpl::SavedTabGroupModelLoaded() {
 void TabGroupSyncServiceImpl::OnReadTabGroupStore() {
   VLOG(2) << __func__;
 
-  for (const auto& group : GetAllGroups()) {
+  for (const auto& group : model_->saved_tab_groups()) {
     auto sync_id = group.saved_guid();
     auto id_metadata = tab_group_store_->GetTabGroupIDMetadata(sync_id);
     if (!id_metadata) {

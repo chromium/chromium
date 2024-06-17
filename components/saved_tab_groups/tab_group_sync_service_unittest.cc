@@ -228,6 +228,15 @@ TEST_F(TabGroupSyncServiceTest, GetAllGroups) {
   EXPECT_EQ(all_groups[0].saved_guid(), group_1_.saved_guid());
   EXPECT_EQ(all_groups[1].saved_guid(), group_2_.saved_guid());
   EXPECT_EQ(all_groups[2].saved_guid(), group_3_.saved_guid());
+
+  SavedTabGroup group_4(test::CreateTestSavedTabGroupWithNoTabs());
+  LocalTabGroupID tab_group_id = test::GenerateRandomTabGroupID();
+  group_4.SetLocalGroupId(tab_group_id);
+  tab_group_sync_service_->AddGroup(group_4);
+
+  EXPECT_EQ(model_->Count(), 4);
+  all_groups = tab_group_sync_service_->GetAllGroups();
+  EXPECT_EQ(all_groups.size(), 3u);
 }
 
 TEST_F(TabGroupSyncServiceTest, GetGroup) {
