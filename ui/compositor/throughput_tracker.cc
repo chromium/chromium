@@ -51,10 +51,14 @@ void ThroughputTracker::Start(ThroughputTrackerHost::ReportCallback callback) {
 bool ThroughputTracker::Stop() {
   DCHECK_EQ(state_, State::kStarted);
 
-  state_ = State::kWaitForReport;
-  if (host_)
-    return host_->StopThroughputTracker(id_);
+  if (host_ && host_->StopThroughputTracker(id_)) {
+    state_ = State::kWaitForReport;
+    return true;
+  }
 
+  // No data will be reported. This could happen when gpu process crashed.
+  // Treat the case as `kCanceled`.
+  state_ = State::kCanceled;
   return false;
 }
 
@@ -69,7 +73,10 @@ void ThroughputTracker::Cancel() {
 }
 
 void ThroughputTracker::CancelReport() {
-  DCHECK(state_ == State::kStarted || state_ == State::kWaitForReport);
+  // Report is only possible in `kStarted` and `kWaitForReport` state.
+  if (state_ != State::kStarted && state_ != State::kWaitForReport) {
+    return;
+  }
 
   state_ = State::kCanceled;
   if (host_)

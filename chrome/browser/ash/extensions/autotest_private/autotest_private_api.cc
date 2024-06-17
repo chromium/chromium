@@ -978,11 +978,11 @@ class DisplaySmoothnessTracker {
     return true;
   }
 
-  void Stop(ReportCallback callback) {
+  bool Stop(ReportCallback callback) {
     stopping_ = true;
     throughtput_timer_.Stop();
     callback_ = std::move(callback);
-    tracker_->Stop();
+    return tracker_->Stop();
   }
 
   void CancelReport() { tracker_->CancelReport(); }
@@ -5894,8 +5894,14 @@ AutotestPrivateStopSmoothnessTrackingFunction::Run() {
       base::BindOnce(&AutotestPrivateStopSmoothnessTrackingFunction::OnTimeOut,
                      this, display_id));
 
-  it->second->Stop(base::BindOnce(
-      &AutotestPrivateStopSmoothnessTrackingFunction::OnReportData, this));
+  if (!it->second->Stop(base::BindOnce(
+          &AutotestPrivateStopSmoothnessTrackingFunction::OnReportData,
+          this))) {
+    timeout_timer_.AbandonAndStop();
+    trackers->erase(it);
+    return RespondNow(
+        Error("No smoothness report, GPU process may have crashed"));
+  }
 
   // Trigger a repaint after ThroughputTracker::Stop() to generate a frame to
   // ensure the tracker report will be sent back.
