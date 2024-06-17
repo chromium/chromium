@@ -1,0 +1,28 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("coordinator") {
+  sources = [
+    "lens_overlay_coordinator.h",
+    "lens_overlay_coordinator.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser/lens_overlay/ui:view_controller",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/model/url",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/web/model",
+    "//ios/chrome/browser/web_state_list/model",
+    "//ios/web/public/navigation",
+    "//ui/base",
+  ]
+}

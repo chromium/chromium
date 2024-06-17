@@ -27,6 +27,7 @@ source_set("commands") {
     "generate_qr_code_command.mm",
     "help_commands.h",
     "lens_commands.h",
+    "lens_overlay_commands.h",
     "load_query_commands.h",
     "manage_storage_alert_commands.h",
     "mini_map_commands.h",

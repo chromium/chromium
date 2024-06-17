@@ -84,6 +84,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/itunes_urls/model",
     "//ios/chrome/browser/language/model",
     "//ios/chrome/browser/lens/model",
+    "//ios/chrome/browser/lens_overlay/coordinator",
     "//ios/chrome/browser/link_to_text/model",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/metrics/model:metrics_browser_agent",

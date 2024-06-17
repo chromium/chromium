@@ -64,6 +64,7 @@
 #import "ios/chrome/browser/infobars/model/infobar_manager_impl.h"
 #import "ios/chrome/browser/intents/intents_donation_helper.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/model/tab_based_iph_browser_agent.h"
+#import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_coordinator.h"
 #import "ios/chrome/browser/metrics/model/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
@@ -564,6 +565,7 @@ enum class ToolbarKind {
   BubbleViewControllerPresenter* _contextualPanelEntrypointHelpPresenter;
   ToolbarAccessoryPresenter* _toolbarAccessoryPresenter;
   LensCoordinator* _lensCoordinator;
+  LensOverlayCoordinator* _lensOverlayCoordinator;
   ToolbarCoordinator* _toolbarCoordinator;
   TabStripCoordinator* _tabStripCoordinator;
   TabStripLegacyCoordinator* _legacyTabStripCoordinator;
@@ -1070,6 +1072,7 @@ enum class ToolbarKind {
   self.tabLifecycleMediator.NTPCoordinator = _NTPCoordinator;
 
   _lensCoordinator = [[LensCoordinator alloc] initWithBrowser:self.browser];
+
   _voiceSearchController =
       ios::provider::CreateVoiceSearchController(self.browser);
 
@@ -1209,6 +1212,9 @@ enum class ToolbarKind {
 
   [_lensCoordinator stop];
   _lensCoordinator = nil;
+
+  [_lensOverlayCoordinator stop];
+  _lensOverlayCoordinator = nil;
 
   [self.downloadManagerCoordinator stop];
   self.downloadManagerCoordinator = nil;
@@ -1373,6 +1379,13 @@ enum class ToolbarKind {
                          browser:self.browser];
   _dockingPromoCoordinator.promosUIHandler = _promosManagerCoordinator;
   [_dockingPromoCoordinator start];
+
+  if (base::FeatureList::IsEnabled(kEnableLensOverlay)) {
+    _lensOverlayCoordinator = [[LensOverlayCoordinator alloc]
+        initWithBaseViewController:self.viewController
+                           browser:self.browser];
+    [_lensOverlayCoordinator start];
+  }
 }
 
 // Stops child coordinators.

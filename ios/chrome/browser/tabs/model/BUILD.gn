@@ -83,6 +83,7 @@ source_set("tabs_internal") {
     "//ios/chrome/browser/itunes_urls/model",
     "//ios/chrome/browser/language/model",
     "//ios/chrome/browser/lens/model",
+    "//ios/chrome/browser/lens_overlay/model",
     "//ios/chrome/browser/link_to_text/model",
     "//ios/chrome/browser/main/model",
     "//ios/chrome/browser/metrics/model",

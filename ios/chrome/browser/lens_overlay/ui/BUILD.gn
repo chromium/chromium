@@ -1,0 +1,23 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("view_controller") {
+  sources = [
+    "lens_overlay_container_view_controller.h",
+    "lens_overlay_container_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
