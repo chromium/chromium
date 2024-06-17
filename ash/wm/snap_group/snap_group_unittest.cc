@@ -2455,6 +2455,15 @@ class SnapGroupTest : public AshTestBase {
     return window;
   }
 
+  std::unique_ptr<aura::Window> CreateAlwaysOnTopWindow() {
+    std::unique_ptr<aura::Window> always_on_top_window(CreateAppWindow());
+    always_on_top_window->SetProperty(aura::client::kZOrderingKey,
+                                      ui::ZOrderLevel::kFloatingWindow);
+    EXPECT_EQ(kShellWindowId_AlwaysOnTopContainer,
+              always_on_top_window->parent()->GetId());
+    return always_on_top_window;
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -2566,6 +2575,61 @@ TEST_F(SnapGroupTest, NoGapAfterSnapGroupCreationInPortrait) {
 
   EXPECT_TRUE(snap_group_divider());
   UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
+}
+
+// Tests that we can create a Snap Group with a floated window.
+TEST_F(SnapGroupTest, SnapGroupCreationWithFloatedWindow) {
+  std::unique_ptr<aura::Window> normal_window(CreateAppWindow());
+  std::unique_ptr<aura::Window> floated_window(CreateAppWindow());
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
+
+  SnapOneTestWindow(normal_window.get(),
+                    /*state_type=*/chromeos::WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
+  VerifySplitViewOverviewSession(normal_window.get());
+  OverviewItemBase* floated_window_overview_item =
+      GetOverviewItemForWindow(floated_window.get());
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(gfx::ToRoundedPoint(
+      floated_window_overview_item->target_bounds().CenterPoint()));
+  event_generator->ClickLeftButton();
+
+  // Verify that Snap Group will be formed after activating `floated_window` in
+  // partial Overview.
+  EXPECT_FALSE(split_view_controller()->InSplitViewMode());
+  EXPECT_FALSE(WindowState::Get(floated_window.get())->IsFloated());
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(
+      normal_window.get(), floated_window.get()));
+}
+
+// Verify snap group will not be formed when attempting to include a window from
+// the always-on-top container.
+TEST_F(SnapGroupTest, DisallowFormSnapGroupWithAlwaysOnTopWindow) {
+  std::unique_ptr<aura::Window> normal_window(CreateAppWindow());
+  std::unique_ptr<aura::Window> always_on_top_window(CreateAlwaysOnTopWindow());
+
+  SnapOneTestWindow(normal_window.get(),
+                    /*state_type=*/chromeos::WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
+  VerifySplitViewOverviewSession(normal_window.get());
+  OverviewItemBase* always_on_top_overview_item =
+      GetOverviewItemForWindow(always_on_top_window.get());
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(gfx::ToRoundedPoint(
+      always_on_top_overview_item->target_bounds().CenterPoint()));
+  event_generator->ClickLeftButton();
+
+  // Verify that Snap Group will not be formed after activating
+  // `always_on_top_window` in partial Overview.
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  EXPECT_FALSE(snap_group_controller->AreWindowsInSnapGroup(
+      normal_window.get(), always_on_top_window.get()));
+  EXPECT_FALSE(
+      snap_group_controller->GetSnapGroupForGivenWindow(normal_window.get()));
+  EXPECT_FALSE(
+      snap_group_controller->GetSnapGroupForGivenWindow(normal_window.get()));
 }
 
 // Verify that a window configured to be "visible on all workspaces" cannot be
@@ -7137,6 +7201,51 @@ TEST_F(SnapGroupSnapToReplaceTest, UseShortcutToGroupPerformSnapToReplace) {
   EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w3.get(), w4.get()));
   EXPECT_TRUE(snap_group_divider());
   UnionBoundsEqualToWorkAreaBounds(w3.get(), w4.get(), snap_group_divider());
+}
+
+// Tests that we can perform snap-to-replace with a floated window.
+TEST_F(SnapGroupSnapToReplaceTest, SnapToReplaceWithFloatedWindow) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  ASSERT_FALSE(split_view_controller()->InSplitViewMode());
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  std::unique_ptr<aura::Window> floated_window(CreateAppWindow());
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_TRUE(WindowState::Get(floated_window.get())->IsFloated());
+
+  SnapOneTestWindow(floated_window.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio);
+  ASSERT_FALSE(WindowState::Get(floated_window.get())->IsFloated());
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(floated_window.get(),
+                                                           w2.get()));
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+}
+
+// Verify snap-to-replace is disallowed when attempting to snap an always-on-top
+// window. See http://b/347356195 for more details.
+TEST_F(SnapGroupSnapToReplaceTest, DisallowSnapToReplaceWithAlwaysOnTopWindow) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  ASSERT_FALSE(split_view_controller()->InSplitViewMode());
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  std::unique_ptr<aura::Window> always_on_top_window(CreateAlwaysOnTopWindow());
+  EXPECT_NE(w1->parent(), always_on_top_window->parent());
+  SnapOneTestWindow(always_on_top_window.get(),
+                    WindowStateType::kSecondarySnapped,
+                    chromeos::kDefaultSnapRatio);
+
+  EXPECT_FALSE(snap_group_controller->AreWindowsInSnapGroup(
+      w1.get(), always_on_top_window.get()));
+  EXPECT_FALSE(snap_group_controller->AreWindowsInSnapGroup(
+      w2.get(), always_on_top_window.get()));
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
 }
 
 // -----------------------------------------------------------------------------

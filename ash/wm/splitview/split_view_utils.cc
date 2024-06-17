@@ -853,14 +853,18 @@ bool ShouldExcludeForOcclusionCheck(const aura::Window* window,
   // `window` should be excluded for occlusion check under the following
   // conditions:
   // 1. When `window` is not on the same root window as `target_root`;
-  // 2. When it is not visible or minimized;
-  // 3. When it is a float or pip window.
+  // 2. When `window` does not belong to the active desk container, for example
+  // always-on-top window, float or pip window;
+  // 3. When it is not visible or minimized;
   if (window->GetRootWindow() != target_root || !window->IsVisible()) {
     return true;
   }
-  const auto* window_state = WindowState::Get(window);
-  return window_state->IsMinimized() || window_state->IsFloated() ||
-         window_state->IsPip();
+
+  if (!desks_util::IsActiveDeskContainer(window->parent())) {
+    return true;
+  }
+
+  return WindowState::Get(window)->IsMinimized();
 }
 
 aura::Window::Windows GetActiveDeskAppWindowsInZOrder(aura::Window* root) {

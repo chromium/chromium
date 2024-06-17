@@ -470,6 +470,12 @@ bool SnapGroupController::MaybeSnapToReplace(
     new_secondary_window = to_be_snapped_window;
   }
 
+  // Disallow snap-to-replace if `to_be_replaced_window` is on a different
+  // parent container with the `to_be_snapped_window`.
+  if (to_be_replaced_window->parent() != to_be_snapped_window->parent()) {
+    return false;
+  }
+
   const float snapped_window_snap_ratio =
       WindowState::Get(to_be_replaced_window)
           ->snap_ratio()
@@ -507,6 +513,12 @@ bool SnapGroupController::MaybeSnapToReplace(
       new_primary_window, new_secondary_window, /*replace=*/true,
       /*carry_over_creation_time=*/
       std::make_optional<base::TimeTicks>(carry_over_creation_time));
+
+  // Snap Group may not be formed successfully.
+  if (!new_snap_group) {
+    return false;
+  }
+
   base::RecordAction(base::UserMetricsAction("SnapGroups_SnapToReplace"));
 
   // Apply the `primary_window_snap_ratio` to the `new_snap_group` such that the
