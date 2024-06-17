@@ -191,7 +191,7 @@ SearchInfo VectorDatabase::FindNearest(
     search_info.searched_embedding_count += item->embeddings.size();
 
     base::ElapsedTimer scoring_timer;
-    while (q.size() > count) {
+    while (q.size() >= count) {
       q.pop();
     }
     const auto [score, score_index] =
