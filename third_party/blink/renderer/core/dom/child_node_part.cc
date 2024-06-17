@@ -91,7 +91,9 @@ PartRootUnion* ChildNodePart::clone(ExceptionState& exception_state) {
   }
   auto& document = GetDocument();
   auto* fragment = DocumentFragment::Create(document);
-  NodeCloningData data{CloneOption::kPreserveDOMParts};
+  NodeCloningData data{RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()
+                           ? CloneOption::kPreserveDOMPartsMinimalAPI
+                           : CloneOption::kPreserveDOMParts};
   auto& fragment_part_root = fragment->getPartRoot();
   data.PushPartRoot(fragment_part_root);
   ContainerNode* new_parent = To<ContainerNode>(

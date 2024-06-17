@@ -762,7 +762,12 @@ Element& Element::CloneWithChildren(
 
   clone.CloneAttributesFrom(*this);
   clone.CloneNonAttributePropertiesFrom(*this, data);
-  PartRoot::CloneParts(*this, clone, data);
+  if (data.Has(CloneOption::kPreserveDOMPartsMinimalAPI) && HasNodePart()) {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
+    clone.SetHasNodePart();
+  } else if (data.Has(CloneOption::kPreserveDOMParts)) {
+    PartRoot::CloneParts(*this, clone, data);
+  }
 
   // Append the clone to its parent first, before cloning children. If this is
   // done in the reverse order, each new child will receive treeDepth calls to
@@ -789,7 +794,12 @@ Element& Element::CloneWithoutChildren(NodeCloningData& data,
 
   clone.CloneAttributesFrom(*this);
   clone.CloneNonAttributePropertiesFrom(*this, data);
-  PartRoot::CloneParts(*this, clone, data);
+  if (data.Has(CloneOption::kPreserveDOMPartsMinimalAPI) && HasNodePart()) {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
+    clone.SetHasNodePart();
+  } else if (data.Has(CloneOption::kPreserveDOMParts)) {
+    PartRoot::CloneParts(*this, clone, data);
+  }
   return clone;
 }
 

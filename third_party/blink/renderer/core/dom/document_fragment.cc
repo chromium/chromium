@@ -70,12 +70,14 @@ Node* DocumentFragment::Clone(Document& factory,
       << "DocumentFragment::Clone() doesn't support append_to";
   DocumentFragment* clone = Create(factory);
   DocumentPartRoot* part_root = nullptr;
+  DCHECK(!data.Has(CloneOption::kPreserveDOMPartsMinimalAPI) || !HasNodePart());
   if (data.Has(CloneOption::kPreserveDOMParts)) {
     DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
+    DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
     part_root = &clone->getPartRoot();
     data.PushPartRoot(*part_root);
+    PartRoot::CloneParts(*this, *clone, data);
   }
-  PartRoot::CloneParts(*this, *clone, data);
   if (data.Has(CloneOption::kIncludeDescendants)) {
     clone->CloneChildNodesFrom(*this, data);
   }

@@ -265,7 +265,13 @@ Node* CharacterData::Clone(Document& factory,
                            ContainerNode* append_to,
                            ExceptionState& append_exception_state) const {
   CharacterData* clone = CloneWithData(factory, data());
-  PartRoot::CloneParts(*this, *clone, cloning_data);
+  if (cloning_data.Has(CloneOption::kPreserveDOMPartsMinimalAPI) &&
+      HasNodePart()) {
+    DCHECK(RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
+    clone->SetHasNodePart();
+  } else if (cloning_data.Has(CloneOption::kPreserveDOMParts)) {
+    PartRoot::CloneParts(*this, *clone, cloning_data);
+  }
   if (append_to) {
     append_to->AppendChild(clone, append_exception_state);
   }

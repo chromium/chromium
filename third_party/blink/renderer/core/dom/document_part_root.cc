@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -25,7 +26,10 @@ void DocumentPartRoot::Trace(Visitor* visitor) const {
 
 PartRootUnion* DocumentPartRoot::clone(ExceptionState&) {
   NodeCloningData data{CloneOption::kIncludeDescendants,
-                       CloneOption::kPreserveDOMParts};
+                       RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()
+                           ? CloneOption::kPreserveDOMPartsMinimalAPI
+                           : CloneOption::kPreserveDOMParts};
+
   Node* clone = rootContainer()->Clone(rootContainer()->GetDocument(), data,
                                        /*append_to*/ nullptr);
   // http://crbug.com/1467847: clone may be null and can be hit by clusterfuzz.

@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -101,6 +102,8 @@ inline bool ChildNodePart::IsValid() const {
   if (!previous_sibling_ || !next_sibling_) {
     return false;
   }
+  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled() ||
+         (previous_sibling_->HasNodePart() && next_sibling_->HasNodePart()));
   ContainerNode* parent = parentNode();
   if (!parent) {
     return false;

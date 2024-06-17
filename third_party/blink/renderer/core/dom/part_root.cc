@@ -59,16 +59,10 @@ void PartRoot::RemovePart(Part& part) {
 void PartRoot::CloneParts(const Node& source_node,
                           Node& destination_node,
                           NodeCloningData& data) {
-  if (!data.Has(CloneOption::kPreserveDOMParts)) {
-    return;
-  }
   DCHECK(RuntimeEnabledFeatures::DOMPartsAPIEnabled());
-  if (RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
-    if (source_node.HasNodePart()) {
-      destination_node.SetHasNodePart();
-    }
-    return;
-  }
+  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
+  DCHECK(data.Has(CloneOption::kPreserveDOMParts));
+  DCHECK(!data.Has(CloneOption::kPreserveDOMPartsMinimalAPI));
   if (auto* parts = source_node.GetDOMParts()) {
     for (Part* part : *parts) {
       if (!part->IsValid()) {
@@ -189,9 +183,9 @@ namespace {
 // fresh-builds the parts list, and/or just the node lists, every time with no
 // caching.
 void BuildPartsList(PartRoot& part_root,
-                    HeapVector<Member<Part>>* part_list,
-                    HeapVector<Member<Node>>* node_part_nodes,
-                    HeapVector<Member<Node>>* child_node_part_nodes) {
+                    PartRoot::PartList* part_list,
+                    PartRoot::PartNodeList* node_part_nodes,
+                    PartRoot::PartNodeList* child_node_part_nodes) {
   DCHECK(RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
   Node* node = part_root.FirstIncludedChildNode();
   Node* end_node = part_root.LastIncludedChildNode();
@@ -261,26 +255,25 @@ void BuildPartsList(PartRoot& part_root,
 
 }  // namespace
 
-HeapVector<Member<Node>> PartRoot::getNodePartNodes() {
+const PartRoot::PartNodeList& PartRoot::getNodePartNodes() {
   DCHECK(RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
-  HeapVector<Member<Node>> nodes;
-  BuildPartsList(*this, nullptr, &nodes, nullptr);
-  return nodes;
+  auto* nodes = MakeGarbageCollected<PartRoot::PartNodeList>();
+  BuildPartsList(*this, nullptr, nodes, nullptr);
+  return *nodes;
 }
 
-HeapVector<Member<Node>> PartRoot::getChildNodePartNodes() {
+const PartRoot::PartNodeList& PartRoot::getChildNodePartNodes() {
   DCHECK(RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
-  HeapVector<Member<Node>> nodes;
-  BuildPartsList(*this, nullptr, nullptr, &nodes);
-  return nodes;
+  auto* nodes = MakeGarbageCollected<PartRoot::PartNodeList>();
+  BuildPartsList(*this, nullptr, nullptr, nodes);
+  return *nodes;
 }
 
-const HeapVector<Member<Part>>& PartRoot::getParts() {
+const PartRoot::PartList& PartRoot::getParts() {
   if (RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
     DCHECK(cached_ordered_parts_.empty());
     DCHECK(!cached_parts_list_dirty_);
-    HeapVector<Member<Part>>* parts =
-        MakeGarbageCollected<HeapVector<Member<Part>>>();
+    auto* parts = MakeGarbageCollected<PartRoot::PartList>();
     BuildPartsList(*this, parts, nullptr, nullptr);
     return *parts;
   } else if (cached_parts_list_dirty_) {
@@ -296,7 +289,7 @@ const HeapVector<Member<Part>>& PartRoot::getParts() {
       }
     }
     if (remove_invalid) {
-      HeapVector<Member<Part>> new_list;
+      PartRoot::PartList new_list;
       for (auto& part : cached_ordered_parts_) {
         if (part->IsValid()) {
           new_list.push_back(part);

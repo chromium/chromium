@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
@@ -23,10 +24,11 @@ namespace blink {
 enum class CloneOption {
   kIncludeDescendants,
   kPreserveDOMParts,
+  kPreserveDOMPartsMinimalAPI,
 
   // For `CloneOptionSet`.
   kMinValue = kIncludeDescendants,
-  kMaxValue = kPreserveDOMParts,
+  kMaxValue = kPreserveDOMPartsMinimalAPI,
 };
 
 using CloneOptionSet =
@@ -46,9 +48,11 @@ class CORE_EXPORT NodeCloningData final {
   bool Has(CloneOption option) const { return clone_options_.Has(option); }
   void Put(CloneOption option) { clone_options_.Put(option); }
   void PushPartRoot(PartRoot& clone) {
+    DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
     cloned_part_root_stack_.push_back(&clone);
   }
   void PopPartRoot(ChildNodePart& expected_top_of_stack) {
+    DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
     if (PartRootStackInvalid()) {
       return;
     }
@@ -61,12 +65,17 @@ class CORE_EXPORT NodeCloningData final {
 
     cloned_part_root_stack_.pop_back();
   }
-  bool PartRootStackInvalid() const { return cloned_part_root_stack_.empty(); }
+  bool PartRootStackInvalid() const {
+    DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
+    return cloned_part_root_stack_.empty();
+  }
   bool PartRootStackHasOnlyDocumentRoot() const {
+    DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
     return cloned_part_root_stack_.size() <= 1;
   }
 
   PartRoot& CurrentPartRoot() const {
+    DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
     DCHECK(!PartRootStackInvalid());
     return *cloned_part_root_stack_.back();
   }
