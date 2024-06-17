@@ -418,46 +418,6 @@ TEST_F(PromosManagerImplTest, SortsPromosPreferCertainTypes) {
   EXPECT_EQ(sorted[3], promos_manager::Promo::Test);
 }
 
-// Tests `SortPromos` sorts `DockingPromo` promos before others.
-TEST_F(PromosManagerImplTest, SortsPromosPreferDockingPromoType) {
-  CreatePromosManager();
-
-  const std::map<promos_manager::Promo, PromoContext> active_promos = {
-      {promos_manager::Promo::Test, PromoContext{false}},
-      {promos_manager::Promo::AllTabsDefaultBrowser, PromoContext{true}},
-      {promos_manager::Promo::DockingPromo, PromoContext{false}},
-  };
-
-  std::vector<promos_manager::Promo> sorted =
-      promos_manager_->SortPromos(active_promos);
-  EXPECT_EQ(sorted.size(), (size_t)3);
-  // tied for the type.
-  EXPECT_TRUE(sorted[0] == promos_manager::Promo::DockingPromo);
-  // with pending state, before the less recently shown promo (Test).
-  EXPECT_EQ(sorted[1], promos_manager::Promo::AllTabsDefaultBrowser);
-  EXPECT_EQ(sorted[2], promos_manager::Promo::Test);
-}
-
-// Tests `SortPromos` sorts `DockingPromoRemindMeLater` promos before others.
-TEST_F(PromosManagerImplTest, SortsPromosPreferDockingPromoRemindMeLaterType) {
-  CreatePromosManager();
-
-  const std::map<promos_manager::Promo, PromoContext> active_promos = {
-      {promos_manager::Promo::Test, PromoContext{false}},
-      {promos_manager::Promo::AllTabsDefaultBrowser, PromoContext{true}},
-      {promos_manager::Promo::DockingPromoRemindMeLater, PromoContext{false}},
-  };
-
-  std::vector<promos_manager::Promo> sorted =
-      promos_manager_->SortPromos(active_promos);
-  EXPECT_EQ(sorted.size(), (size_t)3);
-  // tied for the type.
-  EXPECT_TRUE(sorted[0] == promos_manager::Promo::DockingPromoRemindMeLater);
-  // with pending state, before the less recently shown promo (Test).
-  EXPECT_EQ(sorted[1], promos_manager::Promo::AllTabsDefaultBrowser);
-  EXPECT_EQ(sorted[2], promos_manager::Promo::Test);
-}
-
 // Tests `SortPromos` sorts promos with pending state before others without.
 TEST_F(PromosManagerImplTest, SortsPromosPreferPendingToNonPending) {
   CreatePromosManager();
