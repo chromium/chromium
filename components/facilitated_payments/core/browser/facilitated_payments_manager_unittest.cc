@@ -76,6 +76,10 @@ class MockFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver {
 // A mock for the facilitated payment API client interface.
 class MockFacilitatedPaymentsApiClient : public FacilitatedPaymentsApiClient {
  public:
+  static std::unique_ptr<FacilitatedPaymentsApiClient> CreateApiClient() {
+    return std::make_unique<MockFacilitatedPaymentsApiClient>();
+  }
+
   MockFacilitatedPaymentsApiClient() = default;
   ~MockFacilitatedPaymentsApiClient() override = default;
 
@@ -188,15 +192,15 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
         std::make_unique<MockOptimizationGuideDecider>();
     driver_ = std::make_unique<MockFacilitatedPaymentsDriver>(nullptr);
     client_ = std::make_unique<MockFacilitatedPaymentsClient>();
-    auto api_client = std::make_unique<MockFacilitatedPaymentsApiClient>();
-    api_client_ = api_client.get();
+
     manager_ = std::make_unique<FacilitatedPaymentsManager>(
-        driver_.get(), client_.get(), std::move(api_client),
+        driver_.get(), client_.get(), /*api_client_creator=*/
+        base::BindOnce(&MockFacilitatedPaymentsApiClient::CreateApiClient),
         optimization_guide_decider_.get());
     manager_->is_test_ = true;
 
-    // Using Autofill preferences since we use autofill's infra for syncing bank
-    // accounts.
+    // Using Autofill preferences since we use autofill's infra for syncing
+    // bank accounts.
     pref_service_ = autofill::test::PrefServiceForTesting();
     payments_data_manager_ =
         std::make_unique<autofill::TestPaymentsDataManager>();
@@ -210,7 +214,6 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
   }
 
   void TearDown() override {
-    api_client_ = nullptr;
     allowlist_decision_timer_.Stop();
     page_load_timer_.Stop();
     payments_data_manager_->ClearAllServerDataForTesting();
@@ -308,6 +311,11 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
+  MockFacilitatedPaymentsApiClient& GetApiClient() {
+    return *static_cast<MockFacilitatedPaymentsApiClient*>(
+        manager_->GetApiClient());
+  }
+
  protected:
   base::test::ScopedFeatureList features_;
   optimization_guide::OptimizationGuideDecision allowlist_result_;
@@ -320,9 +328,6 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
   std::unique_ptr<PrefService> pref_service_;
   std::unique_ptr<autofill::TestPaymentsDataManager> payments_data_manager_;
   MockFacilitatedPaymentsNetworkInterface payments_network_interface_;
-
-  // Owned by the `manager_`.
-  raw_ptr<MockFacilitatedPaymentsApiClient> api_client_ = nullptr;
 
  private:
   // Number of attempts at checking the allowlist.
@@ -932,7 +937,7 @@ TEST_F(FacilitatedPaymentsManagerTest, PaymentNotOfferedReason_RiskDataEmpty) {
 // retrieve a client token from the facilitated payments API client.
 TEST_F(FacilitatedPaymentsManagerTest,
        DoesNotRetrieveClientTokenIfPixPaymentPromptRejected) {
-  EXPECT_CALL(*api_client_, GetClientToken(testing::_)).Times(0);
+  EXPECT_CALL(GetApiClient(), GetClientToken(testing::_)).Times(0);
 
   manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/false,
                                      /*selected_instrument_id=*/-1);
@@ -942,7 +947,7 @@ TEST_F(FacilitatedPaymentsManagerTest,
 // client token from the facilitated payments API client.
 TEST_F(FacilitatedPaymentsManagerTest,
        RetrievesClientTokenIfPixPaymentPromptAccepted) {
-  EXPECT_CALL(*api_client_, GetClientToken(testing::_));
+  EXPECT_CALL(GetApiClient(), GetClientToken(testing::_));
 
   manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/true,
                                      /*selected_instrument_id=*/-1);
@@ -954,7 +959,7 @@ TEST_F(FacilitatedPaymentsManagerTest,
 TEST_F(FacilitatedPaymentsManagerTest,
        GetClientTokenHistogram_ClientTokenNotEmpty) {
   base::HistogramTester histogram_tester;
-  EXPECT_CALL(*api_client_, GetClientToken(testing::_));
+  EXPECT_CALL(GetApiClient(), GetClientToken(testing::_));
   manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/true,
                                      /*selected_instrument_id=*/-1);
   FastForwardBy(base::Seconds(2));
@@ -977,7 +982,7 @@ TEST_F(FacilitatedPaymentsManagerTest,
 TEST_F(FacilitatedPaymentsManagerTest,
        GetClientTokenHistogram_ClientTokenEmpty) {
   base::HistogramTester histogram_tester;
-  EXPECT_CALL(*api_client_, GetClientToken(testing::_));
+  EXPECT_CALL(GetApiClient(), GetClientToken(testing::_));
   manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/true,
                                      /*selected_instrument_id=*/-1);
   FastForwardBy(base::Seconds(2));
@@ -1069,7 +1074,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsDisabledTest,
        ValidPixCodeDetectionResult_HasPixAccounts_ApiClientNotTriggered) {
   payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
 
-  EXPECT_CALL(*api_client_, IsAvailable(testing::_)).Times(0);
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
   manager_->ProcessPixCodeDetectionResult(
       mojom::PixCodeDetectionResult::kValidPixCodeFound, std::string());
@@ -1093,7 +1098,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
        ValidPixCodeDetectionResult_HasPixAccounts_ApiClientTriggered) {
   payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
 
-  EXPECT_CALL(*api_client_, IsAvailable(testing::_));
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
 
   manager_->ProcessPixCodeDetectionResult(
       mojom::PixCodeDetectionResult::kValidPixCodeFound,
@@ -1111,7 +1116,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
        ValidPixCodeDetectionResult_InvalidPixCodeString_ApiClientNotTriggered) {
   payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
 
-  EXPECT_CALL(*api_client_, IsAvailable(testing::_)).Times(0);
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
   manager_->ProcessPixCodeDetectionResult(
       mojom::PixCodeDetectionResult::kValidPixCodeFound, std::string());
@@ -1127,7 +1132,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
        InvalidPixCodeDetectionResultDoesNotTriggerApiClient) {
   payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
 
-  EXPECT_CALL(*api_client_, IsAvailable(testing::_)).Times(0);
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
   manager_->ProcessPixCodeDetectionResult(
       mojom::PixCodeDetectionResult::kInvalidPixCodeFound, std::string());
@@ -1138,7 +1143,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
        ApiClientTriggeredAfterPixCodeValidation) {
   payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
 
-  EXPECT_CALL(*api_client_, IsAvailable(testing::_));
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
 
   manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
                                /*is_pix_code_valid=*/true);
@@ -1150,7 +1155,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
        PixCodeValidationFailed_NoApiClientTriggered) {
   payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
 
-  EXPECT_CALL(*api_client_, IsAvailable(testing::_)).Times(0);
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
   manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
                                /*is_pix_code_valid=*/false);
@@ -1177,7 +1182,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
        PixCodeValidatorTerminatedUnexpectedly_NoApiClientTriggered) {
   payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
 
-  EXPECT_CALL(*api_client_, IsAvailable(testing::_)).Times(0);
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
   manager_->OnPixCodeValidated(
       /*pix_code=*/std::string(),
@@ -1210,7 +1215,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   // Turn off PIX pref.
   autofill::prefs::SetFacilitatedPaymentsPix(pref_service_.get(), false);
 
-  EXPECT_CALL(*api_client_, IsAvailable(testing::_)).Times(0);
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
   manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
                                /*is_pix_code_valid=*/true);
@@ -1220,7 +1225,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
 // whether the facilitated payment API is available.
 TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
        NoPixAccounts_NoApiClientTriggered) {
-  EXPECT_CALL(*api_client_, IsAvailable(testing::_)).Times(0);
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
   manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
                                /*is_pix_code_valid=*/true);
@@ -1234,7 +1239,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   ON_CALL(*client_, GetPaymentsDataManager)
       .WillByDefault(testing::Return(nullptr));
 
-  EXPECT_CALL(*api_client_, IsAvailable(testing::_)).Times(0);
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_)).Times(0);
 
   manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
                                /*is_pix_code_valid=*/true);
@@ -1251,7 +1256,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
       CreatePixBankAccount(/*instrument_id=*/2);
   payments_data_manager_->AddMaskedBankAccountForTest(pix_account1);
   payments_data_manager_->AddMaskedBankAccountForTest(pix_account2);
-  ON_CALL(*api_client_, IsAvailable)
+  ON_CALL(GetApiClient(), IsAvailable)
       .WillByDefault([](base::OnceCallback<void(bool)> callback) {
         std::move(callback).Run(true);
       });
@@ -1287,7 +1292,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   ON_CALL(*client_, GetCoreAccountInfo)
       .WillByDefault(testing::Return(CreateLoggedInAccountInfo()));
 
-  EXPECT_CALL(*api_client_, InvokePurchaseAction).Times(0);
+  EXPECT_CALL(GetApiClient(), InvokePurchaseAction).Times(0);
 
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
@@ -1306,7 +1311,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   ON_CALL(*client_, GetCoreAccountInfo)
       .WillByDefault(testing::Return(CreateLoggedInAccountInfo()));
 
-  EXPECT_CALL(*api_client_, InvokePurchaseAction).Times(0);
+  EXPECT_CALL(GetApiClient(), InvokePurchaseAction).Times(0);
 
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
@@ -1322,7 +1327,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   ON_CALL(*client_, GetCoreAccountInfo)
       .WillByDefault(testing::Return(std::nullopt));
 
-  EXPECT_CALL(*api_client_, InvokePurchaseAction).Times(0);
+  EXPECT_CALL(GetApiClient(), InvokePurchaseAction).Times(0);
 
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
@@ -1339,7 +1344,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   ON_CALL(*client_, GetCoreAccountInfo)
       .WillByDefault(testing::Return(CoreAccountInfo()));
 
-  EXPECT_CALL(*api_client_, InvokePurchaseAction).Times(0);
+  EXPECT_CALL(GetApiClient(), InvokePurchaseAction).Times(0);
 
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
@@ -1357,7 +1362,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   ON_CALL(*client_, GetCoreAccountInfo)
       .WillByDefault(testing::Return(CreateLoggedInAccountInfo()));
 
-  EXPECT_CALL(*api_client_, InvokePurchaseAction);
+  EXPECT_CALL(GetApiClient(), InvokePurchaseAction);
 
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
@@ -1375,7 +1380,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
        ApiAvailabilityHistogram) {
   base::HistogramTester histogram_tester;
   payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
-  EXPECT_CALL(*api_client_, IsAvailable(testing::_));
+  EXPECT_CALL(GetApiClient(), IsAvailable(testing::_));
   manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
                                /*is_pix_code_valid=*/true);
   FastForwardBy(base::Seconds(2));
@@ -1414,7 +1419,7 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
   base::HistogramTester histogram_tester;
   ON_CALL(*client_, GetCoreAccountInfo)
       .WillByDefault(testing::Return(CreateLoggedInAccountInfo()));
-  EXPECT_CALL(*api_client_, InvokePurchaseAction);
+  EXPECT_CALL(GetApiClient(), InvokePurchaseAction);
   auto response_details =
       std::make_unique<FacilitatedPaymentsInitiatePaymentResponseDetails>();
   response_details->action_token_ =
@@ -1461,6 +1466,34 @@ TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
       "FacilitatedPayments.Pix.InitiatePayment.Latency",
       /*sample=*/2000,
       /*expected_bucket_count=*/1);
+}
+
+// Verify that the API client is initialized lazily, so it does not take up
+// space in memory unless it's being used.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       ApiClientInitializedLazily) {
+  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+
+  EXPECT_EQ(nullptr, manager_->api_client_.get());
+
+  manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                               /*is_pix_code_valid=*/true);
+
+  EXPECT_NE(nullptr, manager_->api_client_.get());
+}
+
+// Verify that a failure to lazily initialize the API client is not fatal.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       HandlesFailureToLazilyInitializeApiClient) {
+  payments_data_manager_->AddMaskedBankAccountForTest(CreatePixBankAccount(1));
+  manager_->api_client_creator_.Reset();
+
+  EXPECT_EQ(nullptr, manager_->api_client_.get());
+
+  manager_->OnPixCodeValidated(/*pix_code=*/std::string(),
+                               /*is_pix_code_valid=*/true);
+
+  EXPECT_EQ(nullptr, manager_->api_client_.get());
 }
 
 }  // namespace payments::facilitated

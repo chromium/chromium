@@ -75,6 +75,10 @@ class FacilitatedPaymentsApiClient {
       base::OnceCallback<void(PurchaseActionResult)> callback) = 0;
 };
 
+// A one time use factory for the facilitated payment API client.
+using FacilitatedPaymentsApiClientCreator =
+    base::OnceCallback<std::unique_ptr<FacilitatedPaymentsApiClient>()>;
+
 }  // namespace payments::facilitated
 
 #endif  // COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_FACILITATED_PAYMENTS_API_CLIENT_H_

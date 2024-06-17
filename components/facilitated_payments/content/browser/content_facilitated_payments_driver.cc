@@ -22,9 +22,10 @@ ContentFacilitatedPaymentsDriver::ContentFacilitatedPaymentsDriver(
     : FacilitatedPaymentsDriver(std::make_unique<FacilitatedPaymentsManager>(
           /*driver=*/this,
           client,
-          CreateFacilitatedPaymentsApiClient(render_frame_host),
+          GetFacilitatedPaymentsApiClientCreator(
+              render_frame_host->GetGlobalId()),
           optimization_guide_decider)),
-      render_frame_host_(*render_frame_host) {}
+      render_frame_host_id_(render_frame_host->GetGlobalId()) {}
 
 ContentFacilitatedPaymentsDriver::~ContentFacilitatedPaymentsDriver() = default;
 
@@ -36,8 +37,12 @@ void ContentFacilitatedPaymentsDriver::TriggerPixCodeDetection(
 
 const mojo::AssociatedRemote<mojom::FacilitatedPaymentsAgent>&
 ContentFacilitatedPaymentsDriver::GetAgent() {
-  if (!agent_) {
-    render_frame_host_->GetRemoteAssociatedInterfaces()->GetInterface(&agent_);
+  if (!agent_.is_bound()) {
+    content::RenderFrameHost* render_frame_host =
+        content::RenderFrameHost::FromID(render_frame_host_id_);
+    if (render_frame_host && render_frame_host->IsActive()) {
+      render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(&agent_);
+    }
   }
   return agent_;
 }

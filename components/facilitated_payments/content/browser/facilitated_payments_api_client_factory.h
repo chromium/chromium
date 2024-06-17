@@ -5,21 +5,17 @@
 #ifndef COMPONENTS_FACILITATED_PAYMENTS_CONTENT_BROWSER_FACILITATED_PAYMENTS_API_CLIENT_FACTORY_H_
 #define COMPONENTS_FACILITATED_PAYMENTS_CONTENT_BROWSER_FACILITATED_PAYMENTS_API_CLIENT_FACTORY_H_
 
-#include <memory>
-
-namespace content {
-class RenderFrameHost;
-}  // namespace content
+#include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace payments::facilitated {
 
-class FacilitatedPaymentsApiClient;
-
-// Creates a platform-specific instance of the API client. This function is
-// defined in platform specific implementation source files, e.g., in
+// Returns a one time use callback that can create a platform-specific instance
+// of the API client. This function is defined in platform specific
+// implementation source files, e.g., in
 // `facilitated_payments_api_client_android.cc`.
-std::unique_ptr<FacilitatedPaymentsApiClient>
-CreateFacilitatedPaymentsApiClient(content::RenderFrameHost* render_frame_host);
+FacilitatedPaymentsApiClientCreator GetFacilitatedPaymentsApiClientCreator(
+    content::GlobalRenderFrameHostId render_frame_host_id);
 
 }  // namespace payments::facilitated
 

@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -40,7 +41,7 @@ class FacilitatedPaymentsManager {
   FacilitatedPaymentsManager(
       FacilitatedPaymentsDriver* driver,
       FacilitatedPaymentsClient* client,
-      std::unique_ptr<FacilitatedPaymentsApiClient> api_client,
+      FacilitatedPaymentsApiClientCreator api_client_creator,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider);
   FacilitatedPaymentsManager(const FacilitatedPaymentsManager&) = delete;
   FacilitatedPaymentsManager& operator=(const FacilitatedPaymentsManager&) =
@@ -190,6 +191,11 @@ class FacilitatedPaymentsManager {
                            InvokePurchaseActionCompleted_HistogramLogged);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
                            OnInitiatePaymentResponseReceived_HistogramLogged);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+                           ApiClientInitializedLazily);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+                           HandlesFailureToLazilyInitializeApiClient);
+
   // Register optimization guide deciders for PIX. It is an allowlist of URLs
   // where we attempt PIX code detection.
   void RegisterPixAllowlist() const;
@@ -219,6 +225,13 @@ class FacilitatedPaymentsManager {
   // boolean validation result.
   void OnPixCodeValidated(std::string pix_code,
                           base::expected<bool, std::string> is_pix_code_valid);
+
+  // Lazily initializes an API client and returns a pointer to it. Returns a
+  // pointer to the existing API client, if one is already initialized. The
+  // FacilitatedPaymentManager owns this API client. This method can return
+  // `nullptr` if the API client fails to initialize, e.g., if the
+  // `RenderFrameHost` has been destroyed.
+  FacilitatedPaymentsApiClient* GetApiClient();
 
   // Starts `pix_code_detection_latency_measuring_timestamp_`.
   void StartPixCodeDetectionLatencyTimer();
@@ -266,6 +279,9 @@ class FacilitatedPaymentsManager {
 
   // Indirect owner.
   const raw_ref<FacilitatedPaymentsClient> client_;
+
+  // The creator of the facilitated payment API client.
+  FacilitatedPaymentsApiClientCreator api_client_creator_;
 
   // The client for the facilitated payment API.
   std::unique_ptr<FacilitatedPaymentsApiClient> api_client_;

@@ -6,8 +6,7 @@
 #define COMPONENTS_FACILITATED_PAYMENTS_CONTENT_BROWSER_CONTENT_FACILITATED_PAYMENTS_DRIVER_H_
 
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
-
-#include "base/memory/raw_ref.h"
+#include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace content {
@@ -50,10 +49,8 @@ class ContentFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver {
 
   mojo::AssociatedRemote<mojom::FacilitatedPaymentsAgent> agent_;
 
-  // TODO(b/324987918): Store the `GlobalRenderFrameHostId`, and retrieve the
-  // `RenderFrameHost` when required.
-  // The frame/document to which this driver is associated. Outlives `this`.
-  const raw_ref<content::RenderFrameHost> render_frame_host_;
+  // The ID of the frame to which this driver is associated.
+  const content::GlobalRenderFrameHostId render_frame_host_id_;
 };
 
 }  // namespace payments::facilitated

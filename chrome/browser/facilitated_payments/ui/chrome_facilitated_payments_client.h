@@ -63,10 +63,8 @@ class ChromeFacilitatedPaymentsClient
   std::unique_ptr<payments::facilitated::FacilitatedPaymentsNetworkInterface>
       facilitated_payments_network_interface_;
 
-#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<FacilitatedPaymentsController>
       facilitated_payments_controller_;
-#endif
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

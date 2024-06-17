@@ -24,11 +24,11 @@ namespace payments::facilitated {
 FacilitatedPaymentsManager::FacilitatedPaymentsManager(
     FacilitatedPaymentsDriver* driver,
     FacilitatedPaymentsClient* client,
-    std::unique_ptr<FacilitatedPaymentsApiClient> api_client,
+    FacilitatedPaymentsApiClientCreator api_client_creator,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider)
     : driver_(CHECK_DEREF(driver)),
       client_(CHECK_DEREF(client)),
-      api_client_(std::move(api_client)),
+      api_client_creator_(std::move(api_client_creator)),
       optimization_guide_decider_(optimization_guide_decider),
       initiate_payment_request_details_(
           std::make_unique<
@@ -179,11 +179,26 @@ void FacilitatedPaymentsManager::OnPixCodeValidated(
     return;
   }
 
+  if (!GetApiClient()) {
+    Reset();
+    return;
+  }
+
   initiate_payment_request_details_->pix_code_ = std::move(pix_code);
   api_availability_check_start_time_ = base::TimeTicks::Now();
-  api_client_->IsAvailable(
+  GetApiClient()->IsAvailable(
       base::BindOnce(&FacilitatedPaymentsManager::OnApiAvailabilityReceived,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+FacilitatedPaymentsApiClient* FacilitatedPaymentsManager::GetApiClient() {
+  if (!api_client_) {
+    if (api_client_creator_) {
+      api_client_ = std::move(api_client_creator_).Run();
+    }
+  }
+
+  return api_client_.get();
 }
 
 void FacilitatedPaymentsManager::StartPixCodeDetectionLatencyTimer() {
@@ -253,9 +268,10 @@ void FacilitatedPaymentsManager::OnPixPaymentPromptResult(
     Reset();
     return;
   }
+
   initiate_payment_request_details_->instrument_id_ = selected_instrument_id;
   get_client_token_loading_start_time_ = base::TimeTicks::Now();
-  api_client_->GetClientToken(
+  GetApiClient()->GetClientToken(
       base::BindOnce(&FacilitatedPaymentsManager::OnGetClientToken,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -316,7 +332,7 @@ void FacilitatedPaymentsManager::OnInitiatePaymentResponseReceived(
     return;
   }
   purchase_action_start_time_ = base::TimeTicks::Now();
-  api_client_->InvokePurchaseAction(
+  GetApiClient()->InvokePurchaseAction(
       account_info.value(), response_details->action_token_,
       base::BindOnce(&FacilitatedPaymentsManager::OnPurchaseActionResult,
                      weak_ptr_factory_.GetWeakPtr()));
