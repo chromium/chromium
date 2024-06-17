@@ -12,6 +12,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
@@ -22,6 +23,7 @@
 #include "components/shared_highlighting/core/common/fragment_directives_utils.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/clipboard_types.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
@@ -377,10 +379,45 @@ void LinkToTextMenuObserver::CopyTextToClipboard(const std::string& text) {
   auto* rfh = content::RenderFrameHost::FromID(render_frame_host_id_);
   CHECK(rfh);
 
-  ui::ScopedClipboardWriter scw(
-      ui::ClipboardBuffer::kCopyPaste,
-      std::make_unique<ui::DataTransferEndpoint>(
-          rfh->GetMainFrame()->GetLastCommittedURL(),
-          rfh->GetBrowserContext()->IsOffTheRecord()));
-  scw.WriteText(base::UTF8ToUTF16(text));
+  ui::DataTransferEndpoint dte(rfh->GetMainFrame()->GetLastCommittedURL(),
+                               rfh->GetBrowserContext()->IsOffTheRecord());
+  content::ClipboardEndpoint clipboard_endpoint(
+      dte,
+      base::BindRepeating(
+          [](content::GlobalRenderFrameHostId rfh_id)
+              -> content::BrowserContext* {
+            auto* rfh = content::RenderFrameHost::FromID(rfh_id);
+            if (!rfh) {
+              return nullptr;
+            }
+            return rfh->GetBrowserContext();
+          },
+          rfh->GetGlobalId()),
+      *rfh);
+
+  content::ClipboardPasteData data;
+  data.text = base::UTF8ToUTF16(text);
+  size_t size = data.text.size() * sizeof(std::u16string::value_type);
+
+  enterprise_data_protection::IsClipboardCopyAllowedByPolicy(
+      std::move(clipboard_endpoint),
+      {
+          .size = size,
+          .format_type = ui::ClipboardFormatType::PlainTextType(),
+      },
+      std::move(data),
+      base::BindOnce(
+          [](std::unique_ptr<ui::DataTransferEndpoint> dte,
+             const ui::ClipboardFormatType& data_type,
+             const content::ClipboardPasteData& data,
+             std::optional<std::u16string> replacement_data) {
+            ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste,
+                                          std::move(dte));
+            if (replacement_data) {
+              scw.WriteText(std::move(*replacement_data));
+            } else {
+              scw.WriteText(data.text);
+            }
+          },
+          std::make_unique<ui::DataTransferEndpoint>(std::move(dte))));
 }

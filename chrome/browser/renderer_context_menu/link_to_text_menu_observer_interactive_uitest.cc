@@ -6,13 +6,18 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/enterprise/data_controls/data_controls_dialog_test_helper.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/mock_render_view_context_menu.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/enterprise/data_controls/features.h"
+#include "components/enterprise/data_controls/test_utils.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "content/public/browser/context_menu_params.h"
@@ -133,6 +138,18 @@ class LinkToTextMenuObserverTest : public extensions::ExtensionBrowserTest {
 
 LinkToTextMenuObserverTest::LinkToTextMenuObserverTest() = default;
 LinkToTextMenuObserverTest::~LinkToTextMenuObserverTest() = default;
+
+class LinkToTextMenuObserverDataControlsTest
+    : public LinkToTextMenuObserverTest {
+ public:
+  LinkToTextMenuObserverDataControlsTest() {
+    scoped_features_.InitAndEnableFeature(
+        data_controls::kEnableDesktopDataControls);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_features_;
+};
 
 }  // namespace
 
@@ -517,5 +534,140 @@ IN_PROC_BROWSER_TEST_F(
   std::u16string text;
   clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
   EXPECT_EQ(u"http://foo.com/#bar:~:baz=keep&baz=keep2&text=hello%20world",
+            text);
+}
+
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverDataControlsTest,
+                       BlocksCopyingLinkToText) {
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                                   "name": "rule_name",
+                                   "rule_id": "rule_id",
+                                   "sources": {
+                                     "urls": ["*"]
+                                   },
+                                   "restrictions": [
+                                     {"class": "CLIPBOARD", "level": "BLOCK"}
+                                   ]
+                                 })"});
+  data_controls::DataControlsDialogTestHelper helper(
+      data_controls::DataControlsDialog::Type::kClipboardCopyBlock);
+
+  content::BrowserTestClipboardScope test_clipboard_scope;
+  content::ContextMenuParams params;
+  params.page_url = GURL("http://foo.com/");
+  params.selection_text = u"hello world";
+  observer()->SetGenerationResults(
+      "hello%20world", shared_highlighting::LinkGenerationError::kNone,
+      shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady);
+  InitMenu(params);
+  menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
+
+  helper.WaitForDialogToInitialize();
+  helper.CancelDialog();
+  helper.WaitForDialogToClose();
+
+  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  std::u16string text;
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
+  EXPECT_TRUE(text.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverDataControlsTest,
+                       WarnsCopyingLinkToTextAndCancel) {
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                                   "name": "rule_name",
+                                   "rule_id": "rule_id",
+                                   "sources": {
+                                     "urls": ["*"]
+                                   },
+                                   "restrictions": [
+                                     {"class": "CLIPBOARD", "level": "WARN"}
+                                   ]
+                                 })"});
+  data_controls::DataControlsDialogTestHelper helper(
+      data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
+
+  content::BrowserTestClipboardScope test_clipboard_scope;
+  content::ContextMenuParams params;
+  params.page_url = GURL("http://foo.com/");
+  params.selection_text = u"hello world";
+  observer()->SetGenerationResults(
+      "hello%20world", shared_highlighting::LinkGenerationError::kNone,
+      shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady);
+  InitMenu(params);
+  menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
+
+  helper.WaitForDialogToInitialize();
+  helper.CancelDialog();
+  helper.WaitForDialogToClose();
+
+  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  std::u16string text;
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
+  EXPECT_TRUE(text.empty());
+}
+
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverDataControlsTest,
+                       WarnsCopyingLinkToTextAndBypass) {
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                                   "name": "rule_name",
+                                   "rule_id": "rule_id",
+                                   "sources": {
+                                     "urls": ["*"]
+                                   },
+                                   "restrictions": [
+                                     {"class": "CLIPBOARD", "level": "WARN"}
+                                   ]
+                                 })"});
+  data_controls::DataControlsDialogTestHelper helper(
+      data_controls::DataControlsDialog::Type::kClipboardCopyWarn);
+
+  content::BrowserTestClipboardScope test_clipboard_scope;
+  content::ContextMenuParams params;
+  params.page_url = GURL("http://foo.com/");
+  params.selection_text = u"hello world";
+  observer()->SetGenerationResults(
+      "hello%20world", shared_highlighting::LinkGenerationError::kNone,
+      shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady);
+  InitMenu(params);
+  menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
+
+  helper.WaitForDialogToInitialize();
+  helper.AcceptDialog();
+  helper.WaitForDialogToClose();
+
+  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  std::u16string text;
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
+  EXPECT_EQ(u"http://foo.com/#:~:text=hello%20world", text);
+}
+
+IN_PROC_BROWSER_TEST_F(LinkToTextMenuObserverDataControlsTest,
+                       ReplacesCopyingLinkToText) {
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"({
+                                   "name": "rule_name",
+                                   "rule_id": "rule_id",
+                                   "destinations": {
+                                     "os_clipboard": true
+                                   },
+                                   "restrictions": [
+                                     {"class": "CLIPBOARD", "level": "BLOCK"}
+                                   ]
+                                 })"});
+
+  content::BrowserTestClipboardScope test_clipboard_scope;
+  content::ContextMenuParams params;
+  params.page_url = GURL("http://foo.com/");
+  params.selection_text = u"hello world";
+  observer()->SetGenerationResults(
+      "hello%20world", shared_highlighting::LinkGenerationError::kNone,
+      shared_highlighting::LinkGenerationReadyStatus::kRequestedAfterReady);
+  InitMenu(params);
+  menu()->ExecuteCommand(IDC_CONTENT_CONTEXT_COPYLINKTOTEXT, 0);
+
+  ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
+  std::u16string text;
+  clipboard->ReadText(ui::ClipboardBuffer::kCopyPaste, nullptr, &text);
+  EXPECT_EQ(u"Pasting this content here is blocked by your administrator.",
             text);
 }
