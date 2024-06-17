@@ -30,6 +30,7 @@ NXCOMPAT_FLAG = 0x0100
 NO_SEH_FLAG = 0x0400
 GUARD_CF_FLAG = 0x4000
 MACHINE_TYPE_AMD64 = 0x8664
+MACHINE_TYPE_ARM64 = 0xaa64
 CETCOMPAT_BIT = 0  # offset in extended dll characteristics
 
 # Please do not add your file here without confirming that it indeed doesn't
@@ -129,7 +130,7 @@ def main(options, args):
         (hasattr(pe, "DIRECTORY_ENTRY_LOAD_CONFIG") and
          pe.DIRECTORY_ENTRY_LOAD_CONFIG.struct.SEHandlerCount > 0 and
          pe.DIRECTORY_ENTRY_LOAD_CONFIG.struct.SEHandlerTable != 0) or
-        pe.FILE_HEADER.Machine == MACHINE_TYPE_AMD64):
+        pe.FILE_HEADER.Machine in (MACHINE_TYPE_AMD64, MACHINE_TYPE_ARM64)):
       if options.verbose:
         print("Checking %s for /SAFESEH... PASS" % path)
     else:
@@ -138,7 +139,7 @@ def main(options, args):
 
     # ASLR is weakened on Windows 64-bit when the ImageBase is below 4GB
     # (because the loader will never be rebase the image above 4GB).
-    if pe.FILE_HEADER.Machine == MACHINE_TYPE_AMD64:
+    if pe.FILE_HEADER.Machine in (MACHINE_TYPE_AMD64, MACHINE_TYPE_ARM64):
       if pe.OPTIONAL_HEADER.ImageBase <= 0xFFFFFFFF:
         print("Checking %s ImageBase (0x%X < 4GB)... FAIL" %
               (path, pe.OPTIONAL_HEADER.ImageBase))
