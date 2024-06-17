@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.sync.UserSelectableType;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -151,12 +152,14 @@ public class SearchResumptionModuleUtils {
 
         if (!IdentityServicesProvider.get()
                 .getIdentityManager(profile)
-                .hasPrimaryAccount(ConsentLevel.SYNC)) {
+                .hasPrimaryAccount(ConsentLevel.SIGNIN)) {
             recordModuleNotShownReason(ModuleNotShownReason.NOT_SIGN_IN);
             return false;
         }
 
-        if (!SyncServiceFactory.getForProfile(profile).hasKeepEverythingSynced()) {
+        if (!SyncServiceFactory.getForProfile(profile)
+                .getSelectedTypes()
+                .contains(UserSelectableType.HISTORY)) {
             recordModuleNotShownReason(ModuleNotShownReason.NOT_SYNC);
             return false;
         }
