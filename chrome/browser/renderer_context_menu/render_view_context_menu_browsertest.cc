@@ -2999,17 +2999,9 @@ IN_PROC_BROWSER_TEST_F(
   loop.Run();
 }
 
-// TODO(crbug.com/346738477): Re-enable the test.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_ValidNonGoogleRegionSearchWithUnifiedSidePanelAndSideImageSearch \
-  DISABLED_ValidNonGoogleRegionSearchWithUnifiedSidePanelAndSideImageSearch
-#else
-#define MAYBE_ValidNonGoogleRegionSearchWithUnifiedSidePanelAndSideImageSearch \
-  ValidNonGoogleRegionSearchWithUnifiedSidePanelAndSideImageSearch
-#endif
 IN_PROC_BROWSER_TEST_F(
     SearchByRegionWithUnifiedSidePanelBrowserTest,
-    MAYBE_ValidNonGoogleRegionSearchWithUnifiedSidePanelAndSideImageSearch) {
+    ValidNonGoogleRegionSearchWithUnifiedSidePanelAndSideImageSearch) {
   SetupNonGoogleRegionSearchEngine();
   SetupUnifiedSidePanel();
   // We need a base::RunLoop to ensure that our test does not finish until the
