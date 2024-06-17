@@ -101,7 +101,7 @@ export class HelloWorldAppElement extends CrLitElement {
 
   static override get properties() {
     return {
-      message_: {String}
+      message_: {type: String},
     };
   }
 
@@ -131,6 +131,10 @@ build_webui("build") {
 
   non_web_component_files = [ "app.ts", "app.html.ts" ]
   css_files = [ "app.css" ]
+
+  # Enable the proper webui_context_type depending on whether implementing
+  # a chrome:// or chrome-untrusted:// page.
+  webui_context_type = "trusted"
 
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",
