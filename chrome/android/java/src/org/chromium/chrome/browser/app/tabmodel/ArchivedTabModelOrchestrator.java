@@ -321,6 +321,10 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator implement
         return mTabArchiveSettings;
     }
 
+    public TabArchiver getTabArchiver() {
+        return mTabArchiver;
+    }
+
     // Private methods
 
     /**

@@ -230,7 +230,8 @@ public class TabSwitcherPaneCoordinatorFactory {
                             mBrowserControlsStateProvider,
                             mTabContentManager,
                             mMode,
-                            mActivity.findViewById(R.id.coordinator));
+                            mActivity.findViewById(R.id.coordinator),
+                            mTabCreatorManager.getTabCreator(/* incognito= */ false));
             if (mLifecycleDispatcher.isNativeInitializationFinished()) {
                 mMessageManager.initWithNative(
                         mProfileProviderSupplier.get().getOriginalProfile(), getTabListMode());

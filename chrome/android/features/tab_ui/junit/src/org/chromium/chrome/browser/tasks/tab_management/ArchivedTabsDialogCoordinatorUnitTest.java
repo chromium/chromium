@@ -35,6 +35,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
@@ -64,6 +65,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     @Mock private TabListEditorCoordinator mTabListEditorCoordinator;
     @Mock private TabListEditorController mTabListEditorController;
     @Spy private ViewGroup mRootView;
+    @Mock private TabCreator mRegularTabCreator;
 
     private Context mContext;
     private ArchivedTabsDialogCoordinator mCoordinator;
@@ -84,7 +86,8 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
                         mTabContentManager,
                         TabListMode.GRID,
                         mRootView,
-                        mSnackbarManager);
+                        mSnackbarManager,
+                        mRegularTabCreator);
         mCoordinator.setTabListEditorCoordinatorForTesting(mTabListEditorCoordinator);
     }
 
@@ -131,11 +134,11 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
 
         // Then close bloth
         doReturn(1).when(mArchivedTabModel).getCount();
-        observer.willCloseTab(null, true);
+        observer.tabRemoved(null);
         verify(mTabListEditorController, times(2)).setToolbarTitle("1 inactive tab");
 
         doReturn(0).when(mArchivedTabModel).getCount();
-        observer.willCloseTab(null, true);
+        observer.tabRemoved(null);
         verify(mRootView).removeView(any());
     }
 }

@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -32,7 +33,7 @@ public class ArchivedTabsDialogCoordinator {
 
     /** Interface exposing functionality to the menu items for the archived tabs dialog */
     public interface ArchiveDelegate {
-        /** Restore all archived tabs. */
+        /** Restore all tabs from the archived tab model. */
         void restoreAllArchivedTabs();
 
         /** Open the archive settings page. */
@@ -46,7 +47,12 @@ public class ArchivedTabsDialogCoordinator {
             new ArchiveDelegate() {
                 @Override
                 public void restoreAllArchivedTabs() {
-                    // TODO(crbug.com/345010580): Implement this.
+                    while (mArchivedTabModel.getCount() > 0) {
+                        mArchivedTabModelOrchestrator
+                                .getTabArchiver()
+                                .unarchiveAndRestoreTab(
+                                        mRegularTabCreator, mArchivedTabModel.getTabAt(0));
+                    }
                 }
 
                 @Override
@@ -76,7 +82,7 @@ public class ArchivedTabsDialogCoordinator {
     private final TabModelObserver mTabModelObserver =
             new TabModelObserver() {
                 @Override
-                public void willCloseTab(Tab tab, boolean didCloseAlone) {
+                public void tabRemoved(Tab tab) {
                     if (mArchivedTabModel.getCount() <= 0) {
                         hide();
                         return;
@@ -99,6 +105,7 @@ public class ArchivedTabsDialogCoordinator {
     private final @TabListMode int mMode;
     private final @NonNull ViewGroup mRootView;
     private final @NonNull SnackbarManager mSnackbarManager;
+    private final @NonNull TabCreator mRegularTabCreator;
 
     private ViewGroup mView;
     private @TabActionState int mTabActionState = TabActionState.CLOSABLE;
@@ -119,13 +126,15 @@ public class ArchivedTabsDialogCoordinator {
             @NonNull TabContentManager tabContentManager,
             @TabListMode int mode,
             @NonNull ViewGroup rootView,
-            @NonNull SnackbarManager snackbarManager) {
+            @NonNull SnackbarManager snackbarManager,
+            @NonNull TabCreator regularTabCreator) {
         mContext = context;
         mBrowserControlsStateProvider = browserControlsStateProvider;
         mTabContentManager = tabContentManager;
         mMode = mode;
         mRootView = rootView;
         mSnackbarManager = snackbarManager;
+        mRegularTabCreator = regularTabCreator;
 
         mArchivedTabModelOrchestrator = archivedTabModelOrchestrator;
         mArchivedTabModel =
@@ -203,5 +212,9 @@ public class ArchivedTabsDialogCoordinator {
 
     void setTabListEditorCoordinatorForTesting(TabListEditorCoordinator tabListEditorCoordinator) {
         mTabListEditorCoordinator = tabListEditorCoordinator;
+    }
+
+    ArchiveDelegate getArchiveDelegateForTesting() {
+        return mArchiveDelegate;
     }
 }

@@ -273,7 +273,8 @@ public class TabSwitcherCoordinator
                             mBrowserControlsStateProvider,
                             mTabContentManager,
                             mMode,
-                            mCoordinatorView);
+                            mCoordinatorView,
+                            mTabCreatorManager.getTabCreator(/* incognito= */ false));
             mMessageManager.registerMessages(mTabListCoordinator);
             mMessageManager.bind(mTabListCoordinator, container, mMediator);
 

@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
@@ -64,6 +65,7 @@ public class ArchivedTabsMessageServiceUnitTest {
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private TabContentManager mTabContentManager;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private TabCreator mRegularTabCreator;
 
     private Activity mActivity;
     private ViewGroup mRootView;
@@ -85,7 +87,8 @@ public class ArchivedTabsMessageServiceUnitTest {
                         mTabContentManager,
                         TabListMode.GRID,
                         mRootView,
-                        mSnackbarManager);
+                        mSnackbarManager,
+                        mRegularTabCreator);
         mArchivedTabsMessageService.setArchivedTabsDialogCoordiantorForTesting(
                 mArchivedTabsDialogCoordinator);
         mArchivedTabsMessageService.addObserver(mMessageObserver);

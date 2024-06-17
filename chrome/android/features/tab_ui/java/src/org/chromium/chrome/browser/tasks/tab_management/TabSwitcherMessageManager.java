@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
@@ -134,6 +135,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
     private final @NonNull TabContentManager mTabContentManager;
     private final @TabListMode int mTabListMode;
     private final @NonNull ViewGroup mRootView;
+    private final @NonNull TabCreator mRegularTabCreator;
 
     private @Nullable Profile mProfile;
     private @Nullable IncognitoReauthManager mIncognitoReauthManager;
@@ -160,7 +162,8 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
             @NonNull BrowserControlsStateProvider browserControlStateProvider,
             @NonNull TabContentManager tabContentManager,
             @TabListMode int tabListMode,
-            @NonNull ViewGroup rootView) {
+            @NonNull ViewGroup rootView,
+            @NonNull TabCreator regularTabCreator) {
         mContext = context;
         mLifecylceDispatcher = lifecycleDispatcher;
         mCurrentTabModelFilterSupplier = currentTabModelFilterSupplier;
@@ -171,6 +174,7 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
         mTabContentManager = tabContentManager;
         mTabListMode = tabListMode;
         mRootView = rootView;
+        mRegularTabCreator = regularTabCreator;
 
         mMessageCardProviderCoordinator =
                 new MessageCardProviderCoordinator(
@@ -270,7 +274,8 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                             mTabContentManager,
                             mTabListMode,
                             mRootView,
-                            mSnackbarManager);
+                            mSnackbarManager,
+                            mRegularTabCreator);
             addObserver(mArchivedTabsMessageService);
             mMessageCardProviderCoordinator.subscribeMessageService(mArchivedTabsMessageService);
         }

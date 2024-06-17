@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.tab.TabArchiveSettings;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MessageCardScope;
@@ -109,6 +110,7 @@ public class ArchivedTabsMessageService extends MessageService
     private final @TabListMode int mTabListMode;
     private final @NonNull ViewGroup mRootView;
     private final @NonNull SnackbarManager mSnackbarManager;
+    private final @NonNull TabCreator mRegularTabCreator;
 
     private ArchivedTabsDialogCoordinator mArchivedTabsDialogCoordinator;
     private TabModel mArchivedTabModel;
@@ -123,7 +125,8 @@ public class ArchivedTabsMessageService extends MessageService
             @NonNull TabContentManager tabContentManager,
             @TabListMode int tabListMode,
             @NonNull ViewGroup rootView,
-            @NonNull SnackbarManager snackbarManager) {
+            @NonNull SnackbarManager snackbarManager,
+            @NonNull TabCreator regularTabCreator) {
         super(MessageType.ARCHIVED_TABS_MESSAGE);
 
         mContext = context;
@@ -133,6 +136,7 @@ public class ArchivedTabsMessageService extends MessageService
         mTabListMode = tabListMode;
         mRootView = rootView;
         mSnackbarManager = snackbarManager;
+        mRegularTabCreator = regularTabCreator;
 
         if (mArchivedTabModelOrchestrator.isTabModelInitialized()) {
             mArchivedTabModelOrchestratorObserver.onTabModelCreated(
@@ -225,7 +229,8 @@ public class ArchivedTabsMessageService extends MessageService
                         mTabContentManager,
                         mTabListMode,
                         mRootView,
-                        mSnackbarManager);
+                        mSnackbarManager,
+                        mRegularTabCreator);
     }
 
     private void updateModelProperties() {

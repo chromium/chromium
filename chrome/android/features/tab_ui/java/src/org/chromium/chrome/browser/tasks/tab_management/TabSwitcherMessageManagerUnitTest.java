@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
@@ -81,6 +82,7 @@ public class TabSwitcherMessageManagerUnitTest {
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private TabContentManager mTabContentManager;
     @Mock private ViewGroup mRootView;
+    @Mock private TabCreator mRegularTabCreator;
 
     @Captor private ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
 
@@ -130,7 +132,8 @@ public class TabSwitcherMessageManagerUnitTest {
                         mBrowserControlsStateProvider,
                         mTabContentManager,
                         TabListMode.GRID,
-                        mRootView);
+                        mRootView,
+                        mRegularTabCreator);
         mMessageManager.registerMessages(mTabListCoordinator);
         mMessageManager.bind(
                 mTabListCoordinator, container, mPriceWelcomeMessageReviewActionProvider);
