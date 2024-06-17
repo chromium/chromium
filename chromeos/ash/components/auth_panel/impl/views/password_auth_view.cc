@@ -208,8 +208,8 @@ PasswordAuthView::PasswordAuthView(AuthPanelEventDispatcher* dispatcher,
 
   ConfigureRootLayout();
   CreateAndConfigurePasswordRow();
-  CreateAndConfigureTextfieldContainer();
   CreateAndConfigureCapslockIcon();
+  CreateAndConfigureTextfieldContainer();
   CreateAndConfigureDisplayPasswordButton();
   CreateAndConfigureSubmitButton();
 }
