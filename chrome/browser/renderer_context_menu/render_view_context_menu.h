@@ -33,7 +33,6 @@
 #include "extensions/buildflags/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
-#include "services/screen_ai/buildflags/buildflags.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -301,9 +300,6 @@ class RenderViewContextMenu
   // Returns true if the items were appended. This might not happen in all
   // cases, e.g. these are only appended if a screen reader is enabled.
   bool AppendAccessibilityLabelsItems();
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  void AppendLayoutExtractionItem();
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   void AppendSearchProvider();
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   void AppendAllExtensionItems();
@@ -396,9 +392,6 @@ class RenderViewContextMenu
   void ExecOpenCompose();
 #endif
   void ExecOpenInReadAnything();
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  void ExecRunLayoutExtraction();
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   void MediaPlayerAction(const blink::mojom::MediaPlayerAction& action);
   void SearchForVideoFrame(const gfx::ImageSkia& image);

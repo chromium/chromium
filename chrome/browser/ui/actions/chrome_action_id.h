@@ -464,9 +464,6 @@
     IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS) \
   E(kActionContentContextAccessibilityLabelsToggleOnce, \
     IDC_CONTENT_CONTEXT_ACCESSIBILITY_LABELS_TOGGLE_ONCE) \
-  /* Screen AI layout extraction. */ \
-  E(kActionContentContextRunLayoutExtraction, \
-    IDC_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION) \
   /* Tab Search */ \
   E(kActionTabSearch, IDC_TAB_SEARCH) \
   E(kActionTabSearchClose, IDC_TAB_SEARCH_CLOSE) \

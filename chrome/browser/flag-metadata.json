@@ -5630,11 +5630,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "layout-extraction",
-    "owners": [ "rhalavati@chromium.org", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "left-hand-side-activity-indicators",
     "owners": [ "elklm@chromium.org", "//components/permissions/PERMISSIONS_OWNERS" ],
     "expiry_milestone": 135

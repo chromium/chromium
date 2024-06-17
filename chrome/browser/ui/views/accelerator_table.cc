@@ -248,11 +248,6 @@ const AcceleratorMapping kAcceleratorMap[] = {
     {ui::VKEY_OEM_PLUS, ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN, IDC_ZOOM_PLUS},
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 #endif  // !BUILDFLAG(IS_MAC)
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE) && \
-    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
-    {ui::VKEY_S, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN,
-     IDC_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION},
-#endif
 };
 
 const AcceleratorMapping kDevToolsAcceleratorMap[] = {

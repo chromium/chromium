@@ -217,11 +217,6 @@ AX_BASE_EXPORT bool IsAccessibilityServiceEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kDataCollectionModeForScreen2x);
 AX_BASE_EXPORT bool IsDataCollectionModeForScreen2xEnabled();
 
-// Use local MI service to make inaccessibile surfaces (e.g.
-// canvases) accessible.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kLayoutExtraction);
-AX_BASE_EXPORT bool IsLayoutExtractionEnabled();
-
 // Identify and annotate the main node of the AXTree where one was not already
 // provided.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kMainNodeAnnotations);

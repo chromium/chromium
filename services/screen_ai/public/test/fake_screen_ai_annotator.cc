@@ -39,14 +39,6 @@ void FakeScreenAIAnnotator::PerformOcrAndReturnAXTreeUpdate(
   std::move(callback).Run(update);
 }
 
-void FakeScreenAIAnnotator::ExtractSemanticLayout(
-    const ::SkBitmap& image,
-    const ::ui::AXTreeID& parent_tree_id,
-    ExtractSemanticLayoutCallback callback) {
-  ui::AXTreeID tree_id = ui::AXTreeID::CreateNewAXTreeID();
-  std::move(callback).Run(tree_id);
-}
-
 void FakeScreenAIAnnotator::PerformOcrAndReturnAnnotation(
     const ::SkBitmap& image,
     PerformOcrAndReturnAnnotationCallback callback) {

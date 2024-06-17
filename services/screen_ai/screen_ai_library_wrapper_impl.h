@@ -44,10 +44,6 @@ class ScreenAILibraryWrapperImpl : public ScreenAILibraryWrapper {
   void SetLogger() override;
 #endif
 
-  bool InitLayoutExtraction() override;
-  std::optional<chrome_screen_ai::VisualAnnotation> ExtractLayout(
-      const SkBitmap& image) override;
-
   bool InitMainContentExtraction() override;
   std::optional<std::vector<int32_t>> ExtractMainContent(
       const std::string& serialized_view_hierarchy) override;
@@ -90,21 +86,6 @@ class ScreenAILibraryWrapperImpl : public ScreenAILibraryWrapper {
                                                   const char* /*message*/));
   SetLoggerFn set_logger_ = nullptr;
 #endif
-
-  // Initializes the pipeline for layout extraction.
-  typedef bool (*InitLayoutExtractionFn)();
-  InitLayoutExtractionFn init_layout_extraction_ = nullptr;
-
-  // Sends the given bitmap to layout extraction pipeline and returns visual
-  // annotations. The annotations will be returned as a serialized
-  // VisualAnnotation proto if the task is successful, otherwise nullptr is
-  // returned. The returned string is not null-terminated and its size will be
-  // put in `serialized_visual_annotation_length`. The allocated memory should
-  // be released in the library to avoid cross boundary memory issues.
-  typedef char* (*ExtractLayoutFn)(
-      const SkBitmap& /*bitmap*/,
-      uint32_t& /*serialized_visual_annotation_length*/);
-  ExtractLayoutFn extract_layout_ = nullptr;
 
   // Initializes the pipeline for main content extraction.
   typedef bool (*InitMainContentExtractionFn)();

@@ -502,7 +502,6 @@
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 #include "chrome/browser/accessibility/ax_main_node_annotator_controller_factory.h"
-#include "chrome/browser/accessibility/ax_screen_ai_annotator_factory.h"
 #include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -1179,7 +1178,6 @@ void ChromeBrowserMainExtraPartsProfiles::
   if (features::IsMainNodeAnnotationsEnabled()) {
     screen_ai::AXMainNodeAnnotatorControllerFactory::GetInstance();
   }
-  screen_ai::AXScreenAIAnnotatorFactory::EnsureFactoryBuilt();
   screen_ai::PdfOcrControllerFactory::GetInstance();
   screen_ai::ScreenAIServiceRouterFactory::EnsureFactoryBuilt();
 #endif

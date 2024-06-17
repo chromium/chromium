@@ -100,15 +100,6 @@ struct WordBox {
 // service.
 [RuntimeFeature=ax.mojom.features.kScreenAIOCREnabled]
 interface ScreenAIAnnotator {
-  // Receives an image, such as a screenshot or a canvas content, as well as the
-  // ID of the accessibility tree that contains the image (`parent_tree_id`).
-  // It then asks the Screen AI library to perform semantic layout extraction on
-  // the image and returns the ID of the accessibility tree which would be
-  // created by the service containing the output of the library.
-  ExtractSemanticLayout(skia.mojom.BitmapN32 image,
-    ax.mojom.AXTreeID parent_tree_id) =>
-    (ax.mojom.AXTreeID child_tree_id);
-
   // Receives an image, such as a screenshot or a page from a PDF file, as well
   // as the ID of the accessibility tree that contains the image
   // (`parent_tree_id`). It then asks the Screen AI library to perform OCR on
@@ -125,15 +116,6 @@ interface ScreenAIAnnotator {
 
   // Sets OCR client type for metrics.
   SetClientType(OcrClientType client_type);
-};
-
-// This interface sends accessibility messages from the Screen AI Service to
-// `AXScreenAIAnnotator` in the browser process in non-ChromeOS or the extension
-// in ChromeOS.
-interface ScreenAIAnnotatorClient {
-  // Sent to inform about the creation of a new accessibility tree or an update
-  // to an existing one.
-  HandleAXTreeUpdate(ax.mojom.AXTreeUpdate update);
 };
 
 // Main interface a client uses for Main Content Extraction function of Screen
@@ -162,10 +144,6 @@ interface Screen2xMainContentExtractor {
 interface OCRService {
   // Binds a new annotator to the service.
   BindAnnotator(pending_receiver<ScreenAIAnnotator>? annotator);
-
-  // Binds a client to receive update messages for annotation service.
-  BindAnnotatorClient(
-    pending_remote<ScreenAIAnnotatorClient>? annotator_client);
 };
 
 // Provides an interface to the Main Content Extraction functionalities of the

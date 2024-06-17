@@ -44,10 +44,6 @@ class ScreenAILibraryWrapperFake : public ScreenAILibraryWrapper {
   void SetLogger() override;
 #endif
 
-  bool InitLayoutExtraction() override;
-  std::optional<chrome_screen_ai::VisualAnnotation> ExtractLayout(
-      const SkBitmap& image) override;
-
   bool InitMainContentExtraction() override;
   std::optional<std::vector<int32_t>> ExtractMainContent(
       const std::string& serialized_view_hierarchy) override;

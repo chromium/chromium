@@ -203,7 +203,6 @@
 #include "printing/buildflags/buildflags.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "services/screen_ai/buildflags/buildflags.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/context_menu_data/context_menu_data.h"
@@ -273,12 +272,6 @@
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #endif  // BUILDFLAG(ENABLE_PRINTING)
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "chrome/browser/accessibility/ax_screen_ai_annotator.h"
-#include "chrome/browser/accessibility/ax_screen_ai_annotator_factory.h"
-#include "chrome/browser/screen_ai/screen_ai_install_state.h"
-#endif
 
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 #include "chrome/browser/lens/region_search/lens_region_search_controller.h"
@@ -509,7 +502,7 @@ const std::map<int, int>& GetIdcToUmaMap(UmaEnumIdLookupType type) {
        {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_ADDRESS, 134},
        {IDC_CONTENT_CONTEXT_SEARCHWEBFORNEWTAB, 135},
        // Removed: {IDC_CONTENT_CONTEXT_ORCA, 136},
-       {IDC_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION, 137},
+       // Removed: {IDC_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION, 137},
        {IDC_CONTENT_PASTE_FROM_CLIPBOARD, 138},
        {IDC_CONTEXT_COMPOSE, 139},
        {IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PAYMENTS, 140},
@@ -1245,13 +1238,6 @@ void RenderViewContextMenu::InitMenu() {
     AppendLanguageSettings();
     AppendPlatformEditableItems();
   }
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  if (features::IsLayoutExtractionEnabled()) {
-    AppendLayoutExtractionItem();
-    VLOG(2) << "Appended Layout Extraction Item";
-  }
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
   if (content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_MEDIA_PLUGIN)) {
@@ -2327,14 +2313,6 @@ void RenderViewContextMenu::AppendReadingModeItem() {
   }
 }
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-void RenderViewContextMenu::AppendLayoutExtractionItem() {
-  menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
-  menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION,
-                                  IDS_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION);
-}
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-
 void RenderViewContextMenu::AppendRotationItems() {
   if (params_.media_flags & ContextMenuData::kMediaCanRotate) {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
@@ -3015,11 +2993,6 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
       return !!(params_.media_flags &
                 ContextMenuData::kMediaCanPictureInPicture);
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-    case IDC_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION:
-      return true;
-#endif
-
     case IDC_CONTENT_CONTEXT_EMOJI:
       return params_.is_editable;
     case IDC_CONTEXT_COMPOSE:
@@ -3417,12 +3390,6 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
     case IDC_CONTENT_CONTEXT_RELOADFRAME:
       source_web_contents_->ReloadFocusedFrame();
       break;
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-    case IDC_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION:
-      ExecRunLayoutExtraction();
-      break;
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
     case IDC_CONTENT_CONTEXT_VIEWFRAMESOURCE:
       if (GetRenderFrameHost()) {
@@ -4404,13 +4371,6 @@ void RenderViewContextMenu::ExecRegionSearch(
                                         entry_point);
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-void RenderViewContextMenu::ExecRunLayoutExtraction() {
-  screen_ai::AXScreenAIAnnotatorFactory::GetForBrowserContext(GetProfile())
-      ->AnnotateScreenshot(source_web_contents_);
-}
-#endif
 
 void RenderViewContextMenu::ExecSearchWebForImage(bool is_image_translate) {
   CoreTabHelper* core_tab_helper =

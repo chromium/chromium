@@ -255,15 +255,6 @@ void ScreenAIServiceRouter::BindScreenAIAnnotator(
   }
 }
 
-void ScreenAIServiceRouter::BindScreenAIAnnotatorClient(
-    mojo::PendingRemote<mojom::ScreenAIAnnotatorClient> remote) {
-  InitializeServiceIfNeeded(Service::kOCR);
-
-  if (ocr_service_.is_bound()) {
-    ocr_service_->BindAnnotatorClient(std::move(remote));
-  }
-}
-
 void ScreenAIServiceRouter::BindMainContentExtractor(
     mojo::PendingReceiver<mojom::Screen2xMainContentExtractor> receiver) {
   InitializeServiceIfNeeded(Service::kMainContentExtraction);

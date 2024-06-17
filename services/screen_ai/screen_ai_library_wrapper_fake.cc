@@ -28,10 +28,6 @@ void ScreenAILibraryWrapperFake::SetFileContentFunctions(
 
 void ScreenAILibraryWrapperFake::EnableDebugMode() {}
 
-bool ScreenAILibraryWrapperFake::InitLayoutExtraction() {
-  return true;
-}
-
 bool ScreenAILibraryWrapperFake::InitOCR() {
   return true;
 }
@@ -42,11 +38,6 @@ bool ScreenAILibraryWrapperFake::InitMainContentExtraction() {
 
 std::optional<chrome_screen_ai::VisualAnnotation>
 ScreenAILibraryWrapperFake::PerformOcr(const SkBitmap& image) {
-  return std::nullopt;
-}
-
-std::optional<chrome_screen_ai::VisualAnnotation>
-ScreenAILibraryWrapperFake::ExtractLayout(const SkBitmap& image) {
   return std::nullopt;
 }
 

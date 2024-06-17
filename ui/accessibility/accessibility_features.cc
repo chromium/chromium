@@ -285,13 +285,6 @@ bool IsDataCollectionModeForScreen2xEnabled() {
       ::features::kDataCollectionModeForScreen2x);
 }
 
-BASE_FEATURE(kLayoutExtraction,
-             "LayoutExtraction",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-bool IsLayoutExtractionEnabled() {
-  return base::FeatureList::IsEnabled(::features::kLayoutExtraction);
-}
-
 BASE_FEATURE(kMainNodeAnnotations,
              "MainNodeAnnotations",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -2598,22 +2598,6 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.ScreenAI.AnnotateScreenshotTime.{Result}"
-    units="ms" expires_after="2025-02-28">
-  <owner>kyungjunlee@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records the time taken to get a screenshot for ScreenAI visual annotator for
-    cases where the action {Result}. It's being emitted each time whenever it
-    gets or fails to get a screenshot for ScreenAI visual annotator. Refer to
-    AXScreenAIAnnotator::OnScreenshotReceived for details.
-  </summary>
-  <token key="Result">
-    <variant name="Failure" summary="has failed"/>
-    <variant name="Success" summary="has succeeded"/>
-  </token>
-</histogram>
-
 <histogram name="Accessibility.ScreenAI.Component.Available2"
     enum="ComponentAvailability" expires_after="2025-02-28">
   <owner>rhalavati@chromium.org</owner>

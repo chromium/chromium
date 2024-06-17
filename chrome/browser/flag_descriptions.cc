@@ -5289,11 +5289,6 @@ const char kHatsWebUIDescription[] =
     "Enables the Happiness Tracking Surveys being delivered via chrome webui, "
     "rather than a separate static website.";
 
-const char kLayoutExtractionName[] = "Layout Extraction";
-const char kLayoutExtractionDescription[] =
-    "Enables Layout Extraction local machine intelligence library to use "
-    "screen snapshots to add metadata for accessibility tools.";
-
 const char kMainNodeAnnotationsName[] = "Main Node Annotations";
 const char kMainNodeAnnotationsDescription[] =
     "Uses Screen2x main content extractor to annotate the accessibility tree "

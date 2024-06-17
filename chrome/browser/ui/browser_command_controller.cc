@@ -100,14 +100,9 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_urls.h"
 #include "printing/buildflags/buildflags.h"
-#include "services/screen_ai/buildflags/buildflags.h"
 #include "ui/actions/actions.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/keycodes/keyboard_codes.h"
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-#include "ui/accessibility/accessibility_features.h"
-#endif
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/browser_commands_mac.h"
@@ -1049,12 +1044,6 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
       ExecuteUIDebugCommand(id, browser_);
       break;
 
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-    case IDC_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION:
-      RunScreenAILayoutExtraction(browser_);
-      break;
-#endif
-
     case IDC_CONTENT_CONTEXT_LENS_OVERLAY:
       ExecLensOverlay(browser_);
       break;
@@ -1763,12 +1752,6 @@ void BrowserCommandController::UpdateCommandsForFullscreenMode() {
                                         main_not_fullscreen);
   command_updater_.UpdateCommandEnabled(
       IDC_FOCUS_INACTIVE_POPUP_FOR_ACCESSIBILITY, main_not_fullscreen);
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  command_updater_.UpdateCommandEnabled(
-      IDC_CONTENT_CONTEXT_RUN_LAYOUT_EXTRACTION,
-      features::IsLayoutExtractionEnabled());
-#endif
 
   // Show various bits of UI
   command_updater_.UpdateCommandEnabled(IDC_DEVELOPER_MENU, show_main_ui);

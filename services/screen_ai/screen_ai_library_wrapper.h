@@ -40,10 +40,6 @@ class ScreenAILibraryWrapper {
   virtual void SetLogger() = 0;
 #endif
 
-  virtual bool InitLayoutExtraction() = 0;
-  virtual std::optional<chrome_screen_ai::VisualAnnotation> ExtractLayout(
-      const SkBitmap& image) = 0;
-
   virtual bool InitMainContentExtraction() = 0;
   virtual std::optional<std::vector<int32_t>> ExtractMainContent(
       const std::string& serialized_view_hierarchy) = 0;

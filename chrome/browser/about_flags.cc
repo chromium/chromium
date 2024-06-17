@@ -9816,12 +9816,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
-    // TODO(crbug.com/40911117): Add Windows once library supports it.
-    {"layout-extraction", flag_descriptions::kLayoutExtractionName,
-     flag_descriptions::kLayoutExtractionDescription,
-     kOsMac | kOsLinux | kOsCrOS | kOsLacros,
-     FEATURE_VALUE_TYPE(features::kLayoutExtraction)},
-
     {"main-node-annotations", flag_descriptions::kMainNodeAnnotationsName,
      flag_descriptions::kMainNodeAnnotationsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kMainNodeAnnotations)},

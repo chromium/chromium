@@ -25,6 +25,7 @@
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 #include "services/screen_ai/public/cpp/utilities.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_features.mojom-features.h"

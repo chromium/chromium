@@ -83,14 +83,6 @@ bool ScreenAILibraryWrapperImpl::Load(const base::FilePath& library_path) {
     return false;
   }
 
-  // Layout Extraction functions.
-  if (features::IsLayoutExtractionEnabled()) {
-    if (!LoadFunction(init_layout_extraction_, "InitLayoutExtraction") ||
-        !LoadFunction(extract_layout_, "ExtractLayout")) {
-      return false;
-    }
-  }
-
   if (!LoadFunction(init_ocr_, "InitOCRUsingCallback") ||
       !LoadFunction(perform_ocr_, "PerformOCR")) {
     return false;
@@ -138,12 +130,6 @@ void ScreenAILibraryWrapperImpl::EnableDebugMode() {
 }
 
 NO_SANITIZE("cfi-icall")
-bool ScreenAILibraryWrapperImpl::InitLayoutExtraction() {
-  CHECK(init_layout_extraction_);
-  return init_layout_extraction_();
-}
-
-NO_SANITIZE("cfi-icall")
 bool ScreenAILibraryWrapperImpl::InitOCR() {
   CHECK(init_ocr_);
   return init_ocr_();
@@ -169,34 +155,6 @@ ScreenAILibraryWrapperImpl::PerformOcr(const SkBitmap& image) {
   // deleter results in crash on Linux official build.
   std::unique_ptr<char> library_buffer(
       perform_ocr_(image, annotation_proto_length));
-
-  if (!library_buffer) {
-    return annotation_proto;
-  }
-
-  annotation_proto = chrome_screen_ai::VisualAnnotation();
-  if (!annotation_proto->ParseFromArray(library_buffer.get(),
-                                        annotation_proto_length)) {
-    annotation_proto.reset();
-  }
-
-  free_library_allocated_char_array_(library_buffer.release());
-  return annotation_proto;
-}
-
-NO_SANITIZE("cfi-icall")
-std::optional<chrome_screen_ai::VisualAnnotation>
-ScreenAILibraryWrapperImpl::ExtractLayout(const SkBitmap& image) {
-  CHECK(extract_layout_);
-  CHECK(free_library_allocated_char_array_);
-
-  std::optional<chrome_screen_ai::VisualAnnotation> annotation_proto;
-
-  uint32_t annotation_proto_length = 0;
-  // Memory allocated in `library_buffer` should be release only using
-  // `free_library_allocated_char_array_` function.
-  std::unique_ptr<char> library_buffer(
-      extract_layout_(image, annotation_proto_length));
 
   if (!library_buffer) {
     return annotation_proto;

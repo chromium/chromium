@@ -3087,9 +3087,6 @@ extern const char kHappinessTrackingSurveysForDesktopDemoDescription[];
 extern const char kHatsWebUIName[];
 extern const char kHatsWebUIDescription[];
 
-extern const char kLayoutExtractionName[];
-extern const char kLayoutExtractionDescription[];
-
 extern const char kMainNodeAnnotationsName[];
 extern const char kMainNodeAnnotationsDescription[];
 

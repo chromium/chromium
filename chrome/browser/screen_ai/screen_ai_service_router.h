@@ -41,9 +41,6 @@ class ScreenAIServiceRouter : public KeyedService,
   void BindScreenAIAnnotator(
       mojo::PendingReceiver<mojom::ScreenAIAnnotator> receiver);
 
-  void BindScreenAIAnnotatorClient(
-      mojo::PendingRemote<mojom::ScreenAIAnnotatorClient> remote);
-
   void BindMainContentExtractor(
       mojo::PendingReceiver<mojom::Screen2xMainContentExtractor> receiver);
 

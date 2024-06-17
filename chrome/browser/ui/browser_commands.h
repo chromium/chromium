@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "content/public/common/page_zoom.h"
 #include "printing/buildflags/buildflags.h"
-#include "services/screen_ai/buildflags/buildflags.h"
 #include "ui/base/window_open_disposition.h"
 
 class Browser;
@@ -264,12 +263,6 @@ bool ShouldInterceptChromeURLNavigationInIncognito(Browser* browser,
                                                    const GURL& url);
 void ProcessInterceptedChromeURLNavigationInIncognito(Browser* browser,
                                                       const GURL& url);
-
-#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-// Triggers the Screen AI layout extraction to be run once on the |browser|.
-void RunScreenAILayoutExtraction(Browser* browser);
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-
 void ExecLensOverlay(Browser* browser);
 void ExecLensRegionSearch(Browser* browser);
 
