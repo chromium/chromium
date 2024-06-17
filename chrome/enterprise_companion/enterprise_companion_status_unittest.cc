@@ -1,0 +1,108 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/enterprise_companion/enterprise_companion_status.h"
+
+#include "base/ranges/algorithm.h"
+#include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/cloud_policy_validator.h"
+#include "testing/gtest/include/gtest/gtest.h"
+
+namespace enterprise_companion {
+
+TEST(EnterpriseCompanionStatusTest, FromDeviceManagementStatusSuccess) {
+  EnterpriseCompanionStatus status =
+      EnterpriseCompanionStatus::FromDeviceManagementStatus(
+          policy::DM_STATUS_SUCCESS);
+  EXPECT_TRUE(status.ok());
+}
+
+TEST(EnterpriseCompanionStatusTest, FromDeviceManagementStatusError) {
+  EnterpriseCompanionStatus status =
+      EnterpriseCompanionStatus::FromDeviceManagementStatus(
+          policy::DM_STATUS_REQUEST_FAILED);
+  EXPECT_FALSE(status.ok());
+  EXPECT_TRUE(
+      status.EqualsDeviceManagementStatus(policy::DM_STATUS_REQUEST_FAILED));
+}
+
+TEST(EnterpriseCompanionStatusTest, DeviceManagementStatusErrorsEqual) {
+  EnterpriseCompanionStatus status1 =
+      EnterpriseCompanionStatus::FromDeviceManagementStatus(
+          policy::DM_STATUS_REQUEST_FAILED);
+  EnterpriseCompanionStatus status2 =
+      EnterpriseCompanionStatus::FromDeviceManagementStatus(
+          policy::DM_STATUS_REQUEST_FAILED);
+  EXPECT_EQ(status1, status2);
+}
+
+TEST(EnterpriseCompanionStatusTest, FromCloudPolicyValidationResultSuccess) {
+  EnterpriseCompanionStatus status =
+      EnterpriseCompanionStatus::FromCloudPolicyValidationResult(
+          policy::CloudPolicyValidatorBase::VALIDATION_OK);
+  EXPECT_TRUE(status.ok());
+}
+
+TEST(EnterpriseCompanionStatusTest, FromCloudPolicyValidationResultError) {
+  EnterpriseCompanionStatus status =
+      EnterpriseCompanionStatus::FromCloudPolicyValidationResult(
+          policy::CloudPolicyValidatorBase::VALIDATION_BAD_SIGNATURE);
+  EXPECT_FALSE(status.ok());
+  EXPECT_TRUE(status.EqualsCloudPolicyValidationResult(
+      policy::CloudPolicyValidatorBase::VALIDATION_BAD_SIGNATURE));
+}
+
+TEST(EnterpriseCompanionStatusTest, CloudPolicyValidationResultErrorsEqual) {
+  EnterpriseCompanionStatus status1 =
+      EnterpriseCompanionStatus::FromCloudPolicyValidationResult(
+          policy::CloudPolicyValidatorBase::VALIDATION_BAD_SIGNATURE);
+  EnterpriseCompanionStatus status2 =
+      EnterpriseCompanionStatus::FromCloudPolicyValidationResult(
+          policy::CloudPolicyValidatorBase::VALIDATION_BAD_SIGNATURE);
+  EXPECT_EQ(status1, status2);
+}
+
+TEST(EnterpriseCompanionStatusTest, DifferentSuccessesEqual) {
+  std::vector<EnterpriseCompanionStatus> successes = {
+      EnterpriseCompanionStatus::Success(),
+      EnterpriseCompanionStatus::FromDeviceManagementStatus(
+          policy::DM_STATUS_SUCCESS),
+      EnterpriseCompanionStatus::FromCloudPolicyValidationResult(
+          policy::CloudPolicyValidatorBase::VALIDATION_OK)};
+
+  ASSERT_TRUE(base::ranges::all_of(
+      successes,
+      [](const EnterpriseCompanionStatus& status) { return status.ok(); }));
+  for (const auto& lhs : successes) {
+    for (const auto& rhs : successes) {
+      EXPECT_EQ(lhs, rhs);
+    }
+  }
+}
+
+TEST(EnterpriseCompanionStatusTest, DifferentErrorsNotEqual) {
+  EnterpriseCompanionStatus status1 =
+      EnterpriseCompanionStatus::FromDeviceManagementStatus(
+          policy::DM_STATUS_SERVICE_DEVICE_NOT_FOUND);
+  EnterpriseCompanionStatus status2 =
+      EnterpriseCompanionStatus::FromCloudPolicyValidationResult(
+          policy::CloudPolicyValidatorBase::VALIDATION_BAD_DM_TOKEN);
+
+  EXPECT_NE(status1, status2);
+}
+
+TEST(EnterpriseCompanionStatusTest, SuccessAndErrorNotEqual) {
+  EnterpriseCompanionStatus success = EnterpriseCompanionStatus::Success();
+  EnterpriseCompanionStatus error1 =
+      EnterpriseCompanionStatus::FromCloudPolicyValidationResult(
+          policy::CloudPolicyValidatorBase::VALIDATION_BAD_DM_TOKEN);
+  EnterpriseCompanionStatus error2 =
+      EnterpriseCompanionStatus::FromDeviceManagementStatus(
+          policy::DM_STATUS_SERVICE_DEVICE_NOT_FOUND);
+
+  EXPECT_NE(success, error1);
+  EXPECT_NE(success, error2);
+}
+
+}  // namespace enterprise_companion

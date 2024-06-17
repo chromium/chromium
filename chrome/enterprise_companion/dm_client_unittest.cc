@@ -18,6 +18,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
+#include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -127,8 +128,8 @@ TEST_F(DMClientTest, RegisterDeviceSuccess) {
 
   base::RunLoop run_loop;
   dm_client_->RegisterBrowser(
-      base::BindOnce([](policy::DeviceManagementStatus status) {
-        EXPECT_EQ(status, policy::DM_STATUS_SUCCESS);
+      base::BindOnce([](EnterpriseCompanionStatus status) {
+        EXPECT_TRUE(status.ok());
       }).Then(run_loop.QuitClosure()));
   mock_cloud_policy_client_->SetDMToken(kFakeDMToken);
   mock_cloud_policy_client_->NotifyRegistrationStateChanged();
@@ -146,8 +147,9 @@ TEST_F(DMClientTest, RegisterDeviceFailure) {
 
   base::RunLoop run_loop;
   dm_client_->RegisterBrowser(
-      base::BindOnce([](policy::DeviceManagementStatus status) {
-        EXPECT_EQ(status, policy::DM_STATUS_SERVICE_INVALID_SERIAL_NUMBER);
+      base::BindOnce([](EnterpriseCompanionStatus status) {
+        EXPECT_TRUE(status.EqualsDeviceManagementStatus(
+            policy::DM_STATUS_SERVICE_INVALID_SERIAL_NUMBER));
       }).Then(run_loop.QuitClosure()));
   mock_cloud_policy_client_->SetStatus(
       policy::DM_STATUS_SERVICE_INVALID_SERIAL_NUMBER);
@@ -180,8 +182,8 @@ TEST_F(DMClientTest, RegistrationRemovesPolicies) {
   // Register the device. All policies should be removed as a side effect.
   base::RunLoop run_loop;
   dm_client_->RegisterBrowser(
-      base::BindOnce([](policy::DeviceManagementStatus status) {
-        EXPECT_EQ(status, policy::DM_STATUS_SUCCESS);
+      base::BindOnce([](EnterpriseCompanionStatus status) {
+        EXPECT_TRUE(status.ok());
       }).Then(run_loop.QuitClosure()));
   mock_cloud_policy_client_->SetDMToken(kFakeDMToken);
   mock_cloud_policy_client_->NotifyRegistrationStateChanged();
@@ -196,8 +198,8 @@ TEST_F(DMClientTest, RegistrationSkippedNoEnrollmentToken) {
 
   base::RunLoop run_loop;
   dm_client_->RegisterBrowser(
-      base::BindOnce([](policy::DeviceManagementStatus status) {
-        EXPECT_EQ(status, policy::DM_STATUS_SUCCESS);
+      base::BindOnce([](EnterpriseCompanionStatus status) {
+        EXPECT_TRUE(status.ok());
       }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 
@@ -211,8 +213,8 @@ TEST_F(DMClientTest, RegistrationSkippedAlreadyManaged) {
 
   base::RunLoop run_loop;
   dm_client_->RegisterBrowser(
-      base::BindOnce([](policy::DeviceManagementStatus status) {
-        EXPECT_EQ(status, policy::DM_STATUS_SUCCESS);
+      base::BindOnce([](EnterpriseCompanionStatus status) {
+        EXPECT_TRUE(status.ok());
       }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 
@@ -239,8 +241,8 @@ TEST_F(DMClientTest, PoliciesPersistedThroughSkippedRegistration) {
   // Registration should be skipped as DM token is still present.
   base::RunLoop run_loop;
   dm_client_->RegisterBrowser(
-      base::BindOnce([](policy::DeviceManagementStatus status) {
-        EXPECT_EQ(status, policy::DM_STATUS_SUCCESS);
+      base::BindOnce([](EnterpriseCompanionStatus status) {
+        EXPECT_TRUE(status.ok());
       }).Then(run_loop.QuitClosure()));
   run_loop.Run();
 

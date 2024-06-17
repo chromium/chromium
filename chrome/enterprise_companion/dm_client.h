@@ -10,7 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
-#include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 
 namespace network {
@@ -34,7 +34,7 @@ class DMClient {
   // Register the browser with the enrollment token from storage. Posts
   // `callback` to the current sequence with the result of the operation.
   virtual void RegisterBrowser(
-      base::OnceCallback<void(policy::DeviceManagementStatus)> callback) = 0;
+      base::OnceCallback<void(EnterpriseCompanionStatus)> callback) = 0;
 };
 
 CloudPolicyClientProvider GetDefaultCloudPolicyClientProvider(

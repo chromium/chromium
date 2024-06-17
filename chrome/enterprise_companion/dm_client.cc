@@ -17,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
+#include "chrome/enterprise_companion/enterprise_companion_status.h"
 #include "chrome/enterprise_companion/enterprise_companion_version.h"
 #include "components/policy/core/common/cloud/client_data_delegate.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -99,14 +100,13 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
   ~DMClientImpl() override { cloud_policy_client_->RemoveObserver(this); }
 
   // Overrides for DMClient.
-  void RegisterBrowser(base::OnceCallback<void(policy::DeviceManagementStatus)>
-                           callback) override {
+  void RegisterBrowser(
+      base::OnceCallback<void(EnterpriseCompanionStatus)> callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     DCHECK(!pending_callback_);
 
     if (ShouldSkipRegistration()) {
-      std::move(callback).Run(
-          policy::DeviceManagementStatus::DM_STATUS_SUCCESS);
+      std::move(callback).Run(EnterpriseCompanionStatus::Success());
       return;
     }
 
@@ -127,7 +127,9 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     VLOG(1) << __func__;
     if (pending_callback_) {
-      std::move(pending_callback_).Run(cloud_policy_client_->last_dm_status());
+      std::move(pending_callback_)
+          .Run(EnterpriseCompanionStatus::FromDeviceManagementStatus(
+              cloud_policy_client_->last_dm_status()));
     }
     if (cloud_policy_client_->is_registered()) {
       dm_storage_->StoreDmToken(cloud_policy_client_->dm_token());
@@ -138,7 +140,9 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     VLOG(1) << __func__;
     if (pending_callback_) {
-      std::move(pending_callback_).Run(cloud_policy_client_->last_dm_status());
+      std::move(pending_callback_)
+          .Run(EnterpriseCompanionStatus::FromDeviceManagementStatus(
+              cloud_policy_client_->last_dm_status()));
     }
     if (cloud_policy_client_->last_dm_status() ==
         policy::DM_STATUS_SERVICE_DEVICE_NEEDS_RESET) {
@@ -153,7 +157,7 @@ class DMClientImpl : public DMClient, policy::CloudPolicyClient::Observer {
   std::unique_ptr<policy::CloudPolicyClient> cloud_policy_client_;
   scoped_refptr<device_management_storage::DMStorage> dm_storage_;
   ClientDataDelegate client_data_delegate_;
-  base::OnceCallback<void(policy::DeviceManagementStatus)> pending_callback_;
+  base::OnceCallback<void(EnterpriseCompanionStatus)> pending_callback_;
 
   bool ShouldSkipRegistration() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
