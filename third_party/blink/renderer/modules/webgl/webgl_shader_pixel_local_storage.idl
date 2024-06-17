@@ -29,7 +29,7 @@
                                                        GLint layer);
     undefined framebufferPixelLocalClearValuefvWEBGL(
             GLint plane,
-            [AllowShared, BufferSourceTypeNoSizeLimit] Float32Array value,
+            [AllowShared, PassAsSpan] Float32Array value,
             optional GLuint srcOffset = 0);
     undefined framebufferPixelLocalClearValuefvWEBGL(
             GLint plane,
@@ -37,7 +37,7 @@
             optional GLuint srcOffset = 0);
     undefined framebufferPixelLocalClearValueivWEBGL(
             GLint plane,
-            [AllowShared, BufferSourceTypeNoSizeLimit] Int32Array value,
+            [AllowShared, PassAsSpan] Int32Array value,
             optional GLuint srcOffset = 0);
     undefined framebufferPixelLocalClearValueivWEBGL(
             GLint plane,
@@ -45,7 +45,7 @@
             optional GLuint srcOffset = 0);
     undefined framebufferPixelLocalClearValueuivWEBGL(
             GLint plane,
-            [AllowShared, BufferSourceTypeNoSizeLimit] Uint32Array value,
+            [AllowShared, PassAsSpan] Uint32Array value,
             optional GLuint srcOffset = 0);
     undefined framebufferPixelLocalClearValueuivWEBGL(
             GLint plane,

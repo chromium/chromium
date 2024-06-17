@@ -36,7 +36,6 @@ namespace blink {
 class CallbackFunctionBase;
 class CallbackInterfaceBase;
 class EventListener;
-class FlexibleArrayBufferView;
 class GPUColorTargetState;
 class GPURenderPassColorAttachment;
 class GPUVertexBufferLayout;
@@ -790,11 +789,9 @@ template <typename T>
   requires std::derived_from<T, DOMArrayBufferView>
 struct NativeValueTraits<IDLBufferSourceTypeNoSizeLimit<MaybeShared<T>>>
     : public NativeValueTraitsBase<MaybeShared<T>> {
-  // FlexibleArrayBufferView uses this in its implementation, so we cannot
-  // delete it.
   static MaybeShared<T> NativeValue(v8::Isolate* isolate,
                                     v8::Local<v8::Value> value,
-                                    ExceptionState& exception_state);
+                                    ExceptionState& exception_state) = delete;
 
   static MaybeShared<T> ArgumentValue(v8::Isolate* isolate,
                                       int argument_index,
@@ -830,50 +827,6 @@ struct NativeValueTraits<
                                       int argument_index,
                                       v8::Local<v8::Value> value,
                                       ExceptionState& exception_state);
-};
-
-template <typename T>
-  requires std::derived_from<T, FlexibleArrayBufferView>
-struct NativeValueTraits<T> : public NativeValueTraitsBase<T> {
-  // FlexibleArrayBufferView must be used only as arguments.
-  static T NativeValue(v8::Isolate* isolate,
-                       v8::Local<v8::Value> value,
-                       ExceptionState& exception_state) = delete;
-
-  static T ArgumentValue(v8::Isolate* isolate,
-                         int argument_index,
-                         v8::Local<v8::Value> value,
-                         ExceptionState& exception_state);
-};
-
-template <typename T>
-  requires std::derived_from<T, FlexibleArrayBufferView>
-struct NativeValueTraits<IDLBufferSourceTypeNoSizeLimit<T>>
-    : public NativeValueTraitsBase<T> {
-  // BufferSourceTypeNoSizeLimit and FlexibleArrayBufferView must be used only
-  // as arguments.
-  static T NativeValue(v8::Isolate* isolate,
-                       v8::Local<v8::Value> value,
-                       ExceptionState& exception_state) = delete;
-
-  static T ArgumentValue(v8::Isolate* isolate,
-                         int argument_index,
-                         v8::Local<v8::Value> value,
-                         ExceptionState& exception_state);
-};
-
-template <typename T>
-  requires std::derived_from<T, FlexibleArrayBufferView>
-struct NativeValueTraits<IDLNullable<T>> : public NativeValueTraitsBase<T> {
-  // FlexibleArrayBufferView must be used only as arguments.
-  static T NativeValue(v8::Isolate* isolate,
-                       v8::Local<v8::Value> value,
-                       ExceptionState& exception_state) = delete;
-
-  static T ArgumentValue(v8::Isolate* isolate,
-                         int argument_index,
-                         v8::Local<v8::Value> value,
-                         ExceptionState& exception_state);
 };
 
 // object

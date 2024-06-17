@@ -1191,16 +1191,6 @@ reads would leak cross-origin information.
 With both `Getter` and `Setter`, allows both cross-origin reads and cross-origin
 writes. This is used for the `Window.location` attribute.
 
-### [FlexibleArrayBufferView]
-
-Summary: `[FlexibleArrayBufferView]` wraps a parameter that is known to be an ArrayBufferView (or a subtype of, e.g. typed arrays) with a FlexibleArrayBufferView.
-
-The FlexibleArrayBufferView itself can then either refer to an actual ArrayBufferView or a temporary copy (for small payloads) that may even live on the stack. The idea is that copying the payload on the stack and referring to the temporary copy saves creating global handles (resulting in weak roots) in V8. Note that `[FlexibleArrayBufferView]`  will actually result in a TypedFlexibleArrayBufferView wrapper for typed arrays.
-
-The FlexibleArrayBufferView extended attribute always requires the AllowShared extended attribute.
-
-Usage: Applies to arguments of methods. See modules/webgl/WebGLRenderingContextBase.idl for an example.
-
 ### [HasAsyncIteratorReturnAlgorithm]
 
 Summary: `[HasAsyncIteratorReturnAlgorithm]` indicates whether an [asynchronously iterable declaration](https://webidl.spec.whatwg.org/#dfn-async-iterable-declaration) has an [asynchronous iterator return algorithm](https://webidl.spec.whatwg.org/#asynchronous-iterator-return).

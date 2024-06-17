@@ -88,7 +88,6 @@ def _build_supported_extended_attributes():
         E("Exposed",
           applicable_to=T_EXPOSURE,
           forms=[F.IDENT, F.IDENT_LIST, F.ARG_LIST]),
-        E("FlexibleArrayBufferView", applicable_to=[T.TYPE]),
         E("GetterCallWith",
           applicable_to=[T.ATTRIBUTE],
           forms=[F.IDENT, F.IDENT_LIST],

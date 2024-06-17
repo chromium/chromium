@@ -267,16 +267,7 @@ def blink_type_info(idl_type):
                         is_gc_type=True)
 
     if real_type.is_buffer_source_type:
-        if "FlexibleArrayBufferView" in idl_type.effective_annotations:
-            assert "AllowShared" in idl_type.effective_annotations
-            return TypeInfo("Flexible{}".format(real_type.keyword_typename),
-                            member_fmt="void",
-                            ref_fmt="{}",
-                            const_ref_fmt="const {}",
-                            value_fmt="{}",
-                            has_null_value=True,
-                            is_gc_type=True)
-        elif "AllowShared" in idl_type.effective_annotations:
+        if "AllowShared" in idl_type.effective_annotations:
             return TypeInfo("MaybeShared<DOM{}>".format(
                 real_type.keyword_typename),
                             has_null_value=True,

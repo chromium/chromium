@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_render_pass_encoder.h"
 
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_index_format.h"
-#include "third_party/blink/renderer/core/typed_arrays/typed_flexible_array_buffer_view.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_bind_group.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_buffer.h"
