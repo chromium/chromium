@@ -178,7 +178,15 @@ export class PerfLogger {
     // If the measurement is interrupted, drop the measurement since the result
     // might be inaccurate.
     if (this.interruptedTime !== null && startTime < this.interruptedTime) {
-      return;
+      // TODO(b/344473689): Currently, when entering review views after
+      // capturing (e.g., GIF, Doc scan), the camera is suspended and
+      // `reconfigure` is called repeatedly until the camera resumes. However,
+      // this also interrupts performance events, preventing us from sending
+      // perf events when the review view is opened. Force sending
+      // DOCUMENT_PDF_SAVING for now.
+      if (event !== PerfEvent.DOCUMENT_PDF_SAVING) {
+        return;
+      }
     }
 
     const duration = performance.now() - startTime;

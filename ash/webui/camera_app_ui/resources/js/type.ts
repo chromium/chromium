@@ -223,11 +223,22 @@ export type FpsRangeList = FpsRange[];
  */
 export enum PerfEvent {
   CAMERA_SWITCHING = 'camera-switching',
+  // In Doc Scan mode, the duration between the shutter sound plays and the
+  // image is being shown in the review.
+  DOCUMENT_CAPTURE_POST_PROCESSING = 'document-capture-post-processing',
+  // In Doc Scan mode, the duration between clicking "Save as PDF" and the
+  // review being closed.
+  DOCUMENT_PDF_SAVING = 'document-pdf-saving',
   GIF_CAPTURE_POST_PROCESSING = 'gif-capture-post-processing',
   LAUNCHING_FROM_LAUNCH_APP_COLD = 'launching-from-launch-app-cold',
   LAUNCHING_FROM_LAUNCH_APP_WARM = 'launching-from-launch-app-warm',
   LAUNCHING_FROM_WINDOW_CREATION = 'launching-from-window-creation',
   MODE_SWITCHING = 'mode-switching',
+  // In Photo mode, the duration between a snapshot of the preview being scanned
+  // by OCR(automatically, with 500ms intervals) and the scanned result being
+  // shown in the preview. The result might now be shown if it is empty or if
+  // other scanners have detected results.
+  OCR_SCANNING = 'ocr-scanning',
   PHOTO_CAPTURE_POST_PROCESSING = 'photo-capture-post-processing',
   PHOTO_CAPTURE_SHUTTER = 'photo-capture-shutter',
   PORTRAIT_MODE_CAPTURE_POST_PROCESSING =
@@ -252,6 +263,8 @@ export interface PerfInformation {
   hasError?: boolean;
   resolution?: Resolution;
   facing?: Facing;
+  // Only for DOCUMENT_PDF_SAVING
+  pageCount?: number;
 }
 
 export interface PerfEntry {

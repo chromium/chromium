@@ -1136,6 +1136,9 @@
     <variant value="10">TIMELAPSE_CAPTURE_POST_PROCESSING</variant>
     <variant value="11">VIDEO_CAPTURE_POST_PROCESSING</variant>
     <variant value="12">SNAPSHOT_TAKING</variant>
+    <variant value="13">DOCUMENT_CAPTURE_POST_PROCESSING</variant>
+    <variant value="14">DOCUMENT_PDF_SAVING</variant>
+    <variant value="15">OCR_SCANNING</variant>
   </enum>
 
   <enum name="CameraAppOcrEventType">
@@ -1687,7 +1690,7 @@
     </metric>
     <metric name="PageCount" type="int">
       <summary>
-        Integer indicating how many pages are there in the document scanning result.
+        Integer indicating how many pages are saved from document scanning.
       </summary>
     </metric>
   </event>
@@ -1763,6 +1766,11 @@
       <summary>
         The resolution height of the camera. Will be 0 if the resolution information
         is not provided.
+      </summary>
+    </metric>
+    <metric name="PageCount" type="int">
+      <summary>
+        Integer indicating how many pages are there in the document scanning result.
       </summary>
     </metric>
   </event>

@@ -250,6 +250,9 @@ enum PerfEventType {
   kTimelapseCapturePostProcessing,
   kVideoCapturePostProcessing,
   kSnapshotTaking,
+  kDocumentCapturePostProcessing,
+  kDocumentPdfSaving,
+  kOcrScanning,
 };
 
 struct PerfEventParams {
@@ -258,10 +261,13 @@ struct PerfEventParams {
   // In milliseconds.
   int32 duration;
 
-  // Extra information.
+  // TODO(b/331904752): Use union for extra information since the members depend
+  // on `event_type`.
   Facing facing;
   int32 resolution_width;
   int32 resolution_height;
+  // Only for kDocumentPdfSaving
+  uint32 page_count;
 };
 
 enum UserBehavior {
