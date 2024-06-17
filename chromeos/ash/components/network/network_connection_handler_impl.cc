@@ -1102,6 +1102,13 @@ void NetworkConnectionHandlerImpl::CheckPendingRequest(
     return;
   }
   if (NetworkState::StateIsConnected(connection_state)) {
+    if (network->type() == shill::kTypeWifi) {
+      base::Value::Dict config_properties;
+      config_properties.Set(shill::kGuidProperty, network->guid());
+      configuration_handler_->SetShillProperties(
+          service_path, config_properties, base::DoNothing(),
+          network_handler::ErrorCallback());
+    }
     if (!request->profile_path.empty()) {
       // If a profile path was specified, set it on a successful connection.
       configuration_handler_->SetNetworkProfile(

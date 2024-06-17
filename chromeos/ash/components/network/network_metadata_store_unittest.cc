@@ -402,7 +402,7 @@ TEST_F(NetworkMetadataStoreTest, ConfigurationUpdated) {
   metadata_store()->SetIsConfiguredBySync(kGuid);
   ASSERT_FALSE(metadata_store()->GetLastConnectedTimestamp(kGuid).is_zero());
   ASSERT_TRUE(metadata_store()->GetIsConfiguredBySync(kGuid));
-  ASSERT_EQ(0, metadata_observer()->GetNumberOfUpdates(kGuid));
+  ASSERT_EQ(1, metadata_observer()->GetNumberOfUpdates(kGuid));
 
   auto properties =
       base::Value::Dict()
@@ -416,7 +416,7 @@ TEST_F(NetworkMetadataStoreTest, ConfigurationUpdated) {
 
   ASSERT_TRUE(metadata_store()->GetLastConnectedTimestamp(kGuid).is_zero());
   ASSERT_FALSE(metadata_store()->GetIsConfiguredBySync(kGuid));
-  ASSERT_EQ(1, metadata_observer()->GetNumberOfUpdates(kGuid));
+  ASSERT_EQ(2, metadata_observer()->GetNumberOfUpdates(kGuid));
 }
 
 TEST_F(NetworkMetadataStoreTest, SharedConfigurationUpdatedByOtherUser) {
