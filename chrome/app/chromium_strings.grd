@@ -820,6 +820,11 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_EXTENSIONS_ALERT_ITEM_BLOCKLISTED_MALWARE_TITLE" desc="A statement that multiple extension/apps have been newly blocklisted for malware.">
           Chromium found that these items contain malware:
         </message>
+
+        <!-- Manifest V2 Deprecation dialog -->
+        <message name="IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_KEEP_DIALOG_DESCRIPTION" desc="The description of the dialog asking the user if they want to keep the extension installed, which is affected by the Manifest V2 deprecation">
+          This extension is no longer supported. Chromium recommends that you remove it instead.
+        </message>
       </if>
 
       <!-- Extension Safety Check Detail Page strings -->

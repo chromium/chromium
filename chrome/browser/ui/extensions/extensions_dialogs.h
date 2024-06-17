@@ -31,6 +31,7 @@ class Profile;
 
 namespace content {
 class WebContents;
+class BrowserContext;
 }
 
 namespace gfx {
@@ -69,6 +70,14 @@ void ShowExtensionMultipleUninstallDialog(
     const std::vector<ExtensionId>& extension_ids,
     base::OnceClosure accept_callback,
     base::OnceClosure cancel_callback);
+
+// Shows a dialog when the user triggers the warning dismissal for an extension
+// affected by the MV2 deprecation.
+void ShowMv2DeprecationKeepDialog(content::BrowserContext* browser_context,
+                                  gfx::NativeWindow parent,
+                                  const Extension& extension,
+                                  base::OnceClosure accept_callback,
+                                  base::OnceClosure cancel_callback);
 
 // Shows a dialog when extensions require a refresh for their action
 // to be run or blocked. When the dialog is accepted, `callback` is

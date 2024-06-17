@@ -4273,6 +4273,7 @@ if (!is_android) {
         "../browser/ui/views/extensions/extensions_dialogs_browsertest.h",
         "../browser/ui/views/extensions/extensions_request_access_hover_card_coordinator_browsertest.cc",
         "../browser/ui/views/extensions/media_galleries_dialog_views_browsertest.cc",
+        "../browser/ui/views/extensions/mv2_deprecation_keep_dialog_browsertest.cc",
         "../browser/ui/views/extensions/reload_page_dialog_browsertest.cc",
         "../browser/ui/views/extensions/security_dialog_tracker_browsertest.cc",
         "../browser/ui/views/extensions/settings_overridden_dialog_browsertest.cc",

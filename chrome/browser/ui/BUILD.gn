@@ -5508,6 +5508,7 @@ static_library("ui") {
       "views/extensions/extensions_toolbar_container_view_controller.h",
       "views/extensions/extensions_toolbar_coordinator.cc",
       "views/extensions/extensions_toolbar_coordinator.h",
+      "views/extensions/mv2_deprecation_keep_dialog.cc",
       "views/extensions/reload_page_dialog.cc",
       "views/extensions/security_dialog_tracker.cc",
       "views/extensions/security_dialog_tracker.h",

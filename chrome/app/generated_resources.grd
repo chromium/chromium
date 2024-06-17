@@ -6327,6 +6327,14 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Learn more about disabled extensions.
       </message>
 
+      <!-- Manifest V2 Deprecation Dialog -->
+      <message name="IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_KEEP_DIALOG_TITLE" desc="The title of the dialog asking the user if they want to keep the extension installed, which is affected by the Manifest V2 deprecation">
+        Keep "<ph name="EXTENSION_NAME">$1<ex>Google Translate</ex></ph>"?
+      </message>
+      <message name="IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_KEEP_DIALOG_OK_BUTTON" desc="The text of the dialog button to keep the extension installed, which is affected by the Manifest V2 deprecation">
+        Keep
+      </message>
+
       <!-- Begin Extension Settings Overridden Dialog strings. -->
       <message name="IDS_EXTENSION_SETTINGS_OVERRIDDEN_DIALOG_CHANGE_IT_BACK" desc="The text of the button to revert to old settings; displayed in the dialog describing settings overridden by an extension.">
         Change it back
