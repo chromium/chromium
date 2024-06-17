@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/347137620 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/autofill/core/browser/geo/address_rewriter.h"
 
 #include <memory>
@@ -41,10 +36,13 @@ static bool ExtractRegionRulesData(const std::string& region,
   int resource_id = 0;
   std::string resource_key = GetMapKey(region);
   for (size_t i = 0; i < kAutofillAddressRewriterResourcesSize; ++i) {
-    if (kAutofillAddressRewriterResources[i].path == resource_key) {
-      resource_id = kAutofillAddressRewriterResources[i].id;
-      break;
-    }
+    // TODO: crbug.com/347651465: GRIT should define std::arrays instead of
+    // c-style arrays.
+    UNSAFE_BUFFERS(
+        if (kAutofillAddressRewriterResources[i].path == resource_key) {
+          resource_id = kAutofillAddressRewriterResources[i].id;
+          break;
+        })
   }
 
   if (!resource_id) {
