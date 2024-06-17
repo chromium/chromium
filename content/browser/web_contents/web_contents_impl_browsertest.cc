@@ -5390,8 +5390,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTest,
 
   EXPECT_FALSE(web_contents->ShouldIgnoreUnresponsiveRenderer());
   web_contents->IsClipboardPasteAllowedByPolicy(
-      ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com"))),
-      ClipboardEndpoint(ui::DataTransferEndpoint(GURL("google.com")),
+      ClipboardEndpoint(ui::DataTransferEndpoint(GURL("https://google.com/"))),
+      ClipboardEndpoint(ui::DataTransferEndpoint(GURL("https://google.com/")),
                         base::BindLambdaForTesting([web_contents] {
                           return web_contents->GetBrowserContext();
                         }),
