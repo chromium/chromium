@@ -517,7 +517,7 @@ class WebDriverProtocol(Protocol):
             # 5 seconds of extra_timeout we have as maximum to end the test before
             # the external timeout from testrunner triggers.
             self.webdriver.send_session_command("GET", "window", timeout=2)
-        except (socket.timeout, error.UnknownErrorException, error.InvalidSessionIdException):
+        except (OSError, error.WebDriverException):
             return False
         return True
 
@@ -630,11 +630,7 @@ class WebDriverTestharnessExecutor(TestharnessExecutor):
             #
             # https://github.com/w3c/webdriver/issues/1308
             if not isinstance(result, list) or len(result) != 3:
-                try:
-                    is_alive = self.is_alive()
-                except error.WebDriverException:
-                    is_alive = False
-
+                is_alive = self.is_alive()
                 if not is_alive:
                     raise Exception("Browser crashed during script execution.")
 
@@ -700,6 +696,9 @@ class WebDriverRefTestExecutor(RefTestExecutor):
             """return [window.outerWidth - window.innerWidth,
                        window.outerHeight - window.innerHeight];"""
         )
+        # width_offset and height_offset should never be negative
+        width_offset = max(width_offset, 0)
+        height_offset = max(height_offset, 0)
         try:
             self.protocol.webdriver.window.position = (0, 0)
         except error.InvalidArgumentException:
