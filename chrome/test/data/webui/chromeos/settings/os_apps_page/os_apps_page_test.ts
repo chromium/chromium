@@ -270,6 +270,45 @@ suite('<os-apps-page> Subpage trigger focusing', () => {
               `${triggerSelector} should be focused.`);
         });
   });
+
+  test(
+      'Returning from androidApps with playStore disabled focuses on button',
+      async () => {
+        await initPage();
+
+        const subpageTrigger =
+            appsPage.shadowRoot!.querySelector<HTMLButtonElement>(
+                '#androidApps .subpage-arrow');
+        assertTrue(!!subpageTrigger);
+        assertTrue(isVisible(subpageTrigger));
+
+        // Sub-page trigger navigates to Detailed build info subpage
+        subpageTrigger.click();
+        assertEquals(
+            routes.ANDROID_APPS_DETAILS, Router.getInstance().currentRoute);
+
+        // Disable PlayStore
+        appsPage.androidAppsInfo = {
+          playStoreEnabled: false,
+          settingsAppAvailable: false,
+        };
+        flush();
+
+        // Navigate back
+        const popStateEventPromise = eventToPromise('popstate', window);
+        Router.getInstance().navigateToPreviousRoute();
+        await popStateEventPromise;
+        await waitAfterNextRender(appsPage);
+
+        const arcEnableButton = appsPage.shadowRoot!.querySelector<HTMLElement>(
+            '#androidApps #arcEnable');
+        assertTrue(!!arcEnableButton);
+        assertTrue(isVisible(arcEnableButton));
+
+        assertEquals(
+            arcEnableButton, appsPage.shadowRoot!.activeElement,
+            '#arcEnable button should be focused.');
+      });
 });
 
 suite('AppsPageTests', () => {

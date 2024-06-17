@@ -339,7 +339,11 @@ export class OsSettingsAppsPageElement extends OsSettingsAppsPageElementBase {
     this.addFocusConfig(
         routes.MANAGE_ISOLATED_WEB_APPS, '#manageIsolatedWebAppsRow');
     this.addFocusConfig(
-        routes.ANDROID_APPS_DETAILS, '#androidApps .subpage-arrow');
+        routes.ANDROID_APPS_DETAILS,
+        () => this.shadowRoot!.querySelector<HTMLElement>(
+            this.androidAppsInfo.playStoreEnabled ?
+                '#androidApps .subpage-arrow' :
+                '#arcEnable'));
   }
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
