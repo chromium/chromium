@@ -53,6 +53,7 @@ executable("${updater_product_full_name}Util") {
   sources = [ "updater_util.cc" ]
   deps = [
     "//base",
+    "//chrome/enterprise_companion/device_management_storage",
     "//chrome/updater:base",
     "//chrome/updater:constants_prod",
     "//chrome/updater:external_constants",

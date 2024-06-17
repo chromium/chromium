@@ -28,13 +28,12 @@
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/device_management/dm_cached_policy_info.h"
 #include "chrome/updater/device_management/dm_message.h"
 #include "chrome/updater/device_management/dm_response_validator.h"
-#include "chrome/updater/device_management/dm_storage.h"
 #include "chrome/updater/external_constants_default.h"
 #include "chrome/updater/ipc/ipc_support.h"
 #include "chrome/updater/policy/service.h"
@@ -146,19 +145,23 @@ std::ostream& operator<<(std::ostream& os,
   }
 }
 
-scoped_refptr<DMStorage> GetDMStorage() {
+scoped_refptr<device_management_storage::DMStorage> GetDMStorage() {
   const base::FilePath storage_path =
       base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
           kCBCMPolicyPathSwitch);
-  return storage_path.empty() ? GetDefaultDMStorage()
-                              : base::MakeRefCounted<DMStorage>(storage_path);
+  return storage_path.empty()
+             ? device_management_storage::GetDefaultDMStorage()
+             : base::MakeRefCounted<device_management_storage::DMStorage>(
+                   storage_path);
 }
 
-std::unique_ptr<CachedPolicyInfo> GetCachedPolicyInfo(
-    scoped_refptr<DMStorage> dm_storage) {
+std::unique_ptr<device_management_storage::CachedPolicyInfo>
+GetCachedPolicyInfo(
+    scoped_refptr<device_management_storage::DMStorage> dm_storage) {
   const base::FilePath policy_info_file =
       dm_storage->policy_cache_folder().AppendASCII("CachedPolicyInfo");
-  auto cached_info = std::make_unique<CachedPolicyInfo>();
+  auto cached_info =
+      std::make_unique<device_management_storage::CachedPolicyInfo>();
   std::string policy_info_data;
   if (base::PathExists(policy_info_file) &&
       base::ReadFileToString(policy_info_file, &policy_info_data)) {
@@ -211,7 +214,7 @@ void PrintCachedPolicy(const base::FilePath& policy_path) {
     return;
   }
 
-  scoped_refptr<DMStorage> storage = GetDMStorage();
+  scoped_refptr<device_management_storage::DMStorage> storage = GetDMStorage();
   PolicyValidationResult status;
   DMResponseValidator validator(*GetCachedPolicyInfo(storage),
                                 storage->GetDmToken(), storage->GetDeviceID());
@@ -238,7 +241,8 @@ void PrintCachedPolicy(const base::FilePath& policy_path) {
             << std::endl;
 }
 
-void PrintCachedPolicyInfo(const CachedPolicyInfo& cached_info) {
+void PrintCachedPolicyInfo(
+    const device_management_storage::CachedPolicyInfo& cached_info) {
   constexpr size_t kPrintWidth = 16;
 
   std::cout << "Cached policy info:" << std::endl;
@@ -258,7 +262,7 @@ void PrintCachedPolicyInfo(const CachedPolicyInfo& cached_info) {
 }
 
 void PrintCBCMPolicies() {
-  scoped_refptr<DMStorage> storage = GetDMStorage();
+  scoped_refptr<device_management_storage::DMStorage> storage = GetDMStorage();
   if (!storage) {
     std::cerr << "Failed to instantiate DM storage instance." << std::endl;
     return;
@@ -271,7 +275,8 @@ void PrintCBCMPolicies() {
   std::cout << "DM token: " << storage->GetDmToken() << std::endl;
   std::cout << "-------------------------------------------------" << std::endl;
 
-  std::unique_ptr<CachedPolicyInfo> cached_info = GetCachedPolicyInfo(storage);
+  std::unique_ptr<device_management_storage::CachedPolicyInfo> cached_info =
+      GetCachedPolicyInfo(storage);
   if (cached_info) {
     PrintCachedPolicyInfo(*cached_info);
     std::cout << "-------------------------------------------------"

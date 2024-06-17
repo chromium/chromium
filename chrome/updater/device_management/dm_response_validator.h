@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/ranges/algorithm.h"
-#include "chrome/updater/device_management/dm_cached_policy_info.h"
+#include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 
 namespace enterprise_management {
 
@@ -98,9 +98,10 @@ struct PolicyValidationResult {
 
 class DMResponseValidator {
  public:
-  DMResponseValidator(const CachedPolicyInfo& policy_info,
-                      const std::string& expected_dm_token,
-                      const std::string& expected_device_id);
+  DMResponseValidator(
+      const device_management_storage::CachedPolicyInfo& policy_info,
+      const std::string& expected_dm_token,
+      const std::string& expected_device_id);
   ~DMResponseValidator();
 
   // Validates a single policy fetch response.
@@ -153,7 +154,7 @@ class DMResponseValidator {
       const enterprise_management::PolicyData& policy_data,
       PolicyValidationResult& validation_result) const;
 
-  const CachedPolicyInfo policy_info_;
+  const device_management_storage::CachedPolicyInfo policy_info_;
   const std::string expected_dm_token_;
   const std::string expected_device_id_;
 };

@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <utility>
@@ -18,12 +19,12 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
-#include "chrome/updater/device_management/dm_cached_policy_info.h"
+#include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/updater/device_management/dm_message.h"
 #include "chrome/updater/device_management/dm_policy_builder_for_testing.h"
 #include "chrome/updater/device_management/dm_response_validator.h"
-#include "chrome/updater/device_management/dm_storage.h"
 #include "chrome/updater/net/network.h"
+#include "chrome/updater/policy/dm_policy_manager.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
 #include "chrome/updater/test/unit_test_util.h"
@@ -43,7 +44,8 @@ using base::test::RunClosure;
 namespace updater {
 namespace {
 
-class TestTokenService : public TokenServiceInterface {
+class TestTokenService
+    : public device_management_storage::TokenServiceInterface {
  public:
   TestTokenService(const std::string& enrollment_token,
                    const std::string& dm_token)
@@ -127,7 +129,7 @@ class DMRequestCallbackHandler
     ASSERT_TRUE(storage_dir_.CreateUniqueTempDir());
     constexpr char kEnrollmentToken[] = "TestEnrollmentToken";
     constexpr char kDmToken[] = "test-dm-token";
-    storage_ = base::MakeRefCounted<DMStorage>(
+    storage_ = base::MakeRefCounted<device_management_storage::DMStorage>(
         storage_dir_.GetPath(),
         std::make_unique<TestTokenService>(kEnrollmentToken,
                                            init_dm_token ? kDmToken : ""));
@@ -138,7 +140,8 @@ class DMRequestCallbackHandler
           dm_response = GetDefaultTestingPolicyFetchDMResponse(
               /*first_request=*/true, /*rotate_to_new_key=*/false,
               DMPolicyBuilderForTesting::SigningOption::kSignNormally);
-      std::unique_ptr<CachedPolicyInfo> info = storage_->GetCachedPolicyInfo();
+      std::unique_ptr<device_management_storage::CachedPolicyInfo> info =
+          storage_->GetCachedPolicyInfo();
       std::vector<PolicyValidationResult> validation_results;
       DMPolicyMap policies = ParsePolicyFetchResponse(
           dm_response->SerializeAsString(), *info.get(), storage_->GetDmToken(),
@@ -160,13 +163,15 @@ class DMRequestCallbackHandler
     expected_public_key_type_ = expect_key_type;
   }
 
-  scoped_refptr<DMStorage> GetStorage() { return storage_; }
+  scoped_refptr<device_management_storage::DMStorage> GetStorage() {
+    return storage_;
+  }
 
  protected:
   virtual ~DMRequestCallbackHandler() = default;
 
   base::ScopedTempDir storage_dir_;
-  scoped_refptr<DMStorage> storage_;
+  scoped_refptr<device_management_storage::DMStorage> storage_;
 
   net::HttpStatusCode expected_http_status_ = net::HTTP_OK;
   DMClient::RequestResult expected_result_ = DMClient::RequestResult::kSuccess;
@@ -223,7 +228,8 @@ class DMPolicyFetchRequestCallbackHandler : public DMRequestCallbackHandler {
       return;
     }
 
-    std::unique_ptr<CachedPolicyInfo> info = storage_->GetCachedPolicyInfo();
+    std::unique_ptr<device_management_storage::CachedPolicyInfo> info =
+        storage_->GetCachedPolicyInfo();
     switch (expected_public_key_type_) {
       case PublicKeyType::kTestKey1:
         EXPECT_EQ(info->public_key(), GetTestKey1()->GetPublicKeyString());
@@ -238,10 +244,10 @@ class DMPolicyFetchRequestCallbackHandler : public DMRequestCallbackHandler {
     }
 
     if (result == DMClient::RequestResult::kSuccess) {
-      std::unique_ptr<::wireless_android_enterprise_devicemanagement::
-                          OmahaSettingsClientProto>
-          omaha_settings = storage_->GetOmahaPolicySettings();
-      EXPECT_NE(omaha_settings, nullptr);
+      std::optional<::wireless_android_enterprise_devicemanagement::
+                        OmahaSettingsClientProto>
+          omaha_settings = GetOmahaPolicySettings(storage_);
+      EXPECT_TRUE(omaha_settings);
 
       // Sample some of the policy values and check they are expected.
       EXPECT_EQ(omaha_settings->proxy_mode(), "pac_script");

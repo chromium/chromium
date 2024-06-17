@@ -17,11 +17,11 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/updater/configurator.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/device_management/dm_client.h"
 #include "chrome/updater/device_management/dm_response_validator.h"
-#include "chrome/updater/device_management/dm_storage.h"
 #include "chrome/updater/policy/dm_policy_manager.h"
 #include "chrome/updater/policy/service.h"
 #include "chrome/updater/util/util.h"
@@ -62,7 +62,8 @@ void PolicyFetcher::RegisterDevice(
     scoped_refptr<base::SequencedTaskRunner> main_task_runner,
     base::OnceCallback<void(bool, DMClient::RequestResult)> callback) {
   VLOG(1) << __func__;
-  scoped_refptr<DMStorage> dm_storage = GetDefaultDMStorage();
+  scoped_refptr<device_management_storage::DMStorage> dm_storage =
+      device_management_storage::GetDefaultDMStorage();
   if (!dm_storage) {
     main_task_runner->PostTask(
         FROM_HERE,
@@ -113,7 +114,7 @@ void PolicyFetcher::FetchPolicy(
   DMClient::FetchPolicy(
       DMClient::CreateDefaultConfigurator(server_url_,
                                           policy_service_proxy_configuration_),
-      GetDefaultDMStorage(),
+      device_management_storage::GetDefaultDMStorage(),
       base::BindOnce(&PolicyFetcher::OnFetchPolicyRequestComplete, this)
           .Then(std::move(callback)));
 }
@@ -138,7 +139,7 @@ PolicyFetcher::OnFetchPolicyRequestComplete(
             &DMClient::ReportPolicyValidationErrors,
             DMClient::CreateDefaultConfigurator(
                 server_url_, policy_service_proxy_configuration_),
-            GetDefaultDMStorage(), validation_result,
+            device_management_storage::GetDefaultDMStorage(), validation_result,
             base::BindOnce([](DMClient::RequestResult result) {
               if (result != DMClient::RequestResult::kSuccess) {
                 LOG(WARNING)

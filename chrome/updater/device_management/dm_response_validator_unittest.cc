@@ -8,7 +8,7 @@
 #include <memory>
 #include <utility>
 
-#include "chrome/updater/device_management/dm_cached_policy_info.h"
+#include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/updater/device_management/dm_message.h"
 #include "chrome/updater/device_management/dm_policy_builder_for_testing.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
@@ -22,7 +22,8 @@ namespace edm = ::wireless_android_enterprise_devicemanagement;
 
 class DMResponseValidatorTests : public ::testing::Test {
  protected:
-  void GetCachedInfoWithPublicKey(CachedPolicyInfo& cached_info) const;
+  void GetCachedInfoWithPublicKey(
+      device_management_storage::CachedPolicyInfo& cached_info) const;
 
   std::unique_ptr<::enterprise_management::DeviceManagementResponse>
   GetDMResponseWithOmahaPolicy(
@@ -30,7 +31,7 @@ class DMResponseValidatorTests : public ::testing::Test {
 };
 
 void DMResponseValidatorTests::GetCachedInfoWithPublicKey(
-    CachedPolicyInfo& cached_info) const {
+    device_management_storage::CachedPolicyInfo& cached_info) const {
   std::unique_ptr<::enterprise_management::DeviceManagementResponse>
       dm_response = GetDefaultTestingPolicyFetchDMResponse(
           /*first_request=*/true, /*rotate_to_new_key=*/false,
@@ -69,8 +70,8 @@ TEST_F(DMResponseValidatorTests, ValidationOKWithoutPublicKey) {
   const ::enterprise_management::PolicyFetchResponse& response =
       dm_response->policy_response().responses(0);
 
-  DMResponseValidator validator(CachedPolicyInfo(), "test-dm-token",
-                                "test-device-id");
+  DMResponseValidator validator(device_management_storage::CachedPolicyInfo(),
+                                "test-dm-token", "test-device-id");
   PolicyValidationResult validation_result;
   EXPECT_TRUE(validator.ValidatePolicyResponse(response, validation_result));
   EXPECT_EQ(validation_result.status,
@@ -80,7 +81,7 @@ TEST_F(DMResponseValidatorTests, ValidationOKWithoutPublicKey) {
 
 TEST_F(DMResponseValidatorTests, ValidationOKWithPublicKey) {
   // Cached info should be created before parsing next policy response.
-  CachedPolicyInfo cached_info;
+  device_management_storage::CachedPolicyInfo cached_info;
   GetCachedInfoWithPublicKey(cached_info);
 
   std::unique_ptr<::enterprise_management::DeviceManagementResponse>
@@ -110,8 +111,8 @@ TEST_F(DMResponseValidatorTests, UnexpectedDMToken) {
   const ::enterprise_management::PolicyFetchResponse& response =
       dm_response->policy_response().responses(0);
 
-  DMResponseValidator validator(CachedPolicyInfo(), "wrong-dm-token",
-                                "test-device-id");
+  DMResponseValidator validator(device_management_storage::CachedPolicyInfo(),
+                                "wrong-dm-token", "test-device-id");
   PolicyValidationResult validation_result;
   EXPECT_FALSE(validator.ValidatePolicyResponse(response, validation_result));
   EXPECT_EQ(validation_result.policy_type, "google/machine-level-omaha");
@@ -130,8 +131,8 @@ TEST_F(DMResponseValidatorTests, UnexpectedDeviceID) {
   const ::enterprise_management::PolicyFetchResponse& response =
       dm_response->policy_response().responses(0);
 
-  DMResponseValidator validator(CachedPolicyInfo(), "test-dm-token",
-                                "unexpected-device-id");
+  DMResponseValidator validator(device_management_storage::CachedPolicyInfo(),
+                                "test-dm-token", "unexpected-device-id");
   PolicyValidationResult validation_result;
   EXPECT_FALSE(validator.ValidatePolicyResponse(response, validation_result));
   EXPECT_EQ(validation_result.policy_type, "google/machine-level-omaha");
@@ -152,8 +153,8 @@ TEST_F(DMResponseValidatorTests, NoCachedPublicKey) {
   const ::enterprise_management::PolicyFetchResponse& response =
       dm_response->policy_response().responses(0);
 
-  DMResponseValidator validator(CachedPolicyInfo(), "test-dm-token",
-                                "test-device-id");
+  DMResponseValidator validator(device_management_storage::CachedPolicyInfo(),
+                                "test-dm-token", "test-device-id");
   PolicyValidationResult validation_result;
   EXPECT_FALSE(validator.ValidatePolicyResponse(response, validation_result));
   EXPECT_EQ(validation_result.policy_type, "google/machine-level-omaha");
@@ -164,7 +165,7 @@ TEST_F(DMResponseValidatorTests, NoCachedPublicKey) {
 
 TEST_F(DMResponseValidatorTests, BadSignedPublicKey) {
   // Cached info should be created before parsing next policy response.
-  CachedPolicyInfo cached_info;
+  device_management_storage::CachedPolicyInfo cached_info;
   GetCachedInfoWithPublicKey(cached_info);
 
   // Validation should fail if the public key is not signed properly.
@@ -198,8 +199,8 @@ TEST_F(DMResponseValidatorTests, BadSignedPolicyData) {
   const ::enterprise_management::PolicyFetchResponse& response =
       dm_response->policy_response().responses(0);
 
-  DMResponseValidator validator(CachedPolicyInfo(), "test-dm-token",
-                                "test-device-id");
+  DMResponseValidator validator(device_management_storage::CachedPolicyInfo(),
+                                "test-dm-token", "test-device-id");
   PolicyValidationResult validation_result;
   EXPECT_FALSE(validator.ValidatePolicyResponse(response, validation_result));
   EXPECT_EQ(validation_result.status,
@@ -238,8 +239,8 @@ TEST_F(DMResponseValidatorTests, OmahaPolicyWithBadValues) {
   const ::enterprise_management::PolicyFetchResponse& response =
       dm_response->policy_response().responses(0);
 
-  DMResponseValidator validator(CachedPolicyInfo(), "test-dm-token",
-                                "test-device-id");
+  DMResponseValidator validator(device_management_storage::CachedPolicyInfo(),
+                                "test-dm-token", "test-device-id");
   PolicyValidationResult validation_result;
   EXPECT_FALSE(validator.ValidatePolicyResponse(response, validation_result));
   EXPECT_EQ(validation_result.policy_type, kGoogleUpdatePolicyType);

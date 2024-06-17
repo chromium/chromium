@@ -14,8 +14,8 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/device_management/dm_cached_policy_info.h"
 #include "chrome/updater/device_management/dm_message.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -267,9 +267,10 @@ PolicyValidationResult::PolicyValidationResult(
     const PolicyValidationResult& other) = default;
 PolicyValidationResult::~PolicyValidationResult() = default;
 
-DMResponseValidator::DMResponseValidator(const CachedPolicyInfo& policy_info,
-                                         const std::string& expected_dm_token,
-                                         const std::string& expected_device_id)
+DMResponseValidator::DMResponseValidator(
+    const device_management_storage::CachedPolicyInfo& policy_info,
+    const std::string& expected_dm_token,
+    const std::string& expected_device_id)
     : policy_info_(policy_info),
       expected_dm_token_(expected_dm_token),
       expected_device_id_(expected_device_id) {}

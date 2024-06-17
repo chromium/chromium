@@ -1,5 +1,6 @@
 include_rules = [
   "+chrome/common",
+  "+chrome/enterprise_companion/device_management_storage",
   "+chrome/installer/util",
   "+components/crash/core/common",
   "+components/crx_file",
@@ -18,8 +19,8 @@ include_rules = [
   "+third_party/crashpad",
   "+third_party/re2",
   "+third_party/updater",
-  "+third_party/zlib/google",
   "+third_party/wtl",
+  "+third_party/zlib/google",
 
   # The metainstaller should not depend on ICU, to minimize binary size.
   "-base/i18n",

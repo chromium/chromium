@@ -55,6 +55,7 @@ test("enterprise_companion_tests") {
     "//base/test:test_support",
     "//chrome/enterprise_companion/device_management_storage",
     "//chrome/enterprise_companion/device_management_storage:unit_tests",
+    "//chrome/updater:constants_test",
     "//components/named_mojo_ipc_server",
     "//components/policy/core/common",
     "//components/policy/core/common:test_support",
@@ -73,7 +74,10 @@ static_library("client") {
 if (!is_official_build) {
   executable("enterprise_companion") {
     sources = [ "main.cc" ]
-    deps = [ ":base" ]
+    deps = [
+      ":base",
+      "//chrome/updater:constants_prod",
+    ]
 
     if (is_win) {
       configs += [ "//build/config/win:windowed" ]

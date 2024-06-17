@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+# Note that this library must be linked against //chrome/updater:constants_prod
+# or constants_test to get symbols for constants_header.
 static_library("device_management_storage") {
   sources = [
     "dm_storage.cc",
@@ -10,13 +12,15 @@ static_library("device_management_storage") {
   deps = [
     "//base",
     "//chrome/updater:branding_header",
-    "//chrome/updater:browser_sources",
+    "//chrome/updater:constants_header",
+    "//chrome/updater:public_sources",
     "//components/policy/proto",
   ]
   visibility = [
     ":unit_tests",
     "//chrome/enterprise_companion:*",
     "//chrome/updater:*",
+    "//chrome/updater/tools:*",
   ]
 
   if (is_linux) {
@@ -37,7 +41,8 @@ source_set("unit_tests") {
     ":device_management_storage",
     "//base",
     "//base/test:test_support",
-    "//chrome/updater:browser_sources",
+    "//chrome/updater:constants_test",
+    "//chrome/updater:public_sources",
     "//components/policy/proto",
     "//remoting/host/mojom",
     "//testing/gmock",

@@ -48,10 +48,10 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
+#include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/updater/activity.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/device_management/dm_policy_builder_for_testing.h"
-#include "chrome/updater/device_management/dm_storage.h"
 #include "chrome/updater/external_constants_builder.h"
 #include "chrome/updater/external_constants_override.h"
 #include "chrome/updater/persisted_data.h"
@@ -323,7 +323,9 @@ void ExpectDeviceManagementRequest(ScopedServer* test_server,
           R"(agent=%s\+%s&platform=.*&deviceid=%s)",
           test_server->device_management_path().c_str(), request_type.c_str(),
           PRODUCT_FULLNAME_STRING, kUpdaterVersion,
-          GetDefaultDMStorage()->GetDeviceID().c_str())),
+          device_management_storage::GetDefaultDMStorage()
+              ->GetDeviceID()
+              .c_str())),
       request::GetUpdaterUserAgentMatcher(),
       request::GetHeaderMatcher(
           {{"Authorization",
@@ -1371,7 +1373,8 @@ void RunOfflineInstallOsNotSupported(UpdaterScope scope,
 #endif  // !BUILDFLAG(IS_WIN)
 
 void DMPushEnrollmentToken(const std::string& enrollment_token) {
-  scoped_refptr<DMStorage> storage = GetDefaultDMStorage();
+  scoped_refptr<device_management_storage::DMStorage> storage =
+      device_management_storage::GetDefaultDMStorage();
   ASSERT_NE(storage, nullptr);
   EXPECT_TRUE(storage->StoreEnrollmentToken(enrollment_token));
   EXPECT_TRUE(storage->DeleteDMToken());
@@ -1381,14 +1384,16 @@ void DMDeregisterDevice(UpdaterScope scope) {
   if (!IsSystemInstall(GetUpdaterScopeForTesting())) {
     return;
   }
-  EXPECT_TRUE(GetDefaultDMStorage()->InvalidateDMToken());
+  EXPECT_TRUE(
+      device_management_storage::GetDefaultDMStorage()->InvalidateDMToken());
 }
 
 void DMCleanup(UpdaterScope scope) {
   if (!IsSystemInstall(GetUpdaterScopeForTesting())) {
     return;
   }
-  scoped_refptr<DMStorage> storage = GetDefaultDMStorage();
+  scoped_refptr<device_management_storage::DMStorage> storage =
+      device_management_storage::GetDefaultDMStorage();
   EXPECT_TRUE(storage->DeleteEnrollmentToken());
   EXPECT_TRUE(storage->DeleteDMToken());
   EXPECT_TRUE(base::DeletePathRecursively(storage->policy_cache_folder()));
@@ -1430,7 +1435,9 @@ void ExpectDeviceManagementPolicyFetchRequest(
             dm_response = GetDMResponseForOmahaPolicy(
                 first_request, rotate_public_key,
                 DMPolicyBuilderForTesting::SigningOption::kSignNormally,
-                dm_token, GetDefaultDMStorage()->GetDeviceID(), omaha_settings);
+                dm_token,
+                device_management_storage::GetDefaultDMStorage()->GetDeviceID(),
+                omaha_settings);
         return dm_response->SerializeAsString();
       }(),
       target_url);
@@ -1449,7 +1456,9 @@ void ExpectDeviceManagementPolicyFetchWithNewPublicKeyRequest(
                 DMPolicyBuilderForTesting::CreateInstanceWithOptions(
                     /*first_request=*/false, /*rotate_to_new_key=*/true,
                     DMPolicyBuilderForTesting::SigningOption::kSignNormally,
-                    dm_token, GetDefaultDMStorage()->GetDeviceID())
+                    dm_token,
+                    device_management_storage::GetDefaultDMStorage()
+                        ->GetDeviceID())
                     ->BuildDMResponseForPolicies(
                         {{"a-mock-policy-type-without-new-public-key",
                           omaha_settings.SerializeAsString()},
@@ -1477,7 +1486,9 @@ void ExpectDeviceManagementTokenDeletionRequest(ScopedServer* test_server,
                 DMPolicyBuilderForTesting::CreateInstanceWithOptions(
                     /*first_request=*/false, /*rotate_to_new_key=*/false,
                     DMPolicyBuilderForTesting::SigningOption::kSignNormally,
-                    dm_token, GetDefaultDMStorage()->GetDeviceID())
+                    dm_token,
+                    device_management_storage::GetDefaultDMStorage()
+                        ->GetDeviceID())
                     ->BuildDMResponseWithError(error_detail);
         return dm_response->SerializeAsString();
       }());

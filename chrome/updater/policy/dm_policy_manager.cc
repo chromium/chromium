@@ -10,14 +10,19 @@
 #include <vector>
 
 #include "base/enterprise_util.h"
+#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/device_management/dm_message.h"
 #include "chrome/updater/policy/manager.h"
+#include "chrome/updater/protos/omaha_settings.pb.h"
+#include "device_management_backend.pb.h"
 
 namespace updater {
 
@@ -304,15 +309,34 @@ std::optional<std::vector<std::string>> DMPolicyManager::GetAppsWithPolicy()
   return apps_with_policy;
 }
 
+std::optional<
+    wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto>
+GetOmahaPolicySettings(
+    scoped_refptr<device_management_storage::DMStorage> dm_storage) {
+  wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto
+      omaha_settings;
+  std::optional<enterprise_management::PolicyData> policy_data =
+      dm_storage->ReadPolicyData(kGoogleUpdatePolicyType);
+  if (!policy_data || !policy_data->has_policy_value()) {
+    return std::nullopt;
+  }
+  if (!omaha_settings.ParseFromString(policy_data->policy_value())) {
+    VLOG(1) << "Failed to parse OmahaSettingsClientProto";
+    return std::nullopt;
+  }
+  return omaha_settings;
+}
+
 scoped_refptr<PolicyManagerInterface> CreateDMPolicyManager(
     const std::optional<bool>& override_is_managed_device) {
-  scoped_refptr<DMStorage> default_dm_storage = GetDefaultDMStorage();
+  scoped_refptr<device_management_storage::DMStorage> default_dm_storage =
+      device_management_storage::GetDefaultDMStorage();
   if (!default_dm_storage) {
     return nullptr;
   }
-  std::unique_ptr<
+  std::optional<
       ::wireless_android_enterprise_devicemanagement::OmahaSettingsClientProto>
-      omaha_settings = default_dm_storage->GetOmahaPolicySettings();
+      omaha_settings = GetOmahaPolicySettings(default_dm_storage);
   if (!omaha_settings) {
     return nullptr;
   }

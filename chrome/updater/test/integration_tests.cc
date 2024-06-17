@@ -34,11 +34,11 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
+#include "chrome/enterprise_companion/device_management_storage/dm_storage.h"
 #include "chrome/updater/constants.h"
-#include "chrome/updater/device_management/dm_cached_policy_info.h"
 #include "chrome/updater/device_management/dm_policy_builder_for_testing.h"
-#include "chrome/updater/device_management/dm_storage.h"
 #include "chrome/updater/ipc/ipc_support.h"
+#include "chrome/updater/policy/dm_policy_manager.h"
 #include "chrome/updater/protos/omaha_settings.pb.h"
 #include "chrome/updater/registration_data.h"
 #include "chrome/updater/service_proxy_factory.h"
@@ -2579,11 +2579,12 @@ TEST_F(IntegrationTestDeviceManagement, PolicyFetchBeforeInstall) {
   ASSERT_NO_FATAL_FAILURE(Install());
   ASSERT_NO_FATAL_FAILURE(ExpectInstalled());
 
-  scoped_refptr<DMStorage> dm_storage = GetDefaultDMStorage();
+  scoped_refptr<device_management_storage::DMStorage> dm_storage =
+      device_management_storage::GetDefaultDMStorage();
   ASSERT_NE(dm_storage, nullptr);
-  std::unique_ptr<OmahaSettingsClientProto> omaha_policy =
-      dm_storage->GetOmahaPolicySettings();
-  ASSERT_TRUE(omaha_policy != nullptr);
+  std::optional<OmahaSettingsClientProto> omaha_policy =
+      GetOmahaPolicySettings(dm_storage);
+  ASSERT_TRUE(omaha_policy);
   EXPECT_EQ(omaha_policy->download_preference(), "not-cacheable");
   EXPECT_EQ(omaha_policy->proxy_mode(), "system");
   EXPECT_EQ(omaha_policy->proxy_server(), "test.proxy.server");
@@ -3035,14 +3036,16 @@ TEST_F(IntegrationTestDeviceManagement, DMTokenDeletion) {
       ExpectNoUpdateSequence(test_server_.get(), kApp1.appid));
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
-  EXPECT_EQ(GetDefaultDMStorage()->GetDmToken(), kDMToken);
+  EXPECT_EQ(device_management_storage::GetDefaultDMStorage()->GetDmToken(),
+            kDMToken);
 
   // Run a second policy fetch and delete the DM token.
   ExpectDeviceManagementTokenDeletionRequest(test_server_.get(), kDMToken,
                                              /*invalidate_token=*/false);
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
-  EXPECT_TRUE(GetDefaultDMStorage()->GetDmToken().empty());
+  EXPECT_TRUE(
+      device_management_storage::GetDefaultDMStorage()->GetDmToken().empty());
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp1.appid));
@@ -3064,14 +3067,16 @@ TEST_F(IntegrationTestDeviceManagement, DMTokenInvalidation) {
       ExpectNoUpdateSequence(test_server_.get(), kApp1.appid));
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
-  EXPECT_EQ(GetDefaultDMStorage()->GetDmToken(), kDMToken);
+  EXPECT_EQ(device_management_storage::GetDefaultDMStorage()->GetDmToken(),
+            kDMToken);
 
   // Run a second policy fetch and invalidate the DM token.
   ExpectDeviceManagementTokenDeletionRequest(test_server_.get(), kDMToken,
                                              /*invalidate_token=*/true);
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
-  EXPECT_TRUE(GetDefaultDMStorage()->IsDeviceDeregistered());
+  EXPECT_TRUE(
+      device_management_storage::GetDefaultDMStorage()->IsDeviceDeregistered());
 
   ASSERT_NO_FATAL_FAILURE(ExpectUninstallPing(test_server_.get()));
   ASSERT_NO_FATAL_FAILURE(UninstallApp(kApp1.appid));
@@ -3097,8 +3102,9 @@ TEST_F(IntegrationTestDeviceManagement, PublicKeyRotation) {
   ASSERT_NO_FATAL_FAILURE(RunWake(0));
   ASSERT_TRUE(WaitForUpdaterExit());
 
-  scoped_refptr<DMStorage> dm_storage = GetDefaultDMStorage();
-  std::unique_ptr<CachedPolicyInfo> cached_info =
+  scoped_refptr<device_management_storage::DMStorage> dm_storage =
+      device_management_storage::GetDefaultDMStorage();
+  std::unique_ptr<device_management_storage::CachedPolicyInfo> cached_info =
       dm_storage->GetCachedPolicyInfo();
   ASSERT_NE(cached_info, nullptr);
   int64_t initial_key_timestamp = cached_info->timestamp();
