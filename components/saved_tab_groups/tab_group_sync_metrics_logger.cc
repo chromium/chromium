@@ -9,6 +9,71 @@
 #include "components/sync_device_info/device_info_tracker.h"
 
 namespace tab_groups {
+namespace {
+
+void LogGroupCreated(DeviceType group_create_origin) {
+  base::UmaHistogramEnumeration(
+      "TabGroups.Sync.TabGroup.Created.GroupCreateOrigin", group_create_origin,
+      DeviceType::kMaxValue);
+}
+
+void LogGroupRemoved(DeviceType group_create_origin) {
+  base::UmaHistogramEnumeration(
+      "TabGroups.Sync.TabGroup.Removed.GroupCreateOrigin", group_create_origin,
+      DeviceType::kMaxValue);
+}
+
+void LogGroupOpened(DeviceType group_create_origin) {
+  base::UmaHistogramEnumeration(
+      "TabGroups.Sync.TabGroup.Opened.GroupCreateOrigin", group_create_origin,
+      DeviceType::kMaxValue);
+}
+
+void LogGroupClosed(DeviceType group_create_origin) {
+  base::UmaHistogramEnumeration(
+      "TabGroups.Sync.TabGroup.Closed.GroupCreateOrigin", group_create_origin,
+      DeviceType::kMaxValue);
+}
+
+void LogGroupVisualsChanged(DeviceType group_create_origin) {
+  base::UmaHistogramEnumeration(
+      "TabGroups.Sync.TabGroup.VisualsChanged.GroupCreateOrigin",
+      group_create_origin, DeviceType::kMaxValue);
+}
+
+void LogGroupTabsReordered(DeviceType group_create_origin) {
+  base::UmaHistogramEnumeration(
+      "TabGroups.Sync.TabGroup.TabsReordered.GroupCreateOrigin",
+      group_create_origin, DeviceType::kMaxValue);
+}
+
+void LogTabAdded(DeviceType group_create_origin) {
+  base::UmaHistogramEnumeration(
+      "TabGroups.Sync.TabGroup.TabAdded.GroupCreateOrigin", group_create_origin,
+      DeviceType::kMaxValue);
+}
+
+void LogTabNavigated(DeviceType group_create_origin,
+                     DeviceType tab_create_origin) {
+  base::UmaHistogramEnumeration(
+      "TabGroups.Sync.TabGroup.TabNavigated.GroupCreateOrigin",
+      group_create_origin, DeviceType::kMaxValue);
+  base::UmaHistogramEnumeration(
+      "TabGroups.Sync.TabGroup.TabNavigated.TabCreateOrigin", tab_create_origin,
+      DeviceType::kMaxValue);
+}
+
+void LogTabRemoved(DeviceType group_create_origin,
+                   DeviceType tab_create_origin) {
+  base::UmaHistogramEnumeration(
+      "TabGroups.Sync.TabGroup.TabRemoved.GroupCreateOrigin",
+      group_create_origin, DeviceType::kMaxValue);
+  base::UmaHistogramEnumeration(
+      "TabGroups.Sync.TabGroup.TabRemoved.TabCreateOrigin", tab_create_origin,
+      DeviceType::kMaxValue);
+}
+
+}  // namespace
 
 TabGroupSyncMetricsLogger::TabGroupSyncMetricsLogger(
     syncer::DeviceInfoTracker* device_info_tracker)
@@ -19,7 +84,42 @@ TabGroupSyncMetricsLogger::~TabGroupSyncMetricsLogger() = default;
 void TabGroupSyncMetricsLogger::LogEvent(
     TabGroupEvent event,
     const std::optional<std::string>& group_create_cache_guid,
-    const std::optional<std::string>& tab_create_cache_guid) {}
+    const std::optional<std::string>& tab_create_cache_guid) {
+  DeviceType group_create_origin =
+      GetDeviceTypeFromCacheGuid(group_create_cache_guid);
+  DeviceType tab_create_origin =
+      GetDeviceTypeFromCacheGuid(tab_create_cache_guid);
+
+  switch (event) {
+    case TabGroupEvent::kTabGroupCreated:
+      LogGroupCreated(group_create_origin);
+      break;
+    case TabGroupEvent::kTabGroupRemoved:
+      LogGroupRemoved(group_create_origin);
+      break;
+    case TabGroupEvent::kTabGroupOpened:
+      LogGroupOpened(group_create_origin);
+      break;
+    case TabGroupEvent::kTabGroupClosed:
+      LogGroupClosed(group_create_origin);
+      break;
+    case TabGroupEvent::kTabGroupVisualsChanged:
+      LogGroupVisualsChanged(group_create_origin);
+      break;
+    case TabGroupEvent::kTabGroupTabsReordered:
+      LogGroupTabsReordered(group_create_origin);
+      break;
+    case TabGroupEvent::kTabAdded:
+      LogTabAdded(group_create_origin);
+      break;
+    case TabGroupEvent::kTabNavigated:
+      LogTabNavigated(group_create_origin, tab_create_origin);
+      break;
+    case TabGroupEvent::kTabRemoved:
+      LogTabRemoved(group_create_origin, tab_create_origin);
+      break;
+  }
+}
 
 DeviceType TabGroupSyncMetricsLogger::GetDeviceTypeFromCacheGuid(
     const std::optional<std::string>& cache_guid) const {

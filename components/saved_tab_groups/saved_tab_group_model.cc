@@ -427,6 +427,28 @@ void SavedTabGroupModel::MoveTabInGroupTo(const base::Uuid& group_id,
   }
 }
 
+void SavedTabGroupModel::UpdateLastUpdaterCacheGuidForGroup(
+    const std::optional<std::string>& cache_guid,
+    const LocalTabGroupID& group_id,
+    const std::optional<LocalTabID>& tab_id) {
+  const std::optional<int> index = GetIndexOf(group_id);
+  if (!index.has_value()) {
+    return;
+  }
+
+  SavedTabGroup& group = saved_tab_groups_[index.value()];
+  group.SetLastUpdaterCacheGuid(cache_guid);
+
+  if (!tab_id.has_value()) {
+    return;
+  }
+
+  auto* tab = group.GetTab(tab_id.value());
+  if (tab) {
+    tab->SetLastUpdaterCacheGuid(cache_guid);
+  }
+}
+
 const SavedTabGroup* SavedTabGroupModel::MergeRemoteGroupMetadata(
     const base::Uuid& guid,
     const std::u16string& title,

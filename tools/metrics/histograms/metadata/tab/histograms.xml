@@ -872,6 +872,96 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="TabGroups.Sync.TabGroup.Closed.GroupCreateOrigin"
+    enum="DeviceType" expires_after="2024-12-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-multiplayer-eng@google.com</owner>
+  <summary>
+    Records the DeviceType of the device in which a tab group was created.
+    Recorded when the group is closed.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.TabGroup.Created.GroupCreateOrigin"
+    enum="DeviceType" expires_after="2024-12-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-multiplayer-eng@google.com</owner>
+  <summary>
+    Records the DeviceType of the device in which a tab group was created.
+    Recorded when the group is created.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.TabGroup.Opened.GroupCreateOrigin"
+    enum="DeviceType" expires_after="2024-12-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-multiplayer-eng@google.com</owner>
+  <summary>
+    Records the DeviceType of the device in which a tab group was created.
+    Recorded when the group is opened.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.TabGroup.Removed.GroupCreateOrigin"
+    enum="DeviceType" expires_after="2024-12-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-multiplayer-eng@google.com</owner>
+  <summary>
+    Records the DeviceType of the device in which a tab group was created.
+    Recorded when the group is removed.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.TabGroup.TabAdded.GroupCreateOrigin"
+    enum="DeviceType" expires_after="2024-12-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-multiplayer-eng@google.com</owner>
+  <summary>
+    Records the DeviceType of the device in which a tab group was created.
+    Recorded when a tab was added to the tab group.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.TabGroup.TabNavigated.GroupCreateOrigin"
+    enum="DeviceType" expires_after="2024-12-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-multiplayer-eng@google.com</owner>
+  <summary>
+    Records the DeviceType of the device in which a tab group was created.
+    Recorded when a tab was navigated in the tab group.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.TabGroup.TabRemoved.GroupCreateOrigin"
+    enum="DeviceType" expires_after="2024-12-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-multiplayer-eng@google.com</owner>
+  <summary>
+    Records the DeviceType of the device in which a tab group was created.
+    Recorded when a tab was was removed from the tab group.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.TabGroup.TabsReordered.GroupCreateOrigin"
+    enum="DeviceType" expires_after="2024-12-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-multiplayer-eng@google.com</owner>
+  <summary>
+    Records the DeviceType of the device in which a tab group was created.
+    Recorded when the tabs are reordered inside the group.
+  </summary>
+</histogram>
+
+<histogram name="TabGroups.Sync.TabGroup.VisualsChanged.GroupCreateOrigin"
+    enum="DeviceType" expires_after="2024-12-01">
+  <owner>shaktisahu@chromium.org</owner>
+  <owner>chrome-multiplayer-eng@google.com</owner>
+  <summary>
+    Records the DeviceType of the device in which a tab group was created.
+    Recorded when the group visuals (title or color) is changed.
+  </summary>
+</histogram>
+
 <histogram name="TabGroups.TabGroupBubble.TabCount" units="tabs"
     expires_after="2024-11-03">
   <owner>sophiechang@chromium.org</owner>

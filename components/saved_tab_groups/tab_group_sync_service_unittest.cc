@@ -306,6 +306,8 @@ TEST_F(TabGroupSyncServiceTest, AddGroup) {
   EXPECT_EQ(group->title(), group_4.title());
   EXPECT_EQ(group->color(), group_4.color());
   EXPECT_FALSE(group->created_before_syncing_tab_groups());
+  EXPECT_EQ(kTestCacheGuid, group->creator_cache_guid());
+
   test::CompareSavedTabGroupTabs(group->saved_tabs(), group_4.saved_tabs());
 }
 

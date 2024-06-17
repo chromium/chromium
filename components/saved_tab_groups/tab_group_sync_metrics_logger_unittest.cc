@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/test/metrics/histogram_tester.h"
 #include "components/saved_tab_groups/saved_tab_group_test_utils.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_tracker.h"
@@ -19,6 +20,12 @@ using testing::Invoke;
 using testing::Return;
 
 namespace tab_groups {
+namespace {
+
+const char kDeviceGuid1[] = "device1";
+const char kDeviceGuid2[] = "device2";
+
+}  // namespace
 
 class TabGroupSyncMetricsLoggerTest : public testing::Test {
  public:
@@ -42,6 +49,80 @@ class TabGroupSyncMetricsLoggerTest : public testing::Test {
   std::unique_ptr<syncer::FakeDeviceInfoTracker> device_info_tracker_;
   std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger_;
 };
+
+TEST_F(TabGroupSyncMetricsLoggerTest, HistogramsAreEmittedForLogEvents) {
+  base::HistogramTester histogram_tester;
+  auto device_info1 =
+      test::CreateDeviceInfo(kDeviceGuid1, syncer::DeviceInfo::OsType::kAndroid,
+                             syncer::DeviceInfo::FormFactor::kPhone);
+  auto device_info2 =
+      test::CreateDeviceInfo(kDeviceGuid2, syncer::DeviceInfo::OsType::kWindows,
+                             syncer::DeviceInfo::FormFactor::kDesktop);
+  device_info_tracker_->Add(device_info1.get());
+  device_info_tracker_->Add(device_info2.get());
+
+  // Group events.
+  metrics_logger_->LogEvent(TabGroupEvent::kTabGroupCreated, kDeviceGuid1,
+                            std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Sync.TabGroup.Created.GroupCreateOrigin",
+      DeviceType::kAndroidPhone, 1u);
+
+  metrics_logger_->LogEvent(TabGroupEvent::kTabGroupRemoved, kDeviceGuid1,
+                            std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Sync.TabGroup.Removed.GroupCreateOrigin",
+      DeviceType::kAndroidPhone, 1u);
+
+  metrics_logger_->LogEvent(TabGroupEvent::kTabGroupOpened, kDeviceGuid1,
+                            std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Sync.TabGroup.Opened.GroupCreateOrigin",
+      DeviceType::kAndroidPhone, 1u);
+
+  metrics_logger_->LogEvent(TabGroupEvent::kTabGroupClosed, kDeviceGuid1,
+                            std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Sync.TabGroup.Closed.GroupCreateOrigin",
+      DeviceType::kAndroidPhone, 1u);
+
+  metrics_logger_->LogEvent(TabGroupEvent::kTabGroupVisualsChanged,
+                            kDeviceGuid1, std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Sync.TabGroup.VisualsChanged.GroupCreateOrigin",
+      DeviceType::kAndroidPhone, 1u);
+
+  metrics_logger_->LogEvent(TabGroupEvent::kTabGroupTabsReordered, kDeviceGuid1,
+                            std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Sync.TabGroup.TabsReordered.GroupCreateOrigin",
+      DeviceType::kAndroidPhone, 1u);
+
+  // Tab events.
+  metrics_logger_->LogEvent(TabGroupEvent::kTabAdded, kDeviceGuid1,
+                            std::nullopt);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Sync.TabGroup.TabAdded.GroupCreateOrigin",
+      DeviceType::kAndroidPhone, 1u);
+
+  metrics_logger_->LogEvent(TabGroupEvent::kTabRemoved, kDeviceGuid1,
+                            kDeviceGuid2);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Sync.TabGroup.TabRemoved.GroupCreateOrigin",
+      DeviceType::kAndroidPhone, 1u);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Sync.TabGroup.TabRemoved.TabCreateOrigin",
+      DeviceType::kWindows, 1u);
+
+  metrics_logger_->LogEvent(TabGroupEvent::kTabNavigated, kDeviceGuid1,
+                            kDeviceGuid2);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Sync.TabGroup.TabNavigated.GroupCreateOrigin",
+      DeviceType::kAndroidPhone, 1u);
+  histogram_tester.ExpectUniqueSample(
+      "TabGroups.Sync.TabGroup.TabNavigated.TabCreateOrigin",
+      DeviceType::kWindows, 1u);
+}
 
 TEST_F(TabGroupSyncMetricsLoggerTest, DeviceTypeConversion) {
   EXPECT_EQ(DeviceType::kAndroidPhone,
