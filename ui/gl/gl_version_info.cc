@@ -17,13 +17,6 @@
 
 namespace {
 
-bool DesktopCoreCommonCheck(
-    bool is_es, unsigned major_version, unsigned minor_version) {
-  return (!is_es &&
-          ((major_version == 3 && minor_version >= 2) ||
-           major_version > 3));
-}
-
 static bool disable_es3_for_testing = false;
 
 }  // namespace
@@ -72,9 +65,6 @@ void GLVersionInfo::Initialize(const char* version_str,
     if (is_angle && driver_vendor == "ANGLE")
       ExtractDriverVendorANGLE(renderer_str);
   }
-  is_desktop_core_profile =
-      DesktopCoreCommonCheck(is_es, major_version, minor_version) &&
-      !gfx::HasExtension(extensions, "GL_ARB_compatibility");
   is_es3_capable = IsES3Capable(extensions);
 
   // Post-fixup in case the user requested disabling ES3 capability

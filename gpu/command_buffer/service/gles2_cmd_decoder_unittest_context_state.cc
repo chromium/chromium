@@ -557,20 +557,6 @@ TEST_P(GLES3DecoderTest, ES3PixelStoreiWithPixelUnpackBuffer) {
   DoBindBuffer(GL_PIXEL_UNPACK_BUFFER, client_buffer_id_, kServiceBufferId);
 }
 
-TEST_P(GLES2DecoderManualInitTest, MipmapHintOnCoreProfile) {
-  // On a core profile, glHint(GL_GENERATE_MIPMAP_HINT) should be a noop
-  InitState init;
-  init.gl_version = "3.2";
-  InitDecoder(init);
-
-  cmds::Hint cmd;
-  cmd.Init(GL_GENERATE_MIPMAP_HINT, GL_NICEST);
-
-  EXPECT_CALL(*gl_, Hint(GL_GENERATE_MIPMAP_HINT, GL_NICEST)).Times(0);
-  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-}
-
 TEST_P(GLES2DecoderManualInitTest, MipmapHintOnCompatibilityProfile) {
   // On a compatibility profile, glHint(GL_GENERATE_MIPMAP_HINT) should be go
   // through

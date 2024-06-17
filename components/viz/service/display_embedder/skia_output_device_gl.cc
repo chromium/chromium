@@ -30,7 +30,6 @@
 #include "ui/gl/gl_features.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_surface.h"
-#include "ui/gl/gl_version_info.h"
 
 namespace viz {
 
@@ -137,20 +136,12 @@ SkiaOutputDeviceGL::SkiaOutputDeviceGL(
   DCHECK(context_state_->context());
 
   GrDirectContext* gr_context = context_state_->gr_context();
-  gl::CurrentGL* current_gl = context_state_->context()->GetCurrentGL();
 
   // Get alpha bits from the default frame buffer.
   int alpha_bits = 0;
   glBindFramebufferEXT(GL_FRAMEBUFFER, 0);
   gr_context->resetContext(kRenderTarget_GrGLBackendState);
-  const auto* version = current_gl->Version.get();
-  if (version->is_desktop_core_profile) {
-    glGetFramebufferAttachmentParameterivEXT(
-        GL_FRAMEBUFFER, GL_BACK_LEFT, GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE,
-        &alpha_bits);
-  } else {
-    glGetIntegerv(GL_ALPHA_BITS, &alpha_bits);
-  }
+  glGetIntegerv(GL_ALPHA_BITS, &alpha_bits);
   CHECK_GL_ERROR();
 
   auto color_type = kRGBA_8888_SkColorType;

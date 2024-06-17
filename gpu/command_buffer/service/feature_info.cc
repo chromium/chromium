@@ -448,7 +448,7 @@ void FeatureInfo::EnableANGLEInstancedArrayIfPossible(
     if (gfx::HasExtension(extensions, "GL_ANGLE_instanced_arrays") ||
         (gfx::HasExtension(extensions, "GL_ARB_instanced_arrays") &&
          gfx::HasExtension(extensions, "GL_ARB_draw_instanced")) ||
-        gl_version_info_->is_es3 || gl_version_info_->is_desktop_core_profile) {
+        gl_version_info_->is_es3) {
       AddExtensionString("GL_ANGLE_instanced_arrays");
       feature_flags_.angle_instanced_arrays = true;
       validators_.vertex_attribute.AddValue(
@@ -463,8 +463,7 @@ void FeatureInfo::EnableWEBGLMultiDrawIfPossible(
     if (!is_passthrough_cmd_decoder_ ||
         gfx::HasExtension(extensions, "GL_ANGLE_multi_draw")) {
       if (gfx::HasExtension(extensions, "GL_ANGLE_instanced_arrays") ||
-          feature_flags_.angle_instanced_arrays || gl_version_info_->is_es3 ||
-          gl_version_info_->is_desktop_core_profile) {
+          feature_flags_.angle_instanced_arrays || gl_version_info_->is_es3) {
         feature_flags_.webgl_multi_draw = true;
         AddExtensionString("GL_WEBGL_multi_draw");
 
@@ -492,7 +491,7 @@ void FeatureInfo::InitializeFeatures() {
   // Really it's part of core OpenGL 2.1 and up, but let's assume the
   // extension is still advertised.
   bool has_pixel_buffers =
-      gl_version_info_->is_es3 || gl_version_info_->is_desktop_core_profile ||
+      gl_version_info_->is_es3 ||
       gfx::HasExtension(extensions, "GL_ARB_pixel_buffer_object") ||
       gfx::HasExtension(extensions, "GL_NV_pixel_buffer_object");
 
@@ -726,8 +725,7 @@ void FeatureInfo::InitializeFeatures() {
   if (!workarounds_.disable_depth_texture &&
       (gfx::HasExtension(extensions, "GL_ARB_depth_texture") ||
        gfx::HasExtension(extensions, "GL_OES_depth_texture") ||
-       gfx::HasExtension(extensions, "GL_ANGLE_depth_texture") ||
-       gl_version_info_->is_desktop_core_profile)) {
+       gfx::HasExtension(extensions, "GL_ANGLE_depth_texture"))) {
     // Note that we don't expose depth_texture extenion on top of ES3 if
     // the depth_texture extension isn't exposed by the ES3 driver.
     // This is because depth textures are filterable under linear mode in
@@ -752,7 +750,7 @@ void FeatureInfo::InitializeFeatures() {
   GLenum depth_stencil_texture_format = GL_NONE;
   if (gfx::HasExtension(extensions, "GL_EXT_packed_depth_stencil") ||
       gfx::HasExtension(extensions, "GL_OES_packed_depth_stencil") ||
-      gl_version_info_->is_es3 || gl_version_info_->is_desktop_core_profile) {
+      gl_version_info_->is_es3) {
     AddExtensionString("GL_OES_packed_depth_stencil");
     feature_flags_.packed_depth24_stencil8 = true;
     if (enable_depth_texture) {
@@ -782,7 +780,7 @@ void FeatureInfo::InitializeFeatures() {
     }
   }
 
-  if (gl_version_info_->is_es3 || gl_version_info_->is_desktop_core_profile ||
+  if (gl_version_info_->is_es3 ||
       gfx::HasExtension(extensions, "GL_OES_vertex_array_object") ||
       gfx::HasExtension(extensions, "GL_ARB_vertex_array_object") ||
       gfx::HasExtension(extensions, "GL_APPLE_vertex_array_object")) {
@@ -1066,7 +1064,7 @@ void FeatureInfo::InitializeFeatures() {
 
   // Check if we should allow GL_OES_texture_npot
   if (!disallowed_features_.npot_support &&
-      (gl_version_info_->is_es3 || gl_version_info_->is_desktop_core_profile ||
+      (gl_version_info_->is_es3 ||
        gfx::HasExtension(extensions, "GL_ARB_texture_non_power_of_two") ||
        gfx::HasExtension(extensions, "GL_OES_texture_npot"))) {
     AddExtensionString("GL_OES_texture_npot");
@@ -1081,7 +1079,7 @@ void FeatureInfo::InitializeFeatures() {
         gfx::HasExtension(extensions, "GL_ARB_framebuffer_object") ||
         (gfx::HasExtension(extensions, "GL_EXT_framebuffer_multisample") &&
          gfx::HasExtension(extensions, "GL_EXT_framebuffer_blit")) ||
-        gl_version_info_->is_es3 || gl_version_info_->is_desktop_core_profile;
+        gl_version_info_->is_es3;
     if (gl_version_info_->is_angle || gl_version_info_->is_swiftshader) {
       ext_has_multisample |=
           gfx::HasExtension(extensions, "GL_ANGLE_framebuffer_multisample");
@@ -1225,8 +1223,7 @@ void FeatureInfo::InitializeFeatures() {
   // they should use ordinary non-power-of-two textures. However, for unit
   // testing purposes we expose it on all supported platforms.
   if (gfx::HasExtension(extensions, "GL_ARB_texture_rectangle") ||
-      gfx::HasExtension(extensions, "GL_ANGLE_texture_rectangle") ||
-      gl_version_info_->is_desktop_core_profile) {
+      gfx::HasExtension(extensions, "GL_ANGLE_texture_rectangle")) {
     AddExtensionString("GL_ARB_texture_rectangle");
     feature_flags_.arb_texture_rectangle = true;
     // Rectangle textures are used as samplers via glBindTexture, framebuffer
@@ -1303,8 +1300,6 @@ void FeatureInfo::InitializeFeatures() {
   bool have_arb_occlusion_query2 =
       gfx::HasExtension(extensions, "GL_ARB_occlusion_query2");
   bool have_arb_occlusion_query =
-      (gl_version_info_->is_desktop_core_profile &&
-       gl_version_info_->IsAtLeastGL(1, 5)) ||
       gfx::HasExtension(extensions, "GL_ARB_occlusion_query");
 
   if (have_occlusion_query || have_ext_occlusion_query_boolean ||
@@ -1326,7 +1321,6 @@ void FeatureInfo::InitializeFeatures() {
   EnableANGLEInstancedArrayIfPossible(extensions);
 
   bool have_es2_draw_buffers_vendor_agnostic =
-      gl_version_info_->is_desktop_core_profile ||
       gfx::HasExtension(extensions, "GL_ARB_draw_buffers") ||
       gfx::HasExtension(extensions, "GL_EXT_draw_buffers");
   bool can_emulate_es2_draw_buffers_on_es3_nv =
@@ -1403,7 +1397,7 @@ void FeatureInfo::InitializeFeatures() {
   bool ui_gl_fence_works = gl::GLFence::IsSupported();
 
   feature_flags_.map_buffer_range =
-      gl_version_info_->is_es3 || gl_version_info_->is_desktop_core_profile ||
+      gl_version_info_->is_es3 ||
       gfx::HasExtension(extensions, "GL_ARB_map_buffer_range") ||
       gfx::HasExtension(extensions, "GL_EXT_map_buffer_range");
 
@@ -1462,7 +1456,7 @@ void FeatureInfo::InitializeFeatures() {
     }
   }
 
-  if ((gl_version_info_->is_es3 || gl_version_info_->is_desktop_core_profile ||
+  if ((gl_version_info_->is_es3 ||
        gfx::HasExtension(extensions, "GL_EXT_texture_rg") ||
        gfx::HasExtension(extensions, "GL_ARB_texture_rg")) &&
       IsGL_REDSupportedOnFBOs()) {
@@ -1495,8 +1489,7 @@ void FeatureInfo::InitializeFeatures() {
 
   const bool is_texture_norm16_supported_for_webgl2_or_es3 =
       IsWebGL2OrES3OrHigherContext() &&
-      (gl_version_info_->is_desktop_core_profile ||
-       (gl_version_info_->IsAtLeastGL(2, 1) &&
+      ((gl_version_info_->IsAtLeastGL(2, 1) &&
         gfx::HasExtension(extensions, "GL_ARB_texture_rg")) ||
        gfx::HasExtension(extensions, "GL_EXT_texture_norm16"));
   const bool is_texture_norm16_supported_for_angle_es2 =
@@ -1689,9 +1682,7 @@ void FeatureInfo::InitializeFeatures() {
 #else
   if ((!is_passthrough_cmd_decoder_ &&
        ((gl_version_info_->IsAtLeastGLES(3, 2) &&
-         gfx::HasExtension(extensions, "GL_EXT_base_instance")) ||
-        (gl_version_info_->is_desktop_core_profile &&
-         gl_version_info_->IsAtLeastGL(4, 2)))) ||
+         gfx::HasExtension(extensions, "GL_EXT_base_instance")))) ||
       gfx::HasExtension(extensions, "GL_ANGLE_base_vertex_base_instance")) {
 #endif
     // TODO(shrekshao): change condition to the following after workaround for
@@ -1853,8 +1844,7 @@ void FeatureInfo::InitializeFloatAndHalfFloatFeatures(
     enable_ext_color_buffer_half_float = true;
   }
 
-  if (gfx::HasExtension(extensions, "GL_ARB_texture_float") ||
-      gl_version_info_->is_desktop_core_profile) {
+  if (gfx::HasExtension(extensions, "GL_ARB_texture_float")) {
     enable_texture_float = true;
     enable_texture_float_linear = true;
     enable_texture_half_float = true;

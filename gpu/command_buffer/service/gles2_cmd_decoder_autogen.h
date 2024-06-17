@@ -2200,9 +2200,7 @@ error::Error GLES2DecoderImpl::HandleHint(uint32_t immediate_data_size,
     case GL_GENERATE_MIPMAP_HINT:
       if (state_.hint_generate_mipmap != mode) {
         state_.hint_generate_mipmap = mode;
-        if (!feature_info_->gl_version_info().is_desktop_core_profile) {
-          api()->glHintFn(target, mode);
-        }
+        api()->glHintFn(target, mode);
       }
       break;
     case GL_FRAGMENT_SHADER_DERIVATIVE_HINT_OES:

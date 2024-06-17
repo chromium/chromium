@@ -1246,9 +1246,7 @@ void CopyTextureResourceManagerImpl::DoCopyTextureInternal(
   if (vertex_array_object_id_) {
     glBindVertexArrayOES(vertex_array_object_id_);
   } else {
-    if (!gl_version_info.is_desktop_core_profile) {
-      decoder->ClearAllAttributes();
-    }
+    decoder->ClearAllAttributes();
     glEnableVertexAttribArray(kVertexPositionAttrib);
     glBindBuffer(GL_ARRAY_BUFFER, buffer_id_);
     glVertexAttribPointer(kVertexPositionAttrib, 2, GL_FLOAT, GL_FALSE, 0, 0);

@@ -3225,23 +3225,9 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
       GLint depth_bits = 0;
       GLint stencil_bits = 0;
 
-      bool default_fb = (GetBackbufferServiceId() == 0);
-
-      if (gl_version_info().is_desktop_core_profile) {
-        api()->glGetFramebufferAttachmentParameterivEXTFn(
-            GL_FRAMEBUFFER, default_fb ? GL_BACK_LEFT : GL_COLOR_ATTACHMENT0,
-            GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE, &alpha_bits);
-        api()->glGetFramebufferAttachmentParameterivEXTFn(
-            GL_FRAMEBUFFER, default_fb ? GL_DEPTH : GL_DEPTH_ATTACHMENT,
-            GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE, &depth_bits);
-        api()->glGetFramebufferAttachmentParameterivEXTFn(
-            GL_FRAMEBUFFER, default_fb ? GL_STENCIL : GL_STENCIL_ATTACHMENT,
-            GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE, &stencil_bits);
-      } else {
-        api()->glGetIntegervFn(GL_ALPHA_BITS, &alpha_bits);
-        api()->glGetIntegervFn(GL_DEPTH_BITS, &depth_bits);
-        api()->glGetIntegervFn(GL_STENCIL_BITS, &stencil_bits);
-      }
+      api()->glGetIntegervFn(GL_ALPHA_BITS, &alpha_bits);
+      api()->glGetIntegervFn(GL_DEPTH_BITS, &depth_bits);
+      api()->glGetIntegervFn(GL_STENCIL_BITS, &stencil_bits);
 
       back_buffer_color_format_ = alpha_bits > 0 ? GL_RGBA : GL_RGB;
       back_buffer_has_depth_ = depth_bits > 0;
@@ -3264,10 +3250,6 @@ gpu::ContextResult GLES2DecoderImpl::Initialize(
   if (!gl_version_info().BehavesLikeGLES()) {
     api()->glEnableFn(GL_VERTEX_PROGRAM_POINT_SIZE);
     api()->glEnableFn(GL_POINT_SPRITE);
-  } else if (gl_version_info().is_desktop_core_profile) {
-    // The desktop core profile changed how program point size mode is
-    // enabled.
-    api()->glEnableFn(GL_PROGRAM_POINT_SIZE);
   }
 
   // ES3 requires seamless cubemap. ES2 does not.
@@ -6273,18 +6255,7 @@ bool GLES2DecoderImpl::GetHelper(
         if (framebuffer) {
           if (framebuffer->HasAlphaMRT() &&
               framebuffer->HasSameInternalFormatsMRT()) {
-            if (gl_version_info().is_desktop_core_profile) {
-              for (uint32_t i = 0; i < group_->max_draw_buffers(); i++) {
-                if (framebuffer->HasColorAttachment(i)) {
-                  api()->glGetFramebufferAttachmentParameterivEXTFn(
-                      GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
-                      GL_FRAMEBUFFER_ATTACHMENT_ALPHA_SIZE, &v);
-                  break;
-                }
-              }
-            } else {
-              api()->glGetIntegervFn(GL_ALPHA_BITS, &v);
-            }
+            api()->glGetIntegervFn(GL_ALPHA_BITS, &v);
           }
         } else {
           v = (ClientExposedBackBufferHasAlpha() ? 8 : 0);
@@ -6296,20 +6267,7 @@ bool GLES2DecoderImpl::GetHelper(
       *num_written = 1;
       if (params) {
         GLint v = 0;
-        if (gl_version_info().is_desktop_core_profile) {
-          Framebuffer* framebuffer = GetBoundDrawFramebuffer();
-          if (framebuffer) {
-            if (framebuffer->HasDepthAttachment()) {
-              api()->glGetFramebufferAttachmentParameterivEXTFn(
-                  GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                  GL_FRAMEBUFFER_ATTACHMENT_DEPTH_SIZE, &v);
-            }
-          } else {
-            v = (back_buffer_has_depth_ ? 24 : 0);
-          }
-        } else {
-          api()->glGetIntegervFn(GL_DEPTH_BITS, &v);
-        }
+        api()->glGetIntegervFn(GL_DEPTH_BITS, &v);
         params[0] = BoundFramebufferHasDepthAttachment() ? v : 0;
       }
       return true;
@@ -6319,37 +6277,7 @@ bool GLES2DecoderImpl::GetHelper(
       *num_written = 1;
       if (params) {
         GLint v = 0;
-        if (gl_version_info().is_desktop_core_profile) {
-          Framebuffer* framebuffer = GetBoundDrawFramebuffer();
-          if (framebuffer) {
-            if (framebuffer->HasSameInternalFormatsMRT()) {
-              GLenum framebuffer_enum = 0;
-              switch (pname) {
-                case GL_RED_BITS:
-                  framebuffer_enum = GL_FRAMEBUFFER_ATTACHMENT_RED_SIZE;
-                  break;
-                case GL_GREEN_BITS:
-                  framebuffer_enum = GL_FRAMEBUFFER_ATTACHMENT_GREEN_SIZE;
-                  break;
-                case GL_BLUE_BITS:
-                  framebuffer_enum = GL_FRAMEBUFFER_ATTACHMENT_BLUE_SIZE;
-                  break;
-              }
-              for (uint32_t i = 0; i < group_->max_draw_buffers(); i++) {
-                if (framebuffer->HasColorAttachment(i)) {
-                  api()->glGetFramebufferAttachmentParameterivEXTFn(
-                      GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i,
-                      framebuffer_enum, &v);
-                  break;
-                }
-              }
-            }
-          } else {
-            v = 8;
-          }
-        } else {
-          api()->glGetIntegervFn(pname, &v);
-        }
+        api()->glGetIntegervFn(pname, &v);
         params[0] = v;
       }
       return true;
@@ -6357,20 +6285,7 @@ bool GLES2DecoderImpl::GetHelper(
       *num_written = 1;
       if (params) {
         GLint v = 0;
-        if (gl_version_info().is_desktop_core_profile) {
-          Framebuffer* framebuffer = GetBoundDrawFramebuffer();
-          if (framebuffer) {
-            if (framebuffer->HasStencilAttachment()) {
-              api()->glGetFramebufferAttachmentParameterivEXTFn(
-                  GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT,
-                  GL_FRAMEBUFFER_ATTACHMENT_STENCIL_SIZE, &v);
-            }
-          } else {
-            v = (back_buffer_has_stencil_ ? 8 : 0);
-          }
-        } else {
-          api()->glGetIntegervFn(GL_STENCIL_BITS, &v);
-        }
+        api()->glGetIntegervFn(GL_STENCIL_BITS, &v);
         params[0] = BoundFramebufferHasStencilAttachment() ? v : 0;
       }
       return true;
@@ -6711,10 +6626,6 @@ GLenum GLES2DecoderImpl::AdjustGetPname(GLenum pname) {
   if (GL_MAX_SAMPLES == pname &&
       features().use_img_for_multisampled_render_to_texture) {
     return GL_MAX_SAMPLES_IMG;
-  }
-  if (GL_ALIASED_POINT_SIZE_RANGE == pname &&
-      gl_version_info().is_desktop_core_profile) {
-    return GL_POINT_SIZE_RANGE;
   }
   return pname;
 }

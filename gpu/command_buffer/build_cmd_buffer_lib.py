@@ -424,7 +424,6 @@ _STATE_INFO = {
         'type': 'GLenum',
         'enum': 'GL_GENERATE_MIPMAP_HINT',
         'default': 'GL_DONT_CARE',
-        'gl_version_flag': '!is_desktop_core_profile'
       },
       {
         'name': 'hint_fragment_shader_derivative',

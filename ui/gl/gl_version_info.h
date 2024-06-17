@@ -36,9 +36,7 @@ struct GL_EXPORT GLVersionInfo {
                      (major_version == major && minor_version >= minor));
   }
 
-  bool BehavesLikeGLES() const {
-    return is_es || is_desktop_core_profile;
-  }
+  bool BehavesLikeGLES() const { return is_es; }
 
   bool SupportsFixedType() const {
     return is_es || IsAtLeastGL(4, 1);
@@ -59,7 +57,7 @@ struct GL_EXPORT GLVersionInfo {
   // We need to emulate GL_ALPHA and GL_LUMINANCE and GL_LUMINANCE_ALPHA
   // texture formats on core profile and ES3, except for ANGLE and Swiftshader.
   bool NeedsLuminanceAlphaEmulation() const {
-    return !is_angle && !is_swiftshader && (is_es3 || is_desktop_core_profile);
+    return !is_angle && !is_swiftshader && is_es3;
   }
 
   bool is_es = false;
@@ -74,7 +72,6 @@ struct GL_EXPORT GLVersionInfo {
   unsigned minor_version = 0;
   bool is_es2 = false;
   bool is_es3 = false;
-  bool is_desktop_core_profile = false;
   bool is_es3_capable = false;
   std::string driver_vendor;
   std::string driver_version;

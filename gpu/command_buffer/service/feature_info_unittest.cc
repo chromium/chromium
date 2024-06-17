@@ -1380,28 +1380,6 @@ TEST_P(FeatureInfoTest, InitializeGLES3_occlusion_query_boolean) {
   EXPECT_TRUE(info_->feature_flags().occlusion_query_boolean);
 }
 
-TEST_P(FeatureInfoTest, InitializeGL33_occlusion_query2) {
-  SetupInitExpectationsWithGLVersion("", "", "3.3");
-  if (GetContextType() == CONTEXT_TYPE_OPENGLES2) {
-    EXPECT_TRUE(gfx::HasExtension(info_->extensions(),
-                                  "GL_EXT_occlusion_query_boolean"));
-  }
-  EXPECT_TRUE(info_->feature_flags().occlusion_query_boolean);
-  EXPECT_TRUE(info_->feature_flags(
-      ).use_arb_occlusion_query2_for_occlusion_query_boolean);
-}
-
-TEST_P(FeatureInfoTest, InitializeGL43_occlusion_query2) {
-  SetupInitExpectationsWithGLVersion("", "", "4.3");
-  if (GetContextType() == CONTEXT_TYPE_OPENGLES2) {
-    EXPECT_TRUE(gfx::HasExtension(info_->extensions(),
-                                  "GL_EXT_occlusion_query_boolean"));
-  }
-  EXPECT_TRUE(info_->feature_flags().occlusion_query_boolean);
-  EXPECT_FALSE(info_->feature_flags(
-      ).use_arb_occlusion_query2_for_occlusion_query_boolean);
-}
-
 TEST_P(FeatureInfoTest, InitializeOES_vertex_array_object) {
   SetupInitExpectations("GL_OES_vertex_array_object");
   EXPECT_TRUE(

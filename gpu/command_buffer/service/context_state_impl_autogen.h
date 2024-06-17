@@ -254,10 +254,8 @@ void ContextState::InitState(const ContextState* prev_state) const {
       api()->glDepthRangeFn(z_near, z_far);
     if ((front_face != prev_state->front_face))
       api()->glFrontFaceFn(front_face);
-    if (!feature_info_->gl_version_info().is_desktop_core_profile) {
-      if (prev_state->hint_generate_mipmap != hint_generate_mipmap) {
-        api()->glHintFn(GL_GENERATE_MIPMAP_HINT, hint_generate_mipmap);
-      }
+    if (prev_state->hint_generate_mipmap != hint_generate_mipmap) {
+      api()->glHintFn(GL_GENERATE_MIPMAP_HINT, hint_generate_mipmap);
     }
     if (feature_info_->feature_flags().oes_standard_derivatives) {
       if (prev_state->hint_fragment_shader_derivative !=
@@ -336,9 +334,7 @@ void ContextState::InitState(const ContextState* prev_state) const {
     api()->glDepthMaskFn(cached_depth_mask);
     api()->glDepthRangeFn(z_near, z_far);
     api()->glFrontFaceFn(front_face);
-    if (!feature_info_->gl_version_info().is_desktop_core_profile) {
-      api()->glHintFn(GL_GENERATE_MIPMAP_HINT, hint_generate_mipmap);
-    }
+    api()->glHintFn(GL_GENERATE_MIPMAP_HINT, hint_generate_mipmap);
     if (feature_info_->feature_flags().oes_standard_derivatives) {
       api()->glHintFn(GL_FRAGMENT_SHADER_DERIVATIVE_HINT_OES,
                       hint_fragment_shader_derivative);
