@@ -1,0 +1,30 @@
+<!doctype html>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script type="module">
+import { buildValidNavigatorIdentityRequest, requestIdentityWithActivation } from './helper.js';
+
+// iframe.html will make a digital credential request when it gets a message,
+// and trigger a postMessage on completion.
+async function messageListener(event) {
+  let result;
+  try {
+    let request = buildValidNavigatorIdentityRequest();
+    let requestResult = await requestIdentityWithActivation(test_driver, request);
+    result = {
+      constructor: requestResult.constructor.name,
+      data: requestResult.data
+    };
+  } catch (error) {
+    result = {
+      constructor: error.constructor.name,
+      name: error.name,
+      message: error.message,
+    };
+  } finally {
+    event.source?.postMessage(result, event.origin);
+  }
+}
+
+window.addEventListener("message", messageListener);
+</script>
