@@ -5,7 +5,7 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<ViewSwitcher
+<FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/upgrade_promo_portrait"
     android:background="@macro/default_bg_color"
@@ -18,4 +18,4 @@ found in the LICENSE file.
     <include
         android:id="@+id/history_sync"
         layout="@layout/history_sync_portrait_view"/>
-</ViewSwitcher>
+</FrameLayout>
