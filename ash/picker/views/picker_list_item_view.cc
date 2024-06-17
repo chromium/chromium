@@ -30,8 +30,8 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
@@ -92,15 +92,18 @@ PickerListItemView::PickerListItemView(SelectItemCallback select_item_callback)
                      FocusIndicatorStyle::kFocusBar) {
   // This view only contains one child for the moment, but treat this as a
   // full-width vertical list.
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical);
+  SetLayoutManager(
+      std::make_unique<views::BoxLayout>(views::LayoutOrientation::kVertical));
 
   // `item_contents` is used to group child views that should not receive
   // events.
-  auto* item_contents = AddChildView(
-      views::Builder<views::FlexLayoutView>()
-          .SetCanProcessEventsWithinSubtree(false)
-          .Build());
+  // TODO: Align the leading icon to the top of the item.
+  auto* item_contents =
+      AddChildView(views::Builder<views::BoxLayoutView>()
+                       .SetOrientation(views::LayoutOrientation::kHorizontal)
+                       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+                       .SetCanProcessEventsWithinSubtree(false)
+                       .Build());
 
   // The leading icon should always be preferred size.
   leading_icon_view_ = item_contents->AddChildView(
@@ -113,24 +116,18 @@ PickerListItemView::PickerListItemView(SelectItemCallback select_item_callback)
   // The main container should use the remaining horizontal space.
   // Shrink to zero to allow the main contents to be elided.
   auto* main_container = item_contents->AddChildView(
-      views::Builder<views::FlexLayoutView>()
+      views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::LayoutOrientation::kVertical)
-          .SetProperty(
-              views::kFlexBehaviorKey,
-              views::FlexSpecification(views::LayoutOrientation::kHorizontal,
-                                       views::MinimumFlexSizeRule::kScaleToZero,
-                                       views::MaximumFlexSizeRule::kUnbounded))
           .Build());
+  item_contents->SetFlexForView(main_container, 1);
   primary_container_ = main_container->AddChildView(
       views::Builder<views::View>().SetUseDefaultFillLayout(true).Build());
   secondary_container_ = main_container->AddChildView(
       views::Builder<views::View>().SetUseDefaultFillLayout(true).Build());
 
-  // Trailing badge should always be preferred size and centered vertically.
+  // Trailing badge should always be preferred size.
   trailing_badge_ = item_contents->AddChildView(
       views::Builder<PickerBadgeView>()
-          .SetProperty(views::kCrossAxisAlignmentKey,
-                       views::LayoutAlignment::kCenter)
           .SetProperty(views::kMarginsKey, kBadgeLeftPadding)
           .SetVisible(false)
           .Build());
