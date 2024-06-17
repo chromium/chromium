@@ -49,6 +49,7 @@ void OverlayStrategyUnderlay::Propose(
 
   for (auto it = quad_list.begin(); it != quad_list.end(); ++it) {
     OverlayCandidate candidate;
+    candidate.overlay_type = gfx::OverlayType::kUnderlay;
     if (candidate_factory.FromDrawQuad(*it, candidate) !=
             OverlayCandidate::CandidateStatus::kSuccess ||
         (opaque_mode_ == OpaqueMode::RequireOpaqueCandidates &&

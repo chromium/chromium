@@ -23,7 +23,8 @@ OverlayPlaneData::OverlayPlaneData(
     std::optional<SkColor4f> color,
     bool is_solid_color,
     bool is_root_overlay,
-    std::optional<Rect> clip_rect)
+    std::optional<Rect> clip_rect,
+    gfx::OverlayType overlay_type)
     : z_order(z_order),
       plane_transform(plane_transform),
       display_bounds(display_bounds),
@@ -38,7 +39,8 @@ OverlayPlaneData::OverlayPlaneData(
       color(color),
       is_solid_color(is_solid_color),
       is_root_overlay(is_root_overlay),
-      clip_rect(clip_rect) {}
+      clip_rect(clip_rect),
+      overlay_type(overlay_type) {}
 
 OverlayPlaneData::~OverlayPlaneData() = default;
 

@@ -21,6 +21,7 @@
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
+#include "ui/gfx/overlay_type.h"
 
 namespace ui {
 
@@ -90,6 +91,9 @@ class COMPONENT_EXPORT(OZONE_BASE) OverlaySurfaceCandidate {
   gfx::RRectF rounded_corners;
   // Specifies the background color of the overlay.
   std::optional<SkColor> background_color;
+  // Specifies the type of of the overlay, which is proposed by a similarly
+  // named strategy.
+  gfx::OverlayType overlay_type = gfx::OverlayType::kSimple;
 };
 
 using OverlaySurfaceCandidateList = std::vector<OverlaySurfaceCandidate>;

@@ -156,6 +156,7 @@ void OverlayStrategyFullscreen::Propose(
 
   candidate.is_opaque = true;
   candidate.plane_z_order = 0;
+  candidate.overlay_type = gfx::OverlayType::kFullScreen;
   candidates->emplace_back(front, candidate, this);
 }
 

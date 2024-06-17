@@ -71,6 +71,7 @@ void ConvertToOzoneOverlaySurface(
   ozone_candidate->requires_overlay = overlay_candidate.requires_overlay;
   ozone_candidate->priority_hint = overlay_candidate.priority_hint;
   ozone_candidate->rounded_corners = overlay_candidate.rounded_corners;
+  ozone_candidate->overlay_type = overlay_candidate.overlay_type;
   // TODO(crbug.com/40219248): OverlaySurfaceCandidate to SkColor4f
   // That can be a solid color quad.
   if (!overlay_candidate.is_solid_color && ozone_candidate->background_color &&
@@ -98,6 +99,7 @@ void ConvertToTiledOzoneOverlaySurface(
   ozone_candidate->priority_hint = overlay_candidate.priority_hint;
   ozone_candidate->rounded_corners = overlay_candidate.rounded_corners;
   ozone_candidate->native_pixmap = nullptr;
+  ozone_candidate->overlay_type = overlay_candidate.overlay_type;
 }
 
 uint32_t MailboxToUInt32(const gpu::Mailbox& mailbox) {

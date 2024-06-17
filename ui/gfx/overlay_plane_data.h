@@ -18,6 +18,7 @@
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
+#include "ui/gfx/overlay_type.h"
 
 namespace gfx {
 
@@ -38,7 +39,8 @@ struct GFX_EXPORT OverlayPlaneData {
       std::optional<SkColor4f> color = std::nullopt,
       bool is_solid_color = false,
       bool is_root_overlay = false,
-      std::optional<Rect> clip_rect = std::nullopt);
+      std::optional<Rect> clip_rect = std::nullopt,
+      gfx::OverlayType overlay_type = gfx::OverlayType::kSimple);
   ~OverlayPlaneData();
 
   OverlayPlaneData(const OverlayPlaneData& other);
@@ -94,6 +96,9 @@ struct GFX_EXPORT OverlayPlaneData {
 
   // Optional clip rect for this overlay.
   std::optional<gfx::Rect> clip_rect;
+
+  // Specifies the type of this overlay based on a strategy used to propose it.
+  gfx::OverlayType overlay_type = gfx::OverlayType::kSimple;
 };
 
 }  // namespace gfx

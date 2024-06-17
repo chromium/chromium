@@ -27,6 +27,7 @@
 #include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
+#include "ui/gfx/overlay_type.h"
 #include "ui/gfx/video_types.h"
 
 namespace gfx {
@@ -255,6 +256,9 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // does not affect |display_rect|.
   absl::variant<gfx::OverlayTransform, gfx::Transform> transform =
       gfx::OVERLAY_TRANSFORM_NONE;
+
+  // Default overlay type.
+  gfx::OverlayType overlay_type = gfx::OverlayType::kSimple;
 };
 
 using OverlayCandidateList = std::vector<OverlayCandidate>;

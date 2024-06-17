@@ -124,6 +124,7 @@ void OverlayStrategySingleOnTop::Propose(
     }
 
     OverlayCandidate candidate;
+    candidate.overlay_type = gfx::OverlayType::kSingleOnTop;
     if (candidate_factory.FromDrawQuad(*quad_it, candidate) !=
         OverlayCandidate::CandidateStatus::kSuccess) {
       // Quads with display masks should always be valid overlay candidates.
