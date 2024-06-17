@@ -475,6 +475,40 @@ TEST_F(PickerViewTest, SelectingCategoryUpdatesSearchFieldPlaceholderText) {
                 IDS_PICKER_LINKS_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT));
 }
 
+TEST_F(PickerViewTest, SelectingCategoryShowsBackButton) {
+  FakePickerViewDelegate delegate;
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  views::View* category_item_view = GetFirstCategoryItemView(picker_view);
+  category_item_view->ScrollViewToVisible();
+  ViewDrawnWaiter().Wait(category_item_view);
+
+  LeftClickOn(category_item_view);
+
+  EXPECT_TRUE(picker_view->search_field_view_for_testing()
+                  .back_button_for_testing()
+                  .GetVisible());
+}
+
+TEST_F(PickerViewTest, SearchingWithCategoryKeepsShowingBackButton) {
+  FakePickerViewDelegate delegate;
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+  PickerView* picker_view = GetPickerViewFromWidget(*widget);
+  views::View* category_item_view = GetFirstCategoryItemView(picker_view);
+  category_item_view->ScrollViewToVisible();
+  ViewDrawnWaiter().Wait(category_item_view);
+  LeftClickOn(category_item_view);
+
+  // Type something into the search field.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+
+  EXPECT_TRUE(picker_view->search_field_view_for_testing()
+                  .back_button_for_testing()
+                  .GetVisible());
+}
+
 TEST_F(PickerViewTest, SearchingWithCategorySwitchesToSearchResultsView) {
   FakePickerViewDelegate delegate({
       .available_categories = {PickerCategory::kLinks},

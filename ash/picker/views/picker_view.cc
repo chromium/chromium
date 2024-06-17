@@ -478,6 +478,7 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
   search_field_view_->SetPlaceholderText(
       GetSearchFieldPlaceholderTextForPickerCategory(category));
   search_field_view_->SetQueryText(std::u16string(query));
+  search_field_view_->SetBackButtonVisible(true);
 
   if (query.empty()) {
     // Getting suggested results for a category can be slow, so show a loading
@@ -545,7 +546,6 @@ void PickerView::AddEmojiBarView() {
 }
 
 void PickerView::SetActivePage(PickerPageView* page_view) {
-  search_field_view_->SetBackButtonVisible(page_view == category_results_view_);
   main_container_view_->SetActivePage(page_view);
   if (active_pseudo_focus_handler_ != nullptr) {
     active_pseudo_focus_handler_->LosePseudoFocus();
@@ -581,6 +581,7 @@ void PickerView::AdvanceActivePseudoFocusHandler(
 void PickerView::OnSearchBackButtonPressed() {
   search_field_view_->SetPlaceholderText(GetSearchFieldPlaceholderText());
   search_field_view_->SetQueryText(u"");
+  search_field_view_->SetBackButtonVisible(false);
   SetActivePage(zero_state_view_);
 }
 
