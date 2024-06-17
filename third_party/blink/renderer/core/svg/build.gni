@@ -17,8 +17,6 @@ blink_core_sources_svg = [
   "animation/smil_time_container.h",
   "animation/svg_smil_element.cc",
   "animation/svg_smil_element.h",
-  "color_distance.cc",
-  "color_distance.h",
   "gradient_attributes.h",
   "graphics/filters/svg_fe_image.cc",
   "graphics/filters/svg_fe_image.h",

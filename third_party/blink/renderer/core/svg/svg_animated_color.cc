@@ -24,10 +24,56 @@
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
-#include "third_party/blink/renderer/core/svg/color_distance.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 
 namespace blink {
+
+namespace {
+
+struct RGBATuple {
+  float red;
+  float green;
+  float blue;
+  float alpha;
+};
+
+void Accumulate(RGBATuple& base, const RGBATuple& addend) {
+  base.red += addend.red;
+  base.green += addend.green;
+  base.blue += addend.blue;
+  base.alpha += addend.alpha;
+}
+
+RGBATuple ToRGBATuple(const StyleColor& color,
+                      Color fallback_color,
+                      mojom::blink::ColorScheme color_scheme) {
+  const Color resolved = color.Resolve(fallback_color, color_scheme);
+  RGBATuple tuple;
+  resolved.GetRGBA(tuple.red, tuple.green, tuple.blue, tuple.alpha);
+  return tuple;
+}
+
+StyleColor ToStyleColor(const RGBATuple& tuple) {
+  return StyleColor(
+      Color::FromRGBAFloat(tuple.red, tuple.green, tuple.blue, tuple.alpha));
+}
+
+Color FallbackColorForCurrentColor(const SVGElement& target_element) {
+  if (const ComputedStyle* target_style = target_element.GetComputedStyle()) {
+    return target_style->VisitedDependentColor(GetCSSPropertyColor());
+  }
+  return Color::kTransparent;
+}
+
+mojom::blink::ColorScheme ColorSchemeForSVGElement(
+    const SVGElement& target_element) {
+  if (const ComputedStyle* target_style = target_element.GetComputedStyle()) {
+    return target_style->UsedColorScheme();
+  }
+  return mojom::blink::ColorScheme::kLight;
+}
+
+}  // namespace
 
 SVGColorProperty::SVGColorProperty(const String& color_string)
     : style_color_(StyleColor::CurrentColor()) {
@@ -49,33 +95,18 @@ SVGPropertyBase* SVGColorProperty::CloneForAnimation(const String&) const {
   return nullptr;
 }
 
-static inline Color FallbackColorForCurrentColor(
-    const SVGElement* target_element) {
-  DCHECK(target_element);
-  if (const ComputedStyle* target_style = target_element->GetComputedStyle())
-    return target_style->VisitedDependentColor(GetCSSPropertyColor());
-  return Color::kTransparent;
-}
-
-static inline mojom::blink::ColorScheme ColorSchemeForSVGElement(
-    const SVGElement* target_element) {
-  DCHECK(target_element);
-  if (const ComputedStyle* target_style = target_element->GetComputedStyle())
-    return target_style->UsedColorScheme();
-  return mojom::blink::ColorScheme::kLight;
-}
-
 void SVGColorProperty::Add(const SVGPropertyBase* other,
                            const SVGElement* context_element) {
   DCHECK(context_element);
 
-  Color fallback_color = FallbackColorForCurrentColor(context_element);
+  Color fallback_color = FallbackColorForCurrentColor(*context_element);
   mojom::blink::ColorScheme color_scheme =
-      ColorSchemeForSVGElement(context_element);
-  Color from_color = To<SVGColorProperty>(other)->style_color_.Resolve(
-      fallback_color, color_scheme);
-  Color to_color = style_color_.Resolve(fallback_color, color_scheme);
-  style_color_ = StyleColor(ColorDistance::AddColors(from_color, to_color));
+      ColorSchemeForSVGElement(*context_element);
+  auto base = ToRGBATuple(To<SVGColorProperty>(other)->style_color_,
+                          fallback_color, color_scheme);
+  const auto addend = ToRGBATuple(style_color_, fallback_color, color_scheme);
+  Accumulate(base, addend);
+  style_color_ = ToStyleColor(base);
 }
 
 void SVGColorProperty::CalculateAnimatedValue(
@@ -93,53 +124,53 @@ void SVGColorProperty::CalculateAnimatedValue(
 
   // Apply currentColor rules.
   DCHECK(context_element);
-  Color fallback_color = FallbackColorForCurrentColor(context_element);
+  Color fallback_color = FallbackColorForCurrentColor(*context_element);
   mojom::blink::ColorScheme color_scheme =
-      ColorSchemeForSVGElement(context_element);
-  Color from_color = from_style_color.Resolve(fallback_color, color_scheme);
-  Color to_color = to_style_color.Resolve(fallback_color, color_scheme);
-  Color to_at_end_of_duration_color =
-      to_at_end_of_duration_style_color.Resolve(fallback_color, color_scheme);
+      ColorSchemeForSVGElement(*context_element);
+  const auto from = ToRGBATuple(from_style_color, fallback_color, color_scheme);
+  const auto to = ToRGBATuple(to_style_color, fallback_color, color_scheme);
+  const auto to_at_end_of_duration = ToRGBATuple(
+      to_at_end_of_duration_style_color, fallback_color, color_scheme);
 
-  // TODO(crbug.com/1399566): Use float color and don't clobber colorspace.
-  float animated_red = ComputeAnimatedNumber(
-      parameters, percentage, repeat_count, from_color.Red(), to_color.Red(),
-      to_at_end_of_duration_color.Red());
-  float animated_green = ComputeAnimatedNumber(
-      parameters, percentage, repeat_count, from_color.Green(),
-      to_color.Green(), to_at_end_of_duration_color.Green());
-  float animated_blue = ComputeAnimatedNumber(
-      parameters, percentage, repeat_count, from_color.Blue(), to_color.Blue(),
-      to_at_end_of_duration_color.Blue());
-  float animated_alpha = ComputeAnimatedNumber(
-      parameters, percentage, repeat_count, from_color.AlphaAsInteger(),
-      to_color.AlphaAsInteger(), to_at_end_of_duration_color.AlphaAsInteger());
+  // TODO(crbug.com/40249893): Don't clobber colorspace.
+  RGBATuple result;
+  result.red =
+      ComputeAnimatedNumber(parameters, percentage, repeat_count, from.red,
+                            to.red, to_at_end_of_duration.red);
+  result.green =
+      ComputeAnimatedNumber(parameters, percentage, repeat_count, from.green,
+                            to.green, to_at_end_of_duration.green);
+  result.blue =
+      ComputeAnimatedNumber(parameters, percentage, repeat_count, from.blue,
+                            to.blue, to_at_end_of_duration.blue);
+  result.alpha =
+      ComputeAnimatedNumber(parameters, percentage, repeat_count, from.alpha,
+                            to.alpha, to_at_end_of_duration.alpha);
 
   if (parameters.is_additive) {
-    Color animated_color = style_color_.Resolve(fallback_color, color_scheme);
-    animated_red += animated_color.Red();
-    animated_green += animated_color.Green();
-    animated_blue += animated_color.Blue();
-    animated_alpha += animated_color.AlphaAsInteger();
+    Accumulate(result, ToRGBATuple(style_color_, fallback_color, color_scheme));
   }
 
-  style_color_ = StyleColor(
-      Color::FromRGBA(roundf(animated_red), roundf(animated_green),
-                      roundf(animated_blue), roundf(animated_alpha)));
+  style_color_ = ToStyleColor(result);
 }
 
 float SVGColorProperty::CalculateDistance(
     const SVGPropertyBase* to_value,
     const SVGElement* context_element) const {
   DCHECK(context_element);
-  Color fallback_color = FallbackColorForCurrentColor(context_element);
+  Color fallback_color = FallbackColorForCurrentColor(*context_element);
   mojom::blink::ColorScheme color_scheme =
-      ColorSchemeForSVGElement(context_element);
+      ColorSchemeForSVGElement(*context_element);
 
-  Color from_color = style_color_.Resolve(fallback_color, color_scheme);
-  Color to_color = To<SVGColorProperty>(to_value)->style_color_.Resolve(
-      fallback_color, color_scheme);
-  return ColorDistance::Distance(from_color, to_color);
+  const auto from = ToRGBATuple(style_color_, fallback_color, color_scheme);
+  const auto to = ToRGBATuple(To<SVGColorProperty>(to_value)->style_color_,
+                              fallback_color, color_scheme);
+  float red_diff = to.red - from.red;
+  float green_diff = to.green - from.green;
+  float blue_diff = to.blue - from.blue;
+  // This is just a simple distance calculation, not respecting color spaces
+  return sqrtf(red_diff * red_diff + blue_diff * blue_diff +
+               green_diff * green_diff);
 }
 
 }  // namespace blink
