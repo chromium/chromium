@@ -4,24 +4,18 @@
 
 package org.chromium.chrome.browser.app.feed.feedmanagement;
 
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
 import androidx.appcompat.widget.Toolbar;
 
-import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SnackbarActivity;
-import org.chromium.chrome.browser.app.feed.followmanagement.FollowManagementActivity;
 import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.feedmanagement.FeedManagementCoordinator;
-import org.chromium.chrome.browser.feed.feedmanagement.FeedManagementMediator;
 
 /** Activity for managing feed and webfeed settings on the new tab page. */
-public class FeedManagementActivity extends SnackbarActivity
-        implements FeedManagementMediator.FollowManagementLauncher {
+public class FeedManagementActivity extends SnackbarActivity {
     private static final String TAG = "FeedMActivity";
     public static final String INITIATING_STREAM_TYPE_EXTRA =
             "feed_management_initiating_stream_type_extra";
@@ -33,8 +27,7 @@ public class FeedManagementActivity extends SnackbarActivity
         @StreamKind
         int streamKind = getIntent().getIntExtra(INITIATING_STREAM_TYPE_EXTRA, StreamKind.UNKNOWN);
 
-        FeedManagementCoordinator coordinator =
-                new FeedManagementCoordinator(this, this, streamKind);
+        FeedManagementCoordinator coordinator = new FeedManagementCoordinator(this, streamKind);
         setContentView(coordinator.getView());
 
         // Set up the toolbar and back button.
@@ -51,19 +44,6 @@ public class FeedManagementActivity extends SnackbarActivity
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
-        }
-    }
-
-    // FollowManagementLauncher method.
-    @Override
-    public void launchFollowManagement(Context context) {
-        try {
-            // Launch a new activity for the following management page.
-            Intent intent = new Intent(context, FollowManagementActivity.class);
-            Log.d(TAG, "Launching follow management activity.");
-            context.startActivity(intent);
-        } catch (Exception e) {
-            Log.d(TAG, "Failed to launch activity " + e);
         }
     }
 }
