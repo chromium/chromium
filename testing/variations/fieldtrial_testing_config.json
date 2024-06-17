@@ -11361,6 +11361,21 @@
             ]
         }
     ],
+    "IOSParcelTrackingCarrierNumberDetection": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableNewParcelTrackingNumberDetection"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSPartitionAllocBackupRefPtr": [
         {
             "platforms": [
