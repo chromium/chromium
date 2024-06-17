@@ -1961,7 +1961,7 @@ class TabListMediator {
     private TabListMediator.TabActionListener getTabActionButtonListener(
             Tab tab, @TabActionState int tabActionState) {
         if (tabActionState == TabActionState.SELECTABLE) {
-            return mTabSelectedListener;
+            return mSelectableTabOnClickListener;
         } else {
             return isTabInTabGroup(tab)
                     ? TabListGroupMenuCoordinator.getTabListGroupMenuOnClickListener(

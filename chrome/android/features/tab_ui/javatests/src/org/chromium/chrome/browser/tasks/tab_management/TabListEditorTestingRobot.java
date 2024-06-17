@@ -30,6 +30,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.view.View;
 
+import androidx.annotation.IdRes;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.NoMatchingRootException;
 import androidx.test.espresso.NoMatchingViewException;
@@ -43,6 +44,7 @@ import org.hamcrest.TypeSafeMatcher;
 import org.junit.Assert;
 
 import org.chromium.base.test.util.RawFailureHandler;
+import org.chromium.base.test.util.ViewActionOnDescendant;
 import org.chromium.chrome.test.R;
 
 /**
@@ -122,6 +124,16 @@ public class TabListEditorTestingRobot {
         public TabListEditorTestingRobot.Action clickItemAtAdapterPosition(int position) {
             onView(inTabListEditor(withId(R.id.tab_list_recycler_view)))
                     .perform(actionOnItemAtPosition(position, click()));
+            return this;
+        }
+
+        public TabListEditorTestingRobot.Action clickActionButtonAdapterPosition(
+                int position, @IdRes int actionButtonId) {
+            ViewActionOnDescendant.performOnRecyclerViewNthItemDescendant(
+                    inTabListEditor(withId(R.id.tab_list_recycler_view)),
+                    position,
+                    withId(actionButtonId),
+                    click());
             return this;
         }
 

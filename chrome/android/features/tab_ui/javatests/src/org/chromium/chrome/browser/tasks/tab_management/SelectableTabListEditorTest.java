@@ -34,6 +34,7 @@ import android.content.Intent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.intent.Intents;
@@ -362,6 +363,38 @@ public class SelectableTabListEditorTest {
                 .verifyToolbarSelectionText("1 tab");
 
         mRobot.actionRobot.clickItemAtAdapterPosition(0);
+        mRobot.resultRobot
+                .verifyItemNotSelectedAtAdapterPosition(0)
+                .verifyToolbarSelectionTextWithResourceId(
+                        R.string.tab_selection_editor_toolbar_select_tabs);
+    }
+
+    @Test
+    @MediumTest
+    public void testSelectItemsThroughActionButton() {
+        prepareBlankTab(2, false);
+        List<Tab> tabs = getTabsInCurrentTabModel();
+
+        showSelectionEditor(tabs, null);
+
+        mRobot.resultRobot.verifyItemNotSelectedAtAdapterPosition(0);
+
+        mRobot.actionRobot.clickActionButtonAdapterPosition(0, getActionButtonId());
+        mRobot.resultRobot
+                .verifyItemSelectedAtAdapterPosition(0)
+                .verifyToolbarSelectionText("1 tab");
+
+        mRobot.actionRobot.clickActionButtonAdapterPosition(1, getActionButtonId());
+        mRobot.resultRobot
+                .verifyItemSelectedAtAdapterPosition(1)
+                .verifyToolbarSelectionText("2 tabs");
+
+        mRobot.actionRobot.clickActionButtonAdapterPosition(1, getActionButtonId());
+        mRobot.resultRobot
+                .verifyItemNotSelectedAtAdapterPosition(1)
+                .verifyToolbarSelectionText("1 tab");
+
+        mRobot.actionRobot.clickActionButtonAdapterPosition(0, getActionButtonId());
         mRobot.resultRobot
                 .verifyItemNotSelectedAtAdapterPosition(0)
                 .verifyToolbarSelectionTextWithResourceId(
@@ -1926,5 +1959,13 @@ public class SelectableTabListEditorTest {
                         mTabListEditorController.configureToolbarWithMenuItems(actions);
                     }
                 });
+    }
+
+    private @IdRes int getActionButtonId() {
+        if (getMode() == TabListCoordinator.TabListMode.GRID) {
+            return R.id.action_button;
+        } else {
+            return R.id.end_button;
+        }
     }
 }
