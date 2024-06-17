@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
+
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
@@ -54,6 +56,7 @@ public class AwContentsStaticsTest extends AwParameterizedTest {
     @Test
     @Feature({"AndroidWebView"})
     @SmallTest
+    @OnlyRunIn(EITHER_PROCESS) // This test doesn't use the renderer process
     public void testClearClientCertPreferences() throws Throwable {
         mActivityTestRule.startBrowserProcess();
         final ClearClientCertCallbackHelper callbackHelper = new ClearClientCertCallbackHelper();

@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
@@ -32,6 +34,7 @@ import java.util.Arrays;
 /** Instrumentation tests for {@link MetricsFilteringDecorator}. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+@OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
 @MediumTest
 @Batch(Batch.PER_CLASS)
 public class MetricsFilteringDecoratorTest extends AwParameterizedTest {

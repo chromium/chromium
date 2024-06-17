@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test.services;
 
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
+
 import androidx.test.filters.MediumTest;
 
 import org.json.JSONException;
@@ -16,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.nonembedded.crash.CrashInfo;
 import org.chromium.android_webview.services.CrashLoggingUtils;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
+import org.chromium.android_webview.test.OnlyRunIn;
 import org.chromium.base.test.util.Batch;
 
 import java.io.File;
@@ -26,6 +29,7 @@ import java.util.Map;
 
 /** Tests for {@link CrashLoggingUtils}. */
 @RunWith(AwJUnit4ClassRunner.class)
+@OnlyRunIn(EITHER_PROCESS) // These are unit tests
 @Batch(Batch.UNIT_TESTS)
 public class CrashLoggingUtilsTest {
     private static final String TEST_CRASH_LOCAL_ID = "abc1234";

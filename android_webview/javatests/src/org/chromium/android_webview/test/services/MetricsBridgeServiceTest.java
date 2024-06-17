@@ -4,7 +4,7 @@
 
 package org.chromium.android_webview.test.services;
 
-import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
 import static org.chromium.android_webview.test.services.MetricsBridgeServiceUnitTest.RETRIEVE_METRICS_TASK_STATUS_SUCCESS_RECORD;
 
 import android.content.Context;
@@ -31,7 +31,7 @@ import java.util.List;
  * services are properly killed between tests.
  */
 @RunWith(AwJUnit4ClassRunner.class)
-@OnlyRunIn(SINGLE_PROCESS)
+@OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
 public class MetricsBridgeServiceTest {
     @Test
     @MediumTest

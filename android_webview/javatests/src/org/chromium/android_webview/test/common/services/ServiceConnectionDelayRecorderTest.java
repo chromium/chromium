@@ -28,7 +28,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 
 /** Unit tests for {@link ServiceConnectionDelayRecorder}. */
 @RunWith(AwJUnit4ClassRunner.class)
-@OnlyRunIn(EITHER_PROCESS)
+@OnlyRunIn(EITHER_PROCESS) // These are unit tests
 @DoNotBatch(reason = "To make sure all bound services are properly killed between tests.")
 public class ServiceConnectionDelayRecorderTest {
     // Test class that increments time with multiples of 1000 ms.

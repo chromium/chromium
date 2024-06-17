@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
+
 import android.content.Context;
 
 import androidx.test.InstrumentationRegistry;
@@ -83,6 +85,7 @@ public class OnDiskFileTest extends AwParameterizedTest {
 
     @Test
     @SmallTest
+    @OnlyRunIn(EITHER_PROCESS) // This test doesn't use the renderer process
     @Feature({"AndroidWebView"})
     public void testCookiePathIsInsideDataDir() {
         File webViewCookiePath =
@@ -105,6 +108,7 @@ public class OnDiskFileTest extends AwParameterizedTest {
 
     @Test
     @SmallTest
+    @OnlyRunIn(EITHER_PROCESS) // This test doesn't use the renderer process
     @Feature({"AndroidWebView"})
     public void testProfilesHaveSeparateDirectories() throws Throwable {
         mActivityTestRule.startBrowserProcess();

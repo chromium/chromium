@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -28,6 +30,7 @@ import org.chromium.base.test.util.Features;
  */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+@OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process, they test browser crashes
 @DoNotBatch(reason = "needsBrowserProcessStarted false and @Batch are incompatible")
 public class AwCrashyClassUtilsTest extends AwParameterizedTest {
 

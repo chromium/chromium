@@ -8,6 +8,8 @@ import static org.hamcrest.Matchers.greaterThan;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
+
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.app.job.JobWorkItem;
@@ -73,6 +75,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /** Test WebView SafeMode. */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
+@OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
 public class SafeModeTest extends AwParameterizedTest {
     // The package name of the test shell. This is acting both as the client app and the WebView
     // provider.

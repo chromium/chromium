@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
+
 import android.os.Looper;
 
 import androidx.test.InstrumentationRegistry;
@@ -135,6 +137,7 @@ public class CookieManagerStartupTest extends AwParameterizedTest {
 
     @Test
     @SmallTest
+    @OnlyRunIn(EITHER_PROCESS) // This test doesn't use the renderer process
     @Feature({"AndroidWebView", "Privacy"})
     public void testAllowFileSchemeCookies() {
         AwCookieManager cookieManager = new AwCookieManager();
@@ -147,6 +150,7 @@ public class CookieManagerStartupTest extends AwParameterizedTest {
 
     @Test
     @SmallTest
+    @OnlyRunIn(EITHER_PROCESS) // This test doesn't use the renderer process
     @Feature({"AndroidWebView", "Privacy"})
     public void testAllowCookies() {
         AwCookieManager cookieManager = new AwCookieManager();

@@ -4,7 +4,7 @@
 
 package org.chromium.android_webview.test.services;
 
-import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
 import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
 
 import android.os.ParcelFileDescriptor;
@@ -59,7 +59,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * to leave them unbatched to avoid possible state leaking between tests.
  */
 @RunWith(AwJUnit4ClassRunner.class)
-@OnlyRunIn(SINGLE_PROCESS)
+@OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
 @DoNotBatch(reason = "These tests load the native library so batching might leak state")
 public class MinidumpUploadJobTest {
     @Rule

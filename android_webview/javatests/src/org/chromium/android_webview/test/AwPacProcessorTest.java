@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
+
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
@@ -29,6 +31,7 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @MinAndroidSdkLevel(Build.VERSION_CODES.P)
 @RequiresApi(Build.VERSION_CODES.P)
+@OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
 public class AwPacProcessorTest extends AwParameterizedTest {
     private AwPacProcessor mProcessor;
 

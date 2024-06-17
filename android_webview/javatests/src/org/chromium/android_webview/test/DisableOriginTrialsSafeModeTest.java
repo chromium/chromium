@@ -7,6 +7,8 @@ package org.chromium.android_webview.test;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
+
 import androidx.test.filters.SmallTest;
 
 import org.jni_zero.JNINamespace;
@@ -29,6 +31,7 @@ import java.util.Set;
 /** Tests for WebView DisableOriginTrialsSafeMode. */
 @JNINamespace("android_webview")
 @RunWith(Parameterized.class)
+@OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 public class DisableOriginTrialsSafeModeTest extends AwParameterizedTest {
     public static final String TAG = "DisableOriginTrialsSafeModeTest";

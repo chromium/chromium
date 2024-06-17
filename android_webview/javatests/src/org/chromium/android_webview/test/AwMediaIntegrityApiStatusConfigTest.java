@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
+
 import android.net.Uri;
 
 import androidx.test.filters.MediumTest;
@@ -21,6 +23,7 @@ import java.util.Map;
 
 /** {@link org.chromium.android_webview.AwMediaIntegrityApiStatusConfig} tests. */
 @RunWith(AwJUnit4ClassRunner.class)
+@OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
 public class AwMediaIntegrityApiStatusConfigTest {
     @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();
 

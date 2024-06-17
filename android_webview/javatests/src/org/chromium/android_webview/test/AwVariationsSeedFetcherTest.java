@@ -8,7 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
-import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
 
 import android.annotation.SuppressLint;
 import android.app.job.JobInfo;
@@ -55,7 +55,7 @@ import java.util.concurrent.TimeoutException;
 
 /** Test AwVariationsSeedFetcher. */
 @RunWith(AwJUnit4ClassRunner.class)
-@OnlyRunIn(SINGLE_PROCESS)
+@OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
 public class AwVariationsSeedFetcherTest {
     private static final int HTTP_OK = 200;
     private static final int HTTP_NOT_FOUND = 404;

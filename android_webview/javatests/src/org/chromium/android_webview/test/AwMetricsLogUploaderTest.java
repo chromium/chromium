@@ -9,6 +9,8 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
+
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -36,6 +38,7 @@ import java.util.concurrent.LinkedBlockingQueue;
  */
 @RunWith(AwJUnit4ClassRunner.class)
 @MediumTest
+@OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
 @Batch(Batch.PER_CLASS)
 public class AwMetricsLogUploaderTest {
     private static final ChromeUserMetricsExtension SAMPLE_TEST_METRICS_LOG =

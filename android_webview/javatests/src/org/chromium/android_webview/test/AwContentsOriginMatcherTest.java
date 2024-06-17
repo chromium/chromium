@@ -4,6 +4,8 @@
 
 package org.chromium.android_webview.test;
 
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
+
 import android.net.Uri;
 
 import androidx.test.filters.SmallTest;
@@ -23,6 +25,7 @@ import java.util.Arrays;
 
 /** AwContentsOriginMatcher tests. */
 @RunWith(AwJUnit4ClassRunner.class)
+@OnlyRunIn(EITHER_PROCESS) // These are unit tests
 @DoNotBatch(reason = "Shared dependencies among the tests cause conflicts during batch testing.")
 public class AwContentsOriginMatcherTest {
     @Rule public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();

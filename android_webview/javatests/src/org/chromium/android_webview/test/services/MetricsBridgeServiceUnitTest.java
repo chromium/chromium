@@ -4,7 +4,7 @@
 
 package org.chromium.android_webview.test.services;
 
-import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
+import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
 
 import android.os.IBinder;
 
@@ -40,7 +40,7 @@ import java.util.concurrent.FutureTask;
  * they don't actually launch any services or other components.
  */
 @RunWith(AwJUnit4ClassRunner.class)
-@OnlyRunIn(SINGLE_PROCESS)
+@OnlyRunIn(EITHER_PROCESS) // These are unit tests
 @Batch(Batch.UNIT_TESTS)
 public class MetricsBridgeServiceUnitTest {
     public static final byte[] PARSING_LOG_RESULT_SUCCESS_RECORD =
