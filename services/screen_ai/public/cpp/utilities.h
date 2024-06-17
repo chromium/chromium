@@ -6,12 +6,15 @@
 #define SERVICES_SCREEN_AI_PUBLIC_CPP_UTILITIES_H_
 
 #include "base/files/file_path.h"
+#include "services/screen_ai/buildflags/buildflags.h"
 
 namespace screen_ai {
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
 // Get the absolute path of the ScreenAI component binary for tests. This
 // function verifies that the binary exists on disk and can be opened.
 base::FilePath GetComponentBinaryPathForTests();
+#endif
 
 // Returns the install directory relative to components folder.
 base::FilePath GetRelativeInstallDir();

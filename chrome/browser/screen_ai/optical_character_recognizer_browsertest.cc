@@ -5,6 +5,7 @@
 #include "chrome/browser/screen_ai/public/optical_character_recognizer.h"
 
 #include "base/files/file_util.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -124,8 +125,13 @@ class OpticalCharacterRecognizerTest
     InProcessBrowserTest::SetUpOnMainThread();
 
     if (IsLibraryAvailable()) {
+#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
       ScreenAIInstallState::GetInstance()->SetComponentFolder(
           GetComponentBinaryPathForTests().DirName());
+#else
+      NOTREACHED_NORETURN()
+          << "Test library is used on a not-suppported platform.";
+#endif
     } else {
       // Set an observer to reply download failed, when download requested.
       component_download_observer_.Observe(ScreenAIInstallState::GetInstance());

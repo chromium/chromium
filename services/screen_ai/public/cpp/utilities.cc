@@ -12,7 +12,6 @@
 #include "base/version.h"
 #include "build/build_config.h"
 #include "components/component_updater/component_updater_paths.h"
-#include "services/screen_ai/buildflags/buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
 
 namespace screen_ai {
@@ -110,6 +109,7 @@ base::FilePath GetComponentDir() {
 #endif
 }
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
 base::FilePath GetComponentBinaryPathForTests() {
   base::FilePath component_path = GetComponentDir();
 
@@ -124,6 +124,7 @@ base::FilePath GetComponentBinaryPathForTests() {
 
   return component_path;
 }
+#endif
 
 const char* GetBinaryPathSwitch() {
   // This is only used on Linux and ChromeOS.
