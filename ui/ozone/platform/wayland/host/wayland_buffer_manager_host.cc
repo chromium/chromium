@@ -563,6 +563,7 @@ base::ScopedFD WaylandBufferManagerHost::ExtractReleaseFence(
 
   struct dma_buf_export_sync_file req;
   req.flags = DMA_BUF_SYNC_RW;
+  req.fd = -1;
 
   if (HANDLE_EINTR(
           ioctl(it->second.get(), DMA_BUF_IOCTL_EXPORT_SYNC_FILE, &req)) < 0) {
