@@ -109,20 +109,26 @@ chromium-metrics-reviews@google.com.
     units="ms" expires_after="2024-08-01">
   <owner>jonross@chromium.org</owner>
   <owner>sahir.vellani@microsoft.com</owner>
+  <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
-    The latency improvement provided by the delegated ink trail API, both with
-    and without prediction, in milliseconds. This latency improvement is the
+    The latency improvement provided by the delegated ink trail API
+    {Prediction}, in milliseconds {Renderer}. This latency improvement is the
     difference between the timestamp of the pointerevent provided to the API,
     and the final point of the trail that is drawn. Points are forwarded from
     the browser to viz when this API is being used, so viz will have points
     ahead of what the app provided the API, and they are used to draw the trail.
+    This metric measures how much closer the trail is to the pointer, in time,
+    compared to the last API drawn point. The bigger the histogram's value, the
+    closer Delegated Ink got us to the last pointer position.
   </summary>
   <token key="Renderer">
-    <variant name="Skia"/>
+    <variant name="OS" summary="using the native OS Delegated Ink API"/>
+    <variant name="Skia"
+        summary="using the Skia implementation for Delegated Ink"/>
   </token>
   <token key="Prediction">
-    <variant name="WithoutPrediction"/>
-    <variant name="WithPrediction"/>
+    <variant name="WithoutPrediction" summary="without point prediction"/>
+    <variant name="WithPrediction" summary="using point draw prediction"/>
   </token>
 </histogram>
 

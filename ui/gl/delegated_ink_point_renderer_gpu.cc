@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/metrics/histogram_functions.h "
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -105,11 +106,18 @@ void DelegatedInkPointRendererGpu::ReportPointsDrawn() {
   if (points_to_be_drawn_.empty()) {
     return;
   }
+  CHECK(metadata_);
   const base::TimeTicks now = base::TimeTicks::Now();
+  base::TimeTicks most_recent_timestamp = base::TimeTicks::Min();
   for (const auto& timestamp : points_to_be_drawn_) {
     UMA_HISTOGRAM_TIMES("Renderer.DelegatedInkTrail.OS.TimeToDrawPointsMillis",
                         now - timestamp);
+    most_recent_timestamp = std::max(timestamp, most_recent_timestamp);
   }
+  CHECK_GE(most_recent_timestamp, metadata_->timestamp());
+  base::UmaHistogramTimes(
+      "Renderer.DelegatedInkTrail.LatencyImprovement.OS.WithoutPrediction",
+      most_recent_timestamp - metadata_->timestamp());
   points_to_be_drawn_.clear();
 }
 
