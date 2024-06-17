@@ -24,7 +24,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.TimeUtils.UptimeMillisTimer;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -60,8 +59,6 @@ import java.util.List;
 public class TabSwitcherPaneCoordinator implements BackPressHandler {
     private static final String COMPONENT_NAME = "GridTabSwitcher";
 
-    private final TabGridItemTouchHelperCallback.OnLongPressTabItemEventListener
-            mLongPressItemEventListener = this::onLongPressOnTabCard;
     private final Activity mActivity;
     private final OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private final Callback<Boolean> mOnVisibilityChanged = this::onVisibilityChanged;
@@ -227,7 +224,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                                     : Resources.ID_NULL,
                             onTabGroupCreation);
             mTabListCoordinator = tabListCoordinator;
-            tabListCoordinator.setOnLongPressTabItemEventListener(mLongPressItemEventListener);
 
             TabListRecyclerView recyclerView = tabListCoordinator.getContainerView();
             recyclerView.setVisibility(View.VISIBLE);
@@ -467,11 +463,6 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
     private PriceWelcomeMessageController getPriceWelcomeMessageController() {
         return mMessageManager;
-    }
-
-    private void onLongPressOnTabCard(int tabId) {
-        mTabListEditorManager.showTabListEditor();
-        RecordUserAction.record("TabMultiSelectV2.OpenLongPressInGrid");
     }
 
     /** Returns the container view property model for testing. */

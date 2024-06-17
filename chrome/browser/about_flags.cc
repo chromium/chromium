@@ -10964,6 +10964,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kAtomicMoveAPI)},
 
 #if BUILDFLAG(IS_ANDROID)
+    {"android-hub", flag_descriptions::kAndroidHubName,
+     flag_descriptions::kAndroidHubDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidHub)},
+
     {"android-hub-floating-action-button",
      flag_descriptions::kAndroidHubFloatingActionButtonName,
      flag_descriptions::kAndroidHubFloatingActionButtonDescription, kOsAndroid,

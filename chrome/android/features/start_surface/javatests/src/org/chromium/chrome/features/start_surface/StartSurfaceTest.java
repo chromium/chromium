@@ -10,6 +10,7 @@ import static androidx.test.espresso.action.ViewActions.pressKey;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
+import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -186,6 +187,45 @@ public class StartSurfaceTest {
                                         manager.addObserver(mLayoutObserver);
                                     });
                 });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    @CommandLineFlags.Add({
+        START_SURFACE_TEST_SINGLE_ENABLED_PARAMS + "/hide_switch_when_no_incognito_tabs/false"
+    })
+    // TODO(b/335250391): This test is no longer relevant when Hub is launched.
+    @DisableFeatures({ChromeFeatureList.ANDROID_HUB})
+    public void testShow_SingleAsHomepage_NoIncognitoSwitch() {
+        if (!mImmediateReturn) {
+            StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
+        }
+
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForStartSurfaceVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout, cta);
+
+        onViewWaiting(withId(R.id.primary_tasks_surface_view));
+        onViewWaiting(withId(R.id.search_box_text));
+        onViewWaiting(withId(R.id.mv_tiles_container)).check(matches(isDisplayed()));
+        onViewWaiting(withId(R.id.single_tab_view)).check(matches(isDisplayed()));
+        onView(withId(R.id.tasks_surface_body)).check(matches(isDisplayed()));
+
+        // TODO(crbug.com/40128588): fix toolbar to make incognito switch part of the view.
+        onView(withId(R.id.incognito_toggle_tabs)).check(matches(withEffectiveVisibility(GONE)));
+
+        StartSurfaceTestUtils.clickTabSwitcherButton(cta);
+        StartSurfaceTestUtils.waitForTabSwitcherVisible(cta);
+        onView(withId(R.id.incognito_toggle_tabs)).check(matches(withEffectiveVisibility(VISIBLE)));
+
+        StartSurfaceTestUtils.pressBack(mActivityTestRule);
+        onViewWaiting(withId(R.id.primary_tasks_surface_view));
+
+        onView(withId(R.id.incognito_toggle_tabs)).check(matches(withEffectiveVisibility(GONE)));
+
+        onViewWaiting(withId(R.id.single_tab_view)).perform(click());
+        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
     }
 
     @Test

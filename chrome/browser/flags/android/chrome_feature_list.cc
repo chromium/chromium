@@ -165,6 +165,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidElegantTextHeight,
     &kAndroidGoogleSansText,
     &kAndroidHatsRefactor,
+    &kAndroidHub,
     &kAndroidHubFloatingActionButton,
     &kAndroidHubV2,
     &kAndroidImprovedBookmarks,
@@ -444,6 +445,8 @@ BASE_FEATURE(kAndroidGoogleSansText,
 BASE_FEATURE(kAndroidHatsRefactor,
              "AndroidHatsRefactor",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kAndroidHub, "AndroidHub", base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidHubFloatingActionButton,
              "AndroidHubFloatingActionButton",
@@ -891,6 +894,7 @@ BASE_FEATURE(kTabIdMapAndroid,
 BASE_FEATURE(kTabletTabSwitcherLongPressMenu,
              "TabletTabSwitcherLongPressMenu",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
 
 BASE_FEATURE(kTabletToolbarReordering,
              "TabletToolbarReordering",

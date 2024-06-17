@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.hub;
 import static org.junit.Assert.assertEquals;
 
 import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.ANDROID_HUB;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.SHOW_NTP_AT_STARTUP_ANDROID;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.START_SURFACE_RETURN_TIME;
 
@@ -41,6 +42,7 @@ import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
 /** Public transit instrumentation/integration test of Hub. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@EnableFeatures({ANDROID_HUB})
 @Batch(Batch.PER_CLASS)
 public class HubLayoutPublicTransitTest {
     @ClassRule

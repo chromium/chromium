@@ -803,6 +803,26 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_HUB)
+    public void tabSelection_HubDisabled() {
+        // Mock that the animation source view is not null, and the dialog is showing.
+        mModel.set(TabGridDialogProperties.ANIMATION_SOURCE_VIEW, mView);
+        mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, true);
+
+        mTabModelObserverCaptor
+                .getValue()
+                .didSelectTab(mTab1, TabSelectionType.FROM_USER, Tab.INVALID_TAB_ID);
+
+        assertThat(mModel.get(TabGridDialogProperties.ANIMATION_SOURCE_VIEW), equalTo(null));
+        assertFalse(mModel.get(TabGridDialogProperties.IS_DIALOG_VISIBLE));
+
+        // Simulate the animation finishing.
+        mModel.get(TabGridDialogProperties.VISIBILITY_LISTENER).finishedHidingDialogView();
+
+        verify(mDialogController).resetWithListOfTabs(null);
+    }
+
+    @Test
     public void tabSelection_stripContext() {
         mMediator.destroy();
         mMediator =

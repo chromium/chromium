@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.ANDROID_HUB;
 
 import androidx.test.filters.MediumTest;
 
@@ -32,6 +33,7 @@ import org.chromium.components.tab_groups.TabGroupColorId;
 /** Public transit tests for the Hub's tab switcher list editor. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@EnableFeatures({ANDROID_HUB})
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherListEditorPTTest {
     @ClassRule

@@ -23,8 +23,16 @@ public class HubFieldTrialTest {
 
     @Test
     @SmallTest
+    @EnableFeatures({ChromeFeatureList.ANDROID_HUB})
     public void testHubEnabled() {
         assertTrue(HubFieldTrial.isHubEnabled());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures({ChromeFeatureList.ANDROID_HUB})
+    public void testHubDisabled() {
+        assertFalse(HubFieldTrial.isHubEnabled());
     }
 
     @Test
