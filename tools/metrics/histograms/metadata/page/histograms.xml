@@ -949,6 +949,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PageLoad.Clients.GoogleSearch.NavigationTiming.NavigationStartToOnComplete"
+    units="ms" expires_after="2024-12-08">
+  <owner>suzukikeita@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    The time relative to navigation start that the page load metrics observer is
+    destructed (i.e. the page is closed), for Google Search page loads. The
+    metric is emitted when the navigation is completed.
+  </summary>
+</histogram>
+
+<histogram
     name="PageLoad.Clients.GoogleSearch.PaintTiming.NavigationToFirstContentfulPaint"
     units="ms" expires_after="2024-12-01">
   <owner>spelchat@chromium.org</owner>

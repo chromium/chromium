@@ -18,6 +18,7 @@ extern const char kHistogramGWSNavigationStartToFinalLoaderCallback[];
 extern const char kHistogramGWSNavigationStartToFirstRequestStart[];
 extern const char kHistogramGWSNavigationStartToFirstResponseStart[];
 extern const char kHistogramGWSNavigationStartToFirstLoaderCallback[];
+extern const char kHistogramGWSNavigationStartToOnComplete[];
 
 extern const char kHistogramGWSFirstContentfulPaint[];
 extern const char kHistogramGWSLargestContentfulPaint[];

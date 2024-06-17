@@ -37,6 +37,8 @@ const char kHistogramGWSNavigationStartToFirstResponseStart[] =
     HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFirstResponseStart";
 const char kHistogramGWSNavigationStartToFirstLoaderCallback[] =
     HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToFirstLoaderCallback";
+const char kHistogramGWSNavigationStartToOnComplete[] =
+    HISTOGRAM_PREFIX "NavigationTiming.NavigationStartToOnComplete";
 const char kHistogramGWSFirstContentfulPaint[] =
     HISTOGRAM_PREFIX "PaintTiming.NavigationToFirstContentfulPaint";
 const char kHistogramGWSLargestContentfulPaint[] =
@@ -114,6 +116,11 @@ void GWSPageLoadMetricsObserver::OnParseStart(
 
 void GWSPageLoadMetricsObserver::OnComplete(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
+  const base::TimeTicks navigation_start = GetDelegate().GetNavigationStart();
+  if (!navigation_start.is_null()) {
+    PAGE_LOAD_HISTOGRAM(internal::kHistogramGWSNavigationStartToOnComplete,
+                        base::TimeTicks::Now() - navigation_start);
+  }
   LogMetricsOnComplete();
 }
 

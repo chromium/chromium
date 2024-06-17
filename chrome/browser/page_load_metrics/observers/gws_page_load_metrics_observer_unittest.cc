@@ -105,6 +105,8 @@ TEST_F(GWSPageLoadMetricsObserverTest, Search) {
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramGWSNavigationStartToFinalLoaderCallback, 1, 1);
   tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSNavigationStartToOnComplete, 1);
+  tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSParseStart, 1);
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramGWSParseStart, 1, 1);
@@ -147,6 +149,8 @@ TEST_F(GWSPageLoadMetricsObserverTest, NonSearch) {
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSNavigationStartToFinalLoaderCallback, 0);
   tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSNavigationStartToOnComplete, 0);
+  tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSParseStart, 0);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSFirstContentfulPaint, 0);
@@ -183,6 +187,8 @@ TEST_F(GWSPageLoadMetricsObserverTest, SearchBackground) {
       internal::kHistogramGWSNavigationStartToFinalResponseStart, 0);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSNavigationStartToFinalLoaderCallback, 0);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSNavigationStartToOnComplete, 1);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSParseStart, 0);
   tester()->histogram_tester().ExpectTotalCount(
@@ -235,6 +241,8 @@ TEST_F(GWSPageLoadMetricsObserverTest, SearchBackgroundLater) {
       internal::kHistogramGWSNavigationStartToFinalLoaderCallback, 1);
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramGWSNavigationStartToFinalLoaderCallback, 0, 1);
+  tester()->histogram_tester().ExpectTotalCount(
+      internal::kHistogramGWSNavigationStartToOnComplete, 1);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramGWSParseStart, 1);
   tester()->histogram_tester().ExpectBucketCount(
