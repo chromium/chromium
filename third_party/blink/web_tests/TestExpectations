@@ -7579,7 +7579,7 @@ crbug.com/346219035 [ Linux ] http/tests/loading/preload-image-src.html [ Failur
 crbug.com/346387874 [ Win11 ] fast/backgrounds/size/contain-and-cover.html [ Failure ]
 
 # Gardener 2024-06-12
-crbug.com/346706682 [ Mac ] http/tests/devtools/indexeddb/resources-panel.js [ Failure ]
+crbug.com/346706682 http/tests/devtools/indexeddb/resources-panel.js [ Failure Pass ]
 
 crbug.com/40899458 [ Mac14 ] fast/canvas/OffscreenCanvas-copyImage.html [ Failure Pass ]
 
