@@ -2956,8 +2956,6 @@ static_library("browser") {
       "android/mojo/chrome_interface_registrar_android.cc",
       "android/mojo/chrome_interface_registrar_android.h",
       "android/navigation_predictor/navigation_predictor_bridge.cc",
-      "android/net/nqe/network_quality_provider.cc",
-      "android/net/nqe/network_quality_provider.h",
       "android/ntp/most_visited_sites_bridge.cc",
       "android/ntp/most_visited_sites_bridge.h",
       "android/ntp/new_tab_page_url_handler.cc",

@@ -766,7 +766,6 @@ if (current_toolchain == default_toolchain) {
       "//components/ntp_tiles:ntp_tiles_enums_java",
       "//components/offline_pages/core:offline_page_model_enums_java",
       "//components/supervised_user/core/browser:supervised_user_utils_enum_javagen",
-      "//net:effective_connection_type_java",
     ]
 
     # From java_sources.gni.
@@ -3759,7 +3758,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/metrics/VariationsSession.java",
     "java/src/org/chromium/chrome/browser/mojo/ChromeInterfaceRegistrar.java",
     "java/src/org/chromium/chrome/browser/navigation_predictor/NavigationPredictorBridge.java",
-    "java/src/org/chromium/chrome/browser/net/nqe/NetworkQualityProvider.java",
     "java/src/org/chromium/chrome/browser/notifications/ActionInfo.java",
     "java/src/org/chromium/chrome/browser/notifications/NotificationPlatformBridge.java",
     "java/src/org/chromium/chrome/browser/notifications/NotificationSuspender.java",

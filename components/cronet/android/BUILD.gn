@@ -52,6 +52,10 @@ android_library("cronet_jni_registration_java") {
   srcjar_deps = [ ":cronet_jni_registration" ]
 }
 
+java_cpp_enum("effective_connection_type_java") {
+  sources = [ "//net/nqe/effective_connection_type.h" ]
+}
+
 java_cpp_enum("rtt_throughput_values_java") {
   sources = [ "//net/nqe/network_quality.h" ]
 }
@@ -358,10 +362,10 @@ android_library("cronet_stats_log_java") {
 }
 
 cronet_impl_common_java_srcjar_deps = [
+  ":effective_connection_type_java",
   ":http_cache_type_java",
   ":load_states_list",
   ":rtt_throughput_values_java",
-  "//net:effective_connection_type_java",
 ]
 
 cronet_impl_common_java_deps_to_package =

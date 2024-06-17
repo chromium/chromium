@@ -259,7 +259,6 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/multiwindow/MultiWindowTestUtils.java",
   "junit/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtilsUnitTest.java",
   "junit/src/org/chromium/chrome/browser/native_page/NativePageFactoryTest.java",
-  "junit/src/org/chromium/chrome/browser/net/nqe/NetworkQualityProviderTest.java",
   "junit/src/org/chromium/chrome/browser/new_tab_url/DseNewTabUrlManagerUnitTest.java",
   "junit/src/org/chromium/chrome/browser/night_mode/GlobalNightModeStateControllerTest.java",
   "junit/src/org/chromium/chrome/browser/night_mode/GlobalNightModeStateProviderHolderTest.java",
