@@ -13,6 +13,7 @@
 #import "components/search_engines/prepopulated_engines.h"
 #import "components/search_engines/search_engines_switches.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/supervised_user/core/common/features.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/search_engines/model/search_engines_app_interface.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -1485,12 +1486,6 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 // Tests that content suggestions are hidden for supervised users on sign-in.
 // When the supervised user signs out the active policy should apply to the NTP.
 - (void)testFeedHiddenForSupervisedUser {
-  // TODO(crbug.com/40907845): Re-enable the test on iPad once the test is
-  // fixed.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Disabled for iPad as the test fails.");
-  }
-
   // Disable trending queries experiment to ensure that the Discover feed is
   // visible when first opening the NTP.
   // TODO(crbug.com/40856730): Adapt the test with launch of trending queries.
@@ -1498,8 +1493,9 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
   config.additional_args.push_back(std::string("--") +
                                    switches::kDisableSearchEngineChoiceScreen);
-  // TODO(crbug.com/40251409): Reenable the discover feed sync promo feature
-  config.features_disabled.push_back(kEnableDiscoverFeedTopSyncPromo);
+  config.features_enabled.push_back(
+      supervised_user::
+          kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS);
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   [self
@@ -1521,7 +1517,65 @@ bool AreNumbersEqual(CGFloat num1, CGFloat num2) {
 
   [SigninEarlGrey signinWithFakeIdentity:identity];
 
-  // Check feed label and if NTP is scrollable.
+  // Check that the feed label is not visible and if NTP is scrollable.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
+      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+  [self checkIfNTPIsScrollable];
+
+  // Check that the fake omnibox is visible.
+  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
+                      chrome_test_util::FakeOmnibox()];
+
+  // Opens settings menu and ensures that Discover setting is not present.
+  [self checkDiscoverSettingsToggleVisible:NO];
+
+  [SigninEarlGreyUI signOut];
+
+  // The feed label should be visible on sign-out.
+  [self checkFeedLabelForFeedVisible:YES];
+  [self checkIfNTPIsScrollable];
+
+  // Opens settings menu and ensures that Discover setting is present.
+  [self checkDiscoverSettingsToggleVisible:YES];
+}
+
+// Tests that content suggestions are hidden for supervised users on sign-in,
+// with supervision status based on system capabilities.
+// TODO(crbug.com/346756363): Remove this test when supervision status system
+// capabilities are deprecated.
+- (void)testFeedHiddenForSupervisedUserViaSystemCapabilities {
+  // Disable trending queries experiment to ensure that the Discover feed is
+  // visible when first opening the NTP.
+  // TODO(crbug.com/40856730): Adapt the test with launch of trending queries.
+  AppLaunchConfiguration config = [self appConfigurationForTestCase];
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+  config.additional_args.push_back(std::string("--") +
+                                   switches::kDisableSearchEngineChoiceScreen);
+  config.features_disabled.push_back(
+      supervised_user::
+          kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  [self
+      testNTPInitialPositionAndContent:[NewTabPageAppInterface collectionView]];
+
+  // Ensure that label is visible with correct text for enabled feed, and that
+  // the NTP is scrollable.
+  [self checkFeedLabelForFeedVisible:YES];
+  [self checkIfNTPIsScrollable];
+
+  // Opens settings menu and ensures that Discover setting is present.
+  [self checkDiscoverSettingsToggleVisible:YES];
+
+  // The identity must exist in the test storage to be able to set capabilities
+  // through the fake identity service.
+  FakeSystemIdentity* identity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:identity];
+  [SigninEarlGrey setIsSubjectToParentalControls:YES forIdentity:identity];
+
+  [SigninEarlGrey signinWithFakeIdentity:identity];
+
+  // Check that the feed label is not visible and if NTP is scrollable.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::DiscoverHeaderLabel()]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
   [self checkIfNTPIsScrollable];

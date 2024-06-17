@@ -347,6 +347,7 @@ source_set("eg2_tests") {
     "//components/segmentation_platform/public",
     "//components/signin/internal/identity_manager",
     "//components/strings",
+    "//components/supervised_user/core/common:features",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/flags:system_flags",

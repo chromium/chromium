@@ -131,6 +131,9 @@ BASE_FEATURE(kWaitUntilAccessTokenAvailableForClassifyUrl,
 BASE_FEATURE(kReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS,
              "ReplaceSupervisionPrefsWithAccountCapabilitiesOnIOS",
              base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS,
+             "ReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif
 
 bool IsKidFriendlyContentFeedAvailable() {

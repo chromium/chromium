@@ -6,6 +6,7 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
+#import "base/feature_list.h"
 #import "base/metrics/field_trial_params.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
@@ -21,6 +22,8 @@
 #import "components/search/search.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "components/signin/public/identity_manager/tribool.h"
+#import "components/supervised_user/core/common/features.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/link_preview/link_preview_coordinator.h"
@@ -62,6 +65,7 @@
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
+#import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/account_switching/account_switcher_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
@@ -131,7 +135,8 @@
                                      NewTabPageHeaderCommands,
                                      NewTabPageMetricsDelegate,
                                      OverscrollActionsControllerDelegate,
-                                     SceneStateObserver> {
+                                     SceneStateObserver,
+                                     SupervisedUserCapabilitiesObserving> {
   // Observes changes in the IdentityManager.
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityObserverBridge;
@@ -142,6 +147,10 @@
   // Observer for auth service status changes.
   std::unique_ptr<AuthenticationServiceObserverBridge>
       _authServiceObserverBridge;
+
+  // Observer to track changes to supervision-related capabilities.
+  std::unique_ptr<supervised_user::SupervisedUserCapabilitiesObserverBridge>
+      _supervisedUserCapabilitiesObserverBridge;
 }
 
 // Coordinator for the ContentSuggestions.
@@ -316,8 +325,22 @@
     self.NTPViewController.focusAccessibilityOmniboxWhenViewAppears = NO;
   }
 
-  // Updates feed asynchronously if the account is subject to parental controls.
-  [self updateFeedVisibilityForSupervision];
+  // Update the feed if the account is subject to parental controls.
+  if (base::FeatureList::IsEnabled(
+          supervised_user::
+              kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS)) {
+    signin::IdentityManager* identityManager =
+        IdentityManagerFactory::GetForBrowserState(
+            self.browser->GetBrowserState());
+    signin::Tribool capability =
+        supervised_user::IsPrimaryAccountSubjectToParentalControls(
+            identityManager);
+    [self
+        updateFeedWithIsSupervisedUser:(capability == signin::Tribool::kTrue)];
+  } else {
+    // Update asynchronously using system capabilities.
+    [self updateFeedVisibilityForSupervision];
+  }
 
   [self configureNTPMediator];
   if (self.NTPMediator.feedHeaderVisible) {
@@ -397,6 +420,7 @@
   [self.feedMenuCoordinator stop];
   self.feedMenuCoordinator = nil;
 
+  _supervisedUserCapabilitiesObserverBridge.reset();
   _discoverFeedObserverBridge.reset();
   _identityObserverBridge.reset();
   _authServiceObserverBridge.reset();
@@ -574,6 +598,11 @@
   _identityObserverBridge =
       std::make_unique<signin::IdentityManagerObserverBridge>(identityManager,
                                                               self);
+
+  // Start observing supervised user capabilities.
+  _supervisedUserCapabilitiesObserverBridge = std::make_unique<
+      supervised_user::SupervisedUserCapabilitiesObserverBridge>(
+      identityManager, self);
 
   // Start observing DiscoverFeedService.
   _discoverFeedObserverBridge = std::make_unique<DiscoverFeedObserverBridge>(
@@ -1358,6 +1387,8 @@
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
 
+// TODO(crbug.com/346756363): Remove this method as it is replaced with
+// `onIsSubjectToParentalControlsCapabilityChanged`.
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
   // An account change may trigger after the coordinator has been stopped.
@@ -1391,6 +1422,20 @@
       // instead of resetting the hierarchy.
       [self updateNTPForFeed];
       [self setContentOffsetToTop];
+  }
+}
+
+#pragma mark - SupervisedUserCapabilitiesObserving
+
+- (void)onIsSubjectToParentalControlsCapabilityChanged:
+    (supervised_user::CapabilityUpdateState)capabilityUpdateState {
+  if (base::FeatureList::IsEnabled(
+          supervised_user::
+              kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS)) {
+    BOOL isSubjectToParentalControl =
+        (capabilityUpdateState ==
+         supervised_user::CapabilityUpdateState::kSetToTrue);
+    [self updateFeedWithIsSupervisedUser:isSubjectToParentalControl];
   }
 }
 
@@ -1509,27 +1554,33 @@
 
 // Updates the visibility of the content suggestions on the NTP if the account
 // is subject to parental controls.
+// TODO(crbug.com/346756363): Remove this method as we deprecate getting
+// supervision status from SystemIdentityManager.
 - (void)updateFeedVisibilityForSupervision {
-  DCHECK(self.prefService);
-  DCHECK(self.authService);
+  if (!base::FeatureList::IsEnabled(
+          supervised_user::
+              kReplaceSupervisionSystemCapabilitiesWithAccountCapabilitiesOnIOS)) {
+    DCHECK(self.prefService);
+    DCHECK(self.authService);
 
-  id<SystemIdentity> identity =
-      self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  if (!identity) {
-    [self updateFeedWithIsSupervisedUser:NO];
-    return;
+    id<SystemIdentity> identity =
+        self.authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+    if (!identity) {
+      [self updateFeedWithIsSupervisedUser:NO];
+      return;
+    }
+
+    using CapabilityResult = SystemIdentityCapabilityResult;
+
+    __weak NewTabPageCoordinator* weakSelf = self;
+    GetApplicationContext()
+        ->GetSystemIdentityManager()
+        ->IsSubjectToParentalControls(
+            identity, base::BindOnce(^(CapabilityResult result) {
+              const bool isSupervisedUser = result == CapabilityResult::kTrue;
+              [weakSelf updateFeedWithIsSupervisedUser:isSupervisedUser];
+            }));
   }
-
-  using CapabilityResult = SystemIdentityCapabilityResult;
-
-  __weak NewTabPageCoordinator* weakSelf = self;
-  GetApplicationContext()
-      ->GetSystemIdentityManager()
-      ->IsSubjectToParentalControls(
-          identity, base::BindOnce(^(CapabilityResult result) {
-            const bool isSupervisedUser = result == CapabilityResult::kTrue;
-            [weakSelf updateFeedWithIsSupervisedUser:isSupervisedUser];
-          }));
 }
 
 // Toggles feed visibility between hidden or expanded using the feed header
