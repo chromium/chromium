@@ -884,6 +884,8 @@ component("net") {
     "socket/ssl_socket.h",
     "socket/stream_socket.cc",
     "socket/stream_socket.h",
+    "socket/stream_socket_handle.cc",
+    "socket/stream_socket_handle.h",
     "socket/tcp_client_socket.cc",
     "socket/tcp_client_socket.h",
     "socket/tcp_server_socket.cc",

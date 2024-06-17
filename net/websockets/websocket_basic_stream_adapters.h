@@ -29,7 +29,7 @@ class QuicHeaderList;
 
 namespace net {
 
-class ClientSocketHandle;
+class StreamSocketHandle;
 class IOBuffer;
 class SpdyBuffer;
 struct NetworkTrafficAnnotationTag;
@@ -40,7 +40,7 @@ class NET_EXPORT_PRIVATE WebSocketClientSocketHandleAdapter
  public:
   WebSocketClientSocketHandleAdapter() = delete;
   explicit WebSocketClientSocketHandleAdapter(
-      std::unique_ptr<ClientSocketHandle> connection);
+      std::unique_ptr<StreamSocketHandle> connection);
   ~WebSocketClientSocketHandleAdapter() override;
 
   int Read(IOBuffer* buf,
@@ -54,7 +54,7 @@ class NET_EXPORT_PRIVATE WebSocketClientSocketHandleAdapter
   bool is_initialized() const override;
 
  private:
-  std::unique_ptr<ClientSocketHandle> connection_;
+  std::unique_ptr<StreamSocketHandle> connection_;
 };
 
 // Adapter to make WebSocketBasicStream use an HTTP/2 stream.

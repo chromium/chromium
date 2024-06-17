@@ -178,7 +178,7 @@ base::Value::Dict NetLogFailureParam(int net_error,
 }  // namespace
 
 WebSocketBasicHandshakeStream::WebSocketBasicHandshakeStream(
-    std::unique_ptr<ClientSocketHandle> connection,
+    std::unique_ptr<StreamSocketHandle> connection,
     WebSocketStream::ConnectDelegate* connect_delegate,
     bool is_for_get_to_http_proxy,
     std::vector<std::string> requested_sub_protocols,

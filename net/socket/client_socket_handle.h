@@ -27,6 +27,7 @@
 #include "net/socket/client_socket_pool.h"
 #include "net/socket/connection_attempts.h"
 #include "net/socket/stream_socket.h"
+#include "net/socket/stream_socket_handle.h"
 #include "net/ssl/ssl_cert_request_info.h"
 
 namespace net {
@@ -41,21 +42,14 @@ class SocketTag;
 // connection.  It is used by the ClientSocketPool to group similar connected
 // client socket objects.
 //
-class NET_EXPORT ClientSocketHandle {
+class NET_EXPORT ClientSocketHandle : public StreamSocketHandle {
  public:
-  enum SocketReuseType {
-    UNUSED = 0,   // unused socket that just finished connecting
-    UNUSED_IDLE,  // unused socket that has been idle for awhile
-    REUSED_IDLE,  // previously used socket
-    NUM_TYPES,
-  };
-
   ClientSocketHandle();
 
   ClientSocketHandle(const ClientSocketHandle&) = delete;
   ClientSocketHandle& operator=(const ClientSocketHandle&) = delete;
 
-  ~ClientSocketHandle();
+  ~ClientSocketHandle() override;
 
   // Initializes a ClientSocketHandle object, which involves talking to the
   // ClientSocketPool to obtain a connected socket, possibly reusing one.  This
@@ -112,7 +106,7 @@ class NET_EXPORT ClientSocketHandle {
   // NOTE: To prevent the socket from being kept alive, be sure to call its
   // Disconnect method.  This will result in the ClientSocketPool deleting the
   // StreamSocket.
-  void Reset();
+  void Reset() override;
 
   // Like Reset(), but also closes the socket (if there is one) and cancels any
   // pending attempt to establish a connection, if the connection attempt is
@@ -138,28 +132,10 @@ class NET_EXPORT ClientSocketHandle {
   // Closes idle sockets that are in the same group with |this|.
   void CloseIdleSocketsInGroup(const char* net_log_reason_utf8);
 
-  // Returns true when Init() has completed successfully.
-  bool is_initialized() const { return is_initialized_; }
-
-  // Sets the portion of LoadTimingInfo related to connection establishment, and
-  // the socket id.  |is_reused| is needed because the handle may not have full
-  // reuse information.  |load_timing_info| must have all default values when
-  // called. Returns false and makes no changes to |load_timing_info| when
-  // |socket_| is NULL.
-  bool GetLoadTimingInfo(bool is_reused,
-                         LoadTimingInfo* load_timing_info) const;
-
-  // Used by ClientSocketPool to initialize the ClientSocketHandle.
-  //
-  // SetSocket() may also be used if this handle is used as simply for
-  // socket storage (e.g., http://crbug.com/37810).
-  void SetSocket(std::unique_ptr<StreamSocket> s);
-
   // Populates several fields of |this| with error-related information from the
   // provided completed ConnectJob. Should only be called on ConnectJob failure.
   void SetAdditionalErrorState(ConnectJob* connect_job);
 
-  void set_reuse_type(SocketReuseType reuse_type) { reuse_type_ = reuse_type; }
   void set_idle_time(base::TimeDelta idle_time) { idle_time_ = idle_time; }
   void set_group_generation(int64_t group_generation) {
     group_generation_ = group_generation;
@@ -176,7 +152,7 @@ class NET_EXPORT ClientSocketHandle {
 
   // Only valid if there is no |socket_|.
   bool is_ssl_error() const {
-    DCHECK(!socket_);
+    DCHECK(!socket());
     return is_ssl_error_;
   }
 
@@ -191,24 +167,13 @@ class NET_EXPORT ClientSocketHandle {
     return connection_attempts_;
   }
 
-  StreamSocket* socket() { return socket_.get(); }
-
-  // SetSocket() must be called with a new socket before this handle
-  // is destroyed if is_initialized() is true.
-  std::unique_ptr<StreamSocket> PassSocket();
-
   // These may only be used if is_initialized() is true.
   const ClientSocketPool::GroupId& group_id() const { return group_id_; }
   int64_t group_generation() const { return group_generation_; }
-  bool is_reused() const { return reuse_type_ == REUSED_IDLE; }
+  bool is_reused() const {
+    return reuse_type() == SocketReuseType::kReusedIdle;
+  }
   base::TimeDelta idle_time() const { return idle_time_; }
-  SocketReuseType reuse_type() const { return reuse_type_; }
-  const LoadTimingInfo::ConnectTiming& connect_timing() const {
-    return connect_timing_;
-  }
-  void set_connect_timing(const LoadTimingInfo::ConnectTiming& connect_timing) {
-    connect_timing_ = connect_timing;
-  }
 
   base::WeakPtr<ClientSocketHandle> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -233,12 +198,9 @@ class NET_EXPORT ClientSocketHandle {
   // Resets the supplemental error state.
   void ResetErrorState();
 
-  bool is_initialized_ = false;
   raw_ptr<ClientSocketPool> pool_ = nullptr;
   raw_ptr<HigherLayeredPool> higher_pool_ = nullptr;
-  std::unique_ptr<StreamSocket> socket_;
   ClientSocketPool::GroupId group_id_;
-  SocketReuseType reuse_type_ = ClientSocketHandle::UNUSED;
   CompletionOnceCallback callback_;
   base::TimeDelta idle_time_;
   // See ClientSocketPool::ReleaseSocket() for an explanation.
@@ -249,9 +211,6 @@ class NET_EXPORT ClientSocketHandle {
   std::vector<ConnectionAttempt> connection_attempts_;
 
   NetLogSource requesting_source_;
-
-  // Timing information is set when a connection is successfully established.
-  LoadTimingInfo::ConnectTiming connect_timing_;
 
   base::WeakPtrFactory<ClientSocketHandle> weak_factory_{this};
 };

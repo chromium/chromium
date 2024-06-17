@@ -17,18 +17,19 @@
 #include "net/http/http_response_body_drainer.h"
 #include "net/http/http_stream_parser.h"
 #include "net/http/http_util.h"
-#include "net/socket/client_socket_handle.h"
+#include "net/socket/stream_socket.h"
+#include "net/socket/stream_socket_handle.h"
 #include "net/ssl/ssl_info.h"
 #include "url/gurl.h"
 
 namespace net {
 
-HttpBasicState::HttpBasicState(std::unique_ptr<ClientSocketHandle> connection,
+HttpBasicState::HttpBasicState(std::unique_ptr<StreamSocketHandle> connection,
                                bool is_for_get_to_http_proxy)
     : read_buf_(base::MakeRefCounted<GrowableIOBuffer>()),
       connection_(std::move(connection)),
       is_for_get_to_http_proxy_(is_for_get_to_http_proxy) {
-  CHECK(connection_) << "ClientSocketHandle passed to HttpBasicState must "
+  CHECK(connection_) << "StreamSocketHandle passed to HttpBasicState must "
                         "not be NULL. See crbug.com/790776";
 }
 
@@ -40,9 +41,11 @@ void HttpBasicState::Initialize(const HttpRequestInfo* request_info,
   DCHECK(!parser_.get());
   traffic_annotation_ = request_info->traffic_annotation;
   parser_ = std::make_unique<HttpStreamParser>(
-      connection_->socket(), connection_->is_reused(), request_info->url,
-      request_info->method, request_info->upload_data_stream, read_buf_.get(),
-      net_log);
+      connection_->socket(),
+      connection_->reuse_type() ==
+          StreamSocketHandle::SocketReuseType::kReusedIdle,
+      request_info->url, request_info->method, request_info->upload_data_stream,
+      read_buf_.get(), net_log);
 }
 
 void HttpBasicState::Close(bool not_reusable) {
@@ -63,7 +66,7 @@ void HttpBasicState::Close(bool not_reusable) {
   connection_->Reset();
 }
 
-std::unique_ptr<ClientSocketHandle> HttpBasicState::ReleaseConnection() {
+std::unique_ptr<StreamSocketHandle> HttpBasicState::ReleaseConnection() {
   // The HttpStreamParser object still has a pointer to the connection. Just to
   // be extra-sure it doesn't touch the connection again, delete it here rather
   // than leaving it until the destructor is called.
@@ -81,12 +84,14 @@ std::string HttpBasicState::GenerateRequestLine() const {
 }
 
 bool HttpBasicState::IsConnectionReused() const {
-  return connection_->is_reused() ||
-         connection_->reuse_type() == ClientSocketHandle::UNUSED_IDLE;
+  return connection_->reuse_type() ==
+             StreamSocketHandle::SocketReuseType::kReusedIdle ||
+         connection_->reuse_type() ==
+             StreamSocketHandle::SocketReuseType::kUnusedIdle;
 }
 
 void HttpBasicState::SetConnectionReused() {
-  connection_->set_reuse_type(ClientSocketHandle::REUSED_IDLE);
+  connection_->set_reuse_type(StreamSocketHandle::SocketReuseType::kReusedIdle);
 }
 
 bool HttpBasicState::CanReuseConnection() const {

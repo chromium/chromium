@@ -14,13 +14,13 @@
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_body_drainer.h"
 #include "net/http/http_stream_parser.h"
-#include "net/socket/client_socket_handle.h"
+#include "net/socket/stream_socket_handle.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_info.h"
 
 namespace net {
 
-HttpBasicStream::HttpBasicStream(std::unique_ptr<ClientSocketHandle> connection,
+HttpBasicStream::HttpBasicStream(std::unique_ptr<StreamSocketHandle> connection,
                                  bool is_for_get_to_http_proxy)
     : state_(std::move(connection), is_for_get_to_http_proxy) {}
 

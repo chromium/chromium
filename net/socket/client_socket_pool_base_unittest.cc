@@ -3008,7 +3008,7 @@ TEST_F(ClientSocketPoolBaseTest, DoNotReuseSocketAfterFlush) {
                   callback.callback(), ClientSocketPool::ProxyAuthCallback(),
                   pool_.get(), NetLogWithSource()));
   EXPECT_THAT(callback.WaitForResult(), IsOk());
-  EXPECT_EQ(ClientSocketHandle::UNUSED, handle.reuse_type());
+  EXPECT_EQ(StreamSocketHandle::SocketReuseType::kUnused, handle.reuse_type());
   NetLogSource source = handle.socket()->NetLog().source();
 
   pool_->FlushWithError(ERR_NETWORK_CHANGED, "Network changed");
@@ -3023,7 +3023,7 @@ TEST_F(ClientSocketPoolBaseTest, DoNotReuseSocketAfterFlush) {
                   callback.callback(), ClientSocketPool::ProxyAuthCallback(),
                   pool_.get(), NetLogWithSource()));
   EXPECT_THAT(callback.WaitForResult(), IsOk());
-  EXPECT_EQ(ClientSocketHandle::UNUSED, handle.reuse_type());
+  EXPECT_EQ(StreamSocketHandle::SocketReuseType::kUnused, handle.reuse_type());
 
   ExpectSocketClosedWithReason(
       source, TransportClientSocketPool::kSocketGenerationOutOfDate);

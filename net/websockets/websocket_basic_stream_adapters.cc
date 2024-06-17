@@ -20,6 +20,7 @@
 #include "net/base/io_buffer.h"
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/stream_socket.h"
+#include "net/socket/stream_socket_handle.h"
 #include "net/spdy/spdy_buffer.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_header_list.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/spdy_utils.h"
@@ -31,7 +32,7 @@ namespace net {
 struct NetworkTrafficAnnotationTag;
 
 WebSocketClientSocketHandleAdapter::WebSocketClientSocketHandleAdapter(
-    std::unique_ptr<ClientSocketHandle> connection)
+    std::unique_ptr<StreamSocketHandle> connection)
     : connection_(std::move(connection)) {}
 
 WebSocketClientSocketHandleAdapter::~WebSocketClientSocketHandleAdapter() =

@@ -20,7 +20,7 @@
 
 namespace net {
 
-class ClientSocketHandle;
+class StreamSocketHandle;
 class GrowableIOBuffer;
 class IPEndPoint;
 class HttpStreamParser;
@@ -31,7 +31,7 @@ class SSLInfo;
 
 class NET_EXPORT_PRIVATE HttpBasicState {
  public:
-  HttpBasicState(std::unique_ptr<ClientSocketHandle> connection,
+  HttpBasicState(std::unique_ptr<StreamSocketHandle> connection,
                  bool is_for_get_to_http_proxy);
 
   HttpBasicState(const HttpBasicState&) = delete;
@@ -52,9 +52,9 @@ class NET_EXPORT_PRIVATE HttpBasicState {
   // Returns true if this request is a non-tunneled HTTP request via a proxy.
   bool is_for_get_to_http_proxy() const { return is_for_get_to_http_proxy_; }
 
-  ClientSocketHandle* connection() const { return connection_.get(); }
+  StreamSocketHandle* connection() const { return connection_.get(); }
 
-  std::unique_ptr<ClientSocketHandle> ReleaseConnection();
+  std::unique_ptr<StreamSocketHandle> ReleaseConnection();
 
   scoped_refptr<GrowableIOBuffer> read_buf() const;
 
@@ -96,7 +96,7 @@ class NET_EXPORT_PRIVATE HttpBasicState {
  private:
   scoped_refptr<GrowableIOBuffer> read_buf_;
 
-  std::unique_ptr<ClientSocketHandle> connection_;
+  std::unique_ptr<StreamSocketHandle> connection_;
 
   std::unique_ptr<HttpStreamParser> parser_;
 

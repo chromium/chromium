@@ -36,7 +36,7 @@ TEST(HttpBasicStateTest, ReleaseConnectionWorks) {
   ClientSocketHandle* const handle_ptr = handle.get();
   // Ownership of |handle| is passed to |state|.
   HttpBasicState state(std::move(handle), false);
-  const std::unique_ptr<ClientSocketHandle> released_connection(
+  const std::unique_ptr<StreamSocketHandle> released_connection(
       state.ReleaseConnection());
   EXPECT_EQ(nullptr, state.parser());
   EXPECT_EQ(nullptr, state.connection());

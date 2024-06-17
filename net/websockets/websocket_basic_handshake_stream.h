@@ -27,7 +27,7 @@
 
 namespace net {
 
-class ClientSocketHandle;
+class StreamSocketHandle;
 class HttpNetworkSession;
 class HttpRequestHeaders;
 class HttpResponseHeaders;
@@ -50,7 +50,7 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
  public:
   // |connect_delegate| and |failure_message| must out-live this object.
   WebSocketBasicHandshakeStream(
-      std::unique_ptr<ClientSocketHandle> connection,
+      std::unique_ptr<StreamSocketHandle> connection,
       WebSocketStream::ConnectDelegate* connect_delegate,
       bool using_proxy,
       std::vector<std::string> requested_sub_protocols,
