@@ -62,6 +62,8 @@ public class SecurityButtonAnimationDelegate {
                     @Override
                     public void onEnd(Animator animation) {
                         mSecurityButton.setVisibility(View.INVISIBLE);
+                        // No icon to display.
+                        mSecurityButton.setImageDrawable(null);
                     }
                 });
 
@@ -91,8 +93,6 @@ public class SecurityButtonAnimationDelegate {
     public void updateSecurityButton(
             int securityIconResource, boolean animate, boolean isActualResourceChange) {
         if (securityIconResource == 0) {
-            // No icon to display.
-            mSecurityButton.setImageDrawable(null);
             hideSecurityButton(animate);
         } else {
             if (isActualResourceChange) {
