@@ -193,14 +193,6 @@ void FileHandlingSubManager::Unregister(
                                   (result == Result::kOk));
       }).Then(std::move(callback));
 
-  // TODO(crbug.com/40214162): remove after fully deprecate old
-  // `InstallOsHooks/UninstallOsHooks` paths.
-  if (!HasFileHandling(desired_state)) {
-    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
-    update->UpdateApp(app_id)->SetFileHandlerOsIntegrationState(
-        OsIntegrationState::kDisabled);
-  }
-
   UnregisterFileHandlersWithOs(app_id, profile_path_,
                                std::move(metrics_callback));
 }
@@ -219,14 +211,6 @@ void FileHandlingSubManager::Register(
         base::UmaHistogramBoolean("WebApp.FileHandlersRegistration.Result",
                                   (result == Result::kOk));
       }).Then(std::move(callback));
-
-  // TODO(crbug.com/40214162): remove after fully deprecate old
-  // `InstallOsHooks/UninstallOsHooks` paths.
-  {
-    ScopedRegistryUpdate update = provider_->sync_bridge_unsafe().BeginUpdate();
-    update->UpdateApp(app_id)->SetFileHandlerOsIntegrationState(
-        OsIntegrationState::kEnabled);
-  }
 
   RegisterFileHandlersWithOs(
       app_id, provider_->registrar_unsafe().GetAppShortName(app_id),

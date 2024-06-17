@@ -46,18 +46,6 @@ class WebAppFileHandlerManager {
       const webapps::AppId& app_id,
       const std::vector<base::FilePath>& launch_files);
 
-  // Enables and registers OS specific file handlers for OSs that need them.
-  // Currently on Chrome OS, file handlers are enabled and registered as long as
-  // the app is installed.
-  void EnableAndRegisterOsFileHandlers(const webapps::AppId& app_id,
-                                       ResultCallback callback);
-
-  // Disables file handlers for all OSs and unregisters OS specific file
-  // handlers for OSs that need them. On Chrome OS file handlers are registered
-  // separately but they are still enabled and disabled here.
-  void DisableAndUnregisterOsFileHandlers(const webapps::AppId& app_id,
-                                          ResultCallback callback);
-
   // Gets all enabled file handlers for |app_id|. |nullptr| if the app has no
   // enabled file handlers. Note: The lifetime of the file handlers are tied to
   // the app they belong to.
@@ -78,19 +66,10 @@ class WebAppFileHandlerManager {
   virtual bool IsDisabledForTesting();
 
  private:
-  // Sets whether `app_id` should have its File Handling abilities surfaces in
-  // the OS. In theory, this should match the actual OS integration state (e.g.
-  // the contents of the .desktop file on Linux), however, that's only enforced
-  // on a best-effort basis.
-  void SetOsIntegrationState(const webapps::AppId& app_id,
-                             OsIntegrationState os_state);
-
   // Indicates whether file handlers should be OS-registered for an app. As with
   // `SetOsIntegrationState()`, there may be a mismatch with the actual OS
   // registry.
   bool ShouldOsIntegrationBeEnabled(const webapps::AppId& app_id) const;
-
-  static bool disable_automatic_file_handler_cleanup_for_testing_;
 
   [[maybe_unused]] const raw_ptr<Profile, DanglingUntriaged> profile_;
   raw_ptr<WebAppProvider> provider_ = nullptr;

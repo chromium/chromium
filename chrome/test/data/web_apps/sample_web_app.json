@@ -60,7 +60,6 @@
       "MONOCHROME": [ 256 ]
    },
    "file_handler_approval_state": "kRequiresPrompt",
-   "file_handler_os_integration_state": "kDisabled",
    "file_handlers": [ {
       "accept": [ {
          "file_extensions": [ ".32484220700a", ".32484220700b" ],

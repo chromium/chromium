@@ -184,10 +184,6 @@ class WebApp {
     return file_handler_approval_state_;
   }
 
-  OsIntegrationState file_handler_os_integration_state() const {
-    return file_handler_os_integration_state_;
-  }
-
   const std::optional<apps::ShareTarget>& share_target() const {
     return share_target_;
   }
@@ -483,8 +479,6 @@ class WebApp {
       std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_infos);
   void SetFileHandlers(apps::FileHandlers file_handlers);
   void SetFileHandlerApprovalState(ApiApprovalState approval_state);
-  void SetFileHandlerOsIntegrationState(
-      OsIntegrationState os_integration_state);
   void SetShareTarget(std::optional<apps::ShareTarget> share_target);
   void SetAdditionalSearchTerms(
       std::vector<std::string> additional_search_terms);
@@ -636,11 +630,6 @@ class WebApp {
   // The state of the user's approval of the app's use of the File Handler API.
   ApiApprovalState file_handler_approval_state_ =
       ApiApprovalState::kRequiresPrompt;
-  // Tracks whether file handling has been or should be enabled at the OS level.
-  // This might go out of sync with actual OS integration status, as Chrome does
-  // not actively monitor OS registries.
-  OsIntegrationState file_handler_os_integration_state_ =
-      OsIntegrationState::kDisabled;
   bool window_controls_overlay_enabled_ = false;
   std::optional<LaunchHandler> launch_handler_;
   std::optional<webapps::AppId> parent_app_id_;

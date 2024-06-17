@@ -209,26 +209,6 @@ WebAppProto::ApiApprovalState ApiApprovalStateToProto(
   }
 }
 
-OsIntegrationState ProtoToOsIntegrationState(
-    WebAppProto::OsIntegrationState state) {
-  switch (state) {
-    case WebAppProto_OsIntegrationState_ENABLED:
-      return OsIntegrationState::kEnabled;
-    case WebAppProto_OsIntegrationState_DISABLED:
-      return OsIntegrationState::kDisabled;
-  }
-}
-
-WebAppProto::OsIntegrationState OsIntegrationStateToProto(
-    OsIntegrationState state) {
-  switch (state) {
-    case OsIntegrationState::kEnabled:
-      return WebAppProto_OsIntegrationState_ENABLED;
-    case OsIntegrationState::kDisabled:
-      return WebAppProto_OsIntegrationState_DISABLED;
-  }
-}
-
 apps::FileHandler::LaunchType ProtoToLaunchType(
     WebAppFileHandlerProto::LaunchType state) {
   switch (state) {
@@ -787,9 +767,6 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
 
   local_data->set_file_handler_approval_state(
       ApiApprovalStateToProto(web_app.file_handler_approval_state()));
-
-  local_data->set_file_handler_os_integration_state(
-      OsIntegrationStateToProto(web_app.file_handler_os_integration_state()));
 
   local_data->set_window_controls_overlay_enabled(
       web_app.window_controls_overlay_enabled());
@@ -1537,11 +1514,6 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   if (local_data.has_file_handler_approval_state()) {
     web_app->SetFileHandlerApprovalState(
         ProtoToApiApprovalState(local_data.file_handler_approval_state()));
-  }
-
-  if (local_data.has_file_handler_os_integration_state()) {
-    web_app->SetFileHandlerOsIntegrationState(ProtoToOsIntegrationState(
-        local_data.file_handler_os_integration_state()));
   }
 
   if (local_data.has_window_controls_overlay_enabled()) {
