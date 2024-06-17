@@ -81,7 +81,6 @@ class SavedTabGroupTab {
   }
   SavedTabGroupTab& SetLocalTabID(std::optional<LocalTabID> local_tab_id) {
     local_tab_id_ = local_tab_id;
-    SetUpdateTimeWindowsEpochMicros(base::Time::Now());
     return *this;
   }
   SavedTabGroupTab& SetPosition(size_t position) {
@@ -92,13 +91,11 @@ class SavedTabGroupTab {
   SavedTabGroupTab& SetCreatorCacheGuid(
       std::optional<std::string> new_cache_guid) {
     creator_cache_guid_ = new_cache_guid;
-    SetUpdateTimeWindowsEpochMicros(base::Time::Now());
     return *this;
   }
   SavedTabGroupTab& SetLastUpdaterCacheGuid(
       std::optional<std::string> cache_guid) {
     last_updater_cache_guid_ = cache_guid;
-    SetUpdateTimeWindowsEpochMicros(base::Time::Now());
     return *this;
   }
   SavedTabGroupTab& SetUpdateTimeWindowsEpochMicros(

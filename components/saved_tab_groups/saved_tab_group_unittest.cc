@@ -238,24 +238,12 @@ TEST(SavedTabGroupTest, UpdateCreatorCacheGuid) {
   std::string cache_guid_2 = "new_guid_2";
   SavedTabGroup group = CreateDefaultEmptySavedTabGroup();
 
-  // Make sure that the old update time is different.
-  group.SetUpdateTimeWindowsEpochMicros(
-      group.update_time_windows_epoch_micros() - base::Milliseconds(250));
-  // Saved Tab Group should have position after pin.
-  auto old_update_time = group.update_time_windows_epoch_micros();
   ASSERT_EQ(group.creator_cache_guid(), std::nullopt);
   group.SetCreatorCacheGuid(cache_guid_1);
   EXPECT_EQ(group.creator_cache_guid(), cache_guid_1);
-  EXPECT_NE(group.update_time_windows_epoch_micros(), old_update_time);
 
-  // Make sure that the old update time is different.
-  group.SetUpdateTimeWindowsEpochMicros(
-      group.update_time_windows_epoch_micros() - base::Milliseconds(250));
-  // cache guid should update even if its already set.
-  old_update_time = group.update_time_windows_epoch_micros();
   group.SetCreatorCacheGuid(cache_guid_2);
   EXPECT_EQ(group.creator_cache_guid(), cache_guid_2);
-  EXPECT_NE(group.update_time_windows_epoch_micros(), old_update_time);
 }
 
 }  // namespace tab_groups

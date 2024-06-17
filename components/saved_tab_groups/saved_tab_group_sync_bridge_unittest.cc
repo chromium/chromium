@@ -844,6 +844,29 @@ TEST_F(SavedTabGroupSyncBridgeTest, AddGroupLocally) {
   saved_tab_group_model_.Add(std::move(group));
 }
 
+// Verify that local ID change events aren't passed to the processor.
+TEST_F(SavedTabGroupSyncBridgeTest, LocalIdChanged) {
+  EXPECT_TRUE(saved_tab_group_model_.saved_tab_groups().empty());
+
+  SavedTabGroup group(u"Test Title", tab_groups::TabGroupColorId::kBlue, {},
+                      /*position=*/std::nullopt);
+  SavedTabGroupTab tab_1(GURL("https://website.com"), u"Website Title",
+                         group.saved_guid(), /*position=*/std::nullopt);
+  group.AddTabLocally(tab_1);
+  saved_tab_group_model_.Add(group);
+
+  // Local ID change events on tabs or groups shouldn't propagate to the
+  // processor.
+  EXPECT_CALL(processor_, Put(_, _, _)).Times(0);
+  // Open the group.
+  group.SetLocalGroupId(test::GenerateRandomTabGroupID());
+  tab_1.SetLocalTabID(test::GenerateRandomTabID());
+
+  // Close the group.
+  group.SetLocalGroupId(std::nullopt);
+  tab_1.SetLocalTabID(std::nullopt);
+}
+
 // Verify that locally removed groups removes the group from the processor
 // and leaves the tabs without an associated group.
 TEST_F(SavedTabGroupSyncBridgeTest, RemoveGroupLocally) {
