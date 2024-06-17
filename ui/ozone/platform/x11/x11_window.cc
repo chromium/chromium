@@ -690,6 +690,8 @@ void X11Window::SetFullscreen(bool fullscreen, int64_t target_display_id) {
     }
   }
 
+  UpdateDecorationInsets();
+
   // Do not go through SetBounds as long as it adjusts bounds and sets them to X
   // Server. Instead, we just store the bounds and notify the client that the
   // window occupies the entire screen.
@@ -1495,6 +1497,7 @@ void X11Window::OnXWindowStateChanged() {
     tiled_state_ = tiled_state;
 #if BUILDFLAG(IS_LINUX)
     platform_window_delegate_->OnWindowTiledStateChanged(tiled_state);
+    UpdateDecorationInsets();
 #endif
   }
 }
