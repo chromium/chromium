@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("browser_view") {
+source_set("ui_bundled") {
   sources = [
     "browser_coordinator+Testing.h",
     "browser_coordinator.h",
@@ -298,7 +298,7 @@ source_set("unit_tests") {
     "key_commands_provider_unittest.mm",
   ]
   deps = [
-    ":browser_view",
+    ":ui_bundled",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
     "//components/commerce/core:shopping_service_test_support",

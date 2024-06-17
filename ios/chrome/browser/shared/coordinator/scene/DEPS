@@ -1,6 +1,7 @@
 include_rules = [
   "+ios/chrome/browser/app_store_rating/ui_bundled",
   "+ios/chrome/browser/appearance/ui_bundled/appearance_customization.h",
+  "+ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h",
   "+ios/chrome/browser/browsing_data/model",
   "+ios/chrome/browser/crash_report/model",
   "+ios/chrome/browser/credential_provider_promo/ui_bundled/credential_provider_promo_scene_agent.h",

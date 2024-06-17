@@ -17,7 +17,7 @@ windows with the same number. You can use
 unlikely case it is needed.  Depending on the needs of the test, you can decide
 on how to proceed, for example wanting to keep the left window as 0 and the
 right window as 1.  See
-[`[BrowserViewControllerTestCase testMultiWindowURLLoading]`](https://source.chromium.org/chromium/chromium/src/+/main:ios/chrome/browser/ui/browser_view/browser_view_controller_egtest.mm;l=209)
+[`[BrowserViewControllerTestCase testMultiWindowURLLoading]`](https://source.chromium.org/chromium/chromium/src/+/main:ios/chrome/browser/browser_view/ui_bundled/browser_view_controller_egtest.mm;l=209)
 as an example of this.
 
 ## Helpers

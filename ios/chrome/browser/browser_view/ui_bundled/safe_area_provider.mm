@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/browser_view/safe_area_provider.h"
+#import "ios/chrome/browser/browser_view/ui_bundled/safe_area_provider.h"
 
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/app/application_delegate/app_state.h"

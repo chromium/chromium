@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/browser_view/browser_coordinator.h"
+#import "ios/chrome/browser/browser_view/ui_bundled/browser_coordinator.h"
 
 #import <StoreKit/StoreKit.h>
 
@@ -32,6 +32,14 @@
 #import "ios/chrome/browser/app_launcher/model/app_launcher_tab_helper_browser_presentation_provider.h"
 #import "ios/chrome/browser/app_store_rating/ui_bundled/features.h"
 #import "ios/chrome/browser/bookmarks/ui_bundled/home/bookmarks_coordinator.h"
+#import "ios/chrome/browser/browser_view/ui_bundled/browser_coordinator+Testing.h"
+#import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller+private.h"
+#import "ios/chrome/browser/browser_view/ui_bundled/browser_view_controller.h"
+#import "ios/chrome/browser/browser_view/ui_bundled/browser_view_visibility_consumer.h"
+#import "ios/chrome/browser/browser_view/ui_bundled/key_commands_provider.h"
+#import "ios/chrome/browser/browser_view/ui_bundled/safe_area_provider.h"
+#import "ios/chrome/browser/browser_view/ui_bundled/tab_events_mediator.h"
+#import "ios/chrome/browser/browser_view/ui_bundled/tab_lifecycle_mediator.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/bubble/ui_bundled/bubble_view_controller_presenter.h"
@@ -171,14 +179,6 @@
 #import "ios/chrome/browser/ui/autofill/progress_dialog/autofill_progress_dialog_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
-#import "ios/chrome/browser/ui/browser_view/browser_coordinator+Testing.h"
-#import "ios/chrome/browser/ui/browser_view/browser_view_controller+private.h"
-#import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
-#import "ios/chrome/browser/ui/browser_view/browser_view_visibility_consumer.h"
-#import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
-#import "ios/chrome/browser/ui/browser_view/safe_area_provider.h"
-#import "ios/chrome/browser/ui/browser_view/tab_events_mediator.h"
-#import "ios/chrome/browser/ui/browser_view/tab_lifecycle_mediator.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_controller_ios.h"
 #import "ios/chrome/browser/ui/find_bar/find_bar_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/omnibox_position/omnibox_position_choice_coordinator.h"

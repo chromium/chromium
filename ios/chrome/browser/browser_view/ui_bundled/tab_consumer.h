@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_BROWSER_VIEW_TAB_CONSUMER_H_
-#define IOS_CHROME_BROWSER_UI_BROWSER_VIEW_TAB_CONSUMER_H_
+#ifndef IOS_CHROME_BROWSER_BROWSER_VIEW_UI_BUNDLED_TAB_CONSUMER_H_
+#define IOS_CHROME_BROWSER_BROWSER_VIEW_UI_BUNDLED_TAB_CONSUMER_H_
 
 #import <Foundation/Foundation.h>
 
@@ -59,4 +59,4 @@ class WebState;
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_BROWSER_VIEW_TAB_CONSUMER_H_
+#endif  // IOS_CHROME_BROWSER_BROWSER_VIEW_UI_BUNDLED_TAB_CONSUMER_H_
