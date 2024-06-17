@@ -380,12 +380,13 @@ void BoundSessionCookieRefreshServiceImpl::OnStorageKeyDataCleared(
     return;
   }
 
+  std::vector<BoundSessionCookieController*> controllers_to_remove;
   for (auto& [key, controller] : cookie_controllers_) {
     // Only terminate a session if it was created within the specified time
     // range.
     base::Time session_creation_time = controller->session_creation_time();
     if (session_creation_time < begin || session_creation_time > end) {
-      return;
+      continue;
     }
 
     // Only terminate a session if its URL matches `storage_key_matcher`.
@@ -393,11 +394,16 @@ void BoundSessionCookieRefreshServiceImpl::OnStorageKeyDataCleared(
     // acceptable to use `blink::StorageKey::CreateFirstParty()`.
     if (!storage_key_matcher.Run(blink::StorageKey::CreateFirstParty(
             url::Origin::Create(controller->url())))) {
-      return;
+      continue;
     }
 
-    TerminateSession(controller.get(),
-                     SessionTerminationTrigger::kCookiesCleared);
+    // `TerminateSession()` cannot be called while iterating over
+    // `cookie_controllers_`.
+    controllers_to_remove.push_back(controller.get());
+  }
+
+  for (const auto& controller : controllers_to_remove) {
+    TerminateSession(controller, SessionTerminationTrigger::kCookiesCleared);
   }
 }
 

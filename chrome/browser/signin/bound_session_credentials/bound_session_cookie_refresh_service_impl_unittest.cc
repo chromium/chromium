@@ -1026,6 +1026,7 @@ class BoundSessionCookieRefreshServiceImplMultiSessionTest
   CreateBoundSessionCookieController(
       const bound_session_credentials::BoundSessionParams& bound_session_params,
       BoundSessionCookieController::Delegate* delegate) override {
+    PruneDestroyedControllers();
     auto controller = std::make_unique<FakeBoundSessionCookieController>(
         bound_session_params, delegate);
     auto [it, inserted] = cookie_controllers_.emplace(
@@ -1047,11 +1048,19 @@ class BoundSessionCookieRefreshServiceImplMultiSessionTest
 
   base::WeakPtr<FakeBoundSessionCookieController> GetCookieController(
       const BoundSessionKey& key) {
+    CHECK(cookie_refresh_service());
     auto it = cookie_controllers_.find(key);
     if (it == cookie_controllers_.end()) {
       return nullptr;
     }
     return it->second;
+  }
+
+  // Erase controllers whose weak pointers were invalidated.
+  void PruneDestroyedControllers() {
+    base::EraseIf(cookie_controllers_, [](const auto& key_controller_pair) {
+      return !key_controller_pair.second;
+    });
   }
 
   void VerifyBoundSessions(
@@ -1189,7 +1198,8 @@ TEST_F(BoundSessionCookieRefreshServiceImplMultiSessionTest,
 
   EXPECT_CALL(*mock_observer(),
               OnBoundSessionTerminated(
-                  kTestGoogleURL, base::flat_set<std::string>({"cookieC"})));
+                  kTestGoogleURL, base::flat_set<std::string>({"cookieC"})))
+      .WillOnce([this] { PruneDestroyedControllers(); });
   GetCookieController(kGoogleSessionKeyTwo)
       ->SimulateOnPersistentErrorEncountered();
   ASSERT_TRUE(future.IsReady());
@@ -1296,4 +1306,140 @@ TEST_F(BoundSessionCookieRefreshServiceImplMultiSessionTest,
   EXPECT_TRUE(future.IsReady());
   EXPECT_EQ(future.Get(),
             ResumeBlockedRequestsTrigger::kShutdownOrSessionTermination);
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplMultiSessionTest,
+       RegisterNewBoundSession) {
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  VerifyBoundSessions({});
+
+  auto params =
+      CreateBoundSessionParams(kGoogleSessionKeyOne, {"cookieA", "cookieB"});
+  service->RegisterNewBoundSession(params);
+  VerifyBoundSessions({params});
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplMultiSessionTest,
+       RegisterSecondBoundSessionSameDomainDifferentSessionIds) {
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  auto first_params =
+      CreateBoundSessionParams(kGoogleSessionKeyOne, {"cookieA", "cookieB"});
+  service->RegisterNewBoundSession(first_params);
+
+  auto second_params =
+      CreateBoundSessionParams(kGoogleSessionKeyTwo, {"cookieC"});
+  service->RegisterNewBoundSession(second_params);
+  VerifyBoundSessions({first_params, second_params});
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplMultiSessionTest,
+       RegisterSecondBoundSessionSameSessionIdDifferentDomains) {
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  auto first_params =
+      CreateBoundSessionParams(kGoogleSessionKeyOne, {"cookieA", "cookieB"});
+  service->RegisterNewBoundSession(first_params);
+
+  auto second_params =
+      CreateBoundSessionParams(kYoutubeSessionKeyOne, {"cookieC"});
+  service->RegisterNewBoundSession(second_params);
+  VerifyBoundSessions({first_params, second_params});
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplMultiSessionTest,
+       RegisterBoundSessionSameSessionKey) {
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  auto other_params =
+      CreateBoundSessionParams(kGoogleSessionKeyTwo, {"cookieX"});
+  service->RegisterNewBoundSession(other_params);
+  auto params_to_be_overridden =
+      CreateBoundSessionParams(kGoogleSessionKeyOne, {"cookieA", "cookieB"});
+  service->RegisterNewBoundSession(params_to_be_overridden);
+
+  auto new_params =
+      CreateBoundSessionParams(kGoogleSessionKeyOne, {"cookieA", "cookieD"});
+  service->RegisterNewBoundSession(new_params);
+  VerifyBoundSessions({new_params, other_params});
+  VerifySessionTerminationTriggerRecorded(
+      SessionTerminationTrigger::kSessionOverride);
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplMultiSessionTest,
+       TerminateSessionOnPersistentErrorEncountered) {
+  std::vector<bound_session_credentials::BoundSessionParams> all_params = {
+      CreateBoundSessionParams(kGoogleSessionKeyOne, {"cookieA", "cookieB"}),
+      CreateBoundSessionParams(kGoogleSessionKeyTwo, {"cookieC"}),
+      CreateBoundSessionParams(kYoutubeSessionKeyOne, {"cookieA"})};
+  for (const auto& params : all_params) {
+    ASSERT_TRUE(storage()->SaveParams(params));
+  }
+  GetCookieRefreshServiceImpl();
+
+  EXPECT_CALL(
+      *mock_observer(),
+      OnBoundSessionTerminated(
+          kTestGoogleURL, base::flat_set<std::string>({"cookieA", "cookieB"})))
+      .WillOnce([this] { PruneDestroyedControllers(); });
+  GetCookieController(kGoogleSessionKeyOne)
+      ->SimulateOnPersistentErrorEncountered();
+  // all_params[0] should have been terminated.
+  VerifyBoundSessions({all_params[1], all_params[2]});
+  VerifySessionTerminationTriggerRecorded(
+      SessionTerminationTrigger::kCookieRotationPersistentError);
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplMultiSessionTest,
+       TerminateSessionOnSessionTerminationHeader) {
+  std::vector<bound_session_credentials::BoundSessionParams> all_params = {
+      CreateBoundSessionParams(kGoogleSessionKeyOne, {"cookieA", "cookieB"}),
+      CreateBoundSessionParams(kGoogleSessionKeyTwo, {"cookieC"}),
+      CreateBoundSessionParams(kYoutubeSessionKeyOne, {"cookieA"})};
+  for (const auto& params : all_params) {
+    ASSERT_TRUE(storage()->SaveParams(params));
+  }
+  scoped_refptr<net::HttpResponseHeaders> headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("");
+  headers->AddHeader(kSessionTerminationHeader,
+                     kGoogleSessionKeyOne.session_id);
+
+  EXPECT_CALL(
+      *mock_observer(),
+      OnBoundSessionTerminated(
+          kTestGoogleURL, base::flat_set<std::string>({"cookieA", "cookieB"})))
+      .WillOnce([this] { PruneDestroyedControllers(); });
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  service->MaybeTerminateSession(GURL("https://google.com/SignOut"),
+                                 headers.get());
+  // all_params[0] should have been terminated.
+  VerifyBoundSessions({all_params[1], all_params[2]});
+  VerifySessionTerminationTriggerRecorded(
+      SessionTerminationTrigger::kSessionTerminationHeader);
+}
+
+TEST_F(BoundSessionCookieRefreshServiceImplMultiSessionTest,
+       TerminateSessionOnClearBrowsingData) {
+  std::vector<bound_session_credentials::BoundSessionParams> all_params = {
+      CreateBoundSessionParams(kGoogleSessionKeyOne, {"cookieA", "cookieB"}),
+      CreateBoundSessionParams(kGoogleSessionKeyTwo, {"cookieC"}),
+      CreateBoundSessionParams(kYoutubeSessionKeyOne, {"cookieA"})};
+  for (const auto& params : all_params) {
+    ASSERT_TRUE(storage()->SaveParams(params));
+  }
+  GetCookieRefreshServiceImpl();
+
+  EXPECT_CALL(
+      *mock_observer(),
+      OnBoundSessionTerminated(
+          kTestGoogleURL, base::flat_set<std::string>({"cookieA", "cookieB"})))
+      .WillOnce([this] { PruneDestroyedControllers(); });
+  EXPECT_CALL(*mock_observer(),
+              OnBoundSessionTerminated(
+                  kTestGoogleURL, base::flat_set<std::string>({"cookieC"})))
+      .WillOnce([this] { PruneDestroyedControllers(); });
+  ClearOriginData(content::StoragePartition::REMOVE_DATA_MASK_COOKIES,
+                  url::Origin::Create(kTestGoogleURL));
+  // all_params[0] and all_params[1] should have been terminated.
+  VerifyBoundSessions({all_params[2]});
+  histogram_tester().ExpectUniqueSample(
+      "Signin.BoundSessionCredentials.SessionTerminationTrigger",
+      SessionTerminationTrigger::kCookiesCleared, 2);
 }
