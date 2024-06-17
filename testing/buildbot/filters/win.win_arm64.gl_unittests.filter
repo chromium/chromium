@@ -1,7 +1,5 @@
 # crbug.com/1523061
--All/DirectCompositionPixelTest.SoftwareVideoSwapchain/0
--All/DirectCompositionPixelTest.SoftwareVideoSwapchain/1
--All/DirectCompositionPixelTest.YUY2SwapChain/0
--All/DirectCompositionPixelTest.YUY2SwapChain/1
--DCompPresenterPixelTest.SoftwareVideoSwapchain
--DCompPresenterPixelTest.YUY2SwapChain
+-DCompPresenterPixelTest/DCompPresenterPixelTest.SoftwareVideoSwapchain/0
+-DCompPresenterPixelTest/DCompPresenterPixelTest.SoftwareVideoSwapchain/1
+-DCompPresenterPixelTest/DCompPresenterPixelTest.YUY2SwapChain/0
+-DCompPresenterPixelTest/DCompPresenterPixelTest.YUY2SwapChain/1
