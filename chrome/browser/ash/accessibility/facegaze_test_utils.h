@@ -201,6 +201,8 @@ class FaceGazeTestUtils {
     MockFaceLandmarkerResult& WithGesture(const MediapipeGesture& gesture,
                                           int confidence);
 
+    MockFaceLandmarkerResult& WithLatency(int latency);
+
     const base::Value::Dict& forehead_location() const {
       return forehead_location_;
     }
@@ -208,7 +210,10 @@ class FaceGazeTestUtils {
       return recognized_gestures_;
     }
 
+    const std::optional<int>& latency() const { return latency_; }
+
    private:
+    std::optional<int> latency_;
     base::Value::Dict forehead_location_;
     base::Value::List recognized_gestures_;
   };

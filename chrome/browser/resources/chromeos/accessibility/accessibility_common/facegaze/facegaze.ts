@@ -114,8 +114,7 @@ export class FaceGaze {
       this.cameraStreamWindowId_ = win.id;
       chrome.runtime.onMessage.addListener(message => {
         if (message.type === 'faceLandmarkerResult') {
-          this.metricsUtils_.addFaceLandmarkerResultLatency(message.latency);
-          this.processFaceLandmarkerResult_(message.result);
+          this.processFaceLandmarkerResult_(message.result, message.latency);
         } else if (message.type === 'cameraStreamReadyForTesting') {
           this.cameraStreamReadyResolver_!();
         } else if (message.type === 'updateLandmarkWeights') {
@@ -128,9 +127,14 @@ export class FaceGaze {
     });
   }
 
-  private processFaceLandmarkerResult_(result: FaceLandmarkerResult): void {
+  private processFaceLandmarkerResult_(
+      result: FaceLandmarkerResult, latency?: number): void {
     if (!result) {
       return;
+    }
+
+    if (latency !== undefined) {
+      this.metricsUtils_.addFaceLandmarkerResultLatency(latency);
     }
 
     if (this.cursorControlEnabled_) {

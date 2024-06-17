@@ -126,15 +126,17 @@ class FaceGazeTestSupport {
    * camera data.
    * @param {!{x: number, y: number, z: number}} foreheadLocation
    * @param {!Array<{categoryName: string, score: number}>} recognizedGestures
+   * @param {number|undefined} latency
    */
-  async processFaceLandmarkerResult(foreheadLocation, recognizedGestures) {
+  async processFaceLandmarkerResult(
+      foreheadLocation, recognizedGestures, latency) {
     const result = {
       faceBlendshapes: [{categories: []}],
       faceLandmarks: [[null, null, null, null, null, null, null, null, null]],
     };
     result.faceBlendshapes[0].categories = recognizedGestures;
     result.faceLandmarks[0][8] = foreheadLocation;
-    this.getFaceGaze_().processFaceLandmarkerResult_(result);
+    this.getFaceGaze_().processFaceLandmarkerResult_(result, latency);
     this.notifyCcTests_();
   }
 

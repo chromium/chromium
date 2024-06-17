@@ -219,6 +219,12 @@ FaceGazeTestUtils::MockFaceLandmarkerResult::WithGesture(
   return *this;
 }
 
+FaceGazeTestUtils::MockFaceLandmarkerResult&
+FaceGazeTestUtils::MockFaceLandmarkerResult::WithLatency(int latency) {
+  latency_ = latency;
+  return *this;
+}
+
 FaceGazeTestUtils::FaceGazeTestUtils() = default;
 FaceGazeTestUtils::~FaceGazeTestUtils() = default;
 
@@ -261,9 +267,18 @@ void FaceGazeTestUtils::ProcessFaceLandmarkerResult(
       base::WriteJson(result.forehead_location()).value();
   std::string recognized_gestures_json =
       base::WriteJson(result.recognized_gestures()).value();
-  std::string script = base::StringPrintf(
-      "faceGazeTestSupport.processFaceLandmarkerResult(%s, %s)",
-      forehead_location_json.c_str(), recognized_gestures_json.c_str());
+  std::string script;
+  if (result.latency().has_value()) {
+    script = base::StringPrintf(
+        "faceGazeTestSupport.processFaceLandmarkerResult(%s, %s, %d)",
+        forehead_location_json.c_str(), recognized_gestures_json.c_str(),
+        result.latency().value());
+  } else {
+    script = base::StringPrintf(
+        "faceGazeTestSupport.processFaceLandmarkerResult(%s, %s)",
+        forehead_location_json.c_str(), recognized_gestures_json.c_str());
+  }
+
   ExecuteAccessibilityCommonScript(script);
 }
 

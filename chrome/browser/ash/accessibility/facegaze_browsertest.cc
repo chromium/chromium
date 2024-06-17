@@ -5,6 +5,7 @@
 #include "ash/shell.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
+#include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/facegaze_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -362,6 +363,23 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest,
   ASSERT_TRUE(mouse_events[0].IsOnlyLeftMouseButton());
   ASSERT_EQ(gfx::Point(600, 400), mouse_events[0].root_location());
   ASSERT_TRUE(mouse_events[0].IsSynthesized());
+}
+
+IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, PerformanceHistogram) {
+  utils()->EnableFaceGaze(
+      Config()
+          .Default()
+          .WithGesturesToMacros(
+              {{FaceGazeGesture::MOUTH_PUCKER, MacroName::MOUSE_CLICK_LEFT}})
+          .WithGestureConfidences({{FaceGazeGesture::MOUTH_PUCKER, 50}}));
+
+  HistogramWaiter waiter("Accessibility.FaceGaze.AverageFaceLandmarkerLatency");
+  for (int i = 0; i < 100; ++i) {
+    utils()->ProcessFaceLandmarkerResult(
+        MockFaceLandmarkerResult().WithLatency(i));
+  }
+
+  waiter.Wait();
 }
 
 }  // namespace ash

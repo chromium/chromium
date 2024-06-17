@@ -22,7 +22,7 @@ export class MetricsUtils {
       sum += val;
     }
 
-    const average = sum / this.latencies_.length;
+    const average = Math.ceil(sum / this.latencies_.length);
     chrome.metricsPrivate.recordMediumTime(
         MetricsUtils.FACELANDMARKER_PERFORMANCE_METRIC, average);
   }

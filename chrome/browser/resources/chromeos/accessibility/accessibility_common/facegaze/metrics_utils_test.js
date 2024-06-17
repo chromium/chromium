@@ -37,7 +37,7 @@ AX_TEST_F('FaceGazeMetricsUtilsTest', 'FaceLandmarkerLatency', function() {
     assertEquals(i, histogramCount);
     assertEquals(
         'Accessibility.FaceGaze.AverageFaceLandmarkerLatency', metricName);
-    assertEquals(49.5, metricValue);
+    assertEquals(50, metricValue);
     assertEquals(0, utils.latencies_.length);
   }
 });
