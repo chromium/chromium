@@ -3142,18 +3142,6 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   syncer::SyncPrefs::MaybeMigratePasswordsToPerAccountPref(profile_prefs);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  // Added 06/2024.
-  // crbug.com/40535332.
-#if BUILDFLAG(IS_MAC)
-  if (profile_prefs->HasPrefPath(prefs::kWebKitFixedFontFamily)) {
-    std::string font_name =
-        profile_prefs->GetString(prefs::kWebKitFixedFontFamily);
-    if (font_name == "Osaka") {
-      profile_prefs->ClearPref(prefs::kWebKitFixedFontFamily);
-    }
-  }
-#endif
-
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
 
