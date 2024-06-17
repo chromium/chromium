@@ -9,12 +9,15 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/value_store/testing_value_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,9 +34,13 @@ class WallpaperControllerClientImplTest : public testing::Test {
   }
 
   void SetUp() override {
-    testing::Test::SetUp();
     client_.InitForTesting(&controller_);
+
+    ash::SystemSaltGetter::Initialize();
+    ash::SystemSaltGetter::Get()->SetRawSaltForTesting({0x01, 0x02, 0x03});
   }
+
+  void TearDown() override { ash::SystemSaltGetter::Shutdown(); }
 
   TestWallpaperController* controller() { return &controller_; }
   WallpaperControllerClientImpl* client() { return &client_; }
@@ -77,6 +84,33 @@ TEST_F(WallpaperControllerClientImplTest, IsWallpaperSyncEnabledNoProfile) {
       AccountId::FromUserEmailGaiaId("idontexist@test.com", "444444");
   EXPECT_FALSE(client()->WallpaperControllerClientImpl::IsWallpaperSyncEnabled(
       account_id));
+}
+
+TEST_F(WallpaperControllerClientImplTest, GetFilesId) {
+  const AccountId account_id = AccountId::FromUserEmail("test@test.com");
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  // Make a fake entry to register `account_id` as existing user.
+  known_user.SetPath(account_id, "test", base::Value(""));
+  EXPECT_TRUE(known_user.UserExists(account_id));
+  EXPECT_FALSE(known_user.FindPath(account_id, "wallpaper-files-id"));
+
+  base::test::TestFuture<const std::string&> future;
+  client()->GetFilesId(account_id, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  const auto* value = known_user.FindPath(account_id, "wallpaper-files-id");
+  ASSERT_TRUE(value);
+  const auto* files_id = value->GetIfString();
+  ASSERT_TRUE(files_id);
+  EXPECT_EQ(*files_id, future.Get<0>());
+}
+
+TEST_F(WallpaperControllerClientImplTest, GetFilesIdForRemovedUser) {
+  const AccountId account_id = AccountId::FromUserEmail("test@test.com");
+  base::test::TestFuture<const std::string&> future;
+  client()->GetFilesId(account_id, future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  EXPECT_FALSE(known_user.UserExists(account_id));
 }
 
 TEST_F(WallpaperControllerClientImplTest, DailyGooglePhotosDoNotRepeat) {

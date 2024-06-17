@@ -142,7 +142,12 @@ void GetFilesIdSaltReady(
 
   const std::string wallpaper_files_id =
       HashWallpaperFilesIdStr(account_id.GetUserEmail());
-  known_user.SetStringPref(account_id, kWallpaperFilesId, wallpaper_files_id);
+  if (known_user.UserExists(account_id)) {
+    // This is async call, so during the operation (i.e. waiting for salt
+    // is updated via D-Bus), the user may be deleted. Do not cache for
+    // such cases, but still returns the value.
+    known_user.SetStringPref(account_id, kWallpaperFilesId, wallpaper_files_id);
+  }
   std::move(files_id_callback).Run(wallpaper_files_id);
 }
 
