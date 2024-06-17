@@ -315,6 +315,9 @@ class LensOverlayController : public LensSearchboxClient,
       int selection_start_index,
       int selection_end_index);
 
+  // Gets string for invocation source enum, used for logging metrics.
+  std::string GetInvocationSourceString();
+
   // Gets the WebContents housed in the side panel for testing.
   content::WebContents* GetSidePanelWebContentsForTesting();
 
@@ -644,6 +647,9 @@ class LensOverlayController : public LensSearchboxClient,
 
   // The assembly data needed for the overlay to be created and shown.
   std::unique_ptr<OverlayInitializationData> initialization_data_;
+
+  // Invocation source for the lens overlay.
+  lens::LensOverlayInvocationSource invocation_source_;
 
   // A pending url to be loaded in the side panel. Needed when the side
   // panel is not bound at the time of a text request.

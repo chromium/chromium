@@ -290,6 +290,7 @@ void LensOverlayController::ShowUI(
     return;
   }
 
+  invocation_source_ = invocation_source;
   // Request user permission before grabbing a screenshot.
   Browser* tab_browser = chrome::FindBrowserWithTab(tab_->GetContents());
   CHECK(tab_browser);
@@ -298,7 +299,8 @@ void LensOverlayController::ShowUI(
     if (!permission_bubble_controller_) {
       permission_bubble_controller_ =
           std::make_unique<lens::LensPermissionBubbleController>(
-              tab_->GetBrowserWindowInterface(), pref_service_);
+              tab_->GetBrowserWindowInterface(), pref_service_,
+              GetInvocationSourceString());
     }
     permission_bubble_controller_->RequestPermission(
         tab_->GetContents(),
@@ -730,6 +732,23 @@ void LensOverlayController::IssueTranslateSelectionRequestForTesting(
     int selection_end_index) {
   IssueTranslateSelectionRequest(text_query, content_language,
                                  selection_start_index, selection_end_index);
+}
+
+std::string LensOverlayController::GetInvocationSourceString() {
+  switch (invocation_source_) {
+    case lens::LensOverlayInvocationSource::kAppMenu:
+      return "AppMenu";
+    case lens::LensOverlayInvocationSource::kContentAreaContextMenuPage:
+      return "ContentAreaContextMenuPage";
+    case lens::LensOverlayInvocationSource::kContentAreaContextMenuImage:
+      return "ContentAreaContextMenuImage";
+    case lens::LensOverlayInvocationSource::kToolbar:
+      return "Toolbar";
+    case lens::LensOverlayInvocationSource::kFindInPage:
+      return "FindInPage";
+    case lens::LensOverlayInvocationSource::kOmnibox:
+      return "Omnibox";
+  }
 }
 
 content::WebContents*
