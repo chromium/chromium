@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/347137620 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/autofill/core/browser/profile_token_quality.h"
 
 #include <algorithm>
@@ -260,8 +255,8 @@ size_t ProfileTokenQuality::AddSubsetOfObservations(
                                         : 1;
   // Shuffle the `observations` and add the first `observations_to_add` many.
   base::RandomShuffle(observations.begin(), observations.end());
-  for (auto& [type, observation] : base::make_span(
-           observations.begin(), observations.begin() + observations_to_add)) {
+  for (auto& [type, observation] :
+       base::span(observations).first(observations_to_add)) {
     AddObservation(type, std::move(observation));
   }
   return observations_to_add;
