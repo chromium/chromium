@@ -75,6 +75,19 @@ export class SettingsAutofillPageElement extends
         type: Boolean,
         value: () => !!loadTimeData.getString('plusAddressManagementUrl'),
       },
+      plusAddressIcon_: {
+        type: String,
+        value() {
+          // <if expr="_google_chrome">
+          return loadTimeData.getBoolean('plusAddressUiRedesign') ?
+              'settings-internal:plus-address-logo-medium' :
+              'settings-internal:plus-addresses-logo';
+          // </if>
+          // <if expr="not _google_chrome">
+          return 'settings:email';
+          // </if>
+        },
+      },
     };
   }
 
