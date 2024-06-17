@@ -1585,6 +1585,12 @@
   },
   'chrome_public_wpt': {
     'modifications': {
+      'android-chrome-13-x64-wpt-android-specific': {
+        'args': [
+          '--test-list',
+          '../../third_party/blink/web_tests/TestLists/android.filter'
+        ]
+      },
       'android-chrome-pie-x86-wpt-fyi-rel': {
         'args': [
           '--use-upstream-wpt',
