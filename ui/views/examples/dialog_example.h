@@ -6,7 +6,6 @@
 #define UI_VIEWS_EXAMPLES_DIALOG_EXAMPLE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -46,12 +45,12 @@ class VIEWS_EXAMPLES_EXPORT DialogExample : public ExampleBase,
 
   // Helper methods to setup the configuration Views.
   void StartTextfieldRow(View* parent,
-                         Textfield** member,
+                         raw_ptr<Textfield>* member,
                          std::u16string label,
                          std::u16string value,
                          Label** created_label = nullptr,
                          bool pad_last_col = false);
-  void AddCheckbox(View* parent, Checkbox** member, Label* label);
+  void AddCheckbox(View* parent, raw_ptr<Checkbox>* member, Label* label);
 
   // Checkbox callback
   void OnPerformAction();
@@ -78,37 +77,17 @@ class VIEWS_EXAMPLES_EXPORT DialogExample : public ExampleBase,
   raw_ptr<DialogDelegate> last_dialog_ = nullptr;
   raw_ptr<Label> last_body_label_ = nullptr;
 
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION Textfield* title_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION Textfield* body_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION Textfield* ok_button_label_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION Checkbox* has_ok_button_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION Textfield* cancel_button_label_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION Checkbox* has_cancel_button_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION Textfield* extra_button_label_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION Checkbox* has_extra_button_;
+  raw_ptr<Textfield> title_ = nullptr;
+  raw_ptr<Textfield> body_ = nullptr;
+  raw_ptr<Textfield> ok_button_label_ = nullptr;
+  raw_ptr<Checkbox> has_ok_button_ = nullptr;
+  raw_ptr<Textfield> cancel_button_label_ = nullptr;
+  raw_ptr<Checkbox> has_cancel_button_ = nullptr;
+  raw_ptr<Textfield> extra_button_label_ = nullptr;
+  raw_ptr<Checkbox> has_extra_button_ = nullptr;
   raw_ptr<Combobox> mode_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION Checkbox* bubble_;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION Checkbox* persistent_bubble_;
+  raw_ptr<Checkbox> bubble_ = nullptr;
+  raw_ptr<Checkbox> persistent_bubble_ = nullptr;
   raw_ptr<LabelButton> show_;
   ui::SimpleComboboxModel mode_model_;
 };

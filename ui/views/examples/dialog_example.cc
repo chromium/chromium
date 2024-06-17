@@ -208,7 +208,7 @@ void DialogExample::CreateExampleView(View* container) {
 }
 
 void DialogExample::StartTextfieldRow(View* parent,
-                                      Textfield** member,
+                                      raw_ptr<Textfield>* member,
                                       std::u16string label,
                                       std::u16string value,
                                       Label** created_label,
@@ -225,7 +225,9 @@ void DialogExample::StartTextfieldRow(View* parent,
     parent->AddChildView(std::make_unique<View>());
 }
 
-void DialogExample::AddCheckbox(View* parent, Checkbox** member, Label* label) {
+void DialogExample::AddCheckbox(View* parent,
+                                raw_ptr<Checkbox>* member,
+                                Label* label) {
   auto callback = member == &bubble_ ? &DialogExample::BubbleCheckboxPressed
                                      : &DialogExample::OtherCheckboxPressed;
   auto checkbox = std::make_unique<Checkbox>(
