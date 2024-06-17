@@ -2382,6 +2382,7 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="OIDC profile policy fetch failure"/>
   <int value="4"
       label="Dasher-based OIDC profile can't add/set primary account"/>
+  <int value="5" label="Profile ID mismatch with registration request"/>
 </enum>
 
 <enum name="OsSuite">
