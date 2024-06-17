@@ -54,8 +54,10 @@ class AXMainNodeAnnotatorControllerBrowserTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
     screen_ai::ScreenAIInstallState::GetInstance()->SetComponentFolder(
         screen_ai::GetComponentBinaryPathForTests().DirName());
+#endif
 
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -66,12 +68,7 @@ class AXMainNodeAnnotatorControllerBrowserTest : public InProcessBrowserTest {
   }
 
   void Connect() {
-// Lacros does not download the library.
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || !BUILDFLAG(USE_FAKE_SCREEN_AI)
-    screen_ai::AXMainNodeAnnotatorControllerFactory::GetForProfile(
-        browser()->profile())
-        ->set_service_ready_for_testing();
-#else
+#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
     base::test::TestFuture<bool> future;
     screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
         browser()->profile())
@@ -80,6 +77,10 @@ class AXMainNodeAnnotatorControllerBrowserTest : public InProcessBrowserTest {
             future.GetCallback());
     ASSERT_TRUE(future.Wait()) << "Service state callback not called.";
     ASSERT_TRUE(future.Get<bool>()) << "Service initialization failed.";
+#else
+    screen_ai::AXMainNodeAnnotatorControllerFactory::GetForProfile(
+        browser()->profile())
+        ->set_service_ready_for_testing();
 #endif
   }
 
