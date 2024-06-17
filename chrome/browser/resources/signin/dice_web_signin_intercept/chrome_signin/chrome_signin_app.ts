@@ -80,9 +80,8 @@ export class ChromeSigninAppElement extends ChromeSigninAppElementBase {
     if (!this.interceptionParameters_) {
       return null;
     }
-    const nameAndEmail = this.interceptionParameters_.givenName + ' ' +
-        this.interceptionParameters_.email;
-    return this.i18n('chromeSigninAcceptText', nameAndEmail);
+    return this.i18n(
+        'acceptButtonAriaLabel', this.interceptionParameters_.email);
   }
 }
 

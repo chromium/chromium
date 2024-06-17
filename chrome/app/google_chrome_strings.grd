@@ -1085,6 +1085,11 @@ Permissions you've already given to websites and apps may apply to this account.
           </message>
         </if>
 
+         <message name="IDS_SIGNIN_CONTINUE_AS_BUTTON_ACCESSIBILITY_LABEL"
+          desc="Label of the 'Continue as' button of Chrome Signin promos. Spoken by screen readers when the button is focused.">
+          Sign in to Chrome as <ph name="USER_EMAIL">$1<ex>john@google.com</ex></ph>
+        </message>
+
         <!-- Autofill Sign In Promo Bubble -->
         <message name="IDS_AUTOFILL_SIGNIN_PROMO_SUBTITLE_PASSWORD"  desc="This is the body text of a confirmation message and means that the password was only saved locally to the user's device (not in their Google Account). It appears when the user is not signed in to Chrome and is after the 'Password saved to this device' string. If the user wants to save this data to their Google Account, they can click the 'Sign in to Chrome' button at the bottom of this message. The tone should be motivating.">
           To save and use passwords and more on all your devices, sign in to Chrome. This password will be saved in your Google Account after you sign in.

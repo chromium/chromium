@@ -104,6 +104,8 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
   source->AddLocalizedString(
       "chromeSigninDeclineText",
       IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_DECLINE_TEXT);
+  source->AddLocalizedString("acceptButtonAriaLabel",
+                             IDS_SIGNIN_CONTINUE_AS_BUTTON_ACCESSIBILITY_LABEL);
 
   source->UseStringsJs();
   source->EnableReplaceI18nInJS();
