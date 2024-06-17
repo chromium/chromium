@@ -294,10 +294,9 @@ public class ShowNtpAtStartupTest {
     public void testLogoSize() {
         mActivityTestRule.startMainActivityWithURL(UrlConstants.NTP_URL);
         Resources res = mActivityTestRule.getActivity().getResources();
-        int expectedLogoHeight = res.getDimensionPixelSize(R.dimen.ntp_logo_height_shrink);
-        int expectedTopMargin = LogoUtils.getTopMarginPolished(res);
-        int expectedBottomMargin =
-                res.getDimensionPixelSize(R.dimen.ntp_logo_vertical_bottom_margin_tablet);
+        int expectedLogoHeight = res.getDimensionPixelSize(R.dimen.ntp_logo_height);
+        int expectedTopMargin = res.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
+        int expectedBottomMargin = res.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
 
         // Verifies the logo size is decreased, and top bottom margins are updated.
         testLogoSizeImpl(expectedLogoHeight, expectedTopMargin, expectedBottomMargin);

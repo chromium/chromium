@@ -5,9 +5,9 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 <resources>
-  <dimen name="logo_height_polished">48dp</dimen>
-  <dimen name="logo_margin_top_polished">12dp</dimen>
-  <dimen name="logo_margin_bottom_polished">24dp</dimen>
+  <dimen name="ntp_logo_height">48dp</dimen>
+  <dimen name="ntp_logo_margin_top">12dp</dimen>
+  <dimen name="ntp_logo_margin_bottom">24dp</dimen>
   <dimen name="logo_height_logo_polish_large">84dp</dimen>
   <dimen name="logo_height_logo_polish_medium">76dp</dimen>
   <dimen name="logo_height_logo_polish_small">68dp</dimen>

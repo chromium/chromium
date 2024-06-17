@@ -36,10 +36,9 @@ public class LogoUtilsUnitTest {
     @SmallTest
     public void testSetLogoViewLayoutParams() {
         MarginLayoutParams layoutParams = new MarginLayoutParams(0, 0);
-        int logoHeight = mResources.getDimensionPixelSize(R.dimen.logo_height_polished);
-        int logoTopMargin = mResources.getDimensionPixelSize(R.dimen.logo_margin_top_polished);
-        int logoBottomMargin =
-                mResources.getDimensionPixelSize(R.dimen.logo_margin_bottom_polished);
+        int logoHeight = mResources.getDimensionPixelSize(R.dimen.ntp_logo_height);
+        int logoTopMargin = mResources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
+        int logoBottomMargin = mResources.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
 
         int logoHeightLargeForLogoPolish =
                 mResources.getDimensionPixelSize(R.dimen.logo_height_logo_polish_large);
@@ -55,15 +54,6 @@ public class LogoUtilsUnitTest {
         LogoUtils.setLogoViewLayoutParams(
                 layoutParams,
                 mResources,
-                /* isTablet= */ false,
-                /* isLogoPolishEnabled= */ false,
-                /* logoSizeForLogoPolish= */ LogoSizeForLogoPolish.LARGE);
-        testSetLogoViewLayoutParamsImpl(logoHeight, logoTopMargin, logoBottomMargin, layoutParams);
-
-        LogoUtils.setLogoViewLayoutParams(
-                layoutParams,
-                mResources,
-                /* isTablet= */ true,
                 /* isLogoPolishEnabled= */ false,
                 /* logoSizeForLogoPolish= */ LogoSizeForLogoPolish.LARGE);
         testSetLogoViewLayoutParamsImpl(logoHeight, logoTopMargin, logoBottomMargin, layoutParams);
@@ -72,7 +62,6 @@ public class LogoUtilsUnitTest {
         LogoUtils.setLogoViewLayoutParams(
                 layoutParams,
                 mResources,
-                /* isTablet= */ false,
                 /* isLogoPolishEnabled= */ true,
                 /* logoSizeForLogoPolish= */ LogoSizeForLogoPolish.LARGE);
         testSetLogoViewLayoutParamsImpl(
@@ -84,19 +73,6 @@ public class LogoUtilsUnitTest {
         LogoUtils.setLogoViewLayoutParams(
                 layoutParams,
                 mResources,
-                /* isTablet= */ true,
-                /* isLogoPolishEnabled= */ true,
-                /* logoSizeForLogoPolish= */ LogoSizeForLogoPolish.LARGE);
-        testSetLogoViewLayoutParamsImpl(
-                logoHeightLargeForLogoPolish,
-                logoTopMarginForLogoPolish,
-                logoBottomMarginForLogoPolish,
-                layoutParams);
-
-        LogoUtils.setLogoViewLayoutParams(
-                layoutParams,
-                mResources,
-                /* isTablet= */ false,
                 /* isLogoPolishEnabled= */ true,
                 /* logoSizeForLogoPolish= */ LogoSizeForLogoPolish.MEDIUM);
         testSetLogoViewLayoutParamsImpl(
@@ -108,31 +84,6 @@ public class LogoUtilsUnitTest {
         LogoUtils.setLogoViewLayoutParams(
                 layoutParams,
                 mResources,
-                /* isTablet= */ true,
-                /* isLogoPolishEnabled= */ true,
-                /* logoSizeForLogoPolish= */ LogoSizeForLogoPolish.MEDIUM);
-        testSetLogoViewLayoutParamsImpl(
-                logoHeightMediumForLogoPolish,
-                logoTopMarginForLogoPolish,
-                logoBottomMarginForLogoPolish,
-                layoutParams);
-
-        LogoUtils.setLogoViewLayoutParams(
-                layoutParams,
-                mResources,
-                /* isTablet= */ false,
-                /* isLogoPolishEnabled= */ true,
-                /* logoSizeForLogoPolish= */ LogoSizeForLogoPolish.SMALL);
-        testSetLogoViewLayoutParamsImpl(
-                logoHeightSmallForLogoPolish,
-                logoTopMarginForLogoPolish,
-                logoBottomMarginForLogoPolish,
-                layoutParams);
-
-        LogoUtils.setLogoViewLayoutParams(
-                layoutParams,
-                mResources,
-                /* isTablet= */ true,
                 /* isLogoPolishEnabled= */ true,
                 /* logoSizeForLogoPolish= */ LogoSizeForLogoPolish.SMALL);
         testSetLogoViewLayoutParamsImpl(

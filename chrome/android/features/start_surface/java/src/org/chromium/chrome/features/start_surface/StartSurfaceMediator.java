@@ -54,13 +54,11 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
 import org.chromium.chrome.browser.feed.FeedReliabilityLogger;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lens.LensMetrics;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.logo.LogoCoordinator;
-import org.chromium.chrome.browser.logo.LogoUtils;
 import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.magic_stack.HomeModulesConfigManager;
 import org.chromium.chrome.browser.magic_stack.HomeModulesCoordinator;
@@ -146,7 +144,6 @@ class StartSurfaceMediator
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final TabCreatorManager mTabCreatorManager;
     private final boolean mUseMagicStack;
-    private final boolean mIsSurfacePolishEnabled;
     @Nullable private final ModuleDelegateCreator mModuleDelegateCreator;
     private boolean mShouldIgnoreTabSelecting;
 
@@ -216,8 +213,6 @@ class StartSurfaceMediator
             ObservableSupplier<Profile> profileSupplier) {
         mTabSwitcherModule = tabSwitcherModule;
         mController = mTabSwitcherModule != null ? mTabSwitcherModule.getController() : null;
-        mIsSurfacePolishEnabled =
-                isStartSurfaceEnabled && ChromeFeatureList.sSurfacePolish.isEnabled();
         mUseMagicStack = isStartSurfaceEnabled && StartSurfaceConfiguration.useMagicStack();
         // When a magic stack is enabled on Start surface, it doesn't need a controller to handle
         // its showing and hiding.
@@ -1034,8 +1029,6 @@ class StartSurfaceMediator
     }
 
     private void setLogoVisibility(boolean isVisible) {
-        if (!mIsSurfacePolishEnabled) return;
-
         if (isVisible && mLogoCoordinator == null) {
             mLogoCoordinator = initializeLogo();
             if (mIsNativeInitialized) mLogoCoordinator.initWithNative();
@@ -1180,15 +1173,6 @@ class StartSurfaceMediator
                         });
         mLogoContainerView.setVisibility(View.VISIBLE);
         LogoView logoView = mLogoContainerView.findViewById(R.id.search_provider_logo);
-        if (mIsSurfacePolishEnabled) {
-            LogoUtils.setLogoViewLayoutParams(
-                    logoView,
-                    mContext.getResources(),
-                    /* isTablet= */ false,
-                    StartSurfaceConfiguration.isLogoPolishEnabled(),
-                    StartSurfaceConfiguration.getLogoSizeForLogoPolish());
-        }
-
         mLogoCoordinator =
                 new LogoCoordinator(mContext, logoClickedCallback, logoView, true, null, this);
         return mLogoCoordinator;

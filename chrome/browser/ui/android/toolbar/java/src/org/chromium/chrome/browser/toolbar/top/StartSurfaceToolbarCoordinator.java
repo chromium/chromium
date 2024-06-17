@@ -341,7 +341,7 @@ public class StartSurfaceToolbarCoordinator {
                                     StartSurfaceConfiguration.getLogoSizeForLogoPolish());
         } else {
             mFakeSearchBoxOffsetForSurfacePolishLogoInContent =
-                    toolbarPlaceholderHeight + LogoUtils.getLogoTotalHeightPolished(resources);
+                    toolbarPlaceholderHeight + LogoUtils.getLogoTotalHeight(resources);
         }
         mFakeSearchBoxOffsetForSurfacePolishNoLogoInContent =
                 toolbarPlaceholderHeight

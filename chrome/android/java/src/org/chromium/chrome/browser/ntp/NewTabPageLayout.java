@@ -399,19 +399,6 @@ public class NewTabPageLayout extends LinearLayout {
         // room, we don't need to fetch logo image.
         boolean shouldFetchDoodle = !FeedPositionUtils.isFeedPullUpEnabled();
         mLogoView = findViewById(R.id.search_provider_logo);
-        if (mIsSurfacePolishEnabled) {
-            LogoUtils.setLogoViewLayoutParams(
-                    mLogoView,
-                    getResources(),
-                    mIsTablet,
-                    mIsLogoPolishEnabled,
-                    mIsInMultiWindowModeOnTablet
-                            ? LogoSizeForLogoPolish.SMALL
-                            : mLogoSizeForLogoPolish);
-        } else if (mIsTablet) {
-            mLogoView.getLayoutParams().height =
-                    mContext.getResources().getDimensionPixelSize(R.dimen.ntp_logo_height_shrink);
-        }
 
         mLogoCoordinator =
                 new LogoCoordinator(
@@ -653,7 +640,6 @@ public class NewTabPageLayout extends LinearLayout {
         LogoUtils.setLogoViewLayoutParams(
                 mLogoView,
                 getResources(),
-                mIsTablet,
                 mIsLogoPolishEnabled,
                 mIsInMultiWindowModeOnTablet
                         ? LogoSizeForLogoPolish.SMALL
@@ -859,14 +845,6 @@ public class NewTabPageLayout extends LinearLayout {
             return LogoUtils.getTopMarginForLogoPolish(resources);
         }
 
-        if (mIsSurfacePolishEnabled && mSearchProviderHasLogo) {
-            return LogoUtils.getTopMarginPolished(resources);
-        }
-
-        if (mIsTablet && mSearchProviderHasLogo) {
-            return resources.getDimensionPixelSize(R.dimen.ntp_logo_vertical_top_margin_tablet);
-        }
-
         return resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
     }
 
@@ -875,14 +853,6 @@ public class NewTabPageLayout extends LinearLayout {
 
         if (mIsLogoPolishEnabled && mSearchProviderHasLogo) {
             return LogoUtils.getBottomMarginForLogoPolish(resources);
-        }
-
-        if (mIsSurfacePolishEnabled && mSearchProviderHasLogo) {
-            return LogoUtils.getBottomMarginPolished(resources);
-        }
-
-        if (mIsTablet && mSearchProviderHasLogo) {
-            return resources.getDimensionPixelSize(R.dimen.ntp_logo_vertical_bottom_margin_tablet);
         }
 
         return resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
@@ -1048,7 +1018,6 @@ public class NewTabPageLayout extends LinearLayout {
             LogoUtils.setLogoViewLayoutParams(
                     mLogoView,
                     getResources(),
-                    mIsTablet,
                     mIsLogoPolishEnabled,
                     mIsInMultiWindowModeOnTablet
                             ? LogoSizeForLogoPolish.SMALL

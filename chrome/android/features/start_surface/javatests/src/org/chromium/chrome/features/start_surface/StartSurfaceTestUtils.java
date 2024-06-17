@@ -519,7 +519,7 @@ public class StartSurfaceTestUtils {
                     LogoUtils.getLogoTotalHeightForLogoPolish(
                             resources, StartSurfaceConfiguration.getLogoSizeForLogoPolish());
         } else {
-            logoInSurfaceHeight = LogoUtils.getLogoTotalHeightPolished(resources);
+            logoInSurfaceHeight = LogoUtils.getLogoTotalHeight(resources);
         }
         float toY =
                 -cta.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)

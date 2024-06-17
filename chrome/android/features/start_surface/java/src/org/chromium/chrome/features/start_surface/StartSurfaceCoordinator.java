@@ -598,13 +598,7 @@ public class StartSurfaceCoordinator implements StartSurface {
                     resources, StartSurfaceConfiguration.getLogoSizeForLogoPolish());
         }
 
-        if (mIsSurfacePolishEnabled) {
-            return LogoUtils.getLogoTotalHeightPolished(resources);
-        }
-
-        return getPixelSize(R.dimen.ntp_logo_height)
-                + getPixelSize(R.dimen.ntp_logo_margin_top)
-                + getPixelSize(R.dimen.ntp_logo_margin_bottom);
+        return LogoUtils.getLogoTotalHeight(resources);
     }
 
     private void initializeOffsetChangedListener() {

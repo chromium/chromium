@@ -134,12 +134,6 @@ found in the LICENSE file.
     <dimen name="mvt_container_top_padding">17dp</dimen>
     <dimen name="mvt_container_bottom_padding">22dp</dimen>
     <dimen name="mvt_container_top_margin">23dp</dimen>
-    <dimen name="ntp_logo_height">100dp</dimen>
-    <dimen name="ntp_logo_margin_top">26dp</dimen>
-    <dimen name="ntp_logo_margin_bottom">23dp</dimen>
-    <dimen name="ntp_logo_height_shrink">72dp</dimen>
-    <dimen name="ntp_logo_vertical_top_margin_tablet">36dp</dimen>
-    <dimen name="ntp_logo_vertical_bottom_margin_tablet">24dp</dimen>
     <dimen name="ntp_search_box_height_for_start_animation">48dp</dimen>
     <dimen name="ntp_search_box_bottom_margin">1dp</dimen>
     <dimen name="ntp_search_box_transition_length">16dp</dimen>

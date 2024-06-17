@@ -28,22 +28,6 @@ public class LogoUtils {
         int LARGE = 2;
     }
 
-    /** Returns the top margin of the LogoView if Surface Polish is enabled. */
-    public static int getTopMarginPolished(Resources resources) {
-        return resources.getDimensionPixelSize(R.dimen.logo_margin_top_polished);
-    }
-
-    /** Returns the bottom margin of the LogoView if Surface Polish is enabled. */
-    public static int getBottomMarginPolished(Resources resources) {
-        return resources.getDimensionPixelSize(R.dimen.logo_margin_bottom_polished);
-    }
-
-    @VisibleForTesting
-    /** Returns the height of the LogoView if Surface Polish is enabled. */
-    public static int getLogoHeightPolished(Resources resources) {
-        return resources.getDimensionPixelSize(R.dimen.logo_height_polished);
-    }
-
     /** Returns the top margin of the LogoView if Logo Polish is enabled. */
     public static int getTopMarginForLogoPolish(Resources resources) {
         return resources.getDimensionPixelSize(R.dimen.logo_margin_top_logo_polish);
@@ -72,14 +56,11 @@ public class LogoUtils {
         return resources.getDimensionPixelSize(R.dimen.logo_height_logo_polish_small);
     }
 
-    /**
-     * Returns the sum of the height, the top margin and the bottom margin of the LogoView if
-     * Surface Polish is enabled.
-     */
-    public static int getLogoTotalHeightPolished(Resources resources) {
-        return getLogoHeightPolished(resources)
-                + getTopMarginPolished(resources)
-                + getBottomMarginPolished(resources);
+    /** Returns the sum of the height, the top margin and the bottom margin of the LogoView. */
+    public static int getLogoTotalHeight(Resources resources) {
+        return resources.getDimensionPixelSize(R.dimen.ntp_logo_height)
+                + resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top)
+                + resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
     }
 
     /**
@@ -106,22 +87,19 @@ public class LogoUtils {
                         + getTopMarginForLogoPolish(resources);
             default:
                 assert false;
-                return getLogoTotalHeightPolished(resources);
+                return getLogoTotalHeight(resources);
         }
     }
 
-    /**
-     * Sets the layout params for the LogoView when Surface Polished or Logo Polished is enabled.
-     */
+    /** Sets the layout params for the LogoView when Logo Polished is enabled. */
     public static void setLogoViewLayoutParams(
             LogoView logoView,
             Resources resources,
-            boolean isTablet,
             boolean isLogoPolishEnabled,
             final @LogoSizeForLogoPolish int logoSizeForLogoPolish) {
         MarginLayoutParams layoutParams = (MarginLayoutParams) logoView.getLayoutParams();
         setLogoViewLayoutParams(
-                layoutParams, resources, isTablet, isLogoPolishEnabled, logoSizeForLogoPolish);
+                layoutParams, resources, isLogoPolishEnabled, logoSizeForLogoPolish);
         if (layoutParams != null) {
             logoView.setLayoutParams(layoutParams);
         }
@@ -131,7 +109,6 @@ public class LogoUtils {
     public static void setLogoViewLayoutParams(
             MarginLayoutParams layoutParams,
             Resources resources,
-            boolean isTablet,
             boolean isLogoPolishEnabled,
             final @LogoSizeForLogoPolish int logoSizeForLogoPolish) {
         if (layoutParams == null) return;
@@ -157,9 +134,10 @@ public class LogoUtils {
                     assert false;
             }
         } else {
-            layoutParams.height = getLogoHeightPolished(resources);
-            layoutParams.topMargin = getTopMarginPolished(resources);
-            layoutParams.bottomMargin = getBottomMarginPolished(resources);
+            layoutParams.height = resources.getDimensionPixelSize(R.dimen.ntp_logo_height);
+            layoutParams.topMargin = resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
+            layoutParams.bottomMargin =
+                    resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
         }
     }
 }

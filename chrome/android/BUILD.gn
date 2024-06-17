@@ -229,6 +229,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/device_lock:java_resources",
       "//chrome/browser/ui/android/favicon:java_resources",
       "//chrome/browser/ui/android/google_bottom_bar:java_resources",
+      "//chrome/browser/ui/android/logo:java_resources",
       "//chrome/browser/ui/android/management:java_resources",
       "//chrome/browser/ui/android/omnibox:java_resources",
       "//chrome/browser/ui/android/quickactionsearchwidget:java_resources",
