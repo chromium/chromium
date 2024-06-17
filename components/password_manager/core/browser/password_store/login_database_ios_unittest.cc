@@ -65,12 +65,13 @@ TEST_F(LoginDatabaseIOSTest, KeychainStorage) {
   };
 
   for (unsigned int i = 0; i < std::size(test_passwords); i++) {
+    EncryptDecryptInterface* encryptor_decryptor = login_db_.get();
     std::string encrypted;
-    EXPECT_EQ(LoginDatabase::ENCRYPTION_RESULT_SUCCESS,
-              login_db_->EncryptedString(test_passwords[i], &encrypted));
+    EXPECT_EQ(EncryptionResult::kSuccess, encryptor_decryptor->EncryptedString(
+                                              test_passwords[i], &encrypted));
     std::u16string decrypted;
-    EXPECT_EQ(LoginDatabase::ENCRYPTION_RESULT_SUCCESS,
-              login_db_->DecryptedString(encrypted, &decrypted));
+    EXPECT_EQ(EncryptionResult::kSuccess,
+              encryptor_decryptor->DecryptedString(encrypted, &decrypted));
     EXPECT_STREQ(UTF16ToUTF8(test_passwords[i]).c_str(),
                  UTF16ToUTF8(decrypted).c_str());
   }

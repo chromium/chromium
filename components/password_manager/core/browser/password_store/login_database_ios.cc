@@ -39,20 +39,20 @@ namespace password_manager {
 // stored as an attribute along with the password in the keychain.
 // A side effect of this approach is that the same password saved multiple
 // times will have different "encrypted" values.
-LoginDatabase::EncryptionResult LoginDatabase::EncryptedString(
+EncryptionResult LoginDatabase::EncryptedString(
     const std::u16string& plain_text,
-    std::string* cipher_text) {
+    std::string* cipher_text) const {
   return OSCrypt::EncryptString16(plain_text, cipher_text)
-             ? ENCRYPTION_RESULT_SUCCESS
-             : ENCRYPTION_RESULT_SERVICE_FAILURE;
+             ? EncryptionResult::kSuccess
+             : EncryptionResult::kServiceFailure;
 }
 
-LoginDatabase::EncryptionResult LoginDatabase::DecryptedString(
+EncryptionResult LoginDatabase::DecryptedString(
     const std::string& cipher_text,
-    std::u16string* plain_text) {
+    std::u16string* plain_text) const {
   return OSCrypt::DecryptString16(cipher_text, plain_text)
-             ? ENCRYPTION_RESULT_SUCCESS
-             : ENCRYPTION_RESULT_SERVICE_FAILURE;
+             ? EncryptionResult::kSuccess
+             : EncryptionResult::kServiceFailure;
 }
 
 bool CreateKeychainIdentifier(const std::u16string& plain_text,

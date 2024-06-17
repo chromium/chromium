@@ -15,6 +15,7 @@
 #include "base/pickle.h"
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_store/encrypt_decrypt_intrface.h"
 #include "components/password_manager/core/browser/password_store/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_store/password_notes_table.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
@@ -46,7 +47,7 @@ extern const int kCompatibleVersionNumber;
 // Interface to the database storage of login information, intended as a helper
 // for PasswordStore on platforms that need internal storage of some or all of
 // the login information.
-class LoginDatabase {
+class LoginDatabase : public EncryptDecryptInterface {
  public:
   struct LoginDatabaseEmptinessState {
     // True if the login database has 0 passwords stored.
@@ -205,36 +206,6 @@ class LoginDatabase {
     return password_sync_metadata_store_;
   }
 
-  // Result values for encryption/decryption actions.
-  enum EncryptionResult {
-    // Success.
-    ENCRYPTION_RESULT_SUCCESS,
-    // Failure for a specific item (e.g., the encrypted value was manually
-    // moved from another machine, and can't be decrypted on this machine).
-    // This is presumed to be a permanent failure.
-    ENCRYPTION_RESULT_ITEM_FAILURE,
-    // A service-level failure (e.g., on a platform using a keyring, the keyring
-    // is temporarily unavailable).
-    // This is presumed to be a temporary failure.
-    ENCRYPTION_RESULT_SERVICE_FAILURE,
-  };
-
-  // Encrypts plain_text, setting the value of cipher_text and returning true if
-  // successful, or returning false and leaving cipher_text unchanged if
-  // encryption fails (e.g., if the underlying OS encryption system is
-  // temporarily unavailable).
-  [[nodiscard]] static EncryptionResult EncryptedString(
-      const std::u16string& plain_text,
-      std::string* cipher_text);
-
-  // Decrypts cipher_text, setting the value of plain_text and returning true if
-  // successful, or returning false and leaving plain_text unchanged if
-  // decryption fails (e.g., if the underlying OS encryption system is
-  // temporarily unavailable).
-  [[nodiscard]] static EncryptionResult DecryptedString(
-      const std::string& cipher_text,
-      std::u16string* plain_text);
-
   // After `were_undecryptable_logins_deleted_` is used by the
   // `PasswordSyncBridge` it should be cleared to avoid unnecessary sync calls.
   void clear_were_undecryptable_logins_deleted() {
@@ -248,6 +219,14 @@ class LoginDatabase {
   }
 
  private:
+  // EncryptDecryptInterface implementation.
+  [[nodiscard]] EncryptionResult EncryptedString(
+      const std::u16string& plain_text,
+      std::string* cipher_text) const override;
+  [[nodiscard]] EncryptionResult DecryptedString(
+      const std::string& cipher_text,
+      std::u16string* plain_text) const override;
+
   struct PrimaryKeyAndPassword;
   class SyncMetadataStore : public PasswordStoreSync::MetadataStore {
    public:

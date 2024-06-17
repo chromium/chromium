@@ -744,7 +744,9 @@ bool UpdatePassword(sql::Database* db,
   return password_value_update.Run();
 }
 
-bool MigrateToOSCrypt(IsAccountStore is_account_store, sql::Database* db) {
+bool MigrateToOSCrypt(IsAccountStore is_account_store,
+                      sql::Database* db,
+                      EncryptDecryptInterface* encryptor) {
   sql::Statement get_passwords_statement(
       db->GetUniqueStatement("SELECT id, password_value FROM logins"));
   // Update each password_value with the new BLOB.
@@ -767,9 +769,8 @@ bool MigrateToOSCrypt(IsAccountStore is_account_store, sql::Database* db) {
     } else {
       // Encrypt password using OSCrypt.
       std::string encrypted_password;
-      if (LoginDatabase::EncryptedString(plaintext_password,
-                                         &encrypted_password) !=
-          LoginDatabase::ENCRYPTION_RESULT_SUCCESS) {
+      if (encryptor->EncryptedString(plaintext_password, &encrypted_password) !=
+          EncryptionResult::kSuccess) {
         return false;
       }
       // Updated password_value in the database.
@@ -788,7 +789,8 @@ bool MigrateToOSCrypt(IsAccountStore is_account_store, sql::Database* db) {
 bool MigrateDatabase(unsigned current_version,
                      SQLTableBuilders builders,
                      IsAccountStore is_account_store,
-                     sql::Database* db) {
+                     sql::Database* db,
+                     EncryptDecryptInterface* encryptor) {
   if (!builders.logins->MigrateFrom(
           current_version, db,
           base::BindRepeating(&LoginsTablePostMigrationStepCallback))) {
@@ -901,7 +903,7 @@ bool MigrateDatabase(unsigned current_version,
       return false;
     }
 
-    return MigrateToOSCrypt(is_account_store, db);
+    return MigrateToOSCrypt(is_account_store, db, encryptor);
   }
 #endif
 
@@ -997,17 +999,18 @@ std::unique_ptr<sync_pb::EntityMetadata> DecryptAndParseSyncEntityMetadata(
   return entity_metadata;
 }
 
-LoginDatabase::EncryptionResult DecryptPasswordFromStatement(
+EncryptionResult DecryptPasswordFromStatement(
     sql::Statement& s,
-    std::u16string* plaintext_password) {
+    std::u16string* plaintext_password,
+    EncryptDecryptInterface* decryptor) {
   CHECK(plaintext_password);
   std::string encrypted_password;
   s.ColumnBlobAsString(COLUMN_PASSWORD_VALUE, &encrypted_password);
-  LoginDatabase::EncryptionResult encryption_result =
-      LoginDatabase::DecryptedString(encrypted_password, plaintext_password);
-  if (encryption_result != LoginDatabase::ENCRYPTION_RESULT_SUCCESS) {
+  EncryptionResult encryption_result =
+      decryptor->DecryptedString(encrypted_password, plaintext_password);
+  if (encryption_result != EncryptionResult::kSuccess) {
     DLOG(WARNING) << "Password decryption failed, encryption_result is "
-                  << encryption_result;
+                  << static_cast<int>(encryption_result);
   }
   return encryption_result;
 }
@@ -1154,7 +1157,7 @@ bool LoginDatabase::Init() {
 
   stats_table_.Init(&db_);
   insecure_credentials_table_.Init(&db_);
-  password_notes_table_.Init(&db_);
+  password_notes_table_.Init(&db_, this);
 
   int current_version = meta_table_.GetVersionNumber();
   bool migration_success = FixVersionIfNeeded(&db_, &current_version);
@@ -1163,7 +1166,7 @@ bool LoginDatabase::Init() {
   if (migration_success && current_version < kCurrentVersionNumber) {
     migration_success =
         MigrateDatabase(base::checked_cast<unsigned>(current_version), builders,
-                        is_account_store_, &db_);
+                        is_account_store_, &db_, this);
   }
   // Enforce that 'insecure_credentials' is created only after the 'logins'
   // table was created and migrated to the latest version. This guarantees the
@@ -1266,7 +1269,7 @@ void LoginDatabase::ReportInaccessiblePasswordsMetrics() {
   while (get_passwords_statement.Step()) {
     std::u16string decrypted_password;
     if (DecryptedString(get_passwords_statement.ColumnString(0),
-                        &decrypted_password) != ENCRYPTION_RESULT_SUCCESS) {
+                        &decrypted_password) != EncryptionResult::kSuccess) {
       ++failed_encryption;
     }
   }
@@ -1348,7 +1351,7 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
 #endif  // BUILDFLAG(IS_IOS)
   std::string encrypted_password;
   if (EncryptedString(form_to_add.password_value, &encrypted_password) !=
-      ENCRYPTION_RESULT_SUCCESS) {
+      EncryptionResult::kSuccess) {
     if (error) {
       *error = AddCredentialError::kEncryptionServiceFailure;
     }
@@ -1419,7 +1422,7 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(
   }
   std::string encrypted_password;
   if (EncryptedString(form.password_value, &encrypted_password) !=
-      ENCRYPTION_RESULT_SUCCESS) {
+      EncryptionResult::kSuccess) {
     if (error) {
       *error = UpdateCredentialError::kEncryptionServiceFailure;
     }
@@ -1937,7 +1940,7 @@ DatabaseCleanupResult LoginDatabase::DeleteUndecryptableLogins() {
     s.ColumnBlobAsString(COLUMN_PASSWORD_VALUE, &encrypted_password);
     std::u16string decrypted_password;
     if (DecryptedString(encrypted_password, &decrypted_password) ==
-        ENCRYPTION_RESULT_SUCCESS) {
+        EncryptionResult::kSuccess) {
       continue;
     }
 
@@ -2291,7 +2294,7 @@ LoginDatabase::PrimaryKeyAndPassword LoginDatabase::GetPrimaryKeyAndPassword(
     s.ColumnBlobAsString(1, &encrypted_password);
     s.ColumnBlobAsString(2, &result.keychain_identifier);
     if (DecryptedString(encrypted_password, &result.decrypted_password) !=
-        ENCRYPTION_RESULT_SUCCESS) {
+        EncryptionResult::kSuccess) {
       result.decrypted_password.clear();
     }
     return result;
@@ -2320,14 +2323,14 @@ FormRetrievalResult LoginDatabase::StatementToForms(
   while (statement->Step()) {
     std::u16string plaintext_password;
     EncryptionResult result =
-        DecryptPasswordFromStatement(*statement, &plaintext_password);
-    if (result == ENCRYPTION_RESULT_SERVICE_FAILURE ||
-        result == ENCRYPTION_RESULT_ITEM_FAILURE) {
+        DecryptPasswordFromStatement(*statement, &plaintext_password, this);
+    if (result == EncryptionResult::kItemFailure ||
+        result == EncryptionResult::kServiceFailure) {
       failed = true;
       continue;
     }
 
-    DCHECK_EQ(ENCRYPTION_RESULT_SUCCESS, result);
+    DCHECK_EQ(EncryptionResult::kSuccess, result);
 
     PasswordForm form = GetFormWithoutPasswordFromStatement(*statement);
     form.password_value = std::move(plaintext_password);

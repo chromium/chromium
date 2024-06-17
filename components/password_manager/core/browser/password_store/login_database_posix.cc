@@ -28,17 +28,17 @@ void RecordPasswordDecryptionResult(PasswordDecryptionResult result) {
 
 }  // namespace
 
-LoginDatabase::EncryptionResult LoginDatabase::EncryptedString(
+EncryptionResult LoginDatabase::EncryptedString(
     const std::u16string& plain_text,
-    std::string* cipher_text) {
+    std::string* cipher_text) const {
   return OSCrypt::EncryptString16(plain_text, cipher_text)
-             ? ENCRYPTION_RESULT_SUCCESS
-             : ENCRYPTION_RESULT_SERVICE_FAILURE;
+             ? EncryptionResult::kSuccess
+             : EncryptionResult::kServiceFailure;
 }
 
-LoginDatabase::EncryptionResult LoginDatabase::DecryptedString(
+EncryptionResult LoginDatabase::DecryptedString(
     const std::string& cipher_text,
-    std::u16string* plain_text) {
+    std::u16string* plain_text) const {
 #if !BUILDFLAG(IS_FUCHSIA)
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   // On Android and ChromeOS, we have a mix of obfuscated and plain-text
@@ -55,7 +55,7 @@ LoginDatabase::EncryptionResult LoginDatabase::DecryptedString(
     *plain_text = base::UTF8ToUTF16(cipher_text);
     RecordPasswordDecryptionResult(
         PasswordDecryptionResult::kSucceededBySkipping);
-    return ENCRYPTION_RESULT_SUCCESS;
+    return EncryptionResult::kSuccess;
   }
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
@@ -69,14 +69,14 @@ LoginDatabase::EncryptionResult LoginDatabase::DecryptedString(
     *plain_text = base::UTF8ToUTF16(cipher_text);
     RecordPasswordDecryptionResult(
         PasswordDecryptionResult::kSucceededByIgnoringFailure);
-    return ENCRYPTION_RESULT_SUCCESS;
+    return EncryptionResult::kSuccess;
   }
 #endif
   RecordPasswordDecryptionResult(decryption_success
                                      ? PasswordDecryptionResult::kSucceeded
                                      : PasswordDecryptionResult::kFailed);
-  return decryption_success ? ENCRYPTION_RESULT_SUCCESS
-                            : ENCRYPTION_RESULT_SERVICE_FAILURE;
+  return decryption_success ? EncryptionResult::kSuccess
+                            : EncryptionResult::kServiceFailure;
 }
 
 }  // namespace password_manager

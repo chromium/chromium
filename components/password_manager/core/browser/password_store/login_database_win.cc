@@ -9,18 +9,18 @@
 
 namespace password_manager {
 
-LoginDatabase::EncryptionResult LoginDatabase::EncryptedString(
+EncryptionResult LoginDatabase::EncryptedString(
     const std::u16string& plain_text,
-    std::string* cipher_text) {
+    std::string* cipher_text) const {
   if (OSCrypt::EncryptString16(plain_text, cipher_text)) {
-    return ENCRYPTION_RESULT_SUCCESS;
+    return EncryptionResult::kSuccess;
   }
-  return ENCRYPTION_RESULT_ITEM_FAILURE;
+  return EncryptionResult::kItemFailure;
 }
 
-LoginDatabase::EncryptionResult LoginDatabase::DecryptedString(
+EncryptionResult LoginDatabase::DecryptedString(
     const std::string& cipher_text,
-    std::u16string* plain_text) {
+    std::u16string* plain_text) const {
   // Unittests need to read sample database entries. If these entries had real
   // passwords, their encoding would need to be different for every platform.
   // To avoid the need for that, the entries have empty passwords. OSCrypt on
@@ -32,12 +32,12 @@ LoginDatabase::EncryptionResult LoginDatabase::DecryptedString(
   // discussion.
   if (cipher_text.empty()) {
     plain_text->clear();
-    return ENCRYPTION_RESULT_SUCCESS;
+    return EncryptionResult::kSuccess;
   }
   if (OSCrypt::DecryptString16(cipher_text, plain_text)) {
-    return ENCRYPTION_RESULT_SUCCESS;
+    return EncryptionResult::kSuccess;
   }
-  return ENCRYPTION_RESULT_ITEM_FAILURE;
+  return EncryptionResult::kItemFailure;
 }
 
 }  // namespace password_manager
