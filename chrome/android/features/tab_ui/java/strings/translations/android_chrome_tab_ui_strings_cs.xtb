@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">Nachová</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Rozbalit skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_ONE" /> kartou.}few{Rozbalit skupinu karet <ph name="TITLE_OF_GROUP" /> se <ph name="TABS_COUNT_MANY" /> kartami.}many{Rozbalit skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> karty.}other{Rozbalit skupinu karet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartami.}}</translation>
 <translation id="427987768447457592">Nová skupina karet</translation>
+<translation id="4371591986692297148">Neaktivní</translation>
 <translation id="4460014764210899310">Zrušit seskupení</translation>
 <translation id="4648718555153979859">Zde jsou seskupeny vaše karty</translation>
 <translation id="4686942373615810936">Vytvořeno právě teď</translation>

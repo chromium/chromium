@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">Ljubičasta</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Proširivanje grupe kartica <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_ONE" /> karticom.}one{Proširivanje grupe kartica <ph name="TITLE_OF_GROUP" /> sa <ph name="TABS_COUNT_MANY" /> karticom.}few{Proširivanje grupe kartica <ph name="TITLE_OF_GROUP" /> sa <ph name="TABS_COUNT_MANY" /> kartice.}other{Proširivanje grupe kartica <ph name="TITLE_OF_GROUP" /> sa <ph name="TABS_COUNT_MANY" /> kartica.}}</translation>
 <translation id="427987768447457592">Nova grupa kartica</translation>
+<translation id="4371591986692297148">Neaktivno</translation>
 <translation id="4460014764210899310">Razgrupiši</translation>
 <translation id="4648718555153979859">Vaše kartice su grupisane ovdje</translation>
 <translation id="4686942373615810936">Kreirano je upravo sada</translation>

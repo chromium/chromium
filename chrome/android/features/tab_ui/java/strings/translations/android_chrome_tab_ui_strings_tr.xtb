@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">Mor</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeli <ph name="TITLE_OF_GROUP" /> sekme grubunu genişlet.}other{<ph name="TABS_COUNT_MANY" /> sekmeli <ph name="TITLE_OF_GROUP" /> sekme grubunu genişlet.}}</translation>
 <translation id="427987768447457592">Yeni sekme grubu</translation>
+<translation id="4371591986692297148">Etkin değil</translation>
 <translation id="4460014764210899310">Grubu Çöz</translation>
 <translation id="4648718555153979859">Sekmeleriniz burada gruplandırılır</translation>
 <translation id="4686942373615810936">Az önce oluşturuldu</translation>

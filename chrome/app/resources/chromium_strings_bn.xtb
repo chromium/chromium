@@ -116,6 +116,7 @@
 <translation id="2945997411976714835">ইনস্টল সংক্রান্ত সমস্যা: ইনস্টলার প্রসেস শুরু করা যায়নি।</translation>
 <translation id="2977470724722393594">Chromium আপ-টু-ডেট আছে</translation>
 <translation id="2977506796191543575">যদি কোনও সাইট আপনার পাসওয়ার্ড চুরি করার চেষ্টা করে বা আপনি কোনও ক্ষতিকারক ফাইল ডাউনলোড করলে, Chromium, পৃষ্ঠার কিছু কন্টেন্ট সহ URL ও হয়ত Safe Browsing-এ পাঠাতে পারে</translation>
+<translation id="2987208172821108655">আপনার ব্রাউজ করার অভিজ্ঞতা উন্নত করার জন্য Chromium এইসব ট্যাব বন্ধ করে দিতে পারে, এর ফলে রিসোর্স কম ব্যবহার হবে।</translation>
 <translation id="3013473503895162900">Chromium-এর নতুন একটি ট্যাবে <ph name="URL" /> খুলুন।</translation>
 <translation id="3032706164202344641">Chromium আপনার পাসওয়ার্ড চেক করতে পারছে না। পরে আবার চেষ্টা করুন।</translation>
 <translation id="3032787606318309379">Chromium-এ জুড়ছে...</translation>
@@ -317,6 +318,7 @@
 <translation id="6248213926982192922">Chromium-কে ডিফল্ট ব্রাউজার করুন</translation>
 <translation id="6266342355635466082">কোনও আপডেট আছে কিনা, Chromium তা চেক করে দেখতে পারছে না। আপনার ইন্টারনেট কানেকশন চেক করে দেখে নিন।</translation>
 <translation id="6268381023930128611">Chromium থেকে সাইন-আউট করবেন?</translation>
+<translation id="6270547683008298381">এইসব ট্যাব অতিরিক্ত রিসোর্স ব্যবহার করছে। আপনার পারফর্ম্যান্স উন্নত করতে, Chromium-কে এগুলি বন্ধ করতে দিন।</translation>
 <translation id="6281746429495226318">আপনার Chromium প্রোফাইল কাস্টমাইজ করুন</translation>
 <translation id="6290827346642914212">আপনার Chromium প্রোফাইলের নাম লিখুন</translation>
 <translation id="6294831894865512704">এক্সটেনশন ব্যবহার করতে Chromium-এ সাইন-ইন করতে হবে</translation>
@@ -325,6 +327,7 @@
 <translation id="6327105987658262776">কোনও আপডেট উপলভ্য নেই।</translation>
 <translation id="6333502561965082103">Chromium এ আরেকটি ক্রিয়াকলাপ প্রক্রিয়ায় আছে। অনুগ্রহ করে পরে আবার চেষ্টা করুন।</translation>
 <translation id="6334986366598267305">এখন আপনার Google অ্যাকাউন্ট ও শেয়ার করা কম্পিউটারগুলিতে Chromium ব্যবহার করা আরো সহজ৷</translation>
+<translation id="633626832589656416">আপনার ব্রাউজ করার অভিজ্ঞতা উন্নত এবং দ্রুত করার জন্য Chromium এইসব ট্যাব বন্ধ করে দিতে পারে।</translation>
 <translation id="6347933965114150440">Chromium-এর শর্টকার্ট</translation>
 <translation id="6366160072964553914">এই ফাইলটি সাধারণত ডাউনলোড করা হয় না এবং এটি বিপজ্জনক হতে পারে, তাই Chromium এই ডাউনলোডটি ব্লক করে দিয়েছে</translation>
 <translation id="6373523479360886564">আপনি কি Chromium আনইনস্টল করার ব্যাপারে নিশ্চিত?</translation>

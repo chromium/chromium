@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">Paars</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_ONE" /> tabblad uitvouwen.}other{Tabbladgroep <ph name="TITLE_OF_GROUP" /> met <ph name="TABS_COUNT_MANY" /> tabbladen uitvouwen.}}</translation>
 <translation id="427987768447457592">Nieuwe tabbladgroep</translation>
+<translation id="4371591986692297148">Inactief</translation>
 <translation id="4460014764210899310">Groeperen ongedaan maken</translation>
 <translation id="4648718555153979859">Je tabbladen zijn hier gegroepeerd</translation>
 <translation id="4686942373615810936">Zojuist gemaakt</translation>

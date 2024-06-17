@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">Fiolett</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Vis fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_ONE" /> fane.}other{Vis fanegruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
 <translation id="427987768447457592">Ny fanegruppe</translation>
+<translation id="4371591986692297148">Inaktiv</translation>
 <translation id="4460014764210899310">Fjern gruppering</translation>
 <translation id="4648718555153979859">Fanene dine er gruppert sammen her</translation>
 <translation id="4686942373615810936">Opprettet nå nettopp</translation>

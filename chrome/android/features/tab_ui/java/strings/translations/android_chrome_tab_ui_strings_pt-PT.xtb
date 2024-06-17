@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">Roxo</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Expandir o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_ONE" /> separador.}other{Expandir o grupo de separadores <ph name="TITLE_OF_GROUP" /> com <ph name="TABS_COUNT_MANY" /> separadores.}}</translation>
 <translation id="427987768447457592">Novo grupo separadores</translation>
+<translation id="4371591986692297148">Inativo</translation>
 <translation id="4460014764210899310">Desagrupar</translation>
 <translation id="4648718555153979859">Os separadores estão agrupados aqui.</translation>
 <translation id="4686942373615810936">Criado agora mesmo</translation>

@@ -173,6 +173,7 @@
 <translation id="3261565993776444564">तुमचा ब्राउझर कस्टमाइझ करण्यासाठी नवीन रंग वापरून पहा</translation>
 <translation id="3282568296779691940">Chrome वर साइन इन करा</translation>
 <translation id="3286538390144397061">त्वरित रीस्टार्ट करा</translation>
+<translation id="3292333338048274092">तुम्हाला त्यानंतर Chrome रीस्टार्ट करावे लागले.</translation>
 <translation id="3360895254066713204">Chrome मदतनीस</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome आता पुन्हा लॉंच होईल}=1{Chrome एका सेकंदामध्ये पुन्हा लॉंच होईल}other{Chrome # सेकंदांमध्ये पुन्हा लॉंच होईल}}</translation>
 <translation id="3396977131400919238">स्थापनेदरम्यान एक ऑपरेटिंग सिस्टम‍ एरर आली. कृपया Google Chrome पुन्हा डाउनलोड करा.</translation>
@@ -217,6 +218,7 @@
 <translation id="4035053306113201399">अपडेट लागू करण्यासाठी ChromeOS रीस्टार्ट करणे आवश्यक आहे.</translation>
 <translation id="4050175100176540509">नवीनतम आवृत्तीमध्‍ये महत्त्वाच्या सुरक्षितता सुधारणा आणि नवीन वैशिष्ट्ये उपलब्‍ध आहेत.</translation>
 <translation id="4053720452172726777">Google Chrome कस्टमाइझ करा आणि नियंत्रित करा</translation>
+<translation id="4084404300720192944">तुमची विंडो शेअर करण्यासाठी, सिस्टीम प्राधान्ये यांमध्ये Chrome साठी स्क्रीन रेकॉर्डिंगला अनुमती द्या.</translation>
 <translation id="4106587138345390261">Chrome नवीन वैशिष्‍ट्ये एक्सप्लोर करत आहे, ज्यामुळे साइटना तुमची कमी माहिती वापरून समान ब्राउझिंग अनुभव देता येतो</translation>
 <translation id="4110895483821904099">तुमची नवीन Chrome प्रोफाइल सेट करा</translation>
 <translation id="4111566860456076004">हे एक्स्टेंशन कुठून आले आणि ते सुरक्षित आहे का याची Chrome ला पडताळणी करता आली नाही. ते Chrome वरून काढून टाका, जेणेकरून ते वैयक्तिक माहितीच्या समावेशासह तुम्ही भेट देत असलेल्या साइटवरील तुमचा डेटा आता पाहू आणि बदलू शकणार नाही.</translation>
@@ -254,6 +256,7 @@
 <translation id="4561051373932531560">Google Chrome तुम्हाला वेबवरील फोन नंबर क्लिक करू देते आणि त्या नंबरवर Skype द्वारा कॉल करू देते!</translation>
 <translation id="4567424176335768812">तुम्ही <ph name="USER_EMAIL_ADDRESS" /> म्हणून साइन इन केले आहे. आता तुम्ही तुमच्या सर्व साइन इन केलेल्या डिव्हाइसवरील तुमच्या बुकमार्क, इतिहास आणि अन्य सेटिंग्ज ॲक्सेस करू शकता.</translation>
 <translation id="4571503333518166079">Chrome सूचना सेटिंग्जवर जा</translation>
+<translation id="4575717501879784448">तुमच्या ब्राउझिंग अनुभवामध्ये सुधारणा करण्यासाठी आणि स्रोत रिक्त करण्यासाठी Chrome हे टॅब इनॅक्टिव्ह करू शकते.</translation>
 <translation id="459622048091363950">एकदा का Chrome ला ॲक्सेस मिळाला की, वेबसाइट तुम्हाला ॲक्सेससाठी विचारतील.</translation>
 <translation id="4600710005438004015">Chrome नवीनतम आवृत्तीवर अपडेट होऊ शकले नाही, त्यामुळे तुम्ही नवीन वैशिष्ट्ये आणि सुरक्षितता निराकरणे गमावत आहात.</translation>
 <translation id="4624065194742029982">Chrome चा गुप्त मोड</translation>
@@ -285,6 +288,7 @@
 <translation id="4970761609246024540">Chrome प्रोफाइलमध्ये स्वागत आहे</translation>
 <translation id="4970880042055371251">ChromeOS ची आवृत्ती</translation>
 <translation id="4990567037958725628">Google Chrome कॅनरी</translation>
+<translation id="4997044641749333913">तुमच्या ब्राउझिंग अनुभवामध्ये सुधारणा करण्यासाठी आणि जलद काम करण्यासाठी Chrome हे टॅब इनॅक्टिव्ह करू शकते.</translation>
 <translation id="5003967926796347400">“Google Password Manager” वर क्लिक करा</translation>
 <translation id="5120334927898581447">तुम्ही इतर Google सेवांमध्ये साइन इन करता, तेव्हा Chrome मध्ये साइन इन करा</translation>
 <translation id="5126049312684316860">Chrome तुम्ही भेट देण्याची शक्यता असलेली आणखी पेज प्रीलोड करते, जेणेकरून तुम्ही त्यांना भेट देता, तेव्हा ती अधिक जलद लोड होतात</translation>
@@ -348,12 +352,14 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="608006075545470555">या ब्राउझरवर कार्य प्रोफाइल जोडा</translation>
 <translation id="6097822892606850415">AI ची मदत घेऊन अधिक आत्मविश्वासाने लिहा</translation>
 <translation id="6113794647360055231">Chrome आता उत्कृष्ट झाले आहे</translation>
+<translation id="6135456723633883042">हे टॅब अतिरिक्त स्रोत वापरत आहेत. तुमच्या परफॉर्मन्समध्ये सुधारणा करण्यासाठी, Chrome ला ते इनॅक्टिव्ह करू द्या.</translation>
 <translation id="6145313976051292476">Chrome मध्ये PDF उघडा</translation>
 <translation id="6157638032135951407"><ph name="TIMEOUT_DURATION" /> कालावधीसाठी Chrome डेटा वापरला जात नाही, तेव्हा तुमची संस्था तो हटवते. यात इतिहास, ऑटोफिल आणि डाउनलोड यांचा समावेश असू शकतो.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> – Google Chrome</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome बीटा</translation>
 <translation id="6182736845697986886">अपडेट सर्व्हरच्या अंतर्गत एररमुळे इंस्टॉलेशन यशस्वी झाले नाही.</translation>
 <translation id="6200139057479872438">तुम्ही अलीकडे भेट दिलेली नाही. Chrome ने <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> परवानग्या काढून टाकल्या</translation>
+<translation id="621585339844629864">तुमची स्क्रीन शेअर करण्यासाठी, सिस्टीम प्राधान्ये यांमध्ये Chrome साठी स्क्रीन रेकॉर्डिंगला अनुमती द्या.</translation>
 <translation id="6235018212288296708">mDNS रहदारीस अनुमती देण्यासाठी Google Chrome साठी अंतर्गामी नियम.</translation>
 <translation id="624230925347970731">Chrome लवकरच बंद होईल</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>

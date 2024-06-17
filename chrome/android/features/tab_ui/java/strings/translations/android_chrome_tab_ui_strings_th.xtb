@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">ม่วง</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{ขยายกลุ่มแท็บ <ph name="TITLE_OF_GROUP" /> ที่มีอยู่ <ph name="TABS_COUNT_ONE" /> แท็บ}other{ขยายกลุ่มแท็บ <ph name="TITLE_OF_GROUP" /> ที่มีอยู่ <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="427987768447457592">กลุ่มแท็บใหม่</translation>
+<translation id="4371591986692297148">ไม่ได้ใช้งาน</translation>
 <translation id="4460014764210899310">ยกเลิกการจัดกลุ่ม</translation>
 <translation id="4648718555153979859">แท็บของคุณมีการจัดกลุ่มเข้าด้วยกันที่นี่</translation>
 <translation id="4686942373615810936">สร้างเมื่อสักครู่</translation>

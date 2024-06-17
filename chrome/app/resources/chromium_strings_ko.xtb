@@ -118,6 +118,7 @@
 <translation id="2945997411976714835">설치 오류: 설치 프로그램 프로세스를 시작할 수 없습니다.</translation>
 <translation id="2977470724722393594">Chromium이 최신 버전임</translation>
 <translation id="2977506796191543575">사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chromium에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
+<translation id="2987208172821108655">Chromium은 이러한 탭을 비활성화하여 탐색 환경을 개선하고 리소스를 확보할 수 있습니다.</translation>
 <translation id="3013473503895162900">Chromium의 새 탭에서 <ph name="URL" /> 주소가 열립니다.</translation>
 <translation id="3032706164202344641">Chromium에서 비밀번호를 확인할 수 없습니다. 나중에 다시 시도하세요.</translation>
 <translation id="3032787606318309379">Chromium에 추가하는 중...</translation>
@@ -319,6 +320,7 @@
 <translation id="6248213926982192922">Chromium을 기본 브라우저로 설정</translation>
 <translation id="6266342355635466082">Chromium에서 업데이트를 확인할 수 없습니다. 인터넷 연결 상태를 확인하세요.</translation>
 <translation id="6268381023930128611">Chromium에서 로그아웃</translation>
+<translation id="6270547683008298381">이러한 탭은 추가 리소스를 사용하고 있습니다. 성능을 개선하려면 Chromium에서 이러한 탭을 비활성화하도록 허용하세요.</translation>
 <translation id="6281746429495226318">Chromium 프로필 맞춤설정</translation>
 <translation id="6290827346642914212">Chromium 프로필 이름 지정</translation>
 <translation id="6294831894865512704">확장 프로그램에서 Chromium에 로그인하도록 요청합니다</translation>
@@ -327,6 +329,7 @@
 <translation id="6327105987658262776">사용 가능한 업데이트가 없습니다.</translation>
 <translation id="6333502561965082103">Chromium에서 다른 작업이 진행 중입니다. 나중에 다시 시도해 주세요.</translation>
 <translation id="6334986366598267305">이제 Google 계정으로 공유 컴퓨터에서 Chromium을 손쉽게 사용할 수 있습니다.</translation>
+<translation id="633626832589656416">Chromium은 이러한 탭을 비활성화하여 탐색 환경을 개선하고 빠른 속도를 유지할 수 있습니다.</translation>
 <translation id="6347933965114150440">Chromium 바로가기</translation>
 <translation id="6366160072964553914">일반적으로 다운로드하지 않는 파일이며 위험할 가능성이 있기 때문에 Chromium에서 이 다운로드를 차단했습니다.</translation>
 <translation id="6373523479360886564">Chromium을 제거하시겠습니까?</translation>

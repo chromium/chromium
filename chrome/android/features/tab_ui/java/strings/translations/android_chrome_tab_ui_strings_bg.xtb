@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">лилаво</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Разгъване на групата раздели „<ph name="TITLE_OF_GROUP" />“ с <ph name="TABS_COUNT_ONE" /> раздел.}other{Разгъване на групата раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="427987768447457592">Нова група раздели</translation>
+<translation id="4371591986692297148">Неактивно</translation>
 <translation id="4460014764210899310">Разгрупиране</translation>
 <translation id="4648718555153979859">Разделите ви са групирани заедно тук</translation>
 <translation id="4686942373615810936">Създадено току-що</translation>

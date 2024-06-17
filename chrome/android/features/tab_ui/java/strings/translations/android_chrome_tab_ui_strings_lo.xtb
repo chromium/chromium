@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">ສີມ່ວງ</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{ຂະຫຍາຍກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ທີ່ມີ <ph name="TABS_COUNT_ONE" /> ແຖບ.}other{ຂະຫຍາຍກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ທີ່ມີ <ph name="TABS_COUNT_MANY" /> ແຖບ.}}</translation>
 <translation id="427987768447457592">ກຸ່ມແຖບໃໝ່</translation>
+<translation id="4371591986692297148">ບໍ່ໄດ້ນຳໃຊ້</translation>
 <translation id="4460014764210899310">ຍົກເລີກການຈັດກຸ່ມ</translation>
 <translation id="4648718555153979859">ແຖບຂອງທ່ານຖືກຈັດເປັນກຸ່ມຮວມກັນຢູ່ບ່ອນນີ້</translation>
 <translation id="4686942373615810936">ຫາກໍສ້າງຕອນນີ້</translation>

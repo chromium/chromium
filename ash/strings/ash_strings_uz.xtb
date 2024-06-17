@@ -119,6 +119,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1383876407941801731">Qidiruv</translation>
 <translation id="1391102559483454063">Yoniq</translation>
 <translation id="1394698770495054737">Toʻliq fokus</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 kun oldin}other{# kun oldin}}</translation>
 <translation id="1404963891829069586">Fokus tovushlari</translation>
 <translation id="1407069428457324124">Tungi mavzu</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Sanalarga oʻtish uchun strelka tugmalaridan foydalaning.</translation>
@@ -209,6 +210,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="174102739345480129">Marker oʻchiq.</translation>
 <translation id="1743570585616704562">Barmoq izi aniqlanmadi</translation>
 <translation id="1743927604032653654">Bildirishnomani (<ph name="NOTIFICATION_TITLE" />) yigʻish</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{1 soat ichida}=1{1 soat oldin}other{# soat oldin}}</translation>
 <translation id="1746730358044914197">Matn kiritish usuli administratoringiz tomonidan sozlangan.</translation>
 <translation id="1747336645387973286">bajarish muddati: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Ekran klaviaturasi yoqildi</translation>
@@ -346,6 +348,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2359808026110333948">Davom etish</translation>
 <translation id="2360398059912971776">batareya</translation>
 <translation id="2361210043495191221">Wi-Fi tugmasi. <ph name="STATE" />.</translation>
+<translation id="236574664504281623"><ph name="SESSION_NAME" /> orqali yuborilgan</translation>
 <translation id="2367186422933365202">Chromebook hisobiga kirilmadi</translation>
 <translation id="2367972762794486313">Ilovalarni ko‘rsatish</translation>
 <translation id="2368828502825385061">Topish</translation>
@@ -506,6 +509,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Mikrofondan foydalanishga ruxsat berilsinmi?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> nutq fayllari yuklab olinmadi</translation>
+<translation id="2968761508099987738">Joriy joylashuvingiz hozirda dastaklanmaydi.</translation>
 <translation id="2970920913501714344">Ilovalar, kengaytmalar va mavzularni oʻrnating</translation>
 <translation id="2977598380246111477">Keyingi raqam</translation>
 <translation id="2985148236010982088">Barcha ilovalar</translation>
@@ -571,6 +575,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3226991577105957773">yana <ph name="COUNT" /> ta</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233611303007751344">Quvvat tejalishi faolsizlantirildi</translation>
+<translation id="3238409143297336341">Ilovalar uchun ota-ona nazoratini sozlang</translation>
 <translation id="324366796737464147">Shovqinsizlantirish</translation>
 <translation id="3249513730522716925"><ph name="WINDOW_TITLE" /> oynasi <ph name="ACTIVE_DESK" /> ish stolidan <ph name="TARGET_DESK" /> ish stoliga koʻchirildi</translation>
 <translation id="3253743281242075461">Sinf ishi turi: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -978,6 +983,7 @@ Quvvatni tejash uchun ayrim funksiyalar ishlashi cheklandi.</translation>
 <translation id="468293128311738995">Telefondagi ilovalar</translation>
 <translation id="4690510401873698237">Javon pastda</translation>
 <translation id="4696813013609194136">Ota-ona kodi bilan qurilmani qulfdan chiqarish</translation>
+<translation id="4697357603686181098">Bu masalada yordam bera olmayman. Boshqa soʻrov yuboring.</translation>
 <translation id="4702647871202761252">Maxfiylik ekrani yoniq emas</translation>
 <translation id="4706121060329443414">Keyinroq yuklab olinadi. Hozir nutq qayta ishlanishi uchun Googlega yuboriladi.</translation>
 <translation id="470644585772471629">Ranglarni akslantirish</translation>
@@ -1399,6 +1405,7 @@ Hech qanday qurilma ulanmagan.</translation>
 <translation id="6141205840878048728">Nima maqsadda fokus qilishni istaysiz?</translation>
 <translation id="6141988275892716286">Yuklanishni tasdiqlang</translation>
 <translation id="6143578372829139382">YouTubega ulashish</translation>
+<translation id="6147182561428020853">Mazkur <ph name="DEVICE_TYPE" /> qurilmasida oʻrnatilgan ilovalarni bloklash mumkin</translation>
 <translation id="6154006699632741460">Tashqi qurilmalar ishlamaydi</translation>
 <translation id="6156960295318603523">Til sozlamalari</translation>
 <translation id="615957422585914272">Ekran klaviaturasini ko‘rsatish</translation>
@@ -1899,6 +1906,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="7982878511129296052">Oʻchirilmoqda...</translation>
 <translation id="7984197416080286869">Siz juda koʻp marta urindingiz</translation>
 <translation id="798779949890829624">Bu sozlama administrator tomonidan boshqariladi</translation>
+<translation id="7989206653429884947">Koʻp marta ochilgan</translation>
 <translation id="799296642788192631">Muhim fayllarni mahkamlash mumkin. Mahkamlash uchun sichqonchani fayl ustiga suring yoki Fayllar ilovasini ochib, unga oʻng klik bosing.</translation>
 <translation id="7994370417837006925">Bir nechta hisobdan kirish</translation>
 <translation id="7995804128062002838">Ekran suratga olinmadi</translation>
@@ -2083,6 +2091,7 @@ Qurilmani oʻchirish uchun uning quvvat tugmasini biroz bosib turing.</translati
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Vaqt tugadi. Barakalla! 🎉</translation>
+<translation id="8753368202781196133">Bu til hozirda dastaklanmaydi.</translation>
 <translation id="8755498163081687682">Shaxsingizni tasdiqlang: <ph name="ORIGIN_NAME" /> bu siz ekanligingizni tasdiqlamoqchi</translation>
 <translation id="875593634123171288">VPN sozlamalarini ochish</translation>
 <translation id="8756799553341497810">Darslik yopilganda ilova dizaynini moslashni boshlash mumkin.</translation>

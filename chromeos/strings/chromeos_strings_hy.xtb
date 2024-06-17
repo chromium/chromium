@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">պաստելային դեղին</translation>
 <translation id="1056898198331236512">Զգուշացում</translation>
 <translation id="1059913517121127803">Չհաջողվեց սկսել սկանավորումը</translation>
+<translation id="1061864016440983342">Օգտագործել առանց տեղորոշման</translation>
 <translation id="1062823486781306604"><ph name="INDEX" />/<ph name="COUNT" />, <ph name="NAME" />։</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Հայտնաբերվել է հրապատ</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Այլ կարգավորումներ</translation>
 <translation id="2082932131694554252">Նշանակված ստեղն</translation>
 <translation id="2085089206770112532">Էկրանի պայծառության նվազեցում</translation>
+<translation id="2086091080968010660">Ժամանակի հիման վրա փոփոխությունները կարող են ճշգրիտ չլինել։ Միացրեք համակարգի տեղորոշման թույլտվությունը կարգավորումներում։</translation>
 <translation id="2102231663024125441">Տեքստի խմբագրում</translation>
 <translation id="2105810540595158374">Սարքը խաղային վահանակ է։</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, տարբերակ <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Վերականգնել կանխադրված կարգավորումները</translation>
 <translation id="2286454467119466181">Պարզեցված</translation>
 <translation id="2287186687001756809">Ոչ մի պատկեր չկա։ Լուսանկարներ ավելացնելու համար անցեք <ph name="LINK" />։</translation>
+<translation id="2294577623958216786">Ընթացիկ ժամանակացույցը՝ <ph name="SUNRISE" /> – <ph name="SUNSET" />։ Արևածագի և մայրամուտի ժամանակացույցն ավտոմատ թարմացնելու համար միացրեք տեղորոշման թույլտվությունը։</translation>
 <translation id="2305172810646967500">սև</translation>
 <translation id="2307344026739914387">Օգտագործել ընթացիկ բանալիների զույգը</translation>
 <translation id="2308243864813041101">Թարմացումը շարունակելու համար անջատեք USB մալուխը <ph name="DEVICE_NAME" /> սարքից</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">ստեղնաշարի պայծառություն</translation>
 <translation id="6412715219990689313">Ներկառուցված ստեղնաշար</translation>
 <translation id="6417265370957905582">Google Օգնական</translation>
+<translation id="6419454453018688975">Միացնել համակարգի տեղորոշման թույլտվությունը</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Թույլ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Անցնել հաշվի կարգավորումներ</translation>

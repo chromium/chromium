@@ -899,6 +899,7 @@ Neke su značajke ograničene radi produljenja trajanja baterije.</translation>
 <translation id="4381031910344220229">Omogućuje pristup mikrofonu za aplikaciju <ph name="APP_NAME" /> i sve aplikacije i web-lokacije s dopuštenjem za mikrofon</translation>
 <translation id="4382340674111381977">Povratak na prethodnu stranicu</translation>
 <translation id="4389184120735010762">Pritisnuli ste tipkovni prečac za usidreno povećalo. Želite li ga uključiti?</translation>
+<translation id="4394466652057229831">Kliknite desnom tipkom radi sažimanja</translation>
 <translation id="439598569299422042">Pauzirano, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Spremanje zaslonske prezentacije nije uspjelo</translation>
 <translation id="4405151984121254935">Povezani periferni uređaj nije podržan</translation>
@@ -1933,6 +1934,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8113423164597455979">Uklj., sve ap.</translation>
 <translation id="8113515504791187892">Gumb odabira za govor</translation>
 <translation id="8120151603115102514">Telefon nema zaključani zaslon. Da biste otključali Chromebook, unesite zaporku.</translation>
+<translation id="8120249852906205273">Ponovno pokreni</translation>
 <translation id="8127095419621171197">Otvaranje aplikacije Kalkulator</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8130528849632411619">Prelazak na početak dokumenta</translation>
@@ -2027,6 +2029,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="85123341071060231">Bluetooth na Chromebooku je isključen. Da biste otključali Chromebook, unesite zaporku.</translation>
 <translation id="8513108775083588393">Autom. zakret.</translation>
 <translation id="851458219935658693">Prikaži prozore s trenutačne radne površine, odabran je izborni gumb</translation>
+<translation id="851660987304951246">Upotrijebite značajku Pomozi mi čitati da biste brzo saželi sadržaj ili postavili pitanja</translation>
 <translation id="8517041960877371778">Uređaj <ph name="DEVICE_TYPE" /> možda se neće puniti dok je uključen.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Ulazom mikrofona upravlja aplikacija <ph name="APP_NAME" />}one{Ulazom mikrofona upravlja # aplikacija}few{Ulazom mikrofona upravlja # aplikacije}other{Ulazom mikrofona upravlja # aplikacija}}</translation>
 <translation id="8535393432370007982">Poništavanje poretka po boji</translation>

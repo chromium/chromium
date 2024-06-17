@@ -971,6 +971,7 @@
 <translation id="1697150536837697295">アート</translation>
 <translation id="1697686431566694143">ファイルを編集</translation>
 <translation id="1698796500103229697">お支払い方法(&amp;P)</translation>
+<translation id="1698899521169711967">カーソル ブラウジング</translation>
 <translation id="1699807488537653303">パスワード エラーを修正する</translation>
 <translation id="1700201317341192482">仮想カードを削除</translation>
 <translation id="1700517974991662022">アクセス済み</translation>
@@ -2464,6 +2465,7 @@
 <translation id="2771816809568414714">チーズ</translation>
 <translation id="2772936498786524345">スニーキー</translation>
 <translation id="2773288106548584039">従来のブラウザのサポート</translation>
+<translation id="2773621783913034737">タブを非アクティブにする</translation>
 <translation id="2773802008104670137">この種類のファイルはパソコンに危害を及ぼす可能性があります。</translation>
 <translation id="2775104091073479743">指紋を編集</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{拡張機能「<ph name="EXTENSION" />」がデバイスにアクセスしていました}=1{拡張機能「<ph name="EXTENSION" />」が {0} 個のデバイスにアクセスしています}other{拡張機能「<ph name="EXTENSION" />」が {0} 個のデバイスにアクセスしています}}</translation>
@@ -2544,6 +2546,7 @@
 <translation id="2830528677948328648">Google アカウントを管理(&amp;G)</translation>
 <translation id="2831430281393059038">デバイスはサポートされています</translation>
 <translation id="2832124733806557606">お子様はデバイスのログインやロック解除に PIN を使用できます。</translation>
+<translation id="2833144527504272627">テキスト カーソルで移動する</translation>
 <translation id="2835177225987815960">現在のスキャン設定（割り当てたスイッチや自動スキャンの速度設定など）はリセットされます。</translation>
 <translation id="2835547721736623118">音声認識サービス</translation>
 <translation id="2835761321523638096">リーディング リストのエントリの読み取りと変更</translation>
@@ -4097,6 +4100,7 @@
 <translation id="3978325380690188371">ChromeVox が有効になっている場合、固定キーは利用できません</translation>
 <translation id="3979395879372752341">新しい拡張機能が追加されました（<ph name="EXTENSION_NAME" />）</translation>
 <translation id="3979748722126423326"><ph name="NETWORKDEVICE" /> を有効にする</translation>
+<translation id="398095528354975981">これらのタブを非表示にする</translation>
 <translation id="3981058120448670012"><ph name="REMAINING_TIME" />間、付近のデバイスに「<ph name="DEVICE_NAME" />」として表示されます...</translation>
 <translation id="3981760180856053153">入力された保存形式が無効です。</translation>
 <translation id="3982375475032951137">簡単な手順でブラウザを設定できます</translation>
@@ -6284,6 +6288,7 @@
 <translation id="5642508497713047">CRL の署名者</translation>
 <translation id="5643191124441701136">セキュリティ コードはカードの表面に記載されています</translation>
 <translation id="5643321261065707929">従量制ネットワーク</translation>
+<translation id="5643717184207603910">パフォーマンスを高速に保つ</translation>
 <translation id="5646376287012673985">保存先</translation>
 <translation id="5646558797914161501">ビジネスマン</translation>
 <translation id="5648021990716966815">マイク差込口</translation>
@@ -6388,6 +6393,7 @@
 <translation id="5733109311583381874">よく使う単語を単語リストに登録して、変換候補をカスタマイズします</translation>
 <translation id="5734362860645681824">通信</translation>
 <translation id="5734697361979786483">ファイル共有を追加</translation>
+<translation id="5735513236153491131">今すぐ向上</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{このデータまたはお使いのデバイスは、組織のセキュリティ ポリシーの一部に違反しています。修正が必要な箇所を管理者にご確認ください。}=1{このファイルまたはお使いのデバイスは、組織のセキュリティ ポリシーの一部に違反しています。修正が必要な箇所を管理者にご確認ください。}other{これらのファイルは、組織のセキュリティ ポリシーの一部に違反しています。修正が必要な箇所を管理者にご確認ください。}}</translation>
 <translation id="5738093759615225354">パソコンにログインするには、このパスキーが必要です</translation>
 <translation id="5739017626473506901">ログインして、<ph name="USER_NAME" /> さんの学校アカウントの追加を許可してください</translation>
@@ -8197,6 +8203,7 @@
 <translation id="7114054701490058191">パスワードが一致しません</translation>
 <translation id="7114648273807173152">Smart Lock を使用して Google アカウントにログインするには、[設定] &gt; [接続済みのデバイス] &gt; [スマートフォン] &gt; [Smart Lock] に移動します。</translation>
 <translation id="7115361495406486998">連絡先が見つかりませんでした</translation>
+<translation id="7115731767122970828">今すぐ向上</translation>
 <translation id="7116554090938189816">プリンタの SSL 証明書の有効期限が切れています。プリンタを再起動してもう一度お試しください。</translation>
 <translation id="7117228822971127758">しばらくしてからもう一度お試しください</translation>
 <translation id="7118268675952955085">スクリーンショット</translation>
@@ -8352,6 +8359,7 @@
 <translation id="7245628041916450754"><ph name="WIDTH" />x<ph name="HEIGHT" />（最適）</translation>
 <translation id="7246230585855757313">セキュリティ キーを挿入し直して、もう一度お試しください</translation>
 <translation id="724835896049478274">Android アプリで使用できるアカウント</translation>
+<translation id="7248802599439396696">タブを非アクティブにする</translation>
 <translation id="7249197363678284330">アドレスバーでこの設定を変更できます。</translation>
 <translation id="7249764475759804559">ファイルを開く際にオプションとしてこのアプリを含める</translation>
 <translation id="7250616558727237648">共有先のデバイスから応答がありませんでした。もう一度お試しください。</translation>
@@ -9945,6 +9953,7 @@
 <translation id="8390392581097975659">スキャナ ソフトウェアをインストールしています</translation>
 <translation id="8390449457866780408">サーバーを使用できません。</translation>
 <translation id="8391218455464584335">レコード</translation>
+<translation id="8391918125842702622">パフォーマンスの問題に関するアラート</translation>
 <translation id="8392726714909453725">「選択して読み上げ」の設定</translation>
 <translation id="8393511274964623038">プラグインを停止</translation>
 <translation id="839363317075970734">Bluetooth デバイスの詳細</translation>
@@ -10045,6 +10054,7 @@
 <translation id="8466052016039127321">前のセッションを再開できません</translation>
 <translation id="8467326454809944210">別の言語を選択</translation>
 <translation id="8468087214092422866">Bluetooth デバイスの検出が許可されていないサイト</translation>
+<translation id="8469863130477774813">パフォーマンスを向上できます</translation>
 <translation id="8470513973197838199"><ph name="ORIGIN" /> 用に保存されているパスワード</translation>
 <translation id="8471525937465764768">多くのサイトは、ドキュメントを印刷したりストレージ デバイスに保存するために USB デバイスに接続します。</translation>
 <translation id="8471959340398751476">割引情報の取得はオフになっています。カスタマイズ メニューでオンにすることができます</translation>

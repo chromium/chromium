@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">Violetti</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Laajenna välilehtiryhmä <ph name="TITLE_OF_GROUP" />, jossa on <ph name="TABS_COUNT_ONE" /> välilehti.}other{Laajenna välilehtiryhmä <ph name="TITLE_OF_GROUP" />, jossa on <ph name="TABS_COUNT_MANY" /> välilehteä.}}</translation>
 <translation id="427987768447457592">Uusi välilehtiryhmä</translation>
+<translation id="4371591986692297148">Ei aktiivinen</translation>
 <translation id="4460014764210899310">Poista ryhmittely</translation>
 <translation id="4648718555153979859">Välilehtesi on koottu tänne</translation>
 <translation id="4686942373615810936">Luotiin juuri nyt</translation>

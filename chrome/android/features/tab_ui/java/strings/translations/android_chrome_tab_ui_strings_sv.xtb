@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">Lila</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Utöka flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_ONE" /> flik.}other{Utöka flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> flikar.}}</translation>
 <translation id="427987768447457592">Ny flikgrupp</translation>
+<translation id="4371591986692297148">Inaktiv</translation>
 <translation id="4460014764210899310">Ta bort gruppering</translation>
 <translation id="4648718555153979859">Dina flikar samlas här</translation>
 <translation id="4686942373615810936">Skapades just nu</translation>

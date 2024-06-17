@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">Пурпуровий</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Розгорнути групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_ONE" /> вкладкою.}one{Розгорнути групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладкою.}few{Розгорнути групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладками.}many{Розгорнути групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладками.}other{Розгорнути групу "<ph name="TITLE_OF_GROUP" />" з <ph name="TABS_COUNT_MANY" /> вкладки.}}</translation>
 <translation id="427987768447457592">Нова група вкладок</translation>
+<translation id="4371591986692297148">неактивна</translation>
 <translation id="4460014764210899310">Розгрупувати</translation>
 <translation id="4648718555153979859">Тут згруповано ваші вкладки</translation>
 <translation id="4686942373615810936">Щойно створено</translation>

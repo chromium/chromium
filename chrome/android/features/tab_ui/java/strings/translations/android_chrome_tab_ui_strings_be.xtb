@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">Фіялетавы</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Разгарнуць групу ўкладак "<ph name="TITLE_OF_GROUP" />". У ёй <ph name="TABS_COUNT_ONE" /> укладка.}one{Разгарнуць групу ўкладак "<ph name="TITLE_OF_GROUP" />". У ёй <ph name="TABS_COUNT_MANY" /> укладка.}few{Разгарнуць групу ўкладак "<ph name="TITLE_OF_GROUP" />". У ёй <ph name="TABS_COUNT_MANY" /> укладкі.}many{Разгарнуць групу ўкладак "<ph name="TITLE_OF_GROUP" />". У ёй <ph name="TABS_COUNT_MANY" /> укладак.}other{Разгарнуць групу ўкладак "<ph name="TITLE_OF_GROUP" />". У ёй <ph name="TABS_COUNT_MANY" /> укладкі.}}</translation>
 <translation id="427987768447457592">Новая група ўкладак</translation>
+<translation id="4371591986692297148">неактыўная</translation>
 <translation id="4460014764210899310">Разгрупаваць</translation>
 <translation id="4648718555153979859">Укладкі згрупаваны тут</translation>
 <translation id="4686942373615810936">Створана толькі што</translation>

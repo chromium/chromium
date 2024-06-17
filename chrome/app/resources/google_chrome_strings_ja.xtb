@@ -250,6 +250,7 @@
 <translation id="4561051373932531560">Google Chrome では、ウェブサイト上の電話番号をクリックするだけで Skype で通話を発信できます。</translation>
 <translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" /> としてログインしています。ログインしているすべてのデバイスで、ブックマーク、履歴、その他の設定にアクセスできます。</translation>
 <translation id="4571503333518166079">Chrome の通知設定に移動</translation>
+<translation id="4575717501879784448">Chrome では、これらのタブを非アクティブにして、ブラウジング環境を改善し、リソースを解放できます。</translation>
 <translation id="459622048091363950">Chrome にアクセスを許可すると、ウェブサイトからアクセスをリクエストできるようになります。</translation>
 <translation id="4600710005438004015">Chrome を最新版に更新できませんでした。新しい機能とセキュリティ修正は適用されていません。</translation>
 <translation id="4624065194742029982">Chrome のシークレット モード</translation>
@@ -281,6 +282,7 @@
 <translation id="4970761609246024540">Chrome プロフィールへようこそ</translation>
 <translation id="4970880042055371251">Chrome OS のバージョン</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="4997044641749333913">Chrome では、これらのタブを非アクティブにして、ブラウジング環境を改善し、処理を高速に保つことができます。</translation>
 <translation id="5003967926796347400">[Google パスワード マネージャー] をクリックします</translation>
 <translation id="5120334927898581447">他の Google サービスにログインしたときに Chrome にログインする</translation>
 <translation id="5126049312684316860">アクセスする可能性の高いページがさらに多くプリロードされ、該当のページにアクセスしたときにページの読み込み速度が向上します</translation>
@@ -341,6 +343,7 @@
 <translation id="608006075545470555">このブラウザに仕事用プロファイルを追加</translation>
 <translation id="6097822892606850415">AI のサポートで文書を作成できます</translation>
 <translation id="6113794647360055231">進化する Chrome</translation>
+<translation id="6135456723633883042">これらのタブでは追加のリソースが使用されています。パフォーマンスを改善するには、Chrome でこれらのタブを非アクティブにしてください。</translation>
 <translation id="6145313976051292476">Chrome で PDF を開く</translation>
 <translation id="6157638032135951407"><ph name="TIMEOUT_DURATION" /> 使用しなかったため、Chrome のデータは組織によって削除されます。これには、履歴、自動入力、ダウンロードが含まれます。</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

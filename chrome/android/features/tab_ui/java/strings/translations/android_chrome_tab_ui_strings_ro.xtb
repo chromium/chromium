@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">Mov</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Extinde grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_ONE" /> filă.}few{Extinde grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> file.}other{Extinde grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> de file.}}</translation>
 <translation id="427987768447457592">Grup de file nou</translation>
+<translation id="4371591986692297148">Inactiv</translation>
 <translation id="4460014764210899310">Anulați gruparea</translation>
 <translation id="4648718555153979859">Filele tale sunt grupate aici</translation>
 <translation id="4686942373615810936">Creat chiar acum</translation>

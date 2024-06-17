@@ -155,7 +155,7 @@ If '<ph name="SERVICE_SCRIPT_NAME" />' is already ticked, untick it and then tic
 <translation id="7970576581263377361">Authentication failed. Please sign in to Chromium again.</translation>
 <translation id="7981525049612125370">The remote session has expired.</translation>
 <translation id="8038111231936746805">(default)</translation>
-<translation id="8041089156583427627">Send Feedback</translation>
+<translation id="8041089156583427627">Send feedback</translation>
 <translation id="8060029310790625334">Help Centre</translation>
 <translation id="806699900641041263">Connecting to <ph name="HOSTNAME" /></translation>
 <translation id="8073845705237259513">To use Chrome Remote Desktop, you'll need to add a Google Account to your device.</translation>

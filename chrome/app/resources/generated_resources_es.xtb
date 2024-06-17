@@ -972,6 +972,7 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1697150536837697295">Arte</translation>
 <translation id="1697686431566694143">Editar archivo</translation>
 <translation id="1698796500103229697">&amp;Métodos de pago</translation>
+<translation id="1698899521169711967">Navegación por cursor de texto</translation>
 <translation id="1699807488537653303">Corregir error de contraseña</translation>
 <translation id="1700201317341192482">Quitar tu tarjeta virtual</translation>
 <translation id="1700517974991662022">Visitado</translation>
@@ -2471,6 +2472,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2771816809568414714">Queso</translation>
 <translation id="2772936498786524345">Ninja</translation>
 <translation id="2773288106548584039">Compatibilidad con navegadores antiguos</translation>
+<translation id="2773621783913034737">Inactivar pestañas</translation>
 <translation id="2773802008104670137">Este tipo de archivo puede dañar tu ordenador.</translation>
 <translation id="2775104091073479743">Editar huellas digitales</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{La extensión <ph name="EXTENSION" /> estaba accediendo a dispositivos}=1{La extensión <ph name="EXTENSION" /> está accediendo a {0} dispositivo}other{La extensión <ph name="EXTENSION" /> está accediendo a {0} dispositivos}}</translation>
@@ -2551,6 +2553,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2830528677948328648">Gestionar tu cuenta de &amp;Google</translation>
 <translation id="2831430281393059038">Dispositivo admitido</translation>
 <translation id="2832124733806557606">Tu hijo/a puede usar el PIN para iniciar sesión en el dispositivo o para desbloquearlo.</translation>
+<translation id="2833144527504272627">Desplazarse con el cursor de texto</translation>
 <translation id="2835177225987815960">Se borrará la configuración de búsqueda actual, incluyendo todos los interruptores asignados y las preferencias de velocidad de la búsqueda automática.</translation>
 <translation id="2835547721736623118">Servicio de reconocimiento de voz</translation>
 <translation id="2835761321523638096">Leer y cambiar entradas en la lista de lectura</translation>
@@ -4105,6 +4108,7 @@ Puede tratarse de información sobre el software instalado, los archivos, tu nav
 <translation id="3978325380690188371">Las teclas persistentes no están disponibles cuando ChromeVox está activado</translation>
 <translation id="3979395879372752341">Nueva extensión añadida (<ph name="EXTENSION_NAME" />)</translation>
 <translation id="3979748722126423326">Habilitar <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">Ocultar estas pestañas</translation>
 <translation id="3981058120448670012">Visible para los dispositivos cercanos con el nombre <ph name="DEVICE_NAME" /> durante <ph name="REMAINING_TIME" />...</translation>
 <translation id="3981760180856053153">Tipo de almacenamiento no válido</translation>
 <translation id="3982375475032951137">Configura tu navegador con unos sencillos pasos</translation>
@@ -6296,6 +6300,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5642508497713047">Firmante de la lista de revocación de certificados</translation>
 <translation id="5643191124441701136">Tu código de seguridad está en la parte delantera de tu tarjeta</translation>
 <translation id="5643321261065707929">Red de uso medido</translation>
+<translation id="5643717184207603910">Mantén un rendimiento rápido</translation>
 <translation id="5646376287012673985">Ubicación</translation>
 <translation id="5646558797914161501">Hombre de negocios</translation>
 <translation id="5648021990716966815">Conector jack para micrófono</translation>
@@ -6400,6 +6405,7 @@ Los permisos que hayas dado a sitios web y aplicaciones se pueden aplicar a esta
 <translation id="5733109311583381874">Añade tus propias palabras a los diccionarios del usuario para personalizar los candidatos de conversión.</translation>
 <translation id="5734362860645681824">Comunicaciones</translation>
 <translation id="5734697361979786483">Añadir sistema de archivos compartidos</translation>
+<translation id="5735513236153491131">Mejorar ahora</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{Estos datos o tu dispositivo no cumplen algunas de las políticas de seguridad de tu organización. Consulta con tu administrador qué debes corregir.}=1{Este archivo o tu dispositivo no cumplen algunas de las políticas de seguridad de tu organización. Consulta con tu administrador qué debes corregir.}other{Estos archivos no cumplen algunas de las políticas de seguridad de tu organización. Consulta con tu administrador qué debes corregir.}}</translation>
 <translation id="5738093759615225354">Necesitas esta llave de acceso para iniciar sesión en tu ordenador</translation>
 <translation id="5739017626473506901">Inicia sesión para ayudar a <ph name="USER_NAME" /> a añadir una cuenta de centro educativo</translation>
@@ -8211,6 +8217,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7114054701490058191">Las contraseñas no coinciden</translation>
 <translation id="7114648273807173152">Si quieres usar Smart Lock para iniciar sesión en tu cuenta de Google, ve a Configuración &gt; Dispositivos conectados &gt; Tu teléfono &gt; Smart Lock.</translation>
 <translation id="7115361495406486998">No hay contactos disponibles</translation>
+<translation id="7115731767122970828">Mejorar ahora</translation>
 <translation id="7116554090938189816">El certificado SSL de la impresora ha caducado. Reinicia la impresora e inténtalo de nuevo.</translation>
 <translation id="7117228822971127758">Inténtalo de nuevo más tarde</translation>
 <translation id="7118268675952955085">captura de pantalla</translation>
@@ -8366,6 +8373,7 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (recomendado)</translation>
 <translation id="7246230585855757313">Vuelve a introducir la llave de seguridad e inténtalo de nuevo.</translation>
 <translation id="724835896049478274">Cuentas disponibles para aplicaciones Android</translation>
+<translation id="7248802599439396696">Inactivar pestañas</translation>
 <translation id="7249197363678284330">Cambia este ajuste en la barra de direcciones.</translation>
 <translation id="7249764475759804559">Incluir esta aplicación como opción al abrir archivos</translation>
 <translation id="7250616558727237648">El dispositivo con el que estás compartiendo contenido no responde. Inténtalo de nuevo.</translation>
@@ -9961,6 +9969,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8390392581097975659">Instalando software del escáner</translation>
 <translation id="8390449457866780408">Servidor no disponible</translation>
 <translation id="8391218455464584335">Vinilo</translation>
+<translation id="8391918125842702622">Alerta de problema de rendimiento</translation>
 <translation id="8392726714909453725">Configuración de Enunciar selección</translation>
 <translation id="8393511274964623038">Detener complemento</translation>
 <translation id="839363317075970734">Información del dispositivo Bluetooth</translation>
@@ -10061,6 +10070,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8466052016039127321">No se puede reanudar la sesión anterior</translation>
 <translation id="8467326454809944210">Elegir otro idioma</translation>
 <translation id="8468087214092422866">Sin permiso para buscar dispositivos Bluetooth</translation>
+<translation id="8469863130477774813">Mejora de rendimiento disponible</translation>
 <translation id="8470513973197838199">Contraseñas guardadas de <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Los sitios se suelen conectar a dispositivos USB para usarlos en funciones como la impresión de documentos o el guardado de contenido en dispositivos de almacenamiento.</translation>
 <translation id="8471959340398751476">Los descuentos están desactivados. Puedes activarlos en el menú Personalizar.</translation>

@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">kuning pastel</translation>
 <translation id="1056898198331236512">Amaran</translation>
 <translation id="1059913517121127803">Tidak dapat memulakan pengimbasan</translation>
+<translation id="1061864016440983342">Gunakan tanpa lokasi</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> daripada <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Tembok api dikesan</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Lagi tetapan</translation>
 <translation id="2082932131694554252">Serahkan kunci papan kekunci</translation>
 <translation id="2085089206770112532">Kurangkan kecerahan paparan</translation>
+<translation id="2086091080968010660">Perubahan berdasarkan masa mungkin tidak tepat. Hidupkan akses lokasi sistem dalam tetapan.</translation>
 <translation id="2102231663024125441">Pengeditan teks</translation>
 <translation id="2105810540595158374">Peranti ialah pengawal permainan.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versi <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Pulihkan lalai</translation>
 <translation id="2286454467119466181">Ringkas</translation>
 <translation id="2287186687001756809">Tiada imej tersedia. Untuk menambah foto, lawati <ph name="LINK" /></translation>
+<translation id="2294577623958216786">Jadual semasa ditetapkan kepada <ph name="SUNRISE" />-<ph name="SUNSET" />. Untuk mengemaskinikan jadual matahari terbenam dan matahari terbit secara automatik, hidupkan akses lokasi sistem.</translation>
 <translation id="2305172810646967500">hitam</translation>
 <translation id="2307344026739914387">Gunakan pasangan kunci semasa</translation>
 <translation id="2308243864813041101">Cabut kabel USB <ph name="DEVICE_NAME" /> untuk meneruskan proses kemaskinian</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">kecerahan papan kekunci</translation>
 <translation id="6412715219990689313">Papan kekunci terbina dalam</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="6419454453018688975">Hidupkan akses lokasi sistem</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Lemah (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Pergi ke tetapan akaun</translation>

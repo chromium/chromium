@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">Pers</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Vou <ph name="TITLE_OF_GROUP" />-oortjiegroep met <ph name="TABS_COUNT_ONE" /> oortjie uit.}other{Vou <ph name="TITLE_OF_GROUP" />-oortjiegroep met <ph name="TABS_COUNT_MANY" /> oortjies uit.}}</translation>
 <translation id="427987768447457592">Nuwe oortjiegroep</translation>
+<translation id="4371591986692297148">Onaktief</translation>
 <translation id="4460014764210899310">Ongroepeer</translation>
 <translation id="4648718555153979859">Jou oortjies word hier saamgegroepeer</translation>
 <translation id="4686942373615810936">Pas geskep</translation>

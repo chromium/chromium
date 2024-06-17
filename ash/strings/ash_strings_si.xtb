@@ -903,6 +903,7 @@
 <translation id="4381031910344220229">මෙය <ph name="APP_NAME" /> සඳහා මයික්‍රෆෝන ප්‍රවේශයට සහ මයික්‍රෆෝන අවසරය ඇති සියලු යෙදුම් සහ වෙබ් අඩවිවලට ඉඩ දෙයි</translation>
 <translation id="4382340674111381977">පෙර පිටුවට ආපසු යන්න</translation>
 <translation id="4389184120735010762">ඔබ ඩොක් කළ විශාලකය සඳහා යතුරුපුවරු කෙටිමඟ ඔබා ඇත. ඔබට එය සක්‍රීය කළ යුතුද?</translation>
+<translation id="4394466652057229831">සාරාංශ කිරීමට දකුණු ක්ලික් කරන්න</translation>
 <translation id="439598569299422042"><ph name="SIZE_INFO" />, විරාම කරන ලදි</translation>
 <translation id="440113666232554208">තිරසටහන සුරැකිය නොහැකිය</translation>
 <translation id="4405151984121254935">සම්බන්ධිත උපාංග වර්ගයට සහාය නොදක්වයි</translation>
@@ -1939,6 +1940,7 @@
 <translation id="8113423164597455979">සියලු යෙදුම් සක්‍රිය.</translation>
 <translation id="8113515504791187892">කථා-කිරීමට-තෝරන්න බොත්තම</translation>
 <translation id="8120151603115102514">ඔබගේ දුරකථනයට අගුලු තිරයක් නොමැත. ඔබගේ Chromebook අගුලු හැරීමට, මුරපදය ඇතුළු කරන්න.</translation>
+<translation id="8120249852906205273">යළි අරඹන්න</translation>
 <translation id="8127095419621171197">ගණක යෙදුම විවෘත කරන්න</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8130528849632411619">ලේඛනයේ ආරම්භයට යන්න</translation>
@@ -2033,6 +2035,7 @@
 <translation id="85123341071060231">ඔබගේ Chromebook හි බ්ලූටූත් ක්‍රියාවිරහිතයි. ඔබගේ Chromebook අගුලු හැරීමට, මුරපදය ඇතුළු කරන්න.</translation>
 <translation id="8513108775083588393">ස්වයංක්‍රීය කරකැවීම</translation>
 <translation id="851458219935658693">වත්මන් මේසයෙන් කවුළු පෙන්වයි, රේඩියෝ බොත්තම තෝරා ගන්නා ලදී</translation>
+<translation id="851660987304951246">අන්තර්ගතය ක්‍ෂණිකව සාරාංශ කිරීමට හෝ ප්‍රශ්න ඇසීමට මට කියවීමට උදවු කරන්න භාවිත කරන්න</translation>
 <translation id="8517041960877371778">ඔබගේ <ph name="DEVICE_TYPE" /> සක්‍රියව පවතින විට එය ආරෝපණය නොවනු ඇත.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{මයික් ආදානය <ph name="APP_NAME" /> මගින් පාලනය වේ}one{මයික් ආදානය යෙදුම් #කින් පාලනය වේ}other{මයික් ආදානය යෙදුම් #කින් පාලනය වේ}}</translation>
 <translation id="8535393432370007982">වර්ණය අනුව අනුපිළිවෙලට සැකසීමේ පිළිවෙළ පසුගමනය කරන්න</translation>

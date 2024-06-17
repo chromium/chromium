@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">მეწამული</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{ჩანართების <ph name="TABS_COUNT_ONE" />-ჩანართიანი ჯგუფის „<ph name="TITLE_OF_GROUP" />“ გაფართოება.}other{ჩანართების <ph name="TABS_COUNT_MANY" />-ჩანართიანი ჯგუფის „<ph name="TITLE_OF_GROUP" />“ გაფართოება.}}</translation>
 <translation id="427987768447457592">ჩანართების ახალი ჯგუფი</translation>
+<translation id="4371591986692297148">არააქტიური</translation>
 <translation id="4460014764210899310">დაჯგუფების გაუქმება</translation>
 <translation id="4648718555153979859">თქვენი ჩანართები აქ დაჯგუფებულია</translation>
 <translation id="4686942373615810936">შეიქმნა ახლახან</translation>

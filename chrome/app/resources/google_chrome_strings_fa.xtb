@@ -253,6 +253,7 @@
 <translation id="4561051373932531560">‏Google Chrome به شما اجازه می‌دهد بر روی شماره تلفن روی وب کلیک کرده و از طریق Skype تماس بگیرید!</translation>
 <translation id="4567424176335768812">با حساب <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم شده‌اید. اکنون در همه دستگاه‌هایی که با آنها به سیستم وارد شده‌اید می‌توانید به نشانک‌ها، سابقه و دیگر تنظیماتتان دسترسی داشته باشید.</translation>
 <translation id="4571503333518166079">‏رفتن به تنظیمات اعلان Chrome</translation>
+<translation id="4575717501879784448">‏‫Chrome می‌تواند این برگه‌ها را غیرفعال کند تا تجربه مرور شما را بهبود بخشد و منابع را آزاد کند.</translation>
 <translation id="459622048091363950">‏وقتی Chrome دسترسی داشته باشد، وب‌سایت‌ها می‌توانند مجوز دسترسی درخواست کنند.</translation>
 <translation id="4600710005438004015">‏Chrome به جدیدترین نسخه به‌روزرسانی نشد، بنابراین قابلیت‌های جدید و رفع اشکال‌های امنیتی را ندارید.</translation>
 <translation id="4624065194742029982">‏حالت ناشناس Chrome</translation>
@@ -284,6 +285,7 @@
 <translation id="4970761609246024540">‏به نمایه‌های Chrome خوش‌آمدید</translation>
 <translation id="4970880042055371251">‏نسخه ChromeOS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="4997044641749333913">‏‫Chrome می‌تواند این برگه‌ها را غیرفعال کند تا تجربه مرور شما را بهبود بخشد و سرعت بالا را حفظ کند.</translation>
 <translation id="5003967926796347400">‏روی «مدیر گذرواژه Google» کلیک کنید</translation>
 <translation id="5120334927898581447">‏ورود به سیستم Chrome هنگام وارد شدن به سیستم دیگر سرویس‌های Google</translation>
 <translation id="5126049312684316860">‏Chrome صفحه‌های بیشتری را که احتمالاً از آن‌ها بازدید خواهید کرد پیش‌بارگیری می‌کند تا وقتی از آن‌ها بازدید می‌کنید سریع‌تر بار شوند</translation>
@@ -344,6 +346,7 @@
 <translation id="608006075545470555">افزودن نمایه کاری به این مرورگر</translation>
 <translation id="6097822892606850415">با کمک هوش مصنوعی، با اعتماد به‌نفس بیشتری بنویسید</translation>
 <translation id="6113794647360055231">‏Chrome اکنون بهتر شده است</translation>
+<translation id="6135456723633883042">‏این برگه‌ها از منابع بیشتری استفاده می‌کنند. برای بهبود عملکرد، اجازه دهید Chrome آن‌ها را غیرفعال کند.</translation>
 <translation id="6145313976051292476">‏بازکردن فایل‌های PDF در Chrome</translation>
 <translation id="6157638032135951407">‏اگر <ph name="TIMEOUT_DURATION" /> از Chrome استفاده نشود، سازمانتان داده‌های آن را حذف می‌کند. این داده‌ها می‌تواند شامل سابقه، تکمیل خودکار، و بارگیری‌ها شود.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

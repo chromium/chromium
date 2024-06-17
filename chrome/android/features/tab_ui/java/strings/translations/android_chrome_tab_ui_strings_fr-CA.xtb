@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">Mauve</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Développer le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Développer le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Développer le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="427987768447457592">Nouveau groupe d'onglets</translation>
+<translation id="4371591986692297148">Inactif</translation>
 <translation id="4460014764210899310">Dégrouper</translation>
 <translation id="4648718555153979859">Vos onglets sont regroupés ici</translation>
 <translation id="4686942373615810936">Créé à l'instant</translation>

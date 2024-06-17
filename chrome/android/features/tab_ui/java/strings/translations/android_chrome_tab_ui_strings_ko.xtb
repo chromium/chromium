@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">보라색</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{탭 <ph name="TABS_COUNT_ONE" />개가 포함된 <ph name="TITLE_OF_GROUP" /> 탭 그룹을 펼칩니다.}other{탭 <ph name="TABS_COUNT_MANY" />개가 포함된 <ph name="TITLE_OF_GROUP" /> 탭 그룹을 펼칩니다.}}</translation>
 <translation id="427987768447457592">새 탭 그룹</translation>
+<translation id="4371591986692297148">비활성</translation>
 <translation id="4460014764210899310">그룹 해제</translation>
 <translation id="4648718555153979859">탭이 여기에서 그룹화됩니다.</translation>
 <translation id="4686942373615810936">방금 생성됨</translation>

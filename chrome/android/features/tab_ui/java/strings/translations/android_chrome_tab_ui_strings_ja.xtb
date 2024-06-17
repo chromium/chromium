@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">パープル</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TITLE_OF_GROUP" /> タブグループの <ph name="TABS_COUNT_ONE" /> 個のタブを展開します。}other{<ph name="TITLE_OF_GROUP" /> タブグループの <ph name="TABS_COUNT_MANY" /> 個のタブを展開します。}}</translation>
 <translation id="427987768447457592">新しいタブグループ</translation>
+<translation id="4371591986692297148">無効</translation>
 <translation id="4460014764210899310">グループを解除</translation>
 <translation id="4648718555153979859">タブはここにグループ化されます</translation>
 <translation id="4686942373615810936">作成: たった今</translation>

@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">Lila</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{I-expand ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_ONE" /> tab.}one{I-expand ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> tab.}other{I-expand ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> na tab.}}</translation>
 <translation id="427987768447457592">Bagong grupo ng tab</translation>
+<translation id="4371591986692297148">Hindi Aktibo</translation>
 <translation id="4460014764210899310">I-ungroup</translation>
 <translation id="4648718555153979859">Magkakasama sa pangkat ang iyong mga tab dito</translation>
 <translation id="4686942373615810936">Kakagawa lang</translation>

@@ -122,6 +122,7 @@ Vaši se podaci šifriraju vašom šifrom. Unesite je da biste upotrebljavali i 
 
 Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromiuma na svom računu<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Otvara stranicu postavki načina plaćanja u Chromiumu.</translation>
+<translation id="458786853569524949">Sad možete koristiti Chromium svaki put kad dodirnete veze u e-porukama, dokumentima i drugim aplikacijama.</translation>
 <translation id="459080529287102949">Pretraživanje slika u Chromiumu</translation>
 <translation id="4633738821577273991">Nabavite poboljšano sigurno pregledavanje i za ovaj profil u Chromiumu</translation>
 <translation id="4638625642619341392">Preuzmite Chromium ovdje.</translation>
@@ -288,6 +289,7 @@ Vaše šifrirane podatke može pročitati samo osoba koja ima vašu šifru. Šif
 Vaši su podaci šifrirani vašom šifrom <ph name="TIME" /> Unesite je da biste upotrebljavali i spremali podatke Chromiuma na svojem Google računu.</translation>
 <translation id="9022552996538154597">Prijava na Chromium</translation>
 <translation id="9050790730841755540">Upotrebljavajte Chromium svaki put kad dodirnete veze u drugim aplikacijama.</translation>
+<translation id="9057082013386654559">Koristi Chromium za iPad prema zadanim postavkama</translation>
 <translation id="9059693977935746710">Nećete morati pamtiti tu zaporku. Spremit će se u Upravitelj zaporki za <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium je zastario</translation>
 <translation id="9110075932708282655">Koristi Chromium prema zadanim postavkama</translation>

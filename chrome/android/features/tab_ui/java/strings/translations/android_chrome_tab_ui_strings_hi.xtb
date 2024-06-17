@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">बैंगनी</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> टैब वाले टैब ग्रुप को बड़ा करें. इसका नाम <ph name="TITLE_OF_GROUP" /> है.}one{<ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को बड़ा करें. इसका नाम <ph name="TITLE_OF_GROUP" /> है.}other{<ph name="TABS_COUNT_MANY" /> टैब वाले टैब ग्रुप को बड़ा करें. इसका नाम <ph name="TITLE_OF_GROUP" /> है.}}</translation>
 <translation id="427987768447457592">नया टैब ग्रुप</translation>
+<translation id="4371591986692297148">चालू नहीं है</translation>
 <translation id="4460014764210899310">ग्रुप से अलग करें</translation>
 <translation id="4648718555153979859">यहां पर आपके टैब एक ग्रुप में रखे जाते हैं</translation>
 <translation id="4686942373615810936">अभी-अभी बनाया गया</translation>

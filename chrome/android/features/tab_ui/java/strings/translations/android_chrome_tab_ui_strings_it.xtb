@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">Viola</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> scheda.}other{Espandi il gruppo di schede <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> schede.}}</translation>
 <translation id="427987768447457592">Nuovo gruppo di schede</translation>
+<translation id="4371591986692297148">non attivo</translation>
 <translation id="4460014764210899310">Separa</translation>
 <translation id="4648718555153979859">Le schede sono raggruppate qui</translation>
 <translation id="4686942373615810936">Creato un attimo fa</translation>

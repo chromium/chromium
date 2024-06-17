@@ -122,6 +122,7 @@ Podaci se šifruju pomoću pristupne fraze. Unesite je da biste koristili i sa�
 
 Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chromium podatke na nalogu<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Otvara stranicu Podešavanje načina plaćanja u Chromium-u.</translation>
+<translation id="458786853569524949">Sada možete da koristite Chromium svaki put kada dodirnete linkove u imejlovima, dokumentima i drugim aplikacijama.</translation>
 <translation id="459080529287102949">Pretražite vizuelni materijal u Chromium-u</translation>
 <translation id="4633738821577273991">Nabavite poboljšano bezbedno pregledanje i za ovaj Chromium profil</translation>
 <translation id="4638625642619341392">Preuzmite Chromium ovde.</translation>
@@ -288,6 +289,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 Podaci su šifrovani pomoću pristupne fraze <ph name="TIME" />. Unesite je da biste koristili i sačuvali Chromium podatke na Google nalogu.</translation>
 <translation id="9022552996538154597">Prijavljivanje na Chromium</translation>
 <translation id="9050790730841755540">Koristite Chromium svaki put kada dodirujete linkove u drugim aplikacijama.</translation>
+<translation id="9057082013386654559">Podrazumevano koristite Chromium za iPad</translation>
 <translation id="9059693977935746710">Ne morate da zapamtite ovu lozinku. Čuva se u Menadžeru lozinki za <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium je zastareo</translation>
 <translation id="9110075932708282655">Podrazumevano koristite Chromium</translation>

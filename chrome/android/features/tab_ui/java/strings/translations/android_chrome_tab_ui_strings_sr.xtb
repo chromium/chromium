@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">Љубичаста</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Проширите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_ONE" /> картицом.}one{Проширите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картицом.}few{Проширите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картице.}other{Проширите групу картица <ph name="TITLE_OF_GROUP" /> са <ph name="TABS_COUNT_MANY" /> картица.}}</translation>
 <translation id="427987768447457592">Нова група картица</translation>
+<translation id="4371591986692297148">Неактивно</translation>
 <translation id="4460014764210899310">Раздвоји</translation>
 <translation id="4648718555153979859">Картице су груписане заједно овде</translation>
 <translation id="4686942373615810936">Направљено је малопре</translation>

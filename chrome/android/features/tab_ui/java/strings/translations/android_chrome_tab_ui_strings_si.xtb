@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">දම්</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> පටිත්තක් සමග <ph name="TITLE_OF_GROUP" /> පටිති සමූහය දිග හරින්න.}one{පටිති <ph name="TABS_COUNT_MANY" />ක් සමග <ph name="TITLE_OF_GROUP" /> පටිති සමූහය දිග හරින්න.}other{පටිති <ph name="TABS_COUNT_MANY" />ක් සමග <ph name="TITLE_OF_GROUP" /> පටිති සමූහය දිග හරින්න.}}</translation>
 <translation id="427987768447457592">නව පටිති සමූහය</translation>
+<translation id="4371591986692297148">අක්‍රිය</translation>
 <translation id="4460014764210899310">කණ්ඩායම් නොකරන්න</translation>
 <translation id="4648718555153979859">ඔබේ පටිති මෙහි එකට කණ්ඩායම් කෙරේ</translation>
 <translation id="4686942373615810936">මේ දැන් තනන ලදි</translation>

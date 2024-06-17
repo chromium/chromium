@@ -532,6 +532,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="371398631992790800">Bukmarklarni yashirish</translation>
 <translation id="37207012422556617">Qidiruv trendlari</translation>
 <translation id="3725081662140949903">Boshqalar parolingizni ishlatmasligi uchun <ph name="APP" /> ilovasini ochib, parolni almashtiring</translation>
+<translation id="372676576864368480">Karta raqamini (<ph name="LAST_DIGITS" />) avtomatik kiritish</translation>
 <translation id="3738428049780661523">Yaratilgan: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Yuklanmalarni yashirish</translation>
 <translation id="3745190878148784130">Matn masshtabini berkitish</translation>
@@ -1097,6 +1098,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="6476800141292307438">Sahifa <ph name="LANGUAGE" /> tiliga tarjima qilinmoqda. Parametrlar ekranning pastiga yaqin joyda joylashgan.</translation>
 <translation id="648164694371393720">Autentifikatsiya xatosi</translation>
 <translation id="6494931198667773526">Tugashi</translation>
+<translation id="6500795388871406244">Taklif qilingan parolni ishlatish:</translation>
 <translation id="650279896687777322">Batafsil...</translation>
 <translation id="6505334220040167806">Varaqlar guruhini yigʻish.</translation>
 <translation id="6507973708545996744">Oʻqish roʻyxatini barcha qurilmalarda ochish uchun hisobga kiring.</translation>
@@ -1310,6 +1312,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7583004045319035904">Inkognito varaqlar qulfini <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> bilan oching.</translation>
 <translation id="7598439272585186139">Xavfsizlikni oshirish</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> tili hech qachon tarjima qilinmasin</translation>
+<translation id="7603308509262646847">Karta egasini (<ph name="NAME" />) avtomatik kiritish</translation>
 <translation id="7603852183842204213">Qalqib chiquvchi oynalar bloklandi (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">Varaqlar guruhi</translation>
 <translation id="7607521702806708809">Parolni olib tashlash</translation>
@@ -1342,6 +1345,7 @@ Inkognito rejimida cookie fayllaringiz yopiq boʻladi va saytlar reklamalarni si
 <translation id="7749790401023484470">Matn tanlang.</translation>
 <translation id="7752405526771734448">Lens orqali vizual qidiruv</translation>
 <translation id="7756478488453921771">Menyu → Sozlamalar → Toʻlov usullari</translation>
+<translation id="775755486779745798">Amal qilish oyini (<ph name="MONTH" />) avtomatik kiritish</translation>
 <translation id="7760127703945531263">Inkognito qulflanishi</translation>
 <translation id="7765158879357617694">Ko‘chirib o‘tkazish</translation>
 <translation id="7772032839648071052">Kodli iborani tasdiqlang</translation>
@@ -1518,6 +1522,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8556590991644167667">{count,plural, =1{{count} ta ogohlantirishni yopdingiz}other{{count} ta ogohlantirishni yopdingiz}}</translation>
 <translation id="8560253818350321773">Avval tez-tez ishlatilgan elementlarni chiqarish.</translation>
 <translation id="8569721750632860947">Qaysi URL Saqlangan sahifalarga kiritilsin?</translation>
+<translation id="8577056989960190117">Amal qilish yilini (<ph name="YEAR" />) avtomatik kiritish</translation>
 <translation id="8588404856427128947">Oʻchiq</translation>
 <translation id="8591976964826315682">Inkognito rejimidagi tashqi cookie fayllarni taqiqlash</translation>
 <translation id="8593565399399144771">Endi yangi varaq ochish mumkin.</translation>

@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{展開含有 <ph name="TABS_COUNT_ONE" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」分頁群組。}other{展開含有 <ph name="TABS_COUNT_MANY" /> 個分頁的「<ph name="TITLE_OF_GROUP" />」分頁群組。}}</translation>
 <translation id="427987768447457592">新分頁群組</translation>
+<translation id="4371591986692297148">未啟用</translation>
 <translation id="4460014764210899310">取消分組</translation>
 <translation id="4648718555153979859">你的分頁都集中顯示在這裡</translation>
 <translation id="4686942373615810936">剛剛建立</translation>

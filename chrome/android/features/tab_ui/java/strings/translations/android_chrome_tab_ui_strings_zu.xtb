@@ -66,6 +66,7 @@
 <translation id="4159784952369912983">Okuphephuli</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Nweba iqembu lethebhu elithi <ph name="TITLE_OF_GROUP" /> ngethebhu eli-<ph name="TABS_COUNT_ONE" />.}one{Nweba iqembu lethebhu elithi <ph name="TITLE_OF_GROUP" /> ngamathebhu angu-<ph name="TABS_COUNT_MANY" />.}other{Nweba iqembu lethebhu elithi <ph name="TITLE_OF_GROUP" /> ngamathebhu angu-<ph name="TABS_COUNT_MANY" />.}}</translation>
 <translation id="427987768447457592">Iqembu lethebhu elisha</translation>
+<translation id="4371591986692297148">Akusebenzi</translation>
 <translation id="4460014764210899310">Khipha ukubuthana</translation>
 <translation id="4648718555153979859">Amathebhu akho afakwa kuqembu ndawonye lapha</translation>
 <translation id="4686942373615810936">Kusanda kusungulwa</translation>
