@@ -65,11 +65,11 @@ TEST_F(HistoryEmbeddingsProviderTest,
   EXPECT_EQ(history_embeddings_provider_->matches_[0].relevance, 500);
   EXPECT_EQ(history_embeddings_provider_->matches_[0].deletable, false);
   EXPECT_EQ(history_embeddings_provider_->matches_[0].type,
-            AutocompleteMatchType::HISTORY_BODY);
+            AutocompleteMatchType::HISTORY_EMBEDDINGS);
   EXPECT_EQ(history_embeddings_provider_->matches_[0].destination_url.spec(),
             "https://url.com/");
-  EXPECT_EQ(history_embeddings_provider_->matches_[0].contents, u"title");
-  EXPECT_EQ(history_embeddings_provider_->matches_[0].description,
+  EXPECT_EQ(history_embeddings_provider_->matches_[0].description, u"title");
+  EXPECT_EQ(history_embeddings_provider_->matches_[0].contents,
             u"https://url.com/");
   EXPECT_EQ(history_embeddings_provider_->matches_[0].keyword, u"");
   EXPECT_TRUE(PageTransitionCoreTypeIs(

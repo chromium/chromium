@@ -75,20 +75,20 @@ void HistoryEmbeddingsProvider::OnReceivedSearchResult(
   for (const history_embeddings::ScoredUrlRow& scored_url_row :
        result.scored_url_rows) {
     AutocompleteMatch match(this, scored_url_row.scored_url.score * kMaxScore,
-                            false, AutocompleteMatchType::HISTORY_BODY);
+                            false, AutocompleteMatchType::HISTORY_EMBEDDINGS);
     match.destination_url = scored_url_row.row.url();
 
-    match.contents =
+    match.description =
         AutocompleteMatch::SanitizeString(scored_url_row.row.title());
-    match.contents_class = ClassifyTermMatches(
-        FindTermMatches(input_text, match.contents), match.contents.size(),
-        ACMatchClassification::MATCH, ACMatchClassification::NONE);
-
-    match.description = base::UTF8ToUTF16(scored_url_row.row.url().spec());
     match.description_class = ClassifyTermMatches(
         FindTermMatches(input_text, match.description),
         match.description.size(), ACMatchClassification::MATCH,
-        ACMatchClassification::URL);
+        ACMatchClassification::NONE);
+
+    match.contents = base::UTF8ToUTF16(scored_url_row.row.url().spec());
+    match.contents_class = ClassifyTermMatches(
+        FindTermMatches(input_text, match.contents), match.contents.size(),
+        ACMatchClassification::MATCH, ACMatchClassification::URL);
 
     if (starter_pack_engine_) {
       match.keyword = starter_pack_engine_->keyword();
