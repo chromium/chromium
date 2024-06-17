@@ -3,16 +3,11 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//chromeos/components/libsegmentation/buildflags.gni")
 import("//ui/webui/resources/tools/build_webui.gni")
 import("//ui/webui/webui_features.gni")
 
 assert(is_chromeos_ash)
-
-declare_args() {
-  # Whether or not the target board supports the time of day feature. Set in
-  # the chromeos-chrome ebuild file.
-  is_time_of_day_supported = true
-}
 
 build_webui("build") {
   grd_prefix = "ash_personalization_app"
@@ -184,7 +179,7 @@ build_webui("build") {
   # Time of day assets cannot be made public until after the feature is
   # released. Thus, they are currently hosted in CIPD and downloaded to
   # this directory only if an internal chrome-branded checkout is being used.
-  if (is_chrome_branded && is_time_of_day_supported) {
+  if (is_chrome_branded && overlay_include_cbx) {
     static_files += [
       "time_of_day/thumbnails/clouds.jpg",
       "time_of_day/thumbnails/new_mexico.jpg",
