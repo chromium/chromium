@@ -80,6 +80,10 @@ DocumentDownloadTabHelper::~DocumentDownloadTabHelper() {
   }
 }
 
+bool DocumentDownloadTabHelper::IsDownloadTaskCreatedByCurrentTabHelper() {
+  return current_task_is_document_download_;
+}
+
 #pragma mark - web::WebStateObserver
 
 void DocumentDownloadTabHelper::WebStateDestroyed(web::WebState* web_state) {
@@ -179,10 +183,9 @@ void DocumentDownloadTabHelper::PageLoaded(
       (!web_state->ContentIsHTML() &&
        !base::StartsWith(web_state->GetContentsMimeType(), "video/"));
 
-  // Only triggers on http(s) or external file.
+  // Only triggers on http(s).
   GURL url = web_state->GetLastCommittedURL();
-  should_trigger = should_trigger && (url.SchemeIsHTTPOrHTTPS() ||
-                                      url.host() == kChromeUIExternalFileHost);
+  should_trigger = should_trigger && url.SchemeIsHTTPOrHTTPS();
 
   if (should_trigger) {
     base::UmaHistogramEnumeration(kIOSDocumentDownloadMimeType,

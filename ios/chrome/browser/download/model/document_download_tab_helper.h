@@ -28,6 +28,9 @@ class DocumentDownloadTabHelper
 
   ~DocumentDownloadTabHelper() override;
 
+  // Returns whether the current download task was created by this TabHelper.
+  bool IsDownloadTaskCreatedByCurrentTabHelper();
+
   // web::WebStateObserver implementation.
   void WebStateDestroyed(web::WebState* web_state) override;
   void PageLoaded(

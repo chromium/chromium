@@ -12,6 +12,7 @@
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/task/thread_pool.h"
+#import "ios/chrome/browser/download/model/document_download_tab_helper.h"
 #import "ios/chrome/browser/download/model/download_directory_util.h"
 #import "ios/chrome/browser/download/model/external_app_util.h"
 #import "ios/chrome/browser/drive/model/drive_availability.h"
@@ -199,7 +200,15 @@ void DownloadManagerMediator::UpdateConsumer() {
     [consumer_ setSaveToDriveUserEmail:identity.userEmail];
     [consumer_ setInstallDriveButtonVisible:!IsGoogleDriveAppInstalled()
                                    animated:NO];
-    [consumer_ setCanOpenFile:filename.MatchesExtension(".pdf")];
+
+    // A file can be opened if it is not already presented in the web state and
+    // of type PDF.
+    DocumentDownloadTabHelper* document_download_tab_helper =
+        DocumentDownloadTabHelper::FromWebState(download_task_->GetWebState());
+    BOOL can_open_file = !document_download_tab_helper
+                              ->IsDownloadTaskCreatedByCurrentTabHelper() &&
+                         filename.MatchesExtension(".pdf");
+    [consumer_ setCanOpenFile:can_open_file];
   } else if (state == kDownloadManagerStateSucceeded &&
              !IsGoogleDriveAppInstalled()) {
     [consumer_ setInstallDriveButtonVisible:YES animated:YES];

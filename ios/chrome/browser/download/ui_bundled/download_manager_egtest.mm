@@ -46,14 +46,28 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   return result;
 }
 
-// Provides test page for downloads with content disposition
-std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
+// Provides test page for new page downloads with content disposition.
+std::unique_ptr<net::test_server::HttpResponse>
+GetLinkToContentDispositionResponse(
     const net::test_server::HttpRequest& request) {
   auto result = std::make_unique<net::test_server::BasicHttpResponse>();
   result->set_code(net::HTTP_OK);
   result->set_content(
-      "<a id='pdf' download='test.pdf' href='/single_page_wide.pdf'>PDF</a>");
-  result->set_content_type("attachment; filename='filename.pdf'");
+      "<a id='pdf' download href='/content-disposition'>PDF</a><br/><a "
+      "id='pdf_new_window' target='_blank' href='/content-disposition'>PDF in "
+      "new tab</a>");
+  return result;
+}
+
+// Provides test page for downloads with content disposition.
+std::unique_ptr<net::test_server::HttpResponse>
+GetContentDispositionPDFResponse(const net::test_server::HttpRequest& request) {
+  auto result = std::make_unique<net::test_server::BasicHttpResponse>();
+  result->set_code(net::HTTP_OK);
+  result->set_content("fakePDFData");
+  result->AddCustomHeader("Content-Type", "application/pdf");
+  result->AddCustomHeader("Content-Disposition",
+                          "attachment; filename=filename.pdf");
   return result;
 }
 
@@ -113,8 +127,12 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
                           base::BindRepeating(&GetResponse)));
 
   self.testServer->RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, "/link-to-content-disposition",
+      base::BindRepeating(&GetLinkToContentDispositionResponse)));
+
+  self.testServer->RegisterRequestHandler(base::BindRepeating(
       &net::test_server::HandlePrefixedRequest, "/content-disposition",
-      base::BindRepeating(&GetContentDispositionResponse)));
+      base::BindRepeating(&GetContentDispositionPDFResponse)));
 
   self.testServer->RegisterRequestHandler(base::BindRepeating(
       &net::test_server::HandlePrefixedRequest, "/download-example",
@@ -363,7 +381,6 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
   GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
   [[EarlGrey selectElementWithMatcher:DownloadButton()]
       performAction:grey_tap()];
-
   if (shouldOpen) {
     GREYAssert(WaitForOpenPDFButton(), @"Open button did not show up");
   } else {
@@ -372,22 +389,36 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
 }
 
 // Tests that a file is downloaded successfully even if it is renderable by the
-// browser. The `shouldOpen` used to wait for the right button once the download
+// browser.The `shouldOpen` used to wait for the right button once the download
 // button is tapped.
 - (void)testSuccessfulDownloadWithContentDisposition:(BOOL)shouldOpen {
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/content-disposition")];
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL("/link-to-content-disposition")];
   [ChromeEarlGrey waitForWebStateContainingText:"PDF"];
   [ChromeEarlGrey tapWebStateElementWithID:@"pdf"];
 
   GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
   [[EarlGrey selectElementWithMatcher:DownloadButton()]
       performAction:grey_tap()];
-
   if (shouldOpen) {
     GREYAssert(WaitForOpenPDFButton(), @"Open button did not show up");
   } else {
     GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
   }
+}
+
+// Tests that a file is downloaded successfully when opened in a new window.
+- (void)testSuccessfulDownloadWithContentDispositionInNewWindow {
+  [ChromeEarlGrey
+      loadURL:self.testServer->GetURL("/link-to-content-disposition")];
+  [ChromeEarlGrey waitForWebStateContainingText:"PDF"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"pdf_new_window"];
+
+  GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
+  [[EarlGrey selectElementWithMatcher:DownloadButton()]
+      performAction:grey_tap()];
+
+  GREYAssert(WaitForOpenPDFButton(), @"Open button did not show up");
 }
 
 @end
@@ -410,6 +441,7 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration configuration;
   configuration.features_disabled.push_back(kIOSSaveToDrive);
+  configuration.features_disabled.push_back(kDownloadedPDFOpening);
   return configuration;
 }
 
@@ -522,6 +554,12 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
 // is run in a separate process.
 - (void)testSuccessfulDownload {
   [_helper testSuccessfulDownload];
+}
+
+// Tests successful download, when the download is triggered in a new page, and
+// when finished to "Open" button is displayed.
+- (void)testSuccessfulDownloadWithContentDispositionInNewWindow {
+  [_helper testSuccessfulDownloadWithContentDispositionInNewWindow];
 }
 
 // Tests successful download up to the point where "Open in..." button is

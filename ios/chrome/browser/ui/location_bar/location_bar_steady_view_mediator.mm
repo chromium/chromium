@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/http_auth_overlay.h"
+#import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/active_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_steady_view_consumer.h"
@@ -289,7 +290,15 @@
   }
 
   const GURL& URL = self.currentWebState->GetLastCommittedURL();
-  return URL.is_valid() && !web::GetWebClient()->IsAppSpecificURL(URL);
+
+  // Enable sharing when the current page url is valid and the url is not app
+  // specific (the url's scheme is `chrome`) except when:
+  // 1. The page url represents a chrome's download path `chrome://downloads`.
+  // 2. The page url is a reference to an external file
+  // `chrome://external-file`.
+  return URL.is_valid() &&
+         (UrlIsDownloadedFile(URL) || UrlIsExternalFileReference(URL) ||
+          !web::GetWebClient()->IsAppSpecificURL(URL));
 }
 
 @end
