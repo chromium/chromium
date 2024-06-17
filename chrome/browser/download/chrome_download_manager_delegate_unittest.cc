@@ -25,6 +25,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -34,6 +35,7 @@
 #include "chrome/browser/download/download_item_model.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/insecure_download_blocking.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
@@ -124,6 +126,12 @@ namespace {
 class MockWebContentsDelegate : public content::WebContentsDelegate {
  public:
   ~MockWebContentsDelegate() override {}
+  MOCK_METHOD(void,
+              CanDownload,
+              (const GURL&,
+               const std::string&,
+               base::OnceCallback<void(bool)> callback),
+              (override));
 };
 
 ACTION_P3(ScheduleCallback2, result0, result1) {
@@ -334,6 +342,10 @@ class ChromeDownloadManagerDelegateTest
       InsecureDownloadExtensions extension,
       download::DownloadInterruptReason interrupt_reason,
       download::DownloadItem::InsecureDownloadStatus insecure_download_status);
+
+  MockWebContentsDelegate* web_contents_delegate() {
+    return &web_contents_delegate_;
+  }
 
  private:
   base::FilePath test_download_dir_;
@@ -1492,6 +1504,29 @@ TEST_F(ChromeDownloadManagerDelegateTest,
       InsecureDownloadExtensions::kTest,
       download::DOWNLOAD_INTERRUPT_REASON_NONE,
       download::DownloadItem::InsecureDownloadStatus::SAFE);
+}
+
+TEST_F(ChromeDownloadManagerDelegateTest, DownloadBlockedForSyncedTab) {
+  GURL download_url = GURL("http://test.com/abc");
+  EXPECT_CALL(*web_contents_delegate(), CanDownload(_, _, _))
+      .WillRepeatedly([](const GURL& url, const std::string& request_method,
+                         base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(true);
+      });
+  delegate()->CheckDownloadAllowed(
+      base::BindRepeating(&RenderViewHostTestHarness::web_contents,
+                          base::Unretained(this)),
+      download_url, "GET", std::nullopt, false, false,
+      base::BindOnce([](bool allowed) { EXPECT_TRUE(allowed); }));
+  base::RunLoop().RunUntilIdle();
+
+  TabGroupSyncTabState::CreateForWebContents(web_contents());
+  delegate()->CheckDownloadAllowed(
+      base::BindRepeating(&RenderViewHostTestHarness::web_contents,
+                          base::Unretained(this)),
+      download_url, "GET", std::nullopt, false, false,
+      base::BindOnce([](bool allowed) { EXPECT_FALSE(allowed); }));
+  base::RunLoop().RunUntilIdle();
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

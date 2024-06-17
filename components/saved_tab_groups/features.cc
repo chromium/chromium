@@ -67,6 +67,12 @@ BASE_FEATURE(kTabGroupSyncAutoOpenKillSwitch,
              "TabGroupSyncAutoOpenKillSwitch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Feature flag to restrict download on synced tabs if the navigation is
+// triggered without attention..
+BASE_FEATURE(kRestrictDownloadOnSyncedTabs,
+             "RestrictDownloadOnSyncedTabs",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 bool IsTabGroupsSaveV2Enabled() {
   return base::FeatureList::IsEnabled(kTabGroupsSaveV2);
 }
@@ -81,6 +87,10 @@ bool IsMigrationFromJavaSharedPrefsEnabled() {
 
 bool AlwaysAcceptServerDataInModel() {
   return base::FeatureList::IsEnabled(kAlwaysAcceptServerDataInModel);
+}
+
+bool RestrictDownloadOnSyncedTabs() {
+  return base::FeatureList::IsEnabled(kRestrictDownloadOnSyncedTabs);
 }
 
 }  // namespace tab_groups
