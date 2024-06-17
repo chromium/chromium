@@ -85,6 +85,7 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"openDownloadsFolder", IDS_DOWNLOAD_LINK_OPEN_DOWNLOADS_FOLDER},
       {"moreActions", IDS_DOWNLOAD_MORE_ACTIONS},
       {"search", IDS_DOWNLOAD_HISTORY_SEARCH},
+      {"inIncognito", IDS_DOWNLOAD_IN_INCOGNITO},
 
       // No results message that shows instead of the downloads list.
       {"noDownloads", IDS_DOWNLOAD_NO_DOWNLOADS},
@@ -95,8 +96,6 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"statusRemoved", IDS_DOWNLOAD_FILE_REMOVED},
 
       // Dangerous file.
-      {"dangerSave", IDS_CONFIRM_DOWNLOAD},
-      {"dangerRestore", IDS_CONFIRM_DOWNLOAD_RESTORE},
       {"dangerDiscard", IDS_DISCARD_DOWNLOAD},
       {"dangerReview", IDS_REVIEW_DOWNLOAD},
 
@@ -118,21 +117,17 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"promptForLocalPasswordScanningDesc",
        IDS_BLOCK_REASON_PROMPT_FOR_LOCAL_PASSWORD_SCANNING},
       {"controlDeepScan", IDS_DOWNLOAD_DEEP_SCAN_UPDATED},
-      {"controlBypassDeepScan", IDS_DOWNLOAD_BYPASS_DEEP_SCAN_UPDATED},
       {"controlLocalPasswordScan", IDS_DOWNLOAD_LOCAL_PASSWORD_SCAN},
 
       // Controls.
       {"controlPause", IDS_DOWNLOAD_LINK_PAUSE},
       {"controlCancel", IDS_DOWNLOAD_LINK_CANCEL},
       {"controlResume", IDS_DOWNLOAD_LINK_RESUME},
-      {"controlRemoveFromList", IDS_DOWNLOAD_LINK_REMOVE},
-      {"controlRemoveFromListAriaLabel", IDS_DOWNLOAD_LINK_REMOVE_ARIA_LABEL},
       {"controlRetry", IDS_DOWNLOAD_LINK_RETRY},
       {"controlledByUrl", IDS_DOWNLOAD_BY_EXTENSION_URL},
       {"controlOpenNow", IDS_OPEN_DOWNLOAD_NOW},
       {"controlOpenAnyway", IDS_OPEN_DOWNLOAD_ANYWAY},
       {"toastClearedAll", IDS_DOWNLOAD_TOAST_CLEARED_ALL},
-      {"toastRemovedFromList", IDS_DOWNLOAD_TOAST_REMOVED_FROM_LIST},
       {"toastDeletedFromHistoryStillOnDevice",
        IDS_DOWNLOADS_TOAST_DELETED_FROM_HISTORY_STILL_ON_DEVICE},
       {"toastDeletedFromHistory", IDS_DOWNLOADS_TOAST_DELETED_FROM_HISTORY},
@@ -170,14 +165,24 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
       {"warningBypassDialogLearnMoreLink",
        IDS_DOWNLOAD_WARNING_BYPASS_DIALOG_LEARN_MORE_LINK},
       {"warningBypassDialogCancel", IDS_CANCEL},
+
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
       // ESB Download Row Promo
       {"esbDownloadRowPromoString", IDS_DOWNLOAD_ROW_ESB_PROMOTION},
       {"esbDownloadRowPromoA11y", IDS_DOWNLOAD_ROW_ESB_PROMO_A11Y},
 #endif
-      // Dangerous File
+
+      // Strings describing reasons for blocked downloads.
       {"noSafeBrowsingDesc",
        IDS_BLOCK_DOWNLOAD_REASON_UNVERIFIED_NO_SAFE_BROWSING},
+      {"dangerFileDesc", IDS_BLOCK_DOWNLOAD_REASON_DANGEROUS_FILETYPE},
+      {"dangerDownloadDesc", IDS_BLOCK_DOWNLOAD_REASON_DANGEROUS},
+      {"dangerDownloadCookieTheft",
+       IDS_BLOCK_DOWNLOAD_REASON_DANGEROUS_COOKIE_THEFT},
+      {"dangerDownloadCookieTheftAndAccountDesc",
+       IDS_BLOCK_DOWNLOAD_REASON_DANGEROUS_COOKIE_THEFT_AND_ACCOUNT},
+      {"dangerSettingsDesc", IDS_BLOCK_DOWNLOAD_REASON_POTENTIALLY_UNWANTED},
+      {"insecureDownloadDesc", IDS_BLOCK_DOWNLOAD_REASON_INSECURE},
 
       {"referrerLine", IDS_DOWNLOADS_PAGE_REFERRER_LINE},
   };
@@ -186,53 +191,16 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
   source->AddBoolean(
       "showReferrerUrl",
       base::FeatureList::IsEnabled(safe_browsing::kDownloadsPageReferrerUrl));
-  // New chrome://downloads icons, colors, strings, etc. to be consistent with
-  // download bubble.
-  // TODO(chlily): Temporarily hardcoding true in order to remove base::Feature
-  // and references. This will be cleaned up shortly.
-  bool improved_download_warnings_ux = true;
-  source->AddBoolean("improvedDownloadWarningsUX",
-                     improved_download_warnings_ux);
-  source->AddLocalizedString("dangerFileDesc",
-                             improved_download_warnings_ux
-                                 ? IDS_BLOCK_DOWNLOAD_REASON_DANGEROUS_FILETYPE
-                                 : IDS_BLOCK_REASON_GENERIC_DOWNLOAD);
-  source->AddLocalizedString("dangerDownloadDesc",
-                             improved_download_warnings_ux
-                                 ? IDS_BLOCK_DOWNLOAD_REASON_DANGEROUS
-                                 : IDS_BLOCK_REASON_DANGEROUS_DOWNLOAD);
-  source->AddLocalizedString(
-      "dangerDownloadCookieTheft",
-      improved_download_warnings_ux
-          ? IDS_BLOCK_DOWNLOAD_REASON_DANGEROUS_COOKIE_THEFT
-          : IDS_BLOCK_REASON_DANGEROUS_DOWNLOAD);
-  source->AddLocalizedString(
-      "dangerDownloadCookieTheftAndAccountDesc",
-      improved_download_warnings_ux
-          ? IDS_BLOCK_DOWNLOAD_REASON_DANGEROUS_COOKIE_THEFT_AND_ACCOUNT
-          : IDS_BLOCK_REASON_DANGEROUS_DOWNLOAD);
   source->AddLocalizedString(
       "dangerUncommonDesc",
       requests_ap_verdicts
           ? IDS_BLOCK_REASON_UNCOMMON_DOWNLOAD_IN_ADVANCED_PROTECTION
-          : (improved_download_warnings_ux
-                 ? IDS_BLOCK_DOWNLOAD_REASON_UNCOMMON
-                 : IDS_BLOCK_REASON_UNCOMMON_DOWNLOAD));
+          : IDS_BLOCK_DOWNLOAD_REASON_UNCOMMON);
   source->AddLocalizedString(
       "dangerUncommonSuspiciousArchiveDesc",
       requests_ap_verdicts
           ? IDS_BLOCK_REASON_UNCOMMON_DOWNLOAD_IN_ADVANCED_PROTECTION
-          : (improved_download_warnings_ux
-                 ? IDS_BLOCK_DOWNLOAD_REASON_UNCOMMON_SUSPICIOUS_ARCHIVE
-                 : IDS_BLOCK_REASON_UNCOMMON_DOWNLOAD));
-  source->AddLocalizedString(
-      "dangerSettingsDesc", improved_download_warnings_ux
-                                ? IDS_BLOCK_DOWNLOAD_REASON_POTENTIALLY_UNWANTED
-                                : IDS_BLOCK_REASON_UNWANTED_DOWNLOAD);
-  source->AddLocalizedString("insecureDownloadDesc",
-                             improved_download_warnings_ux
-                                 ? IDS_BLOCK_DOWNLOAD_REASON_INSECURE
-                                 : IDS_BLOCK_REASON_INSECURE_DOWNLOAD);
+          : IDS_BLOCK_DOWNLOAD_REASON_UNCOMMON_SUSPICIOUS_ARCHIVE);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Download Row ESB Promo:
@@ -254,8 +222,6 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
   source->AddBoolean("allowDeletingHistory",
                      prefs->GetBoolean(prefs::kAllowDeletingBrowserHistory) &&
                          !profile->IsChild());
-
-  source->AddLocalizedString("inIncognito", IDS_DOWNLOAD_IN_INCOGNITO);
 
   // The URL to open when the user clicks on "Learn more" for a blocked
   // dangerous file.

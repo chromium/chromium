@@ -34,7 +34,7 @@ import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {htmlEscape} from 'chrome://resources/js/util.js';
 import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
-import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
 import type {MojomData} from './data.js';
@@ -108,15 +108,9 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         value: '',
       },
 
-      controlRemoveFromListAriaLabel_: {
-        type: String,
-        computed: 'computeControlRemoveFromListAriaLabel_(data.fileName)',
-      },
-
       iconAriaLabel_: {
         type: String,
-        computed: 'computeIconAriaLabel_(' +
-            'displayType_, improvedDownloadWarningsUx_)',
+        computed: 'computeIconAriaLabel_(displayType_)',
       },
 
       isActive_: {
@@ -187,11 +181,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
         value: DisplayType.NORMAL,
       },
 
-      improvedDownloadWarningsUx_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('improvedDownloadWarningsUX'),
-      },
-
       // <if expr="_google_chrome">
       showEsbPromotion: {
         type: Boolean,
@@ -215,7 +204,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       'observeControlledBy_(controlledBy_)',
       'observeDisplayType_(displayType_, isDangerous_, data.*)',
       'restoreFocusAfterCancelIfNeeded_(data)',
-      'updatePauseOrResumeClass_(pauseOrResumeText_, improvedDownloadWarningsUx_)',
     ];
   }
 
@@ -238,7 +226,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   private useFileIcon_: boolean;
   private restoreFocusAfterCancel_: boolean = false;
   private displayType_: DisplayType;
-  private improvedDownloadWarningsUx_: boolean;
   private completelyOnDisk_: boolean;
   override overrideCustomEquivalent: boolean;
 
@@ -272,14 +259,12 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   getMoreActionsButton(): CrIconButtonElement|null {
-    assert(this.improvedDownloadWarningsUx_);
     const button =
         this.shadowRoot!.querySelector<CrIconButtonElement>('#more-actions');
     return button || null;
   }
 
   getMoreActionsMenu(): CrActionMenuElement {
-    assert(this.improvedDownloadWarningsUx_);
     const menu = this.shadowRoot!.querySelector<CrActionMenuElement>(
         '#more-actions-menu');
     assert(!!menu);
@@ -342,11 +327,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     const url = `chrome://extensions/?id=${this.data.byExtId}`;
     const name = this.data.byExtName;
     return loadTimeData.getStringF('controlledByUrl', url, htmlEscape(name));
-  }
-
-  private computeControlRemoveFromListAriaLabel_(): string {
-    return loadTimeData.getStringF(
-        'controlRemoveFromListAriaLabel', this.data.fileName);
   }
 
   private computeDate_(): string {
@@ -534,51 +514,46 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   private computeIconAriaLabel_(): string {
-    if (this.improvedDownloadWarningsUx_) {
-      switch (this.displayType_) {
-        case DisplayType.DANGEROUS:
-          return this.i18n('accessibleLabelDangerous');
-        case DisplayType.INSECURE:
-          return this.i18n('accessibleLabelInsecure');
-        case DisplayType.UNVERIFIED:
-          return this.i18n('accessibleLabelUnverified');
-        case DisplayType.SUSPICIOUS:
-          return this.i18n('accessibleLabelSuspicious');
-      }
+    switch (this.displayType_) {
+      case DisplayType.DANGEROUS:
+        return this.i18n('accessibleLabelDangerous');
+      case DisplayType.INSECURE:
+        return this.i18n('accessibleLabelInsecure');
+      case DisplayType.UNVERIFIED:
+        return this.i18n('accessibleLabelUnverified');
+      case DisplayType.SUSPICIOUS:
+        return this.i18n('accessibleLabelSuspicious');
     }
     return '';
   }
 
   private iconAndDescriptionColor_(): string {
-    if (this.improvedDownloadWarningsUx_) {
-      switch (this.displayType_) {
-        case DisplayType.DANGEROUS:
-        case DisplayType.ERROR:
-          return 'red';
-        case DisplayType.INSECURE:
-        case DisplayType.UNVERIFIED:
-        case DisplayType.SUSPICIOUS:
-          return 'grey';
-      }
+    switch (this.displayType_) {
+      case DisplayType.DANGEROUS:
+      case DisplayType.ERROR:
+        return 'red';
+      case DisplayType.INSECURE:
+      case DisplayType.UNVERIFIED:
+      case DisplayType.SUSPICIOUS:
+        return 'grey';
     }
     return '';
   }
 
   private computeIcon_(): string {
     if (this.data) {
-      if (this.improvedDownloadWarningsUx_) {
-        switch (this.displayType_) {
-          case DisplayType.DANGEROUS:
-            return 'downloads:dangerous';
-          case DisplayType.INSECURE:
-          case DisplayType.UNVERIFIED:
-          case DisplayType.SUSPICIOUS:
-            return 'cr:warning';
-          case DisplayType.ERROR:
-            return 'cr:error';
-        }
+      switch (this.displayType_) {
+        case DisplayType.DANGEROUS:
+          return 'downloads:dangerous';
+        case DisplayType.INSECURE:
+        case DisplayType.UNVERIFIED:
+        case DisplayType.SUSPICIOUS:
+          return 'cr:warning';
+        case DisplayType.ERROR:
+          return 'cr:error';
       }
 
+      assert(this.displayType_ === DisplayType.NORMAL);
       const dangerType = this.data.dangerType as DangerType;
       if ((loadTimeData.getBoolean('requestsApVerdicts') &&
            dangerType === DangerType.kUncommonContent) ||
@@ -606,8 +581,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
       }
     }
     if (this.isDangerous_) {
-      return this.improvedDownloadWarningsUx_ ? 'downloads:dangerous' :
-                                                'cr:error';
+      return 'downloads:dangerous';
     }
     if (!this.useFileIcon_) {
       return 'cr:insert-drive-file';
@@ -617,31 +591,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
   private computeIconColor_(): string {
     if (this.data) {
-      if (this.improvedDownloadWarningsUx_) {
-        return this.iconAndDescriptionColor_();
-      }
-      const dangerType = this.data.dangerType as DangerType;
-      if ((loadTimeData.getBoolean('requestsApVerdicts') &&
-           dangerType === DangerType.kUncommonContent) ||
-          dangerType === DangerType.kSensitiveContentWarning ||
-          dangerType === DangerType.kDeepScannedFailed) {
-        return 'yellow';
-      }
-
-      const WARNING_TYPES = [
-        DangerType.kSensitiveContentBlock,
-        DangerType.kBlockedTooLarge,
-        DangerType.kBlockedPasswordProtected,
-      ];
-      if (WARNING_TYPES.includes(dangerType)) {
-        return 'red';
-      }
-
-      if (this.data.state === State.kAsyncScanning ||
-          this.data.state === State.kPromptForScanning ||
-          this.data.state === State.kPromptForLocalPasswordScanning) {
-        return 'yellow';
-      }
+      return this.iconAndDescriptionColor_();
     }
     if (this.isDangerous_) {
       return 'red';
@@ -679,22 +629,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     return this.data.isReviewable;
   }
 
-  private toggleButtonClass_() {
-    this.shadowRoot!.querySelector('#pauseOrResume')!.classList.toggle(
-        'action-button',
-        this.pauseOrResumeText_ === loadTimeData.getString('controlResume'));
-  }
-
-  private updatePauseOrResumeClass_() {
-    if (!this.pauseOrResumeText_ || this.improvedDownloadWarningsUx_) {
-      return;
-    }
-
-    // Wait for dom-if to switch to true, in case the text has just changed
-    // from empty.
-    beforeNextRender(this, () => this.toggleButtonClass_());
-  }
-
   private computePauseOrResumeText_(): string {
     if (this.data === undefined) {
       return '';
@@ -721,10 +655,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
   private computeShowControlsForDangerous_(): boolean {
     return !this.isReviewable_ && this.isDangerous_;
-  }
-
-  private computeShowButtonsForDangerous_(): boolean {
-    return !this.improvedDownloadWarningsUx_ && this.isDangerous_;
   }
 
   private computeShowCancel_(): boolean {
@@ -853,36 +783,12 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     // Returns whether to use the file icon, and additionally clears file url
     // links if necessary.
     const mayUseFileIcon = () => {
-      if (this.improvedDownloadWarningsUx_) {
-        const use = this.displayType_ === DisplayType.NORMAL;
-        if (!use) {
-          removeFileUrlLinks();
-          updateReferrerUrlLinkHref();
-        }
-        return use;
-      }
-
-      // Handle various dangerous cases.
-      const OVERRIDDEN_ICON_TYPES = [
-        DangerType.kSensitiveContentBlock,
-        DangerType.kBlockedTooLarge,
-        DangerType.kBlockedPasswordProtected,
-        DangerType.kDeepScannedFailed,
-      ];
-      if (this.isDangerous_) {
+      const use = this.displayType_ === DisplayType.NORMAL;
+      if (!use) {
         removeFileUrlLinks();
         updateReferrerUrlLinkHref();
-        return false;
       }
-      if (OVERRIDDEN_ICON_TYPES.includes(this.data.dangerType as DangerType)) {
-        return false;
-      }
-      if (this.data.state === State.kAsyncScanning ||
-          this.data.state === State.kPromptForScanning ||
-          this.data.state === State.kPromptForLocalPasswordScanning) {
-        return false;
-      }
-      return true;
+      return use;
     };
 
     this.useFileIcon_ = mayUseFileIcon();
@@ -925,7 +831,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   // </if>
 
   private onMoreActionsClick_() {
-    assert(this.improvedDownloadWarningsUx_);
     const button = this.getMoreActionsButton();
     // The menu button is not always shown, but if this handler is invoked, then
     // it must be.
@@ -936,7 +841,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   // Handles the "x" remove button which can be different actions depending on
   // the state of the download.
   private onQuickRemoveClick_(e: Event) {
-    assert(this.improvedDownloadWarningsUx_);
     if (this.isReviewable_ || this.computeShowControlsForDangerous_()) {
       this.onDiscardDangerousClick_(e);
       return;
@@ -949,55 +853,41 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     this.restoreFocusAfterCancel_ = true;
     assert(!!this.mojoHandler_);
     this.mojoHandler_.cancel(this.data.id);
-    if (this.improvedDownloadWarningsUx_) {
-      getAnnouncerInstance().announce(
-          loadTimeData.getString('screenreaderCanceled'));
-      this.getMoreActionsMenu().close();
-    }
+    getAnnouncerInstance().announce(
+        loadTimeData.getString('screenreaderCanceled'));
+    this.getMoreActionsMenu().close();
   }
 
   private onDiscardDangerousClick_(e: Event) {
     assert(!!this.mojoHandler_);
     this.mojoHandler_.discardDangerous(this.data.id);
-    if (this.improvedDownloadWarningsUx_) {
-      this.displayRemovedToast_(/*canUndo=*/ false, e);
-      this.getMoreActionsMenu().close();
-    }
+    this.displayRemovedToast_(/*canUndo=*/ false, e);
+    this.getMoreActionsMenu().close();
   }
 
   private onOpenNowClick_() {
     this.mojoHandler_!.openDuringScanningRequiringGesture(this.data.id);
-    if (this.improvedDownloadWarningsUx_) {
-      this.getMoreActionsMenu().close();
-    }
+    this.getMoreActionsMenu().close();
   }
 
   private onDeepScanClick_() {
     this.mojoHandler_!.deepScan(this.data.id);
-    if (this.improvedDownloadWarningsUx_) {
-      this.getMoreActionsMenu().close();
-    }
+    this.getMoreActionsMenu().close();
   }
 
   private onBypassDeepScanClick_() {
     this.mojoHandler_!.bypassDeepScanRequiringGesture(this.data.id);
-    if (this.improvedDownloadWarningsUx_) {
-      this.getMoreActionsMenu().close();
-    }
+    this.getMoreActionsMenu().close();
   }
 
   private onReviewDangerousClick_() {
     this.mojoHandler_!.reviewDangerousRequiringGesture(this.data.id);
-    if (this.improvedDownloadWarningsUx_) {
-      this.getMoreActionsMenu().close();
-    }
+    this.getMoreActionsMenu().close();
   }
 
   private onOpenAnywayClick_() {
     this.mojoHandler_!.openFileRequiringGesture(this.data.id);
-    if (this.improvedDownloadWarningsUx_) {
-      this.getMoreActionsMenu().close();
-    }
+    this.getMoreActionsMenu().close();
   }
 
   private onDragStart_(e: Event) {
@@ -1021,19 +911,15 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   private doPause_() {
     assert(!!this.mojoHandler_);
     this.mojoHandler_.pause(this.data.id);
-    if (this.improvedDownloadWarningsUx_) {
-      getAnnouncerInstance().announce(
-          loadTimeData.getString('screenreaderPaused'));
-    }
+    getAnnouncerInstance().announce(
+        loadTimeData.getString('screenreaderPaused'));
   }
 
   private doResume_() {
     assert(!!this.mojoHandler_);
     this.mojoHandler_.resume(this.data.id);
-    if (this.improvedDownloadWarningsUx_) {
-      getAnnouncerInstance().announce(
-          loadTimeData.getString('screenreaderResumed'));
-    }
+    getAnnouncerInstance().announce(
+        loadTimeData.getString('screenreaderResumed'));
   }
 
   private onPauseOrResumeClick_() {
@@ -1042,17 +928,14 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     } else {
       this.doResume_();
     }
-    if (this.improvedDownloadWarningsUx_) {
-      this.getMoreActionsMenu().close();
-    }
+    this.getMoreActionsMenu().close();
   }
 
   private displayRemovedToast_(canUndo: boolean, e: Event) {
-    const templateStringId = this.improvedDownloadWarningsUx_ ?
-        (this.displayType_ === DisplayType.NORMAL && this.completelyOnDisk_ ?
-             'toastDeletedFromHistoryStillOnDevice' :
-             'toastDeletedFromHistory') :
-        'toastRemovedFromList';
+    const templateStringId =
+        (this.displayType_ === DisplayType.NORMAL && this.completelyOnDisk_) ?
+        'toastDeletedFromHistoryStillOnDevice' :
+        'toastDeletedFromHistory';
     const pieces =
         loadTimeData.getSubstitutedStringPieces(
             loadTimeData.getString(templateStringId), this.data.fileName) as
@@ -1074,17 +957,12 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
     this.mojoHandler_.remove(this.data.id);
     const canUndo = !this.data.isDangerous && !this.data.isInsecure;
     this.displayRemovedToast_(canUndo, e);
-
-    if (this.improvedDownloadWarningsUx_) {
-      this.getMoreActionsMenu().close();
-    }
+    this.getMoreActionsMenu().close();
   }
 
   private onRetryClick_() {
     this.mojoHandler_!.retryDownload(this.data.id);
-    if (this.improvedDownloadWarningsUx_) {
-      this.getMoreActionsMenu().close();
-    }
+    this.getMoreActionsMenu().close();
   }
 
   private notifySaveDangerousClick_() {
@@ -1096,12 +974,6 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
   }
 
   private onSaveDangerousClick_() {
-    // TODO(chlily): Remove this branch. It is only reachable in tests while
-    // cleanup is in progress.
-    if (!this.improvedDownloadWarningsUx_) {
-      return;
-    }
-
     this.getMoreActionsMenu().close();
 
     if (this.displayType_ === DisplayType.DANGEROUS) {
@@ -1127,9 +999,7 @@ export class DownloadsItemElement extends DownloadsItemElementBase {
 
   private onShowClick_() {
     this.mojoHandler_!.show(this.data.id);
-    if (this.improvedDownloadWarningsUx_) {
-      this.getMoreActionsMenu().close();
-    }
+    this.getMoreActionsMenu().close();
   }
 
   private restoreFocusAfterCancelIfNeeded_() {

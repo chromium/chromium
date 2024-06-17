@@ -2317,21 +2317,9 @@ are declared in tools/grit/grit_rule.gni.
         desc="Message shown in the download shelf for all Advanced Protection and Enhanced Safe Browsing users when Chrome recommends uploading the file for additional scanning.">
         <ph name="FILE_NAME">$1<ex>bla.exe</ex></ph> may be dangerous. Send to Google for scanning?
       </message>
-      <message name="IDS_BLOCK_REASON_UNCOMMON_DOWNLOAD"
-         desc="Message shown to the user on chrome://downloads page to explain that this download is blocked because it is uncommon.">
-        This file is not commonly downloaded and may be dangerous.
-      </message>
       <message name="IDS_BLOCK_REASON_UNCOMMON_DOWNLOAD_IN_ADVANCED_PROTECTION"
          desc="Message shown to the user on chrome://downloads page to explain that this download is blocked because it is uncommon. This variant is shown when the user is enrolled in the Advanced Protection program.">
         This file was blocked by Advanced Protection.
-      </message>
-      <message name="IDS_BLOCK_REASON_GENERIC_DOWNLOAD"
-         desc="Message shown to the user on chrome://downloads page to explain that this download is blocked because it may be dangerous.">
-        This type of file may harm your computer.
-      </message>
-      <message name="IDS_BLOCK_REASON_INSECURE_DOWNLOAD"
-         desc="Message shown to the user on chrome://downloads page to explain that this download is blocked because it was insecurely delivered.">
-        This file can't be downloaded securely
       </message>
       <message name="IDS_BLOCK_REASON_DEEP_SCANNING_UPDATED"
           desc="Message shown on chrome://downloads when a download is being scanned">
@@ -2416,10 +2404,6 @@ are declared in tools/grit/grit_rule.gni.
           Keep
         </message>
       </if>
-      <message name="IDS_CONFIRM_DOWNLOAD_RESTORE"
-               desc="Text for the button used to validate the downloading of a dangerous download on chrome://downloads page.">
-        Keep dangerous file
-      </message>
       <message name="IDS_CONTINUE_EXTENSION_DOWNLOAD"
                desc="Text for the button used to validate the installation of an extension.">
         Continue
@@ -2462,14 +2446,6 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_DOWNLOAD_LINK_RESUME"
                desc="In the download view, 'Resume' link text">
         Resume
-      </message>
-      <message name="IDS_DOWNLOAD_LINK_REMOVE"
-               desc="In the download view, 'Remove from list' link text">
-        Remove from list
-      </message>
-      <message name="IDS_DOWNLOAD_LINK_REMOVE_ARIA_LABEL"
-               desc="In the download view, 'Remove from list' link aria-label">
-        Remove <ph name="FILE_NAME">$1<ex>somedocument.pdf</ex></ph> from list
       </message>
       <message name="IDS_DOWNLOAD_LINK_CANCEL"
                desc="In the download view, 'Cancel' link text">
@@ -2552,9 +2528,6 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_DOWNLOAD_UNDO" desc="Menu title for undoing an operation">
         Undo
       </message>
-      <message name="IDS_DOWNLOAD_TOAST_REMOVED_FROM_LIST" desc="Toast message for removing download entry from list">
-        Removed '<ph name="FILE_NAME">$1<ex>somedocument.pdf</ex></ph>' from list
-      </message>
       <message name="IDS_DOWNLOAD_TOAST_CLEARED_ALL" desc="Toast message for clearing all download entries">
         Cleared all
       </message>
@@ -2569,10 +2542,6 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_DOWNLOAD_BYPASS_DEEP_SCAN"
                desc="In the download view, the 'Open' button when prompt for deep scan">
         Open
-      </message>
-      <message name="IDS_DOWNLOAD_BYPASS_DEEP_SCAN_UPDATED"
-               desc="In the download view, the 'Open' button when prompt for deep scan">
-        Open anyway
       </message>
       <message name="IDS_DOWNLOAD_LOCAL_PASSWORD_SCAN"
         desc="On the downloads page, the label for the button to check a download for malware">

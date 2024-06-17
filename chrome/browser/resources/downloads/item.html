@@ -201,7 +201,7 @@
   }
 
   @media (prefers-color-scheme: light) {
-    .is-active :-webkit-any(#file-link, #show) {
+    .is-active :-webkit-any(#file-link) {
       color: var(--google-blue-600);
     }
 
@@ -291,10 +291,6 @@
     }
   }
 
-  #show {
-    margin: .7em 0;
-  }
-
   #controlled-by,
   #controlled-by a {
     color: var(--controlled-by-inactive-color);
@@ -342,9 +338,6 @@
     width: 16px;
   }
 
-  #pauseOrResume,
-  #dangerous .action-button,
-  #openNow,
   #deepScan {
     margin-inline-end: 8px;
   }
@@ -363,14 +356,12 @@
         aria-hidden="[[computeIconAriaHidden_(iconAriaLabel_)]]">
       <img class="icon" id="file-icon" alt="" hidden="[[!useFileIcon_]]"
           icon-color$="[[computeIconColor_(isDangerous_, data.dangerType,
-          useFileIcon_, improvedDownloadWarningsUx_,
-          displayType_)]]">
+          useFileIcon_, displayType_)]]">
       <iron-icon class="icon" hidden="[[useFileIcon_]]"
           icon$="[[computeIcon_(isDangerous_, data.dangerType, useFileIcon_,
-              improvedDownloadWarningsUx_, displayType_)]]"
+              displayType_)]]"
           icon-color$="[[computeIconColor_(isDangerous_, data.dangerType,
-              useFileIcon_, improvedDownloadWarningsUx_,
-              displayType_)]]"></iron-icon>
+              useFileIcon_, displayType_)]]"></iron-icon>
     </div>
 
     <div id="details">
@@ -398,17 +389,14 @@
       </div>
 
       <div class="description" role="gridcell"
-          description-color$="[[iconAndDescriptionColor_(displayType_,
-              improvedDownloadWarningsUx_)]]"
-          hidden$="[[!computeDescriptionVisible_(data.*, displayType_,
-              improvedDownloadWarningsUx_)]]">
+          description-color$="[[iconAndDescriptionColor_(displayType_)]]"
+          hidden$="[[!computeDescriptionVisible_(data.*, displayType_)]]">
         [[computeDescription_(
             data.state,
             data.dangerType,
             data.fileName,
             data.progressStatusText,
-            displayType_,
-            improvedDownloadWarningsUx_)]]
+            displayType_)]]
       </div>
 
       <div class="description" role="gridcell"
@@ -425,240 +413,103 @@
         </div>
       </template>
 
-      <!-- Show most of the safe control buttons in the old UX only. -->
-      <template is="dom-if" if="[[!improvedDownloadWarningsUx_]]">
-        <div id="safe" class="controls" hidden="[[isDangerous_]]">
-          <span role="gridcell" hidden="[[!hasShowInFolderLink_]]">
-            <a is="action-link" id="show" on-click="onShowClick_"
-                focus-row-control
-                focus-type="show"
-                title="[[data.filePath]]">
-              [[data.showInFolderText]]
-            </a>
-          </span>
-          <template is="dom-if" if="[[data.retry]]">
-            <span role="gridcell">
-              <cr-button class="action-button" on-click="onRetryClick_"
-                  focus-row-control focus-type="retry">
-                $i18n{controlRetry}
-              </cr-button>
-            </span>
-          </template>
-          <template is="dom-if" if="[[pauseOrResumeText_]]">
-            <span role="gridcell">
-              <cr-button on-click="onPauseOrResumeClick_" id="pauseOrResume"
-                  focus-row-control focus-type="pauseOrResume">
-                [[pauseOrResumeText_]]
-              </cr-button>
-            </span>
-          </template>
-          <template is="dom-if" if="[[showDeepScan_]]" restamp>
-            <span role="gridcell">
-              <cr-button on-click="onDeepScanClick_" id="deepScan"
-                  class="action-button" focus-row-control focus-type="open">
-                [[computeDeepScanControlText_(data.state)]]
-              </cr-button>
-            </span>
-            <span role="gridcell">
-              <cr-button on-click="onBypassDeepScanClick_" id="bypassDeepScan"
-                        focus-row-control focus-type="open">
-                $i18n{controlBypassDeepScan}
-              </cr-button>
-            </span>
-          </template>
-          <template is="dom-if" if="[[showCancel_]]">
-            <span role="gridcell">
-              <cr-button on-click="onCancelClick_" focus-row-control
-                  focus-type="cancel">
-                $i18n{controlCancel}
-              </cr-button>
-            </span>
-          </template>
-          <template is="dom-if" if="[[showOpenAnyway_]]">
-            <span role="gridcell">
-              <cr-button on-click="onOpenAnywayClick_" id="openAnyway"
-                  focus-row-control focus-type="open">
-                $i18n{controlOpenAnyway}
-              </cr-button>
-            </span>
-          </template>
-        </div>
-      </template>
-      <!-- Only this button should appear for improvedDownloadWarningsUx. -->
-      <template is="dom-if" if="[[improvedDownloadWarningsUx_]]">
-        <div id="safe" class="controls" hidden="[[isDangerous_]]">
-          <template is="dom-if" if="[[showDeepScan_]]" restamp>
-            <span role="gridcell">
-              <cr-button on-click="onDeepScanClick_" id="deepScan"
-                  class="action-button" focus-row-control focus-type="open">
-                [[computeDeepScanControlText_(data.state)]]
-              </cr-button>
-            </span>
-          </template>
-        </div>
-      </template>
+      <div id="safe" class="controls" hidden="[[isDangerous_]]">
+        <span role="gridcell" hidden="[[!showDeepScan_]]">
+          <cr-button on-click="onDeepScanClick_" id="deepScan"
+              class="action-button" focus-row-control focus-type="open">
+            [[computeDeepScanControlText_(data.state)]]
+          </cr-button>
+        </span>
+      </div>
       <div id="controlled-by" hidden="[[isDangerous_]]"><!--
         Text populated dynamically.
       --></div>
-
-      <!-- Show the dangerous control buttons in the old UX only. -->
-      <template is="dom-if"
-          if="[[computeShowButtonsForDangerous_(isDangerous_,
-              improvedDownloadWarningsUx_)]]">
-        <div id="dangerous" class="controls">
-          <!-- Files that enterprise policies allow to be reviewed. -->
-          <template is="dom-if" if="[[isReviewable_]]">
-            <span role="gridcell">
-              <cr-button on-click="onDiscardDangerousClick_"
-                  class="action-button" focus-row-control
-                  focus-type="discard">
-                $i18n{dangerDiscard}
-              </cr-button>
-            </span>
-            <span role="gridcell">
-              <cr-button on-click="onReviewDangerousClick_" focus-row-control
-                  focus-type="save">
-                $i18n{dangerReview}
-              </cr-button>
-            </span>
-          </template>
-
-          <template is="dom-if" if="[[!isReviewable_]]">
-            <!-- Dangerous file types (e.g. .exe, .jar). -->
-            <template is="dom-if" if="[[!isMalware_]]">
-              <span role="gridcell">
-                <cr-button on-click="onDiscardDangerousClick_"
-                    class="action-button" focus-row-control
-                    focus-type="discard">
-                  $i18n{dangerDiscard}
-                </cr-button>
-              </span>
-              <span role="gridcell">
-                <cr-button on-click="onSaveDangerousClick_" focus-row-control
-                    focus-type="save">
-                  $i18n{dangerSave}
-                </cr-button>
-              </span>
-            </template>
-
-            <!-- Things that safe browsing has determined to be dangerous. -->
-            <template is="dom-if" if="[[isMalware_]]">
-              <span role="gridcell">
-                <cr-button on-click="onDiscardDangerousClick_"
-                    class="action-button"
-                    focus-row-control focus-type="discard">
-                  $i18n{controlRemoveFromList}
-                </cr-button>
-              </span>
-              <span role="gridcell">
-                <cr-button on-click="onSaveDangerousClick_" focus-row-control
-                    focus-type="save">
-                  $i18n{dangerRestore}
-                </cr-button>
-              </span>
-            </template>
-          </template>
-        </div>
-      </template>
     </div>
     <div class="more-options">
-      <!-- Only show the "x" button in the old UX. -->
-      <template is="dom-if" if="[[!improvedDownloadWarningsUx_]]">
-        <div role="gridcell">
-          <cr-icon-button class="icon-clear"
-              style$="[[computeRemoveStyle_(isDangerous_, showCancel_)]]"
-              id="remove-old" title="$i18n{controlRemoveFromList}"
-              aria-label$="[[controlRemoveFromListAriaLabel_]]"
-              on-click="onRemoveClick_" focus-row-control focus-type="remove">
-          </cr-icon-button>
-        </div>
-      </template>
-      <!-- In improvedDownloadWarnings, show menu and/or quick action(s). -->
-      <template is="dom-if" if="[[improvedDownloadWarningsUx_]]">
-        <div role="gridcell" id="action-icon-buttons">
-          <cr-icon-button id="more-actions" iron-icon="cr:more-vert"
-              hidden="[[!computeShowActionMenu_(pauseOrResumeText_,
-                  isDangerous_, isReviewable_, showDeepScan_, showCancel_,
-                  showOpenAnyway_, data.state, data.retry, data.dangerType)]]"
-              class="dropdown-trigger" title="$i18n{moreActions}"
-              on-click="onMoreActionsClick_" aria-haspopup="menu"
-              focus-row-control focus-type="actionMenuButton">
-          </cr-icon-button>
-          <cr-icon-button id="quick-show-in-folder" class="icon-folder-open"
-              hidden="[[!computeShowQuickShow_(hasShowInFolderLink_,
-                  pauseOrResumeText_, isDangerous_, isReviewable_,
-                  showDeepScan_, showCancel_, showOpenAnyway_, data.state,
-                  data.retry, data.dangerType)]]"
-              title="[[data.showInFolderText]]"
-              aria-label$="[[data.showInFolderText]]" on-click="onShowClick_"
-              focus-row-control focus-type="quickShow">
-          </cr-icon-button>
-          <cr-icon-button id="quick-remove" class="icon-clear"
-              hidden="[[!computeShowQuickRemove_(isDangerous_, showCancel_,
-                  isReviewable_)]]"
-              title="$i18n{controlDeleteFromHistory}"
-              aria-label$="$i18n{controlDeleteFromHistory}"
-              on-click="onQuickRemoveClick_"
-              focus-row-control focus-type="quickRemove">
-          </cr-icon-button>
-        </div>
-        <cr-action-menu id="more-actions-menu"
-            role-description="$i18n{actionMenuDescription}">
-          <button class="dropdown-item" on-click="onShowClick_"
-              hidden="[[!hasShowInFolderLink_]]" id="show-in-folder">
-            [[data.showInFolderText]]
-          </button>
-          <button class="dropdown-item" on-click="onPauseOrResumeClick_"
-              hidden="[[!pauseOrResumeText_]]" id="pause-or-resume">
-            [[pauseOrResumeText_]]
-          </button>
-          <button class="dropdown-item" on-click="onRemoveClick_"
-              hidden="[[!computeShowRemove_(isDangerous_, showCancel_)]]"
-              id="remove">
-            $i18n{controlDeleteFromHistory}
-          </button>
-          <button class="dropdown-item" on-click="onDiscardDangerousClick_"
-              hidden="[[!computeShowControlsForDangerous_(isDangerous_,
-                      isReviewable_)]]"
-              id="discard-dangerous">
-            $i18n{controlDeleteFromHistory}
-          </button>
-          <button class="dropdown-item" on-click="onRetryClick_"
-              hidden="[[!data.retry]]" id="retry">
-            $i18n{controlRetry}
-          </button>
-          <button class="dropdown-item" on-click="onDeepScanClick_"
-              hidden="[[!showDeepScan_]]" id="deep-scan">
-            $i18n{controlDeepScan}
-          </button>
-          <button class="dropdown-item" on-click="onBypassDeepScanClick_"
-              hidden="[[!showDeepScan_]]" id="bypass-deep-scan">
-            [[computeSaveDangerousLabel_(displayType_)]]
-          </button>
-          <button class="dropdown-item" on-click="onCancelClick_"
-              hidden="[[!showCancel_]]" id="cancel">
-            $i18n{controlCancel}
-          </button>
-          <button class="dropdown-item" on-click="onOpenAnywayClick_"
-              hidden="[[!showOpenAnyway_]]" id="open-anyway">
-            $i18n{controlOpenAnyway}
-          </button>
-          <button class="dropdown-item" on-click="onDiscardDangerousClick_"
-              hidden="[[!isReviewable_]]" id="reviewable-discard-dangerous">
-            $i18n{dangerDiscard}
-          </button>
-          <button class="dropdown-item" on-click="onReviewDangerousClick_"
-              hidden="[[!isReviewable_]]" id="review-dangerous">
-            $i18n{dangerReview}
-          </button>
-          <button class="dropdown-item" on-click="onSaveDangerousClick_"
-              hidden="[[!computeShowControlsForDangerous_(isDangerous_,
-                      isReviewable_)]]"
-              id="save-dangerous">
-            [[computeSaveDangerousLabel_(displayType_)]]
-          </button>
-        </cr-action-menu>
-      </template>
+      <!-- Menu and/or quick action(s). -->
+      <div role="gridcell" id="action-icon-buttons">
+        <cr-icon-button id="more-actions" iron-icon="cr:more-vert"
+            hidden="[[!computeShowActionMenu_(pauseOrResumeText_,
+                isDangerous_, isReviewable_, showDeepScan_, showCancel_,
+                showOpenAnyway_, data.state, data.retry, data.dangerType)]]"
+            class="dropdown-trigger" title="$i18n{moreActions}"
+            on-click="onMoreActionsClick_" aria-haspopup="menu"
+            focus-row-control focus-type="actionMenuButton">
+        </cr-icon-button>
+        <cr-icon-button id="quick-show-in-folder" class="icon-folder-open"
+            hidden="[[!computeShowQuickShow_(hasShowInFolderLink_,
+                pauseOrResumeText_, isDangerous_, isReviewable_,
+                showDeepScan_, showCancel_, showOpenAnyway_, data.state,
+                data.retry, data.dangerType)]]"
+            title="[[data.showInFolderText]]"
+            aria-label$="[[data.showInFolderText]]" on-click="onShowClick_"
+            focus-row-control focus-type="quickShow">
+        </cr-icon-button>
+        <cr-icon-button id="quick-remove" class="icon-clear"
+            hidden="[[!computeShowQuickRemove_(isDangerous_, showCancel_,
+                isReviewable_)]]"
+            title="$i18n{controlDeleteFromHistory}"
+            aria-label$="$i18n{controlDeleteFromHistory}"
+            on-click="onQuickRemoveClick_"
+            focus-row-control focus-type="quickRemove">
+        </cr-icon-button>
+      </div>
+      <cr-action-menu id="more-actions-menu"
+          role-description="$i18n{actionMenuDescription}">
+        <button class="dropdown-item" on-click="onShowClick_"
+            hidden="[[!hasShowInFolderLink_]]" id="show-in-folder">
+          [[data.showInFolderText]]
+        </button>
+        <button class="dropdown-item" on-click="onPauseOrResumeClick_"
+            hidden="[[!pauseOrResumeText_]]" id="pause-or-resume">
+          [[pauseOrResumeText_]]
+        </button>
+        <button class="dropdown-item" on-click="onRemoveClick_"
+            hidden="[[!computeShowRemove_(isDangerous_, showCancel_)]]"
+            id="remove">
+          $i18n{controlDeleteFromHistory}
+        </button>
+        <button class="dropdown-item" on-click="onDiscardDangerousClick_"
+            hidden="[[!computeShowControlsForDangerous_(isDangerous_,
+                    isReviewable_)]]"
+            id="discard-dangerous">
+          $i18n{controlDeleteFromHistory}
+        </button>
+        <button class="dropdown-item" on-click="onRetryClick_"
+            hidden="[[!data.retry]]" id="retry">
+          $i18n{controlRetry}
+        </button>
+        <button class="dropdown-item" on-click="onDeepScanClick_"
+            hidden="[[!showDeepScan_]]" id="deep-scan">
+          $i18n{controlDeepScan}
+        </button>
+        <button class="dropdown-item" on-click="onBypassDeepScanClick_"
+            hidden="[[!showDeepScan_]]" id="bypass-deep-scan">
+          [[computeSaveDangerousLabel_(displayType_)]]
+        </button>
+        <button class="dropdown-item" on-click="onCancelClick_"
+            hidden="[[!showCancel_]]" id="cancel">
+          $i18n{controlCancel}
+        </button>
+        <button class="dropdown-item" on-click="onOpenAnywayClick_"
+            hidden="[[!showOpenAnyway_]]" id="open-anyway">
+          $i18n{controlOpenAnyway}
+        </button>
+        <button class="dropdown-item" on-click="onDiscardDangerousClick_"
+            hidden="[[!isReviewable_]]" id="reviewable-discard-dangerous">
+          $i18n{dangerDiscard}
+        </button>
+        <button class="dropdown-item" on-click="onReviewDangerousClick_"
+            hidden="[[!isReviewable_]]" id="review-dangerous">
+          $i18n{dangerReview}
+        </button>
+        <button class="dropdown-item" on-click="onSaveDangerousClick_"
+            hidden="[[!computeShowControlsForDangerous_(isDangerous_,
+                    isReviewable_)]]"
+            id="save-dangerous">
+          [[computeSaveDangerousLabel_(displayType_)]]
+        </button>
+      </cr-action-menu>
       <div id="incognito" title="$i18n{inIncognito}" hidden="[[!data.otr]]">
       </div>
     </div>

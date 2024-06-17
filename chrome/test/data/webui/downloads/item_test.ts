@@ -101,9 +101,6 @@ suite('item tests', function() {
       });
 
   test('referrer url on dangerous downloads isn\'t linkable', () => {
-    const item = document.createElement('downloads-item');
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.appendChild(item);
     const referrerUrl = 'https://test.com';
     const displayReferrerUrl = 'https://displaytest.com';
     item.set('data', createDownload({
@@ -203,60 +200,8 @@ suite('item tests', function() {
     assertTrue(item.getFileIcon().hidden);
   });
 
-  test('icon overridden by danger type', async () => {
-    loadTimeData.overrideValues({improvedDownloadWarningsUX: false});
-    const item = document.createElement('downloads-item');
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.appendChild(item);
-    testIconLoader.setShouldIconsLoad(true);
-    item.set('data', createDownload({
-               filePath: 'unique1',
-               hideDate: false,
-               dangerType: DangerType.kSensitiveContentBlock,
-             }));
-    flush();
-
-    assertEquals('cr:error', item.shadowRoot!.querySelector('iron-icon')!.icon);
-    assertTrue(item.$['file-icon'].hidden);
-
-    item.set('data', createDownload({
-               filePath: 'unique1',
-               hideDate: false,
-               dangerType: DangerType.kBlockedTooLarge,
-             }));
-    flush();
-
-    assertEquals('cr:error', item.shadowRoot!.querySelector('iron-icon')!.icon);
-    assertTrue(item.$['file-icon'].hidden);
-
-    item.set('data', createDownload({
-               filePath: 'unique1',
-               hideDate: false,
-               dangerType: DangerType.kBlockedPasswordProtected,
-             }));
-    flush();
-
-    assertEquals('cr:error', item.shadowRoot!.querySelector('iron-icon')!.icon);
-    assertTrue(item.$['file-icon'].hidden);
-
-    item.set('data', createDownload({
-               filePath: 'unique1',
-               hideDate: false,
-               dangerType: DangerType.kDeepScannedFailed,
-             }));
-    flush();
-
-    assertEquals('cr:info', item.shadowRoot!.querySelector('iron-icon')!.icon);
-    assertTrue(item.$['file-icon'].hidden);
-  });
-
   test(
-      'icon overridden by display type for improvedDownloadWarningsUX',
-      async () => {
-        loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
-        const item = document.createElement('downloads-item');
-        document.body.innerHTML = window.trustedTypes!.emptyHTML;
-        document.body.appendChild(item);
+      'icon overridden by display type', async () => {
         testIconLoader.setShouldIconsLoad(true);
         item.set('data', createDownload({
                    filePath: 'unique1',
@@ -364,13 +309,7 @@ suite('item tests', function() {
       });
 
   test(
-      'description color set by display type for improvedDownloadWarningsUX',
-      async () => {
-        loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
-        const item = document.createElement('downloads-item');
-        document.body.innerHTML = window.trustedTypes!.emptyHTML;
-        document.body.appendChild(item);
-
+      'description color set by display type', async () => {
         item.set('data', createDownload({
                    filePath: 'unique1',
                    hideDate: false,
@@ -455,11 +394,6 @@ suite('item tests', function() {
       });
 
   test('description text overridden by tailored warning type', () => {
-    loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
-    const item = document.createElement('downloads-item');
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.appendChild(item);
-
     function assertDescriptionText(expected: string) {
       assertEquals(
           expected,
@@ -514,12 +448,7 @@ suite('item tests', function() {
   });
 
   test(
-      'icon aria-hidden determined by display type for improvedDownloadWarningsUX',
-      () => {
-        loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
-        const item = document.createElement('downloads-item');
-        document.body.innerHTML = window.trustedTypes!.emptyHTML;
-        document.body.appendChild(item);
+      'icon aria-hidden determined by display type', () => {
         testIconLoader.setShouldIconsLoad(true);
 
         const iconWrapper = item.shadowRoot!.querySelector('.icon-wrapper');
@@ -552,10 +481,6 @@ suite('item tests', function() {
       });
 
   test('save dangerous click fires event for dangerous', () => {
-    loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
-    const item = document.createElement('downloads-item');
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.appendChild(item);
     item.set('data', createDownload({
                filePath: 'unique1',
                hideDate: false,
@@ -578,10 +503,6 @@ suite('item tests', function() {
   });
 
   test('save dangerous click does not fire event for suspicious', async () => {
-    loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
-    const item = document.createElement('downloads-item');
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.appendChild(item);
     item.set('data', createDownload({
                id: 'itemId',
                filePath: 'unique1',
@@ -615,10 +536,6 @@ suite('item tests', function() {
   });
 
   test('deep scan dropdown buttons shown on correct state', () => {
-    loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
-    const item = document.createElement('downloads-item');
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.appendChild(item);
     item.set('data', createDownload({
                filePath: 'unique1',
                hideDate: false,
@@ -636,10 +553,6 @@ suite('item tests', function() {
   });
 
   test('local decryption scan icon and text', () => {
-    loadTimeData.overrideValues({'improvedDownloadWarningsUX': true});
-    const item = document.createElement('downloads-item');
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.appendChild(item);
     item.set('data', createDownload({
                filePath: 'unique1',
                hideDate: false,
@@ -658,10 +571,6 @@ suite('item tests', function() {
   });
 
   test('open anyway dropdown button shown on failed deep scan', () => {
-    loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
-    const item = document.createElement('downloads-item');
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.appendChild(item);
     item.set('data', createDownload({
                filePath: 'unique1',
                hideDate: false,
@@ -678,14 +587,8 @@ suite('item tests', function() {
   });
 
   test('undo is shown in toast', () => {
-    loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
-    const item = document.createElement('downloads-item');
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.appendChild(item);
     item.set('data', createDownload({hideDate: false}));
     flush();
-    toastManager = document.createElement('cr-toast-manager');
-    document.body.appendChild(toastManager);
     toastManager.show('', /* hideSlotted= */ true);
     assertTrue(toastManager.slottedHidden);
     // There's no menu button when the item is normal (not dangerous) and
@@ -702,18 +605,12 @@ suite('item tests', function() {
   });
 
   test('undo is not shown in toast when item is dangerous', () => {
-    loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
-    const item = document.createElement('downloads-item');
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.appendChild(item);
     item.set('data', createDownload({
                hideDate: false,
                isDangerous: true,
                state: State.kDangerous,
              }));
     flush();
-    toastManager = document.createElement('cr-toast-manager');
-    document.body.appendChild(toastManager);
     toastManager.show('', /* hideSlotted= */ false);
     assertFalse(toastManager.slottedHidden);
     const moreActionsButton = item.getMoreActionsButton();
@@ -729,18 +626,12 @@ suite('item tests', function() {
   });
 
   test('undo is not shown in toast when item is insecure', () => {
-    loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
-    const item = document.createElement('downloads-item');
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.appendChild(item);
     item.set('data', createDownload({
                hideDate: false,
                isInsecure: true,
                state: State.kInsecure,
              }));
     flush();
-    toastManager = document.createElement('cr-toast-manager');
-    document.body.appendChild(toastManager);
     toastManager.show('', /* hideSlotted= */ false);
     assertFalse(toastManager.slottedHidden);
     const moreActionsButton = item.getMoreActionsButton();
@@ -756,12 +647,6 @@ suite('item tests', function() {
   });
 
   test('quick remove button discards dangerous item', async function() {
-    // TODO(chlily): cleanup/refactor test setup to account for the launch of
-    // improved download warnings.
-    loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
-    const item = document.createElement('downloads-item');
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.appendChild(item);
     item.set('data', createDownload({
                id: 'itemId',
                filePath: 'unique1',
@@ -770,8 +655,6 @@ suite('item tests', function() {
                state: State.kDangerous,
              }));
     flush();
-    toastManager = document.createElement('cr-toast-manager');
-    document.body.appendChild(toastManager);
     const quickRemoveButton =
         item.shadowRoot!.querySelector<HTMLElement>('#quick-remove');
     assertTrue(!!quickRemoveButton);
@@ -783,18 +666,12 @@ suite('item tests', function() {
   });
 
   test('quick remove button removes normal item', async function() {
-    loadTimeData.overrideValues({improvedDownloadWarningsUX: true});
-    const item = document.createElement('downloads-item');
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    document.body.appendChild(item);
     item.set('data', createDownload({
                id: 'itemId',
                filePath: 'unique1',
                hideDate: false,
              }));
     flush();
-    toastManager = document.createElement('cr-toast-manager');
-    document.body.appendChild(toastManager);
     const quickRemoveButton =
         item.shadowRoot!.querySelector<HTMLElement>('#quick-remove');
     assertTrue(!!quickRemoveButton);
