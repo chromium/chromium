@@ -37,6 +37,13 @@ extern const wchar_t kRegGlsPath[];
 // Enables verbose logging in GCPW.
 extern const wchar_t kRegEnableVerboseLogging[];
 
+// Enables logging to a specified file path.
+extern const wchar_t kRegLogFilePath[];
+
+// If logging to a file, indicates whether the data should be appended to the
+// existing file or not.
+extern const wchar_t kRegLogFileAppend[];
+
 // Determines if crash reporting is initialized for credential provider DLL.
 extern const wchar_t kRegInitializeCrashReporting[];
 

@@ -160,6 +160,17 @@ BOOL CGaiaCredentialProviderModule::DllMain(HINSTANCE /*hinstance*/,
       // Initialize logging.
       logging::LoggingSettings settings;
       settings.logging_dest = logging::LOG_NONE;
+
+      std::wstring log_file_path =
+          GetGlobalFlagOrDefault(kRegLogFilePath, std::wstring{});
+      if (not log_file_path.empty()) {
+        settings.logging_dest = logging::LOG_TO_FILE;
+        bool append_log = GetGlobalFlagOrDefault(kRegLogFileAppend, 0);
+        settings.delete_old = append_log ? logging::APPEND_TO_OLD_LOG_FILE
+                                         : logging::DELETE_OLD_LOG_FILE;
+        settings.log_file_path = log_file_path;
+      }
+
       logging::InitLogging(settings);
       logging::SetLogItems(true,    // Enable process id.
                            true,    // Enable thread id.
