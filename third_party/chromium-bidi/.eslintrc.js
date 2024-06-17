@@ -99,6 +99,15 @@ module.exports = {
             devDependencies: false,
           },
         ],
+        'no-restricted-syntax': [
+          'error',
+          {
+            message:
+              'When `registerPromiseEvent` the `then` need to have a second catch argument',
+            selector:
+              'CallExpression[callee.property.name="registerPromiseEvent"] > :first-child[callee.property.name="then"][arguments.length<2]',
+          },
+        ],
         // keep-sorted start block=yes sticky_comments=yes
         '@typescript-eslint/array-type': 'warn',
         '@typescript-eslint/consistent-generic-constructors': 'warn',

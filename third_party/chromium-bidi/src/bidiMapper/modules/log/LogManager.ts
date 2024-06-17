@@ -163,23 +163,29 @@ export class LogManager {
 
       for (const browsingContext of realm.associatedBrowsingContexts) {
         this.#eventManager.registerPromiseEvent(
-          LogManager.#getExceptionText(params, realm).then((text) => ({
-            kind: 'success',
-            value: {
-              type: 'event',
-              method: ChromiumBidi.Log.EventNames.LogEntryAdded,
-              params: {
-                level: Log.Level.Error,
-                source: realm.source,
-                text,
-                timestamp: Math.round(params.timestamp),
-                stackTrace: getBidiStackTrace(
-                  params.exceptionDetails.stackTrace
-                ),
-                type: 'javascript',
+          LogManager.#getExceptionText(params, realm).then(
+            (text) => ({
+              kind: 'success',
+              value: {
+                type: 'event',
+                method: ChromiumBidi.Log.EventNames.LogEntryAdded,
+                params: {
+                  level: Log.Level.Error,
+                  source: realm.source,
+                  text,
+                  timestamp: Math.round(params.timestamp),
+                  stackTrace: getBidiStackTrace(
+                    params.exceptionDetails.stackTrace
+                  ),
+                  type: 'javascript',
+                },
               },
-            },
-          })),
+            }),
+            (error) => ({
+              kind: 'error',
+              error,
+            })
+          ),
           browsingContext.id,
           ChromiumBidi.Log.EventNames.LogEntryAdded
         );
