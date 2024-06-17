@@ -35,6 +35,12 @@ luci.bucket(
             roles = acl.SCHEDULER_TRIGGERER,
             groups = "project-chromium-scheduler-triggerers",
         ),
+        acl.entry(
+            roles = acl.SCHEDULER_OWNER,
+            groups = [
+                "mdb/chrome-troopers",
+            ],
+        ),
     ],
 )
 
