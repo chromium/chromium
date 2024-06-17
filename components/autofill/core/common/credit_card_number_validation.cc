@@ -6,6 +6,9 @@
 
 #include <stddef.h>
 
+#include <string>
+#include <string_view>
+
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/strings/string_number_conversions.h"
@@ -17,12 +20,12 @@
 
 namespace autofill {
 
-bool IsValidCreditCardNumber(const std::u16string& text) {
+bool IsValidCreditCardNumber(std::u16string_view text) {
   const std::u16string number = StripCardNumberSeparators(text);
   return HasCorrectCreditCardNumberLength(number) && PassesLuhnCheck(number);
 }
 
-bool HasCorrectCreditCardNumberLength(const std::u16string& number) {
+bool HasCorrectCreditCardNumberLength(std::u16string_view number) {
   // Credit card numbers are at most 19 digits in length, 12 digits seems to
   // be a fairly safe lower-bound [1].  Specific card issuers have more rigidly
   // defined sizes.
@@ -60,7 +63,7 @@ bool HasCorrectCreditCardNumberLength(const std::u16string& number) {
   return true;
 }
 
-bool PassesLuhnCheck(const std::u16string& number) {
+bool PassesLuhnCheck(std::u16string_view number) {
   // Use the Luhn formula [3] to validate the number.
   // [3] http://en.wikipedia.org/wiki/Luhn_algorithm
   int sum = 0;
@@ -82,13 +85,13 @@ bool PassesLuhnCheck(const std::u16string& number) {
   return (sum % 10) == 0;
 }
 
-std::u16string StripCardNumberSeparators(const std::u16string& number) {
+std::u16string StripCardNumberSeparators(std::u16string_view number) {
   std::u16string stripped;
   base::RemoveChars(number, u"- ", &stripped);
   return stripped;
 }
 
-const char* GetCardNetwork(const std::u16string& number) {
+const char* GetCardNetwork(std::u16string_view number) {
   // Credit card number specifications taken from:
   // https://en.wikipedia.org/wiki/Payment_card_number,
   // http://www.regular-expressions.info/creditcard.html,
