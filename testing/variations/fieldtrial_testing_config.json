@@ -10668,41 +10668,6 @@
             ]
         }
     ],
-    "HelpAppAppsDiscoveryV2": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros"
-            ],
-            "experiments": [
-                {
-                    "name": "AllEnabled",
-                    "enable_features": [
-                        "HelpAppAppsList",
-                        "HelpAppHomePageAppArticles"
-                    ]
-                },
-                {
-                    "name": "OnlyHomePageAppArticlesEnabled",
-                    "enable_features": [
-                        "HelpAppHomePageAppArticles"
-                    ],
-                    "disable_features": [
-                        "HelpAppAppsList"
-                    ]
-                },
-                {
-                    "name": "OnlyAppsListEnabled",
-                    "enable_features": [
-                        "HelpAppAppsList"
-                    ],
-                    "disable_features": [
-                        "HelpAppHomePageAppArticles"
-                    ]
-                }
-            ]
-        }
-    ],
     "HelpAppLauncherSearch": [
         {
             "platforms": [

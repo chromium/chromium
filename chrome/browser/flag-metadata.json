@@ -4944,7 +4944,7 @@
   {
     "name": "help-app-apps-list",
     "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
-    "expiry_milestone": 126
+    "expiry_milestone": 132
   },
   {
     "name": "help-app-auto-trigger-install-dialog",
@@ -4954,7 +4954,7 @@
   {
     "name": "help-app-home-page-app-articles",
     "owners": [ "//ash/webui/help_app_ui/OWNERS" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 132
   },
   {
     "name": "help-app-launcher-search",

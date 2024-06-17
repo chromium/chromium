@@ -1491,7 +1491,7 @@ BASE_FEATURE(kHelpAppAppDetailPage,
 // If enabled, the Help app will render the Apps List page and entry point.
 BASE_FEATURE(kHelpAppAppsList,
              "HelpAppAppsList",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the logic that auto triggers the install dialog during the web app
 // install flow initiated from the Help App.
@@ -1503,7 +1503,7 @@ BASE_FEATURE(kHelpAppAutoTriggerInstallDialog,
 // articles about apps.
 BASE_FEATURE(kHelpAppHomePageAppArticles,
              "HelpAppHomePageAppArticles",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable showing search results from the help app in the launcher.
 BASE_FEATURE(kHelpAppLauncherSearch,
