@@ -321,13 +321,12 @@ TEST_F(StoreMetricsReporterTest, ReportMetricsAtMostOncePerDay) {
   account_store->Init(&prefs_, /*affiliated_match_helper=*/nullptr);
 
   base::HistogramTester histogram_tester;
-  base::MockCallback<base::OnceClosure> done_callback;
+  base::test::TestFuture<void> done_callback_future;
   StoreMetricsReporter reporter(
       profile_store.get(), account_store.get(), sync_service(), &prefs_,
-      /*password_reuse_manager=*/nullptr, done_callback.Get());
+      /*password_reuse_manager=*/nullptr, done_callback_future.GetCallback());
   histogram_tester.ExpectTotalCount("PasswordManager.EnableState", 1);
-  EXPECT_CALL(done_callback, Run());
-  RunUntilIdle();
+  ASSERT_TRUE(done_callback_future.Wait());
 
   EXPECT_EQ(
       pref_service()->GetInteger(prefs::kTotalPasswordsAvailableForAccount), 0);
@@ -342,13 +341,12 @@ TEST_F(StoreMetricsReporterTest, ReportMetricsAtMostOncePerDay) {
   account_store->AddLogin(CreateForm(kRealm, "anaccountuser", "anaccountpass"));
 
   base::HistogramTester histogram_tester2;
-  base::MockCallback<base::OnceClosure> done_callback2;
+  base::test::TestFuture<void> done_callback_future2;
   StoreMetricsReporter reporter2(
       profile_store.get(), account_store.get(), sync_service(), &prefs_,
-      /*password_reuse_manager=*/nullptr, done_callback2.Get());
+      /*password_reuse_manager=*/nullptr, done_callback_future2.GetCallback());
   histogram_tester2.ExpectTotalCount("PasswordManager.Enabled4", 0);
-  EXPECT_CALL(done_callback2, Run());
-  RunUntilIdle();
+  ASSERT_TRUE(done_callback_future2.Wait());
 
   // The total passwords count wasn't updated because it's too soon.
   EXPECT_EQ(

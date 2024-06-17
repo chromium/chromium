@@ -98,12 +98,6 @@ enum class SyncingAccountState {
   kMaxValue = kNotSyncingAndSyncPasswordSaved,
 };
 
-// Used for counting credentials that were found in both stores.
-struct CredentialsCount {
-  int profile_credentials_count = 0;
-  int account_credentials_count = 0;
-};
-
 void LogAccountStatHiRes(const std::string& name, int sample) {
   base::UmaHistogramCustomCounts(name, sample, 0, 1000, 100);
 }
@@ -583,7 +577,7 @@ void ReportMultiStoreMetrics(
   }
 }
 
-CredentialsCount ReportAllMetrics(
+StoreMetricsReporter::CredentialsCount ReportAllMetrics(
     bool custom_passphrase_enabled,
     const std::string& sync_username,
     bool is_opted_in_account_storage,
@@ -622,7 +616,7 @@ CredentialsCount ReportAllMetrics(
     }
   }
 
-  CredentialsCount credentials_count;
+  StoreMetricsReporter::CredentialsCount credentials_count;
 
   if (profile_store_results.has_value()) {
     credentials_count.profile_credentials_count = ReportStoreMetrics(
@@ -656,75 +650,6 @@ enum class PasswordManagerCredentialRemovalReason {
   kToBeDefined = 0,  // Stored as (1<<0) in the bit vector.
   kMaxValue = kToBeDefined,
 };
-
-void OnBackgroundMetricsReportingCompleted(
-    base::WeakPtr<StoreMetricsReporter> reporter_weak_ptr,
-    base::OnceClosure done_callback,
-    PrefService* prefs,
-    CredentialsCount credentials_count) {
-  // Metrics reporting is performed asynchronously on a background thread. By
-  // the time metrics reporting is completed, it could be the case that the
-  // StoreMetricsReporter has been destructed already (e.g. if the user closes
-  // the browser profile for which metrics are being reported). If the reporter
-  // doesn't exist anymore, it's pointless (and wrong) to run the
-  // `done_callback` since the main purpose of the `done_callback` is to
-  // destroy the reporter (as in password_store_utils.cc).
-  if (reporter_weak_ptr) {
-    std::move(done_callback).Run();
-
-    // Check for password loss and record metrics if a loss occurred.
-    // These metrics can't be recorded together with the rest of the metrics on
-    // the background thread because they require reading from Chrome prefs,
-    // which can't happen on the background thread.
-    int old_account_credentials_count =
-        prefs->GetInteger(prefs::kTotalPasswordsAvailableForAccount);
-    if (old_account_credentials_count > 0 &&
-        credentials_count.account_credentials_count == 0) {
-      std::string_view store_suffix =
-          GetMetricsSuffixForStore(/*is_account_store=*/true);
-      base::UmaHistogramCustomCounts(
-          base::StrCat({kPasswordManager, store_suffix, kPasswordLossSuffix}),
-          old_account_credentials_count, 0, 1000, 100);
-
-      int credential_removal_reasons =
-          prefs->GetInteger(prefs::kPasswordRemovalReasonForAccount);
-      base::UmaHistogramSparse(
-          base::StrCat({kPasswordManager, store_suffix,
-                        kPasswordLossPotentialReasonSuffix}),
-          credential_removal_reasons);
-    }
-
-    int old_profile_credentials_count =
-        prefs->GetInteger(prefs::kTotalPasswordsAvailableForProfile);
-    if (old_profile_credentials_count > 0 &&
-        credentials_count.profile_credentials_count == 0) {
-      std::string_view store_suffix =
-          GetMetricsSuffixForStore(/*is_account_store=*/false);
-      base::UmaHistogramCustomCounts(
-          base::StrCat({kPasswordManager, store_suffix, kPasswordLossSuffix}),
-          old_profile_credentials_count, 0, 1000, 100);
-
-      int credential_removal_reasons =
-          prefs->GetInteger(prefs::kPasswordRemovalReasonForProfile);
-      base::UmaHistogramSparse(
-          base::StrCat({kPasswordManager, store_suffix,
-                        kPasswordLossPotentialReasonSuffix}),
-          credential_removal_reasons);
-    }
-
-    // Store the current total count of passwords per store for tracking
-    // potential password loss in the future.
-    prefs->SetInteger(prefs::kTotalPasswordsAvailableForAccount,
-                      credentials_count.account_credentials_count);
-    prefs->SetInteger(prefs::kTotalPasswordsAvailableForProfile,
-                      credentials_count.profile_credentials_count);
-
-    // The reasons for password loss need to be tracked anew because the old
-    // ones were already processed.
-    prefs->ClearPref(prefs::kPasswordRemovalReasonForAccount);
-    prefs->ClearPref(prefs::kPasswordRemovalReasonForProfile);
-  }
-}
 
 void ReportBiometricAuthenticationBeforeFillingMetrics(PrefService* prefs) {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
@@ -836,18 +761,79 @@ void StoreMetricsReporter::OnGetPasswordStoreResultsFrom(
 
   DCHECK(done_callback_);
 
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+  // Metrics reporting is performed asynchronously on a background thread. By
+  // the time metrics reporting is completed, it could be the case that the
+  // StoreMetricsReporter has been destructed already (e.g. if the user closes
+  // the browser profile for which metrics are being reported) so
+  // `OnBackgroundMetricsReportingCompleted` won't run.
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&ReportAllMetrics, custom_passphrase_enabled_,
                      sync_username_, is_opted_in_account_storage_,
                      is_safe_browsing_enabled_,
                      std::exchange(profile_store_results_, std::nullopt),
                      std::exchange(account_store_results_, std::nullopt)),
-      base::BindOnce(&OnBackgroundMetricsReportingCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(done_callback_),
-                     prefs_));
+      base::BindOnce(
+          &StoreMetricsReporter::OnBackgroundMetricsReportingCompleted,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 StoreMetricsReporter::~StoreMetricsReporter() = default;
+
+void StoreMetricsReporter::OnBackgroundMetricsReportingCompleted(
+    CredentialsCount credentials_count) {
+  // Check for password loss and record metrics if a loss occurred.
+  // These metrics can't be recorded together with the rest of the metrics on
+  // the background thread because they require reading from Chrome prefs,
+  // which can't happen on the background thread.
+  int old_account_credentials_count =
+      prefs_->GetInteger(prefs::kTotalPasswordsAvailableForAccount);
+  if (old_account_credentials_count > 0 &&
+      credentials_count.account_credentials_count == 0) {
+    std::string_view store_suffix =
+        GetMetricsSuffixForStore(/*is_account_store=*/true);
+    base::UmaHistogramCustomCounts(
+        base::StrCat({kPasswordManager, store_suffix, kPasswordLossSuffix}),
+        old_account_credentials_count, 0, 1000, 100);
+
+    int credential_removal_reasons =
+        prefs_->GetInteger(prefs::kPasswordRemovalReasonForAccount);
+    base::UmaHistogramSparse(base::StrCat({kPasswordManager, store_suffix,
+                                           kPasswordLossPotentialReasonSuffix}),
+                             credential_removal_reasons);
+  }
+
+  int old_profile_credentials_count =
+      prefs_->GetInteger(prefs::kTotalPasswordsAvailableForProfile);
+  if (old_profile_credentials_count > 0 &&
+      credentials_count.profile_credentials_count == 0) {
+    std::string_view store_suffix =
+        GetMetricsSuffixForStore(/*is_account_store=*/false);
+    base::UmaHistogramCustomCounts(
+        base::StrCat({kPasswordManager, store_suffix, kPasswordLossSuffix}),
+        old_profile_credentials_count, 0, 1000, 100);
+
+    int credential_removal_reasons =
+        prefs_->GetInteger(prefs::kPasswordRemovalReasonForProfile);
+    base::UmaHistogramSparse(base::StrCat({kPasswordManager, store_suffix,
+                                           kPasswordLossPotentialReasonSuffix}),
+                             credential_removal_reasons);
+  }
+
+  // Store the current total count of passwords per store for tracking
+  // potential password loss in the future.
+  prefs_->SetInteger(prefs::kTotalPasswordsAvailableForAccount,
+                     credentials_count.account_credentials_count);
+  prefs_->SetInteger(prefs::kTotalPasswordsAvailableForProfile,
+                     credentials_count.profile_credentials_count);
+
+  // The reasons for password loss need to be tracked anew because the old
+  // ones were already processed.
+  prefs_->ClearPref(prefs::kPasswordRemovalReasonForAccount);
+  prefs_->ClearPref(prefs::kPasswordRemovalReasonForProfile);
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, std::move(done_callback_));
+}
 
 }  // namespace password_manager

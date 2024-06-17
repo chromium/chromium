@@ -27,6 +27,12 @@ class PasswordReuseManager;
 // store.
 class StoreMetricsReporter : public PasswordStoreConsumer {
  public:
+  // Used for counting credentials that were found in both stores.
+  struct CredentialsCount {
+    int profile_credentials_count = 0;
+    int account_credentials_count = 0;
+  };
+
   // Reports various metrics based on whether password manager is enabled. Uses
   // |sync_service| password syncing state. Uses |sync_service| to obtain the
   // sync username to report about its presence among saved credentials. Uses
@@ -52,6 +58,9 @@ class StoreMetricsReporter : public PasswordStoreConsumer {
   void OnGetPasswordStoreResultsFrom(
       PasswordStoreInterface* store,
       std::vector<std::unique_ptr<PasswordForm>> results) override;
+
+  void OnBackgroundMetricsReportingCompleted(
+      CredentialsCount credentials_count);
 
   // Since metrics reporting is run in a delayed task, we grab refptrs to the
   // stores, to ensure they're still alive when the delayed task runs.
