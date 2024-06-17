@@ -74,6 +74,17 @@ export class PrivacyGuideCompletionFragmentElement extends
         type: Boolean,
         value: false,
       },
+
+      privacySandboxRowSubLabel_: {
+        type: String,
+        value: () => {
+          return loadTimeData.getString(
+              loadTimeData.getBoolean(
+                  'isPrivacySandboxPrivacyGuideAdTopicsEnabled') ?
+                  'privacyGuideCompletionCardPrivacySandboxSubLabelAdTopics' :
+                  'privacyGuideCompletionCardPrivacySandboxSubLabel');
+        },
+      },
     };
   }
 
@@ -82,6 +93,7 @@ export class PrivacyGuideCompletionFragmentElement extends
   private shouldShowWaa_: boolean;
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
+  private privacySandboxRowSubLabel_: string;
 
   override ready() {
     super.ready();

@@ -51,5 +51,11 @@ export class PrivacyGuideDescriptionItemElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'privacy-guide-description-item': PrivacyGuideDescriptionItemElement;
+  }
+}
+
 customElements.define(
     PrivacyGuideDescriptionItemElement.is, PrivacyGuideDescriptionItemElement);

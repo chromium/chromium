@@ -28,6 +28,8 @@ build_webui("build") {
     "images/password_check_positive.svg",
     "images/permissions_banner_dark.svg",
     "images/permissions_banner.svg",
+    "images/privacy_guide/ad_topics_graphic.svg",
+    "images/privacy_guide/ad_topics_graphic_dark.svg",
     "images/privacy_guide/clouds_graphic_dark.svg",
     "images/privacy_guide/clouds_graphic.svg",
     "images/privacy_guide/completion_banner_dark_v2.svg",

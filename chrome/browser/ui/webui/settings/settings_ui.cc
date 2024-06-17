@@ -563,6 +563,11 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
                           base::FeatureList::IsEnabled(
                               features::kCookieDeprecationFacilitatedTesting));
 
+  html_source->AddBoolean(
+      "isPrivacySandboxPrivacyGuideAdTopicsEnabled",
+      base::FeatureList::IsEnabled(
+          privacy_sandbox::kPrivacySandboxPrivacyGuideAdTopics));
+
   // Performance
   AddSettingsPageUIHandler(std::make_unique<PerformanceHandler>());
   html_source->AddBoolean(

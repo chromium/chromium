@@ -5,6 +5,7 @@
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {PrivacyGuideCompletionFragmentElement} from 'chrome://settings/lazy_load.js';
+import type {CrLinkRowElement} from 'chrome://settings/settings.js';
 import {loadTimeData, MetricsBrowserProxyImpl, OpenWindowProxyImpl, PrivacyGuideInteractions, resetRouterForTesting, Router, routes} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
@@ -102,9 +103,15 @@ suite('CompletionFragment', function() {
         await openWindowProxy.whenCalled('openUrl'));
   });
 
-  test('privacySandboxLinkClick', async function() {
-    fragment.shadowRoot!.querySelector<HTMLElement>(
-                            '#privacySandboxRow')!.click();
+  test('privacySandboxLink', async function() {
+    const privacySandboxRow =
+        fragment.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#privacySandboxRow');
+    assertTrue(!!privacySandboxRow);
+    assertEquals(
+        fragment.i18n('privacyGuideCompletionCardPrivacySandboxSubLabel'),
+        privacySandboxRow.subLabel);
+    privacySandboxRow!.click();
     flush();
 
     assertEquals(
@@ -271,5 +278,40 @@ suite('CompletionFragmentWithoutTrackingProtection', function() {
     assertEquals(
         fragment.i18n('privacyGuideCompletionCardSubHeaderNoLinks'),
         subheader.innerText);
+  });
+});
+
+suite('CompletionFragmentWithAdTopicsCard', function() {
+  let fragment: PrivacyGuideCompletionFragmentElement;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      isPrivacySandboxRestricted: false,
+      isPrivacySandboxRestrictedNoticeEnabled: false,
+      isPrivacySandboxPrivacyGuideAdTopicsEnabled: true,
+    });
+    resetRouterForTesting();
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+
+    assertTrue(loadTimeData.getBoolean('showPrivacyGuide'));
+
+    fragment = document.createElement('privacy-guide-completion-fragment');
+    document.body.appendChild(fragment);
+
+    return flushTasks();
+  });
+
+  test('TestAdTopicsCrLinkRowSubLabel', function() {
+    const privacySandboxRow =
+        fragment.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#privacySandboxRow');
+    assertTrue(!!privacySandboxRow);
+    assertEquals(
+        fragment.i18n(
+            'privacyGuideCompletionCardPrivacySandboxSubLabelAdTopics'),
+        privacySandboxRow.subLabel);
   });
 });

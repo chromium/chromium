@@ -8,17 +8,40 @@
  * card that contains the ad topics setting and its description.
  */
 
+import '../../controls/settings_toggle_button.js';
+import '../../icons.html.js';
+import './privacy_guide_description_item.js';
+
+import {PrefsMixin} from '/shared/settings/prefs/prefs_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import type {SettingsToggleButtonElement} from '../../controls/settings_toggle_button.js';
+import {PrivacySandboxBrowserProxyImpl} from '../../privacy_sandbox/privacy_sandbox_browser_proxy.js';
 
 import {getTemplate} from './privacy_guide_ad_topics_fragment.html.js';
 
-export class PrivacyGuideAdTopicsFragmentElement extends PolymerElement {
+const PrivacyGuideAdTopicsFragmentElementBase = PrefsMixin(PolymerElement);
+
+export class PrivacyGuideAdTopicsFragmentElement extends
+    PrivacyGuideAdTopicsFragmentElementBase {
   static get is() {
     return 'privacy-guide-ad-topics-fragment';
   }
 
   static get template() {
     return getTemplate();
+  }
+
+  static get properties() {
+    return {
+      /**
+       * Preferences state.
+       */
+      prefs: {
+        type: Object,
+        notify: true,
+      },
+    };
   }
 
   override focus() {
@@ -28,6 +51,12 @@ export class PrivacyGuideAdTopicsFragmentElement extends PolymerElement {
     // to continue navigating the screen reader position downwards through the
     // newly visible content.
     this.shadowRoot!.querySelector<HTMLElement>('[focus-element]')!.focus();
+  }
+
+  private onToggleChange_(e: Event) {
+    const target = e.target as SettingsToggleButtonElement;
+    PrivacySandboxBrowserProxyImpl.getInstance().topicsToggleChanged(
+        target.checked);
   }
 }
 

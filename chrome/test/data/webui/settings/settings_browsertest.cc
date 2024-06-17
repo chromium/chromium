@@ -875,6 +875,17 @@ IN_PROC_BROWSER_TEST_F(
           "CompletionFragmentPrivacySandboxRestrictedWithNoticeEnabled')");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest,
+                       CompletionFragmentWithAdTopicsCard) {
+  RunTest("settings/privacy_guide_completion_fragment_test.js",
+          "runMochaSuite('CompletionFragmentWithAdTopicsCard')");
+}
+
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, AdTopicsFragment) {
+  RunTest("settings/privacy_guide_ad_topics_fragment_test.js",
+          "runMochaSuite('AdTopicsFragment')");
+}
+
 class SettingsPrivacyPagePrivacySandboxRestrictedTest
     : public SettingsBrowserTest {
  protected:
