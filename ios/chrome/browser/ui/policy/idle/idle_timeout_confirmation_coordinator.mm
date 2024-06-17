@@ -56,8 +56,8 @@ constexpr base::TimeDelta kDialogTimeout = base::Seconds(30);
   CHECK(titleId)
       << "The idle timeout confirmation dialog title id should not be empty";
   int subtitleId = enterprise_idle::GetIdleTimeoutActionsSubtitleId(
-      actions, /*is_account_managed=*/authService->HasPrimaryIdentityManaged(
-          signin::ConsentLevel::kSignin));
+      actions,
+      /*is_data_cleared_on_signout=*/authService->ShouldClearDataOnSignOut());
 
   _presentedViewController = [[IdleTimeoutConfirmationViewController alloc]
       initWithIdleTimeoutTitleId:*titleId

@@ -16,6 +16,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/signin/ios/browser/features.h"
@@ -497,8 +498,9 @@ TEST_F(AuthenticationServiceTest, SignedInManagedAccountSignOut) {
 
 // Tests that local data is cleared on signout when
 // `kClearDeviceDataOnSignOutForManagedUsers` is enabled for a managed account.
-TEST_F(AuthenticationServiceTest,
-       SignedInManagedAccountSignOutWithClearDataFeatureEnabled) {
+TEST_F(
+    AuthenticationServiceTest,
+    SignedInManagedAccountSignOutWithClearDataFeatureEnabled_UnmanagedBrowser) {
   scoped_feature_list_.InitWithFeatures(
       {kClearDeviceDataOnSignOutForManagedUsers}, {});
   fake_system_identity_manager()->AddManagedIdentities(@[ @"foo3" ]);
@@ -515,11 +517,43 @@ TEST_F(AuthenticationServiceTest,
   // passed. This is intended because signout is not always triggered from UI
   // sources that set this value to true.
   authentication_service()->SignOut(
-      signin_metrics::ProfileSignout::kAbortSignin,
+      signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
       /*force_clear_browsing_data=*/false, nil);
   EXPECT_FALSE(HasCachedMDMInfo(identity(2)));
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 0UL);
   EXPECT_EQ(ClearBrowsingDataCount(), 1);
+}
+
+// Tests that local data is not cleared on managed user's signout when
+// `kClearDeviceDataOnSignOutForManagedUsers` is enabled for a managed account
+// and the browser is managed.
+TEST_F(
+    AuthenticationServiceTest,
+    SignedInManagedAccountSignOutWithClearDataFeatureEnabled_ManagedBrowser) {
+  scoped_feature_list_.InitWithFeatures(
+      {kClearDeviceDataOnSignOutForManagedUsers}, {});
+  // Add managed configuration so the browser is managed.
+  NSUserDefaults* userDefaults = [NSUserDefaults standardUserDefaults];
+  NSDictionary* dict = @{@"key" : @"value"};
+  [userDefaults setObject:dict forKey:kPolicyLoaderIOSConfigurationKey];
+  fake_system_identity_manager()->AddManagedIdentities(@[ @"foo3" ]);
+
+  authentication_service()->SignIn(
+      identity(2), signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 3UL);
+  ASSERT_TRUE(authentication_service()->HasPrimaryIdentityManaged(
+      signin::ConsentLevel::kSignin));
+  VerifyLastSigninTimestamp();
+
+  SetCachedMDMInfo(identity(2), CreateRefreshAccessTokenError(identity(0)));
+  // Data should not be cleared if the browser is managed.
+  authentication_service()->SignOut(
+      signin_metrics::ProfileSignout::kAbortSignin,
+      /*force_clear_browsing_data=*/false, nil);
+  ASSERT_FALSE(HasCachedMDMInfo(identity(2)));
+  ASSERT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 0UL);
+  EXPECT_EQ(ClearBrowsingDataCount(), 0);
+  [userDefaults removeObjectForKey:kPolicyLoaderIOSConfigurationKey];
 }
 
 // Tests that MDM errors do not lead to seeding empty account ids.

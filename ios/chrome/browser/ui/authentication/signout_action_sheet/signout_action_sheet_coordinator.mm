@@ -162,9 +162,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   DCHECK(self.browser);
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
-  if (self.authenticationService->HasPrimaryIdentityManaged(
-          signin::ConsentLevel::kSignin) &&
-      base::FeatureList::IsEnabled(kClearDeviceDataOnSignOutForManagedUsers)) {
+  if (self.authenticationService->ShouldClearDataOnSignOut()) {
     return SignedInUserStateWithManagedAccountClearsDataOnSignout;
   }
   // TODO(crbug.com/40066949): Simplify once ConsentLevel::kSync and

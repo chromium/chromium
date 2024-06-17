@@ -105,6 +105,9 @@ class AuthenticationService : public KeyedService,
   virtual bool HasPrimaryIdentityManaged(
       signin::ConsentLevel consent_level) const;
 
+  // Returns true if data should be cleared on sign-out.
+  virtual bool ShouldClearDataOnSignOut() const;
+
   // Retrieves the identity of the currently authenticated user or `nil` if
   // either the user is not authenticated, or is authenticated through
   // ClientLogin.

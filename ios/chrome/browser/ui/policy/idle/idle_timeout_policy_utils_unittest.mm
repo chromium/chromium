@@ -87,9 +87,9 @@ TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_AllTypes_UserSignedIn) {
             IDS_IOS_IDLE_TIMEOUT_ALL_ACTIONS_TITLE);
   EXPECT_EQ(GetIdleTimeoutActionsSnackbarMessageId(action_set),
             IDS_IOS_IDLE_TIMEOUT_ALL_ACTIONS_SNACKBAR_MESSAGE);
-  EXPECT_EQ(
-      GetIdleTimeoutActionsSubtitleId(action_set, /*is_account_managed=*/false),
-      IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA);
+  EXPECT_EQ(GetIdleTimeoutActionsSubtitleId(
+                action_set, /*is_data_cleared_on_signout=*/false),
+            IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA);
 }
 
 TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_AllTypes_UserSignedOut) {
@@ -104,9 +104,9 @@ TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_AllTypes_UserSignedOut) {
             IDS_IOS_IDLE_TIMEOUT_CLOSE_TABS_AND_CLEAR_DATA_TITLE);
   EXPECT_EQ(GetIdleTimeoutActionsSnackbarMessageId(action_set),
             IDS_IOS_IDLE_TIMEOUT_CLOSE_TABS_AND_CLEAR_DATA_SNACKBAR_MESSAGE);
-  EXPECT_EQ(
-      GetIdleTimeoutActionsSubtitleId(action_set, /*is_account_managed=*/false),
-      IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA);
+  EXPECT_EQ(GetIdleTimeoutActionsSubtitleId(
+                action_set, /*is_data_cleared_on_signout=*/false),
+            IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA);
 }
 
 TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_Signout_UserSignedIn) {
@@ -121,9 +121,9 @@ TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_Signout_UserSignedIn) {
             IDS_IOS_IDLE_TIMEOUT_SIGNOUT_TITLE);
   EXPECT_EQ(GetIdleTimeoutActionsSnackbarMessageId(action_set),
             IDS_IOS_IDLE_TIMEOUT_SIGNOUT_SNACKBAR_MESSAGE);
-  EXPECT_EQ(
-      GetIdleTimeoutActionsSubtitleId(action_set, /*is_account_managed=*/false),
-      IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITHOUT_CLEAR_DATA);
+  EXPECT_EQ(GetIdleTimeoutActionsSubtitleId(
+                action_set, /*is_data_cleared_on_signout=*/false),
+            IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITHOUT_CLEAR_DATA);
 }
 
 TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_Signout_UserSignedOut) {
@@ -149,9 +149,9 @@ TEST_F(IdleTimeoutPolicyUtilsTest, AllActionsToActionSet_CloseTabs) {
             IDS_IOS_IDLE_TIMEOUT_CLOSE_TABS_TITLE);
   EXPECT_EQ(GetIdleTimeoutActionsSnackbarMessageId(action_set),
             IDS_IOS_IDLE_TIMEOUT_CLOSE_TABS_SNACKBAR_MESSAGE);
-  EXPECT_EQ(
-      GetIdleTimeoutActionsSubtitleId(action_set, /*is_account_managed=*/false),
-      IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITHOUT_CLEAR_DATA);
+  EXPECT_EQ(GetIdleTimeoutActionsSubtitleId(
+                action_set, /*is_data_cleared_on_signout=*/false),
+            IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITHOUT_CLEAR_DATA);
 }
 
 TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_ClearBrowsingHistory) {
@@ -165,9 +165,9 @@ TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_ClearBrowsingHistory) {
             IDS_IOS_IDLE_TIMEOUT_CLEAR_DATA_TITLE);
   EXPECT_EQ(GetIdleTimeoutActionsSnackbarMessageId(action_set),
             IDS_IOS_IDLE_TIMEOUT_CLEAR_DATA_SNACKBAR_MESSAGE);
-  EXPECT_EQ(
-      GetIdleTimeoutActionsSubtitleId(action_set, /*is_account_managed=*/false),
-      IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA);
+  EXPECT_EQ(GetIdleTimeoutActionsSubtitleId(
+                action_set, /*is_data_cleared_on_signout=*/false),
+            IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA);
 }
 
 TEST_F(IdleTimeoutPolicyUtilsTest,
@@ -220,9 +220,9 @@ TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_SignoutAndClearData) {
   // `IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA` should take precedence over
   // `IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA_ON_SIGNOUT` even if the
   // `is_managed` flag is true.
-  EXPECT_EQ(
-      GetIdleTimeoutActionsSubtitleId(action_set, /*is_account_managed=*/true),
-      IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA);
+  EXPECT_EQ(GetIdleTimeoutActionsSubtitleId(
+                action_set, /*is_data_cleared_on_signout=*/true),
+            IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA);
 }
 
 TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_SignoutAndCloseTabs) {
@@ -237,17 +237,17 @@ TEST_F(IdleTimeoutPolicyUtilsTest, ActionsToActionSet_SignoutAndCloseTabs) {
             IDS_IOS_IDLE_TIMEOUT_CLOSE_TABS_AND_SIGNOUT_TITLE);
   EXPECT_EQ(GetIdleTimeoutActionsSnackbarMessageId(action_set),
             IDS_IOS_IDLE_TIMEOUT_CLOSE_TABS_AND_SIGNOUT_SNACKBAR_MESSAGE);
-  EXPECT_EQ(
-      GetIdleTimeoutActionsSubtitleId(action_set, /*is_account_managed=*/false),
-      IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITHOUT_CLEAR_DATA);
+  EXPECT_EQ(GetIdleTimeoutActionsSubtitleId(
+                action_set, /*is_data_cleared_on_signout=*/false),
+            IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITHOUT_CLEAR_DATA);
 }
 
 TEST_F(IdleTimeoutPolicyUtilsTest,
        ActionsToActionSet_SignoutAndCloseTabsWithManagedState) {
   // Sign in and verify that the signout action is set to true. Note that it
   // does not make a difference whether this is a sign-in to a managed or
-  // unmanaged account becasuse `is_account_managed` is hard coded to true in
-  // the `GetIdleTimeoutActionsSubtitleId` method under test below.
+  // unmanaged account becasuse `is_data_cleared_on_signout` is hard coded to
+  // true in the `GetIdleTimeoutActionsSubtitleId` method under test below.
   SignIn();
   SetIdleTimeoutActions({ActionType::kSignOut, ActionType::kCloseTabs});
   ActionSet action_set = GetActionSet(pref_service_, authentication_service_);
@@ -259,9 +259,9 @@ TEST_F(IdleTimeoutPolicyUtilsTest,
             IDS_IOS_IDLE_TIMEOUT_CLOSE_TABS_AND_SIGNOUT_TITLE);
   EXPECT_EQ(GetIdleTimeoutActionsSnackbarMessageId(action_set),
             IDS_IOS_IDLE_TIMEOUT_CLOSE_TABS_AND_SIGNOUT_SNACKBAR_MESSAGE);
-  EXPECT_EQ(
-      GetIdleTimeoutActionsSubtitleId(action_set, /*is_account_managed=*/true),
-      IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA_ON_SIGNOUT);
+  EXPECT_EQ(GetIdleTimeoutActionsSubtitleId(
+                action_set, /*is_data_cleared_on_signout=*/true),
+            IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA_ON_SIGNOUT);
 }
 
 }  // namespace enterprise_idle

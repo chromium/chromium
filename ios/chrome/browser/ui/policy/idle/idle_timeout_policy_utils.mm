@@ -39,12 +39,10 @@ std::optional<int> GetIdleTimeoutActionsTitleId(ActionSet actions) {
 }
 
 int GetIdleTimeoutActionsSubtitleId(ActionSet actions,
-                                    bool is_account_managed) {
+                                    bool is_data_cleared_on_signout) {
   if (actions.clear) {
     return IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA;
-  } else if (actions.signout && is_account_managed &&
-             base::FeatureList::IsEnabled(
-                 kClearDeviceDataOnSignOutForManagedUsers)) {
+  } else if (actions.signout && is_data_cleared_on_signout) {
     return IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA_ON_SIGNOUT;
   } else {
     return IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITHOUT_CLEAR_DATA;

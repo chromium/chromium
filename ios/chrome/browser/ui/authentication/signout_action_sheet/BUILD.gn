@@ -68,6 +68,7 @@ source_set("eg2_tests") {
     "//base",
     "//base/test:test_support",
     "//build:branding_buildflags",
+    "//components/policy/core/common:common_constants",
     "//components/sync/base:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/public/features",

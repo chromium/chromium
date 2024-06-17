@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -16,6 +18,7 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
+#import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -69,6 +72,14 @@ void ClickSignOutInAccountSettings() {
   // Enable the feature that shows the clear data on signout dialog for managed
   // accounts.
   config.features_enabled.push_back(kClearDeviceDataOnSignOutForManagedUsers);
+  return config;
+}
+
+- (AppLaunchConfiguration)managedAppConfigurationForTestCase {
+  AppLaunchConfiguration config = self.appConfigurationForTestCase;
+  config.additional_args.push_back(base::StrCat(
+      {"-", base::SysNSStringToUTF8(kPolicyLoaderIOSConfigurationKey)}));
+  config.additional_args.push_back(std::string("<dict></dict>"));
   return config;
 }
 
@@ -169,6 +180,24 @@ void ClickSignOutInAccountSettings() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::CancelButton()]
       performAction:grey_tap()];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeManagedIdentity];
+}
+
+// Tests the signout flow for managed users in a managed browser does not show
+// the dialog for clearing data on sign-out.
+- (void)testNoSignoutConfirmationForManagedIdentityInManagedBrowser {
+  // Relaunch the app with managed config to take the configuration into
+  // account.
+  [[AppLaunchManager sharedManager]
+      ensureAppLaunchedWithConfiguration:
+          [self managedAppConfigurationForTestCase]];
+  // Sign in with managed account.
+  FakeSystemIdentity* fakeManagedIdentity =
+      [FakeSystemIdentity fakeManagedIdentity];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeManagedIdentity];
+
+  // The sign out button should directly sign out the user.
+  ClickSignOutInAccountSettings();
+  [SigninEarlGrey verifySignedOut];
 }
 
 @end
