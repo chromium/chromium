@@ -5902,9 +5902,7 @@ TEST_F(BrowserAutofillManagerTest, ProfileDisabledDoesNotSuggest) {
   FormData form = CreateTestAddressFormData();
   FormsSeen({form});
 
-  GetAutofillSuggestions(
-      form,
-      CreateTestFormField("Email", "email", "", FormControlType::kInputEmail));
+  GetAutofillSuggestions(form, form.fields().back());
   // Expect no suggestions as autofill and autocomplete are disabled for
   // addresses.
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
@@ -5919,9 +5917,7 @@ TEST_F(BrowserAutofillManagerTest, CreditCardDisabledDoesNotSuggest) {
       CreateTestCreditCardFormData(/*is_https=*/true, /*use_month_type=*/false);
   FormsSeen({form});
 
-  GetAutofillSuggestions(form,
-                         CreateTestFormField("Name on Card", "nameoncard", "",
-                                             FormControlType::kInputText));
+  GetAutofillSuggestions(form, form.fields()[0]);
   // Expect no suggestions as autofill and autocomplete are disabled for credit
   // cards.
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());

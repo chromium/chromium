@@ -1115,13 +1115,10 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
     const FormData& form,
     const FieldGlobalId& field_id,
     const base::TimeTicks timestamp) {
-  const FormFieldData* field = form.FindFieldByGlobalId(field_id);
-  if (!field) {
-    return;
-  }
+  const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form, *field, &form_structure, &autofill_field)) {
+  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
     return;
   }
 
@@ -1129,7 +1126,7 @@ void BrowserAutofillManager::OnTextFieldDidChangeImpl(
   // If the user types into the same field multiple times, repeated
   // TypingFieldLogEvents are coalesced.
   autofill_field->AppendLogEventIfNotRepeated(TypingFieldLogEvent{
-      .has_value_after_typing = ToOptionalBoolean(!field->value().empty())});
+      .has_value_after_typing = ToOptionalBoolean(!field.value().empty())});
 
   UpdatePendingForm(form);
 
@@ -1262,10 +1259,6 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   if (base::FeatureList::IsEnabled(features::kAutofillDisableFilling)) {
     return;
   }
-  const FormFieldData* field = form.FindFieldByGlobalId(field_id);
-  if (!field) {
-    return;
-  }
 
   if (FormStructure* form_structure = FindCachedFormById(form.global_id())) {
     AutofillMetrics::LogParsedFormUntilInteractionTiming(
@@ -1279,16 +1272,17 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     client().NotifyAutofillManualFallbackUsed();
   }
 
-  external_delegate_->SetCurrentDataListValues(field->datalist_options());
-  external_delegate_->OnQuery(form, *field, caret_bounds, trigger_source);
+  const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
+  external_delegate_->SetCurrentDataListValues(field.datalist_options());
+  external_delegate_->OnQuery(form, field, caret_bounds, trigger_source);
 
   SuggestionsContext context =
-      BuildSuggestionsContext(form, *field, trigger_source);
+      BuildSuggestionsContext(form, field, trigger_source);
 
   GenerateSuggestionsAndMaybeShowUI(
-      form, *field, trigger_source, context,
+      form, field, trigger_source, context,
       base::BindOnce(&BrowserAutofillManager::OnGenerateSuggestionsComplete,
-                     weak_ptr_factory_.GetWeakPtr(), form, *field,
+                     weak_ptr_factory_.GetWeakPtr(), form, field,
                      trigger_source, context));
 }
 
@@ -1784,14 +1778,10 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
   }
 #endif
 
-  const FormFieldData* field = form.FindFieldByGlobalId(field_id);
-  if (!field) {
-    return;
-  }
-
+  const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
   // TODO(crbug.com/41392130): Add metrics for performance impact.
   SuggestionsContext context = BuildSuggestionsContext(
-      form, *field, AutofillSuggestionTriggerSource::kUnspecified);
+      form, field, AutofillSuggestionTriggerSource::kUnspecified);
   // This code path checks if suggestions to be announced to a screen reader are
   // available when the focus on a form field changes. This cannot happen in
   // `OnAskForValuesToFillImpl()`, since the `AutofillSuggestionAvailability` is
@@ -1802,7 +1792,7 @@ void BrowserAutofillManager::OnFocusOnFormFieldImpl(
   // be done with the `kUnspecified` suggestion trigger source.
   std::vector<Suggestion> suggestions =
       GetAvailableAddressAndCreditCardSuggestions(
-          form, *field, AutofillSuggestionTriggerSource::kUnspecified, context);
+          form, field, AutofillSuggestionTriggerSource::kUnspecified, context);
   external_delegate_->OnAutofillAvailabilityEvent(
       (context.suppress_reason == SuppressReason::kNotSuppressed &&
        !suggestions.empty())
@@ -2026,17 +2016,14 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
     }
     return std::string("unknown");
   };
-  const FormFieldData* field = form.FindFieldByGlobalId(field_id);
-  if (!field) {
-    return;
-  }
+  const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
   LogBuffer change(IsLoggingActive(log_manager()));
   LOG_AF(change) << Tag{"div"} << Attrib{"class", "form"};
-  LOG_AF(change) << *field << Br{};
+  LOG_AF(change) << field << Br{};
   LOG_AF(change) << "Old value structure: '"
                  << StructureOfString(old_value.substr(0, 80)) << "'" << Br{};
   LOG_AF(change) << "New value structure: '"
-                 << StructureOfString(field->value().substr(0, 80)) << "'";
+                 << StructureOfString(field.value().substr(0, 80)) << "'";
   LOG_AF(log_manager()) << LoggingScope::kWebsiteModifiedFieldValue
                         << LogMessage::kJavaScriptChangedAutofilledValue << Br{}
                         << Tag{"table"} << Tr{} << GetFieldNumber()
@@ -2044,17 +2031,16 @@ void BrowserAutofillManager::OnJavaScriptChangedAutofilledValueImpl(
 
   FormStructure* form_structure = nullptr;
   AutofillField* autofill_field = nullptr;
-  if (!GetCachedFormAndField(form, *field, &form_structure, &autofill_field)) {
+  if (!GetCachedFormAndField(form, field, &form_structure, &autofill_field)) {
     return;
   }
-  AnalyzeJavaScriptChangedAutofilledValue(*form_structure, *autofill_field,
-                                          field->value().empty(),
-                                          formatting_only);
+  AnalyzeJavaScriptChangedAutofilledValue(
+      *form_structure, *autofill_field, field.value().empty(), formatting_only);
   if (formatting_only) {
     return;
   }
   form_filler_->MaybeTriggerRefillForExpirationDate(
-      form, *field, *form_structure, old_value,
+      form, field, *form_structure, old_value,
       {.trigger_source =
            AutofillTriggerSource::kJavaScriptChangedAutofilledValue});
 }
@@ -2168,9 +2154,10 @@ void BrowserAutofillManager::OnGetSingleFieldSuggestionsCallback(
                                                  focused_field_type_group);
   // TODO(b/309163415): Replace parameter of FormFieldData in
   // `TryToShowTouchToFill` by FieldGlobalId.
-  const FormFieldData* form_field = form.FindFieldByGlobalId(field_id);
-  if (form_field && form_element_was_clicked && touch_to_fill_delegate_ &&
-      touch_to_fill_delegate_->TryToShowTouchToFill(form, *form_field)) {
+  if (const FormFieldData& field =
+          CHECK_DEREF(form.FindFieldByGlobalId(field_id));
+      form_element_was_clicked && touch_to_fill_delegate_ &&
+      touch_to_fill_delegate_->TryToShowTouchToFill(form, field)) {
     return;
   }
   external_delegate_->OnSuggestionsReturned(field_id, suggestions);
