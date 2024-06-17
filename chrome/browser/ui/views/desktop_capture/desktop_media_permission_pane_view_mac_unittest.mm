@@ -33,4 +33,5 @@ TEST_F(DesktopMediaPermissionPaneViewMacTest, TestClick) {
   EXPECT_CALL(open_screen_recording_settings_callback_, Run).Times(1);
   permission_pane_view_->SimulateClickForTesting();
   task_environment_.RunUntilIdle();
+  EXPECT_TRUE(permission_pane_view_->WasPermissionButtonClicked());
 }
