@@ -19,9 +19,12 @@ const char kUrl[] = "https://www.merchant.com/price_drop_product";
 
 NSString* kTitle = @"Product title";
 NSString* kVariant = @"Product variant";
-NSString* kLowPrice = @"$699";
-NSString* kHighPrice = @"$799";
-NSString* kCurrency = @"USD";
+int64_t kLowPrice = 699000000L;
+NSString* kLowPriceString = @"$699.00";
+int64_t kHighPrice = 799000000L;
+NSString* kHighPriceString = @"$799.00";
+std::string kCurrency = "USD";
+std::string kCountryCode = "us";
 
 // Retrieves a view of a specified class with a given accessibility identifier
 // within a given view hierarchy.
@@ -76,6 +79,7 @@ PriceInsightsItem* GetPriceInsights(bool has_variant,
   item.canPriceTrack = has_tracking;
   item.buyingOptionsURL = has_buying_options ? GURL(kUrl) : GURL();
   item.currency = kCurrency;
+  item.country = kCountryCode;
 
   if (has_history) {
     NSDateFormatter* dateFormat = [[NSDateFormatter alloc] init];
@@ -158,8 +162,9 @@ TEST_F(PriceInsightsCellTest, TestViewOrderWhenPriceHistoryNotAvailable) {
       /*has_buying_options=*/true);
   [cell_ configureWithItem:item];
 
-  CheckNumberOfComponents(1ul);
+  CheckNumberOfComponents(2ul);
   CheckPositionOfComponent(kPriceTrackingStackViewIdentifier, 0);
+  CheckPositionOfComponent(kPriceRangeStackViewIdentifier, 1);
 }
 
 // Test the order of components in the content view when Price Range is the only
@@ -241,11 +246,12 @@ TEST_F(PriceInsightsCellTest, TestPriceTrackingUIWithHistoryRangeAndNoVariant) {
   EXPECT_TRUE([title.text isEqualToString:kTitle]);
   UILabel* subtitle = GetLabelFromIdentifier(kPriceTrackingSubtitleIdentifier,
                                              cell_.contentView);
+
   EXPECT_TRUE([subtitle.text
       isEqualToString:l10n_util::GetNSStringF(
                           IDS_PRICE_RANGE_SINGLE_OPTION,
-                          base::SysNSStringToUTF16(item.lowPrice),
-                          base::SysNSStringToUTF16(item.highPrice))]);
+                          base::SysNSStringToUTF16(kLowPriceString),
+                          base::SysNSStringToUTF16(kHighPriceString))]);
 }
 
 // Tests the presence of UI elements in the Price Tracking components when all
@@ -268,8 +274,8 @@ TEST_F(PriceInsightsCellTest, TestPriceTrackingUIHistoryRangeAndVariant) {
   EXPECT_TRUE([subtitle.text
       isEqualToString:l10n_util::GetNSStringF(
                           IDS_PRICE_RANGE_ALL_OPTIONS,
-                          base::SysNSStringToUTF16(item.lowPrice),
-                          base::SysNSStringToUTF16(item.highPrice))]);
+                          base::SysNSStringToUTF16(kLowPriceString),
+                          base::SysNSStringToUTF16(kHighPriceString))]);
 }
 
 // Tests the presence of UI elements in the Price Tracking components when all
@@ -292,7 +298,7 @@ TEST_F(PriceInsightsCellTest, TestPriceTrackingUIHistorySingleRangeAndVariant) {
   EXPECT_TRUE([subtitle.text
       isEqualToString:l10n_util::GetNSStringF(
                           IDS_PRICE_RANGE_ALL_OPTIONS_ONE_TYPICAL_PRICE,
-                          base::SysNSStringToUTF16(item.lowPrice))]);
+                          base::SysNSStringToUTF16(kLowPriceString))]);
 }
 
 // Tests the presence of UI elements in the Price Tracking components when all
@@ -316,7 +322,7 @@ TEST_F(PriceInsightsCellTest,
   EXPECT_TRUE([subtitle.text
       isEqualToString:l10n_util::GetNSStringF(
                           IDS_PRICE_RANGE_SINGLE_OPTION_ONE_TYPICAL_PRICE,
-                          base::SysNSStringToUTF16(item.lowPrice))]);
+                          base::SysNSStringToUTF16(kLowPriceString))]);
 }
 
 // Tests the presence of UI elements in the Price Tracking components when Price
@@ -496,4 +502,134 @@ TEST_F(PriceInsightsCellTest, TestPriceHistoryWithTrackingRangeAndNoVariant) {
   UILabel* secondary_subtitle = GetLabelFromIdentifier(
       kPriceHistorySecondarySubtitleIdentifier, cell_.contentView);
   EXPECT_EQ(NULL, secondary_subtitle);
+}
+
+// Tests the presence of UI elements in the Price Range components when Price
+// Range and Price Tracking are available, with variants.
+TEST_F(PriceInsightsCellTest, TestPriceRangeWithTrackingAndVariant) {
+  PriceInsightsItem* item = GetPriceInsights(
+      /*has_variant=*/true,
+      /*has_tracking=*/true,
+      /*has_range=*/true,
+      /*has_single_range=*/false,
+      /*has_history=*/false,
+      /*has_buying_options=*/true);
+  [cell_ configureWithItem:item];
+
+  CheckNumberOfComponents(2ul);
+  CheckPositionOfComponent(kPriceTrackingStackViewIdentifier, 0);
+  CheckPositionOfComponent(kPriceRangeStackViewIdentifier, 1);
+
+  UILabel* title =
+      GetLabelFromIdentifier(kPriceRangeTitleIdentifier, cell_.contentView);
+  EXPECT_TRUE([title.text
+      isEqualToString:l10n_util::GetNSString(
+                          IDS_PRICE_INSIGHTS_PRICE_RANGE_TITLE_VARIANT)]);
+  UILabel* subtitle =
+      GetLabelFromIdentifier(kPriceRangeSubtitleIdentifier, cell_.contentView);
+  EXPECT_EQ(NULL, subtitle);
+
+  UILabel* lowPrice = GetLabelFromIdentifier(
+      kPriceRangeSliderLowPriceIdentifier, cell_.contentView);
+  EXPECT_TRUE([lowPrice.text isEqualToString:kLowPriceString]);
+  UILabel* highPrice = GetLabelFromIdentifier(
+      kPriceRangeSliderHighPriceIdentifier, cell_.contentView);
+  EXPECT_TRUE([highPrice.text isEqualToString:kHighPriceString]);
+}
+
+// Tests the presence of UI elements in the Price Range components when Price
+// Range and Price Tracking are available, without any variants.
+TEST_F(PriceInsightsCellTest, TestPriceRangeWithTrackingAndNoVariant) {
+  PriceInsightsItem* item = GetPriceInsights(
+      /*has_variant=*/false,
+      /*has_tracking=*/true,
+      /*has_range=*/true,
+      /*has_single_range=*/false,
+      /*has_history=*/false,
+      /*has_buying_options=*/true);
+  [cell_ configureWithItem:item];
+
+  CheckNumberOfComponents(2ul);
+  CheckPositionOfComponent(kPriceTrackingStackViewIdentifier, 0);
+  CheckPositionOfComponent(kPriceRangeStackViewIdentifier, 1);
+
+  UILabel* title =
+      GetLabelFromIdentifier(kPriceRangeTitleIdentifier, cell_.contentView);
+  EXPECT_TRUE([title.text
+      isEqualToString:l10n_util::GetNSString(
+                          IDS_PRICE_INSIGHTS_PRICE_RANGE_TITLE_NO_VARIANT)]);
+  UILabel* subtitle =
+      GetLabelFromIdentifier(kPriceRangeSubtitleIdentifier, cell_.contentView);
+  EXPECT_EQ(NULL, subtitle);
+
+  UILabel* lowPrice = GetLabelFromIdentifier(
+      kPriceRangeSliderLowPriceIdentifier, cell_.contentView);
+  EXPECT_TRUE([lowPrice.text isEqualToString:kLowPriceString]);
+  UILabel* highPrice = GetLabelFromIdentifier(
+      kPriceRangeSliderHighPriceIdentifier, cell_.contentView);
+  EXPECT_TRUE([highPrice.text isEqualToString:kHighPriceString]);
+}
+
+// Tests the presence of UI elements in the Price Range components when only
+// Price Range is available, with variants.
+TEST_F(PriceInsightsCellTest, TestPriceRangeAndWithVariant) {
+  PriceInsightsItem* item = GetPriceInsights(
+      /*has_variant=*/true,
+      /*has_tracking=*/false,
+      /*has_range=*/true,
+      /*has_single_range=*/false,
+      /*has_history=*/false,
+      /*has_buying_options=*/true);
+  [cell_ configureWithItem:item];
+
+  CheckNumberOfComponents(1ul);
+  CheckPositionOfComponent(kPriceRangeStackViewIdentifier, 0);
+
+  UILabel* title =
+      GetLabelFromIdentifier(kPriceRangeTitleIdentifier, cell_.contentView);
+  EXPECT_TRUE([title.text isEqualToString:item.title]);
+  UILabel* subtitle =
+      GetLabelFromIdentifier(kPriceRangeSubtitleIdentifier, cell_.contentView);
+  EXPECT_TRUE([subtitle.text
+      isEqualToString:l10n_util::GetNSString(
+                          IDS_PRICE_INSIGHTS_PRICE_RANGE_TITLE_VARIANT)]);
+
+  UILabel* lowPrice = GetLabelFromIdentifier(
+      kPriceRangeSliderLowPriceIdentifier, cell_.contentView);
+  EXPECT_TRUE([lowPrice.text isEqualToString:kLowPriceString]);
+  UILabel* highPrice = GetLabelFromIdentifier(
+      kPriceRangeSliderHighPriceIdentifier, cell_.contentView);
+  EXPECT_TRUE([highPrice.text isEqualToString:kHighPriceString]);
+}
+
+// Tests the presence of UI elements in the Price Range components when only
+// Price Range is available,  without any variants.
+TEST_F(PriceInsightsCellTest, TestPriceRangeAndWithNoVariant) {
+  PriceInsightsItem* item = GetPriceInsights(
+      /*has_variant=*/false,
+      /*has_tracking=*/false,
+      /*has_range=*/true,
+      /*has_single_range=*/false,
+      /*has_history=*/false,
+      /*has_buying_options=*/true);
+  [cell_ configureWithItem:item];
+
+  CheckNumberOfComponents(1ul);
+  CheckPositionOfComponent(kPriceRangeStackViewIdentifier, 0);
+
+  UILabel* title =
+      GetLabelFromIdentifier(kPriceRangeTitleIdentifier, cell_.contentView);
+  EXPECT_TRUE([title.text isEqualToString:item.title]);
+  UILabel* subtitle =
+      GetLabelFromIdentifier(kPriceRangeSubtitleIdentifier, cell_.contentView);
+  EXPECT_TRUE([subtitle.text
+      isEqualToString:l10n_util::GetNSString(
+                          IDS_PRICE_INSIGHTS_PRICE_RANGE_TITLE_NO_VARIANT)]);
+
+  UILabel* lowPrice = GetLabelFromIdentifier(
+      kPriceRangeSliderLowPriceIdentifier, cell_.contentView);
+  EXPECT_TRUE([lowPrice.text isEqualToString:kLowPriceString]);
+  UILabel* highPrice = GetLabelFromIdentifier(
+      kPriceRangeSliderHighPriceIdentifier, cell_.contentView);
+  EXPECT_TRUE([highPrice.text isEqualToString:kHighPriceString]);
 }

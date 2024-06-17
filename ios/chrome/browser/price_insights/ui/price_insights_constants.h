@@ -33,5 +33,19 @@ extern NSString* const kPriceHistoryPrimarySubtitleIdentifier;
 extern NSString* const kPriceHistorySecondarySubtitleIdentifier;
 // Accessibility identifier for the graph of price history.
 extern NSString* const kPriceHistoryGraphIdentifier;
+// Accessibility identifier for the title label of price range.
+extern NSString* const kPriceRangeTitleIdentifier;
+// Accessibility identifier for the subtitle label of price range.
+extern NSString* const kPriceRangeSubtitleIdentifier;
+// Accessibility identifier for the price range stack view.
+extern NSString* const kPriceRangeStackViewIdentifier;
+// Accessibility identifier for the low label of the price range slider.
+extern NSString* const kPriceRangeSliderLowLabelIdentifier;
+// Accessibility identifier for the low price of the price range slider.
+extern NSString* const kPriceRangeSliderLowPriceIdentifier;
+// Accessibility identifier for the high label of the price range slider.
+extern NSString* const kPriceRangeSliderHighLabelIdentifier;
+// Accessibility identifier for the high price of the price range slider.
+extern NSString* const kPriceRangeSliderHighPriceIdentifier;
 
 #endif  // IOS_CHROME_BROWSER_PRICE_INSIGHTS_UI_PRICE_INSIGHTS_CONSTANTS_H_

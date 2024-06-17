@@ -13,11 +13,15 @@ source_set("price_insights_ui") {
     "price_insights_item.h",
     "price_insights_item.mm",
     "price_insights_mutator.h",
+    "price_ranger_slider.h",
+    "price_ranger_slider.mm",
   ]
 
   deps = [
     ":price_history_swift",
     "//base",
+    "//components/commerce/core:commerce_constants",
+    "//components/payments/core",
     "//components/strings",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",

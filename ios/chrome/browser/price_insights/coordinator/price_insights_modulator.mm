@@ -8,7 +8,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/commerce_constants.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
-#import "components/payments/core/currency_formatter.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_model.h"
 #import "ios/chrome/browser/price_insights/ui/price_insights_cell.h"
@@ -25,17 +24,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
-
-NSString* getFormattedCurrentPrice(int64_t amount_micro,
-                                   std::string currency_code,
-                                   std::string country_code) {
-  float price = static_cast<float>(amount_micro) /
-                static_cast<float>(commerce::kToMicroCurrency);
-  payments::CurrencyFormatter formatter(currency_code, country_code);
-  formatter.SetMaxFractionalDigits(2);
-  return base::SysUTF16ToNSString(
-      formatter.Format(base::NumberToString(price)));
-}
 
 NSDate* getNSDateFromString(std::string date) {
   NSDateFormatter* date_format = [[NSDateFormatter alloc] init];
@@ -249,7 +237,8 @@ NSDate* getNSDateFromString(std::string date) {
   item.title = base::SysUTF8ToNSString(config->product_info->title);
   item.variants =
       base::SysUTF8ToNSString(config->product_info->product_cluster_title);
-  item.currency = base::SysUTF8ToNSString(config->product_info->currency_code);
+  item.currency = config->product_info->currency_code;
+  item.country = config->product_info->country_code;
   item.canPriceTrack = config->can_price_track;
   item.isPriceTracked = config->is_subscribed;
   item.productURL =
@@ -259,20 +248,15 @@ NSDate* getNSDateFromString(std::string date) {
     return item;
   }
 
-  std::string currencyCode = config->product_info->currency_code;
-  std::string countryCode = config->product_info->country_code;
+  item.currentPrice = config->product_info->amount_micros;
   if (config->price_insights_info->typical_low_price_micros.has_value()) {
-    int64_t amountMicro =
-        config->price_insights_info->typical_low_price_micros.value();
     item.lowPrice =
-        getFormattedCurrentPrice(amountMicro, currencyCode, countryCode);
+        config->price_insights_info->typical_low_price_micros.value();
   }
 
   if (config->price_insights_info->typical_high_price_micros.has_value()) {
-    int64_t amountMicro =
-        config->price_insights_info->typical_high_price_micros.value();
     item.highPrice =
-        getFormattedCurrentPrice(amountMicro, currencyCode, countryCode);
+        config->price_insights_info->typical_high_price_micros.value();
   }
 
   NSMutableDictionary* priceHistory = [[NSMutableDictionary alloc] init];

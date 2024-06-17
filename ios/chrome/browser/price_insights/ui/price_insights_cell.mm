@@ -5,10 +5,13 @@
 #import "ios/chrome/browser/price_insights/ui/price_insights_cell.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/commerce/core/commerce_constants.h"
+#import "components/payments/core/currency_formatter.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/price_insights/ui/price_history_swift.h"
 #import "ios/chrome/browser/price_insights/ui/price_insights_constants.h"
 #import "ios/chrome/browser/price_insights/ui/price_insights_mutator.h"
+#import "ios/chrome/browser/price_insights/ui/price_ranger_slider.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -42,6 +45,9 @@ const CGFloat kIconSize = 20.0f;
 // Size of the space between the graph and the text in Price History.
 const CGFloat kPriceHistoryContentSpacing = 12.0f;
 
+// Size of the space between the graph and the text in Price Range.
+const CGFloat kPriceRangeContentSpacing = 16.0f;
+
 // Height of Price History graph.
 const CGFloat kPriceHistoryGraphHeight = 186.0f;
 
@@ -53,6 +59,18 @@ const CGFloat kTrackButtonHorizontalPadding = 14.0f;
 
 // The vertical padding for the track button.
 const CGFloat kTrackButtonVerticalPadding = 3.0f;
+
+// Formats a price amount in micro-units into a localized string representation
+// for display.
+std::u16string getFormattedCurrentPrice(int64_t amount_micro,
+                                        std::string currency_code,
+                                        std::string country_code) {
+  float price = static_cast<float>(amount_micro) /
+                static_cast<float>(commerce::kToMicroCurrency);
+  payments::CurrencyFormatter formatter(currency_code, country_code);
+  formatter.SetMaxFractionalDigits(2);
+  return formatter.Format(base::NumberToString(price));
+}
 
 }  // namespace
 
@@ -68,6 +86,7 @@ const CGFloat kTrackButtonVerticalPadding = 3.0f;
   UIStackView* _buyingOptionsStackView;
   UIStackView* _contentStackView;
   UIStackView* _priceHistoryStackView;
+  UIStackView* _priceRangeStackView;
   UIButton* _trackButton;
   NSLayoutConstraint* _trackButtonWidthConstraint;
 }
@@ -106,7 +125,7 @@ const CGFloat kTrackButtonVerticalPadding = 3.0f;
   }
 
   // Configure Price History.
-  if ([self hasPriceHistory] && self.item.currency) {
+  if ([self hasPriceHistory] && !self.item.currency.empty()) {
     NSString* title;
     NSString* primarySubtitle;
     NSString* secondarySubtitle;
@@ -136,6 +155,20 @@ const CGFloat kTrackButtonVerticalPadding = 3.0f;
     [_contentStackView addArrangedSubview:_priceHistoryStackView];
   }
 
+  // Configure Price Range
+  if ([self hasPriceRange] && ![self hasPriceHistory]) {
+    NSString* variantTitle =
+        [self hasVariants]
+            ? l10n_util::GetNSString(
+                  IDS_PRICE_INSIGHTS_PRICE_RANGE_TITLE_VARIANT)
+            : l10n_util::GetNSString(
+                  IDS_PRICE_INSIGHTS_PRICE_RANGE_TITLE_NO_VARIANT);
+    NSString* title = self.item.canPriceTrack ? variantTitle : self.item.title;
+    NSString* subtitle = self.item.canPriceTrack ? nil : variantTitle;
+    [self configurePriceRangeWithTitle:title subtitle:subtitle];
+    [_contentStackView addArrangedSubview:_priceRangeStackView];
+  }
+
   // Configure Buying options.
   if ([self hasPriceHistory] && [self hasPriceRange] &&
       self.item.buyingOptionsURL.is_valid()) {
@@ -153,15 +186,13 @@ const CGFloat kTrackButtonVerticalPadding = 3.0f;
 
 // Returns whether or not price range is available.
 - (BOOL)hasPriceRange {
-  return self.item.lowPrice.length > 0 && self.item.highPrice.length > 0;
+  return self.item.lowPrice > 0 && self.item.highPrice > 0;
 }
 
 // Returns whether or not price has one typical price. If there is only one
 // typical price, the high and low price are equal.
 - (BOOL)hasPriceOneTypicalPrice {
-  return [self hasPriceRange]
-             ? [self.item.highPrice isEqualToString:self.item.lowPrice]
-             : NO;
+  return [self hasPriceRange] ? self.item.highPrice == self.item.lowPrice : NO;
 }
 
 // Returns whether or not there are any variants.
@@ -191,24 +222,26 @@ const CGFloat kTrackButtonVerticalPadding = 3.0f;
       CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightRegular);
   priceTrackingSubtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
   if ([self hasPriceRange] && [self hasPriceHistory]) {
+    std::u16string lowPrice = getFormattedCurrentPrice(
+        self.item.lowPrice, self.item.currency, self.item.country);
+    std::u16string highPrice = getFormattedCurrentPrice(
+        self.item.highPrice, self.item.currency, self.item.country);
+
+    priceTrackingSubtitle.numberOfLines = 2;
     priceTrackingSubtitle.text =
         [self hasVariants]
             ? ([self hasPriceOneTypicalPrice]
                    ? l10n_util::GetNSStringF(
                          IDS_PRICE_RANGE_ALL_OPTIONS_ONE_TYPICAL_PRICE,
-                         base::SysNSStringToUTF16(self.item.lowPrice))
-                   : l10n_util::GetNSStringF(
-                         IDS_PRICE_RANGE_ALL_OPTIONS,
-                         base::SysNSStringToUTF16(self.item.lowPrice),
-                         base::SysNSStringToUTF16(self.item.highPrice)))
+                         lowPrice)
+                   : l10n_util::GetNSStringF(IDS_PRICE_RANGE_ALL_OPTIONS,
+                                             lowPrice, highPrice))
             : ([self hasPriceOneTypicalPrice]
                    ? l10n_util::GetNSStringF(
                          IDS_PRICE_RANGE_SINGLE_OPTION_ONE_TYPICAL_PRICE,
-                         base::SysNSStringToUTF16(self.item.lowPrice))
-                   : l10n_util::GetNSStringF(
-                         IDS_PRICE_RANGE_SINGLE_OPTION,
-                         base::SysNSStringToUTF16(self.item.lowPrice),
-                         base::SysNSStringToUTF16(self.item.highPrice)));
+                         lowPrice)
+                   : l10n_util::GetNSStringF(IDS_PRICE_RANGE_SINGLE_OPTION,
+                                             lowPrice, highPrice));
   } else {
     priceTrackingSubtitle.numberOfLines = 2;
     priceTrackingSubtitle.text =
@@ -307,6 +340,7 @@ const CGFloat kTrackButtonVerticalPadding = 3.0f;
   verticalStack.axis = UILayoutConstraintAxisVertical;
   verticalStack.distribution = UIStackViewDistributionFill;
   verticalStack.alignment = UIStackViewAlignmentLeading;
+  verticalStack.spacing = kPriceTrackingVerticalStackViewSpacing;
 
   UILabel* title = [self createLabel];
   [title setAccessibilityIdentifier:kPriceHistoryTitleIdentifier];
@@ -340,9 +374,10 @@ const CGFloat kTrackButtonVerticalPadding = 3.0f;
     }
   }
 
-  UIViewController* priceHistoryViewController =
-      [PriceHistoryProvider makeViewControllerWithHistory:self.item.priceHistory
-                                                 currency:self.item.currency];
+  UIViewController* priceHistoryViewController = [PriceHistoryProvider
+      makeViewControllerWithHistory:self.item.priceHistory
+                           currency:base::SysUTF8ToNSString(
+                                        self.item.currency)];
   priceHistoryViewController.view.translatesAutoresizingMaskIntoConstraints =
       NO;
   [self.viewController addChildViewController:priceHistoryViewController];
@@ -368,6 +403,65 @@ const CGFloat kTrackButtonVerticalPadding = 3.0f;
   _priceHistoryStackView.layoutMargins =
       UIEdgeInsets(kContentVerticalInset, kContentHorizontalInset,
                     kContentVerticalInset, kContentHorizontalInset);
+}
+
+- (void)configurePriceRangeWithTitle:(NSString*)titleText
+                            subtitle:(NSString*)primarySubtitleText {
+  UIStackView* labelStackView = [[UIStackView alloc] init];
+  labelStackView.axis = UILayoutConstraintAxisVertical;
+  labelStackView.distribution = UIStackViewDistributionFill;
+  labelStackView.alignment = UIStackViewAlignmentLeading;
+  labelStackView.spacing = kPriceTrackingVerticalStackViewSpacing;
+
+  UILabel* title = [self createLabel];
+  [title setAccessibilityIdentifier:kPriceRangeTitleIdentifier];
+  title.font =
+      CreateDynamicFont(UIFontTextStyleSubheadline, UIFontWeightSemibold);
+  title.text = titleText;
+  title.numberOfLines = 2;
+  title.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  [labelStackView addArrangedSubview:title];
+
+  if (primarySubtitleText.length) {
+    UILabel* primarySubtitle = [self createLabel];
+    [primarySubtitle setAccessibilityIdentifier:kPriceRangeSubtitleIdentifier];
+    primarySubtitle.font =
+        CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightRegular);
+    primarySubtitle.text = primarySubtitleText;
+    primarySubtitle.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    [labelStackView addArrangedSubview:primarySubtitle];
+  }
+
+  std::u16string lowPriceFormatted = getFormattedCurrentPrice(
+      self.item.lowPrice, self.item.currency, self.item.country);
+  std::u16string highPriceFormatted = getFormattedCurrentPrice(
+      self.item.highPrice, self.item.currency, self.item.country);
+  CGRect contentArea = [UIScreen mainScreen].bounds;
+  CGFloat sliderViewWidth = contentArea.size.width -
+                            (kContentHorizontalInset * 2) -
+                            (kHorizontalInset * 2);
+
+  PriceRangeSliderView* sliderStackView = [[PriceRangeSliderView alloc]
+      initWithMinimumLabelText:base::SysUTF16ToNSString(lowPriceFormatted)
+              maximumLabelText:base::SysUTF16ToNSString(highPriceFormatted)
+                  minimumValue:self.item.lowPrice
+                  maximumValue:self.item.highPrice
+                  currentValue:self.item.currentPrice
+               sliderViewWidth:sliderViewWidth];
+
+  _priceRangeStackView = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ labelStackView, sliderStackView ]];
+  [_priceRangeStackView
+      setAccessibilityIdentifier:kPriceRangeStackViewIdentifier];
+  _priceRangeStackView.axis = UILayoutConstraintAxisVertical;
+  _priceRangeStackView.spacing = kPriceRangeContentSpacing;
+  _priceRangeStackView.distribution = UIStackViewDistributionFill;
+  _priceRangeStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  _priceRangeStackView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+  _priceRangeStackView.layoutMarginsRelativeArrangement = YES;
+  _priceRangeStackView.layoutMargins =
+      UIEdgeInsets(kContentVerticalInset, kContentHorizontalInset,
+                   kContentVerticalInset, kContentHorizontalInset);
 }
 
 // Creates and configures a UILabel with default settings.

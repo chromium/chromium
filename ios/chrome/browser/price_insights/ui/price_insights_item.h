@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#include <string>
+
 class GURL;
 
 // Base object for Price Insights data. This will be used to pass the data to
@@ -18,11 +20,15 @@ class GURL;
 // The product variants.
 @property(nonatomic, copy) NSString* variants;
 // The product typically low price.
-@property(nonatomic, copy) NSString* lowPrice;
+@property(nonatomic, assign) int64_t lowPrice;
 // The product typically high price.
-@property(nonatomic, copy) NSString* highPrice;
+@property(nonatomic, assign) int64_t highPrice;
+// The product current price.
+@property(nonatomic, assign) int64_t currentPrice;
 // The product price currency.
-@property(nonatomic, copy) NSString* currency;
+@property(nonatomic, assign) std::string currency;
+// The product country code.
+@property(nonatomic, assign) std::string country;
 // The price history.
 @property(nonatomic, copy) NSDictionary* priceHistory;
 // The product buying options URL.

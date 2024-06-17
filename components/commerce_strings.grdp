@@ -440,6 +440,12 @@
   <message name="IDS_PRICE_INSIGHTS_TRACK_BUTTON_TITLE" desc="The title text for track button of price insights.">
     Track
   </message>
+  <message name="IDS_PRICE_INSIGHTS_RANGE_LABEL_LOW" desc="The range slider label text for low prices.">
+    Low
+  </message>
+  <message name="IDS_PRICE_INSIGHTS_RANGE_LABEL_HIGH" desc="The range slider label text for high prices.">
+    High
+  </message>
   <message name="IDS_PRICE_INSIGHTS_TRACKING_BUTTON_TITLE" desc="The title text for tracking button of price insights.">
     Tracking
   </message>
@@ -465,8 +471,11 @@
     <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_HIGH_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively high price.">
       Price is High
     </message>
-    <message name="IDS_PRICE_INSIGHTS_PRICE_RANGE_TITLE" desc="The title text for the price range component of price insights.">
+    <message name="IDS_PRICE_INSIGHTS_PRICE_RANGE_TITLE_VARIANT" desc="The title text for the price range component of price insights when the product has a variant.">
       Price Range for All Options
+    </message>
+    <message name="IDS_PRICE_INSIGHTS_PRICE_RANGE_TITLE_NO_VARIANT" desc="The title text for the price range component of price insights when the product has no variant.">
+      Price Range
     </message>
   </if> <!-- use_titlecase -->
   <if expr="not use_titlecase">
@@ -479,8 +488,11 @@
     <message name="IDS_SHOPPING_INSIGHTS_ICON_EXPANDED_TEXT_HIGH_PRICE" desc="The expanded text for the price insights icon in the location bar, indicating an option has relatively high price.">
       Price is high
     </message>
-    <message name="IDS_PRICE_INSIGHTS_PRICE_RANGE_TITLE" desc="The title text for the price range component of price insights.">
+    <message name="IDS_PRICE_INSIGHTS_PRICE_RANGE_TITLE_VARIANT" desc="The title text for the price range component of price insights when the product has a variant.">
       Price range for all options
+    </message>
+    <message name="IDS_PRICE_INSIGHTS_PRICE_RANGE_TITLE_NO_VARIANT" desc="The title text for the price range component of price insights when the product has no variant.">
+      Price range
     </message>
   </if> <!-- not use_titlecase -->
 
