@@ -23,6 +23,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -147,6 +148,7 @@ public class PasswordSavingIntegrationTest {
     @Test
     @MediumTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    @DisabledTest(message = "https://crbug.com/347739972")
     // TODO(crbug.com/40927881): Add integration tests for automotive update password flow.
     public void testUpdatingPassword() throws InterruptedException, TimeoutException {
         // Store the test credential.
