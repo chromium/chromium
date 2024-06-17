@@ -12208,9 +12208,10 @@
             ],
             "experiments": [
                 {
-                    "name": "HideGuestMode_20240611",
+                    "name": "UncredentialedFilteringFallbackAndHideGuestMode",
                     "enable_features": [
-                        "HideGuestModeForSupervisedUsers"
+                        "HideGuestModeForSupervisedUsers",
+                        "UncredentialedFilteringFallbackForSupervisedUsers"
                     ]
                 }
             ]
