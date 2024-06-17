@@ -199,17 +199,16 @@ public class LocalTabGroupMutationHelperUnitTest {
         mLocalMutationHelper.updateTabGroup(savedTabGroup);
 
         // Collapsed must be re-set after the merge.
-        InOrder inOrder = inOrder(mTabGroupModelFilter);
+        InOrder inOrder = inOrder(mTabGroupModelFilter, mTabModel, mTabGroupSyncService);
+        verify(mTabCreationDelegate, times(2))
+                .createBackgroundTab(any(), anyString(), any(), anyInt());
         inOrder.verify(mTabGroupModelFilter, times(2))
                 .mergeListOfTabsToGroup(
                         anyList(), argThat(tab -> tab.getId() == ROOT_ID_1), eq(false));
-        inOrder.verify(mTabGroupModelFilter).setTabGroupCollapsed(ROOT_ID_1, true);
-
         verify(mTabGroupSyncService, times(1))
                 .updateLocalTabId(eq(LOCAL_TAB_GROUP_ID_1), any(), eq(TAB_ID_1));
-        verify(mTabModel).closeMultipleTabs(argThat(tabs -> tabs.size() == 1), eq(false));
-        verify(mTabCreationDelegate, times(2))
-                .createBackgroundTab(any(), anyString(), any(), anyInt());
+        inOrder.verify(mTabModel).closeMultipleTabs(argThat(tabs -> tabs.size() == 1), eq(false));
+        inOrder.verify(mTabGroupModelFilter).setTabGroupCollapsed(ROOT_ID_1, true);
     }
 
     @Test
