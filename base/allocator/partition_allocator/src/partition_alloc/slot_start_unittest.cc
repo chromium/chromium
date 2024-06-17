@@ -49,6 +49,24 @@ TEST_F(SlotStartTest, SlotStartCrashes) {
 
   allocator_.root()->Free(buffer);
 }
+
+// In general, a `SlotStart` should not be constructed from a freed
+// pointer, but this is only _really_ crashy when the freed pointer
+// points to a direct map, which is decommitted immediately in
+// `PartitionDirectUnmap()`. Normal buckets may or may not be subject
+// to the same restriction, depending on the presence of the
+// `MemoryReclaimer`.
+TEST_F(SlotStartTest, SlotStartCrashesOnFreedDirectMap) {
+  constexpr size_t kDirectMapSize = kMaxBucketed + 1;
+  void* buffer = allocator_.root()->Alloc(kDirectMapSize, "");
+  ASSERT_TRUE(buffer);
+  allocator_.root()->Free(buffer);
+
+  // `buffer` was decommitted by the `Free()` above. We expect this
+  // to crash.
+  EXPECT_DEATH_IF_SUPPORTED(SlotStart::FromObject</*enforce=*/true>(buffer),
+                            "");
+}
 #endif  // PA_USE_DEATH_TESTS()
 
 }  // namespace
