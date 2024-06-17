@@ -11,14 +11,13 @@
 <script src="/resources/testdriver-vendor.js"></script>
 
 <script>
-  const resetPermission = () => {
-    return test_driver.set_permission({ name: "geolocation" }, "prompt");
-  };
+  promise_setup(async ()=>{
+    await test_driver.set_permission({ name: "geolocation" }, "granted");
+  });
+
   const invalidValues = ["boom", 321, -Infinity, { foo: 5 }];
 
   promise_test(async (t) => {
-    t.add_cleanup(resetPermission);
-    await test_driver.set_permission({ name: "geolocation" }, "granted");
     for (const enableHighAccuracy of invalidValues) {
       navigator.geolocation.getCurrentPosition(() => {}, null, {
         enableHighAccuracy,
@@ -27,8 +26,6 @@
   }, "Call getCurrentPosition with wrong type for enableHighAccuracy. No exception expected.");
 
   promise_test(async (t) => {
-    t.add_cleanup(resetPermission);
-    await test_driver.set_permission({ name: "geolocation" }, "granted");
     for (const enableHighAccuracy of invalidValues) {
       const id = navigator.geolocation.watchPosition(() => {}, null, {
         enableHighAccuracy,
@@ -38,8 +35,6 @@
   }, "Call watchPosition with wrong type for enableHighAccuracy. No exception expected.");
 
   promise_test(async (t) => {
-    t.add_cleanup(resetPermission);
-    await test_driver.set_permission({ name: "geolocation" }, "granted");
     const error = await new Promise((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(reject, resolve, {
         timeout: 0,
@@ -50,8 +45,6 @@
   }, "Set timeout and maximumAge to 0, check that timeout error raised (getCurrentPosition)");
 
   promise_test(async (t) => {
-    t.add_cleanup(resetPermission);
-    await test_driver.set_permission({ name: "geolocation" }, "granted");
     let watchId;
     const error = await new Promise((resolve, reject) => {
       watchId = navigator.geolocation.watchPosition(reject, resolve, {
@@ -64,8 +57,6 @@
   }, "Set timeout and maximumAge to 0, check that timeout error raised (watchPosition)");
 
   promise_test(async (t) => {
-    t.add_cleanup(resetPermission);
-    await test_driver.set_permission({ name: "geolocation" }, "granted");
     let watchId;
     const error = await new Promise((resolve, reject) => {
       watchId = navigator.geolocation.getCurrentPosition(reject, resolve, {
@@ -78,8 +69,6 @@
   }, "Check that a negative timeout and maxAge values are clamped to 0 (getCurrentPosition)");
 
   promise_test(async (t) => {
-    t.add_cleanup(resetPermission);
-    await test_driver.set_permission({ name: "geolocation" }, "granted");
     let watchId;
     const error = await new Promise((resolve, reject) => {
       watchId = navigator.geolocation.watchPosition(reject, resolve, {

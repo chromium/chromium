@@ -9,15 +9,13 @@
 <script src="support.js"></script>
 <body></body>
 <script>
-  promise_test(async (t) => {
-    t.add_cleanup(() => {
-      return test_driver.set_permission({ name: "geolocation" }, "prompt");
-    });
+  promise_setup(async () => {
     await test_driver.set_permission({ name: "geolocation" }, "granted");
+  });
 
+  promise_test(async (t) => {
     // Create the iframe, wait for it to load...
     const iframe = document.createElement("iframe");
-    // ...wait for the iframe to load...
     await new Promise((resolve) => {
       iframe.src = "resources/iframe.html";
       iframe.allow = "geolocation";
