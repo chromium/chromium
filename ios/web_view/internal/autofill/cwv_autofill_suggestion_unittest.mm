@@ -24,7 +24,7 @@ TEST_F(CWVAutofillSuggestionTest, Initialization) {
       suggestionWithValue:@"TestValue"
        displayDescription:@"TestDisplayDescription"
                      icon:nil
-              popupItemId:autofill::SuggestionType::kAddressEntry
+                     type:autofill::SuggestionType::kAddressEntry
         backendIdentifier:nil
            requiresReauth:NO];
   CWVAutofillSuggestion* suggestion =

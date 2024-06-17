@@ -617,7 +617,7 @@ void PasswordControllerTest::FillFormAndValidate(TestPasswordFormData test_data,
       suggestionWithValue:suggestion_text
        displayDescription:nil
                      icon:nil
-              popupItemId:autofill::SuggestionType::kAutocompleteEntry
+                     type:autofill::SuggestionType::kAutocompleteEntry
         backendIdentifier:nil
            requiresReauth:NO];
 

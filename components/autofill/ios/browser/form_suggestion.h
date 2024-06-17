@@ -34,8 +34,8 @@ struct FormSuggestionMetadata {
 // otherwise.
 @property(copy, readonly, nonatomic) UIImage* icon;
 
-// Denotes the popup type.
-@property(assign, readonly, nonatomic) autofill::SuggestionType popupItemId;
+// Denotes the suggestion type.
+@property(assign, readonly, nonatomic) autofill::SuggestionType type;
 
 // Indicates if the user should re-authenticate with the device before applying
 // the suggestion.
@@ -58,7 +58,7 @@ struct FormSuggestionMetadata {
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
                     displayDescription:(NSString*)displayDescription
                                   icon:(UIImage*)icon
-                           popupItemId:(autofill::SuggestionType)popupItemId
+                                  type:(autofill::SuggestionType)type
                      backendIdentifier:(NSString*)backendIdentifier
                         requiresReauth:(BOOL)requiresReauth
             acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement
@@ -69,7 +69,7 @@ struct FormSuggestionMetadata {
                             minorValue:(NSString*)minorValue
                     displayDescription:(NSString*)displayDescription
                                   icon:(UIImage*)icon
-                           popupItemId:(autofill::SuggestionType)popupItemId
+                                  type:(autofill::SuggestionType)type
                      backendIdentifier:(NSString*)backendIdentifier
                         requiresReauth:(BOOL)requiresReauth
             acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement;
@@ -78,7 +78,7 @@ struct FormSuggestionMetadata {
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
                     displayDescription:(NSString*)displayDescription
                                   icon:(UIImage*)icon
-                           popupItemId:(autofill::SuggestionType)popupItemId
+                                  type:(autofill::SuggestionType)type
                      backendIdentifier:(NSString*)backendIdentifier
                         requiresReauth:(BOOL)requiresReauth;
 

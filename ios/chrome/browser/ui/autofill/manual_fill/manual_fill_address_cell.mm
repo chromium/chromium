@@ -664,7 +664,7 @@ constexpr CGFloat kOverflowMenuButtonTopSpacing = 14;
                       minorValue:nil
               displayDescription:nil
                             icon:nil
-                     popupItemId:autofill::SuggestionType::kAddressEntry
+                            type:autofill::SuggestionType::kAddressEntry
                backendIdentifier:[self.address GUID]
                   requiresReauth:NO
       acceptanceA11yAnnouncement:

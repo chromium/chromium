@@ -174,7 +174,7 @@ enum class FormExtractionStatus {
                                suggestionWithValue:username
                                 displayDescription:realm
                                               icon:nil
-                                       popupItemId:autofill::SuggestionType::
+                                              type:autofill::SuggestionType::
                                                        kAutocompleteEntry
                                  backendIdentifier:nil
                                     requiresReauth:YES

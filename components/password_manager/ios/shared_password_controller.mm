@@ -561,7 +561,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                suggestionWithValue:value
                 displayDescription:rawSuggestion.displayDescription
                               icon:nil
-                       popupItemId:autofill::SuggestionType::kAutocompleteEntry
+                              type:autofill::SuggestionType::kAutocompleteEntry
                  backendIdentifier:nil
                     requiresReauth:YES
         acceptanceA11yAnnouncement:nil
@@ -582,7 +582,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
         suggestionWithValue:suggestPassword
          displayDescription:nil
                        icon:nil
-                popupItemId:autofill::SuggestionType::kGeneratePasswordEntry
+                       type:autofill::SuggestionType::kGeneratePasswordEntry
           backendIdentifier:nil
              requiresReauth:NO];
 
@@ -614,7 +614,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     return;
   }
 
-  switch (suggestion.popupItemId) {
+  switch (suggestion.type) {
     case autofill::SuggestionType::kAllSavedPasswordsEntry: {
       completion();
       password_manager::metrics_util::LogPasswordDropdownItemSelected(

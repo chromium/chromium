@@ -81,13 +81,13 @@ using autofill::FormRendererId;
         suggestionWithValue:@"foo"
          displayDescription:nil
                        icon:nil
-                popupItemId:autofill::SuggestionType::kAutocompleteEntry
+                       type:autofill::SuggestionType::kAutocompleteEntry
           backendIdentifier:nil
              requiresReauth:NO],
     [FormSuggestion suggestionWithValue:@"bar"
                      displayDescription:nil
                                    icon:nil
-                            popupItemId:autofill::SuggestionType::kAddressEntry
+                                   type:autofill::SuggestionType::kAddressEntry
                       backendIdentifier:nil
                          requiresReauth:NO]
   ];
@@ -399,13 +399,13 @@ TEST_F(FormSuggestionControllerTest,
         suggestionWithValue:@"foo"
          displayDescription:nil
                        icon:nil
-                popupItemId:autofill::SuggestionType::kAutocompleteEntry
+                       type:autofill::SuggestionType::kAutocompleteEntry
           backendIdentifier:nil
              requiresReauth:NO],
     [FormSuggestion suggestionWithValue:@"bar"
                      displayDescription:nil
                                    icon:nil
-                            popupItemId:autofill::SuggestionType::kAddressEntry
+                                   type:autofill::SuggestionType::kAddressEntry
                       backendIdentifier:nil
                          requiresReauth:NO]
   ];
@@ -452,7 +452,7 @@ TEST_F(FormSuggestionControllerTest, SelectingSuggestionShouldNotifyDelegate) {
         suggestionWithValue:@"foo"
          displayDescription:nil
                        icon:nil
-                popupItemId:autofill::SuggestionType::kAutocompleteEntry
+                       type:autofill::SuggestionType::kAutocompleteEntry
           backendIdentifier:nil
              requiresReauth:NO],
   ];
@@ -490,7 +490,7 @@ TEST_F(FormSuggestionControllerTest, AutofillSuggestionIPH) {
       suggestionWithValue:@"foo"
        displayDescription:nil
                      icon:nil
-              popupItemId:autofill::SuggestionType::kAutocompleteEntry
+                     type:autofill::SuggestionType::kAutocompleteEntry
         backendIdentifier:nil
            requiresReauth:NO];
   suggestion.featureForIPH = @"YES";
@@ -523,7 +523,7 @@ TEST_F(FormSuggestionControllerTest, CopyAndAdjustSuggestions) {
       suggestionWithValue:@""
        displayDescription:nil
                      icon:nil
-              popupItemId:autofill::SuggestionType::kGeneratePasswordEntry
+                     type:autofill::SuggestionType::kGeneratePasswordEntry
         backendIdentifier:nil
            requiresReauth:NO];
   [suggestions addObject:suggestion];
@@ -552,7 +552,7 @@ TEST_F(FormSuggestionControllerTest, CopyAndAdjustPlusAddressSuggestions) {
       suggestionWithValue:@""
        displayDescription:nil
                      icon:nil
-              popupItemId:autofill::SuggestionType::kCreateNewPlusAddress
+                     type:autofill::SuggestionType::kCreateNewPlusAddress
         backendIdentifier:nil
            requiresReauth:NO];
   [suggestions addObject:suggestion];
@@ -561,7 +561,7 @@ TEST_F(FormSuggestionControllerTest, CopyAndAdjustPlusAddressSuggestions) {
       suggestionWithValue:@""
        displayDescription:nil
                      icon:nil
-              popupItemId:autofill::SuggestionType::kFillExistingPlusAddress
+                     type:autofill::SuggestionType::kFillExistingPlusAddress
         backendIdentifier:nil
            requiresReauth:NO];
   [suggestions addObject:suggestion];

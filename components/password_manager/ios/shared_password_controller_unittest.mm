@@ -444,7 +444,7 @@ TEST_F(SharedPasswordControllerTest, ReturnsSuggestionsIfAvailable) {
              suggestionWithValue:@"value"
               displayDescription:@"display-description"
                             icon:nil
-                     popupItemId:autofill::SuggestionType::kAutocompleteEntry
+                            type:autofill::SuggestionType::kAutocompleteEntry
                backendIdentifier:nil
                   requiresReauth:NO
       acceptanceA11yAnnouncement:nil
@@ -527,7 +527,7 @@ TEST_F(SharedPasswordControllerTest,
                  ASSERT_EQ(1UL, suggestions.count);
                  FormSuggestion* suggestion = suggestions.firstObject;
                  EXPECT_EQ(autofill::SuggestionType::kGeneratePasswordEntry,
-                           suggestion.popupItemId);
+                           suggestion.type);
                  EXPECT_EQ(delegate, controller_);
                  completion_was_called = YES;
                }];
@@ -576,7 +576,7 @@ TEST_F(SharedPasswordControllerTest, SuggestsGeneratedPassword) {
       suggestionWithValue:@"test-value"
        displayDescription:@"test-description"
                      icon:nil
-              popupItemId:autofill::SuggestionType::kGeneratePasswordEntry
+                     type:autofill::SuggestionType::kGeneratePasswordEntry
         backendIdentifier:nil
            requiresReauth:NO];
 
@@ -646,7 +646,7 @@ TEST_F(SharedPasswordControllerTest, PresavesGeneratedPassword) {
       suggestionWithValue:@"test-value"
        displayDescription:@"test-description"
                      icon:nil
-              popupItemId:autofill::SuggestionType::kGeneratePasswordEntry
+                     type:autofill::SuggestionType::kGeneratePasswordEntry
         backendIdentifier:nil
            requiresReauth:NO];
 
@@ -1382,7 +1382,7 @@ TEST_F(SharedPasswordControllerTest, DeclinePasswordGenerationDialog) {
       suggestionWithValue:@"test-value"
        displayDescription:@"test-description"
                      icon:nil
-              popupItemId:autofill::SuggestionType::kGeneratePasswordEntry
+                     type:autofill::SuggestionType::kGeneratePasswordEntry
         backendIdentifier:nil
            requiresReauth:NO];
 

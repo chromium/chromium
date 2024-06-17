@@ -273,9 +273,8 @@ UILabel* TextLabel(NSString* text,
 
 // Returns whether this label is for a credit card suggestion.
 - (BOOL)isCreditCardSuggestion {
-  return (_suggestion.popupItemId ==
-          autofill::SuggestionType::kCreditCardEntry) ||
-         (_suggestion.popupItemId ==
+  return (_suggestion.type == autofill::SuggestionType::kCreditCardEntry) ||
+         (_suggestion.type ==
           autofill::SuggestionType::kVirtualCreditCardEntry);
 }
 
@@ -301,7 +300,7 @@ UILabel* TextLabel(NSString* text,
   // moment of setting up the label's width anchor.
   CGSize windowSize = [[UIScreen mainScreen] bounds].size;
   CGFloat portraitScreenWidth = MIN(windowSize.width, windowSize.height);
-  switch (_suggestion.popupItemId) {
+  switch (_suggestion.type) {
     case autofill::SuggestionType::kCreditCardEntry:
     case autofill::SuggestionType::kVirtualCreditCardEntry: {
       // Max width is just enough to show half of the credit card icon on the

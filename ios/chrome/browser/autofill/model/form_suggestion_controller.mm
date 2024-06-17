@@ -403,12 +403,10 @@ UIImage* defaultIconForType(autofill::SuggestionType type) {
   NSMutableArray<FormSuggestion*>* suggestionsCopy = [NSMutableArray array];
   for (FormSuggestion* suggestion : suggestions) {
     BOOL isPlusAddressSuggestion =
-        (suggestion.popupItemId ==
-         autofill::SuggestionType::kCreateNewPlusAddress) ||
-        (suggestion.popupItemId ==
-         autofill::SuggestionType::kFillExistingPlusAddress);
+        (suggestion.type == autofill::SuggestionType::kCreateNewPlusAddress) ||
+        (suggestion.type == autofill::SuggestionType::kFillExistingPlusAddress);
 
-    UIImage* defaultIcon = defaultIconForType(suggestion.popupItemId);
+    UIImage* defaultIcon = defaultIconForType(suggestion.type);
 
     // If there are no icons, but we have a default icon for this suggestion,
     // copy the suggestion and add the default icon. If
@@ -430,7 +428,7 @@ UIImage* defaultIconForType(autofill::SuggestionType type) {
                                         minorValue:suggestion.minorValue
                                 displayDescription:suggestion.displayDescription
                                               icon:defaultIcon
-                                       popupItemId:suggestion.popupItemId
+                                              type:suggestion.type
                                  backendIdentifier:suggestion.backendIdentifier
                                     requiresReauth:suggestion.requiresReauth
                         acceptanceA11yAnnouncement:

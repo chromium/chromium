@@ -333,14 +333,12 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
         });
   }
 
-  if (suggestion.popupItemId == autofill::SuggestionType::kAddressEntry ||
-      suggestion.popupItemId == autofill::SuggestionType::kCreditCardEntry ||
-      suggestion.popupItemId ==
-          autofill::SuggestionType::kCreateNewPlusAddress ||
+  if (suggestion.type == autofill::SuggestionType::kAddressEntry ||
+      suggestion.type == autofill::SuggestionType::kCreditCardEntry ||
+      suggestion.type == autofill::SuggestionType::kCreateNewPlusAddress ||
       (base::FeatureList::IsEnabled(
            autofill::features::kAutofillEnableVirtualCards) &&
-       suggestion.popupItemId ==
-           autofill::SuggestionType::kVirtualCreditCardEntry)) {
+       suggestion.type == autofill::SuggestionType::kVirtualCreditCardEntry)) {
     _pendingAutocompleteFieldID = fieldRendererID;
     if (_suggestionDelegate) {
       // TODO(crbug.com/41460687): Replace 0 with the index of the selected
@@ -348,7 +346,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
       autofill::Suggestion autofill_suggestion;
       autofill_suggestion.main_text.value =
           SysNSStringToUTF16(suggestion.value);
-      autofill_suggestion.type = suggestion.popupItemId;
+      autofill_suggestion.type = suggestion.type;
       if (!suggestion.backendIdentifier.length) {
         autofill_suggestion.payload = autofill::Suggestion::BackendId();
       } else {
@@ -377,9 +375,8 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
     return;
   }
 
-  if (suggestion.popupItemId == autofill::SuggestionType::kAutocompleteEntry ||
-      suggestion.popupItemId ==
-          autofill::SuggestionType::kFillExistingPlusAddress) {
+  if (suggestion.type == autofill::SuggestionType::kAutocompleteEntry ||
+      suggestion.type == autofill::SuggestionType::kFillExistingPlusAddress) {
     // FormSuggestion is a simple, single value that can be filled out now.
     [self fillField:SysNSStringToUTF8(fieldIdentifier)
         fieldRendererID:fieldRendererID
@@ -387,7 +384,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
                formName:SysNSStringToUTF8(formName)
                   value:SysNSStringToUTF16(suggestion.value)
                 inFrame:frame];
-  } else if (suggestion.popupItemId == autofill::SuggestionType::kUndoOrClear) {
+  } else if (suggestion.type == autofill::SuggestionType::kUndoOrClear) {
     __weak __typeof(self) weakSelf = self;
     SuggestionHandledCompletion suggestionHandledCompletionCopy =
         [_suggestionHandledCompletion copy];
@@ -401,8 +398,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
           suggestionHandledCompletionCopy();
         }));
 
-  } else if (suggestion.popupItemId ==
-             autofill::SuggestionType::kShowAccountCards) {
+  } else if (suggestion.type == autofill::SuggestionType::kShowAccountCards) {
     autofill::BrowserAutofillManager* autofillManager =
         [self autofillManagerFromWebState:_webState webFrame:frame];
     if (autofillManager) {
@@ -410,7 +406,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
     }
   } else {
     NOTREACHED_IN_MIGRATION()
-        << "unknown identifier " << base::to_underlying(suggestion.popupItemId);
+        << "unknown identifier " << base::to_underlying(suggestion.type);
   }
 }
 
@@ -637,7 +633,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
                         minorValue:minorValue
                 displayDescription:displayDescription
                               icon:icon
-                       popupItemId:popup_suggestion.type
+                              type:popup_suggestion.type
                  backendIdentifier:SysUTF8ToNSString(
                                        popup_suggestion
                                            .GetBackendId<

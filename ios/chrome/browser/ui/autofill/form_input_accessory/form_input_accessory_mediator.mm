@@ -722,12 +722,12 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 
 // Logs information about what type of suggestion the user selected.
 - (void)logReauthenticationEvent:(ReauthenticationEvent)reauthenticationEvent
-                     popupItemId:(autofill::SuggestionType)popupItemId {
+                            type:(autofill::SuggestionType)type {
   std::string histogramName;
   if (self.currentProvider.type == SuggestionProviderTypePassword) {
     histogramName = "IOS.Reauth.Password.Autofill";
   } else if (self.currentProvider.type == SuggestionProviderTypeAutofill) {
-    switch (popupItemId) {
+    switch (type) {
       case autofill::SuggestionType::kCreditCardEntry:
       case autofill::SuggestionType::kVirtualCreditCardEntry:
         histogramName = "IOS.Reauth.CreditCard.Autofill";
@@ -772,11 +772,11 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
 
 - (void)didSelectSuggestion:(FormSuggestion*)formSuggestion {
   [self logReauthenticationEvent:ReauthenticationEvent::kAttempt
-                     popupItemId:formSuggestion.popupItemId];
+                            type:formSuggestion.type];
 
   if (!formSuggestion.requiresReauth) {
     [self logReauthenticationEvent:ReauthenticationEvent::kSuccess
-                       popupItemId:formSuggestion.popupItemId];
+                              type:formSuggestion.type];
     [self handleSuggestion:formSuggestion];
     return;
   }
@@ -785,11 +785,11 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
     auto completionHandler = ^(ReauthenticationResult result) {
       if (result != ReauthenticationResult::kFailure) {
         [self logReauthenticationEvent:ReauthenticationEvent::kSuccess
-                           popupItemId:formSuggestion.popupItemId];
+                                  type:formSuggestion.type];
         [self handleSuggestion:formSuggestion];
       } else {
         [self logReauthenticationEvent:ReauthenticationEvent::kFailure
-                           popupItemId:formSuggestion.popupItemId];
+                                  type:formSuggestion.type];
       }
     };
 
@@ -799,7 +799,7 @@ bool InputTriggersKeyboard(std::string field_type, bool default_value) {
                                  handler:completionHandler];
   } else {
     [self logReauthenticationEvent:ReauthenticationEvent::kMissingPasscode
-                       popupItemId:formSuggestion.popupItemId];
+                              type:formSuggestion.type];
     [self handleSuggestion:formSuggestion];
   }
 }

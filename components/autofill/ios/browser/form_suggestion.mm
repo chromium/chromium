@@ -10,7 +10,7 @@
                     minorValue:(NSString*)minorValue
             displayDescription:(NSString*)displayDescription
                           icon:(UIImage*)icon
-                   popupItemId:(autofill::SuggestionType)popupItemId
+                          type:(autofill::SuggestionType)type
              backendIdentifier:(NSString*)backendIdentifier
                 requiresReauth:(BOOL)requiresReauth
     acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement
@@ -21,7 +21,7 @@
     _minorValue = [minorValue copy];
     _displayDescription = [displayDescription copy];
     _icon = [icon copy];
-    _popupItemId = popupItemId;
+    _type = type;
     _backendIdentifier = backendIdentifier;
     _requiresReauth = requiresReauth;
     _acceptanceA11yAnnouncement = [acceptanceA11yAnnouncement copy];
@@ -33,7 +33,7 @@
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
                     displayDescription:(NSString*)displayDescription
                                   icon:(UIImage*)icon
-                           popupItemId:(autofill::SuggestionType)popupItemId
+                                  type:(autofill::SuggestionType)type
                      backendIdentifier:(NSString*)backendIdentifier
                         requiresReauth:(BOOL)requiresReauth
             acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement
@@ -42,7 +42,7 @@
                                     minorValue:nil
                             displayDescription:displayDescription
                                           icon:icon
-                                   popupItemId:popupItemId
+                                          type:type
                              backendIdentifier:backendIdentifier
                                 requiresReauth:requiresReauth
                     acceptanceA11yAnnouncement:acceptanceA11yAnnouncement
@@ -53,7 +53,7 @@
                             minorValue:(NSString*)minorValue
                     displayDescription:(NSString*)displayDescription
                                   icon:(UIImage*)icon
-                           popupItemId:(autofill::SuggestionType)popupItemId
+                                  type:(autofill::SuggestionType)type
                      backendIdentifier:(NSString*)backendIdentifier
                         requiresReauth:(BOOL)requiresReauth
             acceptanceA11yAnnouncement:(NSString*)acceptanceA11yAnnouncement {
@@ -61,7 +61,7 @@
                                     minorValue:minorValue
                             displayDescription:displayDescription
                                           icon:icon
-                                   popupItemId:popupItemId
+                                          type:type
                              backendIdentifier:backendIdentifier
                                 requiresReauth:requiresReauth
                     acceptanceA11yAnnouncement:acceptanceA11yAnnouncement
@@ -71,14 +71,14 @@
 + (FormSuggestion*)suggestionWithValue:(NSString*)value
                     displayDescription:(NSString*)displayDescription
                                   icon:(UIImage*)icon
-                           popupItemId:(autofill::SuggestionType)popupItemId
+                                  type:(autofill::SuggestionType)type
                      backendIdentifier:(NSString*)backendIdentifier
                         requiresReauth:(BOOL)requiresReauth {
   return [[FormSuggestion alloc] initWithValue:value
                                     minorValue:nil
                             displayDescription:displayDescription
                                           icon:icon
-                                   popupItemId:popupItemId
+                                          type:type
                              backendIdentifier:backendIdentifier
                                 requiresReauth:requiresReauth
                     acceptanceA11yAnnouncement:nil

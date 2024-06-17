@@ -242,15 +242,16 @@ using PaymentsSuggestionBottomSheetExitReason::kBadProvider;
                       minorValue:nil
               displayDescription:nil
                             icon:nil
-                     popupItemId:
-                         ((base::FeatureList::IsEnabled(
-                               autofill::features::
-                                   kAutofillEnableVirtualCards) &&
-                           ([creditCardData recordType] ==
-                            autofill::CreditCard::RecordType::kVirtualCard))
-                              ? autofill::SuggestionType::
-                                    kVirtualCreditCardEntry
-                              : autofill::SuggestionType::kCreditCardEntry)
+                            type:((base::FeatureList::IsEnabled(
+                                       autofill::features::
+                                           kAutofillEnableVirtualCards) &&
+                                   ([creditCardData recordType] ==
+                                    autofill::CreditCard::RecordType::
+                                        kVirtualCard))
+                                      ? autofill::SuggestionType::
+                                            kVirtualCreditCardEntry
+                                      : autofill::SuggestionType::
+                                            kCreditCardEntry)
                backendIdentifier:[creditCardData backendIdentifier]
                   requiresReauth:NO
       acceptanceA11yAnnouncement:

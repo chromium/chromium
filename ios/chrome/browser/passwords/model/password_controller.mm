@@ -514,8 +514,7 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
 
 - (void)sharedPasswordController:(SharedPasswordController*)controller
              didAcceptSuggestion:(FormSuggestion*)suggestion {
-  if (suggestion.popupItemId ==
-      autofill::SuggestionType::kAllSavedPasswordsEntry) {
+  if (suggestion.type == autofill::SuggestionType::kAllSavedPasswordsEntry) {
     // Navigate to the settings list.
     [self.delegate displaySavedPasswordList];
   }

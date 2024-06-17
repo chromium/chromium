@@ -713,7 +713,7 @@ CGFloat GPayIconTopAnchorOffset() {
 // Called when the "Autofill Form" button is tapped. Fills the current form with
 // the card's data.
 - (void)onAutofillFormButtonTapped {
-  autofill::SuggestionType popupItemId =
+  autofill::SuggestionType type =
       autofill::VirtualCardFeatureEnabled() &&
               [self.card recordType] == kVirtualCard
           ? autofill::SuggestionType::kVirtualCreditCardEntry
@@ -723,7 +723,7 @@ CGFloat GPayIconTopAnchorOffset() {
                                minorValue:nil
                        displayDescription:nil
                                      icon:nil
-                              popupItemId:popupItemId
+                                     type:type
                         backendIdentifier:[self.card GUID]
                            requiresReauth:NO
                acceptanceA11yAnnouncement:
