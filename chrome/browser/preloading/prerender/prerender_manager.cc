@@ -246,6 +246,7 @@ PrerenderManager::StartPrerenderBookmark(const GURL& prerendering_url) {
       preloading_data->AddPreloadingAttempt(
           chrome_preloading_predictor::kMouseHoverOrMouseDownOnBookmarkBar,
           content::PreloadingType::kPrerender, std::move(same_url_matcher),
+          /*planned_max_preloading_type=*/std::nullopt,
           web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   // BookmarkBar only allows https protocol.
@@ -301,6 +302,7 @@ PrerenderManager::StartPrerenderNewTabPage(
       preloading_data->AddPreloadingAttempt(
           predictor, content::PreloadingType::kPrerender,
           std::move(same_url_matcher),
+          /*planned_max_preloading_type=*/std::nullopt,
           web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   // New Tab Page only allow https protocol.

@@ -1319,6 +1319,7 @@ void PrerenderHostRegistry::BackNavigationLikely(
                                            triggered_primary_page_source_id);
   PreloadingAttempt* attempt = preloading_data->AddPreloadingAttempt(
       predictor, PreloadingType::kPrerender, same_url_matcher,
+      /*planned_max_preloading_type=*/std::nullopt,
       triggered_primary_page_source_id);
 
   if (back_entry->GetMainFrameDocumentSequenceNumber() ==

@@ -17,6 +17,7 @@
 #include "content/common/features.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/prefetch_metrics.h"
+#include "content/public/browser/preloading.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom.h"
@@ -70,6 +71,7 @@ class CONTENT_EXPORT PrefetchDocumentManager
       const GURL& url,
       const PrefetchType& prefetch_type,
       const PreloadingPredictor& enacting_predictor,
+      PreloadingType planned_max_preloading_type,
       const blink::mojom::Referrer& referrer,
       const network::mojom::NoVarySearchPtr& no_vary_search_expected,
       base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer);

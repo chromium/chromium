@@ -616,6 +616,9 @@ class CONTENT_EXPORT PrefetchContainer {
   // has redirect(s).
   const SinglePrefetch& GetPreviousSinglePrefetchToPrefetch() const;
 
+  // Returns "Sec-Purpose" header value for a prefetch request to `request_url`.
+  const char* GetSecPurposeHeaderValue(const GURL& request_url) const;
+
   // The ID of the RenderFrameHost/Document that triggered the prefetch.
   // This will be empty when browser-initiated prefetch.
   const GlobalRenderFrameHostId referring_render_frame_host_id_;

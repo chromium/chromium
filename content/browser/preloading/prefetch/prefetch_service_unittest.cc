@@ -319,7 +319,8 @@ class PrefetchServiceTest : public RenderViewHostTestHarness {
     prefetch_document_manager->PrefetchUrl(
         prefetch_url, prefetch_type,
         GetPredictorForPreloadingTriggerType(prefetch_type.trigger_type()),
-        referrer, no_vary_search_hint, nullptr);
+        /*planned_max_preloading_type=*/PreloadingType::kPrefetch, referrer,
+        no_vary_search_hint, nullptr);
   }
 
   void MakePrefetchFromEmbedder(

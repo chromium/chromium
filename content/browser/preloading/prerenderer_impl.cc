@@ -341,6 +341,7 @@ bool PrerendererImpl::MaybePrerender(
             preloading_data->AddPreloadingAttempt(
                 creating_predictor, enacting_predictor,
                 PreloadingType::kPrerender, std::move(same_url_matcher),
+                /*planned_max_preloading_type=*/PreloadingType::kPrerender,
                 web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()));
         preloading_attempt->SetSpeculationEagerness(candidate->eagerness);
         return registry_->CreateAndStartHost(attributes, preloading_attempt);

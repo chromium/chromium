@@ -472,6 +472,7 @@ class PrefetchURLLoaderInterceptorTestBase : public RenderViewHostTestHarness {
         preloading_data->AddPreloadingAttempt(
             GetPredictorForPreloadingTriggerType(prefetch_type.trigger_type()),
             PreloadingType::kPrefetch, std::move(matcher),
+            /*planned_max_preloading_type=*/std::nullopt,
             web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId()));
 
     attempt->SetSpeculationEagerness(prefetch_type.GetEagerness());

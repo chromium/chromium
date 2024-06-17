@@ -759,9 +759,7 @@ void PrefetchContainer::AddRedirectHop(const net::RedirectInfo& redirect_info) {
   net::HttpRequestHeaders updated_headers;
   std::vector<std::string> headers_to_remove;
   updated_headers.SetHeader("Sec-Purpose",
-                            IsProxyRequiredForURL(redirect_info.new_url)
-                                ? "prefetch;anonymous-client-ip"
-                                : "prefetch");
+                            GetSecPurposeHeaderValue(redirect_info.new_url));
 
   // Remove any existing client hints headers (except, below, if we still want
   // to send this particular hint).
@@ -1413,11 +1411,7 @@ void PrefetchContainer::MakeResourceRequest(
   request->credentials_mode = network::mojom::CredentialsMode::kInclude;
   request->headers.MergeFrom(additional_headers);
   request->headers.SetHeader(kCorsExemptPurposeHeaderName, "prefetch");
-  // TODO(https://crbug.com/342089492): Use `Sec-Purpose: prefetch;prerender`
-  // for prefetch ahead of prerender.
-  request->headers.SetHeader("Sec-Purpose", IsProxyRequiredForURL(url)
-                                                ? "prefetch;anonymous-client-ip"
-                                                : "prefetch");
+  request->headers.SetHeader("Sec-Purpose", GetSecPurposeHeaderValue(url));
   request->headers.SetHeader("Upgrade-Insecure-Requests", "1");
 
   // Remove the user agent header if it was set so that the network context's
@@ -1581,6 +1575,49 @@ PrefetchContainer::SinglePrefetch::~SinglePrefetch() {
   CHECK(response_reader_);
   base::SequencedTaskRunner::GetCurrentDefault()->ReleaseSoon(
       FROM_HERE, std::move(response_reader_));
+}
+
+const char* PrefetchContainer::GetSecPurposeHeaderValue(
+    const GURL& request_url) const {
+  auto* attempt = static_cast<PreloadingAttemptImpl*>(attempt_.get());
+  if (attempt) {
+    switch (attempt->planned_max_preloading_type()) {
+      case PreloadingType::kPrefetch:
+        if (IsProxyRequiredForURL(request_url)) {
+          return "prefetch;anonymous-client-ip";
+        } else {
+          return "prefetch";
+        }
+      case PreloadingType::kPrerender:
+        if (IsProxyRequiredForURL(request_url)) {
+          // Note that this path would be reachable if a prefetch ahead of
+          // prerender were triggered with a speculation candidate with
+          // `requires_anonymous_client_ip_when_cross_origin`. But such
+          // Speculation Rules are discarded in blink.
+          //
+          // See
+          // https://github.com/WICG/nav-speculation/blob/main/triggers.md#requirements
+          NOTREACHED_NORETURN();
+        } else {
+          return "prefetch;prerender";
+        }
+      case PreloadingType::kUnspecified:
+      case PreloadingType::kPreconnect:
+      case PreloadingType::kNoStatePrefetch:
+      case PreloadingType::kLinkPreview:
+        NOTREACHED_NORETURN();
+    }
+  } else {
+    // Note that the `PreloadingAttempt` is null means that the initiating
+    // document has gone, which also implies there is no prerender that can use
+    // the result of this prefetch.
+
+    if (IsProxyRequiredForURL(request_url)) {
+      return "prefetch;anonymous-client-ip";
+    } else {
+      return "prefetch";
+    }
+  }
 }
 
 }  // namespace content

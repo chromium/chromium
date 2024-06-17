@@ -671,6 +671,7 @@ TEST_F(PrerenderHostTest, CanceledPrerenderCannotBeReadyForActivation) {
   PreloadingAttempt* preloading_attempt = preloading_data->AddPreloadingAttempt(
       content_preloading_predictor::kSpeculationRules,
       PreloadingType::kPrerender, std::move(same_url_matcher),
+      /*planned_max_preloading_type=*/std::nullopt,
       contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 
   const int prerender_frame_tree_node_id = registry().CreateAndStartHost(

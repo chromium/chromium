@@ -57,6 +57,7 @@ TEST_P(PreloadingAttemptImplRecordUMATest, TestHistogramRecordedCorrectly) {
       /*triggered_primary_page_source_id=*/0,
       /*url_match_predicate=*/
       PreloadingData::GetSameURLMatcher(GURL("http://example.com/")),
+      /*planned_max_preloading_type=*/std::nullopt,
       /*sampling_seed=*/1ul);
   {
     base::HistogramTester histogram_tester;
@@ -122,6 +123,7 @@ TEST_F(PreloadingAttemptUKMTest, NoSampling) {
       preloading_predictor::kUrlPointerDownOnAnchor,
       PreloadingType::kPreconnect, ukm::AssignNewSourceId(),
       PreloadingData::GetSameURLMatcher(GURL("http://example.com/")),
+      /*planned_max_preloading_type=*/std::nullopt,
       /*sampling_seed=*/1ul);
   attempt.RecordPreloadingAttemptMetrics(ukm::AssignNewSourceId());
   const char* entry_name =
@@ -158,6 +160,7 @@ TEST_F(PreloadingAttemptUKMTest, SampledOut) {
       preloading_predictor::kUrlPointerDownOnAnchor,
       PreloadingType::kPreconnect, ukm::AssignNewSourceId(),
       PreloadingData::GetSameURLMatcher(GURL("http://example.com/")),
+      /*planned_max_preloading_type=*/std::nullopt,
       /*sampling_seed=*/1ul);
   attempt.RecordPreloadingAttemptMetrics(ukm::AssignNewSourceId());
   const char* entry_name =

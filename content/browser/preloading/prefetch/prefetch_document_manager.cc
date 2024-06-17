@@ -193,8 +193,9 @@ void PrefetchDocumentManager::ProcessCandidates(
     // Eager candidates are enacted by the same predictor that creates them.
     const PreloadingPredictor enacting_predictor =
         GetPredictorForPreloadingTriggerType(prefetch_type.trigger_type());
-    PrefetchUrl(prefetch_url, prefetch_type, enacting_predictor, referrer,
-                no_vary_search_expected, devtools_observer);
+    PrefetchUrl(prefetch_url, prefetch_type, enacting_predictor,
+                /*planned_max_preloading_type=*/PreloadingType::kPrefetch,
+                referrer, no_vary_search_expected, devtools_observer);
   }
 
   if (PrefetchService* prefetch_service = GetPrefetchService()) {
@@ -212,8 +213,9 @@ bool PrefetchDocumentManager::MaybePrefetch(
 
   auto [prefetch_url, prefetch_type, referrer, no_vary_search_expected] =
       SpeculationCandidateToPrefetchUrlParams(candidate);
-  PrefetchUrl(prefetch_url, prefetch_type, enacting_predictor, referrer,
-              no_vary_search_expected, devtools_observer);
+  PrefetchUrl(prefetch_url, prefetch_type, enacting_predictor,
+              /*planned_max_preloading_type=*/PreloadingType::kPrefetch,
+              referrer, no_vary_search_expected, devtools_observer);
   return true;
 }
 
@@ -222,8 +224,9 @@ void PrefetchDocumentManager::PrefetchAheadOfPrerender(
     const PreloadingPredictor& enacting_predictor) {
   auto [prefetch_url, prefetch_type, referrer, no_vary_search_expected] =
       SpeculationCandidateToPrefetchUrlParams(candidate);
-  PrefetchUrl(prefetch_url, prefetch_type, enacting_predictor, referrer,
-              no_vary_search_expected,
+  PrefetchUrl(prefetch_url, prefetch_type, enacting_predictor,
+              /*planned_max_preloading_type=*/PreloadingType::kPrerender,
+              referrer, no_vary_search_expected,
               // TODO(https://crbug.com/342537094): Emit CDP events for prefetch
               // ahead of prerender.
               /*devtools_observer=*/nullptr);
@@ -233,6 +236,7 @@ void PrefetchDocumentManager::PrefetchUrl(
     const GURL& url,
     const PrefetchType& prefetch_type,
     const PreloadingPredictor& enacting_predictor,
+    PreloadingType planned_max_preloading_type,
     const blink::mojom::Referrer& referrer,
     const network::mojom::NoVarySearchPtr& mojo_no_vary_search_expected,
     base::WeakPtr<SpeculationHostDevToolsObserver> devtools_observer) {
@@ -278,7 +282,7 @@ void PrefetchDocumentManager::PrefetchUrl(
   auto* attempt =
       static_cast<PreloadingAttemptImpl*>(preloading_data->AddPreloadingAttempt(
           creating_predictor, enacting_predictor, PreloadingType::kPrefetch,
-          std::move(matcher),
+          std::move(matcher), planned_max_preloading_type,
           web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId()));
 
   attempt->SetSpeculationEagerness(prefetch_type.GetEagerness());

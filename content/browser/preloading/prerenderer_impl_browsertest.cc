@@ -59,7 +59,6 @@ class PrerendererImplBrowserTestBase : public ContentBrowserTest {
     histogram_tester_ = std::make_unique<base::HistogramTester>();
 
     host_resolver()->AddRule("*", "127.0.0.1");
-
     https_server_->SetSSLConfig(
         net::test_server::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server_->RegisterRequestMonitor(
@@ -98,7 +97,7 @@ class PrerendererImplBrowserTestBase : public ContentBrowserTest {
         /*requires_anonymous_client_ip_when_cross_origin=*/false,
         /*target_browsing_context_name_hint=*/
         blink::mojom::SpeculationTargetHint::kNoHint,
-        /*eagerness=*/blink::mojom::SpeculationEagerness::kConservative,
+        /*eagerness=*/blink::mojom::SpeculationEagerness::kEager,
         /*no_vary_search_hint=*/nullptr,
         /*injection_type=*/blink::mojom::SpeculationInjectionType::kNone);
   }
@@ -119,13 +118,13 @@ class PrerendererImplBrowserTestBase : public ContentBrowserTest {
   }
 
   net::EmbeddedTestServer& https_server() { return *https_server_.get(); }
-  WebContents& web_contents() { return *shell()->web_contents(); }
-  WebContentsImpl& web_contents_impl() {
-    return static_cast<WebContentsImpl&>(web_contents());
-  }
   base::HistogramTester& histogram_tester() { return *histogram_tester_.get(); }
   test::PrerenderTestHelper& prerender_helper() {
     return *prerender_helper_.get();
+  }
+  WebContents& web_contents() { return *shell()->web_contents(); }
+  WebContentsImpl& web_contents_impl() {
+    return static_cast<WebContentsImpl&>(web_contents());
   }
 
  protected:
@@ -194,11 +193,11 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestNoPrefetchAhead,
       "Preloading.Prerender.Attempt.SpeculationRules.TriggeringOutcome",
       PreloadingTriggeringOutcome::kSuccess, 1);
 
-  std::vector<RequestPathAndSecPurposeHeader> expect{
+  std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},
       {.path = "/title1.html",
        .sec_purpose_header_value = "prefetch;prerender"}};
-  ASSERT_EQ(expect, GetObservedRequests());
+  ASSERT_EQ(expected, GetObservedRequests());
 }
 
 IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestNoPrefetchAhead,
@@ -232,13 +231,13 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestNoPrefetchAhead,
       "Preloading.Prerender.Attempt.SpeculationRules.TriggeringOutcome",
       PreloadingTriggeringOutcome::kFailure, 1);
 
-  std::vector<RequestPathAndSecPurposeHeader> expect{
+  std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},
       {.path = "/title1.html",
        .sec_purpose_header_value = "prefetch;prerender"},
       {.path = "/title1.html", .sec_purpose_header_value = ""},
   };
-  ASSERT_EQ(expect, GetObservedRequests());
+  ASSERT_EQ(expected, GetObservedRequests());
 }
 
 IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
@@ -265,10 +264,11 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
       "Preloading.Prerender.Attempt.SpeculationRules.TriggeringOutcome",
       PreloadingTriggeringOutcome::kSuccess, 1);
 
-  std::vector<RequestPathAndSecPurposeHeader> expect{
+  std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},
-      {.path = "/title1.html", .sec_purpose_header_value = "prefetch"}};
-  ASSERT_EQ(expect, GetObservedRequests());
+      {.path = "/title1.html",
+       .sec_purpose_header_value = "prefetch;prerender"}};
+  ASSERT_EQ(expected, GetObservedRequests());
 }
 
 IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
@@ -296,13 +296,12 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
       "Preloading.Prerender.Attempt.SpeculationRules.TriggeringOutcome",
       PreloadingTriggeringOutcome::kUnspecified, 1);
 
-  std::vector<RequestPathAndSecPurposeHeader> expect{
+  std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},
-      // TODO(https://crbug.com/342539088): Use "prefetch;prerender" for
-      // prefetch ahead of prerender.
-      {.path = "/title1.html", .sec_purpose_header_value = "prefetch"},
+      {.path = "/title1.html",
+       .sec_purpose_header_value = "prefetch;prerender"},
   };
-  ASSERT_EQ(expect, GetObservedRequests());
+  ASSERT_EQ(expected, GetObservedRequests());
 }
 
 IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
@@ -339,13 +338,12 @@ IN_PROC_BROWSER_TEST_F(PrerendererImplBrowserTestPrefetchAhead,
       "Preloading.Prerender.Attempt.SpeculationRules.TriggeringOutcome",
       PreloadingTriggeringOutcome::kFailure, 1);
 
-  std::vector<RequestPathAndSecPurposeHeader> expect{
+  std::vector<RequestPathAndSecPurposeHeader> expected{
       {.path = "/empty.html", .sec_purpose_header_value = ""},
-      // TODO(https://crbug.com/342539088): Use "prefetch;prerender" for
-      // prefetch ahead of prerender.
-      {.path = "/title1.html", .sec_purpose_header_value = "prefetch"},
+      {.path = "/title1.html",
+       .sec_purpose_header_value = "prefetch;prerender"},
   };
-  ASSERT_EQ(expect, GetObservedRequests());
+  ASSERT_EQ(expected, GetObservedRequests());
 }
 
 }  // namespace

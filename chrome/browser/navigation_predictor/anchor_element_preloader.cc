@@ -75,6 +75,7 @@ void AnchorElementPreloader::MaybePreconnect(const GURL& target) {
   content::PreloadingAttempt* attempt = preloading_data->AddPreloadingAttempt(
       chrome_preloading_predictor::kPointerDownOnAnchor,
       content::PreloadingType::kPreconnect, match_callback,
+      /*planned_max_preloading_type=*/std::nullopt,
       triggered_primary_page_source_id);
 
   if (content::PreloadingEligibility eligibility =
