@@ -3727,6 +3727,10 @@ bool RenderViewContextMenu::IsSaveImageAsEnabled() const {
     return false;
   }
 
+  if (!IsSaveAsItemAllowedByUntrustedNetworkStatus()) {
+    return false;
+  }
+
   return params_.has_image_contents;
 }
 

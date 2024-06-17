@@ -2682,6 +2682,150 @@ IN_PROC_BROWSER_TEST_F(
       testing::Not(testing::Contains(IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS)));
 }
 
+IN_PROC_BROWSER_TEST_F(ContextMenuFencedFrameTest,
+                       SaveImageAsEntryIsDisabledAfterNetworkCutoff) {
+  // Add content/test/data for cross_site_iframe_factory.html.
+  https_server()->ServeFilesFromSourceDirectory("content/test/data");
+  ASSERT_TRUE(https_server()->Start());
+
+  // Navigate fenced frame to an image.
+  GURL fenced_frame_url(https_server()->GetURL("a.test", "/test_visual.html"));
+
+  GURL main_url(https_server()->GetURL(
+      "a.test",
+      base::StringPrintf("/cross_site_iframe_factory.html?a.test(%s{fenced})",
+                         fenced_frame_url.spec().c_str())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  // Get fenced frame render frame host.
+  std::vector<content::RenderFrameHost*> child_frames =
+      fenced_frame_test_helper().GetChildFencedFrameHosts(
+          primary_main_frame_host());
+  ASSERT_EQ(child_frames.size(), 1u);
+  content::RenderFrameHost* fenced_frame_rfh = child_frames[0];
+  ASSERT_EQ(fenced_frame_rfh->GetLastCommittedURL(), fenced_frame_url);
+
+  // To avoid flakiness and ensure fenced_frame_rfh is ready for hit testing.
+  content::WaitForHitTestData(fenced_frame_rfh);
+
+  // Click inside the fenced frame.
+  const gfx::PointF click_point(15, 15);
+
+  // Open a context menu by right clicking on the image.
+  ContextMenuWaiter menu_observer;
+  SimulateClickAt(fenced_frame_rfh, blink::WebMouseEvent::Button::kRight,
+                  click_point);
+
+  // Wait for context menu to be visible.
+  menu_observer.WaitForMenuOpenAndClose();
+
+  // "Save Image As..." should be present and enabled in the context menu.
+  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
+              testing::Contains(IDC_CONTENT_CONTEXT_SAVEIMAGEAS));
+
+  // Disable fenced frame untrusted network access.
+  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
+    (async () => {
+      return window.fence.disableUntrustedNetwork();
+    })();
+  )"));
+
+  // Open the context menu again.
+  ContextMenuWaiter menu_observer_after_network_cutoff;
+  SimulateClickAt(fenced_frame_rfh, blink::WebMouseEvent::Button::kRight,
+                  click_point);
+
+  // Wait for context menu to be visible.
+  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
+
+  // "Save Image As..." should be disabled in the context menu after fenced
+  // frame has untrusted network access revoked.
+  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
+              testing::Contains(IDC_CONTENT_CONTEXT_SAVEIMAGEAS));
+  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
+              testing::Not(testing::Contains(IDC_CONTENT_CONTEXT_SAVEIMAGEAS)));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextMenuFencedFrameTest,
+    SaveImageAsEntryIsDisabledInNestedIframeAfterNetworkCutoff) {
+  // Add content/test/data for cross_site_iframe_factory.html.
+  https_server()->ServeFilesFromSourceDirectory("content/test/data");
+  ASSERT_TRUE(https_server()->Start());
+
+  // Navigate the nested iframe to an image.
+  GURL nested_iframe_url(https_server()->GetURL("a.test", "/test_visual.html"));
+
+  // The page has a fenced frame with a nested iframe inside.
+  GURL main_url(https_server()->GetURL(
+      "a.test",
+      base::StringPrintf(
+          "/cross_site_iframe_factory.html?a.test(a.test{fenced}(%s))",
+          nested_iframe_url.spec().c_str())));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
+
+  // Get fenced frame and nested iframe render frame host.
+  std::vector<content::RenderFrameHost*> child_frames =
+      fenced_frame_test_helper().GetChildFencedFrameHosts(
+          primary_main_frame_host());
+  ASSERT_EQ(child_frames.size(), 1u);
+  content::RenderFrameHost* fenced_frame_rfh = child_frames[0];
+  content::RenderFrameHost* nested_iframe_rfh =
+      content::ChildFrameAt(fenced_frame_rfh, 0);
+  ASSERT_EQ(nested_iframe_rfh->GetLastCommittedURL(), nested_iframe_url);
+
+  // To avoid flakiness and ensure fenced_frame_rfh and nested_iframe_rfh are
+  // ready for hit testing.
+  content::WaitForHitTestData(fenced_frame_rfh);
+  content::WaitForHitTestData(nested_iframe_rfh);
+
+  // Click inside the nested iframe.
+  gfx::PointF click_point(15, 15);
+
+  // Because the mouse event is forwarded to the `RenderWidgetHost` of the
+  // fenced frame, the click point needs to be offset by the top left
+  // coordinates of the nested iframe relative to the fenced frame.
+  const gfx::PointF iframe_offset =
+      GetTopLeftCoordinatesOfElementWithId(fenced_frame_rfh, "child-0");
+  click_point.Offset(iframe_offset.x(), iframe_offset.y());
+
+  // Open a context menu by right clicking on the image.
+  ContextMenuWaiter menu_observer;
+  SimulateClickAt(fenced_frame_rfh, blink::WebMouseEvent::Button::kRight,
+                  click_point);
+
+  // Wait for context menu to be visible.
+  menu_observer.WaitForMenuOpenAndClose();
+
+  // "Save Image As..." should be present and enabled in the context menu.
+  EXPECT_THAT(menu_observer.GetCapturedCommandIds(),
+              testing::Contains(IDC_CONTENT_CONTEXT_SAVEIMAGEAS));
+  EXPECT_THAT(menu_observer.GetCapturedEnabledCommandIds(),
+              testing::Contains(IDC_CONTENT_CONTEXT_SAVEIMAGEAS));
+
+  // Disable fenced frame untrusted network access.
+  ASSERT_TRUE(ExecJs(fenced_frame_rfh, R"(
+    (async () => {
+      return window.fence.disableUntrustedNetwork();
+    })();
+  )"));
+
+  // Open the context menu again.
+  ContextMenuWaiter menu_observer_after_network_cutoff;
+  SimulateClickAt(fenced_frame_rfh, blink::WebMouseEvent::Button::kRight,
+                  click_point);
+
+  // Wait for context menu to be visible.
+  menu_observer_after_network_cutoff.WaitForMenuOpenAndClose();
+
+  // "Save Image As..." should be disabled in the context menu after fenced
+  // frame has untrusted network access revoked.
+  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedCommandIds(),
+              testing::Contains(IDC_CONTENT_CONTEXT_SAVEIMAGEAS));
+  EXPECT_THAT(menu_observer_after_network_cutoff.GetCapturedEnabledCommandIds(),
+              testing::Not(testing::Contains(IDC_CONTENT_CONTEXT_SAVEIMAGEAS)));
+}
+
 // TODO(crbug.com/40285326): This fails with the field trial testing config.
 class ContextMenuFencedFrameTestNoTestingConfig
     : public ContextMenuFencedFrameTest {
