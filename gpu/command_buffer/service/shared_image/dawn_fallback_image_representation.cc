@@ -256,11 +256,6 @@ bool DawnFallbackImageRepresentation::UploadToBacking() {
   wgpu::Queue queue = device_.GetQueue();
   queue.Submit(1, &commandBuffer);
 
-  struct MapCallbackData {
-    base::AtomicFlag map_complete;
-    WGPUBufferMapAsyncStatus status;
-  };
-
   // Map the staging buffer for read.
   std::vector<SkPixmap> staging_pixmaps;
   for (int plane_index = 0;
