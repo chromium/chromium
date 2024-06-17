@@ -23,6 +23,9 @@ interface FacilitatedPaymentsPaymentMethodsComponent {
     interface Delegate {
         /** Called whenever the sheet is dismissed. */
         void onDismissed();
+
+        /** Called whenever a bank account is selected. */
+        void onBankAccountSelected(long instrumentId);
     }
 
     /** Initializes the component. */

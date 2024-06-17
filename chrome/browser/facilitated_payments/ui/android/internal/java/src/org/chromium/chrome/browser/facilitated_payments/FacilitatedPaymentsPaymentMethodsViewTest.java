@@ -8,6 +8,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.Matchers.is;
 
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_DRAWABLE_ID;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_SUMMARY;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_NAME;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.ON_BANK_ACCOUNT_CLICK_ACTION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE;
@@ -28,6 +32,7 @@ import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -174,8 +179,17 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
     }
 
     private PropertyModel createBankAccountModel(BankAccount bankAccount) {
-        return FacilitatedPaymentsPaymentMethodsMediator.createBankAccountModel(
-                mActivityTestRule.getActivity(), bankAccount);
+        PropertyModel.Builder bankAccountModelBuilder =
+                new PropertyModel.Builder(BankAccountProperties.NON_TRANSFORMING_KEYS)
+                        .with(BANK_NAME, bankAccount.getBankName())
+                        .with(
+                                BANK_ACCOUNT_SUMMARY,
+                                FacilitatedPaymentsPaymentMethodsMediator
+                                        .getBankAccountSummaryString(
+                                                mActivityTestRule.getActivity(), bankAccount))
+                        .with(BANK_ACCOUNT_DRAWABLE_ID, R.drawable.ic_account_balance)
+                        .with(ON_BANK_ACCOUNT_CLICK_ACTION, () -> {});
+        return bankAccountModelBuilder.build();
     }
 
     private RecyclerView getBankAccounts() {

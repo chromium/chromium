@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.facilitated_payments;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.ADDITIONAL_INFO;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.CONTINUE_BUTTON;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.HEADER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE;
@@ -87,6 +88,10 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
                 ADDITIONAL_INFO,
                 FacilitatedPaymentsPaymentMethodsViewBinder::createAdditionalInfoView,
                 FacilitatedPaymentsPaymentMethodsViewBinder::bindAdditionalInfoView);
+        adapter.registerType(
+                CONTINUE_BUTTON,
+                FacilitatedPaymentsPaymentMethodsViewBinder::createContinueButtonView,
+                FacilitatedPaymentsPaymentMethodsViewBinder::bindContinueButtonView);
         view.getSheetItemListView().setAdapter(adapter);
     }
 

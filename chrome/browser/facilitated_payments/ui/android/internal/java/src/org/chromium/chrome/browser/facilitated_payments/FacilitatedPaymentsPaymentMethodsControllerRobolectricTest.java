@@ -16,6 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.ADDITIONAL_INFO;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.CONTINUE_BUTTON;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.HEADER;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE;
@@ -47,6 +48,8 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Tests for {@link FacilitatedPaymentsPaymentMethodsCoordinator} and {@link
@@ -141,5 +144,28 @@ public class FacilitatedPaymentsPaymentMethodsControllerRobolectricTest {
 
         assertThat(mFacilitatedPaymentsPaymentMethodsModel.get(VISIBLE), is(false));
         verify(mDelegateMock).onDismissed();
+    }
+
+    @Test
+    public void testShowsContinueButtonWhenOneBankAccount() {
+        mCoordinator.showSheet(List.of(BANK_ACCOUNT_1));
+
+        ModelList itemList = mFacilitatedPaymentsPaymentMethodsModel.get(SHEET_ITEMS);
+        assertEquals(getModelsOfType(itemList, CONTINUE_BUTTON).size(), 1);
+    }
+
+    @Test
+    public void testNoContinueButtonWhenManyBankAccounts() {
+        mCoordinator.showSheet(List.of(BANK_ACCOUNT_1, BANK_ACCOUNT_2));
+
+        ModelList itemList = mFacilitatedPaymentsPaymentMethodsModel.get(SHEET_ITEMS);
+        assertEquals(getModelsOfType(itemList, CONTINUE_BUTTON).size(), 0);
+    }
+
+    private static List<PropertyModel> getModelsOfType(ModelList items, int type) {
+        return StreamSupport.stream(items.spliterator(), false)
+                .filter(item -> item.type == type)
+                .map(item -> item.model)
+                .collect(Collectors.toList());
     }
 }

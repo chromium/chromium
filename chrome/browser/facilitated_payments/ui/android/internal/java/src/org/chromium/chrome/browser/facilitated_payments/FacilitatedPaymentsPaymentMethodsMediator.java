@@ -8,10 +8,12 @@ import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymen
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_SUMMARY;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_NAME;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.ON_BANK_ACCOUNT_CLICK_ACTION;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.DESCRIPTION_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.IMAGE_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.HeaderProperties.TITLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.BANK_ACCOUNT;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.ItemType.CONTINUE_BUTTON;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.SHEET_ITEMS;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.VISIBLE;
 
@@ -26,11 +28,13 @@ import org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPayme
 import org.chromium.components.autofill.payments.AccountType;
 import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.payments.InputProtector;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
+import java.util.stream.StreamSupport;
 
 /**
  * Contains the logic for the facilitated payments component. It sets the state of the model and
@@ -40,6 +44,8 @@ class FacilitatedPaymentsPaymentMethodsMediator {
     private Context mContext;
     private PropertyModel mModel;
     private Delegate mDelegate;
+
+    private InputProtector mInputProtector = new InputProtector();
 
     void initialize(Context context, PropertyModel model, Delegate delegate) {
         mContext = context;
@@ -55,16 +61,19 @@ class FacilitatedPaymentsPaymentMethodsMediator {
         ModelList sheetItems = mModel.get(SHEET_ITEMS);
         sheetItems.clear();
 
-        sheetItems.add(buildHeader());
-
         for (BankAccount bankAccount : bankAccounts) {
             final PropertyModel model = createBankAccountModel(mContext, bankAccount);
             sheetItems.add(new ListItem(BANK_ACCOUNT, model));
         }
 
+        maybeShowContinueButton(sheetItems);
+
         sheetItems.add(buildAdditionalInfo());
 
+        sheetItems.add(0, buildHeader());
+
         mModel.set(VISIBLE, true);
+        mInputProtector.markShowTime();
 
         return true;
     }
@@ -97,18 +106,27 @@ class FacilitatedPaymentsPaymentMethodsMediator {
     }
 
     @VisibleForTesting
-    static PropertyModel createBankAccountModel(Context context, BankAccount bankAccount) {
+    PropertyModel createBankAccountModel(Context context, BankAccount bankAccount) {
         PropertyModel.Builder bankAccountModelBuilder =
                 new PropertyModel.Builder(BankAccountProperties.NON_TRANSFORMING_KEYS)
                         .with(BANK_NAME, bankAccount.getBankName())
                         .with(
                                 BANK_ACCOUNT_SUMMARY,
                                 getBankAccountSummaryString(context, bankAccount))
-                        .with(BANK_ACCOUNT_DRAWABLE_ID, R.drawable.ic_account_balance);
+                        .with(BANK_ACCOUNT_DRAWABLE_ID, R.drawable.ic_account_balance)
+                        .with(
+                                ON_BANK_ACCOUNT_CLICK_ACTION,
+                                () -> this.onSelectedBankAccount(bankAccount));
         return bankAccountModelBuilder.build();
     }
 
-    private static String getBankAccountSummaryString(Context context, BankAccount bankAccount) {
+    public void onSelectedBankAccount(BankAccount bankAccount) {
+        if (!mInputProtector.shouldInputBeProcessed()) return;
+        mDelegate.onBankAccountSelected(bankAccount.getInstrumentId());
+    }
+
+    @VisibleForTesting
+    static String getBankAccountSummaryString(Context context, BankAccount bankAccount) {
         return context.getResources()
                 .getString(
                         R.string.settings_pix_bank_account_identifer,
@@ -116,8 +134,8 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                         bankAccount.getAccountNumberSuffix());
     }
 
-    private static String getBankAccountTypeString(
-            Context context, @AccountType int bankAccountType) {
+    @VisibleForTesting
+    static String getBankAccountTypeString(Context context, @AccountType int bankAccountType) {
         switch (bankAccountType) {
             case AccountType.CHECKING:
                 return context.getResources().getString(R.string.bank_account_type_checking);
@@ -133,5 +151,21 @@ class FacilitatedPaymentsPaymentMethodsMediator {
             default:
                 return "";
         }
+    }
+
+    private void maybeShowContinueButton(ModelList sheetItems) {
+        if (StreamSupport.stream(sheetItems.spliterator(), false)
+                        .filter(item -> item.type == BANK_ACCOUNT)
+                        .count()
+                != 1) {
+            return;
+        }
+        PropertyModel model =
+                StreamSupport.stream(sheetItems.spliterator(), false)
+                        .filter(item -> item.type == BANK_ACCOUNT)
+                        .findFirst()
+                        .get()
+                        .model;
+        sheetItems.add(new ListItem(CONTINUE_BUTTON, model));
     }
 }

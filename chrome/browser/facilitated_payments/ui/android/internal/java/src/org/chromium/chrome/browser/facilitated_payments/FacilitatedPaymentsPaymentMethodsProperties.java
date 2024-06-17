@@ -34,6 +34,10 @@ class FacilitatedPaymentsPaymentMethodsProperties {
         // Additional info to users making payments through bottom sheet.
         int ADDITIONAL_INFO = 2;
 
+        // A "Continue" button, which is shown when there is only one payment
+        // method available.
+        int CONTINUE_BUTTON = 3;
+
         // A footer section containing additional actions.
         int FOOTER = 3;
     }
@@ -46,9 +50,11 @@ class FacilitatedPaymentsPaymentMethodsProperties {
                 new ReadableObjectPropertyKey("bank_account_summary");
         static final ReadableIntPropertyKey BANK_ACCOUNT_DRAWABLE_ID =
                 new ReadableIntPropertyKey("bank_account_drawable_id");
+        static final ReadableObjectPropertyKey<Runnable> ON_BANK_ACCOUNT_CLICK_ACTION =
+                new ReadableObjectPropertyKey<>("on_bank_account_click_action");
 
         static final PropertyKey[] NON_TRANSFORMING_KEYS = {
-            BANK_NAME, BANK_ACCOUNT_SUMMARY, BANK_ACCOUNT_DRAWABLE_ID
+            BANK_NAME, BANK_ACCOUNT_SUMMARY, BANK_ACCOUNT_DRAWABLE_ID, ON_BANK_ACCOUNT_CLICK_ACTION
         };
 
         private BankAccountProperties() {}

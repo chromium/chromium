@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.facilitated_payments;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_DRAWABLE_ID;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_ACCOUNT_SUMMARY;
 import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.BANK_NAME;
+import static org.chromium.chrome.browser.facilitated_payments.FacilitatedPaymentsPaymentMethodsProperties.BankAccountProperties.ON_BANK_ACCOUNT_CLICK_ACTION;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,6 +43,8 @@ class BankAccountViewBinder {
             bankAccountIcon.setImageDrawable(
                     AppCompatResources.getDrawable(
                             view.getContext(), model.get(BANK_ACCOUNT_DRAWABLE_ID)));
+        } else if (propertyKey == ON_BANK_ACCOUNT_CLICK_ACTION) {
+            view.setOnClickListener(unusedView -> model.get(ON_BANK_ACCOUNT_CLICK_ACTION).run());
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
