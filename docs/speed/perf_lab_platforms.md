@@ -84,7 +84,6 @@
 
 ### Android
 
- * [android-pixel2-perf-aab-fyi](https://ci.chromium.org/p/chrome/builders/ci/android-pixel2-perf-aab-fyi): Android OPM1.171019.021.
  * [android-pixel2-perf-fyi](https://ci.chromium.org/p/chrome/builders/ci/android-pixel2-perf-fyi): Android OPM1.171019.021.
 
 ### Chromeos

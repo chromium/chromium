@@ -1444,18 +1444,8 @@ targets.binaries.generated_script(
 )
 
 targets.binaries.generated_script(
-    name = "performance_test_suite_android_clank_monochrome",
-    label = "//chrome/test:performance_test_suite_android_clank_monochrome",
-)
-
-targets.binaries.generated_script(
     name = "performance_test_suite_android_clank_monochrome_64_32_bundle",
     label = "//chrome/test:performance_test_suite_android_clank_monochrome_64_32_bundle",
-)
-
-targets.binaries.generated_script(
-    name = "performance_test_suite_android_clank_monochrome_bundle",
-    label = "//chrome/test:performance_test_suite_android_clank_monochrome_bundle",
 )
 
 targets.binaries.generated_script(
