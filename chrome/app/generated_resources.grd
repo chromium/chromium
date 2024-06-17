@@ -4716,7 +4716,10 @@ are declared in tools/grit/grit_rule.gni.
 
       <!-- DevTools shared process infobar -->
       <message name="IDS_DEV_TOOLS_SHARED_PROCESS_INFOBAR" desc="Label displayed in an infobar when the tab being debugged is run in a process that hosts multiple tabs. The label does not disappear until the user dismisses it or closes the debugger.">
-        Other tabs share a process with this tab, which may result in an unexpected DevTools experience.
+        This tab shares resources with other tabs, which could interfere with debugging.
+      </message>
+      <message name="IDS_DEV_TOOLS_SHARED_PROCESS_INFOBAR_LEARN_MORE" desc="Used as 'Learn More' link text.">
+        Learn More
       </message>
 
       <!-- DevTools attached infobar -->

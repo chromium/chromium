@@ -23,6 +23,15 @@ int ProcessSharingInfobarDelegate::GetButtons() const {
   return BUTTON_NONE;
 }
 
+std::u16string ProcessSharingInfobarDelegate::GetLinkText() const {
+  return l10n_util::GetStringUTF16(
+      IDS_DEV_TOOLS_SHARED_PROCESS_INFOBAR_LEARN_MORE);
+}
+
+GURL ProcessSharingInfobarDelegate::GetLinkURL() const {
+  return GURL("https://developer.chrome.com/docs/devtools/shared-processes");
+}
+
 infobars::InfoBarDelegate::InfoBarIdentifier
 ProcessSharingInfobarDelegate::GetIdentifier() const {
   return DEV_TOOLS_SHARED_PROCESS_DELEGATE;

@@ -20,6 +20,8 @@ class ProcessSharingInfobarDelegate : public ConfirmInfoBarDelegate {
   // ConfirmInfoBarDelegate:
   std::u16string GetMessageText() const override;
   int GetButtons() const override;
+  std::u16string GetLinkText() const override;
+  GURL GetLinkURL() const override;
 
   // infobars::InfoBarDelegate
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
