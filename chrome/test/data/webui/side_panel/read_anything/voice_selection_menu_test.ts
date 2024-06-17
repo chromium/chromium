@@ -27,7 +27,7 @@ suite('VoiceSelectionMenu', () => {
 
   // If no param for enabledLangs is provided, it auto populates it with the
   // langs of the voices
-  const setAvailableVoices = (enabledLangs?: string[]) => {
+  function setAvailableVoices(enabledLangs?: string[]) {
     voiceSelectionMenu.availableVoices = availableVoices;
     if (enabledLangs === undefined) {
       voiceSelectionMenu.enabledLangs =
@@ -36,14 +36,14 @@ suite('VoiceSelectionMenu', () => {
       voiceSelectionMenu.enabledLangs = enabledLangs;
     }
     flush();
-  };
+  }
 
-  const getDropdownItemForVoice = (voice: SpeechSynthesisVoice) => {
+  function getDropdownItemForVoice(voice: SpeechSynthesisVoice) {
     return voiceSelectionMenu.$.voiceSelectionMenu.get()
         .querySelector<HTMLButtonElement>(`[data-test-id="${
             stringToHtmlTestId(voice.name)}"].dropdown-voice-selection-button`)!
         ;
-  };
+  }
 
   setup(() => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
