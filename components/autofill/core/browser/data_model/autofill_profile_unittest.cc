@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/347137620 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 
 #include <stddef.h>
@@ -279,30 +274,27 @@ TEST(AutofillProfileTest, CreateInferredLabelsI18n_CH) {
                        "Brandschenkestrasse 110", "", "Zurich", "", "8002",
                        "CH", "+41 44-668-1800");
   profiles.back()->set_language_code("de_CH");
-  static const char* kExpectedLabels[] = {
-      "",
-      "H. R. Giger",
-      "H. R. Giger, Brandschenkestrasse 110",
-      "H. R. Giger, Brandschenkestrasse 110, Zurich",
-      "H. R. Giger, Brandschenkestrasse 110, CH-8002 Zurich",
-      "Beispiel Inc, H. R. Giger, Brandschenkestrasse 110, CH-8002 Zurich",
-      "Beispiel Inc, H. R. Giger, Brandschenkestrasse 110, CH-8002 Zurich, "
-      "Switzerland",
-      "Beispiel Inc, H. R. Giger, Brandschenkestrasse 110, CH-8002 Zurich, "
-      "Switzerland, hrgiger@beispiel.com",
-      "Beispiel Inc, H. R. Giger, Brandschenkestrasse 110, CH-8002 Zurich, "
-      "Switzerland, hrgiger@beispiel.com, +41 44-668-1800",
-  };
+  static constexpr auto kExpectedLabels = std::to_array<std::u16string_view>(
+      {u"", u"H. R. Giger", u"H. R. Giger, Brandschenkestrasse 110",
+       u"H. R. Giger, Brandschenkestrasse 110, Zurich",
+       u"H. R. Giger, Brandschenkestrasse 110, CH-8002 Zurich",
+       u"Beispiel Inc, H. R. Giger, Brandschenkestrasse 110, CH-8002 Zurich",
+       u"Beispiel Inc, H. R. Giger, Brandschenkestrasse 110, CH-8002 Zurich, "
+       u"Switzerland",
+       u"Beispiel Inc, H. R. Giger, Brandschenkestrasse 110, CH-8002 Zurich, "
+       u"Switzerland, hrgiger@beispiel.com",
+       u"Beispiel Inc, H. R. Giger, Brandschenkestrasse 110, CH-8002 Zurich, "
+       u"Switzerland, hrgiger@beispiel.com, +41 44-668-1800"});
 
   std::vector<std::u16string> labels;
-  for (size_t i = 0; i < std::size(kExpectedLabels); ++i) {
+  for (size_t i = 0; i < kExpectedLabels.size(); ++i) {
     AutofillProfile::CreateInferredLabels(
         ToRawPointerVector(profiles),
         /*suggested_fields=*/std::nullopt,
         /*triggering_field_type=*/std::nullopt, /*excluded_fields=*/{},
         /*minimal_fields_shown=*/i, "en-US", &labels);
     ASSERT_FALSE(labels.empty());
-    EXPECT_EQ(UTF8ToUTF16(kExpectedLabels[i]), labels.back());
+    EXPECT_EQ(kExpectedLabels[i], labels.back());
   }
 }
 
@@ -314,32 +306,30 @@ TEST(AutofillProfileTest, CreateInferredLabelsI18n_FR) {
                        "antoine@exemple.com", "Exemple Inc", "8 Rue de Londres",
                        "", "Paris", "", "75009", "FR", "+33 (0) 1 42 68 53 00");
   profiles.back()->set_language_code("fr_FR");
-  static const char* kExpectedLabels[] = {
-      "",
-      "Antoine de Saint-Exupéry",
-      "Antoine de Saint-Exupéry, 8 Rue de Londres",
-      "Antoine de Saint-Exupéry, 8 Rue de Londres, Paris",
-      "Antoine de Saint-Exupéry, 8 Rue de Londres, 75009 Paris",
-      "Exemple Inc, Antoine de Saint-Exupéry, 8 Rue de Londres, 75009 Paris",
-      "Exemple Inc, Antoine de Saint-Exupéry, 8 Rue de Londres, 75009 Paris, "
-      "France",
-      "Exemple Inc, Antoine de Saint-Exupéry, 8 Rue de Londres, 75009 Paris, "
-      "France, antoine@exemple.com",
-      "Exemple Inc, Antoine de Saint-Exupéry, 8 Rue de Londres, 75009 Paris, "
-      "France, antoine@exemple.com, +33 (0) 1 42 68 53 00",
-      "Exemple Inc, Antoine de Saint-Exupéry, 8 Rue de Londres, 75009 Paris, "
-      "France, antoine@exemple.com, +33 (0) 1 42 68 53 00",
-  };
+  static constexpr auto kExpectedLabels = std::to_array<std::u16string_view>(
+      {u"", u"Antoine de Saint-Exupéry",
+       u"Antoine de Saint-Exupéry, 8 Rue de Londres",
+       u"Antoine de Saint-Exupéry, 8 Rue de Londres, Paris",
+       u"Antoine de Saint-Exupéry, 8 Rue de Londres, 75009 Paris",
+       u"Exemple Inc, Antoine de Saint-Exupéry, 8 Rue de Londres, 75009 Paris",
+       u"Exemple Inc, Antoine de Saint-Exupéry, 8 Rue de Londres, 75009 Paris, "
+       u"France",
+       u"Exemple Inc, Antoine de Saint-Exupéry, 8 Rue de Londres, 75009 Paris, "
+       u"France, antoine@exemple.com",
+       u"Exemple Inc, Antoine de Saint-Exupéry, 8 Rue de Londres, 75009 Paris, "
+       u"France, antoine@exemple.com, +33 (0) 1 42 68 53 00",
+       u"Exemple Inc, Antoine de Saint-Exupéry, 8 Rue de Londres, 75009 Paris, "
+       u"France, antoine@exemple.com, +33 (0) 1 42 68 53 00"});
 
   std::vector<std::u16string> labels;
-  for (size_t i = 0; i < std::size(kExpectedLabels); ++i) {
+  for (size_t i = 0; i < kExpectedLabels.size(); ++i) {
     AutofillProfile::CreateInferredLabels(
         ToRawPointerVector(profiles),
         /*suggested_fields=*/std::nullopt,
         /*triggering_field_type=*/std::nullopt, /*excluded_fields=*/{},
         /*minimal_fields_shown=*/i, "en-US", &labels);
     ASSERT_FALSE(labels.empty());
-    EXPECT_EQ(UTF8ToUTF16(kExpectedLabels[i]), labels.back());
+    EXPECT_EQ(kExpectedLabels[i], labels.back());
   }
 }
 
@@ -354,39 +344,36 @@ TEST(AutofillProfileTest, CreateInferredLabelsI18n_KR) {
   profiles.back()->set_language_code("ko_Latn");
   profiles.back()->SetInfo(ADDRESS_HOME_DEPENDENT_LOCALITY, u"Yeoksam-Dong",
                            "en-US");
-  static const char* kExpectedLabels[] = {
-      "",
-      "Park Jae-sang",
-      "Park Jae-sang, Gangnam Finance Center",
-      "Park Jae-sang, Gangnam Finance Center, 152 Teheran-ro",
-      "Park Jae-sang, Gangnam Finance Center, 152 Teheran-ro, Yeoksam-Dong",
-      "Park Jae-sang, Gangnam Finance Center, 152 Teheran-ro, Yeoksam-Dong, "
-      "Gangnam-Gu",
-      "Park Jae-sang, Gangnam Finance Center, 152 Teheran-ro, Yeoksam-Dong, "
-      "Gangnam-Gu, Seoul",
-      "Park Jae-sang, Gangnam Finance Center, 152 Teheran-ro, Yeoksam-Dong, "
-      "Gangnam-Gu, Seoul, 135-984",
-      "Park Jae-sang, Yeleul Inc, Gangnam Finance Center, 152 Teheran-ro, "
-      "Yeoksam-Dong, Gangnam-Gu, Seoul, 135-984",
-      "Park Jae-sang, Yeleul Inc, Gangnam Finance Center, 152 Teheran-ro, "
-      "Yeoksam-Dong, Gangnam-Gu, Seoul, 135-984, South Korea",
-      "Park Jae-sang, Yeleul Inc, Gangnam Finance Center, 152 Teheran-ro, "
-      "Yeoksam-Dong, Gangnam-Gu, Seoul, 135-984, South Korea, "
-      "park@yeleul.com",
-      "Park Jae-sang, Yeleul Inc, Gangnam Finance Center, 152 Teheran-ro, "
-      "Yeoksam-Dong, Gangnam-Gu, Seoul, 135-984, South Korea, "
-      "park@yeleul.com, +82-2-531-9000",
-  };
+  static constexpr auto kExpectedLabels = std::to_array<std::u16string_view>(
+      {u"", u"Park Jae-sang", u"Park Jae-sang, Gangnam Finance Center",
+       u"Park Jae-sang, Gangnam Finance Center, 152 Teheran-ro",
+       u"Park Jae-sang, Gangnam Finance Center, 152 Teheran-ro, Yeoksam-Dong",
+       u"Park Jae-sang, Gangnam Finance Center, 152 Teheran-ro, Yeoksam-Dong, "
+       u"Gangnam-Gu",
+       u"Park Jae-sang, Gangnam Finance Center, 152 Teheran-ro, Yeoksam-Dong, "
+       u"Gangnam-Gu, Seoul",
+       u"Park Jae-sang, Gangnam Finance Center, 152 Teheran-ro, Yeoksam-Dong, "
+       u"Gangnam-Gu, Seoul, 135-984",
+       u"Park Jae-sang, Yeleul Inc, Gangnam Finance Center, 152 Teheran-ro, "
+       u"Yeoksam-Dong, Gangnam-Gu, Seoul, 135-984",
+       u"Park Jae-sang, Yeleul Inc, Gangnam Finance Center, 152 Teheran-ro, "
+       u"Yeoksam-Dong, Gangnam-Gu, Seoul, 135-984, South Korea",
+       u"Park Jae-sang, Yeleul Inc, Gangnam Finance Center, 152 Teheran-ro, "
+       u"Yeoksam-Dong, Gangnam-Gu, Seoul, 135-984, South Korea, "
+       u"park@yeleul.com",
+       u"Park Jae-sang, Yeleul Inc, Gangnam Finance Center, 152 Teheran-ro, "
+       u"Yeoksam-Dong, Gangnam-Gu, Seoul, 135-984, South Korea, "
+       u"park@yeleul.com, +82-2-531-9000"});
 
   std::vector<std::u16string> labels;
-  for (size_t i = 0; i < std::size(kExpectedLabels); ++i) {
+  for (size_t i = 0; i < kExpectedLabels.size(); ++i) {
     AutofillProfile::CreateInferredLabels(
         ToRawPointerVector(profiles),
         /*suggested_fields=*/std::nullopt,
         /*triggering_field_type=*/std::nullopt, /*excluded_fields=*/{},
         /*minimal_fields_shown=*/i, "en-US", &labels);
     ASSERT_FALSE(labels.empty());
-    EXPECT_EQ(UTF8ToUTF16(kExpectedLabels[i]), labels.back());
+    EXPECT_EQ(kExpectedLabels[i], labels.back());
   }
 }
 
@@ -399,34 +386,31 @@ TEST(AutofillProfileTest, CreateInferredLabelsI18n_JP_Latn) {
                        "6-10-1 Roppongi, Minato-ku", "", "Tokyo", "106-6126",
                        "JP", "+81-3-6384-9000");
   profiles.back()->set_language_code("ja_Latn");
-  static const char* kExpectedLabels[] = {
-      "",
-      "Miku Hatsune",
-      "Miku Hatsune, Roppongi Hills Mori Tower",
-      "Miku Hatsune, Roppongi Hills Mori Tower, 6-10-1 Roppongi, Minato-ku",
-      "Miku Hatsune, Roppongi Hills Mori Tower, 6-10-1 Roppongi, Minato-ku, "
-      "Tokyo",
-      "Miku Hatsune, Roppongi Hills Mori Tower, 6-10-1 Roppongi, Minato-ku, "
-      "Tokyo, 106-6126",
-      "Miku Hatsune, Rei Inc, Roppongi Hills Mori Tower, 6-10-1 Roppongi, "
-      "Minato-ku, Tokyo, 106-6126",
-      "Miku Hatsune, Rei Inc, Roppongi Hills Mori Tower, 6-10-1 Roppongi, "
-      "Minato-ku, Tokyo, 106-6126, Japan",
-      "Miku Hatsune, Rei Inc, Roppongi Hills Mori Tower, 6-10-1 Roppongi, "
-      "Minato-ku, Tokyo, 106-6126, Japan, miku@rei.com",
-      "Miku Hatsune, Rei Inc, Roppongi Hills Mori Tower, 6-10-1 Roppongi, "
-      "Minato-ku, Tokyo, 106-6126, Japan, miku@rei.com, +81-3-6384-9000",
-  };
+  static constexpr auto kExpectedLabels = std::to_array<std::u16string_view>(
+      {u"", u"Miku Hatsune", u"Miku Hatsune, Roppongi Hills Mori Tower",
+       u"Miku Hatsune, Roppongi Hills Mori Tower, 6-10-1 Roppongi, Minato-ku",
+       u"Miku Hatsune, Roppongi Hills Mori Tower, 6-10-1 Roppongi, Minato-ku, "
+       u"Tokyo",
+       u"Miku Hatsune, Roppongi Hills Mori Tower, 6-10-1 Roppongi, Minato-ku, "
+       u"Tokyo, 106-6126",
+       u"Miku Hatsune, Rei Inc, Roppongi Hills Mori Tower, 6-10-1 Roppongi, "
+       u"Minato-ku, Tokyo, 106-6126",
+       u"Miku Hatsune, Rei Inc, Roppongi Hills Mori Tower, 6-10-1 Roppongi, "
+       u"Minato-ku, Tokyo, 106-6126, Japan",
+       u"Miku Hatsune, Rei Inc, Roppongi Hills Mori Tower, 6-10-1 Roppongi, "
+       u"Minato-ku, Tokyo, 106-6126, Japan, miku@rei.com",
+       u"Miku Hatsune, Rei Inc, Roppongi Hills Mori Tower, 6-10-1 Roppongi, "
+       u"Minato-ku, Tokyo, 106-6126, Japan, miku@rei.com, +81-3-6384-9000"});
 
   std::vector<std::u16string> labels;
-  for (size_t i = 0; i < std::size(kExpectedLabels); ++i) {
+  for (size_t i = 0; i < kExpectedLabels.size(); ++i) {
     AutofillProfile::CreateInferredLabels(
         ToRawPointerVector(profiles),
         /*suggested_fields=*/std::nullopt,
         /*triggering_field_type=*/std::nullopt, /*excluded_fields=*/{},
         /*minimal_fields_shown=*/i, "en-US", &labels);
     ASSERT_FALSE(labels.empty());
-    EXPECT_EQ(UTF8ToUTF16(kExpectedLabels[i]), labels.back());
+    EXPECT_EQ(kExpectedLabels[i], labels.back());
   }
 }
 
@@ -439,30 +423,30 @@ TEST(AutofillProfileTest, CreateInferredLabelsI18n_JP_ja) {
                        "六本木 6-10-1", "", "東京都", "106-6126", "JP",
                        "03-6384-9000");
   profiles.back()->set_language_code("ja_JP");
-  static const char* kExpectedLabels[] = {
-      "",
-      "初音ミク",
-      "港区六本木ヒルズ森タワー初音ミク",
-      "港区六本木ヒルズ森タワー六本木 6-10-1初音ミク",
-      "東京都港区六本木ヒルズ森タワー六本木 6-10-1初音ミク",
-      "〒106-6126東京都港区六本木ヒルズ森タワー六本木 6-10-1初音ミク",
-      "〒106-6126東京都港区六本木ヒルズ森タワー六本木 6-10-1例初音ミク",
-      "〒106-6126東京都港区六本木ヒルズ森タワー六本木 6-10-1例初音ミク, Japan",
-      "〒106-6126東京都港区六本木ヒルズ森タワー六本木 6-10-1例初音ミク, Japan, "
-      "miku@rei.com",
-      "〒106-6126東京都港区六本木ヒルズ森タワー六本木 6-10-1例初音ミク, Japan, "
-      "miku@rei.com, 03-6384-9000",
-  };
+  static constexpr auto kExpectedLabels = std::to_array<std::u16string_view>(
+      {u"", u"初音ミク", u"港区六本木ヒルズ森タワー初音ミク",
+       u"港区六本木ヒルズ森タワー六本木 6-10-1初音ミク",
+       u"東京都港区六本木ヒルズ森タワー六本木 6-10-1初音ミク",
+       u"〒106-6126東京都港区六本木ヒルズ森タワー六本木 6-10-1初音ミク",
+       u"〒106-6126東京都港区六本木ヒルズ森タワー六本木 6-10-1例初音ミク",
+       u"〒106-6126東京都港区六本木ヒルズ森タワー六本木 6-10-1例初音ミク, "
+       u"Japan",
+       u"〒106-6126東京都港区六本木ヒルズ森タワー六本木 6-10-1例初音ミク, "
+       u"Japan, "
+       u"miku@rei.com",
+       u"〒106-6126東京都港区六本木ヒルズ森タワー六本木 6-10-1例初音ミク, "
+       u"Japan, "
+       u"miku@rei.com, 03-6384-9000"});
 
   std::vector<std::u16string> labels;
-  for (size_t i = 0; i < std::size(kExpectedLabels); ++i) {
+  for (size_t i = 0; i < kExpectedLabels.size(); ++i) {
     AutofillProfile::CreateInferredLabels(
         ToRawPointerVector(profiles),
         /*suggested_fields=*/std::nullopt,
         /*triggering_field_type=*/std::nullopt, /*excluded_fields=*/{},
         /*minimal_fields_shown=*/i, "en-US", &labels);
     ASSERT_FALSE(labels.empty());
-    EXPECT_EQ(UTF8ToUTF16(kExpectedLabels[i]), labels.back());
+    EXPECT_EQ(kExpectedLabels[i], labels.back());
   }
 }
 

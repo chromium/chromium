@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/347137620 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 
 #include <algorithm>
@@ -231,9 +226,8 @@ void GetFieldsForDistinguishingProfiles(
   std::vector<FieldType> default_fields;
   if (!suggested_fields) {
     default_fields.assign(
-        AutofillProfile::kDefaultDistinguishingFieldsForLabels,
-        AutofillProfile::kDefaultDistinguishingFieldsForLabels +
-            std::size(AutofillProfile::kDefaultDistinguishingFieldsForLabels));
+        AutofillProfile::kDefaultDistinguishingFieldsForLabels.begin(),
+        AutofillProfile::kDefaultDistinguishingFieldsForLabels.end());
     if (excluded_fields.empty()) {
       distinguishing_fields->swap(default_fields);
       return;
@@ -555,42 +549,41 @@ bool AutofillProfile::IsPresentButInvalid(FieldType type) const {
 }
 
 int AutofillProfile::Compare(const AutofillProfile& profile) const {
-  const FieldType types[] = {
-      NAME_FULL,
-      NAME_FIRST,
-      NAME_MIDDLE,
-      NAME_LAST,
-      NAME_LAST_FIRST,
-      NAME_LAST_SECOND,
-      NAME_LAST_CONJUNCTION,
-      COMPANY_NAME,
-      ADDRESS_HOME_STREET_ADDRESS,
-      ADDRESS_HOME_DEPENDENT_LOCALITY,
-      ADDRESS_HOME_CITY,
-      ADDRESS_HOME_STATE,
-      ADDRESS_HOME_ZIP,
-      ADDRESS_HOME_SORTING_CODE,
-      ADDRESS_HOME_COUNTRY,
-      ADDRESS_HOME_LANDMARK,
-      ADDRESS_HOME_OVERFLOW,
-      ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY,
-      ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
-      ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
-      ADDRESS_HOME_BETWEEN_STREETS,
-      ADDRESS_HOME_BETWEEN_STREETS_1,
-      ADDRESS_HOME_BETWEEN_STREETS_2,
-      ADDRESS_HOME_ADMIN_LEVEL2,
-      ADDRESS_HOME_HOUSE_NUMBER,
-      ADDRESS_HOME_STREET_NAME,
-      ADDRESS_HOME_SUBPREMISE,
-      ADDRESS_HOME_STREET_LOCATION,
-      ADDRESS_HOME_APT,
-      ADDRESS_HOME_APT_NUM,
-      ADDRESS_HOME_APT_TYPE,
-      ADDRESS_HOME_FLOOR,
-      EMAIL_ADDRESS,
-      PHONE_HOME_WHOLE_NUMBER,
-  };
+  static constexpr auto kTypes =
+      std::to_array<FieldType>({NAME_FULL,
+                                NAME_FIRST,
+                                NAME_MIDDLE,
+                                NAME_LAST,
+                                NAME_LAST_FIRST,
+                                NAME_LAST_SECOND,
+                                NAME_LAST_CONJUNCTION,
+                                COMPANY_NAME,
+                                ADDRESS_HOME_STREET_ADDRESS,
+                                ADDRESS_HOME_DEPENDENT_LOCALITY,
+                                ADDRESS_HOME_CITY,
+                                ADDRESS_HOME_STATE,
+                                ADDRESS_HOME_ZIP,
+                                ADDRESS_HOME_SORTING_CODE,
+                                ADDRESS_HOME_COUNTRY,
+                                ADDRESS_HOME_LANDMARK,
+                                ADDRESS_HOME_OVERFLOW,
+                                ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY,
+                                ADDRESS_HOME_BETWEEN_STREETS_OR_LANDMARK,
+                                ADDRESS_HOME_OVERFLOW_AND_LANDMARK,
+                                ADDRESS_HOME_BETWEEN_STREETS,
+                                ADDRESS_HOME_BETWEEN_STREETS_1,
+                                ADDRESS_HOME_BETWEEN_STREETS_2,
+                                ADDRESS_HOME_ADMIN_LEVEL2,
+                                ADDRESS_HOME_HOUSE_NUMBER,
+                                ADDRESS_HOME_STREET_NAME,
+                                ADDRESS_HOME_SUBPREMISE,
+                                ADDRESS_HOME_STREET_LOCATION,
+                                ADDRESS_HOME_APT,
+                                ADDRESS_HOME_APT_NUM,
+                                ADDRESS_HOME_APT_TYPE,
+                                ADDRESS_HOME_FLOOR,
+                                EMAIL_ADDRESS,
+                                PHONE_HOME_WHOLE_NUMBER});
 
   // When adding field types, ensure that they don't need to be added here and
   // update the last checked value.
@@ -598,7 +591,7 @@ int AutofillProfile::Compare(const AutofillProfile& profile) const {
                 "New field type needs to be reviewed for inclusion in the "
                 "profile comparison logic.");
 
-  for (FieldType type : types) {
+  for (FieldType type : kTypes) {
     int comparison = GetRawInfo(type).compare(profile.GetRawInfo(type));
     if (comparison != 0) {
       return comparison;

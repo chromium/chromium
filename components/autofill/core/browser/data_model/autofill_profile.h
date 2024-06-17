@@ -58,20 +58,13 @@ class AutofillProfile : public AutofillDataModel {
   // one.
   // TODO(b/40285811): Change this into a FieldTypeSet once the priority is not
   // decided by the order of these entries anymore.
-  static constexpr FieldType kDefaultDistinguishingFieldsForLabels[] = {
-      NAME_FULL,
-      ADDRESS_HOME_LINE1,
-      ADDRESS_HOME_LINE2,
-      ADDRESS_HOME_DEPENDENT_LOCALITY,
-      ADDRESS_HOME_CITY,
-      ADDRESS_HOME_STATE,
-      ADDRESS_HOME_ZIP,
-      ADDRESS_HOME_SORTING_CODE,
-      ADDRESS_HOME_COUNTRY,
-      EMAIL_ADDRESS,
-      PHONE_HOME_WHOLE_NUMBER,
-      COMPANY_NAME,
-  };
+  static constexpr auto kDefaultDistinguishingFieldsForLabels =
+      std::to_array<FieldType>(
+          {NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2,
+           ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_CITY,
+           ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP, ADDRESS_HOME_SORTING_CODE,
+           ADDRESS_HOME_COUNTRY, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER,
+           COMPANY_NAME});
 
   // The values used to represent Autofill in the `initial_creator_id()` and
   // `last_modifier_id()`.
