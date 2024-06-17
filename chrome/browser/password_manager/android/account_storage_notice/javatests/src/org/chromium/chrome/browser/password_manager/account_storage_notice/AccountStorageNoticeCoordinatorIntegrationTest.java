@@ -13,6 +13,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.password_manager.account_storage_notice.AccountStorageNoticeCoordinator.CLOSE_REASON_METRIC;
+
 import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 
@@ -30,9 +32,11 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.password_manager.account_storage_notice.AccountStorageNoticeCoordinator.CloseReason;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -126,6 +130,9 @@ public class AccountStorageNoticeCoordinatorIntegrationTest {
         createCoordinator();
         waitSheetVisible(true);
         verify(mJniMock, never()).onClosed(NATIVE_OBSERVER_PTR);
+        HistogramWatcher.newBuilder()
+                .expectIntRecord(CLOSE_REASON_METRIC, CloseReason.USER_CLICKED_GOT_IT)
+                .build();
 
         onView(withText(R.string.passwords_account_storage_notice_button_text)).perform(click());
 
@@ -134,7 +141,7 @@ public class AccountStorageNoticeCoordinatorIntegrationTest {
     }
 
     // TODO(crbug.com/338576301): Add test clicking on settings link. There seems to be some
-    // limitation on ViewUtils.clickOnClickableSpan().
+    // limitation on ViewUtils.clickOnClickableSpan(). Test the metric too.
 
     @Test
     @MediumTest
@@ -142,6 +149,9 @@ public class AccountStorageNoticeCoordinatorIntegrationTest {
         createCoordinator();
         waitSheetVisible(true);
         verify(mJniMock, never()).onClosed(NATIVE_OBSERVER_PTR);
+        HistogramWatcher.newBuilder()
+                .expectIntRecord(CLOSE_REASON_METRIC, CloseReason.USER_DISMISSED)
+                .build();
 
         Espresso.pressBack();
 
@@ -155,6 +165,9 @@ public class AccountStorageNoticeCoordinatorIntegrationTest {
         AccountStorageNoticeCoordinator coordinator = createCoordinator();
         waitSheetVisible(true);
         verify(mJniMock, never()).onClosed(NATIVE_OBSERVER_PTR);
+        HistogramWatcher.newBuilder()
+                .expectIntRecord(CLOSE_REASON_METRIC, CloseReason.EMBEDDER_REQUESTED)
+                .build();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> coordinator.hideImmediatelyIfShowing());
 
@@ -168,6 +181,9 @@ public class AccountStorageNoticeCoordinatorIntegrationTest {
         AccountStorageNoticeCoordinator coordinator = createCoordinator();
         waitSheetVisible(true);
         verify(mJniMock, never()).onClosed(NATIVE_OBSERVER_PTR);
+        HistogramWatcher.newBuilder()
+                .expectIntRecord(CLOSE_REASON_METRIC, CloseReason.EMBEDDER_REQUESTED)
+                .build();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> coordinator.setObserver(0));
         TestThreadUtils.runOnUiThreadBlocking(() -> coordinator.hideImmediatelyIfShowing());

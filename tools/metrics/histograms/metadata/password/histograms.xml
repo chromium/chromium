@@ -783,6 +783,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.AndroidAccountStorageNotice.CloseReason"
+    enum="AndroidAccountStorageNoticeCloseReason" expires_after="2024-12-12">
+  <owner>victorvianna@google.com</owner>
+  <owner>src/components/password_manager/OWNERS</owner>
+  <summary>
+    Android only. The &quot;account storage notice&quot; is a one-off UI shown
+    to users who went from saving passwords locally to saving in their signed-in
+    account (and thus need to be notified). This histogram is recorded when such
+    notice is closed, and records the event which caused this.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.ApplySyncChanges.AddLoginSyncError"
     enum="PasswordAddLoginSyncError" expires_after="2024-10-20">
   <owner>mamir@chromium.org</owner>
