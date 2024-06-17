@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/347137620 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/autofill/core/common/credit_card_number_validation.h"
 
 #include <cstddef>
@@ -23,40 +18,39 @@ namespace {
 
 // From
 // https://www.paypalobjects.com/en_US/vhelp/paypalmanager_help/credit_card_numbers.htm
-const char16_t* const kValidNumbers[] = {
-    u"378282246310005",     u"3714 4963 5398 431",  u"3787-3449-3671-000",
-    u"5610591081018250",    u"3056 9309 0259 04",   u"3852-0000-0232-37",
-    u"6011111111111117",    u"6011 0009 9013 9424", u"3530-1113-3330-0000",
-    u"3566002020360505",
-    u"5555 5555 5555 4444",  // Mastercard.
-    u"5105-1051-0510-5100",
-    u"4111111111111111",  // Visa.
-    u"4012 8888 8888 1881", u"4222-2222-2222-2",    u"5019717010103742",
-    u"6331101999990016",    u"6247130048162403",
-    u"4532261615476013542",  // Visa, 19 digits.
-    u"5067071446391278",     // Elo.
-    u"5060995764815772",     // Verve.
-    u"506099576481577267",   // Verve 18 digits.
-    u"5060995764815772675",  // Verve 19 digits.
-    u"6362970000457013",
-};
-const char16_t* const kInvalidNumbers[] = {
+constexpr auto kValidNumbers = std::to_array<std::u16string_view>(
+    {u"378282246310005",     u"3714 4963 5398 431",  u"3787-3449-3671-000",
+     u"5610591081018250",    u"3056 9309 0259 04",   u"3852-0000-0232-37",
+     u"6011111111111117",    u"6011 0009 9013 9424", u"3530-1113-3330-0000",
+     u"3566002020360505",
+     u"5555 5555 5555 4444",  // Mastercard.
+     u"5105-1051-0510-5100",
+     u"4111111111111111",  // Visa.
+     u"4012 8888 8888 1881", u"4222-2222-2222-2",    u"5019717010103742",
+     u"6331101999990016",    u"6247130048162403",
+     u"4532261615476013542",  // Visa, 19 digits.
+     u"5067071446391278",     // Elo.
+     u"5060995764815772",     // Verve.
+     u"506099576481577267",   // Verve 18 digits.
+     u"5060995764815772675",  // Verve 19 digits.
+     u"6362970000457013"});
+constexpr auto kInvalidNumbers = std::to_array<std::u16string_view>({
     u"4111 1111 112",        /* too short */
     u"41111111111111111115", /* too long */
     u"4111-1111-1111-1110",  /* wrong Luhn checksum */
     u"3056 9309 0259 04aa",  /* non-digit characters */
-    u"50609957648157726",    /* Verve 17 digits */
-};
+    u"50609957648157726"     /* Verve 17 digits */
+});
 
 TEST(AutofillValidation, IsValidCreditCardNumber) {
   base::test::ScopedFeatureList scoped_feature_list{
       features::kAutofillEnableVerveCardSupport};
 
-  for (const char16_t* valid_number : kValidNumbers) {
+  for (std::u16string_view valid_number : kValidNumbers) {
     SCOPED_TRACE(base::UTF16ToUTF8(valid_number));
     EXPECT_TRUE(IsValidCreditCardNumber(valid_number));
   }
-  for (const char16_t* invalid_number : kInvalidNumbers) {
+  for (std::u16string_view invalid_number : kInvalidNumbers) {
     SCOPED_TRACE(base::UTF16ToUTF8(invalid_number));
     EXPECT_FALSE(IsValidCreditCardNumber(invalid_number));
   }
@@ -64,14 +58,15 @@ TEST(AutofillValidation, IsValidCreditCardNumber) {
 
 // Tests the plausibility of the length of the supplied credit card number.
 TEST(AutofillValidation, IsValidCreditCardNumberLength) {
-  for (const char16_t* valid_number : kValidNumbers) {
+  for (std::u16string_view valid_number : kValidNumbers) {
     SCOPED_TRACE(base::UTF16ToUTF8(valid_number));
     EXPECT_TRUE(HasCorrectCreditCardNumberLength(
         StripCardNumberSeparators(valid_number)));
   }
   // Only the first 2 invalid numbers in kInvalidNumbers have a bad length.
+  static_assert(2 <= kInvalidNumbers.size());
   for (size_t i = 0; i < 2; ++i) {
-    const char16_t* invalid_number = kInvalidNumbers[i];
+    std::u16string_view invalid_number = kInvalidNumbers[i];
     SCOPED_TRACE(base::UTF16ToUTF8(invalid_number));
     EXPECT_FALSE(HasCorrectCreditCardNumberLength(
         StripCardNumberSeparators(invalid_number)));
@@ -80,12 +75,12 @@ TEST(AutofillValidation, IsValidCreditCardNumberLength) {
 
 // Tests the validation of credit card numbers using the Luhn check.
 TEST(AutofillValidation, CreditCardNumberLuhnTest) {
-  for (const char16_t* valid_number : kValidNumbers) {
+  for (std::u16string_view valid_number : kValidNumbers) {
     SCOPED_TRACE(base::UTF16ToUTF8(valid_number));
     EXPECT_TRUE(PassesLuhnCheck(StripCardNumberSeparators(valid_number)));
   }
 
-  const char16_t* invalid_luhn_number = kInvalidNumbers[2];
+  constexpr std::u16string_view invalid_luhn_number = kInvalidNumbers[2];
   SCOPED_TRACE(base::UTF16ToUTF8(invalid_luhn_number));
   EXPECT_FALSE(PassesLuhnCheck(invalid_luhn_number));
 }
