@@ -196,6 +196,7 @@ ts_library("library") {
     "components-chromium/iron-a11y-keys-behavior/iron-a11y-keys-behavior.d.ts",
     "components-chromium/iron-a11y-keys/iron-a11y-keys.d.ts",
     "components-chromium/iron-behaviors/iron-control-state.d.ts",
+    "components-chromium/iron-fit-behavior/iron-fit-behavior.d.ts",
     "components-chromium/iron-flex-layout/iron-flex-layout-classes.d.ts",
     "components-chromium/iron-icon/iron-icon.d.ts",
     "components-chromium/iron-iconset-svg/iron-iconset-svg.d.ts",
