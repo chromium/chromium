@@ -260,7 +260,8 @@ void FormStructure::DetermineNonActiveHeuristicTypes(
     } else {
       // Run heuristics.
       context.pattern_source = *pattern_source;
-      ParseFieldTypesWithPatterns(context);
+      AssignBestFieldTypes(ParseFieldTypesWithPatterns(context),
+                           *pattern_source);
     }
   }
 }

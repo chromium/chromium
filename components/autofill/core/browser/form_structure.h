@@ -387,7 +387,8 @@ class FormStructure {
   // Classifies each field using the regular expressions. The classifications
   // are returned, but not assigned to the `fields_` yet. Use
   // `AssignBestFieldTypes()` to do so.
-  FieldCandidatesMap ParseFieldTypesWithPatterns(ParsingContext& context) const;
+  [[nodiscard]] FieldCandidatesMap ParseFieldTypesWithPatterns(
+      ParsingContext& context) const;
 
   // Assigns the best heuristic types from the `field_type_map` to the heuristic
   // types of the corresponding fields for the `pattern_source`.
