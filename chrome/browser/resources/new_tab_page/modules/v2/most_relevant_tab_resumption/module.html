@@ -128,10 +128,23 @@
   .tab:hover cr-icon-button {
       display: block;
   }
+
+  #see-more-button-container {
+    color: var(--color-new-tab-page-link);
+    font-size: 13px;
+    line-height: 20px;
+    margin: 0 0 8px 8px;
+    padding: 8px 16px 8px 16px;
+    width: fit-content;
+  }
+
+  #see-more-button {
+    text-decoration: none;
+  }
 </style>
 <ntp-module-header-v2
     id="moduleHeaderElementV2"
-    header-text="[[i18n('modulesTabResumptionTitle')]]"
+    header-text="[[i18n('modulesMostRelevantTabResumptionTitle')]]"
     menu-item-groups="[[getMenuItemGroups_()]]"
     more-actions-text="[[i18nRecursive('',
                                   'modulesMoreActions',
@@ -173,6 +186,12 @@
     </a>
   </template>
 </div>
+<div id="see-more-button-container">
+  <a id="see-more-button" href="chrome://history/syncedTabs">
+    $i18n{modulesMostRelevantTabResumptionSeeMore}
+  </a>
+</div>
+
 <cr-lazy-render id="infoDialogRender">
   <template>
     <ntp-info-dialog
