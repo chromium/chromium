@@ -270,8 +270,10 @@ void XuCameraService::GetUnitIdWithDevicePath(
     }
   }
 
-  content::GetDeviceService().BindUsbDeviceManager(
-      usb_manager_.BindNewPipeAndPassReceiver());
+  if(!usb_manager_) {
+    content::GetDeviceService().BindUsbDeviceManager(
+        usb_manager_.BindNewPipeAndPassReceiver());
+  }
   device::mojom::UsbEnumerationOptionsPtr options =
       device::mojom::UsbEnumerationOptions::New();
   usb_manager_->GetDevices(
