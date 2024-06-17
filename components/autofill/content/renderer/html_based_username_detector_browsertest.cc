@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/347137620 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
+#include "components/autofill/content/renderer/html_based_username_detector.h"
+
+#include <array>
 
 #include "base/strings/stringprintf.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
-#include "components/autofill/content/renderer/html_based_username_detector.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "content/public/test/render_view_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -131,56 +129,60 @@ TEST_F(HtmlBasedUsernameDetectorTest, DeveloperGroupAttributes) {
   // be right before password field.  These tests basically check
   // searching in developer group (i.e. name and id attribute,
   // concatenated, with "$" guard in between).
-  const TestCase test_cases[] = {
-      // There are both field name and id.
-      {{"username", "x1d", "johnsmith"},
-       {"email", "y1d", "js@google.com"},
-       "x1d"},
-      // there is no field id.
-      {{"username", "x1d", "johnsmith"},
-       {"email", "y1d", "js@google.com"},
-       "x1d"},
-      // Upper or mixed case shouldn't matter.
-      {{"uSeRnAmE", "x1d", "johnsmith"},
-       {"email", "y1d", "js@google.com"},
-       "x1d"},
-      // Check removal of special characters.
-      {{"u1_s2-e3~r4/n5(a)6m#e", "x1d", "johnsmith"},
-       {"email", "y1d", "js@google.com"},
-       "x1d"},
-      // Check guard between field name and field id.
-      {{"us", "ername", "johnsmith"}, {"email", "id", "js@google.com"}, "id"},
-      // Check removal of fields with latin negative words in developer group.
-      {{"email", "x", "js@google.com"},
-       {"fake_username", "y", "johnsmith"},
-       "x"},
-      {{"email", "mail", "js@google.com"},
-       {"user_name", "fullname", "johnsmith"},
-       "mail"},
-      // Identify latin translations of "username".
-      {{"benutzername", "x", "johnsmith"},
-       {"email", "y", "js@google.com"},
-       "x"},
-      // Identify latin translations of "user".
-      {{"utilizator", "x1d", "johnsmith"},
-       {"email", "y1d", "js@google.com"},
-       "x1d"},
-      // Identify technical words.
-      {{"loginid", "x1d", "johnsmith"},
-       {"email", "y1d", "js@google.com"},
-       "x1d"},
-      // Identify weak words.
-      {{"usrname", "x1d", "johnsmith"},
-       {"email", "y1d", "js@google.com"},
-       "y1d"},
-      // If a word matches in maximum 2 fields, it is accepted.
-      // First encounter is selected as username.
-      {{"username", "x1d", "johnsmith"},
-       {"repeat_username", "y1d", "johnsmith"},
-       "x1d"},
-      // A short word should be enclosed between delimiters. Otherwise, an
-      // Occurrence doesn't count.
-      {{"identity_name", "idn", "johnsmith"}, {"id", "xid", "123"}, "xid"}};
+  const auto test_cases = std::to_array<TestCase>(
+      {// There are both field name and id.
+       TestCase{{"username", "x1d", "johnsmith"},
+                {"email", "y1d", "js@google.com"},
+                "x1d"},
+       // there is no field id.
+       TestCase{{"username", "x1d", "johnsmith"},
+                {"email", "y1d", "js@google.com"},
+                "x1d"},
+       // Upper or mixed case shouldn't matter.
+       TestCase{{"uSeRnAmE", "x1d", "johnsmith"},
+                {"email", "y1d", "js@google.com"},
+                "x1d"},
+       // Check removal of special characters.
+       TestCase{{"u1_s2-e3~r4/n5(a)6m#e", "x1d", "johnsmith"},
+                {"email", "y1d", "js@google.com"},
+                "x1d"},
+       // Check guard between field name and field id.
+       TestCase{{"us", "ername", "johnsmith"},
+                {"email", "id", "js@google.com"},
+                "id"},
+       // Check removal of fields with latin negative words in developer group.
+       TestCase{{"email", "x", "js@google.com"},
+                {"fake_username", "y", "johnsmith"},
+                "x"},
+       TestCase{{"email", "mail", "js@google.com"},
+                {"user_name", "fullname", "johnsmith"},
+                "mail"},
+       // Identify latin translations of "username".
+       TestCase{{"benutzername", "x", "johnsmith"},
+                {"email", "y", "js@google.com"},
+                "x"},
+       // Identify latin translations of "user".
+       TestCase{{"utilizator", "x1d", "johnsmith"},
+                {"email", "y1d", "js@google.com"},
+                "x1d"},
+       // Identify technical words.
+       TestCase{{"loginid", "x1d", "johnsmith"},
+                {"email", "y1d", "js@google.com"},
+                "x1d"},
+       // Identify weak words.
+       TestCase{{"usrname", "x1d", "johnsmith"},
+                {"email", "y1d", "js@google.com"},
+                "y1d"},
+       // If a word matches in maximum 2 fields, it is accepted.
+       // First encounter is selected as username.
+       TestCase{{"username", "x1d", "johnsmith"},
+                {"repeat_username", "y1d", "johnsmith"},
+                "x1d"},
+       // A short word should be enclosed between delimiters. Otherwise, an
+       // Occurrence doesn't count.
+       TestCase{{"identity_name", "idn", "johnsmith"},
+                {"id", "xid", "123"},
+                "xid"}});
 
   for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(testing::Message() << "Iteration " << i);
@@ -200,59 +202,57 @@ TEST_F(HtmlBasedUsernameDetectorTest, UserGroupAttributes) {
   // base heuristic. Thus, username field does not necessarily have to
   // be right before password field.  These tests basically check
   // searching in user group
-  const TestCase test_cases[] = {
-      // Label information will decide username.
-      {{"name1", "id1", "johnsmith", "Username:"},
-       {"name2", "id2", "js@google.com", "Email:"},
-       "id1"},
-      // Placeholder information will decide username.
-      {{"name1", "id1", "js@google.com", "Email:"},
-       {"name2", "id2", "johnsmith", "Username:"},
-       "id2"},
-      // Check removal of special characters.
-      {{"name1", "id1", "johnsmith", "U s er n a m e:"},
-       {"name2", "id2", "js@google.com", "Email:"},
-       "id1"},
-      // Check removal of fields with latin negative words in user group.
-      {{"name1", "id1", "johnsmith", "Username password:"},
-       {"name2", "id2", "js@google.com", "Email:"},
-       "id2"},
-      // Check removal of fields with non-latin negative words in user group.
-      {{"name1", "id1", "js@google.com", "Email:"},
-       {"name2", "id2", "johnsmith", "የይለፍቃልየይለፍቃል:"},
-       "id1"},
-      // Identify latin translations of "username".
-      {{"name1", "id1", "johnsmith", "Username:"},
-       {"name2", "id2", "js@google.com", "Email:"},
-       "id1"},
-      // Identify non-latin translations of "username".
-      {{"name1", "id1", "johnsmith", "用户名:"},
-       {"name2", "id2", "js@google.com", "Email:"},
-       "id1"},
-      // Identify latin translations of "user".
-      {{"name1", "id1", "johnsmith", "Wosuta:"},
-       {"name2", "id2", "js@google.com", "Email:"},
-       "id1"},
-      // Identify non-latin translations of "user".
-      {{"name1", "id1", "johnsmith", "истифода:"},
-       {"name2", "id2", "js@google.com", "Email:"},
-       "id1"},
-      // Identify weak words.
-      {{"name1", "id1", "johnsmith", "Insert your login details:"},
-       {"name2", "id2", "js@google.com", "Insert your email:"},
-       "id1"},
-      // Check user group priority, compared to developer group.
-      // User group should have higher priority than developer group.
-      {{"email", "id1", "js@google.com", "Username:"},
-       {"username", "id2", "johnsmith", "Email:"},
-       "id1"},
-      // Check treatment for short dictionary words. "uid" has higher priority,
-      // but its occurrence is ignored because it is a part of another word.
-      {
-          {"name1", "noword", "johnsmith", "Insert your id:"},
-          {"name2", "uidentical", "js@google.com", "Insert something:"},
-          "noword",
-      }};
+  const auto test_cases = std::to_array<TestCase>(
+      {// Label information will decide username.
+       TestCase{{"name1", "id1", "johnsmith", "Username:"},
+                {"name2", "id2", "js@google.com", "Email:"},
+                "id1"},
+       // Placeholder information will decide username.
+       TestCase{{"name1", "id1", "js@google.com", "Email:"},
+                {"name2", "id2", "johnsmith", "Username:"},
+                "id2"},
+       // Check removal of special characters.
+       TestCase{{"name1", "id1", "johnsmith", "U s er n a m e:"},
+                {"name2", "id2", "js@google.com", "Email:"},
+                "id1"},
+       // Check removal of fields with latin negative words in user group.
+       TestCase{{"name1", "id1", "johnsmith", "Username password:"},
+                {"name2", "id2", "js@google.com", "Email:"},
+                "id2"},
+       // Check removal of fields with non-latin negative words in user group.
+       TestCase{{"name1", "id1", "js@google.com", "Email:"},
+                {"name2", "id2", "johnsmith", "የይለፍቃልየይለፍቃል:"},
+                "id1"},
+       // Identify latin translations of "username".
+       TestCase{{"name1", "id1", "johnsmith", "Username:"},
+                {"name2", "id2", "js@google.com", "Email:"},
+                "id1"},
+       // Identify non-latin translations of "username".
+       TestCase{{"name1", "id1", "johnsmith", "用户名:"},
+                {"name2", "id2", "js@google.com", "Email:"},
+                "id1"},
+       // Identify latin translations of "user".
+       TestCase{{"name1", "id1", "johnsmith", "Wosuta:"},
+                {"name2", "id2", "js@google.com", "Email:"},
+                "id1"},
+       // Identify non-latin translations of "user".
+       TestCase{{"name1", "id1", "johnsmith", "истифода:"},
+                {"name2", "id2", "js@google.com", "Email:"},
+                "id1"},
+       // Identify weak words.
+       TestCase{{"name1", "id1", "johnsmith", "Insert your login details:"},
+                {"name2", "id2", "js@google.com", "Insert your email:"},
+                "id1"},
+       // Check user group priority, compared to developer group.
+       // User group should have higher priority than developer group.
+       TestCase{{"email", "id1", "js@google.com", "Username:"},
+                {"username", "id2", "johnsmith", "Email:"},
+                "id1"},
+       // Check treatment for short dictionary words. "uid" has higher priority,
+       // but its occurrence is ignored because it is a part of another word.
+       TestCase{{"name1", "noword", "johnsmith", "Insert your id:"},
+                {"name2", "uidentical", "js@google.com", "Insert something:"},
+                "noword"}});
 
   for (size_t i = 0; i < std::size(test_cases); ++i) {
     SCOPED_TRACE(testing::Message() << "Iteration " << i);
