@@ -830,6 +830,9 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_SHOW_FULL_URLS:
       ToggleShowFullURLs(browser_);
       break;
+    case IDC_SHOW_GOOGLE_LENS_SHORTCUT:
+      ToggleShowGoogleLensShortcut(browser_);
+      break;
     case IDC_PROFILING_ENABLED:
       content::Profiling::Toggle();
       break;
@@ -1502,6 +1505,7 @@ void BrowserCommandController::UpdateSharedCommandsForIncognitoAvailability(
       extension_service && extension_service->extensions_enabled();
 
   command_updater->UpdateCommandEnabled(IDC_SHOW_FULL_URLS, true);
+  command_updater->UpdateCommandEnabled(IDC_SHOW_GOOGLE_LENS_SHORTCUT, true);
 
   // Bookmark manager and settings page/subpages are forced to open in normal
   // mode. For this reason we disable these commands when incognito is forced.

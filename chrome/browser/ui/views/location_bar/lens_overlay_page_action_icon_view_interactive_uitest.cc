@@ -12,6 +12,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/lens/lens_features.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "url/url_constants.h"
@@ -69,6 +70,31 @@ IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest,
   EXPECT_TRUE(focus_manager->GetFocusedView());
   run_loop.Run();
   EXPECT_TRUE(icon_view->GetVisible());
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest,
+                       DoesNotShowWhenSettingDisabled) {
+  // Disable the setting.
+  browser()->profile()->GetPrefs()->SetBoolean(omnibox::kShowGoogleLensShortcut,
+                                               false);
+
+  // Navigate to a non-NTP page.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL)));
+
+  LensOverlayPageActionIconView* icon_view = lens_overlay_icon_view();
+  views::FocusManager* focus_manager = icon_view->GetFocusManager();
+  focus_manager->ClearFocus();
+  EXPECT_FALSE(focus_manager->GetFocusedView());
+  EXPECT_FALSE(icon_view->GetVisible());
+
+  // The icon should remain hidden despite focus in the location bar.
+  base::RunLoop run_loop;
+  icon_view->set_update_callback_for_testing(run_loop.QuitClosure());
+  location_bar()->FocusLocation(false);
+  EXPECT_TRUE(focus_manager->GetFocusedView());
+  run_loop.Run();
+  EXPECT_FALSE(icon_view->GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayPageActionIconViewTest, DoesNotShowOnNTP) {

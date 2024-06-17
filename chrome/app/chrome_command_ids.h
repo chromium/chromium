@@ -270,6 +270,7 @@
 #define IDC_OPEN_SAFETY_HUB             40279
 #define IDC_SAFETY_HUB_SHOW_PASSWORD_CHECKUP  40280
 #define IDC_SAFETY_HUB_MANAGE_EXTENSIONS  40281
+#define IDC_SHOW_GOOGLE_LENS_SHORTCUT   40282
 
 // Spell-check
 // Insert any additional suggestions before _LAST; these have to be consecutive.

@@ -7670,6 +7670,16 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Always show full URLs
         </message>
       </if>
+      <if expr="use_titlecase">
+        <message name="IDS_CONTEXT_MENU_SHOW_GOOGLE_LENS_SHORTCUT" desc="In Title Case: The text label of the omnibox context menu option to show the 'Search with Google Lens' shortcut button">
+          Always Show Google Lens Shortcut
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_CONTEXT_MENU_SHOW_GOOGLE_LENS_SHORTCUT" desc="The text label of the omnibox context menu option to show the 'Search with Google Lens' shortcut button">
+          Always show Google Lens shortcut
+        </message>
+      </if>
 
       <!-- NTP -->
       <message name="IDS_GOOGLE_SEARCH_BOX_EMPTY_HINT_MD" desc="The text displayed in the fakebox (on the New Tab page) when it is empty, Google is the default search engine, and the Material Design UI is enabled.">

@@ -1396,6 +1396,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
         // Profile-level items that affect how the profile's UI looks should
         // only be available while there is a Profile opened.
         case IDC_SHOW_FULL_URLS:
+        case IDC_SHOW_GOOGLE_LENS_SHORTCUT:
           enable = hasLoadedProfile;
           break;
         // Browser-level items that open in new tabs or perform an action in a

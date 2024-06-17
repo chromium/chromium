@@ -116,6 +116,7 @@ enum {
   kFacilitatedPaymentsPix = 72,
   kSyncableTabGroups = 73,
   kAutoPinNewTabGroups = 74,
+  kShowGoogleLensShortcut = 75,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -187,6 +188,9 @@ constexpr auto kCommonSyncablePrefsAllowlist =
         {omnibox::kKeywordSpaceTriggeringEnabled,
          {syncable_prefs_ids::kKeywordSpaceTriggeringEnabled,
           syncer::PREFERENCES, PrefSensitivity::kNone, MergeBehavior::kNone}},
+        {omnibox::kShowGoogleLensShortcut,
+         {syncable_prefs_ids::kShowGoogleLensShortcut, syncer::PREFERENCES,
+          PrefSensitivity::kNone, MergeBehavior::kNone}},
         {password_manager::prefs::kCredentialsEnableAutosignin,
          {syncable_prefs_ids::kCredentialsEnableAutosignin,
           syncer::PRIORITY_PREFERENCES, PrefSensitivity::kNone,

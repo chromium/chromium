@@ -1972,6 +1972,13 @@ void ToggleShowFullURLs(Browser* browser) {
       omnibox::kPreventUrlElisionsInOmnibox, !pref_enabled);
 }
 
+void ToggleShowGoogleLensShortcut(Browser* browser) {
+  bool pref_enabled = browser->profile()->GetPrefs()->GetBoolean(
+      omnibox::kShowGoogleLensShortcut);
+  browser->profile()->GetPrefs()->SetBoolean(omnibox::kShowGoogleLensShortcut,
+                                             !pref_enabled);
+}
+
 void ShowAppMenu(Browser* browser) {
   // We record the user metric for this event in AppMenu::RunMenu.
   browser->window()->ShowAppMenu();

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/location_bar/lens_overlay_page_action_icon_view.h"
 
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
@@ -16,6 +17,7 @@
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
 #include "chrome/browser/user_education/user_education_service.h"
 #include "components/lens/lens_features.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -69,6 +71,9 @@ LensOverlayPageActionIconView::LensOverlayPageActionIconView(
 LensOverlayPageActionIconView::~LensOverlayPageActionIconView() = default;
 
 void LensOverlayPageActionIconView::UpdateImpl() {
+  bool enabled = browser_->profile()->GetPrefs()->GetBoolean(
+      omnibox::kShowGoogleLensShortcut);
+
   bool location_bar_has_focus = false;
   if (BrowserView* const browser_view =
           BrowserView::GetBrowserViewForBrowser(browser_);
@@ -87,7 +92,7 @@ void LensOverlayPageActionIconView::UpdateImpl() {
       web_Contents &&
       LensOverlayController::GetController(web_Contents) != nullptr &&
       !IsNewTabPage(web_Contents);
-  SetVisible(location_bar_has_focus && lens_overlay_available);
+  SetVisible(enabled && location_bar_has_focus && lens_overlay_available);
   ResetSlideAnimation(true);
 
   // TODO(pbos): Investigate why this call seems to be required to pick up that

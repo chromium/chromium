@@ -292,6 +292,8 @@ NSMenuItem* BuildViewMenu(NSApplication* nsapp,
                   .command_id(IDC_TOGGLE_FULLSCREEN_TOOLBAR),
               Item(IDS_CONTEXT_MENU_SHOW_FULL_URLS)
                   .command_id(IDC_SHOW_FULL_URLS),
+              Item(IDS_CONTEXT_MENU_SHOW_GOOGLE_LENS_SHORTCUT)
+                  .command_id(IDC_SHOW_GOOGLE_LENS_SHORTCUT),
               Item(IDS_CUSTOMIZE_TOUCH_BAR)
                   .tag(IDC_CUSTOMIZE_TOUCH_BAR)
                   .action(@selector(toggleTouchBarCustomizationPalette:))
