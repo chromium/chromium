@@ -142,7 +142,6 @@ public class QuickDeleteDialogDelegateTest {
     private void setSyncable(boolean syncable) {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    when(mMockSyncService.isSyncFeatureEnabled()).thenReturn(syncable);
                     when(mMockSyncService.getActiveDataTypes())
                             .thenReturn(
                                     syncable

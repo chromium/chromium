@@ -54,14 +54,12 @@ abstract class QuickDeleteDelegate {
 
     /**
      * @param {@link Profile} from which to query the syncing history status.
-     *
      * @return A boolean indicating whether the user is syncing history and history deletions are
-     *         propagated.
+     *     propagated.
      */
     static boolean isSyncingHistory(@NonNull Profile profile) {
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
         return syncService != null
-                && syncService.isSyncFeatureEnabled()
                 && syncService.getActiveDataTypes().contains(ModelType.HISTORY_DELETE_DIRECTIVES);
     }
 
