@@ -336,6 +336,7 @@ export namespace BrowsingContext {
   export type Info = {
     children: BrowsingContext.InfoList | null;
     context: BrowsingContext.BrowsingContext;
+    originalOpener: BrowsingContext.BrowsingContext | null;
     url: string;
     userContext: Browser.UserContext;
     parent?: BrowsingContext.BrowsingContext | null;

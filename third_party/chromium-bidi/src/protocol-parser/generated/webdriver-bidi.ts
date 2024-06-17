@@ -460,6 +460,10 @@ export namespace BrowsingContext {
     z.object({
       children: z.union([BrowsingContext.InfoListSchema, z.null()]),
       context: BrowsingContext.BrowsingContextSchema,
+      originalOpener: z.union([
+        BrowsingContext.BrowsingContextSchema,
+        z.null(),
+      ]),
       url: z.string(),
       userContext: Browser.UserContextSchema,
       parent: z

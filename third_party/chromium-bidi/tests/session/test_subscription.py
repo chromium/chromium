@@ -124,7 +124,8 @@ async def test_subscribeWithContext_subscribesToEventsInNestedContext(
             "url": url_same_origin,
             "children": None,
             "parent": context_id,
-            "userContext": "default"
+            "userContext": "default",
+            "originalOpener": None
         }
     } == resp
 

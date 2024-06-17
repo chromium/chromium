@@ -67,7 +67,8 @@ async def test_browsingContext_create_eventContextCreatedEmitted(
             "url": "about:blank",
             "children": None,
             "parent": None,
-            "userContext": "default"
+            "userContext": "default",
+            "originalOpener": None
         }
     } == context_created_event
 
@@ -132,18 +133,21 @@ async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCr
             "parent": None,
             "url": top_level_page,
             "userContext": "default",
+            "originalOpener": None,
             "children": [
                 {
                     "context": ANY_STR,
                     # It's not guaranteed the nested page is already loaded.
                     "url": ANY_STR,
                     "userContext": "default",
+                    "originalOpener": None,
                     "children": [{
                         "context": ANY_STR,
                         # It's not guaranteed the nested page is already loaded.
                         "url": ANY_STR,
                         "userContext": "default",
-                        "children": []
+                        "children": [],
+                        "originalOpener": None
                     }]
                 },
             ]
@@ -154,7 +158,7 @@ async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCr
         "context"]
     nested_iframe_context_id = \
         tree["contexts"][0]["children"][0]["children"][0]["context"]
-    assert events[0] == {
+    assert events[0] == AnyExtending({
         'type': 'event',
         "method": "browsingContext.contextCreated",
         "params": {
@@ -164,9 +168,9 @@ async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCr
             'url': 'about:blank',
             'userContext': 'default'
         }
-    }
+    })
 
-    assert events[1] == {
+    assert events[1] == AnyExtending({
         'type': 'event',
         "method": "browsingContext.contextCreated",
         "params": {
@@ -176,7 +180,7 @@ async def test_browsingContext_createWithNestedSameOriginContexts_eventContextCr
             'url': 'about:blank',
             'userContext': 'default'
         }
-    }
+    })
 
 
 @pytest.mark.asyncio
@@ -235,7 +239,8 @@ async def test_browsingContext_create_withUserGesture_eventsEmitted(
             'url': 'about:blank',
             'children': None,
             'parent': None,
-            'userContext': 'default'
+            'userContext': 'default',
+            'originalOpener': ANY_STR,
         }
     }, {
         'type': 'event',
@@ -287,13 +292,13 @@ async def test_browsingContext_create_withUserContext(websocket, type):
 
     assert len(tree['contexts']) == 2
 
-    assert tree["contexts"][1] == {
+    assert tree["contexts"][1] == AnyExtending({
         'context': result['context'],
         'url': 'about:blank',
         'userContext': user_context["userContext"],
         'children': [],
         'parent': None
-    }
+    })
 
 
 @pytest.mark.asyncio

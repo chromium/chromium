@@ -14,7 +14,7 @@
 # limitations under the License.
 import pytest
 from syrupy.filters import paths
-from test_helpers import (execute_command, get_tree, goto_url,
+from test_helpers import (AnyExtending, execute_command, get_tree, goto_url,
                           read_JSON_message, send_JSON_command, subscribe,
                           wait_for_event)
 
@@ -32,7 +32,7 @@ async def test_browsingContext_close(websocket, context_id):
 
     # Assert "browsingContext.contextCreated" event emitted.
     resp = await read_JSON_message(websocket)
-    assert resp == {
+    assert resp == AnyExtending({
         'type': 'event',
         "method": "browsingContext.contextDestroyed",
         "params": {
@@ -42,7 +42,7 @@ async def test_browsingContext_close(websocket, context_id):
             "children": None,
             "userContext": "default"
         }
-    }
+    })
 
     resp = await read_JSON_message(websocket)
     assert resp == {"type": "success", "id": command_id, "result": {}}

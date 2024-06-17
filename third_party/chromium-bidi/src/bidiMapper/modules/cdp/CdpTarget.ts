@@ -213,6 +213,7 @@ export class CdpTarget {
         this.#browsingContextStorage,
         this.#realmStorage,
         frame.url,
+        undefined,
         this.#logger
       );
     }

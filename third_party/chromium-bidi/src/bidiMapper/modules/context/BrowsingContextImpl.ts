@@ -79,6 +79,8 @@ export class BrowsingContextImpl {
   // Keeps track of the previously set viewport.
   #previousViewport: {width: number; height: number} = {width: 0, height: 0};
 
+  #originalOpener?: string;
+
   private constructor(
     id: BrowsingContext.BrowsingContext,
     parentId: BrowsingContext.BrowsingContext | null,
@@ -88,6 +90,7 @@ export class BrowsingContextImpl {
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
     url: string,
+    originalOpener?: string,
     logger?: LoggerFn
   ) {
     this.#cdpTarget = cdpTarget;
@@ -99,6 +102,8 @@ export class BrowsingContextImpl {
     this.#realmStorage = realmStorage;
     this.#logger = logger;
     this.#url = url;
+
+    this.#originalOpener = originalOpener;
   }
 
   static create(
@@ -110,6 +115,7 @@ export class BrowsingContextImpl {
     browsingContextStorage: BrowsingContextStorage,
     realmStorage: RealmStorage,
     url: string,
+    originalOpener?: string,
     logger?: LoggerFn
   ): BrowsingContextImpl {
     const context = new BrowsingContextImpl(
@@ -121,6 +127,7 @@ export class BrowsingContextImpl {
       browsingContextStorage,
       realmStorage,
       url,
+      originalOpener,
       logger
     );
 
@@ -305,6 +312,7 @@ export class BrowsingContextImpl {
       context: this.#id,
       url: this.url,
       userContext: this.userContext,
+      originalOpener: this.#originalOpener ?? null,
       children:
         maxDepth > 0
           ? this.directChildren.map((c) =>

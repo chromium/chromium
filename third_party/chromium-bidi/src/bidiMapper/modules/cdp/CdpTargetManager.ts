@@ -129,6 +129,7 @@ export class CdpTargetManager {
         // At this point, we don't know the URL of the frame yet, so it will be updated
         // later.
         'about:blank',
+        undefined,
         this.#logger
       );
     }
@@ -187,6 +188,7 @@ export class CdpTargetManager {
             // https://html.spec.whatwg.org/multipage/document-sequences.html#creating-browsing-contexts
             // TODO: check who to deal with non-null creator and its `creatorOrigin`.
             targetInfo.url === '' ? 'about:blank' : targetInfo.url,
+            targetInfo.openerId,
             this.#logger
           );
         }

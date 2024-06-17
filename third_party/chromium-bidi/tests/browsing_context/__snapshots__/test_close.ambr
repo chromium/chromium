@@ -4,6 +4,7 @@
     'method': 'browsingContext.contextDestroyed',
     'params': dict({
       'children': None,
+      'originalOpener': None,
       'parent': None,
       'url': "data:text/html,%0A        <script>%0A            window.addEventListener('beforeunload', event => {%0A                event.returnValue = 'Leave?%27;%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20event.preventDefault();%0A%20%20%20%20%20%20%20%20%20%20%20%20});%0A%20%20%20%20%20%20%20%20%3C/script%3E",
       'userContext': 'default',

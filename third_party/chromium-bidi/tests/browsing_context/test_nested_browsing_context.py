@@ -36,7 +36,8 @@ async def test_nestedBrowsingContext_navigateToPageWithHash_contextInfoUpdated(
             "children": [],
             "parent": ANY_STR,
             "url": url_with_hash_1,
-            "userContext": "default"
+            "userContext": "default",
+            "originalOpener": None
         }]
     } == result
 
@@ -194,7 +195,8 @@ async def test_nestedBrowsingContext_navigateSameDocumentNavigation_waitInteract
             "children": [],
             "parent": ANY_STR,
             "url": url_with_hash_1,
-            "userContext": "default"
+            "userContext": "default",
+            "originalOpener": None
         }]
     } == result
 
@@ -209,7 +211,8 @@ async def test_nestedBrowsingContext_navigateSameDocumentNavigation_waitInteract
             "children": [],
             "parent": ANY_STR,
             "url": url_with_hash_2,
-            "userContext": "default"
+            "userContext": "default",
+            "originalOpener": None
         }]
     } == result
 
@@ -235,7 +238,8 @@ async def test_nestedBrowsingContext_navigateSameDocumentNavigation_waitComplete
             "children": [],
             "parent": ANY_STR,
             "url": url_with_hash_1,
-            "userContext": "default"
+            "userContext": "default",
+            "originalOpener": None
         }]
     } == result
 
@@ -250,7 +254,8 @@ async def test_nestedBrowsingContext_navigateSameDocumentNavigation_waitComplete
             "children": [],
             "parent": ANY_STR,
             "url": url_with_hash_2,
-            "userContext": "default"
+            "userContext": "default",
+            "originalOpener": None
         }]
     } == result
 
@@ -273,11 +278,13 @@ async def test_nestedBrowsingContext_afterNavigation_getTreeWithNestedCrossOrigi
                 "context": ANY_STR,
                 "url": another_example_url,
                 "children": [],
-                "userContext": "default"
+                "userContext": "default",
+                "originalOpener": None
             }],
             "parent": ANY_STR,
             "url": another_page_with_nested_iframe,
-            "userContext": "default"
+            "userContext": "default",
+            "originalOpener": None
         }]
     } == result
 
@@ -306,10 +313,12 @@ async def test_nestedBrowsingContext_afterNavigation_getTreeWithNestedContexts_c
                 "context": ANY_STR,
                 "url": another_nested_iframe,
                 "children": [],
-                "userContext": "default"
+                "userContext": "default",
+                "originalOpener": None
             }],
             "parent": ANY_STR,
-            "userContext": "default"
+            "userContext": "default",
+            "originalOpener": None
         }]
     } == result
 
@@ -329,11 +338,13 @@ async def test_browsingContext_addAndRemoveNestedContext_contextAddedAndRemoved(
                 "context": ANY_STR,
                 "url": url_cross_origin,
                 "children": [],
-                "userContext": "default"
+                "userContext": "default",
+                "originalOpener": None
             }],
             "parent": None,
             "url": page_with_nested_iframe,
-            "userContext": "default"
+            "userContext": "default",
+            "originalOpener": None
         }]
     } == result
 
@@ -358,6 +369,7 @@ async def test_browsingContext_addAndRemoveNestedContext_contextAddedAndRemoved(
             "children": [],
             "parent": None,
             "url": page_with_nested_iframe,
-            "userContext": "default"
+            "userContext": "default",
+            "originalOpener": None
         }]
     } == result
