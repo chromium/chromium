@@ -210,6 +210,20 @@ TEST_F(VisitedURLRankingServiceImplTest, FetchURLVisitAggregates) {
   EXPECT_EQ(result.second.size(), 1u);
 }
 
+TEST_F(VisitedURLRankingServiceImplTest, FetchWhenHistoryIsNotAvailable) {
+  InitService(PrepareMockDataFetchers(), /*transformers=*/{});
+  FetchOptions fetch_options = FetchOptions(
+      {
+          {Fetcher::kHistory, FetchOptions::kOriginSources},
+          {Fetcher::kSession, FetchOptions::kOriginSources},
+      },
+      base::Time::Now() - base::Days(1), {});
+  VisitedURLRankingServiceImplTest::Result result =
+      RunFetchURLVisitAggregates(fetch_options);
+  EXPECT_EQ(result.first, ResultStatus::kSuccess);
+  EXPECT_EQ(result.second.size(), 1u);
+}
+
 TEST_F(VisitedURLRankingServiceImplTest,
        FetchURLVisitAggregatesWithTransforms) {
   auto mock_bookmark_transformer =
