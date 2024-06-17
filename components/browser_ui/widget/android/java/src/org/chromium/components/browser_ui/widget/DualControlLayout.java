@@ -61,7 +61,7 @@ public final class DualControlLayout extends ViewGroup {
     @IntDef({
         ButtonType.PRIMARY_FILLED,
         ButtonType.PRIMARY_TEXT,
-        ButtonType.SECONDARY,
+        ButtonType.SECONDARY_TEXT,
         ButtonType.PRIMARY_OUTLINED,
         ButtonType.SECONDARY_OUTLINED
     })
@@ -79,8 +79,7 @@ public final class DualControlLayout extends ViewGroup {
 
         // Buttons will have the secondary button ID without an outlined border or a filled
         // container (same style as PRIMARY_TEXT)
-        // TODO(crbug.com/346943346) Rename ButtonType.SECONDARY to ButtonType.SECONDARY_TEXT
-        int SECONDARY = 3;
+        int SECONDARY_TEXT = 3;
 
         // Buttons will have the secondary button ID with an outlined border but without a filled
         // container (same style as PRIMARY_OUTLINED)
@@ -117,7 +116,7 @@ public final class DualControlLayout extends ViewGroup {
             case ButtonType.PRIMARY_FILLED:
                 return R.style.FilledButtonThemeOverlay_Flat;
             case ButtonType.PRIMARY_TEXT:
-            case ButtonType.SECONDARY:
+            case ButtonType.SECONDARY_TEXT:
                 return R.style.TextButtonThemeOverlay;
             case ButtonType.PRIMARY_OUTLINED:
             case ButtonType.SECONDARY_OUTLINED:
@@ -133,7 +132,7 @@ public final class DualControlLayout extends ViewGroup {
             case ButtonType.PRIMARY_TEXT:
             case ButtonType.PRIMARY_OUTLINED:
                 return R.id.button_primary;
-            case ButtonType.SECONDARY:
+            case ButtonType.SECONDARY_TEXT:
             case ButtonType.SECONDARY_OUTLINED:
                 return R.id.button_secondary;
             default:
@@ -366,7 +365,7 @@ public final class DualControlLayout extends ViewGroup {
         if (!TextUtils.isEmpty(primaryButtonText) && !TextUtils.isEmpty(secondaryButtonText)) {
             addView(
                     createButtonForLayout(
-                            getContext(), ButtonType.SECONDARY, secondaryButtonText, null));
+                            getContext(), ButtonType.SECONDARY_TEXT, secondaryButtonText, null));
         }
 
         // Set the alignment.

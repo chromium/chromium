@@ -237,7 +237,7 @@ class SigninView extends LinearLayout {
     private void createButtons() {
         mRefuseButton =
                 DualControlLayout.createButtonForLayout(
-                        getContext(), DualControlLayout.ButtonType.SECONDARY, "", null);
+                        getContext(), DualControlLayout.ButtonType.SECONDARY_TEXT, "", null);
         mRefuseButton.setLayoutParams(
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));

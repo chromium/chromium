@@ -145,7 +145,7 @@ public final class PromoDialogLayout extends BoundedLinearLayout {
                     getResources().getString(mParams.secondaryButtonStringResource);
             buttonBar.addView(
                     DualControlLayout.createButtonForLayout(
-                            getContext(), ButtonType.SECONDARY, secondaryString, null));
+                            getContext(), ButtonType.SECONDARY_TEXT, secondaryString, null));
         }
     }
 

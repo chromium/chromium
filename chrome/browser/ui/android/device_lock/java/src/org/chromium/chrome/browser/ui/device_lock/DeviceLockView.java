@@ -52,7 +52,7 @@ public class DeviceLockView extends LinearLayout {
 
         mDismissButton =
                 DualControlLayout.createButtonForLayout(
-                        getContext(), ButtonType.SECONDARY, "", null);
+                        getContext(), ButtonType.SECONDARY_TEXT, "", null);
         mDismissButton.setLayoutParams(
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));

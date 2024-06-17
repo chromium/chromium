@@ -68,7 +68,7 @@ class DownloadInterstitialView {
         mSecondaryButton =
                 DualControlLayout.createButtonForLayout(
                         context,
-                        ButtonType.SECONDARY,
+                        ButtonType.SECONDARY_TEXT,
                         mView.getResources().getString(R.string.cancel),
                         null);
         mSecondaryButton.setLayoutParams(

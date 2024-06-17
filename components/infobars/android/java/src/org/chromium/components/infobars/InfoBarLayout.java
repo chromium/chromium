@@ -232,7 +232,7 @@ public final class InfoBarLayout extends ViewGroup implements View.OnClickListen
         if (!TextUtils.isEmpty(secondaryText)) {
             secondaryButton =
                     DualControlLayout.createButtonForLayout(
-                            getContext(), ButtonType.SECONDARY, secondaryText, this);
+                            getContext(), ButtonType.SECONDARY_TEXT, secondaryText, this);
         }
 
         setBottomViews(

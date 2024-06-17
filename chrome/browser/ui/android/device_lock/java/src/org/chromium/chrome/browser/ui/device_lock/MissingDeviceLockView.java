@@ -49,7 +49,7 @@ public class MissingDeviceLockView extends LinearLayout {
         mCreateDeviceLockButton =
                 DualControlLayout.createButtonForLayout(
                         getContext(),
-                        ButtonType.SECONDARY,
+                        ButtonType.SECONDARY_TEXT,
                         getResources().getString(R.string.device_lock_create_lock_button),
                         null);
         mCreateDeviceLockButton.setLayoutParams(

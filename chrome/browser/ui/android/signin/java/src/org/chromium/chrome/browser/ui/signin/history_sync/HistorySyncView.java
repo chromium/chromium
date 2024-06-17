@@ -87,7 +87,7 @@ class HistorySyncView extends LinearLayout {
         final @DualControlLayout.ButtonType int declineButtonType;
         if (restrictionStatus == ScreenMode.UNRESTRICTED) {
             acceptButtonType = DualControlLayout.ButtonType.PRIMARY_FILLED;
-            declineButtonType = DualControlLayout.ButtonType.SECONDARY;
+            declineButtonType = DualControlLayout.ButtonType.SECONDARY_TEXT;
         } else {
             acceptButtonType = DualControlLayout.ButtonType.PRIMARY_OUTLINED;
             declineButtonType = DualControlLayout.ButtonType.SECONDARY_OUTLINED;

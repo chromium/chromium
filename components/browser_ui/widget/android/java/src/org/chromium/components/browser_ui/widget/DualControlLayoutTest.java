@@ -321,7 +321,7 @@ public class DualControlLayoutTest {
                         mContext, ButtonType.PRIMARY_FILLED, "Done", null));
         inflatedLayout.addView(
                 DualControlLayout.createButtonForLayout(
-                        mContext, ButtonType.SECONDARY, "Cancel", null));
+                        mContext, ButtonType.SECONDARY_TEXT, "Cancel", null));
 
         Button newPrimaryButton = inflatedLayout.findViewById(R.id.button_primary);
         Assert.assertNotNull(newPrimaryButton);
