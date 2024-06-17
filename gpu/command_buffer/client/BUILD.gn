@@ -359,10 +359,7 @@ source_set("webgpu_sources") {
 component("gles2_implementation_no_check") {
   sources = gles2_implementation_source_files
 
-  defines = [
-    "GLES2_IMPL_IMPLEMENTATION",
-    "GLES2_CONFORMANCE_TESTS=1",
-  ]
+  defines = [ "GLES2_IMPL_IMPLEMENTATION" ]
   if (enable_gpu_client_logging) {
     defines += [ "GPU_ENABLE_CLIENT_LOGGING" ]
   }
@@ -393,22 +390,6 @@ component("gles2_c_lib") {
   sources = gles2_c_lib_source_files
   defines = [ "GLES2_C_LIB_IMPLEMENTATION" ]
 
-  deps = [
-    ":gles2_interface",
-    "//base",
-    "//gpu/command_buffer/common",
-  ]
-}
-
-# Same as gles2_c_lib except with no parameter checking. Required for
-# OpenGL ES 2.0 conformance tests.
-component("gles2_c_lib_nocheck") {
-  sources = gles2_c_lib_source_files
-
-  defines = [
-    "GLES2_C_LIB_IMPLEMENTATION",
-    "GLES2_CONFORMANCE_TESTS=1",
-  ]
   deps = [
     ":gles2_interface",
     "//base",

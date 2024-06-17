@@ -148,8 +148,6 @@ group("gn_all") {
       deps += [
         "//components/subresource_filter/tools:subresource_filter_tools",
         "//components/zucchini:zucchini",
-        "//gpu/gles2_conform_support:gles2_conform_test",
-        "//gpu/khronos_glcts_support:khronos_glcts_test",
         "//net:hpack_example_generator",
         "//third_party/spirv-tools/src:SPIRV-Tools",
         "//tools/aggregation_service:aggregation_service_tool",
@@ -614,7 +612,6 @@ group("gn_all") {
 
     if (is_linux || is_chromeos_lacros) {
       deps += [
-        "//gpu/khronos_glcts_support:khronos_glcts_test",
         "//skia:filter_fuzz_stub",
         "//skia:image_operations_bench",
         "//ui/snapshot:snapshot_unittests",
