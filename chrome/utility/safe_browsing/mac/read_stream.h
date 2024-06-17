@@ -13,6 +13,7 @@
 
 #include "base/containers/span.h"
 #include "base/files/file.h"
+#include "base/memory/raw_span.h"
 
 namespace safe_browsing {
 namespace dmg {
@@ -81,7 +82,7 @@ class MemoryReadStream : public ReadStream {
   base::span<const uint8_t> byte_buf() const { return byte_buf_; }
 
  protected:
-  base::span<const uint8_t> byte_buf_;
+  base::raw_span<const uint8_t> byte_buf_;
   off_t offset_;
 };
 
