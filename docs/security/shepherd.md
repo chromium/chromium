@@ -302,18 +302,31 @@ bug that is platform specific and you do not have access to a device with that
 OS, please [ask for help](#Ask-for-help), there is likely someone on the team
 that does and can help you.
 
-ChromeOS is in a separate issue tracker. VRP reports for ChromeOS should be
+ChromeOS is in the Google issue tracker. VRP reports for ChromeOS should be
 [directly reported to ChromeOS](https://bughunters.google.com/report). Please
-request the reporter submit direct to ChromeOS via that reporting route to
-ensure it is received by the appropriate team.
+request the reporter submit reports directly to ChromeOS in the future. For
+VRP and other human-submitted security bug reports specific to ChromeOS,
+please move the report corresponding component (componentid:1335705) in the
+Google issue tracker. Since this bug is being moved between trackers you will
+need to use your google.com account to move the bug into that tracker component.
+
+Some machine-discovered (Clusterfuzz, Crash AutoBugFiler, GWP-ASAN) may be
+specific to ChromeOS. If this is determined to be the case after investigation
+(please remember some GWP-ASAN or crash bug auto-filer bugs may have come from a
+ChromeOS crash, but the issue may not be specific to ChromeOS), move the bug
+to the appropriate ChromeOS component (componentid:1214738) in the Google
+issue tracker for these reports. Again, you will need to use your google.com
+account to move this bug into that component.
 
 ### Assign
 
 Security bugs are not automatically visible, so you must add people to get them
 fixed. For each bug, set:
 
-* The **Component Tags** – due to a limited set of auto-cc rules, this may add
-  some visibility.
+* The **Component** – due to a limited set of auto-cc rules, this may add
+  some visibility. This will "move" the bug into that component; this is the
+  expected outcome. It can also be helpful to set additional **Component Tags**
+  when a bug does not fall neatly into a single component.
 * An **assignee/owner**. Use `git blame` or look for similar past bugs in the
   tracker.
 * Lots of **cc**s. Copy everyone who could possibly be relevant. Use the owners
