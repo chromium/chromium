@@ -129,15 +129,6 @@ bundle_data_xcassets("chromium_icons") {
   sources = [
     "ChromiumIcons.xcassets/AppIcon.appiconset/Contents.json",
     "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-1024.png",
-    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-120.png",
-    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-152.png",
-    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-167.png",
-    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-180.png",
-    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-29.png",
-    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-40.png",
-    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-58.png",
-    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-80.png",
-    "ChromiumIcons.xcassets/AppIcon.appiconset/Icon-87.png",
   ]
 }
 
