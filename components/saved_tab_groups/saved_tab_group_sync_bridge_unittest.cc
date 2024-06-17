@@ -615,6 +615,7 @@ TEST_F(SavedTabGroupSyncBridgeTest, AddSyncData) {
                          group.saved_guid(), /*position=*/std::nullopt);
   SavedTabGroupTab tab_2(GURL("https://google.com"), u"Google",
                          group.saved_guid(), /*position=*/std::nullopt);
+  group.SetCreatorCacheGuid("remote_cache_guid");
   group.AddTabLocally(tab_1).AddTabLocally(tab_2);
 
   bridge_->ApplyIncrementalSyncChanges(
@@ -634,6 +635,8 @@ TEST_F(SavedTabGroupSyncBridgeTest, AddSyncData) {
     EXPECT_TRUE(AreSavedTabGroupTabsEqual(
         tab, *group_from_model->GetTab(tab.saved_tab_guid())));
   }
+
+  EXPECT_TRUE(group_from_model->is_remote_group());
 
   // Ensure a tab added to an existing group in the bridge is added into the
   // model correctly.
@@ -1132,6 +1135,8 @@ class SavedTabGroupSyncBridgeMigrationTest
         prefs::kSavedTabGroupSpecificsToDataMigration, false);
     ON_CALL(processor_, IsTrackingMetadata())
         .WillByDefault(testing::Return(true));
+    ON_CALL(processor_, TrackedCacheGuid())
+        .WillByDefault(testing::Return("local_cache_guid"));
   }
 
   void CreateBridge(bool has_specifics_migrated) {

@@ -188,6 +188,11 @@ SavedTabGroup& SavedTabGroup::SetCollaborationId(
   return *this;
 }
 
+SavedTabGroup& SavedTabGroup::SetIsRemoteGroup(bool is_remote_group) {
+  is_remote_group_ = is_remote_group;
+  return *this;
+}
+
 SavedTabGroup& SavedTabGroup::AddTabLocally(SavedTabGroupTab tab) {
   InsertTabImpl(tab);
   UpdateTabPositionsImpl();

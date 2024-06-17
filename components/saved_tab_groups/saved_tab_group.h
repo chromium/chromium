@@ -115,6 +115,7 @@ class SavedTabGroup {
   SavedTabGroup& SetPinned(bool pinned);
   SavedTabGroup& SetCollaborationId(
       std::optional<std::string> collaboration_id);
+  SavedTabGroup& SetIsRemoteGroup(bool is_remote_group);
 
   // Tab mutators.
   // Add `tab` into its position in `saved_tabs_` if it is set. Otherwise add it
