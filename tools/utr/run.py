@@ -45,12 +45,12 @@ def add_common_args(parser):
                       help='Skip all prompts about config mismatches.')
   parser.add_argument('--test',
                       '-t',
-                      required=True,
                       action='append',
                       default=[],
                       dest='tests',
                       help='Name of test suite(s) to replicate. Pass multiple '
-                      'times for multiple tests.')
+                      'times for multiple tests. Optional with the "compile" '
+                      'run mode which will compile "all".')
   parser.add_argument('--builder',
                       '-b',
                       required=True,
@@ -143,6 +143,11 @@ def parse_args(args=None):
   if args.reuse_task and args.run_mode != 'test':
     parser.print_help()
     parser.error('reuse-task is only compatible with "test"')
+  if not args.tests:
+    # Only compile mode should default to compile all
+    if args.run_mode != 'compile':
+      parser.print_help()
+      parser.error('Please provide a test to run')
   return args
 
 
