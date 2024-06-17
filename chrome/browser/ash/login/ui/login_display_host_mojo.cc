@@ -490,7 +490,7 @@ void LoginDisplayHostMojo::OnStartSignInScreen() {
 
   CreateExistingUserController();
 
-  AuthHub::Get()->InitializeForMode(AuthHubMode::kLoginScreen);
+  ScheduleStartAuthHubInLoginMode();
 
   // Load the UI.
   existing_user_controller_->Init(user_manager::UserManager::Get()->GetUsers());
@@ -502,6 +502,23 @@ void LoginDisplayHostMojo::OnStartSignInScreen() {
   OnStartSignInScreenCommon();
 
   login::SecurityTokenSessionController::MaybeDisplayLoginScreenNotification();
+}
+
+void LoginDisplayHostMojo::ScheduleStartAuthHubInLoginMode() {
+  UserDataAuthClient::Get()->WaitForServiceToBeAvailable(
+      base::BindOnce(&LoginDisplayHostMojo::StartAuthHubInLoginMode,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void LoginDisplayHostMojo::StartAuthHubInLoginMode(
+    bool is_cryptohome_available) {
+  if (!is_cryptohome_available) {
+    LOG(ERROR)
+        << "Unable to start AuthHub in login mode, cryptohome is not available";
+    return;
+  }
+
+  AuthHub::Get()->InitializeForMode(AuthHubMode::kLoginScreen);
 }
 
 void LoginDisplayHostMojo::OnStartAppLaunch() {
