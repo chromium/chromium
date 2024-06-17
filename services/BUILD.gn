@@ -59,6 +59,7 @@ test("services_unittests") {
       "//services/viz/public/cpp/gpu:tests",
       "//services/viz/public/cpp/hit_test:tests",
       "//services/webnn:tests",
+      "//services/webnn/public/mojom:tests",
     ]
     if (is_ios) {
       bundle_deps =

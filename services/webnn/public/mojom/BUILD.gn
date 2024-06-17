@@ -62,3 +62,17 @@ component("webnn_mojom_traits") {
 
   defines = [ "IS_WEBNN_MOJOM_TRAITS_IMPL" ]
 }
+
+source_set("tests") {
+  testonly = true
+
+  sources = [ "operand_descriptor_mojom_traits_unittest.cc" ]
+
+  deps = [
+    ":mojom",
+    ":webnn_mojom_traits",
+    "//base/test:test_support",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gtest",
+  ]
+}

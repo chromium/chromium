@@ -35,6 +35,14 @@ std::optional<OperandDescriptor> OperandDescriptor::Create(
 }
 
 // static
+OperandDescriptor OperandDescriptor::UnsafeCreateForTesting(
+    OperandDataType data_type,
+    base::span<const uint32_t> shape) {
+  return OperandDescriptor(data_type,
+                           std::vector<uint32_t>(shape.begin(), shape.end()));
+}
+
+// static
 size_t OperandDescriptor::GetBytesPerElement(OperandDataType data_type) {
   switch (data_type) {
     case OperandDataType::kFloat32:
