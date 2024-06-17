@@ -4,11 +4,13 @@
 
 #include "ash/system/bluetooth/bluetooth_device_status_ui_handler.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "ash/public/cpp/hats_bluetooth_revamp_trigger.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
@@ -16,6 +18,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chromeos/ash/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/prefs/pref_service.h"
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -30,16 +33,32 @@ const char kBluetoothToastIdPrefix[] = "cros_bluetooth_device_toast_id-";
 
 }  // namespace
 
-BluetoothDeviceStatusUiHandler::BluetoothDeviceStatusUiHandler() {
+BluetoothDeviceStatusUiHandler::BluetoothDeviceStatusUiHandler(
+    PrefService* local_state)
+    : local_state_(local_state) {
   // Asynchronously bind to CrosBluetoothConfig so that we don't want to attempt
   // to bind to it before it has initialized.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE,
       base::BindOnce(&BluetoothDeviceStatusUiHandler::BindToCrosBluetoothConfig,
                      weak_ptr_factory_.GetWeakPtr()));
+  // `local_state` may be null in tests.
+  if (!local_state_) {
+    return;
+  }
+  device::MaybeRecordConnectionToastShownCount(local_state_,
+                                               /*triggered_by_connect=*/false);
 }
 
 BluetoothDeviceStatusUiHandler::~BluetoothDeviceStatusUiHandler() = default;
+
+// static:
+void BluetoothDeviceStatusUiHandler::RegisterLocalStatePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(prefs::kBluetoothConnectionToastShownCount, 0);
+  registry->RegisterTimePref(prefs::kBluetoothToastCountStartTime,
+                             base::Time::Now().LocalMidnight());
+}
 
 void BluetoothDeviceStatusUiHandler::OnDevicePaired(
     PairedBluetoothDevicePropertiesPtr device) {
@@ -89,6 +108,8 @@ void BluetoothDeviceStatusUiHandler::OnDeviceConnected(
   ShowToast(std::move(toast_data));
   device::RecordUiSurfaceDisplayed(
       device::BluetoothUiSurface::kConnectionToast);
+  device::MaybeRecordConnectionToastShownCount(local_state_,
+                                               /*triggered_by_connect=*/true);
 
   if (last_connection_timestamp_.has_value()) {
     device::RecordTimeIntervalBetweenConnections(

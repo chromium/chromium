@@ -68,6 +68,18 @@ chromium-metrics-reviews@google.com.
   <token key="MethodName" variants="BlueZDBusMethodName"/>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.ConnectionToastShownIn24Hours.Count"
+    units="count" expires_after="2025-05-30">
+  <owner>longbowei@google.com</owner>
+  <owner>dpad@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Record the number of times the connection toast is shown to user in the
+    24-hour period, starting at local midnight. Fires at system start or on
+    Bluetooth connection if 24 hours have passed.
+  </summary>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.DeviceConnected.{ConnectionType}"
     enum="BluetoothDeviceType" expires_after="2025-02-20">
   <owner>khorimoto@chromium.org</owner>

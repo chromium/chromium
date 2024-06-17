@@ -24,6 +24,7 @@
 #include <string_view>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "chromeos/ash/services/nearby/public/cpp/nearby_client_uuids.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/shared/ble_constants.h"
@@ -45,6 +46,10 @@ const char kSecurityKeyServiceUUID[] = "FFFD";
 
 constexpr base::TimeDelta kMaxDeviceSelectionDuration = base::Seconds(30);
 constexpr base::TimeDelta kConnectionTimeIntervalThreshold = base::Minutes(15);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr base::TimeDelta kToastShownCountTimeIntervalThreshold =
+    base::Hours(24);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 constexpr uint8_t kLimitedDiscoveryFlag = 0x01;
 constexpr uint8_t kGeneralDiscoveryFlag = 0x02;
@@ -594,5 +599,39 @@ void RecordTimeIntervalBetweenConnections(
       /*min=*/base::Milliseconds(0),
       /*max=*/kConnectionTimeIntervalThreshold, 100);
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void MaybeRecordConnectionToastShownCount(PrefService* local_state_pref,
+                                          bool triggered_by_connect) {
+  bool is_within_24_hrs =
+      base::Time::Now() -
+          local_state_pref->GetTime(ash::prefs::kBluetoothToastCountStartTime) <
+      kToastShownCountTimeIntervalThreshold;
+  int toast_shown_count = local_state_pref->GetInteger(
+      ash::prefs::kBluetoothConnectionToastShownCount);
+
+  if (is_within_24_hrs && triggered_by_connect) {
+    // Increment the count if within 24 hours and it is triggered by connect.
+    local_state_pref->SetInteger(
+        ash::prefs::kBluetoothConnectionToastShownCount, toast_shown_count + 1);
+    return;
+  }
+
+  if (is_within_24_hrs) {
+    // Do nothing since we haven't exceeded the time interval.
+    return;
+  }
+
+  // Emit metric and reset count and timestamp if 24 hours have passed.
+  base::UmaHistogramCounts100(
+      "Bluetooth.ChromeOS.ConnectionToastShownIn24Hours.Count",
+      toast_shown_count);
+  // Reset the count, and update the start time.
+  local_state_pref->SetInteger(ash::prefs::kBluetoothConnectionToastShownCount,
+                               triggered_by_connect ? 1 : 0);
+  local_state_pref->SetTime(ash::prefs::kBluetoothToastCountStartTime,
+                            base::Time::Now().LocalMidnight());
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace device

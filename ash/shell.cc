@@ -1733,7 +1733,7 @@ void Shell::Init(
       std::make_unique<VideoActivityNotifier>(video_detector_.get());
   bluetooth_state_cache_ = std::make_unique<BluetoothStateCache>();
   bluetooth_device_status_ui_handler_ =
-      std::make_unique<BluetoothDeviceStatusUiHandler>();
+      std::make_unique<BluetoothDeviceStatusUiHandler>(local_state_);
   bluetooth_notification_controller_ =
       std::make_unique<BluetoothNotificationController>(
           message_center::MessageCenter::Get());

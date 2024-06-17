@@ -173,6 +173,7 @@ component("bluetooth") {
     "//base",
     "//build:chromeos_buildflags",
     "//components/device_event_log",
+    "//components/prefs",
     "//crypto",
     "//device/base",
     "//device/bluetooth/strings",

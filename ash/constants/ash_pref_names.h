@@ -1421,6 +1421,16 @@ inline constexpr char kUserBluetoothAdapterEnabled[] =
 inline constexpr char kSystemBluetoothAdapterEnabled[] =
     "ash.system.bluetooth.adapter_enabled";
 
+// An integer pref counting the number of times bluetooth connection toast has
+// been displayed.
+inline constexpr char kBluetoothConnectionToastShownCount[] =
+    "ash.bluetooth.connection_toast_shown_count";
+
+// A time pref storing the start time for counting the number of times the
+// bluetooth connection toast has been displayed.
+inline constexpr char kBluetoothToastCountStartTime[] =
+    "ash.bluetooth.toast_count_start_time";
+
 // A boolean pref indicating whether the camera is allowed to be used.
 inline constexpr char kUserCameraAllowed[] = "ash.user.camera_allowed";
 

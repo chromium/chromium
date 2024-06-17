@@ -123,6 +123,7 @@ test("device_unittests") {
     "//components/apdu",
     "//components/cbor",
     "//components/device_event_log",
+    "//components/prefs:test_support",
     "//crypto:test_support",
     "//device/base",
     "//device/base/synchronization",

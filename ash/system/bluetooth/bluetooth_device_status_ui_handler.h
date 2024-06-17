@@ -8,6 +8,8 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -19,12 +21,14 @@ namespace ash {
 class ASH_EXPORT BluetoothDeviceStatusUiHandler
     : public bluetooth_config::mojom::BluetoothDeviceStatusObserver {
  public:
-  BluetoothDeviceStatusUiHandler();
+  explicit BluetoothDeviceStatusUiHandler(PrefService* local_state);
   BluetoothDeviceStatusUiHandler(const BluetoothDeviceStatusUiHandler&) =
       delete;
   BluetoothDeviceStatusUiHandler& operator=(
       const BluetoothDeviceStatusUiHandler&) = delete;
   ~BluetoothDeviceStatusUiHandler() override;
+
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
  private:
   // bluetooth_config::mojom::BluetoothDeviceStatusObserver:
@@ -49,6 +53,8 @@ class ASH_EXPORT BluetoothDeviceStatusUiHandler
   void BindToCrosBluetoothConfig();
 
   std::optional<base::TimeTicks> last_connection_timestamp_;
+
+  raw_ptr<PrefService> local_state_;  // unowned.
 
   mojo::Remote<bluetooth_config::mojom::CrosBluetoothConfig>
       remote_cros_bluetooth_config_;

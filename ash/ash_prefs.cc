@@ -43,6 +43,7 @@
 #include "ash/shelf/shelf_controller.h"
 #include "ash/style/color_palette_controller.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
+#include "ash/system/bluetooth/bluetooth_device_status_ui_handler.h"
 #include "ash/system/brightness/brightness_controller_chromeos.h"
 #include "ash/system/camera/autozoom_controller_impl.h"
 #include "ash/system/camera/autozoom_nudge_controller.h"
@@ -242,6 +243,7 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry, bool for_test) {
   PowerNotificationController::RegisterLocalStatePrefs(registry);
   quick_pair::ScanningEnabledProvider::RegisterLocalStatePrefs(registry);
   InputDeviceSettingsMetadataManager::RegisterLocalStatePrefs(registry);
+  BluetoothDeviceStatusUiHandler::RegisterLocalStatePrefs(registry);
 
   if (for_test) {
     registry->RegisterBooleanPref(prefs::kOwnerPrimaryMouseButtonRight, false);
