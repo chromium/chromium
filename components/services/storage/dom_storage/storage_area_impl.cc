@@ -14,7 +14,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
-#include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "third_party/leveldatabase/env_chromium.h"
 
 namespace storage {
@@ -75,6 +74,9 @@ StorageAreaImpl::StorageAreaImpl(AsyncDomStorageDatabase* database,
       default_commit_delay_(options.default_commit_delay),
       data_rate_limiter_(options.max_bytes_per_hour, base::Hours(1)),
       commit_rate_limiter_(options.max_commits_per_hour, base::Hours(1)) {
+  if (database_) {
+    database_->AddCommitter(this);
+  }
   receivers_.set_disconnect_handler(base::BindRepeating(
       &StorageAreaImpl::OnConnectionError, weak_ptr_factory_.GetWeakPtr()));
 }
@@ -83,6 +85,9 @@ StorageAreaImpl::~StorageAreaImpl() {
   DCHECK(!has_pending_load_tasks());
   if (commit_batch_)
     CommitChanges();
+  if (database_) {
+    database_->RemoveCommitter(this);
+  }
 }
 
 void StorageAreaImpl::InitializeAsEmpty() {
@@ -523,6 +528,12 @@ void StorageAreaImpl::GetAll(
     AddObserver(std::move(new_observer));
 }
 
+base::OnceCallback<void(leveldb::Status)>
+StorageAreaImpl::GetCommitCompleteCallback() {
+  return base::BindOnce(&StorageAreaImpl::OnCommitComplete,
+                        weak_ptr_factory_.GetWeakPtr());
+}
+
 void StorageAreaImpl::SetCacheMode(CacheMode cache_mode) {
   if (cache_mode_ == cache_mode ||
       (!database_ && cache_mode == CacheMode::KEYS_ONLY_WHEN_POSSIBLE)) {
@@ -718,21 +729,23 @@ void StorageAreaImpl::CommitChanges() {
     return;
   }
 
+  database_->InitiateCommit(this);
+}
+
+std::optional<AsyncDomStorageDatabase::Commit>
+StorageAreaImpl::CollectCommit() {
+  if (!commit_batch_) {
+    return std::nullopt;
+  }
+
   DCHECK(database_);
   DCHECK(IsMapLoaded()) << static_cast<int>(map_state_);
 
   commit_rate_limiter_.add_samples(1);
 
   // Commit all our changes in a single batch.
-  struct Commit {
-    DomStorageDatabase::Key prefix;
-    bool clear_all_first;
-    std::vector<DomStorageDatabase::KeyValuePair> entries_to_add;
-    std::vector<DomStorageDatabase::Key> keys_to_delete;
-    std::optional<DomStorageDatabase::Key> copy_to_prefix;
-  };
-
-  Commit commit;
+  AsyncDomStorageDatabase::Commit commit;
+  commit.timestamps = std::move(commit_batch_->put_timestamps);
   commit.prefix = prefix_;
   commit.clear_all_first = commit_batch_->clear_all_first;
   delegate_->PrepareToCommit(&commit.entries_to_add, &commit.keys_to_delete);
@@ -797,37 +810,8 @@ void StorageAreaImpl::CommitChanges() {
   data_rate_limiter_.add_samples(data_size);
 
   ++commit_batches_in_flight_;
-
-  database_->RunDatabaseTask(
-      base::BindOnce(
-          [](Commit commit, std::vector<base::TimeTicks> put_timestamps,
-             const DomStorageDatabase& db) {
-            const auto now = base::TimeTicks::Now();
-            for (const base::TimeTicks& put_time : put_timestamps) {
-              UMA_HISTOGRAM_LONG_TIMES_100("DOMStorage.CommitMeasuredDelay",
-                                           now - put_time);
-            }
-
-            leveldb::WriteBatch batch;
-            if (commit.clear_all_first)
-              db.DeletePrefixed(commit.prefix, &batch);
-            for (const auto& entry : commit.entries_to_add) {
-              batch.Put(leveldb_env::MakeSlice(entry.key),
-                        leveldb_env::MakeSlice(entry.value));
-            }
-            for (const auto& key : commit.keys_to_delete)
-              batch.Delete(leveldb_env::MakeSlice(key));
-            if (commit.copy_to_prefix) {
-              db.CopyPrefixed(commit.prefix, commit.copy_to_prefix.value(),
-                              &batch);
-            }
-            return db.Commit(&batch);
-          },
-          std::move(commit), std::move(commit_batch_->put_timestamps)),
-      base::BindOnce(&StorageAreaImpl::OnCommitComplete,
-                     weak_ptr_factory_.GetWeakPtr()));
-
   commit_batch_.reset();
+  return commit;
 }
 
 void StorageAreaImpl::OnCommitComplete(leveldb::Status status) {

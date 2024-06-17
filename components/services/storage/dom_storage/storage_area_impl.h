@@ -15,6 +15,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -42,7 +43,8 @@ class AsyncDomStorageDatabase;
 // 4) Throttles requests to avoid overwhelming the disk.
 //
 // The wrapper supports two different caching modes.
-class StorageAreaImpl : public blink::mojom::StorageArea {
+class StorageAreaImpl : public blink::mojom::StorageArea,
+                        public AsyncDomStorageDatabase::Committer {
  public:
   using ValueMap = std::map<std::vector<uint8_t>, std::vector<uint8_t>>;
   using ValueMapCallback = base::OnceCallback<void(std::unique_ptr<ValueMap>)>;
@@ -199,6 +201,13 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
       mojo::PendingRemote<blink::mojom::StorageAreaObserver> new_observer,
       GetAllCallback callback) override;
 
+  // Committer:
+  std::optional<AsyncDomStorageDatabase::Commit> CollectCommit() override;
+  base::OnceCallback<void(leveldb::Status)> GetCommitCompleteCallback()
+      override;
+
+  void OnCommitComplete(leveldb::Status status);
+
   void SetOnLoadCallbackForTesting(base::OnceClosure callback) {
     on_load_callback_for_testing_ = std::move(callback);
   }
@@ -208,7 +217,7 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
   FRIEND_TEST_ALL_PREFIXES(StorageAreaImplTest,
                            PutLoadsValuesAfterCacheModeUpgrade);
   FRIEND_TEST_ALL_PREFIXES(StorageAreaImplTest, SetCacheModeConsistent);
-  FRIEND_TEST_ALL_PREFIXES(StorageAreaImplParamTest,
+  FRIEND_TEST_ALL_PREFIXES(StorageAreaImplCacheModeTest,
                            CommitOnDifferentCacheModes);
 
   // Used to rate limit commits.
@@ -295,7 +304,6 @@ class StorageAreaImpl : public blink::mojom::StorageArea {
   base::TimeDelta ComputeCommitDelay() const;
 
   void CommitChanges();
-  void OnCommitComplete(leveldb::Status status);
 
   void UnloadMapIfPossible();
 
