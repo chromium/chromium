@@ -439,6 +439,10 @@ int64_t MockNetworkTransaction::GetTotalSentBytes() const {
   return sent_bytes_;
 }
 
+int64_t MockNetworkTransaction::GetReceivedBodyBytes() const {
+  return received_body_bytes_;
+}
+
 void MockNetworkTransaction::DoneReading() {
   CHECK(!done_reading_called_);
   done_reading_called_ = true;
@@ -501,6 +505,9 @@ const int64_t MockNetworkTransaction::kTotalReceivedBytes = 1000;
 
 // static
 const int64_t MockNetworkTransaction::kTotalSentBytes = 100;
+
+// static
+const int64_t MockNetworkTransaction::kReceivedBodyBytes = 500;
 
 int MockNetworkTransaction::StartInternal(HttpRequestInfo request,
                                           CompletionOnceCallback callback) {
@@ -598,6 +605,7 @@ int MockNetworkTransaction::DoSendRequest() {
 
   sent_bytes_ = kTotalSentBytes;
   received_bytes_ = kTotalReceivedBytes;
+  received_body_bytes_ = kReceivedBodyBytes;
 
   const MockTransaction* t = FindMockTransaction(current_request_.url);
   CHECK(t);

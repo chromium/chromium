@@ -479,6 +479,15 @@ int64_t HttpCache::Transaction::GetTotalSentBytes() const {
   return total_sent_bytes;
 }
 
+int64_t HttpCache::Transaction::GetReceivedBodyBytes() const {
+  int64_t received_body_bytes = network_transaction_info_.received_body_bytes;
+  const HttpTransaction* transaction = GetOwnedOrMovedNetworkTransaction();
+  if (transaction) {
+    received_body_bytes = transaction->GetReceivedBodyBytes();
+  }
+  return received_body_bytes;
+}
+
 void HttpCache::Transaction::DoneReading() {
   if (cache_.get() && entry_) {
     DCHECK_NE(mode_, UPDATE);
@@ -3932,6 +3941,8 @@ void HttpCache::Transaction::SaveNetworkTransactionInfo(
   network_transaction_info_.total_received_bytes +=
       transaction.GetTotalReceivedBytes();
   network_transaction_info_.total_sent_bytes += transaction.GetTotalSentBytes();
+  network_transaction_info_.received_body_bytes =
+      transaction.GetReceivedBodyBytes();
 
   ConnectionAttempts attempts = transaction.GetConnectionAttempts();
   for (const auto& attempt : attempts) {

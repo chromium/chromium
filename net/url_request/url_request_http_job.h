@@ -172,6 +172,7 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   int ReadRawData(IOBuffer* buf, int buf_size) override;
   int64_t GetTotalReceivedBytes() const override;
   int64_t GetTotalSentBytes() const override;
+  int64_t GetReceivedBodyBytes() const override;
   void DoneReading() override;
   void DoneReadingRedirectResponse() override;
   void DoneReadingRetryResponse() override;

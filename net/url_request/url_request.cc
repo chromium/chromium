@@ -258,9 +258,16 @@ int64_t URLRequest::GetTotalSentBytes() const {
 }
 
 int64_t URLRequest::GetRawBodyBytes() const {
-  if (!job_.get())
+  if (!job_.get()) {
     return 0;
+  }
 
+  if (int64_t bytes = job_->GetReceivedBodyBytes()) {
+    return bytes;
+  }
+
+  // GetReceivedBodyBytes() is available only when the body was received from
+  // the network. Otherwise, returns prefilter_bytes_read() instead.
   return job_->prefilter_bytes_read();
 }
 

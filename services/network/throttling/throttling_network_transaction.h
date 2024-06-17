@@ -71,6 +71,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkTransaction
   void StopCaching() override;
   int64_t GetTotalReceivedBytes() const override;
   int64_t GetTotalSentBytes() const override;
+  int64_t GetReceivedBodyBytes() const override;
   void DoneReading() override;
   const net::HttpResponseInfo* GetResponseInfo() const override;
   net::LoadState GetLoadState() const override;

@@ -144,6 +144,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
   void StopCaching() override;
   int64_t GetTotalReceivedBytes() const override;
   int64_t GetTotalSentBytes() const override;
+  int64_t GetReceivedBodyBytes() const override;
   void DoneReading() override;
   const HttpResponseInfo* GetResponseInfo() const override;
   LoadState GetLoadState() const override;
@@ -224,6 +225,7 @@ class NET_EXPORT_PRIVATE HttpCache::Transaction : public HttpTransaction {
     std::unique_ptr<LoadTimingInfo> old_network_trans_load_timing;
     int64_t total_received_bytes = 0;
     int64_t total_sent_bytes = 0;
+    int64_t received_body_bytes = 0;
     ConnectionAttempts old_connection_attempts;
     IPEndPoint old_remote_endpoint;
     // For metrics. Can be removed when associated histograms are removed.

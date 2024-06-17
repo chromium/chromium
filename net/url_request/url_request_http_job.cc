@@ -1700,6 +1700,13 @@ int64_t URLRequestHttpJob::GetTotalSentBytes() const {
   return total_sent_bytes;
 }
 
+int64_t URLRequestHttpJob::GetReceivedBodyBytes() const {
+  if (transaction_) {
+    return transaction_->GetReceivedBodyBytes();
+  }
+  return 0;
+}
+
 void URLRequestHttpJob::DoneReading() {
   if (transaction_) {
     transaction_->DoneReading();

@@ -117,6 +117,9 @@ class NET_EXPORT URLRequestJob {
   // will never decrease over the lifetime of the URLRequestJob.
   virtual int64_t GetTotalSentBytes() const;
 
+  // Get the number of bytes of the body received from network.
+  virtual int64_t GetReceivedBodyBytes() const;
+
   // Called to fetch the current load state for the job.
   virtual LoadState GetLoadState() const;
 

@@ -233,6 +233,10 @@ int64_t ThrottlingNetworkTransaction::GetTotalSentBytes() const {
   return network_transaction_->GetTotalSentBytes();
 }
 
+int64_t ThrottlingNetworkTransaction::GetReceivedBodyBytes() const {
+  return network_transaction_->GetReceivedBodyBytes();
+}
+
 void ThrottlingNetworkTransaction::DoneReading() {
   network_transaction_->DoneReading();
 }

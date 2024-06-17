@@ -1725,6 +1725,66 @@ TEST_P(HttpNetworkTransactionTest, Ignores1xx) {
   EXPECT_EQ("hello world", response_data);
 }
 
+TEST_P(HttpNetworkTransactionTest, GetReceivedBodyBytes) {
+  HttpRequestInfo request;
+  request.method = "GET";
+  request.url = GURL("http://www.example.com/");
+  request.traffic_annotation =
+      MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS);
+
+  std::vector<MockWrite> data_writes = {
+      MockWrite(ASYNC, 0,
+                "GET / HTTP/1.1\r\n"
+                "Host: www.example.com\r\n"
+                "Connection: keep-alive\r\n\r\n"),
+  };
+  static constexpr char chunk1[] = "hello ";
+  static constexpr char chunk2[] = "world";
+
+  MockRead data_reads[] = {
+      MockRead(ASYNC, 1, "HTTP/1.0 200 OK\r\n\r\n"),
+      MockRead(ASYNC, 2, chunk1),
+      MockRead(ASYNC, 3, chunk2),
+      MockRead(ASYNC, OK, 4),
+  };
+  SequencedSocketData data(data_reads, data_writes);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  std::unique_ptr<HttpNetworkSession> session(CreateSession(&session_deps_));
+
+  HttpNetworkTransaction trans(DEFAULT_PRIORITY, session.get());
+
+  TestCompletionCallback start_cb;
+  EXPECT_THAT(start_cb.GetResult(trans.Start(&request, start_cb.callback(),
+                                             NetLogWithSource())),
+              IsOk());
+
+  const size_t kBufferSize = 256;
+
+  auto buf = base::MakeRefCounted<IOBufferWithSize>(kBufferSize);
+  EXPECT_THAT(trans.GetReceivedBodyBytes(), 0);
+
+  TestCompletionCallback read_cb1;
+  EXPECT_THAT(read_cb1.GetResult(
+                  trans.Read(buf.get(), kBufferSize, read_cb1.callback())),
+              strlen(chunk1));
+
+  EXPECT_THAT(trans.GetReceivedBodyBytes(), strlen(chunk1));
+
+  TestCompletionCallback read_cb2;
+  EXPECT_THAT(read_cb2.GetResult(
+                  trans.Read(buf.get(), kBufferSize, read_cb2.callback())),
+              strlen(chunk2));
+
+  EXPECT_THAT(trans.GetReceivedBodyBytes(), strlen(chunk1) + strlen(chunk2));
+
+  TestCompletionCallback read_cb3;
+  EXPECT_THAT(read_cb3.GetResult(
+                  trans.Read(buf.get(), kBufferSize, read_cb3.callback())),
+              IsOk());
+  EXPECT_THAT(trans.GetReceivedBodyBytes(), strlen(chunk1) + strlen(chunk2));
+}
+
 TEST_P(HttpNetworkTransactionTest, LoadTimingMeasuresTimeToFirstByteForHttp) {
   static const base::TimeDelta kDelayAfterFirstByte = base::Milliseconds(10);
 

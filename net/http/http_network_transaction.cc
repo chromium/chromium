@@ -480,6 +480,10 @@ int64_t HttpNetworkTransaction::GetTotalSentBytes() const {
   return total_sent_bytes;
 }
 
+int64_t HttpNetworkTransaction::GetReceivedBodyBytes() const {
+  return received_body_bytes_;
+}
+
 void HttpNetworkTransaction::DoneReading() {}
 
 const HttpResponseInfo* HttpNetworkTransaction::GetResponseInfo() const {
@@ -1433,6 +1437,8 @@ int HttpNetworkTransaction::DoReadBodyComplete(int result) {
   if (result <= 0) {
     DCHECK_NE(ERR_IO_PENDING, result);
     done = true;
+  } else {
+    received_body_bytes_ += result;
   }
 
   // Clean up connection if we are done.

@@ -424,6 +424,10 @@ int64_t SharedDictionaryNetworkTransaction::GetTotalSentBytes() const {
   return network_transaction_->GetTotalSentBytes();
 }
 
+int64_t SharedDictionaryNetworkTransaction::GetReceivedBodyBytes() const {
+  return network_transaction_->GetReceivedBodyBytes();
+}
+
 void SharedDictionaryNetworkTransaction::DoneReading() {
   network_transaction_->DoneReading();
 }

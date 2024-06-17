@@ -215,6 +215,8 @@ class MockNetworkTransaction final : public HttpTransaction {
 
   int64_t GetTotalSentBytes() const override;
 
+  int64_t GetReceivedBodyBytes() const override;
+
   void DoneReading() override;
 
   const HttpResponseInfo* GetResponseInfo() const override;
@@ -270,6 +272,9 @@ class MockNetworkTransaction final : public HttpTransaction {
   // Bogus value that will be returned by GetTotalSentBytes() if the
   // MockNetworkTransaction was started.
   static const int64_t kTotalSentBytes;
+  // Bogus value that will be returned by GetReceivedBodyBytes() if the
+  // MockNetworkTransaction was started.
+  static const int64_t kReceivedBodyBytes;
 
  private:
   enum class State {
@@ -327,6 +332,7 @@ class MockNetworkTransaction final : public HttpTransaction {
   base::WeakPtr<MockNetworkLayer> transaction_factory_;
   int64_t received_bytes_ = 0;
   int64_t sent_bytes_ = 0;
+  int64_t received_body_bytes_ = 0;
 
   // NetLog ID of the fake / non-existent underlying socket used by the
   // connection. Requires Start() be passed a NetLogWithSource with a real

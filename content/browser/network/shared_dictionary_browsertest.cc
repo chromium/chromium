@@ -2298,6 +2298,37 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
                 .ExtractString());
 }
 
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
+                       EncodedBodySizeAndDecodedBodySize) {
+  RunWriteDictionaryTest(FetchType::kLinkRelCompressionDictionary,
+                         GetURL("/shared_dictionary/blank.html"),
+                         GetURL("/shared_dictionary/test.dict"));
+
+  EXPECT_EQ(base::StringPrintf("%zu, %zu", kZstdCompressedDataString.size(),
+                               kCompressedDataOriginalString.size()),
+            EvalJs(GetTargetShell()->web_contents()->GetPrimaryMainFrame(),
+                   JsReplace(R"(
+          (async () => {
+            const targetUrl = $1;
+            const promise = new Promise((resolve) => {
+              const observer = new PerformanceObserver((list) => {
+                list.getEntries().forEach((entry) => {
+                  if (entry.name == targetUrl) {
+                    resolve(entry);
+                  }
+                });
+              });
+              observer.observe({ type: 'resource', buffered: true });
+            });
+            fetch(targetUrl);
+            const entry = await promise;
+            return entry.encodedBodySize + ', ' + entry.decodedBodySize;
+          })();
+        )",
+                             GetURL("/shared_dictionary/path/test?")))
+                .ExtractString());
+}
+
 }  // namespace
 
 }  // namespace content
