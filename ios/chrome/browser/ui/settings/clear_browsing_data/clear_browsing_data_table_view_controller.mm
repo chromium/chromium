@@ -53,17 +53,14 @@
     IdentityManagerObserverBridgeDelegate,
     SignoutActionSheetCoordinatorDelegate,
     TableViewLinkHeaderFooterItemDelegate,
-    UIGestureRecognizerDelegate>
+    UIGestureRecognizerDelegate> {
+  // Browser.
+  base::WeakPtr<Browser> _browser;
+}
 
 // TODO(crbug.com/40579855): remove direct dependency and replace with
 // delegate.
 @property(nonatomic, readonly, strong) ClearBrowsingDataManager* dataManager;
-
-// Browser state.
-@property(nonatomic, readonly) ChromeBrowserState* browserState;
-
-// Browser.
-@property(nonatomic, readonly) Browser* browser;
 
 // Coordinator that managers a UIAlertController to clear browsing data.
 @property(nonatomic, strong) ActionSheetCoordinator* actionSheetCoordinator;
@@ -101,14 +98,14 @@
   UITableViewStyle style = ChromeTableViewStyle();
   self = [super initWithStyle:style];
   if (self) {
-    _browser = browser;
-    _browserState = browser->GetBrowserState();
+    _browser = browser->AsWeakPtr();
     _dataManager = [[ClearBrowsingDataManager alloc]
-        initWithBrowserState:browser->GetBrowserState()];
+        initWithBrowserState:self.browserState];
     _dataManager.consumer = self;
     _identityManagerObserverBridge.reset(
         new signin::IdentityManagerObserverBridge(
-            IdentityManagerFactory::GetForBrowserState(_browserState), self));
+            IdentityManagerFactory::GetForBrowserState(self.browserState),
+            self));
   }
   return self;
 }
@@ -119,8 +116,7 @@
   [_dataManager disconnect];
   _dataManager.consumer = nil;
   _dataManager = nil;
-  _browser = nil;
-  _browserState = nil;
+  _browser.reset();
 }
 
 - (void)didMoveToParentViewController:(UIViewController*)parent {
@@ -301,7 +297,9 @@
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
-  if (!self.browserState) {
+  PrefService* prefService = self.prefService;
+  if (!prefService) {
+    // The C++ model has been destroyed, return early.
     return;
   }
 
@@ -311,7 +309,7 @@
     case ItemTypeTimeRange: {
       UIViewController* controller =
           [[TimeRangeSelectorTableViewController alloc]
-              initWithPrefs:self.browserState->GetPrefs()];
+              initWithPrefs:prefService];
       [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
       [self.navigationController pushViewController:controller animated:YES];
       break;
@@ -325,8 +323,8 @@
       TableViewClearBrowsingDataItem* clearBrowsingDataItem =
           base::apple::ObjCCastStrict<TableViewClearBrowsingDataItem>(item);
 
-      self.browserState->GetPrefs()->SetBoolean(clearBrowsingDataItem.prefName,
-                                                !clearBrowsingDataItem.checked);
+      prefService->SetBoolean(clearBrowsingDataItem.prefName,
+                              !clearBrowsingDataItem.checked);
       // UI update will be trigerred by data manager.
       break;
     }
@@ -406,14 +404,16 @@
   }
 }
 
-- (void)removeBrowsingDataForBrowserState:(ChromeBrowserState*)browserState
-                               timePeriod:(browsing_data::TimePeriod)timePeriod
-                               removeMask:(BrowsingDataRemoveMask)removeMask
-                          completionBlock:(ProceduralBlock)completionBlock {
-  if (!self.browserState) {
+- (void)removeBrowsingDataForTimePeriod:(browsing_data::TimePeriod)timePeriod
+                             removeMask:(BrowsingDataRemoveMask)removeMask
+                        completionBlock:(ProceduralBlock)completionBlock {
+  Browser* browser = self.browser;
+  ChromeBrowserState* browserState = self.browserState;
+  PrefService* prefService = self.prefService;
+  if (!browser || !browserState || !prefService) {
+    // The C++ model has been destroyed, return early.
     return;
   }
-  CHECK(browserState, base::NotFatalUntil::M130);
 
   base::RecordAction(
       base::UserMetricsAction("MobileClearBrowsingDataTriggeredFromUIRefresh"));
@@ -421,7 +421,7 @@
   // Show activity indicator modal while removal is happening.
   self.overlayCoordinator = [[ChromeActivityOverlayCoordinator alloc]
       initWithBaseViewController:self.navigationController
-                         browser:_browser];
+                         browser:browser];
 
   self.overlayCoordinator.messageText = l10n_util::GetNSStringWithFixup(
       IDS_IOS_CLEAR_BROWSING_DATA_ACTIVITY_MODAL);
@@ -466,9 +466,8 @@
   // showing of customized content after history has been cleared. We might want
   // to create a specific Pref for this.
   if (IsRemoveDataMaskSet(removeMask, BrowsingDataRemoveMask::REMOVE_HISTORY)) {
-    browserState->GetPrefs()->SetInt64(
-        browsing_data::prefs::kLastClearBrowsingDataTime,
-        base::Time::Now().ToTimeT());
+    prefService->SetInt64(browsing_data::prefs::kLastClearBrowsingDataTime,
+                          base::Time::Now().ToTimeT());
 
     DiscoverFeedServiceFactory::GetForBrowserState(browserState)
         ->BrowsingHistoryCleared();
@@ -482,6 +481,12 @@
 }
 
 - (void)showBrowsingHistoryRemovedDialog {
+  Browser* browser = self.browser;
+  if (!browser) {
+    // The C++ model has been destroyed, return early.
+    return;
+  }
+
   NSString* title =
       l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_HISTORY_NOTICE_TITLE);
   NSString* message = l10n_util::GetNSString(
@@ -489,7 +494,7 @@
 
   self.alertCoordinator =
       [[AlertCoordinator alloc] initWithBaseViewController:self
-                                                   browser:_browser
+                                                   browser:browser
                                                      title:title
                                                    message:message];
 
@@ -547,9 +552,35 @@
   [self allowUserInteraction];
 }
 
+#pragma mark - Properties
+
+- (Browser*)browser {
+  return _browser.get();
+}
+
+- (ChromeBrowserState*)browserState {
+  if (Browser* browser = self.browser) {
+    return browser->GetBrowserState();
+  }
+  return nullptr;
+}
+
+- (PrefService*)prefService {
+  if (ChromeBrowserState* browserState = self.browserState) {
+    return browserState->GetPrefs();
+  }
+  return nullptr;
+}
+
 #pragma mark - Private Helpers
 
 - (void)showClearBrowsingDataAlertController:(id)sender {
+  Browser* browser = self.browser;
+  if (!browser) {
+    // The C++ model has been destroyed, return early.
+    return;
+  }
+
   BrowsingDataRemoveMask dataTypeMaskToRemove =
       BrowsingDataRemoveMask::REMOVE_NOTHING;
   NSArray* dataTypeItems = [self.tableViewModel
@@ -563,7 +594,7 @@
   self.actionSheetCoordinator = [self.dataManager
       actionSheetCoordinatorWithDataTypesToRemove:dataTypeMaskToRemove
                                baseViewController:self
-                                          browser:_browser
+                                          browser:browser
                               sourceBarButtonItem:sender];
   __weak ClearBrowsingDataTableViewController* weakSelf = self;
   [self.actionSheetCoordinator
@@ -602,6 +633,12 @@
 // If they sync, they can keep or delete their data.
 // TODO(crbug.com/40879413) Test that correct histogram is registered.
 - (void)showSignOutWithItemView:(UIView*)itemView {
+  Browser* browser = self.browser;
+  if (!browser) {
+    // The C++ model has been destroyed, return early.
+    return;
+  }
+
   if (_signoutCoordinator) {
     // An action is already in progress, ignore user's request.
     return;
@@ -610,7 +647,7 @@
       ProfileSignout::kUserClickedSignoutFromClearBrowsingDataPage;
   _signoutCoordinator = [[SignoutActionSheetCoordinator alloc]
       initWithBaseViewController:self
-                         browser:_browser
+                         browser:browser
                             rect:itemView.frame
                             view:itemView
                       withSource:signout_source_metric];
