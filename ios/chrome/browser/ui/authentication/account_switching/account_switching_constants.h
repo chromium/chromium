@@ -9,5 +9,7 @@
 
 // The accessibility identifier of the view controller's view.
 extern NSString* const kAccountSwitchingTableViewId;
+// The accessibility identifier of the view controlle's close button.
+extern NSString* const kAccountSwitchingCloseButtonId;
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_ACCOUNT_SWITCHING_ACCOUNT_SWITCHING_CONSTANTS_H_

@@ -11,6 +11,7 @@ source_set("account_switching") {
   ]
   deps = [
     ":account_switching_ui",
+    ":constants",
     "//base",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/ui/table_view:utils",
@@ -48,4 +49,21 @@ source_set("unit_tests") {
     ":account_switching",
     "//base",
   ]
+}
+
+source_set("eg2_tests") {
+  configs += [ "//build/config/ios:xctest_config" ]
+  testonly = true
+  sources = [ "account_switching_egtest.mm" ]
+  deps = [
+    ":constants",
+    "//base/test:test_support",
+    "//ios/chrome/browser/signin/model:fake_system_identity",
+    "//ios/chrome/browser/ui/authentication:eg_test_support+eg2",
+    "//ios/chrome/browser/ui/ntp:constants",
+    "//ios/chrome/browser/ui/ntp:feature_flags",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+  ]
+  frameworks = [ "UIKit.framework" ]
 }

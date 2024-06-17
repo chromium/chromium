@@ -7,6 +7,7 @@
 #import "base/check.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/ui/authentication/account_switching/account_switcher_view_controller.h"
+#import "ios/chrome/browser/ui/authentication/account_switching/account_switching_constants.h"
 
 @implementation AccountSwitcherCoordinator {
   AccountSwitcherViewController* _viewController;
@@ -32,6 +33,7 @@
         initWithBarButtonSystemItem:UIBarButtonSystemItemClose
                              target:self
                              action:@selector(didTapClose)];
+    closeButton.accessibilityIdentifier = kAccountSwitchingCloseButtonId;
     _viewController.navigationItem.rightBarButtonItem = closeButton;
   }
 
@@ -41,7 +43,12 @@
 }
 
 - (void)stop {
-  DCHECK(_viewController);
+  // TODO(crbug.com/336719423): Change condition to CHECK(_viewController). But
+  // firt inform the parent coordinator at didTapClose that this view was
+  // dismissed.
+  if (!_viewController) {
+    return;
+  }
   [_viewController dismissViewControllerAnimated:YES completion:nil];
   _viewController = nil;
   [super stop];
