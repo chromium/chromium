@@ -275,4 +275,9 @@ void ShowNotificationActionPerformer::HandleNotificationClicked(
   CHECK(campaigns_manager);
 
   campaigns_manager->PerformAction(campaign_id, &action);
+
+  // Explicitly remove the notification as the notification framework doesn't
+  // automatically close at buttons click.
+  message_center::MessageCenter::Get()->RemoveNotification(notification_id,
+                                                           /* by_user=*/true);
 }
