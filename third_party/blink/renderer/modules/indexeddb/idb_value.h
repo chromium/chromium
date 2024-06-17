@@ -41,7 +41,7 @@ class WebBlobInfo;
 class MODULES_EXPORT IDBValue final {
  public:
   IDBValue(
-      std::optional<Vector<char>> data,
+      Vector<char>&& data,
       Vector<WebBlobInfo>,
       Vector<mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>> =
           {});
@@ -51,12 +51,11 @@ class MODULES_EXPORT IDBValue final {
   IDBValue(const IDBValue&) = delete;
   IDBValue& operator=(const IDBValue&) = delete;
 
-  size_t DataSize() const { return data_ ? data_->size() : 0; }
+  size_t DataSize() const { return data_.size(); }
 
-  bool IsNull() const;
   scoped_refptr<SerializedScriptValue> CreateSerializedValue() const;
   const Vector<WebBlobInfo>& BlobInfo() const { return blob_info_; }
-  const std::optional<Vector<char>>& Data() const { return data_; }
+  const Vector<char>& Data() const { return data_; }
   const IDBKey* PrimaryKey() const { return primary_key_.get(); }
   const IDBKeyPath& KeyPath() const { return key_path_; }
 
@@ -101,7 +100,7 @@ class MODULES_EXPORT IDBValue final {
  private:
   friend class IDBValueUnwrapper;
 
-  std::optional<Vector<char>> data_;
+  Vector<char> data_;
 
   Vector<WebBlobInfo> blob_info_;
 

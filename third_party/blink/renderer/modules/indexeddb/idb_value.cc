@@ -20,7 +20,7 @@
 namespace blink {
 
 IDBValue::IDBValue(
-    std::optional<Vector<char>> data,
+    Vector<char>&& data,
     Vector<WebBlobInfo> blob_info,
     Vector<mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>>
         file_system_access_tokens)
@@ -34,16 +34,11 @@ IDBValue::~IDBValue() {
 }
 
 scoped_refptr<SerializedScriptValue> IDBValue::CreateSerializedValue() const {
-  CHECK(data_);
   Vector<char> decompressed;
-  if (IDBValueUnwrapper::Decompress(*data_, &decompressed)) {
+  if (IDBValueUnwrapper::Decompress(data_, &decompressed)) {
     const_cast<IDBValue*>(this)->SetData(std::move(decompressed));
   }
-  return SerializedScriptValue::Create(base::as_byte_span(*data_));
-}
-
-bool IDBValue::IsNull() const {
-  return !data_;
+  return SerializedScriptValue::Create(base::as_byte_span(data_));
 }
 
 void IDBValue::SetIsolate(v8::Isolate* isolate) {
@@ -51,7 +46,7 @@ void IDBValue::SetIsolate(v8::Isolate* isolate) {
   DCHECK(!isolate_) << "SetIsolate must be called at most once";
 
   isolate_ = isolate;
-  external_allocated_size_ = data_ ? static_cast<int64_t>(data_->size()) : 0l;
+  external_allocated_size_ = DataSize();
   if (external_allocated_size_)
     isolate_->AdjustAmountOfExternalAllocatedMemory(external_allocated_size_);
 }
@@ -83,7 +78,7 @@ scoped_refptr<BlobDataHandle> IDBValue::TakeLastBlob() {
 std::unique_ptr<IDBValue> IDBValue::ConvertReturnValue(
     const mojom::blink::IDBReturnValuePtr& input) {
   if (!input) {
-    return std::make_unique<IDBValue>(std::nullopt, Vector<WebBlobInfo>());
+    return std::make_unique<IDBValue>(Vector<char>(), Vector<WebBlobInfo>());
   }
 
   std::unique_ptr<IDBValue> output = std::move(input->value);

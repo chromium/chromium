@@ -454,8 +454,9 @@ std::unique_ptr<IDBKey> CreateIDBKeyFromValueAndKeyPaths(
 v8::Local<v8::Value> DeserializeIDBValueData(v8::Isolate* isolate,
                                              const IDBValue* value) {
   DCHECK(isolate->InContext());
-  if (!value || value->IsNull())
+  if (!value) {
     return v8::Null(isolate);
+  }
 
   scoped_refptr<SerializedScriptValue> serialized_value =
       value->CreateSerializedValue();
@@ -486,8 +487,9 @@ v8::Local<v8::Value> DeserializeIDBValue(ScriptState* script_state,
                                          const IDBValue* value) {
   v8::Isolate* isolate = script_state->GetIsolate();
   DCHECK(isolate->InContext());
-  if (!value || value->IsNull())
+  if (!value) {
     return v8::Null(isolate);
+  }
 
   v8::Local<v8::Value> v8_value = DeserializeIDBValueData(isolate, value);
   if (value->PrimaryKey()) {

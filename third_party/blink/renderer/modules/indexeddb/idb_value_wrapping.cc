@@ -276,10 +276,10 @@ IDBValueUnwrapper::IDBValueUnwrapper() {
 bool IDBValueUnwrapper::IsWrapped(IDBValue* value) {
   DCHECK(value);
 
-  if (!value->data_ || value->data_->size() < kHeaderSize) {
+  if (value->DataSize() < kHeaderSize) {
     return false;
   }
-  base::span<const uint8_t> data_span = base::as_byte_span(*value->data_);
+  base::span<const uint8_t> data_span = base::as_byte_span(value->Data());
   return data_span[0] == kVersionTag &&
          data_span[1] == kRequiresProcessingSSVPseudoVersion &&
          data_span[2] == kReplaceWithBlob;
@@ -297,12 +297,9 @@ bool IDBValueUnwrapper::IsWrapped(
 
 // static
 void IDBValueUnwrapper::Unwrap(Vector<char>&& wrapper_blob_content,
-                               IDBValue* wrapped_value) {
-  DCHECK(wrapped_value);
-  DCHECK(wrapped_value->data_);
-
-  wrapped_value->SetData(std::move(wrapper_blob_content));
-  wrapped_value->TakeLastBlob();
+                               IDBValue& wrapped_value) {
+  wrapped_value.SetData(std::move(wrapper_blob_content));
+  wrapped_value.TakeLastBlob();
 }
 
 // static
@@ -341,8 +338,8 @@ bool IDBValueUnwrapper::Parse(IDBValue* value) {
   if (!IDBValueUnwrapper::IsWrapped(value))
     return false;
 
-  const uint8_t* data = reinterpret_cast<const uint8_t*>(value->data_->data());
-  end_ = data + value->data_->size();
+  const uint8_t* data = reinterpret_cast<const uint8_t*>(value->Data().data());
+  end_ = data + value->DataSize();
   current_ = data + kHeaderSize;
 
   if (!ReadVarInt(blob_size_))
