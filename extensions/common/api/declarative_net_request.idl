@@ -636,8 +636,10 @@ namespace declarativeNetRequest {
     // extension updates.</li>
     // <li>Static rules specified as part of the extension package can not be
     // removed using this function.</li>
-    // <li>$(ref:MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES) is the maximum number
-    // of combined dynamic and session rules an extension can add.</li>
+    // <li>$(ref:MAX_NUMBER_OF_DYNAMIC_RULES) is the maximum number
+    // of dynamic rules an extension can add. The number of
+    // <a href="#safe_rules">unsafe rules</a> must not exceed
+    // $(ref:MAX_NUMBER_OF_UNSAFE_DYNAMIC_RULES).</li>
     // </ul>
     // |callback|: Called once the update is complete or has failed. In case of
     // an error, $(ref:runtime.lastError) will be set and no change will be made
@@ -667,8 +669,8 @@ namespace declarativeNetRequest {
     // specified rules are added and removed, or an error is returned.</li>
     // <li>These rules are not persisted across sessions and are backed in
     // memory.</li>
-    // <li>$(ref:MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES) is the maximum number
-    // of combined dynamic and session rules an extension can add.</li>
+    // <li>$(ref:MAX_NUMBER_OF_SESSION_RULES) is the maximum number
+    // of session rules an extension can add.</li>
     // </ul>
     // |callback|: Called once the update is complete or has failed. In case of
     // an error, $(ref:runtime.lastError) will be set and no change will be made
@@ -786,7 +788,7 @@ namespace declarativeNetRequest {
 
     // The maximum number of combined dynamic and session scoped rules an
     // extension can add.
-    [nodoc, value=5000] static long MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES();
+    [nodoc, value=5000, deprecated="There is no longer a combined limit. See $(ref:MAX_NUMBER_OF_DYNAMIC_RULES) and $(ref:MAX_NUMBER_OF_SESSION_RULES)."] static long MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES();
 
     // The maximum number of dynamic rules that an extension can add.
     [value=30000] static long MAX_NUMBER_OF_DYNAMIC_RULES();
