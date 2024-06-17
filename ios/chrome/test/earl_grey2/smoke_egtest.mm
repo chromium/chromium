@@ -90,9 +90,16 @@
                                    chrome_test_util::SettingsDoneButton(),
                                    grey_sufficientlyVisible(), nil)]
       performAction:grey_tap()];
-  // Close Password Manager.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
-      performAction:grey_tap()];
+
+  // TODO(crbug.com/347330366): The mock reauth is somehow interfering with the
+  // left and right navigation buttons appearing.  Instead, skip this step on
+  // iOS18 until fixed.
+  if (@available(iOS 18, *)) {
+  } else {
+    // Close Password Manager.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsDoneButton()]
+        performAction:grey_tap()];
+  }
 
   // Remove mock to keep the app in the same state as before running the test.
   [PasswordSettingsAppInterface removeMockReauthenticationModule];
