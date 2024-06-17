@@ -11,6 +11,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
+#import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/sessions/fake_tab_restore_service.h"
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
@@ -32,6 +33,8 @@
 
 using SessionMigrationTest = PlatformTest;
 
+using tab_groups::TabGroupId;
+
 namespace {
 
 // Information about a single tab.
@@ -48,6 +51,7 @@ struct TabGroupInfo {
   const std::u16string title = u"";
   const tab_groups::TabGroupColorId color = tab_groups::TabGroupColorId::kGrey;
   const bool collapsed_state = false;
+  const TabGroupId tab_group_id = TabGroupId::GenerateNew();
 };
 
 // Information about a session.
@@ -94,7 +98,7 @@ constexpr TabInfo kTabs2[] = {
     TabInfo{},
 };
 
-constexpr TabGroupInfo kTabGroups1[] = {
+const TabGroupInfo kTabGroups1[] = {
     TabGroupInfo{
         .range_start = 0,
         .range_count = 1,
@@ -227,7 +231,8 @@ bool GenerateLegacySession(const base::FilePath& root,
                 rangeCount:group_info.range_count
                      title:base::SysUTF16ToNSString(group_info.title)
                    colorId:static_cast<NSInteger>(group_info.color)
-            collapsedState:group_info.collapsed_state];
+            collapsedState:group_info.collapsed_state
+                tabGroupId:group_info.tab_group_id];
     [groups addObject:session_tab_group];
   }
 
@@ -384,6 +389,8 @@ bool GenerateOptimizedSession(const base::FilePath& root,
     group_storage.set_title(base::UTF16ToUTF8(group_info.title));
     group_storage.set_color(tab_group_util::ColorForStorage(group_info.color));
     group_storage.set_collapsed(group_info.collapsed_state);
+    tab_group_util::TabGroupIdForStorage(group_info.tab_group_id,
+                                         *group_storage.mutable_tab_group_id());
   }
 
   // Write the session metadata file.
@@ -529,6 +536,9 @@ void CheckOptimizedSession(const base::FilePath& root,
     EXPECT_EQ(group_storage.color(),
               tab_group_util::ColorForStorage(group_info.color));
     EXPECT_EQ(group_storage.collapsed(), group_info.collapsed_state);
+    EXPECT_EQ(
+        tab_group_util::TabGroupIdFromStorage(group_storage.tab_group_id()),
+        group_info.tab_group_id);
   }
 }
 
@@ -605,6 +615,8 @@ void CheckLegacySession(const base::FilePath& root,
     EXPECT_EQ(group_session.rangeCount, group_info.range_count);
     EXPECT_EQ(base::SysNSStringToUTF16(group_session.title), group_info.title);
     EXPECT_EQ(group_session.colorId, static_cast<int>(group_info.color));
+    EXPECT_EQ(group_session.collapsedState, group_info.collapsed_state);
+    EXPECT_EQ(group_session.tabGroupId, group_info.tab_group_id);
   }
 }
 

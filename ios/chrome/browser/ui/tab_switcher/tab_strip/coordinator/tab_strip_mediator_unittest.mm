@@ -10,6 +10,7 @@
 #import "components/favicon/core/favicon_url.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
@@ -34,6 +35,8 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+
+using tab_groups::TabGroupId;
 
 // Fake handler to get commands in tests.
 @interface FakeTabStripHandler : NSObject <TabStripCommands>
@@ -352,7 +355,8 @@ TEST_F(TabStripMediatorTest, ConsumerPopulated) {
             consumer_.items[1].tabSwitcherItem.identifier);
 
   // Check that the group is correctly added to the consumer.
-  const TabGroup* group_0 = web_state_list_->CreateGroup({0}, {});
+  const TabGroup* group_0 =
+      web_state_list_->CreateGroup({0}, {}, TabGroupId::GenerateNew());
 
   ASSERT_NE(nil, consumer_.selectedItem);
   EXPECT_EQ(web_state_list_->GetActiveWebState()->GetUniqueIdentifier(),
@@ -530,7 +534,7 @@ TEST_F(TabStripMediatorTest, TabStripItemDataUpdated) {
                                         builder.GetWebStateForIdentifier('g')),
                                     web_state_list_->GetIndexOfWebState(
                                         builder.GetWebStateForIdentifier('h'))},
-                                   {});
+                                   {}, TabGroupId::GenerateNew());
   builder.SetTabGroupIdentifier(group_2, '2');
   UIColor* group_2_color = group_2->GetColor();
   ASSERT_EQ(builder.GetWebStateListDescription(),
@@ -661,7 +665,7 @@ TEST_F(TabStripMediatorTest, ItemParentsUpdated) {
                                         builder.GetWebStateForIdentifier('g')),
                                     web_state_list_->GetIndexOfWebState(
                                         builder.GetWebStateForIdentifier('h'))},
-                                   {});
+                                   {}, TabGroupId::GenerateNew());
   builder.SetTabGroupIdentifier(group_2, '2');
   ASSERT_EQ(builder.GetWebStateListDescription(),
             "a b | [ 2 c* d f g h ] [ 0 e ]");
@@ -836,7 +840,8 @@ TEST_F(TabStripMediatorTest, RemoveTabFromGroup) {
   AddWebState();
   AddWebState();
   AddWebState();
-  const TabGroup* group = web_state_list_->CreateGroup({1, 2}, {});
+  const TabGroup* group =
+      web_state_list_->CreateGroup({1, 2}, {}, TabGroupId::GenerateNew());
 
   InitializeMediator();
 
@@ -1029,7 +1034,8 @@ TEST_F(TabStripMediatorTest, CollapseExpandGroup) {
   AddWebState();
   AddWebState();
   AddWebState();
-  const TabGroup* group = web_state_list_->CreateGroup({1, 2}, {});
+  const TabGroup* group =
+      web_state_list_->CreateGroup({1, 2}, {}, TabGroupId::GenerateNew());
   TabGroupItem* group_item =
       [[TabGroupItem alloc] initWithTabGroup:group
                                 webStateList:web_state_list_];
@@ -1069,7 +1075,8 @@ TEST_F(TabStripMediatorTest, CollapseExpandGroup) {
 TEST_F(TabStripMediatorTest, RenameGroup) {
   AddWebState();
   AddWebState();
-  const TabGroup* group = web_state_list_->CreateGroup({0, 1}, {});
+  const TabGroup* group =
+      web_state_list_->CreateGroup({0, 1}, {}, TabGroupId::GenerateNew());
   TabGroupItem* groupItem =
       [[TabGroupItem alloc] initWithTabGroup:group
                                 webStateList:web_state_list_];
@@ -1084,7 +1091,8 @@ TEST_F(TabStripMediatorTest, RenameGroup) {
 TEST_F(TabStripMediatorTest, AddTabInGroup) {
   AddWebState();
   AddWebState();
-  const TabGroup* group = web_state_list_->CreateGroup({0, 1}, {});
+  const TabGroup* group =
+      web_state_list_->CreateGroup({0, 1}, {}, TabGroupId::GenerateNew());
   TabGroupItem* groupItem =
       [[TabGroupItem alloc] initWithTabGroup:group
                                 webStateList:web_state_list_];
@@ -1108,7 +1116,8 @@ TEST_F(TabStripMediatorTest, AddTabInGroup) {
 TEST_F(TabStripMediatorTest, UngroupTabs) {
   AddWebState();
   AddWebState();
-  const TabGroup* group = web_state_list_->CreateGroup({0, 1}, {});
+  const TabGroup* group =
+      web_state_list_->CreateGroup({0, 1}, {}, TabGroupId::GenerateNew());
   TabGroupItem* groupItem =
       [[TabGroupItem alloc] initWithTabGroup:group
                                 webStateList:web_state_list_];
@@ -1131,7 +1140,8 @@ TEST_F(TabStripMediatorTest, UngroupTabs) {
 TEST_F(TabStripMediatorTest, DeleteGroup) {
   AddWebState();
   AddWebState();
-  const TabGroup* group = web_state_list_->CreateGroup({0, 1}, {});
+  const TabGroup* group =
+      web_state_list_->CreateGroup({0, 1}, {}, TabGroupId::GenerateNew());
   TabGroupItem* groupItem =
       [[TabGroupItem alloc] initWithTabGroup:group
                                 webStateList:web_state_list_];
@@ -1154,7 +1164,8 @@ TEST_F(TabStripMediatorTest, DeleteGroup) {
 TEST_F(TabStripMediatorTest, AddTabToGroup) {
   AddWebState();
   AddWebState();
-  const TabGroup* group = web_state_list_->CreateGroup({0}, {});
+  const TabGroup* group =
+      web_state_list_->CreateGroup({0}, {}, TabGroupId::GenerateNew());
 
   InitializeMediator();
 

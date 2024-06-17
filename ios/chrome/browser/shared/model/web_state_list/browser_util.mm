@@ -171,6 +171,10 @@ void MoveTabGroupToBrowser(const TabGroup* source_tab_group,
   const tab_groups::TabGroupVisualData destination_visual_data(
       source_tab_group->visual_data());
 
+  // Duplicate the `TabGroupId` for the new group.
+  const tab_groups::TabGroupId destination_local_id =
+      source_tab_group->tab_group_id();
+
   // Move tabs to the new browser.
   int moved_tab_count = 0;
   size_t source_group_count =
@@ -199,7 +203,7 @@ void MoveTabGroupToBrowser(const TabGroup* source_tab_group,
   const TabGroup* destination_tab_group =
       destination_browser->GetWebStateList()->CreateGroup(
           TabGroupRange(destination_tab_group_index, moved_tab_count).AsSet(),
-          destination_visual_data);
+          destination_visual_data, destination_local_id);
   CHECK(destination_browser->GetWebStateList()->ContainsGroup(
       destination_tab_group));
   // Check that the source browser has one less group.

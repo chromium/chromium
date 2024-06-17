@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/sessions/tab_group_util.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "components/tab_groups/tab_group_color.h"
+#import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/sessions/proto/tab_group.pb.h"
 #import "ios/chrome/browser/sessions/session_tab_group.h"
@@ -17,10 +19,13 @@ using TabSessionGroupUtil = PlatformTest;
 using tab_group_util::ColorForStorage;
 using tab_group_util::ColorFromStorage;
 using tab_group_util::DeserializedGroup;
+using tab_groups::TabGroupId;
 using tab_groups::TabGroupVisualData;
 
 // Tests the `FromSerializedValue:` method.
 TEST_F(TabSessionGroupUtil, FromSerializedValue) {
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+
   ios::proto::TabGroupStorage group_storage;
   ios::proto::RangeIndex& range = *group_storage.mutable_range();
   range.set_start(2);
@@ -29,6 +34,8 @@ TEST_F(TabSessionGroupUtil, FromSerializedValue) {
   group_storage.set_color(
       tab_group_util::ColorForStorage(tab_groups::TabGroupColorId::kGrey));
   group_storage.set_collapsed(true);
+  tab_group_util::TabGroupIdForStorage(tab_group_id,
+                                       *group_storage.mutable_tab_group_id());
 
   DeserializedGroup group_deserialized =
       tab_group_util::FromSerializedValue(group_storage);
@@ -38,17 +45,21 @@ TEST_F(TabSessionGroupUtil, FromSerializedValue) {
   EXPECT_EQ(group_deserialized.visual_data.color(),
             tab_groups::TabGroupColorId::kGrey);
   EXPECT_TRUE(group_deserialized.visual_data.is_collapsed());
+  EXPECT_EQ(group_deserialized.tab_group_id, tab_group_id);
 }
 
 // Tests the legacy `FromSerializedValue:` method.
 TEST_F(TabSessionGroupUtil, FromSerializedValueLegacy) {
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
+
   SessionTabGroup* session_tab_group = [[SessionTabGroup alloc]
       initWithRangeStart:2
               rangeCount:3
                    title:@"title"
                  colorId:static_cast<NSInteger>(
                              tab_groups::TabGroupColorId::kGrey)
-          collapsedState:YES];
+          collapsedState:YES
+              tabGroupId:tab_group_id];
 
   SessionWindowIOS* session_window =
       [[SessionWindowIOS alloc] initWithSessions:@[]
@@ -63,6 +74,7 @@ TEST_F(TabSessionGroupUtil, FromSerializedValueLegacy) {
   EXPECT_EQ(group_deserialized.visual_data.color(),
             tab_groups::TabGroupColorId::kGrey);
   EXPECT_TRUE(group_deserialized.visual_data.is_collapsed());
+  EXPECT_EQ(group_deserialized.tab_group_id, tab_group_id);
 }
 
 // Tests the `ColorForStorage:` method.

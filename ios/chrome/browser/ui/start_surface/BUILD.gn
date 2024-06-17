@@ -62,6 +62,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/favicon/ios",
     "//components/sync_preferences:test_support",
+    "//components/tab_groups",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/app/application_delegate:app_state_header",
     "//ios/chrome/app/application_delegate:application_delegate_internal",

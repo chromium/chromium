@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/sessions/session_ios.h"
 #import "ios/chrome/browser/sessions/session_tab_group.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
+#import "ios/chrome/browser/sessions/tab_group_util.h"
 #import "ios/web/public/session/crw_session_storage.h"
 #import "ios/web/public/session/crw_session_user_data.h"
 #import "ios/web/public/session/proto/storage.pb.h"
@@ -228,7 +229,9 @@ SessionWindowIOS* OptimizedSession::ToLegacy() const {
                 rangeCount:group_storage.range().count()
                      title:base::SysUTF8ToNSString(group_storage.title())
                    colorId:static_cast<NSInteger>(group_storage.color())
-            collapsedState:group_storage.collapsed()];
+            collapsedState:group_storage.collapsed()
+                tabGroupId:tab_group_util::TabGroupIdFromStorage(
+                               group_storage.tab_group_id())];
     [groups addObject:session_tab_group];
   }
 
@@ -306,6 +309,8 @@ void OptimizedSession::AddTabGroup(SessionTabGroup* legacy_tab_group) {
   group_storage.set_color(
       static_cast<ios::proto::TabGroupColorId>(legacy_tab_group.colorId));
   group_storage.set_collapsed(legacy_tab_group.collapsedState);
+  tab_group_util::TabGroupIdForStorage(legacy_tab_group.tabGroupId,
+                                       *group_storage.mutable_tab_group_id());
 }
 
 void OptimizedSession::AddItem(CRWSessionStorage* legacy_item) {

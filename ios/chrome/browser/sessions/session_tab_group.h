@@ -7,6 +7,10 @@
 
 #import <Foundation/Foundation.h>
 
+namespace tab_groups {
+class TabGroupId;
+}  // namespace tab_groups
+
 // NSCoding-compliant class used to serialize tab groups.
 @interface SessionTabGroup : NSObject <NSCoding>
 
@@ -15,6 +19,7 @@
                              title:(NSString*)title
                            colorId:(NSInteger)colorId
                     collapsedState:(BOOL)collapsedState
+                        tabGroupId:(tab_groups::TabGroupId)tabGroupId
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -23,6 +28,7 @@
 @property(nonatomic, copy) NSString* title;
 @property(nonatomic, assign) NSInteger colorId;
 @property(nonatomic, assign) BOOL collapsedState;
+@property(nonatomic, readonly) tab_groups::TabGroupId tabGroupId;
 
 @end
 

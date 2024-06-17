@@ -30,6 +30,14 @@ message RangeIndex {
   int32 count = 2;
 }
 
+// Represents the unique identifier of a tab group.
+//
+// All fields are required.
+message TabGroupId {
+  uint64 low = 1;
+  uint64 high = 2;
+}
+
 // Represents the information about a tab group stored in a WebStateList.
 //
 // The tab group information is stored inline.
@@ -38,4 +46,5 @@ message TabGroupStorage {
   string title = 2;
   TabGroupColorId color = 3;
   bool collapsed = 4;
+  TabGroupId tab_group_id = 5;
 }

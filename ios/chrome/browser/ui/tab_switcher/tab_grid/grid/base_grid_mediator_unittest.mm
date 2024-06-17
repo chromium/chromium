@@ -16,6 +16,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/time/time.h"
 #import "components/commerce/core/commerce_feature_list.h"
+#import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/commerce/model/shopping_persisted_data_tab_helper.h"
 #import "ios/chrome/browser/drag_and_drop/model/drag_item_util.h"
@@ -49,6 +50,8 @@
 #import "testing/gtest_mac.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
+
+using tab_groups::TabGroupId;
 
 namespace {
 
@@ -600,8 +603,10 @@ TEST_P(BaseGridMediatorTest, SelectedTabWithGroup) {
 
   [mediator_ selectTabsButtonTapped:nil];
   browser_->GetWebStateList()->CreateGroup(
-      {1}, tab_groups::TabGroupVisualData(u"My group",
-                                          tab_groups::TabGroupColorId::kBlue));
+      {1},
+      tab_groups::TabGroupVisualData(u"My group",
+                                     tab_groups::TabGroupColorId::kBlue),
+      TabGroupId::GenerateNew());
 
   // Simulate a user who tapped on a tab.
   [mediator_ userTappedOnItemID:[GridItemIdentifier
@@ -665,8 +670,10 @@ TEST_P(BaseGridMediatorTest, SelectedTabAndGroupWithGroup) {
 
   [mediator_ selectTabsButtonTapped:nil];
   browser_->GetWebStateList()->CreateGroup(
-      {1}, tab_groups::TabGroupVisualData(u"My group",
-                                          tab_groups::TabGroupColorId::kBlue));
+      {1},
+      tab_groups::TabGroupVisualData(u"My group",
+                                     tab_groups::TabGroupColorId::kBlue),
+      TabGroupId::GenerateNew());
 
   // Simulate a user who tapped on a tab and on the group.
   [mediator_ userTappedOnItemID:[GridItemIdentifier
@@ -727,7 +734,7 @@ TEST_P(BaseGridMediatorTest, SelectedTabAndGroupWithGroup) {
 TEST_P(BaseGridMediatorTest, UngroupGroup) {
   WebStateList* web_state_list = browser_->GetWebStateList();
 
-  web_state_list->CreateGroup({1}, {});
+  web_state_list->CreateGroup({1}, {}, TabGroupId::GenerateNew());
   const TabGroup* group = web_state_list->GetGroupOfWebStateAt(1);
 
   EXPECT_EQ(3UL, consumer_.items.size());
@@ -746,7 +753,7 @@ TEST_P(BaseGridMediatorTest, UngroupGroup) {
 // Tests that closing the last tab of a selected group clears the selection.
 TEST_P(BaseGridMediatorTest, CloseSelectedGroup) {
   WebStateList* web_state_list = browser_->GetWebStateList();
-  web_state_list->CreateGroup({1}, {});
+  web_state_list->CreateGroup({1}, {}, TabGroupId::GenerateNew());
   const TabGroup* group = web_state_list->GetGroupOfWebStateAt(1);
   [mediator_ switchToMode:TabGridModeSelection];
   [mediator_
@@ -764,7 +771,7 @@ TEST_P(BaseGridMediatorTest, CloseSelectedGroup) {
 // clears the selection.
 TEST_P(BaseGridMediatorTest, CloseSelectedGroupInBatch) {
   WebStateList* web_state_list = browser_->GetWebStateList();
-  web_state_list->CreateGroup({1}, {});
+  web_state_list->CreateGroup({1}, {}, TabGroupId::GenerateNew());
   const TabGroup* group = web_state_list->GetGroupOfWebStateAt(1);
   [mediator_ switchToMode:TabGridModeSelection];
   [mediator_
@@ -975,7 +982,8 @@ TEST_P(BaseGridMediatorTest, DISABLED_DropCrossBrowserTabGroup) {
   GURL url_to_load = GURL(kDraggedUrl);
   other_browser->GetWebStateList()->InsertWebState(
       CreateFakeWebStateWithURL(url_to_load));
-  other_browser->GetWebStateList()->CreateGroup({0}, {});
+  other_browser->GetWebStateList()->CreateGroup({0}, {},
+                                                TabGroupId::GenerateNew());
 
   const TabGroup* other_tab_group =
       other_browser->GetWebStateList()->GetGroupOfWebStateAt(0);

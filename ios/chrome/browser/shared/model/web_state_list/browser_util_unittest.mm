@@ -7,6 +7,7 @@
 #import <memory>
 
 #import "base/memory/raw_ptr.h"
+#import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/sessions/fake_tab_restore_service.h"
 #import "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -26,6 +27,7 @@
 #import "testing/platform_test.h"
 #import "ui/base/test/ios/ui_image_test_utils.h"
 
+using tab_groups::TabGroupId;
 using tab_groups::TabGroupVisualData;
 using ui::test::uiimage_utils::UIImagesAreEqual;
 using ui::test::uiimage_utils::UIImageWithSizeAndSolidColor;
@@ -239,10 +241,11 @@ TEST_F(BrowserUtilTest, TestMoveTabGroupOneTabAcrossRegularBrowsers) {
   WebStateList* other_web_state_list = other_browser_->GetWebStateList();
 
   // Create a group of two tabs.
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
   TabGroupVisualData visual_data =
       TabGroupVisualData(u"Group", tab_groups::TabGroupColorId::kGrey);
-  const TabGroup* tab_group =
-      web_state_list->CreateGroup({2}, TabGroupVisualData(visual_data));
+  const TabGroup* tab_group = web_state_list->CreateGroup(
+      {2}, TabGroupVisualData(visual_data), tab_group_id);
 
   web::WebStateID tab_id = GetTabIDForWebStateAt(2, browser_.get());
   ASSERT_EQ(3, web_state_list->count());
@@ -254,6 +257,7 @@ TEST_F(BrowserUtilTest, TestMoveTabGroupOneTabAcrossRegularBrowsers) {
   const TabGroup* other_group = other_web_state_list->GetGroupOfWebStateAt(0);
   ASSERT_TRUE(other_group);
   EXPECT_EQ(1, other_group->range().count());
+  EXPECT_EQ(tab_group_id, other_group->tab_group_id());
   EXPECT_EQ(visual_data, other_group->visual_data());
   EXPECT_EQ(2, web_state_list->count());
   EXPECT_EQ(1, other_web_state_list->count());
@@ -268,10 +272,11 @@ TEST_F(BrowserUtilTest, TestMoveTabGroupMutipleTabsAcrossRegularBrowsers) {
   WebStateList* other_web_state_list = other_browser_->GetWebStateList();
 
   // Create a group of two tabs.
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
   TabGroupVisualData visual_data =
       TabGroupVisualData(u"Group", tab_groups::TabGroupColorId::kGrey);
-  const TabGroup* tab_group =
-      web_state_list->CreateGroup({0, 1}, TabGroupVisualData(visual_data));
+  const TabGroup* tab_group = web_state_list->CreateGroup(
+      {0, 1}, TabGroupVisualData(visual_data), tab_group_id);
   web::WebStateID tab_id_0 = GetTabIDForWebStateAt(0, browser_.get());
   web::WebStateID tab_id_1 = GetTabIDForWebStateAt(1, browser_.get());
   ASSERT_EQ(3, web_state_list->count());
@@ -283,6 +288,7 @@ TEST_F(BrowserUtilTest, TestMoveTabGroupMutipleTabsAcrossRegularBrowsers) {
   const TabGroup* other_group = other_web_state_list->GetGroupOfWebStateAt(0);
   ASSERT_TRUE(other_group);
   EXPECT_EQ(2, other_group->range().count());
+  EXPECT_EQ(tab_group_id, other_group->tab_group_id());
   EXPECT_EQ(visual_data, other_group->visual_data());
   EXPECT_EQ(1, web_state_list->count());
   EXPECT_EQ(2, other_web_state_list->count());
@@ -297,12 +303,14 @@ TEST_F(BrowserUtilTest, TestMoveTabGroupsAcrossRegularBrowsers) {
   WebStateList* other_web_state_list = other_browser_->GetWebStateList();
 
   // Create 2 groups.
+  TabGroupId tab_group_id_0 = TabGroupId::GenerateNew();
+  TabGroupId tab_group_id_1 = TabGroupId::GenerateNew();
   TabGroupVisualData visual_data =
       TabGroupVisualData(u"Group", tab_groups::TabGroupColorId::kGrey);
-  const TabGroup* tab_group_0 =
-      web_state_list->CreateGroup({0}, TabGroupVisualData(visual_data));
-  const TabGroup* tab_group_1 =
-      web_state_list->CreateGroup({1}, TabGroupVisualData(visual_data));
+  const TabGroup* tab_group_0 = web_state_list->CreateGroup(
+      {0}, TabGroupVisualData(visual_data), tab_group_id_0);
+  const TabGroup* tab_group_1 = web_state_list->CreateGroup(
+      {1}, TabGroupVisualData(visual_data), tab_group_id_1);
   web::WebStateID tab_id_0 = GetTabIDForWebStateAt(0, browser_.get());
   web::WebStateID tab_id_1 = GetTabIDForWebStateAt(1, browser_.get());
   ASSERT_EQ(3, web_state_list->count());
@@ -319,6 +327,8 @@ TEST_F(BrowserUtilTest, TestMoveTabGroupsAcrossRegularBrowsers) {
   ASSERT_TRUE(other_group_1);
   EXPECT_EQ(1, other_group_0->range().count());
   EXPECT_EQ(1, other_group_1->range().count());
+  EXPECT_EQ(tab_group_id_0, other_group_0->tab_group_id());
+  EXPECT_EQ(tab_group_id_1, other_group_1->tab_group_id());
   EXPECT_EQ(visual_data, other_group_0->visual_data());
   EXPECT_EQ(visual_data, other_group_1->visual_data());
   EXPECT_EQ(1, web_state_list->count());
@@ -333,10 +343,11 @@ TEST_F(BrowserUtilTest, MoveTabGroupToItsOwningBrowser_SameIndex) {
   WebStateList* web_state_list = browser_->GetWebStateList();
 
   // Create a group of two tabs.
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
   TabGroupVisualData visual_data =
       TabGroupVisualData(u"Group", tab_groups::TabGroupColorId::kGrey);
-  const TabGroup* tab_group =
-      web_state_list->CreateGroup({0, 1}, TabGroupVisualData(visual_data));
+  const TabGroup* tab_group = web_state_list->CreateGroup(
+      {0, 1}, TabGroupVisualData(visual_data), tab_group_id);
   web::WebStateID tab_id_0 = GetTabIDForWebStateAt(0, browser_.get());
   web::WebStateID tab_id_1 = GetTabIDForWebStateAt(1, browser_.get());
   ASSERT_EQ(3, web_state_list->count());
@@ -349,6 +360,7 @@ TEST_F(BrowserUtilTest, MoveTabGroupToItsOwningBrowser_SameIndex) {
   EXPECT_EQ(tab_group, web_state_list->GetGroupOfWebStateAt(1));
   EXPECT_EQ(nullptr, web_state_list->GetGroupOfWebStateAt(2));
   EXPECT_EQ(2, tab_group->range().count());
+  EXPECT_EQ(tab_group_id, tab_group->tab_group_id());
   EXPECT_EQ(visual_data, tab_group->visual_data());
   EXPECT_EQ(3, web_state_list->count());
   EXPECT_EQ(tab_id_0, GetTabIDForWebStateAt(0, browser_.get()));
@@ -361,10 +373,11 @@ TEST_F(BrowserUtilTest, MoveTabGroupToItsOwningBrowser_MovingRight) {
   WebStateList* web_state_list = browser_->GetWebStateList();
 
   // Create a group of two tabs.
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
   TabGroupVisualData visual_data =
       TabGroupVisualData(u"Group", tab_groups::TabGroupColorId::kGrey);
-  const TabGroup* tab_group =
-      web_state_list->CreateGroup({0, 1}, TabGroupVisualData(visual_data));
+  const TabGroup* tab_group = web_state_list->CreateGroup(
+      {0, 1}, TabGroupVisualData(visual_data), tab_group_id);
   web::WebStateID tab_id_0 = GetTabIDForWebStateAt(0, browser_.get());
   web::WebStateID tab_id_1 = GetTabIDForWebStateAt(1, browser_.get());
   ASSERT_EQ(3, web_state_list->count());
@@ -377,6 +390,7 @@ TEST_F(BrowserUtilTest, MoveTabGroupToItsOwningBrowser_MovingRight) {
   EXPECT_EQ(tab_group, web_state_list->GetGroupOfWebStateAt(1));
   EXPECT_EQ(tab_group, web_state_list->GetGroupOfWebStateAt(2));
   EXPECT_EQ(2, tab_group->range().count());
+  EXPECT_EQ(tab_group_id, tab_group->tab_group_id());
   EXPECT_EQ(visual_data, tab_group->visual_data());
   EXPECT_EQ(3, web_state_list->count());
   EXPECT_EQ(tab_id_0, GetTabIDForWebStateAt(1, browser_.get()));
@@ -389,10 +403,11 @@ TEST_F(BrowserUtilTest, MoveTabGroupToItsOwningBrowser_MovingLeft) {
   WebStateList* web_state_list = browser_->GetWebStateList();
 
   // Create a group of two tabs.
+  TabGroupId tab_group_id = TabGroupId::GenerateNew();
   TabGroupVisualData visual_data =
       TabGroupVisualData(u"Group", tab_groups::TabGroupColorId::kGrey);
-  const TabGroup* tab_group =
-      web_state_list->CreateGroup({1, 2}, TabGroupVisualData(visual_data));
+  const TabGroup* tab_group = web_state_list->CreateGroup(
+      {1, 2}, TabGroupVisualData(visual_data), tab_group_id);
   web::WebStateID tab_id_1 = GetTabIDForWebStateAt(1, browser_.get());
   web::WebStateID tab_id_2 = GetTabIDForWebStateAt(2, browser_.get());
   ASSERT_EQ(3, web_state_list->count());
@@ -406,6 +421,7 @@ TEST_F(BrowserUtilTest, MoveTabGroupToItsOwningBrowser_MovingLeft) {
   EXPECT_EQ(tab_group, web_state_list->GetGroupOfWebStateAt(0));
   EXPECT_EQ(tab_group, web_state_list->GetGroupOfWebStateAt(1));
   EXPECT_EQ(2, tab_group->range().count());
+  EXPECT_EQ(tab_group_id, tab_group->tab_group_id());
   EXPECT_EQ(visual_data, tab_group->visual_data());
   EXPECT_EQ(3, web_state_list->count());
   EXPECT_EQ(tab_id_1, GetTabIDForWebStateAt(0, browser_.get()));

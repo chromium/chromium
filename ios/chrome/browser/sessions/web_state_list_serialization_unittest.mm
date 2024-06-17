@@ -12,12 +12,14 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/tab_groups/tab_group_color.h"
+#import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/sessions/features.h"
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/session_constants.h"
 #import "ios/chrome/browser/sessions/session_tab_group.h"
 #import "ios/chrome/browser/sessions/session_window_ios.h"
+#import "ios/chrome/browser/sessions/tab_group_util.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_range.h"
@@ -35,6 +37,8 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+
+using tab_groups::TabGroupId;
 
 namespace {
 
@@ -381,10 +385,10 @@ TEST_F(WebStateListSerializationTest, Serialize_ObjC_DropDuplicatesWithGroups) {
   web_state_list.InsertWebState(
       CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(1113)),
       WebStateList::InsertionParams::AtIndex(10));
-  web_state_list.CreateGroup({2, 3}, {});
-  web_state_list.CreateGroup({6, 7}, {});
-  web_state_list.CreateGroup({8}, {});
-  web_state_list.CreateGroup({9, 10}, {});
+  web_state_list.CreateGroup({2, 3}, {}, TabGroupId::GenerateNew());
+  web_state_list.CreateGroup({6, 7}, {}, TabGroupId::GenerateNew());
+  web_state_list.CreateGroup({8}, {}, TabGroupId::GenerateNew());
+  web_state_list.CreateGroup({9, 10}, {}, TabGroupId::GenerateNew());
   builder.GenerateIdentifiersForWebStateList();
   EXPECT_EQ("a b | [ 0 c d* ] e f [ 1 g h ] [ 2 i ] [ 3 j k ]",
             builder.GetWebStateListDescription());
@@ -653,10 +657,10 @@ TEST_F(WebStateListSerializationTest,
   web_state_list.InsertWebState(
       CreateWebStateWithWebStateID(web::WebStateID::FromSerializedValue(1113)),
       WebStateList::InsertionParams::AtIndex(10));
-  web_state_list.CreateGroup({2, 3}, {});
-  web_state_list.CreateGroup({6, 7}, {});
-  web_state_list.CreateGroup({8}, {});
-  web_state_list.CreateGroup({9, 10}, {});
+  web_state_list.CreateGroup({2, 3}, {}, TabGroupId::GenerateNew());
+  web_state_list.CreateGroup({6, 7}, {}, TabGroupId::GenerateNew());
+  web_state_list.CreateGroup({8}, {}, TabGroupId::GenerateNew());
+  web_state_list.CreateGroup({9, 10}, {}, TabGroupId::GenerateNew());
   builder.GenerateIdentifiersForWebStateList();
   EXPECT_EQ("a b | [ 0 c d* ] e f [ 1 g h ] [ 2 i ] [ 3 j k ]",
             builder.GetWebStateListDescription());
@@ -1287,6 +1291,8 @@ TEST_F(WebStateListSerializationTest, Deserialize_Proto_TabGroupsInvalid) {
   group_storage.set_title("Invalid");
   group_storage.set_color(ios::proto::TabGroupColorId::GREY);
   group_storage.set_collapsed(false);
+  tab_group_util::TabGroupIdForStorage(TabGroupId::GenerateNew(),
+                                       *group_storage.mutable_tab_group_id());
 
   EXPECT_EQ(storage.items_size(), 4);
   EXPECT_EQ(storage.active_index(), 1);
@@ -1334,7 +1340,8 @@ TEST_F(WebStateListSerializationTest, Deserialize_ObjC_TabGroupsInvalid) {
                                        rangeCount:4
                                             title:@"Invalid"
                                           colorId:0
-                                   collapsedState:NO];
+                                   collapsedState:NO
+                                       tabGroupId:TabGroupId::GenerateNew()];
   NSArray<SessionTabGroup*>* session_groups = [session_window.tabGroups
       arrayByAddingObjectsFromArray:@[ invalid_tab_group ]];
   session_window =

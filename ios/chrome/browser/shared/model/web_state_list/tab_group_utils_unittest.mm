@@ -8,6 +8,7 @@
 #import "components/favicon/core/favicon_url.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/keyed_service/core/service_access_type.h"
+#import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
@@ -26,6 +27,8 @@
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+
+using tab_groups::TabGroupId;
 
 class GroupUtilsTest : public PlatformTest {
  public:
@@ -105,7 +108,8 @@ class GroupUtilsTest : public PlatformTest {
   // web state at `web_state_index` with a default title and a `color`.
   void CreateGroup(int web_state_index, tab_groups::TabGroupColorId color) {
     tab_groups::TabGroupVisualData visual_data(u"Test title", color);
-    web_state_list_->CreateGroup({web_state_index}, visual_data);
+    web_state_list_->CreateGroup({web_state_index}, visual_data,
+                                 TabGroupId::GenerateNew());
   }
 
   // Returns the default color for the regular web state list.
@@ -170,17 +174,20 @@ TEST_F(GroupUtilsTest, TestDefaultColor) {
 TEST_F(GroupUtilsTest, AllGroupsSingleWindow) {
   AddDefaultWebStates();
 
+  TabGroupId tab_group_id_1 = TabGroupId::GenerateNew();
   tab_groups::TabGroupVisualData visual_data1(
       u"First title", tab_groups::TabGroupColorId::kGreen);
-  web_state_list_->CreateGroup({0}, visual_data1);
+  web_state_list_->CreateGroup({0}, visual_data1, tab_group_id_1);
 
+  TabGroupId tab_group_id_2 = TabGroupId::GenerateNew();
   tab_groups::TabGroupVisualData visual_data2(
       u"Second title", tab_groups::TabGroupColorId::kPink);
-  web_state_list_->CreateGroup({1}, visual_data2);
+  web_state_list_->CreateGroup({1}, visual_data2, tab_group_id_2);
 
+  TabGroupId tab_group_id_3 = TabGroupId::GenerateNew();
   tab_groups::TabGroupVisualData visual_data3(
       u"Third title", tab_groups::TabGroupColorId::kCyan);
-  incognito_web_state_list_->CreateGroup({3}, visual_data3);
+  incognito_web_state_list_->CreateGroup({3}, visual_data3, tab_group_id_3);
 
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(browser_state_.get());
@@ -189,8 +196,10 @@ TEST_F(GroupUtilsTest, AllGroupsSingleWindow) {
       GetAllGroupsForBrowserList(browser_list, incognito);
   EXPECT_EQ(groups, GetAllGroupsForBrowserState(browser_state_.get()));
 
+  std::vector<TabGroupId> tab_group_ids;
   std::vector<tab_groups::TabGroupVisualData> visual_data;
   for (const TabGroup* group : groups) {
+    tab_group_ids.push_back(group->tab_group_id());
     visual_data.push_back(group->visual_data());
   }
 
@@ -199,6 +208,10 @@ TEST_F(GroupUtilsTest, AllGroupsSingleWindow) {
               visual_data.end());
   EXPECT_TRUE(std::find(visual_data.begin(), visual_data.end(), visual_data2) !=
               visual_data.end());
+  EXPECT_TRUE(std::find(tab_group_ids.begin(), tab_group_ids.end(),
+                        tab_group_id_1) != tab_group_ids.end());
+  EXPECT_TRUE(std::find(tab_group_ids.begin(), tab_group_ids.end(),
+                        tab_group_id_2) != tab_group_ids.end());
 
   ChromeBrowserState* otr_browser_state =
       browser_state_->GetOffTheRecordChromeBrowserState();
@@ -210,6 +223,7 @@ TEST_F(GroupUtilsTest, AllGroupsSingleWindow) {
 
   EXPECT_EQ(1u, incognito_groups.size());
   for (const TabGroup* group : incognito_groups) {
+    EXPECT_EQ(tab_group_id_3, group->tab_group_id());
     EXPECT_EQ(visual_data3, group->visual_data());
   }
 }
@@ -219,25 +233,30 @@ TEST_F(GroupUtilsTest, AllGroupsMultipleWindows) {
   AddOtherBrowsers();
   AddDefaultWebStates();
 
+  TabGroupId tab_group_id_1 = TabGroupId::GenerateNew();
   tab_groups::TabGroupVisualData visual_data1(
       u"First title", tab_groups::TabGroupColorId::kGreen);
-  web_state_list_->CreateGroup({0}, visual_data1);
+  web_state_list_->CreateGroup({0}, visual_data1, tab_group_id_1);
 
+  TabGroupId tab_group_id_2 = TabGroupId::GenerateNew();
   tab_groups::TabGroupVisualData visual_data2(
       u"Second title", tab_groups::TabGroupColorId::kPink);
-  web_state_list_->CreateGroup({1}, visual_data2);
+  web_state_list_->CreateGroup({1}, visual_data2, tab_group_id_2);
 
+  TabGroupId tab_group_id_3 = TabGroupId::GenerateNew();
   tab_groups::TabGroupVisualData visual_data3(
       u"Third title", tab_groups::TabGroupColorId::kCyan);
-  incognito_web_state_list_->CreateGroup({3}, visual_data3);
+  incognito_web_state_list_->CreateGroup({3}, visual_data3, tab_group_id_3);
 
+  TabGroupId tab_group_id_4 = TabGroupId::GenerateNew();
   tab_groups::TabGroupVisualData visual_data4(
       u"Fourth title", tab_groups::TabGroupColorId::kPurple);
-  other_web_state_list_->CreateGroup({1}, visual_data4);
+  other_web_state_list_->CreateGroup({1}, visual_data4, tab_group_id_4);
 
+  TabGroupId tab_group_id_5 = TabGroupId::GenerateNew();
   tab_groups::TabGroupVisualData visual_data5(
       u"Fifth title", tab_groups::TabGroupColorId::kYellow);
-  other_web_state_list_->CreateGroup({0}, visual_data5);
+  other_web_state_list_->CreateGroup({0}, visual_data5, tab_group_id_5);
 
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(browser_state_.get());
@@ -245,8 +264,11 @@ TEST_F(GroupUtilsTest, AllGroupsMultipleWindows) {
   std::set<const TabGroup*> groups =
       GetAllGroupsForBrowserList(browser_list, incognito);
   EXPECT_EQ(groups, GetAllGroupsForBrowserState(browser_state_.get()));
+
+  std::vector<TabGroupId> tab_group_ids;
   std::vector<tab_groups::TabGroupVisualData> visual_data;
   for (const TabGroup* group : groups) {
+    tab_group_ids.push_back(group->tab_group_id());
     visual_data.push_back(group->visual_data());
   }
 
@@ -259,6 +281,14 @@ TEST_F(GroupUtilsTest, AllGroupsMultipleWindows) {
               visual_data.end());
   EXPECT_TRUE(std::find(visual_data.begin(), visual_data.end(), visual_data5) !=
               visual_data.end());
+  EXPECT_TRUE(std::find(tab_group_ids.begin(), tab_group_ids.end(),
+                        tab_group_id_1) != tab_group_ids.end());
+  EXPECT_TRUE(std::find(tab_group_ids.begin(), tab_group_ids.end(),
+                        tab_group_id_2) != tab_group_ids.end());
+  EXPECT_TRUE(std::find(tab_group_ids.begin(), tab_group_ids.end(),
+                        tab_group_id_4) != tab_group_ids.end());
+  EXPECT_TRUE(std::find(tab_group_ids.begin(), tab_group_ids.end(),
+                        tab_group_id_5) != tab_group_ids.end());
 
   ChromeBrowserState* otr_browser_state =
       browser_state_->GetOffTheRecordChromeBrowserState();
@@ -270,6 +300,7 @@ TEST_F(GroupUtilsTest, AllGroupsMultipleWindows) {
 
   EXPECT_EQ(1u, incognito_groups.size());
   for (const TabGroup* group : incognito_groups) {
+    EXPECT_EQ(tab_group_id_3, group->tab_group_id());
     EXPECT_EQ(visual_data3, group->visual_data());
   }
 }
@@ -280,7 +311,7 @@ TEST_F(GroupUtilsTest, MoveToGroupSingleWindow) {
 
   tab_groups::TabGroupVisualData visual_data(
       u"First title", tab_groups::TabGroupColorId::kGreen);
-  web_state_list_->CreateGroup({1}, visual_data);
+  web_state_list_->CreateGroup({1}, visual_data, TabGroupId::GenerateNew());
 
   web::WebStateID web_state_id =
       web_state_list_->GetWebStateAt(0)->GetUniqueIdentifier();
@@ -318,7 +349,8 @@ TEST_F(GroupUtilsTest, MoveToGroupMultipleWindow) {
 
   tab_groups::TabGroupVisualData visual_data(
       u"First title", tab_groups::TabGroupColorId::kGreen);
-  other_web_state_list_->CreateGroup({0}, visual_data);
+  other_web_state_list_->CreateGroup({0}, visual_data,
+                                     TabGroupId::GenerateNew());
 
   web::WebStateID web_state_id =
       web_state_list_->GetWebStateAt(1)->GetUniqueIdentifier();
@@ -354,16 +386,18 @@ TEST_F(GroupUtilsTest, GetBrowserForGroupSingleWindow) {
 
   tab_groups::TabGroupVisualData visual_data1(
       u"First title", tab_groups::TabGroupColorId::kGreen);
-  const TabGroup* group1 = web_state_list_->CreateGroup({0}, visual_data1);
+  const TabGroup* group1 = web_state_list_->CreateGroup(
+      {0}, visual_data1, TabGroupId::GenerateNew());
 
   tab_groups::TabGroupVisualData visual_data2(
       u"Second title", tab_groups::TabGroupColorId::kPink);
-  const TabGroup* group2 = web_state_list_->CreateGroup({1}, visual_data2);
+  const TabGroup* group2 = web_state_list_->CreateGroup(
+      {1}, visual_data2, TabGroupId::GenerateNew());
 
   tab_groups::TabGroupVisualData visual_data3(
       u"Third title", tab_groups::TabGroupColorId::kCyan);
-  const TabGroup* incognito_group3 =
-      incognito_web_state_list_->CreateGroup({3}, visual_data3);
+  const TabGroup* incognito_group3 = incognito_web_state_list_->CreateGroup(
+      {3}, visual_data3, TabGroupId::GenerateNew());
 
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(browser_state_.get());
@@ -389,26 +423,28 @@ TEST_F(GroupUtilsTest, GetBrowserForGroupMultipleWindows) {
 
   tab_groups::TabGroupVisualData visual_data1(
       u"First title", tab_groups::TabGroupColorId::kGreen);
-  const TabGroup* group1 = web_state_list_->CreateGroup({0}, visual_data1);
+  const TabGroup* group1 = web_state_list_->CreateGroup(
+      {0}, visual_data1, TabGroupId::GenerateNew());
 
   tab_groups::TabGroupVisualData visual_data2(
       u"Second title", tab_groups::TabGroupColorId::kPink);
-  const TabGroup* group2 = web_state_list_->CreateGroup({1}, visual_data2);
+  const TabGroup* group2 = web_state_list_->CreateGroup(
+      {1}, visual_data2, TabGroupId::GenerateNew());
 
   tab_groups::TabGroupVisualData visual_data3(
       u"Third title", tab_groups::TabGroupColorId::kCyan);
-  const TabGroup* incognito_group3 =
-      incognito_web_state_list_->CreateGroup({3}, visual_data3);
+  const TabGroup* incognito_group3 = incognito_web_state_list_->CreateGroup(
+      {3}, visual_data3, TabGroupId::GenerateNew());
 
   tab_groups::TabGroupVisualData visual_data4(
       u"Fourth title", tab_groups::TabGroupColorId::kPurple);
-  const TabGroup* other_group4 =
-      other_web_state_list_->CreateGroup({1}, visual_data4);
+  const TabGroup* other_group4 = other_web_state_list_->CreateGroup(
+      {1}, visual_data4, TabGroupId::GenerateNew());
 
   tab_groups::TabGroupVisualData visual_data5(
       u"Fifth title", tab_groups::TabGroupColorId::kYellow);
-  const TabGroup* other_group5 =
-      other_web_state_list_->CreateGroup({0}, visual_data5);
+  const TabGroup* other_group5 = other_web_state_list_->CreateGroup(
+      {0}, visual_data5, TabGroupId::GenerateNew());
 
   BrowserList* browser_list =
       BrowserListFactory::GetForBrowserState(browser_state_.get());

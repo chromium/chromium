@@ -10,9 +10,10 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
-TabGroup::TabGroup(const tab_groups::TabGroupVisualData& visual_data,
+TabGroup::TabGroup(tab_groups::TabGroupId tab_group_id,
+                   const tab_groups::TabGroupVisualData& visual_data,
                    TabGroupRange range)
-    : visual_data_(visual_data), range_(range) {}
+    : tab_group_id_(tab_group_id), visual_data_(visual_data), range_(range) {}
 
 TabGroup::~TabGroup() = default;
 

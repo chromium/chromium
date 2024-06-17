@@ -10,6 +10,7 @@
 
 #import "base/strings/string_split.h"
 #import "base/strings/string_util.h"
+#import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -203,7 +204,8 @@ bool WebStateListBuilderFromDescription::BuildWebStateListFromDescription(
         }
         const TabGroup* created_group = web_state_list_->CreateGroup(
             std::move(indices_for_current_tab_group),
-            tab_groups::TabGroupVisualData());
+            tab_groups::TabGroupVisualData(),
+            tab_groups::TabGroupId::GenerateNew());
         SetTabGroupIdentifier(created_group, identifier_for_current_tab_group);
         identifier_for_current_tab_group = 0;
         break;

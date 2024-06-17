@@ -14,6 +14,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "components/sessions/core/session_id.h"
+#import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/main/model/browser_web_state_list_delegate.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
@@ -46,6 +47,8 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "third_party/ocmock/gtest_support.h"
+
+using tab_groups::TabGroupId;
 
 namespace {
 
@@ -634,28 +637,32 @@ TEST_F(SessionRestorationBrowserAgentTest, FilterOutDuplicateItemsWithGroups) {
                    title:@"group with duplicate at the end"
                  colorId:static_cast<NSInteger>(
                              tab_groups::TabGroupColorId::kGrey)
-          collapsedState:NO];
+          collapsedState:NO
+              tabGroupId:TabGroupId::GenerateNew()];
   SessionTabGroup* session_tab_group_2 = [[SessionTabGroup alloc]
       initWithRangeStart:4
               rangeCount:2
                    title:@"group with no duplicate"
                  colorId:static_cast<NSInteger>(
                              tab_groups::TabGroupColorId::kPink)
-          collapsedState:NO];
+          collapsedState:NO
+              tabGroupId:TabGroupId::GenerateNew()];
   SessionTabGroup* session_tab_group_3 = [[SessionTabGroup alloc]
       initWithRangeStart:7
               rangeCount:1
                    title:@"group with only duplicate"
                  colorId:static_cast<NSInteger>(
                              tab_groups::TabGroupColorId::kYellow)
-          collapsedState:NO];
+          collapsedState:NO
+              tabGroupId:TabGroupId::GenerateNew()];
   SessionTabGroup* session_tab_group_4 = [[SessionTabGroup alloc]
       initWithRangeStart:7
               rangeCount:2
                    title:@"group with duplicate at the beginning"
                  colorId:static_cast<NSInteger>(
                              tab_groups::TabGroupColorId::kOrange)
-          collapsedState:NO];
+          collapsedState:NO
+              tabGroupId:TabGroupId::GenerateNew()];
   SessionWindowIOS* window = CreateSessionWindow(
       SessionInfo<9>{
           .active_index = 0,

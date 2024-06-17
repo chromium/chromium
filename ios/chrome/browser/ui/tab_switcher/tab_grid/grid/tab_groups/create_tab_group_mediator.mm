@@ -148,7 +148,8 @@
       }
     }
     if (!tabIndexes.empty()) {
-      _webStateList->CreateGroup(tabIndexes, visualData);
+      _webStateList->CreateGroup(tabIndexes, visualData,
+                                 tab_groups::TabGroupId::GenerateNew());
     }
   }
   completion();

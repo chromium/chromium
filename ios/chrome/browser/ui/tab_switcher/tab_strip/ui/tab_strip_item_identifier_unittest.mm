@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -14,6 +15,8 @@
 #import "testing/platform_test.h"
 
 using TabStripItemIdentifierTest = PlatformTest;
+
+using tab_groups::TabGroupId;
 
 // Verifies the properties of a Tab strip tab item.
 TEST_F(TabStripItemIdentifierTest, Tab) {
@@ -89,7 +92,8 @@ TEST_F(TabStripItemIdentifierTest, Group) {
   std::unique_ptr<WebStateList> web_state_list =
       std::make_unique<WebStateList>(&web_state_list_delegate);
   web_state_list->InsertWebState(std::make_unique<web::FakeWebState>());
-  const TabGroup* tab_group = web_state_list->CreateGroup({0}, {});
+  const TabGroup* tab_group =
+      web_state_list->CreateGroup({0}, {}, TabGroupId::GenerateNew());
   TabGroupItem* tab_group_item =
       [[TabGroupItem alloc] initWithTabGroup:tab_group
                                 webStateList:web_state_list.get()];
@@ -106,7 +110,8 @@ TEST_F(TabStripItemIdentifierTest, GroupEqualGroup) {
   std::unique_ptr<WebStateList> web_state_list =
       std::make_unique<WebStateList>(&web_state_list_delegate);
   web_state_list->InsertWebState(std::make_unique<web::FakeWebState>());
-  const TabGroup* tab_group = web_state_list->CreateGroup({0}, {});
+  const TabGroup* tab_group =
+      web_state_list->CreateGroup({0}, {}, TabGroupId::GenerateNew());
   TabGroupItem* tab_group_item_1 =
       [[TabGroupItem alloc] initWithTabGroup:tab_group
                                 webStateList:web_state_list.get()];
@@ -129,13 +134,15 @@ TEST_F(TabStripItemIdentifierTest, GroupNotEqualGroup) {
       std::make_unique<WebStateList>(&web_state_list_delegate);
   web_state_list->InsertWebState(std::make_unique<web::FakeWebState>());
   web_state_list->InsertWebState(std::make_unique<web::FakeWebState>());
-  const TabGroup* tab_group_1 = web_state_list->CreateGroup({0}, {});
+  const TabGroup* tab_group_1 =
+      web_state_list->CreateGroup({0}, {}, TabGroupId::GenerateNew());
   TabGroupItem* tab_group_item_1 =
       [[TabGroupItem alloc] initWithTabGroup:tab_group_1
                                 webStateList:web_state_list.get()];
   TabStripItemIdentifier* item_identifier_1 =
       [TabStripItemIdentifier groupIdentifier:tab_group_item_1];
-  const TabGroup* tab_group_2 = web_state_list->CreateGroup({1}, {});
+  const TabGroup* tab_group_2 =
+      web_state_list->CreateGroup({1}, {}, TabGroupId::GenerateNew());
   TabGroupItem* tab_group_item_2 =
       [[TabGroupItem alloc] initWithTabGroup:tab_group_2
                                 webStateList:web_state_list.get()];
@@ -155,7 +162,8 @@ TEST_F(TabStripItemIdentifierTest, GroupsHashingLikeNSValueWithPointer) {
   std::unique_ptr<WebStateList> web_state_list =
       std::make_unique<WebStateList>(&web_state_list_delegate);
   web_state_list->InsertWebState(std::make_unique<web::FakeWebState>());
-  const TabGroup* tab_group = web_state_list->CreateGroup({0}, {});
+  const TabGroup* tab_group =
+      web_state_list->CreateGroup({0}, {}, TabGroupId::GenerateNew());
   TabGroupItem* tab_group_item =
       [[TabGroupItem alloc] initWithTabGroup:tab_group
                                 webStateList:web_state_list.get()];
@@ -175,7 +183,8 @@ TEST_F(TabStripItemIdentifierTest, TabNotEqualGroup) {
   std::unique_ptr<WebStateList> web_state_list =
       std::make_unique<WebStateList>(&web_state_list_delegate);
   web_state_list->InsertWebState(std::make_unique<web::FakeWebState>());
-  const TabGroup* tab_group = web_state_list->CreateGroup({0}, {});
+  const TabGroup* tab_group =
+      web_state_list->CreateGroup({0}, {}, TabGroupId::GenerateNew());
   TabGroupItem* tab_group_item =
       [[TabGroupItem alloc] initWithTabGroup:tab_group
                                 webStateList:web_state_list.get()];

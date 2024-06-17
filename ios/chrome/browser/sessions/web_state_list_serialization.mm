@@ -18,6 +18,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "components/sessions/core/session_id.h"
 #import "components/sessions/core/session_id_generator.h"
+#import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/sessions/features.h"
 #import "ios/chrome/browser/sessions/proto/storage.pb.h"
 #import "ios/chrome/browser/sessions/proto/tab_group.pb.h"
@@ -402,6 +403,7 @@ std::vector<web::WebState*> DeserializeWebStateListInternal(
   // Deserialize and create tab groups.
   if (enable_tab_groups) {
     const int tab_group_count = deserializer.GetTabGroupsCount();
+    std::set<tab_groups::TabGroupId> tab_group_ids;
     for (int i = 0; i < tab_group_count; ++i) {
       DeserializedGroup group = deserializer.GetDeserializedGroupAt(i);
       if (group.range_start < restored_pinned_tabs_count ||
@@ -412,9 +414,23 @@ std::vector<web::WebState*> DeserializeWebStateListInternal(
           group.range_start + group.range_count > restored_tabs_count) {
         continue;
       }
+
+      tab_groups::TabGroupId tab_group_id = group.tab_group_id;
+      if (!tab_group_id.is_empty()) {
+        // Check that there is no duplicate  of `tab_group_id`.
+        // It is improbable, but not impossible, for this to occur.
+        if (tab_group_ids.contains(tab_group_id)) {
+          base::debug::DumpWithoutCrashing();
+          continue;
+        }
+        tab_group_ids.insert(tab_group_id);
+      } else {
+        tab_group_id = tab_groups::TabGroupId::GenerateNew();
+      }
+
       web_state_list->CreateGroup(
           TabGroupRange(group.range_start, group.range_count).AsSet(),
-          group.visual_data);
+          group.visual_data, tab_group_id);
     }
   }
 
@@ -498,7 +514,8 @@ SessionWindowIOS* SerializeWebStateList(const WebStateList* web_state_list) {
                                  group->visual_data().title())
                      colorId:static_cast<NSInteger>(
                                  group->visual_data().color())
-              collapsedState:group->visual_data().is_collapsed()];
+              collapsedState:group->visual_data().is_collapsed()
+                  tabGroupId:group->tab_group_id()];
       [serialized_groups addObject:serialized_group];
     }
   }
@@ -572,6 +589,8 @@ void SerializeWebStateList(const WebStateList& web_state_list,
       group_storage.set_color(
           tab_group_util::ColorForStorage(group->visual_data().color()));
       group_storage.set_collapsed(group->visual_data().is_collapsed());
+      tab_group_util::TabGroupIdForStorage(
+          group->tab_group_id(), *group_storage.mutable_tab_group_id());
     }
   }
 

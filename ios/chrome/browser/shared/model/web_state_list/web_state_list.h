@@ -32,6 +32,7 @@ class WebStateListObserver;
 class WebStateListTest;
 
 namespace tab_groups {
+class TabGroupId;
 class TabGroupVisualData;
 }  // namespace tab_groups
 
@@ -309,9 +310,9 @@ class WebStateList {
   // The returned TabGroup is valid as long as the WebStateList is not mutated.
   // To get its exact lifecycle, Listen to the group deletion notification,
   // after-which the pointer should not be used.
-  const TabGroup* CreateGroup(
-      const std::set<int>& indices,
-      const tab_groups::TabGroupVisualData& visual_data);
+  const TabGroup* CreateGroup(const std::set<int>& indices,
+                              const tab_groups::TabGroupVisualData& visual_data,
+                              tab_groups::TabGroupId tab_group_id);
 
   // Returns true if the specified group is contained by the model.
   bool ContainsGroup(const TabGroup* group) const;
@@ -425,7 +426,8 @@ class WebStateList {
   // Assumes that the WebStateList is locked.
   const TabGroup* CreateGroupImpl(
       const std::set<int>& indices,
-      const tab_groups::TabGroupVisualData& visual_data);
+      const tab_groups::TabGroupVisualData& visual_data,
+      tab_groups::TabGroupId tab_group_id);
 
   // Moves the set of WebStates at `indices` at the end of the given tab group.
   //

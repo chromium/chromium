@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 
 #import "build/blink_buildflags.h"
+#import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/sessions/session_restoration_service.h"
 #import "ios/chrome/browser/sessions/session_restoration_service_factory.h"
@@ -120,7 +121,8 @@ web::WebState* TabInsertionBrowserAgent::InsertWebState(
       web_state_list->CreateGroup(
           {web_state_list->GetIndexOfWebState(web_state_ptr)},
           tab_groups::TabGroupVisualData{
-              u"", TabGroup::DefaultColorForNewTabGroup(web_state_list)});
+              u"", TabGroup::DefaultColorForNewTabGroup(web_state_list)},
+          tab_groups::TabGroupId::GenerateNew());
     }
   }
   return web_state_ptr;

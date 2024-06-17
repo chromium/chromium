@@ -7,8 +7,10 @@
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/sessions/session_tab_group.h"
 
+using tab_groups::TabGroupId;
 using tab_groups::TabGroupVisualData;
 
 namespace tab_group_util {
@@ -22,18 +24,18 @@ DeserializedGroup FromSerializedValue(ios::proto::TabGroupStorage group) {
       .range_start = group.range().start(),
       .range_count = group.range().count(),
       .visual_data = visual_data,
-  };
+      .tab_group_id =
+          tab_group_util::TabGroupIdFromStorage(group.tab_group_id())};
 }
 
 DeserializedGroup FromSerializedValue(SessionTabGroup* group) {
   TabGroupVisualData visual_data =
       tab_groups::TabGroupVisualData(base::SysNSStringToUTF16(group.title),
                                      group.colorId, group.collapsedState);
-  return DeserializedGroup{
-      .range_start = static_cast<int>(group.rangeStart),
-      .range_count = static_cast<int>(group.rangeCount),
-      .visual_data = visual_data,
-  };
+  return DeserializedGroup{.range_start = static_cast<int>(group.rangeStart),
+                           .range_count = static_cast<int>(group.rangeCount),
+                           .visual_data = visual_data,
+                           .tab_group_id = group.tabGroupId};
 }
 
 ios::proto::TabGroupColorId ColorForStorage(
@@ -62,6 +64,14 @@ ios::proto::TabGroupColorId ColorForStorage(
   }
 }
 
+void TabGroupIdForStorage(TabGroupId tab_group_id,
+                          ios::proto::TabGroupId& storage) {
+  const base::Token token = tab_group_id.token();
+  CHECK(!token.is_zero());
+  storage.set_high(token.high());
+  storage.set_low(token.low());
+}
+
 tab_groups::TabGroupColorId ColorFromStorage(
     ios::proto::TabGroupColorId color_id) {
   switch (color_id) {
@@ -86,6 +96,11 @@ tab_groups::TabGroupColorId ColorFromStorage(
     default:
       NOTREACHED_NORETURN() << "value is not a supported color enum.";
   }
+}
+
+TabGroupId TabGroupIdFromStorage(ios::proto::TabGroupId tab_group_id) {
+  return TabGroupId::FromRawToken(
+      base::Token(tab_group_id.high(), tab_group_id.low()));
 }
 
 }  // namespace tab_group_util

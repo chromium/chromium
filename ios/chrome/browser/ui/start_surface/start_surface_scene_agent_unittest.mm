@@ -8,6 +8,7 @@
 #import "base/test/scoped_feature_list.h"
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
+#import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/fake_startup_information.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
@@ -32,6 +33,8 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+
+using tab_groups::TabGroupId;
 
 namespace {
 const char kURL[] = "https://chromium.org/";
@@ -261,8 +264,10 @@ TEST_F(StartSurfaceSceneAgentTest, KeepAtMostOneEmptyNTPPerGroup) {
   WebStateList* web_state_list =
       scene_state_.browserProviderInterface.mainBrowserProvider.browser
           ->GetWebStateList();
-  const TabGroup* group_0 = web_state_list->CreateGroup({0, 1, 2, 3}, {});
-  const TabGroup* group_1 = web_state_list->CreateGroup({6}, {});
+  const TabGroup* group_0 =
+      web_state_list->CreateGroup({0, 1, 2, 3}, {}, TabGroupId::GenerateNew());
+  const TabGroup* group_1 =
+      web_state_list->CreateGroup({6}, {}, TabGroupId::GenerateNew());
   [agent_ sceneState:scene_state_
       transitionedToActivationLevel:SceneActivationLevelForegroundActive];
   histogram_tester_->ExpectTotalCount("IOS.NTP.ExcessRemovedTabCount", 0);
@@ -311,7 +316,8 @@ TEST_F(StartSurfaceSceneAgentTest,
       scene_state_.browserProviderInterface.mainBrowserProvider.browser
           ->GetWebStateList();
   web_state_list->ActivateWebStateAt(0);
-  const TabGroup* group_0 = web_state_list->CreateGroup({0, 1}, {});
+  const TabGroup* group_0 =
+      web_state_list->CreateGroup({0, 1}, {}, TabGroupId::GenerateNew());
   [agent_ sceneState:scene_state_
       transitionedToActivationLevel:SceneActivationLevelForegroundActive];
   histogram_tester_->ExpectTotalCount("IOS.NTP.ExcessRemovedTabCount", 0);

@@ -24,6 +24,13 @@
 
 namespace {
 
+// Information about a tab group.
+struct TabGroupInfo {
+  const TabGroupRange group_range;
+  const tab_groups::TabGroupId tab_group_id;
+  const tab_groups::TabGroupVisualData visual_data;
+};
+
 // Moves WebStates in range [start; start+count) from `source` to `target`.
 void MoveWebStatesInRangeBetweenLists(WebStateList* source,
                                       WebStateList* target,
@@ -46,7 +53,7 @@ void MoveWebStatesInRangeBetweenLists(WebStateList* source,
       old_active_index, RemovingIndexes({.start = start, .count = count})));
 
   // Store the groups info.
-  std::vector<std::pair<TabGroupRange, tab_groups::TabGroupVisualData>> groups;
+  std::vector<TabGroupInfo> groups;
   for (const TabGroup* group : source->GetGroups()) {
     TabGroupRange range = group->range();
     // The group is not in the range of moving items, ignore it.
@@ -59,7 +66,11 @@ void MoveWebStatesInRangeBetweenLists(WebStateList* source,
     // range of closed items.
     CHECK(start <= range.range_begin() && range.range_end() <= end);
     range.Move(offset - start);
-    groups.push_back({range, group->visual_data()});
+    groups.push_back(TabGroupInfo{
+        .group_range = range,
+        .tab_group_id = group->tab_group_id(),
+        .visual_data = group->visual_data(),
+    });
   }
 
   for (int n = 0; n < count; ++n) {
@@ -77,8 +88,9 @@ void MoveWebStatesInRangeBetweenLists(WebStateList* source,
   }
 
   // Restore the groups info.
-  for (const auto& [range, visual_data] : groups) {
-    target->CreateGroup(range.AsSet(), visual_data);
+  for (const auto& group : groups) {
+    target->CreateGroup(group.group_range.AsSet(), group.visual_data,
+                        group.tab_group_id);
   }
 }
 

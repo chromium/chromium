@@ -83,6 +83,7 @@ source_set("unit_tests") {
   sources = [ "tab_strip_item_identifier_unittest.mm" ]
   deps = [
     ":swift",
+    "//components/tab_groups",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/ui/tab_switcher",

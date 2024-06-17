@@ -7,6 +7,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -28,6 +29,8 @@
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #import "ui/base/device_form_factor.h"
+
+using tab_groups::TabGroupId;
 
 // Fake WebStateList delegate that attaches the required tab helper.
 class InactiveTabsFakeWebStateListDelegate : public FakeWebStateListDelegate {
@@ -664,7 +667,7 @@ TEST_F(InactiveTabsUtilsTest, DoNotMoveTabInGroupToInactive) {
   EXPECT_EQ(active_web_state_list->count(), 3);
   EXPECT_EQ(inactive_web_state_list->count(), 0);
 
-  active_web_state_list->CreateGroup({0}, {});
+  active_web_state_list->CreateGroup({0}, {}, TabGroupId::GenerateNew());
 
   EXPECT_EQ(active_web_state_list->count(), 3);
   EXPECT_EQ(inactive_web_state_list->count(), 0);

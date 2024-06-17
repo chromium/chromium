@@ -8,6 +8,7 @@
 #import "base/numerics/safe_conversions.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/tab_groups/tab_group_color.h"
+#import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -23,6 +24,7 @@
 #import "testing/platform_test.h"
 #import "ui/base/device_form_factor.h"
 
+using tab_groups::TabGroupId;
 using tab_groups::TabGroupVisualData;
 
 class GridUtilsTest : public PlatformTest {
@@ -109,8 +111,10 @@ TEST_F(GridUtilsTest, CreateItemsListWithGroup) {
   TabGroupVisualData visual_data_b =
       TabGroupVisualData(u"Group B", tab_groups::TabGroupColorId::kRed);
 
-  web_state_list_->CreateGroup({0, 1, 2}, visual_data_a);
-  web_state_list_->CreateGroup({5, 6}, visual_data_b);
+  web_state_list_->CreateGroup({0, 1, 2}, visual_data_a,
+                               TabGroupId::GenerateNew());
+  web_state_list_->CreateGroup({5, 6}, visual_data_b,
+                               TabGroupId::GenerateNew());
 
   NSArray<GridItemIdentifier*>* itemsList = CreateItems(web_state_list_);
 

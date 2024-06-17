@@ -9,6 +9,7 @@ source_set("model") {
   ]
   deps = [
     "//build:blink_buildflags",
+    "//components/tab_groups",
     "//ios/chrome/browser/ntp/model",
     "//ios/chrome/browser/sessions:session_restoration_service",
     "//ios/chrome/browser/sessions:session_restoration_service_factory",

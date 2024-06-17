@@ -8,6 +8,7 @@
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -26,6 +27,8 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "ui/base/test/ios/ui_image_test_utils.h"
 #import "url/gurl.h"
+
+using tab_groups::TabGroupId;
 
 namespace {
 const MenuScenarioHistogram kTestMenuScenario =
@@ -443,10 +446,12 @@ TEST_F(ActionFactoryTest, AddTabsToGroupSeveralGroups) {
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
-  TabGroup group1(tab_groups::TabGroupVisualData(
-      u"First", tab_groups::TabGroupColorId::kGrey));
-  TabGroup group2(tab_groups::TabGroupVisualData(
-      u"Second", tab_groups::TabGroupColorId::kGrey));
+  TabGroup group1(TabGroupId::GenerateNew(),
+                  tab_groups::TabGroupVisualData(
+                      u"First", tab_groups::TabGroupColorId::kGrey));
+  TabGroup group2(TabGroupId::GenerateNew(),
+                  tab_groups::TabGroupVisualData(
+                      u"Second", tab_groups::TabGroupColorId::kGrey));
   std::set<const TabGroup*> groups{&group1, &group2};
 
   UIMenuElement* menu_element =
@@ -519,10 +524,12 @@ TEST_F(ActionFactoryTest, MoveTabFromGroup) {
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
-  TabGroup group1(tab_groups::TabGroupVisualData(
-      u"First", tab_groups::TabGroupColorId::kGrey));
-  TabGroup group2(tab_groups::TabGroupVisualData(
-      u"Second", tab_groups::TabGroupColorId::kGrey));
+  TabGroup group1(TabGroupId::GenerateNew(),
+                  tab_groups::TabGroupVisualData(
+                      u"First", tab_groups::TabGroupColorId::kGrey));
+  TabGroup group2(TabGroupId::GenerateNew(),
+                  tab_groups::TabGroupVisualData(
+                      u"Second", tab_groups::TabGroupColorId::kGrey));
   std::set<const TabGroup*> groups{&group1, &group2};
 
   UIMenuElement* menu_element =

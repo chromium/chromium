@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/visited_url_ranking/model/ios_tab_model_url_visit_data_fetcher.h"
 
+#import "components/tab_groups/tab_group_id.h"
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "components/visited_url_ranking/public/url_visit.h"
 #import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
@@ -16,6 +17,8 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/platform_test.h"
+
+using tab_groups::TabGroupId;
 
 class IOSTabModelURLVisitDataFetcherTest : public PlatformTest {
  protected:
@@ -135,7 +138,7 @@ TEST_F(IOSTabModelURLVisitDataFetcherTest, FetchNormalTabsWithData) {
       u"test", tab_groups::TabGroupColorId::kGrey);
   EXPECT_EQ(GURL(normal_urls[2]),
             web_state_list->GetWebStateAt(2)->GetLastCommittedURL());
-  web_state_list->CreateGroup({2}, visual_data);
+  web_state_list->CreateGroup({2}, visual_data, TabGroupId::GenerateNew());
   web_state_list->GetWebStateAt(2)
       ->GetNavigationManager()
       ->GetLastCommittedItem()
@@ -242,7 +245,7 @@ TEST_F(IOSTabModelURLVisitDataFetcherTest, AggregateEntries) {
   EXPECT_EQ(GURL(url), web_state1->GetLastCommittedURL());
   tab_groups::TabGroupVisualData visual_data(
       u"test", tab_groups::TabGroupColorId::kGrey);
-  web_state_list->CreateGroup({1}, visual_data);
+  web_state_list->CreateGroup({1}, visual_data, TabGroupId::GenerateNew());
   web_state1->GetNavigationManager()->GetLastCommittedItem()->SetTimestamp(
       now - base::Hours(1));
   web_state1->SetLastActiveTime(now - base::Hours(5));

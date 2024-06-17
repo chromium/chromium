@@ -6,6 +6,7 @@
 
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
+#import "components/tab_groups/tab_group_id.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -19,6 +20,8 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+
+using tab_groups::TabGroupId;
 
 // Fake WebStateList delegate that attaches the required tab helper.
 class TabGroupCoordinatorFakeWebStateListDelegate
@@ -60,8 +63,8 @@ class TabGroupCoordinatorTest : public PlatformTest {
     web_state_list->InsertWebState(
         std::make_unique<web::FakeWebState>(web::WebStateID::NewUnique()),
         WebStateList::InsertionParams::Automatic().Activate());
-    const TabGroup* group =
-        web_state_list->CreateGroup({0}, temporaryVisualData);
+    const TabGroup* group = web_state_list->CreateGroup(
+        {0}, temporaryVisualData, TabGroupId::GenerateNew());
 
     coordinator_ = [[TabGroupCoordinator alloc]
         initWithBaseViewController:base_view_controller_
