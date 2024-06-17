@@ -5,6 +5,8 @@
 #ifndef PDF_INK_INK_AFFINE_TRANSFORM_H_
 #define PDF_INK_INK_AFFINE_TRANSFORM_H_
 
+#include <iosfwd>
+
 namespace chrome_pdf {
 
 // NOTE: This is the equivalent to the following 3x3 matrix:
@@ -22,6 +24,11 @@ struct InkAffineTransform {
   float e;
   float f;
 };
+
+bool operator==(const InkAffineTransform& lhs, const InkAffineTransform& rhs);
+
+// Supports pretty-printing transforms for test failures.
+void PrintTo(const InkAffineTransform& transform, std::ostream* os);
 
 }  // namespace chrome_pdf
 

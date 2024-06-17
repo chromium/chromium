@@ -72,18 +72,6 @@ struct InputOutputPair {
 
 }  // namespace
 
-bool operator==(const InkAffineTransform& lhs, const InkAffineTransform& rhs) {
-  return lhs.a == rhs.a && lhs.b == rhs.b && lhs.c == rhs.c && lhs.d == rhs.d &&
-         lhs.e == rhs.e && lhs.f == rhs.f;
-}
-
-// Supports pretty-printing transforms for test failures.
-void PrintTo(const InkAffineTransform& transform, std::ostream* os) {
-  *os << base::StringPrintf("[ %f, %f, %f, %f, %f, %f ]", transform.a,
-                            transform.b, transform.c, transform.d, transform.e,
-                            transform.f);
-}
-
 TEST(PdfInkTransformTest, EventPositionToCanonicalPositionIdentity) {
   constexpr auto kInputsAndOutputs = std::to_array<InputOutputPair>({
       InputOutputPair{kInputPositionTopLeft, kCanonicalPositionTopLeft},
