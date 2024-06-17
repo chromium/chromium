@@ -609,16 +609,8 @@ class IpProtectionConfigProviderPolicyBrowserTest : public policy::PolicyTest {
       profile_selections_;
 };
 
-// TODO(https://crbug.com/328624105): These policy tests are flaky on Android.
-// Re-enable them once the root cause has been determined.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE(test) DISABLED_##test
-#else
-#define MAYBE(test) test
-#endif
-
 IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderPolicyBrowserTest,
-                       MAYBE(IpProtectionEnterprisePolicyDisableAndEnable)) {
+                       IpProtectionEnterprisePolicyDisableAndEnable) {
   IpProtectionConfigProvider* provider =
       IpProtectionConfigProvider::Get(GetProfile());
 
@@ -639,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderPolicyBrowserTest,
 // pref value should no longer be considered managed and should effectively be
 // reset to its initial state.
 IN_PROC_BROWSER_TEST_F(IpProtectionConfigProviderPolicyBrowserTest,
-                       MAYBE(IpProtectionEnterprisePolicyUnsetAfterSet)) {
+                       IpProtectionEnterprisePolicyUnsetAfterSet) {
   IpProtectionConfigProvider* provider =
       IpProtectionConfigProvider::Get(GetProfile());
 
