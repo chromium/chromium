@@ -109,41 +109,7 @@ class BuilderList:
             for builder in self.filter_builders(is_try=True,
                                                 exclude_specifiers={'android'})
         }
-        # Remove CQ builders whose port is a duplicate of a *-blink-rel builder
-        # to avoid wasting resources.
-        for blink_builder, cq_builder in self.try_bots_with_cq_mirror():
-            if blink_builder in try_builders and cq_builder in try_builders:
-                try_builders.remove(cq_builder)
         return try_builders
-
-    def try_bots_with_cq_mirror(self):
-        """Returns a sorted list of (try_builder_names, cq_mirror_builder_names).
-
-        When all steps in a cq trybot exist in a blink-rel trybot and the port
-        name matches, we say that blink-rel trybot has a cq mirror, and thus there
-        is no need to trigger the cq trybot together with the blink-rel trybot.
-
-        As of today, this should return:
-        [("linux-blink-rel", "linux-rel"),
-         ("mac12.0-blink-rel", "mac-rel"),
-         ("win10.20h2-blink-rel", "win-rel")]
-        """
-        rv = []
-        all_blink_rel_trybots = sorted(
-            set(self.all_try_builder_names()) -
-            set(self.all_cq_try_builder_names()))
-        for builder_name in all_blink_rel_trybots:
-            step_names = set(self.step_names_for_builder(builder_name))
-            for cq_builder_name in self.all_cq_try_builder_names():
-                if (self.port_name_for_builder_name(cq_builder_name) !=
-                        self.port_name_for_builder_name(builder_name)):
-                    continue
-                cq_step_names = set(
-                    self.step_names_for_builder(cq_builder_name))
-                if cq_step_names.issubset(step_names):
-                    rv.append((builder_name, cq_builder_name))
-                    break
-        return rv
 
     def all_continuous_builder_names(self):
         return self.filter_builders(is_try=False)
