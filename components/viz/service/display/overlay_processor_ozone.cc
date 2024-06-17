@@ -416,10 +416,6 @@ void OverlayProcessorOzone::ReceiveHardwareCapabilities(
         std::min(max_overlays_supported, max_overlays_config_);
     has_independent_cursor_plane_ =
         hardware_capabilities.has_independent_cursor_plane;
-
-    UMA_HISTOGRAM_COUNTS_100(
-        "Compositing.Display.OverlayProcessorOzone.MaxPlanesSupported",
-        hardware_capabilities.num_overlay_capable_planes);
   } else {
     // Default to attempting 1 overlay if we get an invalid response.
     max_overlays_considered_ = 1;

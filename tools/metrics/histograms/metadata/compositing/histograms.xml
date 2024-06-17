@@ -464,41 +464,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.Display.OverlayProcessorOzone.MaxPlanesSupported"
-    units="units" expires_after="2024-06-30">
-  <owner>khaslett@chromium.org</owner>
-  <owner>kylechar@chromium.org</owner>
-  <summary>
-    This is logged every time a valid HardwareCapabilities is received from DRM
-    when display configuration may have changed. It records the number of
-    overlay planes we have available on this device including the primary plane.
-    Note: this metric was expired from 2023-08-20 to 2024-02-05.
-  </summary>
-</histogram>
-
-<histogram
-    name="Compositing.Display.OverlayProcessorUsingStrategy.CheckOverlaySupportCallCount"
-    units="units" expires_after="2024-06-30">
-  <owner>khaslett@chromium.org</owner>
-  <owner>kylechar@chromium.org</owner>
-  <summary>
-    This is logged once per frame, the number of times CheckOverlaySupport is
-    called this frame.
-  </summary>
-</histogram>
-
-<histogram
-    name="Compositing.Display.OverlayProcessorUsingStrategy.CheckOverlaySupportUs"
-    units="microseconds" expires_after="2024-06-30">
-  <owner>khaslett@chromium.org</owner>
-  <owner>kylechar@chromium.org</owner>
-  <summary>
-    Logged zero or more times per frame, the time spent checking if a set of
-    candidates can be promoted to overlay. Only reported for platforms
-    supporting high resolution clocks.
-  </summary>
-</histogram>
-
 <histogram
     name="Compositing.Display.OverlayProcessorUsingStrategy.FramesAttemptingRequiredOverlays"
     enum="Boolean" expires_after="2024-12-08">

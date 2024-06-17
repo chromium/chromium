@@ -252,10 +252,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   // be whether that scaling worked or not.
   void UpdateDownscalingCapabilities(float scale_factor, bool success);
 
-  // Logs the number of times CheckOverlaySupport was called this frame, and
-  // resets the counter to 0.
-  void LogCheckOverlaySupportMetrics();
-
   // Moves `curr_overlays` into `prev_overlays`, and updates `curr_overlays` to
   // reflect the overlays that will be promoted this frame in `candidates`.
   void UpdateOverlayStatusMap(const OverlayCandidateList& candidates);
@@ -270,7 +266,6 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
   base::TimeTicks last_time_interval_switch_overlay_tick_;
   ProposedCandidateKey prev_overlay_tracking_id_;
   uint64_t frame_sequence_number_ = 0;
-  int check_overlay_support_call_count_ = 0;
 
   // These values are used for tracking how much we can downscale with overlays
   // and is used for when we require an overlay so we can determine how much we

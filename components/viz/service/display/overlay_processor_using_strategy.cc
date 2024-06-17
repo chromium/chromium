@@ -408,7 +408,6 @@ void OverlayProcessorUsingStrategy::ProcessForOverlays(
         resource_provider, render_passes, &surface_damage_rect_list,
         output_surface_plane, candidates, content_bounds, damage_rect);
   }
-  LogCheckOverlaySupportMetrics();
 
   DCHECK(candidates->empty() || success);
   UMA_HISTOGRAM_COUNTS_100(kNumOverlaysPromotedHistogramName,
@@ -439,18 +438,7 @@ void OverlayProcessorUsingStrategy::CheckOverlaySupport(
     primary_plane_color_space_ = primary_plane->color_space;
 #endif
 
-  base::ElapsedTimer timer;
   CheckOverlaySupportImpl(primary_plane, candidate_list);
-  check_overlay_support_call_count_++;
-
-  base::TimeDelta time = timer.Elapsed();
-
-  static constexpr base::TimeDelta kMinTime = base::Microseconds(1);
-  static constexpr base::TimeDelta kMaxTime = base::Milliseconds(10);
-  static constexpr int kTimeBuckets = 50;
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Compositing.Display.OverlayProcessorUsingStrategy.CheckOverlaySupportUs",
-      time, kMinTime, kMaxTime, kTimeBuckets);
 }
 
 void OverlayProcessorUsingStrategy::ClearOverlayCombinationCache() {
@@ -1194,14 +1182,6 @@ void OverlayProcessorUsingStrategy::UpdateDownscalingCapabilities(
   // legitimate.
   constexpr float kMaxFailedScaleMin = 0.70f;
   max_failed_scale_ = std::min(max_failed_scale_, kMaxFailedScaleMin);
-}
-
-void OverlayProcessorUsingStrategy::LogCheckOverlaySupportMetrics() {
-  UMA_HISTOGRAM_COUNTS_100(
-      "Compositing.Display.OverlayProcessorUsingStrategy."
-      "CheckOverlaySupportCallCount",
-      check_overlay_support_call_count_);
-  check_overlay_support_call_count_ = 0;
 }
 
 }  // namespace viz
