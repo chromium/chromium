@@ -121,7 +121,7 @@ void WebApps::Launch(const std::string& app_id,
   // the URL. Loading the context will cause a slight delay on first launch, but
   // it is then cached in the DeviceInfoManager for subsequent launches.
   // TODO(b/331702863): Remove this custom integration.
-  if (chromeos::features::IsCrosMallEnabled() && app_id == kMallAppId) {
+  if (chromeos::features::IsCrosMallWebAppEnabled() && app_id == kMallAppId) {
     device_info_manager_.GetDeviceInfo(base::BindOnce(
         &WebApps::LaunchMallWithContext, weak_ptr_factory_.GetWeakPtr(),
         event_flags, launch_source, std::move(window_info)));

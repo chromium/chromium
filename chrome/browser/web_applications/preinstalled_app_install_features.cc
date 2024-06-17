@@ -64,7 +64,7 @@ constexpr const FeatureWithEnabledFunction
         {raw_ref(chromeos::features::kContainerAppPreinstall),
          &chromeos::features::IsContainerAppPreinstallEnabled},
         {raw_ref(chromeos::features::kCrosMall),
-         &chromeos::features::IsCrosMallEnabled}
+         &chromeos::features::IsCrosMallWebAppEnabled}
 #endif
 };
 

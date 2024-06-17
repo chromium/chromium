@@ -1668,10 +1668,9 @@ struct BrowserInitParams {
   [MinVersion=80]
   bool is_orca_enabled@80;
 
-  // Set to true when the `chromeos::features::kCrosMall` flag is enabled in
-  // Ash.
+  // Set to true when the Mall web app is enabled in Ash.
   [MinVersion=81]
-  bool is_cros_mall_enabled@81;
+  bool is_cros_mall_web_app_enabled@81;
 
   // If true, "Mahi" will be enabled.
   [MinVersion=82]

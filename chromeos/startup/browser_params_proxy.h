@@ -172,7 +172,7 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsOrcaEnabled() const;
 
-  bool IsCrosMallEnabled() const;
+  bool IsCrosMallWebAppEnabled() const;
 
   bool IsMagicBoostEnabled() const;
 

@@ -373,8 +373,8 @@ bool BrowserParamsProxy::IsOrcaEnabled() const {
   return BrowserInitParams::Get()->is_orca_enabled;
 }
 
-bool BrowserParamsProxy::IsCrosMallEnabled() const {
-  return BrowserInitParams::Get()->is_cros_mall_enabled;
+bool BrowserParamsProxy::IsCrosMallWebAppEnabled() const {
+  return BrowserInitParams::Get()->is_cros_mall_web_app_enabled;
 }
 
 bool BrowserParamsProxy::IsMagicBoostEnabled() const {

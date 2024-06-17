@@ -366,17 +366,18 @@ bool IsCrosComponentsEnabled() {
   return base::FeatureList::IsEnabled(kCrosComponents) && IsJellyEnabled();
 }
 
-bool IsCrosMallEnabled() {
+bool IsCrosMallWebAppEnabled() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()->IsCrosMallEnabled();
+  return chromeos::BrowserParamsProxy::Get()->IsCrosMallWebAppEnabled();
 #else
-  return base::FeatureList::IsEnabled(kCrosMall);
+  return base::FeatureList::IsEnabled(kCrosMall) &&
+         !base::FeatureList::IsEnabled(kCrosMallSwa);
 #endif
 }
 
 bool IsCrosMallSwaEnabled() {
-  return chromeos::features::IsCrosMallEnabled() &&
-         base::FeatureList::IsEnabled(chromeos::features::kCrosMallSwa);
+  return base::FeatureList::IsEnabled(kCrosMall) &&
+         base::FeatureList::IsEnabled(kCrosMallSwa);
 }
 
 bool IsCrosShortstandEnabled() {
