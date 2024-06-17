@@ -48,7 +48,7 @@ class CookieControlsBubbleViewController
 
   void SetCallbacks();
   void OnUserClosedContentView();
-  void OnToggleButtonPressed(bool new_value);
+  void OnToggleButtonPressed(bool toggled_on);
   void OnFeedbackButtonPressed();
 
   void OnFaviconFetched(const favicon_base::FaviconImageResult& result) const;

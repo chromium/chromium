@@ -173,7 +173,8 @@ class CookieControlsInteractiveUiBaseTest : public InteractiveFeaturePromoTest {
   auto CheckTrackingProtectionAllowedState() {
     return Steps(
         CheckViewProperty(CookieControlsContentView::kToggleButton,
-                          &views::ToggleButton::GetIsOn, true),
+                          &views::ToggleButton::GetIsOn,
+                          !HasNewTrackingProtectionUi()),
         CheckViewProperty(
             CookieControlsContentView::kTitle, &views::Label::GetText,
             l10n_util::GetPluralStringFUTF16(
@@ -199,7 +200,8 @@ class CookieControlsInteractiveUiBaseTest : public InteractiveFeaturePromoTest {
   auto CheckTrackingProtectionBlockedState() {
     return Steps(
         CheckViewProperty(CookieControlsContentView::kToggleButton,
-                          &views::ToggleButton::GetIsOn, false),
+                          &views::ToggleButton::GetIsOn,
+                          HasNewTrackingProtectionUi()),
         CheckViewProperty(
             CookieControlsContentView::kTitle, &views::Label::GetText,
             l10n_util::GetStringUTF16(

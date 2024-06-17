@@ -22,6 +22,7 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/tracking_protection_feature.h"
 #include "components/favicon/core/favicon_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
 #include "components/strings/grit/privacy_sandbox_strings.h"
 #include "content/public/browser/navigation_controller.h"
@@ -56,6 +57,11 @@ constexpr UrlIdentity::FormatOptions kUrlIdentityOptions{
 
 const gfx::VectorIcon& GetToggleIcon(bool enabled) {
   return enabled ? views::kEyeRefreshIcon : views::kEyeCrossedRefreshIcon;
+}
+
+bool IsNewUiEnabled() {
+  return base::FeatureList::IsEnabled(
+      privacy_sandbox::kTrackingProtectionSettingsLaunch);
 }
 
 }  // namespace
@@ -149,7 +155,8 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesAllowedState(
   bubble_view_->UpdateTitle(l10n_util::GetStringUTF16(bubble_title));
   bubble_view_->GetContentView()->UpdateContentLabels(
       label_title, l10n_util::GetStringUTF16(label_description));
-  bubble_view_->GetContentView()->SetToggleIsOn(true);
+  // New UB UI toggle matches protections state (off when protections off).
+  bubble_view_->GetContentView()->SetToggleIsOn(!IsNewUiEnabled());
   bubble_view_->GetContentView()->SetToggleIcon(GetToggleIcon(true));
 }
 
@@ -163,7 +170,8 @@ void CookieControlsBubbleViewController::ApplyThirdPartyCookiesBlockedState() {
           IDS_COOKIE_CONTROLS_BUBBLE_SITE_NOT_WORKING_TITLE),
       l10n_util::GetStringUTF16(
           IDS_TRACKING_PROTECTION_BUBBLE_SITE_NOT_WORKING_DESCRIPTION));
-  bubble_view_->GetContentView()->SetToggleIsOn(false);
+  // New UB UI toggle matches protections state (on when protections on).
+  bubble_view_->GetContentView()->SetToggleIsOn(IsNewUiEnabled());
   bubble_view_->GetContentView()->SetToggleIcon(GetToggleIcon(false));
 }
 
@@ -297,8 +305,10 @@ void CookieControlsBubbleViewController::SetCallbacks() {
 }
 
 void CookieControlsBubbleViewController::OnToggleButtonPressed(
-    bool allow_third_party_cookies) {
-  if (allow_third_party_cookies) {
+    bool toggled_on) {
+  // Protections are on iff the toggle is on in the new UI or off in the old UI.
+  bool protections_on = IsNewUiEnabled() == toggled_on;
+  if (!protections_on) {
     base::RecordAction(base::UserMetricsAction(
         "CookieControls.Bubble.AllowThirdPartyCookies"));
   } else {
@@ -306,7 +316,8 @@ void CookieControlsBubbleViewController::OnToggleButtonPressed(
         "CookieControls.Bubble.BlockThirdPartyCookies"));
   }
   controller_->SetUserChangedCookieBlockingForSite(true);
-  controller_->OnCookieBlockingEnabledForSite(!allow_third_party_cookies);
+  // Set the toggle ON when protections are ON (cookies are blocked).
+  controller_->OnCookieBlockingEnabledForSite(protections_on);
   bubble_view_->GetContentView()->NotifyAccessibilityEvent(
       ax::mojom::Event::kAlert, true);
 }
