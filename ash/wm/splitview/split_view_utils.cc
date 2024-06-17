@@ -930,7 +930,7 @@ aura::Window* GetOppositeVisibleSnappedWindow(aura::Window* window) {
 bool ShouldConsiderWindowForFasterSplitView(
     aura::Window* window,
     WindowSnapActionSource snap_action_source) {
-  if (!window_util::IsSnapGroupEnabledInClamshell()) {
+  if (!IsSnapGroupEnabledInClamshellMode()) {
     return false;
   }
 

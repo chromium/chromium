@@ -813,14 +813,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kSnapWindowSuggestions, true);
 }
 
-bool IsSnapGroupEnabledInClamshell() {
-  // TODO(b/346584829): Fix checks between `IsSnapGroupEnabled()` and
-  // `SnapGroupController::Get()` and consolidate
-  // `IsSnapGroupEnabledInClamshell()`.
-  return !Shell::Get()->IsInTabletMode() && features::IsSnapGroupEnabled() &&
-         SnapGroupController::Get();
-}
-
 bool IsInFasterSplitScreenSetupSession(const aura::Window* window) {
   SplitViewOverviewSession* split_view_overview_session =
       RootWindowController::ForWindow(window)->split_view_overview_session();
