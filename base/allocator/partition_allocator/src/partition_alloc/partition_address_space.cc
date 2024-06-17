@@ -183,7 +183,7 @@ void PartitionAddressSpace::Init() {
                  PageAccessibilityConfiguration(
                      PageAccessibilityConfiguration::kInaccessible),
                  PageTag::kPartitionAlloc, pools_fd);
-#if BUILDFLAG(IS_ANDROID)
+#if PA_BUILDFLAG(IS_ANDROID)
   // On Android, Adreno-GSL library fails to mmap if we snatch address
   // 0x400000000. Find a different address instead.
   if (setup_.regular_pool_base_address_ == 0x400000000) {
@@ -195,7 +195,7 @@ void PartitionAddressSpace::Init() {
     FreePages(setup_.regular_pool_base_address_, glued_pool_sizes);
     setup_.regular_pool_base_address_ = new_base_address;
   }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // PA_BUILDFLAG(IS_ANDROID)
   if (!setup_.regular_pool_base_address_) {
     HandlePoolAllocFailure();
   }
