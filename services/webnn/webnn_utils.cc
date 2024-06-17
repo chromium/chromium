@@ -248,23 +248,23 @@ std::string OpKindToString(mojom::Reduce::Kind kind) {
   }
 }
 
-std::string DataTypeToString(mojom::DataType type) {
+std::string DataTypeToString(OperandDataType type) {
   switch (type) {
-    case mojom::DataType::kFloat32:
+    case OperandDataType::kFloat32:
       return "float32";
-    case mojom::DataType::kFloat16:
+    case OperandDataType::kFloat16:
       return "float16";
-    case mojom::DataType::kInt32:
+    case OperandDataType::kInt32:
       return "int32";
-    case mojom::DataType::kUint32:
+    case OperandDataType::kUint32:
       return "uint32";
-    case mojom::DataType::kInt8:
+    case OperandDataType::kInt8:
       return "int8";
-    case mojom::DataType::kUint8:
+    case OperandDataType::kUint8:
       return "uint8";
-    case mojom::DataType::kInt64:
+    case OperandDataType::kInt64:
       return "int64";
-    case mojom::DataType::kUint64:
+    case OperandDataType::kUint64:
       return "uint64";
   }
 }
@@ -299,31 +299,31 @@ std::string NotSupportedOperatorError(const mojom::ElementWiseUnary& op) {
 
 std::string NotSupportedArgumentTypeError(std::string_view op_name,
                                           std::string_view argument_name,
-                                          mojom::DataType type) {
+                                          OperandDataType type) {
   return base::StrCat({"Unsupported data type ", DataTypeToString(type),
                        " for ", op_name, " argument ", argument_name, "."});
 }
 
-std::string NotSupportedConstantTypeError(mojom::DataType type) {
+std::string NotSupportedConstantTypeError(OperandDataType type) {
   return base::StrCat(
       {"Unsupported data type ", DataTypeToString(type), " for constant."});
 }
 
 std::string NotSupportedInputArgumentTypeError(std::string_view op_name,
-                                               mojom::DataType type) {
+                                               OperandDataType type) {
   return base::StrCat({"Unsupported data type ", DataTypeToString(type),
                        " for ", op_name, " argument input."});
 }
 
 std::string NotSupportedInputTypeError(std::string_view input_name,
-                                       mojom::DataType type) {
+                                       OperandDataType type) {
   return base::StrCat({"Unsupported data type ", DataTypeToString(type),
                        " for input operand ", input_name});
 }
 
 std::string NotSupportedOptionTypeError(std::string_view op_name,
                                         std::string_view option_name,
-                                        mojom::DataType type) {
+                                        OperandDataType type) {
   return base::StrCat({"Unsupported data type ", DataTypeToString(type),
                        " for ", op_name, " option ", option_name});
 }
@@ -340,27 +340,6 @@ std::vector<uint32_t> PermuteArray(base::span<const uint32_t> array,
   }
 
   return permuted_array;
-}
-
-OperandDataType ToOperandDataType(mojom::DataType data_type) {
-  switch (data_type) {
-    case mojom::DataType::kFloat32:
-      return OperandDataType::kFloat32;
-    case mojom::DataType::kFloat16:
-      return OperandDataType::kFloat16;
-    case mojom::DataType::kInt32:
-      return OperandDataType::kInt32;
-    case mojom::DataType::kUint32:
-      return OperandDataType::kUint32;
-    case mojom::DataType::kInt64:
-      return OperandDataType::kInt64;
-    case mojom::DataType::kUint64:
-      return OperandDataType::kUint64;
-    case mojom::DataType::kInt8:
-      return OperandDataType::kInt8;
-    case mojom::DataType::kUint8:
-      return OperandDataType::kUint8;
-  }
 }
 
 }  // namespace webnn

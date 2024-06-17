@@ -28,8 +28,6 @@ struct OperandDescriptor {
 
 // Represents the `MLOperand` which describes not only input and constant
 // operand, but also the output operand of operator.
-//
-// TODO(crbug.com/325598628): De-duplicate with `OperandDescriptor`.
 struct Operand {
   enum Kind {
     kInput,
@@ -38,10 +36,7 @@ struct Operand {
   };
 
   Kind kind;
-  // The data type of the operand.
-  DataType data_type;
-  // The dimensions of the operand.
-  array<uint32> dimensions;
+  OperandDescriptor descriptor;
   // The name field is only required for input/output operands of graph.
   string? name;
 };

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph.h"
 
+#include <array>
 #include <numeric>
 #include <optional>
 #include <utility>
@@ -21,6 +22,7 @@
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
@@ -100,10 +102,10 @@ struct OperandInfo {
   Vector<T> values;
 };
 
-struct OperandInfoMojo {
-  blink_mojom::DataType data_type;
-  Vector<uint32_t> dimensions;
-};
+webnn::OperandDescriptor ToDescriptor(webnn::OperandDataType data_type,
+                                      base::span<const uint32_t> shape) {
+  return *webnn::OperandDescriptor::Create(data_type, shape);
+}
 
 template <typename T>
 T* V8ToObject(V8TestingScope* scope, ScriptValue value) {
@@ -1424,7 +1426,7 @@ MLActivation* CreateActivation(V8TestingScope& scope,
 
 struct SoftmaxTester {
   OperandInfo<float> input;
-  OperandInfoMojo expected;
+  webnn::OperandDescriptor expected_descriptor;
 
   void Test(MLGraphTest& helper,
             V8TestingScope& scope,
@@ -1449,8 +1451,7 @@ struct SoftmaxTester {
     auto output_operand_iter =
         graph_info->id_to_operand_map.find(output_operand_id);
     ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
-    EXPECT_EQ(output_operand_iter->value->data_type, expected.data_type);
-    EXPECT_EQ(output_operand_iter->value->dimensions, expected.dimensions);
+    EXPECT_EQ(output_operand_iter->value->descriptor, expected_descriptor);
   }
 };
 
@@ -1464,20 +1465,23 @@ TEST_F(MLGraphTest, SoftmaxTest) {
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
   ASSERT_THAT(builder, testing::NotNull());
+
   {
     // Test building softmax with float32 input.
-    SoftmaxTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                            .dimensions = {2, 4}},
-                  .expected = {.data_type = blink_mojom::DataType::kFloat32,
-                               .dimensions = {2, 4}}}
+    SoftmaxTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                  .dimensions = {2, 4}},
+        .expected_descriptor = ToDescriptor(webnn::OperandDataType::kFloat32,
+                                            std::array<uint32_t, 2>{2, 4})}
         .Test(*this, scope, builder);
   }
   {
     // Test building softmax with float16 input.
-    SoftmaxTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
-                            .dimensions = {1, 5}},
-                  .expected = {.data_type = blink_mojom::DataType::kFloat16,
-                               .dimensions = {1, 5}}}
+    SoftmaxTester{
+        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                  .dimensions = {1, 5}},
+        .expected_descriptor = ToDescriptor(webnn::OperandDataType::kFloat16,
+                                            std::array<uint32_t, 2>{1, 5})}
         .Test(*this, scope, builder);
   }
 }
@@ -1485,7 +1489,7 @@ TEST_F(MLGraphTest, SoftmaxTest) {
 template <typename T>
 struct ConstantTester {
   OperandInfo<T> constant;
-  OperandInfoMojo expected;
+  webnn::OperandDescriptor expected_descriptor;
   Vector<T> expected_constant_data;
 
   void Test(MLGraphTest& helper,
@@ -1513,8 +1517,7 @@ struct ConstantTester {
       ASSERT_TRUE(constant_operand_iter != graph_info->id_to_operand_map.end());
       EXPECT_EQ(constant_operand_iter->value->kind,
                 blink_mojom::Operand::Kind::kConstant);
-      EXPECT_EQ(constant_operand_iter->value->data_type, expected.data_type);
-      EXPECT_EQ(constant_operand_iter->value->dimensions, expected.dimensions);
+      EXPECT_EQ(constant_operand_iter->value->descriptor, expected_descriptor);
       EXPECT_TRUE(constant_operand_iter->value->name.empty());
       // Verify the constant data in the mojo.
       const wtf_size_t constant_size =
@@ -1537,14 +1540,13 @@ TEST_F(MLGraphTest, ConstantTest) {
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
   ASSERT_THAT(builder, testing::NotNull());
-  {
-    // Test scalar constant operand.
+  {  // Test scalar constant operand.
     ConstantTester<float>{
         .constant = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                      .dimensions = {},
                      .values = {1.0}},
-        .expected = {.data_type = blink_mojom::DataType::kFloat32,
-                     .dimensions = {}},
+        .expected_descriptor = ToDescriptor(webnn::OperandDataType::kFloat32,
+                                            std::array<uint32_t, 0>{}),
         .expected_constant_data = {1.0}}
         .Test(*this, scope, builder);
   }
@@ -1554,8 +1556,8 @@ TEST_F(MLGraphTest, ConstantTest) {
         .constant = {.data_type = V8MLOperandDataType::Enum::kFloat32,
                      .dimensions = {2, 3},
                      .values = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0}},
-        .expected = {.data_type = blink_mojom::DataType::kFloat32,
-                     .dimensions = {2, 3}},
+        .expected_descriptor = ToDescriptor(webnn::OperandDataType::kFloat32,
+                                            std::array<uint32_t, 2>{2, 3}),
         .expected_constant_data = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0}}
         .Test(*this, scope, builder);
   }
@@ -1565,8 +1567,8 @@ TEST_F(MLGraphTest, ConstantTest) {
         .constant = {.data_type = V8MLOperandDataType::Enum::kFloat16,
                      .dimensions = {2, 3},
                      .values = {1, 2, 3, 4, 5, 6}},
-        .expected = {.data_type = blink_mojom::DataType::kFloat16,
-                     .dimensions = {2, 3}},
+        .expected_descriptor = ToDescriptor(webnn::OperandDataType::kFloat16,
+                                            std::array<uint32_t, 2>{2, 3}),
         .expected_constant_data = {1, 2, 3, 4, 5, 6}}
         .Test(*this, scope, builder);
   }
@@ -1576,8 +1578,8 @@ TEST_F(MLGraphTest, ConstantTest) {
         .constant = {.data_type = V8MLOperandDataType::Enum::kInt32,
                      .dimensions = {2, 3},
                      .values = {1, 2, 3, 4, 5, 6}},
-        .expected = {.data_type = blink_mojom::DataType::kInt32,
-                     .dimensions = {2, 3}},
+        .expected_descriptor = ToDescriptor(webnn::OperandDataType::kInt32,
+                                            std::array<uint32_t, 2>{2, 3}),
         .expected_constant_data = {1, 2, 3, 4, 5, 6}}
         .Test(*this, scope, builder);
   }
@@ -1587,8 +1589,8 @@ TEST_F(MLGraphTest, ConstantTest) {
         .constant = {.data_type = V8MLOperandDataType::Enum::kInt8,
                      .dimensions = {2, 3},
                      .values = {1, 2, 3, 4, 5, 6}},
-        .expected = {.data_type = blink_mojom::DataType::kInt8,
-                     .dimensions = {2, 3}},
+        .expected_descriptor = ToDescriptor(webnn::OperandDataType::kInt8,
+                                            std::array<uint32_t, 2>{2, 3}),
         .expected_constant_data = {1, 2, 3, 4, 5, 6}}
         .Test(*this, scope, builder);
   }
@@ -1597,7 +1599,7 @@ TEST_F(MLGraphTest, ConstantTest) {
 struct CastTester {
   OperandInfo<float> input;
   V8MLOperandDataType::Enum output_data_type;
-  OperandInfoMojo expected_operand;
+  webnn::OperandDescriptor expected_descriptor;
 
   void Test(MLGraphTest& helper,
             V8TestingScope& scope,
@@ -1627,10 +1629,7 @@ struct CastTester {
     auto output_operand_iter =
         graph_info->id_to_operand_map.find(output_operand_id);
     ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
-    EXPECT_EQ(output_operand_iter->value->data_type,
-              expected_operand.data_type);
-    EXPECT_EQ(output_operand_iter->value->dimensions,
-              expected_operand.dimensions);
+    EXPECT_EQ(output_operand_iter->value->descriptor, expected_descriptor);
   }
 };
 
@@ -1643,196 +1642,188 @@ TEST_F(MLGraphTest, CastTester) {
   // Create WebNN Context with GPU device type.
   options->setDeviceType(V8MLDeviceType::Enum::kGpu);
   auto* builder = CreateGraphBuilder(scope, options);
+  const std::array<uint32_t, 2> shape{2, 2};
+  const Vector<uint32_t> wtf_shape(shape);
   {
     CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                         .dimensions = {2, 2}},
+                         .dimensions = wtf_shape},
                .output_data_type = V8MLOperandDataType::Enum::kInt32,
-               .expected_operand = {.data_type = blink_mojom::DataType::kInt32,
-                                    .dimensions = {2, 2}}}
-        .Test(*this, scope, builder);
-    CastTester{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                  .dimensions = {2, 2}},
-        .output_data_type = V8MLOperandDataType::Enum::kFloat16,
-        .expected_operand = {.data_type = blink_mojom::DataType::kFloat16,
-                             .dimensions = {2, 2}}}
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kInt32, shape)}
         .Test(*this, scope, builder);
     CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                         .dimensions = {2, 2}},
-               .output_data_type = V8MLOperandDataType::Enum::kUint32,
-               .expected_operand = {.data_type = blink_mojom::DataType::kUint32,
-                                    .dimensions = {2, 2}}}
+                         .dimensions = wtf_shape},
+               .output_data_type = V8MLOperandDataType::Enum::kFloat16,
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kFloat16, shape)}
         .Test(*this, scope, builder);
     CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                         .dimensions = {2, 2}},
-               .output_data_type = V8MLOperandDataType::Enum::kInt8,
-               .expected_operand = {.data_type = blink_mojom::DataType::kInt8,
-                                    .dimensions = {2, 2}}}
+                         .dimensions = wtf_shape},
+               .output_data_type = V8MLOperandDataType::Enum::kUint32,
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kUint32, shape)}
         .Test(*this, scope, builder);
     CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
-                         .dimensions = {2, 2}},
-               .output_data_type = V8MLOperandDataType::Enum::kUint8,
-               .expected_operand = {.data_type = blink_mojom::DataType::kUint8,
-                                    .dimensions = {2, 2}}}
-        .Test(*this, scope, builder);
-    CastTester{
-        .input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
-                  .dimensions = {2, 2}},
-        .output_data_type = V8MLOperandDataType::Enum::kFloat32,
-        .expected_operand = {.data_type = blink_mojom::DataType::kFloat32,
-                             .dimensions = {2, 2}}}
-        .Test(*this, scope, builder);
-    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
-                         .dimensions = {2, 2}},
-               .output_data_type = V8MLOperandDataType::Enum::kInt32,
-               .expected_operand = {.data_type = blink_mojom::DataType::kInt32,
-                                    .dimensions = {2, 2}}}
-        .Test(*this, scope, builder);
-    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
-                         .dimensions = {2, 2}},
-               .output_data_type = V8MLOperandDataType::Enum::kUint32,
-               .expected_operand = {.data_type = blink_mojom::DataType::kUint32,
-                                    .dimensions = {2, 2}}}
-        .Test(*this, scope, builder);
-    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
-                         .dimensions = {2, 2}},
+                         .dimensions = wtf_shape},
                .output_data_type = V8MLOperandDataType::Enum::kInt8,
-               .expected_operand = {.data_type = blink_mojom::DataType::kInt8,
-                                    .dimensions = {2, 2}}}
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kInt8, shape)}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat32,
+                         .dimensions = wtf_shape},
+               .output_data_type = V8MLOperandDataType::Enum::kUint8,
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kUint8, shape)}
         .Test(*this, scope, builder);
     CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
-                         .dimensions = {2, 2}},
+                         .dimensions = wtf_shape},
+               .output_data_type = V8MLOperandDataType::Enum::kFloat32,
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kFloat32, shape)}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                         .dimensions = wtf_shape},
+               .output_data_type = V8MLOperandDataType::Enum::kInt32,
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kInt32, shape)}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                         .dimensions = wtf_shape},
+               .output_data_type = V8MLOperandDataType::Enum::kUint32,
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kUint32, shape)}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                         .dimensions = wtf_shape},
+               .output_data_type = V8MLOperandDataType::Enum::kInt8,
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kInt8, shape)}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kFloat16,
+                         .dimensions = wtf_shape},
                .output_data_type = V8MLOperandDataType::Enum::kUint8,
-               .expected_operand = {.data_type = blink_mojom::DataType::kUint8,
-                                    .dimensions = {2, 2}}}
-        .Test(*this, scope, builder);
-    CastTester{
-        .input = {.data_type = V8MLOperandDataType::Enum::kInt32,
-                  .dimensions = {2, 2}},
-        .output_data_type = V8MLOperandDataType::Enum::kFloat32,
-        .expected_operand = {.data_type = blink_mojom::DataType::kFloat32,
-                             .dimensions = {2, 2}}}
-        .Test(*this, scope, builder);
-    CastTester{
-        .input = {.data_type = V8MLOperandDataType::Enum::kInt32,
-                  .dimensions = {2, 2}},
-        .output_data_type = V8MLOperandDataType::Enum::kFloat16,
-        .expected_operand = {.data_type = blink_mojom::DataType::kFloat16,
-                             .dimensions = {2, 2}}}
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kUint8, shape)}
         .Test(*this, scope, builder);
     CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt32,
-                         .dimensions = {2, 2}},
-               .output_data_type = V8MLOperandDataType::Enum::kUint32,
-               .expected_operand = {.data_type = blink_mojom::DataType::kUint32,
-                                    .dimensions = {2, 2}}}
+                         .dimensions = wtf_shape},
+               .output_data_type = V8MLOperandDataType::Enum::kFloat32,
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kFloat32, shape)}
         .Test(*this, scope, builder);
     CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt32,
-                         .dimensions = {2, 2}},
-               .output_data_type = V8MLOperandDataType::Enum::kInt8,
-               .expected_operand = {.data_type = blink_mojom::DataType::kInt8,
-                                    .dimensions = {2, 2}}}
+                         .dimensions = wtf_shape},
+               .output_data_type = V8MLOperandDataType::Enum::kFloat16,
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kFloat16, shape)}
         .Test(*this, scope, builder);
     CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt32,
-                         .dimensions = {2, 2}},
-               .output_data_type = V8MLOperandDataType::Enum::kUint8,
-               .expected_operand = {.data_type = blink_mojom::DataType::kUint8,
-                                    .dimensions = {2, 2}}}
-        .Test(*this, scope, builder);
-    CastTester{
-        .input = {.data_type = V8MLOperandDataType::Enum::kUint32,
-                  .dimensions = {2, 2}},
-        .output_data_type = V8MLOperandDataType::Enum::kFloat32,
-        .expected_operand = {.data_type = blink_mojom::DataType::kFloat32,
-                             .dimensions = {2, 2}}}
-        .Test(*this, scope, builder);
-    CastTester{
-        .input = {.data_type = V8MLOperandDataType::Enum::kUint32,
-                  .dimensions = {2, 2}},
-        .output_data_type = V8MLOperandDataType::Enum::kFloat16,
-        .expected_operand = {.data_type = blink_mojom::DataType::kFloat16,
-                             .dimensions = {2, 2}}}
-        .Test(*this, scope, builder);
-    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint32,
-                         .dimensions = {2, 2}},
-               .output_data_type = V8MLOperandDataType::Enum::kInt32,
-               .expected_operand = {.data_type = blink_mojom::DataType::kInt32,
-                                    .dimensions = {2, 2}}}
-        .Test(*this, scope, builder);
-    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint32,
-                         .dimensions = {2, 2}},
-               .output_data_type = V8MLOperandDataType::Enum::kInt8,
-               .expected_operand = {.data_type = blink_mojom::DataType::kInt8,
-                                    .dimensions = {2, 2}}}
-        .Test(*this, scope, builder);
-    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint32,
-                         .dimensions = {2, 2}},
-               .output_data_type = V8MLOperandDataType::Enum::kUint8,
-               .expected_operand = {.data_type = blink_mojom::DataType::kUint8,
-                                    .dimensions = {2, 2}}}
-        .Test(*this, scope, builder);
-    CastTester{
-        .input = {.data_type = V8MLOperandDataType::Enum::kInt8,
-                  .dimensions = {2, 2}},
-        .output_data_type = V8MLOperandDataType::Enum::kFloat32,
-        .expected_operand = {.data_type = blink_mojom::DataType::kFloat32,
-                             .dimensions = {2, 2}}}
-        .Test(*this, scope, builder);
-    CastTester{
-        .input = {.data_type = V8MLOperandDataType::Enum::kInt8,
-                  .dimensions = {2, 2}},
-        .output_data_type = V8MLOperandDataType::Enum::kFloat16,
-        .expected_operand = {.data_type = blink_mojom::DataType::kFloat16,
-                             .dimensions = {2, 2}}}
-        .Test(*this, scope, builder);
-    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt8,
-                         .dimensions = {2, 2}},
+                         .dimensions = wtf_shape},
                .output_data_type = V8MLOperandDataType::Enum::kUint32,
-               .expected_operand = {.data_type = blink_mojom::DataType::kUint32,
-                                    .dimensions = {2, 2}}}
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kUint32, shape)}
         .Test(*this, scope, builder);
-    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt8,
-                         .dimensions = {2, 2}},
-               .output_data_type = V8MLOperandDataType::Enum::kUint8,
-               .expected_operand = {.data_type = blink_mojom::DataType::kUint8,
-                                    .dimensions = {2, 2}}}
-        .Test(*this, scope, builder);
-    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt8,
-                         .dimensions = {2, 2}},
-               .output_data_type = V8MLOperandDataType::Enum::kInt32,
-               .expected_operand = {.data_type = blink_mojom::DataType::kInt32,
-                                    .dimensions = {2, 2}}}
-        .Test(*this, scope, builder);
-    CastTester{
-        .input = {.data_type = V8MLOperandDataType::Enum::kUint8,
-                  .dimensions = {2, 2}},
-        .output_data_type = V8MLOperandDataType::Enum::kFloat32,
-        .expected_operand = {.data_type = blink_mojom::DataType::kFloat32,
-                             .dimensions = {2, 2}}}
-        .Test(*this, scope, builder);
-    CastTester{
-        .input = {.data_type = V8MLOperandDataType::Enum::kUint8,
-                  .dimensions = {2, 2}},
-        .output_data_type = V8MLOperandDataType::Enum::kFloat16,
-        .expected_operand = {.data_type = blink_mojom::DataType::kFloat16,
-                             .dimensions = {2, 2}}}
-        .Test(*this, scope, builder);
-    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint8,
-                         .dimensions = {2, 2}},
-               .output_data_type = V8MLOperandDataType::Enum::kInt32,
-               .expected_operand = {.data_type = blink_mojom::DataType::kInt32,
-                                    .dimensions = {2, 2}}}
-        .Test(*this, scope, builder);
-    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint8,
-                         .dimensions = {2, 2}},
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt32,
+                         .dimensions = wtf_shape},
                .output_data_type = V8MLOperandDataType::Enum::kInt8,
-               .expected_operand = {.data_type = blink_mojom::DataType::kInt8,
-                                    .dimensions = {2, 2}}}
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kInt8, shape)}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt32,
+                         .dimensions = wtf_shape},
+               .output_data_type = V8MLOperandDataType::Enum::kUint8,
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kUint8, shape)}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint32,
+                         .dimensions = wtf_shape},
+               .output_data_type = V8MLOperandDataType::Enum::kFloat32,
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kFloat32, shape)}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint32,
+                         .dimensions = wtf_shape},
+               .output_data_type = V8MLOperandDataType::Enum::kFloat16,
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kFloat16, shape)}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint32,
+                         .dimensions = wtf_shape},
+               .output_data_type = V8MLOperandDataType::Enum::kInt32,
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kInt32, shape)}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint32,
+                         .dimensions = wtf_shape},
+               .output_data_type = V8MLOperandDataType::Enum::kInt8,
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kInt8, shape)}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint32,
+                         .dimensions = wtf_shape},
+               .output_data_type = V8MLOperandDataType::Enum::kUint8,
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kUint8, shape)}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt8,
+                         .dimensions = wtf_shape},
+               .output_data_type = V8MLOperandDataType::Enum::kFloat32,
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kFloat32, shape)}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt8,
+                         .dimensions = wtf_shape},
+               .output_data_type = V8MLOperandDataType::Enum::kFloat16,
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kFloat16, shape)}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt8,
+                         .dimensions = wtf_shape},
+               .output_data_type = V8MLOperandDataType::Enum::kUint32,
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kUint32, shape)}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt8,
+                         .dimensions = wtf_shape},
+               .output_data_type = V8MLOperandDataType::Enum::kUint8,
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kUint8, shape)}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kInt8,
+                         .dimensions = wtf_shape},
+               .output_data_type = V8MLOperandDataType::Enum::kInt32,
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kInt32, shape)}
         .Test(*this, scope, builder);
     CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint8,
-                         .dimensions = {2, 2}},
+                         .dimensions = wtf_shape},
+               .output_data_type = V8MLOperandDataType::Enum::kFloat32,
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kFloat32, shape)}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                         .dimensions = wtf_shape},
+               .output_data_type = V8MLOperandDataType::Enum::kFloat16,
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kFloat16, shape)}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                         .dimensions = wtf_shape},
                .output_data_type = V8MLOperandDataType::Enum::kInt32,
-               .expected_operand = {.data_type = blink_mojom::DataType::kInt32,
-                                    .dimensions = {2, 2}}}
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kInt32, shape)}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                         .dimensions = wtf_shape},
+               .output_data_type = V8MLOperandDataType::Enum::kInt8,
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kInt8, shape)}
+        .Test(*this, scope, builder);
+    CastTester{.input = {.data_type = V8MLOperandDataType::Enum::kUint8,
+                         .dimensions = wtf_shape},
+               .output_data_type = V8MLOperandDataType::Enum::kInt32,
+               .expected_descriptor =
+                   ToDescriptor(webnn::OperandDataType::kInt32, shape)}
         .Test(*this, scope, builder);
   }
 }
