@@ -217,6 +217,25 @@ each histogram.
   </summary>
 </histogram>
 
+<histogram name="PerformanceManager.LoadingNotQuiescentPageCount.{Visibility}"
+    units="pages" expires_after="2024-12-10">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Recorded every 30 seconds with the number of PageNodes that have started
+    loading and not reached quiescence at the end of the interval (ie. in
+    LoadingState kLoading or kLoadedBusy). This variant records pages that are
+    {Visibility} for the entire load. PerformanceManager.QuiescentPageCount is
+    recorded at the same time for comparison.
+  </summary>
+  <token key="Visibility">
+    <variant name="All" summary="in any visibility state"/>
+    <variant name="Hidden" summary="hidden"/>
+    <variant name="MixedVisibility" summary="in a mix of visibility states"/>
+    <variant name="Visible" summary="visible"/>
+  </token>
+</histogram>
+
 <histogram
     name="PerformanceManager.PerformanceInterventions.CPU.AverageBackgroundCPU.{Timing}"
     units="%" expires_after="2024-11-03">
@@ -379,6 +398,19 @@ each histogram.
     (active, playing audio, etc) tabs.
   </summary>
   <token key="Timing" variants="PerformanceInterventionsCPUTiming"/>
+</histogram>
+
+<histogram name="PerformanceManager.QuiescentPageCount" units="pages"
+    expires_after="2024-12-10">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Recorded every 30 seconds with the number of PageNodes that have not started
+    loading (ie. in LoadingState kLoadingNotStarted or kLoadingTimedOut) or have
+    reached quiescence (ie. in LoadingState kLoadedIdle) at the end of the
+    interval. PerformanceManager.LoadingNotQuiescentPageCount is recorded at the
+    same time for comparison.
+  </summary>
 </histogram>
 
 <histogram name="PerformanceManager.SiteDB.DatabaseInit"
