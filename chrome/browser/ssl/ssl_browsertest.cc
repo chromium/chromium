@@ -5689,13 +5689,9 @@ class SSLUITestCustomCACerts : public SSLUITestNoCert {
   raw_ptr<Profile> profile_2_;
 
   // The NSSCertDatabase for |profile_1_|.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
   raw_ptr<net::NSSCertDatabase> profile_1_cert_db_;
 
   // The NSSCertDatabase for |profile_2_|.
-  // This field is not a raw_ptr<> because it was filtered by the rewriter
-  // for: #addr-of
   raw_ptr<net::NSSCertDatabase> profile_2_cert_db_;
 
   // Policy provider for |profile_2_|. Overrides any other policy providers.
