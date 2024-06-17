@@ -65,8 +65,8 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/peak_gpu_memory_tracker_factory.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/peak_gpu_memory_tracker.h"
 #include "ipc/ipc_message.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/models/list_selection_model.h"
@@ -285,9 +285,9 @@ bool BrowserTabStripController::IsTabPinned(int model_index) const {
 
 void BrowserTabStripController::SelectTab(int model_index,
                                           const ui::Event& event) {
-  std::unique_ptr<content::PeakGpuMemoryTracker> tracker =
-      content::PeakGpuMemoryTracker::Create(
-          content::PeakGpuMemoryTracker::Usage::CHANGE_TAB);
+  std::unique_ptr<input::PeakGpuMemoryTracker> tracker =
+      content::PeakGpuMemoryTrackerFactory::Create(
+          input::PeakGpuMemoryTracker::Usage::CHANGE_TAB);
 
   TabStripUserGestureDetails gesture_detail(
       TabStripUserGestureDetails::GestureType::kOther, event.time_stamp());
@@ -303,7 +303,7 @@ void BrowserTabStripController::SelectTab(int model_index,
   tabstrip_->GetWidget()
       ->GetCompositor()
       ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
-          [](std::unique_ptr<content::PeakGpuMemoryTracker> tracker,
+          [](std::unique_ptr<input::PeakGpuMemoryTracker> tracker,
              const viz::FrameTimingDetails& frame_timing_details) {
             // This callback will be ran once the ui::Compositor presents the
             // next frame for the |tabstrip_|. The destruction of |tracker| will

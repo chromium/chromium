@@ -14,6 +14,7 @@
 #include "components/input/fling_scheduler_base.h"
 #include "components/input/input_disposition_handler.h"
 #include "components/input/input_router_impl.h"
+#include "components/input/peak_gpu_memory_tracker.h"
 #include "content/common/content_export.h"
 #include "content/common/input/input_injector.mojom-shared.h"
 #include "content/common/input/render_input_router_delegate.h"
@@ -29,10 +30,13 @@
 #include "third_party/blink/public/mojom/page/widget.mojom.h"
 #include "third_party/blink/public/mojom/widget/platform_widget.mojom.h"
 
+namespace input {
+class PeakGpuMemoryTracker;
+}  // namespace input
+
 namespace content {
 
 class MockRenderInputRouter;
-class PeakGpuMemoryTracker;
 
 // RenderInputRouter is currently owned by RenderWidgetHostImpl and is being
 // used for forwarding input events. It maintains mojo connections
@@ -208,7 +212,7 @@ class CONTENT_EXPORT RenderInputRouter : public input::InputRouterImplClient,
   bool is_in_touchpad_gesture_fling_ = false;
   std::unique_ptr<RenderInputRouterLatencyTracker> latency_tracker_;
 
-  std::unique_ptr<PeakGpuMemoryTracker> scroll_peak_gpu_mem_tracker_;
+  std::unique_ptr<input::PeakGpuMemoryTracker> scroll_peak_gpu_mem_tracker_;
 
   raw_ptr<input::InputRouterImplClient> input_router_impl_client_;
   raw_ptr<RenderInputRouterDelegate> delegate_;

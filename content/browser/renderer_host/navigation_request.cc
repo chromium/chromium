@@ -122,6 +122,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/origin_trials_controller_delegate.h"
+#include "content/public/browser/peak_gpu_memory_tracker_factory.h"
 #include "content/public/browser/reduce_accept_language_controller_delegate.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/runtime_feature_state/runtime_feature_state_document_data.h"
@@ -132,7 +133,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/origin_util.h"
-#include "content/public/common/peak_gpu_memory_tracker.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -1770,8 +1770,8 @@ NavigationRequest::NavigationRequest(
       common_params_->url, *common_params_->referrer);
 
   if (IsInPrimaryMainFrame()) {
-    loading_mem_tracker_ =
-        PeakGpuMemoryTracker::Create(PeakGpuMemoryTracker::Usage::PAGE_LOAD);
+    loading_mem_tracker_ = PeakGpuMemoryTrackerFactory::Create(
+        input::PeakGpuMemoryTracker::Usage::PAGE_LOAD);
   }
 
   if (frame_tree_node_->IsInFencedFrameTree()) {
@@ -9238,7 +9238,7 @@ bool NavigationRequest::CheckPermissionsPoliciesForFencedFrames(
   return true;
 }
 
-std::unique_ptr<PeakGpuMemoryTracker>
+std::unique_ptr<input::PeakGpuMemoryTracker>
 NavigationRequest::TakePeakGpuMemoryTracker() {
   return std::move(loading_mem_tracker_);
 }

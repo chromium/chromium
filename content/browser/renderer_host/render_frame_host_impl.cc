@@ -203,7 +203,6 @@
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/common/page_visibility_state.h"
-#include "content/public/common/peak_gpu_memory_tracker.h"
 #include "content/public/common/referrer.h"
 #include "content/public/common/referrer_type_converters.h"
 #include "content/public/common/url_constants.h"

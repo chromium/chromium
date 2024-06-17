@@ -7,7 +7,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
-#include "content/public/common/peak_gpu_memory_tracker.h"
+#include "components/input/peak_gpu_memory_tracker.h"
 #include "gpu/ipc/common/gpu_peak_memory.h"
 
 namespace content {
@@ -26,7 +26,7 @@ namespace content {
 // - |allocation_per_source|: A breakdown of the peak memory usage, showing how
 //                            much was allocated by each source.
 void PeakGpuMemoryCallback(
-    PeakGpuMemoryTracker::Usage usage,
+    input::PeakGpuMemoryTracker::Usage usage,
     base::OnceClosure testing_callback,
     const uint64_t peak_memory,
     const base::flat_map<gpu::GpuPeakMemoryAllocationSource, uint64_t>&

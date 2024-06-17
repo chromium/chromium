@@ -184,7 +184,6 @@ source_set("common_sources") {
     "page_type.h",
     "page_visibility_state.h",
     "page_zoom.h",
-    "peak_gpu_memory_tracker.h",
     "persistent_notification_status.h",
     "process_type.h",
     "profiling.cc",

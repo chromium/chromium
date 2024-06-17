@@ -32,11 +32,14 @@
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
 #include "url/gurl.h"
 
+namespace input {
+class PeakGpuMemoryTracker;
+}  // namespace input
+
 namespace content {
 
 class NavigationRequest;
 class PageDelegate;
-class PeakGpuMemoryTracker;
 class RenderFrameHostImpl;
 
 // This implements the Page interface that is exposed to embedders of content,
@@ -370,7 +373,7 @@ class CONTENT_EXPORT PageImpl : public Page {
   // Created by NavigationRequest; ownership is maintained until the frame has
   // stopped loading, or we navigate away from the page before it finishes
   // loading.
-  std::unique_ptr<PeakGpuMemoryTracker> loading_memory_tracker_;
+  std::unique_ptr<input::PeakGpuMemoryTracker> loading_memory_tracker_;
 
   // Whether the page is overriding the user agent or not.
   bool is_overriding_user_agent_ = false;

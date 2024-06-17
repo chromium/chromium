@@ -35,6 +35,7 @@ component("input") {
     "native_web_keyboard_event.h",
     "passthrough_touch_event_queue.cc",
     "passthrough_touch_event_queue.h",
+    "peak_gpu_memory_tracker.h",
     "switches.cc",
     "switches.h",
     "tap_suppression_controller.cc",

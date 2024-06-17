@@ -92,6 +92,7 @@
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_types.h"
+#include "content/public/browser/peak_gpu_memory_tracker_factory.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
 #include "content/public/browser/render_process_host_priority_client.h"
 #include "content/public/browser/render_widget_host_iterator.h"
@@ -101,7 +102,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/drop_data.h"
-#include "content/public/common/peak_gpu_memory_tracker.h"
 #include "content/public/common/result_codes.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
@@ -2525,10 +2525,10 @@ bool RenderWidgetHostImpl::PreHandleGestureEvent(
   return delegate()->PreHandleGestureEvent(event);
 }
 
-std::unique_ptr<PeakGpuMemoryTracker>
+std::unique_ptr<input::PeakGpuMemoryTracker>
 RenderWidgetHostImpl::MakePeakGpuMemoryTracker(
-    PeakGpuMemoryTracker::Usage usage) {
-  return PeakGpuMemoryTracker::Create(usage);
+    input::PeakGpuMemoryTracker::Usage usage) {
+  return PeakGpuMemoryTrackerFactory::Create(usage);
 }
 
 void RenderWidgetHostImpl::ShowPopup(const gfx::Rect& initial_screen_rect,
