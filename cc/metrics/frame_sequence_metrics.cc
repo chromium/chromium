@@ -103,6 +103,12 @@ std::string GetCheckerboardingV3HistogramName(FrameSequenceTrackerType type) {
        FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type)});
 }
 
+std::string GetCheckerboardingV4HistogramName(FrameSequenceTrackerType type) {
+  return base::StrCat(
+      {"Graphics.Smoothness.Checkerboarding4.",
+       FrameSequenceTracker::GetFrameSequenceTrackerTypeName(type)});
+}
+
 std::string GetCheckerboardingV3ThreadedHistogramName(
     FrameSequenceTrackerType type,
     const char* thread_name) {
@@ -142,7 +148,7 @@ FrameSequenceMetrics::~FrameSequenceMetrics() {
   // However we may not be merged before teardown, if so terminate the trace
   // now.
   if (trace_data_.trace_id) {
-    trace_data_.Terminate(v3_, GetEffectiveThread());
+    trace_data_.Terminate(v3_, v4_, GetEffectiveThread());
   }
 }
 
@@ -214,6 +220,12 @@ void FrameSequenceMetrics::Merge(
     v3_.last_frame_delta = metrics->v3_.last_frame_delta;
     v3_.no_update_duration = metrics->v3_.no_update_duration;
   }
+  v4_.frames_checkerboarded += metrics->v4_.frames_checkerboarded;
+  v4_.frames_checkerboarded_need_raster +=
+      metrics->v4_.frames_checkerboarded_need_raster;
+  v4_.frames_checkerboarded_need_record +=
+      metrics->v4_.frames_checkerboarded_need_record;
+  DCHECK_EQ(v3_.frames_missing_content, v4_.frames_checkerboarded_need_raster);
 }
 
 bool FrameSequenceMetrics::HasEnoughDataForReporting() const {
@@ -236,7 +248,7 @@ void FrameSequenceMetrics::AdoptTrace(FrameSequenceMetrics* adopt_from) {
 
 void FrameSequenceMetrics::ReportMetrics() {
   // Terminates |trace_data_| for all types of FrameSequenceTracker.
-  trace_data_.Terminate(v3_, GetEffectiveThread());
+  trace_data_.Terminate(v3_, v4_, GetEffectiveThread());
 
   if (type_ == FrameSequenceTrackerType::kCustom) {
     DCHECK(!custom_reporter_.is_null());
@@ -252,6 +264,9 @@ void FrameSequenceMetrics::ReportMetrics() {
     v3_.frames_missing_content = 0u;
     v3_.no_update_count = 0u;
     v3_.jank_count = 0u;
+    v4_.frames_checkerboarded = 0u;
+    v4_.frames_checkerboarded_need_raster = 0u;
+    v4_.frames_checkerboarded_need_record = 0u;
     return;
   }
 
@@ -261,43 +276,69 @@ void FrameSequenceMetrics::ReportMetrics() {
       ShouldReportForInteraction(type(), thread_type, thread_type);
 
   if (v3_.frames_expected >= kMinFramesForThroughputMetric) {
-    const int percent_missing_content =
-        std::ceil(100. * v3_.frames_missing_content /
-                  static_cast<double>(v3_.frames_expected));
-    const int percent =
-        v3_.frames_expected == 0
-            ? 0
-            : std::ceil(100. * v3_.frames_dropped /
-                        static_cast<double>(v3_.frames_expected));
-    const int percent_jank = std::ceil(
-        100. * v3_.jank_count / static_cast<double>(v3_.frames_expected));
+    auto get_percent = [this](uint32_t frames) -> int {
+      if (v3_.frames_expected == 0) {
+        return 0;
+      }
+      return std::ceil(100. * frames /
+                       static_cast<double>(v3_.frames_expected));
+    };
+
+    const int percent_missing_content = get_percent(v3_.frames_missing_content);
+    const int percent_dropped = get_percent(v3_.frames_dropped);
+    const int percent_jank = get_percent(v3_.jank_count);
+
+    // v4.
+    const int percent_checkerboarded = get_percent(v4_.frames_checkerboarded);
+    const int percent_checkerboarded_need_raster =
+        get_percent(v4_.frames_checkerboarded_need_raster);
+    const int percent_checkerboarded_need_record =
+        get_percent(v4_.frames_checkerboarded_need_record);
 
     if (is_animation) {
       UMA_HISTOGRAM_PERCENTAGE(
           "Graphics.Smoothness.Checkerboarding3.AllAnimations",
           percent_missing_content);
+      UMA_HISTOGRAM_PERCENTAGE(
+          "Graphics.Smoothness.Checkerboarding4.AllAnimations",
+          percent_checkerboarded);
       UMA_HISTOGRAM_PERCENTAGE("Graphics.Smoothness.Jank3.AllAnimations",
                                percent_jank);
       UMA_HISTOGRAM_PERCENTAGE(
-          "Graphics.Smoothness.PercentDroppedFrames3.AllAnimations", percent);
+          "Graphics.Smoothness.PercentDroppedFrames3.AllAnimations",
+          percent_dropped);
     }
     if (is_interaction) {
       UMA_HISTOGRAM_PERCENTAGE(
           "Graphics.Smoothness.Checkerboarding3.AllInteractions",
           percent_missing_content);
+      UMA_HISTOGRAM_PERCENTAGE(
+          "Graphics.Smoothness.Checkerboarding4.AllInteractions",
+          percent_checkerboarded);
       UMA_HISTOGRAM_PERCENTAGE("Graphics.Smoothness.Jank3.AllInteractions",
                                percent_jank);
       UMA_HISTOGRAM_PERCENTAGE(
-          "Graphics.Smoothness.PercentDroppedFrames3.AllInteractions", percent);
+          "Graphics.Smoothness.PercentDroppedFrames3.AllInteractions",
+          percent_dropped);
     }
     if (is_animation || is_interaction) {
       UMA_HISTOGRAM_PERCENTAGE(
           "Graphics.Smoothness.Checkerboarding3.AllSequences",
           percent_missing_content);
+      UMA_HISTOGRAM_PERCENTAGE(
+          "Graphics.Smoothness.Checkerboarding4.AllSequences",
+          percent_checkerboarded);
+      UMA_HISTOGRAM_PERCENTAGE(
+          "Graphics.Smoothness.CheckerboardingNeedRaster4.AllSequences",
+          percent_checkerboarded_need_raster);
+      UMA_HISTOGRAM_PERCENTAGE(
+          "Graphics.Smoothness.CheckerboardingNeedRecord4.AllSequences",
+          percent_checkerboarded_need_record);
       UMA_HISTOGRAM_PERCENTAGE("Graphics.Smoothness.Jank3.AllSequences",
                                percent_jank);
       UMA_HISTOGRAM_PERCENTAGE(
-          "Graphics.Smoothness.PercentDroppedFrames3.AllSequences", percent);
+          "Graphics.Smoothness.PercentDroppedFrames3.AllSequences",
+          percent_dropped);
     }
 
     const char* thread_name = GetThreadTypeName(thread_type);
@@ -305,7 +346,7 @@ void FrameSequenceMetrics::ReportMetrics() {
     STATIC_HISTOGRAM_POINTER_GROUP(
         GetThroughputV3HistogramName(type(), thread_name),
         GetIndexForMetric(thread_type, type_), kMaximumHistogramIndex,
-        Add(percent),
+        Add(percent_dropped),
         base::LinearHistogram::FactoryGet(
             GetThroughputV3HistogramName(type(), thread_name), 1, 100, 101,
             base::HistogramBase::kUmaTargetedHistogramFlag));
@@ -316,6 +357,13 @@ void FrameSequenceMetrics::ReportMetrics() {
         Add(percent_missing_content),
         base::LinearHistogram::FactoryGet(
             GetCheckerboardingV3HistogramName(type_), 1, 100, 101,
+            base::HistogramBase::kUmaTargetedHistogramFlag));
+    STATIC_HISTOGRAM_POINTER_GROUP(
+        GetCheckerboardingV4HistogramName(type_), static_cast<int>(type_),
+        static_cast<int>(FrameSequenceTrackerType::kMaxType),
+        Add(percent_checkerboarded),
+        base::LinearHistogram::FactoryGet(
+            GetCheckerboardingV4HistogramName(type_), 1, 100, 101,
             base::HistogramBase::kUmaTargetedHistogramFlag));
 
     if (scrolling_thread_ != SmoothEffectDrivingThread::kUnknown) {
@@ -340,6 +388,9 @@ void FrameSequenceMetrics::ReportMetrics() {
     v3_.frames_missing_content = 0u;
     v3_.no_update_count = 0u;
     v3_.jank_count = 0u;
+    v4_.frames_checkerboarded = 0u;
+    v4_.frames_checkerboarded_need_raster = 0u;
+    v4_.frames_checkerboarded_need_record = 0u;
   }
 }
 
@@ -352,6 +403,7 @@ FrameSequenceMetrics::TraceData::~TraceData() = default;
 
 void FrameSequenceMetrics::TraceData::Terminate(
     const V3& v3,
+    const V4& v4,
     FrameInfo::SmoothEffectDrivingThread effective_thread) {
   if (!enabled || !trace_id) {
     return;
@@ -361,6 +413,13 @@ void FrameSequenceMetrics::TraceData::Terminate(
   dict->SetInteger("expected", v3.frames_expected);
   dict->SetInteger("dropped", v3.frames_dropped);
   dict->SetInteger("missing_content", v3.frames_missing_content);
+  // v4.
+  dict->SetInteger("checkerboarded", v4.frames_checkerboarded);
+  DCHECK_EQ(v3.frames_missing_content, v4.frames_checkerboarded_need_raster);
+  dict->SetInteger("checkerboarded_need_raster",
+                   v4.frames_checkerboarded_need_raster);
+  dict->SetInteger("checkerboarded_need_record",
+                   v4.frames_checkerboarded_need_record);
   dict->EndDictionary();
   base::TimeTicks termination_time =
       v3.last_presented_frame.GetTerminationTimeForThread(effective_thread);
@@ -444,15 +503,14 @@ void FrameSequenceMetrics::AddSortedFrame(const viz::BeginFrameArgs& args,
       v3_.last_presented_frame.GetTerminationTimeForThread(effective_thread);
   const auto termination_time =
       frame_info.GetTerminationTimeForThread(effective_thread);
+  bool should_calculate_jank_and_checkerboarding = false;
   switch (effective_thread) {
     case SmoothEffectDrivingThread::kCompositor:
       if (frame_info.WasSmoothCompositorUpdateDropped()) {
         ++v3_.frames_dropped;
       }
       ++v3_.frames_expected;
-      CalculateCheckerboardingAndJankV3(
-          args, frame_info, frame_info.GetFinalStateForThread(effective_thread),
-          last_presented_termination_time, termination_time);
+      should_calculate_jank_and_checkerboarding = true;
       break;
     case SmoothEffectDrivingThread::kMain:
       if (frame_info.WasSmoothMainUpdateExpected()) {
@@ -460,10 +518,7 @@ void FrameSequenceMetrics::AddSortedFrame(const viz::BeginFrameArgs& args,
           ++v3_.frames_dropped;
         }
         ++v3_.frames_expected;
-        CalculateCheckerboardingAndJankV3(
-            args, frame_info,
-            frame_info.GetFinalStateForThread(effective_thread),
-            last_presented_termination_time, termination_time);
+        should_calculate_jank_and_checkerboarding = true;
       } else {
         IncrementJankIdleTimeV3(last_presented_termination_time,
                                 termination_time);
@@ -473,11 +528,17 @@ void FrameSequenceMetrics::AddSortedFrame(const viz::BeginFrameArgs& args,
       NOTREACHED_IN_MIGRATION();
       break;
   }
+  if (should_calculate_jank_and_checkerboarding) {
+    auto final_state = frame_info.GetFinalStateForThread(effective_thread);
+    CalculateJankV3(args, frame_info, final_state,
+                    last_presented_termination_time, termination_time);
+    CalculateCheckerboarding(frame_info, final_state);
+  }
   v3_.last_begin_frame_args = args;
   v3_.last_frame = frame_info;
 }
 
-void FrameSequenceMetrics::CalculateCheckerboardingAndJankV3(
+void FrameSequenceMetrics::CalculateJankV3(
     const viz::BeginFrameArgs& args,
     const FrameInfo& frame_info,
     FrameInfo::FrameFinalState final_state,
@@ -487,19 +548,12 @@ void FrameSequenceMetrics::CalculateCheckerboardingAndJankV3(
     case FrameInfo::FrameFinalState::kNoUpdateDesired:
       IncrementJankIdleTimeV3(last_presented_termination_time,
                               termination_time);
-      ABSL_FALLTHROUGH_INTENDED;
+      break;
     case FrameInfo::FrameFinalState::kDropped:
-      if (v3_.last_presented_frame.has_missing_content) {
-        ++v3_.frames_missing_content;
-      }
       break;
     case FrameInfo::FrameFinalState::kPresentedAll:
     case FrameInfo::FrameFinalState::kPresentedPartialOldMain:
     case FrameInfo::FrameFinalState::kPresentedPartialNewMain:
-      if (frame_info.has_missing_content) {
-        ++v3_.frames_missing_content;
-      }
-
       // The first frame of a sequence will have no previous timestamp. We don't
       // calculate it for jank. However we start the tracing from when the
       // sequence was started.
@@ -567,6 +621,26 @@ void FrameSequenceMetrics::CalculateCheckerboardingAndJankV3(
         v3_.last_presented_frame = frame_info;
       }
       break;
+  }
+}
+
+void FrameSequenceMetrics::CalculateCheckerboarding(
+    const FrameInfo& frame_info,
+    FrameInfo::FrameFinalState final_state) {
+  const FrameInfo& used_frame_info =
+      final_state == FrameInfo::FrameFinalState::kDropped
+          ? v3_.last_presented_frame
+          : frame_info;
+  if (used_frame_info.checkerboarded_needs_raster) {
+    ++v3_.frames_missing_content;
+    ++v4_.frames_checkerboarded_need_raster;
+  }
+  if (used_frame_info.checkerboarded_needs_record) {
+    ++v4_.frames_checkerboarded_need_record;
+  }
+  if (used_frame_info.checkerboarded_needs_raster ||
+      used_frame_info.checkerboarded_needs_record) {
+    ++v4_.frames_checkerboarded;
   }
 }
 

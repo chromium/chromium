@@ -1477,7 +1477,12 @@ void CompositorFrameReporter::ReportCompositorLatencyTraceEvents(
         reporter->set_frame_source(args_.frame_id.source_id);
         reporter->set_frame_sequence(args_.frame_id.sequence_number);
         reporter->set_layer_tree_host_id(layer_tree_host_id_);
-        reporter->set_has_missing_content(info.has_missing_content);
+        reporter->set_has_missing_content(info.checkerboarded_needs_raster ||
+                                          info.checkerboarded_needs_record);
+        reporter->set_checkerboarded_needs_raster(
+            info.checkerboarded_needs_raster);
+        reporter->set_checkerboarded_needs_record(
+            info.checkerboarded_needs_record);
         if (info.IsDroppedAffectingSmoothness()) {
           DCHECK(state == ChromeFrameReporter::STATE_DROPPED ||
                  state == ChromeFrameReporter::STATE_PRESENTED_PARTIAL);
@@ -2112,7 +2117,8 @@ FrameInfo CompositorFrameReporter::GenerateFrameInfo() const {
   info.final_state = final_state;
   info.smooth_thread = smooth_thread;
   info.scroll_thread = scrolling_thread;
-  info.has_missing_content = has_missing_content_;
+  info.checkerboarded_needs_raster = checkerboarded_needs_raster_;
+  info.checkerboarded_needs_record = checkerboarded_needs_record_;
   info.sequence_number = args_.frame_id.sequence_number;
 
   if (frame_skip_reason_.has_value() &&

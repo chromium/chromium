@@ -396,8 +396,20 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   gfx::Rect scaled_viewport_for_tile_priority = gfx::ScaleToEnclosingRect(
       viewport_rect_for_tile_priority_in_content_space_, max_contents_scale);
 
-  size_t missing_tile_count = 0u;
-  size_t on_demand_missing_tile_count = 0u;
+  std::optional<gfx::Rect> scaled_cull_rect;
+  const ScrollTree& scroll_tree =
+      layer_tree_impl()->property_trees()->scroll_tree();
+  if (const ScrollNode* scroll_node = scroll_tree.Node(scroll_tree_index())) {
+    if (transform_tree_index() == scroll_node->transform_id) {
+      if (const gfx::Rect* cull_rect =
+              scroll_tree.ScrollingContentsCullRect(scroll_node->element_id)) {
+        scaled_cull_rect =
+            gfx::ScaleToEnclosingRect(*cull_rect, max_contents_scale);
+      }
+    }
+  }
+
+  int missing_tile_count = 0u;
   only_used_low_res_last_append_quads_ = true;
   gfx::Rect scaled_recorded_bounds = gfx::ScaleToEnclosingRect(
       raster_source_->recorded_bounds(), max_contents_scale);
@@ -430,9 +442,7 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
     if (visible_geometry_rect.IsEmpty())
       continue;
 
-    int64_t visible_geometry_area =
-        static_cast<int64_t>(visible_geometry_rect.width()) *
-        visible_geometry_rect.height();
+    uint64_t visible_geometry_area = visible_geometry_rect.size().Area64();
     append_quads_data->visible_layer_area += visible_geometry_area;
 
     bool has_draw_quad = false;
@@ -455,7 +465,7 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
           if (iter->contents_scale_key() != raster_contents_scale_key() &&
               iter->contents_scale_key() < ideal_contents_scale_key() &&
               geometry_rect.Intersects(scaled_viewport_for_tile_priority)) {
-            append_quads_data->num_incomplete_tiles++;
+            append_quads_data->num_incompletely_rastered_tiles++;
           }
 
           auto* quad =
@@ -490,8 +500,21 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
       }
     }
 
+    int64_t needs_record_content_area = 0;
+    if (scaled_cull_rect) {
+      gfx::Rect fully_recorded_rect =
+          gfx::IntersectRects(*scaled_cull_rect, visible_geometry_rect);
+      if (fully_recorded_rect != visible_geometry_rect) {
+        append_quads_data->num_incompletely_recorded_tiles++;
+        needs_record_content_area =
+            visible_geometry_area - fully_recorded_rect.size().Area64();
+        append_quads_data->checkerboarded_needs_record_content_area +=
+            needs_record_content_area;
+      }
+    }
+
     if (!has_draw_quad) {
-      // Checkerboard.
+      // Checkerboard due to missing raster.
       SkColor4f color = safe_opaque_background_color();
       if (ShowDebugBorders(DebugBorderType::LAYER)) {
         // Fill the whole tile with the missing tile color.
@@ -509,19 +532,14 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
       }
       append_quads_data->checkerboarded_visible_content_area +=
           visible_geometry_area;
-      // Intersect checkerboard rect with interest rect to generate rect where
+      // Intersect checkerboard rect with recorded bounds to generate rect where
       // we checkerboarded and has recording. The area where we don't have
       // recording is not necessarily a Rect, and its area is calculated using
       // subtraction.
       gfx::Rect visible_rect_has_recording = visible_geometry_rect;
       visible_rect_has_recording.Intersect(scaled_recorded_bounds);
-      int64_t checkerboarded_has_recording_area =
-          static_cast<int64_t>(visible_rect_has_recording.width()) *
-          visible_rect_has_recording.height();
       append_quads_data->checkerboarded_needs_raster_content_area +=
-          checkerboarded_has_recording_area;
-      append_quads_data->checkerboarded_no_recording_content_area +=
-          visible_geometry_area - checkerboarded_has_recording_area;
+          visible_rect_has_recording.size().Area64();
 
       // Report data on any missing images that might be the largest
       // contentful image.
@@ -533,6 +551,9 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
 
       continue;
     }
+
+    append_quads_data->checkerboarded_visible_content_area +=
+        needs_record_content_area;
 
     if (iter.resolution() != HIGH_RESOLUTION) {
       append_quads_data->approximated_visible_content_area +=
@@ -557,13 +578,9 @@ void PictureLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
   shared_quad_state->visible_quad_layer_rect.Offset(quad_offset);
 
   if (missing_tile_count) {
-    TRACE_EVENT_INSTANT2("cc",
-                         "PictureLayerImpl::AppendQuads checkerboard",
-                         TRACE_EVENT_SCOPE_THREAD,
-                         "missing_tile_count",
-                         missing_tile_count,
-                         "on_demand_missing_tile_count",
-                         on_demand_missing_tile_count);
+    TRACE_EVENT_INSTANT1("cc", "PictureLayerImpl::AppendQuads checkerboard",
+                         TRACE_EVENT_SCOPE_THREAD, "missing_tile_count",
+                         missing_tile_count);
   }
 
   // Aggressively remove any tilings that are not seen to save memory. Note

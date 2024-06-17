@@ -126,8 +126,8 @@ void FrameInfo::MergeWith(const FrameInfo& other) {
     }
   }
 
-  if (other.has_missing_content)
-    has_missing_content = true;
+  checkerboarded_needs_raster |= other.checkerboarded_needs_raster;
+  checkerboarded_needs_record |= other.checkerboarded_needs_record;
 
   if (other.final_state == FrameFinalState::kDropped)
     final_state = FrameFinalState::kDropped;

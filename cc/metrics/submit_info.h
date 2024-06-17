@@ -12,7 +12,8 @@ namespace cc {
 struct SubmitInfo {
   uint32_t frame_token = 0u;
   base::TimeTicks time;
-  bool has_missing_content = false;
+  bool checkerboarded_needs_raster = false;
+  bool checkerboarded_needs_record = false;
   bool top_controls_moved = false;
   EventMetricsSet events_metrics;
 };

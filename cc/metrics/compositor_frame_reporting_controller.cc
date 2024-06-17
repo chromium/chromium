@@ -361,7 +361,10 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
         submit_info.time);
     main_reporter->AddEventsMetrics(
         std::move(submit_info.events_metrics.main_event_metrics));
-    main_reporter->set_has_missing_content(submit_info.has_missing_content);
+    main_reporter->set_checkerboarded_needs_raster(
+        submit_info.checkerboarded_needs_raster);
+    main_reporter->set_checkerboarded_needs_record(
+        submit_info.checkerboarded_needs_record);
     main_reporter->set_reporter_type_to_main();
     main_reporter->set_top_controls_moved(submit_info.top_controls_moved);
     submitted_compositor_frames_.emplace_back(submit_info.frame_token,
@@ -375,7 +378,10 @@ void CompositorFrameReportingController::DidSubmitCompositorFrame(
         submit_info.time);
     impl_reporter->AddEventsMetrics(
         std::move(submit_info.events_metrics.impl_event_metrics));
-    impl_reporter->set_has_missing_content(submit_info.has_missing_content);
+    impl_reporter->set_checkerboarded_needs_raster(
+        submit_info.checkerboarded_needs_raster);
+    impl_reporter->set_checkerboarded_needs_record(
+        submit_info.checkerboarded_needs_record);
     impl_reporter->set_is_accompanied_by_main_thread_update(
         is_activated_frame_new);
     impl_reporter->set_reporter_type_to_impl();

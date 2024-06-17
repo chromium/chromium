@@ -782,7 +782,6 @@ TEST_F(FrameSequenceTrackerTest, CustomTrackerOutOfOrderFramesMissingV3Data) {
   frame_info.final_state = FrameInfo::FrameFinalState::kPresentedAll;
   frame_info.smooth_thread = FrameInfo::SmoothThread::kSmoothMain;
   frame_info.scroll_thread = FrameInfo::SmoothEffectDrivingThread::kMain;
-  frame_info.has_missing_content = false;
   frame_info.sequence_number = frame1_args.frame_id.sequence_number;
   sorter_.AddFrameResult(frame1_args, frame_info);
 

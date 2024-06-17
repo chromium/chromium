@@ -40,12 +40,12 @@ struct CC_DEBUG_EXPORT RenderingStats {
   RenderingStats(const RenderingStats& other);
   ~RenderingStats();
 
-  int64_t frame_count;
-  int64_t visible_content_area;
-  int64_t approximated_visible_content_area;
-  int64_t checkerboarded_visible_content_area;
-  int64_t checkerboarded_no_recording_content_area;
-  int64_t checkerboarded_needs_raster_content_area;
+  int64_t frame_count = 0;
+  int64_t visible_content_area = 0;
+  int64_t approximated_visible_content_area = 0;
+  int64_t checkerboarded_visible_content_area = 0;
+  int64_t checkerboarded_needs_record_content_area = 0;
+  int64_t checkerboarded_needs_raster_content_area = 0;
 
   TimeDeltaList draw_duration;
   TimeDeltaList draw_duration_estimate;

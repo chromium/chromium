@@ -32,6 +32,15 @@ chromium-metrics-reviews@google.com.
                touchscreen, touchpad, mousewheel, etc.)"/>
 </variants>
 
+<variants name="CheckerboardingVersion">
+  <variant name="3"
+      summary="A frame is counted as checkerboarded if any visible tile is
+               not fully rastered."/>
+  <variant name="4"
+      summary="A frame is counted as checkerboarded if any visible tile is
+               not fully rastered or recorded."/>
+</variants>
+
 <variants name="LCDTextDisallowedReasonDPI">
   <variant name="HighDPI"
       summary="In web pages where device scale factor is greater than or
@@ -1224,8 +1233,56 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Graphics.Smoothness.Checkerboarding3.AllSequences" units="%"
-    expires_after="2024-11-17">
+<histogram name="Graphics.Smoothness.CheckerboardingNeedRaster4.AllSequences"
+    units="%" expires_after="2024-11-17">
+  <owner>wangxianzhu@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of checkerboarded frames that contain any not fully
+    rastered visible tiles, for a sequence by aggregating all its animations and
+    interactions, where a sequence is a series of frames produced which contain
+    at least one of the animations/interactions. Such animations and
+    interactions encompass: Compositor-thread animations; Main-thread
+    animations; JS animations; scrolling; and pinch-gestures.
+
+    Checkerboarding is measured by tracking the number of times checkerboard
+    frames are displayed (as opposed to the number of checkerboard frames
+    produced), since the same checkerboard frame can be displayed more than
+    once.
+
+    Note that this metric is reported only when there are a sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until an additional sequence completes where there are (&gt;=
+    100) frames available in total.
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.CheckerboardingNeedRecord4.AllSequences"
+    units="%" expires_after="2024-11-17">
+  <owner>wangxianzhu@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of checkerboarded frames that contain any not fully
+    recorded visible tiles, for a sequence by aggregating all its animations and
+    interactions, where a sequence is a series of frames produced which contain
+    at least one of the animations/interactions. Such animations and
+    interactions encompass: Compositor-thread animations; Main-thread
+    animations; JS animations; scrolling; and pinch-gestures.
+
+    Checkerboarding is measured by tracking the number of times checkerboard
+    frames are displayed (as opposed to the number of checkerboard frames
+    produced), since the same checkerboard frame can be displayed more than
+    once.
+
+    Note that this metric is reported only when there are a sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until an additional sequence completes where there are (&gt;=
+    100) frames available in total.
+  </summary>
+</histogram>
+
+<histogram name="Graphics.Smoothness.Checkerboarding{Version}.AllSequences"
+    units="%" expires_after="2024-11-17">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1245,31 +1302,10 @@ chromium-metrics-reviews@google.com.
     aggregated until an additional sequence completes where there are (&gt;=
     100) frames available in total.
   </summary>
+  <token key="Version" variants="CheckerboardingVersion"/>
 </histogram>
 
-<histogram name="Graphics.Smoothness.Checkerboarding3.{Sequence}" units="%"
-    expires_after="2024-11-17">
-  <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    Tracks the percent of checkerboarded frames for a sequence by aggregating
-    all {Sequence}, where a sequence is a series of frames produced which
-    contain at least one of the aforementioned effects.
-
-    Checkerboarding is measured by tracking the number of times checkerboard
-    frames are displayed (as opposed to the number of checkerboard frames
-    produced), since the same checkerboard frame can be displayed more than
-    once.
-
-    Note that this metric is reported only when there are a sufficient number of
-    frames (&gt;= 100). If there are sequences with fewer frames, then these are
-    aggregated until an additional sequence completes where there are (&gt;=
-    100) frames available in total.
-  </summary>
-  <token key="Sequence" variants="AccumulatedSequences"/>
-</histogram>
-
-<histogram name="Graphics.Smoothness.Checkerboarding3.{Thread}{Sequence}"
+<histogram name="Graphics.Smoothness.Checkerboarding{Version}.{Sequence}"
     units="%" expires_after="2024-11-17">
   <owner>jonross@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
@@ -1288,6 +1324,31 @@ chromium-metrics-reviews@google.com.
     aggregated until an additional sequence completes where there are (&gt;=
     100) frames available in total.
   </summary>
+  <token key="Version" variants="CheckerboardingVersion"/>
+  <token key="Sequence" variants="AccumulatedSequences"/>
+</histogram>
+
+<histogram
+    name="Graphics.Smoothness.Checkerboarding{Version}.{Thread}{Sequence}"
+    units="%" expires_after="2024-11-17">
+  <owner>jonross@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Tracks the percent of checkerboarded frames for a sequence by aggregating
+    all {Sequence}, where a sequence is a series of frames produced which
+    contain at least one of the aforementioned effects.
+
+    Checkerboarding is measured by tracking the number of times checkerboard
+    frames are displayed (as opposed to the number of checkerboard frames
+    produced), since the same checkerboard frame can be displayed more than
+    once.
+
+    Note that this metric is reported only when there are a sufficient number of
+    frames (&gt;= 100). If there are sequences with fewer frames, then these are
+    aggregated until an additional sequence completes where there are (&gt;=
+    100) frames available in total.
+  </summary>
+  <token key="Version" variants="CheckerboardingVersion"/>
   <token key="Thread" variants="SmoothnessThread"/>
   <token key="Sequence" variants="SmoothnessSequence"/>
 </histogram>

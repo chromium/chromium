@@ -37,13 +37,7 @@ base::TimeDelta RenderingStats::TimeDeltaList::GetLastTimeDelta() const {
   return values.empty() ? base::TimeDelta() : values.back();
 }
 
-RenderingStats::RenderingStats()
-    : frame_count(0),
-      visible_content_area(0),
-      approximated_visible_content_area(0),
-      checkerboarded_visible_content_area(0),
-      checkerboarded_no_recording_content_area(0),
-      checkerboarded_needs_raster_content_area(0) {}
+RenderingStats::RenderingStats() = default;
 
 RenderingStats::RenderingStats(const RenderingStats& other) = default;
 
@@ -59,8 +53,8 @@ RenderingStats::AsTraceableData() const {
                           approximated_visible_content_area);
   record_data->SetInteger("checkerboarded_visible_content_area",
                           checkerboarded_visible_content_area);
-  record_data->SetInteger("checkerboarded_no_recording_content_area",
-                          checkerboarded_no_recording_content_area);
+  record_data->SetInteger("checkerboarded_needs_record_content_area",
+                          checkerboarded_needs_record_content_area);
   record_data->SetInteger("checkerboarded_needs_raster_content_area",
                           checkerboarded_needs_raster_content_area);
   draw_duration.AddToTracedValue("draw_duration_ms", record_data.get());

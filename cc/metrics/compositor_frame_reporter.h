@@ -380,8 +380,11 @@ class CC_EXPORT CompositorFrameReporter {
     tick_clock_ = tick_clock;
   }
 
-  void set_has_missing_content(bool has_missing_content) {
-    has_missing_content_ = has_missing_content;
+  void set_checkerboarded_needs_raster(bool checkerboarded_needs_raster) {
+    checkerboarded_needs_raster_ = checkerboarded_needs_raster;
+  }
+  void set_checkerboarded_needs_record(bool checkerboarded_needs_record) {
+    checkerboarded_needs_record_ = checkerboarded_needs_record;
   }
 
   void set_top_controls_moved(bool top_controls_moved) {
@@ -576,9 +579,11 @@ class CC_EXPORT CompositorFrameReporter {
   const SmoothThread smooth_thread_;
   const int layer_tree_host_id_;
 
-  // Indicates whether the submitted frame had any missing content (i.e. content
-  // with checkerboarding).
-  bool has_missing_content_ = false;
+  // Indicates whether the submitted frame had any missing or incomplete
+  // content (i.e. content with checkerboarding), due to rasterization and
+  // recording, respectively.
+  bool checkerboarded_needs_raster_ = false;
+  bool checkerboarded_needs_record_ = false;
 
   bool top_controls_moved_ = false;
 

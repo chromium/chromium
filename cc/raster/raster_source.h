@@ -127,7 +127,7 @@ class CC_EXPORT RasterSource : public base::RefCountedThreadSafe<RasterSource> {
   // Returns true if this raster source has anything to rasterize.
   bool HasRecordings() const;
 
-  // Valid rectangle in which everything is recorded and can be rastered from.
+  // Valid rectangle in which anything is recorded and can be rastered from.
   gfx::Rect recorded_bounds() const {
     // TODO(crbug.com/41490692): Create tiling for directly composited images
     // based on the recorded bounds.

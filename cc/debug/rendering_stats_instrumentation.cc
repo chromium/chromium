@@ -63,13 +63,13 @@ void RenderingStatsInstrumentation::AddCheckerboardedVisibleContentArea(
   impl_thread_rendering_stats_.checkerboarded_visible_content_area += area;
 }
 
-void RenderingStatsInstrumentation::AddCheckerboardedNoRecordingContentArea(
+void RenderingStatsInstrumentation::AddCheckerboardedNeedsRecordContentArea(
     int64_t area) {
   if (!record_rendering_stats_)
     return;
 
   base::AutoLock scoped_lock(lock_);
-  impl_thread_rendering_stats_.checkerboarded_no_recording_content_area += area;
+  impl_thread_rendering_stats_.checkerboarded_needs_record_content_area += area;
 }
 
 void RenderingStatsInstrumentation::AddCheckerboardedNeedsRasterContentArea(

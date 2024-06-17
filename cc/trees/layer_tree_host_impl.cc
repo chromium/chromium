@@ -1353,7 +1353,8 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   const DrawMode draw_mode = GetDrawMode();
 
   int num_missing_tiles = 0;
-  int num_incomplete_tiles = 0;
+  bool has_incompletely_rastered_tiles = false;
+  bool has_incompletely_recorded_tiles = false;
 
   bool have_copy_request =
       active_tree()->property_trees()->effect_tree().HasCopyRequests();
@@ -1412,13 +1413,16 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
           append_quads_data.approximated_visible_content_area);
       rendering_stats_instrumentation_->AddCheckerboardedVisibleContentArea(
           append_quads_data.checkerboarded_visible_content_area);
-      rendering_stats_instrumentation_->AddCheckerboardedNoRecordingContentArea(
-          append_quads_data.checkerboarded_no_recording_content_area);
+      rendering_stats_instrumentation_->AddCheckerboardedNeedsRecordContentArea(
+          append_quads_data.checkerboarded_needs_record_content_area);
       rendering_stats_instrumentation_->AddCheckerboardedNeedsRasterContentArea(
           append_quads_data.checkerboarded_needs_raster_content_area);
 
       num_missing_tiles += append_quads_data.num_missing_tiles;
-      num_incomplete_tiles += append_quads_data.num_incomplete_tiles;
+      has_incompletely_rastered_tiles |=
+          append_quads_data.num_incompletely_rastered_tiles > 0;
+      has_incompletely_recorded_tiles |=
+          append_quads_data.num_incompletely_recorded_tiles > 0;
 
       if (append_quads_data.num_missing_tiles > 0) {
         have_missing_animated_tiles |=
@@ -1454,7 +1458,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
   // not cause the scheduler to do a main frame, instead it will continue to try
   // drawing until we finally complete, so the copy request will not be lost.
   // TODO(weiliangc): Remove RequiresHighResToDraw. crbug.com/469175
-  if (num_incomplete_tiles || num_missing_tiles) {
+  if (has_incompletely_rastered_tiles || num_missing_tiles) {
     if (RequiresHighResToDraw())
       draw_result = DrawResult::kAbortedMissingHighResContent;
   }
@@ -1510,8 +1514,9 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
     active_tree()->set_needs_update_draw_properties();
   }
 
-  frame->has_missing_content =
-      num_missing_tiles > 0 || num_incomplete_tiles > 0;
+  frame->checkerboarded_needs_raster =
+      num_missing_tiles > 0 || has_incompletely_rastered_tiles;
+  frame->checkerboarded_needs_record = has_incompletely_recorded_tiles;
 
   TRACE_EVENT_END2("cc,benchmark", "LayerTreeHostImpl::CalculateRenderPasses",
                    "draw_result", draw_result, "missing tiles",
@@ -2684,8 +2689,12 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
     client_->FrameSinksToThrottleUpdated(throttle_decider_.ids());
   }
 
-  return SubmitInfo{frame_token, submit_time, frame->has_missing_content,
-                    top_controls_moved, std::move(events_metrics)};
+  return SubmitInfo{frame_token,
+                    submit_time,
+                    frame->checkerboarded_needs_raster,
+                    frame->checkerboarded_needs_record,
+                    top_controls_moved,
+                    std::move(events_metrics)};
 }
 
 viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(

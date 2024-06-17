@@ -221,7 +221,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     // frame_token is populated by the LayerTreeHostImpl when submitted.
     uint32_t frame_token = 0;
 
-    bool has_missing_content = false;
+    bool checkerboarded_needs_raster = false;
+    bool checkerboarded_needs_record = false;
 
     std::vector<viz::SurfaceId> activation_dependencies;
     std::optional<uint32_t> deadline_in_frames;

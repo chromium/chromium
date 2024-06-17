@@ -116,12 +116,13 @@ class CC_EXPORT FrameSequenceMetrics {
   // FrameInfo is a merger of two threads' frame production. We should only look
   // at the `final_state`, `last_presented_termination_time` and
   // `termination_time` for the GetEffectiveThread.
-  void CalculateCheckerboardingAndJankV3(
-      const viz::BeginFrameArgs& args,
-      const FrameInfo& frame_info,
-      FrameInfo::FrameFinalState final_state,
-      base::TimeTicks last_presented_termination_time,
-      base::TimeTicks termination_time);
+  void CalculateJankV3(const viz::BeginFrameArgs& args,
+                       const FrameInfo& frame_info,
+                       FrameInfo::FrameFinalState final_state,
+                       base::TimeTicks last_presented_termination_time,
+                       base::TimeTicks termination_time);
+  void CalculateCheckerboarding(const FrameInfo& frame_info,
+                                FrameInfo::FrameFinalState final_state);
   void IncrementJankIdleTimeV3(base::TimeTicks last_presented_termination_time,
                                base::TimeTicks termination_time);
   void TraceJankV3(uint64_t sequence_number,
@@ -146,6 +147,12 @@ class CC_EXPORT FrameSequenceMetrics {
     base::TimeDelta no_update_duration;
   } v3_;
 
+  struct V4 {
+    uint32_t frames_checkerboarded = 0;
+    uint32_t frames_checkerboarded_need_raster = 0;
+    uint32_t frames_checkerboarded_need_record = 0;
+  } v4_;
+
   // Tracks some data to generate useful trace events.
   struct TraceData {
     explicit TraceData(FrameSequenceMetrics* metrics);
@@ -164,6 +171,7 @@ class CC_EXPORT FrameSequenceMetrics {
                  uint64_t sequence_number,
                  const char* histogram_name);
     void Terminate(const V3& v3,
+                   const V4& v4,
                    FrameInfo::SmoothEffectDrivingThread effective_thread);
   } trace_data_{this};
 
