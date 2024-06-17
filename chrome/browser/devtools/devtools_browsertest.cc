@@ -4051,7 +4051,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
       configConsoleInsights->FindBool("blockedByEnterprisePolicy").value());
   EXPECT_FALSE(configConsoleInsights->FindBool("blockedByAge").value());
   EXPECT_FALSE(configConsoleInsights->FindBool("blockedByGeo").value());
-  EXPECT_TRUE(configConsoleInsights->FindBool("optIn").value());
+  EXPECT_FALSE(configConsoleInsights->FindBool("optIn").value());
   CloseDevToolsWindow();
 }
 

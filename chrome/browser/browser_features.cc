@@ -77,17 +77,19 @@ BASE_FEATURE(kDestroySystemProfiles,
 // insights regarding console (error) messages.
 BASE_FEATURE(kDevToolsConsoleInsights,
              "DevToolsConsoleInsights",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kDevToolsConsoleInsightsAidaScope{
-    &kDevToolsConsoleInsights, "aida_scope", /*default*/ ""};
+    &kDevToolsConsoleInsights, "aida_scope",
+    /*default*/ "https://www.googleapis.com/auth/aida"};
 const base::FeatureParam<std::string> kDevToolsConsoleInsightsAidaEndpoint{
-    &kDevToolsConsoleInsights, "aida_endpoint", /*default*/ ""};
+    &kDevToolsConsoleInsights, "aida_endpoint",
+    /*default*/ "https://aida.googleapis.com/v1/aida:doConversation"};
 const base::FeatureParam<std::string> kDevToolsConsoleInsightsModelId{
     &kDevToolsConsoleInsights, "aida_model_id", /*default*/ ""};
 const base::FeatureParam<double> kDevToolsConsoleInsightsTemperature{
     &kDevToolsConsoleInsights, "aida_temperature", /*default*/ 0.2};
 const base::FeatureParam<bool> kDevToolsConsoleInsightsOptIn{
-    &kDevToolsConsoleInsights, "opt_in", /*default*/ true};
+    &kDevToolsConsoleInsights, "opt_in", /*default*/ false};
 
 // Separate dogfood feature for DevTools console insights,
 // not restricted by enterprise policy or location.
