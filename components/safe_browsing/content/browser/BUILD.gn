@@ -99,8 +99,6 @@ source_set("browser") {
     "unsafe_resource_util.h",
     "url_checker_on_sb.cc",
     "url_checker_on_sb.h",
-    "web_api_handshake_checker.cc",
-    "web_api_handshake_checker.h",
     "web_contents_key.cc",
     "web_contents_key.h",
   ]
@@ -168,7 +166,6 @@ source_set("unit_tests") {
     "client_report_util_unittest.cc",
     "client_side_detection_feature_cache_unittest.cc",
     "client_side_phishing_model_unittest.cc",
-    "web_api_handshake_checker_unittest.cc",
   ]
 
   deps = [

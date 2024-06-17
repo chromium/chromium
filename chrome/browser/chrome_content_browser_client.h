@@ -28,7 +28,6 @@
 #include "chrome/browser/startup_data.h"
 #include "components/file_access/scoped_file_access.h"
 #include "components/safe_browsing/buildflags.h"
-#include "components/safe_browsing/content/browser/web_api_handshake_checker.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/digital_identity_provider.h"
@@ -1160,25 +1159,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       uint64_t column,
       std::optional<content::LegacyTechCookieIssueDetails> cookie_issue_details)
       override;
-
-  void SafeBrowsingWebApiHandshakeChecked(
-      std::unique_ptr<safe_browsing::WebApiHandshakeChecker> checker,
-      int process_id,
-      int frame_routing_id,
-      const GURL& url,
-      const url::Origin& initiator_origin,
-      mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
-          handshake_client,
-      WillCreateWebTransportCallback callback,
-      safe_browsing::WebApiHandshakeChecker::CheckResult result);
-  void MaybeInterceptWebTransport(
-      int process_id,
-      int frame_routing_id,
-      const GURL& url,
-      const url::Origin& initiator_origin,
-      mojo::PendingRemote<network::mojom::WebTransportHandshakeClient>
-          handshake_client,
-      WillCreateWebTransportCallback callback);
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   std::unique_ptr<blink::URLLoaderThrottle>
