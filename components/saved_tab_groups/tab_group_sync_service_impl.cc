@@ -17,6 +17,7 @@
 #include "components/saved_tab_groups/shared_tab_group_data_sync_bridge.h"
 #include "components/saved_tab_groups/stats.h"
 #include "components/saved_tab_groups/tab_group_store.h"
+#include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/types.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -43,7 +44,8 @@ TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
     std::unique_ptr<SyncDataTypeConfiguration> shared_tab_group_configuration,
     std::unique_ptr<TabGroupStore> tab_group_store,
     PrefService* pref_service,
-    std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids)
+    std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids,
+    std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger)
     : model_(std::move(model)),
       saved_bridge_(
           model_.get(),
@@ -51,7 +53,8 @@ TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
           std::move(saved_tab_group_configuration->change_processor),
           pref_service,
           std::move(migrated_android_local_ids)),
-      tab_group_store_(std::move(tab_group_store)) {
+      tab_group_store_(std::move(tab_group_store)),
+      metrics_logger_(std::move(metrics_logger)) {
   if (shared_tab_group_configuration) {
     shared_bridge_ = std::make_unique<SharedTabGroupDataSyncBridge>(
         model_.get(),
@@ -80,6 +83,10 @@ void TabGroupSyncServiceImpl::AddObserver(
 void TabGroupSyncServiceImpl::RemoveObserver(
     TabGroupSyncService::Observer* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void TabGroupSyncServiceImpl::Shutdown() {
+  metrics_logger_.reset();
 }
 
 base::WeakPtr<syncer::ModelTypeControllerDelegate>

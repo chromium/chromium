@@ -62,6 +62,8 @@ TabGroupSyncServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   auto model = std::make_unique<SavedTabGroupModel>();
   ChromeBrowserState* browser_state = static_cast<ChromeBrowserState*>(context);
+  // TODO(b/346624020): Fix dependency for DeviceInfoSyncService and pass
+  // metrics logger.
   auto saved_config = CreateSavedTabGroupDataTypeConfiguration(browser_state);
 
   std::unique_ptr<TabGroupStoreDelegate> tab_group_store_delegate =
@@ -74,7 +76,7 @@ TabGroupSyncServiceFactory::BuildServiceInstanceFor(
   return std::make_unique<TabGroupSyncServiceImpl>(
       std::move(model), std::move(saved_config), nullptr,
       std::move(tab_group_store), browser_state->GetPrefs(),
-      std::move(migrated_android_local_ids));
+      std::move(migrated_android_local_ids), /*metrics_logger=*/nullptr);
 }
 
 }  // namespace tab_groups

@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -19,6 +20,7 @@
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/shared_tab_group_data_sync_bridge.h"
 #include "components/saved_tab_groups/tab_group_store.h"
+#include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/tab_group_sync_service.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
@@ -51,7 +53,8 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       std::unique_ptr<SyncDataTypeConfiguration> shared_tab_group_configuration,
       std::unique_ptr<TabGroupStore> tab_group_store,
       PrefService* pref_service,
-      std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids);
+      std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids,
+      std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger);
   ~TabGroupSyncServiceImpl() override;
 
   // Disallow copy/assign.
@@ -100,6 +103,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void RemoveObserver(TabGroupSyncService::Observer* observer) override;
 
  private:
+  // KeyedService:
+  void Shutdown() override;
+
   // SavedTabGroupModelObserver implementation.
   void SavedTabGroupAddedFromSync(const base::Uuid& guid) override;
   void SavedTabGroupAddedLocally(const base::Uuid& guid) override;
@@ -144,6 +150,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
 
   // Stores tab group ID mapping (Sync ID -> Local ID) and some local metadata.
   std::unique_ptr<TabGroupStore> tab_group_store_;
+
+  // Helper class for logging metrics.
+  std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger_;
 
   // Whether the initialization has been completed, i.e. all the groups and the
   // ID mappings have been loaded into memory.
