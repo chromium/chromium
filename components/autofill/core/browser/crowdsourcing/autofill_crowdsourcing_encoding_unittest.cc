@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/347137620 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/autofill/core/browser/crowdsourcing/autofill_crowdsourcing_encoding.h"
 
 #include <algorithm>
@@ -3373,10 +3368,8 @@ TEST_F(AutofillCrowdsourcingEncoding,
                                       nullptr, nullptr);
 
   ASSERT_EQ(form.field_count(), 6U);
-
-  auto form_as_span = base::make_span(form.begin(), form.end());
   EXPECT_THAT(
-      form_as_span,
+      form.fields(),
       Each(Pointee(Property(&AutofillField::server_type,
                             Not(AnyOf(experimental_prediction.type(),
                                       unknown_prediction_source.type()))))))
