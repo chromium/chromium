@@ -1423,7 +1423,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'tRyduW-A8WA-ai-MIf8GbxFkEyfw7bVcMK1lT6dM2gYC',
+          'version': 'S_YOHO7jz4tuD86_sKjLMX5MN-Vr0lH07rp3AhVNKUEC',
       },
     ],
     'condition': 'checkout_android',
