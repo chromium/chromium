@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/347137620 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/autofill/core/browser/payments_data_manager.h"
 
 #include <memory>
@@ -804,7 +799,7 @@ gfx::Image* PaymentsDataManager::GetCreditCardArtImageForUrl(
     return cached_image;
   }
 
-  FetchImagesForURLs(base::make_span(&card_art_url, 1u));
+  FetchImagesForURLs(base::span_from_ref(card_art_url));
   return nullptr;
 }
 
