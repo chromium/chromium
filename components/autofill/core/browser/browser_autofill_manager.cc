@@ -525,7 +525,7 @@ void LogSuggestionsCount(const SuggestionsContext& context,
   if (context.filling_product == FillingProduct::kCreditCard) {
     AutofillMetrics::LogIsQueriedCreditCardFormSecure(
         context.is_context_secure);
-    // TODO(crbug.com/41484171): Move to PaymentsSuggestionGenerator.
+    // TODO(crbug.com/41484171): Move to payments_suggestion_generator.cc.
     autofill_metrics::LogSuggestionsCount(
         base::ranges::count_if(suggestions,
                                [](const Suggestion& suggestion) {
@@ -536,7 +536,7 @@ void LogSuggestionsCount(const SuggestionsContext& context,
         FillingProduct::kCreditCard);
   }
   if (context.filling_product == FillingProduct::kAddress) {
-    // TODO(crbug.com/41484171): Move to AddressSuggestionGenerator.
+    // TODO(crbug.com/41484171): Move to address_suggestion_generator.cc.
     autofill_metrics::LogSuggestionsCount(
         base::ranges::count_if(suggestions,
                                [](const Suggestion& suggestion) {
@@ -621,10 +621,6 @@ BrowserAutofillManager::BrowserAutofillManager(AutofillDriver* driver,
     : AutofillManager(driver),
       external_delegate_(std::make_unique<AutofillExternalDelegate>(this)),
       app_locale_(app_locale),
-      address_suggestion_generator_(
-          std::make_unique<AddressSuggestionGenerator>()),
-      payments_suggestion_generator_(
-          std::make_unique<PaymentsSuggestionGenerator>()),
       form_filler_(
           std::make_unique<FormFiller>(*this, log_manager(), app_locale)) {
   address_form_event_logger_ =
@@ -2661,9 +2657,9 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     return field_types;
   }();
 
-  return address_suggestion_generator_->GetSuggestionsForProfiles(
-      client(), field_types, trigger_field, trigger_field_type,
-      current_suggestion_type, trigger_source);
+  return GetSuggestionsForProfiles(client(), field_types, trigger_field,
+                                   trigger_field_type, current_suggestion_type,
+                                   trigger_source);
 }
 
 std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
@@ -2675,7 +2671,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
       trigger_field, signin_state_for_metrics_);
 
   std::vector<Suggestion> suggestions;
-  PaymentsSuggestionGenerator::CreditCardSuggestionSummary summary;
+  CreditCardSuggestionSummary summary;
   bool is_virtual_card_standalone_cvc_field = false;
 
   // If credit card number field is not empty and is not autofilled, do not
@@ -2709,21 +2705,17 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
               GetVirtualCreditCardsForStandaloneCvcField(
                   trigger_field.origin());
       if (!virtual_card_guid_to_last_four_map.empty()) {
-        suggestions =
-            payments_suggestion_generator_
-                ->GetSuggestionsForVirtualCardStandaloneCvc(
-                    client(), trigger_field, summary.metadata_logging_context,
-                    virtual_card_guid_to_last_four_map);
+        suggestions = GetSuggestionsForVirtualCardStandaloneCvc(
+            client(), trigger_field, summary.metadata_logging_context,
+            virtual_card_guid_to_last_four_map);
         is_virtual_card_standalone_cvc_field = true;
       }
     } else {
-      suggestions =
-          payments_suggestion_generator_->GetSuggestionsForCreditCards(
-              client(), trigger_field, trigger_field_type, trigger_source,
-              ShouldShowScanCreditCard(form, trigger_field),
-              ShouldShowCardsFromAccountOption(form, trigger_field,
-                                               trigger_source),
-              summary);
+      suggestions = GetSuggestionsForCreditCards(
+          client(), trigger_field, trigger_field_type, trigger_source,
+          ShouldShowScanCreditCard(form, trigger_field),
+          ShouldShowCardsFromAccountOption(form, trigger_field, trigger_source),
+          summary);
     }
   }
 

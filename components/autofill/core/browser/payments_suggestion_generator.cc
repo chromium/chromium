@@ -724,8 +724,7 @@ std::vector<Suggestion> GetCreditCardFooterSuggestions(
     footer_suggestions.push_back(CreateUndoOrClearFormSuggestion());
   }
   footer_suggestions.push_back(
-      PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
-          with_gpay_logo));
+      CreateManageCreditCardsSuggestion(with_gpay_logo));
   return footer_suggestions;
 }
 
@@ -867,8 +866,8 @@ Suggestion CreateCreditCardSuggestion(
   // First layer manual fallback entries can't fill forms and thus can't be
   // selected by the user.
   suggestion.type = SuggestionType::kCreditCardEntry;
-  suggestion.is_acceptable = PaymentsSuggestionGenerator::IsCardAcceptable(
-      credit_card, client, is_manual_fallback);
+  suggestion.is_acceptable =
+      IsCardSuggestionAcceptable(credit_card, client, is_manual_fallback);
   suggestion.payload = Suggestion::Guid(credit_card.guid());
 #if BUILDFLAG(IS_ANDROID)
   // The card art icon should always be shown at the start of the suggestion.
@@ -933,12 +932,7 @@ Suggestion CreateCreditCardSuggestion(
 
 }  // namespace
 
-PaymentsSuggestionGenerator::PaymentsSuggestionGenerator() = default;
-
-PaymentsSuggestionGenerator::~PaymentsSuggestionGenerator() = default;
-
-std::vector<Suggestion>
-PaymentsSuggestionGenerator::GetSuggestionsForCreditCards(
+std::vector<Suggestion> GetSuggestionsForCreditCards(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
     FieldType trigger_field_type,
@@ -1011,8 +1005,7 @@ PaymentsSuggestionGenerator::GetSuggestionsForCreditCards(
   return suggestions;
 }
 
-std::vector<Suggestion>
-PaymentsSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
+std::vector<Suggestion> GetSuggestionsForVirtualCardStandaloneCvc(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
     autofill_metrics::CardMetadataLoggingContext& metadata_logging_context,
@@ -1079,8 +1072,7 @@ PaymentsSuggestionGenerator::GetSuggestionsForVirtualCardStandaloneCvc(
   return suggestions;
 }
 
-std::vector<CreditCard>
-PaymentsSuggestionGenerator::GetTouchToFillCardsToSuggest(
+std::vector<CreditCard> GetTouchToFillCardsToSuggest(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
     FieldType trigger_field_type) {
@@ -1097,21 +1089,19 @@ PaymentsSuggestionGenerator::GetTouchToFillCardsToSuggest(
 }
 
 // static
-Suggestion PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
-    bool with_gpay_logo) {
+Suggestion CreateManageCreditCardsSuggestion(bool with_gpay_logo) {
   return CreateManagePaymentMethodsEntry(SuggestionType::kManageCreditCard,
                                          with_gpay_logo);
 }
 
 // static
-Suggestion PaymentsSuggestionGenerator::CreateManageIbansEntry() {
+Suggestion CreateManageIbansSuggestion() {
   return CreateManagePaymentMethodsEntry(SuggestionType::kManageIban,
                                          /*with_gpay_logo=*/false);
 }
 
 // static
-std::vector<Suggestion> PaymentsSuggestionGenerator::GetSuggestionsForIbans(
-    const std::vector<Iban>& ibans) {
+std::vector<Suggestion> GetSuggestionsForIbans(const std::vector<Iban>& ibans) {
   if (ibans.empty()) {
     return {};
   }
@@ -1138,13 +1128,12 @@ std::vector<Suggestion> PaymentsSuggestionGenerator::GetSuggestionsForIbans(
   }
 
   suggestions.push_back(CreateSeparator());
-  suggestions.push_back(CreateManageIbansEntry());
+  suggestions.push_back(CreateManageIbansSuggestion());
   return suggestions;
 }
 
 // static
-std::vector<Suggestion>
-PaymentsSuggestionGenerator::GetPromoCodeSuggestionsFromPromoCodeOffers(
+std::vector<Suggestion> GetPromoCodeSuggestionsFromPromoCodeOffers(
     const std::vector<const AutofillOfferData*>& promo_code_offers) {
   std::vector<Suggestion> suggestions;
   GURL footer_offer_details_url;
@@ -1196,9 +1185,9 @@ PaymentsSuggestionGenerator::GetPromoCodeSuggestionsFromPromoCodeOffers(
   return suggestions;
 }
 
-bool PaymentsSuggestionGenerator::IsCardAcceptable(const CreditCard& card,
-                                                   const AutofillClient& client,
-                                                   bool is_manual_fallback) {
+bool IsCardSuggestionAcceptable(const CreditCard& card,
+                                const AutofillClient& client,
+                                bool is_manual_fallback) {
   if (card.record_type() == CreditCard::RecordType::kVirtualCard) {
     auto* optimization_guide = client.GetAutofillOptimizationGuide();
     return !(
@@ -1210,8 +1199,7 @@ bool PaymentsSuggestionGenerator::IsCardAcceptable(const CreditCard& card,
   return !is_manual_fallback;
 }
 
-std::vector<CreditCard>
-PaymentsSuggestionGenerator::GetOrderedCardsToSuggestForTest(
+std::vector<CreditCard> GetOrderedCardsToSuggestForTest(
     const AutofillClient& client,
     const FormFieldData& trigger_field,
     FieldType trigger_field_type,
@@ -1223,7 +1211,7 @@ PaymentsSuggestionGenerator::GetOrderedCardsToSuggestForTest(
                                   include_virtual_cards);
 }
 
-Suggestion PaymentsSuggestionGenerator::CreateCreditCardSuggestionForTest(
+Suggestion CreateCreditCardSuggestionForTest(
     const CreditCard& credit_card,
     const AutofillClient& client,
     FieldType trigger_field_type,
@@ -1239,9 +1227,8 @@ Suggestion PaymentsSuggestionGenerator::CreateCreditCardSuggestionForTest(
                                            : dummy_context);
 }
 
-bool PaymentsSuggestionGenerator::ShouldShowVirtualCardOptionForTest(
-    const CreditCard* candidate_card,
-    const AutofillClient& client) {
+bool ShouldShowVirtualCardOptionForTest(const CreditCard* candidate_card,
+                                        const AutofillClient& client) {
   return ShouldShowVirtualCardOption(candidate_card, client);
 }
 

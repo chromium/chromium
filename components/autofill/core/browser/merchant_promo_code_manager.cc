@@ -156,8 +156,7 @@ void MerchantPromoCodeManager::SendPromoCodeSuggestions(
 
   std::move(on_suggestions_returned)
       .Run(field.global_id(),
-           PaymentsSuggestionGenerator::
-               GetPromoCodeSuggestionsFromPromoCodeOffers(promo_code_offers));
+           GetPromoCodeSuggestionsFromPromoCodeOffers(promo_code_offers));
 
   // Log that promo code autofill suggestions were shown.
   uma_recorder_.OnOffersSuggestionsShown(field.global_id(), promo_code_offers);

@@ -61,13 +61,11 @@
 
 namespace autofill {
 
-class AddressSuggestionGenerator;
 class AutofillField;
 class AutofillClient;
 class AutofillProfile;
 class CreditCard;
 class CreditCardAccessManager;
-class PaymentsSuggestionGenerator;
 
 class FormData;
 class FormFieldData;
@@ -694,10 +692,6 @@ class BrowserAutofillManager : public AutofillManager {
   // The credit card access manager, used to access local and server cards.
   // Lazily initialized: access only through GetCreditCardAccessManager().
   std::unique_ptr<CreditCardAccessManager> credit_card_access_manager_;
-
-  // TODO(crbug.com/41484171): Remove.
-  std::unique_ptr<AddressSuggestionGenerator> address_suggestion_generator_;
-  std::unique_ptr<PaymentsSuggestionGenerator> payments_suggestion_generator_;
 
   // Helper class to autofill forms and fields. Do not use directly, use
   // form_filler() instead.

@@ -25,59 +25,50 @@ class AddressDataManager;
 class AutofillClient;
 class FormFieldData;
 
-// Helper class to generate Autofill suggestions, such as for credit card and
-// address profile Autofill.
-class AddressSuggestionGenerator {
- public:
-  struct ProfilesToSuggestOptions {
-    const bool exclude_disused_addresses = true;
-    const bool require_non_empty_value_on_trigger_field = true;
-    const bool prefix_match_suggestions = true;
-    const bool deduplicate_suggestions = true;
-  };
-
-  AddressSuggestionGenerator();
-  ~AddressSuggestionGenerator();
-  AddressSuggestionGenerator(const AddressSuggestionGenerator&) = delete;
-  AddressSuggestionGenerator& operator=(const AddressSuggestionGenerator&) =
-      delete;
-
-  // Generates suggestions for a form containing the given `field_types`. It
-  // considers all available profiles, deduplicates them based on the types and
-  // returns one suggestion per remaining profile.
-  // `field_types` are the relevant types for the current suggestions.
-  std::vector<Suggestion> GetSuggestionsForProfiles(
-      const AutofillClient& client,
-      const FieldTypeSet& field_types,
-      const FormFieldData& trigger_field,
-      FieldType trigger_field_type,
-      SuggestionType suggestion_type,
-      AutofillSuggestionTriggerSource trigger_source);
-
-  // Generates a footer suggestion "Manage addresses..." menu item which will
-  // redirect to Chrome address settings page.
-  static Suggestion CreateManageAddressesEntry();
-
-  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-  GetProfilesToSuggestForTest(
-      const AddressDataManager& address_data,
-      FieldType trigger_field_type,
-      const std::u16string& field_contents,
-      bool field_is_autofilled,
-      const FieldTypeSet& field_types,
-      AutofillSuggestionTriggerSource trigger_source =
-          AutofillSuggestionTriggerSource::kFormControlElementClicked);
-
-  std::vector<Suggestion> CreateSuggestionsFromProfilesForTest(
-      const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
-          profiles,
-      const FieldTypeSet& field_types,
-      SuggestionType suggestion_type,
-      FieldType trigger_field_type,
-      uint64_t trigger_field_max_length,
-      bool is_off_the_record = false,
-      const std::string& app_locale = "en-US");
+struct ProfilesToSuggestOptions {
+  const bool exclude_disused_addresses = true;
+  const bool require_non_empty_value_on_trigger_field = true;
+  const bool prefix_match_suggestions = true;
+  const bool deduplicate_suggestions = true;
 };
+
+// Generates suggestions for a form containing the given `field_types`. It
+// considers all available profiles, deduplicates them based on the types and
+// returns one suggestion per remaining profile.
+// `field_types` are the relevant types for the current suggestions.
+std::vector<Suggestion> GetSuggestionsForProfiles(
+    const AutofillClient& client,
+    const FieldTypeSet& field_types,
+    const FormFieldData& trigger_field,
+    FieldType trigger_field_type,
+    SuggestionType suggestion_type,
+    AutofillSuggestionTriggerSource trigger_source);
+
+// Generates a footer suggestion "Manage addresses..." menu item which will
+// redirect to Chrome address settings page.
+Suggestion CreateManageAddressesSuggestion();
+
+// Exposes `GetProfilesToSuggest` in tests.
+std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
+GetProfilesToSuggestForTest(
+    const AddressDataManager& address_data,
+    FieldType trigger_field_type,
+    const std::u16string& field_contents,
+    bool field_is_autofilled,
+    const FieldTypeSet& field_types,
+    AutofillSuggestionTriggerSource trigger_source =
+        AutofillSuggestionTriggerSource::kFormControlElementClicked);
+
+// Exposes `CreateSuggestionsFromProfiles` in tests.
+std::vector<Suggestion> CreateSuggestionsFromProfilesForTest(
+    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+        profiles,
+    const FieldTypeSet& field_types,
+    SuggestionType suggestion_type,
+    FieldType trigger_field_type,
+    uint64_t trigger_field_max_length,
+    bool is_off_the_record = false,
+    const std::string& app_locale = "en-US");
 
 }  // namespace autofill
 

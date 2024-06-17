@@ -983,16 +983,15 @@ std::vector<Suggestion> GetAddressFooterSuggestions(bool is_autofilled) {
   if (is_autofilled) {
     footer_suggestions.push_back(CreateUndoOrClearFormSuggestion());
   }
-  footer_suggestions.push_back(
-      AddressSuggestionGenerator::CreateManageAddressesEntry());
+  footer_suggestions.push_back(CreateManageAddressesSuggestion());
   return footer_suggestions;
 }
 
-AddressSuggestionGenerator::ProfilesToSuggestOptions
-GetProfilesToSuggestOptions(FieldType trigger_field_type,
-                            const std::u16string& trigger_field_contents,
-                            bool trigger_field_is_autofilled,
-                            AutofillSuggestionTriggerSource trigger_source) {
+ProfilesToSuggestOptions GetProfilesToSuggestOptions(
+    FieldType trigger_field_type,
+    const std::u16string& trigger_field_contents,
+    bool trigger_field_is_autofilled,
+    AutofillSuggestionTriggerSource trigger_source) {
   // By default, disused profiles are excluded only if the normalized field
   // value is empty. However, triggering suggestions via manual fallback should
   // allow the user to access all their profiles, which is why this option is
@@ -1028,7 +1027,7 @@ GetProfilesToSuggestOptions(FieldType trigger_field_type,
   // option is disabled there.
   bool should_deduplicate_suggestions =
       trigger_source != AutofillSuggestionTriggerSource::kManualFallbackAddress;
-  return AddressSuggestionGenerator::ProfilesToSuggestOptions{
+  return ProfilesToSuggestOptions{
       .exclude_disused_addresses = should_excluded_disused_addresses,
       .require_non_empty_value_on_trigger_field =
           should_require_non_empty_value_on_trigger_field,
@@ -1043,13 +1042,12 @@ GetProfilesToSuggestOptions(FieldType trigger_field_type,
 // `options` defines what strategies to follow by the function in order to
 // filter the list or returned profiles.
 std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-GetProfilesToSuggest(
-    const AddressDataManager& address_data,
-    FieldType trigger_field_type,
-    const std::u16string& field_contents,
-    bool field_is_autofilled,
-    const FieldTypeSet& field_types,
-    AddressSuggestionGenerator::ProfilesToSuggestOptions options) {
+GetProfilesToSuggest(const AddressDataManager& address_data,
+                     FieldType trigger_field_type,
+                     const std::u16string& field_contents,
+                     bool field_is_autofilled,
+                     const FieldTypeSet& field_types,
+                     ProfilesToSuggestOptions options) {
   // Get the profiles to suggest, which are already sorted.
   std::vector<const AutofillProfile*> sorted_profiles =
       address_data.GetProfilesToSuggest();
@@ -1208,11 +1206,7 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
 
 }  // namespace
 
-AddressSuggestionGenerator::AddressSuggestionGenerator() = default;
-
-AddressSuggestionGenerator::~AddressSuggestionGenerator() = default;
-
-std::vector<Suggestion> AddressSuggestionGenerator::GetSuggestionsForProfiles(
+std::vector<Suggestion> GetSuggestionsForProfiles(
     const AutofillClient& client,
     const FieldTypeSet& field_types,
     const FormFieldData& trigger_field,
@@ -1271,8 +1265,7 @@ std::vector<Suggestion> AddressSuggestionGenerator::GetSuggestionsForProfiles(
   return suggestions;
 }
 
-// static
-Suggestion AddressSuggestionGenerator::CreateManageAddressesEntry() {
+Suggestion CreateManageAddressesSuggestion() {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES),
       SuggestionType::kManageAddress);
@@ -1281,13 +1274,12 @@ Suggestion AddressSuggestionGenerator::CreateManageAddressesEntry() {
 }
 
 std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-AddressSuggestionGenerator::GetProfilesToSuggestForTest(
-    const AddressDataManager& address_data,
-    FieldType trigger_field_type,
-    const std::u16string& field_contents,
-    bool field_is_autofilled,
-    const FieldTypeSet& field_types,
-    AutofillSuggestionTriggerSource trigger_source) {
+GetProfilesToSuggestForTest(const AddressDataManager& address_data,
+                            FieldType trigger_field_type,
+                            const std::u16string& field_contents,
+                            bool field_is_autofilled,
+                            const FieldTypeSet& field_types,
+                            AutofillSuggestionTriggerSource trigger_source) {
   return GetProfilesToSuggest(
       address_data, trigger_field_type, field_contents, field_is_autofilled,
       field_types,
@@ -1295,8 +1287,7 @@ AddressSuggestionGenerator::GetProfilesToSuggestForTest(
                                   field_is_autofilled, trigger_source));
 }
 
-std::vector<Suggestion>
-AddressSuggestionGenerator::CreateSuggestionsFromProfilesForTest(
+std::vector<Suggestion> CreateSuggestionsFromProfilesForTest(
     const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
         profiles,
     const FieldTypeSet& field_types,

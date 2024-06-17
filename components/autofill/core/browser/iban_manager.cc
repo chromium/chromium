@@ -127,9 +127,7 @@ void IbanManager::SendIbanSuggestions(
   }
 
   std::move(on_suggestions_returned)
-      .Run(field.global_id(),
-           PaymentsSuggestionGenerator::GetSuggestionsForIbans(
-               std::move(ibans)));
+      .Run(field.global_id(), GetSuggestionsForIbans(std::move(ibans)));
 
   uma_recorder_.OnIbanSuggestionsShown(field.global_id());
 }
