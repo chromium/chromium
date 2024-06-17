@@ -13,7 +13,6 @@
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -45,7 +44,6 @@
 #include "third_party/icu/source/common/unicode/uchar.h"
 #include "third_party/icu/source/common/unicode/uscript.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/gfx/platform_font.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -63,7 +61,7 @@
 #include <windows.h>
 #endif
 
-#if BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "ui/gfx/font_list.h"
 #endif
 
@@ -130,19 +128,6 @@ bool ShouldUseAlternateDefaultFixedFont(const std::string& script) {
   UINT smooth_type = 0;
   SystemParametersInfo(SPI_GETFONTSMOOTHINGTYPE, 0, &smooth_type, 0);
   return smooth_type == FE_FONTSMOOTHINGCLEARTYPE;
-}
-
-std::string FirstAvailableFont(const std::string& comma_separated_families) {
-  const std::vector<std::string> families =
-      base::SplitString(comma_separated_families, ",", base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY);
-  CHECK(!families.empty());
-  for (const std::string& family : families) {
-    if (gfx::PlatformFont::Exists(family)) {
-      return family;
-    }
-  }
-  return families.front();
 }
 #endif
 
@@ -442,12 +427,7 @@ void PrefsTabHelper::RegisterProfilePrefs(
     // not be really critical after all.
     if (browser_script != pref_script) {
       std::string value = l10n_util::GetStringUTF8(pref.resource_id);
-#if BUILDFLAG(IS_WIN)
-      if (value.starts_with(',') &&
-          base::FeatureList::IsEnabled(kPrefsFontList)) {
-        value = FirstAvailableFont(value);
-      }
-#elif BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
       if (value.starts_with(',') &&
           base::FeatureList::IsEnabled(kPrefsFontList)) {
         value = gfx::FontList::FirstAvailableOrFirst(value);

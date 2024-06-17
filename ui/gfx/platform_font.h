@@ -62,10 +62,6 @@ class GFX_EXPORT PlatformFont : public base::RefCounted<PlatformFont> {
       int font_size,
       const std::optional<FontRenderParams>& params);
 
-#if BUILDFLAG(IS_WIN)
-  static bool Exists(const std::string& font_name);
-#endif
-
   // Returns a new Font derived from the existing font.
   // |size_delta| is the size in pixels to add to the current font.
   // The style parameter specifies the new style for the font, and is a
