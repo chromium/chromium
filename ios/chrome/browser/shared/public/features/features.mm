@@ -831,3 +831,9 @@ BASE_FEATURE(kSegmentationPlatformIosModuleRankerCaching,
 BASE_FEATURE(kDefaultBrowserPromoIPadExperimentalString,
              "DefaultBrowserPromoIPadExperimentalString",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BOOL UseIPadTailoredStringForDefaultBrowserPromo() {
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET &&
+         base::FeatureList::IsEnabled(
+             kDefaultBrowserPromoIPadExperimentalString);
+}

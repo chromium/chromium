@@ -889,6 +889,9 @@ For more settings that use data to improve your Chromium experience, go to <ph n
       <message name="IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_TITLE" desc="Title for the Set Up List item that encourages the user to set Chromium as their default browser.">
         Use Chromium by Default
       </message>
+      <message name="IDS_IOS_SET_UP_LIST_DEFAULT_BROWSER_TITLE_IPAD" desc="Title for the Set Up List item that encourages the user to set Chrome as their default browser.">
+        Use Chromium on iPad by Default
+      </message>
       <message name="IDS_IOS_SET_UP_LIST_DESCRIPTION" desc="Description for the Set Up List - a list of tasks the user might want to complete when first using Chromium.">
           Complete these suggested actions below to get the most out of Chromium.
       </message>
