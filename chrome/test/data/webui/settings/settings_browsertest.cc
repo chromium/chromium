@@ -867,6 +867,14 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest,
           "runMochaSuite('CompletionFragmentWithoutTrackingProtection')");
 }
 
+IN_PROC_BROWSER_TEST_F(
+    SettingsPrivacyGuideTest,
+    CompletionFragmentPrivacySandboxRestrictedWithNoticeEnabled) {
+  RunTest("settings/privacy_guide_fragments_test.js",
+          "runMochaSuite('"
+          "CompletionFragmentPrivacySandboxRestrictedWithNoticeEnabled')");
+}
+
 class SettingsPrivacyPagePrivacySandboxRestrictedTest
     : public SettingsBrowserTest {
  protected:
