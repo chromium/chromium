@@ -6813,6 +6813,14 @@ const FeatureEntry kFeatureEntries[] = {
                                     kParcelTrackingTestDataVariations,
                                     "ParcelTrackingTestData")},
 
+    {"price-tracking-subscription-service-locale-key",
+     commerce::flag_descriptions::
+         kPriceTrackingSubscriptionServiceLocaleKeyName,
+     commerce::flag_descriptions::
+         kPriceTrackingSubscriptionServiceLocaleKeyDescription,
+     kOsDesktop,
+     FEATURE_VALUE_TYPE(commerce::kPriceTrackingSubscriptionServiceLocaleKey)},
+
 #if BUILDFLAG(IS_ANDROID)
     {"price-change-module", flag_descriptions::kPriceChangeModuleName,
      flag_descriptions::kPriceChangeModuleDescription, kOsAndroid,
