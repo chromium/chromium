@@ -6,13 +6,14 @@
 
 namespace blink {
 
+// static
 bool GPUProgrammablePassEncoder::ValidateSetBindGroupDynamicOffsets(
-    const NADCTypedArrayView<uint32_t>& dynamic_offsets_data,
+    const base::span<const uint32_t> dynamic_offsets_data,
     uint64_t dynamic_offsets_data_start,
     uint32_t dynamic_offsets_data_length,
     ExceptionState& exception_state) {
   const uint64_t src_length =
-      static_cast<uint64_t>(dynamic_offsets_data.Size());
+      static_cast<uint64_t>(dynamic_offsets_data.size());
 
   if (dynamic_offsets_data_start > src_length) {
     exception_state.ThrowRangeError("dynamicOffsetsDataStart too large");

@@ -84,7 +84,7 @@ void GPURenderBundleEncoder::setBindGroup(
 void GPURenderBundleEncoder::setBindGroup(
     uint32_t index,
     GPUBindGroup* bind_group,
-    NADCTypedArrayView<uint32_t> dynamic_offsets_data,
+    base::span<const uint32_t> dynamic_offsets_data,
     uint64_t dynamic_offsets_data_start,
     uint32_t dynamic_offsets_data_length,
     ExceptionState& exception_state) {
@@ -95,7 +95,7 @@ void GPURenderBundleEncoder::setBindGroup(
   }
 
   const uint32_t* data =
-      dynamic_offsets_data.Data() + dynamic_offsets_data_start;
+      dynamic_offsets_data.data() + dynamic_offsets_data_start;
 
   GetHandle().SetBindGroup(
       index, bind_group ? bind_group->GetHandle() : wgpu::BindGroup(nullptr),

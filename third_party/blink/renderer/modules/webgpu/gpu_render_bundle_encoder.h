@@ -47,7 +47,7 @@ class GPURenderBundleEncoder : public DawnObject<wgpu::RenderBundleEncoder>,
                     const Vector<uint32_t>& dynamicOffsets);
   void setBindGroup(uint32_t index,
                     GPUBindGroup* bind_group,
-                    NADCTypedArrayView<uint32_t> dynamic_offsets_data,
+                    base::span<const uint32_t> dynamic_offsets_data,
                     uint64_t dynamic_offsets_data_start,
                     uint32_t dynamic_offsets_data_length,
                     ExceptionState& exception_state);

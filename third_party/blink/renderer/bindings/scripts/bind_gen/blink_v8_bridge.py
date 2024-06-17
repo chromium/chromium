@@ -452,12 +452,13 @@ def _native_value_tag_impl(idl_type):
         is_buffer_source_type = all(t.is_buffer_source_type for t in types)
         assert is_buffer_source_type, (
             "PassAsSpan is only supported for buffer source types")
+        element_type = (", " + typed_array_element_type(real_type)
+                        if real_type.is_typed_array_type else "")
         allow_shared = "AllowShared" in idl_type.effective_annotations or any(
             "AllowShared" in t.effective_annotations for t in types)
-        marker = "PassAsSpan<PassAsSpanMarkerBase::AllowSharedFlag::{}>"
-        if allow_shared:
-            return marker.format("kAllowShared")
-        return marker.format("kDoNotAllowShared")
+        shared_marker = "kAllowShared" if allow_shared else "kDoNotAllowShared"
+        return "PassAsSpan<PassAsSpanMarkerBase::AllowSharedFlag::{}{}>".format(
+            shared_marker, element_type)
 
     if (real_type.is_boolean or real_type.is_numeric or real_type.is_string
             or real_type.is_any or real_type.is_object or real_type.is_bigint):
@@ -910,3 +911,22 @@ def make_v8_to_blink_value_variadic(blink_var_name, v8_array,
         ])
 
     return SymbolNode(blink_var_name, definition_constructor=create_definition)
+
+
+def typed_array_element_type(idl_type):
+    assert isinstance(idl_type, web_idl.IdlType)
+    assert idl_type.is_typed_array_type
+    element_type_map = {
+        'Int8Array': 'int8_t',
+        'Int16Array': 'int16_t',
+        'Int32Array': 'int32_t',
+        'BigInt64Array': 'int64_t',
+        'Uint8Array': 'uint8_t',
+        'Uint16Array': 'uint16_t',
+        'Uint32Array': 'uint32_t',
+        'BigUint64Array': 'uint64_t',
+        'Uint8ClampedArray': 'uint8_t',
+        'Float32Array': 'float',
+        'Float64Array': 'double',
+    }
+    return element_type_map.get(idl_type.keyword_typename)

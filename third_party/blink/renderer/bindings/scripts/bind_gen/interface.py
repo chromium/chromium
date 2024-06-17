@@ -14,6 +14,7 @@ from .blink_v8_bridge import make_v8_to_blink_value
 from .blink_v8_bridge import make_v8_to_blink_value_variadic
 from .blink_v8_bridge import native_value_tag
 from .blink_v8_bridge import v8_bridge_class_name
+from .blink_v8_bridge import typed_array_element_type
 from .code_node import EmptyNode
 from .code_node import FormatNode
 from .code_node import ListNode
@@ -2508,32 +2509,25 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
                         argument=argument,
                         error_exit_return_statement="return;",
                         cg_context=cg_context))
-
-        elif argument.idl_type.unwrap().is_typed_array_type:
+        elif unwrapped_idl_type.is_typed_array_type:
             assert "AllowShared" in argument.idl_type.effective_annotations
-            unwrapped_idl_type = argument.idl_type.unwrap()
-            element_type_map = {
-                'Int8Array': 'int8_t',
-                'Int16Array': 'int16_t',
-                'Int32Array': 'int32_t',
-                'BigInt64Array': 'int64_t',
-                'Uint8Array': 'uint8_t',
-                'Uint16Array': 'uint16_t',
-                'Uint32Array': 'uint32_t',
-                'BigUint64Array': 'uint64_t',
-                'Uint8ClampedArray': 'uint8_t',
-                'Float32Array': 'float',
-                'Float64Array': 'double',
-            }
-            element_type = element_type_map.get(
-                unwrapped_idl_type.keyword_typename)
-
+            element_type = typed_array_element_type(unwrapped_idl_type)
+            v8_type = "const v8::FastApiTypedArray<{}>&".format(element_type)
+            if "PassAsSpan" in argument.idl_type.effective_annotations:
+                return (v8_type,
+                        make_v8_to_blink_value(
+                            blink_arg_name,
+                            "${{{}}}".format(v8_arg_name),
+                            argument.idl_type,
+                            argument=argument,
+                            error_exit_return_statement="return;",
+                            cg_context=cg_context))
+            # TODO(346495942): remove the below branch once v8::FastApiTypedArray is gone.
             def create_definition(symbol_node):
                 binds = {
                     "v8_arg_name": v8_arg_name,
                     "blink_arg_name": blink_arg_name,
                 }
-
                 symbol_def_node = SymbolDefinitionNode(
                     symbol_node,
                     [F("auto& {blink_arg_name} = {v8_arg_name};", **binds)])
@@ -2543,7 +2537,7 @@ def make_no_alloc_direct_call_callback_def(cg_context, function_name,
                     ]))
                 return symbol_def_node
 
-            return ("const v8::FastApiTypedArray<{}>&".format(element_type),
+            return (v8_type,
                     S(blink_arg_name,
                       definition_constructor=create_definition))
         else:

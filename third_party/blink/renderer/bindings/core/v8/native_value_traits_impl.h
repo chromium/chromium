@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "v8/include/v8-fast-api-calls.h"
 
 namespace blink {
 
@@ -1810,38 +1811,25 @@ struct NativeValueTraits<IDLNullable<IDLOnBeforeUnloadEventHandler>>;
 template <>
 struct NativeValueTraits<IDLNullable<IDLOnErrorEventHandler>>;
 
-// This is a marker class for differentiating [PassAsSpan] argument conversions.
-// The actual type returned is `SpanWithInlineStorage`, however, unlike the
-// returned type, the marker carries additional information for conversion
-// (whether shared array buffers should be allowed).
-struct PassAsSpanMarkerBase {
-  enum class AllowSharedFlag { kAllowShared, kDoNotAllowShared };
-};
-
-template <PassAsSpanMarkerBase::AllowSharedFlag AllowShared>
-struct PassAsSpan : public PassAsSpanMarkerBase {
-  static constexpr bool allow_shared =
-      AllowShared == AllowSharedFlag::kAllowShared;
-};
-
 namespace internal {
 
-class CORE_EXPORT SpanWithInlineStorage {
+class CORE_EXPORT ByteSpanWithInlineStorage {
   STACK_ALLOCATED();
 
  public:
-  SpanWithInlineStorage() = default;
-  SpanWithInlineStorage(const SpanWithInlineStorage& r) { *this = r; }
+  ByteSpanWithInlineStorage() = default;
+  ByteSpanWithInlineStorage(const ByteSpanWithInlineStorage& r) { *this = r; }
 
-  SpanWithInlineStorage& operator=(const SpanWithInlineStorage& r);
+  ByteSpanWithInlineStorage& operator=(const ByteSpanWithInlineStorage& r);
 
   template <typename T>
-  static SpanWithInlineStorage GetArrayData(v8::Local<T> array) {
-    return SpanWithInlineStorage(base::make_span(
+  static ByteSpanWithInlineStorage GetArrayData(v8::Local<T> array) {
+    return ByteSpanWithInlineStorage(base::make_span(
         reinterpret_cast<const uint8_t*>(array->Data()), array->ByteLength()));
   }
 
-  static SpanWithInlineStorage GetViewData(v8::Local<v8::ArrayBufferView> view);
+  static ByteSpanWithInlineStorage GetViewData(
+      v8::Local<v8::ArrayBufferView> view);
 
   // This class allows implicit conversion to span, because it's an internal
   // class tightly coupled to the bindings generator that knows how to use it.
@@ -1852,10 +1840,10 @@ class CORE_EXPORT SpanWithInlineStorage {
   const base::span<const uint8_t> as_span() const { return span_; }
 
  private:
-  explicit SpanWithInlineStorage(base::span<const uint8_t> span)
+  explicit ByteSpanWithInlineStorage(base::span<const uint8_t> span)
       : span_(span) {}
-  explicit SpanWithInlineStorage(size_t size)
-      : SpanWithInlineStorage(base::make_span(inline_storage_, size)) {
+  explicit ByteSpanWithInlineStorage(size_t size)
+      : ByteSpanWithInlineStorage(base::make_span(inline_storage_, size)) {
     DCHECK_LE(size, sizeof inline_storage_);
   }
 
@@ -1863,26 +1851,109 @@ class CORE_EXPORT SpanWithInlineStorage {
   uint8_t inline_storage_[64];
 };
 
-}  // namespace internal
+template <typename T>
+class SpanWithInlineStorage {
+  STACK_ALLOCATED();
+
+ public:
+  SpanWithInlineStorage() = default;
+
+  static SpanWithInlineStorage GetViewData(
+      v8::Local<v8::ArrayBufferView> view) {
+    return SpanWithInlineStorage(view);
+  }
+
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  operator base::span<const T>() const& { return as_span(); }
+  operator base::span<const T>() const&& = delete;
+  const base::span<const T> as_span() const {
+    const base::span<const uint8_t> bytes = bytes_.as_span();
+    return base::make_span(reinterpret_cast<const T*>(bytes.data()),
+                           bytes.size() / sizeof(T));
+  }
+
+ private:
+  explicit SpanWithInlineStorage(v8::Local<v8::ArrayBufferView> view)
+      : bytes_(ByteSpanWithInlineStorage::GetViewData(view)) {}
+  ByteSpanWithInlineStorage bytes_;
+};
 
 template <typename T>
-  requires std::derived_from<T, PassAsSpanMarkerBase>
+struct TypedArrayElementTraits {};
+
+#define DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(type, func)      \
+  template <>                                              \
+  struct TypedArrayElementTraits<type> {                   \
+    static bool IsViewOfType(v8::Local<v8::Value> value) { \
+      return value->func();                                \
+    }                                                      \
+  }
+
+DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(int8_t, IsInt8Array);
+// Note Uint8 array is special case due to need to account for
+// Uint8 clamped array, so not declared here.
+DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(int16_t, IsInt16Array);
+DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(uint16_t, IsUint16Array);
+DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(int32_t, IsInt32Array);
+DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(uint32_t, IsUint32Array);
+DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(int64_t, IsBigInt64Array);
+DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(uint64_t, IsBigUint64Array);
+DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(float, IsFloat32Array);
+DEFINE_TYPED_ARRAY_ELEMENT_TRAITS(double, IsFloat64Array);
+
+template <>
+struct TypedArrayElementTraits<uint8_t> {
+ public:
+  static bool IsViewOfType(v8::Local<v8::Value> value) {
+    return value->IsUint8Array() || value->IsUint8ClampedArray();
+  }
+};
+
+}  // namespace internal
+
+// This is a marker class for differentiating [PassAsSpan] argument conversions.
+// The actual type returned is `SpanWithInlineStorage`, however, unlike the
+// returned type, the marker carries additional information for conversion
+// (whether shared array buffers should be allowed, whether a typed array
+// is expected etc).
+struct PassAsSpanMarkerBase {
+  enum class AllowSharedFlag { kAllowShared, kDoNotAllowShared };
+};
+
+template <PassAsSpanMarkerBase::AllowSharedFlag AllowShared, typename T = void>
+struct PassAsSpan : public PassAsSpanMarkerBase {
+  static constexpr bool allow_shared =
+      AllowShared == AllowSharedFlag::kAllowShared;
+  static constexpr bool is_typed = true;
+  using ElementType = T;
+  using ReturnType = internal::SpanWithInlineStorage<T>;
+};
+
+template <PassAsSpanMarkerBase::AllowSharedFlag AllowShared>
+struct PassAsSpan<AllowShared, void> : public PassAsSpanMarkerBase {
+  static constexpr bool allow_shared =
+      AllowShared == AllowSharedFlag::kAllowShared;
+  static constexpr bool is_typed = false;
+  using ReturnType = internal::ByteSpanWithInlineStorage;
+};
+
+template <typename T>
+  requires std::derived_from<T, PassAsSpanMarkerBase> && (!T::is_typed)
 struct NativeValueTraits<T> : public NativeValueTraitsBase<T> {
   static void NativeValue(v8::Isolate* isolate,
                           v8::Local<v8::Value> value,
                           ExceptionState& exception_state) = delete;
 
-  static internal::SpanWithInlineStorage ArgumentValue(
-      v8::Isolate* isolate,
-      int argument_index,
-      v8::Local<v8::Value> value,
-      ExceptionState& exception_state) {
+  static typename T::ReturnType ArgumentValue(v8::Isolate* isolate,
+                                              int argument_index,
+                                              v8::Local<v8::Value> value,
+                                              ExceptionState& exception_state) {
     if (value->IsArrayBuffer()) {
-      return internal::SpanWithInlineStorage::GetArrayData(
+      return internal::ByteSpanWithInlineStorage::GetArrayData(
           value.As<v8::ArrayBuffer>());
     }
     if (T::allow_shared && value->IsSharedArrayBuffer()) {
-      return internal::SpanWithInlineStorage::GetArrayData(
+      return internal::ByteSpanWithInlineStorage::GetArrayData(
           value.As<v8::SharedArrayBuffer>());
     }
     if (value->IsArrayBufferView()) {
@@ -1893,11 +1964,52 @@ struct NativeValueTraits<T> : public NativeValueTraitsBase<T> {
             "The provided ArrayBufferView value must not be shared.");
         return {};
       }
-      return internal::SpanWithInlineStorage::GetViewData(view);
+      return T::ReturnType::GetViewData(view);
     }
     exception_state.ThrowTypeError(
         ExceptionMessages::ArgumentNotOfType(argument_index, "ArrayBuffer"));
     return {};
+  }
+};
+
+template <typename T>
+  requires std::derived_from<T, PassAsSpanMarkerBase> && T::is_typed
+struct NativeValueTraits<T> : public NativeValueTraitsBase<T> {
+  using ElementType = typename T::ElementType;
+
+  static void NativeValue(v8::Isolate* isolate,
+                          v8::Local<v8::Value> value,
+                          ExceptionState& exception_state) = delete;
+
+  static typename T::ReturnType ArgumentValue(v8::Isolate* isolate,
+                                              int argument_index,
+                                              v8::Local<v8::Value> value,
+                                              ExceptionState& exception_state) {
+    if (internal::TypedArrayElementTraits<ElementType>::IsViewOfType(value)) {
+      v8::Local<v8::ArrayBufferView> view = value.As<v8::ArrayBufferView>();
+      if (!T::allow_shared && view->HasBuffer() &&
+          view->Buffer()->GetBackingStore()->IsShared()) {
+        exception_state.ThrowTypeError(
+            "The provided ArrayBufferView value must not be shared.");
+        return {};
+      }
+      return T::ReturnType::GetViewData(view);
+    }
+    exception_state.ThrowTypeError(
+        ExceptionMessages::ArgumentNotOfType(argument_index, "TypedArray"));
+    return {};
+  }
+
+  // TODO(346495942): remove once v8::FastApiTypedArrays are no longer passed.
+  static base::span<ElementType> ArgumentValue(
+      v8::Isolate* isolate,
+      int argument_index,
+      v8::FastApiTypedArray<ElementType> value,
+      ExceptionState& exception_state) {
+    ElementType* data;
+    const bool aligned = value.getStorageIfAligned(&data);
+    DCHECK(aligned);
+    return base::make_span(data, value.length());
   }
 };
 
@@ -1909,7 +2021,7 @@ struct NativeValueTraits<IDLOptional<T>> : public NativeValueTraitsBase<T> {
                           v8::Local<v8::Value> value,
                           ExceptionState& exception_state) = delete;
 
-  static std::optional<internal::SpanWithInlineStorage> ArgumentValue(
+  static std::optional<typename T::ReturnType> ArgumentValue(
       v8::Isolate* isolate,
       int argument_index,
       v8::Local<v8::Value> value,

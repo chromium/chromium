@@ -10,7 +10,7 @@ interface mixin GPUProgrammablePassEncoder {
 
     [RaisesException, NoAllocDirectCall] void setBindGroup(
         GPUIndex32 index, GPUBindGroup? bindGroup,
-        [AllowShared, FlexibleArrayBufferView, BufferSourceTypeNoSizeLimit] Uint32Array dynamicOffsetsData,
+        [AllowShared, PassAsSpan, BufferSourceTypeNoSizeLimit] Uint32Array dynamicOffsetsData,
         GPUSize64 dynamicOffsetsDataStart,
         GPUSize32 dynamicOffsetsDataLength);
 
