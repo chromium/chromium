@@ -205,7 +205,7 @@ class MagicStackRankingModelTest : public PlatformTest {
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        base::BindRepeating(AuthenticationServiceFactory::GetDefaultFactory()));
+        AuthenticationServiceFactory::GetDefaultFactory());
     test_cbs_builder.AddTestingFactory(
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetInstance(),

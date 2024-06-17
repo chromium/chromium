@@ -213,7 +213,7 @@ class AppStateTest : public BlockCleanupTest {
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        base::BindRepeating(AuthenticationServiceFactory::GetDefaultFactory()));
+        AuthenticationServiceFactory::GetDefaultFactory());
 
     browser_state_manager_ = std::make_unique<TestChromeBrowserStateManager>(
         test_cbs_builder.Build());

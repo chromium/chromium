@@ -129,9 +129,8 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     test_cbs_builder.AddTestingFactory(
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetInstance(),
-        base::BindRepeating(
-            segmentation_platform::SegmentationPlatformServiceFactory::
-                GetDefaultFactory()));
+        segmentation_platform::SegmentationPlatformServiceFactory::
+            GetDefaultFactory());
 
     chrome_browser_state_ = test_cbs_builder.Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
@@ -355,7 +354,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   std::unique_ptr<web::WebState> CreateOffTheRecordWebState() {
     web::WebState::CreateParams params(
         chrome_browser_state_
-            ->CreateOffTheRecordBrowserStateWithTestingFactories({}));
+            ->CreateOffTheRecordBrowserStateWithTestingFactories());
     auto web_state = web::WebState::Create(params);
     AttachTabHelpers(web_state.get(), NO);
     return web_state;

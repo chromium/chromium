@@ -31,7 +31,7 @@ TEST_F(ListFamilyMembersServiceFactoryTest, CreateService) {
 TEST_F(ListFamilyMembersServiceFactoryTest,
        ReturnsNullOnOffTheRecordBrowserState) {
   ChromeBrowserState* otr_browser_state =
-      browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories({});
+      browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories();
   CHECK(otr_browser_state);
   supervised_user::ListFamilyMembersService* service =
       ListFamilyMembersServiceFactory::GetForBrowserState(otr_browser_state);

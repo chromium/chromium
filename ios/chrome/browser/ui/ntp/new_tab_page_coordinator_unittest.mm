@@ -168,9 +168,8 @@ class NewTabPageCoordinatorTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetInstance(),
-        base::BindRepeating(
-            segmentation_platform::SegmentationPlatformServiceFactory::
-                GetDefaultFactory()));
+        segmentation_platform::SegmentationPlatformServiceFactory::
+            GetDefaultFactory());
     browser_state_ = test_cbs_builder.Build();
     AuthenticationServiceFactory::CreateAndInitializeForBrowserState(
         browser_state_.get(),

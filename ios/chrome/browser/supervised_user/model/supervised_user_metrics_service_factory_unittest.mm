@@ -34,7 +34,7 @@ TEST_F(SupervisedUserMetricsServiceFactoryTest, CreateService) {
 TEST_F(SupervisedUserMetricsServiceFactoryTest,
        ReturnsNullOnOffTheRecordBrowserState) {
   ChromeBrowserState* otr_browser_state =
-      browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories({});
+      browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories();
   CHECK(otr_browser_state);
   supervised_user::SupervisedUserMetricsService* service =
       SupervisedUserMetricsServiceFactory::GetForBrowserState(

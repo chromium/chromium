@@ -103,13 +103,12 @@ class BrowserCoordinatorTest : public PlatformTest {
         ios::LocalOrSyncableBookmarkModelFactory::GetDefaultFactory());
     test_cbs_builder.AddTestingFactory(
         AuthenticationServiceFactory::GetInstance(),
-        base::BindRepeating(AuthenticationServiceFactory::GetDefaultFactory()));
+        AuthenticationServiceFactory::GetDefaultFactory());
     test_cbs_builder.AddTestingFactory(
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetInstance(),
-        base::BindRepeating(
-            segmentation_platform::SegmentationPlatformServiceFactory::
-                GetDefaultFactory()));
+        segmentation_platform::SegmentationPlatformServiceFactory::
+            GetDefaultFactory());
     test_cbs_builder.AddTestingFactory(
         commerce::ShoppingServiceFactory::GetInstance(),
         base::BindRepeating(

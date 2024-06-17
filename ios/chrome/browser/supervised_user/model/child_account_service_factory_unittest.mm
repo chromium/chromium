@@ -32,7 +32,7 @@ TEST_F(ChildAccountServiceFactoryTest, CreateService) {
 // with an off-the-record ChromeBrowserState.
 TEST_F(ChildAccountServiceFactoryTest, ReturnsNullOnOffTheRecordBrowserState) {
   ChromeBrowserState* otr_browser_state =
-      browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories({});
+      browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories();
   CHECK(otr_browser_state);
   supervised_user::ChildAccountService* service =
       ChildAccountServiceFactory::GetForBrowserState(otr_browser_state);
