@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/347137620 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/autofill/core/browser/autofill_data_util.h"
 
+#include <array>
 #include <iterator>
 #include <string_view>
 #include <vector>
@@ -17,6 +13,7 @@
 #include "base/i18n/char_iterator.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "components/autofill/core/browser/autofill_type.h"
@@ -44,7 +41,7 @@ namespace {
 // Mappings from Chrome card networks to Payment Request API basic card payment
 // spec networks and icons. Note that "generic" is not in the spec.
 // https://w3c.github.io/webpayments-methods-card/#method-id
-const PaymentRequestData kPaymentRequestData[]{
+constexpr PaymentRequestData kPaymentRequestData[]{
     {autofill::kAmericanExpressCard, "amex", IDR_AUTOFILL_CC_AMEX,
      IDS_AUTOFILL_CC_AMEX},
     {autofill::kDinersCard, "diners", IDR_AUTOFILL_CC_DINERS,
@@ -64,7 +61,7 @@ const PaymentRequestData kPaymentRequestData[]{
     {autofill::kVisaCard, "visa", IDR_AUTOFILL_CC_VISA, IDS_AUTOFILL_CC_VISA},
 };
 
-const PaymentRequestData kPaymentRequestDataForNewNetworkImages[]{
+constexpr PaymentRequestData kPaymentRequestDataForNewNetworkImages[]{
     {autofill::kAmericanExpressCard, "amex", IDR_AUTOFILL_METADATA_CC_AMEX,
      IDS_AUTOFILL_CC_AMEX},
     {autofill::kDinersCard, "diners", IDR_AUTOFILL_METADATA_CC_DINERS,
@@ -89,75 +86,71 @@ const PaymentRequestData kPaymentRequestDataForNewNetworkImages[]{
      IDS_AUTOFILL_CC_VISA},
 };
 
-const PaymentRequestData kGenericPaymentRequestData = {
+constexpr PaymentRequestData kGenericPaymentRequestData = {
     autofill::kGenericCard, "generic", IDR_AUTOFILL_CC_GENERIC,
     IDS_AUTOFILL_CC_GENERIC};
 
-const PaymentRequestData kGenericPaymentRequestDataForNewNetworkImages = {
+constexpr PaymentRequestData kGenericPaymentRequestDataForNewNetworkImages = {
     autofill::kGenericCard, "generic", IDR_AUTOFILL_METADATA_CC_GENERIC,
     IDS_AUTOFILL_CC_GENERIC};
 
-const char* const name_prefixes[] = {
-    "1lt",     "1st", "2lt", "2nd",    "3rd",  "admiral", "capt",
-    "captain", "col", "cpt", "dr",     "gen",  "general", "lcdr",
-    "lt",      "ltc", "ltg", "ltjg",   "maj",  "major",   "mg",
-    "mr",      "mrs", "ms",  "pastor", "prof", "rep",     "reverend",
-    "rev",     "sen", "st"};
+constexpr auto kNamePrefixes = std::to_array<std::string_view>(
+    {"1lt",     "1st", "2lt", "2nd",    "3rd",  "admiral", "capt",
+     "captain", "col", "cpt", "dr",     "gen",  "general", "lcdr",
+     "lt",      "ltc", "ltg", "ltjg",   "maj",  "major",   "mg",
+     "mr",      "mrs", "ms",  "pastor", "prof", "rep",     "reverend",
+     "rev",     "sen", "st"});
 
-const char* const name_suffixes[] = {"b.a", "ba", "d.d.s", "dds",  "i",   "ii",
-                                     "iii", "iv", "ix",    "jr",   "m.a", "m.d",
-                                     "ma",  "md", "ms",    "ph.d", "phd", "sr",
-                                     "v",   "vi", "vii",   "viii", "x"};
+constexpr auto kNameSuffixes = std::to_array<std::string_view>(
+    {"b.a", "ba", "d.d.s", "dds", "i",   "ii",   "iii", "iv",
+     "ix",  "jr", "m.a",   "m.d", "ma",  "md",   "ms",  "ph.d",
+     "phd", "sr", "v",     "vi",  "vii", "viii", "x"});
 
-const char* const family_name_prefixes[] = {"d'", "de",  "del", "den", "der",
-                                            "di", "la",  "le",  "mc",  "san",
-                                            "st", "ter", "van", "von"};
+constexpr auto kFamilyNamePrefixes = std::to_array<std::string_view>(
+    {"d'", "de", "del", "den", "der", "di", "la", "le", "mc", "san", "st",
+     "ter", "van", "von"});
 
 // The common and non-ambiguous CJK surnames (last names) that have more than
 // one character.
-const char* common_cjk_multi_char_surnames[] = {
-    // Korean, taken from the list of surnames:
-    // https://ko.wikipedia.org/wiki/%ED%95%9C%EA%B5%AD%EC%9D%98_%EC%84%B1%EC%94%A8_%EB%AA%A9%EB%A1%9D
-    "남궁", "사공", "서문", "선우", "제갈", "황보", "독고", "망절",
-
-    // Chinese, taken from the top 10 Chinese 2-character surnames:
-    // https://zh.wikipedia.org/wiki/%E8%A4%87%E5%A7%93#.E5.B8.B8.E8.A6.8B.E7.9A.84.E8.A4.87.E5.A7.93
-    // Simplified Chinese (mostly mainland China)
-    "欧阳", "令狐", "皇甫", "上官", "司徒", "诸葛", "司马", "宇文", "呼延",
-    "端木",
-    // Traditional Chinese (mostly Taiwan)
-    "張簡", "歐陽", "諸葛", "申屠", "尉遲", "司馬", "軒轅", "夏侯"};
+constexpr auto kCommonCjkMultiCharSurnames = std::to_array<std::string_view>(
+    {// Korean, taken from the list of surnames:
+     // https://ko.wikipedia.org/wiki/%ED%95%9C%EA%B5%AD%EC%9D%98_%EC%84%B1%EC%94%A8_%EB%AA%A9%EB%A1%9D
+     "남궁", "사공", "서문", "선우", "제갈", "황보", "독고", "망절",
+     // Chinese, taken from the top 10 Chinese 2-character surnames:
+     // https://zh.wikipedia.org/wiki/%E8%A4%87%E5%A7%93#.E5.B8.B8.E8.A6.8B.E7.9A.84.E8.A4.87.E5.A7.93
+     // Simplified Chinese (mostly mainland China)
+     "欧阳", "令狐", "皇甫", "上官", "司徒", "诸葛", "司马", "宇文", "呼延",
+     "端木",
+     // Traditional Chinese (mostly Taiwan)
+     "張簡", "歐陽", "諸葛", "申屠", "尉遲", "司馬", "軒轅", "夏侯"});
 
 // All Korean surnames that have more than one character, even the
 // rare/ambiguous ones.
-const char* korean_multi_char_surnames[] = {
-    "강전", "남궁", "독고", "동방", "망절", "사공", "서문",
-    "선우", "소봉", "어금", "장곡", "제갈", "황목", "황보"};
+constexpr auto kKoreanMultiCharSurnames = std::to_array<std::string_view>(
+    {"강전", "남궁", "독고", "동방", "망절", "사공", "서문", "선우", "소봉",
+     "어금", "장곡", "제갈", "황목", "황보"});
 
-// Returns true if |set| contains |element|, modulo a final period.
-bool ContainsString(const char* const set[],
-                    size_t set_size,
+// Returns true if `set` contains `element`, modulo a final period.
+bool ContainsString(base::span<const std::string_view> set,
                     std::u16string_view element) {
   if (!base::IsStringASCII(element))
     return false;
 
   std::u16string_view trimmed_element =
       base::TrimString(element, u".", base::TRIM_ALL);
-
-  for (size_t i = 0; i < set_size; ++i) {
-    if (base::EqualsCaseInsensitiveASCII(trimmed_element, set[i]))
-      return true;
-  }
-
-  return false;
+  return base::ranges::any_of(
+      set, [trimmed_element](std::string_view set_element) {
+        return base::EqualsCaseInsensitiveASCII(trimmed_element, set_element);
+      });
 }
 
-// Removes common name prefixes from |name_tokens|.
+// Removes common name prefixes from `name_tokens`.
 void StripPrefixes(std::vector<std::u16string_view>* name_tokens) {
   auto iter = name_tokens->begin();
   while (iter != name_tokens->end()) {
-    if (!ContainsString(name_prefixes, std::size(name_prefixes), *iter))
+    if (!ContainsString(kNamePrefixes, *iter)) {
       break;
+    }
     ++iter;
   }
 
@@ -166,27 +159,23 @@ void StripPrefixes(std::vector<std::u16string_view>* name_tokens) {
   *name_tokens = copy_vector;
 }
 
-// Removes common name suffixes from |name_tokens|.
+// Removes common name suffixes from `name_tokens`.
 void StripSuffixes(std::vector<std::u16string_view>* name_tokens) {
   while (!name_tokens->empty()) {
-    if (!ContainsString(name_suffixes, std::size(name_suffixes),
-                        name_tokens->back())) {
+    if (!ContainsString(kNameSuffixes, name_tokens->back())) {
       break;
     }
     name_tokens->pop_back();
   }
 }
 
-// Find whether |name| starts with any of the strings from the array
-// |prefixes|. The returned value is the length of the prefix found, or 0 if
+// Find whether `name` starts with any of the strings from the array
+// `prefixes`. The returned value is the length of the prefix found, or 0 if
 // none is found.
 size_t StartsWithAny(std::u16string_view name,
-                     const char** prefixes,
-                     size_t prefix_count) {
-  std::u16string buffer;
-  for (size_t i = 0; i < prefix_count; i++) {
-    buffer.clear();
-    base::UTF8ToUTF16(prefixes[i], strlen(prefixes[i]), &buffer);
+                     base::span<const std::string_view> prefixes) {
+  for (std::string_view prefix : prefixes) {
+    std::u16string buffer = base::UTF8ToUTF16(prefix);
     if (name.starts_with(buffer)) {
       return buffer.size();
     }
@@ -251,21 +240,19 @@ bool SplitCJKName(const std::vector<std::u16string_view>& name_tokens,
     // Japanese names.
     const std::u16string_view& name = name_tokens.front();
     const bool is_korean = IsHangulName(name);
-    size_t surname_length = 0;
-    if (is_korean && name.size() > 3) {
-      // 4-character Korean names are more likely to be 2/2 than 1/3, so use
-      // the full list of Korean 2-char surnames. (instead of only the common
-      // ones)
-      surname_length = std::max<size_t>(
-          1, StartsWithAny(name, korean_multi_char_surnames,
-                           std::size(korean_multi_char_surnames)));
-    } else {
+    const size_t surname_length = [&] {
+      if (is_korean && name.size() > 3) {
+        // 4-character Korean names are more likely to be 2/2 than 1/3, so use
+        // the full list of Korean 2-char surnames. (instead of only the common
+        // ones)
+        return std::max<size_t>(1,
+                                StartsWithAny(name, kKoreanMultiCharSurnames));
+      }
       // Default to 1 character if the surname is not in
-      // |common_cjk_multi_char_surnames|.
-      surname_length = std::max<size_t>(
-          1, StartsWithAny(name, common_cjk_multi_char_surnames,
-                           std::size(common_cjk_multi_char_surnames)));
-    }
+      // `kCommonCjkMultiCharSurnames`.
+      return std::max<size_t>(1,
+                              StartsWithAny(name, kCommonCjkMultiCharSurnames));
+    }();
     parts->family = std::u16string(name.substr(0, surname_length));
     parts->given = std::u16string(name.substr(surname_length));
     return true;
@@ -394,9 +381,9 @@ bool IsCJKName(std::u16string_view name) {
   // well.
   //
   // The middle dot is used as a separator for foreign names in Japanese.
-  static const char16_t kKatakanaMiddleDot = u'\u30FB';
+  static constexpr char16_t kKatakanaMiddleDot = u'\u30FB';
   // A (common?) typo for 'KATAKANA MIDDLE DOT' (U+30FB).
-  static const char16_t kMiddleDot = u'\u00B7';
+  static constexpr char16_t kMiddleDot = u'\u00B7';
   bool previous_was_cjk = false;
   size_t word_count = 0;
   for (base::i18n::UTF16CharIterator iter(name); !iter.end(); iter.Advance()) {
@@ -415,14 +402,13 @@ bool IsCJKName(std::u16string_view name) {
 }
 
 NameParts SplitName(std::u16string_view name) {
-  static const char16_t kWordSeparators[] = {
-      u' ',       // ASCII space.
-      u',',       // ASCII comma.
-      u'\u3000',  // 'IDEOGRAPHIC SPACE' (U+3000).
-      u'\u30FB',  // 'KATAKANA MIDDLE DOT' (U+30FB).
-      u'\u00B7',  // 'MIDDLE DOT' (U+00B7).
-      u'\0'       // End of string.
-  };
+  // u' ',       // ASCII space.
+  // u',',       // ASCII comma.
+  // u'\u3000',  // 'IDEOGRAPHIC SPACE' (U+3000).
+  // u'\u30FB',  // 'KATAKANA MIDDLE DOT' (U+30FB).
+  // u'\u00B7',  // 'MIDDLE DOT' (U+00B7).
+  static constexpr std::u16string_view kWordSeparators =
+      u" ,\u3000\u30FB\u00B7";
   std::vector<std::u16string_view> name_tokens = base::SplitStringPiece(
       name, kWordSeparators, base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   StripPrefixes(&name_tokens);
@@ -460,8 +446,7 @@ NameParts SplitName(std::u16string_view name) {
   reverse_family_tokens.push_back(name_tokens.back());
   name_tokens.pop_back();
   while (name_tokens.size() >= 1 &&
-         ContainsString(family_name_prefixes, std::size(family_name_prefixes),
-                        name_tokens.back())) {
+         ContainsString(kFamilyNamePrefixes, name_tokens.back())) {
     reverse_family_tokens.push_back(name_tokens.back());
     name_tokens.pop_back();
   }
