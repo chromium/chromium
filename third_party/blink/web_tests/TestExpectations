@@ -5716,7 +5716,6 @@ crbug.com/1462683 [ Mac12-arm64 ] virtual/threaded/external/wpt/long-animation-f
 crbug.com/1462683 [ Mac11-arm64 ] virtual/threaded/external/wpt/long-animation-frame/tentative/loaf-iframe-self.html [ Skip Timeout ]
 
 crbug.com/1455262 virtual/threaded/external/wpt/soft-navigation-heuristics/navigation-api-view-transition.tentative.html [ Crash Failure Pass Skip ]
-crbug.com/1521474 external/wpt/intersection-observer/callback-cross-realm-report-exception.html [ Failure ]
 crbug.com/324293120 [ Debug Linux ] external/wpt/webstorage/event_case_sensitive.html [ Failure Pass ]
 
 crbug.com/324536287 external/wpt/soft-navigation-heuristics/interaction-with-paint-before-back.tentative.html [ Failure Pass ]
