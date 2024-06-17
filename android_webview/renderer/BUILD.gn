@@ -22,8 +22,6 @@ source_set("renderer") {
     "aw_safe_browsing_error_page_controller_delegate_impl.h",
     "aw_url_loader_throttle_provider.cc",
     "aw_url_loader_throttle_provider.h",
-    "aw_websocket_handshake_throttle_provider.cc",
-    "aw_websocket_handshake_throttle_provider.h",
     "browser_exposed_renderer_interfaces.cc",
     "browser_exposed_renderer_interfaces.h",
   ]

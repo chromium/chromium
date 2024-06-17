@@ -64,8 +64,6 @@ class AwContentRendererClient : public content::ContentRendererClient,
   std::unique_ptr<media::KeySystemSupportRegistration> GetSupportedKeySystems(
       content::RenderFrame* render_frame,
       media::GetSupportedKeySystemsCB cb) override;
-  std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
-  CreateWebSocketHandshakeThrottleProvider() override;
   bool HandleNavigation(content::RenderFrame* render_frame,
                         blink::WebFrame* frame,
                         const blink::WebURLRequest& request,
