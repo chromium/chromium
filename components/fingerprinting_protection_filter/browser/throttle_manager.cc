@@ -10,6 +10,8 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/debug/crash_logging.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -206,7 +208,36 @@ void ThrottleManager::DidFinishInFrameNavigation(
     return;
   }
 
-  CHECK(navigation_handle->HasCommitted() || is_initial_navigation);
+  if (!navigation_handle->HasCommitted() && !is_initial_navigation) {
+    // TODO(https://crbug.com/40280666): Figure out how we can have a
+    // navigation that is not the initial with no frame filter.
+    SCOPED_CRASH_KEY_STRING1024(
+        "crbug40280666", "navigation-url",
+        navigation_handle->GetURL().possibly_invalid_spec());
+    SCOPED_CRASH_KEY_STRING256(
+        "crbug40280666", "navigation-error-code",
+        net::ErrorToString(navigation_handle->GetNetErrorCode()));
+    std::string previous_main_frame_url;
+    if (navigation_handle->IsInPrimaryMainFrame() ||
+        (navigation_handle->GetParentFrame() &&
+         navigation_handle->GetParentFrame()->GetPage().IsPrimary())) {
+      previous_main_frame_url =
+          navigation_handle->GetPreviousPrimaryMainFrameURL()
+              .possibly_invalid_spec();
+    }
+    SCOPED_CRASH_KEY_STRING1024("crbug40280666", "previous-main-frame-url",
+                                previous_main_frame_url);
+    SCOPED_CRASH_KEY_STRING1024("crbug40280666", "initiator-base-url",
+                                navigation_handle->GetInitiatorBaseUrl()
+                                    .value()
+                                    .possibly_invalid_spec());
+    SCOPED_CRASH_KEY_STRING1024(
+        "crbug40280666", "last-committed-url",
+        frame_host->GetLastCommittedURL().possibly_invalid_spec());
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
+
   bool did_inherit_opener_activation;
   AsyncDocumentSubresourceFilter* filter = FilterForFinishedNavigation(
       navigation_handle, throttle, frame_host, did_inherit_opener_activation);
