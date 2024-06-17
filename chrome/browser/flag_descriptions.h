@@ -4184,6 +4184,9 @@ extern const char kEnableNearbyBleV2GattServerDescription[];
 extern const char kEnableNearbyBluetoothClassicAdvertisingName[];
 extern const char kEnableNearbyBluetoothClassicAdvertisingDescription[];
 
+extern const char kEnableNearbyMdnsName[];
+extern const char kEnableNearbyMdnsDescription[];
+
 extern const char kEnableNearbyWebRtcName[];
 extern const char kEnableNearbyWebRtcDescription[];
 

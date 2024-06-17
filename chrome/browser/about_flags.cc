@@ -8013,6 +8013,10 @@ const FeatureEntry kFeatureEntries[] = {
      kOsCrOS,
      FEATURE_VALUE_TYPE(features::kEnableNearbyBluetoothClassicAdvertising)},
 
+    {"nearby-mdns", flag_descriptions::kEnableNearbyMdnsName,
+     flag_descriptions::kEnableNearbyMdnsDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kEnableNearbyMdns)},
+
     {"nearby-presence", flag_descriptions::kNearbyPresenceName,
      flag_descriptions::kNearbyPresenceDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kNearbyPresence)},

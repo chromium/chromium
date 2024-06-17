@@ -17268,6 +17268,7 @@ from previous Chrome versions.
   <int value="-1386776772" label="FilesZipPack:disabled"/>
   <int value="-1385221197"
       label="AllowSignedHTTPExchangeCertsWithoutExtension:enabled"/>
+  <int value="-1384439177" label="EnableNearbyMdns:disabled"/>
   <int value="-1384426209" label="SharingDeviceRegistration:disabled"/>
   <int value="-1383674566" label="EnableProtoApiForClassifyUrl:enabled"/>
   <int value="-1383597259" label="SyncUserConsentSeparateType:disabled"/>
@@ -19705,6 +19706,7 @@ from previous Chrome versions.
   <int value="-324786035"
       label="EnableAmbientAuthenticationInGuestSession:enabled"/>
   <int value="-324429921" label="HttpsFirstModeV2ForEngagedSites:disabled"/>
+  <int value="-324291988" label="EnableNearbyMdns:enabled"/>
   <int value="-324239279" label="DiscardedTabTreatment:disabled"/>
   <int value="-324099334" label="HatsUseNewHistograms:disabled"/>
   <int value="-323913169" label="PasswordNotesWithBackup:enabled"/>

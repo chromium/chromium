@@ -5966,6 +5966,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "nearby-mdns",
+    "owners": ["chromeos-cross-device-eng@google.com", "dclasson@google.com"],
+    "expiry_milestone": 130
+  },
+  {
     "name": "nearby-presence",
     "owners": [
       "chromeos-cross-device-eng@google.com",

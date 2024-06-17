@@ -40,6 +40,11 @@ BASE_FEATURE(kEnableNearbyBluetoothClassicScanning,
              "EnableNearbyBluetoothClassicScanning",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables use of mDNS discovery in Nearby Connections for Nearby Share.
+BASE_FEATURE(kEnableNearbyMdns,
+             "EnableNearbyMdns",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables use of WebRTC in Nearby Connections for Nearby Share.
 BASE_FEATURE(kNearbySharingWebRtc,
              "NearbySharingWebRtc",
@@ -73,6 +78,10 @@ bool IsNearbyBluetoothClassicAdvertisingEnabled() {
 
 bool IsNearbyBluetoothClassicScanningEnabled() {
   return base::FeatureList::IsEnabled(kEnableNearbyBluetoothClassicScanning);
+}
+
+bool IsNearbyMdnsEnabled() {
+  return base::FeatureList::IsEnabled(kEnableNearbyMdns);
 }
 
 }  // namespace features

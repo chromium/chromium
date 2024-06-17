@@ -7210,6 +7210,10 @@ const char kEnableNearbyBluetoothClassicAdvertisingName[] =
 const char kEnableNearbyBluetoothClassicAdvertisingDescription[] =
     "Enables Nearby advertising over Bluetooth Classic.";
 
+const char kEnableNearbyMdnsName[] = "Nearby mDNS Discovery";
+const char kEnableNearbyMdnsDescription[] =
+    "Enables Nearby discovery over mDNS.";
+
 const char kEnableNearbyWebRtcName[] = "Nearby WebRTC";
 const char kEnableNearbyWebRtcDescription[] =
     "Enables Nearby transfers over WebRTC.";
