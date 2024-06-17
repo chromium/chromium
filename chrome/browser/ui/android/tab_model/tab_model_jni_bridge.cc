@@ -39,7 +39,8 @@ TabModelJniBridge::TabModelJniBridge(JNIEnv* env,
                                      ActivityType activity_type,
                                      bool track_in_native_model_list)
     : TabModel(profile, activity_type),
-      java_object_(env, env->NewWeakGlobalRef(jobj)) {
+      java_object_(env, env->NewWeakGlobalRef(jobj)),
+      track_in_native_model_list_(track_in_native_model_list) {
   if (track_in_native_model_list) {
     TabModelList::AddTabModel(this);
   }
@@ -210,7 +211,9 @@ void TabModelJniBridge::RemoveObserver(TabModelObserver* observer) {
 void TabModelJniBridge::BroadcastSessionRestoreComplete(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  TabModel::BroadcastSessionRestoreComplete();
+  if (track_in_native_model_list_) {
+    TabModel::BroadcastSessionRestoreComplete();
+  }
 }
 
 int TabModelJniBridge::GetTabCountNavigatedInTimeWindow(
@@ -239,7 +242,9 @@ jclass TabModelJniBridge::GetClazz(JNIEnv* env) {
 }
 
 TabModelJniBridge::~TabModelJniBridge() {
-  TabModelList::RemoveTabModel(this);
+  if (track_in_native_model_list_) {
+    TabModelList::RemoveTabModel(this);
+  }
 }
 
 static jlong JNI_TabModelJniBridge_Init(
