@@ -18,6 +18,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/resources/grit/ui_resources.h"
 
@@ -98,6 +99,33 @@ MATCHER_P(ImagesAreEqual, img, "") {
   return gfx::test::AreBitmapsEqual(arg.AsBitmap(), img.AsBitmap());
 }
 
+favicon_base::LargeIconResult GetFaviconResult(const gfx::Image& image) {
+  scoped_refptr<base::RefCountedBytes> data =
+      base::MakeRefCounted<base::RefCountedBytes>();
+  gfx::PNGCodec::EncodeBGRASkBitmap(
+      /*input=*/*image.ToSkBitmap(),
+      /*discard_transparency=*/false, /*output=*/&data->as_vector());
+  favicon_base::FaviconRawBitmapResult bitmap_result;
+  bitmap_result.bitmap_data = data;
+  return favicon_base::LargeIconResult(bitmap_result);
+}
+
+// `LargeIconService::GetLargeIconFromCacheFallbackToGoogleServer()` wrapper
+// that simplifies its mocking by ignoring all arguments except the callback.
+auto MockGetLargeIcon(
+    testing::OnceAction<void(favicon_base::LargeIconCallback callback)>
+        callback_handler) {
+  return [callback_handler = std::move(callback_handler)](
+             const GURL&, favicon::LargeIconService::StandardIconSize,
+             std::optional<favicon::LargeIconService::StandardIconSize>,
+             favicon::LargeIconService::NoBigEnoughIconBehavior, bool,
+             const net::NetworkTrafficAnnotationTag&,
+             favicon_base::LargeIconCallback result_callback,
+             base::CancelableTaskTracker*) mutable {
+    std::move(callback_handler).Call(std::move(result_callback));
+  };
+}
+
 }  // namespace
 
 class PasswordFaviconLoaderTest : public testing::Test {
@@ -121,27 +149,14 @@ class PasswordFaviconLoaderTest : public testing::Test {
 
 TEST_F(PasswordFaviconLoaderTest, LoadsImageFromFaviconService) {
   EXPECT_CALL(large_icon_service(), GetLargeIconFromCacheFallbackToGoogleServer)
-      .WillOnce([](const GURL&, favicon::LargeIconService::StandardIconSize,
-                   std::optional<favicon::LargeIconService::StandardIconSize>,
-                   favicon::LargeIconService::NoBigEnoughIconBehavior, bool,
-                   const net::NetworkTrafficAnnotationTag&,
-                   base::OnceCallback<void(
-                       const favicon_base::LargeIconResult&)> result_callback,
-                   base::CancelableTaskTracker*) {
-        gfx::Image favicon =
-            ui::ResourceBundle::GetSharedInstance().GetImageNamed(IDR_DISABLE);
-        scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes());
-        gfx::PNGCodec::EncodeBGRASkBitmap(
-            /*input=*/*favicon.ToSkBitmap(),
-            /*discard_transparency=*/false, /*output=*/&data->as_vector());
-        favicon_base::FaviconRawBitmapResult bitmap_result;
-        bitmap_result.bitmap_data = data;
-
-        ASSERT_TRUE(bitmap_result.is_valid());
-
-        std::move(result_callback)
-            .Run(favicon_base::LargeIconResult(bitmap_result));
-      });
+      .WillOnce(
+          MockGetLargeIcon([](favicon_base::LargeIconCallback result_callback) {
+            favicon_base::LargeIconResult result = GetFaviconResult(
+                ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+                    IDR_DISABLE));
+            ASSERT_TRUE(result.bitmap.is_valid());
+            std::move(result_callback).Run(result);
+          }));
 
   base::MockOnceCallback<void(const gfx::Image&)> on_success;
   base::MockOnceClosure on_fail;
@@ -160,19 +175,11 @@ TEST_F(PasswordFaviconLoaderTest, LoadsImageFromFaviconService) {
 
 TEST_F(PasswordFaviconLoaderTest, FailsWithInvalidResponseFromFaviconService) {
   EXPECT_CALL(large_icon_service(), GetLargeIconFromCacheFallbackToGoogleServer)
-      .WillOnce(
-          [](const GURL&, favicon::LargeIconService::StandardIconSize,
-             std::optional<favicon::LargeIconService::StandardIconSize>,
-             favicon::LargeIconService::NoBigEnoughIconBehavior, bool,
-             const net::NetworkTrafficAnnotationTag&,
-             base::OnceCallback<void(const favicon_base::LargeIconResult&)>
-                 result_callback,
-             base::CancelableTaskTracker*) {
-            favicon_base::FaviconRawBitmapResult bitmap_result;
-            ASSERT_FALSE(bitmap_result.is_valid());
-            std::move(result_callback)
-                .Run(favicon_base::LargeIconResult(bitmap_result));
-          });
+      .WillOnce(MockGetLargeIcon([](favicon_base::LargeIconCallback callback) {
+        favicon_base::FaviconRawBitmapResult bitmap_result;
+        ASSERT_FALSE(bitmap_result.is_valid());
+        std::move(callback).Run(favicon_base::LargeIconResult(bitmap_result));
+      }));
 
   base::MockOnceCallback<void(const gfx::Image&)> on_success;
   base::MockOnceClosure on_fail;
@@ -207,27 +214,12 @@ TEST_F(PasswordFaviconLoaderTest, ImageIsLoadedFromCache) {
   // Expect one call to the favicon service, after which the result will be
   // provided from cache.
   EXPECT_CALL(large_icon_service(), GetLargeIconFromCacheFallbackToGoogleServer)
-      .WillOnce([](const GURL&, favicon::LargeIconService::StandardIconSize,
-                   std::optional<favicon::LargeIconService::StandardIconSize>,
-                   favicon::LargeIconService::NoBigEnoughIconBehavior, bool,
-                   const net::NetworkTrafficAnnotationTag&,
-                   base::OnceCallback<void(
-                       const favicon_base::LargeIconResult&)> result_callback,
-                   base::CancelableTaskTracker*) {
-        gfx::Image favicon =
-            ui::ResourceBundle::GetSharedInstance().GetImageNamed(IDR_DISABLE);
-        scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes());
-        gfx::PNGCodec::EncodeBGRASkBitmap(
-            /*input=*/*favicon.ToSkBitmap(),
-            /*discard_transparency=*/false, /*output=*/&data->as_vector());
-        favicon_base::FaviconRawBitmapResult bitmap_result;
-        bitmap_result.bitmap_data = data;
-
-        ASSERT_TRUE(bitmap_result.is_valid());
-
-        std::move(result_callback)
-            .Run(favicon_base::LargeIconResult(bitmap_result));
-      });
+      .WillOnce(MockGetLargeIcon([](favicon_base::LargeIconCallback callback) {
+        favicon_base::LargeIconResult result = GetFaviconResult(
+            ui::ResourceBundle::GetSharedInstance().GetImageNamed(IDR_DISABLE));
+        ASSERT_TRUE(result.bitmap.is_valid());
+        std::move(callback).Run(result);
+      }));
   EXPECT_CALL(
       on_success,
       Run(ImagesAreEqual(
