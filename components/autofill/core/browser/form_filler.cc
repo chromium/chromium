@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/347137620 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/autofill/core/browser/form_filler.h"
 
+#include <array>
 #include <optional>
 
 #include "base/check_deref.h"
@@ -458,10 +454,9 @@ void FormFiller::FillOrPreviewField(mojom::ActionPersistence action_persistence,
     if (type == SuggestionType::kCreditCardFieldByFieldFilling ||
         type == SuggestionType::kAddressFieldByFieldFilling) {
       // TODO(crbug.com/40232021): Only use AutofillField.
-      const FormFieldData* const filled_field = &field;
       form_autofill_history_.AddFormFillEntry(
-          base::make_span(&filled_field, 1u),
-          base::make_span(&autofill_field, 1u),
+          std::to_array<const FormFieldData*>({&field}),
+          std::to_array<const AutofillField*>({autofill_field}),
           GetFillingProductFromSuggestionType(type),
           /*is_refill=*/false);
     }

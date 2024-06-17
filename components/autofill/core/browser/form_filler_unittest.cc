@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/347137620 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
 #include <memory>
@@ -24,6 +19,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
@@ -519,13 +515,12 @@ TEST_F(FormFillerTest, UndoResetsCachedAutofillState) {
   FormData form = test::CreateTestAddressFormData();
 
   AutofillField filled_autofill_field(form.fields().front());
-  const FormFieldData* field_ptr = &form.fields().front();
-  const AutofillField* autofill_field_ptr = &filled_autofill_field;
   test_api(form).fields().front().set_is_autofilled(false);
   test_api(test_api(*browser_autofill_manager_).form_filler())
-      .AddFormFillEntry(base::make_span(&field_ptr, 1u),
-                        base::make_span(&autofill_field_ptr, 1u),
-                        FillingProduct::kAddress, /*is_refill=*/false);
+      .AddFormFillEntry(
+          std::to_array<const FormFieldData*>({&form.fields().front()}),
+          std::to_array<const AutofillField*>({&filled_autofill_field}),
+          FillingProduct::kAddress, /*is_refill=*/false);
 
   test_api(form).fields().front().set_is_autofilled(true);
   FormsSeen({form});
