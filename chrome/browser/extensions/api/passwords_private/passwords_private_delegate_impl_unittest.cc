@@ -432,6 +432,8 @@ class PasswordsPrivateDelegateImplTest : public WebAppTest {
     return web_contents;
   }
 
+  syncer::TestSyncService* SyncService();
+
  protected:
   raw_ptr<extensions::TestEventRouter, DanglingUntriaged> event_router_ =
       nullptr;
@@ -519,6 +521,11 @@ PasswordsPrivateDelegateImplTest::GetCredentials(
       }));
   run_loop.Run();
   return result;
+}
+
+syncer::TestSyncService* PasswordsPrivateDelegateImplTest::SyncService() {
+  return static_cast<syncer::TestSyncService*>(
+      SyncServiceFactory::GetForProfile(profile()));
 }
 
 TEST_F(PasswordsPrivateDelegateImplTest, GetSavedPasswordsList) {
@@ -2210,6 +2217,66 @@ TEST_F(PasswordsPrivateDelegateImplFetchFamilyMembersTest,
 
   delegate()->FetchFamilyMembers(callback.Get());
   task_environment()->RunUntilIdle();
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest, GetCredentialGroups_SyncOn) {
+  SyncService()->SetHasSyncConsent(true);
+
+  auto delegate = CreateDelegate();
+
+  PasswordForm password =
+      CreateSampleForm(PasswordForm::Store::kProfileStore, u"username2");
+
+  SetUpPasswordStores({password});
+
+  auto groups = delegate->GetCredentialGroups();
+  EXPECT_EQ(1u, groups.size());
+  EXPECT_EQ(1u, groups[0].entries.size());
+  EXPECT_EQ("abc1.com", groups[0].name);
+  EXPECT_EQ(
+      "https://t1.gstatic.com/"
+      "faviconV2?client=PASSWORD_MANAGER&type=FAVICON&fallback_opts=TYPE,SIZE,"
+      "URL,TOP_DOMAIN&size=32&url=https%3A%2F%2Fabc1.com%2F",
+      groups[0].icon_url);
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest, GetCredentialGroups_SyncOff) {
+  auto delegate = CreateDelegate();
+
+  PasswordForm password =
+      CreateSampleForm(PasswordForm::Store::kProfileStore, u"username2");
+
+  SetUpPasswordStores({password});
+
+  auto groups = delegate->GetCredentialGroups();
+  EXPECT_EQ(1u, groups.size());
+  EXPECT_EQ(1u, groups[0].entries.size());
+  EXPECT_EQ("abc1.com", groups[0].name);
+  EXPECT_EQ("https://abc1.com/favicon.ico", groups[0].icon_url);
+}
+
+TEST_F(PasswordsPrivateDelegateImplTest, GetCredentialGroups_Butter) {
+  signin::IdentityTestEnvironment identity_test_env_;
+  identity_test_env_.MakePrimaryAccountAvailable("test@email.com",
+                                                 signin::ConsentLevel::kSignin);
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
+
+  auto delegate = CreateDelegate();
+
+  PasswordForm password =
+      CreateSampleForm(PasswordForm::Store::kAccountStore, u"username2");
+
+  SetUpPasswordStores({password});
+
+  auto groups = delegate->GetCredentialGroups();
+  EXPECT_EQ(1u, groups.size());
+  EXPECT_EQ(1u, groups[0].entries.size());
+  EXPECT_EQ("abc1.com", groups[0].name);
+  EXPECT_EQ(
+      "https://t1.gstatic.com/"
+      "faviconV2?client=PASSWORD_MANAGER&type=FAVICON&fallback_opts=TYPE,SIZE,"
+      "URL,TOP_DOMAIN&size=32&url=https%3A%2F%2Fabc1.com%2F",
+      groups[0].icon_url);
 }
 
 }  // namespace extensions
