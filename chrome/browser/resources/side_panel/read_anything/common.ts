@@ -30,21 +30,6 @@ const validFontNames: Array<{name: string, css: string}> = [
 
 const ACTIVE_CSS_CLASS = 'active';
 
-// Enum for logging when a read aloud speech setting is changed.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-export enum ReadAloudSettingsChange {
-  VOICE_SPEED_CHANGE = 0,
-  VOICE_NAME_CHANGE = 1,
-  HIGHLIGHT_CHANGE = 2,
-
-  // Must be last.
-  COUNT = 3,
-}
-
-export const SPEECH_SETTINGS_CHANGE_UMA =
-    'Accessibility.ReadAnything.ReadAloud.SettingsChange';
-
 // Validate that the given font name is a valid choice, or use the default.
 export function validatedFontName(fontName: string): string {
   const validFontName =

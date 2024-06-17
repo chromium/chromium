@@ -22,6 +22,7 @@ import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.m
 
 import {getTemplate} from './app.html.js';
 import {getCurrentSpeechRate, minOverflowLengthToScroll, playFromSelectionTimeout, toastDurationMs, validatedFontName} from './common.js';
+import {ReadAnythingLogger} from './read_anything_logger.js';
 import type {ReadAnythingToolbarElement} from './read_anything_toolbar.js';
 import type {VoicePackStatus} from './voice_language_util.js';
 import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoicePackManager, convertLangOrLocaleToExactVoicePackLocale, convertLangToAnAvailableLangIfPresent, createInitialListOfEnabledLanguages, doesLanguageHaveNaturalVoices, getVoicePackConvertedLangIfExists, isEspeak, isNatural, isVoicePackStatusError, isVoicePackStatusSuccess, isWaitingForInstallLocally, mojoVoicePackStatusToVoicePackStatusEnum, VoiceClientSideStatusCode, VoicePackServerStatusErrorCode, VoicePackServerStatusSuccessCode} from './voice_language_util.js';
@@ -81,32 +82,6 @@ const minWidthOverflow = 'fit-content';
 
 // Images CSS Classes.
 const HIDDEN_IMAGE = 'hiddenImg';
-
-// UMA logging constants.
-const NEW_PAGE_UMA = 'Accessibility.ReadAnything.NewPage';
-const LANGUAGE_UMA = 'Accessibility.ReadAnything.ReadAloud.Language';
-const VOICE_UMA = 'Accessibility.ReadAnything.ReadAloud.Voice';
-// Enum for logging when we play speech on a page.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum ReadAnythingNewPage {
-  NEW_PAGE = 0,
-  SPEECH_PLAYED_ON_NEW_PAGE = 1,
-
-  // Must be last.
-  COUNT = 2,
-}
-// Enum for logging which kind of voice is being used to read aloud.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum ReadAnythingVoiceType {
-  NATURAL = 0,
-  ESPEAK = 1,
-  CHROMEOS = 2,
-
-  // Must be last.
-  COUNT = 3,
-}
 
 // A two-way map where each key is unique and each value is unique. The keys are
 // DOM nodes and the values are numbers, representing AXNodeIDs.
@@ -400,6 +375,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
   // Metrics captured for logging.
   private playSessionStartTime: number = -1;
+
+  private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 
   // State for speech synthesis paused/play state needs to be tracked explicitly
   // because there are bugs with window.speechSynthesis.paused and
@@ -772,9 +749,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     if (this.previousRootId_ !== rootId) {
       this.previousRootId_ = rootId;
-      chrome.metricsPrivate.recordEnumerationValue(
-          NEW_PAGE_UMA, ReadAnythingNewPage.NEW_PAGE,
-          ReadAnythingNewPage.COUNT);
+      this.logger_.logNewPage(/*speechPlayed=*/ false);
     }
 
     if (chrome.readingMode.imagesFeatureEnabled) {
@@ -1461,34 +1436,15 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     // Don't log a playback session just in case something has gotten out of
     // sync and we call stopSpeech before playSpeech.
     if (this.playSessionStartTime > 0) {
-      this.logLanguageUsedForReading();
-      this.logVoiceTypeUsedForReading();
+      this.logger_.logLanguageUsedForReading(this.selectedVoice?.lang);
+      // <if expr="chromeos_ash">
+      this.logger_.logVoiceTypeUsedForReading(this.selectedVoice);
+      // </if>
       chrome.readingMode.logLongMetric(
           Date.now() - this.playSessionStartTime,
           'Accessibility.ReadAnything.SpeechPlaybackSession');
       this.playSessionStartTime = -1;
     }
-  }
-
-  private logVoiceTypeUsedForReading() {
-    if (!this.selectedVoice) {
-      return;
-    }
-
-    let voiceType: ReadAnythingVoiceType|undefined;
-    if (isNatural(this.selectedVoice)) {
-      voiceType = ReadAnythingVoiceType.NATURAL;
-    } else if (isEspeak(this.selectedVoice)) {
-      voiceType = ReadAnythingVoiceType.ESPEAK;
-    } else if (chrome.readingMode.isChromeOsAsh) {
-      voiceType = ReadAnythingVoiceType.CHROMEOS;
-    }
-    if (!voiceType) {
-      return;
-    }
-
-    chrome.metricsPrivate.recordEnumerationValue(
-        VOICE_UMA, voiceType, ReadAnythingVoiceType.COUNT);
   }
 
   private playNextGranularity_() {
@@ -1518,24 +1474,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     if (!this.highlightAndPlayMessage()) {
       this.onSpeechFinished();
     }
-  }
-
-  private logLanguageUsedForReading() {
-    if (!this.selectedVoice) {
-      return;
-    }
-
-    // See tools/metrics/histograms/enums.xml enum LocaleCodeISO639. The enum
-    // there doesn't always have locales where the base lang and the locale
-    // are the same (e.g. they don't have id-id, but do have id). So if the
-    // base lang and the locale are the same, just use the base lang.
-    let langToLog = this.selectedVoice.lang;
-    const langSplit = this.selectedVoice.lang.toLowerCase().split('-');
-    if (langSplit.length === 2 && langSplit[0] === langSplit[1]) {
-      langToLog = langSplit[0];
-    }
-    chrome.metricsPrivate.recordSparseValueWithHashMetricName(
-        LANGUAGE_UMA, langToLog);
   }
 
   playSpeech() {
@@ -1607,9 +1545,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
       // This helps us compare how many reading mode pages are opened with
       // speech played and without speech played. Counting resumes would
       // inflate the speech played number.
-      chrome.metricsPrivate.recordEnumerationValue(
-          NEW_PAGE_UMA, ReadAnythingNewPage.SPEECH_PLAYED_ON_NEW_PAGE,
-          ReadAnythingNewPage.COUNT);
+      this.logger_.logNewPage(/*speechPlayed=*/ true);
       this.speechPlayingState = {
         paused: false,
         speechStarted: true,

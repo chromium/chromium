@@ -18,8 +18,10 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {openMenu, ReadAloudSettingsChange, SPEECH_SETTINGS_CHANGE_UMA} from './common.js';
+import {openMenu} from './common.js';
 import type {LanguageMenuElement} from './language_menu.js';
+import {ReadAloudSettingsChange} from './metrics_browser_proxy.js';
+import {ReadAnythingLogger} from './read_anything_logger.js';
 import {areVoicesEqual, convertLangOrLocaleForVoicePackManager, isNatural, VoiceClientSideStatusCode} from './voice_language_util.js';
 import {getTemplate} from './voice_selection_menu.html.js';
 
@@ -66,6 +68,8 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   private readonly paused: boolean;
   private voicePlayingWhenMenuOpened_: boolean = false;
   private enabledVoices_: SpeechSynthesisVoice[];
+
+  private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 
   static get is() {
     return 'voice-selection-menu';
@@ -172,9 +176,8 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase {
   }
 
   private onVoiceSelectClick_(event: DomRepeatEvent<VoiceDropdownItem>) {
-    chrome.metricsPrivate.recordEnumerationValue(
-        SPEECH_SETTINGS_CHANGE_UMA, ReadAloudSettingsChange.VOICE_NAME_CHANGE,
-        ReadAloudSettingsChange.COUNT);
+    this.logger_.logSpeechSettingsChange(
+        ReadAloudSettingsChange.VOICE_NAME_CHANGE);
     const selectedVoice = event.model.item.voice;
 
     this.dispatchEvent(new CustomEvent('select-voice', {

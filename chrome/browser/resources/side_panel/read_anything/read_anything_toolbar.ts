@@ -24,7 +24,9 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {DomRepeatEvent} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {Debouncer, PolymerElement, timeOut} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getCurrentSpeechRate, minOverflowLengthToScroll, openMenu, ReadAloudSettingsChange, SPEECH_SETTINGS_CHANGE_UMA, spinnerDebounceTimeout, validatedFontName} from './common.js';
+import {getCurrentSpeechRate, minOverflowLengthToScroll, openMenu, spinnerDebounceTimeout, validatedFontName} from './common.js';
+import {ReadAloudSettingsChange, ReadAnythingSettingsChange} from './metrics_browser_proxy.js';
+import {ReadAnythingLogger} from './read_anything_logger.js';
 import {getTemplate} from './read_anything_toolbar.html.js';
 import type {VoiceSelectionMenuElement} from './voice_selection_menu.js';
 
@@ -67,37 +69,6 @@ interface ToggleButton {
   callback: (event: DomRepeatEvent<ToggleButton>) => void;
 }
 
-// Enum for logging when a text style setting is changed.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum ReadAnythingSettingsChange {
-  FONT_CHANGE = 0,
-  FONT_SIZE_CHANGE = 1,
-  THEME_CHANGE = 2,
-  LINE_HEIGHT_CHANGE = 3,
-  LETTER_SPACING_CHANGE = 4,
-  LINKS_ENABLED_CHANGE = 5,
-  IMAGES_ENABLED_CHANGE = 6,
-
-  // Must be last.
-  COUNT = 7,
-}
-
-// Enum for logging the reading highlight state.
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum ReadAloudHighlightState {
-  HIGHLIGHT_ON = 0,
-  HIGHLIGHT_OFF = 1,
-
-  // Must be last.
-  COUNT = 2,
-}
-
-const TEXT_SETTINGS_CHANGE_UMA = 'Accessibility.ReadAnything.SettingsChange';
-const HIGHLIGHT_STATE_UMA =
-    'Accessibility.ReadAnything.ReadAloud.HighlightState';
-const VOICE_SPEED_UMA = 'Accessibility.ReadAnything.ReadAloud.VoiceSpeed';
 export const moreOptionsClass = '.more-options-icon';
 
 // Link toggle button constants.
@@ -399,6 +370,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   // certain toolbar buttons like the play / pause button should be disabled.
   // This is set from the parent element via one way data binding.
   private readonly isReadAloudPlayable: boolean;
+
+  private logger_: ReadAnythingLogger = ReadAnythingLogger.getInstance();
 
   constructor() {
     super();
@@ -703,9 +676,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private onHighlightClick_() {
-    chrome.metricsPrivate.recordEnumerationValue(
-        SPEECH_SETTINGS_CHANGE_UMA, ReadAloudSettingsChange.HIGHLIGHT_CHANGE,
-        ReadAloudSettingsChange.COUNT);
+    this.logger_.logSpeechSettingsChange(
+        ReadAloudSettingsChange.HIGHLIGHT_CHANGE);
     const isHighlightOn = chrome.readingMode.isHighlightOn();
     if (isHighlightOn) {
       chrome.readingMode.turnedHighlightOff();
@@ -713,11 +685,7 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       chrome.readingMode.turnedHighlightOn();
     }
 
-    const newHighlightState = isHighlightOn ?
-        ReadAloudHighlightState.HIGHLIGHT_OFF :
-        ReadAloudHighlightState.HIGHLIGHT_ON;
-    chrome.metricsPrivate.recordEnumerationValue(
-        HIGHLIGHT_STATE_UMA, newHighlightState, ReadAloudHighlightState.COUNT);
+    this.logger_.logHighlightState(!isHighlightOn);
     this.setHighlightState_(!isHighlightOn);
   }
 
@@ -760,17 +728,14 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       logVal: ReadAnythingSettingsChange, menuClicked: CrActionMenuElement,
       emitEventName: string) {
     event.model.item.callback();
-    chrome.metricsPrivate.recordEnumerationValue(
-        TEXT_SETTINGS_CHANGE_UMA, logVal, ReadAnythingSettingsChange.COUNT);
+    this.logger_.logTextSettingsChange(logVal);
     this.emitEvent_(emitEventName, {data: event.model.item.data});
     this.setCheckMarkForMenu_(menuClicked, event.model.index);
     this.closeMenus_();
   }
 
   private onFontClick_(event: DomRepeatEvent<string>) {
-    chrome.metricsPrivate.recordEnumerationValue(
-        TEXT_SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.FONT_CHANGE,
-        ReadAnythingSettingsChange.COUNT);
+    this.logger_.logTextSettingsChange(ReadAnythingSettingsChange.FONT_CHANGE);
     const fontName = event.model.item;
     this.propagateFontChange_(fontName);
     this.setCheckMarkForMenu_(this.$.fontMenu.getIfExists(), event.model.index);
@@ -792,11 +757,10 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private onRateClick_(event: DomRepeatEvent<number>) {
-    chrome.metricsPrivate.recordEnumerationValue(
-        SPEECH_SETTINGS_CHANGE_UMA, ReadAloudSettingsChange.VOICE_SPEED_CHANGE,
-        ReadAloudSettingsChange.COUNT);
+    this.logger_.logSpeechSettingsChange(
+        ReadAloudSettingsChange.VOICE_SPEED_CHANGE);
     // Log which rate is chosen by index rather than the rate value itself.
-    chrome.metricsPrivate.recordSmallCount(VOICE_SPEED_UMA, event.model.index);
+    this.logger_.logVoiceSpeed(event.model.index);
     chrome.readingMode.onSpeechRateChange(event.model.item);
     this.emitEvent_(RATE_EVENT);
     this.setRateIcon_(event.model.item);
@@ -854,10 +818,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       return;
     }
 
-    chrome.metricsPrivate.recordEnumerationValue(
-        TEXT_SETTINGS_CHANGE_UMA,
-        ReadAnythingSettingsChange.LINKS_ENABLED_CHANGE,
-        ReadAnythingSettingsChange.COUNT);
+    this.logger_.logTextSettingsChange(
+        ReadAnythingSettingsChange.LINKS_ENABLED_CHANGE);
 
     chrome.readingMode.onLinksEnabledToggled();
     this.emitEvent_(LINKS_EVENT);
@@ -868,10 +830,8 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
     if (!event.target) {
       return;
     }
-    chrome.metricsPrivate.recordEnumerationValue(
-        TEXT_SETTINGS_CHANGE_UMA,
-        ReadAnythingSettingsChange.IMAGES_ENABLED_CHANGE,
-        ReadAnythingSettingsChange.COUNT);
+    this.logger_.logTextSettingsChange(
+        ReadAnythingSettingsChange.IMAGES_ENABLED_CHANGE);
 
     chrome.readingMode.onImagesEnabledToggled();
     this.emitEvent_(IMAGES_EVENT);
@@ -903,18 +863,16 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
   }
 
   private updateFontSize_(increase: boolean) {
-    chrome.metricsPrivate.recordEnumerationValue(
-        TEXT_SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.FONT_SIZE_CHANGE,
-        ReadAnythingSettingsChange.COUNT);
+    this.logger_.logTextSettingsChange(
+        ReadAnythingSettingsChange.FONT_SIZE_CHANGE);
     chrome.readingMode.onFontSizeChanged(increase);
     this.emitEvent_(FONT_SIZE_EVENT);
     // Don't close the menu
   }
 
   private onFontResetClick_() {
-    chrome.metricsPrivate.recordEnumerationValue(
-        TEXT_SETTINGS_CHANGE_UMA, ReadAnythingSettingsChange.FONT_SIZE_CHANGE,
-        ReadAnythingSettingsChange.COUNT);
+    this.logger_.logTextSettingsChange(
+        ReadAnythingSettingsChange.FONT_SIZE_CHANGE);
     chrome.readingMode.onFontSizeReset();
     this.emitEvent_(FONT_SIZE_EVENT);
   }

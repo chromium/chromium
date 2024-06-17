@@ -23,6 +23,8 @@ build_webui("build") {
   non_web_component_files = [
     "read_anything.ts",
     "common.ts",
+    "metrics_browser_proxy.ts",
+    "read_anything_logger.ts",
     "voice_language_util.ts",
   ]
   icons_html_files = [ "icons.html" ]

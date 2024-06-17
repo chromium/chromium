@@ -54,3 +54,16 @@ export function getItemsInMenu(
   flush();
   return Array.from(menu.querySelectorAll<HTMLButtonElement>('.dropdown-item'));
 }
+
+export function createSpeechSynthesisVoice(
+    overrides?: Partial<SpeechSynthesisVoice>): SpeechSynthesisVoice {
+  return Object.assign(
+      {
+        default: false,
+        name: '',
+        lang: 'en-us',
+        localService: true,
+        voiceURI: '',
+      },
+      overrides || {});
+}
