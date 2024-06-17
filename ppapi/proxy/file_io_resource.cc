@@ -7,6 +7,7 @@
 #include <limits>
 #include <utility>
 
+#include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "ipc/ipc_message.h"
 #include "ppapi/c/pp_errors.h"
@@ -74,20 +75,18 @@ FileIOResource::ReadOp::~ReadOp() {
 }
 
 int32_t FileIOResource::ReadOp::DoWork() {
-  DCHECK(!buffer_.get());
-  buffer_.reset(new char[bytes_to_read_]);
-  return file_holder_->file()->Read(offset_, buffer_.get(), bytes_to_read_);
+  DCHECK(buffer_.empty());
+  buffer_ = base::HeapArray<char>::Uninit(bytes_to_read_);
+  return file_holder_->file()->Read(offset_, buffer_.data(), bytes_to_read_);
 }
 
 FileIOResource::WriteOp::WriteOp(scoped_refptr<FileHolder> file_holder,
                                  int64_t offset,
-                                 std::unique_ptr<char[]> buffer,
-                                 int32_t bytes_to_write,
+                                 base::HeapArray<char> buffer,
                                  bool append)
     : file_holder_(file_holder),
       offset_(offset),
       buffer_(std::move(buffer)),
-      bytes_to_write_(bytes_to_write),
       append_(append) {}
 
 FileIOResource::WriteOp::~WriteOp() {
@@ -97,10 +96,10 @@ int32_t FileIOResource::WriteOp::DoWork() {
   // In append mode, we can't call Write, since NaCl doesn't implement fcntl,
   // causing the function to call pwrite, which is incorrect.
   if (append_) {
-    return file_holder_->file()->WriteAtCurrentPos(buffer_.get(),
-                                                   bytes_to_write_);
+    return file_holder_->file()->WriteAtCurrentPos(buffer_.data(),
+                                                   buffer_.size());
   } else {
-    return file_holder_->file()->Write(offset_, buffer_.get(), bytes_to_write_);
+    return file_holder_->file()->Write(offset_, buffer_.data(), buffer_.size());
   }
 }
 
@@ -296,13 +295,13 @@ int32_t FileIOResource::Write(int64_t offset,
     if (increase > 0) {
       // Request a quota reservation. This makes the Write asynchronous, so we
       // must copy the plugin's buffer.
-      std::unique_ptr<char[]> copy(new char[bytes_to_write]);
-      memcpy(copy.get(), buffer, bytes_to_write);
+      auto copy = base::HeapArray<char>::Uninit(bytes_to_write);
+      memcpy(copy.data(), buffer, bytes_to_write);
       int64_t result =
           file_system_resource_->AsPPB_FileSystem_API()->RequestQuota(
-              increase, base::BindOnce(
-                            &FileIOResource::OnRequestWriteQuotaComplete, this,
-                            offset, std::move(copy), bytes_to_write, callback));
+              increase,
+              base::BindOnce(&FileIOResource::OnRequestWriteQuotaComplete, this,
+                             offset, std::move(copy), callback));
       if (result == PP_OK_COMPLETIONPENDING)
         return PP_OK_COMPLETIONPENDING;
       DCHECK(result == increase);
@@ -503,10 +502,10 @@ int32_t FileIOResource::WriteValidated(
 
   // For the non-blocking case, post a task to the file thread. We must copy the
   // plugin's buffer at this point.
-  std::unique_ptr<char[]> copy(new char[bytes_to_write]);
-  memcpy(copy.get(), buffer, bytes_to_write);
-  scoped_refptr<WriteOp> write_op(new WriteOp(
-      file_holder_, offset, std::move(copy), bytes_to_write, append));
+  auto copy = base::HeapArray<char>::Uninit(bytes_to_write);
+  memcpy(copy.data(), buffer, bytes_to_write);
+  scoped_refptr<WriteOp> write_op(
+      new WriteOp(file_holder_, offset, std::move(copy), append));
   PpapiGlobals::Get()->GetFileTaskRunner()->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&FileIOResource::WriteOp::DoWork, write_op),
       RunWhileLocked(base::BindOnce(&TrackedCallback::Run, callback)));
@@ -569,10 +568,10 @@ int32_t FileIOResource::OnReadComplete(scoped_refptr<ReadOp> read_op,
 
 void FileIOResource::OnRequestWriteQuotaComplete(
     int64_t offset,
-    std::unique_ptr<char[]> buffer,
-    int32_t bytes_to_write,
+    base::HeapArray<char> buffer,
     scoped_refptr<TrackedCallback> callback,
     int64_t granted) {
+  const int64_t bytes_to_write = buffer.size();
   DCHECK(granted >= 0);
   if (granted == 0) {
     callback->Run(PP_ERROR_NOQUOTA);
@@ -591,13 +590,13 @@ void FileIOResource::OnRequestWriteQuotaComplete(
 
   if (callback->is_blocking()) {
     int32_t result =
-        WriteValidated(offset, buffer.get(), bytes_to_write, callback);
+        WriteValidated(offset, buffer.data(), bytes_to_write, callback);
     DCHECK(result != PP_OK_COMPLETIONPENDING);
     callback->Run(result);
   } else {
     bool append = (open_flags_ & PP_FILEOPENFLAG_APPEND) != 0;
-    scoped_refptr<WriteOp> write_op(new WriteOp(
-        file_holder_, offset, std::move(buffer), bytes_to_write, append));
+    scoped_refptr<WriteOp> write_op(
+        new WriteOp(file_holder_, offset, std::move(buffer), append));
     PpapiGlobals::Get()->GetFileTaskRunner()->PostTaskAndReplyWithResult(
         FROM_HERE, base::BindOnce(&FileIOResource::WriteOp::DoWork, write_op),
         RunWhileLocked(base::BindOnce(&TrackedCallback::Run, callback)));
