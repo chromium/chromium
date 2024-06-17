@@ -1681,21 +1681,21 @@ constexpr FeatureEntry::FeatureParam kOmniboxAnswerActionsTreatment5[] = {
 
 constexpr FeatureEntry::FeatureVariation kOmniboxAnswerActionsVariants[] = {
     {"Counterfactual: fetch without rendering ",
-     kOmniboxAnswerActionsCounterfactual, 0, nullptr},
+     kOmniboxAnswerActionsCounterfactual, 0, "t3379046"},
     {"T1: Show chips above keyboard when there are no url matches",
      kOmniboxAnswerActionsTreatment1,
-     std::size(kOmniboxAnswerActionsTreatment1), nullptr},
+     std::size(kOmniboxAnswerActionsTreatment1), "t3379047"},
     {"T2: Show chips at position 0", kOmniboxAnswerActionsTreatment2,
-     std::size(kOmniboxAnswerActionsTreatment2), nullptr},
+     std::size(kOmniboxAnswerActionsTreatment2), "t3379048"},
     {"T3: Show chips at position 0 when there are no url matches",
      kOmniboxAnswerActionsTreatment3,
-     std::size(kOmniboxAnswerActionsTreatment3), nullptr},
+     std::size(kOmniboxAnswerActionsTreatment3), "t3379049"},
     {"T4: Show rich card above keyboard when there are no url matches",
      kOmniboxAnswerActionsTreatment4,
-     std::size(kOmniboxAnswerActionsTreatment4), nullptr},
+     std::size(kOmniboxAnswerActionsTreatment4), "t3379050"},
     {"T5: Show rich card at position 0 when there are no url matches",
      kOmniboxAnswerActionsTreatment5,
-     std::size(kOmniboxAnswerActionsTreatment5), nullptr},
+     std::size(kOmniboxAnswerActionsTreatment5), "t3379051"},
 };
 
 constexpr FeatureEntry::FeatureParam kOmniboxQueryTilesShowListAboveTrends[] = {
