@@ -139,7 +139,7 @@ IsolatedSVGDocumentHost::IsolatedSVGDocumentHost(
 }
 
 void IsolatedSVGDocumentHost::InstallDocument(
-    const SegmentedBuffer& data,
+    scoped_refptr<const SharedBuffer> data,
     base::OnceClosure async_load_callback,
     const Settings* inherited_settings,
     ProcessingMode processing_mode) {
@@ -165,8 +165,9 @@ void IsolatedSVGDocumentHost::InstallDocument(
     settings.SetImageAnimationPolicy(
         mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyNoAnimation);
   }
+  CHECK(data);
   LocalFrame* frame = GetFrame();
-  frame->ForceSynchronousDocumentInstall(AtomicString("image/svg+xml"), data);
+  frame->ForceSynchronousDocumentInstall(AtomicString("image/svg+xml"), *data);
 
   // Intrinsic sizing relies on computed style (e.g. font-size and
   // writing-mode).

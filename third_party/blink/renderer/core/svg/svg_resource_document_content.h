@@ -73,10 +73,10 @@ class CORE_EXPORT SVGResourceDocumentContent final
     kAsync,
     kError,
   };
-  // Update the contained document using the data in `data`, using
+  // Update the contained document using the text data in `content`, using
   // `request_url` as the document URL. Returns `kAsync` if the document's
   // 'load' event has not been dispatched.
-  UpdateResult UpdateDocument(const SegmentedBuffer& data,
+  UpdateResult UpdateDocument(scoped_refptr<SharedBuffer> data,
                               const KURL& request_url);
   void ClearDocument();
   void Dispose();

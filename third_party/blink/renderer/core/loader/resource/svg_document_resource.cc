@@ -82,7 +82,7 @@ void SVGDocumentResource::Finish(base::TimeTicks load_finish_time,
   UpdateResult update_status = UpdateResult::kError;
   if (MimeTypeAllowed(response) && HasData()) {
     update_status =
-        content_->UpdateDocument(*Data(), response.CurrentRequestUrl());
+        content_->UpdateDocument(Data(), response.CurrentRequestUrl());
   }
   switch (update_status) {
     case UpdateResult::kCompleted:

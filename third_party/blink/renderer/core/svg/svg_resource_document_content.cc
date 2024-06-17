@@ -130,16 +130,16 @@ void SVGResourceDocumentContent::UpdateStatus(ResourceStatus new_status) {
 }
 
 SVGResourceDocumentContent::UpdateResult
-SVGResourceDocumentContent::UpdateDocument(const SegmentedBuffer& data,
+SVGResourceDocumentContent::UpdateDocument(scoped_refptr<SharedBuffer> data,
                                            const KURL& request_url) {
-  if (data.empty()) {
+  if (data->empty()) {
     return UpdateResult::kError;
   }
   auto* chrome_client = MakeGarbageCollected<ChromeClient>(this);
   document_host_ = MakeGarbageCollected<IsolatedSVGDocumentHost>(
       *chrome_client, *agent_group_scheduler_);
   document_host_->InstallDocument(
-      data,
+      std::move(data),
       WTF::BindOnce(&SVGResourceDocumentContent::AsyncLoadingFinished,
                     WrapWeakPersistent(this)),
       nullptr, IsolatedSVGDocumentHost::ProcessingMode::kStatic);

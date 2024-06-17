@@ -671,7 +671,7 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
       IsolatedSVGDocumentHostInitializer::Get()->GetOrCreate();
   chrome_client_->SetImage(this);
   document_host_->InstallDocument(
-      *Data(),
+      Data(),
       WTF::BindOnce(&SVGImage::NotifyAsyncLoadCompleted,
                     weak_ptr_factory_.GetWeakPtr()),
       settings_to_use, IsolatedSVGDocumentHost::ProcessingMode::kAnimated);

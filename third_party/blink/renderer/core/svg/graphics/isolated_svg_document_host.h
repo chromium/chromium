@@ -59,7 +59,7 @@ class IsolatedSVGDocumentHost final
   IsolatedSVGDocumentHost(IsolatedSVGChromeClient&, AgentGroupScheduler&);
   ~IsolatedSVGDocumentHost();
 
-  void InstallDocument(const SegmentedBuffer& data,
+  void InstallDocument(scoped_refptr<const SharedBuffer> data,
                        base::OnceClosure async_load_callback,
                        const Settings* inherited_settings,
                        ProcessingMode processing_mode);
