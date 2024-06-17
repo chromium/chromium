@@ -168,6 +168,7 @@ inline constexpr char16_t kCityRe[] =
     u"|localita"                                         // it-IT
     u"|市区町村"                                         // ja-JP
     u"|cidade"                                           // pt-BR
+    u"|citt[àa]\\b"                                      // it
     u"|miasto|miejscowość"                               // pl
     u"|Город|Насел(е|ё)нный.?пункт"                      // ru
     u"|市"                                               // zh-CN
@@ -195,9 +196,10 @@ inline constexpr char16_t kStateRe[] =
     u"|provinci";                                                     // id
 
 inline constexpr char16_t kOverflowRe[] =
-    u"complemento"              // pt-BR, pt-PT
-    u"|informações adicionais"  // pt-BR
-    u"|adresszusatz";           // de-DE
+    u"complemento"                   // pt-BR, pt-PT
+    u"|informações adicionais"       // pt-BR
+    u"|adresszusatz"                 // de-DE
+    u"|indirizzo[.\\s]*aggiuntivo";  // it
 
 inline constexpr char16_t kOverflowAndLandmarkRe[] =
     u"complement and reference"  // en (but could be generic)

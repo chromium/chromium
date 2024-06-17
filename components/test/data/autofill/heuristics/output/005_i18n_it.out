@@ -3,7 +3,7 @@ NAME_LAST | ln | Cognome: |  | fn_1
 COMPANY_NAME | cm | Ragione Sociale: |  | fn_1
 ADDRESS_HOME_LINE1 | a1 | Indirizzo: |  | fn_1
 ADDRESS_HOME_LINE2 | a2 | Indirizzo 2: |  | fn_1
-ADDRESS_HOME_CITY | ct | Localita: |  | fn_1
+ADDRESS_HOME_CITY | ct | Città: |  | fn_1
 ADDRESS_HOME_ZIP | zc | CAP: |  | fn_1
 ADDRESS_HOME_STATE | st | Provincia: |  | fn_1
 EMAIL_ADDRESS | em | E-mail: |  | fn_1
