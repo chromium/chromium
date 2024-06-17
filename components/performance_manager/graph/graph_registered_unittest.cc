@@ -127,34 +127,45 @@ TEST_F(GraphRegisteredTest, GraphRegistrationWorks) {
 TEST_F(GraphRegisteredTest, GraphOwnedAndRegistered) {
   // Insertion works.
   EXPECT_FALSE(graph()->GetRegisteredObjectAs<OwnedFoo>());
-  OwnedFoo* foo = graph()->PassToGraph(std::make_unique<OwnedFoo>());
+  auto unique_foo = std::make_unique<OwnedFoo>();
+  EXPECT_EQ(unique_foo->GetOwningGraph(), nullptr);
+  OwnedFoo* foo = graph()->PassToGraph(std::move(unique_foo));
   EXPECT_EQ(foo, graph()->GetRegisteredObjectAs<OwnedFoo>());
+  EXPECT_EQ(foo->GetOwningGraph(), graph());
 
   EXPECT_FALSE(graph()->GetRegisteredObjectAs<OwnedBar>());
-  OwnedBar* bar = graph()->PassToGraph(std::make_unique<OwnedBar>());
+  auto unique_bar = std::make_unique<OwnedBar>();
+  EXPECT_EQ(unique_bar->GetOwningGraph(), nullptr);
+  OwnedBar* bar = graph()->PassToGraph(std::move(unique_bar));
   EXPECT_EQ(bar, graph()->GetRegisteredObjectAs<OwnedBar>());
   EXPECT_TRUE(bar->on_passed_called());
+  EXPECT_EQ(bar->GetOwningGraph(), graph());
 
   // Inserting again fails.
   EXPECT_CHECK_DEATH(graph()->RegisterObject(foo));
   EXPECT_CHECK_DEATH(graph()->PassToGraph(std::make_unique<OwnedFoo>()));
 
   // Unregistering works.
-  std::unique_ptr<OwnedFoo> foo2 = graph()->TakeFromGraphAs<OwnedFoo>(foo);
-  EXPECT_EQ(foo, foo2.get());
+  std::unique_ptr<OwnedFoo> unique_foo2 =
+      graph()->TakeFromGraphAs<OwnedFoo>(foo);
+  EXPECT_EQ(foo, unique_foo2.get());
   EXPECT_EQ(nullptr, graph()->GetRegisteredObjectAs<OwnedFoo>());
+  EXPECT_EQ(foo->GetOwningGraph(), nullptr);
 
-  std::unique_ptr<OwnedBar> bar2 = graph()->TakeFromGraphAs<OwnedBar>(bar);
-  EXPECT_EQ(bar, bar2.get());
+  std::unique_ptr<OwnedBar> unique_bar2 =
+      graph()->TakeFromGraphAs<OwnedBar>(bar);
+  EXPECT_EQ(bar, unique_bar2.get());
   EXPECT_EQ(nullptr, graph()->GetRegisteredObjectAs<OwnedBar>());
   EXPECT_TRUE(bar->on_taken_called());
+  EXPECT_EQ(bar->GetOwningGraph(), nullptr);
 
   // Unregistering again fails.
   EXPECT_CHECK_DEATH(graph()->UnregisterObject(foo));
 
   // Passing back an object that was taken should re-register it.
-  graph()->PassToGraph(std::move(foo2));
+  graph()->PassToGraph(std::move(unique_foo2));
   EXPECT_EQ(foo, graph()->GetRegisteredObjectAs<OwnedFoo>());
+  EXPECT_EQ(foo->GetOwningGraph(), graph());
 
   // At this point the graph can be safely torn down because
   // GraphOwnedAndRegistered objects will be deleted and unregistered.

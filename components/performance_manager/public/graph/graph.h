@@ -11,6 +11,7 @@
 
 #include "base/dcheck_is_on.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 #include "components/performance_manager/public/graph/node_set_view.h"
 
@@ -183,6 +184,11 @@ class GraphOwned {
   // call to Graph::TakeFromGraph, or prior to the Graph being destroyed.
   virtual void OnTakenFromGraph(Graph* graph) = 0;
 
+  // Returns a pointer to the owning Graph. The will return nullptr before
+  // OnPassedToGraph() and after OnTakenFromGraph(), and a valid pointer at all
+  // other times.
+  Graph* GetOwningGraph() const { return graph_.get(); }
+
  private:
   // GraphImpl is allowed to call PassToGraphImpl and TakeFromGraphImpl.
   friend class GraphImpl;
@@ -198,6 +204,9 @@ class GraphOwned {
   // without having to remember to call the inherited methods.
   virtual void PassToGraphImpl(Graph* graph);
   virtual void TakeFromGraphImpl(Graph* graph);
+
+  // Pointer back to the owning graph.
+  raw_ptr<Graph> graph_ = nullptr;
 };
 
 // A default implementation of GraphOwned.

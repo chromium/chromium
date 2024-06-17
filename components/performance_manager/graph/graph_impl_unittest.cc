@@ -172,8 +172,14 @@ class Foo : public GraphOwned {
   ~Foo() override { (*destructor_count_)++; }
 
   // GraphOwned implementation:
-  void OnPassedToGraph(Graph* graph) override { passed_to_called_ = true; }
-  void OnTakenFromGraph(Graph* graph) override { taken_from_called_ = true; }
+  void OnPassedToGraph(Graph* graph) override {
+    EXPECT_EQ(GetOwningGraph(), graph);
+    passed_to_called_ = true;
+  }
+  void OnTakenFromGraph(Graph* graph) override {
+    EXPECT_EQ(GetOwningGraph(), graph);
+    taken_from_called_ = true;
+  }
 
   bool passed_to_called() const { return passed_to_called_; }
   bool taken_from_called() const { return taken_from_called_; }
@@ -198,19 +204,26 @@ TEST_F(GraphImplTest, GraphOwned) {
   std::unique_ptr<GraphImpl> graph = std::make_unique<GraphImpl>();
   graph->SetUp();
   EXPECT_EQ(0u, graph->GraphOwnedCountForTesting());
+
   EXPECT_FALSE(raw1->passed_to_called());
+  EXPECT_EQ(raw1->GetOwningGraph(), nullptr);
   graph->PassToGraph(std::move(foo1));
   EXPECT_TRUE(raw1->passed_to_called());
+  EXPECT_EQ(raw1->GetOwningGraph(), graph.get());
   EXPECT_EQ(1u, graph->GraphOwnedCountForTesting());
+
   EXPECT_FALSE(raw2->passed_to_called());
+  EXPECT_EQ(raw2->GetOwningGraph(), nullptr);
   graph->PassToGraph(std::move(foo2));
   EXPECT_TRUE(raw2->passed_to_called());
+  EXPECT_EQ(raw2->GetOwningGraph(), graph.get());
   EXPECT_EQ(2u, graph->GraphOwnedCountForTesting());
 
   // Take one back.
   EXPECT_FALSE(raw1->taken_from_called());
   foo1 = graph->TakeFromGraphAs<Foo>(raw1);
   EXPECT_TRUE(raw1->taken_from_called());
+  EXPECT_EQ(raw1->GetOwningGraph(), nullptr);
   EXPECT_EQ(1u, graph->GraphOwnedCountForTesting());
 
   // Destroy that object and expect its destructor to have been invoked.
