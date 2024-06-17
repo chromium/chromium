@@ -1398,8 +1398,14 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
 
     // Simulate some security keys that return an error if user.displayName is
     // empty.
-    if (request.user.display_name && request.user.display_name->empty()) {
+    if (request.user.display_name && request.user.display_name->empty() &&
+        config_.reject_empty_display_name) {
       return CtapDeviceResponseCode::kCtap1ErrInvalidLength;
+    }
+
+    // Simulate iPhones returning an error if user.displayName is missing.
+    if (!request.user.display_name && config_.reject_missing_display_name) {
+      return CtapDeviceResponseCode::kCtap2ErrInvalidCBOR;
     }
 
     registration.is_resident = true;

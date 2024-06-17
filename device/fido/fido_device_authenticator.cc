@@ -29,6 +29,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_device.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/get_assertion_task.h"
 #include "device/fido/large_blob.h"
@@ -159,6 +160,12 @@ void FidoDeviceAuthenticator::MakeCredential(
     request.user_verification = UserVerificationRequirement::kRequired;
   } else {
     request.user_verification = UserVerificationRequirement::kDiscouraged;
+  }
+
+  if (AuthenticatorTransport() == FidoTransportProtocol::kHybrid) {
+    // iPhones will refuse to make a passkey through hybrid if they do not
+    // receive an empty display name.
+    request.user.serialization_options.include_empty_display_name = true;
   }
 
   RunTask<MakeCredentialTask,

@@ -14,14 +14,16 @@ namespace device {
 // static
 std::optional<PublicKeyCredentialUserEntity>
 PublicKeyCredentialUserEntity::CreateFromCBORValue(const cbor::Value& cbor) {
-  if (!cbor.is_map())
+  if (!cbor.is_map()) {
     return std::nullopt;
+  }
 
   const cbor::Value::MapValue& cbor_map = cbor.GetMap();
 
   auto id_it = cbor_map.find(cbor::Value(kEntityIdMapKey));
-  if (id_it == cbor_map.end() || !id_it->second.is_bytestring())
+  if (id_it == cbor_map.end() || !id_it->second.is_bytestring()) {
     return std::nullopt;
+  }
 
   PublicKeyCredentialUserEntity user(id_it->second.GetBytestring());
 
@@ -84,11 +86,12 @@ bool PublicKeyCredentialUserEntity::operator==(
 cbor::Value AsCBOR(const PublicKeyCredentialUserEntity& user) {
   cbor::Value::MapValue user_map;
   user_map.emplace(kEntityIdMapKey, user.id);
-  if (user.name)
+  if (user.name) {
     user_map.emplace(kEntityNameMapKey, *user.name);
-  // Empty display names result in CTAP1_ERR_INVALID_LENGTH on some security
-  // keys.
-  if (user.display_name && !user.display_name->empty()) {
+  }
+  if (user.display_name &&
+      (!user.display_name->empty() ||
+       user.serialization_options.include_empty_display_name)) {
     user_map.emplace(kDisplayNameMapKey, *user.display_name);
   }
   return cbor::Value(std::move(user_map));

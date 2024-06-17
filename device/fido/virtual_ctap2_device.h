@@ -237,6 +237,16 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     // allow_non_resident_credential_creation_without_uv corresponds to the
     // make_cred_uv_not_required field in AuthenticatorSupportedOptions.
     bool allow_non_resident_credential_creation_without_uv = false;
+
+    // reject_empty_display_name will cause a device to error out with
+    // kCtap1ErrInvalidLength if the display name is present by empty, mirroring
+    // the behaviour of some security keys.
+    bool reject_empty_display_name = false;
+
+    // reject_missing_display_name will cause a device to error out with
+    // kCtap2ErrInvalidCBOR if the display name is not present, simulating the
+    // behaviour of iPhones.
+    bool reject_missing_display_name = false;
   };
 
   VirtualCtap2Device();

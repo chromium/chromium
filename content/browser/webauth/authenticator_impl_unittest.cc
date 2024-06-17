@@ -7062,16 +7062,42 @@ TEST_F(ResidentKeyAuthenticatorImplTest, StorageFull) {
             AuthenticatorStatus::NOT_ALLOWED_ERROR);
 }
 
-TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialEmptyFields) {
+TEST_F(ResidentKeyAuthenticatorImplTest,
+       MakeCredentialEmptyFields_SecurityKey) {
+  VirtualCtap2Device::Config config;
+  config.pin_support = true;
+  config.resident_key_support = true;
+  config.reject_empty_display_name = true;
+  virtual_device_factory_->SetCtap2Config(std::move(config));
+  virtual_device_factory_->SetTransport(
+      device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
+
   PublicKeyCredentialCreationOptionsPtr options = make_credential_options();
+
   // This value is perfectly legal, but our VirtualCtap2Device simulates
   // some security keys in rejecting empty values. CBOR serialisation should
   // omit these values rather than send empty ones.
   options->user.display_name = "";
 
-  MakeCredentialResult result = AuthenticatorMakeCredential(std::move(options));
+  EXPECT_EQ(AuthenticatorStatus::SUCCESS,
+            AuthenticatorMakeCredential(std::move(options)).status);
+}
 
-  EXPECT_EQ(AuthenticatorStatus::SUCCESS, result.status);
+// Regression test for crbug.com/346835891.
+TEST_F(ResidentKeyAuthenticatorImplTest, MakeCredentialEmptyFields_Phone) {
+  // iPhones reject a request with a missing display name.
+  VirtualCtap2Device::Config config;
+  config.pin_support = true;
+  config.resident_key_support = true;
+  config.reject_missing_display_name = true;
+  virtual_device_factory_->SetCtap2Config(std::move(config));
+  virtual_device_factory_->SetTransport(device::FidoTransportProtocol::kHybrid);
+
+  PublicKeyCredentialCreationOptionsPtr options = make_credential_options();
+  options->user.display_name = "";
+
+  EXPECT_EQ(AuthenticatorStatus::SUCCESS,
+            AuthenticatorMakeCredential(std::move(options)).status);
 }
 
 TEST_F(ResidentKeyAuthenticatorImplTest, GetAssertionSingleNoPII) {
