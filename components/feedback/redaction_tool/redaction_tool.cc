@@ -15,12 +15,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/chromeos_buildflags.h"
+#include "components/autofill/core/common/credit_card_number_validation.h"
 #include "components/feedback/redaction_tool/ip_address.h"
 #include "components/feedback/redaction_tool/pii_types.h"
-#include "components/feedback/redaction_tool/validation.h"
 #ifdef USE_SYSTEM_RE2
 #include <re2/re2.h>
 #else
@@ -934,10 +935,11 @@ std::string RedactionTool::RedactCreditCardNumbers(
       continue;
     }
 
-    std::string number;
-    base::RemoveChars(std::string_view(sequence), "- ", &number);
+    const std::u16string stripped_number =
+        autofill::StripCardNumberSeparators(base::UTF8ToUTF16(sequence));
+    const std::string u8number = base::UTF16ToUTF8(stripped_number);
 
-    const auto cc_it = credit_cards_.find(number);
+    const auto cc_it = credit_cards_.find(u8number);
     if (cc_it != credit_cards_.cend()) {
       result += cc_it->second;
       result.append(post_sequence);
@@ -947,11 +949,13 @@ std::string RedactionTool::RedactCreditCardNumbers(
       continue;
     }
 
-    if (redaction::IsValidCreditCardNumber(number)) {
+    const bool only_zeros =
+        stripped_number.find_first_not_of(u'0', 0) == std::u16string::npos;
+    if (!only_zeros && autofill::IsValidCreditCardNumber(stripped_number)) {
       metrics_recorder_->RecordCreditCardRedactionHistogram(
           CreditCardDetection::kValidated);
       const auto& [it, success] = credit_cards_.emplace(
-          number,
+          u8number,
           base::StrCat({"(CREDITCARD: ",
                         base::NumberToString(credit_cards_.size() + 1), ")"}));
       if (redact_credit_cards_) {
