@@ -62,8 +62,9 @@ void DhcpPacFileAdapterFetcher::Fetch(
       FROM_HERE,
       base::BindOnce(&DhcpPacFileAdapterFetcher::DhcpQuery::GetPacURLForAdapter,
                      dhcp_query.get(), adapter_name),
-      base::BindOnce(&DhcpPacFileAdapterFetcher::OnDhcpQueryDone, AsWeakPtr(),
-                     dhcp_query, traffic_annotation));
+      base::BindOnce(&DhcpPacFileAdapterFetcher::OnDhcpQueryDone,
+                     weak_ptr_factory_.GetWeakPtr(), dhcp_query,
+                     traffic_annotation));
 }
 
 void DhcpPacFileAdapterFetcher::Cancel() {

@@ -304,7 +304,8 @@ int DhcpPacFileFetcherWin::Fetch(
           &DhcpPacFileFetcherWin::AdapterQuery::GetCandidateAdapterNames,
           last_query_.get()),
       base::BindOnce(&DhcpPacFileFetcherWin::OnGetCandidateAdapterNamesDone,
-                     AsWeakPtr(), last_query_, traffic_annotation));
+                     weak_ptr_factory_.GetWeakPtr(), last_query_,
+                     traffic_annotation));
 
   return ERR_IO_PENDING;
 }
