@@ -612,7 +612,7 @@ std::optional<std::vector<float>> DrmGpuDisplayManager::GetSeamlessRefreshRates(
 
   // TODO: b/323362145: Support continuity logic.
   const gfx::Size current_mode_size = controller->GetModeSize();
-  std::vector<float> range;
+  std::vector<float> rates;
   for (const drmModeModeInfo& mode : display->modes()) {
     if (ui::ModeSize(mode) != current_mode_size) {
       continue;
@@ -620,11 +620,11 @@ std::optional<std::vector<float>> DrmGpuDisplayManager::GetSeamlessRefreshRates(
 
     // Do a test commit to check if this mode can be configured without
     // a modeset.
-    if (controller->TestSeamlessRefreshRate(display->crtc(), mode)) {
-      range.push_back(ModeRefreshRate(mode));
+    if (controller->TestSeamlessMode(display->crtc(), mode)) {
+      rates.push_back(ModeRefreshRate(mode));
     }
   }
-  return range;
+  return rates;
 }
 
 DrmDisplay* DrmGpuDisplayManager::FindDisplay(int64_t display_id) const {

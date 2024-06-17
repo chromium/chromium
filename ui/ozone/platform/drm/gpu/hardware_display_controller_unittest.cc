@@ -1416,7 +1416,7 @@ TEST_F(HardwareDisplayControllerTest, AddingAndRemovingCrtcsWithMovablePlanes) {
 
   modeset_planes.pop_back();
   EXPECT_TRUE(ModesetWithPlanes(modeset_planes))
-      << "Modesetting should work when neigher CRTC needs the movable overlay "
+      << "Modesetting should work when neither CRTC needs the movable overlay "
          "plane";
 
   {
@@ -1488,52 +1488,7 @@ TEST_F(HardwareDisplayControllerTest, ModifiersFilter) {
 }
 
 TEST_F(HardwareDisplayControllerMockedDeviceTest,
-       TestSeamlessRefreshRate_DifferentSize) {
-  MockDrmDevice* mock_drm = static_cast<MockDrmDevice*>(drm_.get());
-
-  DrmOverlayPlaneList modeset_planes;
-  modeset_planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
-  ASSERT_TRUE(ModesetWithPlanes(modeset_planes));
-
-  // Mode with visible size that doesn't match the size of the currently
-  // configured mode.
-  drmModeModeInfo wrong_size_mode = kDefaultMode;
-  wrong_size_mode.hdisplay *= 2;
-  wrong_size_mode.vdisplay *= 2;
-
-  // CommitProperties won't be called at all, because the mode is a different
-  // size.
-  EXPECT_CALL(*mock_drm, CommitProperties(_, _, _, _)).Times(0);
-  EXPECT_FALSE(
-      controller_->TestSeamlessRefreshRate(primary_crtc_, wrong_size_mode));
-}
-
-TEST_F(HardwareDisplayControllerMockedDeviceTest,
-       TestSeamlessRefreshRate_MatchingSize) {
-  MockDrmDevice* mock_drm = static_cast<MockDrmDevice*>(drm_.get());
-
-  DrmOverlayPlaneList modeset_planes;
-  modeset_planes.push_back(DrmOverlayPlane::TestPlane(CreateBuffer()));
-  ASSERT_TRUE(ModesetWithPlanes(modeset_planes));
-
-  // Mode with visible size that matches the size of the currently configured
-  // mode, and a different refresh rate.
-  drmModeModeInfo matching_size_mode = kDefaultMode;
-  matching_size_mode.vrefresh *= 2;
-
-  // DrmDevice will be probed because visible size matches, once for each mode.
-  // The probe result will be propagated back to the caller.
-  EXPECT_CALL(*mock_drm, CommitProperties(_, DRM_MODE_ATOMIC_TEST_ONLY, 1, _))
-      .Times(2)
-      .WillRepeatedly(Return(true));
-  EXPECT_TRUE(
-      controller_->TestSeamlessRefreshRate(primary_crtc_, kDefaultMode));
-  EXPECT_TRUE(
-      controller_->TestSeamlessRefreshRate(primary_crtc_, matching_size_mode));
-}
-
-TEST_F(HardwareDisplayControllerMockedDeviceTest,
-       TestSeamlessRefreshRate_MatchingSizeFailedProbe) {
+       TestSeamlessMode_MatchingSizeFailedProbe) {
   MockDrmDevice* mock_drm = static_cast<MockDrmDevice*>(drm_.get());
 
   DrmOverlayPlaneList modeset_planes;
@@ -1547,12 +1502,12 @@ TEST_F(HardwareDisplayControllerMockedDeviceTest,
 
   // Even if the size of the mode matches, the driver may reject a
   // non-modesetting commit. This test failure should propagate up to
-  // TestSeamlessRefreshRate.
+  // TestSeamlessMode.
   EXPECT_CALL(*mock_drm, CommitProperties(_, DRM_MODE_ATOMIC_TEST_ONLY, 1, _))
       .Times(1)
       .WillRepeatedly(Return(false));
   EXPECT_FALSE(
-      controller_->TestSeamlessRefreshRate(primary_crtc_, matching_size_mode));
+      controller_->TestSeamlessMode(primary_crtc_, matching_size_mode));
 }
 
 }  // namespace ui

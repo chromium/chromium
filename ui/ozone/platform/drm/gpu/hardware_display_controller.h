@@ -142,8 +142,7 @@ class HardwareDisplayController {
 
   // Perform a test commit to |mode| on the CRTC to determine if it can be
   // configured without a modeset.
-  // |mode| must have the same visible area as the currently configured mode.
-  bool TestSeamlessRefreshRate(int32_t crtc_id, const drmModeModeInfo& mode);
+  bool TestSeamlessMode(int32_t crtc_id, const drmModeModeInfo& mode);
 
   // Return the supported modifiers for |fourcc_format| for this controller.
   std::vector<uint64_t> GetSupportedModifiers(uint32_t fourcc_format,

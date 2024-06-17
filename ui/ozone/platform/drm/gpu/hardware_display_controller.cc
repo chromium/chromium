@@ -293,17 +293,8 @@ HardwareDisplayController::ScheduleOrTestPageFlip(
                         : PageFlipResult::kFailedCommit;
 }
 
-bool HardwareDisplayController::TestSeamlessRefreshRate(
-    int32_t crtc_id,
-    const drmModeModeInfo& mode) {
-  // Don't consider modes that have a different visible size from the currently
-  // configured mode.
-  if (GetModeSize() != ui::ModeSize(mode)) {
-    LOG(WARNING) << "Requested mode's visible size differs from the currently "
-                    "configured mode.";
-    return false;
-  }
-
+bool HardwareDisplayController::TestSeamlessMode(int32_t crtc_id,
+                                                 const drmModeModeInfo& mode) {
   return GetDrmDevice()->plane_manager()->TestSeamlessMode(crtc_id, mode);
 }
 
