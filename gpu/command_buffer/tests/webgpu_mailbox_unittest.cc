@@ -642,6 +642,66 @@ TEST_P(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
   }
 }
 
+// Test that passing write usages when associating a mailbox fails if
+// the SharedImage associated with the mailbox doesn't have WEBGPU_WRITE access.
+TEST_P(WebGPUMailboxTest, PassWriteUsagesWhenAssociatingReadOnlyMailbox) {
+  // Create the shared image.
+  SharedImageInterface* sii = GetSharedImageInterface();
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      sii->CreateSharedImage({GetParam().format,
+                              {1, 1},
+                              gfx::ColorSpace::CreateSRGB(),
+                              SHARED_IMAGE_USAGE_WEBGPU_READ,
+                              "TestLabel"},
+                             kNullSurfaceHandle);
+  SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
+  webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
+
+  // Set callback to expect a validation error.
+  device_.SetUncapturedErrorCallback(ToMockUncapturedErrorCallback, nullptr);
+
+  // Register the shared image as a Dawn texture in the wire.
+  gpu::webgpu::ReservedTexture reservation =
+      webgpu()->ReserveTexture(device_.Get());
+
+  // Create a texture for the mailbox, passing CopyDst as a usage.
+  webgpu()->AssociateMailbox(
+      reservation.deviceId, reservation.deviceGeneration, reservation.id,
+      reservation.generation,
+      WGPUTextureUsage_CopySrc | WGPUTextureUsage_CopyDst,
+      webgpu::WEBGPU_MAILBOX_NONE, shared_image->mailbox());
+  wgpu::Texture texture = wgpu::Texture::Acquire(reservation.texture);
+
+  // Copy the texture in a mappable buffer.
+  wgpu::BufferDescriptor buffer_desc;
+  buffer_desc.size = BytesPerTexel(GetParam().format);
+  buffer_desc.usage = wgpu::BufferUsage::MapRead | wgpu::BufferUsage::CopyDst;
+  wgpu::Buffer readback_buffer = device_.CreateBuffer(&buffer_desc);
+
+  wgpu::ImageCopyTexture copy_src = {};
+  copy_src.texture = texture;
+  copy_src.mipLevel = 0;
+  copy_src.origin = {0, 0, 0};
+
+  wgpu::ImageCopyBuffer copy_dst = {};
+  copy_dst.buffer = readback_buffer;
+  copy_dst.layout.offset = 0;
+  copy_dst.layout.bytesPerRow = 256;
+
+  wgpu::Extent3D copy_size = {1, 1, 1};
+
+  wgpu::CommandEncoder encoder = device_.CreateCommandEncoder();
+  encoder.CopyTextureToBuffer(&copy_src, &copy_dst, &copy_size);
+
+  EXPECT_CALL(*mock_device_error_callback,
+              Call(WGPUErrorType_Validation, testing::_, testing::_))
+      .Times(1);
+
+  encoder.Finish();
+
+  WaitForCompletion(device_);
+}
+
 // Test that passing internal write usages when associating a mailbox fails if
 // the SharedImage associated with the mailbox doesn't have WEBGPU_WRITE access.
 TEST_P(WebGPUMailboxTest,
