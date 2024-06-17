@@ -23,7 +23,6 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -68,7 +67,6 @@ public class PasswordSavingIntegrationTest {
     private static final String PASSWORD_NODE_ID = "password_field";
     private static final String OLD_PASSWORD_NODE_ID = "chg_password_field";
     private static final String NEW_PASSWORD_NODE_ID = "chg_new_password_1";
-    private static final String NEW_PASSWORD_REPEAT_NODE_ID = "chg_new_password_2";
     private static final String USERNAME_TEXT = "username";
     private static final String PASSWORD_TEXT = "password";
     private static final String NEW_PASSWORD_TEXT = "new password";
@@ -150,7 +148,6 @@ public class PasswordSavingIntegrationTest {
     @MediumTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     // TODO(crbug.com/40927881): Add integration tests for automotive update password flow.
-    @DisabledTest(message = "https://crbug.com/1468903")
     public void testUpdatingPassword() throws InterruptedException, TimeoutException {
         // Store the test credential.
         PasswordStoreCredential testCredential =
@@ -189,11 +186,6 @@ public class PasswordSavingIntegrationTest {
         // Enter the new password.
         enterInputIntoTextField(
                 mWebContents, mInputMethodManagerWrapper, NEW_PASSWORD_NODE_ID, NEW_PASSWORD_TEXT);
-        enterInputIntoTextField(
-                mWebContents,
-                mInputMethodManagerWrapper,
-                NEW_PASSWORD_REPEAT_NODE_ID,
-                NEW_PASSWORD_TEXT);
 
         // Submit the form and wait for the success page to load.
         DOMUtils.clickNodeWithJavaScript(mWebContents, CHANGE_PASSWORD_BUTTON_ID);
