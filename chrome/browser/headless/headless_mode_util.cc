@@ -34,7 +34,7 @@ enum HeadlessMode {
   kNoHeadlessMode,
   kOldHeadlessMode,
   kNewHeadlessMode,
-  kDefaultHeadlessMode = kOldHeadlessMode
+  kDefaultHeadlessMode = kNewHeadlessMode
 };
 
 HeadlessMode GetHeadlessMode() {
