@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 
@@ -20,8 +21,9 @@ public class CustomMessageCardViewModel {
                 .with(
                         CustomMessageCardViewProperties.IS_INCOGNITO_CALLBACK,
                         provider::setIsIncognito)
-                .with(CARD_TYPE, TabListModel.CardProperties.ModelType.MESSAGE)
                 .with(CARD_ALPHA, 1f)
+                .with(CARD_TYPE, TabListModel.CardProperties.ModelType.MESSAGE)
+                .with(MESSAGE_TYPE, provider.getMessageType())
                 .build();
     }
 }

@@ -148,6 +148,11 @@ public class ArchivedTabsMessageService extends MessageService
     // CustomMessageCardViewProvider implementation.
 
     @Override
+    public int getMessageType() {
+        return MessageService.MessageType.ARCHIVED_TABS_MESSAGE;
+    }
+
+    @Override
     public View getCustomView() {
         return mCustomCardView;
     }

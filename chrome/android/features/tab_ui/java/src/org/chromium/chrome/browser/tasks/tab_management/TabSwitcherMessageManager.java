@@ -573,6 +573,9 @@ public class TabSwitcherMessageManager implements PriceWelcomeMessageController 
                 || messageType == MessageService.MessageType.INCOGNITO_REAUTH_PROMO_MESSAGE) {
             tabListCoordinator.removeSpecialListItem(
                     TabProperties.UiType.LARGE_MESSAGE, messageType);
+        } else if (messageType == MessageService.MessageType.ARCHIVED_TABS_MESSAGE) {
+            tabListCoordinator.removeSpecialListItem(
+                    TabProperties.UiType.CUSTOM_MESSAGE, messageType);
         } else {
             tabListCoordinator.removeSpecialListItem(TabProperties.UiType.MESSAGE, messageType);
             appendNextMessage(messageType);

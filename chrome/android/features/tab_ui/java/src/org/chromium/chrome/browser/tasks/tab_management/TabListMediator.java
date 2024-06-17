@@ -2446,7 +2446,9 @@ class TabListMediator {
     void removeSpecialItemFromModel(
             @UiType int uiType, @MessageService.MessageType int itemIdentifier) {
         int index = TabModel.INVALID_TAB_INDEX;
-        if (uiType == UiType.MESSAGE || uiType == UiType.LARGE_MESSAGE) {
+        if (uiType == UiType.MESSAGE
+                || uiType == UiType.LARGE_MESSAGE
+                || uiType == UiType.CUSTOM_MESSAGE) {
             if (itemIdentifier == MessageService.MessageType.ALL) {
                 while (mModel.lastIndexForMessageItem() != TabModel.INVALID_TAB_INDEX) {
                     index = mModel.lastIndexForMessageItem();
@@ -2465,7 +2467,9 @@ class TabListMediator {
 
     private boolean validateItemAt(
             int index, @UiType int uiType, @MessageService.MessageType int itemIdentifier) {
-        if (uiType == UiType.MESSAGE || uiType == UiType.LARGE_MESSAGE) {
+        if (uiType == UiType.MESSAGE
+                || uiType == UiType.LARGE_MESSAGE
+                || uiType == UiType.CUSTOM_MESSAGE) {
             return mModel.get(index).type == uiType
                     && mModel.get(index).model.get(MESSAGE_TYPE) == itemIdentifier;
         }

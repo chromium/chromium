@@ -9,6 +9,11 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_CARD_VISIBILITY_CONTROL_IN_REGULAR_AND_INCOGNITO_MODE;
+import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_TYPE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_ALPHA;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
+
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +28,10 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MessageCardScope;
+import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageType;
+import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties;
+import org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -47,7 +56,8 @@ public class CustomMessageCardViewBinderUnitTest {
         doReturn(MessageCardViewProperties.MessageCardScope.BOTH)
                 .when(mProvider)
                 .getMessageCardVisibilityControl();
-        doReturn(TabListModel.CardProperties.ModelType.MESSAGE).when(mProvider).getCardType();
+        doReturn(ModelType.MESSAGE).when(mProvider).getCardType();
+        doReturn(MessageType.ARCHIVED_TABS_MESSAGE).when(mProvider).getMessageType();
 
         mCustomMessageCardView =
                 (CustomMessageCardView)
@@ -65,6 +75,12 @@ public class CustomMessageCardViewBinderUnitTest {
     public void testSetup() {
         assertEquals(1, mCustomMessageCardView.getChildCount());
         assertEquals(1f, mCustomMessageCardView.getAlpha(), MathUtils.EPSILON);
+        assertEquals(
+                MessageCardScope.REGULAR,
+                mModel.get(MESSAGE_CARD_VISIBILITY_CONTROL_IN_REGULAR_AND_INCOGNITO_MODE));
+        assertEquals(1f, mModel.get(CARD_ALPHA), MathUtils.EPSILON);
+        assertEquals(CardProperties.ModelType.MESSAGE, mModel.get(CARD_TYPE));
+        assertEquals(MessageType.ARCHIVED_TABS_MESSAGE, mModel.get(MESSAGE_TYPE));
 
         mModel.set(MessageCardViewProperties.IS_INCOGNITO, true);
         verify(mProvider, times(1)).setIsIncognito(true);
