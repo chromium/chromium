@@ -4678,8 +4678,16 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, PrerenderBlankIframe) {
 }
 
 // Tests that an inner WebContents can be attached in a prerendered page.
-// TODO(crbug.com/346929955): The test shows high flakiness.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, ActivatePageWithInnerContents) {
+// TODO(crbug.com/346929955): The test shows high flakiness on sanitizer bots.
+#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) || \
+    defined(MEMORY_SANITIZER)
+#define MAYBE_ActivatePageWithInnerContents \
+  DISABLED_ActivatePageWithInnerContents
+#else
+#define MAYBE_ActivatePageWithInnerContents ActivatePageWithInnerContents
+#endif
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+                       MAYBE_ActivatePageWithInnerContents) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/page_with_blank_iframe.html");
   const GURL kInnerContentsUrl = GetUrl("/empty.html?prerender");
