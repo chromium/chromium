@@ -151,8 +151,8 @@ void FormEventLoggerBase::OnDidShowSuggestions(
 
 void FormEventLoggerBase::RecordFillingOperation(
     FormGlobalId form_id,
-    base::span<const FormFieldData*> filled_fields,
-    base::span<const AutofillField*> filled_autofill_fields) {
+    base::span<const FormFieldData* const> filled_fields,
+    base::span<const AutofillField* const> filled_autofill_fields) {
   ++filling_operation_count_;
   bool is_address =
       parsed_form_types_.contains(FormTypeNameForLogging::kAddressForm);

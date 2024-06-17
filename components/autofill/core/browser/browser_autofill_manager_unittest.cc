@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/347137620 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 
 #include <stddef.h>
@@ -166,7 +161,7 @@ using upload_contents_matchers::ObservedSubmissionIs;
 
 const std::string kArbitraryNickname = "Grocery Card";
 const std::u16string kArbitraryNickname16 = u"Grocery Card";
-Suggestion::Icon kAddressEntryIcon = Suggestion::Icon::kAccount;
+constexpr Suggestion::Icon kAddressEntryIcon = Suggestion::Icon::kAccount;
 
 // Action `SaveArgElementsTo<k>(pointer)` saves the value pointed to by the
 // `k`th (0-based) argument of the mock function by moving it to `*pointer`.
@@ -5839,16 +5834,19 @@ TEST_F(BrowserAutofillManagerTest, DontSaveCvcInAutocompleteHistory) {
   form.set_url(GURL("https://myform.com/form.html"));
   form.set_action(GURL("https://myform.com/submit.html"));
 
-  struct {
+  struct TestField {
     const char* label;
     const char* name;
     const char* value;
     FieldType expected_field_type;
-  } test_fields[] = {
-      {"Card number", "1", "4234-5678-9012-3456", CREDIT_CARD_NUMBER},
-      {"Card verification code", "2", "123", CREDIT_CARD_VERIFICATION_CODE},
-      {"expiration date", "3", "04/2020", CREDIT_CARD_EXP_4_DIGIT_YEAR},
   };
+  constexpr auto test_fields = std::to_array<TestField>({
+      TestField{"Card number", "1", "4234-5678-9012-3456", CREDIT_CARD_NUMBER},
+      TestField{"Card verification code", "2", "123",
+                CREDIT_CARD_VERIFICATION_CODE},
+      TestField{"expiration date", "3", "04/2020",
+                CREDIT_CARD_EXP_4_DIGIT_YEAR},
+  });
 
   for (const auto& test_field : test_fields) {
     test_api(form).fields().push_back(
@@ -5860,8 +5858,8 @@ TEST_F(BrowserAutofillManagerTest, DontSaveCvcInAutocompleteHistory) {
   FormSubmitted(form);
 
   EXPECT_EQ(form.fields().size(), form_seen_by_ahm.fields().size());
-  ASSERT_EQ(std::size(test_fields), form_seen_by_ahm.fields().size());
-  for (size_t i = 0; i < std::size(test_fields); ++i) {
+  ASSERT_EQ(test_fields.size(), form_seen_by_ahm.fields().size());
+  for (size_t i = 0; i < test_fields.size(); ++i) {
     EXPECT_EQ(
         form_seen_by_ahm.fields()[i].should_autocomplete(),
         test_fields[i].expected_field_type != CREDIT_CARD_VERIFICATION_CODE);
@@ -7015,7 +7013,8 @@ INSTANTIATE_TEST_SUITE_P(
 // submission.
 TEST_F(BrowserAutofillManagerTest, AutocompleteMetrics) {
   // `kAutocompleteValues` corresponds to empty, valid, garbage and off.
-  constexpr const char* kAutocompleteValues[]{"", "name", "asdf", "off"};
+  constexpr auto kAutocompleteValues =
+      std::to_array<const char*>({"", "name", "asdf", "off"});
   // The 4 possible combinations of heuristic and server type status:
   // - Neither a fillable heuristic type nor a fillable server type.
   // - Only a fillable server type.
@@ -7023,10 +7022,11 @@ TEST_F(BrowserAutofillManagerTest, AutocompleteMetrics) {
   // - Both a fillable heuristic type and a fillable server type.
   // NO_SERVER_DATA and UNKNOWN_TYPE are both unfillable types, but
   // NO_SERVER_DATA is ignored in the PredictionCollisionType metric.
-  constexpr FieldType kTypeClasses[][2]{{UNKNOWN_TYPE, NO_SERVER_DATA},
-                                        {UNKNOWN_TYPE, EMAIL_ADDRESS},
-                                        {ADDRESS_HOME_COUNTRY, UNKNOWN_TYPE},
-                                        {ADDRESS_HOME_COUNTRY, EMAIL_ADDRESS}};
+  constexpr auto kTypeClasses = std::to_array<std::array<FieldType, 2>>(
+      {{UNKNOWN_TYPE, NO_SERVER_DATA},
+       {UNKNOWN_TYPE, EMAIL_ADDRESS},
+       {ADDRESS_HOME_COUNTRY, UNKNOWN_TYPE},
+       {ADDRESS_HOME_COUNTRY, EMAIL_ADDRESS}});
 
   // Create a form with one field per kAutofillValue x kTypeClass combination.
   FormData form;

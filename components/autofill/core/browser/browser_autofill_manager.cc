@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/347137620 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <iterator>
 #include <limits>
 #include <map>
@@ -1646,26 +1642,24 @@ void BrowserAutofillManager::FillOrPreviewField(
                                    form_structure, autofill_field, value, type,
                                    field_type_used);
   if (action_persistence == mojom::ActionPersistence::kFill) {
-    const FormFieldData* const_field = &field;
-    const AutofillField* const_autofill_field = autofill_field;
     if (type == SuggestionType::kAddressFieldByFieldFilling) {
       address_form_event_logger_->OnFilledByFieldByFieldFilling(type);
       address_form_event_logger_->RecordFillingOperation(
-          form.global_id(), base::make_span(&const_field, 1u),
-          base::make_span(&const_autofill_field, 1u));
+          form.global_id(), std::to_array<const FormFieldData*>({&field}),
+          std::to_array<const AutofillField*>({autofill_field}));
     } else if (type == SuggestionType::kCreditCardFieldByFieldFilling) {
       credit_card_form_event_logger_->OnFilledByFieldByFieldFilling(type);
       credit_card_form_event_logger_->RecordFillingOperation(
-          form.global_id(), base::make_span(&const_field, 1u),
-          base::make_span(&const_autofill_field, 1u));
+          form.global_id(), std::to_array<const FormFieldData*>({&field}),
+          std::to_array<const AutofillField*>({autofill_field}));
     }
 
     const bool is_address_manual_fallback_on_non_address_field =
-        IsAddressAutofillManuallyTriggeredOnNonAddressField(
-            type, const_autofill_field);
+        IsAddressAutofillManuallyTriggeredOnNonAddressField(type,
+                                                            autofill_field);
     const bool is_payments_manual_fallback_on_non_payments_field =
         IsCreditCardAutofillManuallyTriggeredOnNonCreditCardField(
-            type, const_autofill_field);
+            type, autofill_field);
     if (is_address_manual_fallback_on_non_address_field ||
         is_payments_manual_fallback_on_non_payments_field) {
       manual_fallback_logger_->OnDidFillSuggestion(
