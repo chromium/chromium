@@ -20,6 +20,7 @@
 #include "components/performance_manager/public/execution_context/execution_context.h"
 #include "components/performance_manager/public/execution_context/execution_context_attached_data.h"
 #include "components/performance_manager/public/graph/frame_node.h"
+#include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/node_attached_data.h"
 #include "components/performance_manager/public/graph/node_data_describer_registry.h"
 #include "components/performance_manager/public/graph/worker_node.h"
@@ -665,9 +666,6 @@ V8DetailedMemoryDecorator::~V8DetailedMemoryDecorator() = default;
 
 void V8DetailedMemoryDecorator::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(nullptr, graph_);
-  graph_ = graph;
-
   // Iterate over the existing process nodes to put them under observation.
   for (const ProcessNode* process_node : graph->GetAllProcessNodes()) {
     OnProcessNodeAdded(process_node);
@@ -680,14 +678,11 @@ void V8DetailedMemoryDecorator::OnPassedToGraph(Graph* graph) {
 
 void V8DetailedMemoryDecorator::OnTakenFromGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(graph, graph_);
-
   ApplyToAllRequestQueues(&V8DetailedMemoryRequestQueue::OnOwnerUnregistered);
   UpdateProcessMeasurementSchedules();
 
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
   graph->RemoveProcessNodeObserver(this);
-  graph_ = nullptr;
 }
 
 void V8DetailedMemoryDecorator::OnProcessNodeAdded(
@@ -794,17 +789,16 @@ void V8DetailedMemoryDecorator::ApplyToAllRequestQueues(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   func(measurement_requests_.get());
   NodeAttachedProcessData::ApplyToAllRenderers(
-      graph_, [func](NodeAttachedProcessData* process_data) {
+      GetOwningGraph(), [func](NodeAttachedProcessData* process_data) {
         func(&process_data->process_measurement_requests());
       });
 }
 
 void V8DetailedMemoryDecorator::UpdateProcessMeasurementSchedules() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(graph_);
   measurement_requests_->Validate();
   NodeAttachedProcessData::ApplyToAllRenderers(
-      graph_, &NodeAttachedProcessData::ScheduleNextMeasurement);
+      GetOwningGraph(), &NodeAttachedProcessData::ScheduleNextMeasurement);
 }
 
 void V8DetailedMemoryDecorator::NotifyObserversOnMeasurementAvailable(

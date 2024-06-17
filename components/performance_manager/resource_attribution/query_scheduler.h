@@ -11,10 +11,8 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/resource_attribution/query_results.h"
 #include "components/performance_manager/public/resource_attribution/resource_contexts.h"
@@ -22,6 +20,10 @@
 #include "components/performance_manager/resource_attribution/cpu_measurement_monitor.h"
 #include "components/performance_manager/resource_attribution/memory_measurement_provider.h"
 #include "components/performance_manager/resource_attribution/performance_manager_aliases.h"
+
+namespace performance_manager {
+class Graph;
+}
 
 namespace resource_attribution {
 class ContextCollection;
@@ -108,8 +110,6 @@ class QueryScheduler
       std::vector<QueryResultMap> all_results);
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  raw_ptr<Graph> graph_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // CPU measurement machinery.
   CPUMeasurementMonitor cpu_monitor_ GUARDED_BY_CONTEXT(sequence_checker_);

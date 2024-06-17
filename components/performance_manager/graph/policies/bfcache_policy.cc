@@ -125,13 +125,11 @@ void BFCachePolicy::MaybeFlushBFCache(
 
 void BFCachePolicy::OnPassedToGraph(Graph* graph) {
   DCHECK(graph->HasOnlySystemNode());
-  graph_ = graph;
-  graph_->AddSystemNodeObserver(this);
+  graph->AddSystemNodeObserver(this);
 }
 
 void BFCachePolicy::OnTakenFromGraph(Graph* graph) {
-  graph_->RemoveSystemNodeObserver(this);
-  graph_ = nullptr;
+  graph->RemoveSystemNodeObserver(this);
 }
 
 void BFCachePolicy::OnMemoryPressure(MemoryPressureLevel new_level) {
@@ -141,7 +139,7 @@ void BFCachePolicy::OnMemoryPressure(MemoryPressureLevel new_level) {
   }
 
   // Apply the cache limit to all pages.
-  for (const PageNode* page_node : graph_->GetAllPageNodes()) {
+  for (const PageNode* page_node : GetOwningGraph()->GetAllPageNodes()) {
     if (PageMightHaveFramesInBFCache(page_node)) {
       MaybeFlushBFCache(page_node, new_level);
     }

@@ -9,7 +9,6 @@
 #include <optional>
 #include <set>
 
-#include "base/memory/raw_ptr.h"
 #include "base/numerics/clamped_math.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -116,9 +115,6 @@ class MetricsCollector : public FrameNode::ObserverDefaultImpl,
   // Nodes in visibility state kMixed, since this can't be calculated from the
   // PageNode alone.
   std::set<const PageNode*> mixed_state_pages_;
-
-  // The graph to which this object belongs.
-  raw_ptr<Graph> graph_ = nullptr;
 };
 
 }  // namespace performance_manager

@@ -111,7 +111,6 @@ MetricsCollector::MetricsCollector() = default;
 MetricsCollector::~MetricsCollector() = default;
 
 void MetricsCollector::OnPassedToGraph(Graph* graph) {
-  graph_ = graph;
   RegisterObservers(graph);
 
   loading_page_counts_.fill(0);
@@ -126,7 +125,6 @@ void MetricsCollector::OnPassedToGraph(Graph* graph) {
 void MetricsCollector::OnTakenFromGraph(Graph* graph) {
   page_loading_state_timer_.Stop();
   UnregisterObservers(graph);
-  graph_ = nullptr;
 }
 
 void MetricsCollector::OnPageNodeAdded(const PageNode* page_node) {
@@ -212,7 +210,7 @@ void MetricsCollector::OnMainFrameDocumentChanged(const PageNode* page_node) {
     return;
   }
 
-  for (const PageNode* page : graph_->GetAllPageNodes()) {
+  for (const PageNode* page : GetOwningGraph()->GetAllPageNodes()) {
     if (page != page_node) {
       if (page->GetBrowserContextID() == page_node->GetBrowserContextID() &&
           url::IsSameOriginWith(page->GetMainFrameUrl(),
