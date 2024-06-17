@@ -13,6 +13,7 @@
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "components/embedder_support/android/contextmenu/context_menu_builder.h"
+#include "components/embedder_support/android/contextmenu/context_menu_image_format.h"
 #include "components/lens/lens_metadata.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"

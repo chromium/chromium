@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.contextmenu;
+package org.chromium.components.embedder_support.contextmenu;
 
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;

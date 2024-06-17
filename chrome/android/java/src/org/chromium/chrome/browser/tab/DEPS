@@ -102,6 +102,7 @@ specific_include_rules = {
     "-components",
     "+components/android_autofill/browser/java/src/org/chromium/components/autofill",
     "+components/dom_distiller/core/android/java/src/org/chromium/components/dom_distiller/core/DomDistillerUrlUtils.java",
+    "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/contextmenu",
     "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/delegate",
     "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/util",
     "+components/embedder_support/android/java/src/org/chromium/components/embedder_support/view",

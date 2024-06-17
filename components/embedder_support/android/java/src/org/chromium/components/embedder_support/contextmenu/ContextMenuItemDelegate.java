@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.contextmenu;
+package org.chromium.components.embedder_support.contextmenu;
 
 import android.net.Uri;
 
@@ -32,12 +32,12 @@ public interface ContextMenuItemDelegate {
     void onDestroy();
 
     /**
-     * @return The title of the current tab associated with this delegate..
+     * @return The title of the current page associated with this delegate..
      */
     String getPageTitle();
 
     /**
-     * @return The web contents of the current tab owned by this delegate.
+     * @return The web contents of the current page owned by this delegate.
      */
     WebContents getWebContents();
 
@@ -47,7 +47,7 @@ public interface ContextMenuItemDelegate {
     boolean isIncognito();
 
     /**
-     * @return Whether or not the current application can show incognito tabs.
+     * @return Whether or not the current application can show incognito pages.
      */
     boolean isIncognitoSupported();
 
@@ -63,27 +63,30 @@ public interface ContextMenuItemDelegate {
 
     /**
      * Called when the context menu is trying to start a download.
+     *
      * @param url Url of the download item.
      * @param isLink Whether or not the download is a link (as opposed to an image/video).
-     * @return       Whether or not a download should actually be started.
+     * @return Whether or not a download should actually be started.
      */
     boolean startDownload(GURL url, boolean isLink);
 
     /**
      * Called when the {@code url} should be opened in the other window with the same incognito
-     * state as the current {@link Tab}.
+     * state as the current page.
+     *
      * @param url The URL to open.
      */
     void onOpenInOtherWindow(GURL url, Referrer referrer);
 
     /**
-     * Called when the {@code url} should be opened in a new tab with the same incognito state as
-     * the current {@link Tab}.
+     * Called when the {@code url} should be opened in a new page with the same incognito state as
+     * the current page.
+     *
      * @param url The URL to open.
-     * @param navigateToTab Whether or not to navigate to the new tab.
+     * @param navigateToTab Whether or not to navigate to the new page.
      * @param impression The attribution impression to associate with the navigation.
      * @param additionalNavigationParams Additional information that needs to be passed to the
-     * navigation request.
+     *     navigation request.
      */
     void onOpenInNewTab(
             GURL url,
@@ -92,32 +95,36 @@ public interface ContextMenuItemDelegate {
             @Nullable AdditionalNavigationParams additionalNavigationParams);
 
     /**
-     * Called when {@code url} should be opened in a new tab in the same group as the current
-     * {@link Tab}.
+     * Called when {@code url} should be opened in a new page in the same group as the current page.
+     *
      * @param url The URL to open.
      */
     void onOpenInNewTabInGroup(GURL url, Referrer referrer);
 
     /**
-     * Called when the {@code url} should be opened in a new incognito tab.
+     * Called when the {@code url} should be opened in a new incognito page.
+     *
      * @param url The URL to open.
      */
     void onOpenInNewIncognitoTab(GURL url);
 
     /**
-     * Called when the {@code url} is of an image and should be opened in the same tab.
+     * Called when the {@code url} is of an image and should be opened in the same page.
+     *
      * @param url The image URL to open.
      */
     void onOpenImageUrl(GURL url, Referrer referrer);
 
     /**
-     * Called when the {@code url} is of an image and should be opened in a new tab.
+     * Called when the {@code url} is of an image and should be opened in a new page.
+     *
      * @param url The image URL to open.
      */
     void onOpenImageInNewTab(GURL url, Referrer referrer);
 
     /**
      * Called when the {@code text} should be saved to the clipboard.
+     *
      * @param text The text to save to the clipboard.
      * @param clipboardType The type of data in {@code text}.
      */
@@ -125,6 +132,7 @@ public interface ContextMenuItemDelegate {
 
     /**
      * Called when the image should be saved to the clipboard.
+     *
      * @param Uri The (@link Uri) of the image to save to the clipboard.
      */
     void onSaveImageToClipboard(Uri uri);
@@ -136,6 +144,7 @@ public interface ContextMenuItemDelegate {
 
     /**
      * Called when the {@code url} should be parsed to call a phone number.
+     *
      * @param url The URL to be parsed to call a phone number.
      */
     void onCall(GURL url);
@@ -147,6 +156,7 @@ public interface ContextMenuItemDelegate {
 
     /**
      * Called when the {@code url} should be parsed to send an email.
+     *
      * @param url The URL to be parsed to send an email.
      */
     void onSendEmailMessage(GURL url);
@@ -158,18 +168,21 @@ public interface ContextMenuItemDelegate {
 
     /**
      * Called when the {@code url} should be parsed to send a text message.
+     *
      * @param url The URL to be parsed to send a text message.
      */
     void onSendTextMessage(GURL url);
 
     /**
      * Returns whether or not an activity is available to handle intent to add contacts.
+     *
      * @return true if an activity is available to handle intent to add contacts.
      */
     public boolean supportsAddToContacts();
 
     /**
      * Called when the {@code url} should be parsed to add to contacts.
+     *
      * @param url The URL to be parsed to add to contacts.
      */
     void onAddToContacts(GURL url);
@@ -181,15 +194,17 @@ public interface ContextMenuItemDelegate {
 
     /**
      * Called when a link should be opened in the main Chrome browser.
+     *
      * @param linkUrl URL that should be opened.
      * @param pageUrl URL of the current page.
      */
     void onOpenInChrome(GURL linkUrl, GURL pageUrl);
 
     /**
-     * Called when the {@code url} should be opened in a new Chrome tab from CCT.
+     * Called when the {@code url} should be opened in a new Chrome page from CCT.
+     *
      * @param linkUrl The URL to open.
-     * @param isIncognito true if the {@code url} should be opened in a new incognito tab.
+     * @param isIncognito true if the {@code url} should be opened in a new incognito page.
      */
     void onOpenInNewChromeTabFromCCT(GURL linkUrl, boolean isIncognito);
 
@@ -200,12 +215,14 @@ public interface ContextMenuItemDelegate {
 
     /**
      * Called when the current Chrome app is not the default to handle a View Intent.
+     *
      * @param url The URL to open.
      */
     void onOpenInDefaultBrowser(GURL url);
 
     /**
-     * Called when the {@code url} should be opened in an ephemeral tab.
+     * Called when the {@code url} should be opened in an ephemeral page.
+     *
      * @param url The URL to open.
      * @param title The title text to show on top control.
      */
@@ -213,6 +230,7 @@ public interface ContextMenuItemDelegate {
 
     /**
      * Called when Read Later was selected from the context menu.
+     *
      * @param url The URL to be saved to the reading list.
      * @param title The title text to be shown for this item in the reading list.
      */

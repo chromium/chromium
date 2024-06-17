@@ -1632,11 +1632,6 @@ if (is_android) {
     ]
   }
 
-  java_cpp_enum("context_menu_image_format_enum_javagen") {
-    sources =
-        [ "browser/android/context_menu/context_menu_native_delegate_impl.h" ]
-  }
-
   source_set("chrome_android_core") {
     sources = [
       "app/android/chrome_jni_onload.cc",

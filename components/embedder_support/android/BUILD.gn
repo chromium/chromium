@@ -266,6 +266,7 @@ static_library("context_menu") {
   sources = [
     "contextmenu/context_menu_builder.cc",
     "contextmenu/context_menu_builder.h",
+    "contextmenu/context_menu_image_format.h",
   ]
   deps = [
     ":context_menu_jni_headers",
@@ -280,6 +281,10 @@ generate_jni("context_menu_jni_headers") {
   sources = [ "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuParams.java" ]
 }
 
+java_cpp_enum("context_menu_image_format_enum_javagen") {
+  sources = [ "contextmenu/context_menu_image_format.h" ]
+}
+
 android_library("context_menu_java") {
   deps = [
     "//base:base_java",
@@ -291,8 +296,19 @@ android_library("context_menu_java") {
     "//url:gurl_java",
   ]
 
-  srcjar_deps = [ ":context_menu_jni_headers" ]
-  sources = [ "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuParams.java" ]
+  srcjar_deps = [
+    ":context_menu_jni_headers",
+    ":context_menu_image_format_enum_javagen",
+  ]
+  sources = [
+    "java/src/org/chromium/components/embedder_support/contextmenu/ChipDelegate.java",
+    "java/src/org/chromium/components/embedder_support/contextmenu/ChipRenderParams.java",
+    "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuItemDelegate.java",
+    "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuNativeDelegate.java",
+    "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuParams.java",
+    "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuPopulator.java",
+    "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuPopulatorFactory.java",
+  ]
 }
 
 android_library("native_java_unittests_java") {

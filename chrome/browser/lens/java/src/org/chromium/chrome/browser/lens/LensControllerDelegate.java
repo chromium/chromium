@@ -13,16 +13,18 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.contextmenu.ChipRenderParams;
+import org.chromium.components.embedder_support.contextmenu.ChipRenderParams;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * Base class for defining methods where different behavior is required by downstream targets.
- * The correct version of {@link LensControllerDelegateImpl} will be determined at compile time
- * via build rules.
+ * Base class for defining methods where different behavior is required by downstream targets. The
+ * correct version of {@link LensControllerDelegateImpl} will be determined at compile time via
+ * build rules.
  */
 public class LensControllerDelegate {
-    /** @see {@link LensController#isSdkAvailable()} */
+    /**
+     * @see {@link LensController#isSdkAvailable()}
+     */
     public boolean isSdkAvailable() {
         return false;
     }

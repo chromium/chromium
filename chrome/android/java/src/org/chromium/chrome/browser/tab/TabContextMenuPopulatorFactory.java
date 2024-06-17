@@ -6,14 +6,14 @@ package org.chromium.chrome.browser.tab;
 
 import android.content.Context;
 
-import org.chromium.chrome.browser.contextmenu.ContextMenuNativeDelegate;
-import org.chromium.chrome.browser.contextmenu.ContextMenuPopulator;
-import org.chromium.chrome.browser.contextmenu.ContextMenuPopulatorFactory;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuNativeDelegate;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulator;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 
 /**
- * A simple wrapper around a {@link ContextMenuPopulatorFactory} for creating
- * {@link TabContextMenuPopulator} which is able to handle observer notifications.
+ * A simple wrapper around a {@link ContextMenuPopulatorFactory} for creating {@link
+ * TabContextMenuPopulator} which is able to handle observer notifications.
  */
 class TabContextMenuPopulatorFactory implements ContextMenuPopulatorFactory {
     private final ContextMenuPopulatorFactory mPopulatorFactory;

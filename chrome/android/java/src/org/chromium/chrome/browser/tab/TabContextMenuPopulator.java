@@ -9,8 +9,8 @@ import android.util.Pair;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList.RewindableIterator;
-import org.chromium.chrome.browser.contextmenu.ChipDelegate;
-import org.chromium.chrome.browser.contextmenu.ContextMenuPopulator;
+import org.chromium.components.embedder_support.contextmenu.ChipDelegate;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulator;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 
 import java.util.List;

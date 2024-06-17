@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.contextmenu;
+package org.chromium.components.embedder_support.contextmenu;
 
 import android.util.Pair;
 
@@ -19,18 +19,20 @@ import java.util.List;
 public interface ContextMenuPopulator {
     /**
      * Should be used to populate {@code menu} with the correct context menu items.
+     *
      * @return A list separate by groups. Each "group" will contain items related to said group as
-     *         well as an integer that is a string resource for the group. Image items will have
-     *         items that belong to that are related to that group and the string resource for the
-     *         group will likely say "IMAGE". If the link pressed is contains multiple items (like
-     *         an image link) the list will have both an image list and a link list.
+     *     well as an integer that is a string resource for the group. Image items will have items
+     *     that belong to that are related to that group and the string resource for the group will
+     *     likely say "IMAGE". If the link pressed is contains multiple items (like an image link)
+     *     the list will have both an image list and a link list.
      */
     List<Pair<Integer, ModelList>> buildContextMenu();
 
     /**
      * Called when a context menu item has been selected.
+     *
      * @param itemId The id of the selected menu item.
-     * @return       Whether or not the selection was handled.
+     * @return Whether or not the selection was handled.
      */
     boolean onItemSelected(int itemId);
 

@@ -90,6 +90,7 @@ android_library("java") {
     "//components/commerce/core:proto_java",
     "//components/commerce/core/android:core_java",
     "//components/embedder_support/android:content_view_java",
+    "//components/embedder_support/android:context_menu_java",
     "//components/embedder_support/android:util_java",
     "//components/embedder_support/android:web_contents_delegate_java",
     "//components/external_intents/android:java",
