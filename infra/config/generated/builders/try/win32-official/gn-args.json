@@ -4,6 +4,7 @@
     "is_official_build": true,
     "symbol_level": 1,
     "target_cpu": "x86",
+    "target_os": "win",
     "use_remoteexec": true,
     "use_siso": true
   }

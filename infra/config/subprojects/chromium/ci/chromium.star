@@ -83,6 +83,7 @@ ci.builder(
             "remoteexec",
             "minimal_symbols",
             "strip_debug_info",
+            "arm",
         ],
     ),
     targets = targets.bundle(
@@ -192,6 +193,7 @@ ci.builder(
             "remoteexec",
             "android_builder_without_codecs",
             "full_symbols",
+            "arm",
         ],
     ),
     targets = targets.bundle(
@@ -236,6 +238,7 @@ ci.builder(
             "release_builder",
             "remoteexec",
             "use_cups",
+            "x64",
         ],
     ),
     targets = targets.bundle(
@@ -315,6 +318,7 @@ ci.builder(
             "release_builder",
             "remoteexec",
             "also_build_ash_chrome",
+            "x64",
         ],
     ),
     targets = targets.bundle(
@@ -375,6 +379,7 @@ ci.builder(
             "ozone_headless",
             "lacros",
             "release",
+            "x64",
         ],
     ),
     # If tests get added to this builder, it will need to specify os_type chromeos
@@ -434,6 +439,7 @@ ci.builder(
             "ozone_headless",
             "lacros",
             "release",
+            "arm",
         ],
     ),
     # If tests get added to this builder, it will need to specify os_type chromeos
@@ -493,6 +499,7 @@ ci.builder(
             "ozone_headless",
             "lacros",
             "release",
+            "arm64",
         ],
     ),
     # If tests get added to this builder, it will need to specify os_type chromeos
@@ -545,6 +552,8 @@ ci.builder(
             "release_builder",
             "remoteexec",
             "updater",
+            "linux",
+            "x64",
         ],
     ),
     targets = targets.bundle(
@@ -590,7 +599,7 @@ ci.builder(
         ),
     ),
     gn_args = gn_args.config(
-        configs = ["official_optimize", "remoteexec"],
+        configs = ["official_optimize", "remoteexec", "linux", "x64"],
     ),
     targets = targets.bundle(
         additional_compile_targets = "all",
@@ -635,6 +644,8 @@ ci.builder(
             "remoteexec",
             "mac_strip",
             "minimal_symbols",
+            "mac",
+            "x64",
         ],
     ),
     targets = targets.bundle(
@@ -683,6 +694,7 @@ ci.builder(
             "remoteexec",
             "mac_strip",
             "minimal_symbols",
+            "mac",
             "arm64",
         ],
     ),
@@ -734,6 +746,8 @@ ci.builder(
         configs = [
             "official_optimize",
             "remoteexec",
+            "mac",
+            "arm64",
         ],
     ),
     targets = targets.bundle(
@@ -774,6 +788,8 @@ ci.builder(
             "release_builder",
             "remoteexec",
             "minimal_symbols",
+            "win",
+            "x64",
         ],
     ),
     targets = targets.bundle(
@@ -825,6 +841,7 @@ ci.builder(
             "release_builder",
             "remoteexec",
             "minimal_symbols",
+            "win",
             "arm64",
         ],
     ),
@@ -881,6 +898,8 @@ ci.builder(
             "official_optimize",
             "remoteexec",
             "minimal_symbols",
+            "win",
+            "x64",
         ],
     ),
     targets = targets.bundle(
@@ -925,6 +944,7 @@ ci.builder(
             "remoteexec",
             "x86",
             "minimal_symbols",
+            "win",
         ],
     ),
     targets = targets.bundle(
@@ -975,6 +995,7 @@ ci.builder(
         configs = [
             "official_optimize",
             "remoteexec",
+            "win",
             "x86",
         ],
     ),

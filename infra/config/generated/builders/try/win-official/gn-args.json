@@ -3,6 +3,8 @@
     "dcheck_always_on": true,
     "is_official_build": true,
     "symbol_level": 1,
+    "target_cpu": "x64",
+    "target_os": "win",
     "use_remoteexec": true,
     "use_siso": true
   }
