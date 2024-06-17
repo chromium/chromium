@@ -178,9 +178,6 @@ END_METADATA
 
 }  // namespace
 
-// It is the parent container of GlanceablesTasksView that matches the style
-// of GlanceableTrayChildBubble, so `use_glanceables_container_style` is set to
-// false here.
 GlanceablesTasksView::GlanceablesTasksView(
     const ui::ListModel<api::TaskList>* task_lists)
     : shown_time_(base::Time::Now()) {
@@ -327,12 +324,6 @@ GlanceablesTasksView::~GlanceablesTasksView() {
     RecordNumberOfAddedTasks(added_tasks_, task_list_initially_empty_,
                              user_with_no_tasks_);
   }
-}
-
-void GlanceablesTasksView::OnViewFocused(views::View* view) {
-  CHECK_EQ(view, task_list_combo_box_view_);
-
-  AnnounceListStateOnComboBoxAccessibility();
 }
 
 void GlanceablesTasksView::Layout(PassKey) {
@@ -672,8 +663,6 @@ void GlanceablesTasksView::UpdateTasksInTaskList(
       ax::mojom::Event::kChildrenChanged,
       /*send_native_event=*/true);
 
-  AnnounceListStateOnComboBoxAccessibility();
-
   if (old_preferred_size != GetPreferredSize()) {
     if (context == ListShownContext::kUserSelectedList) {
       AnimateResize(ResizeAnimation::Type::kChildResize);
@@ -698,15 +687,6 @@ void GlanceablesTasksView::UpdateTasksInTaskList(
       RecordTasksChangeLoadTime(base::TimeTicks::Now() - tasks_requested_time_);
       first_task_list_shown_ = true;
       break;
-  }
-}
-
-// TODO(b/338917100): Remove this along with the view observer as the
-// announcement is not needed anymore.
-void GlanceablesTasksView::AnnounceListStateOnComboBoxAccessibility() {
-  if (list_footer_view_->title_label()->GetVisible()) {
-    task_list_combo_box_view_->GetViewAccessibility().AnnounceText(
-        list_footer_view_->title_label()->GetText());
   }
 }
 
@@ -1031,7 +1011,6 @@ void GlanceablesTasksView::RemoveTaskView(
 
 void GlanceablesTasksView::CreateComboBoxView() {
   if (task_list_combo_box_view_) {
-    combobox_view_observation_.Reset();
     tasks_header_view_->RemoveChildViewT(
         std::exchange(task_list_combo_box_view_, nullptr));
   }
@@ -1044,7 +1023,6 @@ void GlanceablesTasksView::CreateComboBoxView() {
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kPreferred));
-  combobox_view_observation_.Observe(task_list_combo_box_view_);
   task_list_combo_box_view_->SetVisible(is_expanded_);
 
   // Assign a default value for tooltip and accessible text.

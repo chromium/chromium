@@ -16,14 +16,12 @@
 #include "ash/glanceables/tasks/glanceables_tasks_error_type.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/list_model.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view.h"
 #include "ui/views/view_model.h"
-#include "ui/views/view_observer.h"
 
 class GURL;
 
@@ -43,8 +41,7 @@ class GlanceablesTaskView;
 
 // Glanceables view responsible for interacting with Google Tasks.
 class ASH_EXPORT GlanceablesTasksView
-    : public GlanceablesTimeManagementBubbleView,
-      public views::ViewObserver {
+    : public GlanceablesTimeManagementBubbleView {
   METADATA_HEADER(GlanceablesTasksView, GlanceablesTimeManagementBubbleView)
  public:
   explicit GlanceablesTasksView(const ui::ListModel<api::TaskList>* task_lists);
@@ -56,9 +53,6 @@ class ASH_EXPORT GlanceablesTasksView
   void Layout(PassKey) override;
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
-
-  // views::ViewObserver:
-  void OnViewFocused(views::View* view) override;
 
   // GlanceablesTimeManagementBubbleView:
   bool IsExpanded() const override;
@@ -272,9 +266,6 @@ class ASH_EXPORT GlanceablesTasksView
 
   // Callback that recreates `task_list_combo_box_view_`.
   base::OnceClosure recreate_combobox_callback_;
-
-  base::ScopedObservation<views::View, views::ViewObserver>
-      combobox_view_observation_{this};
 
   base::WeakPtrFactory<GlanceablesTasksView> weak_ptr_factory_{this};
 };

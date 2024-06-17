@@ -220,7 +220,6 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
       &GlanceablesClassroomStudentView::SelectedAssignmentListChanged,
       base::Unretained(this),
       /*initial_update=*/false));
-  combobox_view_observation_.Observe(combo_box_view_);
 
   auto text_on_combobox = combo_box_view_->GetTextForRow(
       combo_box_view_->GetSelectedIndex().value());
@@ -325,12 +324,6 @@ void GlanceablesClassroomStudentView::RegisterUserProfilePrefs(
 void GlanceablesClassroomStudentView::ClearUserStatePrefs(
     PrefService* pref_service) {
   pref_service->ClearPref(kLastSelectedAssignmentsListPref);
-}
-
-void GlanceablesClassroomStudentView::OnViewFocused(views::View* view) {
-  CHECK_EQ(view, combo_box_view_);
-
-  AnnounceListStateOnComboBoxAccessibility();
 }
 
 bool GlanceablesClassroomStudentView::IsExpanded() const {
@@ -564,10 +557,6 @@ void GlanceablesClassroomStudentView::OnGetAssignments(
       ax::mojom::Event::kChildrenChanged,
       /*send_native_event=*/true);
 
-  // The list is shown in response to the action on the assignment selector
-  // combobox, notify the user of the list state id the combox is still focused.
-  AnnounceListStateOnComboBoxAccessibility();
-
   if (old_preferred_size != GetPreferredSize()) {
     PreferredSizeChanged();
 
@@ -601,19 +590,6 @@ void GlanceablesClassroomStudentView::OnGetAssignments(
             base::Unretained(this)),
         GlanceablesErrorMessageView::ButtonActionType::kDismiss);
     error_message()->SetProperty(views::kViewIgnoredByLayoutKey, true);
-  }
-}
-
-// TODO(b/338917100): Remove this along with the view observer as the
-// announcement is not needed anymore.
-void GlanceablesClassroomStudentView::
-    AnnounceListStateOnComboBoxAccessibility() {
-  if (empty_list_label_->GetVisible()) {
-    combo_box_view_->GetViewAccessibility().AnnounceText(
-        empty_list_label_->GetText());
-  } else if (list_footer_view_->title_label()->GetVisible()) {
-    combo_box_view_->GetViewAccessibility().AnnounceText(
-        list_footer_view_->title_label()->GetText());
   }
 }
 

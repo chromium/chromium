@@ -14,10 +14,8 @@
 #include "ash/glanceables/common/glanceables_time_management_bubble_view.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/view_observer.h"
 
 class GURL;
 class PrefRegistrySimple;
@@ -31,8 +29,6 @@ namespace views {
 class BoxLayoutView;
 class FlexLayoutView;
 class Label;
-class View;
-class ViewObserver;
 }  // namespace views
 
 namespace ash {
@@ -56,8 +52,7 @@ enum class StudentAssignmentsListType {
 };
 
 class ASH_EXPORT GlanceablesClassroomStudentView
-    : public GlanceablesTimeManagementBubbleView,
-      public views::ViewObserver {
+    : public GlanceablesTimeManagementBubbleView {
   METADATA_HEADER(GlanceablesClassroomStudentView,
                   GlanceablesTimeManagementBubbleView)
 
@@ -74,9 +69,6 @@ class ASH_EXPORT GlanceablesClassroomStudentView
 
   // Clears any student glanceables state from user `pref_services`.
   static void ClearUserStatePrefs(PrefService* pref_service);
-
-  // views::ViewObserver:
-  void OnViewFocused(views::View* view) override;
 
   // GlanceablesTimeManagementBubbleView:
   bool IsExpanded() const override;
@@ -165,9 +157,6 @@ class ASH_EXPORT GlanceablesClassroomStudentView
   // The currently selected assignment list.
   StudentAssignmentsListType selected_list_type_ =
       StudentAssignmentsListType::kAssigned;
-
-  base::ScopedObservation<views::View, views::ViewObserver>
-      combobox_view_observation_{this};
 
   base::WeakPtrFactory<GlanceablesClassroomStudentView> weak_ptr_factory_{this};
 };
