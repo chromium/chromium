@@ -56,6 +56,10 @@ inline bool IsFontPresent(const UChar* font_name,
   if (!tf)
     return false;
 
+  if (RuntimeEnabledFeatures::FontPresentWinEnabled()) {
+    return true;
+  }
+
   SkTypeface::LocalizedStrings* actual_families =
       tf->createFamilyNameIterator();
   bool matches_requested_family = false;
