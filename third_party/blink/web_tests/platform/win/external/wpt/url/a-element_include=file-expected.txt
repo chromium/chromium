@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 56 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 60 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Test that embedded 0x0A is stripped
   assert_equals: expected "data:text/plain;charset=utf-8,first%20linesecond%20line" but got "data:text/plain;charset=utf-8,first%20line%0Asecond%20line"
 [FAIL] Parsing: <file:/example.com/> against <http://example.org/foo/bar>
@@ -14,6 +14,14 @@ Found 56 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_equals: href expected "file:///" but got "file://localhost/"
 [FAIL] Parsing: <file://localhost/test> against <file:///tmp/mock/path>
   assert_equals: href expected "file:///test" but got "file://localhost/test"
+[FAIL] Parsing: <file:///w|m> against <about:blank>
+  assert_equals: href expected "file:///w|m" but got "file:///W:/m"
+[FAIL] Parsing: <file:///w||m> against <about:blank>
+  assert_equals: href expected "file:///w||m" but got "file:///W:/%7Cm"
+[FAIL] Parsing: <file:///w|/m> against <about:blank>
+  assert_equals: href expected "file:///w:/m" but got "file:///W:/m"
+[FAIL] Parsing: <file:C||/m/> against <about:blank>
+  assert_equals: href expected "file:///C||/m/" but got "file:///C:/%7C/m/"
 [FAIL] Parsing: <file:/example.com/> against <about:blank>
   assert_equals: href expected "file:///example.com/" but got "file://example.com/"
 [FAIL] Parsing: <file:...> against <http://www.example.com/test>

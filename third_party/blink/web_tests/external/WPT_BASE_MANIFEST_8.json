@@ -3743,6 +3743,22 @@
        {}
       ]
      ],
+     "line-clamp": {
+      "webkit-line-clamp-041-crash.html": [
+       "3f4bf3c8ef578fa22469e81e504879aa5d713bf8",
+       [
+        null,
+        {}
+       ]
+      ],
+      "webkit-line-clamp-042-crash.html": [
+       "1a5fe2e246ff5abb8b4096223c8f0fd47a3968b2",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "multicol-in-orthogonal-writing-mode-crash.html": [
       "5a7378de2ea890fc2eefd91135c6cb299a7464ba",
       [
@@ -3780,20 +3796,6 @@
      ],
      "table-header-group-overflow-crash.html": [
       "1b0774129da2601dff9d77d3fcec43949bd96fd2",
-      [
-       null,
-       {}
-      ]
-     ],
-     "webkit-line-clamp-041-crash.html": [
-      "3f4bf3c8ef578fa22469e81e504879aa5d713bf8",
-      [
-       null,
-       {}
-      ]
-     ],
-     "webkit-line-clamp-042-crash.html": [
-      "1a5fe2e246ff5abb8b4096223c8f0fd47a3968b2",
       [
        null,
        {}
@@ -75357,6 +75359,19 @@
       ]
      ],
      "background-size": {
+      "background-size-contain-svg-view.html": [
+       "0d69e27e3dc653b7c4dc5f4da6330bd811a7c112",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "background-size-contain.xht": [
        "7309905bbac46d67f16907d799fb3ba7716bb31a",
        [
@@ -75390,6 +75405,19 @@
         [
          [
           "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "background-size-cover-svg-view.html": [
+       "dc792792476aea43d1f3239a19cdae2ebfd2c484",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
           "=="
          ]
         ],
@@ -160982,760 +161010,1321 @@
        {}
       ]
      ],
-     "line-clamp-001.tentative.html": [
-      "c8cfcb1066de1a1d5c98e147c8e47499069046be",
-      [
-       null,
+     "line-clamp": {
+      "line-clamp-001.html": [
+       "c8cfcb1066de1a1d5c98e147c8e47499069046be",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-002.tentative.html": [
-      "5f21b545fb32d8ecb2c72287b9fc9fcf9d41de90",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-002.html": [
+       "5f21b545fb32d8ecb2c72287b9fc9fcf9d41de90",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-003.tentative.html": [
-      "fa3b7472e5e44fe9eb854eb4dadc34f98af16e92",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-003.html": [
+       "fa3b7472e5e44fe9eb854eb4dadc34f98af16e92",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-004.tentative.html": [
-      "c766d195b7c27935f099876f8e69a18966623ad9",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-004.html": [
+       "c766d195b7c27935f099876f8e69a18966623ad9",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-006-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-005.tentative.html": [
-      "143aa65d899dc1e83e5be5927f1f349e8f0a399c",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-006-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-005.tentative.html": [
+       "143aa65d899dc1e83e5be5927f1f349e8f0a399c",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-009-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-006.tentative.html": [
-      "f06d94161b635a092ed3446cdf9e6b3ebf830777",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-009-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-006.tentative.html": [
+       "f06d94161b635a092ed3446cdf9e6b3ebf830777",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-010-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-007.tentative.html": [
-      "c71068641b80530031dc4474422225033959d146",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-010-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-007.tentative.html": [
+       "c71068641b80530031dc4474422225033959d146",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-011-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-008.tentative.html": [
-      "0d91b3612d0cd38a08f56f01d0d38a7e3cc62042",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-011-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-008.tentative.html": [
+       "0d91b3612d0cd38a08f56f01d0d38a7e3cc62042",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-009.tentative.html": [
-      "4dfd3d6194a6f3715f4f684b8072b5be55478911",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-009.tentative.html": [
+       "4dfd3d6194a6f3715f4f684b8072b5be55478911",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-006-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-010.tentative.html": [
-      "1386b147ce639f511fa1fc58e0c0cd75ab99efc2",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-006-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-010.html": [
+       "1386b147ce639f511fa1fc58e0c0cd75ab99efc2",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-010-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-011.tentative.html": [
-      "953f0c4faa9e57975cfabfd10d20ae4e1f9c45a3",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-010-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-011.tentative.html": [
+       "953f0c4faa9e57975cfabfd10d20ae4e1f9c45a3",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-011-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-012.tentative.html": [
-      "be39074037745b5bda0092ff29d45c68f93b4442",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-011-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-012.tentative.html": [
+       "be39074037745b5bda0092ff29d45c68f93b4442",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-012-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-013.tentative.html": [
-      "1bda501f028e9cca1f0f7f5930d4459ac26a5607",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-012-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-013.tentative.html": [
+       "1bda501f028e9cca1f0f7f5930d4459ac26a5607",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-013-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-014.tentative.html": [
-      "9ca7c8937248f482aec2976490c2c86b945f0dfd",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-013-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-014.html": [
+       "9ca7c8937248f482aec2976490c2c86b945f0dfd",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-015.tentative.html": [
-      "820300732235ceed5333217a3cc856c224e8e456",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-015.html": [
+       "820300732235ceed5333217a3cc856c224e8e456",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-015-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-016.tentative.html": [
-      "09714c499de663e621925c74bc63e167dc9f7b85",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-015-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-016.tentative.html": [
+       "09714c499de663e621925c74bc63e167dc9f7b85",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-017.tentative.html": [
-      "11d6ceeb556c7469b8de0cd323ddb2594e8b8b34",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-017.tentative.html": [
+       "11d6ceeb556c7469b8de0cd323ddb2594e8b8b34",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-018.tentative.html": [
-      "af75f7dfb0d291f6158fea3081ca5d1042d06989",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-018.tentative.html": [
+       "af75f7dfb0d291f6158fea3081ca5d1042d06989",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-019.tentative.html": [
-      "b39376d39502ff643d41543c26db8f43abcc35bd",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-019.tentative.html": [
+       "b39376d39502ff643d41543c26db8f43abcc35bd",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-020.tentative.html": [
-      "9d8a2b4d06ce8d1ca1c8a90ec44abbf2466fb7a6",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-020.html": [
+       "9d8a2b4d06ce8d1ca1c8a90ec44abbf2466fb7a6",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-021.tentative.html": [
-      "611cd6f8901af66ecdc301305f2db0f30bf96023",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-021.tentative.html": [
+       "611cd6f8901af66ecdc301305f2db0f30bf96023",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-021-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-auto-001.tentative.html": [
-      "02d8479736d4d6fd7e26df53611624e7a75d0989",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-021-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-001.tentative.html": [
+       "02d8479736d4d6fd7e26df53611624e7a75d0989",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-auto-002.tentative.html": [
-      "ff9e802f0f9e376635230707972611ab5a0ec7d6",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-002.tentative.html": [
+       "ff9e802f0f9e376635230707972611ab5a0ec7d6",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-auto-002-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-auto-003.tentative.html": [
-      "a74704dd3b0765434c27935c944fac010415b13c",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-003.tentative.html": [
+       "a74704dd3b0765434c27935c944fac010415b13c",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-auto-002-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-auto-004.tentative.html": [
-      "2dbf9d54084034f2a1b83eccf370e281af24dc8c",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-004.tentative.html": [
+       "2dbf9d54084034f2a1b83eccf370e281af24dc8c",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-auto-005.tentative.html": [
-      "1c9148e2647f310522103d1b5c6c2765a6c6644c",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-005.tentative.html": [
+       "1c9148e2647f310522103d1b5c6c2765a6c6644c",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-auto-005-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-auto-006.tentative.html": [
-      "ab6915f52163f9cbd1c4c2f2fa4e9d8bf90a3a88",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-006.tentative.html": [
+       "ab6915f52163f9cbd1c4c2f2fa4e9d8bf90a3a88",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-auto-007.tentative.html": [
-      "f7d56bfa6557413e33bbb2422c5234437ac302b4",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-007.tentative.html": [
+       "f7d56bfa6557413e33bbb2422c5234437ac302b4",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-auto-008.tentative.html": [
-      "9e7f38ab7ca09debf7628505d8d63ce473dc355e",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-008.tentative.html": [
+       "9e7f38ab7ca09debf7628505d8d63ce473dc355e",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-auto-009.tentative.html": [
-      "44d111056c6b021c796ea694d744816125314def",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-009.tentative.html": [
+       "44d111056c6b021c796ea694d744816125314def",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-036-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-auto-010.tentative.html": [
-      "cb706bba08e2c9dd6ff05b926be23eb22c9c25b7",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-036-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-010.tentative.html": [
+       "cb706bba08e2c9dd6ff05b926be23eb22c9c25b7",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-037-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-auto-011.tentative.html": [
-      "00076a5336e89004b6a2143e9bd6c72ec9fe95e0",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-037-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-011.tentative.html": [
+       "00076a5336e89004b6a2143e9bd6c72ec9fe95e0",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-auto-011-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-auto-012.tentative.html": [
-      "56957b15c9223466ddd6f06a45bb854cab18fda6",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-011-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-012.tentative.html": [
+       "56957b15c9223466ddd6f06a45bb854cab18fda6",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-auto-013.tentative.html": [
-      "dd864fbdcb3fbd3cfeb11a385df61a99e739aba9",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-013.tentative.html": [
+       "dd864fbdcb3fbd3cfeb11a385df61a99e739aba9",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-auto-014.tentative.html": [
-      "6738c708706e778dd4ee307b8532ca32e8b7b881",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-014.tentative.html": [
+       "6738c708706e778dd4ee307b8532ca32e8b7b881",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-auto-015.tentative.html": [
-      "cdb1ed18c0d7a913fc3b9e446dbff15add266300",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-015.tentative.html": [
+       "cdb1ed18c0d7a913fc3b9e446dbff15add266300",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-auto-016.tentative.html": [
-      "372213983b7a753037616485bfc2aae7524abfd5",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-016.tentative.html": [
+       "372213983b7a753037616485bfc2aae7524abfd5",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-auto-016-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-with-abspos-001.tentative.html": [
-      "79667f23fbdc3d941484c343b2cf0a04ec34363f",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-016-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-abspos-001.tentative.html": [
+       "79667f23fbdc3d941484c343b2cf0a04ec34363f",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-with-abspos-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-with-abspos-002.tentative.html": [
-      "cecb9d52bc63ec161dd96dfadcef166edd9334ed",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-abspos-002.tentative.html": [
+       "cecb9d52bc63ec161dd96dfadcef166edd9334ed",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-with-abspos-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-with-abspos-003.tentative.html": [
-      "e4bd1de222e2b75455ae50d4c8bfa5c62b0c47c2",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-abspos-003.tentative.html": [
+       "e4bd1de222e2b75455ae50d4c8bfa5c62b0c47c2",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-with-abspos-004.tentative.html": [
-      "483e6d1da6dc739599e25f3172b0ad248ac23c1b",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-abspos-004.tentative.html": [
+       "483e6d1da6dc739599e25f3172b0ad248ac23c1b",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-with-abspos-005.tentative.html": [
-      "3dc77831a06ffd28df3a5a4dca6045cba30fe1dd",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-abspos-005.tentative.html": [
+       "3dc77831a06ffd28df3a5a4dca6045cba30fe1dd",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-with-abspos-005-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-with-abspos-006.tentative.html": [
-      "f18fed6c2daea0ab6e1ab715c1257407067fa97b",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-abspos-006.tentative.html": [
+       "f18fed6c2daea0ab6e1ab715c1257407067fa97b",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-with-abspos-006-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-with-abspos-007.tentative.html": [
-      "f0a1f58c8d304aead5490db007f763d437e9c5ad",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-006-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-abspos-007.tentative.html": [
+       "f0a1f58c8d304aead5490db007f763d437e9c5ad",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-with-abspos-007-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-with-abspos-008.tentative.html": [
-      "9c62e44f3897b5868dde26a6d6c203c7ddea4b8a",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-007-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-abspos-008.tentative.html": [
+       "9c62e44f3897b5868dde26a6d6c203c7ddea4b8a",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-with-abspos-008-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-with-abspos-009.tentative.html": [
-      "dce04d720cfc83d82e2228204b7f6d41e244aabf",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-008-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-abspos-009.tentative.html": [
+       "dce04d720cfc83d82e2228204b7f6d41e244aabf",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-with-abspos-010.tentative.html": [
-      "325278b3a0b44f480ea020c575b9427b33f2ec4e",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-abspos-010.tentative.html": [
+       "325278b3a0b44f480ea020c575b9427b33f2ec4e",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-with-abspos-010-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-with-abspos-011.tentative.html": [
-      "ab5102a7cf2ea75cdb4729092d7618882e9c6ddf",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-010-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-abspos-011.tentative.html": [
+       "ab5102a7cf2ea75cdb4729092d7618882e9c6ddf",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-with-abspos-011-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-with-floats-001.tentative.html": [
-      "98bbdcb9040224c9c9df1a535ffdeb426040a3c7",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-abspos-011-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-floats-001.tentative.html": [
+       "98bbdcb9040224c9c9df1a535ffdeb426040a3c7",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-with-floats-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-with-floats-002.tentative.html": [
-      "15379a3de3e5518505c24ed9722c0ac4541331a2",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-floats-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-floats-002.tentative.html": [
+       "15379a3de3e5518505c24ed9722c0ac4541331a2",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-with-floats-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-with-floats-003.tentative.html": [
-      "c203758235130cd8e4a0c4838b6b99f8c284cd20",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-floats-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-floats-003.tentative.html": [
+       "c203758235130cd8e4a0c4838b6b99f8c284cd20",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-with-floats-004.tentative.html": [
-      "6213130174768418c078ffc792c30b2774c5d9c6",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-floats-004.tentative.html": [
+       "6213130174768418c078ffc792c30b2774c5d9c6",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-with-floats-005.tentative.html": [
-      "9689a83fa7f9e5976c2d5b71f6adc7fd0397e2cc",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-floats-005.tentative.html": [
+       "9689a83fa7f9e5976c2d5b71f6adc7fd0397e2cc",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-with-floats-005-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-with-floats-006.tentative.html": [
-      "0a709bff198f3f4c35072559ab67f9892a1bf668",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-floats-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-floats-006.tentative.html": [
+       "0a709bff198f3f4c35072559ab67f9892a1bf668",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-with-floats-006-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-with-floats-007.tentative.html": [
-      "7ee286fbf43b3d961d8a26dc0063b38523e49ad5",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-floats-006-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-floats-007.tentative.html": [
+       "7ee286fbf43b3d961d8a26dc0063b38523e49ad5",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-with-floats-007-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-with-floats-008.tentative.html": [
-      "c62ba5371a8fe27ab4e463dc7e548135b7561701",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-floats-007-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-floats-008.tentative.html": [
+       "c62ba5371a8fe27ab4e463dc7e548135b7561701",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-with-floats-008-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-with-floats-009.tentative.html": [
-      "f25ac381c09d8766f1fd8efe9ec8b677a55b2988",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-floats-008-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-floats-009.tentative.html": [
+       "f25ac381c09d8766f1fd8efe9ec8b677a55b2988",
        [
+        null,
         [
-         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "line-clamp-with-floats-010.tentative.html": [
-      "a00ff60171258aee2aba3ac98847e5756fbc26eb",
-      [
-       null,
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-with-floats-010.tentative.html": [
+       "a00ff60171258aee2aba3ac98847e5756fbc26eb",
        [
+        null,
         [
-         "/css/css-overflow/reference/line-clamp-with-floats-010-ref.html",
-         "=="
-        ]
-       ],
-       {}
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-with-floats-010-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-001.html": [
+       "bba3d1c49f2dab5055fbceb7313659f463454166",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-002.html": [
+       "a04b95994204c1ae2e5b6173719fb9ea41f126c2",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-003.html": [
+       "5ebe64675f8c76eb4b59a6a19cd8d79ddf9a75f9",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-004.html": [
+       "d66d0bb62f12339c0f04c773af2e8daa82739548",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-005.html": [
+       "73b4b8cfa8b5ba2a111d38f0b334f51b59da81e4",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-006.html": [
+       "0d2c1f9c6458bf4d4c1f43e9337d0bb306957cdf",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-006-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-007.html": [
+       "95c2db51653c2ef59cf9b1962354d0db1bb48015",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-007-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-008.html": [
+       "471333e666f17ef780054f1cd456106bc689d9f3",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-008-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-009.html": [
+       "240f6b113b08f6725256f2b3c4d937cc1ac66970",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-009-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-010.html": [
+       "9ff23a2fe399bcfc2ee2e39a76f2cb504cecfaa7",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-010-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-011.html": [
+       "3a0016e9dfdac662089a7898fa30a6edac4c999c",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-011-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-012.html": [
+       "d46a7944fafb31945a43333c8707078e99e6e999",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-012-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-013.html": [
+       "6db53906acd2f1354d6de0525fb1f5fa906fbbc8",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-013-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-014.html": [
+       "948b247533065dbedc6f6c18e6fba9a2e2715b27",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-014-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-015.html": [
+       "c1817e04e6a8ecc227ab93299d004ac0d93487e3",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-015-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-016.html": [
+       "5b2d4593aefed4b36653c09394c1fe5e3565aaf3",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-016-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-017.html": [
+       "ece4d3123b1b8dda7da814648f2c2e0e862f47bb",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-017-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-018.html": [
+       "d381c645467ffa2a95c74191a748a587b8e1c51b",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-018-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-019.html": [
+       "ff6f7e3cf788dbda5a6cb18c4e6f4b4724b578b8",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-019-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-020.html": [
+       "9d875d52dee852ddf360c1edf1ccc2b7c3e638d1",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-020-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-021.html": [
+       "44a196c9ba1b120f99ae4274c1d70bf9544fcefd",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-021-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-022.html": [
+       "2959a734411283572b854469f84e547a718ed2a5",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-022-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-023.html": [
+       "7f03513baa8eddcebf2a5a1e44fe7062bb5f78cc",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-023-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-024.html": [
+       "6ebf5a8958b9592f3fc3850185cd3ee59867beaa",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-024-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-025.html": [
+       "67804dedf60db0c75f6da93af3be38398c4cd161",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-025-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-026.html": [
+       "741384f292770c3a87d0ade0b3745d29c779d988",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-026-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-027.html": [
+       "93bfb0f4b46a0f3c1d2ed9d6dede2892475884fb",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-027-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-029.html": [
+       "fc395d313ea5cd8015f56c9fbfec319a24c69622",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-029-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-030.html": [
+       "5e14a78a583ed0fc3d50ede16f25df68d7f3d05b",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-030-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-031.html": [
+       "4f8c55301ab26a4ba6c5cedbc50abd2f554bfe89",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-031-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-032.html": [
+       "4d0731379d042b877926d00236e4e3a7d4d3abea",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-032-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-033.html": [
+       "261cf5b6b2478698cd50c25f6d6a437e6853e5b1",
+       [
+        null,
+        [
+         [
+          "/css/reference/blank.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-034.html": [
+       "e0b31d544c20a0f57486c771b6b4edef9b69625b",
+       [
+        null,
+        [
+         [
+          "/css/reference/blank.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-035.html": [
+       "5a550e022ecbb87580c3beb77337fccac825adc7",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-035-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-036.html": [
+       "b8d7b194f05dd8dc1189900b399188e0d17391d1",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-036-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-037.html": [
+       "86015228f88e4c622c4bd1c20cb35a20619075c7",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-037-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-038.html": [
+       "b50ae2764c317c809af07649295a2d42ec211517",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-038-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-039.html": [
+       "fe9436da53d707f8641e606d5756d3ad2e771b7a",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-039-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-040.html": [
+       "fa885c8088d5f2d221548ca062fdc0ebb0c83e4b",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-040-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-043.html": [
+       "1f7a0a94c03ed0661c67c4ef46c7ce31d133ddde",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-block-in-inline-001.html": [
+       "75d1de3bf5bcf5d00d6980de4a70845e9f7ae8e4",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-block-in-inline-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-dynamic-001.html": [
+       "fc4f2f9e4db6b55d124dd774e0563e2625ca3288",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-dynamic-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "webkit-line-clamp-with-line-height.tentative.html": [
+       "a82635f986b60ff4853785dc40b7bbe985af4eb1",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-with-line-height-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
       ]
-     ],
+     },
      "margin-block-end-scroll-area-001.html": [
       "3b8f4ca3f355718d05fe6eeda200bddccb388f57",
       [
@@ -163045,565 +163634,6 @@
        [
         [
          "/css/css-overflow/reference/text-overflow-scroll-vertical-lr-rtl-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-001.html": [
-      "bba3d1c49f2dab5055fbceb7313659f463454166",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-002.html": [
-      "a04b95994204c1ae2e5b6173719fb9ea41f126c2",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-003.html": [
-      "5ebe64675f8c76eb4b59a6a19cd8d79ddf9a75f9",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-004.html": [
-      "d66d0bb62f12339c0f04c773af2e8daa82739548",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-005.html": [
-      "73b4b8cfa8b5ba2a111d38f0b334f51b59da81e4",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-005-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-006.html": [
-      "0d2c1f9c6458bf4d4c1f43e9337d0bb306957cdf",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-006-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-007.html": [
-      "95c2db51653c2ef59cf9b1962354d0db1bb48015",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-007-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-008.html": [
-      "471333e666f17ef780054f1cd456106bc689d9f3",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-008-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-009.html": [
-      "240f6b113b08f6725256f2b3c4d937cc1ac66970",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-009-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-010.html": [
-      "9ff23a2fe399bcfc2ee2e39a76f2cb504cecfaa7",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-010-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-011.html": [
-      "3a0016e9dfdac662089a7898fa30a6edac4c999c",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-011-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-012.html": [
-      "d46a7944fafb31945a43333c8707078e99e6e999",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-012-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-013.html": [
-      "6db53906acd2f1354d6de0525fb1f5fa906fbbc8",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-013-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-014.html": [
-      "948b247533065dbedc6f6c18e6fba9a2e2715b27",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-014-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-015.html": [
-      "c1817e04e6a8ecc227ab93299d004ac0d93487e3",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-015-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-016.html": [
-      "5b2d4593aefed4b36653c09394c1fe5e3565aaf3",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-016-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-017.html": [
-      "ece4d3123b1b8dda7da814648f2c2e0e862f47bb",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-017-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-018.html": [
-      "d381c645467ffa2a95c74191a748a587b8e1c51b",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-018-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-019.html": [
-      "ff6f7e3cf788dbda5a6cb18c4e6f4b4724b578b8",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-019-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-020.html": [
-      "9d875d52dee852ddf360c1edf1ccc2b7c3e638d1",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-020-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-021.html": [
-      "44a196c9ba1b120f99ae4274c1d70bf9544fcefd",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-021-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-022.html": [
-      "2959a734411283572b854469f84e547a718ed2a5",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-022-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-023.html": [
-      "7f03513baa8eddcebf2a5a1e44fe7062bb5f78cc",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-023-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-024.html": [
-      "6ebf5a8958b9592f3fc3850185cd3ee59867beaa",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-024-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-025.html": [
-      "67804dedf60db0c75f6da93af3be38398c4cd161",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-025-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-026.html": [
-      "741384f292770c3a87d0ade0b3745d29c779d988",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-026-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-027.html": [
-      "93bfb0f4b46a0f3c1d2ed9d6dede2892475884fb",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-027-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-029.html": [
-      "fc395d313ea5cd8015f56c9fbfec319a24c69622",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-029-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-030.html": [
-      "5e14a78a583ed0fc3d50ede16f25df68d7f3d05b",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-030-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-031.html": [
-      "4f8c55301ab26a4ba6c5cedbc50abd2f554bfe89",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-031-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-032.html": [
-      "4d0731379d042b877926d00236e4e3a7d4d3abea",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-032-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-033.html": [
-      "261cf5b6b2478698cd50c25f6d6a437e6853e5b1",
-      [
-       null,
-       [
-        [
-         "/css/reference/blank.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-034.html": [
-      "e0b31d544c20a0f57486c771b6b4edef9b69625b",
-      [
-       null,
-       [
-        [
-         "/css/reference/blank.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-035.html": [
-      "5a550e022ecbb87580c3beb77337fccac825adc7",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-035-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-036.html": [
-      "b8d7b194f05dd8dc1189900b399188e0d17391d1",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-036-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-037.html": [
-      "86015228f88e4c622c4bd1c20cb35a20619075c7",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-037-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-038.html": [
-      "b50ae2764c317c809af07649295a2d42ec211517",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-038-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-039.html": [
-      "fe9436da53d707f8641e606d5756d3ad2e771b7a",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-039-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-040.html": [
-      "fa885c8088d5f2d221548ca062fdc0ebb0c83e4b",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-040-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-043.html": [
-      "54f0ac538daaa351de0e7d870e8bf35f3a6711f8",
-      [
-       null,
-       [
-        [
-         "/css/reference/ref-filled-green-100px-square.xht",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-block-in-inline-001.html": [
-      "75d1de3bf5bcf5d00d6980de4a70845e9f7ae8e4",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-block-in-inline-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-dynamic-001.html": [
-      "fc4f2f9e4db6b55d124dd774e0563e2625ca3288",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-dynamic-001-ref.html",
-         "=="
-        ]
-       ],
-       {}
-      ]
-     ],
-     "webkit-line-clamp-with-line-height.tentative.html": [
-      "a82635f986b60ff4853785dc40b7bbe985af4eb1",
-      [
-       null,
-       [
-        [
-         "/css/css-overflow/reference/webkit-line-clamp-with-line-height-ref.html",
          "=="
         ]
        ],
@@ -238279,6 +238309,19 @@
        {}
       ]
      ],
+     "reset-state-after-scrolled-view-transition.html": [
+      "5f8c14fd9b7bfc520be5b227c163adf4f518eea3",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/reset-state-after-scrolled-view-transition-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "root-captured-as-different-tag.html": [
       "1d4d1610d16bd4e6e682acdc19fcad3d48aefa2f",
       [
@@ -239183,7 +239226,7 @@
        ]
       ],
       "iframe-zoom-nested.html": [
-       "22a491eb0b58e4cc908336597bdd75f88f5fa18b",
+       "9dc99a0fa55ea28e4a7e36ecd90166aef64771fb",
        [
         null,
         [
@@ -239196,7 +239239,7 @@
        ]
       ],
       "iframe-zoom.sub.html": [
-       "a27fb91619b6b82290c3468dd1b966983b7287fa",
+       "3ddfcd820d72f3ecbc5365a303f9ce1311be60b1",
        [
         null,
         [
@@ -291533,7 +291576,7 @@
      []
     ],
     "OWNERS": [
-     "087586107f86d394c1d144322ca8be78fe5ecdaa",
+     "85322b607d0b70159bd6754bd396b8ab7a849f54",
      []
     ],
     "blob": {
@@ -305990,6 +306033,10 @@
        "rectangle-96x60.png": [
         "add0d272b1eb56d0003d414c6e04f080053b62a4",
         []
+       ],
+       "sprite-view-no-viewbox.svg": [
+        "c17f5cf582611b0b85e5af0c1668e635865b057c",
+        []
        ]
       },
       "vector": {
@@ -309928,20 +309975,12 @@
        "40b0a07ae0183163576247a4adcf534345b068c1",
        []
       ],
-      "container-for-shadow-dom-expected.txt": [
-       "e64b8b878489305f33442ac584a34a1441b137ab",
-       []
-      ],
       "container-units-gradient-ref.html": [
        "dbdabd9bc4ecee3eec34406e7fd13a1e04141978",
        []
       ],
       "container-units-rule-cache-ref.html": [
        "6c8261959f674aa8a80f1f1f8fda343e64450114",
-       []
-      ],
-      "container-units-shadow-expected.txt": [
-       "a8cbb573bbfa197b8d64fac8a946a9334a4fc85d",
        []
       ],
       "container-units-sharing-via-rule-node-ref.html": [
@@ -328239,6 +328278,258 @@
       "c622cbc364d03c4b7c0d81ec09bde9bb1342109b",
       []
      ],
+     "line-clamp": {
+      "reference": {
+       "line-clamp-010-ref.html": [
+        "46ca731c5446db88ba4e5fc8a3d6b8b43c4fc056",
+        []
+       ],
+       "line-clamp-011-ref.html": [
+        "04297fff2b5538a8be020d780cba3d82aa30fa9e",
+        []
+       ],
+       "line-clamp-012-ref.html": [
+        "f412e0110d45ac2db2e8e55adfdab3ae9dce57df",
+        []
+       ],
+       "line-clamp-013-ref.html": [
+        "b2eb05e884d781ae9d5fdaa690e17be60607d97f",
+        []
+       ],
+       "line-clamp-015-ref.html": [
+        "1af45c1225c2df9ed258eb69c687f11c4be9a965",
+        []
+       ],
+       "line-clamp-021-ref.html": [
+        "d794c76e3c9653dd94b2bad73cdf2a4574db5f50",
+        []
+       ],
+       "line-clamp-auto-002-ref.html": [
+        "fe0a8dbd588a8a56c8ac0488713a061ef83474f9",
+        []
+       ],
+       "line-clamp-auto-005-ref.html": [
+        "01eea67a0da77dc7a99bcd0b8677abdd3a4033f5",
+        []
+       ],
+       "line-clamp-auto-011-ref.html": [
+        "5f7120ee39a2014f75f2f700ebedcc0b0e6e6275",
+        []
+       ],
+       "line-clamp-auto-016-ref.html": [
+        "4a5f3536cc62c33e1a30ed9fce9a21cecda341bc",
+        []
+       ],
+       "line-clamp-with-abspos-001-ref.html": [
+        "d756162dde0c54bd52646597b01bbff8a80f5fd8",
+        []
+       ],
+       "line-clamp-with-abspos-005-ref.html": [
+        "3b1f9218e887a7e50745f0c5e540c099475a59df",
+        []
+       ],
+       "line-clamp-with-abspos-006-ref.html": [
+        "4b55c37a033ea4d4a9d97b5fdf8035a60aace4bd",
+        []
+       ],
+       "line-clamp-with-abspos-007-ref.html": [
+        "e3dcc696e39684b47e1785968f29ec9adf8f9c0b",
+        []
+       ],
+       "line-clamp-with-abspos-008-ref.html": [
+        "373b2755c1d617e1716afe8060c28b246d52c33e",
+        []
+       ],
+       "line-clamp-with-abspos-010-ref.html": [
+        "ecc2fcee1b5219b310ef15b28f0684b07d84baf6",
+        []
+       ],
+       "line-clamp-with-abspos-011-ref.html": [
+        "f08b0270e8d7aa8a389910319617528dac6a4240",
+        []
+       ],
+       "line-clamp-with-floats-001-ref.html": [
+        "bcd70aa9305f73a44c46542208f0ad664c92bfde",
+        []
+       ],
+       "line-clamp-with-floats-005-ref.html": [
+        "d20d6c53ddee3de2fe12ea1927eb3182a0f55201",
+        []
+       ],
+       "line-clamp-with-floats-006-ref.html": [
+        "9288c4e36f924c4ab80bb9ad368b87a3a2d01720",
+        []
+       ],
+       "line-clamp-with-floats-007-ref.html": [
+        "6d5390246b4d28365a4e8f238bd02f4fe6be9c21",
+        []
+       ],
+       "line-clamp-with-floats-008-ref.html": [
+        "50b3d53900e21d7bf031fd25d69c80f174bca7c2",
+        []
+       ],
+       "line-clamp-with-floats-010-ref.html": [
+        "12b8cdc441a64fb4e1a6249ee8aea640c66b82b5",
+        []
+       ],
+       "webkit-line-clamp-001-ref.html": [
+        "ef28e01dac0223c9a2768d3fd1415fb9ef2f1c6b",
+        []
+       ],
+       "webkit-line-clamp-005-ref.html": [
+        "c9a9ae5d7ffebd9f041186a8d79f49f827becd61",
+        []
+       ],
+       "webkit-line-clamp-006-ref.html": [
+        "3a17a6d5f3b47c511578b28ffd9fc35b5b61dd98",
+        []
+       ],
+       "webkit-line-clamp-007-ref.html": [
+        "1c9a728aafcee7e830c203f3abec2393bd58e104",
+        []
+       ],
+       "webkit-line-clamp-008-ref.html": [
+        "4ead437830f96be87f75c687c973e21d63021d99",
+        []
+       ],
+       "webkit-line-clamp-009-ref.html": [
+        "62e100d63346b1da7d80ca34dc2fdf4bcd1972ab",
+        []
+       ],
+       "webkit-line-clamp-010-ref.html": [
+        "63e9885e8b9ce3cac850987917ca301045d4128f",
+        []
+       ],
+       "webkit-line-clamp-011-ref.html": [
+        "fbcd8ca3115e70ce2244a4b22820ede745e3bc09",
+        []
+       ],
+       "webkit-line-clamp-012-ref.html": [
+        "d28c9388aea4c494d1773dd2e1ffcbb7a7712bb3",
+        []
+       ],
+       "webkit-line-clamp-013-ref.html": [
+        "ba14aefc7cc3b27318325c22ef35cb1da755193b",
+        []
+       ],
+       "webkit-line-clamp-014-ref.html": [
+        "c7346ab527935246f795e1f0181abd7c31cd4fb7",
+        []
+       ],
+       "webkit-line-clamp-015-ref.html": [
+        "d73bc7d7cb6c54ea7d6141b04f901ef345c44e14",
+        []
+       ],
+       "webkit-line-clamp-016-ref.html": [
+        "e54947e3956cbe0acc1cab1fc91eef8763775c04",
+        []
+       ],
+       "webkit-line-clamp-017-ref.html": [
+        "043e5f3d1c31ac0bc1e1db014769e7dedd3f1f68",
+        []
+       ],
+       "webkit-line-clamp-018-ref.html": [
+        "b95f7ce7662fac02eed3594f47ec42cca202cc26",
+        []
+       ],
+       "webkit-line-clamp-019-ref.html": [
+        "b95f7ce7662fac02eed3594f47ec42cca202cc26",
+        []
+       ],
+       "webkit-line-clamp-020-ref.html": [
+        "043e5f3d1c31ac0bc1e1db014769e7dedd3f1f68",
+        []
+       ],
+       "webkit-line-clamp-021-ref.html": [
+        "043e5f3d1c31ac0bc1e1db014769e7dedd3f1f68",
+        []
+       ],
+       "webkit-line-clamp-022-ref.html": [
+        "29d738589d19afef0d85a107cd803bdd05743116",
+        []
+       ],
+       "webkit-line-clamp-023-ref.html": [
+        "3127bb078b348f7604b421b28cad4dee13e8afb7",
+        []
+       ],
+       "webkit-line-clamp-024-ref.html": [
+        "d4820a1b487a031611b7010a3513fb3daf06d71f",
+        []
+       ],
+       "webkit-line-clamp-025-ref.html": [
+        "c33a6b5033890c8a27d5de58a801a80a3083b554",
+        []
+       ],
+       "webkit-line-clamp-026-ref.html": [
+        "e4c1b033499cbea1ba657009ae86d1f4366df3d8",
+        []
+       ],
+       "webkit-line-clamp-027-ref.html": [
+        "be27d6d276abb1c910c3c1c3dab00128e6c0c2c2",
+        []
+       ],
+       "webkit-line-clamp-029-ref.html": [
+        "0d18c2a7f55f4f071657ee3d3c4e610f7e8fb05b",
+        []
+       ],
+       "webkit-line-clamp-030-ref.html": [
+        "e88c8bffc02da9e187ba6f30834751e84b590940",
+        []
+       ],
+       "webkit-line-clamp-031-ref.html": [
+        "14f2fb1bb40f2885a304b0e9de8a866027e689c1",
+        []
+       ],
+       "webkit-line-clamp-032-ref.html": [
+        "8f5b1ef53eb72dd82f1211744a21c34dede17b46",
+        []
+       ],
+       "webkit-line-clamp-035-ref.html": [
+        "230218399e31f9dc79ba6aef2856a16be1ae98b4",
+        []
+       ],
+       "webkit-line-clamp-036-ref.html": [
+        "0de35e98ab353519664996fba8ab8ef6916a18d0",
+        []
+       ],
+       "webkit-line-clamp-037-ref.html": [
+        "2927716d76dbc8ebc8b98169c533301214a517aa",
+        []
+       ],
+       "webkit-line-clamp-038-ref.html": [
+        "bd8db762dd889c65d55a31e33ce9913a125fff3a",
+        []
+       ],
+       "webkit-line-clamp-039-ref.html": [
+        "fd8a76b2f8e67a901500dd0ae26074f2404518a0",
+        []
+       ],
+       "webkit-line-clamp-040-ref.html": [
+        "f55be86e5461dfc1d302d0649f2aa0d31a285b8b",
+        []
+       ],
+       "webkit-line-clamp-block-in-inline-001-ref.html": [
+        "79f2e409109d72a76e12374220bd423aba16f4eb",
+        []
+       ],
+       "webkit-line-clamp-dynamic-001-ref.html": [
+        "21458953df99e0be27d2143c182a5829438ede5d",
+        []
+       ],
+       "webkit-line-clamp-with-line-height-ref.html": [
+        "c2c8914161af668cd57ce7ebac15b2100d93be8b",
+        []
+       ]
+      }
+     },
+     "overflow-alignment-001-ref.html": [
+      "5a89c88467eccda859bbec0c09d421afd2a61613",
+      []
+     ],
+     "overflow-alignment-002-ref.html": [
+      "8c2974347515641ab47d04ef63da9b4615302ef7",
+      []
+     ],
      "overflow-auto-scrollbar-gutter-intrinsic-001-ref.html": [
       "8c092bd0c876bc328919f4b39358110dd902c726",
       []
@@ -328450,98 +328741,6 @@
        "d7125ee2ef3285d461b2172208e23d8d4cc27a64",
        []
       ],
-      "line-clamp-010-ref.html": [
-       "46ca731c5446db88ba4e5fc8a3d6b8b43c4fc056",
-       []
-      ],
-      "line-clamp-011-ref.html": [
-       "04297fff2b5538a8be020d780cba3d82aa30fa9e",
-       []
-      ],
-      "line-clamp-012-ref.html": [
-       "f412e0110d45ac2db2e8e55adfdab3ae9dce57df",
-       []
-      ],
-      "line-clamp-013-ref.html": [
-       "b2eb05e884d781ae9d5fdaa690e17be60607d97f",
-       []
-      ],
-      "line-clamp-015-ref.html": [
-       "1af45c1225c2df9ed258eb69c687f11c4be9a965",
-       []
-      ],
-      "line-clamp-021-ref.html": [
-       "d794c76e3c9653dd94b2bad73cdf2a4574db5f50",
-       []
-      ],
-      "line-clamp-auto-002-ref.html": [
-       "fe0a8dbd588a8a56c8ac0488713a061ef83474f9",
-       []
-      ],
-      "line-clamp-auto-005-ref.html": [
-       "01eea67a0da77dc7a99bcd0b8677abdd3a4033f5",
-       []
-      ],
-      "line-clamp-auto-011-ref.html": [
-       "5f7120ee39a2014f75f2f700ebedcc0b0e6e6275",
-       []
-      ],
-      "line-clamp-auto-016-ref.html": [
-       "4a5f3536cc62c33e1a30ed9fce9a21cecda341bc",
-       []
-      ],
-      "line-clamp-with-abspos-001-ref.html": [
-       "d756162dde0c54bd52646597b01bbff8a80f5fd8",
-       []
-      ],
-      "line-clamp-with-abspos-005-ref.html": [
-       "3b1f9218e887a7e50745f0c5e540c099475a59df",
-       []
-      ],
-      "line-clamp-with-abspos-006-ref.html": [
-       "4b55c37a033ea4d4a9d97b5fdf8035a60aace4bd",
-       []
-      ],
-      "line-clamp-with-abspos-007-ref.html": [
-       "e3dcc696e39684b47e1785968f29ec9adf8f9c0b",
-       []
-      ],
-      "line-clamp-with-abspos-008-ref.html": [
-       "373b2755c1d617e1716afe8060c28b246d52c33e",
-       []
-      ],
-      "line-clamp-with-abspos-010-ref.html": [
-       "ecc2fcee1b5219b310ef15b28f0684b07d84baf6",
-       []
-      ],
-      "line-clamp-with-abspos-011-ref.html": [
-       "f08b0270e8d7aa8a389910319617528dac6a4240",
-       []
-      ],
-      "line-clamp-with-floats-001-ref.html": [
-       "bcd70aa9305f73a44c46542208f0ad664c92bfde",
-       []
-      ],
-      "line-clamp-with-floats-005-ref.html": [
-       "d20d6c53ddee3de2fe12ea1927eb3182a0f55201",
-       []
-      ],
-      "line-clamp-with-floats-006-ref.html": [
-       "9288c4e36f924c4ab80bb9ad368b87a3a2d01720",
-       []
-      ],
-      "line-clamp-with-floats-007-ref.html": [
-       "6d5390246b4d28365a4e8f238bd02f4fe6be9c21",
-       []
-      ],
-      "line-clamp-with-floats-008-ref.html": [
-       "50b3d53900e21d7bf031fd25d69c80f174bca7c2",
-       []
-      ],
-      "line-clamp-with-floats-010-ref.html": [
-       "12b8cdc441a64fb4e1a6249ee8aea640c66b82b5",
-       []
-      ],
       "overflow-body-no-propagation-ref.html": [
        "9795d1f5861f0affaeb3a36b3644d17fd60e1f4d",
        []
@@ -328600,154 +328799,6 @@
       ],
       "text-overflow-scroll-vertical-lr-rtl-001-ref.html": [
        "fff3dec59cb494d98ee87660ded2b9ee05a5e198",
-       []
-      ],
-      "webkit-line-clamp-001-ref.html": [
-       "ef28e01dac0223c9a2768d3fd1415fb9ef2f1c6b",
-       []
-      ],
-      "webkit-line-clamp-005-ref.html": [
-       "c9a9ae5d7ffebd9f041186a8d79f49f827becd61",
-       []
-      ],
-      "webkit-line-clamp-006-ref.html": [
-       "3a17a6d5f3b47c511578b28ffd9fc35b5b61dd98",
-       []
-      ],
-      "webkit-line-clamp-007-ref.html": [
-       "1c9a728aafcee7e830c203f3abec2393bd58e104",
-       []
-      ],
-      "webkit-line-clamp-008-ref.html": [
-       "4ead437830f96be87f75c687c973e21d63021d99",
-       []
-      ],
-      "webkit-line-clamp-009-ref.html": [
-       "62e100d63346b1da7d80ca34dc2fdf4bcd1972ab",
-       []
-      ],
-      "webkit-line-clamp-010-ref.html": [
-       "63e9885e8b9ce3cac850987917ca301045d4128f",
-       []
-      ],
-      "webkit-line-clamp-011-ref.html": [
-       "fbcd8ca3115e70ce2244a4b22820ede745e3bc09",
-       []
-      ],
-      "webkit-line-clamp-012-ref.html": [
-       "d28c9388aea4c494d1773dd2e1ffcbb7a7712bb3",
-       []
-      ],
-      "webkit-line-clamp-013-ref.html": [
-       "ba14aefc7cc3b27318325c22ef35cb1da755193b",
-       []
-      ],
-      "webkit-line-clamp-014-ref.html": [
-       "c7346ab527935246f795e1f0181abd7c31cd4fb7",
-       []
-      ],
-      "webkit-line-clamp-015-ref.html": [
-       "d73bc7d7cb6c54ea7d6141b04f901ef345c44e14",
-       []
-      ],
-      "webkit-line-clamp-016-ref.html": [
-       "e54947e3956cbe0acc1cab1fc91eef8763775c04",
-       []
-      ],
-      "webkit-line-clamp-017-ref.html": [
-       "043e5f3d1c31ac0bc1e1db014769e7dedd3f1f68",
-       []
-      ],
-      "webkit-line-clamp-018-ref.html": [
-       "b95f7ce7662fac02eed3594f47ec42cca202cc26",
-       []
-      ],
-      "webkit-line-clamp-019-ref.html": [
-       "b95f7ce7662fac02eed3594f47ec42cca202cc26",
-       []
-      ],
-      "webkit-line-clamp-020-ref.html": [
-       "043e5f3d1c31ac0bc1e1db014769e7dedd3f1f68",
-       []
-      ],
-      "webkit-line-clamp-021-ref.html": [
-       "043e5f3d1c31ac0bc1e1db014769e7dedd3f1f68",
-       []
-      ],
-      "webkit-line-clamp-022-ref.html": [
-       "29d738589d19afef0d85a107cd803bdd05743116",
-       []
-      ],
-      "webkit-line-clamp-023-ref.html": [
-       "3127bb078b348f7604b421b28cad4dee13e8afb7",
-       []
-      ],
-      "webkit-line-clamp-024-ref.html": [
-       "d4820a1b487a031611b7010a3513fb3daf06d71f",
-       []
-      ],
-      "webkit-line-clamp-025-ref.html": [
-       "c33a6b5033890c8a27d5de58a801a80a3083b554",
-       []
-      ],
-      "webkit-line-clamp-026-ref.html": [
-       "e4c1b033499cbea1ba657009ae86d1f4366df3d8",
-       []
-      ],
-      "webkit-line-clamp-027-ref.html": [
-       "be27d6d276abb1c910c3c1c3dab00128e6c0c2c2",
-       []
-      ],
-      "webkit-line-clamp-029-ref.html": [
-       "0d18c2a7f55f4f071657ee3d3c4e610f7e8fb05b",
-       []
-      ],
-      "webkit-line-clamp-030-ref.html": [
-       "e88c8bffc02da9e187ba6f30834751e84b590940",
-       []
-      ],
-      "webkit-line-clamp-031-ref.html": [
-       "14f2fb1bb40f2885a304b0e9de8a866027e689c1",
-       []
-      ],
-      "webkit-line-clamp-032-ref.html": [
-       "8f5b1ef53eb72dd82f1211744a21c34dede17b46",
-       []
-      ],
-      "webkit-line-clamp-035-ref.html": [
-       "230218399e31f9dc79ba6aef2856a16be1ae98b4",
-       []
-      ],
-      "webkit-line-clamp-036-ref.html": [
-       "0de35e98ab353519664996fba8ab8ef6916a18d0",
-       []
-      ],
-      "webkit-line-clamp-037-ref.html": [
-       "2927716d76dbc8ebc8b98169c533301214a517aa",
-       []
-      ],
-      "webkit-line-clamp-038-ref.html": [
-       "bd8db762dd889c65d55a31e33ce9913a125fff3a",
-       []
-      ],
-      "webkit-line-clamp-039-ref.html": [
-       "fd8a76b2f8e67a901500dd0ae26074f2404518a0",
-       []
-      ],
-      "webkit-line-clamp-040-ref.html": [
-       "f55be86e5461dfc1d302d0649f2aa0d31a285b8b",
-       []
-      ],
-      "webkit-line-clamp-block-in-inline-001-ref.html": [
-       "79f2e409109d72a76e12374220bd423aba16f4eb",
-       []
-      ],
-      "webkit-line-clamp-dynamic-001-ref.html": [
-       "21458953df99e0be27d2143c182a5829438ede5d",
-       []
-      ],
-      "webkit-line-clamp-with-line-height-ref.html": [
-       "c2c8914161af668cd57ce7ebac15b2100d93be8b",
        []
       ]
      },
@@ -344131,6 +344182,10 @@
       "89b3a8a78efda6184ad62088c3b7595cc4f6d829",
       []
      ],
+     "reset-state-after-scrolled-view-transition-ref.html": [
+      "93cb9975d4c6889c383330048b5cf7c7d75e3b2e",
+      []
+     ],
      "root-captured-as-different-tag-ref.html": [
       "ca4705f818461c3df509adaa295318fe36b86a80",
       []
@@ -344314,11 +344369,11 @@
       ],
       "reference": {
        "iframe-zoom-nested-ref.html": [
-        "b855278516cb03d0b5ef7921a3fded41f28f684f",
+        "fcdc16b1fb784f829bd1d964f04987737abfe02f",
         []
        ],
        "iframe-zoom-ref.html": [
-        "43bc3e24cf832079f56772747f4b493c121a7c59",
+        "f482d29ebf2900dad11ed87f40bff5edff270b19",
         []
        ],
        "letter-spacing-ref.html": [
@@ -344335,12 +344390,20 @@
         "58c4d03a466e2bb045da142e354c565ec122b502",
         []
        ],
+       "leaf.html": [
+        "21e75b62768e660ad60a004b411d71821ddcb014",
+        []
+       ],
        "nested-iframe-no-zoom.html": [
         "60b1fd648155eb1188ceb4595f79bca14a45660d",
         []
        ],
        "nested-iframe-with-zoom.html": [
         "e7de64aafb769e106885ea2b4e01fb75331c3e68",
+        []
+       ],
+       "nested-iframe.html": [
+        "f48d230e13d7833ec204ec2382f5a2deb927da1b",
         []
        ]
       },
@@ -350123,12 +350186,12 @@
      []
     ],
     "support": {
-     "digital-identity-helper.js": [
+     "helper.js": [
       "8fff82745172154972dcda4c3c6cb98d4a5af5e1",
       []
      ],
-     "digital-identity-iframe.html": [
-      "8b3a424d1e21d381b76849deb261762aec016298",
+     "iframe.html": [
+      "74733d82ec6533cbd0c6da4af1e88af61413e868",
       []
      ]
     }
@@ -359571,17 +359634,9 @@
      ]
     }
    },
-   "geolocation-API": {
-    "DIR_METADATA": [
-     "e20089c8e5f1c6f06bfaa2177ac3905cbe89f5a1",
-     []
-    ],
+   "geolocation": {
     "META.yml": [
      "e3d6c4dff8eddcd9edfa0a56e4efb87cb08e8453",
-     []
-    ],
-    "OWNERS": [
-     "5c49de21a3b53dfe928d30a36400469d8238bb1d",
      []
     ],
     "disabled-by-permissions-policy.https.sub.html.headers": [
@@ -359616,6 +359671,28 @@
     },
     "support.js": [
      "0f0e7f65b2c253c1068414727f44175c5f9a878a",
+     []
+    ]
+   },
+   "geolocation-API": {
+    "DIR_METADATA": [
+     "e20089c8e5f1c6f06bfaa2177ac3905cbe89f5a1",
+     []
+    ],
+    "OWNERS": [
+     "5c49de21a3b53dfe928d30a36400469d8238bb1d",
+     []
+    ],
+    "enabled-by-permission-policy-attribute-redirect-on-load.https.sub-expected.txt": [
+     "19ac246a013c7c018666845aa001659c702bce75",
+     []
+    ],
+    "enabled-by-permission-policy-attribute.https.sub-expected.txt": [
+     "2de51b28ae78c11fda0e2f7ec3335b4858f1c11f",
+     []
+    ],
+    "permission.https-expected.txt": [
+     "f86b94320d51a576c91ad839964d784c2b89e0fb",
      []
     ]
    },
@@ -364503,7 +364580,7 @@
        []
       ],
       "gentestutilsunion.py": [
-       "2880240799501d0b55c79c91809da8f75a3d702f",
+       "ab6f4e1cd08145470f7bb8c6d0a477e06b63713a",
        []
       ],
       "name2dir-canvas.yaml": [
@@ -384986,7 +385063,7 @@
       []
      ],
      "permissions-policy.js": [
-      "d30d1191d169d5a7bb51c6fdbfb232b06e2be804",
+      "d700cb086b362229e194cd2596f151bdf74d0039",
       []
      ],
      "picture-in-picture.js": [
@@ -385492,10 +385569,6 @@
     ],
     "onload-event-expected.txt": [
      "91ec5d2f2273010bbe7b3745514de6ea46dd4754",
-     []
-    ],
-    "preconnect-onerror-event-expected.txt": [
-     "d507b6ca1488ae1225cd359f0de0e7142f265cf0",
      []
     ],
     "prefetch-cache-expected.txt": [
@@ -393186,6 +393259,14 @@
        "c14df771544e34d75d42118f306e164300e239c2",
        []
       ],
+      "media-capabilities-decoding-info.https.html": [
+       "5f1523701ea5621abed5f50ed9f5b8c3bb02f0e8",
+       []
+      ],
+      "media-capabilities-encoding-info.https.html": [
+       "539867824ce845a17d47daf02e085cd475fa878a",
+       []
+      ],
       "media-device-info.https.html": [
        "14d2ff78c99a3653db35546ffb08fe7741ee44be",
        []
@@ -395700,10 +395781,6 @@
      "956a3a5fe69d11262639193b6221b26a8fc006cb",
      []
     ],
-    "SVGScriptElement-internal-slot-expected.txt": [
-     "dad210914c6b7cb2939a21d310b185d2e381e889",
-     []
-    ],
     "TrustedTypePolicyFactory-getAttributeType-svg-expected.txt": [
      "cbf27e2812216b03267171463ee15736feab4565",
      []
@@ -396662,7 +396739,7 @@
       []
      ],
      "urltestdata.json": [
-      "b9a199daab660cef5d208103797c554f1868e508",
+      "53f6d575e165bf34aadddf23a7df0aa4b0f65031",
       []
      ]
     },
@@ -399130,7 +399207,7 @@
       },
       "browsing_context": {
        "__init__.py": [
-        "51b3c64b42d3e2527d93445f3bc308d0105e2528",
+        "91899eb50df49b1ab47e55ab52c2b49bd2a4fe0e",
         []
        ],
        "activate": {
@@ -400651,6 +400728,14 @@
       "d9d54f9b9a1f3f09148675a59466296ff35ff298",
       []
      ],
+     "gelu.https.any.worker_npu-expected.txt": [
+      "f3f51ad6e963fa8a01b2e032cefbe4c8b22763c7",
+      []
+     ],
+     "gelu.https.any_npu-expected.txt": [
+      "f3f51ad6e963fa8a01b2e032cefbe4c8b22763c7",
+      []
+     ],
      "gemm.https.any.worker_cpu-expected.txt": [
       "3d00a92798d056fef5422cf78a2adea09adf7f68",
       []
@@ -400870,6 +400955,10 @@
        "a67e708ae20b0e0d0b39fd55685be068ccd162a6",
        []
       ],
+      "gelu.json": [
+       "414227975913f31b95f9c4446f5acd94be6d76fb",
+       []
+      ],
       "gemm.json": [
        "23a18b316caab6b9531cface498d36808ec4796d",
        []
@@ -401080,7 +401169,7 @@
       ]
      },
      "utils.js": [
-      "363341bec8f345d094f77b09a235a03dd1ecb486",
+      "ea2e203e25c7bd45e18ec03af71abe9349087ffc",
       []
      ],
      "utils_validation.js": [
@@ -401254,10 +401343,6 @@
      "8ac0e346514d2a56d36af07f76f4fda440a5ec5b",
      []
     ],
-    "RTCRtpReceiver-audio-jitterBufferTarget-stats.https-expected.txt": [
-     "1bb80b144c7f709e712254b8258ba79b2608b9de",
-     []
-    ],
     "RTCRtpReceiver-getParameters-expected.txt": [
      "715e5d349c3bfbde9c46acb5a89a2db406282f59",
      []
@@ -401389,6 +401474,10 @@
      ],
      "setParameters-encodings.https-expected.txt": [
       "492bc3313e0da26f4f578fc6cd3c469eee561349",
+      []
+     ],
+     "setParameters-maxFramerate.https-expected.txt": [
+      "a0f9da0d5245964825237d9c2f1e32596f2f7212",
       []
      ],
      "simulcast.js": [
@@ -441439,7 +441528,7 @@
       ]
      ],
      "secure.https.html": [
-      "9308899694375520f93f5a85a696d09d6940b0d8",
+      "4557cd248fb207b01f65d3630f6c0e3d5a66eaa3",
       [
        null,
        {
@@ -450407,7 +450496,7 @@
        ]
       ],
       "style-container-for-shadow-dom.html": [
-       "d88bf0bca98292c05c6503190c623fa45614fcb6",
+       "e8297be941f2be6ab488f20ad4dad62772a492c4",
        [
         null,
         {}
@@ -467688,6 +467777,13 @@
        {}
       ]
      ],
+     "serialize-escape-identifiers.html": [
+      "90476d6eca0ac6ccfa0e9644272afc6b79a50d07",
+      [
+       null,
+       {}
+      ]
+     ],
      "trailing-braces.html": [
       "ac2e8e61b9942d96493269b18f7dc2d0860ff3aa",
       [
@@ -484669,8 +484765,8 @@
     ]
    },
    "digital-credentials": {
-    "digital-credentials.tentative.https.html": [
-     "30e24e5450a463d59a09ccf9150c15170b85e901",
+    "identity-get.tentative.https.html": [
+     "ba5212e433b42eb6a19e5a137aaedcc7869e75eb",
      [
       null,
       {
@@ -510789,7 +510885,7 @@
        ]
       ],
       "keepalive.any.js": [
-       "d6ec1f67920717d65e9dd550abebbb106fb1688a",
+       "55225e00aa061309102757a24e3d0729e81aac05",
        [
         "fetch/api/basic/keepalive.any.html",
         {
@@ -537501,7 +537597,7 @@
      ]
     ]
    },
-   "geolocation-API": {
+   "geolocation": {
     "PositionOptions.https.html": [
      "6b36d66d7358cccd6fe5143a1504a17db4170af4",
      [
@@ -537587,7 +537683,7 @@
     "idlharness.https.window.js": [
      "eadd6b7a4fbce9a286821bb9ad4243292fb6458a",
      [
-      "geolocation-API/idlharness.https.window.html",
+      "geolocation/idlharness.https.window.html",
       {
        "script_metadata": [
         [
@@ -605344,7 +605440,14 @@
    },
    "mediacapture-extensions": {
     "GUM-backgroundBlur.https.html": [
-     "605a4e0831914834ac4a5587bbdb7e87cde74e59",
+     "5383e088a62abc8e9f5abbbf0f941c3d460a30c6",
+     [
+      null,
+      {}
+     ]
+    ],
+    "GUM-eyeGazeCorrection.https.html": [
+     "3235b166d843eaf94296d22c4c6597f8733ba453",
      [
       null,
       {}
@@ -618020,7 +618123,7 @@
      ]
     ],
     "preconnect-onerror-event.html": [
-     "4ce583d4db8502d626c5c563c078b36fa08a768d",
+     "b2997fed2536f724310b183a141d21d10c501edf",
      [
       null,
       {
@@ -631501,7 +631604,7 @@
      ]
     ],
     "content-type.html": [
-     "f6b1db7d9f8e7133de365d2f40bc05057be13070",
+     "5a09a9114f2c28ba316098194027ec77df05e3f4",
      [
       null,
       {}
@@ -645036,6 +645139,40 @@
        }
       ]
      ],
+     "restriction-media-capabilities-decoding-info.https.html": [
+      "6bcb63b597896b9c0323dfb1bef3ba61eb8c3d02",
+      [
+       "speculation-rules/prerender/restriction-media-capabilities-decoding-info.https.html?target_hint=_blank",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "speculation-rules/prerender/restriction-media-capabilities-decoding-info.https.html?target_hint=_self",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
+     "restriction-media-capabilities-encoding-info.https.html": [
+      "3eb5950ee78df82d017d954bf4d791e4c7565db0",
+      [
+       "speculation-rules/prerender/restriction-media-capabilities-encoding-info.https.html?target_hint=_blank",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ],
+      [
+       "speculation-rules/prerender/restriction-media-capabilities-encoding-info.https.html?target_hint=_self",
+       {
+        "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
      "restriction-media-device-info.https.html": [
       "f725145aa1592222d516df1dc5d4e8b46a7b9153",
       [
@@ -656378,6 +656515,13 @@
       ],
       "SVGGraphicsElement.getBBox-03.html": [
        "0bb8a11fe7a50c1c1ef2dc55da10f471346e0ec8",
+       [
+        null,
+        {}
+       ]
+      ],
+      "SVGGraphicsElement.getBBox-04.html": [
+       "2b5a5eb2bb9310670b37805a6daf7c35e9101e0a",
        [
         null,
         {}
@@ -682616,6 +682760,225 @@
        }
       ]
      ],
+     "gelu.https.any.js": [
+      "67287c3ad3f1983b419e6b5f98126cd5577b5876",
+      [
+       "webnn/conformance_tests/gelu.https.any.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API gelu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/gelu.https.any.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API gelu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/gelu.https.any.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API gelu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/gelu.https.any.worker.html?cpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API gelu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/gelu.https.any.worker.html?gpu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API gelu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ],
+      [
+       "webnn/conformance_tests/gelu.https.any.worker.html?npu",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "test WebNN API gelu operation"
+         ],
+         [
+          "global",
+          "window,dedicatedworker"
+         ],
+         [
+          "variant",
+          "?cpu"
+         ],
+         [
+          "variant",
+          "?gpu"
+         ],
+         [
+          "variant",
+          "?npu"
+         ],
+         [
+          "script",
+          "../resources/utils.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
+     ],
      "gemm.https.any.js": [
       "0af471753e049fe8984e9c047c3b1d9555914e49",
       [
@@ -691062,7 +691425,7 @@
      ]
     ],
     "RTCRtpReceiver-audio-jitterBufferTarget-stats.https.html": [
-     "d728ec5a9c9758e0b754ef754e881b6aa5e0f7c3",
+     "005286497cb10598582024684a24df84e331f3cd",
      [
       null,
       {
@@ -691117,7 +691480,7 @@
      ]
     ],
     "RTCRtpReceiver-video-jitterBufferTarget-stats.html": [
-     "022dbe70c50b97757ca82cfc38a062d63393c73d",
+     "d69d7f51990df8f73b3a09569b389407172de9dc",
      [
       null,
       {
@@ -691893,6 +692256,15 @@
        null,
        {
         "testdriver": true,
+        "timeout": "long"
+       }
+      ]
+     ],
+     "setParameters-maxFramerate.https.html": [
+      "e404787dbd8ace1445a3f860d735cf0593d57821",
+      [
+       null,
+       {
         "timeout": "long"
        }
       ]
@@ -712387,7 +712759,7 @@
      ]
     ],
     "shared-worker-options-mismatch.html": [
-     "604f69a43671137edbd2672fb417d1b342d86b51",
+     "76beda937fbd12e45c41e7c44fde2c769cb7b55f",
      [
       null,
       {}
@@ -727669,6 +728041,148 @@
       ]
      ]
     },
+    "css-overflow": {
+     "overflow-alignment-block-001.html": [
+      "20192eb2f10ab73a4107b3ddb78efed55f4a127c",
+      [
+       null,
+       {}
+      ]
+     ],
+     "overflow-alignment-block-002.html": [
+      "587f7394449fb053c5554f1f5a28b4a559badc90",
+      [
+       null,
+       {}
+      ]
+     ],
+     "overflow-alignment-flex-col-reverse-001.html": [
+      "30cb6c92db74a6aacd675b2e06cc8c29942ff804",
+      [
+       null,
+       {}
+      ]
+     ],
+     "overflow-alignment-flex-col-reverse-002.html": [
+      "a6252391c49ec2fc27f5214322363823329c26a1",
+      [
+       null,
+       {}
+      ]
+     ],
+     "overflow-alignment-flex-col-reverse-overflow-001.html": [
+      "0a98dae690bec44df55734ab0a04d42e1045cf85",
+      [
+       null,
+       {}
+      ]
+     ],
+     "overflow-alignment-flex-col-reverse-overflow-002.html": [
+      "d5c842e4b70116aaaadbc520d2d3031e3a59b2d4",
+      [
+       null,
+       {}
+      ]
+     ],
+     "overflow-alignment-flex-col-wrap-001.html": [
+      "b980b94314c5056f4a33fb98a83144f807cc593c",
+      [
+       null,
+       {}
+      ]
+     ],
+     "overflow-alignment-flex-col-wrap-002.html": [
+      "195a877ccd467c0df08af47005ae7191c3a0c0de",
+      [
+       null,
+       {}
+      ]
+     ],
+     "overflow-alignment-flex-col-wrap-overflow-001.html": [
+      "59815fa0aa93a6d25aa448673eb0965f476b09d9",
+      [
+       null,
+       {}
+      ]
+     ],
+     "overflow-alignment-flex-col-wrap-overflow-002.html": [
+      "cb0ce12b9e9a3032b314e246e0a363e6435d4b37",
+      [
+       null,
+       {}
+      ]
+     ],
+     "overflow-alignment-flex-row-reverse-001.html": [
+      "c41e7ce3e5262c7ce90216160ffd4375d8ee4f87",
+      [
+       null,
+       {}
+      ]
+     ],
+     "overflow-alignment-flex-row-reverse-002.html": [
+      "a032d59e6758b01d049e1a084da8bb145dfb7d1b",
+      [
+       null,
+       {}
+      ]
+     ],
+     "overflow-alignment-flex-row-reverse-overflow-001.html": [
+      "fbc0ef02bf776996f8ab6738ef6eb6ad34e337db",
+      [
+       null,
+       {}
+      ]
+     ],
+     "overflow-alignment-flex-row-reverse-overflow-002.html": [
+      "a1b9f4bae8664769050440d55dd6919c333f94ec",
+      [
+       null,
+       {}
+      ]
+     ],
+     "overflow-alignment-flex-row-wrap-001.html": [
+      "51f02add772c8c0614016994561e304ad41daf74",
+      [
+       null,
+       {}
+      ]
+     ],
+     "overflow-alignment-flex-row-wrap-002.html": [
+      "e5ee089d0c4ffb0342a9dcaf4e74bab64cbe5429",
+      [
+       null,
+       {}
+      ]
+     ],
+     "overflow-alignment-flex-row-wrap-overflow-001.html": [
+      "63f5ef2c8ea3d03e3ba3361f065d088037981d11",
+      [
+       null,
+       {}
+      ]
+     ],
+     "overflow-alignment-flex-row-wrap-overflow-002.html": [
+      "e1d3fb2c7d91ce0c21fe70b8ce9f988c140ba1d9",
+      [
+       null,
+       {}
+      ]
+     ],
+     "overflow-alignment-grid-001.html": [
+      "bf98b62116da30f43e3be503ec90edf06714c794",
+      [
+       null,
+       {}
+      ]
+     ],
+     "overflow-alignment-grid-002.html": [
+      "76d3886d7c6a1213dc15c9e252f20a8557ed9f21",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "css-ruby": {
      "ruby-001.xht": [
       "80f49f0dbcf3e3a76ba6f740243e19a5f627bfd2",
@@ -729852,21 +730366,21 @@
          ]
         ],
         "reference_context.py": [
-         "6b7fd8b2be1b1c1051d4f68df56c087066db86eb",
+         "8511495594b40d00ab4a3a90a0788ab0848020af",
          [
           null,
           {}
          ]
         ],
         "type.py": [
-         "cc6d7e51ab6863654b51e9afd10209c69117012d",
+         "17703d60123e28571919cd87d5c90143f4bad7bf",
          [
           null,
           {}
          ]
         ],
         "user_context.py": [
-         "51406262fc85e431be241570595dfc5992628188",
+         "490188c265d461d285772bb6c9c79215b6b5ff6d",
          [
           null,
           {}
@@ -729900,7 +730414,7 @@
        },
        "get_tree": {
         "frames.py": [
-         "81c664740c1e8c11ae3c798f302b6e32881117c5",
+         "4fd220ed8fc4426f540bf9eedad9e1d8ac399a05",
          [
           null,
           {}
@@ -729914,14 +730428,14 @@
          ]
         ],
         "max_depth.py": [
-         "ca1d0edfa1b8225c9e603a56e097ec97e4098630",
+         "b855b8e7eba06b56a63ee2dd4f64b0e88d8a7513",
          [
           null,
           {}
          ]
         ],
         "root.py": [
-         "74d11c600330fb6ce05dee24fa306a8a597f843d",
+         "40e9f8ac93b81b5c499133db9682798683725131",
          [
           null,
           {}

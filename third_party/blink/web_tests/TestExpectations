@@ -2569,7 +2569,19 @@ crbug.com/626703 external/wpt/mediacapture-insertable-streams/tentative/VideoTra
 # https://logs.chromium.org/logs/infra/buildbucket/cr-buildbucket/8757448685637289873/+/u/Import_changes_from_WPT_to_Chromium/stdout
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
+# Flaky output (sometimes passing)
+external/wpt/webrtc/RTCRtpReceiver-video-jitterBufferTarget-stats.html [ Failure ]
+external/wpt/webrtc/RTCRtpReceiver-audio-jitterBufferTarget-stats.https.html [ Failure ]
+
 # ====== New tests from wpt-importer added here ======
+external/wpt/css/css-overflow/line-clamp/line-clamp-001.html [ Failure ]
+external/wpt/css/css-overflow/line-clamp/line-clamp-004.html [ Failure ]
+external/wpt/css/css-overflow/line-clamp/line-clamp-010.html [ Failure ]
+external/wpt/css/css-overflow/line-clamp/line-clamp-015.html [ Failure ]
+external/wpt/geolocation/enabled-by-permissions-policy.https.sub.html [ Timeout ]
+external/wpt/geolocation/enabled-on-self-origin-by-permissions-policy.https.sub.html [ Timeout ]
+external/wpt/geolocation/getCurrentPosition_permission_allow.https.html [ Timeout ]
+external/wpt/geolocation/non-fully-active.https.html [ Timeout ]
 [ Mac14-arm64 ] virtual/threaded/external/wpt/css/css-view-transitions/no-painting-while-render-blocked.html [ Failure ]
 [ Mac14 ] virtual/threaded/external/wpt/css/css-view-transitions/no-painting-while-render-blocked.html [ Failure ]
 [ Mac13-arm64 ] virtual/threaded/external/wpt/css/css-view-transitions/no-painting-while-render-blocked.html [ Failure ]
