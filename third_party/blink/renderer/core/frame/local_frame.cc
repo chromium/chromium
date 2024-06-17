@@ -2643,6 +2643,11 @@ void LocalFrame::ResumeSubresourceLoading() {
 }
 
 SmoothScrollSequencer* LocalFrame::CreateNewSmoothScrollSequence() {
+  if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
+    // If MultiSmoothScrollIntoView is enabled, we run smooth scrolls in
+    // parallel, not in sequence.
+    return nullptr;
+  }
   if (!IsLocalRoot()) {
     return LocalFrameRoot().CreateNewSmoothScrollSequence();
   }

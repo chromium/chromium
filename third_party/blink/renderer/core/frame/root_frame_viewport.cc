@@ -385,13 +385,18 @@ PhysicalRect RootFrameViewport::ScrollIntoView(
 
   if (new_scroll_offset != GetScrollOffset()) {
     if (params->is_for_scroll_sequence) {
-      CHECK(GetSmoothScrollSequencer());
-      DCHECK(params->type == mojom::blink::ScrollType::kProgrammatic ||
-             params->type == mojom::blink::ScrollType::kUser);
       mojom::blink::ScrollBehavior behavior = DetermineScrollBehavior(
           params->behavior, GetLayoutBox()->StyleRef().GetScrollBehavior());
-      GetSmoothScrollSequencer()->QueueAnimation(this, new_scroll_offset,
-                                                 behavior);
+      if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
+        ScrollableArea::SetScrollOffset(new_scroll_offset, params->type,
+                                        behavior);
+      } else {
+        CHECK(GetSmoothScrollSequencer());
+        DCHECK(params->type == mojom::blink::ScrollType::kProgrammatic ||
+               params->type == mojom::blink::ScrollType::kUser);
+        GetSmoothScrollSequencer()->QueueAnimation(this, new_scroll_offset,
+                                                   behavior);
+      }
     } else {
       ScrollableArea::SetScrollOffset(new_scroll_offset, params->type);
     }

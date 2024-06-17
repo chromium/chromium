@@ -214,8 +214,9 @@ void PaintLayerScrollableArea::DisposeImpl() {
 
   ClearScrollableArea();
 
-  if (SmoothScrollSequencer* sequencer = GetSmoothScrollSequencer())
+  if (SmoothScrollSequencer* sequencer = GetSmoothScrollSequencer()) {
     sequencer->DidDisposeScrollableArea(*this);
+  }
 
   RunScrollCompleteCallbacks(ScrollableArea::ScrollCompletionMode::kFinished);
 
@@ -2424,13 +2425,17 @@ PhysicalRect PaintLayerScrollableArea::ScrollIntoView(
   new_scroll_offset = ScrollPositionToOffset(end_point);
 
   if (params->is_for_scroll_sequence) {
-    CHECK(GetSmoothScrollSequencer());
-    DCHECK(params->type == mojom::blink::ScrollType::kProgrammatic ||
-           params->type == mojom::blink::ScrollType::kUser);
     mojom::blink::ScrollBehavior behavior = DetermineScrollBehavior(
         params->behavior, GetLayoutBox()->StyleRef().GetScrollBehavior());
-    GetSmoothScrollSequencer()->QueueAnimation(this, new_scroll_offset,
-                                               behavior);
+    if (RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
+      SetScrollOffset(new_scroll_offset, params->type, behavior);
+    } else {
+      CHECK(GetSmoothScrollSequencer());
+      DCHECK(params->type == mojom::blink::ScrollType::kProgrammatic ||
+             params->type == mojom::blink::ScrollType::kUser);
+      GetSmoothScrollSequencer()->QueueAnimation(this, new_scroll_offset,
+                                                 behavior);
+    }
   } else {
     SetScrollOffset(new_scroll_offset, params->type,
                     mojom::blink::ScrollBehavior::kInstant);

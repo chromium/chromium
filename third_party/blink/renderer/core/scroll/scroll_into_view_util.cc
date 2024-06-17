@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -132,6 +133,9 @@ std::optional<PhysicalRect> PerformBubblingScrollIntoView(
   PhysicalRect absolute_rect_to_scroll = absolute_rect;
   PhysicalBoxStrut active_scroll_margin = scroll_margin;
   bool scrolled_to_area = false;
+  bool will_sequence_scrolls =
+      !RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled() &&
+      params->is_for_scroll_sequence;
 
   // TODO(bokan): Temporary, to track cross-origin scroll-into-view prevalence.
   // https://crbug.com/1339003.
@@ -169,10 +173,10 @@ std::optional<PhysicalRect> PerformBubblingScrollIntoView(
 
     if (area_to_scroll) {
       ScrollOffset scroll_before = area_to_scroll->GetScrollOffset();
-      CHECK(!params->is_for_scroll_sequence ||
+      CHECK(!will_sequence_scrolls ||
             area_to_scroll->GetSmoothScrollSequencer());
       wtf_size_t num_scroll_sequences =
-          params->is_for_scroll_sequence
+          will_sequence_scrolls
               ? area_to_scroll->GetSmoothScrollSequencer()->GetCount()
               : 0ul;
 
@@ -188,7 +192,7 @@ std::optional<PhysicalRect> PerformBubblingScrollIntoView(
       // check instead if an entry was added to the sequence which occurs only
       // if the scroll offset is changed as a result of ScrollIntoView.
       bool scroll_changed =
-          params->is_for_scroll_sequence
+          will_sequence_scrolls
               ? area_to_scroll->GetSmoothScrollSequencer()->GetCount() !=
                     num_scroll_sequences
               : area_to_scroll->GetScrollOffset() != scroll_before;
@@ -296,9 +300,12 @@ void ScrollRectToVisible(const LayoutObject& layout_object,
 
   params->is_for_scroll_sequence |=
       params->type == mojom::blink::ScrollType::kProgrammatic;
+  bool will_sequence_scrolls =
+      !RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled() &&
+      params->is_for_scroll_sequence;
 
   SmoothScrollSequencer* old_sequencer = nullptr;
-  if (params->is_for_scroll_sequence) {
+  if (will_sequence_scrolls) {
     old_sequencer = frame->CreateNewSmoothScrollSequence();
     frame->GetSmoothScrollSequencer()->SetScrollType(params->type);
   }
@@ -319,7 +326,7 @@ void ScrollRectToVisible(const LayoutObject& layout_object,
       PerformBubblingScrollIntoView(*enclosing_box, scroll_into_view_rect,
                                     params, scroll_margin, from_remote_frame);
 
-  if (params->is_for_scroll_sequence) {
+  if (will_sequence_scrolls) {
     if (frame->GetSmoothScrollSequencer()->IsEmpty()) {
       // If the scroll into view was a no-op (the element was already in the
       // proper place), reinstate any previously running smooth scroll sequence

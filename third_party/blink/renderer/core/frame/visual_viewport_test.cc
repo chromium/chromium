@@ -2389,9 +2389,16 @@ TEST_F(VisualViewportSimTest, ScrollingContentsSmallerThanContainer) {
             visual_viewport.GetScrollNode()->ContentsRect());
 }
 
-class VisualViewportScrollIntoViewTest : public VisualViewportSimTest {
+class VisualViewportScrollIntoViewTest
+    : public VisualViewportSimTest,
+      public ::testing::WithParamInterface<
+          std::vector<base::test::FeatureRef>> {
  public:
-  VisualViewportScrollIntoViewTest() {}
+  VisualViewportScrollIntoViewTest() {
+    feature_list_.InitWithFeatures(
+        GetParam(),
+        /*disabled_features=*/std::vector<base::test::FeatureRef>());
+  }
 
   void SetUp() override {
     VisualViewportSimTest::SetUp();
@@ -2422,41 +2429,41 @@ class VisualViewportScrollIntoViewTest : public VisualViewportSimTest {
     WebView().ResizeVisualViewport(gfx::Size(400, 600 - 100));
   }
 
-  // Scrolls an element by the given name into view in the |visual_viewport|
-  // using params that optionally apply to a scroll sequence.
-  void ScrollIntoView(const WebString& element_name,
-                      bool is_for_scroll_sequence) {
-    WebDocument web_doc = WebView().MainFrameImpl()->GetDocument();
-    Element* bottom_element = web_doc.GetElementById(element_name);
-    auto scroll_params = ScrollAlignment::CreateScrollIntoViewParams(
-        ScrollAlignment::ToEdgeIfNeeded(), ScrollAlignment::ToEdgeIfNeeded(),
-        mojom::blink::ScrollType::kProgrammatic,
-        /*make_visible_in_visual_viewport=*/true,
-        mojom::blink::ScrollBehavior::kInstant, is_for_scroll_sequence);
-    GetDocument().GetFrame()->CreateNewSmoothScrollSequence();
-    WebView().GetPage()->GetVisualViewport().ScrollIntoView(
-        bottom_element->BoundingBox(), PhysicalBoxStrut(), scroll_params);
-  }
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(VisualViewportScrollIntoViewTest,
-       ScrollingToFixedWithScrollSequenceAnimationShort) {
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    VisualViewportScrollIntoViewTest,
+    testing::Values(std::vector<base::test::FeatureRef>{},
+                    std::vector<base::test::FeatureRef>{
+                        features::kMultiSmoothScrollIntoView}));
+
+TEST_P(VisualViewportScrollIntoViewTest, ScrollingToFixed) {
   VisualViewport& visual_viewport = WebView().GetPage()->GetVisualViewport();
   EXPECT_EQ(0.f, visual_viewport.GetScrollOffset().y());
-  ScrollIntoView("bottom", true);
-  visual_viewport.GetSmoothScrollSequencer()->RunQueuedAnimations();
+  WebDocument web_doc = WebView().MainFrameImpl()->GetDocument();
+  Element* bottom_element = web_doc.GetElementById("bottom");
+  bool is_for_scroll_sequence =
+      !RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled();
+  auto scroll_params = ScrollAlignment::CreateScrollIntoViewParams(
+      ScrollAlignment::ToEdgeIfNeeded(), ScrollAlignment::ToEdgeIfNeeded(),
+      mojom::blink::ScrollType::kProgrammatic,
+      /*make_visible_in_visual_viewport=*/true,
+      mojom::blink::ScrollBehavior::kInstant, is_for_scroll_sequence);
+  if (is_for_scroll_sequence) {
+    GetDocument().GetFrame()->CreateNewSmoothScrollSequence();
+  }
+  WebView().GetPage()->GetVisualViewport().ScrollIntoView(
+      bottom_element->BoundingBox(), PhysicalBoxStrut(), scroll_params);
+  if (is_for_scroll_sequence) {
+    visual_viewport.GetSmoothScrollSequencer()->RunQueuedAnimations();
+  }
   EXPECT_EQ(100.f, visual_viewport.GetScrollOffset().y());
 }
 
-TEST_F(VisualViewportScrollIntoViewTest,
-       ScrollingToFixedWithoutScrollSequenceAnimationShort) {
-  VisualViewport& visual_viewport = WebView().GetPage()->GetVisualViewport();
-  EXPECT_EQ(0.f, visual_viewport.GetScrollOffset().y());
-  ScrollIntoView("bottom", false);
-  EXPECT_EQ(100.f, visual_viewport.GetScrollOffset().y());
-}
-
-TEST_F(VisualViewportScrollIntoViewTest, ScrollingToFixedFromJavascript) {
+TEST_P(VisualViewportScrollIntoViewTest, ScrollingToFixedFromJavascript) {
   VisualViewport& visual_viewport = WebView().GetPage()->GetVisualViewport();
   EXPECT_EQ(0.f, visual_viewport.GetScrollOffset().y());
   GetDocument().getElementById(AtomicString("bottom"))->scrollIntoView();

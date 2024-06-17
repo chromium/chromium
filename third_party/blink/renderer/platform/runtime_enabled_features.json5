@@ -2605,6 +2605,10 @@
       name: "MultiSelectDeselectWhenOnlyOption",
       status: "test",
     },
+    {
+      name: "MultiSmoothScrollIntoView",
+      status: "test",
+    },
     // crbug.com/1446498: This feature is being used for the deprecation of
     // Mutation Events.
     {

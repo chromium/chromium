@@ -713,6 +713,32 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   void ScrollToScrollStartTarget(const LayoutBox*, cc::SnapAxis);
   void ScrollToScrollStartTargets(const ScrollStartTargetCandidates*);
 
+  bool ShouldFilterIncomingScroll(mojom::blink::ScrollType incoming_type) {
+    auto old_type = active_smooth_scroll_type_;
+
+    // Allow the incoming scroll to co-exist if its scroll type is
+    // kClamping, or kAnchoring.
+    if (incoming_type == mojom::blink::ScrollType::kClamping ||
+        incoming_type == mojom::blink::ScrollType::kAnchoring) {
+      return false;
+    }
+    // If the current smooth scroll is UserScroll, but the incoming scroll is
+    // not, filter the incoming scroll. See crbug.com/913009 for more details.
+    if (old_type == mojom::blink::ScrollType::kUser &&
+        incoming_type != mojom::blink::ScrollType::kUser) {
+      return true;
+    }
+    // TODO(crbug.com/325081538, crbug.com/342093060): Ideally, if the incoming
+    // scroll is a gesture scroll we'd cancel the current animation here.
+    // But to do that, we must be able to distinguish between compositor updates
+    // due to gesture scrolls from compositor updates due to impl-ticked
+    // programmatic scrolls. So we'd need to:
+    //   - split kCompositor ScrollType into kCompositorUser and
+    //     kCompositorProgrammatic and
+    //   - pass the ScrollType from the compositor to the main thread.
+    return false;
+  }
+
   // This animator is used to handle painting animations for MacOS scrollbars
   // using AppKit-specific code (Cocoa APIs). It requires input from
   // ScrollableArea about changes on scrollbars. For other platforms, painting
@@ -738,6 +764,8 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   unsigned scrollbar_captured_ : 1;
   unsigned mouse_over_scrollbar_ : 1;
   unsigned has_been_disposed_ : 1;
+
+  std::optional<mojom::blink::ScrollType> active_smooth_scroll_type_;
 
   scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner_;
 };

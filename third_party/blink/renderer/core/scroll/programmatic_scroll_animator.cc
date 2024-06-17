@@ -46,8 +46,9 @@ void ProgrammaticScrollAnimator::ScrollToOffsetWithoutAnimation(
   ScrollOffsetChanged(offset, GetScrollType());
   is_sequenced_scroll_ = false;
   if (SmoothScrollSequencer* sequencer =
-          GetScrollableArea()->GetSmoothScrollSequencer())
+          GetScrollableArea()->GetSmoothScrollSequencer()) {
     sequencer->RunQueuedAnimations();
+  }
 }
 
 void ProgrammaticScrollAnimator::AnimateToOffset(
@@ -146,23 +147,22 @@ void ProgrammaticScrollAnimator::UpdateCompositorAnimations() {
           GetScrollableArea()->GetCompositorAnimationTimeline());
 
     bool sent_to_compositor = false;
+    if (!scrollable_area_->ShouldScrollOnMainThread()) {
+      // If MultiSmoothScrollIntoView is not enabled, we use sequenced scrolls
+      // which we cannot send to the compositor thread. crbug.com/730705.
+      if (!is_sequenced_scroll_ ||
+          RuntimeEnabledFeatures::MultiSmoothScrollIntoViewEnabled()) {
+        auto animation = cc::KeyframeModel::Create(
+            animation_curve_->Clone(),
+            cc::AnimationIdProvider::NextKeyframeModelId(),
+            cc::AnimationIdProvider::NextGroupId(),
+            cc::KeyframeModel::TargetPropertyId(
+                cc::TargetProperty::SCROLL_OFFSET));
 
-    // TODO(sunyunjia): Sequenced Smooth Scroll should also be able to
-    // scroll on the compositor thread. We should send the ScrollType
-    // information to the compositor thread.
-    // crbug.com/730705
-    if (!scrollable_area_->ShouldScrollOnMainThread() &&
-        !is_sequenced_scroll_) {
-      auto animation = cc::KeyframeModel::Create(
-          animation_curve_->Clone(),
-          cc::AnimationIdProvider::NextKeyframeModelId(),
-          cc::AnimationIdProvider::NextGroupId(),
-          cc::KeyframeModel::TargetPropertyId(
-              cc::TargetProperty::SCROLL_OFFSET));
-
-      if (AddAnimation(std::move(animation))) {
-        sent_to_compositor = true;
-        run_state_ = RunState::kRunningOnCompositor;
+        if (AddAnimation(std::move(animation))) {
+          sent_to_compositor = true;
+          run_state_ = RunState::kRunningOnCompositor;
+        }
       }
     }
 
