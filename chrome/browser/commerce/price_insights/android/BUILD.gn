@@ -1,0 +1,47 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [ "java/src/org/chromium/chrome/browser/price_insights/PriceInsightsButtonController.java" ]
+
+  deps = [
+    "//base:base_java",
+    "//base:supplier_java",
+    "//chrome/android:chrome_app_java_resources",
+    "//chrome/browser/android/customtabs/branding:java",
+    "//chrome/browser/commerce/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//chrome/browser/user_education:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/util/android:java",
+    "//components/feature_engagement/public:public_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//ui/android:ui_java",
+  ]
+}
+
+robolectric_library("junit") {
+  sources = [ "javatests/src/org/chromium/chrome/browser/price_insights/PriceInsightsButtonControllerTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/tab:java",
+    "//chrome/browser/ui/android/toolbar:java",
+    "//chrome/browser/ui/messages/android:java",
+    "//components/browser_ui/bottomsheet/android:java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+  ]
+}

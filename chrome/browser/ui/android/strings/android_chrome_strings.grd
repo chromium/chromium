@@ -4272,6 +4272,12 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_IPH_PRICE_TRACKING_MENU_ITEM_ACCESSIBILITY" is_accessibility_with_no_ui="true" desc="In-product-help accessibility text that describes that a user can track the price of a product in the overflow menu.">
         Track price from the More options button
       </message>
+      <message name="IDS_PRICE_INSIGHTS_TITLE" desc="The title for the price insights button.">
+        Price insights
+      </message>
+      <message name="IDS_PRICE_INSIGHTS_PRICE_IS_LOW_TITLE" desc="The title when a user see the price insights contextual page action while price is low.">
+        Price is low
+      </message>
       <message name="IDS_IPH_SHOPPING_LIST_SAVE_FLOW" desc="In-product help text that notifies a user that they can organize their saved products from a folder in bookmarks.">
         Organize your tracked products in Bookmarks
       </message>
