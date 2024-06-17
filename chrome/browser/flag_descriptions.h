@@ -2291,6 +2291,9 @@ extern const char kReduceAcceptLanguageDescription[];
 extern const char kReduceTransferSizeUpdatedIPCName[];
 extern const char kReduceTransferSizeUpdatedIPCDescription[];
 
+extern const char kResetAudioSelectionImprovementPrefName[];
+extern const char kResetAudioSelectionImprovementPrefDescription[];
+
 extern const char kResetShortcutCustomizationsName[];
 extern const char kResetShortcutCustomizationsDescription[];
 

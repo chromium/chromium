@@ -5997,9 +5997,14 @@ const char kAudioAecRequiredForCrasProcessorDescription[] =
     "debug purpose only.";
 
 const char kAudioSelectionImprovementName[] =
-    "Enable audio selection improvemet algorithm";
+    "Enable audio selection improvement algorithm";
 const char kAudioSelectionImprovementDescription[] =
     "Enable set-based audio selection improvement algorithm.";
+
+const char kResetAudioSelectionImprovementPrefName[] =
+    "Reset audio selection improvement user preference";
+const char kResetAudioSelectionImprovementPrefDescription[] =
+    "Reset audio selection improvement user preference for testing purpose.";
 
 const char kAudioSuppressSetRTCAudioActiveName[] =
     "Suppress calling the SetRTCAudioActive D-Bus method";

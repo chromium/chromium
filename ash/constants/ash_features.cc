@@ -2592,6 +2592,11 @@ BASE_FEATURE(kRemoveStalePolicyPinnedAppsFromShelf,
              "RemoveStalePolicyPinnedAppsFromShelf",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Reset audio I/O selection improvement pref, used for testing purpose.
+BASE_FEATURE(kResetAudioSelectionImprovementPref,
+             "ResetAudioSelectionImprovementPref",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, will reset all shortcut customizations on startup.
 BASE_FEATURE(kResetShortcutCustomizations,
              "ResetShortcutCustomizations",
@@ -4382,6 +4387,10 @@ bool IsRenderArcNotificationsByChromeEnabled() {
 
 bool IsRemoveStalePolicyPinnedAppsFromShelfEnabled() {
   return base::FeatureList::IsEnabled(kRemoveStalePolicyPinnedAppsFromShelf);
+}
+
+bool IsResetAudioSelectionImprovementPrefEnabled() {
+  return base::FeatureList::IsEnabled(kResetAudioSelectionImprovementPref);
 }
 
 bool IsResetShortcutCustomizationsEnabled() {
