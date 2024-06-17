@@ -16428,7 +16428,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
         Create a new PIN for Google Password Manager
       </message>
       <message name="IDS_WEBAUTHN_GPM_CREATE_PIN_TITLE" desc="The title of a dialog that is shown when a user is creating a Google Password Manager PIN for the first time. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
-        Next, protect all your passkeys with a recovery PIN
+        Protect all your passkeys with a recovery PIN
       </message>
       <message name="IDS_WEBAUTHN_GPM_CREATE_PIN_DESC" desc="The description of a dialog that is shown when a user is creating a Google Password Manager PIN explaining that it will be used to access their passkeys on all devices. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'">
         A recovery PIN helps you access your saved passkeys on any device
