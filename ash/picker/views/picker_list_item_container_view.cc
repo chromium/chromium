@@ -12,7 +12,7 @@
 #include "ash/picker/views/picker_list_item_view.h"
 #include "base/ranges/algorithm.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -21,7 +21,7 @@ namespace ash {
 
 PickerListItemContainerView::PickerListItemContainerView() {
   // Lay out items as a full-width vertical list.
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
+  SetLayoutManager(std::make_unique<views::BoxLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 }
 

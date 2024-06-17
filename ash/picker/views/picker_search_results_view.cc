@@ -37,7 +37,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
@@ -56,7 +56,7 @@ PickerSearchResultsView::PickerSearchResultsView(
     int picker_view_width,
     PickerAssetFetcher* asset_fetcher)
     : delegate_(delegate) {
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
+  SetLayoutManager(std::make_unique<views::BoxLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
   SetProperty(views::kElementIdentifierKey, kPickerSearchResultsPageElementId);
 

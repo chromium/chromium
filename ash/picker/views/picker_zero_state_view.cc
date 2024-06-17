@@ -42,7 +42,7 @@
 #include "ui/views/animation/bounds_animator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/focus/focus_manager.h"
-#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
@@ -57,7 +57,7 @@ PickerZeroStateView::PickerZeroStateView(
     int picker_view_width,
     PickerAssetFetcher* asset_fetcher)
     : delegate_(delegate) {
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
+  SetLayoutManager(std::make_unique<views::BoxLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
   section_list_view_ = AddChildView(std::make_unique<PickerSectionListView>(

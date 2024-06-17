@@ -19,8 +19,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
 
@@ -39,7 +38,7 @@ constexpr int kBadgeCornerRadius = 4;
 
 PickerBadgeView::PickerBadgeView() {
   // TODO: b/342478227 - Ensure this works with tall text.
-  views::Builder<views::FlexLayoutView>(this)
+  views::Builder<views::BoxLayoutView>(this)
       .SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetMainAxisAlignment(views::LayoutAlignment::kStart)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
@@ -76,7 +75,7 @@ void PickerBadgeView::SetText(const std::u16string& text) {
 gfx::Size PickerBadgeView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   const int preferred_width =
-      FlexLayoutView::CalculatePreferredSize(available_size).width();
+      BoxLayoutView::CalculatePreferredSize(available_size).width();
   return gfx::Size(preferred_width, kBadgeHeight);
 }
 
