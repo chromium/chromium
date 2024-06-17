@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/views/performance_controls/performance_intervention_bubble.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/grit/generated_resources.h"
-#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -36,10 +35,10 @@ PerformanceInterventionButton::PerformanceInterventionButton(
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
   SetFlipCanvasOnPaintForRTLUI(false);
-  // TODO(crbug.com/338620692): Replace placeholder accessibility name when
-  // strings finalize.
-  SetAccessibleName(std::u16string(),
-                    ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_PERFORMANCE_INTERVENTION_BUTTON_ACCNAME));
+  SetTooltipText(
+      l10n_util::GetStringUTF16(IDS_PERFORMANCE_INTERVENTION_BUTTON_TOOLTIP));
   SetProperty(views::kElementIdentifierKey,
               kToolbarPerformanceInterventionButtonElementId);
   SetVisible(false);

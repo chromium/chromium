@@ -17562,18 +17562,24 @@ Please help our engineers fix this problem. Tell us what happened right before y
         </message>
       </if>
       <if expr="not use_titlecase">
-        <message name="IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V1" desc="In Title Case: Label on a dialog button that deactivate the specified tabs in the dialog when clicked.">
+        <message name="IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V1" desc="Label on a dialog button that deactivate the specified tabs in the dialog when clicked.">
         Fix now
         </message>
-        <message name="IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V2" desc="In Title Case: Label on a dialog button that deactivate the specified tabs in the dialog when clicked.">
+        <message name="IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V2" desc="Label on a dialog button that deactivate the specified tabs in the dialog when clicked.">
         Boost now
         </message>
-        <message name="IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V3" desc="In Title Case: Label on a dialog button that deactivate the specified tabs in the dialog when clicked.">
+        <message name="IDS_PERFORMANCE_INTERVENTION_DEACTIVATE_TABS_BUTTON_V3" desc="Label on a dialog button that deactivate the specified tabs in the dialog when clicked.">
         Make tabs inactive
         </message>
       </if>
       <message name="IDS_PERFORMANCE_INTERVENTION_DISMISS_BUTTON" desc="Label on a dialog button that dismisses the dialog when clicked.">
         Dismiss
+      </message>
+      <message name="IDS_PERFORMANCE_INTERVENTION_BUTTON_TOOLTIP" desc="The tooltip for the performance intervention toolbar button">
+        Perfomance issue alert
+      </message>
+      <message name="IDS_PERFORMANCE_INTERVENTION_BUTTON_ACCNAME" desc="The accessibility text for the performance intervention toolbar button">
+        Performance issue alert
       </message>
     </if>
     <message name="IDS_ACCNAME_SIDEBAR_WEBVIEW_LOCATION_BAR" desc="The accessible name of the sidebar webview's location bar.">
