@@ -708,8 +708,9 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
 }
 
 TEST_F(SafeBrowsingApiHandlerBridgeTest,
-       HashRealTimeUrlCheck_NonRecoverableLookupResultAndFallback) {
+       HashRealTimeUrlCheck_NonRecoverableLookupResult) {
   GURL url1("https://example1.com");
+  // FAILURE_API_UNSUPPORTED is a non-recoverable error.
   AddSafeBrowsingResponse(
       url1, SafeBrowsingApiLookupResult::FAILURE_API_UNSUPPORTED,
       SafeBrowsingJavaThreatType::POTENTIALLY_HARMFUL_APPLICATION, {},
@@ -728,20 +729,14 @@ TEST_F(SafeBrowsingApiHandlerBridgeTest,
       /*expected_count=*/1);
 
   GURL url2("https://example2.com");
-  std::string metadata = "{\"matches\":[{\"threat_type\":\"3\"}]}";
-  AddSafetyNetBlocklistResponse(url2, metadata,
-                                GetAllSafetyNetThreatsOfInterest());
 
-  // The response should come from SafetyNet because FAILURE_API_UNSUPPORTED is
-  // a non-recoverable failure.
   RunHashRealTimeUrlCheck(url2,
                           /*threat_types=*/GetAllThreatTypes(),
-                          /*expected_threat_type=*/SB_THREAT_TYPE_URL_UNWANTED);
+                          /*expected_threat_type=*/SB_THREAT_TYPE_SAFE);
   histogram_tester_.ExpectBucketCount(
       "SafeBrowsing.GmsSafeBrowsingApi.IsAvailable", /*sample=*/false,
       /*expected_count=*/1);
-  // No additional histogram because the check doesn't go through SafeBrowsing
-  // API.
+  // No additional histogram because SafeBrowsing API is not available.
   histogram_tester_.ExpectTotalCount(
       "SafeBrowsing.GmsSafeBrowsingApi.JavaValidationResult",
       /*expected_count=*/1);
