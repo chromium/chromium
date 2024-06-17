@@ -10,7 +10,7 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
-import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId;
+import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

@@ -587,12 +587,12 @@ const FeatureEntry::FeatureVariation kCCTGoogleBottomBarVariations[] = {
 };
 
 const FeatureEntry::FeatureParam kCCTDoubleDeckerBottomBarParam[] = {
-    {"google_bottom_bar_layout_variant", "0"}};
+    {"google_bottom_bar_variant_layout", "1"}};
 const FeatureEntry::FeatureParam kCCTSingleDeckerBottomBarParam[] = {
-    {"google_bottom_bar_layout_variant", "1"}};
+    {"google_bottom_bar_variant_layout", "2"}};
 const FeatureEntry::FeatureParam
     kCCTSingleDeckerBottomBarWithButtonsOnRightParam[] = {
-        {"google_bottom_bar_layout_variant", "2"}};
+        {"google_bottom_bar_variant_layout", "3"}};
 
 const FeatureEntry::FeatureVariation
     kCCTGoogleBottomBarVariantLayoutsVariations[] = {

@@ -12,6 +12,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId.PIH_BASIC;
 import static org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.BUTTON_CLICKED_HISTOGRAM;
 
 import android.app.Activity;
@@ -41,7 +42,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.page_insights.PageInsightsCoordinator;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId;
+import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarLogger.GoogleBottomBarButtonEvent;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.base.TestActivity;
@@ -209,7 +210,7 @@ public class GoogleBottomBarActionsHandlerTest {
         View buttonView = new View(context);
         BottomBarConfig.ButtonConfig buttonConfig =
                 new BottomBarConfig.ButtonConfig(
-                        ButtonId.PIH_BASIC,
+                        PIH_BASIC,
                         context.getDrawable(R.drawable.page_insights_icon),
                         context.getString(
                                 R.string.google_bottom_bar_page_insights_button_description),
@@ -233,7 +234,7 @@ public class GoogleBottomBarActionsHandlerTest {
         View buttonView = new View(context);
         BottomBarConfig.ButtonConfig buttonConfig =
                 new BottomBarConfig.ButtonConfig(
-                        ButtonId.PIH_BASIC,
+                        PIH_BASIC,
                         context.getDrawable(R.drawable.page_insights_icon),
                         context.getString(
                                 R.string.google_bottom_bar_page_insights_button_description),
@@ -257,7 +258,7 @@ public class GoogleBottomBarActionsHandlerTest {
         View buttonView = new View(context);
         BottomBarConfig.ButtonConfig buttonConfig =
                 new BottomBarConfig.ButtonConfig(
-                        BottomBarConfigCreator.ButtonId.PIH_BASIC,
+                        PIH_BASIC,
                         context.getDrawable(R.drawable.page_insights_icon),
                         context.getString(
                                 R.string.google_bottom_bar_page_insights_button_description),

@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.ui.google_bottom_bar;
 import android.app.PendingIntent;
 import android.graphics.drawable.Drawable;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
-import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator.ButtonId;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /**
@@ -19,6 +21,35 @@ import java.util.List;
  * Bar.
  */
 class BottomBarConfig {
+
+    /**
+     * Each button is encoded as: 1 - Page Insights Hub with basic icon 2 - Chrome Share 3 - Save 4
+     * - Add notes 5 - Chrome Refresh 6 - Page Insights Hub with coloured icon 7 - Page Insights Hub
+     * with expanded icon 8 - Custom button
+     */
+    @IntDef({
+        ButtonId.PIH_BASIC,
+        ButtonId.SHARE,
+        ButtonId.SAVE,
+        ButtonId.ADD_NOTES,
+        ButtonId.REFRESH,
+        ButtonId.PIH_COLORED,
+        ButtonId.PIH_EXPANDED,
+        ButtonId.CUSTOM,
+        ButtonId.MAX_BUTTON_ID,
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface ButtonId {
+        int PIH_BASIC = 1;
+        int SHARE = 2;
+        int SAVE = 3;
+        int ADD_NOTES = 4;
+        int REFRESH = 5;
+        int PIH_COLORED = 6;
+        int PIH_EXPANDED = 7;
+        int CUSTOM = 8;
+        int MAX_BUTTON_ID = CUSTOM;
+    }
 
     private final @Nullable @ButtonId Integer mSpotlightId;
     private final List<ButtonConfig> mButtonList;

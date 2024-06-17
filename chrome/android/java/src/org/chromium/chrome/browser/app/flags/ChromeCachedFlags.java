@@ -40,7 +40,7 @@ import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementFieldTrial;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
-import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
+import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfigCreator;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.omnibox.OmniboxFeatures;
 
@@ -94,7 +94,7 @@ public class ChromeCachedFlags {
                         CustomTabIntentDataProvider.ALLOWLIST_ENTRIES,
                         CustomTabIntentDataProvider.OMNIBOX_ALLOWED_PACKAGE_NAMES,
                         DseNewTabUrlManager.SWAP_OUT_NTP,
-                        GoogleBottomBarCoordinator.GOOGLE_BOTTOM_BAR_PARAM_BUTTON_LIST,
+                        BottomBarConfigCreator.GOOGLE_BOTTOM_BAR_PARAM_BUTTON_LIST,
                         HubFieldTrial.PANE_SWITCHER_USES_TEXT,
                         HubFieldTrial.SUPPORTS_OTHER_TABS,
                         HubFieldTrial.SUPPORTS_SEARCH,

@@ -6,16 +6,17 @@ package org.chromium.chrome.browser.ui.google_bottom_bar;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
+import org.chromium.base.cached_flags.StringCachedFieldTrialParameter;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonConfig;
+import org.chromium.chrome.browser.ui.google_bottom_bar.BottomBarConfig.ButtonId;
+import org.chromium.chrome.browser.ui.google_bottom_bar.proto.IntentParams.GoogleBottomBarIntentParams;
 import org.chromium.ui.UiUtils;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 /** This class creates a {@link BottomBarConfig} based on provided params. */
 public class BottomBarConfigCreator {
     private static final String TAG = "GoogleBottomBar";
+    private static final String BUTTON_LIST_PARAM = "google_bottom_bar_button_list";
     private static final Map<Integer, Integer> CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP =
             Map.of(
                     100,
@@ -40,7 +42,16 @@ public class BottomBarConfigCreator {
                     ButtonId.CUSTOM);
     private static final List<Integer> DEFAULT_BUTTON_ID_LIST =
             List.of(ButtonId.SAVE, ButtonId.PIH_BASIC, ButtonId.SHARE);
+
     private final Context mContext;
+
+    /**
+     * A cached parameter representing the order of Google Bottom Bar buttons based on experiment
+     * configuration.
+     */
+    public static final StringCachedFieldTrialParameter GOOGLE_BOTTOM_BAR_PARAM_BUTTON_LIST =
+            ChromeFeatureList.newStringCachedFieldTrialParameter(
+                    ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR, BUTTON_LIST_PARAM, "");
 
     /** Returns true if the id of the custom button param is supported. */
     static boolean shouldAddToGoogleBottomBar(int customButtonParamsId) {
@@ -64,70 +75,31 @@ public class BottomBarConfigCreator {
     }
 
     /**
-     * @param encodedLayout String with the following representation: "5,1,2,3,4,5", where the first
-     *     item represents the spotlight button and the rest of the list the order of the buttons in
-     *     the bottom bar.
-     * @param customButtonParams Parameters for custom buttons provided by the client
-     * @return {@link BottomBarConfig} that contains an ordered list of the buttons and the
-     *     spotlight if available
-     */
-    BottomBarConfig create(String encodedLayout, List<CustomButtonParams> customButtonParams) {
-        List<Integer> encodedList = getEncodedListFromString(encodedLayout);
-
-        return create(encodedList, customButtonParams);
-    }
-
-    /**
-     * @param encodedLayoutList Integer list with the following representation [5,1,2,3,4,5], where
-     *     the first item represents the spotlight button and the rest of the list the order of the
-     *     buttons in the bottom bar.
-     * @param customButtonParams Parameters for custom buttons provided by the client
-     * @return {@link BottomBarConfig} that contains an ordered list of the buttons and the
-     *     spotlight if available
+     * @param intentParams that optionally contains:
+     *     <p>Integer list with the following representation [5,1,2,3,4,5], where the first item
+     *     represents the spotlight button and the rest of the list the order of the buttons in the
+     *     bottom bar.
+     *     <p>Variant layout type that specifies variation of the layout that should be used
+     * @param customButtonParamsList Parameters for custom buttons provided by the client
+     * @return {@link BottomBarConfig} that contains an ordered list of the buttons, the
+     *     spotlight(if available) and variant layout type(if available)
      */
     BottomBarConfig create(
-            List<Integer> encodedLayoutList, List<CustomButtonParams> customButtonParams) {
-        if (encodedLayoutList.isEmpty()) {
-            Log.e(TAG, "The list is empty or has wrong format");
-            return createDefaultConfig(customButtonParams);
-        }
+            GoogleBottomBarIntentParams intentParams,
+            List<CustomButtonParams> customButtonParamsList) {
 
-        if (encodedLayoutList.size() < 2) {
-            Log.e(TAG, "The list doesn't have enough parameters");
-            return createDefaultConfig(customButtonParams);
-        }
-
-        List<Integer> buttonIdList =
-                encodedLayoutList.subList(1, encodedLayoutList.size()); // remove spotlight
-
-        long validButtonListSize =
-                buttonIdList.stream().filter(BottomBarConfigCreator::isValidButtonId).count();
-
-        if (validButtonListSize != buttonIdList.size()) {
-            Log.e(TAG, "The list has non-valid button ids");
-            return createDefaultConfig(customButtonParams);
-        }
-
-        // 0 aka no spotlight is not encoded in ButtonId so it must be checked separately
-        int spotlitButton = encodedLayoutList.get(0);
-
-        if (!isValidButtonId(spotlitButton) && spotlitButton != 0) {
-            Log.e(TAG, "The spotlight button id is not supported");
-            return createDefaultConfig(customButtonParams);
-        }
-
-        return new BottomBarConfig(
-                createSpotlight(spotlitButton),
-                createButtonConfigList(buttonIdList, customButtonParams));
+        List<Integer> encodedLayoutList =
+                intentParams.getEncodedButtonCount() != 0
+                        // Encoded button list provided in intent from embedder
+                        ? intentParams.getEncodedButtonList()
+                        :
+                        // Fall back on encoded string provided in Finch param
+                        getEncodedListFromString(GOOGLE_BOTTOM_BAR_PARAM_BUTTON_LIST.getValue());
+        return create(encodedLayoutList, customButtonParamsList);
     }
 
     BottomBarConfigCreator(Context context) {
         mContext = context;
-    }
-
-    @Nullable
-    private static @ButtonId Integer createSpotlight(int code) {
-        return code != 0 ? code : null;
     }
 
     private List<ButtonConfig> createButtonConfigList(
@@ -158,26 +130,6 @@ public class BottomBarConfigCreator {
             }
         }
         return null;
-    }
-
-    private static List<Integer> getEncodedListFromString(String encodedConfig) {
-        List<Integer> result;
-
-        try {
-            result =
-                    Arrays.stream(encodedConfig.split(","))
-                            .mapToInt(Integer::parseInt)
-                            .boxed()
-                            .collect(Collectors.toList());
-        } catch (NumberFormatException e) {
-            result = Collections.emptyList();
-        }
-
-        return result;
-    }
-
-    private static @ButtonId Integer getButtonId(int customButtonParamId) {
-        return CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP.get(customButtonParamId);
     }
 
     /** Create default {@link ButtonConfig} for the given ID. */
@@ -228,32 +180,72 @@ public class BottomBarConfigCreator {
     }
 
     /**
-     * Each button is encoded as: 1 - Page Insights Hub with basic icon 2 - Chrome Share 3 - Save 4
-     * - Add notes 5 - Chrome Refresh 6 - Page Insights Hub with coloured icon 7 - Page Insights Hub
-     * with expanded icon 8 - Custom button
+     * @param encodedLayoutList Integer list with the following representation [5,1,2,3,4,5], where
+     *     the first item represents the spotlight button and the rest of the list the order of the
+     *     buttons in the bottom bar.
+     * @param customButtonParams Parameters for custom buttons provided by the client
+     * @return {@link BottomBarConfig} that contains an ordered list of the buttons and the
+     *     spotlight if available
      */
-    @IntDef({
-        ButtonId.PIH_BASIC,
-        ButtonId.SHARE,
-        ButtonId.SAVE,
-        ButtonId.ADD_NOTES,
-        ButtonId.REFRESH,
-        ButtonId.PIH_COLORED,
-        ButtonId.PIH_EXPANDED,
-        ButtonId.CUSTOM,
-        ButtonId.MAX_BUTTON_ID,
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface ButtonId {
-        int PIH_BASIC = 1;
-        int SHARE = 2;
-        int SAVE = 3;
-        int ADD_NOTES = 4;
-        int REFRESH = 5;
-        int PIH_COLORED = 6;
-        int PIH_EXPANDED = 7;
-        int CUSTOM = 8;
-        int MAX_BUTTON_ID = CUSTOM;
+    private BottomBarConfig create(
+            List<Integer> encodedLayoutList, List<CustomButtonParams> customButtonParams) {
+        if (encodedLayoutList.isEmpty()) {
+            Log.e(TAG, "The list is empty or has wrong format");
+            return createDefaultConfig(customButtonParams);
+        }
+
+        if (encodedLayoutList.size() < 2) {
+            Log.e(TAG, "The list doesn't have enough parameters");
+            return createDefaultConfig(customButtonParams);
+        }
+
+        List<Integer> buttonIdList =
+                encodedLayoutList.subList(1, encodedLayoutList.size()); // remove spotlight
+
+        long validButtonListSize =
+                buttonIdList.stream().filter(BottomBarConfigCreator::isValidButtonId).count();
+
+        if (validButtonListSize != buttonIdList.size()) {
+            Log.e(TAG, "The list has non-valid button ids");
+            return createDefaultConfig(customButtonParams);
+        }
+
+        // 0 aka no spotlight is not encoded in ButtonId so it must be checked separately
+        int spotlightButton = encodedLayoutList.get(0);
+
+        if (!isValidButtonId(spotlightButton) && spotlightButton != 0) {
+            Log.e(TAG, "The spotlight button id is not supported");
+            return createDefaultConfig(customButtonParams);
+        }
+
+        return new BottomBarConfig(
+                createSpotlight(spotlightButton),
+                createButtonConfigList(buttonIdList, customButtonParams));
+    }
+
+    @Nullable
+    private static @ButtonId Integer createSpotlight(int code) {
+        return code != 0 ? code : null;
+    }
+
+    private static List<Integer> getEncodedListFromString(String encodedConfig) {
+        List<Integer> result;
+
+        try {
+            result =
+                    Arrays.stream(encodedConfig.split(","))
+                            .mapToInt(Integer::parseInt)
+                            .boxed()
+                            .collect(Collectors.toList());
+        } catch (NumberFormatException e) {
+            result = Collections.emptyList();
+        }
+
+        return result;
+    }
+
+    private static @ButtonId Integer getButtonId(int customButtonParamId) {
+        return CUSTOM_BUTTON_PARAM_ID_TO_BUTTON_ID_MAP.get(customButtonParamId);
     }
 
     /**
