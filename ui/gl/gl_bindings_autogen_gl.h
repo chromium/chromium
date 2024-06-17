@@ -1946,7 +1946,6 @@ struct ExtensionsGL {
   bool b_GL_ARB_internalformat_query;
   bool b_GL_ARB_occlusion_query;
   bool b_GL_ARB_robustness;
-  bool b_GL_ARB_sampler_objects;
   bool b_GL_ARB_sync;
   bool b_GL_ARB_texture_multisample;
   bool b_GL_ARB_texture_swizzle;
