@@ -122,6 +122,25 @@ void InProcessFuzzer::Run(
 
 void InProcessFuzzer::SetUpOnMainThread() {
   InProcessBrowserTest::SetUpOnMainThread();
+
+  // All of the engines that are being used to run those fuzzers are handling
+  // process interruption. In case we let Chrome handle those signals itself,
+  // we end up exiting the fuzzing process, and the engine records the last
+  // run as a crash since it cannot not determine the reason why the process
+  // terminated.
+#if BUILDFLAG(IS_POSIX)
+  signal(SIGTERM, SIG_DFL);
+  signal(SIGINT, SIG_DFL);
+#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+  // In case we're being built with a memory tool (asan, msan...), we should
+  // let it handle this signal so that we get better reporting.
+  // As of now, since both in-process stack traces and the crashpad handler are
+  // being disabled, this is the only signal that we need to reset since it's
+  // being set in
+  // https://source.chromium.org/chromium/chromium/src/+/main:content/public/test/browser_test_base.cc?q=SignalHandler
+  signal(SIGSEGV, SIG_DFL);
+#endif  // BUILDFLAG(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#endif  // BUILDFLAG(IS_POSIX)
 }
 
 InProcessFuzzer* g_test;
@@ -282,6 +301,13 @@ int main(int argc, char** argv) {
     chromium_arguments.push_back(FILE_PATH_LITERAL("--disable-gpu"));
     chromium_arguments.push_back(
         FILE_PATH_LITERAL("--disable-crashpad-for-testing"));
+#if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+    // We disable in-process stack trace handling in case we're using memory
+    // tools so that we get better reporting on what happened in case of
+    // SIGSEGV.
+    chromium_arguments.push_back(
+        FILE_PATH_LITERAL("--disable-in-process-stack-traces"));
+#endif
     base::CommandLine::ForCurrentProcess()->InitFromArgv(chromium_arguments);
 
     // Various bits of setup are done by base::TestSuite::Initialize.
