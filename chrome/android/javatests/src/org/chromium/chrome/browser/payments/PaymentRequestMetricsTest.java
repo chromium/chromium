@@ -26,7 +26,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.autofill.AutofillProfile;
-import org.chromium.components.payments.Event;
+import org.chromium.components.payments.Event2;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -96,20 +96,17 @@ public class PaymentRequestMetricsTest {
 
         // Make sure the events were logged correctly.
         int expectedSample =
-                Event.SHOWN
-                        | Event.PAY_CLICKED
-                        | Event.RECEIVED_INSTRUMENT_DETAILS
-                        | Event.COMPLETED
-                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
-                        | Event.REQUEST_SHIPPING
-                        | Event.REQUEST_METHOD_OTHER
-                        | Event.SELECTED_OTHER
-                        | Event.AVAILABLE_METHOD_OTHER;
+                Event2.SHOWN
+                        | Event2.PAY_CLICKED
+                        | Event2.COMPLETED
+                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event2.REQUEST_SHIPPING
+                        | Event2.REQUEST_METHOD_OTHER
+                        | Event2.SELECTED_OTHER;
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events", expectedSample));
+                        "PaymentRequest.Events2", expectedSample));
     }
 
     /**
@@ -157,17 +154,15 @@ public class PaymentRequestMetricsTest {
 
         // Make sure the events were logged correctly.
         int expectedSample =
-                Event.SHOWN
-                        | Event.USER_ABORTED
-                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
-                        | Event.REQUEST_SHIPPING
-                        | Event.REQUEST_METHOD_OTHER
-                        | Event.AVAILABLE_METHOD_OTHER;
+                Event2.SHOWN
+                        | Event2.USER_ABORTED
+                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event2.REQUEST_SHIPPING
+                        | Event2.REQUEST_METHOD_OTHER;
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events", expectedSample));
+                        "PaymentRequest.Events2", expectedSample));
     }
 
     /**
@@ -195,17 +190,15 @@ public class PaymentRequestMetricsTest {
 
         // Make sure the events were logged correctly.
         int expectedSample =
-                Event.SHOWN
-                        | Event.USER_ABORTED
-                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
-                        | Event.REQUEST_SHIPPING
-                        | Event.REQUEST_METHOD_OTHER
-                        | Event.AVAILABLE_METHOD_OTHER;
+                Event2.SHOWN
+                        | Event2.USER_ABORTED
+                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event2.REQUEST_SHIPPING
+                        | Event2.REQUEST_METHOD_OTHER;
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events", expectedSample));
+                        "PaymentRequest.Events2", expectedSample));
     }
 
     /**
@@ -239,17 +232,15 @@ public class PaymentRequestMetricsTest {
 
         // Make sure the events were logged correctly.
         int expectedSample =
-                Event.SHOWN
-                        | Event.USER_ABORTED
-                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
-                        | Event.REQUEST_SHIPPING
-                        | Event.REQUEST_METHOD_OTHER
-                        | Event.AVAILABLE_METHOD_OTHER;
+                Event2.SHOWN
+                        | Event2.USER_ABORTED
+                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event2.REQUEST_SHIPPING
+                        | Event2.REQUEST_METHOD_OTHER;
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events", expectedSample));
+                        "PaymentRequest.Events2", expectedSample));
     }
 
     /**
@@ -275,17 +266,15 @@ public class PaymentRequestMetricsTest {
 
         // Make sure the events were logged correctly.
         int expectedSample =
-                Event.SHOWN
-                        | Event.USER_ABORTED
-                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
-                        | Event.REQUEST_SHIPPING
-                        | Event.REQUEST_METHOD_OTHER
-                        | Event.AVAILABLE_METHOD_OTHER;
+                Event2.SHOWN
+                        | Event2.USER_ABORTED
+                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event2.REQUEST_SHIPPING
+                        | Event2.REQUEST_METHOD_OTHER;
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events", expectedSample));
+                        "PaymentRequest.Events2", expectedSample));
     }
 
     /**
@@ -311,17 +300,15 @@ public class PaymentRequestMetricsTest {
 
         // Make sure the events were logged correctly.
         int expectedSample =
-                Event.SHOWN
-                        | Event.OTHER_ABORTED
-                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
-                        | Event.REQUEST_SHIPPING
-                        | Event.REQUEST_METHOD_OTHER
-                        | Event.AVAILABLE_METHOD_OTHER;
+                Event2.SHOWN
+                        | Event2.OTHER_ABORTED
+                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event2.REQUEST_SHIPPING
+                        | Event2.REQUEST_METHOD_OTHER;
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events", expectedSample));
+                        "PaymentRequest.Events2", expectedSample));
     }
 
     /**
@@ -345,14 +332,11 @@ public class PaymentRequestMetricsTest {
 
         // Make sure the events were logged correctly.
         int expectedSample =
-                Event.REQUEST_SHIPPING
-                        | Event.REQUEST_METHOD_GOOGLE
-                        | Event.COULD_NOT_SHOW
-                        | Event.NEEDS_COMPLETION_PAYMENT;
+                Event2.REQUEST_SHIPPING | Event2.REQUEST_METHOD_GOOGLE | Event2.COULD_NOT_SHOW;
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events", expectedSample));
+                        "PaymentRequest.Events2", expectedSample));
     }
 
     /**
@@ -373,20 +357,17 @@ public class PaymentRequestMetricsTest {
 
         // Make sure the events were logged correctly.
         int expectedSample =
-                Event.SHOWN
-                        | Event.PAY_CLICKED
-                        | Event.RECEIVED_INSTRUMENT_DETAILS
-                        | Event.COMPLETED
-                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
-                        | Event.REQUEST_METHOD_GOOGLE
-                        | Event.SELECTED_GOOGLE
-                        | Event.REQUEST_SHIPPING
-                        | Event.AVAILABLE_METHOD_GOOGLE;
+                Event2.SHOWN
+                        | Event2.PAY_CLICKED
+                        | Event2.COMPLETED
+                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event2.REQUEST_METHOD_GOOGLE
+                        | Event2.SELECTED_GOOGLE
+                        | Event2.REQUEST_SHIPPING;
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events", expectedSample));
+                        "PaymentRequest.Events2", expectedSample));
     }
 
     /**
@@ -405,19 +386,16 @@ public class PaymentRequestMetricsTest {
 
         // Make sure the events were logged correctly.
         int expectedSample =
-                Event.SKIPPED_SHOW
-                        | Event.PAY_CLICKED
-                        | Event.RECEIVED_INSTRUMENT_DETAILS
-                        | Event.COMPLETED
-                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
-                        | Event.REQUEST_METHOD_GOOGLE
-                        | Event.SELECTED_GOOGLE
-                        | Event.AVAILABLE_METHOD_GOOGLE;
+                Event2.SKIPPED_SHOW
+                        | Event2.PAY_CLICKED
+                        | Event2.COMPLETED
+                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event2.REQUEST_METHOD_GOOGLE
+                        | Event2.SELECTED_GOOGLE;
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events", expectedSample));
+                        "PaymentRequest.Events2", expectedSample));
     }
 
     /**
@@ -445,16 +423,14 @@ public class PaymentRequestMetricsTest {
 
         // Make sure the events were logged correctly.
         int expectedSample =
-                Event.SHOWN
-                        | Event.USER_ABORTED
-                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
-                        | Event.REQUEST_METHOD_GOOGLE
-                        | Event.AVAILABLE_METHOD_GOOGLE;
+                Event2.SHOWN
+                        | Event2.USER_ABORTED
+                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event2.REQUEST_METHOD_GOOGLE;
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events", expectedSample));
+                        "PaymentRequest.Events2", expectedSample));
     }
 
     /**
@@ -495,15 +471,14 @@ public class PaymentRequestMetricsTest {
 
         // Make sure the events were logged correctly.
         int expectedSample =
-                Event.SHOWN
-                        | Event.USER_ABORTED
-                        | Event.HAD_INITIAL_FORM_OF_PAYMENT
-                        | Event.HAD_NECESSARY_COMPLETE_SUGGESTIONS
-                        | Event.REQUEST_METHOD_BASIC_CARD
-                        | Event.SELECTED_CREDIT_CARD;
+                Event2.SHOWN
+                        | Event2.USER_ABORTED
+                        | Event2.HAD_INITIAL_FORM_OF_PAYMENT
+                        | Event2.REQUEST_METHOD_BASIC_CARD
+                        | Event2.SELECTED_CREDIT_CARD;
         Assert.assertEquals(
                 1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "PaymentRequest.Events", expectedSample));
+                        "PaymentRequest.Events2", expectedSample));
     }
 }
