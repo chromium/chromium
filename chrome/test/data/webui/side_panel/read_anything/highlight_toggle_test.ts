@@ -43,9 +43,9 @@ suite('HighlightToggle', () => {
 
   suite('by default', () => {
     test('highlighting is on', () => {
-      assertEquals(highlightButton.ironIcon, 'read-anything:highlight-on');
+      assertEquals('read-anything:highlight-on', highlightButton.ironIcon);
       assertStringContains(highlightButton.title, 'off');
-      assertEquals(chrome.readingMode.highlightGranularity, 0);
+      assertEquals(0, chrome.readingMode.highlightGranularity);
       assertTrue(chrome.readingMode.isHighlightOn());
       assertFalse(!!highlightOn);
     });
@@ -57,9 +57,9 @@ suite('HighlightToggle', () => {
     });
 
     test('highlighting is turned off', () => {
-      assertEquals(highlightButton.ironIcon, 'read-anything:highlight-off');
+      assertEquals('read-anything:highlight-off', highlightButton.ironIcon);
       assertStringContains(highlightButton.title, 'on');
-      assertEquals(chrome.readingMode.highlightGranularity, 1);
+      assertEquals(1, chrome.readingMode.highlightGranularity);
       assertFalse(chrome.readingMode.isHighlightOn());
       assertFalse(highlightOn!);
     });
@@ -70,9 +70,9 @@ suite('HighlightToggle', () => {
       });
 
       test('highlighting is turned back on', () => {
-        assertEquals(highlightButton.ironIcon, 'read-anything:highlight-on');
+        assertEquals('read-anything:highlight-on', highlightButton.ironIcon);
         assertStringContains(highlightButton.title, 'off');
-        assertEquals(chrome.readingMode.highlightGranularity, 0);
+        assertEquals(0, chrome.readingMode.highlightGranularity);
         assertTrue(chrome.readingMode.isHighlightOn());
         assertTrue(highlightOn!);
       });

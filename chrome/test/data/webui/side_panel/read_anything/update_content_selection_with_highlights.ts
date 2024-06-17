@@ -50,8 +50,8 @@ suite('UpdateContentSelectionWithHighlights', () => {
     app = document.createElement('read-anything-app');
     document.body.appendChild(app);
 
-    assertEquals(textNodeIds.length, 4);
-    assertEquals(texts.length, 4);
+    assertEquals(4, textNodeIds.length);
+    assertEquals(4, texts.length);
     fakeTree = new FakeTreeBuilder()
                    .root(1)
                    .addTag(2, /* parentId= */ 1, 'p')
@@ -163,10 +163,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
           previousSelector, expectedAnchorOffset, texts[0]!,
           expectedFocusOffset);
 
-      assertEquals(actualAnchorId, expectedNodeId);
-      assertEquals(actualFocusId, expectedNodeId);
-      assertEquals(actualAnchorOffset, expectedAnchorOffset);
-      assertEquals(actualFocusOffset, expectedFocusOffset);
+      assertEquals(expectedNodeId, actualAnchorId);
+      assertEquals(expectedNodeId, actualFocusId);
+      assertEquals(expectedAnchorOffset, actualAnchorOffset);
+      assertEquals(expectedFocusOffset, actualFocusOffset);
     });
 
     test('multiple nodes selected before single node highlight', async () => {
@@ -178,10 +178,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
           previousSelector, expectedAnchorOffset, texts[0]!,
           expectedFocusOffset, texts[1]!);
 
-      assertEquals(actualAnchorId, textNodeIds[0]!);
-      assertEquals(actualFocusId, textNodeIds[1]!);
-      assertEquals(actualAnchorOffset, expectedAnchorOffset);
-      assertEquals(actualFocusOffset, expectedFocusOffset);
+      assertEquals(textNodeIds[0]!, actualAnchorId);
+      assertEquals(textNodeIds[1]!, actualFocusId);
+      assertEquals(expectedAnchorOffset, actualAnchorOffset);
+      assertEquals(expectedFocusOffset, actualFocusOffset);
     });
 
     test('one node selected before multiple node highlight', async () => {
@@ -197,10 +197,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
           previousSelector, expectedAnchorOffset, texts[1]!,
           expectedFocusOffset);
 
-      assertEquals(actualAnchorId, expectedNodeId);
-      assertEquals(actualFocusId, expectedNodeId);
-      assertEquals(actualAnchorOffset, expectedAnchorOffset);
-      assertEquals(actualFocusOffset, expectedFocusOffset);
+      assertEquals(expectedNodeId, actualAnchorId);
+      assertEquals(expectedNodeId, actualFocusId);
+      assertEquals(expectedAnchorOffset, actualAnchorOffset);
+      assertEquals(expectedFocusOffset, actualFocusOffset);
     });
 
     test('multiple nodes selected before multiple node highlight', async () => {
@@ -215,10 +215,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
           previousSelector, expectedAnchorOffset, texts[0]!,
           expectedFocusOffset, texts[1]!);
 
-      assertEquals(actualAnchorId, textNodeIds[0]!);
-      assertEquals(actualFocusId, textNodeIds[1]!);
-      assertEquals(actualAnchorOffset, expectedAnchorOffset);
-      assertEquals(actualFocusOffset, expectedFocusOffset);
+      assertEquals(textNodeIds[0]!, actualAnchorId);
+      assertEquals(textNodeIds[1]!, actualFocusId);
+      assertEquals(expectedAnchorOffset, actualAnchorOffset);
+      assertEquals(expectedFocusOffset, actualFocusOffset);
     });
 
     test('one node selected inside single node highlight', async () => {
@@ -232,10 +232,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
           currentSelector, expectedAnchorOffset, texts[1]!,
           expectedFocusOffset);
 
-      assertEquals(actualAnchorId, highlightId);
-      assertEquals(actualFocusId, highlightId);
-      assertEquals(actualAnchorOffset, expectedAnchorOffset);
-      assertEquals(actualFocusOffset, expectedFocusOffset);
+      assertEquals(highlightId, actualAnchorId);
+      assertEquals(highlightId, actualFocusId);
+      assertEquals(expectedAnchorOffset, actualAnchorOffset);
+      assertEquals(expectedFocusOffset, actualFocusOffset);
     });
 
     test('one node selected inside multiple node highlight', async () => {
@@ -250,10 +250,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
           currentSelector, expectedAnchorOffset, texts[1]!,
           expectedFocusOffset);
 
-      assertEquals(actualAnchorId, textNodeIds[1]!);
-      assertEquals(actualFocusId, textNodeIds[1]!);
-      assertEquals(actualAnchorOffset, expectedAnchorOffset);
-      assertEquals(actualFocusOffset, expectedFocusOffset);
+      assertEquals(textNodeIds[1]!, actualAnchorId);
+      assertEquals(textNodeIds[1]!, actualFocusId);
+      assertEquals(expectedAnchorOffset, actualAnchorOffset);
+      assertEquals(expectedFocusOffset, actualFocusOffset);
     });
 
     test('prefix selected in long reading highlight', async () => {
@@ -268,10 +268,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
           previousSelector, expectedAnchorOffset,
           texts[2]!.slice(0, highlightStart), highlightStart);
 
-      assertEquals(actualAnchorId, highlightId);
-      assertEquals(actualFocusId, highlightId);
-      assertEquals(actualAnchorOffset, expectedAnchorOffset);
-      assertEquals(actualFocusOffset, highlightStart);
+      assertEquals(highlightId, actualAnchorId);
+      assertEquals(highlightId, actualFocusId);
+      assertEquals(expectedAnchorOffset, actualAnchorOffset);
+      assertEquals(highlightStart, actualFocusOffset);
     });
 
     test('suffix selected in long reading highlight', async () => {
@@ -288,10 +288,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
       selection.setBaseAndExtent(textNode, 0, textNode, selectedText.length);
       await flushTasks();
 
-      assertEquals(actualAnchorId, highlightId);
-      assertEquals(actualFocusId, highlightId);
-      assertEquals(actualAnchorOffset, highlightEnd);
-      assertEquals(actualFocusOffset, texts[2]!.length);
+      assertEquals(highlightId, actualAnchorId);
+      assertEquals(highlightId, actualFocusId);
+      assertEquals(highlightEnd, actualAnchorOffset);
+      assertEquals(texts[2]!.length, actualFocusOffset);
     });
 
     test('one node selected after reading highlight', async () => {
@@ -303,10 +303,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
       await selectNodes(
           afterSelector, expectedAnchorOffset, texts[2]!, expectedFocusOffset);
 
-      assertEquals(actualAnchorId, textNodeIds[2]!);
-      assertEquals(actualFocusId, textNodeIds[2]!);
-      assertEquals(actualAnchorOffset, expectedAnchorOffset);
-      assertEquals(actualFocusOffset, expectedFocusOffset);
+      assertEquals(textNodeIds[2]!, actualAnchorId);
+      assertEquals(textNodeIds[2]!, actualFocusId);
+      assertEquals(expectedAnchorOffset, actualAnchorOffset);
+      assertEquals(expectedFocusOffset, actualFocusOffset);
     });
 
     test('multiple nodes selected after reading highlight', async () => {
@@ -319,10 +319,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
           afterSelector, expectedAnchorOffset, texts[1]!, expectedFocusOffset,
           texts[2]!);
 
-      assertEquals(actualAnchorId, textNodeIds[1]!);
-      assertEquals(actualFocusId, textNodeIds[2]!);
-      assertEquals(actualAnchorOffset, expectedAnchorOffset);
-      assertEquals(actualFocusOffset, expectedFocusOffset);
+      assertEquals(textNodeIds[1]!, actualAnchorId);
+      assertEquals(textNodeIds[2]!, actualFocusId);
+      assertEquals(expectedAnchorOffset, actualAnchorOffset);
+      assertEquals(expectedFocusOffset, actualFocusOffset);
     });
 
     test(
@@ -342,10 +342,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
               anchorNode, 0, focusNode, focusText.length);
           await flushTasks();
 
-          assertEquals(actualAnchorId, textNodeIds[0]!);
-          assertEquals(actualFocusId, textNodeIds[3]!);
-          assertEquals(actualAnchorOffset, expectedAnchorOffset);
-          assertEquals(actualFocusOffset, expectedFocusOffset);
+          assertEquals(textNodeIds[0]!, actualAnchorId);
+          assertEquals(textNodeIds[3]!, actualFocusId);
+          assertEquals(expectedAnchorOffset, actualAnchorOffset);
+          assertEquals(expectedFocusOffset, actualFocusOffset);
         });
   });
 
@@ -364,10 +364,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
       app.updateSelection();
 
       const selection = app.getSelection();
-      assertEquals(selection.anchorNode.textContent, texts[0]!);
-      assertEquals(selection.focusNode.textContent, texts[0]!);
-      assertEquals(selection.anchorOffset, expectedAnchorOffset);
-      assertEquals(selection.focusOffset, expectedFocusOffset);
+      assertEquals(texts[0]!, selection.anchorNode.textContent);
+      assertEquals(texts[0]!, selection.focusNode.textContent);
+      assertEquals(expectedAnchorOffset, selection.anchorOffset);
+      assertEquals(expectedFocusOffset, selection.focusOffset);
     });
 
     test('multiple nodes selected before single node highlight', () => {
@@ -380,10 +380,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
       app.updateSelection();
 
       const selection = app.getSelection();
-      assertEquals(selection.anchorNode.textContent, texts[0]!);
-      assertEquals(selection.focusNode.textContent, texts[1]!);
-      assertEquals(selection.anchorOffset, expectedAnchorOffset);
-      assertEquals(selection.focusOffset, expectedFocusOffset);
+      assertEquals(texts[0]!, selection.anchorNode.textContent);
+      assertEquals(texts[1]!, selection.focusNode.textContent);
+      assertEquals(expectedAnchorOffset, selection.anchorOffset);
+      assertEquals(expectedFocusOffset, selection.focusOffset);
     });
 
     test('one node selected before multiple node highlight', () => {
@@ -396,10 +396,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
       app.updateSelection();
 
       const selection = app.getSelection();
-      assertEquals(selection.anchorNode.textContent, texts[1]!);
-      assertEquals(selection.focusNode.textContent, texts[1]!);
-      assertEquals(selection.anchorOffset, expectedAnchorOffset);
-      assertEquals(selection.focusOffset, expectedFocusOffset);
+      assertEquals(texts[1]!, selection.anchorNode.textContent);
+      assertEquals(texts[1]!, selection.focusNode.textContent);
+      assertEquals(expectedAnchorOffset, selection.anchorOffset);
+      assertEquals(expectedFocusOffset, selection.focusOffset);
     });
 
     test('multiple nodes selected before multiple node highlight', () => {
@@ -412,10 +412,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
       app.updateSelection();
 
       const selection = app.getSelection();
-      assertEquals(selection.anchorNode.textContent, texts[0]!);
-      assertEquals(selection.focusNode.textContent, texts[1]!);
-      assertEquals(selection.anchorOffset, expectedAnchorOffset);
-      assertEquals(selection.focusOffset, expectedFocusOffset);
+      assertEquals(texts[0]!, selection.anchorNode.textContent);
+      assertEquals(texts[1]!, selection.focusNode.textContent);
+      assertEquals(expectedAnchorOffset, selection.anchorOffset);
+      assertEquals(expectedFocusOffset, selection.focusOffset);
     });
 
     test('one node selected inside single node highlight', () => {
@@ -430,10 +430,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
       app.updateSelection();
 
       const selection = app.getSelection();
-      assertEquals(selection.anchorNode.textContent, texts[1]!);
-      assertEquals(selection.focusNode.textContent, texts[1]!);
-      assertEquals(selection.anchorOffset, expectedAnchorOffset);
-      assertEquals(selection.focusOffset, expectedFocusOffset);
+      assertEquals(texts[1]!, selection.anchorNode.textContent);
+      assertEquals(texts[1]!, selection.focusNode.textContent);
+      assertEquals(expectedAnchorOffset, selection.anchorOffset);
+      assertEquals(expectedFocusOffset, selection.focusOffset);
     });
 
     test('one node selected inside multiple node highlight', () => {
@@ -446,10 +446,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
       app.updateSelection();
 
       const selection = app.getSelection();
-      assertEquals(selection.anchorNode.textContent, texts[1]!);
-      assertEquals(selection.focusNode.textContent, texts[1]!);
-      assertEquals(selection.anchorOffset, expectedAnchorOffset);
-      assertEquals(selection.focusOffset, expectedFocusOffset);
+      assertEquals(texts[1]!, selection.anchorNode.textContent);
+      assertEquals(texts[1]!, selection.focusNode.textContent);
+      assertEquals(expectedAnchorOffset, selection.anchorOffset);
+      assertEquals(expectedFocusOffset, selection.focusOffset);
     });
 
     test(
@@ -465,10 +465,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
           app.updateSelection();
 
           const selection = app.getSelection();
-          assertEquals(selection.anchorNode.textContent, texts[0]!);
-          assertEquals(selection.focusNode.textContent, texts[1]!);
-          assertEquals(selection.anchorOffset, expectedAnchorOffset);
-          assertEquals(selection.focusOffset, expectedFocusOffset);
+          assertEquals(texts[0]!, selection.anchorNode.textContent);
+          assertEquals(texts[1]!, selection.focusNode.textContent);
+          assertEquals(expectedAnchorOffset, selection.anchorOffset);
+          assertEquals(expectedFocusOffset, selection.focusOffset);
         });
 
     test('prefix selected in long reading highlight', () => {
@@ -485,10 +485,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
 
       const selection = app.getSelection();
       const expectedSelectedText = texts[2]!.slice(0, highlightStart);
-      assertEquals(selection.anchorNode.textContent, expectedSelectedText);
-      assertEquals(selection.focusNode.textContent, expectedSelectedText);
-      assertEquals(selection.anchorOffset, expectedAnchorOffset);
-      assertEquals(selection.focusOffset, highlightStart);
+      assertEquals(expectedSelectedText, selection.anchorNode.textContent);
+      assertEquals(expectedSelectedText, selection.focusNode.textContent);
+      assertEquals(expectedAnchorOffset, selection.anchorOffset);
+      assertEquals(highlightStart, selection.focusOffset);
     });
 
     test('suffix selected in long reading highlight', () => {
@@ -507,10 +507,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
       // entirety of the new second node.
       const selection = app.getSelection();
       const expectedSelectedText = texts[2]!.slice(highlightEnd);
-      assertEquals(selection.anchorNode.textContent, expectedSelectedText);
-      assertEquals(selection.focusNode.textContent, expectedSelectedText);
-      assertEquals(selection.anchorOffset, 0);
-      assertEquals(selection.focusOffset, expectedSelectedText.length);
+      assertEquals(expectedSelectedText, selection.anchorNode.textContent);
+      assertEquals(expectedSelectedText, selection.focusNode.textContent);
+      assertEquals(0, selection.anchorOffset);
+      assertEquals(expectedSelectedText.length, selection.focusOffset);
     });
 
     test('one node selected after reading highlight', () => {
@@ -523,10 +523,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
       app.updateSelection();
 
       const selection = app.getSelection();
-      assertEquals(selection.anchorNode.textContent, texts[2]!);
-      assertEquals(selection.focusNode.textContent, texts[2]!);
-      assertEquals(selection.anchorOffset, expectedAnchorOffset);
-      assertEquals(selection.focusOffset, expectedFocusOffset);
+      assertEquals(texts[2]!, selection.anchorNode.textContent);
+      assertEquals(texts[2]!, selection.focusNode.textContent);
+      assertEquals(expectedAnchorOffset, selection.anchorOffset);
+      assertEquals(expectedFocusOffset, selection.focusOffset);
     });
 
     test('multiple nodes selected after reading highlight', () => {
@@ -539,10 +539,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
       app.updateSelection();
 
       const selection = app.getSelection();
-      assertEquals(selection.anchorNode.textContent, texts[1]!);
-      assertEquals(selection.focusNode.textContent, texts[2]!);
-      assertEquals(selection.anchorOffset, expectedAnchorOffset);
-      assertEquals(selection.focusOffset, expectedFocusOffset);
+      assertEquals(texts[1]!, selection.anchorNode.textContent);
+      assertEquals(texts[2]!, selection.focusNode.textContent);
+      assertEquals(expectedAnchorOffset, selection.anchorOffset);
+      assertEquals(expectedFocusOffset, selection.focusOffset);
     });
 
     test('selection across previous, current, and after highlight', () => {
@@ -556,10 +556,10 @@ suite('UpdateContentSelectionWithHighlights', () => {
       app.updateSelection();
 
       const selection = app.getSelection();
-      assertEquals(selection.anchorOffset, 0);
-      assertEquals(selection.focusOffset, texts[3]!.length);
-      assertEquals(selection.anchorNode.textContent, texts[0]!);
-      assertEquals(selection.focusNode.textContent, texts[3]!);
+      assertEquals(0, selection.anchorOffset);
+      assertEquals(texts[3]!.length, selection.focusOffset);
+      assertEquals(texts[0]!, selection.anchorNode.textContent);
+      assertEquals(texts[3]!, selection.focusNode.textContent);
     });
   });
 });

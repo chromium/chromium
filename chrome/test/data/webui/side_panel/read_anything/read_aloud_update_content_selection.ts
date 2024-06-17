@@ -103,7 +103,7 @@ suite('ReadAloud_UpdateContentSelection', () => {
       // The expected HTML before any highlights are added.
       const expected = '<div><p>World</p><p>Friend!</p></div>';
       const innerHTML = app.$.container.innerHTML;
-      assertEquals(innerHTML, expected);
+      assertEquals(expected, innerHTML);
     });
 
     test('selection in reading mode panel correct', () => {
@@ -111,17 +111,17 @@ suite('ReadAloud_UpdateContentSelection', () => {
       // so use a helper to get the selection from the app instead.
       const selection = document.getSelection()!;
       assertTrue(selection != null);
-      assertEquals(selection.anchorNode!.textContent, 'World');
-      assertEquals(selection.focusNode!.textContent, 'Friend');
-      assertEquals(selection.anchorOffset, 1);
-      assertEquals(selection.focusOffset, 2);
+      assertEquals('World', selection.anchorNode!.textContent);
+      assertEquals('Friend', selection.focusNode!.textContent);
+      assertEquals(1, selection.anchorOffset);
+      assertEquals(2, selection.focusOffset);
     });
 
     test('conbtainer class correct', () => {
       assertEquals(
           app.$.container.className,
           'user-select-disabled-when-speech-playing-false');
-      assertEquals(window.getComputedStyle(app.$.container).userSelect, 'auto');
+      assertEquals('auto', window.getComputedStyle(app.$.container).userSelect);
     });
   });
 
@@ -143,19 +143,19 @@ suite('ReadAloud_UpdateContentSelection', () => {
           '<span class="current-read-highlight">!</span>' +
           '</span></p></div>';
       const innerHTML = app.$.container.innerHTML;
-      assertEquals(innerHTML, expected);
+      assertEquals(expected, innerHTML);
     });
 
     test('selection in reading mode panel cleared', () => {
       const selection = document.getSelection()!;
-      assertEquals(selection.toString(), '');
+      assertEquals('', selection.toString());
     });
 
     test('container class correct', () => {
       assertEquals(
           app.$.container.className,
           'user-select-disabled-when-speech-playing-true');
-      assertEquals(window.getComputedStyle(app.$.container).userSelect, 'none');
+      assertEquals('none', window.getComputedStyle(app.$.container).userSelect);
     });
   });
 
@@ -176,19 +176,19 @@ suite('ReadAloud_UpdateContentSelection', () => {
           '<span class="current-read-highlight">!</span>' +
           '</span></p></div>';
       const innerHTML = app.$.container.innerHTML;
-      assertEquals(innerHTML, expected);
+      assertEquals(expected, innerHTML);
     });
 
     test('selection in reading mode panel cleared', () => {
       const selection = document.getSelection()!;
-      assertEquals(selection.toString(), '');
+      assertEquals('', selection.toString());
     });
 
     test('container class correct', () => {
       assertEquals(
           app.$.container.className,
           'user-select-disabled-when-speech-playing-false');
-      assertEquals(window.getComputedStyle(app.$.container).userSelect, 'auto');
+      assertEquals('auto', window.getComputedStyle(app.$.container).userSelect);
     });
   });
 });

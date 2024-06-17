@@ -64,7 +64,7 @@ suite('Automatic voice selection', () => {
     });
 
     test('it chooses the first voice with the same language', () => {
-      assertEquals(app.getSpeechSynthesisVoice(), firstVoiceWithLang);
+      assertEquals(firstVoiceWithLang, app.getSpeechSynthesisVoice());
     });
 
     test('it switches to a Natural voice if it later becomes available', () => {
@@ -79,7 +79,7 @@ suite('Automatic voice selection', () => {
       };
       app.onVoicesChanged();
 
-      assertEquals(app.getSpeechSynthesisVoice()?.name, 'Wall-e (Natural)');
+      assertEquals('Wall-e (Natural)', app.getSpeechSynthesisVoice()?.name);
     });
   });
 
@@ -89,7 +89,7 @@ suite('Automatic voice selection', () => {
       app.selectPreferredVoice();
     });
     test('it chooses the user stored voice', () => {
-      assertEquals(app.getSpeechSynthesisVoice(), secondVoiceWithLang);
+      assertEquals(secondVoiceWithLang, app.getSpeechSynthesisVoice());
     });
 
     test(
@@ -106,7 +106,7 @@ suite('Automatic voice selection', () => {
           };
           app.onVoicesChanged();
 
-          assertEquals(app.getSpeechSynthesisVoice(), secondVoiceWithLang);
+          assertEquals(secondVoiceWithLang, app.getSpeechSynthesisVoice());
         });
   });
 });

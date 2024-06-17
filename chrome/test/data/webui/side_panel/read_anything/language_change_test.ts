@@ -103,7 +103,7 @@ suite('LanguageChanged', () => {
 
     chrome.readingMode.getStoredVoice = () => otherVoice.name;
     app.languageChanged();
-    assertEquals(app.selectedVoice, startingVoice);
+    assertEquals(startingVoice, app.selectedVoice);
   });
 
   suite('with flag updates selected voice', () => {
@@ -123,7 +123,7 @@ suite('LanguageChanged', () => {
 
       app.languageChanged();
 
-      assertEquals(app.selectedVoice, otherVoice);
+      assertEquals(otherVoice, app.selectedVoice);
     });
 
     suite('when there is no stored voice for this language', () => {
@@ -139,12 +139,12 @@ suite('LanguageChanged', () => {
         test('to the current voice if there is one', () => {
           app.selectedVoice = otherVoice;
           app.languageChanged();
-          assertEquals(app.selectedVoice, otherVoice);
+          assertEquals(otherVoice, app.selectedVoice);
         });
 
         test('to a natural voice if there\'s no current voice', () => {
           app.languageChanged();
-          assertEquals(app.selectedVoice, naturalVoiceWithLang3);
+          assertEquals(naturalVoiceWithLang3, app.selectedVoice);
         });
 
         test('to the device default if there\'s no natural', () => {
@@ -152,7 +152,7 @@ suite('LanguageChanged', () => {
           flush();
 
           app.languageChanged();
-          assertEquals(app.selectedVoice, defaultVoice);
+          assertEquals(defaultVoice, app.selectedVoice);
         });
       });
 
@@ -160,7 +160,7 @@ suite('LanguageChanged', () => {
         test('to a natural voice for this language', () => {
           chrome.readingMode.baseLanguageForSpeech = lang3;
           app.languageChanged();
-          assertEquals(app.selectedVoice, naturalVoiceWithLang3);
+          assertEquals(naturalVoiceWithLang3, app.selectedVoice);
         });
 
         test(
@@ -168,7 +168,7 @@ suite('LanguageChanged', () => {
             () => {
               chrome.readingMode.baseLanguageForSpeech = lang1;
               app.languageChanged();
-              assertEquals(app.selectedVoice, defaultVoiceWithLang1);
+              assertEquals(defaultVoiceWithLang1, app.selectedVoice);
             });
 
         test(
@@ -176,7 +176,7 @@ suite('LanguageChanged', () => {
             () => {
               chrome.readingMode.baseLanguageForSpeech = lang2;
               app.languageChanged();
-              assertEquals(app.selectedVoice, firstVoiceWithLang2);
+              assertEquals(firstVoiceWithLang2, app.selectedVoice);
             });
       });
 
@@ -189,7 +189,7 @@ suite('LanguageChanged', () => {
           app.languageChanged();
 
           assertTrue(app.enabledLangs.includes(lang3));
-          assertEquals(app.selectedVoice, naturalVoiceWithLang3);
+          assertEquals(naturalVoiceWithLang3, app.selectedVoice);
         });
 
         test(
@@ -202,7 +202,7 @@ suite('LanguageChanged', () => {
               app.languageChanged();
 
               assertTrue(app.enabledLangs.includes(lang1));
-              assertEquals(app.selectedVoice, defaultVoiceWithLang1);
+              assertEquals(defaultVoiceWithLang1, app.selectedVoice);
             });
 
 
@@ -218,7 +218,7 @@ suite('LanguageChanged', () => {
 
           app.languageChanged();
 
-          assertEquals(app.selectedVoice, voice);
+          assertEquals(voice, app.selectedVoice);
         });
 
         test('to natural enabled voice if no same locale', () => {
@@ -229,7 +229,7 @@ suite('LanguageChanged', () => {
 
           app.languageChanged();
 
-          assertEquals(app.selectedVoice, naturalVoiceWithLang3);
+          assertEquals(naturalVoiceWithLang3, app.selectedVoice);
         });
 
         test('to default enabled voice if no natural voice', () => {
@@ -240,7 +240,7 @@ suite('LanguageChanged', () => {
 
           app.languageChanged();
 
-          assertEquals(app.selectedVoice, defaultVoiceWithLang1);
+          assertEquals(defaultVoiceWithLang1, app.selectedVoice);
         });
 
         test('to undefined if no enabled languages', () => {
@@ -250,7 +250,7 @@ suite('LanguageChanged', () => {
 
           app.languageChanged();
 
-          assertEquals(app.selectedVoice, undefined);
+          assertEquals(undefined, app.selectedVoice);
         });
       });
     });

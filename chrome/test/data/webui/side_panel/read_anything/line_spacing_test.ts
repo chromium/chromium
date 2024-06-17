@@ -55,13 +55,13 @@ suite('LineSpacing', () => {
     });
 
     test('has 3 options', () => {
-      assertEquals(lineSpacingMenuOptions.length, 3);
+      assertEquals(3, lineSpacingMenuOptions.length);
     });
 
     test('first option propagates standard spacing', () => {
       lineSpacingMenuOptions[0]!.click();
 
-      assertEquals(spacingEmitted, chrome.readingMode.standardLineSpacing);
+      assertEquals(chrome.readingMode.standardLineSpacing, spacingEmitted);
       assertEquals(
           chrome.readingMode.lineSpacing,
           chrome.readingMode.standardLineSpacing);
@@ -70,15 +70,15 @@ suite('LineSpacing', () => {
     test('second option propagates loose spacing', () => {
       lineSpacingMenuOptions[1]!.click();
 
-      assertEquals(spacingEmitted, chrome.readingMode.looseLineSpacing);
+      assertEquals(chrome.readingMode.looseLineSpacing, spacingEmitted);
       assertEquals(
-          chrome.readingMode.lineSpacing, chrome.readingMode.looseLineSpacing);
+          chrome.readingMode.looseLineSpacing, chrome.readingMode.lineSpacing);
     });
 
     test('third option propagates very loose spacing', () => {
       lineSpacingMenuOptions[2]!.click();
 
-      assertEquals(spacingEmitted, chrome.readingMode.veryLooseLineSpacing);
+      assertEquals(chrome.readingMode.veryLooseLineSpacing, spacingEmitted);
       assertEquals(
           chrome.readingMode.lineSpacing,
           chrome.readingMode.veryLooseLineSpacing);

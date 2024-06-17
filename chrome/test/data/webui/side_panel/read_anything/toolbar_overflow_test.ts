@@ -51,7 +51,7 @@ suite('ToolbarOverflow', () => {
       const moreOptionsButtons =
           toolbar.$.moreOptionsMenu.get().querySelectorAll<HTMLElement>(
               moreOptionsClass);
-      assertEquals(moreOptionsButtons.length, 0);
+      assertEquals(0, moreOptionsButtons.length);
     });
   });
 
@@ -71,18 +71,18 @@ suite('ToolbarOverflow', () => {
       let numOverflow = 3;
       overflow(numOverflow);
       assertEquals(
+          numOverflow,
           toolbar.$.moreOptionsMenu.get()
               .querySelectorAll<HTMLElement>(moreOptionsClass)
-              .length,
-          numOverflow);
+              .length);
 
       numOverflow = 5;
       overflow(numOverflow);
       assertEquals(
+          numOverflow,
           toolbar.$.moreOptionsMenu.get()
               .querySelectorAll<HTMLElement>(moreOptionsClass)
-              .length,
-          numOverflow);
+              .length);
     });
   });
 });

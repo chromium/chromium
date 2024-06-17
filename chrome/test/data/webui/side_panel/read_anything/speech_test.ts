@@ -99,7 +99,7 @@ suite('Speech', () => {
     });
 
     test('speaks all text by sentences', () => {
-      assertEquals(speechSynthesis.spokenUtterances.length, totalSentences);
+      assertEquals(totalSentences, speechSynthesis.spokenUtterances.length);
       const utteranceTexts = getSpokenTexts();
       assertTrue(
           paragraph1.every(sentence => utteranceTexts.includes(sentence)));
@@ -164,14 +164,14 @@ suite('Speech', () => {
       await selectAndPlay(axTree, 5, 0, 5, 7);
 
       const utteranceTexts = getSpokenTexts();
-      assertEquals(utteranceTexts.length, totalSentences - paragraph1.length);
+      assertEquals(totalSentences - paragraph1.length, utteranceTexts.length);
       assertTrue(
           paragraph2.every(sentence => utteranceTexts.includes(sentence)));
     });
 
     test('selection is cleared after play', async () => {
       await selectAndPlay(axTree, 5, 0, 5, 10);
-      assertEquals(app.getSelection().type, 'None');
+      assertEquals('None', app.getSelection().type);
     });
 
     test(
@@ -181,7 +181,7 @@ suite('Speech', () => {
 
           const utteranceTexts = getSpokenTexts();
           assertEquals(
-              utteranceTexts.length, totalSentences - paragraph1.length);
+              totalSentences - paragraph1.length, utteranceTexts.length);
           assertTrue(
               paragraph2.every(sentence => utteranceTexts.includes(sentence)));
         });
@@ -190,7 +190,7 @@ suite('Speech', () => {
       await selectAndPlay(axTree, 3, 10, 5, 10);
 
       const utteranceTexts = getSpokenTexts();
-      assertEquals(utteranceTexts.length, totalSentences);
+      assertEquals(totalSentences, utteranceTexts.length);
       assertTrue(
           paragraph1.every(sentence => utteranceTexts.includes(sentence)));
       assertTrue(
@@ -201,7 +201,7 @@ suite('Speech', () => {
       await selectAndPlay(axTree, 5, 10, 3, 10, /*isBackward=*/ true);
 
       const utteranceTexts = getSpokenTexts();
-      assertEquals(utteranceTexts.length, totalSentences);
+      assertEquals(totalSentences, utteranceTexts.length);
       assertTrue(
           paragraph1.every(sentence => utteranceTexts.includes(sentence)));
       assertTrue(
@@ -218,7 +218,7 @@ suite('Speech', () => {
           assertTrue(speechSynthesis.canceled);
           const utteranceTexts = getSpokenTexts();
           assertEquals(
-              utteranceTexts.length, totalSentences - paragraph1.length);
+              totalSentences - paragraph1.length, utteranceTexts.length);
           assertTrue(
               paragraph2.every(sentence => utteranceTexts.includes(sentence)));
         });
@@ -269,7 +269,7 @@ suite('Speech', () => {
       const utteranceTexts = getSpokenTexts();
       // We shouldn't speak fragment2 even though it's in the same node
       // because the selection only covers fragment 3.
-      assertEquals(utteranceTexts.length, 1);
+      assertEquals(1, utteranceTexts.length);
       assertTrue(utteranceTexts.includes(fragment3));
     });
   });
@@ -317,7 +317,7 @@ suite('Speech', () => {
 
     emitEvent(app, NEXT_GRANULARITY_EVENT);
 
-    assertEquals(speechSynthesis.spokenUtterances.length, expectedNumSentences);
+    assertEquals(expectedNumSentences, speechSynthesis.spokenUtterances.length);
     const utteranceTexts = getSpokenTexts();
     assertFalse(utteranceTexts.includes(paragraph1[0]!));
     assertTrue(paragraph2.every(sentence => utteranceTexts.includes(sentence)));
@@ -330,8 +330,8 @@ suite('Speech', () => {
 
     emitEvent(app, PREVIOUS_GRANULARITY_EVENT);
 
-    assertEquals(speechSynthesis.spokenUtterances.length, 1);
-    assertEquals(speechSynthesis.spokenUtterances[0]!.text, paragraph2.at(-1)!);
+    assertEquals(1, speechSynthesis.spokenUtterances.length);
+    assertEquals(paragraph2.at(-1)!, speechSynthesis.spokenUtterances[0]!.text);
   });
 
 
@@ -382,11 +382,11 @@ suite('Speech', () => {
       app.playSpeech();
 
       assertEquals(
-          speechSynthesis.spokenUtterances.length, expectedNumSegments);
+          expectedNumSegments, speechSynthesis.spokenUtterances.length);
       const spoken =
           speechSynthesis.spokenUtterances.map(utterance => utterance.text)
               .join('');
-      assertEquals(spoken, longSentences);
+      assertEquals(longSentences, spoken);
     });
 
     test('on text-too-long error smaller text segment plays', () => {
@@ -404,7 +404,7 @@ suite('Speech', () => {
       assertFalse(speechSynthesis.speaking);
       assertTrue(speechSynthesis.canceled);
       assertFalse(speechSynthesis.paused);
-      assertEquals(speechSynthesis.spokenUtterances.length, 3);
+      assertEquals(3, speechSynthesis.spokenUtterances.length);
 
       // The first utterance should contain the entire text, but it should
       // be canceled. The second utterance should be the smaller text
@@ -412,17 +412,17 @@ suite('Speech', () => {
       // should be the remaining text, as there is no longer a text-too-long
       // error triggered.
       const accessibleTextLength = app.getAccessibleTextLength(longSentences);
-      assertEquals(speechSynthesis.spokenUtterances[0]!.text, longSentences);
+      assertEquals(longSentences, speechSynthesis.spokenUtterances[0]!.text);
       assertEquals(
-          speechSynthesis.spokenUtterances[1]!.text,
-          longSentences.substring(0, accessibleTextLength));
+          longSentences.substring(0, accessibleTextLength),
+          speechSynthesis.spokenUtterances[1]!.text);
       assertEquals(
-          speechSynthesis.spokenUtterances[2]!.text,
-          longSentences.substring(accessibleTextLength));
-      assertEquals(speechSynthesis.canceledUtterances.length, 1);
+          longSentences.substring(accessibleTextLength),
+          speechSynthesis.spokenUtterances[2]!.text);
+      assertEquals(1, speechSynthesis.canceledUtterances.length);
       assertEquals(
-          speechSynthesis.canceledUtterances[0]!,
-          speechSynthesis.spokenUtterances[0]!);
+          speechSynthesis.spokenUtterances[0]!,
+          speechSynthesis.canceledUtterances[0]!);
     });
   });
 
@@ -587,7 +587,7 @@ suite('Speech', () => {
         assertFalse(speechSynthesis.speaking);
         assertTrue(speechSynthesis.canceled);
         assertFalse(speechSynthesis.paused);
-        assertEquals(speechRate, 1);
+        assertEquals(1, speechRate);
       });
     });
 
@@ -600,7 +600,7 @@ suite('Speech', () => {
         assertTrue(speechSynthesis.canceled, 'canceled');
         assertTrue(speechSynthesis.speaking, 'speaking');
         assertFalse(speechSynthesis.paused, 'paused');
-        assertEquals(speechSynthesis.spokenUtterances.length, 1);
+        assertEquals(1, speechSynthesis.spokenUtterances.length);
       });
 
       test('then resumes speech after voice menu is closed', () => {
@@ -612,7 +612,7 @@ suite('Speech', () => {
 
         assertTrue(speechSynthesis.canceled);
         assertFalse(speechSynthesis.paused);
-        assertEquals(speechSynthesis.spokenUtterances.length, totalSentences);
+        assertEquals(totalSentences, speechSynthesis.spokenUtterances.length);
       });
     });
   });

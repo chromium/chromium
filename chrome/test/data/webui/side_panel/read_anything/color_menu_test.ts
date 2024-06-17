@@ -61,7 +61,7 @@ suite('ColorMenu', () => {
         option.click();
 
         // the selected option is unique and is emitted down the pipeline
-        assertEquals(emittedColors.indexOf(colorEmitted), -1);
+        assertEquals(-1, emittedColors.indexOf(colorEmitted));
         assertGT(chrome.readingMode.colorTheme, previousPropagatedColor);
 
         emittedColors.push(colorEmitted);

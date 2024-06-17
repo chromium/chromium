@@ -59,7 +59,7 @@ suite('LinksToggledIntegration', () => {
 
   function assertContainerHasLinks(hasLinks: boolean) {
     const innerHTML = app.$.container.innerHTML;
-    assertEquals(innerHTML.includes('a href'), hasLinks);
+    assertEquals(hasLinks, innerHTML.includes('a href'));
   }
 
   setup(() => {

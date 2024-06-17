@@ -18,13 +18,13 @@ suite('Common', () => {
   suite('getCurrentSpeechRate', () => {
     test('rounds value to 1 decimal', () => {
       chrome.readingMode.speechRate = 1.1234567890;
-      assertEquals(getCurrentSpeechRate(), 1.1);
+      assertEquals(1.1, getCurrentSpeechRate());
 
       chrome.readingMode.speechRate = 0.912345678;
-      assertEquals(getCurrentSpeechRate(), 0.9);
+      assertEquals(0.9, getCurrentSpeechRate());
 
       chrome.readingMode.speechRate = 1.199999999;
-      assertEquals(getCurrentSpeechRate(), 1.2);
+      assertEquals(1.2, getCurrentSpeechRate());
     });
   });
 });

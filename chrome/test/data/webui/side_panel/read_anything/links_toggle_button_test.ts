@@ -57,7 +57,7 @@ suite('LinksToggle', () => {
 
     test('links are turned off', () => {
       assertEquals(LINKS_DISABLED_ICON, menuButton.ironIcon);
-      assertEquals(chrome.readingMode.linksEnabled, false);
+      assertFalse(chrome.readingMode.linksEnabled);
       assertStringContains('enable links', menuButton.title.toLowerCase());
     });
 

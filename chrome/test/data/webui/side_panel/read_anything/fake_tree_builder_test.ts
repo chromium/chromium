@@ -39,18 +39,18 @@ suite('FakeTreeBuilderTest', () => {
       const node = tree.nodes.get(expectedId)!;
       assertEquals(node.id, expectedId);
 
-      assertEquals(node.htmlTag, expectedHtmlTag);
-      assertEquals(readingMode.getHtmlTag(expectedId), expectedHtmlTag);
+      assertEquals(expectedHtmlTag, node.htmlTag);
+      assertEquals(expectedHtmlTag, readingMode.getHtmlTag(expectedId));
 
-      assertEquals(node.textContent, expectedTextContent);
-      assertEquals(readingMode.getTextContent(expectedId), expectedTextContent);
+      assertEquals(expectedTextContent, node.textContent);
+      assertEquals(expectedTextContent, readingMode.getTextContent(expectedId));
 
       const readingModeChildren = readingMode.getChildren(expectedId);
-      assertEquals(readingModeChildren.length, expectedChildren.length);
-      assertEquals(node.children.length, expectedChildren.length);
+      assertEquals(expectedChildren.length, readingModeChildren.length);
+      assertEquals(expectedChildren.length, node.children.length);
       for (let i = 0; i < expectedChildren.length; i++) {
-        assertEquals(readingModeChildren[i]!, expectedChildren[i]);
-        assertEquals(node.children[i]!, expectedChildren[i]);
+        assertEquals(expectedChildren[i], readingModeChildren[i]!);
+        assertEquals(expectedChildren[i], node.children[i]!);
       }
     }
 
@@ -75,7 +75,7 @@ suite('FakeTreeBuilderTest', () => {
       const rootId = 0;
       const tree = builder.root(rootId).build(readingMode);
 
-      assertEquals(readingMode.rootId, rootId);
+      assertEquals(rootId, readingMode.rootId);
       assertNodeHasExpectedValues(tree, rootId, '#document', '', []);
     });
 
@@ -99,7 +99,7 @@ suite('FakeTreeBuilderTest', () => {
       });
 
       test('root of tree has document tag and html tag children', () => {
-        assertEquals(readingMode.rootId, rootId);
+        assertEquals(rootId, readingMode.rootId);
         assertNodeHasExpectedValues(
             tree, rootId, '#document', '', htmlTagNodes);
       });
@@ -150,19 +150,19 @@ suite('FakeTreeBuilderTest', () => {
       test('selection within one node succeeds', () => {
         tree.setSelection(14, 3, 14, 10);
 
-        assertEquals(readingMode.startNodeId, 14);
-        assertEquals(readingMode.endNodeId, 14);
-        assertEquals(readingMode.startOffset, 3);
-        assertEquals(readingMode.endOffset, 10);
+        assertEquals(14, readingMode.startNodeId);
+        assertEquals(14, readingMode.endNodeId);
+        assertEquals(3, readingMode.startOffset);
+        assertEquals(10, readingMode.endOffset);
       });
 
       test('selection across nodes succeeds', () => {
         tree.setSelection(14, 0, 16, 5);
 
-        assertEquals(readingMode.startNodeId, 14);
-        assertEquals(readingMode.endNodeId, 16);
-        assertEquals(readingMode.startOffset, 0);
-        assertEquals(readingMode.endOffset, 5);
+        assertEquals(14, readingMode.startNodeId);
+        assertEquals(16, readingMode.endNodeId);
+        assertEquals(0, readingMode.startOffset);
+        assertEquals(5, readingMode.endOffset);
       });
     });
 
@@ -177,18 +177,18 @@ suite('FakeTreeBuilderTest', () => {
         });
 
         test('indices for highlighted node are correct', () => {
-          assertEquals(readingMode.getCurrentTextStartIndex(textNodes[1]!), 3);
-          assertEquals(readingMode.getCurrentTextEndIndex(textNodes[1]!), 10);
+          assertEquals(3, readingMode.getCurrentTextStartIndex(textNodes[1]!));
+          assertEquals(10, readingMode.getCurrentTextEndIndex(textNodes[1]!));
         });
 
         test('indices for valid but not highlighted node are not found', () => {
-          assertEquals(readingMode.getCurrentTextStartIndex(textNodes[2]!), -1);
-          assertEquals(readingMode.getCurrentTextEndIndex(textNodes[2]!), -1);
+          assertEquals(-1, readingMode.getCurrentTextStartIndex(textNodes[2]!));
+          assertEquals(-1, readingMode.getCurrentTextEndIndex(textNodes[2]!));
         });
 
         test('indices for invalid node are not found', () => {
-          assertEquals(readingMode.getCurrentTextStartIndex(0), -1);
-          assertEquals(readingMode.getCurrentTextEndIndex(0), -1);
+          assertEquals(-1, readingMode.getCurrentTextStartIndex(0));
+          assertEquals(-1, readingMode.getCurrentTextEndIndex(0));
         });
       });
 
@@ -198,20 +198,20 @@ suite('FakeTreeBuilderTest', () => {
         });
 
         test('indices for first highlighted node are correct', () => {
-          assertEquals(readingMode.getCurrentTextStartIndex(textNodes[1]!), 4);
+          assertEquals(4, readingMode.getCurrentTextStartIndex(textNodes[1]!));
           assertEquals(
               readingMode.getCurrentTextEndIndex(textNodes[1]!),
               text[1]!.length);
         });
 
         test('indices for last highlighted node are correct', () => {
-          assertEquals(readingMode.getCurrentTextStartIndex(textNodes[3]!), 0);
-          assertEquals(readingMode.getCurrentTextEndIndex(textNodes[3]!), 5);
+          assertEquals(0, readingMode.getCurrentTextStartIndex(textNodes[3]!));
+          assertEquals(5, readingMode.getCurrentTextEndIndex(textNodes[3]!));
         });
 
         test('indices for invalid node are not found', () => {
-          assertEquals(readingMode.getCurrentTextStartIndex(0), -1);
-          assertEquals(readingMode.getCurrentTextEndIndex(0), -1);
+          assertEquals(-1, readingMode.getCurrentTextStartIndex(0));
+          assertEquals(-1, readingMode.getCurrentTextEndIndex(0));
         });
       });
     });
@@ -227,20 +227,20 @@ suite('FakeTreeBuilderTest', () => {
         });
 
         test('full node is highlighted', () => {
-          assertEquals(readingMode.getCurrentTextStartIndex(textNodes[2]!), 0);
+          assertEquals(0, readingMode.getCurrentTextStartIndex(textNodes[2]!));
           assertEquals(
               readingMode.getCurrentTextEndIndex(textNodes[2]!),
               text[2]!.length);
         });
 
         test('valid but not highlighted node has invalid indices', () => {
-          assertEquals(readingMode.getCurrentTextStartIndex(textNodes[3]!), -1);
-          assertEquals(readingMode.getCurrentTextEndIndex(textNodes[3]!), -1);
+          assertEquals(-1, readingMode.getCurrentTextStartIndex(textNodes[3]!));
+          assertEquals(-1, readingMode.getCurrentTextEndIndex(textNodes[3]!));
         });
 
         test('indices for invalid node are not found', () => {
-          assertEquals(readingMode.getCurrentTextStartIndex(0), -1);
-          assertEquals(readingMode.getCurrentTextEndIndex(0), -1);
+          assertEquals(-1, readingMode.getCurrentTextStartIndex(0));
+          assertEquals(-1, readingMode.getCurrentTextEndIndex(0));
         });
       });
     });

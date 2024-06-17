@@ -124,7 +124,7 @@ suite('SpeechUsesMaxTextLength', () => {
 
     test('first accessible text boundary is at last comma', () => {
       assertLT(firstBoundary, longSentenceWithFewCommas.length);
-      assertEquals(longSentenceWithFewCommas.lastIndexOf(','), firstBoundary);
+      assertEquals(firstBoundary, longSentenceWithFewCommas.lastIndexOf(','));
     });
 
     test('next accessible text boundary is before end of string', () => {

@@ -42,8 +42,8 @@ suite('RateSelection', () => {
 
   suite('by default', () => {
     test('uses 1x', () => {
-      assertEquals(rateButton.ironIcon, 'voice-rate:1');
-      assertEquals(chrome.readingMode.speechRate, 1);
+      assertEquals('voice-rate:1', rateButton.ironIcon);
+      assertEquals(1, chrome.readingMode.speechRate);
     });
 
     test('menu is not open', () => {
@@ -90,11 +90,11 @@ suite('RateSelection', () => {
       menuOption.click();
 
       // updates rate
-      assertEquals(chrome.readingMode.speechRate, rateValue);
+      assertEquals(rateValue, chrome.readingMode.speechRate);
       assertTrue(rateEmitted);
 
       // updates icon on toolbar'
-      assertEquals(rateButton.ironIcon, 'voice-rate:' + rateValue);
+      assertEquals('voice-rate:' + rateValue, rateButton.ironIcon);
 
       // closes menu
       assertFalse(toolbar.$.rateMenu.get().open);

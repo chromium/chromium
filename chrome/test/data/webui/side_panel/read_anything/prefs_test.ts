@@ -122,14 +122,14 @@ suite('PrefsTest', () => {
       test('to the stored voice for this language if there is one', () => {
         chrome.readingMode.getStoredVoice = () => otherVoice.name;
         app.restoreSettingsFromPrefs();
-        assertEquals(app.selectedVoice, otherVoice);
+        assertEquals(otherVoice, app.selectedVoice);
       });
 
       test('to a default voice if the stored voice is invalid', () => {
         chrome.readingMode.getStoredVoice = () => 'Matt';
         app.enabledLangs = [langForDefaultVoice];
         app.restoreSettingsFromPrefs();
-        assertEquals(app.selectedVoice, defaultVoice);
+        assertEquals(defaultVoice, app.selectedVoice);
       });
 
       suite('when there is no stored voice for this language', () => {
@@ -146,13 +146,13 @@ suite('PrefsTest', () => {
             app.selectedVoice = otherVoice;
             app.enabledLangs = [otherVoice.lang];
             app.restoreSettingsFromPrefs();
-            assertEquals(app.selectedVoice, otherVoice);
+            assertEquals(otherVoice, app.selectedVoice);
           });
 
           test('to the device default if there\'s no current voice', () => {
             app.enabledLangs = [langForDefaultVoice, otherVoice.lang];
             app.restoreSettingsFromPrefs();
-            assertEquals(app.selectedVoice, defaultVoice);
+            assertEquals(defaultVoice, app.selectedVoice);
           });
         });
 
@@ -160,7 +160,7 @@ suite('PrefsTest', () => {
           app.enabledLangs = [lang1];
           app.speechSynthesisLanguage = lang1;
           app.restoreSettingsFromPrefs();
-          assertEquals(app.selectedVoice, defaultVoiceWithLang1);
+          assertEquals(defaultVoiceWithLang1, app.selectedVoice);
         });
 
         test(
@@ -171,8 +171,8 @@ suite('PrefsTest', () => {
               app.restoreSettingsFromPrefs();
               const currentSelectedVoice = app.selectedVoice;
               assertTrue(!!currentSelectedVoice);
-              assertEquals(currentSelectedVoice.name, firstVoiceWithLang2.name);
-              assertEquals(currentSelectedVoice.lang, firstVoiceWithLang2.lang);
+              assertEquals(firstVoiceWithLang2.name, currentSelectedVoice.name);
+              assertEquals(firstVoiceWithLang2.lang, currentSelectedVoice.lang);
             });
       });
     });

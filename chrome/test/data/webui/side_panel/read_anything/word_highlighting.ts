@@ -99,7 +99,7 @@ suite('WordHighlighting', () => {
       const currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
       assertTrue(currentHighlight !== undefined);
-      assertEquals(currentHighlight!.textContent, 'This is a link.');
+      assertEquals('This is a link.', currentHighlight!.textContent);
     });
   });
 
@@ -112,7 +112,7 @@ suite('WordHighlighting', () => {
       const currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
       assertTrue(currentHighlight !== undefined);
-      assertEquals(currentHighlight!.textContent, 'This is a link.');
+      assertEquals('This is a link.', currentHighlight!.textContent);
     });
   });
 });

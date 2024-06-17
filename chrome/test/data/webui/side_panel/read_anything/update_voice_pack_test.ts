@@ -74,8 +74,8 @@ suite('UpdateVoicePack', () => {
             getVoicePackServerInstallStatus(voicePackLang).code,
             VoicePackServerStatusSuccessCode.NOT_INSTALLED);
         assertEquals(
-            getVoicePackServerInstallStatus(lang).id, 'Successful response');
-        assertEquals(sentInstallRequestFor, voicePackLang);
+            'Successful response', getVoicePackServerInstallStatus(lang).id);
+        assertEquals(voicePackLang, sentInstallRequestFor);
       });
     });
   });
@@ -165,7 +165,7 @@ suite('UpdateVoicePack', () => {
             getVoicePackServerInstallStatus(lang).code,
             VoicePackServerStatusSuccessCode.INSTALLED);
         assertEquals(
-            getVoicePackServerInstallStatus(lang).id, 'Successful response');
+            'Successful response', getVoicePackServerInstallStatus(lang).id);
         assertEquals(
             app.getVoicePackLocalStatus(lang),
             VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
@@ -197,7 +197,7 @@ suite('UpdateVoicePack', () => {
         getVoicePackServerInstallStatus(lang).code,
         VoicePackServerStatusSuccessCode.INSTALLED);
     assertEquals(
-        getVoicePackServerInstallStatus(lang).id, 'Successful response');
+        'Successful response', getVoicePackServerInstallStatus(lang).id);
     assertEquals(
         app.getVoicePackLocalStatus(lang),
         VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
@@ -217,7 +217,7 @@ suite('UpdateVoicePack', () => {
             getVoicePackServerInstallStatus(lang).code,
             VoicePackServerStatusSuccessCode.INSTALLED);
         assertEquals(
-            getVoicePackServerInstallStatus(lang).id, 'Successful response');
+            'Successful response', getVoicePackServerInstallStatus(lang).id);
         assertEquals(
             app.getVoicePackLocalStatus(lang),
             VoiceClientSideStatusCode.AVAILABLE);
@@ -234,7 +234,7 @@ suite('UpdateVoicePack', () => {
             getVoicePackServerInstallStatus(lang).code,
             VoicePackServerStatusSuccessCode.INSTALLED);
         assertEquals(
-            getVoicePackServerInstallStatus(lang).id, 'Successful response');
+            'Successful response', getVoicePackServerInstallStatus(lang).id);
         assertEquals(
             app.getVoicePackLocalStatus(lang),
             VoiceClientSideStatusCode.INSTALLED_AND_UNAVAILABLE);
@@ -259,12 +259,12 @@ suite('UpdateVoicePack', () => {
             getVoicePackServerInstallStatus(lang).code,
             VoicePackServerStatusSuccessCode.INSTALLED);
         assertEquals(
-            getVoicePackServerInstallStatus(lang).id, 'Successful response');
+            'Successful response', getVoicePackServerInstallStatus(lang).id);
         assertEquals(
             app.getVoicePackLocalStatus(lang),
             VoiceClientSideStatusCode.AVAILABLE);
         assertTrue(app.getVoices().some(v => v.lang.toLowerCase() === lang));
-        assertEquals(app.selectedVoice, undefined);
+        assertEquals(undefined, app.selectedVoice);
       });
 
   test(
@@ -287,7 +287,7 @@ suite('UpdateVoicePack', () => {
         app.updateVoicePackStatus(lang, 'kInstalled');
 
         assertTrue(!!app.selectedVoice);
-        assertEquals(app.selectedVoice.lang, lang);
+        assertEquals(lang, app.selectedVoice.lang);
         assertTrue(app.selectedVoice.name.includes('Natural'));
       });
 
@@ -314,7 +314,7 @@ suite('UpdateVoicePack', () => {
         app.updateVoicePackStatus(lang, 'kInstalled');
 
         // The selected voice should stay the same as it was.
-        assertEquals(app.selectedVoice, currentVoice);
+        assertEquals(currentVoice, app.selectedVoice);
       });
 
   test('with error code marks the status', () => {
@@ -324,7 +324,7 @@ suite('UpdateVoicePack', () => {
         getVoicePackServerInstallStatus(lang).code,
         VoicePackServerStatusErrorCode.OTHER);
     assertEquals(
-        getVoicePackServerInstallStatus(lang).id, 'Unsuccessful response');
+        'Unsuccessful response', getVoicePackServerInstallStatus(lang).id);
 
     assertEquals(
         app.getVoicePackLocalStatus(lang),

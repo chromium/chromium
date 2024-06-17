@@ -98,15 +98,15 @@ suite('UpdateContentSelection', () => {
     test('InnerHtmlCorrect', () => {
       const expected = '<div><p>World</p><p>Friend!</p></div>';
       const innerHTML = app.$.container.innerHTML;
-      assertEquals(innerHTML, expected);
+      assertEquals(expected, innerHTML);
     });
 
     test('CorrectContentSelected', () => {
       const selection = app.getSelection();
-      assertEquals(selection.anchorNode.textContent, 'World');
-      assertEquals(selection.focusNode.textContent, 'Friend');
-      assertEquals(selection.anchorOffset, 1);
-      assertEquals(selection.focusOffset, 2);
+      assertEquals('World', selection.anchorNode.textContent);
+      assertEquals('Friend', selection.focusNode.textContent);
+      assertEquals(1, selection.anchorOffset);
+      assertEquals(2, selection.focusOffset);
     });
   });
 });

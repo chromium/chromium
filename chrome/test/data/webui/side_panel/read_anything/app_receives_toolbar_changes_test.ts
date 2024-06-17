@@ -44,15 +44,15 @@ suite('AppReceivesToolbarChanges', () => {
     test('container letter spacing updated', () => {
       const letterSpacing1 = 0.5;
       emitLetterSpacing(letterSpacing1);
-      assertEquals(containerLetterSpacing(), letterSpacing1);
+      assertEquals(letterSpacing1, containerLetterSpacing());
 
       const letterSpacing2 = 1.2;
       emitLetterSpacing(letterSpacing2);
-      assertEquals(containerLetterSpacing(), letterSpacing2);
+      assertEquals(letterSpacing2, containerLetterSpacing());
 
       const letterSpacing3 = 2;
       emitLetterSpacing(letterSpacing3);
-      assertEquals(containerLetterSpacing(), letterSpacing3);
+      assertEquals(letterSpacing3, containerLetterSpacing());
     });
   });
 
@@ -69,15 +69,15 @@ suite('AppReceivesToolbarChanges', () => {
     test('container line spacing updated', () => {
       const lineSpacing1 = 0.5;
       emitLineSpacing(lineSpacing1);
-      assertEquals(containerLineSpacing(), lineSpacing1);
+      assertEquals(lineSpacing1, containerLineSpacing());
 
       const lineSpacing2 = 1.2;
       emitLineSpacing(lineSpacing2);
-      assertEquals(containerLineSpacing(), lineSpacing2);
+      assertEquals(lineSpacing2, containerLineSpacing());
 
       const lineSpacing3 = 2;
       emitLineSpacing(lineSpacing3);
-      assertEquals(containerLineSpacing(), lineSpacing3);
+      assertEquals(lineSpacing3, containerLineSpacing());
     });
   });
 
@@ -96,17 +96,17 @@ suite('AppReceivesToolbarChanges', () => {
       const fontSize1 = 12;
       chrome.readingMode.fontSize = fontSize1;
       emitFontSize();
-      assertEquals(containerFontSize(), fontSize1);
+      assertEquals(fontSize1, containerFontSize());
 
       const fontSize2 = 16;
       chrome.readingMode.fontSize = fontSize2;
       emitFontSize();
-      assertEquals(containerFontSize(), fontSize2);
+      assertEquals(fontSize2, containerFontSize());
 
       const fontSize3 = 9;
       chrome.readingMode.fontSize = fontSize3;
       emitFontSize();
-      assertEquals(containerFontSize(), fontSize3);
+      assertEquals(fontSize3, containerFontSize());
     });
   });
 
@@ -177,8 +177,8 @@ suite('AppReceivesToolbarChanges', () => {
 
     function assertFontsEqual(actual: string, expected: string): void {
       assertEquals(
-          actual.trim().toLowerCase().replaceAll('"', ''),
-          expected.trim().toLowerCase().replaceAll('"', ''));
+          expected.trim().toLowerCase().replaceAll('"', ''),
+          actual.trim().toLowerCase().replaceAll('"', ''));
     }
 
     test('valid font updates container font', () => {
@@ -271,7 +271,7 @@ suite('AppReceivesToolbarChanges', () => {
             () => {
               emitLanguageToggle(lang);
 
-              assertEquals(sentInstallRequestFor, lang);
+              assertEquals(lang, sentInstallRequestFor);
               assertEquals(
                   app.getVoicePackLocalStatus(lang),
                   VoiceClientSideStatusCode.SENT_INSTALL_REQUEST_ERROR_RETRY);
@@ -282,7 +282,7 @@ suite('AppReceivesToolbarChanges', () => {
         test('directly sends install request', () => {
           emitLanguageToggle('en-us');
 
-          assertEquals(sentInstallRequestFor, 'en-us');
+          assertEquals('en-us', sentInstallRequestFor);
         });
       });
 
@@ -299,7 +299,7 @@ suite('AppReceivesToolbarChanges', () => {
         test('does not directly install lang', () => {
           emitLanguageToggle(lang);
 
-          assertEquals(sentInstallRequestFor, '');
+          assertEquals('', sentInstallRequestFor);
         });
       });
     });
@@ -423,25 +423,25 @@ suite('AppReceivesToolbarChanges', () => {
 
     test('on hide, uses transparent highlight', () => {
       emitHighlight(false);
-      assertEquals(highlightColor(), 'transparent');
+      assertEquals('transparent', highlightColor());
     });
 
     test('on show, uses colored highlight', () => {
       emitHighlight(true);
-      assertNotEquals(highlightColor(), 'transparent');
+      assertNotEquals('transparent', highlightColor());
     });
 
     suite('after update color theme', () => {
       test('uses colored highlight with highlights on', () => {
         emitHighlight(true);
         emitEvent(app, THEME_EVENT, {detail: {data: '-blue'}});
-        assertNotEquals(highlightColor(), 'transparent');
+        assertNotEquals('transparent', highlightColor());
       });
 
       test('uses transparent highlight with highlights off', () => {
         emitHighlight(false);
         emitEvent(app, THEME_EVENT, {detail: {data: '-yellow'}});
-        assertEquals(highlightColor(), 'transparent');
+        assertEquals('transparent', highlightColor());
       });
     });
   });

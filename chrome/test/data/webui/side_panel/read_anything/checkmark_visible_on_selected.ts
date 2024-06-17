@@ -29,8 +29,8 @@ suite('CheckmarkVisibleOnSelected', () => {
       checkMarks: NodeListOf<HTMLElement>, expectedIndex: number): void {
     checkMarks.forEach((element, index) => {
       assertEquals(
-          element.style.visibility,
-          index === expectedIndex ? 'visible' : 'hidden');
+          index === expectedIndex ? 'visible' : 'hidden',
+          element.style.visibility);
     });
   }
 
