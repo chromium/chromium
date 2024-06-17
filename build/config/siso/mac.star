@@ -15,17 +15,7 @@ def __filegroups(ctx):
     fg.update(typescript.filegroups(ctx))
     return fg
 
-# to reduce unnecessary local process and
-# unnecessary digest calculation of output file.
-def __copy_bundle_data(ctx, cmd):
-    input = cmd.inputs[0]
-    out = cmd.outputs[0]
-    ctx.actions.copy(input, out, recursive = ctx.fs.is_dir(input))
-    ctx.actions.exit(exit_status = 0)
-
-__handlers = {
-    "copy_bundle_data": __copy_bundle_data,
-}
+__handlers = {}
 __handlers.update(clang.handlers)
 __handlers.update(typescript.handlers)
 
