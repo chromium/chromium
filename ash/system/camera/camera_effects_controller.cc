@@ -426,8 +426,8 @@ CameraEffectsController::CameraEffectsController()
 
   // The effects are not applied when this is constructed, observe for changes
   // that will come later.
-  media::CameraHalDispatcherImpl::GetInstance()->AddCameraEffectObserver(
-      this, base::DoNothing());
+  scoped_camera_effect_observation_.Observe(
+      media::CameraHalDispatcherImpl::GetInstance());
 
   Shell::Get()->autozoom_controller()->AddObserver(this);
 }
@@ -442,8 +442,6 @@ CameraEffectsController::~CameraEffectsController() {
   }
 
   Shell::Get()->autozoom_controller()->RemoveObserver(this);
-  media::CameraHalDispatcherImpl::GetInstance()->RemoveCameraEffectObserver(
-      this);
 }
 
 cros::mojom::EffectsConfigPtr CameraEffectsController::GetCameraEffects() {

@@ -9,9 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
-#include "base/posix/safe_strerror.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
@@ -520,7 +518,7 @@ TEST_F(CameraHalDispatcherImplTest, CameraActiveClientObserverTest) {
 // the mojom call is replied from camera hal server.
 TEST_F(CameraHalDispatcherImplTest, CameraEffectObserver) {
   MockCameraEffectObserver observer;
-  dispatcher_->AddCameraEffectObserver(&observer, base::DoNothing());
+  dispatcher_->AddCameraEffectObserver(&observer);
   cros::mojom::EffectsConfigPtr config =
       GetDefaultCameraEffectsConfigForTesting();
   // Set effects for the first time.
@@ -593,7 +591,7 @@ TEST_F(CameraHalDispatcherImplTest, CameraEffectObserver) {
 // Test that SetCameraEffects behave correctly.
 TEST_F(CameraHalDispatcherImplTest, SetCameraEffects) {
   MockCameraEffectObserver observer;
-  dispatcher_->AddCameraEffectObserver(&observer, base::DoNothing());
+  dispatcher_->AddCameraEffectObserver(&observer);
   // Case (1) SetCameraEffects should fail if the camera service is not
   // initialized.
   CreateLoop(1);

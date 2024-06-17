@@ -11,13 +11,11 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/trace_event/trace_event.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "components/device_event_log/device_event_log.h"
 #include "media/capture/video/chromeos/mojom/camera_common.mojom.h"
@@ -376,18 +374,8 @@ void CameraHalDispatcherImpl::RemoveCameraPrivacySwitchObserver(
 }
 
 void CameraHalDispatcherImpl::AddCameraEffectObserver(
-    CameraEffectObserver* observer,
-    CameraEffectObserverCallback camera_effect_observer_callback) {
+    CameraEffectObserver* observer) {
   camera_effect_observers_->AddObserver(observer);
-
-  if (proxy_thread_.IsRunning() && !camera_effect_observer_callback.is_null()) {
-    proxy_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &CameraHalDispatcherImpl::OnCameraEffectsObserverAddOnProxyThread,
-            base::Unretained(this),
-            std::move(camera_effect_observer_callback)));
-  }
 }
 
 void CameraHalDispatcherImpl::RemoveCameraEffectObserver(
@@ -906,12 +894,6 @@ void CameraHalDispatcherImpl::OnSetCameraEffectsCompleteOnProxyThread(
   camera_effect_observers_->Notify(FROM_HERE,
                                    &CameraEffectObserver::OnCameraEffectChanged,
                                    std::move(new_effects));
-}
-
-void CameraHalDispatcherImpl::OnCameraEffectsObserverAddOnProxyThread(
-    CameraEffectObserverCallback camera_effect_observer_callback) {
-  DCHECK(proxy_task_runner_->BelongsToCurrentThread());
-  std::move(camera_effect_observer_callback).Run(current_effects_.Clone());
 }
 
 std::string CameraHalDispatcherImpl::GetDeviceIdFromCameraId(

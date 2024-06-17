@@ -261,6 +261,10 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
   // This task runner is used to run io work.
   const scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
 
+  base::ScopedObservation<media::CameraHalDispatcherImpl,
+                          media::CameraEffectObserver>
+      scoped_camera_effect_observation_{this};
+
   // Records current effects that is applied to camera hal server.
   cros::mojom::EffectsConfigPtr current_effects_;
 

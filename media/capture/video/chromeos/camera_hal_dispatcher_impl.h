@@ -11,14 +11,13 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/containers/unique_ptr_adapters.h"
-#include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation_traits.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
@@ -26,19 +25,15 @@
 #include "base/threading/thread.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/components/mojo_service_manager/mojom/mojo_service_manager.mojom.h"
-#include "components/chromeos_camera/common/jpeg_encode_accelerator.mojom.h"
-#include "components/chromeos_camera/common/mjpeg_decode_accelerator.mojom.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/video/chromeos/mojo_service_manager_observer.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
 #include "media/capture/video/chromeos/token_manager.h"
-#include "media/capture/video/video_capture_device_factory.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 
 namespace base {
 
@@ -178,11 +173,7 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
   void RemoveCameraPrivacySwitchObserver(CameraPrivacySwitchObserver* observer);
 
   // Adds an observer that watches for camera effect configuration change.
-  // Observer would be immediately notified of the current camera effect
-  // configuration changes.
-  void AddCameraEffectObserver(
-      CameraEffectObserver* observer,
-      CameraEffectObserverCallback camera_effect_observer_callback);
+  void AddCameraEffectObserver(CameraEffectObserver* observer);
 
   // Removes the observer. A previously-added observer must be removed before
   // being destroyed.
@@ -310,10 +301,6 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
       bool is_from_register,
       cros::mojom::SetEffectResult result);
 
-  // Called when new camera effects observer is added.
-  void OnCameraEffectsObserverAddOnProxyThread(
-      CameraEffectObserverCallback camera_effect_observer_callback);
-
   void BindCameraServiceOnProxyThread(
       mojo::PendingRemote<cros::mojom::CrosCameraService> camera_service);
 
@@ -401,5 +388,22 @@ class CAPTURE_EXPORT CameraHalDispatcherImpl final
 };
 
 }  // namespace media
+
+namespace base {
+
+template <>
+struct ScopedObservationTraits<media::CameraHalDispatcherImpl,
+                               media::CameraEffectObserver> {
+  static void AddObserver(media::CameraHalDispatcherImpl* source,
+                          media::CameraEffectObserver* observer) {
+    source->AddCameraEffectObserver(observer);
+  }
+  static void RemoveObserver(media::CameraHalDispatcherImpl* source,
+                             media::CameraEffectObserver* observer) {
+    source->RemoveCameraEffectObserver(observer);
+  }
+};
+
+}  // namespace base
 
 #endif  // MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_HAL_DISPATCHER_IMPL_H_

@@ -5,14 +5,15 @@
 #include "media/capture/video/chromeos/video_capture_device_chromeos_delegate.h"
 
 #include <memory>
-#include <queue>
 #include <string>
 #include <utility>
 
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/trace_event.h"
 #include "chromeos/ash/components/mojo_service_manager/connection.h"
 #include "media/capture/video/chromeos/camera_app_device_bridge_impl.h"
 #include "media/capture/video/chromeos/camera_device_delegate.h"
@@ -21,7 +22,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/cros_system_api/mojo/service_constants.h"
-#include "ui/display/display.h"
 
 namespace media {
 
