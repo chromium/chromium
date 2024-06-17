@@ -748,6 +748,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
     [self.tableViewModel addItem:[self enhancedSafeBrowsingInlinePromoItem]
          toSectionWithIdentifier:SettingsSectionIdentifierESBPromo];
   }
+
+  [self maybeRecordEnhancedSafeBrowsingImpressionLimitReached];
 }
 
 #pragma mark - Model Items
@@ -2156,6 +2158,27 @@ UIImage* GetBrandedGoogleServicesSymbol() {
          (IsPriceNotificationsEnabled() ||
           IsContentNotificationEnabled(_browserState) ||
           IsIOSTipsNotificationsEnabled());
+}
+
+// Records that the user has reached the impression limit for the enhanced safe
+// browsing inline promo.
+- (void)maybeRecordEnhancedSafeBrowsingImpressionLimitReached {
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(_browserState);
+  std::vector<std::pair<feature_engagement::EventConfig, int>> events =
+      tracker->ListEvents(
+          feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature);
+  for (const auto& event : events) {
+    if (event.first.name == "inline_enhanced_safe_browsing_promo_trigger") {
+      unsigned int impressionLimit = event.first.comparator.value;
+      unsigned int numberOfImpressions = event.second;
+      if (impressionLimit == numberOfImpressions) {
+        base::RecordAction(base::UserMetricsAction(
+            "MobileSettingsEnhancedSafeBrowsingInlineProm"
+            "oImpressionLimitReached"));
+      }
+    }
+  }
 }
 
 #pragma mark - Sign in
