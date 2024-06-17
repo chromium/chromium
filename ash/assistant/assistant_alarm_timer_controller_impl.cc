@@ -247,7 +247,7 @@ AssistantNotification CreateTimerNotification(
   notification.grouping_key = kTimerNotificationGroupingKey;
   notification.priority = CreateTimerNotificationPriority(timer);
   notification.remove_on_click = false;
-  notification.is_pinned = true;
+  notification.is_pinned = false;
 
   // If we are creating a notification to replace an |existing_notification| and
   // our new notification has higher priority, we want the system to "renotify"

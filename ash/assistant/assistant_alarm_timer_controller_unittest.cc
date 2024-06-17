@@ -720,17 +720,4 @@ TEST_F(AssistantAlarmTimerControllerTest,
             notification_model_observer.last_notification());
 }
 
-// Tests that a notification is added for a timer and is pinned.
-TEST_F(AssistantAlarmTimerControllerTest, TimerNotificationIsPinned) {
-  // Observe notifications.
-  ScopedNotificationModelObserver observer;
-
-  // Schedule a timer.
-  ScheduleTimer{kTimerId};
-
-  // Make assertions about the notification.
-  EXPECT_EQ(ExpectedNotification().WithClientId(kClientId).WithIsPinned(true),
-            observer.last_notification());
-}
-
 }  // namespace ash
