@@ -671,6 +671,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   void PerformAction(std::unique_ptr<BrowserAction> action);
 
+  // Delete Lacros data. Call if Lacros is disabled and not running.
+  void ClearLacrosData();
 
   // NOTE: The state is exposed to tests via autotest_private.
   State state_ = State::NOT_INITIALIZED;
