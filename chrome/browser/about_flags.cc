@@ -1411,6 +1411,26 @@ const FeatureEntry::FeatureVariation
          std::size(kOmniboxRichAutocompletionAggressive4), nullptr},
 };
 
+const FeatureEntry::FeatureParam
+    kOmniboxDriveSuggestionsIgnoreWhenDebouncing[] = {
+        {"DocumentProviderIgnoreWhenDebouncing", "true"}};
+const FeatureEntry::FeatureVariation kOmniboxDriveSuggestionsVariations[] = {
+    {"ignore when debouncing", kOmniboxDriveSuggestionsIgnoreWhenDebouncing,
+     std::size(kOmniboxDriveSuggestionsIgnoreWhenDebouncing), nullptr}};
+
+const FeatureEntry::FeatureParam kOmniboxStarterPackExpansionPreProdUrl[] = {
+    {"StarterPackGeminiUrlOverride", "https://gemini.google.com/corp/prompt"}};
+const FeatureEntry::FeatureParam kOmniboxStarterPackExpansionStagingUrl[] = {
+    {"StarterPackGeminiUrlOverride",
+     "https://gemini.google.com/staging/prompt"}};
+const FeatureEntry::FeatureVariation kOmniboxStarterPackExpansionVariations[] =
+    {{"pre-prod url", kOmniboxStarterPackExpansionPreProdUrl,
+      std::size(kOmniboxStarterPackExpansionPreProdUrl), nullptr},
+     {"staging url", kOmniboxStarterPackExpansionStagingUrl,
+      std::size(kOmniboxStarterPackExpansionStagingUrl), nullptr}};
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
+        // BUILDFLAG(IS_WIN)
+
 const FeatureEntry::FeatureParam kOmniboxMlUrlScoringEnabledWithFixes[] = {
     {"enable_scoring_signals_annotators_for_ml_scoring", "true"},
     {"MlUrlScoringShortcutDocumentSignals", "true"},
@@ -1516,26 +1536,6 @@ const FeatureEntry::FeatureVariation kMlUrlSearchBlendingVariations[] = {
     {"Mapped aggressive urls", kMlUrlSearchBlendingMappedAggressiveUrls,
      std::size(kMlUrlSearchBlendingMappedAggressiveUrls), nullptr},
 };
-
-const FeatureEntry::FeatureParam
-    kOmniboxDriveSuggestionsIgnoreWhenDebouncing[] = {
-        {"DocumentProviderIgnoreWhenDebouncing", "true"}};
-const FeatureEntry::FeatureVariation kOmniboxDriveSuggestionsVariations[] = {
-    {"ignore when debouncing", kOmniboxDriveSuggestionsIgnoreWhenDebouncing,
-     std::size(kOmniboxDriveSuggestionsIgnoreWhenDebouncing), nullptr}};
-
-const FeatureEntry::FeatureParam kOmniboxStarterPackExpansionPreProdUrl[] = {
-    {"StarterPackGeminiUrlOverride", "https://gemini.google.com/corp/prompt"}};
-const FeatureEntry::FeatureParam kOmniboxStarterPackExpansionStagingUrl[] = {
-    {"StarterPackGeminiUrlOverride",
-     "https://gemini.google.com/staging/prompt"}};
-const FeatureEntry::FeatureVariation kOmniboxStarterPackExpansionVariations[] =
-    {{"pre-prod url", kOmniboxStarterPackExpansionPreProdUrl,
-      std::size(kOmniboxStarterPackExpansionPreProdUrl), nullptr},
-     {"staging url", kOmniboxStarterPackExpansionStagingUrl,
-      std::size(kOmniboxStarterPackExpansionStagingUrl), nullptr}};
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
-        // BUILDFLAG(IS_WIN)
 
 const FeatureEntry::FeatureParam
     kOmniboxZeroSuggestPrefetchDebouncingMinimalFromLastRun[] = {
@@ -6209,6 +6209,38 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxZeroSuggestInMemoryCachingDescription, kOsAll,
      FEATURE_VALUE_TYPE(omnibox::kZeroSuggestInMemoryCaching)},
 
+    {"omnibox-ml-log-url-scoring-signals",
+     flag_descriptions::kOmniboxMlLogUrlScoringSignalsName,
+     flag_descriptions::kOmniboxMlLogUrlScoringSignalsDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kLogUrlScoringSignals)},
+    {"omnibox-ml-url-piecewise-mapped-search-blending",
+     flag_descriptions::kOmniboxMlUrlPiecewiseMappedSearchBlendingName,
+     flag_descriptions::kOmniboxMlUrlPiecewiseMappedSearchBlendingDescription,
+     kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         omnibox::kMlUrlPiecewiseMappedSearchBlending,
+         kMlUrlPiecewiseMappedSearchBlendingVariations,
+         "MlUrlPiecewiseMappedSearchBlending")},
+    {"omnibox-ml-url-score-caching",
+     flag_descriptions::kOmniboxMlUrlScoreCachingName,
+     flag_descriptions::kOmniboxMlUrlScoreCachingDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kMlUrlScoreCaching)},
+    {"omnibox-ml-url-scoring", flag_descriptions::kOmniboxMlUrlScoringName,
+     flag_descriptions::kOmniboxMlUrlScoringDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kMlUrlScoring,
+                                    kOmniboxMlUrlScoringVariations,
+                                    "MlUrlScoring")},
+    {"omnibox-ml-url-search-blending",
+     flag_descriptions::kOmniboxMlUrlSearchBlendingName,
+     flag_descriptions::kOmniboxMlUrlSearchBlendingDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kMlUrlSearchBlending,
+                                    kMlUrlSearchBlendingVariations,
+                                    "MlUrlScoring")},
+    {"omnibox-ml-url-scoring-model",
+     flag_descriptions::kOmniboxMlUrlScoringModelName,
+     flag_descriptions::kOmniboxMlUrlScoringModelDescription, kOsAll,
+     FEATURE_VALUE_TYPE(omnibox::kUrlScoringModel)},
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
     {"omnibox-domain-suggestions",
@@ -6255,37 +6287,6 @@ const FeatureEntry kFeatureEntries[] = {
          omnibox::kRichAutocompletion,
          kOmniboxRichAutocompletionPromisingVariations,
          "OmniboxBundledExperimentV1")},
-    {"omnibox-ml-log-url-scoring-signals",
-     flag_descriptions::kOmniboxMlLogUrlScoringSignalsName,
-     flag_descriptions::kOmniboxMlLogUrlScoringSignalsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kLogUrlScoringSignals)},
-    {"omnibox-ml-url-piecewise-mapped-search-blending",
-     flag_descriptions::kOmniboxMlUrlPiecewiseMappedSearchBlendingName,
-     flag_descriptions::kOmniboxMlUrlPiecewiseMappedSearchBlendingDescription,
-     kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         omnibox::kMlUrlPiecewiseMappedSearchBlending,
-         kMlUrlPiecewiseMappedSearchBlendingVariations,
-         "MlUrlPiecewiseMappedSearchBlending")},
-    {"omnibox-ml-url-score-caching",
-     flag_descriptions::kOmniboxMlUrlScoreCachingName,
-     flag_descriptions::kOmniboxMlUrlScoreCachingDescription, kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kMlUrlScoreCaching)},
-    {"omnibox-ml-url-scoring", flag_descriptions::kOmniboxMlUrlScoringName,
-     flag_descriptions::kOmniboxMlUrlScoringDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kMlUrlScoring,
-                                    kOmniboxMlUrlScoringVariations,
-                                    "MlUrlScoring")},
-    {"omnibox-ml-url-search-blending",
-     flag_descriptions::kOmniboxMlUrlSearchBlendingName,
-     flag_descriptions::kOmniboxMlUrlSearchBlendingDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(omnibox::kMlUrlSearchBlending,
-                                    kMlUrlSearchBlendingVariations,
-                                    "MlUrlScoring")},
-    {"omnibox-ml-url-scoring-model",
-     flag_descriptions::kOmniboxMlUrlScoringModelName,
-     flag_descriptions::kOmniboxMlUrlScoringModelDescription, kOsAll,
-     FEATURE_VALUE_TYPE(omnibox::kUrlScoringModel)},
 
     {"omnibox-limit-keyword-mode-suggestions",
      flag_descriptions::kOmniboxLimitKeywordModeSuggestionsName,
