@@ -139,6 +139,9 @@ class VIEWS_EXPORT SizeBounds {
   // specified amounts.
   void Enlarge(int width, int height);
 
+  // Shrink the SizeBounds by the given `insets`.
+  SizeBounds Inset(const gfx::Insets& inset) const;
+
   std::string ToString() const;
 
  private:

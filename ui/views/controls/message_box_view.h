@@ -85,6 +85,8 @@ class VIEWS_EXPORT MessageBoxView : public BoxLayoutView {
 
  protected:
   // View:
+  gfx::Size CalculatePreferredSize(
+      const SizeBounds& available_size) const override;
   void ViewHierarchyChanged(
       const ViewHierarchyChangedDetails& details) override;
   // Handles Ctrl-C and writes the message in the system clipboard.

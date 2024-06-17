@@ -248,6 +248,12 @@ void MessageBoxView::SetPromptField(const std::u16string& default_prompt) {
 ///////////////////////////////////////////////////////////////////////////////
 // MessageBoxView, View overrides:
 
+gfx::Size MessageBoxView::CalculatePreferredSize(
+    const SizeBounds& available_size) const {
+  return BoxLayoutView::CalculatePreferredSize(
+      SizeBounds(message_width_, available_size.height()));
+}
+
 void MessageBoxView::ViewHierarchyChanged(
     const ViewHierarchyChangedDetails& details) {
   if (details.child == this && details.is_add) {
@@ -284,7 +290,6 @@ bool MessageBoxView::AcceleratorPressed(const ui::Accelerator& accelerator) {
 void MessageBoxView::ResetLayoutManager() {
   SetBetweenChildSpacing(inter_row_vertical_spacing_);
   SetMinimumCrossAxisSize(message_width_);
-  scroll_view_->SetPreferredSize(gfx::Size(message_width_, 0));
 
   views::DialogContentType trailing_content_type =
       views::DialogContentType::kText;

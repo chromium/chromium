@@ -225,11 +225,9 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   base::CallbackListSubscription AddContentsScrollEndedCallback(
       ScrollViewCallback callback);
 
-  // View overrides:
+  // View:
   gfx::Size CalculatePreferredSize(
       const SizeBounds& available_size) const override;
-
-  int GetHeightForWidth(int width) const override;
   void Layout(PassKey) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   bool OnMouseWheel(const ui::MouseWheelEvent& e) override;

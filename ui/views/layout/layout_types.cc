@@ -50,6 +50,12 @@ void SizeBounds::Enlarge(int width, int height) {
   height_ = std::max<SizeBound>(0, height_ + height);
 }
 
+SizeBounds SizeBounds::Inset(const gfx::Insets& inset) const {
+  SizeBounds new_size_bounds(*this);
+  new_size_bounds.Enlarge(-inset.width(), -inset.height());
+  return new_size_bounds;
+}
+
 std::string SizeBounds::ToString() const {
   return base::StrCat({width_.ToString(), " x ", height_.ToString()});
 }
