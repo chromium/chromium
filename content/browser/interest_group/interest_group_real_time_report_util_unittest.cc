@@ -272,4 +272,25 @@ TEST_F(InterestGroupRealTimeReportUtilTest, HasValidRealTimePriorityWeight) {
   }
 }
 
+TEST_F(InterestGroupRealTimeReportUtilTest, BitPacking) {
+  const struct {
+    int id;
+    std::vector<uint8_t> input;
+    std::vector<uint8_t> expected_packed;
+  } kTestCases[] = {
+      {0, {}, {}},
+      {1, {1}, {128}},
+      {1, {1, 0, 0}, {128}},
+      {2, {0, 1, 0, 0}, {64}},
+      {3, {0, 0, 0, 0, 0, 0, 0, 1}, {1}},
+      {4, {0, 0, 0, 0, 0, 0, 0, 1, 1}, {1, 128}},
+      {5, {0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0}, {1, 128 + 64}},
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.id);
+    EXPECT_EQ(test_case.expected_packed, BitPacking(test_case.input));
+  }
+}
+
 }  // namespace content

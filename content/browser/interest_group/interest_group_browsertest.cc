@@ -24678,22 +24678,22 @@ IN_PROC_BROWSER_TEST_F(RealTimeReportingEnabledTest, RealTimeReporting) {
   ASSERT_TRUE(version_it != map.end() && version_it->second.is_integer());
   EXPECT_EQ(1, version_it->second.GetInteger());
 
-  const auto histogram_it = map.find(cbor::Value("histogram"));
-  ASSERT_TRUE(histogram_it != map.end() &&
-              histogram_it->second.is_bytestring());
-  std::vector<uint8_t> histogram = histogram_it->second.GetBytestring();
-  CHECK_EQ(1024u, histogram.size());
-  EXPECT_TRUE(base::ranges::all_of(
-      histogram, [](uint8_t bit) { return bit == 0 || bit == 1; }));
-
-  const auto platform_histogram_it = map.find(cbor::Value("platformHistogram"));
-  ASSERT_TRUE(platform_histogram_it != map.end() &&
-              platform_histogram_it->second.is_bytestring());
-  std::vector<uint8_t> platform_histogram =
-      platform_histogram_it->second.GetBytestring();
-  CHECK_EQ(4u, platform_histogram.size());
-  EXPECT_TRUE(base::ranges::all_of(
-      platform_histogram, [](uint8_t bit) { return bit == 0 || bit == 1; }));
+  for (const std::string& field : {"histogram", "platformHistogram"}) {
+    const auto histogram_it = map.find(cbor::Value(field));
+    ASSERT_TRUE(histogram_it != map.end() && histogram_it->second.is_map());
+    const auto& histogram_map = histogram_it->second.GetMap();
+    const auto buckets_it = histogram_map.find(cbor::Value("buckets"));
+    ASSERT_TRUE(buckets_it != histogram_map.end() &&
+                buckets_it->second.is_bytestring());
+    std::vector<uint8_t> buckets = buckets_it->second.GetBytestring();
+    size_t expected_buckets_size = field == "histogram" ? 128u : 1u;
+    CHECK_EQ(expected_buckets_size, buckets.size());
+    const auto length_it = histogram_map.find(cbor::Value("length"));
+    ASSERT_TRUE(length_it != histogram_map.end() &&
+                length_it->second.is_integer());
+    int expected_length = field == "histogram" ? 1024 : 4;
+    EXPECT_EQ(expected_length, length_it->second.GetInteger());
+  }
 }
 
 // Opted-in sellers will receive real time histograms, even if they don't call

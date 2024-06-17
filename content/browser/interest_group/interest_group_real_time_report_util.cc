@@ -124,4 +124,22 @@ bool HasValidRealTimePriorityWeight(
          std::isfinite(contribution->priority_weight);
 }
 
+std::vector<uint8_t> BitPacking(std::vector<uint8_t> data) {
+  std::vector<uint8_t> packed;
+  packed.reserve((data.size() + 7) / 8);
+  uint8_t current_byte = 0;
+
+  for (size_t i = 0; i < data.size(); i++) {
+    current_byte = (current_byte << 1) | data[i];
+    if ((i + 1) % 8 == 0) {
+      packed.push_back(current_byte);
+      current_byte = 0;
+    } else if (i == data.size() - 1) {
+      current_byte <<= 8 - (i + 1) % 8;
+      packed.push_back(current_byte);
+    }
+  }
+  return packed;
+}
+
 }  // namespace content

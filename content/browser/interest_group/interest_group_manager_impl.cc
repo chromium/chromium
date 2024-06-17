@@ -154,9 +154,6 @@ std::vector<uint8_t> BuildRealTimeReport(
       auction_worklet::RealTimeReportingPlatformError::kNumValues;
   CHECK_EQ(real_time_histogram.size(), num_user_buckets + num_platform_buckets);
 
-  cbor::Value::MapValue report;
-  report.emplace("version", kRealTimeReportDataVersion);
-
   std::vector<uint8_t> histogram_list;
   std::vector<uint8_t> platform_histogram_list;
   for (size_t i = 0; i < real_time_histogram.size(); i++) {
@@ -167,8 +164,20 @@ std::vector<uint8_t> BuildRealTimeReport(
     }
   }
 
-  report.emplace("histogram", std::move(histogram_list));
-  report.emplace("platformHistogram", std::move(platform_histogram_list));
+  cbor::Value::MapValue histogram_map;
+  histogram_map.emplace("length", static_cast<int64_t>(histogram_list.size()));
+  histogram_map.emplace("buckets", BitPacking(std::move(histogram_list)));
+
+  cbor::Value::MapValue platform_histogram_map;
+  platform_histogram_map.emplace(
+      "length", static_cast<int64_t>(platform_histogram_list.size()));
+  platform_histogram_map.emplace(
+      "buckets", BitPacking(std::move(platform_histogram_list)));
+
+  cbor::Value::MapValue report;
+  report.emplace("version", kRealTimeReportDataVersion);
+  report.emplace("histogram", std::move(histogram_map));
+  report.emplace("platformHistogram", std::move(platform_histogram_map));
   std::optional<std::vector<uint8_t>> report_cbor =
       cbor::Writer::Write(cbor::Value(std::move(report)));
   if (!report_cbor.has_value()) {
