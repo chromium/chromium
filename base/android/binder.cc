@@ -191,6 +191,45 @@ BinderStatusOr<uint32_t> ParcelReader::ReadUint32() const {
   return unexpected(STATUS_UNEXPECTED_NULL);
 }
 
+BinderStatusOr<uint64_t> ParcelReader::ReadUint64() const {
+  WITH_BINDER_API(api) {
+    uint64_t value;
+    const auto status = api.AParcel_readUint64(parcel_.get(), &value);
+    if (status != STATUS_OK) {
+      return unexpected(status);
+    }
+    return ok(value);
+  }
+  return unexpected(STATUS_UNEXPECTED_NULL);
+}
+
+BinderStatusOr<void> ParcelReader::ReadByteArrayImpl(
+    AParcel_byteArrayAllocator allocator,
+    void* context) const {
+  WITH_BINDER_API(api) {
+    const auto status =
+        api.AParcel_readByteArray(parcel_.get(), context, allocator);
+    if (status != STATUS_OK) {
+      return unexpected(status);
+    }
+    return ok();
+  }
+  return unexpected(STATUS_UNEXPECTED_NULL);
+}
+
+BinderStatusOr<ScopedFD> ParcelReader::ReadFileDescriptor() const {
+  WITH_BINDER_API(api) {
+    int fd;
+    const auto status =
+        api.AParcel_readParcelFileDescriptor(parcel_.get(), &fd);
+    if (status != STATUS_OK) {
+      return unexpected(status);
+    }
+    return ScopedFD(fd);
+  }
+  return unexpected(STATUS_UNEXPECTED_NULL);
+}
+
 ParcelWriter::ParcelWriter(AParcel* parcel) : parcel_(parcel) {}
 
 ParcelWriter::ParcelWriter(Parcel& parcel) : parcel_(parcel.get()) {}
@@ -227,6 +266,42 @@ BinderStatusOr<void> ParcelWriter::WriteUint32(uint32_t value) const {
   binder_status_t status = STATUS_UNEXPECTED_NULL;
   WITH_BINDER_API(api) {
     status = api.AParcel_writeUint32(parcel_.get(), value);
+    if (status == STATUS_OK) {
+      return ok();
+    }
+  }
+  return unexpected(status);
+}
+
+BinderStatusOr<void> ParcelWriter::WriteUint64(uint64_t value) const {
+  binder_status_t status = STATUS_UNEXPECTED_NULL;
+  WITH_BINDER_API(api) {
+    status = api.AParcel_writeUint64(parcel_.get(), value);
+    if (status == STATUS_OK) {
+      return ok();
+    }
+  }
+  return unexpected(status);
+}
+
+BinderStatusOr<void> ParcelWriter::WriteByteArray(
+    span<const uint8_t> bytes) const {
+  binder_status_t status = STATUS_UNEXPECTED_NULL;
+  WITH_BINDER_API(api) {
+    status = api.AParcel_writeByteArray(
+        parcel_.get(), reinterpret_cast<const int8_t*>(bytes.data()),
+        checked_cast<int32_t>(bytes.size()));
+    if (status == STATUS_OK) {
+      return ok();
+    }
+  }
+  return unexpected(status);
+}
+
+BinderStatusOr<void> ParcelWriter::WriteFileDescriptor(ScopedFD file) const {
+  binder_status_t status = STATUS_UNEXPECTED_NULL;
+  WITH_BINDER_API(api) {
+    status = api.AParcel_writeParcelFileDescriptor(parcel_.get(), file.get());
     if (status == STATUS_OK) {
       return ok();
     }

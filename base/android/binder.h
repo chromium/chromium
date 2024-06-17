@@ -18,8 +18,11 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/base_export.h"
 #include "base/check.h"
+#include "base/containers/span.h"
+#include "base/files/scoped_file.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
@@ -73,8 +76,37 @@ class BASE_EXPORT ParcelReader {
   BinderStatusOr<BinderRef> ReadBinder() const;
   BinderStatusOr<int32_t> ReadInt32() const;
   BinderStatusOr<uint32_t> ReadUint32() const;
+  BinderStatusOr<uint64_t> ReadUint64() const;
+  BinderStatusOr<ScopedFD> ReadFileDescriptor() const;
+
+  // Reads a byte array from the parcel. `allocator` is called with a single
+  // size_t argument for the number of bytes in the array and must return a
+  // pointer to at least that much memory, into which ReadByteArray() will copy
+  // the array data before returning. If the parcel contains an empty or null
+  // byte array, `allocator` is not invoked. If `allocator` is invoked and
+  // returns null, ReadByteArray() returns an error.
+  template <typename Allocator>
+  BinderStatusOr<void> ReadByteArray(Allocator allocator) const {
+    auto c_allocator = [](void* context, int32_t length, int8_t** out) {
+      const auto& allocator = *static_cast<Allocator*>(context);
+      const auto size = saturated_cast<size_t>(length);
+      if (!size) {
+        *out = nullptr;
+        return true;
+      }
+
+      // Binder API wants int8_t for bytes, but we generally use uint8_t.
+      uint8_t* const data = allocator(size);
+      *out = reinterpret_cast<int8_t*>(data);
+      return !!data;
+    };
+    return ReadByteArrayImpl(c_allocator, &allocator);
+  }
 
  private:
+  BinderStatusOr<void> ReadByteArrayImpl(AParcel_byteArrayAllocator allocator,
+                                         void* context) const;
+
   raw_ptr<const AParcel> parcel_;
 };
 
@@ -93,6 +125,9 @@ class BASE_EXPORT ParcelWriter {
   BinderStatusOr<void> WriteBinder(BinderRef binder) const;
   BinderStatusOr<void> WriteInt32(int32_t value) const;
   BinderStatusOr<void> WriteUint32(uint32_t value) const;
+  BinderStatusOr<void> WriteUint64(uint64_t value) const;
+  BinderStatusOr<void> WriteByteArray(span<const uint8_t> bytes) const;
+  BinderStatusOr<void> WriteFileDescriptor(ScopedFD fd) const;
 
  private:
   raw_ptr<AParcel> parcel_;

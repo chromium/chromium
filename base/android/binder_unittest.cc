@@ -6,10 +6,14 @@
 
 #include <android/binder_status.h>
 
+#include <algorithm>
 #include <atomic>
+#include <limits>
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/files/file.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
 #include "base/notreached.h"
 #include "base/process/launch.h"
@@ -34,6 +38,146 @@ class BinderTest : public testing::Test {
     }
   }
 };
+
+DEFINE_BINDER_CLASS(ReflectorClass);
+
+class Reflector : public SupportsBinder<ReflectorClass> {
+ public:
+  using ReflectCallback = OnceCallback<void(const ParcelReader&)>;
+
+  template <typename WriteFn, typename ReadFn>
+  void Reflect(WriteFn writer, ReadFn reader) {
+    auto binder = GetBinder();
+    auto parcel = *binder.PrepareTransaction();
+    writer(parcel.writer());
+    reflected_.Reset();
+    reflect_ = BindLambdaForTesting(reader);
+    EXPECT_TRUE(binder.TransactOneWay(1, std::move(parcel)).has_value());
+    reflected_.Wait();
+  }
+
+ private:
+  ~Reflector() override = default;
+
+  // SupportsBinder<ReflectorClass>:
+  BinderStatusOr<void> OnBinderTransaction(transaction_code_t code,
+                                           const ParcelReader& reader,
+                                           const ParcelWriter& out) override {
+    std::move(reflect_).Run(reader);
+    reflected_.Signal();
+    return ok();
+  }
+
+  ReflectCallback reflect_;
+  WaitableEvent reflected_;
+};
+
+TEST_F(BinderTest, ReadWriteInt32) {
+  auto reflector = MakeRefCounted<Reflector>();
+  reflector->Reflect(
+      [](const ParcelWriter& writer) {
+        EXPECT_TRUE(writer.WriteInt32(42).has_value());
+        EXPECT_TRUE(writer.WriteInt32(-42).has_value());
+        EXPECT_TRUE(
+            writer.WriteInt32(std::numeric_limits<int32_t>::min()).has_value());
+        EXPECT_TRUE(
+            writer.WriteInt32(std::numeric_limits<int32_t>::max()).has_value());
+      },
+      [](const ParcelReader& reader) {
+        EXPECT_EQ(42, *reader.ReadInt32());
+        EXPECT_EQ(-42, *reader.ReadInt32());
+        EXPECT_EQ(std::numeric_limits<int32_t>::min(), *reader.ReadInt32());
+        EXPECT_EQ(std::numeric_limits<int32_t>::max(), *reader.ReadInt32());
+      });
+}
+
+TEST_F(BinderTest, ReadWriteUint32) {
+  auto reflector = MakeRefCounted<Reflector>();
+  reflector->Reflect(
+      [](const ParcelWriter& writer) {
+        EXPECT_TRUE(writer.WriteUint32(42).has_value());
+        EXPECT_TRUE(writer.WriteUint32(std::numeric_limits<uint32_t>::min())
+                        .has_value());
+        EXPECT_TRUE(writer.WriteUint32(std::numeric_limits<uint32_t>::max())
+                        .has_value());
+      },
+      [](const ParcelReader& reader) {
+        EXPECT_EQ(42u, *reader.ReadUint32());
+        EXPECT_EQ(std::numeric_limits<uint32_t>::min(), *reader.ReadUint32());
+        EXPECT_EQ(std::numeric_limits<uint32_t>::max(), *reader.ReadUint32());
+      });
+}
+
+TEST_F(BinderTest, ReadWriteUint64) {
+  auto reflector = MakeRefCounted<Reflector>();
+  reflector->Reflect(
+      [](const ParcelWriter& writer) {
+        EXPECT_TRUE(writer.WriteUint64(42).has_value());
+        EXPECT_TRUE(writer.WriteUint64(std::numeric_limits<uint64_t>::min())
+                        .has_value());
+        EXPECT_TRUE(writer.WriteUint64(std::numeric_limits<uint64_t>::max())
+                        .has_value());
+      },
+      [](const ParcelReader& reader) {
+        EXPECT_EQ(42u, *reader.ReadUint64());
+        EXPECT_EQ(std::numeric_limits<uint64_t>::min(), *reader.ReadUint64());
+        EXPECT_EQ(std::numeric_limits<uint64_t>::max(), *reader.ReadUint64());
+      });
+}
+
+TEST_F(BinderTest, ReadWriteByteArray) {
+  auto reflector = MakeRefCounted<Reflector>();
+  const uint8_t kPrimeData[] = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29};
+  reflector->Reflect(
+      [&](const ParcelWriter& writer) {
+        EXPECT_TRUE(writer.WriteByteArray(kPrimeData).has_value());
+      },
+      [&](const ParcelReader& reader) {
+        std::vector<uint8_t> buffer;
+        EXPECT_TRUE(reader
+                        .ReadByteArray([&](size_t size) {
+                          buffer.resize(size);
+                          return buffer.data();
+                        })
+                        .has_value());
+        EXPECT_TRUE(std::equal(buffer.begin(), buffer.end(),
+                               std::begin(kPrimeData), std::end(kPrimeData)));
+      });
+}
+
+TEST_F(BinderTest, ReadWriteEmptyByteArray) {
+  auto reflector = MakeRefCounted<Reflector>();
+  reflector->Reflect(
+      [&](const ParcelWriter& writer) {
+        EXPECT_TRUE(writer.WriteByteArray({}).has_value());
+      },
+      [](const ParcelReader& reader) {
+        EXPECT_TRUE(reader
+                        .ReadByteArray([](size_t size) -> uint8_t* {
+                          // We don't call the allocator for empty arrays.
+                          NOTREACHED_NORETURN();
+                        })
+                        .has_value());
+      });
+}
+
+TEST_F(BinderTest, ReadWriteFileDescriptor) {
+  ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  File file(temp_dir.GetPath().AppendASCII("test_file"),
+            File::Flags::FLAG_CREATE | File::Flags::FLAG_WRITE);
+  auto reflector = MakeRefCounted<Reflector>();
+  reflector->Reflect(
+      [&](const ParcelWriter& writer) {
+        EXPECT_TRUE(
+            writer.WriteFileDescriptor(ScopedFD(file.TakePlatformFile()))
+                .has_value());
+      },
+      [](const ParcelReader& reader) {
+        ScopedFD fd = *reader.ReadFileDescriptor();
+        EXPECT_TRUE(fd.is_valid());
+      });
+}
 
 class AddInterface {
  public:
