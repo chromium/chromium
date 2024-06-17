@@ -12,32 +12,6 @@ import "ui/accessibility/mojom/ax_tree_id.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
 import "mojo/public/mojom/base/values.mojom";
 
-// Used to represent the current user choices for the Read Anything visual
-// presentation/theme. This includes font name, size, spacing, and colors.
-struct ReadAnythingTheme {
-  // The name of the user's font choice.
-  string font_name;
-
-  // The px value of the user's font size.
-  float font_size;
-
-  // True if links are enabled.
-  bool links_enabled;
-
-  // True if images are enabled.
-  bool images_enabled;
-
-  // The various colors of the user's chosen theme.
-  skia.mojom.SkColor foreground_color;
-  skia.mojom.SkColor background_color;
-
-  // The enum value of the user's line spacing choice
-  read_anything.mojom.LineSpacing line_spacing;
-
-  // The enum value of the user's letter spacing choice.
-  read_anything.mojom.LetterSpacing letter_spacing;
-};
-
 [Extensible]
 enum InstallationState {
   [Default] kUnknown = 0,
@@ -232,9 +206,6 @@ interface UntrustedPage {
   // destroyed. This is not guaranteed to be called after the tree_id was
   // previously passed to AccessibilityEventsReceived.
   OnAXTreeDestroyed(ax.mojom.AXTreeID tree_id);
-
-  // Send an updated theme to the WebUI.
-  OnThemeChanged(ReadAnythingTheme new_theme);
 
   // Send an updated language code to the WebUI. Will either be the page
   // language or the browser language depending on what's available.

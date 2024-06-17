@@ -72,18 +72,6 @@ ReadAnythingAppModel::ReadAloudCurrentGranularity::ReadAloudCurrentGranularity(
 ReadAnythingAppModel::ReadAloudCurrentGranularity::
     ~ReadAloudCurrentGranularity() = default;
 
-void ReadAnythingAppModel::OnThemeChanged(
-    read_anything::mojom::ReadAnythingThemePtr new_theme) {
-  font_name_ = new_theme->font_name;
-  font_size_ = new_theme->font_size;
-  links_enabled_ = new_theme->links_enabled;
-  images_enabled_ = new_theme->images_enabled;
-  letter_spacing_ = GetLetterSpacingValue(new_theme->letter_spacing);
-  line_spacing_ = GetLineSpacingValue(new_theme->line_spacing);
-  background_color_ = new_theme->background_color;
-  foreground_color_ = new_theme->foreground_color;
-}
-
 void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
     read_anything::mojom::LineSpacing line_spacing,
     read_anything::mojom::LetterSpacing letter_spacing,

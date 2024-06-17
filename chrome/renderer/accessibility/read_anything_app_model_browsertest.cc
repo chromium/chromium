@@ -85,29 +85,17 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     update->tree_data = tree_data;
   }
 
-  void SetThemeForTesting(const std::string& font_name,
-                          float font_size,
-                          bool links_enabled,
-                          bool images_enabled,
-                          SkColor foreground_color,
-                          SkColor background_color,
-                          int line_spacing,
-                          int letter_spacing) {
-    auto line_spacing_enum =
-        static_cast<read_anything::mojom::LineSpacing>(line_spacing);
-    auto letter_spacing_enum =
-        static_cast<read_anything::mojom::LetterSpacing>(letter_spacing);
-    model_->OnThemeChanged(read_anything::mojom::ReadAnythingTheme::New(
-        font_name, font_size, links_enabled, images_enabled, foreground_color,
-        background_color, line_spacing_enum, letter_spacing_enum));
-  }
-
-  void SetLineAndLetterSpacing(
+  void OnSettingsRestoredFromPrefs(
+      read_anything::mojom::LineSpacing line_spacing,
       read_anything::mojom::LetterSpacing letter_spacing,
-      read_anything::mojom::LineSpacing line_spacing) {
-    model_->OnThemeChanged(read_anything::mojom::ReadAnythingTheme::New(
-        "Arial", 15.0, false, false, SkColorSetRGB(0x33, 0x40, 0x36),
-        SkColorSetRGB(0xDF, 0xD2, 0x63), line_spacing, letter_spacing));
+      const std::string& font,
+      double font_size,
+      bool links_enabled,
+      bool images_enabled,
+      read_anything::mojom::Colors color) {
+    model_->OnSettingsRestoredFromPrefs(line_spacing, letter_spacing, font,
+                                        font_size, links_enabled,
+                                        images_enabled, color);
   }
 
   void AccessibilityEventReceived(const std::vector<ui::AXTreeUpdate>& updates,
@@ -154,13 +142,11 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
 
   bool ImagesEnabled() { return model_->images_enabled(); }
 
-  SkColor ForegroundColor() { return model_->foreground_color(); }
-
-  SkColor BackgroundColor() { return model_->background_color(); }
-
   float LineSpacing() { return model_->line_spacing(); }
 
   float LetterSpacing() { return model_->letter_spacing(); }
+
+  int ColorTheme() { return model_->color_theme(); }
 
   bool DistillationInProgress() { return model_->distillation_in_progress(); }
 
@@ -331,29 +317,28 @@ TEST_F(ReadAnythingAppModelTest, FontName) {
   EXPECT_EQ(font_name, FontName());
 }
 
-TEST_F(ReadAnythingAppModelTest, Theme) {
+TEST_F(ReadAnythingAppModelTest, OnSettingsRestoredFromPrefs) {
+  auto line_spacing = read_anything::mojom::LineSpacing::kDefaultValue;
+  float line_spacing_value = 1.5;
+  auto letter_spacing = read_anything::mojom::LetterSpacing::kDefaultValue;
+  float letter_spacing_value = 0.0;
   std::string font_name = "Roboto";
-  float font_size = 18.0;
+  double font_size = 18.0;
   bool links_enabled = false;
   bool images_enabled = true;
-  SkColor foreground = SkColorSetRGB(0x33, 0x36, 0x39);
-  SkColor background = SkColorSetRGB(0xFD, 0xE2, 0x93);
-  int letter_spacing =
-      static_cast<int>(read_anything::mojom::LetterSpacing::kDefaultValue);
-  float letter_spacing_value = 0.0;
-  int line_spacing =
-      static_cast<int>(read_anything::mojom::LineSpacing::kDefaultValue);
-  float line_spacing_value = 1.5;
-  SetThemeForTesting(font_name, font_size, links_enabled, images_enabled,
-                     foreground, background, line_spacing, letter_spacing);
+  auto color = read_anything::mojom::Colors::kDefaultValue;
+  int color_value = 0;
+
+  OnSettingsRestoredFromPrefs(line_spacing, letter_spacing, font_name,
+                              font_size, links_enabled, images_enabled, color);
+
+  EXPECT_EQ(line_spacing_value, LineSpacing());
+  EXPECT_EQ(letter_spacing_value, LetterSpacing());
   EXPECT_EQ(font_name, FontName());
   EXPECT_EQ(font_size, FontSize());
   EXPECT_EQ(links_enabled, LinksEnabled());
   EXPECT_EQ(images_enabled, ImagesEnabled());
-  EXPECT_EQ(foreground, ForegroundColor());
-  EXPECT_EQ(background, BackgroundColor());
-  EXPECT_EQ(line_spacing_value, LineSpacing());
-  EXPECT_EQ(letter_spacing_value, LetterSpacing());
+  EXPECT_EQ(color_value, ColorTheme());
 }
 
 TEST_F(ReadAnythingAppModelTest, IsNodeIgnoredForReadAnything) {
@@ -1000,19 +985,6 @@ TEST_F(ReadAnythingAppModelTest,
   EXPECT_FALSE(SelectionNodeIdsContains(2));
   EXPECT_FALSE(SelectionNodeIdsContains(3));
   EXPECT_FALSE(SelectionNodeIdsContains(4));
-}
-
-TEST_F(ReadAnythingAppModelTest, SetTheme_LineAndLetterSpacingCorrect) {
-  SetLineAndLetterSpacing(read_anything::mojom::LetterSpacing::kStandard,
-                          read_anything::mojom::LineSpacing::kLoose);
-  ASSERT_EQ(LineSpacing(), 1.5);
-  ASSERT_EQ(LetterSpacing(), 0);
-
-  // Ensure the line and letter spacing are updated.
-  SetLineAndLetterSpacing(read_anything::mojom::LetterSpacing::kWide,
-                          read_anything::mojom::LineSpacing::kVeryLoose);
-  ASSERT_EQ(LineSpacing(), 2.0);
-  ASSERT_EQ(LetterSpacing(), 0.05f);
 }
 
 TEST_F(ReadAnythingAppModelTest, Reset_ResetsState) {

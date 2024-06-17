@@ -14,10 +14,8 @@ import {ColorChangeUpdater} from '//resources/cr_components/color_change_listene
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {WebUiListenerMixin} from '//resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from '//resources/js/assert.js';
-import {rgbToSkColor, skColorToRgba} from '//resources/js/color_utils.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {listenOnce} from '//resources/js/util.js';
-import type {SkColor} from '//resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
@@ -29,11 +27,6 @@ import {areVoicesEqual, AVAILABLE_GOOGLE_TTS_LOCALES, convertLangOrLocaleForVoic
 
 const ReadAnythingElementBase = WebUiListenerMixin(PolymerElement);
 
-interface LinkColor {
-  default: string;
-  visited: string;
-}
-
 interface UtteranceSettings {
   lang: string;
   volume: number;
@@ -41,32 +34,8 @@ interface UtteranceSettings {
   rate: number;
 }
 
-// TODO(crbug.com/40275871): Remove colors defined here once the Views toolbar
-// is removed.
-const style = getComputedStyle(document.body);
-const darkThemeBackgroundSkColor =
-    rgbToSkColor(style.getPropertyValue('--google-grey-900-rgb'));
-const lightThemeBackgroundSkColor =
-    rgbToSkColor(style.getPropertyValue('--google-grey-50-rgb'));
-const yellowThemeBackgroundSkColor =
-    rgbToSkColor(style.getPropertyValue('--google-yellow-100-rgb'));
 const darkThemeEmptyStateBodyColor = 'var(--google-grey-500)';
 const defaultThemeEmptyStateBodyColor = 'var(--google-grey-700)';
-const darkThemeLinkColors: LinkColor = {
-  default: 'var(--google-blue-300)',
-  visited: 'var(--google-purple-200)',
-};
-const defaultLinkColors: LinkColor = {
-  default: 'var(--google-blue-900)',
-  visited: 'var(--google-purple-900)',
-};
-const lightThemeLinkColors: LinkColor = {
-  default: 'var(--google-blue-800)',
-  visited: 'var(--google-purple-900)',
-};
-const darkThemeSelectionColor = 'var(--google-blue-200)';
-const defaultSelectionColor = 'var(--google-yellow-100)';
-const yellowThemeSelectionColor = 'var(--google-blue-100)';
 
 export const previousReadHighlightClass = 'previous-read-highlight';
 export const currentReadHighlightClass = 'current-read-highlight';
@@ -159,12 +128,6 @@ if (chrome.readingMode) {
               lang, status);
         }
       };
-
-  chrome.readingMode.updateTheme = () => {
-    const readAnythingApp = document.querySelector('read-anything-app');
-    assert(readAnythingApp, 'no app');
-    readAnythingApp.updateTheme();
-  };
 
   chrome.readingMode.showLoading = () => {
     const readAnythingApp = document.querySelector('read-anything-app');
@@ -313,9 +276,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   private isHighlightOn_: boolean = true;
   private previousRootId_: number;
 
-  // If the WebUI toolbar should be shown. This happens when the WebUI feature
-  // flag is enabled.
-  private isWebUIToolbarVisible_: boolean;
   private isReadAloudEnabled_: boolean;
 
   // If the speech engine is considered "loaded." If it is, we should display
@@ -409,11 +369,8 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         (this.constructorTime - this.startTime),
         'Accessibility.ReadAnything.TimeFromAppStartedToConstructor');
     this.isReadAloudEnabled_ = chrome.readingMode.isReadAloudEnabled;
-    this.isWebUIToolbarVisible_ = chrome.readingMode.isWebUIToolbarVisible;
     this.speechSynthesisLanguage = chrome.readingMode.baseLanguageForSpeech;
-    if (chrome.readingMode && chrome.readingMode.isWebUIToolbarVisible) {
-      ColorChangeUpdater.forDocument().start();
-    }
+    ColorChangeUpdater.forDocument().start();
   }
 
   override connectedCallback() {
@@ -2190,47 +2147,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
   }
 
-  // TODO(b/1465029): Once the IsReadAnythingWebUIEnabled flag is removed
-  // this should be removed
-  private validatedFontName_(): string {
-    return validatedFontName(chrome.readingMode.fontName);
-  }
-
-  private getLinkColor_(backgroundSkColor: SkColor): LinkColor {
-    switch (backgroundSkColor.value) {
-      case darkThemeBackgroundSkColor.value:
-        return darkThemeLinkColors;
-      case lightThemeBackgroundSkColor.value:
-        return lightThemeLinkColors;
-      default:
-        return defaultLinkColors;
-    }
-  }
-
-  private getEmptyStateBodyColor_(backgroundSkColor: SkColor): string {
-    const isDark = backgroundSkColor.value === darkThemeBackgroundSkColor.value;
-    return isDark ? darkThemeEmptyStateBodyColor :
-                    defaultThemeEmptyStateBodyColor;
-  }
-
-  // TODO(crbug.com/40275871): This method should be renamed to
-  // getEmptyStateBodyColor_() and replace the one above once we've removed the
-  // Views toolbar.
-  private getEmptyStateBodyColorFromWebUi_(colorSuffix: string): string {
+  private getEmptyStateBodyColor_(colorSuffix: string): string {
     const isDark = colorSuffix.includes('dark');
     return isDark ? darkThemeEmptyStateBodyColor :
                     defaultThemeEmptyStateBodyColor;
-  }
-
-  private getSelectionColor_(backgroundSkColor: SkColor): string {
-    switch (backgroundSkColor.value) {
-      case darkThemeBackgroundSkColor.value:
-        return darkThemeSelectionColor;
-      case yellowThemeBackgroundSkColor.value:
-        return yellowThemeSelectionColor;
-      default:
-        return defaultSelectionColor;
-    }
   }
 
   // This must be called BEFORE calling
@@ -2294,7 +2214,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         // Do nothing
     }
     if (colorSuffix !== undefined) {
-      this.updateThemeFromWebUi_(colorSuffix);
+      this.updateTheme_(colorSuffix);
     }
     // TODO(crbug.com/40927698): investigate using parent/child relationshiop
     // instead of element by id.
@@ -2418,7 +2338,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   private onThemeChange_(event: CustomEvent<{data: string}>) {
-    this.updateThemeFromWebUi_(event.detail.data);
+    this.updateTheme_(event.detail.data);
   }
 
   private onResetToolbar_() {
@@ -2440,12 +2360,10 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     });
   }
 
-  // TODO(crbug.com/40275871): This method should be renamed to updateTheme()
-  // and replace the one below once we've removed the Views toolbar.
-  private updateThemeFromWebUi_(colorSuffix: string) {
+  private updateTheme_(colorSuffix: string) {
     this.currentColorSuffix_ = colorSuffix;
     const emptyStateBodyColor = colorSuffix ?
-        this.getEmptyStateBodyColorFromWebUi_(colorSuffix) :
+        this.getEmptyStateBodyColor_(colorSuffix) :
         'var(--color-side-panel-card-secondary-foreground)';
     this.updateStyles({
       '--background-color': this.getBackgroundColorVar(colorSuffix),
@@ -2518,38 +2436,6 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     }
 
     return `var(--google-grey-800)`;
-  }
-
-  updateTheme() {
-    const foregroundColor:
-        SkColor = {value: chrome.readingMode.foregroundColor};
-    const backgroundColor:
-        SkColor = {value: chrome.readingMode.backgroundColor};
-    const linkColor = this.getLinkColor_(backgroundColor);
-
-    this.updateStyles({
-      '--background-color': skColorToRgba(backgroundColor),
-      '--font-family': this.validatedFontName_(),
-      '--font-size': chrome.readingMode.fontSize + 'em',
-      '--foreground-color': skColorToRgba(foregroundColor),
-      '--letter-spacing': chrome.readingMode.letterSpacing + 'em',
-      '--line-height': chrome.readingMode.lineSpacing,
-      '--link-color': linkColor.default,
-      '--selection-color': this.getSelectionColor_(backgroundColor),
-      '--sp-empty-state-heading-color': skColorToRgba(foregroundColor),
-      '--sp-empty-state-body-color':
-          this.getEmptyStateBodyColor_(backgroundColor),
-      '--visited-link-color': linkColor.visited,
-    });
-    if (!chrome.readingMode.isWebUIToolbarVisible) {
-      document.body.style.background = skColorToRgba(backgroundColor);
-    }
-
-    document.documentElement.style.setProperty(
-        '--selection-color', this.getSelectionColor_(backgroundColor));
-    document.documentElement.style.setProperty(
-        '--selection-text-color',
-        this.getSelectionTextColorVar(skColorToRgba(backgroundColor)));
   }
 
   // If the screen is locked during speech, we should stop speaking.

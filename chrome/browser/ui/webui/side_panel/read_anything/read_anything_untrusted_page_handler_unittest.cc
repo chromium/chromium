@@ -59,9 +59,6 @@ class MockPage : public read_anything::mojom::UntrustedPage {
                     ukm::SourceId ukm_source_id,
                     bool is_pdf));
   MOCK_METHOD(void, OnAXTreeDestroyed, (const ui::AXTreeID&));
-  MOCK_METHOD(void,
-              OnThemeChanged,
-              (read_anything::mojom::ReadAnythingThemePtr));
   MOCK_METHOD(void, SetLanguageCode, (const std::string&));
   MOCK_METHOD(void, SetDefaultLanguageCode, (const std::string&));
   MOCK_METHOD(void, ScreenAIServiceReady, ());
@@ -89,7 +86,7 @@ class ReadAnythingUntrustedPageHandlerTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingWebUIToolbar, features::kReadAnythingReadAloud},
+        {features::kReadAnythingReadAloud},
         {features::kReadAnythingWithScreen2x, features::kPdfOcr});
     BrowserWithTestWindowTest::SetUp();
     web_contents_ = content::WebContents::Create(
@@ -268,7 +265,7 @@ class ReadAnythingUntrustedPageHandlerWithAutoVoiceSwitchingTest
  public:
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {features::kReadAnythingWebUIToolbar, features::kReadAnythingReadAloud,
+        {features::kReadAnythingReadAloud,
          features::kReadAloudAutoVoiceSwitching},
         {features::kReadAnythingWithScreen2x, features::kPdfOcr});
     BrowserWithTestWindowTest::SetUp();

@@ -113,8 +113,6 @@ class ReadAnythingAppController
                                ukm::SourceId ukm_source_id,
                                bool is_pdf) override;
   void OnAXTreeDestroyed(const ui::AXTreeID& tree_id) override;
-  void OnThemeChanged(
-      read_anything::mojom::ReadAnythingThemePtr new_theme) override;
   void OnSettingsRestoredFromPrefs(
       read_anything::mojom::LineSpacing line_spacing,
       read_anything::mojom::LetterSpacing letter_spacing,
@@ -140,7 +138,6 @@ class ReadAnythingAppController
   int StartOffset() const;
   ui::AXNodeID EndNodeId() const;
   int EndOffset() const;
-  SkColor BackgroundColor() const;
   std::string FontName() const;
   float FontSize() const;
   bool LinksEnabled() const;
@@ -151,7 +148,6 @@ class ReadAnythingAppController
   void OnFontSizeReset();
   void OnLinksEnabledToggled();
   void OnImagesEnabledToggled();
-  SkColor ForegroundColor() const;
   float LetterSpacing() const;
   float LineSpacing() const;
   int ColorTheme() const;
@@ -199,7 +195,6 @@ class ReadAnythingAppController
   void OnCollapseSelection() const;
   void OnRestartReadAloud();
   bool IsGoogleDocs() const;
-  bool IsWebUIToolbarEnabled() const;
   bool IsReadAloudEnabled() const;
   bool IsChromeOsAsh() const;
   bool IsAutoVoiceSwitchingEnabled() const;
@@ -321,10 +316,9 @@ class ReadAnythingAppController
 
   int GetNextWordHighlightLength(int index);
 
-  // SetContentForTesting, SetThemeForTesting, and SetLanguageForTesting are
-  // used by ReadAnythingAppTest and thus need to be kept in
-  // ReadAnythingAppController even though ReadAnythingAppControllerBrowserTest
-  // is friended.
+  // SetContentForTesting and SetLanguageForTesting are used by
+  // ReadAnythingAppTest and thus need to be kept in ReadAnythingAppController
+  // even though ReadAnythingAppControllerBrowserTest is friended.
   // Snapshot_lite is a data structure which resembles an
   // AXTreeUpdate. E.g.:
   //   const axTree = {
@@ -344,14 +338,6 @@ class ReadAnythingAppController
   //   };
   void SetContentForTesting(v8::Local<v8::Value> v8_snapshot_lite,
                             std::vector<ui::AXNodeID> content_node_ids);
-  void SetThemeForTesting(const std::string& font_name,
-                          float font_size,
-                          bool links_enabled,
-                          bool images_enabled,
-                          SkColor foreground_color,
-                          SkColor background_color,
-                          int line_spacing,
-                          int letter_spacing);
   void SetLanguageForTesting(const std::string& language_code);
 
   // Helpers for logging UmaHistograms based on times recorded in WebUI.

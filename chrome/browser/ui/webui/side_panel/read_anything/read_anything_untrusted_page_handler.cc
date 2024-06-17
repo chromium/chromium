@@ -16,17 +16,19 @@
 #include "chrome/browser/accessibility/pdf_ocr_controller.h"
 #include "chrome/browser/accessibility/pdf_ocr_controller_factory.h"
 #include "chrome/browser/browser_features.h"
+#include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/common/accessibility/read_anything.mojom-forward.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
+#include "components/language/core/browser/language_model.h"
+#include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/pdf/common/pdf_util.h"
 #include "components/prefs/pref_service.h"
@@ -56,7 +58,6 @@ using ash::language_packs::PackResult;
 
 using read_anything::mojom::ErrorCode;
 using read_anything::mojom::InstallationState;
-using read_anything::mojom::ReadAnythingTheme;
 using read_anything::mojom::UntrustedPage;
 using read_anything::mojom::UntrustedPageHandler;
 using read_anything::mojom::VoicePackInstallationState;
@@ -253,53 +254,59 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
     coordinator_ = ReadAnythingCoordinator::FromBrowser(browser_.get());
     if (coordinator_) {
       coordinator_->AddObserver(this);
-      coordinator_->AddModelObserver(this);
     }
   }
 
-  if (features::IsReadAnythingWebUIToolbarEnabled()) {
-    PrefService* prefs = browser_->profile()->GetPrefs();
-    double speechRate =
-        features::IsReadAnythingReadAloudEnabled()
-            ? prefs->GetDouble(prefs::kAccessibilityReadAnythingSpeechRate)
-            : kReadAnythingDefaultSpeechRate;
-    read_anything::mojom::HighlightGranularity highlightGranularity =
-        features::IsReadAnythingReadAloudEnabled()
-            ? static_cast<read_anything::mojom::HighlightGranularity>(
-                  prefs->GetDouble(
-                      prefs::kAccessibilityReadAnythingHighlightGranularity))
-            : read_anything::mojom::HighlightGranularity::kDefaultValue;
-    base::Value::Dict voices = base::Value::Dict();
-    if (features::IsReadAnythingReadAloudEnabled()) {
-      if (features::IsReadAloudAutoVoiceSwitchingEnabled()) {
-        voices =
-            prefs->GetDict(prefs::kAccessibilityReadAnythingVoiceName).Clone();
-      } else {
-        std::string voice_name =
-            prefs->GetString(prefs::kAccessibilityReadAnythingVoiceName);
-        if (!voice_name.empty()) {
-          voices.Set("", voice_name);
-        }
+  PrefService* prefs = browser_->profile()->GetPrefs();
+  double speechRate =
+      features::IsReadAnythingReadAloudEnabled()
+          ? prefs->GetDouble(prefs::kAccessibilityReadAnythingSpeechRate)
+          : kReadAnythingDefaultSpeechRate;
+  read_anything::mojom::HighlightGranularity highlightGranularity =
+      features::IsReadAnythingReadAloudEnabled()
+          ? static_cast<read_anything::mojom::HighlightGranularity>(
+                prefs->GetDouble(
+                    prefs::kAccessibilityReadAnythingHighlightGranularity))
+          : read_anything::mojom::HighlightGranularity::kDefaultValue;
+  base::Value::Dict voices = base::Value::Dict();
+  if (features::IsReadAnythingReadAloudEnabled()) {
+    if (features::IsReadAloudAutoVoiceSwitchingEnabled()) {
+      voices =
+          prefs->GetDict(prefs::kAccessibilityReadAnythingVoiceName).Clone();
+    } else {
+      std::string voice_name =
+          prefs->GetString(prefs::kAccessibilityReadAnythingVoiceName);
+      if (!voice_name.empty()) {
+        voices.Set("", voice_name);
       }
     }
-    page_->OnSettingsRestoredFromPrefs(
-        static_cast<read_anything::mojom::LineSpacing>(
-            prefs->GetInteger(prefs::kAccessibilityReadAnythingLineSpacing)),
-        static_cast<read_anything::mojom::LetterSpacing>(
-            prefs->GetInteger(prefs::kAccessibilityReadAnythingLetterSpacing)),
-        prefs->GetString(prefs::kAccessibilityReadAnythingFontName),
-        prefs->GetDouble(prefs::kAccessibilityReadAnythingFontScale),
-        prefs->GetBoolean(prefs::kAccessibilityReadAnythingLinksEnabled),
-        prefs->GetBoolean(prefs::kAccessibilityReadAnythingImagesEnabled),
-        static_cast<read_anything::mojom::Colors>(
-            prefs->GetInteger(prefs::kAccessibilityReadAnythingColorInfo)),
-        speechRate, std::move(voices),
-        features::IsReadAnythingReadAloudEnabled()
-            ? prefs->GetList(prefs::kAccessibilityReadAnythingLanguagesEnabled)
-                  .Clone()
-            : base::Value::List(),
-        highlightGranularity);
   }
+
+  page_->OnSettingsRestoredFromPrefs(
+      static_cast<read_anything::mojom::LineSpacing>(
+          prefs->GetInteger(prefs::kAccessibilityReadAnythingLineSpacing)),
+      static_cast<read_anything::mojom::LetterSpacing>(
+          prefs->GetInteger(prefs::kAccessibilityReadAnythingLetterSpacing)),
+      prefs->GetString(prefs::kAccessibilityReadAnythingFontName),
+      prefs->GetDouble(prefs::kAccessibilityReadAnythingFontScale),
+      prefs->GetBoolean(prefs::kAccessibilityReadAnythingLinksEnabled),
+      prefs->GetBoolean(prefs::kAccessibilityReadAnythingImagesEnabled),
+      static_cast<read_anything::mojom::Colors>(
+          prefs->GetInteger(prefs::kAccessibilityReadAnythingColorInfo)),
+      speechRate, std::move(voices),
+      features::IsReadAnythingReadAloudEnabled()
+          ? prefs->GetList(prefs::kAccessibilityReadAnythingLanguagesEnabled)
+                .Clone()
+          : base::Value::List(),
+      highlightGranularity);
+
+  // Get user's default language to check for compatible fonts.
+  language::LanguageModel* language_model =
+      LanguageModelManagerFactory::GetForBrowserContext(browser_->profile())
+          ->GetPrimaryModel();
+  std::string prefs_lang = language_model->GetLanguages().front().lang_code;
+  prefs_lang = language::ExtractBaseLanguage(prefs_lang);
+  SetDefaultLanguageCode(prefs_lang);
 
   if (features::IsReadAnythingWithScreen2xEnabled()) {
     screen_ai::ScreenAIServiceRouterFactory::GetForBrowserContext(
@@ -345,7 +352,6 @@ ReadAnythingUntrustedPageHandler::~ReadAnythingUntrustedPageHandler() {
     // |this| from the observer lists. In the cases where the coordinator is
     // destroyed first, these will have been destroyed before this call.
     coordinator_->RemoveObserver(this);
-    coordinator_->RemoveModelObserver(this);
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -605,37 +611,6 @@ void ReadAnythingUntrustedPageHandler::OnSnapshotRequested() {
   }
   VLOG(2) << "Requesting a snapshot for the main web contents";
   web_snapshotter_->RequestSnapshot(main_observer_->web_contents());
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// ReadAnythingModel::Observer:
-///////////////////////////////////////////////////////////////////////////////
-
-void ReadAnythingUntrustedPageHandler::OnReadAnythingThemeChanged(
-    const std::string& font_name,
-    double font_scale,
-    bool links_enabled,
-    bool images_enabled,
-    ui::ColorId foreground_color_id,
-    ui::ColorId background_color_id,
-    ui::ColorId separator_color_id,
-    ui::ColorId dropdown_color_id,
-    ui::ColorId selected_dropdown_color_id,
-    ui::ColorId focus_ring_color_id,
-    read_anything::mojom::LineSpacing line_spacing,
-    read_anything::mojom::LetterSpacing letter_spacing) {
-  // Elsewhere in this file, `web_contents` refers to the active web contents
-  // in the tab strip. In this case, `web_contents` refers to the web contents
-  // hosting the WebUI.
-  content::WebContents* web_contents = web_ui_->GetWebContents();
-  SkColor foreground_skcolor =
-      web_contents->GetColorProvider().GetColor(foreground_color_id);
-  SkColor background_skcolor =
-      web_contents->GetColorProvider().GetColor(background_color_id);
-
-  page_->OnThemeChanged(ReadAnythingTheme::New(
-      font_name, font_scale, links_enabled, images_enabled, foreground_skcolor,
-      background_skcolor, line_spacing, letter_spacing));
 }
 
 void ReadAnythingUntrustedPageHandler::SetDefaultLanguageCode(

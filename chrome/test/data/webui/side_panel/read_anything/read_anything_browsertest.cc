@@ -67,11 +67,6 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, ReadAloudFlag) {
                    "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, WebUiToolbarFlag) {
-  RunSidePanelTest("side_panel/read_anything/toolbar_flag_test.js",
-                   "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, FontSize) {
   RunSidePanelTest("side_panel/read_anything/font_size_test.js", "mocha.run()");
 }

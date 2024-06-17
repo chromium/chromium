@@ -77,32 +77,6 @@ class ReadAnythingAppTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateTheme_FontName) {
-  ASSERT_TRUE(RunTest("update_theme_font_name.js"));
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, DISABLED_UpdateTheme_FontSize) {
-  ASSERT_TRUE(RunTest("update_theme_font_size.js"));
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateTheme_ForegroundColor) {
-  ASSERT_TRUE(RunTest("update_theme_foreground_color.js"));
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest,
-                       DISABLED_UpdateTheme_BackgroundColor) {
-  ASSERT_TRUE(RunTest("update_theme_background_color.js"));
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, DISABLED_UpdateTheme_LineSpacing) {
-  ASSERT_TRUE(RunTest("update_theme_line_spacing.js"));
-}
-
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest,
-                       DISABLED_UpdateTheme_LetterSpacing) {
-  ASSERT_TRUE(RunTest("update_theme_letter_spacing.js"));
-}
-
 // TODO(crbug.com/40910623): unflake and re-enable
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest,
                        DISABLED_ConnectedCallback_ShowLoadingScreen) {

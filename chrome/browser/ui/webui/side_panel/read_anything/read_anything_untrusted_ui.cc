@@ -24,7 +24,6 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "read_anything_untrusted_ui.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/resources/grit/webui_resources.h"
 #include "ui/views/style/platform_style.h"
@@ -184,10 +183,8 @@ WEB_UI_CONTROLLER_TYPE_IMPL(ReadAnythingUntrustedUI)
 void ReadAnythingUntrustedUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
         pending_receiver) {
-  if (features::IsReadAnythingWebUIToolbarEnabled()) {
-    color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
-        web_ui()->GetWebContents(), std::move(pending_receiver));
-  }
+  color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
+      web_ui()->GetWebContents(), std::move(pending_receiver));
 }
 
 void ReadAnythingUntrustedUI::BindInterface(

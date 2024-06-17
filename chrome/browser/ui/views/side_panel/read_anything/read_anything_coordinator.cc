@@ -15,18 +15,14 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/accessibility/embedded_a11y_extension_loader.h"
-#include "chrome/browser/language/language_model_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_container_view.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_controller.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_controller_utils.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_side_panel_web_view.h"
 #include "chrome/browser/ui/views/side_panel/read_anything/read_anything_tab_helper.h"
-#include "chrome/browser/ui/views/side_panel/read_anything/read_anything_toolbar_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
@@ -35,9 +31,6 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/language/core/browser/language_model.h"
-#include "components/language/core/browser/language_model_manager.h"
-#include "components/language/core/common/locale_util.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -82,13 +75,6 @@ ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
                    base::BindRepeating(
                        &ReadAnythingCoordinator::OnTabChangeDelayComplete,
                        base::Unretained(this))) {
-  // Create the model and initialize it with user prefs (if present).
-  model_ = std::make_unique<ReadAnythingModel>();
-  InitModelWithUserPrefs();
-
-  // Create the controller.
-  controller_ = std::make_unique<ReadAnythingController>(model_.get(), browser);
-
   browser->tab_strip_model()->AddObserver(this);
   Observe(GetActiveWebContents());
   if (features::IsReadAnythingLocalSidePanelEnabled()) {
@@ -101,61 +87,6 @@ ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
 
   if (features::IsReadAnythingDocsIntegrationEnabled()) {
     EmbeddedA11yExtensionLoader::GetInstance()->Init();
-  }
-}
-
-void ReadAnythingCoordinator::InitModelWithUserPrefs() {
-  Browser* browser = &GetBrowser();
-  if (!browser->profile() || !browser->profile()->GetPrefs()) {
-    return;
-  }
-
-  // Get user's default language to check for compatible fonts.
-  language::LanguageModel* language_model =
-      LanguageModelManagerFactory::GetForBrowserContext(browser->profile())
-          ->GetPrimaryModel();
-  std::string prefs_lang = language_model->GetLanguages().front().lang_code;
-  prefs_lang = language::ExtractBaseLanguage(prefs_lang);
-
-  std::string prefs_font_name = browser->profile()->GetPrefs()->GetString(
-      prefs::kAccessibilityReadAnythingFontName);
-
-  double prefs_font_scale = browser->profile()->GetPrefs()->GetDouble(
-      prefs::kAccessibilityReadAnythingFontScale);
-
-  bool prefs_links_enabled = browser->profile()->GetPrefs()->GetBoolean(
-      prefs::kAccessibilityReadAnythingLinksEnabled);
-
-  bool prefs_images_enabled = browser->profile()->GetPrefs()->GetBoolean(
-      prefs::kAccessibilityReadAnythingImagesEnabled);
-
-  read_anything::mojom::Colors prefs_colors =
-      static_cast<read_anything::mojom::Colors>(
-          browser->profile()->GetPrefs()->GetInteger(
-              prefs::kAccessibilityReadAnythingColorInfo));
-
-  read_anything::mojom::LineSpacing prefs_line_spacing =
-      static_cast<read_anything::mojom::LineSpacing>(
-          browser->profile()->GetPrefs()->GetInteger(
-              prefs::kAccessibilityReadAnythingLineSpacing));
-
-  read_anything::mojom::LetterSpacing prefs_letter_spacing =
-      static_cast<read_anything::mojom::LetterSpacing>(
-          browser->profile()->GetPrefs()->GetInteger(
-              prefs::kAccessibilityReadAnythingLetterSpacing));
-
-  model_->Init(
-      /* lang code = */ prefs_lang,
-      /* font name= */ prefs_font_name,
-      /* font scale = */ prefs_font_scale,
-      /* links enabled = */ prefs_links_enabled,
-      /* images_enabled = */ prefs_images_enabled,
-      /* colors = */ prefs_colors,
-      /* line spacing = */ prefs_line_spacing,
-      /* letter spacing = */ prefs_letter_spacing);
-  default_language_code_ = prefs_lang;
-  for (Observer& obs : observers_) {
-    obs.SetDefaultLanguageCode(prefs_lang);
   }
 }
 
@@ -224,36 +155,14 @@ void ReadAnythingCoordinator::CreateAndRegisterEntryForWebContents(
   tab_helper->CreateAndRegisterEntry();
 }
 
-ReadAnythingController* ReadAnythingCoordinator::GetController() {
-  return controller_.get();
-}
-
-ReadAnythingModel* ReadAnythingCoordinator::GetModel() {
-  return model_.get();
-}
-
 void ReadAnythingCoordinator::AddObserver(
     ReadAnythingCoordinator::Observer* observer) {
   observers_.AddObserver(observer);
-
-  // InitModelWithUserPrefs where default_language_code_ is set may be called
-  // before all observerers have been added, so ensure that observers are
-  // updated with the correct language code as they're added.
-  observer->SetDefaultLanguageCode(default_language_code_);
 }
+
 void ReadAnythingCoordinator::RemoveObserver(
     ReadAnythingCoordinator::Observer* observer) {
   observers_.RemoveObserver(observer);
-}
-void ReadAnythingCoordinator::AddModelObserver(
-    ReadAnythingModel::Observer* observer) {
-  DCHECK(model_);
-  model_->AddObserver(observer);
-}
-void ReadAnythingCoordinator::RemoveModelObserver(
-    ReadAnythingModel::Observer* observer) {
-  DCHECK(model_);
-  model_->RemoveObserver(observer);
 }
 
 void ReadAnythingCoordinator::OnEntryShown(SidePanelEntry* entry) {
@@ -312,23 +221,7 @@ std::unique_ptr<views::View> ReadAnythingCoordinator::CreateContainerView() {
   auto web_view =
       std::make_unique<ReadAnythingSidePanelWebView>(browser->profile());
 
-  if (features::IsReadAnythingWebUIToolbarEnabled()) {
-    return std::move(web_view);
-  }
-
-  // Create the views.
-  auto toolbar = std::make_unique<ReadAnythingToolbarView>(
-      this,
-      /* ReadAnythingToolbarView::Delegate* = */ controller_.get(),
-      /* ReadAnythingFontCombobox::Delegate* = */ controller_.get());
-
-  // Create the component.
-  // Note that a coordinator would normally maintain ownership of these objects,
-  // but objects extending {ui/views/view.h} prefer ownership over raw pointers.
-  auto container_view = std::make_unique<ReadAnythingContainerView>(
-      this, std::move(toolbar), std::move(web_view));
-
-  return std::move(container_view);
+  return std::move(web_view);
 }
 
 void ReadAnythingCoordinator::StartPageChangeDelay() {

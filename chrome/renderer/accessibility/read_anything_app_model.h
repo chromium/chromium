@@ -172,7 +172,6 @@ class ReadAnythingAppModel {
 
   std::vector<std::string> GetSupportedFonts() const;
 
-  // TODO(b/1266555): Ensure there is proper test coverage for all methods.
   // Theme
   const std::string& font_name() const { return font_name_; }
   void set_font_name(const std::string& font) { font_name_ = font; }
@@ -182,8 +181,6 @@ class ReadAnythingAppModel {
   float letter_spacing() const { return letter_spacing_; }
   float line_spacing() const { return line_spacing_; }
   int color_theme() const { return color_theme_; }
-  const SkColor& foreground_color() const { return foreground_color_; }
-  const SkColor& background_color() const { return background_color_; }
 
   // Selection.
   bool has_selection() const { return has_selection_; }
@@ -240,7 +237,6 @@ class ReadAnythingAppModel {
   ui::AXNode* GetAXNode(const ui::AXNodeID& ax_node_id) const;
   bool IsNodeIgnoredForReadAnything(const ui::AXNodeID& ax_node_id) const;
   bool NodeIsContentNode(const ui::AXNodeID& ax_node_id) const;
-  void OnThemeChanged(read_anything::mojom::ReadAnythingThemePtr new_theme);
   void OnSettingsRestoredFromPrefs(
       read_anything::mojom::LineSpacing line_spacing,
       read_anything::mojom::LetterSpacing letter_spacing,
@@ -526,8 +522,6 @@ class ReadAnythingAppModel {
   float letter_spacing_ =
       (int)read_anything::mojom::LetterSpacing::kDefaultValue;
   float line_spacing_ = (int)read_anything::mojom::LineSpacing::kDefaultValue;
-  SkColor background_color_ = (int)read_anything::mojom::Colors::kDefaultValue;
-  SkColor foreground_color_ = (int)read_anything::mojom::Colors::kDefaultValue;
   int color_theme_ = (int)read_anything::mojom::Colors::kDefaultValue;
 
   // Selection information.

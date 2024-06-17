@@ -55,9 +55,6 @@
 #include "v8/include/v8-context.h"
 #include "v8/include/v8-microtask-queue.h"
 
-using read_anything::mojom::ReadAnythingTheme;
-using read_anything::mojom::ReadAnythingThemePtr;
-
 namespace {
 
 constexpr char kUndeterminedLocale[] = "und";
@@ -709,26 +706,6 @@ void ReadAnythingAppController::DrawSelection() {
   ExecuteJavaScript("chrome.readingMode.updateSelection();");
 }
 
-void ReadAnythingAppController::OnThemeChanged(ReadAnythingThemePtr new_theme) {
-  bool needs_redraw_for_links =
-      model_.links_enabled() != new_theme->links_enabled;
-  bool needs_redraw_for_images =
-      model_.images_enabled() != new_theme->images_enabled;
-  model_.OnThemeChanged(std::move(new_theme));
-  ExecuteJavaScript("chrome.readingMode.updateTheme();");
-
-  // Only redraw if there is an active tree.
-  if (needs_redraw_for_links &&
-      model_.active_tree_id() != ui::AXTreeIDUnknown()) {
-    ExecuteJavaScript("chrome.readingMode.updateLinks();");
-  }
-
-  if (needs_redraw_for_images &&
-      model_.active_tree_id() != ui::AXTreeIDUnknown()) {
-    ExecuteJavaScript("chrome.readingMode.updateImages();");
-  }
-}
-
 void ReadAnythingAppController::OnSettingsRestoredFromPrefs(
     read_anything::mojom::LineSpacing line_spacing,
     read_anything::mojom::LetterSpacing letter_spacing,
@@ -768,17 +745,12 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("startOffset", &ReadAnythingAppController::StartOffset)
       .SetProperty("endNodeId", &ReadAnythingAppController::EndNodeId)
       .SetProperty("endOffset", &ReadAnythingAppController::EndOffset)
-      .SetProperty("backgroundColor",
-                   &ReadAnythingAppController::BackgroundColor)
       .SetProperty("fontName", &ReadAnythingAppController::FontName)
       .SetProperty("fontSize", &ReadAnythingAppController::FontSize)
       .SetProperty("linksEnabled", &ReadAnythingAppController::LinksEnabled)
       .SetProperty("imagesEnabled", &ReadAnythingAppController::ImagesEnabled)
-
       .SetProperty("imagesFeatureEnabled",
                    &ReadAnythingAppController::ImagesFeatureEnabled)
-      .SetProperty("foregroundColor",
-                   &ReadAnythingAppController::ForegroundColor)
       .SetProperty("letterSpacing", &ReadAnythingAppController::LetterSpacing)
       .SetProperty("lineSpacing", &ReadAnythingAppController::LineSpacing)
       .SetProperty("standardLineSpacing",
@@ -802,8 +774,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("yellowTheme", &ReadAnythingAppController::YellowTheme)
       .SetProperty("blueTheme", &ReadAnythingAppController::BlueTheme)
       .SetProperty("speechRate", &ReadAnythingAppController::SpeechRate)
-      .SetProperty("isWebUIToolbarVisible",
-                   &ReadAnythingAppController::IsWebUIToolbarEnabled)
       .SetProperty("isGoogleDocs", &ReadAnythingAppController::IsGoogleDocs)
       .SetProperty("isReadAloudEnabled",
                    &ReadAnythingAppController::IsReadAloudEnabled)
@@ -887,8 +857,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
                    &ReadAnythingAppController::GetSupportedFonts)
       .SetMethod("setContentForTesting",
                  &ReadAnythingAppController::SetContentForTesting)
-      .SetMethod("setThemeForTesting",
-                 &ReadAnythingAppController::SetThemeForTesting)
       .SetMethod("setLanguageForTesting",
                  &ReadAnythingAppController::SetLanguageForTesting)
       .SetMethod("initAxPositionWithNode",
@@ -955,10 +923,6 @@ int ReadAnythingAppController::EndOffset() const {
   return model_.end_offset();
 }
 
-SkColor ReadAnythingAppController::BackgroundColor() const {
-  return model_.background_color();
-}
-
 std::string ReadAnythingAppController::FontName() const {
   return model_.font_name();
 }
@@ -977,10 +941,6 @@ bool ReadAnythingAppController::ImagesEnabled() const {
 
 bool ReadAnythingAppController::ImagesFeatureEnabled() const {
   return features::IsReadAnythingImagesViaAlgorithmEnabled();
-}
-
-SkColor ReadAnythingAppController::ForegroundColor() const {
-  return model_.foreground_color();
 }
 
 float ReadAnythingAppController::LetterSpacing() const {
@@ -1282,10 +1242,6 @@ bool ReadAnythingAppController::IsLeafNode(ui::AXNodeID ax_node_id) const {
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
   return ax_node->IsLeaf();
-}
-
-bool ReadAnythingAppController::IsWebUIToolbarEnabled() const {
-  return features::IsReadAnythingWebUIToolbarEnabled();
 }
 
 bool ReadAnythingAppController::IsReadAloudEnabled() const {
@@ -1633,25 +1589,6 @@ int ReadAnythingAppController::GetHighlightStartIndex(ui::AXNodeID node_id,
 
 int ReadAnythingAppController::GetCurrentTextEndIndex(ui::AXNodeID node_id) {
   return model_.GetCurrentTextEndIndex(node_id);
-}
-
-// TODO(crbug.com/40802192): Change line_spacing and letter_spacing types from
-// int to their corresponding enums.
-void ReadAnythingAppController::SetThemeForTesting(const std::string& font_name,
-                                                   float font_size,
-                                                   bool links_enabled,
-                                                   bool images_enabled,
-                                                   SkColor foreground_color,
-                                                   SkColor background_color,
-                                                   int line_spacing,
-                                                   int letter_spacing) {
-  auto line_spacing_enum =
-      static_cast<read_anything::mojom::LineSpacing>(line_spacing);
-  auto letter_spacing_enum =
-      static_cast<read_anything::mojom::LetterSpacing>(letter_spacing);
-  OnThemeChanged(ReadAnythingTheme::New(
-      font_name, font_size, links_enabled, images_enabled, foreground_color,
-      background_color, line_spacing_enum, letter_spacing_enum));
 }
 
 void ReadAnythingAppController::SetLanguageForTesting(

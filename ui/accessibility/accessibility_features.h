@@ -254,10 +254,6 @@ AX_BASE_EXPORT bool IsReadAnythingReadAloudAutomaticWordHighlightingEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingReadAloudPhraseHighlighting);
 AX_BASE_EXPORT bool IsReadAnythingReadAloudPhraseHighlightingEnabled();
 
-// Use the WebUI toolbar in Read Anything.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingWebUIToolbar);
-AX_BASE_EXPORT bool IsReadAnythingWebUIToolbarEnabled();
-
 // Use screen2x integration for Read Anything to distill web pages
 // using an ML model.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingWithScreen2x);

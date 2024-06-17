@@ -184,17 +184,22 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
     update->tree_data = tree_data;
   }
 
-  void SetThemeForTesting(const std::string& font_name,
-                          float font_size,
-                          bool links_enabled,
-                          bool images_enabled,
-                          SkColor foreground_color,
-                          SkColor background_color,
-                          int line_spacing,
-                          int letter_spacing) {
-    controller_->SetThemeForTesting(
-        font_name, font_size, links_enabled, images_enabled, foreground_color,
-        background_color, line_spacing, letter_spacing);
+  void OnSettingsRestoredFromPrefs(
+      read_anything::mojom::LineSpacing line_spacing,
+      read_anything::mojom::LetterSpacing letter_spacing,
+      const std::string& font,
+      double font_size,
+      bool links_enabled,
+      bool images_enabled,
+      read_anything::mojom::Colors color,
+      double speech_rate,
+      base::Value::Dict voices,
+      base::Value::List languages_enabled_in_pref,
+      read_anything::mojom::HighlightGranularity granularity) {
+    controller_->OnSettingsRestoredFromPrefs(
+        line_spacing, letter_spacing, font, font_size, links_enabled,
+        images_enabled, color, speech_rate, std::move(voices),
+        std::move(languages_enabled_in_pref), granularity);
   }
 
   void AccessibilityEventReceived(
@@ -298,13 +303,11 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   bool ImagesEnabled() { return controller_->ImagesEnabled(); }
 
-  SkColor ForegroundColor() { return controller_->ForegroundColor(); }
-
-  SkColor BackgroundColor() { return controller_->BackgroundColor(); }
-
   float LineSpacing() { return controller_->LineSpacing(); }
 
   float LetterSpacing() { return controller_->LetterSpacing(); }
+
+  int ColorTheme() { return controller_->ColorTheme(); }
 
   void OnFontSizeReset() { controller_->OnFontSizeReset(); }
 
@@ -379,8 +382,6 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   bool IsReadAloudEnabled() { return controller_->IsReadAloudEnabled(); }
 
-  bool IsWebUIToolbarEnabled() { return controller_->IsWebUIToolbarEnabled(); }
-
   bool IsLeafNode(ui::AXNodeID ax_node_id) {
     return controller_->IsLeafNode(ax_node_id);
   }
@@ -411,6 +412,10 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
 
   double SpeechRate() { return controller_->read_aloud_model_.speech_rate(); }
 
+  int HighlightGranularity() {
+    return controller_->read_aloud_model_.highlight_granularity();
+  }
+
   const base::Value::List& EnabledLanguages() {
     return controller_->read_aloud_model_.languages_enabled_in_pref();
   }
@@ -434,6 +439,10 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
   }
   void SetLanguageCode(std::string code) {
     controller_->SetLanguageForTesting(code);
+  }
+
+  std::vector<std::string> GetLanguagesEnabledInPref() {
+    return controller_->GetLanguagesEnabledInPref();
   }
 
   size_t GetAccessibleBoundary(const std::u16string& text,
@@ -593,36 +602,44 @@ TEST_F(ReadAnythingAppControllerTest,
   ASSERT_EQ(GetStoredVoice(), "");
 }
 
-TEST_F(ReadAnythingAppControllerTest, IsWebUIToolbarEnabled) {
-  EXPECT_TRUE(IsWebUIToolbarEnabled());
-
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kReadAnythingWebUIToolbar);
-  EXPECT_FALSE(IsWebUIToolbarEnabled());
-}
-
-TEST_F(ReadAnythingAppControllerTest, Theme) {
-  std::string font_name = "Roboto";
-  float font_size = 18.0;
-  bool links_enabled = false;
-  bool images_enabled = false;
-  SkColor foreground = SkColorSetRGB(0x33, 0x36, 0x39);
-  SkColor background = SkColorSetRGB(0xFD, 0xE2, 0x93);
-  int letter_spacing =
-      static_cast<int>(read_anything::mojom::LetterSpacing::kDefaultValue);
-  float letter_spacing_value = 0.0;
-  int line_spacing =
-      static_cast<int>(read_anything::mojom::LineSpacing::kDefaultValue);
+TEST_F(ReadAnythingAppControllerTest, OnSettingsRestoredFromPrefs) {
+  auto line_spacing = read_anything::mojom::LineSpacing::kDefaultValue;
   float line_spacing_value = 1.5;
-  SetThemeForTesting(font_name, font_size, links_enabled, images_enabled,
-                     foreground, background, line_spacing, letter_spacing);
+  auto letter_spacing = read_anything::mojom::LetterSpacing::kDefaultValue;
+  float letter_spacing_value = 0.0;
+  std::string font_name = "Roboto";
+  double font_size = 18.0;
+  bool links_enabled = false;
+  bool images_enabled = true;
+  auto color = read_anything::mojom::Colors::kDefaultValue;
+  int color_value = 0;
+  double speech_rate = 1.5;
+  std::string voice_value = "Italian voice 3";
+  std::string language_value = "it-IT";
+  base::Value::Dict voices = base::Value::Dict();
+  voices.Set(language_value, voice_value);
+  base::Value::List languages_enabled_in_pref = base::Value::List();
+  languages_enabled_in_pref.Append(language_value);
+  auto highlight_granularity =
+      read_anything::mojom::HighlightGranularity::kDefaultValue;
+  int highlight_granularity_value = 0;
+
+  OnSettingsRestoredFromPrefs(
+      line_spacing, letter_spacing, font_name, font_size, links_enabled,
+      images_enabled, color, speech_rate, std::move(voices),
+      std::move(languages_enabled_in_pref), highlight_granularity);
+
+  EXPECT_EQ(line_spacing_value, LineSpacing());
+  EXPECT_EQ(letter_spacing_value, LetterSpacing());
   EXPECT_EQ(font_name, FontName());
   EXPECT_EQ(font_size, FontSize());
   EXPECT_EQ(links_enabled, LinksEnabled());
-  EXPECT_EQ(foreground, ForegroundColor());
-  EXPECT_EQ(background, BackgroundColor());
-  EXPECT_EQ(line_spacing_value, LineSpacing());
-  EXPECT_EQ(letter_spacing_value, LetterSpacing());
+  EXPECT_EQ(color_value, ColorTheme());
+  EXPECT_EQ(speech_rate, SpeechRate());
+  EXPECT_EQ(voice_value, GetStoredVoice());
+  EXPECT_EQ(1u, GetLanguagesEnabledInPref().size());
+  EXPECT_EQ(language_value, GetLanguagesEnabledInPref()[0]);
+  EXPECT_EQ(highlight_granularity_value, HighlightGranularity());
 }
 
 TEST_F(ReadAnythingAppControllerTest, RootIdIsSnapshotRootId) {
@@ -2145,19 +2162,28 @@ TEST_F(ReadAnythingAppControllerTest, RequestImageDataUrl) {
   ui::AXNodeID ax_node_id = 2;
   EXPECT_CALL(page_handler_, OnImageDataRequested(tree_id_, ax_node_id))
       .Times(1);
+
+  auto line_spacing = read_anything::mojom::LineSpacing::kDefaultValue;
+  auto letter_spacing = read_anything::mojom::LetterSpacing::kDefaultValue;
   std::string font_name = "Roboto";
-  float font_size = 18.0;
+  double font_size = 18.0;
   bool links_enabled = false;
   bool images_enabled = true;
-  SkColor foreground = SkColorSetRGB(0x33, 0x36, 0x39);
-  SkColor background = SkColorSetRGB(0xFD, 0xE2, 0x93);
-  int letter_spacing =
-      static_cast<int>(read_anything::mojom::LetterSpacing::kDefaultValue);
-  int line_spacing =
-      static_cast<int>(read_anything::mojom::LineSpacing::kDefaultValue);
+  auto color = read_anything::mojom::Colors::kDefaultValue;
+  double speech_rate = 1.5;
+  std::string voice_value = "Italian voice 3";
+  std::string language_value = "it-IT";
+  base::Value::Dict voices = base::Value::Dict();
+  voices.Set(language_value, voice_value);
+  base::Value::List languages_enabled_in_pref = base::Value::List();
+  languages_enabled_in_pref.Append(language_value);
+  auto highlight_granularity =
+      read_anything::mojom::HighlightGranularity::kDefaultValue;
 
-  SetThemeForTesting(font_name, font_size, links_enabled, images_enabled,
-                     foreground, background, line_spacing, letter_spacing);
+  OnSettingsRestoredFromPrefs(
+      line_spacing, letter_spacing, font_name, font_size, links_enabled,
+      images_enabled, color, speech_rate, std::move(voices),
+      std::move(languages_enabled_in_pref), highlight_granularity);
   RequestImageDataUrl(ax_node_id);
   page_handler_.FlushForTesting();
   Mock::VerifyAndClearExpectations(distiller_);

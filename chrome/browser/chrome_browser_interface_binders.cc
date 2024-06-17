@@ -1962,10 +1962,8 @@ void PopulateChromeWebUIFrameInterfaceBrokers(
     registry.ForWebUI<CompanionSidePanelUntrustedUI>()
         .Add<side_panel::mojom::CompanionPageHandlerFactory>();
   }
-  if (features::IsReadAnythingWebUIToolbarEnabled()) {
-    registry.ForWebUI<ReadAnythingUntrustedUI>()
-        .Add<color_change_listener::mojom::PageHandler>();
-  }
+  registry.ForWebUI<ReadAnythingUntrustedUI>()
+      .Add<color_change_listener::mojom::PageHandler>();
   if (base::FeatureList::IsEnabled(features::kHaTSWebUI)) {
     registry.ForWebUI<HatsUI>().Add<hats::mojom::PageHandlerFactory>();
   }

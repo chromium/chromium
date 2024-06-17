@@ -28,18 +28,14 @@ declare namespace chrome {
     let endNodeId: number;
     let endOffset: number;
 
-    // Items in the ReadAnythingTheme struct, see read_anything.mojom for info.
+    // The current style theme values.
     let fontName: string;
     let fontSize: number;
     let linksEnabled: boolean;
     let imagesEnabled: boolean;
     let imagesFeatureEnabled: boolean;
-    let foregroundColor: number;
-    let backgroundColor: number;
     let lineSpacing: number;
     let letterSpacing: number;
-
-    // The current color theme value.
     let colorTheme: number;
 
     // Current audio settings values.
@@ -58,9 +54,6 @@ declare namespace chrome {
     let darkTheme: number;
     let yellowTheme: number;
     let blueTheme: number;
-
-    // Whether the WebUI toolbar feature flag is enabled.
-    let isWebUIToolbarVisible: boolean;
 
     // Whether the Read Aloud feature flag is enabled.
     let isReadAloudEnabled: boolean;
@@ -284,10 +277,6 @@ declare namespace chrome {
 
     // Ping that the selection has been updated.
     function updateSelection(): void;
-
-    // Ping that the theme choices of the user have been changed using the
-    // toolbar and are ready to consume.
-    function updateTheme(): void;
 
     // Read Aloud state should be updated if the lock screen state changes.
     function onLockScreen(): void;

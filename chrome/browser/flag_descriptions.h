@@ -2902,9 +2902,6 @@ extern const char kReadAnythingWithAlgorithmDescription[];
 extern const char kReadAnythingImagesViaAlgorithmName[];
 extern const char kReadAnythingImagesViaAlgorithmDescription[];
 
-extern const char kReadAnythingWebUIToolbarName[];
-extern const char kReadAnythingWebUIToolbarDescription[];
-
 extern const char kReadAnythingReadAloudName[];
 extern const char kReadAnythingReadAloudDescription[];
 

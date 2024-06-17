@@ -4984,11 +4984,6 @@ const char kReadAnythingImagesViaAlgorithmDescription[] =
     "Have Reading Mode use a local rules based algorithm to include images "
     "from webpages.";
 
-const char kReadAnythingWebUIToolbarName[] = "Reading Mode WebUI Toolbar";
-const char kReadAnythingWebUIToolbarDescription[] =
-    "Enables the Reading Mode toolbar implemented with WebUI instead of with "
-    "Views.";
-
 const char kReadAnythingReadAloudName[] = "Reading Mode Read Aloud";
 const char kReadAnythingReadAloudDescription[] =
     "Enables the experimental Read Aloud feature in Reading Mode.";
