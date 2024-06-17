@@ -394,12 +394,15 @@ void SCKAudioInputStream::Start(AudioInputCallback* callback) {
       base::BindRepeating(&SCKAudioInputStream::OnStreamError,
                           base::Unretained(this)));
 
+  // Make a local copy of the shared_refptr in case the error handler is called
+  // after `this` is destroyed.
+  auto local_shared_helper = shared_helper_;
   [stream_ startCaptureWithCompletionHandler:^(NSError* error) {
     if (!error) {
       return;
     }
 
-    shared_helper_->OnStreamError(error);
+    local_shared_helper->OnStreamError(error);
   }];
 }
 
