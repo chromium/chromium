@@ -301,12 +301,6 @@ BASE_FEATURE(kScrollableTabStripOverflow,
              base::FEATURE_DISABLED_BY_DEFAULT);
 const char kScrollableTabStripOverflowModeName[] = "tabScrollOverflow";
 
-// Splits pinned and unpinned tabs into separate TabStrips.
-// https://crbug.com/1346019
-BASE_FEATURE(kSplitTabStrip,
-             "SplitTabStrip",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Stores the tabs as a tree based data structure instead of a
 // vector in the tabstrip model. b/323937237
 BASE_FEATURE(kTabStripCollectionStorage,

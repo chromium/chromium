@@ -6747,10 +6747,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kScrollableTabStripOverflow,
                                     kScrollableTabStripOverflowVariations,
                                     "ScrollableTabStripOverflow")},
-
+#if !BUILDFLAG(IS_ANDROID)
     {"split-tabstrip", flag_descriptions::kSplitTabStripName,
      flag_descriptions::kSplitTabStripDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(features::kSplitTabStrip)},
+     FEATURE_VALUE_TYPE(tabs::kSplitTabStrip)},
+#endif
 
     {flag_descriptions::kSidePanelJourneysFlagId,
      flag_descriptions::kSidePanelJourneysName,

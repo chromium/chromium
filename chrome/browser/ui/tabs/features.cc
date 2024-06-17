@@ -9,6 +9,12 @@
 
 namespace tabs {
 
+// Splits pinned and unpinned tabs into separate TabStrips.
+// https://crbug.com/1346019
+BASE_FEATURE(kSplitTabStrip,
+             "SplitTabStrip",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kTabSearchPositionSetting,
              "TabSearchPositionSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);

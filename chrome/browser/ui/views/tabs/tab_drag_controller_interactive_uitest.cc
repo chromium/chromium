@@ -35,6 +35,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/tab_group.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -559,7 +560,7 @@ class DetachToBrowserTabDragControllerTest
   DetachToBrowserTabDragControllerTest() {
     std::vector<base::test::FeatureRef> enabled_features = {};
     if (std::get<0>(GetParam())) {
-      enabled_features.push_back(features::kSplitTabStrip);
+      enabled_features.push_back(tabs::kSplitTabStrip);
     }
     if (std::get<1>(GetParam())) {
       enabled_features.push_back(features::kTearOffWebAppTabOpensWebAppWindow);
