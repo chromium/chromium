@@ -1,0 +1,36 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("assistant") {
+  sources = [
+    "assistant_util.cc",
+    "assistant_util.h",
+  ]
+
+  deps = [
+    "//ash/public/cpp",
+    "//chrome/browser/profiles",
+    "//chromeos/ash/services/assistant/public/cpp",
+    "//components/language/core/browser",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "assistant_util_unittest.cc" ]
+
+  deps = [
+    ":assistant",
+    "//ash/public/cpp",
+    "//chrome/browser/ash",
+    "//chrome/browser/ash:test_support",
+    "//chromeos/ash/services/assistant/public/cpp",
+    "//components/language/core/browser",
+  ]
+}
