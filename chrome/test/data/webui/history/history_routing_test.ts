@@ -203,6 +203,20 @@ import {navigateTo} from './test_util.js';
                 window.location.href);
           }
         });
+
+    test(
+        'routing to chrome://history/syncedTabs works correctly',
+        async function() {
+          navigateTo('/syncedTabs', app);
+          if (isHistoryClustersEnabled) {
+            // cr-tabs can change their selected value, but these should be
+            // ignored since /syncedTabs is not a tabbed page.
+            const historyTabs = app.shadowRoot!.querySelector('cr-tabs')!;
+            historyTabs.selected = -1;
+            await microtasksFinished();
+          }
+          assertEquals(`chrome://history/syncedTabs`, window.location.href);
+        });
   });
 });
 
