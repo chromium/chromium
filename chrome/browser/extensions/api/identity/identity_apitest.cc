@@ -669,20 +669,19 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
       GenerateFailureResult(gaia_ids, nullptr) << "Result was not an array";
     const base::Value::List& results = (*callback_arguments_list)[0].GetList();
 
-    std::set<std::string> result_ids;
+    std::vector<std::string> result_ids;
     for (const base::Value& item : results) {
       std::optional<api::identity::AccountInfo> info =
           api::identity::AccountInfo::FromValue(item);
       if (info) {
-        result_ids.insert(info->id);
+        result_ids.push_back(info->id);
       } else {
         return GenerateFailureResult(gaia_ids, &results);
       }
     }
 
-    for (const std::string& gaia_id : gaia_ids) {
-      if (result_ids.find(gaia_id) == result_ids.end())
-        return GenerateFailureResult(gaia_ids, &results);
+    if (result_ids != gaia_ids) {
+      return GenerateFailureResult(gaia_ids, &results);
     }
 
     return testing::AssertionResult(true);
@@ -712,6 +711,10 @@ class IdentityGetAccountsFunctionTest : public IdentityTestWithSignin {
 
     return testing::AssertionFailure(msg);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      switches::kExplicitBrowserSigninUIOnDesktop};
 };
 
 IN_PROC_BROWSER_TEST_F(IdentityGetAccountsFunctionTest, AllAccountsOn) {
@@ -731,7 +734,7 @@ IN_PROC_BROWSER_TEST_F(IdentityGetAccountsFunctionTest,
                        PrimaryAccountHasInvalidRefreshToken) {
   CoreAccountId primary_account_id = SignIn("primary@example.com");
   identity_test_env()->SetInvalidRefreshTokenForPrimaryAccount();
-  EXPECT_TRUE(ExpectGetAccounts({}));
+  EXPECT_TRUE(ExpectGetAccounts({"gaia_id_for_primary_example.com"}));
 }
 
 IN_PROC_BROWSER_TEST_F(IdentityGetAccountsFunctionTest,
@@ -749,6 +752,15 @@ IN_PROC_BROWSER_TEST_F(IdentityGetAccountsFunctionTest, TwoAccountsSignedIn) {
   } else {
     EXPECT_TRUE(ExpectGetAccounts({"gaia_id_for_primary_example.com"}));
   }
+}
+
+IN_PROC_BROWSER_TEST_F(IdentityGetAccountsFunctionTest, SignedInOnTheWeb) {
+  identity_test_env()->MakeAccountAvailable("secondary@example.com");
+  EXPECT_TRUE(ExpectGetAccounts({}));
+
+  SignIn("primary@example.com");
+  EXPECT_TRUE(ExpectGetAccounts({"gaia_id_for_primary_example.com",
+                                 "gaia_id_for_secondary_example.com"}));
 }
 
 class IdentityGetProfileUserInfoFunctionTest : public IdentityTestWithSignin {
