@@ -102,6 +102,9 @@ const char kProxyBypassList[] = "proxy-bypass-list";
 // affects HTTP and HTTPS requests.
 const char kProxyServer[] = "proxy-server";
 
+// Forces each navigation to use a new BrowsingInstance.
+const char kForceNewBrowsingInstance[] = "force-new-browsing-instance";
+
 // A string used to override the default user agent with a custom one.
 const char kUserAgent[] = "user-agent";
 

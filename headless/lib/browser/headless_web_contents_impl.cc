@@ -177,9 +177,14 @@ class HeadlessWebContentsImpl::Delegate : public content::WebContentsDelegate {
         return nullptr;
     }
 
+    content::NavigationController::LoadURLParams load_url_params(params);
+    load_url_params.force_new_browsing_instance =
+        headless_web_contents_->browser()
+            ->options()
+            ->force_new_browsing_instance;
+
     base::WeakPtr<content::NavigationHandle> navigation =
-        target->GetController().LoadURLWithParams(
-            content::NavigationController::LoadURLParams(params));
+        target->GetController().LoadURLWithParams(load_url_params);
     if (navigation_handle_callback && navigation) {
       std::move(navigation_handle_callback).Run(*navigation);
     }
@@ -445,6 +450,9 @@ bool HeadlessWebContentsImpl::OpenURL(const GURL& url) {
   content::NavigationController::LoadURLParams params(url);
   params.transition_type = ui::PageTransitionFromInt(
       ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
+  params.force_new_browsing_instance =
+      browser()->options()->force_new_browsing_instance;
+
   web_contents_->GetController().LoadURLWithParams(params);
   web_contents_delegate_->ActivateContents(web_contents_.get());
   web_contents_->Focus();

@@ -215,6 +215,10 @@ bool HandleCommandLineSwitches(base::CommandLine& command_line,
     builder.SetEnableLazyLoading(false);
   }
 
+  if (command_line.HasSwitch(switches::kForceNewBrowsingInstance)) {
+    builder.SetForceNewBrowsingInstance(true);
+  }
+
   return true;
 }
 

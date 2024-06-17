@@ -141,6 +141,9 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
   // Whether lazy loading of images and frames is enabled.
   bool lazy_load_enabled = true;
 
+  // Forces each navigation to use a new BrowsingInstance.
+  bool force_new_browsing_instance = false;
+
   // Reminder: when adding a new field here, do not forget to add it to
   // HeadlessBrowserContextOptions (where appropriate).
  private:
@@ -179,6 +182,7 @@ class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {
   Builder& SetCrashReporterEnabled(bool enabled);
   Builder& SetCrashDumpsDir(const base::FilePath& dir);
   Builder& SetFontRenderHinting(gfx::FontRenderParams::Hinting hinting);
+  Builder& SetForceNewBrowsingInstance(bool force);
   Options Build();
 
  private:

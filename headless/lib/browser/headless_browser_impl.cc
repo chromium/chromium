@@ -155,6 +155,11 @@ Builder& Builder::SetFontRenderHinting(gfx::FontRenderParams::Hinting hinting) {
   return *this;
 }
 
+Builder& Builder::SetForceNewBrowsingInstance(bool force) {
+  options_.force_new_browsing_instance = force;
+  return *this;
+}
+
 Options Builder::Build() {
   return std::move(options_);
 }
