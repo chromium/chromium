@@ -2796,26 +2796,6 @@ TEST_F(SnapGroupTest, WindowDestroyToBreakSnapGroup) {
   EXPECT_TRUE(window_to_snap_group_map.empty());
 }
 
-// Tests to verify that resnapping a window within a Snap Group to the same
-// position but with a different snap ratio will break the existing group. See
-// http://b/342230763 for more details.
-TEST_F(SnapGroupTest, ReSnapWindowWithDifferentSnapRatio) {
-  std::unique_ptr<aura::Window> w1(CreateAppWindow());
-  std::unique_ptr<aura::Window> w2(CreateAppWindow());
-  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
-  SnapGroupController* snap_group_controller = SnapGroupController::Get();
-  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
-  ASSERT_TRUE(snap_group_divider());
-
-  // Re-snap `w2`. Test we re-form the group with different snap ratio.
-  SnapOneTestWindow(w2.get(), WindowStateType::kSecondarySnapped,
-                    chromeos::kOneThirdSnapRatio,
-                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
-  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
-  // TODO(b/346624805): Verify the bounds get updated.
-  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
-}
-
 // Tests that if one window in the snap group is actiaved, the stacking order of
 // the other window in the snap group will be updated to be right below the
 // activated window i.e. the two windows in the snap group will be placed on
@@ -7164,7 +7144,30 @@ TEST_F(SnapGroupSnapToReplaceTest, UseShortcutToGroupPerformSnapToReplace) {
 
 using SnapGroupAutoSnapGroupTest = SnapGroupTest;
 
-// Tests that we auto form a group when dragged to re-snap.
+// Tests to verify that resnapping a window within a Snap Group to the same
+// position but with a different snap ratio will update the existing group. See
+// http://b/342230763 for more details.
+TEST_F(SnapGroupAutoSnapGroupTest, ReSnapWindowWithDifferentSnapRatio) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get(), /*horizontal=*/true);
+  SnapGroupController* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  ASSERT_TRUE(snap_group_divider());
+
+  // Re-snap `w2` to 1/3. Test we re-form the group with the divider at 2/3.
+  SnapOneTestWindow(w2.get(), WindowStateType::kSecondarySnapped,
+                    chromeos::kOneThirdSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  const int work_area_width(work_area_bounds().width());
+  EXPECT_EQ(std::round(work_area_width * chromeos::kTwoThirdSnapRatio),
+            snap_group_divider_bounds_in_screen().CenterPoint().x());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
+}
+
+// Tests that drag to snap will respect the opposite snapped window's snap
+// ratio.
 TEST_F(SnapGroupAutoSnapGroupTest, DragToSnap) {
   // Create a snap group at 2/3 and 1/3.
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
@@ -7176,9 +7179,13 @@ TEST_F(SnapGroupAutoSnapGroupTest, DragToSnap) {
   ClickOverviewItem(event_generator, w2.get());
   auto* snap_group_controller = Shell::Get()->snap_group_controller();
   ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  const int work_area_width(work_area_bounds().width());
+  EXPECT_EQ(std::round(work_area_width * chromeos::kTwoThirdSnapRatio),
+            snap_group_divider_bounds_in_screen().CenterPoint().x());
   UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
 
-  // Drag out to unsnap `w1`, then re-snap to 1/2. Test we re-form a group.
+  // Drag out to unsnap `w1`, then re-snap. Test we re-form a group with the
+  // divider at 2/3 to keep the opposite snapped `w2` at 1/3.
   event_generator->MoveMouseTo(GetDragPoint(w1.get()));
   event_generator->DragMouseTo(work_area_bounds().CenterPoint());
   EXPECT_FALSE(
@@ -7187,7 +7194,98 @@ TEST_F(SnapGroupAutoSnapGroupTest, DragToSnap) {
   ASSERT_EQ(WindowStateType::kPrimarySnapped,
             WindowState::Get(w1.get())->GetStateType());
   EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_EQ(std::round(work_area_width * chromeos::kTwoThirdSnapRatio),
+            snap_group_divider_bounds_in_screen().CenterPoint().x());
   UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
+
+  // Drag out to unsnap `w2`, then re-snap. Test we re-form a group with the
+  // divider at 2/3 to keep the opposite snapped `w2` at 1/3.
+  event_generator->MoveMouseTo(GetDragPoint(w2.get()));
+  event_generator->DragMouseTo(work_area_bounds().CenterPoint());
+  EXPECT_FALSE(
+      snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  event_generator->DragMouseTo(work_area_bounds().right_center());
+  ASSERT_EQ(WindowStateType::kSecondarySnapped,
+            WindowState::Get(w2.get())->GetStateType());
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_EQ(std::round(work_area_width * chromeos::kTwoThirdSnapRatio),
+            snap_group_divider_bounds_in_screen().CenterPoint().x());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
+}
+
+// Tests that drag out to unsnap, then drag back to snap without releasing the
+// mouse will keep the group snap ratio. See bug in http://b/346624805.
+TEST_F(SnapGroupAutoSnapGroupTest, DragToSnapWithoutReleasingMouse) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  auto* snap_group_controller = Shell::Get()->snap_group_controller();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  const int work_area_width(work_area_bounds().width());
+  EXPECT_EQ(std::round(work_area_width * chromeos::kDefaultSnapRatio),
+            snap_group_divider_bounds_in_screen().CenterPoint().x());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
+
+  // Drag out to unsnap `w1` without releasing the left button.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(GetDragPoint(w1.get()));
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseTo(work_area_bounds().CenterPoint());
+  // At this point `w1` will look visually unsnapped but still have snapped
+  // state.
+  ASSERT_EQ(gfx::Rect(250, 252, 300, 300), w1->GetTargetBounds());
+  EXPECT_EQ(WindowStateType::kPrimarySnapped,
+            WindowState::Get(w1.get())->GetStateType());
+  // Now snap `w1` back to primary then release. Test it snaps at 1/2 and
+  // re-forms a group.
+  event_generator->MoveMouseTo(work_area_bounds().left_center());
+  event_generator->ReleaseLeftButton();
+  ASSERT_EQ(WindowStateType::kPrimarySnapped,
+            WindowState::Get(w1.get())->GetStateType());
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_EQ(work_area_bounds().CenterPoint(),
+            snap_group_divider_bounds_in_screen().CenterPoint());
+  UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
+}
+
+// Tests that resizing the snap group, then dragging to re-snap works correctly.
+TEST_F(SnapGroupAutoSnapGroupTest, ResizeThenDragToSnap) {
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapTwoTestWindows(w1.get(), w2.get());
+  auto* snap_group_controller = Shell::Get()->snap_group_controller();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+
+  auto* event_generator = GetEventGenerator();
+
+  // Resize to arbitrary locations, then drag to re-snap.
+  for (const int resize_delta : {-30, 0, 15}) {
+    SCOPED_TRACE(base::StringPrintf("Resize delta: %d", resize_delta));
+    const gfx::Point divider_center(
+        snap_group_divider_bounds_in_screen().CenterPoint());
+    event_generator->MoveMouseTo(divider_center);
+    event_generator->PressLeftButton();
+    const gfx::Point resize_point(divider_center +
+                                  gfx::Vector2d(resize_delta, 0));
+    event_generator->MoveMouseTo(resize_point, /*count=*/2);
+    EXPECT_EQ(resize_point,
+              snap_group_divider_bounds_in_screen().CenterPoint());
+    UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
+    event_generator->ReleaseLeftButton();
+
+    // Drag out to unsnap, then re-snap. Test it snaps at approximately the same
+    // ratio.
+    event_generator->MoveMouseTo(GetDragPoint(w1.get()));
+    event_generator->DragMouseTo(work_area_bounds().CenterPoint());
+    ASSERT_FALSE(
+        snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+    event_generator->DragMouseTo(work_area_bounds().left_center());
+    ASSERT_TRUE(
+        snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+    EXPECT_NEAR(resize_point.x(),
+                snap_group_divider_bounds_in_screen().CenterPoint().x(), 1);
+    UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
+  }
 }
 
 // Tests re-snapping to different ratios via the window layout menu.
@@ -7202,6 +7300,7 @@ TEST_F(SnapGroupAutoSnapGroupTest, WindowLayoutMenu) {
   ClickOverviewItem(event_generator, w2.get());
   auto* snap_group_controller = Shell::Get()->snap_group_controller();
   ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  const int work_area_width(work_area_bounds().width());
   UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
 
   // Re-snap `w1` to 1/2.
@@ -7209,6 +7308,8 @@ TEST_F(SnapGroupAutoSnapGroupTest, WindowLayoutMenu) {
                     chromeos::kDefaultSnapRatio,
                     WindowSnapActionSource::kSnapByWindowLayoutMenu);
   ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_EQ(work_area_width * chromeos::kDefaultSnapRatio,
+            snap_group_divider_bounds_in_screen().CenterPoint().x());
   UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
 
   // Re-snap `w1` to 2/3.
@@ -7216,6 +7317,8 @@ TEST_F(SnapGroupAutoSnapGroupTest, WindowLayoutMenu) {
                     chromeos::kTwoThirdSnapRatio,
                     WindowSnapActionSource::kSnapByWindowLayoutMenu);
   ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_EQ(std::round(work_area_width * chromeos::kTwoThirdSnapRatio),
+            snap_group_divider_bounds_in_screen().CenterPoint().x());
   UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
 
   // Re-snap `w2` to 1/2.
@@ -7223,6 +7326,8 @@ TEST_F(SnapGroupAutoSnapGroupTest, WindowLayoutMenu) {
                     chromeos::kDefaultSnapRatio,
                     WindowSnapActionSource::kSnapByWindowLayoutMenu);
   ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_EQ(std::round(work_area_width * chromeos::kDefaultSnapRatio),
+            snap_group_divider_bounds_in_screen().CenterPoint().x());
   UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
 
   // Re-snap `w2` to 1/3.
@@ -7230,6 +7335,8 @@ TEST_F(SnapGroupAutoSnapGroupTest, WindowLayoutMenu) {
                     chromeos::kOneThirdSnapRatio,
                     WindowSnapActionSource::kSnapByWindowLayoutMenu);
   ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_EQ(std::round(work_area_width * chromeos::kTwoThirdSnapRatio),
+            snap_group_divider_bounds_in_screen().CenterPoint().x());
   UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get(), snap_group_divider());
 }
 

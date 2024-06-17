@@ -217,6 +217,24 @@ void SnapGroup::MinimizeWindows() {
   window2_state->Minimize();
 }
 
+void SnapGroup::RefreshSnapGroup() {
+  CHECK_EQ(window1_->GetRootWindow(), window2_->GetRootWindow());
+  // If the windows + divider no longer fit in the work area, break the group.
+  if (!CanWindowsFitInWorkArea(window1_, window2_)) {
+    // `this` will be shut down and removed from the controller immediately, and
+    // then destroyed asynchronously soon.
+    SnapGroupController::Get()->RemoveSnapGroup(
+        this, SnapGroupExitPoint::kCanNotFitInWorkArea);
+    return;
+  }
+
+  // Otherwise call `ApplyPrimarySnapRatio()`, which will clamp the divider
+  // position to between the windows' minimum sizes.
+  ApplyPrimarySnapRatio(WindowState::Get(GetPhysicallyLeftOrTopWindow())
+                            ->snap_ratio()
+                            .value_or(chromeos::kDefaultSnapRatio));
+}
+
 void SnapGroup::OnWindowDestroying(aura::Window* window) {
   DCHECK(window == window1_ || window == window2_);
   // `this` will be shut down and removed from the controller immediately, and
@@ -522,24 +540,6 @@ void SnapGroup::ApplyPrimarySnapRatio(float primary_snap_ratio) {
                             primary_snap_ratio);
   UpdateSnappedWindowBounds(window2_, /*account_for_divider_width=*/true,
                             1 - primary_snap_ratio);
-}
-
-void SnapGroup::RefreshSnapGroup() {
-  CHECK_EQ(window1_->GetRootWindow(), window2_->GetRootWindow());
-  // If the windows + divider no longer fit in the work area, break the group.
-  if (!CanWindowsFitInWorkArea(window1_, window2_)) {
-    // `this` will be shut down and removed from the controller immediately, and
-    // then destroyed asynchronously soon.
-    SnapGroupController::Get()->RemoveSnapGroup(
-        this, SnapGroupExitPoint::kCanNotFitInWorkArea);
-    return;
-  }
-
-  // Otherwise call `ApplyPrimarySnapRatio()`, which will clamp the divider
-  // position to between the windows' minimum sizes.
-  ApplyPrimarySnapRatio(WindowState::Get(GetPhysicallyLeftOrTopWindow())
-                            ->snap_ratio()
-                            .value_or(chromeos::kDefaultSnapRatio));
 }
 
 void SnapGroup::OnOverviewModeStarting() {

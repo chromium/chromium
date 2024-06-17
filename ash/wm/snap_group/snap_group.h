@@ -93,6 +93,11 @@ class SnapGroup : public aura::WindowObserver,
   // Minimizes the windows in the snap group.
   void MinimizeWindows();
 
+  // Refreshes the window and divider bounds. Note `this` may be destroyed if
+  // the windows are no longer valid for a snap group.
+  // TODO(b/346624805): See if we can private this again.
+  void RefreshSnapGroup();
+
   // aura::WindowObserver:
   void OnWindowDestroying(aura::Window* window) override;
   void OnWindowParentChanged(aura::Window* window,
@@ -155,10 +160,6 @@ class SnapGroup : public aura::WindowObserver,
   // Adjusts snapped windows and divider bounds to match the given
   // `primary_snap_ratio`. Note the windows and divider must fit the work area.
   void ApplyPrimarySnapRatio(float primary_snap_ratio);
-
-  // Refreshes the window and divider bounds. Note `this` may be destroyed if
-  // the windows are no longer valid for a snap group.
-  void RefreshSnapGroup();
 
   // Hides scoped windows in a snap group in partial overview, restores their
   // visibility when partial overview ends.

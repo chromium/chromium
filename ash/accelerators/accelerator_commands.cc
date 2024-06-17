@@ -543,8 +543,13 @@ void CreateSnapGroup() {
   auto maybe_create_snap_group =
       [&](aura::Window* window1, aura::Window* window2,
           std::optional<base::TimeTicks> carry_over_creation_time) {
-        snap_group_controller->AddSnapGroup(window1, window2, /*replace=*/false,
-                                            carry_over_creation_time);
+        if (auto* snap_group = snap_group_controller->AddSnapGroup(
+                window1, window2, /*replace=*/false,
+                carry_over_creation_time)) {
+          // TODO(b/346624805): See if we can move this to `AddSnapGroup()`.
+          // Currently needed since multiple places can refresh snap bounds.
+          snap_group->RefreshSnapGroup();
+        }
         if (snap_group_controller->AreWindowsInSnapGroup(window1, window2)) {
           Shell::Get()->accessibility_controller()->TriggerAccessibilityAlert(
               AccessibilityAlert::SNAP_GROUP_CREATION);

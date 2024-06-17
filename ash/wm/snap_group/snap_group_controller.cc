@@ -103,10 +103,38 @@ bool SnapGroupController::OnWindowSnapped(
   }
 
   if (auto* opposite_window = GetOppositeVisibleSnappedWindow(window)) {
-    if (AddSnapGroup(window, opposite_window, /*replace=*/false,
-                     /*carry_over_creation_time=*/std::nullopt)) {
-      // TODO(b/346624805): Fix shifted bounds issue. Currently we just ensure
-      // the bounds and divider don't overlap.
+    if (auto* snap_group =
+            AddSnapGroup(window, opposite_window, /*replace=*/false,
+                         /*carry_over_creation_time=*/std::nullopt)) {
+      aura::Window* target_window = nullptr;
+      switch (snap_action_source) {
+        case WindowSnapActionSource::kSnapByWindowLayoutMenu:
+        case WindowSnapActionSource::kLacrosSnapButtonOrWindowLayoutMenu:
+        case WindowSnapActionSource::kSnapByClamshellTabletTransition:
+          // If the window was snapped via the layout menu, respect its
+          // requested snap ratio. We also refresh the bounds for tablet
+          // transition to ensure no divider gap.
+          target_window = window;
+          break;
+        case WindowSnapActionSource::kDragWindowToEdgeToSnap:
+        case WindowSnapActionSource::kLongPressCaptionButtonToSnap:
+          // Else respect the opposite window's snap ratio. This is to give the
+          // impression of filling the layout and feels more intuitive to the
+          // user.
+          target_window = opposite_window;
+          break;
+        default:
+          // Else no need to refresh the group bounds.
+          return true;
+      }
+      const float snap_ratio =
+          window_util::GetSnapRatioForWindow(target_window);
+      // Apply the target window's snap ratio *after* the group creation so we
+      // can actually enforce it.
+      // TODO(b/346624805): See if we can consolidate this with
+      // `AddSnapGroup()` and/or `ShowDivider()`.
+      snap_group->ApplyPrimarySnapRatio(
+          IsPhysicallyLeftOrTop(target_window) ? snap_ratio : 1.f - snap_ratio);
       return true;
     }
   }
@@ -160,8 +188,7 @@ SnapGroup* SnapGroupController::AddSnapGroup(
   // window_state.cc.
   auto* snap_group_ptr = snap_group.get();
   snap_groups_.push_back(std::move(snap_group));
-  snap_group_ptr->UpdateGroupWindowsBounds(
-      /*account_for_divider_width=*/true);
+  // TODO(b/346624805): Unify the group and divider bounds updates.
 
   if (!replace) {
     ReportSnapGroupsCountHistogram(/*count=*/snap_groups_.size());
