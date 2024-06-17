@@ -113,7 +113,6 @@ class MEDIA_EXPORT AudioManagerBase : public AudioManager {
   void GetAudioOutputDeviceDescriptions(
       AudioDeviceDescriptions* device_descriptions) final;
 
-  AudioParameters GetDefaultOutputStreamParameters() override;
   AudioParameters GetOutputStreamParameters(
       const std::string& device_id) override;
   AudioParameters GetInputStreamParameters(

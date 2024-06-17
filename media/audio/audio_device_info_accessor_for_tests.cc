@@ -37,12 +37,6 @@ void AudioDeviceInfoAccessorForTests::GetAudioOutputDeviceDescriptions(
   audio_manager_->GetAudioOutputDeviceDescriptions(device_descriptions);
 }
 
-AudioParameters
-AudioDeviceInfoAccessorForTests::GetDefaultOutputStreamParameters() {
-  DCHECK(audio_manager_->GetTaskRunner()->BelongsToCurrentThread());
-  return audio_manager_->GetDefaultOutputStreamParameters();
-}
-
 AudioParameters AudioDeviceInfoAccessorForTests::GetOutputStreamParameters(
     const std::string& device_id) {
   DCHECK(audio_manager_->GetTaskRunner()->BelongsToCurrentThread());

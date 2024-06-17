@@ -31,6 +31,7 @@
 #include "media/audio/audio_unittest_util.h"
 #include "media/audio/fake_audio_log_factory.h"
 #include "media/audio/fake_audio_manager.h"
+#include "media/audio/mock_audio_debug_recording_manager.h"
 #include "media/audio/test_audio_thread.h"
 #include "media/base/limits.h"
 #include "media/base/media_switches.h"
@@ -166,8 +167,8 @@ class AudioManagerTest : public ::testing::Test {
     stream->Close();
   }
 
-  void GetDefaultOutputStreamParameters(media::AudioParameters* params) {
-    *params = device_info_accessor_->GetDefaultOutputStreamParameters();
+  AudioParameters GetOutputStreamParameters(const std::string& device_id) {
+    return device_info_accessor_->GetOutputStreamParameters(device_id);
   }
 
   void GetAssociatedOutputDeviceID(const std::string& input_device_id,
@@ -399,12 +400,12 @@ TEST_F(AudioManagerTest, EnumerateOutputDevicesAlsaWithOutputDeviceSwitch) {
 }
 #endif  // defined(USE_ALSA)
 
-TEST_F(AudioManagerTest, GetDefaultOutputStreamParameters) {
+TEST_F(AudioManagerTest, GetOutputStreamParameters) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   ABORT_AUDIO_TEST_IF_NOT(InputDevicesAvailable());
 
-  AudioParameters params;
-  GetDefaultOutputStreamParameters(&params);
+  std::string default_device_id = AudioDeviceDescription::kDefaultDeviceId;
+  AudioParameters params = GetOutputStreamParameters(default_device_id);
   EXPECT_TRUE(params.IsValid());
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 }
@@ -547,8 +548,8 @@ TEST_F(AudioManagerTest, DefaultCommunicationsLabelsContainRealLabels) {
 TEST_F(AudioManagerTest, CheckMakeOutputStreamWithPreferredParameters) {
   ABORT_AUDIO_TEST_IF_NOT(OutputDevicesAvailable());
 
-  AudioParameters params;
-  GetDefaultOutputStreamParameters(&params);
+  std::string default_device_id = AudioDeviceDescription::kDefaultDeviceId;
+  AudioParameters params = GetOutputStreamParameters(default_device_id);
   ASSERT_TRUE(params.IsValid());
 
   AudioOutputStream* stream =
@@ -600,8 +601,8 @@ TEST_F(AudioManagerTest, CheckMinMaxAudioBufferSizeCallbacks) {
 
   DCHECK(audio_manager_);
 
-  AudioParameters default_params;
-  GetDefaultOutputStreamParameters(&default_params);
+  std::string default_device_id = AudioDeviceDescription::kDefaultDeviceId;
+  AudioParameters default_params = GetOutputStreamParameters(default_device_id);
   ASSERT_LT(default_params.frames_per_buffer(),
             media::limits::kMaxAudioBufferSize);
 

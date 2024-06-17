@@ -137,10 +137,6 @@ class CastAudioManagerTest : public testing::Test {
     audio_thread_.FlushForTesting();
   }
 
-  void GetDefaultOutputStreamParameters(::media::AudioParameters* params) {
-    *params = device_info_accessor_->GetDefaultOutputStreamParameters();
-  }
-
   base::Thread audio_thread_;
   base::test::TaskEnvironment task_environment_;
   ::media::FakeAudioLogFactory fake_audio_log_factory_;
@@ -156,8 +152,9 @@ class CastAudioManagerTest : public testing::Test {
 };
 
 TEST_F(CastAudioManagerTest, HasValidOutputStreamParameters) {
-  ::media::AudioParameters params;
-  GetDefaultOutputStreamParameters(&params);
+  std::string default_device_id = AudioDeviceDescription::kDefaultDeviceId;
+  ::media::AudioParameters params =
+      audio_manager_->GetOutputStreamParameters(default_device_id);
   EXPECT_TRUE(params.IsValid());
 }
 

@@ -125,15 +125,18 @@ std::optional<AudioParameters> AudioSystemHelper::ComputeOutputParameters(
   DCHECK(audio_manager_->GetTaskRunner()->BelongsToCurrentThread());
 
   // TODO(olka): remove this when
-  // AudioManager::Get[Default]OutputStreamParameters() returns invalid
+  // AudioManager::GetOutputStreamParameters() returns invalid
   // parameters if the device is not found.
   if (!audio_manager_->HasAudioOutputDevices())
     return std::optional<AudioParameters>();
 
-  AudioParameters params =
+  std::string effective_device_id =
       AudioDeviceDescription::IsDefaultDevice(device_id)
-          ? audio_manager_->GetDefaultOutputStreamParameters()
-          : audio_manager_->GetOutputStreamParameters(device_id);
+          ? audio_manager_->GetDefaultOutputDeviceID()
+          : device_id;
+
+  AudioParameters params =
+      audio_manager_->GetOutputStreamParameters(effective_device_id);
 
   if (params.IsValid())
     return params;

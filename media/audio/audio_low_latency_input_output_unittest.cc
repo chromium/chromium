@@ -272,8 +272,11 @@ class AudioOutputStreamTraits {
 
   static AudioParameters GetDefaultAudioStreamParameters(
       AudioManager* audio_manager) {
+    std::string default_device_id =
+        AudioDeviceInfoAccessorForTests(audio_manager)
+            .GetDefaultOutputDeviceID();
     return AudioDeviceInfoAccessorForTests(audio_manager)
-        .GetDefaultOutputStreamParameters();
+        .GetOutputStreamParameters(default_device_id);
   }
 
   static StreamType* CreateStream(AudioManager* audio_manager,

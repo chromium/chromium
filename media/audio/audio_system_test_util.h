@@ -179,15 +179,6 @@ TYPED_TEST_P(AudioSystemTestTemplate, GetOutputStreamParameters) {
   wait_loop.Run();
 }
 
-TYPED_TEST_P(AudioSystemTestTemplate, GetDefaultOutputStreamParameters) {
-  base::RunLoop wait_loop;
-  this->audio_system()->GetOutputStreamParameters(
-      AudioDeviceDescription::kDefaultDeviceId,
-      this->expectations_.GetAudioParamsCallback(
-          FROM_HERE, wait_loop.QuitClosure(), this->default_output_params_));
-  wait_loop.Run();
-}
-
 TYPED_TEST_P(AudioSystemTestTemplate,
              GetOutputStreamParametersForDefaultDeviceNoDevices) {
   this->audio_manager()->SetHasOutputDevices(false);
@@ -351,7 +342,6 @@ REGISTER_TYPED_TEST_SUITE_P(
     GetInputStreamParametersNormal,
     GetInputStreamParametersNoDevice,
     GetOutputStreamParameters,
-    GetDefaultOutputStreamParameters,
     GetOutputStreamParametersForDefaultDeviceNoDevices,
     GetOutputStreamParametersForNonDefaultDeviceNoDevices,
     HasInputDevices,

@@ -481,7 +481,14 @@ class AudioAndroidOutputTest : public testing::Test {
 
   void GetDefaultOutputStreamParametersOnAudioThread() {
     RunOnAudioThread(base::BindOnce(
-        &AudioAndroidOutputTest::GetDefaultOutputStreamParameters,
+        [](AudioAndroidOutputTest* self) {
+          std::string default_device_id =
+              AudioDeviceDescription::kDefaultDeviceId;
+          self->audio_output_parameters_ =
+              self->audio_manager_device_info()->GetOutputStreamParameters(
+                  default_device_id);
+          EXPECT_TRUE(self->audio_output_parameters_.IsValid());
+        },
         base::Unretained(this)));
   }
 
@@ -550,13 +557,6 @@ class AudioAndroidOutputTest : public testing::Test {
               0.70 * expected_time_between_callbacks_ms);
     EXPECT_LE(average_time_between_callbacks_ms,
               1.50 * expected_time_between_callbacks_ms);
-  }
-
-  void GetDefaultOutputStreamParameters() {
-    DCHECK(audio_manager()->GetTaskRunner()->BelongsToCurrentThread());
-    audio_output_parameters_ =
-        audio_manager_device_info()->GetDefaultOutputStreamParameters();
-    EXPECT_TRUE(audio_output_parameters_.IsValid());
   }
 
   void MakeOutputStream(const AudioParameters& params) {
@@ -738,12 +738,6 @@ TEST_P(AudioAndroidInputTest, GetDefaultInputStreamParameters) {
   GetDefaultInputStreamParametersOnAudioThread();
   EXPECT_TRUE(audio_input_parameters().IsValid());
   DVLOG(1) << audio_input_parameters();
-}
-
-// Get the default audio output parameters and log the result.
-TEST_F(AudioAndroidOutputTest, GetDefaultOutputStreamParameters) {
-  GetDefaultOutputStreamParametersOnAudioThread();
-  DVLOG(1) << audio_output_parameters();
 }
 
 // Verify input device enumeration.

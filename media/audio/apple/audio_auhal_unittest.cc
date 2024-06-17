@@ -51,8 +51,12 @@ class AUHALStreamTest : public testing::Test {
   ~AUHALStreamTest() override { manager_->Shutdown(); }
 
   AudioOutputStream* Create() {
+    std::string default_device_id =
+        manager_device_info_.GetDefaultOutputDeviceID();
+    AudioParameters default_params =
+        manager_device_info_.GetOutputStreamParameters(default_device_id);
     return manager_->MakeAudioOutputStream(
-        manager_device_info_.GetDefaultOutputStreamParameters(), "",
+        default_params, "",
         base::BindRepeating(&AUHALStreamTest::OnLogMessage,
                             base::Unretained(this)));
   }
@@ -73,8 +77,10 @@ class AUHALStreamTest : public testing::Test {
 
 TEST_F(AUHALStreamTest, HardwareSampleRate) {
   ABORT_AUDIO_TEST_IF_NOT(OutputDevicesAvailable());
+  std::string default_device_id =
+      manager_device_info_.GetDefaultOutputDeviceID();
   const AudioParameters preferred_params =
-      manager_device_info_.GetDefaultOutputStreamParameters();
+      manager_device_info_.GetOutputStreamParameters(default_device_id);
   EXPECT_GE(preferred_params.sample_rate(), 16000);
   EXPECT_LE(preferred_params.sample_rate(), 192000);
 }

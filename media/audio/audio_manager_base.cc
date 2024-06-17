@@ -552,11 +552,6 @@ void AudioManagerBase::NotifyAllOutputDeviceChangeListeners() {
     observer.OnDeviceChange();
 }
 
-AudioParameters AudioManagerBase::GetDefaultOutputStreamParameters() {
-  return GetPreferredOutputStreamParameters(GetDefaultOutputDeviceID(),
-      AudioParameters());
-}
-
 AudioParameters AudioManagerBase::GetOutputStreamParameters(
     const std::string& device_id) {
   return GetPreferredOutputStreamParameters(device_id,

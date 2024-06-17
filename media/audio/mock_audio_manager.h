@@ -98,7 +98,6 @@ class MockAudioManager : public AudioManager {
   void GetAudioOutputDeviceDescriptions(
       media::AudioDeviceDescriptions* device_descriptions) override;
 
-  AudioParameters GetDefaultOutputStreamParameters() override;
   AudioParameters GetOutputStreamParameters(
       const std::string& device_id) override;
   AudioParameters GetInputStreamParameters(
