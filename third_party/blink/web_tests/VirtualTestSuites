@@ -784,13 +784,6 @@
     "expires": "Jul 1, 2024"
   },
   {
-    "prefix": "payment-request-mandatory-total",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": ["http/tests/payments/payment-request-app-store-billing-mandatory-total.html"],
-    "args": ["--disable-blink-features=PaymentRequestTotalOptional"],
-    "expires": "Jul 1, 2023"
-  },
-  {
     "prefix": "css-sign-related-functions-disabled",
     "owners": ["seokho@chromium.org", "sakhapov@chromium.org"],
     "platforms": ["Linux", "Mac", "Win"],
