@@ -1,11 +1,11 @@
 # `unicode-width`
 
-[![Build status](https://github.com/unicode-rs/unicode-width/actions/workflows/rust.yml/badge.svg)](https://travis-ci.org/unicode-rs/unicode-width)
+[![Build status](https://github.com/unicode-rs/unicode-width/actions/workflows/rust.yml/badge.svg)](https://github.com/unicode-rs/unicode-width/actions/workflows/rust.yml)
 [![crates.io version](https://img.shields.io/crates/v/unicode-width)](https://crates.io/crates/unicode-width)
 [![Docs status](https://img.shields.io/docsrs/unicode-width)](https://docs.rs/unicode-width/)
 
-Determine displayed width of `char` and `str` types according to [Unicode Standard Annex #11][UAX11],
-other portions of the Unicode standard, and common implementations of POSIX [`wcwidth()`](https://pubs.opengroup.org/onlinepubs/9699919799/).
+Determine displayed width of `char` and `str` types according to [Unicode Standard Annex #11][UAX11]
+and other portions of the Unicode standard.
 
 This crate is `#![no_std]`.
 
@@ -16,7 +16,7 @@ use unicode_width::UnicodeWidthStr;
 
 fn main() {
     let teststr = "Ｈｅｌｌｏ, ｗｏｒｌｄ!";
-    let width = UnicodeWidthStr::width(teststr);
+    let width = teststr.width();
     println!("{}", teststr);
     println!("The above string is {} columns wide.", width);
     let width = teststr.width_cjk();
@@ -34,9 +34,9 @@ extern crate unicode_width;
 use unicode_width::UnicodeWidthStr;
 
 fn main() {
-    assert_eq!(UnicodeWidthStr::width("👩"), 2); // Woman
-    assert_eq!(UnicodeWidthStr::width("🔬"), 2); // Microscope
-    assert_eq!(UnicodeWidthStr::width("👩‍🔬"), 4); // Woman scientist
+    assert_eq!("👩".width(), 2); // Woman
+    assert_eq!("🔬".width(), 2); // Microscope
+    assert_eq!("👩‍🔬".width(), 4); // Woman scientist
 }
 ```
 

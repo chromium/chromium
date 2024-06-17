@@ -1,7 +1,7 @@
 [package]
 
 name = "unicode-width"
-version = "0.1.12"
+version = "0.1.13"
 authors = [
     "kwantam <kwantam@gmail.com>",
     "Manish Goregaokar <manishsmail@gmail.com>",
@@ -24,15 +24,12 @@ according to Unicode Standard Annex #11 rules.
 """
 edition = "2021"
 
-exclude = ["target/*", "Cargo.lock"]
+exclude = ["/.github/*"]
 
 [dependencies]
 std = { version = "1.0", package = "rustc-std-workspace-std", optional = true }
 core = { version = "1.0", package = "rustc-std-workspace-core", optional = true }
 compiler_builtins = { version = "0.1", optional = true }
-
-[dev-dependencies]
-unicode-normalization = "0.1.23"
 
 [features]
 default = []

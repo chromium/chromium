@@ -12,15 +12,12 @@
 [package]
 edition = "2021"
 name = "unicode-width"
-version = "0.1.12"
+version = "0.1.13"
 authors = [
     "kwantam <kwantam@gmail.com>",
     "Manish Goregaokar <manishsmail@gmail.com>",
 ]
-exclude = [
-    "target/*",
-    "Cargo.lock",
-]
+exclude = ["/.github/*"]
 description = """
 Determine displayed width of `char` and `str` types
 according to Unicode Standard Annex #11 rules.
@@ -54,9 +51,6 @@ package = "rustc-std-workspace-core"
 version = "1.0"
 optional = true
 package = "rustc-std-workspace-std"
-
-[dev-dependencies.unicode-normalization]
-version = "0.1.23"
 
 [features]
 default = []

@@ -149,7 +149,7 @@ components/strictmode/android/java/src/org/chromium/components/strictmode 4 3
 components/sync/engine/nigori 1 1
 components/test/data/autofill/heuristics/input 10 7
 components/test/data/browsing_topics 1 1
-components/test/data/optimization_guide 4 3
+components/test/data/optimization_guide 6 4
 components/ukm 2 1
 components/url_formatter 1 1
 components/url_formatter/spoof_checks 1 1
@@ -170,6 +170,7 @@ content/browser/tracing 1 1
 content/child 1 1
 content/common 1 1
 content/public/android/junit/src/org/chromium/content/browser/input 1 1
+content/public/browser 1 1
 content/public/common 1 1
 content/renderer 2 1
 content/renderer/pepper 1 1
@@ -220,7 +221,7 @@ media/audio/android 2 1
 media/audio/mac 12 2
 media/audio/pulse 1 1
 media/audio/win 4 2
-media/base 2 2
+media/base 3 3
 media/base/android 1 1
 media/ffmpeg/scripts 18 5
 media/ffmpeg/scripts/robo_lib 1 1
@@ -398,7 +399,7 @@ third_party/blink/renderer/modules/canvas/canvas2d 1 1
 third_party/blink/renderer/modules/credentialmanagement 1 1
 third_party/blink/renderer/modules/csspaint 2 1
 third_party/blink/renderer/modules/device_orientation 1 1
-third_party/blink/renderer/modules/encryptedmedia 2 2
+third_party/blink/renderer/modules/encryptedmedia 1 1
 third_party/blink/renderer/modules/installedapp 2 2
 third_party/blink/renderer/modules/launch 1 1
 third_party/blink/renderer/modules/manifest 3 1
@@ -410,7 +411,7 @@ third_party/blink/renderer/modules/webcodecs 1 1
 third_party/blink/renderer/modules/websockets 2 2
 third_party/blink/renderer/modules/window_controls_overlay 3 3
 third_party/blink/renderer/modules/xr 4 4
-third_party/blink/renderer/platform/media 2 2
+third_party/blink/renderer/platform/media 1 1
 third_party/blink/renderer/platform/storage 1 1
 third_party/blink/renderer/platform/testing 3 1
 third_party/blink/renderer/platform/text 1 1
@@ -726,8 +727,7 @@ third_party/rust/chromium_crates_io/vendor/syn-2.0.66/src 2 1
 third_party/rust/chromium_crates_io/vendor/termcolor-1.4.1/.github/workflows 3 1
 third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.12 1 1
 third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.12/.github/workflows 2 1
-third_party/rust/chromium_crates_io/vendor/unicode-width-0.1.12 1 1
-third_party/rust/chromium_crates_io/vendor/unicode-width-0.1.12/.github/workflows 2 1
+third_party/rust/chromium_crates_io/vendor/unicode-width-0.1.13/tests 1 1
 third_party/rust/chromium_crates_io/vendor/winapi-util-0.1.8/.github/workflows 4 1
 third_party/rust/chromium_crates_io/vendor/windows-sys-0.52.0 1 1
 third_party/rust/chromium_crates_io/vendor/windows-sys-0.52.0/src/Windows/Wdk/System/SystemServices 1 1

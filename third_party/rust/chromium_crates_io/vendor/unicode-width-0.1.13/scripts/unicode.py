@@ -15,20 +15,31 @@
 # - DerivedCoreProperties.txt
 # - EastAsianWidth.txt
 # - HangulSyllableType.txt
+# - NormalizationTest.txt (for tests only)
 # - PropList.txt
 # - ReadMe.txt
+# - Scripts.txt
+# - UnicodeData.txt
+# - emoji/emoji-data.txt
 # - emoji/emoji-variation-sequences.txt
+# - extracted/DerivedGeneralCategory.txt
 #
 # Since this should not require frequent updates, we just store this
 # out-of-line and check the generated module into git.
 
 import enum
 import math
+import operator
 import os
 import re
 import sys
+import urllib.request
 from collections import defaultdict
 from itertools import batched
+from typing import Callable
+
+UNICODE_VERSION = "15.1.0"
+"""The version of the Unicode data files to download."""
 
 NUM_CODEPOINTS = 0x110000
 """An upper bound for which `range(0, NUM_CODEPOINTS)` contains Unicode's codespace."""
@@ -61,32 +72,55 @@ codepoint and those tables offsets are stored according to `offset_type`.
 
 If this is edited, you must ensure that `emit_module` reflects your changes."""
 
-MODULE_FILENAME = "tables.rs"
-"""The filename of the emitted Rust module (will be created in the working directory)"""
+MODULE_PATH = "../src/tables.rs"
+"""The path of the emitted Rust module (relative to the working directory)"""
 
 Codepoint = int
 BitPos = int
 
 
-def fetch_open(filename: str):
+def fetch_open(filename: str, local_prefix: str = ""):
     """Opens `filename` and return its corresponding file object. If `filename` isn't on disk,
-    fetches it from `http://www.unicode.org/Public/UNIDATA/`. Exits with code 1 on failure.
+    fetches it from `https://www.unicode.org/Public/`. Exits with code 1 on failure.
     """
     basename = os.path.basename(filename)
-    if not os.path.exists(basename):
-        os.system(f"curl -O http://www.unicode.org/Public/UNIDATA/{filename}")
+    localname = os.path.join(local_prefix, basename)
+    if not os.path.exists(localname):
+        urllib.request.urlretrieve(
+            f"https://www.unicode.org/Public/{UNICODE_VERSION}/ucd/{filename}",
+            localname,
+        )
     try:
-        return open(basename, encoding="utf-8")
+        return open(localname, encoding="utf-8")
     except OSError:
-        sys.stderr.write(f"cannot load {basename}")
+        sys.stderr.write(f"cannot load {localname}")
         sys.exit(1)
 
 
-def load_unicode_version() -> "tuple[int, int, int]":
+def load_unicode_version() -> tuple[int, int, int]:
     """Returns the current Unicode version by fetching and processing `ReadMe.txt`."""
     with fetch_open("ReadMe.txt") as readme:
         pattern = r"for Version (\d+)\.(\d+)\.(\d+) of the Unicode"
         return tuple(map(int, re.search(pattern, readme.read()).groups()))
+
+
+def load_property(filename: str, pattern: str, action: Callable[[int], None]):
+    with fetch_open(filename) as properties:
+        single = re.compile(rf"^([0-9A-F]+)\s*;\s*{pattern}\s+")
+        multiple = re.compile(rf"^([0-9A-F]+)\.\.([0-9A-F]+)\s*;\s*{pattern}\s+")
+
+        for line in properties.readlines():
+            raw_data = None  # (low, high)
+            if match := single.match(line):
+                raw_data = (match.group(1), match.group(1))
+            elif match := multiple.match(line):
+                raw_data = (match.group(1), match.group(2))
+            else:
+                continue
+            low = int(raw_data[0], 16)
+            high = int(raw_data[1], 16)
+            for cp in range(low, high + 1):
+                action(cp)
 
 
 class EffectiveWidth(enum.IntEnum):
@@ -104,7 +138,7 @@ class EffectiveWidth(enum.IntEnum):
     """ Two columns wide in a CJK context. One column wide in all other contexts. """
 
 
-def load_east_asian_widths() -> "list[EffectiveWidth]":
+def load_east_asian_widths() -> list[EffectiveWidth]:
     """Return a list of effective widths, indexed by codepoint.
     Widths are determined by fetching and parsing `EastAsianWidth.txt`.
 
@@ -112,12 +146,13 @@ def load_east_asian_widths() -> "list[EffectiveWidth]":
 
     `Wide` and `Fullwidth` characters are assigned `EffectiveWidth.WIDE`.
 
-    `Ambiguous` chracters are assigned `EffectiveWidth.AMBIGUOUS`."""
+    `Ambiguous` characters are assigned `EffectiveWidth.AMBIGUOUS`."""
+
     with fetch_open("EastAsianWidth.txt") as eaw:
         # matches a width assignment for a single codepoint, i.e. "1F336;N  # ..."
-        single = re.compile(r"^([0-9A-F]+)\s+;\s+(\w+) +# (\w+)")
+        single = re.compile(r"^([0-9A-F]+)\s*;\s*(\w+) +# (\w+)")
         # matches a width assignment for a range of codepoints, i.e. "3001..3003;W  # ..."
-        multiple = re.compile(r"^([0-9A-F]+)\.\.([0-9A-F]+)\s+;\s+(\w+) +# (\w+)")
+        multiple = re.compile(r"^([0-9A-F]+)\.\.([0-9A-F]+)\s*;\s*(\w+) +# (\w+)")
         # map between width category code and condensed width
         width_codes = {
             **{c: EffectiveWidth.NARROW for c in ["N", "Na", "H"]},
@@ -150,27 +185,56 @@ def load_east_asian_widths() -> "list[EffectiveWidth]":
             # Catch any leftover codepoints and assign them implicit Neutral/narrow width.
             width_map.append(EffectiveWidth.NARROW)
 
-        return width_map
+    # Characters from alphabetic scripts are narrow
+    load_property(
+        "Scripts.txt",
+        r"(?:Latin|Greek|Cyrillic)",
+        lambda cp: (
+            operator.setitem(width_map, cp, EffectiveWidth.NARROW)
+            if width_map[cp] == EffectiveWidth.AMBIGUOUS
+            and not (0x2160 <= cp <= 0x217F)  # Roman numerals remain ambiguous
+            else None
+        ),
+    )
+
+    # Ambiguous `Modifier_Symbol`s are narrow
+    load_property(
+        "extracted/DerivedGeneralCategory.txt",
+        "Sk",
+        lambda cp: (
+            operator.setitem(width_map, cp, EffectiveWidth.NARROW)
+            if width_map[cp] == EffectiveWidth.AMBIGUOUS
+            else None
+        ),
+    )
+
+    # GREEK ANO TELEIA: NFC decomposes to U+00B7 MIDDLE DOT
+    width_map[0x0387] = EffectiveWidth.AMBIGUOUS
+
+    # Canonical equivalence for symbols with stroke
+    with fetch_open("UnicodeData.txt") as udata:
+        single = re.compile(r"([0-9A-Z]+);.*?;.*?;.*?;.*?;([0-9A-Z]+) 0338;")
+        for line in udata.readlines():
+            if match := single.match(line):
+                composed = int(match.group(1), 16)
+                decomposed = int(match.group(2), 16)
+                if width_map[decomposed] == EffectiveWidth.AMBIGUOUS:
+                    width_map[composed] = EffectiveWidth.AMBIGUOUS
+
+    return width_map
 
 
-def load_zero_widths() -> "list[bool]":
+def load_zero_widths() -> list[bool]:
     """Returns a list `l` where `l[c]` is true if codepoint `c` is considered a zero-width
     character. `c` is considered a zero-width character if
 
-    - it is a control character,
-    - or if it has the `Default_Ignorable_Code_Point` property (determined from `DerivedCoreProperties.txt`),
+    - it has the `Default_Ignorable_Code_Point` property (determined from `DerivedCoreProperties.txt`),
     - or if it has the `Grapheme_Extend` property (determined from `DerivedCoreProperties.txt`),
     - or if it one of eight characters that should be `Grapheme_Extend` but aren't due to a Unicode spec bug,
     - or if it has a `Hangul_Syllable_Type` of `Vowel_Jamo` or `Trailing_Jamo` (determined from `HangulSyllableType.txt`).
     """
 
     zw_map = [False] * NUM_CODEPOINTS
-
-    # Control characters have width 0
-    for c in range(0x00, 0x20):
-        zw_map[c] = True
-    for c in range(0x7F, 0xA0):
-        zw_map[c] = True
 
     # `Default_Ignorable_Code_Point`s also have 0 width:
     # https://www.unicode.org/faq/unsup_char.html#3
@@ -179,26 +243,11 @@ def load_zero_widths() -> "list[bool]":
     # `Grapheme_Extend` includes characters with general category `Mn` or `Me`,
     # as well as a few `Mc` characters that need to be included so that
     # canonically equivalent sequences have the same width.
-    with fetch_open("DerivedCoreProperties.txt") as properties:
-        single = re.compile(
-            r"^([0-9A-F]+)\s+;\s+(?:Default_Ignorable_Code_Point|Grapheme_Extend)\s+"
-        )
-        multiple = re.compile(
-            r"^([0-9A-F]+)\.\.([0-9A-F]+)\s+;\s+(?:Default_Ignorable_Code_Point|Grapheme_Extend)\s+"
-        )
-
-        for line in properties.readlines():
-            raw_data = None  # (low, high)
-            if match := single.match(line):
-                raw_data = (match.group(1), match.group(1))
-            elif match := multiple.match(line):
-                raw_data = (match.group(1), match.group(2))
-            else:
-                continue
-            low = int(raw_data[0], 16)
-            high = int(raw_data[1], 16)
-            for cp in range(low, high + 1):
-                zw_map[cp] = True
+    load_property(
+        "DerivedCoreProperties.txt",
+        r"(?:Default_Ignorable_Code_Point|Grapheme_Extend)",
+        lambda cp: operator.setitem(zw_map, cp, True),
+    )
 
     # Unicode spec bug: these should be `Grapheme_Cluster_Break=Extend`,
     # as they canonically decompose to two characters with this property,
@@ -216,29 +265,33 @@ def load_zero_widths() -> "list[bool]":
     # and the resulting grapheme has width 2.
     #
     # (See the Unicode Standard sections 3.12 and 18.6 for more on Hangul)
-    with fetch_open("HangulSyllableType.txt") as categories:
-        single = re.compile(r"^([0-9A-F]+)\s+;\s+(V|T)\s+")
-        multiple = re.compile(r"^([0-9A-F]+)\.\.([0-9A-F]+)\s+;\s+(V|T)\s+")
+    load_property(
+        "HangulSyllableType.txt",
+        r"(?:V|T)",
+        lambda cp: operator.setitem(zw_map, cp, True),
+    )
 
-        for line in categories.readlines():
-            raw_data = None  # (low, high)
-            if match := single.match(line):
-                raw_data = (match.group(1), match.group(1))
-            elif match := multiple.match(line):
-                raw_data = (match.group(1), match.group(2))
-            else:
-                continue
-            low = int(raw_data[0], 16)
-            high = int(raw_data[1], 16)
-            for cp in range(low, high + 1):
-                zw_map[cp] = True
+    # Syriac abbreviation mark:
+    # Zero-width `Prepended_Concatenation_Mark`
+    zw_map[0x070F] = True
 
-    # Special case: U+115F HANGUL CHOSEONG FILLER.
+    # Some Arabic Prepended_Concatenation_Mark`s
+    # https://www.unicode.org/versions/Unicode15.0.0/ch09.pdf#G27820
+    zw_map[0x0605] = True
+    zw_map[0x0890] = True
+    zw_map[0x0891] = True
+    zw_map[0x08E2] = True
+
+    # HANGUL CHOSEONG FILLER
     # U+115F is a `Default_Ignorable_Code_Point`, and therefore would normally have
     # zero width. However, the expected usage is to combine it with vowel or trailing jamo
     # (which are considered 0-width on their own) to form a composed Hangul syllable with
     # width 2. Therefore, we treat it as having width 2.
     zw_map[0x115F] = False
+
+    # DEVANAGARI CARET
+    # https://www.unicode.org/versions/Unicode15.0.0/ch12.pdf#G667447
+    zw_map[0xA8FA] = True
 
     return zw_map
 
@@ -271,13 +324,13 @@ class Bucket:
         self.widths = more
         return True
 
-    def entries(self) -> "list[tuple[Codepoint, EffectiveWidth]]":
+    def entries(self) -> list[tuple[Codepoint, EffectiveWidth]]:
         """Return a list of the codepoint/width pairs in this bucket, sorted by codepoint."""
         result = list(self.entry_set)
         result.sort()
         return result
 
-    def width(self) -> "EffectiveWidth | None":
+    def width(self) -> EffectiveWidth | None:
         """If all codepoints in this bucket have the same width, return that width; otherwise,
         return `None`."""
         if len(self.widths) == 0:
@@ -289,7 +342,7 @@ class Bucket:
         return potential_width
 
 
-def make_buckets(entries, low_bit: BitPos, cap_bit: BitPos) -> "list[Bucket]":
+def make_buckets(entries, low_bit: BitPos, cap_bit: BitPos) -> list[Bucket]:
     """Partitions the `(Codepoint, EffectiveWidth)` tuples in `entries` into `Bucket`s. All
     codepoints with identical bits from `low_bit` to `cap_bit` (exclusive) are placed in the
     same bucket. Returns a list of the buckets in increasing order of those bits."""
@@ -357,7 +410,7 @@ class Table:
         """Returns an iterator over this table's buckets."""
         return self.indexed
 
-    def to_bytes(self) -> "list[int]":
+    def to_bytes(self) -> list[int]:
         """Returns this table's entries as a list of bytes. The bytes are formatted according to
         the `OffsetType` which the table was created with, converting any `EffectiveWidth` entries
         to their enum variant's integer value. For example, with `OffsetType.U2`, each byte will
@@ -373,8 +426,8 @@ class Table:
 
 
 def make_tables(
-    table_cfgs: "list[tuple[BitPos, BitPos, OffsetType]]", entries
-) -> "list[Table]":
+    table_cfgs: list[tuple[BitPos, BitPos, OffsetType]], entries
+) -> list[Table]:
     """Creates a table for each configuration in `table_cfgs`, with the first config corresponding
     to the top-level lookup table, the second config corresponding to the second-level lookup
     table, and so forth. `entries` is an iterator over the `(Codepoint, EffectiveWidth)` pairs
@@ -388,14 +441,14 @@ def make_tables(
     return tables
 
 
-def load_variation_sequences() -> "list[int]":
+def load_emoji_presentation_sequences() -> list[int]:
     """Outputs a list of character ranages, corresponding to all the valid characters for starting
     an emoji presentation sequence."""
 
     with fetch_open("emoji/emoji-variation-sequences.txt") as sequences:
         # Match all emoji presentation sequences
         # (one codepoint followed by U+FE0F, and labeled "emoji style")
-        sequence = re.compile(r"^([0-9A-F]+)\s+FE0F\s*;\s+emoji style")
+        sequence = re.compile(r"^([0-9A-F]+)\s+FE0F\s*;\s*emoji style")
         codepoints = []
         for line in sequences.readlines():
             if match := sequence.match(line):
@@ -404,12 +457,46 @@ def load_variation_sequences() -> "list[int]":
     return codepoints
 
 
-def make_variation_sequence_table(
-    seqs: "list[int]",
-    width_map: "list[EffectiveWidth]",
-) -> "tuple[list[int], list[list[int]]]":
-    """Generates 2-level lookup table for whether a codepoint might start an emoji presentation sequence.
-    (Characters that are always wide may be excluded.)
+def load_text_presentation_sequences() -> list[int]:
+    """Outputs a list of character ranages, corresponding to all the valid characters
+    whose widths change with a text presentation sequence."""
+
+    text_presentation_seq_codepoints = set()
+    with fetch_open("emoji/emoji-variation-sequences.txt") as sequences:
+        # Match all text presentation sequences
+        # (one codepoint followed by U+FE0E, and labeled "text style")
+        sequence = re.compile(r"^([0-9A-F]+)\s+FE0E\s*;\s*text style")
+        for line in sequences.readlines():
+            if match := sequence.match(line):
+                cp = int(match.group(1), 16)
+                text_presentation_seq_codepoints.add(cp)
+
+    default_emoji_codepoints = set()
+
+    load_property(
+        "emoji/emoji-data.txt",
+        "Emoji_Presentation",
+        lambda cp: default_emoji_codepoints.add(cp),
+    )
+
+    codepoints = []
+    for cp in text_presentation_seq_codepoints.intersection(default_emoji_codepoints):
+        # "Enclosed Ideographic Supplement" block;
+        # wide even in text presentation
+        if not cp in range(0x1F200, 0x1F300):
+            codepoints.append(cp)
+
+    codepoints.sort()
+    return codepoints
+
+
+def make_presentation_sequence_table(
+    seqs: list[Codepoint],
+    width_map: list[EffectiveWidth],
+    spurious_false: set[EffectiveWidth],
+    spurious_true: set[EffectiveWidth],
+) -> tuple[list[tuple[int, int]], list[list[int]]]:
+    """Generates 2-level lookup table for whether a codepoint might start an emoji variation sequence.
     The first level is a match on all but the 10 LSB, the second level is a 1024-bit bitmap for those 10 LSB.
     """
 
@@ -417,42 +504,55 @@ def make_variation_sequence_table(
     for cp in seqs:
         prefixes_dict[cp >> 10].add(cp & 0x3FF)
 
-    # We don't strictly need to keep track of characters that are always wide,
-    # because being in an emoji variation seq won't affect their width.
-    # So store their info only when it wouldn't inflate the size of the tables.
     for k in list(prefixes_dict.keys()):
         if all(
             map(
-                lambda cp: width_map[(k << 10) | cp] == EffectiveWidth.WIDE,
+                lambda cp: width_map[(k << 10) | cp] in spurious_false,
                 prefixes_dict[k],
             )
         ):
             del prefixes_dict[k]
 
-    indexes = list(prefixes_dict.keys())
+    msbs: list[int] = list(prefixes_dict.keys())
 
-    # Similarly, we can spuriously return `true` for always-wide characters
-    # even if not part of a presentation seq; this saves an additional lookup,
-    # so we should do it where there is no size cost.
     for cp, width in enumerate(width_map):
-        if width == EffectiveWidth.WIDE and (cp >> 10) in indexes:
+        if width in spurious_true and (cp >> 10) in msbs:
             prefixes_dict[cp >> 10].add(cp & 0x3FF)
 
-    leaves = []
+    leaves: list[list[int]] = []
     for cps in prefixes_dict.values():
         leaf = [0] * 128
         for cp in cps:
             idx_in_leaf, bit_shift = divmod(cp, 8)
             leaf[idx_in_leaf] |= 1 << bit_shift
         leaves.append(leaf)
+
+    indexes = [(msb, index) for (index, msb) in enumerate(msbs)]
+
+    # Cull duplicate leaves
+    i = 0
+    while i < len(leaves):
+        first_idx = leaves.index(leaves[i])
+        if first_idx == i:
+            i += 1
+        else:
+            for j in range(0, len(indexes)):
+                if indexes[j][1] == i:
+                    indexes[j] = (indexes[j][0], first_idx)
+                elif indexes[j][1] > i:
+                    indexes[j] = (indexes[j][0], indexes[j][1] - 1)
+
+            leaves.pop(i)
+
     return (indexes, leaves)
 
 
 def emit_module(
     out_name: str,
-    unicode_version: "tuple[int, int, int]",
-    tables: "list[Table]",
-    variation_table: "tuple[list[int], list[list[int]]]",
+    unicode_version: tuple[int, int, int],
+    tables: list[Table],
+    emoji_presentation_table: tuple[list[tuple[int, int]], list[list[int]]],
+    text_presentation_table: tuple[list[tuple[int, int]], list[list[int]]],
 ):
     """Outputs a Rust module to `out_name` using table data from `tables`.
     If `TABLE_CFGS` is edited, you may need to edit the included code for `lookup_width`.
@@ -496,21 +596,21 @@ pub mod charwidth {
     /// However, if you change the *actual structure* of the lookup tables (perhaps by editing the
     /// `TABLE_CFGS` global in `unicode.py`) you must ensure that this code reflects those changes.
     #[inline]
-    fn lookup_width(c: char, is_cjk: bool) -> usize {
+    pub fn lookup_width(c: char, is_cjk: bool) -> usize {
         let cp = c as usize;
 
-        let t1_offset = TABLES_0[cp >> 13 & 0xFF];
+        let t1_offset = TABLES_0.0[cp >> 13 & 0xFF];
 
         // Each sub-table in TABLES_1 is 7 bits, and each stored entry is a byte,
         // so each sub-table is 128 bytes in size.
         // (Sub-tables are selected using the computed offset from the previous table.)
-        let t2_offset = TABLES_1[128 * usize::from(t1_offset) + (cp >> 6 & 0x7F)];
+        let t2_offset = TABLES_1.0[128 * usize::from(t1_offset) + (cp >> 6 & 0x7F)];
 
         // Each sub-table in TABLES_2 is 6 bits, but each stored entry is 2 bits.
         // This is accomplished by packing four stored entries into one byte.
         // So each sub-table is 2**(6-2) == 16 bytes in size.
         // Since this is the last table, each entry represents an encoded width.
-        let packed_widths = TABLES_2[16 * usize::from(t2_offset) + (cp >> 2 & 0xF)];
+        let packed_widths = TABLES_2.0[16 * usize::from(t2_offset) + (cp >> 2 & 0xF)];
 
         // Extract the packed width
         let width = packed_widths >> (2 * (cp & 0b11)) & 0b11;
@@ -529,7 +629,8 @@ pub mod charwidth {
 """
         )
 
-        variation_idx, variation_leaves = variation_table
+        emoji_presentation_idx, emoji_presentation_leaves = emoji_presentation_table
+        text_presentation_idx, text_presentation_leaves = text_presentation_table
 
         module.write(
             """
@@ -547,7 +648,7 @@ pub mod charwidth {
 """
         )
 
-        for i, msbs in enumerate(variation_idx):
+        for msbs, i in emoji_presentation_idx:
             module.write(f"            {msbs} => {i},\n")
 
         module.write(
@@ -565,31 +666,40 @@ pub mod charwidth {
 
         module.write(
             """
-    /// Returns the [UAX #11](https://www.unicode.org/reports/tr11/) based width of `c`, or
-    /// `None` if `c` is a control character other than `'\\x00'`.
-    /// If `is_cjk == true`, ambiguous width characters are treated as double width; otherwise,
-    /// they're treated as single width.
+    /// Returns `true` iff `c` has default emoji presentation, but forms a [text presentation sequence]
+    /// (https://www.unicode.org/reports/tr51/#def_text_presentation_sequence)
+    /// when followed by `'\\u{FEOE}'`, and is not ideographic.
+    /// Such sequences are considered to have width 1.
+    ///
+    /// This may spuriously return `true` for characters of narrow or ambiguous width.
     #[inline]
-    pub fn width(c: char, is_cjk: bool) -> Option<usize> {
-        if c < '\\u{7F}' {
-            if c >= '\\u{20}' {
-                // U+0020 to U+007F (exclusive) are single-width ASCII codepoints
-                Some(1)
-            } else if c == '\\0' {
-                // U+0000 *is* a control code, but it's special-cased
-                Some(0)
-            } else {
-                // U+0001 to U+0020 (exclusive) are control codes
-                None
-            }
-        } else if c >= '\\u{A0}' {
-            // No characters >= U+00A0 are control codes, so we can consult the lookup tables
-            Some(lookup_width(c, is_cjk))
-        } else {
-            // U+007F to U+00A0 (exclusive) are control codes
-            None
-        }
+    pub fn starts_non_ideographic_text_presentation_seq(c: char) -> bool {
+        let cp: u32 = c.into();
+        // First level of lookup uses all but 10 LSB
+        let top_bits = cp >> 10;
+        let idx_of_leaf: usize = match top_bits {
+"""
+        )
+
+        for msbs, i in text_presentation_idx:
+            module.write(f"            {msbs} => {i},\n")
+
+        module.write(
+            """            _ => return false,
+        };
+        // Extract the 3-9th (0-indexed) least significant bits of `cp`,
+        // and use them to index into `leaf_row`.
+        let idx_within_leaf = usize::try_from((cp >> 3) & 0x7F).unwrap();
+        let leaf_byte = TEXT_PRESENTATION_LEAVES.0[idx_of_leaf][idx_within_leaf];
+        // Use the 3 LSB of `cp` to index into `leaf_byte`.
+        ((leaf_byte >> (cp & 7)) & 1) == 1
     }
+
+    #[repr(align(128))]
+    struct Align128<T>(T);
+
+    #[repr(align(16))]
+    struct Align16<T>(T);
 """
         )
 
@@ -598,32 +708,53 @@ pub mod charwidth {
             new_subtable_count = len(table.buckets())
             if i == len(tables) - 1:
                 table.indices_to_widths()  # for the last table, indices == widths
+                align = 16
+            else:
+                align = 128
             byte_array = table.to_bytes()
             module.write(
                 f"""
     /// Autogenerated. {subtable_count} sub-table(s). Consult [`lookup_width`] for layout info.
-    static TABLES_{i}: [u8; {len(byte_array)}] = ["""
+    static TABLES_{i}: Align{align}<[u8; {len(byte_array)}]> = Align{align}(["""
             )
             for j, byte in enumerate(byte_array):
                 # Add line breaks for every 15th entry (chosen to match what rustfmt does)
                 if j % 15 == 0:
                     module.write("\n       ")
                 module.write(f" 0x{byte:02X},")
-            module.write("\n    ];\n")
+            module.write("\n    ]);\n")
             subtable_count = new_subtable_count
 
         # emoji table
 
         module.write(
             f"""
-    #[repr(align(128))]
-    struct Align128<T>(T);
-    /// Array of 1024-bit bitmaps. Index into the correct (obtained from `EMOJI_PRESENTATION_INDEX`)
-    /// bitmap with the 10 LSB of your codepoint to get whether it can start an emoji presentation seq.
-    static EMOJI_PRESENTATION_LEAVES: Align128<[[u8; 128]; {len(variation_leaves)}]> = Align128([
+    /// Array of 1024-bit bitmaps. Index into the correct bitmap with the 10 LSB of your codepoint
+    /// to get whether it can start an emoji presentation sequence.
+    static EMOJI_PRESENTATION_LEAVES: Align128<[[u8; 128]; {len(emoji_presentation_leaves)}]> = Align128([
 """
         )
-        for leaf in variation_leaves:
+        for leaf in emoji_presentation_leaves:
+            module.write("        [\n")
+            for row in batched(leaf, 14):
+                module.write("           ")
+                for entry in row:
+                    module.write(f" 0x{entry:02X},")
+                module.write("\n")
+            module.write("        ],\n")
+
+        module.write("    ]);\n")
+
+        # text table
+
+        module.write(
+            f"""
+    /// Array of 1024-bit bitmaps. Index into the correct bitmap with the 10 LSB of your codepoint
+    /// to get whether it can start a text presentation sequence.
+    static TEXT_PRESENTATION_LEAVES: Align128<[[u8; 128]; {len(text_presentation_leaves)}]> = Align128([
+"""
+        )
+        for leaf in text_presentation_leaves:
             module.write("        [\n")
             for row in batched(leaf, 14):
                 module.write("           ")
@@ -637,26 +768,12 @@ pub mod charwidth {
         module.write("}\n")
 
 
-def main(module_filename: str):
+def main(module_path: str):
     """Obtain character data from the latest version of Unicode, transform it into a multi-level
     lookup table for character width, and write a Rust module utilizing that table to
     `module_filename`.
 
-    We obey the following rules, in decreasing order of importance:
-
-    - Emoji presentation sequences are double-width.
-    - The soft hyphen (`U+00AD`) is single-width. (https://archive.is/fCT3c)
-    - Hangul jamo medial vowels & final consonants are zero-width.
-    - `Default_Ignorable_Code_Point`s are zero-width, except for U+115F HANGUL CHOSEONG FILLER.
-    - Control characters are zero-width.
-    - `Grapheme_Extend` chracters, as well as eight characters that NFD decompose to `Grapheme_Extend` chracters,
-      are zero-width.
-    - Codepoints with an East Asian Width of `Ambigous` are ambiguous-width.
-    - Codepoints with an East Asian Width of `Wide` or `Fullwidth` are double-width.
-    - All other codepoints (including unassigned codepoints and codepoints with an East Asian Width
-      of `Neutral`, `Narrow`, or `Halfwidth`) are single-width.
-
-    These rules are based off of UAX11, other Unicode standards, and various `wcwidth()` implementations.
+    See `lib.rs` for documentation of the exact width rules.
     """
     version = load_unicode_version()
     print(f"Generating module for Unicode {version[0]}.{version[1]}.{version[2]}")
@@ -669,13 +786,23 @@ def main(module_filename: str):
         map(lambda x: EffectiveWidth.ZERO if x[1] else x[0], zip(eaw_map, zw_map))
     )
 
-    # Override for soft hyphen
-    width_map[0x00AD] = EffectiveWidth.NARROW
-
     tables = make_tables(TABLE_CFGS, enumerate(width_map))
 
-    emoji_variations = load_variation_sequences()
-    variation_table = make_variation_sequence_table(emoji_variations, width_map)
+    emoji_presentations = load_emoji_presentation_sequences()
+    emoji_presentation_table = make_presentation_sequence_table(
+        emoji_presentations, width_map, {EffectiveWidth.WIDE}, {EffectiveWidth.WIDE}
+    )
+
+    text_presentations = load_text_presentation_sequences()
+    text_presentation_table = make_presentation_sequence_table(
+        text_presentations,
+        width_map,
+        set(),
+        {EffectiveWidth.NARROW, EffectiveWidth.AMBIGUOUS},
+    )
+
+    # Download normalization test file for use by tests
+    fetch_open("NormalizationTest.txt", "../tests/")
 
     print("------------------------")
     total_size = 0
@@ -683,18 +810,25 @@ def main(module_filename: str):
         size_bytes = len(table.to_bytes())
         print(f"Table {i} size: {size_bytes} bytes")
         total_size += size_bytes
-    emoji_index_size = len(variation_table[0]) * 4
-    print(f"Emoji presentation index size: {emoji_index_size} bytes")
-    total_size += emoji_index_size
-    emoji_leaves_size = len(variation_table[1]) * len(variation_table[1][0])
-    print(f"Emoji presentation leaves size: {emoji_leaves_size} bytes")
-    total_size += emoji_leaves_size
+
+    for s, table in [
+        ("Emoji", emoji_presentation_table),
+        ("Text", text_presentation_table),
+    ]:
+        index_size = len(table[0]) * 4
+        print(f"{s} presentation index size: {index_size} bytes")
+        total_size += index_size
+        leaves_size = len(table[1]) * len(table[1][0])
+        print(f"{s} presentation leaves size: {leaves_size} bytes")
+        total_size += leaves_size
     print("------------------------")
     print(f"  Total size: {total_size} bytes")
 
-    emit_module(module_filename, version, tables, variation_table)
-    print(f'Wrote to "{module_filename}"')
+    emit_module(
+        module_path, version, tables, emoji_presentation_table, text_presentation_table
+    )
+    print(f'Wrote to "{module_path}"')
 
 
 if __name__ == "__main__":
-    main(MODULE_FILENAME)
+    main(MODULE_PATH)
