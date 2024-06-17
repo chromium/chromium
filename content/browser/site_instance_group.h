@@ -18,6 +18,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/browsing_instance_id.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/browser/site_instance.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_proto.h"
 
 namespace perfetto::protos::pbzero {
@@ -31,8 +32,6 @@ class RenderProcessHost;
 class SiteInstance;
 class SiteInstanceImpl;
 struct ChildProcessTerminationInfo;
-
-using SiteInstanceGroupId = base::IdType32<class SiteInstanceGroupIdTag>;
 
 // A SiteInstanceGroup represents one view of a browsing context group's frame
 // trees within a renderer process. It provides a tuning knob, allowing the

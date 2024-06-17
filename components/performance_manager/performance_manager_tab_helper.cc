@@ -200,7 +200,8 @@ void PerformanceManagerTabHelper::RenderFrameCreated(
           process_node, page_node_.get(), parent_frame_node,
           outer_document_for_fenced_frame, render_frame_host->GetRoutingID(),
           blink::LocalFrameToken(render_frame_host->GetFrameToken()),
-          site_instance->GetBrowsingInstanceId(), site_instance->GetId(),
+          site_instance->GetBrowsingInstanceId(),
+          site_instance->GetSiteInstanceGroupId(),
           render_frame_host->IsActive(),
           base::BindOnce(
               [](GURL url, url::Origin origin, FrameNodeImpl* frame_node) {

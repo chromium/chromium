@@ -78,7 +78,7 @@ base::Value::Dict FrameNodeImplDescriber::DescribeFrameNodeData(
   ret.Set("render_frame_id", impl->render_frame_id_);
   ret.Set("frame_token", impl->frame_token_.value().ToString());
   ret.Set("browsing_instance_id", impl->browsing_instance_id_.value());
-  ret.Set("site_instance_id", impl->site_instance_id_.value());
+  ret.Set("site_instance_group_id", impl->site_instance_group_id_.value());
   ret.Set("lifecycle_state", MojoEnumToString(impl->lifecycle_state_.value()));
   ret.Set("is_ad_frame", impl->is_ad_frame_.value());
   ret.Set("is_holding_weblock", impl->is_holding_weblock_.value());

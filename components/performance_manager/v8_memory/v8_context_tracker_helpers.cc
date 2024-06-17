@@ -32,10 +32,11 @@ bool IsSynchronousIframeAttributionDataExpected(
   // ... where the parent is hosted in the same process ...
   if (frame->GetProcessNode() != parent->GetProcessNode())
     return false;
-  // ... and where they are both in the same site instance (implying they are
-  // both in the same frame-tree and know directly of each other's LocalFrame
-  // rather then communicating via a RemoteFrame and a RenderFrameProxy).
-  return frame->GetSiteInstanceId() == parent->GetSiteInstanceId();
+  // ... and where they are both in the same SiteInstanceGroup (implying they
+  // are both in the same frame-tree and know directly of each other's
+  // LocalFrame rather then communicating via a RemoteFrame and a
+  // RenderFrameProxy).
+  return frame->GetSiteInstanceGroupId() == parent->GetSiteInstanceGroupId();
 }
 
 }  // namespace

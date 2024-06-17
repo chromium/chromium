@@ -118,9 +118,9 @@ class FrameNode : public TypedNode<FrameNode> {
   // constant over the lifetime of the frame.
   virtual content::BrowsingInstanceId GetBrowsingInstanceId() const = 0;
 
-  // Gets the ID of the site instance to which this frame belongs. This is a
+  // Gets the ID of the SiteInstanceGroup to which this frame belongs. This is a
   // constant over the lifetime of the frame.
-  virtual content::SiteInstanceId GetSiteInstanceId() const = 0;
+  virtual content::SiteInstanceGroupId GetSiteInstanceGroupId() const = 0;
 
   // Gets the unique token identifying this node for resource attribution. This
   // token will not be reused after the node is destroyed.

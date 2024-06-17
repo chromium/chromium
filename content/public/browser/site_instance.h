@@ -27,6 +27,7 @@ class RenderProcessHost;
 class StoragePartitionConfig;
 
 using SiteInstanceId = base::IdType32<class SiteInstanceIdTag>;
+using SiteInstanceGroupId = base::IdType32<class SiteInstanceGroupIdTag>;
 
 ///////////////////////////////////////////////////////////////////////////////
 // SiteInstance interface.
@@ -125,6 +126,11 @@ class CONTENT_EXPORT SiteInstance : public base::RefCounted<SiteInstance> {
   // ensure only one RenderProcessHost for the site exists within the
   // BrowserContext.
   virtual RenderProcessHost* GetProcess() = 0;
+
+  // Returns the ID of the SiteInstanceGroup this SiteInstance belongs to. If
+  // the SiteInstance has no group, return 0, which is an invalid
+  // SiteInstanceGroup ID.
+  virtual SiteInstanceGroupId GetSiteInstanceGroupId() = 0;
 
   // Browser context to which this SiteInstance (and all related
   // SiteInstances) belongs.

@@ -436,6 +436,10 @@ RenderProcessHost* SiteInstanceImpl::GetProcess() {
   return site_instance_group_->process();
 }
 
+SiteInstanceGroupId SiteInstanceImpl::GetSiteInstanceGroupId() {
+  return has_group() ? site_instance_group_->GetId() : SiteInstanceGroupId(0);
+}
+
 bool SiteInstanceImpl::ShouldUseProcessPerSite() const {
   BrowserContext* browser_context = browsing_instance_->GetBrowserContext();
   return has_site_ && site_info_.ShouldUseProcessPerSite(browser_context);

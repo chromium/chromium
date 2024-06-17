@@ -110,7 +110,7 @@ class PerformanceManagerImpl : public PerformanceManager {
       int render_frame_id,
       const blink::LocalFrameToken& frame_token,
       content::BrowsingInstanceId browsing_instance_id,
-      content::SiteInstanceId site_instance_id,
+      content::SiteInstanceGroupId site_instance_group_id,
       bool is_current,
       FrameNodeCreationCallback creation_callback =
           FrameNodeCreationCallback());

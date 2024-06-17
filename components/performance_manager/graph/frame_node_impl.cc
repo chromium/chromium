@@ -26,15 +26,16 @@ constexpr char FrameNodeImpl::kDefaultPriorityReason[] =
 
 using PriorityAndReason = execution_context_priority::PriorityAndReason;
 
-FrameNodeImpl::FrameNodeImpl(ProcessNodeImpl* process_node,
-                             PageNodeImpl* page_node,
-                             FrameNodeImpl* parent_frame_node,
-                             FrameNodeImpl* outer_document_for_fenced_frame,
-                             int render_frame_id,
-                             const blink::LocalFrameToken& frame_token,
-                             content::BrowsingInstanceId browsing_instance_id,
-                             content::SiteInstanceId site_instance_id,
-                             bool is_current)
+FrameNodeImpl::FrameNodeImpl(
+    ProcessNodeImpl* process_node,
+    PageNodeImpl* page_node,
+    FrameNodeImpl* parent_frame_node,
+    FrameNodeImpl* outer_document_for_fenced_frame,
+    int render_frame_id,
+    const blink::LocalFrameToken& frame_token,
+    content::BrowsingInstanceId browsing_instance_id,
+    content::SiteInstanceGroupId site_instance_group_id,
+    bool is_current)
     : parent_frame_node_(parent_frame_node),
       outer_document_for_fenced_frame_(outer_document_for_fenced_frame),
       page_node_(page_node),
@@ -42,7 +43,7 @@ FrameNodeImpl::FrameNodeImpl(ProcessNodeImpl* process_node,
       render_frame_id_(render_frame_id),
       frame_token_(frame_token),
       browsing_instance_id_(browsing_instance_id),
-      site_instance_id_(site_instance_id),
+      site_instance_group_id_(site_instance_group_id),
       render_frame_host_proxy_(content::GlobalRenderFrameHostId(
           process_node->GetRenderProcessHostId().value(),
           render_frame_id)),
@@ -142,9 +143,9 @@ content::BrowsingInstanceId FrameNodeImpl::GetBrowsingInstanceId() const {
   return browsing_instance_id_;
 }
 
-content::SiteInstanceId FrameNodeImpl::GetSiteInstanceId() const {
+content::SiteInstanceGroupId FrameNodeImpl::GetSiteInstanceGroupId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return site_instance_id_;
+  return site_instance_group_id_;
 }
 
 resource_attribution::FrameContext FrameNodeImpl::GetResourceContext() const {
