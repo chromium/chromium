@@ -599,6 +599,12 @@ void AuthPerformer::OnStartAuthSession(
         !cryptohome::SafeConvertFactorTypeFromProto(factor_proto.type())) {
       continue;
     }
+    // TODO(b/347292062): Implement legacy fingerprint auth factor engine so
+    // we can get rid of the the following temporary workaround.
+    if (factor_proto.type() ==
+        user_data_auth::AUTH_FACTOR_TYPE_LEGACY_FINGERPRINT) {
+      continue;
+    }
     next_factors.emplace_back(
         cryptohome::DeserializeAuthFactor(factor_proto, fallback_type));
   }

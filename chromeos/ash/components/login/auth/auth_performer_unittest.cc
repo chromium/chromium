@@ -164,6 +164,48 @@ TEST_F(AuthPerformerTest, StartWithUntypedKioskKey) {
   EXPECT_TRUE(user_context->GetAuthFactorsData().FindKioskFactor());
 }
 
+// Checks that a legacy fp factor returned by StartAuthSession() is skipped.
+TEST_F(AuthPerformerTest, StartWithLegacyFp) {
+  EXPECT_CALL(mock_client_, StartAuthSession(_, _))
+      .WillOnce([](const ::user_data_auth::StartAuthSessionRequest& request,
+                   UserDataAuthClient::StartAuthSessionCallback callback) {
+        ::user_data_auth::StartAuthSessionReply reply;
+        reply.set_auth_session_id("123");
+        reply.set_broadcast_id("broadcast");
+        reply.set_user_exists(true);
+        auto* legacy_fp_factor = reply.add_auth_factors();
+        legacy_fp_factor->set_label("");
+        legacy_fp_factor->set_type(user_data_auth::AuthFactorType::
+                                       AUTH_FACTOR_TYPE_LEGACY_FINGERPRINT);
+        auto* password_factor = reply.add_auth_factors();
+        password_factor->set_label("password");
+        password_factor->set_type(
+            user_data_auth::AuthFactorType::AUTH_FACTOR_TYPE_PASSWORD);
+        std::move(callback).Run(reply);
+      });
+  AuthPerformer performer(&mock_client_);
+
+  // Act.
+  base::test::TestFuture<bool, std::unique_ptr<UserContext>,
+                         std::optional<AuthenticationError>>
+      result;
+  performer.StartAuthSession(std::move(context_), /*ephemeral=*/false,
+                             AuthSessionIntent::kVerifyOnly,
+                             result.GetCallback());
+  auto [user_exists, user_context, cryptohome_error] = result.Take();
+
+  // Assert: no error, user context has AuthSession ID and the password factor.
+  EXPECT_TRUE(user_exists);
+  ASSERT_TRUE(user_context);
+  EXPECT_EQ(user_context->GetAuthSessionId(), "123");
+  EXPECT_EQ(user_context->GetBroadcastId(), "broadcast");
+  EXPECT_TRUE(user_context->GetAuthFactorsData().FindPasswordFactor(
+      cryptohome::KeyLabel{"password"}));
+  EXPECT_EQ(user_context->GetAuthFactorsData().FindFactorByType(
+                cryptohome::AuthFactorType::kLegacyFingerprint),
+            nullptr);
+}
+
 // Checks that AuthenticateUsingKnowledgeKey (which will be called with "gaia"
 // label after online authentication) correctly falls back to "legacy-0" label.
 TEST_F(AuthPerformerTest, KnowledgeKeyCorrectLabelFallback) {
