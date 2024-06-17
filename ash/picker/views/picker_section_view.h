@@ -17,6 +17,7 @@
 #include "ui/views/view.h"
 
 namespace views {
+class BoxLayoutView;
 class Label;
 }  // namespace views
 
@@ -126,7 +127,7 @@ class ASH_EXPORT PickerSectionView : public views::View {
 
   // Container for the section title contents, which can have a title label and
   // a trailing link.
-  raw_ptr<views::View> title_container_ = nullptr;
+  raw_ptr<views::BoxLayoutView> title_container_ = nullptr;
   raw_ptr<views::Label> title_label_ = nullptr;
   raw_ptr<views::Link> title_trailing_link_ = nullptr;
 

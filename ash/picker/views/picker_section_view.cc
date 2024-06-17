@@ -35,9 +35,8 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
-#include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/flex_layout_types.h"
-#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
@@ -68,11 +67,11 @@ PickerCategory GetCategoryForEditorData(
 PickerSectionView::PickerSectionView(int section_width,
                                      PickerAssetFetcher* asset_fetcher)
     : section_width_(section_width), asset_fetcher_(asset_fetcher) {
-  SetLayoutManager(std::make_unique<views::FlexLayout>())
+  SetLayoutManager(std::make_unique<views::BoxLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
   title_container_ =
-      AddChildView(views::Builder<views::FlexLayoutView>()
+      AddChildView(views::Builder<views::BoxLayoutView>()
                        .SetOrientation(views::LayoutOrientation::kHorizontal)
                        .Build());
 }
@@ -90,14 +89,9 @@ void PickerSectionView::AddTitleLabel(const std::u16string& title_text) {
                                     title_text,
                                     cros_tokens::kCrosSysOnSurfaceVariant))
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-          .SetProperty(views::kFlexBehaviorKey,
-                       views::FlexSpecification(
-                           views::LayoutOrientation::kHorizontal,
-                           views::MinimumFlexSizeRule::kScaleToMinimum,
-                           views::MaximumFlexSizeRule::kUnbounded)
-                           .WithWeight(1))
           .SetProperty(views::kMarginsKey, kSectionTitleMargins)
           .Build());
+  title_container_->SetFlexForView(title_label_, 1);
 }
 
 void PickerSectionView::AddTitleTrailingLink(
