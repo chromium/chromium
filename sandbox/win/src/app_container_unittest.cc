@@ -252,7 +252,14 @@ TEST(AppContainerTest, MAYBE_CreateAndDeleteAppContainerProfile) {
   EXPECT_FALSE(ProfileExist(package_name));
 }
 
-TEST(AppContainerTest, CreateAndOpenAppContainer) {
+// TODO(crbug/347529039): re-enable the tests once they are passing on
+// Windows ARM64.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_CreateAndOpenAppContainer DISABLED_CreateAndOpenAppContainer
+#else
+#define MAYBE_CreateAndOpenAppContainer CreateAndOpenAppContainer
+#endif
+TEST(AppContainerTest, MAYBE_CreateAndOpenAppContainer) {
   if (!features::IsAppContainerSandboxSupported())
     return;
 
