@@ -52,23 +52,17 @@ bool ShouldHaveAnchorElementMetricsSender(Document& document) {
 }
 
 wtf_size_t GetMaxNumberOfObservations() {
-  static const wtf_size_t max_observations = []() {
-    const base::FeatureParam<int> max_number_of_observations{
-        &features::kNavigationPredictor, "max_intersection_observations", -1};
-    int value = max_number_of_observations.Get();
-    return value >= 0 ? value : std::numeric_limits<wtf_size_t>::max();
-  }();
-  return max_observations;
+  const base::FeatureParam<int> max_number_of_observations{
+      &features::kNavigationPredictor, "max_intersection_observations", -1};
+  int value = max_number_of_observations.Get();
+  return value >= 0 ? value : std::numeric_limits<wtf_size_t>::max();
 }
 
 base::TimeDelta GetIntersectionObserverDelay() {
-  static const base::TimeDelta intersection_observer_delay = []() {
-    const base::FeatureParam<base::TimeDelta> param{
-        &features::kNavigationPredictor, "intersection_observer_delay",
-        base::Milliseconds(100)};
-    return param.Get();
-  }();
-  return intersection_observer_delay;
+  const base::FeatureParam<base::TimeDelta> param{
+      &features::kNavigationPredictor, "intersection_observer_delay",
+      base::Milliseconds(100)};
+  return param.Get();
 }
 
 bool ShouldReportViewportPositions() {
@@ -241,6 +235,8 @@ AnchorElementMetricsSender::AnchorElementMetricsSender(Document& document)
           blink::features::kNavigationPredictor,
           "random_anchor_sampling_period",
           100)),
+      max_number_of_observations_(GetMaxNumberOfObservations()),
+      intersection_observer_delay_(GetIntersectionObserverDelay()),
       clock_(base::DefaultTickClock::GetInstance()),
       position_update_timer_(
           document.GetExecutionContext()->GetTaskRunner(
@@ -257,7 +253,7 @@ AnchorElementMetricsSender::AnchorElementMetricsSender(Document& document)
                          WrapWeakPersistent(this)),
       LocalFrameUkmAggregator::kAnchorElementMetricsIntersectionObserver,
       {.thresholds = {kIntersectionRatioThreshold},
-       .delay = GetIntersectionObserverDelay()});
+       .delay = intersection_observer_delay_});
 }
 
 void AnchorElementMetricsSender::SetNowAsNavigationStartForTesting() {
@@ -424,7 +420,7 @@ void AnchorElementMetricsSender::MaybeReportAnchorElementsPositionOnScrollEnd(
   // At this point, we're unsure of whether we have the latest
   // IntersectionObserver data or not (|intersection_observer_| is configured
   // with a delay), and the post-scroll intersection computations may or may not
-  // have happened yet. We set a timer for |GetIntersectionObserverDelay()| and
+  // have happened yet. We set a timer for |intersection_observer_delay_| and
   // wait for either:
   // 1) UpdateVisibleAnchors to be called before the timer (we stop the timer)
   // 2) The timer finishes (no intersection changes and UpdateVisibleAnchors
@@ -435,7 +431,7 @@ void AnchorElementMetricsSender::MaybeReportAnchorElementsPositionOnScrollEnd(
   // |position_update_timer_| might already be active in a scenario where a
   // second scroll completes before the timer finishes.
   if (!position_update_timer_.IsActive()) {
-    position_update_timer_.StartOneShot(GetIntersectionObserverDelay(),
+    position_update_timer_.StartOneShot(intersection_observer_delay_,
                                         FROM_HERE);
   }
 }
@@ -552,7 +548,6 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
     return;
   }
 
-  const wtf_size_t max_num_observations = GetMaxNumberOfObservations();
   for (const auto& member_element : anchor_elements_to_report_) {
     HTMLAnchorElement& anchor_element = *member_element;
 
@@ -580,7 +575,7 @@ void AnchorElementMetricsSender::DidFinishLifecycleUpdate(
         // by avoiding intersection computations altogether in such pages. This
         // could be revisited in the future.
         if (intersection_observer_->Observations().size() >
-            max_num_observations) {
+            max_number_of_observations_) {
           intersection_observer_limit_exceeded_ = true;
           intersection_observer_->disconnect();
         }

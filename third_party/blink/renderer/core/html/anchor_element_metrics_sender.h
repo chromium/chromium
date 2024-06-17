@@ -187,7 +187,10 @@ class CORE_EXPORT AnchorElementMetricsSender final
   // is no longer done.
   bool should_skip_update_delays_for_testing_ = false;
 
+  // Cached field trial param values.
   const int random_anchor_sampling_period_;
+  const wtf_size_t max_number_of_observations_;
+  const base::TimeDelta intersection_observer_delay_;
 
   Member<IntersectionObserver> intersection_observer_;
   HeapHashSet<WeakMember<const HTMLAnchorElement>> anchors_in_viewport_;
