@@ -296,6 +296,11 @@ DeskActivationAnimation::GetSmoothnessReportCallback() const {
   }));
 }
 
+void DeskActivationAnimation::AddOnAnimationFinishedCallbackForTesting(
+    base::OnceClosure callback) {
+  on_animation_finished_callback_for_testing_ = std::move(callback);
+}
+
 void DeskActivationAnimation::PrepareDeskForScreenshot(int index) {
   for (auto* root_window_controller : Shell::GetAllRootWindowControllers())
     root_window_controller->HideContextMenuNoAnimation();

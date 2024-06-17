@@ -41,6 +41,8 @@ class ASH_EXPORT DeskActivationAnimation : public DeskAnimationBase {
   LatencyReportCallback GetLatencyReportCallback() const override;
   metrics_util::ReportCallback GetSmoothnessReportCallback() const override;
 
+  void AddOnAnimationFinishedCallbackForTesting(base::OnceClosure callback);
+
  private:
   FRIEND_TEST_ALL_PREFIXES(DeskActivationAnimationTest,
                            AnimatingAfterFastSwipe);

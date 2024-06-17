@@ -106,9 +106,13 @@ Pointer::Pointer(PointerDelegate* delegate,
   for (aura::Window* root : ash::Shell::GetAllRootWindows()) {
     root->AddPreTargetHandler(this);
   }
+
+  ash::DesksController::Get()->AddObserver(this);
 }
 
 Pointer::~Pointer() {
+  ash::DesksController::Get()->RemoveObserver(this);
+
   ash::Shell::Get()->RemoveShellObserver(this);
   for (aura::Window* root : ash::Shell::GetAllRootWindows()) {
     root->RemovePreTargetHandler(this);
@@ -353,9 +357,12 @@ bool Pointer::EnablePointerCapture(Surface* capture_surface) {
   capture_window_ = window;
 
   // Add a pre-target handler that can consume all mouse events before it gets
-  // sent to other targets.
-  aura::Env::GetInstance()->AddPreTargetHandler(
-      this, ui::EventTarget::Priority::kSystem);
+  // sent to other targets. If there's an ongoing animation, the pre-target
+  // handler will be added once `OnDeskSwitchAnimationFinished` is triggered.
+  if (!ash::DesksController::Get()->animation()) {
+    aura::Env::GetInstance()->AddPreTargetHandler(
+        this, ui::EventTarget::Priority::kSystem);
+  }
 
   location_when_pointer_capture_enabled_ =
       gfx::ToRoundedPoint(location_in_root_);
@@ -793,6 +800,15 @@ void Pointer::OnRootWindowAdded(aura::Window* root_window) {
 
 void Pointer::OnRootWindowWillShutdown(aura::Window* root_window) {
   root_window->RemovePreTargetHandler(this);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// ash::DesksController::Observer:
+void Pointer::OnDeskSwitchAnimationFinished() {
+  if (capture_window_) {
+    aura::Env::GetInstance()->AddPreTargetHandler(
+        this, ui::EventTarget::Priority::kSystem);
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

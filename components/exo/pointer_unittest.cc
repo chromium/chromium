@@ -9,7 +9,11 @@
 #include "ash/constants/ash_features.h"
 #include "ash/drag_drop/drag_drop_controller.h"
 #include "ash/shell.h"
+#include "ash/wm/desks/desk_animation_impl.h"
+#include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/desks/root_window_desk_switch_animator_test_api.h"
+#include "ash/wm/gestures/wm_gesture_handler.h"
 #include "ash/wm/window_positioning_utils.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
@@ -52,6 +56,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/test/draw_waiter_for_test.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
@@ -1866,6 +1871,118 @@ TEST_P(PointerConstraintTest, ConstrainPointerWithUncommittedShellSurface) {
   // process, while pointer capture is not allowed on an inactive window.
   EXPECT_FALSE(pointer_->ConstrainPointer(&second_constraint));
 
+  pointer_.reset();
+}
+
+// This test verifies that if pointer lock is activated during a desk switch
+// swipe animation, that the animation is able to complete and pointer lock is
+// correctly set. Regression test for b/324146178.
+TEST_P(PointerConstraintTest, DeskSwitchSwipeGesture) {
+  ui::ScopedAnimationDurationScaleMode animation_scale(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Start with a surface that has a constrained pointer.
+  EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate_));
+  EXPECT_CALL(delegate_, OnPointerFrame()).Times(3);
+  generator_->MoveMouseTo(surface_->window()->GetBoundsInScreen().origin());
+
+  EXPECT_CALL(delegate_, OnPointerMotion(testing::_, testing::_)).Times(0);
+  generator_->MoveMouseTo(surface_->window()->GetBoundsInScreen().origin() +
+                          gfx::Vector2d(-1, -1));
+
+  EXPECT_TRUE(pointer_->GetIsPointerConstrainedForTesting());
+
+  // Swapping desks will unconstrain the pointer.
+  EXPECT_CALL(delegate_, OnPointerLeave(surface_.get()));
+  auto* desks_controller = ash::DesksController::Get();
+  desks_controller->NewDesk(ash::DesksCreationRemovalSource::kButton);
+  desks_controller->ActivateAdjacentDesk(
+      /*going_left=*/false, ash::DesksSwitchSource::kDeskSwitchShortcut);
+  {
+    ash::DeskActivationAnimation* animation =
+        static_cast<ash::DeskActivationAnimation*>(
+            desks_controller->animation());
+    ASSERT_TRUE(animation);
+
+    // End the swipe animation and wait for the desk activation animation to
+    // finish. This is required to prevent flakiness.
+    base::RunLoop run_loop;
+    animation->AddOnAnimationFinishedCallbackForTesting(run_loop.QuitClosure());
+    run_loop.Run();
+  }
+  EXPECT_FALSE(desks_controller->animation());
+  EXPECT_FALSE(pointer_->GetIsPointerConstrainedForTesting());
+  EXPECT_EQ(desks_controller->GetActiveDeskIndex(), 1);
+
+  // Trigger a desk switch gesture.
+  // Start off with a fling cancel (touchpad start) to start the touchpad swipe
+  // sequence.
+  int kNumFingersForDesksSwitch = 4;
+  base::TimeTicks timestamp = ui::EventTimeForNow();
+  ui::ScrollEvent fling_cancel(ui::ET_SCROLL_FLING_CANCEL, gfx::Point(),
+                               timestamp, 0, 0, 0, 0, 0,
+                               kNumFingersForDesksSwitch);
+  generator_->Dispatch(&fling_cancel);
+
+  // Continue with a large enough scroll to the left to start the desk switch
+  // animation. The animation does not start on fling cancel since there is no
+  // finger data in production code.
+  const base::TimeDelta step_delay = base::Milliseconds(5);
+  timestamp += step_delay;
+  // Use a negative scroll direction to scroll to the left.
+  const int direction = -1;
+  const int initial_move_x =
+      (ash::WmGestureHandler::kContinuousGestureMoveThresholdDp + 5) *
+      direction;
+  ui::ScrollEvent initial_move(ui::ET_SCROLL, gfx::Point(), timestamp, 0,
+                               initial_move_x, 0, initial_move_x, 0,
+                               kNumFingersForDesksSwitch);
+  generator_->Dispatch(&initial_move);
+
+  // Wait for the animation, and verify things work properly during the
+  // animation.
+  ash::DeskActivationAnimation* animation =
+      static_cast<ash::DeskActivationAnimation*>(desks_controller->animation());
+  EXPECT_TRUE(animation);
+  {
+    // Wait until the animations ending screenshot has been taken. Otherwise,
+    // we will just stay at the initial desk if no screenshot has been taken.
+    ash::WaitUntilEndingScreenshotTaken(animation);
+
+    // Verify that during the animation that the pointer is constrained
+    // properly.
+    EXPECT_TRUE(pointer_->ConstrainPointer(&constraint_delegate_));
+    EXPECT_TRUE(pointer_->GetIsPointerConstrainedForTesting());
+
+    // Send some more move events, enough to shift to the next desk.
+    const int steps = 100;
+    const float x_offset =
+        direction * ash::WmGestureHandler::kHorizontalThresholdDp;
+    float dx = x_offset / steps;
+    for (int i = 0; i < steps; ++i) {
+      timestamp += step_delay;
+      ui::ScrollEvent move(ui::ET_SCROLL, gfx::Point(), timestamp, 0, dx, 0, dx,
+                           0, kNumFingersForDesksSwitch);
+      generator_->Dispatch(&move);
+    }
+
+    // End the swipe and wait for the animation to finish.
+    ui::ScrollEvent fling_start(ui::ET_SCROLL_FLING_START, gfx::Point(),
+                                timestamp, 0, x_offset, 0, x_offset, 0,
+                                kNumFingersForDesksSwitch);
+    ash::DeskSwitchAnimationWaiter animation_finished_waiter;
+    generator_->Dispatch(&fling_start);
+    animation_finished_waiter.Wait();
+  }
+
+  // Verify that the desk switch animation was completed, and that the pointer
+  // is still correctly constrained.
+  EXPECT_EQ(desks_controller->GetActiveDeskIndex(), 0);
+  EXPECT_TRUE(pointer_->GetIsPointerConstrainedForTesting());
+  EXPECT_FALSE(desks_controller->animation());
+
+  pointer_->OnPointerConstraintDelegateDestroying(&constraint_delegate_);
+  EXPECT_CALL(delegate_, OnPointerDestroying(pointer_.get()));
   pointer_.reset();
 }
 
