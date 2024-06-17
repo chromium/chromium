@@ -39,6 +39,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneshotSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -150,6 +151,7 @@ import org.chromium.chrome.browser.toolbar.top.TopToolbarInteractabilityManager;
 import org.chromium.chrome.browser.toolbar.top.ViewShiftingActionBarDelegate;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripHeightObserver;
+import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.MenuButtonDelegate;
@@ -326,6 +328,8 @@ public class ToolbarManager
     private ObservableSupplierImpl<Integer> mTabStripHeightSupplier;
     private TabStripHeightObserver mTabStripHeightObserver;
     private @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
+    private OneshotSupplierImpl<TabStripTransitionDelegate> mTabStripTransitionDelegateSupplier =
+            new OneshotSupplierImpl<>();
 
     private TabGroupUi mTabGroupUi;
 
@@ -1449,7 +1453,8 @@ public class ToolbarManager
                         mControlsVisibilityDelegate,
                         mFullscreenManager,
                         mTabObscuringHandler,
-                        mDesktopWindowStateProvider);
+                        mDesktopWindowStateProvider,
+                        mTabStripTransitionDelegateSupplier);
 
         mHomepageStateListener =
                 () -> {
@@ -1792,7 +1797,7 @@ public class ToolbarManager
             mControlContainer.setToolbarContainerDragListener(
                     stripLayoutHelperManager.getDragListener());
 
-            mToolbar.addTabStripHeightObserver(stripLayoutHelperManager);
+            mTabStripTransitionDelegateSupplier.set(stripLayoutHelperManager);
             stripLayoutHelperManager.setIsTabStripHidden(mToolbar.getTabStripHeight() == 0);
         }
 

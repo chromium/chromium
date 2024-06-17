@@ -9,7 +9,7 @@ package org.chromium.chrome.browser.toolbar.top.tab_strip;
  * by adding a scrim in-place.
  */
 class ScrimTransitionHandler {
-    void maybeUpdateTabStripVisibility() {
+    void requestTransition() {
         // TODO: Trigger in-place fade transition if applicable.
     }
 }

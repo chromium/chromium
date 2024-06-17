@@ -15,6 +15,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.Observer;
@@ -23,6 +24,7 @@ import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripHeightObserver;
+import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionDelegate;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceReadyOnceCallback;
 
@@ -44,6 +46,8 @@ class HeightTransitionHandler {
     private final ControlContainer mControlContainer;
     private final View mToolbarLayout;
     private final int mTabStripHeightFromResource;
+
+    private OneshotSupplier<TabStripTransitionDelegate> mTabStripTransitionDelegateSupplier;
 
     /**
      * Current height of the tab strip represented by the space reserved on top of the toolbar
@@ -83,6 +87,8 @@ class HeightTransitionHandler {
      * @param callbackController The {@link CallbackController} used by {@link
      *     TabStripTransitionCoordinator}.
      * @param handler The {@link Handler} used by {@link TabStripTransitionCoordinator}.
+     * @param tabStripTransitionDelegateSupplier Supplier for the {@link
+     *     TabStripTransitionDelegate}.
      */
     HeightTransitionHandler(
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
@@ -90,13 +96,15 @@ class HeightTransitionHandler {
             View toolbarLayout,
             int tabStripHeightFromResource,
             @NonNull CallbackController callbackController,
-            @NonNull Handler handler) {
+            @NonNull Handler handler,
+            OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier) {
         mBrowserControlsVisibilityManager = browserControlsVisibilityManager;
         mControlContainer = controlContainer;
         mToolbarLayout = toolbarLayout;
         mTabStripHeightFromResource = tabStripHeightFromResource;
         mCallbackController = callbackController;
         mHandler = handler;
+        mTabStripTransitionDelegateSupplier = tabStripTransitionDelegateSupplier;
 
         mTabStripHeight = tabStripHeightFromResource;
         mTabStripVisible = mTabStripHeight > 0;
@@ -136,7 +144,7 @@ class HeightTransitionHandler {
         mTabStripTransitionThreshold = threshold;
 
         if (TabStripTransitionCoordinator.sMinScreenWidthForTesting != null) {
-            maybeUpdateTabStripVisibility();
+            requestTransition();
         }
     }
 
@@ -145,7 +153,12 @@ class HeightTransitionHandler {
         mTopPadding = topPadding;
     }
 
-    void maybeUpdateTabStripVisibility() {
+    void requestTransition() {
+        mTabStripTransitionDelegateSupplier.runSyncOrOnAvailable(
+                mCallbackController.makeCancelable(delegate -> maybeUpdateTabStripVisibility()));
+    }
+
+    private void maybeUpdateTabStripVisibility() {
         // Do not allow callback to pass through when object is destroyed.
         if (mIsDestroyed) return;
 
@@ -321,9 +334,9 @@ class HeightTransitionHandler {
         updateViewStubTopMargin(
                 R.id.target_view_stub, R.id.toolbar_drag_drop_target_view, mTabStripHeight);
 
-        for (var observer : mTabStripHeightObservers) {
-            observer.onHeightChanged(mTabStripHeight);
-        }
+        assert mTabStripTransitionDelegateSupplier.get() != null
+                : "TabStripTransitionDelegate should be available.";
+        mTabStripTransitionDelegateSupplier.get().onHeightChanged(mTabStripHeight);
 
         // If top control is already at steady state, notify right away.
         if (isTopControlAtSteadyState()) {
@@ -393,9 +406,10 @@ class HeightTransitionHandler {
         // Reset internal state after transition ends.
         mForceUpdateHeight = false;
         mTransitionFinishedObserver = null;
-        for (var observer : mTabStripHeightObservers) {
-            observer.onTransitionFinished();
-        }
+
+        assert mTabStripTransitionDelegateSupplier.get() != null
+                : "TabStripTransitionDelegate should be available.";
+        mTabStripTransitionDelegateSupplier.get().onTransitionFinished();
 
         if (measureControlContainer) remeasureControlContainer();
     }

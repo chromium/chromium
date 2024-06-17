@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.toolbar.top.NavigationPopup.HistoryDelegate;
 import org.chromium.chrome.browser.toolbar.top.ToolbarTablet.OfflineDownloader;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripHeightObserver;
+import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuButtonHelper;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
@@ -140,6 +141,7 @@ public class TopToolbarCoordinator implements Toolbar {
 
     private TabObscuringHandler mTabObscuringHandler;
     private @Nullable DesktopWindowStateProvider mDesktopWindowStateProvider;
+    private OneshotSupplier<TabStripTransitionDelegate> mTabStripTransitionDelegateSupplier;
 
     /** Token used to block the tab strip transition when find in page toolbar is showing. */
     private int mFindToolbarToken = TokenHolder.INVALID_TOKEN;
@@ -186,6 +188,8 @@ public class TopToolbarCoordinator implements Toolbar {
      * @param fullscreenManager Used to check whether in fullscreen.
      * @param tabObscuringHandler Delegate object handling obscuring views.
      * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} instance.
+     * @param tabStripTransitionDelegateSupplier Supplier for the {@link
+     *     TabStripTransitionDelegate}.
      */
     public TopToolbarCoordinator(
             ToolbarControlContainer controlContainer,
@@ -220,7 +224,8 @@ public class TopToolbarCoordinator implements Toolbar {
                     browserStateBrowserControlsVisibilityDelegate,
             FullscreenManager fullscreenManager,
             TabObscuringHandler tabObscuringHandler,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider,
+            OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier) {
         mControlContainer = controlContainer;
         mToolbarLayout = toolbarLayout;
         mMenuButtonCoordinator = browsingModeMenuButtonCoordinator;
@@ -237,6 +242,7 @@ public class TopToolbarCoordinator implements Toolbar {
         mTabObscuringHandler = tabObscuringHandler;
         mDesktopWindowStateProvider = desktopWindowStateProvider;
         mTrackerSupplier = new ObservableSupplierImpl<>();
+        mTabStripTransitionDelegateSupplier = tabStripTransitionDelegateSupplier;
 
         if (mToolbarLayout instanceof ToolbarPhone && isStartSurfaceEnabled) {
             mStartSurfaceToolbarCoordinator =
@@ -395,7 +401,8 @@ public class TopToolbarCoordinator implements Toolbar {
                         mToolbarLayout,
                         tabStripHeightResource,
                         mTabObscuringHandler,
-                        mDesktopWindowStateProvider);
+                        mDesktopWindowStateProvider,
+                        mTabStripTransitionDelegateSupplier);
         mToolbarLayout.getContext().registerComponentCallbacks(mTabStripTransitionCoordinator);
         mToolbarLayout.setTabStripTransitionCoordinator(mTabStripTransitionCoordinator);
     }

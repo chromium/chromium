@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
@@ -41,7 +42,6 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
 
     /** Observes height of tab strip that could change during run time. */
     // TODO(crbug.com/41481630): Rework the observer interface.
-    // TODO(crbug.com/345849359): Rename to TabStripTransitionDelegate.
     public interface TabStripHeightObserver {
         /**
          * Called when the tab strip requests an update when control container changes its width.
@@ -49,7 +49,10 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
          * @param newHeight The expected height tab strip will be changed into.
          */
         default void onTransitionRequested(int newHeight) {}
+    }
 
+    /** Delegate to enforce tab strip updates when strip transition is requested. */
+    public interface TabStripTransitionDelegate {
         /**
          * Called when the tab strip height changed. This height will match the space on top of the
          * toolbar reserved for the tab strip.
@@ -108,6 +111,8 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
      * @param tabStripHeightFromResource The height of the tab strip defined in resource.
      * @param tabObscuringHandler Delegate object handling obscuring views.
      * @param desktopWindowStateProvider The {@link DesktopWindowStateProvider} instance.
+     * @param tabStripTransitionDelegateSupplier Supplier for the {@link
+     *     TabStripTransitionDelegate}.
      */
     public TabStripTransitionCoordinator(
             BrowserControlsVisibilityManager browserControlsVisibilityManager,
@@ -115,7 +120,8 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
             View toolbarLayout,
             int tabStripHeightFromResource,
             TabObscuringHandler tabObscuringHandler,
-            @Nullable DesktopWindowStateProvider desktopWindowStateProvider) {
+            @Nullable DesktopWindowStateProvider desktopWindowStateProvider,
+            OneshotSupplier<TabStripTransitionDelegate> tabStripTransitionDelegateSupplier) {
         mControlContainer = controlContainer;
         mTabStripHeightFromResource = tabStripHeightFromResource;
         mDesktopWindowStateProvider = desktopWindowStateProvider;
@@ -127,7 +133,8 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
                         toolbarLayout,
                         tabStripHeightFromResource,
                         mCallbackController,
-                        mHandler);
+                        mHandler,
+                        tabStripTransitionDelegateSupplier);
         mScrimTransitionHandler = new ScrimTransitionHandler();
 
         mTabStripReservedTopPadding =
@@ -290,11 +297,11 @@ public class TabStripTransitionCoordinator implements ComponentCallbacks, AppHea
 
         if (!AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateProvider)
                 || mForceUpdateHeight) {
-            mHeightTransitionHandler.maybeUpdateTabStripVisibility();
+            mHeightTransitionHandler.requestTransition();
             // Reset internal state after use.
             mForceUpdateHeight = false;
         } else {
-            mScrimTransitionHandler.maybeUpdateTabStripVisibility();
+            mScrimTransitionHandler.requestTransition();
         }
     }
 

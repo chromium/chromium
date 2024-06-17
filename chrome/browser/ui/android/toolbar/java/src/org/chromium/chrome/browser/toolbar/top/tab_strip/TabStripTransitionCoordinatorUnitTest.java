@@ -40,6 +40,7 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
+import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -54,6 +55,7 @@ import org.chromium.chrome.browser.tab.TabObscuringHandler.Target;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripHeightObserver;
+import org.chromium.chrome.browser.toolbar.top.tab_strip.TabStripTransitionCoordinator.TabStripTransitionDelegate;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderState;
 import org.chromium.chrome.browser.ui.desktop_windowing.AppHeaderUtils.DesktopWindowModeState;
 import org.chromium.chrome.browser.ui.desktop_windowing.DesktopWindowStateProvider;
@@ -92,6 +94,8 @@ public class TabStripTransitionCoordinatorUnitTest {
     private TestActivity mActivity;
     private TabObscuringHandler mTabObscuringHandler = new TabObscuringHandler();
     private TestObserver mObserver;
+    private TestDelegate mDelegate;
+    private OneshotSupplierImpl<TabStripTransitionDelegate> mDelegateSupplier;
     private int mReservedTopPadding;
 
     // Test variables
@@ -134,6 +138,10 @@ public class TabStripTransitionCoordinatorUnitTest {
 
         // Setup other mocks.
         doAnswer((arg) -> mAppHeaderState).when(mDesktopWindowStateProvider).getAppHeaderState();
+
+        mDelegate = new TestDelegate();
+        mDelegateSupplier = new OneshotSupplierImpl<>();
+        mDelegateSupplier.set(mDelegate);
 
         setUpTabStripTransitionCoordinator();
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
@@ -737,7 +745,8 @@ public class TabStripTransitionCoordinatorUnitTest {
                         mSpyControlContainer.toolbarLayout,
                         TEST_TAB_STRIP_HEIGHT,
                         mTabObscuringHandler,
-                        mDesktopWindowStateProvider);
+                        mDesktopWindowStateProvider,
+                        mDelegateSupplier);
         mObserver = new TestObserver();
         mCoordinator.addObserver(mObserver);
     }
@@ -807,9 +816,9 @@ public class TabStripTransitionCoordinatorUnitTest {
                 mCoordinator.getTabStripHeight());
 
         Assert.assertEquals(
-                "Observer#onHeightChanged received a different value.",
+                "Delegate#onHeightChanged received a different value.",
                 tabStripHeight,
-                mObserver.heightChanged);
+                mDelegate.heightChanged);
     }
 
     private void assertObservedTransitionFinished(boolean finished) {
@@ -817,7 +826,7 @@ public class TabStripTransitionCoordinatorUnitTest {
                 "Transition finished signal not dispatched. Current contentOffset: "
                         + mTopControlsContentOffset,
                 finished,
-                mObserver.transitionFinished);
+                mDelegate.transitionFinished);
     }
 
     private BrowserControlsStateProvider.Observer getBrowserControlsObserver() {
@@ -843,6 +852,7 @@ public class TabStripTransitionCoordinatorUnitTest {
         getBrowserControlsObserver().onControlsOffsetChanged(0, 0, 0, 0, false);
         mObserver = new TestObserver();
         mCoordinator.addObserver(mObserver);
+        mDelegate.reset();
     }
 
     private void simulateLayoutChange(int width) {
@@ -946,12 +956,20 @@ public class TabStripTransitionCoordinatorUnitTest {
 
     static class TestObserver implements TabStripHeightObserver {
         public int heightRequested = NOTHING_OBSERVED;
-        public int heightChanged = NOTHING_OBSERVED;
-        public boolean transitionFinished;
 
         @Override
         public void onTransitionRequested(int newHeight) {
             heightRequested = newHeight;
+        }
+    }
+
+    static class TestDelegate implements TabStripTransitionDelegate {
+        public int heightChanged = NOTHING_OBSERVED;
+        public boolean transitionFinished;
+
+        void reset() {
+            heightChanged = NOTHING_OBSERVED;
+            transitionFinished = false;
         }
 
         @Override
