@@ -52,6 +52,7 @@ class ASH_EXPORT BluetoothDetailedViewController
   // DetailedViewController:
   std::unique_ptr<views::View> CreateView() override;
   std::u16string GetAccessibleName() const override;
+  void ShutDown() override;
 
   // bluetooth_config::mojom::SystemPropertiesObserver:
   void OnPropertiesUpdated(bluetooth_config::mojom::BluetoothSystemPropertiesPtr

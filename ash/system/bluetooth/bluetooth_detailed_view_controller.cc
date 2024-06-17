@@ -322,4 +322,8 @@ void BluetoothDetailedViewController::AddFakeBluetoothDevices() {
 #endif  // !BUILDFLAG(IS_CHROMEOS_DEVICE)
 }
 
+void BluetoothDetailedViewController::ShutDown() {
+  device_list_controller_.reset();
+}
+
 }  // namespace ash
