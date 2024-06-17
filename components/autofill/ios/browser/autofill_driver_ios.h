@@ -100,7 +100,7 @@ class AutofillDriverIOS : public AutofillDriver,
       const base::flat_map<FieldGlobalId, FieldType>& field_type_map) override;
   void ApplyFieldAction(mojom::FieldActionType action_type,
                         mojom::ActionPersistence action_persistence,
-                        const FieldGlobalId& field,
+                        const FieldGlobalId& field_id,
                         const std::u16string& value) override;
   void ExtractForm(
       FormGlobalId form,
@@ -114,7 +114,7 @@ class AutofillDriverIOS : public AutofillDriver,
       const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source) override;
   void RendererShouldAcceptDataListSuggestion(
-      const FieldGlobalId& field,
+      const FieldGlobalId& field_id,
       const std::u16string& value) override;
   void TriggerFormExtractionInDriverFrame() override;
   void TriggerFormExtractionInAllFrames(
@@ -131,7 +131,7 @@ class AutofillDriverIOS : public AutofillDriver,
   }
 
   void RendererShouldSetSuggestionAvailability(
-      const FieldGlobalId& field,
+      const FieldGlobalId& field_id,
       mojom::AutofillSuggestionAvailability suggestion_availability) override;
   std::optional<net::IsolationInfo> GetIsolationInfo() override;
 
@@ -145,17 +145,17 @@ class AutofillDriverIOS : public AutofillDriver,
   // irrelevant args omitted). See
   // components/autofill/content/common/mojom/autofill_driver.mojom
   // for further documentation of each method.
-  void AskForValuesToFill(const FormData& form, const FormFieldData& field);
+  void AskForValuesToFill(const FormData& form, const FieldGlobalId& field_id);
   void DidFillAutofillFormData(const FormData& form, base::TimeTicks timestamp);
   void FormsSeen(const std::vector<FormData>& updated_forms);
   void FormSubmitted(const FormData& form,
                      bool known_success,
                      mojom::SubmissionSource submission_source);
   void CaretMovedInFormField(const FormData& form,
-                             const FormFieldData& field,
+                             const FieldGlobalId& field_id,
                              const gfx::Rect& caret_bounds);
   void TextFieldDidChange(const FormData& form,
-                          const FormFieldData& field,
+                          const FieldGlobalId& field_id,
                           base::TimeTicks timestamp);
 
   // AutofillDriverIOS:
@@ -176,6 +176,7 @@ class AutofillDriverIOS : public AutofillDriver,
 
     // Renderer id of the last interacted formless field or `FieldRendererId()`
     // if the last interaction was not with a single formless field.
+    // TODO: crbug.com/40266699 - Convert to FieldGlobalId.
     FieldRendererId formless_field;
   };
 

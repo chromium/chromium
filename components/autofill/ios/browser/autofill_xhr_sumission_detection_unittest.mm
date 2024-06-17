@@ -140,18 +140,18 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   // Simulate typing in the first form.
   auto* autofill_driver = main_frame_driver();
   ASSERT_TRUE(autofill_driver);
-  autofill_driver->TextFieldDidChange(form_data1, form_field_data1,
+  autofill_driver->TextFieldDidChange(form_data1, form_field_data1.global_id(),
                                       base::TimeTicks::Now());
   // Simulate typing in the first field of the second form.
   form_field_data2.set_value(u"value2");
   form_data2.set_fields({form_field_data2, form_field_data3});
-  autofill_driver->TextFieldDidChange(form_data2, form_field_data2,
+  autofill_driver->TextFieldDidChange(form_data2, form_field_data2.global_id(),
                                       base::TimeTicks::Now());
 
   // Simulate typing on the other field of the second form.
   form_field_data3.set_value(u"value3");
   form_data2.set_fields({form_field_data2, form_field_data3});
-  autofill_driver->TextFieldDidChange(form_data2, form_field_data3,
+  autofill_driver->TextFieldDidChange(form_data2, form_field_data3.global_id(),
                                       base::TimeTicks::Now());
   // Simulate forms removal.
   autofill_driver->FormsRemoved(
@@ -258,13 +258,13 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   ASSERT_TRUE(autofill_driver);
   form_field_data1.set_value(u"value1");
   form_data.set_fields({form_field_data1, form_field_data2});
-  autofill_driver->TextFieldDidChange(form_data, form_field_data1,
+  autofill_driver->TextFieldDidChange(form_data, form_field_data1.global_id(),
                                       base::TimeTicks::Now());
 
   // Simulate the user updating the second field.
   form_field_data2.set_value(u"value2");
   form_data.set_fields({form_field_data1, form_field_data2});
-  autofill_driver->TextFieldDidChange(form_data, form_field_data2,
+  autofill_driver->TextFieldDidChange(form_data, form_field_data2.global_id(),
                                       base::TimeTicks::Now());
 
   // Simulate the removal of the first formless field.
@@ -383,7 +383,7 @@ TEST_F(AutofillXHRSubmissionDetectionTest,
   // Simulate the user updating the form field.
   auto* autofill_driver = main_frame_driver();
   ASSERT_TRUE(autofill_driver);
-  autofill_driver->TextFieldDidChange(form_data, form_field_data,
+  autofill_driver->TextFieldDidChange(form_data, form_field_data.global_id(),
                                       base::TimeTicks::Now());
 
   // Update the form field in FieldDataManager.

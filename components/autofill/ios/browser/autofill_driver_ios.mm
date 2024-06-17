@@ -145,14 +145,14 @@ base::flat_set<FieldGlobalId> AutofillDriverIOS::ApplyFormAction(
 void AutofillDriverIOS::ApplyFieldAction(
     mojom::FieldActionType action_type,
     mojom::ActionPersistence action_persistence,
-    const FieldGlobalId& field,
+    const FieldGlobalId& field_id,
     const std::u16string& value) {
   // For now, only support filling.
   switch (action_persistence) {
     case mojom::ActionPersistence::kFill: {
       web::WebFrame* frame = web_frame();
       if (frame) {
-        [bridge_ fillSpecificFormField:field.renderer_id
+        [bridge_ fillSpecificFormField:field_id.renderer_id
                              withValue:value
                                inFrame:frame];
       }
@@ -182,7 +182,7 @@ void AutofillDriverIOS::SendAutofillTypePredictionsToRenderer(
 }
 
 void AutofillDriverIOS::RendererShouldAcceptDataListSuggestion(
-    const FieldGlobalId& field,
+    const FieldGlobalId& field_id,
     const std::u16string& value) {}
 
 void AutofillDriverIOS::TriggerFormExtractionInDriverFrame() {
@@ -216,7 +216,7 @@ void AutofillDriverIOS::RendererShouldTriggerSuggestions(
 }
 
 void AutofillDriverIOS::RendererShouldSetSuggestionAvailability(
-    const FieldGlobalId& field,
+    const FieldGlobalId& field_id,
     mojom::AutofillSuggestionAvailability suggestion_availability) {}
 
 std::optional<net::IsolationInfo> AutofillDriverIOS::GetIsolationInfo() {
@@ -233,13 +233,13 @@ web::WebFrame* AutofillDriverIOS::web_frame() const {
 }
 
 void AutofillDriverIOS::AskForValuesToFill(const FormData& form,
-                                           const FormFieldData& field) {
+                                           const FieldGlobalId& field_id) {
   // TODO(crbug.com/40266699): Route this using AutofillDriverRouter.
   // TODO(crbug.com/40269303): Distinguish between different trigger sources.
   // The caret position is currently not extracted on iOS .
   gfx::Rect caret_bounds;
   GetAutofillManager().OnAskForValuesToFill(
-      form, field.global_id(), caret_bounds,
+      form, field_id, caret_bounds,
       autofill::AutofillSuggestionTriggerSource::kiOS);
 }
 
@@ -290,22 +290,21 @@ void AutofillDriverIOS::FormSubmitted(
 }
 
 void AutofillDriverIOS::CaretMovedInFormField(const FormData& form,
-                                              const FormFieldData& field,
+                                              const FieldGlobalId& field_id,
                                               const gfx::Rect& caret_bounds) {
-  GetAutofillManager().OnCaretMovedInFormField(form, field.global_id(),
-                                               caret_bounds);
+  GetAutofillManager().OnCaretMovedInFormField(form, field_id, caret_bounds);
 }
 
 void AutofillDriverIOS::TextFieldDidChange(const FormData& form,
-                                           const FormFieldData& field,
+                                           const FieldGlobalId& field_id,
                                            base::TimeTicks timestamp) {
   UpdateLastInteractedForm(/*form_data=*/form,
                            /*formless_field=*/form.renderer_id()
                                ? FieldRendererId()
-                               : field.renderer_id());
+                               : field_id.renderer_id);
 
   // TODO(crbug.com/40266699): Route this using AutofillDriverRouter.
-  GetAutofillManager().OnTextFieldDidChange(form, field.global_id(), timestamp);
+  GetAutofillManager().OnTextFieldDidChange(form, field_id, timestamp);
 }
 
 void AutofillDriverIOS::SetParent(base::WeakPtr<AutofillDriverIOS> parent) {

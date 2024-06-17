@@ -22,6 +22,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/metrics/field_trial.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/ranges/algorithm.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -84,7 +85,10 @@
 using autofill::AutofillJavaScriptFeature;
 using autofill::FieldDataManager;
 using autofill::FieldDataManagerFactoryIOS;
+using autofill::FieldGlobalId;
 using autofill::FieldRendererId;
+using autofill::FormData;
+using autofill::FormFieldData;
 using autofill::FormGlobalId;
 using autofill::FormHandlersJavaScriptFeature;
 using autofill::FormRendererId;
@@ -98,7 +102,7 @@ using base::SysUTF8ToNSString;
 
 namespace {
 
-using FormDataVector = std::vector<autofill::FormData>;
+using FormDataVector = std::vector<FormData>;
 // Maps each field id to their respective host form id. This is needed as the
 // information linking the fields to their host form is lost between the moment
 // of filling and when receiving the filling response.
@@ -115,30 +119,6 @@ struct AutofillData {
 // |fetchFormsWithName:completionHandler|
 typedef void (^FetchFormsCompletionHandler)(BOOL, const FormDataVector&);
 
-// Gets the field specified by |fieldIdentifier| from |form|, if focusable. Also
-// modifies the field's value for the select elements.
-void GetFormField(autofill::FormFieldData* field,
-                  const autofill::FormData& form,
-                  FieldRendererId fieldIdentifier) {
-  for (const auto& currentField : form.fields()) {
-    if (currentField.renderer_id() == fieldIdentifier &&
-        currentField.is_focusable()) {
-      *field = currentField;
-      break;
-    }
-  }
-  if (field->SameFieldAs(autofill::FormFieldData()))
-    return;
-
-  // Hack to get suggestions from select input elements.
-  if (field->IsSelectElement()) {
-    // Any value set will cause the BrowserAutofillManager to filter suggestions
-    // (only show suggestions that begin the same as the current value) with the
-    // effect that one only suggestion would be returned; the value itself.
-    field->set_value(std::u16string());
-  }
-}
-
 // Delay for setting an utterance to be queued, it is required to ensure that
 // standard announcements have already been started and thus would not interrupt
 // the enqueued utterance.
@@ -147,6 +127,12 @@ constexpr base::TimeDelta kA11yAnnouncementQueueDelay = base::Seconds(1);
 // The correct icon size to use in suggestions. Used to ensure images are scaled
 // appropriately.
 constexpr CGFloat kSuggestionIconWidth = 32;
+
+bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
+  auto it =
+      base::ranges::find(form.fields(), field_id, &FormFieldData::renderer_id);
+  return it != form.fields().end() && it->is_focusable();
+}
 
 }  // namespace
 
@@ -206,7 +192,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
       _formActivityObserverBridge;
 
   // ID of the last Autofill query made. Used to discard outdated suggestions.
-  autofill::FieldGlobalId _lastQueriedFieldID;
+  FieldGlobalId _lastQueriedFieldID;
 }
 
 @end
@@ -476,7 +462,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 // Similar to `fillField`, but does not rely on `FillActiveFormField`, opting
 // instead to find and fill a specific field in `frame` with `value`. In other
 // words, `field` need not be `document.activeElement`.
-- (void)fillSpecificFormField:(const autofill::FieldRendererId&)field
+- (void)fillSpecificFormField:(const FieldRendererId&)field
                     withValue:(const std::u16string)value
                       inFrame:(web::WebFrame*)frame {
   base::Value::Dict data;
@@ -685,7 +671,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
       suggestionDelegate:base::WeakPtr<autofill::AutofillSuggestionDelegate>()];
 }
 
-- (bool)isLastQueriedField:(autofill::FieldGlobalId)fieldID {
+- (bool)isLastQueriedField:(FieldGlobalId)fieldID {
   return fieldID == _lastQueriedFieldID;
 }
 
@@ -846,7 +832,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 
   // Exactly one form should be extracted.
   DCHECK_EQ(1U, forms.size());
-  autofill::FormData form = forms[0];
+  FormData form = forms[0];
   driver->FormSubmitted(form,
                         /*known_success=*/false,
                         autofill::mojom::SubmissionSource::FORM_SUBMISSION);
@@ -1096,10 +1082,12 @@ constexpr CGFloat kSuggestionIconWidth = 32;
   if (!driver) {
     return;
   }
-
-  autofill::FormFieldData field;
-  GetFormField(&field, forms[0], fieldIdentifier);
-  driver->TextFieldDidChange(forms[0], field, base::TimeTicks::Now());
+  const FormData& form = forms[0];
+  if (!ContainsFocusableField(form, fieldIdentifier)) {
+    return;
+  }
+  driver->TextFieldDidChange(form, {form.host_frame(), fieldIdentifier},
+                             base::TimeTicks::Now());
 }
 
 // Helper method to create icons for payment cards.
@@ -1231,7 +1219,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
       FieldDataManagerFactoryIOS::GetRetainable(frame);
   AutofillJavaScriptFeature::GetInstance()->FetchForms(
       frame, base::BindOnce(^(NSString* formJSON) {
-        std::vector<autofill::FormData> formData;
+        std::vector<FormData> formData;
         bool success = autofill::ExtractFormsData(
             formJSON, filtered, formNameCopy, pageURL, frameOrigin,
             *fieldDataManager, &formData);
@@ -1253,7 +1241,7 @@ constexpr CGFloat kSuggestionIconWidth = 32;
 
 // Sends a request to BrowserAutofillManager to retrieve suggestions for the
 // specified form and field.
-- (void)queryAutofillForForm:(const autofill::FormData&)form
+- (void)queryAutofillForForm:(const FormData&)form
              fieldIdentifier:(FieldRendererId)fieldIdentifier
                         type:(NSString*)type
                   typedValue:(NSString*)typedValue
@@ -1265,19 +1253,18 @@ constexpr CGFloat kSuggestionIconWidth = 32;
     return;
   }
 
-  // Find the right field.
-  autofill::FormFieldData field;
-  GetFormField(&field, form, fieldIdentifier);
-
   // Save the completion and go look for suggestions.
   _suggestionsAvailableCompletion = [completion copy];
   _typedValue = [typedValue copy];
 
   // Query the BrowserAutofillManager for suggestions. Results will arrive in
   // -showAutofillPopup:suggestionDelegate:.
-  _lastQueriedFieldID = field.global_id();
+  if (!ContainsFocusableField(form, fieldIdentifier)) {
+    return;
+  }
+  _lastQueriedFieldID = {form.host_frame(), fieldIdentifier};
   autofill::AutofillDriverIOS::FromWebStateAndWebFrame(_webState, frame.get())
-      ->AskForValuesToFill(form, field);
+      ->AskForValuesToFill(form, _lastQueriedFieldID);
 }
 
 - (void)processPage:(web::WebState*)webState {
