@@ -50,6 +50,7 @@
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "content/public/browser/web_ui.h"
+#include "net/base/url_search_params.h"
 #include "net/base/url_util.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/lens_server_proto/lens_overlay_selection_type.pb.h"
@@ -146,6 +147,36 @@ std::vector<lens::mojom::OverlayObjectPtr> CopyObjects(
   return objects_copy;
 }
 
+// Returns true if the two URLs have the same base url, and the same query
+// parameters. This differs from comparing two GURLs using == since this method
+// will ensure equivalence even if there are empty query params, viewport
+// params, or different query param ordering.
+bool AreSearchUrlsEquivalent(const GURL& a, const GURL& b) {
+  // Check urls without query and reference (fragment) for equality first.
+  GURL::Replacements replacements;
+  replacements.ClearRef();
+  replacements.ClearQuery();
+  if (a.ReplaceComponents(replacements) != b.ReplaceComponents(replacements)) {
+    return false;
+  }
+
+  // Now, compare each query param individually to ensure equivalence. Remove
+  // params that should not contribute to differing search results.
+  net::UrlSearchParams a_search_params(
+      lens::RemoveIgnoredSearchURLParameters(a));
+  net::UrlSearchParams b_search_params(
+      lens::RemoveIgnoredSearchURLParameters(b));
+
+  // Sort params so they are in the same order during comparison.
+  a_search_params.Sort();
+  b_search_params.Sort();
+
+  // Check Search Params for equality
+  // All search params, in order, need to have the same keys and the same
+  // values.
+  return a_search_params.params() == b_search_params.params();
+}
+
 }  // namespace
 
 LensOverlayController::LensOverlayController(
@@ -211,6 +242,7 @@ LensOverlayController::SearchQuery::SearchQuery(const SearchQuery& other) {
   if (other.selected_region_) {
     selected_region_ = other.selected_region_->Clone();
   }
+  selected_region_bitmap_ = other.selected_region_bitmap_;
   selected_region_thumbnail_uri_ = other.selected_region_thumbnail_uri_;
   search_query_url_ = other.search_query_url_;
   selected_text_ = other.selected_text_;
@@ -223,6 +255,7 @@ LensOverlayController::SearchQuery::operator=(
   if (other.selected_region_) {
     selected_region_ = other.selected_region_->Clone();
   }
+  selected_region_bitmap_ = other.selected_region_bitmap_;
   selected_region_thumbnail_uri_ = other.selected_region_thumbnail_uri_;
   search_query_url_ = other.search_query_url_;
   selected_text_ = other.selected_text_;
@@ -598,8 +631,8 @@ void LensOverlayController::AddQueryToHistory(std::string query,
   auto loaded_search_query =
       initialization_data_->currently_loaded_search_query_;
   if (loaded_search_query &&
-      lens::RemoveUrlViewportParams(loaded_search_query->search_query_url_) ==
-          lens::RemoveUrlViewportParams(search_url)) {
+      AreSearchUrlsEquivalent(loaded_search_query->search_query_url_,
+                              search_url)) {
     return;
   }
 
@@ -609,6 +642,7 @@ void LensOverlayController::AddQueryToHistory(std::string query,
   const std::string lens_mode = lens::GetLensModeParameterValue(search_url);
   if (lens_mode.empty()) {
     initialization_data_->selected_region_.reset();
+    initialization_data_->selected_region_bitmap_.reset();
     initialization_data_->selected_text_.reset();
     initialization_data_->additional_search_query_params_.clear();
     selected_region_thumbnail_uri_.clear();
@@ -624,9 +658,12 @@ void LensOverlayController::AddQueryToHistory(std::string query,
   if (initialization_data_->selected_region_) {
     search_query.selected_region_ =
         initialization_data_->selected_region_->Clone();
-    search_query.selected_region_thumbnail_uri_ =
-        selected_region_thumbnail_uri_;
   }
+  if (!initialization_data_->selected_region_bitmap_.drawsNothing()) {
+    search_query.selected_region_bitmap_ =
+        initialization_data_->selected_region_bitmap_;
+  }
+  search_query.selected_region_thumbnail_uri_ = selected_region_thumbnail_uri_;
   if (initialization_data_->selected_text_.has_value()) {
     search_query.selected_text_ = initialization_data_->selected_text_.value();
   }
@@ -681,7 +718,28 @@ void LensOverlayController::PopAndLoadQueryFromHistory() {
   SetSearchboxInputText(query.search_query_text_);
   SetSearchboxThumbnail(query.selected_region_thumbnail_uri_);
 
-  // Load the popped query URL in the results frame.
+  if (query.selected_region_ || !query.selected_region_bitmap_.drawsNothing()) {
+    // If the current query has a region or image bytes, we need to send a new
+    // interaction request in order to to keep our request IDs in sync with the
+    // server. If not, we will receive broken results. Because of this, we also
+    // want to modify the currently loaded search query so that we don't get
+    // duplicates added to the query history stack.
+    initialization_data_->currently_loaded_search_query_.reset();
+    if (!initialization_data_->search_query_history_stack_.empty()) {
+      auto previous_query =
+          initialization_data_->search_query_history_stack_.back();
+      initialization_data_->search_query_history_stack_.pop_back();
+      initialization_data_->currently_loaded_search_query_ = previous_query;
+    }
+    DoLensRequest(
+        query.selected_region_->Clone(),
+        query.selected_region_bitmap_.drawsNothing()
+            ? std::nullopt
+            : std::make_optional<SkBitmap>(query.selected_region_bitmap_));
+    return;
+  }
+  // Load the popped query URL in the results frame if it does not need to
+  // send image bytes.
   LoadURLInResultsFrame(query.search_query_url_);
 
   // Set the currently loaded query to the one we just popped.
@@ -1300,6 +1358,7 @@ void LensOverlayController::OnTextModified() {
 void LensOverlayController::OnThumbnailRemoved() {
   selected_region_thumbnail_uri_.clear();
   initialization_data_->selected_region_.reset();
+  initialization_data_->selected_region_bitmap_.reset();
   page_->ClearRegionSelection();
 }
 
@@ -1443,6 +1502,12 @@ void LensOverlayController::DoLensRequest(
   initialization_data_->selected_region_ = region.Clone();
   initialization_data_->selected_text_.reset();
   initialization_data_->additional_search_query_params_.clear();
+  if (region_bytes) {
+    initialization_data_->selected_region_bitmap_ = region_bytes.value();
+  } else {
+    initialization_data_->selected_region_bitmap_.reset();
+  }
+
   // TODO(b/332787629): Append the 'mactx' param.
   lens_overlay_query_controller_->SendRegionSearch(
       region.Clone(), initialization_data_->additional_search_query_params_,
@@ -1575,6 +1640,7 @@ void LensOverlayController::IssueTextSelectionRequestInner(
     int selection_start_index,
     int selection_end_index) {
   initialization_data_->selected_region_.reset();
+  initialization_data_->selected_region_bitmap_.reset();
   selected_region_thumbnail_uri_.clear();
   initialization_data_->selected_text_ =
       std::make_pair(selection_start_index, selection_end_index);

@@ -71,8 +71,17 @@ inline constexpr char kInvocationSourceToolbarIcon[] = "chrome.cr.tbic";
 inline constexpr char kInvocationSourceOmniboxIcon[] = "chrome.cr.obic";
 
 // The url query param for the viewport width and height.
-constexpr char kViewportWidthQueryParamKey[] = "biw";
-constexpr char kViewportHeightQueryParamKey[] = "bih";
+inline constexpr char kViewportWidthQueryParamKey[] = "biw";
+inline constexpr char kViewportHeightQueryParamKey[] = "bih";
+
+// Query parameters that can be appended by GWS to the URL after a redirect.
+inline constexpr char kXSRFTokenQueryParamKey[] = "sxsrf";
+inline constexpr char kSecActQueryParamKey[] = "sec_act";
+
+// The list of query parameters to ignore when comparing search URLs.
+inline constexpr std::string kIgnoredSearchUrlQueryParameters[] = {
+    kViewportWidthQueryParamKey, kViewportHeightQueryParamKey,
+    kXSRFTokenQueryParamKey, kSecActQueryParamKey};
 
 // Query parameter for dark mode.
 inline constexpr char kDarkModeParameterKey[] = "cs";
@@ -351,21 +360,11 @@ GURL GetSearchResultsUrlFromRedirectUrl(const GURL& url) {
   return GURL();
 }
 
-GURL RemoveUrlViewportParams(const GURL& url) {
+GURL RemoveIgnoredSearchURLParameters(const GURL& url) {
   GURL processed_url = url;
-  std::string actual_viewport_width;
-  bool has_viewport_width = net::GetValueForKeyInQuery(
-      url, kViewportWidthQueryParamKey, &actual_viewport_width);
-  std::string actual_viewport_height;
-  bool has_viewport_height = net::GetValueForKeyInQuery(
-      GURL(url), kViewportHeightQueryParamKey, &actual_viewport_height);
-  if (has_viewport_width) {
+  for (std::string query_param : kIgnoredSearchUrlQueryParameters) {
     processed_url = net::AppendOrReplaceQueryParameter(
-        processed_url, kViewportWidthQueryParamKey, std::nullopt);
-  }
-  if (has_viewport_height) {
-    processed_url = net::AppendOrReplaceQueryParameter(
-        processed_url, kViewportHeightQueryParamKey, std::nullopt);
+        processed_url, query_param, std::nullopt);
   }
   return processed_url;
 }

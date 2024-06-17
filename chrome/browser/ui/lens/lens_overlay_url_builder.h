@@ -80,10 +80,12 @@ bool IsValidSearchResultsUrl(const GURL& url);
 // a finch configured flag.
 GURL GetSearchResultsUrlFromRedirectUrl(const GURL& url);
 
-// Removes the viewport width (biw) and viewport height (bih) params from the
-// search url. This allows us to compare search url's accurately in
-// AddQueryToHistory when the side panel is resized.
-GURL RemoveUrlViewportParams(const GURL& url);
+// Removes parameters that frequently change on the SRP URL due to redirects or
+// client changes without changing the actual results. This allows us to compare
+// search url's accurately in AddQueryToHistory when the side panel is resized
+// or when the SRP redirects to append parameters unrelated to the search
+// results.
+GURL RemoveIgnoredSearchURLParameters(const GURL& url);
 
 }  // namespace lens
 

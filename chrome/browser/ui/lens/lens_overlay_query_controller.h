@@ -79,7 +79,7 @@ class LensOverlayQueryController {
   // region_bytes are included, those will be sent to Lens instead of cropping
   // the region out of the screenshot. This should be used to provide a higher
   // definition image than image cropping would provide.
-  void SendRegionSearch(
+  virtual void SendRegionSearch(
       lens::mojom::CenterRotatedBoxPtr region,
       std::map<std::string, std::string> additional_search_query_params,
       std::optional<SkBitmap> region_bytes);

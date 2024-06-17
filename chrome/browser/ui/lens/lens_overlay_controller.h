@@ -106,6 +106,8 @@ class LensOverlayController : public LensSearchboxClient,
     std::string search_query_text_;
     // The selected region for this query, if any.
     lens::mojom::CenterRotatedBoxPtr selected_region_;
+    // The selected region bitmap for this query, if any.
+    SkBitmap selected_region_bitmap_;
     // The selected text for this query, if any.
     std::optional<std::pair<int, int>> selected_text_;
     // The data URI of the thumbnail in the searchbox.
@@ -392,6 +394,11 @@ class LensOverlayController : public LensSearchboxClient,
     return search_bubble_controller_.get();
   }
 
+  lens::LensOverlayQueryController*
+  get_lens_overlay_query_controller_for_testing() {
+    return lens_overlay_query_controller_.get();
+  }
+
  protected:
   // Override these methods to stub out network requests for testing.
   virtual std::unique_ptr<lens::LensOverlayQueryController>
@@ -462,6 +469,13 @@ class LensOverlayController : public LensSearchboxClient,
     // the region. Cleared if the user makes a text-only or object selection
     // query.
     lens::mojom::CenterRotatedBoxPtr selected_region_;
+
+    // The selected region bitmap. This should only be set if the user opened
+    // the overlay with a pending region bitmap. Stored so that it can be used
+    // for multiple requests, such as if the user changes the text query without
+    // changing the region. Cleared if the user makes a text-only or object
+    // selection query.
+    SkBitmap selected_region_bitmap_;
 
     // A pair representing the start and end selection indexes for the currently
     // selected text. This needs to be an optional since std::pair will
