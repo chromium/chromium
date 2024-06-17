@@ -4,6 +4,7 @@
 
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
+import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
@@ -94,6 +95,11 @@ const REGION_SELECTION_STATE_CENTER_Y_AMPLITUDE_PERCENT = 40;
 // The time it takes in MS to transition from a different state to the region
 // selection state.
 const REGION_SELECTION_TRANSITION_DURATION = 750;
+
+// The opacity of the sparkles. The sparkles opacity also is dictated by the
+// circle pixel opacity below it. Meaning, the true opacity value is
+// SPARKLES_OPACITY * CIRCLE_OPACITY.
+const SPARKLES_OPACITY = 1;
 
 // Specifies the current animation state of the shader canvas.
 enum ShimmerState {
@@ -195,6 +201,7 @@ function createCircleGradient(
 export interface OverlayShimmerCanvasElement {
   $: {
     shaderCanvas: HTMLCanvasElement,
+    sparklesSvg: SVGImageElement,
   };
 }
 
@@ -278,6 +285,18 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
   private regionWidth: number;
   private regionHeight: number;
 
+  // The sparkles pattern used for rendering the sparkling animation. Created
+  // when the sparkles PNG is loaded in. Null otherwise.
+  private sparklesPattern: CanvasPattern|null = null;
+  // A randomized value every 100ms to transform the sparkles to create
+  // movement.
+  private sparklesOffset: number = 0;
+  // The ID of the setInterval call that updates the sparklesOffset.
+  private sparklesIntervalId?: number;
+  // Whether the sparkles are enabled or not.
+  private enableSparkles: boolean =
+      loadTimeData.getBoolean('enableShimmerSparkles');
+
   // The current shimmer state.
   private shimmerState: ShimmerState = ShimmerState.NONE;
   // The start time of the current animation. When undefined, it will be set at
@@ -321,6 +340,27 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
         id => assert(
             BrowserProxyImpl.getInstance().callbackRouter.removeListener(id)));
     this.listenerIds = [];
+
+    // Stop updating the sparkles if they are currently updating.
+    if (this.sparklesIntervalId) {
+      clearInterval(this.sparklesIntervalId);
+      this.sparklesIntervalId = undefined;
+    }
+  }
+
+  private onSparklesLoad() {
+    // If the flag to enable sparkles is off, ignore the SVG loading in which
+    // will cause skip initializing sparklesPattern so no sparkles appear.
+    if (!this.enableSparkles) {
+      return;
+    }
+
+    this.sparklesPattern =
+        this.context.createPattern(this.$.sparklesSvg, 'repeat');
+
+    this.sparklesIntervalId = setInterval(() => {
+      this.sparklesOffset = Math.round(Math.random() * 500);
+    }, 100);
   }
 
   /** Starts the invocation animation into the steady state. */
@@ -384,6 +424,7 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
     this.resetCanvasPixelRatioIfNeeded();
 
     this.drawCircles(timeMs);
+    this.drawSparkles();
     requestAnimationFrame(this.stepAnimation.bind(this));
   }
 
@@ -577,6 +618,31 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
     // If the last transition update resulted in a completed animation, clean up
     // an leftover animation state.
     this.finishAnimationIfNeeded(elapsed);
+  }
+
+  // Draws sparkles on the canvas using circles as an alpha mask.
+  private drawSparkles(): void {
+    if (!this.sparklesPattern) {
+      return;
+    }
+
+    // Update the sparkles position to use across the circles.
+    this.sparklesPattern!.setTransform(new DOMMatrixReadOnly().translate(
+        this.sparklesOffset, this.sparklesOffset));
+
+    this.context.save();
+
+    // Draw a path over the entire canvas.
+    this.context.beginPath();
+    this.context.rect(0, 0, this.canvasWidth, this.canvasHeight);
+    this.context.closePath();
+
+    this.context.globalCompositeOperation = 'source-atop';
+    this.context.globalAlpha = SPARKLES_OPACITY;
+    this.context.fillStyle = this.sparklesPattern;
+    this.context.fill();
+
+    this.context.restore();
   }
 
   // Checks the set canvas size and if it has changed, resets it on the canvas.

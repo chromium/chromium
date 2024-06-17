@@ -101,7 +101,7 @@ const base::FeatureParam<bool> kLensOverlayPreciseHighlight{
 const base::FeatureParam<bool> kLensOverlayEnableShimmer{
     &kLensOverlay, "enable-shimmer", true};
 const base::FeatureParam<bool> kLensOverlayEnableShimmerSparkles{
-    &kLensOverlay, "enable-shimmer-sparkles", false};
+    &kLensOverlay, "enable-shimmer-sparkles", true};
 const base::FeatureParam<bool> kLensOverlaySelectionDraggingEnabled{
     &kLensOverlay, "enable-selection-dragging", false};
 const base::FeatureParam<std::string> kResultsSearchLoadingUrl{
