@@ -1,1 +1,256 @@
-<div id="header"></div>
+<style include="cr-shared-style sanitize-shared">
+  :host {
+    padding: 12px;
+    position: absolute;
+    background-color: var(--cros-sys-base_elevated);
+    height: 640px;
+    width: 680px;
+  }
+
+  .completed-icon {
+    height: 32px;
+    width: 32px;
+  }
+
+  .expand-container-icon {
+    height: 24px;
+    width: 24px;
+    margin-right: 12px;
+  }
+
+  div[slot="body"] {
+    border-radius: 20px;
+    padding: 32px;
+  }
+
+  .title {
+    margin-top: 16px;
+    margin-bottom: 16px;
+    font-family: var(--cros-display-5-font-family);
+    font-size: var(--cros-display-5-font-size);
+    font: var(--cros-display-5-font);
+    font-weight: var(--cros-display-5-font-weight);
+    line-height: var(--cros-display-5-line-height);
+    color: var(--cros-sys-on_surface);
+  }
+
+  .sanitize-done-description {
+    margin-bottom: 24px;
+    font-family: var(--cros-body-2-font-family);
+    font-size: var(--cros-body-2-font-size);
+    font: var(--cros-body-2-font);
+    font-weight: var(--cros-body-2-font-weight);
+    line-height: var(--cros-body-2-line-height);
+    color: var(--cros-sys-on_surface_variant);
+  }
+
+  .sanitize-done-info {
+    border-radius: 16px;
+    background-color: var(--cros-sys-secondary_container);
+  }
+
+  .sanitize-done-rollback {
+    font-family: var(--cros-button-2-font-family);
+    font-size: var(--cros-button-2-font-size);
+    font: var(--cros-button-2-font);
+    font-weight: var(--cros-button-2-font-weight);
+    line-height: var(--cros-button-2-line-height);
+    color: var(--cros-sys-on_secondary_container);
+    padding: 12px 12px 16px 12px;
+  }
+
+  .expand-buttons {
+    background-color: var(--cros-sys-app_base_shaded);
+    padding: 12px;
+    border-bottom-left-radius: 16px;
+    border-bottom-right-radius: 16px;
+    height: 290px;
+    overflow-y:scroll;
+  }
+
+  .secondary-button-container {
+    margin-left: auto;
+  }
+
+  .done-button-container {
+    text-align: right;
+    margin-top: 24px;
+  }
+
+  cr-expand-button {
+    background-color: var(--cros-sys-app_base);
+    margin-bottom:8px;
+    border-radius: var(--cr-card-border-radius);
+    padding: 14px 16px 16px 14px;
+  }
+
+  .expand-title {
+    font-family: var(--cros-button-1-font-family);
+    font-size: var(--cros-button-1-font-size);
+    font: var(--cros-button-1-font);
+    font-weight: var(--cros-button-1-font-weight);
+    line-height: var(--cros-button-1-line-height);
+    color: var(--cros-sys-on_surface);
+  }
+
+  .expand-div {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .list-container {
+    font-family: var(--cros-button-1-font-family);
+    font-size: var(--cros-button-1-font-size);
+    font: var(--cros-button-1-font);
+    font-weight: var(--cros-button-1-font-weight);
+    line-height: var(--cros-button-1-line-height);
+    color: var(--cros-sys-on_surface);
+    padding-top: 4px;
+    border-top: var(--cr-separator-line);
+    min-height: var(--settings-row-min-height);
+    display: flex;
+    align-items: center;
+  }
+
+  .list-container:not(:last-child) {
+    padding-bottom: 4px;
+  }
+</style>
+<div slot="body">
+  <div class="completed-icon-div">
+    <svg class="completed-icon"
+        preserveAspectRatio="xMidYMid meet" role="img" viewBox="0 0 32 32">
+      <use href="svg/finished_32.svg#finished_32"></use>
+    </svg>
+  </div>
+  <div id="title" class="title">$i18n{sanitizeDoneTitle}</div>
+  <div class="sanitize-done-description">
+    $i18n{sanitizeDoneExplanation}
+  </div>
+  <div class="sanitize-done-info">
+    <div class="sanitize-done-rollback">
+      $i18n{sanitizeDoneRollback}
+    </div>
+    <div class="expand-buttons">
+      <cr-expand-button class="expand-container"
+          expanded="{{extensionsExpanded_}}"
+          id="expandExtensions">
+        <div class="expand-div">
+          <svg class="expand-container-icon extensions-icon"
+               preserveAspectRatio="xMidYMid meet"
+               role="img" viewBox="0 0 32 32">
+            <use href="svg/extension_off_32.svg#extension_off_32"></use>
+          </svg>
+          <span class="expand-title">
+            $i18n{sanitizeDoneAccordionExtensionsTitle}
+          </span>
+        </div>
+        <template is="dom-if" if="[[extensionsExpanded_]]">
+          <div>
+            <div class="list-container">
+              $i18n{sanitizeDoneAccordionExtensionsReenable}
+              <span class="secondary-button-container">
+                <cros-button button-style="secondary" id="extensionsButton"
+                    on-click="onExtensionsButtonClick_" label="Extensions">
+                </cros-button>
+              </span>
+            </div>
+          </div>
+        </template>
+      </cr-expand-button>
+      <cr-expand-button
+          class="expand-container"
+          expanded="{{chromeOSSettingsInfoExpanded_}}"
+          id="expandChromeOsSettingsInfo">
+        <div class="expand-div">
+          <svg class="expand-container-icon chromeos-icon"
+              preserveAspectRatio="xMidYMid meet"
+              role="img" viewBox="0 0 24 24">
+            <use href="svg/card_settings.svg#card_settings"></use>
+          </svg>
+          <span class="expand-title">
+            $i18n{sanitizeDoneAccordionChromeOsTitle}
+          </span>
+        </div>
+        <template is="dom-if" if="[[chromeOSSettingsInfoExpanded_]]">
+          <div>
+            <div class="list-container">
+              $i18n{sanitizeDoneAccordionChromeOsInput}
+              <span class="secondary-button-container">
+                <cros-button button-style="secondary" id="chromeOsInputButton"
+                    on-click="onChromeOsInputClick_" label="ChromeOS Input">
+                </cros-button>
+              </span>
+            </div>
+            <div class="list-container">
+              $i18n{sanitizeDoneAccordionChromeOsNetwork}
+              <span class="secondary-button-container">
+                <cros-button button-style="secondary" id="chromeOsNetworkButton"
+                    on-click="onChromeOsNetworkClick_" label="ChromeOS Network">
+                </cros-button>
+              </span>
+            </div>
+          </div>
+        </template>
+      </cr-expand-button>
+      <cr-expand-button
+          class="expand-container"
+          expanded="{{chromeSettingsInfoExpanded_}}"
+          id="expandChromeSettingsInfo">
+        <div class="expand-div">
+          <svg class="expand-container-icon chrome-icon"
+              preserveAspectRatio="xMidYMid meet"
+              role="img" viewBox="0 0 24 24">
+            <use href="svg/card_chrome_product.svg#card_chrome_product"></use>
+          </svg>
+          <span class="expand-title">
+            $i18n{sanitizeDoneAccordionChromeTitle}
+          </span>
+        </div>
+        <template is="dom-if" if="[[chromeSettingsInfoExpanded_]]">
+          <div>
+            <div class="list-container">
+              $i18n{sanitizeDoneAccordionChromeSiteContent}
+              <span class="secondary-button-container">
+                <cros-button button-style="secondary"
+                    id="chromeSiteContentButton"
+                    on-click="onChromeSiteContentClick_"
+                    label="Chrome Site Content">
+                </cros-button>
+              </span>
+            </div>
+            <div class="list-container">
+              $i18n{sanitizeDoneAccordionChromeStartup}
+              <span class="secondary-button-container">
+                <cros-button button-style="secondary" id="chromeStartupButton"
+                    on-click="onChromeStartupClick_" label="Chrome Startup">
+                </cros-button>
+              </span>
+            </div>
+            <div class="list-container">
+              $i18n{sanitizeDoneAccordionChromeHomepage}
+              <span class="secondary-button-container">
+                <cros-button button-style="secondary" id="chromeHomepageButton"
+                    on-click="onChromeHomepageClick_" label="Chrome Homepage">
+                </cros-button>
+              </span>
+            </div>
+            <div class="list-container">
+              $i18n{sanitizeDoneAccordionChromeLanguages}
+              <span class="secondary-button-container">
+                <cros-button button-style="secondary" id="chromeLanguagesButton"
+                    on-click="onChromeLanguagesClick_" label="Chrome Languages">
+                </cros-button>
+              </span>
+            </div>
+          </div>
+        </template>
+      </cr-expand-button>
+    </div>
+  </div>
+  <div class="button-container done-button-container">
+    <cros-button button-style="primary" id="doneButton"
+        label="$i18n{sanitizeDoneButton}" on-click="onDoneClick_">
+    </cros-button>
+  </div>
+</div>

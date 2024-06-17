@@ -42,6 +42,18 @@
 #include "chrome/browser/dbus_memory_pressure_evaluator_linux.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "ash/public/cpp/new_window_delegate.h"
+#include "ash/webui/sanitize_ui/url_constants.h"
+#include "ash/webui/system_apps/public/system_web_app_type.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
+#include "chrome/browser/ui/webui/ash/settings/pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_launch_util.h"
+#endif
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/linux_util.h"
 #include "chrome/common/chrome_paths_internal.h"
@@ -118,8 +130,9 @@ void ChromeBrowserMainPartsLinux::PreProfileInit() {
   ChromeBrowserMainPartsPosix::PreProfileInit();
 }
 
-#if defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
+#if (defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)) || BUILDFLAG(IS_CHROMEOS_ASH)
 void ChromeBrowserMainPartsLinux::PostBrowserStart() {
+#if defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
   // static_cast is safe because this is the only implementation of
   // MemoryPressureMonitor.
   auto* monitor =
@@ -131,10 +144,29 @@ void ChromeBrowserMainPartsLinux::PostBrowserStart() {
         std::make_unique<DbusMemoryPressureEvaluatorLinux>(
             monitor->CreateVoter()));
   }
-
+#endif  // defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  CheckIfSanitizeCompleted();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ChromeBrowserMainPartsPosix::PostBrowserStart();
 }
-#endif  // defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)
+#endif  // (defined(USE_DBUS) && !BUILDFLAG(IS_CHROMEOS)) ||
+        // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void ChromeBrowserMainPartsLinux::CheckIfSanitizeCompleted() {
+  PrefService* prefs = ProfileManager::GetPrimaryUserProfile()->GetPrefs();
+  if (base::FeatureList::IsEnabled(ash::features::kSanitize) &&
+      prefs->GetBoolean(ash::settings::prefs::kSanitizeCompleted)) {
+    prefs->SetBoolean(ash::settings::prefs::kSanitizeCompleted, false);
+    prefs->CommitPendingWrite();
+    ash::SystemAppLaunchParams params;
+    params.launch_source = apps::LaunchSource::kUnknown;
+    ash::LaunchSystemWebAppAsync(ProfileManager::GetPrimaryUserProfile(),
+                                 ash::SystemWebAppType::OS_SANITIZE, params);
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ChromeBrowserMainPartsLinux::PostDestroyThreads() {
 #if BUILDFLAG(IS_CHROMEOS)

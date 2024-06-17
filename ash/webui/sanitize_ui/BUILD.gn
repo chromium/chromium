@@ -22,7 +22,7 @@ static_library("sanitize_ui") {
     "//ash/webui/common:chrome_os_webui_config",
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/sanitize_ui/resources:resources",
-    "//chromeos/strings:strings_grit",
+    "//chromeos/strings/",
     "//content/public/browser:browser",
     "//ui/base",
     "//ui/resources",

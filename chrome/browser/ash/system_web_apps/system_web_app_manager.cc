@@ -152,6 +152,10 @@ SystemWebAppDelegateMap CreateSystemWebApps(Profile* profile) {
     info_vec.push_back(std::make_unique<SanitizeSystemAppDelegate>(profile));
   }
 
+  if (base::FeatureList::IsEnabled(ash::features::kSanitize)) {
+    info_vec.push_back(std::make_unique<SanitizeSystemAppDelegate>(profile));
+  }
+
 #if !defined(OFFICIAL_BUILD)
   info_vec.push_back(std::make_unique<SampleSystemAppDelegate>(profile));
 #endif  // !defined(OFFICIAL_BUILD)

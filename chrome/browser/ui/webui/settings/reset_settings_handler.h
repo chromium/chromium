@@ -34,7 +34,7 @@ class ResetSettingsHandler : public SettingsPageUIHandler {
   // profile settings URL.
   static const char kCctResetSettingsHash[];
 
-  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   static bool ShouldShowResetProfileBanner(Profile* profile);

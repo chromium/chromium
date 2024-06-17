@@ -3116,6 +3116,48 @@
         <message name="IDS_OS_SANITIZE_APP_NAME" desc="Name of the Sanitize web app" translateable="false">
           Sanitize
         </message>
+        <message name="IDS_SANITIZE_DONE_HEADING" desc="Name of the 'Safety reset done' window" translateable="false">
+          Your device is sanitized
+        </message>
+        <message name="IDS_SANITIZE_DONE_DESCRIPTION" desc="Description of the safety reset done dialog" translateable="false">
+          Your ChromeOS device was reset to safe defaults.
+        </message>
+        <message name="IDS_SANITIZE_DONE_ROLLBACK" desc="Description of how the user can roll back changes" translateable="false">
+          We made changes to make your device more secure, you can undo some of our changes below.
+        </message>
+        <message name="IDS_SANITIZE_DONE" desc="Name of the button that will close the sanitize done dialog" translateable="false">
+          Done
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_EXTENSIONS_TITLE" translateable="false">
+          Your Extensions
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_EXTENSIONS_REENABLE" translateable="false">
+          Re-enable extensions you trust
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_TITLE" translateable="false">
+          Your ChromeOS Settings
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_INPUT" translateable="false">
+          Verify your input method
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROMEOS_NETWORK" translateable="false">
+          Check your current network
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_TITLE" translateable="false">
+          Your Chrome Settings
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_SITE_CONTENT" translateable="false">
+          Verify your site content settings
+        </message>
+        <message name="IDS_SANITZIE_DONE_ACCORDION_CHROME_STARTUP" translateable="false">
+          Check your Chrome startup preferences
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_HOMEPAGE" translateable="false">
+          Verify the status of your homepage
+        </message>
+        <message name="IDS_SANITIZE_DONE_ACCORDION_CHROME_LANGUAGES" translateable="false">
+          Verify your language settings
+        </message>
 
         <!-- Sea Pen UI -->
         <message name="IDS_SEA_PEN_LABEL" desc="Label for the Create with AI feature.">

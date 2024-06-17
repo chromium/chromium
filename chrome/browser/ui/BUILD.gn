@@ -3537,6 +3537,8 @@ static_library("ui") {
       "webui/ash/print_preview_cros/print_preview_cros_dialog.h",
       "webui/ash/remote_maintenance_curtain_ui.cc",
       "webui/ash/remote_maintenance_curtain_ui.h",
+      "webui/ash/sanitize_dialog.cc",
+      "webui/ash/sanitize_dialog.h",
       "webui/ash/scalable_iph/scalable_iph_debug_ui.cc",
       "webui/ash/scalable_iph/scalable_iph_debug_ui.h",
       "webui/ash/sensor_info/sensor_info_ui.cc",

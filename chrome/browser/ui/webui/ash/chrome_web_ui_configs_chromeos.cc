@@ -315,7 +315,9 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<multidevice::ProximityAuthUIConfig>());
   map.AddWebUIConfig(std::make_unique<RecorderAppUIConfig>());
   map.AddWebUIConfig(std::make_unique<RemoteMaintenanceCurtainUIConfig>());
-  map.AddWebUIConfig(MakeSanitizeUIConfig());
+  if (base::FeatureList::IsEnabled(ash::features::kSanitize)) {
+    map.AddWebUIConfig(MakeSanitizeUIConfig());
+  }
   map.AddWebUIConfig(
       MakeComponentConfigWithDelegate<ScanningUIConfig, ScanningUI,
                                       ChromeScanningAppDelegate>());

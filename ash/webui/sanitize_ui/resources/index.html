@@ -5,11 +5,24 @@
 <html dir="$i18n{textdirection}" lang="$i18n{language}">
   <head>
     <title></title>
-    <meta charset="utf-8">
+    <link rel="stylesheet" href="chrome://theme/typography.css">
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+    <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
+    <link rel="stylesheet" href="chrome://theme/colors.css?sets=legacy,sys">
+    <style>
+      body {
+        height: 100vh;
+        margin: 0;
+        overflow: hidden;
+      }
+
+      html {
+        background-color: var(--cros-sys-app_base_shaded);
+      }
+    </style>
   </head>
-  <body>
+  <body class="jelly-enabled">
     <sanitize-done></sanitize-done>
     <script type="module" src="sanitize_done.js"></script>
   </body>
 </html>
-
