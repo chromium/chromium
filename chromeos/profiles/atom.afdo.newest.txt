@@ -1,1 +1,1 @@
-chromeos-chrome-amd64-atom-127-6516.0-1718015045-benchmark-127.0.6533.11-r1-redacted.afdo.xz
+chromeos-chrome-amd64-atom-127-6516.0-1718015045-benchmark-127.0.6533.12-r1-redacted.afdo.xz
