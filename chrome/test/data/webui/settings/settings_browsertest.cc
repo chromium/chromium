@@ -1489,6 +1489,14 @@ IN_PROC_BROWSER_TEST_F(SettingsSiteSettingsPageTest, SafetyHubDisabled) {
           "runMochaSuite('SafetyHubDisabled')");
 }
 
+IN_PROC_BROWSER_TEST_F(
+    SettingsSiteSettingsPageTest,
+    AbusiveNotificationsEnabledUnusedSitePermissionsDisabled) {
+  RunTest("settings/site_settings_page_test.js",
+          "runMochaSuite('"
+          "AbusiveNotificationsEnabledUnusedSitePermissionsDisabled')");
+}
+
 using SettingsTranslatePageTest = SettingsBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(SettingsTranslatePageTest, TranslateSettings) {

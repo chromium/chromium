@@ -654,7 +654,9 @@ export class SettingsSiteSettingsPageElement extends
       return;
     }
 
-    this.showUnusedSitePermissions_ = this.unusedSitePermissionsEnabled_ &&
+    this.showUnusedSitePermissions_ =
+        (this.unusedSitePermissionsEnabled_ ||
+         this.safetyHubAbusiveNotificationRevocationEnabled_) &&
         permissions.length > 0 && !loadTimeData.getBoolean('isGuest');
     this.unusedSitePermissionsHeader_ =
         await PluralStringProxyImpl.getInstance().getPluralString(

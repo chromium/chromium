@@ -472,3 +472,48 @@ suite('SafetyHubDisabled', function() {
             '#unusedSitePermissionsRevocationToggle')));
   });
 });
+
+/**
+ * If unused site permissions feature is not enabled, but abusive notification
+ * revocation is enabled, the UI should be shown if there are permissions for
+ * the user to review.
+ *
+ * TODO(crbug.com/328773301): Remove after
+ * SafetyHubAbusiveNotificationRevocation is launched.
+ */
+suite('AbusiveNotificationsEnabledUnusedSitePermissionsDisabled', function() {
+  let page: SettingsSiteSettingsPageElement;
+  let safetyHubBrowserProxy: TestSafetyHubBrowserProxy;
+
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      enableSafetyHub: false,
+      safetyCheckUnusedSitePermissionsEnabled: false,
+      safetyHubAbusiveNotificationRevocationEnabled: true,
+    });
+  });
+
+  setup(async function() {
+    safetyHubBrowserProxy = new TestSafetyHubBrowserProxy();
+    SafetyHubBrowserProxyImpl.setInstance(safetyHubBrowserProxy);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    page = document.createElement('settings-site-settings-page');
+    document.body.appendChild(page);
+    await flushTasks();
+  });
+
+  test(
+      'VisibleWithItemsToReviewUnusedSitePermissionsDisabled',
+      async function() {
+        // The element is not visible when there is nothing to review.
+        assertFalse(isChildVisible(page, 'settings-unused-site-permissions'));
+
+        // The element becomes visible if the list of permissions is no longer
+        // empty.
+        webUIListenerCallback(
+            SafetyHubEvent.UNUSED_PERMISSIONS_MAYBE_CHANGED,
+            unusedSitePermissionMockData);
+        await flushTasks();
+        assertTrue(isChildVisible(page, 'settings-unused-site-permissions'));
+      });
+});
