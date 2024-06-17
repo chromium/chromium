@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
 import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.url.GURL;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -124,28 +123,6 @@ public class SimpleHttpClient implements Destroyable {
                                     annotation.getHashCode(),
                                     responseConsumer);
                 });
-    }
-
-    // TODO(agrieve): Delete once unused by //clank.
-    public static HttpResponse createHttpResponse(
-            int responseCode,
-            int netErrorCode,
-            byte[] body,
-            String[] headerKeys,
-            String[] headerValues) {
-        assert headerKeys.length == headerValues.length;
-
-        Map<String, String> responseHeaders = new HashMap<>();
-        for (int i = 0; i < headerKeys.length; i++) {
-            if (!responseHeaders.containsKey(headerKeys[i])) {
-                responseHeaders.put(headerKeys[i], headerValues[i]);
-            } else {
-                String headerValue = responseHeaders.get(headerKeys[i]);
-                headerValue += "\n" + headerValues[i];
-                responseHeaders.put(headerKeys[i], headerValue);
-            }
-        }
-        return createHttpResponse(responseCode, netErrorCode, body, responseHeaders);
     }
 
     /**
