@@ -40,6 +40,7 @@ class OverlayPresenter;
 class PrefService;
 @protocol PriceNotificationsCommands;
 class PromosManager;
+@protocol QuickDeleteCommands;
 class ReadingListBrowserAgent;
 class ReadingListModel;
 @protocol SettingsCommands;
@@ -75,6 +76,7 @@ class WebStateList;
 @property(nonatomic, weak) id<PriceNotificationsCommands>
     priceNotificationHandler;
 @property(nonatomic, weak) id<TextZoomCommands> textZoomHandler;
+@property(nonatomic, weak) id<QuickDeleteCommands> quickDeleteHandler;
 
 // Navigation agent for reloading pages.
 @property(nonatomic, assign) WebNavigationBrowserAgent* navigationAgent;

@@ -213,7 +213,6 @@ TEST_F(KeyCommandsProviderTest, CanPerform_AlwaysAvailableActions) {
   EXPECT_TRUE(CanPerform(@"keyCommand_showSettings"));
   EXPECT_TRUE(CanPerform(@"keyCommand_showReadingList"));
   EXPECT_TRUE(CanPerform(@"keyCommand_goToTabGrid"));
-  EXPECT_TRUE(CanPerform(@"keyCommand_clearBrowsingData"));
 }
 
 // Checks whether KeyCommandsProvider can perform the actions that are always
@@ -236,7 +235,6 @@ TEST_F(KeyCommandsProviderTest,
   EXPECT_FALSE(CanPerform(@"keyCommand_showSettings"));
   EXPECT_FALSE(CanPerform(@"keyCommand_showReadingList"));
   EXPECT_FALSE(CanPerform(@"keyCommand_goToTabGrid"));
-  EXPECT_FALSE(CanPerform(@"keyCommand_clearBrowsingData"));
 }
 
 // Checks whether KeyCommandsProvider can perform the actions that are only
@@ -552,6 +550,23 @@ TEST_F(KeyCommandsProviderTest, ShowHistory_IncognitoBrowserState) {
   InsertNewWebState(0);
   // This condition should be TRUE in regular but FALSE in incognito.
   EXPECT_FALSE(CanPerform(showHistoryCommand));
+}
+
+// Checks the Clear Browsing Data logic based on an regular browser state.
+TEST_F(KeyCommandsProviderTest, clearBrowsingData_RegularBrowserState) {
+  EXPECT_TRUE(CanPerform(@"keyCommand_clearBrowsingData"));
+}
+
+// Checks the Clear Browsing Data logic based on an incognito browser state.
+TEST_F(KeyCommandsProviderTest, clearBrowsingData_IncognitoBrowserState) {
+  ChromeBrowserState* incognito_browser_state =
+      browser_state_->GetOffTheRecordChromeBrowserState();
+  browser_ = std::make_unique<TestBrowser>(incognito_browser_state);
+  provider_ = [[KeyCommandsProvider alloc] initWithBrowser:browser_.get()];
+  web_state_list_ = browser_->GetWebStateList();
+
+  // This condition should be TRUE in regular but FALSE in incognito.
+  EXPECT_FALSE(CanPerform(@"keyCommand_clearBrowsingData"));
 }
 
 #pragma mark - Metrics Tests

@@ -8,10 +8,11 @@
 #import <UIKit/UIKit.h>
 
 @protocol ApplicationCommands;
-@protocol SettingsCommands;
 struct AutocompleteMatch;
 @protocol OmniboxCommands;
 @class OmniboxPedalData;
+@protocol QuickDeleteCommands;
+@protocol SettingsCommands;
 
 /// A class to add pedal data to a given autocomplete match object
 @interface OmniboxPedalAnnotator : NSObject
@@ -24,6 +25,9 @@ struct AutocompleteMatch;
 
 /// The endpoint that handles Omnibox commands.
 @property(nonatomic, weak) id<OmniboxCommands> omniboxHandler;
+
+/// The endpoint that handles QuickDelete commands.
+@property(nonatomic, weak) id<QuickDeleteCommands> quickDeleteHandler;
 
 /// Creates a new pedal for the provided match.
 - (OmniboxPedalData*)pedalForMatch:(const AutocompleteMatch&)match;

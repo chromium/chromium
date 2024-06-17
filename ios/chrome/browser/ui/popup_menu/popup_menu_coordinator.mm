@@ -47,6 +47,7 @@
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
+#import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
@@ -286,6 +287,8 @@ using base::UserMetricsAction;
     mediator.priceNotificationHandler =
         HandlerForProtocol(dispatcher, PriceNotificationsCommands);
     mediator.textZoomHandler = HandlerForProtocol(dispatcher, TextZoomCommands);
+    mediator.quickDeleteHandler =
+        HandlerForProtocol(dispatcher, QuickDeleteCommands);
 
     mediator.webStateList = self.browser->GetWebStateList();
     mediator.navigationAgent =

@@ -15,10 +15,12 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/colorful_background_symbol_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/omnibox/popup/popup_swift.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -51,6 +53,7 @@ const CGFloat kSymbolSize = 18;
   __weak id<ApplicationCommands> applicationHandler = self.applicationHandler;
   __weak id<SettingsCommands> settingsHandler = self.settingsHandler;
   __weak id<OmniboxCommands> omniboxHandler = self.omniboxHandler;
+  __weak id<QuickDeleteCommands> quickDeleteHandler = self.quickDeleteHandler;
 
   NSString* hint =
       base::SysUTF16ToNSString(omniboxPedal->GetLabelStrings().hint);
@@ -97,7 +100,11 @@ const CGFloat kSymbolSize = 18;
                        type:pedalType
                      action:^{
                        [omniboxHandler cancelOmniboxEdit];
-                       [settingsHandler showClearBrowsingDataSettings];
+                       if (IsIosQuickDeleteEnabled()) {
+                         [quickDeleteHandler showQuickDelete];
+                       } else {
+                         [settingsHandler showClearBrowsingDataSettings];
+                       }
                      }];
     }
     case OmniboxPedalId::SET_CHROME_AS_DEFAULT_BROWSER: {

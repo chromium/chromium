@@ -120,6 +120,17 @@ const char kMyActivityURL[] = "myactivity.google.com";
       waitForSyncTransportStateActiveWithTimeout:kSyncOperationTimeout];
 }
 
+// Opens Quick Delete from the History page.
+- (void)openQuickDeleteFromHistory {
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGreyUI
+      tapToolsMenuButton:chrome_test_util::HistoryDestinationButton()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          HistoryClearBrowsingDataButton()]
+      performAction:grey_tap()];
+}
+
 // Returns a matcher for the title of the Quick Delete bottom sheet.
 - (id<GREYMatcher>)quickDeleteTitle {
   return grey_allOf(
@@ -220,8 +231,22 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_nil()];
 }
 
-// TODO(crbug.com/335387869): Also test opening Quick Delete from the History
-// page, once that path is implemented.
+// Tests if the Quick Delete UI is shown correctly from the history entry point.
+- (void)testOpenAndDismissQuickDeleteFromHistory {
+  [self openQuickDeleteFromHistory];
+
+  // Check that Quick Delete is presented.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      assertWithMatcher:grey_notNil()];
+
+  // Swipe the bottom sheet down.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+
+  // Check that Quick Delete has been dismissed.
+  [[EarlGrey selectElementWithMatcher:[self quickDeleteTitle]]
+      assertWithMatcher:grey_nil()];
+}
 
 // Tests the selection time range for the browsing data deletion: the time range
 // selection is shown with the pref value and a new selection updates the pref.

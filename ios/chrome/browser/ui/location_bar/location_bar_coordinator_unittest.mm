@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
+#import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
@@ -129,6 +130,11 @@ class LocationBarCoordinatorTest : public PlatformTest {
                              forProtocol:@protocol(ApplicationCommands)];
     [dispatcher startDispatchingToTarget:mock_settings_handler
                              forProtocol:@protocol(SettingsCommands)];
+
+    id mock_quick_delete_handler =
+        OCMProtocolMock(@protocol(QuickDeleteCommands));
+    [dispatcher startDispatchingToTarget:mock_quick_delete_handler
+                             forProtocol:@protocol(QuickDeleteCommands)];
 
     delegate_ = [[TestOmniboxFocusDelegate alloc] init];
 

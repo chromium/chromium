@@ -7,7 +7,9 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_app_interface.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
 #import "ios/chrome/browser/ui/settings/password/password_settings_app_interface.h"
+#import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
@@ -32,6 +34,13 @@ NSString* kDinoSearchString = @"dino game";
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
+
+  if ([self isRunningTest:@selector(testLegacyClearBrowsingDataPedal)]) {
+    config.features_disabled.push_back(kIOSQuickDelete);
+  } else {
+    config.features_enabled.push_back(kIOSQuickDelete);
+  }
+
   return config;
 }
 
@@ -146,9 +155,9 @@ NSString* kDinoSearchString = @"dino game";
   [PasswordSettingsAppInterface removeMockReauthenticationModule];
 }
 
-// Tests that the clear browsing data pedal is present and it opens the clear
-// browsing data page.
-- (void)testClearBrowsingDataPedal {
+// Tests that the clear browsing data pedal is present and it opens the legacy
+// clear browsing data page.
+- (void)testLegacyClearBrowsingDataPedal {
   // Focus omnibox from Web.
   [ChromeEarlGrey loadURL:GURL("about:blank")];
   [ChromeEarlGreyUI focusOmniboxAndType:@"pedalclearbrowsing"];
@@ -177,6 +186,44 @@ NSString* kDinoSearchString = @"dino game";
       performAction:grey_tap()];
   [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:
                       chrome_test_util::ClearBrowsingDataView()];
+
+  [ChromeEarlGrey closeCurrentTab];
+}
+
+// Tests that the clear browsing data pedal is present and it opens the clear
+// browsing data page.
+- (void)testClearBrowsingDataPedal {
+  // Focus omnibox from Web.
+  [ChromeEarlGrey loadURL:GURL("about:blank")];
+  [ChromeEarlGreyUI focusOmniboxAndType:@"pedalclearbrowsing"];
+
+  NSString* clearBrowsingDataPedalString = l10n_util::GetNSString(
+      IDS_IOS_OMNIBOX_PEDAL_SUBTITLE_CLEAR_BROWSING_DATA);
+
+  // Matcher for the clear browsing data pedal suggestion.
+  id<GREYMatcher> clearBrowsingDataPedal =
+      chrome_test_util::OmniboxPopupRowWithString(clearBrowsingDataPedalString);
+
+  // Clear browsing data pedal should be visible.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:clearBrowsingDataPedal];
+
+  // Tap on clear browsing data pedal.
+  [[EarlGrey selectElementWithMatcher:clearBrowsingDataPedal]
+      performAction:grey_tap()];
+
+  id<GREYMatcher> quickDeleteTitle = grey_allOf(
+      grey_accessibilityID(kConfirmationAlertTitleAccessibilityIdentifier),
+      grey_accessibilityLabel(
+          l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE)),
+      nil);
+
+  // Clear browsing data page should be displayed.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:quickDeleteTitle];
+
+  // Close the Clear browsing data page.
+  [[EarlGrey selectElementWithMatcher:quickDeleteTitle]
+      performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
+  [ChromeEarlGrey waitForUIElementToDisappearWithMatcher:quickDeleteTitle];
 
   [ChromeEarlGrey closeCurrentTab];
 }

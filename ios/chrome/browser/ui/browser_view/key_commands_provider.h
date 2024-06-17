@@ -15,6 +15,7 @@ class Browser;
 @protocol BrowserCoordinatorCommands;
 @protocol FindInPageCommands;
 @protocol OmniboxCommands;
+@protocol QuickDeleteCommands;
 @protocol SettingsCommands;
 
 // Handles the keyboard commands registration and handling for the
@@ -30,6 +31,7 @@ class Browser;
 @property(nonatomic, weak) id<BrowserCoordinatorCommands>
     browserCoordinatorHandler;
 @property(nonatomic, weak) id<OmniboxCommands> omniboxHandler;
+@property(nonatomic, weak) id<QuickDeleteCommands> quickDeleteHandler;
 
 - (instancetype)initWithBrowser:(Browser*)browser NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;

@@ -29,6 +29,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
+#import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -151,6 +152,8 @@
       HandlerForProtocol(dispatcher, ApplicationCommands);
   annotator.settingsHandler = HandlerForProtocol(dispatcher, SettingsCommands);
   annotator.omniboxHandler = HandlerForProtocol(dispatcher, OmniboxCommands);
+  annotator.quickDeleteHandler =
+      HandlerForProtocol(dispatcher, QuickDeleteCommands);
 
   self.mediator.pedalAnnotator = annotator;
 

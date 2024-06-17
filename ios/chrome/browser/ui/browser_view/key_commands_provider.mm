@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/omnibox_commands.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reading_list_add_command.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/ui/util/keyboard_observer_helper.h"
@@ -40,6 +41,7 @@
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_util.h"
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/window_activities/model/window_activity_helpers.h"
@@ -218,6 +220,10 @@ using base::UserMetricsAction;
   if (sel_isEqual(action, @selector(keyCommand_openNewIncognitoTab))) {
     // Don't open incognito tab if incognito is disabled by policy.
     return !IsIncognitoModeDisabled(_browser->GetBrowserState()->GetPrefs());
+  }
+  if (sel_isEqual(action, @selector(keyCommand_clearBrowsingData))) {
+    // Clear Browsing Data shouldn't be available in incognito mode.
+    return !_browser->GetBrowserState()->IsOffTheRecord();
   }
 
   return [super canPerformAction:action withSender:sender];
@@ -522,7 +528,11 @@ using base::UserMetricsAction;
 
 - (void)keyCommand_clearBrowsingData {
   RecordAction(UserMetricsAction("MobileKeyCommandClearBrowsingData"));
-  [_settingsHandler showClearBrowsingDataSettings];
+  if (IsIosQuickDeleteEnabled()) {
+    [_quickDeleteHandler showQuickDelete];
+  } else {
+    [_settingsHandler showClearBrowsingDataSettings];
+  }
 }
 
 #pragma mark - Private

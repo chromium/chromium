@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/ui/history/public/history_presentation_delegate.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
+#import "ios/chrome/browser/ui/settings/clear_browsing_data/features.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/sharing/sharing_params.h"
 
@@ -214,6 +215,7 @@ history::WebHistoryService* WebHistoryServiceGetter(
 }
 
 - (void)displayClearHistoryData {
+  CHECK(!IsIosQuickDeleteEnabled());
   if (self.historyClearBrowsingDataCoordinator) {
     return;
   }

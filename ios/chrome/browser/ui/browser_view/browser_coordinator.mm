@@ -948,6 +948,8 @@ enum class ToolbarKind {
       HandlerForProtocol(_dispatcher, FindInPageCommands);
   _keyCommandsProvider.browserCoordinatorHandler =
       HandlerForProtocol(_dispatcher, BrowserCoordinatorCommands);
+  _keyCommandsProvider.quickDeleteHandler =
+      HandlerForProtocol(_dispatcher, QuickDeleteCommands);
 
   // TODO(crbug.com/40937114): This can't use HandlerForProtocol because
   // dispatch for BookmarksCommands is set up when the tab grid coordinator

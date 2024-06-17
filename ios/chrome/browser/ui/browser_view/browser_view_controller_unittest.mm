@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
 #import "ios/chrome/browser/shared/public/commands/parcel_tracking_opt_in_commands.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
+#import "ios/chrome/browser/shared/public/commands/quick_delete_commands.h"
 #import "ios/chrome/browser/shared/public/commands/settings_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/text_zoom_commands.h"
@@ -194,6 +195,11 @@ class BrowserViewControllerTest : public BlockCleanupTest {
                              forProtocol:@protocol(ApplicationCommands)];
     [dispatcher startDispatchingToTarget:mock_settings_handler
                              forProtocol:@protocol(SettingsCommands)];
+
+    id mock_quick_delete_handler =
+        OCMProtocolMock(@protocol(QuickDeleteCommands));
+    [dispatcher startDispatchingToTarget:mock_quick_delete_handler
+                             forProtocol:@protocol(QuickDeleteCommands)];
 
     // Create three web states.
     for (int i = 0; i < 3; i++) {
