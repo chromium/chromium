@@ -1678,6 +1678,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebviewAccelerateSmallCanvases);
 
 BLINK_COMMON_EXPORT bool IsAllowURNsInIframeEnabled();
 
+BLINK_COMMON_EXPORT bool IsCanvas2DHibernationEnabled();
+
 BLINK_COMMON_EXPORT bool DisplayWarningDeprecateURNIframesUseFencedFrames();
 
 BLINK_COMMON_EXPORT bool IsFencedFramesEnabled();

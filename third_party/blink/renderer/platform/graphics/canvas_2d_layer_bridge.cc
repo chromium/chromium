@@ -64,11 +64,6 @@ gpu::ContextSupport* GetContextSupport() {
 
 }  // namespace
 
-// static
-bool Canvas2DLayerBridge::IsHibernationEnabled() {
-  return base::FeatureList::IsEnabled(features::kCanvas2DHibernation);
-}
-
 Canvas2DLayerBridge::Canvas2DLayerBridge()
     : logger_(std::make_unique<Logger>()),
       snapshot_state_(kInitialSnapshotState),
@@ -272,7 +267,7 @@ void Canvas2DLayerBridge::PageVisibilityChanged() {
     }
   }
 
-  if (IsHibernationEnabled() && ResourceProvider() &&
+  if (features::IsCanvas2DHibernationEnabled() && ResourceProvider() &&
       resource_host_->GetRasterMode() == RasterMode::kGPU && !page_is_visible &&
       !hibernation_scheduled_) {
     resource_host_->ClearLayerTexture();

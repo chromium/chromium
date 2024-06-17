@@ -103,8 +103,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
   CanvasResourceProvider* GetOrCreateResourceProvider();
   void FlushRecording(FlushReason);
 
-  static bool IsHibernationEnabled();
-
   CanvasHibernationHandler& GetHibernationHandlerForTesting() {
     return hibernation_handler_;
   }

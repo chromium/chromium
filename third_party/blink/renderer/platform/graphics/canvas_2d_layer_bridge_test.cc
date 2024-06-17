@@ -420,8 +420,9 @@ class MockLogger : public Canvas2DLayerBridge::Logger {
 };
 
 TEST_F(Canvas2DLayerBridgeTest, HibernationLifeCycle) {
-  if (!Canvas2DLayerBridge::IsHibernationEnabled())
+  if (!features::IsCanvas2DHibernationEnabled()) {
     GTEST_SKIP();
+  }
 
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   std::unique_ptr<Canvas2DLayerBridge> bridge =
@@ -472,8 +473,9 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationLifeCycle) {
 }
 
 TEST_F(Canvas2DLayerBridgeTest, HibernationReEntry) {
-  if (!Canvas2DLayerBridge::IsHibernationEnabled())
+  if (!features::IsCanvas2DHibernationEnabled()) {
     GTEST_SKIP();
+  }
 
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   std::unique_ptr<Canvas2DLayerBridge> bridge =
@@ -534,8 +536,9 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationReEntry) {
 }
 
 TEST_F(Canvas2DLayerBridgeTest, TeardownWhileHibernating) {
-  if (!Canvas2DLayerBridge::IsHibernationEnabled())
+  if (!features::IsCanvas2DHibernationEnabled()) {
     GTEST_SKIP();
+  }
 
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   std::unique_ptr<Canvas2DLayerBridge> bridge =
@@ -575,8 +578,9 @@ TEST_F(Canvas2DLayerBridgeTest, TeardownWhileHibernating) {
 }
 
 TEST_F(Canvas2DLayerBridgeTest, SnapshotWhileHibernating) {
-  if (!Canvas2DLayerBridge::IsHibernationEnabled())
+  if (!features::IsCanvas2DHibernationEnabled()) {
     GTEST_SKIP();
+  }
 
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   std::unique_ptr<Canvas2DLayerBridge> bridge =
@@ -630,8 +634,9 @@ TEST_F(Canvas2DLayerBridgeTest, SnapshotWhileHibernating) {
 }
 
 TEST_F(Canvas2DLayerBridgeTest, TeardownWhileHibernationIsPending) {
-  if (!Canvas2DLayerBridge::IsHibernationEnabled())
+  if (!features::IsCanvas2DHibernationEnabled()) {
     GTEST_SKIP();
+  }
 
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   std::unique_ptr<Canvas2DLayerBridge> bridge =
@@ -666,8 +671,9 @@ TEST_F(Canvas2DLayerBridgeTest, TeardownWhileHibernationIsPending) {
 }
 
 TEST_F(Canvas2DLayerBridgeTest, HibernationAbortedDueToVisibilityChange) {
-  if (!Canvas2DLayerBridge::IsHibernationEnabled())
+  if (!features::IsCanvas2DHibernationEnabled()) {
     GTEST_SKIP();
+  }
 
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   std::unique_ptr<Canvas2DLayerBridge> bridge =
@@ -709,8 +715,9 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationAbortedDueToVisibilityChange) {
 }
 
 TEST_F(Canvas2DLayerBridgeTest, HibernationAbortedDueToLostContext) {
-  if (!Canvas2DLayerBridge::IsHibernationEnabled())
+  if (!features::IsCanvas2DHibernationEnabled()) {
     GTEST_SKIP();
+  }
 
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   std::unique_ptr<Canvas2DLayerBridge> bridge =
@@ -747,8 +754,9 @@ TEST_F(Canvas2DLayerBridgeTest, HibernationAbortedDueToLostContext) {
 }
 
 TEST_F(Canvas2DLayerBridgeTest, PrepareMailboxWhileHibernating) {
-  if (!Canvas2DLayerBridge::IsHibernationEnabled())
+  if (!features::IsCanvas2DHibernationEnabled()) {
     GTEST_SKIP();
+  }
 
   ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
   std::unique_ptr<Canvas2DLayerBridge> bridge =

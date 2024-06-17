@@ -2599,6 +2599,10 @@ bool IsAllowURNsInIframeEnabled() {
   return base::FeatureList::IsEnabled(blink::features::kAllowURNsInIframes);
 }
 
+bool IsCanvas2DHibernationEnabled() {
+  return base::FeatureList::IsEnabled(features::kCanvas2DHibernation);
+}
+
 bool DisplayWarningDeprecateURNIframesUseFencedFrames() {
   return base::FeatureList::IsEnabled(
       blink::features::kDisplayWarningDeprecateURNIframesUseFencedFrames);
