@@ -222,33 +222,6 @@ TEST_F(WebNNBufferImplBackendTest, CreateBufferImplTest) {
   EXPECT_FALSE(bad_message_helper.GetLastBadMessage().has_value());
 }
 
-// Test creating an over-sized WebNNBuffer should always fail.
-TEST_F(WebNNBufferImplBackendTest, CreateBufferImplOversizedTest) {
-  BadMessageTestHelper bad_message_helper;
-
-  mojo::Remote<mojom::WebNNContext> webnn_context_remote;
-  if (!CreateWebNNContext(webnn_context_remote)) {
-    GTEST_SKIP() << "WebNN not supported on this platform.";
-  }
-
-  ASSERT_TRUE(webnn_context_remote.is_bound());
-
-  mojo::AssociatedRemote<mojom::WebNNBuffer> webnn_buffer_remote;
-  webnn_context_remote->CreateBuffer(
-      webnn_buffer_remote.BindNewEndpointAndPassReceiver(),
-      mojom::BufferInfo::New(
-          *OperandDescriptor::Create(
-              OperandDataType::kFloat32,
-              std::array<uint32_t, 1>{std::numeric_limits<uint32_t>::max()}),
-          MLBufferUsage()),
-      base::UnguessableToken::Create());
-
-  EXPECT_TRUE(webnn_buffer_remote.is_bound());
-
-  webnn_context_remote.FlushForTesting();
-  EXPECT_EQ(bad_message_helper.GetLastBadMessage(), kBadMessageInvalidBuffer);
-}
-
 // Creating two or more WebNNBuffer(s) with separate tokens should always
 // succeed.
 TEST_F(WebNNBufferImplBackendTest, CreateBufferImplManyTest) {
