@@ -5266,6 +5266,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.NightLight.ScheduleType.Initial"
+    enum="AshNightLightScheduleType" expires_after="2025-06-28">
+  <owner>dpad@google.com</owner>
+  <owner>cambickel@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>The selected Night Light schedule type. Emitted on login.</summary>
+</histogram>
+
 <histogram name="Ash.NightLight.Temperature"
     enum="AshNightLightTemperatureRanges" expires_after="2022-02-01">
   <owner>afakhry@chromium.org</owner>
@@ -5274,6 +5282,17 @@ chromium-metrics-reviews@google.com.
     The ranges in which the selected values of the Night Light color temperature
     reside. Emitted when the user drags the Night Light color temperature slider
     to change its value from the Display System Settings.
+  </summary>
+</histogram>
+
+<histogram name="Ash.NightLight.Temperature.Initial" units="%"
+    expires_after="2025-06-28">
+  <owner>dpad@google.com</owner>
+  <owner>cambickel@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    The current Night Light color temperature. Low temperatures are cooler,
+    higher temperature are warmer. Emitted on login.
   </summary>
 </histogram>
 

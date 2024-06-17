@@ -21,6 +21,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/geolocation/geolocation_controller.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/night_light/night_light_metrics_recorder.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
@@ -328,6 +329,8 @@ NightLightControllerImpl::NightLightControllerImpl()
                        prefs::kNightLightCustomStartTime,
                        prefs::kNightLightCustomEndTime),
       temperature_animation_(std::make_unique<ColorTemperatureAnimation>()),
+      night_light_metrics_recorder_(
+          std::make_unique<NightLightMetricsRecorder>()),
       ambient_temperature_(kNeutralColorTemperatureInKelvin),
       weak_ptr_factory_(this) {
   Shell::Get()->window_tree_host_manager()->AddObserver(this);

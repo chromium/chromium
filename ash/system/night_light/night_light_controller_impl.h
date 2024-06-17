@@ -12,6 +12,7 @@
 #include "ash/public/cpp/night_light_controller.h"
 #include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/system/night_light/night_light_metrics_recorder.h"
 #include "ash/system/scheduled_feature/scheduled_feature.h"
 #include "ash/system/time/time_of_day.h"
 #include "base/containers/flat_map.h"
@@ -187,6 +188,8 @@ class ASH_EXPORT NightLightControllerImpl
   AnimationDuration last_animation_duration_ = AnimationDuration::kShort;
 
   std::unique_ptr<ColorTemperatureAnimation> temperature_animation_;
+
+  std::unique_ptr<NightLightMetricsRecorder> night_light_metrics_recorder_;
 
   // True only until Night Light is initialized from the very first user
   // session. After that, it is set to false.
