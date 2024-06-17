@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/347137620 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/autofill/core/browser/form_data_importer.h"
 
 #include <stddef.h>
@@ -4421,20 +4416,20 @@ TEST_F(FormDataImporterTest,
   AutofillField field;
   field.SetTypeTo(AutofillType(NAME_FIRST));
   field.set_value(u"First");
-  const AutofillField* field_ptr = &field;
 
   base::flat_map<FieldType, std::u16string> observed_field_types =
       test_api(form_data_importer())
-          .GetObservedFieldValues(base::make_span(&field_ptr, 1u));
+          .GetObservedFieldValues(
+              std::to_array<const AutofillField*>({&field}));
   EXPECT_EQ(observed_field_types.size(), 1u);
 
   // Set the autofilled type of the field as something different from its
   // classified type, representing that the field was filled using this type as
   // fallback.
   field.set_autofilled_type(NAME_FULL);
-  observed_field_types =
-      test_api(form_data_importer())
-          .GetObservedFieldValues(base::make_span(&field_ptr, 1u));
+  observed_field_types = test_api(form_data_importer())
+                             .GetObservedFieldValues(
+                                 std::to_array<const AutofillField*>({&field}));
   EXPECT_TRUE(observed_field_types.empty());
 }
 

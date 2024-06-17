@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/347137620 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/autofill/core/browser/server_prediction_overrides.h"
 
 #include <string_view>
@@ -134,11 +129,10 @@ TEST(ServerPredictionOverridesTest, ParsesWellFormedOverridesCorrectly) {
                                    Key(kOverrides[2]), Key(kOverrides[3])));
 
   // General sanity checks.
-  for (int i = 0; i < 4; ++i) {
-    ASSERT_THAT(overrides.at(kOverrides[i]), SizeIs(1));
-    EXPECT_EQ(
-        FieldSignature(overrides.at(kOverrides[i]).front().field_signature()),
-        kOverrides[i].second);
+  for (const std::pair<FormSignature, FieldSignature>& override : kOverrides) {
+    ASSERT_THAT(overrides.at(override), SizeIs(1));
+    EXPECT_EQ(FieldSignature(overrides.at(override).front().field_signature()),
+              override.second);
   }
 
   // Prediction content checks.
