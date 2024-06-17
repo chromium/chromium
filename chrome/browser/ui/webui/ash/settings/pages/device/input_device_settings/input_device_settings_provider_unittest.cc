@@ -1243,24 +1243,6 @@ TEST_F(InputDeviceSettingsProviderTest, ButtonPressObserverFollowsWindowFocus) {
   EXPECT_EQ(*expected_button, fake_observer.last_pressed_button());
 }
 
-TEST_F(InputDeviceSettingsProviderTest, HasLauncherButton) {
-  base::test::TestFuture<bool> future;
-
-  controller_->AddKeyboard(kKeyboard2.Clone());
-  controller_->AddKeyboard(kKeyboard3.Clone());
-
-  provider_->HasLauncherButton(future.GetCallback());
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(future.Get<0>());
-  future.Clear();
-  controller_->AddKeyboard(kKeyboard1.Clone());
-  provider_->HasLauncherButton(future.GetCallback());
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_TRUE(future.Get<0>());
-}
-
 TEST_F(InputDeviceSettingsProviderTest, HasKeyboardBacklight) {
   base::test::TestFuture<bool> future;
 

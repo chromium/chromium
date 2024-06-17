@@ -41,7 +41,7 @@
         button-remapping-list="[[buttonRemappingList]]"
         remapping-index="[[index]]"
         action-list$="[[actionList]]"
-        has-launcher-button="[[hasLauncherButton]]">
+        meta-key="[[metaKey]]">
     </customize-button-row>
   </template>
 </div>
@@ -90,6 +90,6 @@
     id="keyCombinationInputDialog"
     button-remapping-list="{{buttonRemappingList}}"
     remapping-index="[[selectedButtonIndex_]]"
-    has-launcher-button="[[hasLauncherButton]]"
+    meta-key="[[metaKey]]"
     on-close="onKeyCombinationDialogClose_">
 </key-combination-input-dialog>

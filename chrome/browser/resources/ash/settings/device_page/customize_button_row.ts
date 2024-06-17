@@ -24,7 +24,7 @@ import {CustomizeButtonSelectElement} from './customize_button_select.js';
 import {setDataTransferOriginIndex} from './drag_and_drop_manager.js';
 import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {ActionChoice, Button, ButtonRemapping, InputDeviceSettingsProviderInterface} from './input_device_settings_types.js';
+import {ActionChoice, Button, ButtonRemapping, InputDeviceSettingsProviderInterface, MetaKey} from './input_device_settings_types.js';
 import {buttonsAreEqual} from './input_device_settings_utils.js';
 
 export interface CustomizeButtonRowElement {
@@ -114,9 +114,7 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
         value: null,
       },
 
-      hasLauncherButton: {
-        type: Boolean,
-      },
+      metaKey: Object,
     };
   }
 
@@ -129,7 +127,7 @@ export class CustomizeButtonRowElement extends CustomizeButtonRowElementBase {
   buttonRemappingList: ButtonRemapping[];
   remappingIndex: number;
   actionList: ActionChoice[];
-  hasLauncherButton: boolean;
+  metaKey: MetaKey = MetaKey.kSearch;
   private buttonPressObserverReceiver: ButtonPressObserverReceiver;
   private buttonRemapping_: ButtonRemapping;
   private buttonRemappingName_: string;

@@ -8,7 +8,7 @@ import {InputDeviceSettingsProvider} from '../mojom-webui/input_device_settings_
 
 import {fakeGraphicsTabletButtonActions, fakeGraphicsTablets, fakeKeyboards, fakeMice, fakeMouseButtonActions, fakePointingSticks, fakeStyluses, fakeTouchpads} from './fake_input_device_data.js';
 import {FakeInputDeviceSettingsProvider} from './fake_input_device_settings_provider.js';
-import {InputDeviceSettingsProviderInterface} from './input_device_settings_types.js';
+import {InputDeviceSettingsProviderInterface, MetaKey} from './input_device_settings_types.js';
 
 /**
  * @fileoverview
@@ -34,7 +34,7 @@ export function setupFakeInputDeviceSettingsProvider(): void {
   provider.setFakeActionsForGraphicsTabletButtonCustomization(
       fakeGraphicsTabletButtonActions);
   provider.setFakeActionsForMouseButtonCustomization(fakeMouseButtonActions);
-  provider.setFakeHasLauncherButton(true);
+  provider.setFakeMetaKeyToDisplay(MetaKey.kSearch);
   provider.setFakeIsRgbKeyboardSupported(true);
   provider.setFakeHasKeyboardBacklight(true);
   provider.setFakeHasAmbientLightSensor(true);

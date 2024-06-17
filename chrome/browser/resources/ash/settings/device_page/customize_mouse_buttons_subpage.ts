@@ -23,7 +23,7 @@ import {Route, Router, routes} from '../router.js';
 
 import {getTemplate} from './customize_mouse_buttons_subpage.html.js';
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {ActionChoice, InputDeviceSettingsProviderInterface, Mouse, MousePolicies} from './input_device_settings_types.js';
+import {ActionChoice, InputDeviceSettingsProviderInterface, MetaKey, Mouse, MousePolicies} from './input_device_settings_types.js';
 import {getPrefPolicyFields} from './input_device_settings_utils.js';
 
 const SettingsCustomizeMouseButtonsSubpageElementBase =
@@ -69,11 +69,9 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
       },
 
       /**
-       * Use hasLauncherButton to decide which meta key icon to display.
+       * Use metaKey to decide which meta key icon to display.
        */
-      hasLauncherButton_: {
-        type: Boolean,
-      },
+      metaKey_: Object,
     };
   }
 
@@ -94,15 +92,15 @@ export class SettingsCustomizeMouseButtonsSubpageElement extends
   private previousRoute_: Route|null = null;
   private primaryRightPref_: chrome.settingsPrivate.PrefObject;
   private isInitialized_: boolean = false;
-  private hasLauncherButton_: boolean;
+  private metaKey_: MetaKey = MetaKey.kSearch;
 
   override async connectedCallback(): Promise<void> {
     super.connectedCallback();
 
     this.addEventListener('button-remapping-changed', this.onSettingsChanged);
-    this.hasLauncherButton_ =
-        (await this.inputDeviceSettingsProvider_.hasLauncherButton())
-            ?.hasLauncherButton;
+    this.metaKey_ =
+        (await this.inputDeviceSettingsProvider_.getMetaKeyToDisplay())
+            ?.metaKey;
   }
 
   override disconnectedCallback(): void {

@@ -75,10 +75,9 @@ suite('<settings-customize-mouse-buttons-subpage>', () => {
     assertDeepEquals(buttonActionList, expectedActionList);
   });
 
-  test('hasLauncherButton fetched from provider', async () => {
-    const expectedHasLauncherButton =
-        (await provider.hasLauncherButton())?.hasLauncherButton;
-    assertEquals(page.get('hasLauncherButton_'), expectedHasLauncherButton);
+  test('getMetaKeyToDisplay fetched from provider', async () => {
+    const expectedMetaKey = (await provider.getMetaKeyToDisplay())?.metaKey;
+    assertEquals(page.get('metaKey_'), expectedMetaKey);
   });
 
   test('button name change triggers settings update', async () => {

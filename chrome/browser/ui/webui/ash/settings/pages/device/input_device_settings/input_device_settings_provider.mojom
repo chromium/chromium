@@ -6,6 +6,7 @@ module ash.settings.mojom;
 
 import "ash/public/mojom/input_device_settings.mojom";
 import "ash/public/mojom/accelerator_actions.mojom";
+import "ui/events/ash/mojom/meta_key.mojom";
 
 // Represents the options for user in the dropdown of button customization.
 struct ActionChoice {
@@ -166,11 +167,10 @@ interface InputDeviceSettingsProvider {
   GetActionsForGraphicsTabletButtonCustomization() =>
       (array<ActionChoice> options);
 
-  // Returns whether any of the keyboards has launcher button.
-  // True if the keyboard has launcher button as meta key and we display the
-  // launcher icon in settings. False if the keyboard has other buttons as meta
-  // key and we display the search icon in settings.
-  HasLauncherButton() => (bool has_launcher_button);
+  // Returns the meta key to display in the UI to represent the overall current
+  // keyboard situation. This will only return either Launcher, Search, or
+  // LauncherRefresh.
+  GetMetaKeyToDisplay() => (ui.mojom.MetaKey meta_key);
 
   // Returns whether the internal keyboard has a backlight.
   HasKeyboardBacklight() => (bool has_keyboard_backlight);

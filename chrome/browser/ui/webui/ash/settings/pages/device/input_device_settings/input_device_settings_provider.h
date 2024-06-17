@@ -148,7 +148,7 @@ class InputDeviceSettingsProvider
   void OnWidgetDestroyed(views::Widget* widget) override;
 
   void SetWidgetForTesting(views::Widget* widget);
-  void HasLauncherButton(HasLauncherButtonCallback callback) override;
+  void GetMetaKeyToDisplay(GetMetaKeyToDisplayCallback callback) override;
   void HasKeyboardBacklight(HasKeyboardBacklightCallback callback) override;
   void HasAmbientLightSensor(HasAmbientLightSensorCallback callback) override;
   void IsRgbKeyboardSupported(IsRgbKeyboardSupportedCallback callback) override;

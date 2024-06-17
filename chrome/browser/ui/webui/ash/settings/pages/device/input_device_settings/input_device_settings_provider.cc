@@ -718,21 +718,10 @@ void InputDeviceSettingsProvider::GetActionsForMouseButtonCustomization(
   std::move(callback).Run(std::move(choices));
 }
 
-void InputDeviceSettingsProvider::HasLauncherButton(
-    HasLauncherButtonCallback callback) {
-  DCHECK(features::IsInputDeviceSettingsSplitEnabled());
-  DCHECK(InputDeviceSettingsController::Get());
-
-  auto keyboards =
-      InputDeviceSettingsController::Get()->GetConnectedKeyboards();
-  for (const ::ash::mojom::KeyboardPtr& keyboard : keyboards) {
-    if (keyboard->meta_key == ::ui::mojom::MetaKey::kLauncher) {
-      std::move(callback).Run(true);
-      return;
-    }
-  }
-
-  std::move(callback).Run(/*has_launcher_button=*/false);
+void InputDeviceSettingsProvider::GetMetaKeyToDisplay(
+    GetMetaKeyToDisplayCallback callback) {
+  std::move(callback).Run(
+      Shell::Get()->keyboard_capability()->GetMetaKeyToDisplay());
 }
 
 void InputDeviceSettingsProvider::OnReceiveHasKeyboardBacklight(

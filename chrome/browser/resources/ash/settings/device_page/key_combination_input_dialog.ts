@@ -10,14 +10,14 @@ import 'chrome://resources/ash/common/cr_elements/cr_shared_vars.css.js';
 import './input_device_settings_shared.css.js';
 import '../settings_shared.css.js';
 
-import {ShortcutInputElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input.js';
 import {CrDialogElement} from 'chrome://resources/ash/common/cr_elements/cr_dialog/cr_dialog.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
+import {ShortcutInputElement} from 'chrome://resources/ash/common/shortcut_input_ui/shortcut_input.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {ButtonRemapping, KeyEvent, ShortcutInputProviderInterface} from './input_device_settings_types.js';
+import {ButtonRemapping, KeyEvent, MetaKey, ShortcutInputProviderInterface} from './input_device_settings_types.js';
 import {keyEventsAreEqual} from './input_device_settings_utils.js';
 import {getTemplate} from './key_combination_input_dialog.html.js';
 import {getShortcutInputProvider} from './shortcut_input_mojo_interface_provider.js';
@@ -84,9 +84,7 @@ export class KeyCombinationInputDialogElement extends
         type: Object,
       },
 
-      hasLauncherButton: {
-        type: Boolean,
-      },
+      metaKey: Object,
     };
   }
 
@@ -102,7 +100,7 @@ export class KeyCombinationInputDialogElement extends
   shortcutInput: ShortcutInputElement;
   inputKeyEvent: KeyEvent|undefined;
   isCapturing: boolean = false;
-  hasLauncherButton: boolean;
+  metaKey: MetaKey = MetaKey.kSearch;
   private buttonRemapping_: ButtonRemapping;
   private eventTracker_: EventTracker = new EventTracker();
 

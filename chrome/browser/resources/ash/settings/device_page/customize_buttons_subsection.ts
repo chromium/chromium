@@ -25,7 +25,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {ReorderButtonEvent, ShowKeyCustomizationDialogEvent, ShowRenamingDialogEvent} from './customize_button_row.js';
 import {getTemplate} from './customize_buttons_subsection.html.js';
 import {DragAndDropManager, OnDropCallback} from './drag_and_drop_manager.js';
-import {ActionChoice, ButtonRemapping} from './input_device_settings_types.js';
+import {ActionChoice, ButtonRemapping, MetaKey} from './input_device_settings_types.js';
 import {KeyCombinationInputDialogElement} from './key_combination_input_dialog.js';
 
 const MAX_INPUT_LENGTH = 32;
@@ -100,9 +100,7 @@ export class CustomizeButtonsSubsectionElement extends
         value: false,
       },
 
-      hasLauncherButton: {
-        type: Boolean,
-      },
+      metaKey: Object,
 
       /** Used to reference the maxInputLength constant in HTML. */
       maxInputLength: {
@@ -115,7 +113,7 @@ export class CustomizeButtonsSubsectionElement extends
 
   buttonRemappingList: ButtonRemapping[];
   actionList: ActionChoice[];
-  hasLauncherButton: boolean;
+  metaKey: MetaKey = MetaKey.kSearch;
   private selectedButton_: ButtonRemapping;
   private selectedButtonIndex_: number;
   private selectedButtonName_: string;

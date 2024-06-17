@@ -17,5 +17,6 @@ mojom("mojom") {
   public_deps = [
     "//ash/public/mojom:input_device_settings",
     "//mojo/public/mojom/base",
+    "//ui/events/ash/mojom",
   ]
 }

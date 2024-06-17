@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {fakeGraphicsTabletButtonActions, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakeMouseButtonActions, fakePointingSticks, fakeStyluses, fakeTouchpads, Keyboard, ModifierKey, SixPackKeyInfo, SixPackShortcutModifier} from 'chrome://os-settings/os_settings.js';
+import {fakeGraphicsTabletButtonActions, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakeMouseButtonActions, fakePointingSticks, fakeStyluses, fakeTouchpads, Keyboard, MetaKey, ModifierKey, SixPackKeyInfo, SixPackShortcutModifier} from 'chrome://os-settings/os_settings.js';
 import {assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('FakeInputDeviceSettings', () => {
@@ -164,14 +164,14 @@ suite('FakeInputDeviceSettings', () => {
         graphicsTabletActions.options, fakeGraphicsTabletButtonActions);
   });
 
-  test('hasLauncherButton', async () => {
-    provider.setFakeHasLauncherButton(true);
-    let hasLauncherButton = await provider.hasLauncherButton();
-    assertDeepEquals(hasLauncherButton, {hasLauncherButton: true});
+  test('getMetaKeyToDisplay', async () => {
+    provider.setFakeMetaKeyToDisplay(MetaKey.kLauncher);
+    let metaKey = await provider.getMetaKeyToDisplay();
+    assertDeepEquals(metaKey, {metaKey: MetaKey.kLauncher});
 
-    provider.setFakeHasLauncherButton(false);
-    hasLauncherButton = await provider.hasLauncherButton();
-    assertDeepEquals(hasLauncherButton, {hasLauncherButton: false});
+    provider.setFakeMetaKeyToDisplay(MetaKey.kLauncherRefresh);
+    metaKey = await provider.getMetaKeyToDisplay();
+    assertDeepEquals(metaKey, {metaKey: MetaKey.kLauncherRefresh});
   });
 
   test('isRgbKeyboardSupported', async () => {
