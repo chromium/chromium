@@ -7034,6 +7034,7 @@ data/media/shape_detection_test.html
 data/media/too_many_web_media_players_intervention_test.html
 data/media/tulip2.webm
 data/media/video-player-autoplay.html
+data/media/video-player-autoplay.html.mock-http-headers
 data/media/video-player.html
 data/media/video_audio_element_capture_test.html
 data/media/video_capture_test.html

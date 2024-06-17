@@ -350,6 +350,7 @@ class RenderViewContextMenu
   bool IsOpenLinkAllowedByDlp(const GURL& link_url) const;
   bool IsRegionSearchEnabled() const;
   bool IsAddANoteEnabled() const;
+  bool IsVideoFrameItemEnabled(int id) const;
 
   // Command execution functions.
   void ExecSearchWebInCompanionSidePanel(const GURL& url);

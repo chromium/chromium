@@ -2882,9 +2882,7 @@ bool RenderViewContextMenu::IsCommandIdEnabled(int id) const {
     case IDC_CONTENT_CONTEXT_COPYVIDEOFRAME:
     case IDC_CONTENT_CONTEXT_SEARCHLENSFORVIDEOFRAME:
     case IDC_CONTENT_CONTEXT_SEARCHWEBFORVIDEOFRAME:
-      return (params_.media_flags & ContextMenuData::kMediaEncrypted) == 0 &&
-             (params_.media_flags &
-              ContextMenuData::kMediaHasReadableVideoFrame) != 0;
+      return IsVideoFrameItemEnabled(id);
 
     case IDC_CONTENT_CONTEXT_COPYAVLOCATION:
       return params_.src_url.is_valid() && !params_.src_url.SchemeIsBlob();
@@ -3878,6 +3876,17 @@ bool RenderViewContextMenu::IsRegionSearchEnabled() const {
 #else
   return false;
 #endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+}
+
+bool RenderViewContextMenu::IsVideoFrameItemEnabled(int id) const {
+  if (id == IDC_CONTENT_CONTEXT_SAVEVIDEOFRAMEAS &&
+      !IsSaveAsItemAllowedByUntrustedNetworkStatus()) {
+    return false;
+  }
+
+  return (params_.media_flags & ContextMenuData::kMediaEncrypted) == 0 &&
+         (params_.media_flags & ContextMenuData::kMediaHasReadableVideoFrame) !=
+             0;
 }
 
 // Returns true if the item was appended.
