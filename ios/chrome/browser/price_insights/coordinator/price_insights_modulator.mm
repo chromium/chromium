@@ -8,6 +8,8 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/commerce/core/commerce_constants.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
+#import "components/payments/core/currency_formatter.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/price_insights/model/price_insights_model.h"
 #import "ios/chrome/browser/price_insights/ui/price_insights_cell.h"
@@ -16,6 +18,11 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/public/commands/application_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
+#import "ios/chrome/browser/shared/public/commands/price_notifications_commands.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/ui/price_notifications/price_notifications_price_tracking_mediator.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -71,6 +78,7 @@ NSDate* getNSDateFromString(std::string date) {
                  imageFetcher:std::move(imageFetcher)
                      webState:webState
       pushNotificationService:pushNotificationService];
+  self.mediator.priceInsightsConsumer = self;
 }
 
 - (void)stop {
@@ -99,6 +107,7 @@ NSDate* getNSDateFromString(std::string date) {
 
 - (void)didStartPriceTracking {
   [self.priceInsightsCell updateTrackButton:YES];
+  [self displaySnackbar];
 }
 
 - (void)didStopPriceTracking {
@@ -272,6 +281,33 @@ NSDate* getNSDateFromString(std::string date) {
                               ? config->price_insights_info->jackpot_url.value()
                               : GURL();
   return item;
+}
+
+- (void)displaySnackbar {
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  id<SnackbarCommands> snackbarHandler =
+      HandlerForProtocol(dispatcher, SnackbarCommands);
+  __weak id<PriceNotificationsCommands> weakPriceNotificationsHandler =
+      HandlerForProtocol(dispatcher, PriceNotificationsCommands);
+  __weak id<ApplicationCommands> weakApplicationHandler =
+      HandlerForProtocol(dispatcher, ApplicationCommands);
+  __weak id<ContextualSheetCommands> weakContextualSheetHandler =
+      HandlerForProtocol(dispatcher, ContextualSheetCommands);
+  // TODO(b/346601270): Set the snackbar message conditionally, depending on
+  // whether the user has enabled notifications.
+  [snackbarHandler
+      showSnackbarWithMessage:
+          l10n_util::GetNSString(
+              IDS_PRICE_INSIGHTS_SNACKBAR_MESSAGE_TITLE_NOTIFICATION_DISABLED)
+                   buttonText:l10n_util::GetNSString(
+                                  IDS_PRICE_INSIGHTS_SNACKBAR_BUTTON_TITLE)
+                messageAction:^{
+                  [weakApplicationHandler prepareToPresentModal:^{
+                    [weakContextualSheetHandler closeContextualSheet];
+                    [weakPriceNotificationsHandler showPriceNotifications];
+                  }];
+                }
+             completionAction:nil];
 }
 
 @end

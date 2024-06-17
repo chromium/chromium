@@ -495,8 +495,7 @@ std::u16string getFormattedCurrentPrice(int64_t amount_micro,
     configuration.background.backgroundColor = [UIColor colorNamed:kBlueColor];
     configuration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
     configuration.contentInsets = NSDirectionalEdgeInsetsMake(
-        kTrackButtonVerticalPadding, kTrackButtonHorizontalPadding,
-        kTrackButtonVerticalPadding, kTrackButtonHorizontalPadding);
+        kTrackButtonVerticalPadding, 0, kTrackButtonVerticalPadding, 0);
     _trackButton = [[UIButton alloc] init];
     _trackButton.configuration = configuration;
     _trackButtonWidthConstraint =

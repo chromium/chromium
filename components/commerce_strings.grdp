@@ -461,6 +461,12 @@
   <message name="IDS_PRICE_INSIGHTS_ACCESSIBILITY" desc="Accessibility string for the price insights entry point when the confidence is low.">
     Price Insights
   </message>
+  <message name="IDS_PRICE_INSIGHTS_SNACKBAR_BUTTON_TITLE" desc="The snackbar button title for Price Insights when the user has notification enabled.">
+    VIEW
+  </message>
+  <message name="IDS_PRICE_INSIGHTS_SNACKBAR_MESSAGE_TITLE_NOTIFICATION_DISABLED" desc="The snackbar title for Price Insights when the user has notification disabled.">
+    Bookmark saved.
+  </message>
   <if expr="use_titlecase">
     <message name="IDS_PRICE_HISTORY_TITLE_SINGLE_OPTION" desc="The title of the Price History section in the Shopping Insights side panel when we only find one option of this product.">
       Price History Across the Web
