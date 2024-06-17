@@ -493,11 +493,8 @@ bool isContextualConsentEnabled() {
 }
 
 bool IsShoppingListAllowedForEnterprise(PrefService* prefs) {
-  const base::Value* pref =
-      prefs->GetUserPrefValue(kShoppingListEnabledPrefName);
-
-  // Default to true if there is no value set.
-  return !pref || pref->GetBool();
+  return prefs->GetBoolean(kShoppingListEnabledPrefName) ||
+         !prefs->IsManagedPreference(kShoppingListEnabledPrefName);
 }
 
 bool IsEnabledForCountryAndLocale(const base::Feature& feature,

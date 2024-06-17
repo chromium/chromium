@@ -18,6 +18,7 @@
 #include "components/power_bookmarks/core/proto/power_bookmark_meta.pb.h"
 #include "components/power_bookmarks/core/proto/shopping_specifics.pb.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -78,8 +79,9 @@ void AddProductInfoToExistingBookmark(
                                             std::move(meta));
 }
 
-void SetShoppingListEnterprisePolicyPref(PrefService* prefs, bool enabled) {
-  prefs->SetBoolean(kShoppingListEnabledPrefName, enabled);
+void SetShoppingListEnterprisePolicyPref(TestingPrefServiceSimple* prefs,
+                                         bool enabled) {
+  prefs->SetManagedPref(kShoppingListEnabledPrefName, base::Value(enabled));
 }
 
 std::optional<PriceInsightsInfo> CreateValidPriceInsightsInfo(

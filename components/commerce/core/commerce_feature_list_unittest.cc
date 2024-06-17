@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/commerce/core/commerce_feature_list.h"
+
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
@@ -10,6 +11,7 @@
 #include "components/commerce/core/commerce_heuristics_data_metrics_helper.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/commerce/core/test_utils.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -171,4 +173,23 @@ TEST_F(CommerceFeatureListTest, TestEnabledForCountryAndLocale) {
   // Ensure empty values don't crash.
   ASSERT_FALSE(commerce::IsEnabledForCountryAndLocale(
       commerce::kShoppingPDPMetricsRegionLaunched, "", ""));
+}
+
+TEST_F(CommerceFeatureListTest, IsShoppingListEnabled) {
+  TestingPrefServiceSimple prefs;
+  prefs.registry()->RegisterBooleanPref(commerce::kShoppingListEnabledPrefName,
+                                        true);
+
+  EXPECT_TRUE(commerce::IsShoppingListAllowedForEnterprise(&prefs));
+
+  prefs.SetUserPref(commerce::kShoppingListEnabledPrefName, base::Value(false));
+  EXPECT_TRUE(commerce::IsShoppingListAllowedForEnterprise(&prefs));
+
+  prefs.SetManagedPref(commerce::kShoppingListEnabledPrefName,
+                       base::Value(true));
+  EXPECT_TRUE(commerce::IsShoppingListAllowedForEnterprise(&prefs));
+
+  prefs.SetManagedPref(commerce::kShoppingListEnabledPrefName,
+                       base::Value(false));
+  EXPECT_FALSE(commerce::IsShoppingListAllowedForEnterprise(&prefs));
 }
