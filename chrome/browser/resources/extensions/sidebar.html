@@ -1,4 +1,5 @@
-<style include="cr-icons cr-hidden-style cr-nav-menu-item-style">
+<style include="cr-icons cr-hidden-style cr-nav-menu-item-style
+cr-shared-style">
   :host {
     --sidebar-inactive-color: #5a5a5a;
     color: var(--sidebar-inactive-color);
@@ -46,8 +47,7 @@
 <cr-menu-selector id="sectionMenu"
     selected-attribute="selected"
     attr-for-selected="data-path"
-    selected="[[selectedPath_]]"
-    selectable="a">
+    selected="[[selectedPath_]]">
   <!-- Values for "data-path" attribute must match the "Page" enum. -->
   <a role="menuitem" class="cr-nav-menu-item" id="sectionsExtensions" href="/"
       on-click="onLinkClick_" data-path="items-list">
