@@ -5265,8 +5265,9 @@ void SetupRemoteObjectInvocation(Shell* shell, const GURL& url) {
 // integrated into WebView.
 // This test is a temporary way of verifying that the renderer part
 // works as expected.
+// TODO(crbug.com/347691518): This test is flaky.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
-                       RemoteObjectEnumerateProperties) {
+                       DISABLED_RemoteObjectEnumerateProperties) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
 
   RemoteObjectInjector injector(web_contents());
@@ -5327,8 +5328,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_EQ(kInnerObject.id, EvalJs(web_contents(), kScript));
 }
 
+// TODO(crbug.com/340869172): This test is flaky.
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
-                       RemoteObjectInvokeMethodException) {
+                       DISABLED_RemoteObjectInvokeMethodException) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
 
   RemoteObjectInjector injector(web_contents());
@@ -5349,7 +5351,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
 }
 
 // Based on testReturnedObjectIsGarbageCollected.
-IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, RemoteObjectRelease) {
+// TODO(crbug.com/340928363): This test is flaky.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       DISABLED_RemoteObjectRelease) {
   GURL url(embedded_test_server()->GetURL("/empty.html"));
 
   RemoteObjectInjector injector(web_contents());
