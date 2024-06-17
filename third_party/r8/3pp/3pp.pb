@@ -3,6 +3,7 @@ create {
     script { name: "fetch.py" }
     unpack_archive: true
     patch_dir: "patches"
+    patch_version: "cr1"
   }
 
   build {
