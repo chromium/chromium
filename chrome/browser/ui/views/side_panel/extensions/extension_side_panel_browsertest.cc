@@ -776,13 +776,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
 // Test that calling window.close() from an extension side panel when it is
 // shown closes the side panel even if another entry is loading and will be
 // shown.
-#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#define MAYBE_WindowCloseCalledWhenLoading DISABLED_WindowCloseCalledWhenLoading
-#else
-#define MAYBE_WindowCloseCalledWhenLoading WindowCloseCalledWhenLoading
-#endif
+// TODO(crbug.com/347643170) Test is flaky.
 IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
-                       MAYBE_WindowCloseCalledWhenLoading) {
+                       DISABLED_WindowCloseCalledWhenLoading) {
   // Install an extension and show its side panel.
   scoped_refptr<const extensions::Extension> extension = LoadExtension(
       test_data_dir_.AppendASCII("api_test/side_panel/simple_default"));
