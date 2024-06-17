@@ -71,6 +71,30 @@ InputMethodContextImplGtk::InputMethodContextImplGtk(
   CHECK(delegate_);
 
   gtk_context_ = gtk_im_multicontext_new();
+
+  static const char kAllowGtkWaylandIm[] = "allow-gtk-wayland-im";
+  static const gchar* const kContextIdWayland = "wayland";
+  static const gchar* kContextIdIbus = "ibus";
+  const gchar* context_id = gtk_im_multicontext_get_context_id(
+      GTK_IM_MULTICONTEXT(gtk_context_.get()));
+  // switch to allow wayland IM module if it is picked.
+  if (context_id) {
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+            kAllowGtkWaylandIm) &&
+        (std::string(context_id) == kContextIdWayland)) {
+      // The wayland IM module doesn't work at all because of our usage of dummy
+      // window. So try using ibus module instead. Direct Wayland IM integration
+      // is being tracked under crbug.com/40113488.
+      // TODO(crbug.com/40801194) Remove this if dummy window is no longer used.
+      VLOG(1) << "Overriding wayland IM context to ibus";
+      gtk_im_multicontext_set_context_id(
+          GTK_IM_MULTICONTEXT(gtk_context_.get()), kContextIdIbus);
+    } else {
+      // This is the case where a non-wayland IM module is picked as per the
+      // user's configuration.
+      VLOG(1) << "Using GTK IM context: " << context_id;
+    }
+  }
   gtk_simple_context_ = gtk_im_context_simple_new();
 
   auto connect = [&](const char* detailed_signal, auto receiver) {
