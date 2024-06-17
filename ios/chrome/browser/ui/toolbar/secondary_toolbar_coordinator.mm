@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_coordinator.h"
 
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -13,6 +14,8 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator+subclassing.h"
+#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button_factory.h"
+#import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_mediator.h"
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_view_controller.h"
 
@@ -46,6 +49,8 @@
       FullscreenController::FromBrowser(self.browser);
   self.viewController.fullscreenController = controller;
   self.viewController.toolbarHeightDelegate = self.toolbarHeightDelegate;
+
+  _secondaryToolbarMediator.consumer = self.viewController;
 
   [super start];
 }

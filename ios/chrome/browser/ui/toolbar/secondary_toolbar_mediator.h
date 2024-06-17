@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/ui/toolbar/secondary_toolbar_keyboard_state_provider.h"
 
+@protocol SecondaryToolbarConsumer;
 class WebStateList;
 
 /// Mediator providing web state information to SecondaryToolbarViewController.
@@ -17,6 +18,9 @@ class WebStateList;
 
 /// Creates an instance of the mediator.
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList;
+
+// The consumer for this mediator.
+@property(nonatomic, weak) id<SecondaryToolbarConsumer> consumer;
 
 /// Disconnects web state list reference.
 - (void)disconnect;

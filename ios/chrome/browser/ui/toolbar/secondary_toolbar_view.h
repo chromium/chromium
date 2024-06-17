@@ -34,6 +34,12 @@
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
+// Makes the toolbar translucent.
+- (void)makeTranslucent;
+
+// Makes the toolbar opaque.
+- (void)makeOpaque;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_SECONDARY_TOOLBAR_VIEW_H_

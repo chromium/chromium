@@ -168,4 +168,14 @@
   }
 }
 
+#pragma mark - SecondaryToolbarConsumer
+
+- (void)makeTranslucent {
+  [self.view makeTranslucent];
+}
+
+- (void)makeOpaque {
+  [self.view makeOpaque];
+}
+
 @end
