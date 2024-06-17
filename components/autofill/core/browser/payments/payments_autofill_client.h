@@ -30,6 +30,7 @@ class CreditCardRiskBasedAuthenticator;
 class Iban;
 class IbanAccessManager;
 class IbanManager;
+class MerchantPromoCodeManager;
 class MigratableCreditCard;
 struct OfferNotificationOptions;
 class OtpUnmaskDelegate;
@@ -328,6 +329,10 @@ class PaymentsAutofillClient : public RiskDataLoader {
 
   // Gets the IbanAccessManager instance associated with the client.
   virtual IbanAccessManager* GetIbanAccessManager();
+
+  // Gets the MerchantPromoCodeManager instance associated with the
+  // client (can be null for unsupported platforms).
+  virtual MerchantPromoCodeManager* GetMerchantPromoCodeManager();
 
   // Should only be called when we are sure re-showing the bubble will display a
   // confirmation bubble. If the most recent bubble was an opt-in bubble and it

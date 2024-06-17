@@ -40,6 +40,7 @@ class ContentAutofillClient;
 class CreditCardRiskBasedAuthenticator;
 class IbanAccessManager;
 class IbanManager;
+class MerchantPromoCodeManager;
 struct OfferNotificationOptions;
 class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
@@ -164,6 +165,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
       const OfferNotificationOptions& options) override;
   void DismissOfferNotification() override;
   void OpenPromoCodeOfferDetailsURL(const GURL& url) override;
+  MerchantPromoCodeManager* GetMerchantPromoCodeManager() override;
 
   AutofillProgressDialogControllerImpl*
   AutofillProgressDialogControllerForTesting() {

@@ -8,6 +8,7 @@
 #include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/data_model/iban.h"
 #include "components/autofill/core/browser/mock_iban_manager.h"
+#include "components/autofill/core/browser/mock_merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/payments/mock_iban_access_manager.h"
@@ -20,6 +21,7 @@ namespace autofill {
 class AutofillClient;
 class CreditCardCvcAuthenticator;
 class CreditCardOtpAuthenticator;
+class MerchantPromoCodeManager;
 class VirtualCardEnrollmentManager;
 
 namespace payments {
@@ -90,6 +92,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   MockIbanManager* GetIbanManager() override;
   MockIbanAccessManager* GetIbanAccessManager() override;
   void ShowMandatoryReauthOptInConfirmation() override;
+  MerchantPromoCodeManager* GetMerchantPromoCodeManager() override;
 
   bool GetMandatoryReauthOptInPromptWasShown();
 
@@ -146,6 +149,8 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
     return risk_based_authenticator_ &&
            risk_based_authenticator_->authenticate_invoked();
   }
+
+  MockMerchantPromoCodeManager* GetMockMerchantPromoCodeManager();
 
  private:
   const raw_ref<AutofillClient> client_;
@@ -207,6 +212,9 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   // Populated if name fix flow was offered. True if bubble was shown, false
   // otherwise.
   bool credit_card_name_fix_flow_bubble_was_shown_ = false;
+
+  ::testing::NiceMock<MockMerchantPromoCodeManager>
+      mock_merchant_promo_code_manager_;
 };
 
 }  // namespace payments

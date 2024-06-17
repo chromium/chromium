@@ -24,7 +24,6 @@
 #include "chrome/browser/autofill/autocomplete_history_manager_factory.h"
 #include "chrome/browser/autofill/autofill_offer_manager_factory.h"
 #include "chrome/browser/autofill/autofill_optimization_guide_factory.h"
-#include "chrome/browser/autofill/merchant_promo_code_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/autofill/ui/ui_util.h"
@@ -287,12 +286,6 @@ void ChromeAutofillClient::OfferPlusAddressCreation(
       plus_addresses::PlusAddressCreationController::GetOrCreate(
           web_contents());
   controller->OfferCreation(main_frame_origin, std::move(callback));
-}
-
-MerchantPromoCodeManager* ChromeAutofillClient::GetMerchantPromoCodeManager() {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-  return MerchantPromoCodeManagerFactory::GetForProfile(profile);
 }
 
 PrefService* ChromeAutofillClient::GetPrefs() {

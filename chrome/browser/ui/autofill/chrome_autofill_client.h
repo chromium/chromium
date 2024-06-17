@@ -103,7 +103,6 @@ class ChromeAutofillClient : public ContentAutofillClient,
   AutofillPlusAddressDelegate* GetPlusAddressDelegate() override;
   void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
                                 PlusAddressCallback callback) override;
-  MerchantPromoCodeManager* GetMerchantPromoCodeManager() override;
   PrefService* GetPrefs() override;
   const PrefService* GetPrefs() const override;
   syncer::SyncService* GetSyncService() override;

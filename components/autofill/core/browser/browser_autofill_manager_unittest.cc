@@ -1118,7 +1118,8 @@ class BrowserAutofillManagerTest : public testing::Test {
             std::make_unique<NiceMock<MockSingleFieldFormFillRouter>>(
                 autofill_client_.GetMockAutocompleteHistoryManager(),
                 autofill_client_.GetPaymentsAutofillClient()->GetIbanManager(),
-                autofill_client_.GetMockMerchantPromoCodeManager()));
+                autofill_client_.GetPaymentsAutofillClient()
+                    ->GetMockMerchantPromoCodeManager()));
     test_api(*browser_autofill_manager_)
         .SetExternalDelegate(std::make_unique<TestAutofillExternalDelegate>(
             browser_autofill_manager_.get(),

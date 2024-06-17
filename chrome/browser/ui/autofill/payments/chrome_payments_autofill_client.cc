@@ -8,6 +8,7 @@
 
 #include "base/check_deref.h"
 #include "chrome/browser/autofill/iban_manager_factory.h"
+#include "chrome/browser/autofill/merchant_promo_code_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ui/autofill/risk_util.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/metrics/payments/risk_data_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
@@ -623,6 +625,13 @@ void ChromePaymentsAutofillClient::OpenPromoCodeOfferDetailsURL(
                              ui::PageTransition::PAGE_TRANSITION_AUTO_TOPLEVEL,
                              /*is_renderer_initiated=*/false),
       /*navigation_handle_callback=*/{});
+}
+
+MerchantPromoCodeManager*
+ChromePaymentsAutofillClient::GetMerchantPromoCodeManager() {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  return MerchantPromoCodeManagerFactory::GetForProfile(profile);
 }
 
 #if BUILDFLAG(IS_ANDROID)

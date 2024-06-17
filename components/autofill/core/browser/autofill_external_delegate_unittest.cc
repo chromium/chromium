@@ -2541,7 +2541,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
                                  SuggestionType::kMerchantPromoCodeEntry,
                                  std::optional(MERCHANT_PROMO_CODE)));
   EXPECT_CALL(
-      *client().GetMockMerchantPromoCodeManager(),
+      *client().GetPaymentsAutofillClient()->GetMockMerchantPromoCodeManager(),
       OnSingleFieldSuggestionSelected(dummy_promo_code_string,
                                       SuggestionType::kMerchantPromoCodeEntry));
 

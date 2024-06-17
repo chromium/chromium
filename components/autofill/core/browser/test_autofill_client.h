@@ -142,10 +142,6 @@ class TestAutofillClientTemplate : public T {
     return plus_address_delegate_.get();
   }
 
-  MerchantPromoCodeManager* GetMerchantPromoCodeManager() override {
-    return &mock_merchant_promo_code_manager_;
-  }
-
   AutofillTestingPrefService* GetPrefs() override {
     if (!prefs_) {
       prefs_ = autofill::test::PrefServiceForTesting();
@@ -541,10 +537,6 @@ class TestAutofillClientTemplate : public T {
     return &mock_autocomplete_history_manager_;
   }
 
-  MockMerchantPromoCodeManager* GetMockMerchantPromoCodeManager() {
-    return &mock_merchant_promo_code_manager_;
-  }
-
   void set_autofill_offer_manager(
       std::unique_ptr<AutofillOfferManager> autofill_offer_manager) {
     autofill_offer_manager_ = std::move(autofill_offer_manager);
@@ -592,8 +584,6 @@ class TestAutofillClientTemplate : public T {
           std::make_unique<testing::NiceMock<MockAutofillOptimizationGuide>>();
   ::testing::NiceMock<MockAutocompleteHistoryManager>
       mock_autocomplete_history_manager_;
-  ::testing::NiceMock<MockMerchantPromoCodeManager>
-      mock_merchant_promo_code_manager_;
   ::testing::NiceMock<MockFastCheckoutClient> mock_fast_checkout_client_;
   std::unique_ptr<::testing::NiceMock<payments::MockMandatoryReauthManager>>
       mock_payments_mandatory_reauth_manager_;

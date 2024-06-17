@@ -81,10 +81,6 @@ void AutofillClient::OfferPlusAddressCreation(
     const url::Origin& main_frame_origin,
     PlusAddressCallback callback) {}
 
-MerchantPromoCodeManager* AutofillClient::GetMerchantPromoCodeManager() {
-  return nullptr;
-}
-
 payments::PaymentsAutofillClient* AutofillClient::GetPaymentsAutofillClient() {
   return nullptr;
 }

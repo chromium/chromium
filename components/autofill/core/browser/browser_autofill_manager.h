@@ -641,7 +641,7 @@ class BrowserAutofillManager : public AutofillManager {
       std::make_unique<SingleFieldFormFillRouter>(
           client().GetAutocompleteHistoryManager(),
           client().GetPaymentsAutofillClient()->GetIbanManager(),
-          client().GetMerchantPromoCodeManager());
+          client().GetPaymentsAutofillClient()->GetMerchantPromoCodeManager());
 
   // Utilities for logging form events. The loggers emit metrics during their
   // destruction, effectively when the BrowserAutofillManager is reset or

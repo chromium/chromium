@@ -87,7 +87,6 @@ enum class CreditCardFetchResult;
 class FormDataImporter;
 class Iban;
 class LogManager;
-class MerchantPromoCodeManager;
 class PersonalDataManager;
 class StrikeDatabase;
 struct Suggestion;
@@ -374,10 +373,6 @@ class AutofillClient {
   // supported platforms.
   virtual void OfferPlusAddressCreation(const url::Origin& main_frame_origin,
                                         PlusAddressCallback callback);
-
-  // Gets the MerchantPromoCodeManager instance associated with the
-  // client (can be null for unsupported platforms).
-  virtual MerchantPromoCodeManager* GetMerchantPromoCodeManager();
 
   // Gets the preferences associated with the client.
   virtual PrefService* GetPrefs() = 0;
