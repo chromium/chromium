@@ -69,6 +69,7 @@ sync_protocol_sources = [
   "sync_entity.proto",
   "sync_enums.proto",
   "sync_invalidations_payload.proto",
+  "tab_group_attribution_metadata.proto",
   "test.proto",
   "theme_specifics.proto",
   "typed_url_specifics.proto",

@@ -30,7 +30,8 @@ SavedTabGroup::SavedTabGroup(
     std::optional<size_t> position,
     std::optional<base::Uuid> saved_guid,
     std::optional<LocalTabGroupID> local_group_id,
-    std::optional<std::string> originator_cache_guid,
+    std::optional<std::string> creator_cache_guid,
+    std::optional<std::string> last_updater_cache_guid,
     bool created_before_syncing_tab_groups,
     std::optional<base::Time> creation_time_windows_epoch_micros,
     std::optional<base::Time> update_time_windows_epoch_micros)
@@ -41,7 +42,8 @@ SavedTabGroup::SavedTabGroup(
       color_(color),
       saved_tabs_(urls),
       position_(position),
-      originator_cache_guid_(std::move(originator_cache_guid)),
+      creator_cache_guid_(std::move(creator_cache_guid)),
+      last_updater_cache_guid_(std::move(last_updater_cache_guid)),
       created_before_syncing_tab_groups_(created_before_syncing_tab_groups),
       creation_time_windows_epoch_micros_(
           creation_time_windows_epoch_micros.value_or(base::Time::Now())),
@@ -139,9 +141,16 @@ SavedTabGroup& SavedTabGroup::SetLocalGroupId(
   return *this;
 }
 
-SavedTabGroup& SavedTabGroup::SetOriginatorCacheGuid(
+SavedTabGroup& SavedTabGroup::SetCreatorCacheGuid(
     std::optional<std::string> new_cache_guid) {
-  originator_cache_guid_ = new_cache_guid;
+  creator_cache_guid_ = new_cache_guid;
+  SetUpdateTimeWindowsEpochMicros(base::Time::Now());
+  return *this;
+}
+
+SavedTabGroup& SavedTabGroup::SetLastUpdaterCacheGuid(
+    std::optional<std::string> cache_guid) {
+  last_updater_cache_guid_ = cache_guid;
   SetUpdateTimeWindowsEpochMicros(base::Time::Now());
   return *this;
 }
@@ -326,7 +335,8 @@ void SavedTabGroup::MergeRemoteGroupMetadata(
     const std::u16string& title,
     TabGroupColorId color,
     std::optional<size_t> position,
-    std::optional<std::string> originator_cache_guid,
+    std::optional<std::string> creator_cache_guid,
+    std::optional<std::string> last_updater_cache_guid,
     base::Time update_time) {
   if (!RemoteGroupHasMoreRecentUpdates(update_time)) {
     return;
@@ -340,7 +350,8 @@ void SavedTabGroup::MergeRemoteGroupMetadata(
     SetPinned(false);
   }
 
-  SetOriginatorCacheGuid(originator_cache_guid);
+  SetCreatorCacheGuid(creator_cache_guid);
+  SetLastUpdaterCacheGuid(last_updater_cache_guid);
 
   SetUpdateTimeWindowsEpochMicros(update_time);
 }

@@ -26,18 +26,20 @@ namespace tab_groups {
 // tab_group_editor_bubble_view.
 class SavedTabGroup {
  public:
-  SavedTabGroup(const std::u16string& title,
-                const tab_groups::TabGroupColorId& color,
-                const std::vector<SavedTabGroupTab>& urls,
-                std::optional<size_t> position,
-                std::optional<base::Uuid> saved_guid = std::nullopt,
-                std::optional<LocalTabGroupID> local_group_id = std::nullopt,
-                std::optional<std::string> originator_cache_guid = std::nullopt,
-                bool created_before_syncing_tab_groups = false,
-                std::optional<base::Time> creation_time_windows_epoch_micros =
-                    std::nullopt,
-                std::optional<base::Time> update_time_windows_epoch_micros =
-                    std::nullopt);
+  SavedTabGroup(
+      const std::u16string& title,
+      const tab_groups::TabGroupColorId& color,
+      const std::vector<SavedTabGroupTab>& urls,
+      std::optional<size_t> position,
+      std::optional<base::Uuid> saved_guid = std::nullopt,
+      std::optional<LocalTabGroupID> local_group_id = std::nullopt,
+      std::optional<std::string> creator_cache_guid = std::nullopt,
+      std::optional<std::string> last_updater_cache_guid = std::nullopt,
+      bool created_before_syncing_tab_groups = false,
+      std::optional<base::Time> creation_time_windows_epoch_micros =
+          std::nullopt,
+      std::optional<base::Time> update_time_windows_epoch_micros =
+          std::nullopt);
   SavedTabGroup(const SavedTabGroup& other);
   SavedTabGroup& operator=(const SavedTabGroup& other);
   SavedTabGroup(SavedTabGroup&& other);
@@ -55,13 +57,13 @@ class SavedTabGroup {
   const base::Time& update_time_windows_epoch_micros() const {
     return update_time_windows_epoch_micros_;
   }
-
-  const std::optional<std::string>& originator_cache_guid() const {
-    return originator_cache_guid_;
+  const std::optional<std::string>& creator_cache_guid() const {
+    return creator_cache_guid_;
   }
-
+  const std::optional<std::string>& last_updater_cache_guid() const {
+    return last_updater_cache_guid_;
+  }
   bool is_remote_group() const { return is_remote_group_; }
-
   bool created_before_syncing_tab_groups() const {
     return created_before_syncing_tab_groups_;
   }
@@ -99,8 +101,8 @@ class SavedTabGroup {
   SavedTabGroup& SetTitle(std::u16string title);
   SavedTabGroup& SetColor(tab_groups::TabGroupColorId color);
   SavedTabGroup& SetLocalGroupId(std::optional<LocalTabGroupID> tab_group_id);
-  SavedTabGroup& SetOriginatorCacheGuid(
-      std::optional<std::string> new_cache_guid);
+  SavedTabGroup& SetCreatorCacheGuid(std::optional<std::string> new_cache_guid);
+  SavedTabGroup& SetLastUpdaterCacheGuid(std::optional<std::string> cache_guid);
   SavedTabGroup& SetCreatedBeforeSyncingTabGroups(
       bool created_before_syncing_tab_groups);
   SavedTabGroup& SetUpdateTimeWindowsEpochMicros(
@@ -148,7 +150,8 @@ class SavedTabGroup {
       const std::u16string& title,
       TabGroupColorId color,
       std::optional<size_t> position,
-      std::optional<std::string> originator_cache_guid,
+      std::optional<std::string> creator_cache_guid,
+      std::optional<std::string> last_updater_cache_guid,
       base::Time update_time);
 
   // Returns whether the remote group has more recent updates.
@@ -197,11 +200,15 @@ class SavedTabGroup {
   // will be assigned one when it is added into the SavedTabGroupModel.
   std::optional<size_t> position_;
 
-  // A guid which refers to the group which created the tab group. If metadata
+  // A guid which refers to the device which created the tab group. If metadata
   // is not being tracked when the saved tab group is being created, this value
   // will be null. The value could also be null if the group was created before
-  // M127.
-  std::optional<std::string> originator_cache_guid_;
+  // M127. Used for metrics purposes only.
+  std::optional<std::string> creator_cache_guid_;
+
+  // The cache guid of the device that last modified this tab group. Can be null
+  // if the group was just created. Used for metrics purposes only.
+  std::optional<std::string> last_updater_cache_guid_;
 
   // Whether the tab group was created from a remote device.
   bool is_remote_group_ = false;

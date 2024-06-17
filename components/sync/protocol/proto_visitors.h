@@ -57,6 +57,7 @@
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/protocol/sync_entity.pb.h"
 #include "components/sync/protocol/sync_invalidations_payload.pb.h"
+#include "components/sync/protocol/tab_group_attribution_metadata.pb.h"
 #include "components/sync/protocol/theme_specifics.pb.h"
 #include "components/sync/protocol/typed_url_specifics.pb.h"
 #include "components/sync/protocol/unique_position.pb.h"
@@ -1180,6 +1181,7 @@ VISIT_PROTO_FIELDS(const sync_pb::SavedTabGroupSpecifics& proto) {
   VISIT(update_time_windows_epoch_micros);
   VISIT(group);
   VISIT(tab);
+  VISIT(attribution_metadata);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SavedTabGroup& proto) {
@@ -1187,7 +1189,6 @@ VISIT_PROTO_FIELDS(const sync_pb::SavedTabGroup& proto) {
   VISIT(title);
   VISIT_ENUM(color);
   VISIT(pinned_position);
-  VISIT(originator_cache_guid);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SavedTabGroupTab& proto) {
@@ -1195,6 +1196,21 @@ VISIT_PROTO_FIELDS(const sync_pb::SavedTabGroupTab& proto) {
   VISIT(group_guid);
   VISIT(url);
   VISIT(title);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::AttributionMetadata& proto) {
+  VISIT(created);
+  VISIT(updated);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::AttributionMetadata::Attribution& proto) {
+  VISIT(device_info);
+}
+
+VISIT_PROTO_FIELDS(
+    const sync_pb::AttributionMetadata::Attribution::AttributionDeviceInfo&
+        proto) {
+  VISIT(cache_guid);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::SearchEngineSpecifics& proto) {

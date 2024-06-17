@@ -594,10 +594,8 @@ void SavedTabGroupSyncBridge::AddDataToLocalStorage(
           group_guid, base::UTF8ToUTF16(specifics.group().title()),
           SyncColorToTabGroupColor(specifics.group().color()),
           GroupPositionFromSpecifics(specifics),
-          specifics.group().has_originator_cache_guid()
-              ? std::make_optional<std::string>(
-                    specifics.group().originator_cache_guid())
-              : std::nullopt,
+          GetCreatorCacheGuidFromSpecifics(specifics),
+          GetLastUpdaterCacheGuidFromSpecifics(specifics),
           TimeFromWindowsEpochMicros(
               specifics.update_time_windows_epoch_micros()));
       proto::SavedTabGroupData updated_data =

@@ -17,6 +17,8 @@ SavedTabGroupTab::SavedTabGroupTab(
     std::optional<size_t> position,
     std::optional<base::Uuid> saved_tab_guid,
     std::optional<LocalTabID> local_tab_id,
+    std::optional<std::string> creator_cache_guid,
+    std::optional<std::string> last_updater_cache_guid,
     std::optional<base::Time> creation_time_windows_epoch_micros,
     std::optional<base::Time> update_time_windows_epoch_micros,
     std::optional<gfx::Image> favicon)
@@ -29,6 +31,8 @@ SavedTabGroupTab::SavedTabGroupTab(
       url_(url),
       title_(title),
       favicon_(favicon),
+      creator_cache_guid_(std::move(creator_cache_guid)),
+      last_updater_cache_guid_(std::move(last_updater_cache_guid)),
       creation_time_windows_epoch_micros_(
           creation_time_windows_epoch_micros.has_value()
               ? creation_time_windows_epoch_micros.value()
@@ -65,6 +69,8 @@ void SavedTabGroupTab::MergeRemoteTab(const SavedTabGroupTab& remote_tab) {
   SetTitle(remote_tab.title());
   // TODO(crbug.com/319521964): check that remote tab always contains position.
   SetPosition(remote_tab.position().value_or(0));
+  SetCreatorCacheGuid(remote_tab.creator_cache_guid());
+  SetLastUpdaterCacheGuid(remote_tab.last_updater_cache_guid());
   SetUpdateTimeWindowsEpochMicros(
       remote_tab.update_time_windows_epoch_micros());
 }

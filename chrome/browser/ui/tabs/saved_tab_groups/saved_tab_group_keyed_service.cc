@@ -239,6 +239,7 @@ base::Uuid SavedTabGroupKeyedService::SaveGroup(
   SavedTabGroup saved_tab_group(
       tab_group->visual_data()->title(), tab_group->visual_data()->color(), {},
       std::nullopt, std::nullopt, tab_group->id(), bridge_.GetLocalCacheGuid(),
+      /*last_updater_cache_guid=*/std::nullopt,
       /*created_before_syncing_tab_groups=*/!bridge_.IsSyncing());
   if (is_pinned) {
     saved_tab_group.SetPinned(true);

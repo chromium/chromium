@@ -30,6 +30,8 @@ class SavedTabGroupTab {
       std::optional<size_t> position,
       std::optional<base::Uuid> saved_tab_guid = std::nullopt,
       std::optional<LocalTabID> local_tab_id = std::nullopt,
+      std::optional<std::string> creator_cache_guid = std::nullopt,
+      std::optional<std::string> last_updater_cache_guid = std::nullopt,
       std::optional<base::Time> creation_time_windows_epoch_micros =
           std::nullopt,
       std::optional<base::Time> update_time_windows_epoch_micros = std::nullopt,
@@ -53,6 +55,12 @@ class SavedTabGroupTab {
   }
   const base::Time& update_time_windows_epoch_micros() const {
     return update_time_windows_epoch_micros_;
+  }
+  const std::optional<std::string>& creator_cache_guid() const {
+    return creator_cache_guid_;
+  }
+  const std::optional<std::string>& last_updater_cache_guid() const {
+    return last_updater_cache_guid_;
   }
 
   // Mutators.
@@ -78,6 +86,18 @@ class SavedTabGroupTab {
   }
   SavedTabGroupTab& SetPosition(size_t position) {
     position_ = position;
+    SetUpdateTimeWindowsEpochMicros(base::Time::Now());
+    return *this;
+  }
+  SavedTabGroupTab& SetCreatorCacheGuid(
+      std::optional<std::string> new_cache_guid) {
+    creator_cache_guid_ = new_cache_guid;
+    SetUpdateTimeWindowsEpochMicros(base::Time::Now());
+    return *this;
+  }
+  SavedTabGroupTab& SetLastUpdaterCacheGuid(
+      std::optional<std::string> cache_guid) {
+    last_updater_cache_guid_ = cache_guid;
     SetUpdateTimeWindowsEpochMicros(base::Time::Now());
     return *this;
   }
@@ -120,6 +140,16 @@ class SavedTabGroupTab {
 
   // The favicon of the website this SavedTabGroupTab represents.
   std::optional<gfx::Image> favicon_;
+
+  // A guid which refers to the device which created the tab group. If metadata
+  // is not being tracked when the saved tab group is being created, this value
+  // will be null. The value could also be null if the group was created before
+  // M127. Used for metrics purposes only.
+  std::optional<std::string> creator_cache_guid_;
+
+  // The cache guid of the device that last modified this tab group. Can be null
+  // if the group was just created. Used for metrics purposes only.
+  std::optional<std::string> last_updater_cache_guid_;
 
   // Timestamp for when the tab was created using windows epoch microseconds.
   base::Time creation_time_windows_epoch_micros_;
