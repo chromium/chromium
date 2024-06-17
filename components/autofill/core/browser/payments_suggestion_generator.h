@@ -104,18 +104,12 @@ class PaymentsSuggestionGenerator {
   // Returns true if the suggestion created from the card is acceptable, returns
   // false when merchant does not accept the given card for example when
   // merchants opt-out of VCNs.
-  bool IsCardAcceptable(const CreditCard& card,
-                        const AutofillClient& client,
-                        bool is_manual_fallback);
+  static bool IsCardAcceptable(const CreditCard& card,
+                               const AutofillClient& client,
+                               bool is_manual_fallback);
 
- private:
-  friend class PaymentsSuggestionGeneratorTestApi;
-
-  // Returns the local and server cards ordered by the Autofill ranking.
-  // If `suppress_disused_cards`, local expired disused cards are removed.
-  // If `prefix_match`, cards are matched with the contents of `trigger_field`.
-  // If `include_virtual_cards`, virtual cards will be added when possible.
-  std::vector<CreditCard> GetOrderedCardsToSuggest(
+  // Exposes `GetOrderedCardsToSuggest` in tests.
+  std::vector<CreditCard> GetOrderedCardsToSuggestForTest(
       const AutofillClient& client,
       const FormFieldData& trigger_field,
       FieldType trigger_field_type,
@@ -123,24 +117,19 @@ class PaymentsSuggestionGenerator {
       bool prefix_match,
       bool include_virtual_cards);
 
-  // Creates a suggestion for the given `credit_card`. `virtual_card_option`
-  // suggests whether the suggestion is a virtual card option.
-  // `card_linked_offer_available` indicates whether a card-linked offer is
-  // attached to the `credit_card`. `metadata_logging_context` contains card
-  // metadata related information used for metrics logging.
-  Suggestion CreateCreditCardSuggestion(
+  // Exposes `CreateCreditCardSuggestion` in tests.
+  Suggestion CreateCreditCardSuggestionForTest(
       const CreditCard& credit_card,
       const AutofillClient& client,
       FieldType trigger_field_type,
       bool virtual_card_option,
       bool card_linked_offer_available,
-      autofill_metrics::CardMetadataLoggingContext& metadata_logging_context);
+      base::optional_ref<autofill_metrics::CardMetadataLoggingContext>
+          metadata_logging_context = std::nullopt);
 
-  // Helper function to decide whether to show the virtual card option for
-  // `candidate_card`.
-  // TODO(b/326950201): Pass the argument by reference.
-  bool ShouldShowVirtualCardOption(const CreditCard* candidate_card,
-                                   const AutofillClient& client);
+  // Exposes `ShouldShowVirtualCardOption` in tests.
+  bool ShouldShowVirtualCardOptionForTest(const CreditCard* candidate_card,
+                                          const AutofillClient& client);
 };
 
 }  // namespace autofill

@@ -987,77 +987,11 @@ std::vector<Suggestion> GetAddressFooterSuggestions(bool is_autofilled) {
   return footer_suggestions;
 }
 
-}  // namespace
-
-AddressSuggestionGenerator::AddressSuggestionGenerator() = default;
-
-AddressSuggestionGenerator::~AddressSuggestionGenerator() = default;
-
-std::vector<Suggestion> AddressSuggestionGenerator::GetSuggestionsForProfiles(
-    const AutofillClient& client,
-    const FieldTypeSet& field_types,
-    const FormFieldData& trigger_field,
-    FieldType trigger_field_type,
-    SuggestionType suggestion_type,
-    AutofillSuggestionTriggerSource trigger_source) {
-  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-      profiles_to_suggest = GetProfilesToSuggest(
-          client.GetPersonalDataManager()->address_data_manager(),
-          trigger_field_type, trigger_field.value(),
-          trigger_field.is_autofilled(), field_types,
-          GetProfilesToSuggestOptions(trigger_field_type, trigger_field.value(),
-                                      trigger_field.is_autofilled(),
-                                      trigger_source));
-  // If autofill for addresses is triggered from the context menu on an address
-  // field and no suggestions can be shown (i.e. if a user has only addresses
-  // without emails and then triggers autofill from the context menu on an email
-  // field), then default to the same behaviour as if the user triggers autofill
-  // on a non-address field. This is done to avoid a situation when the user
-  // would trigger autofill from the context menu, and then no suggestions
-  // appear.
-  // The "if condition" is satisfied only if `trigger_field_type` is an address
-  // field. Then, `GetSuggestionsForProfiles()` is called with `UNKOWN_TYPE` for
-  // the `trigger_field_type`. This guarantees no infinite recursion occurs.
-  if (profiles_to_suggest.empty() && IsAddressType(trigger_field_type) &&
-      trigger_source ==
-          AutofillSuggestionTriggerSource::kManualFallbackAddress &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillForUnclassifiedFieldsAvailable)) {
-    return GetSuggestionsForProfiles(client, {UNKNOWN_TYPE}, trigger_field,
-                                     UNKNOWN_TYPE, suggestion_type,
-                                     trigger_source);
-  }
-  std::vector<Suggestion> suggestions = CreateSuggestionsFromProfiles(
-      profiles_to_suggest, field_types, suggestion_type, trigger_field_type,
-      trigger_field.max_length(), client.IsOffTheRecord(),
-      client.GetPersonalDataManager()->address_data_manager().app_locale());
-
-  // Add devtools test addresses suggestion if it exists. A suggestion will
-  // exist if devtools is open and therefore test addresses were set.
-  if (IsAddressType(trigger_field_type)) {
-    if (std::optional<Suggestion> test_addresses_suggestion =
-            GetSuggestionForTestAddresses(client.GetTestAddresses(),
-                                          client.GetPersonalDataManager()
-                                              ->address_data_manager()
-                                              .app_locale())) {
-      suggestions.insert(suggestions.begin(),
-                         std::move(*test_addresses_suggestion));
-    }
-  }
-  if (suggestions.empty()) {
-    return suggestions;
-  }
-  base::ranges::move(GetAddressFooterSuggestions(trigger_field.is_autofilled()),
-                     std::back_inserter(suggestions));
-  return suggestions;
-}
-
 AddressSuggestionGenerator::ProfilesToSuggestOptions
-AddressSuggestionGenerator::GetProfilesToSuggestOptions(
-    FieldType trigger_field_type,
-    const std::u16string& trigger_field_contents,
-    bool trigger_field_is_autofilled,
-    AutofillSuggestionTriggerSource trigger_source) {
+GetProfilesToSuggestOptions(FieldType trigger_field_type,
+                            const std::u16string& trigger_field_contents,
+                            bool trigger_field_is_autofilled,
+                            AutofillSuggestionTriggerSource trigger_source) {
   // By default, disused profiles are excluded only if the normalized field
   // value is empty. However, triggering suggestions via manual fallback should
   // allow the user to access all their profiles, which is why this option is
@@ -1093,7 +1027,7 @@ AddressSuggestionGenerator::GetProfilesToSuggestOptions(
   // option is disabled there.
   bool should_deduplicate_suggestions =
       trigger_source != AutofillSuggestionTriggerSource::kManualFallbackAddress;
-  return ProfilesToSuggestOptions{
+  return AddressSuggestionGenerator::ProfilesToSuggestOptions{
       .exclude_disused_addresses = should_excluded_disused_addresses,
       .require_non_empty_value_on_trigger_field =
           should_require_non_empty_value_on_trigger_field,
@@ -1101,14 +1035,20 @@ AddressSuggestionGenerator::GetProfilesToSuggestOptions(
       .deduplicate_suggestions = should_deduplicate_suggestions};
 }
 
+// Returns a list of profiles that will be displayed as suggestions to the user,
+// sorted by their relevance. This involves many steps from fetching the
+// profiles to matching with `field_contents`, and deduplicating based on
+// `field_types`, which are the relevant types for the current suggestion.
+// `options` defines what strategies to follow by the function in order to
+// filter the list or returned profiles.
 std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-AddressSuggestionGenerator::GetProfilesToSuggest(
+GetProfilesToSuggest(
     const AddressDataManager& address_data,
     FieldType trigger_field_type,
     const std::u16string& field_contents,
     bool field_is_autofilled,
     const FieldTypeSet& field_types,
-    ProfilesToSuggestOptions options) {
+    AddressSuggestionGenerator::ProfilesToSuggestOptions options) {
   // Get the profiles to suggest, which are already sorted.
   std::vector<const AutofillProfile*> sorted_profiles =
       address_data.GetProfilesToSuggest();
@@ -1146,8 +1086,12 @@ AddressSuggestionGenerator::GetProfilesToSuggest(
   return profiles_to_suggest;
 }
 
-std::vector<Suggestion>
-AddressSuggestionGenerator::CreateSuggestionsFromProfiles(
+// Returns a list of Suggestion objects, each representing an element in
+// `profiles`.
+// `field_types` holds the type of fields relevant for the current suggestion.
+// The profiles passed to this function should already have been matched on
+// `trigger_field_contents_canon` and deduplicated.
+std::vector<Suggestion> CreateSuggestionsFromProfiles(
     const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
         profiles,
     const FieldTypeSet& field_types,
@@ -1258,7 +1202,71 @@ AddressSuggestionGenerator::CreateSuggestionsFromProfiles(
                                                 is_off_the_record, app_locale);
     }
   }
+  return suggestions;
+}
 
+}  // namespace
+
+AddressSuggestionGenerator::AddressSuggestionGenerator() = default;
+
+AddressSuggestionGenerator::~AddressSuggestionGenerator() = default;
+
+std::vector<Suggestion> AddressSuggestionGenerator::GetSuggestionsForProfiles(
+    const AutofillClient& client,
+    const FieldTypeSet& field_types,
+    const FormFieldData& trigger_field,
+    FieldType trigger_field_type,
+    SuggestionType suggestion_type,
+    AutofillSuggestionTriggerSource trigger_source) {
+  std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
+      profiles_to_suggest = GetProfilesToSuggest(
+          client.GetPersonalDataManager()->address_data_manager(),
+          trigger_field_type, trigger_field.value(),
+          trigger_field.is_autofilled(), field_types,
+          GetProfilesToSuggestOptions(trigger_field_type, trigger_field.value(),
+                                      trigger_field.is_autofilled(),
+                                      trigger_source));
+  // If autofill for addresses is triggered from the context menu on an address
+  // field and no suggestions can be shown (i.e. if a user has only addresses
+  // without emails and then triggers autofill from the context menu on an email
+  // field), then default to the same behaviour as if the user triggers autofill
+  // on a non-address field. This is done to avoid a situation when the user
+  // would trigger autofill from the context menu, and then no suggestions
+  // appear.
+  // The "if condition" is satisfied only if `trigger_field_type` is an address
+  // field. Then, `GetSuggestionsForProfiles()` is called with `UNKOWN_TYPE` for
+  // the `trigger_field_type`. This guarantees no infinite recursion occurs.
+  if (profiles_to_suggest.empty() && IsAddressType(trigger_field_type) &&
+      trigger_source ==
+          AutofillSuggestionTriggerSource::kManualFallbackAddress &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillForUnclassifiedFieldsAvailable)) {
+    return GetSuggestionsForProfiles(client, {UNKNOWN_TYPE}, trigger_field,
+                                     UNKNOWN_TYPE, suggestion_type,
+                                     trigger_source);
+  }
+  std::vector<Suggestion> suggestions = CreateSuggestionsFromProfiles(
+      profiles_to_suggest, field_types, suggestion_type, trigger_field_type,
+      trigger_field.max_length(), client.IsOffTheRecord(),
+      client.GetPersonalDataManager()->address_data_manager().app_locale());
+
+  // Add devtools test addresses suggestion if it exists. A suggestion will
+  // exist if devtools is open and therefore test addresses were set.
+  if (IsAddressType(trigger_field_type)) {
+    if (std::optional<Suggestion> test_addresses_suggestion =
+            GetSuggestionForTestAddresses(client.GetTestAddresses(),
+                                          client.GetPersonalDataManager()
+                                              ->address_data_manager()
+                                              .app_locale())) {
+      suggestions.insert(suggestions.begin(),
+                         std::move(*test_addresses_suggestion));
+    }
+  }
+  if (suggestions.empty()) {
+    return suggestions;
+  }
+  base::ranges::move(GetAddressFooterSuggestions(trigger_field.is_autofilled()),
+                     std::back_inserter(suggestions));
   return suggestions;
 }
 
@@ -1269,6 +1277,36 @@ Suggestion AddressSuggestionGenerator::CreateManageAddressesEntry() {
       SuggestionType::kManageAddress);
   suggestion.icon = Suggestion::Icon::kSettings;
   return suggestion;
+}
+
+std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
+AddressSuggestionGenerator::GetProfilesToSuggestForTest(
+    const AddressDataManager& address_data,
+    FieldType trigger_field_type,
+    const std::u16string& field_contents,
+    bool field_is_autofilled,
+    const FieldTypeSet& field_types,
+    AutofillSuggestionTriggerSource trigger_source) {
+  return GetProfilesToSuggest(
+      address_data, trigger_field_type, field_contents, field_is_autofilled,
+      field_types,
+      GetProfilesToSuggestOptions(trigger_field_type, field_contents,
+                                  field_is_autofilled, trigger_source));
+}
+
+std::vector<Suggestion>
+AddressSuggestionGenerator::CreateSuggestionsFromProfilesForTest(
+    const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
+        profiles,
+    const FieldTypeSet& field_types,
+    SuggestionType suggestion_type,
+    FieldType trigger_field_type,
+    uint64_t trigger_field_max_length,
+    bool is_off_the_record,
+    const std::string& app_locale) {
+  return CreateSuggestionsFromProfiles(
+      profiles, field_types, suggestion_type, trigger_field_type,
+      trigger_field_max_length, is_off_the_record, app_locale);
 }
 
 }  // namespace autofill

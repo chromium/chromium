@@ -840,7 +840,6 @@ static_library("test_support") {
   sources = [
     "address_data_cleaner_test_api.h",
     "address_data_manager_test_api.h",
-    "address_suggestion_generator_test_api.h",
     "autofill_form_test_utils.cc",
     "autofill_form_test_utils.h",
     "autofill_manager_test_api.h",
@@ -925,7 +924,6 @@ static_library("test_support") {
     "payments/test_virtual_card_enrollment_manager.h",
     "payments_data_manager_test_api.cc",
     "payments_data_manager_test_api.h",
-    "payments_suggestion_generator_test_api.h",
     "personal_data_manager_test_utils.cc",
     "personal_data_manager_test_utils.h",
     "profile_token_quality_test_api.cc",

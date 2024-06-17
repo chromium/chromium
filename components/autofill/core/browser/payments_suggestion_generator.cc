@@ -753,6 +753,183 @@ bool ShouldShowVirtualCardOptionForServerCard(const CreditCard& card,
   return true;
 }
 
+// Helper function to decide whether to show the virtual card option for
+// `candidate_card`.
+// TODO(crbug.com/326950201): Pass the argument by reference.
+bool ShouldShowVirtualCardOption(const CreditCard* candidate_card,
+                                 const AutofillClient& client) {
+  const CreditCard* candidate_server_card = nullptr;
+  switch (candidate_card->record_type()) {
+    case CreditCard::RecordType::kLocalCard:
+      candidate_server_card = client.GetPersonalDataManager()
+                                  ->payments_data_manager()
+                                  .GetServerCardForLocalCard(candidate_card);
+      break;
+    case CreditCard::RecordType::kMaskedServerCard:
+      candidate_server_card = candidate_card;
+      break;
+    case CreditCard::RecordType::kFullServerCard:
+      break;
+    case CreditCard::RecordType::kVirtualCard:
+      // Should not happen since virtual card is not persisted.
+      NOTREACHED_NORETURN();
+  }
+  if (!candidate_server_card) {
+    return false;
+  }
+  candidate_card = candidate_server_card;
+  return ShouldShowVirtualCardOptionForServerCard(*candidate_server_card,
+                                                  client);
+}
+
+// Returns the local and server cards ordered by the Autofill ranking.
+// If `suppress_disused_cards`, local expired disused cards are removed.
+// If `prefix_match`, cards are matched with the contents of `trigger_field`.
+// If `include_virtual_cards`, virtual cards will be added when possible.
+std::vector<CreditCard> GetOrderedCardsToSuggest(
+    const AutofillClient& client,
+    const FormFieldData& trigger_field,
+    FieldType trigger_field_type,
+    bool suppress_disused_cards,
+    bool prefix_match,
+    bool include_virtual_cards) {
+  std::vector<CreditCard*> available_cards = client.GetPersonalDataManager()
+                                                 ->payments_data_manager()
+                                                 .GetCreditCardsToSuggest();
+  // If a card has available card linked offers on the last committed url, rank
+  // it to the top.
+  if (std::map<std::string, AutofillOfferData*> card_linked_offers_map =
+          GetCardLinkedOffers(client);
+      !card_linked_offers_map.empty()) {
+    base::ranges::stable_sort(
+        available_cards,
+        [&card_linked_offers_map](const CreditCard* a, const CreditCard* b) {
+          return base::Contains(card_linked_offers_map, a->guid()) &&
+                 !base::Contains(card_linked_offers_map, b->guid());
+        });
+  }
+  // Suppress disused credit cards when triggered from an empty field.
+  if (suppress_disused_cards) {
+    const base::Time min_last_used =
+        AutofillClock::Now() - kDisusedDataModelTimeDelta;
+    RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(min_last_used,
+                                                       available_cards);
+  }
+  std::vector<CreditCard> cards_to_suggest;
+  std::u16string field_contents =
+      base::i18n::ToLower(SanitizeCreditCardFieldValue(trigger_field.value()));
+  for (const CreditCard* credit_card : available_cards) {
+    std::u16string suggested_value = credit_card->GetInfo(
+        trigger_field_type,
+        client.GetPersonalDataManager()->payments_data_manager().app_locale());
+    if (prefix_match && suggested_value.empty()) {
+      continue;
+    }
+    if (prefix_match &&
+        !IsValidPaymentsSuggestionForFieldContents(
+            /*suggestion_canon=*/base::i18n::ToLower(suggested_value),
+            field_contents, trigger_field_type,
+            credit_card->record_type() ==
+                CreditCard::RecordType::kMaskedServerCard,
+            trigger_field.is_autofilled())) {
+      continue;
+    }
+    if (include_virtual_cards &&
+        ShouldShowVirtualCardOption(credit_card, client)) {
+      cards_to_suggest.push_back(CreditCard::CreateVirtualCard(*credit_card));
+    }
+    cards_to_suggest.push_back(*credit_card);
+  }
+  return cards_to_suggest;
+}
+
+// Creates a suggestion for the given `credit_card`. `virtual_card_option`
+// suggests whether the suggestion is a virtual card option.
+// `card_linked_offer_available` indicates whether a card-linked offer is
+// attached to the `credit_card`. `metadata_logging_context` contains card
+// metadata related information used for metrics logging.
+// TODO(crbug.com/40232456): Separate logic for desktop, Android dropdown, and
+// Keyboard Accessory.
+Suggestion CreateCreditCardSuggestion(
+    const CreditCard& credit_card,
+    const AutofillClient& client,
+    FieldType trigger_field_type,
+    bool virtual_card_option,
+    bool card_linked_offer_available,
+    autofill_metrics::CardMetadataLoggingContext& metadata_logging_context) {
+  // Manual fallback entries are shown for all non credit card fields.
+  const bool is_manual_fallback =
+      GroupTypeOfFieldType(trigger_field_type) != FieldTypeGroup::kCreditCard;
+
+  Suggestion suggestion;
+  suggestion.icon = credit_card.CardIconForAutofillSuggestion();
+  // First layer manual fallback entries can't fill forms and thus can't be
+  // selected by the user.
+  suggestion.type = SuggestionType::kCreditCardEntry;
+  suggestion.is_acceptable = PaymentsSuggestionGenerator::IsCardAcceptable(
+      credit_card, client, is_manual_fallback);
+  suggestion.payload = Suggestion::Guid(credit_card.guid());
+#if BUILDFLAG(IS_ANDROID)
+  // The card art icon should always be shown at the start of the suggestion.
+  suggestion.is_icon_at_start = true;
+#endif  // BUILDFLAG(IS_ANDROID)
+
+  // Manual fallback suggestions labels are computed as if the triggering field
+  // type was the credit card number.
+  auto [main_text, minor_text] = GetSuggestionMainTextAndMinorTextForCard(
+      credit_card, client,
+      is_manual_fallback ? CREDIT_CARD_NUMBER : trigger_field_type);
+  suggestion.main_text = std::move(main_text);
+  suggestion.minor_text = std::move(minor_text);
+  SetSuggestionLabelsForCard(
+      credit_card, client,
+      is_manual_fallback ? CREDIT_CARD_NUMBER : trigger_field_type,
+      metadata_logging_context, suggestion);
+  SetCardArtURL(suggestion, credit_card,
+                client.GetPersonalDataManager()->payments_data_manager(),
+                virtual_card_option);
+
+  // For virtual cards, make some adjustments for the suggestion contents.
+  if (virtual_card_option) {
+    // We don't show card linked offers for virtual card options.
+    AdjustVirtualCardSuggestionContent(suggestion, credit_card, client,
+                                       trigger_field_type);
+  } else if (card_linked_offer_available) {
+#if BUILDFLAG(IS_ANDROID)
+    // For Keyboard Accessory, set Suggestion::feature_for_iph and change the
+    // suggestion icon only if card linked offers are also enabled.
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillEnableOffersInClankKeyboardAccessory)) {
+      suggestion.feature_for_iph =
+          &feature_engagement::kIPHKeyboardAccessoryPaymentOfferFeature;
+      suggestion.icon = Suggestion::Icon::kOfferTag;
+    } else {
+#else   // Add the offer label on Desktop unconditionally.
+    {
+#endif  // BUILDFLAG(IS_ANDROID)
+      suggestion.labels.push_back(
+          std::vector<Suggestion::Text>{Suggestion::Text(
+              l10n_util::GetStringUTF16(IDS_AUTOFILL_OFFERS_CASHBACK))});
+    }
+  }
+
+  if (virtual_card_option) {
+    suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_A11Y_ANNOUNCE_VIRTUAL_CARD_MANUAL_FALLBACK_ENTRY);
+  } else if (is_manual_fallback) {
+    AddPaymentsGranularFillingChildSuggestions(
+        credit_card, suggestion,
+        client.GetPersonalDataManager()->payments_data_manager().app_locale());
+    suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_A11Y_ANNOUNCE_EXPANDABLE_ONLY_ENTRY);
+  } else {
+    suggestion.acceptance_a11y_announcement =
+        l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
+  }
+
+  return suggestion;
+}
+
 }  // namespace
 
 PaymentsSuggestionGenerator::PaymentsSuggestionGenerator() = default;
@@ -908,11 +1085,10 @@ PaymentsSuggestionGenerator::GetTouchToFillCardsToSuggest(
     FieldType trigger_field_type) {
   // TouchToFill actually has a trigger field which must be classified in some
   // way, but we intentionally fetch suggestions irrelevant of them.
-  std::vector<CreditCard> cards_to_suggest =
-      PaymentsSuggestionGenerator::GetOrderedCardsToSuggest(
-          client, trigger_field, trigger_field_type,
-          /*suppress_disused_cards=*/true, /*prefix_match=*/false,
-          /*include_virtual_cards=*/true);
+  std::vector<CreditCard> cards_to_suggest = GetOrderedCardsToSuggest(
+      client, trigger_field, trigger_field_type,
+      /*suppress_disused_cards=*/true, /*prefix_match=*/false,
+      /*include_virtual_cards=*/true);
   return base::ranges::any_of(cards_to_suggest,
                               &CreditCard::IsCompleteValidCard)
              ? cards_to_suggest
@@ -930,64 +1106,6 @@ Suggestion PaymentsSuggestionGenerator::CreateManageCreditCardsEntry(
 Suggestion PaymentsSuggestionGenerator::CreateManageIbansEntry() {
   return CreateManagePaymentMethodsEntry(SuggestionType::kManageIban,
                                          /*with_gpay_logo=*/false);
-}
-
-// static
-std::vector<CreditCard> PaymentsSuggestionGenerator::GetOrderedCardsToSuggest(
-    const AutofillClient& client,
-    const FormFieldData& trigger_field,
-    FieldType trigger_field_type,
-    bool suppress_disused_cards,
-    bool prefix_match,
-    bool include_virtual_cards) {
-  std::vector<CreditCard*> available_cards = client.GetPersonalDataManager()
-                                                 ->payments_data_manager()
-                                                 .GetCreditCardsToSuggest();
-  // If a card has available card linked offers on the last committed url, rank
-  // it to the top.
-  if (std::map<std::string, AutofillOfferData*> card_linked_offers_map =
-          GetCardLinkedOffers(client);
-      !card_linked_offers_map.empty()) {
-    base::ranges::stable_sort(
-        available_cards,
-        [&card_linked_offers_map](const CreditCard* a, const CreditCard* b) {
-          return base::Contains(card_linked_offers_map, a->guid()) &&
-                 !base::Contains(card_linked_offers_map, b->guid());
-        });
-  }
-  // Suppress disused credit cards when triggered from an empty field.
-  if (suppress_disused_cards) {
-    const base::Time min_last_used =
-        AutofillClock::Now() - kDisusedDataModelTimeDelta;
-    RemoveExpiredLocalCreditCardsNotUsedSinceTimestamp(min_last_used,
-                                                       available_cards);
-  }
-  std::vector<CreditCard> cards_to_suggest;
-  std::u16string field_contents =
-      base::i18n::ToLower(SanitizeCreditCardFieldValue(trigger_field.value()));
-  for (const CreditCard* credit_card : available_cards) {
-    std::u16string suggested_value = credit_card->GetInfo(
-        trigger_field_type,
-        client.GetPersonalDataManager()->payments_data_manager().app_locale());
-    if (prefix_match && suggested_value.empty()) {
-      continue;
-    }
-    if (prefix_match &&
-        !IsValidPaymentsSuggestionForFieldContents(
-            /*suggestion_canon=*/base::i18n::ToLower(suggested_value),
-            field_contents, trigger_field_type,
-            credit_card->record_type() ==
-                CreditCard::RecordType::kMaskedServerCard,
-            trigger_field.is_autofilled())) {
-      continue;
-    }
-    if (include_virtual_cards &&
-        ShouldShowVirtualCardOption(credit_card, client)) {
-      cards_to_suggest.push_back(CreditCard::CreateVirtualCard(*credit_card));
-    }
-    cards_to_suggest.push_back(*credit_card);
-  }
-  return cards_to_suggest;
 }
 
 // static
@@ -1091,113 +1209,39 @@ bool PaymentsSuggestionGenerator::IsCardAcceptable(const CreditCard& card,
   return !is_manual_fallback;
 }
 
-bool PaymentsSuggestionGenerator::ShouldShowVirtualCardOption(
-    const CreditCard* candidate_card,
-    const AutofillClient& client) {
-  const CreditCard* candidate_server_card = nullptr;
-  switch (candidate_card->record_type()) {
-    case CreditCard::RecordType::kLocalCard:
-      candidate_server_card = client.GetPersonalDataManager()
-                                  ->payments_data_manager()
-                                  .GetServerCardForLocalCard(candidate_card);
-      break;
-    case CreditCard::RecordType::kMaskedServerCard:
-      candidate_server_card = candidate_card;
-      break;
-    case CreditCard::RecordType::kFullServerCard:
-      break;
-    case CreditCard::RecordType::kVirtualCard:
-      // Should not happen since virtual card is not persisted.
-      NOTREACHED_NORETURN();
-  }
-  if (!candidate_server_card) {
-    return false;
-  }
-  candidate_card = candidate_server_card;
-  return ShouldShowVirtualCardOptionForServerCard(*candidate_server_card,
-                                                  client);
+std::vector<CreditCard>
+PaymentsSuggestionGenerator::GetOrderedCardsToSuggestForTest(
+    const AutofillClient& client,
+    const FormFieldData& trigger_field,
+    FieldType trigger_field_type,
+    bool suppress_disused_cards,
+    bool prefix_match,
+    bool include_virtual_cards) {
+  return GetOrderedCardsToSuggest(client, trigger_field, trigger_field_type,
+                                  suppress_disused_cards, prefix_match,
+                                  include_virtual_cards);
 }
 
-// TODO(crbug.com/40232456): Separate logic for desktop, Android dropdown, and
-// Keyboard Accessory.
-Suggestion PaymentsSuggestionGenerator::CreateCreditCardSuggestion(
+Suggestion PaymentsSuggestionGenerator::CreateCreditCardSuggestionForTest(
     const CreditCard& credit_card,
     const AutofillClient& client,
     FieldType trigger_field_type,
     bool virtual_card_option,
     bool card_linked_offer_available,
-    autofill_metrics::CardMetadataLoggingContext& metadata_logging_context) {
-  // Manual fallback entries are shown for all non credit card fields.
-  const bool is_manual_fallback =
-      GroupTypeOfFieldType(trigger_field_type) != FieldTypeGroup::kCreditCard;
+    base::optional_ref<autofill_metrics::CardMetadataLoggingContext>
+        metadata_logging_context) {
+  autofill_metrics::CardMetadataLoggingContext dummy_context;
+  return CreateCreditCardSuggestion(
+      credit_card, client, trigger_field_type, virtual_card_option,
+      card_linked_offer_available,
+      metadata_logging_context.has_value() ? *metadata_logging_context
+                                           : dummy_context);
+}
 
-  Suggestion suggestion;
-  suggestion.icon = credit_card.CardIconForAutofillSuggestion();
-  // First layer manual fallback entries can't fill forms and thus can't be
-  // selected by the user.
-  suggestion.type = SuggestionType::kCreditCardEntry;
-  suggestion.is_acceptable =
-      IsCardAcceptable(credit_card, client, is_manual_fallback);
-  suggestion.payload = Suggestion::Guid(credit_card.guid());
-#if BUILDFLAG(IS_ANDROID)
-  // The card art icon should always be shown at the start of the suggestion.
-  suggestion.is_icon_at_start = true;
-#endif  // BUILDFLAG(IS_ANDROID)
-
-  // Manual fallback suggestions labels are computed as if the triggering field
-  // type was the credit card number.
-  auto [main_text, minor_text] = GetSuggestionMainTextAndMinorTextForCard(
-      credit_card, client,
-      is_manual_fallback ? CREDIT_CARD_NUMBER : trigger_field_type);
-  suggestion.main_text = std::move(main_text);
-  suggestion.minor_text = std::move(minor_text);
-  SetSuggestionLabelsForCard(
-      credit_card, client,
-      is_manual_fallback ? CREDIT_CARD_NUMBER : trigger_field_type,
-      metadata_logging_context, suggestion);
-  SetCardArtURL(suggestion, credit_card,
-                client.GetPersonalDataManager()->payments_data_manager(),
-                virtual_card_option);
-
-  // For virtual cards, make some adjustments for the suggestion contents.
-  if (virtual_card_option) {
-    // We don't show card linked offers for virtual card options.
-    AdjustVirtualCardSuggestionContent(suggestion, credit_card, client,
-                                       trigger_field_type);
-  } else if (card_linked_offer_available) {
-#if BUILDFLAG(IS_ANDROID)
-    // For Keyboard Accessory, set Suggestion::feature_for_iph and change the
-    // suggestion icon only if card linked offers are also enabled.
-    if (base::FeatureList::IsEnabled(
-            features::kAutofillEnableOffersInClankKeyboardAccessory)) {
-      suggestion.feature_for_iph =
-          &feature_engagement::kIPHKeyboardAccessoryPaymentOfferFeature;
-      suggestion.icon = Suggestion::Icon::kOfferTag;
-    } else {
-#else   // Add the offer label on Desktop unconditionally.
-    {
-#endif  // BUILDFLAG(IS_ANDROID)
-      suggestion.labels.push_back(
-          std::vector<Suggestion::Text>{Suggestion::Text(
-              l10n_util::GetStringUTF16(IDS_AUTOFILL_OFFERS_CASHBACK))});
-    }
-  }
-
-  if (virtual_card_option) {
-    suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_A11Y_ANNOUNCE_VIRTUAL_CARD_MANUAL_FALLBACK_ENTRY);
-  } else if (is_manual_fallback) {
-    AddPaymentsGranularFillingChildSuggestions(
-        credit_card, suggestion,
-        client.GetPersonalDataManager()->payments_data_manager().app_locale());
-    suggestion.acceptance_a11y_announcement = l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_A11Y_ANNOUNCE_EXPANDABLE_ONLY_ENTRY);
-  } else {
-    suggestion.acceptance_a11y_announcement =
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_FILLED_FORM);
-  }
-
-  return suggestion;
+bool PaymentsSuggestionGenerator::ShouldShowVirtualCardOptionForTest(
+    const CreditCard* candidate_card,
+    const AutofillClient& client) {
+  return ShouldShowVirtualCardOption(candidate_card, client);
 }
 
 }  // namespace autofill

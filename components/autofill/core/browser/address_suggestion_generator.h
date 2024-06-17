@@ -29,6 +29,13 @@ class FormFieldData;
 // address profile Autofill.
 class AddressSuggestionGenerator {
  public:
+  struct ProfilesToSuggestOptions {
+    const bool exclude_disused_addresses = true;
+    const bool require_non_empty_value_on_trigger_field = true;
+    const bool prefix_match_suggestions = true;
+    const bool deduplicate_suggestions = true;
+  };
+
   AddressSuggestionGenerator();
   ~AddressSuggestionGenerator();
   AddressSuggestionGenerator(const AddressSuggestionGenerator&) = delete;
@@ -51,50 +58,25 @@ class AddressSuggestionGenerator {
   // redirect to Chrome address settings page.
   static Suggestion CreateManageAddressesEntry();
 
- private:
-  friend class AddressSuggestionGeneratorTestApi;
-
-  struct ProfilesToSuggestOptions {
-    const bool exclude_disused_addresses;
-    const bool require_non_empty_value_on_trigger_field;
-    const bool prefix_match_suggestions;
-    const bool deduplicate_suggestions;
-  };
-
-  ProfilesToSuggestOptions GetProfilesToSuggestOptions(
-      FieldType trigger_field_type,
-      const std::u16string& trigger_field_contents,
-      bool trigger_field_is_autofilled,
-      AutofillSuggestionTriggerSource trigger_source);
-
-  // Returns a list of profiles that will be displayed as suggestions to the
-  // user, sorted by their relevance. This involves many steps from fetching the
-  // profiles to matching with `field_contents`, and deduplicating based on
-  // `field_types`, which are the relevant types for the current suggestion.
-  // `options` defines what strategies to follow by the function in order to
-  // filter the list or returned profiles.
   std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>
-  GetProfilesToSuggest(const AddressDataManager& address_data,
-                       FieldType trigger_field_type,
-                       const std::u16string& field_contents,
-                       bool field_is_autofilled,
-                       const FieldTypeSet& field_types,
-                       ProfilesToSuggestOptions options);
+  GetProfilesToSuggestForTest(
+      const AddressDataManager& address_data,
+      FieldType trigger_field_type,
+      const std::u16string& field_contents,
+      bool field_is_autofilled,
+      const FieldTypeSet& field_types,
+      AutofillSuggestionTriggerSource trigger_source =
+          AutofillSuggestionTriggerSource::kFormControlElementClicked);
 
-  // Returns a list of Suggestion objects, each representing an element in
-  // `profiles`.
-  // `field_types` holds the type of fields relevant for the current suggestion.
-  // The profiles passed to this function should already have been matched on
-  // `trigger_field_contents_canon` and deduplicated.
-  std::vector<Suggestion> CreateSuggestionsFromProfiles(
+  std::vector<Suggestion> CreateSuggestionsFromProfilesForTest(
       const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
           profiles,
       const FieldTypeSet& field_types,
       SuggestionType suggestion_type,
       FieldType trigger_field_type,
       uint64_t trigger_field_max_length,
-      bool is_off_the_record,
-      const std::string& app_locale);
+      bool is_off_the_record = false,
+      const std::string& app_locale = "en-US");
 };
 
 }  // namespace autofill
