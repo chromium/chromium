@@ -4822,20 +4822,6 @@ deps = {
       'condition': 'checkout_android and checkout_src_internal',
   },
 
-  # OpenGL ES 2.0 Conformance tests.
-  'src/third_party/gles2_conform': {
-      'url': Var('chrome_git') + '/chrome/deps/gles2_conform.git' + '@' +
-        '57738bb2cc672cb81ed2ee287fcd0defde968811',
-      'condition': 'checkout_src_internal',
-  },
-
-  # OpenGL ES 3.X Conformance tests.
-  'src/third_party/khronos_glcts': {
-      'url': Var('chrome_git') + '/chrome/deps/khronos_glcts.git' + '@' +
-        'eedb0baca9e88c53596874901ff5f6136102d20d',
-      'condition': 'checkout_src_internal',
-  },
-
   'src/third_party/libassistant/x64': {
     'packages': [
         {
