@@ -23,7 +23,7 @@ import {DropdownMenuOptionList} from '../controls/settings_dropdown_menu.js';
 
 import {CustomizeButtonDropdownItemElement, DropdownItemSelectEvent, DropdownMenuOption} from './customize_button_dropdown_item.js';
 import {getTemplate} from './customize_button_select.html.js';
-import {ActionChoice, ButtonRemapping, KeyEvent, RemappingAction, StaticShortcutAction} from './input_device_settings_types.js';
+import {ActionChoice, ButtonRemapping, KeyEvent, MetaKey, RemappingAction, StaticShortcutAction} from './input_device_settings_types.js';
 
 export interface CustomizeButtonSelectElement {
   $: {
@@ -468,7 +468,7 @@ export class CustomizeButtonSelectElement extends
 
   private getAriaLabelForIcon(key: string): string {
     const ariaLabelStringId = ShortcutInputKeyElement.getAriaLabelStringId(
-        key, this.hasLauncherButton);
+        key, this.hasLauncherButton ? MetaKey.kLauncher : MetaKey.kSearch);
 
     return this.i18n(ariaLabelStringId);
   }

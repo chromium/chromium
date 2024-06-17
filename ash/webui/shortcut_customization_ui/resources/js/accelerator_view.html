@@ -38,13 +38,13 @@
     <div id="accelerator-keys">
       <template is="dom-repeat" items="[[modifiers]]">
         <shortcut-input-key key="[[item]]" key-state="modifier-selected"
-            has-launcher-button="[[hasLauncherButton]]">
+            meta-key="[[metaKey]]">
         </shortcut-input-key>
       </template>
       <shortcut-input-key
           key="[[acceleratorInfo.layoutProperties.standardAccelerator.keyDisplay]]"
           key-state="alpha-numeric-selected"
-          has-launcher-button="[[hasLauncherButton]]">
+          meta-key="[[metaKey]]">
       </shortcut-input-key>
     </div>
     <div class="lock-icon-container"
@@ -65,7 +65,7 @@
       on-dom-change="onShortcutInputDomChange" restamp>
     <shortcut-input id="shortcutInput"
         pending-prerewritten-key-event="{{pendingKeyEvent}}"
-        has-launcher-button="[[hasLauncherButton]]"
+        meta-key="[[metaKey]]"
         shortcut-input-provider="[[getShortcutInputProvider()]]"
         should-ignore-key-release="[[hasError]]"
         update-on-key-press

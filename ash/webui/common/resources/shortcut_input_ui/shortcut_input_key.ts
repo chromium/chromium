@@ -13,7 +13,7 @@ import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './shortcut_input_key.html.js';
-import {KeyInputState, KeyToIconNameMap} from './shortcut_utils.js';
+import {KeyInputState, KeyToIconNameMap, MetaKey} from './shortcut_utils.js';
 
 export const META_KEY = 'meta';
 export const LWIN_KEY = 'Meta';
@@ -72,9 +72,8 @@ export class ShortcutInputKeyElement extends ShortcutInputKeyElementBase {
 
       // This property is used to apply different icon if the meta key is
       // launcher button.
-      hasLauncherButton: {
-        type: Boolean,
-        value: false,
+      metaKey: {
+        type: Object,
         reflectToAttribute: true,
       },
     };
@@ -85,7 +84,7 @@ export class ShortcutInputKeyElement extends ShortcutInputKeyElementBase {
   narrow: boolean;
   highlighted: boolean;
   hasIcon: boolean;
-  hasLauncherButton: boolean;
+  metaKey: MetaKey = MetaKey.kSearch;
 
   override connectedCallback(): void {
     super.connectedCallback();
@@ -102,8 +101,16 @@ export class ShortcutInputKeyElement extends ShortcutInputKeyElementBase {
     }
     // For 'META_KEY' and 'LWIN' key, return launcher/search icon.
     if (this.key === META_KEY || this.key === LWIN_KEY) {
-      return this.hasLauncherButton ? 'shortcut-input-keys:launcher' :
-                                      'shortcut-input-keys:search';
+      switch (this.metaKey) {
+        case MetaKey.kLauncherRefresh:
+          // TODO(b/338134189): Replace it with updated icon when finalized.
+          return 'shortcut-input-keys:launcher';
+        case MetaKey.kSearch:
+          return 'shortcut-input-keys:search';
+        case MetaKey.kLauncher:
+        default:
+          return 'shortcut-input-keys:launcher';
+      }
     }
     const iconName = KeyToIconNameMap[this.key];
     return iconName ? `shortcut-input-keys:${iconName}` : null;
@@ -114,20 +121,29 @@ export class ShortcutInputKeyElement extends ShortcutInputKeyElementBase {
    * static so that it can be used by the test for this element.
    *
    * @param key The KeyboardEvent.code of a key, e.g. ArrowUp or PrintScreen.
-   * @param hasLauncherButton Whether the keyboard has a launcher button or a
-   *     search button.
+   * @param metaKey The keyboard' meta key to display in the UI,
+   *    e.g. Search or Launcher.
    */
-  static getAriaLabelStringId(key: string, hasLauncherButton: boolean): string {
+  static getAriaLabelStringId(key: string, metaKey: MetaKey): string {
     if (key === META_KEY || key === LWIN_KEY) {
-      return hasLauncherButton ? 'iconLabelOpenLauncher' :
-                                 'iconLabelOpenSearch';
+      switch (metaKey) {
+        case MetaKey.kLauncherRefresh:
+          // TODO(b/338134189): Replace it with updated string id when
+          // finalized.
+          return 'iconLabelOpenLauncher';
+        case MetaKey.kSearch:
+          return 'iconLabelOpenSearch';
+        case MetaKey.kLauncher:
+        default:
+          return 'iconLabelOpenLauncher';
+      }
     }
     return `iconLabel${key}`;  // e.g. iconLabelArrowUp
   }
 
   private getAriaLabelForIcon(): string {
-    const ariaLabelStringId = ShortcutInputKeyElement.getAriaLabelStringId(
-        this.key, this.hasLauncherButton);
+    const ariaLabelStringId =
+        ShortcutInputKeyElement.getAriaLabelStringId(this.key, this.metaKey);
     assert(
         this.i18nExists(ariaLabelStringId),
         `String ID ${ariaLabelStringId} should exist, but it doesn't.`);

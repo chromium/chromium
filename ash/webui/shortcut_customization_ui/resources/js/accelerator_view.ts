@@ -149,8 +149,8 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         reflectToAttribute: true,
       },
 
-      /** Whether to show a launcher icon or search icon for meta key. */
-      hasLauncherButton: Boolean,
+      /** The meta key on the keyboard to display to the user. */
+      metaKey: Object,
 
       hasFunctionKey: {
         type: Boolean,
@@ -172,7 +172,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   subcategoryIsLocked: boolean;
   isFirstAccelerator: boolean;
   isDisabled: boolean;
-  hasLauncherButton: boolean;
+  metaKey: MetaKey = MetaKey.kSearch;
   pendingKeyEvent: KeyEvent|null = null;
   shortcutInput: ShortcutInputElement|null;
   defaultAccelerators: Accelerator[];
@@ -192,11 +192,8 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
 
     this.subcategoryIsLocked = this.lookupManager.isSubcategoryLocked(
         this.lookupManager.getAcceleratorSubcategory(this.source, this.action));
-    // TODO(b/338134189): Replace this.hasLauncherButton with
-    // this.metaKeyToDisplay and update children components to use enum instead
-    // of boolean.
-    this.hasLauncherButton =
-        this.lookupManager.getMetaKeyToDisplay() !== MetaKey.kSearch;
+
+    this.metaKey = this.lookupManager.getMetaKeyToDisplay();
     this.defaultAccelerators =
         (await this.shortcutProvider.getDefaultAcceleratorsForId(this.action))
             .accelerators;

@@ -13,7 +13,7 @@ import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
-import {AcceleratorSource, MetaKey, TextAcceleratorPart, TextAcceleratorPartType} from './shortcut_types.js';
+import {AcceleratorSource, TextAcceleratorPart, TextAcceleratorPartType} from './shortcut_types.js';
 import {isCustomizationAllowed} from './shortcut_utils.js';
 import {getTemplate} from './text_accelerator.html.js';
 
@@ -126,11 +126,7 @@ export class TextAcceleratorElement extends PolymerElement {
     key.keyState = keyState;
     key.narrow = this.narrow;
     key.highlighted = this.highlighted;
-    // TODO(b/338134189): Replace this.hasLauncherButton with
-    // this.metaKeyToDisplay and update children components to use enum instead
-    // of boolean.
-    key.hasLauncherButton =
-        this.lookupManager.getMetaKeyToDisplay() !== MetaKey.kSearch;
+    key.metaKey = this.lookupManager.getMetaKeyToDisplay();
     return key;
   }
 

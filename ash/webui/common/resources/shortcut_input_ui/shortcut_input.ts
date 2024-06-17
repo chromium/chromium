@@ -15,7 +15,7 @@ import {FakeShortcutInputProvider} from './fake_shortcut_input_provider.js';
 import {KeyEvent} from './input_device_settings.mojom-webui.js';
 import {getTemplate} from './shortcut_input.html.js';
 import {ShortcutInputObserverReceiver, ShortcutInputProviderInterface} from './shortcut_input_provider.mojom-webui.js';
-import {getSortedModifiers, KeyInputState, KeyToIconNameMap, Modifier, ModifierKeyCodes, Modifiers} from './shortcut_utils.js';
+import {getSortedModifiers, KeyInputState, KeyToIconNameMap, MetaKey, Modifier, ModifierKeyCodes, Modifiers} from './shortcut_utils.js';
 
 export interface ShortcutInputElement {
   $: {
@@ -55,9 +55,7 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
         type: Boolean,
       },
 
-      hasLauncherButton: {
-        type: Boolean,
-      },
+      metaKey: Object,
 
       // When `updateOnKeyPress` is true, always show edit-view and and updates
       // occur on key press events rather than on key release.
@@ -90,7 +88,7 @@ export class ShortcutInputElement extends ShortcutInputElementBase {
     };
   }
 
-  hasLauncherButton: boolean = true;
+  metaKey: MetaKey = MetaKey.kSearch;
   hasFunctionKey: boolean = false;
   shortcutInputProvider: ShortcutInputProviderInterface|null = null;
   pendingKeyEvent: KeyEvent|null = null;

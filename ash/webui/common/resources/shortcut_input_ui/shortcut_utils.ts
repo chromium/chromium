@@ -5,6 +5,7 @@
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 
 import {StandardAcceleratorProperties} from './accelerator_info.mojom-webui.js';
+import * as MetaKeyTypes from './meta_key.mojom-webui.js';
 import {ShortcutInputKeyElement} from './shortcut_input_key.js';
 
 export interface ShortcutLabelProperties extends StandardAcceleratorProperties {
@@ -55,6 +56,14 @@ export const ModifierKeyCodes: AllowedModifierKeyCodes[] = [
   AllowedModifierKeyCodes.META_RIGHT,
   AllowedModifierKeyCodes.FN_KEY,
 ];
+
+/**
+ * Enumeration of meta key denoting all the possible options deducable from
+ * the users keyboard. Used to show the correct key to the user in the settings
+ * UI.
+ */
+export type MetaKey = MetaKeyTypes.MetaKey;
+export const MetaKey = MetaKeyTypes.MetaKey;
 
 export const getSortedModifiers = (modifierStrings: string[]): string[] => {
   const sortOrder = ['meta', 'ctrl', 'alt', 'shift', 'fn'];
@@ -133,7 +142,8 @@ export function createInputKeyParts(
       // Current use cases outside keyboard page or shortcut page only consider
       // 'meta' instead of 'command'.
       key.key = modifierName === 'command' ? 'meta' : modifierName;
-      key.hasLauncherButton = shortcutLabelProperties.hasLauncherKey;
+      key.metaKey = shortcutLabelProperties.hasLauncherKey ? MetaKey.kLauncher :
+                                                             MetaKey.kSearch;
       key.narrow = useNarrowLayout;
       inputKeys.push(key);
       pressedModifiers.push(modifierName);
