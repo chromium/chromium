@@ -238,7 +238,7 @@ public final class SyncTestUtil {
 
     /**
      * Extracts datatype-specific information from the given JSONObject. The returned JSONObject
-     * contains the same data as a specifics protocol buffer (e.g., TypedUrlSpecifics).
+     * contains the same data as a specifics protocol buffer (e.g., ReadingListSpecifics).
      */
     private static JSONObject extractSpecifics(JSONObject node) throws JSONException {
         JSONObject specifics = node.getJSONObject("SPECIFICS");
@@ -294,17 +294,15 @@ public final class SyncTestUtil {
     /**
      * Returns the local Sync data present for a single datatype.
      *
-     * For each data entity, a Pair is returned. The first piece of data is the entity's server ID.
-     * This is useful for activities like deleting an entity on the server. The second piece of data
-     * is a JSONObject representing the datatype-specific information for the entity. This data is
-     * the same as the data stored in a specifics protocol buffer (e.g., TypedUrlSpecifics).
+     * <p>For each data entity, a Pair is returned. The first piece of data is the entity's server
+     * ID. This is useful for activities like deleting an entity on the server. The second piece of
+     * data is a JSONObject representing the datatype-specific information for the entity. This data
+     * is the same as the data stored in a specifics protocol buffer (e.g., ReadingListSpecifics).
      *
      * @param context the Context used to retreive the correct SyncService
      * @param typeString a String representing a specific datatype.
-     *
-     * TODO(pvalenzuela): Replace typeString with the native ModelType enum or something else
-     * that will avoid callers needing to specify the native string version.
-     *
+     *     <p>TODO(pvalenzuela): Replace typeString with the native ModelType enum or something else
+     *     that will avoid callers needing to specify the native string version.
      * @return a List of Pair<String, JSONObject> representing the local Sync data
      */
     public static List<Pair<String, JSONObject>> getLocalData(Context context, String typeString)
