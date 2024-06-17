@@ -405,10 +405,12 @@ export class ObjectLayerElement extends PolymerElement {
       return;
     }
 
-    let leftMostPoint = 0;
-    let rightMostPoint = 0;
-    let topMostPoint = 0;
-    let bottomMostPoint = 0;
+    const firstVertex = polygons[0].vertex[0];
+    let topMostPoint = firstVertex.y;
+    let bottomMostPoint = firstVertex.y;
+    let leftMostPoint = firstVertex.x;
+    let rightMostPoint = firstVertex.x;
+
     for (const polygon of polygons) {
       // TODO(b/330183480): Currently, we are assuming that polygon
       // coordinates are normalized. We should still implement
@@ -416,12 +418,6 @@ export class ObjectLayerElement extends PolymerElement {
       if (polygon.coordinateType !== Polygon_CoordinateType.kNormalized) {
         continue;
       }
-
-      const firstVertex = polygon.vertex[0];
-      topMostPoint = firstVertex.y;
-      bottomMostPoint = firstVertex.y;
-      leftMostPoint = firstVertex.x;
-      rightMostPoint = firstVertex.x;
 
       for (const vertex of polygon.vertex.slice(1)) {
         topMostPoint = Math.min(topMostPoint, vertex.y);
