@@ -601,10 +601,21 @@ void SessionRestorationServiceImpl::DeleteDataForDiscardedSessions(
     const std::set<std::string>& identifiers,
     base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!HasIntersection(identifiers, identifiers_));
+  std::set<std::string> filtered_identifiers = identifiers;
+  if (@available(iOS 18, *)) {
+    // TODO(crbug.com/347443965): Something is broken here on iOS18.
+    for (const std::string& identifier : identifiers) {
+      if (identifiers_.contains(identifier)) {
+        filtered_identifiers.erase(identifier);
+      }
+    }
+  } else {
+    DCHECK(!HasIntersection(identifiers, identifiers_));
+  }
   task_runner_->PostTaskAndReply(
       FROM_HERE,
-      base::BindOnce(&DeleteDataForSessions, storage_path_, identifiers),
+      base::BindOnce(&DeleteDataForSessions, storage_path_,
+                     filtered_identifiers),
       std::move(closure));
 }
 

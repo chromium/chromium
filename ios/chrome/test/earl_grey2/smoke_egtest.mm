@@ -273,6 +273,11 @@
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey loadURL:GURL("chrome://about")];
+  if (@available(iOS 18, *)) {
+    // TODO(crbug.com/347443965): Something is broken here on iOS18 and this
+    // test doesn't seem to be syncing chrome://about to disk.
+    sleep(3);
+  }
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithFeaturesEnabled:{}
       disabled:{}
       relaunchPolicy:ForceRelaunchByKilling];
