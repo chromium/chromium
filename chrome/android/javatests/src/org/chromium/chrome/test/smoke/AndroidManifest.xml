@@ -7,10 +7,6 @@
 <manifest
       xmlns:android="http://schemas.android.com/apk/res/android"
       package="org.chromium.chrome.test.smoke">
-
-    <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
     <instrumentation android:name="org.chromium.base.test.BaseChromiumAndroidJUnitRunner"
         android:targetPackage="org.chromium.chrome.test.smoke"
         android:label="Runner for org.chromium.chrome.test.smoke"/>

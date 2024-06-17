@@ -8,9 +8,7 @@
 
 {% block extra_uses_permissions %}
     <uses-permission android:name="android.permission.ACCESS_MOCK_LOCATION" />
-    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.READ_LOGS"/>
-    <uses-permission android:name="android.permission.SET_ANIMATION_SCALE"/>
 {% endblock %}
 
 {% block extra_application_definitions_for_test %}
@@ -32,14 +30,6 @@
 
         <activity android:name="org.chromium.components.signin.test.util.FakeAccountManagerFacade$AddAccountActivityStub"
             android:exported="true"/>
-{% endblock %}
-
-{% block extra_application_attributes %}
-{{ super() }}
-## Test listing breaks because of scoped storage in Android 10 - see
-## https://developer.android.com/training/data-storage#scoped-storage and
-## https://developer.android.com/training/data-storage/compatibility.
-android:requestLegacyExternalStorage="true"
 {% endblock %}
 
 {% block extra_root_definitions %}

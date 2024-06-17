@@ -3658,7 +3658,7 @@ if (!is_robolectric && enable_java_templates) {
       }
 
       deps = [
-        "//testing/android/instrumentation:instrumentation_test_runner_java",
+        "//testing/android/instrumentation:test_runner_java",
       ]
       if (defined(invoker.deps)) {
         deps += invoker.deps

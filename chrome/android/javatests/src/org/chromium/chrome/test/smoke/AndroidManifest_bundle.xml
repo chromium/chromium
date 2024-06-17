@@ -8,14 +8,6 @@
       xmlns:android="http://schemas.android.com/apk/res/android"
       package="org.chromium.chrome.test.smoke.bundle">
 
-    <uses-permission android:name="android.permission.RUN_INSTRUMENTATION" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
-    <!-- Explicitly set the attribute requestLegacyExternalStorage to "true"
-         since it is "false" by default on apps targeting Android Q. -->
-    <application android:requestLegacyExternalStorage="true">
-    </application>
-
     <instrumentation android:name="org.chromium.base.test.BaseChromiumAndroidJUnitRunner"
         android:targetPackage="org.chromium.chrome.test.smoke.bundle"
         android:label="Runner for org.chromium.chrome.test.smoke.bundle"/>
