@@ -2066,10 +2066,16 @@ Permissions you've already given to websites and apps may apply to this account.
           Service error: <ph name="SERVICE_ERROR">$1<ex>error-internal</ex></ph>.
         </message>
 
-        <!--Install errors.-->
+        <!--update_client install errors.-->
         <message name="IDS_GENERIC_INSTALL_ERROR"
-                 desc="Error message displayed in the main dialog for runtime errors that occur while installing.">
+                 desc="Error message displayed in the main dialog if update client encounters an error while installing.">
           Install error: <ph name="INSTALL_ERROR">$1<ex>error-internal</ex></ph>
+        </message>
+
+        <!--Installer errors.-->
+        <message name="IDS_GENERIC_INSTALLER_ERROR"
+                 desc="Error message displayed in the main dialog when the application installer returns an error.">
+          Installer error: <ph name="INSTALLER_ERROR">$1<ex>error-internal</ex></ph>
         </message>
         <message name="IDS_INSTALL_REBOOT"
                  desc="Message displayed in the main dialog when a system reboot is required or has been initiated after installing.">

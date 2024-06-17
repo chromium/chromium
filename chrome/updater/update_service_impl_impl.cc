@@ -373,7 +373,7 @@ std::wstring GetTextForInstallerError(int error_code) {
 
     case GOOPDATEINSTALL_E_INSTALL_ALREADY_RUNNING:
       return GetLocalizedStringF(
-          IDS_GENERIC_INSTALL_ERROR_BASE,
+          IDS_GENERIC_INSTALLER_ERROR_BASE,
           GetTextForSystemError(ERROR_INSTALL_ALREADY_RUNNING));
 
     case ERROR_SUCCESS_REBOOT_INITIATED:
@@ -383,7 +383,7 @@ std::wstring GetTextForInstallerError(int error_code) {
                                  GetTextForSystemError(error_code));
 
     default:
-      return GetLocalizedStringF(IDS_GENERIC_INSTALL_ERROR_BASE,
+      return GetLocalizedStringF(IDS_GENERIC_INSTALLER_ERROR_BASE,
                                  GetTextForSystemError(error_code));
   }
 #undef POLICY_ERROR_SWITCH_ENTRY

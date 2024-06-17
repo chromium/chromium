@@ -400,7 +400,7 @@ INSTANTIATE_TEST_SUITE_P(
         {UpdateService::ErrorCategory::kInstaller,
          2,
          base::WideToUTF8(GetLocalizedStringF(
-             IDS_GENERIC_INSTALL_ERROR_BASE,
+             IDS_GENERIC_INSTALLER_ERROR_BASE,
              L"The system cannot find the file specified. ")),
          {}},
         {UpdateService::ErrorCategory::kInstaller,
