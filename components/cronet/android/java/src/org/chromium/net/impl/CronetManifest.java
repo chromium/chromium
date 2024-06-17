@@ -4,6 +4,7 @@
 
 package org.chromium.net.impl;
 
+import android.annotation.SuppressLint;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -17,7 +18,7 @@ import org.chromium.net.impl.CronetLogger.CronetSource;
 /**
  * Utilities for working with Cronet Android manifest flags.
  *
- * Cronet manifest flags must be defined within a service definition named after {@link
+ * <p>Cronet manifest flags must be defined within a service definition named after {@link
  * #META_DATA_HOLDER_SERVICE_NAME} (the reason this is not defined at the application level is to
  * avoid scalability issues with PackageManager queries). For example, to enable telemetry, add the
  * following to {@code AndroidManifest.xml}:
@@ -71,28 +72,60 @@ public final class CronetManifest {
         return getMetaData(context).getBoolean(READ_HTTP_FLAGS_META_DATA_KEY, /* default= */ true);
     }
 
+    private static final Object sLock = new Object();
+
+    // Leaking this is fine because this is storing an application context which lives for the
+    // entire process duration anyway.
+    @SuppressLint("StaticFieldLeak")
+    private static Context sLastContext;
+
+    private static Bundle sMetaData;
+
     /**
      * @return The meta-data contained within the Cronet meta-data holder service definition in the
-     * Android manifest, or an empty Bundle if there is no such definition. Never returns null.
+     *     Android manifest, or an empty Bundle if there is no such definition. Never returns null.
      */
     private static Bundle getMetaData(Context context) {
-        ServiceInfo serviceInfo;
-        try {
-            serviceInfo =
-                    context.getPackageManager()
-                            .getServiceInfo(
-                                    new ComponentName(context, META_DATA_HOLDER_SERVICE_NAME),
-                                    PackageManager.GET_META_DATA
-                                            | PackageManager.MATCH_DISABLED_COMPONENTS
-                                            | PackageManager.MATCH_DIRECT_BOOT_AWARE
-                                            | PackageManager.MATCH_DIRECT_BOOT_UNAWARE);
-        } catch (PackageManager.NameNotFoundException | NullPointerException e) {
-            // TODO(b/331573772): Consider removing this NPE check once we can check for
-            // CRONET_SOURCE_FAKE when creating logger.
-            serviceInfo = null;
+        // Make sure we don't create a memory leak by only caching the application context, not a
+        // local short-lived context.
+        context = context.getApplicationContext();
+        synchronized (sLock) {
+            // If we are being asked for the meta-data again for the same Context, assume the answer
+            // will be the same and serve a cached result. This is deemed safe because manifests are
+            // not supposed to change over the lifetime of the app, and this makes the code
+            // considerably more efficient because PackageManager calls are expensive (they involve
+            // an IPC to the system server). See also https://crbug.com/346546533.
+            if (context != sLastContext) {
+                ServiceInfo serviceInfo;
+                try {
+                    serviceInfo =
+                            context.getPackageManager()
+                                    .getServiceInfo(
+                                            new ComponentName(
+                                                    context, META_DATA_HOLDER_SERVICE_NAME),
+                                            PackageManager.GET_META_DATA
+                                                    | PackageManager.MATCH_DISABLED_COMPONENTS
+                                                    | PackageManager.MATCH_DIRECT_BOOT_AWARE
+                                                    | PackageManager.MATCH_DIRECT_BOOT_UNAWARE);
+                } catch (PackageManager.NameNotFoundException | NullPointerException e) {
+                    // TODO(b/331573772): Consider removing this NPE check once we can check for
+                    // CRONET_SOURCE_FAKE when creating logger.
+                    serviceInfo = null;
+                }
+                sMetaData =
+                        serviceInfo != null && serviceInfo.metaData != null
+                                ? serviceInfo.metaData
+                                : new Bundle();
+                sLastContext = context;
+            }
+            assert sMetaData != null;
+            return sMetaData;
         }
-        return serviceInfo != null && serviceInfo.metaData != null
-                ? serviceInfo.metaData
-                : new Bundle();
+    }
+
+    @VisibleForTesting
+    public static void resetCache() {
+        sMetaData = null;
+        sLastContext = null;
     }
 }

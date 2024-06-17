@@ -29,6 +29,7 @@ import org.chromium.base.Log;
 import org.chromium.base.PathUtils;
 import org.chromium.net.httpflags.Flags;
 import org.chromium.net.httpflags.HttpFlagsInterceptor;
+import org.chromium.net.impl.CronetManifest;
 import org.chromium.net.impl.CronetUrlRequestContext;
 import org.chromium.net.impl.HttpEngineNativeProvider;
 import org.chromium.net.impl.JavaCronetEngine;
@@ -459,6 +460,7 @@ public class CronetTestRule implements TestRule {
                                 .build());
             }
 
+            CronetManifest.resetCache();
             setHttpFlags(null);
         }
 
