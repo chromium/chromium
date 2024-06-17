@@ -94,7 +94,7 @@ void ShowCreateDesktopShortcutDialog(
           .AddCancelButton(base::DoNothing())
           .SetDialogDestroyingCallback(base::BindOnce(
               &CreateDesktopShortcutDelegate::OnClose, delegate_weak_ptr))
-          .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_NONE)
+          .OverrideDefaultButton(ui::DialogButton::DIALOG_BUTTON_CANCEL)
           .Build();
 
   dialog_model->AddCustomField(
