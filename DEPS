@@ -514,7 +514,7 @@ vars = {
   # ninja CIPD package version.
   # https://chrome-infra-packages.appspot.com/p/infra/3pp/tools/ninja
   # This has to stay in sync with the version in src/third_party/ninja/README.chromium.
-  'ninja_version': 'version:2@1.11.1.chromium.6',
+  'ninja_version': 'version:2@1.12.1.chromium.1',
 
   # 'magic' variable to tell depot_tools that git submodules should be accepted
   # but parity with DEPS file is expected.
