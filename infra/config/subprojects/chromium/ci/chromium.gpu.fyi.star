@@ -376,6 +376,8 @@ ci.gpu.linux_builder(
             "remoteexec",
             "dcheck_off",
             "no_symbols",
+            "chromeos",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -429,6 +431,8 @@ ci.gpu.linux_builder(
             "dcheck_off",
             "no_symbols",
             "is_skylab",
+            "chromeos",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -495,6 +499,7 @@ ci.gpu.linux_builder(
             "try_builder",
             "remoteexec",
             "static_angle",
+            "arm",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -567,6 +572,8 @@ ci.gpu.linux_builder(
             "release_builder",
             "try_builder",
             "remoteexec",
+            "linux",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -600,6 +607,8 @@ ci.gpu.linux_builder(
             "release_builder",
             "try_builder",
             "remoteexec",
+            "linux",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -630,6 +639,8 @@ ci.gpu.linux_builder(
             "gpu_fyi_tests",
             "debug_builder",
             "remoteexec",
+            "linux",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -663,6 +674,8 @@ ci.gpu.linux_builder(
             "try_builder",
             "remoteexec",
             "tsan",
+            "linux",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -694,6 +707,7 @@ ci.gpu.mac_builder(
             "try_builder",
             "remoteexec",
             "x64",
+            "mac",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -726,6 +740,7 @@ ci.gpu.mac_builder(
             "remoteexec",
             "asan",
             "x64",
+            "mac",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -756,6 +771,7 @@ ci.gpu.mac_builder(
             "debug_builder",
             "remoteexec",
             "x64",
+            "mac",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -788,6 +804,7 @@ ci.gpu.mac_builder(
             "try_builder",
             "remoteexec",
             "arm64",
+            "mac",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -1748,6 +1765,7 @@ gpu_fyi_windows_builder(
             "release_builder",
             "try_builder",
             "remoteexec",
+            "win",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -1780,6 +1798,7 @@ gpu_fyi_windows_builder(
             "try_builder",
             "remoteexec",
             "x86",
+            "win",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -1814,6 +1833,7 @@ gpu_fyi_windows_builder(
             # Remove this once the decision to use cross-compilation or not in
             # crbug.com/1510985 is made.
             "win_cross",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -1844,6 +1864,8 @@ gpu_fyi_windows_builder(
             "gpu_fyi_tests",
             "debug_builder",
             "remoteexec",
+            "win",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -1876,6 +1898,8 @@ gpu_fyi_windows_builder(
             "release_builder",
             "try_builder",
             "remoteexec",
+            "win",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -1907,6 +1931,8 @@ gpu_fyi_windows_builder(
             "dx12vk",
             "debug_builder",
             "remoteexec",
+            "win",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
@@ -1945,6 +1971,8 @@ gpu_fyi_windows_builder(
             "release_builder",
             "try_builder",
             "remoteexec",
+            "win",
+            "x64",
         ],
     ),
     console_view_entry = consoles.console_view_entry(
