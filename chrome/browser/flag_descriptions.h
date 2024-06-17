@@ -2279,9 +2279,6 @@ extern const char kSanitizerApiDescription[];
 extern const char kUsePassthroughCommandDecoderName[];
 extern const char kUsePassthroughCommandDecoderDescription[];
 
-extern const char kUseMultiPlaneFormatForHardwareVideoName[];
-extern const char kUseMultiPlaneFormatForHardwareVideoDescription[];
-
 extern const char kUseMultiPlaneFormatForSoftwareVideoName[];
 extern const char kUseMultiPlaneFormatForSoftwareVideoDescription[];
 

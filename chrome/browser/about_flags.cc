@@ -10306,11 +10306,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(arc::kEnableArcS2Idle)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    {"use-multi-plane-format-for-hardware-video",
-     flag_descriptions::kUseMultiPlaneFormatForHardwareVideoName,
-     flag_descriptions::kUseMultiPlaneFormatForHardwareVideoDescription, kOsAll,
-     FEATURE_VALUE_TYPE(media::kUseMultiPlaneFormatForHardwareVideo)},
-
     {"use-multi-plane-format-for-software-video",
      flag_descriptions::kUseMultiPlaneFormatForSoftwareVideoName,
      flag_descriptions::kUseMultiPlaneFormatForSoftwareVideoDescription, kOsAll,

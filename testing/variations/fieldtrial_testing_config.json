@@ -22593,26 +22593,6 @@
             ]
         }
     ],
-    "UseMultiPlaneFormatForHardwareVideo": [
-        {
-            "platforms": [
-                "mac",
-                "windows",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "fuchsia"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseMultiPlaneFormatForHardwareVideo"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseMultiPlaneFormatForSoftwareVideo": [
         {
             "platforms": [

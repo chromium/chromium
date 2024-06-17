@@ -598,12 +598,6 @@ BASE_FEATURE(kUseWritePixelsYUV,
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables creating single shared image and mailbox for multi-planar formats for
-// hardware video decoders.
-BASE_FEATURE(kUseMultiPlaneFormatForHardwareVideo,
-             "UseMultiPlaneFormatForHardwareVideo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables creating single shared image and mailbox for multi-planar formats for
 // software video decoders.
 BASE_FEATURE(kUseMultiPlaneFormatForSoftwareVideo,
              "UseMultiPlaneFormatForSoftwareVideo",
@@ -1850,10 +1844,6 @@ bool IsVideoCaptureAcceleratedJpegDecodingEnabled() {
 #else
   return false;
 #endif
-}
-
-bool IsMultiPlaneFormatForHardwareVideoEnabled() {
-  return true;
 }
 
 bool IsMultiPlaneFormatForSoftwareVideoEnabled() {
