@@ -11,8 +11,13 @@ interface mixin PartRootMixin {
   // Retrieve the parts list for this PartRoot, always in tree order breaking
   // ties for a Node using the order Parts were constructed.
   sequence<Part> getParts();
-  // Retrieve getParts()[index].NodeToSortBy. This is experimental.
-  [PerWorldBindings] Node getPartNode(unsigned long index);
+  // Retrieve the Nodes corresponding to the NodeParts returned by getParts(),
+  // without building the Part objects.
+  [RuntimeEnabled=DOMPartsAPIMinimal] sequence<Node> getNodePartNodes();
+  // Retrieve the pairs of previous/next Nodes corresponding to the
+  // ChildNodeParts returned by getParts(), without building the Part objects.
+  // Nodes are paired, so for 3 ChildNodeParts, 6 Nodes will be returned.
+  [RuntimeEnabled=DOMPartsAPIMinimal] sequence<Node> getChildNodePartNodes();
   // This clones the PartRoot, and also clones the Node tree itself, starting
   // at the RootContainer. In the case of a DocumentPartRoot, the entire
   // document tree is cloned. In the case of a ChildPartRoot, only the children

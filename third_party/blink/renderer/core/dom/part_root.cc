@@ -101,6 +101,7 @@ void PartRoot::CloneParts(const Node& source_node,
 }
 
 void PartRoot::SwapPartsList(PartRoot& other) {
+  DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
   cached_ordered_parts_.swap(other.cached_ordered_parts_);
   std::swap(cached_parts_list_dirty_, other.cached_parts_list_dirty_);
 }
@@ -119,8 +120,8 @@ void PartRoot::SwapPartsList(PartRoot& other) {
 // any Parts we find. If we find a ChildNodePart (or other PartRoot), we ignore
 // Parts until we exit the Partroot.
 void PartRoot::RebuildPartsList() {
-  DCHECK(cached_parts_list_dirty_);
   DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
+  DCHECK(cached_parts_list_dirty_);
   cached_ordered_parts_.clear();
   // Then traverse the tree under the root container and add parts in the order
   // they're found in the tree, and for the same Node, in the order they were
@@ -182,21 +183,22 @@ void PartRoot::RebuildPartsList() {
   }
 }
 
+namespace {
+
 // This is used only in the case of DOMPartsAPIMinimal enabled, and it just
-// fresh-builds the parts list every time.
-void PartRoot::BuildPartsList() {
+// fresh-builds the parts list, and/or just the node lists, every time with no
+// caching.
+void BuildPartsList(PartRoot& part_root,
+                    HeapVector<Member<Part>>* part_list,
+                    HeapVector<Member<Node>>* node_part_nodes,
+                    HeapVector<Member<Node>>* child_node_part_nodes) {
   DCHECK(RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
-  // Use |cached_ordered_parts_| for the data.
-  cached_ordered_parts_.clear();
-  // Then traverse the tree under the root container and add parts in the order
-  // they're found in the tree, and for the same Node, in the order they were
-  // constructed.
-  Node* node = FirstIncludedChildNode();
-  Node* end_node = LastIncludedChildNode();
+  Node* node = part_root.FirstIncludedChildNode();
+  Node* end_node = part_root.LastIncludedChildNode();
   if (!node || !end_node) {
-    return;  // Empty list
+    return;  // Empty lists
   }
-  if (!IsDocumentPartRoot()) {
+  if (!part_root.IsDocumentPartRoot()) {
     // This is a ChildNodePart, so we need to skip the first start node, or
     // we'll just re-detect this ChildNodePart. If `node` doesn't have a
     // nextSibling (i.e. this ChildNodePart is mal-formed), then `node` will be
@@ -207,7 +209,6 @@ void PartRoot::BuildPartsList() {
   }
   while (node != end_node) {
     if (node->HasNodePart()) {
-      Vector<String> metadata;
       if (Comment* start_comment = DynamicTo<Comment>(node);
           start_comment &&
           start_comment->data() == kChildNodePartStartCommentData) {
@@ -226,9 +227,15 @@ void PartRoot::BuildPartsList() {
           if (LIKELY(end_comment.data() == kChildNodePartEndCommentData)) {
             if (LIKELY(!nested_child_node_part_count)) {
               // Found the end of the child node part.
-              cached_ordered_parts_.push_back(
-                  MakeGarbageCollected<ChildNodePart>(*this, *start_comment,
-                                                      end_comment, metadata));
+              if (part_list) {
+                Vector<String> metadata;
+                part_list->push_back(MakeGarbageCollected<ChildNodePart>(
+                    part_root, *start_comment, end_comment, metadata));
+              }
+              if (child_node_part_nodes) {
+                child_node_part_nodes->push_back(start_comment);
+                child_node_part_nodes->push_back(&end_comment);
+              }
               break;
             }
             --nested_child_node_part_count;
@@ -237,21 +244,45 @@ void PartRoot::BuildPartsList() {
           }
         }
       } else {
-        // Plain NodePart
-        cached_ordered_parts_.push_back(
-            MakeGarbageCollected<NodePart>(*this, *node, metadata));
+        // This is just a NodePart.
+        if (part_list) {
+          Vector<String> metadata;
+          part_list->push_back(
+              MakeGarbageCollected<NodePart>(part_root, *node, metadata));
+        }
+        if (node_part_nodes) {
+          node_part_nodes->push_back(node);
+        }
       }
     }
     node = NodeTraversal::Next(*node);
   }
 }
 
+}  // namespace
+
+HeapVector<Member<Node>> PartRoot::getNodePartNodes() {
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
+  HeapVector<Member<Node>> nodes;
+  BuildPartsList(*this, nullptr, &nodes, nullptr);
+  return nodes;
+}
+
+HeapVector<Member<Node>> PartRoot::getChildNodePartNodes() {
+  DCHECK(RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
+  HeapVector<Member<Node>> nodes;
+  BuildPartsList(*this, nullptr, nullptr, &nodes);
+  return nodes;
+}
+
 const HeapVector<Member<Part>>& PartRoot::getParts() {
   if (RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
-    // For minimal mode, always traverse the tree and return parts. No caching
-    // at all. For now, this *only* returns NodeParts, and does not take
-    // ChildNodeParts into account.
-    BuildPartsList();
+    DCHECK(cached_ordered_parts_.empty());
+    DCHECK(!cached_parts_list_dirty_);
+    HeapVector<Member<Part>>* parts =
+        MakeGarbageCollected<HeapVector<Member<Part>>>();
+    BuildPartsList(*this, parts, nullptr, nullptr);
+    return *parts;
   } else if (cached_parts_list_dirty_) {
     RebuildPartsList();
     cached_parts_list_dirty_ = false;
@@ -275,14 +306,6 @@ const HeapVector<Member<Part>>& PartRoot::getParts() {
     }
   }
   return cached_ordered_parts_;
-}
-
-Node* PartRoot::getPartNode(unsigned index) {
-  auto& parts = getParts();
-  if (index >= parts.size()) {
-    return nullptr;
-  }
-  return parts[index]->NodeToSortBy();
 }
 
 // static

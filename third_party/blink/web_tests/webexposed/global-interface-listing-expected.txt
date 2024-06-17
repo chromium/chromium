@@ -1449,7 +1449,6 @@ interface ChildNodePart : Part
     getter rootContainer
     method clone
     method constructor
-    method getPartNode
     method getParts
     method replaceChildren
 interface Clipboard : EventTarget
@@ -2404,7 +2403,6 @@ interface DocumentPartRoot
     getter rootContainer
     method clone
     method constructor
-    method getPartNode
     method getParts
 interface DocumentPictureInPicture : EventTarget
     attribute @@toStringTag

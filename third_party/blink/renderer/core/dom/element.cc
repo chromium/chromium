@@ -6960,7 +6960,8 @@ void Element::SetInnerHTMLInternal(
             template_element->hasAttribute(html_names::kParsepartsAttr);
       }
       ReplaceChildrenWithFragment(container, fragment, exception_state);
-      if (swap_dom_parts) {
+      if (swap_dom_parts &&
+          !RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled()) {
         // Move the parts list over to the template's content document's
         // DocumentPartRoot.
         To<DocumentFragment>(*container)

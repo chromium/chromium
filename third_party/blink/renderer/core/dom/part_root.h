@@ -41,7 +41,10 @@ class CORE_EXPORT PartRoot : public GarbageCollectedMixin {
   static void CloneParts(const Node& source_node,
                          Node& destination_node,
                          NodeCloningData& data);
-  void MarkPartsDirty() { cached_parts_list_dirty_ = true; }
+  void MarkPartsDirty() {
+    DCHECK(!RuntimeEnabledFeatures::DOMPartsAPIMinimalEnabled());
+    cached_parts_list_dirty_ = true;
+  }
   void SwapPartsList(PartRoot& other);
 
   virtual Document& GetDocument() const = 0;
@@ -58,7 +61,8 @@ class CORE_EXPORT PartRoot : public GarbageCollectedMixin {
 
   // PartRoot API
   const HeapVector<Member<Part>>& getParts();
-  Node* getPartNode(unsigned index);
+  HeapVector<Member<Node>> getNodePartNodes();
+  HeapVector<Member<Node>> getChildNodePartNodes();
   virtual ContainerNode* rootContainer() const = 0;
 
  protected:
@@ -67,7 +71,6 @@ class CORE_EXPORT PartRoot : public GarbageCollectedMixin {
 
  private:
   void RebuildPartsList();
-  void BuildPartsList();
   HeapVector<Member<Part>> cached_ordered_parts_;
   bool cached_parts_list_dirty_{false};
 };
