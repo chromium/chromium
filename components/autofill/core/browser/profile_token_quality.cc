@@ -145,7 +145,7 @@ bool ProfileTokenQuality::AddObservationsForFilledForm(
       continue;
     }
     if (!field.autofilled_type()) {
-      // TODO(b/311604770): Field-by-field filling doesn't support
+      // TODO(crbug.com/311604770): Field-by-field filling doesn't support
       // `autofilled_type()`.
       continue;
     }

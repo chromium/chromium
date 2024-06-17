@@ -293,7 +293,7 @@ class FormFillerTest : public testing::Test {
   test::AutofillUnitTestEnvironment autofill_test_environment_;
   NiceMock<MockAutofillClient> autofill_client_;
   NiceMock<MockAutofillDriver> autofill_driver_{&autofill_client_};
-  // TODO(b/41490871): Replace with FormFiller.
+  // TODO(crbug.com/41490871): Replace with FormFiller.
   std::unique_ptr<TestBrowserAutofillManager> browser_autofill_manager_;
 };
 
@@ -995,7 +995,7 @@ TEST_F(FormFillerTest, FillFormWithAuthorSpecifiedSections) {
   std::vector<FormFieldData> filled_fields =
       FillAutofillFormData(form, form.fields()[0], &profile).fields();
   ASSERT_EQ(filled_fields.size(), 5u);
-  // TODO(b/40264633): Replace with GetInfo.
+  // TODO(crbug.com/40264633): Replace with GetInfo.
   EXPECT_THAT(filled_fields[0],
               AutofilledWith(profile.GetRawInfo(ADDRESS_HOME_COUNTRY)));
   EXPECT_FALSE(filled_fields[1].is_autofilled());
@@ -1630,7 +1630,7 @@ TEST_F(FormFillerTest, FormChangesVisibilityOfFields) {
               AutofilledWith(profile.GetInfo(ADDRESS_HOME_LINE1, kAppLocale)));
   EXPECT_THAT(later_filled_fields[2],
               AutofilledWith(profile2.GetInfo(ADDRESS_HOME_ZIP, kAppLocale)));
-  // TODO(b/40264633): Replace with GetInfo.
+  // TODO(crbug.com/40264633): Replace with GetInfo.
   EXPECT_THAT(later_filled_fields[3],
               AutofilledWith(profile2.GetRawInfo(ADDRESS_HOME_COUNTRY)));
 }

@@ -526,7 +526,7 @@ void CreditCardSaveManager::OnDidUploadCard(
 
   // Init virtual card enrollment since there is no save card
   // confirmation bubble showing if the flag is disabled.
-  // TODO(b/309627643): Clean up Chrome feature flag:
+  // TODO(crbug.com/309627643): Clean up Chrome feature flag:
   // autofill-enable-save-card-loading-and-confirmation
   if (get_details_for_enrollment_response_details.has_value() &&
       !IsSaveCardLoadingAndConfirmationEnabled()) {

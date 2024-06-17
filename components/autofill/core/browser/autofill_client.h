@@ -242,9 +242,9 @@ class AutofillClient {
     CardSaveType card_save_type = CardSaveType::kCardSaveOnly;
   };
 
-  // TODO(b/325440757): Remove after the save-update controller splitting is
-  // done or remove this TODO if a new option is added.
-  // Used for options of save (and update) address profile prompt.
+  // TODO(crbug.com/325440757): Remove after the save-update controller
+  // splitting is done or remove this TODO if a new option is added. Used for
+  // options of save (and update) address profile prompt.
   struct SaveAddressProfilePromptOptions {
     // Whether the prompt suggests migration into the user's account.
     bool is_migration_to_account = false;
@@ -264,8 +264,9 @@ class AutofillClient {
     PopupOpenArgs& operator=(const PopupOpenArgs&);
     PopupOpenArgs& operator=(PopupOpenArgs&&);
     ~PopupOpenArgs();
-    // TODO(b/340817507): Update this member name since bounds can now refer to
-    // the caret bounds and elements gives the idea of HTML elements only.
+    // TODO(crbug.com/340817507): Update this member name since bounds can now
+    // refer to the caret bounds and elements gives the idea of HTML elements
+    // only.
     gfx::RectF element_bounds;
     base::i18n::TextDirection text_direction =
         base::i18n::TextDirection::UNKNOWN_DIRECTION;

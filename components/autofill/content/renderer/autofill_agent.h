@@ -453,7 +453,7 @@ class AutofillAgent : public content::RenderFrameObserver,
                : last_interacted_form_;
   }
 
-  // TODO(b/40281981): Remove.
+  // TODO(crbug.com/40281981): Remove.
   std::optional<FormData>& provisionally_saved_form() {
     return form_tracker_->provisionally_saved_form();
   }
@@ -484,7 +484,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   std::vector<std::pair<FieldRef, blink::WebAutofillState>> previewed_elements_;
 
   // Last form which was interacted with by the user.
-  // TODO(b/40281981): Remove when tracking becomes only FormTracker's
+  // TODO(crbug.com/40281981): Remove when tracking becomes only FormTracker's
   // responsibility.
   FormRef last_interacted_form_;
 

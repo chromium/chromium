@@ -550,7 +550,7 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
     // autofill entries) are zero or positive. Negative entries we are
     // interested in is autofill::SuggestionType::kUndoOrClear, used to show the
     // "clear form" button.
-    // TODO(b/40266549): Replace Clear Form with Undo
+    // TODO(crbug.com/40266549): Replace Clear Form with Undo
     NSString* value = nil;
     NSString* minorValue = nil;
     NSString* displayDescription = nil;
@@ -599,7 +599,8 @@ bool ContainsFocusableField(const FormData& form, FieldRendererId field_id) {
     } else if (popup_suggestion.type ==
                autofill::SuggestionType::kUndoOrClear) {
       // Show the "clear form" button.
-      // TODO(b/40266549): Replace Clear Form with Undo once this changes
+      // TODO(crbug.com/40266549): Replace Clear Form with Undo once this
+      // changes
       value = SysUTF16ToNSString(popup_suggestion.main_text.value);
     } else if (popup_suggestion.type ==
                autofill::SuggestionType::kShowAccountCards) {

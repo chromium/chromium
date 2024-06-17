@@ -288,9 +288,9 @@ bool PopupBaseView::DoShow() {
 
   // Showing the widget can change native focus (which would result in an
   // immediate hiding of the popup). Only start observing after shown.
-  // TODO(b/325246516): Hiding by widget focus change seems redundant as it is
-  // already done by the field focus loss. After successful password manual
-  // fallback testing confirms safety, remove the focus observation.
+  // TODO(crbug.com/325246516): Hiding by widget focus change seems redundant as
+  // it is already done by the field focus loss. After successful password
+  // manual fallback testing confirms safety, remove the focus observation.
   if (initialize_widget &&
       !base::FeatureList::IsEnabled(
           password_manager::features::kPasswordManualFallbackAvailable)) {

@@ -60,8 +60,8 @@ class AutofillKeyboardAccessoryControllerImpl
   gfx::NativeView container_view() const override;
   content::WebContents* GetWebContents() const override;
   const gfx::RectF& element_bounds() const override;
-  // TODO(b/b/342383222) Re-evaluate whether this method makes sense here.
-  // Today it is only needed on desktop.
+  // TODO(crbug.com/b/342383222) Re-evaluate whether this method makes sense
+  // here. Today it is only needed on desktop.
   PopupAnchorType anchor_type() const override;
 
   base::i18n::TextDirection GetElementTextDirection() const override;

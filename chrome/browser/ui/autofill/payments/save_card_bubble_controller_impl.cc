@@ -505,8 +505,8 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
 
   // If the dialog should be re-shown, do not change the bubble type or log
   // metrics.
-  // TODO(b/316391673): Determine if we should track metrics on the usage of
-  // this member.
+  // TODO(crbug.com/316391673): Determine if we should track metrics on the
+  // usage of this member.
   if (was_url_opened_) {
     return;
   }

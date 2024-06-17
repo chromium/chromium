@@ -235,7 +235,7 @@ void AutofillPopupControllerImpl::Show(
         trigger_source_ ==
                 AutofillSuggestionTriggerSource::kManualFallbackPasswords
             ? std::optional<AutofillPopupView::SearchBarConfig>(
-                  // TODO(b/325246516): Set translated strings from the
+                  // TODO(crbug.com/325246516): Set translated strings from the
                   // greenlines when they get finalized.
                   {.placeholder = u"Search",
                    .no_results_message = u"No passwords found"})
@@ -350,8 +350,9 @@ void AutofillPopupControllerImpl::Hide(SuggestionHidingReason reason) {
   }
   key_press_observer_.Reset();
   popup_hide_helper_.reset();
-  // TODO(b/341916065): Consider only emitting this metric if the popup has been opened
-  // before. Today the show method can call `Hide()` before properly opening the popup.
+  // TODO(crbug.com/341916065): Consider only emitting this metric if the popup
+  // has been opened before. Today the show method can call `Hide()` before
+  // properly opening the popup.
   AutofillMetrics::LogAutofillSuggestionHidingReason(
       suggestions_filling_product_, reason);
 

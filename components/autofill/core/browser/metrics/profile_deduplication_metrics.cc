@@ -62,7 +62,7 @@ void LogDeduplicationStartupMetricsForProfile(
       duplication_rank);
   LogTypeOfQuasiDuplicateTokenMetric(kStartupHistogramPrefix, duplication_rank,
                                      min_incompatible_sets);
-  // TODO(b/325452461): Implement more metrics.
+  // TODO(crbug.com/325452461): Implement more metrics.
 }
 
 }  // namespace
@@ -130,7 +130,7 @@ void LogDeduplicationImportMetrics(
       duplication_rank);
   LogTypeOfQuasiDuplicateTokenMetric(metric_name_prefix, duplication_rank,
                                      min_incompatible_sets);
-  // TODO(b/325452461): Implement more metrics.
+  // TODO(crbug.com/325452461): Implement more metrics.
 }
 
 }  // namespace autofill::autofill_metrics

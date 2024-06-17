@@ -97,7 +97,7 @@ const PrefService* AndroidAutofillClient::GetPrefs() const {
 }
 
 syncer::SyncService* AndroidAutofillClient::GetSyncService() {
-  // TODO(b/321949351): Move this and other stubs into AutofillClient.
+  // TODO(crbug.com/321949351): Move this and other stubs into AutofillClient.
   return nullptr;
 }
 
@@ -118,7 +118,8 @@ ukm::UkmRecorder* AndroidAutofillClient::GetUkmRecorder() {
 }
 
 ukm::SourceId AndroidAutofillClient::GetUkmSourceId() {
-  // TODO(b/321677608): Consider UKM recording via delegate (non-WebView only).
+  // TODO(crbug.com/321677608): Consider UKM recording via delegate (non-WebView
+  // only).
   return ukm::kInvalidSourceId;
 }
 
@@ -137,7 +138,7 @@ url::Origin AndroidAutofillClient::GetLastCommittedPrimaryMainFrameOrigin()
 
 security_state::SecurityLevel
 AndroidAutofillClient::GetSecurityLevelForUmaHistograms() {
-  // TODO(b/321677908): Consider recording for non-webview.
+  // TODO(crbug.com/321677908): Consider recording for non-webview.
   // Return the count value which will not be recorded.
   return security_state::SecurityLevel::SECURITY_LEVEL_COUNT;
 }
@@ -252,7 +253,8 @@ bool AndroidAutofillClient::IsContextSecure() const {
   ssl_status = navigation_entry->GetSSL();
   // Note: As of crbug.com/701018, Chrome relies on SecurityStateTabHelper to
   // determine whether the page is secure, but WebView has no equivalent class.
-  // TODO(b/321679324): Consider injecting SecurityStateTabHelper for 3P chrome.
+  // TODO(crbug.com/321679324): Consider injecting SecurityStateTabHelper for 3P
+  // chrome.
 
   return navigation_entry->GetURL().SchemeIsCryptographic() &&
          ssl_status.certificate &&

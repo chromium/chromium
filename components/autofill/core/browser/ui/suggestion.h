@@ -90,7 +90,7 @@ struct Suggestion {
   enum class Icon {
     kNoIcon,
     kAccount,
-    // TODO(b/40266549): Rename to Undo.
+    // TODO(crbug.com/40266549): Rename to Undo.
     kClear,
     kCreate,
     kCode,
@@ -113,7 +113,8 @@ struct Suggestion {
     kOfferTag,
     kPenSpark,
     kPlusAddress,
-    // TODO(b/342125189): Rename to `kPlusAddress` when UI changes are launched.
+    // TODO(crbug.com/342125189): Rename to `kPlusAddress` when UI changes are
+    // launched.
     kPlusAddressSmall,
     kScanCreditCard,
     kSettings,
@@ -135,10 +136,10 @@ struct Suggestion {
     kIban,
   };
 
-  // TODO(b/335194240): Consolidate expected param types for these constructors.
-  // Some expect UTF16 strings and others UTF8, while internally we only use
-  // UTF16. The ones expecting UTF8 are only used by tests and could be easily
-  // refactored.
+  // TODO(crbug.com/335194240): Consolidate expected param types for these
+  // constructors. Some expect UTF16 strings and others UTF8, while internally
+  // we only use UTF16. The ones expecting UTF8 are only used by tests and could
+  // be easily refactored.
   Suggestion();
   explicit Suggestion(std::u16string main_text);
   explicit Suggestion(SuggestionType type);
@@ -185,7 +186,7 @@ struct Suggestion {
         // Manual fallback password suggestions store the password to preview or
         // fill in the suggestion's payload. Regular per-domain contain empty
         // `BackendId`.
-        // TODO(b/333992198): Use `PasswordSuggestionDetails` for all
+        // TODO(crbug.com/333992198): Use `PasswordSuggestionDetails` for all
         // suggestions with `SuggestionType::kPasswordEntry`.
         return absl::holds_alternative<BackendId>(payload) ||
                absl::holds_alternative<PasswordSuggestionDetails>(payload);

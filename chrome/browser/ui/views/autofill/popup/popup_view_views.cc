@@ -236,7 +236,7 @@ bool PopupViewViews::Show(
   }
 
   // Compose has separate on show announcements.
-  // TODO(b/340359989): Replace with AutofillComposeDelegate::OnShow
+  // TODO(crbug.com/340359989): Replace with AutofillComposeDelegate::OnShow
   if (controller_->GetMainFillingProduct() == FillingProduct::kCompose) {
     switch (controller_->GetSuggestionAt(0).type) {
       case SuggestionType::kComposeResumeNudge:
@@ -756,7 +756,7 @@ bool PopupViewViews::SearchBarHandleKeyPressed(const ui::KeyEvent& event) {
     return false;
   }
 
-// TODO(b/339187209): On MaOS, conversion of a character key event to
+// TODO(crbug.com/339187209): On MaOS, conversion of a character key event to
 // `NativeWebKeyboardEvent` hits `NOTREACHED` in `ui::DomKeyFromNSEvent`. This
 // doesn't affect our use case as we handle only non-character events
 // (Arrows/Esc/etc) for navigation. But it needs to be investigated and ideally

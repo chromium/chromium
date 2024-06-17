@@ -521,8 +521,8 @@ class CreditCardAccessManagerTest : public testing::Test {
         .OnUserAcceptedAuthenticationSelectionDialog(
             challenge_option.id.value());
 
-    // TODO(b/329523854): Check that the challenge selection acceptance was
-    // handled correctly using mocks instead of test classes.
+    // TODO(crbug.com/329523854): Check that the challenge selection acceptance
+    // was handled correctly using mocks instead of test classes.
     switch (challenge_option.type) {
       case CardUnmaskChallengeOptionType::kCvc: {
         CreditCardCvcAuthenticator& cvc_authenticator =

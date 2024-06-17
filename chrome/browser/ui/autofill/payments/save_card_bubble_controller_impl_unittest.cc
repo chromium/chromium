@@ -957,7 +957,7 @@ TEST_F(SaveCardBubbleControllerImplTest, UploadCardSaveBubbleType) {
   EXPECT_TRUE(controller()->IsIconVisible());
   EXPECT_NE(controller()->GetPaymentBubbleView(), nullptr);
 
-  // TODO(b/309627643): Change the bubble type when the
+  // TODO(crbug.com/309627643): Change the bubble type when the
   // AutofillEnableSaveCardLoadingAndConfirmation feature flag is enabled.
   controller()->OnSaveButton({});
   EXPECT_EQ(controller()->GetBubbleType(), BubbleType::UPLOAD_SAVE);
@@ -1532,8 +1532,8 @@ TEST_F(SaveCardBubbleControllerImplTestWithLoadingAndConfirmation,
   // Expect the prompt metric not to change from the initial bubble showing
   // because this is a reshowing after returning to the original tab after a
   // link click.
-  // TODO(b/316391673): Determine if a different metric (or the re-show metric)
-  // should be tracking this re-show.
+  // TODO(crbug.com/316391673): Determine if a different metric (or the re-show
+  // metric) should be tracking this re-show.
   histogram_tester.ExpectUniqueSample(
       "Autofill.SaveCreditCardPromptOffer.Upload.FirstShow",
       autofill_metrics::SaveCardPromptOffer::kShown, 1);

@@ -649,7 +649,7 @@ void ChromeAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {
                                               std::move(callback));
 }
 
-// TODO(b/309163844): Add follow-up ManualFallback for showing IBANs.
+// TODO(crbug.com/309163844): Add follow-up ManualFallback for showing IBANs.
 bool ChromeAutofillClient::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const autofill::CreditCard> cards_to_suggest,

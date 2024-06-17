@@ -444,7 +444,8 @@ enum FieldType {
   // fields between single username and password forms.
   // Will be used to rollout new predictions based on new votes of Username
   // First Flow with intermediate values.
-  // TODO(b/294195764): Deprecate after fully rolling out new predictions.
+  // TODO(crbug.com/294195764): Deprecate after fully rolling out new
+  // predictions.
   SINGLE_USERNAME_WITH_INTERMEDIATE_VALUES = 160,
 
   // SERVER_RESPONSE_PENDING is not exposed as an enum value to prevent

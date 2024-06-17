@@ -183,8 +183,8 @@ FieldFillingSkipReason FormFiller::GetFieldFillingSkipReason(
   // is empty and its initial value (= cached value) was empty as well. A
   // similar check is done in ForEachMatchingFormFieldCommon(), which
   // frequently has false negatives.
-  // TODO(b/40227496): 'autofill_field.value' should be the initial value of
-  // the field. `form_field.value` should be the current value.
+  // TODO(crbug.com/40227496): 'autofill_field.value' should be the initial
+  // value of the field. `form_field.value` should be the current value.
   if ((field.properties_mask() & kUserTyped) &&
       (!field.value().empty() || !autofill_field.value().empty()) &&
       !is_trigger_field) {
@@ -248,8 +248,8 @@ FieldFillingSkipReason FormFiller::GetFieldFillingSkipReason(
   // that this check happens after the `kFieldTypeUnrelated` check.
 
   // Don't fill meaningfully pre-filled fields but overwrite placeholders.
-  // TODO(b/40227496): 'autofill_field.value' should be the initial value of
-  // the field.
+  // TODO(crbug.com/40227496): 'autofill_field.value' should be the initial
+  // value of the field.
   if (!is_trigger_field && !autofill_field.IsSelectOrSelectListElement() &&
       !autofill_field.value().empty() &&
       (IsNotAPlaceholder(autofill_field) ||

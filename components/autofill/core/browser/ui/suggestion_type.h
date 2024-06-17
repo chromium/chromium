@@ -107,7 +107,8 @@ enum class SuggestionType {
   // Other suggestions.
   kTitle = 45,
   kSeparator = 46,
-  // TODO(b/40266549): Rename to Undo once iOS implements it - it still works
+  // TODO(crbug.com/40266549): Rename to Undo once iOS implements it - it still
+  // works
   // as clear form there.
   kUndoOrClear = 47,
   kMixedFormMessage = 48,

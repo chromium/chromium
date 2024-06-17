@@ -177,7 +177,8 @@ BASE_FEATURE(kAutofillEnableAddressFieldParserNG,
 // When enabled, autofill displays an IPH informing users about using autofill
 // from the context menu. The IPH will be attached to address fields with
 // autocomplete="garbage".
-// TODO(b/313587343) Remove once manual fallback IPH feature is launched.
+// TODO(crbug.com/313587343) Remove once manual fallback IPH feature is
+// launched.
 BASE_FEATURE(kAutofillEnableManualFallbackIPH,
              "AutofillEnableManualFallbackIPH",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -319,7 +320,7 @@ BASE_FEATURE(kAutofillEnableXHRSubmissionDetectionIOS,
 // When enabled, focusing on an autofilled field that was traditionally filled
 // with address data (meaning filled with the value of their classified type)
 // will yield field-by-field filling suggestions without prefix matching.
-// TODO(b/339543182): Remove when launched.
+// TODO(crbug.com/339543182): Remove when launched.
 BASE_FEATURE(kAutofillAddressFieldSwapping,
              "AutofillAddressFieldSwapping",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -550,7 +551,7 @@ BASE_FEATURE(kAutofillPopupDisablePaintChecks,
              "AutofillPopupDisablePaintChecks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// TODO(b/334909042): Remove after cleanup.
+// TODO(crbug.com/334909042): Remove after cleanup.
 // If the feature is enabled, the Autofill popup widget is initialized with
 // `Widget::InitParams::z_order` set to `ui::ZOrderLevel::kSecuritySurface`,
 // otherwise the `z_order` is not set and defined by the widget type (see
@@ -732,14 +733,14 @@ const base::FeatureParam<int>
 
 // When enabled, various deduplication related metrics are logged on startup
 // and on import.
-// TODO(b/325452461): Remove once rolled out.
+// TODO(crbug.com/325452461): Remove once rolled out.
 BASE_FEATURE(kAutofillLogDeduplicationMetrics,
              "AutofillLogDeduplicationMetrics",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // When enabled, low-quality quasi duplicates of rank one are silently removed
 // during the once-per-milestone deduplication routine.
-// TODO(b/325450676): Remove when launched.
+// TODO(crbug.com/325450676): Remove when launched.
 BASE_FEATURE(kAutofillSilentlyRemoveQuasiDuplicates,
              "AutofillSilentlyRemoveQuasiDuplicates",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -750,7 +751,7 @@ BASE_FEATURE(kAutofillSilentlyRemoveQuasiDuplicates,
 // In particular, if the observed profile was autofilled, except for an edit in
 // a single type, this qualifies for an update of the autofilled profile, in
 // case the edited type has low-quality.
-// TODO(b/325451601): Remove when launched.
+// TODO(crbug.com/325451601): Remove when launched.
 BASE_FEATURE(kAutofillUpdateLowQualityTokenOnImport,
              "AutofillUpdateLowQualityTokenOnImport",
              base::FEATURE_DISABLED_BY_DEFAULT);

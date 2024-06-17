@@ -46,8 +46,8 @@ class PersonalDataManagerObserver;
 // general principles that apply to both. For data type specific information,
 // see those classes.
 // The ADM/PayDM are owned by the PDM.
-// TODO(b/322170538): Currently, only the PDM can be observed. Split the PDM
-// observer into an ADM and a PayDM observer.
+// TODO(crbug.com/322170538): Currently, only the PDM can be observed. Split the
+// PDM observer into an ADM and a PayDM observer.
 //
 // Since `AutofillTable` lives on a separate sequence, changes posted to the
 // ADM/PayDM are asynchronous. They only become effective in the ADM/PayDM
@@ -117,8 +117,8 @@ class PersonalDataManager : public KeyedService,
   void OnPaymentsDataChanged() override;
 
   // history::HistoryServiceObserver:
-  // TODO(b/322170538): This is used to clear the crowdsourcing manager's
-  // history. Consider moving the observer there.
+  // TODO(crbug.com/322170538): This is used to clear the crowdsourcing
+  // manager's history. Consider moving the observer there.
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
 
@@ -127,7 +127,7 @@ class PersonalDataManager : public KeyedService,
 
   // Depending on what the `guid` identifies, removes either an AutofillProfile,
   // a credit card or an IBAN.
-  // TODO(b/322170538): Remove. Callers should use one of the following
+  // TODO(crbug.com/322170538): Remove. Callers should use one of the following
   // functions instead:
   // - `address_data_manager().RemoveProfile()`.
   // - `payments_data_manager().RemoveByGUID()`.
@@ -151,7 +151,7 @@ class PersonalDataManager : public KeyedService,
   // payment changes are pending.
   void NotifyPersonalDataObserver();
 
-  // TODO(b/40100455): Consider moving this to the TestPDM or a TestAPI.
+  // TODO(crbug.com/40100455): Consider moving this to the TestPDM or a TestAPI.
   void SetSyncServiceForTest(syncer::SyncService* sync_service);
 
  protected:
@@ -161,9 +161,9 @@ class PersonalDataManager : public KeyedService,
   // Responsible for all payments-related logic of the PDM. Non-null.
   std::unique_ptr<PaymentsDataManager> payments_data_manager_;
 
-  // TODO(b/322170538): These observers are used to emulate the PDM observer
-  // while it is being split into separate address and payments observers.
-  // Remove once the PDMObserver is gone.
+  // TODO(crbug.com/322170538): These observers are used to emulate the PDM
+  // observer while it is being split into separate address and payments
+  // observers. Remove once the PDMObserver is gone.
   base::ScopedObservation<AddressDataManager, AddressDataManager::Observer>
       address_data_manager_observation_{this};
   base::ScopedObservation<PaymentsDataManager, PaymentsDataManager::Observer>

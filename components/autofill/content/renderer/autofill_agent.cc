@@ -113,7 +113,7 @@ bool JavaScriptOnlyReformattedValue(std::u16string old_value,
   // across all use cases of JavaScript formatting a value (e.g. for
   // normalizing single-byte and double-byte encoding of digits in Japan, an
   // NKFC normalization may be appropriate).
-  // TODO(b/40947225): Internationalize this normalization.
+  // TODO(crbug.com/40947225): Internationalize this normalization.
   return old_value == new_value;
 }
 
@@ -955,13 +955,13 @@ void AutofillAgent::ClearPreviewedForm() {
     return;
   }
   // `password_generation_agent_` can be null in WebView.
-  // TODO(b/326213028): Clear fields previewed by `PasswordGenerationAgent`
-  // directly using `PasswordGenerationAgent`.
+  // TODO(crbug.com/326213028): Clear fields previewed by
+  // `PasswordGenerationAgent` directly using `PasswordGenerationAgent`.
   if (password_generation_agent_) {
     password_generation_agent_->ClearPreviewedForm();
   }
-  // TODO(b/326213028): Clear fields previewed by `PasswordAutofillAgent`
-  // directly using `PasswordAutofillAgent`.
+  // TODO(crbug.com/326213028): Clear fields previewed by
+  // `PasswordAutofillAgent` directly using `PasswordAutofillAgent`.
   password_autofill_agent_->ClearPreviewedForm();
 
   std::vector<std::pair<WebFormControlElement, WebAutofillState>>
@@ -1215,7 +1215,7 @@ void AutofillAgent::ShowSuggestions(
   last_queried_element_ = FieldRef(element);
 
   // Manual fallbacks override any prioritization done based on the field type.
-  // TODO(b/333990908): Test manual fallback on different form types.
+  // TODO(crbug.com/333990908): Test manual fallback on different form types.
   if (IsAddressAutofillManuallyTriggered(trigger_source) ||
       IsPaymentsAutofillManuallyTriggered(trigger_source) ||
       IsPlusAddressesManuallyTriggered(trigger_source)) {
@@ -1763,12 +1763,12 @@ void AutofillAgent::OnProvisionallySaveForm(
       // afterwards and we don't want to fire the same event twice.
       if (base::FeatureList::IsEnabled(
               features::kAutofillUnifyAndFixFormTracking)) {
-        // TODO(b/40281981): Figure out if this is still needed, and document
-        // the reason, otherwise remove.
+        // TODO(crbug.com/40281981): Figure out if this is still needed, and
+        // document the reason, otherwise remove.
         password_autofill_agent_->InformBrowserAboutUserInput(
             form_element, WebInputElement());
-        // TODO(b/40281981): Figure out if this is still needed, and document
-        // the reason, otherwise remove.
+        // TODO(crbug.com/40281981): Figure out if this is still needed, and
+        // document the reason, otherwise remove.
         update_submission_data_on_user_edit();
       }
       if (std::optional<FormData> form_data = form_util::ExtractFormData(

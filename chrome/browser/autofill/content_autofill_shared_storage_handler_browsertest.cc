@@ -65,8 +65,8 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillSharedStorageHandlerBrowserTest,
       base::Base64Decode(base::UTF16ToUTF8(result.data), &decoded_data));
   card_list_proto.ParseFromString(decoded_data);
   auto card_data_list = card_list_proto.server_cards();
-  // TODO(b/324137757): AddTestServerCreditCard results in duplicate cards in
-  // the database. Check for exactly one card here once that's fixed.
+  // TODO(crbug.com/324137757): AddTestServerCreditCard results in duplicate
+  // cards in the database. Check for exactly one card here once that's fixed.
   ASSERT_LE(1, card_data_list.size());
   AutofillCreditCardData card_data = card_data_list[0];
   EXPECT_EQ(card.LastFourDigits(), base::UTF8ToUTF16(card_data.last_four()));

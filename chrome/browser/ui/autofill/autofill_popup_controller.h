@@ -88,8 +88,8 @@ class AutofillPopupController : public AutofillSuggestionController {
   // Handles a key press event and returns whether the event should be swallowed
   // (meaning that no other handler, in particular not the default handler, can
   // process it).
-  // TODO(b/325246516): Change the event type to `ui::KeyEvent` as events can
-  // come not only from blink, but from native UI too.
+  // TODO(crbug.com/325246516): Change the event type to `ui::KeyEvent` as
+  // events can come not only from blink, but from native UI too.
   virtual bool HandleKeyPressEvent(
       const input::NativeWebKeyboardEvent& event) = 0;
 

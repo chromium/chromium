@@ -38,9 +38,10 @@ class CardUnmaskPromptController {
   virtual std::u16string GetOkButtonLabel() const = 0;
   virtual int GetCvcImageRid() const = 0;
   virtual bool ShouldRequestExpirationDate() const = 0;
-  // TODO(b/303715882): Should consider removing these detailed information
-  // accessors and instead return the credit card object directly. Only exposing
-  // necessary information is good but this list is growing larger.
+  // TODO(crbug.com/303715882): Should consider removing these detailed
+  // information accessors and instead return the credit card object directly.
+  // Only exposing necessary information is good but this list is growing
+  // larger.
 #if BUILDFLAG(IS_ANDROID)
   virtual Suggestion::Icon GetCardIcon() const = 0;
   virtual std::u16string GetCardName() const = 0;

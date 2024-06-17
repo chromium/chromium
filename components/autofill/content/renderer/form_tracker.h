@@ -75,7 +75,7 @@ class FormTracker : public content::RenderFrameObserver,
    public:
     enum class SaveFormReason {
       kTextFieldChanged,
-      // TODO(b/40281981): Remove after launching the feature
+      // TODO(crbug.com/40281981): Remove after launching the feature
       // kAutofillUnifyAndFixFormTracking.
       kWillSendSubmitEvent,
       kSelectChanged,
@@ -142,7 +142,7 @@ class FormTracker : public content::RenderFrameObserver,
 
   FormRef last_interacted_form() const { return last_interacted_.form; }
 
-  // TODO(b/40281981): Remove.
+  // TODO(crbug.com/40281981): Remove.
   std::optional<FormData>& provisionally_saved_form() {
     return last_interacted_.saved_state;
   }

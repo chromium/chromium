@@ -85,8 +85,8 @@ class PopupSearchBarView : public views::View,
   void SetInputTextForTesting(const std::u16string& text);
   gfx::Point GetClearButtonScreenCenterPointForTesting() const;
 
-  // TODO(b/325246516): Add methods to support communication with its hosting
-  // poopup view.
+  // TODO(crbug.com/325246516): Add methods to support communication with its
+  // hosting poopup view.
 
  private:
   void OnInputChanged();

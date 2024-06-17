@@ -263,8 +263,8 @@ void GetFieldsForDistinguishingProfiles(
   // `NAME_FULL` or `PHONE_HOME_WHOLE_NUMBER` in the list of distinguishing
   // fields as a last-ditch fallback. This allows us to distinguish between
   // profiles that are identical except for the name or phone number.
-  // TODO(b/320475288): Clean up this special case. It might be possible to just
-  // append `PHONE_HOME_WHOLE_NUMBER` at the end.
+  // TODO(crbug.com/320475288): Clean up this special case. It might be possible
+  // to just append `PHONE_HOME_WHOLE_NUMBER` at the end.
   for (FieldType excluded_field : excluded_fields) {
     FieldType effective_excluded_type =
         GetStorableTypeCollapsingGroupsForPartialType(excluded_field);

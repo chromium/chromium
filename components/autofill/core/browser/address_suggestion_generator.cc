@@ -73,7 +73,8 @@ Suggestion CreateUndoOrClearFormSuggestion() {
 #if BUILDFLAG(IS_IOS)
   std::u16string value =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM);
-  // TODO(b/40266549): iOS still uses Clear Form logic, replace with Undo.
+  // TODO(crbug.com/40266549): iOS still uses Clear Form logic, replace with
+  // Undo.
   Suggestion suggestion(value, SuggestionType::kUndoOrClear);
   suggestion.icon = Suggestion::Icon::kClear;
 #else
@@ -84,7 +85,7 @@ Suggestion CreateUndoOrClearFormSuggestion() {
   Suggestion suggestion(value, SuggestionType::kUndoOrClear);
   suggestion.icon = Suggestion::Icon::kUndo;
 #endif
-  // TODO(b/40266549): update "Clear Form" a11y announcement to "Undo"
+  // TODO(crbug.com/40266549): update "Clear Form" a11y announcement to "Undo"
   suggestion.acceptance_a11y_announcement =
       l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM);
   return suggestion;
@@ -1111,9 +1112,9 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
           profiles, field_types, suggestion_type, trigger_field_type,
           app_locale);
   // This will be used to check if suggestions should be supported with icons.
-  // TODO(b/40285811): Consider simplifying this to be any address field. This
-  // will allow to add icons for every full form filling and manual fallback
-  // case.
+  // TODO(crbug.com/40285811): Consider simplifying this to be any address
+  // field. This will allow to add icons for every full form filling and manual
+  // fallback case.
   const bool contains_profile_related_fields =
       base::ranges::count_if(field_types, [](FieldType field_type) {
         FieldTypeGroup field_type_group = GroupTypeOfFieldType(field_type);

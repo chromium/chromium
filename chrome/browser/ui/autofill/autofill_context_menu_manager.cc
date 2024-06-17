@@ -429,7 +429,7 @@ void AutofillContextMenuManager::MaybeAddAutofillManualFallbackItems() {
 
   const bool select_passwords_option_shown =
       add_passwords_fallback && UserHasPasswordsSaved(*password_manager_driver);
-  // TODO(b/327566698): Log metrics for plus address fallbacks, too.
+  // TODO(crbug.com/327566698): Log metrics for plus address fallbacks, too.
   LogManualFallbackContextMenuEntryShown(
       autofill_driver, password_manager_driver, add_address_fallback,
       add_payments_fallback, select_passwords_option_shown);
@@ -518,7 +518,7 @@ void AutofillContextMenuManager::AddPasswordsManualFallbackItems(
       password_manager_util::ManualPasswordGenerationEnabled(
           &password_manager_driver);
 
-  // TODO(b/321678141): Update strings once we have UX decision.
+  // TODO(crbug.com/321678141): Update strings once we have UX decision.
   if (UserHasPasswordsSaved(password_manager_driver)) {
     regular_password_entry_command_id =
         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD;
@@ -645,14 +645,14 @@ void AutofillContextMenuManager::LogManualFallbackContextMenuEntryAccepted(
           rfh ? ContentPasswordManagerDriver::GetForRenderFrameHost(rfh)
               : nullptr;
 
-      // TODO(b/321678141): Handle the "else" case of this if.
+      // TODO(crbug.com/321678141): Handle the "else" case of this if.
       if (!IsPasswordFormField(password_manager_driver, params_)) {
         manager.GetManualFallbackEventLogger().ContextMenuEntryAccepted(
             filling_product);
       }
       break;
     }
-    // TODO(b/327566698): Add metrics for plus addresses.
+    // TODO(crbug.com/327566698): Add metrics for plus addresses.
     case FillingProduct::kPlusAddresses:
       NOTIMPLEMENTED();
       break;

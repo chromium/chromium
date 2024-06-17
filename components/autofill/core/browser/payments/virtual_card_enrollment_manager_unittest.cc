@@ -123,8 +123,8 @@ class VirtualCardEnrollmentManagerTest : public testing::Test {
     return response;
   }
 
-  // TODO(b/303715506): This part does not test the desired behavior on iOS as
-  // the virtual card enrollment strikedatabase on iOS is not initialized
+  // TODO(crbug.com/303715506): This part does not test the desired behavior on
+  // iOS as the virtual card enrollment strikedatabase on iOS is not initialized
   // (guarded by the feature flag).
   void SetUpStrikeDatabaseTest() {
     VirtualCardEnrollmentProcessState* state =

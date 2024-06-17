@@ -123,7 +123,7 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
     std::string context_token;
     // The origin of the primary main frame where the unmasking happened.
     // Should be populated when the unmasking is for a virtual-card.
-    // TODO(b/325465172): Convert this to an std::optional<url::Origin>.
+    // TODO(crbug.com/325465172): Convert this to an std::optional<url::Origin>.
     std::optional<GURL> last_committed_primary_main_frame_origin;
     // The selected challenge option. Should be populated when we are doing CVC
     // unmasking for a virtual card.

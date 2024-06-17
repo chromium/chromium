@@ -514,8 +514,8 @@ bool WillFillCreditCardNumber(
         // case as only finding 1 fillable credit card field is needed.
         base::flat_map<FieldType, size_t> type_count;
 
-        // TODO(b/328478565): Cover cases where filling is skipped due to the
-        // iframe security policy.
+        // TODO(crbug.com/328478565): Cover cases where filling is skipped due
+        // to the iframe security policy.
         return FormFiller::GetFieldFillingSkipReason(
                    *field, autofill_field, trigger_autofill_field, type_count,
                    std::nullopt) == FieldFillingSkipReason::kNotSkipped;

@@ -12,7 +12,8 @@ namespace autofill {
 class AddressBubbleBaseView : public AutofillLocationBarBubble {
   using AutofillLocationBarBubble::AutofillLocationBarBubble;
 
-  // TODO(b/325440757): Add common for Save/UpdateAddressProfileView functions.
+  // TODO(crbug.com/325440757): Add common for Save/UpdateAddressProfileView
+  // functions.
 };
 
 }  // namespace autofill

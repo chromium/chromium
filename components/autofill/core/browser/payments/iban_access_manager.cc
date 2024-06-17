@@ -159,7 +159,7 @@ void IbanAccessManager::OnUnmaskResponseReceived(
 }
 
 void IbanAccessManager::OnServerIbanUnmaskCancelled() {
-  // TODO(b/296651899): Log the cancel metrics.
+  // TODO(crbug.com/296651899): Log the cancel metrics.
 }
 
 void IbanAccessManager::StartDeviceAuthenticationForFilling(

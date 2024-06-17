@@ -339,8 +339,8 @@ void FormTracker::WillDetach(blink::DetachReason detach_reason) {
   }
   if (base::FeatureList::IsEnabled(
           features::kAutofillUnifyAndFixFormTracking)) {
-    // TODO(b/40281981): Figure out if this is still needed, and document
-    // the reason, otherwise remove.
+    // TODO(crbug.com/40281981): Figure out if this is still needed, and
+    // document the reason, otherwise remove.
     ResetLastInteractedElements();
   }
 }

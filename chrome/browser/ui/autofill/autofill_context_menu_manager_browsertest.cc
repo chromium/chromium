@@ -1441,7 +1441,7 @@ class PlusAddressContextMenuManagerTest
   static constexpr char kExcludedDomainUrl[] = "https://muh.mah";
 
   PlusAddressContextMenuManagerTest() {
-    // TODO(b/327562692): Create and use a `PlusAddressTestEnvironment`.
+    // TODO(crbug.com/327562692): Create and use a `PlusAddressTestEnvironment`.
     feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
         {{plus_addresses::features::kPlusAddressesEnabled,

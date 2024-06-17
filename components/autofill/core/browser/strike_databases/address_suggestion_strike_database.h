@@ -21,7 +21,7 @@ struct AddressSuggestionStrikeDatabaseTraits {
   static constexpr std::string_view kName = "AddressSuggestion";
   // This value is now meaningless, since precedence is taken by the
   // parameterized `AddressSuggestionStrikeDatabase::GetMaxStrikesLimit`.
-  // TODO(b/41460687): Change to launched parameterization.
+  // TODO(crbug.com/41460687): Change to launched parameterization.
   static constexpr size_t kMaxStrikeLimit = 3;
   static constexpr size_t kMaxStrikeEntities = 300;
   // Strikes in this database do not expire.
@@ -56,7 +56,7 @@ class AddressSuggestionStrikeDatabase
                            FieldSignature field_signature,
                            const GURL& url);
 
-  // TODO(b/41460687): Remove.
+  // TODO(crbug.com/41460687): Remove.
   int GetMaxStrikesLimit() const override;
 };
 

@@ -258,7 +258,7 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   // Hide warnings as appropriate.
   PossiblyRemoveAutofillWarnings(&suggestions);
 
-  // TODO(b/320126773): consider moving these metrics to a better place.
+  // TODO(crbug.com/320126773): consider moving these metrics to a better place.
   if (base::ranges::any_of(suggestions, [](const Suggestion& suggestion) {
         return suggestion.type == SuggestionType::kShowAccountCards;
       })) {
@@ -402,7 +402,8 @@ void AutofillExternalDelegate::OnSuggestionsShown() {
   } else {
     // We send autocomplete availability event even though there might be no
     // autocomplete suggestions shown.
-    // TODO(b/315748930): Provide AX event only for autocomplete entries.
+    // TODO(crbug.com/315748930): Provide AX event only for autocomplete
+    // entries.
     OnAutofillAvailabilityEvent(
         mojom::AutofillSuggestionAvailability::kAutocompleteAvailable);
     if (base::Contains(shown_suggestion_types_,

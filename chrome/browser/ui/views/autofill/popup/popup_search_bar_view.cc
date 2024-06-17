@@ -44,8 +44,8 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
 
   input_ = AddChildView(
       views::Builder<views::Textfield>()
-          // TODO(b/325246516): Set default placeholder according to approved
-          // greenlines.
+          // TODO(crbug.com/325246516): Set default placeholder according to
+          // approved greenlines.
           .SetPlaceholderText(placeholder.empty() ? u"Search" : placeholder)
           .SetController(this)
           .SetBorder(nullptr)
@@ -61,9 +61,9 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
       input_->AddTextChangedCallback(base::BindRepeating(
           &PopupSearchBarView::OnInputChanged, base::Unretained(this)));
 
-  // TODO(b/325246516): Clarify whether the clear button should be rendered
-  // on top of the input field and rework the layout (probably with a custom
-  // LayoutManager).
+  // TODO(crbug.com/325246516): Clarify whether the clear button should be
+  // rendered on top of the input field and rework the layout (probably with a
+  // custom LayoutManager).
   clear_ = AddChildView(
       views::Builder<views::ImageButton>()
           .SetCallback(base::BindRepeating(&PopupSearchBarView::OnClearPressed,
@@ -71,7 +71,8 @@ PopupSearchBarView::PopupSearchBarView(const std::u16string& placeholder,
           .SetImageModel(views::Button::STATE_NORMAL,
                          ui::ImageModel::FromVectorIcon(
                              vector_icons::kCloseChromeRefreshIcon))
-          // TODO(b/325246516): Set the name according to approved greenlines.
+          // TODO(crbug.com/325246516): Set the name according to approved
+          // greenlines.
           .SetAccessibleName(u"tmp non empty name")
           .Build());
 }

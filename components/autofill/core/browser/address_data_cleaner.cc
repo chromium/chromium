@@ -178,7 +178,7 @@ void AddressDataCleaner::MaybeCleanupAddressData() {
   // To simplify the rollout of AutofillSilentlyRemoveQuasiDuplicates, this
   // condition is relaxed to twice per milestone (but still limited to at most
   // once per startup).
-  // TODO(b/325450676): Revert to once per milestone after the rollout.
+  // TODO(crbug.com/325450676): Revert to once per milestone after the rollout.
   if (pref_service_->GetInteger(prefs::kAutofillLastVersionDeduped) <
       CHROME_VERSION_MAJOR) {
     pref_service_->SetInteger(prefs::kAutofillLastVersionDeduped,

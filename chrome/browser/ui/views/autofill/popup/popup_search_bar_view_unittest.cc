@@ -131,7 +131,8 @@ TEST_F(PopupSearchBarViewTest, OnInputChangedCallbackIsThrottled) {
       PopupSearchBarView::kInputChangeCallbackDelay);
 }
 
-// TODO(b/338934966): Enable when key events suppressing in tests is fixed.
+// TODO(crbug.com/338934966): Enable when key events suppressing in tests is
+// fixed.
 #if !BUILDFLAG(IS_WIN)
 TEST_F(PopupSearchBarViewTest, KeyPressedFromTextfieldPassedToDelegateFirst) {
   PopupSearchBarView* view = widget().SetContentsView(

@@ -197,7 +197,7 @@ class ChromeAutofillClient : public ContentAutofillClient,
       FormGlobalId form_id,
       FieldGlobalId field_id) const override;
 
-  // TODO(b/320634151): Create a test API.
+  // TODO(crbug.com/320634151): Create a test API.
   base::WeakPtr<AutofillSuggestionController>
   suggestion_controller_for_testing() {
     return suggestion_controller_;

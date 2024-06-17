@@ -105,7 +105,7 @@ class RendererSavePasswordProgressLogger;
 class PasswordGenerationAgent;
 
 // This class is responsible for filling password forms.
-// TODO(b/40281981): Remove FormTracker::Observer after launching
+// TODO(crbug.com/40281981): Remove FormTracker::Observer after launching
 // kAutofillUnifyAndFixFormTracking.
 class PasswordAutofillAgent : public content::RenderFrameObserver,
                               public FormTracker::Observer,

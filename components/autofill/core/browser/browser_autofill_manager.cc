@@ -283,7 +283,7 @@ bool IsSingleFieldFormFillerFillingProduct(FillingProduct filling_product) {
 // a plus address suggestion.
 // It only logs these metrics for users that are signed in and tabs that are not
 // in incognito mode.
-// TODO(b/327328460): Clean up once the metric is has been evaluated.
+// TODO(crbug.com/327328460): Clean up once the metric is has been evaluated.
 void MaybeLogAutocompleteSuppressionByPlusAddresses(
     AutofillClient& client,
     base::span<const Suggestion> suggestions,
@@ -525,7 +525,7 @@ void LogSuggestionsCount(const SuggestionsContext& context,
   if (context.filling_product == FillingProduct::kCreditCard) {
     AutofillMetrics::LogIsQueriedCreditCardFormSecure(
         context.is_context_secure);
-    // TODO(b/41484171): Move to PaymentsSuggestionGenerator.
+    // TODO(crbug.com/41484171): Move to PaymentsSuggestionGenerator.
     autofill_metrics::LogSuggestionsCount(
         base::ranges::count_if(suggestions,
                                [](const Suggestion& suggestion) {
@@ -536,7 +536,7 @@ void LogSuggestionsCount(const SuggestionsContext& context,
         FillingProduct::kCreditCard);
   }
   if (context.filling_product == FillingProduct::kAddress) {
-    // TODO(b/41484171): Move to AddressSuggestionGenerator.
+    // TODO(crbug.com/41484171): Move to AddressSuggestionGenerator.
     autofill_metrics::LogSuggestionsCount(
         base::ranges::count_if(suggestions,
                                [](const Suggestion& suggestion) {
@@ -1416,7 +1416,7 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUI(
     }
   }
 
-  // TODO(b/340494671): Move ShouldOfferSingleFieldFormFill out of
+  // TODO(crbug.com/340494671): Move ShouldOfferSingleFieldFormFill out of
   // OnAskForValuesToFillImpl.
   auto ShouldOfferSingleFieldFormFill = [&] {
     if (!suggestions.empty() || !should_offer_other_suggestions) {
@@ -2146,7 +2146,7 @@ void BrowserAutofillManager::OnGetSingleFieldSuggestionsCallback(
     const std::vector<Suggestion>& suggestions) {
   MaybeLogAutocompleteSuppressionByPlusAddresses(client(), suggestions,
                                                  focused_field_type_group);
-  // TODO(b/309163415): Replace parameter of FormFieldData in
+  // TODO(crbug.com/309163415): Replace parameter of FormFieldData in
   // `TryToShowTouchToFill` by FieldGlobalId.
   if (const FormFieldData& field =
           CHECK_DEREF(form.FindFieldByGlobalId(field_id));

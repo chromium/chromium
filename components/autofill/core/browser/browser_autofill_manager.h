@@ -111,7 +111,7 @@ enum class ValuePatternsMetric {
 // plus address suggestion.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
-// TODO(b/327328460): Clean up once the metric is has been evaluated.
+// TODO(crbug.com/327328460): Clean up once the metric is has been evaluated.
 enum class AutocompleteSuppressionByPlusAddress {
   // The Autocomplete suggestions would not have been suppressed.
   kNotSuppressed = 0,
@@ -184,7 +184,8 @@ class BrowserAutofillManager : public AutofillManager {
   // Logs metrics when the user accepts address form filling suggestion. This
   // happens only for already parsed forms (`FormStructure` and `AutofillField`
   // are defined).
-  // TODO(b/40227071): Remove when field-filling and form-filling are merged
+  // TODO(crbug.com/40227071): Remove when field-filling and form-filling are
+  // merged
   virtual void OnDidFillAddressFormFillingSuggestion(
       const AutofillProfile& profile,
       const FormData& form,
@@ -528,8 +529,8 @@ class BrowserAutofillManager : public AutofillManager {
   // modification. `cleared_value` is true if JS wiped the previous value, and
   // `formatting_only` is true if JS only modified whitespaces, symbols and
   // capitalization.
-  // TODO(b/40227496): Remove `cleared_value` when `field` starts containing
-  // the actual current value of the field.
+  // TODO(crbug.com/40227496): Remove `cleared_value` when `field` starts
+  // containing the actual current value of the field.
   void AnalyzeJavaScriptChangedAutofilledValue(const FormStructure& form,
                                                AutofillField& field,
                                                bool cleared_value,
@@ -546,8 +547,8 @@ class BrowserAutofillManager : public AutofillManager {
   // the `form` are filled depends on the `trigger_source`. `context` could
   // contain additional information about the suggestions, such as ablation
   // study related fields.
-  // TODO(b/340494671): Move ablation study fields out of the function and make
-  // the context a const ref.
+  // TODO(crbug.com/340494671): Move ablation study fields out of the function
+  // and make the context a const ref.
   std::vector<Suggestion> GetAvailableAddressAndCreditCardSuggestions(
       const FormData& form,
       const FormFieldData& field,
@@ -576,7 +577,7 @@ class BrowserAutofillManager : public AutofillManager {
   // `GenerateSuggestionsAndMaybeShowUI` and displays them if `show_suggestions`
   // is true (via the `external_delegate_`). It also logs whether there is a
   // suggestion for the user and whether the suggestion is shown.
-  // TODO(b/340494671): Move to the unnamed namespace.
+  // TODO(crbug.com/340494671): Move to the unnamed namespace.
   void OnGenerateSuggestionsComplete(
       const FormData& form,
       const FormFieldData& field,
@@ -694,7 +695,7 @@ class BrowserAutofillManager : public AutofillManager {
   // Lazily initialized: access only through GetCreditCardAccessManager().
   std::unique_ptr<CreditCardAccessManager> credit_card_access_manager_;
 
-  // TODO(b/41484171): Remove.
+  // TODO(crbug.com/41484171): Remove.
   std::unique_ptr<AddressSuggestionGenerator> address_suggestion_generator_;
   std::unique_ptr<PaymentsSuggestionGenerator> payments_suggestion_generator_;
 

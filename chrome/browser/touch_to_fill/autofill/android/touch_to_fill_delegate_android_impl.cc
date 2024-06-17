@@ -161,7 +161,8 @@ TouchToFillDelegateAndroidImpl::DryRunForCreditCard(
   // Fetch all complete valid credit cards on file.
   // Complete = contains number, expiration date and name on card.
   // Valid = unexpired with valid number format.
-  // TODO(b/40227496): `*field` must contain the updated field information.
+  // TODO(crbug.com/40227496): `*field` must contain the updated field
+  // information.
   std::vector<CreditCard> cards_to_suggest =
       PaymentsSuggestionGenerator().GetTouchToFillCardsToSuggest(
           manager_->client(), field, field.Type().GetStorableType());
