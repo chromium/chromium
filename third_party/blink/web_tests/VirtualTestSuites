@@ -1624,6 +1624,26 @@
     "expires": "Sep 1, 2024"
   },
   {
+    "prefix": "fledge-bidding-and-auction",
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "owners": [
+      "behamilton@google.com",
+      "mmenke@chromium.org",
+      "pauljensen@chromium.org"
+    ],
+    "bases": [
+      "external/wpt/fledge/tentative/get-interest-group-auction-data.https.window.js"
+    ],
+    "args": [
+      "--enable-features=FledgeBiddingAndAuctionServerAPI,FledgeBiddingAndAuctionServer:FledgeBiddingAndAuctionKeyConfig/{\"https%3A%2F%2Fpublickeyservice.gcp.privacysandboxservices.com\"%3A\"https%3A%2F%2Fpublickeyservice.pa.gcp.privacysandboxservices.com%2F.well-known%2Fprotected-auction%2Fv1%2Fpublic-keys\"%2C\"https%3A%2F%2Fpublickeyservice.pa.gcp.privacysandboxservices.com\"%3A\"https%3A%2F%2Fpublickeyservice.pa.gcp.privacysandboxservices.com%2F.well-known%2Fprotected-auction%2Fv1%2Fpublic-keys\"}"
+    ],
+    "expires": "Jan 14, 2025"
+  },
+  {
     "prefix": "automatic-lazy-frame-loading",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [

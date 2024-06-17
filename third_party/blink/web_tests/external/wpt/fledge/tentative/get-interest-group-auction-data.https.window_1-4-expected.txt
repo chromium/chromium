@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] getInterestGroupAdAuctionData() with no interest groups returns a zero length result.
+  promise_test: Unhandled rejection with value: object "TypeError: navigator.getInterestGroupAdAuctionData is not a function"
+[FAIL] getInterestGroupAdAuctionData() with one interest group returns a non-zero length result.
+  promise_test: Unhandled rejection with value: object "TypeError: navigator.getInterestGroupAdAuctionData is not a function"
+Harness: the test ran to completion.
+
