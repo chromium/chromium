@@ -9,6 +9,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/extensions/test_extension_prefs.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/consent_level.h"
@@ -206,4 +207,85 @@ TEST_F(IdentityAPITest, FireOnAccountSignInChangedOnlyIfSignedIn) {
   Mock::VerifyAndClearExpectations(&mock_on_signin_changed_callback());
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+TEST_F(IdentityAPITest, MaybeShowChromeSigninDialogChromeAlreadySignedIn) {
+  EXPECT_CALL(mock_on_signin_changed_callback(), Run(_));
+  identity_env()->MakePrimaryAccountAvailable(kTestAccount,
+                                              signin::ConsentLevel::kSignin);
+  ASSERT_TRUE(identity_env()->identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
+  base::test::TestFuture<void> on_complete;
+  api()->MaybeShowChromeSigninDialog("Extension name",
+                                     on_complete.GetCallback());
+  // The UI is not shown and the callback is shown immediately.
+  EXPECT_TRUE(on_complete.IsReady());
+}
+
+TEST_F(IdentityAPITest, MaybeShowChromeSigninDialogNoAccountsOnTheWeb) {
+  ASSERT_TRUE(identity_env()
+                  ->identity_manager()
+                  ->GetAccountsWithRefreshTokens()
+                  .empty());
+  base::test::TestFuture<void> on_complete;
+  api()->MaybeShowChromeSigninDialog("Extension name",
+                                     on_complete.GetCallback());
+  // The UI is not shown and the callback is shown immediately.
+  EXPECT_TRUE(on_complete.IsReady());
+}
+
+TEST_F(IdentityAPITest, MaybeShowChromeSigninDialog) {
+  identity_env()->MakeAccountAvailable(kTestAccount);
+  ASSERT_FALSE(identity_env()
+                   ->identity_manager()
+                   ->GetAccountsWithRefreshTokens()
+                   .empty());
+
+  const size_t kShowTwice = 2;
+  for (size_t i = 0; i < kShowTwice; i++) {
+    base::test::TestFuture<base::OnceClosure> on_ui_triggered;
+    api()->SetSkipUIForTesting(on_ui_triggered.GetCallback());
+
+    base::test::TestFuture<void> on_complete;
+    api()->MaybeShowChromeSigninDialog("Extension name",
+                                       on_complete.GetCallback());
+
+    EXPECT_FALSE(on_complete.IsReady());
+    EXPECT_TRUE(on_ui_triggered.IsReady());
+
+    // Complete the dialog.
+    std::move(on_ui_triggered.Take()).Run();
+    EXPECT_TRUE(on_complete.IsReady());
+  }
+}
+
+TEST_F(IdentityAPITest, MaybeShowChromeSigninDialogConcurrent) {
+  identity_env()->MakeAccountAvailable(kTestAccount);
+  ASSERT_FALSE(identity_env()
+                   ->identity_manager()
+                   ->GetAccountsWithRefreshTokens()
+                   .empty());
+
+  base::test::TestFuture<base::OnceClosure> on_ui_triggered;
+  api()->SetSkipUIForTesting(on_ui_triggered.GetCallback());
+
+  base::test::TestFuture<void> on_complete_1;
+  base::test::TestFuture<void> on_complete_2;
+  api()->MaybeShowChromeSigninDialog("Extension name",
+                                     on_complete_1.GetCallback());
+
+  EXPECT_TRUE(on_ui_triggered.IsReady());
+  // Should crash if UI is shown as `on_ui_triggered` should have been already
+  // consumed.
+  api()->MaybeShowChromeSigninDialog("Extension name",
+                                     on_complete_2.GetCallback());
+
+  EXPECT_FALSE(on_complete_1.IsReady());
+  EXPECT_FALSE(on_complete_2.IsReady());
+  // Complete the dialog.
+  std::move(on_ui_triggered.Take()).Run();
+  EXPECT_TRUE(on_complete_1.IsReady());
+  EXPECT_TRUE(on_complete_2.IsReady());
+}
+#endif
 }  // namespace extensions

@@ -363,6 +363,7 @@ void SigninViewController::MaybeShowChromeSigninDialogForExtensions(
     content::WebContents* web_contents = tab_strip->GetWebContentsAt(tab_index);
     if (web_contents && SigninViewController::IsNTPTab(web_contents)) {
       ntp_tab_index = tab_index;
+      // Prefer to keep the active tab if possible.
       if (ntp_tab_index == active_tab_index) {
         break;
       }
@@ -761,7 +762,8 @@ void SigninViewController::ShowChromeSigninDialogForExtensions(
             IdentityManagerFactory::GetForProfile(profile.get());
         if (identity_manager) {
           identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
-              account_id, signin::ConsentLevel::kSignin);
+              account_id, signin::ConsentLevel::kSignin,
+              signin_metrics::AccessPoint::ACCESS_POINT_EXTENSIONS);
         }
       },
       browser_->profile()->GetWeakPtr(), account_info_for_promos.account_id);

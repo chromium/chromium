@@ -224,6 +224,14 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   virtual void StartDeviceAccessTokenRequest();
 #endif
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // This dialog prompts the user to sign in with an account that is already
+  // present in the identity manager. This is different from the signin dialog
+  // shown when there are no accounts in the identity manager.
+  void MaybeShowChromeSigninDialog();
+  void OnChromeSigninDialogDestroyed();
+#endif
+
   // Methods for invoking UI. Overridable for testing.
   virtual void ShowExtensionLoginPrompt();
   virtual void ShowRemoteConsentDialog(

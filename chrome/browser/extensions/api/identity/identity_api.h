@@ -12,6 +12,7 @@
 #include "base/callback_list.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -81,6 +82,23 @@ class IdentityAPI : public BrowserContextKeyedAPI,
   // account only.
   bool AreExtensionsRestrictedToPrimaryAccount();
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Shows the Chrome sign in dialog for extensions if:
+  // - The dialog is not already showing
+  // - The user is signed in on the web but not to Chrome
+  // `on_complete` is guaranteed to be called.
+  void MaybeShowChromeSigninDialog(std::string_view extension_name,
+                                   base::OnceClosure on_complete);
+
+  // Callback to be called when the tests triggers showing UI.
+  // Should be used in unittests.
+  void SetSkipUIForTesting(
+      base::OnceCallback<void(base::OnceClosure)> callback) {
+    skip_ui_for_testing_callback_ = std::move(callback);
+  }
+
+#endif
+
  private:
   friend class BrowserContextKeyedAPIFactory<IdentityAPI>;
   friend class IdentityAPITest;
@@ -118,6 +136,11 @@ class IdentityAPI : public BrowserContextKeyedAPI,
   void FireOnAccountSignInChanged(const std::string& gaia_id,
                                   bool is_signed_in);
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  void OnChromeSigninDialogDestroyed();
+  void HandleSkipUIForTesting(base::OnceClosure on_complete);
+#endif
+
   const raw_ptr<Profile> profile_;
   const raw_ptr<signin::IdentityManager> identity_manager_;
   const raw_ptr<ExtensionPrefs> extension_prefs_;
@@ -131,6 +154,14 @@ class IdentityAPI : public BrowserContextKeyedAPI,
   OnSignInChangedCallback on_signin_changed_callback_for_testing_;
 
   base::OnceCallbackList<void()> on_shutdown_callback_list_;
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  bool is_chrome_signin_dialog_open_ = false;
+  std::vector<base::OnceClosure> on_chrome_signin_dialog_completed_;
+  // Should only be set in unittests.
+  base::OnceCallback<void(base::OnceClosure)> skip_ui_for_testing_callback_;
+  base::WeakPtrFactory<IdentityAPI> weak_ptr_factory_{this};
+#endif
 };
 
 template <>
