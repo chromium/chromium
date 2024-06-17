@@ -853,6 +853,15 @@
         "form_control_types": ["INPUT_TEXT", "SELECT_ONE", "SELECT_LIST", "INPUT_SEARCH"]
       }
     ],
+    "it": [
+      {
+        "positive_pattern": "\\bpaese\\b|\\bnazione\\b",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "match_field_attributes": ["LABEL", "NAME"],
+        "form_control_types": ["INPUT_TEXT", "SELECT_ONE", "SELECT_LIST", "INPUT_SEARCH"]
+      }
+    ],
     "pl": [
       {
         // "(?<!o)" exists to prevent "okrajov" and "okraj" from matching.

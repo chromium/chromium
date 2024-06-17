@@ -126,6 +126,7 @@ inline constexpr char16_t kCountryRe[] =
     u"|(\\b|_)(ülke|ulce|ulke)(\\b|_)"    // tr
     u"|کشور"                              // fa
     u"|negara"                            // id
+    u"|\\bpaese\\b|\\bnazione\\b"         // it
     u"|(?<!o)kraj|pa[nń]stwo";            // pl
 inline constexpr char16_t kCountryLocationRe[] = u"location";
 inline constexpr char16_t kZipCodeRe[] =
