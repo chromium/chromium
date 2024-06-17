@@ -127,11 +127,7 @@ export class UrlVisitElement extends ClusterMenuElementBase {
 
   private onAuxClick_() {
     // Notify the parent <history-cluster> element of this event.
-    this.dispatchEvent(new CustomEvent('visit-clicked', {
-      bubbles: true,
-      composed: true,
-      detail: this.visit,
-    }));
+    this.fire('visit-clicked', this.visit);
   }
 
   protected onClick_(event: MouseEvent) {
@@ -194,11 +190,7 @@ export class UrlVisitElement extends ClusterMenuElementBase {
   private emitMenuButtonClick_(event: Event, emitEventName: string) {
     event.preventDefault();  // Prevent default browser action (navigation).
 
-    this.dispatchEvent(new CustomEvent(emitEventName, {
-      bubbles: true,
-      composed: true,
-      detail: this.visit,
-    }));
+    this.fire(emitEventName, this.visit);
 
     // This can also be triggered from the hide visit icon, in which case the
     // menu may not be rendered.

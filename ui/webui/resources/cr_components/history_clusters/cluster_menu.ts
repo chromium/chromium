@@ -93,10 +93,7 @@ export class ClusterMenuElement extends ClusterMenuElementBase {
   protected onOpenAllButtonClick_(event: Event) {
     event.preventDefault();  // Prevent default browser action (navigation).
 
-    this.dispatchEvent(new CustomEvent('open-all-visits', {
-      bubbles: true,
-      composed: true,
-    }));
+    this.fire('open-all-visits');
 
     this.closeActionMenu_();
   }
@@ -104,10 +101,7 @@ export class ClusterMenuElement extends ClusterMenuElementBase {
   protected onHideAllButtonClick_(event: Event) {
     event.preventDefault();  // Prevent default browser action (navigation).
 
-    this.dispatchEvent(new CustomEvent('hide-all-visits', {
-      bubbles: true,
-      composed: true,
-    }));
+    this.fire('hide-all-visits');
 
     this.closeActionMenu_();
   }
@@ -115,10 +109,7 @@ export class ClusterMenuElement extends ClusterMenuElementBase {
   protected onRemoveAllButtonClick_(event: Event) {
     event.preventDefault();  // Prevent default browser action (navigation).
 
-    this.dispatchEvent(new CustomEvent('remove-all-visits', {
-      bubbles: true,
-      composed: true,
-    }));
+    this.fire('remove-all-visits');
 
     this.closeActionMenu_();
   }

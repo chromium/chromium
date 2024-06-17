@@ -178,20 +178,14 @@ export class ClusterElement extends ClusterElementBase {
       // without an explicit event. But we also can't send this until we have
       // updated the image property, so send it on the next idle.
       requestIdleCallback(() => {
-        this.dispatchEvent(new CustomEvent('iron-resize', {
-          bubbles: true,
-          composed: true,
-        }));
+        this.fire('iron-resize');
       });
     } else if (changedProperties.has('cluster')) {
       // Iron-list re-assigns the `cluster` property to reuse existing elements
       // as the user scrolls. Since this property can change the height of this
       // element, we need to notify iron-list that this element's height may
       // need to be re-calculated.
-      this.dispatchEvent(new CustomEvent('iron-resize', {
-        bubbles: true,
-        composed: true,
-      }));
+      this.fire('iron-resize');
     }
   }
 
@@ -223,14 +217,10 @@ export class ClusterElement extends ClusterElementBase {
     MetricsProxyImpl.getInstance().recordVisitAction(
         VisitAction.kClicked, visitIndex, MetricsProxyImpl.getVisitType(visit));
 
-    this.dispatchEvent(new CustomEvent('record-history-link-click', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        resultType: HistoryResultType.GROUPED,
-        index: visitIndex,
-      },
-    }));
+    this.fire('record-history-link-click', {
+      resultType: HistoryResultType.GROUPED,
+      index: visitIndex,
+    });
   }
 
   protected onOpenAllVisits_() {
@@ -242,20 +232,12 @@ export class ClusterElement extends ClusterElementBase {
   }
 
   protected onHideAllVisits_() {
-    this.dispatchEvent(new CustomEvent('hide-visits', {
-      bubbles: true,
-      composed: true,
-      detail: this.cluster.visits,
-    }));
+    this.fire('hide-visits', this.cluster.visits);
   }
 
   protected onRemoveAllVisits_() {
     // Pass event up with new detail of all this cluster's visits.
-    this.dispatchEvent(new CustomEvent('remove-visits', {
-      bubbles: true,
-      composed: true,
-      detail: this.cluster.visits,
-    }));
+    this.fire('remove-visits', this.cluster.visits);
   }
 
   protected onHideVisit_(event: CustomEvent<URLVisit>) {
@@ -275,11 +257,7 @@ export class ClusterElement extends ClusterElementBase {
         VisitAction.kDeleted, this.getVisitIndex_(visit),
         MetricsProxyImpl.getVisitType(visit));
 
-    this.dispatchEvent(new CustomEvent('remove-visits', {
-      bubbles: true,
-      composed: true,
-      detail: [visit],
-    }));
+    this.fire('remove-visits', [visit]);
   }
 
   //============================================================================
@@ -329,11 +307,7 @@ export class ClusterElement extends ClusterElementBase {
     if (!remainingVisits.length) {
       // If all the visits are removed, fire an event to also remove this
       // cluster from the list of clusters.
-      this.dispatchEvent(new CustomEvent('remove-cluster', {
-        bubbles: true,
-        composed: true,
-        detail: this.index,
-      }));
+      this.fire('remove-cluster', this.index);
 
       MetricsProxyImpl.getInstance().recordClusterAction(
           ClusterAction.kDeleted, this.index);
@@ -343,10 +317,7 @@ export class ClusterElement extends ClusterElementBase {
     }
 
     this.updateComplete.then(() => {
-      this.dispatchEvent(new CustomEvent('iron-resize', {
-        bubbles: true,
-        composed: true,
-      }));
+      this.fire('iron-resize');
     });
   }
 

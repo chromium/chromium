@@ -72,10 +72,7 @@ export class SearchQueryElement extends SearchQueryElementBase {
         RelatedSearchAction.kClicked, this.index);
 
     // Notify the parent <history-cluster> element of this event.
-    this.dispatchEvent(new CustomEvent('related-search-clicked', {
-      bubbles: true,
-      composed: true,
-    }));
+    this.fire('related-search-clicked');
   }
 
   protected onClick_(event: MouseEvent) {
