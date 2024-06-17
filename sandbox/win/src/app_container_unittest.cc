@@ -18,6 +18,7 @@
 #include "base/win/security_descriptor.h"
 #include "base/win/security_util.h"
 #include "base/win/sid.h"
+#include "build/build_config.h"
 #include "sandbox/features.h"
 #include "sandbox/win/src/app_container_base.h"
 #include "sandbox/win/src/security_capabilities.h"
@@ -227,7 +228,16 @@ TEST(AppContainerTest, SecurityCapabilities) {
       ValidSecurityCapabilities(&two_capabilities, package_sid, capabilities));
 }
 
-TEST(AppContainerTest, CreateAndDeleteAppContainerProfile) {
+// TODO(crbug/347547524): re-enable the tests once they are passing on
+// Windows ARM64.
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+#define MAYBE_CreateAndDeleteAppContainerProfile \
+  DISABLED_CreateAndDeleteAppContainerProfile
+#else
+#define MAYBE_CreateAndDeleteAppContainerProfile \
+  CreateAndDeleteAppContainerProfile
+#endif
+TEST(AppContainerTest, MAYBE_CreateAndDeleteAppContainerProfile) {
   if (!features::IsAppContainerSandboxSupported())
     return;
 
