@@ -530,6 +530,8 @@ class WPTAdapter:
                 tests_root = self.tools_root
             else:
                 tests_root = self.finder.path_from_wpt_tests()
+                TestLoader.install(self.port, self._expectations,
+                                   runner_options.include)
             runner_options.tests_root = tests_root
             runner_options.metadata_root = tests_root
             logger.debug('Using WPT tests (external) from %s', tests_root)
@@ -538,8 +540,6 @@ class WPTAdapter:
             runner_options.run_info = tmp_dir
             self._initialize_tmp_dir(tmp_dir, tests_root)
 
-            TestLoader.install(self.port, self._expectations,
-                               runner_options.include)
             stack.enter_context(
                 self.process_and_upload_results(runner_options))
             self.port.setup_test_run()  # Start Xvfb, if necessary.
