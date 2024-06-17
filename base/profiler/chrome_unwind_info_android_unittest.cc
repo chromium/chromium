@@ -24,8 +24,13 @@ bool operator==(const FunctionTableEntry& e1, const FunctionTableEntry& e2) {
                   e2.function_offset_table_byte_index);
 }
 
-template <class T, size_t E1, size_t E2>
-void ExpectSpanSizeAndContentsEqual(span<T, E1> actual, span<T, E2> expected) {
+template <class T,
+          size_t E1,
+          size_t E2,
+          typename InternalPtrType1,
+          typename InternalPtrType2>
+void ExpectSpanSizeAndContentsEqual(span<T, E1, InternalPtrType1> actual,
+                                    span<T, E2, InternalPtrType2> expected) {
   EXPECT_EQ(actual.size(), expected.size());
   if (actual.size() != expected.size()) {
     return;

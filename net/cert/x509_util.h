@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "crypto/signature_verifier.h"
@@ -96,9 +97,9 @@ struct NET_EXPORT Extension {
   ~Extension();
   Extension(const Extension&);
 
-  base::span<const uint8_t> oid;
+  base::raw_span<const uint8_t> oid;
   bool critical;
-  base::span<const uint8_t> contents;
+  base::raw_span<const uint8_t> contents;
 };
 
 // Create a certificate signed by |issuer_key| and write it to |der_encoded|.

@@ -1,13 +1,10 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
 #pragma allow_unsafe_buffers
 #endif
-
-#include "base/metrics/histogram.h"
 
 #include <memory>
 #include <set>
@@ -16,7 +13,9 @@
 
 #include "base/atomicops.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "base/metrics/bucket_ranges.h"
+#include "base/metrics/histogram.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/sparse_histogram.h"
 #include "base/no_destructor.h"
@@ -147,12 +146,12 @@ class SnapshotDeltaThread : public SimpleThread {
   }
 
   const size_t num_emissions_;
-  span<HistogramBase*> histograms_;
+  raw_span<HistogramBase*> histograms_;
   const HistogramBase::Sample histogram_max_;
   raw_ptr<subtle::Atomic32> real_total_samples_count_;
-  span<subtle::Atomic32> real_bucket_counts_;
+  raw_span<subtle::Atomic32> real_bucket_counts_;
   raw_ptr<subtle::Atomic32> snapshots_total_samples_count_;
-  span<subtle::Atomic32> snapshots_bucket_counts_;
+  raw_span<subtle::Atomic32> snapshots_bucket_counts_;
 };
 
 }  // namespace

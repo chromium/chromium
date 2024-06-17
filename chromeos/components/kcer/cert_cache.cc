@@ -4,11 +4,12 @@
 
 #include "chromeos/components/kcer/cert_cache.h"
 
-#include <vector>
-
 #include <stdint.h>
 
+#include <vector>
+
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "chromeos/components/kcer/kcer.h"
 #include "net/cert/x509_util.h"
 
@@ -31,7 +32,7 @@ class CmpAdapter {
   }
 
  private:
-  base::span<const uint8_t> data_;
+  base::raw_span<const uint8_t> data_;
 };
 
 }  // namespace

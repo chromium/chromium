@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -53,7 +54,7 @@ class CONTENT_EXPORT RaceNetworkRequestWriteBufferManager {
   bool is_data_pipe_created_;
   mojo::ScopedDataPipeProducerHandle producer_;
   mojo::ScopedDataPipeConsumerHandle consumer_;
-  base::span<uint8_t> buffer_;
+  base::raw_span<uint8_t> buffer_;
   mojo::SimpleWatcher watcher_;
   size_t num_bytes_written_ = 0;
 };

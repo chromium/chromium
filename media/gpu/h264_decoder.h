@@ -13,6 +13,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/scoped_refptr.h"
 #include "media/base/limits.h"
 #include "media/base/subsample_entry.h"
@@ -414,7 +415,8 @@ class MEDIA_GPU_EXPORT H264Decoder : public AcceleratedVideoDecoder {
   // Encrypted NALUs preceding a fully encrypted (CENCv1) slice NALU. We need to
   // save these that are part of a single sample so they can all be decrypted
   // together.
-  std::vector<base::span<const uint8_t>> prior_cencv1_nalus_;
+  std::vector<base::raw_span<const uint8_t, DanglingUntriaged>>
+      prior_cencv1_nalus_;
   std::vector<SubsampleEntry> prior_cencv1_subsamples_;
 
   // These are std::nullopt unless get recovery point SEI message after Reset.

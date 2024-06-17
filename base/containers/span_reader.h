@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "base/memory/stack_allocated.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 
@@ -21,6 +22,8 @@ namespace base {
 // with span directly).
 template <class T>
 class SpanReader {
+  STACK_ALLOCATED();
+
  public:
   // Construct SpanReader from a span.
   explicit SpanReader(span<T> buf) : buf_(buf), original_size_(buf_.size()) {}

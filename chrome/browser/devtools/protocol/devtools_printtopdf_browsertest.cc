@@ -9,6 +9,7 @@
 #include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_span.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/values_test_util.h"
@@ -128,7 +129,7 @@ class PrintToPdfProtocolTest : public DevToolsProtocolTest,
   net::EmbeddedTestServer https_server_;
 
   std::string pdf_data_;
-  base::span<const uint8_t> pdf_span_;
+  base::raw_span<const uint8_t, DanglingUntriaged> pdf_span_;
   int pdf_num_pages_ = 0;
 
   headless::PDFPageBitmap page_bitmap;

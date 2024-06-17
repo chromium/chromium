@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/service_provider_config.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -76,7 +77,7 @@ struct LocalAnalysisSettings {
 
   std::string local_path;
   bool user_specific = false;
-  base::span<const char* const> subject_names;
+  base::raw_span<const char* const> subject_names;
   // The scanning limit for pasted text and image in local content analysis.
   size_t max_file_size;
   // Arrays of base64 encoded signing key signatures.

@@ -7,10 +7,12 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
 #include <memory>
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/unsafe_shared_memory_pool.h"
 #include "base/unguessable_token.h"
@@ -81,7 +83,7 @@ class GPU_EXPORT GpuMemoryBufferImplDXGI : public GpuMemoryBufferImpl {
   std::unique_ptr<base::UnsafeSharedMemoryPool::Handle> shared_memory_handle_;
 
   // Used to store shared memory passed from the capturer.
-  base::span<uint8_t> premapped_memory_;
+  base::raw_span<uint8_t> premapped_memory_;
 };
 
 }  // namespace gpu

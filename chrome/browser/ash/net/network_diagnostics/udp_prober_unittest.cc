@@ -11,6 +11,7 @@
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
+#include "base/memory/raw_span.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -113,7 +114,7 @@ class UdpProberWithFakeNetworkContextTest : public ::testing::Test {
       net::HostPortPair::FromString("fake_stun_server.com:80");
   const net::IPEndPoint kFakeIPAddress{
       net::IPEndPoint(net::IPAddress::IPv4Localhost(), /*port=*/1234)};
-  const base::span<const uint8_t> kValidStunData = util::GetStunHeader();
+  const base::raw_span<const uint8_t> kValidStunData = util::GetStunHeader();
   const net::NetworkTrafficAnnotationTag kStunTag =
       util::GetStunNetworkAnnotationTag();
   const base::TimeDelta kTimeoutAfterHostResolution = base::Seconds(10);

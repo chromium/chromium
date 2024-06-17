@@ -15,6 +15,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "crypto/crypto_export.h"
 
 struct evp_aead_st;
@@ -81,7 +82,7 @@ class CRYPTO_EXPORT Aead {
                              base::span<const uint8_t> additional_data,
                              base::span<uint8_t> out) const;
 
-  std::optional<base::span<const uint8_t>> key_;
+  std::optional<base::raw_span<const uint8_t, DanglingUntriaged>> key_;
   raw_ptr<const evp_aead_st> aead_;
 };
 

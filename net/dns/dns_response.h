@@ -16,6 +16,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/containers/span_writer.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/base/net_export.h"
 #include "net/dns/dns_response_result_extractor.h"
@@ -83,6 +84,13 @@ class NET_EXPORT_PRIVATE DnsRecordParser {
                                       size_t offset,
                                       size_t num_records);
 
+  DnsRecordParser(const DnsRecordParser&);
+  DnsRecordParser(DnsRecordParser&&);
+  DnsRecordParser& operator=(const DnsRecordParser&);
+  DnsRecordParser& operator=(DnsRecordParser&&);
+
+  ~DnsRecordParser();
+
   // Returns |true| if initialized.
   bool IsValid() const { return !packet_.empty(); }
 
@@ -110,7 +118,7 @@ class NET_EXPORT_PRIVATE DnsRecordParser {
   bool ReadQuestion(std::string& out_dotted_qname, uint16_t& out_qtype);
 
  private:
-  base::span<const uint8_t> packet_;
+  base::raw_span<const uint8_t> packet_;
   size_t num_records_ = 0u;
   size_t num_records_parsed_ = 0u;
   // Current offset within the packet.

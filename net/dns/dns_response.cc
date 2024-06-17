@@ -125,6 +125,16 @@ size_t DnsResourceRecord::CalculateRecordSize() const {
 
 DnsRecordParser::DnsRecordParser() = default;
 
+DnsRecordParser::~DnsRecordParser() = default;
+
+DnsRecordParser::DnsRecordParser(const DnsRecordParser&) = default;
+
+DnsRecordParser::DnsRecordParser(DnsRecordParser&&) = default;
+
+DnsRecordParser& DnsRecordParser::operator=(const DnsRecordParser&) = default;
+
+DnsRecordParser& DnsRecordParser::operator=(DnsRecordParser&&) = default;
+
 DnsRecordParser::DnsRecordParser(base::span<const uint8_t> packet,
                                  size_t offset,
                                  size_t num_records)

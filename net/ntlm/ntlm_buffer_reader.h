@@ -17,6 +17,7 @@
 
 #include "base/check.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "net/base/net_export.h"
 #include "net/ntlm/ntlm_constants.h"
 
@@ -218,7 +219,7 @@ class NET_EXPORT_PRIVATE NtlmBufferReader {
     return *(GetBufferAtCursor());
   }
 
-  base::span<const uint8_t> buffer_;
+  base::raw_span<const uint8_t> buffer_;
   size_t cursor_ = 0;
 };
 

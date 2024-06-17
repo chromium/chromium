@@ -8,6 +8,9 @@
 
 namespace media {
 
+ScopedD3DBuffer::ScopedD3DBuffer(base::span<uint8_t> data) : data_(data) {}
+ScopedD3DBuffer::~ScopedD3DBuffer() = default;
+
 D3DInputBuffer::D3DInputBuffer(std::unique_ptr<ScopedD3DBuffer> buffer)
     : buffer_(std::move(buffer)) {}
 

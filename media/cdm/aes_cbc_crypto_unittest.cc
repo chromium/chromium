@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "crypto/encryptor.h"
 #include "crypto/symmetric_key.h"
 #include "media/base/decoder_buffer.h"
@@ -94,7 +95,7 @@ class AesCbcCryptoTest : public testing::Test {
   // Constants for testing.
   std::unique_ptr<crypto::SymmetricKey> key1_;
   std::unique_ptr<crypto::SymmetricKey> key2_;
-  base::span<const uint8_t> iv_;
+  base::raw_span<const uint8_t> iv_;
   const std::vector<uint8_t> one_block_;
 };
 

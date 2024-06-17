@@ -14,6 +14,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_span.h"
 #include "base/values.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/gpu_export.h"
@@ -352,7 +353,7 @@ class GPU_EXPORT GpuControlList {
 
   // These always point to built-in arrays of constants, so raw_ptr doesn't
   // add any protection but costs some overhead.
-  base::span<const Entry> entries_;
+  base::raw_span<const Entry> entries_;
 
   // This records all the entries that are applicable to the current user
   // machine.  It is updated everytime MakeDecision() is called and is used

@@ -22,6 +22,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -436,9 +437,9 @@ class StaticSocketDataHelper {
   // fails if no data is available.
   const MockWrite& PeekRealWrite() const;
 
-  const base::span<const MockRead> reads_;
+  const base::raw_span<const MockRead, DanglingUntriaged> reads_;
   size_t read_index_ = 0;
-  const base::span<const MockWrite> writes_;
+  const base::raw_span<const MockWrite, DanglingUntriaged> writes_;
   size_t write_index_ = 0;
 };
 

@@ -17,6 +17,7 @@
 #include "base/check.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -46,13 +47,13 @@ class MEDIA_EXPORT DecoderBuffer
   // class cannot be included in //media/base.
   struct MEDIA_EXPORT ExternalMemory {
    public:
-    explicit ExternalMemory(base::span<const uint8_t> span) : span_(span) {}
-    virtual ~ExternalMemory() = default;
-    const base::span<const uint8_t>& span() const { return span_; }
+    explicit ExternalMemory(base::span<const uint8_t> span);
+    virtual ~ExternalMemory();
+    const base::span<const uint8_t> span() const { return span_; }
 
    protected:
-    ExternalMemory() = default;
-    base::span<const uint8_t> span_;
+    ExternalMemory();
+    base::raw_span<const uint8_t, DanglingUntriaged> span_;
   };
 
   using DiscardPadding = std::pair<base::TimeDelta, base::TimeDelta>;

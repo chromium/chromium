@@ -12,6 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "base/numerics/checked_math.h"
 
 namespace base {
@@ -231,9 +232,9 @@ class BufferIterator {
 
  private:
   // The original buffer that the iterator was constructed with.
-  const span<B> buffer_;
+  const raw_span<B> buffer_;
   // A subspan of `buffer_` containing the remaining bytes to iterate over.
-  span<B> remaining_;
+  raw_span<B> remaining_;
   // Copy and assign allowed.
 };
 

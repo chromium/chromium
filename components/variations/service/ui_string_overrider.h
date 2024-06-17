@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 
 namespace variations {
 
@@ -35,6 +36,8 @@ class UIStringOverrider {
   UIStringOverrider(base::span<const uint32_t> resource_hashes,
                     base::span<const int> resource_indices);
 
+  UIStringOverrider(const UIStringOverrider&);
+
   UIStringOverrider& operator=(const UIStringOverrider&) = delete;
 
   ~UIStringOverrider();
@@ -44,8 +47,8 @@ class UIStringOverrider {
   int GetResourceIndex(uint32_t hash);
 
  private:
-  const base::span<const uint32_t> resource_hashes_;
-  const base::span<const int> resource_indices_;
+  const base::raw_span<const uint32_t> resource_hashes_;
+  const base::raw_span<const int> resource_indices_;
 };
 
 }  // namespace variations

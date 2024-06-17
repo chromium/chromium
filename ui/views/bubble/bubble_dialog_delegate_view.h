@@ -13,6 +13,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
@@ -363,7 +364,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
    private:
     std::optional<raw_ptr<views::View>> bubble_view_;
     std::optional<raw_ptr<views::BubbleDialogDelegate>> delegate_;
-    std::optional<base::span<const char*>> allowed_class_names_for_testing_;
+    std::optional<base::raw_span<const char*>> allowed_class_names_for_testing_;
     base::WeakPtrFactory<BubbleUmaLogger> weak_factory_{this};
   };
 

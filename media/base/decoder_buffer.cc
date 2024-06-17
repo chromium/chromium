@@ -251,4 +251,8 @@ size_t DecoderBuffer::GetMemoryUsage() const {
   return memory_usage;
 }
 
+DecoderBuffer::ExternalMemory::ExternalMemory(base::span<const uint8_t> span)
+    : span_(span) {}
+DecoderBuffer::ExternalMemory::~ExternalMemory() = default;
+DecoderBuffer::ExternalMemory::ExternalMemory() = default;
 }  // namespace media

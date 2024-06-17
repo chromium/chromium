@@ -16,6 +16,13 @@
 
 namespace media {
 
+AudioBuffer::ExternalMemory::ExternalMemory() = default;
+AudioBuffer::ExternalMemory::ExternalMemory(base::span<uint8_t> span)
+    : span_(span) {}
+AudioBuffer::ExternalMemory::~ExternalMemory() = default;
+AudioBuffer::ExternalMemory::ExternalMemory(const ExternalMemory&) = default;
+AudioBuffer::ExternalMemory::ExternalMemory(ExternalMemory&&) = default;
+
 namespace {
 
 // TODO(crbug.com/41258600): Use vector instructions to speed this up.

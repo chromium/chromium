@@ -10,6 +10,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "ipc/ipc_message.h"
 #include "mojo/public/interfaces/bindings/native_struct.mojom-forward.h"
 
@@ -34,7 +35,7 @@ class COMPONENT_EXPORT(IPC_MOJOM) MessageView {
   std::optional<std::vector<mojo::native::SerializedHandlePtr>> TakeHandles();
 
  private:
-  base::span<const uint8_t> bytes_;
+  base::raw_span<const uint8_t> bytes_;
   std::optional<std::vector<mojo::native::SerializedHandlePtr>> handles_;
 };
 

@@ -87,8 +87,12 @@ void RaceNetworkRequestWriteBufferManager::CancelWatching() {
 }
 
 MojoResult RaceNetworkRequestWriteBufferManager::BeginWriteData() {
-  return producer_->BeginWriteData(mojo::DataPipeProducerHandle::kNoSizeHint,
-                                   MOJO_WRITE_DATA_FLAG_NONE, buffer_);
+  base::span<uint8_t> buffer = buffer_;
+  auto result =
+      producer_->BeginWriteData(mojo::DataPipeProducerHandle::kNoSizeHint,
+                                MOJO_WRITE_DATA_FLAG_NONE, buffer);
+  buffer_ = buffer;
+  return result;
 }
 
 MojoResult RaceNetworkRequestWriteBufferManager::EndWriteData(

@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "base/time/time.h"
 #include "media/formats/hls/parse_status.h"
 #include "media/formats/hls/source_string.h"
@@ -361,8 +362,10 @@ struct MEDIA_EXPORT AttributeMap {
     return {{{keys, std::nullopt}...}};
   }
 
+  ~AttributeMap();
+
  private:
-  base::span<Item> items_;
+  base::raw_span<Item> items_;
 };
 
 // Represents a string that is guaranteed to be a non-empty, and consisting only

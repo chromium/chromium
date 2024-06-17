@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "base/containers/queue.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "device/fido/fido_constants.h"
 
 namespace device {
@@ -115,7 +116,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoBleFrameFragment {
   virtual ~FidoBleFrameFragment();
 
  private:
-  base::span<const uint8_t> fragment_;
+  base::raw_span<const uint8_t> fragment_;
 };
 
 // An initialization fragment of a frame.

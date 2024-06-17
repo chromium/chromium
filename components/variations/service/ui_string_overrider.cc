@@ -20,6 +20,8 @@ UIStringOverrider::UIStringOverrider(base::span<const uint32_t> resource_hashes,
   CHECK_EQ(resource_hashes_.size(), resource_indices_.size());
 }
 
+UIStringOverrider::UIStringOverrider(const UIStringOverrider&) = default;
+
 UIStringOverrider::~UIStringOverrider() = default;
 
 int UIStringOverrider::GetResourceIndex(uint32_t hash) {

@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversion_utils.h"
@@ -54,7 +55,7 @@ class Core : private ash::input_method::ImeKeyboard::Observer {
   LayoutKeyFunction GetFunctionFromKeyboardCode(
       ui::KeyboardCode key_code) const;
 
-  const base::span<const ui::DomCode> supported_keys_;
+  const base::raw_span<const ui::DomCode> supported_keys_;
   base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback_;
   base::ScopedObservation<ash::input_method::ImeKeyboard,
                           ash::input_method::ImeKeyboard::Observer>

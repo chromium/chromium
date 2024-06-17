@@ -8,6 +8,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_span.h"
 #include "content/public/browser/web_contents.h"
 
 namespace sessions {
@@ -58,7 +59,7 @@ struct WebContentsStateByteBuffer {
   // TODO(ellyjones): is it necessary to cache this view of the buffer? It is
   // very cheap to recompute on the fly as needed, as long as we have the
   // JNIEnv* ready to hand.
-  base::span<const uint8_t> backing_buffer;
+  base::raw_span<const uint8_t> backing_buffer;
   int state_version;
   base::android::ScopedJavaGlobalRef<jobject> java_buffer;
 };

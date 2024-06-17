@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "gpu/command_buffer/client/program_info_manager.h"
+
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 
 #include <string_view>
 
-#include "gpu/command_buffer/client/program_info_manager.h"
+#include "base/memory/raw_span.h"
 
 namespace {
 
@@ -48,7 +50,7 @@ class DataIterator {
   }
 
  private:
-  base::span<const int8_t> data_;
+  base::raw_span<const int8_t> data_;
 };
 
 // Writes the string pointed by name and of maximum size buffsize. If length is

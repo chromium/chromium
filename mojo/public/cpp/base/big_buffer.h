@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/system/buffer.h"
 
@@ -210,7 +211,7 @@ class COMPONENT_EXPORT(MOJO_BASE) BigBufferView {
 
  private:
   BigBuffer::StorageType storage_type_ = BigBuffer::StorageType::kBytes;
-  base::span<const uint8_t> bytes_;
+  base::raw_span<const uint8_t> bytes_;
   std::optional<internal::BigBufferSharedMemoryRegion> shared_memory_;
 };
 

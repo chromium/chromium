@@ -17,6 +17,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/writable_shared_memory_region.h"
@@ -399,7 +400,7 @@ class MakeIterableThread : public SimpleThread {
 
  private:
   raw_ptr<PersistentMemoryAllocator> allocator_;
-  span<Reference> refs_;
+  raw_span<Reference> refs_;
 };
 
 // Verifies that multiple threads making the same objects iterable doesn't cause

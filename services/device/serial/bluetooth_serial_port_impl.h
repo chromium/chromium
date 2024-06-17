@@ -6,6 +6,7 @@
 #define SERVICES_DEVICE_SERIAL_BLUETOOTH_SERIAL_PORT_IMPL_H_
 
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -99,7 +100,7 @@ class BluetoothSerialPortImpl : public mojom::SerialPort {
 
   // Used for pending writes to |out_stream_|. When empty this indicates that
   // |out_stream_| has been closed (and possibly replaced).
-  base::span<char> pending_write_buffer_;
+  base::raw_span<char> pending_write_buffer_;
 
   // Holds the callback for a drain until pending operations have been
   // completed.

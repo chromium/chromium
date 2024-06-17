@@ -12,6 +12,7 @@
 #include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "components/strings/grit/components_strings.h"
@@ -90,7 +91,7 @@ struct TaxonomyUpdate {
   // message ID.
   base::flat_map<uint16_t, uint16_t> renamed_topics;
   // The topics that have been deleted since the prior taxonomy version.
-  const base::span<const uint16_t> deleted_topics;
+  const base::raw_span<const uint16_t> deleted_topics;
 };
 
 const uint16_t kDeletedTopicsV2[] = {

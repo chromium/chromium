@@ -18,6 +18,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/time/time.h"
 #include "net/base/address_list.h"
 #include "net/socket/client_socket_factory.h"
@@ -147,7 +148,7 @@ class MockTransportClientSocketFactory : public ClientSocketFactory {
   raw_ptr<NetLog> net_log_;
   int allocation_count_ = 0;
   Type client_socket_type_ = Type::kSynchronous;
-  base::span<const Rule> rules_;
+  base::raw_span<const Rule, DanglingUntriaged> rules_;
   base::TimeDelta delay_;
   base::queue<base::OnceClosure> triggerable_sockets_;
   base::OnceClosure run_loop_quit_closure_;

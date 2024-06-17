@@ -15,6 +15,7 @@
 
 #include "base/containers/span.h"
 #include "base/memory/aligned_memory.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -46,13 +47,16 @@ class MEDIA_EXPORT AudioBuffer
  public:
   struct MEDIA_EXPORT ExternalMemory {
    public:
-    explicit ExternalMemory(base::span<uint8_t> span) : span_(span) {}
-    virtual ~ExternalMemory() = default;
-    base::span<uint8_t>& span() { return span_; }
+    explicit ExternalMemory(base::span<uint8_t> span);
+    virtual ~ExternalMemory();
+    ExternalMemory(const ExternalMemory&);
+    ExternalMemory(ExternalMemory&&);
+
+    base::span<uint8_t> span() { return span_; }
 
    protected:
-    ExternalMemory() = default;
-    base::span<uint8_t> span_;
+    ExternalMemory();
+    base::raw_span<uint8_t, DanglingUntriaged> span_;
   };
 
   // Create an AudioBuffer whose channel data is copied from |data|. For

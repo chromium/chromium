@@ -14,6 +14,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_span.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/web/web_associated_url_loader_client.h"
 
@@ -191,7 +192,7 @@ class UrlLoader final : public blink::WebAssociatedURLLoaderClient {
   base::circular_deque<char> buffer_;
 
   base::OnceCallback<void(int)> read_callback_;
-  base::span<char> client_buffer_;
+  base::raw_span<char> client_buffer_;
 };
 
 }  // namespace chrome_pdf

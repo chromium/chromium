@@ -13,6 +13,7 @@
 #include "base/containers/span.h"
 #include "base/memory/nonscannable_memory.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_span.h"
 #include "mojo/core/scoped_ipcz_handle.h"
 #include "mojo/public/c/system/message_pipe.h"
 #include "mojo/public/c/system/types.h"
@@ -135,7 +136,7 @@ class MojoMessage {
 
   // A view into the message data, whether it's backed by `parcel_` or stored in
   // `data_storage_`.
-  base::span<uint8_t> data_;
+  base::raw_span<uint8_t, DanglingUntriaged> data_;
 
   std::vector<IpczHandle> handles_;
   bool handles_consumed_ = false;

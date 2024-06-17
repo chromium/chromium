@@ -15,6 +15,7 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
@@ -46,12 +47,9 @@ struct MEDIA_EXPORT Box {
 
 class MEDIA_EXPORT BufferReader {
  public:
-  BufferReader(const uint8_t* buf, const size_t buf_size)
-      :  // TODO(crbug.com/40284755): BufferReader should be receiving a span,
-         // the construction of the span here is unsound as there's no way to
-         // tell the size is correct from here.
-        UNSAFE_BUFFERS(buf_(buf, buf_size)) {}
-
+  BufferReader(const uint8_t* buf, const size_t buf_size);
+  BufferReader(const BufferReader& other);
+  virtual ~BufferReader();
   bool HasBytes(size_t count) {
     // As the size of a box is implementation limited to 2^31, fail if
     // attempting to check for too many bytes.
@@ -95,7 +93,7 @@ class MEDIA_EXPORT BufferReader {
   size_t pos() const { return pos_; }
 
  protected:
-  base::span<const uint8_t> buf_;
+  base::raw_span<const uint8_t> buf_;
   // The position in `buf_` where the next read is from.
   size_t pos_ = 0u;
 };
@@ -103,7 +101,7 @@ class MEDIA_EXPORT BufferReader {
 class MEDIA_EXPORT BoxReader : public BufferReader {
  public:
   BoxReader(const BoxReader& other);
-  ~BoxReader();
+  ~BoxReader() override;
 
   // Create a BoxReader from a buffer. If the result is kOk, then |out_reader|
   // will be set, otherwise |out_reader| will be unchanged.

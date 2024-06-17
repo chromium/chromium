@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "chrome/browser/ui/webauthn/hover_list_model.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "ui/base/models/image_model.h"
@@ -36,7 +37,8 @@ class TransportHoverListModel : public HoverListModel {
   size_t GetPreferredItemCount() const override;
 
  private:
-  const base::span<const AuthenticatorRequestDialogModel::Mechanism>
+  const base::raw_span<const AuthenticatorRequestDialogModel::Mechanism,
+                       DanglingUntriaged>
       mechanisms_;
   const std::vector<int> mechanism_indices_to_display_;
 };

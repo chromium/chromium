@@ -6,9 +6,11 @@
 #define COMPONENTS_METRICS_EXPIRED_HISTOGRAMS_CHECKER_H_
 
 #include <stdint.h>
+
 #include <set>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "base/metrics/record_histogram_checker.h"
 #include "base/strings/string_piece.h"
 
@@ -39,7 +41,7 @@ class ExpiredHistogramsChecker final : public base::RecordHistogramChecker {
   void InitAllowlist(const std::string& allowlist_str);
 
   // Array of expired histogram hashes.
-  const base::span<const uint32_t> expired_histogram_hashes_;
+  const base::raw_span<const uint32_t> expired_histogram_hashes_;
 
   // Set of expired histogram hashes that should be recorded.
   std::set<uint32_t> allowlist_;

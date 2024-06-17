@@ -8,6 +8,10 @@
 
 namespace web_package {
 
+InputReader::InputReader(base::span<const uint8_t> buf) : buf_(buf) {}
+
+InputReader::~InputReader() = default;
+
 std::optional<uint8_t> InputReader::ReadByte() {
   uint8_t b;
   if (!buf_.ReadU8BigEndian(b)) {

@@ -18,6 +18,16 @@ namespace mp4 {
 
 Box::~Box() = default;
 
+BufferReader::BufferReader(const uint8_t* buf, const size_t buf_size)
+    :  // TODO(crbug.com/40284755): BufferReader should be receiving a span,
+       // the construction of the span here is unsound as there's no way to
+       // tell the size is correct from here.
+      UNSAFE_BUFFERS(buf_(buf, buf_size)) {}
+
+BufferReader::~BufferReader() = default;
+
+BufferReader::BufferReader(const BufferReader& other) = default;
+
 bool BufferReader::Read1(uint8_t* v) {
   RCHECK(HasBytes(1));
   *v = base::numerics::U8FromBigEndian(buf_.subspan(pos_).first<1u>());

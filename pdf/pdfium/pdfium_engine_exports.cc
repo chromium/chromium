@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/raw_span.h"
 #include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
@@ -85,7 +86,7 @@ class DataDocumentLoader : public DocumentLoader {
   void ClearPendingRequests() override {}
 
  private:
-  const base::span<const uint8_t> pdf_data_;
+  const base::raw_span<const uint8_t> pdf_data_;
 };
 
 int CalculatePosition(FPDF_PAGE page,

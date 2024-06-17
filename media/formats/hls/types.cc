@@ -414,6 +414,8 @@ ParseStatus AttributeMap::FillUntilError(AttributeListIterator* iter) {
   }
 }
 
+AttributeMap::~AttributeMap() = default;
+
 // static
 ParseStatus::Or<VariableName> VariableName::Parse(SourceString source_str) {
   static const base::NoDestructor<re2::RE2> variable_name_regex(

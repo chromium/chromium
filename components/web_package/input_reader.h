@@ -10,6 +10,7 @@
 
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
+#include "base/memory/stack_allocated.h"
 
 namespace web_package {
 
@@ -31,11 +32,15 @@ constexpr uint64_t kMaxCBORItemHeaderSize = 9;
 
 // A utility class for reading various values from input buffer.
 class InputReader {
+  STACK_ALLOCATED();
+
  public:
-  explicit InputReader(base::span<const uint8_t> buf) : buf_(buf) {}
+  explicit InputReader(base::span<const uint8_t> buf);
 
   InputReader(const InputReader&) = delete;
   InputReader& operator=(const InputReader&) = delete;
+
+  ~InputReader();
 
   size_t CurrentOffset() const { return buf_.num_read(); }
   size_t Size() const { return buf_.remaining(); }

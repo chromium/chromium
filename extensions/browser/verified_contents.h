@@ -15,6 +15,7 @@
 
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_span.h"
 #include "base/version.h"
 #include "extensions/browser/content_verifier/content_verifier_utils.h"
 #include "extensions/common/extension_id.h"
@@ -84,7 +85,7 @@ class VerifiedContents {
                        const std::string& signature_bytes);
 
   // The public key we should use for signature verification.
-  base::span<const uint8_t> public_key_;
+  base::raw_span<const uint8_t, DanglingUntriaged> public_key_;
 
   // Indicates whether the signature was successfully validated or not.
   bool valid_signature_;
