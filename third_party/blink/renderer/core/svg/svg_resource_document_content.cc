@@ -135,6 +135,7 @@ SVGResourceDocumentContent::UpdateDocument(scoped_refptr<SharedBuffer> data,
   if (data->empty()) {
     return UpdateResult::kError;
   }
+  CHECK(!document_host_);
   auto* chrome_client = MakeGarbageCollected<ChromeClient>(this);
   document_host_ = MakeGarbageCollected<IsolatedSVGDocumentHost>(
       *chrome_client, *agent_group_scheduler_);
