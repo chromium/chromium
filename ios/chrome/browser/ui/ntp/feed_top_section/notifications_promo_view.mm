@@ -36,10 +36,6 @@ constexpr CGFloat kButtonTitleVerticalContentInset = 9.0;
 constexpr CGFloat kButtonStackViewSubViewSpacing = 8.0;
 // Buttons and text stack view spacing.
 constexpr CGFloat kTextAndButtonStackViewSubViewSpacing = 12.0;
-// Main button text size.
-constexpr CGFloat kButtonTextFontSize = 17.0;
-// Main text size.
-constexpr CGFloat kTextFontSize = 15.0;
 // Main image size.
 constexpr CGSize kMainImageSize = {56.0, 56.0};
 }  // namespace
@@ -179,8 +175,7 @@ constexpr CGSize kMainImageSize = {56.0, 56.0};
           kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset,
           kButtonTitleVerticalContentInset, kButtonTitleHorizontalContentInset);
       // Button text.
-      font = [[UIFont preferredFontForTextStyle:UIFontTextStyleHeadline]
-          fontWithSize:kButtonTextFontSize];
+      font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
       NSAttributedString* attributedTitle = [[NSAttributedString alloc]
           initWithString:text
               attributes:@{NSFontAttributeName : font}];
@@ -195,8 +190,7 @@ constexpr CGSize kMainImageSize = {56.0, 56.0};
       [button addTarget:self
                     action:@selector(onSecondaryButtonAction:)
           forControlEvents:UIControlEventTouchUpInside];
-      font = [[UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
-          fontWithSize:kButtonTextFontSize];
+      font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
       NSAttributedString* attributedTitle = [[NSAttributedString alloc]
           initWithString:text
               attributes:@{NSFontAttributeName : font}];
@@ -228,8 +222,8 @@ constexpr CGSize kMainImageSize = {56.0, 56.0};
   textLabel.numberOfLines = 0;
   textLabel.textAlignment = NSTextAlignmentCenter;
   textLabel.lineBreakMode = NSLineBreakByWordWrapping;
-  textLabel.font = [[UIFont preferredFontForTextStyle:UIFontTextStyleBody]
-      fontWithSize:kTextFontSize];
+  textLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
   textLabel.textColor = [UIColor colorNamed:kGrey800Color];
   textLabel.text =
       l10n_util::GetNSString(IDS_IOS_CONTENT_NOTIFICATIONS_PROMO_TEXT);
