@@ -21,6 +21,39 @@
 
 namespace ax::android {
 
+namespace {
+enum CollectionType { kGrid, kListWithCount, kListWithoutCount, kNone };
+
+CollectionType GetCollectionType(
+    mojom::AccessibilityCollectionInfoData* collection_info) {
+  if (collection_info == nullptr) {
+    return CollectionType::kNone;
+  }
+
+  if (collection_info->row_count > 1 && collection_info->column_count > 1) {
+    return CollectionType::kGrid;
+  }
+
+  bool is_linear =
+      collection_info->row_count == 1 || collection_info->column_count == 1;
+  // CollectionInfo might be missing count information. ChromeVox doesn't expect
+  // a list without count information. We don't want to announce it as a list in
+  // that case.
+  bool has_both_count =
+      collection_info->row_count > 0 && collection_info->column_count > 0;
+
+  if (is_linear) {
+    if (has_both_count) {
+      return CollectionType::kListWithCount;
+    }
+    return CollectionType::kListWithoutCount;
+  }
+
+  return CollectionType::kNone;
+}
+
+}  // namespace
+
 using AXActionType = mojom::AccessibilityActionType;
 using AXBooleanProperty = mojom::AccessibilityBooleanProperty;
 using AXCollectionInfoData = mojom::AccessibilityCollectionInfoData;
@@ -163,24 +196,31 @@ void AccessibilityNodeInfoDataWrapper::PopulateAXRole(
     return;
   }
 
-  if (node_ptr_->collection_info) {
-    AXCollectionInfoData* collection_info = node_ptr_->collection_info.get();
-    if (collection_info->row_count > 1 && collection_info->column_count > 1) {
+  AXCollectionInfoData* collection_info;
+  switch (GetCollectionType(node_ptr_->collection_info.get())) {
+    case CollectionType::kGrid:
+      collection_info = node_ptr_->collection_info.get();
       out_data->role = ax::mojom::Role::kGrid;
       out_data->AddIntAttribute(ax::mojom::IntAttribute::kTableRowCount,
                                 collection_info->row_count);
       out_data->AddIntAttribute(ax::mojom::IntAttribute::kTableColumnCount,
                                 collection_info->column_count);
       return;
-    }
 
-    if (collection_info->row_count == 1 || collection_info->column_count == 1) {
-      out_data->role = ax::mojom::Role::kList;
+    case CollectionType::kListWithCount:
+      collection_info = node_ptr_->collection_info.get();
       out_data->AddIntAttribute(
           ax::mojom::IntAttribute::kSetSize,
           std::max(collection_info->row_count, collection_info->column_count));
+      out_data->role = ax::mojom::Role::kList;
       return;
-    }
+
+    case CollectionType::kListWithoutCount:
+      out_data->role = ax::mojom::Role::kList;
+      return;
+
+    case CollectionType::kNone:
+      break;
   }
 
   if (node_ptr_->collection_item_info) {
@@ -194,7 +234,7 @@ void AccessibilityNodeInfoDataWrapper::PopulateAXRole(
     // In order to properly resolve the role of this node, a collection item, we
     // need additional information contained only in the CollectionInfo. The
     // CollectionInfo should be an ancestor of this node.
-    AXCollectionInfoData* collection_info = nullptr;
+    collection_info = nullptr;
     for (AccessibilityInfoDataWrapper* container =
              const_cast<AccessibilityNodeInfoDataWrapper*>(this);
          container;) {
@@ -209,8 +249,8 @@ void AccessibilityNodeInfoDataWrapper::PopulateAXRole(
       container = tree_source_->GetParent(container);
     }
 
-    if (collection_info) {
-      if (collection_info->row_count > 1 && collection_info->column_count > 1) {
+    switch (GetCollectionType(collection_info)) {
+      case CollectionType::kGrid:
         out_data->role = ax::mojom::Role::kGridCell;
         out_data->AddIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex,
                                   collection_item_info->row_index);
@@ -222,13 +262,23 @@ void AccessibilityNodeInfoDataWrapper::PopulateAXRole(
         out_data->AddIntAttribute(ax::mojom::IntAttribute::kAriaCellColumnIndex,
                                   collection_item_info->column_index + 1);
         return;
-      }
 
-      out_data->role = ax::mojom::Role::kListItem;
-      out_data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet,
-                                std::max(collection_item_info->row_index,
-                                         collection_item_info->column_index));
-      return;
+      case CollectionType::kListWithCount:
+        if (collection_info->row_count == 1) {
+          out_data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet,
+                                    collection_item_info->column_index);
+        } else if (collection_info->column_count == 1) {
+          out_data->AddIntAttribute(ax::mojom::IntAttribute::kPosInSet,
+                                    collection_item_info->row_index);
+        }
+        out_data->role = ax::mojom::Role::kListItem;
+        return;
+      case CollectionType::kListWithoutCount:
+        out_data->role = ax::mojom::Role::kListItem;
+        return;
+
+      case CollectionType::kNone:
+        break;
     }
   }
 
@@ -290,7 +340,6 @@ void AccessibilityNodeInfoDataWrapper::PopulateAXRole(
   MAP_ROLE(ui::kAXViewGroupClassname, ax::mojom::Role::kGroup);
 
 #undef MAP_ROLE
-
   if (node_ptr_->collection_info) {
     // Fallback for some RecyclerViews which doesn't correctly populate
     // row/col counts.
