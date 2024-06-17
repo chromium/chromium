@@ -250,15 +250,27 @@ const char* WebAppBrowserTestBase::GetInstallableAppName() {
 void WebAppBrowserTestBase::SetUp() {
   https_server_.AddDefaultHandlers(GetChromeTestDataDir());
   webapps::TestAppBannerManagerDesktop::SetUp();
-  InProcessBrowserTest::SetUp();
+#if BUILDFLAG(IS_CHROMEOS)
+  ChromeOSBrowserUITest::SetUp();
+#else
+  MixinBasedInProcessBrowserTest::SetUp();
+#endif
 }
 
 void WebAppBrowserTestBase::TearDown() {
-  InProcessBrowserTest::TearDown();
+#if BUILDFLAG(IS_CHROMEOS)
+  ChromeOSBrowserUITest::TearDown();
+#else
+  MixinBasedInProcessBrowserTest::TearDown();
+#endif
 }
 
 void WebAppBrowserTestBase::SetUpInProcessBrowserTestFixture() {
-  InProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+#if BUILDFLAG(IS_CHROMEOS)
+  ChromeOSBrowserUITest::SetUpInProcessBrowserTestFixture();
+#else
+  MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+#endif
   cert_verifier_.SetUpInProcessBrowserTestFixture();
   create_services_subscription_ =
       BrowserContextDependencyManager::GetInstance()
@@ -268,7 +280,11 @@ void WebAppBrowserTestBase::SetUpInProcessBrowserTestFixture() {
 }
 
 void WebAppBrowserTestBase::TearDownInProcessBrowserTestFixture() {
-  InProcessBrowserTest::TearDownInProcessBrowserTestFixture();
+#if BUILDFLAG(IS_CHROMEOS)
+  ChromeOSBrowserUITest::TearDownInProcessBrowserTestFixture();
+#else
+  MixinBasedInProcessBrowserTest::TearDownInProcessBrowserTestFixture();
+#endif
   cert_verifier_.TearDownInProcessBrowserTestFixture();
 }
 
@@ -284,7 +300,12 @@ void WebAppBrowserTestBase::TearDownOnMainThread() {
     CloseAllAshBrowserWindows();
   }
 #endif
-  InProcessBrowserTest::TearDownOnMainThread();
+
+#if BUILDFLAG(IS_CHROMEOS)
+  ChromeOSBrowserUITest::TearDownOnMainThread();
+#else
+  MixinBasedInProcessBrowserTest::TearDownOnMainThread();
+#endif
 }
 
 void WebAppBrowserTestBase::SetUpCommandLine(
@@ -301,7 +322,12 @@ void WebAppBrowserTestBase::SetUpOnMainThread() {
   }
 #endif
 
-  InProcessBrowserTest::SetUpOnMainThread();
+#if BUILDFLAG(IS_CHROMEOS)
+  ChromeOSBrowserUITest::SetUpOnMainThread();
+#else
+  MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+#endif
+
   host_resolver()->AddRule("*", "127.0.0.1");
   ASSERT_TRUE(https_server()->Start());
 

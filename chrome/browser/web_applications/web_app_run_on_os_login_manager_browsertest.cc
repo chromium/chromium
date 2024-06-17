@@ -100,20 +100,25 @@ class MockNetworkConnectionTracker : public network::NetworkConnectionTracker {
   }
 };
 
-class RunOnOsLoginTestHandler {
+class RunOnOsLoginTestHandlerMixin : public InProcessBrowserTestMixin {
  public:
-  RunOnOsLoginTestHandler()
-      :  // ROOL startup done manually to ensure that SetUpOnMainThread is run
-         // before.
+  explicit RunOnOsLoginTestHandlerMixin(
+      InProcessBrowserTestMixinHost* mixin_host,
+      InProcessBrowserTest* test_base)
+      : InProcessBrowserTestMixin(mixin_host),
+        test_base_(test_base),
+        // ROOL startup done manually to ensure that SetUpOnMainThread is run
+        // before.
         skip_run_on_os_login_startup_(std::make_unique<base::AutoReset<bool>>(
             WebAppRunOnOsLoginManager::SkipStartupForTesting())) {}
 
-  void SetUp(Profile* profile, WebAppProvider* provider) {
-    profile_ = profile;
-    provider_ = provider;
+  void SetUpOnMainThread() override {
+    profile_ = test_base_->browser()->profile();
+    provider_ = WebAppProvider::GetForTest(profile_);
   }
 
-  void TearDown() {
+  void TearDownOnMainThread() override {
+    test_base_ = nullptr;
     profile_ = nullptr;
     provider_ = nullptr;
   }
@@ -171,6 +176,7 @@ class RunOnOsLoginTestHandler {
   void ResetSkipRunOnOsLoginStartup() { skip_run_on_os_login_startup_.reset(); }
 
  private:
+  raw_ptr<InProcessBrowserTest> test_base_;
   raw_ptr<Profile> profile_ = nullptr;
   raw_ptr<WebAppProvider> provider_ = nullptr;
   std::unique_ptr<base::AutoReset<bool>> skip_run_on_os_login_startup_;
@@ -196,7 +202,6 @@ class WebAppRunOnOsLoginManagerBrowserTest
         /*network_connection_tracker=*/nullptr);
     content::SetNetworkConnectionTrackerForTesting(mock_tracker_.get());
     test::WaitUntilWebAppProviderAndSubsystemsReady(&provider());
-    run_on_os_login_handler_.SetUp(profile(), &provider());
     run_on_os_login_handler_.ResetSkipRunOnOsLoginStartup();
   }
 
@@ -259,7 +264,7 @@ class WebAppRunOnOsLoginManagerBrowserTest
   base::ScopedObservation<NotificationDisplayService,
                           WebAppRunOnOsLoginManagerBrowserTest>
       notification_observation_{this};
-  RunOnOsLoginTestHandler run_on_os_login_handler_;
+  RunOnOsLoginTestHandlerMixin run_on_os_login_handler_{&mixin_host_, this};
 };
 
 IN_PROC_BROWSER_TEST_F(
@@ -622,7 +627,6 @@ class IsolatedWebAppRunOnOsLoginManagerBrowserTest
   void SetUpOnMainThread() override {
     IsolatedWebAppBrowserTestHarness::SetUpOnMainThread();
     test::WaitUntilWebAppProviderAndSubsystemsReady(&provider());
-    run_on_os_login_handler_.SetUp(profile(), &provider());
     SetUpFilesAndServer();
     AddTrustedWebBundleIdForTesting(url_info_->web_bundle_id());
     run_on_os_login_handler_.ResetSkipRunOnOsLoginStartup();
@@ -708,7 +712,6 @@ class IsolatedWebAppRunOnOsLoginManagerBrowserTest
     return AppBrowserController::FindForWebApp(*profile(), app_id);
   }
 
-  RunOnOsLoginTestHandler run_on_os_login_handler_;
   std::optional<IsolatedWebAppUrlInfo> url_info_;
   base::FilePath temp_dir_;
   net::EmbeddedTestServer iwa_server_;
@@ -716,6 +719,7 @@ class IsolatedWebAppRunOnOsLoginManagerBrowserTest
   web_package::WebBundleSigner::Ed25519KeyPair key_pair_ =
       web_package::WebBundleSigner::Ed25519KeyPair(kTestPublicKey,
                                                    kTestPrivateKey);
+  RunOnOsLoginTestHandlerMixin run_on_os_login_handler_{&mixin_host_, this};
 };
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppRunOnOsLoginManagerBrowserTest,

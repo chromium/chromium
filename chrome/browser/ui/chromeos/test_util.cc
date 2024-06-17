@@ -92,7 +92,7 @@ class TabletModeWatcher : public display::DisplayObserver {
 
 void ChromeOSBrowserUITest::SetUpDefaultCommandLine(
     base::CommandLine* command_line) {
-  InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
+  MixinBasedInProcessBrowserTest::SetUpDefaultCommandLine(command_line);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   command_line->AppendSwitch(ash::switches::kAshEnableTabletMode);
 #endif
@@ -102,7 +102,7 @@ void ChromeOSBrowserUITest::TearDownOnMainThread() {
   if (InTabletMode()) {
     ExitTabletMode();
   }
-  InProcessBrowserTest::TearDownOnMainThread();
+  MixinBasedInProcessBrowserTest::TearDownOnMainThread();
 }
 
 bool ChromeOSBrowserUITest::InTabletMode() {
