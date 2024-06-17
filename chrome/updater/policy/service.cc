@@ -405,7 +405,7 @@ base::Value PolicyService::GetAllPolicies() const {
         "DownloadPreference",
         base::Value::Dict()
             .Set("value", download_preference.policy())
-            .Set("source", update_supressed_times.effective_policy()->source));
+            .Set("source", download_preference.effective_policy()->source));
   }
 
   const PolicyStatus<int> cache_size_limit = GetPackageCacheSizeLimitMBytes();

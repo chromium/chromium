@@ -448,7 +448,7 @@ TEST(PolicyService, MultiplePolicyManagers) {
                                             .Set("source", "group_policy"))
               .Set("DownloadPreference", base::Value::Dict()
                                              .Set("value", "cacheable")
-                                             .Set("source", "group_policy"))
+                                             .Set("source", "imaginary"))
               .Set("PackageCacheSizeLimit", base::Value::Dict()
                                                 .Set("value", 1000)
                                                 .Set("source", "group_policy"))
