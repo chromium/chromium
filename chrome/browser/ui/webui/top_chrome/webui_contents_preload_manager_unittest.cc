@@ -315,3 +315,32 @@ TEST_F(WebUIContentsPreloadManagerTest, CandidateSelector) {
   EXPECT_EQ(result.web_contents->GetVisibleURL(), url1);
   EXPECT_EQ(preload_manager()->preloaded_web_contents()->GetVisibleURL(), url2);
 }
+
+// Tests that WebUI destroy may trigger new preloading.
+TEST_F(WebUIContentsPreloadManagerTest, PreloadOnWebUIDestroy) {
+  std::unique_ptr<content::BrowserContext> browser_context =
+      std::make_unique<TestingProfile>();
+  const GURL url1("chrome://example1"), url2("chrome://example2");
+
+  // URL1 is preferred over URL2.
+  ON_CALL(preload_candidate_selector(), GetURLToPreload(_))
+      .WillByDefault(Return(url1));
+  preload_manager()->MaybePreloadForBrowserContextForTesting(
+      browser_context.get());
+  // Initially, URL1 is preloaded.
+  EXPECT_EQ(preload_manager()->preloaded_web_contents()->GetVisibleURL(), url1);
+
+  // Now, show URL1, then URL2 is preloaded.
+  ON_CALL(preload_candidate_selector(), GetURLToPreload(_))
+      .WillByDefault(Return(url2));
+  MakeContentsResult result =
+      preload_manager()->MakeContents(url1, browser_context.get());
+  EXPECT_EQ(result.web_contents->GetVisibleURL(), url1);
+  EXPECT_EQ(preload_manager()->preloaded_web_contents()->GetVisibleURL(), url2);
+
+  // Destroy URL1. Since URL1 is preferred over URL2, URL1 should be preloaded.
+  ON_CALL(preload_candidate_selector(), GetURLToPreload(_))
+      .WillByDefault(Return(url1));
+  result.web_contents.reset();
+  EXPECT_EQ(preload_manager()->preloaded_web_contents()->GetVisibleURL(), url1);
+}

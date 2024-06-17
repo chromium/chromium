@@ -9,6 +9,7 @@
 #include <set>
 
 #include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -30,6 +31,8 @@ class PerProfileWebUITrackerImpl : public PerProfileWebUITracker {
   // PerProfileWebUITracker:
   void AddWebContents(content::WebContents* web_contents) override;
   bool ProfileHasWebUI(Profile* profile, std::string webui_url) const override;
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
 
  private:
   class WebContentsObserver;
@@ -41,6 +44,8 @@ class PerProfileWebUITrackerImpl : public PerProfileWebUITracker {
                                   url::Origin old_origin,
                                   url::Origin new_origin);
 
+  base::ObserverList<Observer, /*check_empty=*/true> observers_;
+  // Observers of tracked WebContents.
   std::map<raw_ptr<content::WebContents>, std::unique_ptr<WebContentsObserver>>
       web_contents_observers_;
   // Maintains a multi-set of {profile, origin} pairs. Note that a multi-set is
@@ -107,10 +112,22 @@ bool PerProfileWebUITrackerImpl::ProfileHasWebUI(Profile* profile,
   return profile_origin_set_.contains({profile, webui_origin});
 }
 
+void PerProfileWebUITrackerImpl::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void PerProfileWebUITrackerImpl::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void PerProfileWebUITrackerImpl::OnWebContentsDestroyed(
     content::WebContents* web_contents) {
   CHECK(web_contents_observers_.contains(web_contents));
   web_contents_observers_.erase(web_contents);
+
+  for (Observer& observer : observers_) {
+    observer.OnWebContentsDestroyed(web_contents);
+  }
 }
 
 void PerProfileWebUITrackerImpl::OnWebContentsOriginChanged(
