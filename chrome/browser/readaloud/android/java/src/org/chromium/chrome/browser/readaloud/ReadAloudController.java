@@ -24,6 +24,7 @@ import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
+import org.chromium.base.TraceEvent;
 import org.chromium.base.UserData;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -474,6 +475,7 @@ public class ReadAloudController
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void onProfileAvailable(Profile profile) {
+        TraceEvent.begin("ReadAloudController#onProfileAvailable");
         mReadabilityHooks =
                 sReadabilityHooksForTesting != null
                         ? sReadabilityHooksForTesting
@@ -633,6 +635,7 @@ public class ReadAloudController
                 insetObserver.addObserver(this);
             }
         }
+        TraceEvent.end("ReadAloudController#onProfileAvailable");
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
