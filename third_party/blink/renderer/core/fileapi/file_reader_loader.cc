@@ -36,6 +36,7 @@
 
 #include "base/auto_reset.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/system/wait.h"
@@ -92,7 +93,7 @@ void FileReaderLoader::StartInternal(scoped_refptr<BlobDataHandle> blob_data,
   mojo::ScopedDataPipeProducerHandle producer_handle;
   MojoResult rv = CreateDataPipe(&options, producer_handle, consumer_handle_);
   if (rv != MOJO_RESULT_OK) {
-    Failed(FileErrorCode::kNotReadableErr);
+    Failed(FileErrorCode::kNotReadableErr, FailureType::kMojoPipeCreation);
     return;
   }
 
@@ -106,14 +107,16 @@ void FileReaderLoader::StartInternal(scoped_refptr<BlobDataHandle> blob_data,
     if (received_on_complete_)
       return;
     if (!received_all_data_) {
-      Failed(FileErrorCode::kNotReadableErr);
+      Failed(FileErrorCode::kNotReadableErr,
+             FailureType::kSyncDataNotAllLoaded);
       return;
     }
 
     // Wait for OnComplete
     receiver_.WaitForIncomingCall();
     if (!received_on_complete_) {
-      Failed(FileErrorCode::kNotReadableErr);
+      Failed(FileErrorCode::kNotReadableErr,
+             FailureType::kSyncOnCompleteNotReceived);
     }
   }
 }
@@ -129,11 +132,13 @@ void FileReaderLoader::Cleanup() {
   receiver_.reset();
 }
 
-void FileReaderLoader::Failed(FileErrorCode error_code) {
+void FileReaderLoader::Failed(FileErrorCode error_code, FailureType type) {
   // If an error was already reported, don't report this error again.
   if (error_code_ != FileErrorCode::kOK)
     return;
   error_code_ = error_code;
+  base::UmaHistogramEnumeration("Storage.Blob.FileReaderLoader.FailureType2",
+                                type);
   Cleanup();
   client_->DidFail(error_code_);
 }
@@ -150,7 +155,7 @@ void FileReaderLoader::OnCalculatedSize(uint64_t total_size,
 
   if (auto err = client_->DidStartLoading(expected_content_size);
       err != FileErrorCode::kOK) {
-    Failed(err);
+    Failed(err, FailureType::kClientFailure);
     return;
   }
 
@@ -170,14 +175,18 @@ void FileReaderLoader::OnCalculatedSize(uint64_t total_size,
 }
 
 void FileReaderLoader::OnComplete(int32_t status, uint64_t data_length) {
+  base::UmaHistogramSparse("Storage.Blob.FileReaderLoader.ReadError2",
+                           std::max(0, -net_error_));
+
   if (status != net::OK) {
     net_error_ = status;
     Failed(status == net::ERR_FILE_NOT_FOUND ? FileErrorCode::kNotFoundErr
-                                             : FileErrorCode::kNotReadableErr);
+                                             : FileErrorCode::kNotReadableErr,
+           FailureType::kBackendReadError);
     return;
   }
   if (data_length != total_bytes_) {
-    Failed(FileErrorCode::kNotReadableErr);
+    Failed(FileErrorCode::kNotReadableErr, FailureType::kReadSizesIncorrect);
     return;
   }
 
@@ -189,7 +198,8 @@ void FileReaderLoader::OnComplete(int32_t status, uint64_t data_length) {
 void FileReaderLoader::OnDataPipeReadable(MojoResult result) {
   if (result != MOJO_RESULT_OK) {
     if (!received_all_data_) {
-      Failed(FileErrorCode::kNotReadableErr);
+      Failed(FileErrorCode::kNotReadableErr,
+             FailureType::kDataPipeNotReadableWithBytesLeft);
     }
     return;
   }
@@ -211,12 +221,14 @@ void FileReaderLoader::OnDataPipeReadable(MojoResult result) {
     if (pipe_result == MOJO_RESULT_FAILED_PRECONDITION) {
       // Pipe closed.
       if (!received_all_data_) {
-        Failed(FileErrorCode::kNotReadableErr);
+        Failed(FileErrorCode::kNotReadableErr,
+               FailureType::kMojoPipeClosedEarly);
       }
       return;
     }
     if (pipe_result != MOJO_RESULT_OK) {
-      Failed(FileErrorCode::kNotReadableErr);
+      Failed(FileErrorCode::kNotReadableErr,
+             FailureType::kMojoPipeUnexpectedReadError);
       return;
     }
 
@@ -229,7 +241,7 @@ void FileReaderLoader::OnDataPipeReadable(MojoResult result) {
     if (auto err = client_->DidReceiveData(
             data, base::checked_cast<unsigned>(num_bytes));
         err != FileErrorCode::kOK) {
-      Failed(err);
+      Failed(err, FailureType::kClientFailure);
       return;
     }
 

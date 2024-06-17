@@ -443,6 +443,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.Blob.FileReaderLoader.FailureType2"
+    enum="FileReaderLoaderFailureType" expires_after="2024-12-14">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Recorded when an error occurs in the FileReaderLoader, which is used to load
+    blobs in the Renderer. FileReaderUser is mostly used for Javascript's
+    'FileReader', but can also be used to read blobs for the IndexedDB
+    renderer-side implementation. For the read error category, see
+    Storage.Blob.FileReaderLoader.ReadError for a breakdown of the specific read
+    error reasons.
+  </summary>
+</histogram>
+
+<histogram name="Storage.Blob.FileReaderLoader.ReadError2" enum="NetErrorCodes"
+    expires_after="2024-12-14">
+  <owner>estade@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    The error code reported by the blob system while trying to read a blob in
+    the FileReaderLoader.
+  </summary>
+</histogram>
+
 <histogram name="Storage.Buckets.BucketCount" units="buckets"
     expires_after="2025-04-01">
   <owner>estade@chromium.org</owner>

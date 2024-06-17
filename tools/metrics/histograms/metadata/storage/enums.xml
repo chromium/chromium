@@ -112,6 +112,20 @@ chromium-metrics-reviews@google.com.
   <int value="9" label="Filenames"/>
 </enum>
 
+<enum name="FileReaderLoaderFailureType">
+  <int value="0" label="Mojo pipe creation failed"/>
+  <int value="1" label="Data incomplete after synchronous reading"/>
+  <int value="2" label="OnComplete never called after synchronous reading"/>
+  <int value="3"
+      label="Backend read error, see Storage.Blob.FileReaderLoader.ReadError"/>
+  <int value="4" label="The size read does not match the size reported"/>
+  <int value="5"
+      label="The data pipe is not readable and there are bytes left to read"/>
+  <int value="6" label="The data pipe closed early"/>
+  <int value="7" label="Data pipe reading failed with an unexpected error"/>
+  <int value="8" label="File reader client reporter a problem"/>
+</enum>
+
 <enum name="FileSystemAccessPermissionRequestOutcome">
   <int value="0" label="Blocked by Content Setting"/>
   <int value="1" label="Blocked from invalid frame"/>
