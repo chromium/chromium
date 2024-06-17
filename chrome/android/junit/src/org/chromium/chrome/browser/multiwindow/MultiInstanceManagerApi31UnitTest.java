@@ -56,6 +56,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
@@ -67,6 +68,8 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
@@ -98,6 +101,10 @@ import java.util.Set;
         shadows = {ShadowApplicationStatus.class})
 public class MultiInstanceManagerApi31UnitTest {
     @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+
+    @Rule public JniMocker mMocker = new JniMocker();
+
+    @Mock TabGroupSyncFeatures.Natives mTabGroupSyncFeaturesJniMock;
 
     /** Shadows {@link ApplicationStatus} class for testing. */
     @Implements(ApplicationStatus.class)
@@ -317,6 +324,10 @@ public class MultiInstanceManagerApi31UnitTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
+
+        mMocker.mock(TabGroupSyncFeaturesJni.TEST_HOOKS, mTabGroupSyncFeaturesJniMock);
+        when(mTabGroupSyncFeaturesJniMock.isTabGroupSyncEnabled(any())).thenReturn(true);
+
         when(mActivityTask56.getTaskId()).thenReturn(TASK_ID_56);
         when(mActivityTask57.getTaskId()).thenReturn(TASK_ID_57);
         when(mActivityTask58.getTaskId()).thenReturn(TASK_ID_58);

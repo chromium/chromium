@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
@@ -1069,8 +1070,11 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
 
         TabGroupModelFilter filter =
                 (TabGroupModelFilter) selector.getTabModelFilterProvider().getTabModelFilter(false);
-        TabGroupSyncService tabGroupSyncService =
-                TabGroupSyncServiceFactory.getForProfile(filter.getTabModel().getProfile());
+
+        Profile profile = filter.getTabModel().getProfile();
+        if (!TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)) return;
+
+        TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
         TabGroupSyncUtils.unmapLocalIdsNotInTabGroupModelFilter(tabGroupSyncService, filter);
     }
 }
