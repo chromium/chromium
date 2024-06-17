@@ -147,6 +147,21 @@ XrResult xrCreateActionSpace(XrSession session,
   return XR_SUCCESS;
 }
 
+XrResult xrCreateHandTrackerEXT(XrSession session,
+                                const XrHandTrackerCreateInfoEXT* create_info,
+                                XrHandTrackerEXT* hand_tracker) {
+  DVLOG(2) << __func__;
+  RETURN_IF_XR_FAILED(g_test_helper.ValidateSession(session));
+  RETURN_IF(create_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
+            "XrHandTrackerCreateInfoEXT is nullptr");
+  RETURN_IF(create_info->hand == XR_HAND_MAX_ENUM_EXT,
+            XR_ERROR_VALIDATION_FAILURE, "XrHand is unsupported");
+  RETURN_IF(hand_tracker == nullptr, XR_ERROR_VALIDATION_FAILURE,
+            "XrHandTrackerEXT is null");
+  *hand_tracker = g_test_helper.CreateHandTracker(create_info->hand);
+  return XR_SUCCESS;
+}
+
 XrResult xrCreateInstance(const XrInstanceCreateInfo* create_info,
                           XrInstance* instance) {
   DVLOG(2) << __FUNCTION__;
@@ -296,6 +311,12 @@ XrResult xrCreateSwapchain(XrSession session,
 XrResult xrDestroyActionSet(XrActionSet action_set) {
   DVLOG(2) << __FUNCTION__;
   RETURN_IF_XR_FAILED(g_test_helper.DestroyActionSet(action_set));
+  return XR_SUCCESS;
+}
+
+XrResult xrDestroyHandTrackerEXT(XrHandTrackerEXT hand_tracker) {
+  DVLOG(2) << __func__;
+  RETURN_IF_XR_FAILED(g_test_helper.DestroyHandTracker(hand_tracker));
   return XR_SUCCESS;
 }
 
@@ -863,6 +884,20 @@ XrResult xrGetSystemProperties(XrInstance instance,
   return XR_SUCCESS;
 }
 
+XrResult xrLocateHandJointsEXT(XrHandTrackerEXT hand_tracker,
+                               const XrHandJointsLocateInfoEXT* locate_info,
+                               XrHandJointLocationsEXT* locations) {
+  DVLOG(2) << __func__;
+  RETURN_IF_XR_FAILED(g_test_helper.ValidateHandTracker(hand_tracker));
+  RETURN_IF(locate_info == nullptr, XR_ERROR_VALIDATION_FAILURE,
+            "XrHandJointsLocateInfoEXT is nullptr");
+  RETURN_IF(locations == nullptr, XR_ERROR_VALIDATION_FAILURE,
+            "XrHandJointLocationsEXT is nullptr");
+  // No tests actually use hand joint data, so we leave them unpopulated at this
+  // time.
+  return XR_SUCCESS;
+}
+
 XrResult xrLocateSpace(XrSpace space,
                        XrSpace base_space,
                        XrTime time,
@@ -1134,6 +1169,8 @@ XrResult XRAPI_PTR xrGetInstanceProcAddr(XrInstance instance,
     *function = reinterpret_cast<PFN_xrVoidFunction>(xrCreateActionSet);
   } else if (strcmp(name, "xrCreateActionSpace") == 0) {
     *function = reinterpret_cast<PFN_xrVoidFunction>(xrCreateActionSpace);
+  } else if (strcmp(name, "xrCreateHandTrackerEXT") == 0) {
+    *function = reinterpret_cast<PFN_xrVoidFunction>(xrCreateHandTrackerEXT);
   } else if (strcmp(name, "xrCreateInstance") == 0) {
     *function = reinterpret_cast<PFN_xrVoidFunction>(xrCreateInstance);
   } else if (strcmp(name, "xrCreateReferenceSpace") == 0) {
@@ -1144,6 +1181,8 @@ XrResult XRAPI_PTR xrGetInstanceProcAddr(XrInstance instance,
     *function = reinterpret_cast<PFN_xrVoidFunction>(xrCreateSwapchain);
   } else if (strcmp(name, "xrDestroyActionSet") == 0) {
     *function = reinterpret_cast<PFN_xrVoidFunction>(xrDestroyActionSet);
+  } else if (strcmp(name, "xrDestroyHandTrackerEXT") == 0) {
+    *function = reinterpret_cast<PFN_xrVoidFunction>(xrDestroyHandTrackerEXT);
   } else if (strcmp(name, "xrDestroyInstance") == 0) {
     *function = reinterpret_cast<PFN_xrVoidFunction>(xrDestroyInstance);
   } else if (strcmp(name, "xrDestroySession") == 0) {
@@ -1200,6 +1239,8 @@ XrResult XRAPI_PTR xrGetInstanceProcAddr(XrInstance instance,
     *function = reinterpret_cast<PFN_xrVoidFunction>(xrGetSystem);
   } else if (strcmp(name, "xrGetSystemProperties") == 0) {
     *function = reinterpret_cast<PFN_xrVoidFunction>(xrGetSystemProperties);
+  } else if (strcmp(name, "xrLocateHandJointsEXT") == 0) {
+    *function = reinterpret_cast<PFN_xrVoidFunction>(xrLocateHandJointsEXT);
   } else if (strcmp(name, "xrLocateSpace") == 0) {
     *function = reinterpret_cast<PFN_xrVoidFunction>(xrLocateSpace);
   } else if (strcmp(name, "xrLocateViews") == 0) {

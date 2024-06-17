@@ -439,6 +439,32 @@ XrPath OpenXrTestHelper::GetCurrentInteractionProfile() {
   return GetPath(interaction_profile_);
 }
 
+XrHandTrackerEXT OpenXrTestHelper::CreateHandTracker(XrHandEXT hand) {
+  switch (hand) {
+    case XR_HAND_LEFT_EXT:
+      DCHECK_EQ(left_hand_, static_cast<XrHandTrackerEXT>(XR_NULL_HANDLE));
+      left_hand_ = TreatIntegerAsHandle<XrHandTrackerEXT>(++next_handle_);
+      return left_hand_;
+    case XR_HAND_RIGHT_EXT:
+      DCHECK_EQ(right_hand_, static_cast<XrHandTrackerEXT>(XR_NULL_HANDLE));
+      right_hand_ = TreatIntegerAsHandle<XrHandTrackerEXT>(++next_handle_);
+      return right_hand_;
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
+XrResult OpenXrTestHelper::DestroyHandTracker(XrHandTrackerEXT hand_tracker) {
+  RETURN_IF_XR_FAILED(ValidateHandTracker(hand_tracker));
+  if (left_hand_ == hand_tracker) {
+    left_hand_ = XR_NULL_HANDLE;
+  } else if (right_hand_ == hand_tracker) {
+    right_hand_ = XR_NULL_HANDLE;
+  }
+
+  return XR_SUCCESS;
+}
+
 device::OpenXrViewConfiguration& OpenXrTestHelper::GetViewConfigInfo(
     XrViewConfigurationType view_config) {
   const auto& primary_config = primary_configs_supported_.find(view_config);
@@ -1198,6 +1224,15 @@ XrResult OpenXrTestHelper::ValidateActionSpaceCreateInfo(
             XR_ERROR_VALIDATION_FAILURE,
             "ValidateActionSpaceCreateInfo subactionPath != XR_NULL_PATH");
   RETURN_IF_XR_FAILED(ValidateXrPosefIsIdentity(create_info.poseInActionSpace));
+  return XR_SUCCESS;
+}
+
+XrResult OpenXrTestHelper::ValidateHandTracker(
+    XrHandTrackerEXT hand_tracker) const {
+  RETURN_IF(left_hand_ == XR_NULL_HANDLE && right_hand_ == XR_NULL_HANDLE,
+            XR_ERROR_HANDLE_INVALID, "No Hand Tracker has been created");
+  RETURN_IF(left_hand_ != hand_tracker && right_hand_ != hand_tracker,
+            XR_ERROR_HANDLE_INVALID, "Hand Tracker invalid");
   return XR_SUCCESS;
 }
 

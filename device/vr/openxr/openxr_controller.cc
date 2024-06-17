@@ -346,8 +346,8 @@ mojom::XRInputSourceDescriptionPtr OpenXrController::GetDescription(
     description_ = device::mojom::XRInputSourceDescription::New();
     description_->handedness = GetHandness();
     description_->target_ray_mode = GetTargetRayMode();
-    description_->profiles =
-        path_helper_->GetInputProfiles(interaction_profile_);
+    description_->profiles = path_helper_->GetInputProfiles(
+        interaction_profile_, hand_joints_enabled_);
   }
 
   description_->input_from_pointer =
@@ -529,8 +529,8 @@ XrResult OpenXrController::UpdateInteractionProfile() {
   }
 
   if (description_) {
-    description_->profiles =
-        path_helper_->GetInputProfiles(interaction_profile_);
+    description_->profiles = path_helper_->GetInputProfiles(
+        interaction_profile_, hand_joints_enabled_);
   }
   return XR_SUCCESS;
 }

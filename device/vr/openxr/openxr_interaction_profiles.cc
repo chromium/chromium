@@ -111,6 +111,9 @@ GetOpenXrInputProfilesMap() {
           {OpenXrInteractionProfileType::kHandSelectGrasp,
            {{"",
              {"generic-hand-select-grasp", "generic-hand-select",
+              "generic-fixed-hand", "generic-trigger-squeeze"}},
+            {kOpenXrHandJointSystem,
+             {"generic-hand-select-grasp", "generic-hand-select",
               "generic-hand", "generic-trigger-squeeze"}}}},
 
           // Vive Cosmos
@@ -119,13 +122,21 @@ GetOpenXrInputProfilesMap() {
 
           // EXT Hand Interaction
           {OpenXrInteractionProfileType::kExtHand,
-           {{"",
-             {"generic-hand-select-grasp", "generic-hand-select",
-              "generic-hand", "generic-trigger-squeeze"}}}},
+           {
+               {"",
+                {"generic-hand-select-grasp", "generic-hand-select",
+                 "generic-fixed-hand", "generic-trigger-squeeze"}},
+               {kOpenXrHandJointSystem,
+                {"generic-hand-select-grasp", "generic-hand-select",
+                 "generic-hand", "generic-trigger-squeeze"}},
+           }},
 
           // XR_FB_hand_tracking_aim
           {OpenXrInteractionProfileType::kMetaHandAim,
-           {{"", {"generic-hand-select", "generic-hand", "generic-button"}}}},
+           {{"",
+             {"generic-hand-select", "generic-fixed-hand", "generic-button"}},
+            {kOpenXrHandJointSystem,
+             {"generic-hand-select", "generic-hand", "generic-button"}}}},
       });
   return *kInputProfilesMap;
 }

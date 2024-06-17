@@ -77,6 +77,8 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   XrResult DestroyActionSet(XrActionSet action_set);
   XrPath GetPath(std::string path_string);
   XrPath GetCurrentInteractionProfile();
+  XrHandTrackerEXT CreateHandTracker(XrHandEXT hand);
+  XrResult DestroyHandTracker(XrHandTrackerEXT hand_tracker);
 
   device::OpenXrViewConfiguration& GetViewConfigInfo(
       XrViewConfigurationType view_config);
@@ -125,6 +127,7 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   XrResult ValidateActionSetNotAttached(XrActionSet action_set) const;
   XrResult ValidateActionSpaceCreateInfo(
       const XrActionSpaceCreateInfo& create_info) const;
+  XrResult ValidateHandTracker(XrHandTrackerEXT hand_tracker) const;
   XrResult ValidateInstance(XrInstance instance) const;
   XrResult ValidateSystemId(XrSystemId system_id) const;
   XrResult ValidateSession(XrSession session) const;
@@ -149,6 +152,7 @@ class OpenXrTestHelper : public device::ServiceTestHook {
       XR_EXT_HAND_INTERACTION_EXTENSION_NAME,
       XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME,
       XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME,
+      XR_EXT_HAND_TRACKING_EXTENSION_NAME,
   };
 
   static constexpr uint32_t kPrimaryViewDimension = 128;
@@ -211,6 +215,8 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   XrSystemId system_id_;
   XrSession session_;
   XrSwapchain swapchain_;
+  XrHandTrackerEXT left_hand_;
+  XrHandTrackerEXT right_hand_;
 
   // Properties that changes depending on the state of the runtime.
   uint32_t frame_count_ = 0;

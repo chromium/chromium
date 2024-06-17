@@ -350,6 +350,8 @@ if (enable_openxr) {
       testonly = true
       output_name = "mock_vr_clients/bin/openxr/openxrruntime"
 
+      defines = [ "XR_EXTENSION_PROTOTYPES" ]
+
       include_dirs = [ "//third_party/openxr/src/include" ]
 
       sources = [
