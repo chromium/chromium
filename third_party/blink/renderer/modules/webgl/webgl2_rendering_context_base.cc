@@ -362,14 +362,7 @@ void WebGL2RenderingContextBase::bufferSubData(
 
 void WebGL2RenderingContextBase::bufferSubData(GLenum target,
                                                int64_t offset,
-                                               DOMArrayBufferBase* data) {
-  WebGLRenderingContextBase::bufferSubData(target, offset, data);
-}
-
-void WebGL2RenderingContextBase::bufferSubData(
-    GLenum target,
-    int64_t offset,
-    const FlexibleArrayBufferView& data) {
+                                               base::span<const uint8_t> data) {
   WebGLRenderingContextBase::bufferSubData(target, offset, data);
 }
 
@@ -2805,10 +2798,10 @@ void WebGL2RenderingContextBase::uniform4ui(
 
 void WebGL2RenderingContextBase::uniform1fv(
     const WebGLUniformLocation* location,
-    NADCTypedArrayView<GLfloat> v,
+    base::span<const GLfloat> v,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformParameters("uniform1fv", location, v, 1, src_offset,
@@ -2823,7 +2816,7 @@ void WebGL2RenderingContextBase::uniform1fv(
     Vector<GLfloat>& v,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformParameters("uniform1fv", location, v.data(), v.size(), 1,
@@ -2835,10 +2828,10 @@ void WebGL2RenderingContextBase::uniform1fv(
 
 void WebGL2RenderingContextBase::uniform2fv(
     const WebGLUniformLocation* location,
-    NADCTypedArrayView<GLfloat> v,
+    base::span<const GLfloat> v,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformParameters("uniform2fv", location, v, 2, src_offset,
@@ -2853,7 +2846,7 @@ void WebGL2RenderingContextBase::uniform2fv(
     Vector<GLfloat>& v,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformParameters("uniform2fv", location, v.data(), v.size(), 2,
@@ -2865,10 +2858,10 @@ void WebGL2RenderingContextBase::uniform2fv(
 
 void WebGL2RenderingContextBase::uniform3fv(
     const WebGLUniformLocation* location,
-    NADCTypedArrayView<GLfloat> v,
+    base::span<const GLfloat> v,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformParameters("uniform3fv", location, v, 3, src_offset,
@@ -2883,7 +2876,7 @@ void WebGL2RenderingContextBase::uniform3fv(
     Vector<GLfloat>& v,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformParameters("uniform3fv", location, v.data(), v.size(), 3,
@@ -2895,10 +2888,10 @@ void WebGL2RenderingContextBase::uniform3fv(
 
 void WebGL2RenderingContextBase::uniform4fv(
     const WebGLUniformLocation* location,
-    NADCTypedArrayView<GLfloat> v,
+    base::span<const GLfloat> v,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformParameters("uniform4fv", location, v, 4, src_offset,
@@ -2913,7 +2906,7 @@ void WebGL2RenderingContextBase::uniform4fv(
     Vector<GLfloat>& v,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformParameters("uniform4fv", location, v.data(), v.size(), 4,
@@ -2925,10 +2918,10 @@ void WebGL2RenderingContextBase::uniform4fv(
 
 void WebGL2RenderingContextBase::uniform1iv(
     const WebGLUniformLocation* location,
-    NADCTypedArrayView<GLint> v,
+    base::span<const GLint> v,
     GLuint src_offset,
     GLuint src_length) {
-  GLint* data;
+  const GLint* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformParameters("uniform1iv", location, v, 1, src_offset,
@@ -2943,7 +2936,7 @@ void WebGL2RenderingContextBase::uniform1iv(
     Vector<GLint>& v,
     GLuint src_offset,
     GLuint src_length) {
-  GLint* data;
+  const GLint* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformParameters("uniform1iv", location, v.data(), v.size(), 1,
@@ -2955,10 +2948,10 @@ void WebGL2RenderingContextBase::uniform1iv(
 
 void WebGL2RenderingContextBase::uniform2iv(
     const WebGLUniformLocation* location,
-    NADCTypedArrayView<GLint> v,
+    base::span<const GLint> v,
     GLuint src_offset,
     GLuint src_length) {
-  GLint* data;
+  const GLint* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformParameters("uniform2iv", location, v, 2, src_offset,
@@ -2973,7 +2966,7 @@ void WebGL2RenderingContextBase::uniform2iv(
     Vector<GLint>& v,
     GLuint src_offset,
     GLuint src_length) {
-  GLint* data;
+  const GLint* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformParameters("uniform2iv", location, v.data(), v.size(), 2,
@@ -2985,10 +2978,10 @@ void WebGL2RenderingContextBase::uniform2iv(
 
 void WebGL2RenderingContextBase::uniform3iv(
     const WebGLUniformLocation* location,
-    NADCTypedArrayView<GLint> v,
+    base::span<const GLint> v,
     GLuint src_offset,
     GLuint src_length) {
-  GLint* data;
+  const GLint* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformParameters("uniform3iv", location, v, 3, src_offset,
@@ -3003,7 +2996,7 @@ void WebGL2RenderingContextBase::uniform3iv(
     Vector<GLint>& v,
     GLuint src_offset,
     GLuint src_length) {
-  GLint* data;
+  const GLint* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformParameters("uniform3iv", location, v.data(), v.size(), 3,
@@ -3015,10 +3008,10 @@ void WebGL2RenderingContextBase::uniform3iv(
 
 void WebGL2RenderingContextBase::uniform4iv(
     const WebGLUniformLocation* location,
-    NADCTypedArrayView<GLint> v,
+    base::span<const GLint> v,
     GLuint src_offset,
     GLuint src_length) {
-  GLint* data;
+  const GLint* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformParameters("uniform4iv", location, v, 4, src_offset,
@@ -3033,7 +3026,7 @@ void WebGL2RenderingContextBase::uniform4iv(
     Vector<GLint>& v,
     GLuint src_offset,
     GLuint src_length) {
-  GLint* data;
+  const GLint* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformParameters("uniform4iv", location, v.data(), v.size(), 4,
@@ -3045,10 +3038,10 @@ void WebGL2RenderingContextBase::uniform4iv(
 
 void WebGL2RenderingContextBase::uniform1uiv(
     const WebGLUniformLocation* location,
-    NADCTypedArrayView<GLuint> v,
+    base::span<const GLuint> v,
     GLuint src_offset,
     GLuint src_length) {
-  GLuint* data;
+  const GLuint* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformParameters("uniform1uiv", location, v, 1, src_offset,
@@ -3063,7 +3056,7 @@ void WebGL2RenderingContextBase::uniform1uiv(
     Vector<GLuint>& value,
     GLuint src_offset,
     GLuint src_length) {
-  GLuint* data;
+  const GLuint* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformParameters("uniform1uiv", location, value.data(),
@@ -3076,10 +3069,10 @@ void WebGL2RenderingContextBase::uniform1uiv(
 
 void WebGL2RenderingContextBase::uniform2uiv(
     const WebGLUniformLocation* location,
-    NADCTypedArrayView<GLuint> v,
+    base::span<const GLuint> v,
     GLuint src_offset,
     GLuint src_length) {
-  GLuint* data;
+  const GLuint* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformParameters("uniform2uiv", location, v, 2, src_offset,
@@ -3094,7 +3087,7 @@ void WebGL2RenderingContextBase::uniform2uiv(
     Vector<GLuint>& value,
     GLuint src_offset,
     GLuint src_length) {
-  GLuint* data;
+  const GLuint* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformParameters("uniform2uiv", location, value.data(),
@@ -3107,10 +3100,10 @@ void WebGL2RenderingContextBase::uniform2uiv(
 
 void WebGL2RenderingContextBase::uniform3uiv(
     const WebGLUniformLocation* location,
-    NADCTypedArrayView<GLuint> v,
+    base::span<const GLuint> v,
     GLuint src_offset,
     GLuint src_length) {
-  GLuint* data;
+  const GLuint* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformParameters("uniform3uiv", location, v, 3, src_offset,
@@ -3125,7 +3118,7 @@ void WebGL2RenderingContextBase::uniform3uiv(
     Vector<GLuint>& value,
     GLuint src_offset,
     GLuint src_length) {
-  GLuint* data;
+  const GLuint* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformParameters("uniform3uiv", location, value.data(),
@@ -3138,10 +3131,10 @@ void WebGL2RenderingContextBase::uniform3uiv(
 
 void WebGL2RenderingContextBase::uniform4uiv(
     const WebGLUniformLocation* location,
-    NADCTypedArrayView<GLuint> v,
+    base::span<const GLuint> v,
     GLuint src_offset,
     GLuint src_length) {
-  GLuint* data;
+  const GLuint* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformParameters("uniform4uiv", location, v, 4, src_offset,
@@ -3156,7 +3149,7 @@ void WebGL2RenderingContextBase::uniform4uiv(
     Vector<GLuint>& value,
     GLuint src_offset,
     GLuint src_length) {
-  GLuint* data;
+  const GLuint* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformParameters("uniform4uiv", location, value.data(),
@@ -3170,10 +3163,10 @@ void WebGL2RenderingContextBase::uniform4uiv(
 void WebGL2RenderingContextBase::uniformMatrix2fv(
     const WebGLUniformLocation* location,
     GLboolean transpose,
-    NADCTypedArrayView<GLfloat> v,
+    base::span<const GLfloat> v,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() || !ValidateUniformMatrixParameters(
                              "uniformMatrix2fv", location, transpose, v, 4,
@@ -3188,7 +3181,7 @@ void WebGL2RenderingContextBase::uniformMatrix2fv(
     Vector<GLfloat>& v,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformMatrixParameters("uniformMatrix2fv", location, transpose,
@@ -3201,10 +3194,10 @@ void WebGL2RenderingContextBase::uniformMatrix2fv(
 void WebGL2RenderingContextBase::uniformMatrix3fv(
     const WebGLUniformLocation* location,
     GLboolean transpose,
-    NADCTypedArrayView<GLfloat> v,
+    base::span<const GLfloat> v,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() || !ValidateUniformMatrixParameters(
                              "uniformMatrix3fv", location, transpose, v, 9,
@@ -3219,7 +3212,7 @@ void WebGL2RenderingContextBase::uniformMatrix3fv(
     Vector<GLfloat>& v,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformMatrixParameters("uniformMatrix3fv", location, transpose,
@@ -3232,10 +3225,10 @@ void WebGL2RenderingContextBase::uniformMatrix3fv(
 void WebGL2RenderingContextBase::uniformMatrix4fv(
     const WebGLUniformLocation* location,
     GLboolean transpose,
-    NADCTypedArrayView<GLfloat> v,
+    base::span<const GLfloat> v,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() || !ValidateUniformMatrixParameters(
                              "uniformMatrix4fv", location, transpose, v, 16,
@@ -3250,7 +3243,7 @@ void WebGL2RenderingContextBase::uniformMatrix4fv(
     Vector<GLfloat>& v,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformMatrixParameters("uniformMatrix4fv", location, transpose,
@@ -3263,10 +3256,10 @@ void WebGL2RenderingContextBase::uniformMatrix4fv(
 void WebGL2RenderingContextBase::uniformMatrix2x3fv(
     const WebGLUniformLocation* location,
     GLboolean transpose,
-    NADCTypedArrayView<GLfloat> value,
+    base::span<const GLfloat> value,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() || !ValidateUniformMatrixParameters(
                              "uniformMatrix2x3fv", location, transpose, value,
@@ -3282,7 +3275,7 @@ void WebGL2RenderingContextBase::uniformMatrix2x3fv(
     Vector<GLfloat>& value,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformMatrixParameters("uniformMatrix2x3fv", location,
@@ -3296,10 +3289,10 @@ void WebGL2RenderingContextBase::uniformMatrix2x3fv(
 void WebGL2RenderingContextBase::uniformMatrix3x2fv(
     const WebGLUniformLocation* location,
     GLboolean transpose,
-    NADCTypedArrayView<GLfloat> value,
+    base::span<const GLfloat> value,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() || !ValidateUniformMatrixParameters(
                              "uniformMatrix3x2fv", location, transpose, value,
@@ -3315,7 +3308,7 @@ void WebGL2RenderingContextBase::uniformMatrix3x2fv(
     Vector<GLfloat>& value,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformMatrixParameters("uniformMatrix3x2fv", location,
@@ -3329,10 +3322,10 @@ void WebGL2RenderingContextBase::uniformMatrix3x2fv(
 void WebGL2RenderingContextBase::uniformMatrix2x4fv(
     const WebGLUniformLocation* location,
     GLboolean transpose,
-    NADCTypedArrayView<GLfloat> value,
+    base::span<const GLfloat> value,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() || !ValidateUniformMatrixParameters(
                              "uniformMatrix2x4fv", location, transpose, value,
@@ -3348,7 +3341,7 @@ void WebGL2RenderingContextBase::uniformMatrix2x4fv(
     Vector<GLfloat>& value,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformMatrixParameters("uniformMatrix2x4fv", location,
@@ -3362,10 +3355,10 @@ void WebGL2RenderingContextBase::uniformMatrix2x4fv(
 void WebGL2RenderingContextBase::uniformMatrix4x2fv(
     const WebGLUniformLocation* location,
     GLboolean transpose,
-    NADCTypedArrayView<GLfloat> value,
+    base::span<const GLfloat> value,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() || !ValidateUniformMatrixParameters(
                              "uniformMatrix4x2fv", location, transpose, value,
@@ -3381,7 +3374,7 @@ void WebGL2RenderingContextBase::uniformMatrix4x2fv(
     Vector<GLfloat>& value,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformMatrixParameters("uniformMatrix4x2fv", location,
@@ -3395,10 +3388,10 @@ void WebGL2RenderingContextBase::uniformMatrix4x2fv(
 void WebGL2RenderingContextBase::uniformMatrix3x4fv(
     const WebGLUniformLocation* location,
     GLboolean transpose,
-    NADCTypedArrayView<GLfloat> value,
+    base::span<const GLfloat> value,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() || !ValidateUniformMatrixParameters(
                              "uniformMatrix3x4fv", location, transpose, value,
@@ -3414,7 +3407,7 @@ void WebGL2RenderingContextBase::uniformMatrix3x4fv(
     Vector<GLfloat>& value,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformMatrixParameters(
@@ -3428,10 +3421,10 @@ void WebGL2RenderingContextBase::uniformMatrix3x4fv(
 void WebGL2RenderingContextBase::uniformMatrix4x3fv(
     const WebGLUniformLocation* location,
     GLboolean transpose,
-    NADCTypedArrayView<GLfloat> value,
+    base::span<const GLfloat> value,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() || !ValidateUniformMatrixParameters(
                              "uniformMatrix4x3fv", location, transpose, value,
@@ -3447,7 +3440,7 @@ void WebGL2RenderingContextBase::uniformMatrix4x3fv(
     Vector<GLfloat>& value,
     GLuint src_offset,
     GLuint src_length) {
-  GLfloat* data;
+  const GLfloat* data;
   GLuint length;
   if (isContextLost() ||
       !ValidateUniformMatrixParameters(
@@ -3460,7 +3453,7 @@ void WebGL2RenderingContextBase::uniformMatrix4x3fv(
 
 void WebGL2RenderingContextBase::uniform1fv(
     const WebGLUniformLocation* location,
-    NADCTypedArrayView<GLfloat> v) {
+    base::span<const GLfloat> v) {
   WebGLRenderingContextBase::uniform1fv(location, v);
 }
 
@@ -3472,7 +3465,7 @@ void WebGL2RenderingContextBase::uniform1fv(
 
 void WebGL2RenderingContextBase::uniform2fv(
     const WebGLUniformLocation* location,
-    NADCTypedArrayView<GLfloat> v) {
+    base::span<const GLfloat> v) {
   WebGLRenderingContextBase::uniform2fv(location, v);
 }
 
@@ -3484,7 +3477,7 @@ void WebGL2RenderingContextBase::uniform2fv(
 
 void WebGL2RenderingContextBase::uniform3fv(
     const WebGLUniformLocation* location,
-    NADCTypedArrayView<GLfloat> v) {
+    base::span<const GLfloat> v) {
   WebGLRenderingContextBase::uniform3fv(location, v);
 }
 
@@ -3496,7 +3489,7 @@ void WebGL2RenderingContextBase::uniform3fv(
 
 void WebGL2RenderingContextBase::uniform4fv(
     const WebGLUniformLocation* location,
-    NADCTypedArrayView<GLfloat> v) {
+    base::span<const GLfloat> v) {
   WebGLRenderingContextBase::uniform4fv(location, v);
 }
 
@@ -3508,7 +3501,7 @@ void WebGL2RenderingContextBase::uniform4fv(
 
 void WebGL2RenderingContextBase::uniform1iv(
     const WebGLUniformLocation* location,
-    NADCTypedArrayView<GLint> v) {
+    base::span<const GLint> v) {
   WebGLRenderingContextBase::uniform1iv(location, v);
 }
 
@@ -3520,7 +3513,7 @@ void WebGL2RenderingContextBase::uniform1iv(
 
 void WebGL2RenderingContextBase::uniform2iv(
     const WebGLUniformLocation* location,
-    NADCTypedArrayView<GLint> v) {
+    base::span<const GLint> v) {
   WebGLRenderingContextBase::uniform2iv(location, v);
 }
 
@@ -3532,7 +3525,7 @@ void WebGL2RenderingContextBase::uniform2iv(
 
 void WebGL2RenderingContextBase::uniform3iv(
     const WebGLUniformLocation* location,
-    NADCTypedArrayView<GLint> v) {
+    base::span<const GLint> v) {
   WebGLRenderingContextBase::uniform3iv(location, v);
 }
 
@@ -3544,7 +3537,7 @@ void WebGL2RenderingContextBase::uniform3iv(
 
 void WebGL2RenderingContextBase::uniform4iv(
     const WebGLUniformLocation* location,
-    NADCTypedArrayView<GLint> v) {
+    base::span<const GLint> v) {
   WebGLRenderingContextBase::uniform4iv(location, v);
 }
 
@@ -3557,7 +3550,7 @@ void WebGL2RenderingContextBase::uniform4iv(
 void WebGL2RenderingContextBase::uniformMatrix2fv(
     const WebGLUniformLocation* location,
     GLboolean transpose,
-    NADCTypedArrayView<GLfloat> v) {
+    base::span<const GLfloat> v) {
   WebGLRenderingContextBase::uniformMatrix2fv(location, transpose, v);
 }
 
@@ -3571,7 +3564,7 @@ void WebGL2RenderingContextBase::uniformMatrix2fv(
 void WebGL2RenderingContextBase::uniformMatrix3fv(
     const WebGLUniformLocation* location,
     GLboolean transpose,
-    NADCTypedArrayView<GLfloat> v) {
+    base::span<const GLfloat> v) {
   WebGLRenderingContextBase::uniformMatrix3fv(location, transpose, v);
 }
 
@@ -3585,7 +3578,7 @@ void WebGL2RenderingContextBase::uniformMatrix3fv(
 void WebGL2RenderingContextBase::uniformMatrix4fv(
     const WebGLUniformLocation* location,
     GLboolean transpose,
-    NADCTypedArrayView<GLfloat> v) {
+    base::span<const GLfloat> v) {
   WebGLRenderingContextBase::uniformMatrix4fv(location, transpose, v);
 }
 
@@ -3607,16 +3600,15 @@ void WebGL2RenderingContextBase::vertexAttribI4i(GLuint index,
   SetVertexAttribType(index, kInt32ArrayType);
 }
 
-void WebGL2RenderingContextBase::vertexAttribI4iv(
-    GLuint index,
-    NADCTypedArrayView<const GLint> v) {
+void WebGL2RenderingContextBase::vertexAttribI4iv(GLuint index,
+                                                  base::span<const GLint> v) {
   if (isContextLost())
     return;
-  if (v.IsEmpty() || v.Size() < 4) {
+  if (v.size() < 4) {
     SynthesizeGLError(GL_INVALID_VALUE, "vertexAttribI4iv", "invalid array");
     return;
   }
-  ContextGL()->VertexAttribI4iv(index, v.Data());
+  ContextGL()->VertexAttribI4iv(index, v.data());
   SetVertexAttribType(index, kInt32ArrayType);
 }
 
@@ -3643,16 +3635,15 @@ void WebGL2RenderingContextBase::vertexAttribI4ui(GLuint index,
   SetVertexAttribType(index, kUint32ArrayType);
 }
 
-void WebGL2RenderingContextBase::vertexAttribI4uiv(
-    GLuint index,
-    NADCTypedArrayView<const GLuint> v) {
+void WebGL2RenderingContextBase::vertexAttribI4uiv(GLuint index,
+                                                   base::span<const GLuint> v) {
   if (isContextLost())
     return;
-  if (v.IsEmpty() || v.Size() < 4) {
+  if (v.size() < 4) {
     SynthesizeGLError(GL_INVALID_VALUE, "vertexAttribI4uiv", "invalid array");
     return;
   }
-  ContextGL()->VertexAttribI4uiv(index, v.Data());
+  ContextGL()->VertexAttribI4uiv(index, v.data());
   SetVertexAttribType(index, kUint32ArrayType);
 }
 
@@ -3864,11 +3855,12 @@ WebGLTexture* WebGL2RenderingContextBase::ValidateTexImageBinding(
 
 void WebGL2RenderingContextBase::clearBufferiv(GLenum buffer,
                                                GLint drawbuffer,
-                                               NADCTypedArrayView<GLint> value,
+                                               base::span<const GLint> value,
                                                GLuint src_offset) {
   if (isContextLost() ||
-      !ValidateClearBuffer("clearBufferiv", buffer, value.Size(), src_offset))
+      !ValidateClearBuffer("clearBufferiv", buffer, value.size(), src_offset)) {
     return;
+  }
 
   ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
                                                    drawing_buffer_.get());
@@ -3877,7 +3869,7 @@ void WebGL2RenderingContextBase::clearBufferiv(GLenum buffer,
   // user-requested clearBuffer call because of scissor test side effects.
   ClearIfComposited(kClearCallerDrawOrClear);
 
-  ContextGL()->ClearBufferiv(buffer, drawbuffer, value.Data() + src_offset);
+  ContextGL()->ClearBufferiv(buffer, drawbuffer, value.data() + src_offset);
 }
 
 void WebGL2RenderingContextBase::clearBufferiv(GLenum buffer,
@@ -3898,14 +3890,14 @@ void WebGL2RenderingContextBase::clearBufferiv(GLenum buffer,
   ContextGL()->ClearBufferiv(buffer, drawbuffer, value.data() + src_offset);
 }
 
-void WebGL2RenderingContextBase::clearBufferuiv(
-    GLenum buffer,
-    GLint drawbuffer,
-    NADCTypedArrayView<GLuint> value,
-    GLuint src_offset) {
-  if (isContextLost() ||
-      !ValidateClearBuffer("clearBufferuiv", buffer, value.Size(), src_offset))
+void WebGL2RenderingContextBase::clearBufferuiv(GLenum buffer,
+                                                GLint drawbuffer,
+                                                base::span<const GLuint> value,
+                                                GLuint src_offset) {
+  if (isContextLost() || !ValidateClearBuffer("clearBufferuiv", buffer,
+                                              value.size(), src_offset)) {
     return;
+  }
 
   ScopedRGBEmulationColorMask emulation_color_mask(this, color_mask_,
                                                    drawing_buffer_.get());
@@ -3913,7 +3905,7 @@ void WebGL2RenderingContextBase::clearBufferuiv(
   // This call is not applicable to the default framebuffer attachments
   // as they cannot have UINT type. Ignore any pending implicit clears.
 
-  ContextGL()->ClearBufferuiv(buffer, drawbuffer, value.Data() + src_offset);
+  ContextGL()->ClearBufferuiv(buffer, drawbuffer, value.data() + src_offset);
 }
 
 void WebGL2RenderingContextBase::clearBufferuiv(GLenum buffer,
@@ -3933,14 +3925,14 @@ void WebGL2RenderingContextBase::clearBufferuiv(GLenum buffer,
   ContextGL()->ClearBufferuiv(buffer, drawbuffer, value.data() + src_offset);
 }
 
-void WebGL2RenderingContextBase::clearBufferfv(
-    GLenum buffer,
-    GLint drawbuffer,
-    NADCTypedArrayView<GLfloat> value,
-    GLuint src_offset) {
+void WebGL2RenderingContextBase::clearBufferfv(GLenum buffer,
+                                               GLint drawbuffer,
+                                               base::span<const GLfloat> value,
+                                               GLuint src_offset) {
   if (isContextLost() ||
-      !ValidateClearBuffer("clearBufferfv", buffer, value.Size(), src_offset))
+      !ValidateClearBuffer("clearBufferfv", buffer, value.size(), src_offset)) {
     return;
+  }
 
   // As of this writing the default back buffer will always have an
   // RGB(A)/UNSIGNED_BYTE color attachment, so only clearBufferfv can
@@ -3955,7 +3947,7 @@ void WebGL2RenderingContextBase::clearBufferfv(
   // user-requested clearBuffer call because of scissor test side effects.
   ClearIfComposited(kClearCallerDrawOrClear);
 
-  ContextGL()->ClearBufferfv(buffer, drawbuffer, value.Data() + src_offset);
+  ContextGL()->ClearBufferfv(buffer, drawbuffer, value.data() + src_offset);
 
   // This might have been used to clear the color buffer of the default back
   // buffer. Notification is required to update the canvas.
