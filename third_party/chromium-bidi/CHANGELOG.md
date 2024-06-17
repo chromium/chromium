@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.24](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.23...chromium-bidi-v0.5.24) (2024-06-17)
+
+
+### Features
+
+* add support for `originalOpener` in BrowsingContext.Info ([#2318](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2318)) ([a132812](https://github.com/GoogleChromeLabs/chromium-bidi/commit/a132812466195843558d1a98f61805ef1f8b83af))
+
+
+### Bug Fixes
+
+* catch error when logging args ([#2319](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2319)) ([90b9708](https://github.com/GoogleChromeLabs/chromium-bidi/commit/90b970879f9285e1a943bb13a9c59af5815644aa))
+* handle `registerPromiseEvent` with errors ([#2323](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2323)) ([d38472f](https://github.com/GoogleChromeLabs/chromium-bidi/commit/d38472f65319fe63607681bf1eb1aa4ee2f7df83))
+
 ## [0.5.23](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.22...chromium-bidi-v0.5.23) (2024-06-11)
 
 
