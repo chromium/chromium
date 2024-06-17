@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "ash/shell.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/accessibility/accessibility_feature_browsertest.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/facegaze_test_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -380,6 +382,24 @@ IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, PerformanceHistogram) {
   }
 
   waiter.Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(FaceGazeIntegrationTest, OpenSettingsPage) {
+  utils()->EnableFaceGaze(
+      Config()
+          .Default()
+          .WithGesturesToMacros({{FaceGazeGesture::MOUTH_RIGHT,
+                                  MacroName::OPEN_FACEGAZE_SETTINGS}})
+          .WithGestureConfidences({{FaceGazeGesture::MOUTH_RIGHT, 30}}));
+
+  base::RunLoop waiter;
+  AccessibilityManager::Get()->SetOpenSettingsSubpageObserverForTest(
+      base::BindLambdaForTesting([&waiter]() { waiter.Quit(); }));
+
+  // Move mouth right to open the FaceGaze settings page.
+  utils()->ProcessFaceLandmarkerResult(MockFaceLandmarkerResult().WithGesture(
+      MediapipeGesture::MOUTH_RIGHT, 40));
+  waiter.Run();
 }
 
 }  // namespace ash

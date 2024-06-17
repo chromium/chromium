@@ -221,6 +221,11 @@ export class GestureHandler {
       case MacroName.KEY_PRESS_TOGGLE_OVERVIEW:
       case MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE:
         return new KeyPressMacro(name);
+      case MacroName.OPEN_FACEGAZE_SETTINGS:
+        return new CustomCallbackMacro(MacroName.OPEN_FACEGAZE_SETTINGS, () => {
+          chrome.accessibilityPrivate.openSettingsSubpage(
+              GestureHandler.SETTINGS_PATH);
+        });
       case MacroName.TOGGLE_FACEGAZE:
         return new CustomCallbackMacro(MacroName.TOGGLE_FACEGAZE, () => {
           this.mouseController_.togglePaused();
@@ -248,6 +253,8 @@ export namespace GestureHandler {
 
   export const GESTURE_TO_CONFIDENCE_PREF =
       'settings.a11y.face_gaze.gestures_to_confidence';
+
+  export const SETTINGS_PATH = 'manageAccessibility/faceGaze';
 }
 
 TestImportManager.exportForTesting(GestureHandler);

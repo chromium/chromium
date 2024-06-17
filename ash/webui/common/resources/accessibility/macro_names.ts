@@ -165,6 +165,9 @@ export enum MacroName {
   // FaceGaze is already running.
   TOGGLE_FACEGAZE = 46,
 
+  // If FaceGaze is enabled, opens the FaceGaze settings subpage.
+  OPEN_FACEGAZE_SETTINGS = 47,
+
   // Any new actions should match with Voice Access's semantic tags where
   // possible.
 }
