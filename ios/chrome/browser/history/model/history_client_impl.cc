@@ -139,7 +139,7 @@ void HistoryClientImpl::HandleBookmarksRemovedFromModel(
   }
 
   // Only notify when bookmarks are removed from both models.
-  // TODO(crbug.com/326185948): This verification shouldn't be needed when there
+  // TODO(crbug.com/346918509): This verification shouldn't be needed when there
   // is exactly one BookmarkModel instance per BrowserState.
 
   // Compute URLs that were removed from `model` and are not bookmarked by

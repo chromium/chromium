@@ -86,7 +86,7 @@ class SpotlightBookmarkModelBridge;
   // The nodes stored in this stack will be indexed.
   // Nodes are stored as a pair of flag indicating if it belongs to the local
   // model or account model, plus UUID itself.
-  // TODO(crbug.com/326185948): Once a single BookmarkModel exists on iOS,
+  // TODO(crbug.com/346918509): Once a single BookmarkModel exists on iOS,
   // remove the enum.
   std::stack<std::pair<BookmarkModelType, base::Uuid>> _indexingStack;
 
@@ -494,7 +494,7 @@ class SpotlightBookmarkModelBridge;
 
   _nodesIndexed = 0;
   _pendingLargeIconTasksCount = 0;
-  // TODO(crbug.com/326185948): Once a single BookmarkModel exists on iOS, this
+  // TODO(crbug.com/346918509): Once a single BookmarkModel exists on iOS, this
   // code could simply push the root node's UUID.
   [self
       pushPermanentFoldersToIndexingStack:_localOrSyncableBookmarkModel

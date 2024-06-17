@@ -153,7 +153,7 @@ class MockDelegate
 class CommercePushNotificationClientTest : public PlatformTest {
  public:
   CommercePushNotificationClientTest() {
-    // TODO(crbug.com/326185948): These tests rely on Sync-the-feature and thus
+    // TODO(crbug.com/346918509): These tests rely on Sync-the-feature and thus
     // break with kMigrateSyncingUserToSignedIn enabled. Once
     // kEnableBookmarkFoldersForAccountStorage gets enabled, that should resolve
     // this.
@@ -216,7 +216,7 @@ class CommercePushNotificationClientTest : public PlatformTest {
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
     // Pretend sync is on and bookmarks have been downloaded from the server,
     // required for price tracking.
-    // TODO(crbug.com/326185948): This is questionable because it means the test
+    // TODO(crbug.com/346918509): This is questionable because it means the test
     // is effectively turning on sync-the-feature.
     ios::LocalOrSyncableBookmarkSyncServiceFactory::GetForBrowserState(
         chrome_browser_state_.get())

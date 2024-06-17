@@ -48,7 +48,7 @@ PowerBookmarkServiceFactory::BuildServiceInstanceFor(
   ChromeBrowserState* chrome_state =
       ChromeBrowserState::FromBrowserState(state);
 
-  // TODO(crbug.com/326185948): The flag-disabled case below looks wrong. It is
+  // TODO(crbug.com/346918509): The flag-disabled case below looks wrong. It is
   // more likely that PowerBookmarkService intends to integrate with account
   // bookmarks only.
   bookmarks::BookmarkModel* bookmark_model =

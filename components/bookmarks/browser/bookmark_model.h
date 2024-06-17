@@ -94,7 +94,7 @@ class BookmarkModel : public CoreBookmarkModel,
   // Special API for iOS only, where a dedicated BookmarkModel is used for
   // account bookmarks, and counter-intuitively this BookmarkModel instance
   // exposes those bookmarks as local-or-syncable bookmarks.
-  // TODO(crbug.com/326185948): Remove once a single BookmarkModel instance is
+  // TODO(crbug.com/346918509): Remove once a single BookmarkModel instance is
   // used on iOS.
   void LoadAccountBookmarksFileAsLocalOrSyncableBookmarks(
       const base::FilePath& profile_path);
@@ -268,13 +268,13 @@ class BookmarkModel : public CoreBookmarkModel,
   GetNodesByURL(const GURL& url) const;
 
   // Same as above but it only returns the count.
-  // TODO(crbug.com/326185948): Remove this function once the migration of iOS
+  // TODO(crbug.com/346918509): Remove this function once the migration of iOS
   // to a single BookmarkModel instance is complete, as callers can invoke
   // `GetNodesByURL()` instead.
   size_t GetNodeCountByURL(const GURL& url) const override;
 
   // Same as `GetNodesByURL()` but it only returns the titles.
-  // TODO(crbug.com/326185948): Remove this function once the migration of iOS
+  // TODO(crbug.com/346918509): Remove this function once the migration of iOS
   // to a single BookmarkModel instance is complete, as callers can invoke
   // `GetNodesByURL()` instead.
   std::vector<std::u16string_view> GetNodeTitlesByURL(

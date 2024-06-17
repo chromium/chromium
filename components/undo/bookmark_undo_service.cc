@@ -31,7 +31,7 @@ using bookmarks::BookmarkUndoProvider;
 
 namespace {
 
-// TODO(crbug.com/326185948): Remove this function once the migration of iOS to
+// TODO(crbug.com/346918509): Remove this function once the migration of iOS to
 // a single BookmarkModel instance is complete.
 BookmarkModel* DetermineModelForNode(
     const BookmarkNode* node,

@@ -69,7 +69,7 @@ class BookmarkUndoService : public bookmarks::BaseBookmarkModelObserver,
 
   UndoManager undo_manager_;
   base::flat_set<raw_ptr<bookmarks::BookmarkModel>> observed_models_;
-  // TODO(crbug.com/326185948): Switch to a single observation once the
+  // TODO(crbug.com/346918509): Switch to a single observation once the
   // migration of iOS to a single BookmarkModel instance is complete.
   base::ScopedMultiSourceObservation<bookmarks::BookmarkModel,
                                      bookmarks::BookmarkModelObserver>

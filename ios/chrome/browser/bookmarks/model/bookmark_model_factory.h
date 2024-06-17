@@ -21,7 +21,7 @@ namespace ios {
 
 class BookmarkModelFactory : public BrowserStateKeyedServiceFactory {
  public:
-  // TODO(crbug.com/326185948): Return BookmarkModel, once the other two
+  // TODO(crbug.com/346918509): Return BookmarkModel, once the other two
   // factories are deleted.
   static bookmarks::CoreBookmarkModel* GetForBrowserState(
       ChromeBrowserState* browser_state);

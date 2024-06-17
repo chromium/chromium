@@ -39,14 +39,14 @@ extern const int64_t kLastUsedBookmarkFolderNone;
 
 // Checks whether all available bookmark models are loaded.
 // Return true if the bookmarks model are loaded, false otherwise.
-// TODO(crbug.com/326185948): Inline this trivial helper function.
+// TODO(crbug.com/346918509): Inline this trivial helper function.
 [[nodiscard]] bool AreAllAvailableBookmarkModelsLoaded(
     ChromeBrowserState* browser_state);
 
 // Removes all user bookmarks and clears bookmark-related pref. Requires
 // bookmark model to be loaded.
 // Return true if the bookmarks were successfully removed and false otherwise.
-// TODO(crbug.com/326185948): Inline this trivial helper function.
+// TODO(crbug.com/346918509): Inline this trivial helper function.
 [[nodiscard]] bool RemoveAllUserBookmarksIOS(ChromeBrowserState* browser_state,
                                              const base::Location& location);
 

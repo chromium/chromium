@@ -29,7 +29,7 @@ struct UrlAndTitle;
 // semantics if an instance represented a merged view of two underlying
 // BookmarkModel instances. Beyond that, the precise APIs included here is
 // arbitrary and influenced by actual need in code.
-// TODO(crbug.com/326185948): Remove this base class one the migration is
+// TODO(crbug.com/346918509): Remove this base class one the migration is
 // complete.
 class CoreBookmarkModel : public KeyedService {
  public:
