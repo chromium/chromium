@@ -462,6 +462,17 @@
     "expires": "never"
   },
   {
+    "prefix": "backdrop-filter-mirror-edge",
+    "platforms": ["Linux"],
+    "bases": ["external/wpt/css/filter-effects/backdrop-filter-edge-behavior.html",
+              "external/wpt/css/filter-effects/backdrop-filter-edge-clipping.html",
+              "external/wpt/css/filter-effects/backdrop-filter-edge-mirror.html",
+              "external/wpt/css/filter-effects/backdrop-filter-edge-pixels.html"],
+    "args": ["--enable-features=BackdropFilterMirrorEdgeMode"],
+    "owners": ["flackr@chromium.org"],
+    "expires": "Jul 1, 2025"
+  },
+  {
     "prefix": "dark-mode-classifier-transparency-and-num-colors",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["dark-mode/images"],
