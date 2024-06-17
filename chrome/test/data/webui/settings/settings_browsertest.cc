@@ -851,26 +851,26 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, CookiesFragment) {
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest, CompletionFragment) {
-  RunTest("settings/privacy_guide_fragments_test.js",
+  RunTest("settings/privacy_guide_completion_fragment_test.js",
           "runMochaSuite('CompletionFragment')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest,
                        CompletionFragmentPrivacySandboxRestricted) {
-  RunTest("settings/privacy_guide_fragments_test.js",
+  RunTest("settings/privacy_guide_completion_fragment_test.js",
           "runMochaSuite('CompletionFragmentPrivacySandboxRestricted')");
 }
 
 IN_PROC_BROWSER_TEST_F(SettingsPrivacyGuideTest,
                        CompletionFragmentWithTrackingProtection) {
-  RunTest("settings/privacy_guide_fragments_test.js",
+  RunTest("settings/privacy_guide_completion_fragment_test.js",
           "runMochaSuite('CompletionFragmentWithoutTrackingProtection')");
 }
 
 IN_PROC_BROWSER_TEST_F(
     SettingsPrivacyGuideTest,
     CompletionFragmentPrivacySandboxRestrictedWithNoticeEnabled) {
-  RunTest("settings/privacy_guide_fragments_test.js",
+  RunTest("settings/privacy_guide_completion_fragment_test.js",
           "runMochaSuite('"
           "CompletionFragmentPrivacySandboxRestrictedWithNoticeEnabled')");
 }
