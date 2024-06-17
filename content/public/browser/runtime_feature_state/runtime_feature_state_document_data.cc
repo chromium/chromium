@@ -16,4 +16,10 @@ RuntimeFeatureStateDocumentData::RuntimeFeatureStateDocumentData(
     : DocumentUserData(rfh),
       runtime_feature_state_read_context_(read_context) {}
 
+RuntimeFeatureStateDocumentData::RuntimeFeatureStateDocumentData(
+    RenderFrameHost* rfh)
+    : DocumentUserData(rfh),
+      runtime_feature_state_read_context_(
+          blink::RuntimeFeatureStateReadContext()) {}
+
 }  // namespace content
