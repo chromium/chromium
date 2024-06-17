@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//services/screen_ai/buildflags/features.gni")
+import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 assert(enable_screen_ai_service)
@@ -45,6 +46,20 @@ source_set("screen_ai") {
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+if (is_chromeos) {
+  test("screen_ai_ocr_perf_test") {
+    sources = [ "screen_ai_ocr_perf_test.cc" ]
+
+    deps = [
+      ":screen_ai",
+      "//base/test:test_support",
+      "//services/screen_ai/public/cpp:utilities",
+      "//skia",
+      "//ui/gfx/codec",
+    ]
+  }
 }
 
 if (is_linux || is_chromeos) {
