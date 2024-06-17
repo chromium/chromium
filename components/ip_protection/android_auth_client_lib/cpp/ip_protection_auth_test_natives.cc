@@ -44,6 +44,109 @@ const char kMockClassNameForSynchronousError[] =
     "org.chromium.components.ip_protection_auth.mock_service."
     "ConstantResponseService$SynchronousError";
 
+// Perform an IpProtectionAuthClient::CreateConnectedInstanceForTesting call in
+// a RunLoop, quitting the RunLoop when either a client is ready or an error
+// occurs. Returns the resulting base::expected value.
+//
+// A task environment must already be set up.
+//
+// Beware that this only wraps the _creation_ of an IpProtectionAuthClient in a
+// RunLoop and not its destruction! If any tasks need to be run as part of
+// client destruction, such as handling unresolved getInitialData/authAndSign
+// callbacks, this is the responsibility of the caller (or client owner).
+base::expected<
+    std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>,
+    std::string>
+CreateClientBlocking(const std::string_view mockClassName) {
+  base::expected<
+      std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>,
+      std::string>
+      result;
+  base::RunLoop run_loop;
+  ip_protection::android::IpProtectionAuthClient::
+      CreateConnectedInstanceForTesting(
+          kMockPackageName, mockClassName,
+          base::BindPostTask(
+              base::SequencedTaskRunner::GetCurrentDefault(),
+              base::BindLambdaForTesting(
+                  [&run_loop, &result](
+                      base::expected<
+                          std::unique_ptr<ip_protection::android::
+                                              IpProtectionAuthClientInterface>,
+                          std::string> maybe_client) {
+                    result = std::move(maybe_client);
+                    run_loop.Quit();
+                  })));
+  run_loop.Run();
+  return result;
+}
+
+// Same as CreateClientBlocking, but asserts that a client is acquired and
+// returns the unwrapped client from the base::expected.
+//
+// A task environment must already be set up.
+std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
+CreateAndExpectClientBlocking(const std::string_view mockClassName) {
+  base::expected<
+      std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>,
+      std::string>
+      client = CreateClientBlocking(mockClassName);
+  CHECK(client.has_value()) << client.error();
+  return std::move(*client);
+}
+
+// Perform an getInitialData request in a RunLoop, quitting the RunLoop when a
+// response is received and returning the base::expected result.
+//
+// A task environment must already be set up.
+base::expected<privacy::ppn::GetInitialDataResponse,
+               ip_protection::android::AuthRequestError>
+GetInitialDataBlocking(
+    ip_protection::android::IpProtectionAuthClientInterface& client,
+    privacy::ppn::GetInitialDataRequest request) {
+  base::expected<privacy::ppn::GetInitialDataResponse,
+                 ip_protection::android::AuthRequestError>
+      result;
+  base::RunLoop run_loop;
+  client.GetInitialData(
+      std::move(request),
+      base::BindLambdaForTesting(
+          [&run_loop,
+           &result](base::expected<privacy::ppn::GetInitialDataResponse,
+                                   ip_protection::android::AuthRequestError>
+                        response) {
+            result = std::move(response);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+  return result;
+}
+
+// Perform an authAndSign request in a RunLoop, quitting the RunLoop when a
+// response is received and returning the base::expected result.
+base::expected<privacy::ppn::AuthAndSignResponse,
+               ip_protection::android::AuthRequestError>
+AuthAndSignBlocking(
+    ip_protection::android::IpProtectionAuthClientInterface& client,
+    privacy::ppn::AuthAndSignRequest request) {
+  base::expected<privacy::ppn::AuthAndSignResponse,
+                 ip_protection::android::AuthRequestError>
+      result;
+  base::RunLoop run_loop;
+  client.AuthAndSign(
+      std::move(request),
+      base::BindLambdaForTesting(
+          [&run_loop,
+           &result](base::expected<privacy::ppn::AuthAndSignResponse,
+                                   ip_protection::android::AuthRequestError>
+                        response) {
+            result = std::move(response);
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+  return result;
+}
+
 }  // namespace
 
 static void JNI_IpProtectionAuthTestNatives_Initialize(JNIEnv* env) {
@@ -56,397 +159,176 @@ static void JNI_IpProtectionAuthTestNatives_Initialize(JNIEnv* env) {
 static void JNI_IpProtectionAuthTestNatives_CreateConnectedInstanceForTesting(
     JNIEnv* env) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  base::RunLoop run_loop;
 
-  ip_protection::android::IpProtectionAuthClient::
-      CreateConnectedInstanceForTesting(
-          kMockPackageName, kMockClassNameForDefault,
-          base::BindPostTask(
-              base::SequencedTaskRunner::GetCurrentDefault(),
-              base::BindLambdaForTesting(
-                  [&run_loop](
-                      base::expected<
-                          std::unique_ptr<ip_protection::android::
-                                              IpProtectionAuthClientInterface>,
-                          std::string> response) {
-                    CHECK(response.has_value()) << response.error();
-                    run_loop.Quit();
-                  })));
-  run_loop.Run();
+  CreateAndExpectClientBlocking(kMockClassNameForDefault);
 }
 
 static void JNI_IpProtectionAuthTestNatives_TestGetInitialData(JNIEnv* env) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  base::RunLoop run_loop;
+  std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
+      client = CreateAndExpectClientBlocking(kMockClassNameForDefault);
+  privacy::ppn::GetInitialDataRequest get_initial_data_request;
+  get_initial_data_request.set_service_type("webviewipblinding");
 
-  ip_protection::android::IpProtectionAuthClient::
-      CreateConnectedInstanceForTesting(
-          kMockPackageName, kMockClassNameForDefault,
-          base::BindPostTask(
-              base::SequencedTaskRunner::GetCurrentDefault(),
-              base::BindLambdaForTesting(
-                  [&run_loop](
-                      base::expected<
-                          std::unique_ptr<ip_protection::android::
-                                              IpProtectionAuthClientInterface>,
-                          std::string> response) {
-                    CHECK(response.has_value()) << response.error();
-                    privacy::ppn::GetInitialDataRequest request;
-                    request.set_service_type("webviewipblinding");
-                    (*response)->GetInitialData(
-                        request,
-                        base::BindLambdaForTesting(
-                            [&run_loop](
-                                base::expected<
-                                    privacy::ppn::GetInitialDataResponse,
-                                    ip_protection::android::AuthRequestError>
-                                    initial_data_response) {
-                              CHECK(initial_data_response.has_value());
-                              CHECK(initial_data_response->privacy_pass_data()
-                                        .token_key_id() == "test")
-                                  << "expected \"test\" for token_key_id, got: "
-                                  << initial_data_response->privacy_pass_data()
-                                         .token_key_id();
-                              run_loop.Quit();
-                            }));
-                  })));
-  run_loop.Run();
+  base::expected<privacy::ppn::GetInitialDataResponse,
+                 ip_protection::android::AuthRequestError>
+      get_initial_data_response =
+          GetInitialDataBlocking(*client, get_initial_data_request);
+
+  CHECK(get_initial_data_response.has_value());
+  CHECK(get_initial_data_response->privacy_pass_data().token_key_id() == "test")
+      << "expected \"test\" for token_key_id, got: "
+      << get_initial_data_response->privacy_pass_data().token_key_id();
 }
 
 static void JNI_IpProtectionAuthTestNatives_TestAuthAndSign(JNIEnv* env) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  base::RunLoop run_loop;
+  std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
+      client = CreateAndExpectClientBlocking(kMockClassNameForDefault);
+  privacy::ppn::AuthAndSignRequest auth_and_sign_request;
+  auth_and_sign_request.set_oauth_token("test");
 
-  ip_protection::android::IpProtectionAuthClient::
-      CreateConnectedInstanceForTesting(
-          kMockPackageName, kMockClassNameForDefault,
-          base::BindPostTask(
-              base::SequencedTaskRunner::GetCurrentDefault(),
-              base::BindLambdaForTesting(
-                  [&run_loop](
-                      base::expected<
-                          std::unique_ptr<ip_protection::android::
-                                              IpProtectionAuthClientInterface>,
-                          std::string> response) {
-                    CHECK(response.has_value()) << response.error();
-                    privacy::ppn::AuthAndSignRequest request;
-                    request.set_oauth_token("test");
-                    (*response)->AuthAndSign(
-                        request,
-                        base::BindLambdaForTesting(
-                            [&run_loop](
-                                base::expected<
-                                    privacy::ppn::AuthAndSignResponse,
-                                    ip_protection::android::AuthRequestError>
-                                    auth_and_sign_response) {
-                              CHECK(auth_and_sign_response.has_value());
-                              CHECK(auth_and_sign_response->apn_type() ==
-                                    "test")
-                                  << "expected \"test\" for apn_type, got: "
-                                  << auth_and_sign_response->apn_type();
-                              run_loop.Quit();
-                            }));
-                  })));
-  run_loop.Run();
+  base::expected<privacy::ppn::AuthAndSignResponse,
+                 ip_protection::android::AuthRequestError>
+      auth_and_sign_response =
+          AuthAndSignBlocking(*client, auth_and_sign_request);
+
+  CHECK(auth_and_sign_response.has_value());
+  CHECK(auth_and_sign_response->apn_type() == "test")
+      << "expected \"test\" for apn_type, got: "
+      << auth_and_sign_response->apn_type();
 }
 
 static void JNI_IpProtectionAuthTestNatives_TestTransientError(JNIEnv* env) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  base::RunLoop run_loop;
+  std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
+      client = CreateAndExpectClientBlocking(kMockClassNameForTransientError);
 
-  ip_protection::android::IpProtectionAuthClient::
-      CreateConnectedInstanceForTesting(
-          kMockPackageName, kMockClassNameForTransientError,
-          base::BindPostTask(
-              base::SequencedTaskRunner::GetCurrentDefault(),
-              base::BindLambdaForTesting(
-                  [&run_loop](
-                      base::expected<
-                          std::unique_ptr<ip_protection::android::
-                                              IpProtectionAuthClientInterface>,
-                          std::string> response) {
-                    CHECK(response.has_value()) << response.error();
+  base::expected<privacy::ppn::GetInitialDataResponse,
+                 ip_protection::android::AuthRequestError>
+      get_initial_data_response = GetInitialDataBlocking(
+          *client, privacy::ppn::GetInitialDataRequest());
+  base::expected<privacy::ppn::AuthAndSignResponse,
+                 ip_protection::android::AuthRequestError>
+      auth_and_sign_response =
+          AuthAndSignBlocking(*client, privacy::ppn::AuthAndSignRequest());
 
-                    (*response)->GetInitialData(
-                        privacy::ppn::GetInitialDataRequest(),
-                        base::BindLambdaForTesting(
-                            [&run_loop](
-                                base::expected<
-                                    privacy::ppn::GetInitialDataResponse,
-                                    ip_protection::android::AuthRequestError>
-                                    initial_data_response) {
-                              CHECK(!initial_data_response.has_value());
-                              CHECK(initial_data_response.error() ==
-                                    ip_protection::android::AuthRequestError::
-                                        kTransient);
-                              run_loop.Quit();
-                            }));
-
-                    (*response)->AuthAndSign(
-                        privacy::ppn::AuthAndSignRequest(),
-                        base::BindLambdaForTesting(
-                            [&run_loop](
-                                base::expected<
-                                    privacy::ppn::AuthAndSignResponse,
-                                    ip_protection::android::AuthRequestError>
-                                    auth_and_sign_response) {
-                              CHECK(!auth_and_sign_response.has_value());
-                              CHECK(auth_and_sign_response.error() ==
-                                    ip_protection::android::AuthRequestError::
-                                        kTransient);
-                              run_loop.Quit();
-                            }));
-                  })));
-  run_loop.Run();
+  CHECK(!get_initial_data_response.has_value());
+  CHECK(get_initial_data_response.error() ==
+        ip_protection::android::AuthRequestError::kTransient);
+  CHECK(!auth_and_sign_response.has_value());
+  CHECK(auth_and_sign_response.error() ==
+        ip_protection::android::AuthRequestError::kTransient);
 }
 
 static void JNI_IpProtectionAuthTestNatives_TestPersistentError(JNIEnv* env) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  base::RunLoop run_loop;
+  std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
+      client = CreateAndExpectClientBlocking(kMockClassNameForPersistentError);
 
-  ip_protection::android::IpProtectionAuthClient::
-      CreateConnectedInstanceForTesting(
-          kMockPackageName, kMockClassNameForPersistentError,
-          base::BindPostTask(
-              base::SequencedTaskRunner::GetCurrentDefault(),
-              base::BindLambdaForTesting(
-                  [&run_loop](
-                      base::expected<
-                          std::unique_ptr<ip_protection::android::
-                                              IpProtectionAuthClientInterface>,
-                          std::string> response) {
-                    CHECK(response.has_value()) << response.error();
+  base::expected<privacy::ppn::GetInitialDataResponse,
+                 ip_protection::android::AuthRequestError>
+      get_initial_data_response = GetInitialDataBlocking(
+          *client, privacy::ppn::GetInitialDataRequest());
+  base::expected<privacy::ppn::AuthAndSignResponse,
+                 ip_protection::android::AuthRequestError>
+      auth_and_sign_response =
+          AuthAndSignBlocking(*client, privacy::ppn::AuthAndSignRequest());
 
-                    (*response)->GetInitialData(
-                        privacy::ppn::GetInitialDataRequest(),
-                        base::BindLambdaForTesting(
-                            [&run_loop](
-                                base::expected<
-                                    privacy::ppn::GetInitialDataResponse,
-                                    ip_protection::android::AuthRequestError>
-                                    initial_data_response) {
-                              CHECK(!initial_data_response.has_value());
-                              CHECK(initial_data_response.error() ==
-                                    ip_protection::android::AuthRequestError::
-                                        kPersistent);
-                              run_loop.Quit();
-                            }));
-
-                    (*response)->AuthAndSign(
-                        privacy::ppn::AuthAndSignRequest(),
-                        base::BindLambdaForTesting(
-                            [&run_loop](
-                                base::expected<
-                                    privacy::ppn::AuthAndSignResponse,
-                                    ip_protection::android::AuthRequestError>
-                                    auth_and_sign_response) {
-                              CHECK(!auth_and_sign_response.has_value());
-                              CHECK(auth_and_sign_response.error() ==
-                                    ip_protection::android::AuthRequestError::
-                                        kPersistent);
-                              run_loop.Quit();
-                            }));
-                  })));
-  run_loop.Run();
+  CHECK(!get_initial_data_response.has_value());
+  CHECK(get_initial_data_response.error() ==
+        ip_protection::android::AuthRequestError::kPersistent);
+  CHECK(!auth_and_sign_response.has_value());
+  CHECK(auth_and_sign_response.error() ==
+        ip_protection::android::AuthRequestError::kPersistent);
 }
 
 static void JNI_IpProtectionAuthTestNatives_TestIllegalErrorCode(JNIEnv* env) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  base::RunLoop run_loop;
+  std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
+      client = CreateAndExpectClientBlocking(kMockClassNameForIllegalErrorCode);
 
-  ip_protection::android::IpProtectionAuthClient::
-      CreateConnectedInstanceForTesting(
-          kMockPackageName, kMockClassNameForIllegalErrorCode,
-          base::BindPostTask(
-              base::SequencedTaskRunner::GetCurrentDefault(),
-              base::BindLambdaForTesting(
-                  [&run_loop](
-                      base::expected<
-                          std::unique_ptr<ip_protection::android::
-                                              IpProtectionAuthClientInterface>,
-                          std::string> client) {
-                    CHECK(client.has_value()) << client.error();
+  base::expected<privacy::ppn::GetInitialDataResponse,
+                 ip_protection::android::AuthRequestError>
+      get_initial_data_response = GetInitialDataBlocking(
+          *client, privacy::ppn::GetInitialDataRequest());
+  base::expected<privacy::ppn::AuthAndSignResponse,
+                 ip_protection::android::AuthRequestError>
+      auth_and_sign_response =
+          AuthAndSignBlocking(*client, privacy::ppn::AuthAndSignRequest());
 
-                    (*client)->GetInitialData(
-                        privacy::ppn::GetInitialDataRequest(),
-                        base::BindLambdaForTesting(
-                            [&run_loop](
-                                base::expected<
-                                    privacy::ppn::GetInitialDataResponse,
-                                    ip_protection::android::AuthRequestError>
-                                    initial_data_response) {
-                              CHECK(!initial_data_response.has_value());
-                              CHECK(initial_data_response.error() ==
-                                    ip_protection::android::AuthRequestError::
-                                        kOther);
-                              run_loop.Quit();
-                            }));
-
-                    (*client)->AuthAndSign(
-                        privacy::ppn::AuthAndSignRequest(),
-                        base::BindLambdaForTesting(
-                            [&run_loop](
-                                base::expected<
-                                    privacy::ppn::AuthAndSignResponse,
-                                    ip_protection::android::AuthRequestError>
-                                    auth_and_sign_response) {
-                              CHECK(!auth_and_sign_response.has_value());
-                              CHECK(auth_and_sign_response.error() ==
-                                    ip_protection::android::AuthRequestError::
-                                        kOther);
-                              run_loop.Quit();
-                            }));
-                  })));
-  run_loop.Run();
+  CHECK(!get_initial_data_response.has_value());
+  CHECK(get_initial_data_response.error() ==
+        ip_protection::android::AuthRequestError::kOther);
+  CHECK(!auth_and_sign_response.has_value());
+  CHECK(auth_and_sign_response.error() ==
+        ip_protection::android::AuthRequestError::kOther);
 }
 
 static void JNI_IpProtectionAuthTestNatives_TestNullResponse(JNIEnv* env) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  base::RunLoop run_loop;
+  std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
+      client = CreateAndExpectClientBlocking(kMockClassNameForNullResponse);
 
-  ip_protection::android::IpProtectionAuthClient::
-      CreateConnectedInstanceForTesting(
-          kMockPackageName, kMockClassNameForNullResponse,
-          base::BindPostTask(
-              base::SequencedTaskRunner::GetCurrentDefault(),
-              base::BindLambdaForTesting(
-                  [&run_loop](
-                      base::expected<
-                          std::unique_ptr<ip_protection::android::
-                                              IpProtectionAuthClientInterface>,
-                          std::string> client) {
-                    CHECK(client.has_value()) << client.error();
+  base::expected<privacy::ppn::GetInitialDataResponse,
+                 ip_protection::android::AuthRequestError>
+      get_initial_data_response = GetInitialDataBlocking(
+          *client, privacy::ppn::GetInitialDataRequest());
+  base::expected<privacy::ppn::AuthAndSignResponse,
+                 ip_protection::android::AuthRequestError>
+      auth_and_sign_response =
+          AuthAndSignBlocking(*client, privacy::ppn::AuthAndSignRequest());
 
-                    (*client)->GetInitialData(
-                        privacy::ppn::GetInitialDataRequest(),
-                        base::BindLambdaForTesting(
-                            [&run_loop](
-                                base::expected<
-                                    privacy::ppn::GetInitialDataResponse,
-                                    ip_protection::android::AuthRequestError>
-                                    initial_data_response) {
-                              CHECK(!initial_data_response.has_value());
-                              CHECK(initial_data_response.error() ==
-                                    ip_protection::android::AuthRequestError::
-                                        kOther);
-                              run_loop.Quit();
-                            }));
-
-                    (*client)->AuthAndSign(
-                        privacy::ppn::AuthAndSignRequest(),
-                        base::BindLambdaForTesting(
-                            [&run_loop](
-                                base::expected<
-                                    privacy::ppn::AuthAndSignResponse,
-                                    ip_protection::android::AuthRequestError>
-                                    auth_and_sign_response) {
-                              CHECK(!auth_and_sign_response.has_value());
-                              CHECK(auth_and_sign_response.error() ==
-                                    ip_protection::android::AuthRequestError::
-                                        kOther);
-                              run_loop.Quit();
-                            }));
-                  })));
-  run_loop.Run();
+  CHECK(!get_initial_data_response.has_value());
+  CHECK(get_initial_data_response.error() ==
+        ip_protection::android::AuthRequestError::kOther);
+  CHECK(!auth_and_sign_response.has_value());
+  CHECK(auth_and_sign_response.error() ==
+        ip_protection::android::AuthRequestError::kOther);
 }
 
 static void JNI_IpProtectionAuthTestNatives_TestUnparsableResponse(
     JNIEnv* env) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  base::RunLoop run_loop;
+  std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
+      client =
+          CreateAndExpectClientBlocking(kMockClassNameForUnparsableResponse);
 
-  ip_protection::android::IpProtectionAuthClient::
-      CreateConnectedInstanceForTesting(
-          kMockPackageName, kMockClassNameForUnparsableResponse,
-          base::BindPostTask(
-              base::SequencedTaskRunner::GetCurrentDefault(),
-              base::BindLambdaForTesting(
-                  [&run_loop](
-                      base::expected<
-                          std::unique_ptr<ip_protection::android::
-                                              IpProtectionAuthClientInterface>,
-                          std::string> client) {
-                    CHECK(client.has_value()) << client.error();
+  base::expected<privacy::ppn::GetInitialDataResponse,
+                 ip_protection::android::AuthRequestError>
+      get_initial_data_response = GetInitialDataBlocking(
+          *client, privacy::ppn::GetInitialDataRequest());
+  base::expected<privacy::ppn::AuthAndSignResponse,
+                 ip_protection::android::AuthRequestError>
+      auth_and_sign_response =
+          AuthAndSignBlocking(*client, privacy::ppn::AuthAndSignRequest());
 
-                    (*client)->GetInitialData(
-                        privacy::ppn::GetInitialDataRequest(),
-                        base::BindLambdaForTesting(
-                            [&run_loop](
-                                base::expected<
-                                    privacy::ppn::GetInitialDataResponse,
-                                    ip_protection::android::AuthRequestError>
-                                    initial_data_response) {
-                              CHECK(!initial_data_response.has_value());
-                              CHECK(initial_data_response.error() ==
-                                    ip_protection::android::AuthRequestError::
-                                        kOther);
-                              run_loop.Quit();
-                            }));
-
-                    (*client)->AuthAndSign(
-                        privacy::ppn::AuthAndSignRequest(),
-                        base::BindLambdaForTesting(
-                            [&run_loop](
-                                base::expected<
-                                    privacy::ppn::AuthAndSignResponse,
-                                    ip_protection::android::AuthRequestError>
-                                    auth_and_sign_response) {
-                              CHECK(!auth_and_sign_response.has_value());
-                              CHECK(auth_and_sign_response.error() ==
-                                    ip_protection::android::AuthRequestError::
-                                        kOther);
-                              run_loop.Quit();
-                            }));
-                  })));
-  run_loop.Run();
+  CHECK(!get_initial_data_response.has_value());
+  CHECK(get_initial_data_response.error() ==
+        ip_protection::android::AuthRequestError::kOther);
+  CHECK(!auth_and_sign_response.has_value());
+  CHECK(auth_and_sign_response.error() ==
+        ip_protection::android::AuthRequestError::kOther);
 }
 
 static void JNI_IpProtectionAuthTestNatives_TestSynchronousError(JNIEnv* env) {
   base::test::SingleThreadTaskEnvironment task_environment;
-  base::RunLoop run_loop;
+  std::unique_ptr<ip_protection::android::IpProtectionAuthClientInterface>
+      client = CreateAndExpectClientBlocking(kMockClassNameForSynchronousError);
 
-  ip_protection::android::IpProtectionAuthClient::
-      CreateConnectedInstanceForTesting(
-          kMockPackageName, kMockClassNameForSynchronousError,
-          base::BindPostTask(
-              base::SequencedTaskRunner::GetCurrentDefault(),
-              base::BindLambdaForTesting(
-                  [&run_loop](
-                      base::expected<
-                          std::unique_ptr<ip_protection::android::
-                                              IpProtectionAuthClientInterface>,
-                          std::string> client) {
-                    CHECK(client.has_value()) << client.error();
+  base::expected<privacy::ppn::GetInitialDataResponse,
+                 ip_protection::android::AuthRequestError>
+      get_initial_data_response = GetInitialDataBlocking(
+          *client, privacy::ppn::GetInitialDataRequest());
+  base::expected<privacy::ppn::AuthAndSignResponse,
+                 ip_protection::android::AuthRequestError>
+      auth_and_sign_response =
+          AuthAndSignBlocking(*client, privacy::ppn::AuthAndSignRequest());
 
-                    (*client)->GetInitialData(
-                        privacy::ppn::GetInitialDataRequest(),
-                        base::BindLambdaForTesting(
-                            [&run_loop](
-                                base::expected<
-                                    privacy::ppn::GetInitialDataResponse,
-                                    ip_protection::android::AuthRequestError>
-                                    initial_data_response) {
-                              CHECK(!initial_data_response.has_value());
-                              CHECK(initial_data_response.error() ==
-                                    ip_protection::android::AuthRequestError::
-                                        kOther);
-                              run_loop.Quit();
-                            }));
-
-                    (*client)->AuthAndSign(
-                        privacy::ppn::AuthAndSignRequest(),
-                        base::BindLambdaForTesting(
-                            [&run_loop](
-                                base::expected<
-                                    privacy::ppn::AuthAndSignResponse,
-                                    ip_protection::android::AuthRequestError>
-                                    auth_and_sign_response) {
-                              CHECK(!auth_and_sign_response.has_value());
-                              CHECK(auth_and_sign_response.error() ==
-                                    ip_protection::android::AuthRequestError::
-                                        kOther);
-                              run_loop.Quit();
-                            }));
-                  })));
-  run_loop.Run();
+  CHECK(!get_initial_data_response.has_value());
+  CHECK(get_initial_data_response.error() ==
+        ip_protection::android::AuthRequestError::kOther);
+  CHECK(!auth_and_sign_response.has_value());
+  CHECK(auth_and_sign_response.error() ==
+        ip_protection::android::AuthRequestError::kOther);
 }

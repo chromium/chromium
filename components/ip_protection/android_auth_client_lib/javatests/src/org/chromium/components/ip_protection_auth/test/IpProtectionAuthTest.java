@@ -28,29 +28,38 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.components.ip_protection_auth.IpProtectionAuthClient;
 import org.chromium.components.ip_protection_auth.IpProtectionAuthServiceCallback;
 import org.chromium.components.ip_protection_auth.IpProtectionByteArrayCallback;
 
+/**
+ * Tests for IpProtectionAuthClient and associated classes.
+ *
+ * <p>These tests mostly call into native code (ip_protection_auth_test_natives.cc) and interact
+ * with "mock" services hosted in a secondary APK.
+ *
+ * <p>The usage of native test code for Java-hosted tests along with using native functionality like
+ * RunLoop and CHECK has the potential to make any test failures more confusing, including native
+ * crashes rather than Java AssertionErrors and global task state contamination across unrelated
+ * test suites. As such, these tests are batched PER_CLASS to isolate such failures.
+ */
 @MediumTest
 @RunWith(BaseJUnit4ClassRunner.class)
-@Batch(Batch.UNIT_TESTS)
-@DisabledTest(message = "crbug.com/347020821")
+@Batch(Batch.PER_CLASS)
 public final class IpProtectionAuthTest {
     private static final String ACTION = "android.net.http.IpProtectionAuthService";
     private static final String MOCK_PACKAGE_NAME = "org.chromium.components.ip_protection_auth";
 
     private static final String MOCK_CLASS_NAME_FOR_DEFAULT =
-            "org.chromium.components.ip_protection_auth.mock_service.IpProtectionAuthServiceMock";
+            MOCK_PACKAGE_NAME + ".mock_service.IpProtectionAuthServiceMock";
     private static final String MOCK_CLASS_NAME_FOR_NONEXISTANT =
-            "org.chromium.components.ip_protection_auth.mock_service.IntentionallyNonexistantClass";
+            MOCK_PACKAGE_NAME + ".mock_service.IntentionallyNonexistantClass";
     private static final String MOCK_CLASS_NAME_FOR_NULL_BINDING =
-            "org.chromium.components.ip_protection_auth.mock_service.NullBindingService";
+            MOCK_PACKAGE_NAME + ".mock_service.NullBindingService";
     private static final String MOCK_CLASS_NAME_FOR_DISABLED =
-            "org.chromium.components.ip_protection_auth.mock_service.NullBindingService$DisabledService";
+            MOCK_PACKAGE_NAME + ".mock_service.NullBindingService$DisabledService";
     private static final String MOCK_CLASS_NAME_FOR_RESTRICTED =
-            "org.chromium.components.ip_protection_auth.mock_service.NullBindingService$RestrictedService";
+            MOCK_PACKAGE_NAME + ".mock_service.NullBindingService$RestrictedService";
 
     private static final int TIMEOUT_MS = 10000;
 
