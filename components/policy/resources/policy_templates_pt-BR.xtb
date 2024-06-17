@@ -1228,7 +1228,7 @@ Se a política for definida como desativada, o <ph name="PRODUCT_NAME" /> fechar
       Esta política comercial fica desativada por padrão.</translation>
 <translation id="1947848925128084608">Desativar o alto contraste na tela de login e permitir que o usuário o ative temporariamente</translation>
 <translation id="1949584741547056205">Respostas rápidas</translation>
-<translation id="1951288262199783797">Você pode ativar esta política para criar um dicionário de extensões de tipos de arquivo com uma lista de domínios correspondentes que estão isentos dos avisos de download com base na extensão do tipo de arquivo. Isso permite que os administradores corporativos bloqueiem avisos de download com base na extensão de tipo para arquivos associados a um domínio listado. Por exemplo, se a extensão "jnlp" estiver associada ao "site1.com", os usuários não vão receber um aviso ao fazer o download de arquivos "jnlp" do "site1.com", mas vão receber um aviso ao fazer o download de arquivos "jnlp" do "site2.com".
+<translation id="1951288262199783797">Você pode ativar esta política para criar um dicionário de extensões de tipos de arquivo com uma lista de domínios correspondentes que estão isentos dos avisos de download com base na extensão do tipo de arquivo. Isso permite que os administradores corporativos bloqueiem avisos de download com base na extensão de tipo para arquivos associados a um domínio listado. Por exemplo, se a extensão "jnlp" estiver associada ao "site1.com", os usuários não vão receber um aviso ao baixar arquivos "jnlp" do "site1.com", mas vão receber um aviso ao baixar arquivos "jnlp" do "site2.com".
 
       Arquivos com extensões especificadas para domínios identificados por esta política, ainda vão estar sujeitos a avisos de segurança não baseados na extensão do tipo do arquivo, como avisos de download de conteúdo misto e do Navegação segura.
 
@@ -2026,7 +2026,7 @@ seleção padrão.</translation>
 
       Se a política não for definida, os Termos de Serviço não aparecerão.
 
-      A política precisa ser definida para um URL do qual o <ph name="PRODUCT_OS_NAME" /> possa fazer o download dos Termos de Serviço. Os Termos de Serviço precisam ser um texto simples, veiculado como Tipo MIME. Nenhuma marcação é permitida.</translation>
+      A política precisa ser definida para um URL do qual o <ph name="PRODUCT_OS_NAME" /> possa baixar os Termos de Serviço. Os Termos de Serviço precisam ser um texto simples, veiculado como Tipo MIME. Nenhuma marcação é permitida.</translation>
 <translation id="250151283451228612">Se <ph name="DEVICE_POWER_PEAK_SHIFT_ENABLED_POLICY_NAME" /> estiver "Ativada", a configuração de <ph name="DEVICE_POWER_PEAK_SHIFT_BATTERY_THRESHOLD_POLICY_NAME" /> definirá o limite de bateria, em porcentagem, para a economia de energia no período de pico.
 
        Se a política não for definida, a economia de energia no período de pico ficará desativada.</translation>
@@ -3051,7 +3051,7 @@ Quando a política é deixada sem definição, o novo comportamento é usado, as
 
 Se a política for definida como "Desativada", os arquivos baixados não serão enviados para análise pela Navegação segura quando forem de uma fonte confiável.
 
-Essas restrições são aplicadas a downloads acionados em conteúdos de páginas da Web e na opção do menu "Fazer download do link". Essas restrições não se aplicam às opções de salvar ou fazer o download da página atualmente em exibição nem de salvar como PDF nas opções de impressão.
+Essas restrições são aplicadas a downloads acionados em conteúdos de páginas da Web e na opção do menu "Baixar o link". Essas restrições não se aplicam às opções de salvar ou fazer o download da página atualmente em exibição nem de salvar como PDF nas opções de impressão.
 
 No <ph name="MS_WIN_NAME" />, essa política só está disponível em instâncias associadas a um domínio do <ph name="MS_AD_NAME" />, associadas ao <ph name="MS_AAD_NAME" /> ou registradas em <ph name="CHROME_BROWSER_CLOUD_MANAGEMENT_NAME" />.</translation>
 <translation id="3300441638895109781">Atualizar automaticamente o fluxo de autenticação no ChromeOS</translation>
@@ -3283,7 +3283,7 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 <translation id="3513265258454735822">Ativar o salvamento do histórico do navegador</translation>
 <translation id="3513655665999652754">O servidor Quirks fornece arquivos de configuração específicos de hardware, como perfis de exibição ICC para ajustar a calibração do monitor.
 
-      Quando esta política for definida como falsa, o dispositivo não tentará entrar em contato com o servidor Quirks para fazer o download dos arquivos de configuração.
+      Quando esta política for definida como falsa, o dispositivo não tentará entrar em contato com o servidor Quirks para baixar os arquivos de configuração.
 
       Se esta política for definida como verdadeira ou for deixada sem definição, o <ph name="PRODUCT_OS_NAME" /> entrará em contato automaticamente com o servidor Quirks, fará o download dos arquivos de configuração, se eles estiverem disponíveis, e os armazenará no dispositivo.  Esses arquivos podem ser usados, por exemplo, para melhorar a qualidade de exibição de monitores acoplados.</translation>
 <translation id="3515196503924273265">Permite ativar o recurso NewBaseUrlInheritanceBehavior</translation>
@@ -6538,7 +6538,7 @@ política enquanto o navegador estiver em execução.</translation>
 
       4: bloqueia arquivos maliciosos sinalizados pelo servidor do Navegação segura, não bloqueia tipos de arquivo perigosos (recomendado).
 
-      Observação: essas restrições são aplicadas a downloads acionados em conteúdos de páginas da Web e na opção do menu "Fazer download do link". Elas não se aplicam à opção de fazer o download da página atualmente mostrada nem de salvar como PDF nas opções de impressão. Leia mais sobre o Navegação segura (https://developers.google.com/safe-browsing).</translation>
+      Observação: essas restrições são aplicadas a downloads acionados em conteúdos de páginas da Web e na opção do menu "Baixar o link". Elas não se aplicam à opção de fazer o download da página atualmente mostrada nem de salvar como PDF nas opções de impressão. Leia mais sobre o Navegação segura (https://developers.google.com/safe-browsing).</translation>
 <translation id="6115254134376460539">Desativar o recurso</translation>
 <translation id="6118226055960302400">Restaurar o comportamento de permissões.</translation>
 <translation id="6119207979839638596">Essa política foi removida na versão M75 após a remoção da política de versão máxima do TLS do produto <ph name="PRODUCT_NAME" />.
@@ -7401,7 +7401,7 @@ Se ela for definida como falsa, o comportamento antigo será ativado.</translati
 Desativar a política ou deixá-la sem definição faz com que a política de KDC seja ignorada nas plataformas com suporte, e somente <ph name="AUTH_NEGOTIATE_DELEGATE_ALLOWLIST_POLICY_NAME" /> será respeitada.
 
 No <ph name="MS_WIN_NAME" />, a política de KDC sempre é respeitada.</translation>
-<translation id="6658245400435704251">Especifica o número de segundos que um dispositivo pode chegar a atrasar aleatoriamente o download de uma atualização a partir do momento em que a atualização foi lançada no servidor. O dispositivo pode esperar uma parte desse intervalo de tempo em tempo cronológico e o restante contado em número de verificações de atualizações. Em todo caso, a dispersão tem como limite máximo uma quantidade constante de tempo para que o dispositivo nunca fique parado indefinidamente esperando para fazer o download de uma atualização.</translation>
+<translation id="6658245400435704251">Especifica o número de segundos que um dispositivo pode chegar a atrasar aleatoriamente o download de uma atualização a partir do momento em que a atualização foi lançada no servidor. O dispositivo pode esperar uma parte desse intervalo de tempo em tempo cronológico e o restante contado em número de verificações de atualizações. Em todo caso, a dispersão tem como limite máximo uma quantidade constante de tempo para que o dispositivo nunca fique parado indefinidamente esperando para baixar uma atualização.</translation>
 <translation id="6659537776197644458">Não acionar fluxos de autenticação para a sincronização de senhas</translation>
 <translation id="6659877981632400997">O menu de contexto não terá um item de menu para compartilhar imagens no <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="6661178198729301029">Ativar os relatórios de nuvem do perfil gerenciado</translation>
@@ -8167,7 +8167,7 @@ Essas políticas são ignoradas se a Área de trabalho remota do Google Chrome n
       Se a política for definida como <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> (valor 3), por padrão, o usuário receberá um aviso quando a permissão para posicionamento de janelas for solicitada. Se o usuário conceder a permissão, ela vai ampliar a capacidade dos sites de ver informações sobre as telas do dispositivo e usar essas informações para abrir e posicionar janelas ou solicitar a tela cheia em locais específicos.
 
       Se a política for deixada sem definição, a <ph name="ASK_WINDOW_PLACEMENT_POLICY_NAME" /> será aplicada, mas o usuário poderá mudar essa configuração.</translation>
-<translation id="7244600351241637530">Se esta configuração for ativada, os usuários que já ativaram o recurso Seu smartphone vão poder ver e fazer o download de fotos e vídeos do smartphone pelo ChromeOS.
+<translation id="7244600351241637530">Se esta configuração for ativada, os usuários que já ativaram o recurso Seu smartphone vão poder ver e baixar fotos e vídeos do smartphone pelo ChromeOS.
 
       Se a configuração estiver desativada, os usuários não vão ter permissão para usar o recurso. Se a política <ph name="PHONE_HUB_ALLOWED_POLICY_NAME" /> estiver desativada, os usuários também não vão ter permissão para usar o recurso.
 
@@ -8513,7 +8513,7 @@ a leitura em voz alta será ativada.</translation>
       </translation>
 <translation id="7512514325152952954">Os payloads de atualização automática no <ph name="PRODUCT_OS_NAME" /> podem ser baixados via HTTP, em vez de por HTTPS. Isso permite o armazenamento em cache de HTTP transparente dos downloads de HTTP.
 
-Se essa política for definida como verdadeira, o <ph name="PRODUCT_OS_NAME" /> vai tentar fazer o download dos payloads de atualização automática via HTTP. Se a política for definida como falsa ou não for definida, o HTTPS será usado para o download dos payloads de atualização automática.</translation>
+Se essa política for definida como verdadeira, o <ph name="PRODUCT_OS_NAME" /> vai tentar baixar os payloads de atualização automática via HTTP. Se a política for definida como falsa ou não for definida, o HTTPS será usado para o download dos payloads de atualização automática.</translation>
 <translation id="7515953732107149296">Essa política foi removida na versão M53 após a remoção do RC4 do produto <ph name="PRODUCT_NAME" />.
 
       Se a política for deixada sem definição ou for definida como falsa, os pacotes de criptografia RC4 no TLS não vão ser ativados. Caso contrário, ela pode ser definida como verdadeira para manter a compatibilidade com um servidor desatualizado. Essa é uma medida provisória, e o servidor deve ser reconfigurado.</translation>

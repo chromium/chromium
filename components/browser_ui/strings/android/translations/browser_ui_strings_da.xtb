@@ -259,7 +259,7 @@
 <translation id="5317780077021120954">Gem</translation>
 <translation id="5335288049665977812">Tillad, at websites kører JavaScript (anbefales)</translation>
 <translation id="534295439873310000">NFC-enheder</translation>
-<translation id="5344522958567249764">Administrer privatliv ved annoncering</translation>
+<translation id="5344522958567249764">Administrer privatliv vedrørende annoncering</translation>
 <translation id="5389626883706033615">Websites kan ikke bede dig om at bruge oplysninger, de har gemt om dig</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 anden)}one{(+ # anden)}other{(+ # andre)}}</translation>
 <translation id="5403592356182871684">Navne</translation>
@@ -317,7 +317,7 @@
 <translation id="6194967801833346599">{DAYS,plural, =1{I morgen blokerer Chrome cookies igen}one{Cookies blokeres igen om # dag}other{Cookies blokeres igen om # dage}}</translation>
 <translation id="6195163219142236913">Tredjepartscookies er begrænset</translation>
 <translation id="6196640612572343990">Bloker cookies fra tredjeparter</translation>
-<translation id="6205314730813004066">Privatliv ved annoncering</translation>
+<translation id="6205314730813004066">Privatliv vedrørende annoncering</translation>
 <translation id="6207207788774442484">Slet data, og nulstil tilladelser</translation>
 <translation id="6231752747840485235">Vil du afinstallere "<ph name="APP_NAME" />"?</translation>
 <translation id="6262191102408817757">Baseret på din seneste fane</translation>
