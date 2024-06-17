@@ -172,6 +172,7 @@
 <translation id="3261565993776444564">तुमचा ब्राउझर कस्टमाइझ करण्यासाठी नवीन रंग वापरून पहा</translation>
 <translation id="3282568296779691940">Chrome वर साइन इन करा</translation>
 <translation id="3286538390144397061">त्वरित रीस्टार्ट करा</translation>
+<translation id="3292333338048274092">तुम्हाला त्यानंतर Chrome रीस्टार्ट करावे लागले.</translation>
 <translation id="3360895254066713204">Chrome मदतनीस</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome आता पुन्हा लॉंच होईल}=1{Chrome एका सेकंदामध्ये पुन्हा लॉंच होईल}other{Chrome # सेकंदांमध्ये पुन्हा लॉंच होईल}}</translation>
 <translation id="3396977131400919238">स्थापनेदरम्यान एक ऑपरेटिंग सिस्टम‍ एरर आली. कृपया Google Chrome पुन्हा डाउनलोड करा.</translation>
@@ -216,6 +217,7 @@
 <translation id="4035053306113201399">अपडेट लागू करण्यासाठी ChromeOS रीस्टार्ट करणे आवश्यक आहे.</translation>
 <translation id="4050175100176540509">नवीनतम आवृत्तीमध्‍ये महत्त्वाच्या सुरक्षितता सुधारणा आणि नवीन वैशिष्ट्ये उपलब्‍ध आहेत.</translation>
 <translation id="4053720452172726777">Google Chrome कस्टमाइझ करा आणि नियंत्रित करा</translation>
+<translation id="4084404300720192944">तुमची विंडो शेअर करण्यासाठी, सिस्टीम प्राधान्ये यांमध्ये Chrome साठी स्क्रीन रेकॉर्डिंगला अनुमती द्या.</translation>
 <translation id="4106587138345390261">Chrome नवीन वैशिष्‍ट्ये एक्सप्लोर करत आहे, ज्यामुळे साइटना तुमची कमी माहिती वापरून समान ब्राउझिंग अनुभव देता येतो</translation>
 <translation id="4110895483821904099">तुमची नवीन Chrome प्रोफाइल सेट करा</translation>
 <translation id="4111566860456076004">हे एक्स्टेंशन कुठून आले आणि ते सुरक्षित आहे का याची Chrome ला पडताळणी करता आली नाही. ते Chrome वरून काढून टाका, जेणेकरून ते वैयक्तिक माहितीच्या समावेशासह तुम्ही भेट देत असलेल्या साइटवरील तुमचा डेटा आता पाहू आणि बदलू शकणार नाही.</translation>
@@ -353,6 +355,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome बीटा</translation>
 <translation id="6182736845697986886">अपडेट सर्व्हरच्या अंतर्गत एररमुळे इंस्टॉलेशन यशस्वी झाले नाही.</translation>
 <translation id="6200139057479872438">तुम्ही अलीकडे भेट दिलेली नाही. Chrome ने <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> परवानग्या काढून टाकल्या</translation>
+<translation id="621585339844629864">तुमची स्क्रीन शेअर करण्यासाठी, सिस्टीम प्राधान्ये यांमध्ये Chrome साठी स्क्रीन रेकॉर्डिंगला अनुमती द्या.</translation>
 <translation id="6235018212288296708">mDNS रहदारीस अनुमती देण्यासाठी Google Chrome साठी अंतर्गामी नियम.</translation>
 <translation id="624230925347970731">Chrome लवकरच बंद होईल</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>

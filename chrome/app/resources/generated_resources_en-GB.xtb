@@ -1217,7 +1217,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1868617395637139709">Use location for Android apps and services.</translation>
 <translation id="1869433484041798909">Bookmark button</translation>
 <translation id="1871098866036088250">Open in Chrome browser</translation>
-<translation id="1871131409931646355">Full Download History</translation>
+<translation id="1871131409931646355">Full download history</translation>
 <translation id="187145082678092583">Fewer apps</translation>
 <translation id="1871534214638631766">Show related info when you right-click or long press on content</translation>
 <translation id="1871615898038944731">Your <ph name="DEVICE_TYPE" /> is up to date</translation>
@@ -9483,7 +9483,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="803771048473350947">File</translation>
 <translation id="8037801708772278989">Checked just now</translation>
 <translation id="8039151841428107077">{NUM_OF_FILES,plural, =1{Copying 1 file to <ph name="CLOUD_PROVIDER" />}other{Copying {NUM_OF_FILES} files to <ph name="CLOUD_PROVIDER" />}}</translation>
-<translation id="8041089156583427627">Send Feedback</translation>
+<translation id="8041089156583427627">Send feedback</translation>
 <translation id="8041267120753677077">Stream your phone's apps</translation>
 <translation id="8042142357103597104">Text opacity</translation>
 <translation id="8042331986490021244">Your passwords are encrypted on your device before they‘re saved to Google Password Manager</translation>
@@ -9800,7 +9800,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
     <ph name="BEGIN_PARAGRAPH4" />If additional Web &amp; app activity setting is turned on for your child, this data may be saved to their Google Account. Learn more about these settings and how to adjust them at families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Invalid client certificate</translation>
 <translation id="8270320981823560179">Drive</translation>
-<translation id="82706708334564640">Recent Download History</translation>
+<translation id="82706708334564640">Recent download history</translation>
 <translation id="8270946420566049889">You can customise Chrome the way that you want:
       &lt;ul&gt;
         &lt;li&gt;&lt;em&gt;The best of Google&lt;/em&gt;, for those who want it. For example, you can choose Google Search as Chrome's default search engine and use Google Password Manager to get all your passwords on any device. &lt;/li&gt;

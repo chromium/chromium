@@ -121,6 +121,7 @@
 <translation id="1383876407941801731">Որոնում</translation>
 <translation id="1391102559483454063">Միացված է</translation>
 <translation id="1394698770495054737">Լրիվ շաղում</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 օր առաջ}one{# օր առաջ}other{# օր առաջ}}</translation>
 <translation id="1404963891829069586">Առանց շեղումների ռեժիմի ձայներ</translation>
 <translation id="1407069428457324124">Մուգ թեմա</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />։ Մի ամսաթվից մյուսին անցնելու համար օգտագործեք սլաքի ստեղները։</translation>
@@ -211,6 +212,7 @@
 <translation id="174102739345480129">Նշիչն անջատված է։</translation>
 <translation id="1743570585616704562">Չճանաչվեց</translation>
 <translation id="1743927604032653654">Ծալել «<ph name="NOTIFICATION_TITLE" />» ծանուցումը</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{1 ժամվա ընթացքում}=1{1 ժամ առաջ}one{# ժ առաջ}other{# ժ առաջ}}</translation>
 <translation id="1746730358044914197">Ներածման եղանակները կարգավորվում են ձեր ադմինիստրատորի կողմից:</translation>
 <translation id="1747336645387973286">վերջնաժամկետը՝ <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Էկրանի ստեղնաշարը միացված է</translation>
@@ -348,6 +350,7 @@
 <translation id="2359808026110333948">Շարունակել</translation>
 <translation id="2360398059912971776">մարտկոց</translation>
 <translation id="2361210043495191221">Միացնել/անջատել Wi-Fi-ը։ <ph name="STATE" />։</translation>
+<translation id="236574664504281623">Ուղարկվել է <ph name="SESSION_NAME" />-ից</translation>
 <translation id="2367186422933365202">Չհաջողվեց մուտք գործել Chromebook</translation>
 <translation id="2367972762794486313">Ցույց տալ հավելվածները</translation>
 <translation id="2368828502825385061">Տեղորոշել</translation>
@@ -510,6 +513,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Միացնե՞լ խոսափողի օգտագործման թույլտվությունը</translation>
 <translation id="296762781903199866">Չհաջողվեց ներբեռնել <ph name="LANGUAGE" /> լեզվով խոսքի ճանաչման ֆայլերը</translation>
+<translation id="2968761508099987738">Ձեր ընթացիկ տեղադրությունը ներկայումս չի աջակցվում։</translation>
 <translation id="2970920913501714344">Տեղադրել հավելվածներ, ընդլայնումներ և թեմաներ</translation>
 <translation id="2977598380246111477">Հաջորդ համարը</translation>
 <translation id="2985148236010982088">Տեսնել բոլոր հավելվածները</translation>
@@ -986,6 +990,7 @@
 <translation id="468293128311738995">Հավելվածներ ձեր հեռախոսից</translation>
 <translation id="4690510401873698237">Դարակը ներքևում է</translation>
 <translation id="4696813013609194136">Մուտքագրեք ծնողի մուտքի կոդը</translation>
+<translation id="4697357603686181098">Այս հարցով չեմ կարող օգնել։ Փորձեք մեկ այլ հարցում։</translation>
 <translation id="4702647871202761252">Գաղտնիության էկրանն անջատված է</translation>
 <translation id="4706121060329443414">Ավելի ուշ մենք կփորձենք նորից ներբեռնել ֆայլերը։ Իսկ հիմա խոսքի ձայնագրությունը կփոխանցվի Google-ին՝ մշակման համար։</translation>
 <translation id="470644585772471629">Գունաշրջում</translation>
@@ -1902,6 +1907,7 @@
 <translation id="7982878511129296052">Անջատվում է…</translation>
 <translation id="7984197416080286869">Մատնահետքով ապակողպման փորձերը չափից շատ են</translation>
 <translation id="798779949890829624">Այս կարգավորումը կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
+<translation id="7989206653429884947">Հաճախ է բացվում</translation>
 <translation id="799296642788192631">Դուք կարող եք ամրացնել կարևոր ֆայլերը։ Ամրացնելու համար պահեք մկնիկի նշորդը տարրի վրա կամ բացեք «Ֆայլեր» հավելվածը և սեղմեք մկնիկի աջ կոճակը տարրի վրա։</translation>
 <translation id="7994370417837006925">Բազմակի մուտք</translation>
 <translation id="7995804128062002838">Չհաջողվեց լուսանկարել էկրանը</translation>
@@ -2088,6 +2094,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Ժամանակը սպառվել է։ Կեցցե՛ք։ 🎉</translation>
+<translation id="8753368202781196133">Այս լեզուն ներկայումս չի աջակցվում։</translation>
 <translation id="8755498163081687682"><ph name="ORIGIN_NAME" /> կայքին/հավելվածին անհրաժեշտ է, որ հաստատեք ձեր ինքնությունը</translation>
 <translation id="875593634123171288">Ցուցադրել VPN-ի կարգավորումները</translation>
 <translation id="8756799553341497810">Այս դիտակերպից դուրս գալուց հետո կարող եք սկսել հարմարեցնել ձեր հավելվածների դասավորությունը։</translation>

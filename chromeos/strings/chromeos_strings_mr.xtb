@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">पेस्टल पिवळे</translation>
 <translation id="1056898198331236512">चेतावणी</translation>
 <translation id="1059913517121127803">स्कॅनिंग सुरू करता आले नाही</translation>
+<translation id="1061864016440983342">स्थानाशिवाय वापरा</translation>
 <translation id="1062823486781306604"><ph name="COUNT" /> पैकी <ph name="INDEX" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">फायरवॉल डिटेक्ट केली</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">अधिक सेटिंग्ज</translation>
 <translation id="2082932131694554252">कीबोर्डची की असाइन केली आहे</translation>
 <translation id="2085089206770112532">डिस्प्लेचा ब्राइटनेस कमी करा</translation>
+<translation id="2086091080968010660">वेळेवर आधारित बदल हे कदाचित अचूक नसू शकतात. सेटिंग्जमध्ये सिस्टीम स्थान अ‍ॅक्सेस सुरू करा.</translation>
 <translation id="2102231663024125441">मजकूर संपादन</translation>
 <translation id="2105810540595158374">डिव्हाइस हे गेम नियंत्रक आहे.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, आवृत्ती <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">डीफॉल्ट रिस्टोअर करा</translation>
 <translation id="2286454467119466181">साधी</translation>
 <translation id="2287186687001756809">इमेज उपलब्ध नाही. फोटो जोडण्यासाठी, <ph name="LINK" /> वर जा</translation>
+<translation id="2294577623958216786">सद्य शेड्यूल हे <ph name="SUNRISE" />-<ph name="SUNSET" /> वर सेट केले आहे. सूर्यास्त आणि सूर्योदय शेड्यूल आपोआप अपडेट करण्यासाठी, सिस्टीम स्थान अ‍ॅक्सेस सुरू करा.</translation>
 <translation id="2305172810646967500">काळा</translation>
 <translation id="2307344026739914387">सध्याचे कीपेअर वापरा</translation>
 <translation id="2308243864813041101">अपडेट करण्याची प्रक्रिया पुढे सुरू ठेवण्यासाठी, <ph name="DEVICE_NAME" /> ची USB केबल अनप्लग करा</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">कीबोर्ड ब्राइटनेस</translation>
 <translation id="6412715219990689313">बिल्ट-इन कीबोर्ड</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="6419454453018688975">सिस्टीम स्थान अ‍ॅक्सेस सुरू करा</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">कमकुवत (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">खाते सेटिंग्ज मध्ये जा</translation>

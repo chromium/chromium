@@ -531,6 +531,7 @@
 <translation id="371398631992790800">बुकमार्क लपवा</translation>
 <translation id="37207012422556617">ट्रेंडिंग शोध</translation>
 <translation id="3725081662140949903">तुमचा पासवर्ड वापरण्यापासून इतरांना थांबवण्यासाठी, तुमचा पासवर्ड बदलण्याकरिता <ph name="APP" /> ॲप उघडा</translation>
+<translation id="372676576864368480"><ph name="LAST_DIGITS" /> ने संपणारा कार्ड नंबर ऑटोफिल करा</translation>
 <translation id="3738428049780661523"><ph name="DATE" /> रोजी तयार केला आहे</translation>
 <translation id="374357899112510277">डाउनलोड लपवा</translation>
 <translation id="3745190878148784130">मजकुरावर झूम करा हे लपवा</translation>
@@ -1097,6 +1098,7 @@
 <translation id="6476800141292307438">पेजचे <ph name="LANGUAGE" /> मध्ये भाषांतर करत आहे. पर्याय स्क्रीनच्या खाली उपलब्ध आहेत.</translation>
 <translation id="648164694371393720">ऑथेंटिकेशन एरर</translation>
 <translation id="6494931198667773526">संपेल</translation>
+<translation id="6500795388871406244">सुचवलेला पासवर्ड वापरा:</translation>
 <translation id="650279896687777322">अधिक जाणून घ्या…</translation>
 <translation id="6507973708545996744">तुमच्या सर्व डिव्हाइसवर तुमची वाचन सूची मिळवण्यासाठी साइन इन करा.</translation>
 <translation id="6510072653668207258">मला नंतर आठवण करून द्या</translation>
@@ -1309,6 +1311,7 @@
 <translation id="7583004045319035904">तुमचे गुप्त टॅब अनलॉक करण्यासाठी <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> वापरा.</translation>
 <translation id="7598439272585186139">आणखी सुरक्षा मिळवा</translation>
 <translation id="7600965453749440009">कधीही <ph name="LANGUAGE" /> चा भाषांतर करु नका</translation>
+<translation id="7603308509262646847"><ph name="NAME" /> कार्डधारक ऑटोफिल करा</translation>
 <translation id="7603852183842204213">(<ph name="NUMBER_OF_BLOCKED_POPUPS" />) पॉप-अप ब्लॉक केले</translation>
 <translation id="7606639338662398635">टॅब गट</translation>
 <translation id="7607521702806708809">पासवर्ड हटवा</translation>
@@ -1341,6 +1344,7 @@
 <translation id="7749790401023484470">तुम्ही कोणताही मजकूर निवडला नाही.</translation>
 <translation id="7752405526771734448">Lens मधील व्हिज्युअल शोध</translation>
 <translation id="7756478488453921771">मेनू → सेटिंग्ज → पेमेंट पद्धती</translation>
+<translation id="775755486779745798">एक्स्पायरीचा महिना <ph name="MONTH" /> ऑटोफिल करा</translation>
 <translation id="7760127703945531263">गुप्त मोड लॉक करण्याची सुविधा</translation>
 <translation id="7765158879357617694">हलवा</translation>
 <translation id="7772032839648071052">सांकेतिक पासफ्रेझ निश्चित करा</translation>
@@ -1517,6 +1521,7 @@
 <translation id="8556590991644167667">{count,plural, =1{तुम्ही {count} चेतावणी डिसमिस केली आहे}other{तुम्ही {count} चेतावण्या डिसमिस केल्या आहेत}}</translation>
 <translation id="8560253818350321773">वारंवार वापरले जाणारे आयटम सर्वप्रथम दाखवा.</translation>
 <translation id="8569721750632860947">तुम्हाला तुमच्या वाचन सूचीमध्ये कोणती URL जोडायची आहे?</translation>
+<translation id="8577056989960190117">एक्स्पायरीचे वर्ष <ph name="YEAR" /> ऑटोफिल करा</translation>
 <translation id="8588404856427128947">बंद करा</translation>
 <translation id="8591976964826315682">तृतीय पक्ष कुकी गुप्त मोडमध्ये ब्लॉक करा</translation>
 <translation id="8593565399399144771">तुम्ही इथे नवीन टॅब उघडू शकता.</translation>
