@@ -537,7 +537,7 @@ class OutputDictionaryProperty extends OutputProperty {
 class OutputScoringSignalsProperty extends OutputDictionaryProperty {
   constructor(value: Signals) {
     super(Object.entries(value)
-              .filter(([, value]) => value)
+              .filter(([, value]) => value !== null)
               .map(([key, value]) => ({
                      key,
                      value,
