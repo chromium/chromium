@@ -330647,7 +330647,7 @@
       []
      ],
      "first-letter-hi-001-ref.html": [
-      "d0decf8bf41d4516895f77ecf3462231d063f09e",
+      "0eaae755eb91fbb3983ff2caf9bbe4ac4f7bc9e1",
       []
      ],
      "first-letter-hi-002-ref.html": [
@@ -347464,6 +347464,10 @@
       "matchMedia.js": [
        "f8947e0472f489ca1a98a9e231b17e7d8ce6585e",
        []
+      ],
+      "simultaneousScrollIntoViews.js": [
+       "f3d02d2598d2624fc602e1a49b6afcbbb24017ed",
+       []
       ]
      },
      "screen-detached-frame-expected.txt": [
@@ -347494,8 +347498,8 @@
       "c8a783980f8a36216f282f5873b9e161286ab3ac",
       []
      ],
-     "smooth-scroll-nonstop-expected.txt": [
-      "7cf4f26a2da860b1713cc943d8637368d0bda72e",
+     "smooth-scrollIntoView-with-smooth-fragment-scroll-iframe.html": [
+      "26dbdd2053ae62efcb7710eecc8dc270119ffe00",
       []
      ],
      "subpixel-sizes-and-offsets.tentative-expected.txt": [
@@ -400274,7 +400278,7 @@
        []
       ],
       "fixtures_bidi.py": [
-       "a9cefd004b14f622fcec8cca8cb2315d138698b9",
+       "dd99e800cc08ee36b9de59d1442722e8b51c341c",
        []
       ],
       "fixtures_http.py": [
@@ -480615,6 +480619,20 @@
        {}
       ]
      ],
+     "scrollIntoView-multiple-nested.html": [
+      "630cd21b6137c2150bb6a3363c4654b885f5e20a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "scrollIntoView-multiple.html": [
+      "e6ddd1818f2ab861017c25b112725b448c2b1c09",
+      [
+       null,
+       {}
+      ]
+     ],
      "scrollIntoView-scrollMargin.html": [
       "930702aa8792506df50120feaca86d3f76bc1a02",
       [
@@ -480665,7 +480683,7 @@
       ]
      ],
      "scrollIntoView-smooth.html": [
-      "ddfa31076c2bff7711ed493dbaec0943fd03ff87",
+      "324e51d7388a04fdc3b53e26542284e4aa6a6792",
       [
        null,
        {}
@@ -480774,6 +480792,22 @@
       [
        null,
        {}
+      ]
+     ],
+     "smooth-scrollIntoView-with-smooth-fragment-scroll.html": [
+      "72ecdf15e5511532944aa24d05c84f37ce04a6ce",
+      [
+       null,
+       {}
+      ]
+     ],
+     "smooth-scrollIntoView-with-unrelated-gesture-scroll.html": [
+      "f42fcb298570ccc6d56d63657982cabeb874b559",
+      [
+       null,
+       {
+        "testdriver": true
+       }
       ]
      ],
      "subpixel-sizes-and-offsets.tentative.html": [
@@ -486483,7 +486517,7 @@
        ]
       ],
       "scrollend-event-fired-for-scrollIntoView.html": [
-       "8782b1dfee623741dd2830d538684ecffe767f18",
+       "40aa77f4764b6c4301b8aba7221e1e42e768505d",
        [
         null,
         {

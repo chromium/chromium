@@ -149,7 +149,7 @@ def wait_for_future_safe(configuration):
                 asyncio.shield(future),
                 timeout=timeout * configuration["timeout_multiplier"],
             )
-        except asyncio.exceptions.TimeoutError:
+        except asyncio.TimeoutError:
             raise TimeoutException("Future did not resolve within the given timeout")
 
     return wait_for_future_safe
