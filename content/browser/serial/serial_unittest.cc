@@ -30,6 +30,7 @@ namespace content {
 
 namespace {
 
+using ::base::test::InvokeFuture;
 using ::base::test::TestFuture;
 using ::testing::_;
 using ::testing::Invoke;
@@ -386,9 +387,7 @@ TEST_F(SerialTest, PortConnectedState) {
   // Connect the port.
   TestFuture<blink::mojom::SerialPortInfoPtr> connect_future;
   EXPECT_CALL(client, OnPortConnectedStateChanged)
-      .WillOnce([&connect_future](blink::mojom::SerialPortInfoPtr port) {
-        connect_future.SetValue(std::move(port));
-      });
+      .WillOnce(InvokeFuture(connect_future));
   port->connected = true;
   observer()->OnPortConnectedStateChanged(*port);
   EXPECT_EQ(connect_future.Get()->token, port->token);
@@ -397,9 +396,7 @@ TEST_F(SerialTest, PortConnectedState) {
   // Disconnect the port.
   TestFuture<blink::mojom::SerialPortInfoPtr> disconnect_future;
   EXPECT_CALL(client, OnPortConnectedStateChanged)
-      .WillOnce([&disconnect_future](blink::mojom::SerialPortInfoPtr port) {
-        disconnect_future.SetValue(std::move(port));
-      });
+      .WillOnce(InvokeFuture(disconnect_future));
   port->connected = false;
   observer()->OnPortConnectedStateChanged(*port);
   EXPECT_EQ(disconnect_future.Get()->token, port->token);

@@ -250,10 +250,7 @@ TEST_F(BluetoothSerialDeviceEnumeratorTest, PortConnectedState) {
 
   // Add the device. The observer is notified that a new port was added.
   TestFuture<const mojom::SerialPortInfo&> port_future;
-  EXPECT_CALL(observer, OnPortAdded)
-      .WillOnce([&port_future](const mojom::SerialPortInfo& port) {
-        port_future.SetValue(port);
-      });
+  EXPECT_CALL(observer, OnPortAdded).WillOnce(InvokeFuture(port_future));
   EXPECT_CALL(observer, OnPortConnectedStateChanged).Times(0);
   enumerator.DeviceAddedForTesting(mock_adapter.get(), mock_device.get());
   EXPECT_TRUE(port_future.Get().connected);
@@ -261,9 +258,7 @@ TEST_F(BluetoothSerialDeviceEnumeratorTest, PortConnectedState) {
   // Disconnect the Bluetooth device and wait for the observer to be notified.
   TestFuture<const mojom::SerialPortInfo&> disconnect_future;
   EXPECT_CALL(observer, OnPortConnectedStateChanged)
-      .WillOnce([&disconnect_future](const mojom::SerialPortInfo& port) {
-        disconnect_future.SetValue(port);
-      });
+      .WillOnce(InvokeFuture(disconnect_future));
   mock_device->SetConnected(false);
   enumerator.DeviceChangedForTesting(mock_adapter.get(), mock_device.get());
   EXPECT_EQ(disconnect_future.Get().token, port_future.Get().token);
@@ -272,9 +267,7 @@ TEST_F(BluetoothSerialDeviceEnumeratorTest, PortConnectedState) {
   // Reconnect the Bluetooth device and wait for the observer to be notified.
   TestFuture<const mojom::SerialPortInfo&> reconnect_future;
   EXPECT_CALL(observer, OnPortConnectedStateChanged)
-      .WillOnce([&reconnect_future](const mojom::SerialPortInfo& port) {
-        reconnect_future.SetValue(port);
-      });
+      .WillOnce(InvokeFuture(reconnect_future));
   mock_device->SetConnected(true);
   enumerator.DeviceChangedForTesting(mock_adapter.get(), mock_device.get());
   EXPECT_EQ(reconnect_future.Get().token, port_future.Get().token);

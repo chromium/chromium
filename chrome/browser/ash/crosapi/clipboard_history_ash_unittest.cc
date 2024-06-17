@@ -28,6 +28,7 @@ namespace crosapi {
 
 namespace {
 
+using ::base::test::InvokeFuture;
 using ::testing::ElementsAre;
 
 // Matchers --------------------------------------------------------------------
@@ -106,9 +107,7 @@ class ClipboardHistoryAshWithClientTest : public ash::AshTestBase {
         std::vector<mojom::ClipboardHistoryItemDescriptorPtr>>
         future;
     EXPECT_CALL(mock_client_, SetClipboardHistoryItemDescriptors)
-        .WillOnce([&future](auto descriptors) {
-          future.SetValue(std::move(descriptors));
-        });
+        .WillOnce(InvokeFuture(future));
 
     return future.Take();
   }

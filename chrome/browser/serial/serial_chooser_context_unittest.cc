@@ -43,6 +43,7 @@
 
 namespace {
 
+using ::base::test::InvokeFuture;
 using ::base::test::ParseJson;
 using ::base::test::TestFuture;
 using ::content_settings::SettingSource;
@@ -784,9 +785,7 @@ TEST_F(SerialChooserContextTest, BluetoothPortConnectedState) {
   // is notified that the port is now disconnected.
   TestFuture<const device::mojom::SerialPortInfo&> port_future;
   EXPECT_CALL(port_observer(), OnPortConnectedStateChanged)
-      .WillOnce([&port_future](const device::mojom::SerialPortInfo& port) {
-        port_future.SetValue(port);
-      });
+      .WillOnce(InvokeFuture(port_future));
   auto disconnected_port = port.Clone();
   disconnected_port->connected = false;
   context()->OnPortConnectedStateChanged(std::move(disconnected_port));
