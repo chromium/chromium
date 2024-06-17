@@ -21,7 +21,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {castExists} from '../assert_extras.js';
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {isRevampWayfindingEnabled} from '../common/load_time_booleans.js';
-import {RouteObserverMixin} from '../common/route_observer_mixin.js';
+import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
 import {Route, Router, routes} from '../router.js';
 
@@ -37,7 +37,7 @@ export interface SettingsAndroidAppsSubpageElement {
 const GOOGLE_PLAY_STORE_URL = 'https://play.google.com/store/';
 
 const SettingsAndroidAppsSubpageElementBase =
-    DeepLinkingMixin(RouteObserverMixin(PrefsMixin(I18nMixin(PolymerElement))));
+    DeepLinkingMixin(RouteOriginMixin(PrefsMixin(I18nMixin(PolymerElement))));
 
 export class SettingsAndroidAppsSubpageElement extends
     SettingsAndroidAppsSubpageElementBase {
@@ -100,9 +100,26 @@ export class SettingsAndroidAppsSubpageElement extends
   private playStoreEnabled_: boolean;
   private isRevampWayfindingEnabled_: boolean;
 
-  override currentRouteChanged(route: Route): void {
+  constructor() {
+    super();
+
+    /** RouteOriginMixin override */
+    this.route = routes.ANDROID_APPS_DETAILS;
+  }
+
+  override ready(): void {
+    super.ready();
+
+    this.addFocusConfig(
+        routes.ANDROID_APPS_DETAILS_ARC_VM_SHARED_USB_DEVICES,
+        '#manageArcvmShareUsbDevices');
+  }
+
+  override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
+    super.currentRouteChanged(newRoute, oldRoute);
+
     // Does not apply to this page.
-    if (route !== routes.ANDROID_APPS_DETAILS) {
+    if (newRoute !== this.route) {
       return;
     }
 

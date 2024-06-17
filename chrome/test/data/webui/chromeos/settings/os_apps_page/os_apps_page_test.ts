@@ -976,15 +976,20 @@ suite('AppsPageTests', () => {
     setup(() => {
       preliminarySetupForAndroidAppsSubpage(/*loadTimeDataOverrides=*/ null);
 
-      subpage = document.createElement('settings-android-apps-subpage');
-      document.body.appendChild(subpage);
-
       // Because we can't simulate the loadTimeData value androidAppsVisible,
-      // this route doesn't exist for tests. Add it in for testing.
+      // these route doesn't exist for tests. Add them in for testing.
       if (!routes.ANDROID_APPS_DETAILS) {
         routes.ANDROID_APPS_DETAILS = routes.APPS.createChild(
             '/' + routesMojom.GOOGLE_PLAY_STORE_SUBPAGE_PATH);
       }
+      if (!routes.ANDROID_APPS_DETAILS_ARC_VM_SHARED_USB_DEVICES) {
+        routes.ANDROID_APPS_DETAILS_ARC_VM_SHARED_USB_DEVICES =
+            routes.ANDROID_APPS_DETAILS.createChild(
+                '/' + routesMojom.ARC_VM_USB_PREFERENCES_SUBPAGE_PATH);
+      }
+
+      subpage = document.createElement('settings-android-apps-subpage');
+      document.body.appendChild(subpage);
 
       subpage.prefs = {arc: {enabled: {value: true}}};
       subpage.androidAppsInfo = {
@@ -1145,6 +1150,31 @@ suite('AppsPageTests', () => {
       flush();
       assertTrue(isVisible(
           subpage.shadowRoot!.querySelector('#manageArcvmShareUsbDevices')));
+    });
+
+    test('ManageUsbDevice returning navigation sets focus', async () => {
+      subpage.isArcVmManageUsbAvailable = true;
+      Router.getInstance().navigateTo(routes.ANDROID_APPS_DETAILS);
+
+      const subpageLink = subpage.shadowRoot!.querySelector<HTMLButtonElement>(
+          '#manageArcvmShareUsbDevices');
+      assertTrue(!!subpageLink);
+      assertTrue(isVisible(subpageLink));
+
+      subpageLink.click();
+      assertEquals(
+          routes.ANDROID_APPS_DETAILS_ARC_VM_SHARED_USB_DEVICES,
+          Router.getInstance().currentRoute);
+
+      // Navigate back
+      const popStateEventPromise = eventToPromise('popstate', window);
+      Router.getInstance().navigateToPreviousRoute();
+      await popStateEventPromise;
+      await waitAfterNextRender(subpage);
+
+      assertEquals(
+          subpageLink, subpage.shadowRoot!.activeElement,
+          `#manageArcvmShareUsbDevices should be focused.`);
     });
 
     if (isRevampWayfindingEnabled) {
