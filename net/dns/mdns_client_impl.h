@@ -17,6 +17,7 @@
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "net/base/io_buffer.h"
@@ -131,7 +132,7 @@ class NET_EXPORT_PRIVATE MDnsClientImpl : public MDnsClient {
   // whenever the number of listeners reaches zero. The deletion happens
   // asychronously, so destroying the last listener does not immediately
   // invalidate the core.
-  class Core : public base::SupportsWeakPtr<Core>, MDnsConnection::Delegate {
+  class Core final : public MDnsConnection::Delegate {
    public:
     Core(base::Clock* clock, base::OneShotTimer* timer);
 
@@ -210,6 +211,7 @@ class NET_EXPORT_PRIVATE MDnsClientImpl : public MDnsClient {
     base::Time scheduled_cleanup_;
 
     std::unique_ptr<MDnsConnection> connection_;
+    base::WeakPtrFactory<Core> weak_ptr_factory_{this};
   };
 
   MDnsClientImpl();
@@ -248,8 +250,7 @@ class NET_EXPORT_PRIVATE MDnsClientImpl : public MDnsClient {
   std::unique_ptr<Core> core_;
 };
 
-class MDnsListenerImpl : public MDnsListener,
-                         public base::SupportsWeakPtr<MDnsListenerImpl> {
+class MDnsListenerImpl final : public MDnsListener {
  public:
   MDnsListenerImpl(uint16_t rrtype,
                    const std::string& name,
@@ -297,11 +298,11 @@ class MDnsListenerImpl : public MDnsListener,
   bool active_refresh_ = false;
 
   base::CancelableRepeatingClosure next_refresh_;
+  base::WeakPtrFactory<MDnsListenerImpl> weak_ptr_factory_{this};
 };
 
-class MDnsTransactionImpl : public base::SupportsWeakPtr<MDnsTransactionImpl>,
-                            public MDnsTransaction,
-                            public MDnsListener::Delegate {
+class MDnsTransactionImpl final : public MDnsTransaction,
+                                  public MDnsListener::Delegate {
  public:
   MDnsTransactionImpl(uint16_t rrtype,
                       const std::string& name,
@@ -362,6 +363,7 @@ class MDnsTransactionImpl : public base::SupportsWeakPtr<MDnsTransactionImpl>,
 
   bool started_ = false;
   int flags_;
+  base::WeakPtrFactory<MDnsTransactionImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace net

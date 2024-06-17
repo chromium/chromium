@@ -40,8 +40,7 @@ class DnsResponse;
 // a DNS stub resolver. One DnsTransaction is created for each resolution
 // needed, which for AF_UNSPEC resolutions includes both A and AAAA. The
 // transactions are scheduled separately and started separately.
-class NET_EXPORT_PRIVATE HostResolverDnsTask
-    : public base::SupportsWeakPtr<HostResolverDnsTask> {
+class NET_EXPORT_PRIVATE HostResolverDnsTask final {
  public:
   using Results = std::set<std::unique_ptr<HostResolverInternalResult>>;
 
@@ -113,6 +112,10 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask
   bool secure() const { return secure_; }
 
   void StartNextTransaction();
+
+  base::WeakPtr<HostResolverDnsTask> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   enum class TransactionErrorBehavior {
@@ -258,6 +261,8 @@ class NET_EXPORT_PRIVATE HostResolverDnsTask
   bool fallback_available_;
 
   const HostResolver::HttpsSvcbOptions https_svcb_options_;
+
+  base::WeakPtrFactory<HostResolverDnsTask> weak_ptr_factory_{this};
 };
 
 }  // namespace net

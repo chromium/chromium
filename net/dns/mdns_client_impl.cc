@@ -423,7 +423,7 @@ void MDnsClientImpl::Core::RemoveListener(MDnsListenerImpl* listener) {
     // happens while iterating over the observer list.
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(&MDnsClientImpl::Core::CleanupObserverList,
-                                  AsWeakPtr(), key));
+                                  weak_ptr_factory_.GetWeakPtr(), key));
   }
 }
 
@@ -628,8 +628,8 @@ void MDnsListenerImpl::ScheduleNextRefresh() {
     return;
   }
 
-  next_refresh_.Reset(
-      base::BindRepeating(&MDnsListenerImpl::DoRefresh, AsWeakPtr()));
+  next_refresh_.Reset(base::BindRepeating(&MDnsListenerImpl::DoRefresh,
+                                          weak_ptr_factory_.GetWeakPtr()));
 
   // Schedule refreshes at both 85% and 95% of the original TTL. These will both
   // be canceled and rescheduled if the record's TTL is updated due to a
@@ -680,7 +680,7 @@ bool MDnsTransactionImpl::Start() {
   DCHECK(!started_);
   started_ = true;
 
-  base::WeakPtr<MDnsTransactionImpl> weak_this = AsWeakPtr();
+  base::WeakPtr<MDnsTransactionImpl> weak_this = weak_ptr_factory_.GetWeakPtr();
   if (flags_ & MDnsTransaction::QUERY_CACHE) {
     ServeRecordsFromCache();
 
@@ -754,7 +754,7 @@ void MDnsTransactionImpl::SignalTransactionOver() {
 
 void MDnsTransactionImpl::ServeRecordsFromCache() {
   std::vector<const RecordParsed*> records;
-  base::WeakPtr<MDnsTransactionImpl> weak_this = AsWeakPtr();
+  base::WeakPtr<MDnsTransactionImpl> weak_this = weak_ptr_factory_.GetWeakPtr();
 
   if (client_->core()) {
     client_->core()->QueryCache(rrtype_, name_, &records);
@@ -788,8 +788,8 @@ bool MDnsTransactionImpl::QueryAndListen() {
   if (!client_->core()->SendQuery(rrtype_, name_))
     return false;
 
-  timeout_.Reset(
-      base::BindOnce(&MDnsTransactionImpl::SignalTransactionOver, AsWeakPtr()));
+  timeout_.Reset(base::BindOnce(&MDnsTransactionImpl::SignalTransactionOver,
+                                weak_ptr_factory_.GetWeakPtr()));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, timeout_.callback(), kTransactionTimeout);
 
