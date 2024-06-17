@@ -48,6 +48,10 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
+
 namespace content {
 
 RenderWidgetHostViewBase::RenderWidgetHostViewBase(RenderWidgetHost* host)
@@ -560,6 +564,32 @@ void RenderWidgetHostViewBase::UpdateScreenInfo() {
              << new_screen_infos.current().device_scale_factor
              << " for capture.";
   }
+
+#if BUILDFLAG(IS_OZONE)
+  // There are platforms where no global screen coordinates are available for
+  // client applications, and scaling is done in a per-window basis (rather than
+  // per-display) and controlled by the display server. In such cases, the
+  // ScreenInfo Web API is mostly pointless. To avoid distorted graphics in web
+  // contents, override the display scale with the preferred window scale here.
+  // TODO(crbug.com/336007385): Consolidate screen representation and a less
+  // hacky scale handling in platforms that support per-window scaling.
+  if (ui::OzonePlatform::GetInstance()
+          ->GetPlatformRuntimeProperties()
+          .supports_per_window_scaling) {
+    const float window_scale =
+        display::Screen::GetScreen()
+            ->GetPreferredScaleFactorForView(GetNativeView())
+            .value_or(1.0f);
+    auto& screen = new_screen_infos.mutable_current();
+    const float old = screen.device_scale_factor;
+    if (window_scale != old) {
+      VLOG(1) << __func__ << ": Overriding scale for screen '" << screen.label
+              << "' from " << old << " with windows scale " << window_scale;
+      screen.device_scale_factor = window_scale;
+      force_sync_visual_properties = true;
+    }
+  }
+#endif  // BUILDFLAG(IS_OZONE)
 
   if (screen_infos_ == new_screen_infos && !force_sync_visual_properties)
     return;
