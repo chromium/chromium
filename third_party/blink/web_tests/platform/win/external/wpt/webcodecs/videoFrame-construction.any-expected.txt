@@ -1,5 +1,12 @@
 This is a testharness.js-based test.
+Found 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] Test we can construct a VideoFrame from a <video>.
   assert_equals: codedWidth expected 320 but got 384
+[FAIL] Test we can construct a I420AP12 VideoFrame
+  Failed to construct 'VideoFrame': Failed to read the 'format' property from 'VideoFrameBufferInit': The provided value 'I420AP12' is not a valid enum value of type VideoPixelFormat.
+[FAIL] Test we can construct a I422AP12 VideoFrame
+  Failed to construct 'VideoFrame': Failed to read the 'format' property from 'VideoFrameBufferInit': The provided value 'I422AP12' is not a valid enum value of type VideoPixelFormat.
+[FAIL] Test we can construct a I444AP12 VideoFrame
+  Failed to construct 'VideoFrame': Failed to read the 'format' property from 'VideoFrameBufferInit': The provided value 'I444AP12' is not a valid enum value of type VideoPixelFormat.
 Harness: the test ran to completion.
 
