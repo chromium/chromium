@@ -485,8 +485,7 @@ TEST_F(SandboxWinTest, GeneratedPolicyTest) {
   // PreSpawn should get called, but not modifying the policy for this test.
   EXPECT_CALL(test_renderer_delegate, PreSpawnTarget(_)).WillOnce(Return(true));
   ResultCode result = SandboxWin::GeneratePolicyForSandboxedProcess(
-      cmd_line, switches::kRendererProcess, handles_to_inherit,
-      &test_renderer_delegate, policy.get());
+      cmd_line, handles_to_inherit, &test_renderer_delegate, policy.get());
   ASSERT_EQ(ResultCode::SBOX_ALL_OK, result);
   // Check some default values come back. No need to check the exact policy in
   // detail, but just that GeneratePolicyForSandboxedProcess generated some kind
@@ -514,13 +513,11 @@ TEST_F(SandboxWinTest, GeneratedPolicyTestMultipleCalls) {
       .Times(2)
       .WillRepeatedly(Return(true));
   ResultCode result = SandboxWin::GeneratePolicyForSandboxedProcess(
-      cmd_line, switches::kRendererProcess, handles_to_inherit,
-      &test_renderer_delegate, policy.get());
+      cmd_line, handles_to_inherit, &test_renderer_delegate, policy.get());
   ASSERT_EQ(ResultCode::SBOX_ALL_OK, result);
   BrokerServicesBase::FreezeTargetConfigForTesting(policy->GetConfig());
   result = SandboxWin::GeneratePolicyForSandboxedProcess(
-      cmd_line, switches::kRendererProcess, handles_to_inherit,
-      &test_renderer_delegate, policy.get());
+      cmd_line, handles_to_inherit, &test_renderer_delegate, policy.get());
   ASSERT_EQ(ResultCode::SBOX_ALL_OK, result);
 }
 
@@ -537,8 +534,7 @@ TEST_F(SandboxWinTest, GeneratedPolicyTestNoSandbox) {
   EXPECT_CALL(test_unsandboxed_delegate, PreSpawnTarget(_)).Times(0);
 
   ResultCode result = SandboxWin::GeneratePolicyForSandboxedProcess(
-      cmd_line, switches::kRendererProcess, handles_to_inherit,
-      &test_unsandboxed_delegate, policy.get());
+      cmd_line, handles_to_inherit, &test_unsandboxed_delegate, policy.get());
   ASSERT_EQ(ResultCode::SBOX_ERROR_UNSANDBOXED_PROCESS, result);
 }
 

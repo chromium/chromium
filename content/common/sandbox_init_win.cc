@@ -45,7 +45,7 @@ sandbox::ResultCode StartSandboxedProcess(
   }
 
   return sandbox::policy::SandboxWin::StartSandboxedProcess(
-      full_command_line, type_str, handles_to_inherit, delegate, process);
+      full_command_line, handles_to_inherit, delegate, process);
 }
 
 }  // namespace content

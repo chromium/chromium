@@ -51,8 +51,7 @@ TEST_P(RendererFeatureSandboxWinTest, RendererGeneratedPolicyTest) {
   // PreSpawn
   ::sandbox::ResultCode result =
       ::sandbox::policy::SandboxWin::GeneratePolicyForSandboxedProcess(
-          cmd_line, ::sandbox::policy::switches::kRendererProcess,
-          handles_to_inherit, &test_renderer_delegate, policy.get());
+          cmd_line, handles_to_inherit, &test_renderer_delegate, policy.get());
   ASSERT_EQ(::sandbox::ResultCode::SBOX_ALL_OK, result);
 
   ValidateSecurityLevels(policy->GetConfig());

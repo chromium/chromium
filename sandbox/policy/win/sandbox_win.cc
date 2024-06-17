@@ -561,7 +561,6 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
 }
 
 ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
-                                             const std::string& process_type,
                                              SandboxDelegate* delegate,
                                              TargetConfig* config) {
   DCHECK(!config->IsConfigured());
@@ -611,7 +610,7 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
   if (result != SBOX_ALL_OK)
     return result;
 
-  if (process_type == switches::kRendererProcess) {
+  if (sandbox_type == Sandbox::kRenderer) {
     // TODO(crbug.com/40088338) Remove if we can reliably not load
     // cryptbase.dll.
     config->AddKernelObjectToClose(HandleToClose::kKsecDD);
@@ -632,7 +631,7 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
   if (result != SBOX_ALL_OK)
     return result;
 
-  if (process_type == switches::kGpuProcess) {
+  if (sandbox_type == Sandbox::kGpu) {
     config->SetLockdownDefaultDacl();
     config->AddRestrictingRandomSid();
   }
@@ -928,7 +927,6 @@ bool SandboxWin::InitTargetServices(TargetServices* target_services) {
 // static
 ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
     const base::CommandLine& cmd_line,
-    const std::string& process_type,
     const base::HandlesToInheritVector& handles_to_inherit,
     SandboxDelegate* delegate,
     TargetPolicy* policy) {
@@ -947,8 +945,8 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
     policy->AddHandleToShare(handle);
 
   if (!policy->GetConfig()->IsConfigured()) {
-    ResultCode result = GenerateConfigForSandboxedProcess(
-        cmd_line, process_type, delegate, policy->GetConfig());
+    ResultCode result = GenerateConfigForSandboxedProcess(cmd_line, delegate,
+                                                          policy->GetConfig());
     if (result != SBOX_ALL_OK)
       return result;
   }
@@ -969,7 +967,6 @@ ResultCode SandboxWin::GeneratePolicyForSandboxedProcess(
 // static
 ResultCode SandboxWin::StartSandboxedProcess(
     const base::CommandLine& cmd_line,
-    const std::string& process_type,
     const base::HandlesToInheritVector& handles_to_inherit,
     SandboxDelegate* delegate,
     base::Process* process) {
@@ -986,7 +983,7 @@ ResultCode SandboxWin::StartSandboxedProcess(
   timer.OnPolicyCreated();
 
   ResultCode result = GeneratePolicyForSandboxedProcess(
-      cmd_line, process_type, handles_to_inherit, delegate, policy.get());
+      cmd_line, handles_to_inherit, delegate, policy.get());
   if (SBOX_ALL_OK != result)
     return result;
   timer.OnPolicyGenerated();
