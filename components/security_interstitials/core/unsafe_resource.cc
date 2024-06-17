@@ -24,9 +24,7 @@ UnsafeResource::UrlCheckResult::UrlCheckResult(
 }
 
 UnsafeResource::UnsafeResource()
-    : is_subresource(false),
-      is_subframe(false),
-      threat_type(safe_browsing::SBThreatType::SB_THREAT_TYPE_SAFE),
+    : threat_type(safe_browsing::SBThreatType::SB_THREAT_TYPE_SAFE),
       request_destination(network::mojom::RequestDestination::kDocument),
       is_delayed_warning(false),
       is_async_check(false) {}
@@ -37,10 +35,6 @@ UnsafeResource::~UnsafeResource() = default;
 
 bool UnsafeResource::IsMainPageLoadPendingWithSyncCheck() const {
   using enum safe_browsing::SBThreatType;
-  // Subresource hits cannot happen until after main page load is committed.
-  if (is_subresource)
-    return false;
-
   switch (threat_type) {
     // Client-side phishing detection interstitials never block the main
     // frame load, since they happen after the page is finished loading.

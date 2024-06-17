@@ -285,17 +285,6 @@ void AwUrlCheckerDelegateImpl::DoApplicationResponse(
                         request, entry);
   }
 
-  // Navigate back for back-to-safety on subresources
-  if (!proceed && resource.is_subframe) {
-    if (web_contents->GetController().CanGoBack()) {
-      web_contents->GetController().GoBack();
-    } else {
-      web_contents->GetController().LoadURL(
-          ui_manager->default_safe_page(), content::Referrer(),
-          ui::PAGE_TRANSITION_AUTO_TOPLEVEL, std::string());
-    }
-  }
-
   GURL main_frame_url = entry ? entry->GetURL() : GURL();
   ui_manager->OnBlockingPageDone(
       std::vector<security_interstitials::UnsafeResource>{resource}, proceed,

@@ -296,7 +296,6 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
     const content::GlobalRenderFrameHostId primary_main_frame_id =
         primary_main_frame->GetGlobalId();
     resource->url = url;
-    resource->is_subresource = false;
     resource->request_destination =
         network::mojom::RequestDestination::kDocument;
     resource->threat_type = threat_type;

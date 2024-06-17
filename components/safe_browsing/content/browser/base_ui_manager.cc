@@ -310,31 +310,7 @@ void BaseUIManager::OnBlockingPageDone(
 
 void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
   using enum SBThreatType;
-
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  bool is_frame = resource.is_subframe ||
-                  resource.request_destination ==
-                      network::mojom::RequestDestination::kEmbed ||
-                  resource.request_destination ==
-                      network::mojom::RequestDestination::kObject;
-  if (resource.is_subresource && !is_frame) {
-    // Sites tagged as serving Unwanted Software should only show a warning for
-    // main-frame or frame-like (subframe, embed, object) resource. Similar
-    // warning restrictions should be applied to malware sites tagged as
-    // "landing sites" (see "Types of Malware sites" under
-    // https://developers.google.com/safe-browsing/v4/metadata#malware-sites).
-    // This is to avoid false positives on benign sites that load resources
-    // from landing sites.
-    if (resource.threat_type == SB_THREAT_TYPE_URL_UNWANTED ||
-        (resource.threat_type == SB_THREAT_TYPE_URL_MALWARE &&
-         resource.threat_metadata.threat_pattern_type ==
-             ThreatPatternType::MALWARE_LANDING)) {
-      resource.DispatchCallback(
-          FROM_HERE, true /* proceed */, false /* showed_interstitial */,
-          false /* has_post_commit_interstitial_skipped */);
-      return;
-    }
-  }
 
   // The tab might have been closed. If it was closed, just act as if "Don't
   // Proceed" had been chosen.

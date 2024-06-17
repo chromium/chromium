@@ -83,8 +83,6 @@ struct UnsafeResource {
   GURL navigation_url;
   GURL referrer_url;
   std::vector<GURL> redirect_urls;
-  bool is_subresource;
-  bool is_subframe;
   safe_browsing::SBThreatType threat_type;
   safe_browsing::ThreatMetadata threat_metadata;
   safe_browsing::RTLookupResponse rt_lookup_response;

@@ -557,7 +557,6 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
   EXPECT_TRUE(Mock::VerifyAndClear(ui_manager_.get()));
   EXPECT_EQ(phishing_url, resource.url);
   EXPECT_EQ(phishing_url, resource.original_url);
-  EXPECT_FALSE(resource.is_subresource);
   EXPECT_EQ(SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING,
             resource.threat_type);
   EXPECT_EQ(ThreatSource::CLIENT_SIDE_DETECTION, resource.threat_source);
@@ -630,7 +629,6 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
   EXPECT_TRUE(Mock::VerifyAndClear(ui_manager_.get()));
   EXPECT_EQ(other_phishing_url, resource.url);
   EXPECT_EQ(other_phishing_url, resource.original_url);
-  EXPECT_FALSE(resource.is_subresource);
   EXPECT_EQ(SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING,
             resource.threat_type);
   EXPECT_EQ(ThreatSource::CLIENT_SIDE_DETECTION, resource.threat_source);

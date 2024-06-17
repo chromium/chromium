@@ -3106,7 +3106,6 @@ class SafeBrowsingBlockingPageIDNTest
     SafeBrowsingBlockingPage::UnsafeResource resource;
 
     resource.url = request_url;
-    resource.is_subresource = false;
     resource.threat_type = GetParam();
     resource.render_process_id = primary_main_frame_id.child_id;
     resource.render_frame_token = primary_main_frame->GetFrameToken().value();

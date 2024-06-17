@@ -719,7 +719,6 @@ bool SafeBrowsingService::IsURLAllowlisted(
   security_interstitials::UnsafeResource resource;
   resource.url = url;
   resource.original_url = url;
-  resource.is_subresource = false;
   resource.threat_type = SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
   const content::GlobalRenderFrameHostId primary_main_frame_id =
       primary_main_frame->GetGlobalId();

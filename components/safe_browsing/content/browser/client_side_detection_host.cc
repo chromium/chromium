@@ -994,7 +994,6 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
       security_interstitials::UnsafeResource resource;
       resource.url = phishing_url;
       resource.original_url = phishing_url;
-      resource.is_subresource = false;
       resource.threat_type =
           SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
       resource.threat_source =

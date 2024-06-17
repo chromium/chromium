@@ -124,12 +124,9 @@ class PhishyInteractionTrackerTest : public ChromeRenderViewHostTestHarness {
     return Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   }
 
-  security_interstitials::UnsafeResource MakeUnsafeResource(
-      const char* url,
-      bool is_subresource) {
+  security_interstitials::UnsafeResource MakeUnsafeResource(const char* url) {
     security_interstitials::UnsafeResource resource;
     resource.url = GURL(url);
-    resource.is_subresource = is_subresource;
     resource.threat_type =
         safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
     return resource;
@@ -223,8 +220,7 @@ class PhishyInteractionTrackerTest : public ChromeRenderViewHostTestHarness {
 TEST_F(PhishyInteractionTrackerTest, CheckHistogramCountsOnPhishyUserEvents) {
   base::HistogramTester histogram_tester_;
 
-  security_interstitials::UnsafeResource resource =
-      MakeUnsafeResource(kBadURL, false /* is_subresource */);
+  security_interstitials::UnsafeResource resource = MakeUnsafeResource(kBadURL);
   safe_browsing::SBThreatType threat_type;
   EXPECT_TRUE(ui_manager_->IsUrlAllowlistedOrPendingForWebContents(
       resource.url, /*entry=*/nullptr,

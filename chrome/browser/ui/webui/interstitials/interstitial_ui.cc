@@ -308,8 +308,6 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
       primary_main_frame->GetGlobalId();
   safe_browsing::SafeBrowsingBlockingPage::UnsafeResource resource;
   resource.url = request_url;
-  resource.is_subresource = false;
-  resource.is_subframe = false;
   resource.threat_type = threat_type;
   resource.render_process_id = primary_main_frame_id.child_id;
   resource.render_frame_token = primary_main_frame->GetFrameToken().value();
@@ -357,8 +355,6 @@ std::unique_ptr<EnterpriseWarnPage> CreateEnterpriseWarnPage(
       primary_main_frame->GetGlobalId();
   safe_browsing::SafeBrowsingBlockingPage::UnsafeResource resource;
   resource.url = kRequestUrl;
-  resource.is_subresource = false;
-  resource.is_subframe = false;
   resource.threat_type =
       safe_browsing::SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN;
   resource.render_process_id = primary_main_frame_id.child_id;
@@ -409,8 +405,6 @@ CreateSafeBrowsingQuietBlockingPage(content::WebContents* web_contents) {
       primary_main_frame->GetGlobalId();
   safe_browsing::SafeBrowsingBlockingPage::UnsafeResource resource;
   resource.url = request_url;
-  resource.is_subresource = false;
-  resource.is_subframe = false;
   resource.threat_type = threat_type;
   resource.render_process_id = primary_main_frame_id.child_id;
   resource.render_frame_token = primary_main_frame->GetFrameToken().value();
