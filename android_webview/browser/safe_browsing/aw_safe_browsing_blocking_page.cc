@@ -60,9 +60,9 @@ AwSafeBrowsingBlockingPage::AwSafeBrowsingBlockingPage(
   if (errorUiType == ErrorUiType::QUIET_SMALL ||
       errorUiType == ErrorUiType::QUIET_GIANT) {
     set_sb_error_ui(std::make_unique<SafeBrowsingQuietErrorUI>(
-        unsafe_resources[0].url, main_frame_url,
-        GetInterstitialReason(unsafe_resources), display_options,
-        ui_manager->app_locale(), base::Time::NowFromSystemTime(), controller(),
+        unsafe_resources[0].url, GetInterstitialReason(unsafe_resources),
+        display_options, ui_manager->app_locale(),
+        base::Time::NowFromSystemTime(), controller(),
         errorUiType == ErrorUiType::QUIET_GIANT));
   }
 

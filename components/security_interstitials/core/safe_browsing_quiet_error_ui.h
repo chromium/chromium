@@ -24,7 +24,6 @@ class SafeBrowsingQuietErrorUI
  public:
   SafeBrowsingQuietErrorUI(
       const GURL& request_url,
-      const GURL& main_frame_url,
       BaseSafeBrowsingErrorUI::SBInterstitialReason reason,
       const BaseSafeBrowsingErrorUI::SBErrorDisplayOptions& display_options,
       const std::string& app_locale,

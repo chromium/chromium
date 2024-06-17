@@ -63,7 +63,6 @@ BaseBlockingPage::BaseBlockingPage(
       threat_details_proceed_delay_ms_(kThreatDetailsProceedDelayMilliSeconds),
       sb_error_ui_(std::make_unique<SafeBrowsingLoudErrorUI>(
           unsafe_resources_[0].url,
-          main_frame_url_,
           GetInterstitialReason(unsafe_resources_),
           display_options,
           ui_manager->app_locale(),

@@ -42,7 +42,6 @@ void RecordExtendedReportingPrefChanged(bool report) {
 
 SafeBrowsingLoudErrorUI::SafeBrowsingLoudErrorUI(
     const GURL& request_url,
-    const GURL& main_frame_url,
     SBInterstitialReason reason,
     const SBErrorDisplayOptions& display_options,
     const std::string& app_locale,
@@ -50,7 +49,6 @@ SafeBrowsingLoudErrorUI::SafeBrowsingLoudErrorUI(
     ControllerClient* controller,
     bool created_prior_to_navigation)
     : BaseSafeBrowsingErrorUI(request_url,
-                              main_frame_url,
                               reason,
                               display_options,
                               app_locale,

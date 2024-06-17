@@ -98,7 +98,6 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
       is_main_page_load_blocked_(resource.IsMainPageLoadPendingWithSyncCheck()),
       error_ui_(std::make_unique<SafeBrowsingLoudErrorUI>(
           resource.url,
-          GetMainFrameUrl(resource),
           GetUnsafeResourceInterstitialReason(resource),
           GetDefaultDisplayOptions(resource),
           client->GetApplicationLocale(),

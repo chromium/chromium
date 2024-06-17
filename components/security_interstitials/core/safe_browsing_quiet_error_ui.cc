@@ -19,7 +19,6 @@ namespace security_interstitials {
 
 SafeBrowsingQuietErrorUI::SafeBrowsingQuietErrorUI(
     const GURL& request_url,
-    const GURL& main_frame_url,
     BaseSafeBrowsingErrorUI::SBInterstitialReason reason,
     const BaseSafeBrowsingErrorUI::SBErrorDisplayOptions& display_options,
     const std::string& app_locale,
@@ -27,7 +26,6 @@ SafeBrowsingQuietErrorUI::SafeBrowsingQuietErrorUI(
     ControllerClient* controller,
     const bool is_giant_webview)
     : BaseSafeBrowsingErrorUI(request_url,
-                              main_frame_url,
                               reason,
                               display_options,
                               app_locale,
