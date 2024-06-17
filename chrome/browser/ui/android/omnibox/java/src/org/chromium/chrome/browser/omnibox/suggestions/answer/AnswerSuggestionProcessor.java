@@ -19,8 +19,6 @@ import org.chromium.chrome.browser.omnibox.suggestions.base.BaseSuggestionViewPr
 import org.chromium.components.omnibox.AnswerType;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
-import org.chromium.components.omnibox.RichAnswerTemplateProto.RichAnswerTemplate;
-import org.chromium.components.omnibox.SuggestionAnswer;
 import org.chromium.components.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
@@ -73,14 +71,17 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
         @AnswerType
         int answerType =
                 suggestion.getAnswer() == null
-                        ? AnswerType.INVALID
+                        ? suggestion.getAnswerType()
                         : suggestion.getAnswer().getType();
         boolean suggestionTextColorReversal = checkColorReversalRequired(answerType);
         AnswerText[] details;
         if (suggestion.getAnswerTemplate() != null) {
             details =
                     RichAnswerText.from(
-                            mContext, suggestion.getAnswerTemplate(), suggestionTextColorReversal);
+                            mContext,
+                            suggestion.getAnswerTemplate(),
+                            answerType,
+                            suggestionTextColorReversal);
         } else {
             details =
                     AnswerTextNewLayout.from(
@@ -141,10 +142,11 @@ public class AnswerSuggestionProcessor extends BaseSuggestionViewProcessor {
     public @NonNull OmniboxDrawableState getFallbackIcon(@NonNull AutocompleteMatch suggestion) {
         int icon = 0;
 
-        SuggestionAnswer answer = suggestion.getAnswer();
-        int type = answer != null ? answer.getType() : AnswerType.INVALID;
-        RichAnswerTemplate template = suggestion.getAnswerTemplate();
-        type = template != null ? template.getAnswerType().getNumber() : type;
+        @AnswerType
+        int type =
+                suggestion.getAnswer() == null
+                        ? suggestion.getAnswerType()
+                        : suggestion.getAnswer().getType();
         if (type != AnswerType.INVALID) {
             switch (type) {
                 case AnswerType.DICTIONARY:

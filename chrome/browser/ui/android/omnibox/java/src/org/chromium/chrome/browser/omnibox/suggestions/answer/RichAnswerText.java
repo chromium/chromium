@@ -58,10 +58,10 @@ class RichAnswerText implements AnswerText {
     static AnswerText[] from(
             @NonNull Context context,
             @NonNull RichAnswerTemplate richAnswerTemplate,
+            @AnswerType int answerType,
             boolean reverseStockTextColor) {
         RichAnswerText[] result = new RichAnswerText[2];
 
-        int answerType = richAnswerTemplate.getAnswerType().getNumber();
         int maxLines = getMaxLinesForAnswerType(answerType);
         if (answerType == AnswerType.DICTIONARY) {
             result[0] =

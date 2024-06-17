@@ -73,6 +73,7 @@ public class AutocompleteMatch {
     private List<MatchClassification> mDescriptionClassifications;
     private SuggestionAnswer mAnswer;
     private @Nullable RichAnswerTemplate mAnswerTemplate;
+    private final int mAnswerType;
     private final String mFillIntoEdit;
     private GURL mUrl;
     private final GURL mImageUrl;
@@ -103,6 +104,7 @@ public class AutocompleteMatch {
             List<MatchClassification> descriptionClassifications,
             SuggestionAnswer answer,
             byte[] serializedAnswerTemplate,
+            int answerType,
             String fillIntoEdit,
             GURL url,
             GURL imageUrl,
@@ -137,6 +139,7 @@ public class AutocompleteMatch {
                 // When parsing error occurs, leave template as null.
             }
         }
+        mAnswerType = answerType;
         mFillIntoEdit = TextUtils.isEmpty(fillIntoEdit) ? displayText : fillIntoEdit;
         assert url != null;
         mUrl = url;
@@ -171,6 +174,7 @@ public class AutocompleteMatch {
             int[] descriptionClassificationStyles,
             SuggestionAnswer answer,
             byte[] serializedAnswerTemplate,
+            int answerType,
             String fillIntoEdit,
             GURL url,
             GURL imageUrl,
@@ -211,6 +215,7 @@ public class AutocompleteMatch {
                         new ArrayList<>(),
                         answer,
                         serializedAnswerTemplate,
+                        answerType,
                         fillIntoEdit,
                         url,
                         imageUrl,
@@ -336,6 +341,10 @@ public class AutocompleteMatch {
 
     public @Nullable RichAnswerTemplate getAnswerTemplate() {
         return mAnswerTemplate;
+    }
+
+    public @AnswerType int getAnswerType() {
+        return mAnswerType;
     }
 
     public @NonNull String getFillIntoEdit() {

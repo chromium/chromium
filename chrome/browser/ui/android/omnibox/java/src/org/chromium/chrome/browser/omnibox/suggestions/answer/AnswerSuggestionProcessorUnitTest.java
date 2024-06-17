@@ -199,7 +199,6 @@ public class AnswerSuggestionProcessorUnitTest {
             @AnswerType int type, String line1Text, String line2Text) {
         RichAnswerTemplate answer =
                 RichAnswerTemplate.newBuilder()
-                        .setAnswerType(RichAnswerTemplate.AnswerType.forNumber(type))
                         .addAnswers(
                                 AnswerData.newBuilder()
                                         .setHeadline(
@@ -214,6 +213,7 @@ public class AnswerSuggestionProcessorUnitTest {
         AutocompleteMatch suggestion =
                 AutocompleteMatchBuilder.searchWithType(OmniboxSuggestionType.SEARCH_SUGGEST)
                         .setSerializedAnswerTemplate(answer.toByteArray())
+                        .setAnswerType(type)
                         .build();
         PropertyModel model = mProcessor.createModel();
         return new SuggestionTestHelper(suggestion, model, null);

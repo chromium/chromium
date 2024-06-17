@@ -634,6 +634,7 @@ void BaseSearchProvider::AddMatchToMap(
         existing_match.duplicate_matches.back();
     if (less_relevant_duplicate_match.answer && !existing_match.answer) {
       existing_match.answer = less_relevant_duplicate_match.answer;
+      existing_match.answer_type = less_relevant_duplicate_match.answer_type;
       if (OmniboxFieldTrial::kAnswerActionsShowRichCard.Get()) {
         existing_match.suggestion_group_id =
             less_relevant_duplicate_match.suggestion_group_id;
@@ -644,6 +645,7 @@ void BaseSearchProvider::AddMatchToMap(
         !existing_match.answer_template) {
       existing_match.answer_template =
           less_relevant_duplicate_match.answer_template;
+      existing_match.answer_type = less_relevant_duplicate_match.answer_type;
       if (OmniboxFieldTrial::kAnswerActionsShowRichCard.Get()) {
         existing_match.suggestion_group_id =
             less_relevant_duplicate_match.suggestion_group_id;
