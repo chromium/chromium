@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO: crbug.com/347137620 - Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table.h"
 
 #include <string>
@@ -177,7 +172,7 @@ TEST_F(AutocompleteTableTest, Autocomplete) {
   changes.clear();
   EXPECT_TRUE(table_->RemoveFormElementsAddedBetween(begin, Time(), changes));
 
-  const AutocompleteChange kExpectedChanges[] = {
+  const auto kExpectedChanges = std::array{
       AutocompleteChange(AutocompleteChange::REMOVE,
                          AutocompleteKey(u"Name", u"Superman")),
       AutocompleteChange(AutocompleteChange::REMOVE,
@@ -187,7 +182,7 @@ TEST_F(AutocompleteTableTest, Autocomplete) {
       AutocompleteChange(AutocompleteChange::REMOVE,
                          AutocompleteKey(u"Favorite Color", u"Green")),
   };
-  EXPECT_EQ(std::size(kExpectedChanges), changes.size());
+  EXPECT_EQ(kExpectedChanges.size(), changes.size());
   for (size_t i = 0; i < std::size(kExpectedChanges); ++i) {
     EXPECT_EQ(kExpectedChanges[i], changes[i]);
   }
