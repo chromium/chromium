@@ -112,23 +112,23 @@ constexpr auto kFamilyNamePrefixes = std::to_array<std::string_view>(
 
 // The common and non-ambiguous CJK surnames (last names) that have more than
 // one character.
-constexpr auto kCommonCjkMultiCharSurnames = std::to_array<std::string_view>(
+constexpr auto kCommonCjkMultiCharSurnames = std::to_array<std::u16string_view>(
     {// Korean, taken from the list of surnames:
      // https://ko.wikipedia.org/wiki/%ED%95%9C%EA%B5%AD%EC%9D%98_%EC%84%B1%EC%94%A8_%EB%AA%A9%EB%A1%9D
-     "남궁", "사공", "서문", "선우", "제갈", "황보", "독고", "망절",
+     u"남궁", u"사공", u"서문", u"선우", u"제갈", u"황보", u"독고", u"망절",
      // Chinese, taken from the top 10 Chinese 2-character surnames:
      // https://zh.wikipedia.org/wiki/%E8%A4%87%E5%A7%93#.E5.B8.B8.E8.A6.8B.E7.9A.84.E8.A4.87.E5.A7.93
      // Simplified Chinese (mostly mainland China)
-     "欧阳", "令狐", "皇甫", "上官", "司徒", "诸葛", "司马", "宇文", "呼延",
-     "端木",
+     u"欧阳", u"令狐", u"皇甫", u"上官", u"司徒", u"诸葛", u"司马", u"宇文",
+     u"呼延", u"端木",
      // Traditional Chinese (mostly Taiwan)
-     "張簡", "歐陽", "諸葛", "申屠", "尉遲", "司馬", "軒轅", "夏侯"});
+     u"張簡", u"歐陽", u"諸葛", u"申屠", u"尉遲", u"司馬", u"軒轅", u"夏侯"});
 
 // All Korean surnames that have more than one character, even the
 // rare/ambiguous ones.
-constexpr auto kKoreanMultiCharSurnames = std::to_array<std::string_view>(
-    {"강전", "남궁", "독고", "동방", "망절", "사공", "서문", "선우", "소봉",
-     "어금", "장곡", "제갈", "황목", "황보"});
+constexpr auto kKoreanMultiCharSurnames = std::to_array<std::u16string_view>(
+    {u"강전", u"남궁", u"독고", u"동방", u"망절", u"사공", u"서문", u"선우",
+     u"소봉", u"어금", u"장곡", u"제갈", u"황목", u"황보"});
 
 // Returns true if `set` contains `element`, modulo a final period.
 bool ContainsString(base::span<const std::string_view> set,
@@ -173,11 +173,10 @@ void StripSuffixes(std::vector<std::u16string_view>* name_tokens) {
 // `prefixes`. The returned value is the length of the prefix found, or 0 if
 // none is found.
 size_t StartsWithAny(std::u16string_view name,
-                     base::span<const std::string_view> prefixes) {
-  for (std::string_view prefix : prefixes) {
-    std::u16string buffer = base::UTF8ToUTF16(prefix);
-    if (name.starts_with(buffer)) {
-      return buffer.size();
+                     base::span<const std::u16string_view> prefixes) {
+  for (std::u16string_view prefix : prefixes) {
+    if (name.starts_with(prefix)) {
+      return prefix.size();
     }
   }
   return 0;
