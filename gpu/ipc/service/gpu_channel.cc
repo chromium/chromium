@@ -409,8 +409,7 @@ void GpuChannelMessageFilter::FlushDeferredRequests(
   // Threading: GpuChannelManager outlives gpu_channel_, so even though it is a
   // main thread object, we don't have a lifetime issue. However we may be
   // reading something stale here, but we don't synchronize anything here.
-  if (base::FeatureList::IsEnabled(features::kGpuCleanupInBackground) &&
-      gpu_channel_->gpu_channel_manager()->application_backgrounded()) {
+  if (gpu_channel_->gpu_channel_manager()->application_backgrounded()) {
     // We expect to clean shared images, so put it on this sequence, to make
     // sure that ordering is conserved, and we execute after.
     auto it = route_sequences_.find(

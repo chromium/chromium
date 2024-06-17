@@ -107,8 +107,6 @@ GPU_EXPORT extern const base::FeatureParam<std::string> kWGSLUnsafeFeatures;
 
 GPU_EXPORT BASE_DECLARE_FEATURE(kIncreasedCmdBufferParseSlice);
 
-GPU_EXPORT BASE_DECLARE_FEATURE(kGpuCleanupInBackground);
-
 GPU_EXPORT BASE_DECLARE_FEATURE(kDeferredOverlaysRelease);
 
 #if BUILDFLAG(IS_WIN)

@@ -438,12 +438,6 @@ BASE_FEATURE(kUseGpuSchedulerDfs,
 #endif
 );
 
-// When the application is in background, whether to perform immediate GPU
-// cleanup when executing deferred requests.
-BASE_FEATURE(kGpuCleanupInBackground,
-             "GpuCleanupInBackground",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // On platforms with delegated compositing, try to release overlays later, when
 // no new frames are swapped.
 BASE_FEATURE(kDeferredOverlaysRelease,

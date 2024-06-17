@@ -406,8 +406,7 @@ SkiaOutputSurfaceImplOnGpu::~SkiaOutputSurfaceImplOnGpu() {
 
 #if BUILDFLAG(ENABLE_VULKAN)
     // No frame will come for us, make sure that all the cleanup is done.
-    if (base::FeatureList::IsEnabled(features::kGpuCleanupInBackground) &&
-        context_state_->GrContextIsVulkan()) {
+    if (context_state_->GrContextIsVulkan()) {
       DCHECK(context_state_->vk_context_provider());
       auto* fence_helper = context_state_->vk_context_provider()
                                ->GetDeviceQueue()

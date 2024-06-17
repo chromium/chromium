@@ -825,11 +825,10 @@ void GpuChannelManager::OnApplicationBackgrounded() {
 
   // Release all skia caching when the application is backgrounded.
   SkGraphics::PurgeAllCaches();
-  if (base::FeatureList::IsEnabled(features::kGpuCleanupInBackground)) {
-    // At that point, no frames are going to be produced. Make sure that
-    // e.g. pending SharedImage deletions happens promptly.
-    PerformImmediateCleanup();
-  }
+  // At that point, no frames are going to be produced. Make sure that
+  // e.g. pending SharedImage deletions happens promptly.
+  PerformImmediateCleanup();
+
   application_backgrounded_ = true;
 }
 
