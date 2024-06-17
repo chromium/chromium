@@ -26,23 +26,23 @@ namespace {
 using SignatureType = mojom::SignatureInfo::Tag;
 
 std::pair<SignatureType, BinaryData> GetSignatureType(
-    const SignatureAttributesMap& attributes_map) {
-  const BinaryData* ed25519_key =
+    const AttributesMap& attributes_map) {
+  const cbor::Value* ed25519_key =
       base::FindOrNull(attributes_map, kEd25519PublicKeyAttributeName);
-  const BinaryData* ecdsa_key =
+  const cbor::Value* ecdsa_key =
       base::FindOrNull(attributes_map, kEcdsaP256PublicKeyAttributeName);
 
   if (ed25519_key && ecdsa_key) {
     // The signature type cannot be determined if the attributes map contains
     // both keys.
     return {SignatureType::kUnknown, BinaryData()};
-  } else if (ecdsa_key) {
-    return {SignatureType::kEcdsaP256Sha256, *ecdsa_key};
-  } else if (ed25519_key) {
-    return {SignatureType::kEd25519, *ed25519_key};
+  } else if (ecdsa_key && ecdsa_key->is_bytestring()) {
+    return {SignatureType::kEcdsaP256Sha256, ecdsa_key->GetBytestring()};
+  } else if (ed25519_key && ed25519_key->is_bytestring()) {
+    return {SignatureType::kEd25519, ed25519_key->GetBytestring()};
   } else {
     // The signature type cannot be determined neither key is present in the
-    // attributes map.
+    // attributes map or the key is not a valid bytestring.
     return {SignatureType::kUnknown, BinaryData()};
   };
 }
@@ -104,8 +104,7 @@ void SignatureStackEntryParser::ReadSignatureStructure(
 }
 
 void SignatureStackEntryParser::GetAttributesMap(
-    base::expected<std::pair<SignatureAttributesMap, uint64_t>, std::string>
-        result) {
+    base::expected<std::pair<AttributesMap, uint64_t>, std::string> result) {
   if (!result.has_value()) {
     RunErrorCallback(std::move(result.error()));
     return;
@@ -113,7 +112,7 @@ void SignatureStackEntryParser::GetAttributesMap(
 
   auto [attributes_map, offset_to_end_of_map] = std::move(result.value());
 
-  attributes_map_ = attributes_map;
+  attributes_map_ = std::move(attributes_map);
   uint64_t attribute_map_size = offset_to_end_of_map - offset_in_stream_;
   data_source_->Read(
       offset_in_stream_, attribute_map_size,

@@ -6,6 +6,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/extend.h"
+#include "base/functional/overloaded.h"
 #include "base/strings/stringprintf.h"
 #include "base/types/expected_macros.h"
 #include "components/web_package/input_reader.h"
@@ -67,8 +68,7 @@ void AttributeMapParser::ReadNextAttributeEntry() {
 void AttributeMapParser::ReadAttributeNameCborHeader(
     const std::optional<BinaryData>& data) {
   if (!data) {
-    RunErrorCallback(
-        "Error reading signature stack entry's attributes header.");
+    RunErrorCallback("Error reading the header for attribute name.");
     return;
   }
 
@@ -91,7 +91,7 @@ void AttributeMapParser::ReadAttributeName(
     uint64_t attribute_name_length,
     const std::optional<BinaryData>& data) {
   if (!data) {
-    RunErrorCallback("Error reading signature stack entry's attribute key.");
+    RunErrorCallback("Error reading attribute key.");
     return;
   }
 
@@ -101,15 +101,14 @@ void AttributeMapParser::ReadAttributeName(
       });
 
   if (!attribute_name) {
-    RunErrorCallback("Error reading signature stack entry's attribute key.");
+    RunErrorCallback("Error reading attribute key.");
     return;
   }
 
   if (base::Contains(attributes_map_, *attribute_name)) {
-    RunErrorCallback(
-        base::StringPrintf("Found duplicate attribute name <%s> in signature "
-                           "stack entry's attributes.",
-                           std::string(*attribute_name).c_str()));
+    RunErrorCallback(base::StringPrintf(
+        "Found duplicate attribute name <%s> in the attributes map.",
+        std::string(*attribute_name).c_str()));
     return;
   }
 
@@ -123,38 +122,81 @@ void AttributeMapParser::ReadAttributeValueCborHeader(
     std::string attribute_name,
     const std::optional<BinaryData>& data) {
   if (!data) {
-    RunErrorCallback("Error reading signature stack entry's attribute key.");
-    return;
-  }
-
-  std::optional<uint64_t> attribute_value_size =
-      ReadCborData(*data, [](InputReader* input) {
-        return input->ReadCBORHeader(CBORType::kByteString);
-      });
-  if (!attribute_value_size) {
     RunErrorCallback(
-        "The value of the signature stack entry attribute value must be a byte "
-        "string.");
+        base::StringPrintf("Error reading attribute value header for <%s>.",
+                           attribute_name.c_str()));
+    return;
+  }
+  std::optional<CBORHeader> result = ReadCborData(
+      *data, [](InputReader* input) { return input->ReadCBORHeader(); });
+  if (!result) {
+    RunErrorCallback(
+        base::StringPrintf("Error reading attribute value header for <%s>.",
+                           attribute_name.c_str()));
     return;
   }
 
-  data_source_->Read(
-      offset_in_stream_, *attribute_value_size,
-      base::BindOnce(&AttributeMapParser::ReadAttributeValue,
-                     weak_factory_.GetWeakPtr(), std::move(attribute_name)));
+  RETURN_IF_ERROR(
+      absl::visit(
+          base::Overloaded{
+              [&](bool value) -> base::expected<void, std::string> {
+                attributes_map_.emplace(std::move(attribute_name), value);
+                ReadNextAttributeEntry();
+                return base::ok();
+              },
+              [&](int64_t value) -> base::expected<void, std::string> {
+                attributes_map_.emplace(std::move(attribute_name), value);
+                ReadNextAttributeEntry();
+                return base::ok();
+              },
+              [&](const CBORHeader::StringInfo& info)
+                  -> base::expected<void, std::string> {
+                data_source_->Read(
+                    offset_in_stream_, info.byte_length,
+                    base::BindOnce(
+                        &AttributeMapParser::ReadStringAttributeValue,
+                        weak_factory_.GetWeakPtr(), std::move(attribute_name),
+                        info.type));
+                return base::ok();
+              },
+              [&](const CBORHeader::ContainerInfo&)
+                  -> base::expected<void, std::string> {
+                return base::unexpected(base::StringPrintf(
+                    "Attribute value for <%s> is a map/array; nested "
+                    "attributes are currently not supported.",
+                    attribute_name.c_str()));
+              }},
+          result->data),
+      [&](std::string error) { RunErrorCallback(std::move(error)); });
 }
 
-void AttributeMapParser::ReadAttributeValue(
+void AttributeMapParser::ReadStringAttributeValue(
     std::string attribute_name,
+    StringType string_type,
     const std::optional<BinaryData>& data) {
   if (!data) {
-    RunErrorCallback("Error reading signature stack entry's public key.");
+    RunErrorCallback(base::StringPrintf(
+        "Error reading attribute value for <%s>.", attribute_name.c_str()));
     return;
   }
 
-  attributes_map_[std::move(attribute_name)] = *data;
-
-  offset_in_stream_ += data->size();
+  switch (string_type) {
+    case StringType::kByteString: {
+      attributes_map_.emplace(std::move(attribute_name), *data);
+      offset_in_stream_ += data->size();
+    } break;
+    case StringType::kTextString: {
+      std::optional<std::string_view> value = ReadCborData(
+          *data,
+          [&](InputReader* input) { return input->ReadString(data->size()); });
+      if (!value) {
+        RunErrorCallback(base::StringPrintf(
+            "Error reading attribute value for <%s>.", attribute_name.c_str()));
+        return;
+      }
+      attributes_map_.emplace(std::move(attribute_name), *value);
+    }
+  }
 
   ReadNextAttributeEntry();
 }

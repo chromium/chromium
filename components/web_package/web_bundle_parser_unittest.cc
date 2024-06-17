@@ -250,6 +250,7 @@ using base::test::ErrorIs;
 using testing::AllOf;
 using testing::Eq;
 using testing::Field;
+using testing::HasSubstr;
 using testing::Pointee;
 
 class WebBundleParserTest : public testing::Test {
@@ -965,7 +966,7 @@ TEST_F(WebBundleParserTest, SignedBundleWithMultipleAttributes) {
   auto bundle_and_keys = SignBundle(
       unsigned_bundle, {/*integrity_block_errors=*/{},
                         {{WebBundleSigner::IntegritySignatureErrorForTesting::
-                              kAdditionalSignatureStackEntryAttribute}}});
+                              kAdditionalSignatureStackEntryAttributes}}});
   TestDataSource data_source(bundle_and_keys.bundle);
 
   ASSERT_OK_AND_ASSIGN(auto integrity_block,
@@ -1000,6 +1001,40 @@ TEST_F(WebBundleParserTest, SignedBundleWithMultiplePublicKeyAttributes) {
                         Eq(mojom::BundleParseErrorType::kFormatError)),
                   Field(&mojom::BundleIntegrityBlockParseError::message,
                         Eq("Unknown cipher type of the first signature."))))));
+}
+
+TEST_F(WebBundleParserTest, SignedBundleUnsupportedSignatureAttributeMap) {
+  auto unsigned_bundle = CreateSmallBundle();
+  auto bundle_and_keys = SignBundle(
+      unsigned_bundle, {/*integrity_block_errors=*/{},
+                        {{WebBundleSigner::IntegritySignatureErrorForTesting::
+                              kSignatureStackEntryUnsupportedMapAttribute}}});
+  TestDataSource data_source(bundle_and_keys.bundle);
+
+  EXPECT_THAT(
+      ParseSignedBundleIntegrityBlock(&data_source),
+      ErrorIs(Pointee(AllOf(
+          Field(&mojom::BundleIntegrityBlockParseError::type,
+                Eq(mojom::BundleParseErrorType::kFormatError)),
+          Field(&mojom::BundleIntegrityBlockParseError::message,
+                HasSubstr("nested attributes are currently not supported"))))));
+}
+
+TEST_F(WebBundleParserTest, SignedBundleUnsupportedSignatureAttributeArray) {
+  auto unsigned_bundle = CreateSmallBundle();
+  auto bundle_and_keys = SignBundle(
+      unsigned_bundle, {/*integrity_block_errors=*/{},
+                        {{WebBundleSigner::IntegritySignatureErrorForTesting::
+                              kSignatureStackEntryUnsupportedArrayAttribute}}});
+  TestDataSource data_source(bundle_and_keys.bundle);
+
+  EXPECT_THAT(
+      ParseSignedBundleIntegrityBlock(&data_source),
+      ErrorIs(Pointee(AllOf(
+          Field(&mojom::BundleIntegrityBlockParseError::type,
+                Eq(mojom::BundleParseErrorType::kFormatError)),
+          Field(&mojom::BundleIntegrityBlockParseError::message,
+                HasSubstr("nested attributes are currently not supported"))))));
 }
 
 TEST_F(WebBundleParserTest, SignedBundleNoPublicKeyAttribute) {

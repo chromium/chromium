@@ -11,17 +11,41 @@
 #include "base/containers/span.h"
 #include "base/containers/span_reader.h"
 #include "base/memory/stack_allocated.h"
+#include "base/types/id_type.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace web_package {
 
 // https://datatracker.ietf.org/doc/html/rfc8949.html#section-3.1
 enum class CBORType {
-  // kUnsignedInt = 0,
-  // kNegativeInt = 1,
+  kUnsignedInt = 0,
+  kNegativeInt = 1,
   kByteString = 2,
   kTextString = 3,
   kArray = 4,
   kMap = 5,
+  // kTag = 6,
+  kSimpleValue = 7,
+  // kFloatValue = 7,
+};
+
+struct CBORHeader {
+  struct StringInfo {
+    enum class StringType {
+      kByteString,
+      kTextString,
+    } type;
+    uint64_t byte_length;
+  };
+  struct ContainerInfo {
+    enum class ContainerType {
+      kArray,
+      kMap,
+    } type;
+    uint64_t size;
+  };
+
+  const absl::variant<bool, int64_t, StringInfo, ContainerInfo> data;
 };
 
 // The maximum length of the CBOR item header (type and argument).
@@ -67,9 +91,16 @@ class InputReader {
   std::optional<std::string_view> ReadString(size_t n);
 
   // Parses the type and argument of a CBOR item from the input head. If parsed
-  // successfully and the type matches |expected_type|, returns the argument.
+  // successfully and the type matches `expected_type`, returns the argument.
   // Otherwise returns nullopt.
   std::optional<uint64_t> ReadCBORHeader(CBORType expected_type);
+
+  // Parses the type and argument of a CBOR item from the input head. If parsed
+  // successfully, returns type and:
+  //  * value for kUnsignedInt/kNegativeInt;
+  //  * value_size for kTextString/kByteString/kMap/kArray.
+  // Otherwise returns nullopt.
+  std::optional<CBORHeader> ReadCBORHeader();
 
  private:
   std::optional<std::pair<CBORType, uint64_t>> ReadTypeAndArgument();

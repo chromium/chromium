@@ -9,12 +9,13 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "components/cbor/values.h"
 
 namespace web_package {
 
 using BinaryData = std::vector<uint8_t>;
 
-using SignatureAttributesMap = base::flat_map<std::string, BinaryData>;
+using AttributesMap = base::flat_map<std::string, cbor::Value>;
 
 }  // namespace web_package
 

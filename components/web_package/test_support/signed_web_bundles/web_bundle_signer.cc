@@ -4,6 +4,8 @@
 
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 
+#include <limits>
+
 #include "base/check_is_test.h"
 #include "base/containers/extend.h"
 #include "base/containers/to_vector.h"
@@ -60,37 +62,63 @@ cbor::Value CreateSignatureStackEntryAttributes(
                                   kNoPublicKeySignatureStackEntryAttribute)) {
     if (errors_for_testing.Has(IntegritySignatureErrorForTesting::
                                    kMultipleValidPublicKeyAttributes)) {
-      attributes[cbor::Value(kEd25519PublicKeyAttributeName)] =
-          cbor::Value(public_key_bytes);
+      attributes.emplace(kEd25519PublicKeyAttributeName, public_key_bytes);
 
-      attributes[cbor::Value(kEcdsaP256PublicKeyAttributeName)] = cbor::Value(
+      attributes.emplace(
+          kEcdsaP256PublicKeyAttributeName,
           base::ToVector(WebBundleSigner::EcdsaP256KeyPair::CreateRandom()
                              .public_key.bytes()));
     } else if (errors_for_testing.Has(
                    IntegritySignatureErrorForTesting::
                        kWrongSignatureStackEntryAttributeName)) {
       // Add a typo: "ee" instead of "ed".
-      attributes[cbor::Value("ee25519PublicKey")] =
-          cbor::Value(public_key_bytes);
+      attributes.emplace("ee25519PublicKey", public_key_bytes);
     } else if (errors_for_testing.Has(
                    IntegritySignatureErrorForTesting::
                        kWrongSignatureStackEntryAttributeNameLength)) {
-      attributes[cbor::Value("ed25519")] = cbor::Value(public_key_bytes);
+      attributes.emplace("ed25519", public_key_bytes);
     } else {
-      attributes[cbor::Value(absl::visit(
-          base::Overloaded{[](const Ed25519PublicKey&) {
-                             return kEd25519PublicKeyAttributeName;
-                           },
-                           [](const EcdsaP256PublicKey&) {
-                             return kEcdsaP256PublicKeyAttributeName;
-                           }},
-          public_key))] = cbor::Value(public_key_bytes);
+      attributes.emplace(
+          absl::visit(
+              base::Overloaded{[](const Ed25519PublicKey&) {
+                                 return kEd25519PublicKeyAttributeName;
+                               },
+                               [](const EcdsaP256PublicKey&) {
+                                 return kEcdsaP256PublicKeyAttributeName;
+                               }},
+              public_key),
+          public_key_bytes);
     }
   }
 
   if (errors_for_testing.Has(IntegritySignatureErrorForTesting::
-                                 kAdditionalSignatureStackEntryAttribute)) {
-    attributes[cbor::Value("foo")] = cbor::Value(public_key_bytes);
+                                 kAdditionalSignatureStackEntryAttributes)) {
+    attributes.emplace("kBinaryString", public_key_bytes);
+    attributes.emplace("kTextString", "aaaaaaaaaaaaaaaaaaa");
+
+    attributes.emplace("kZero", 0);
+
+    attributes.emplace("kSimpleValue_true", true);
+    attributes.emplace("kSimpleValue_false", false);
+
+    // Integer values: one less than 24 & one large.
+    attributes.emplace("kUnsignedInt_small", 5);
+    attributes.emplace("kUnsignedInt", std::numeric_limits<int64_t>::max());
+
+    // Negative integer values: one less than 24 (modulo) & one large.
+    attributes.emplace("kNegativeInt_small", -12);
+    attributes.emplace("kNegativeInt", std::numeric_limits<int64_t>::min());
+  }
+
+  if (errors_for_testing.Has(
+          IntegritySignatureErrorForTesting::
+              kSignatureStackEntryUnsupportedArrayAttribute)) {
+    attributes.emplace("kArrayUnsupported", cbor::Value::ArrayValue());
+  }
+
+  if (errors_for_testing.Has(IntegritySignatureErrorForTesting::
+                                 kSignatureStackEntryUnsupportedMapAttribute)) {
+    attributes.emplace("kMapUnsupported", cbor::Value::MapValue());
   }
 
   return cbor::Value(attributes);

@@ -37,8 +37,7 @@ class SignatureStackEntryParser {
  private:
   void ReadSignatureStructure(const std::optional<BinaryData>& data);
   void GetAttributesMap(
-      base::expected<std::pair<SignatureAttributesMap, uint64_t>, std::string>
-          result);
+      base::expected<std::pair<AttributesMap, uint64_t>, std::string> result);
   void ReadAttributesMapBytes(uint64_t num_bytes,
                               const std::optional<BinaryData>& data);
   void ReadSignatureHeader(const std::optional<BinaryData>& data);
@@ -47,7 +46,7 @@ class SignatureStackEntryParser {
   void RunErrorCallback(const std::string& message);
 
   mojom::BundleIntegrityBlockSignatureStackEntryPtr signature_stack_entry_;
-  SignatureAttributesMap attributes_map_;
+  AttributesMap attributes_map_;
   std::unique_ptr<AttributeMapParser> attribute_map_parser_;
 
   uint64_t offset_in_stream_;
