@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -53,6 +54,12 @@ namespace signin {
 enum class ReauthResult;
 }
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+namespace {
+class NewTabWebContentsObserver;
+}
+#endif
+
 // Class responsible for showing and hiding all sign-in related UIs
 // (modal sign-in, DICE full-tab sign-in page, sync confirmation dialog, sign-in
 // error dialog, reauth prompt). Sync confirmation is used on
@@ -74,6 +81,9 @@ class SigninViewController {
   virtual ~SigninViewController();
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  // Returns true if Chrome new tab page/blank is displayed in `contents`.
+  static bool IsNTPTab(content::WebContents* contents);
+
   // Shows the signin attached to |browser_|'s active web contents.
   // |access_point| indicates the access point used to open the Gaia sign in
   // page.
@@ -115,6 +125,13 @@ class SigninViewController {
       signin_metrics::AccessPoint reauth_access_point,
       signin_metrics::ProfileSignout profile_signout_source,
       signin_metrics::SourceForRefreshTokenOperation token_signout_source);
+
+  // Called by extensions to ask the user to sign in to chrome while they are
+  // signed in on the web only.
+  // This opens/reuses a new tab page and opens a modal dialog.
+  // Note: This should  only be called if the dialog is not already showing.
+  void MaybeShowChromeSigninDialogForExtensions(std::string_view extension_name,
+                                                base::OnceClosure on_complete);
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -236,6 +253,13 @@ class SigninViewController {
       signin_metrics::ProfileSignout profile_signout_source,
       signin_metrics::SourceForRefreshTokenOperation token_signout_source,
       syncer::ModelTypeSet unsynced_datatypes);
+
+  void ShowChromeSigninDialogForExtensions(
+      std::string_view extension_name,
+      base::OnceClosure on_complete,
+      const AccountInfo& account_info_for_promos,
+      content::WebContents* contents);
+
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
   // Returns the web contents of the modal dialog.
@@ -253,6 +277,10 @@ class SigninViewController {
 
   // Currently displayed modal dialog, or nullptr if none is displayed.
   std::unique_ptr<SigninModalDialog> dialog_;
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  std::unique_ptr<NewTabWebContentsObserver> new_tab_web_contents_observer_;
+#endif
 
   base::WeakPtrFactory<SigninViewController> weak_ptr_factory_{this};
 };
