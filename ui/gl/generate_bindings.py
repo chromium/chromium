@@ -92,14 +92,12 @@ GL_FUNCTIONS = [
   'arguments': 'GLenum target, GLuint index, GLuint buffer, GLintptr offset, '
                'GLsizeiptr size', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glBindFragDataLocation',
-                 'extensions': ['GL_ARB_blend_func_extended'] },
+  'versions': [{ 'name': 'glBindFragDataLocation' },
                { 'name': 'glBindFragDataLocationEXT',
                  'extensions': ['GL_EXT_blend_func_extended'] }],
   'arguments': 'GLuint program, GLuint colorNumber, const char* name', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glBindFragDataLocationIndexed',
-                 'extensions': ['GL_ARB_blend_func_extended'] },
+  'versions': [{ 'name': 'glBindFragDataLocationIndexed' },
                { 'name': 'glBindFragDataLocationIndexedEXT',
                  'extensions': ['GL_EXT_blend_func_extended'] }],
   'arguments':
@@ -258,8 +256,7 @@ GL_FUNCTIONS = [
   'names': ['glClearStencil'],
   'arguments': 'GLint s', },
 { 'return_type': 'void',
-  'versions': [{ 'name': 'glClearTexImage',
-                 'extensions': ['GL_ARB_clear_texture'] },
+  'versions': [{ 'name': 'glClearTexImage' },
                { 'name': 'glClearTexImageEXT',
                  'extensions': ['GL_EXT_clear_texture'] }],
   'arguments':
@@ -865,8 +862,7 @@ GL_FUNCTIONS = [
   'arguments':
       'GLenum pname, GLsizei bufSize, GLsizei* length, GLfloat* data', },
 { 'return_type': 'GLint',
-  'versions': [{'name': 'glGetFragDataIndex',
-                'extensions': ['GL_ARB_blend_func_extended']},
+  'versions': [{'name': 'glGetFragDataIndex' },
                {'name': 'glGetFragDataIndexEXT',
                 'extensions': ['GL_EXT_blend_func_extended']}],
   'arguments': 'GLuint program, const char* name', },
@@ -1768,7 +1764,7 @@ GL_FUNCTIONS = [
   'arguments':
       'GLenum target, GLenum internalformat, GLsizei width, GLsizei height', },
 { 'return_type': 'void',
- 'versions' : [{'name': 'glRenderbufferStorageMultisample',
+  'versions': [{'name': 'glRenderbufferStorageMultisample',
                 'extensions': ['GL_ARB_framebuffer_object']},
                {'name': 'glRenderbufferStorageMultisampleANGLE'},
                {'name': 'glRenderbufferStorageMultisampleEXT',
@@ -1777,13 +1773,13 @@ GL_FUNCTIONS = [
   'arguments': 'GLenum target, GLsizei samples, GLenum internalformat, '
                'GLsizei width, GLsizei height', },
 { 'return_type': 'void',
- 'versions' : [{'name': 'glRenderbufferStorageMultisampleAdvancedAMD',
+  'versions': [{'name': 'glRenderbufferStorageMultisampleAdvancedAMD',
                 'extensions': ['GL_AMD_framebuffer_multisample_advanced'] ,
                 'explicit_only': True}],
   'arguments': 'GLenum target, GLsizei samples, GLsizei storageSamples, '
                'GLenum internalformat,GLsizei width, GLsizei height', },
 { 'return_type': 'void',
- 'versions' : [{'name': 'glRenderbufferStorageMultisampleEXT',
+  'versions': [{'name': 'glRenderbufferStorageMultisampleEXT',
                 'extensions': ['GL_EXT_multisampled_render_to_texture'],
                 'explicit_only': True},
                {'name': 'glRenderbufferStorageMultisampleIMG'}],

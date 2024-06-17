@@ -329,10 +329,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       gfx::HasExtension(extensions, "GL_ARB_ES2_compatibility");
   ext.b_GL_ARB_base_instance =
       gfx::HasExtension(extensions, "GL_ARB_base_instance");
-  ext.b_GL_ARB_blend_func_extended =
-      gfx::HasExtension(extensions, "GL_ARB_blend_func_extended");
-  ext.b_GL_ARB_clear_texture =
-      gfx::HasExtension(extensions, "GL_ARB_clear_texture");
   ext.b_GL_ARB_draw_buffers =
       gfx::HasExtension(extensions, "GL_ARB_draw_buffers");
   ext.b_GL_ARB_draw_instanced =
@@ -519,7 +515,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         GetGLProcAddress("glBindBufferRangeEXT"));
   }
 
-  if (ver->IsAtLeastGL(3u, 0u) || ext.b_GL_ARB_blend_func_extended) {
+  if (ver->IsAtLeastGL(3u, 0u)) {
     fn.glBindFragDataLocationFn = reinterpret_cast<glBindFragDataLocationProc>(
         GetGLProcAddress("glBindFragDataLocation"));
   } else if (ext.b_GL_EXT_blend_func_extended || ext.b_GL_EXT_gpu_shader4) {
@@ -527,7 +523,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         GetGLProcAddress("glBindFragDataLocationEXT"));
   }
 
-  if (ver->IsAtLeastGL(3u, 3u) || ext.b_GL_ARB_blend_func_extended) {
+  if (ver->IsAtLeastGL(3u, 3u)) {
     fn.glBindFragDataLocationIndexedFn =
         reinterpret_cast<glBindFragDataLocationIndexedProc>(
             GetGLProcAddress("glBindFragDataLocationIndexed"));
@@ -695,7 +691,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         reinterpret_cast<glClearDepthfProc>(GetGLProcAddress("glClearDepthf"));
   }
 
-  if (ver->IsAtLeastGL(4u, 4u) || ext.b_GL_ARB_clear_texture) {
+  if (ver->IsAtLeastGL(4u, 4u)) {
     fn.glClearTexImageFn = reinterpret_cast<glClearTexImageProc>(
         GetGLProcAddress("glClearTexImage"));
   } else if (ext.b_GL_EXT_clear_texture) {
@@ -1378,7 +1374,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         GetGLProcAddress("glGetFloatvRobustANGLE"));
   }
 
-  if (ver->IsAtLeastGL(3u, 3u) || ext.b_GL_ARB_blend_func_extended) {
+  if (ver->IsAtLeastGL(3u, 3u)) {
     fn.glGetFragDataIndexFn = reinterpret_cast<glGetFragDataIndexProc>(
         GetGLProcAddress("glGetFragDataIndex"));
   } else if (ext.b_GL_EXT_blend_func_extended) {
