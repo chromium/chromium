@@ -59,6 +59,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/menu_model.h"
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "components/plus_addresses/resources/vector_icons.h"
+#endif
+
 namespace autofill {
 
 using FillingProductSet = DenseSet<FillingProduct>;
@@ -82,7 +86,7 @@ constexpr int kContextMenuIconSize = 16;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const gfx::VectorIcon& kPlusAddressLogoIcon =
-    vector_icons::kPlusAddressLogoSmallIcon;
+    plus_addresses::kPlusAddressLogoSmallIcon;
 #else
 const gfx::VectorIcon& kPlusAddressLogoIcon = vector_icons::kEmailIcon;
 #endif

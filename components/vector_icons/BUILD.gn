@@ -285,8 +285,6 @@ aggregate_vector_icons("components_vector_icons") {
       "google_chrome/page_insights.icon",
       "google_chrome/page_insights_color.icon",
       "google_chrome/pen_spark.icon",
-      "google_chrome/plus_address_logo_large.icon",
-      "google_chrome/plus_address_logo_small.icon",
     ]
   }
 }
