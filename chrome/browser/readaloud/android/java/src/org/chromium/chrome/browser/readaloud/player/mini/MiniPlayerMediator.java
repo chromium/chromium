@@ -197,7 +197,7 @@ public class MiniPlayerMediator implements BottomControlsLayer {
      *
      * @param newState New visibility.
      */
-    public void onTransitionFinished(@VisibilityState int newState) {
+    private void onTransitionFinished(@VisibilityState int newState) {
         mModel.set(Properties.VISIBILITY, newState);
     }
 
@@ -249,6 +249,7 @@ public class MiniPlayerMediator implements BottomControlsLayer {
     @Override
     public boolean isVisible() {
         // Consider layer visible even it's during transition.
-        return mModel.get(Properties.VISIBILITY) != VisibilityState.GONE;
+        return mModel.get(Properties.VISIBILITY) == VisibilityState.VISIBLE
+                || mModel.get(Properties.VISIBILITY) == VisibilityState.SHOWING;
     }
 }
