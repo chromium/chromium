@@ -26,7 +26,6 @@
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
-#include "gpu/config/gpu_test_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -433,14 +432,6 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, IsSupported) {
 }
 
 TEST_P(GLTextureImageBackingFactoryWithFormatTest, Basic) {
-  // TODO(jonahr): Test fails on Mac with ANGLE/passthrough
-  // (crbug.com/1100975)
-  gpu::GPUTestBotConfig bot_config;
-  if (bot_config.LoadCurrentConfig(nullptr) &&
-      bot_config.Matches("mac passthrough")) {
-    GTEST_SKIP();
-  }
-
   viz::SharedImageFormat format = get_format();
   if (!IsFormatSupport(format)) {
     GTEST_SKIP();
