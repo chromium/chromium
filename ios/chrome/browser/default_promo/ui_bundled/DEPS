@@ -1,0 +1,7 @@
+include_rules = [
+  "+ios/chrome/browser/default_browser/model/utils.h",
+  "+ios/chrome/browser/feature_engagement/model/tracker_factory.h",
+  "+ios/chrome/browser/promos_manager/model",
+  "+ios/chrome/browser/ui/infobars",
+  "+ios/chrome/browser/ui/promos_manager",
+]

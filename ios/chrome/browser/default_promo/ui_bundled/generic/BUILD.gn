@@ -1,0 +1,47 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("generic") {
+  sources = [
+    "default_browser_generic_promo_commands.h",
+    "default_browser_generic_promo_coordinator.h",
+    "default_browser_generic_promo_coordinator.mm",
+    "default_browser_generic_promo_mediator.h",
+    "default_browser_generic_promo_mediator.mm",
+    "default_browser_generic_promo_view_controller.h",
+    "default_browser_generic_promo_view_controller.mm",
+  ]
+
+  deps = [
+    "//components/feature_engagement/public",
+    "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/default_promo/ui_bundled:coordinator",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/promos_manager/model",
+    "//ios/chrome/browser/promos_manager/model:factory",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/ui/promos_manager:promos",
+    "//ios/chrome/common/ui/confirmation_alert",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "default_browser_generic_promo_coordinator_unittest.mm" ]
+  deps = [
+    ":generic",
+    "//base",
+    "//base/test:test_support",
+    "//components/feature_engagement/public",
+    "//components/feature_engagement/test:test_support",
+    "//ios/chrome/browser/feature_engagement/model",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/test:test_support",
+  ]
+}

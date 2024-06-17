@@ -40,8 +40,8 @@ specific_include_rules = {
     "+ios/chrome/browser/shared/coordinator/scene/scene_state.h",
   ],
   "^ios_chrome_default_browser_metrics_provider.mm": [
-    "+ios/chrome/browser/ui/default_promo/default_browser_utils.h",
     "+ios/chrome/browser/default_browser/model/utils.h",
+    "+ios/chrome/browser/default_promo/ui_bundled/default_browser_utils.h",
   ],
   "^ios_chrome_metrics_service_client.mm": [
     "+ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h",

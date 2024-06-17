@@ -7,6 +7,8 @@
 #import "base/notreached.h"
 #import "base/timer/timer.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/default_browser_promo_non_modal_commands.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/default_browser_promo_non_modal_metrics_util.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_presenter_observer_bridge.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -19,8 +21,6 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
-#import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_metrics_util.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 

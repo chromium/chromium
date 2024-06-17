@@ -1,5 +1,5 @@
 include_rules = [
-  "+ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_scheduler.h",
+  "+ios/chrome/browser/default_promo/ui_bundled/default_browser_promo_non_modal_scheduler.h",
 ]
 
 specific_include_rules = {
