@@ -1029,6 +1029,10 @@ public final class ProductionSupportedFlagList {
                 BlinkFeatures.STANDARDIZED_BROWSER_ZOOM,
                 "Enable conformance to the new HTML specification for CSS zoom."),
         Flag.baseFeature("UseContextSnapshot"),
+        Flag.baseFeature(
+                CcFeatures.WAIT_FOR_LATE_SCROLL_EVENTS,
+                "While scrolling, attempts to wait for late arriving input events before"
+                    + " rendering."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
