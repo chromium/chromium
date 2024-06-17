@@ -63,6 +63,7 @@ source_set("browser_tests") {
     "//chrome/browser/apps/app_service/app_install:implementation",
     "//chrome/browser/ash:test_support",
     "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
+    "//chrome/browser/ash/wallpaper_handlers:test_support",
     "//chrome/browser/error_reporting:test_support",
     "//chrome/browser/ui/ash/system_web_apps",
     "//components/crash/content/browser/error_reporting:mock_crash_endpoint",

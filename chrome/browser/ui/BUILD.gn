@@ -3887,6 +3887,7 @@ static_library("ui") {
       "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/ash/system_web_apps/types",
       "//chrome/browser/ash/wallpaper",
+      "//chrome/browser/ash/wallpaper_handlers",
       "//chrome/browser/chromeos/extensions/vpn_provider",
       "//chrome/browser/chromeos/extensions/wm",
       "//chrome/browser/chromeos/launcher_search:search_util",

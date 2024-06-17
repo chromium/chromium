@@ -602,6 +602,7 @@ source_set("unit_tests") {
     "//base/test:test_config",
     "//base/test:test_support",
     "//chrome/browser/ash:test_support",
+    "//chrome/browser/ash/wallpaper_handlers:test_support",
     "//chrome/browser/chromeos:test_support",
     "//chrome/browser/chromeos/launcher_search:search_util",
     "//chrome/common/printing",
