@@ -172,8 +172,6 @@ void MahiWebContentsManager::Initialize() {
                              base::BindRepeating(
                                  &MahiWebContentsManager::RequestContent,
                                  weak_pointer_factory_.GetWeakPtr()));
-  content_extraction_delegate_ =
-      std::make_unique<MahiContentExtractionDelegate>();
 
   is_initialized_ = true;
 }
@@ -338,6 +336,11 @@ void MahiWebContentsManager::RequestContent(
     // TODO(b:336438243): Add UMA to track this.
     std::move(callback).Run(nullptr);
     return;
+  }
+
+  if (!content_extraction_delegate_) {
+    content_extraction_delegate_ =
+        std::make_unique<MahiContentExtractionDelegate>();
   }
 
   if (IsPDFWebContents(focused_web_contents_)) {
