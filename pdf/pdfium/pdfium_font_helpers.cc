@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "pdf/pdfium/pdfium_font_helpers.h"
 
 #include <algorithm>
@@ -56,7 +51,7 @@ std::optional<blink::WebFontDescription> PdfFontToBlinkFontMapping(
     desc.generic_family = blink::WebFontDescription::kGenericFamilyStandard;
   }
 
-  static const struct {
+  static constexpr struct {
     const char* pdf_name;
     const char* face;
     bool bold;
@@ -103,21 +98,22 @@ std::optional<blink::WebFontDescription> PdfFontToBlinkFontMapping(
   }
 
   // Map from the standard PDF fonts to TrueType font names.
-  size_t i;
-  for (i = 0; i < std::size(kPdfFontSubstitutions); ++i) {
-    if (strcmp(face, kPdfFontSubstitutions[i].pdf_name) == 0) {
-      desc.family = blink::WebString::FromUTF8(kPdfFontSubstitutions[i].face);
-      if (kPdfFontSubstitutions[i].bold) {
+  bool found_substitution = false;
+  for (const auto& substitution : kPdfFontSubstitutions) {
+    if (strcmp(face, substitution.pdf_name) == 0) {
+      desc.family = blink::WebString::FromUTF8(substitution.face);
+      if (substitution.bold) {
         desc.weight = blink::WebFontDescription::kWeightBold;
       }
-      if (kPdfFontSubstitutions[i].italic) {
+      if (substitution.italic) {
         desc.italic = true;
       }
+      found_substitution = true;
       break;
     }
   }
 
-  if (i == std::size(kPdfFontSubstitutions)) {
+  if (!found_substitution) {
     // Convert to UTF-8 and make sure it is valid.
     std::string face_utf8;
     if (base::IsStringUTF8(face)) {
