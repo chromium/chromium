@@ -1884,6 +1884,7 @@
     },
     {
       name: "FontationsForSelectedFormats",
+      status: "stable",
     },
     {
       name: "FontFamilyPostscriptMatchingCTMigration",

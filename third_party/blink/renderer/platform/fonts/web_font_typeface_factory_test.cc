@@ -66,6 +66,8 @@ TEST(WebFontTypefaceFactoryTest, DefaultAlwaysSystem) {
 }
 
 TEST(WebFontTypefaceFactoryTest, ColrV1AlwaysFallback) {
+  ScopedFontationsForSelectedFormatsForTest scoped_fontations_selected_formats(
+      false);
   sk_sp<SkData> data = SkData::MakeEmpty();
   MockFontFormatCheck mock_font_format_check(data);
   EXPECT_CALL(mock_font_format_check, IsColrCpalColorFontV1())
@@ -97,6 +99,8 @@ TEST(WebFontTypefaceFactoryTest, FontationsSelectedAlwaysColrV1) {
 }
 
 TEST(WebFontTypefaceFactoryTest, Cff2AlwaysFallback) {
+  ScopedFontationsForSelectedFormatsForTest scoped_fontations_selected_formats(
+      false);
   sk_sp<SkData> data = SkData::MakeEmpty();
   MockFontFormatCheck mock_font_format_check(data);
   EXPECT_CALL(mock_font_format_check, IsCff2OutlineFont())
@@ -128,6 +132,8 @@ TEST(WebFontTypefaceFactoryTest, FontationsSelectedAlwaysCFF2) {
 }
 
 TEST(WebFontTypefaceFactoryTest, CbdtCblcAlwaysFallback) {
+  ScopedFontationsForSelectedFormatsForTest scoped_fontations_selected_formats(
+      false);
   sk_sp<SkData> data = SkData::MakeEmpty();
   MockFontFormatCheck mock_font_format_check(data);
   EXPECT_CALL(mock_font_format_check, IsCbdtCblcColorFont())
@@ -159,6 +165,8 @@ TEST(WebFontTypefaceFactoryTest, FontationsSelectedAlwaysCbdtCblc) {
 }
 
 TEST(WebFontTypefaceFactoryTest, ColrV0FallbackApple) {
+  ScopedFontationsForSelectedFormatsForTest scoped_fontations_selected_formats(
+      false);
   sk_sp<SkData> data = SkData::MakeEmpty();
   MockFontFormatCheck mock_font_format_check(data);
   EXPECT_CALL(mock_font_format_check, IsColrCpalColorFontV0())
@@ -176,6 +184,8 @@ TEST(WebFontTypefaceFactoryTest, ColrV0FallbackApple) {
 }
 
 TEST(WebFontTypefaceFactoryTest, VariableColrV0FallbackWindowsApple) {
+  ScopedFontationsForSelectedFormatsForTest scoped_fontations_selected_formats(
+      false);
   sk_sp<SkData> data = SkData::MakeEmpty();
   MockFontFormatCheck mock_font_format_check(data);
   EXPECT_CALL(mock_font_format_check, IsColrCpalColorFontV0())
@@ -256,6 +266,8 @@ TEST(WebFontTypefaceFactoryTest, FontationsSelectedVariableColrV0) {
 #define MAYBE_SbixFallbackWindows SbixFallbackWindows
 #endif
 TEST(WebFontTypefaceFactoryTest, MAYBE_SbixFallbackWindows) {
+  ScopedFontationsForSelectedFormatsForTest scoped_fontations_selected_formats(
+      false);
   sk_sp<SkData> data = SkData::MakeEmpty();
   MockFontFormatCheck mock_font_format_check(data);
   EXPECT_CALL(mock_font_format_check, IsSbixColorFont())
@@ -301,6 +313,8 @@ TEST(WebFontTypefaceFactoryTest, FontationsSelectedSbixNonApple) {
 #define MAYBE_VariationsWinFallbackIfNeeded VariationsWinFallbackIfNeeded
 #endif
 TEST(WebFontTypefaceFactoryTest, MAYBE_VariationsWinFallbackIfNeeded) {
+  ScopedFontationsForSelectedFormatsForTest scoped_fontations_selected_formats(
+      false);
   sk_sp<SkData> data = SkData::MakeEmpty();
   MockFontFormatCheck mock_font_format_check(data);
   EXPECT_CALL(mock_font_format_check, IsVariableFont())

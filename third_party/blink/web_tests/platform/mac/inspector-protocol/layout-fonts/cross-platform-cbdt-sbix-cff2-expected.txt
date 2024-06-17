@@ -4,7 +4,7 @@ abcdefghijklmnopqrstuvwxyz
 
 
 #sbix_support__should_be_using_chromacheck_only:
-"PixelAmbacht ChromaCheck (Fontations)" : 7
+"PixelAmbacht ChromaCheck" : 7
 
 
 #cbdt_support__should_be_using_notocoloremoji_only:
