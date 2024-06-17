@@ -47,7 +47,7 @@ enum class DragDropItem {
 enum class DragItemOrigin {
   kSameCollection = 0,
   kSameBrowser = 1,
-  kOtherBrwoser = 2,
+  kOtherBrowser = 2,
   kOther = 3,
   kMaxValue = kOther
 };

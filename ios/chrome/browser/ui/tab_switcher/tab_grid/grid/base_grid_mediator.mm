@@ -1238,7 +1238,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
     if (sourceWebStateIndex == WebStateList::kInvalidIndex) {
       // Move tab across Browsers.
       base::UmaHistogramEnumeration(kUmaGridViewDragOrigin,
-                                    DragItemOrigin::kOtherBrwoser);
+                                    DragItemOrigin::kOtherBrowser);
       int destinationWebStateIndex =
           WebStateIndexFromGridDropItemIndex(webStateList, destinationIndex);
 
@@ -1247,13 +1247,14 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
     }
 
     if (fromSameCollection) {
-      base::UmaHistogramEnumeration(kUmaGroupViewDragOrigin,
+      base::UmaHistogramEnumeration(kUmaGridViewDragOrigin,
                                     DragItemOrigin::kSameCollection);
     } else {
       base::UmaHistogramEnumeration(kUmaGridViewDragOrigin,
                                     DragItemOrigin::kSameBrowser);
     }
 
+    // Reorder tabs.
     int destinationWebStateIndex = WebStateIndexFromGridDropItemIndex(
         webStateList, destinationIndex, sourceWebStateIndex);
     const auto insertionParams =
@@ -1271,7 +1272,7 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
       return;
     }
     if (fromSameCollection) {
-      base::UmaHistogramEnumeration(kUmaGridViewGroupDragOrigin,
+      base::UmaHistogramEnumeration(kUmaGridViewDragOrigin,
                                     DragItemOrigin::kSameCollection);
       CHECK(tabGroupInfo.tabGroup);
       int sourceIndex = tabGroupInfo.tabGroup->range().range_begin();
@@ -1280,8 +1281,8 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
       webStateList->MoveGroup(tabGroupInfo.tabGroup, nextWebStateIndex);
       return;
     } else {
-      base::UmaHistogramEnumeration(kUmaGridViewGroupDragOrigin,
-                                    DragItemOrigin::kOtherBrwoser);
+      base::UmaHistogramEnumeration(kUmaGridViewDragOrigin,
+                                    DragItemOrigin::kOtherBrowser);
     }
 
     int destinationWebStateIndex =
@@ -1308,13 +1309,23 @@ Browser* GetBrowserForTabWithId(BrowserList* browser_list,
     return;
   }
 
+  if (_currentMode == TabGridModeGroup) {
+    base::UmaHistogramEnumeration(kUmaGroupViewDragOrigin,
+                                  DragItemOrigin::kOther);
+  } else {
+    base::UmaHistogramEnumeration(kUmaGridViewDragOrigin,
+                                  DragItemOrigin::kOther);
+  }
+
+  __weak BaseGridMediator* weakSelf = self;
   auto loadHandler =
       ^(__kindof id<NSItemProviderReading> providedItem, NSError* error) {
         dispatch_async(dispatch_get_main_queue(), ^{
           [placeholderContext deletePlaceholder];
           NSURL* droppedURL = static_cast<NSURL*>(providedItem);
-          [self insertNewWebStateAtGridIndex:destinationIndex
-                                     withURL:net::GURLWithNSURL(droppedURL)];
+          [weakSelf
+              insertNewWebStateAtGridIndex:destinationIndex
+                                   withURL:net::GURLWithNSURL(droppedURL)];
         });
       };
   [itemProvider loadObjectOfClass:[NSURL class] completionHandler:loadHandler];

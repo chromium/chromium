@@ -224,7 +224,7 @@
             .InGroup(_tabGroup.get());
     if (sourceWebStateIndex == WebStateList::kInvalidIndex) {
       base::UmaHistogramEnumeration(kUmaGroupViewDragOrigin,
-                                    DragItemOrigin::kOtherBrwoser);
+                                    DragItemOrigin::kOtherBrowser);
       MoveTabToBrowser(tabInfo.tabID, self.browser, insertionParams);
       return;
     }
@@ -233,14 +233,17 @@
       base::UmaHistogramEnumeration(kUmaGroupViewDragOrigin,
                                     DragItemOrigin::kSameCollection);
     } else {
-      base::UmaHistogramEnumeration(kUmaGridViewDragOrigin,
+      base::UmaHistogramEnumeration(kUmaGroupViewDragOrigin,
                                     DragItemOrigin::kSameBrowser);
     }
 
+    // Reorder tabs.
     MoveWebStateWithIdentifierToInsertionParams(
         tabInfo.tabID, insertionParams, webStateList, fromSameCollection);
     return;
   }
+  base::UmaHistogramEnumeration(kUmaGroupViewDragOrigin,
+                                DragItemOrigin::kOther);
 
   // Handle URLs from within Chrome synchronously using a local object.
   if ([dragItem.localObject isKindOfClass:[URLInfo class]]) {

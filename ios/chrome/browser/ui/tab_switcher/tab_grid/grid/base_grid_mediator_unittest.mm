@@ -13,6 +13,7 @@
 #import "base/containers/contains.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/time/time.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/tab_groups/tab_group_visual_data.h"
@@ -28,6 +29,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_collection_drag_drop_metrics.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_test.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_mediator.h"
@@ -92,8 +94,15 @@ class BaseGridMediatorTest
     GridMediatorTestClass::TearDown();
   }
 
+  // Checks that the drag item origin metric is logged in UMA.
+  void ExpectThatDragItemOriginMetricLogged(DragItemOrigin origin,
+                                            int count = 1) {
+    histogram_tester_.ExpectUniqueSample(kUmaGridViewDragOrigin, origin, count);
+  }
+
  protected:
   BaseGridMediator* mediator_;
+  base::HistogramTester histogram_tester_;
 };
 
 // Variation on BaseGridMediatorTest which enable PriceDropIndicatorsFlag.
@@ -827,6 +836,7 @@ TEST_P(BaseGridMediatorTest, DropLocalTab) {
   [mediator_ dropItem:drag_item toIndex:0 fromSameCollection:YES];
 
   EXPECT_EQ("| c a* b", builder.GetWebStateListDescription());
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kSameCollection);
 }
 
 // Tests dropping a tabs from the tab group view in the grid.
@@ -854,6 +864,7 @@ TEST_P(BaseGridMediatorTest, DropLocalTabFromTabGroup) {
   drag_item.localObject = local_object;
   [mediator_ dropItem:drag_item toIndex:1 fromSameCollection:NO];
   EXPECT_EQ("| a* d b c [ 0 e f ] g", builder.GetWebStateListDescription());
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kSameBrowser, 1);
 
   // Drop "E" (in a group) before "G".
   web_state_id = web_state_list->GetWebStateAt(4)->GetUniqueIdentifier();
@@ -865,6 +876,7 @@ TEST_P(BaseGridMediatorTest, DropLocalTabFromTabGroup) {
   drag_item.localObject = local_object;
   [mediator_ dropItem:drag_item toIndex:5 fromSameCollection:NO];
   EXPECT_EQ("| a* d b c [ 0 f ] e g", builder.GetWebStateListDescription());
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kSameBrowser, 2);
 }
 
 // Tests dropping a tab from another browser (e.g. drag from another window) in
@@ -904,6 +916,7 @@ TEST_P(BaseGridMediatorTest, DropCrossWindowTab) {
   EXPECT_EQ(4, web_state_list->count());
   EXPECT_EQ(0, other_browser->GetWebStateList()->count());
   EXPECT_EQ(url_to_load, web_state_list->GetWebStateAt(1)->GetVisibleURL());
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kOtherBrowser);
 }
 
 // Tests dropping a local Tab Group (i.e. from the same window).
@@ -933,6 +946,7 @@ TEST_P(BaseGridMediatorTest, DropLocalTabGroup) {
   [mediator_ dropItem:drag_item toIndex:1 fromSameCollection:YES];
 
   EXPECT_EQ("| [ 1 a* b ] [ 2 d e ] c", builder.GetWebStateListDescription());
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kSameCollection);
 }
 
 // TODO:(crbug.com/346293139): Re-enable this test.
@@ -979,6 +993,7 @@ TEST_P(BaseGridMediatorTest, DISABLED_DropCrossBrowserTabGroup) {
 
   EXPECT_EQ(nullptr, web_state_list->GetGroupOfWebStateAt(2));
   EXPECT_EQ(other_tab_group, web_state_list->GetGroupOfWebStateAt(3));
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kOtherBrowser);
 }
 
 // Tests dropping an interal URL (e.g. drag from omnibox) in the grid.
@@ -1003,6 +1018,7 @@ TEST_P(BaseGridMediatorTest, DropInternalURL) {
   web::WebState* web_state = web_state_list->GetWebStateAt(1);
   EXPECT_EQ(url_to_load,
             web_state->GetNavigationManager()->GetPendingItem()->GetURL());
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kOther);
 }
 
 // Tests dropping an external URL in the grid.
@@ -1029,6 +1045,7 @@ TEST_P(BaseGridMediatorTest, DropExternalURL) {
   web::WebState* web_state = web_state_list->GetWebStateAt(1);
   EXPECT_EQ(GURL(kDraggedUrl),
             web_state->GetNavigationManager()->GetPendingItem()->GetURL());
+  ExpectThatDragItemOriginMetricLogged(DragItemOrigin::kOther);
 }
 
 INSTANTIATE_TEST_SUITE_P(
