@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab.flatbuffer.TabLaunchTypeAtCreation;
 import org.chromium.chrome.browser.tab.flatbuffer.UserAgentType;
 import org.chromium.chrome.browser.tabpersistence.FlatBufferTabStateSerializer.TabStateFlatBufferDeserializeResult;
+import org.chromium.chrome.test.util.ByteBufferTestUtils;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -52,6 +53,9 @@ public class TabStateFileManagerUnitTest {
     private static final @TabUserAgent int USER_AGENT = TabUserAgent.MOBILE;
     private static final long TAB_GROUP_ID_TOKEN_HIGH = 0x1234567890L;
     private static final long TAB_GROUP_ID_TOKEN_LOW = 0xABCDEF1234L;
+    private static final Token TAB_GROUP_ID =
+            new Token(TAB_GROUP_ID_TOKEN_HIGH, TAB_GROUP_ID_TOKEN_LOW);
+    private static final int LARGE_BYTE_BUFFER_SIZE = Integer.MAX_VALUE / 4;
 
     @Rule public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
@@ -74,6 +78,22 @@ public class TabStateFileManagerUnitTest {
         TabStateFileManager.saveStateInternal(file, state, false);
 
         validateTestTabState(TabStateFileManager.restoreTabStateInternal(file, false), tabGroupId);
+    }
+
+    @Test
+    public void testLargeContentsState() throws IOException {
+        File file = createTestTabStateFile();
+        ByteBuffer buffer = ByteBuffer.allocateDirect(LARGE_BYTE_BUFFER_SIZE);
+        for (int i = 0; i < LARGE_BYTE_BUFFER_SIZE; i++) {
+            buffer.put((byte) (i % Byte.MAX_VALUE));
+        }
+        WebContentsState contentsState = new WebContentsState(buffer);
+        contentsState.setVersion(WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
+        TabState state = createTabState(contentsState);
+        TabStateFileManager.saveStateInternal(file, state, /* encrypted= */ false);
+        validateTestTabState(
+                TabStateFileManager.restoreTabStateInternal(file, /* isEncrypted= */ false),
+                contentsState);
     }
 
     @Test
@@ -439,36 +459,58 @@ public class TabStateFileManagerUnitTest {
 
     private TabState createTabStateWithMappedByteBuffer(File file, @Nullable Token tabGroupId)
             throws IOException {
-        TabState state = new TabState();
         FileInputStream fileInputStream = null;
-
         try {
             fileInputStream = new FileInputStream(file);
-            state.contentsState =
+            return createTabState(
                     new WebContentsState(
                             fileInputStream
                                     .getChannel()
                                     .map(
                                             FileChannel.MapMode.READ_ONLY,
                                             fileInputStream.getChannel().position(),
-                                            file.length()));
-            state.contentsState.setVersion(VERSION);
-            state.timestampMillis = TIMESTAMP;
-            state.parentId = PARENT_ID;
-            state.themeColor = THEME_COLOR;
-            state.openerAppId = OPENER_APP_ID;
-            state.tabLaunchTypeAtCreation = LAUNCH_TYPE_AT_CREATION;
-            state.rootId = ROOT_ID;
-            state.userAgent = USER_AGENT;
-            state.lastNavigationCommittedTimestampMillis = TIMESTAMP;
-            state.tabGroupId = tabGroupId;
+                                            file.length())),
+                    tabGroupId);
         } finally {
             StreamUtil.closeQuietly(fileInputStream);
         }
+    }
+
+    private static TabState createTabState(
+            WebContentsState contentsState, @Nullable Token tabGroupId) {
+        TabState state = new TabState();
+        state.contentsState = contentsState;
+        state.contentsState.setVersion(VERSION);
+        state.timestampMillis = TIMESTAMP;
+        state.parentId = PARENT_ID;
+        state.themeColor = THEME_COLOR;
+        state.openerAppId = OPENER_APP_ID;
+        state.tabLaunchTypeAtCreation = LAUNCH_TYPE_AT_CREATION;
+        state.rootId = ROOT_ID;
+        state.userAgent = USER_AGENT;
+        state.lastNavigationCommittedTimestampMillis = TIMESTAMP;
+        state.tabGroupId = tabGroupId;
         return state;
     }
 
+    private static TabState createTabState(WebContentsState contentsState) {
+        return createTabState(contentsState, TAB_GROUP_ID);
+    }
+
     private void validateTestTabState(TabState state, @Nullable Token tabGroupId) {
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(CONTENTS_STATE_BYTES.length);
+        for (int i = 0; i < CONTENTS_STATE_BYTES.length; i++) {
+            byteBuffer.put(CONTENTS_STATE_BYTES[i]);
+        }
+        validateTestTabState(state, tabGroupId, new WebContentsState(byteBuffer));
+    }
+
+    private static void validateTestTabState(TabState state, WebContentsState contentsState) {
+        validateTestTabState(state, TAB_GROUP_ID, contentsState);
+    }
+
+    private static void validateTestTabState(
+            TabState state, @Nullable Token tabGroupId, WebContentsState contentsState) {
         assertEquals(TIMESTAMP, state.timestampMillis);
         assertEquals(PARENT_ID, state.parentId);
         assertEquals(OPENER_APP_ID, state.openerAppId);
@@ -476,7 +518,6 @@ public class TabStateFileManagerUnitTest {
         assertEquals(THEME_COLOR, state.getThemeColor());
         assertEquals(LAUNCH_TYPE_AT_CREATION, state.tabLaunchTypeAtCreation);
         assertEquals(ROOT_ID, state.rootId);
-        assertEquals(CONTENTS_STATE_BYTES.length, state.contentsState.buffer().remaining());
         assertEquals(USER_AGENT, state.userAgent);
         assertEquals(TIMESTAMP, state.lastNavigationCommittedTimestampMillis);
         if (tabGroupId == null) {
@@ -484,13 +525,7 @@ public class TabStateFileManagerUnitTest {
         } else {
             assertEquals(tabGroupId, state.tabGroupId);
         }
-
-        byte[] bytesFromFile = new byte[CONTENTS_STATE_BYTES.length];
-        state.contentsState.buffer().get(bytesFromFile);
-
-        for (int i = 0; i < CONTENTS_STATE_BYTES.length; i++) {
-            assertEquals(bytesFromFile[i], CONTENTS_STATE_BYTES[i]);
-        }
+        ByteBufferTestUtils.verifyByteBuffer(state.contentsState.buffer(), contentsState.buffer());
     }
 
     private File createTestTabStateFile() throws IOException {
