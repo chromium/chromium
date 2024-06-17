@@ -1073,13 +1073,15 @@ void WebMediaPlayerImpl::DoSeek(base::TimeDelta time, bool time_updated) {
       // by timeChanged() to signal the renderer seek.
       should_notify_time_changed_ = true;
 
-      // Seek will always emit a new frame -- even if the it's the same frame it
-      // will be decoded again with a new frame id, so simulate that here.
-      main_task_runner_->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&WebMediaPlayerImpl::OnNewFramePresentedCallback,
-                         weak_this_),
-          delay);
+      if (has_first_frame_) {
+        // Seek will always emit a new frame -- even if the it's the same frame
+        // it will be decoded again with a new frame id, so simulate that here.
+        main_task_runner_->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(&WebMediaPlayerImpl::OnNewFramePresentedCallback,
+                           weak_this_),
+            delay);
+      }
 
       main_task_runner_->PostDelayedTask(
           FROM_HERE,
