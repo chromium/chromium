@@ -306,7 +306,7 @@ FaceGazeTestBase = class extends E2ETestBase {
    * @param {!MockFaceLandmarkerResult} result
    * @param {boolean} triggerMouseControllerInterval
    */
-  processFaceLandmarkerResult(result, triggerMouseControllerInterval) {
+  processFaceLandmarkerResult(result, triggerMouseControllerInterval = true) {
     this.getFaceGaze().processFaceLandmarkerResult_(result);
 
     if (triggerMouseControllerInterval) {
