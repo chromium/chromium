@@ -671,14 +671,14 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
     render_pass_scissor_in_draw_space.Intersect(*output_surface_clip_rect_);
   }
 
-  EnsureRenderPassAllocated(render_pass);
-
   if (!is_root_render_pass && render_pass_scissor_in_draw_space.IsEmpty() &&
       base::FeatureList::IsEnabled(kAllowSkipEmptyNonrootRenderPassDraws)) {
     // If the scissor rect is empty, we will end up skipping all the draw quads,
     // so there is no work to do.
     return;
   }
+
+  EnsureRenderPassAllocated(render_pass);
 
   // TODO(crbug.com/40454563): This change applies only when Vulkan is enabled
   // and it will be removed once SkiaRenderer has complete support for Vulkan.

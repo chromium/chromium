@@ -127,12 +127,6 @@ void ImageContextImpl::DeleteFallbackTextures() {
 
 void ImageContextImpl::CreateFallbackImage(
     gpu::SharedContextState* context_state) {
-  // Render pass backings are managed by the renderer, so we expect them to be
-  // available if we try to reference one. If this trips, it likely indicates a
-  // bug in viz.
-  LOG_IF(DFATAL, is_for_render_pass_)
-      << "Expected to fulfill promise texture for render pass backing.";
-
   const int num_planes = format().NumberOfPlanes();
 
   if (context_state->graphite_context()) {

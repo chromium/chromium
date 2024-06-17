@@ -3368,9 +3368,27 @@ void SkiaRenderer::DrawRenderPassQuad(
 
   // A real render pass that was turned into an image
   auto iter = render_pass_backings_.find(quad->render_pass_id);
-  DCHECK(render_pass_backings_.end() != iter)
-      << "Could not find render pass id # " << quad->render_pass_id
-      << " in the render pass overlay backings";
+  if (iter == render_pass_backings_.end()) {
+    // This can happen if we previously skipped drawing a render pass (and
+    // allocating its backing) due to an empty update rect.
+    LOG(ERROR) << "Could not find render pass id # " << quad->render_pass_id
+               << " in the render pass overlay backings";
+
+    // Collect a dump so we can investigate the root cause, but fallback to a
+    // solid color to avoid disrupting the user.
+    base::debug::DumpWithoutCrashing();
+
+    // The fallback is a solid color quad, which do not support batching.
+    if (!batched_quads_.empty()) {
+      FlushBatchedQuads();
+    }
+#if DCHECK_IS_ON()
+    DrawColoredQuad(SkColors::kRed, &rpdq_params, params);
+#else
+    DrawColoredQuad(SkColors::kWhite, &rpdq_params, params);
+#endif
+    return;
+  }
   // This function is called after AllocateRenderPassResourceIfNeeded, so
   // there should be backing ready.
   RenderPassBacking& backing = iter->second;
