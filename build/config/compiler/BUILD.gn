@@ -424,11 +424,7 @@ config("compiler") {
       # links.
       ldflags += [ "-Wl,--build-id=sha1" ]
     } else if (current_os != "aix" && current_os != "zos") {
-      if (!is_nacl) {
-        ldflags += [ "-Wl,--build-id=fast" ]
-      } else {
-        ldflags += [ "-Wl,--build-id" ]
-      }
+      ldflags += [ "-Wl,--build-id" ]
     }
 
     if (!is_android) {
