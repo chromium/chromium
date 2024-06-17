@@ -65,10 +65,6 @@ const CGFloat kButtonsHeight = 50;
 const CGFloat kButtonsMargin = 8;
 const CGFloat kButtonBackgroundCornerRadius = 15;
 
-// Threshold for considering whether the displayed keyboard is a toolbar or the
-// virtual keyboard.
-const CGFloat kKeyboardToolbarHeightThreshold = 70;
-
 // Clear button constants.
 const CGFloat kClearButtonAlpha = 0.34;
 const CGFloat kClearButtonSize = 20;
@@ -108,10 +104,6 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   // are displayed.
   NSArray<NSLayoutConstraint*>* _singleSnapshotConstraints;
   NSArray<NSLayoutConstraint*>* _multipleSnapshotsConstraints;
-  // Constraints for the top anchor of the `_colorsScrollView`, depending on if
-  // the `_snapshotsView` is displayed.
-  NSLayoutConstraint* _snapshotsViewDisplayedConstraint;
-  NSLayoutConstraint* _snapshotsViewHiddenConstraint;
 
   // Buttons to create or cancel the group creation.
   UIButton* _creationButton;
@@ -125,9 +117,6 @@ const CGFloat kClearButtonWidthAndHeight = 40;
 
   // Scrollview that containts color selection buttons.
   UIView* _colorsScrollView;
-
-  // YES if the visual keyboard is displayed.
-  BOOL _keyboardDisplayed;
 }
 
 - (instancetype)initWithEditMode:(BOOL)editMode
@@ -168,29 +157,13 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   [_selectedButton setSelected:YES];
 
   [self createConfigurations];
-  [self updateViews];
+  [self updateViews:self.view previousTraitCollection:nil];
 
   if (@available(iOS 17, *)) {
     [self registerForTraitChanges:@[ UITraitVerticalSizeClass.self ]
-                       withAction:@selector(updateViews)];
+                       withAction:@selector(updateViews:
+                                      previousTraitCollection:)];
   }
-  [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(keyboardDidShow:)
-             name:UIKeyboardDidShowNotification
-           object:nil];
-  [[NSNotificationCenter defaultCenter]
-      addObserver:self
-         selector:@selector(keyboardDidHide:)
-             name:UIKeyboardDidHideNotification
-           object:nil];
-
-  // Force-hide the snapshots on iPad by simulating a visible virtual keyboard.
-  // The keyboard will appear when the view controller is presented, so this
-  // avoids having the snapshots visible by default.
-  _keyboardDisplayed = YES;
-  [self hideSnapshotsIfNeeded:NO];
-  _keyboardDisplayed = NO;
 
   // To force display the keyboard when the view is shown.
   [_tabGroupTextField becomeFirstResponder];
@@ -207,7 +180,8 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   }
   if (self.traitCollection.verticalSizeClass !=
       previousTraitCollection.verticalSizeClass) {
-    [self updateViews];
+    [self updateViews:self.view
+        previousTraitCollection:previousTraitCollection];
   }
 }
 
@@ -235,9 +209,12 @@ const CGFloat kClearButtonWidthAndHeight = 40;
                   action:@selector(clearTextField)
         forControlEvents:UIControlEventTouchUpInside];
 
+  NSLayoutConstraint* buttonWidth = [clearButton.widthAnchor
+      constraintEqualToConstant:kClearButtonWidthAndHeight];
+  buttonWidth.priority = UILayoutPriorityDefaultHigh;
+
   [NSLayoutConstraint activateConstraints:@[
-    [clearButton.widthAnchor
-        constraintEqualToConstant:kClearButtonWidthAndHeight],
+    buttonWidth,
     [clearButton.heightAnchor constraintEqualToAnchor:clearButton.widthAnchor],
   ]];
 
@@ -580,97 +557,71 @@ const CGFloat kClearButtonWidthAndHeight = 40;
 }
 
 // Updates all the view and subviews depending on space available.
-- (void)updateViews {
-  _cancelButton.hidden = NO;
-  _creationButton.hidden = NO;
-  _cancelButtonCompact.hidden = NO;
-  _creationButtonCompact.hidden = NO;
+- (void)updateViews:(UIView*)updatedView
+    previousTraitCollection:(UITraitCollection*)previousTraitCollection {
+  if (previousTraitCollection.verticalSizeClass ==
+      self.traitCollection.verticalSizeClass) {
+    return;
+  }
+  NSArray<UIView*>* toHide;
+  NSArray<UIView*>* toDisplay;
 
   BOOL isVerticallyCompacted =
       self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
   if (isVerticallyCompacted) {
-    _cancelButton.hidden = YES;
-    _creationButton.hidden = YES;
+    toHide = @[ _cancelButton, _creationButton ];
+    toDisplay = @[ _cancelButtonCompact, _creationButtonCompact ];
     [NSLayoutConstraint deactivateConstraints:_regularConstraints];
     [NSLayoutConstraint activateConstraints:_compactConstraints];
   } else {
-    _cancelButtonCompact.hidden = YES;
-    _creationButtonCompact.hidden = YES;
+    toHide = @[ _cancelButtonCompact, _creationButtonCompact ];
+    toDisplay = @[ _cancelButton, _creationButton ];
     [NSLayoutConstraint deactivateConstraints:_compactConstraints];
     [NSLayoutConstraint activateConstraints:_regularConstraints];
   }
 
-  [self.view layoutIfNeeded];
-  [self hideSnapshotsIfNeeded:YES];
+  for (UIView* view in toDisplay) {
+    view.hidden = NO;
+    view.alpha = 0;
+  }
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:kSnapshotViewAnimationTime
+      animations:^{
+        for (UIView* view in toHide) {
+          view.alpha = 0;
+        }
+        for (UIView* view in toDisplay) {
+          view.alpha = 1;
+        }
+        [weakSelf.view layoutIfNeeded];
+        [weakSelf hideSnapshotsIfNeeded];
+      }
+      completion:^(BOOL finished) {
+        for (UIView* view in toHide) {
+          view.hidden = YES;
+        }
+      }];
+
   // To force display the keyboard.
   [_tabGroupTextField becomeFirstResponder];
 }
 
 // Hides the snapshots container depending on some conditions.
-- (void)hideSnapshotsIfNeeded:(BOOL)animated {
-  BOOL tooSmall = _snapshotsContainer.frame.size.height < 60;
+- (void)hideSnapshotsIfNeeded {
+  BOOL tooSmall = _snapshotsContainer.frame.size.height < 100;
   BOOL isVerticallyCompacted =
       self.traitCollection.verticalSizeClass == UIUserInterfaceSizeClassCompact;
-
-  const UIDeviceOrientation deviceOrientation =
-      [[UIDevice currentDevice] orientation];
-  BOOL isInLandscape = deviceOrientation == UIDeviceOrientationLandscapeRight ||
-                       deviceOrientation == UIDeviceOrientationLandscapeLeft;
-  BOOL isIpadConfiguration =
-      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) &&
-      _keyboardDisplayed;
-  BOOL isIpadInLandscapeWithKeyboard = isIpadConfiguration && isInLandscape;
 
   // The snapshots container should not be displayed in the following
   // scenarios:
   // - When the container lacks sufficient space.
   // - On devices with a vertically compact form factor.
-  // - iPad in landscape orientation with the virtual keyboard visible.
-  CGFloat updatedAlpha =
-      (tooSmall || isVerticallyCompacted || isIpadInLandscapeWithKeyboard) ? 0
-                                                                           : 1;
+  CGFloat updatedAlpha = (tooSmall || isVerticallyCompacted) ? 0 : 1;
   if (_snapshotsContainer.alpha == updatedAlpha) {
     return;
   }
 
-  __weak __typeof(self) weakSelf = self;
-  [UIView
-      animateWithDuration:animated ? kSnapshotViewAnimationTime : 0
-               animations:^{
-                 [weakSelf hideSnapshotsIfNeededAnimationBlock:updatedAlpha];
-               }];
-}
-
-// Animation block for the `hideSnapshotsIfNeeded:` method.
-- (void)hideSnapshotsIfNeededAnimationBlock:(CGFloat)updatedAlpha {
   [_snapshotsContainer setAlpha:updatedAlpha];
-
-  if (updatedAlpha != 1) {
-    _snapshotsViewDisplayedConstraint.active = NO;
-    _snapshotsViewHiddenConstraint.active = YES;
-  } else {
-    _snapshotsViewHiddenConstraint.active = NO;
-    _snapshotsViewDisplayedConstraint.active = YES;
-  }
-  [self.view layoutIfNeeded];
-}
-
-// Called when the virtual keyboard is shown.
-- (void)keyboardDidShow:(NSNotification*)notification {
-  CGRect keyboardFrameEnd = [[[notification userInfo]
-      objectForKey:UIKeyboardFrameEndUserInfoKey] CGRectValue];
-  // If the `keyboardFrameEnd` height is below the threshold, that means we are
-  // only displaying the keyboard toolbar.
-  _keyboardDisplayed =
-      keyboardFrameEnd.size.height > kKeyboardToolbarHeightThreshold;
-
-  [self hideSnapshotsIfNeeded:YES];
-}
-
-// Called when the virtual keyboard is hidden.
-- (void)keyboardDidHide:(NSNotification*)notification {
-  _keyboardDisplayed = NO;
-  [self hideSnapshotsIfNeeded:YES];
 }
 
 // Configures the view and all subviews when there is enough space.
@@ -712,79 +663,37 @@ const CGFloat kClearButtonWidthAndHeight = 40;
       constraintEqualToAnchor:self.view.keyboardLayoutGuide.topAnchor];
   keyboardConstraint.priority = UILayoutPriorityDefaultHigh + 1;
 
-  _snapshotsViewDisplayedConstraint = [_colorsScrollView.topAnchor
-      constraintEqualToAnchor:snapshotsContainerLayoutGuide.bottomAnchor
-                     constant:kSnapshotViewVerticalMargin];
-  _snapshotsViewDisplayedConstraint.priority = UILayoutPriorityRequired - 1;
-  _snapshotsViewHiddenConstraint = [_colorsScrollView.topAnchor
-      constraintEqualToAnchor:dotAndFieldContainer.bottomAnchor
-                     constant:kSnapshotViewVerticalMargin];
+  NSLayoutConstraint* snapshotLayoutGuideConstraint =
+      [snapshotsContainerLayoutGuide.bottomAnchor
+          constraintEqualToAnchor:_colorsScrollView.topAnchor
+                         constant:-kSnapshotViewVerticalMargin];
+  snapshotLayoutGuideConstraint.priority = UILayoutPriorityDefaultLow;
 
   _regularConstraints = @[
-    _snapshotsViewDisplayedConstraint,
     [dotAndFieldContainer.leadingAnchor
         constraintGreaterThanOrEqualToAnchor:container.leadingAnchor
                                     constant:kHorizontalMargin],
     [dotAndFieldContainer.trailingAnchor
         constraintLessThanOrEqualToAnchor:container.trailingAnchor
                                  constant:-kHorizontalMargin],
-    [_creationButton.bottomAnchor
-        constraintEqualToAnchor:_cancelButton.topAnchor],
-    [_cancelButton.bottomAnchor constraintEqualToAnchor:container.bottomAnchor
-                                               constant:-kButtonsMargin],
-    [_creationButton.topAnchor
-        constraintEqualToAnchor:_colorsScrollView.bottomAnchor
-                       constant:kColorListBottomMargin],
-
-    [snapshotsContainerLayoutGuide.topAnchor
-        constraintEqualToAnchor:viewAboveSnapshots.bottomAnchor
-                       constant:kSnapshotViewVerticalMargin],
-
-    [_snapshotsContainer.centerXAnchor
-        constraintEqualToAnchor:snapshotsContainerLayoutGuide.centerXAnchor],
-    [_snapshotsContainer.centerYAnchor
-        constraintEqualToAnchor:snapshotsContainerLayoutGuide.centerYAnchor],
-    [_snapshotsContainer.topAnchor
-        constraintGreaterThanOrEqualToAnchor:snapshotsContainerLayoutGuide
-                                                 .topAnchor],
-    [_snapshotsContainer.bottomAnchor
-        constraintLessThanOrEqualToAnchor:snapshotsContainerLayoutGuide
-                                              .bottomAnchor],
-    [snapshotsContainerLayoutGuide.widthAnchor
-        constraintEqualToAnchor:dotAndFieldContainer.widthAnchor],
     [_creationButton.widthAnchor
         constraintEqualToAnchor:dotAndFieldContainer.widthAnchor],
     [_cancelButton.widthAnchor
         constraintEqualToAnchor:dotAndFieldContainer.widthAnchor],
-
-    [snapshotsContainerLayoutGuide.centerXAnchor
-        constraintEqualToAnchor:self.view.centerXAnchor],
-    [_creationButton.centerXAnchor
-        constraintEqualToAnchor:self.view.centerXAnchor],
-    [_cancelButton.centerXAnchor
-        constraintEqualToAnchor:self.view.centerXAnchor],
+    [_cancelButton.bottomAnchor constraintEqualToAnchor:container.bottomAnchor
+                                               constant:-kButtonsMargin],
   ];
 
   _compactConstraints = @[
-    [_cancelButtonCompact.leadingAnchor
-        constraintEqualToAnchor:container.leadingAnchor
-                       constant:kHorizontalMargin],
+
     [_cancelButtonCompact.trailingAnchor
         constraintLessThanOrEqualToAnchor:dotAndFieldContainer.leadingAnchor],
-    [_cancelButtonCompact.topAnchor
-        constraintEqualToAnchor:container.topAnchor
-                       constant:kDotAndFieldContainerMargin],
     [_creationButtonCompact.leadingAnchor
         constraintGreaterThanOrEqualToAnchor:dotAndFieldContainer
                                                  .trailingAnchor],
-    [_creationButtonCompact.trailingAnchor
-        constraintEqualToAnchor:container.trailingAnchor
-                       constant:-kHorizontalMargin],
-    [_creationButtonCompact.topAnchor
-        constraintEqualToAnchor:container.topAnchor
-                       constant:kDotAndFieldContainerMargin],
     [_colorsScrollView.bottomAnchor
-        constraintEqualToAnchor:container.bottomAnchor],
+        constraintEqualToAnchor:container.bottomAnchor
+                       constant:-kColorListBottomMargin],
   ];
 
   NSLayoutConstraint* dotAndFieldWidth = [dotAndFieldContainer.widthAnchor
@@ -814,6 +723,49 @@ const CGFloat kClearButtonWidthAndHeight = 40;
     [container.trailingAnchor
         constraintEqualToAnchor:self.view.safeAreaLayoutGuide.trailingAnchor],
     [container.heightAnchor constraintLessThanOrEqualToConstant:kMaxHeight],
+
+    [_creationButton.centerXAnchor
+        constraintEqualToAnchor:self.view.centerXAnchor],
+    [_cancelButton.centerXAnchor
+        constraintEqualToAnchor:self.view.centerXAnchor],
+    [_creationButton.bottomAnchor
+        constraintEqualToAnchor:_cancelButton.topAnchor],
+    [_creationButton.topAnchor
+        constraintEqualToAnchor:_colorsScrollView.bottomAnchor
+                       constant:kColorListBottomMargin],
+
+    [_cancelButtonCompact.leadingAnchor
+        constraintEqualToAnchor:container.leadingAnchor
+                       constant:kHorizontalMargin],
+    [_creationButtonCompact.trailingAnchor
+        constraintEqualToAnchor:container.trailingAnchor
+                       constant:-kHorizontalMargin],
+    [_cancelButtonCompact.topAnchor
+        constraintEqualToAnchor:container.topAnchor
+                       constant:kDotAndFieldContainerMargin],
+    [_creationButtonCompact.topAnchor
+        constraintEqualToAnchor:container.topAnchor
+                       constant:kDotAndFieldContainerMargin],
+
+    [snapshotsContainerLayoutGuide.centerXAnchor
+        constraintEqualToAnchor:self.view.centerXAnchor],
+    [snapshotsContainerLayoutGuide.topAnchor
+        constraintEqualToAnchor:viewAboveSnapshots.bottomAnchor
+                       constant:kSnapshotViewVerticalMargin],
+    [snapshotsContainerLayoutGuide.widthAnchor
+        constraintEqualToAnchor:dotAndFieldContainer.widthAnchor],
+    snapshotLayoutGuideConstraint,
+
+    [_snapshotsContainer.centerXAnchor
+        constraintEqualToAnchor:snapshotsContainerLayoutGuide.centerXAnchor],
+    [_snapshotsContainer.centerYAnchor
+        constraintEqualToAnchor:snapshotsContainerLayoutGuide.centerYAnchor],
+    [_snapshotsContainer.heightAnchor
+        constraintLessThanOrEqualToAnchor:snapshotsContainerLayoutGuide
+                                              .heightAnchor],
+    [_snapshotsContainer.widthAnchor
+        constraintLessThanOrEqualToAnchor:snapshotsContainerLayoutGuide
+                                              .widthAnchor],
     keyboardConstraint,
   ]];
 
