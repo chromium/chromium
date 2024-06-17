@@ -914,6 +914,21 @@
             ]
         }
     ],
+    "ArcOnDemandV2": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ArcOnDemandV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "ArcSkipDropPageCache": [
         {
             "platforms": [
