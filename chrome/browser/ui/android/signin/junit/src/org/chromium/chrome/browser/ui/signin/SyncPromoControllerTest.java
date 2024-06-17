@@ -464,8 +464,10 @@ public class SyncPromoControllerTest {
     @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void
             shouldHideRecentTabsSyncPromoIfTabsIsManagedByPolicy_replaceSyncPromosWithSigninPromosEnabled() {
+        when(IdentityServicesProvider.get().getSigninManager(mProfile)).thenReturn(mSigninManager);
+        doReturn(true).when(mSigninManager).isSigninAllowed();
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
-        when(mHistorySyncHelper.isHistorySyncDisabledByPolicy()).thenReturn(true);
+        when(mHistorySyncHelper.shouldSuppressHistorySync()).thenReturn(true);
 
         SyncPromoController syncPromoController =
                 new SyncPromoController(
@@ -497,8 +499,10 @@ public class SyncPromoControllerTest {
     @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void
             shouldHideRecentTabsIfUserAlreadyOptedIn_replaceSyncPromosWithSigninPromosEnabled() {
+        when(IdentityServicesProvider.get().getSigninManager(mProfile)).thenReturn(mSigninManager);
+        doReturn(false).when(mSigninManager).isSigninAllowed();
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
-        when(mHistorySyncHelper.didAlreadyOptIn()).thenReturn(true);
+        when(mHistorySyncHelper.shouldSuppressHistorySync()).thenReturn(true);
 
         SyncPromoController syncPromoController =
                 new SyncPromoController(
@@ -513,7 +517,28 @@ public class SyncPromoControllerTest {
     @Test
     @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void
-            shouldShowRecentTabsSyncPromoIfTabsIsNotManagedByPolicyAndUserDidNoOptIn_replaceSyncPromosWithSigninPromosEnabled() {
+            shouldShowRecentTabsHistorySyncPromoIfTabsIsNotManagedByPolicyAndUserIsNotSignedIn_replaceSyncPromosWithSigninPromosEnabled() {
+        when(IdentityServicesProvider.get().getSigninManager(mProfile)).thenReturn(mSigninManager);
+        doReturn(true).when(mSigninManager).isSigninAllowed();
+        HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
+
+        SyncPromoController syncPromoController =
+                new SyncPromoController(
+                        mProfile,
+                        BOTTOM_SHEET_STRINGS,
+                        SigninAccessPoint.RECENT_TABS,
+                        mSyncConsentActivityLauncher,
+                        mSigninAndHistoryOptInActivityLauncher);
+        Assert.assertTrue(syncPromoController.canShowSyncPromo());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void
+            shouldShowRecentTabsSyncPromoIfUserSignedInButDidNotOptIn_replaceSyncPromosWithSigninPromosEnabled() {
+        when(IdentityServicesProvider.get().getSigninManager(mProfile)).thenReturn(mSigninManager);
+        doReturn(false).when(mSigninManager).isSigninAllowed();
+        doReturn(true).when(mIdentityManager).hasPrimaryAccount(ConsentLevel.SIGNIN);
         HistorySyncHelper.setInstanceForTesting(mHistorySyncHelper);
 
         SyncPromoController syncPromoController =

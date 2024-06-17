@@ -442,11 +442,10 @@ public class RecentTabsManager
             //
             // TODO(crbug.com/343908771): Revise SyncPromoState after launching
             //     ReplaceSyncPromosWithSignInPromos.
-            // TODO(crbug.com/338541375): Move mSignInManager.isSigninAllowed() inside
-            //  SyncPromoController#canShowSyncPromo().
-            return mSyncPromoController.canShowSyncPromo() && mSignInManager.isSigninAllowed()
-                    ? SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE
-                    : SyncPromoState.NO_PROMO;
+            if (!mSyncPromoController.canShowSyncPromo()) {
+                return SyncPromoState.NO_PROMO;
+            }
+            return SyncPromoState.PROMO_FOR_SIGNED_OUT_STATE;
         }
         if (!mSignInManager.getIdentityManager().hasPrimaryAccount(ConsentLevel.SYNC)) {
             if (!mSyncPromoController.canShowSyncPromo()) {
