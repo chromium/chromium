@@ -449,7 +449,7 @@ class CORE_EXPORT ContainerNode : public Node {
 
   Element* GetAutofocusDelegate() const;
 
-  bool IsReadingOrderContainer() const;
+  bool IsReadingFlowContainer() const;
 
   HTMLCollection* PopoverInvokers() {
     DCHECK(IsTreeScope());

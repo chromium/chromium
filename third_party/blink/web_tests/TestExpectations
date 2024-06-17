@@ -3516,8 +3516,8 @@ crbug.com/1494847 external/wpt/css/css-page/page-name-margin-001-print.html [ Fa
 crbug.com/1494863 external/wpt/css/css-page/page-name-zero-height-001-print.html [ Failure ]
 crbug.com/346088869 [ Mac ] external/wpt/css/css-page/page-size-011-print.html [ Pass Timeout ]
 
-# Implement reading-order-items
-crbug.com/338162121 external/wpt/shadow-dom/focus-navigation/reading-order/tentative/grid-order-across-scopes.html [ Failure ]
+# Implement reading-flow
+crbug.com/338162121 external/wpt/shadow-dom/focus-navigation/reading-flow/tentative/grid-order-across-scopes.html [ Failure ]
 
 # Tests only passing with virtual/page-margin-boxes/
 crbug.com/40341678 external/wpt/css/css-page/page-background-image-print.html [ Failure ]

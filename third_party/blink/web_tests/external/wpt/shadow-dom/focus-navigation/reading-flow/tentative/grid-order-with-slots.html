@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="timeout" content="long">
-<title>CSS Display: reading-order-items with value grid-order in Shadow DOM</title>
-<link rel="help" href="https://drafts.csswg.org/css-display-4/#reading-order-items">
+<title>CSS Display: reading-flow with value grid-order in Shadow DOM</title>
+<link rel="help" href="https://drafts.csswg.org/css-display-4/#reading-flow">
 <link rel="author" title="Di Zhang" href="mailto:dizhangg@chromium.org">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -15,17 +15,17 @@
 <style>
 .wrapper {
   display: grid;
-  reading-order-items: grid-order;
+  reading-flow: grid-order;
 }
 </style>
 
 <span id="root1" class="test-case" data-expect="b1,a1,c1"
-      data-description="Slot assigned element is a grid with reading-order-items.">
+      data-description="Slot assigned element is a grid with reading-flow.">
   <template shadowrootmode="open">
     <style>
     .wrapper {
       display: grid;
-      reading-order-items: grid-order;
+      reading-flow: grid-order;
     }
     </style>
     <slot></slot>
@@ -39,12 +39,12 @@
 <br>
 
 <span id="root2" class="test-case" data-expect="b2,a2,c2"
-      data-description="Slot is a grid with reading-order-items.">
+      data-description="Slot is a grid with reading-flow.">
   <template shadowrootmode="open">
     <style>
     .wrapper {
       display: grid;
-      reading-order-items: grid-order;
+      reading-flow: grid-order;
     }
     </style>
     <slot class="wrapper"></slot>
@@ -56,12 +56,12 @@
 <br>
 
 <span id="root3" class="test-case" data-expect="root3/o2,root3/o4,o1,o3,o5"
-      data-description="Slot is inside a grid container with reading-order-items.">
+      data-description="Slot is inside a grid container with reading-flow.">
   <template shadowrootmode="open">
     <style>
     .wrapper {
       display: grid;
-      reading-order-items: grid-order;
+      reading-flow: grid-order;
     }
     </style>
     <div class="wrapper">
@@ -78,12 +78,12 @@
 
 <span id="root4" class="test-case"
       data-expect="root4/after,root4/before,b4,a4,d42,d41,d43,c4"
-      data-description="Slot is a grid with reading-order-items inside a grid container with reading-order-items.">
+      data-description="Slot is a grid with reading-flow inside a grid container with reading-flow.">
   <template shadowrootmode="open">
     <style>
     .wrapper {
       display: grid;
-      reading-order-items: grid-order;
+      reading-flow: grid-order;
     }
     </style>
     <div class="wrapper">
@@ -126,7 +126,7 @@
     <style>
     .wrapper {
       display: grid;
-      reading-order-items: grid-order;
+      reading-flow: grid-order;
     }
     </style>
     <div class="wrapper">
@@ -146,7 +146,7 @@
     <style>
     .wrapper {
       display: grid;
-      reading-order-items: grid-order;
+      reading-flow: grid-order;
     }
     </style>
     <div class="wrapper">

@@ -1875,7 +1875,7 @@
     "anchors-visible",
     "no-overflow",
 
-    // reading-order-items
+    // reading-flow
     // normal
     "flex-visual",
     "flex-flow",

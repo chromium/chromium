@@ -49,7 +49,7 @@ class PhysicalFragmentRareData
     visitor->Trace(table_collapsed_borders_);
     visitor->Trace(table_column_geometries_);
     visitor->Trace(mathml_paint_info_);
-    visitor->Trace(reading_order_elements_);
+    visitor->Trace(reading_flow_elements_);
   }
 
  private:
@@ -163,7 +163,7 @@ class PhysicalFragmentRareData
   Member<const TableBorders> table_collapsed_borders_;
   Member<const TableFragmentData::ColumnGeometries> table_column_geometries_;
   Member<const MathMLPaintInfo> mathml_paint_info_;
-  Member<const HeapVector<Member<Element>>> reading_order_elements_;
+  Member<const HeapVector<Member<Element>>> reading_flow_elements_;
 };
 
 }  // namespace blink

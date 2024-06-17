@@ -298,7 +298,7 @@ position-try-options: none
 position-try-order: normal
 position-visibility: always
 r: 0px
-reading-order-items: normal
+reading-flow: normal
 resize: none
 right: auto
 rotate: none

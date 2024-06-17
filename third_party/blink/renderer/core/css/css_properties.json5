@@ -4603,7 +4603,7 @@
       invalidate: ["layout"],
     },
     {
-      name: "reading-order-items",
+      name: "reading-flow",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "*",
       field_template: "keyword",
@@ -4611,7 +4611,7 @@
       typedom_types: ["Keyword"],
       default_value: "normal",
       invalidate: ["layout"],
-      runtime_flag: "CSSReadingOrderItems",
+      runtime_flag: "CSSReadingFlow",
     },
     {
       name: "resize",

@@ -984,10 +984,10 @@
       status: "experimental",
     },
     {
-      // TODO(crbug.com/40932006): Non-standard 'reading-order-items' keyword
-      // for CSS reading of grid and flex layout.
-      // https://drafts.csswg.org/css-display-4/#reading-order-items
-      name: "CSSReadingOrderItems",
+      // TODO(crbug.com/40932006): Non-standard 'reading-flow' keyword
+      // for reading of grid and flexbox items.
+      // https://drafts.csswg.org/css-display-4/#reading-flow
+      name: "CSSReadingFlow",
       status: "experimental",
     },
     {

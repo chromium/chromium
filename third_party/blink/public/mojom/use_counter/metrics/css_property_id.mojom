@@ -840,7 +840,7 @@ enum CSSSampleId {
     kPositionTryOptions = 784,
     kPositionTry = 785,
     kTextBoxEdge = 786,
-    kReadingOrderItems = 787,
+    kReadingFlow = 787,
     kPositionAnchor = 788,
     kPositionVisibility = 789,
     kTypes = 790,

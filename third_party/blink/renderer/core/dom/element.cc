@@ -663,9 +663,9 @@ bool Element::IsFocusableStyle(UpdateBehavior update_behavior) const {
   if (HasDisplayContentsStyle() &&
       RuntimeEnabledFeatures::DisplayContentsFocusableEnabled()) {
     // TODO(crbug.com/338162121): Currently, it is not possible for display
-    // contents elements to be focusable in reading order.
+    // contents elements to be focusable in reading flow.
     if (ContainerNode* parent = LayoutTreeBuilderTraversal::LayoutParent(*this);
-        parent && parent->IsReadingOrderContainer()) {
+        parent && parent->IsReadingFlowContainer()) {
       return false;
     }
     if (const ComputedStyle* style =

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <meta name="timeout" content="long">
-<title>CSS Display: reading-order-items with value grid-order</title>
-<link rel="help" href="https://drafts.csswg.org/css-display-4/#reading-order-items">
+<title>CSS Display: reading-flow with value grid-order</title>
+<link rel="help" href="https://drafts.csswg.org/css-display-4/#reading-flow">
 <link rel="author" title="Di Zhang" href="mailto:dizhangg@chromium.org">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -15,7 +15,7 @@
 <style>
 .wrapper {
   display: grid;
-  reading-order-items: grid-order;
+  reading-flow: grid-order;
 }
 .popover {
   inset:auto;
@@ -48,7 +48,7 @@ promise_test(async () => {
     'a',
   ];
   await assert_focus_navigation_forward(elements);
-}, `Popover in reading-order-items: grid-order container.`);
+}, `Popover in reading-flow: grid-order container.`);
 
 promise_test(async () => {
   P.classList.add("wrapper");
@@ -61,5 +61,5 @@ promise_test(async () => {
     'a',
   ];
   await assert_focus_navigation_forward(elements);
-}, `Popover in container and itself with reading-order-items: grid-order.`);
+}, `Popover in container and itself with reading-flow: grid-order.`);
 </script>

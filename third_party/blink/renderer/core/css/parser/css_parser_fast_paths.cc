@@ -1316,8 +1316,8 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
              value_id == CSSValueID::kMostHeight ||
              value_id == CSSValueID::kMostBlockSize ||
              value_id == CSSValueID::kMostInlineSize;
-    case CSSPropertyID::kReadingOrderItems:
-      DCHECK(RuntimeEnabledFeatures::CSSReadingOrderItemsEnabled());
+    case CSSPropertyID::kReadingFlow:
+      DCHECK(RuntimeEnabledFeatures::CSSReadingFlowEnabled());
       return value_id == CSSValueID::kNormal ||
              value_id == CSSValueID::kFlexVisual ||
              value_id == CSSValueID::kFlexFlow ||
@@ -1724,7 +1724,7 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kPointerEvents,
     CSSPropertyID::kPosition,
     CSSPropertyID::kPositionTryOrder,
-    CSSPropertyID::kReadingOrderItems,
+    CSSPropertyID::kReadingFlow,
     CSSPropertyID::kResize,
     CSSPropertyID::kScrollMarkers,
     CSSPropertyID::kScrollBehavior,

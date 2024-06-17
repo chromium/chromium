@@ -97,9 +97,9 @@ class CORE_EXPORT PhysicalBoxFragment final : public PhysicalFragment {
     return base::make_span(children_);
   }
 
-  const HeapVector<Member<Element>>* ReadingOrderElements() const {
+  const HeapVector<Member<Element>>* ReadingFlowElements() const {
     if (rare_data_) {
-      return rare_data_->reading_order_elements_;
+      return rare_data_->reading_flow_elements_;
     }
     return nullptr;
   }

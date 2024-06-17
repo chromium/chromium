@@ -24,10 +24,10 @@ PhysicalFragmentRareData::PhysicalFragmentRareData(
     wtf_size_t num_fields)
     : table_collapsed_borders_(builder.table_collapsed_borders_),
       mathml_paint_info_(builder.mathml_paint_info_),
-      reading_order_elements_(
-          builder.reading_order_elements_.size()
+      reading_flow_elements_(
+          builder.reading_flow_elements_.size()
               ? MakeGarbageCollected<HeapVector<Member<Element>>>(
-                    builder.reading_order_elements_)
+                    builder.reading_flow_elements_)
               : nullptr) {
   field_list_.ReserveInitialCapacity(num_fields);
 

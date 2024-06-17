@@ -87,7 +87,7 @@ class CORE_EXPORT FocusController final
       LocalFrame* to,
       InputDeviceCapabilities* source_capabilities = nullptr);
   static Element* FindFocusableElementInShadowHost(const Element& shadow_host);
-  static HTMLElement* FindScopeOwnerSlotOrReadingOrderContainer(const Element&);
+  static HTMLElement* FindScopeOwnerSlotOrReadingFlowContainer(const Element&);
 
   // Returns the next focusable element (likely an <input> field) after the
   // given element in focus traversal and within the enclosing <form> that

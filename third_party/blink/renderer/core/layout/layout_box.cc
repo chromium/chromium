@@ -4443,27 +4443,27 @@ WritingModeConverter LayoutBox::CreateWritingModeConverter() const {
                               Size());
 }
 
-bool LayoutBox::IsReadingOrderContainer() const {
-  if (!RuntimeEnabledFeatures::CSSReadingOrderItemsEnabled()) {
+bool LayoutBox::IsReadingFlowContainer() const {
+  if (!RuntimeEnabledFeatures::CSSReadingFlowEnabled()) {
     return false;
   }
   const ComputedStyle& style = StyleRef();
-  switch (style.ReadingOrderItems()) {
-    case EReadingOrderItems::kNormal:
+  switch (style.ReadingFlow()) {
+    case EReadingFlow::kNormal:
       return false;
-    case EReadingOrderItems::kFlexVisual:
-    case EReadingOrderItems::kFlexFlow:
+    case EReadingFlow::kFlexVisual:
+    case EReadingFlow::kFlexFlow:
       return IsFlexibleBox();
-    case EReadingOrderItems::kGridRows:
-    case EReadingOrderItems::kGridColumns:
-    case EReadingOrderItems::kGridOrder:
+    case EReadingFlow::kGridRows:
+    case EReadingFlow::kGridColumns:
+    case EReadingFlow::kGridOrder:
       return IsLayoutGrid();
   }
   return false;
 }
 
-const HeapVector<Member<Element>>& LayoutBox::ReadingOrderElements() const {
-  if (const auto* elements = GetPhysicalFragment(0)->ReadingOrderElements()) {
+const HeapVector<Member<Element>>& LayoutBox::ReadingFlowElements() const {
+  if (const auto* elements = GetPhysicalFragment(0)->ReadingFlowElements()) {
     return *elements;
   }
   DEFINE_STATIC_LOCAL(Persistent<HeapVector<Member<Element>>>, empty_vector,

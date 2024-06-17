@@ -592,8 +592,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.GetPosition() == b.GetPosition();
     case CSSPropertyID::kQuotes:
       return a.Quotes() == b.Quotes();
-    case CSSPropertyID::kReadingOrderItems:
-      return a.ReadingOrderItems() == b.ReadingOrderItems();
+    case CSSPropertyID::kReadingFlow:
+      return a.ReadingFlow() == b.ReadingFlow();
     case CSSPropertyID::kResize:
       return a.Resize() == b.Resize();
     case CSSPropertyID::kRight:

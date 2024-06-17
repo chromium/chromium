@@ -376,26 +376,26 @@ void FlexLayoutAlgorithm::HandleOutOfFlowPositionedItems(
   }
 }
 
-void FlexLayoutAlgorithm::SetReadingOrderElements(
+void FlexLayoutAlgorithm::SetReadingFlowElements(
     const HeapVector<NGFlexLine>& flex_line_outputs) {
   const auto& style = Style();
-  const EReadingOrderItems reading_order_items = style.ReadingOrderItems();
-  if (reading_order_items != EReadingOrderItems::kFlexVisual &&
-      reading_order_items != EReadingOrderItems::kFlexFlow) {
+  const EReadingFlow reading_flow = style.ReadingFlow();
+  if (reading_flow != EReadingFlow::kFlexVisual &&
+      reading_flow != EReadingFlow::kFlexFlow) {
     return;
   }
-  HeapVector<Member<Element>> reading_order_elements;
+  HeapVector<Member<Element>> reading_flow_elements;
   // Add flex item if it is a DOM element
   auto AddItemIfNeeded = [&](const NGFlexItem& item) {
     if (Element* element =
             DynamicTo<Element>(item.ng_input_node.GetDOMNode())) {
-      reading_order_elements.push_back(element);
+      reading_flow_elements.push_back(element);
     }
   };
-  // Given CSS reading-order-items, flex-flow, flex-direction; read values
-  // in correct reading order.
+  // Given CSS reading-flow, flex-flow, flex-direction; read values
+  // in correct order.
   auto AddFlexItems = [&](const NGFlexLine& line) {
-    if (reading_order_items == EReadingOrderItems::kFlexFlow &&
+    if (reading_flow == EReadingFlow::kFlexFlow &&
         (style.ResolvedIsColumnReverseFlexDirection() ||
          style.ResolvedIsRowReverseFlexDirection())) {
       for (const auto& item : base::Reversed(line.line_items)) {
@@ -407,7 +407,7 @@ void FlexLayoutAlgorithm::SetReadingOrderElements(
       }
     }
   };
-  if (reading_order_items == EReadingOrderItems::kFlexFlow &&
+  if (reading_flow == EReadingFlow::kFlexFlow &&
       style.FlexWrap() == EFlexWrap::kWrapReverse) {
     for (const auto& line : base::Reversed(flex_line_outputs)) {
       AddFlexItems(line);
@@ -417,7 +417,7 @@ void FlexLayoutAlgorithm::SetReadingOrderElements(
       AddFlexItems(line);
     }
   }
-  container_builder_.SetReadingOrderElements(std::move(reading_order_elements));
+  container_builder_.SetReadingFlowElements(std::move(reading_flow_elements));
 }
 
 bool FlexLayoutAlgorithm::IsContainerCrossSizeDefinite() const {
@@ -1173,7 +1173,7 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
 #endif
   }
 
-  SetReadingOrderElements(flex_line_outputs);
+  SetReadingFlowElements(flex_line_outputs);
   HandleOutOfFlowPositionedItems(oof_children);
 
   // For rows, the break-before of the first row and the break-after of the

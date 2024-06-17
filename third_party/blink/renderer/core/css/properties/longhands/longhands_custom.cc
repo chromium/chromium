@@ -7213,12 +7213,12 @@ const CSSValue* R::CSSValueFromComputedStyleInternal(
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(style.R(), style);
 }
 
-const CSSValue* ReadingOrderItems::CSSValueFromComputedStyleInternal(
+const CSSValue* ReadingFlow::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,
     const LayoutObject*,
     bool,
     CSSValuePhase) const {
-  return CSSIdentifierValue::Create(style.ReadingOrderItems());
+  return CSSIdentifierValue::Create(style.ReadingFlow());
 }
 
 const CSSValue* Resize::CSSValueFromComputedStyleInternal(
