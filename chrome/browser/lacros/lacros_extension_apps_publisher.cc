@@ -35,6 +35,7 @@
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter.h"
+#include "components/services/app_service/public/cpp/package_id.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
@@ -309,6 +310,8 @@ class LacrosExtensionAppsPublisher::ProfileTracker
     app->readiness = is_app_disabled ? Readiness::kDisabledByPolicy : readiness;
     app->name = extension->name();
     app->short_name = extension->short_name();
+    app->installer_package_id =
+        apps::PackageId(apps::PackageType::kChromeApp, extension->id());
 
     // TODO(crbug.com/40240007): Work out how pinning interacts with Lacros
     // multi-profile support once there is a product decision on what that looks
