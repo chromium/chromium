@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/browser_commands.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 #include <vector>
 
@@ -1108,35 +1109,29 @@ void MoveTabsToNewWindow(Browser* browser,
         Browser::Create(Browser::CreateParams(browser->profile(), true));
   }
 
+  std::optional<base::Uuid> paused_saved_guid = std::nullopt;
+
+  tab_groups::SavedTabGroupKeyedService* const service =
+      tab_groups::SavedTabGroupServiceFactory::GetForProfile(
+          browser->profile());
+
+  tab_groups::TabGroupVisualData visual_data;
+
   if (group.has_value()) {
-    tab_groups::SavedTabGroupKeyedService* const service =
-        tab_groups::SavedTabGroupServiceFactory::GetForProfile(
-            browser->profile());
-    if (service && service->model()->Contains(group.value())) {
-      // If the group we are looking to move is saved:
-      // 1) Stop listening to changes on it
-      // 2) Close the group in the browser
-      // 3) Open the group in a new browser and link it to the saved guid.
-      const base::Uuid& saved_guid =
-          service->model()->Get(group.value())->saved_guid();
-
-      service->DisconnectLocalTabGroup(group.value());
-      browser->tab_strip_model()->CloseAllTabsInGroup(group.value());
-      service->OpenSavedTabGroupInBrowser(new_browser, saved_guid);
-      return;
-    }
-
     const tab_groups::TabGroupVisualData* old_visual_data =
         browser->tab_strip_model()
             ->group_model()
             ->GetTabGroup(group.value())
             ->visual_data();
-    tab_groups::TabGroupVisualData new_visual_data(old_visual_data->title(),
-                                                   old_visual_data->color(),
-                                                   false /* is_collapsed */);
 
-    new_browser->tab_strip_model()->group_model()->AddTabGroup(group.value(),
-                                                               new_visual_data);
+    visual_data = tab_groups::TabGroupVisualData(old_visual_data->title(),
+                                                 old_visual_data->color(),
+                                                 false /* is_collapsed */);
+
+    if (service && service->model()->Contains(group.value())) {
+      paused_saved_guid = service->model()->Get(group.value())->saved_guid();
+      service->PauseTrackingLocalTabGroup(group.value());
+    }
   }
 
   int indices_size = tab_indices.size();
@@ -1156,9 +1151,24 @@ void MoveTabsToNewWindow(Browser* browser,
       add_types = add_types | AddTabTypes::ADD_ACTIVE;
     }
 
-    new_browser->tab_strip_model()->AddTab(
-        std::move(tab_model), -1, ui::PAGE_TRANSITION_TYPED, add_types, group);
+    new_browser->tab_strip_model()->AddTab(std::move(tab_model), -1,
+                                           ui::PAGE_TRANSITION_TYPED, add_types,
+                                           std::nullopt);
   }
+
+  // Add all the tabs in the new browser to the group if it belonged in a group.
+  if (group.has_value()) {
+    std::vector<int> indices(new_browser->tab_strip_model()->GetTabCount());
+    std::iota(indices.begin(), indices.end(), 0);
+    new_browser->tab_strip_model()->AddToNewGroup(indices, group.value(),
+                                                  visual_data);
+
+    if (paused_saved_guid.has_value()) {
+      service->ResumeTrackingLocalTabGroup(paused_saved_guid.value(),
+                                           group.value());
+    }
+  }
+
   new_browser->window()->Show();
 }
 
