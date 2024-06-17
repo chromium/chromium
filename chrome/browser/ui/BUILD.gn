@@ -3888,6 +3888,7 @@ static_library("ui") {
       "//chrome/browser/ash/sharesheet",
       "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/ash/system_web_apps/types",
+      "//chrome/browser/ash/tether",
       "//chrome/browser/ash/wallpaper",
       "//chrome/browser/ash/wallpaper_handlers",
       "//chrome/browser/chromeos/extensions/vpn_provider",
@@ -4127,6 +4128,7 @@ static_library("ui") {
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/privacy_hub",
       "//chrome/browser/ash/sharesheet",
+      "//chrome/browser/ash/tether",
       "//chrome/browser/chromeos/extensions/wm",
     ]
 
