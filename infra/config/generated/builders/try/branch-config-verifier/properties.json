@@ -8,7 +8,6 @@
   },
   "branch_configs": [
     {
-      "gardener_rotation": "chrome_browser_release",
       "initialize": {},
       "name": "standard branch"
     },

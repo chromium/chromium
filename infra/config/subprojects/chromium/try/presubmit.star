@@ -71,7 +71,6 @@ def branch_configs():
     return [{
         "name": "standard branch",
         "initialize": {},
-        "gardener_rotation": "chrome_browser_release",
     }, {
         "name": "desktop extended stable branch",
         "platform_set": {
