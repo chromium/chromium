@@ -1327,10 +1327,6 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
   DCHECK(document_service_);
 
   if (!shared_storage_worklet_service_) {
-    bool private_aggregation_permissions_policy_allowed =
-        document_service_->render_frame_host().IsFeatureEnabled(
-            blink::mojom::PermissionsPolicyFeature::kPrivateAggregation);
-
     code_cache_host_receivers_ =
         std::make_unique<CodeCacheHostImpl::ReceiverSet>(
             storage_partition_->GetGeneratedCodeCacheContext());
@@ -1362,10 +1358,19 @@ SharedStorageWorkletHost::GetAndConnectToSharedStorageWorkletService() {
         shared_storage_worklet_service_.BindNewPipeAndPassReceiver(),
         std::move(global_scope_creation_params));
 
+    const blink::PermissionsPolicy* permissions_policy =
+        rfh.permissions_policy();
+
+    bool private_aggregation_permissions_policy_allowed =
+        permissions_policy->IsFeatureEnabledForOrigin(
+            blink::mojom::PermissionsPolicyFeature::kPrivateAggregation,
+            shared_storage_origin_);
+
     auto embedder_context = static_cast<RenderFrameHostImpl&>(
                                 document_service_->render_frame_host())
                                 .frame_tree_node()
                                 ->GetEmbedderSharedStorageContextIfAllowed();
+
     shared_storage_worklet_service_->Initialize(
         shared_storage_worklet_service_client_.BindNewEndpointAndPassRemote(),
         private_aggregation_permissions_policy_allowed, embedder_context);

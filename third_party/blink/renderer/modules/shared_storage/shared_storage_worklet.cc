@@ -9,6 +9,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "third_party/blink/public/common/permissions_policy/permissions_policy.h"
 #include "third_party/blink/public/common/shared_storage/shared_storage_utils.h"
 #include "third_party/blink/public/mojom/origin_trial_feature/origin_trial_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/shared_storage/shared_storage.mojom-blink.h"
@@ -129,13 +130,6 @@ void SharedStorageWorklet::AddModuleHelper(ScriptState* script_state,
 
   KURL script_source_url = execution_context->CompleteURL(module_url);
 
-  if (!CheckSharedStoragePermissionsPolicy(*script_state, *execution_context,
-                                           *resolver)) {
-    LogSharedStorageWorkletError(
-        SharedStorageWorkletErrorType::kAddModuleWebVisible);
-    return;
-  }
-
   if (!script_source_url.IsValid()) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kDataError,
@@ -167,6 +161,25 @@ void SharedStorageWorklet::AddModuleHelper(ScriptState* script_state,
         SharedStorageWorkletErrorType::kAddModuleWebVisible);
     return;
   }
+
+  url::Origin shared_storage_origin = script_security_origin->ToUrlOrigin();
+
+  const PermissionsPolicy* policy =
+      execution_context->GetSecurityContext().GetPermissionsPolicy();
+  if (!policy || !policy->IsFeatureEnabledForOrigin(
+                     mojom::blink::PermissionsPolicyFeature::kSharedStorage,
+                     shared_storage_origin)) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
+        "The \"shared-storage\" Permissions Policy denied the method for the "
+        "worklet origin."));
+
+    LogSharedStorageWorkletError(
+        SharedStorageWorkletErrorType::kAddModuleWebVisible);
+    return;
+  }
+
+  shared_storage_origin_ = std::move(shared_storage_origin);
 
   const String& credentials = options->credentials();
   std::optional<network::mojom::CredentialsMode> credentials_mode =
@@ -276,36 +289,34 @@ ScriptPromise<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
-  // For `selectURL()` to succeed, it is currently enforced in the browser side
-  // that `addModule()` must be called beforehand that passed the early
-  // permission checks. Thus the permissions-policy check here isn't strictly
-  // needed. But here we still check the permissions-policy for consistency and
-  // consider this a higher priority error.
-  if (!CheckSharedStoragePermissionsPolicy(*script_state, *execution_context,
-                                           *resolver)) {
-    LogSharedStorageWorkletError(
-        SharedStorageWorkletErrorType::kSelectURLWebVisible);
-    return promise;
-  }
-
-  if (!execution_context->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kSharedStorageSelectUrl)) {
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
-        "The \"shared-storage-select-url\" Permissions Policy denied the usage "
-        "of window.sharedStorage.selectURL()."));
-
-    LogSharedStorageWorkletError(
-        SharedStorageWorkletErrorType::kSelectURLWebVisible);
-
-    return promise;
-  }
-
   if (!worklet_host_) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kOperationError,
         "sharedStorage.worklet.addModule() has to be called before "
         "selectURL()."));
+
+    LogSharedStorageWorkletError(
+        SharedStorageWorkletErrorType::kSelectURLWebVisible);
+
+    return promise;
+  }
+
+  // The `kSharedStorage` permissions policy should have been checked in
+  // addModule() already.
+  const PermissionsPolicy* policy =
+      execution_context->GetSecurityContext().GetPermissionsPolicy();
+  CHECK(policy);
+  CHECK(policy->IsFeatureEnabledForOrigin(
+      mojom::blink::PermissionsPolicyFeature::kSharedStorage,
+      shared_storage_origin_));
+
+  if (!policy->IsFeatureEnabledForOrigin(
+          mojom::blink::PermissionsPolicyFeature::kSharedStorageSelectUrl,
+          shared_storage_origin_)) {
+    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
+        script_state->GetIsolate(), DOMExceptionCode::kInvalidAccessError,
+        "The \"shared-storage-select-url\" Permissions Policy denied the "
+        "method for the worklet origin."));
 
     LogSharedStorageWorkletError(
         SharedStorageWorkletErrorType::kSelectURLWebVisible);
@@ -547,12 +558,6 @@ ScriptPromise<IDLAny> SharedStorageWorklet::run(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
-  if (!CheckSharedStoragePermissionsPolicy(*script_state, *execution_context,
-                                           *resolver)) {
-    LogSharedStorageWorkletError(SharedStorageWorkletErrorType::kRunWebVisible);
-    return promise;
-  }
-
   if (!worklet_host_) {
     resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
         script_state->GetIsolate(), DOMExceptionCode::kOperationError,
@@ -562,6 +567,15 @@ ScriptPromise<IDLAny> SharedStorageWorklet::run(
 
     return promise;
   }
+
+  // The `kSharedStorage` permissions policy should have been checked in
+  // addModule() already.
+  const PermissionsPolicy* policy =
+      execution_context->GetSecurityContext().GetPermissionsPolicy();
+  CHECK(policy);
+  CHECK(policy->IsFeatureEnabledForOrigin(
+      mojom::blink::PermissionsPolicyFeature::kSharedStorage,
+      shared_storage_origin_));
 
   if (!cross_origin_script_allowed_) {
     // The opaque origin should have been checked in addModule() already.
