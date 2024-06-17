@@ -790,6 +790,8 @@ Called by update_protocol_commands_enum.py.-->
       label="Animations panel - Scroll driven animation group selected"/>
   <int value="144"
       label="Animations panel - Scroll driven animation group scrubbed"/>
+  <int value="145" label="Freestyler panel - Opened through Elements panel"/>
+  <int value="146" label="Freestyler panel - Opened through Styles tab"/>
 </enum>
 
 <enum name="DevToolsAnimationPlaybackRateChanged">
