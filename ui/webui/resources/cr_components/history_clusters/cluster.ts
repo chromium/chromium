@@ -183,6 +183,15 @@ export class ClusterElement extends ClusterElementBase {
           composed: true,
         }));
       });
+    } else if (changedProperties.has('cluster')) {
+      // Iron-list re-assigns the `cluster` property to reuse existing elements
+      // as the user scrolls. Since this property can change the height of this
+      // element, we need to notify iron-list that this element's height may
+      // need to be re-calculated.
+      this.dispatchEvent(new CustomEvent('iron-resize', {
+        bubbles: true,
+        composed: true,
+      }));
     }
   }
 
