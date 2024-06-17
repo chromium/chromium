@@ -112,17 +112,24 @@ SkiaOutputDeviceDawn::SkiaOutputDeviceDawn(
   surface_desc.nextInChain = &android_native_window_desc;
 #endif
 
-  CHECK(context_state_->dawn_context_provider() &&
-        context_state_->dawn_context_provider()->GetDevice());
+  auto* context_provider = context_state_->dawn_context_provider();
+  CHECK(context_provider && context_provider->GetDevice());
 
-  surface_ =
-      context_state_->dawn_context_provider()->GetInstance().CreateSurface(
-          &surface_desc);
-  CHECK(surface_);
-  wgpu::TextureUsage supported_usage = context_state_->dawn_context_provider()
-                                           ->GetDevice()
-                                           .GetSupportedSurfaceUsage(surface_);
-  CHECK_EQ(~supported_usage & kUsage, 0);
+  surface_ = context_provider->GetInstance().CreateSurface(&surface_desc);
+
+  // With Dawn/Vulkan the Vulkan surface is created lazily when needed, like
+  // here for GetCapabilities(), and not when `surface_` is created. This may
+  // fail.
+  wgpu::SurfaceCapabilities caps;
+  wgpu::Status result =
+      surface_.GetCapabilities(context_provider->GetAdapter(), &caps);
+  // TOOD(crbug.com/347047834): This is where vkCreateAndroidSurfaceKHR()
+  // failures first show up. Have SkiaOutputDeviceDawn creation fail instead of
+  // crashing the GPU process.
+  CHECK_EQ(result, wgpu::Status::Success);
+
+  // Verify `surface_` supports all the required usage for the swap chain.
+  CHECK_EQ(~caps.usages & kUsage, 0);
 }
 
 SkiaOutputDeviceDawn::~SkiaOutputDeviceDawn() = default;
