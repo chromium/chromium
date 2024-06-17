@@ -121,6 +121,7 @@
 <translation id="7326879924029668159">Peržiūrėkite grąžinimo politiką ir kt.</translation>
 <translation id="7352298686197644113">Žr., kurio elemento jūsų atidarytuose skirtukuose kaina žemesnė</translation>
 <translation id="7452985128687107478">Skirtukų grupės automatiškai išsaugomos ir atnaujinamos visuose įrenginiuose</translation>
+<translation id="747459581954555080">Atkurti viską</translation>
 <translation id="753732157349120914">Skirtukų perjungiklis</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> apžvalga iš „Google“}one{<ph name="REVIEWS_COUNT_MANY" /> apžvalga iš „Google“}few{<ph name="REVIEWS_COUNT_MANY" /> apžvalgos iš „Google“}many{<ph name="REVIEWS_COUNT_MANY" /> apžvalgos iš „Google“}other{<ph name="REVIEWS_COUNT_MANY" /> apžvalgų iš „Google“}}</translation>
 <translation id="7559245342362162951">Rodyti grupės skirtukus viso ekrano tinklelyje</translation>
@@ -144,6 +145,7 @@
 <translation id="8338427544764842461">Skirtukų grupės išsaugomos čia ir atnaujinamos visuose įrenginiuose, kuriuose esate prisijungę</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Uždaryti <ph name="TABS_COUNT_ONE" /> pasirinktą skirtuką}one{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinktą skirtuką}few{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinktus skirtukus}many{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinkto skirtuko}other{Uždaryti <ph name="TABS_COUNT_MANY" /> pasirinktų skirtukų}}</translation>
 <translation id="8398929769197326728">Naujas aplankas – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="8428213095426709021">Nustatymai</translation>
 <translation id="8714939927607906138">Žemesnė kaina</translation>
 <translation id="8730621377337864115">Atlikta</translation>
 <translation id="8730999928494395583">Jūsų veikla šiuose inkognito skirtukuose bus pašalinta iš šio įrenginio</translation>

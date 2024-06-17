@@ -118,6 +118,7 @@
 <translation id="2945997411976714835">Грешка при инсталацији: Процес инсталације није успео.</translation>
 <translation id="2977470724722393594">Chromium је ажуриран</translation>
 <translation id="2977506796191543575">Ако неки сајт покуша да украде вашу лозинку или пробате да преузмете штетни фајл, Chromium може да пошаље URL-ове, укључујући делове садржаја странице, у Безбедно прегледање</translation>
+<translation id="2987208172821108655">Chromium може да учини ове картице неактивним да би побољшао доживљај прегледања и ослободио ресурсе.</translation>
 <translation id="3013473503895162900">Отворите <ph name="URL" /> на новој картици у Chromium-у.</translation>
 <translation id="3032706164202344641">Chromium не може да вам проверава лозинке. Пробајте поново касније.</translation>
 <translation id="3032787606318309379">Додавање у Chromium...</translation>
@@ -319,6 +320,7 @@
 <translation id="6248213926982192922">Подеси Chromium за подразумевани прегледач</translation>
 <translation id="6266342355635466082">Chromium не може да тражи ажурирања. Проверите интернет везу.</translation>
 <translation id="6268381023930128611">Желите ли да се одјавите из Chromium-а?</translation>
+<translation id="6270547683008298381">Ове картице користе додатне ресурсе. Да бисте побољшали перформансе, дозволите Chromium-у да их учини неактивним.</translation>
 <translation id="6281746429495226318">Прилагодите Chromium профил</translation>
 <translation id="6290827346642914212">Дајте назив Chromium профилу</translation>
 <translation id="6294831894865512704">Додатак жели да се пријавите у Chromium</translation>
@@ -327,6 +329,7 @@
 <translation id="6327105987658262776">Нема доступних ажурирања.</translation>
 <translation id="6333502561965082103">Друга радња у Chromium-у је у току. Пробајте поново касније.</translation>
 <translation id="6334986366598267305">Сада можете лакше да користите Chromium са Google налогом и на дељеним рачунарима.</translation>
+<translation id="633626832589656416">Chromium може да учини ове картице неактивним да би побољшао доживљај прегледања и убрзао рад.</translation>
 <translation id="6347933965114150440">Chromium пречица</translation>
 <translation id="6366160072964553914">Chromium је блокирао ово преузимање јер се овај фајл не преузима често и може да буде опасан</translation>
 <translation id="6373523479360886564">Јесте ли сигурни да желите да деинсталирате Chromium?</translation>

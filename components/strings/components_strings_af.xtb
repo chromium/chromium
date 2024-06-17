@@ -566,6 +566,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2036983605131262583">Alternatiewe rol</translation>
 <translation id="2040463897538655645">Verwyderbare berging</translation>
 <translation id="2040894699575719559">Ligging is geblokkeer</translation>
+<translation id="2041788246978549610">Gebruik beskikbare mikrofone (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Laai 7</translation>
 <translation id="204357726431741734">Meld aan om wagwoorde te gebruik wat in jou Google-rekening gestoor is</translation>
 <translation id="2045871135676061132">Koevert Persoonlik</translation>
@@ -885,6 +886,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2655752832536625875">Badkamer</translation>
 <translation id="2657637947725373811">{0,plural, =1{Dra vertroulike lêer oor?}other{Dra vertroulike lêers oor?}}</translation>
 <translation id="2658843814961855121">Arbeid- en indiensnemingsreg</translation>
+<translation id="2658944305627908367">Transaksies wat jou saldo oorskry, sal nie verwerk word nie</translation>
 <translation id="2660779039299703961">Geleentheid</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Geen}=1{1 wagwoord (vir <ph name="DOMAIN_LIST" />)}=2{2 wagwoorde (vir <ph name="DOMAIN_LIST" />)}other{# wagwoorde (vir <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Top</translation>
@@ -1081,6 +1083,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3090667236485488075">Glas</translation>
 <translation id="3095940652251934233">Verklaring</translation>
 <translation id="3098513225387949945">Geïgnoreer omdat die deaktiveerlys 'n patroon gelyk aan "*" bevat wat gelykstaande daaraan is om die beleid te deaktiveer.</translation>
+<translation id="3099619114405539473">Gebruik beskikbare kameras (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Spaar</translation>
 <translation id="3103188521861412364">Aandele en effekte</translation>
 <translation id="3105172416063519923">Bate-ID:</translation>
@@ -1357,6 +1360,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3583757800736429874">Herdoen skuif</translation>
 <translation id="3584299510153766161">Dubbelpons onder</translation>
 <translation id="3584755835709800788">Wetenskapsfiksie en fantasie</translation>
+<translation id="3585455899094692781">Gebruik en skuif beskikbare kameras (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Nat film</translation>
 <translation id="3586931643579894722">Versteek besonderhede</translation>
 <translation id="3587738293690942763">Middel</translation>
@@ -2421,6 +2425,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5645132789250840550">Plastiek (semiglans)</translation>
 <translation id="5645719697465708351">Partytjie- en vakansiebenodigdhede</translation>
 <translation id="5645854190134202180">Tweede skof</translation>
+<translation id="5648166631817621825">Afgelope 7 dae</translation>
 <translation id="5649053991847567735">Outomatiese aflaaie</translation>
 <translation id="5651323159439184939">Kettingpapiertoevoer</translation>
 <translation id="5654927323611874862">Het omvalverslag-ID opgelaai:</translation>

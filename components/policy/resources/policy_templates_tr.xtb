@@ -1409,7 +1409,6 @@ Genellikle bu politika kimlik avına karşı bir savunma olarak Devre Dışıdı
 <translation id="2043770014371753404">Devre dışı bırakılmış kurumsal yazıcılar</translation>
 <translation id="2054093043033461396">Cihaz ekran koruyucu giriş ekranı etkinleştirildi.</translation>
 <translation id="2057317273526988987">URL listesine erişime izin ver</translation>
-<translation id="2058055310819710697">Erişime kapalı uygulamalar için geliştirici modunu etkinleştir</translation>
 <translation id="205807990145127714">Sinyal gücü etkinliği hakkında raporlanacak telemetri verileri.</translation>
 <translation id="2060153898336610735">Geçerli dil ayarınıza göre otomatik</translation>
 <translation id="2061123930713023976">Ağ paketi yakalama işlemlerinde hata ayıklamaya izin ver</translation>
@@ -2132,7 +2131,6 @@ Bu politika Yanlış değerine ayarlandığında İlgili Web Sitesi Grupları ö
 <translation id="2570059561924004903">Sesli geri bildirimi dışı bırak</translation>
 <translation id="2570181623957732921">Üçüncü taraf alanlarının listesi için <ph name="DESK_API_NAME" /> öğesini etkinleştir</translation>
 <translation id="2575198840408498393">Dolaşım profillerinin oluşturulmasını devre dışı bırak</translation>
-<translation id="2576324725151524912">Erişime kapalı uygulamalar için geliştirici moduna izin ver.</translation>
 <translation id="25765864042030871"><ph name="UNLOAD_EVENT_NAME" /> etkinlik işleyicilerin desteği sonlandırılıyor. Bu işleyicilerin tetiklenip tetiklenmemesi <ph name="UNLOAD_EVENT_NAME" /> <ph name="PERMISSIONS_POLICY_NAME" /> politikasına bağlıdır. Şu anda politika bunlara varsayılan olarak izin vermektedir. Gelecekte, kademeli bir şekilde varsayılan olarak izin verilmeyecek ve sitelerin, <ph name="PERMISSIONS_POLICY_NAME" /> başlıklarını kullanarak bunları açıkça etkinleştirmesi gerekecek. Bu kurumsal politika, varsayılan ayarı etkin olarak kalmaya zorlayarak desteğin kademeli olarak sonlandırılmasını devre dışı bırakmak için kullanılabilir.
  
 Sayfalar, verileri kaydetmek veya bir kullanıcı oturumunun sonlandırıldığını sunucuya bildirmek için <ph name="UNLOAD_EVENT_NAME" /> etkinlik işleyicileri kullanabilir. Güvenilir olmadığı ve <ph name="PRODUCT_NAME" /> kullanımını engelleyerek performansı etkilediği için bu kullanım önerilmez. Önerilen alternatifler mevcut olsa da <ph name="UNLOAD_EVENT_NAME" /> etkinliği uzun süredir kullanılmaktadır. Bazı uygulamalar bunu kullanmaya devam edebilir.
@@ -6326,7 +6324,6 @@ geçerlidir ve politika ayarlanmadan bırakılırsa varsayılan olarak devre dı
       Bu özellik etkinleştirildiğinde sunucu desteğine, HTTPS DNS kaydının kullanılabilirliğine veya kullanıma sunma durumuna bağlı olarak <ph name="PRODUCT_NAME" />, ECH'yi kullanabilir veya kullanmayabilir.
 
       ECH, sürekli gelişen bir protokol olduğu için <ph name="PRODUCT_NAME" /> hizmetinin uygulama sürecinde değişiklikler yapılabilir. Dolayısıyla bu politika ilk deneysel uygulama sürecini kontrol etmek için kullanıma sunulmuş geçici bir önlemdir. Protokol kesinleştiğinde politika da son kontrollere göre değiştirilecektir.</translation>
-<translation id="5939656968921014919">Erişime kapalı uygulamalar için geliştirici modunu devre dışı bırak</translation>
 <translation id="5939873071468124100"><ph name="MICROSOFT_ONE_DRIVE_NAME" /> entegrasyonunu kullanabilen hesapları kısıtlar</translation>
 <translation id="5945312246863177268">Kullanıcıların Eche uygulamasını başlatmak için Telefon Merkezi bildirimini tıklamasına izin vermez.</translation>
 <translation id="5946082169633555022">Beta kanalı</translation>
@@ -9898,9 +9895,6 @@ Bu politika Yanlış değerine ayarlandığında politika verileri ve politika g
 Bu politika yalnızca <ph name="PRODUCT_NAME" /> için makinenin <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> kaydı yapıldığında geçerli olur.
 <ph name="PRODUCT_OS_NAME" /> için bu politika her zaman geçerlidir.</translation>
 <translation id="8619748440665904084">İlk çalıştırmada form otomatik doldurma verilerinin içe aktarılmasını devre dışı bırak</translation>
-<translation id="8623672932476443039">Politika, etkin değerine ayarlanırsa kullanıcılar erişime kapalı uygulamalar için geliştirici moduna erişebilir.
-      Politika, devre dışı değerine ayarlanırsa kullanıcılar bu özelliklere erişemez.
-      Bu politika ayarlanmadan bırakılırsa varsayılan olarak ChromeOS'teki kuruluş tarafından yönetilen kullanıcılara izin verilmezken, diğer tüm kullanıcılara ve işletim sistemlerine izin verilir.</translation>
 <translation id="862621549134406761">RSA anahtarı kullanma kontrolünü etkinleştir</translation>
 <translation id="8626826495474944836">Her site için Site İzolasyonunu zorunlu tut</translation>
 <translation id="8631314130868563649">Yoğun saatlerde güç kullanımını değiştirme yönetimini devre dışı bırak</translation>

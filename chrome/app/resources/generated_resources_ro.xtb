@@ -136,7 +136,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1085064499066015002">Întotdeauna pe toate site-urile</translation>
 <translation id="1085697365578766383">A apărut o eroare la pornirea mașinii virtuale. Încearcă din nou.</translation>
 <translation id="1086486568852410168">Caută cu Google Lens</translation>
-<translation id="1088490543924960890">Începe să salvezi chei de acces cu Managerul de parole Google</translation>
 <translation id="1090126737595388931">Nu rulează aplicații în fundal</translation>
 <translation id="1090541560108055381">Înainte de asociere, asigură-te că apare același cod pe ambele dispozitive</translation>
 <translation id="1091767800771861448">Apăsați pe ESCAPE pentru a ignora (numai versiunile neoficiale).</translation>
@@ -3668,7 +3667,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3685598397738512288">Preferințe USB în Linux</translation>
 <translation id="3687598459967813435">Permite întotdeauna notificările de la <ph name="WEBSITE" /></translation>
 <translation id="368789413795732264">A apărut o eroare la încercarea de scriere a fișierului: <ph name="ERROR_TEXT" />.</translation>
-<translation id="3688368689701175138">Cheia de acces se va salva în Managerul de parole Google pentru <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3688507211863392146">Scrie în fișierele și dosarele pe care le deschideți în aplicație</translation>
 <translation id="3688526734140524629">Schimbați canalul</translation>
 <translation id="3688578402379768763">Actualizat</translation>
@@ -6099,7 +6097,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5497739595514726398">Chrome nu a putut verifica acest pachet de instalare</translation>
 <translation id="5498967291577176373">Scrii mai rapid cu ajutorul sugestiilor inline pentru nume, adresă sau numărul de telefon</translation>
 <translation id="5499211612787418966">Acest dialog nu este focalizat. Apasă pe Alt-Shift A pentru a focaliza dialogul.</translation>
-<translation id="5499313591153584299">Este posibil ca acest fișier să fie dăunător pentru computer.</translation>
 <translation id="5499453227627332024">Este disponibil un upgrade pentru containerul Linux. Poți să faci upgrade și mai târziu, din aplicația Setări.</translation>
 <translation id="5499476581866658341">Acum poți vedea fotografiile și conținutul media recent de pe telefon</translation>
 <translation id="549957179819296104">Pictogramă nouă</translation>
@@ -7025,7 +7022,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6206199626856438589">Te vei deconecta de la site-urile afișate, inclusiv din filele deschise</translation>
 <translation id="6206311232642889873">Cop&amp;iază imaginea</translation>
 <translation id="6207200176136643843">Resetează la nivelul de zoom prestabilit</translation>
-<translation id="6207298079289376837">Verifică dacă filele pot fi organizate</translation>
 <translation id="6207937957461833379">Țară/Regiune</translation>
 <translation id="6208521041562685716">Se activează datele mobile</translation>
 <translation id="6208725777148613371">Nu s-a salvat în <ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
@@ -7376,7 +7372,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6476482583633999078">Viteza vorbirii</translation>
 <translation id="6476671549211161535">Apasă pe un buton care nu este butonul stâng sau drept al mouse-ului de pe <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">Sincronizarea notificărilor nu este acceptată pentru telefoanele asociate unui profil de serviciu. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
-<translation id="6478248366783946499">Păstrezi fișierul periculos?</translation>
 <translation id="6479881432656947268">Accesează Magazinul web Chrome</translation>
 <translation id="6480327114083866287">Gestionat de <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Permite accesul dispozitivelor din apropiere la fișiere și alt conținut. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
@@ -7557,7 +7552,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="6613267708691765962">Se caută programe malware...</translation>
 <translation id="6613668613087513143">Nu există spațiu suficient pe dispozitiv pentru a finaliza actualizarea. Eliberează <ph name="NECESSARY_SPACE" /> pe dispozitiv și încearcă din nou din browserul Chrome.</translation>
 <translation id="6615455863669487791">Afișează</translation>
-<translation id="6618097958368085618">Păstrează oricum</translation>
 <translation id="6618744767048954150">Rulează</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Site-ul poate să îți urmărească locația</translation>
@@ -8143,7 +8137,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7044211973375150246">O aplicație este setată să deschidă aceleași linkuri ca <ph name="APP_NAME" />. Astfel, <ph name="APP_NAME_2" /> va fi setată să nu mai deschidă linkurile acceptate.</translation>
 <translation id="7044606776288350625">Sincronizează datele</translation>
 <translation id="7047059339731138197">Alege un fundal</translation>
-<translation id="7049293980323620022">Păstrezi fișierul?</translation>
 <translation id="7049524156282610342">Date de navigare pentru <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Configurația hotspotului nu este validă</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{Parola s-a salvat în Contul Google, <ph name="USER_EMAIL" />}few{Parolele s-au salvat în Contul Google, <ph name="USER_EMAIL" />}other{Parolele s-au salvat în Contul Google, <ph name="USER_EMAIL" />}}</translation>
@@ -9331,7 +9324,6 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7939062555109487992">Opțiuni avansate</translation>
 <translation id="793923212791838">Dispozitivul nu poate fi folosit cu acest site</translation>
 <translation id="7939328347457537652">Gestionează certificatele dispozitivelor</translation>
-<translation id="7939412583708276221">Păstrați oricum</translation>
 <translation id="7940087892955752820">Trimiterea nu s-a putut anula, deoarece o aplicație folosește acest dosar. Trimiterea dosarului va fi anulată la următoarea închidere a sistemului <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Sortează după <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Pregătirea pentru tethering:</translation>
@@ -10091,7 +10083,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8477241577829954800">Depășit</translation>
 <translation id="8477384620836102176">&amp;General</translation>
 <translation id="8479176401914456949">Cod nevalid. Încearcă din nou.</translation>
-<translation id="8480082892550707549">Chiar dacă anterior ai descărcat fișiere de pe site, momentan, este posibil ca acesta să fie nesigur (compromis). Încearcă să descarci fișierul mai târziu.</translation>
 <translation id="8480869669560681089">Dispozitiv necunoscut de la <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Confirmă permisiunea pentru USB</translation>
 <translation id="8482077254400484047">Gestionează aspectul filelor inactive aici</translation>
@@ -10921,7 +10912,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="9085256200913095638">Fila selectată este o dublură</translation>
 <translation id="9085446486797400519">Acces la cameră</translation>
 <translation id="9085776959277692427">Nu s-a selectat <ph name="LANGUAGE" />. Apasă tasta de căutare + bara de spațiu pentru a selecta.</translation>
-<translation id="9087183943157874068">Poți verifica oricând dacă există sugestii de grupuri de file</translation>
 <translation id="9087949559523851360">Adaugă un utilizator cu permisiuni limitate</translation>
 <translation id="9088234649737575428">Pluginul <ph name="PLUGIN_NAME" /> este blocat conform politicii companiei</translation>
 <translation id="9088446193279799727">Nu s-a putut configura Linux. Conectează-te la internet și încearcă din nou.</translation>

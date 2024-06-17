@@ -80,6 +80,7 @@
 <translation id="1247519845643687288">Нещодавні додатки</translation>
 <translation id="1252999807265626933">Джерело заряджання: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Який прогноз погоди?</translation>
+<translation id="1256734167083229794">Ви натиснули комбінацію клавіш для повноекранної лупи. Щоб наблизити область, натисніть комбінацію <ph name="ZOOM_IN_ACCELERATOR" />, а щоб віддалити – <ph name="ZOOM_OUT_ACCELERATOR" />. Переміщуйтеся наближеною областю за допомогою комбінації Ctrl + Alt + клавіш зі стрілками.</translation>
 <translation id="1269405891096105529">Периферійні пристрої не підтримуються в режимі гостя</translation>
 <translation id="1270290102613614947">Екранну клавіатуру вимкнено</translation>
 <translation id="1272079795634619415">Зупинити</translation>
@@ -99,7 +100,6 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Будь-коли натисніть <ph name="LAUNCHER_KEY_NAME" /> + g</translation>
 <translation id="1306549533752902673">РЕКОМЕНДОВАНІ ПРОГРАМИ</translation>
-<translation id="1311294419381837540">Ви транслюєте вкладку. Трансляцію можна будь-коли призупинити або припинити.</translation>
 <translation id="1312604459020188865">Рівень сигналу – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Завжди показувати полицю</translation>
 <translation id="132346741904777634">Зображення з камери закріплено у верхньому лівому куті, що конфліктує із системною платформою.</translation>
@@ -108,7 +108,6 @@
 <translation id="1340378040547539434">Віддалити контент на сторінці</translation>
 <translation id="1341651618736211726">Додаткове меню</translation>
 <translation id="1341926407152459446">Використовувати пристрій <ph name="DEVICE_NAME" /> для введення й виведення аудіо</translation>
-<translation id="1344141078024003905">Ви транслюєте екран. Трансляцію можна будь-коли призупинити або припинити.</translation>
 <translation id="1346748346194534595">Праворуч</translation>
 <translation id="1351937230027495976">Згорнути меню</translation>
 <translation id="1360220746312242196">Під час пошуку на сторінці перейти до попереднього збігу</translation>
@@ -264,6 +263,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">Робочий стіл і вікна вилучено. Щоб відмінити дію, натисніть комбінацію клавіш Ctrl + Z.</translation>
 <translation id="1972950159383891558">Вітаємо, <ph name="USERNAME" /></translation>
+<translation id="1977686871076551563">Режим інверсії кольорів увімкнено. Щоб вимкнути його, ще раз натисніть комбінацію клавіш <ph name="ACCELERATOR" />.</translation>
 <translation id="1978498689038657292">Ввести текст</translation>
 <translation id="1980808257969311265">Приєднатися до події "<ph name="EVENT_SUMMARY" />"</translation>
 <translation id="1982717156487272186">Показати попередній тиждень</translation>
@@ -352,7 +352,6 @@
 <translation id="2369165858548251131">Як сказати "привіт" китайською</translation>
 <translation id="2370971919968699910">За передавання даних може стягуватися плата.
 Підключено пристроїв: <ph name="DEVICECOUNT" />.</translation>
-<translation id="2382875860893882175">Трансляцію зараз призупинено. Ви можете будь-коли продовжити або припинити її.</translation>
 <translation id="2386292613071805067">Вибрати все на сторінці</translation>
 <translation id="2392659840443812875">Немає точок доступу. Переконайтеся, що ваш пристрій поблизу, а Bluetooth увімкнено.</translation>
 <translation id="2397416548179033562">Показати меню Chrome</translation>
@@ -572,6 +571,7 @@
 <translation id="3226991577105957773">Ще <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Мікрофон</translation>
 <translation id="3233611303007751344">Режим енергозбереження вимкнено.</translation>
+<translation id="3238409143297336341">Налаштуйте батьківський контроль для додатків</translation>
 <translation id="324366796737464147">Заглушення шумів</translation>
 <translation id="3249513730522716925">Вікно "<ph name="WINDOW_TITLE" />" переміщено з робочого столу "<ph name="ACTIVE_DESK" />" на робочий стіл "<ph name="TARGET_DESK" />"</translation>
 <translation id="3253743281242075461">Тип завдання: "<ph name="GLANCEABLES_CLASSROOM_LIST_NAME" />"</translation>
@@ -615,7 +615,6 @@
 <translation id="3389599499324569679">Увімкнути диктування?</translation>
 <translation id="3394432020929931914">, розгорнуто</translation>
 <translation id="3405101454990027959">Надати доступ до мікрофона</translation>
-<translation id="3408735331120433841">Зараз ви транслюєте екран.</translation>
 <translation id="3409584356742878290">Показати або сховати панель "Інспектор" в Інструментах розробника</translation>
 <translation id="3410336247007142655">Показати налаштування темної теми</translation>
 <translation id="3413817803639110246">Ще нічого немає</translation>
@@ -855,7 +854,6 @@
 <translation id="4217571870635786043">Диктування</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, установлений додаток, призупинено</translation>
 <translation id="4228078597006700451">Елементи керування не налаштовано</translation>
-<translation id="4231053948789591973">Трансляцію зараз призупинено. Ви можете будь-коли відновити або припинити її.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Режим огляду</translation>
 <translation id="4242533952199664413">Відкрити налаштування</translation>
@@ -1183,6 +1181,7 @@
 <translation id="5377367976106153749">Увімкнути доступ до камери?</translation>
 <translation id="5379115545237091094">Забагато спроб</translation>
 <translation id="5391307769715781764">Замінити збережений робочий стіл?</translation>
+<translation id="5392327145184648521">Визначаємо % заряду акумулятора…</translation>
 <translation id="5393156353051693207">Натисніть і втримуйте будь-яке місце, щоб змінити порядок додатків</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> перетягнено на додаток <ph name="IN_PLACE_APP" />. Відпустіть, щоб створити папку.</translation>
 <translation id="5397578532367286026">Менеджер (<ph name="MANAGER_EMAIL" />) може переглядати дії й історію цього користувача на chrome.com.</translation>
@@ -1237,6 +1236,7 @@
 <translation id="5577281275355252094">Щоб користуватися функцією "Керування телефоном", переконайтеся, що на пристрої ввімкнено Bluetooth</translation>
 <translation id="5578188167649348993">пам’ять</translation>
 <translation id="5580000943347215299">Бібліотека</translation>
+<translation id="5586388332127302891">Закріплену лупу ввімкнено. Щоб вимкнути її, ще раз натисніть комбінацію клавіш <ph name="ACCELERATOR" />.</translation>
 <translation id="5587506661873751671">Завантажується (<ph name="DOWNLOAD_PERCENT" />%)</translation>
 <translation id="558849140439112033">Потягніть, щоб вибрати область, знімок якої потрібно зробити</translation>
 <translation id="5590609058453685222">Нагадування про вимкнений мікрофон увімкнено. Якщо ви говоритимете в режимі "Без звуку", то отримаєте сповіщення.</translation>
@@ -1400,6 +1400,7 @@
 <translation id="6141205840878048728">На чому потрібно сконцентруватися?</translation>
 <translation id="6141988275892716286">Підтвердити завантаження</translation>
 <translation id="6143578372829139382">Поділитися на YouTube</translation>
+<translation id="6147182561428020853">Тепер ви можете блокувати додатки, установлені на цьому пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">Периферійний пристрій не підтримується</translation>
 <translation id="6156960295318603523">Налаштування мови</translation>
 <translation id="615957422585914272">Показувати екранну клавіатуру</translation>
@@ -1447,6 +1448,7 @@
 <translation id="6319503618073410818">Переглянути деталі у вебпереглядачі</translation>
 <translation id="6324916366299863871">Змінити ярлик</translation>
 <translation id="6330012934079202188">Показано вікна всіх робочих столів. Щоб показати вікна поточного робочого столу, натисніть клавішу зі стрілкою вгору.</translation>
+<translation id="6337159624125741244">Повноекранну лупу ввімкнено</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> – сеанс, яким керує <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">Пристрій <ph name="DEVICE_NAME" /> під’єднано</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, а потім <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> або <ph name="KEY_THREE" /></translation>
@@ -1513,6 +1515,7 @@
 <translation id="6574587113394758819">Сповіщення з додатка <ph name="APP_TITLE" /> приховано, оскільки ввімкнено безпечний перегляд</translation>
 <translation id="6574622320167699133">Розблоковано телефоном. Натисніть, щоб увійти.</translation>
 <translation id="6578407462441924264">Без назви</translation>
+<translation id="6582034443359256692">Визначаємо рівень заряду акумулятора.</translation>
 <translation id="6585808820553845416">Сеанс закінчиться через <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Зображення з камери закріплено в нижньому лівому куті, що конфліктує із системною платформою.</translation>
@@ -1574,6 +1577,7 @@
 <translation id="6790428901817661496">Відтворити</translation>
 <translation id="679368458793552943">Наблизити, коли лупу ввімкнено</translation>
 <translation id="6794287755901682422">Для цього завдання вказано: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
+<translation id="6797745268063125932">Не вимикати</translation>
 <translation id="6801878137098616817">Змінено нещодавно</translation>
 <translation id="6802687695197837794">Буде надано доступ для додатків <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> і всіх додатків та веб-сайтів, які мають дозволи на доступ до камери й мікрофона</translation>
 <translation id="6803622936009808957">Не вдалося дублювати зображення екранів, оскільки не знайдено підтримувані значення роздільної здатності. Натомість запущено режим розширеного робочого столу.</translation>
@@ -1885,6 +1889,7 @@
 <translation id="7947798320695032612">Додаток <ph name="APP_NAME" /> хоче використовувати цей пристрій: <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Зменшити яскравість клавіатури</translation>
 <translation id="7953994493035617347">Підтвердити нову роздільну здатність?</translation>
+<translation id="795958884516058160">Повноекранну лупу ввімкнено. Щоб вимкнути її, ще раз натисніть комбінацію клавіш <ph name="ACCELERATOR" />.</translation>
 <translation id="7963689218131240420">Режим "Не турбувати" вимкнено.</translation>
 <translation id="7963992254934562106">З телефона <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Вибрати папку…</translation>
@@ -2136,6 +2141,7 @@
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> (<ph name="EMAIL" />), прапорець не поставлено.</translation>
 <translation id="8949925099261528566">Підключено, але немає доступу до Інтернету</translation>
 <translation id="8951539504029375108">З вашим Chromebook сумісні лише схвалені пристрої Thunderbolt</translation>
+<translation id="8959380109429710384">Ви натиснули комбінацію клавіш для повноекранної лупи. Переміщуйтеся наближеною областю за допомогою комбінації Ctrl + Alt + клавіш зі стрілками.</translation>
 <translation id="8964525410783593407">1 година</translation>
 <translation id="8973885907461690937">Виділити значок меню</translation>
 <translation id="8980862970816311842">Перемістити значок додатка в папку чи з папки в сітці додатків</translation>

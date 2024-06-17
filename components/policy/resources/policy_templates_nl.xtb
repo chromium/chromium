@@ -1385,7 +1385,6 @@ Dit beleid wordt meestal niet toegepast als beveiliging tegen phishing.</transla
 <translation id="2043770014371753404">Bedrijfsprinters staan uit</translation>
 <translation id="2054093043033461396">Screensaver voor het inlogscherm aangezet.</translation>
 <translation id="2057317273526988987">Toegang verlenen aan een lijst met URL's</translation>
-<translation id="2058055310819710697">Ontwikkelaarsmodus voor geïsoleerde apps aanzetten</translation>
 <translation id="205807990145127714">Telemetriegegevens om te rapporteren over signaalsterkte.</translation>
 <translation id="2060153898336610735">Automatisch op basis van huidige taal</translation>
 <translation id="2061123930713023976">Opnamen van netwerkpakketten voor fouten opsporen toestaan</translation>
@@ -2089,7 +2088,6 @@ Als je dit beleid instelt op False, staat de functie Gerelateerde websitesets ui
 <translation id="2570059561924004903">Gesproken feedback uitzetten</translation>
 <translation id="2570181623957732921"><ph name="DESK_API_NAME" /> aanzetten voor een lijst met domeinen van derden</translation>
 <translation id="2575198840408498393">Maken van roamingprofielen uitzetten</translation>
-<translation id="2576324725151524912">Ontwikkelaarsmodus voor geïsoleerde apps toestaan.</translation>
 <translation id="25765864042030871"><ph name="UNLOAD_EVENT_NAME" />-gebeurtenishandlers worden beëindigd. Of ze worden geactiveerd, is afhankelijk van de <ph name="UNLOAD_EVENT_NAME" /> <ph name="PERMISSIONS_POLICY_NAME" />. Op dit moment worden ze standaard toegestaan op basis van beleid. In de toekomst worden ze geleidelijk omgezet naar standaard niet toegestaan en moeten sites ze expliciet aanzetten via <ph name="PERMISSIONS_POLICY_NAME" />-headers. Dit zakelijke beleid kan worden gebruikt om je af te melden voor deze geleidelijke beëindiging door af te dwingen dat de standaardinstelling actief blijft.
  
 Pagina's kunnen afhankelijk zijn van <ph name="UNLOAD_EVENT_NAME" />-gebeurtenishandlers om gegevens op te slaan of het einde van een gebruikerssessie aan te geven aan de server. Dit wordt afgeraden omdat het onbetrouwbaar is en de prestaties beïnvloedt door het gebruik van <ph name="PRODUCT_NAME" /> te blokkeren. Er zijn aanbevolen alternatieven, maar de gebeurtenis <ph name="UNLOAD_EVENT_NAME" /> wordt al lange tijd gebruikt. Sommige apps zijn misschien nog steeds hiervan afhankelijk.
@@ -6181,7 +6179,6 @@ Als beide beleidsregels niet zijn ingesteld, worden alle webserviceverificaties 
       Als de functie aanstaat, kan <ph name="PRODUCT_NAME" /> ECH wel of niet gebruiken, afhankelijk van de serversupport, beschikbaarheid van de HTTPS DNS-record of uitrolstatus.
 
       ECH is een protocol dat nog in ontwikkeling is, dus de implementatie van <ph name="PRODUCT_NAME" /> kan veranderen. Dit beleid is daarom een tijdelijke maatregel om de eerste experimentele implementatie te beheren. Het wordt vervangen door definitieve beheeropties zodra het protocol is afgerond.</translation>
-<translation id="5939656968921014919">Ontwikkelaarsmodus voor geïsoleerde apps uitzetten</translation>
 <translation id="5939873071468124100">Beperkt accounts die de <ph name="MICROSOFT_ONE_DRIVE_NAME" />-integratie kunnen gebruiken</translation>
 <translation id="5945312246863177268">Staat niet toe dat gebruikers op een Telefoonhub-melding klikken om de Eche-app te starten.</translation>
 <translation id="5946082169633555022">Bètakanaal</translation>
@@ -9663,9 +9660,6 @@ Als je dit beleid instelt op False, worden de beleidsgegevens en het tijdstip va
 Dit beleid is alleen van kracht als de machine is ingeschreven met <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> voor <ph name="PRODUCT_NAME" />.
 Dit beleid is altijd van kracht voor <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="8619748440665904084">Import van formuliergegevens voor automatisch invullen bij eerste uitvoering uitzetten</translation>
-<translation id="8623672932476443039">Als je het beleid toepast, hebben gebruikers toegang tot de ontwikkelaarsmodus voor geïsoleerde apps.
-      Als je het beleid niet toepast, hebben gebruikers geen toegang tot deze mogelijkheden.
-      Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor beheerde zakelijke gebruikers op Chrome OS en 'toegestaan' voor alle andere gebruikers en besturingssystemen.</translation>
 <translation id="862621549134406761">Controle van RSA-sleutelgebruik aanzetten</translation>
 <translation id="8626826495474944836">Site-isolatie verplichten voor elke site</translation>
 <translation id="8631314130868563649">Stroombeheer voor piekuren uitzetten</translation>

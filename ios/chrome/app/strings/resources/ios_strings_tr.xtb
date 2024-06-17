@@ -200,6 +200,7 @@
 <translation id="199425419756152024">Şifreyi Göster</translation>
 <translation id="2010008505735295285">Yeniden yükle</translation>
 <translation id="2015722694326466240">Şifreleri görmek için öncelikle cihazınızda bir şifre kodu ayarlamanız gerekir.</translation>
+<translation id="201759455285471444">Sekme grubunu genişletin.</translation>
 <translation id="2021670401941426298">Arama geçmişinizi silmek için arama motorunuzun bununla ilgili talimatlarını (varsa) inceleyin.</translation>
 <translation id="202292859882676807">Mikrofon Erişimine İzin Veriliyor</translation>
 <translation id="20485545164632846">yeni öğe</translation>
@@ -261,7 +262,7 @@
 <translation id="2353784052777482798">{COUNT,plural, =1{{DOMAIN_ONE} şifrenizi Google Hesabınıza ({EMAIL}) kaydedebilirsiniz.}=2{{DOMAIN_ONE} ve {DOMAIN_TWO} şifrelerinizi Google Hesabınıza ({EMAIL}) kaydedebilirsiniz.}=3{{DOMAIN_ONE}, {DOMAIN_TWO} ve diğer {OTHER_DOMAINS_COUNT} sitenin şifrelerini Google Hesabınıza ({EMAIL}) kaydedebilirsiniz.}other{{DOMAIN_ONE}, {DOMAIN_TWO} ve diğer {OTHER_DOMAINS_COUNT} sitenin şifrelerini Google Hesabınıza ({EMAIL}) kaydedebilirsiniz.}}</translation>
 <translation id="235789365079050412">Google Gizlilik Politikası</translation>
 <translation id="2359043044084662842">Çevir</translation>
-<translation id="2359808026110333948">Devam et</translation>
+<translation id="2359808026110333948">Devam</translation>
 <translation id="2360196772093551345">Mobil Site İste</translation>
 <translation id="2361721159900796207">Bu öğeyi gizler</translation>
 <translation id="2362083820973145409"><ph name="USER_NAME" /> olarak oturum açtınız. <ph name="USER_EMAIL" />. Ayarları açar.</translation>
@@ -1097,6 +1098,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="648164694371393720">Kimlik Doğrulama Hatası</translation>
 <translation id="6494931198667773526">Bitiş zamanı</translation>
 <translation id="650279896687777322">Daha Fazla Bilgi...</translation>
+<translation id="6505334220040167806">Sekme grubunu daraltın.</translation>
 <translation id="6507973708545996744">Okuma listenize tüm cihazlarınızdan erişmek için oturum açın.</translation>
 <translation id="6510072653668207258">Daha Sonra Hatırlat</translation>
 <translation id="651505212789431520">Senkronizasyon iptal edilsin mi? Senkronizasyonu istediğiniz zaman Ayarlar'dan açabilirsiniz.</translation>

@@ -121,6 +121,7 @@
 <translation id="7326879924029668159">উভতাই দিয়াৰ নীতি আৰু অন্য বহুতো চাওক</translation>
 <translation id="7352298686197644113">আপোনাৰ খোলা থকা টেবসমূহত কোনটো বস্তুৰ মূল্য কম সেয়া চাওক</translation>
 <translation id="7452985128687107478">টেবৰ গোটসমূহ আপোনাৰ সমগ্ৰ ডিভাইচত স্বয়ংক্ৰিয়ভাৱে ছেভ আৰু আপডে’ট হয়</translation>
+<translation id="747459581954555080">সকলো পুনঃস্থাপন কৰক</translation>
 <translation id="753732157349120914">টেব সলনি কৰোঁতা</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Googleৰ পৰা <ph name="REVIEWS_COUNT_ONE" /> টা পর্যালোচনা}one{Googleৰ পৰা <ph name="REVIEWS_COUNT_MANY" /> টা পর্যালোচনা}other{Googleৰ পৰা <ph name="REVIEWS_COUNT_MANY" /> টা পর্যালোচনা}}</translation>
 <translation id="7559245342362162951">গোটৰ টেব সম্পূৰ্ণ স্ক্রীণৰ গ্রিডত দেখুৱাওক</translation>
@@ -144,6 +145,7 @@
 <translation id="8338427544764842461">আপোনাৰ টেবৰ গোটসমূহ ইয়াত ছেভ কৰা হয় আৰু আপোনাৰ আটাইবোৰ ছাইন-ইন কৰা ডিভাইচত আপডে’ট কৰা হয়</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> টা বাছনি কৰা টেব বন্ধ কৰক}one{<ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেব বন্ধ কৰক}other{<ph name="TABS_COUNT_MANY" /> টা বাছনি কৰা টেব বন্ধ কৰক}}</translation>
 <translation id="8398929769197326728">নতুন ফ’ল্ডাৰ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="8428213095426709021">ছেটিংসমূহ</translation>
 <translation id="8714939927607906138">কম মূল্য</translation>
 <translation id="8730621377337864115">হ’ল</translation>
 <translation id="8730999928494395583">এই ইনক’গনিট’ টেবসমূহত আপুনি কৰা কাৰ্যকলাপ এই ডিভাইচটোৰ পৰা আঁতৰোৱা হ’ব</translation>

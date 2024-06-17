@@ -1383,7 +1383,6 @@ Diese Richtlinie ist normalerweise zum Schutz vor Phishing deaktiviert.</transla
 <translation id="2043770014371753404">Deaktivierte Unternehmensdrucker</translation>
 <translation id="2054093043033461396">Der Bildschirmschoner für den Anmeldebildschirm des Geräts ist aktiviert.</translation>
 <translation id="2057317273526988987">Zugriff auf eine Liste mit URLs erlauben</translation>
-<translation id="2058055310819710697">Entwicklermodus für isolierte Apps aktivieren</translation>
 <translation id="205807990145127714">Telemetriedaten, die bei Änderungen der Signalstärke gesendet werden.</translation>
 <translation id="2060153898336610735">Automatisch, basierend auf der aktuellen Sprache</translation>
 <translation id="2061123930713023976">Fehlerbehebung von Netzwerkpaketaufnahmen erlauben</translation>
@@ -2089,7 +2088,6 @@ Wenn sie auf „False“ gesetzt ist, ist die Funktion für Gruppen ähnlicher W
 <translation id="2570059561924004903">Gesprochenes Feedback deaktivieren</translation>
 <translation id="2570181623957732921"><ph name="DESK_API_NAME" /> für eine Liste von Drittanbieterdomains aktivieren</translation>
 <translation id="2575198840408498393">Erstellung von Roaming-Profilen deaktivieren</translation>
-<translation id="2576324725151524912">Entwicklermodus für isolierte Apps erlauben.</translation>
 <translation id="25765864042030871"><ph name="UNLOAD_EVENT_NAME" />-Event-Handler werden nicht mehr unterstützt. Ob sie ausgelöst werden, hängt von <ph name="UNLOAD_EVENT_NAME" />-<ph name="PERMISSIONS_POLICY_NAME" /> ab. Derzeit sind sie standardmäßig durch die Richtlinie zugelassen. Zukünftig werden sie schrittweise standardmäßig deaktiviert. Websites müssen sie dann mithilfe von <ph name="PERMISSIONS_POLICY_NAME" />-Headern explizit aktivieren. Mit dieser Unternehmensrichtlinie kann diese schrittweise Einstellung deaktiviert werden. Dabei wird die Aktivierung als Standardeinstellung erzwungen.
  
 Seiten können auf <ph name="UNLOAD_EVENT_NAME" />-Event-Handler angewiesen sein, um Daten zu speichern oder dem Server das Ende einer Nutzersitzung zu signalisieren. Dies wird nicht empfohlen, da es unzuverlässig ist und die Leistung durch die Blockierung von <ph name="PRODUCT_NAME" /> beeinträchtigt. Es gibt zwar empfohlene Alternativen, allerdings wird das <ph name="UNLOAD_EVENT_NAME" />-Ereignis schon seit Langem verwendet. Daher wird es von einigen Anwendungen möglicherweise noch immer genutzt.
@@ -6189,7 +6187,6 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
       Wenn die Funktion aktiviert ist, kann <ph name="PRODUCT_NAME" /> je nach Serversupport, Verfügbarkeit des HTTPS-DNS-Eintrags oder Einführungsstatus ECH verwenden.
 
       ECH ist ein Protokoll, das ständig weiterentwickelt wird. Die Implementierung von <ph name="PRODUCT_NAME" /> kann sich also ändern. Diese Richtlinie ist daher eine vorübergehende Maßnahme, um die ursprüngliche experimentelle Implementierung zu steuern. Sie wird durch eine endgültige Lösung ersetzt, wenn die Entwicklung des Protokolls abgeschlossen ist.</translation>
-<translation id="5939656968921014919">Entwicklermodus für isolierte Apps deaktivieren</translation>
 <translation id="5939873071468124100">Schränkt Konten ein, die die <ph name="MICROSOFT_ONE_DRIVE_NAME" />-Integration verwenden können</translation>
 <translation id="5945312246863177268">Verhindert, dass Nutzer auf eine Phone Hub-Benachrichtigung klicken, um die App „Eche“ zu starten.</translation>
 <translation id="5946082169633555022">Beta-Kanal</translation>
@@ -9675,9 +9672,6 @@ Wenn diese Richtlinie auf „False“ gesetzt ist, werden keine Daten zu Richtli
 Diese Richtlinie wird nur angewendet, wenn das Gerät für <ph name="PRODUCT_NAME" /> mit <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> registriert ist.
 Für <ph name="PRODUCT_OS_NAME" /> wird diese Richtlinie immer angewendet.</translation>
 <translation id="8619748440665904084">Import von Autofill-Daten für Formulare bei der ersten Ausführung deaktivieren</translation>
-<translation id="8623672932476443039">Wenn die Richtlinie aktiviert ist, können Nutzer den Entwicklermodus für isolierte Apps nutzen.
-      Ist sie deaktiviert, können Nutzer diese Funktion nicht nutzen.
-      Wenn die Richtlinie nicht konfiguriert ist, kann die Funktion nicht standardmäßig von durch Unternehmen verwalteten Nutzern unter Chrome OS verwendet werden – für alle anderen Nutzer und Betriebssysteme ist sie jedoch verfügbar.</translation>
 <translation id="862621549134406761">Prüfung der RSA-Schlüsselverwendung aktivieren</translation>
 <translation id="8626826495474944836">Website-Isolierung für jede Website erzwingen</translation>
 <translation id="8631314130868563649">Energieverwaltung zum Umschalten bei Leistungsspitzen deaktivieren</translation>

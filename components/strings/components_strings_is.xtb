@@ -566,6 +566,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2036983605131262583">Önnur rúlla</translation>
 <translation id="2040463897538655645">Laus geymsla</translation>
 <translation id="2040894699575719559">Lokað á staðsetningu</translation>
+<translation id="2041788246978549610">Nota tiltæka hljóðnema (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Bakki 7</translation>
 <translation id="204357726431741734">Skráðu þig inn til að nota aðgangsorð sem eru vistuð á Google reikningnum þínum</translation>
 <translation id="2045871135676061132">Umslag: persónulegt</translation>
@@ -885,6 +886,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2655752832536625875">Baðherbergi</translation>
 <translation id="2657637947725373811">{0,plural, =1{Flytja trúnaðarskrá?}one{Flytja trúnaðarskrár?}other{Flytja trúnaðarskrár?}}</translation>
 <translation id="2658843814961855121">Verkalýðs- og vinnulöggjöf</translation>
+<translation id="2658944305627908367">Ekki verður unnið úr færslum sem eru hærri en innistæðan þín</translation>
 <translation id="2660779039299703961">Tilvik</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Ekkert}=1{1 aðgangsorð (fyrir <ph name="DOMAIN_LIST" />)}=2{2 aðgangsorð (fyrir <ph name="DOMAIN_LIST" />)}one{# aðgangsorð (fyrir <ph name="DOMAIN_LIST" />)}other{# aðgangsorð (fyrir <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Efst</translation>
@@ -1081,6 +1083,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3090667236485488075">Gler</translation>
 <translation id="3095940652251934233">Yfirlit</translation>
 <translation id="3098513225387949945">Hunsað vegna þess að listinn „slökkva“ inniheldur mynstur sem jafngildir „*“, sem jafngildir því að slökkva á reglunni.</translation>
+<translation id="3099619114405539473">Nota tiltækar myndavélar (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Sparnaður</translation>
 <translation id="3103188521861412364">Verð- og skuldabréf</translation>
 <translation id="3105172416063519923">Auðkenni eignar:</translation>
@@ -1357,6 +1360,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3583757800736429874">Endu&amp;rtaka flutning</translation>
 <translation id="3584299510153766161">Tvö göt neðst</translation>
 <translation id="3584755835709800788">Vísindaskáldskapar- og fantasíumyndir</translation>
+<translation id="3585455899094692781">Nota og hreyfa tiltækar myndavélar (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Blautfilma</translation>
 <translation id="3586931643579894722">Fela upplýsingar</translation>
 <translation id="3587738293690942763">Miðja</translation>
@@ -2421,6 +2425,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5645132789250840550">Plast (hálfglans)</translation>
 <translation id="5645719697465708351">Veislu- og hátíðarvörur</translation>
 <translation id="5645854190134202180">Önnur vakt</translation>
+<translation id="5648166631817621825">Síðastliðna sjö daga</translation>
 <translation id="5649053991847567735">Sjálfvirkt niðurhal</translation>
 <translation id="5651323159439184939">Gatapappír</translation>
 <translation id="5654927323611874862">Auðkenni sendrar hrunskýrslu:</translation>

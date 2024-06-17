@@ -83,7 +83,7 @@
 <translation id="1165039591588034296">Erro</translation>
 <translation id="1165174597379888365">Uma página é acessada</translation>
 <translation id="1165813024716836071">{COUNT,plural, =0{Nenhum}=1{Em 1 site. Sua Conta do Google vai continuar conectada}one{Em # site. Sua Conta do Google vai continuar conectada}other{Em # sites. Sua Conta do Google vai continuar conectada}}</translation>
-<translation id="1167877250265821930">Falha ao fazer o download de <ph name="LANGUAGE" /></translation>
+<translation id="1167877250265821930">Falha ao baixar <ph name="LANGUAGE" /></translation>
 <translation id="1174644974616730562">Envelope chinês 1</translation>
 <translation id="1174723505405632867">Você quer permitir que <ph name="EMBEDDED_URL" /> use cookies e dados do site em <ph name="TOP_LEVEL_URL" />?
 
@@ -566,6 +566,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2036983605131262583">Rolo alternativo</translation>
 <translation id="2040463897538655645">Armazenamento removível</translation>
 <translation id="2040894699575719559">Acesso ao local bloqueado</translation>
+<translation id="2041788246978549610">Usar os microfones disponíveis (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Bandeja 7</translation>
 <translation id="204357726431741734">Faça login para usar as senhas salvas na sua Conta do Google</translation>
 <translation id="2045871135676061132">Envelope pessoal</translation>
@@ -704,7 +705,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2276057643614339130">Base da impressão</translation>
 <translation id="2277103315734023688">Avançar</translation>
 <translation id="2277753418458118549">Mostrar detalhes da conexão</translation>
-<translation id="22792995594807632">Revise antes de fazer o download dos arquivos</translation>
+<translation id="22792995594807632">Revise antes de baixar os arquivos</translation>
 <translation id="2283340219607151381">Salvar e preencher endereços</translation>
 <translation id="2283447177162560884">Item "<ph name="PAGE_TITLE" />" excluído</translation>
 <translation id="2286383991450886080">34 x 44 pol.</translation>
@@ -885,6 +886,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2655752832536625875">Banheiro</translation>
 <translation id="2657637947725373811">{0,plural, =1{Transferir arquivo confidencial?}one{Transferir arquivo confidencial?}other{Transferir arquivos confidenciais?}}</translation>
 <translation id="2658843814961855121">Leis trabalhistas</translation>
+<translation id="2658944305627908367">As transações que ultrapassarem seu saldo não serão processadas</translation>
 <translation id="2660779039299703961">Evento</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Nenhuma}=1{1 senha (para <ph name="DOMAIN_LIST" />)}=2{2 senhas (para <ph name="DOMAIN_LIST" />)}one{# senha (para <ph name="DOMAIN_LIST" />)}other{# senhas (para <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Parte superior</translation>
@@ -1081,6 +1083,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3090667236485488075">Vidro</translation>
 <translation id="3095940652251934233">Meia carta</translation>
 <translation id="3098513225387949945">Ignorado. A lista "disable" contém um padrão igual a "*", que é equivalente a desativar a política.</translation>
+<translation id="3099619114405539473">Usar as câmeras disponíveis (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Poupança</translation>
 <translation id="3103188521861412364">Ações e títulos</translation>
 <translation id="3105172416063519923">Código do recurso:</translation>
@@ -1357,6 +1360,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3583757800736429874">&amp;Refazer mover</translation>
 <translation id="3584299510153766161">Perfuração dupla na parte inferior</translation>
 <translation id="3584755835709800788">Filmes de ficção científica e fantasia</translation>
+<translation id="3585455899094692781">Usar e mover as câmeras disponíveis (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Filme molhado</translation>
 <translation id="3586931643579894722">Ocultar detalhes</translation>
 <translation id="3587738293690942763">Meio</translation>
@@ -1388,7 +1392,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3634567936866541746">Você acabou de digitar sua senha em um site suspeito. Para proteger suas contas, o Chrome recomenda conferir as senhas salvas.</translation>
 <translation id="3638102297696182302">Para retomar o recurso "Quero ajuda para escrever", pressione Tab e depois Enter</translation>
 <translation id="3641116835972736297">Futebol americano</translation>
-<translation id="3642196846309122856">Tente fazer o download dos arquivos de novo</translation>
+<translation id="3642196846309122856">Tente baixar os arquivos de novo</translation>
 <translation id="3642638418806704195">Aplicativo:</translation>
 <translation id="3646643500201740985">Medir a performance de um anúncio</translation>
 <translation id="3647286794400715637">Cada entrada de string de URL precisa conter entre um e dois URLs.</translation>
@@ -2421,6 +2425,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5645132789250840550">Plástico (semibrilho)</translation>
 <translation id="5645719697465708351">Artigos para festas e datas comemorativas</translation>
 <translation id="5645854190134202180">Segundo turno</translation>
+<translation id="5648166631817621825">Últimos sete dias</translation>
 <translation id="5649053991847567735">Downloads automáticos</translation>
 <translation id="5651323159439184939">Alimentação com trator</translation>
 <translation id="5654927323611874862">Código do relatório de erros enviado:</translation>

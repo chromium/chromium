@@ -566,6 +566,7 @@
 <translation id="2036983605131262583">Альтернативний рулон</translation>
 <translation id="2040463897538655645">Знімний носій</translation>
 <translation id="2040894699575719559">Доступ до геоданих заблоковано</translation>
+<translation id="2041788246978549610">Використовувати доступні мікрофони (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Лоток 7</translation>
 <translation id="204357726431741734">Увійдіть, щоб користуватися паролями, збереженими в обліковому записі Google</translation>
 <translation id="2045871135676061132">Конверт особистий</translation>
@@ -885,6 +886,7 @@
 <translation id="2655752832536625875">Ванна кімната</translation>
 <translation id="2657637947725373811">{0,plural, =1{Перенести конфіденційний файл?}one{Перенести конфіденційні файли?}few{Перенести конфіденційні файли?}many{Перенести конфіденційні файли?}other{Перенести конфіденційні файли?}}</translation>
 <translation id="2658843814961855121">Трудове законодавство</translation>
+<translation id="2658944305627908367">Трансакції, які перевищують суму вашого балансу, не буде оброблено</translation>
 <translation id="2660779039299703961">Подія</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Немає}=1{1 пароль (для <ph name="DOMAIN_LIST" />)}=2{2 паролі (для <ph name="DOMAIN_LIST" />)}one{# пароль (для <ph name="DOMAIN_LIST" />)}few{# паролі (для <ph name="DOMAIN_LIST" />)}many{# паролів (для <ph name="DOMAIN_LIST" />)}other{# пароля (для <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Верх</translation>
@@ -1081,6 +1083,7 @@
 <translation id="3090667236485488075">Скло</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Ігнорується, оскільки список деактивації містить шаблон "*", який означає те саме, що й вимкнути правило.</translation>
+<translation id="3099619114405539473">Використовувати доступні камери (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Ощадний рахунок</translation>
 <translation id="3103188521861412364">Акції і облігації</translation>
 <translation id="3105172416063519923">Ідентифікатор об’єкта:</translation>
@@ -1357,6 +1360,7 @@
 <translation id="3583757800736429874">&amp;Повторити переміщення</translation>
 <translation id="3584299510153766161">Пробити два отвори внизу</translation>
 <translation id="3584755835709800788">Науково-фантастичні фільми й фентезі</translation>
+<translation id="3585455899094692781">Використовувати й переміщувати доступні камери (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Волога плівка</translation>
 <translation id="3586931643579894722">Сховати докладні дані</translation>
 <translation id="3587738293690942763">Середній</translation>
@@ -2421,6 +2425,7 @@
 <translation id="5645132789250840550">Пластик (напівглянцевий)</translation>
 <translation id="5645719697465708351">Товари для вечірок і свят</translation>
 <translation id="5645854190134202180">Друга зміна</translation>
+<translation id="5648166631817621825">Останні 7 днів</translation>
 <translation id="5649053991847567735">Автоматичні завантаження</translation>
 <translation id="5651323159439184939">Подавання паперу за допомогою перфорації</translation>
 <translation id="5654927323611874862">Ідентифікатор завантаженого звіту про аварійне завершення роботи:</translation>

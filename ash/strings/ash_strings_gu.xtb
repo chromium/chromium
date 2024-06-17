@@ -100,7 +100,6 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">કોઈપણ સમયે <ph name="LAUNCHER_KEY_NAME" /> + g દબાવો</translation>
 <translation id="1306549533752902673">ભલામણ કરેલ ઍપ</translation>
-<translation id="1311294419381837540">તમે ટૅબને કાસ્ટ કરી રહ્યા છો. તમે કોઈપણ સમયે કાસ્ટ કરવાનું થોભાવી કે રોકી શકો છો.</translation>
 <translation id="1312604459020188865">સિગ્નલની સશક્તતા <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">હંમેશાં શેલ્ફ બતાવો</translation>
 <translation id="132346741904777634">કૅમેરાને ઉપરના ડાબા ખૂણામાં સ્નેપ કર્યો. સિસ્ટમની સપાટીને ઓવરલેપ કરે છે.</translation>
@@ -109,7 +108,6 @@
 <translation id="1340378040547539434">પેજને નાનું કરો</translation>
 <translation id="1341651618736211726">ઓવરફ્લો</translation>
 <translation id="1341926407152459446">ઑડિયો ઇનપુટ અને આઉટપુટ માટે "<ph name="DEVICE_NAME" />"નો ઉપયોગ કરો</translation>
-<translation id="1344141078024003905">તમે તમારી સ્ક્રીન કાસ્ટ કરી રહ્યા છો. તમે તમારી સ્ક્રીન કાસ્ટ કરવાનું કોઈપણ સમયે થોભાવી કે રોકી શકો છો.</translation>
 <translation id="1346748346194534595">જમણે</translation>
 <translation id="1351937230027495976">મેનૂ સંકુચિત કરો</translation>
 <translation id="1360220746312242196">પેજમાં શોધતી વખતે, શોધ માટે પાછલા મેળ પર જાઓ</translation>
@@ -354,7 +352,6 @@
 <translation id="2369165858548251131">ચીની ભાષામાં "નમસ્કાર"</translation>
 <translation id="2370971919968699910">આમ કરવાથી ડેટા વપરાશનો ખર્ચ લાગુ થઈ શકે છે.
 <ph name="DEVICECOUNT" /> ડિવાઇસ કનેક્ટ કર્યા.</translation>
-<translation id="2382875860893882175">કાસ્ટ કરવાનું હાલમાં થોભાવવામાં આવ્યું છે. તમે કોઈપણ સમયે કાસ્ટ કરવાનું ફરી ચાલુ કરી કે રોકી શકો છો.</translation>
 <translation id="2386292613071805067">પેજ પરનું બધું પસંદ કરો</translation>
 <translation id="2392659840443812875">કોઈ હૉટસ્પૉટ ઉપલબ્ધ નથી. ખાતરી કરો કે તમારું ડિવાઇસ નજીકમાં હોય અને તેમાં બ્લૂટૂથની સુવિધા ચાલુ હોય.</translation>
 <translation id="2397416548179033562">Chrome મેનૂ દર્શાવો</translation>
@@ -618,7 +615,6 @@
 <translation id="3389599499324569679">શું ડિક્ટેશનની સુવિધા ચાલુ કરીએ?</translation>
 <translation id="3394432020929931914">, મોટી કરેલી</translation>
 <translation id="3405101454990027959">માઇક્રોફોનનો ઍક્સેસ ચાલુ કરો</translation>
-<translation id="3408735331120433841">હાલમાં તમે તમારી સ્ક્રીન કાસ્ટ કરી રહ્યા છો.</translation>
 <translation id="3409584356742878290">ડેવલપર ટૂલ ઇન્સ્પેક્ટર બતાવો અથવા છુપાવો</translation>
 <translation id="3410336247007142655">ઘેરી થીમના સેટિંગ બતાવો</translation>
 <translation id="3413817803639110246">હજુ સુધી જોવા માટે કંઈ નથી</translation>
@@ -858,7 +854,6 @@
 <translation id="4217571870635786043">ડિક્ટેશન</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ઇન્સ્ટૉલ કરેલી ઍપ, થોભાવી</translation>
 <translation id="4228078597006700451">નિયંત્રણોનું સેટઅપ કરેલું નથી</translation>
-<translation id="4231053948789591973">કાસ્ટ કરવાનું હાલમાં થોભાવવામાં આવ્યું છે. તમે તમારી સ્ક્રીન કોઈપણ સમયે કાસ્ટ કરવાનું ફરી શરુ કરી શકો છો કે રોકી શકો છો.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">ઝલક મોડ</translation>
 <translation id="4242533952199664413">સેટિંગ ખોલો</translation>

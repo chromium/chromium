@@ -118,6 +118,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="2945997411976714835">Diegimo klaida: nepavyko pradėti diegimo programos proceso.</translation>
 <translation id="2977470724722393594">„Chromium“ naujausios versijos</translation>
 <translation id="2977506796191543575">Jei svetainė bando pavogti slaptažodį ar atsisiuntėte žalingą failą, „Chromium“ taip pat gali siųsti URL, įskaitant puslapio turinio dalis, Saugaus naršymo funkcijai</translation>
+<translation id="2987208172821108655">„Chromium“ gali padaryti šiuos skirtukus neaktyvius, kad pagerintų naršymą ir atlaisvintų šaltinių.</translation>
 <translation id="3013473503895162900">Atidarykite <ph name="URL" /> naujame „Chromium“ skirtuke.</translation>
 <translation id="3032706164202344641">„Chromium“ negali patikrinti jūsų slaptažodžių. Vėliau bandykite dar kartą.</translation>
 <translation id="3032787606318309379">Pridedama prie „Chromium“...</translation>
@@ -319,6 +320,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6248213926982192922">Padaryti „Chromium“ numatytąja naršykle</translation>
 <translation id="6266342355635466082">„Chromium“ negali tikrinti naujinių. Pabandykite patikrinti interneto ryšį.</translation>
 <translation id="6268381023930128611">Atsijungti nuo „Chromium“?</translation>
+<translation id="6270547683008298381">Šie skirtukai naudoja papildomus šaltinius. Kad padidintumėte našumą, leiskite „Chromium“ juos padaryti neaktyvius.</translation>
 <translation id="6281746429495226318">Tinkinti „Chromium“ profilį</translation>
 <translation id="6290827346642914212">Pavadinkite „Chromium“ profilį</translation>
 <translation id="6294831894865512704">Norint naudoti plėtinį, reikia prisijungti prie „Chromium“</translation>
@@ -327,6 +329,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6327105987658262776">Naujini nėra.</translation>
 <translation id="6333502561965082103">Vykdoma kita „Chromium“ operacija. Vėliau bandykite dar kartą.</translation>
 <translation id="6334986366598267305">Dabar galite lengviau naudoti „Chromium“ naudodami „Google“ paskyrą ir bendrinamus kompiuterius.</translation>
+<translation id="633626832589656416">„Chromium“ gali padaryti šiuos skirtukus neaktyvius, kad pagerintų naršymo funkcijas ir veiktų sparčiai.</translation>
 <translation id="6347933965114150440">„Chromium“ spartusis klavišas</translation>
 <translation id="6366160072964553914">„Chromium“ užblokavo šį atsisiuntimą, nes failas nėra dažnai atsisiunčiamas ir jis gali būti pavojingas</translation>
 <translation id="6373523479360886564">Ar tikrai norite pašalinti „Chromium"?</translation>

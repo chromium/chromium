@@ -100,7 +100,6 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Вы ў любы момант можаце націснуць <ph name="LAUNCHER_KEY_NAME" /> + G</translation>
 <translation id="1306549533752902673">РЭКАМЕНДАВАНЫЯ ПРАГРАМЫ</translation>
-<translation id="1311294419381837540">Выконваецца трансляцыя ўкладкі. Вы можаце прыпыніць або спыніць трансляцыю ў любы час.</translation>
 <translation id="1312604459020188865">Магутнасць сігналу – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Заўсёды паказваць паліцу</translation>
 <translation id="132346741904777634">Акно перадпрагляду камеры прывязана да левага верхняга вугла, бо яно перакрывала інтэрфейс сістэмы.</translation>
@@ -109,7 +108,6 @@
 <translation id="1340378040547539434">Паменшыць маштаб старонкі</translation>
 <translation id="1341651618736211726">Адкрыць меню</translation>
 <translation id="1341926407152459446">Выкарыстоўваць прыладу "<ph name="DEVICE_NAME" />" у якасці аўдыяўвахода і аўдыявыхаду</translation>
-<translation id="1344141078024003905">Вы трансліруеце свой экран. Вы можаце прыпыніць або спыніць трансляцыю экрана ў любы час.</translation>
 <translation id="1346748346194534595">Справа</translation>
 <translation id="1351937230027495976">Згарнуць меню</translation>
 <translation id="1360220746312242196">Пры пошуку на старонцы перайсці да папярэдняга супадзення</translation>
@@ -357,7 +355,6 @@
 <translation id="2369165858548251131">"Вітаю" па-кітайску</translation>
 <translation id="2370971919968699910">Можа спаганяцца плата за перадачу даных.
 Падключана прылад: <ph name="DEVICECOUNT" />.</translation>
-<translation id="2382875860893882175">Трансляцыя цяпер прыпынена. Вы можаце ўзнавіць або спыніць трансляцыю ў любы час.</translation>
 <translation id="2386292613071805067">Вылучыць усё на старонцы</translation>
 <translation id="2392659840443812875">Няма даступнага хот-спота. Упэўніцеся, што прылада знаходзіцца паблізу, а Bluetooth уключаны.</translation>
 <translation id="2397416548179033562">Паказаць меню Chrome</translation>
@@ -578,6 +575,7 @@
 <translation id="3226991577105957773">+ яшчэ <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Мікрафон</translation>
 <translation id="3233611303007751344">Рэжым энергазберажэння выключаны</translation>
+<translation id="3238409143297336341">Наладзьце бацькоўскі кантроль для праграм</translation>
 <translation id="324366796737464147">Падаўленне шуму</translation>
 <translation id="3249513730522716925">Акно "<ph name="WINDOW_TITLE" />" было перанесена са Стала <ph name="ACTIVE_DESK" /> на Стол <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Тып задання: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -621,7 +619,6 @@
 <translation id="3389599499324569679">Уключыць галасавы ўвод?</translation>
 <translation id="3394432020929931914">, разгорнута</translation>
 <translation id="3405101454990027959">Уключыць доступ да мікрафона</translation>
-<translation id="3408735331120433841">Вы цяпер трансліруеце свой экран.</translation>
 <translation id="3409584356742878290">Паказаць або схаваць інспектар інструментаў распрацоўшчыка</translation>
 <translation id="3410336247007142655">Паказаць налады цёмнай тэмы</translation>
 <translation id="3413817803639110246">Пакуль што нічога няма</translation>
@@ -861,7 +858,6 @@
 <translation id="4217571870635786043">Галасавы ўвод</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, усталяваная праграма, прыпынена</translation>
 <translation id="4228078597006700451">Налады не зададзены</translation>
-<translation id="4231053948789591973">Трансляцыя цяпер прыпынена. Вы можаце ўзнавіць або спыніць трансляцыю свайго экрана ў любы час.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Рэжым агляду</translation>
 <translation id="4242533952199664413">Адкрыць налады</translation>
@@ -1409,6 +1405,7 @@
 <translation id="6141205840878048728">На чым бы вы хацелі сканцэнтраваць увагу?</translation>
 <translation id="6141988275892716286">Пацвярджэнне спампоўвання</translation>
 <translation id="6143578372829139382">Абагуліць у YouTube</translation>
+<translation id="6147182561428020853">Цяпер вы можаце блакіраваць праграмы, усталяваныя на прыладзе "<ph name="DEVICE_TYPE" />"</translation>
 <translation id="6154006699632741460">Перыферыйная прылада не падтрымліваецца</translation>
 <translation id="6156960295318603523">Налады мовы</translation>
 <translation id="615957422585914272">Паказаць экранную клавіятуру</translation>

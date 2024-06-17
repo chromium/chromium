@@ -915,6 +915,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5596627076506792578">Ďalšie možnosti</translation>
 <translation id="5599455543593328020">Režim inkognito</translation>
 <translation id="5601180634394228718">Ďalšie nastavenia, ktoré zlepšujú prostredie Chromu pomocou údajov, nájdete v <ph name="BEGIN_LINK" />službách Googlu<ph name="END_LINK" />.</translation>
+<translation id="5614625640221885312">Prihláste sa a používajte záložky, heslá a ďalší obsah vo všetkých svojich zariadeniach</translation>
 <translation id="5620163320393916465">Žiadne uložené heslá</translation>
 <translation id="5620928963363755975">Stiahnuté súbory a stránky nájdete po použití tlačidla Ďalšie možnosti</translation>
 <translation id="562289928968387744">Spravovať reakcie</translation>
@@ -956,6 +957,7 @@ Váš účet Google môže mať na adrese <ph name="BEGIN_LINK" />myactivity.goo
 <translation id="5793665092639000975">Využité: <ph name="SPACE_USED" /> z <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Vyhľadávanie a prehliadanie</translation>
 <translation id="5797949256525811424">Blokovaná téma</translation>
+<translation id="580893287573699959">Spravujte témy a weby, ktoré vás zaujímajú</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{pred # hodinou}few{pred # hodinami}many{pred # hodinou}other{pred # hodinami}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Všetky práva vyhradené.</translation>
 <translation id="5814749351757353073">Držte krok s novinkami na obľúbených weboch</translation>

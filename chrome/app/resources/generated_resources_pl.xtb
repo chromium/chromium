@@ -136,7 +136,6 @@ Twoje hasła przechowuje <ph name="GOOGLE_PASSWORD_MANAGER" />. Możesz je spraw
 <translation id="1085064499066015002">Zawsze na wszystkich stronach</translation>
 <translation id="1085697365578766383">Błąd podczas uruchamiania maszyny wirtualnej. Spróbuj ponownie.</translation>
 <translation id="1086486568852410168">Szukaj za pomocą Obiektywu Google</translation>
-<translation id="1088490543924960890">Zacznij zapisywać klucze dostępu w Menedżerze haseł Google</translation>
 <translation id="1090126737595388931">Brak aplikacji uruchomionych w tle</translation>
 <translation id="1090541560108055381">Przed sparowaniem urządzeń sprawdź, czy wyświetla się na nich ten sam kod</translation>
 <translation id="1091767800771861448">Naciśnij ESCAPE, aby pominąć aktualizację (tylko nieoficjalne kompilacje).</translation>
@@ -3651,7 +3650,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3685598397738512288">Ustawienia Linuksa dotyczące USB</translation>
 <translation id="3687598459967813435">Zawsze zezwalaj na powiadomienia z <ph name="WEBSITE" /></translation>
 <translation id="368789413795732264">Wystąpił błąd podczas próby zapisu pliku: <ph name="ERROR_TEXT" />.</translation>
-<translation id="3688368689701175138">Ten klucz dostępu zostanie zapisany w Menedżerze haseł Google na koncie <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3688507211863392146">Zapisywanie danych w plikach i folderach otwieranych w aplikacji</translation>
 <translation id="3688526734140524629">Zmień kanał</translation>
 <translation id="3688578402379768763">Aktualne</translation>
@@ -6082,7 +6080,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5497739595514726398">Przeglądarka Chrome nie mogła zweryfikować tego pakietu instalacyjnego</translation>
 <translation id="5498967291577176373">Dzięki podpowiedziom w tekście szybciej wpisuj imię i nazwisko, adres oraz numer telefonu</translation>
 <translation id="5499211612787418966">To okno nie jest teraz zaznaczone. Aby je zaznaczyć, naciśnij Alt-Shift A.</translation>
-<translation id="5499313591153584299">Ten plik może wyrządzić szkody na Twoim komputerze.</translation>
 <translation id="5499453227627332024">Dostępna jest nowa wersja kontenera Linuksa. Aktualizację możesz też przeprowadzić później w aplikacji Ustawienia.</translation>
 <translation id="5499476581866658341">Możesz teraz wyświetlać najnowsze zdjęcia i pliki multimedialne z telefonu</translation>
 <translation id="549957179819296104">Nowa ikona</translation>
@@ -7010,7 +7007,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6206199626856438589">Wylogujemy Cię z wyświetlonych witryn, także na otwartych kartach</translation>
 <translation id="6206311232642889873">Kop&amp;iuj grafikę</translation>
 <translation id="6207200176136643843">Przywróć domyślny poziom powiększenia</translation>
-<translation id="6207298079289376837">Sprawdź, czy można uporządkować karty</translation>
 <translation id="6207937957461833379">Kraj/region</translation>
 <translation id="6208521041562685716">Aktywuję mobilną transmisję danych</translation>
 <translation id="6208725777148613371">Nie udało się zapisać w: <ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
@@ -7361,7 +7357,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6476482583633999078">Szybkość mowy</translation>
 <translation id="6476671549211161535">Naciśnij na urządzeniu <ph name="DEVICE_NAME" /> przycisk inny niż lewy lub prawy przycisk myszy.</translation>
 <translation id="6477822444490674459">Telefony używające profilu służbowego nie obsługują synchronizacji powiadomień. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
-<translation id="6478248366783946499">Zachować niebezpieczny plik?</translation>
 <translation id="6479881432656947268">Zajrzyj do Chrome Web Store</translation>
 <translation id="6480327114083866287">Zarządzane przez <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Udostępniaj pliki i inne dane urządzeniom w pobliżu. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
@@ -7544,7 +7539,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="6613267708691765962">Skanuję w poszukiwaniu złośliwego oprogramowania…</translation>
 <translation id="6613668613087513143">Na tym urządzeniu jest za mało miejsca, aby dokończyć tę aktualizację. Zwolnij <ph name="NECESSARY_SPACE" /> i spróbuj ponownie, zaczynając w przeglądarce Chrome.</translation>
 <translation id="6615455863669487791">Pokaż mi</translation>
-<translation id="6618097958368085618">Zachowaj mimo to</translation>
 <translation id="6618744767048954150">W toku</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Strona może śledzić Twoją lokalizację</translation>
@@ -8128,7 +8122,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7044211973375150246">Inna aplikacja została ustawiona na otwieranie tych samych linków co <ph name="APP_NAME" />. Ta czynność spowoduje, że aplikacja <ph name="APP_NAME_2" /> przestanie otwierać obsługiwane linki.</translation>
 <translation id="7044606776288350625">Synchronizowanie danych</translation>
 <translation id="7047059339731138197">Wybierz tło</translation>
-<translation id="7049293980323620022">Zachować plik?</translation>
 <translation id="7049524156282610342">Dane przeglądania, <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Nieprawidłowa konfiguracja hotspota</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{Hasło zostało zapisane na Twoim koncie Google <ph name="USER_EMAIL" />}few{Hasła zostały zapisane na Twoim koncie Google <ph name="USER_EMAIL" />}many{Hasła zostały zapisane na Twoim koncie Google <ph name="USER_EMAIL" />}other{Hasła zostały zapisane na Twoim koncie Google <ph name="USER_EMAIL" />}}</translation>
@@ -9317,7 +9310,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7939062555109487992">Opcje zaawansowane</translation>
 <translation id="793923212791838">Twojego urządzenia nie można używać z tą witryną</translation>
 <translation id="7939328347457537652">Zarządzaj certyfikatami urządzenia</translation>
-<translation id="7939412583708276221">Zachowaj mimo to</translation>
 <translation id="7940087892955752820">Nie udało się cofnąć udostępniania, ponieważ tego folderu używa aplikacja. Folder przestanie być udostępniany po zamknięciu elementu <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Sortuj według: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Gotowość do obsługi tetheringu:</translation>
@@ -10079,7 +10071,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8477241577829954800">Zastąpiony</translation>
 <translation id="8477384620836102176">&amp;Ogólne</translation>
 <translation id="8479176401914456949">Nieprawidłowy kod. Spróbuj ponownie.</translation>
-<translation id="8480082892550707549">Nawet jeśli wcześniej pobierałeś pliki z tej strony, może ona być przez jakiś czas niebezpieczna (np. z powodu ataku hakerów). Spróbuj pobrać ten plik później.</translation>
 <translation id="8480869669560681089">Nieznane urządzenie firmy <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Potwierdź uprawnienia USB</translation>
 <translation id="8482077254400484047">Tutaj możesz zarządzać wyglądem nieaktywnych kart</translation>
@@ -10905,7 +10896,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="9085256200913095638">Powiel wybraną kartę</translation>
 <translation id="9085446486797400519">Dostęp do aparatu</translation>
 <translation id="9085776959277692427">Nie wybrano: <ph name="LANGUAGE" />. Aby wybrać język, naciśnij Wyszukaj i spację.</translation>
-<translation id="9087183943157874068">W każdej chwili możesz sprawdzić sugestie dotyczące grup kart</translation>
 <translation id="9087949559523851360">Dodawanie użytkownika z ograniczonym dostępem</translation>
 <translation id="9088234649737575428">Wtyczka <ph name="PLUGIN_NAME" /> została zablokowana przez zasady przedsiębiorstwa</translation>
 <translation id="9088446193279799727">Nie udało się skonfigurować Linuksa. Połącz się z internetem i spróbuj ponownie.</translation>

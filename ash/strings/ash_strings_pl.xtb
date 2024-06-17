@@ -100,7 +100,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">W dowolnym momencie naciśnij <ph name="LAUNCHER_KEY_NAME" /> + G</translation>
 <translation id="1306549533752902673">POLECANE APLIKACJE</translation>
-<translation id="1311294419381837540">Przesyłasz kartę. Przesyłanie możesz w każdej chwili wstrzymać lub zatrzymać.</translation>
 <translation id="1312604459020188865">Siła sygnału: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Zawsze pokazuj półkę</translation>
 <translation id="132346741904777634">Podgląd z kamery został przyciągnięty do lewego górnego rogu. Konflikt z obszarem systemowym.</translation>
@@ -109,7 +108,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1340378040547539434">Pomniejsz na stronie</translation>
 <translation id="1341651618736211726">Rozwiń menu</translation>
 <translation id="1341926407152459446">Użyj urządzenia „<ph name="DEVICE_NAME" />” jako wejścia i wyjścia audio</translation>
-<translation id="1344141078024003905">Przesyłasz ekran. Przesyłanie ekranu możesz w każdej chwili wstrzymać lub zakończyć.</translation>
 <translation id="1346748346194534595">W prawo</translation>
 <translation id="1351937230027495976">Zwiń menu</translation>
 <translation id="1360220746312242196">Podczas wyszukiwania na stronie przejdź do poprzedniego elementu pasującego do zapytania</translation>
@@ -354,7 +352,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="2369165858548251131">„Cześć” po chińsku</translation>
 <translation id="2370971919968699910">Może to spowodować koszty związane z przesyłaniem danych.
 Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
-<translation id="2382875860893882175">Przesyłanie jest obecnie wstrzymane. W każdej chwili możesz je wznowić lub zakończyć.</translation>
 <translation id="2386292613071805067">Zaznacz wszystko na stronie</translation>
 <translation id="2392659840443812875">Brak dostępnego hotspota. Upewnij się, że urządzenie jest w pobliżu i ma włączony Bluetooth.</translation>
 <translation id="2397416548179033562">Pokaż menu Chrome</translation>
@@ -618,7 +615,6 @@ Podłączone urządzenia: <ph name="DEVICECOUNT" />.</translation>
 <translation id="3389599499324569679">Czy włączyć dyktowanie?</translation>
 <translation id="3394432020929931914">, widok rozwinięty</translation>
 <translation id="3405101454990027959">Włącz dostęp do mikrofonu</translation>
-<translation id="3408735331120433841">Obecnie przesyłasz ekran.</translation>
 <translation id="3409584356742878290">Wyświetl lub ukryj inspektora Narzędzi dla programistów</translation>
 <translation id="3410336247007142655">Pokaż ustawienia ciemnego motywu</translation>
 <translation id="3413817803639110246">Na razie nie ma nic do pokazania</translation>
@@ -858,7 +854,6 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4217571870635786043">Dyktowanie</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, zainstalowana aplikacja, wstrzymana</translation>
 <translation id="4228078597006700451">Elementy sterujące nie są skonfigurowane</translation>
-<translation id="4231053948789591973">Przesyłanie jest obecnie wstrzymane. Przesyłanie ekranu możesz w każdej chwili wznowić lub zakończyć.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Tryb przeglądu</translation>
 <translation id="4242533952199664413">Otwórz ustawienia</translation>

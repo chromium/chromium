@@ -566,6 +566,7 @@
 <translation id="2036983605131262583">Alternativ Rulon</translation>
 <translation id="2040463897538655645">Çıxarıla bilən yaddaş</translation>
 <translation id="2040894699575719559">Məkan blok edildi</translation>
+<translation id="2041788246978549610">Əlçatan mikrofonları istifadə edin (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Qab 7</translation>
 <translation id="204357726431741734">Google Hesabınızda saxlanılan parollardan istifadə etmək üçün daxil olun</translation>
 <translation id="2045871135676061132">Zərf Fərdi</translation>
@@ -885,6 +886,7 @@
 <translation id="2655752832536625875">Hamam</translation>
 <translation id="2657637947725373811">{0,plural, =1{Məxfi fayl ötürülsün?}other{Məxfi fayllar ötürülsün?}}</translation>
 <translation id="2658843814961855121">İş və əmək qanunu</translation>
+<translation id="2658944305627908367">Balansı keçən tranzaksiyalar emal edilməyəcək</translation>
 <translation id="2660779039299703961">Tədbir</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Heç biri}=1{1 parol (<ph name="DOMAIN_LIST" /> üçün)}=2{2 parol (<ph name="DOMAIN_LIST" /> üçün)}other{# parol (<ph name="DOMAIN_LIST" /> üçün)}}</translation>
 <translation id="2666092431469916601">Yuxarı</translation>
@@ -1081,6 +1083,7 @@
 <translation id="3090667236485488075">Şüşə</translation>
 <translation id="3095940652251934233">Bəyanat</translation>
 <translation id="3098513225387949945">Deaktiv siyahısında siyasətin deaktiv edilməsinə bərabər olan '*' işarəsinə bərabər model olduğu üçün nəzərə alınmayıb.</translation>
+<translation id="3099619114405539473">Əlçatan kameraları istifadə edin (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Əmanət hesabı</translation>
 <translation id="3103188521861412364">Səhmlər və İstiqrazlar</translation>
 <translation id="3105172416063519923">Aktiv ID:</translation>
@@ -1354,6 +1357,7 @@
 <translation id="3583757800736429874">Hərəkəti təkrarlayın</translation>
 <translation id="3584299510153766161">Altdan qoşa deşik açın</translation>
 <translation id="3584755835709800788">Elmi fantastika və fantastik filmlər</translation>
+<translation id="3585455899094692781">Əlçatan kameraları istifadə edin və yerlərini dəyişin (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Yaş plyonka</translation>
 <translation id="3586931643579894722">Detalları gizlədin</translation>
 <translation id="3587738293690942763">Orta</translation>
@@ -2417,6 +2421,7 @@
 <translation id="5645132789250840550">Plastik (yarıparlaq)</translation>
 <translation id="5645719697465708351">Şənlik və Bayram Təchizatları</translation>
 <translation id="5645854190134202180">İkinci növbə</translation>
+<translation id="5648166631817621825">Son 7 gün</translation>
 <translation id="5649053991847567735">Avtomatik endirmələr</translation>
 <translation id="5651323159439184939">Kağızın verilməsi mexanizmi</translation>
 <translation id="5654927323611874862">Xəta Hesabatı ID'si yükləndi:</translation>

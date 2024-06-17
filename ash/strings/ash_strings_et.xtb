@@ -80,6 +80,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1247519845643687288">Hiljutised rakendused</translation>
 <translation id="1252999807265626933">Laadimine toiteallikast <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Milline on ilm?</translation>
+<translation id="1256734167083229794">Vajutasite täisekraani suurenduse klaviatuuri otseteed. Kasutage sissesuumimiseks klahvi <ph name="ZOOM_IN_ACCELERATOR" /> ja väljasuumimiseks klahvi <ph name="ZOOM_OUT_ACCELERATOR" />. Sissesuumitud vaates liikumiseks kasutage klahve ctrl + alt + nooleklahve.</translation>
 <translation id="1269405891096105529">Välisseadet külalisrežiimis ei toetata</translation>
 <translation id="1270290102613614947">Ekraanil kuvatav klaviatuur on keelatud</translation>
 <translation id="1272079795634619415">Peata</translation>
@@ -99,7 +100,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Vajutage igal ajal klahve <ph name="LAUNCHER_KEY_NAME" /> + g</translation>
 <translation id="1306549533752902673">SOOVITATUD RAKENDUSED</translation>
-<translation id="1311294419381837540">Olete vahekaarti üle kandmas. Saate ülekandmise igal ajal peatada või lõpetada.</translation>
 <translation id="1312604459020188865">Signaalitugevus: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Kuva alati riiul</translation>
 <translation id="132346741904777634">Kaamera kinnitati vasakusse ülanurka. Konflikt süsteemi platvormiga.</translation>
@@ -108,7 +108,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1340378040547539434">Lehel väljasuumimine</translation>
 <translation id="1341651618736211726">Ületäide</translation>
 <translation id="1341926407152459446">Helisisendiks ja -väljundiks hakatakse kasutama seadet „<ph name="DEVICE_NAME" />“.</translation>
-<translation id="1344141078024003905">Olete oma ekraani üle kandmas. Saate ekraani ülekandmise igal ajal peatada või lõpetada.</translation>
 <translation id="1346748346194534595">Paremale</translation>
 <translation id="1351937230027495976">Ahenda menüü</translation>
 <translation id="1360220746312242196">Lehel otsimisel eelmise vaste juurde liikumine</translation>
@@ -264,6 +263,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">Töölaud ja aknad on eemaldatud. Toimingu tagasivõtmiseks vajutage klahvikombinatsiooni Control + Z.</translation>
 <translation id="1972950159383891558">Tere, <ph name="USERNAME" />!</translation>
+<translation id="1977686871076551563">Värvide ümberpööramise režiim on lubatud. Vajutage uuesti nuppu <ph name="ACCELERATOR" />, et see välja lülitada.</translation>
 <translation id="1978498689038657292">Tekstisisestus</translation>
 <translation id="1980808257969311265">Liitu: <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Kuva eelmine nädal</translation>
@@ -352,7 +352,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2369165858548251131">„Tere” hiina keeles</translation>
 <translation id="2370971919968699910">See võib põhjustada andmesidekulusid.
 <ph name="DEVICECOUNT" /> seadet on ühendatud.</translation>
-<translation id="2382875860893882175">Ülekandmine on praegu lõpetatud. Saate ülekandmist igal ajal jätkata või lõpetada.</translation>
 <translation id="2386292613071805067">Lehel kõige valimine</translation>
 <translation id="2392659840443812875">Ühtegi kuumkohta pole saadaval. Veenduge, et teie seade oleks läheduses ja Bluetooth oleks sisse lülitatud.</translation>
 <translation id="2397416548179033562">Kuva Chrome'i menüü</translation>
@@ -572,6 +571,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3226991577105957773">ja veel <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233611303007751344">Akusäästja on välja lülitatud</translation>
+<translation id="3238409143297336341">Seadistage rakenduste jaoks vanemlik järelevalve</translation>
 <translation id="324366796737464147">Müra vähendamine</translation>
 <translation id="3249513730522716925">Aken <ph name="WINDOW_TITLE" /> teisaldati töölaualt <ph name="ACTIVE_DESK" /> töölauale <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Kursuse tööde tüüp: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -615,7 +615,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="3389599499324569679">Kas lülitada dikteerimine sisse?</translation>
 <translation id="3394432020929931914">, laiendatud</translation>
 <translation id="3405101454990027959">Lülita sisse juurdepääs mikrofonile</translation>
-<translation id="3408735331120433841">Olete praegu oma ekraani üle kandmas.</translation>
 <translation id="3409584356742878290">Arendajatööriistade inspektori kuvamine või peitmine</translation>
 <translation id="3410336247007142655">Kuva tumeda teema seaded</translation>
 <translation id="3413817803639110246">Veel ei ole midagi kuvada</translation>
@@ -856,7 +855,6 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4217571870635786043">Dikteerimine</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installitud rakendus, ajutiselt peatatud</translation>
 <translation id="4228078597006700451">Juhtelemente pole seadistatud</translation>
-<translation id="4231053948789591973">Ülekandmine on praegu lõpetatud. Saate oma ekraani ülekandmist igal ajal jätkata või lõpetada.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Ülevaaterežiim</translation>
 <translation id="4242533952199664413">Ava seaded</translation>
@@ -1184,6 +1182,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5377367976106153749">Kas lülitada juurdepääs kaamerale sisse?</translation>
 <translation id="5379115545237091094">Liiga palju katseid</translation>
 <translation id="5391307769715781764">Kas asendada salvestatud töölaud?</translation>
+<translation id="5392327145184648521">Aku % arvutamine …</translation>
 <translation id="5393156353051693207">Rakenduste järjestuse muutmiseks puudutage pikalt kus tahes</translation>
 <translation id="5395308026110844773">Rakendus <ph name="DRAGGED_APP_NAME" /> rakenduse <ph name="IN_PLACE_APP" /> kohal, kausta loomiseks vabastage.</translation>
 <translation id="5397578532367286026">Haldur (<ph name="MANAGER_EMAIL" />) saab kasutaja kasutusandmeid ja ajalugu vaadata aadressil chrome.com.</translation>
@@ -1238,6 +1237,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="5577281275355252094">Phone Hubi kasutamiseks veenduge, et Bluetooth oleks teie telefonis lubatud</translation>
 <translation id="5578188167649348993">mälumaht</translation>
 <translation id="5580000943347215299">Kogu</translation>
+<translation id="5586388332127302891">Dokitud luup on lubatud. Vajutage uuesti nuppu <ph name="ACCELERATOR" />, et see välja lülitada.</translation>
 <translation id="5587506661873751671">Allalaadimine: <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">Lohistage jäädvustatava piirkonna valimiseks</translation>
 <translation id="5590609058453685222">Vaigistamise märguanne on sisse lülitatud. Teid teavitatakse, kui räägite vaigistatuna.</translation>
@@ -1401,6 +1401,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6141205840878048728">Millele soovite keskenduda?</translation>
 <translation id="6141988275892716286">Allalaadimise kinnitamine</translation>
 <translation id="6143578372829139382">Jagage YouTube'is</translation>
+<translation id="6147182561428020853">Nüüd saate seadmesse <ph name="DEVICE_TYPE" /> installitud rakendusi blokeerida</translation>
 <translation id="6154006699632741460">Välisseadet ei toetata</translation>
 <translation id="6156960295318603523">Keeleseaded</translation>
 <translation id="615957422585914272">Ekraanil kuvatava klaviatuuri kuvamine</translation>
@@ -1448,6 +1449,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="6319503618073410818">Vaadake üksikasju brauseris</translation>
 <translation id="6324916366299863871">Otsetee muutmine</translation>
 <translation id="6330012934079202188">Kuvatud on kõigi töölaudade aknad. Praeguse töölaua akende kuvamiseks vajutage ülesnooleklahvi.</translation>
+<translation id="6337159624125741244">Täisekraani suurendus on sisse lülitatud</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> on hallatud seanss, mida haldab <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> on ühendatud</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, seejärel <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> või <ph name="KEY_THREE" /></translation>
@@ -1514,6 +1516,7 @@ Uus installimine</translation>
 <translation id="6574587113394758819">Rakenduse <ph name="APP_TITLE" /> märguanne on peidetud, kuna vaatamiskaitse on sisse lülitatud</translation>
 <translation id="6574622320167699133">Teie telefoni kaudu avatud. Sisenemiseks puudutage või klõpsake.</translation>
 <translation id="6578407462441924264">Nimetu</translation>
+<translation id="6582034443359256692">Aku laetuse taseme arvutamine.</translation>
 <translation id="6585808820553845416">Seansi lõpuni on jäänud <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Kaamera kinnitati vasakusse alanurka. Konflikt süsteemi platvormiga.</translation>
@@ -1575,6 +1578,7 @@ Uus installimine</translation>
 <translation id="6790428901817661496">Esita</translation>
 <translation id="679368458793552943">Suumi sisse, kui luup on sisse lülitatud</translation>
 <translation id="6794287755901682422">Üksus: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
+<translation id="6797745268063125932">Hoia sisselülitatuna</translation>
 <translation id="6801878137098616817">Hiljuti muudetud</translation>
 <translation id="6802687695197837794">Sisselülitamisel antakse juurdepääsuluba rakendustele <ph name="APP1_NAME" /> ja <ph name="APP2_NAME" /> ning kõikidele kaamerale ja mikrofonile juurdepääsemise loaga rakendustele ning veebisaitidele</translation>
 <translation id="6803622936009808957">Ei saanud kuvasid peegeldada, kuna toetatud eraldusvõimeid ei leitud. Selle asemel siseneti laiendatud töölaua režiimi.</translation>
@@ -1886,6 +1890,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7947798320695032612"><ph name="APP_NAME" /> soovib kasutada teie seadet <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Hämarda klaviatuur</translation>
 <translation id="7953994493035617347">Kas kinnitada uus eraldusvõime?</translation>
+<translation id="795958884516058160">Täisekraani suurendus on lubatud. Vajutage uuesti nuppu <ph name="ACCELERATOR" />, et see välja lülitada.</translation>
 <translation id="7963689218131240420">Režiim Mitte segada on väljas.</translation>
 <translation id="7963992254934562106">Telefonist <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Kausta valimine …</translation>
@@ -2137,6 +2142,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, ruut ei ole märgitud.</translation>
 <translation id="8949925099261528566">Ühendatud, Interneti-ühendus puudub</translation>
 <translation id="8951539504029375108">Teie Chromebookiga ühilduvad ainult heakskiidetud Thunderbolti seadmed</translation>
+<translation id="8959380109429710384">Vajutasite täisekraani suurenduse klaviatuuri otseteed. Sissesuumitud vaates liikumiseks kasutage klahve ctrl + alt + nooleklahve.</translation>
 <translation id="8964525410783593407">1 h</translation>
 <translation id="8973885907461690937">Menüüikooni fokuseerimine</translation>
 <translation id="8980862970816311842">Rakenduse ikooni teisaldamine rakenduste ruudustiku kausta / kaustast välja</translation>

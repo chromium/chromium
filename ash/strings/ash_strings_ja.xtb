@@ -100,7 +100,6 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">アクセスするには、<ph name="LAUNCHER_KEY_NAME" />+G キーを押してください</translation>
 <translation id="1306549533752902673">おすすめのアプリ</translation>
-<translation id="1311294419381837540">タブをキャストしています。いつでもキャストを一時停止または停止できます。</translation>
 <translation id="1312604459020188865">信号強度 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">シェルフを常に表示</translation>
 <translation id="132346741904777634">カメラは左上にスナップされています。システムのサーフェスと競合しています。</translation>
@@ -109,7 +108,6 @@
 <translation id="1340378040547539434">ページを縮小する</translation>
 <translation id="1341651618736211726">オーバーフロー</translation>
 <translation id="1341926407152459446">オーディオの入出力に "<ph name="DEVICE_NAME" />" を使用する</translation>
-<translation id="1344141078024003905">画面をキャストしています。いつでも画面のキャストを一時停止または停止できます。</translation>
 <translation id="1346748346194534595">右</translation>
 <translation id="1351937230027495976">メニューを折りたたむ</translation>
 <translation id="1360220746312242196">ページ検索時に前の一致箇所に移動する</translation>
@@ -354,7 +352,6 @@
 <translation id="2369165858548251131">中国語で「こんにちは」ってどう言うの</translation>
 <translation id="2370971919968699910">データ料金が発生する場合があります。
 <ph name="DEVICECOUNT" /> 台のデバイスが接続されています。</translation>
-<translation id="2382875860893882175">キャストは現在一時停止しています。いつでもキャストを再開または停止できます。</translation>
 <translation id="2386292613071805067">ページ上のすべてを選択する</translation>
 <translation id="2392659840443812875">利用できるアクセス ポイントはありません。デバイスが近くにあり、Bluetooth がオンになっていることを確認してください。</translation>
 <translation id="2397416548179033562">Chrome メニューを表示</translation>
@@ -618,7 +615,6 @@
 <translation id="3389599499324569679">音声入力をオンにしますか？</translation>
 <translation id="3394432020929931914">、開かれています</translation>
 <translation id="3405101454990027959">マイクへのアクセスをオンにする</translation>
-<translation id="3408735331120433841">現在、画面をキャストしています。</translation>
 <translation id="3409584356742878290">デベロッパー ツール インスペクタの表示と非表示を切り替える</translation>
 <translation id="3410336247007142655">ダークモードの設定を表示</translation>
 <translation id="3413817803639110246">通知はありません</translation>
@@ -858,7 +854,6 @@
 <translation id="4217571870635786043">音声入力</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />、インストール済みアプリ、一時停止中</translation>
 <translation id="4228078597006700451">コントロールが設定されていません</translation>
-<translation id="4231053948789591973">キャストは現在一時停止しています。いつでも画面のキャストを再開または停止できます。</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">複数画面モード</translation>
 <translation id="4242533952199664413">設定を開く</translation>

@@ -121,6 +121,7 @@
 <translation id="7326879924029668159">മടക്കി നൽകൽ നയവും മറ്റും കാണുക</translation>
 <translation id="7352298686197644113">തുറന്നിരിക്കുന്ന ടാബുകളിൽ ഏത് ഇനത്തിനാണ് കുറഞ്ഞ വിലയുള്ളതെന്ന് കാണുക</translation>
 <translation id="7452985128687107478">ടാബ് ഗ്രൂപ്പുകൾ നിങ്ങളുടെ ഉപകരണങ്ങളിലുടനീളം സ്വയമേവ സംരക്ഷിച്ച് അപ്‌ഡേറ്റ് ചെയ്യുന്നു</translation>
+<translation id="747459581954555080">എല്ലാം പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="753732157349120914">ടാബ് സ്വിച്ചർ</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google-ൽ നിന്നുള്ള <ph name="REVIEWS_COUNT_ONE" /> റിവ്യൂ}other{Google-ൽ നിന്നുള്ള <ph name="REVIEWS_COUNT_MANY" /> റിവ്യൂകൾ}}</translation>
 <translation id="7559245342362162951">ഗ്രൂപ്പിന്റെ ടാബുകൾ പൂർണ്ണസ്ക്രീൻ ഗ്രിഡിൽ കാണിക്കുക</translation>
@@ -144,6 +145,7 @@
 <translation id="8338427544764842461">നിങ്ങളുടെ ടാബ് ഗ്രൂപ്പുകൾ ഇവിടെ സംരക്ഷിക്കും, നിങ്ങൾ സൈൻ ഇൻ ചെയ്‌തിരിക്കുന്ന എല്ലാ ഉപകരണങ്ങളിലും അവ അപ്‌ഡേറ്റ് ചെയ്യും</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_ONE" /> ടാബ് അടയ്‌ക്കുക}other{തിരഞ്ഞെടുത്ത <ph name="TABS_COUNT_MANY" /> ടാബുകൾ അടയ്‌ക്കുക}}</translation>
 <translation id="8398929769197326728">പുതിയ ഫോൾഡർ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="8428213095426709021">ക്രമീകരണം</translation>
 <translation id="8714939927607906138">കുറഞ്ഞ വില</translation>
 <translation id="8730621377337864115">പൂർത്തിയാക്കി</translation>
 <translation id="8730999928494395583">ഈ അദൃശ്യ ടാബുകളിൽ നിന്നുള്ള നിങ്ങളുടെ ആക്റ്റിവിറ്റി ഈ ഉപകരണത്തിൽ നിന്ന് നീക്കം ചെയ്യും</translation>

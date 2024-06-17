@@ -116,6 +116,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="2945997411976714835">Pogreška instalacije: nije uspjelo pokretanje programa za instalaciju.</translation>
 <translation id="2977470724722393594">Chromium je ažuran</translation>
 <translation id="2977506796191543575">Ako neka web-lokacija pokuša ukrasti vašu zaporku ili ako preuzmete štetnu datoteku, Chromium također može sigurnom pregledavanju poslati URL-ove, uključujući dijelove sadržaja web-stranice</translation>
+<translation id="2987208172821108655">Chromium može deaktivirati te kartice radi poboljšanja vašeg doživljaja pregledavanja i oslobađanja resursa.</translation>
 <translation id="3013473503895162900">Otvorite <ph name="URL" /> u novoj kartici u Chromiumu.</translation>
 <translation id="3032706164202344641">Chromium ne može provjeriti vaše zaporke. Pokušajte ponovno kasnije.</translation>
 <translation id="3032787606318309379">Dodavanje u preglednik Chromium...</translation>
@@ -317,6 +318,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6248213926982192922">Neka Chromium bude zadani preglednik</translation>
 <translation id="6266342355635466082">Chromium ne može provjeriti ažuriranja. Provjerite internetsku vezu.</translation>
 <translation id="6268381023930128611">Želite li se odjaviti iz Chromiuma?</translation>
+<translation id="6270547683008298381">Te kartice upotrebljavaju dodatne resurse. Da biste poboljšali izvedbu, dopustite Chromiumu da ih deaktivira.</translation>
 <translation id="6281746429495226318">Prilagodite profil u Chromiumu</translation>
 <translation id="6290827346642914212">Odaberite naziv profila za Chromium</translation>
 <translation id="6294831894865512704">Proširenje traži da se prijavite na Chromium</translation>
@@ -325,6 +327,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="6327105987658262776">Ažuriranja nisu dostupna.</translation>
 <translation id="6333502561965082103">U tijeku je neka druga operacija na Chromiumu. Pokušajte ponovo kasnije.</translation>
 <translation id="6334986366598267305">Upotreba Chromiuma s vašim Google računom te na dijeljenim računalima sada je još jednostavnija.</translation>
+<translation id="633626832589656416">Chromium može deaktivirati te kartice radi poboljšanja vašeg doživljaja pregledavanja i brze aktivnosti.</translation>
 <translation id="6347933965114150440">Prečac za Chrome</translation>
 <translation id="6366160072964553914">Chromium je blokirao ovo preuzimanje jer se ova datoteka obično ne preuzima i mogla bi biti opasna</translation>
 <translation id="6373523479360886564">Jeste li sigurni da želite deinstalirati Chromium?</translation>

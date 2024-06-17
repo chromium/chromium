@@ -50,6 +50,7 @@
 <translation id="1682634494516646069">Google Chrome, veri dizini üzerinde okuma ve yazma işlemi yapamıyor: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1698376642261615901">Google Chrome, web sayfalarını ve uygulamaları yıldırım hızıyla çalıştıran bir web tarayıcısıdır. Hızlı, dengeli ve kullanımı kolaydır. Kötü amaçlı yazılımlara ve e-dolandırıcılığa karşı Google Chrome'un içinde yerleşik olarak bulunan koruma özellikleriyle web'de daha güvenli bir şekilde gezinin.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome bir saat içinde yeniden başlatılacak}other{Chrome # saat içinde yeniden başlatılacak}}</translation>
+<translation id="1722488837206509557">Böylece, kullanılabilir cihazlar arasından seçiminizi yapıp içerikleri bu cihazlarda görüntüleyebilirsiniz.</translation>
 <translation id="1734234790201236882">Chrome bu şifreyi Google Hesabınıza kaydedecek. Bu şekilde şifreyi hatırlamanız gerekmez.</translation>
 <translation id="1786003790898721085"><ph name="TARGET_DEVICE_NAME" /> cihazınızdan Chrome'da oturum açtığınızdan emin olup tekrar göndermeyi deneyin.</translation>
 <translation id="1786044937610313874">Kısayollar Chrome'da açılır</translation>
@@ -91,7 +92,7 @@
 <translation id="2348335408836342058">Chrome'un bu sitede kameranıza ve mikrofonunuza erişmesi için izin gerekiyor</translation>
 <translation id="234869673307233423">Chrome, şifrelerinizi kontrol edemiyor. Daha sonra tekrar deneyin.</translation>
 <translation id="235650106824528204">Bu profil kullanılırken oluşturulan tüm Chrome verileri (yer işaretlerinin oluşturulması, geçmiş, şifreler ve diğer ayarlar gibi) iş profili yöneticisi tarafından kaldırılabilir. <ph name="LEARN_MORE" /></translation>
-<translation id="2359808026110333948">Devam et</translation>
+<translation id="2359808026110333948">Devam</translation>
 <translation id="2390624519615263404">Güvenlik özelliklerini göster</translation>
 <translation id="2401189691232800402">ChromeOS sistemi</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Bir veya daha fazla Chrome uzantısı, 1 insan arabirim cihazına erişiyordu}=1{Bir veya daha fazla Chrome uzantısı, 1 insan arabirim cihazına erişiyor}other{Bir veya daha fazla Chrome uzantısı, # insan arabirim cihazına erişiyor}}</translation>

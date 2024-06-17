@@ -121,6 +121,7 @@
 <translation id="7326879924029668159">Katso palautuskäytäntö ja muita</translation>
 <translation id="7352298686197644113">Katso, minkä avoimilta välilehdiltäsi löytyvän tuotteen voit saada edullisempaan hintaan</translation>
 <translation id="7452985128687107478">Välilehtiryhmät tallentuvat ja päivittyvät automaattisesti kaikilla laitteillasi</translation>
+<translation id="747459581954555080">Palauta kaikki</translation>
 <translation id="753732157349120914">Välilehtien vaihtaja</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> arvostelu Googlesta}other{<ph name="REVIEWS_COUNT_MANY" /> arvostelua Googlesta}}</translation>
 <translation id="7559245342362162951">Näytä ryhmän välilehdet koko näytön ruudukossa</translation>
@@ -144,6 +145,7 @@
 <translation id="8338427544764842461">Välilehtiryhmäsi tallennetaan tänne, ja ne päivittyvät kaikilla sisäänkirjautuneilla laitteilla</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Sulje <ph name="TABS_COUNT_ONE" /> valittu välilehti}other{Sulje <ph name="TABS_COUNT_MANY" /> valittua välilehteä}}</translation>
 <translation id="8398929769197326728">Uusi kansio – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="8428213095426709021">Asetukset</translation>
 <translation id="8714939927607906138">Edullisempi hinta</translation>
 <translation id="8730621377337864115">Valmis</translation>
 <translation id="8730999928494395583">Toimintasi näillä incognito-välilehdillä poistetaan laitteelta</translation>

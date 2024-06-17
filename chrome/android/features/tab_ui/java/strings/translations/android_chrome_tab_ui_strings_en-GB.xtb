@@ -121,6 +121,7 @@
 <translation id="7326879924029668159">See return policy and more</translation>
 <translation id="7352298686197644113">See which item in your open tabs has a lower price</translation>
 <translation id="7452985128687107478">Tab groups automatically save and update across all your devices</translation>
+<translation id="747459581954555080">Restore all</translation>
 <translation id="753732157349120914">Tab Switcher</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> review from Google}other{<ph name="REVIEWS_COUNT_MANY" /> reviews from Google}}</translation>
 <translation id="7559245342362162951">Show group's tabs in full-screen grid</translation>
@@ -144,6 +145,7 @@
 <translation id="8338427544764842461">Your tab groups are saved here and get updated across all your signed-in devices</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Close <ph name="TABS_COUNT_ONE" /> selected tab}other{Close <ph name="TABS_COUNT_MANY" /> selected tabs}}</translation>
 <translation id="8398929769197326728">New folder – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="8428213095426709021">Settings</translation>
 <translation id="8714939927607906138">Lower price</translation>
 <translation id="8730621377337864115">Done</translation>
 <translation id="8730999928494395583">Your activity in these Incognito tabs will be removed from this device</translation>

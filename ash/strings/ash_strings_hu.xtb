@@ -100,7 +100,6 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Bármikor megnyomhatja a(z) <ph name="LAUNCHER_KEY_NAME" /> + g billentyűkombinációt</translation>
 <translation id="1306549533752902673">AJÁNLOTT ALKALMAZÁSOK</translation>
-<translation id="1311294419381837540">Folyamatban van egy lap átküldése. Az átküldést bármikor szüneteltetheti vagy leállíthatja.</translation>
 <translation id="1312604459020188865">Jelerősség: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Mindig látsszon a polc</translation>
 <translation id="132346741904777634">Kamera a bal felső sarokhoz igazítva. Ütközés a rendszerfelülettel.</translation>
@@ -109,7 +108,6 @@
 <translation id="1340378040547539434">Kicsinyítés az oldalon</translation>
 <translation id="1341651618736211726">Túlcsordulás</translation>
 <translation id="1341926407152459446">A(z) „<ph name="DEVICE_NAME" />” használata hangbemenethez és -kimenethez</translation>
-<translation id="1344141078024003905">A képernyő átküldése folyamatban van. Bármikor szüneteltetheti vagy leállíthatja a képernyő átküldését.</translation>
 <translation id="1346748346194534595">Jobbra</translation>
 <translation id="1351937230027495976">Menü összecsukása</translation>
 <translation id="1360220746312242196">Oldalkereséskor ugrás az előző keresési találatra</translation>
@@ -354,7 +352,6 @@
 <translation id="2369165858548251131">„Helló” kínai nyelven</translation>
 <translation id="2370971919968699910">Ez adatforgalmi költségekkel járhat.
 <ph name="DEVICECOUNT" /> eszköz van csatlakoztatva.</translation>
-<translation id="2382875860893882175">Az átküldés jelenleg szünetel. Bármikor folytathatja vagy leállíthatja az átküldést.</translation>
 <translation id="2386292613071805067">Az oldalon lévő összes elem kijelölése</translation>
 <translation id="2392659840443812875">Nincs rendelkezésre álló hotspot. Győződjön meg arról, hogy az eszköze a közelben van, és be van kapcsolva rajta a Bluetooth.</translation>
 <translation id="2397416548179033562">A Chrome-menü megjelenítése</translation>
@@ -618,7 +615,6 @@
 <translation id="3389599499324569679">Bekapcsolja a Diktálás funkciót?</translation>
 <translation id="3394432020929931914">, kibontva</translation>
 <translation id="3405101454990027959">Mikrofon-hozzáférés aktiválása</translation>
-<translation id="3408735331120433841">Jelenleg folyamatban van a képernyő átküldése.</translation>
 <translation id="3409584356742878290">A Fejlesztői eszközök ellenőrző paneljének megjelenítése vagy elrejtése</translation>
 <translation id="3410336247007142655">Sötét téma beállításainak megjelenítése</translation>
 <translation id="3413817803639110246">Itt most nem látható semmi</translation>
@@ -859,7 +855,6 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4217571870635786043">Diktálás</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, telepített alkalmazás, szüneteltetve</translation>
 <translation id="4228078597006700451">A vezérlők nincsenek beállítva</translation>
-<translation id="4231053948789591973">Az átküldés jelenleg szünetel. Bármikor folytathatja vagy leállíthatja a képernyő átküldését.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Áttekintési mód</translation>
 <translation id="4242533952199664413">Beállítások megnyitása</translation>

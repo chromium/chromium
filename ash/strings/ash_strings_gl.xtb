@@ -100,7 +100,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Preme <ph name="LAUNCHER_KEY_NAME" /> + g en calquera momento</translation>
 <translation id="1306549533752902673">APLICACIÓNS RECOMENDADAS</translation>
-<translation id="1311294419381837540">Estás emitindo unha pestana. Podes pór en pausa ou deter a emisión cando queiras.</translation>
 <translation id="1312604459020188865">Intensidade do sinal do <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Mostrar sempre o estante</translation>
 <translation id="132346741904777634">Cámara axustada á esquina superior esquerda. Conflito coa plataforma do sistema.</translation>
@@ -109,7 +108,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1340378040547539434">Afastar páxina</translation>
 <translation id="1341651618736211726">Menú adicional</translation>
 <translation id="1341926407152459446">Usa <ph name="DEVICE_NAME" /> para a entrada e a saída de audio</translation>
-<translation id="1344141078024003905">Estás emitindo a pantalla. Podes pór en pausa ou deter a emisión cando queiras.</translation>
 <translation id="1346748346194534595">Dereita</translation>
 <translation id="1351937230027495976">Contraer menú</translation>
 <translation id="1360220746312242196">Ir á seguinte coincidencia ao buscar nunha páxina</translation>
@@ -354,7 +352,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2369165858548251131">"Ola" en chinés</translation>
 <translation id="2370971919968699910">Pode que se apliquen custos polo uso de datos.
 Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
-<translation id="2382875860893882175">A emisión está en pausa. Podes retomala ou detela en calquera momento.</translation>
 <translation id="2386292613071805067">Selecciona todo na páxina</translation>
 <translation id="2392659840443812875">Non hai ningunha zona wifi dispoñible. Asegúrate de ter o dispositivo preto e de que o Bluetooth estea activado.</translation>
 <translation id="2397416548179033562">Mostrar menú de Chrome</translation>
@@ -574,6 +571,7 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="3226991577105957773"><ph name="COUNT" /> máis</translation>
 <translation id="3227137524299004712">Micrófono</translation>
 <translation id="3233611303007751344">Desactivouse a función Aforro de batería</translation>
+<translation id="3238409143297336341">Configura os controis parentais para aplicacións</translation>
 <translation id="324366796737464147">Cancelación de ruído</translation>
 <translation id="3249513730522716925">A ventá <ph name="WINDOW_TITLE" /> moveuse do escritorio <ph name="ACTIVE_DESK" /> ao escritorio <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Tipo de traballo de clase: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -617,7 +615,6 @@ Hai <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
 <translation id="3389599499324569679">Queres activar a función de ditado?</translation>
 <translation id="3394432020929931914">, despregado</translation>
 <translation id="3405101454990027959">Activar acceso ao micrófono</translation>
-<translation id="3408735331120433841">Estás emitindo a pantalla.</translation>
 <translation id="3409584356742878290">Mostrar ou ocultar inspector de ferramentas para programadores</translation>
 <translation id="3410336247007142655">Mostrar configuración do tema escuro</translation>
 <translation id="3413817803639110246">Aínda non hai contido</translation>
@@ -858,7 +855,6 @@ Limitáronse algunhas funcións para ampliar a duración da batería.</translati
 <translation id="4217571870635786043">Ditado</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, aplicación instalada, en pausa</translation>
 <translation id="4228078597006700451">Os controis non están configurados</translation>
-<translation id="4231053948789591973">A emisión está en pausa. Podes retomala ou detela en calquera momento.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modo de visión xeral</translation>
 <translation id="4242533952199664413">Abrir configuración</translation>
@@ -1405,6 +1401,7 @@ Non hai ningún dispositivo conectado.</translation>
 <translation id="6141205840878048728">En que tarefa queres concentrarte?</translation>
 <translation id="6141988275892716286">Confirma a descarga</translation>
 <translation id="6143578372829139382">Compartir en YouTube</translation>
+<translation id="6147182561428020853">Agora podes bloquear as aplicacións instaladas neste dispositivo (<ph name="DEVICE_TYPE" />)</translation>
 <translation id="6154006699632741460">O periférico non é compatible</translation>
 <translation id="6156960295318603523">Configuración de idioma</translation>
 <translation id="615957422585914272">Mostrar teclado en pantalla</translation>

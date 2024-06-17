@@ -566,6 +566,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2036983605131262583">Rollo alternativo</translation>
 <translation id="2040463897538655645">Almacenamiento extraíble</translation>
 <translation id="2040894699575719559">Ubicación bloqueada</translation>
+<translation id="2041788246978549610">Usar los micrófonos disponibles (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Bandeja 7</translation>
 <translation id="204357726431741734">Accede a tu Cuenta de Google para usar las contraseñas guardadas allí</translation>
 <translation id="2045871135676061132">Sobre Personal</translation>
@@ -885,6 +886,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2655752832536625875">Baño</translation>
 <translation id="2657637947725373811">{0,plural, =1{¿Quieres transferir el archivo confidencial?}other{¿Quieres transferir los archivos confidenciales?}}</translation>
 <translation id="2658843814961855121">Legislación laboral</translation>
+<translation id="2658944305627908367">No se procesarán las transacciones que superen tu saldo</translation>
 <translation id="2660779039299703961">Evento</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Ninguna}=1{1 contraseña (para <ph name="DOMAIN_LIST" />)}=2{2 contraseñas (para <ph name="DOMAIN_LIST" />)}other{# contraseñas (para <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Superior</translation>
@@ -1081,6 +1083,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3090667236485488075">Vidrio</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Se ignoró porque la lista de inhabilitaciones contenía un patrón igual a "*", lo que es igual a la política de inhabilitación.</translation>
+<translation id="3099619114405539473">Usar las cámaras disponibles (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Caja de ahorros</translation>
 <translation id="3103188521861412364">Acciones y bonos</translation>
 <translation id="3105172416063519923">ID de recurso:</translation>
@@ -1358,6 +1361,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3583757800736429874">&amp;Rehacer Mover</translation>
 <translation id="3584299510153766161">Perforación doble en la parte inferior</translation>
 <translation id="3584755835709800788">Películas de ciencia ficción y fantasía</translation>
+<translation id="3585455899094692781">Usar y mover las cámaras disponibles (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Película húmeda</translation>
 <translation id="3586931643579894722">Ocultar detalles</translation>
 <translation id="3587738293690942763">Medio</translation>
@@ -2422,6 +2426,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5645132789250840550">Plástico (semibrillante)</translation>
 <translation id="5645719697465708351">Suministros para fiestas y vacaciones</translation>
 <translation id="5645854190134202180">Segundo turno</translation>
+<translation id="5648166631817621825">Últimos 7 días</translation>
 <translation id="5649053991847567735">Descargas automáticas</translation>
 <translation id="5651323159439184939">Alimentación por tracción</translation>
 <translation id="5654927323611874862">ID del informe de fallas subido:</translation>

@@ -566,6 +566,7 @@
 <translation id="2036983605131262583">대체 롤</translation>
 <translation id="2040463897538655645">이동식 저장소</translation>
 <translation id="2040894699575719559">위치가 차단됨</translation>
+<translation id="2041788246978549610">이용 가능한 마이크 사용(<ph name="MICS_COUNT" />개)</translation>
 <translation id="2042213636306070719">트레이 7</translation>
 <translation id="204357726431741734">Google 계정에 저장된 비밀번호를 사용하여 로그인</translation>
 <translation id="2045871135676061132">봉투 Personal</translation>
@@ -885,6 +886,7 @@
 <translation id="2655752832536625875">욕실</translation>
 <translation id="2657637947725373811">{0,plural, =1{기밀 파일을 전송하시겠습니까?}other{기밀 파일을 전송하시겠습니까?}}</translation>
 <translation id="2658843814961855121">근로 및 고용법</translation>
+<translation id="2658944305627908367">잔액을 초과하는 거래는 처리되지 않습니다.</translation>
 <translation id="2660779039299703961">이벤트</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{없음}=1{비밀번호 1개(도메인: <ph name="DOMAIN_LIST" />)}=2{비밀번호 2개(도메인: <ph name="DOMAIN_LIST" />)}other{비밀번호 #개(도메인: <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">맨 위</translation>
@@ -1081,6 +1083,7 @@
 <translation id="3090667236485488075">광택</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">사용 안함 목록에 정책을 사용 중지하는 것과 동일한 '*'와 동등한 패턴이 포함되어 있으므로 무시되었습니다.</translation>
+<translation id="3099619114405539473">이용 가능한 카메라 사용(<ph name="CAMERAS_COUNT" />개)</translation>
 <translation id="3102312643185441063">저축예금</translation>
 <translation id="3103188521861412364">주식 및 채권</translation>
 <translation id="3105172416063519923">애셋 ID:</translation>
@@ -1357,6 +1360,7 @@
 <translation id="3583757800736429874">이동 다시 실행(&amp;R)</translation>
 <translation id="3584299510153766161">하단 2공 펀칭</translation>
 <translation id="3584755835709800788">공상과학 및 판타지 영화</translation>
+<translation id="3585455899094692781">이용 가능한 카메라 사용 및 이동(<ph name="CAMERAS_COUNT" />개)</translation>
 <translation id="3586833803451155175">웻 필름</translation>
 <translation id="3586931643579894722">세부정보 숨기기</translation>
 <translation id="3587738293690942763">보통</translation>
@@ -2421,6 +2425,7 @@
 <translation id="5645132789250840550">플라스틱(반광택)</translation>
 <translation id="5645719697465708351">파티 및 축제 용품</translation>
 <translation id="5645854190134202180">두 번째 시프트</translation>
+<translation id="5648166631817621825">지난 7일</translation>
 <translation id="5649053991847567735">자동 다운로드</translation>
 <translation id="5651323159439184939">트랙터 피드</translation>
 <translation id="5654927323611874862">업로드된 비정상 종료 보고서 ID:</translation>

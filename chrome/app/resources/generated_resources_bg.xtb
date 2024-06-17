@@ -136,7 +136,6 @@
 <translation id="1085064499066015002">Винаги на всички сайтове</translation>
 <translation id="1085697365578766383">Грешка при стартирането на виртуалната машина. Моля, опитайте отново.</translation>
 <translation id="1086486568852410168">Търсене с Google Обектив</translation>
-<translation id="1088490543924960890">Започнете да запазвате ключове за достъп с Google Мениджър на пароли</translation>
 <translation id="1090126737595388931">Не се изпълняват приложения на заден план</translation>
 <translation id="1090541560108055381">Преди сдвояването се уверете, че този код е един и същ и на двете устройства</translation>
 <translation id="1091767800771861448">Натиснете „ESCAPE“ за пропускане (само в неофициалните версии).</translation>
@@ -3683,7 +3682,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3685598397738512288">Предпочитания за USB за Linux</translation>
 <translation id="3687598459967813435">Винаги да се разрешават известията от <ph name="WEBSITE" /></translation>
 <translation id="368789413795732264">Възникна грешка при опита за запис във файла: <ph name="ERROR_TEXT" />.</translation>
-<translation id="3688368689701175138">Ключът за достъп ще бъде запазен в Google Мениджър на пароли за <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3688507211863392146">Запис във файлове и папки, които сте отворили в приложението</translation>
 <translation id="3688526734140524629">Промяна на канала</translation>
 <translation id="3688578402379768763">Актуално</translation>
@@ -6120,7 +6118,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5497739595514726398">Chrome не успя да потвърди този инсталационен пакет</translation>
 <translation id="5498967291577176373">Пишете по-бързо посредством показвани в текста предложения за името, адреса или телефонния ви номер</translation>
 <translation id="5499211612787418966">Понастоящем фокусът не е върху този диалогов прозорец. Натиснете Alt + Shift A, за да поставите фокуса върху него.</translation>
-<translation id="5499313591153584299">Този файл може да навреди на компютъра ви.</translation>
 <translation id="5499453227627332024">Налице е надстройка за контейнера ви за Linux. Можете също да го надстроите по-късно от приложението „Настройки“.</translation>
 <translation id="5499476581866658341">Вече можете да преглеждате скорошните снимки и мултимедийни файлове, които имате на телефона си</translation>
 <translation id="549957179819296104">Нова икона</translation>
@@ -7047,7 +7044,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6206199626856438589">Ще излезете от профила си в показаните сайтове, включително в отворените раздели</translation>
 <translation id="6206311232642889873">Копи&amp;ране на изображението</translation>
 <translation id="6207200176136643843">Възстановяване на стандартното ниво на мащаба</translation>
-<translation id="6207298079289376837">Проверете дали разделите могат да бъдат организирани</translation>
 <translation id="6207937957461833379">Държава/Регион</translation>
 <translation id="6208521041562685716">Мобилните данни се активират</translation>
 <translation id="6208725777148613371">Запазването в(ъв) <ph name="WEB_DRIVE" /> не бе успешно – <ph name="INTERRUPT_REASON" /></translation>
@@ -7398,7 +7394,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6476482583633999078">Скорост на говора</translation>
 <translation id="6476671549211161535">Натиснете бутон, който не е левият или десният бутон на мишката на <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">Синхронизирането на известията не се поддържа за телефони, работещи със служебен потребителски профил. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
-<translation id="6478248366783946499">Да се запази ли опасният файл?</translation>
 <translation id="6479881432656947268">Посетете уеб магазина на Chrome</translation>
 <translation id="6480327114083866287">Управлява се от <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Споделяйте файлове и още много други неща с устройства в близост. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
@@ -7577,7 +7572,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="6613267708691765962">Сканира се за злонамерен софтуер...</translation>
 <translation id="6613668613087513143">На това устройство няма достатъчно място за завършване на актуализацията. Освободете <ph name="NECESSARY_SPACE" /> и направете нов опит в Chrome.</translation>
 <translation id="6615455863669487791">Покажете ми</translation>
-<translation id="6618097958368085618">Запазване въпреки това</translation>
 <translation id="6618744767048954150">В ход</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Сайтът може да следи местоположението ви</translation>
@@ -8164,7 +8158,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7044211973375150246">За приложението е зададено да отваря същите връзки като <ph name="APP_NAME" />. Това действие ще деактивира отварянето на поддържаните връзки от <ph name="APP_NAME_2" />.</translation>
 <translation id="7044606776288350625">Синхронизиране на данните</translation>
 <translation id="7047059339731138197">Изберете фон</translation>
-<translation id="7049293980323620022">Да се запази ли файлът?</translation>
 <translation id="7049524156282610342">Данни за сърфирането: <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Невалидна конфигурация на точката за достъп</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{Паролата е запазена в профила ви в Google (<ph name="USER_EMAIL" />)}other{Паролите са запазени в профила ви в Google (<ph name="USER_EMAIL" />)}}</translation>
@@ -9355,7 +9348,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7939062555109487992">Разширени опции</translation>
 <translation id="793923212791838">Устройството ви не може да се използва с този сайт</translation>
 <translation id="7939328347457537652">Управление на сертификатите на устройството</translation>
-<translation id="7939412583708276221">Запазване въпреки това</translation>
 <translation id="7940087892955752820">Прекратяването на споделянето не бе успешно, защото тази папка се използва от приложение. Споделянето ѝ ще бъде прекратено при следващото изключване на <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Сортиране по: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Готовност за тетъринг:</translation>
@@ -10115,7 +10107,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8477241577829954800">Заменен</translation>
 <translation id="8477384620836102176">&amp;Общи</translation>
 <translation id="8479176401914456949">Невалиден код. Моля, опитайте отново.</translation>
-<translation id="8480082892550707549">Дори ако преди сте изтегляли файлове от този сайт, той може временно да не е безопасен (променен от хакери). Опитайте да изтеглите файла по-късно.</translation>
 <translation id="8480869669560681089">Неизвестно устройство от <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Потвърждаване на разрешението за USB</translation>
 <translation id="8482077254400484047">Управлявайте облика на неактивните раздели оттук</translation>
@@ -10944,7 +10935,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9085256200913095638">Дублиране на избрания раздел</translation>
 <translation id="9085446486797400519">Достъп до камерата</translation>
 <translation id="9085776959277692427">Не е избран <ph name="LANGUAGE" /> език. За избиране натиснете клавиша „търсене“ + интервал.</translation>
-<translation id="9087183943157874068">Можете да проверите дали има предложения за групи раздели по всяко време</translation>
 <translation id="9087949559523851360">Добавяне на потребител с ограничена функционалност</translation>
 <translation id="9088234649737575428">Приставката <ph name="PLUGIN_NAME" /> е блокирана от корпоративно правило</translation>
 <translation id="9088446193279799727">Конфигурирането на Linux не бе успешно. Свържете се с интернет и опитайте отново.</translation>

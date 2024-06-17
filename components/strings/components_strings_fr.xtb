@@ -566,6 +566,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2036983605131262583">Autre rouleau</translation>
 <translation id="2040463897538655645">Mémoire de stockage amovible</translation>
 <translation id="2040894699575719559">Position bloquée</translation>
+<translation id="2041788246978549610">Utiliser les micros disponibles (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Bac 7</translation>
 <translation id="204357726431741734">Connectez-vous pour utiliser les mots de passe enregistrés dans votre compte Google</translation>
 <translation id="2045871135676061132">Enveloppe personnelle</translation>
@@ -885,6 +886,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2655752832536625875">Salle de bains</translation>
 <translation id="2657637947725373811">{0,plural, =1{Transférer le fichier confidentiel ?}one{Transférer le fichier confidentiel ?}other{Transférer les fichiers confidentiels ?}}</translation>
 <translation id="2658843814961855121">Droit du travail</translation>
+<translation id="2658944305627908367">Les transactions qui dépassent votre solde ne seront pas traitées</translation>
 <translation id="2660779039299703961">Événement</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Aucun}=1{1 mot de passe (associé à <ph name="DOMAIN_LIST" />)}=2{2 mots de passe (associés à <ph name="DOMAIN_LIST" />)}one{# mot de passe (associé à <ph name="DOMAIN_LIST" />)}other{# mots de passe (associés à <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">En haut</translation>
@@ -1081,6 +1083,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3090667236485488075">Verre</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Cette règle est ignorée. Elle est considérée comme désactivée, car la liste d'interdictions contient une séquence équivalente à "*".</translation>
+<translation id="3099619114405539473">Utiliser les caméras disponibles (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Épargne</translation>
 <translation id="3103188521861412364">Actions et obligations</translation>
 <translation id="3105172416063519923">ID d'élément : </translation>
@@ -1357,6 +1360,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3583757800736429874">&amp;Rétablir le déplacement</translation>
 <translation id="3584299510153766161">Double perforation en bas</translation>
 <translation id="3584755835709800788">Films de science-fiction et fantastiques</translation>
+<translation id="3585455899094692781">Utiliser et déplacer les caméras disponibles (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Pellicule humide</translation>
 <translation id="3586931643579894722">Masquer les détails</translation>
 <translation id="3587738293690942763">Milieu</translation>
@@ -2421,6 +2425,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5645132789250840550">Plastique (semi-brillance)</translation>
 <translation id="5645719697465708351">Fournitures de fêtes et vacances</translation>
 <translation id="5645854190134202180">Deuxième quart de travail</translation>
+<translation id="5648166631817621825">7 derniers jours</translation>
 <translation id="5649053991847567735">Téléchargements automatiques</translation>
 <translation id="5651323159439184939">Continu sans pli</translation>
 <translation id="5654927323611874862">ID du rapport d'erreur importé :</translation>

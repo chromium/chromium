@@ -121,6 +121,7 @@
 <translation id="7326879924029668159">دیدن خط‌مشی برگرداندن و موارد دیگر</translation>
 <translation id="7352298686197644113">ببینید کدام مورد در برگه‌های باز قیمت کمتری دارد</translation>
 <translation id="7452985128687107478">گروه‌های برگه به‌طور خودکار در همه دستگاه‌ها ذخیره و به‌روز می‌شود</translation>
+<translation id="747459581954555080">بازیابی همه</translation>
 <translation id="753732157349120914">تعویض‌کننده برگه</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{‏<ph name="REVIEWS_COUNT_ONE" /> مرور از Google}one{‏<ph name="REVIEWS_COUNT_MANY" /> مرور از Google}other{‏<ph name="REVIEWS_COUNT_MANY" /> مرور از Google}}</translation>
 <translation id="7559245342362162951">نمایش برگه‌های گروه در شبکه تمام‌صفحه</translation>
@@ -144,6 +145,7 @@
 <translation id="8338427544764842461">گروه‌های برگه شما اینجا ذخیره می‌شود و در همه دستگاه‌های واردشده به حساب به‌روز می‌شود</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{بستن <ph name="TABS_COUNT_ONE" /> برگه انتخابی}one{بستن <ph name="TABS_COUNT_MANY" /> برگه انتخابی}other{بستن <ph name="TABS_COUNT_MANY" /> برگه انتخابی}}</translation>
 <translation id="8398929769197326728">پوشه جدید - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="8428213095426709021">تنظیمات</translation>
 <translation id="8714939927607906138">قیمت کمتر</translation>
 <translation id="8730621377337864115">تمام</translation>
 <translation id="8730999928494395583">فعالیتتان در این «برگه‌های ناشناس» از این دستگاه حذف خواهد شد</translation>

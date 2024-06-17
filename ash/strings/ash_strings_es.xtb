@@ -80,6 +80,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1247519845643687288">Aplicaciones recientes</translation>
 <translation id="1252999807265626933">Cargando a través de <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">¿Qué tiempo hace?</translation>
+<translation id="1256734167083229794">Has pulsado la combinación de teclas para la lupa de pantalla completa. Usa <ph name="ZOOM_IN_ACCELERATOR" /> para ampliar y <ph name="ZOOM_OUT_ACCELERATOR" /> para reducir. Usa Ctrl + Alt + flechas para desplazarte por la vista ampliada.</translation>
 <translation id="1269405891096105529">No se puede usar el periférico en el modo Invitado</translation>
 <translation id="1270290102613614947">Teclado en pantalla inhabilitado</translation>
 <translation id="1272079795634619415">Detener</translation>
@@ -99,7 +100,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Pulsa <ph name="LAUNCHER_KEY_NAME" /> + G en cualquier momento</translation>
 <translation id="1306549533752902673">APLICACIONES RECOMENDADAS</translation>
-<translation id="1311294419381837540">Estás enviando una pestaña. Puedes pausar o detener el envío en cualquier momento.</translation>
 <translation id="1312604459020188865">Intensidad de la señal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Mostrar estantería siempre</translation>
 <translation id="132346741904777634">Cámara ajustada a la esquina superior izquierda. Conflicto con la superficie del sistema.</translation>
@@ -108,7 +108,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1340378040547539434">Reducir la página</translation>
 <translation id="1341651618736211726">Menú adicional</translation>
 <translation id="1341926407152459446">Usar <ph name="DEVICE_NAME" /> como entrada y salida de audio</translation>
-<translation id="1344141078024003905">Estás enviando tu pantalla. Puedes pausar o detener el envío de tu pantalla en cualquier momento.</translation>
 <translation id="1346748346194534595">Derecha</translation>
 <translation id="1351937230027495976">Ocultar menú</translation>
 <translation id="1360220746312242196">Al buscar en una página, ir a la coincidencia anterior de la búsqueda</translation>
@@ -264,6 +263,7 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">El escritorio y las ventanas se han quitado. Pulsa Control + Z para deshacer la acción.</translation>
 <translation id="1972950159383891558">Hola, <ph name="USERNAME" />:</translation>
+<translation id="1977686871076551563">Modo Invertir colores habilitado. Vuelve a pulsar <ph name="ACCELERATOR" /> para desactivarlo.</translation>
 <translation id="1978498689038657292">Introducción de texto</translation>
 <translation id="1980808257969311265">Unirse a <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Mostrar semana anterior</translation>
@@ -352,7 +352,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="2369165858548251131">"Hola" en chino</translation>
 <translation id="2370971919968699910">Es posible que se apliquen cargos por el uso de datos.
 <ph name="DEVICECOUNT" /> dispositivos conectados.</translation>
-<translation id="2382875860893882175">El envío de contenido está en pausa. Puedes reanudarlo o detenerlo en cualquier momento.</translation>
 <translation id="2386292613071805067">Seleccionar todo el contenido de la página</translation>
 <translation id="2392659840443812875">No hay puntos de acceso disponibles. Asegúrate de que tu dispositivo esté cerca y tenga el Bluetooth activado.</translation>
 <translation id="2397416548179033562">Mostrar menú de Chrome</translation>
@@ -616,7 +615,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="3389599499324569679">¿Activar dictado?</translation>
 <translation id="3394432020929931914">, desplegado</translation>
 <translation id="3405101454990027959">Activar acceso al micrófono</translation>
-<translation id="3408735331120433841">Estás enviando tu pantalla.</translation>
 <translation id="3409584356742878290">Mostrar u ocultar el inspector de herramientas de desarrollo</translation>
 <translation id="3410336247007142655">Mostrar ajustes de Tema oscuro</translation>
 <translation id="3413817803639110246">Aún no hay contenido</translation>
@@ -857,7 +855,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4217571870635786043">Dictado</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, aplicación instalada, pausada</translation>
 <translation id="4228078597006700451">Controles no configurados</translation>
-<translation id="4231053948789591973">El envío de contenido está en pausa. Puedes reanudar o detener el envío de tu pantalla en cualquier momento.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modo Vista general</translation>
 <translation id="4242533952199664413">Abrir Configuración</translation>
@@ -1185,6 +1182,7 @@ No hay dispositivos conectados.</translation>
 <translation id="5377367976106153749">¿Activar acceso a cámara?</translation>
 <translation id="5379115545237091094">Demasiados intentos</translation>
 <translation id="5391307769715781764">¿Sustituir escritorio guardado?</translation>
+<translation id="5392327145184648521">Calculando porcentaje de batería...</translation>
 <translation id="5393156353051693207">Toca y mantén pulsado en cualquier lugar de la pantalla para reorganizar tus aplicaciones</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> está encima de <ph name="IN_PLACE_APP" />. Suelta para crear una carpeta.</translation>
 <translation id="5397578532367286026">El administrador puede consultar el uso y el historial de este usuario (<ph name="MANAGER_EMAIL" />) en la página chrome.com.</translation>
@@ -1239,6 +1237,7 @@ No hay dispositivos conectados.</translation>
 <translation id="5577281275355252094">Comprueba que el Bluetooth está activado en tu teléfono para usar la función Mi teléfono</translation>
 <translation id="5578188167649348993">memoria</translation>
 <translation id="5580000943347215299">Biblioteca</translation>
+<translation id="5586388332127302891">Lupa fijada habilitada. Vuelve a pulsar <ph name="ACCELERATOR" /> para desactivarla.</translation>
 <translation id="5587506661873751671">Descargando: <ph name="DOWNLOAD_PERCENT" /> %</translation>
 <translation id="558849140439112033">Arrastra para seleccionar un área para hacer la captura</translation>
 <translation id="5590609058453685222">El aviso de micrófono silenciado está activado. Se te avisará si hablas y el micrófono está silenciado.</translation>
@@ -1450,6 +1449,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6319503618073410818">Ver detalles en el navegador</translation>
 <translation id="6324916366299863871">Editar combinación de teclas</translation>
 <translation id="6330012934079202188">Se muestran las ventanas de todos los escritorios. Pulsa la tecla de la flecha hacia arriba para ver las ventanas del escritorio actual.</translation>
+<translation id="6337159624125741244">La lupa de pantalla completa está activada</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> es una sesión administrada por <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> conectado</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> y, a continuación, <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> o <ph name="KEY_THREE" /></translation>
@@ -1516,6 +1516,7 @@ Nueva instalación</translation>
 <translation id="6574587113394758819">Se ha ocultado una notificación de <ph name="APP_TITLE" /> porque la protección contra fisgones está activada</translation>
 <translation id="6574622320167699133">Desbloqueado con tu teléfono. Toca o haz clic para acceder.</translation>
 <translation id="6578407462441924264">Sin nombre</translation>
+<translation id="6582034443359256692">Calculando el nivel de carga de la batería.</translation>
 <translation id="6585808820553845416">La sesión finalizará dentro de <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Cámara ajustada a la esquina inferior izquierda. Conflicto con la superficie del sistema.</translation>
@@ -1577,6 +1578,7 @@ Nueva instalación</translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="679368458793552943">Ampliar cuando la lupa esté activada</translation>
 <translation id="6794287755901682422">Este elemento tiene: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
+<translation id="6797745268063125932">Dejar activada</translation>
 <translation id="6801878137098616817">Editado recientemente</translation>
 <translation id="6802687695197837794">Esto permite el acceso a <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> y todas las aplicaciones y sitios web con los permisos de cámara y micrófono</translation>
 <translation id="6803622936009808957">No se han podido proyectar las pantallas porque no se han encontrado resoluciones compatibles. Se ha utilizado el modo de escritorio ampliado en su lugar.</translation>
@@ -1888,6 +1890,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="7947798320695032612"><ph name="APP_NAME" /> quiere usar tu <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Atenuar la luz del teclado</translation>
 <translation id="7953994493035617347">¿Confirmar la nueva resolución?</translation>
+<translation id="795958884516058160">Lupa de pantalla completa habilitada. Vuelve a pulsar <ph name="ACCELERATOR" /> para desactivarla.</translation>
 <translation id="7963689218131240420">No molestar está desactivado.</translation>
 <translation id="7963992254934562106">Desde <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Seleccionar carpeta...</translation>
@@ -2139,6 +2142,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Casilla no seleccionada.</translation>
 <translation id="8949925099261528566">Conexión sin Internet</translation>
 <translation id="8951539504029375108">Solo los dispositivos Thunderbolt aprobados son compatibles con Chromebook</translation>
+<translation id="8959380109429710384">Has pulsado la combinación de teclas para la lupa de pantalla completa. Usa Ctrl + Alt + flechas para desplazarte por la vista ampliada.</translation>
 <translation id="8964525410783593407">1 h</translation>
 <translation id="8973885907461690937">Seleccionar el icono del menú</translation>
 <translation id="8980862970816311842">Mueve el icono de una aplicación dentro o fuera de una carpeta en la cuadrícula de aplicaciones</translation>

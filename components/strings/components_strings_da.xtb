@@ -566,6 +566,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2036983605131262583">Alternativ papirrulle</translation>
 <translation id="2040463897538655645">Flytbart lager</translation>
 <translation id="2040894699575719559">Stedet er blokeret</translation>
+<translation id="2041788246978549610">Brug tilgængelige mikrofoner (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Bakke 7</translation>
 <translation id="204357726431741734">Log ind for at bruge de adgangskoder, du har gemt på din Google-konto</translation>
 <translation id="2045871135676061132">Konvolut Personlig</translation>
@@ -885,6 +886,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2655752832536625875">Badeværelse</translation>
 <translation id="2657637947725373811">{0,plural, =1{Vil du overføre den fortrolige fil?}one{Vil du overføre den fortrolige fil?}other{Vil du overføre fortrolige filer?}}</translation>
 <translation id="2658843814961855121">Arbejdsret og arbejdsmarkedsret</translation>
+<translation id="2658944305627908367">Transaktioner, der overstiger din saldo, bliver ikke behandlet</translation>
 <translation id="2660779039299703961">Hændelse</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Ingen}=1{1 adgangskode (til <ph name="DOMAIN_LIST" />)}=2{2 adgangskoder (til <ph name="DOMAIN_LIST" />)}one{# adgangskode (til <ph name="DOMAIN_LIST" />)}other{# adgangskoder (til <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Top</translation>
@@ -1068,7 +1070,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3045769629416806687">Ekstremsport</translation>
 <translation id="305162504811187366">Historik for Chrome Fjernskrivebord, herunder tidsstempler, hosts og id'er for klientsessioner</translation>
 <translation id="3052964831964880138">Prisfald på <ph name="PRICE_DROP" /> på <ph name="PRODUCT_NAME" /></translation>
-<translation id="3054512251683174387">Chrome sletter automatisk emner, der er mere end 4 uger gamle. Når du browser videre, kan et emne dukke op på listen igen. Du kan også blokere de emner, som du ikke vil have, at Chrome skal dele med websites. Få flere oplysninger om administration af privatliv ved annoncering i Chrome.</translation>
+<translation id="3054512251683174387">Chrome sletter automatisk emner, der er mere end 4 uger gamle. Når du browser videre, kan et emne dukke op på listen igen. Du kan også blokere de emner, som du ikke vil have, at Chrome skal dele med websites. Få flere oplysninger om administration af privatliv vedrørende annoncering i Chrome.</translation>
 <translation id="3061707000357573562">Tjeneste til programrettelse</translation>
 <translation id="3062655045399308513">Slet browserdata...</translation>
 <translation id="306573536155379004">Spillet er startet.</translation>
@@ -1081,6 +1083,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3090667236485488075">Glas</translation>
 <translation id="3095940652251934233">Erklæring</translation>
 <translation id="3098513225387949945">Ignoreret, fordi deaktiveringslisten indeholder et mønster, der svarer til "*", hvilket er ækvivalent til deaktivering af politikken.</translation>
+<translation id="3099619114405539473">Brug tilgængelige kameraer (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Opsparingskonto</translation>
 <translation id="3103188521861412364">Aktier og obligationer</translation>
 <translation id="3105172416063519923">Aktiv-id:</translation>
@@ -1357,6 +1360,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3583757800736429874">&amp;Annuller fortryd flytning</translation>
 <translation id="3584299510153766161">To huller nederst</translation>
 <translation id="3584755835709800788">Science fiction- og fantasyfilm</translation>
+<translation id="3585455899094692781">Brug og flyt tilgængelige kameraer (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Vådfilm</translation>
 <translation id="3586931643579894722">Skjul oplysninger</translation>
 <translation id="3587738293690942763">I midten</translation>
@@ -1730,7 +1734,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4282346679996504092">Underretninger for dette produkt er deaktiveret, og bogmærket er fjernet</translation>
 <translation id="4285498937028063278">Frigør</translation>
 <translation id="428639260510061158">{NUM_CARDS,plural, =1{Kortet er gemt på din Google-konto}one{Kortet er gemt på din Google-konto}other{Kortene er gemt på din Google-konto}}</translation>
-<translation id="4287495839370498922">Forbedret privatliv ved annoncering i Chrome</translation>
+<translation id="4287495839370498922">Forbedret privatliv vedrørende annoncering i Chrome</translation>
 <translation id="4290920330097335010">Tillad aldrig</translation>
 <translation id="4296207570293932800">En ny privatlivsfunktion for annoncer er nu tilgængelig</translation>
 <translation id="4297502707443874121">Miniature for siden <ph name="THUMBNAIL_PAGE" /></translation>
@@ -2061,7 +2065,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4953689047182316270">Reagere på hændelser med hjælpefunktioner</translation>
 <translation id="4957080528849277028">Knappen Se din Chrome-historik, aktivér for at se og administrere din browserhistorik i Chrome-indstillingerne</translation>
 <translation id="4958444002117714549">Udvid liste</translation>
-<translation id="4960068118612257147">Du kan foretage ændringer i Chromes indstillinger for privatliv ved annoncering</translation>
+<translation id="4960068118612257147">Du kan foretage ændringer i Chromes indstillinger for privatliv vedrørende annoncering</translation>
 <translation id="4960203958361543136">Vælg din søgemaskine</translation>
 <translation id="4961708452830821006">Giv Chrome adgang i <ph name="LINK" /> for at bruge mikrofonen.</translation>
 <translation id="4963413887558778009">Landskabsarkitektur</translation>
@@ -2258,7 +2262,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5334145288572353250">Vil du gemme adressen?</translation>
 <translation id="5340250774223869109">Appen er blokeret</translation>
 <translation id="534295439873310000">NFC-enheder</translation>
-<translation id="5344522958567249764">Administrer privatliv ved annoncering</translation>
+<translation id="5344522958567249764">Administrer privatliv vedrørende annoncering</translation>
 <translation id="5344579389779391559">Denne side forsøger muligvis at opkræve penge af dig</translation>
 <translation id="5345249337934847112">Papir (tungt, bestrøget)</translation>
 <translation id="5349543692327946794">Etiketter (blæk)</translation>
@@ -2421,6 +2425,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5645132789250840550">Plast (halvblank)</translation>
 <translation id="5645719697465708351">Fest- og helligdagsartikler</translation>
 <translation id="5645854190134202180">Andet arbejdsskift</translation>
+<translation id="5648166631817621825">De seneste syv dage</translation>
 <translation id="5649053991847567735">Automatiske downloads</translation>
 <translation id="5651323159439184939">Traktorfremføring</translation>
 <translation id="5654927323611874862">Uploadede nedbrudsrapport-id'et:</translation>
@@ -2693,7 +2698,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6197648101609735209">89 x 89 mm</translation>
 <translation id="6198480336395236519">Faner i fuld længde</translation>
 <translation id="6203231073485539293">Kontrollér din internetforbindelse</translation>
-<translation id="6205314730813004066">Privatliv ved annoncering</translation>
+<translation id="6205314730813004066">Privatliv vedrørende annoncering</translation>
 <translation id="6212314149070368045">US Fanfold</translation>
 <translation id="6215936431492593050">Metal (satin)</translation>
 <translation id="6217950634729714357">Køkken- og spisestuemøbler</translation>

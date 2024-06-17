@@ -80,6 +80,7 @@
 <translation id="1247519845643687288">Недавние приложения</translation>
 <translation id="1252999807265626933">Подключен источник питания: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Какая сейчас погода?</translation>
+<translation id="1256734167083229794">Вы нажали сочетание клавиш для полноэкранной лупы. Чтобы увеличить масштаб, нажмите <ph name="ZOOM_IN_ACCELERATOR" />, а чтобы уменьшить – <ph name="ZOOM_OUT_ACCELERATOR" />. Для перемещения по экрану, когда масштаб увеличен, нажимайте клавиши со стрелками, удерживая Ctrl и Alt.</translation>
 <translation id="1269405891096105529">Периферийные устройства в гостевом режиме не поддерживаются.</translation>
 <translation id="1270290102613614947">Экранная клавиатура отключена</translation>
 <translation id="1272079795634619415">Остановить</translation>
@@ -99,7 +100,6 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Нажмите <ph name="LAUNCHER_KEY_NAME" /> + G в любой момент.</translation>
 <translation id="1306549533752902673">РЕКОМЕНДУЕМЫЕ ПРИЛОЖЕНИЯ</translation>
-<translation id="1311294419381837540">Идет трансляция вкладки. Этот процесс можно в любое время приостановить или завершить.</translation>
 <translation id="1312604459020188865">Уровень сигнала – <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Всегда показывать панель запуска</translation>
 <translation id="132346741904777634">Окно предварительного просмотра камеры привязано к левому верхнему углу, так как перекрывало элементы системного интерфейса</translation>
@@ -108,7 +108,6 @@
 <translation id="1340378040547539434">Уменьшить масштаб страницы</translation>
 <translation id="1341651618736211726">Открыть дополнительное меню</translation>
 <translation id="1341926407152459446">Используйте устройство "<ph name="DEVICE_NAME" />" для ввода и вывода аудио.</translation>
-<translation id="1344141078024003905">Идет трансляция экрана. Ее можно в любое время приостановить или завершить.</translation>
 <translation id="1346748346194534595">Справа</translation>
 <translation id="1351937230027495976">Свернуть меню</translation>
 <translation id="1360220746312242196">Перейти к предыдущему результату поиска по странице</translation>
@@ -264,6 +263,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">Рабочий стол и окна удалены. Нажмите Ctrl + Z, чтобы отменить последнее действие.</translation>
 <translation id="1972950159383891558">Здравствуйте, <ph name="USERNAME" />!</translation>
+<translation id="1977686871076551563">Режим инверсии цветов включен. Чтобы отключить его, нажмите <ph name="ACCELERATOR" /> ещё раз.</translation>
 <translation id="1978498689038657292">Ввод текста</translation>
 <translation id="1980808257969311265">Присоединиться к мероприятию "<ph name="EVENT_SUMMARY" />"</translation>
 <translation id="1982717156487272186">Показать прошлую неделю</translation>
@@ -352,7 +352,6 @@
 <translation id="2369165858548251131">"Привет" по-китайски</translation>
 <translation id="2370971919968699910">Может взиматься плата за передачу данных.
 Подключено несколько устройств (<ph name="DEVICECOUNT" />).</translation>
-<translation id="2382875860893882175">Трансляция приостановлена. Ее можно в любое время возобновить или завершить.</translation>
 <translation id="2386292613071805067">Выделить все содержимое страницы</translation>
 <translation id="2392659840443812875">Точки доступа не найдены. Убедитесь, что устройство находится рядом и Bluetooth включен.</translation>
 <translation id="2397416548179033562">Отображение меню Chrome</translation>
@@ -616,7 +615,6 @@
 <translation id="3389599499324569679">Включить голосовой ввод?</translation>
 <translation id="3394432020929931914">, развернуто</translation>
 <translation id="3405101454990027959">Предоставить доступ к микрофону</translation>
-<translation id="3408735331120433841">Идет трансляция экрана.</translation>
 <translation id="3409584356742878290">Показать или скрыть инспектор инструментов разработчика</translation>
 <translation id="3410336247007142655">Показать настройки тёмной темы</translation>
 <translation id="3413817803639110246">Уведомлений нет.</translation>
@@ -856,7 +854,6 @@
 <translation id="4217571870635786043">Голосовой ввод</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, установленное приложение, приостановлено</translation>
 <translation id="4228078597006700451">Элементы управления не настроены</translation>
-<translation id="4231053948789591973">Трансляция экрана приостановлена. Ее можно в любое время возобновить или завершить.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Режим обзора</translation>
 <translation id="4242533952199664413">Открыть настройки</translation>
@@ -1184,6 +1181,7 @@
 <translation id="5377367976106153749">Разрешить доступ к камере?</translation>
 <translation id="5379115545237091094">Слишком много попыток</translation>
 <translation id="5391307769715781764">Заменить сохраненный рабочий стол?</translation>
+<translation id="5392327145184648521">Расчет заряда батареи…</translation>
 <translation id="5393156353051693207">Чтобы упорядочить приложения, нажмите и удерживайте в любом месте</translation>
 <translation id="5395308026110844773">Вы поместили ярлык приложения "<ph name="DRAGGED_APP_NAME" />" над ярлыком приложения "<ph name="IN_PLACE_APP" />". Чтобы создать папку, отпустите палец.</translation>
 <translation id="5397578532367286026">Менеджер (<ph name="MANAGER_EMAIL" />) может просматривать данные об использовании и историю этого профиля на сайте chrome.com.</translation>
@@ -1238,6 +1236,7 @@
 <translation id="5577281275355252094">Чтобы использовать функцию "Управление телефоном", включите Bluetooth на телефоне.</translation>
 <translation id="5578188167649348993">память</translation>
 <translation id="5580000943347215299">Библиотека</translation>
+<translation id="5586388332127302891">Закрепленная лупа включена. Чтобы отключить ее, нажмите <ph name="ACCELERATOR" /> ещё раз.</translation>
 <translation id="5587506661873751671">Скачивание (<ph name="DOWNLOAD_PERCENT" /> %)</translation>
 <translation id="558849140439112033">Перетащите, чтобы выделить область для снимка</translation>
 <translation id="5590609058453685222">Функция "Напоминание включить микрофон" теперь работает. Если вы будете говорить с отключенным звуком микрофона, появится уведомление.</translation>
@@ -1449,6 +1448,7 @@
 <translation id="6319503618073410818">Посмотреть подробности в браузере</translation>
 <translation id="6324916366299863871">Изменить ярлык</translation>
 <translation id="6330012934079202188">Показаны окна со всех рабочих столов. Чтобы показать окна текущего рабочего стола, нажмите на стрелку вверх.</translation>
+<translation id="6337159624125741244">Полноэкранная лупа включена</translation>
 <translation id="6338485349199627913">Сеансом "<ph name="DISPLAY_NAME" />" управляет <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">Подключено устройство "<ph name="DEVICE_NAME" />".</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, затем <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> или <ph name="KEY_THREE" /></translation>
@@ -1515,6 +1515,7 @@
 <translation id="6574587113394758819">Уведомление "<ph name="APP_TITLE" />" скрыто, потому что включен режим безопасного просмотра.</translation>
 <translation id="6574622320167699133">Устройство разблокировано через ваш телефон. Нажмите, чтобы войти в аккаунт.</translation>
 <translation id="6578407462441924264">Без имени</translation>
+<translation id="6582034443359256692">Рассчитывается уровень заряда батареи.</translation>
 <translation id="6585808820553845416">Сеанс закончится через <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Окно предварительного просмотра камеры привязано к левому нижнему углу, так как перекрывало элементы системного интерфейса</translation>
@@ -1576,6 +1577,7 @@
 <translation id="6790428901817661496">Воспроизвести</translation>
 <translation id="679368458793552943">Увеличить, когда включена лупа</translation>
 <translation id="6794287755901682422">Метаданные задачи: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
+<translation id="6797745268063125932">Не отключать</translation>
 <translation id="6801878137098616817">Недавно отредактировано</translation>
 <translation id="6802687695197837794">Доступ будет предоставлен приложениям "<ph name="APP1_NAME" />" и "<ph name="APP2_NAME" />", а также всем приложениям и сайтам с разрешениями "Камера" и "Микрофон".</translation>
 <translation id="6803622936009808957">Не удалось дублировать изображение экрана, т. к. указанное разрешение не поддерживается. Включен режим расширенного рабочего стола.</translation>
@@ -1887,6 +1889,7 @@
 <translation id="7947798320695032612">Приложению "<ph name="APP_NAME" />" требуется разрешение (<ph name="DEVICE_NAME" />)</translation>
 <translation id="7951630946012935453">Уменьшить яркость подсветки клавиатуры</translation>
 <translation id="7953994493035617347">Подтвердите изменение</translation>
+<translation id="795958884516058160">Полноэкранная лупа включена. Чтобы отключить ее, нажмите <ph name="ACCELERATOR" /> ещё раз.</translation>
 <translation id="7963689218131240420">Сейчас он отключен.</translation>
 <translation id="7963992254934562106">С <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Выбрать папку</translation>
@@ -2138,6 +2141,7 @@
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> (<ph name="EMAIL" />), флажок не установлен.</translation>
 <translation id="8949925099261528566">Подключено, без доступа к интернету</translation>
 <translation id="8951539504029375108">Chromebook совместим только с одобренными устройствами Thunderbolt.</translation>
+<translation id="8959380109429710384">Вы нажали сочетание клавиш для полноэкранной лупы. Для перемещения по экрану, когда масштаб увеличен, нажимайте клавиши со стрелками, удерживая Ctrl и Alt.</translation>
 <translation id="8964525410783593407">1 час</translation>
 <translation id="8973885907461690937">Переключиться на значок меню</translation>
 <translation id="8980862970816311842">Переместить значок приложения в папку или из папки в сетке приложений</translation>

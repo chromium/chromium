@@ -915,6 +915,7 @@
 <translation id="5596627076506792578">Інші опції</translation>
 <translation id="5599455543593328020">Режим анонімного перегляду</translation>
 <translation id="5601180634394228718">Щоб дізнатися про інші налаштування, які використовують дані для покращення роботи Chrome, перейдіть на <ph name="BEGIN_LINK" />сторінку сервісів Google<ph name="END_LINK" />.</translation>
+<translation id="5614625640221885312">Увійдіть в обліковий запис, щоб отримати доступ до закладок, паролів і інших даних на всіх пристроях</translation>
 <translation id="5620163320393916465">Немає збережених паролів</translation>
 <translation id="5620928963363755975">Знаходьте свої файли та сторінки в розділі "Завантаження", натиснувши кнопку "Більше опцій"</translation>
 <translation id="562289928968387744">Керувати реакціями</translation>
@@ -956,6 +957,7 @@
 <translation id="5793665092639000975">Використано <ph name="SPACE_USED" /> з <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Пошук і перегляд</translation>
 <translation id="5797949256525811424">Заблокована тема</translation>
+<translation id="580893287573699959">Керуйте темами й сайтами, які вас цікавлять</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# годину тому}one{# годину тому}few{# години тому}many{# годин тому}other{# години тому}}</translation>
 <translation id="5810288467834065221">© Google LLC <ph name="YEAR" />. Усі права захищено.</translation>
 <translation id="5814749351757353073">Стежте за улюбленими сайтами</translation>

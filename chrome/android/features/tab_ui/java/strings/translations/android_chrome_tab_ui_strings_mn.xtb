@@ -121,6 +121,7 @@
 <translation id="7326879924029668159">Буцаалтын бодлого болон илүү ихийг хараарай</translation>
 <translation id="7352298686197644113">Таны нээлттэй табд аль зүйл илүү хямд үнэтэй байгааг хараарай</translation>
 <translation id="7452985128687107478">Табын бүлгийг таны бүх төхөөрөмж дээр автоматаар хадгалж, шинэчилдэг</translation>
+<translation id="747459581954555080">Бүгдийг сэргээх</translation>
 <translation id="753732157349120914">Таб хооронд шилжүүлэгч</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google-н <ph name="REVIEWS_COUNT_ONE" /> шүүмж}other{Google-н <ph name="REVIEWS_COUNT_MANY" /> шүүмж}}</translation>
 <translation id="7559245342362162951">Бүлгийн табуудыг бүтэн дэлгэцийн торонд харуулах</translation>
@@ -144,6 +145,7 @@
 <translation id="8338427544764842461">Таны табын бүлгийг энд хадгалдаг ба таны нэвтэрсэн бүх төхөөрөмж дээр шинэчилдэг</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> табыг хаах}other{Сонгосон <ph name="TABS_COUNT_MANY" /> табыг хаах}}</translation>
 <translation id="8398929769197326728">Шинэ фолдер - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="8428213095426709021">Тохиргоо</translation>
 <translation id="8714939927607906138">Илүү хямд үнэ</translation>
 <translation id="8730621377337864115">хийсэн</translation>
 <translation id="8730999928494395583">Эдгээр Нууцлалтай таб дахь таны үйл ажиллагааг энэ төхөөрөмжөөс хасна</translation>

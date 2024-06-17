@@ -52,6 +52,7 @@
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1698376642261615901">Google Chrome ir tīmekļa pārlūks, kas zibenīgi atver tīmekļa lapas un izpilda lietojumprogrammas. Tas ir ātrs, stabils un ērti lietojams. Google Chrome iebūvētā aizsardzība pret ļaunprātīgu programmatūru un pikšķerēšanu nodrošina daudz drošāku tīmekļa pārlūkošanu.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Pārlūks Chrome pēc stundas tiks restartēts}zero{Pārlūks Chrome pēc # stundām tiks restartēts}one{Pārlūks Chrome pēc # stundas tiks restartēts}other{Pārlūks Chrome pēc # stundām tiks restartēts}}</translation>
+<translation id="1722488837206509557">Tādējādi varēsiet atlasīt kādu no pieejamām ierīcēm un parādīt tajā saturu.</translation>
 <translation id="1734234790201236882">Pārlūks Chrome saglabās šo paroli jūsu Google kontā. To nav nepieciešams iegaumēt.</translation>
 <translation id="1786003790898721085">Ierīcē <ph name="TARGET_DEVICE_NAME" /> pierakstieties pārlūkā Chrome un pēc tam vēlreiz mēģiniet veikt sūtīšanu.</translation>
 <translation id="1786044937610313874">Saīsnes tiek atvērtas pārlūkā Chrome.</translation>

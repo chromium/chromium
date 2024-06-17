@@ -566,6 +566,7 @@
 <translation id="2036983605131262583">ବିକଳ୍ପ ରୋଲ୍</translation>
 <translation id="2040463897538655645">କାଢ଼ି ହେଉଥିବା ଷ୍ଟୋରେଜ</translation>
 <translation id="2040894699575719559">ଲୋକେସନକୁ ବ୍ଲକ୍ କରାଯାଇଛି</translation>
+<translation id="2041788246978549610">ଉପଲବ୍ଧ ଥିବା (<ph name="MICS_COUNT" />) ମାଇକ୍ରୋଫୋନ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="2042213636306070719">ଟ୍ରେ 7</translation>
 <translation id="204357726431741734">ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ୍ କରାଯାଇଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକ ବ୍ୟବହାର କରିବାକୁ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
 <translation id="2045871135676061132">ଏନଭେଲପ ପର୍ସନାଲ</translation>
@@ -885,6 +886,7 @@
 <translation id="2655752832536625875">ଗାଧୁଆଘର</translation>
 <translation id="2657637947725373811">{0,plural, =1{ଗୋପନୀୟ ଫାଇଲ ଟ୍ରାନ୍ସଫର କରିବେ?}other{ଗୋପନୀୟ ଫାଇଲଗୁଡ଼ିକ ଟ୍ରାନ୍ସଫର କରିବେ?}}</translation>
 <translation id="2658843814961855121">ଶ୍ରମ ଓ ନିଯୁକ୍ତି ଆଇନ</translation>
+<translation id="2658944305627908367">ଆପଣଙ୍କ ବାଲାନ୍ସଠାରୁ ଅଧିକ ମୂଲ୍ୟର ଟ୍ରାଞ୍ଜେକ୍ସନଗୁଡ଼ିକୁ ପ୍ରକ୍ରିୟାନ୍ୱିତ କରାଯିବ ନାହିଁ</translation>
 <translation id="2660779039299703961">ଇଭେଣ୍ଟ</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{କୌଣସିଟି ନୁହେଁ}=1{1ଟି ପାସ୍‌ୱାର୍ଡ (<ph name="DOMAIN_LIST" /> ପାଇଁ)}=2{2ଟି ପାସ୍‌ୱାର୍ଡ (<ph name="DOMAIN_LIST" /> ପାଇଁ)}other{#ଟି ପାସ୍‌ୱାର୍ଡ (<ph name="DOMAIN_LIST" /> ପାଇଁ)}}</translation>
 <translation id="2666092431469916601">ଶୀର୍ଷ</translation>
@@ -1081,6 +1083,7 @@
 <translation id="3090667236485488075">କାଚ</translation>
 <translation id="3095940652251934233">ବକ୍ତବ୍ୟ</translation>
 <translation id="3098513225387949945">ଅକ୍ଷମ ତାଲିକାରେ '*' ପରି ଏକ ପାଟର୍ନ ଅଛି, ଯାହା ନୀତିକୁ ଅକ୍ଷମ କରିବା ସହ ସମାନ ହୋଇଥିବା ଯୋଗୁଁ ଏହାକୁ ଅଣଦେଖା କରାଯାଇଛି।</translation>
+<translation id="3099619114405539473">ଉପଲବ୍ଧ ଥିବା (<ph name="CAMERAS_COUNT" />) କେମେରା ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="3102312643185441063">ସେଭିଂସ</translation>
 <translation id="3103188521861412364">ଷ୍ଟକ ଏବଂ ବଣ୍ଡଗୁଡ଼ିକ</translation>
 <translation id="3105172416063519923">ଆସେଟ୍ ID:</translation>
@@ -1355,6 +1358,7 @@
 <translation id="3583757800736429874">&amp;ଘୁଞ୍ଚାଇବା କାର୍ଯ୍ୟଟି ପୁଣିଥରେ କରନ୍ତୁ</translation>
 <translation id="3584299510153766161">ତଳ ପଟରେ ଦୁଇଟି ପଞ୍ଚ୍</translation>
 <translation id="3584755835709800788">ସାଇନ୍ସ ଫିକ୍ସନ ଏବଂ ଫେଣ୍ଟାସି ଫିଲ୍ମ</translation>
+<translation id="3585455899094692781">ଉପଲବ୍ଧ ଥିବା (<ph name="CAMERAS_COUNT" />) କେମେରା ବ୍ୟବହାର କରି ମୁଭ କରନ୍ତୁ</translation>
 <translation id="3586833803451155175">ୱେଟ ଫିଲ୍ମ</translation>
 <translation id="3586931643579894722">ବିବରଣୀଗୁଡ଼ିକ ଲୁଚାନ୍ତୁ</translation>
 <translation id="3587738293690942763">ମଧ୍ୟମ</translation>
@@ -2418,6 +2422,7 @@
 <translation id="5645132789250840550">ପ୍ଲାଷ୍ଟିକ (ସେମି-ଗ୍ଲସ)</translation>
 <translation id="5645719697465708351">ପାର୍ଟି ଏବଂ ଛୁଟିଦିନ ସାମଗ୍ରୀ</translation>
 <translation id="5645854190134202180">ଦ୍ୱିତୀୟ ସିଫ୍ଟ</translation>
+<translation id="5648166631817621825">ବିଗତ 7 ଦିନ</translation>
 <translation id="5649053991847567735">ସ୍ୱଚାଳିତ ଡାଉନ୍‌ଲୋଡ୍‌ଗୁଡ଼ିକ</translation>
 <translation id="5651323159439184939">ଟ୍ରାକ୍ଟର ଫିଡ</translation>
 <translation id="5654927323611874862">କ୍ରାସ୍ ରିପୋର୍ଟ ID ଅପଲୋଡ୍ କରାଯାଇଛି:</translation>

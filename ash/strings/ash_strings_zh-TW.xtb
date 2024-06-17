@@ -100,7 +100,6 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">可隨時按 <ph name="LAUNCHER_KEY_NAME" /> + G 鍵</translation>
 <translation id="1306549533752902673">推薦應用程式</translation>
-<translation id="1311294419381837540">你正在投放分頁。你隨時可以暫停或停止投放。</translation>
 <translation id="1312604459020188865">訊號強度 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">一律顯示檔案櫃</translation>
 <translation id="132346741904777634">攝影機已對齊左上角，與系統平台發生衝突。</translation>
@@ -109,7 +108,6 @@
 <translation id="1340378040547539434">縮小網頁</translation>
 <translation id="1341651618736211726">溢位</translation>
 <translation id="1341926407152459446">使用「<ph name="DEVICE_NAME" />」做為音訊輸入和輸出裝置</translation>
-<translation id="1344141078024003905">你正在投放螢幕畫面。你隨時可以暫停或停止投放螢幕畫面。</translation>
 <translation id="1346748346194534595">向右</translation>
 <translation id="1351937230027495976">收合選單</translation>
 <translation id="1360220746312242196">搜尋網頁時，前往上一個符合搜尋的項目</translation>
@@ -354,7 +352,6 @@
 <translation id="2369165858548251131">「你好」的英文</translation>
 <translation id="2370971919968699910">這種情況可能需要支付數據傳輸費用。
 已連線到 <ph name="DEVICECOUNT" /> 部裝置。</translation>
-<translation id="2382875860893882175">目前已暫停投放。你隨時可以繼續或停止投放。</translation>
 <translation id="2386292613071805067">選取網頁上的所有項目</translation>
 <translation id="2392659840443812875">沒有可用的無線基地台。請確認裝置在附近，而且藍牙已開啟。</translation>
 <translation id="2397416548179033562">顯示 Chrome 選單</translation>
@@ -618,7 +615,6 @@
 <translation id="3389599499324569679">要開啟語音輸入功能嗎？</translation>
 <translation id="3394432020929931914">，已展開</translation>
 <translation id="3405101454990027959">允許存取麥克風</translation>
-<translation id="3408735331120433841">你目前正在投放螢幕畫面。</translation>
 <translation id="3409584356742878290">顯示或隱藏開發人員工具檢查器</translation>
 <translation id="3410336247007142655">顯示深色主題設定</translation>
 <translation id="3413817803639110246">目前還沒有任何通知</translation>
@@ -855,7 +851,6 @@
 <translation id="4217571870635786043">語音輸入</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />，已安裝的應用程式，已暫停</translation>
 <translation id="4228078597006700451">未設定控制選項</translation>
-<translation id="4231053948789591973">目前已暫停投放。你隨時可以繼續或停止投放螢幕畫面。</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">總覽模式</translation>
 <translation id="4242533952199664413">開啟設定</translation>

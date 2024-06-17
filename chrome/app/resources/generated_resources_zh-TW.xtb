@@ -136,7 +136,6 @@
 <translation id="1085064499066015002">一律在所有網站上執行</translation>
 <translation id="1085697365578766383">啟動虛擬機器時發生錯誤，請再試一次。</translation>
 <translation id="1086486568852410168">透過 Google 智慧鏡頭搜尋</translation>
-<translation id="1088490543924960890">使用 Google 密碼管理工具儲存密碼金鑰</translation>
 <translation id="1090126737595388931">沒有執行中的背景應用程式</translation>
 <translation id="1090541560108055381">配對前，請確認兩部裝置上均顯示這組代碼</translation>
 <translation id="1091767800771861448">按下 ESCAPE 鍵可略過 (僅限非官方版本)。</translation>
@@ -3665,7 +3664,6 @@
 <translation id="3685598397738512288">Linux USB 偏好設定</translation>
 <translation id="3687598459967813435">一律允許接收來自 <ph name="WEBSITE" /> 的通知</translation>
 <translation id="368789413795732264">嘗試寫入檔案時發生錯誤：<ph name="ERROR_TEXT" />。</translation>
-<translation id="3688368689701175138">這個密碼金鑰會儲存到 <ph name="ACCOUNT_NAME" /> 的 Google 密碼管理工具</translation>
 <translation id="3688507211863392146">寫入你在應用程式中開啟的檔案和資料夾</translation>
 <translation id="3688526734140524629">變更版本</translation>
 <translation id="3688578402379768763">最新狀態</translation>
@@ -6095,7 +6093,6 @@
 <translation id="5497739595514726398">Chrome 無法驗證這個安裝套件</translation>
 <translation id="5498967291577176373">透過內嵌建議快速輸入你的姓名、地址或電話號碼</translation>
 <translation id="5499211612787418966">這個對話方塊未處於聚焦狀態。按下 Alt + Shift + A 鍵即可聚焦這個對話方塊。</translation>
-<translation id="5499313591153584299">這個檔案可能對你的電腦有害。</translation>
 <translation id="5499453227627332024">現在可以升級 Linux 容器。你也可以稍後再從「設定」應用程式中升級。</translation>
 <translation id="5499476581866658341">你現在可以查看手機近期的相片和媒體</translation>
 <translation id="549957179819296104">新圖示</translation>
@@ -7017,7 +7014,6 @@
 <translation id="6206199626856438589">系統會將你登出所顯示的網站，包含已開啟的分頁</translation>
 <translation id="6206311232642889873">複製圖片(&amp;Y)</translation>
 <translation id="6207200176136643843">重設為預設縮放等級</translation>
-<translation id="6207298079289376837">檢查能否整理分頁</translation>
 <translation id="6207937957461833379">國家/地區</translation>
 <translation id="6208521041562685716">正在啟用行動數據</translation>
 <translation id="6208725777148613371">無法儲存至「<ph name="WEB_DRIVE" />」- <ph name="INTERRUPT_REASON" /></translation>
@@ -7368,7 +7364,6 @@
 <translation id="6476482583633999078">語音速度</translation>
 <translation id="6476671549211161535">按下「<ph name="DEVICE_NAME" />」上的按鈕 (請勿按下滑鼠左鍵或右鍵)。</translation>
 <translation id="6477822444490674459">設有工作資料夾的手機不支援通知同步功能。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
-<translation id="6478248366783946499">要保留不安全的檔案嗎？</translation>
 <translation id="6479881432656947268">前往 Chrome 線上應用程式商店</translation>
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
 <translation id="6481749622989211463">與鄰近裝置分享檔案和其他內容。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
@@ -7547,7 +7542,6 @@
 <translation id="6613267708691765962">正在掃描惡意軟體...</translation>
 <translation id="6613668613087513143">裝置空間不足，無法完成這項更新作業。請在裝置上釋出 <ph name="NECESSARY_SPACE" /> 的空間，然後在 Chrome 瀏覽器中再試一次。</translation>
 <translation id="6615455863669487791">顯示</translation>
-<translation id="6618097958368085618">確定保留</translation>
 <translation id="6618744767048954150">檢查中</translation>
 <translation id="6619058681307408113">線上印表機服務精靈 (LPD)</translation>
 <translation id="661907246513853610">網站可以追蹤你的位置</translation>
@@ -8133,7 +8127,6 @@
 <translation id="7044211973375150246">某個應用程式所設定會開啟的連結與「<ph name="APP_NAME" />」的設定相同，這會導致「<ph name="APP_NAME_2" />」無法開啟支援的連結。</translation>
 <translation id="7044606776288350625">同步處理資料</translation>
 <translation id="7047059339731138197">選擇背景</translation>
-<translation id="7049293980323620022">要保留檔案嗎？</translation>
 <translation id="7049524156282610342">瀏覽資料 - <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">無效的無線基地台設定</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{密碼已儲存到 Google 帳戶 (<ph name="USER_EMAIL" />)}other{密碼已儲存到 Google 帳戶 (<ph name="USER_EMAIL" />)}}</translation>
@@ -9321,7 +9314,6 @@
 <translation id="7939062555109487992">進階選項</translation>
 <translation id="793923212791838">無法搭配你的裝置使用這個網站</translation>
 <translation id="7939328347457537652">管理裝置憑證</translation>
-<translation id="7939412583708276221">保留</translation>
 <translation id="7940087892955752820">某個應用程式正在使用這個資料夾，因此無法取消共用。系統會在下次關閉 <ph name="SPECIFIC_NAME" /> 時取消共用這個資料夾。</translation>
 <translation id="7940265372707990269">按「<ph name="SORT_TYPE" />」排序</translation>
 <translation id="7941179291434537290">網路共用完備性：</translation>
@@ -10081,7 +10073,6 @@
 <translation id="8477241577829954800">已取代</translation>
 <translation id="8477384620836102176">一般(&amp;G)</translation>
 <translation id="8479176401914456949">代碼無效。請再試一次。</translation>
-<translation id="8480082892550707549">雖然你曾經從這個網站下載檔案，但這個網站目前並不安全 (遭到入侵)。建議你日後再下載這個檔案。</translation>
 <translation id="8480869669560681089">不明的 <ph name="VENDOR_NAME" /> 裝置</translation>
 <translation id="8481187309597259238">確認 USB 權限</translation>
 <translation id="8482077254400484047">這裡可管理閒置分頁的外觀</translation>
@@ -10910,7 +10901,6 @@
 <translation id="9085256200913095638">複製所選分頁</translation>
 <translation id="9085446486797400519">攝影機存取權</translation>
 <translation id="9085776959277692427">未選取<ph name="LANGUAGE" />。按下搜尋鍵加空白鍵即可選取。</translation>
-<translation id="9087183943157874068">你隨時可以查看分頁群組建議</translation>
 <translation id="9087949559523851360">新增受限制的使用者</translation>
 <translation id="9088234649737575428">「<ph name="PLUGIN_NAME" />」遭到企業政策封鎖</translation>
 <translation id="9088446193279799727">無法設定 Linux。請連線至網際網路，然後再試一次。</translation>

@@ -570,6 +570,7 @@
 <translation id="2036983605131262583">Այլ գլանափաթեթ</translation>
 <translation id="2040463897538655645">Շարժական կրիչ</translation>
 <translation id="2040894699575719559">Տեղորոշումն արգելափակված է</translation>
+<translation id="2041788246978549610">Օգտագործել հասանելի խոսափողները (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Դարակ 7</translation>
 <translation id="204357726431741734">Մուտք գործեք՝ Google հաշվում պահված գաղտնաբառերն օգտագործելու համար</translation>
 <translation id="2045871135676061132">Envelope Personal</translation>
@@ -889,6 +890,7 @@
 <translation id="2655752832536625875">Լոգասենյակ</translation>
 <translation id="2657637947725373811">{0,plural, =1{Տեղափոխե՞լ կոնֆիդենցիալ ֆայլը}one{Տեղափոխե՞լ կոնֆիդենցիալ ֆայլը}other{Տեղափոխե՞լ կոնֆիդենցիալ ֆայլերը}}</translation>
 <translation id="2658843814961855121">Աշխատանքի և զբաղվածության օրենք</translation>
+<translation id="2658944305627908367">Ձեր հաշվեկշիռը գերազանցող գործարքները չեն մշակվի</translation>
 <translation id="2660779039299703961">Իրադարձություն</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Չկա}=1{1 գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />)}=2{2 գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />)}one{# գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />)}other{# գաղտնաբառ (հետևյալ տիրույթների համար՝ <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Վերին</translation>
@@ -1087,6 +1089,7 @@
 <translation id="3090667236485488075">Ապակի</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Անտեսվում է, քանի որ «Անջատված» ցանկը պարունակում է «*» ձևանմուշը, որը հավասարազոր է կանոնի անջատմանը։</translation>
+<translation id="3099619114405539473">Օգտագործել հասանելի տեսախցիկները (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Խնայողական</translation>
 <translation id="3103188521861412364">Բաժնետոմսեր և պարտատոմսեր</translation>
 <translation id="3105172416063519923">Ակտիվների ID՝</translation>
@@ -1363,6 +1366,7 @@
 <translation id="3583757800736429874">&amp;Վերարկել տեղափոխումը</translation>
 <translation id="3584299510153766161">Երկու անցք ներքևում</translation>
 <translation id="3584755835709800788">Գիտական ֆանտաստիկա և ֆենթըզի ժանրի ֆիլմեր</translation>
+<translation id="3585455899094692781">Օգտագործել և տեղաշարժել հասանելի տեսախցիկները (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Թաց թաղանթ</translation>
 <translation id="3586931643579894722">Թաքցնել մանրամասները</translation>
 <translation id="3587738293690942763">Միջին</translation>
@@ -2432,6 +2436,7 @@
 <translation id="5645132789250840550">Պլաստիկ (կիսափայլուն)</translation>
 <translation id="5645719697465708351">Տոների և երեկույթների համար նախատեսված պարագաներ</translation>
 <translation id="5645854190134202180">Մինչև երկրորդ հերթափոխը</translation>
+<translation id="5648166631817621825">Վերջին 7 օրվա</translation>
 <translation id="5649053991847567735">Ավտոմատ ներբեռնումներ</translation>
 <translation id="5651323159439184939">Պերֆորացված թուղթ</translation>
 <translation id="5654927323611874862">Խափանման մասին թարմացված հաշվետվության ID՝</translation>

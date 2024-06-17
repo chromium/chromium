@@ -52,6 +52,7 @@
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1698376642261615901">Google Chrome on veebibrauser, mis käitab veebilehti ja rakendusi välgukiirusel. See on kiire, töökindel ja lihtsalt kasutatav. Veebi sirvimine on turvalisem tänu Google Chrome'i sisseehitatud pahavara- ja andmepüügivastasele kaitsele.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome käivitatakse uuesti tunni aja pärast}other{Chrome käivitatakse uuesti # tunni pärast}}</translation>
+<translation id="1722488837206509557">See võimaldab teil valida saadaolevate seadmete hulgast ja kuvada neis sisu.</translation>
 <translation id="1734234790201236882">Chrome salvestab selle parooli teie Google'i kontole. Te ei pea seda meeles pidama.</translation>
 <translation id="1786003790898721085">Veenduge, et oleksite seadmes <ph name="TARGET_DEVICE_NAME" /> Chrome'i sisse logitud, ja proovige siis uuesti saata.</translation>
 <translation id="1786044937610313874">Otseteed avanevad Chrome'is</translation>

@@ -100,7 +100,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Trykk på <ph name="LAUNCHER_KEY_NAME" /> + G når som helst</translation>
 <translation id="1306549533752902673">ANBEFALTE APPER</translation>
-<translation id="1311294419381837540">Du caster en fane. Du kan når som helst stoppe castingen eller sette den på pause.</translation>
 <translation id="1312604459020188865">Signalstyrke <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Vis alltid hyllen</translation>
 <translation id="132346741904777634">Kameraet er festet til øvre venstre hjørne. Konflikt med systemoverflaten.</translation>
@@ -109,7 +108,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1340378040547539434">Zoom ut på siden</translation>
 <translation id="1341651618736211726">Overflyt</translation>
 <translation id="1341926407152459446">Bruk «<ph name="DEVICE_NAME" />» som inn- og utenhet for lyd</translation>
-<translation id="1344141078024003905">Du caster skjermen. Du kan når som helst stoppe castingen av skjermen eller sette den på pause.</translation>
 <translation id="1346748346194534595">Høyre</translation>
 <translation id="1351937230027495976">Skjul menyen</translation>
 <translation id="1360220746312242196">Gå til forrige søketreff når du søker på en side</translation>
@@ -354,7 +352,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2369165858548251131">«Hei» på kinesisk</translation>
 <translation id="2370971919968699910">Dette kan medføre datakostnader.
 <ph name="DEVICECOUNT" /> enheter er tilkoblet.</translation>
-<translation id="2382875860893882175">Castingen er satt på pause. Du kan når som helst gjenoppta eller stoppe castingen.</translation>
 <translation id="2386292613071805067">Merk alt på siden</translation>
 <translation id="2392659840443812875">Ingen tilgjengelig wifi-sone. Sørg for at enheten er i nærheten og Bluetooth er slått på.</translation>
 <translation id="2397416548179033562">Vis Chrome-menyen</translation>
@@ -618,7 +615,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3389599499324569679">Vil du slå på diktering?</translation>
 <translation id="3394432020929931914">, vises</translation>
 <translation id="3405101454990027959">Slå på mikrofontilgang</translation>
-<translation id="3408735331120433841">Du caster skjermen nå.</translation>
 <translation id="3409584356742878290">Vis eller skjul utviklerverktøy-inspektøren</translation>
 <translation id="3410336247007142655">Vis innstillinger for mørkt tema</translation>
 <translation id="3413817803639110246">Ingenting å se ennå</translation>
@@ -858,7 +854,6 @@ Noen funksjoner er begrenset for å forlenge batterilevetiden.</translation>
 <translation id="4217571870635786043">Diktering</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installert app, satt på pause</translation>
 <translation id="4228078597006700451">Kontrollene er ikke konfigurert</translation>
-<translation id="4231053948789591973">Castingen er satt på pause. Du kan når som helst gjenoppta eller stoppe castingen av skjermen.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Oversiktsmodus</translation>
 <translation id="4242533952199664413">Åpne innstillingene</translation>

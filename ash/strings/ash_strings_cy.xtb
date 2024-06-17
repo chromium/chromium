@@ -100,7 +100,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Pwyswch <ph name="LAUNCHER_KEY_NAME" /> + g unrhyw bryd</translation>
 <translation id="1306549533752902673">APIAU A ARGYMHELLIR</translation>
-<translation id="1311294419381837540">Rydych yn castio tab. Gallwch oedi neu stopio castio unrhyw bryd.</translation>
 <translation id="1312604459020188865">Cryfder Signal <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Dangos y silff bob amser</translation>
 <translation id="132346741904777634">Mae'r camera wedi'i snapio i'r gornel chwith uchaf. Gwrthdaro ag arwyneb y system.</translation>
@@ -109,7 +108,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1340378040547539434">Pellhau ar dudalen</translation>
 <translation id="1341651618736211726">Gorlif</translation>
 <translation id="1341926407152459446">Defnyddio "<ph name="DEVICE_NAME" />" ar gyfer mewnbwn ac allbwn sain</translation>
-<translation id="1344141078024003905">Rydych yn castio i'ch sgrîn. Gallwch oedi neu stopio castio eich sgrîn unrhyw bryd.</translation>
 <translation id="1346748346194534595">De</translation>
 <translation id="1351937230027495976">Crebachu'r ddewislen</translation>
 <translation id="1360220746312242196">Wrth chwilio tudalen, mynd i'r gyfatebiaeth flaenorol i chwilio</translation>
@@ -354,7 +352,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2369165858548251131">"Helo" yn Tsieinëeg</translation>
 <translation id="2370971919968699910">Gall hyn arwain at gost data.
 Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
-<translation id="2382875860893882175">Mae castio wedi'i oedi ar hyn o bryd. Gallwch barhau â chastio neu stopio castio unrhyw bryd.</translation>
 <translation id="2386292613071805067">Dewis popeth ar y dudalen</translation>
 <translation id="2392659840443812875">Dim poethfan ar gael. Sicrhewch fod eich dyfais gerllaw a bod Bluetooth wedi'i droi ymlaen.</translation>
 <translation id="2397416548179033562">Dangos dewislen Chrome</translation>
@@ -574,6 +571,7 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> arall</translation>
 <translation id="3227137524299004712">Meicroffon</translation>
 <translation id="3233611303007751344">Arbed Batri wedi'i ddiffodd</translation>
+<translation id="3238409143297336341">Gosod rheolaethau rhieni ar gyfer apiau</translation>
 <translation id="324366796737464147">Dileu sŵn</translation>
 <translation id="3249513730522716925">Mae'r ffenestr <ph name="WINDOW_TITLE" /> wedi symud o'r Ddesg <ph name="ACTIVE_DESK" /> i'r Ddesg <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Math o waith dosbarth: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -617,7 +615,6 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="3389599499324569679">Troi Arddweud ymlaen?</translation>
 <translation id="3394432020929931914">, wedi'i ehangu</translation>
 <translation id="3405101454990027959">Trowch fynediad meicroffon ymlaen</translation>
-<translation id="3408735331120433841">Rydych yn castio'ch sgrîn ar hyn o bryd.</translation>
 <translation id="3409584356742878290">Dangos neu guddio'r arolygydd Offer Datblygwr</translation>
 <translation id="3410336247007142655">Dangos gosodiadau thema dywyll</translation>
 <translation id="3413817803639110246">Dim byd i'w weld eto</translation>
@@ -857,7 +854,6 @@ Mae rhai nodweddion wedi'u cyfyngu i gynyddu oes y batri.</translation>
 <translation id="4217571870635786043">Arddweud</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, Gosodwyd Ap, Seibiwyd</translation>
 <translation id="4228078597006700451">Rheolyddion heb eu gosod</translation>
-<translation id="4231053948789591973">Mae castio wedi'i oedi ar hyn o bryd. Gallwch barhau â chastio neu stopio castio'ch sgrîn unrhyw bryd.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modd trosolwg</translation>
 <translation id="4242533952199664413">Agor y gosodiadau</translation>
@@ -1404,6 +1400,7 @@ Dim dyfeisiau yn gysylltiedig.</translation>
 <translation id="6141205840878048728">Beth hoffech chi ganolbwyntio arno?</translation>
 <translation id="6141988275892716286">Cadarnhau lawrlwytho</translation>
 <translation id="6143578372829139382">Rhannu i YouTube</translation>
+<translation id="6147182561428020853">Gallwch bellach rwystro apiau sydd wedi'u gosod ar y <ph name="DEVICE_TYPE" /> hwn</translation>
 <translation id="6154006699632741460">Ni chefnogir y perifferol</translation>
 <translation id="6156960295318603523">Gosodiadau Iaith</translation>
 <translation id="615957422585914272">Dangos y bysellfwrdd ar y sgrîn</translation>

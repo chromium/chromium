@@ -1388,7 +1388,6 @@ Esta política suele estar inhabilitada para ofrecer protección contra phishing
 <translation id="2043770014371753404">Impresoras de empresa inhabilitadas</translation>
 <translation id="2054093043033461396">Salvapantallas del dispositivo habilitado en la pantalla de inicio de sesión.</translation>
 <translation id="2057317273526988987">Permitir el acceso a una lista de URLs</translation>
-<translation id="2058055310819710697">Habilitar el modo desarrollador de aplicaciones aisladas</translation>
 <translation id="205807990145127714">Datos de telemetría para registrar en los cambios de intensidad de la señal</translation>
 <translation id="2060153898336610735">Automático en función del idioma seleccionado</translation>
 <translation id="2061123930713023976">Permite capturas de paquetes de red de depuración</translation>
@@ -2094,7 +2093,6 @@ Si se le asigna el valor False, se inhabilitará la función Conjuntos de sitios
 <translation id="2570059561924004903">Inhabilitar los mensajes de voz</translation>
 <translation id="2570181623957732921">Habilitar <ph name="DESK_API_NAME" /> para una lista de dominios de terceros</translation>
 <translation id="2575198840408498393">Inhabilitar la creación de perfiles de roaming</translation>
-<translation id="2576324725151524912">Permitir el modo desarrollador para aplicaciones aisladas.</translation>
 <translation id="25765864042030871">Los gestores de eventos <ph name="UNLOAD_EVENT_NAME" /> van a dejar de estar disponibles. <ph name="PERMISSIONS_POLICY_NAME" /> de <ph name="UNLOAD_EVENT_NAME" /> determina si se activan o no. Actualmente, la política los permite de forma predeterminada. En el futuro, pasarán a desactivarse de forma predeterminada progresivamente, y los sitios deberán habilitarlos expresamente mediante los encabezados de <ph name="PERMISSIONS_POLICY_NAME" />. Esta política de empresa se puede usar para inhabilitar esta desactivación gradual al forzar que permanezcan habilitados de forma predeterminada.
  
 Puede que las páginas dependan de gestores de eventos <ph name="UNLOAD_EVENT_NAME" /> para guardar datos o indicar el final de una sesión de usuario al servidor. Esto no es recomendable, ya que no es fiable y afecta al rendimiento al bloquear el uso de <ph name="PRODUCT_NAME" />. Hay alternativas recomendadas, pero se ha usado el evento <ph name="UNLOAD_EVENT_NAME" /> durante mucho tiempo. Aun así, es posible que algunas aplicaciones puedan usarlas.
@@ -6233,7 +6231,6 @@ Si no se define ninguna de estas políticas, se moverán todas las autenticacion
       Cuando esta función esté habilitada, <ph name="PRODUCT_NAME" /> podrá usar o no ECH en función de la compatibilidad del servidor, de la disponibilidad del registro DNS HTTPS o del estado de lanzamiento.
 
       ECH es un protocolo en constante evolución. Esto implica que la implementación de <ph name="PRODUCT_NAME" /> está sujeta a cambios. Por lo tanto, esta política es una medida temporal para controlar la implementación experimental inicial. Se sustituirá por unos controles finales cuando se complete el protocolo.</translation>
-<translation id="5939656968921014919">Inhabilitar el modo desarrollador de aplicaciones aisladas</translation>
 <translation id="5939873071468124100">Restringe las cuentas que pueden usar la integración con <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
 <translation id="5945312246863177268">No permitir que los usuarios hagan clic en una notificación de la función Mi teléfono para abrir la aplicación Eche.</translation>
 <translation id="5946082169633555022">Canal beta</translation>
@@ -9754,9 +9751,6 @@ Si se le asigna el valor False, no se recogerán datos de políticas ni la hora 
 En el caso de <ph name="PRODUCT_NAME" />, esta política solo es efectiva si el equipo está registrado en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 En el caso de <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.</translation>
 <translation id="8619748440665904084">Inhabilitar la importación de los datos para autocompletar formularios en la primera ejecución</translation>
-<translation id="8623672932476443039">Si se habilita la política, los usuarios podrán acceder al modo desarrollador para aplicaciones aisladas.
-      Si se inhabilita, los usuarios no podrán acceder a esta función.
-      Si no se establece, la opción predeterminada no estará disponible para usuarios gestionados por empresas en ChromeOS, pero sí estará disponible para el resto de los usuarios y sistemas operativos.</translation>
 <translation id="862621549134406761">Habilitar comprobación de uso de claves RSA</translation>
 <translation id="8626826495474944836">Requerir aislamiento de sitio web para todos los sitios</translation>
 <translation id="8631314130868563649">Inhabilitar la gestión del cambio de alimentación en picos</translation>

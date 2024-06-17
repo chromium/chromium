@@ -136,7 +136,6 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1085064499066015002">Sempre em todos os sites</translation>
 <translation id="1085697365578766383">Não foi possível iniciar a máquina virtual. Tente novamente.</translation>
 <translation id="1086486568852410168">Pesquisar com o Google Lens</translation>
-<translation id="1088490543924960890">Comece a guardar chaves de acesso com o Gestor de Palavras-passe da Google</translation>
 <translation id="1090126737595388931">Não há aplicações em execução em segundo plano</translation>
 <translation id="1090541560108055381">Antes de sincronizar, certifique-se de que este código é o mesmo em ambos os dispositivos</translation>
 <translation id="1091767800771861448">Prima ESCAPE para ignorar (apenas nas compilações não oficiais).</translation>
@@ -3672,7 +3671,6 @@ Quer pará-lo?</translation>
 <translation id="3685598397738512288">Preferências de USB do Linux</translation>
 <translation id="3687598459967813435">Permitir sempre notificações de <ph name="WEBSITE" /></translation>
 <translation id="368789413795732264">Ocorreu um erro ao tentar escrever o ficheiro: <ph name="ERROR_TEXT" />.</translation>
-<translation id="3688368689701175138">Esta chave de acesso vai ser guardada no Gestor de Palavras-passe da Google para <ph name="ACCOUNT_NAME" />.</translation>
 <translation id="3688507211863392146">Escrever em ficheiros e pastas que são abertos na aplicação</translation>
 <translation id="3688526734140524629">Alterar canal</translation>
 <translation id="3688578402379768763">Atualizado</translation>
@@ -6105,7 +6103,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5497739595514726398">O Chrome não conseguiu validar este pacote de instalação</translation>
 <translation id="5498967291577176373">Escreva mais rapidamente com sugestões inline para o seu nome, endereço ou número de telefone.</translation>
 <translation id="5499211612787418966">Atualmente, esta caixa de diálogo não está focada. Prima Alt + Shift + A para focar esta caixa de diálogo.</translation>
-<translation id="5499313591153584299">Este ficheiro pode ser prejudicial para o seu computador.</translation>
 <translation id="5499453227627332024">Está disponível uma atualização para o seu contentor do Linux. Também pode atualizar mais tarde na app Definições.</translation>
 <translation id="5499476581866658341">Agora, pode ver as fotos e o conteúdo multimédia recentes do seu telemóvel</translation>
 <translation id="549957179819296104">Novo ícone</translation>
@@ -7034,7 +7031,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6206199626856438589">A sua sessão nos sites apresentados vai ser terminada, incluindo em separadores abertos</translation>
 <translation id="6206311232642889873">Cop&amp;iar Imagem</translation>
 <translation id="6207200176136643843">Repor o nível de zoom predefinido</translation>
-<translation id="6207298079289376837">Verifique se os separadores podem ser organizados</translation>
 <translation id="6207937957461833379">País/Região</translation>
 <translation id="6208521041562685716">Os dados móveis estão a ser ativados</translation>
 <translation id="6208725777148613371">Falha ao guardar no <ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
@@ -7385,7 +7381,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6476482583633999078">Velocidade da voz</translation>
 <translation id="6476671549211161535">Prima um botão que não seja o botão esquerdo ou direito do rato no dispositivo <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">A sincronização das notificações não é suportada para telemóveis num perfil de trabalho. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
-<translation id="6478248366783946499">Quer manter este ficheiro perigoso?</translation>
 <translation id="6479881432656947268">Visite a Web Store do Chrome</translation>
 <translation id="6480327114083866287">Gerido por <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Partilhe ficheiros e muito mais com dispositivos próximos. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
@@ -7564,7 +7559,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6613267708691765962">A verificar a existência de software malicioso…</translation>
 <translation id="6613668613087513143">Não existe espaço suficiente neste dispositivo para concluir a atualização. Limpe <ph name="NECESSARY_SPACE" /> no dispositivo e tente novamente a partir do navegador Chrome.</translation>
 <translation id="6615455863669487791">Mostrar</translation>
-<translation id="6618097958368085618">Manter na mesma</translation>
 <translation id="6618744767048954150">Em execução</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">O site pode monitorizar a sua localização.</translation>
@@ -8150,7 +8144,6 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7044211973375150246">Uma app está definida para abrir os mesmos links que a app <ph name="APP_NAME" />. Isto irá impedir que a app <ph name="APP_NAME_2" /> abra links suportados.</translation>
 <translation id="7044606776288350625">Sincronizar dados</translation>
 <translation id="7047059339731138197">Escolher um fundo</translation>
-<translation id="7049293980323620022">Quer manter este ficheiro?</translation>
 <translation id="7049524156282610342">Dados de navegação de <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Configuração da zona Wi-Fi inválida</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{Palavra-passe guardada na sua Conta Google, <ph name="USER_EMAIL" />}other{Palavras-passe guardadas na sua Conta Google, <ph name="USER_EMAIL" />}}</translation>
@@ -9340,7 +9333,6 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7939062555109487992">Opções avançadas</translation>
 <translation id="793923212791838">Não é possível usar o seu dispositivo com este site</translation>
 <translation id="7939328347457537652">Gerir certificados do dispositivo</translation>
-<translation id="7939412583708276221">Manter na mesma</translation>
 <translation id="7940087892955752820">Não foi possível cancelar a partilha porque uma aplicação está a usar esta pasta. A partilha da pasta é cancelada quando o <ph name="SPECIFIC_NAME" /> for encerrado.</translation>
 <translation id="7940265372707990269">Ordenar por <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Prontidão da ligação (à Internet) via telemóvel:</translation>
@@ -10102,7 +10094,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8477241577829954800">Substituído</translation>
 <translation id="8477384620836102176">&amp;Geral</translation>
 <translation id="8479176401914456949">Código inválido. Tente novamente.</translation>
-<translation id="8480082892550707549">Mesmo que tenha transferido ficheiros deste site antes, este pode ser temporariamente inseguro (pode ter sido pirateado). Experimente transferir este ficheiro mais tarde.</translation>
 <translation id="8480869669560681089">Dispositivo desconhecido de <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Confirmar autorização USB</translation>
 <translation id="8482077254400484047">Faça a gestão do aspeto dos separadores inativos aqui</translation>
@@ -10931,7 +10922,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="9085256200913095638">Duplicar o separador selecionado</translation>
 <translation id="9085446486797400519">Acesso à câmara</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> não selecionado. Prima Pesquisar e a tecla de espaço para selecionar.</translation>
-<translation id="9087183943157874068">Pode verificar as sugestões de grupos de separadores em qualquer altura</translation>
 <translation id="9087949559523851360">Adicionar utilizador restrito</translation>
 <translation id="9088234649737575428">O <ph name="PLUGIN_NAME" /> está bloqueado pela política da empresa</translation>
 <translation id="9088446193279799727">Não foi possível configurar o Linux. Estabeleça ligação à Internet e tente novamente.</translation>

@@ -121,6 +121,7 @@
 <translation id="7326879924029668159">Ikusi dendaren itzultze-gidalerroak</translation>
 <translation id="7352298686197644113">Ikusi irekita dauzkazun fitxetako zein produkturen prezioa jaitsi den</translation>
 <translation id="7452985128687107478">Fitxa taldeak automatikoki gordetzen eta eguneratzen dira zure gailu guztietan</translation>
+<translation id="747459581954555080">Leheneratu guztiak</translation>
 <translation id="753732157349120914">Fitxa-aldatzailea</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google-tik datorren <ph name="REVIEWS_COUNT_ONE" /> iritzi}other{Google-tik datozen <ph name="REVIEWS_COUNT_MANY" /> iritzi}}</translation>
 <translation id="7559245342362162951">Erakutsi taldearen fitxak pantaila osoko saretan</translation>
@@ -144,6 +145,7 @@
 <translation id="8338427544764842461">Fitxa taldeak hemen gordetzen dira, eta zure kontuan saioa hasita daukaten gailu guztietan eguneratzen dira</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Itxi hautatutako <ph name="TABS_COUNT_ONE" /> fitxa}other{Itxi hautatutako <ph name="TABS_COUNT_MANY" /> fitxa}}</translation>
 <translation id="8398929769197326728">Karpeta berria (<ph name="CURRENT_TIMESTAMP_MS" />)</translation>
+<translation id="8428213095426709021">Ezarpenak</translation>
 <translation id="8714939927607906138">Merkeagoa</translation>
 <translation id="8730621377337864115">Eginda</translation>
 <translation id="8730999928494395583">Ezkutuko moduko fitxa hauetan egin dituzun jarduerak kendu egingo dira gailu honetatik</translation>

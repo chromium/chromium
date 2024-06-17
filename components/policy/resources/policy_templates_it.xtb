@@ -1415,7 +1415,6 @@ In genere, questo criterio è disattivato per difendere gli utenti da tentativi 
 <translation id="2043770014371753404">Stampanti aziendali disattivate</translation>
 <translation id="2054093043033461396">Schermata di accesso salvaschermo del dispositivo attivata.</translation>
 <translation id="2057317273526988987">Consenti l'accesso a un elenco di URL</translation>
-<translation id="2058055310819710697">Attiva la modalità sviluppatore per app isolate.</translation>
 <translation id="205807990145127714">Dati di telemetria da segnalare per gli eventi di intensità del segnale</translation>
 <translation id="2060153898336610735">Automatico, in base alla lingua corrente</translation>
 <translation id="2061123930713023976">Consenti acquisizioni di pacchetti di rete di debug</translation>
@@ -2121,7 +2120,6 @@ Se questo criterio viene impostato su False, la funzionalità di insiemi di siti
 <translation id="2570059561924004903">Disattiva feedback vocale</translation>
 <translation id="2570181623957732921">Attiva <ph name="DESK_API_NAME" /> per un elenco di domini di terze parti</translation>
 <translation id="2575198840408498393">Disattiva la creazione di profili di roaming</translation>
-<translation id="2576324725151524912">Consenti la modalità sviluppatore per app isolate</translation>
 <translation id="25765864042030871">I gestori di eventi <ph name="UNLOAD_EVENT_NAME" /> sono in fase di ritiro. La loro attivazione dipende dal valore <ph name="UNLOAD_EVENT_NAME" /> del criterio <ph name="PERMISSIONS_POLICY_NAME" />. Attualmente sono consentiti per impostazione predefinita in base al criterio. In futuro passeranno gradualmente allo stato non consentito per impostazione predefinita e i siti dovranno attivarli in modo esplicito tramite le intestazioni <ph name="PERMISSIONS_POLICY_NAME" />. Questo criterio aziendale può essere utilizzato per disattivare questo ritiro graduale. Per farlo, è necessario mantenere attiva l'impostazione predefinita.
  
 Le pagine potrebbero dipendere dai gestori di eventi <ph name="UNLOAD_EVENT_NAME" /> per salvare i dati o segnalare al server la fine di una sessione utente. Questo non è consigliato perché non è affidabile e influisce sulle prestazioni bloccando l'utilizzo di <ph name="PRODUCT_NAME" />. Esistono alternative consigliate, ma l'evento <ph name="UNLOAD_EVENT_NAME" /> è utilizzato da molto tempo. Alcune applicazioni potrebbero continuare a utilizzarli.
@@ -6261,7 +6259,6 @@ gli utenti non potranno modificarlo o eseguirne l'override.</translation>
       Se la funzionalità viene attivata, <ph name="PRODUCT_NAME" /> potrebbe utilizzare o meno ECH, a seconda del supporto del server, della disponibilità del record DNS HTTPS o dello stato del lancio.
 
       ECH è un protocollo in continua evoluzione, quindi l'implementazione di <ph name="PRODUCT_NAME" /> è soggetta a modifiche. Pertanto, questo criterio è una misura temporanea per controllare l'implementazione sperimentale iniziale. Verrà sostituito con i controlli finali una volta completato il protocollo.</translation>
-<translation id="5939656968921014919">Disattiva la modalità sviluppatore per app isolate.</translation>
 <translation id="5939873071468124100">Limita gli account che possono utilizzare l'integrazione <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
 <translation id="5945312246863177268">Non consente agli utenti di fare clic sulla notifica di Phone Hub per avviare l'applicazione Eche.</translation>
 <translation id="5946082169633555022">Canale Beta</translation>
@@ -9808,9 +9805,6 @@ Se il criterio viene impostato su False, i dati del criterio e data e ora del re
 Questo criterio viene applicato soltanto se la macchina viene registrata con <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> per <ph name="PRODUCT_NAME" />.
 Questo criterio viene sempre applicato per <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="8619748440665904084">Disabilita l'importazione dei dati di compilazione automatica dei moduli alla prima esecuzione</translation>
-<translation id="8623672932476443039">Se il criterio viene impostato su enabled, gli utenti possono accedere alla modalità sviluppatore per le app isolate.
-      Se viene impostato su disabled, gli utenti non possono accedere a queste funzionalità.
-      Se non viene configurato, per impostazione predefinita le funzionalità non sono consentite per gli utenti gestiti a livello aziendale su ChromeOS, mentre sono consentite per tutti gli altri utenti e sistemi operativi.</translation>
 <translation id="862621549134406761">Attiva il controllo dell'utilizzo delle chiavi RSA</translation>
 <translation id="8626826495474944836">Richiedi isolamento dei siti per ogni sito</translation>
 <translation id="8631314130868563649">Disattiva la gestione della variazione dei picchi energetici</translation>

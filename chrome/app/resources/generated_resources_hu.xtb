@@ -136,7 +136,6 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1085064499066015002">Mindig, minden webhelyen</translation>
 <translation id="1085697365578766383">Nem sikerült elindítani a virtuális gépet. Próbálja újra.</translation>
 <translation id="1086486568852410168">Keresés a Google Lens segítségével</translation>
-<translation id="1088490543924960890">Mentse azonosítókulcsait a Google Jelszókezelővel</translation>
 <translation id="1090126737595388931">Nincs háttérben futó alkalmazás</translation>
 <translation id="1090541560108055381">A párosítás előtt ellenőrizze, hogy mindkét eszközön ugyanazt a kódot használja-e</translation>
 <translation id="1091767800771861448">Nyomja le az ESC billentyűt a kihagyáshoz (csak nem hivatalos verzióknál).</translation>
@@ -3683,7 +3682,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3685598397738512288">A Linux USB-preferenciái</translation>
 <translation id="3687598459967813435">Mindig legyenek engedélyezve a következő webhely értesítései: <ph name="WEBSITE" /></translation>
 <translation id="368789413795732264">A fájl írásakor hiba történt: <ph name="ERROR_TEXT" />.</translation>
-<translation id="3688368689701175138">Ez az azonosítókulcs a fiókjához (<ph name="ACCOUNT_NAME" />) kapcsolt Google Jelszókezelőbe lesz mentve.</translation>
 <translation id="3688507211863392146">Az alkalmazásban megnyitott fájlok és mappák írása</translation>
 <translation id="3688526734140524629">Csatornaváltás</translation>
 <translation id="3688578402379768763">Naprakész</translation>
@@ -6115,7 +6113,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="5497739595514726398">A Chrome nem tudta ellenőrizni ezt a telepítőcsomagot</translation>
 <translation id="5498967291577176373">Nevére, címére vagy telefonszámára vonatkozó szövegközi javaslatokkal gyorsabban gépelhet</translation>
 <translation id="5499211612787418966">Ez a párbeszédpanel jelenleg nincs fókuszban. Nyomja le az Alt + Shift + A billentyűparancsot, ha erre a párbeszédpanelre szeretne fókuszálni.</translation>
-<translation id="5499313591153584299">Ez a fájl káros lehet a számítógépre.</translation>
 <translation id="5499453227627332024">Frissítés áll rendelkezésre a Linux-tárolóban. A frissítést később is végrehajthatja a Beállítások alkalmazásban.</translation>
 <translation id="5499476581866658341">Mostantól megtekintheti a telefonon legutóbb megnyitott fotókat és médiatartalmakat</translation>
 <translation id="549957179819296104">Új ikon</translation>
@@ -7044,7 +7041,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6206199626856438589">A rendszer kijelentkezteti a megjelenített webhelyekről (a megnyitott lapok esetében is)</translation>
 <translation id="6206311232642889873">Ké&amp;p másolása</translation>
 <translation id="6207200176136643843">Visszaállítás az alapértelmezett nagyítási szintre</translation>
-<translation id="6207298079289376837">A lapok rendszerezhetőségének ellenőrzése</translation>
 <translation id="6207937957461833379">Ország/Régió</translation>
 <translation id="6208521041562685716">Mobiladatok aktiválása…</translation>
 <translation id="6208725777148613371">Nem sikerült menteni ide: <ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
@@ -7395,7 +7391,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6476482583633999078">Beszédsebesség</translation>
 <translation id="6476671549211161535">Nyomjon le egy olyan gombot, amely nem a bal vagy jobb egérgomb a(z) <ph name="DEVICE_NAME" /> eszközön.</translation>
 <translation id="6477822444490674459">Az értesítések szinkronizálása nem támogatott azoknál a telefonoknál, amelyek munkaprofilt használnak. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
-<translation id="6478248366783946499">Megtartja a veszélyes fájlt?</translation>
 <translation id="6479881432656947268">Keresse fel a Chrome Webáruházat.</translation>
 <translation id="6480327114083866287">Kezelő: <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Fájlok és egyebek megosztása közeli eszközökkel. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
@@ -7574,7 +7569,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6613267708691765962">Rosszindulatú programok keresése…</translation>
 <translation id="6613668613087513143">Nincs elég tárhely ezen az eszközön a frissítés végrehajtásához. Szabadítson fel legalább <ph name="NECESSARY_SPACE" /> tárhelyet eszközén, majd próbálkozzon újra a Chrome böngészőben.</translation>
 <translation id="6615455863669487791">Megjelenítés</translation>
-<translation id="6618097958368085618">Megtartás</translation>
 <translation id="6618744767048954150">Ellenőrzés folyamatban</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">A webhely nyomon tudja követni a tartózkodási helyét</translation>
@@ -8160,7 +8154,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7044211973375150246">Egy másik alkalmazásnál is be van állítva, hogy megnyissa ugyanazokat a linkeket, mint a(z) <ph name="APP_NAME" />. Ezzel a művelettel letiltja a következő számára a támogatott linkek megnyitását: <ph name="APP_NAME_2" />.</translation>
 <translation id="7044606776288350625">Adatok szinkronizálása</translation>
 <translation id="7047059339731138197">Háttér kiválasztása</translation>
-<translation id="7049293980323620022">Megtartja a fájlt?</translation>
 <translation id="7049524156282610342">Böngészési adatok – <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Érvénytelen hotspot-konfiguráció</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{Jelszó mentve az Ön Google-fiókjába (<ph name="USER_EMAIL" />)}other{Jelszavak mentve az Ön Google-fiókjába (<ph name="USER_EMAIL" />)}}</translation>
@@ -9349,7 +9342,6 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7939062555109487992">Haladó beállítások</translation>
 <translation id="793923212791838">Az eszköz nem használható ezzel a webhellyel</translation>
 <translation id="7939328347457537652">Eszköztanúsítványok kezelése</translation>
-<translation id="7939412583708276221">Megtartás</translation>
 <translation id="7940087892955752820">Nem sikerült a megosztás visszavonása, mivel valamelyik alkalmazás használja ezt a mappát. A mappa megosztásának visszavonása a(z) <ph name="SPECIFIC_NAME" /> következő leállításakor történik majd meg.</translation>
 <translation id="7940265372707990269">Rendezési szempont: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Internetmegosztási készenlét:</translation>
@@ -10111,7 +10103,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8477241577829954800">Hatálytalanítva</translation>
 <translation id="8477384620836102176">&amp;Általános</translation>
 <translation id="8479176401914456949">Érvénytelen kód. Próbálja újra.</translation>
-<translation id="8480082892550707549">Még ha töltött is le korábban fájlokat erről a webhelyről, előfordulhat, hogy a webhely ideiglenesen nem biztonságos, mert feltörték. Próbálja meg később letölteni a fájlt.</translation>
 <translation id="8480869669560681089">Ismeretlen eszköz a következő gyártótól: <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">USB-engedély megerősítése</translation>
 <translation id="8482077254400484047">Itt kezelheti az inaktív lapok megjelenését</translation>
@@ -10940,7 +10931,6 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="9085256200913095638">Másodpéldány készítése a kiválasztott lapról</translation>
 <translation id="9085446486797400519">Hozzáférés a kamerához</translation>
 <translation id="9085776959277692427">A(z) <ph name="LANGUAGE" /> nincs kiválasztva. A kiválasztáshoz nyomja le a Keresés plusz szóköz billentyűkombinációt.</translation>
-<translation id="9087183943157874068">A lapcsoportokra vonatkozó javaslatokat bármikor ellenőrizheti.</translation>
 <translation id="9087949559523851360">Korlátozott felhasználó felvétele</translation>
 <translation id="9088234649737575428">A(z) <ph name="PLUGIN_NAME" /> beépülő modult letiltotta a vállalati házirend</translation>
 <translation id="9088446193279799727">Nem sikerült a Linux konfigurálása. Csatlakozzon az internethez, és próbálja újra.</translation>

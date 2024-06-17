@@ -566,6 +566,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2036983605131262583">Ordezko arrabola</translation>
 <translation id="2040463897538655645">Memoria aldagarria</translation>
 <translation id="2040894699575719559">Blokeatu egin da kokapena</translation>
+<translation id="2041788246978549610">Erabilgarri dauden mikrofonoak erabili (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">7. erretilua</translation>
 <translation id="204357726431741734">Hasi saioa Google-ko kontuan gordetako pasahitzak erabiltzeko</translation>
 <translation id="2045871135676061132">Gutun-azal pertsonala</translation>
@@ -885,6 +886,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2655752832536625875">Bainugela</translation>
 <translation id="2657637947725373811">{0,plural, =1{Isilpeko fitxategia transferitu nahi duzu?}other{Isilpeko fitxategiak transferitu nahi dituzu?}}</translation>
 <translation id="2658843814961855121">Lan- eta enplegu-zuzenbidea</translation>
+<translation id="2658944305627908367">Saldoa gainditzen duten transakzioak ez dira prozesatuko</translation>
 <translation id="2660779039299703961">Gertaera</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Bat ere ez}=1{<ph name="DOMAIN_LIST" />: 1 pasahitz}=2{<ph name="DOMAIN_LIST" />: 2 pasahitz}other{<ph name="DOMAIN_LIST" />: # pasahitz}}</translation>
 <translation id="2666092431469916601">Goiko elementua</translation>
@@ -1081,6 +1083,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3090667236485488075">Beira</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Ez ikusi egin zaio, desgaitzeko zerrendak * karakterearen berdina den eredu bat daukalako, eta hori gidalerroa desgaitzea bezala da.</translation>
+<translation id="3099619114405539473">Erabilgarri dauden kamerak erabili (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Aurrezkiak</translation>
 <translation id="3103188521861412364">Akzioak eta bonuak</translation>
 <translation id="3105172416063519923">Erreproduzigai-identifikatzailea:</translation>
@@ -1353,6 +1356,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3583757800736429874">&amp;Berregin mugitzea</translation>
 <translation id="3584299510153766161">Bi zulo behean</translation>
 <translation id="3584755835709800788">Zientzia-fikziozko eta fantasiazko filmak</translation>
+<translation id="3585455899094692781">Erabilgarri dauden kamerak erabili eta mugitu (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Film hezea</translation>
 <translation id="3586931643579894722">Ezkutatu xehetasunak</translation>
 <translation id="3587738293690942763">Erdia</translation>
@@ -2417,6 +2421,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5645132789250840550">Plastikoa (erdidistiratsua)</translation>
 <translation id="5645719697465708351">Festa eta jaietarako hornigaiak</translation>
 <translation id="5645854190134202180">Bigarren lanaldia</translation>
+<translation id="5648166631817621825">Azken zazpi egunetakoak</translation>
 <translation id="5649053991847567735">Deskarga automatikoak</translation>
 <translation id="5651323159439184939">Aitzinamendu traktorea</translation>
 <translation id="5654927323611874862">Kargatutako hutsegite-txostenarenidentifikatzailea:</translation>

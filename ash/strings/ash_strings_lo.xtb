@@ -100,7 +100,6 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">ກົດ <ph name="LAUNCHER_KEY_NAME" /> + G ຕອນໃດກໍໄດ້</translation>
 <translation id="1306549533752902673">ແອັບທີ່ແນະນຳ</translation>
-<translation id="1311294419381837540">ທ່ານກຳລັງສົ່ງສັນຍານແຖບ. ທ່ານສາມາດຢຸດຊົ່ວຄາວ ຫຼື ຢຸດການສົ່ງສັນຍານຕອນໃດກໍໄດ້.</translation>
 <translation id="1312604459020188865">ຄວາມແຮງສັນຍານ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">ສະແດງຖ້ານທຸກເທື່ອ</translation>
 <translation id="132346741904777634">ແນບກ້ອງຖ່າຍຮູບໄປໃສ່ມຸມຊ້າຍເທິງແລ້ວ. ຂັດແຍ້ງກັບພື້ນຜິວຂອງລະບົບ.</translation>
@@ -109,7 +108,6 @@
 <translation id="1340378040547539434">ຂະຫຍາຍອອກໃນໜ້າ</translation>
 <translation id="1341651618736211726">ລົ້ນ</translation>
 <translation id="1341926407152459446">ໃຊ້ "<ph name="DEVICE_NAME" />" ສຳລັບອິນພຸດ ແລະ ເອົ້າພຸດສຽງ</translation>
-<translation id="1344141078024003905">ທ່ານກຳລັງສົ່ງສັນຍານໜ້າຈໍຂອງທ່ານ. ທ່ານສາມາດຢຸດຊົ່ວຄາວ ຫຼື ຢຸດການສົ່ງສັນຍານໜ້າຈໍຂອງທ່ານຕອນໃດກໍໄດ້.</translation>
 <translation id="1346748346194534595">ເບື້ອງຂວາ</translation>
 <translation id="1351937230027495976">ຫຍໍ້ເມນູ</translation>
 <translation id="1360220746312242196">ເມື່ອຊອກຫາໃນໜ້າ, ໃຫ້ເຂົ້າໄປລາຍການກ່ອນໜ້າທີ່ກົງກັນກັບການຊອກຫາ</translation>
@@ -354,7 +352,6 @@
 <translation id="2369165858548251131">"ສະບາຍດີ" ເປັນພາສາຈີນ</translation>
 <translation id="2370971919968699910">ສິ່ງນີ້ອາດມີຄ່າໃຊ້ຈ່າຍຂໍ້ມູນ.
 ເຊື່ອມຕໍ່ <ph name="DEVICECOUNT" /> ອຸປະກອນແລ້ວ.</translation>
-<translation id="2382875860893882175">ປັດຈຸບັນການສົ່ງສັນຍານຖືກຢຸດຊົ່ວຄາວ. ທ່ານສາມາດສືບຕໍ່ສົ່ງສັນຍານ ຫຼື ຢຸດສົ່ງສັນຍານຕອນໃດກໍໄດ້.</translation>
 <translation id="2386292613071805067">ເລືອກທຸກຢ່າງໃນໜ້າ</translation>
 <translation id="2392659840443812875">ບໍ່ມີຮັອດສະປອດທີ່ໃຊ້ໄດ້. ກວດສອບໃຫ້ແນ່ໃຈວ່າອຸປະກອນຂອງທ່ານຢູ່ໃກ້ຄຽງ ແລະ ເປີດ Bluetooth ຢູ່.</translation>
 <translation id="2397416548179033562">ສະ​ແດງ​ເມ​ນູ​ Chrome</translation>
@@ -618,7 +615,6 @@
 <translation id="3389599499324569679">ເປີດໃຊ້ການປ້ອນຂໍ້ມູນດ້ວຍສຽງບໍ?</translation>
 <translation id="3394432020929931914">, ຂະຫຍາຍແລ້ວ</translation>
 <translation id="3405101454990027959">ເປີດສິດເຂົ້າເຖິງໄມໂຄຣໂຟນ</translation>
-<translation id="3408735331120433841">ປັດຈຸບັນທ່ານກຳລັງສົ່ງສັນຍານໜ້າຈໍຂອງທ່ານ.</translation>
 <translation id="3409584356742878290">ສະແດງ ຫຼື ເຊື່ອງຕົວກວດສອບເຄື່ອງມືສຳລັບນັກພັດທະນາ</translation>
 <translation id="3410336247007142655">ສະແດງການຕັ້ງຄ່າຮູບແບບສີສັນມືດ</translation>
 <translation id="3413817803639110246">ຍັງບໍ່ທັນມີຫຍັງໃຫ້ເບິ່ງເທື່ອ</translation>
@@ -858,7 +854,6 @@
 <translation id="4217571870635786043">ການພິມຕາມຄຳບອກ</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, ແອັບທີ່ຕິດຕັ້ງແລ້ວ, ຢຸດໄວ້ຊົ່ວຄາວແລ້ວ</translation>
 <translation id="4228078597006700451">ບໍ່ໄດ້ຕັ້ງຄ່າການຄວບຄຸມ</translation>
-<translation id="4231053948789591973">ປັດຈຸບັນການສົ່ງສັນຍານຖືກຢຸດຊົ່ວຄາວ. ທ່ານສາມາດສືບຕໍ່ສົ່ງສັນຍານ ຫຼື ຢຸດສົ່ງສັນຍານໜ້າຈໍຂອງທ່ານຕອນໃດກໍໄດ້.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">ໂໝດພາບຮວມ</translation>
 <translation id="4242533952199664413">ເປີດ​ການ​ຕັ້ງ​ຄ່າ</translation>

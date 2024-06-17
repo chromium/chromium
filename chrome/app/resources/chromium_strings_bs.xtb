@@ -36,7 +36,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="1640672724030957280">Preuzimanje…</translation>
 <translation id="1708666629004767631">Dostupna je novija i sigurnija verzija Chromiuma.</translation>
 <translation id="1715127912119967311">Radi poboljšanja ovih funkcija Chromium šalje vaše interakcije s njima Googleu. Ove podatke će možda čitati, obrađivati i komentirati osobe koje vrše pregled.</translation>
-<translation id="1722488837206509557">To će vam omogućiti odabir između dostupnih uređaja i prikaz sadržaja na njima.</translation>
+<translation id="1722488837206509557">Ovo će vam dozvoliti da odaberete jedan od dostupnih uređaja i da se na njemu prikazuje sadržaj.</translation>
 <translation id="17264556997921157">Možete vidjeti i uklanjati teme koje vas zanimaju, a koje web lokacije koriste da vam prikazuju oglase. Chromium procjenjuje vaša interesovanja na osnovu vaše nedavne historije pregledanja.</translation>
 <translation id="1733725117201708356">Chromium će uskoro izbrisati podatke o pregledanju</translation>
 <translation id="1736443181683099871">Chromium će pokušati nadograditi kretanja na HTTPS</translation>
@@ -118,6 +118,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="2945997411976714835">Greška prilikom instaliranja: pokretanje postupka programa za instaliranje nije uspjelo.</translation>
 <translation id="2977470724722393594">Chromium je ažuriran</translation>
 <translation id="2977506796191543575">Ako web lokacija pokuša ukrasti vašu lozinku ili kada preuzimate štetan fajl, Chromium može slati i URL-ove, uključujući dijelove sadržaja stranice, u Sigurno pregledanje</translation>
+<translation id="2987208172821108655">Chromium može deaktivirati te kartice radi poboljšanja vašeg doživljaja pregledavanja i oslobađanja resursa.</translation>
 <translation id="3013473503895162900">Otvorite <ph name="URL" /> u novoj kartici u Chromiumu.</translation>
 <translation id="3032706164202344641">Chromium ne može provjeravati vaše lozinke. Pokušajte ponovo kasnije.</translation>
 <translation id="3032787606318309379">Dodavanje u Chromium…</translation>
@@ -319,6 +320,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="6248213926982192922">Postavi Chromium kao zadani preglednik</translation>
 <translation id="6266342355635466082">Chromium ne može provjeravati ima li ažuriranja. Predlažemo da provjerite internetsku vezu.</translation>
 <translation id="6268381023930128611">Odjaviti se iz Chromiuma?</translation>
+<translation id="6270547683008298381">Te kartice upotrebljavaju dodatne resurse. Da biste poboljšali izvedbu, dopustite Chromiumu da ih deaktivira.</translation>
 <translation id="6281746429495226318">Prilagodite svoj Chromium profil</translation>
 <translation id="6290827346642914212">Dajte naziv Chromium profilu</translation>
 <translation id="6294831894865512704">Ekstenzija želi da se prijavite u Chromium</translation>
@@ -327,6 +329,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="6327105987658262776">Ažuriranje nije dostupno.</translation>
 <translation id="6333502561965082103">U toku je druga radnja u Chromiumu. Pokušajte ponovo kasnije.</translation>
 <translation id="6334986366598267305">Sada je lakše koristiti Chromium s vašim Google računom i na dijeljenim računarima.</translation>
+<translation id="633626832589656416">Chromium može deaktivirati te kartice radi poboljšanja vašeg doživljaja pregledavanja i brze aktivnosti.</translation>
 <translation id="6347933965114150440">Prečica Chromiuma</translation>
 <translation id="6366160072964553914">Chromium je blokirao ovo preuzimanje jer se fajl ne preuzima često i možda je opasan</translation>
 <translation id="6373523479360886564">Jeste li sigurni da želite deinstalirati Chromium?</translation>

@@ -915,6 +915,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="5596627076506792578">Rohkem valikuid</translation>
 <translation id="5599455543593328020">Inkognito režiim</translation>
 <translation id="5601180634394228718">Kui soovite näha veel seadeid, mis kasutavad andmeid, et parandada teie Chrome'i kasutuskogemust, avage <ph name="BEGIN_LINK" />Google'i teenused<ph name="END_LINK" />.</translation>
+<translation id="5614625640221885312">Logige sisse, et saada kõigis oma seadmetes juurdepääs oma järjehoidjatele, paroolidele ja muule</translation>
 <translation id="5620163320393916465">Salvestatud paroole ei ole</translation>
 <translation id="5620928963363755975">Leidke oma failid ja lehed jaotisest Allalaadimised, kasutades nuppu Rohkem valikuid</translation>
 <translation id="562289928968387744">Reaktsioonide haldamine</translation>
@@ -956,6 +957,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="5793665092639000975">Kasutusel on <ph name="SPACE_USED" /> <ph name="SPACE_AVAILABLE" />-st</translation>
 <translation id="5795872532621730126">Otsi ja sirvi</translation>
 <translation id="5797949256525811424">Teema blokeeriti</translation>
+<translation id="580893287573699959">Hallake teemasid ja saite, mis teile huvi pakuvad</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# tund tagasi}other{# tundi tagasi}}</translation>
 <translation id="5810288467834065221">Autoriõigus <ph name="YEAR" /> Google LLC. Kõik õigused on kaitstud.</translation>
 <translation id="5814749351757353073">Olge oma lemmiksaitidega kursis</translation>

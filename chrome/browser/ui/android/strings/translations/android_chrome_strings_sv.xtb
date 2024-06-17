@@ -916,6 +916,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5596627076506792578">Fler alternativ</translation>
 <translation id="5599455543593328020">Inkognitoläge</translation>
 <translation id="5601180634394228718">Du hittar fler inställningar som använder data för att förbättra Chrome-upplevelsen under <ph name="BEGIN_LINK" />Googles tjänster<ph name="END_LINK" />.</translation>
+<translation id="5614625640221885312">Logga in om du vill ha dina bokmärken, lösenord med mera på alla dina enheter</translation>
 <translation id="5620163320393916465">Inga sparade lösenord</translation>
 <translation id="5620928963363755975">Du hittar filerna och sidorna i Nedladdningar via knappen Fler alternativ</translation>
 <translation id="562289928968387744">Hantera reaktioner</translation>
@@ -957,6 +958,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5793665092639000975"><ph name="SPACE_USED" /> av <ph name="SPACE_AVAILABLE" /> används</translation>
 <translation id="5795872532621730126">Sök och utforska</translation>
 <translation id="5797949256525811424">Blockerat ämne</translation>
+<translation id="580893287573699959">Hantera ämnen och webbplatser som du är intresserad av</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{för # timme sedan}other{för # timmar sedan}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Med ensamrätt.</translation>
 <translation id="5814749351757353073">Håll dig uppdaterad om dina favoritwebbplatser</translation>

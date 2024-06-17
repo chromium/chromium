@@ -1387,7 +1387,6 @@ Cette règle est habituellement désactivée pour protéger les utilisateurs con
 <translation id="2043770014371753404">Imprimantes d'entreprise désactivées</translation>
 <translation id="2054093043033461396">Écran de connexion de l'économiseur d'écran activé.</translation>
 <translation id="2057317273526988987">Autoriser l'accès à une liste d'URL</translation>
-<translation id="2058055310819710697">Activer le mode développeur pour les applis isolées</translation>
 <translation id="205807990145127714">Données de télémétrie pour signaler un événement d'intensité du signal.</translation>
 <translation id="2060153898336610735">Automatique, basé sur la langue actuelle</translation>
 <translation id="2061123930713023976">Autoriser les captures de paquets de débogage du réseau</translation>
@@ -2093,7 +2092,6 @@ Si cette règle est définie sur "False", la fonctionnalité d'ensembles de site
 <translation id="2570059561924004903">Désactiver les commentaires audio</translation>
 <translation id="2570181623957732921">Activer <ph name="DESK_API_NAME" /> pour une liste de domaines tiers</translation>
 <translation id="2575198840408498393">Désactiver la création de profils itinérants</translation>
-<translation id="2576324725151524912">Autoriser le mode développeur pour les applis isolées.</translation>
 <translation id="25765864042030871">Les gestionnaires d'événements <ph name="UNLOAD_EVENT_NAME" /> seront bientôt obsolètes. Leur déclenchement dépend de la règle <ph name="PERMISSIONS_POLICY_NAME" /> <ph name="UNLOAD_EVENT_NAME" />. Actuellement, ils sont autorisés par la règle par défaut. À l'avenir, ils seront progressivement interdits par défaut et les sites devront explicitement les activer à l'aide des en-têtes <ph name="PERMISSIONS_POLICY_NAME" />. Cette règle d'entreprise peut être utilisée pour refuser cet abandon progressif en forçant la valeur par défaut à rester activée.
  
 Les pages peuvent dépendre de gestionnaires d'événements <ph name="UNLOAD_EVENT_NAME" /> pour enregistrer les données sur le serveur ou signaler à celui-ci la fin d'une session utilisateur. Ce n'est pas recommandé, car cela n'est pas fiable et affecte les performances en bloquant l'utilisation de <ph name="PRODUCT_NAME" />. Il existe des alternatives recommandées, mais l'événement <ph name="UNLOAD_EVENT_NAME" /> est utilisé depuis longtemps. Certaines applis peuvent toujours s'appuyer dessus.
@@ -6213,7 +6211,6 @@ Si ces deux règles ne sont pas configurées, toutes les authentifications des s
       Lorsque cette fonctionnalité est activée, <ph name="PRODUCT_NAME" /> peut ou non utiliser ECH en fonction de la compatibilité du serveur, de la disponibilité de l'enregistrement DNS HTTPS ou de l'état du déploiement.
 
       ECH est un protocole qui évolue. L'implémentation de <ph name="PRODUCT_NAME" /> est donc susceptible d'être modifiée. Par conséquent, cette règle est une mesure temporaire pour contrôler l'implémentation expérimentale initiale. Elle sera remplacée par les commandes finales à la fin du protocole.</translation>
-<translation id="5939656968921014919">Désactiver le mode développeur pour les applis isolées</translation>
 <translation id="5939873071468124100">Limite les comptes pouvant utiliser l'intégration <ph name="MICROSOFT_ONE_DRIVE_NAME" />.</translation>
 <translation id="5945312246863177268">Empêche les utilisateurs de cliquer sur une notification Phone Hub pour lancer l'application Eche.</translation>
 <translation id="5946082169633555022">Version bêta</translation>
@@ -9700,9 +9697,6 @@ Si cette règle est définie sur "False", ses données et son heure de récupér
 Cette règle n'est appliquée que si l'ordinateur est enregistré avec la règle <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> pour <ph name="PRODUCT_NAME" />.
 Elle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="8619748440665904084">Désactiver l'importation des données de saisie automatique à la première exécution</translation>
-<translation id="8623672932476443039">Si cette règle est activée, elle permet aux utilisateurs d'accéder au mode développeur pour les applis isolées.
-      Si elle est désactivée, les utilisateurs ne pourront pas bénéficier de ce mode.
-      Si cette règle n'est pas configurée, l'option par défaut n'est pas autorisée pour les utilisateurs gérés par une entreprise sur Chrome OS, mais est autorisée pour tous les autres utilisateurs et OS.</translation>
 <translation id="862621549134406761">Activer la vérification de l'utilisation des clés RSA</translation>
 <translation id="8626826495474944836">Exiger l'isolation de chaque site</translation>
 <translation id="8631314130868563649">Désactiver l'alimentation alternée en heures pleines</translation>

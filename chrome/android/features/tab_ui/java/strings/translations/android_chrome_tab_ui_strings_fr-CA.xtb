@@ -121,6 +121,7 @@
 <translation id="7326879924029668159">Consultez la politique de retour et plus</translation>
 <translation id="7352298686197644113">Voir quel article dans vos onglets ouverts est offert à meilleur prix</translation>
 <translation id="7452985128687107478">Les groupes d'onglets sont automatiquement enregistrés et mis à jour sur tous vos appareils</translation>
+<translation id="747459581954555080">Tout restaurer</translation>
 <translation id="753732157349120914">Gestionnaire d'onglets</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> avis de Google}one{<ph name="REVIEWS_COUNT_MANY" /> avis de Google}other{<ph name="REVIEWS_COUNT_MANY" /> avis de Google}}</translation>
 <translation id="7559245342362162951">Afficher les onglets du groupe dans une grille plein écran</translation>
@@ -144,6 +145,7 @@
 <translation id="8338427544764842461">Vos groupes d'onglets sont enregistrés ici et sont mis à jour sur tous les appareils sur lesquels vous êtes connecté à votre compte</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fermer <ph name="TABS_COUNT_ONE" /> onglet sélectionné}one{Fermer <ph name="TABS_COUNT_MANY" /> onglet sélectionné}other{Fermer <ph name="TABS_COUNT_MANY" /> onglets sélectionnés}}</translation>
 <translation id="8398929769197326728">Nouveau dossier - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="8428213095426709021">Paramètres</translation>
 <translation id="8714939927607906138">Prix inférieur</translation>
 <translation id="8730621377337864115">Terminé</translation>
 <translation id="8730999928494395583">Votre activité dans ces onglets de navigation privée sera retirée de cet appareil</translation>

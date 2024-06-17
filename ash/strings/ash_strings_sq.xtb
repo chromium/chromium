@@ -80,6 +80,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1247519845643687288">Aplikacionet e fundit</translation>
 <translation id="1252999807265626933">Po karikohet nga <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Si është moti?</translation>
+<translation id="1256734167083229794">Ke shtypur shkurtoren e tastierës për zmadhuesin e ekranit të plotë. Përdor <ph name="ZOOM_IN_ACCELERATOR" /> për të zmadhuar dhe <ph name="ZOOM_OUT_ACCELERATOR" /> për të zvogëluar. Përdor ctrl+alt+shigjetat për të lëvizur përreth në pamjen e zmadhuar.</translation>
 <translation id="1269405891096105529">Pajisja periferike nuk mbështetet në modalitetin "vizitor"</translation>
 <translation id="1270290102613614947">Tastiera në ekran u çaktivizua</translation>
 <translation id="1272079795634619415">Ndalo</translation>
@@ -99,7 +100,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Shtyp <ph name="LAUNCHER_KEY_NAME" /> + g në çdo kohë</translation>
 <translation id="1306549533752902673">APLIKACIONET E REKOMANDUARA</translation>
-<translation id="1311294419381837540">Po transmeton një skedë. Mund ta vendosësh në pauzë ose ta ndalosh transmetimin në çdo kohë.</translation>
 <translation id="1312604459020188865">Fuqia e sinjalit <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Shfaq gjithmonë raftin</translation>
 <translation id="132346741904777634">Pamja paraprake e kamerës ka kaluar në këndin e sipërm majtas. Në konflikt me sipërfaqen e sistemit.</translation>
@@ -108,7 +108,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1340378040547539434">Zvogëlo faqen</translation>
 <translation id="1341651618736211726">Tejkalo</translation>
 <translation id="1341926407152459446">Përdor "<ph name="DEVICE_NAME" />" për hyrjen dhe daljen e audios</translation>
-<translation id="1344141078024003905">Po transmeton ekranin tënd. Mund ta vendosësh në pauzë ose ta ndalosh transmetimin e ekranit tënd në çdo kohë.</translation>
 <translation id="1346748346194534595">Djathtas</translation>
 <translation id="1351937230027495976">Palos menynë</translation>
 <translation id="1360220746312242196">Kur kërkon në një faqe, shko te përputhja e mëparshme për kërkimin</translation>
@@ -120,6 +119,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1383876407941801731">Kërko</translation>
 <translation id="1391102559483454063">Aktiv</translation>
 <translation id="1394698770495054737">Turbullim i plotë</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 ditë më parë}other{# ditë më parë}}</translation>
 <translation id="1404963891829069586">Tingujt e "Fokusit"</translation>
 <translation id="1407069428457324124">Tema e errët</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Përdor tastet e shigjetave për të naviguar ndërmjet datave.</translation>
@@ -210,6 +210,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="174102739345480129">Treguesi është joaktiv.</translation>
 <translation id="1743570585616704562">Nuk njihet</translation>
 <translation id="1743927604032653654">Palos njoftimin "<ph name="NOTIFICATION_TITLE" />"</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Brenda 1 ore}=1{1 orë më parë}other{# orë më parë}}</translation>
 <translation id="1746730358044914197">Metodat e hyrjes konfigurohen nga administratori yt.</translation>
 <translation id="1747336645387973286">afati më <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Tastiera në ekran u aktivizua</translation>
@@ -264,6 +265,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">Tavolina e punës dhe dritaret janë hequr. Shtyp Control + Z për të zhbërë veprimin.</translation>
 <translation id="1972950159383891558">Përshëndetje, <ph name="USERNAME" /></translation>
+<translation id="1977686871076551563">"Modaliteti i anasjelljes së ngjyrës" u aktivizua. Shtyp përsëri <ph name="ACCELERATOR" /> për ta çaktivizuar.</translation>
 <translation id="1978498689038657292">Hyrjet e tekstit</translation>
 <translation id="1980808257969311265">Bashkohu në <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Shfaq javën e mëparshme</translation>
@@ -346,13 +348,13 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2360398059912971776">bateria</translation>
 <translation id="2361210043495191221">Aktivizo/çaktivizo Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Dërguar nga <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Nuk mund të identifikohesh në Chromebook-un tënd</translation>
 <translation id="2367972762794486313">Shfaq aplikacionet</translation>
 <translation id="2368828502825385061">Gjej vendndodhjen</translation>
 <translation id="2369165858548251131">"Përshëndetje" në kinezisht</translation>
 <translation id="2370971919968699910">Kjo mund të sjellë kosto për të dhënat.
 <ph name="DEVICECOUNT" /> pajisje të lidhura.</translation>
-<translation id="2382875860893882175">Transmetimi është vendosur aktualisht në pauzë. Mund ta vazhdosh ose ta ndalosh transmetimin në çdo kohë.</translation>
 <translation id="2386292613071805067">Zgjidh gjithçka në faqe</translation>
 <translation id="2392659840443812875">Nuk ka zona të disponueshme të qasjes për internet. Sigurohu që pajisja të jetë në afërsi dhe Bluetooth-i të jetë i aktivizuar.</translation>
 <translation id="2397416548179033562">Shfaq menynë e Chrome</translation>
@@ -507,6 +509,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Të aktivizohet qasja te mikrofoni?</translation>
 <translation id="296762781903199866">S'mund të shkarkoheshin skedarët ligjërimit në <ph name="LANGUAGE" /></translation>
+<translation id="2968761508099987738">Vendndodhja jote aktuale nuk mbështetet në këtë moment.</translation>
 <translation id="2970920913501714344">Instalo aplikacione, shtesa dhe tema</translation>
 <translation id="2977598380246111477">Numri tjetër</translation>
 <translation id="2985148236010982088">Shiko të gjitha aplikacionet</translation>
@@ -572,6 +575,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3226991577105957773">+<ph name="COUNT" /> më shumë</translation>
 <translation id="3227137524299004712">Mikrofoni</translation>
 <translation id="3233611303007751344">"Kursyesi i baterisë" u çaktivizua</translation>
+<translation id="3238409143297336341">Konfiguro kontrollet prindërore për aplikacionet</translation>
 <translation id="324366796737464147">Anulimi i zhurmës</translation>
 <translation id="3249513730522716925">Dritarja <ph name="WINDOW_TITLE" /> u zhvendos nga tavolina e punës <ph name="ACTIVE_DESK" /> në tavolinën e punës <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Lloji i detyrave të klasës: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -615,7 +619,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="3389599499324569679">Të aktivizohet "Diktimi"?</translation>
 <translation id="3394432020929931914">, u zgjerua</translation>
 <translation id="3405101454990027959">Aktivizo qasjen te mikrofoni</translation>
-<translation id="3408735331120433841">Po transmeton aktualisht ekranin tënd.</translation>
 <translation id="3409584356742878290">Shfaq ose fshih inspektorin e "Veglave të zhvilluesit"</translation>
 <translation id="3410336247007142655">Shfaq cilësimet e "Temës së errët"</translation>
 <translation id="3413817803639110246">Nuk ka ende asgjë për të parë</translation>
@@ -855,7 +858,6 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4217571870635786043">Diktimi</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, aplikacioni i instaluar, në pauzë</translation>
 <translation id="4228078597006700451">Kontrollet nuk janë konfiguruar</translation>
-<translation id="4231053948789591973">Transmetimi është vendosur aktualisht në pauzë. Mund ta vazhdosh ose ta ndalosh transmetimin e ekranit tënd në çdo kohë.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modaliteti "Përmbledhja"</translation>
 <translation id="4242533952199664413">Hap cilësimet</translation>
@@ -981,6 +983,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="468293128311738995">Aplikacionet nga telefoni yt</translation>
 <translation id="4690510401873698237">Rafti në fund</translation>
 <translation id="4696813013609194136">Shkyç pajisjen me kodin e prindit</translation>
+<translation id="4697357603686181098">Nuk mund të të ndihmoj me këtë. Provo një kërkesë tjetër.</translation>
 <translation id="4702647871202761252">Ekrani i privatësisë është joaktiv</translation>
 <translation id="4706121060329443414">Shkarkimi do të provohet më vonë. Ligjërimi do t'i dërgohet Google për përpunim tani.</translation>
 <translation id="470644585772471629">Anasjellja e ngjyrës</translation>
@@ -1183,6 +1186,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="5377367976106153749">Të aktivizohet qasja te kamera?</translation>
 <translation id="5379115545237091094">Shumë përpjekje</translation>
 <translation id="5391307769715781764">Të zëvendësohet tavolina e ruajtur e punës?</translation>
+<translation id="5392327145184648521">Po llogaritet përqindja e baterisë...</translation>
 <translation id="5393156353051693207">Prek dhe mbaj të shtypur kudo për të rirenditur aplikacionet</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> mbi <ph name="IN_PLACE_APP" />, lëshoje për të krijuar dosje.</translation>
 <translation id="5397578532367286026">Përdorimi dhe historiku i këtij përdoruesi mund të rishikohen nga menaxheri (<ph name="MANAGER_EMAIL" />) në chrome.com.</translation>
@@ -1237,6 +1241,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="5577281275355252094">Kontrollo që Bluetooth-i të jetë i aktivizuar në telefon për të përdorur Phone Hub.</translation>
 <translation id="5578188167649348993">memoria</translation>
 <translation id="5580000943347215299">Biblioteka</translation>
+<translation id="5586388332127302891">"Zmadhuesi i stacionuar" u aktivizua. Shtyp përsëri <ph name="ACCELERATOR" /> për ta çaktivizuar.</translation>
 <translation id="5587506661873751671">Po shkarkohet: <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">Zvarrite për të zgjedhur një zonë për të regjistruar</translation>
 <translation id="5590609058453685222">Njoftimi për mikrofonin joaktiv është aktiv. Do të marrësh njoftime nëse flet kur është në heshtje.</translation>
@@ -1400,6 +1405,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="6141205840878048728">Në çfarë dëshiron të fokusohesh?</translation>
 <translation id="6141988275892716286">Konfirmo shkarkimin</translation>
 <translation id="6143578372829139382">Ndaj në YouTube</translation>
+<translation id="6147182561428020853">Tani mund t'i bllokosh aplikacionet e instaluara në këtë <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">Pajisja periferike nuk mbështetet</translation>
 <translation id="6156960295318603523">Cilësimet e gjuhës</translation>
 <translation id="615957422585914272">Shfaq tastierën në ekran</translation>
@@ -1447,6 +1453,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="6319503618073410818">Shiko detajet në shfletues</translation>
 <translation id="6324916366299863871">Modifiko shkurtoren</translation>
 <translation id="6330012934079202188">Po shfaqen dritaret nga të gjitha tavolinat e punës. Shtyp tastin "Shigjeta lart" për të shfaqur dritaret nga tavolina aktuale e punës</translation>
+<translation id="6337159624125741244">"Zmadhuesi i ekranit të plotë" është aktiv</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> është sesion i menaxhuar që menaxhohet nga <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> u lidh</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, më pas <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> ose <ph name="KEY_THREE" /></translation>
@@ -1513,6 +1520,7 @@ Instalim i ri</translation>
 <translation id="6574587113394758819">Njoftimi <ph name="APP_TITLE" /> është fshehur sepse është aktivizuar mbrojtja e shikimit</translation>
 <translation id="6574622320167699133">Shkyçur nga telefoni yt. Trokit ose kliko për të hyrë.</translation>
 <translation id="6578407462441924264">Pa emër</translation>
+<translation id="6582034443359256692">Niveli i karikimit të baterisë po llogaritet.</translation>
 <translation id="6585808820553845416">Sesioni përfundon për <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Pamja paraprake e kamerës ka kaluar në këndin e poshtëm majtas. Në konflikt me sipërfaqen e sistemit.</translation>
@@ -1574,6 +1582,7 @@ Instalim i ri</translation>
 <translation id="6790428901817661496">Luaj</translation>
 <translation id="679368458793552943">Zmadho kur zmadhuesi është aktiv</translation>
 <translation id="6794287755901682422">Ky artikull ka: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
+<translation id="6797745268063125932">Mbaje aktiv</translation>
 <translation id="6801878137098616817">Modifikuar së fundi</translation>
 <translation id="6802687695197837794">Kjo lejon qasjen për <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> dhe të gjitha aplikacionet dhe uebsajtet që kanë lejen për kamerën dhe mikrofonin</translation>
 <translation id="6803622936009808957">Nuk mundi të pasqyrojë ekranet sepse nuk u gjetën rezolucione të mbështetura. Në vend të kësaj kaloi në desktopin e zgjeruar.</translation>
@@ -1885,6 +1894,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7947798320695032612"><ph name="APP_NAME" /> dëshiron të përdorë <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Errëso tastierën</translation>
 <translation id="7953994493035617347">Të konfirmohet rezolucioni i ri?</translation>
+<translation id="795958884516058160">"Zmadhuesi i ekranit të plotë" u aktivizua. Shtyp përsëri <ph name="ACCELERATOR" /> për ta çaktivizuar.</translation>
 <translation id="7963689218131240420">Modaliteti "Mos shqetëso" është joaktiv.</translation>
 <translation id="7963992254934562106">Nga <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Zgjidh dosje...</translation>
@@ -1896,6 +1906,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="7982878511129296052">Po çaktivizohet...</translation>
 <translation id="7984197416080286869">Shumë përpjekje të gjurmës së gishtit</translation>
 <translation id="798779949890829624">Ky cilësim menaxhohet nga administratori yt</translation>
+<translation id="7989206653429884947">Hapur shpesh</translation>
 <translation id="799296642788192631">Mund t'i gozhdosh skedarët e rëndësishëm. Për ta gozhduar një artikull, mbaje kursorin mbi artikull ose hap Files dhe kliko me butonin djathtas tek artikulli.</translation>
 <translation id="7994370417837006925">Identifikim i shumëfishtë</translation>
 <translation id="7995804128062002838">Regjistrimi i ekranit dështoi</translation>
@@ -2080,6 +2091,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Koha mbaroi. Punë e shkëlqyer! 🎉</translation>
+<translation id="8753368202781196133">Kjo gjuhë nuk mbështetet në këtë moment.</translation>
 <translation id="8755498163081687682">Verifiko identitetin tënd: <ph name="ORIGIN_NAME" /> dëshiron të konfirmojë që je ti</translation>
 <translation id="875593634123171288">Shfaq cilësimet e VPN</translation>
 <translation id="8756799553341497810">Mund të fillosh ta personalizosh strukturën e aplikacioneve pasi të dalësh nga kjo pamje.</translation>
@@ -2136,6 +2148,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, kutia e zgjedhjes nuk është zgjedhur.</translation>
 <translation id="8949925099261528566">Lidhur, por pa internet</translation>
 <translation id="8951539504029375108">Vetëm pajisjet e miratuara Thunderbolt janë të përputhshme me pajisjen tënde Chromebook</translation>
+<translation id="8959380109429710384">Ke shtypur shkurtoren e tastierës për zmadhuesin e ekranit të plotë. Përdor ctrl + alt + shigjetat për të lëvizur përreth në pamje.</translation>
 <translation id="8964525410783593407">1 orë</translation>
 <translation id="8973885907461690937">Vendose fokusin mbi ikonën e menysë</translation>
 <translation id="8980862970816311842">Zhvendos një ikonë aplikacioni te/nga një dosje në rrjetën e aplikacioneve</translation>

@@ -1256,7 +1256,7 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7140829094791862589">Ordina manualmente</translation>
 <translation id="7146622961999026732">Questi siti e app sembrano importanti per te:</translation>
 <translation id="7148400116894863598"><ph name="BEGIN_LINK" />Richiedi maggiori informazioni<ph name="END_LINK" /> a <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
-<translation id="7149893636342594995">Ultimo giorno</translation>
+<translation id="7149893636342594995">Ultime 24 ore</translation>
 <translation id="71503698506017927">La crittografia delle passphrase non include metodi di pagamento e indirizzi di Google Pay.
 
 Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Chrome nel tuo account<ph name="END_LINK" />.</translation>

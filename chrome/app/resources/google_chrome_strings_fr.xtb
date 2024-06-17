@@ -54,6 +54,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1698376642261615901">Google Chrome est un navigateur Web qui exécute des applications et des pages Web en un temps record. Il est rapide, stable et simple à utiliser. Naviguez sur Internet en toute sécurité grâce à la protection intégrée de Google Chrome contre le phishing et les logiciels malveillants.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome va être relancé dans une heure}one{Chrome va être relancé dans # heure}other{Chrome va être relancé dans # heures}}</translation>
+<translation id="1722488837206509557">Cela vous permettra de sélectionner des appareils disponibles et d'y afficher du contenu.</translation>
 <translation id="1734234790201236882">Chrome va enregistrer ce mot de passe dans votre compte Google. Vous n'avez pas besoin de le retenir.</translation>
 <translation id="1786003790898721085">Vérifiez si vous êtes bien connecté à Chrome sur votre <ph name="TARGET_DEVICE_NAME" />, puis procédez de nouveau à l'envoi.</translation>
 <translation id="1786044937610313874">Les raccourcis s'ouvrent dans Chrome</translation>

@@ -136,7 +136,6 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1085064499066015002">Altijd op alle sites</translation>
 <translation id="1085697365578766383">Fout bij starten van virtuele machine. Probeer het opnieuw.</translation>
 <translation id="1086486568852410168">Zoeken met Google Lens</translation>
-<translation id="1088490543924960890">Sla toegangssleutels op met Google Wachtwoordmanager</translation>
 <translation id="1090126737595388931">Geen actieve achtergrondapps</translation>
 <translation id="1090541560108055381">Voordat je de apparaten koppelt, check je of deze code gelijk is op beide apparaten</translation>
 <translation id="1091767800771861448">Druk op ESCAPE om over te slaan (alleen voor niet-officiële builds).</translation>
@@ -3669,7 +3668,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3685598397738512288">USB-voorkeuren voor Linux</translation>
 <translation id="3687598459967813435">Meldingen van <ph name="WEBSITE" /> altijd toestaan</translation>
 <translation id="368789413795732264">Er is een fout opgetreden bij het genereren van het bestand: <ph name="ERROR_TEXT" />.</translation>
-<translation id="3688368689701175138">Deze toegangssleutel wordt opgeslagen in Google Wachtwoordmanager voor <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3688507211863392146">Schrijven naar bestanden en mappen die je opent in de app</translation>
 <translation id="3688526734140524629">Kanaal wijzigen</translation>
 <translation id="3688578402379768763">Bijgewerkt</translation>
@@ -6099,7 +6097,6 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5497739595514726398">Chrome kan deze installatiebundel niet verifiëren</translation>
 <translation id="5498967291577176373">Schrijf sneller met inline suggesties voor je naam, adres of telefoonnummer</translation>
 <translation id="5499211612787418966">De focus staat momenteel niet op dit dialoogvenster. Druk op Alt-Shift-A om de focus op dit dialoogvenster te zetten.</translation>
-<translation id="5499313591153584299">Dit bestand is mogelijk schadelijk voor je computer.</translation>
 <translation id="5499453227627332024">Er is een upgrade beschikbaar voor je Linux-container. Je kunt ook later upgraden via de app Instellingen.</translation>
 <translation id="5499476581866658341">Je kunt nu de recente foto's en media van je telefoon bekijken</translation>
 <translation id="549957179819296104">Nieuw icoon</translation>
@@ -7023,7 +7020,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6206199626856438589">Je wordt uitgelogd van de getoonde sites, waaronder in geopende tabbladen</translation>
 <translation id="6206311232642889873">A&amp;fbeelding kopiëren</translation>
 <translation id="6207200176136643843">Standaardzoomniveau resetten</translation>
-<translation id="6207298079289376837">Nagaan of tabbladen kunnen worden geordend</translation>
 <translation id="6207937957461833379">Land/regio</translation>
 <translation id="6208521041562685716">Mobiele data activeren</translation>
 <translation id="6208725777148613371">Kan niet opslaan in <ph name="WEB_DRIVE" /> - <ph name="INTERRUPT_REASON" /></translation>
@@ -7374,7 +7370,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6476482583633999078">Spraaksnelheid</translation>
 <translation id="6476671549211161535">Druk op een andere knop dan de linker- of rechtermuisknop op je <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">Synchronisatie van meldingen wordt niet ondersteund voor telefoons in een werkprofiel. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
-<translation id="6478248366783946499">Gevaarlijk bestand behouden?</translation>
 <translation id="6479881432656947268">Chrome Web Store bezoeken</translation>
 <translation id="6480327114083866287">Beheerd door <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Deel onder meer bestanden met apparaten in de buurt. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
@@ -7553,7 +7548,6 @@ Je hebt nog # gehackte wachtwoorden. Google Wachtwoordmanager raadt je aan deze 
 <translation id="6613267708691765962">Scannen op malware...</translation>
 <translation id="6613668613087513143">Er is niet voldoende ruimte op dit apparaat beschikbaar om deze update af te ronden. Maak <ph name="NECESSARY_SPACE" /> vrij op je apparaat en probeer het opnieuw vanuit je Chrome-browser.</translation>
 <translation id="6615455863669487791">Tonen</translation>
-<translation id="6618097958368085618">Toch behouden</translation>
 <translation id="6618744767048954150">Wordt uitgevoerd</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Site kan je locatie bijhouden</translation>
@@ -8138,7 +8132,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7044211973375150246">Een app is ingesteld om dezelfde links te openen als <ph name="APP_NAME" />. Hiermee zet je uit dat <ph name="APP_NAME_2" /> ondersteunde links opent.</translation>
 <translation id="7044606776288350625">Gegevens synchroniseren</translation>
 <translation id="7047059339731138197">Een achtergrond kiezen</translation>
-<translation id="7049293980323620022">Bestand behouden?</translation>
 <translation id="7049524156282610342">Browsegegevens <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Ongeldige hotspotconfiguratie</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{Wachtwoord opgeslagen in je Google-account, <ph name="USER_EMAIL" />}other{Wachtwoorden opgeslagen in je Google-account, <ph name="USER_EMAIL" />}}</translation>
@@ -9325,7 +9318,6 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7939062555109487992">Geavanceerde opties</translation>
 <translation id="793923212791838">Je apparaat kan niet worden gebruikt met deze site</translation>
 <translation id="7939328347457537652">Apparaatcertificaten beheren</translation>
-<translation id="7939412583708276221">Toch bewaren</translation>
 <translation id="7940087892955752820">Kan het delen niet opheffen omdat een app deze map gebruikt. De map wordt niet meer gedeeld als <ph name="SPECIFIC_NAME" /> weer wordt uitgezet.</translation>
 <translation id="7940265372707990269">Sorteren op <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Gereedheid voor tethering:</translation>
@@ -10087,7 +10079,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8477241577829954800">Vervangen</translation>
 <translation id="8477384620836102176">&amp;Algemeen</translation>
 <translation id="8479176401914456949">Ongeldige code. Probeer het opnieuw.</translation>
-<translation id="8480082892550707549">Ook als je eerder bestanden van deze site hebt gedownload, kan de site tegelijk onveilig (gehackt) zijn. Probeer dit bestand later te downloaden.</translation>
 <translation id="8480869669560681089">Onbekend apparaat van <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">USB-rechten bevestigen</translation>
 <translation id="8482077254400484047">Beheer hier het uiterlijk van inactieve tabbladen</translation>
@@ -10917,7 +10908,6 @@ Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je m
 <translation id="9085256200913095638">Geselecteerd tabblad dupliceren</translation>
 <translation id="9085446486797400519">Cameratoegang</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> is niet geselecteerd. Druk op de knop Zoeken en de spatiebalk om te selecteren.</translation>
-<translation id="9087183943157874068">Je kunt altijd checken op suggesties voor tabbladgroepen</translation>
 <translation id="9087949559523851360">Gebruiker met beperkt rechten toevoegen</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> is geblokkeerd op basis van bedrijfsbeleid</translation>
 <translation id="9088446193279799727">Kan Linux niet configureren. Maak verbinding met internet en probeer het opnieuw.</translation>

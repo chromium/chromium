@@ -566,6 +566,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2036983605131262583">Alternatif Rulo</translation>
 <translation id="2040463897538655645">Çıkarılabilir depolama alanı</translation>
 <translation id="2040894699575719559">Konum engellendi</translation>
+<translation id="2041788246978549610">Mevcut mikrofonları (<ph name="MICS_COUNT" />) kullanma</translation>
 <translation id="2042213636306070719">Tepsi 7</translation>
 <translation id="204357726431741734">Google Hesabınızda kayıtlı şifreleri kullanmak için oturum açın</translation>
 <translation id="2045871135676061132">Zarf Personal</translation>
@@ -742,7 +743,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2356926036049612643">V8 optimize edici</translation>
 <translation id="2357481397660644965">Cihazınız <ph name="DEVICE_MANAGER" /> tarafından, hesabınız ise <ph name="ACCOUNT_MANAGER" /> tarafından yönetiliyor.</translation>
 <translation id="2359629602545592467">Birden fazla</translation>
-<translation id="2359808026110333948">Devam et</translation>
+<translation id="2359808026110333948">Devam</translation>
 <translation id="2361263712565360498">275 x 395 mm</translation>
 <translation id="236340516568226369">Yeniden boyutlandırma açma/kapatma menüsü</translation>
 <translation id="2365355378251437925"><ph name="FIELD" /> girin</translation>
@@ -885,6 +886,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="2655752832536625875">Banyo</translation>
 <translation id="2657637947725373811">{0,plural, =1{Gizli dosya aktarılsın mı?}other{Gizli dosyalar aktarılsın mı?}}</translation>
 <translation id="2658843814961855121">İş ve Çalışma Kanunu</translation>
+<translation id="2658944305627908367">Bakiyenizi aşan işlemler işleme alınmaz.</translation>
 <translation id="2660779039299703961">Etkinlik</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Yok}=1{1 şifre (<ph name="DOMAIN_LIST" /> için)}=2{2 şifre (<ph name="DOMAIN_LIST" /> için)}other{# şifre (<ph name="DOMAIN_LIST" /> için)}}</translation>
 <translation id="2666092431469916601">Üst</translation>
@@ -1081,6 +1083,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3090667236485488075">Cam</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Devre dışı bırakma listesinde "*" öğesine eşdeğer bir kalıp olduğundan politika yoksayıldı. "*" öğesi, politikayı devre dışı bırakmayla eşdeğerdir.</translation>
+<translation id="3099619114405539473">Mevcut kameraları (<ph name="CAMERAS_COUNT" />) kullanma</translation>
 <translation id="3102312643185441063">Tasarruf hesabı</translation>
 <translation id="3103188521861412364">Hisse ve Tahviller</translation>
 <translation id="3105172416063519923">Öğe Kimliği:</translation>
@@ -1357,6 +1360,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3583757800736429874">Taşımayı &amp;Yeniden Yap</translation>
 <translation id="3584299510153766161">Altta ikili delik</translation>
 <translation id="3584755835709800788">Bilim Kurgu ve Fantastik Filmler</translation>
+<translation id="3585455899094692781">Mevcut kameraları (<ph name="CAMERAS_COUNT" />) kullanma ve hareket ettirme</translation>
 <translation id="3586833803451155175">Islak Film</translation>
 <translation id="3586931643579894722">Ayrıntıları gizle</translation>
 <translation id="3587738293690942763">Orta</translation>
@@ -2421,6 +2425,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="5645132789250840550">Plastik (Yarı Parlak)</translation>
 <translation id="5645719697465708351">Parti ve Tatil Malzemeleri</translation>
 <translation id="5645854190134202180">İkinci vardiya</translation>
+<translation id="5648166631817621825">Son 7 gün</translation>
 <translation id="5649053991847567735">Otomatik indirmeler</translation>
 <translation id="5651323159439184939">Dişli Besleyici</translation>
 <translation id="5654927323611874862">Yüklenen Kilitlenme Raporu Kimliği:</translation>

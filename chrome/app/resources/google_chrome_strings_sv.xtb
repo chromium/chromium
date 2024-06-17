@@ -55,6 +55,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1698376642261615901">Google Chrome är en webbläsare som kör webbsidor och program med ljusets hastighet. Den är snabb, stabil och lätt att använda. Surfa säkrare med Google Chrome, som har inbyggt skydd mot skadlig kod och nätfiske.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Om en timme startas Chrome om}other{Om # timmar startas Chrome om}}</translation>
+<translation id="1722488837206509557">Detta gör att du kan välja bland tillgängliga enheter och visa innehåll på dem.</translation>
 <translation id="1734234790201236882">Det här lösenordet sparas i ditt Google-konto. Du behöver inte komma ihåg det.</translation>
 <translation id="1786003790898721085">Se till att du är inloggad i Chrome på <ph name="TARGET_DEVICE_NAME" /> och försök skicka igen.</translation>
 <translation id="1786044937610313874">Genvägar öppnas i Chrome</translation>
@@ -254,6 +255,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4561051373932531560">I Google Chrome kan du klicka på ett telefonnummer på nätet och ringa det med Skype!</translation>
 <translation id="4567424176335768812">Du är inloggad som <ph name="USER_EMAIL_ADDRESS" />. Nu kan du komma åt dina bokmärken, historik och andra inställningar på alla enheter som du är inloggad på.</translation>
 <translation id="4571503333518166079">Öppna aviseringsinställningarna för Chrome</translation>
+<translation id="4575717501879784448">Chrome kan inaktivera dessa flikar för att frigöra resurser så din surfupplevelse blir bättre.</translation>
 <translation id="459622048091363950">När du har gett Chrome åtkomst kan webbplatser begära att få åtkomst.</translation>
 <translation id="4600710005438004015">Det gick inte att uppdatera Chrome till den senaste versionen. Därför går du miste om nya funktioner och säkerhetskorrigeringar.</translation>
 <translation id="4624065194742029982">Inkognitoläget i Chrome</translation>
@@ -285,6 +287,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="4970761609246024540">Välkommen till Chrome-profiler</translation>
 <translation id="4970880042055371251">ChromeOS-version</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="4997044641749333913">Chrome kan inaktivera dessa flikar så att allt förblir snabbt och din surfupplevelse blir bättre.</translation>
 <translation id="5003967926796347400">Klicka på Google Lösenordshantering</translation>
 <translation id="5120334927898581447">Logga in i Chrome när du loggar in i andra tjänster från Google</translation>
 <translation id="5126049312684316860">Chrome läser in ännu fler sidor i förväg som du troligen kommer att besöka, så att de läses in snabbare när du besöker dem</translation>
@@ -349,6 +352,7 @@ Google Chrome kan inte återställa dina inställningar.</translation>
 <translation id="608006075545470555">Lägg till en jobbprofil i den här webbläsaren</translation>
 <translation id="6097822892606850415">Skriv med mer självsäkerhet med hjälp av AI</translation>
 <translation id="6113794647360055231">Vi har gjort Chrome ännu bättre</translation>
+<translation id="6135456723633883042">Extra resurser används för dessa flikar. Du kan förbättra prestandan genom att låta Chrome inaktivera dem.</translation>
 <translation id="6145313976051292476">Öppna PDF-filer i Chrome</translation>
 <translation id="6157638032135951407">Organisationen raderar Chrome-data när den inte har använts på <ph name="TIMEOUT_DURATION" />. Detta kan innefatta historik, autofyll och nedladdningar.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

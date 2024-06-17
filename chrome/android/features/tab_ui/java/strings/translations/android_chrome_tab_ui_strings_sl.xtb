@@ -121,6 +121,7 @@
 <translation id="7326879924029668159">Oglejte si pravilnik o vračilih in drugo.</translation>
 <translation id="7352298686197644113">Oglejte si, kateri izdelek na odprtih zavihkih ima nižjo ceno.</translation>
 <translation id="7452985128687107478">Skupine zavihkov se samodejno shranjujejo in posodabljajo v vseh napravah</translation>
+<translation id="747459581954555080">Obnovi vse</translation>
 <translation id="753732157349120914">Preklop med zavihki</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> mnenje iz Googla}one{<ph name="REVIEWS_COUNT_MANY" /> mnenje iz Googla}two{<ph name="REVIEWS_COUNT_MANY" /> mnenji iz Googla}few{<ph name="REVIEWS_COUNT_MANY" /> mnenja iz Googla}other{<ph name="REVIEWS_COUNT_MANY" /> mnenj iz Googla}}</translation>
 <translation id="7559245342362162951">Zavihke skupine pokaži v celozaslonski mreži</translation>
@@ -144,6 +145,7 @@
 <translation id="8338427544764842461">Skupine zavihkov so shranjene tukaj in se posodabljajo v vseh napravah, v katerih ste prijavljeni</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Zapiranje <ph name="TABS_COUNT_ONE" /> izbranega zavihka}one{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranega zavihka}two{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranih zavihkov}few{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranih zavihkov}other{Zapiranje <ph name="TABS_COUNT_MANY" /> izbranih zavihkov}}</translation>
 <translation id="8398929769197326728">Nova mapa – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="8428213095426709021">Nastavitve</translation>
 <translation id="8714939927607906138">Nižja cena</translation>
 <translation id="8730621377337864115">Končano</translation>
 <translation id="8730999928494395583">Vaša dejavnost na teh anonimnih zavihkih bo odstranjena iz te naprave</translation>

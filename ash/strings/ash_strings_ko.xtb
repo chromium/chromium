@@ -80,6 +80,7 @@
 <translation id="1247519845643687288">최근 앱</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />에서 충전 중</translation>
 <translation id="1255033239764210633">날씨가 어때?</translation>
+<translation id="1256734167083229794">전체화면 돋보기 단축키를 눌렀습니다. 확대하려면 <ph name="ZOOM_IN_ACCELERATOR" /> 키를 사용하고 축소하려면 <ph name="ZOOM_OUT_ACCELERATOR" /> 키를 사용하세요. 확대된 보기에서 이동하려면 Ctrl + Alt + 화살표를 사용하세요.</translation>
 <translation id="1269405891096105529">게스트 모드에서는 주변기기가 지원되지 않습니다.</translation>
 <translation id="1270290102613614947">터치 키보드 사용 중지됨</translation>
 <translation id="1272079795634619415">중지</translation>
@@ -99,7 +100,6 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">언제든지 <ph name="LAUNCHER_KEY_NAME" /> + g를 누르세요.</translation>
 <translation id="1306549533752902673">추천 앱</translation>
-<translation id="1311294419381837540">탭을 전송하고 있습니다. 언제든지 전송을 일시중지하거나 중지할 수 있습니다.</translation>
 <translation id="1312604459020188865">신호 강도 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">앱 표시줄 항상 표시</translation>
 <translation id="132346741904777634">카메라 미리보기가 왼쪽 상단으로 맞춰졌습니다. 시스템 표시 경로와 충돌합니다.</translation>
@@ -108,7 +108,6 @@
 <translation id="1340378040547539434">페이지 축소</translation>
 <translation id="1341651618736211726">더보기</translation>
 <translation id="1341926407152459446">오디오 입력 및 출력에 "<ph name="DEVICE_NAME" />" 기기입니다.</translation>
-<translation id="1344141078024003905">화면을 전송하고 있습니다. 언제든지 화면 전송을 일시중지하거나 중지할 수 있습니다.</translation>
 <translation id="1346748346194534595">오른쪽</translation>
 <translation id="1351937230027495976">메뉴 접기</translation>
 <translation id="1360220746312242196">페이지를 검색할 때 이전 일치 항목으로 이동</translation>
@@ -264,6 +263,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" />(USB)</translation>
 <translation id="1971815855639997522">데스크와 창을 삭제했습니다. 작업을 실행취소하려면 Control + Z를 누르세요.</translation>
 <translation id="1972950159383891558"><ph name="USERNAME" />님, 안녕하세요.</translation>
+<translation id="1977686871076551563">색상 반전 모드가 사용 설정되었습니다. 사용 중지하려면 <ph name="ACCELERATOR" /> 키를 다시 누르세요.</translation>
 <translation id="1978498689038657292">텍스트 입력</translation>
 <translation id="1980808257969311265"><ph name="EVENT_SUMMARY" />에 가입하기</translation>
 <translation id="1982717156487272186">지난주 일정 보기</translation>
@@ -352,7 +352,6 @@
 <translation id="2369165858548251131">중국어로 '안녕'</translation>
 <translation id="2370971919968699910">데이터 요금이 발생할 수 있습니다.
 기기 <ph name="DEVICECOUNT" />대가 연결되었습니다.</translation>
-<translation id="2382875860893882175">현재 전송이 일시중지되어 있습니다. 언제든지 전송을 재개하거나 중지할 수 있습니다.</translation>
 <translation id="2386292613071805067">페이지의 모든 항목 선택</translation>
 <translation id="2392659840443812875">사용 가능한 핫스팟이 없습니다. 기기가 근처에 있고 블루투스가 켜져 있어야 합니다.</translation>
 <translation id="2397416548179033562">Chrome 메뉴 표시</translation>
@@ -616,7 +615,6 @@
 <translation id="3389599499324569679">음성기록을 사용 설정하시겠습니까?</translation>
 <translation id="3394432020929931914">펼침</translation>
 <translation id="3405101454990027959">마이크 액세스를 사용 설정합니다.</translation>
-<translation id="3408735331120433841">현재 화면을 전송하고 있습니다.</translation>
 <translation id="3409584356742878290">개발자 도구 검사기 표시 또는 숨기기</translation>
 <translation id="3410336247007142655">어두운 테마 설정 표시</translation>
 <translation id="3413817803639110246">표시할 내용 없음</translation>
@@ -856,7 +854,6 @@
 <translation id="4217571870635786043">음성기록</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, 설치된 앱, 일시중지됨</translation>
 <translation id="4228078597006700451">컨트롤이 설정되지 않음</translation>
-<translation id="4231053948789591973">현재 전송이 일시중지되어 있습니다. 언제든지 화면 전송을 재개하거나 중지할 수 있습니다.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">전체보기 모드</translation>
 <translation id="4242533952199664413">설정 열기</translation>
@@ -1184,6 +1181,7 @@
 <translation id="5377367976106153749">카메라 액세스 권한을 부여하시겠습니까?</translation>
 <translation id="5379115545237091094">시도 횟수가 너무 많음</translation>
 <translation id="5391307769715781764">저장된 데스크를 대체하시겠습니까?</translation>
+<translation id="5392327145184648521">배터리 충전 수준 계산 중(%)...</translation>
 <translation id="5393156353051693207">앱을 재정렬하려면 아무 곳이나 길게 터치합니다</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" />을(를) <ph name="IN_PLACE_APP" /> 위로 드래그해서 놓으면 폴더가 만들어집니다.</translation>
 <translation id="5397578532367286026">관리자(<ph name="MANAGER_EMAIL" />)는 chrome.com에서 해당 사용자의 사용 및 방문 기록을 검토할 수 있습니다.</translation>
@@ -1238,6 +1236,7 @@
 <translation id="5577281275355252094">휴대전화 허브를 사용하려면 휴대전화에 블루투스가 사용 설정되어 있는지 확인하세요.</translation>
 <translation id="5578188167649348993">메모리</translation>
 <translation id="5580000943347215299">라이브러리</translation>
+<translation id="5586388332127302891">고정 돋보기가 사용 설정되었습니다. 사용 중지하려면 <ph name="ACCELERATOR" /> 키를 다시 누르세요.</translation>
 <translation id="5587506661873751671">다운로드 중 <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">드래그하여 캡처할 영역을 선택하세요.</translation>
 <translation id="5590609058453685222">음소거 알림을 사용 중입니다. 음소거 상태에서 말하면 알림을 받습니다.</translation>
@@ -1449,6 +1448,7 @@
 <translation id="6319503618073410818">브라우저에서 세부정보 보기</translation>
 <translation id="6324916366299863871">바로가기 수정</translation>
 <translation id="6330012934079202188">모든 데스크의 창을 표시합니다. 현재 데스크의 창을 표시하려면 위쪽 화살표 키를 누르세요</translation>
+<translation id="6337159624125741244">전체화면 돋보기 사용 설정됨</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> 세션은 <ph name="MANAGER" />에서 관리합니다.</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> 기기가 연결됨</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> 키를 누른 후 <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> 또는 <ph name="KEY_THREE" /></translation>
@@ -1515,6 +1515,7 @@
 <translation id="6574587113394758819">사생활 보호가 켜져 있으므로 <ph name="APP_TITLE" /> 알림이 숨겨집니다.</translation>
 <translation id="6574622320167699133">휴대전화로 잠금 해제되었습니다. 탭 또는 클릭하여 사용하세요.</translation>
 <translation id="6578407462441924264">이름 없음</translation>
+<translation id="6582034443359256692">배터리 충전 수준을 계산하는 중입니다.</translation>
 <translation id="6585808820553845416">세션이 <ph name="SESSION_TIME_REMAINING" /> 후에 종료됩니다.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">카메라 미리보기가 왼쪽 하단으로 맞춰졌습니다. 시스템 표시 경로와 충돌합니다.</translation>
@@ -1576,6 +1577,7 @@
 <translation id="6790428901817661496">재생</translation>
 <translation id="679368458793552943">돋보기 사용 설정 시 확대</translation>
 <translation id="6794287755901682422">하위 할 일에 포함된 항목: <ph name="GLANCEABLES_TASK_ITEM_METADATA" /></translation>
+<translation id="6797745268063125932">계속 사용</translation>
 <translation id="6801878137098616817">최근에 수정됨</translation>
 <translation id="6802687695197837794"><ph name="APP1_NAME" />, <ph name="APP2_NAME" /> 등 카메라 및 마이크 권한이 있는 모든 앱과 웹사이트에 액세스 권한이 부여됩니다.</translation>
 <translation id="6803622936009808957">지원되는 해상도가 없으므로 디스플레이를 그대로 반영할 수 없습니다. 대신 확장 데스크톱을 시작했습니다.</translation>
@@ -1887,6 +1889,7 @@
 <translation id="7947798320695032612"><ph name="APP_NAME" />에서 <ph name="DEVICE_NAME" /> 사용할 권한 요청함</translation>
 <translation id="7951630946012935453">키보드 어둡게</translation>
 <translation id="7953994493035617347">새 해상도를 확인하시겠습니까?</translation>
+<translation id="795958884516058160">전체화면 돋보기가 사용 설정되었습니다. 사용 중지하려면 <ph name="ACCELERATOR" /> 키를 다시 누르세요.</translation>
 <translation id="7963689218131240420">방해 금지 모드가 사용 중지되어 있습니다.</translation>
 <translation id="7963992254934562106">출처: <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">폴더 선택...</translation>
@@ -2138,6 +2141,7 @@
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> 체크박스 선택되지 않음</translation>
 <translation id="8949925099261528566">연결됨, 인터넷 사용 불가</translation>
 <translation id="8951539504029375108">승인된 Thunderbolt 기기만 Chromebook과 호환됩니다.</translation>
+<translation id="8959380109429710384">전체화면 돋보기 단축키를 눌렀습니다. 확대된 보기에서 이동하려면 Ctrl + Alt + 화살표를 사용하세요.</translation>
 <translation id="8964525410783593407">1시간</translation>
 <translation id="8973885907461690937">메뉴 아이콘에 초점 맞추기</translation>
 <translation id="8980862970816311842">앱 그리드의 폴더 안팎으로 앱 아이콘 이동</translation>

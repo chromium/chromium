@@ -566,6 +566,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2036983605131262583">Gombo Mbadala</translation>
 <translation id="2040463897538655645">Nafasi ya hifadhi inayoweza kuondolewa</translation>
 <translation id="2040894699575719559">Imezuiwa kufikia maelezo ya mahali</translation>
+<translation id="2041788246978549610">Tumia maikrofoni zinazopatikana (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Trei ya saba</translation>
 <translation id="204357726431741734">Ingia katika akaunti ili utumie manenosiri uliyohifadhi kwenye Akaunti yako ya Google</translation>
 <translation id="2045871135676061132">Bahasha ya barua Binafsi</translation>
@@ -885,6 +886,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2655752832536625875">Bafu</translation>
 <translation id="2657637947725373811">{0,plural, =1{Ungependa kuhamisha faili ya siri?}other{Ungependa kuhamisha faili za siri?}}</translation>
 <translation id="2658843814961855121">Sheria ya Ajira na Kazi</translation>
+<translation id="2658944305627908367">Miamala inayozidi salio lako haitachakatwa</translation>
 <translation id="2660779039299703961">Tukio</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Hamna}=1{Nenosiri 1 (la <ph name="DOMAIN_LIST" />)}=2{Manenosiri 2 (ya <ph name="DOMAIN_LIST" />)}other{Manenosiri # (ya <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Ya Juu</translation>
@@ -1081,6 +1083,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3090667236485488075">Kioo</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Imepuuzwa kwa sababu orodha ya kuzima ina ruwaza sawa na '*', ambayo ni sawa na kuzima sera.</translation>
+<translation id="3099619114405539473">Tumia kamera zinazopatikana (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Akaunti ya akiba</translation>
 <translation id="3103188521861412364">Hisa na Dhamana</translation>
 <translation id="3105172416063519923">Kitambulisho cha Kipengee:</translation>
@@ -1357,6 +1360,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3583757800736429874">Rudia Hatua</translation>
 <translation id="3584299510153766161">Toboa chini mara mbili</translation>
 <translation id="3584755835709800788">Filamu za Sayansi ya Kubuniwa na Njozi</translation>
+<translation id="3585455899094692781">Tumia na usogeze kamera zinazopatikana (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Filamu yenye Unyevu</translation>
 <translation id="3586931643579894722">Ficha maelezo</translation>
 <translation id="3587738293690942763">Katikati</translation>
@@ -2421,6 +2425,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="5645132789250840550">Plastiki (Mng'ao Nusu)</translation>
 <translation id="5645719697465708351">Bidhaa na Mahitaji ya Sherehe na Sikukuu</translation>
 <translation id="5645854190134202180">Awamu ya pili</translation>
+<translation id="5648166631817621825">Siku 7 zilizopita</translation>
 <translation id="5649053991847567735">Vipakuliwa vya kiotomatiki</translation>
 <translation id="5651323159439184939">Kipokezi cha Trekta</translation>
 <translation id="5654927323611874862">Kitambulisho cha Ripoti Iliyopakiwa ya Programu Kuacha Kufanya Kazi:</translation>

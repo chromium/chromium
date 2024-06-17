@@ -100,7 +100,6 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">随时按<ph name="LAUNCHER_KEY_NAME" /> + g 键</translation>
 <translation id="1306549533752902673">推荐的应用</translation>
-<translation id="1311294419381837540">您正在投放一个标签页。您可随时暂停或停止投放。</translation>
 <translation id="1312604459020188865">信号强度为 <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">一律显示任务栏</translation>
 <translation id="132346741904777634">相机已对准左上角。与系统界面冲突。</translation>
@@ -109,7 +108,6 @@
 <translation id="1340378040547539434">缩小网页</translation>
 <translation id="1341651618736211726">溢出</translation>
 <translation id="1341926407152459446">使用“<ph name="DEVICE_NAME" />”来输入和输出音频</translation>
-<translation id="1344141078024003905">您正在投放屏幕画面。您可随时暂停或停止投屏。</translation>
 <translation id="1346748346194534595">向右</translation>
 <translation id="1351937230027495976">收起菜单</translation>
 <translation id="1360220746312242196">搜索网页时，转到上一个相符的搜索结果</translation>
@@ -354,7 +352,6 @@
 <translation id="2369165858548251131">“你好”用英文怎么说</translation>
 <translation id="2370971919968699910">这可能会产生流量费用。
 已连接 <ph name="DEVICECOUNT" /> 部设备。</translation>
-<translation id="2382875860893882175">目前已暂停投放。您可随时恢复投放或停止投放。</translation>
 <translation id="2386292613071805067">选择网页上的全部内容</translation>
 <translation id="2392659840443812875">没有可用的热点。确保您的设备就在附近且已开启蓝牙。</translation>
 <translation id="2397416548179033562">显示 Chrome 菜单</translation>
@@ -574,6 +571,7 @@
 <translation id="3226991577105957773">+另外 <ph name="COUNT" /> 条</translation>
 <translation id="3227137524299004712">麦克风</translation>
 <translation id="3233611303007751344">省电模式已关闭</translation>
+<translation id="3238409143297336341">设置应用家长控制</translation>
 <translation id="324366796737464147">降噪</translation>
 <translation id="3249513730522716925">窗口“<ph name="WINDOW_TITLE" />”已由桌面 <ph name="ACTIVE_DESK" /> 移至桌面 <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">课业类型：<ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -617,7 +615,6 @@
 <translation id="3389599499324569679">开启语音输入？</translation>
 <translation id="3394432020929931914">，已展开</translation>
 <translation id="3405101454990027959">开启麦克风使用权限</translation>
-<translation id="3408735331120433841">您目前正在投放屏幕画面。</translation>
 <translation id="3409584356742878290">显示或隐藏开发者工具检查器</translation>
 <translation id="3410336247007142655">显示深色主题设置</translation>
 <translation id="3413817803639110246">目前尚无可查看的内容</translation>
@@ -856,7 +853,6 @@
 <translation id="4217571870635786043">语音输入</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />，已安装的应用，已暂停</translation>
 <translation id="4228078597006700451">尚未设置控件</translation>
-<translation id="4231053948789591973">目前已暂停投放。您可随时恢复投放或停止投放屏幕。</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">概览模式</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
@@ -1402,6 +1398,7 @@
 <translation id="6141205840878048728">您打算专注于什么任务？</translation>
 <translation id="6141988275892716286">确认下载</translation>
 <translation id="6143578372829139382">分享到 YouTube</translation>
+<translation id="6147182561428020853">您现在可以屏蔽在此 <ph name="DEVICE_TYPE" /> 上安装的应用</translation>
 <translation id="6154006699632741460">不支持外围设备</translation>
 <translation id="6156960295318603523">语言设置</translation>
 <translation id="615957422585914272">显示屏幕键盘</translation>

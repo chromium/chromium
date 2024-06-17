@@ -115,6 +115,7 @@
 <translation id="2945997411976714835">שגיאת התקנה: הפעלת התהליך של מנהל ההתקנה נכשלה.</translation>
 <translation id="2977470724722393594">‏Chromium‏ מעודכן</translation>
 <translation id="2977506796191543575">‏אם באתר כלשהו מתבצע ניסיון לגנוב את הסיסמה שלך, או אם המערכת מזהה הורדה של קובץ מזיק, Chromium עשוי גם לשלוח כתובות URL לבדיקה באמצעות 'גלישה בטוחה'. הנתונים שנשלחים לבדיקה כוללים ביטים מתוכן של דפים</translation>
+<translation id="2987208172821108655">‏‫Chromium יכול להשבית את הכרטיסיות האלה כדי לשפר את חוויית הגלישה ולפנות משאבים.</translation>
 <translation id="3013473503895162900">‏פתיחה של <ph name="URL" /> בכרטיסייה חדשה ב-Chromium.</translation>
 <translation id="3032706164202344641">‏Chromium לא יכול לבדוק את הסיסמאות שלך. כדאי לנסות שוב מאוחר יותר.</translation>
 <translation id="3032787606318309379">‏מתבצעת הוספה ל-Chromium...</translation>
@@ -314,6 +315,7 @@
 <translation id="6248213926982192922">‏יש להפוך את Chromium לדפדפן ברירת המחדל</translation>
 <translation id="6266342355635466082">‏Chromium לא יכול לחפש עדכונים. יש לבדוק את החיבור לאינטרנט.</translation>
 <translation id="6268381023930128611">‏האם לצאת מ-Chromium?</translation>
+<translation id="6270547683008298381">‏הכרטיסיות האלה משתמשות במשאבים נוספים. כדי לשפר את הביצועים, כדאי לאפשר ל-Chromium להשבית אותן.</translation>
 <translation id="6281746429495226318">‏התאמה אישית של פרופיל Chromium</translation>
 <translation id="6290827346642914212">‏בחירת שם לפרופיל Chromium שלך</translation>
 <translation id="6294831894865512704">‏תוסף מבקש ממך להיכנס ל-Chromium</translation>
@@ -322,6 +324,7 @@
 <translation id="6327105987658262776">אין עדכונים זמינים.</translation>
 <translation id="6333502561965082103">‏מתבצעת כרגע פעולה אחרת ב-Chromium. כדאי לנסות שוב מאוחר יותר.</translation>
 <translation id="6334986366598267305">‏קל יותר כעת להשתמש ב-Chromium באמצעות חשבון Google שלך ובמחשבים משותפים.</translation>
+<translation id="633626832589656416">‏‫Chromium יכול להשבית את הכרטיסיות האלה כדי לשפר את חוויית הגלישה ולשמור על מהירות.</translation>
 <translation id="6347933965114150440">‏קיצור דרך ב-Chromium</translation>
 <translation id="6366160072964553914">‏Chromium חסם את ההורדה הזאת כי לרוב לא מתבצעת הורדה של קבצים כאלה ויכול להיות שהקובץ מסוכן</translation>
 <translation id="6373523479360886564">‏ברצונך באמת להסיר את התקנת Chromium?</translation>

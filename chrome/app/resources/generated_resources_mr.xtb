@@ -136,7 +136,6 @@
 <translation id="1085064499066015002">सर्व साइटसाठी नेहमी सुरू</translation>
 <translation id="1085697365578766383">व्हर्च्युअल मशीन सुरू करताना एरर आली. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="1086486568852410168">Google Lens वापरून शोधा</translation>
-<translation id="1088490543924960890">Google Password Manager वापरून पासकी सेव्ह करणे सुरू करा</translation>
 <translation id="1090126737595388931">कोणतेही पार्श्वभूमी ॲप्लिकेशन चालत नाहीत</translation>
 <translation id="1090541560108055381">पेअर करण्यापूर्वी, हा कोड दोन्ही डिव्हाइसवर समान असल्याची खात्री करा</translation>
 <translation id="1091767800771861448">वगळण्यासाठी ESCAPE प्रेस करा (केवळ अनधिकृत नसलेल्या बिल्डसाठी).</translation>
@@ -3680,7 +3679,6 @@
 <translation id="3685598397738512288">Linux ची USB प्राधान्ये</translation>
 <translation id="3687598459967813435"><ph name="WEBSITE" /> वरील सूचनांना नेहमी अनुमती द्या</translation>
 <translation id="368789413795732264">ही फाइल राइट करण्याचा प्रयत्न करताना एरर आली:<ph name="ERROR_TEXT" />.</translation>
-<translation id="3688368689701175138">ही पासकी <ph name="ACCOUNT_NAME" /> साठी Google Password Manager मध्ये सेव्ह केली जाईल</translation>
 <translation id="3688507211863392146">तुम्ही ॲप्समध्ये उघडता त्या फायलींमध्ये आणि फोल्डरमध्ये लिहा</translation>
 <translation id="3688526734140524629">चॅनल बदला</translation>
 <translation id="3688578402379768763">अद्ययावत</translation>
@@ -5480,6 +5478,7 @@
 <translation id="5032430150487044192">QR कोड तयार करता आला नाही</translation>
 <translation id="5033137252639132982">मोशन सेन्सर वापरण्याची अनुमती नाही</translation>
 <translation id="5033266061063942743">भूमितीय आकार</translation>
+<translation id="503441068567788948">Google Password Manager साठी नवीन पिन तयार करा</translation>
 <translation id="5035846135112863536"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> कडून अधिक माहिती मिळवण्यासाठी खाली "आणखी तपशील" निवडा.</translation>
 <translation id="5037676449506322593">सर्व निवडा</translation>
 <translation id="5038818366306248416">तुम्ही पूर्वी <ph name="ORIGIN" /> वर सर्व एक्स्टेंशनना अनुमती न देणे निवडले आहे</translation>
@@ -5507,6 +5506,7 @@
 <translation id="5057110919553308744">तुम्ही एक्स्टेंशनवर क्लिक करता तेव्हा</translation>
 <translation id="5057127674016624293">स्कॅनिंगला अपेक्षेपेक्षा जास्त वेळ लागत आहे</translation>
 <translation id="5057480703570202545">डाउनलोडचा इतिहास</translation>
+<translation id="5058771692413403640"><ph name="SITE" /> ला हे तुम्हीच असल्याची पडताळणी करायची आहे</translation>
 <translation id="5059241099014281248">साइन इन मर्यादित करा</translation>
 <translation id="5059429103770496207">डिस्प्ले शैली</translation>
 <translation id="5059526285558225588">काय शेअर करायचे ते निवडा</translation>
@@ -5948,6 +5948,7 @@
 <translation id="5390112241331447203">फीडबॅक अहवालामध्ये पाठवलेल्या system_logs.txt फाइलचा समावेश करा.</translation>
 <translation id="5390677308841849479">गडद लाल आणि नारिंगी</translation>
 <translation id="5392192690789334093">सूचना पाठवण्याची अनुमती आहे</translation>
+<translation id="5393330235977997602">पिनसंबंधित पर्याय</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{लिंक}other{# लिंक}}</translation>
 <translation id="5394529681046491727">वायफाय डिरेक्ट</translation>
 <translation id="5395498824851198390">डीफॉल्ट फॉंट</translation>
@@ -6107,7 +6108,6 @@
 <translation id="5497739595514726398">Chrome ला इंस्टॉलेशनच्या या बंडलची पडताळणी करता आली नाही</translation>
 <translation id="5498967291577176373">तुमचे नाव, पत्ता किंवा फोन नंबरसाठी इनलाइन सूचनांसह जलदपणे लिहा</translation>
 <translation id="5499211612787418966">हा डायलॉग सध्या फोकस केलेला नाही. हा डायलॉग फोकस करण्यासाठी, Alt-Shift A प्रेस करा.</translation>
-<translation id="5499313591153584299">ही फाइल तुमच्या कॉंप्युटरसाठी हानिकारक ठरू शकते.</translation>
 <translation id="5499453227627332024">तुमच्या Linux कंटेनर साठी अपग्रेड उपलब्ध आहे. सेटिंग्ज अ‍ॅपमधून तुम्ही नंतरदेखील अपग्रेड करू शकता.</translation>
 <translation id="5499476581866658341">तुम्ही आता तुमच्या फोनमधील अलीकडील फोटो आणि मीडिया पाहू शकता</translation>
 <translation id="549957179819296104">नवीन आयकन</translation>
@@ -6683,6 +6683,7 @@
 <translation id="5935158534896975820">सर्टिफिकेटवर स्वाक्षरी करण्याची विनंती तयार करत आहे (सर्व्हरची प्रतीक्षा करत आहे)</translation>
 <translation id="5935656526031444304">सुरक्षित ब्राउझिंग व्यवस्थापित करा</translation>
 <translation id="5936065461722368675">पूर्ण पेजचे भाषांतर करा</translation>
+<translation id="5937347877659196749">त्यानंतर, रिकव्‍हरी पिन वापरून तुमच्या सर्व पासकीचे संरक्षण करा</translation>
 <translation id="5937977334791924341"><ph name="APP" /> चा लोगो</translation>
 <translation id="5938002010494270685">सुरक्षितता अपग्रेड उपलब्ध आहे</translation>
 <translation id="5939518447894949180">रीसेट करा</translation>
@@ -7033,7 +7034,6 @@
 <translation id="6206199626856438589">प्रदर्शित केलेल्या साइटमधून तुम्हाला साइन आउट केले जाईल, ज्यामध्ये उघड्या टॅबचा समावेश आहे</translation>
 <translation id="6206311232642889873">इमेज कॉ&amp;पी करा</translation>
 <translation id="6207200176136643843">झूम स्तर डीफॉल्टवर रीसेट करा</translation>
-<translation id="6207298079289376837">टॅब संगतवार लावले जाऊ शकतात की नाही हे तपासा</translation>
 <translation id="6207937957461833379">देश/प्रदेश</translation>
 <translation id="6208521041562685716">मोबाइल डेटा ॲक्टिव्हेट करत आहे</translation>
 <translation id="6208725777148613371"><ph name="WEB_DRIVE" /> - <ph name="INTERRUPT_REASON" /> मध्ये सेव्ह करता आले नाही</translation>
@@ -7384,7 +7384,6 @@
 <translation id="6476482583633999078">स्पीचची गती</translation>
 <translation id="6476671549211161535">तुमच्या <ph name="DEVICE_NAME" /> वरील माउसच्या डाव्या किंवा उजव्या बटणाच्या व्यतिरिक्त कोणतेही बटण प्रेस करा.</translation>
 <translation id="6477822444490674459">कार्य प्रोफाइलमध्ये फोनसाठी सूचना सिंक करणे सपोर्ट करत नाही. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
-<translation id="6478248366783946499">धोकादायक फाईल ठेवायची?</translation>
 <translation id="6479881432656947268">Chrome वेब स्टोअरला भेट द्या</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> द्वारे व्यवस्थापित</translation>
 <translation id="6481749622989211463">जवळपासच्या डिव्हाइससह फाइल आणि आणखी बऱ्याच गोष्टी शेअर करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
@@ -7563,7 +7562,6 @@
 <translation id="6613267708691765962">मालवेअरसाठी स्कॅन करत आहे…</translation>
 <translation id="6613668613087513143">हे अपडेट पूर्ण करण्यासाठी, या डिव्हाइसवर पुरेशी जागा नाही. तुमच्या डिव्हाइसवरील <ph name="NECESSARY_SPACE" /> साफ करा आणि Chrome ब्राउझरवरून पुन्हा प्रयत्न करा.</translation>
 <translation id="6615455863669487791">मला दर्शवा</translation>
-<translation id="6618097958368085618">तरीही राहू द्या</translation>
 <translation id="6618744767048954150">रन होत आहे</translation>
 <translation id="6619058681307408113">लाइन प्रिंटर डिमन (LPD)</translation>
 <translation id="661907246513853610">साइट तुमचे स्थान ट्रॅक करू शकते</translation>
@@ -8133,6 +8131,7 @@
 <translation id="7033616203784997570">इनपुट कमाल ६२ वर्णांचे असणे आवश्यक आहे</translation>
 <translation id="7034692021407794547">बिलिंग व्यवस्थापनाचे विशेषाधिकार असलेल्या अ‍ॅडमिनिस्ट्रेटरने सर्वप्रथम ॲडमिन कन्सोलच्या Google Meet हार्डवेअर विभागामध्ये Google Meet हार्डवेअरच्या सेवा अटी स्वीकारणे आवश्यक आहे.</translation>
 <translation id="7036706669646341689">Linux साठी <ph name="DISK_SIZE" /> मोकळ्या जागेची शिफारस केली जाते. मोकळी जागा वाढवण्यासाठी, तुमच्या डिव्हाइसमधून फाइल हटवा.</translation>
+<translation id="7037157058268992880">पिन लक्षात नाही</translation>
 <translation id="7037509989619051237">पूर्वावलोकनासाठी मजकूर</translation>
 <translation id="7038632520572155338">स्विच ॲक्सेस</translation>
 <translation id="7038710352229712897"><ph name="USER_NAME" /> साठी दुसरे Google खाते जोडा</translation>
@@ -8148,7 +8147,6 @@
 <translation id="7044211973375150246">ॲप हे <ph name="APP_NAME" /> सारख्याच लिंक उघडण्यासाठी सेट केले आहे. हे <ph name="APP_NAME_2" /> ला सपोर्ट असलेल्या लिंक उघडण्यापासून बंद करेल.</translation>
 <translation id="7044606776288350625">डेटा सिंक करा</translation>
 <translation id="7047059339731138197">बॅकग्राउंड निवडा</translation>
-<translation id="7049293980323620022">फाईल ठेवायची?</translation>
 <translation id="7049524156282610342">ब्राउझिंग डेटा <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">चुकीचे हॉटस्पॉट कॉन्फिगरेशन</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{तुमच्या <ph name="USER_EMAIL" /> या Google खाते मध्ये पासवर्ड सेव्ह केला आहे}other{तुमच्या <ph name="USER_EMAIL" /> या Google खाते मध्ये पासवर्ड सेव्ह केले आहेत}}</translation>
@@ -9334,7 +9332,6 @@
 <translation id="7939062555109487992">प्रगत पर्याय</translation>
 <translation id="793923212791838">तुमचे डिव्हाइस या साइटसोबत वापरले जाऊ शकत नाही</translation>
 <translation id="7939328347457537652">डिव्हाइस सर्टिफिकेट व्यवस्थापित करा</translation>
-<translation id="7939412583708276221">तरीही राहू द्या</translation>
 <translation id="7940087892955752820">अ‍ॅप्लिकेशन हे फोल्डर वापरत असल्यामुळे ते अनशेअर करता आले नाही. पुढच्या वेळी <ph name="SPECIFIC_NAME" /> बंद केल्यावर फोल्डर अनशेअर केले जाईल.</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> नुसार क्रमवारी लावा</translation>
 <translation id="7941179291434537290">टेदरिंगची सज्जता:</translation>
@@ -9546,6 +9543,7 @@
 <translation id="8084429490152575036">मोबाइल APN सेटिंग्ज</translation>
 <translation id="8084510406207562688">सर्व टॅब रिस्टोअर करा</translation>
 <translation id="8084628902026812045">ही साइट सुरक्षित कनेक्शन वापरत नाही आणि फाइलमध्ये छेडछाड केली गेली असू शकते</translation>
+<translation id="8085701268329068646">Google Password Manager साठीचा तुमचा पिन एंटर करा</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> कॉन्फिगर करत आहे...</translation>
 <translation id="8086121155774250556">हा टॅब तुमची स्क्रीन शेअर करत आहे</translation>
 <translation id="8086610718778464681">Linux अ‍ॅप्स आणि फाइलचा बॅकअप घेऊ शकत नाही</translation>
@@ -10093,7 +10091,6 @@
 <translation id="8477241577829954800">अधिग्रहित</translation>
 <translation id="8477384620836102176">&amp;सामान्य</translation>
 <translation id="8479176401914456949">कोड चुकीचा आहे. कृपया पुन्हा प्रयत्न करा.</translation>
-<translation id="8480082892550707549">तुम्ही यापूर्वी या साइट वरून फाइल डाउनलोड केल्या असल्या तरीदेखील, साइट कदाचित तात्पुरती असुरक्षित (हॅक केलेली) असू शकते. ही फाईल नंतर डाउनलोड करण्‍याचा प्रयत्न करा.</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> कडील अज्ञात डिव्हाइस</translation>
 <translation id="8481187309597259238">USB परवानगीची निश्चिती करा</translation>
 <translation id="8482077254400484047">येथे निष्क्रिय टॅबचा लुक व्यवस्थापित करा</translation>
@@ -10923,7 +10920,6 @@
 <translation id="9085256200913095638">निवडलेला टॅब डुप्लिकेट करा</translation>
 <translation id="9085446486797400519">कॅमेराचा अ‍ॅक्सेस</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> निवडलेली नाही. निवडण्यासाठी सर्च आणि स्पेस प्रेस करा.</translation>
-<translation id="9087183943157874068">तुम्ही तुमच्या टॅब गटासंबंधित सूचना कधीही तपासू शकता</translation>
 <translation id="9087949559523851360">प्रतिबंधित वापरकर्ता जोडा</translation>
 <translation id="9088234649737575428">संस्‍थेच्या धोरणाद्वारे <ph name="PLUGIN_NAME" /> ब्लॉक केले आहे</translation>
 <translation id="9088446193279799727">Linux कॉन्फिगर करता आले नाही. इंटरनेटशी कनेक्ट करा आणि पुन्हा प्रयत्न करा.</translation>
@@ -11076,6 +11072,7 @@
 <translation id="920045321358709304"><ph name="SEARCH_ENGINE" /> शोधा</translation>
 <translation id="9201117361710210082">याआधी पाहिला होता</translation>
 <translation id="9201220332032049474">स्क्रीन लॉक पर्याय</translation>
+<translation id="9201762611758697018">रिकव्‍हरी पिनमुळे तुम्हाला कोणत्याही डिव्हाइसवर तुमच्या सेव्ह केलेल्या पासकी अ‍ॅक्सेस करण्यात मदत होते</translation>
 <translation id="9201842707396338580">काहीतरी चूक झाली. कृपया तुमच्या डिव्हाइसच्या मालकाशी किंवा अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा. एरर कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203296457393252944">लाल-हिरवा, हिरव्या रंगाची दृष्टिक्षीणता (द्वितीयवर्ण दृष्टिक्षीणता)</translation>
 <translation id="9203398526606335860">&amp;प्रोफाइलिंग सक्षम</translation>

@@ -100,7 +100,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Press <ph name="LAUNCHER_KEY_NAME" /> + g at any time</translation>
 <translation id="1306549533752902673">RECOMMENDED APPS</translation>
-<translation id="1311294419381837540">You are casting a tab. You can pause or stop casting at any time.</translation>
 <translation id="1312604459020188865">Signal strength <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Always show shelf</translation>
 <translation id="132346741904777634">Camera snapped to the top-left corner. Conflict with system surface.</translation>
@@ -109,7 +108,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1340378040547539434">Zoom out on page</translation>
 <translation id="1341651618736211726">Overflow</translation>
 <translation id="1341926407152459446">Use '<ph name="DEVICE_NAME" />' for audio input and output</translation>
-<translation id="1344141078024003905">You are casting your screen. You can pause or stop casting your screen at any time.</translation>
 <translation id="1346748346194534595">Right</translation>
 <translation id="1351937230027495976">Collapse menu</translation>
 <translation id="1360220746312242196">When searching a page, go to previous match for search</translation>
@@ -354,7 +352,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="2369165858548251131">"Hello" in Chinese</translation>
 <translation id="2370971919968699910">This may incur data cost.
 <ph name="DEVICECOUNT" /> devices connected</translation>
-<translation id="2382875860893882175">Casting is currently paused. You can resume casting or stop casting at any time.</translation>
 <translation id="2386292613071805067">Select everything on page</translation>
 <translation id="2392659840443812875">No available hotspot. Make sure that your device is nearby and Bluetooth is turned on.</translation>
 <translation id="2397416548179033562">Show Chrome menu</translation>
@@ -618,7 +615,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="3389599499324569679">Turn on dictation?</translation>
 <translation id="3394432020929931914">, expanded</translation>
 <translation id="3405101454990027959">Turn on microphone access</translation>
-<translation id="3408735331120433841">You are currently casting your screen.</translation>
 <translation id="3409584356742878290">Show or hide Developer tools inspector</translation>
 <translation id="3410336247007142655">Show Dark theme settings</translation>
 <translation id="3413817803639110246">Nothing to see just yet</translation>
@@ -858,7 +854,6 @@ Some features are limited to increase battery life.</translation>
 <translation id="4217571870635786043">Dictation</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installed app, paused</translation>
 <translation id="4228078597006700451">Controls not set up</translation>
-<translation id="4231053948789591973">Casting is currently paused. You can resume casting or stop casting your screen at any time.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Overview mode</translation>
 <translation id="4242533952199664413">Open settings</translation>

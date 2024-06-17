@@ -567,6 +567,7 @@
 <translation id="2036983605131262583">বিকল্প রোল</translation>
 <translation id="2040463897538655645">সরিয়ে দেওয়া যায় এমন স্টোরেজ</translation>
 <translation id="2040894699575719559">লোকেশন ব্লক করা হয়েছে</translation>
+<translation id="2041788246978549610">উপলভ্য মাইক্রোফোন ব্যবহার করুন (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">ট্রে ৭</translation>
 <translation id="204357726431741734">আপনার Google অ্যাকাউন্টে সেভ করা পাসওয়ার্ড ব্যবহার করতে সাইন-ইন করুন</translation>
 <translation id="2045871135676061132">এনভেলপ পার্সোনাল</translation>
@@ -886,6 +887,7 @@
 <translation id="2655752832536625875">বাথরুম</translation>
 <translation id="2657637947725373811">{0,plural, =1{গোপনীয় ফাইল ট্রান্সফার করবেন?}one{গোপনীয় ফাইল ট্রান্সফার করবেন?}other{গোপনীয় ফাইল ট্রান্সফার করবেন?}}</translation>
 <translation id="2658843814961855121">লেবার ও এমপ্লয়মেন্ট আইন</translation>
+<translation id="2658944305627908367">আপনার ব্যালেন্সের চেয়ে বেশি পরিমাণের ট্রানজ্যাকশন প্রসেস করা হবে না</translation>
 <translation id="2660779039299703961">ইভেন্ট</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{একটিও নয়}=1{১টি পাসওয়ার্ড (<ph name="DOMAIN_LIST" />-এর জন্য)}=2{২টি পাসওয়ার্ড (<ph name="DOMAIN_LIST" />-এর জন্য)}one{#টি পাসওয়ার্ড (<ph name="DOMAIN_LIST" />-এর জন্য)}other{#টি পাসওয়ার্ড (<ph name="DOMAIN_LIST" />-এর জন্য)}}</translation>
 <translation id="2666092431469916601">শীর্ষ</translation>
@@ -1082,6 +1084,7 @@
 <translation id="3090667236485488075">গ্লাস</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">বাদ দেওয়া হয়েছে কারণ, 'বন্ধ আছে' তালিকাতে '*'-এর মতো প্যাটার্ন আছে। এর মানে নীতি বন্ধ করার সমান।</translation>
+<translation id="3099619114405539473">উপলভ্য ক্যামেরা ব্যবহার করুন (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">সেভিংস</translation>
 <translation id="3103188521861412364">স্টক ও বন্ড</translation>
 <translation id="3105172416063519923">সম্পদ আইডি:</translation>
@@ -1358,6 +1361,7 @@
 <translation id="3583757800736429874">&amp;সরানোর কাজটি আবার করুন</translation>
 <translation id="3584299510153766161">নিচে ডুয়াল পাঞ্চ</translation>
 <translation id="3584755835709800788">সায়েন্স ফিকশন এবং ফ্যান্টাসি সিনেমা</translation>
+<translation id="3585455899094692781">উপলভ্য় ক্যামেরা ব্য়বহার করুন এবং সরান (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">ওয়েট ফিল্ম</translation>
 <translation id="3586931643579894722">বিশদ বিবরণ লুকান</translation>
 <translation id="3587738293690942763">মাঝারি</translation>
@@ -2422,6 +2426,7 @@
 <translation id="5645132789250840550">প্লাস্টিক (সেমি-গ্লস)</translation>
 <translation id="5645719697465708351">পার্টি ও ছুটির দিনে ব্যবহার হওয়া প্রোডাক্ট</translation>
 <translation id="5645854190134202180">দ্বিতীয় শিফ্ট</translation>
+<translation id="5648166631817621825">গত ৭ দিন</translation>
 <translation id="5649053991847567735">অটোমেটিক ডাউনলোডগুলি</translation>
 <translation id="5651323159439184939">ট্র্যাকটর ফিড</translation>
 <translation id="5654927323611874862">আপলোড করা ক্র্যাশ রিপোর্টের আইডি:</translation>

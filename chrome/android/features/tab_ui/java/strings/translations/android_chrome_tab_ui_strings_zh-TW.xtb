@@ -121,6 +121,7 @@
 <translation id="7326879924029668159">查看退貨政策等資訊</translation>
 <translation id="7352298686197644113">查看已開啟分頁中的降價商品</translation>
 <translation id="7452985128687107478">分頁群組會自動儲存並同步至所有裝置</translation>
+<translation id="747459581954555080">全部還原</translation>
 <translation id="753732157349120914">分頁切換工具</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> 則來自 Google 的評論}other{<ph name="REVIEWS_COUNT_MANY" /> 則來自 Google 的評論}}</translation>
 <translation id="7559245342362162951">以全螢幕格狀檢視顯示群組的分頁</translation>
@@ -144,6 +145,7 @@
 <translation id="8338427544764842461">分頁群組會儲存在這裡，並同步至你登入帳戶的所有裝置</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{關閉 <ph name="TABS_COUNT_ONE" /> 個所選分頁}other{關閉 <ph name="TABS_COUNT_MANY" /> 個所選分頁}}</translation>
 <translation id="8398929769197326728">新資料夾 - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="8428213095426709021">設定</translation>
 <translation id="8714939927607906138">較低價格</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8730999928494395583">你在這些無痕分頁中的活動將從這部裝置上移除</translation>

@@ -99,7 +99,6 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">‏אפשר ללחוץ על המקשים ‎<ph name="LAUNCHER_KEY_NAME" /> + g בכל שלב</translation>
 <translation id="1306549533752902673">אפליקציות מומלצות</translation>
-<translation id="1311294419381837540">‏Cast של כרטיסייה מופעל. אפשר להשהות או להפסיק אותו בכל שלב.</translation>
 <translation id="1312604459020188865">עוצמת האות: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">המדף תמיד מוצג</translation>
 <translation id="132346741904777634">המצלמה מוצמדת לפינה הימנית העליונה. התנגשות עם תצוגת המערכת.</translation>
@@ -108,7 +107,6 @@
 <translation id="1340378040547539434">הקטנת התצוגה של הדף</translation>
 <translation id="1341651618736211726">אפשרויות נוספות</translation>
 <translation id="1341926407152459446">שימוש במכשיר '<ph name="DEVICE_NAME" />' לקלט ופלט של אודיו</translation>
-<translation id="1344141078024003905">‏Cast של המסך מופעל. אפשר להשהות או להפסיק את הפעלת ה-Cast של המסך בכל שלב.</translation>
 <translation id="1346748346194534595">ימינה</translation>
 <translation id="1351937230027495976">כיווץ התפריט</translation>
 <translation id="1360220746312242196">מעבר להתאמה הקודמת לחיפוש במהלך חיפוש בדף</translation>
@@ -352,7 +350,6 @@
 <translation id="2369165858548251131">"שלום" בסינית</translation>
 <translation id="2370971919968699910">עשויים לחול חיובים על שימוש בחבילת הגלישה.
 ‫<ph name="DEVICECOUNT" /> מכשירים מחוברים.</translation>
-<translation id="2382875860893882175">‏הפעלת ה-Cast מושהית. אפשר להמשיך או להפסיק אותה בכל שלב.</translation>
 <translation id="2386292613071805067">בחירת כל תוכן הדף</translation>
 <translation id="2392659840443812875">‏אין נקודה לשיתוף אינטרנט (Hotspot). צריך לוודא שהמכשיר נמצא בקרבת מקום ושה-Bluetooth מופעל.</translation>
 <translation id="2397416548179033562">‏הצגת תפריט Chrome</translation>
@@ -572,6 +569,7 @@
 <translation id="3226991577105957773">+<ph name="COUNT" /> נוספות</translation>
 <translation id="3227137524299004712">מיקרופון</translation>
 <translation id="3233611303007751344">התכונה 'חיסכון בסוללה' הושבתה</translation>
+<translation id="3238409143297336341">הגדרה של אמצעי בקרת הורים באפליקציות</translation>
 <translation id="324366796737464147">סינון רעשים</translation>
 <translation id="3249513730522716925">החלון <ph name="WINDOW_TITLE" /> הועבר משולחן העבודה <ph name="ACTIVE_DESK" /> אל שולחן העבודה <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">סוג העבודה: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -615,7 +613,6 @@
 <translation id="3389599499324569679">להפעיל מצב הכתבה?</translation>
 <translation id="3394432020929931914">, מורחבת</translation>
 <translation id="3405101454990027959">הפעלת הגישה למיקרופון</translation>
-<translation id="3408735331120433841">‏Cast של המסך מופעל.</translation>
 <translation id="3409584356742878290">הצגה או הסתרה של הכלי לבדיקת הכלים למפתחים</translation>
 <translation id="3410336247007142655">הגדרות של הצגת עיצוב כהה</translation>
 <translation id="3413817803639110246">עדיין אין מה לראות</translation>
@@ -855,7 +852,6 @@
 <translation id="4217571870635786043">הכתבה</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, אפליקציה מותקנת, מושהית</translation>
 <translation id="4228078597006700451">הפקדים לא הוגדרו</translation>
-<translation id="4231053948789591973">‏הפעלת ה-Cast מושהית. אפשר להמשיך להפעיל Cast של המסך או להפסיק את ההפעלה בכל שלב.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">מצב סקירה כללית</translation>
 <translation id="4242533952199664413">פתיחת ההגדרות</translation>
@@ -1400,6 +1396,7 @@
 <translation id="6141205840878048728">במה היית רוצה להתרכז?</translation>
 <translation id="6141988275892716286">אישור הורדה</translation>
 <translation id="6143578372829139382">‏שיתוף ב-YouTube</translation>
+<translation id="6147182561428020853">עכשיו אפשר לחסום אפליקציות שמותקנות במכשיר <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">אין תמיכה בציוד ההיקפי</translation>
 <translation id="6156960295318603523">הגדרות שפה</translation>
 <translation id="615957422585914272">הצגת מקלדת במסך</translation>

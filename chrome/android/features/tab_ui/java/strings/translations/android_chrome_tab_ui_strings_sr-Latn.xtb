@@ -121,6 +121,7 @@
 <translation id="7326879924029668159">Pogledajte smernice za vraćanje i drugo</translation>
 <translation id="7352298686197644113">Pogledajte koja stavka na otvorenim karticama ima nižu cenu</translation>
 <translation id="7452985128687107478">Grupe kartica se automatski čuvaju i ažuriraju na svim uređajima</translation>
+<translation id="747459581954555080">Vrati sve</translation>
 <translation id="753732157349120914">Prebacivač kartica</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> recenzija iz Google-a}one{<ph name="REVIEWS_COUNT_MANY" /> recenzija iz Google-a}few{<ph name="REVIEWS_COUNT_MANY" /> recenzije iz Google-a}other{<ph name="REVIEWS_COUNT_MANY" /> recenzija iz Google-a}}</translation>
 <translation id="7559245342362162951">Prikazuje kartice grupe u mreži na celom ekranu</translation>
@@ -144,6 +145,7 @@
 <translation id="8338427544764842461">Grupe kartica se čuvaju ovde i ažuriraju se na svim uređajima na kojima ste prijavljeni</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Zatvorite <ph name="TABS_COUNT_ONE" /> izabranu karticu}one{Zatvorite <ph name="TABS_COUNT_MANY" /> izabranu karticu}few{Zatvorite <ph name="TABS_COUNT_MANY" /> izabrane kartice}other{Zatvorite <ph name="TABS_COUNT_MANY" /> izabranih kartica}}</translation>
 <translation id="8398929769197326728">Novi folder – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="8428213095426709021">Podešavanja</translation>
 <translation id="8714939927607906138">Niža cena</translation>
 <translation id="8730621377337864115">Gotovo</translation>
 <translation id="8730999928494395583">Vaše aktivnosti na ovim karticama bez arhiviranja će biti uklonjene sa ovog uređaja</translation>

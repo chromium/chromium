@@ -1140,7 +1140,7 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6640207029842583248">Blokiraj cijelo vrijeme</translation>
 <translation id="6641780377503683465">Ukloni <ph name="INTEREST" /></translation>
 <translation id="6645629752388991326">Kontrolirajte koji se uređaji mogu prijaviti koristeći ovaj uređaj kao sigurnosni ključ.</translation>
-<translation id="6646696210740573446">Googleu se šalje maskirani dio URL-a putem poslužitelja privatnosti koji skriva vašu IP adresu. Ako neka web-lokacija pokuša ukrasti vašu zaporku ili ako preuzmete štetnu datoteku, Chrome također može Googleu poslati URL-ove, uključujući dijelove sadržaja web-stranice.</translation>
+<translation id="6646696210740573446">Googleu se šalje maskirani dio URL-a putem poslužitelja za zaštitu privatnosti koji skriva vašu IP adresu. Ako neka web-lokacija pokuša ukrasti vašu zaporku ili ako preuzmete štetnu datoteku, Chrome također može Googleu poslati URL-ove, uključujući dijelove sadržaja web-stranice.</translation>
 <translation id="6647441008198474441">URL-ovi koje posjećujete šalju se Googleu kako bi se predvidjelo koje biste web-lokacije mogli posjetiti sljedeće</translation>
 <translation id="6648977384226967773">{CONTACT,plural, =1{<ph name="CONTACT_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}one{<ph name="CONTACT_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}few{<ph name="CONTACT_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}other{<ph name="CONTACT_PREVIEW" />\u2026 i još <ph name="NUMBER_OF_ADDITIONAL_CONTACTS" />}}</translation>
 <translation id="6649642165559792194">Pregled slike <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
@@ -1319,7 +1319,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="7431991332293347422">Odredite na koji će se način vaša povijest pregledavanja upotrebljavati za prilagodbu Pretraživanja i drugih značajki</translation>
 <translation id="7435356471928173109">Isključio vaš administrator</translation>
 <translation id="7437998757836447326">Odjava s Chromea</translation>
-<translation id="7450926666485653189">Googleu se šalje maskirani dio URL-a putem poslužitelja privatnosti koji skriva vašu IP adresu.</translation>
+<translation id="7450926666485653189">Googleu se šalje maskirani dio URL-a putem poslužitelja za zaštitu privatnosti koji skriva vašu IP adresu.</translation>
 <translation id="7453467225369441013">Odjavit ćete se s većine web-lokacija, ali se nećete odjaviti s Google računa.</translation>
 <translation id="7453810262525006706">Sažmi u bočni prikaz</translation>
 <translation id="7454641608352164238">Nema dovoljno prostora</translation>
@@ -1528,7 +1528,7 @@ Kako biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke C
 <translation id="8394720698884623075">Provjerava nalaze li se URL-ovi na popisu nesigurnih web-lokacija pohranjenom u Chromeu</translation>
 <translation id="8402673309244746971">Otvorite feed Praćeno</translation>
 <translation id="8413126021676339697">Pokaži cijelu povijest</translation>
-<translation id="8413795581997394485">Štiti od web-lokacija, preuzimanja i proširenja za koje je poznato da su opasni. Kad posjetite neku web-lokaciju, Chrome Googleu šalje maskirani dio URL-a putem poslužitelja privatnosti koji skriva vašu IP adresu. Ako web-lokacija učini nešto sumnjivo, šalju se i potpuni URL-ovi i dijelovi sadržaja.</translation>
+<translation id="8413795581997394485">Štiti od web-lokacija, preuzimanja i proširenja za koje je poznato da su opasni. Kad posjetite neku web-lokaciju, Chrome Googleu šalje maskirani dio URL-a putem poslužitelja za zaštitu privatnosti koji skriva vašu IP adresu. Ako web-lokacija učini nešto sumnjivo, šalju se i potpuni URL-ovi i dijelovi sadržaja.</translation>
 <translation id="8414396119627470038">Prijavite se na web-lokaciju <ph name="SITE_ETLD_PLUS_ONE" /> s <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="8419144699778179708">Briše povijest, uključujući u okviru za pretraživanje</translation>
 <translation id="8419244640277402268">Uključi</translation>

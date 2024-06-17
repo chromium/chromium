@@ -121,6 +121,7 @@
 <translation id="7326879924029668159">Tingnan ang patakaran sa pagbabalik at higit pa</translation>
 <translation id="7352298686197644113">Tingnan kung aling item sa iyong mga nakabukas na tab ang may mas mababang presyo</translation>
 <translation id="7452985128687107478">Awtomatikong nase-save at naa-update ang mga grupo ng tab sa lahat ng iyong device</translation>
+<translation id="747459581954555080">Ipanumbalik lahat</translation>
 <translation id="753732157349120914">Tab Switcher</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> review mula sa Google}one{<ph name="REVIEWS_COUNT_MANY" /> review mula sa Google}other{<ph name="REVIEWS_COUNT_MANY" /> na review mula sa Google}}</translation>
 <translation id="7559245342362162951">Ipakita ang mga tab ng grupo sa fullscreen grid</translation>
@@ -144,6 +145,7 @@
 <translation id="8338427544764842461">Nase-save dito ang iyong mga grupo ng tab at naa-update sa lahat ng iyong naka-sign in na device</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Isara ang <ph name="TABS_COUNT_ONE" /> napiling tab}one{Isara ang <ph name="TABS_COUNT_MANY" /> napiling tab}other{Isara ang <ph name="TABS_COUNT_MANY" /> na napiling tab}}</translation>
 <translation id="8398929769197326728">Bagong Folder - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="8428213095426709021">Mga Setting</translation>
 <translation id="8714939927607906138">Mas mababang presyo</translation>
 <translation id="8730621377337864115">Tapos na</translation>
 <translation id="8730999928494395583">Maaalis sa device na ito ang iyong aktibidad sa mga tab na Incognito na ito</translation>

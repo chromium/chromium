@@ -1443,7 +1443,6 @@ Kebijakan ini biasanya Dinonaktifkan sebagai pertahanan terhadap phishing.</tran
 <translation id="2043770014371753404">Menonaktifkan printer perusahaan</translation>
 <translation id="2054093043033461396">Screensaver untuk layar login perangkat diaktifkan.</translation>
 <translation id="2057317273526988987">Izinkan akses ke daftar URL</translation>
-<translation id="2058055310819710697">Aktifkan Mode Developer Aplikasi Terisolasi</translation>
 <translation id="205807990145127714">Data telemetri yang akan dilaporkan saat peristiwa perubahan kekuatan sinyal terjadi.</translation>
 <translation id="2060153898336610735">Otomatis berdasarkan bahasa saat ini</translation>
 <translation id="2061123930713023976">Mengizinkan debug untuk rekaman paket jaringan</translation>
@@ -2176,7 +2175,6 @@ Jika kebijakan ini disetel ke Salah (False), fitur Set Situs Terkait akan dinona
 <translation id="2570059561924004903">Nonaktifkan respons lisan</translation>
 <translation id="2570181623957732921">Mengaktifkan <ph name="DESK_API_NAME" /> untuk daftar domain pihak ketiga</translation>
 <translation id="2575198840408498393">Nonaktifkan pembuatan profil roaming</translation>
-<translation id="2576324725151524912">Mengizinkan Mode Developer Aplikasi Terisolasi.</translation>
 <translation id="25765864042030871">Pengendali peristiwa <ph name="UNLOAD_EVENT_NAME" /> tidak digunakan lagi. Diaktifkan atau tidaknya pengendali tersebut bergantung pada <ph name="PERMISSIONS_POLICY_NAME" /> <ph name="UNLOAD_EVENT_NAME" />. Saat ini, pengendali tersebut diizinkan oleh kebijakan secara default. Pada masa mendatang, pengendali peristiwa akan secara bertahap tidak lagi diizinkan secara default, dan situs harus secara eksplisit mengaktifkannya menggunakan header <ph name="PERMISSIONS_POLICY_NAME" />. Kebijakan perusahaan ini dapat digunakan untuk memilih tidak mengikuti penghentian bertahap ini dengan memaksa setelan default tetap aktif.
  
 Halaman mungkin bergantung pada pengendali peristiwa <ph name="UNLOAD_EVENT_NAME" /> untuk menyimpan data atau memberi sinyal akhir sesi pengguna ke server. Tindakan ini tidak direkomendasikan karena tidak dapat diandalkan dan memengaruhi performa dengan memblokir penggunaan <ph name="PRODUCT_NAME" />. Alternatif yang direkomendasikan tersedia, tetapi peristiwa <ph name="UNLOAD_EVENT_NAME" /> telah digunakan dalam waktu yang lama. Beberapa aplikasi mungkin masih mengandalkannya.
@@ -6435,7 +6433,6 @@ pengguna tidak dapat mengubah atau menggantinya.</translation>
       Saat fitur ini diaktifkan, <ph name="PRODUCT_NAME" /> mungkin menggunakan atau tidak menggunakan ECH bergantung pada dukungan server, ketersediaan data DNS HTTPS, atau status peluncuran.
 
       ECH adalah protokol yang berkembang, sehingga penerapan <ph name="PRODUCT_NAME" /> dapat berubah sewaktu-waktu. Oleh karena itu, kebijakan ini merupakan tindakan sementara untuk mengontrol penerapan eksperimental awal. Kebijakan ini akan diganti dengan kontrol akhir saat protokol diselesaikan.</translation>
-<translation id="5939656968921014919">Nonaktifkan Mode Developer Aplikasi Terisolasi</translation>
 <translation id="5939873071468124100">Membatasi akun yang dapat menggunakan integrasi <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
 <translation id="5945312246863177268">Melarang pengguna mengklik notifikasi Phone Hub untuk meluncurkan aplikasi Eche.</translation>
 <translation id="5946082169633555022">Saluran beta</translation>
@@ -10065,9 +10062,6 @@ Jika kebijakan ini disetel ke Salah (False), data kebijakan dan waktu pengambila
 Kebijakan ini hanya berlaku saat perangkat didaftarkan dengan <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" /> untuk <ph name="PRODUCT_NAME" />.
 Kebijakan ini selalu berlaku untuk <ph name="PRODUCT_OS_NAME" />.</translation>
 <translation id="8619748440665904084">Nonaktifkan impor data formulir isi otomatis saat browser pertama kali dijalankan</translation>
-<translation id="8623672932476443039">Jika kebijakan disetel ke Aktif, pengguna akan dapat mengakses Mode Developer untuk Aplikasi Terisolasi.
-      Jika kebijakan disetel ke Nonaktif, pengguna tidak dapat mengakses kemampuan tersebut.
-      Jika kebijakan ini tidak disetel, secara default pengguna yang dikelola perusahaan tidak akan diizinkan di ChromeOS dan semua pengguna serta OS lainnya akan diizinkan.</translation>
 <translation id="862621549134406761">Aktifkan pemeriksaan penggunaan kunci RSA</translation>
 <translation id="8626826495474944836">Memerlukan Isolasi Situs untuk setiap situs</translation>
 <translation id="8631314130868563649">Nonaktifkan manajemen pengaktifan daya baterai</translation>

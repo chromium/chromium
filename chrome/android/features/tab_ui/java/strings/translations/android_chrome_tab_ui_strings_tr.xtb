@@ -30,7 +30,7 @@
 <translation id="2271452184061378400">Sekme gruplarınız buraya kaydedilir</translation>
 <translation id="2277224997687551299">Grup adını düzenle</translation>
 <translation id="2330212241471632770">{TABS_COUNT,plural, =1{Sekmeye yer işareti koy}other{Sekmelere yer işareti koy}}</translation>
-<translation id="2359808026110333948">Devam et</translation>
+<translation id="2359808026110333948">Devam</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeli <ph name="TITLE_OF_GROUP" /> sekme grubunu daralt.}other{<ph name="TABS_COUNT_MANY" /> sekmeli <ph name="TITLE_OF_GROUP" /> sekme grubunu daralt.}}</translation>
 <translation id="2498435670446402865">Sekme grubunu yeniden adlandırın</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeyi daralt.}other{<ph name="TABS_COUNT_MANY" /> sekmeli sekme grubunu daralt.}}</translation>
@@ -121,6 +121,7 @@
 <translation id="7326879924029668159">İade politikasını ve daha fazlasını görün</translation>
 <translation id="7352298686197644113">Açık sekmelerinizdeki hangi öğenin fiyatının daha düşük olduğunu görün</translation>
 <translation id="7452985128687107478">Sekme grupları tüm cihazlarınızda otomatik olarak kaydedilip güncellenir</translation>
+<translation id="747459581954555080">Tümünü geri yükle</translation>
 <translation id="753732157349120914">Sekme Değiştirici</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google'dan <ph name="REVIEWS_COUNT_ONE" /> yorum}other{Google'dan <ph name="REVIEWS_COUNT_MANY" /> yorum}}</translation>
 <translation id="7559245342362162951">Grubun sekmelerini tam ekran ızgarada gösterir</translation>
@@ -144,6 +145,7 @@
 <translation id="8338427544764842461">Sekme gruplarınız buraya kaydedilir ve oturum açılmış tüm cihazlarınızda güncellenir</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Seçilen <ph name="TABS_COUNT_ONE" /> sekmeyi kapat}other{Seçilen <ph name="TABS_COUNT_MANY" /> sekmeyi kapat}}</translation>
 <translation id="8398929769197326728">Yeni Klasör - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="8428213095426709021">Ayarlar</translation>
 <translation id="8714939927607906138">Daha düşük fiyat</translation>
 <translation id="8730621377337864115">Bitti</translation>
 <translation id="8730999928494395583">Bu gizli sekmelerdeki etkinliğiniz bu cihazdan silinecektir</translation>

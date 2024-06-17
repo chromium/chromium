@@ -136,7 +136,6 @@
 <translation id="1085064499066015002">在所有网站上始终允许</translation>
 <translation id="1085697365578766383">启动虚拟机时出错。请重试。</translation>
 <translation id="1086486568852410168">使用 Google 智能镜头搜索</translation>
-<translation id="1088490543924960890">开始使用 Google 密码管理工具保存通行密钥</translation>
 <translation id="1090126737595388931">没有任何后台应用在运行</translation>
 <translation id="1090541560108055381">配对之前，请确保在这两部设备上显示的配对码相同</translation>
 <translation id="1091767800771861448">按 ESC 键可跳过更新（仅限非官方版本）。</translation>
@@ -3658,7 +3657,6 @@
 <translation id="3685598397738512288">Linux USB 偏好设置</translation>
 <translation id="3687598459967813435">始终允许接收来自 <ph name="WEBSITE" /> 的通知</translation>
 <translation id="368789413795732264">尝试写入文件时发生错误：<ph name="ERROR_TEXT" />。</translation>
-<translation id="3688368689701175138">此通行密钥将保存到 <ph name="ACCOUNT_NAME" /> 的 Google 密码管理工具中</translation>
 <translation id="3688507211863392146">写入您在此应用中打开的文件和文件夹</translation>
 <translation id="3688526734140524629">变更版本</translation>
 <translation id="3688578402379768763">已是最新</translation>
@@ -5459,6 +5457,7 @@
 <translation id="5032430150487044192">无法创建二维码</translation>
 <translation id="5033137252639132982">不允许使用移动传感器</translation>
 <translation id="5033266061063942743">几何图形</translation>
+<translation id="503441068567788948">为 Google 密码管理工具创建新的 PIN 码</translation>
 <translation id="5035846135112863536">选择下方的“更多详情”可从 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 处获取更多信息。</translation>
 <translation id="5037676449506322593">全选</translation>
 <translation id="5038818366306248416">您先前已选择禁止 <ph name="ORIGIN" /> 上的所有扩展程序</translation>
@@ -5486,6 +5485,7 @@
 <translation id="5057110919553308744">当您点击此扩展程序时</translation>
 <translation id="5057127674016624293">扫描用时超出了预期</translation>
 <translation id="5057480703570202545">下载记录</translation>
+<translation id="5058771692413403640"><ph name="SITE" /> 想验证您的身份</translation>
 <translation id="5059241099014281248">限制登录</translation>
 <translation id="5059429103770496207">显示样式</translation>
 <translation id="5059526285558225588">选择要分享什么</translation>
@@ -5926,6 +5926,7 @@
 <translation id="5390112241331447203">将所发送的 system_logs.txt 文件添加到反馈报告中。</translation>
 <translation id="5390677308841849479">深红色和橙色</translation>
 <translation id="5392192690789334093">允许发送通知</translation>
+<translation id="5393330235977997602">PIN 码选项</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{链接}other{# 个链接}}</translation>
 <translation id="5394529681046491727">Wi-Fi 直连</translation>
 <translation id="5395498824851198390">默认字体</translation>
@@ -6085,7 +6086,6 @@
 <translation id="5497739595514726398">Chrome 未能验证此安装包</translation>
 <translation id="5498967291577176373">提供与您名字、地址或电话号码有关的内嵌建议，帮助您提高输入速度</translation>
 <translation id="5499211612787418966">此对话框目前未被聚焦。按 Alt+Shift+A 即可聚焦于此对话框。</translation>
-<translation id="5499313591153584299">此文件可能对您的计算机有害。</translation>
 <translation id="5499453227627332024">Linux 容器有可用的升级，您也可过段时间再从“设置”应用中升级。</translation>
 <translation id="5499476581866658341">您现在可以查看手机中的近期照片和媒体</translation>
 <translation id="549957179819296104">新图标</translation>
@@ -6658,6 +6658,7 @@
 <translation id="5935158534896975820">正在准备证书签名请求（正在等待服务器的帮助）</translation>
 <translation id="5935656526031444304">管理安全浏览设置</translation>
 <translation id="5936065461722368675">翻译整页内容</translation>
+<translation id="5937347877659196749">接下来，请使用恢复 PIN 码保护您的所有通行密钥</translation>
 <translation id="5937977334791924341">“<ph name="APP" />”徽标</translation>
 <translation id="5938002010494270685">可进行安全性升级</translation>
 <translation id="5939518447894949180">重置</translation>
@@ -7007,7 +7008,6 @@
 <translation id="6206199626856438589">您将从显示的网站（包括已打开的标签页中的网站）退出账号</translation>
 <translation id="6206311232642889873">复制图片(&amp;Y)</translation>
 <translation id="6207200176136643843">重置为默认缩放级别</translation>
-<translation id="6207298079289376837">检查是否可以整理标签页</translation>
 <translation id="6207937957461833379">国家/地区</translation>
 <translation id="6208521041562685716">正在激活移动数据</translation>
 <translation id="6208725777148613371">未能保存到“<ph name="WEB_DRIVE" />”- <ph name="INTERRUPT_REASON" /></translation>
@@ -7358,7 +7358,6 @@
 <translation id="6476482583633999078">语速</translation>
 <translation id="6476671549211161535">按 <ph name="DEVICE_NAME" /> 上的鼠标左键或右键之外的按钮。</translation>
 <translation id="6477822444490674459">设有工作资料的手机无法同步通知。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
-<translation id="6478248366783946499">要保留危险文件吗？</translation>
 <translation id="6479881432656947268">访问 Chrome 应用商店</translation>
 <translation id="6480327114083866287">由 <ph name="MANAGER" /> 管理</translation>
 <translation id="6481749622989211463">与附近的设备分享文件及其他内容。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -7537,7 +7536,6 @@
 <translation id="6613267708691765962">正在扫描以检测是否有恶意软件…</translation>
 <translation id="6613668613087513143">此设备的空间不足，无法完成更新。请在设备上清理出 <ph name="NECESSARY_SPACE" /> 的空间，然后在 Chrome 浏览器中重试。</translation>
 <translation id="6615455863669487791">演示一下</translation>
-<translation id="6618097958368085618">仍然保留</translation>
 <translation id="6618744767048954150">正在运行</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">该网站可能会跟踪您的位置</translation>
@@ -8107,6 +8105,7 @@
 <translation id="7033616203784997570">所输入的内容不得超过 62 个字符</translation>
 <translation id="7034692021407794547">拥有结算管理权限的管理员必须先接受管理控制台的“Google Meet 设备”部分中的 Google Meet 设备服务条款。</translation>
 <translation id="7036706669646341689">建议为 Linux 留出 <ph name="DISK_SIZE" /> 的空间。如需增加可用空间，请从您的设备中删除文件。</translation>
+<translation id="7037157058268992880">忘记了 PIN 码</translation>
 <translation id="7037509989619051237">要试听的文字</translation>
 <translation id="7038632520572155338">开关控制</translation>
 <translation id="7038710352229712897">为<ph name="USER_NAME" />再添加一个 Google 账号</translation>
@@ -8122,7 +8121,6 @@
 <translation id="7044211973375150246">有一款应用已设为与<ph name="APP_NAME" />打开同样的链接。此操作会阻止<ph name="APP_NAME_2" />打开受支持的链接。</translation>
 <translation id="7044606776288350625">同步数据</translation>
 <translation id="7047059339731138197">选择背景</translation>
-<translation id="7049293980323620022">要保留文件吗？</translation>
 <translation id="7049524156282610342"><ph name="DISPLAY_NAME" />的浏览数据</translation>
 <translation id="7050037487872780845">热点配置无效</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{密码已保存到您的 Google 账号 <ph name="USER_EMAIL" />}other{密码已保存到您的 Google 账号 <ph name="USER_EMAIL" />}}</translation>
@@ -9310,7 +9308,6 @@
 <translation id="7939062555109487992">高级选项</translation>
 <translation id="793923212791838">您的设备无法用于此网站</translation>
 <translation id="7939328347457537652">管理设备证书</translation>
-<translation id="7939412583708276221">仍然保留</translation>
 <translation id="7940087892955752820">无法停止共享，因为有一款应用正在使用此文件夹。系统将会在下次关闭 <ph name="SPECIFIC_NAME" /> 时停止共享此文件夹。</translation>
 <translation id="7940265372707990269">排序依据：<ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">网络共享就绪与否：</translation>
@@ -9522,6 +9519,7 @@
 <translation id="8084429490152575036">移动网络 APN 设置</translation>
 <translation id="8084510406207562688">恢复所有标签页(&amp;E)</translation>
 <translation id="8084628902026812045">此网站使用的不是安全连接，该文件可能已被篡改</translation>
+<translation id="8085701268329068646">输入您用于访问 Google 密码管理工具的 PIN 码</translation>
 <translation id="8086015605808120405">正在配置<ph name="PRINTER_NAME" />…</translation>
 <translation id="8086121155774250556">此标签页正在共享屏幕</translation>
 <translation id="8086610718778464681">无法备份 Linux 应用和文件</translation>
@@ -10069,7 +10067,6 @@
 <translation id="8477241577829954800">被取代</translation>
 <translation id="8477384620836102176">基本信息(&amp;G)</translation>
 <translation id="8479176401914456949">代码无效。请重试。</translation>
-<translation id="8480082892550707549">即使您之前从该网站下载过文件，该网站也可能暂时存在安全隐患（遭到黑客入侵）。请稍后再尝试下载此文件。</translation>
 <translation id="8480869669560681089">由“<ph name="VENDOR_NAME" />”提供的未知设备</translation>
 <translation id="8481187309597259238">确认 USB 权限</translation>
 <translation id="8482077254400484047">在此处管理闲置标签页的外观</translation>
@@ -10898,7 +10895,6 @@
 <translation id="9085256200913095638">复制所选标签页</translation>
 <translation id="9085446486797400519">摄像头使用权限</translation>
 <translation id="9085776959277692427">未选择“<ph name="LANGUAGE" />”。按搜索键 + 空格键即可选择。</translation>
-<translation id="9087183943157874068">您可随时查看标签页分组建议</translation>
 <translation id="9087949559523851360">添加受限用户</translation>
 <translation id="9088234649737575428">系统已根据企业政策屏蔽 <ph name="PLUGIN_NAME" /></translation>
 <translation id="9088446193279799727">无法配置 Linux。请连接到互联网，然后重试。</translation>
@@ -11051,6 +11047,7 @@
 <translation id="920045321358709304">在<ph name="SEARCH_ENGINE" />中搜索</translation>
 <translation id="9201117361710210082">之前看过</translation>
 <translation id="9201220332032049474">屏幕锁定选项</translation>
+<translation id="9201762611758697018">恢复 PIN 码可帮助您在任意设备上访问已保存的通行密钥</translation>
 <translation id="9201842707396338580">出了点问题。请与设备所有者或管理员联系。错误代码：<ph name="ERROR_CODE" />。</translation>
 <translation id="9203296457393252944">红/绿、绿色弱（绿色弱视）</translation>
 <translation id="9203398526606335860">分析已启用(&amp;P)</translation>

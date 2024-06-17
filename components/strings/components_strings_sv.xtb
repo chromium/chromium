@@ -566,6 +566,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2036983605131262583">Alternativ rulle</translation>
 <translation id="2040463897538655645">Externa lagringsenheter</translation>
 <translation id="2040894699575719559">Platsen är blockerad</translation>
+<translation id="2041788246978549610">Använda tillgängliga mikrofoner (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Fack 7</translation>
 <translation id="204357726431741734">Logga in om du vill använda lösenord som har sparats i Google-kontot</translation>
 <translation id="2045871135676061132">Personal-kuvert</translation>
@@ -885,6 +886,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2655752832536625875">Badrum</translation>
 <translation id="2657637947725373811">{0,plural, =1{Vill du överföra den konfidentiella filen?}other{Vill du överföra dessa konfidentiella filer?}}</translation>
 <translation id="2658843814961855121">Arbets- och anställningslagstiftning</translation>
+<translation id="2658944305627908367">Transaktioner som överstiger saldot behandlas inte</translation>
 <translation id="2660779039299703961">Event</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Inga}=1{1 lösenord (för <ph name="DOMAIN_LIST" />)}=2{2 lösenord (för <ph name="DOMAIN_LIST" />)}other{# lösenord (för <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Överst</translation>
@@ -1081,6 +1083,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3090667236485488075">Glas</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Ignoreras, eftersom inaktiveringslistan innehåller ett mönster som är likvärdigt med * vilket är samma sak som att inaktivera principen.</translation>
+<translation id="3099619114405539473">Använda tillgängliga kameror (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Sparkonto</translation>
 <translation id="3103188521861412364">Aktier och obligationer</translation>
 <translation id="3105172416063519923">Tillgångs-id:</translation>
@@ -1357,6 +1360,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3583757800736429874">&amp;Gör om Flytta</translation>
 <translation id="3584299510153766161">Två hål längst ned</translation>
 <translation id="3584755835709800788">Science fiction- och fantasy-film</translation>
+<translation id="3585455899094692781">Använda och röra på tillgängliga kameror (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Våtfilm</translation>
 <translation id="3586931643579894722">Dölj detaljerad information</translation>
 <translation id="3587738293690942763">Mellan</translation>
@@ -2421,6 +2425,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5645132789250840550">Plast (halvblank)</translation>
 <translation id="5645719697465708351">Fest- och semesterprodukter</translation>
 <translation id="5645854190134202180">andra skiftet</translation>
+<translation id="5648166631817621825">Senaste sju dagarna</translation>
 <translation id="5649053991847567735">Automatiska nedladdningar</translation>
 <translation id="5651323159439184939">Traktormatning</translation>
 <translation id="5654927323611874862">Uppladdat kraschrapport-id:</translation>
@@ -3058,6 +3063,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6915804003454593391">Användare:</translation>
 <translation id="6916193791494646625">Ange anledning till nedladdning (obligatoriskt)</translation>
 <translation id="6917795328362592458">Lösenordet som du precis använde har läckt ut vid ett dataintrång. Du rekommenderas av Google Lösenordshantering att se över dina sparade lösenord.</translation>
+<translation id="6924013822850225188">Välj om dina kortförmåner ska visas i kassan (bankvillkor gäller)</translation>
 <translation id="6925267999184670015">Nordamerikansk B+</translation>
 <translation id="6926216138694948720">Kroppskonst</translation>
 <translation id="692638818576287323">Yrkesfordon</translation>
@@ -3827,6 +3833,7 @@ Mer information.
 <translation id="830498451218851433">Enkelfalsning</translation>
 <translation id="8308653357438598313">Livestreaming</translation>
 <translation id="8311895354659782580">Fastigheter till salu</translation>
+<translation id="8312841338723044391">LIVE</translation>
 <translation id="8316555157357957253">Används nu</translation>
 <translation id="8319269383395457801">Bostadsförsäljning</translation>
 <translation id="831997045666694187">kvällen</translation>

@@ -200,6 +200,7 @@
 <translation id="199425419756152024">Shiko fjalëkalimin</translation>
 <translation id="2010008505735295285">Ringarko</translation>
 <translation id="2015722694326466240">Për të parë fjalëkalimet, duhet të vendosësh në fillim një kod në pajisjen tënde.</translation>
+<translation id="201759455285471444">Zgjero grupin e skedave.</translation>
 <translation id="2021670401941426298">Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimit, nëse është e vlefshme.</translation>
 <translation id="202292859882676807">Lejohet qasja te "Mikrofoni"</translation>
 <translation id="20485545164632846">artikull i ri</translation>
@@ -531,6 +532,7 @@ Shiko udhëzimet e motorit të kërkimit për fshirjen e historikut të kërkimi
 <translation id="371398631992790800">Fshih "Faqeshënuesit"</translation>
 <translation id="37207012422556617">Kërkimet në tendencë</translation>
 <translation id="3725081662140949903">Për t'i ndaluar të tjerët që të mos përdorin fjalëkalimin tënd, hap aplikacionin <ph name="APP" /> për të ndryshuar fjalëkalimin</translation>
+<translation id="372676576864368480">Plotëso automatikisht numrin e kartës që mbaron me <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Krijuar më <ph name="DATE" /></translation>
 <translation id="374357899112510277">Fshih "Shkarkimet"</translation>
 <translation id="3745190878148784130">Fshih "Zmadho tekstin"</translation>
@@ -1096,7 +1098,9 @@ Sajtet nuk mund t'i përdorin kukit për të parë aktivitetin tënd të shfleti
 <translation id="6476800141292307438">Po përkthen faqen në <ph name="LANGUAGE" />. Opsionet që ofrohen janë pranë fundit të ekranit.</translation>
 <translation id="648164694371393720">Gabim i vërtetimit</translation>
 <translation id="6494931198667773526">Mbaron</translation>
+<translation id="6500795388871406244">Përdor fjalëkalimin e sugjeruar:</translation>
 <translation id="650279896687777322">Mëso më shumë...</translation>
+<translation id="6505334220040167806">Palos grupin e skedave.</translation>
 <translation id="6507973708545996744">Identifikohu për të marrë listën tënde të leximit në të gjitha pajisjet e tua.</translation>
 <translation id="6510072653668207258">Më kujto më vonë</translation>
 <translation id="651505212789431520">Të anulohet sinkronizimi? Mund ta aktivizosh sinkronizimin në çdo kohë te "Cilësimet".</translation>
@@ -1308,6 +1312,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7583004045319035904">Përdor <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> për të shkyçur skedat "e fshehta".</translation>
 <translation id="7598439272585186139">Rrit sigurinë</translation>
 <translation id="7600965453749440009">Asnjëherë mos përkthe <ph name="LANGUAGE" /></translation>
+<translation id="7603308509262646847">Plotëso automatikisht mbajtësin e kartës <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Dritare kërcyese të bllokuara (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">Grupet e skedave</translation>
 <translation id="7607521702806708809">Fshi fjalëkalimin</translation>
@@ -1340,6 +1345,7 @@ Në modalitetin "e fshehtë", sajtet nuk mund t'i përdorin kukit për të parë
 <translation id="7749790401023484470">Nuk zgjodhe asnjë tekst.</translation>
 <translation id="7752405526771734448">Kërkimi vizual me "Lenten"</translation>
 <translation id="7756478488453921771">Menyja → Cilësimet → Mënyrat e pagesës</translation>
+<translation id="775755486779745798">Plotëso automatikisht muajin e skadimit: <ph name="MONTH" /></translation>
 <translation id="7760127703945531263">Kyçja e modalitetit "Të fshehtë"</translation>
 <translation id="7765158879357617694">Zhvendos</translation>
 <translation id="7772032839648071052">Konfirmo shprehjen e kalimit</translation>
@@ -1516,6 +1522,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8556590991644167667">{count,plural, =1{Hoqe {count} paralajmërim}other{Hoqe {count} paralajmërime}}</translation>
 <translation id="8560253818350321773">Shfaq në fillim artikujt e përdorur shpesh.</translation>
 <translation id="8569721750632860947">Cilën URL dëshiron të shtosh te lista e leximit?</translation>
+<translation id="8577056989960190117">Plotëso automatikisht vitin e skadimit: <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Joaktiv</translation>
 <translation id="8591976964826315682">Blloko kukit e palëve të treta në modalitetin "i fshehtë"</translation>
 <translation id="8593565399399144771">Mund të hapësh një skedë të re këtu.</translation>

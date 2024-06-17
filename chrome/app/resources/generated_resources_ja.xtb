@@ -136,7 +136,6 @@
 <translation id="1085064499066015002">すべてのサイトで常に許可</translation>
 <translation id="1085697365578766383">仮想マシンの起動中にエラーが発生しました。もう一度お試しください。</translation>
 <translation id="1086486568852410168">Google レンズで検索</translation>
-<translation id="1088490543924960890">Google パスワード マネージャーでパスキーを保存しましょう</translation>
 <translation id="1090126737595388931">実行中のバックグラウンド アプリはありません</translation>
 <translation id="1090541560108055381">ペア設定を行う前に、両方のデバイスでコードが一致しているか確認してください</translation>
 <translation id="1091767800771861448">Esc キーを押すとスキップできます（非公式のビルドのみ）。</translation>
@@ -3659,7 +3658,6 @@
 <translation id="3685598397738512288">Linux の USB 設定</translation>
 <translation id="3687598459967813435"><ph name="WEBSITE" /> からの通知を常に許可する</translation>
 <translation id="368789413795732264">ファイルの書き出し中にエラーが発生しました: <ph name="ERROR_TEXT" /></translation>
-<translation id="3688368689701175138">このパスキーは <ph name="ACCOUNT_NAME" /> の Google パスワード マネージャーに保存されます</translation>
 <translation id="3688507211863392146">アプリケーションで開いたファイルとフォルダに書き込む</translation>
 <translation id="3688526734140524629">チャンネルを変更</translation>
 <translation id="3688578402379768763">最新</translation>
@@ -6086,7 +6084,6 @@
 <translation id="5497739595514726398">Chrome でこのインストール バンドルを確認できませんでした</translation>
 <translation id="5498967291577176373">名前や住所、電話番号が候補として表示され、すばやく入力できます</translation>
 <translation id="5499211612787418966">このダイアログは現在フォーカスされていません。このダイアログをフォーカスするには Alt+Shift+A キーを押してください。</translation>
-<translation id="5499313591153584299">このファイルはパソコンに危害を加える可能性があります。</translation>
 <translation id="5499453227627332024">Linux コンテナのアップグレードが可能です。後で設定アプリからアップグレードすることもできます。</translation>
 <translation id="5499476581866658341">スマートフォンの最近の写真やメディアを表示できるようになりました</translation>
 <translation id="549957179819296104">アイコンが新しくなりました</translation>
@@ -7012,7 +7009,6 @@
 <translation id="6206199626856438589">開いているタブを含め、表示されたサイトからログアウトします</translation>
 <translation id="6206311232642889873">画像をコピー(&amp;Y)</translation>
 <translation id="6207200176136643843">リセットしてデフォルトのズームレベルに戻す</translation>
-<translation id="6207298079289376837">タブを整理できるかどうかの確認</translation>
 <translation id="6207937957461833379">国/地域</translation>
 <translation id="6208521041562685716">モバイルデータを有効化しています</translation>
 <translation id="6208725777148613371"><ph name="WEB_DRIVE" /> に保存できませんでした - <ph name="INTERRUPT_REASON" /></translation>
@@ -7363,7 +7359,6 @@
 <translation id="6476482583633999078">読み上げ速度</translation>
 <translation id="6476671549211161535"><ph name="DEVICE_NAME" /> でマウスの左右ボタン以外のボタンを押してください。</translation>
 <translation id="6477822444490674459">通知の同期は、仕事用プロファイルが設定されているスマートフォンには対応していません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
-<translation id="6478248366783946499">危険なファイルを保存しますか？</translation>
 <translation id="6479881432656947268">Chrome ウェブストアにアクセス</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> によって管理されています</translation>
 <translation id="6481749622989211463">付近のデバイスとファイルなどを共有します。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -7541,7 +7536,6 @@
 <translation id="6613267708691765962">マルウェアをスキャンしています...</translation>
 <translation id="6613668613087513143">更新を完了するのに十分な容量がデバイスにありません。デバイスで <ph name="NECESSARY_SPACE" /> の容量を確保してから、Chrome ブラウザでもう一度お試しください。</translation>
 <translation id="6615455863669487791">表示</translation>
-<translation id="6618097958368085618">続行する</translation>
 <translation id="6618744767048954150">実行中</translation>
 <translation id="6619058681307408113">ラインプリンタ デーモン（LPD）</translation>
 <translation id="661907246513853610">サイトに現在地の追跡が許可されています</translation>
@@ -8126,7 +8120,6 @@
 <translation id="7044211973375150246"><ph name="APP_NAME" /> と同じリンクを開くよう設定されているアプリがあります。設定を変更すると、<ph name="APP_NAME_2" /> で対応リンクを開けなくなります。</translation>
 <translation id="7044606776288350625">同期データ</translation>
 <translation id="7047059339731138197">背景を選択します</translation>
-<translation id="7049293980323620022">ファイルを保存しますか？</translation>
 <translation id="7049524156282610342">閲覧データ <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">無効なアクセス ポイント設定</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{パスワードは Google アカウント（<ph name="USER_EMAIL" />）に保存されています}other{パスワードは Google アカウント（<ph name="USER_EMAIL" />）に保存されています}}</translation>
@@ -9312,7 +9305,6 @@
 <translation id="7939062555109487992">詳細オプション</translation>
 <translation id="793923212791838">このサイトはお使いのデバイスではご利用いただけません</translation>
 <translation id="7939328347457537652">デバイス証明書の管理</translation>
-<translation id="7939412583708276221">続行する</translation>
 <translation id="7940087892955752820">このフォルダを使用しているアプリケーションがあるため、共有を停止できませんでした。次回 <ph name="SPECIFIC_NAME" /> をシャットダウンするときに、フォルダの共有を停止します。</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> で並べ替え</translation>
 <translation id="7941179291434537290">テザリングの準備:</translation>
@@ -10072,7 +10064,6 @@
 <translation id="8477241577829954800">差し替えられた</translation>
 <translation id="8477384620836102176">全般(&amp;G)</translation>
 <translation id="8479176401914456949">コードが無効です。もう一度お試しください。</translation>
-<translation id="8480082892550707549">以前ファイルをダウンロードしたサイトでも、一時的に安全でなくなっている（ハッキングされている）可能性があります。しばらくしてからファイルをダウンロードしてみてください。</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> 製の不明なデバイス</translation>
 <translation id="8481187309597259238">USB のアクセス許可の確認</translation>
 <translation id="8482077254400484047">ここでアクティブでないタブのデザインを管理します</translation>
@@ -10901,7 +10892,6 @@
 <translation id="9085256200913095638">選択したタブを複製</translation>
 <translation id="9085446486797400519">カメラへのアクセス</translation>
 <translation id="9085776959277692427">「<ph name="LANGUAGE" />」は選択されていません。選択するには検索+Space キーを押してください。</translation>
-<translation id="9087183943157874068">タブグループの候補はいつでも確認できます</translation>
 <translation id="9087949559523851360">制限付きユーザーの追加</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> は会社のポリシーによってブロックされています</translation>
 <translation id="9088446193279799727">Linux を設定できませんでした。インターネットに接続してから、もう一度お試しください。</translation>

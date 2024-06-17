@@ -136,7 +136,6 @@
 <translation id="1085064499066015002">ເປີດຕະຫຼອດທຸກເວັບໄຊ</translation>
 <translation id="1085697365578766383">ເກີດຄວາມຜິດພາດໃນການເລີ່ມເຄື່ອງຈຳລອງສະເໝືອນຈິງ. ກະລຸນາລອງອີກຄັ້ງ.</translation>
 <translation id="1086486568852410168">ຊອກຫາດ້ວຍ Google Lens</translation>
-<translation id="1088490543924960890">ເລີ່ມບັນທຶກກະແຈຜ່ານດ້ວຍຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="1090126737595388931">ບໍ່ມີແອັບພື້ນຫຼັງແລ່ນຢູ່</translation>
 <translation id="1090541560108055381">ກ່ອນການຈັບຄູ່, ໃຫ້ກວດສອບວ່າລະຫັດນີ້ຄືກັນຢູ່ທັງສອງອຸປະກອນກ່ອນ</translation>
 <translation id="1091767800771861448">ກົດ ESCAPE ເພື່ອ​ຂ້າມໄປ (ສ້າງຂຶ້ນບໍ່​ເປັນ​ທາງ​ການ​ເທົ່າ​ນັ້ນ​)​.</translation>
@@ -3680,7 +3679,6 @@
 <translation id="3685598397738512288">ການຕັ້ງຄ່າ USB ໃນ Linux</translation>
 <translation id="3687598459967813435">ອະນຸຍາດການແຈ້ງເຕືອນຈາກ <ph name="WEBSITE" /> ຢູ່ສະເໝີ</translation>
 <translation id="368789413795732264">ມີຄວາມຜິດພາດໃນຂະນະທີ່ພະຍາຍາມຂຽນໄຟລ໌: <ph name="ERROR_TEXT" />.</translation>
-<translation id="3688368689701175138">ລະບົບຈະບັນທຶກກະແຈຜ່ານນີ້ໄວ້ໃນຕົວຈັດການລະຫັດຜ່ານ Google ສຳລັບ <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3688507211863392146">ຂຽນ​ໃສ່​ໄຟ​ລ ​ແລະ​​ໂຟ​ເດີ​ທີ່​ທ່ານ​ເປີດ​ໃນ​ແອ​ພພະລິ​ເຄຊັນ</translation>
 <translation id="3688526734140524629">ປ່ຽນຊ່ອງ</translation>
 <translation id="3688578402379768763">ອັບເດດແລ້ວ</translation>
@@ -6111,7 +6109,6 @@
 <translation id="5497739595514726398">Chrome ຢັ້ງຢືນຊຸດການຕິດຕັ້ງນີ້ບໍ່ສຳເລັດ</translation>
 <translation id="5498967291577176373">ຂຽນໄດ້ໄວກວ່າດ້ວຍການແນະນຳໃນແຖວສຳລັບຊື່, ທີ່ຢູ່ ຫຼື ເບີໂທລະສັບຂອງທ່ານ</translation>
 <translation id="5499211612787418966">ຕອນນີ້ບໍ່ໄດ້ໂຟກັສກ່ອງໂຕ້​ຕອບນີ້. ກົດ Alt-Shift-A ເພື່ອໂຟກັສກ່ອງໂຕ້ຕອບນີ້.</translation>
-<translation id="5499313591153584299">ໄຟ​ລ໌​ນີ້​ອາດ​ຈະ​ເປັນ​ອັນ​ຕະ​ລາຍ​ຕໍ່​ຄອມ​ພິວ​ເຕີ​ຂອງ​ທ່ານ.</translation>
 <translation id="5499453227627332024">ມີການອັບເກຣດສຳລັບກ່ອງບັນຈຸ Linux ຂອງທ່ານ. ນອກນັ້ນທ່ານຍັງສາມາດອັບເກຣດໄດ້ໃນພາຍຫຼັງຈາກແອັບການຕັ້ງຄ່າ.</translation>
 <translation id="5499476581866658341">ຕອນນີ້ທ່ານສາມາດເບິ່ງຮູບພາບ ແລະ ມີເດຍຫຼ້າສຸດຂອງໂທລະສັບທ່ານໄດ້ແລ້ວ</translation>
 <translation id="549957179819296104">ໄອຄອນໃໝ່</translation>
@@ -7037,7 +7034,6 @@
 <translation id="6206199626856438589">ທ່ານຈະອອກຈາກລະບົບຂອງເວັບໄຊສະແດງຜົນ, ຮວມທັງໃນແຖບທີ່ເປີດຢູ່</translation>
 <translation id="6206311232642889873">ກັອບປີ້ຮູບ</translation>
 <translation id="6207200176136643843">ຣີເຊັດເປັນລະດັບການຊູມເລີ່ມຕົ້ນ</translation>
-<translation id="6207298079289376837">ກວດສອບວ່າສາມາດຈັດລະບຽບແຖບໄດ້ຫຼືບໍ່</translation>
 <translation id="6207937957461833379">ປະເທດ/ພາກພື້ນ</translation>
 <translation id="6208521041562685716">ກຳລັງເປີດນຳໃຊ້ອິນເຕີເນັດມືຖື</translation>
 <translation id="6208725777148613371">ບັນທຶກໄປໃສ່ <ph name="WEB_DRIVE" /> ບໍ່ສຳເລັດ - <ph name="INTERRUPT_REASON" /></translation>
@@ -7388,7 +7384,6 @@
 <translation id="6476482583633999078">ຄວາມໄວການເວົ້າ</translation>
 <translation id="6476671549211161535">ກົດປຸ່ມທີ່ບໍ່ແມ່ນປຸ່ມເມົ້າຊ້າຍ ຫຼື ຂວາຢູ່ <ph name="DEVICE_NAME" /> ຂອງທ່ານ.</translation>
 <translation id="6477822444490674459">ບໍ່ຮອງຮັບການຊິ້ງຂໍ້ມູນການແຈ້ງເຕືອນສຳລັບໂທລະສັບໃນໂປຣໄຟລ໌ບ່ອນເຮັດວຽກ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
-<translation id="6478248366783946499">ເກັບໄຟລ໌ອັນຕະລາຍໄວ້ບໍ?</translation>
 <translation id="6479881432656947268">ເຂົ້າເບິ່ງ Chrome Web Store</translation>
 <translation id="6480327114083866287">ຈັດການໂດຍ <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">ແບ່ງປັນໄຟລ໌ ແລະ ອື່ນໆກັບອຸປະກອນທີ່ຢູ່ໃກ້ຄຽງ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
@@ -7567,7 +7562,6 @@
 <translation id="6613267708691765962">ກຳລັງສະແກນຫາເມົາແວ...</translation>
 <translation id="6613668613087513143">ມີພື້ນທີ່ບໍ່ພຽງພໍຢູ່ອຸປະກອນນີ້ເພື່ອອັບເດດໃຫ້ສຳເລັດ. ກະລຸນາສ້າງພື້ນທີ່ຫວ່າງ <ph name="NECESSARY_SPACE" /> ຢູ່ອຸປະກອນຂອງທ່ານແລ້ວລອງໃໝ່ຈາກໂປຣແກຣມທ່ອງເວັບ Chrome ຂອງທ່ານ.</translation>
 <translation id="6615455863669487791">ສະ​ແດງຂ້ອຍ</translation>
-<translation id="6618097958368085618">ຢືນຢັນໃຫ້ເກັບໄວ້</translation>
 <translation id="6618744767048954150">ກຳລັງເປີດ</translation>
 <translation id="6619058681307408113">ເຄື່ອງພິມແດມອນແບບໃຊ້ສາຍ (LPD)</translation>
 <translation id="661907246513853610">ເວັບໄຊສາມາດຕິດຕາມສະຖານທີ່ຂອງທ່ານໄດ້</translation>
@@ -8152,7 +8146,6 @@
 <translation id="7044211973375150246">ແອັບຖືກຕັ້ງໃຫ້ເປີດລິ້ງດຽວກັນເປັນ <ph name="APP_NAME" />. ນີ້ຈະປິດການນຳໃຊ້ <ph name="APP_NAME_2" /> ບໍ່ໃຫ້ເປີດລິ້ງທີ່ຮອງຮັບ.</translation>
 <translation id="7044606776288350625">ຊິ້ງຂໍ້ມູນ</translation>
 <translation id="7047059339731138197">ເລືອກພາບພື້ນຫຼັງ</translation>
-<translation id="7049293980323620022">ເກັບໄຟລ໌ໄວ້ບໍ?</translation>
 <translation id="7049524156282610342">ຂໍ້ມູນການທ່ອງເວັບຂອງ <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">ການຕັ້ງຄ່າຮັອດສະປອດບໍ່ຖືກຕ້ອງ</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, <ph name="USER_EMAIL" />}other{ລະຫັດຜ່ານທີ່ບັນທຶກໄວ້ໃນບັນຊີ Google ຂອງທ່ານ, <ph name="USER_EMAIL" />}}</translation>
@@ -9338,7 +9331,6 @@
 <translation id="7939062555109487992">ຕົວເລືອກຂັ້ນສູງ</translation>
 <translation id="793923212791838">ບໍ່ສາມາດໃຊ້ອຸປະກອນຂອງທ່ານກັບເວັບໄຊນີ້ໄດ້</translation>
 <translation id="7939328347457537652">ຈັດການໃບຮັບຮອງອຸປະກອນ</translation>
-<translation id="7939412583708276221">ແນວໃດກໍ່ຮັກສາໄວ້</translation>
 <translation id="7940087892955752820">ບໍ່ສາມາດເຊົາແບ່ງປັນໄດ້ເນື່ອງຈາກມີແອັບພລິເຄຊັນທີ່ກຳລັງໃຊ້ໂຟນເດີນີ້ຢູ່. ລະບົບຈະເຊົາແບ່ງປັນໂຟນເດີເມື່ອມີການປິດ <ph name="SPECIFIC_NAME" /> ໃນເທື່ອຕໍ່ໄປ.</translation>
 <translation id="7940265372707990269">ຈັດຮຽງຕາມ <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">ຄວາມພ້ອມຂອງການປ່ອຍສັນຍານ:</translation>
@@ -10097,7 +10089,6 @@
 <translation id="8477241577829954800">ປ່ຽນແທນແລ້ວ</translation>
 <translation id="8477384620836102176">ທົ່ວໄປ</translation>
 <translation id="8479176401914456949">ລະຫັດບໍ່ຖືກຕ້ອງ. ກະລຸນາລອງໃໝ່.</translation>
-<translation id="8480082892550707549">ເຖິງແມ່ນວ່າທ່ານໄດ້ດາວໂຫຼດໄຟລ໌ຈາກເວັບໄຊນີ້ມາກ່ອນ, ເວັບໄຊນີ້ອາດຈະບໍ່ປອດໄພຊົ່ວຄາວ (ຖືກແຮັກ). ລອງດາວໂຫຼດໄຟລ໌ນີ້ໃນພາຍຫຼັງ.</translation>
 <translation id="8480869669560681089">ອຸປະກອນທີ່ບໍ່ຮູ້ຈັກຈາກ <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">ຢືນຢັນການອະນຸຍາດ USB</translation>
 <translation id="8482077254400484047">ຈັດການຮູບລັກຂອງແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້ບ່ອນນີ້</translation>
@@ -10926,7 +10917,6 @@
 <translation id="9085256200913095638">ສຳເນົາແຖບທີ່ເລືອກ</translation>
 <translation id="9085446486797400519">ສິດເຂົ້າເຖິງກ້ອງຖ່າຍຮູບ</translation>
 <translation id="9085776959277692427">ບໍ່ໄດ້ເລືອກ <ph name="LANGUAGE" />. ກົດປຸ່ມຊອກຫາພ້ອມກັບປຸ່ມຍະຫວ່າງເພື່ອເລືອກ.</translation>
-<translation id="9087183943157874068">ທ່ານສາມາດເບິ່ງຄຳແນະນຳກຸ່ມແຖບໄດ້ທຸກເວລາ</translation>
 <translation id="9087949559523851360">ເພີ່ມຜູ້ໃຊ້ທີ່ຖືກຈຳກັດ</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> ຖືກບລັອກໄວ້ຕາມນະໂຍບາຍວິສາຫະກິດ</translation>
 <translation id="9088446193279799727">ບໍ່ສາມາດຕັ້ງຄ່າ Linux ໄດ້. ກະລຸນາເຊື່ອມຕໍ່ອິນເຕີເນັດແລ້ວລອງໃໝ່.</translation>

@@ -174,6 +174,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3261565993776444564">Preizkusite novo barvo za prilagajanje brskalnika</translation>
 <translation id="3282568296779691940">Prijava v Chrome</translation>
 <translation id="3286538390144397061">Znova zaženi</translation>
+<translation id="3292333338048274092">Nato boste morali znova zagnati Chrome.</translation>
 <translation id="3360895254066713204">Pomočnik za Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome se bo zdaj znova zagnal}=1{Chrome se bo znova zagnal čez eno sekundo}one{Chrome se bo znova zagnal čez # sekundo}two{Chrome se bo znova zagnal čez # sekundi}few{Chrome se bo znova zagnal čez # sekunde}other{Chrome se bo znova zagnal čez # sekund}}</translation>
 <translation id="3396977131400919238">Med namestitvijo je prišlo do napake v operacijskem sistemu. Ponovno prenesite program Google Chrome.</translation>
@@ -218,6 +219,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4035053306113201399">Če želite namestiti posodobitev, morate znova zagnati Chrome OS.</translation>
 <translation id="4050175100176540509">V najnovejši različici so na voljo pomembne varnostne izboljšave in nove funkcije.</translation>
 <translation id="4053720452172726777">Prilagajanje in nadziranje Google Chroma</translation>
+<translation id="4084404300720192944">Če želite deliti okno, v sistemskih nastavitvah omogočite snemanje zaslona za Chrome.</translation>
 <translation id="4106587138345390261">Chrome raziskuje nove funkcije, ki spletnim mestom omogočajo, da zagotavljajo isto izkušnjo pri brskanju, pri tem pa uporabljajo manj vaših podatkov.</translation>
 <translation id="4110895483821904099">Nastavitev novega profila v Chromu</translation>
 <translation id="4111566860456076004">Chrome ne more preveriti, od kod je ta razširitev, in morda ni varna. Odstranite jo iz Chroma, da si ne bo mogla več ogledati vaših podatkov na obiskanih spletnih mestih, vključno z osebnimi podatki, in jih spreminjati.</translation>
@@ -359,6 +361,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> različica beta Google Chroma</translation>
 <translation id="6182736845697986886">Namestitev ni uspela zaradi notranje napake strežnika za posodobitve.</translation>
 <translation id="6200139057479872438">Nedavno niste obiskali tega mesta. Chrome je odstranil ti dovoljenji: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
+<translation id="621585339844629864">Če želite deliti zaslon, v sistemskih nastavitvah omogočite snemanje zaslona za Chrome.</translation>
 <translation id="6235018212288296708">Pravilo za dohodni promet za Google Chrome, ki omogoča promet mDNS.</translation>
 <translation id="624230925347970731">Chrome se bo kmalu zaprl</translation>
 <translation id="6247557882553405851">Googlov upravitelj gesel</translation>

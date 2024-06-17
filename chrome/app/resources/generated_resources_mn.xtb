@@ -136,7 +136,6 @@
 <translation id="1085064499066015002">Бүх сайт дээр үргэлж</translation>
 <translation id="1085697365578766383">Виртуал машиныг эхлүүлэхэд алдаа гарлаа. Дахин оролдоно уу.</translation>
 <translation id="1086486568852410168">Google Lens-р хайх</translation>
-<translation id="1088490543924960890">Google Нууц үгний менежерээр нэвтрэх түлхүүр хадгалж эхэлнэ үү</translation>
 <translation id="1090126737595388931">Ямар ч үндсэн апп ажиллаагүй байна.</translation>
 <translation id="1090541560108055381">Хослуулахаасаа өмнө энэ код нь хоёр төхөөрөмж дээр адилхан байгаа эсэхийг шалгана уу</translation>
 <translation id="1091767800771861448">Алгасахын тулд ESCAPE-ийг дарна уу (Зөвхөн албан бус боловсруулалтанд).</translation>
@@ -3677,7 +3676,6 @@
 <translation id="3685598397738512288">Linux-н USB сонголт</translation>
 <translation id="3687598459967813435"><ph name="WEBSITE" />-н мэдэгдлийг үргэлж зөвшөөрөх</translation>
 <translation id="368789413795732264">Файлыг бичиж авахыг оролдож байх үед алдаа гарлаа <ph name="ERROR_TEXT" /> .</translation>
-<translation id="3688368689701175138">Энэ нэвтрэх түлхүүрийг <ph name="ACCOUNT_NAME" />-н Google Нууц үгний менежерт хадгална</translation>
 <translation id="3688507211863392146">Аппликейшн дотор өөрийн нээсэн файл болон хавтас бичнэ үү.</translation>
 <translation id="3688526734140524629">Сувгийг өөрчлөх</translation>
 <translation id="3688578402379768763">Шинэчлэгдсэн</translation>
@@ -6108,7 +6106,6 @@
 <translation id="5497739595514726398">Chrome энэ суулгалтын багцыг баталгаажуулж чадсангүй</translation>
 <translation id="5498967291577176373">Нэр, хаяг эсвэл утасны дугаараа мөрөн дэх зөвлөмжүүдийн тусламжтайгаар илүү хурдан бичээрэй</translation>
 <translation id="5499211612787418966">Энэ харилцаг яриаг одоогоор сонгоогүй байна. Энэ харилцан яриаг сонгохын тулд Alt-Shift дээр дарна уу.</translation>
-<translation id="5499313591153584299">Энэ файл нь таны компьютерт хор хөнөөлтэй байж болно.</translation>
 <translation id="5499453227627332024">Таны Linux контейнерт сайжруулалт боломжтой байна. Та дараа нь мөн Тохиргоо аппаас сайжруулах боломжтой.</translation>
 <translation id="5499476581866658341">Та одоо утасныхаа саяхны зургууд болон медиаг харах боломжтой</translation>
 <translation id="549957179819296104">Шинэ дүрс тэмдэг</translation>
@@ -7034,7 +7031,6 @@
 <translation id="6206199626856438589">Таныг үзүүлсэн сайтуудаас гаргах бөгөөд үүнд нээлттэй табуудынх багтана</translation>
 <translation id="6206311232642889873">Зургийг хуулах</translation>
 <translation id="6207200176136643843">Томруулах өгөгдмөл түвшинд тохируулах</translation>
-<translation id="6207298079289376837">Табуудыг цэгцлэх боломжтой эсэхийг шалгана уу</translation>
 <translation id="6207937957461833379">Улс / бүс</translation>
 <translation id="6208521041562685716">Мобайл датаг идэвхжүүлж байна</translation>
 <translation id="6208725777148613371"><ph name="WEB_DRIVE" />-д хадгалж чадсангүй - <ph name="INTERRUPT_REASON" /></translation>
@@ -7385,7 +7381,6 @@
 <translation id="6476482583633999078">Ярианы хурд</translation>
 <translation id="6476671549211161535">Таны <ph name="DEVICE_NAME" /> дээрх хулганын зүүн эсвэл баруун товчлуур бус товчлуурыг дарна уу.</translation>
 <translation id="6477822444490674459">Ажлын профайл дахь утаснуудад мэдэгдэл синк хийхийг дэмждэггүй. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
-<translation id="6478248366783946499">Аюултай файлыг хадгалах уу?</translation>
 <translation id="6479881432656947268">Chrome Веб Дэлгүүрт зочлох</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> удирддаг</translation>
 <translation id="6481749622989211463">Ойролцоох төхөөрөмжүүдтэй файл болон бусад зүйлийг хуваалцана уу. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
@@ -7564,7 +7559,6 @@
 <translation id="6613267708691765962">Хортой программыг скан хийж байна...</translation>
 <translation id="6613668613087513143">Энэ шинэчлэлтийг дуусгахад энэ төхөөрөмж дээр хангалттай зай байхгүй байна. Төхөөрөмж дээрээ <ph name="NECESSARY_SPACE" />-г цэвэрлээд, Chrome хөтчөөсөө дахин оролдоно уу.</translation>
 <translation id="6615455863669487791">Надад үзүүлнэ үү</translation>
-<translation id="6618097958368085618">Ямар ч үед хадгалах</translation>
 <translation id="6618744767048954150">Ажиллуулж байна</translation>
 <translation id="6619058681307408113">Шугам хэвлэгчийн Дэмон (LPD)</translation>
 <translation id="661907246513853610">Сайт таны байршлыг шинжлэх боломжтой</translation>
@@ -8149,7 +8143,6 @@
 <translation id="7044211973375150246">Аппыг <ph name="APP_NAME" />-тай ижил холбоосыг нээхээр тохируулсан. Энэ нь <ph name="APP_NAME_2" />-н тусламж дэмжлэгийн холбоос нээхийг идэвхгүй болгоно.</translation>
 <translation id="7044606776288350625">Өгөгдөл синк хийх</translation>
 <translation id="7047059339731138197">Арын дэвсгэр сонгох</translation>
-<translation id="7049293980323620022">Файлыг хадгалах уу?</translation>
 <translation id="7049524156282610342"><ph name="DISPLAY_NAME" />-н интернэтээр үзсэн өгөгдөл</translation>
 <translation id="7050037487872780845">Буруу сүлжээний цэгийн тохируулга</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{Таны <ph name="USER_EMAIL" /> Google Бүртгэлд нууц үг хадгалсан}other{Таны <ph name="USER_EMAIL" /> Google Бүртгэлд нууц үгнүүд хадгалсан}}</translation>
@@ -9336,7 +9329,6 @@
 <translation id="7939062555109487992">Дэвшилтэт сонголт</translation>
 <translation id="793923212791838">Таны төхөөрөмжийг энэ сайттай ашиглах боломжгүй</translation>
 <translation id="7939328347457537652">Төхөөрөмжийн гэрчилгээг удирдах</translation>
-<translation id="7939412583708276221">Ямар ч байсан үргэлжлүүлнэ үү</translation>
 <translation id="7940087892955752820">Аппликэйшн энэ фолдерыг ашиглаж байгаа тул хуваалцсаныг болиулж чадсангүй. <ph name="SPECIFIC_NAME" />-г дараагийн удаа унтраах үед фолдерыг хуваалцсаныг болиулна.</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" />-р эрэмбэлэх</translation>
 <translation id="7941179291434537290">Модем болгох явцын бэлэн байдал:</translation>
@@ -10094,7 +10086,6 @@
 <translation id="8477241577829954800">Хүчингүй болсон байна</translation>
 <translation id="8477384620836102176">&amp;Ерөнхий</translation>
 <translation id="8479176401914456949">Код буруу байна. Дахин оролдоно уу.</translation>
-<translation id="8480082892550707549">Та өмнө нь энэ сайтаас таталт хийж байсан ч энэ сайт түр хугацаанд аюултай болсон байна (хакердсан). Энэ файлыг дараа татна уу.</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" />-н үл мэдэгдэх төхөөрөмж</translation>
 <translation id="8481187309597259238">USB-н зөвшөөрлийг баталгаажуулах</translation>
 <translation id="8482077254400484047">Идэвхгүй табуудын төрхийг эндээс удирдана уу</translation>
@@ -10921,7 +10912,6 @@
 <translation id="9085256200913095638">Сонгосон табыг хуулбарлах</translation>
 <translation id="9085446486797400519">Камерын хандалт</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" />-г сонгоогүй. Сонгохын тулд Search болон Space-г дарна уу.</translation>
-<translation id="9087183943157874068">Та табын бүлгийн зөвлөмжүүд байгаа эсэхийг хүссэн үедээ шалгах боломжтой</translation>
 <translation id="9087949559523851360">Хязгаарласан хэрэглэгчийг нэмэх</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" />-г байгууллагын удирдамжийн дагуу блоклосон</translation>
 <translation id="9088446193279799727">Linux-г тохируулж чадсангүй. Интернэтэд холбогдоод, дахин оролдоно уу.</translation>

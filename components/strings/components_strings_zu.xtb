@@ -566,6 +566,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2036983605131262583">Omunye Umqulu</translation>
 <translation id="2040463897538655645">Isitoreji esikhiphekayo</translation>
 <translation id="2040894699575719559">Indawo ivinjiwe</translation>
+<translation id="2041788246978549610">Sebenzisa amamakrofoni atholakalayo (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Ithileyi elingu-7</translation>
 <translation id="204357726431741734">Ngena ngemvume ukuze usebenzise amaphasiwedi alondolozwe ku-akhawunti yakho ye-Google</translation>
 <translation id="2045871135676061132">Imvilophu ye-Personal</translation>
@@ -885,6 +886,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="2655752832536625875">Igumbi lokugeza</translation>
 <translation id="2657637947725373811">{0,plural, =1{Dlulisela ifayela eliyimfihlo?}one{Dlulisela amafayela ayimfihlo?}other{Dlulisela amafayela ayimfihlo?}}</translation>
 <translation id="2658843814961855121">Umthetho Wabasebenzi Nokusebenza</translation>
+<translation id="2658944305627908367">Ukuthenga okudlula ibhalansi yakho ngeke kucutshungulwe</translation>
 <translation id="2660779039299703961">Umcimbi</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Lutho}=1{1 iphasiwedi (ye-<ph name="DOMAIN_LIST" />)}=2{2 amaphasiwedi (e-<ph name="DOMAIN_LIST" />)}one{# amaphasiwedi (e-<ph name="DOMAIN_LIST" />)}other{# amaphasiwedi (e-<ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Ngaphezulu</translation>
@@ -1081,6 +1083,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="3090667236485488075">Ingilazi</translation>
 <translation id="3095940652251934233">Isitatimende</translation>
 <translation id="3098513225387949945">Akunakwanga ngoba uhlu lokukhubaza luqukethe iphethini elingana no-'*', okulingana nokukhubaza inqubomgomo.</translation>
+<translation id="3099619114405539473">Sebenzisa amakhamera atholakalayo (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Okulondoloziwe</translation>
 <translation id="3103188521861412364">Izitoko Namabhondi</translation>
 <translation id="3105172416063519923">I-ID yefa:</translation>
@@ -1355,6 +1358,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="3583757800736429874">&amp;Yenza futhi ukuhambisa</translation>
 <translation id="3584299510153766161">Ukushaya kabili phansi</translation>
 <translation id="3584755835709800788">Amafilimu Ezinganekwane Nesayensi</translation>
+<translation id="3585455899094692781">Sebenzisa futhi uhambise amakhamera atholakalayo (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Ifilimu Emanzi</translation>
 <translation id="3586931643579894722">Fihla imininingwana</translation>
 <translation id="3587738293690942763">Okumaphakathi</translation>
@@ -2418,6 +2422,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="5645132789250840550">Ipulasitiki (i-Semi-Gloss)</translation>
 <translation id="5645719697465708351">Izimpahla Zephathi Namaholide</translation>
 <translation id="5645854190134202180">Ishifu lesibili</translation>
+<translation id="5648166631817621825">Izinsuku zokugcina ezingu-7</translation>
 <translation id="5649053991847567735">Ukulandwa okuzenzakalelayo</translation>
 <translation id="5651323159439184939">Okuphakelayo kukagandaganda</translation>
 <translation id="5654927323611874862">I-ID Yombiko Wokusaphazeka Ilayishiwe:</translation>

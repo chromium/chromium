@@ -80,6 +80,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1247519845643687288">Apps recientes</translation>
 <translation id="1252999807265626933">Cargando desde <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">¿Cómo está el clima?</translation>
+<translation id="1256734167083229794">Presionaste la combinación de teclas para activar la lupa de pantalla completa. Usa <ph name="ZOOM_IN_ACCELERATOR" /> para acercar y <ph name="ZOOM_OUT_ACCELERATOR" /> para alejar. Usa Ctrl + Alt + flechas para moverte por la vista con zoom.</translation>
 <translation id="1269405891096105529">El dispositivo periférico no es compatible en el Modo de invitado.</translation>
 <translation id="1270290102613614947">Teclado en pantalla inhabilitado</translation>
 <translation id="1272079795634619415">Interrumpir</translation>
@@ -99,7 +100,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Presiona <ph name="LAUNCHER_KEY_NAME" /> + g en cualquier momento</translation>
 <translation id="1306549533752902673">APPS RECOMENDADAS</translation>
-<translation id="1311294419381837540">Estás transmitiendo una pestaña. Puedes pausar o detener la transmisión en cualquier momento.</translation>
 <translation id="1312604459020188865">Intensidad de la señal: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Siempre mostrar biblio.</translation>
 <translation id="132346741904777634">Se ajustó la cámara a la esquina superior izquierda. Entra en conflicto con la superficie del sistema.</translation>
@@ -108,7 +108,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1340378040547539434">Alejar la página</translation>
 <translation id="1341651618736211726">Ampliado</translation>
 <translation id="1341926407152459446">Usar "<ph name="DEVICE_NAME" />" para la entrada y la salida de audio</translation>
-<translation id="1344141078024003905">Estás transmitiendo la pantalla. Puedes pausar o detener la transmisión de la pantalla en cualquier momento.</translation>
 <translation id="1346748346194534595">Derecha</translation>
 <translation id="1351937230027495976">Contraer menú</translation>
 <translation id="1360220746312242196">Ir a la coincidencia de búsqueda anterior al buscar en una página</translation>
@@ -264,6 +263,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">Se quitaron el escritorio y las ventanas. Presiona Ctrl + Z para deshacer la acción.</translation>
 <translation id="1972950159383891558">Hola, <ph name="USERNAME" /></translation>
+<translation id="1977686871076551563">Se habilitó el modo Inversión de colores. Presiona <ph name="ACCELERATOR" /> nuevamente para desactivarlo.</translation>
 <translation id="1978498689038657292">Ingreso de texto</translation>
 <translation id="1980808257969311265">Unirse a <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Mostrar la semana pasada</translation>
@@ -352,7 +352,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2369165858548251131">"Hola" en chino</translation>
 <translation id="2370971919968699910">Es posible que se generen costos por el uso de datos.
 Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
-<translation id="2382875860893882175">La transmisión está en pausa. Puedes reanudar o detener la transmisión en cualquier momento.</translation>
 <translation id="2386292613071805067">Seleccionar todo en la página</translation>
 <translation id="2392659840443812875">No hay hotspot disponible. Asegúrate de que el dispositivo esté cerca y tenga la conexión Bluetooth activada.</translation>
 <translation id="2397416548179033562">Mostrar el menú de Chrome</translation>
@@ -616,7 +615,6 @@ Se conectaron <ph name="DEVICECOUNT" /> dispositivos.</translation>
 <translation id="3389599499324569679">¿Quieres activar el dictado?</translation>
 <translation id="3394432020929931914">, expandido</translation>
 <translation id="3405101454990027959">Activar el acceso al micrófono</translation>
-<translation id="3408735331120433841">Estás transmitiendo la pantalla.</translation>
 <translation id="3409584356742878290">Ocultar o mostrar el inspector de Herramientas para desarrolladores</translation>
 <translation id="3410336247007142655">Mostrar la configuración del Tema oscuro</translation>
 <translation id="3413817803639110246">No hay nada para ver</translation>
@@ -857,7 +855,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="4217571870635786043">Dictado</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, app instalada, pausada</translation>
 <translation id="4228078597006700451">No se configuraron los controles</translation>
-<translation id="4231053948789591973">La transmisión está en pausa. Puedes reanudar o detener la transmisión de la pantalla en cualquier momento.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Modo de vista Recientes</translation>
 <translation id="4242533952199664413">Abrir la configuración</translation>
@@ -1185,6 +1182,7 @@ No hay dispositivos conectados.</translation>
 <translation id="5377367976106153749">¿Deseas activar el acceso a la cámara?</translation>
 <translation id="5379115545237091094">Realizaste demasiados intentos</translation>
 <translation id="5391307769715781764">¿Deseas reemplazar el escritorio?</translation>
+<translation id="5392327145184648521">Calculando el porcentaje de batería %…</translation>
 <translation id="5393156353051693207">Mantén presionado en cualquier lugar para reorganizar las apps</translation>
 <translation id="5395308026110844773">Arrastra la app <ph name="DRAGGED_APP_NAME" /> sobre <ph name="IN_PLACE_APP" /> y suéltala para crear una carpeta.</translation>
 <translation id="5397578532367286026">El administrador (<ph name="MANAGER_EMAIL" />) puede revisar el uso y el historial de este usuario en la página chrome.com.</translation>
@@ -1239,6 +1237,7 @@ No hay dispositivos conectados.</translation>
 <translation id="5577281275355252094">Verifica que la conexión Bluetooth esté habilitada en tu teléfono para poder usar Phone Hub.</translation>
 <translation id="5578188167649348993">memoria</translation>
 <translation id="5580000943347215299">Biblioteca</translation>
+<translation id="5586388332127302891">Se habilitó la Lupa fijada Presiona <ph name="ACCELERATOR" /> nuevamente para desactivarla.</translation>
 <translation id="5587506661873751671">Descargando <ph name="DOWNLOAD_PERCENT" />%</translation>
 <translation id="558849140439112033">Arrastra el cursor para seleccionar un área que quieras capturar</translation>
 <translation id="5590609058453685222">El Aviso de micrófono silenciado está activado. Recibirás una notificación si hablas con el micrófono silenciado.</translation>
@@ -1450,6 +1449,7 @@ No hay dispositivos conectados.</translation>
 <translation id="6319503618073410818">Ver detalles en el navegador</translation>
 <translation id="6324916366299863871">Editar acceso directo</translation>
 <translation id="6330012934079202188">Se muestran las ventanas de todos los escritorios. Para ver solo las del escritorio actual, presiona la flecha hacia arriba.</translation>
+<translation id="6337159624125741244">La lupa de pantalla completa está activada</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> es una sesión administrada por <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467">El dispositivo <ph name="DEVICE_NAME" /> está conectado</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, luego, <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> o <ph name="KEY_THREE" /></translation>
@@ -1516,6 +1516,7 @@ Nueva instalación</translation>
 <translation id="6574587113394758819">Se oculta la notificación de <ph name="APP_TITLE" /> porque está activada la protección de visualización</translation>
 <translation id="6574622320167699133">Se desbloqueó mediante el teléfono. Presiona o haz clic para ingresar.</translation>
 <translation id="6578407462441924264">Sin nombre</translation>
+<translation id="6582034443359256692">Calculando el nivel de carga de la batería.</translation>
 <translation id="6585808820553845416">La sesión terminará en <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Se ajustó la cámara a la esquina inferior izquierda. Entra en conflicto con la superficie del sistema.</translation>
@@ -1577,6 +1578,7 @@ Nueva instalación</translation>
 <translation id="6790428901817661496">Reproducir</translation>
 <translation id="679368458793552943">Acercar cuando la lupa esté activada</translation>
 <translation id="6794287755901682422">Este elemento tiene: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
+<translation id="6797745268063125932">Mantenerla encendida</translation>
 <translation id="6801878137098616817">Se editó recientemente</translation>
 <translation id="6802687695197837794">Esto permite el acceso para <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> y todas las apps y sitios web con los permisos de cámara y micrófono</translation>
 <translation id="6803622936009808957">No se pudieron reflejar las pantallas porque no se encontraron resoluciones compatibles. En su lugar, se activó el escritorio extendido.</translation>
@@ -1888,6 +1890,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7947798320695032612"><ph name="APP_NAME" /> quiere usar tu <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Atenuar el teclado</translation>
 <translation id="7953994493035617347">¿Confirmas la nueva resolución?</translation>
+<translation id="795958884516058160">La Lupa de pantalla completa está habilitada. Presiona <ph name="ACCELERATOR" /> nuevamente para desactivarla.</translation>
 <translation id="7963689218131240420">La función No interrumpir está desactivada.</translation>
 <translation id="7963992254934562106">De <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Seleccionar carpeta…</translation>
@@ -2139,6 +2142,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="894774083269346314">Casilla de verificación de <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> no marcada.</translation>
 <translation id="8949925099261528566">Conectado, pero sin conexión a Internet</translation>
 <translation id="8951539504029375108">Solo los dispositivos Thunderbolt aprobados son compatibles con tu Chromebook.</translation>
+<translation id="8959380109429710384">Presionaste la combinación de teclas para activar la lupa de pantalla completa. Usa Ctrl + Alt + flechas para moverte por la vista con zoom.</translation>
 <translation id="8964525410783593407">1 h</translation>
 <translation id="8973885907461690937">Enfocar el ícono de menú</translation>
 <translation id="8980862970816311842">Mover el ícono de una app hacia dentro o fuera de una carpeta en la cuadrícula de apps</translation>

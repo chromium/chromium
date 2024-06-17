@@ -121,6 +121,7 @@
 <translation id="7326879924029668159">查看退货政策及其他信息</translation>
 <translation id="7352298686197644113">查看您打开的标签页中哪件商品降价了</translation>
 <translation id="7452985128687107478">标签页分组会自动保存并在您的所有设备上更新</translation>
+<translation id="747459581954555080">全部恢复</translation>
 <translation id="753732157349120914">标签页切换器</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> 条来自 Google 的评价}other{<ph name="REVIEWS_COUNT_MANY" /> 条来自 Google 的评价}}</translation>
 <translation id="7559245342362162951">以全屏网格状视图显示组中的标签页</translation>
@@ -144,6 +145,7 @@
 <translation id="8338427544764842461">您的标签页分组会保存在此处，并在您所有已登录账号的设备上更新。</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{关闭 <ph name="TABS_COUNT_ONE" /> 个所选标签页}other{关闭 <ph name="TABS_COUNT_MANY" /> 个所选标签页}}</translation>
 <translation id="8398929769197326728">新建文件夹 - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="8428213095426709021">设置</translation>
 <translation id="8714939927607906138">降价了</translation>
 <translation id="8730621377337864115">完成</translation>
 <translation id="8730999928494395583">您在这些无痕式标签页中的活动记录将从此设备上移除</translation>

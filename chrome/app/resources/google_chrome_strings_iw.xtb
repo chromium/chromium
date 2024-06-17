@@ -250,6 +250,7 @@
 <translation id="4561051373932531560">‏Google Chrome מאפשר לך ללחוץ על מספר טלפון באינטרנט ולהתקשר אליו באמצעות Skype!</translation>
 <translation id="4567424176335768812">נכנסת למערכת בתור <ph name="USER_EMAIL_ADDRESS" />. כעת יש לך אפשרות לגשת אל הסימניות, ההיסטוריה והגדרות אחרות שלך בכל המכשירים שבהם התחברת לחשבון.</translation>
 <translation id="4571503333518166079">‏מעבר אל הגדרות של הודעות ב-Chrome</translation>
+<translation id="4575717501879784448">‏‫Chrome יכול להשבית את הכרטיסיות האלה כדי לשפר את חוויית הגלישה ולפנות משאבים.</translation>
 <translation id="459622048091363950">‏אחרי מתן גישה ל-Chrome, אתרים יוכלו לבקש ממך גישה.</translation>
 <translation id="4600710005438004015">‏עדכון Chrome לגרסה האחרונה לא הצליח, ולכן אין לך גישה אל תכונות חדשות ותיקוני אבטחה.</translation>
 <translation id="4624065194742029982">‏מצב פרטי ב-Chrome</translation>
@@ -281,6 +282,7 @@
 <translation id="4970761609246024540">‏ברוך בואך לפרופילים של Chrome</translation>
 <translation id="4970880042055371251">‏גרסת ChromeOS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="4997044641749333913">‏‫Chrome יכול להשבית את הכרטיסיות האלה כדי לשפר את חוויית הגלישה ולשמור על מהירות.</translation>
 <translation id="5003967926796347400">‏לוחצים על 'מנהל הסיסמאות של Google'</translation>
 <translation id="5120334927898581447">‏כניסה אל Chrome כשנכנסים לשירותי Google אחרים</translation>
 <translation id="5126049312684316860">‏כדי שהדפים שבהם מבקרים ייטענו מהר יותר, מערכת Chrome טוענת מראש עוד יותר דפים שיש סיכוי גבוה שייפתחו</translation>
@@ -341,6 +343,7 @@
 <translation id="608006075545470555">הוספת פרופיל עבודה לדפדפן זה</translation>
 <translation id="6097822892606850415">‏כותבים בלי להתלבט בעזרת AI</translation>
 <translation id="6113794647360055231">‏Chrome השתפר</translation>
+<translation id="6135456723633883042">‏הכרטיסיות האלה משתמשות במשאבים נוספים. כדי לשפר את הביצועים, כדאי לאפשר ל-Chrome להשבית אותן.</translation>
 <translation id="6145313976051292476">‏פתיחת קובצי PDF ב-Chrome</translation>
 <translation id="6157638032135951407">‏לפי הגדרת הארגון, נתוני Chrome נמחקים אוטומטית כשלא משתמשים בהם במשך <ph name="TIMEOUT_DURATION" />. בין הנתונים שנמחקו: היסטוריה, מילוי אוטומטי והורדות.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

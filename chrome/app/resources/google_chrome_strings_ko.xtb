@@ -55,6 +55,7 @@
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1698376642261615901">Chrome은 웹페이지와 애플리케이션을 빠르게 실행하는 웹 브라우저입니다. 또한 빠르고 안정적이며 사용하기 쉽습니다. Chrome에 기본적으로 제공되는 악성코드 및 피싱 방지 기능으로 웹을 더 안전하게 탐색하세요.</translation>
 <translation id="1713301662689114961">{0,plural, =1{1시간 후 Chrome이 다시 시작됩니다}other{#시간 후 Chrome이 다시 시작됩니다}}</translation>
+<translation id="1722488837206509557">이렇게 하면 사용 가능한 기기 중에서 선택하고 해당 기기에 콘텐츠를 표시할 수 있습니다.</translation>
 <translation id="1734234790201236882">Chrome에서 내 Google 계정에 이 비밀번호를 저장하므로 기억하지 않아도 됩니다.</translation>
 <translation id="1786003790898721085"><ph name="TARGET_DEVICE_NAME" />에서 Chrome에 로그인되어 있는지 확인한 다음 다시 전송해 보세요.</translation>
 <translation id="1786044937610313874">Chrome에서 바로가기 열기</translation>

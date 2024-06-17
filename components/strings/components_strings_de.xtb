@@ -566,6 +566,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2036983605131262583">Wechselnde Rolle</translation>
 <translation id="2040463897538655645">Wechselmedien</translation>
 <translation id="2040894699575719559">Standort blockiert</translation>
+<translation id="2041788246978549610">Verfügbare Mikrofone verwenden (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Fach 7</translation>
 <translation id="204357726431741734">Anmelden, um die in deinem Google-Konto gespeicherten Passwörter zu verwenden</translation>
 <translation id="2045871135676061132">Umschlag Personal</translation>
@@ -885,6 +886,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2655752832536625875">Badezimmer</translation>
 <translation id="2657637947725373811">{0,plural, =1{Vertrauliche Datei übertragen?}other{Vertrauliche Dateien übertragen?}}</translation>
 <translation id="2658843814961855121">Arbeitsrecht</translation>
+<translation id="2658944305627908367">Transaktionen, die dein Guthaben übersteigen, werden nicht verarbeitet</translation>
 <translation id="2660779039299703961">Ereignis</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Keins}=1{1 Passwort (für <ph name="DOMAIN_LIST" />)}=2{2 Passwörter (für <ph name="DOMAIN_LIST" />)}other{# Passwörter (für <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Oben</translation>
@@ -1081,6 +1083,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3090667236485488075">Glas</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">Ignoriert, da die „disable“-Liste ein Muster enthält, das „*“ und damit der Deaktivierung der Richtlinie entspricht.</translation>
+<translation id="3099619114405539473">Verfügbare Kameras verwenden (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Sparkonto</translation>
 <translation id="3103188521861412364">Aktien und Anleihen</translation>
 <translation id="3105172416063519923">Asset-ID:</translation>
@@ -1356,6 +1359,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3583757800736429874">&amp;Verschieben wiederholen</translation>
 <translation id="3584299510153766161">Doppelte Lochung unten</translation>
 <translation id="3584755835709800788">Science-Fiction- und Fantasyfilme</translation>
+<translation id="3585455899094692781">Verfügbare Kameras verwenden und bewegen (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Nassfilm</translation>
 <translation id="3586931643579894722">Details ausblenden</translation>
 <translation id="3587738293690942763">Mitte</translation>
@@ -2419,6 +2423,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5645132789250840550">Kunststoff (halbglanz)</translation>
 <translation id="5645719697465708351">Produkte und Dienste für Partys und besondere Anlässe</translation>
 <translation id="5645854190134202180">Zweite Schicht</translation>
+<translation id="5648166631817621825">Letzte 7 Tage</translation>
 <translation id="5649053991847567735">Auto-Downloads</translation>
 <translation id="5651323159439184939">Endlosdruck</translation>
 <translation id="5654927323611874862">ID für hochgeladenen Absturzbericht:</translation>

@@ -136,7 +136,6 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1085064499066015002">Alltid, på alle nettsteder</translation>
 <translation id="1085697365578766383">Feil ved oppstart av den virtuelle maskinen. Prøv på nytt.</translation>
 <translation id="1086486568852410168">Søk med Google Lens</translation>
-<translation id="1088490543924960890">Begynn å lagre passnøkler med Google Passordlagring</translation>
 <translation id="1090126737595388931">Ingen bakgrunnsprogrammer kjører</translation>
 <translation id="1090541560108055381">Før sammenkobling må du forsikre deg om at denne koden er lik på begge enhetene</translation>
 <translation id="1091767800771861448">Trykk på ESC for å hoppe over denne (bare uoffisielle delversjoner).</translation>
@@ -3675,7 +3674,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3685598397738512288">USB-innstillinger for Linux</translation>
 <translation id="3687598459967813435">Tillat alltid varsler fra <ph name="WEBSITE" /></translation>
 <translation id="368789413795732264">Det oppstod en feil under forsøket på å skrive filen: <ph name="ERROR_TEXT" />.</translation>
-<translation id="3688368689701175138">Denne passnøkkelen lagres i Google Passordlagring for <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3688507211863392146">skrive til filer og mapper du åpner i appen</translation>
 <translation id="3688526734140524629">Bytt kanal</translation>
 <translation id="3688578402379768763">Oppdatert</translation>
@@ -6103,7 +6101,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5497739595514726398">Chrome kunne ikke bekrefte denne installasjonspakken</translation>
 <translation id="5498967291577176373">Skriv raskere med innebygde forslag som for eksempel navnet ditt, adressen din eller telefonnummeret ditt</translation>
 <translation id="5499211612787418966">Denne dialogboksen er ikke fokusert for øyeblikket. Trykk på Alt + Shift + A for å fokusere på denne dialogboksen.</translation>
-<translation id="5499313591153584299">Denne filen kan være skadelig for datamaskinen din.</translation>
 <translation id="5499453227627332024">En oppgradering er tilgjengelig for Linux-beholderen din. Du kan også oppgradere senere i Innstillinger-appen.</translation>
 <translation id="5499476581866658341">Nå kan du se telefonens nylige bilder og medier</translation>
 <translation id="549957179819296104">Nytt ikon</translation>
@@ -7029,7 +7026,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6206199626856438589">Du blir logget av nettstedene som vises, også på faner som er åpne</translation>
 <translation id="6206311232642889873">&amp;Kopier bilde</translation>
 <translation id="6207200176136643843">Tilbakestill til standard zoomnivå</translation>
-<translation id="6207298079289376837">Sjekk om fanene kan organiseres</translation>
 <translation id="6207937957461833379">Land / region</translation>
 <translation id="6208521041562685716">Mobildata aktiveres</translation>
 <translation id="6208725777148613371">Kunne ikke lagre i <ph name="WEB_DRIVE" /> – <ph name="INTERRUPT_REASON" /></translation>
@@ -7380,7 +7376,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6476482583633999078">Talehastighet</translation>
 <translation id="6476671549211161535">Trykk på en knapp som ikke er venstre eller høyre museknapp, på <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">Synkronisering av varsler støttes ikke for telefoner i jobbprofiler. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
-<translation id="6478248366783946499">Vil du beholde den farlige filen?</translation>
 <translation id="6479881432656947268">Gå til Chrome Nettmarked</translation>
 <translation id="6480327114083866287">Administreres av <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Del blant annet filer med enheter i nærheten <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
@@ -7559,7 +7554,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="6613267708691765962">Skanner etter skadelig programvare …</translation>
 <translation id="6613668613087513143">Det er ikke nok plass på enheten til å fullføre oppdateringen. Frigjør <ph name="NECESSARY_SPACE" /> på enheten, og prøv igjen via Chrome-nettleseren.</translation>
 <translation id="6615455863669487791">Vis meg</translation>
-<translation id="6618097958368085618">Behold likevel</translation>
 <translation id="6618744767048954150">Kjører</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Nettstedet kan spore posisjonen din</translation>
@@ -8145,7 +8139,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7044211973375150246">En app er stilt inn på å åpne de samme linkene som <ph name="APP_NAME" />. Dette medfører at <ph name="APP_NAME_2" /> ikke kan åpne støttede linker.</translation>
 <translation id="7044606776288350625">Synkroniseringsdata</translation>
 <translation id="7047059339731138197">Velg en bakgrunn</translation>
-<translation id="7049293980323620022">Vil du beholde filen?</translation>
 <translation id="7049524156282610342">Nettlesingsdata <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Ugyldig konfigurasjon av wifi-sone</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{Passordet er lagret i Google-kontoen din, <ph name="USER_EMAIL" />}other{Passordene er lagret i Google-kontoen din, <ph name="USER_EMAIL" />}}</translation>
@@ -9333,7 +9326,6 @@ Trykk på en tilordnet bryter eller tast for å fjerne tilordningen.</translatio
 <translation id="7939062555109487992">Avanserte alternativer</translation>
 <translation id="793923212791838">Enheten din kan ikke brukes med dette nettstedet</translation>
 <translation id="7939328347457537652">Administrer enhetssertifikater</translation>
-<translation id="7939412583708276221">Behold uansett</translation>
 <translation id="7940087892955752820">Kunne ikke avvise delingen, fordi et program bruker denne mappen. Mappen slutter å være delt neste gang <ph name="SPECIFIC_NAME" /> avsluttes.</translation>
 <translation id="7940265372707990269">Sorter etter <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Tilgjengelighet for internettdeling:</translation>
@@ -10093,7 +10085,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8477241577829954800">Erstattet</translation>
 <translation id="8477384620836102176">&amp;Generelt</translation>
 <translation id="8479176401914456949">Ugyldig kode. Prøv på nytt.</translation>
-<translation id="8480082892550707549">Selv om du har lastet ned filer fra dette nettstedet før, kan det hende at nettstedet er midlertidig utrygt (hacket). Prøv å laste ned filen på nytt senere.</translation>
 <translation id="8480869669560681089">Ukjent enhet fra <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Bekreft USB-tillatelse</translation>
 <translation id="8482077254400484047">Administrer utseendet til inaktive faner her</translation>
@@ -10922,7 +10913,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="9085256200913095638">Dupliser den valgte fanen</translation>
 <translation id="9085446486797400519">Kameratilgang</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> er ikke valgt. Trykk på Søk + mellomrom for å velge.</translation>
-<translation id="9087183943157874068">Du kan se etter forslag til fanegrupper når som helst</translation>
 <translation id="9087949559523851360">Legg til begrenset bruker</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> er blokkert av bedriftens retningslinjer</translation>
 <translation id="9088446193279799727">Kunne ikke konfigurere Linux. Koble til internett, og prøv på nytt.</translation>

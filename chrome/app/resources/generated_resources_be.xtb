@@ -136,7 +136,6 @@
 <translation id="1085064499066015002">Заўсёды на ўсіх сайтах</translation>
 <translation id="1085697365578766383">Памылка падчас запуску віртуальнай машыны. Паўтарыце спробу.</translation>
 <translation id="1086486568852410168">Пошук праз Google Аб'ектыў</translation>
-<translation id="1088490543924960890">Пачніце захоўваць ключы доступу з дапамогай Менеджара пароляў Google</translation>
 <translation id="1090126737595388931">Няма праграм, якія працуюць у фонавым рэжыме</translation>
 <translation id="1090541560108055381">Перад спалучэннем упэўніцеся, што гэты код – аднолькавы на абедзвюх прыладах</translation>
 <translation id="1091767800771861448">Каб прапусціць, націсніце ESC (толькі для неафіцыйных зборак).</translation>
@@ -3675,7 +3674,6 @@
 <translation id="3685598397738512288">Параметры USB у Linux</translation>
 <translation id="3687598459967813435">Дазволіць сайту <ph name="WEBSITE" /> адпраўляць апавяшчэнні</translation>
 <translation id="368789413795732264">Пры спробе запісаць файл адбылася памылка: <ph name="ERROR_TEXT" />.</translation>
-<translation id="3688368689701175138">Гэты ключ доступу будзе захаваны ў Менеджары пароляў Google для ўліковага запісу <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3688507211863392146">Запісваць у файлы і папкі, адкрытыя ў праграме</translation>
 <translation id="3688526734140524629">Змяніць версію</translation>
 <translation id="3688578402379768763">Абнаўленне не патрабуецца</translation>
@@ -5478,6 +5476,7 @@
 <translation id="5032430150487044192">Не ўдалося стварыць QR-код</translation>
 <translation id="5033137252639132982">Не дазволена выкарыстоўваць датчыкі руху</translation>
 <translation id="5033266061063942743">Геаметрычныя фігуры</translation>
+<translation id="503441068567788948">Стварыце новы PIN-код для Менеджара пароляў Google</translation>
 <translation id="5035846135112863536">Каб атрымаць больш звестак пра памылку ад сэрвісу "<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />", націсніце на кнопку "Дадатковая інфармацыя" ўнізе.</translation>
 <translation id="5037676449506322593">Выбраць усё</translation>
 <translation id="5038818366306248416">Раней вы забаранілі пашырэнні на старонцы <ph name="ORIGIN" /></translation>
@@ -5505,6 +5504,7 @@
 <translation id="5057110919553308744">Пры націсканні на пашырэнне</translation>
 <translation id="5057127674016624293">Сканіраванне займае больш часу, чым чакалася</translation>
 <translation id="5057480703570202545">Гісторыя спампоўвання</translation>
+<translation id="5058771692413403640">Сайту "<ph name="SITE" />" трэба спраўдзіць вашу асобу</translation>
 <translation id="5059241099014281248">Задаць абмежаванні на ўваход</translation>
 <translation id="5059429103770496207">Стыль паказу</translation>
 <translation id="5059526285558225588">Выберыце, што абагульваць</translation>
@@ -5946,6 +5946,7 @@
 <translation id="5390112241331447203">Дадаць файл system_logs.txt, які быў адпраўлены ў водгуках-справаздачах.</translation>
 <translation id="5390677308841849479">Цёмна-чырвоны і аранжавы</translation>
 <translation id="5392192690789334093">Дазволена адпраўляць апавяшчэнні</translation>
+<translation id="5393330235977997602">Варыянты PIN-кода</translation>
 <translation id="5393761864111565424">{COUNT,plural, =1{Спасылка}one{# спасылка}few{# спасылкі}many{# спасылак}other{# спасылкі}}</translation>
 <translation id="5394529681046491727">Wi‑Fi Direct</translation>
 <translation id="5395498824851198390">Стандартны шрыфт</translation>
@@ -6105,7 +6106,6 @@
 <translation id="5497739595514726398">Chrome не можа праверыць гэты набор для ўсталявання</translation>
 <translation id="5498967291577176373">Набірайце інфармацыю яшчэ хутчэй, атрымліваючы пры ўводзе тэксту прапановы (вашага імені, адраса або нумара тэлефона)</translation>
 <translation id="5499211612787418966">Гэта дыялогавае акно не вылучана. Каб вылучыць яго, націсніце Alt + Shift + A.</translation>
-<translation id="5499313591153584299">Гэты файл можа нанесці шкоду вашаму камп'ютару.</translation>
 <translation id="5499453227627332024">Для кантэйнера Linux ёсць абнаўленне. Усталяваць абнаўленне можна будзе і пазней – з праграмы "Налады".</translation>
 <translation id="5499476581866658341">Цяпер вы можаце праглядаць нядаўнія медыяфайлы і фота з тэлефона</translation>
 <translation id="549957179819296104">Новы значок</translation>
@@ -6680,6 +6680,7 @@
 <translation id="5935158534896975820">Рыхтуецца запыт на подпіс сертыфіката (чакаецца адказ сервера)</translation>
 <translation id="5935656526031444304">Кіраваць Бяспечным праглядам</translation>
 <translation id="5936065461722368675">Перакласці ўсю старонку</translation>
+<translation id="5937347877659196749">Цяпер абараніце ключы доступу з дапамогай рэзервовага PIN-кода</translation>
 <translation id="5937977334791924341">Лагатып праграмы "<ph name="APP" />"</translation>
 <translation id="5938002010494270685">Даступнае абнаўленне сістэмы бяспекі</translation>
 <translation id="5939518447894949180">Скінуць</translation>
@@ -6835,7 +6836,7 @@
 <translation id="6057381398996433816">Для гэтага сайта заблакіравана выкарыстанне датчыкаў руху і святла.</translation>
 <translation id="6059276912018042191">Нядаўна адкрытыя ўкладкі Chrome</translation>
 <translation id="6059652578941944813">Іерархія сертыфікатаў</translation>
-<translation id="6059925163896151826">Прылады USB</translation>
+<translation id="6059925163896151826">USB-прылады</translation>
 <translation id="6061408389284235459">На прыладу "<ph name="DEVICE_NAME" />" было адпраўлена апавяшчэнне</translation>
 <translation id="6063284707309177505">Стварыць QR-код</translation>
 <translation id="6063847492705284550"><ph name="BEGIN_BOLD" />Заўвага.<ph name="END_BOLD" /> Чалавек з голасам, падобным да голасу карыстальніка <ph name="SUPERVISED_USER_NAME" />, або запісам яго голасу зможа атрымаць доступ да персанальных вынікаў гэтага карыстальніка. Для эканоміі зараду акумулятара вы можаце задаць рэагаванне на фразу "Ok Google" толькі ў тым выпадку, калі прылада падключана да крыніцы сілкавання. Гэта можна зрабіць у наладах Памочніка ва ўліковым запісе карыстальніка <ph name="SUPERVISED_USER_NAME" />.</translation>
@@ -7030,7 +7031,6 @@
 <translation id="6206199626856438589">Будзе выкананы выхад з паказаных сайтаў, у тым ліку на адкрытых укладках</translation>
 <translation id="6206311232642889873">&amp;Капіраваць відарыс</translation>
 <translation id="6207200176136643843">Скінуць маштаб да стандартнага</translation>
-<translation id="6207298079289376837">Праверце, ці можна арганізаваць укладкі</translation>
 <translation id="6207937957461833379">Краіна або рэгіён</translation>
 <translation id="6208521041562685716">Ідзе актывацыя мабільнай перадачы даных</translation>
 <translation id="6208725777148613371">Не ўдалося захаваць элемент у сэрвісе "<ph name="WEB_DRIVE" />": <ph name="INTERRUPT_REASON" /></translation>
@@ -7381,7 +7381,6 @@
 <translation id="6476482583633999078">Хуткасць маўлення</translation>
 <translation id="6476671549211161535">Націсніце на прыладзе "<ph name="DEVICE_NAME" />" любую кнопку, акрамя левай ці правай кнопкі мышы.</translation>
 <translation id="6477822444490674459">Сінхранізацыя апавяшчэнняў не падтрымліваецца, калі на тэлефоне выкарыстоўваецца працоўны профіль. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
-<translation id="6478248366783946499">Захаваць небяспечны файл?</translation>
 <translation id="6479881432656947268">Наведаць Вэб-краму Chrome</translation>
 <translation id="6480327114083866287">Кіруе <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Абагульвайце файлы і іншае змесціва з прыладамі паблізу. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
@@ -7566,7 +7565,6 @@
 <translation id="6613267708691765962">Ідзе пошук шкодных праграм...</translation>
 <translation id="6613668613087513143">На прыладзе недастаткова месца, каб завяршыць абнаўленне. Вызваліце <ph name="NECESSARY_SPACE" /> і паўтарыце спробу з браўзера Chrome.</translation>
 <translation id="6615455863669487791">Паказаць</translation>
-<translation id="6618097958368085618">Захаваць усё роўна</translation>
 <translation id="6618744767048954150">Выконваецца</translation>
 <translation id="6619058681307408113">Праграма кіравання радковымі прынтарамі (LPD)</translation>
 <translation id="661907246513853610">Сайт можа адсочваць ваша месцазнаходжанне</translation>
@@ -8136,6 +8134,7 @@
 <translation id="7033616203784997570">Максімальна дапушчальная колькасць сімвалаў – 62</translation>
 <translation id="7034692021407794547">Спачатку адміністратар з правам на кіраванне плацяжамі павінен прыняць Умовы выкарыстання апаратнага забеспячэння Google Meet у раздзеле "Апаратнае забеспячэнне Google Meet" кансолі адміністратара.</translation>
 <translation id="7036706669646341689">Для выкарыстання Linux рэкамендуецца мець <ph name="DISK_SIZE" />. Каб вызваліць месца, выдаліце файлы з прылады.</translation>
+<translation id="7037157058268992880">Не помню PIN-код</translation>
 <translation id="7037509989619051237">Тэкст для праверкі</translation>
 <translation id="7038632520572155338">Доступ праз пераключальнікі</translation>
 <translation id="7038710352229712897">Дадайце яшчэ адзін Уліковы запіс Google для карыстальніка <ph name="USER_NAME" /></translation>
@@ -8151,7 +8150,6 @@
 <translation id="7044211973375150246">Іншая праграма наладжана адкрываць такія ж спасылкі, што і <ph name="APP_NAME" />. Праграма "<ph name="APP_NAME_2" />" перастане адкрываць адпаведныя спасылкі.</translation>
 <translation id="7044606776288350625">Сінхранізацыя даных</translation>
 <translation id="7047059339731138197">Выбар фону</translation>
-<translation id="7049293980323620022">Захаваць файл?</translation>
 <translation id="7049524156282610342">Даныя пра работу ў браўзеры: <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Няправільная канфігурацыя хот-спота</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{Пароль захаваны ў вашым Уліковым запісе Google <ph name="USER_EMAIL" />}one{Паролі захаваны ў вашым Уліковым запісе Google <ph name="USER_EMAIL" />}few{Паролі захаваны ў вашым Уліковым запісе Google <ph name="USER_EMAIL" />}many{Паролі захаваны ў вашым Уліковым запісе Google <ph name="USER_EMAIL" />}other{Паролі захаваны ў вашым Уліковым запісе Google <ph name="USER_EMAIL" />}}</translation>
@@ -9342,7 +9340,6 @@
 <translation id="7939062555109487992">Дадатковыя параметры</translation>
 <translation id="793923212791838">Вашу прыладу нельга выкарыстоўваць на гэтым сайце</translation>
 <translation id="7939328347457537652">Кіраванне сертыфікатамі прылады</translation>
-<translation id="7939412583708276221">Захаваць усё роўна</translation>
 <translation id="7940087892955752820">Не ўдалося скасаваць абагульванне, бо гэту папку выкарыстоўвае праграма. Абагульванне папкі будзе скасавана пасля наступнага завяршэння працы <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Параметр сартавання: <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Гатоўнасць рэжыму мадэма:</translation>
@@ -9553,6 +9550,7 @@
 <translation id="8084429490152575036">Налады APN для сотавай сеткі</translation>
 <translation id="8084510406207562688">Аднавіць усе ўкладкі</translation>
 <translation id="8084628902026812045">Гэты сайт не выкарыстоўвае бяспечнае падключэнне, таму файл мог быць падроблены</translation>
+<translation id="8085701268329068646">Увядзіце PIN-код, каб адкрыць Менеджар пароляў Google</translation>
 <translation id="8086015605808120405">Ідзе наладжванне прынтара <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086121155774250556">Гэта ўкладка абагульвае ваш экран</translation>
 <translation id="8086610718778464681">Не ўдалося стварыць рэзервовыя копіі файлаў і праграм Linux</translation>
@@ -10100,7 +10098,6 @@
 <translation id="8477241577829954800">Заменены</translation>
 <translation id="8477384620836102176">&amp;Агульныя звесткі</translation>
 <translation id="8479176401914456949">Няправільны код. Паўтарыце спробу.</translation>
-<translation id="8480082892550707549">Нават калі раней вы спампоўвалі файлы з гэтага сайта, ён можа быць часова небяспечным (яго маглі ўзламаць). Паспрабуйце спампаваць гэты файл пазней.</translation>
 <translation id="8480869669560681089">Невядомая прылада ад <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Пацвердзіць дазвол доступу да USB</translation>
 <translation id="8482077254400484047">Кіраванне выглядам неактыўных укладак</translation>
@@ -10929,7 +10926,6 @@
 <translation id="9085256200913095638">Дубліраваць выбраную ўкладку</translation>
 <translation id="9085446486797400519">Доступ да камеры</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" />, не выбрана. Каб выбраць, націсніце "Пошук" і клавішу прабелу.</translation>
-<translation id="9087183943157874068">Вы можаце ў любы час праверыць наяўнасць прапаноў па групаванні ўкладак</translation>
 <translation id="9087949559523851360">Дадаць карыстальніка з абмежаваннямі</translation>
 <translation id="9088234649737575428">Убудова "<ph name="PLUGIN_NAME" />" заблакіравана карпаратыўнай палітыкай</translation>
 <translation id="9088446193279799727">Не ўдалося наладзіць Linux. Падключыцеся да інтэрнэту і паўтарыце спробу.</translation>
@@ -11082,6 +11078,7 @@
 <translation id="920045321358709304">Пошук у сэрвісе <ph name="SEARCH_ENGINE" /></translation>
 <translation id="9201117361710210082">Прагледжана раней</translation>
 <translation id="9201220332032049474">Параметры блакіроўкі экрана</translation>
+<translation id="9201762611758697018">Рэзервовы PIN-код дапаможа атрымаць доступ да захаваных ключоў доступу на любой прыладзе</translation>
 <translation id="9201842707396338580">Нешта пайшло не так. Звярніцеся да адміністратара або ўладальніка прылады. Код памылкі: <ph name="ERROR_CODE" />.</translation>
 <translation id="9203296457393252944">Чырвона-зялёны, парушанае ўспрыманне зялёнага (дэйтаранамалія)</translation>
 <translation id="9203398526606335860">&amp;Прафіліраванне ўключана</translation>

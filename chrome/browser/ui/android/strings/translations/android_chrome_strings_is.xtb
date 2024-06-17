@@ -915,6 +915,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="5596627076506792578">Fleiri valkostir</translation>
 <translation id="5599455543593328020">Huliðsstilling</translation>
 <translation id="5601180634394228718">Til að skoða fleiri stillingar sem nota gögn til að bæta Chrome-upplifunina þína skaltu fara í <ph name="BEGIN_LINK" />Google-þjónustur<ph name="END_LINK" />.</translation>
+<translation id="5614625640221885312">Skráðu þig inn til að sækja bókamerkin þín, aðgangsorð og fleira í öllum tækjunum þínum</translation>
 <translation id="5620163320393916465">Engin vistuð aðgangsorð</translation>
 <translation id="5620928963363755975">Þú finnur skrár og síður í Niðurhali undir hnappinum „Fleiri valkostir“</translation>
 <translation id="562289928968387744">Stjórna viðbrögðum</translation>
@@ -956,6 +957,7 @@ Google reikningurinn þinn kann að vera með annars konar vefskoðunarferil, sv
 <translation id="5793665092639000975">Notar <ph name="SPACE_USED" /> af <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Leita og fletta</translation>
 <translation id="5797949256525811424">Umfjöllunarefni á bannlista</translation>
+<translation id="580893287573699959">Stjórnaðu umfjöllunarefnunum og vefsvæðunum sem þú hefur áhuga á</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{Fyrir # klukkustund}one{Fyrir # klukkustund}other{Fyrir # klukkustundum}}</translation>
 <translation id="5810288467834065221">Höfundarréttur <ph name="YEAR" /> Google LLC. Öll réttindi áskilin.</translation>
 <translation id="5814749351757353073">Fylgstu með uppáhalds vefsvæðunum þínum</translation>

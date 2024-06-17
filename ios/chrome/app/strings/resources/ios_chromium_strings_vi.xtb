@@ -264,6 +264,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="8386869251364507178">Thao tác trên Chromium</translation>
 <translation id="8409374867500149834">Chromium sở hữu khả năng bảo mật mạnh nhất để bảo vệ bạn trước các trang web có hại</translation>
 <translation id="8458950033462118672">Bạn có thể đặt Chromium làm Ứng dụng trình duyệt mặc định để các đường liên kết tự động mở trong Chromium.</translation>
+<translation id="8543509361021925846">{THRESHOLD,plural, =1{Việc này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chromium. Những dữ liệu chỉ được lưu vào thiết bị này khi bạn đăng nhập sẽ bị xoá. Dữ liệu này có thể bao gồm nhật ký và mật khẩu.}other{Việc này diễn ra sau {THRESHOLD} phút bạn không dùng đến Chromium. Những dữ liệu chỉ được lưu vào thiết bị này khi bạn đăng nhập sẽ bị xoá. Dữ liệu này có thể bao gồm nhật ký và mật khẩu.}}</translation>
 <translation id="858114650497379505">Bạn có thể sử dụng mật khẩu đã lưu vào Trình quản lý mật khẩu trong ứng dụng khác trên iPhone.</translation>
 <translation id="8586442755830160949">Bản quyền <ph name="YEAR" /> Tác giả Chromium. Mọi quyền được bảo lưu.</translation>
 <translation id="865600487977764604">Giữ cho bạn an toàn trên Chromium và có thể dùng để cải thiện mức độ bảo mật trên các ứng dụng khác của Google khi bạn đăng nhập.</translation>

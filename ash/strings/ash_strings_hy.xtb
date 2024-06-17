@@ -80,6 +80,7 @@
 <translation id="1247519845643687288">Վերջին հավելվածներ</translation>
 <translation id="1252999807265626933">Լիցքավորվում է <ph name="POWER_SOURCE" />-ից</translation>
 <translation id="1255033239764210633">Ի՞նչ եղանակ է հիմա։</translation>
+<translation id="1256734167083229794">Դուք սեղմեցիք լիաէկրան խոշորացույցի ստեղնային դյուրանցումը։ Օգտագործեք <ph name="ZOOM_IN_ACCELERATOR" /> դյուրանցումը՝ մասշտաբը մեծացնելու համար, և <ph name="ZOOM_OUT_ACCELERATOR" /> դյուրանցումը՝ մասշտաբը փոքրացնելու համար։ Օգտագործեք Ctrl+Alt+սլաքներ դյուրանցումը՝ մեծացրած մասշտաբի դեպքում էկրանով շարժվելու համար։</translation>
 <translation id="1269405891096105529">Արտաքին սարքը չի աջակցվում հյուրի ռեժիմում</translation>
 <translation id="1270290102613614947">Էկրանի ստեղնաշարն անջատված է</translation>
 <translation id="1272079795634619415">Դադարեցնել</translation>
@@ -99,7 +100,6 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Ցանկացած ժամանակ սեղմեք <ph name="LAUNCHER_KEY_NAME" /> + g</translation>
 <translation id="1306549533752902673">ԱՌԱՋԱՐԿՎՈՂ ՀԱՎԵԼՎԱԾՆԵՐ</translation>
-<translation id="1311294419381837540">Դուք ներդիր եք հեռարձակում։ Ցանկացած պահի կարող եք դադարեցնել կամ ավարտել հեռարձակումը։</translation>
 <translation id="1312604459020188865">Ազդանշանի հզորությունը՝ <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Միշտ ցուցադրել դարակը</translation>
 <translation id="132346741904777634">Տեսախցիկի պատկերն ամրացված է վերևի ձախ անկյունում, քանի որ ծածկում էր համակարգի միջերեսի տարրերը։</translation>
@@ -108,7 +108,6 @@
 <translation id="1340378040547539434">Փոքրացնել էջի մասշտաբը</translation>
 <translation id="1341651618736211726">Բացել լրացուցիչ ընտրացանկը</translation>
 <translation id="1341926407152459446">Օգտագործեք «<ph name="DEVICE_NAME" />» սարքը աուդիոյի ներածման և արտածման համար</translation>
-<translation id="1344141078024003905">Դուք հեռարձակում եք ձեր էկրանը։ Ցանկացած պահի կարող եք դադարեցնել կամ ավարտել էկրանի հեռարձակումը։</translation>
 <translation id="1346748346194534595">Աջ</translation>
 <translation id="1351937230027495976">Ծալել ընտրացանկը</translation>
 <translation id="1360220746312242196">Անցնել էջի որոնման նախորդ արդյունքին</translation>
@@ -264,6 +263,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">Աշխատասեղանն ու պատուհանները հեռացվել են։ Սեղմեք Control+Z ստեղները՝ գործողությունը հետարկելու համար։</translation>
 <translation id="1972950159383891558">Ողջույն, <ph name="USERNAME" /></translation>
+<translation id="1977686871076551563">Գունաշրջման ռեժիմը միացված է։ Նորից սեղմեք <ph name="ACCELERATOR" />՝ այն անջատելու համար։</translation>
 <translation id="1978498689038657292">Տեքսի մուտքագրում</translation>
 <translation id="1980808257969311265">Միանալ «<ph name="EVENT_SUMMARY" />» միջոցառմանը</translation>
 <translation id="1982717156487272186">Ցուցադրել նախորդ շաբաթը</translation>
@@ -352,7 +352,6 @@
 <translation id="2369165858548251131">Ինչպես չինարեն ասել «Բարև»</translation>
 <translation id="2370971919968699910">Տվյալների փոխանցման համար կարող է գումար գանձվել։
 Միացած է <ph name="DEVICECOUNT" /> սարք։</translation>
-<translation id="2382875860893882175">Հեռարձակումն այս պահին դադարեցված է։ Ցանկացած պահի կարող եք վերսկսել կամ ավարտել հեռարձակումը։</translation>
 <translation id="2386292613071805067">Ընտրել էջի ամբողջ բովանդակությունը</translation>
 <translation id="2392659840443812875">Հասանելի թեժ կետ չկա։ Համոզվեք, որ ձեր սարքը մոտակայքում է, և որ Bluetooth-ը միացված է։</translation>
 <translation id="2397416548179033562">Ցույց տալ Chrome-ի ընտրացանկը</translation>
@@ -616,7 +615,6 @@
 <translation id="3389599499324569679">Միացնե՞լ թելադրումը</translation>
 <translation id="3394432020929931914">, ծավալված է</translation>
 <translation id="3405101454990027959">Միացնել խոսափողի օգտագործման թույլտվությունը</translation>
-<translation id="3408735331120433841">Այս պահին դուք հեռարձակում եք ձեր էկրանը։</translation>
 <translation id="3409584356742878290">Ցուցադրել կամ թաքցնել Ծրագրավորողի գործիքների քննիչը</translation>
 <translation id="3410336247007142655">Ցույց տալ մուգ թեմայի կարգավորումները</translation>
 <translation id="3413817803639110246">Դեռևս ոչինչ չկա</translation>
@@ -856,7 +854,6 @@
 <translation id="4217571870635786043">Ձայնային ներածում</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, տեղադրված հավելված, դադարեցված է</translation>
 <translation id="4228078597006700451">Կառավարման տարրերը կարգավորված չեն</translation>
-<translation id="4231053948789591973">Հեռարձակումն այս պահին դադարեցված է։ Ցանկացած պահի կարող եք վերսկսել կամ ավարտել էկրանի հեռարձակումը։</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Համատեսքի ռեժիմ</translation>
 <translation id="4242533952199664413">Բացել կարգավորումները</translation>
@@ -1184,6 +1181,7 @@
 <translation id="5377367976106153749">Միացնե՞լ տեսախցիկի օգտագործման թույլտվությունը</translation>
 <translation id="5379115545237091094">Չափազանց շատ փորձեր</translation>
 <translation id="5391307769715781764">Փոխարինե՞լ պահված աշխատասեղանը</translation>
+<translation id="5392327145184648521">Մարտկոցի լիցքի տոկոսի հաշվարկ...</translation>
 <translation id="5393156353051693207">Հպեք էկրանի ցանկացած հատվածին և պահեք՝ հավելվածները վերադասավորելու համար</translation>
 <translation id="5395308026110844773">«<ph name="DRAGGED_APP_NAME" />» հավելվածը «<ph name="IN_PLACE_APP" />» հավելվածի վրա է: Բաց թողեք՝ պանակ ստեղծելու համար:</translation>
 <translation id="5397578532367286026">Այս օգտատիրոջ օգտագործման տվյալները և պատմությունը կարող են վերահսկվել chrome.com-ի կառավարիչի (<ph name="MANAGER_EMAIL" />) կողմից:</translation>
@@ -1238,6 +1236,7 @@
 <translation id="5577281275355252094">Phone Hub-ն օգտագործելու համար համոզվեք, որ ձեր հեռախոսում Bluetooth-ը միացված է</translation>
 <translation id="5578188167649348993">հիշողություն</translation>
 <translation id="5580000943347215299">Դարան</translation>
+<translation id="5586388332127302891">Ամրացված խոշորացույցը միացված է։ Նորից սեղմեք <ph name="ACCELERATOR" />՝ այն անջատելու համար։</translation>
 <translation id="5587506661873751671">Ներբեռնում (<ph name="DOWNLOAD_PERCENT" />%)</translation>
 <translation id="558849140439112033">Քաշեք՝ լուսանկարի հատվածն ընտրելու համար</translation>
 <translation id="5590609058453685222">Խոսափողի հիշեցումը միացված է։ Դուք ծանուցում կստանաք, եթե խոսեք ձայնն անջատված ժամանակ։</translation>
@@ -1449,6 +1448,7 @@
 <translation id="6319503618073410818">Դիտել մանրամասները դիտարկիչում</translation>
 <translation id="6324916366299863871">Փոփոխել դյուրանցումը</translation>
 <translation id="6330012934079202188">Ցուցադրվում են բոլոր աշխատասեղանների պատուհանները։ Սեղմեք վեր սլաքի ստեղնը՝ ընթացիկ աշխատասեղանից պատուհաններ ցուցադրելու համար։</translation>
+<translation id="6337159624125741244">Լիաէկրան խոշորացույցը միացված է</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> աշխատաշրջանը կառավարվում է <ph name="MANAGER" />-ի կողմից</translation>
 <translation id="6344138931392227467">Զուգակցվեց <ph name="DEVICE_NAME" /> սարքը</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, ապա՝ <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" />, ապա <ph name="KEY_THREE" /></translation>
@@ -1515,6 +1515,7 @@
 <translation id="6574587113394758819"><ph name="APP_TITLE" /> հավելվածի ծանուցումները թաքցված են, քանի որ միացված է ապահով դիտումը։</translation>
 <translation id="6574622320167699133">Սարքն ապակողպվել է ձեր հեռախոսի միջոցով։ Հպեք կամ սեղմեք՝ մուտքագրելու համար։</translation>
 <translation id="6578407462441924264">Անանուն</translation>
+<translation id="6582034443359256692">Մարտկոցի լիցքի մակարդակի հաշվարկ։</translation>
 <translation id="6585808820553845416">Աշխատաշրջանն ավարտվում է <ph name="SESSION_TIME_REMAINING" />-ից:</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Տեսախցիկի պատկերն ամրացված է ներքևի ձախ անկյունում, քանի որ ծածկում էր համակարգի միջերեսի տարրերը։</translation>
@@ -1576,6 +1577,7 @@
 <translation id="6790428901817661496">Նվագարկել</translation>
 <translation id="679368458793552943">Մեծացնել, երբ խոշորացույցը միացված է</translation>
 <translation id="6794287755901682422">Առաջադրանքի մետատվյալներ՝ <ph name="GLANCEABLES_TASK_ITEM_METADATA" />։</translation>
+<translation id="6797745268063125932">Միացված թողնել</translation>
 <translation id="6801878137098616817">Վերջերս փոփոխել եք</translation>
 <translation id="6802687695197837794">Սա օգտագործման թույլտվություն է տրամադրում <ph name="APP1_NAME" /> և <ph name="APP2_NAME" /> հավելվածներին, ինչպես նաև բոլոր այն հավելվածներին ու կայքերին, որոնք ունեն խոսափողի և տեսախցիկի օգտագործման թույլտվություն</translation>
 <translation id="6803622936009808957">Չհաջողվեց հայելապատճենել մոնիտորները, քանի որ աջակցվող լուծաչափեր չգտնվեցին: Փոխարենը միացվել է ընդարձակված աշխատասեղանը:</translation>
@@ -1887,6 +1889,7 @@
 <translation id="7947798320695032612"><ph name="APP_NAME" /> հավելվածն ուզում է օգտագործել ձեր <ph name="DEVICE_NAME" />ը</translation>
 <translation id="7951630946012935453">Նվազեցնել ստեղնաշարի հետնալույսի պայծառությունը</translation>
 <translation id="7953994493035617347">Հաստատե՞լ նոր լուծաչափը</translation>
+<translation id="795958884516058160">Լիաէկրան խոշորացույցը միացված է։ Նորից սեղմեք <ph name="ACCELERATOR" />՝ այն անջատելու համար։</translation>
 <translation id="7963689218131240420">«Չանհանգստացնել» ռեժիմն անջատված է։</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" />-ից</translation>
 <translation id="7968693143708939792">Ընտրել պանակ</translation>
@@ -2138,6 +2141,7 @@
 <translation id="894774083269346314"><ph name="PROFILE_NAME" /> (<ph name="EMAIL" />), նշավանդակը նշված չէ։</translation>
 <translation id="8949925099261528566">Միացած է, սակայն ինտերնետ կապ չկա</translation>
 <translation id="8951539504029375108">Միայն հաստատված Thunderbolt սարքերն են համատեղելի ձեր Chromebook-ի հետ</translation>
+<translation id="8959380109429710384">Դուք սեղմեցիք լիաէկրան խոշորացույցի ստեղնային դյուրանցումը։ Օգտագործեք Ctrl + Alt + սլաքներ դյուրանցումը՝ մեծացրած մասշտաբի դեպքում էկրանով շարժվելու համար։</translation>
 <translation id="8964525410783593407">1 ժ</translation>
 <translation id="8973885907461690937">Անցնել ընտրացանկի պատկերակին</translation>
 <translation id="8980862970816311842">Հավելվածի պատկերակը տեղափոխել պանակ կամ պանակից դուրս՝ հավելվածների ցանցում</translation>

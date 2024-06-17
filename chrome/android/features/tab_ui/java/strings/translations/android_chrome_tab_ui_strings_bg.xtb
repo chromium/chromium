@@ -121,6 +121,7 @@
 <translation id="7326879924029668159">Вижте правилата за връщане и др.</translation>
 <translation id="7352298686197644113">Вижте кой артикул в отворените раздели е с по-ниска цена</translation>
 <translation id="7452985128687107478">Групите раздели се запазват и актуализират автоматично на всичките ви устройства</translation>
+<translation id="747459581954555080">Възстановяване на всички</translation>
 <translation id="753732157349120914">Превключвател на раздели</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> отзив от Google}other{<ph name="REVIEWS_COUNT_MANY" /> отзива от Google}}</translation>
 <translation id="7559245342362162951">Показване на разделите от групата в решетка на цял екран</translation>
@@ -144,6 +145,7 @@
 <translation id="8338427544764842461">Групите ви раздели се запазват тук и се актуализират на всички устройства, на които сте влезли в профила си</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Затваряне на избрания <ph name="TABS_COUNT_ONE" /> раздел}other{Затваряне на избраните <ph name="TABS_COUNT_MANY" /> раздела}}</translation>
 <translation id="8398929769197326728">Нова папка – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="8428213095426709021">Настройки</translation>
 <translation id="8714939927607906138">По-ниска цена</translation>
 <translation id="8730621377337864115">Готово</translation>
 <translation id="8730999928494395583">Активността ви в съответните раздели в режим „инкогнито“ ще бъде премахната от това устройство</translation>

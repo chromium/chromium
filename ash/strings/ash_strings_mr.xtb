@@ -100,7 +100,6 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">कोणत्याही वेळी <ph name="LAUNCHER_KEY_NAME" /> + g प्रेस करा</translation>
 <translation id="1306549533752902673">शिफारस केलेले अ‍ॅप्स</translation>
-<translation id="1311294419381837540">तुम्ही टॅब कास्ट करत आहात. तुम्ही कास्ट करणे कधीही थांबवू किंवा बंद करू शकता.</translation>
 <translation id="1312604459020188865">सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">नेहमी शेल्फ दाखवा</translation>
 <translation id="132346741904777634">कॅमेरा सर्वात वरच्या डाव्या कोपर्‍यात स्नॅप केला आहे. सिस्टीम सर्फेसवरील इतर ॲपवर ओव्‍हरलॅप होत आहे.</translation>
@@ -109,7 +108,6 @@
 <translation id="1340378040547539434">पेजवर झूम आउट करा</translation>
 <translation id="1341651618736211726">ओव्हरफ्लो</translation>
 <translation id="1341926407152459446">ऑडिओ इनपुट आणि आउटपुटसाठी "<ph name="DEVICE_NAME" />" वापरा</translation>
-<translation id="1344141078024003905">तुम्ही तुमची स्क्रीन कास्ट करत आहात. तुम्ही तुमची स्क्रीन कास्ट करणे कधीही थांबवू किंवा बंद करू शकता.</translation>
 <translation id="1346748346194534595">उजवे</translation>
 <translation id="1351937230027495976">मेनू कोलॅप्स करा</translation>
 <translation id="1360220746312242196">पेज शोधत असताना, शोधासाठी मागील जुळणीवर जा</translation>
@@ -354,7 +352,6 @@
 <translation id="2369165858548251131">चिनी भाषेत "हॅलो"</translation>
 <translation id="2370971919968699910">यासाठी डेटा शुल्क लागू शकते.
 <ph name="DEVICECOUNT" /> डिव्हाइस कनेक्ट केली आहेत.</translation>
-<translation id="2382875860893882175">कास्ट करणे सध्या थांबले आहे. तुम्ही कास्ट करणे कधीही पुन्हा सुरू करू शकता किंवा थांबवू शकता.</translation>
 <translation id="2386292613071805067">पेजवरील प्रत्येक गोष्ट निवडा</translation>
 <translation id="2392659840443812875">कोणताही हॉटस्पॉट उपलब्ध नाही. तुमचे डिव्हाइस जवळपास असल्याची आणि ब्लूटूथ सुरू असल्याची खात्री करा.</translation>
 <translation id="2397416548179033562">Chrome मेनू दर्शवा</translation>
@@ -574,6 +571,7 @@
 <translation id="3226991577105957773">आणखी +<ph name="COUNT" /></translation>
 <translation id="3227137524299004712">मायक्रोफोन</translation>
 <translation id="3233611303007751344">बॅटरी सेव्हर बंद केले आहे</translation>
+<translation id="3238409143297336341">अ‍ॅप्ससाठी पालक नियंत्रणे सेट करा</translation>
 <translation id="324366796737464147">नॉइझ कॅंसलेशन</translation>
 <translation id="3249513730522716925">विंडो <ph name="WINDOW_TITLE" /> डेस्क <ph name="ACTIVE_DESK" /> वरून डेस्क <ph name="TARGET_DESK" /> वर हलवली</translation>
 <translation id="3253743281242075461">वर्गपाठाचा प्रकार: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -617,7 +615,6 @@
 <translation id="3389599499324569679">डिक्टेशन सुरू करायचे आहे का?</translation>
 <translation id="3394432020929931914">,विस्तार केला</translation>
 <translation id="3405101454990027959">मायक्रोफोनचा अ‍ॅक्सेस सुरू करा</translation>
-<translation id="3408735331120433841">तुम्ही सध्या तुमची स्क्रीन कास्ट करत आहात.</translation>
 <translation id="3409584356742878290">डेव्हलपर टूल इन्स्पेक्टर दाखवा किंवा लपवा</translation>
 <translation id="3410336247007142655">गडद थीम सेटिंग्ज दाखवा</translation>
 <translation id="3413817803639110246">आत्ताच पाहण्यासाठी काहीही नाही</translation>
@@ -857,7 +854,6 @@
 <translation id="4217571870635786043">डिक्टेशन</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, इंस्टॉल केलेले अ‍ॅप, थांबवले आहे</translation>
 <translation id="4228078597006700451">नियंत्रणे सेट केलेली नाहीत</translation>
-<translation id="4231053948789591973">कास्ट करणे सध्या थांबले आहे. तुम्ही तुमची स्क्रीन कास्ट करणे कधीही पुन्हा सुरू करू शकता किंवा थांबवू शकता.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">अवलोकन मोड</translation>
 <translation id="4242533952199664413">सेटिंग्ज उघडा</translation>
@@ -1404,6 +1400,7 @@
 <translation id="6141205840878048728">तुम्हाला कोणत्या गोष्टीवर फोकस करायचा आहे?</translation>
 <translation id="6141988275892716286">डाउनलोड करण्याचे निश्चित करा</translation>
 <translation id="6143578372829139382">YouTube वर शेअर करा</translation>
+<translation id="6147182561428020853">तुम्ही आता या <ph name="DEVICE_TYPE" /> वर इंस्टॉल केलेली अ‍ॅप्स ब्लॉक करू शकता</translation>
 <translation id="6154006699632741460">पेरिफेरलला सपोर्ट नाही</translation>
 <translation id="6156960295318603523">भाषा सेटिंग्ज</translation>
 <translation id="615957422585914272">ऑन-स्‍क्रीन कीबोर्ड दर्शवा</translation>

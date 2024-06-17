@@ -117,6 +117,8 @@
 <translation id="1513814250881909472">Đồng bộ hoá để lấy thẻ từ thiết bị khác</translation>
 <translation id="1513858653616922153">Xóa mật khẩu</translation>
 <translation id="1521774566618522728">Hoạt động hôm nay</translation>
+<translation id="1544084554881119930">Địa chỉ và phương thức thanh toán sẽ không được mã hoá. Nhật ký duyệt web trên Chrome sẽ không đồng bộ hoá.
+Chỉ những người có cụm mật khẩu mới đọc được dữ liệu đã mã hoá của bạn. Cụm mật khẩu không được gửi tới Google hay được Google lưu trữ. Nếu bạn quên cụm mật khẩu hoặc muốn thay đổi chế độ cài đặt này, hãy <ph name="BEGIN_LINK" />xoá dữ liệu Chrome khỏi tài khoản của bạn<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Để quản lý Tài khoản Google của bạn, hãy nhấn vào nút "Quản lý tài khoản"</translation>
 <translation id="154513667535157406">Nút Thích gửi phản hồi cho biết bạn thích nội dung tóm tắt này</translation>
 <translation id="1549000191223877751">Di chuyển đến cửa sổ khác</translation>
@@ -457,6 +459,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3264259168916048410">Máy tính của bạn muốn sử dụng thiết bị này để đăng nhập vào một trang web</translation>
 <translation id="3265093782546847662">Tất cả trang của <ph name="DOMAIN" /></translation>
 <translation id="3269093882174072735">Tải hình ảnh</translation>
+<translation id="327204079441056603">Chúng tôi đã thay đổi cách lưu mật khẩu trên thiết bị này</translation>
 <translation id="3280562213547448728">Tìm kiếm bằng giọng nói</translation>
 <translation id="3282568296779691940">Đăng nhập vào Chrome</translation>
 <translation id="3290249595466894471">Đồng thời gửi một mẫu nhỏ dữ liệu hoạt động trên các trang, tệp đã tải xuống, tiện ích và thông tin hệ thống để giúp phát hiện các mối đe dọa mới</translation>
@@ -1213,6 +1216,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6918398787259831832">Nếu sự cố này vẫn tiếp diễn, hãy <ph name="BEGIN_LINK" />tìm hiểu thêm thông tin<ph name="END_LINK" /> từ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6929224077895306814">Tất cả mã bảo mật đã lưu trên thiết bị và trong Tài khoản Google của bạn sẽ bị xoá</translation>
 <translation id="6937524809504266803">Chế độ cá nhân hoá và liên kết</translation>
+<translation id="6937876069006524083">Biệt hiệu (tuỳ ý)</translation>
 <translation id="6942665639005891494">Thay đổi vị trí tải xuống mặc định bất cứ lúc nào bằng cách sử dụng tùy chọn menu Cài đặt</translation>
 <translation id="694267552845942083">Bạn hiện đang tùy chỉnh các chế độ cài đặt Đồng bộ hóa của mình. Để hoàn tất thao tác bật tính năng đồng bộ hóa, hãy nhấn vào nút Xác nhận ở gần cuối màn hình. Di chuyển lên</translation>
 <translation id="6945221475159498467">Chọn</translation>
@@ -1276,6 +1280,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7207760545532569765">Khôi phục <ph name="TAB_COUNT" /> thẻ dưới dạng các thẻ nền mới.</translation>
 <translation id="7217781228893594884">Các thẻ ẩn danh sẽ bị khoá khi bạn rời khỏi Chrome</translation>
 <translation id="7221869452894271364">Tải lại trang này</translation>
+<translation id="7224097611345298931">Chúng tôi đã hợp nhất tất cả mật khẩu chỉ được lưu vào thiết bị này cho Chrome và <ph name="CHROME_CHANNEL" />. Bạn có thể chọn tự động điền tất cả mật khẩu đã lưu trên cả hai ứng dụng.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 tệp đang chờ tải xuống}other{# tệp đang chờ tải xuống}}</translation>
 <translation id="72415438529550637">Nội dung đề xuất mật khẩu đã đóng.</translation>
 <translation id="7252076891734325316">Để điện thoại của bạn gần máy tính</translation>

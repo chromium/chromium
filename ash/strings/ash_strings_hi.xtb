@@ -80,6 +80,7 @@
 <translation id="1247519845643687288">हाल ही में इस्तेमाल किए गए ऐप्लिकेशन</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> से चार्ज हो रहा है</translation>
 <translation id="1255033239764210633">मौसम कैसा है?</translation>
+<translation id="1256734167083229794">आपने पूरी स्क्रीन को बड़ा करके दिखाने की सुविधा के लिए कीबोर्ड शॉर्टकट दबाया है. ज़ूम इन करने के लिए <ph name="ZOOM_IN_ACCELERATOR" /> और ज़ूम आउट करने के लिए <ph name="ZOOM_OUT_ACCELERATOR" /> का इस्तेमाल करें. ज़ूम इन किए गए व्यू में एक से दूसरी जगह पर जाने के लिए, ctrl+alt+ऐरो का इस्तेमाल करें.</translation>
 <translation id="1269405891096105529">मेहमान मोड चालू होने पर, सहायक डिवाइस (जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह) काम नहीं करते.</translation>
 <translation id="1270290102613614947">ऑन-स्‍क्रीन कीबोर्ड अक्षम है</translation>
 <translation id="1272079795634619415">रोकें</translation>
@@ -99,7 +100,6 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">किसी भी समय <ph name="LAUNCHER_KEY_NAME" /> + g दबाएं</translation>
 <translation id="1306549533752902673">सुझाए गए ऐप्लिकेशन</translation>
-<translation id="1311294419381837540">टैब को कास्ट किया जा रहा है. आपके पास किसी भी समय कास्ट को रोकने या बंद करने का विकल्प होता है.</translation>
 <translation id="1312604459020188865">सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">शेल्फ़ हमेशा दिखाएं</translation>
 <translation id="132346741904777634">कैमरा इनपुट की झलक, अब ऊपर बाएं कोने में दिखेगी. ऐसा, सिस्टम पर दूसरे ऐप्लिकेशन के साथ ओवरलैप होने की वजह से किया गया है.</translation>
@@ -108,7 +108,6 @@
 <translation id="1340378040547539434">पेज पर ज़ूम आउट करें</translation>
 <translation id="1341651618736211726">ओवरफ़्लो</translation>
 <translation id="1341926407152459446">ऑडियो इनपुट और आउटपुट के लिए, "<ph name="DEVICE_NAME" />" का इस्तेमाल करें</translation>
-<translation id="1344141078024003905">आपकी स्क्रीन को कास्ट किया जा रहा है. आपके पास स्क्रीन कास्ट करने की प्रोसेस को कभी भी रोकने या बंद करने की सुविधा होती है.</translation>
 <translation id="1346748346194534595">दाएं</translation>
 <translation id="1351937230027495976">मेन्यू छोटा करें</translation>
 <translation id="1360220746312242196">किसी पेज को खोजते समय, खोज के लिए पिछले मिलान पर जाएं</translation>
@@ -264,6 +263,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">डेस्क और विंडो हटा दी गई हैं. इस कार्रवाई को पहले जैसा करने के लिए, Control + Z दबाएं.</translation>
 <translation id="1972950159383891558">नमस्ते, <ph name="USERNAME" /></translation>
+<translation id="1977686871076551563">रंग बदलने का मोड चालू है. इसे बंद करने के लिए, <ph name="ACCELERATOR" /> को फिर से दबाएं.</translation>
 <translation id="1978498689038657292">टेक्स्ट इनपुट</translation>
 <translation id="1980808257969311265"><ph name="EVENT_SUMMARY" /> में शामिल हों</translation>
 <translation id="1982717156487272186">पिछले हफ़्ते के इवेंट दिखाएं</translation>
@@ -352,7 +352,6 @@
 <translation id="2369165858548251131">चाइनीज़ भाषा में "नमस्ते" कैसे बोलते हैं</translation>
 <translation id="2370971919968699910">इससे डेटा खर्च हो सकता है.
 <ph name="DEVICECOUNT" /> डिवाइस कनेक्ट हैं.</translation>
-<translation id="2382875860893882175">फ़िलहाल, कास्ट करने की प्रोसेस रोकी गई है. इसे कभी भी बंद या शुरू किया जा सकता है.</translation>
 <translation id="2386292613071805067">पेज पर मौजूद सब कुछ चुनें</translation>
 <translation id="2392659840443812875">कोई हॉटस्पॉट उपलब्ध नहीं है. पक्का करें कि आपका डिवाइस आस-पास हो और उसका ब्लूटूथ चालू हो.</translation>
 <translation id="2397416548179033562">Chrome मेन्यू दिखाएं</translation>
@@ -616,7 +615,6 @@
 <translation id="3389599499324569679">क्या आपको लिखवाने की सुविधा चालू करनी है?</translation>
 <translation id="3394432020929931914">, बड़ा किया गया</translation>
 <translation id="3405101454990027959">माइक्रोफ़ोन का ऐक्सेस दें</translation>
-<translation id="3408735331120433841">फ़िलहाल, आपकी स्क्रीन को कास्ट किया जा रहा है.</translation>
 <translation id="3409584356742878290">डेवलपर टूल इंस्पेक्टर दिखाएं या छिपाएं</translation>
 <translation id="3410336247007142655">गहरे रंग वाली थीम की सेटिंग दिखाएं</translation>
 <translation id="3413817803639110246">अभी देखने के लिए कुछ भी नहीं है</translation>
@@ -857,7 +855,6 @@
 <translation id="4217571870635786043">लिखवाना</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, इंस्टॉल किया गया ऐप्लिकेशन, कुछ देर के लिए रोका गया</translation>
 <translation id="4228078597006700451">कंट्रोल सेट अप नहीं किए गए हैं</translation>
-<translation id="4231053948789591973">फ़िलहाल, कास्ट करने की प्रोसेस रोकी गई है. आपके पास स्क्रीन को कास्ट करने की प्रोसेस को कभी भी रोकने या फिर से शुरू करने की सुविधा होती है.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">खास जानकारी मोड</translation>
 <translation id="4242533952199664413">सेटिंग खोलें</translation>
@@ -1185,6 +1182,7 @@
 <translation id="5377367976106153749">क्या आपको कैमरे का ऐक्सेस देना है?</translation>
 <translation id="5379115545237091094">कई बार कोशिश की जा चुकी है</translation>
 <translation id="5391307769715781764">सेव किया गया डेस्क बदलना है?</translation>
+<translation id="5392327145184648521">बैटरी के चार्जिंग लेवल %... का हिसाब लगाया जा रहा है</translation>
 <translation id="5393156353051693207">अपने ऐप्लिकेशन का क्रम बदलने के लिए, स्क्रीन के किसी भी हिस्से को दबाकर रखें</translation>
 <translation id="5395308026110844773"><ph name="IN_PLACE_APP" /> पर<ph name="DRAGGED_APP_NAME" /> को खींचकर लाया जा रहा है, फ़ोल्डर बनाने के लिए इसे छोड़ें.</translation>
 <translation id="5397578532367286026">chrome.com पर इस उपयोगकर्ता के उपयोग और इतिहास से जुड़ी जानकारी की मैनेजर (<ph name="MANAGER_EMAIL" />) समीक्षा कर सकता है.</translation>
@@ -1239,6 +1237,7 @@
 <translation id="5577281275355252094">फ़ोन हब का इस्तेमाल करने के लिए, पक्का करें कि आपके फ़ोन में ब्लूटूथ चालू हो</translation>
 <translation id="5578188167649348993">मेमोरी</translation>
 <translation id="5580000943347215299">लाइब्रेरी</translation>
+<translation id="5586388332127302891">स्क्रीन पर कर्सर वाले हिस्से को बड़ा करके दिखाने की सुविधा चालू है. इसे बंद करने के लिए, <ph name="ACCELERATOR" /> को फिर से दबाएं.</translation>
 <translation id="5587506661873751671"><ph name="DOWNLOAD_PERCENT" />% डाउनलोड हो गई है</translation>
 <translation id="558849140439112033">कैप्चर की जाने वाली जगह चुनने के लिए खींचें और छोड़ें</translation>
 <translation id="5590609058453685222">म्यूट नज की सुविधा चालू है. माइक के म्यूट रहते हुए बात करने पर, आपको इसकी सूचना दी जाएगी.</translation>
@@ -1450,6 +1449,7 @@
 <translation id="6319503618073410818">ब्राउज़र में डाउनलोड की गई फ़ाइल की जानकारी देखें</translation>
 <translation id="6324916366299863871">शॉर्टकट में बदलाव करें</translation>
 <translation id="6330012934079202188">सभी डेस्क की विंडो दिखाई जा रही हैं, मौजूदा डेस्क की विंडो दिखाने के लिए, अप ऐरो बटन को दबाएं</translation>
+<translation id="6337159624125741244">पूरी स्क्रीन को बड़ा करके दिखाने की सुविधा चालू है</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> एक प्रबंधित सत्र है. इसे <ph name="MANAGER" /> प्रबंधित करता है</translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> कनेक्ट किया गया</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" /> फिर <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> या <ph name="KEY_THREE" /></translation>
@@ -1516,6 +1516,7 @@
 <translation id="6574587113394758819">व्यूइंग प्रोटेक्शन चालू होने की वजह से, <ph name="APP_TITLE" /> से मिलने वाली सूचना को छिपाया गया है</translation>
 <translation id="6574622320167699133">आपके फ़ोन से अनलॉक किया गया. Chromebook का इस्तेमाल करने के लिए, टैप या क्लिक करें.</translation>
 <translation id="6578407462441924264">कोई नाम नहीं</translation>
+<translation id="6582034443359256692">बैटरी के चार्जिंग लेवल का हिसाब लगाया जा रहा है.</translation>
 <translation id="6585808820553845416">सत्र <ph name="SESSION_TIME_REMAINING" /> में खत्म होने वाला है.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">कैमरा इनपुट की झलक, अब नीचे बाएं कोने में दिखेगी. ऐसा, सिस्टम पर दूसरे ऐप्लिकेशन के साथ ओवरलैप होने की वजह से किया गया है.</translation>
@@ -1577,6 +1578,7 @@
 <translation id="6790428901817661496">चलाएं</translation>
 <translation id="679368458793552943">ज़ूम करने की सुविधा चालू होने पर ज़ूम इन करने के लिए</translation>
 <translation id="6794287755901682422">इस आइटम में है: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
+<translation id="6797745268063125932">इसे चालू रखें</translation>
 <translation id="6801878137098616817">इसमें, हाल ही में बदलाव किया गया था</translation>
 <translation id="6802687695197837794">इससे <ph name="APP1_NAME" /> और <ph name="APP2_NAME" /> के साथ-साथ बाकी सभी ऐप्लिकेशन और वेबसाइटों को कैमरा और माइक्रोफ़ोन को इस्तेमाल करने का ऐक्सेस मिलता है</translation>
 <translation id="6803622936009808957">प्रदर्शनों को मिरर नहीं किया जा सका क्योंकि कोई समर्थित रिज़ॉल्यूशन नहीं मिला. इसके बजाय विस्तारित डेस्कटॉप में चला गया है.</translation>
@@ -1888,6 +1890,7 @@
 <translation id="7947798320695032612"><ph name="APP_NAME" /> को आपका <ph name="DEVICE_NAME" /> इस्तेमाल करना है</translation>
 <translation id="7951630946012935453">कीबोर्ड की बैकलाइट कम करें</translation>
 <translation id="7953994493035617347">क्या आपको नया रिज़ॉल्यूशन इस्तेमाल करना है?</translation>
+<translation id="795958884516058160">पूरी स्क्रीन को बड़ा करके दिखाने की सुविधा चालू है. इसे बंद करने के लिए, <ph name="ACCELERATOR" /> को फिर से दबाएं.</translation>
 <translation id="7963689218131240420">'परेशान न करें' सुविधा बंद है.</translation>
 <translation id="7963992254934562106"><ph name="PHONE_NAME" /> से</translation>
 <translation id="7968693143708939792">फ़ोल्डर को चुनें...</translation>
@@ -2139,6 +2142,7 @@
 <translation id="894774083269346314"><ph name="PROFILE_NAME" />, <ph name="EMAIL" /> चेक बॉक्स पर सही का निशान नहीं लगाया गया.</translation>
 <translation id="8949925099261528566">कनेक्ट हो गया, लेकिन इंटरनेट नहीं है</translation>
 <translation id="8951539504029375108">आपके Chromebook के साथ सिर्फ़ वे Thunderbolt डिवाइस काम कर सकते हैं जिन्हें अनुमति मिली है</translation>
+<translation id="8959380109429710384">आपने पूरी स्क्रीन को बड़ा करके दिखाने की सुविधा के लिए कीबोर्ड शॉर्टकट दबाया है. ज़ूम इन किए गए व्यू में एक से दूसरी जगह पर जाने के लिए, ctrl + alt + ऐरो का इस्तेमाल करें.</translation>
 <translation id="8964525410783593407">1 घंटा</translation>
 <translation id="8973885907461690937">मेन्यू आइकॉन पर फ़ोकस करें</translation>
 <translation id="8980862970816311842">ऐप्लिकेशन ग्रिड में किसी ऐप्लिकेशन आइकॉन को किसी फ़ोल्डर के अंदर या बाहर ले जाने के लिए</translation>

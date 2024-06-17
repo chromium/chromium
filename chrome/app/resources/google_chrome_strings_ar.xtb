@@ -253,6 +253,7 @@
 <translation id="4561051373932531560">‏يتيح لك Google Chrome النقر على رقم هاتف على الويب والاتصال به باستخدام Skype!</translation>
 <translation id="4567424176335768812">لقد سجلت دخولك باعتبارك <ph name="USER_EMAIL_ADDRESS" />. ويُمكنك الآن الاستمتاع بالدخول إلى الإشارات المرجعية، والسجلّ، والإعدادات الأخرى على جميع الأجهزة التي تسجّل الدخول إليها.</translation>
 <translation id="4571503333518166079">‏الانتقال إلى إعدادات الإشعارات في Chrome</translation>
+<translation id="4575717501879784448">‏يمكن لمتصفِّح Chrome إيقاف علامات التبويب هذه لتحسين تجربة التصفُّح وتوفير المصادر.</translation>
 <translation id="459622048091363950">‏بعد حصول Chrome على إمكانية الوصول، ستتمكن المواقع الإلكترونية من مطالبتك بإمكانية الوصول.</translation>
 <translation id="4600710005438004015">‏تعذّرت إعادة التحميل Chrome إلى آخر إصدار، لذلك قد تفوتك الميزات وعمليات إصلاح الأمان الجديدة.</translation>
 <translation id="4624065194742029982">‏وضع التصفّح المتخفي في Chrome</translation>
@@ -284,6 +285,7 @@
 <translation id="4970761609246024540">‏مرحبًا بك في الملفات الشخصية على Chrome</translation>
 <translation id="4970880042055371251">‏إصدار نظام التشغيل Chrome</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="4997044641749333913">‏يمكن لمتصفِّح Chrome إيقاف علامات التبويب هذه لتحسين تجربة التصفُّح والحفاظ على سرعتها.</translation>
 <translation id="5003967926796347400">‏انقر على "مدير كلمات المرور في Google".</translation>
 <translation id="5120334927898581447">‏تسجيل الدخول إلى Chrome عند تسجيل الدخول إلى خدمات Google الأخرى</translation>
 <translation id="5126049312684316860">‏يُحمِّل Chrome مسبقًا المزيد من الصفحات التي من المرجَح أن تزورها، وذلك بهدف تحميلها بسرعة أكبر عند زيارتك لها.</translation>
@@ -346,6 +348,7 @@
 <translation id="608006075545470555">إضافة ملف شخصي للعمل على هذا المتصفِّح</translation>
 <translation id="6097822892606850415">يمكنك الكتابة بمزيد من الثقة بمساعدة الذكاء الاصطناعي</translation>
 <translation id="6113794647360055231">‏Chrome أصبح أفضل</translation>
+<translation id="6135456723633883042">‏تستخدم علامات التبويب هذه مصادر إضافية. لتحسين أداء التصفُّح، ننصح بالسماح لمتصفّح Chrome بإيقاف علامات التبويب هذه.</translation>
 <translation id="6145313976051292476">‏فتح ملفات PDF في متصفِّح Chrome</translation>
 <translation id="6157638032135951407">‏تحذف مؤسستك بيانات Chrome في حال عدم استخدامها لمدّة <ph name="TIMEOUT_DURATION" />. ويمكن أن يشمل ذلك بيانات السجلّ والملء التلقائي وعمليات التنزيل.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

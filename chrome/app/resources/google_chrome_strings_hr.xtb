@@ -251,6 +251,7 @@
 <translation id="4561051373932531560">Google Chrome omogućuje da kliknete telefonski broj na webu i nazovete ga koristeći se Skypeom!</translation>
 <translation id="4567424176335768812">Prijavljeni ste kao <ph name="USER_EMAIL_ADDRESS" />. Sada možete pristupiti svojim oznakama, povijesti i drugim postavkama na svim uređajima na kojima se prijavljujete.</translation>
 <translation id="4571503333518166079">Otvori postavke obavijesti za Chrome</translation>
+<translation id="4575717501879784448">Chrome može deaktivirati te kartice radi poboljšanja vašeg doživljaja pregledavanja i oslobađanja resursa.</translation>
 <translation id="459622048091363950">Kada Chrome dobije pristup, web-lokacije će vas moći tražiti pristup.</translation>
 <translation id="4600710005438004015">Chrome se nije mogao ažurirati na najnoviju verziju, tako da nemate nove značajke i sigurnosne popravke.</translation>
 <translation id="4624065194742029982">Chromeov anonimni način</translation>
@@ -282,6 +283,7 @@
 <translation id="4970761609246024540">Dobro došli u Chromeove profile</translation>
 <translation id="4970880042055371251">Verzija Chrome OS-a</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="4997044641749333913">Chrome može deaktivirati te kartice radi poboljšanja vašeg doživljaja pregledavanja i brze aktivnosti.</translation>
 <translation id="5003967926796347400">Kliknite Google upravitelj zaporki</translation>
 <translation id="5120334927898581447">Prijavite se u Chrome prilikom prijave na druge Googleove usluge</translation>
 <translation id="5126049312684316860">Chrome predučitava još više stranica koje ćete vjerojatno posjetiti kako bi se brže učitale kad ih posjetite.</translation>
@@ -342,6 +344,7 @@
 <translation id="608006075545470555">Dodavanje poslovnog profila u ovaj preglednik</translation>
 <translation id="6097822892606850415">Pouzdanije pišite uz pomoć umjetne inteligencije</translation>
 <translation id="6113794647360055231">Chrome je upravo postao bolji</translation>
+<translation id="6135456723633883042">Te kartice upotrebljavaju dodatne resurse. Da biste poboljšali izvedbu, dopustite Chromeu da ih deaktivira.</translation>
 <translation id="6145313976051292476">Otvaranje PDF-ova u Chromeu</translation>
 <translation id="6157638032135951407">Vaša organizacija briše Chromeove podatke kada se ne upotrebljava <ph name="TIMEOUT_DURATION" />. To može uključivati povijest, automatsko popunjavanje i preuzimanja.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

@@ -55,7 +55,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1698376642261615901">Google Chrome je web preglednik koji pokreće web stranice i aplikacije munjevitom brzinom. Brz je, stabilan i jednostavan za upotrebu. Pregledajte web u sigurnijem okruženju, zaštićeni od zlonamjernih softvera i krađe identiteta zahvaljujući elementima ugrađenim u Google Chrome.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome će se ponovo pokrenuti za sat vremena}one{Chrome će se ponovo pokrenuti za # sat}few{Chrome će se ponovo pokrenuti za # sata}other{Chrome će se ponovo pokrenuti za # sati}}</translation>
-<translation id="1722488837206509557">To će vam omogućiti odabir između dostupnih uređaja i prikaz sadržaja na njima.</translation>
+<translation id="1722488837206509557">Ovo će vam dozvoliti da odaberete jedan od dostupnih uređaja i da se na njemu prikazuje sadržaj.</translation>
 <translation id="1734234790201236882">Chrome će sačuvati ovu lozinku u vašem Google računu. Nećete morati da je pamtite.</translation>
 <translation id="1786003790898721085">Provjerite jeste li prijavljeni u Chrome na svom uređaju <ph name="TARGET_DEVICE_NAME" /> i pokušajte poslati ponovo.</translation>
 <translation id="1786044937610313874">Prečice se otvaraju u Chromeu</translation>
@@ -255,6 +255,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="4561051373932531560">Google Chrome vam omogućava da klikom na broj telefona na internetu uspostavite Skype poziv!</translation>
 <translation id="4567424176335768812">Prijavljeni ste kao <ph name="USER_EMAIL_ADDRESS" />. Sada možete pristupiti svojim oznakama, historiji i drugim postavkama na svim uređajima na kojima ste prijavljeni.</translation>
 <translation id="4571503333518166079">Idi u postavke obavještenja Chromea</translation>
+<translation id="4575717501879784448">Chrome može deaktivirati te kartice radi poboljšanja vašeg doživljaja pregledavanja i oslobađanja resursa.</translation>
 <translation id="459622048091363950">Kada Chrome dobije pristup, web lokacije će od vas moći tražiti pristup.</translation>
 <translation id="4600710005438004015">Ažuriranje Chromea na najnoviju verziju nije uspjelo, tako da propuštate nove funkcije i ispravke sigurnosnih propusta.</translation>
 <translation id="4624065194742029982">Anonimni način rada u Chromeu</translation>
@@ -286,6 +287,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="4970761609246024540">Dobro došli u Chrome profile</translation>
 <translation id="4970880042055371251">Verzija ChromeOS-a</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="4997044641749333913">Chrome može deaktivirati te kartice radi poboljšanja vašeg doživljaja pregledavanja i brze aktivnosti.</translation>
 <translation id="5003967926796347400">Kliknite na "Google upravitelj lozinki"</translation>
 <translation id="5120334927898581447">Prijava u Chrome prilikom prijave na druge Googleove usluge</translation>
 <translation id="5126049312684316860">Chrome predučitava još više stranica za koje postoji vjerovatnoća da ćete ih posjetiti kako bi se brže učitavale prilikom posjete</translation>
@@ -350,6 +352,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="608006075545470555">Dodajte radni profil na ovaj preglednik</translation>
 <translation id="6097822892606850415">Pišite s više samopouzdanja uz pomoć AI-ja</translation>
 <translation id="6113794647360055231">Chrome je upravo postao još bolji</translation>
+<translation id="6135456723633883042">Te kartice upotrebljavaju dodatne resurse. Da biste poboljšali izvedbu, dopustite Chromeu da ih deaktivira.</translation>
 <translation id="6145313976051292476">Otvaraj PDF dokumente u Chromeu</translation>
 <translation id="6157638032135951407">Vaša organizacija briše podatke Chromea kada se ne koristi <ph name="TIMEOUT_DURATION" />. Ovo može uključivati historiju, automatsko popunjavanje i preuzimanja.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

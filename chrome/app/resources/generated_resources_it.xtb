@@ -136,7 +136,6 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1085064499066015002">Sempre su tutti i siti</translation>
 <translation id="1085697365578766383">Errore durante l'avvio della macchina virtuale. Riprova.</translation>
 <translation id="1086486568852410168">Cerca con Google Lens</translation>
-<translation id="1088490543924960890">Inizia a salvare le passkey con Gestore delle password di Google</translation>
 <translation id="1090126737595388931">Nessuna applicazione in esecuzione in background</translation>
 <translation id="1090541560108055381">Prima di eseguire l'accoppiamento, assicurati che questo codice sia lo stesso su entrambi i dispositivi</translation>
 <translation id="1091767800771861448">Premi ESC per saltare (solo build non ufficiali).</translation>
@@ -3670,7 +3669,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3685598397738512288">Preferenze USB su Linux</translation>
 <translation id="3687598459967813435">Consenti sempre le notifiche da <ph name="WEBSITE" /></translation>
 <translation id="368789413795732264">Si è verificato un errore durante la scrittura del file: <ph name="ERROR_TEXT" />.</translation>
-<translation id="3688368689701175138">Questa passkey verrà salvata nel Gestore delle password di Google per <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3688507211863392146">Accedere in modalità di scrittura a file e cartelle aperte nell'applicazione</translation>
 <translation id="3688526734140524629">Cambia canale</translation>
 <translation id="3688578402379768763">Aggiornato</translation>
@@ -6103,7 +6101,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5497739595514726398">Chrome non è riuscito a verificare questo bundle di installazione</translation>
 <translation id="5498967291577176373">Scrivi più velocemente grazie ai suggerimenti in linea per il tuo nome, indirizzo o numero di telefono</translation>
 <translation id="5499211612787418966">Questa finestra di dialogo non è attualmente attiva. Premi Alt+Maiusc+A per attivarla.</translation>
-<translation id="5499313591153584299">Questo file potrebbe essere dannoso per il computer.</translation>
 <translation id="5499453227627332024">È disponibile un upgrade per il tuo contenitore Linux. Puoi anche eseguire l'upgrade in un secondo momento dall'app Impostazioni.</translation>
 <translation id="5499476581866658341">Ora puoi visualizzare le foto recenti e i contenuti multimediali del tuo telefono</translation>
 <translation id="549957179819296104">Nuova icona</translation>
@@ -7028,7 +7025,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6206199626856438589">Uscirai dai siti visualizzati, schede aperte incluse</translation>
 <translation id="6206311232642889873">Cop&amp;ia immagine</translation>
 <translation id="6207200176136643843">Ripristina il livello di zoom predefinito</translation>
-<translation id="6207298079289376837">Controlla se le schede possono essere organizzate</translation>
 <translation id="6207937957461833379">Paese/Regione</translation>
 <translation id="6208521041562685716">Attivazione dei dati mobili in corso</translation>
 <translation id="6208725777148613371">Impossibile salvare su <ph name="WEB_DRIVE" /> - <ph name="INTERRUPT_REASON" /></translation>
@@ -7379,7 +7375,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6476482583633999078">Velocità della voce</translation>
 <translation id="6476671549211161535">Premi un pulsante diverso dal pulsante destro o sinistro del <ph name="DEVICE_NAME" />.</translation>
 <translation id="6477822444490674459">La sincronizzazione delle notifiche non è supportata per i telefoni in un profilo di lavoro. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
-<translation id="6478248366783946499">Conservare il file pericoloso?</translation>
 <translation id="6479881432656947268">Visita il Chrome Web Store</translation>
 <translation id="6480327114083866287">Gestito da <ph name="MANAGER" /></translation>
 <translation id="6481749622989211463">Condividi file e altri contenuti con i dispositivi nelle vicinanze. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
@@ -7558,7 +7553,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6613267708691765962">Ricerca di malware in corso…</translation>
 <translation id="6613668613087513143">Spazio su questo dispositivo insufficiente per completare l'aggiornamento. Libera <ph name="NECESSARY_SPACE" /> sul dispositivo e riprova dal browser Chrome.</translation>
 <translation id="6615455863669487791">Mostrami</translation>
-<translation id="6618097958368085618">Mantieni comunque</translation>
 <translation id="6618744767048954150">In corso</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Il sito può monitorare la tua posizione</translation>
@@ -8144,7 +8138,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7044211973375150246">C'è un'app impostata per aprire gli stessi link che è possibile aprire con <ph name="APP_NAME" />. Non sarà più possibile aprire i link supportati con <ph name="APP_NAME_2" />.</translation>
 <translation id="7044606776288350625">Sincronizza dati</translation>
 <translation id="7047059339731138197">Scegli uno sfondo</translation>
-<translation id="7049293980323620022">Conservare il file?</translation>
 <translation id="7049524156282610342">Dati di navigazione di: <ph name="DISPLAY_NAME" /></translation>
 <translation id="7050037487872780845">Configurazione hotspot non valida</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{Password salvata nel tuo Account Google: <ph name="USER_EMAIL" />}other{Password salvate nel tuo Account Google: <ph name="USER_EMAIL" />}}</translation>
@@ -8265,7 +8258,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7148426638542880639">I siti potrebbero non funzionare come previsto. Scegli questa opzione se non vuoi lasciare sul dispositivo informazioni sui siti che visiti.</translation>
 <translation id="7148954254185728510">La maggior parte dei siti non può utilizzare cookie di terze parti per monitorare la tua navigazione e i siti non possono utilizzare i cookie di terze parti in modalità di navigazione in incognito.</translation>
 <translation id="7149839598364933473">Converti questo dispositivo in un dispositivo <ph name="DEVICE_OS" />.</translation>
-<translation id="7149893636342594995">Ultimo giorno</translation>
+<translation id="7149893636342594995">Ultime 24 ore</translation>
 <translation id="7152478047064750137">Questa estensione non richiede autorizzazioni speciali</translation>
 <translation id="7153101072880472645">Alto contrasto on/off</translation>
 <translation id="715396040729904728">Avvio app + Maiusc + <ph name="TOP_ROW_KEY" /></translation>
@@ -9334,7 +9327,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7939062555109487992">Opzioni avanzate</translation>
 <translation id="793923212791838">Il dispositivo non può essere utilizzato con questo sito</translation>
 <translation id="7939328347457537652">Gestisci certificati dispositivo</translation>
-<translation id="7939412583708276221">Mantieni comunque</translation>
 <translation id="7940087892955752820">Impossibile annullare la condivisione perché questa cartella è in uso in un'applicazione. La condivisione della cartella verrà annullata al successivo arresto di <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="7940265372707990269">Ordina per <ph name="SORT_TYPE" /></translation>
 <translation id="7941179291434537290">Disponibilità tethering:</translation>
@@ -10096,7 +10088,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8477241577829954800">Sostituito</translation>
 <translation id="8477384620836102176">&amp;Generali</translation>
 <translation id="8479176401914456949">Codice non valido. Riprova.</translation>
-<translation id="8480082892550707549">Anche se hai già scaricato file da questo sito in passato, il sito potrebbe essere temporaneamente non sicuro (compromesso). Prova a scaricare il file in un secondo momento.</translation>
 <translation id="8480869669560681089">Dispositivo sconosciuto di <ph name="VENDOR_NAME" /></translation>
 <translation id="8481187309597259238">Conferma l'autorizzazione USB</translation>
 <translation id="8482077254400484047">Gestisci l'aspetto delle schede non attive qui</translation>
@@ -10925,7 +10916,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="9085256200913095638">Duplica scheda selezionata</translation>
 <translation id="9085446486797400519">Accesso alla fotocamera</translation>
 <translation id="9085776959277692427">Lingua <ph name="LANGUAGE" /> non selezionata. Premi il tasto per la ricerca e la barra spaziatrice per selezionarla.</translation>
-<translation id="9087183943157874068">Puoi controllare i suggerimenti relativi ai gruppi di schede in qualsiasi momento</translation>
 <translation id="9087949559523851360">Aggiungere utente con limitazioni</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> è bloccato dalle norme aziendali</translation>
 <translation id="9088446193279799727">Impossibile configurare Linux. Connettiti a Internet e riprova.</translation>

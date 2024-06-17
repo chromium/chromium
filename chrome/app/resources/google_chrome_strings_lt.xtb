@@ -255,6 +255,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="4561051373932531560">Naudodami „Google Chrome“ galite spustelėti telefono numerį žiniatinklyje ir skambinti juo naudodami „Skype“!</translation>
 <translation id="4567424176335768812">Esate prisijungę kaip <ph name="USER_EMAIL_ADDRESS" />. Dabar galite pasiekti savo žymes, istoriją ir kitus nustatymus visuose įrenginiuose, kuriuose esate prisijungę.</translation>
 <translation id="4571503333518166079">Eiti į „Chrome“ pranešimų nustatymus</translation>
+<translation id="4575717501879784448">„Chrome“ gali padaryti šiuos skirtukus neaktyvius, kad pagerintų naršymą ir atlaisvintų šaltinių.</translation>
 <translation id="459622048091363950">Kai „Chrome“ galės pasiekti duomenis, svetainės taip pat galės prašyti suteikti leidimą juos pasiekti.</translation>
 <translation id="4600710005438004015">Nepavyko atnaujinti „Chrome“ į naujausią versiją, todėl nebus pasiekiamos naujos funkcijos ir saugos pataisos.</translation>
 <translation id="4624065194742029982">„Chrome“ inkognito režimas</translation>
@@ -286,6 +287,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="4970761609246024540">Sveiki, tai – „Chrome“ profiliai</translation>
 <translation id="4970880042055371251">„Chrome“ OS versija</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="4997044641749333913">„Chrome“ gali padaryti šiuos skirtukus neaktyvius, kad pagerintų naršymo funkcijas ir veiktų sparčiai.</translation>
 <translation id="5003967926796347400">Spustelėkite „Google“ slaptažodžių tvarkyklė“.</translation>
 <translation id="5120334927898581447">Prisijungimas prie „Chrome“ prisijungiant prie kitų „Google“ paslaugų</translation>
 <translation id="5126049312684316860">„Chrome“ iš anksto įkelia dar daugiau puslapių, kuriuose galite apsilankyti, kad jie būtų sparčiau įkeliami juose lankantis</translation>
@@ -350,6 +352,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="608006075545470555">Darbo profilio pridėjimas prie šios naršyklės</translation>
 <translation id="6097822892606850415">Rašykite patikimiau naudodami DI</translation>
 <translation id="6113794647360055231">„Chrome“ dabar dar tobulesnė</translation>
+<translation id="6135456723633883042">Šie skirtukai naudoja papildomus šaltinius. Kad padidintumėte našumą, leiskite „Chrome“ juos padaryti neaktyvius.</translation>
 <translation id="6145313976051292476">Atidaryti PDF failus naudojant „Chrome“</translation>
 <translation id="6157638032135951407">Organizacija ištrina „Chrome“ duomenis, kai jie nenaudojami <ph name="TIMEOUT_DURATION" />. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" />– „Google Chrome“</translation>

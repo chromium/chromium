@@ -566,6 +566,7 @@
 <translation id="2036983605131262583">Autre rouleau</translation>
 <translation id="2040463897538655645">Dispositif de stockage amovible</translation>
 <translation id="2040894699575719559">Lieu bloqué</translation>
+<translation id="2041788246978549610">Utiliser les microphones accessibles (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Bac 7</translation>
 <translation id="204357726431741734">Connectez-vous pour utiliser les mots de passe enregistrés dans votre compte Google</translation>
 <translation id="2045871135676061132">Enveloppe Personal</translation>
@@ -885,6 +886,7 @@
 <translation id="2655752832536625875">Salle de bains</translation>
 <translation id="2657637947725373811">{0,plural, =1{Transférer un fichier confidentiel?}one{Transférer un fichier confidentiel?}other{Transférer des fichiers confidentiels?}}</translation>
 <translation id="2658843814961855121">Droit du travail et de l'emploi</translation>
+<translation id="2658944305627908367">Les transactions dépassant votre solde ne seront pas traitées</translation>
 <translation id="2660779039299703961">Événement</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Aucun}=1{1 mot de passe (pour <ph name="DOMAIN_LIST" />)}=2{2 mots de passe (pour <ph name="DOMAIN_LIST" />)}one{# mot de passe (pour <ph name="DOMAIN_LIST" />)}other{# mots de passe (pour <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Haut</translation>
@@ -1081,6 +1083,7 @@
 <translation id="3090667236485488075">Verre</translation>
 <translation id="3095940652251934233">Relevé</translation>
 <translation id="3098513225387949945">Ignoré parce que la liste de désactivation contient un motif égal à « * », ce qui équivaut à désactiver la politique.</translation>
+<translation id="3099619114405539473">Utiliser les caméras accessibles (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Épargne</translation>
 <translation id="3103188521861412364">Actions et obligations</translation>
 <translation id="3105172416063519923">Identifiant de ressource :</translation>
@@ -1357,6 +1360,7 @@
 <translation id="3583757800736429874">&amp;Rétablir le déplacement</translation>
 <translation id="3584299510153766161">Double perforation en bas</translation>
 <translation id="3584755835709800788">Films de science-fiction et fantastiques</translation>
+<translation id="3585455899094692781">Utiliser et déplacer les caméras accessibles (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Pellicule humide</translation>
 <translation id="3586931643579894722">Masquer les détails</translation>
 <translation id="3587738293690942763">Centre</translation>
@@ -2421,6 +2425,7 @@
 <translation id="5645132789250840550">Plastique (semi-brillant)</translation>
 <translation id="5645719697465708351">Fournitures de célébration</translation>
 <translation id="5645854190134202180">Deuxième quart</translation>
+<translation id="5648166631817621825">Sept derniers jours</translation>
 <translation id="5649053991847567735">Téléchargements automatiques</translation>
 <translation id="5651323159439184939">Entraîneur d'alimentation</translation>
 <translation id="5654927323611874862">Identifiant de rapport de plantage téléversé :</translation>

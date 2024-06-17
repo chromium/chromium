@@ -53,6 +53,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1682634494516646069">Prehliadač Google Chrome nemôže čítať ani zapisovať do adresára s údajmi: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1698376642261615901">Google Chrome je webový prehliadač, ktorý spúšťa webové stránky a aplikácie rýchlosťou blesku. Je rýchly, stabilný a jednoduchý. Má v sebe vstavanú ochranu pred škodlivým softvérom a neoprávneným získavaním údajov, vďaka ktorej je prehliadanie webu bezpečnejšie.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome sa znova spustí o 1 hodinu}few{Chrome sa znova spustí o # hodiny}many{Chrome sa znova spustí o # hodiny}other{Chrome sa znova spustí o # hodín}}</translation>
+<translation id="1722488837206509557">Budete si môcť vybrať z dostupných zariadení a zobraziť v nich obsah.</translation>
 <translation id="1734234790201236882">Chrome toto heslo uloží do vášho účtu Google. Nebudete si ho musieť pamätať.</translation>
 <translation id="1786003790898721085">Skontrolujte, či ste sa v zariadení <ph name="TARGET_DEVICE_NAME" /> prihlásili do Chromu, a potom to skúste odoslať znova.</translation>
 <translation id="1786044937610313874">Odkazy sa otvárajú v Chrome</translation>

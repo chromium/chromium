@@ -566,6 +566,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2036983605131262583">Alternatívny kotúč</translation>
 <translation id="2040463897538655645">Vymeniteľné úložisko</translation>
 <translation id="2040894699575719559">Poloha je blokovaná</translation>
+<translation id="2041788246978549610">Používať dostupné mikrofóny (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Priehradka č. 7</translation>
 <translation id="204357726431741734">Prihlásiť sa a používať heslá uložené vo vašom účte Google</translation>
 <translation id="2045871135676061132">Obálka Personal</translation>
@@ -885,6 +886,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2655752832536625875">Kúpeľňa</translation>
 <translation id="2657637947725373811">{0,plural, =1{Chcete preniesť dôverný súbor?}few{Chcete preniesť dôverné súbory?}many{Transfer confidential files?}other{Chcete preniesť dôverné súbory?}}</translation>
 <translation id="2658843814961855121">Právo upravujúce prácu a zamestnávanie</translation>
+<translation id="2658944305627908367">Transakcie, ktoré prekročia váš zostatok, nebudú spracované</translation>
 <translation id="2660779039299703961">Udalosť</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Žiadne}=1{Jedno heslo (pre zoznam domén <ph name="DOMAIN_LIST" />)}=2{Dve heslá (pre zoznam domén <ph name="DOMAIN_LIST" />)}few{# heslá (pre zoznam domén <ph name="DOMAIN_LIST" />)}many{# passwords (for <ph name="DOMAIN_LIST" />)}other{# hesiel (pre zoznam domén <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Vrch</translation>
@@ -1081,6 +1083,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3090667236485488075">Sklo</translation>
 <translation id="3095940652251934233">Výpis</translation>
 <translation id="3098513225387949945">Ignorované, pretože zoznam Deaktivovať obsahuje vzor, ktorý sa rovná hodnote „*“. Ide o ekvivalent deaktivácie pravidiel.</translation>
+<translation id="3099619114405539473">Používať dostupné kamery (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Sporiaci účet</translation>
 <translation id="3103188521861412364">Akcie a dlhopisy</translation>
 <translation id="3105172416063519923">Identifikátor obsahu:</translation>
@@ -1354,6 +1357,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="3583757800736429874">&amp;Znova presunúť</translation>
 <translation id="3584299510153766161">Dve dierky dole</translation>
 <translation id="3584755835709800788">Sci‑fi a fantasy filmy</translation>
+<translation id="3585455899094692781">Používať a presúvať dostupné kamery (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Vlhký film</translation>
 <translation id="3586931643579894722">Skryť podrobnosti</translation>
 <translation id="3587738293690942763">Stred</translation>
@@ -2417,6 +2421,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="5645132789250840550">Plast (pololesklý)</translation>
 <translation id="5645719697465708351">Potreby na oslavy a sviatky</translation>
 <translation id="5645854190134202180">Druhá zmena</translation>
+<translation id="5648166631817621825">Posledných 7 dní</translation>
 <translation id="5649053991847567735">Automatické sťahovanie</translation>
 <translation id="5651323159439184939">Podávanie ťahačom</translation>
 <translation id="5654927323611874862">Nahraný identifikátor prehľadu zrútenia:</translation>

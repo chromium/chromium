@@ -54,6 +54,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1698376642261615901">Google Chrome er vafri sem keyrir vefsíður og forrit með ótrúlegum hraða. Hann er hraðvirkur, stöðugur og einfaldur í notkun. Notaðu vefinn á öruggari hátt með innbyggðri vernd Google Chrome gegn spilliforritum og vefveiðum.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome verður endurræst eftir klukkustund}one{Chrome verður endurræst eftir # klukkustund}other{Chrome verður endurræst eftir # klukkustundir}}</translation>
+<translation id="1722488837206509557">Þetta gerir þér kleift að velja á milli tiltækra tækja og efnis á skjá þeirra.</translation>
 <translation id="1734234790201236882">Chrome mun vista þetta aðgangsorð á Google reikningnum þínum. Þú þarft ekki að muna það.</translation>
 <translation id="1786003790898721085">Vertu viss um að þú sért skráð(ur) inn á Chrome í <ph name="TARGET_DEVICE_NAME" /> og reyndu svo að senda aftur.</translation>
 <translation id="1786044937610313874">Flýtilyklar opnir í Chrome</translation>

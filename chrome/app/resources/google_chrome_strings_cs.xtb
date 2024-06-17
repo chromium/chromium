@@ -55,6 +55,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="1698376642261615901">Webový prohlížeč Google Chrome spouští stránky a aplikace rychlostí blesku. Je rychlý, stabilní a snadno použitelný. S ochranou proti malwaru a phishingu integrovanou do prohlížeče Google Chrome můžete procházet web bezpečněji.</translation>
 <translation id="1713301662689114961">{0,plural, =1{Chrome se za hodinu restartuje}few{Chrome se za # hodiny restartuje}many{Chrome se za # hodiny restartuje}other{Chrome se za # hodin restartuje}}</translation>
+<translation id="1722488837206509557">Budete moci vybírat z dostupných zařízení a zobrazovat na nich obsah.</translation>
 <translation id="1734234790201236882">Chrome heslo uloží do vašeho účtu Google. Nebudete si ho muset pamatovat.</translation>
 <translation id="1786003790898721085">Zkontrolujte, zda jste v zařízení <ph name="TARGET_DEVICE_NAME" /> přihlášeni do Chromu, a potom zkuste číslo odeslat znovu.</translation>
 <translation id="1786044937610313874">Zástupci se otevírají v Chromu</translation>

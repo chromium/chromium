@@ -80,6 +80,7 @@
 <translation id="1247519845643687288">Неодамнешни апликации</translation>
 <translation id="1252999807265626933">Се полни од <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Какво е времето?</translation>
+<translation id="1256734167083229794">Ја притиснавте кратенката од тастатура за „Лупата за цел екран“. Користете <ph name="ZOOM_IN_ACCELERATOR" /> за да зумирате и <ph name="ZOOM_OUT_ACCELERATOR" /> за да одзумирате. Користете Ctrl + Alt + копчињата со стрелки за да се движите низ зумираниот приказ.</translation>
 <translation id="1269405891096105529">Периферниот уред не е поддржан во режим на гостин</translation>
 <translation id="1270290102613614947">Тастатурата на екранот е оневозможена</translation>
 <translation id="1272079795634619415">Запри</translation>
@@ -99,7 +100,6 @@
 <translation id="1301069673413256657">GSM</translation>
 <translation id="1301513122398173424">Притиснете <ph name="LAUNCHER_KEY_NAME" /> + G кога сакате</translation>
 <translation id="1306549533752902673">ПРЕПОРАЧАНИ АПЛИКАЦИИ</translation>
-<translation id="1311294419381837540">Емитувате картичка. Емитувањето може да го паузирате или сопрете во секое време.</translation>
 <translation id="1312604459020188865">Јачина на сигналот: <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Секогаш прикажувај ја полицата</translation>
 <translation id="132346741904777634">Камерата е поставена во горниот лев агол. Конфликт со површината на системот.</translation>
@@ -108,7 +108,6 @@
 <translation id="1340378040547539434">Одзумира на страницата</translation>
 <translation id="1341651618736211726">Прелевање</translation>
 <translation id="1341926407152459446">Користете „<ph name="DEVICE_NAME" />“ за влез и излез за аудио</translation>
-<translation id="1344141078024003905">Го емитувате вашиот екран. Емитувањето на вашиот екран може да го паузирате или сопрете во секое време.</translation>
 <translation id="1346748346194534595">Надесно</translation>
 <translation id="1351937230027495976">Собери го менито</translation>
 <translation id="1360220746312242196">При пребарувањето страница, оди на претходното совпаѓање за пребарување</translation>
@@ -264,6 +263,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1971815855639997522">Работната површина и прозорците се отстранети. Притиснете Control + Z за да го вратите дејството.</translation>
 <translation id="1972950159383891558">Здраво, <ph name="USERNAME" /></translation>
+<translation id="1977686871076551563">„Режимот за инверзија на боите“ е овозможен. Притиснете <ph name="ACCELERATOR" /> повторно за да го вклучите/исклучите.</translation>
 <translation id="1978498689038657292">Внесување текст</translation>
 <translation id="1980808257969311265">Придружете се на <ph name="EVENT_SUMMARY" /></translation>
 <translation id="1982717156487272186">Прикажи ја претходната седмица</translation>
@@ -352,7 +352,6 @@
 <translation id="2369165858548251131">„Здраво“ на кинески</translation>
 <translation id="2370971919968699910">Може да ви се наплати за мобилен интернет.
 Поврзани се <ph name="DEVICECOUNT" /> уреди.</translation>
-<translation id="2382875860893882175">Емитувањето е паузирано во моментов. Емитувањето може да го продолжите или да го сопрете во секое време.</translation>
 <translation id="2386292613071805067">Избира сѐ на страницата</translation>
 <translation id="2392659840443812875">Не е достапна точка на пристап. Погрижете се телефонот да биде во близина и да има вклучено Bluetooth.</translation>
 <translation id="2397416548179033562">Прикажи мени на Chrome</translation>
@@ -572,6 +571,7 @@
 <translation id="3226991577105957773">и уште <ph name="COUNT" /></translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3233611303007751344">Штедачот на батерија е исклучен</translation>
+<translation id="3238409143297336341">Поставете родителски контроли за апликации</translation>
 <translation id="324366796737464147">Исклучи бучава</translation>
 <translation id="3249513730522716925">Прозорецот <ph name="WINDOW_TITLE" /> се премести од работен простор <ph name="ACTIVE_DESK" /> на работен простор <ph name="TARGET_DESK" /></translation>
 <translation id="3253743281242075461">Тип школска работа: <ph name="GLANCEABLES_CLASSROOM_LIST_NAME" /></translation>
@@ -615,7 +615,6 @@
 <translation id="3389599499324569679">Да се вклучи „Диктирање“?</translation>
 <translation id="3394432020929931914">, проширено</translation>
 <translation id="3405101454990027959">Вклучете пристап до микрофонот</translation>
-<translation id="3408735331120433841">Во моментов го емитувате вашиот екран.</translation>
 <translation id="3409584356742878290">Го прикажува или го сокрива инспекторот на „Програмерски алатки“</translation>
 <translation id="3410336247007142655">Прикажи ги поставките за темната тема</translation>
 <translation id="3413817803639110246">Сѐ уште нема што да се види</translation>
@@ -856,7 +855,6 @@
 <translation id="4217571870635786043">Диктат</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, инсталирана апликација, паузирана</translation>
 <translation id="4228078597006700451">Контролите не се поставени</translation>
-<translation id="4231053948789591973">Емитувањето е паузирано во моментов. Емитувањето може да го продолжите или да сопрете со емитување на вашиот екран во секое време.</translation>
 <translation id="4239069858505860023">GPRS</translation>
 <translation id="4240486403425279990">Режим на преглед</translation>
 <translation id="4242533952199664413">Отвори ги поставките</translation>
@@ -1184,6 +1182,7 @@
 <translation id="5377367976106153749">Да се вклучи пристапот до камерата?</translation>
 <translation id="5379115545237091094">Премногу обиди</translation>
 <translation id="5391307769715781764">Да се замени зачуваната работна површина?</translation>
+<translation id="5392327145184648521">Се пресметува процентот на батеријата…</translation>
 <translation id="5393156353051693207">Допрете и задржете каде било за да ги преуредите апликациите</translation>
 <translation id="5395308026110844773"><ph name="DRAGGED_APP_NAME" /> врз <ph name="IN_PLACE_APP" />, пуштете за да се создаде папка.</translation>
 <translation id="5397578532367286026">Користењето и историјата на овој корисник може да ги прегледува управникот (<ph name="MANAGER_EMAIL" />) на chrome.com.</translation>
@@ -1238,6 +1237,7 @@
 <translation id="5577281275355252094">Проверете дали е овозможен Bluetooth на телефонот за да користите Phone Hub</translation>
 <translation id="5578188167649348993">меморија</translation>
 <translation id="5580000943347215299">Збирка</translation>
+<translation id="5586388332127302891">„Закотвената лупа“ е овозможена. Притиснете <ph name="ACCELERATOR" /> повторно за да ја вклучите/исклучите.</translation>
 <translation id="5587506661873751671">Се презема: <ph name="DOWNLOAD_PERCENT" /> %</translation>
 <translation id="558849140439112033">Повлечете за да изберете област за сликање</translation>
 <translation id="5590609058453685222">„Известувањето за исклучен микрофон“ е вклучено. Ќе добиете известување ако зборувате додека е исклучен звукот.</translation>
@@ -1401,6 +1401,7 @@
 <translation id="6141205840878048728">На што би сакале да се концентрирате?</translation>
 <translation id="6141988275892716286">Потврдете го преземањето</translation>
 <translation id="6143578372829139382">Споделете на YouTube</translation>
+<translation id="6147182561428020853">Отсега може да ги блокирате апликациите инсталирани на овој <ph name="DEVICE_TYPE" /></translation>
 <translation id="6154006699632741460">Периферните уреди не се поддржани</translation>
 <translation id="6156960295318603523">Поставки за јазикот</translation>
 <translation id="615957422585914272">Покажи тастатура на екран</translation>
@@ -1448,6 +1449,7 @@
 <translation id="6319503618073410818">Прикажи ги деталите во прелистувач</translation>
 <translation id="6324916366299863871">Изменете ја кратенката</translation>
 <translation id="6330012934079202188">Се прикажуваат прозорци од сите работни површина, притиснете го копчето со стрелка за нагоре за да се прикажат прозорци од тековната работна површина</translation>
+<translation id="6337159624125741244">„Лупата за цел екран“ е вклучена</translation>
 <translation id="6338485349199627913"><ph name="DISPLAY_NAME" /> е управувана сесија со којашто управува <ph name="MANAGER" /></translation>
 <translation id="6344138931392227467"><ph name="DEVICE_NAME" /> – поврзано</translation>
 <translation id="6348449481487610270"><ph name="MODIFIER_ONE" /><ph name="MODIFIER_TWO" /><ph name="KEY_ONE" />, а потоа <ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> или <ph name="KEY_THREE" /></translation>
@@ -1514,6 +1516,7 @@
 <translation id="6574587113394758819">Известувањата од <ph name="APP_TITLE" /> се скриени бидејќи има вклучено заштита од прикажување</translation>
 <translation id="6574622320167699133">Отклучено од вашиот телефон. Допрете или кликнете за да влезете.</translation>
 <translation id="6578407462441924264">Неименувана</translation>
+<translation id="6582034443359256692">Се пресметува нивото на полнење на батеријата.</translation>
 <translation id="6585808820553845416">Сесијата ќе заврши во <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
 <translation id="6597278316891651699">Камерата е поставена во долниот лев агол. Конфликт со површината на системот.</translation>
@@ -1538,7 +1541,7 @@
 <translation id="6650933572246256093">Уредот со Bluetooth „<ph name="DEVICE_NAME" />“ бара дозвола за спарување. Внесете ја пристапната шифра на уредот: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="666343722268997814">Отворете го менито со десен клик за нагласената ставка</translation>
-<translation id="6665545700722362599">Им доделува дозволи на веб-сајтовите, апликациите и екстензиите да ги користат услугите според локација или микрофонот, камерата или другите функции на уредот</translation>
+<translation id="6665545700722362599">Им доделува дозволи на веб-сајтовите, апликациите и екстензиите да ги користат локациските услуги или микрофонот, камерата или другите функции на уредот</translation>
 <translation id="6667908387435388584">Поврзете се со точката на пристап на телефонот, исклучете го звукот на уредот, лоцирајте го уредот и прегледувајте ги неодамнешните картички на Chrome што ви се отворени на телефонот</translation>
 <translation id="6670153871843998651">Биро 3</translation>
 <translation id="6671495933530132209">Копирај слика</translation>
@@ -1575,6 +1578,7 @@
 <translation id="6790428901817661496">Репродуцирај</translation>
 <translation id="679368458793552943">Зумирајте кога е вклучена лупата</translation>
 <translation id="6794287755901682422">Ставкава има: <ph name="GLANCEABLES_TASK_ITEM_METADATA" />.</translation>
+<translation id="6797745268063125932">Не исклучувај</translation>
 <translation id="6801878137098616817">Изменето неодамна</translation>
 <translation id="6802687695197837794">Ова дозволува пристап за <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> и сите апликации и веб-сајтови со дозволи за камерата и микрофонот</translation>
 <translation id="6803622936009808957">Не можеа да се отсликаат екрани затоа што не се пронајдени поддржани резолуции. Наместо тоа, влеговме во проширен десктоп.</translation>
@@ -1886,6 +1890,7 @@
 <translation id="7947798320695032612"><ph name="APP_NAME" /> сака да користи <ph name="DEVICE_NAME" /></translation>
 <translation id="7951630946012935453">Затемнување тастатура</translation>
 <translation id="7953994493035617347">Да се потврди новата резолуција?</translation>
+<translation id="795958884516058160">„Лупата за цел екран“ е овозможена. Притиснете <ph name="ACCELERATOR" /> повторно за да ја вклучите/исклучите.</translation>
 <translation id="7963689218131240420">„Не вознемирувај“ е исклучено.</translation>
 <translation id="7963992254934562106">Од <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Изберете папка…</translation>
@@ -2137,6 +2142,7 @@
 <translation id="894774083269346314">Полето за избор на <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> не е штиклирано.</translation>
 <translation id="8949925099261528566">Поврзан, нема интернет</translation>
 <translation id="8951539504029375108">Само одобрените уреди Thunderbolt се компатибилни со вашиот Chromebook</translation>
+<translation id="8959380109429710384">Ја притиснавте кратенката од тастатура за „Лупата за цел екран“. Користете Ctrl + Alt + копчињата со стрелки за да се движите низ зумираниот приказ.</translation>
 <translation id="8964525410783593407">1 ч.</translation>
 <translation id="8973885907461690937">Го поставува фокусот на иконата за мени</translation>
 <translation id="8980862970816311842">Преместувајте икона за апликација внатре/надвор од папка во мрежа со апликации</translation>

@@ -121,6 +121,7 @@
 <translation id="7326879924029668159">Lihat dasar pemulangan dan pelbagai lagi</translation>
 <translation id="7352298686197644113">Lihat item yang lebih murah dalam tab yang terbuka</translation>
 <translation id="7452985128687107478">Kumpulan tab disimpan dan dikemaskinikan secara automatik merentas semua peranti anda</translation>
+<translation id="747459581954555080">Pulihkan semua</translation>
 <translation id="753732157349120914">Penukar Tab</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> ulasan daripada Google}other{<ph name="REVIEWS_COUNT_MANY" /> ulasan daripada Google}}</translation>
 <translation id="7559245342362162951">Tunjukkan tab kumpulan dalam grid skrin penuh</translation>
@@ -144,6 +145,7 @@
 <translation id="8338427544764842461">Kumpulan tab anda disimpan di sini dan dikemaskinikan merentas semua peranti log masuk anda</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Tutup <ph name="TABS_COUNT_ONE" /> tab yang dipilih}other{Tutup <ph name="TABS_COUNT_MANY" /> tab yang dipilih}}</translation>
 <translation id="8398929769197326728">Folder Baharu - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="8428213095426709021">Tetapan</translation>
 <translation id="8714939927607906138">Lebih murah</translation>
 <translation id="8730621377337864115">Selesai</translation>
 <translation id="8730999928494395583">Aktiviti anda dalam tab Inkognito ini akan dialih keluar daripada peranti ini</translation>

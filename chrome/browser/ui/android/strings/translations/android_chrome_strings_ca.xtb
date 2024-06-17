@@ -915,6 +915,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5596627076506792578">Més opcions</translation>
 <translation id="5599455543593328020">Mode d'incògnit</translation>
 <translation id="5601180634394228718">Per veure més opcions de configuració que utilitzin dades per millorar la teva experiència de Chrome, ves a <ph name="BEGIN_LINK" />Serveis de Google<ph name="END_LINK" />.</translation>
+<translation id="5614625640221885312">Inicia la sessió per obtenir les teves adreces d'interès, contrasenyes i més en tots els dispositius</translation>
 <translation id="5620163320393916465">No hi ha cap contrasenya desada</translation>
 <translation id="5620928963363755975">Per veure els teus fitxers i les teves pàgines, toca el botó Més opcions i ves a la secció Baixades</translation>
 <translation id="562289928968387744">Gestiona les reaccions</translation>
@@ -956,6 +957,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="5793665092639000975">S'estan utilitzant <ph name="SPACE_USED" /> de <ph name="SPACE_AVAILABLE" /></translation>
 <translation id="5795872532621730126">Cerca i navega</translation>
 <translation id="5797949256525811424">Tema bloquejat</translation>
+<translation id="580893287573699959">Gestiona els temes i els llocs web que t'interessen</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{fa # hora}other{fa # hores}}</translation>
 <translation id="5810288467834065221">Copyright <ph name="YEAR" /> Google LLC. Tots els drets reservats.</translation>
 <translation id="5814749351757353073">Estigues al corrent dels teus llocs web preferits</translation>

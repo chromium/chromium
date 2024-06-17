@@ -136,7 +136,6 @@
 <translation id="1085064499066015002">Әрдайым барлық сайтта</translation>
 <translation id="1085697365578766383">Виртуалдық құрылғыны қосу кезінде қате шықты. Қайта қосып көріңіз.</translation>
 <translation id="1086486568852410168">Google Lens арқылы іздеу</translation>
-<translation id="1088490543924960890">Google Password Manager-мен кіру кілттерін сақтауды бастаңыз</translation>
 <translation id="1090126737595388931">Фонда орындалып жатқан қолданбалар жоқ</translation>
 <translation id="1090541560108055381">Жұптамас бұрын осы кодтың екі құрылғыда да бірдей екеніне көз жеткізіңіз.</translation>
 <translation id="1091767800771861448">Өткізіп жіберу үшін ESCAPE түймесін басыңыз (тек бейресми нұсқаларда).</translation>
@@ -3663,7 +3662,6 @@
 <translation id="3685598397738512288">Linux жүйесіндегі USB параметрлері</translation>
 <translation id="3687598459967813435">Веб-сайттан (<ph name="WEBSITE" />) хабарландырулар жіберілуіне әрдайым рұқсат ету</translation>
 <translation id="368789413795732264">Файлды жазуға әрекет ету кезінде қате орын алды: <ph name="ERROR_TEXT" />.</translation>
-<translation id="3688368689701175138">Бұл кіру кілті Google Password Manager (<ph name="ACCOUNT_NAME" />) қызметіне сақталады.</translation>
 <translation id="3688507211863392146">Қолданбада ашатын файлдарға және қалталарға жазу</translation>
 <translation id="3688526734140524629">Арнаны өзгерту</translation>
 <translation id="3688578402379768763">Жаңартылған</translation>
@@ -6094,7 +6092,6 @@
 <translation id="5497739595514726398">Chrome бұл орнату пакетін тексере алмады</translation>
 <translation id="5498967291577176373">Аты-жөніңізді, мекенжайыңызды не телефон нөміріңізді ендірілген ұсыныстармен жылдамырақ жазыңыз.</translation>
 <translation id="5499211612787418966">Бұл диалогтік терезе әзірше ерекшеленбеген. Осы диалогтік терезені ерекшелеу үшін Alt-Shift тіркесімін басыңыз.</translation>
-<translation id="5499313591153584299">Бұл файл компьютеріңізге зиянды болуы мүмкін.</translation>
 <translation id="5499453227627332024">Linux контейнері үшін жаңа нұсқа қолжетімді. Жаңа нұсқаны "Параметрлер" қолданбасы арқылы кейінірек орнатуыңызға болады.</translation>
 <translation id="5499476581866658341">Енді телефондағы соңғы фотосуреттер мен медиафайлдарды көре аласыз</translation>
 <translation id="549957179819296104">Жаңа белгіше</translation>
@@ -7017,7 +7014,6 @@
 <translation id="6206199626856438589">Көрсетілген сайттардан, оның ішінде ашық қойындылардан шығарыласыз.</translation>
 <translation id="6206311232642889873">Кескінді көші&amp;ру</translation>
 <translation id="6207200176136643843">Әдепкі масштабтау деңгейін қайтару</translation>
-<translation id="6207298079289376837">Қойындыларды реттеуге болатынын тексеру</translation>
 <translation id="6207937957461833379">Ел/аймақ</translation>
 <translation id="6208521041562685716">Мобильдік интернет іске қосылуда</translation>
 <translation id="6208725777148613371"><ph name="WEB_DRIVE" /> қоймасына сақталмады. <ph name="INTERRUPT_REASON" />.</translation>
@@ -7368,7 +7364,6 @@
 <translation id="6476482583633999078">Сөйлеу жылдамдығы</translation>
 <translation id="6476671549211161535"><ph name="DEVICE_NAME" /> тінтуірінде сол не оң жақ түймеден басқа түймені басыңыз.</translation>
 <translation id="6477822444490674459">Жұмыс профиліндегі телефондар үшін хабарландыруларды синхрондауға қолдау көрсетілмейді. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
-<translation id="6478248366783946499">Қауіпті файл сақталсын ба?</translation>
 <translation id="6479881432656947268">Chrome Web Store дүкеніне кіру</translation>
 <translation id="6480327114083866287"><ph name="MANAGER" /> басқарады</translation>
 <translation id="6481749622989211463">Файлдарды және т.б. элементтерді маңайдағы құрылғылармен бөліседі. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
@@ -7547,7 +7542,6 @@
 <translation id="6613267708691765962">Зиянды бағдарламаның бар-жоғы тексеріліп жатыр...</translation>
 <translation id="6613668613087513143">Бұл құрылғыда жаңартуды аяқтауға орын жеткіліксіз. Құрылғыдан <ph name="NECESSARY_SPACE" /> орын босатып, әрекетті Chrome браузерінен қайталап көріңіз.</translation>
 <translation id="6615455863669487791">Маған көрсету</translation>
-<translation id="6618097958368085618">Сақтала берсін</translation>
 <translation id="6618744767048954150">Жұмыс істеп тұр</translation>
 <translation id="6619058681307408113">Line Printer Daemon (LPD)</translation>
 <translation id="661907246513853610">Сайт орналасқан жеріңізді бақылай алады</translation>
@@ -8132,7 +8126,6 @@
 <translation id="7044211973375150246"><ph name="APP_NAME" /> ашқан сілтемелерді басқа қолданба да аша алатын болып реттелді. <ph name="APP_NAME_2" /> қолдау көрсету сілтемелерін аша алмай қалады.</translation>
 <translation id="7044606776288350625">Деректерді синхрондау</translation>
 <translation id="7047059339731138197">Фонды таңдау</translation>
-<translation id="7049293980323620022">Файл сақталсын ба?</translation>
 <translation id="7049524156282610342">Браузерді пайдалану деректері (<ph name="DISPLAY_NAME" />)</translation>
 <translation id="7050037487872780845">Хотспот конфигурациясы жарамсыз</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{Құпия сөзіңіз Google аккаунтыңызға (<ph name="USER_EMAIL" />) сақталды.}other{Құпия сөздеріңіз Google аккаунтыңызға (<ph name="USER_EMAIL" />) сақталды.}}</translation>
@@ -9319,7 +9312,6 @@
 <translation id="7939062555109487992">Қосымша опциялар</translation>
 <translation id="793923212791838">Құрылғыңызды осы сайтпен пайдалану мүмкін емес</translation>
 <translation id="7939328347457537652">Құрылғының сертификаттарын басқару</translation>
-<translation id="7939412583708276221">Бәрібір сақтау</translation>
 <translation id="7940087892955752820">Бөлісуден бас тарту мүмкін емес, себебі бұл қалтаны қолданба пайдаланып жатыр. <ph name="SPECIFIC_NAME" /> өшкеннен кейін, қалтаны бөлісуден бас тартылады.</translation>
 <translation id="7940265372707990269"><ph name="SORT_TYPE" /> бойынша сұрыптау</translation>
 <translation id="7941179291434537290">Тетеринг режимі:</translation>
@@ -10078,7 +10070,6 @@
 <translation id="8477241577829954800">Алмастырылған</translation>
 <translation id="8477384620836102176">&amp;Жалпы</translation>
 <translation id="8479176401914456949">Код жарамсыз. Қайталап көріңіз.</translation>
-<translation id="8480082892550707549">Файлдарды бұрын осы сайттан жүктеп алған болсаңыз да, сайт уақытша қауіпті (бұзылған) болуы мүмкін. Файлды кейінірек жүктеп көріңіз.</translation>
 <translation id="8480869669560681089"><ph name="VENDOR_NAME" /> белгісіз құрылғысы</translation>
 <translation id="8481187309597259238">USB рұқсатын растау</translation>
 <translation id="8482077254400484047">Әрекетсіз қойындылардың сыртқы көрінісін осы жерде реттеңіз.</translation>
@@ -10907,7 +10898,6 @@
 <translation id="9085256200913095638">Таңдалған қойындыны көшіру</translation>
 <translation id="9085446486797400519">Камераны пайдалану</translation>
 <translation id="9085776959277692427"><ph name="LANGUAGE" /> таңдалмады. Таңдау үшін іздеу және бос орын пернелерін бірге басыңыз.</translation>
-<translation id="9087183943157874068">Қойындылар тобы ұсыныстарын кез келген уақытта қарай аласыз.</translation>
 <translation id="9087949559523851360">Шектелген пайдаланушыны енгізу</translation>
 <translation id="9088234649737575428"><ph name="PLUGIN_NAME" /> плагині ұйым саясатына сәйкес бөгелді</translation>
 <translation id="9088446193279799727">Linux конфигурацияланбады. Интернетке қосылып, әрекетті қайталап көріңіз.</translation>

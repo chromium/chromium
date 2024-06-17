@@ -566,6 +566,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2036983605131262583">Corró alternatiu</translation>
 <translation id="2040463897538655645">Emmagatzematge extraïble</translation>
 <translation id="2040894699575719559">S'ha bloquejat la ubicació</translation>
+<translation id="2041788246978549610">Utilitza els micròfons disponibles (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Safata 7</translation>
 <translation id="204357726431741734">Inicia la sessió per utilitzar les contrasenyes desades al teu Compte de Google</translation>
 <translation id="2045871135676061132">Sobre personal</translation>
@@ -885,6 +886,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2655752832536625875">Bany</translation>
 <translation id="2657637947725373811">{0,plural, =1{Vols transferir el fitxer confidencial?}other{Vols transferir els fitxers confidencials?}}</translation>
 <translation id="2658843814961855121">Dret laboral i d'ocupació</translation>
+<translation id="2658944305627908367">Les transaccions que superin el saldo no es processaran</translation>
 <translation id="2660779039299703961">Esdeveniment</translation>
 <translation id="2664887757054927933">{COUNT,plural, =0{Cap}=1{1 contrasenya (per a <ph name="DOMAIN_LIST" />)}=2{2 contrasenyes (per a <ph name="DOMAIN_LIST" />)}other{# contrasenyes (per a <ph name="DOMAIN_LIST" />)}}</translation>
 <translation id="2666092431469916601">Superior</translation>
@@ -1081,6 +1083,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3090667236485488075">Vidre</translation>
 <translation id="3095940652251934233">Statement</translation>
 <translation id="3098513225387949945">S'ha ignorat perquè la llista "disable" conté un patró igual a "*", que equival a la desactivació de la política.</translation>
+<translation id="3099619114405539473">Utilitza les càmeres disponibles (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Estalvis</translation>
 <translation id="3103188521861412364">Accions i bons</translation>
 <translation id="3105172416063519923">Identificador de l'element:</translation>
@@ -1357,6 +1360,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3583757800736429874">&amp;Refés el moviment</translation>
 <translation id="3584299510153766161">Encunyació doble a la part inferior</translation>
 <translation id="3584755835709800788">Pel·lícules de fantasia i ciència-ficció</translation>
+<translation id="3585455899094692781">Utilitza i mou les càmeres disponibles (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3586833803451155175">Pel·lícula humida</translation>
 <translation id="3586931643579894722">Oculta els detalls</translation>
 <translation id="3587738293690942763">Mitjà</translation>
@@ -2421,6 +2425,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5645132789250840550">Plàstic (semibrillant)</translation>
 <translation id="5645719697465708351">Productes per a festes i celebracions</translation>
 <translation id="5645854190134202180">Segon torn</translation>
+<translation id="5648166631817621825">7 darrers dies</translation>
 <translation id="5649053991847567735">Baixades automàtiques</translation>
 <translation id="5651323159439184939">Alimentació per tracció</translation>
 <translation id="5654927323611874862">Identificador de l'informe d'error penjat:</translation>

@@ -121,6 +121,7 @@
 <translation id="7326879924029668159">返品に関するポリシーなどを確認</translation>
 <translation id="7352298686197644113">開いているタブに値下げされた商品があります</translation>
 <translation id="7452985128687107478">タブグループは自動的に保存され、すべてのデバイスで更新されます</translation>
+<translation id="747459581954555080">すべて復元</translation>
 <translation id="753732157349120914">タブ切り替え機能</translation>
 <translation id="7545727119051420814">{REVIEWS,plural, =1{Google による審査 <ph name="REVIEWS_COUNT_ONE" /> 件}other{Google による審査 <ph name="REVIEWS_COUNT_MANY" /> 件}}</translation>
 <translation id="7559245342362162951">グループのタブを全画面グリッドで表示</translation>
@@ -144,6 +145,7 @@
 <translation id="8338427544764842461">タブグループはここに保存され、ログインしているすべてのデバイスで更新されます</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{選択した <ph name="TABS_COUNT_ONE" /> 個のタブを閉じます}other{選択した <ph name="TABS_COUNT_MANY" /> 個のタブを閉じます}}</translation>
 <translation id="8398929769197326728">新しいフォルダ - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
+<translation id="8428213095426709021">設定</translation>
 <translation id="8714939927607906138">値下げ</translation>
 <translation id="8730621377337864115">完了</translation>
 <translation id="8730999928494395583">これらのシークレット タブでのアクティビティはこのデバイスから削除されます</translation>
