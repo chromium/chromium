@@ -507,24 +507,23 @@ BASE_FEATURE(kAutofillSkipPreFilledFields,
              "AutofillSkipPreFilledFields",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// If enabled, use the parsing patterns from a JSON file for heuristics, rather
-// than the hardcoded ones from autofill_regex_constants.cc.
-// The specific pattern set is controlled by the
-// `kAutofillParsingPatternActiveSource` parameter.
-//
-// This feature is intended to work with kAutofillPageLanguageDetection.
-//
-// Enabling this feature is also a prerequisite for emitting shadow metrics.
-// TODO(crbug.com/40146444): Remove once launched.
+// This feature flag only exists for its feature parameter
+// `kAutofillParsingPatternActiveSource`, controlling from which JSON file
+// regexes are loaded.
+// If the flag is disabled (which it should never be in practice), it behaves
+// as if enabled with `kAutofillParsingPatternActiveSource` set to "default".
+// TODO(crbug.com/40280853): Remove once there is a decision what to do about
+// the different JSON files.
 BASE_FEATURE(kAutofillParsingPatternProvider,
              "AutofillParsingPatternProvider",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// The specific pattern set is controlled by the `kAutofillParsingPatternActive`
-// parameter. One of "default", "experimental", "nextgen".
+// The specific pattern set from which regexes are loaded for the active
+// predictions. One of "default", "experimental", "nextgen".
 // This parameter is only supported in Chrome-branded builds. Non-Chrome branded
 // builds default to the legacy patterns.
-// TODO(crbug.com/40197215): Remove once experiment is finished.
+// TODO(crbug.com/40280853): Remove once there is a decision what to do about
+// the different JSON files.
 const base::FeatureParam<std::string> kAutofillParsingPatternActiveSource{
     &kAutofillParsingPatternProvider, "prediction_source", "default"};
 

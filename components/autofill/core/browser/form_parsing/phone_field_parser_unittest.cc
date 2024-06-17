@@ -39,18 +39,11 @@ class PhoneFieldParserTest
     : public testing::TestWithParam<PatternProviderFeatureState> {
  public:
   PhoneFieldParserTest() {
-    std::vector<base::test::FeatureRefAndParams> enabled;
-    std::vector<base::test::FeatureRef> disabled;
-    if (GetParam().enable) {
-      enabled.emplace_back(
-          features::kAutofillParsingPatternProvider,
-          base::FieldTrialParams{
-              {features::kAutofillParsingPatternActiveSource.name,
-               GetParam().active_source}});
-    } else {
-      disabled.push_back(features::kAutofillParsingPatternProvider);
-    }
-    scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kAutofillParsingPatternProvider,
+        base::FieldTrialParams{
+            {features::kAutofillParsingPatternActiveSource.name,
+             GetParam().active_source}});
   }
 
   PhoneFieldParserTest(const PhoneFieldParserTest&) = delete;

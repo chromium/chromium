@@ -20,13 +20,8 @@ HeuristicSource GetActiveHeuristicSource() {
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
   return HeuristicSource::kLegacy;
 #else
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillParsingPatternProvider)) {
-    return HeuristicSource::kLegacy;
-  }
   const std::string& source =
       features::kAutofillParsingPatternActiveSource.Get();
-  CHECK(source == "default" || source == "experimental" || source == "nextgen");
   return source == "default"        ? HeuristicSource::kDefault
          : source == "experimental" ? HeuristicSource::kExperimental
                                     : HeuristicSource::kNextGen;

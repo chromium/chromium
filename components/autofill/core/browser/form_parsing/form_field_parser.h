@@ -33,11 +33,6 @@ class AutofillRegexCache;
 class AutofillScanner;
 class LogManager;
 
-// When kNoLegacyPattern is passed to ParseField/ParseFieldSpecifics as the
-// pattern, the functions always default to the MatchPatternRefs, regardless
-// of the status of features::kAutofillParsingPatternProvider.
-inline constexpr std::u16string_view kNoLegacyPattern = u"no-legacy-pattern";
-
 // LRU cache to prevent the repetitive evaluation of identical regular
 // expressions (`pattern`) on identical `input` strings.
 class RegexMatchesCache {
@@ -235,9 +230,7 @@ class FormFieldParser {
 
   // Attempts to parse a form field with the given pattern.  Returns true on
   // success and fills `match` with a pointer to the field.
-  // When `kNoLegacyPattern` is passed as the `pattern`, the functions always
-  // default to `patterns`, regardless of the status of
-  // `features::kAutofillParsingPatternProvider`.
+  // TODO(crbug.com/40280853): The `pattern` parameter is unused. Remove.
   static bool ParseField(ParsingContext& context,
                          AutofillScanner* scanner,
                          std::u16string_view pattern,
@@ -245,12 +238,11 @@ class FormFieldParser {
                          raw_ptr<AutofillField>* match,
                          const char* regex_name = "");
 
-  // When `kNoLegacyPattern` is passed as the `pattern`, the functions always
-  // default to `patterns`, regardless of the status of
-  // `features::kAutofillParsingPatternProvider`.
   // If a `match_pattern_projection` is defined, it is applied to the pattern's
   // MatchParams after dereferencing the `MatchPatternRef`s. Note that this is
   // only relevant with pattern provider.
+  // TODO(crbug.com/40280853): The `pattern` and `match_type` parameters are
+  // unused. Remove them.
   static bool ParseFieldSpecifics(
       ParsingContext& context,
       AutofillScanner* scanner,

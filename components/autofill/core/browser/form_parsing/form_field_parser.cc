@@ -486,16 +486,8 @@ bool FormFieldParser::ParseFieldSpecifics(
     raw_ptr<AutofillField>* match,
     const char* regex_name,
     MatchParams (*match_pattern_projection)(const MatchParams&)) {
-  return (base::FeatureList::IsEnabled(
-              features::kAutofillParsingPatternProvider) ||
-          // Some patterns may not exist as an old-school regex because they
-          // require negative matching.
-          pattern == kNoLegacyPattern)
-             ? ParseFieldSpecificsWithNewPatterns(context, scanner, patterns,
-                                                  match, regex_name,
-                                                  match_pattern_projection)
-             : ParseFieldSpecificsWithLegacyPattern(
-                   context, scanner, pattern, match_type, match, regex_name);
+  return ParseFieldSpecificsWithNewPatterns(
+      context, scanner, patterns, match, regex_name, match_pattern_projection);
 }
 
 // static

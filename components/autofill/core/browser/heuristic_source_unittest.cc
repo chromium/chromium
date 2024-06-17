@@ -25,7 +25,7 @@ namespace autofill {
 
 struct HeuristicSourceParams {
   std::optional<bool> model_predictions_feature;
-  std::optional<std::string> pattern_provider_feature;
+  std::string pattern_provider_feature;
   const HeuristicSource expected_active_source;
   const DenseSet<HeuristicSource> expected_nonactive_sources;
 };
@@ -47,14 +47,10 @@ class HeuristicSourceTest
     } else {
       disabled_features.push_back(features::kAutofillModelPredictions);
     }
-    if (test_case.pattern_provider_feature) {
-      enabled_features.push_back(
-          {features::kAutofillParsingPatternProvider,
-           {{features::kAutofillParsingPatternActiveSource.name,
-             *test_case.pattern_provider_feature}}});
-    } else {
-      disabled_features.push_back(features::kAutofillParsingPatternProvider);
-    }
+    enabled_features.push_back(
+        {features::kAutofillParsingPatternProvider,
+         {{features::kAutofillParsingPatternActiveSource.name,
+           test_case.pattern_provider_feature}}});
     features_.InitWithFeaturesAndParameters(enabled_features,
                                             disabled_features);
   }
@@ -74,8 +70,8 @@ INSTANTIATE_TEST_SUITE_P(
     HeuristicSourceTest,
     HeuristicSourceTest,
     testing::Values(
-// Tests when `kAutofillParsingPatternProvider` is enabled. The behavior is
-// different for Chrome and non-Chrome branded instances.
+// The pattern provider behavior differs between Chrome and non-Chrome branded
+// instances.
 #if !BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
         HeuristicSourceParams{
             .pattern_provider_feature = "legacy",
@@ -88,11 +84,14 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_active_source = HeuristicSource::kMachineLearning,
             .expected_nonactive_sources = {HeuristicSource::kLegacy}},
 
-        HeuristicSourceParams{
-            .model_predictions_feature = false,
-            .pattern_provider_feature = "legacy",
-            .expected_active_source = HeuristicSource::kLegacy,
-            .expected_nonactive_sources = {HeuristicSource::kMachineLearning}},
+        HeuristicSourceParams {
+          .model_predictions_feature = false,
+          .pattern_provider_feature = "legacy",
+          .expected_active_source = HeuristicSource::kLegacy,
+          .expected_nonactive_sources = {
+            HeuristicSource::kMachineLearning
+          }
+        }
 #else
         HeuristicSourceParams{
             .model_predictions_feature = true,
@@ -114,24 +113,8 @@ INSTANTIATE_TEST_SUITE_P(
         HeuristicSourceParams{
             .pattern_provider_feature = "experimental",
             .expected_active_source = HeuristicSource::kExperimental,
-            .expected_nonactive_sources = {HeuristicSource::kNextGen}},
+            .expected_nonactive_sources = {HeuristicSource::kNextGen}}
 #endif
-        // Tests when `kAutofillParsingPatternProvider` is disabled. In this
-        // case, parsing doesn't depend on the pattern source. But since
-        // `MatchPatternRef`s are loaded regardless, expect that the code
-        // defaults to `kLegacy`.
-        HeuristicSourceParams{
-            .expected_active_source = HeuristicSource::kLegacy,
-            .expected_nonactive_sources = {}},
-        HeuristicSourceParams{
-            .model_predictions_feature = true,
-            .expected_active_source = HeuristicSource::kMachineLearning,
-            .expected_nonactive_sources = {HeuristicSource::kLegacy}},
-        HeuristicSourceParams{
-            .model_predictions_feature = false,
-            .expected_active_source = HeuristicSource::kLegacy,
-            .expected_nonactive_sources = {HeuristicSource::kMachineLearning}}
-
         ));
 
 }  // namespace autofill

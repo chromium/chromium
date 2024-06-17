@@ -18,34 +18,27 @@ void UpdateRanks(std::vector<std::unique_ptr<AutofillField>>& fields) {
 
 std::vector<PatternProviderFeatureState> PatternProviderFeatureState::All() {
   return {
-    {.enable = false, .active_source = nullptr},
 #if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
-        {.enable = true, .active_source = "default"},
-        {.enable = true, .active_source = "experimental"},
-        {.enable = true, .active_source = "nextgen"},
+      {.active_source = "default"},
+      {.active_source = "experimental"},
+      {.active_source = "nextgen"},
 #else
       // Builds without Autofill internal patterns default to the legacy
       // patterns. The `active_source` feature parameter is in fact not read
       // in this case.
-      {.enable = true, .active_source = "legacy"},
+      {.active_source = "legacy"},
 #endif
   };
 }
 
 FormFieldParserTestBase::FormFieldParserTestBase(
     PatternProviderFeatureState pattern_provider_feature_state) {
-  std::vector<base::test::FeatureRefAndParams> enabled;
-  std::vector<base::test::FeatureRef> disabled;
-  if (pattern_provider_feature_state.enable) {
-    enabled.emplace_back(
-        features::kAutofillParsingPatternProvider,
-        base::FieldTrialParams{
-            {features::kAutofillParsingPatternActiveSource.name,
-             pattern_provider_feature_state.active_source}});
-  } else {
-    disabled.push_back(features::kAutofillParsingPatternProvider);
-  }
-  scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
+  CHECK_NE(pattern_provider_feature_state.active_source, nullptr);
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      features::kAutofillParsingPatternProvider,
+      base::FieldTrialParams{
+          {features::kAutofillParsingPatternActiveSource.name,
+           pattern_provider_feature_state.active_source}});
 }
 
 FormFieldParserTestBase::~FormFieldParserTestBase() = default;

@@ -30,14 +30,12 @@ enum class ParseResult {
   kMaxValue = kNotParsed
 };
 
-// Represents the intended state of features::kAutofillParsingPatternProvider.
+// Represents the intended state of
+// features::kAutofillParsingPatternActiveSource.
 struct PatternProviderFeatureState {
   // A list of all available configurations, depending on the build config.
   static std::vector<PatternProviderFeatureState> All();
 
-  // Whether features::kAutofillParsingPatternProvider should be enabled.
-  bool enable = false;
-  // The desired value of features::kAutofillParsingPatternActiveSource.
   const char* active_source = nullptr;
 };
 

@@ -162,10 +162,7 @@ std::unique_ptr<FullNameField> FullNameField::Parse(ParsingContext& context,
       ParseFieldSpecifics(context, scanner, kNameIgnoredRe,
                           kNameIgnoredMatchParams, name_ignored_patterns,
                           nullptr, "kNameIgnoredRe") ||
-      // This pattern fully migrated to the MatchPattern mechanism. There
-      // is no regular expression in autofill_regex_constants.h anymore.
-      ParseField(context, scanner, kNoLegacyPattern,
-                 address_name_ignored_patterns, nullptr,
+      ParseField(context, scanner, u"", address_name_ignored_patterns, nullptr,
                  "kAddressNameIgnoredRe");
   scanner->Rewind();
   if (should_ignore) {
@@ -229,11 +226,8 @@ FirstTwoLastNamesField::ParseComponentNames(ParsingContext& context,
   while (!scanner->IsEnd()) {
     // Skip over address label fields, which can have misleading names
     // e.g. "title" or "name".
-    // This pattern fully migrated to the MatchPattern mechanism. There is no
-    // regular expression in autofill_regex_constants.h anymore.
-    if (ParseField(context, scanner, kNoLegacyPattern,
-                   address_name_ignored_patterns, nullptr,
-                   "kAddressNameIgnoredRe")) {
+    if (ParseField(context, scanner, u"", address_name_ignored_patterns,
+                   nullptr, "kAddressNameIgnoredRe")) {
       continue;
     }
 
@@ -334,10 +328,7 @@ FirstLastNameField::ParseNameSurnameLabelSequence(ParsingContext& context,
       ParseFieldSpecifics(context, scanner, kNameIgnoredRe,
                           kNameIgnoredMatchParams, name_ignored_patterns,
                           nullptr, "kNameIgnoredRe") ||
-      // This pattern fully migrated to the MatchPattern mechanism. There is no
-      // regular expression in autofill_regex_constants.h anymore.
-      ParseField(context, scanner, kNoLegacyPattern,
-                 address_name_ignored_patterns, nullptr,
+      ParseField(context, scanner, u"", address_name_ignored_patterns, nullptr,
                  "kAddressNameIgnoredRe");
   scanner->Rewind();
 
@@ -430,11 +421,8 @@ FirstLastNameField::ParseSpecificComponentSequence(ParsingContext& context,
   while (!scanner->IsEnd()) {
     // Skip over address label fields, which can have misleading names
     // e.g. "title" or "name".
-    // This pattern fully migrated to the MatchPattern mechanism. There is no
-    // regular expression in autofill_regex_constants.h anymore.
-    if (ParseField(context, scanner, kNoLegacyPattern,
-                   address_name_ignored_patterns, nullptr,
-                   "kAddressNameIgnoredRe")) {
+    if (ParseField(context, scanner, u"", address_name_ignored_patterns,
+                   nullptr, "kAddressNameIgnoredRe")) {
       continue;
     }
 
