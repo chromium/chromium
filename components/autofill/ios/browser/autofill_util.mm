@@ -194,7 +194,9 @@ bool ExtractFormData(const base::Value::Dict& form,
     if (!host_frame) {
       return false;
     }
-    form_data->set_host_frame(LocalFrameToken(*host_frame));
+    if (include_frame_metadata) {
+      form_data->set_host_frame(LocalFrameToken(*host_frame));
+    }
   }
 
   // main_frame_origin is used for logging UKM.
