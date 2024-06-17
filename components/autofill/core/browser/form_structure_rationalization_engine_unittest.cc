@@ -558,5 +558,59 @@ TEST(FormStructureRationalizationEngine, TestPLAddressLine1WithNoNext) {
                           /*changed*/ ADDRESS_HOME_ZIP));
 }
 
+// Verifies that fields classified as ADDRESS_HOME_LINE1 with a following
+// repeated ADDRESS_HOME_LINE1 are reclassified as ADDRESS_HOME_LINE1 and
+// ADDRESS_HOME_LINE2 for IT forms.
+TEST(FormStructureRationalizationEngine, TestITAddressLine1WithAL1Next) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kTestFeatureForFormStructureRationalizationEngine,
+       features::kAutofillUseITAddressModel},
+      {});
+
+  std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
+      {u"Nome", u"nome", NAME_FIRST},
+      {u"Cognome", u"cognome", NAME_LAST},
+      {u"Indirizzo", u"indirizzo", ADDRESS_HOME_LINE1},
+      {u"Indirizzo", u"indirizzo", ADDRESS_HOME_LINE1},
+      {u"Codice postale", u"codice postale", ADDRESS_HOME_ZIP},
+  });
+
+  GeoIpCountryCode kIT = GeoIpCountryCode("IT");
+  ParsingContext kITContext(kIT, LanguageCode("it"), PatternSource::kLegacy);
+  ApplyRationalizationEngineRules(kITContext, fields, nullptr);
+
+  EXPECT_THAT(GetTypes(fields),
+              ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1,
+                          /*changed*/ ADDRESS_HOME_LINE2, ADDRESS_HOME_ZIP));
+}
+
+// Verifies that fields classified as ADDRESS_HOME_LINE1 without a following
+// ADDRESS_HOME_LINE2 are reclassified as ADDRESS_HOME_STREET_ADDRESS for IT
+// forms.
+TEST(FormStructureRationalizationEngine, TestITAddressLine1WithNoNext) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kTestFeatureForFormStructureRationalizationEngine,
+       features::kAutofillUseITAddressModel},
+      {});
+
+  std::vector<std::unique_ptr<AutofillField>> fields = CreateFields({
+      {u"Nome", u"nome", NAME_FIRST},
+      {u"Cognome", u"cognome", NAME_LAST},
+      {u"Indirizzo", u"indirizzo", ADDRESS_HOME_LINE1},
+      {u"Codice postale", u"codice postale", ADDRESS_HOME_ZIP},
+  });
+
+  GeoIpCountryCode kIT = GeoIpCountryCode("IT");
+  ParsingContext kITContext(kIT, LanguageCode("it"), PatternSource::kLegacy);
+  ApplyRationalizationEngineRules(kITContext, fields, nullptr);
+
+  EXPECT_THAT(
+      GetTypes(fields),
+      ElementsAre(NAME_FIRST, NAME_LAST,
+                  /*changed*/ ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_ZIP));
+}
+
 }  // namespace
 }  // namespace autofill::rationalization
