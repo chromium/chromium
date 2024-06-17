@@ -1728,7 +1728,8 @@ void ChromeMainDelegate::PreSandboxStartup() {
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   // Zygote needs to call InitCrashReporter() in RunZygote().
-  if (process_type != switches::kZygoteProcess) {
+  if (process_type != switches::kZygoteProcess &&
+      !command_line.HasSwitch(switches::kDisableCrashpadForTesting)) {
     if (command_line.HasSwitch(switches::kPreCrashpadCrashTest)) {
       // Crash for the purposes of testing the handling of crashes that happen
       // before crashpad is initialized. Please leave this check immediately

@@ -185,6 +185,10 @@ const char kDisableComponentExtensionsWithBackgroundPages[] =
 const char kDisableComponentUpdate[] = "disable-component-update";
 #endif
 
+// Disables crashpad initialization for testing. The crashpad binary will not
+// run, and thus will not detect and symbolize crashes.
+const char kDisableCrashpadForTesting[] = "disable-crashpad-for-testing";
+
 // Disables installation of default apps on first run. This is used during
 // automated testing.
 const char kDisableDefaultApps[] = "disable-default-apps";

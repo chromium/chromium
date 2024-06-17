@@ -280,6 +280,8 @@ int main(int argc, char** argv) {
     chromium_arguments.push_back(FILE_PATH_LITERAL("--no-sandbox"));
     chromium_arguments.push_back(FILE_PATH_LITERAL("--no-zygote"));
     chromium_arguments.push_back(FILE_PATH_LITERAL("--disable-gpu"));
+    chromium_arguments.push_back(
+        FILE_PATH_LITERAL("--disable-crashpad-for-testing"));
     base::CommandLine::ForCurrentProcess()->InitFromArgv(chromium_arguments);
 
     // Various bits of setup are done by base::TestSuite::Initialize.
