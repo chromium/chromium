@@ -5,7 +5,7 @@
 import {flush} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {BrowserProxy} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
 import type {ReadAnythingElement} from 'chrome-untrusted://read-anything-side-panel.top-chrome/read_anything.js';
-import {assertEquals, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome-untrusted://webui-test/chai_assert.js';
 
 import {suppressInnocuousErrors} from './common.js';
 import {TestColorUpdaterBrowserProxy} from './test_color_updater_browser_proxy.js';
@@ -55,6 +55,22 @@ suite('WordHighlighting', () => {
     ],
   };
 
+  function setAxTreeWithText(text: string) {
+    const axTree = {
+      rootId: 1,
+      nodes: [
+        {
+          id: 1,
+          role: 'rootWebArea',
+          htmlTag: '#document',
+          childIds: [2],
+        },
+        {id: 2, role: 'staticText', name: text},
+      ],
+    };
+    chrome.readingMode.setContentForTesting(axTree, [2]);
+  }
+
   setup(() => {
     suppressInnocuousErrors();
     testBrowserProxy = new TestColorUpdaterBrowserProxy();
@@ -103,16 +119,48 @@ suite('WordHighlighting', () => {
     });
   });
 
-  suite('with word boundary flag with no word boundary', () => {
-    setup(() => {
-      app.playSpeech();
-    });
+  test('with no word boundary sentence highlight used', () => {
+    app.playSpeech();
+    const currentHighlight =
+        app.$.container.querySelector('.current-read-highlight');
+    assertTrue(!!currentHighlight);
+    assertEquals('This is a link.', currentHighlight.textContent);
+  });
 
-    test('sentence highlight used', () => {
+  test(
+      'word highlighting with multiple punctuation marks skips highlight',
+      () => {
+        setAxTreeWithText('.?!\'\",(){}[]');
+        app.updateBoundary(10);
+        app.playSpeech();
+        const currentHighlight =
+            app.$.container.querySelector('.current-read-highlight');
+        assertFalse(!!currentHighlight);
+      });
+
+  test(
+      'word highlighting with single alphabet character does not skip highlight',
+      () => {
+        setAxTreeWithText('a');
+        app.updateBoundary(0);
+        app.playSpeech();
+        const currentHighlight =
+            app.$.container.querySelector('.current-read-highlight');
+        assertTrue(!!currentHighlight);
+        assertEquals('a', currentHighlight.textContent);
+      });
+
+  test('word highlighting skipping', () => {
+    const toTest =
+        ['[', ']', '(', ')', '.', ',', '?', '!', '{', '}', '\'', '\"'];
+
+    for (const char of toTest) {
+      setAxTreeWithText(char);
+      app.updateBoundary(0);
+      app.playSpeech();
       const currentHighlight =
           app.$.container.querySelector('.current-read-highlight');
-      assertTrue(currentHighlight !== undefined);
-      assertEquals('This is a link.', currentHighlight!.textContent);
-    });
+      assertFalse(!!currentHighlight);
+    }
   });
 });

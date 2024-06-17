@@ -43,6 +43,10 @@ const parentOfHighlightClass = 'parent-of-highlight';
 
 const linkDataAttribute = 'link';
 
+// Characters that should be ignored for word highlighting when not accompanied
+// by other characters.
+const IGNORED_HIGHLIGHT_CHARACTERS_REGEX: RegExp = /^[.,!?'"(){}\[\]]+$/;
+
 // Constants for styling the app when page zoom changes.
 const overflowXTypical = 'hidden';
 const overflowXScroll = 'scroll';
@@ -218,6 +222,14 @@ interface PendingImageRequest {
   resolver: (dataUrl: string) => void;
   cancel: () => void;
   nodeId: number;
+}
+
+function isInvalidHighlightForWordHighlighting(textToHighlight: string|
+                                               undefined): boolean {
+  // If a highlight is just white space or punctuation, we can skip
+  // highlighting.
+  return !textToHighlight || textToHighlight === '' ||
+      IGNORED_HIGHLIGHT_CHARACTERS_REGEX.test(textToHighlight);
 }
 
 export class ReadAnythingElement extends ReadAnythingElementBase {
@@ -1936,10 +1948,12 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
         chrome.readingMode.getHighlightStartIndex(highlightNode, index);
     const endIndex = highlightStartIndex + highlightLength;
     if (!element ||
-        element.textContent?.substring(highlightStartIndex, endIndex).trim() ===
-            '') {
+        isInvalidHighlightForWordHighlighting(
+            element.textContent?.substring(highlightStartIndex, endIndex)
+                .trim())) {
       return;
     }
+
     this.highlightCurrentText_(
         highlightStartIndex, endIndex, element as HTMLElement);
   }
