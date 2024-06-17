@@ -142,7 +142,6 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
 
   // TODO(b/319719709) this should be SeaPenTemplateId.
   templateId: string|null;
-  private inspireMeAnimation_: LottieRenderer|null|undefined;
   private seaPenTemplate_: SeaPenTemplate;
   private seaPenQuery_: SeaPenQuery|null;
   private selectedOptions_: Map<SeaPenTemplateChip, SeaPenOption>;
@@ -179,10 +178,9 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
         new ResizeObserver(() => this.animateContainerHeight());
 
     beforeNextRender(this, () => {
-      this.inspireMeAnimation_ =
-          this.shadowRoot?.querySelector<LottieRenderer>('#inspireMeAnimation');
-      if (this.inspireMeAnimation_) {
-        this.inspireMeAnimation_.autoplay = false;
+      const inspireMeAnimation = this.getInspireMeAnimationElement_();
+      if (inspireMeAnimation) {
+        inspireMeAnimation.autoplay = false;
       }
 
       this.containerOriginalHeight_ = this.$.container.scrollHeight;
@@ -235,13 +233,12 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
   }
 
   private startInspireIconAnimation_() {
-    this.inspireMeAnimation_?.play();
+    this.getInspireMeAnimationElement_()?.play();
   }
 
   private stopInspireIconAnimation_() {
-    this.inspireMeAnimation_?.stop();
+    this.getInspireMeAnimationElement_()?.stop();
   }
-
 
   private clearSelectedChipState_() {
     if (this.selectedChip_) {
@@ -369,6 +366,11 @@ export class SeaPenTemplateQueryElement extends WithSeaPenStore {
         userVisibleQuery: this.getUserVisibleQueryInfo_(),
       },
     };
+  }
+
+  private getInspireMeAnimationElement_(): LottieRenderer|null|undefined {
+    return this.shadowRoot?.querySelector<LottieRenderer>(
+        '#inspireMeAnimation');
   }
 
   private onClickSearchButton_(event: Event) {
