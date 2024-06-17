@@ -122,7 +122,7 @@ void BubbleExample::CreateExampleView(View* container) {
       u"Persistent"));
 }
 
-void BubbleExample::ShowBubble(Button** button,
+void BubbleExample::ShowBubble(raw_ptr<Button>* button,
                                BubbleBorder::Shadow shadow,
                                bool persistent,
                                const ui::Event& event) {
