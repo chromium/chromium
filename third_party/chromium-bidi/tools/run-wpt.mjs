@@ -246,7 +246,10 @@ if (RUN_TESTS === 'true') {
   }).status;
 }
 
-if (UPDATE_EXPECTATIONS === 'true') {
+if (
+  (UPDATE_EXPECTATIONS === 'true' && RUN_TESTS !== 'true') ||
+  (UPDATE_EXPECTATIONS === 'true' && RUN_TESTS === 'true' && run_status)
+) {
   log('Updating WPT expectations...');
 
   const wptRunArgs = [
