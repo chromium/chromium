@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {CustomCallbackMacro} from '/common/action_fulfillment/macros/custom_callback_macro.js';
 import {KeyPressMacro} from '/common/action_fulfillment/macros/key_press_macro.js';
 import {Macro} from '/common/action_fulfillment/macros/macro.js';
 import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
@@ -31,6 +32,7 @@ export class GestureHandler {
   // has ended.
   private previousGestures_: FacialGesture[] = [];
   private macrosToCompleteLater_: Map<FacialGesture, Macro> = new Map();
+  private paused_ = false;
 
   constructor(mouseController: MouseController) {
     this.mouseController_ = mouseController;
@@ -38,17 +40,21 @@ export class GestureHandler {
   }
 
   start(): void {
+    this.paused_ = false;
     chrome.settingsPrivate.getAllPrefs(prefs => this.updateFromPrefs_(prefs));
     chrome.settingsPrivate.onPrefsChanged.addListener(this.prefsListener_);
   }
 
   stop(): void {
+    this.paused_ = false;
     chrome.settingsPrivate.onPrefsChanged.removeListener(this.prefsListener_);
     this.previousGestures_ = [];
     this.gestureLastRecognized_.clear();
-    // TODO(b:341770655): Executing these macros clears their state, so that we
-    // aren't left in a mouse down or key down state. However, that could have
-    // other side effects. It would be best to send a synthetic cancel event.
+    // Executing these macros clears their state, so that we aren't left in a
+    // mouse down or key down state.
+    this.macrosToCompleteLater_.forEach((macro) => {
+      macro.run();
+    });
     this.macrosToCompleteLater_.clear();
   }
 
@@ -105,6 +111,14 @@ export class GestureHandler {
         ...this.popMacrosOnGestureEnd(gestures, this.previousGestures_));
     this.previousGestures_ = gestures;
     return macros;
+  }
+
+  togglePaused(): void {
+    const newPaused = !this.paused_;
+    // Run start/stop before assigning the new pause value, since start/stop
+    // will modify the pause value.
+    newPaused ? this.stop() : this.start();
+    this.paused_ = newPaused;
   }
 
   private gesturesToMacros_(gestures: FacialGesture[]): Macro[] {
@@ -181,6 +195,10 @@ export class GestureHandler {
   }
 
   private macroFromName_(name: MacroName): Macro|undefined {
+    if (this.paused_ && name !== MacroName.TOGGLE_FACEGAZE) {
+      return;
+    }
+
     switch (name) {
       case MacroName.TOGGLE_DICTATION:
         return new ToggleDictationMacro();
@@ -203,6 +221,11 @@ export class GestureHandler {
       case MacroName.KEY_PRESS_TOGGLE_OVERVIEW:
       case MacroName.KEY_PRESS_MEDIA_PLAY_PAUSE:
         return new KeyPressMacro(name);
+      case MacroName.TOGGLE_FACEGAZE:
+        return new CustomCallbackMacro(MacroName.TOGGLE_FACEGAZE, () => {
+          this.mouseController_.togglePaused();
+          this.togglePaused();
+        });
       default:
         return;
     }

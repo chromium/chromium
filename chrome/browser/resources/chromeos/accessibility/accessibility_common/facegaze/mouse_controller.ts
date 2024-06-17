@@ -55,6 +55,7 @@ export class MouseController {
   private mouseInterval_: number = -1;
   private lastMouseMovedTime_: number = 0;
   private landmarkWeights_: Map<string, number>;
+  private paused_ = false;
 
   constructor() {
     this.onMouseMovedHandler_ = new EventHandler(
@@ -85,6 +86,7 @@ export class MouseController {
   }
 
   async start(): Promise<void> {
+    this.paused_ = false;
     chrome.settingsPrivate.getAllPrefs(prefs => this.updateFromPrefs_(prefs));
     chrome.settingsPrivate.onPrefsChanged.addListener(this.prefsListener_);
 
@@ -121,10 +123,8 @@ export class MouseController {
    * Update the current location of the tracked face landmark.
    */
   onFaceLandmarkerResult(result: FaceLandmarkerResult): void {
-    if (!this.screenBounds_) {
-      return;
-    }
-    if (!result.faceLandmarks || !result.faceLandmarks[0]) {
+    if (this.paused_ || !this.screenBounds_ || !result.faceLandmarks ||
+        !result.faceLandmarks[0]) {
       return;
     }
 
@@ -186,7 +186,7 @@ export class MouseController {
    * to its previous location.
    */
   private updateMouseLocation_(): void {
-    if (!this.lastLandmarkLocation_ || !this.mouseLocation_ ||
+    if (this.paused_ || !this.lastLandmarkLocation_ || !this.mouseLocation_ ||
         !this.screenBounds_) {
       return;
     }
@@ -260,7 +260,7 @@ export class MouseController {
   }
 
   resetLocation(): void {
-    if (!this.screenBounds_) {
+    if (this.paused_ || !this.screenBounds_) {
       return;
     }
     const x =
@@ -286,7 +286,16 @@ export class MouseController {
     this.previousSmoothedLocation_ = undefined;
     this.lastMouseMovedTime_ = 0;
     this.buffer_ = [];
+    this.paused_ = false;
     chrome.settingsPrivate.onPrefsChanged.removeListener(this.prefsListener_);
+  }
+
+  togglePaused(): void {
+    const newPaused = !this.paused_;
+    // Run start/stop before assigning the new pause value, since start/stop
+    // will modify the pause value.
+    newPaused ? this.stop() : this.start();
+    this.paused_ = newPaused;
   }
 
   /** Listener for when the mouse position changes. */

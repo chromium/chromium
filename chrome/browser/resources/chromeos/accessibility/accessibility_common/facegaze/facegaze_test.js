@@ -1184,3 +1184,235 @@ AX_TEST_F('FaceGazeTest', 'DISABLED_ClosesCameraStream', async function() {
       view => view.location.href.includes('camera_stream.html'));
   assertFalse(!!win);
 });
+
+AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeGesturesShort', async function() {
+  const gestureToMacroName =
+      new Map()
+          .set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_FACEGAZE)
+          .set(FacialGesture.BROW_INNER_UP, MacroName.MOUSE_CLICK_LEFT);
+  const gestureToConfidence = new Map()
+                                  .set(FacialGesture.JAW_OPEN, 0.3)
+                                  .set(FacialGesture.BROW_INNER_UP, 0.3);
+  const config = new Config()
+                     .withMouseLocation({x: 600, y: 400})
+                     .withGestureToMacroName(gestureToMacroName)
+                     .withGestureToConfidence(gestureToConfidence)
+                     .withRepeatDelayMs(1);
+  await this.configureFaceGaze(config);
+
+  // Toggle (pause) FaceGaze.
+  result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.9);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ false);
+  assertTrue(this.getFaceGaze().gestureHandler_.paused_);
+
+  // Try to perform left click.
+  result =
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0)
+          .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0.9);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ false);
+
+  // No click should be performed.
+  this.assertNumMouseEvents(0);
+
+  // Toggle (resume) FaceGaze and release mouse click gesture.
+  result =
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0.9)
+          .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ false);
+  assertFalse(this.getFaceGaze().gestureHandler_.paused_);
+  // No click should be performed.
+  this.assertNumMouseEvents(0);
+
+  // Perform left click now that FaceGaze has resumed.
+  result =
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0)
+          .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0.9);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ false);
+
+  // Synthetic mouse events should have been sent.
+  this.assertNumMouseEvents(2);
+});
+
+AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeGesturesLong', async function() {
+  const gestureToMacroName =
+      new Map()
+          .set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_FACEGAZE)
+          .set(FacialGesture.BROW_INNER_UP, MacroName.MOUSE_LONG_CLICK_LEFT)
+          .set(FacialGesture.EYE_SQUINT_LEFT, MacroName.KEY_PRESS_SPACE);
+  const gestureToConfidence = new Map()
+                                  .set(FacialGesture.JAW_OPEN, 0.3)
+                                  .set(FacialGesture.BROW_INNER_UP, 0.3)
+                                  .set(FacialGesture.EYE_SQUINT_LEFT, 0.3);
+  const config = new Config()
+                     .withMouseLocation({x: 600, y: 400})
+                     .withGestureToMacroName(gestureToMacroName)
+                     .withGestureToConfidence(gestureToConfidence)
+                     .withRepeatDelayMs(1);
+  await this.configureFaceGaze(config);
+
+  // Trigger a mouse press and a key down.
+  let result =
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0.9)
+          .addGestureWithConfidence(
+              MediapipeFacialGesture.EYE_SQUINT_LEFT, 0.9);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ false);
+
+  // A synthetic mouse event should have been sent.
+  this.assertNumMouseEvents(1);
+  this.assertMousePress(this.getMouseEvents()[0]);
+
+  // A synthetic key event should have been sent.
+  this.assertNumKeyEvents(1);
+  this.assertKeyDown(this.getKeyEvents()[0]);
+
+  // Toggle (pause) FaceGaze in the middle of long actions.
+  result =
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0.9)
+          .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0.9)
+          .addGestureWithConfidence(
+              MediapipeFacialGesture.EYE_SQUINT_LEFT, 0.9);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ false);
+  assertTrue(this.getFaceGaze().gestureHandler_.paused_);
+
+  // Pausing in the middle of long actions should cause them to be completed.
+  // The purpose of this is to clear state.
+  this.assertNumMouseEvents(2);
+  this.assertMouseRelease(this.getMouseEvents()[1]);
+  this.assertNumKeyEvents(2);
+  this.assertKeyUp(this.getKeyEvents()[1]);
+
+  // Release all gestures.
+  result =
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0)
+          .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0)
+          .addGestureWithConfidence(MediapipeFacialGesture.EYE_SQUINT_LEFT, 0);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ false);
+  // No extra mouse or key events should have come through.
+  this.assertNumMouseEvents(2);
+  this.assertNumKeyEvents(2);
+
+  // Toggle (resume) FaceGaze.
+  result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.9);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ false);
+  assertFalse(this.getFaceGaze().gestureHandler_.paused_);
+  // No extra mouse or key events should come through.
+  this.assertNumMouseEvents(2);
+  this.assertNumKeyEvents(2);
+
+  // Confirm that long actions work as expected.
+  result =
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0)
+          .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0.9)
+          .addGestureWithConfidence(
+              MediapipeFacialGesture.EYE_SQUINT_LEFT, 0.9);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ false);
+
+  // A mouse press should have been sent.
+  this.assertNumMouseEvents(3);
+  this.assertMousePress(this.getMouseEvents()[2]);
+
+  // A key down should have been sent.
+  this.assertNumKeyEvents(3);
+  this.assertKeyDown(this.getKeyEvents()[2]);
+
+  // Release gestures to get the mouse release and the key up events.
+  result =
+      new MockFaceLandmarkerResult()
+          .addGestureWithConfidence(MediapipeFacialGesture.BROW_INNER_UP, 0)
+          .addGestureWithConfidence(MediapipeFacialGesture.EYE_SQUINT_LEFT, 0);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ false);
+
+  // Confirm that the mouse release was sent.
+  this.assertNumMouseEvents(4);
+  this.assertMouseRelease(this.getMouseEvents()[3]);
+
+  // Confirm that the key up event was sent.
+  this.assertNumKeyEvents(4);
+  this.assertKeyUp(this.getKeyEvents()[3]);
+});
+
+AX_TEST_F('FaceGazeTest', 'ToggleFaceGazeMouseMovement', async function() {
+  const gestureToMacroName =
+      new Map().set(FacialGesture.JAW_OPEN, MacroName.TOGGLE_FACEGAZE);
+  const gestureToConfidence = new Map().set(FacialGesture.JAW_OPEN, 0.3);
+  const config = new Config()
+                     .withMouseLocation({x: 600, y: 400})
+                     .withBufferSize(1)
+                     .withCursorControlEnabled(true)
+                     .withGestureToMacroName(gestureToMacroName)
+                     .withGestureToConfidence(gestureToConfidence)
+                     .withRepeatDelayMs(1);
+  await this.startFacegazeWithConfigAndForeheadLocation_(config, 0.1, 0.2);
+
+  // Move the mouse.
+  let result =
+      new MockFaceLandmarkerResult().setNormalizedForeheadLocation(0.11, 0.21);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ true);
+  this.assertLatestCursorPosition({x: 360, y: 560});
+
+  // Toggle (pause) FaceGaze.
+  result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.9);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ true);
+  assertTrue(this.getFaceGaze().mouseController_.paused_);
+
+  // Try to move the mouse.
+  result = new MockFaceLandmarkerResult()
+               .setNormalizedForeheadLocation(0.50, 0.50)
+               .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ true);
+  // Cursor position should remain the same.
+  this.assertLatestCursorPosition({x: 360, y: 560});
+
+  // Toggle (resume) FaceGaze.
+  result = new MockFaceLandmarkerResult().addGestureWithConfidence(
+      MediapipeFacialGesture.JAW_OPEN, 0.9);
+  // Don't trigger a mouse interval here because starting the MouseController
+  // is an asynchronous operation and will cause flakes otherwise.
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ false);
+  assertFalse(this.getFaceGaze().mouseController_.paused_);
+  // Wait for the MouseController to fully start.
+  await this.waitForValidMouseInterval();
+
+  // TODO(b/330766904): Move the mouse physically and ensure FaceGaze starts
+  // from that location when it's unpaused.
+  // Try to move the mouse. Since the MouseController was just freshly
+  // initialized, the cursor position won't change after processing this result.
+  result = new MockFaceLandmarkerResult()
+               .setNormalizedForeheadLocation(0.1, 0.2)
+               .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ true);
+  this.assertLatestCursorPosition({x: 360, y: 560});
+
+  // The second result should move the mouse.
+  result = new MockFaceLandmarkerResult()
+               .setNormalizedForeheadLocation(0.11, 0.21)
+               .addGestureWithConfidence(MediapipeFacialGesture.JAW_OPEN, 0);
+  this.processFaceLandmarkerResult(
+      result, /*triggerMouseControllerInterval=*/ true);
+  this.assertLatestCursorPosition({x: 120, y: 720});
+});

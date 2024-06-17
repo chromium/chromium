@@ -168,6 +168,11 @@ FaceGazeTestBase = class extends E2ETestBase {
       this.intervalCallbacks_ = {};
       this.nextCallbackId_ = 1;
 
+      // Save the original set and clear interval functions so they can be used
+      // in this file.
+      window.setIntervalOriginal = window.setInterval;
+      window.clearIntervalOriginal = window.clearInterval;
+
       window.setInterval = (callback, timeout) => {
         const id = this.nextCallbackId_;
         this.nextCallbackId_++;
@@ -286,7 +291,8 @@ FaceGazeTestBase = class extends E2ETestBase {
 
   triggerMouseControllerInterval() {
     const intervalId = this.getFaceGaze().mouseController_.mouseInterval_;
-    if (this.getFaceGaze().cursorControlEnabled_) {
+    if (this.getFaceGaze().cursorControlEnabled_ &&
+        !this.getFaceGaze().mouseController_.paused_) {
       assertNotEquals(-1, intervalId);
       assertNotNullNorUndefined(this.intervalCallbacks_[intervalId]);
       this.intervalCallbacks_[intervalId]();
@@ -321,5 +327,77 @@ FaceGazeTestBase = class extends E2ETestBase {
   sendAutomationMouseEvent(mockEvent) {
     this.getFaceGaze().mouseController_.onMouseMovedHandler_.handleEvent_(
         mockEvent);
+  }
+
+  /** @param {!{x: number, y: number}} expected */
+  assertLatestCursorPosition(expected) {
+    const actual = this.mockAccessibilityPrivate.getLatestCursorPosition();
+    assertEquals(expected.x, actual.x);
+    assertEquals(expected.y, actual.y);
+  }
+
+  /** @param {number} num */
+  assertNumMouseEvents(num) {
+    assertEquals(
+        num, this.mockAccessibilityPrivate.syntheticMouseEvents_.length);
+  }
+
+  /** @param {number} num */
+  assertNumKeyEvents(num) {
+    assertEquals(num, this.mockAccessibilityPrivate.syntheticKeyEvents_.length);
+  }
+
+  /** @param {!chrome.accessibilityPrivate.SyntheticMouseEvent} event */
+  assertMousePress(event) {
+    assertEquals(
+        this.mockAccessibilityPrivate.SyntheticMouseEventType.PRESS,
+        event.type);
+  }
+
+  /** @param {!chrome.accessibilityPrivate.SyntheticMouseEvent} event */
+  assertMouseRelease(event) {
+    assertEquals(
+        this.mockAccessibilityPrivate.SyntheticMouseEventType.RELEASE,
+        event.type);
+  }
+
+  /** @param {!chrome.accessibilityPrivate.SyntheticKeyboardEvent} event */
+  assertKeyDown(event) {
+    assertEquals(
+        chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN,
+        event.type);
+  }
+
+  /** @param {!chrome.accessibilityPrivate.SyntheticKeyboardEvent} event */
+  assertKeyUp(event) {
+    assertEquals(
+        chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYUP,
+        event.type);
+  }
+
+  /** @return {!Array<!chrome.accessibilityPrivate.SyntheticMouseEvent>} */
+  getMouseEvents() {
+    return this.mockAccessibilityPrivate.syntheticMouseEvents_;
+  }
+
+  /** @return {!Array<!chrome.accessibilityPrivate.SyntheticKeyboardEvent>} */
+  getKeyEvents() {
+    return this.mockAccessibilityPrivate.syntheticKeyEvents_;
+  }
+
+  /** Waits for the mouse controller to initialize its interval function. */
+  async waitForValidMouseInterval() {
+    if (this.getFaceGaze().mouseController_.mouseInterval_ !== -1) {
+      return;
+    }
+
+    await new Promise((resolve) => {
+      const intervalId = setIntervalOriginal(() => {
+        if (this.getFaceGaze().mouseController_.mouseInterval_ !== -1) {
+          clearIntervalOriginal(intervalId);
+          resolve();
+        }
+      }, 300);
+    });
   }
 };

@@ -92,6 +92,7 @@ class FaceGazeTestUtils {
     KEY_PRESS_UP = 41,
     KEY_PRESS_DOWN = 42,
     MOUSE_LONG_CLICK_LEFT = 45,
+    TOGGLE_FACEGAZE = 46,
   };
 
   // Facial gestures recognized by Mediapipe. Ensure this enum stays in sync
