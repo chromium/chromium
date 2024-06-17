@@ -91,6 +91,8 @@ public final class CronetManifest {
             // CRONET_SOURCE_FAKE when creating logger.
             serviceInfo = null;
         }
-        return serviceInfo != null ? serviceInfo.metaData : new Bundle();
+        return serviceInfo != null && serviceInfo.metaData != null
+                ? serviceInfo.metaData
+                : new Bundle();
     }
 }
