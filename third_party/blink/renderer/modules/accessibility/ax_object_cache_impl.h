@@ -430,7 +430,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   // Returns true if the given object's position in the tree was due to
   // aria-owns.
-  bool IsAriaOwned(const AXObject*, bool checks = true) const;
+  bool IsAriaOwned(const AXObject*) const;
 
   // Returns the parent of the given object due to aria-owns, if valid.
   AXObject* ValidatedAriaOwner(const AXObject*) const;

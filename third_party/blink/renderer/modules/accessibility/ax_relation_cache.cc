@@ -198,40 +198,11 @@ bool AXRelationCache::IsDirty() const {
   return !owner_ids_to_update_.empty();
 }
 
-bool AXRelationCache::IsAriaOwned(const AXObject* child, bool check) const {
+bool AXRelationCache::IsAriaOwned(const AXObject* child) const {
   if (!child)
     return false;
   DCHECK(!child->IsDetached()) << "Child was detached: " << child;
-  bool is_owned =
-      aria_owned_child_to_owner_mapping_.Contains(child->AXObjectID());
-  if (is_owned) {
-    return true;
-  }
-
-  if (!check) {
-    return false;
-  }
-
-  // Ensure that unowned objects have the expected parent.
-  AXObject* parent = child->ParentObjectIfPresent();
-  if (parent && parent->GetElement() && child->GetElement() &&
-      !child->GetElement()->IsPseudoElement()) {
-    AXObject* natural_parent =
-        AXObject::ComputeNonARIAParent(*object_cache_, child->GetElement());
-    if (parent != natural_parent) {
-      std::ostringstream msg;
-      msg << "Unowned child should have natural parent:" << "\n* Child: "
-          << child << "\n* Actual parent: " << parent
-          << "\n* Natural parent: " << natural_parent
-          << "\n* Owners to update:";
-      for (AXID id : owner_ids_to_update_) {
-        msg << " " << id;
-      }
-      NOTREACHED() << msg.str();
-    }
-  }
-
-  return false;
+  return aria_owned_child_to_owner_mapping_.Contains(child->AXObjectID());
 }
 
 AXObject* AXRelationCache::GetAriaOwnedParent(const AXObject* child) const {
@@ -703,36 +674,17 @@ void AXRelationCache::UpdateAriaOwnsWithCleanLayout(AXObject* owner,
     Vector<String> owned_id_vector;
     owner->TokenVectorFromAttribute(element, owned_id_vector,
                                     html_names::kAriaOwnsAttr);
-    HeapVector<Member<Element>> valid_owned_child_elements;
     for (const String& id_name : owned_id_vector) {
       Element* child_element = scope.getElementById(AtomicString(id_name));
       if (!child_element ||
           !IsValidOwnsRelation(const_cast<AXObject*>(owner), *child_element)) {
         continue;
       }
-      AXID future_child_axid = child_element->GetDomNodeId();
-      HashMap<AXID, AXID>::const_iterator iter =
-          aria_owned_child_to_owner_mapping_.find(future_child_axid);
-      if (iter != aria_owned_child_to_owner_mapping_.end() &&
-          owner->AXObjectID() != iter->value) {
-        // Already has a different aria-owns parent.
+      AXObject* child = GetOrCreate(child_element, owner);
+      if (!child) {
         continue;
       }
-
-      // Preemptively add the child to owner mapping to satisfy checks
-      // that this child is owned, and therefore does not need to be added by
-      // any other node who's subtree is eagerly updated during the
-      // GetOrCreate() call, as this call recursively fills out subtrees.
-      aria_owned_child_to_owner_mapping_.Set(future_child_axid,
-                                             owner->AXObjectID());
-      valid_owned_child_elements.emplace_back(child_element);
-    }
-
-    for (Element* child_element : valid_owned_child_elements) {
-      AXObject* child = GetOrCreate(child_element, owner);
-      if (child) {
-        owned_children.push_back(child);
-      }
+      owned_children.push_back(child);
     }
   }
 
