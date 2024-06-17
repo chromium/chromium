@@ -330,6 +330,8 @@ void LayoutSVGRoot::RemoveChild(LayoutObject* child) {
   NOT_DESTROYED();
   LayoutReplaced::RemoveChild(child);
 
+  content_.MarkBoundsDirtyFromRemovedChild();
+
   bool had_non_isolated_descendants =
       (child->IsBlendingAllowed() && child->StyleRef().HasBlendMode()) ||
       child->HasNonIsolatedBlendingDescendants();
