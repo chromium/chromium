@@ -343,18 +343,12 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       gfx::HasExtension(extensions, "GL_ARB_instanced_arrays");
   ext.b_GL_ARB_internalformat_query =
       gfx::HasExtension(extensions, "GL_ARB_internalformat_query");
-  ext.b_GL_ARB_map_buffer_range =
-      gfx::HasExtension(extensions, "GL_ARB_map_buffer_range");
   ext.b_GL_ARB_occlusion_query =
       gfx::HasExtension(extensions, "GL_ARB_occlusion_query");
   ext.b_GL_ARB_robustness = gfx::HasExtension(extensions, "GL_ARB_robustness");
   ext.b_GL_ARB_sampler_objects =
       gfx::HasExtension(extensions, "GL_ARB_sampler_objects");
-  ext.b_GL_ARB_shader_image_load_store =
-      gfx::HasExtension(extensions, "GL_ARB_shader_image_load_store");
   ext.b_GL_ARB_sync = gfx::HasExtension(extensions, "GL_ARB_sync");
-  ext.b_GL_ARB_tessellation_shader =
-      gfx::HasExtension(extensions, "GL_ARB_tessellation_shader");
   ext.b_GL_ARB_texture_multisample =
       gfx::HasExtension(extensions, "GL_ARB_texture_multisample");
   ext.b_GL_ARB_texture_swizzle =
@@ -551,8 +545,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         GetGLProcAddress("glBindFramebufferEXT"));
   }
 
-  if (ver->IsAtLeastGL(4u, 2u) || ver->IsAtLeastGLES(3u, 1u) ||
-      ext.b_GL_ARB_shader_image_load_store) {
+  if (ver->IsAtLeastGL(4u, 2u) || ver->IsAtLeastGLES(3u, 1u)) {
     fn.glBindImageTextureEXTFn = reinterpret_cast<glBindImageTextureEXTProc>(
         GetGLProcAddress("glBindImageTexture"));
   } else if (ext.b_GL_EXT_shader_image_load_store) {
@@ -1125,8 +1118,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         GetGLProcAddress("glFinishFenceNV"));
   }
 
-  if (ver->IsAtLeastGL(3u, 0u) || ver->IsAtLeastGLES(3u, 0u) ||
-      ext.b_GL_ARB_map_buffer_range) {
+  if (ver->IsAtLeastGL(3u, 0u) || ver->IsAtLeastGLES(3u, 0u)) {
     fn.glFlushMappedBufferRangeFn =
         reinterpret_cast<glFlushMappedBufferRangeProc>(
             GetGLProcAddress("glFlushMappedBufferRange"));
@@ -2094,8 +2086,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         reinterpret_cast<glMapBufferProc>(GetGLProcAddress("glMapBufferOES"));
   }
 
-  if (ver->IsAtLeastGL(3u, 0u) || ver->IsAtLeastGLES(3u, 0u) ||
-      ext.b_GL_ARB_map_buffer_range) {
+  if (ver->IsAtLeastGL(3u, 0u) || ver->IsAtLeastGLES(3u, 0u)) {
     fn.glMapBufferRangeFn = reinterpret_cast<glMapBufferRangeProc>(
         GetGLProcAddress("glMapBufferRange"));
   } else if (ext.b_GL_EXT_map_buffer_range) {
@@ -2115,8 +2106,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
             GetGLProcAddress("glMemoryBarrierByRegion"));
   }
 
-  if (ver->IsAtLeastGL(4u, 2u) || ver->IsAtLeastGLES(3u, 1u) ||
-      ext.b_GL_ARB_shader_image_load_store) {
+  if (ver->IsAtLeastGL(4u, 2u) || ver->IsAtLeastGLES(3u, 1u)) {
     fn.glMemoryBarrierEXTFn = reinterpret_cast<glMemoryBarrierEXTProc>(
         GetGLProcAddress("glMemoryBarrier"));
   } else if (ext.b_GL_EXT_shader_image_load_store) {
@@ -2188,8 +2178,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
         GetGLProcAddress("glObjectPtrLabelKHR"));
   }
 
-  if (ver->IsAtLeastGL(4u, 0u) || ver->IsAtLeastGLES(3u, 2u) ||
-      ext.b_GL_ARB_tessellation_shader) {
+  if (ver->IsAtLeastGL(4u, 0u) || ver->IsAtLeastGLES(3u, 2u)) {
     fn.glPatchParameteriFn = reinterpret_cast<glPatchParameteriProc>(
         GetGLProcAddress("glPatchParameteri"));
   } else if (ext.b_GL_OES_tessellation_shader) {

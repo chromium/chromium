@@ -1946,13 +1946,10 @@ struct ExtensionsGL {
   bool b_GL_ARB_framebuffer_object;
   bool b_GL_ARB_instanced_arrays;
   bool b_GL_ARB_internalformat_query;
-  bool b_GL_ARB_map_buffer_range;
   bool b_GL_ARB_occlusion_query;
   bool b_GL_ARB_robustness;
   bool b_GL_ARB_sampler_objects;
-  bool b_GL_ARB_shader_image_load_store;
   bool b_GL_ARB_sync;
-  bool b_GL_ARB_tessellation_shader;
   bool b_GL_ARB_texture_multisample;
   bool b_GL_ARB_texture_swizzle;
   bool b_GL_ARB_timer_query;
