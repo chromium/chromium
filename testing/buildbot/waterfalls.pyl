@@ -6712,6 +6712,18 @@
     'name': 'internal.chromeos.fyi',
     'mixins': ['chrome-tester-service-account'],
     'machines': {
+        'chromeos-betty-arc-t-chrome-fyi': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'test_suites': {
+          'skylab_tests': 'chromeos_betty_vmlab_tests',
+        },
+        'os_type': 'chromeos',
+        'cros_board': 'betty-arc-t',
+        'cros_dut_pool': 'vmlab',
+        'run_cft': True,
+      },
       'chromeos-betty-chrome': {
         'additional_compile_targets': [
           'chromiumos_preflight',

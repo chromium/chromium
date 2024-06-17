@@ -215,6 +215,7 @@
     },
 
     'internal.chromeos.fyi': {
+      'chromeos-betty-arc-t-chrome-fyi': 'chromeos_betty-arc-t_include_unwind_tables_official_reclient',
       'chromeos-betty-chrome': 'chromeos_betty_include_unwind_tables_official_reclient',
       'chromeos-betty-pi-arc-chrome-accessibility-fyi': 'chromeos_betty-pi-arc_dchecks_reclient',
       'chromeos-betty-pi-arc-chrome-dchecks': 'chromeos_betty-pi-arc_dchecks_reclient',
@@ -449,6 +450,11 @@
     ],
     'chromeos_betty-arc-r_include_unwind_tables_official_use_fake_dbus_clients_reclient': [
       'chromeos_device_reclient', 'betty-arc-r', 'include_unwind_tables', 'official', 'use_fake_dbus_clients',
+      'also_build_lacros_chrome_for_architecture_amd64', 'ozone_headless'
+    ],
+
+    'chromeos_betty-arc-t_include_unwind_tables_official_reclient': [
+      'chromeos_device_reclient', 'betty-arc-t', 'include_unwind_tables', 'official', 'is_skylab',
       'also_build_lacros_chrome_for_architecture_amd64', 'ozone_headless'
     ],
 
@@ -998,6 +1004,10 @@
 
     'betty-arc-r': {
       'args_file': '//build/args/chromeos/betty-arc-r.gni',
+    },
+
+    'betty-arc-t': {
+      'args_file': '//build/args/chromeos/betty-arc-t.gni',
     },
 
     'betty-pi-arc': {
