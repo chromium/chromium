@@ -33,9 +33,6 @@ extern const char kCalendarAppId[];
 // The extension id of the Data Saver extension.
 extern const char kDataSaverExtensionId[];
 
-// The extension id of the Google Docs Offline extension.
-extern const char kDocsOfflineExtensionId[];
-
 // The extension id of the Google Maps application.
 extern const char kGoogleMapsAppId[];
 

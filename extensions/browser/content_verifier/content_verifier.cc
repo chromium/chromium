@@ -689,6 +689,7 @@ void ContentVerifier::VerifyFailed(
         histogram_suffix = "MiscFile";
         break;
     }
+
     if (manifest_version == 2) {
       base::UmaHistogramEnumeration(
           base::StringPrintf(
@@ -707,6 +708,32 @@ void ContentVerifier::VerifyFailed(
       base::UmaHistogramEnumeration(
           "Extensions.ContentVerification.VerifyFailedOnFileTypeMV3",
           file_type);
+    }
+
+    // TODO(crbug.com/325613709): Remove docs offline specific logging after a
+    // few milestones.
+    if (extension_id == extension_misc::kDocsOfflineExtensionId) {
+      if (manifest_version == 2) {
+        base::UmaHistogramEnumeration(
+            base::StringPrintf("Extensions.ContentVerification."
+                               "VerifyFailedOnFileMV2.GoogleDocsOffline.%s",
+                               histogram_suffix),
+            reason, ContentVerifyJob::FAILURE_REASON_MAX);
+        base::UmaHistogramEnumeration(
+            "Extensions.ContentVerification.VerifyFailedOnFileTypeMV2."
+            "GoogleDocsOffline",
+            file_type);
+      } else if (manifest_version == 3) {
+        base::UmaHistogramEnumeration(
+            base::StringPrintf("Extensions.ContentVerification."
+                               "VerifyFailedOnFileMV3.GoogleDocsOffline.%s",
+                               histogram_suffix),
+            reason, ContentVerifyJob::FAILURE_REASON_MAX);
+        base::UmaHistogramEnumeration(
+            "Extensions.ContentVerification.VerifyFailedOnFileTypeMV3."
+            "GoogleDocsOffline",
+            file_type);
+      }
     }
   }
 
@@ -821,14 +848,28 @@ void ContentVerifier::OnFetchComplete(
                                                       did_hash_mismatch);
   }
 
-  if (data->manifest_version == 2) {
-    base::UmaHistogramBoolean(
-        "Extensions.ContentVerification.DidHashMismatchOnFetchCompleteMV2",
-        did_hash_mismatch);
-  } else if (data->manifest_version == 3) {
-    base::UmaHistogramBoolean(
-        "Extensions.ContentVerification.DidHashMismatchOnFetchCompleteMV3",
-        did_hash_mismatch);
+  auto record_hash_mismatch = [&data, &did_hash_mismatch](
+                                  const char* mv2_histogram,
+                                  const char* mv3_histogram) {
+    if (data->manifest_version == 2) {
+      base::UmaHistogramBoolean(mv2_histogram, did_hash_mismatch);
+    } else if (data->manifest_version == 3) {
+      base::UmaHistogramBoolean(mv3_histogram, did_hash_mismatch);
+    }
+  };
+
+  record_hash_mismatch(
+      "Extensions.ContentVerification.DidHashMismatchOnFetchCompleteMV2",
+      "Extensions.ContentVerification.DidHashMismatchOnFetchCompleteMV3");
+
+  // TODO(crbug.com/325613709): Remove docs offline specific logging after a few
+  // milestones.
+  if (extension_id == extension_misc::kDocsOfflineExtensionId) {
+    record_hash_mismatch(
+        "Extensions.ContentVerification.DidHashMismatchOnFetchCompleteMV2."
+        "GoogleDocsOffline",
+        "Extensions.ContentVerification.DidHashMismatchOnFetchCompleteMV3."
+        "GoogleDocsOffline");
   }
 
   if (!did_hash_mismatch)

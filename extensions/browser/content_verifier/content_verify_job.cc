@@ -19,6 +19,7 @@
 #include "extensions/browser/content_hash_reader.h"
 #include "extensions/browser/content_verifier/content_hash.h"
 #include "extensions/browser/content_verifier/content_verifier.h"
+#include "extensions/common/constants.h"
 
 namespace extensions {
 
@@ -295,14 +296,24 @@ void ContentVerifyJob::DispatchFailureCallback(FailureReason reason) {
 }
 
 void ContentVerifyJob::ReportJobFinished(FailureReason reason) {
-  if (manifest_version_ == 2) {
-    base::UmaHistogramEnumeration(
-        "Extensions.ContentVerification.VerifyJobResultMV2", reason,
-        FAILURE_REASON_MAX);
-  } else if (manifest_version_ == 3) {
-    base::UmaHistogramEnumeration(
-        "Extensions.ContentVerification.VerifyJobResultMV3", reason,
-        FAILURE_REASON_MAX);
+  auto record_job_finished = [this, &reason](const char* mv2_histogram,
+                                             const char* mv3_histogram) {
+    if (manifest_version_ == 2) {
+      base::UmaHistogramEnumeration(mv2_histogram, reason, FAILURE_REASON_MAX);
+    } else if (manifest_version_ == 3) {
+      base::UmaHistogramEnumeration(mv3_histogram, reason, FAILURE_REASON_MAX);
+    }
+  };
+
+  record_job_finished("Extensions.ContentVerification.VerifyJobResultMV2",
+                      "Extensions.ContentVerification.VerifyJobResultMV3");
+
+  // TODO(crbug.com/325613709): Remove docs offline specific logging after a few
+  // milestones.
+  if (extension_id_ == extension_misc::kDocsOfflineExtensionId) {
+    record_job_finished(
+        "Extensions.ContentVerification.VerifyJobResultMV2.GoogleDocsOffline",
+        "Extensions.ContentVerification.VerifyJobResultMV3.GoogleDocsOffline");
   }
 
   scoped_refptr<TestObserver> test_observer = GetTestObserver();
