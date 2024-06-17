@@ -11,6 +11,10 @@
 
 namespace payments {
 
+namespace {
+using Event2 = payments::JourneyLogger::Event2;
+}  // namespace
+
 class JourneyLoggerTest : public PaymentRequestPlatformBrowserTestBase {
  public:
   JourneyLoggerTest() : gpay_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
@@ -70,14 +74,6 @@ IN_PROC_BROWSER_TEST_F(JourneyLoggerTest, NoPaymentMethodSupported) {
   EXPECT_THAT(eval_js_result.ExtractString(),
               testing::StartsWith("NotSupportedError"));
 
-  std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
-  ASSERT_EQ(1U, buckets.size());
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_AVAILABLE_METHOD_BASIC_CARD);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_AVAILABLE_METHOD_GOOGLE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_AVAILABLE_METHOD_OTHER);
-
   // Verify recorded checkout steps.
   histogram_tester.ExpectBucketCount(
       "PaymentRequest.CheckoutFunnel",
@@ -110,12 +106,11 @@ IN_PROC_BROWSER_TEST_F(JourneyLoggerTest,
 
   // Make sure the events were logged correctly.
   std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
+      histogram_tester.GetAllSamples("PaymentRequest.Events2");
   ASSERT_EQ(1U, buckets.size());
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_SHIPPING);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_REQUEST_METHOD_OTHER);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_COULD_NOT_SHOW);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_NEEDS_COMPLETION_PAYMENT);
+  EXPECT_TRUE(buckets[0].min & static_cast<int>(Event2::kRequestShipping));
+  EXPECT_TRUE(buckets[0].min & static_cast<int>(Event2::kRequestMethodOther));
+  EXPECT_TRUE(buckets[0].min & static_cast<int>(Event2::kCouldNotShow));
 }
 
 IN_PROC_BROWSER_TEST_F(JourneyLoggerTest, GooglePaymentApp) {
@@ -124,14 +119,6 @@ IN_PROC_BROWSER_TEST_F(JourneyLoggerTest, GooglePaymentApp) {
 
   EXPECT_EQ("{\"apiVersion\":1}",
             content::EvalJs(GetActiveWebContents(), "testGPay()"));
-
-  std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
-  ASSERT_EQ(1U, buckets.size());
-  EXPECT_FALSE(buckets[0].min &
-               JourneyLogger::EVENT_AVAILABLE_METHOD_BASIC_CARD);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_AVAILABLE_METHOD_GOOGLE);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_AVAILABLE_METHOD_OTHER);
 
   // Verify recorded checkout steps.
   histogram_tester.ExpectBucketCount(

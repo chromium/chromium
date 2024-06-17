@@ -11,6 +11,10 @@
 
 namespace payments {
 
+namespace {
+using Event2 = payments::JourneyLogger::Event2;
+}  // namespace
+
 class PaymentHandlerJustInTimeInstallationTest
     : public PaymentRequestPlatformBrowserTestBase {
  protected:
@@ -122,12 +126,11 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerSkipSheetTest, SkipWithUserGesture) {
       "PaymentRequest.PaymentHandlerInstallSuccess", false, 0);
 
   std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
+      histogram_tester.GetAllSamples("PaymentRequest.Events2");
   ASSERT_EQ(1U, buckets.size());
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SKIPPED_SHOW);
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_SHOWN);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_AVAILABLE_METHOD_OTHER);
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_SELECTED_OTHER);
+  EXPECT_TRUE(buckets[0].min & static_cast<int>(Event2::kSkippedShow));
+  EXPECT_FALSE(buckets[0].min & static_cast<int>(Event2::kShown));
+  EXPECT_TRUE(buckets[0].min & static_cast<int>(Event2::kSelectedOther));
 }
 
 IN_PROC_BROWSER_TEST_F(PaymentHandlerJustInTimeInstallationTest,
@@ -145,20 +148,6 @@ IN_PROC_BROWSER_TEST_F(PaymentHandlerJustInTimeInstallationTest,
   // The request is expected to stop at the payment sheet waiting for user
   // action.
   EXPECT_TRUE(content::ExecJs(GetActiveWebContents(), "abort()"));
-
-  std::vector<base::Bucket> buckets =
-      histogram_tester.GetAllSamples("PaymentRequest.Events");
-  ASSERT_EQ(1U, buckets.size());
-
-  // The merchant did not request https://google.com/pay or
-  // https://android.com/pay payment methods and no payment apps were added to
-  // Chrome with these payment method identifiers, so no Google payment
-  // instruments were available for the user to select.
-  EXPECT_FALSE(buckets[0].min & JourneyLogger::EVENT_AVAILABLE_METHOD_GOOGLE);
-
-  // Chrome looks up the JIT installable payment handlers, so these "other"
-  // payment instruments are available for the user to select.
-  EXPECT_TRUE(buckets[0].min & JourneyLogger::EVENT_AVAILABLE_METHOD_OTHER);
 }
 
 }  // namespace payments
