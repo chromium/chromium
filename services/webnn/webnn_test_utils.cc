@@ -14,11 +14,11 @@ GraphInfoBuilder::GraphInfoBuilder() {
 GraphInfoBuilder::~GraphInfoBuilder() = default;
 
 uint64_t GraphInfoBuilder::BuildOperand(const std::vector<uint32_t>& dimensions,
-                                        OperandDataType type,
+                                        mojom::DataType type,
                                         mojom::Operand::Kind kind) {
   mojom::OperandPtr operand = mojom::Operand::New();
-
-  operand->descriptor = *OperandDescriptor::Create(type, dimensions);
+  operand->data_type = type;
+  operand->dimensions = dimensions;
   operand->kind = kind;
 
   CHECK(graph_info_->id_to_operand_map.find(operand_id_) ==
@@ -29,13 +29,13 @@ uint64_t GraphInfoBuilder::BuildOperand(const std::vector<uint32_t>& dimensions,
 
 uint64_t GraphInfoBuilder::BuildIntermediateOperand(
     const std::vector<uint32_t>& dimensions,
-    OperandDataType type) {
+    mojom::DataType type) {
   return BuildOperand(dimensions, type, mojom::Operand::Kind::kOutput);
 }
 
 uint64_t GraphInfoBuilder::BuildInput(const std::string& name,
                                       const std::vector<uint32_t>& dimensions,
-                                      OperandDataType type) {
+                                      mojom::DataType type) {
   uint64_t operand_id =
       BuildOperand(dimensions, type, mojom::Operand::Kind::kInput);
   graph_info_->id_to_operand_map[operand_id]->name = name;
@@ -45,7 +45,7 @@ uint64_t GraphInfoBuilder::BuildInput(const std::string& name,
 
 uint64_t GraphInfoBuilder::BuildConstant(
     const std::vector<uint32_t>& dimensions,
-    OperandDataType type,
+    mojom::DataType type,
     base::span<const uint8_t> values) {
   uint64_t operand_id =
       BuildOperand(dimensions, type, mojom::Operand::Kind::kConstant);
@@ -61,7 +61,7 @@ void GraphInfoBuilder::AddOutput(const std::string& name, uint64_t operand_id) {
 
 uint64_t GraphInfoBuilder::BuildOutput(const std::string& name,
                                        const std::vector<uint32_t>& dimensions,
-                                       OperandDataType type) {
+                                       mojom::DataType type) {
   uint64_t operand_id = BuildOperand(dimensions, type);
   AddOutput(name, operand_id);
   return operand_id;

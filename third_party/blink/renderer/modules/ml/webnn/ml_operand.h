@@ -32,8 +32,6 @@ class MODULES_EXPORT MLOperand final : public ScriptWrappable {
   // Represents an MLOperandDescriptor whose characteristics have already been
   // validated according to the steps specified in
   // https://www.w3.org/TR/webnn/#mloperanddescriptor-check-dimensions.
-  //
-  // TODO(crbug.com/325598628): Replace this with `webnn::OperandDescriptor`.
   class ValidatedDescriptor {
    public:
     // Creates a ValidatedDescriptor or returns an error message which may be

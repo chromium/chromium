@@ -15,7 +15,6 @@
 #include "base/memory/stack_allocated.h"
 #include "base/numerics/checked_math.h"
 #include "base/types/expected.h"
-#include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_error.mojom-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
@@ -86,7 +85,7 @@ class GraphBuilderCoreml {
     InputOperandInfo();
     InputOperandInfo(std::string name,
                      std::vector<uint32_t> dimensions,
-                     OperandDataType data_type);
+                     mojom::DataType data_type);
     InputOperandInfo(InputOperandInfo&);
     InputOperandInfo(InputOperandInfo&&);
     ~InputOperandInfo();
@@ -94,7 +93,7 @@ class GraphBuilderCoreml {
     // Identifier for this operand in coreml model file.
     std::string coreml_name;
     std::vector<uint32_t> dimensions;
-    OperandDataType data_type;
+    mojom::DataType data_type;
   };
 
   struct Result {
