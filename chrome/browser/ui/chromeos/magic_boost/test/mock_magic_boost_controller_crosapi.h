@@ -20,6 +20,7 @@ class MockMagicBoostControllerCrosapi
               ShowDisclaimerUi,
               (int64_t, crosapi::mojom::MagicBoostController::TransitionAction),
               (override));
+  MOCK_METHOD(void, CloseDisclaimerUi, (), (override));
 };
 
 }  // namespace chromeos

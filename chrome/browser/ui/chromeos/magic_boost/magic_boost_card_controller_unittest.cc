@@ -58,6 +58,7 @@ TEST_F(MagicBoostCardControllerTest, OnTextAvailableAndDismiss) {
   EXPECT_FALSE(card_controller_.opt_in_widget_for_test());
 
   // Show the opt-in widget and test that the proper views are set.
+  EXPECT_CALL(crosapi_controller_, CloseDisclaimerUi);
   card_controller_.OnTextAvailable(/*anchor_bounds=*/gfx::Rect(),
                                    /*selected_text=*/"",
                                    /*surrounding_text=*/"");
@@ -77,6 +78,7 @@ TEST_F(MagicBoostCardControllerTest, OnTextAvailableAndDismiss) {
 TEST_F(MagicBoostCardControllerTest, BoundsChanged) {
   EXPECT_FALSE(card_controller_.opt_in_widget_for_test());
 
+  EXPECT_CALL(crosapi_controller_, CloseDisclaimerUi);
   gfx::Rect anchor_bounds = gfx::Rect(50, 50, 25, 100);
   card_controller_.OnTextAvailable(anchor_bounds,
                                    /*selected_text=*/"",
@@ -113,6 +115,22 @@ TEST_F(MagicBoostCardControllerTest, DisclaimerUi) {
           });
 
   card_controller_.ShowDisclaimerUi(expected_display_id, expected_action);
+}
+
+TEST_F(MagicBoostCardControllerTest, ShowOptInCardAgain) {
+  // Shows the disclaimer view.
+  EXPECT_CALL(crosapi_controller_, ShowDisclaimerUi);
+  card_controller_.ShowDisclaimerUi(
+      /*display_id=*/1,
+      crosapi::mojom::MagicBoostController::TransitionAction::kShowEditorPanel);
+  EXPECT_FALSE(card_controller_.opt_in_widget_for_test());
+
+  // Shows the opt-in widget. It should close the discalimer view.
+  EXPECT_CALL(crosapi_controller_, CloseDisclaimerUi);
+  card_controller_.OnTextAvailable(/*anchor_bounds=*/gfx::Rect(),
+                                   /*selected_text=*/"",
+                                   /*surrounding_text=*/"");
+  ASSERT_TRUE(card_controller_.opt_in_widget_for_test());
 }
 
 }  // namespace chromeos

@@ -70,6 +70,7 @@ class MagicBoostOptInCardTest : public ChromeViewsTestBase {
 
 TEST_F(MagicBoostOptInCardTest, PrimaryButtonActions) {
   // Show the opt-in UI card.
+  EXPECT_CALL(crosapi_controller_, CloseDisclaimerUi);
   card_controller_.ShowOptInUi(/*anchor_view_bounds=*/gfx::Rect());
   auto* opt_in_widget = card_controller_.opt_in_widget_for_test();
   ASSERT_TRUE(opt_in_widget);
@@ -87,6 +88,7 @@ TEST_F(MagicBoostOptInCardTest, PrimaryButtonActions) {
 
 TEST_F(MagicBoostOptInCardTest, SecondaryButtonActions) {
   // Show the opt-in UI card.
+  EXPECT_CALL(crosapi_controller_, CloseDisclaimerUi);
   card_controller_.ShowOptInUi(/*anchor_view_bounds=*/gfx::Rect());
   auto* opt_in_widget = card_controller_.opt_in_widget_for_test();
   ASSERT_TRUE(opt_in_widget);

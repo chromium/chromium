@@ -90,6 +90,14 @@ void MagicBoostCardController::OnDismiss(bool is_other_command_executed) {
 void MagicBoostCardController::ShowOptInUi(
     const gfx::Rect& anchor_view_bounds) {
   CHECK(!opt_in_widget_);
+
+  // If the disclaimer view is showing, close it.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  remote_->CloseDisclaimerUi();
+#else   // BUILDFLAG(IS_CHROMEOS_ASH)
+  GetMagicBoostControllerAsh().CloseDisclaimerUi();
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
   opt_in_widget_ = MagicBoostOptInCard::CreateWidget(
       /*controller=*/this, anchor_view_bounds, is_orca_included_);
   opt_in_widget_->ShowInactive();

@@ -31,6 +31,7 @@ class MagicBoostControllerAsh : public crosapi::mojom::MagicBoostController {
   void ShowDisclaimerUi(
       int64_t display_id,
       crosapi::mojom::MagicBoostController::TransitionAction action) override;
+  void CloseDisclaimerUi() override;
 
  private:
   mojo::ReceiverSet<crosapi::mojom::MagicBoostController> receivers_;

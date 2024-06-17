@@ -35,4 +35,8 @@ void MagicBoostControllerAsh::ShowDisclaimerUi(
   disclaimer_widget_->Show();
 }
 
+void MagicBoostControllerAsh::CloseDisclaimerUi() {
+  disclaimer_widget_.reset();
+}
+
 }  // namespace ash
