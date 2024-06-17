@@ -93,7 +93,9 @@ aura::Window* GetGameBubbleDialogAnchorWindow(aura::Window* window) {
   DCHECK(window);
 
   auto* widget = views::Widget::GetWidgetForNativeWindow(window);
-  DCHECK(widget);
+  if (!widget) {
+    return nullptr;
+  }
 
   // Check whether `window` has `BubbleDialogDelegateView` or its sub-class
   // instance as its contents view.
@@ -292,7 +294,10 @@ void ArcInputOverlayManager::Shutdown() {
 
 void ArcInputOverlayManager::OnWindowFocused(aura::Window* gained_focus,
                                              aura::Window* lost_focus) {
-  if (display::Screen::GetScreen()->InTabletMode()) {
+  // No need to register window if it is tablet mode and there is no game
+  // window.
+  if (display::Screen::GetScreen()->InTabletMode() ||
+      input_overlay_enabled_windows_.empty()) {
     return;
   }
 
