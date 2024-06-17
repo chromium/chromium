@@ -4,12 +4,19 @@
 
 #include "chrome/browser/extensions/manifest_v2_experiment_manager.h"
 
+#include "base/one_shot_event.h"
 #include "chrome/browser/extensions/extension_management.h"
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/extensions/mv2_experiment_stage.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_factory.h"
+#include "extensions/browser/extension_system.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/pref_types.h"
 #include "extensions/common/extension.h"
@@ -25,8 +32,7 @@ constexpr PrefMap kMV2DeprecationExtensionWarningAcknowledgedPref = {
     "mv2_deprecation_warning_ack", PrefType::kBool,
     PrefScope::kExtensionSpecific};
 
-class ManifestV2ExperimentManagerFactory
-    : public BrowserContextKeyedServiceFactory {
+class ManifestV2ExperimentManagerFactory : public ProfileKeyedServiceFactory {
  public:
   ManifestV2ExperimentManagerFactory();
   ManifestV2ExperimentManagerFactory(
@@ -40,18 +46,23 @@ class ManifestV2ExperimentManagerFactory
 
  private:
   // BrowserContextKeyedServiceFactory:
-  content::BrowserContext* GetBrowserContextToUse(
-      content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
+  bool ServiceIsCreatedWithBrowserContext() const override;
 };
 
 ManifestV2ExperimentManagerFactory::ManifestV2ExperimentManagerFactory()
-    : BrowserContextKeyedServiceFactory(
+    : ProfileKeyedServiceFactory(
           "ManifestV2ExperimentManager",
-          BrowserContextDependencyManager::GetInstance()) {
+          ProfileSelections::Builder()
+              .WithRegular(ProfileSelection::kRedirectedToOriginal)
+              .WithGuest(ProfileSelection::kRedirectedToOriginal)
+              .WithAshInternals(ProfileSelection::kNone)
+              .Build()) {
   DependsOn(ExtensionManagementFactory::GetInstance());
   DependsOn(ExtensionPrefsFactory::GetInstance());
+  DependsOn(ExtensionSystemFactory::GetInstance());
+  DependsOn(ExtensionRegistryFactory::GetInstance());
 }
 
 ManifestV2ExperimentManager*
@@ -61,18 +72,14 @@ ManifestV2ExperimentManagerFactory::GetForBrowserContext(
       GetServiceForBrowserContext(browser_context, /*create=*/true));
 }
 
-content::BrowserContext*
-ManifestV2ExperimentManagerFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  // Shared instance between incognito and regular profiles. This matches the
-  // rest of the core extension services, such as ExtensionService.
-  return ExtensionsBrowserClient::Get()->GetContextRedirectedToOriginal(
-      context, /*force_guest_profile=*/true);
-}
-
 KeyedService* ManifestV2ExperimentManagerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new ManifestV2ExperimentManager(context);
+}
+
+bool ManifestV2ExperimentManagerFactory::ServiceIsCreatedWithBrowserContext()
+    const {
+  return true;
 }
 
 // Determines the current stage of the MV2 deprecation experiments.
@@ -102,7 +109,14 @@ ManifestV2ExperimentManager::ManifestV2ExperimentManager(
       impact_checker_(
           experiment_stage_,
           ExtensionManagementFactory::GetForBrowserContext(browser_context)),
-      extension_prefs_(ExtensionPrefs::Get(browser_context)) {}
+      browser_context_(browser_context) {
+  ExtensionSystem::Get(browser_context)
+      ->ready()
+      .Post(FROM_HERE,
+            base::BindOnce(&ManifestV2ExperimentManager::OnExtensionSystemReady,
+                           weak_factory_.GetWeakPtr()));
+}
+
 ManifestV2ExperimentManager::~ManifestV2ExperimentManager() = default;
 
 // static
@@ -130,7 +144,7 @@ bool ManifestV2ExperimentManager::IsExtensionAffected(
 bool ManifestV2ExperimentManager::DidUserAcknowledgeWarning(
     const ExtensionId& extension_id) {
   bool acknowledged = false;
-  return extension_prefs_->ReadPrefAsBoolean(
+  return extension_prefs()->ReadPrefAsBoolean(
              extension_id, kMV2DeprecationExtensionWarningAcknowledgedPref,
              &acknowledged) &&
          acknowledged;
@@ -138,18 +152,58 @@ bool ManifestV2ExperimentManager::DidUserAcknowledgeWarning(
 
 void ManifestV2ExperimentManager::MarkWarningAsAcknowledged(
     const ExtensionId& extension_id) {
-  extension_prefs_->SetBooleanPref(
+  extension_prefs()->SetBooleanPref(
       extension_id, kMV2DeprecationExtensionWarningAcknowledgedPref, true);
 }
 
 bool ManifestV2ExperimentManager::DidUserAcknowledgeWarningGlobally() {
-  return extension_prefs_->GetPrefAsBoolean(
+  return extension_prefs()->GetPrefAsBoolean(
       kMV2DeprecationWarningAcknowledgedGloballyPref);
 }
 
 void ManifestV2ExperimentManager::MarkWarningAsAcknowledgedGlobally() {
-  extension_prefs_->SetBooleanPref(
+  extension_prefs()->SetBooleanPref(
       kMV2DeprecationWarningAcknowledgedGloballyPref, true);
+}
+
+ExtensionPrefs* ManifestV2ExperimentManager::extension_prefs() {
+  if (!extension_prefs_) {
+    extension_prefs_ = ExtensionPrefs::Get(browser_context_);
+  }
+  return extension_prefs_;
+}
+
+void ManifestV2ExperimentManager::OnExtensionSystemReady() {
+  if (GetCurrentExperimentStage() != MV2ExperimentStage::kDisableWithReEnable) {
+    return;
+  }
+
+  // TODO(https://crbug.com/339061151): Add metrics for disabled extension
+  // counts.
+  DisableAffectedExtensions();
+}
+
+void ManifestV2ExperimentManager::DisableAffectedExtensions() {
+  ExtensionRegistry* extension_registry =
+      ExtensionRegistry::Get(browser_context_);
+  std::set<scoped_refptr<const Extension>> extensions_to_disable;
+  for (const auto& extension : extension_registry->enabled_extensions()) {
+    if (!impact_checker_.IsExtensionAffected(*extension)) {
+      continue;
+    }
+
+    // TODO(https://crbug.com/339061151): Check if the extension has been
+    // explicitly re-enabled by the user.
+
+    extensions_to_disable.insert(extension);
+  }
+
+  ExtensionService* extension_service =
+      ExtensionSystem::Get(browser_context_)->extension_service();
+  for (const auto& extension : extensions_to_disable) {
+    extension_service->DisableExtension(
+        extension->id(), disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION);
+  }
 }
 
 }  // namespace extensions

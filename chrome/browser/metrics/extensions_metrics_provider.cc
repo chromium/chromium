@@ -219,7 +219,7 @@ ExtensionInstallProto::BackgroundScriptType GetBackgroundScriptType(
   return ExtensionInstallProto::NO_BACKGROUND_SCRIPT;
 }
 
-static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 23),
+static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 24),
               "Adding a new disable reason? Be sure to include the new reason "
               "below, update the test to exercise it, and then adjust this "
               "value for DISABLE_REASON_LAST");
@@ -265,6 +265,12 @@ std::vector<ExtensionInstallProto::DisableReason> GetDisableReasons(
       {extensions::disable_reason::
            DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY,
        ExtensionInstallProto::PUBLISHED_IN_STORE_REQUIRED_BY_POLICY},
+      // TODO(https://crbug.com/339061151): Add support for
+      // extensions::disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION.
+      // This requires an internal change and updating extension_install.proto.
+      // {extensions::disable_reason::
+      //      DISABLE_UNSUPPORTED_MANIFEST_VERSION,
+      //  ExtensionInstallProto::UNSUPPORTED_MANIFEST_VERSION},
   };
 
   int disable_reasons = prefs->GetDisableReasons(id);

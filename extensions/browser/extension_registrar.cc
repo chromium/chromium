@@ -229,7 +229,8 @@ void ExtensionRegistrar::DisableExtension(const ExtensionId& extension_id,
             DISABLE_PUBLISHED_IN_STORE_REQUIRED_BY_POLICY |
         extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY |
         extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED |
-        extensions::disable_reason::DISABLE_REINSTALL;
+        extensions::disable_reason::DISABLE_REINSTALL |
+        extensions::disable_reason::DISABLE_UNSUPPORTED_MANIFEST_VERSION;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // For controlled extensions, only allow disabling not ash-keeplisted

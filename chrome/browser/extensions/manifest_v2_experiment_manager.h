@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_MANIFEST_V2_EXPERIMENT_MANAGER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/mv2_deprecation_impact_checker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/common/extension_id.h"
@@ -67,6 +68,21 @@ class ManifestV2ExperimentManager : public KeyedService {
   void MarkWarningAsAcknowledgedGlobally();
 
  private:
+  // Lazily initialize and access `extension_prefs_`. We do this lazily because:
+  // - This service is created on Profile creation.
+  // - A bunch of unit tests override ExtensionPrefs after Profile creation, but
+  //   before the "real" test starts.
+  // As such, if we instantiated ExtensionPrefs in the constructor, it would be
+  // the improper ExtensionPrefs object and would trigger raw_ptr violations.
+  ExtensionPrefs* extension_prefs();
+
+  // Called when the extension system has finished its initialization steps.
+  void OnExtensionSystemReady();
+
+  // Disables any Manifest V2 extensions that are affected by the experiment,
+  // if the user hasn't chosen to re-enable them.
+  void DisableAffectedExtensions();
+
   // The current stage of the MV2 deprecation experiments.
   const MV2ExperimentStage experiment_stage_;
 
@@ -77,6 +93,12 @@ class ManifestV2ExperimentManager : public KeyedService {
   // The associated ExtensionPrefs. Guaranteed to be safe to use since this
   // class depends upon them via the KeyedService infrastructure.
   raw_ptr<ExtensionPrefs> extension_prefs_;
+
+  // The associated BrowserContext. Guaranteed to be safe to use since this is
+  // a KeyedService for the context.
+  raw_ptr<content::BrowserContext> browser_context_;
+
+  base::WeakPtrFactory<ManifestV2ExperimentManager> weak_factory_{this};
 };
 
 }  // namespace extensions

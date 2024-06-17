@@ -479,6 +479,9 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "ManagedBookmarkService",
     "ManagedConfigurationAPI",
     "ManagementAPI",
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    "ManifestV2ExperimentManager",
+#endif
     "MediaGalleriesAPI",
     "MediaRouter",
     "MediaRouterUIService",
