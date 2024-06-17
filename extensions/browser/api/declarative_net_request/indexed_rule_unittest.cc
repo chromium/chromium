@@ -1134,6 +1134,10 @@ TEST_F(IndexedResponseHeaderRuleTest, MatchingResponseHeaders) {
        HeaderInfoList({RawHeaderInfo("excluded-header")}),
        ParseResult::SUCCESS},
 
+      // An empty response header value should parse successfully.
+      {HeaderInfoList({{"header", HeaderValues({""}), std::nullopt}}),
+       std::nullopt, ParseResult::SUCCESS},
+
       // An empty matching response header list should trigger an error.
       {HeaderInfoList(), std::nullopt,
        ParseResult::ERROR_EMPTY_RESPONSE_HEADER_MATCHING_LIST},
@@ -1145,18 +1149,13 @@ TEST_F(IndexedResponseHeaderRuleTest, MatchingResponseHeaders) {
 
       // Test that a rule with an empty or invalid response header name will
       // return an error.
-      {HeaderInfoList({{"", std::nullopt, std::nullopt}}), std::nullopt,
+      {HeaderInfoList({RawHeaderInfo("")}), std::nullopt,
        ParseResult::ERROR_INVALID_MATCHING_RESPONSE_HEADER_NAME},
 
       {std::nullopt, HeaderInfoList({RawHeaderInfo("<<invalid_header>>")}),
        ParseResult::ERROR_INVALID_MATCHING_EXCLUDED_RESPONSE_HEADER_NAME},
 
-      // Test that a rule with an empty or invalid response header value will
-      // return an error.
-      {HeaderInfoList({{"header", HeaderValues({""}), std::nullopt}}),
-       std::nullopt, ParseResult::ERROR_INVALID_MATCHING_RESPONSE_HEADER_VALUE},
-
-      // Test that a rule with an empty response header value will return an
+      // Test that a rule with an invalid response header value will return an
       // error.
       {std::nullopt,
        HeaderInfoList({{"invalid-header-value",

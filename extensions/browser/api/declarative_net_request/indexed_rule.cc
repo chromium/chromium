@@ -491,7 +491,7 @@ ParseResult ValidateMatchingResponseHeaderValues(
     const dnr_api::HeaderInfo& header_info) {
   auto validate_header_values = [](const std::vector<std::string>& values) {
     return base::ranges::all_of(values, [](const std::string& value) {
-      return !value.empty() && net::HttpUtil::IsValidHeaderValue(value);
+      return net::HttpUtil::IsValidHeaderValue(value);
     });
   };
 
