@@ -148,7 +148,6 @@ BASE_DECLARE_FEATURE(kScrollToTLDOptimization);
 BASE_DECLARE_FEATURE(kStopAppIndexingReport);
 BASE_DECLARE_FEATURE(kSuppressToolbarCaptures);
 BASE_DECLARE_FEATURE(kTabDragDropAndroid);
-BASE_DECLARE_FEATURE(kTabGroupPaneAndroid);
 BASE_DECLARE_FEATURE(kTabGroupParityAndroid);
 BASE_DECLARE_FEATURE(kTabIdMapAndroid);
 BASE_DECLARE_FEATURE(kTabletTabSwitcherLongPressMenu);

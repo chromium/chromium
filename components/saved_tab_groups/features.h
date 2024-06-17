@@ -8,7 +8,10 @@
 #include "base/feature_list.h"
 
 namespace tab_groups {
+
 BASE_DECLARE_FEATURE(kTabGroupSyncAndroid);
+
+BASE_DECLARE_FEATURE(kTabGroupPaneAndroid);
 
 BASE_DECLARE_FEATURE(kTabGroupSyncForceOff);
 
@@ -23,6 +26,8 @@ BASE_DECLARE_FEATURE(kTabGroupSyncUno);
 BASE_DECLARE_FEATURE(kMigrationFromJavaSharedPrefs);
 
 BASE_DECLARE_FEATURE(kAlwaysAcceptServerDataInModel);
+
+BASE_DECLARE_FEATURE(kTabGroupSyncAutoOpenKillSwitch);
 
 extern bool IsTabGroupsSaveV2Enabled();
 

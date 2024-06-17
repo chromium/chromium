@@ -25,6 +25,9 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -47,6 +50,7 @@ import java.util.List;
 /** Unit tests for the {@link TabGroupSyncRemoteObserver}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@DisableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH)
 public class TabGroupSyncRemoteObserverUnitTest {
     private static final Token TOKEN_1 = new Token(2, 3);
     private static final Token TOKEN_2 = new Token(4, 4);
@@ -128,6 +132,14 @@ public class TabGroupSyncRemoteObserverUnitTest {
     public void testTabGroupAddedWithAutoOpenOff() {
         when(mPrefService.getBoolean(eq(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS))).thenReturn(false);
 
+        SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
+        mRemoteObserver.onTabGroupAdded(savedTabGroup, TriggerSource.REMOTE);
+        verify(mLocalMutationHelper, never()).createNewTabGroup(any());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH)
+    public void testAutoOpenKillSwitch() {
         SavedTabGroup savedTabGroup = TabGroupSyncTestUtils.createSavedTabGroup();
         mRemoteObserver.onTabGroupAdded(savedTabGroup, TriggerSource.REMOTE);
         verify(mLocalMutationHelper, never()).createNewTabGroup(any());

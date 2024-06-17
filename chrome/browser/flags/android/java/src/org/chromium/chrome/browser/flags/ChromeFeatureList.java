@@ -461,6 +461,8 @@ public abstract class ChromeFeatureList {
     public static final String TAB_GROUP_PANE_ANDROID = "TabGroupPaneAndroid";
     public static final String TAB_GROUP_PARITY_ANDROID = "TabGroupParityAndroid";
     public static final String TAB_GROUP_SYNC_ANDROID = "TabGroupSyncAndroid";
+    public static final String TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH =
+            "TabGroupSyncAutoOpenKillSwitch";
     public static final String TAB_RESUMPTION_MODULE_ANDROID = "TabResumptionModuleAndroid";
     public static final String TAB_ID_MAP = "TabIdMapAndroid";
     public static final String TAB_STRIP_GROUP_COLLAPSE = "TabStripGroupCollapseAndroid";

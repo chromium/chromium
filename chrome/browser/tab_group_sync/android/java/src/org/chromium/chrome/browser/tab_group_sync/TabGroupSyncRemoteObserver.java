@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab_group_sync;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
@@ -74,7 +75,10 @@ public final class TabGroupSyncRemoteObserver implements TabGroupSyncService.Obs
 
         LogUtils.log(TAG, "onTabGroupAdded, tabGroup = " + tabGroup);
         assert tabGroup.localId == null;
-        if (!mPrefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS)) return;
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_SYNC_AUTO_OPEN_KILL_SWITCH)
+                || !mPrefService.getBoolean(Pref.AUTO_OPEN_SYNCED_TAB_GROUPS)) {
+            return;
+        }
 
         mEnableLocalObserverCallback.onResult(false);
         mLocalTabGroupMutationHelper.createNewTabGroup(tabGroup);

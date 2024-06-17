@@ -10155,7 +10155,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_ANDROID)
     {"tab-group-pane-android", flag_descriptions::kTabGroupPaneAndroidName,
      flag_descriptions::kTabGroupPaneAndroidDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kTabGroupPaneAndroid)},
+     FEATURE_VALUE_TYPE(tab_groups::kTabGroupPaneAndroid)},
 
     {"tab-group-parity-android", flag_descriptions::kTabGroupParityAndroidName,
      flag_descriptions::kTabGroupParityAndroidDescription, kOsAndroid,

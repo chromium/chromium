@@ -9,8 +9,16 @@
 
 namespace tab_groups {
 // Core feature flag for tab group sync on Android.
+// Controls registration with the sync service and tab model hookup UI layer.
+// TabGroupSyncService is eanbled when either this flag or kTabGroupPaneAndroid
+// is enabled.
 BASE_FEATURE(kTabGroupSyncAndroid,
              "TabGroupSyncAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Feature flag used to enable tab group revisit surface.
+BASE_FEATURE(kTabGroupPaneAndroid,
+             "TabGroupPaneAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabGroupSyncForceOff,
@@ -50,6 +58,14 @@ BASE_FEATURE(kMigrationFromJavaSharedPrefs,
 BASE_FEATURE(kAlwaysAcceptServerDataInModel,
              "AlwaysAcceptServerDataInModel",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Feature flag to disable auto-open of saved tab groups. Note that the
+// settings page for auto open will still be visible, and when user is allowed
+// to change. However the written pref from the user selection will not be
+// honored. This feature flag should be used only in case of an emergency.
+BASE_FEATURE(kTabGroupSyncAutoOpenKillSwitch,
+             "TabGroupSyncAutoOpenKillSwitch",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsTabGroupsSaveV2Enabled() {
   return base::FeatureList::IsEnabled(kTabGroupsSaveV2);
