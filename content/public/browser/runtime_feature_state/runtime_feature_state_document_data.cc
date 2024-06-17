@@ -20,4 +20,13 @@ RuntimeFeatureStateDocumentData::RuntimeFeatureStateDocumentData(
       origin(), base::PassKey<RuntimeFeatureStateDocumentData>());
 }
 
+RuntimeFeatureStateDocumentData::RuntimeFeatureStateDocumentData(
+    RenderFrameHost* rfh)
+    : DocumentUserData(rfh),
+      runtime_feature_state_read_context_(
+          blink::RuntimeFeatureStateReadContext()) {
+  runtime_feature_state_read_context_.set_origin_on_navigation(
+      origin(), base::PassKey<RuntimeFeatureStateDocumentData>());
+}
+
 }  // namespace content
