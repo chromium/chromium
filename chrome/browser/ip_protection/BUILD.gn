@@ -42,6 +42,7 @@ static_library("ip_protection") {
     "//services/network/public/cpp:cpp",
     "//services/network/public/mojom:mojom",
     "//services/network/public/mojom:url_loader_base",
+    "//third_party/anonymous_tokens:anonymous_tokens_cc_proto",
   ]
 }
 
@@ -70,6 +71,7 @@ source_set("unit_tests") {
     "//net/traffic_annotation:test_support",
     "//services/network:test_support",
     "//testing/gtest:gtest",
+    "//third_party/anonymous_tokens:anonymous_tokens_cc_proto",
   ]
 }
 
@@ -88,6 +90,7 @@ source_set("browser_tests") {
     "//components/privacy_sandbox:features",
     "//components/signin/public/identity_manager:identity_manager",
     "//components/signin/public/identity_manager:test_support",
+    "//third_party/anonymous_tokens:anonymous_tokens_cc_proto",
   ]
 
   if (is_android) {

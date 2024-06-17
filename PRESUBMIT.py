@@ -1057,6 +1057,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         r'services/network/web_transport\.cc',
         r'chrome/browser/ip_protection/.*',
         r'components/ip_protection/.*',
+        r'android_webview/browser/aw_ip_protection_config_provider.*',
         # Not an error in third_party folders.
         _THIRD_PARTY_EXCEPT_BLINK,
         # //base/numerics can't use base or absl.
@@ -1078,6 +1079,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         # Needed to use QUICHE API.
         r'chrome/browser/ip_protection/.*',
         r'components/ip_protection/.*',
+        r'android_webview/browser/aw_ip_protection_config_provider.*',
         # Needed to use MediaPipe API.
         r'components/media_effects/.*\.cc',
         # Not an error in third_party folders.
@@ -1120,7 +1122,7 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         # Needed to use QUICHE API.
         r'chrome/browser/ip_protection/.*',
         r'components/ip_protection/.*',
-        r'services/network/web_transport.*',
+        r'android_webview/browser/aw_ip_protection_config_provider.*',
         # Needed to integrate with //third_party/nearby
         r'components/cross_device/nearby/system_clock.cc',
         _THIRD_PARTY_EXCEPT_BLINK  # Not an error in third_party folders.

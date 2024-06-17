@@ -4688,6 +4688,36 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NetworkService.AwIpProtection.TokenBatchRequestTime"
+    units="ms" expires_after="2024-09-29">
+  <owner>ciaramcmullin@google.com</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <owner>src/chrome/browser/ip_protection/OWNERS</owner>
+  <summary>
+    Records the elapsed time for successful requests by IpProtectionConfigGetter
+    for blind-signed tokens from BSA.
+
+    This metric only measures part of the Android WebView specific blind-signing
+    implementation and does not encompass the full token batch generation
+    process.
+  </summary>
+</histogram>
+
+<histogram name="NetworkService.AwIpProtection.TryGetAuthTokensResult"
+    enum="AwIpProtectionTokenBatchRequestResult" expires_after="2024-09-15">
+  <owner>ciaramcmullin@google.com</owner>
+  <owner>ashleynewson@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <owner>src/chrome/browser/ip_protection/OWNERS</owner>
+  <summary>
+    The result of handling a request by the network service to the Android
+    WebView's browser logic for a batch of blind-signed auth tokens. This is
+    recorded per request attempt. Retries may result in multiple logs for the
+    same request.
+  </summary>
+</histogram>
+
 <histogram name="NetworkService.CorsPreflightMethodAllowed"
     enum="NetworkServiceCorsPreflightMethodAllowed" expires_after="2023-06-18">
   <owner>hiroshige@chromium.org</owner>

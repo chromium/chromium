@@ -7,7 +7,6 @@
 #include <memory>
 #include <optional>
 
-#include "base/base64.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "base/test/bind.h"
@@ -43,35 +42,6 @@ constexpr char kTokenBatchHistogram[] =
     "NetworkService.IpProtection.TokenBatchRequestTime";
 
 constexpr char kTestEmail[] = "test@example.com";
-
-privacy::ppn::PrivacyPassTokenData CreateMockPrivacyPassToken(
-    std::string token_value) {
-  privacy::ppn::PrivacyPassTokenData privacy_pass_token_data;
-
-  // The PrivacyPassTokenData values get base64-encoded by BSA, so simulate that
-  // here.
-  std::string encoded_token_value = base::Base64Encode(token_value);
-  std::string encoded_extension_value =
-      base::Base64Encode("mock-extension-value");
-
-  privacy_pass_token_data.set_token(std::move(encoded_token_value));
-  privacy_pass_token_data.set_encoded_extensions(
-      std::move(encoded_extension_value));
-
-  return privacy_pass_token_data;
-}
-
-// Creates a `quiche::BlindSignToken()` in the format that the BSA library
-// will return them.
-quiche::BlindSignToken CreateMockBlindSignToken(std::string token_value,
-                                                base::Time expiration) {
-  privacy::ppn::PrivacyPassTokenData privacy_pass_token_data =
-      CreateMockPrivacyPassToken(std::move(token_value));
-  quiche::BlindSignToken blind_sign_token;
-  blind_sign_token.token = privacy_pass_token_data.SerializeAsString();
-  blind_sign_token.expiration = absl::FromTimeT(expiration.ToTimeT());
-  return blind_sign_token;
-}
 
 class MockBlindSignAuth : public quiche::BlindSignAuthInterface {
  public:
@@ -317,31 +287,7 @@ class IpProtectionConfigProviderTest : public testing::Test {
     }
   }
 
-  // Shortcut to create a ProxyChain from hostnames.
-  net::ProxyChain MakeChain(
-      std::vector<std::string> hostnames,
-      int chain_id = net::ProxyChain::kDefaultIpProtectionChainId) {
-    std::vector<net::ProxyServer> servers;
-    for (auto& hostname : hostnames) {
-      servers.push_back(net::ProxyServer::FromSchemeHostAndPort(
-          net::ProxyServer::SCHEME_HTTPS, hostname, std::nullopt));
-    }
-    return net::ProxyChain::ForIpProtection(servers, chain_id);
-  }
-
   sync_preferences::TestingPrefServiceSyncable* prefs() { return &prefs_; }
-
-  // Converts a mock token value and expiration time into the struct that will
-  // be passed to the network service, including the formatting that the
-  // `IpProtectionConfigProvider()` will do.
-  static network::mojom::BlindSignedAuthTokenPtr CreateMockBlindSignedAuthToken(
-      std::string token_value,
-      base::Time expiration) {
-    quiche::BlindSignToken blind_sign_token =
-        CreateMockBlindSignToken(token_value, expiration);
-    return IpProtectionConfigProviderHelper::CreateBlindSignedAuthToken(
-        std::move(blind_sign_token));
-  }
 
   // The behavior of the identity manager.
   PrimaryAccountBehavior primary_account_behavior_ =
@@ -388,8 +334,11 @@ class IpProtectionConfigProviderTest : public testing::Test {
 // it.
 TEST_F(IpProtectionConfigProviderTest, Success) {
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
-  bsa_->tokens_ = {CreateMockBlindSignToken("single-use-1", expiration_time_),
-                   CreateMockBlindSignToken("single-use-2", expiration_time_)};
+  bsa_->tokens_ = {
+      IpProtectionConfigProviderHelper::CreateBlindSignTokenForTesting(
+          "single-use-1", expiration_time_),
+      IpProtectionConfigProviderHelper::CreateBlindSignTokenForTesting(
+          "single-use-2", expiration_time_)};
 
   TryGetAuthTokens(2, network::mojom::IpProtectionProxyLayer::kProxyB);
 
@@ -398,10 +347,12 @@ TEST_F(IpProtectionConfigProviderTest, Success) {
   EXPECT_EQ(bsa_->num_tokens_, 2);
   EXPECT_EQ(bsa_->proxy_layer_, quiche::ProxyLayer::kProxyB);
   std::vector<network::mojom::BlindSignedAuthTokenPtr> expected;
-  expected.push_back(
-      CreateMockBlindSignedAuthToken("single-use-1", expiration_time_));
-  expected.push_back(
-      CreateMockBlindSignedAuthToken("single-use-2", expiration_time_));
+  expected.push_back(IpProtectionConfigProviderHelper::
+                         CreateMockBlindSignedAuthTokenForTesting(
+                             "single-use-1", expiration_time_));
+  expected.push_back(IpProtectionConfigProviderHelper::
+                         CreateMockBlindSignedAuthTokenForTesting(
+                             "single-use-2", expiration_time_));
   ExpectTryGetAuthTokensResult(std::move(expected));
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
@@ -532,8 +483,11 @@ TEST_F(IpProtectionConfigProviderTest, BlindSignedTokenErrorOther) {
 // The CanUseChromeIpProtection capability is not present (`kUnknown`).
 TEST_F(IpProtectionConfigProviderTest, AccountCapabilityUnknown) {
   primary_account_behavior_ = PrimaryAccountBehavior::kUnknownEligibility;
-  bsa_->tokens_ = {CreateMockBlindSignToken("single-use-1", expiration_time_),
-                   CreateMockBlindSignToken("single-use-2", expiration_time_)};
+  bsa_->tokens_ = {
+      IpProtectionConfigProviderHelper::CreateBlindSignTokenForTesting(
+          "single-use-1", expiration_time_),
+      IpProtectionConfigProviderHelper::CreateBlindSignTokenForTesting(
+          "single-use-2", expiration_time_)};
 
   TryGetAuthTokens(2, network::mojom::IpProtectionProxyLayer::kProxyA);
 
@@ -542,10 +496,12 @@ TEST_F(IpProtectionConfigProviderTest, AccountCapabilityUnknown) {
   EXPECT_EQ(bsa_->num_tokens_, 2);
   EXPECT_EQ(bsa_->proxy_layer_, quiche::ProxyLayer::kProxyA);
   std::vector<network::mojom::BlindSignedAuthTokenPtr> expected;
-  expected.push_back(
-      CreateMockBlindSignedAuthToken("single-use-1", expiration_time_));
-  expected.push_back(
-      CreateMockBlindSignedAuthToken("single-use-2", expiration_time_));
+  expected.push_back(IpProtectionConfigProviderHelper::
+                         CreateMockBlindSignedAuthTokenForTesting(
+                             "single-use-1", expiration_time_));
+  expected.push_back(IpProtectionConfigProviderHelper::
+                         CreateMockBlindSignedAuthTokenForTesting(
+                             "single-use-2", expiration_time_));
   ExpectTryGetAuthTokensResult(std::move(expected));
   histogram_tester_.ExpectUniqueSample(
       kTryGetAuthTokensResultHistogram,
@@ -629,7 +585,9 @@ TEST_F(IpProtectionConfigProviderTest, AccountLoginTriggersBackoffReset) {
   ExpectTryGetAuthTokensResultFailed(base::TimeDelta::Max());
 
   primary_account_behavior_ = PrimaryAccountBehavior::kReturnsToken;
-  bsa_->tokens_ = {CreateMockBlindSignToken("single-use-1", expiration_time_)};
+  bsa_->tokens_ = {
+      IpProtectionConfigProviderHelper::CreateBlindSignTokenForTesting(
+          "single-use-1", expiration_time_)};
 
   TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyA);
 
@@ -667,7 +625,9 @@ TEST_F(IpProtectionConfigProviderTest, SessionRefreshTriggersBackoffReset) {
       account_info.account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::State::NONE));
 
-  bsa_->tokens_ = {CreateMockBlindSignToken("single-use-1", expiration_time_)};
+  bsa_->tokens_ = {
+      IpProtectionConfigProviderHelper::CreateBlindSignTokenForTesting(
+          "single-use-1", expiration_time_)};
   tokens_future.Clear();
   getter_->TryGetAuthTokens(1, network::mojom::IpProtectionProxyLayer::kProxyB,
                             tokens_future.GetCallback());
@@ -753,7 +713,10 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyChains) {
   getter_->GetProxyList(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
   std::vector<net::ProxyChain> exp_proxy_list = {
-      MakeChain({"proxy1", "proxy1b"}, 1), MakeChain({"proxy2", "proxy2b"}, 2)};
+      IpProtectionConfigProviderHelper::MakeChainForTesting(
+          {"proxy1", "proxy1b"}, 1),
+      IpProtectionConfigProviderHelper::MakeChainForTesting(
+          {"proxy2", "proxy2b"}, 2)};
   EXPECT_THAT(proxy_list_future_.Get(),
               testing::Optional(testing::ElementsAreArray(exp_proxy_list)));
 }
@@ -782,7 +745,8 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyChainsWithPorts) {
   getter_->GetProxyList(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
   std::vector<net::ProxyChain> exp_proxy_list = {
-      MakeChain({"proxy1", "proxy1b"})};
+      IpProtectionConfigProviderHelper::MakeChainForTesting(
+          {"proxy1", "proxy1b"})};
   exp_proxy_list.push_back(net::ProxyChain::ForIpProtection(
       {net::ProxyServer::FromSchemeHostAndPort(net::ProxyServer::SCHEME_HTTPS,
                                                "proxy2", 80),
@@ -817,7 +781,9 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyInvalid) {
 
   getter_->GetProxyList(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
-  std::vector<net::ProxyChain> exp_proxy_list = {MakeChain({"valid", "valid"})};
+  std::vector<net::ProxyChain> exp_proxy_list = {
+      IpProtectionConfigProviderHelper::MakeChainForTesting(
+          {"valid", "valid"})};
   EXPECT_THAT(proxy_list_future_.Get(),
               testing::Optional(testing::ElementsAreArray(exp_proxy_list)));
 }
@@ -840,16 +806,19 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyListProxyInvalidChainId) {
   getter_->GetProxyList(proxy_list_future_.GetCallback());
   ASSERT_TRUE(proxy_list_future_.Wait()) << "GetProxyList did not call back";
   // The proxy chain is still used, but the chain ID is set to the default.
-  std::vector<net::ProxyChain> exp_proxy_list = {MakeChain(
-      {"proxya", "proxyb"}, net::ProxyChain::kDefaultIpProtectionChainId)};
+  std::vector<net::ProxyChain> exp_proxy_list = {
+      IpProtectionConfigProviderHelper::MakeChainForTesting(
+          {"proxya", "proxyb"}, net::ProxyChain::kDefaultIpProtectionChainId)};
   EXPECT_THAT(proxy_list_future_.Get(),
               testing::Optional(testing::ElementsAreArray(exp_proxy_list)));
 }
 
 TEST_F(IpProtectionConfigProviderTest, ProxyOverrideFlagsAll) {
   std::vector<net::ProxyChain> proxy_override_list = {
-      MakeChain({"proxyAOverride", "proxyBOverride"}),
-      MakeChain({"proxyAOverride", "proxyBOverride"}),
+      IpProtectionConfigProviderHelper::MakeChainForTesting(
+          {"proxyAOverride", "proxyBOverride"}),
+      IpProtectionConfigProviderHelper::MakeChainForTesting(
+          {"proxyAOverride", "proxyBOverride"}),
   };
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
@@ -988,7 +957,9 @@ TEST_F(IpProtectionConfigProviderTest, GetProxyList_IpProtectionDisabled) {
 // Do a basic check of the token formats.
 TEST_F(IpProtectionConfigProviderTest, TokenFormat) {
   network::mojom::BlindSignedAuthTokenPtr result =
-      CreateMockBlindSignedAuthToken("single-use-1", expiration_time_);
+      IpProtectionConfigProviderHelper::
+          CreateMockBlindSignedAuthTokenForTesting("single-use-1",
+                                                   expiration_time_);
   std::string token = (*result).token;
   size_t token_position = token.find("PrivateToken token=");
   size_t extensions_position = token.find("extensions=");

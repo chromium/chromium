@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 
+#include "base/base64.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -100,4 +101,55 @@ IpProtectionConfigProviderHelper::CreateBlindSignedAuthToken(
   }
   return network::mojom::BlindSignedAuthToken::New(
       std::move(token_header_value), expiration);
+}
+
+// static
+privacy::ppn::PrivacyPassTokenData
+IpProtectionConfigProviderHelper::CreatePrivacyPassTokenForTesting(
+    std::string token_value) {
+  privacy::ppn::PrivacyPassTokenData privacy_pass_token_data;
+
+  // The PrivacyPassTokenData values get base64-encoded by BSA, so simulate that
+  // here.
+  std::string encoded_token_value = base::Base64Encode(token_value);
+  std::string encoded_extension_value =
+      base::Base64Encode("mock-extension-value");
+
+  privacy_pass_token_data.set_token(std::move(encoded_token_value));
+  privacy_pass_token_data.set_encoded_extensions(
+      std::move(encoded_extension_value));
+
+  return privacy_pass_token_data;
+}
+
+quiche::BlindSignToken
+IpProtectionConfigProviderHelper::CreateBlindSignTokenForTesting(
+    std::string token_value,
+    base::Time expiration) {
+  privacy::ppn::PrivacyPassTokenData privacy_pass_token_data =
+      CreatePrivacyPassTokenForTesting(std::move(token_value));
+  quiche::BlindSignToken blind_sign_token;
+  blind_sign_token.token = privacy_pass_token_data.SerializeAsString();
+  blind_sign_token.expiration = absl::FromTimeT(expiration.ToTimeT());
+  return blind_sign_token;
+}
+
+net::ProxyChain IpProtectionConfigProviderHelper::MakeChainForTesting(
+    std::vector<std::string> hostnames,
+    int chain_id) {
+  std::vector<net::ProxyServer> servers;
+  for (auto& hostname : hostnames) {
+    servers.push_back(net::ProxyServer::FromSchemeHostAndPort(
+        net::ProxyServer::SCHEME_HTTPS, hostname, std::nullopt));
+  }
+  return net::ProxyChain::ForIpProtection(servers, chain_id);
+}
+
+network::mojom::BlindSignedAuthTokenPtr
+IpProtectionConfigProviderHelper::CreateMockBlindSignedAuthTokenForTesting(
+    std::string token_value,
+    base::Time expiration) {
+  quiche::BlindSignToken blind_sign_token =
+      CreateBlindSignTokenForTesting(token_value, expiration);
+  return CreateBlindSignedAuthToken(std::move(blind_sign_token));
 }

@@ -28,8 +28,9 @@ source_set("ip_protection") {
     "//net/third_party/quiche:blind_sign_auth",
     "//services/network/public/cpp:cpp",
     "//services/network/public/mojom:mojom",
-    "//third_party/anonymous_tokens:anonymous_tokens_cc_proto",
   ]
+
+  public_deps = [ "//third_party/anonymous_tokens:anonymous_tokens_cc_proto" ]
 
   if (is_android) {
     deps += [
@@ -58,7 +59,6 @@ source_set("unit_tests") {
     "//services/network:test_support",
     "//services/network/public/cpp:cpp",
     "//testing/gtest",
-    "//third_party/anonymous_tokens:anonymous_tokens_cc_proto",
   ]
 
   if (is_android) {

@@ -589,6 +589,14 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="FINISHED">AsyncTask is done.</int>
 </enum>
 
+<enum name="AwIpProtectionTokenBatchRequestResult">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed - BSA Transient Error"/>
+  <int value="2" label="Failed - BSA Persistent Error"/>
+  <int value="3" label="Failed - BSA Error Other"/>
+  <int value="4" label="Disabled feature"/>
+</enum>
+
 <enum name="BackgroundTaskId">
   <int value="-1" label="Not found"/>
   <int value="0" label="Test task (should not appear)"/>
