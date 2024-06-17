@@ -13,7 +13,6 @@
 #include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/views/picker_category_type.h"
-#include "ash/picker/views/picker_category_view.h"
 #include "ash/picker/views/picker_contents_view.h"
 #include "ash/picker/views/picker_emoji_bar_view.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
@@ -406,7 +405,7 @@ TEST_F(PickerViewTest, SwitchesToCategoryView) {
     ViewDrawnWaiter().Wait(category_item_view);
     LeftClickOn(category_item_view);
 
-    EXPECT_TRUE(picker_view->category_view_for_testing().GetVisible());
+    EXPECT_TRUE(picker_view->category_results_view_for_testing().GetVisible());
     EXPECT_FALSE(picker_view->zero_state_view_for_testing().GetVisible());
     EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
   }
@@ -450,7 +449,7 @@ TEST_F(PickerViewTest, ClickingCategoryResultsSwitchesToCategoryView) {
   ViewDrawnWaiter().Wait(category_result_item_view);
   LeftClickOn(category_result_item_view);
 
-  EXPECT_TRUE(picker_view->category_view_for_testing().GetVisible());
+  EXPECT_TRUE(picker_view->category_results_view_for_testing().GetVisible());
   EXPECT_FALSE(picker_view->zero_state_view_for_testing().GetVisible());
   EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
 }
@@ -493,7 +492,7 @@ TEST_F(PickerViewTest, SearchingWithCategorySwitchesToSearchResultsView) {
   // Type something into the search field.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
 
-  EXPECT_FALSE(picker_view->category_view_for_testing().GetVisible());
+  EXPECT_FALSE(picker_view->category_results_view_for_testing().GetVisible());
   EXPECT_FALSE(picker_view->zero_state_view_for_testing().GetVisible());
   EXPECT_TRUE(picker_view->search_results_view_for_testing().GetVisible());
 }
@@ -517,7 +516,7 @@ TEST_F(PickerViewTest, EmptySearchFieldSwitchesBackToCategoryView) {
   // Clear the search field.
   PressAndReleaseKey(ui::KeyboardCode::VKEY_BACK, ui::EF_NONE);
 
-  EXPECT_TRUE(picker_view->category_view_for_testing().GetVisible());
+  EXPECT_TRUE(picker_view->category_results_view_for_testing().GetVisible());
   EXPECT_FALSE(picker_view->zero_state_view_for_testing().GetVisible());
   EXPECT_FALSE(picker_view->search_results_view_for_testing().GetVisible());
 }

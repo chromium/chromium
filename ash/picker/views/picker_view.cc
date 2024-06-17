@@ -12,7 +12,6 @@
 #include "ash/picker/metrics/picker_session_metrics.h"
 #include "ash/picker/model/picker_action_type.h"
 #include "ash/picker/model/picker_search_results_section.h"
-#include "ash/picker/views/picker_category_view.h"
 #include "ash/picker/views/picker_emoji_bar_view.h"
 #include "ash/picker/views/picker_key_event_handler.h"
 #include "ash/picker/views/picker_main_container_view.h"
@@ -381,7 +380,7 @@ void PickerView::StartSearch(const std::u16string& query) {
             &PickerView::PublishSearchResults, weak_ptr_factory_.GetWeakPtr(),
             /*show_no_results_found=*/selected_category_.has_value()));
   } else if (selected_category_.has_value()) {
-    SetActivePage(category_view_);
+    SetActivePage(category_results_view_);
   } else {
     search_results_view_->ClearSearchResults();
     ResetEmojiBarToZeroState();
@@ -483,8 +482,8 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
   if (query.empty()) {
     // Getting suggested results for a category can be slow, so show a loading
     // animation.
-    category_view_->ShowLoadingAnimation();
-    SetActivePage(category_view_);
+    category_results_view_->ShowLoadingAnimation();
+    SetActivePage(category_results_view_);
     delegate_->GetResultsForCategory(
         category, base::BindRepeating(&PickerView::PublishCategoryResults,
                                       weak_ptr_factory_.GetWeakPtr()));
@@ -495,7 +494,14 @@ void PickerView::SelectCategoryWithQuery(PickerCategory category,
 
 void PickerView::PublishCategoryResults(
     std::vector<PickerSearchResultsSection> results) {
-  category_view_->SetResults(std::move(results));
+  category_results_view_->ClearSearchResults();
+  if (results.empty()) {
+    category_results_view_->ShowNoResultsFound();
+  } else {
+    for (PickerSearchResultsSection& section : results) {
+      category_results_view_->AppendSearchResults(std::move(section));
+    }
+  }
 }
 
 void PickerView::AddMainContainerView(PickerLayoutType layout_type) {
@@ -521,8 +527,8 @@ void PickerView::AddMainContainerView(PickerLayoutType layout_type) {
           this, delegate_->GetAvailableCategories(),
           delegate_->GetRecentResultsCategories(), kPickerViewMaxSize.width(),
           delegate_->GetAssetFetcher()));
-  category_view_ =
-      main_container_view_->AddPage(std::make_unique<PickerCategoryView>(
+  category_results_view_ =
+      main_container_view_->AddPage(std::make_unique<PickerSearchResultsView>(
           this, kPickerViewMaxSize.width(), delegate_->GetAssetFetcher()));
   search_results_view_ =
       main_container_view_->AddPage(std::make_unique<PickerSearchResultsView>(
@@ -539,7 +545,7 @@ void PickerView::AddEmojiBarView() {
 }
 
 void PickerView::SetActivePage(PickerPageView* page_view) {
-  search_field_view_->SetBackButtonVisible(page_view == category_view_);
+  search_field_view_->SetBackButtonVisible(page_view == category_results_view_);
   main_container_view_->SetActivePage(page_view);
   if (active_pseudo_focus_handler_ != nullptr) {
     active_pseudo_focus_handler_->LosePseudoFocus();

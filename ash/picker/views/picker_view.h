@@ -43,7 +43,6 @@ class PickerSearchResultsSection;
 class PickerSearchResultsView;
 class PickerViewDelegate;
 class PickerZeroStateView;
-class PickerCategoryView;
 
 // View for the Picker widget.
 class ASH_EXPORT PickerView : public views::WidgetDelegateView,
@@ -109,7 +108,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   PickerSearchResultsView& search_results_view_for_testing() {
     return *search_results_view_;
   }
-  PickerCategoryView& category_view_for_testing() { return *category_view_; }
+  PickerSearchResultsView& category_results_view_for_testing() {
+    return *category_results_view_;
+  }
   PickerZeroStateView& zero_state_view_for_testing() {
     return *zero_state_view_;
   }
@@ -174,7 +175,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   raw_ptr<PickerMainContainerView> main_container_view_ = nullptr;
   raw_ptr<PickerSearchFieldView> search_field_view_ = nullptr;
   raw_ptr<PickerZeroStateView> zero_state_view_ = nullptr;
-  raw_ptr<PickerCategoryView> category_view_ = nullptr;
+  raw_ptr<PickerSearchResultsView> category_results_view_ = nullptr;
   raw_ptr<PickerSearchResultsView> search_results_view_ = nullptr;
 
   raw_ptr<PickerEmojiBarView> emoji_bar_view_ = nullptr;
