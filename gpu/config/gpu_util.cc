@@ -924,12 +924,18 @@ IntelGpuSeriesType GetIntelGpuSeriesType(uint32_t vendor_id,
       case 0x4F00:
       case 0x5600:
         return IntelGpuSeriesType::kAlchemist;
-      case 0xa700:
+      case 0xA700:
         return IntelGpuSeriesType::kRaptorlake;
-      case 0x7d00:
+      case 0x7D00:
+        if (device_id == 0x7D41 || device_id == 0x7D51 || device_id == 0x7D67 ||
+            device_id == 0x7DD1) {
+          return IntelGpuSeriesType::kArrowlake;
+        }
         return IntelGpuSeriesType::kMeteorlake;
       case 0x6400:
         return IntelGpuSeriesType::kLunarlake;
+      case 0xE200:
+        return IntelGpuSeriesType::kBattlemage;
       default:
         break;
     }
@@ -977,8 +983,10 @@ std::string GetIntelGpuGeneration(uint32_t vendor_id, uint32_t device_id) {
       case IntelGpuSeriesType::kAlchemist:
       case IntelGpuSeriesType::kRaptorlake:
       case IntelGpuSeriesType::kMeteorlake:
+      case IntelGpuSeriesType::kArrowlake:
         return "12";
       case IntelGpuSeriesType::kLunarlake:
+      case IntelGpuSeriesType::kBattlemage:
         return "13";
       default:
         break;

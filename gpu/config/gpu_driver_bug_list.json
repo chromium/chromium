@@ -2309,7 +2309,9 @@
         "alchemist",
         "raptorlake",
         "meteorlake",
-        "lunarlake"
+        "arrowlake",
+        "lunarlake",
+        "battlemage"
       ],
       "features": [
         "force_rgb10a2_overlay_support"
@@ -2471,7 +2473,9 @@
         "alchemist",
         "raptorlake",
         "meteorlake",
-        "lunarlake"
+        "arrowlake",
+        "lunarlake",
+        "battlemage"
       ],
       "features": [
         "supports_two_yuv_hardware_overlays"

@@ -1116,6 +1116,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="27" label="Intel Raptorlake"/>
   <int value="28" label="Intel Meteorlake"/>
   <int value="29" label="Intel Lunarlake"/>
+  <int value="30" label="Intel Arrowlake"/>
+  <int value="31" label="Intel Battlemage"/>
 </enum>
 
 <enum name="MetalReadWriteTextureSupportTier">
