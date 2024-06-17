@@ -9,6 +9,7 @@
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_action_callback.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
@@ -214,10 +215,14 @@ void PinnedActionToolbarButton::UpdatePinnedStateForContextMenu() {
       base::StrCat({"Actions.PinnedToolbarButton.",
                     updated_pin_state ? "Pinned" : "Unpinned",
                     ".ByContextMenu.", metrics_name.value()}));
-  // TODO(corising): Update the text for these notifications once pinning
-  // expands past side panels.
-  GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
-      updated_pin_state ? IDS_SIDE_PANEL_PINNED : IDS_SIDE_PANEL_UNPINNED));
+  if (features::IsToolbarPinningEnabled()) {
+    GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
+        updated_pin_state ? IDS_TOOLBAR_BUTTON_PINNED
+                          : IDS_TOOLBAR_BUTTON_UNPINNED));
+  } else {
+    GetViewAccessibility().AnnounceText(l10n_util::GetStringUTF16(
+        updated_pin_state ? IDS_SIDE_PANEL_PINNED : IDS_SIDE_PANEL_UNPINNED));
+  }
   actions_model->UpdatePinnedState(action_id_, updated_pin_state);
 }
 
