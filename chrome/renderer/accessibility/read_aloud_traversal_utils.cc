@@ -73,3 +73,7 @@ ui::AXNode* GetNextNodeFromPosition(
 
   return ax_position->GetAnchor();
 }
+
+bool IsOpeningPunctuation(char& c) {
+  return (c == '(' || c == '{' || c == '[' || c == '<');
+}

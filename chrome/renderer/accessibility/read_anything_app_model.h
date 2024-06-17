@@ -443,8 +443,6 @@ class ReadAnythingAppModel {
           current_granularity,
       const ui::AXNodeID& id) const;
 
-  bool IsOpeningPunctuation(char& c) const;
-
   bool IsValidAXPosition(
       const ui::AXNodePosition::AXPositionInstance& positin,
       const ReadAnythingAppModel::ReadAloudCurrentGranularity&

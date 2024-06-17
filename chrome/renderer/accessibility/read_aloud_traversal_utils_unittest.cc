@@ -92,3 +92,19 @@ TEST_F(ReadAnythingReadAloudTraversalUtilsTest,
   EXPECT_EQ(index, word.length());
   EXPECT_EQ(word.substr(0, index), word);
 }
+
+TEST_F(ReadAnythingReadAloudTraversalUtilsTest,
+       IsOpeningPunctuation_ReturnsExpected) {
+  char open_parentheses = '(';
+  char open_bracket = '[';
+
+  EXPECT_TRUE(IsOpeningPunctuation(open_parentheses));
+  EXPECT_TRUE(IsOpeningPunctuation(open_bracket));
+
+  // Closing puncutation shouldn't count.
+  char close_parentheses = ')';
+  char close_bracket = ']';
+
+  EXPECT_FALSE(IsOpeningPunctuation(close_parentheses));
+  EXPECT_FALSE(IsOpeningPunctuation(close_bracket));
+}

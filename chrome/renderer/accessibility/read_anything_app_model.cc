@@ -1615,10 +1615,6 @@ bool ReadAnythingAppModel::IsTextForReadAnything(
   return (GetHtmlTag(ax_node_id).length() == 0) || is_list_marker;
 }
 
-bool ReadAnythingAppModel::IsOpeningPunctuation(char& c) const {
-  return (c == '(' || c == '{' || c == '[' || c == '<');
-}
-
 // We should split the current utterance at a paragraph boundary if the
 // AXPosition is at the start of a paragraph and we already have nodes in
 // our current granularity segment.

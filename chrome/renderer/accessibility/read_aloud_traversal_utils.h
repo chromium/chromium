@@ -36,4 +36,9 @@ ui::AXNode* GetAnchorNode(
 ui::AXNode* GetNextNodeFromPosition(
     const ui::AXNodePosition::AXPositionInstance& ax_position);
 
+// Returns if the given character can be considered opening puncutation.
+// This is used to ensure we're not reading out opening punctuation
+// as a separate segment.
+bool IsOpeningPunctuation(char& c);
+
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ALOUD_TRAVERSAL_UTILS_H_
