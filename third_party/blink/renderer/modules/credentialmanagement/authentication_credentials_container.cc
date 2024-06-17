@@ -1972,6 +1972,8 @@ void AuthenticationCredentialsContainer::GetForIdentity(
     }
 
     if (blink::RuntimeEnabledFeatures::FedCmIdPRegistrationEnabled() &&
+        blink::RuntimeEnabledFeatures::FedCmMultipleIdentityProvidersEnabled(
+            context) &&
         provider->hasConfigURL() && provider->configURL() == "any") {
       mojom::blink::IdentityProviderRequestOptionsPtr identity_provider =
           blink::mojom::blink::IdentityProviderRequestOptions::From(*provider);

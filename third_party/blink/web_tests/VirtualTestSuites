@@ -2192,7 +2192,7 @@
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/credential-management/fedcm-register/"],
     "exclusive_tests": "ALL",
-    "args": ["--enable-features=FedCmIdPregistration"],
+    "args": ["--enable-features=FedCmIdPregistration,FedCmMultipleIdentityProviders"],
     "owners": ["cbiesinger@chromium.org", "goto@chromium.org"],
     "expires": "May 1, 2025"
   },
