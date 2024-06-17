@@ -103,9 +103,8 @@ def __step_config(ctx, step_config):
         input_root_absolute_path = gn_logs_data.get("clang_need_input_root_absolute_path") == "true"
         input_root_absolute_path_for_objc = gn_logs_data.get("clang_need_input_root_absolute_path_for_objc") == "true"
 
-        # TODO(b/346425467): enable canonicalize_dir when not input_root_absolute_path
-        canonicalize_dir = False
-        canonicalize_dir_for_objc = False
+        canonicalize_dir = not input_root_absolute_path
+        canonicalize_dir_for_objc = not input_root_absolute_path_for_objc
 
         step_config["rules"].extend([
             {
