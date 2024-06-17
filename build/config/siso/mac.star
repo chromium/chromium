@@ -21,13 +21,6 @@ __handlers.update(typescript.handlers)
 
 def __step_config(ctx, step_config):
     config.check(ctx)
-    step_config["rules"].extend([
-        {
-            "name": "mac/copy_bundle_data",
-            "action": "(.*)?copy_bundle_data",
-            "handler": "copy_bundle_data",
-        },
-    ])
     step_config = clang.step_config(ctx, step_config)
     step_config = typescript.step_config(ctx, step_config)
     return step_config

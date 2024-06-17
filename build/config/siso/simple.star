@@ -53,6 +53,11 @@ def __step_config(ctx, step_config):
             "handler": "copy",
         },
         {
+            "name": "simple/copy_bundle_data",
+            "action": "(.*)?copy_bundle_data",
+            "handler": "copy_bundle_data",
+        },
+        {
             "name": "simple/stamp",
             "action": "(.*_)?stamp",
             "handler": "stamp",
