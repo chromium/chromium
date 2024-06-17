@@ -810,31 +810,20 @@ IN_PROC_BROWSER_TEST_F(ExtensionTelemetryServiceBrowserTest,
 // enabled.
 class
     ExtensionTelemetryServiceBrowserTestWithInterceptRemoteHostsContactedInRendererEnabled
-    : public ExtensionTelemetryServiceBrowserTest,
-      public testing::WithParamInterface<bool> {
+    : public ExtensionTelemetryServiceBrowserTest {
  public:
   ExtensionTelemetryServiceBrowserTestWithInterceptRemoteHostsContactedInRendererEnabled() {
     scoped_feature_list_.Reset();
-    std::vector<base::test::FeatureRef> enabled_features = {
-        kExtensionTelemetryInterceptRemoteHostsContactedInRenderer,
-        kExtensionTelemetryReportContactedHosts,
-        kExtensionTelemetryReportHostsContactedViaWebSocket};
-    std::vector<base::test::FeatureRef> disabled_features = {};
-    if (GetParam()) {
-      enabled_features.push_back(kSafeBrowsingSkipSubresources2);
-    } else {
-      disabled_features.push_back(kSafeBrowsingSkipSubresources2);
-    }
-    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {kExtensionTelemetryInterceptRemoteHostsContactedInRenderer,
+         kExtensionTelemetryReportContactedHosts,
+         kExtensionTelemetryReportHostsContactedViaWebSocket},
+        /*disabled_features=*/{});
   }
 };
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ExtensionTelemetryServiceBrowserTestWithInterceptRemoteHostsContactedInRendererEnabled,
-    testing::Bool());
-
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     ExtensionTelemetryServiceBrowserTestWithInterceptRemoteHostsContactedInRendererEnabled,
     InterceptsRemoteHostContactedSignalInRenderer) {
   base::HistogramTester histogram_tester;
@@ -920,7 +909,7 @@ IN_PROC_BROWSER_TEST_P(
       true, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     ExtensionTelemetryServiceBrowserTestWithInterceptRemoteHostsContactedInRendererEnabled,
     DetectsWebRequestFromContentScript) {
   SetSafeBrowsingState(browser()->profile()->GetPrefs(),

@@ -887,7 +887,7 @@ class V4SafeBrowsingServiceJsRequestNoInterstitialTest
       public V4SafeBrowsingServiceTest {};
 
 IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceJsRequestNoInterstitialTest,
-                       MalwareBlocked) {
+                       MalwareNotBlocked) {
   GURL base_url = embedded_test_server()->GetURL(kMalwareJsRequestPage);
   JsRequestTestParam param = GetParam();
   MarkUrlForMalwareUnexpired(
@@ -897,22 +897,10 @@ IN_PROC_BROWSER_TEST_P(V4SafeBrowsingServiceJsRequestNoInterstitialTest,
   auto new_title = JsRequestTestNavigateAndWaitForTitle(
       browser(), AddJsRequestParam(base_url, param));
 
-  // When |kSafeBrowsingSkipSubresources2| is disabled and request_type is
-  // |JsRequestType::kWebSocket|, show a warning.
-  if (!base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources2) &&
-      param.request_type == JsRequestType::kWebSocket) {
-    EXPECT_EQ("ERROR", new_title);
-    EXPECT_FALSE(ShowingInterstitialPage());
-
-    // got_hit_report() is only set when an interstitial is shown.
-    EXPECT_FALSE(got_hit_report());
-    EXPECT_FALSE(got_warning_shown_report());
-  } else {
-    EXPECT_EQ("NOT BLOCKED", new_title);
-    EXPECT_FALSE(ShowingInterstitialPage());
-    EXPECT_FALSE(got_hit_report());
-    EXPECT_FALSE(got_warning_shown_report());
-  }
+  EXPECT_EQ("NOT BLOCKED", new_title);
+  EXPECT_FALSE(ShowingInterstitialPage());
+  EXPECT_FALSE(got_hit_report());
+  EXPECT_FALSE(got_warning_shown_report());
 }
 
 INSTANTIATE_TEST_SUITE_P(

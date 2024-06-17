@@ -11,23 +11,24 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/stringprintf.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/scheme_logger.h"
 #include "content/public/renderer/render_frame.h"
 #include "ipc/ipc_message.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
-#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 
+// TODO(crbug.com/40934395) [Also TODO(thefrog)]: Move entire file to
+// ENABLE_EXTENSIONS-only build and remove in-code build checks.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/constants.h"
 #endif
 
 namespace safe_browsing {
 
+// TODO(crbug.com/40934395) [Also TODO(thefrog)]: Remove constructor,
+// `frame_token_`, and `safe_browsing_`.
 WebSocketSBHandshakeThrottle::WebSocketSBHandshakeThrottle(
     mojom::SafeBrowsing* safe_browsing,
     base::optional_ref<const blink::LocalFrameToken> local_frame_token)
@@ -52,86 +53,18 @@ void WebSocketSBHandshakeThrottle::ThrottleHandshake(
     const blink::WebSecurityOrigin& creator_origin,
     const blink::WebSecurityOrigin& isolated_world_origin,
     blink::WebSocketHandshakeThrottle::OnCompletion completion_callback) {
-  DCHECK(!url_checker_);
   DCHECK(!completion_callback_);
   completion_callback_ = std::move(completion_callback);
   url_ = url;
-  int load_flags = 0;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   MaybeSendExtensionWebRequestData(url, creator_origin, isolated_world_origin);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-  DCHECK_EQ(state_, State::kInitial);
-  state_ = State::kStarted;
-
+  // TODO(crbug.com/40934395) [Also TODO(thefrog)]: Remove histogram.
   scheme_logger::LogScheme(url, "SafeBrowsing.WebSocketCheck.UrlScheme");
-  // If |kSafeBrowsingSkipSubresources2| is enabled, skip Safe Browsing checks
-  // on WebSockets. Note that we still want to perform the extensions telemetry
-  // code above.
-  if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources2)) {
-    base::UmaHistogramBoolean("SafeBrowsing.WebSocketCheck.Skipped", true);
-    OnCompleteCheck(/*proceed=*/true, /*showed_interstitial=*/false);
-    return;
-  }
-
-  base::UmaHistogramBoolean("SafeBrowsing.WebSocketCheck.Skipped", false);
-  safe_browsing_->CreateCheckerAndCheck(
-      frame_token_, url_checker_.BindNewPipeAndPassReceiver(), url, "GET",
-      net::HttpRequestHeaders(), load_flags, false /* has_user_gesture */,
-      false /* originated_from_service_worker */,
-      base::BindOnce(&WebSocketSBHandshakeThrottle::OnCheckResult,
-                     weak_factory_.GetWeakPtr()));
-
-  // This use of base::Unretained() is safe because the handler will not be
-  // called after |url_checker_| is destroyed, and it is owned by this object.
-  url_checker_.set_disconnect_handler(base::BindOnce(
-      &WebSocketSBHandshakeThrottle::OnMojoDisconnect, base::Unretained(this)));
-}
-
-void WebSocketSBHandshakeThrottle::OnCompleteCheck(bool proceed,
-                                                   bool showed_interstitial) {
-  DCHECK_EQ(state_, State::kStarted);
-  if (proceed) {
-    state_ = State::kSafe;
-    std::move(completion_callback_).Run(std::nullopt);
-  } else {
-    // When the insterstitial is dismissed the page is navigated and this object
-    // is destroyed before reaching here.
-    state_ = State::kBlocked;
-    std::move(completion_callback_)
-        .Run(blink::WebString::FromUTF8(base::StringPrintf(
-            "WebSocket connection to %s failed safe browsing check",
-            url_.spec().c_str())));
-  }
-  // |this| is destroyed here.
-}
-
-void WebSocketSBHandshakeThrottle::OnCheckResult(
-    mojo::PendingReceiver<mojom::UrlCheckNotifier> slow_check_notifier,
-    bool proceed,
-    bool showed_interstitial) {
-  if (!slow_check_notifier.is_valid()) {
-    OnCompleteCheck(proceed, showed_interstitial);
-    return;
-  }
-
-  // TODO(yzshen): Notify the network service to stop reading from the
-  // WebSocket.
-  if (!notifier_receiver_) {
-    notifier_receiver_ =
-        std::make_unique<mojo::Receiver<mojom::UrlCheckNotifier>>(this);
-  }
-  notifier_receiver_->Bind(std::move(slow_check_notifier));
-}
-
-void WebSocketSBHandshakeThrottle::OnMojoDisconnect() {
-  DCHECK(state_ == State::kStarted);
-
-  url_checker_.reset();
-  notifier_receiver_.reset();
-
-  state_ = State::kNotSupported;
+  // TODO(crbug.com/40934395) [Also TODO(thefrog)]: Remove histogram.
+  base::UmaHistogramBoolean("SafeBrowsing.WebSocketCheck.Skipped", true);
   std::move(completion_callback_).Run(std::nullopt);
   // |this| is destroyed here.
 }

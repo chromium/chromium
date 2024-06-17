@@ -641,9 +641,6 @@ public final class ProductionSupportedFlagList {
                 "When enabled, the real time Safe Browsing check will be called asynchronously,"
                         + " along with an additional v4 check which will be synchronous."),
         Flag.baseFeature(
-                "SafeBrowsingSkipSubResources2",
-                "When enabled, Safe Browsing will skip WebTransport and WebSockets"),
-        Flag.baseFeature(
                 "AddWarningShownTSToClientSafeBrowsingReport",
                 "When enabled, client reports will include a timestamp of when the warning was "
                         + "shown to the user"),

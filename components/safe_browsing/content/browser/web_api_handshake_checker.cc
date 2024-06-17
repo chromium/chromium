@@ -16,6 +16,7 @@
 #include "content/public/browser/web_contents.h"
 #include "net/http/http_request_headers.h"
 
+// TODO(crbug.com/40934395) [Also TODO(thefrog)]: Remove entire file.
 namespace safe_browsing {
 
 class WebApiHandshakeChecker::CheckerOnSB {
@@ -53,38 +54,13 @@ class WebApiHandshakeChecker::CheckerOnSB {
       return;
     }
 
+    // TODO(crbug.com/40934395) [Also TODO(thefrog)]: Remove histogram.
     scheme_logger::LogScheme(url,
                              "SafeBrowsing.WebApiHandshakeCheck.UrlScheme");
-    // If |kSafeBrowsingSkipSubresources2| is enabled, skip Safe Browsing checks
-    // for WebTransport.
-    if (base::FeatureList::IsEnabled(kSafeBrowsingSkipSubresources2)) {
-      base::UmaHistogramBoolean("SafeBrowsing.WebApiHandshakeCheck.Skipped",
-                                true);
-      OnCompleteCheckInternal(/*proceed=*/true);
-      return;
-    }
-
+    // TODO(crbug.com/40934395) [Also TODO(thefrog)]: Remove histogram.
     base::UmaHistogramBoolean("SafeBrowsing.WebApiHandshakeCheck.Skipped",
-                              false);
-    url_checker_ = std::make_unique<SafeBrowsingUrlCheckerImpl>(
-        net::HttpRequestHeaders(), /*load_flags=*/0, /*has_user_gesture=*/false,
-        url_checker_delegate, web_contents_getter_, /*weak_web_state=*/nullptr,
-        /*render_process_id=*/content::ChildProcessHost::kInvalidUniqueID,
-        /*render_frame_token=*/std::nullopt, frame_tree_node_id_,
-        /*navigation_id=*/std::nullopt,
-        /*url_real_time_lookup_enabled=*/false,
-        /*can_check_db=*/true, /*can_check_high_confidence_allowlist=*/true,
-        /*url_lookup_service_metric_suffix=*/".None",
-        content::GetUIThreadTaskRunner({}),
-        /*url_lookup_service=*/nullptr,
-        /*hash_realtime_service_on_ui=*/nullptr,
-        /*hash_realtime_selection=*/
-        hash_realtime_utils::HashRealTimeSelection::kNone,
-        /*is_async_check=*/false, SessionID::InvalidValue());
-    url_checker_->CheckUrl(
-        url, "GET",
-        base::BindOnce(&WebApiHandshakeChecker::CheckerOnSB::OnCheckUrlResult,
-                       base::Unretained(this)));
+                              true);
+    OnCompleteCheckInternal(/*proceed=*/true);
   }
 
   base::WeakPtr<CheckerOnSB> AsWeakPtr() { return weak_factory_.GetWeakPtr(); }
