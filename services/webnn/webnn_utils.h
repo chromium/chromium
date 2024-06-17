@@ -117,7 +117,7 @@ std::string COMPONENT_EXPORT(WEBNN_UTILS)
 std::string COMPONENT_EXPORT(WEBNN_UTILS)
     OpKindToString(mojom::Reduce::Kind kind);
 std::string COMPONENT_EXPORT(WEBNN_UTILS)
-    DataTypeToString(mojom::DataType type);
+    DataTypeToString(OperandDataType type);
 std::string COMPONENT_EXPORT(WEBNN_UTILS) GetOpName(const mojom::Operation& op);
 std::string COMPONENT_EXPORT(WEBNN_UTILS)
     NotSupportedOperatorError(const mojom::Operation& op);
@@ -126,19 +126,19 @@ std::string COMPONENT_EXPORT(WEBNN_UTILS)
 std::string COMPONENT_EXPORT(WEBNN_UTILS)
     NotSupportedArgumentTypeError(std::string_view op_name,
                                   std::string_view argument_name,
-                                  mojom::DataType type);
+                                  OperandDataType type);
 std::string COMPONENT_EXPORT(WEBNN_UTILS)
-    NotSupportedConstantTypeError(mojom::DataType type);
+    NotSupportedConstantTypeError(OperandDataType type);
 std::string COMPONENT_EXPORT(WEBNN_UTILS)
     NotSupportedInputArgumentTypeError(std::string_view op_name,
-                                       mojom::DataType type);
+                                       OperandDataType type);
 std::string COMPONENT_EXPORT(WEBNN_UTILS)
     NotSupportedInputTypeError(std::string_view input_name,
-                               mojom::DataType type);
+                               OperandDataType type);
 std::string COMPONENT_EXPORT(WEBNN_UTILS)
     NotSupportedOptionTypeError(std::string_view op_name,
                                 std::string_view option_name,
-                                mojom::DataType type);
+                                OperandDataType type);
 
 // The length of `permutation` must be the same as `array`. The values in
 // `permutation` must be within the range [0, N-1] where N is the length of
@@ -149,11 +149,6 @@ std::string COMPONENT_EXPORT(WEBNN_UTILS)
 std::vector<uint32_t> COMPONENT_EXPORT(WEBNN_UTILS)
     PermuteArray(base::span<const uint32_t> array,
                  base::span<const uint32_t> permutation);
-
-// TOOD(crbug.com/325598628): Remove this method once `mojom::DataType` is no
-// longer in use.
-OperandDataType COMPONENT_EXPORT(WEBNN_UTILS)
-    ToOperandDataType(mojom::DataType data_type);
 
 }  // namespace webnn
 

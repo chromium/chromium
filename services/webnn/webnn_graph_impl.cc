@@ -35,30 +35,32 @@ namespace {
 // Maps the id to its `mojo::Operand`.
 using IdToOperandMap = base::flat_map<uint64_t, mojom::OperandPtr>;
 
-webnn::Operand::DataType MojoOperandTypeToComponent(mojom::DataType data_type) {
+webnn::Operand::DataType OperandDataTypeToComponent(OperandDataType data_type) {
   switch (data_type) {
-    case mojom::DataType::kFloat32:
+    case OperandDataType::kFloat32:
       return webnn::Operand::DataType::kFloat32;
-    case mojom::DataType::kFloat16:
+    case OperandDataType::kFloat16:
       return webnn::Operand::DataType::kFloat16;
-    case mojom::DataType::kInt32:
+    case OperandDataType::kInt32:
       return webnn::Operand::DataType::kInt32;
-    case mojom::DataType::kUint32:
+    case OperandDataType::kUint32:
       return webnn::Operand::DataType::kUint32;
-    case mojom::DataType::kInt64:
+    case OperandDataType::kInt64:
       return webnn::Operand::DataType::kInt64;
-    case mojom::DataType::kUint64:
+    case OperandDataType::kUint64:
       return webnn::Operand::DataType::kUint64;
-    case mojom::DataType::kInt8:
+    case OperandDataType::kInt8:
       return webnn::Operand::DataType::kInt8;
-    case mojom::DataType::kUint8:
+    case OperandDataType::kUint8:
       return webnn::Operand::DataType::kUint8;
   }
 }
 
+// TODO(crbug.com/325598628): Remove all uses of this helper.
 webnn::Operand MojoOperandToComponent(const mojom::Operand* mojo_operand) {
-  return webnn::Operand(MojoOperandTypeToComponent(mojo_operand->data_type),
-                        mojo_operand->dimensions);
+  return webnn::Operand(
+      OperandDataTypeToComponent(mojo_operand->descriptor.data_type()),
+      mojo_operand->descriptor.shape());
 }
 
 webnn::InputOperandLayout MojoInputOperandLayoutToComponent(
@@ -259,15 +261,13 @@ webnn::Conv2dAttributes ConvertToConv2dAttributes(
       const auto* const input =
           GetMojoOperand(id_to_operand_map, conv2d->input_operand_id);
       CHECK(input);
-      const auto& input_shape = input->dimensions;
-      CHECK_EQ(input_shape.size(), 4u);
-      const uint32_t input_channels = input_shape[3];
+      CHECK_EQ(input->descriptor.Rank(), 4u);
+      const uint32_t input_channels = input->descriptor.shape()[3];
       const auto* const output =
           GetMojoOperand(id_to_operand_map, conv2d->output_operand_id);
       CHECK(output);
-      const auto& output_shape = output->dimensions;
-      CHECK_EQ(output_shape.size(), 4u);
-      const uint32_t output_channels = output_shape[3];
+      CHECK_EQ(output->descriptor.Rank(), 4u);
+      const uint32_t output_channels = output->descriptor.shape()[3];
       // Depthwise conv2d is "options.groups == input_channels ==
       // output_channels".
       const bool depthwise = webnn::IsDepthwiseConv2d(
@@ -356,18 +356,18 @@ webnn::ConvTranspose2dAttributes ConvertToConvTranspose2dAttributes(
 
   // Convert the output sizes that fetched from dimensions of output operand.
   auto* output = GetMojoOperand(id_to_operand_map, conv2d->output_operand_id);
-  CHECK_EQ(output->dimensions.size(), 4u);
+  CHECK_EQ(output->descriptor.Rank(), 4u);
   webnn::Size2d<uint32_t> output_sizes;
   switch (context_properties.conv2d_input_layout) {
     case webnn::mojom::InputOperandLayout::kChannelsFirst:
       // "channelsFirst": [batches, input_channels, height, width]
-      output_sizes.height = output->dimensions[2];
-      output_sizes.width = output->dimensions[3];
+      output_sizes.height = output->descriptor.shape()[2];
+      output_sizes.width = output->descriptor.shape()[3];
       break;
     case webnn::mojom::InputOperandLayout::kChannelsLast:
       // "channelsLast": [batches, height, width, input_channels]
-      output_sizes.height = output->dimensions[1];
-      output_sizes.width = output->dimensions[2];
+      output_sizes.height = output->descriptor.shape()[1];
+      output_sizes.width = output->descriptor.shape()[2];
       break;
   }
   component_attributes.output_sizes = std::move(output_sizes);
@@ -416,15 +416,17 @@ webnn::Pool2dAttributes ConvertToPool2dAttributes(
       .height = pool2d->dilations->height, .width = pool2d->dilations->width};
   component_attributes.layout =
       MojoInputOperandLayoutToComponent(pool2d->layout);
-  CHECK_EQ(output->dimensions.size(), 4u);
+  CHECK_EQ(output->descriptor.Rank(), 4u);
   switch (component_attributes.layout) {
     case webnn::InputOperandLayout::kNchw:
-      component_attributes.output_sizes = webnn::Size2d<uint32_t>{
-          .height = output->dimensions[2], .width = output->dimensions[3]};
+      component_attributes.output_sizes =
+          webnn::Size2d<uint32_t>{.height = output->descriptor.shape()[2],
+                                  .width = output->descriptor.shape()[3]};
       break;
     case webnn::InputOperandLayout::kNhwc:
-      component_attributes.output_sizes = webnn::Size2d<uint32_t>{
-          .height = output->dimensions[1], .width = output->dimensions[2]};
+      component_attributes.output_sizes =
+          webnn::Size2d<uint32_t>{.height = output->descriptor.shape()[1],
+                                  .width = output->descriptor.shape()[2]};
       break;
   }
   return component_attributes;
@@ -551,20 +553,12 @@ bool ValidateUnaryOperation(
     return false;
   }
 
-  const auto input_data_type = input->data_type;
-  if (!input_constraint.Has(MojoOperandTypeToComponent(input_data_type))) {
+  const auto input_data_type = input->descriptor.data_type();
+  if (!input_constraint.Has(OperandDataTypeToComponent(input_data_type))) {
     // The data type is not in the constraint.
     return false;
   }
-  if (output->data_type != input_data_type) {
-    // The output data type doesn't match input data type.
-    return false;
-  }
-  if (output->dimensions != input->dimensions) {
-    // The output shape is not expected.
-    return false;
-  }
-  return true;
+  return output->descriptor == input->descriptor;
 }
 
 bool ValidateCastOperation(const IdToOperandMap& id_to_operand_map,
@@ -583,7 +577,8 @@ bool ValidateCastOperation(const IdToOperandMap& id_to_operand_map,
     // The unary operator is invalid.
     return false;
   }
-  if (output->dimensions != input->dimensions) {
+  if (!base::ranges::equal(output->descriptor.shape(),
+                           input->descriptor.shape())) {
     // The output shape is not expected.
     return false;
   }
@@ -744,7 +739,7 @@ bool ValidateConv2d(const mojom::ContextProperties& context_properties,
 
   // The input and output rank need to be validated before converting to
   // `webnn::Conv2dAttributes`.
-  if (input->dimensions.size() != 4 || output->dimensions.size() != 4) {
+  if (input->descriptor.Rank() != 4 || output->descriptor.Rank() != 4) {
     // The element of input and output dimensions should be 4.
     return false;
   }
@@ -807,19 +802,19 @@ bool ValidateElementWiseBinaryDataTypes(
     const mojom::Operand* rhs,
     const mojom::Operand* output,
     const mojom::ElementWiseBinaryPtr& operation) {
-  if (lhs->data_type != rhs->data_type) {
+  if (lhs->descriptor.data_type() != rhs->descriptor.data_type()) {
     // The input types don't match.
     return false;
   }
 
   if (IsLogicalElementWiseBinary(operation->kind)) {
-    if (output->data_type != mojom::DataType::kUint8) {
+    if (output->descriptor.data_type() != OperandDataType::kUint8) {
       // For logical operations, the output data type must be uint8.
       return false;
     }
   } else {
     // For all other operations, the input and output data types must match.
-    if (output->data_type != lhs->data_type) {
+    if (output->descriptor.data_type() != lhs->descriptor.data_type()) {
       return false;
     }
   }
@@ -850,12 +845,13 @@ bool ValidateElementWiseBinary(const IdToOperandMap& id_to_operand_map,
     return false;
   }
 
-  auto dims_output = BroadcastShapes(a->dimensions, b->dimensions);
+  auto dims_output =
+      BroadcastShapes(a->descriptor.shape(), b->descriptor.shape());
   if (!dims_output) {
     // The input shapes are not broadcastable.
     return false;
   }
-  if (output->dimensions != dims_output.value()) {
+  if (!base::ranges::equal(output->descriptor.shape(), dims_output.value())) {
     // The output shape is not expected.
     return false;
   }
@@ -931,18 +927,18 @@ bool ValidateExpand(const IdToOperandMap& id_to_operand_map,
     // The expand operator is invalid.
     return false;
   }
-  if (output->data_type != input->data_type) {
+  if (output->descriptor.data_type() != input->descriptor.data_type()) {
     // The output data type doesn't match input data type.
     return false;
   }
 
-  auto output_shape =
-      BroadcastShapes(input->dimensions, output->dimensions, false);
+  auto output_shape = BroadcastShapes(input->descriptor.shape(),
+                                      output->descriptor.shape(), false);
   if (!output_shape) {
     // The input shape is not broadcastable to the output shape.
     return false;
   }
-  CHECK(output_shape.value() == output->dimensions);
+  CHECK(base::ranges::equal(output_shape.value(), output->descriptor.shape()));
 
   return true;
 }
@@ -1564,14 +1560,13 @@ bool ValidatePool2d(const IdToOperandMap& id_to_operand_map,
 
   if (pool2d->kind == mojom::Pool2d::Kind::kAveragePool2d ||
       pool2d->kind == mojom::Pool2d::Kind::kL2Pool2d) {
-    if (!(input->data_type == mojom::DataType::kFloat32 ||
-          input->data_type == mojom::DataType::kFloat16)) {
+    if (!(input->descriptor.data_type() == OperandDataType::kFloat32 ||
+          input->descriptor.data_type() == OperandDataType::kFloat16)) {
       return false;
     }
   }
 
-  if (output->dimensions.size() != 4) {
-    // The element of output dimensions should be 4.
+  if (output->descriptor.Rank() != 4) {
     return false;
   }
   auto validated_output = ValidatePool2dAndInferOutput(
@@ -1640,7 +1635,7 @@ bool ValidateResample2d(const IdToOperandMap& id_to_operand_map,
   if (resample2d->scales) {
     scales_or_sizes = resample2d->scales.value();
   } else {
-    const auto& output_dimensions = output->dimensions;
+    const auto& output_dimensions = output->descriptor.shape();
     if (axes.size() != 2 || axes[0] >= output_dimensions.size() ||
         axes[1] >= output_dimensions.size()) {
       return false;
@@ -1675,20 +1670,12 @@ bool ValidateReshape(const IdToOperandMap& id_to_operand_map,
     // The reshape operator is invalid.
     return false;
   }
-  if (output->data_type != input->data_type) {
-    // The output data type doesn't match input data type.
+  if (output->descriptor.data_type() != input->descriptor.data_type()) {
     return false;
   }
 
-  base::expected<size_t, std::string> output_number_of_elements =
-      ValidateAndCalculateElementsNumber(output->dimensions);
-  // The dimensions of input and output operand are valid which were already
-  // validated before calling this function.
-  CHECK(output_number_of_elements.has_value());
-  base::expected<size_t, std::string> input_number_of_elements =
-      ValidateAndCalculateElementsNumber(input->dimensions);
-  CHECK(input_number_of_elements.has_value());
-  if (output_number_of_elements.value() != input_number_of_elements.value()) {
+  if (input->descriptor.NumberOfElements() !=
+      output->descriptor.NumberOfElements()) {
     // The output shape is not expected.
     return false;
   }
@@ -1769,10 +1756,10 @@ bool ValidateSplit(const IdToOperandMap& id_to_operand_map,
       return false;
     }
 
-    if (split->axis >= output->dimensions.size()) {
+    if (split->axis >= output->descriptor.Rank()) {
       return false;
     }
-    splits.push_back(output->dimensions[split->axis]);
+    splits.push_back(output->descriptor.shape()[split->axis]);
     processed_operands.insert(output_id);
   }
 
@@ -1933,10 +1920,7 @@ GetOperandNamesAndDescriptorsFromIds(
     CHECK(operand);
     CHECK(operand->name.has_value());
 
-    names_to_descriptors.emplace(
-        *operand->name,
-        *OperandDescriptor::Create(ToOperandDataType(operand->data_type),
-                                   operand->dimensions));
+    names_to_descriptors.emplace(*operand->name, operand->descriptor);
   }
   return names_to_descriptors;
 }
@@ -2197,15 +2181,6 @@ bool WebNNGraphImpl::ValidateGraph(
   graph_outputs.reserve(graph_info->output_operands.size());
   base::flat_map<uint64_t, size_t> constant_id_to_byte_length_map;
   for (auto& [id, operand] : graph_info->id_to_operand_map) {
-    base::expected<size_t, std::string> byte_length =
-        ValidateAndCalculateByteLength(
-            OperandDescriptor::GetBytesPerElement(
-                ToOperandDataType(operand->data_type)),
-            operand->dimensions);
-    if (!byte_length.has_value()) {
-      return false;
-    }
-
     const std::optional<std::string>& name = operand->name;
     switch (operand->kind) {
       case mojom::Operand::Kind::kInput: {
@@ -2239,7 +2214,8 @@ bool WebNNGraphImpl::ValidateGraph(
           // Constant operand should not have a name.
           return false;
         }
-        constant_id_to_byte_length_map[id] = byte_length.value();
+        constant_id_to_byte_length_map[id] =
+            operand->descriptor.PackedByteLength();
         processed_operands.insert(id);
         break;
       }

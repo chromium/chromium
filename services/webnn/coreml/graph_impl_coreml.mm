@@ -75,9 +75,31 @@ uint32_t GetDataTypeByteSize(MLMultiArrayDataType data_type) {
   }
 }
 
+std::optional<MLMultiArrayDataType> ToMLMultiArrayDataType(
+    OperandDataType data_type) {
+  switch (data_type) {
+    case OperandDataType::kFloat32:
+      return MLMultiArrayDataTypeFloat32;
+    case OperandDataType::kFloat16:
+      if (__builtin_available(macOS 14, *)) {
+        return MLMultiArrayDataTypeFloat16;
+      }
+      NOTREACHED_NORETURN();
+    case OperandDataType::kInt32:
+      return MLMultiArrayDataTypeInt32;
+    case OperandDataType::kUint32:
+    case OperandDataType::kInt64:
+    case OperandDataType::kUint64:
+    case OperandDataType::kInt8:
+    case OperandDataType::kUint8:
+      // Unsupported data types in coreml.
+      return std::nullopt;
+  }
+}
+
 void ExtractOutputRecursively(base::span<const uint8_t> bytes,
-                              base::span<const size_t> dimensions,
-                              base::span<const size_t> strides,
+                              base::span<const uint32_t> dimensions,
+                              base::span<const uint32_t> strides,
                               uint32_t item_byte_size,
                               base::span<uint8_t> output) {
   // Data is packed, copy the whole thing.
@@ -95,7 +117,7 @@ void ExtractOutputRecursively(base::span<const uint8_t> bytes,
 
   base::SpanReader<const uint8_t> reader(bytes);
   base::SpanWriter<uint8_t> writer(output);
-  for (size_t i = 0; i < dimensions[0]; i++) {
+  for (uint32_t i = 0; i < dimensions[0]; i++) {
     auto output_subspan = writer.Skip(subspan_size);
     CHECK(output_subspan);
     auto subspan = reader.Read(strides[0] * item_byte_size);
@@ -114,8 +136,8 @@ mojo_base::BigBuffer ExtractMaybeNonContiguousOutput(
     base::span<const uint8_t> bytes,
     uint32_t expected_byte_size,
     uint32_t item_byte_size,
-    base::span<const size_t> dimensions,
-    base::span<const size_t> strides) {
+    base::span<const uint32_t> dimensions,
+    base::span<const uint32_t> strides) {
   mojo_base::BigBuffer output(expected_byte_size);
 
   // Bytes size should match with the layout from the strides.
@@ -336,24 +358,10 @@ MLFeatureValue* GraphImplCoreml::CreateFeatureValue(
 std::optional<GraphImplCoreml::CoreMLFeatureInfo>
 GraphImplCoreml::GetCoreMLFeatureInfo(
     const GraphBuilderCoreml::InputOperandInfo& operand_info) {
-  enum MLMultiArrayDataType data_type;
-  switch (operand_info.data_type) {
-    case webnn::mojom::DataType::kFloat32:
-      data_type = MLMultiArrayDataTypeFloat32;
-      break;
-    case webnn::mojom::DataType::kFloat16:
-      data_type = MLMultiArrayDataTypeFloat16;
-      break;
-    case webnn::mojom::DataType::kInt32:
-      data_type = MLMultiArrayDataTypeInt32;
-      break;
-    case webnn::mojom::DataType::kUint32:
-    case webnn::mojom::DataType::kInt64:
-    case webnn::mojom::DataType::kUint64:
-    case webnn::mojom::DataType::kInt8:
-    case webnn::mojom::DataType::kUint8:
-      // Unsupported data types in coreml.
-      return std::nullopt;
+  std::optional<MLMultiArrayDataType> data_type =
+      ToMLMultiArrayDataType(operand_info.data_type);
+  if (!data_type.has_value()) {
+    return std::nullopt;
   }
   NSMutableArray* shape =
       [[NSMutableArray alloc] initWithCapacity:operand_info.dimensions.size()];
@@ -376,8 +384,8 @@ GraphImplCoreml::GetCoreMLFeatureInfo(
     current_stride = current_stride / dimension;
     [stride addObject:@(current_stride)];
   }
-  return GraphImplCoreml::CoreMLFeatureInfo(data_type, shape, stride,
-                                      operand_info.coreml_name);
+  return GraphImplCoreml::CoreMLFeatureInfo(*data_type, shape, stride,
+                                            operand_info.coreml_name);
 }
 
 GraphImplCoreml::GraphImplCoreml(
@@ -507,12 +515,12 @@ void GraphImplCoreml::DidPredict(base::ElapsedTimer model_predict_timer,
       CHECK_EQ(item_byte_size, OperandDescriptor::GetBytesPerElement(
                                    expected_descriptor.data_type()));
 
-      std::vector<size_t> dimensions(multiarray_value.shape.count);
-      for (size_t i = 0; i < multiarray_value.shape.count; ++i) {
+      std::vector<uint32_t> dimensions(multiarray_value.shape.count);
+      for (uint32_t i = 0; i < multiarray_value.shape.count; ++i) {
         dimensions[i] = multiarray_value.shape[i].integerValue;
       }
-      std::vector<size_t> strides(multiarray_value.strides.count);
-      for (size_t i = 0; i < multiarray_value.strides.count; ++i) {
+      std::vector<uint32_t> strides(multiarray_value.strides.count);
+      for (uint32_t i = 0; i < multiarray_value.strides.count; ++i) {
         strides[i] = multiarray_value.strides[i].integerValue;
       }
       CHECK_EQ(dimensions.size(), strides.size());

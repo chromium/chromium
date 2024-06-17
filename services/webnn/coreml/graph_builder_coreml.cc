@@ -263,67 +263,67 @@ struct WeightMetadata {
 static_assert(sizeof(WeightMetadata) == 64, "WeightMetadata must be 64 bytes");
 
 std::optional<BlobDataType> OperandTypeToDataTypeInWeightFile(
-    mojom::DataType data_type) {
+    OperandDataType data_type) {
   switch (data_type) {
-    case mojom::DataType::kFloat16:
+    case OperandDataType::kFloat16:
       return BlobDataType::Float16;
-    case mojom::DataType::kFloat32:
+    case OperandDataType::kFloat32:
       return BlobDataType::Float32;
-    case mojom::DataType::kUint8:
+    case OperandDataType::kUint8:
       return BlobDataType::UInt8;
-    case mojom::DataType::kInt8:
+    case OperandDataType::kInt8:
       return BlobDataType::Int8;
-    case mojom::DataType::kInt32:
-    case mojom::DataType::kUint32:
-    case mojom::DataType::kInt64:
-    case mojom::DataType::kUint64:
+    case OperandDataType::kInt32:
+    case OperandDataType::kUint32:
+    case OperandDataType::kInt64:
+    case OperandDataType::kUint64:
       return std::nullopt;
   }
 }
 
 CoreML::Specification::MILSpec::DataType OperandTypeToMILDataType(
-    mojom::DataType data_type) {
+    OperandDataType data_type) {
   switch (data_type) {
-    case mojom::DataType::kFloat32:
+    case OperandDataType::kFloat32:
       return CoreML::Specification::MILSpec::DataType::FLOAT32;
-    case mojom::DataType::kFloat16:
+    case OperandDataType::kFloat16:
       return CoreML::Specification::MILSpec::DataType::FLOAT16;
-    case mojom::DataType::kInt32:
+    case OperandDataType::kInt32:
       return CoreML::Specification::MILSpec::DataType::INT32;
-    case mojom::DataType::kUint32:
+    case OperandDataType::kUint32:
       return CoreML::Specification::MILSpec::DataType::UINT32;
-    case mojom::DataType::kInt64:
+    case OperandDataType::kInt64:
       return CoreML::Specification::MILSpec::DataType::INT64;
-    case mojom::DataType::kUint64:
+    case OperandDataType::kUint64:
       return CoreML::Specification::MILSpec::DataType::UINT64;
-    case mojom::DataType::kInt8:
+    case OperandDataType::kInt8:
       return CoreML::Specification::MILSpec::DataType::INT8;
-    case mojom::DataType::kUint8:
+    case OperandDataType::kUint8:
       return CoreML::Specification::MILSpec::DataType::UINT8;
   }
 }
 
 // CoreML has more data types than WebNN. This should only be called with valid
 // WebNN mapped types.
-mojom::DataType MILDataTypeToOperandType(
+OperandDataType MILDataTypeToOperandType(
     CoreML::Specification::MILSpec::DataType mil_data_type) {
   switch (mil_data_type) {
     case CoreML::Specification::MILSpec::DataType::FLOAT32:
-      return mojom::DataType::kFloat32;
+      return OperandDataType::kFloat32;
     case CoreML::Specification::MILSpec::DataType::FLOAT16:
-      return mojom::DataType::kFloat16;
+      return OperandDataType::kFloat16;
     case CoreML::Specification::MILSpec::DataType::INT32:
-      return mojom::DataType::kInt32;
+      return OperandDataType::kInt32;
     case CoreML::Specification::MILSpec::DataType::UINT32:
-      return mojom::DataType::kUint32;
+      return OperandDataType::kUint32;
     case CoreML::Specification::MILSpec::DataType::INT64:
-      return mojom::DataType::kInt64;
+      return OperandDataType::kInt64;
     case CoreML::Specification::MILSpec::DataType::UINT64:
-      return mojom::DataType::kUint64;
+      return OperandDataType::kUint64;
     case CoreML::Specification::MILSpec::DataType::INT8:
-      return mojom::DataType::kInt8;
+      return OperandDataType::kInt8;
     case CoreML::Specification::MILSpec::DataType::UINT8:
-      return mojom::DataType::kUint8;
+      return OperandDataType::kUint8;
     default:
       NOTREACHED_NORETURN() << "Unsupported data type.";
   }
@@ -473,9 +473,10 @@ void PopulateValueType(CoreML::Specification::MILSpec::DataType mil_data_type,
 }
 
 void PopulateValueTypeFromOperandInfo(
-    const GraphBuilderCoreml::OperandInfo& operand,
+    const GraphBuilderCoreml::OperandInfo& operand_info,
     CoreML::Specification::MILSpec::ValueType& value_type) {
-  PopulateValueType(operand.mil_data_type, operand.dimensions, value_type);
+  PopulateValueType(operand_info.mil_data_type, operand_info.dimensions,
+                    value_type);
 }
 
 template <typename DataType>
@@ -863,13 +864,13 @@ base::expected<void, mojom::ErrorPtr> GraphBuilderCoreml::WriteWeightsToFile(
 
   for (auto& [key, buffer] : graph_info_->constant_id_to_buffer_map) {
     const mojom::Operand& operand = GetOperand(key);
-    if (operand.dimensions.empty()) {
+    if (operand.descriptor.shape().empty()) {
       RETURN_IF_ERROR(AddConstantImmediateValue(key, block));
       continue;
     }
 
     std::optional<BlobDataType> weight_type =
-        OperandTypeToDataTypeInWeightFile(operand.data_type);
+        OperandTypeToDataTypeInWeightFile(operand.descriptor.data_type());
     if (!weight_type.has_value()) {
       return NewNotSupportedError("Unsupported constant type.");
     }
@@ -955,10 +956,11 @@ GraphBuilderCoreml::AddInput(
             .try_emplace(operand.name.value(), input_id)
             .second);
 
-  if (operand.dimensions.empty()) {
-    ASSIGN_OR_RETURN(uint64_t internal_operand_id,
-                     GenerateInternalOperandInfo(
-                         OperandTypeToMILDataType(operand.data_type), {}));
+  if (operand.descriptor.shape().empty()) {
+    ASSIGN_OR_RETURN(
+        uint64_t internal_operand_id,
+        GenerateInternalOperandInfo(
+            OperandTypeToMILDataType(operand.descriptor.data_type()), {}));
     RETURN_IF_ERROR(
         AddOperationForReshape(input_id, internal_operand_id, block));
     id_to_operand_info_map()[input_id].coreml_name =
@@ -2354,42 +2356,42 @@ GraphBuilderCoreml::AddConstantImmediateValue(
   base::span<const uint8_t> value(
       graph_info_->constant_id_to_buffer_map.at(constant_id));
   const mojom::Operand& operand = GetOperand(constant_id);
-  switch (operand.data_type) {
-    case mojom::DataType::kFloat32: {
+  switch (operand.descriptor.data_type()) {
+    case OperandDataType::kFloat32: {
       std::vector<float> floats(value.size() / sizeof(float));
       for (size_t i = 0u; i < floats.size(); ++i) {
         floats[i] = base::FloatFromNativeEndian(
             value.subspan(i * sizeof(float)).first<4u>());
       }
       attributes["val"] =
-          CreateTensorImmediateValue<float>(operand.dimensions, floats);
+          CreateTensorImmediateValue<float>(operand.descriptor.shape(), floats);
       break;
     }
-    case mojom::DataType::kFloat16: {
+    case OperandDataType::kFloat16: {
       std::vector<Float16> float16s(value.size() / sizeof(Float16));
       for (size_t i = 0u; i < float16s.size(); ++i) {
         float16s[i].data = base::U16FromNativeEndian(
             value.subspan(i * sizeof(Float16)).first<2u>());
       }
-      attributes["val"] =
-          CreateTensorImmediateValue<Float16>(operand.dimensions, float16s);
+      attributes["val"] = CreateTensorImmediateValue<Float16>(
+          operand.descriptor.shape(), float16s);
       break;
     }
-    case mojom::DataType::kInt32: {
+    case OperandDataType::kInt32: {
       std::vector<int32_t> ints(value.size() / sizeof(int32_t));
       for (size_t i = 0u; i < ints.size(); ++i) {
         ints[i] = base::I32FromNativeEndian(
             value.subspan(i * sizeof(int32_t)).first<4u>());
       }
       attributes["val"] =
-          CreateTensorImmediateValue<int32_t>(operand.dimensions, ints);
+          CreateTensorImmediateValue<int32_t>(operand.descriptor.shape(), ints);
       break;
     }
-    case mojom::DataType::kUint32:
-    case mojom::DataType::kInt64:
-    case mojom::DataType::kUint64:
-    case mojom::DataType::kInt8:
-    case mojom::DataType::kUint8: {
+    case OperandDataType::kUint32:
+    case OperandDataType::kInt64:
+    case OperandDataType::kUint64:
+    case OperandDataType::kInt8:
+    case OperandDataType::kUint8: {
       NOTREACHED_NORETURN() << "Unsupported data type.";
     }
   }
@@ -2467,46 +2469,46 @@ GraphBuilderCoreml::PopulateFeatureDescription(
   const mojom::Operand& operand = GetOperand(operand_id);
   auto* feature_type = feature_description.mutable_type();
   auto* array_feature_type = feature_type->mutable_multiarraytype();
-  switch (operand.data_type) {
-    case mojom::DataType::kFloat32:
+  switch (operand.descriptor.data_type()) {
+    case OperandDataType::kFloat32:
       array_feature_type->set_datatype(
           CoreML::Specification::ArrayFeatureType_ArrayDataType::
               ArrayFeatureType_ArrayDataType_FLOAT32);
       break;
-    case mojom::DataType::kFloat16:
+    case OperandDataType::kFloat16:
       array_feature_type->set_datatype(
           CoreML::Specification::ArrayFeatureType_ArrayDataType::
               ArrayFeatureType_ArrayDataType_FLOAT16);
       break;
-    case mojom::DataType::kInt32:
+    case OperandDataType::kInt32:
       array_feature_type->set_datatype(
           CoreML::Specification::ArrayFeatureType_ArrayDataType::
               ArrayFeatureType_ArrayDataType_INT32);
       break;
-    case mojom::DataType::kUint32:
-    case mojom::DataType::kInt64:
-    case mojom::DataType::kUint64:
-    case mojom::DataType::kInt8:
-    case mojom::DataType::kUint8:
+    case OperandDataType::kUint32:
+    case OperandDataType::kInt64:
+    case OperandDataType::kUint64:
+    case OperandDataType::kInt8:
+    case OperandDataType::kUint8:
       CHECK(operand.name);
       // CoreML only supports limited data types as input/output for a
       // model. Within the model wider set of data types are supported.
-      return NewNotSupportedError(
-          NotSupportedInputTypeError(operand.name.value(), operand.data_type));
+      return NewNotSupportedError(NotSupportedInputTypeError(
+          operand.name.value(), operand.descriptor.data_type()));
   }
   // FeatureDescriptions are about input and output features, WebNN allows
   // scalar operands to have empty dimensions. At the input and output layers
   // these can be treated as a 1D tensor to satisfy CoreML's requirement of
-  // having atleast 1 dimension.
-  if (operand.dimensions.empty()) {
+  // having at least 1 dimension.
+  if (operand.descriptor.shape().empty()) {
     array_feature_type->add_shape(1);
   } else {
-    for (int dimension : operand.dimensions) {
+    for (int dimension : operand.descriptor.shape()) {
       array_feature_type->add_shape(dimension);
     }
   }
 
-  if (operand.dimensions.size() > 5) {
+  if (operand.descriptor.shape().size() > 5) {
     return NewNotSupportedError(
         "Unsupported rank for input. It should be between 0 to 5.");
   }
@@ -2563,7 +2565,7 @@ void GraphBuilderCoreml::PopulateNamedValueTypeForInput(
   // WebNN allows 0D scalar operands to have empty dimensions.
   // At the input nodes, these can be treated as a 1D tensor to
   // satisfy CoreML's requirement of having at least 1 dimension.
-  if (GetOperand(operand_id).dimensions.empty()) {
+  if (GetOperand(operand_id).descriptor.Rank() == 0) {
     auto* tensor_type = named_value_type.mutable_type()->mutable_tensortype();
     tensor_type->set_rank(1);
     tensor_type->add_dimensions()->mutable_constant()->set_size(1);
@@ -2572,13 +2574,13 @@ void GraphBuilderCoreml::PopulateNamedValueTypeForInput(
 
 void GraphBuilderCoreml::UpdateCoreMLInputInfoMap(uint64_t operand_id) {
   const mojom::Operand& operand = GetOperand(operand_id);
-  CHECK(
-      id_to_operand_info_map()
-          .try_emplace(operand_id,
-                       OperandInfo(GetCoreMLNameFromOperand(operand_id),
-                                   operand.dimensions,
-                                   OperandTypeToMILDataType(operand.data_type)))
-          .second);
+  CHECK(id_to_operand_info_map()
+            .try_emplace(operand_id,
+                         OperandInfo(GetCoreMLNameFromOperand(operand_id),
+                                     operand.descriptor.shape(),
+                                     OperandTypeToMILDataType(
+                                         operand.descriptor.data_type())))
+            .second);
 }
 
 base::expected<void, mojom::ErrorPtr>
@@ -2675,7 +2677,7 @@ GraphBuilderCoreml::OperandInfo::OperandInfo(OperandInfo&&) = default;
 GraphBuilderCoreml::InputOperandInfo::InputOperandInfo(
     std::string name,
     std::vector<uint32_t> dimensions,
-    mojom::DataType data_type)
+    OperandDataType data_type)
     : coreml_name(std::move(name)),
       dimensions(std::move(dimensions)),
       data_type(data_type) {}
@@ -2695,14 +2697,14 @@ GraphBuilderCoreml::InputOperandInfo
 GraphBuilderCoreml::Result::FindModelInputOperandInfo(
     const std::string& input_name) const {
   auto it = input_name_to_id_map.find(input_name);
-  const OperandInfo& input_operand = GetOperandInfo(it->second);
+  const OperandInfo& input_operand_info = GetOperandInfo(it->second);
   // Some internally generated operands don't have a matching mojom data type,
   // but model inputs all should have valid mojom data types.
   return InputOperandInfo{
-      input_operand.external_coreml_name,
-      input_operand.dimensions.empty() ? std::vector<uint32_t>({1})
-                                       : input_operand.dimensions,
-      MILDataTypeToOperandType(input_operand.mil_data_type)};
+      input_operand_info.external_coreml_name,
+      input_operand_info.dimensions.empty() ? std::vector<uint32_t>({1})
+                                            : input_operand_info.dimensions,
+      MILDataTypeToOperandType(input_operand_info.mil_data_type)};
 }
 
 const base::FilePath& GraphBuilderCoreml::Result::GetModelFilePath() {

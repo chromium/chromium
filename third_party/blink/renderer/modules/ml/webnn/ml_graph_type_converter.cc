@@ -5,11 +5,13 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_type_converter.h"
 
 #include <array>
+#include <optional>
 
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/expected_macros.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_arg_min_max_options.h"
@@ -46,27 +48,26 @@ namespace blink_mojom = webnn::mojom::blink;
 
 namespace mojo {
 
-blink_mojom::DataType BlinkDataTypeToMojo(
+webnn::OperandDataType ToOperandDataType(
     blink::V8MLOperandDataType::Enum data_type) {
   switch (data_type) {
     case blink::V8MLOperandDataType::Enum::kFloat32:
-      return blink_mojom::DataType::kFloat32;
+      return webnn::OperandDataType::kFloat32;
     case blink::V8MLOperandDataType::Enum::kFloat16:
-      return blink_mojom::DataType::kFloat16;
+      return webnn::OperandDataType::kFloat16;
     case blink::V8MLOperandDataType::Enum::kInt32:
-      return blink_mojom::DataType::kInt32;
+      return webnn::OperandDataType::kInt32;
     case blink::V8MLOperandDataType::Enum::kUint32:
-      return blink_mojom::DataType::kUint32;
+      return webnn::OperandDataType::kUint32;
     case blink::V8MLOperandDataType::Enum::kInt64:
-      return blink_mojom::DataType::kInt64;
+      return webnn::OperandDataType::kInt64;
     case blink::V8MLOperandDataType::Enum::kUint64:
-      return blink_mojom::DataType::kUint64;
+      return webnn::OperandDataType::kUint64;
     case blink::V8MLOperandDataType::Enum::kInt8:
-      return blink_mojom::DataType::kInt8;
+      return webnn::OperandDataType::kInt8;
     case blink::V8MLOperandDataType::Enum::kUint8:
-      return blink_mojom::DataType::kUint8;
+      return webnn::OperandDataType::kUint8;
   }
-  NOTREACHED_NORETURN();
 }
 
 blink_mojom::RecurrentNetworkDirection BlinkRecurrentNetworkDirectionToMojo(
@@ -108,7 +109,18 @@ TypeConverter<blink_mojom::OperandPtr, blink::MLOperand*>::Convert(
   if (!ml_operand) {
     return nullptr;
   }
+  auto operand_descriptor = webnn::OperandDescriptor::Create(
+      ToOperandDataType(ml_operand->DataType()), ml_operand->Dimensions());
+  // TODO(crbug.com/325598628): Remove this failure case once we've required
+  // that that every `blink::MLOperand` is created with a
+  // `webnn::OperandDescriptor`.
+  if (!operand_descriptor.has_value()) {
+    return nullptr;
+  }
+
   auto mojo_operand = blink_mojom::Operand::New();
+  mojo_operand->descriptor = *std::move(operand_descriptor);
+
   switch (ml_operand->Kind()) {
     case webnn::mojom::blink::Operand::Kind::kInput:
       mojo_operand->kind = blink_mojom::Operand::Kind::kInput;
@@ -121,8 +133,6 @@ TypeConverter<blink_mojom::OperandPtr, blink::MLOperand*>::Convert(
       mojo_operand->kind = blink_mojom::Operand::Kind::kOutput;
       break;
   }
-  mojo_operand->data_type = BlinkDataTypeToMojo(ml_operand->DataType());
-  mojo_operand->dimensions = ml_operand->Dimensions();
   return mojo_operand;
 }
 
@@ -189,10 +199,18 @@ uint64_t InsertTemporaryOperand(const OperandToIdMap& operand_to_id_map,
                                 base::span<const uint32_t> dimensions,
                                 blink_mojom::GraphInfo* graph_info) {
   uint64_t operand_id = NextOperandId(*graph_info);
+
+  auto operand_descriptor = webnn::OperandDescriptor::Create(
+      mojo::ToOperandDataType(data_type.AsEnum()), dimensions);
+  // TODO(crbug.com/325598628): Refactor this method to take a
+  // `webnn::OperandDescriptor` such that this CHECK is not required and
+  // inserting a temporary operand will always succeed.
+  CHECK(operand_descriptor.has_value());
+
   auto mojo_operand = blink_mojom::Operand::New();
   mojo_operand->kind = blink_mojom::Operand::Kind::kOutput;
-  mojo_operand->data_type = mojo::BlinkDataTypeToMojo(data_type.AsEnum());
-  mojo_operand->dimensions = Vector<uint32_t>(dimensions);
+  mojo_operand->descriptor = *std::move(operand_descriptor);
+
   graph_info->id_to_operand_map.insert(operand_id, std::move(mojo_operand));
   return operand_id;
 }
