@@ -42,6 +42,7 @@ BLINK_COMMON_EXPORT extern const char kCommonScript[];
 // content/public/common/common_param_traits_macros.h
 struct BLINK_COMMON_EXPORT WebPreferences {
   ScriptFontFamilyMap standard_font_family_map;
+  // The value for Osaka font should be "Osaka", not "Osaka-Mono".
   ScriptFontFamilyMap fixed_font_family_map;
   ScriptFontFamilyMap serif_font_family_map;
   ScriptFontFamilyMap sans_serif_font_family_map;

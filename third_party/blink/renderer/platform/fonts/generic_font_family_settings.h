@@ -56,6 +56,8 @@ class PLATFORM_EXPORT GenericFontFamilySettings {
   bool UpdateStandard(const AtomicString&, UScriptCode = USCRIPT_COMMON);
   const AtomicString& Standard(UScriptCode = USCRIPT_COMMON) const;
 
+  // crbug.com/40535332. In the argument of UpdateFixed(), Osaka font should
+  // be represented as "Osaka", and Fixed() returns "Osaka-Mono" for it.
   bool UpdateFixed(const AtomicString&, UScriptCode = USCRIPT_COMMON);
   const AtomicString& Fixed(UScriptCode = USCRIPT_COMMON) const;
 

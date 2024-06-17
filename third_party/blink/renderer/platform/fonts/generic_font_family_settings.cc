@@ -163,7 +163,16 @@ bool GenericFontFamilySettings::UpdateStandard(const AtomicString& family,
 }
 
 const AtomicString& GenericFontFamilySettings::Fixed(UScriptCode script) const {
-  return GenericFontFamilyForScript(fixed_font_family_map_, script);
+  const AtomicString& fixed_font =
+      GenericFontFamilyForScript(fixed_font_family_map_, script);
+#if BUILDFLAG(IS_MAC)
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kOsaka, ("Osaka"));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(AtomicString, kOsakaMono, ("Osaka-Mono"));
+  if (fixed_font == kOsaka) {
+    return kOsakaMono;
+  }
+#endif
+  return fixed_font;
 }
 
 bool GenericFontFamilySettings::UpdateFixed(const AtomicString& family,

@@ -141,6 +141,8 @@ class WebSettings {
                                     UScriptCode = USCRIPT_COMMON) = 0;
   virtual void SetMathFontFamily(const WebString&,
                                  UScriptCode = USCRIPT_COMMON) = 0;
+  // Osaka font should be represented as "Osaka", not "Osaka-Mono" in the
+  // first argument.
   virtual void SetFixedFontFamily(const WebString&,
                                   UScriptCode = USCRIPT_COMMON) = 0;
   virtual void SetNetworkQuietTimeout(double timeout) = 0;
