@@ -121,7 +121,7 @@ tast_disabled_tests_from_chrome_all = [
   "videoconferencing.OpenCLCacher",
 
   # b/347111366
-  "tast.crostini.TaskManager.bookworm_stable@betty"
+  "crostini.TaskManager.bookworm_stable@betty",
 
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
