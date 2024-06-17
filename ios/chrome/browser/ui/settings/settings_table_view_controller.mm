@@ -174,6 +174,18 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 #endif
 }
 
+// Struct used to count and store the number of active Enhanced Safe Browsing
+// promos, as the FET does not support showing multiple badges for the same FET
+// feature at the same time.
+struct EnhancedSafeBrowsingActivePromoData
+    : public base::SupportsUserData::Data {
+  // The number of active menus.
+  int active_promos = 0;
+
+  // Key to use for this type in SupportsUserData
+  static constexpr char key[] = "EnhancedSafeBrowsingActivePromoData";
+};
+
 }  // namespace
 
 #pragma mark - SettingsTableViewController
@@ -702,34 +714,8 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 // Adds the Enhanced Safe Browsing inline promo to promote ESB.
 - (void)addPromoToEnhancedSafeBrowsingSection {
   if (!base::FeatureList::IsEnabled(
-          feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature)) {
-    return;
-  }
-
-  // The user must be:
-  //   1.) Signed-in
-  //   2.) Have Chrome set to default browser.
-  //   3.) Have Safe Browsing standard protection enabled.
-  //   4.) One of the trigerring criteria has been met.
-  //   5.) Not have their Safe Browsing preferences enterprise-managed.
-  AuthenticationService* authService =
-      AuthenticationServiceFactory::GetForBrowserState(_browserState);
-  feature_engagement::Tracker* tracker =
-      feature_engagement::TrackerFactory::GetForBrowserState(_browserState);
-  bool isSignedInAndSynced =
-      authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
-  bool isDefaultBrowser = IsChromeLikelyDefaultBrowser();
-  bool isStandardProtectionEnabled =
-      safe_browsing::GetSafeBrowsingState(*_browserState->GetPrefs()) ==
-      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION;
-  bool triggerCriteriaMet = tracker->ShouldTriggerHelpUI(
-      feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature);
-  bool isEnterpriseManaged =
-      safe_browsing::IsSafeBrowsingPolicyManaged(*_browserState->GetPrefs());
-
-  if (!isSignedInAndSynced || !isDefaultBrowser ||
-      !isStandardProtectionEnabled || !triggerCriteriaMet ||
-      isEnterpriseManaged) {
+          feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature) ||
+      ![self shouldShowEnhancedSafeBrowsingPromo]) {
     return;
   }
 
@@ -2180,6 +2166,80 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   }
 }
 
+// Returns YES if the Enhanced Safe Browsing inline promo should show.
+- (BOOL)shouldShowEnhancedSafeBrowsingPromo {
+  // First check if another active settings page (e.g. in another
+  // window) has an active promo. If so, just return that the promo should be
+  // shown here without querying the FET. Only query the FET if there is no
+  // currently active promo.
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(_browserState);
+  EnhancedSafeBrowsingActivePromoData* data =
+      static_cast<EnhancedSafeBrowsingActivePromoData*>(
+          tracker->GetUserData(EnhancedSafeBrowsingActivePromoData::key));
+  if (data) {
+    data->active_promos++;
+    return YES;
+  }
+
+  // The user must be:
+  //   1.) Signed-in
+  //   2.) Have Chrome set to default browser.
+  //   3.) Have Safe Browsing standard protection enabled.
+  //   4.) One of the trigerring criteria has been met.
+  //   5.) Not have their Safe Browsing preferences enterprise-managed.
+  AuthenticationService* authService =
+      AuthenticationServiceFactory::GetForBrowserState(_browserState);
+  bool isSignedInAndSynced =
+      authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin);
+  bool isDefaultBrowser = IsChromeLikelyDefaultBrowser();
+  bool isStandardProtectionEnabled =
+      safe_browsing::GetSafeBrowsingState(*_browserState->GetPrefs()) ==
+      safe_browsing::SafeBrowsingState::STANDARD_PROTECTION;
+  bool triggerCriteriaMet = tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature);
+  bool isEnterpriseManaged =
+      safe_browsing::IsSafeBrowsingPolicyManaged(*_browserState->GetPrefs());
+
+  if (!isSignedInAndSynced || !isDefaultBrowser ||
+      !isStandardProtectionEnabled || !triggerCriteriaMet ||
+      isEnterpriseManaged) {
+    return NO;
+  }
+
+  bool promoIsTriggered = tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature);
+  CHECK(promoIsTriggered, base::NotFatalUntil::M131);
+
+  std::unique_ptr<EnhancedSafeBrowsingActivePromoData> new_data =
+      std::make_unique<EnhancedSafeBrowsingActivePromoData>();
+  new_data->active_promos++;
+  tracker->SetUserData(EnhancedSafeBrowsingActivePromoData::key,
+                       std::move(new_data));
+
+  return YES;
+}
+
+// Check if this is the last active Password Manager showing the widget promo
+// and dismisses the FET if so.
+- (void)removeEnhancedSafeBrowsingPromoFETDataIfNeeded {
+  feature_engagement::Tracker* tracker =
+      feature_engagement::TrackerFactory::GetForBrowserState(_browserState);
+  EnhancedSafeBrowsingActivePromoData* data =
+      static_cast<EnhancedSafeBrowsingActivePromoData*>(
+          tracker->GetUserData(EnhancedSafeBrowsingActivePromoData::key));
+  if (!data) {
+    return;
+  }
+
+  data->active_promos--;
+  if (data->active_promos <= 0) {
+    tracker->RemoveUserData(EnhancedSafeBrowsingActivePromoData::key);
+    tracker->Dismissed(
+        feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature);
+  }
+}
+
 #pragma mark - Sign in
 
 - (void)showSignIn {
@@ -2229,6 +2289,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
 - (void)reportDismissalUserAction {
   base::RecordAction(base::UserMetricsAction("MobileSettingsClose"));
+
+  // Remove EnhancedSafeBrowsingPromo FET Data.
+  // This is called here instead of in `settingsWillBeDismissed` because the
+  // ChromeBrowserState no longer exists by that point within the lifecycle.
+  [self removeEnhancedSafeBrowsingPromoFETDataIfNeeded];
 }
 
 - (void)reportBackUserAction {
@@ -2655,10 +2720,11 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForBrowserState(_browserState);
-  tracker->Dismissed(
-      feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature);
+  tracker->NotifyEvent(
+      feature_engagement::events::kInlineEnhancedSafeBrowsingPromoClosed);
   base::RecordAction(base::UserMetricsAction(
       "MobileSettingsEnhancedSafeBrowsingInlinePromoDismiss"));
+  [self removeEnhancedSafeBrowsingPromoFETDataIfNeeded];
 }
 
 - (void)showSafeBrowsingSettingsMenu {
