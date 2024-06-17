@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
 namespace views {
@@ -25,6 +26,7 @@ class PickerSearchResult;
 class PickerSearchResultsViewDelegate;
 class PickerSectionListView;
 class PickerSectionView;
+class PickerSkeletonLoaderView;
 
 class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   METADATA_HEADER(PickerSearchResultsView, PickerPageView)
@@ -37,6 +39,11 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   PickerSearchResultsView(const PickerSearchResultsView&) = delete;
   PickerSearchResultsView& operator=(const PickerSearchResultsView&) = delete;
   ~PickerSearchResultsView() override;
+
+  // The skeleton loader should not be used for short loading times.
+  // Wait for a delay before showing the animation.
+  static constexpr base::TimeDelta kLoadingAnimationDelay =
+      base::Milliseconds(400);
 
   // PickerPageView:
   bool DoPseudoFocusedAction() override;
@@ -57,6 +64,8 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
 
   void ShowNoResultsFound();
 
+  void ShowLoadingAnimation();
+
   // Returns the index of `inserted_result` in the search result list.
   int GetIndex(const PickerSearchResult& inserted_result);
 
@@ -70,6 +79,10 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   }
 
   views::View* no_results_view_for_testing() { return no_results_view_; }
+
+  PickerSkeletonLoaderView& skeleton_loader_view_for_testing() {
+    return *skeleton_loader_view_;
+  }
 
  private:
   // Runs `select_search_result_callback_` on `result`. Note that only one
@@ -88,6 +101,8 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   void OnTrailingLinkClicked(PickerSectionType section_type,
                              const ui::Event& event);
 
+  void StopLoadingAnimation();
+
   raw_ptr<PickerSearchResultsViewDelegate> delegate_;
 
   // The section list view, contains the section views.
@@ -105,6 +120,9 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
 
   // A view for when there are no results.
   raw_ptr<views::View> no_results_view_ = nullptr;
+
+  // The skeleton loader view, shown when the results are pending.
+  raw_ptr<PickerSkeletonLoaderView> skeleton_loader_view_ = nullptr;
 
   PickerPreviewBubbleController preview_controller_;
 };

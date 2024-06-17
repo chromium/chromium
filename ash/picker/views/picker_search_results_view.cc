@@ -22,6 +22,7 @@
 #include "ash/picker/views/picker_search_results_view_delegate.h"
 #include "ash/picker/views/picker_section_list_view.h"
 #include "ash/picker/views/picker_section_view.h"
+#include "ash/picker/views/picker_skeleton_loader_view.h"
 #include "ash/picker/views/picker_strings.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -71,6 +72,9 @@ PickerSearchResultsView::PickerSearchResultsView(
           .SetProperty(views::kMarginsKey, kNoResultsViewLabelMargin)
           .SetHorizontalAlignment(gfx::ALIGN_CENTER)
           .Build());
+
+  skeleton_loader_view_ = AddChildView(
+      views::Builder<PickerSkeletonLoaderView>().SetVisible(false).Build());
 }
 
 PickerSearchResultsView::~PickerSearchResultsView() = default;
@@ -196,11 +200,13 @@ void PickerSearchResultsView::ClearSearchResults() {
   section_list_view_->ClearSectionList();
   section_list_view_->SetVisible(true);
   no_results_view_->SetVisible(false);
+  StopLoadingAnimation();
   top_results_.clear();
 }
 
 void PickerSearchResultsView::AppendSearchResults(
     PickerSearchResultsSection section) {
+  StopLoadingAnimation();
   auto* section_view = section_list_view_->AddSection();
   section_view->AddTitleLabel(
       GetSectionTitleForPickerSectionType(section.type()));
@@ -224,8 +230,15 @@ void PickerSearchResultsView::AppendSearchResults(
 }
 
 void PickerSearchResultsView::ShowNoResultsFound() {
+  StopLoadingAnimation();
   no_results_view_->SetVisible(true);
   section_list_view_->SetVisible(false);
+}
+
+void PickerSearchResultsView::ShowLoadingAnimation() {
+  ClearSearchResults();
+  skeleton_loader_view_->StartAnimationAfter(kLoadingAnimationDelay);
+  skeleton_loader_view_->SetVisible(true);
 }
 
 void PickerSearchResultsView::SelectSearchResult(
@@ -299,6 +312,11 @@ int PickerSearchResultsView::GetIndex(
   }
   return std::min(kMaxIndexForMetrics,
                   static_cast<int>(it - top_results_.begin()));
+}
+
+void PickerSearchResultsView::StopLoadingAnimation() {
+  skeleton_loader_view_->StopAnimation();
+  skeleton_loader_view_->SetVisible(false);
 }
 
 BEGIN_METADATA(PickerSearchResultsView)

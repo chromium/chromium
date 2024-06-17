@@ -14,16 +14,21 @@
 #include "ash/picker/views/picker_search_results_view_delegate.h"
 #include "ash/picker/views/picker_section_list_view.h"
 #include "ash/picker/views/picker_section_view.h"
+#include "ash/picker/views/picker_skeleton_loader_view.h"
 #include "ash/picker/views/picker_strings.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_helpers.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_animator.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_base.h"
@@ -48,7 +53,12 @@ using ::testing::SizeIs;
 
 constexpr int kPickerWidth = 320;
 
-using PickerSearchResultsViewTest = views::ViewsTestBase;
+class PickerSearchResultsViewTest : public views::ViewsTestBase {
+ public:
+  PickerSearchResultsViewTest()
+      : views::ViewsTestBase(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+};
 
 template <class V, class Matcher>
 auto AsView(Matcher matcher) {
@@ -462,6 +472,71 @@ TEST_F(PickerSearchResultsViewTest, ClearSearchResultsShowsSearchResults) {
 
   EXPECT_TRUE(view.section_list_view_for_testing()->GetVisible());
   EXPECT_FALSE(view.no_results_view_for_testing()->GetVisible());
+}
+
+TEST_F(PickerSearchResultsViewTest, ShowLoadingShowsLoaderView) {
+  MockSearchResultsViewDelegate mock_delegate;
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher);
+
+  view.ShowLoadingAnimation();
+
+  EXPECT_TRUE(view.skeleton_loader_view_for_testing().GetVisible());
+  EXPECT_FALSE(view.skeleton_loader_view_for_testing()
+                   .layer()
+                   ->GetAnimator()
+                   ->is_animating());
+}
+
+TEST_F(PickerSearchResultsViewTest, ShowLoadingAnimatesAfterDelay) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  MockSearchResultsViewDelegate mock_delegate;
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher);
+
+  view.ShowLoadingAnimation();
+  task_environment()->FastForwardBy(
+      PickerSearchResultsView::kLoadingAnimationDelay);
+
+  EXPECT_TRUE(view.skeleton_loader_view_for_testing()
+                  .layer()
+                  ->GetAnimator()
+                  ->is_animating());
+}
+
+TEST_F(PickerSearchResultsViewTest, AppendResultsDuringLoadingStopsAnimation) {
+  ui::ScopedAnimationDurationScaleMode test_duration_mode(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  MockSearchResultsViewDelegate mock_delegate;
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher);
+  task_environment()->FastForwardBy(
+      PickerSearchResultsView::kLoadingAnimationDelay);
+
+  view.AppendSearchResults({PickerSearchResultsSection(
+      PickerSectionType::kLinks, {PickerSearchResult::Text(u"1")},
+      /*has_more_results=*/false)});
+
+  EXPECT_FALSE(view.skeleton_loader_view_for_testing().GetVisible());
+  EXPECT_FALSE(view.skeleton_loader_view_for_testing()
+                   .layer()
+                   ->GetAnimator()
+                   ->is_animating());
+}
+
+TEST_F(PickerSearchResultsViewTest, AppendResultsDuringLoadingAppendsResults) {
+  MockSearchResultsViewDelegate mock_delegate;
+  MockPickerAssetFetcher asset_fetcher;
+  PickerSearchResultsView view(&mock_delegate, kPickerWidth, &asset_fetcher);
+  view.ShowLoadingAnimation();
+
+  view.AppendSearchResults({PickerSearchResultsSection(
+      PickerSectionType::kLinks, {PickerSearchResult::Text(u"1")},
+      /*has_more_results=*/false)});
+
+  EXPECT_FALSE(view.skeleton_loader_view_for_testing().GetVisible());
+  EXPECT_THAT(view.section_views_for_testing(), SizeIs(1));
 }
 
 struct PickerSearchResultTestCase {
