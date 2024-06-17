@@ -48,9 +48,9 @@ testing::Matcher<const OverlayCandidate&> IsRenderPassOverlay(
       testing::Field("rpdq", &OverlayCandidate::rpdq, testing::NotNull()),
       testing::Field(
           "rpdq", &OverlayCandidate::rpdq,
-          testing::Field("render_pass_id",
-                         &AggregatedRenderPassDrawQuad::render_pass_id,
-                         testing::Eq(id))));
+          testing::Pointee(testing::Field(
+              "render_pass_id", &AggregatedRenderPassDrawQuad::render_pass_id,
+              testing::Eq(id)))));
 }
 
 testing::Matcher<const OverlayCandidate&> IsSolidColorOverlay(SkColor4f color) {

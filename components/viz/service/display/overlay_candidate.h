@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
@@ -224,8 +224,7 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
 
   // If |rpdq| is present, then the renderer must draw the filter effects and
   // copy the result into the buffer backing of a render pass.
-  // RAW_PTR_EXCLUSION: #addr-of
-  RAW_PTR_EXCLUSION const AggregatedRenderPassDrawQuad* rpdq = nullptr;
+  raw_ptr<const AggregatedRenderPassDrawQuad, DanglingUntriaged> rpdq = nullptr;
 
   // Quad |shared_quad_state| opacity is ubiquitous for quad types
   // AggregateRenderPassDrawQuad, TileDrawQuad, SolidColorDrawQuad. A delegate

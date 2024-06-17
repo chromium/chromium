@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "base/types/expected.h"
@@ -563,7 +564,7 @@ OverlayProcessorWin::TryDelegatedCompositing(
           raw_ref<AggregatedRenderPass>::from_ptr(render_pass_it->get()));
       result.promoted_render_passes_info.promoted_rpdqs.push_back(
           raw_ref<const AggregatedRenderPassDrawQuad>::from_ptr(
-              dc_layer->rpdq));
+              dc_layer->rpdq.get()));
     }
 
     result.candidates.push_back(std::move(dc_layer).value());
@@ -579,7 +580,8 @@ DCLayerOverlayProcessor::RenderPassOverlayDataMap OverlayProcessorWin::
         const AggregatedRenderPassList& render_passes,
         const PromotedRenderPassesInfo& promoted_render_passes_info) {
   struct Embedder {
-    raw_ptr<const AggregatedRenderPassDrawQuad> rpdq = nullptr;
+    // RAW_PTR_EXCLUSION: Stack-scoped.
+    RAW_PTR_EXCLUSION const AggregatedRenderPassDrawQuad* rpdq = nullptr;
     bool is_overlay = false;
   };
 
