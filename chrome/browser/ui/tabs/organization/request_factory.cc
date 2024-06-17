@@ -159,8 +159,13 @@ void PerformTabOrganizationExecution(
     tab->set_url(tab_data->original_url().spec());
   }
 
+  // When the user only has one valid tab, complete without running the model
+  // to show the "No groups found" error state.
   if (valid_tabs < 2) {
-    std::move(on_failure).Run();
+    std::vector<TabOrganizationResponse::Organization> organizations;
+    std::unique_ptr<TabOrganizationResponse> response =
+        std::make_unique<TabOrganizationResponse>(std::move(organizations));
+    std::move(on_completion).Run(std::move(response));
     return;
   }
 
