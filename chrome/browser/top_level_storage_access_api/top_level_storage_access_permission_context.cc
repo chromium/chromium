@@ -211,34 +211,23 @@ void TopLevelStorageAccessPermissionContext::NotifyPermissionSetInternal(
   CHECK(settings_map);
   CHECK(persist);
 
-  // This permission was allowed, so store it. Because this is a superset of the
-  // regular storage access permission, we also store that one.
-  const net::SchemefulSite embedding_site(embedding_origin);
-  const GURL embedding_site_as_url = embedding_site.GetURL();
-  ContentSettingsPattern secondary_site_pattern =
-      ContentSettingsPattern::CreateBuilder()
-          ->WithScheme(embedding_site_as_url.scheme())
-          ->WithDomainWildcard()
-          ->WithHost(embedding_site_as_url.host())
-          ->WithPathWildcard()
-          ->WithPortWildcard()
-          ->Build();
-
   content_settings::ContentSettingConstraints constraints;
   constraints.set_lifetime(
       permissions::kStorageAccessAPIRelatedWebsiteSetsLifetime);
   constraints.set_session_model(
       content_settings::mojom::SessionModel::NON_RESTORABLE_USER_SESSION);
 
-  settings_map->SetContentSettingCustomScope(
-      ContentSettingsPattern::FromURLNoWildcard(requesting_origin),
-      secondary_site_pattern, ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS,
-      content_setting, constraints);
+  settings_map->SetContentSettingDefaultScope(
+      requesting_origin, embedding_origin,
+      ContentSettingsType::TOP_LEVEL_STORAGE_ACCESS, content_setting,
+      constraints);
 
+  // Because this is a superset of the regular storage access permission, we
+  // also store that one.
   settings_map->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(requesting_origin),
-      secondary_site_pattern, ContentSettingsType::STORAGE_ACCESS,
-      content_setting, constraints);
+      ContentSettingsPattern::FromURLToSchemefulSitePattern(embedding_origin),
+      ContentSettingsType::STORAGE_ACCESS, content_setting, constraints);
 
   ContentSettingsForOneType top_level_grants =
       settings_map->GetSettingsForOneType(

@@ -4826,8 +4826,8 @@ class ChromeBrowsingDataRemoverDelegateRelatedWebsiteSetsTest
         return ContentSettingPatternSource(
             ContentSettingsPattern::FromURLNoWildcard(
                 GURL(primaryUrl)),  // e.g. https://subdomain.example.com:112
-            ContentSettingsPattern::FromURLNoWildcard(
-                GURL(secondaryUrl)),  // e.g. https://subidubi.testsite.com:55
+            ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                GURL(secondaryUrl)),
             content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
             content_settings::ProviderType::kPrefProvider, /*incognito=*/false,
             GetMetadata());

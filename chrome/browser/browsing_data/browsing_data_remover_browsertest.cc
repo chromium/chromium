@@ -1782,8 +1782,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
           ContentSettingPatternSource(
               ContentSettingsPattern::FromURLNoWildcard(
                   GURL(kPrimaryUrl)),  // https://subdomain.example.com:112
-              ContentSettingsPattern::FromURLNoWildcard(
-                  GURL(kSecondaryUrl)),  // https://subidubi.testsite.com:55
+              ContentSettingsPattern::FromURLToSchemefulSitePattern(
+                  GURL(kSecondaryUrl)),
               content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
               content_settings::ProviderType::kPrefProvider,
               /*incognito=*/false, expected_metadata)));

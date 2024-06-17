@@ -167,12 +167,6 @@ content_settings::PatternPair GetPatternsFromScopingType(
       patterns.first = ContentSettingsPattern::FromURL(primary_url);
       patterns.second = ContentSettingsPattern::Wildcard();
       break;
-    case WebsiteSettingsInfo::REQUESTING_AND_TOP_ORIGIN_SCOPE:
-      CHECK(!secondary_url.is_empty());
-      patterns.first = ContentSettingsPattern::FromURLNoWildcard(primary_url);
-      patterns.second =
-          ContentSettingsPattern::FromURLNoWildcard(secondary_url);
-      break;
     case WebsiteSettingsInfo::REQUESTING_AND_TOP_SCHEMEFUL_SITE_SCOPE:
       CHECK(!secondary_url.is_empty());
       patterns.first =

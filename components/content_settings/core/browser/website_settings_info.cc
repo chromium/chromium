@@ -70,7 +70,6 @@ uint32_t WebsiteSettingsInfo::GetPrefRegistrationFlags() const {
 bool WebsiteSettingsInfo::SupportsSecondaryPattern() const {
   switch (scoping_type_) {
     case REQUESTING_ORIGIN_WITH_TOP_ORIGIN_EXCEPTIONS_SCOPE:
-    case REQUESTING_AND_TOP_ORIGIN_SCOPE:
     case TOP_ORIGIN_WITH_RESOURCE_EXCEPTIONS_SCOPE:
     case REQUESTING_AND_TOP_SCHEMEFUL_SITE_SCOPE:
     case REQUESTING_ORIGIN_AND_TOP_SCHEMEFUL_SITE_SCOPE:
