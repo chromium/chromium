@@ -73,6 +73,23 @@ std::function<R(Args...)> CreateWeakCallbackFn(R (C::*method)(Args...),
   };
 }
 
+// Helper to convert a OnceCallback to std::function.
+template <typename R, typename... Args>
+std::function<R(Args...)> ConvertCallbackToFn(
+    base::OnceCallback<R(Args...)> callback) {
+  auto shared_callback =
+      std::make_shared<base::OnceCallback<R(Args...)>>(std::move(callback));
+  return [shared_callback = shared_callback,
+          task_runner =
+              base::SequencedTaskRunner::GetCurrentDefault()](Args&&... args) {
+    if (!shared_callback->is_null()) {
+      task_runner->PostTask(FROM_HERE,
+                            base::BindOnce(std::move(*shared_callback),
+                                           std::forward<Args>(args)...));
+    }
+  };
+}
+
 int CalculateTokensPerSecond(int num_tokens, base::TimeDelta duration) {
   if (duration.InMicroseconds() <= 0) {
     return 0;
@@ -354,17 +371,20 @@ class SessionImpl : public on_device_model::OnDeviceModel::Session {
       return;
     }
 
-    auto shared_callback = std::make_shared<base::OnceCallback<void(uint32_t)>>(
-        std::move(callback));
-    auto fn = [shared_callback = shared_callback,
-               task_runner =
-                   base::SequencedTaskRunner::GetCurrentDefault()](int result) {
-      if (!shared_callback->is_null()) {
-        task_runner->PostTask(
-            FROM_HERE, base::BindOnce(std::move(*shared_callback), result));
-      }
-    };
-    chrome_ml_->api().SizeInTokens(model_, text, fn);
+    chrome_ml_->api().SizeInTokens(model_, text,
+                                   ConvertCallbackToFn(std::move(callback)));
+  }
+
+  DISABLE_CFI_DLSYM
+  void Score(const std::string& text,
+             base::OnceCallback<void(float)> callback) override {
+    if (!chrome_ml_->api().Score) {
+      std::move(callback).Run(0);
+      return;
+    }
+
+    chrome_ml_->api().Score(model_, text,
+                            ConvertCallbackToFn(std::move(callback)));
   }
 
  private:

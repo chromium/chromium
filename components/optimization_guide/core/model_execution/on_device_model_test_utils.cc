@@ -52,6 +52,11 @@ void FakeOnDeviceSession::GetSizeInTokens(const std::string& text,
   std::move(callback).Run(0);
 }
 
+void FakeOnDeviceSession::Score(const std::string& text,
+                                ScoreCallback callback) {
+  std::move(callback).Run(0);
+}
+
 void FakeOnDeviceSession::ExecuteImpl(
     on_device_model::mojom::InputOptionsPtr input,
     mojo::PendingRemote<on_device_model::mojom::StreamingResponder> response) {

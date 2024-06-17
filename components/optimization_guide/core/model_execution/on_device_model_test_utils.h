@@ -78,6 +78,8 @@ class FakeOnDeviceSession final : public on_device_model::mojom::Session {
   void GetSizeInTokens(const std::string& text,
                        GetSizeInTokensCallback callback) override;
 
+  void Score(const std::string& text, ScoreCallback callback) override;
+
  private:
   void ExecuteImpl(
       on_device_model::mojom::InputOptionsPtr input,

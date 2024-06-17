@@ -186,6 +186,10 @@ using ChromeMLContextSavedFn = std::function<void(int)>;
 // This will be called on the internal thread executing the model.
 using ChromeMLSizeInTokensFn = std::function<void(int)>;
 
+// Called with a probability score after a call to Score().
+// This will be called on the internal thread executing the model.
+using ChromeMLScoreFn = std::function<void(float)>;
+
 // Conveys details regarding a completed model execution.
 struct ChromeMLExecutionResult {
   // If true, all prior output received for this model execution is effectively
@@ -342,6 +346,11 @@ struct ChromeMLAPI {
   void (*SizeInTokens)(ChromeMLModel model,
                        const std::string& text,
                        const ChromeMLSizeInTokensFn& fn);
+
+  // Scores the first token of the given text.
+  void (*Score)(ChromeMLModel model,
+                const std::string& text,
+                const ChromeMLScoreFn& fn);
 };
 
 // Signature of the GetChromeMLAPI() function which the shared library exports.

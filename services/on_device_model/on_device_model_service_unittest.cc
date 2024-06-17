@@ -6,6 +6,7 @@
 
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/public/cpp/model_assets.h"
 #include "services/on_device_model/public/cpp/test_support/test_response_holder.h"
@@ -388,6 +389,25 @@ TEST_F(OnDeviceModelServiceTest, DeletesModel) {
   adaptation3.reset();
   FlushService();
   EXPECT_EQ(GetNumModels(), 0u);
+}
+
+TEST_F(OnDeviceModelServiceTest, Score) {
+  auto model = LoadModel();
+
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver());
+  session->AddContext(MakeInput("hi"), {});
+
+  {
+    base::test::TestFuture<float> future;
+    session->Score("x", future.GetCallback());
+    EXPECT_EQ(future.Get(), float('x'));
+  }
+  {
+    base::test::TestFuture<float> future;
+    session->Score("y", future.GetCallback());
+    EXPECT_EQ(future.Get(), float('y'));
+  }
 }
 
 }  // namespace

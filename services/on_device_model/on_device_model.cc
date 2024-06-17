@@ -69,6 +69,12 @@ class SessionImpl : public OnDeviceModel::Session {
     std::move(callback).Run(text.size());
   }
 
+  void Score(const std::string& text,
+             base::OnceCallback<void(float)> callback) override {
+    // For unit tests, return the value of the first character.
+    std::move(callback).Run(static_cast<float>(text[0]));
+  }
+
  private:
   std::vector<std::string> context_;
   std::optional<uint32_t> adaptation_id_;

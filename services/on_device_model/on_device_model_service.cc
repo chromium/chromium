@@ -43,6 +43,7 @@ class SessionWrapper final : public mojom::Session {
       mojo::PendingRemote<mojom::StreamingResponder> response) override;
   void GetSizeInTokens(const std::string& text,
                        GetSizeInTokensCallback callback) override;
+  void Score(const std::string& text, ScoreCallback callback) override;
 
   mojo::Receiver<mojom::Session>& receiver() { return receiver_; }
 
@@ -68,6 +69,12 @@ class SessionWrapper final : public mojom::Session {
                                base::OnceClosure on_complete) {
     session_->SizeInTokens(text,
                            std::move(callback).Then(std::move(on_complete)));
+  }
+
+  void ScoreInternal(const std::string& text,
+                     ScoreCallback callback,
+                     base::OnceClosure on_complete) {
+    session_->Score(text, std::move(callback).Then(std::move(on_complete)));
   }
 
   void AddPreviousContext(mojom::InputOptionsPtr input) {
@@ -297,6 +304,17 @@ void SessionWrapper::GetSizeInTokens(const std::string& text,
 
   model_->AddAndRunPendingTask(std::move(size_in_tokens_internal),
                                weak_ptr_factory_.GetWeakPtr());
+}
+
+void SessionWrapper::Score(const std::string& text, ScoreCallback callback) {
+  if (!model_) {
+    return;
+  }
+
+  model_->AddAndRunPendingTask(
+      base::BindOnce(&SessionWrapper::ScoreInternal,
+                     weak_ptr_factory_.GetWeakPtr(), text, std::move(callback)),
+      weak_ptr_factory_.GetWeakPtr());
 }
 
 void SessionWrapper::ReplayPreviousContext() {

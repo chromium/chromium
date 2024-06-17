@@ -34,6 +34,8 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP) OnDeviceModel {
     virtual void ClearContext() = 0;
     virtual void SizeInTokens(const std::string& text,
                               base::OnceCallback<void(uint32_t)> callback) = 0;
+    virtual void Score(const std::string& text,
+                       base::OnceCallback<void(float)> callback) = 0;
   };
 
   virtual std::unique_ptr<Session> CreateSession(
@@ -47,4 +49,4 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_CPP) OnDeviceModel {
 
 }  // namespace on_device_model
 
-#endif  //  SERVICES_ON_DEVICE_MODEL_PUBLIC_CPP_ON_DEVICE_MODEL_H_
+#endif  // SERVICES_ON_DEVICE_MODEL_PUBLIC_CPP_ON_DEVICE_MODEL_H_
