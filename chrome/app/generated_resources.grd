@@ -16277,7 +16277,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
          Choose which device has the passkey for <ph name="APP_NAME">$1<ex>example.com</ex></ph>
       </message>
       <message name="IDS_WEBAUTHN_USE_PASSKEY_TITLE" desc="The title of a dialog prompting the user to use a passkey for signing into a website. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
-         Use your passkey for <ph name="APP_NAME">$1<ex>example.com</ex></ph>
+         Use a saved passkey for <ph name="APP_NAME">$1<ex>example.com</ex></ph>
       </message>
       <message name="IDS_WEBAUTHN_CHOOSE_PASSKEY_TITLE" desc="The title of a dialog prompting the user to choose a passkey from a list to sign into a website. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
          Choose a passkey
