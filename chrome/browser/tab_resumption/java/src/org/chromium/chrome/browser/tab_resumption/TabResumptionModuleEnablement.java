@@ -16,6 +16,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleNotShownReason;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.sync.UserSelectableType;
 
 /** Utility class for the decision funnel on showing or hiding the tab resumption module. */
 public class TabResumptionModuleEnablement {
@@ -52,11 +53,13 @@ public class TabResumptionModuleEnablement {
         static boolean isSignedIn(Profile profile) {
             return IdentityServicesProvider.get()
                     .getIdentityManager(profile)
-                    .hasPrimaryAccount(ConsentLevel.SYNC);
+                    .hasPrimaryAccount(ConsentLevel.SIGNIN);
         }
 
         static boolean isSyncEnabled(Profile profile) {
-            return SyncServiceFactory.getForProfile(profile).hasKeepEverythingSynced();
+            return SyncServiceFactory.getForProfile(profile)
+                    .getSelectedTypes()
+                    .contains(UserSelectableType.TABS);
         }
 
         static boolean isV2Enabled() {

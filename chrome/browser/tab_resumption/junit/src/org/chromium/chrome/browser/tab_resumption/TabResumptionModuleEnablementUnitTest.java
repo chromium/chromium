@@ -19,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.CollectionUtil;
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -30,6 +31,9 @@ import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleMetricsUtils.ModuleNotShownReason;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
+import org.chromium.components.sync.UserSelectableType;
+
+import java.util.HashSet;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -55,15 +59,17 @@ public class TabResumptionModuleEnablementUnitTest extends TestSupportExtended {
     @DisableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
     public void testEnablementWithoutForeignSessionFeature() {
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
-        when(mSyncService.hasKeepEverythingSynced()).thenReturn(false);
+        when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
         Assert.assertEquals(ModuleNotShownReason.FEATURE_DISABLED, getNotShownReason().intValue());
-        when(mSyncService.hasKeepEverythingSynced()).thenReturn(true);
+        when(mSyncService.getSelectedTypes())
+                .thenReturn(CollectionUtil.newHashSet(UserSelectableType.TABS));
         Assert.assertEquals(ModuleNotShownReason.FEATURE_DISABLED, getNotShownReason().intValue());
 
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
-        when(mSyncService.hasKeepEverythingSynced()).thenReturn(false);
+        when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
         Assert.assertEquals(ModuleNotShownReason.FEATURE_DISABLED, getNotShownReason().intValue());
-        when(mSyncService.hasKeepEverythingSynced()).thenReturn(true);
+        when(mSyncService.getSelectedTypes())
+                .thenReturn(CollectionUtil.newHashSet(UserSelectableType.TABS));
         Assert.assertEquals(ModuleNotShownReason.FEATURE_DISABLED, getNotShownReason().intValue());
     }
 
@@ -72,15 +78,17 @@ public class TabResumptionModuleEnablementUnitTest extends TestSupportExtended {
     @EnableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
     public void testEnablementWithForeignSessionFeature() {
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
-        when(mSyncService.hasKeepEverythingSynced()).thenReturn(false);
+        when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
         Assert.assertEquals(ModuleNotShownReason.NOT_SIGNED_IN, getNotShownReason().intValue());
-        when(mSyncService.hasKeepEverythingSynced()).thenReturn(true);
+        when(mSyncService.getSelectedTypes())
+                .thenReturn(CollectionUtil.newHashSet(UserSelectableType.TABS));
         Assert.assertEquals(ModuleNotShownReason.NOT_SIGNED_IN, getNotShownReason().intValue());
 
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
-        when(mSyncService.hasKeepEverythingSynced()).thenReturn(false);
+        when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
         Assert.assertEquals(ModuleNotShownReason.NOT_SYNC, getNotShownReason().intValue());
-        when(mSyncService.hasKeepEverythingSynced()).thenReturn(true);
+        when(mSyncService.getSelectedTypes())
+                .thenReturn(CollectionUtil.newHashSet(UserSelectableType.TABS));
         Assert.assertNull(getNotShownReason());
     }
 

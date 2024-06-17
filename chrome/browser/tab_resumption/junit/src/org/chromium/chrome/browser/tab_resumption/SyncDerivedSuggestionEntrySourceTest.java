@@ -26,6 +26,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CollectionUtil;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.signin.services.SigninManager;
@@ -34,8 +35,10 @@ import org.chromium.chrome.browser.tab_resumption.SyncDerivedSuggestionEntrySour
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncService.SyncStateChangedListener;
+import org.chromium.components.sync.UserSelectableType;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -278,7 +281,12 @@ public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
 
     private void createEntrySource(boolean isSignedIn, boolean isSynced, boolean servesLocalTabs) {
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(isSignedIn);
-        when(mSyncService.hasKeepEverythingSynced()).thenReturn(isSynced);
+        if (isSynced) {
+            when(mSyncService.getSelectedTypes())
+                    .thenReturn(CollectionUtil.newHashSet(UserSelectableType.TABS));
+        } else {
+            when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
+        }
         mSource =
                 new SyncDerivedSuggestionEntrySource(
                         /* signinManager= */ mSigninManager,
@@ -308,7 +316,12 @@ public class SyncDerivedSuggestionEntrySourceTest extends TestSupport {
     }
 
     private void toggleIsSyncedThenNotify(boolean isSynced) {
-        when(mSyncService.hasKeepEverythingSynced()).thenReturn(isSynced);
+        if (isSynced) {
+            when(mSyncService.getSelectedTypes())
+                    .thenReturn(CollectionUtil.newHashSet(UserSelectableType.TABS));
+        } else {
+            when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
+        }
         // For simplicity, call handlers directly instead of using `mSyncService`.
         mSyncStateChangedListenerCaptor.getValue().syncStateChanged();
     }

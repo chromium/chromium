@@ -17,6 +17,7 @@ import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.SyncService.SyncStateChangedListener;
+import org.chromium.components.sync.UserSelectableType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,7 +77,7 @@ public class SyncDerivedSuggestionEntrySource
         mSigninManager.addSignInStateObserver(this);
         mSyncService.addSyncStateChangedListener(this);
         mIsSignedIn = identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN);
-        mIsSynced = mSyncService.hasKeepEverythingSynced();
+        mIsSynced = mSyncService.getSelectedTypes().contains(UserSelectableType.TABS);
 
         mPassUseCachedResults = false;
         mCachedSuggestionEntries = new ArrayList<SuggestionEntry>();
@@ -138,7 +139,7 @@ public class SyncDerivedSuggestionEntrySource
     @Override
     public void syncStateChanged() {
         boolean oldIsSynced = mIsSynced;
-        mIsSynced = mSyncService.hasKeepEverythingSynced();
+        mIsSynced = mSyncService.getSelectedTypes().contains(UserSelectableType.TABS);
         if (oldIsSynced != mIsSynced) {
             dispatchSourceDataChangedObservers(true);
         }
