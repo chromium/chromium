@@ -81,16 +81,7 @@ int GetDialogHeight(const AppInstallDialogArgs& dialog_args) {
 }  // namespace
 
 // static
-bool AppInstallDialog::IsEnabled() {
-  return base::FeatureList::IsEnabled(
-             chromeos::features::kCrosWebAppInstallDialog) ||
-         AppInstallPageHandler::GetAutoAcceptForTesting();
-}
-
-// static
 base::WeakPtr<AppInstallDialog> AppInstallDialog::CreateDialog() {
-  CHECK(IsEnabled());
-
   return (new AppInstallDialog())->GetWeakPtr();
 }
 

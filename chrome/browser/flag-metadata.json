@@ -1751,11 +1751,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "cros-web-app-install-dialog",
-    "owners": [ "loubrett@google.com", "cros-apps-platform-core@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "cros-web-app-shortcut-ui-update",
     "owners": [ "chromeos-apps-foundation-team@google.com" ],
     "expiry_milestone": 130

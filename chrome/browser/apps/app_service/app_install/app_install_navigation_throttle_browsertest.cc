@@ -53,47 +53,20 @@
 
 namespace apps {
 
-class AppInstallNavigationThrottleBrowserTest
-    : public InProcessBrowserTest,
-      public testing::WithParamInterface<bool> {
+class AppInstallNavigationThrottleBrowserTest : public InProcessBrowserTest {
  public:
   class AutoAcceptInstallDialogScope {
    public:
-    explicit AutoAcceptInstallDialogScope(bool is_ash_dialog_enabled)
-        : is_ash_dialog_enabled_(is_ash_dialog_enabled) {
-      if (is_ash_dialog_enabled_) {
-        crosapi::mojom::TestControllerAsyncWaiter(crosapi::GetTestController())
-            .SetAppInstallDialogAutoAccept(true);
-      } else {
-        web_app::SetAutoAcceptPWAInstallConfirmationForTesting(true);
-      }
+    AutoAcceptInstallDialogScope() {
+      crosapi::mojom::TestControllerAsyncWaiter(crosapi::GetTestController())
+          .SetAppInstallDialogAutoAccept(true);
     }
 
     ~AutoAcceptInstallDialogScope() {
-      if (is_ash_dialog_enabled_) {
-        crosapi::mojom::TestControllerAsyncWaiter(crosapi::GetTestController())
-            .SetAppInstallDialogAutoAccept(false);
-      } else {
-        web_app::SetAutoAcceptPWAInstallConfirmationForTesting(false);
-      }
+      crosapi::mojom::TestControllerAsyncWaiter(crosapi::GetTestController())
+          .SetAppInstallDialogAutoAccept(false);
     }
-
-   private:
-    const bool is_ash_dialog_enabled_;
   };
-
-  static std::string ParamToString(testing::TestParamInfo<bool> param) {
-    return param.param ? "AshDialogEnabled" : "AshDialogDisabled";
-  }
-
-  AppInstallNavigationThrottleBrowserTest() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    feature_list_.InitWithFeatureState(
-        chromeos::features::kCrosWebAppInstallDialog, is_ash_dialog_enabled());
-#endif
-  }
-
-  bool is_ash_dialog_enabled() const { return GetParam(); }
 
   void SetUpOnMainThread() override {
     if (!crosapi::AshSupportsCapabilities({"b/304680258"})) {
@@ -101,10 +74,6 @@ class AppInstallNavigationThrottleBrowserTest
     }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Lacros has no way to disable the dialog, so we only run tests with the
-    // dialog enabled.
-    ASSERT_TRUE(is_ash_dialog_enabled());
-
     if (!crosapi::AshSupportsCapabilities({"b/331715712", "b/339106891"})) {
       GTEST_SKIP() << "Unsupported Ash version.";
     }
@@ -189,7 +158,7 @@ class AppInstallNavigationThrottleBrowserTest
   }
 };
 
-IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
+IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
                        UrlTriggeredInstallation) {
   base::HistogramTester histograms;
 
@@ -200,7 +169,7 @@ IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
 
   // Make install prompts auto accept for this block.
   {
-    AutoAcceptInstallDialogScope auto_accept_scope(is_ash_dialog_enabled());
+    AutoAcceptInstallDialogScope auto_accept_scope;
 
     // Open install-app URI.
     EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
@@ -218,13 +187,6 @@ IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
     // Await install to complete.
     web_app::WebAppTestInstallObserver(browser()->profile())
         .BeginListeningAndWait({app_id});
-
-    if (!is_ash_dialog_enabled()) {
-      // Check that window.open() didn't leave an extra about:blank tab lying
-      // around, there should only be the original about:blank tab and the
-      // install page tab.
-      EXPECT_EQ(browser()->tab_strip_model()->count(), 2);
-    }
   }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -234,7 +196,7 @@ IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
 #endif
 }
 
-IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
+IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
                        GeForceNowInstall) {
   // Set up a mock GeForce NOW app.
   webapps::AppId app_id =
@@ -261,7 +223,7 @@ IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
       browser_observer.Wait(), app_id));
 }
 
-IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
+IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
                        InstallUrlFallback) {
   base::HistogramTester histograms;
 
@@ -299,7 +261,7 @@ IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
 #endif
 }
 
-IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest, LegacyScheme) {
+IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest, LegacyScheme) {
   base::HistogramTester histograms;
 
   auto [app_id, package_id] = SetupDefaultServerResponse();
@@ -308,7 +270,7 @@ IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest, LegacyScheme) {
   ASSERT_TRUE(proxy->AppRegistryCache().IsAppTypeInitialized(AppType::kWeb));
 
   // Make install prompts auto accept.
-  AutoAcceptInstallDialogScope auto_accept_scope(is_ash_dialog_enabled());
+  AutoAcceptInstallDialogScope auto_accept_scope;
 
   // Open install-app URI.
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
@@ -331,7 +293,7 @@ IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest, LegacyScheme) {
 // On lacros, window tracking is async so a parent window for anchoring the
 // dialog might not be found. This test verifies that the dialog opening and app
 // installation still works in that situation.
-IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
+IN_PROC_BROWSER_TEST_F(AppInstallNavigationThrottleBrowserTest,
                        InstallationWithoutParentWindow) {
   base::HistogramTester histograms;
 
@@ -351,7 +313,7 @@ IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
       app_id, [](const apps::AppUpdate& update) {}));
 
   // Make install prompts auto accept.
-  AutoAcceptInstallDialogScope auto_accept_scope(is_ash_dialog_enabled());
+  AutoAcceptInstallDialogScope auto_accept_scope;
 
   // Open install-app URI.
   EXPECT_TRUE(content::ExecJs(
@@ -374,18 +336,6 @@ IN_PROC_BROWSER_TEST_P(AppInstallNavigationThrottleBrowserTest,
   histograms.ExpectBucketCount("Apps.AppInstallParentWindowFound", false, 1);
 }
 #endif
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    AppInstallNavigationThrottleBrowserTest,
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    testing::Bool(),
-#else
-    // Lacros has no way to disable the dialog, so we only
-    // run tests with the dialog enabled.
-    testing::Values(true),
-#endif
-    AppInstallNavigationThrottleBrowserTest::ParamToString);
 
 class AppInstallNavigationThrottleUserGestureBrowserTest
     : public InProcessBrowserTest {

@@ -7729,10 +7729,6 @@ const char kCrosAppsBackgroundEventHandlingName[] =
 const char kCrosAppsBackgroundEventHandlingDescription[] =
     "Enable key events for CrOS Apps running in background.";
 
-const char kCrosWebAppInstallDialogName[] = "Web app install dialog";
-const char kCrosWebAppInstallDialogDescription[] =
-    "Enables a more detailed, OS-level dialog for web app installs";
-
 const char kRunOnOsLoginName[] = "Run on OS login";
 const char kRunOnOsLoginDescription[] =
     "When enabled, allows PWAs to be automatically run on OS login.";

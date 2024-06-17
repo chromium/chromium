@@ -118,11 +118,6 @@ void AppInstallDialogUI::CloseDialog() {
 
 WEB_UI_CONTROLLER_TYPE_IMPL(AppInstallDialogUI)
 
-bool AppInstallDialogUIConfig::IsWebUIEnabled(
-    content::BrowserContext* browser_context) {
-  return AppInstallDialog::IsEnabled();
-}
-
 AppInstallDialogUIConfig::AppInstallDialogUIConfig()
     : DefaultWebUIConfig(content::kChromeUIScheme,
                          chrome::kChromeUIAppInstallDialogHost) {}

@@ -21,10 +21,6 @@ const int kIconSize = 32;
 // Defines the web dialog used for installing an app.
 class AppInstallDialog : public SystemWebDialogDelegate {
  public:
-  // Checks feature and testing flags for whether the app install dialog is
-  // enabled.
-  static bool IsEnabled();
-
   // Creates and returns a new dialog for installing an app.
   static base::WeakPtr<AppInstallDialog> CreateDialog();
 

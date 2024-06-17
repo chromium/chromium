@@ -1778,11 +1778,9 @@ void PopulateChromeWebUIFrameBinders(
   RegisterWebUIControllerInterfaceBinder<
       ash::screens_factory::mojom::ScreensFactory, ash::OobeUI>(map);
 
-  if (ash::app_install::AppInstallDialog::IsEnabled()) {
-    RegisterWebUIControllerInterfaceBinder<
-        ash::app_install::mojom::PageHandlerFactory,
-        ash::app_install::AppInstallDialogUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      ash::app_install::mojom::PageHandlerFactory,
+      ash::app_install::AppInstallDialogUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       new_window_proxy::mojom::NewWindowProxy, ash::EmojiUI>(map);

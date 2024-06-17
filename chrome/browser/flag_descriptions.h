@@ -4493,9 +4493,6 @@ extern const char kAddPrinterViaPrintscanmgrDescription[];
 extern const char kCrosAppsBackgroundEventHandlingName[];
 extern const char kCrosAppsBackgroundEventHandlingDescription[];
 
-extern const char kCrosWebAppInstallDialogName[];
-extern const char kCrosWebAppInstallDialogDescription[];
-
 extern const char kRunOnOsLoginName[];
 extern const char kRunOnOsLoginDescription[];
 

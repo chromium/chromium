@@ -951,8 +951,8 @@ void InjectBrowserInitParams(
   params->is_file_system_provider_cloud_file_system_enabled =
       chromeos::features::IsFileSystemProviderCloudFileSystemEnabled();
 
-  params->is_cros_web_app_install_dialog_enabled =
-      chromeos::features::IsCrosWebAppInstallDialogEnabled();
+  // TODO(b/346683858): Remove in M130.
+  params->is_cros_web_app_install_dialog_enabled = true;
 
   params->is_orca_enabled = chromeos::features::IsOrcaEnabled();
 

@@ -60,8 +60,6 @@ class AppInstallDialogUIConfig
     : public content::DefaultWebUIConfig<AppInstallDialogUI> {
  public:
   AppInstallDialogUIConfig();
-
-  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
 };
 
 }  // namespace ash::app_install

@@ -102,11 +102,6 @@ BASE_FEATURE(kCrosShortstand,
              "CrosShortstand",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the more detailed, OS-level dialog for web app installs.
-BASE_FEATURE(kCrosWebAppInstallDialog,
-             "CrosWebAppInstallDialog",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // With this feature enabled, the shortcut app badge is painted in the UI
 // instead of being part of the shortcut app icon.
@@ -389,15 +384,6 @@ bool IsCrosShortstandEnabled() {
   return chromeos::BrowserParamsProxy::Get()->IsCrosShortstandEnabled();
 #else
   return base::FeatureList::IsEnabled(kCrosShortstand);
-#endif
-}
-
-bool IsCrosWebAppInstallDialogEnabled() {
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-  return chromeos::BrowserParamsProxy::Get()
-      ->IsCrosWebAppInstallDialogEnabled();
-#else
-  return base::FeatureList::IsEnabled(kCrosWebAppInstallDialog);
 #endif
 }
 

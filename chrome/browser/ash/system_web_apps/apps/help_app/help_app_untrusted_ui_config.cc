@@ -142,12 +142,9 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
     source->AddBoolean("HelpAppAutoTriggerInstallDialog",
                        base::FeatureList::IsEnabled(
                            features::kHelpAppAutoTriggerInstallDialog));
-    // Only use the action URL if both the uri and dialog features have been
-    // enabled.
+    // Only use the action URL if the install URI is enabled.
     source->AddBoolean("UseActionUrl",
-                       chromeos::features::IsAppInstallServiceUriEnabled() &&
-                           base::FeatureList::IsEnabled(
-                               chromeos::features::kCrosWebAppInstallDialog));
+                       chromeos::features::IsAppInstallServiceUriEnabled());
   }
 
   PrefService* pref_service = profile->GetPrefs();
