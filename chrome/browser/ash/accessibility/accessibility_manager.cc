@@ -3048,4 +3048,9 @@ void AccessibilityManager::OnDeviceListsComplete() {
       Shell::Get()->keyboard_capability()->HasFunctionKeyOnAnyKeyboard());
 }
 
+std::optional<ui::KeyboardCode>
+AccessibilityManager::GetCaretBrowsingActionKey() {
+  return AccessibilityController::Get()->GetCaretBrowsingActionKey();
+}
+
 }  // namespace ash

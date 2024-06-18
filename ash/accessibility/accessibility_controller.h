@@ -21,6 +21,7 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "ui/display/display_observer.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/rect.h"
 
 class PrefChangeRegistrar;
@@ -562,6 +563,10 @@ class ASH_EXPORT AccessibilityController : public SessionObserver,
 
   // Cancels all of spoken feedback's current and queued speech immediately.
   void SilenceSpokenFeedback();
+
+  // Determines the action key that corresponds to F7 for the caret browsing
+  // dialog.
+  std::optional<ui::KeyboardCode> GetCaretBrowsingActionKey();
 
   // Shows an accessibility-related toast.
   void ShowToast(AccessibilityToastType type);

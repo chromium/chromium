@@ -14738,7 +14738,25 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </if>
       <if expr="chromeos_ash">
         <message name="IDS_ENABLE_CARET_BROWSING_INFO" desc="Information in the confirmation dialog for enabling caret browsing">
-          You can navigate pages with a text cursor. Press Ctrl+Search+7 to turn off.
+          You can navigate pages with a text cursor. Press Ctrl + <ph name="key">$1<ex>Search + Brightness up</ex></ph> to turn off.
+        </message>
+        <message name="IDS_CARET_BROWSING_KEY_BRIGHTNESS_UP" desc="Label for the brightness up key">
+          Brightness up
+        </message>
+        <message name="IDS_CARET_BROWSING_KEY_BRIGHTNESS_DOWN" desc="Label for the brightness down key">
+          Brightness down
+        </message>
+        <message name="IDS_CARET_BROWSING_KEY_SEARCH_MODIFIER" desc="Label to add the key modifier Search to a keyboard shortcut">
+          Search + <ph name="key">$1<ex>Brightness up</ex></ph>
+        </message>
+        <message name="IDS_CARET_BROWSING_KEY_PLAY_PAUSE" desc="Label for the play/pause key">
+          Play/pause
+        </message>
+        <message name="IDS_CARET_BROWSING_KEY_MUTE" desc="Label for the mute key">
+          Mute
+        </message>
+        <message name="IDS_CARET_BROWSING_KEY_F7" desc="Description of which key to press to enable caret browsing when no more specific string is available">
+          F7
         </message>
       </if>
       <message name="IDS_CARET_BROWSING_DO_NOT_ASK" desc="Label for check box that prevents the dialog from being shown in the future">

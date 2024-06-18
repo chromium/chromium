@@ -26,6 +26,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/events/accessibility_event_rewriter.h"
+#include "ash/events/event_rewriter_controller_impl.h"
 #include "ash/events/select_to_speak_event_handler.h"
 #include "ash/keyboard/keyboard_controller_impl.h"
 #include "ash/keyboard/ui/keyboard_util.h"
@@ -85,6 +86,8 @@
 #include "ui/display/screen.h"
 #include "ui/display/tablet_state.h"
 #include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/keyboard_device.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notifier_id.h"
@@ -2812,6 +2815,28 @@ void AccessibilityController::UpdateCaretBlinkIntervalFromPrefs() const {
   if (notify_native) {
     native_theme->NotifyOnNativeThemeUpdated();
   }
+}
+
+std::optional<ui::KeyboardCode>
+AccessibilityController::GetCaretBrowsingActionKey() {
+  const std::vector<ui::KeyboardDevice>& keyboards =
+      ui::DeviceDataManager::GetInstance()->GetKeyboardDevices();
+  std::optional<ui::TopRowActionKey> key;
+  if (keyboards.size() > 0) {
+    if (ash::Shell::Get()
+            ->event_rewriter_controller()
+            ->event_rewriter_ash_delegate()
+            ->TopRowKeysAreFunctionKeys(keyboards[0].id)) {
+      return ui::VKEY_F7;
+    }
+    key = ash::Shell::Get()
+              ->keyboard_capability()
+              ->GetCorrespondingActionKeyForFKey(keyboards[0], ui::VKEY_F7);
+  }
+  if (key) {
+    return ui::KeyboardCapability::ConvertToKeyboardCode(*key);
+  }
+  return std::nullopt;
 }
 
 void AccessibilityController::UpdateAccessibilityHighlightingFromPrefs() {
