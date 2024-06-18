@@ -90,14 +90,14 @@ NSString* const kCustomDetentIdentifier = @"customDetent";
            ? 64.0
            : 24.0);
 
-  [NSLayoutConstraint activateConstraints:@[
-    [self.primaryActionButton.leadingAnchor
-        constraintEqualToAnchor:(self.view.leadingAnchor)
-                       constant:buttonHorizontalMargin],
-    [self.primaryActionButton.trailingAnchor
-        constraintEqualToAnchor:(self.view.trailingAnchor)
-                       constant:-buttonHorizontalMargin],
-  ]];
+  [self.primaryActionButton.leadingAnchor
+      constraintEqualToAnchor:(self.view.leadingAnchor)
+                     constant:buttonHorizontalMargin]
+      .active = YES;
+  [self.primaryActionButton.trailingAnchor
+      constraintEqualToAnchor:(self.view.trailingAnchor)
+                     constant:-buttonHorizontalMargin]
+      .active = YES;
 }
 
 #pragma mark - Subclassing
