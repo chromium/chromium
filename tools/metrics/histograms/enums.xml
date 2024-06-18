@@ -16004,6 +16004,7 @@ from previous Chrome versions.
   <int value="-1932379839"
       label="OmniboxUIExperimentHideSteadyStateUrlTrivialSubdomains:enabled"/>
   <int value="-1931712004" label="ConsolidatedSiteStorageControls:disabled"/>
+  <int value="-1931102691" label="EducationalTipModule:disabled"/>
   <int value="-1930720286" label="nacl-debug-mask"/>
   <int value="-1930656203" label="TabGroupSyncForceOff:disabled"/>
   <int value="-1930487223"
@@ -25112,6 +25113,7 @@ from previous Chrome versions.
   <int value="1985952454"
       label="GetDisplayMediaSetAutoSelectAllScreens:enabled"/>
   <int value="1986031201" label="SwipingFromLeftEdgeToGoBack:disabled"/>
+  <int value="1987896454" label="EducationalTipModule:enabled"/>
   <int value="1988099368" label="DropInputEventsBeforeFirstPaint:disabled"/>
   <int value="1988389259" label="MediaFoundationClearRendering:disabled"/>
   <int value="1988506961" label="EnableManualSaving:enabled"/>

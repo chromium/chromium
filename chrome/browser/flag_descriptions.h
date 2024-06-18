@@ -2518,6 +2518,9 @@ extern const char kDrawNativeEdgeToEdgeDescription[];
 extern const char kDrawWebEdgeToEdgeName[];
 extern const char kDrawWebEdgeToEdgeDescription[];
 
+extern const char kEducationalTipModuleName[];
+extern const char kEducationalTipModuleDescription[];
+
 extern const char kEnableAndroidGamepadVibrationName[];
 extern const char kEnableAndroidGamepadVibrationDescription[];
 

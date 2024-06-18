@@ -231,6 +231,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kDrawKeyNativeEdgeToEdge,
     &kDrawNativeEdgeToEdge,
     &kDrawWebEdgeToEdge,
+    &kEducationalTipModule,
     &kExperimentsForAgsa,
     &kFeedPositionAndroid,
     &kFocusOmniboxInIncognitoTabIntents,
@@ -690,6 +691,10 @@ BASE_FEATURE(kDrawNativeEdgeToEdge,
 
 BASE_FEATURE(kDrawWebEdgeToEdge,
              "DrawWebEdgeToEdge",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kEducationalTipModule,
+             "EducationalTipModule",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kExperimentsForAgsa,

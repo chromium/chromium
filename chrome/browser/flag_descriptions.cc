@@ -4275,6 +4275,10 @@ const char kDrawWebEdgeToEdgeDescription[] =
     "Enables the Android feature Edge-to-Edge and forces a draw ToEdge on most "
     "web pages.";
 
+const char kEducationalTipModuleName[] = "Educational Tip Module";
+const char kEducationalTipModuleDescription[] =
+    "Show educational tip module on magic stack in clank";
+
 const char kEnableCommandLineOnNonRootedName[] =
     "Enable command line on non-rooted devices";
 const char kEnableCommandLineOnNoRootedDescription[] =
