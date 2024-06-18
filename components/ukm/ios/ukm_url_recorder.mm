@@ -4,13 +4,15 @@
 
 #include "components/ukm/ios/ukm_url_recorder.h"
 
+#include <set>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
-#import "ios/web/public/navigation/navigation_context.h"
-#import "ios/web/public/web_state.h"
+#include "ios/web/public/navigation/navigation_context.h"
+#include "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
-#import "ios/web/public/web_state_user_data.h"
+#include "ios/web/public/web_state_user_data.h"
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
@@ -18,47 +20,6 @@
 namespace ukm {
 
 namespace internal {
-
-// SourceUrlRecorderWebStateObserver is responsible for recording UKM source
-// URLs for all main frame navigations in a given WebState.
-// SourceUrlRecorderWebStateObserver records both the final URL for a
-// navigation and, if the navigation was redirected, the initial URL as well.
-class SourceUrlRecorderWebStateObserver
-    : public web::WebStateObserver,
-      public web::WebStateUserData<SourceUrlRecorderWebStateObserver> {
- public:
-  SourceUrlRecorderWebStateObserver(const SourceUrlRecorderWebStateObserver&) =
-      delete;
-  SourceUrlRecorderWebStateObserver& operator=(
-      const SourceUrlRecorderWebStateObserver&) = delete;
-
-  ~SourceUrlRecorderWebStateObserver() override;
-
-  // web::WebStateObserver
-  void DidStartNavigation(web::WebState* web_state,
-                          web::NavigationContext* navigation_context) override;
-  void DidFinishNavigation(web::WebState* web_state,
-                           web::NavigationContext* navigation_context) override;
-  void WebStateDestroyed(web::WebState* web_state) override;
-
-  SourceId GetLastCommittedSourceId() const;
-
- private:
-  explicit SourceUrlRecorderWebStateObserver(web::WebState* web_state);
-  friend class web::WebStateUserData<SourceUrlRecorderWebStateObserver>;
-
-  void MaybeRecordUrl(web::NavigationContext* navigation_context,
-                      const GURL& initial_url);
-
-  // Map from navigation ID to the initial URL for that navigation.
-  base::flat_map<int64_t, GURL> pending_navigations_;
-
-  SourceId last_committed_source_id_;
-
-  WEB_STATE_USER_DATA_KEY_DECL();
-};
-
-WEB_STATE_USER_DATA_KEY_IMPL(SourceUrlRecorderWebStateObserver)
 
 SourceUrlRecorderWebStateObserver::SourceUrlRecorderWebStateObserver(
     web::WebState* web_state)
@@ -108,7 +69,6 @@ void SourceUrlRecorderWebStateObserver::DidFinishNavigation(
 
   DCHECK(!navigation_context->IsSameDocument());
 
-  const auto previous_last_committed_source_id = last_committed_source_id_;
   if (navigation_context->HasCommitted()) {
     last_committed_source_id_ = ConvertToSourceId(
         navigation_context->GetNavigationId(), SourceIdType::NAVIGATION_ID);
@@ -121,13 +81,6 @@ void SourceUrlRecorderWebStateObserver::DidFinishNavigation(
   if (navigation_context->IsDownload())
     return;
 
-  if (last_committed_source_id_ == previous_last_committed_source_id) {
-    // When the user is going back to a historical entry via action
-    // "MobileToolbarBack", we've observed that NavigationContext is sometimes
-    // (likely incorrectly) reused. In this case, the URL is already recorded,
-    // so skip the URL recording. See b/40075835.
-    return;
-  }
   MaybeRecordUrl(navigation_context, initial_url);
 }
 
@@ -139,10 +92,29 @@ void SourceUrlRecorderWebStateObserver::MaybeRecordUrl(
     web::NavigationContext* navigation_context,
     const GURL& initial_url) {
   DCHECK(!navigation_context->IsSameDocument());
+  const int64_t navigation_id = navigation_context->GetNavigationId();
 
   DelegatingUkmRecorder* ukm_recorder = DelegatingUkmRecorder::Get();
   if (!ukm_recorder)
     return;
+
+  // Check to avoid recording the same navigation more than once in the UKM
+  // recorder. On iOS, the logic to infer navigation from the limited signals
+  // that WebKit is imperfect, since we don't get all the usual WebKit
+  // navigation callbacks on JS-initiated same-document navigations.
+  // For example, suppose a sequence visits is
+  // 1. https://example.com#foo
+  // 2. https://example.com#bar
+  // 3. https://example.com#foo
+  // The first and third visits to the same URL are erroneously considered the
+  // same navigation, thus the NavigationContext from the first is reused. In
+  // contrast, UKM considers all of these three different navigations, in line
+  // with the logic onother platforms. As a workaround here, we skip recording
+  // the last visit to #foo to UKM. Cases such as these are observed to be very
+  // rare.
+  if (base::Contains(navigation_ids_seen_, navigation_id)) {
+    return;
+  }
 
   const GURL& final_url = navigation_context->GetUrl();
 
@@ -156,10 +128,13 @@ void SourceUrlRecorderWebStateObserver::MaybeRecordUrl(
 
   // TODO(crbug.com/41407501): Fill out the other fields in NavigationData.
 
-  const ukm::SourceId source_id = ukm::ConvertToSourceId(
-      navigation_context->GetNavigationId(), ukm::SourceIdType::NAVIGATION_ID);
+  navigation_ids_seen_.insert(navigation_id);
+  const ukm::SourceId source_id =
+      ukm::ConvertToSourceId(navigation_id, ukm::SourceIdType::NAVIGATION_ID);
   ukm_recorder->RecordNavigation(source_id, navigation_data);
 }
+
+WEB_STATE_USER_DATA_KEY_IMPL(SourceUrlRecorderWebStateObserver)
 
 }  // namespace internal
 
@@ -167,9 +142,13 @@ void InitializeSourceUrlRecorderForWebState(web::WebState* web_state) {
   internal::SourceUrlRecorderWebStateObserver::CreateForWebState(web_state);
 }
 
+internal::SourceUrlRecorderWebStateObserver*
+GetSourceUrlRecorderForWebStateForWebState(web::WebState* web_state) {
+  return internal::SourceUrlRecorderWebStateObserver::FromWebState(web_state);
+}
+
 SourceId GetSourceIdForWebStateDocument(web::WebState* web_state) {
-  internal::SourceUrlRecorderWebStateObserver* obs =
-      internal::SourceUrlRecorderWebStateObserver::FromWebState(web_state);
+  auto* obs = GetSourceUrlRecorderForWebStateForWebState(web_state);
   return obs ? obs->GetLastCommittedSourceId() : kInvalidSourceId;
 }
 
