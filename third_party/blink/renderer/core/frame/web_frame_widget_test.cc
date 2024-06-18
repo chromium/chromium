@@ -644,37 +644,6 @@ class NotifySwapTimesWebFrameWidgetTest : public SimTest {
   }
 };
 
-TEST_F(NotifySwapTimesWebFrameWidgetTest, PresentationTimestampValid) {
-  base::HistogramTester histograms;
-
-  CompositeAndWaitForPresentation(base::Milliseconds(2));
-
-  EXPECT_THAT(histograms.GetAllSamples(
-                  "PageLoad.Internal.Renderer.PresentationTime.Valid"),
-              testing::ElementsAre(base::Bucket(true, 1)));
-}
-
-TEST_F(NotifySwapTimesWebFrameWidgetTest, PresentationTimestampInvalid) {
-  base::HistogramTester histograms;
-
-  CompositeAndWaitForPresentation(base::TimeDelta());
-
-  EXPECT_THAT(histograms.GetAllSamples(
-                  "PageLoad.Internal.Renderer.PresentationTime.Valid"),
-              testing::ElementsAre(base::Bucket(false, 1)));
-}
-
-TEST_F(NotifySwapTimesWebFrameWidgetTest,
-       PresentationTimestampEarlierThanSwaptime) {
-  base::HistogramTester histograms;
-
-  CompositeAndWaitForPresentation(base::Milliseconds(-2));
-
-  EXPECT_THAT(histograms.GetAllSamples(
-                  "PageLoad.Internal.Renderer.PresentationTime.Valid"),
-              testing::ElementsAre(base::Bucket(false, 1)));
-}
-
 // Verifies that the presentation callback is called after the first successful
 // presentation (skips failed presentations in between).
 TEST_F(NotifySwapTimesWebFrameWidgetTest, NotifyOnSuccessfulPresentation) {
@@ -767,10 +736,6 @@ TEST_F(NotifySwapTimesWebFrameWidgetTest, NotifyOnSuccessfulPresentation) {
   // Wait for the presentation callback to be called. It should be called with
   // the timestamp of the successful presentation.
   presentation_run_loop.Run();
-
-  EXPECT_THAT(histograms.GetAllSamples(
-                  "PageLoad.Internal.Renderer.PresentationTime.Valid"),
-              testing::ElementsAre(base::Bucket(true, 1)));
 }
 
 // Tests that the presentation callback is only triggered if there’s
@@ -834,9 +799,6 @@ TEST_F(NotifySwapTimesWebFrameWidgetTest,
 
   // Wait for the presentation callback to be called.
   presentation_run_loop.Run();
-  EXPECT_THAT(histograms.GetAllSamples(
-                  "PageLoad.Internal.Renderer.PresentationTime.Valid"),
-              testing::ElementsAre(base::Bucket(true, 1)));
 }
 
 // Tests that the value of VisualProperties::is_pinch_gesture_active is

@@ -3449,8 +3449,6 @@ class ReportTimeSwapPromise : public cc::SwapPromise {
         frame_timing_details.presentation_feedback.timestamp;
     bool presentation_time_is_valid =
         !presentation_time.is_null() && (presentation_time > swap_time);
-    UMA_HISTOGRAM_BOOLEAN("PageLoad.Internal.Renderer.PresentationTime.Valid",
-                          presentation_time_is_valid);
     if (presentation_time_is_valid) {
       ReportPresentationTime(std::move(presentation_callback),
                              frame_timing_details);

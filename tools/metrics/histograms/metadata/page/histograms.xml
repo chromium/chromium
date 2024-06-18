@@ -2705,21 +2705,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Internal.Renderer.PresentationTime.Valid"
-    enum="Boolean" expires_after="2024-07-21">
-  <owner>jonross@chromium.org</owner>
-  <owner>graphics-dev@chromium.org</owner>
-  <summary>
-    This boolean keeps track of whether a valid presentation-timestamp was
-    received or not. This is reported only for compositor-frames that report a
-    paint-timing metric (e.g. FirstContentfulPaint etc.), and after that frame
-    has been displayed on screen.
-
-    The metric had expired on 2020-09-27, and re-enabled on 2021-03-17. So the
-    data within this period is incomplete.
-  </summary>
-</histogram>
-
 <histogram name="PageLoad.Internal.SoftNavigationFromReferenceInvalidTiming"
     enum="SoftNavigationFromReferenceInvalidTimingReasons"
     expires_after="2024-08-23">
