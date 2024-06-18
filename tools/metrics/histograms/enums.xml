@@ -33330,7 +33330,9 @@ Called by update_net_error_codes.py.-->
   </int>
   <int value="5" label="Kiosk App"/>
   <int value="6" label="Regular Supervised"/>
-  <int value="7" label="ARC Kiosk"/>
+  <int value="7" label="ARC Kiosk (deprecated)">
+    USER_TYPE_ARC_KIOSK - Deprecated 05/2024.
+  </int>
   <int value="8" label="Active Directory (deprecated)">
     USER_TYPE_ACTIVE_DIRECTORY - Deprecated 08/2023.
   </int>

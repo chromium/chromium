@@ -132,7 +132,7 @@ base::LazyInstance<std::map<const Profile*, bool>>::DestructorAtExit
 bool g_disallow_for_testing = false;
 
 // Let IsArcBlockedDueToIncompatibleFileSystem() return the specified value
-// during test runs. Doesn't affect ARC kiosk and public session.
+// during test runs. Doesn't affect public session.
 bool g_arc_blocked_due_to_incompatible_filesystem_for_testing = false;
 
 // TODO(kinaba): Temporary workaround for crbug.com/729034.

@@ -431,8 +431,6 @@ source_set("ash") {
     "arc/instance_throttle/arc_boot_phase_throttle_observer.h",
     "arc/instance_throttle/arc_instance_throttle.cc",
     "arc/instance_throttle/arc_instance_throttle.h",
-    "arc/instance_throttle/arc_kiosk_mode_throttle_observer.cc",
-    "arc/instance_throttle/arc_kiosk_mode_throttle_observer.h",
     "arc/instance_throttle/arc_pip_window_throttle_observer.cc",
     "arc/instance_throttle/arc_pip_window_throttle_observer.h",
     "arc/instance_throttle/arc_power_throttle_observer.cc",

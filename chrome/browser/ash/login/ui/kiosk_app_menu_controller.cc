@@ -36,8 +36,6 @@ KioskAppId ToKioskAppId(const KioskAppMenuEntry& menu_entry) {
       CHECK(menu_entry.chrome_app_id.has_value());
       return KioskAppId::ForChromeApp(menu_entry.chrome_app_id.value(),
                                       menu_entry.account_id);
-    case KioskAppMenuEntry::AppType::kArcApp:
-      NOTREACHED_NORETURN();
   }
 }
 

@@ -113,8 +113,6 @@ void MaybeUpdateOptInCancelUMA(const ArcSupportHost* support_host) {
 // Launch Play Store app, except for the following cases:
 // * When Opt-in verification is disabled (for tests);
 // * In case ARC is enabled from OOBE.
-// * In ARC Kiosk mode, because the only one UI in kiosk mode must be the
-//   kiosk app and device is not needed for opt-in;
 // * In Public Session mode, because Play Store will be hidden from users
 //   and only apps configured by policy should be installed.
 // * When ARC is managed, and user does not go through OOBE opt-in,
@@ -154,11 +152,10 @@ bool ShouldLaunchPlayStoreApp(Profile* profile,
 // Defines the conditions that require UI to present eventual error conditions
 // to the end user.
 //
-// Don't show UI for ARC Kiosk because the only one UI in kiosk mode must
-// be the kiosk app. In case of error the UI will be useless as well, because
-// in typical use case there will be no one nearby the kiosk device, who can
+// Don't show UI for MGS sessions in demo mode because the only one UI must be
+// the demo app. In case of error the UI will be useless as well, because
+// in typical use case there will be no one nearby the demo device, who can
 // do some action to solve the problem be means of UI.
-// Same considerations apply for MGS sessions in Demo Mode.
 // All other managed sessions will be attended by a user and require an error
 // UI.
 bool ShouldUseErrorDialog() {
@@ -1398,8 +1395,8 @@ void ArcSessionManager::MaybeStartTermsOfServiceNegotiation() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(profile_);
   DCHECK(!requirement_checker_);
-  // In Kiosk and Public Session mode, Terms of Service negotiation should be
-  // skipped. See also RequestEnableImpl().
+  // In Public Session mode, Terms of Service negotiation should be skipped.
+  // See also RequestEnableImpl().
   DCHECK(!IsRobotOrOfflineDemoAccountMode());
   // If opt-in verification is disabled, Terms of Service negotiation should
   // be skipped, too. See also RequestEnableImpl().
@@ -1524,8 +1521,8 @@ void ArcSessionManager::StartBackgroundRequirementChecks() {
   DCHECK_EQ(state_, State::ACTIVE);
   DCHECK(!requirement_checker_);
 
-  // We skip Android management check for Kiosk and Public Session mode, because
-  // they don't use real google accounts.
+  // We skip Android management check for Public Session mode, because they
+  // don't use real google accounts.
   if (IsArcOptInVerificationDisabled() || IsRobotOrOfflineDemoAccountMode()) {
     return;
   }
@@ -1942,7 +1939,7 @@ void ArcSessionManager::EmitLoginPromptVisibleCalled() {
     // stop request may be issued after mini-VM is started. This is a complete
     // waste of resources and may also cause page caches evictions making Chrome
     // UI less responsive.
-    // (*) This includes non-ARC Kiosk mode. See b/197510998 for more info.
+    // (*) This includes Kiosk mode. See b/197510998 for more info.
     VLOG(1) << "Starting ARCVM on login screen is not supported.";
     return;
   }

@@ -291,7 +291,7 @@ int CountRegularUsers(const user_manager::UserList& users) {
   for (user_manager::User* user : users) {
     // Skip kiosk apps for login screen user list. Kiosk apps as pods (aka new
     // kiosk UI) is currently disabled and it gets the apps directly from
-    // KioskChromeAppManager, ArcKioskAppManager and WebKioskAppManager.
+    // KioskChromeAppManager, WebKioskAppManager.
     if (user->IsKioskType()) {
       continue;
     }

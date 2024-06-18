@@ -4110,7 +4110,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Ready"/>
   <int value="1" label="Resume"/>
   <int value="2" label="LowStorage"/>
-  <int value="3" label="ArcKiosk"/>
+  <int value="3" label="(Obsolete) ArcKiosk - Removed in 2024/06"/>
   <int value="4" label="StartAutomatically"/>
   <int value="5" label="ResumeMinimal"/>
   <int value="6" label="StartAutomaticallyMinimal"/>
@@ -4125,10 +4125,17 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Request failure in resumed migration"/>
   <int value="6" label="Mount failure in new migration"/>
   <int value="7" label="Mount failure in resumed migration"/>
-  <int value="8" label="Success in arc kiosk migration"/>
-  <int value="9" label="General failure in arc kiosk migration"/>
-  <int value="10" label="Request failure in arc kiosk migration"/>
-  <int value="11" label="Mount failure in arc kiosk migration"/>
+  <int value="8"
+      label="(Obsolete) Success in arc kiosk migration - Removed in 2024/06"/>
+  <int value="9"
+      label="(Obsolete) General failure in arc kiosk migration - Removed in
+             2024/06"/>
+  <int value="10"
+      label="(Obsolete) Request failure in arc kiosk migration - Removed in
+             2024/06"/>
+  <int value="11"
+      label="(Obsolete) Mount failure in arc kiosk migration - Removed in
+             2024/06"/>
 </enum>
 
 <enum name="MigrationUIRemoveCryptohomeResult">
@@ -4136,8 +4143,10 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Success in resumed migration"/>
   <int value="2" label="Failure in new migration"/>
   <int value="3" label="Failure in resumed migration"/>
-  <int value="4" label="Success in arc kiosk migration"/>
-  <int value="5" label="Failure in arc kiosk migration"/>
+  <int value="4"
+      label="(Obsolete) Success in arc kiosk migration - Removed in 2024/06"/>
+  <int value="5"
+      label="(Obsolete) Failure in arc kiosk migration - Removed in 2024/06"/>
 </enum>
 
 <enum name="MigrationUIScreen">

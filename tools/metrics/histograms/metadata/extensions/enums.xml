@@ -3361,7 +3361,7 @@ Called by update_extension_permission.py.-->
   <int value="4" label="(Obsolete) Locally Managed"/>
   <int value="5" label="Kiosk App"/>
   <int value="6" label="Regular Supervised"/>
-  <int value="7" label="ARC Kiosk"/>
+  <int value="7" label="(Obsolete) ARC Kiosk"/>
   <int value="8" label="Active Directory"/>
   <int value="9" label="Web App Kiosk"/>
 </enum>

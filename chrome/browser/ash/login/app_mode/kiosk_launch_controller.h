@@ -255,7 +255,7 @@ class KioskLaunchController : public KioskAppLauncher::Observer,
   base::OneShotTimer splash_wait_timer_;
 
   // Used to prepare and launch the actual kiosk app, is created after
-  // profile initialization. Is nullptr for arc kiosks.
+  // profile initialization.
   std::unique_ptr<KioskAppLauncher> app_launcher_;
 
   // Tracks the moment when Kiosk launcher is started.

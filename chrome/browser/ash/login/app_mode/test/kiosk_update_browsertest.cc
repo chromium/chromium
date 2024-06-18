@@ -946,12 +946,6 @@ IN_PROC_BROWSER_TEST_F(KioskUpdateTest,
   EXPECT_FALSE(IsAppInstalled(kTestSecondaryApp1Id, "1.0.0"));
 }
 
-// This simulates the stand-alone ARC kiosk app case. The primary app has a
-// shared ARC runtime but no secondary apps.
-IN_PROC_BROWSER_TEST_F(KioskUpdateTest, LaunchAppWithSharedModuleNoSecondary) {
-  LaunchAppWithSharedModule();
-}
-
 IN_PROC_BROWSER_TEST_F(KioskUpdateTest, PRE_LaunchAppWithUpdatedModule) {
   LaunchAppWithSharedModule();
   // Verify the shared module is installed with version 1.0.0.

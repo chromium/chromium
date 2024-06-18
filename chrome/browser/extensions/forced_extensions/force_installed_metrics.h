@@ -50,7 +50,7 @@ class ForceInstalledMetrics : public ForceInstalledTracker::Observer {
     // USER_TYPE_SUPERVISED_DEPRECATED = 4,
     USER_TYPE_KIOSK_APP = 5,
     USER_TYPE_CHILD = 6,
-    USER_TYPE_ARC_KIOSK_APP = 7,
+    // USER_TYPE_ARC_KIOSK_APP_DEPRECATED = 7,
     USER_TYPE_ACTIVE_DIRECTORY = 8,
     USER_TYPE_WEB_KIOSK_APP = 9,
     // Maximum histogram value.

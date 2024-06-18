@@ -107,9 +107,6 @@ class EncryptionMigrationScreen : public BaseScreen,
   // Removes cryptohome and shows the error screen after the removal finishes.
   void RemoveCryptohome();
 
-  // True if the session is in ARC kiosk mode.
-  bool IsArcKiosk() const;
-
   // Handlers for cryptohome API callbacks.
   void OnMigrationRequested(std::unique_ptr<UserContext> context,
                             std::optional<AuthenticationError> error);

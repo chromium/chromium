@@ -587,8 +587,8 @@ void OpenNewWindowForFirstRun(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns the app id of the kiosk app associated with the current user session.
-// Returns nullopt for non-kiosk user sessions and for ARC kiosk sessions, since
-// crash recovery is not supported there.
+// Returns nullopt for non-kiosk user sessions, since crash recovery is not
+// supported there.
 std::optional<ash::KioskAppId> GetAppId(const base::CommandLine& command_line,
                                         Profile* profile) {
   const user_manager::User* user =
@@ -1055,8 +1055,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
         ash::LaunchAppOrDie(profile, app_id.value());
       }
     } else {
-      // If we are here, we are either in ARC kiosk session or the user is
-      // invalid. We should terminate the session in such cases.
+      // If we are here, the user is invalid.
+      // We should terminate the session in such cases.
       chrome::AttemptUserExit();
       return false;
     }

@@ -29,7 +29,6 @@ class WindowUserData;
 // developing an education app to support high stakes assessment requirements on
 // Android, or a single-purpose or kiosk application."
 // https://developer.android.com/about/versions/android-5.0.html#ScreenPinning
-// See also ArcKioskAppLauncher::CheckAndPinWindow().
 class ASH_EXPORT ScreenPinningController
     : public WindowTreeHostManager::Observer,
       aura::WindowObserver {
