@@ -4,6 +4,8 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -118,6 +120,23 @@ class FullscreenControllerInteractiveTest : public ExclusiveAccessTest {
     ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), key_code, false,
                                                 false, false, false));
     run_loop.Run();
+  }
+
+  void WaitForPointerLockBubbleToHide() {
+    PointerLockController* pointer_lock_controller =
+        browser()->exclusive_access_manager()->pointer_lock_controller();
+    base::RunLoop run_loop;
+    pointer_lock_controller->set_bubble_hide_callback_for_test(
+        base::BindRepeating(
+            [](base::RunLoop* run_loop,
+               ExclusiveAccessBubbleHideReason reason) {
+              ASSERT_EQ(reason, ExclusiveAccessBubbleHideReason::kTimeout);
+              run_loop->Quit();
+            },
+            &run_loop));
+    run_loop.Run();
+    pointer_lock_controller->set_bubble_hide_callback_for_test(
+        base::NullCallback());
   }
 
  private:
@@ -517,6 +536,9 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   ASSERT_TRUE(IsExclusiveAccessBubbleDisplayed());
   ASSERT_TRUE(IsPointerLocked());
   ASSERT_TRUE(IsExclusiveAccessBubbleDisplayed());
+  // Wait for the bubble to be shown for its full duration. This allows
+  // the page to lock the pointer without showing the bubble later.
+  WaitForPointerLockBubbleToHide();
 
   // Unlock the pointer from target, make sure it's unlocked.
   PressKeyAndWaitForPointerLockRequest(ui::VKEY_U);
@@ -532,6 +554,40 @@ IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
   PressKeyAndWaitForPointerLockRequest(ui::VKEY_U);
   ASSERT_FALSE(IsPointerLocked());
   ASSERT_FALSE(IsExclusiveAccessBubbleDisplayed());
+}
+
+// TODO: crbug.com/336428594 - Flaky on Lacros.
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_SecondPointerLockShowsBubble DISABLED_SecondPointerLockShowsBubble
+#else
+#define MAYBE_SecondPointerLockShowsBubble SecondPointerLockShowsBubble
+#endif
+IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
+                       MAYBE_SecondPointerLockShowsBubble) {
+  SetWebContentsGrantedSilentPointerLockPermission();
+  auto test_server_handle = embedded_test_server()->StartAndReturnHandle();
+  ASSERT_TRUE(test_server_handle);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kFullscreenPointerLockHTML)));
+
+  ASSERT_FALSE(IsExclusiveAccessBubbleDisplayed());
+
+  // Lock the pointer with a user gesture.
+  PressKeyAndWaitForPointerLockRequest(ui::VKEY_1);
+  ASSERT_TRUE(IsExclusiveAccessBubbleDisplayed());
+  ASSERT_TRUE(IsPointerLocked());
+  ASSERT_TRUE(IsExclusiveAccessBubbleDisplayed());
+
+  // Unlock the pointer from target, make sure it's unlocked.
+  PressKeyAndWaitForPointerLockRequest(ui::VKEY_U);
+  ASSERT_FALSE(IsPointerLocked());
+  ASSERT_FALSE(IsExclusiveAccessBubbleDisplayed());
+
+  // Lock the pointer again. The bubble wasn't shown for its full duration last
+  // time, so it gets shown again.
+  PressKeyAndWaitForPointerLockRequest(ui::VKEY_1);
+  ASSERT_TRUE(IsPointerLocked());
+  ASSERT_TRUE(IsExclusiveAccessBubbleDisplayed());
 }
 
 // Tests pointer lock is exited on page navigation.

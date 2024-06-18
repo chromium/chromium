@@ -149,7 +149,7 @@ void ExclusiveAccessBubbleViews::Update(
   DCHECK(EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE != params.type ||
          params.has_download);
   if (params_.type == params.type && params_.url == params.url &&
-      !params.force_update) {
+      !params.force_update && (IsShowing() || IsVisible())) {
     return;
   }
 
