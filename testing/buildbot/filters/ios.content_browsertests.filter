@@ -686,3 +686,6 @@
 # https://crrev.com/c/5468575.
 -NavigationBrowserTest.CommitBadNavigationInPendingCommitRFHCleanup
 
+# TODO(crbug.com/347803432): Timeout happens in these tests.
+-All/NavigationBrowserTestPaintHoldingSubframe.CrashSubframe/0
+-All/NavigationBrowserTestPaintHoldingSubframe.CrashSubframe/1
