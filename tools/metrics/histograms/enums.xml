@@ -18356,6 +18356,7 @@ from previous Chrome versions.
   <int value="-918618075" label="enable-service-worker"/>
   <int value="-917218910" label="FirstPartyVietnameseInput:enabled"/>
   <int value="-916780902" label="ExternalPciDevicesAllowed:enabled"/>
+  <int value="-916419217" label="LensOverlay:disabled"/>
   <int value="-916325423"
       label="WebAuthenticationAndroidCredManAndGmsCore:enabled"/>
   <int value="-915687759" label="CrOSLateBootAudioOffloadCrasDSPToSOF:enabled"/>
@@ -21188,6 +21189,7 @@ from previous Chrome versions.
   <int value="306641800" label="AndroidSiteSettingsUIRefresh:disabled"/>
   <int value="306662699" label="AutofillVirtualViewStructureAndroid:disabled"/>
   <int value="306834044" label="webui-tab-strip"/>
+  <int value="307167930" label="LensOverlay:enabled"/>
   <int value="307543404" label="disable-team-drives"/>
   <int value="307670929"
       label="enable-ambient-authentication-in-guest-session"/>

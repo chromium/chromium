@@ -1292,6 +1292,9 @@ extern const char kLegacyTechReportTopLevelUrlDescription[];
 extern const char kLensRegionSearchStaticPageName[];
 extern const char kLensRegionSearchStaticPageDescription[];
 
+extern const char kLensOverlayName[];
+extern const char kLensOverlayDescription[];
+
 extern const char kLensImageFormatOptimizationsName[];
 extern const char kLensImageFormatOptimizationsDescription[];
 

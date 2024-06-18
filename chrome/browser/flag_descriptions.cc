@@ -2278,6 +2278,10 @@ const char kLensRegionSearchStaticPageDescription[] =
     "Enables use of a static page in a new tab when using the Lens region "
     "search feature.";
 
+const char kLensOverlayName[] = "Lens overlay";
+const char kLensOverlayDescription[] =
+    "Enables Lens search via an overlay on any page.";
+
 const char kLensImageTranslateName[] =
     "Translate text in images with Google Lens";
 const char kLensImageTranslateDescription[] =
