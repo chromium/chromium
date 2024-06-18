@@ -29,7 +29,6 @@ import org.chromium.ui.DropdownPopupWindow;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.List;
-import java.util.function.BooleanSupplier;
 
 /**
  * Handles requests to the manual UI for filling passwords, payments and other user data. Ideally,
@@ -49,7 +48,6 @@ class ManualFillingCoordinator implements ManualFillingComponent {
             WindowAndroid windowAndroid,
             Profile profile,
             BottomSheetController sheetController,
-            BooleanSupplier isContextualSearchOpened,
             SoftKeyboardDelegate keyboardDelegate,
             BackPressManager backPressManager,
             Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
@@ -69,7 +67,6 @@ class ManualFillingCoordinator implements ManualFillingComponent {
                 new KeyboardAccessoryCoordinator(profile, mMediator, mMediator, barStub),
                 new AccessorySheetCoordinator(sheetStub, mMediator),
                 sheetController,
-                isContextualSearchOpened,
                 backPressManager,
                 edgeToEdgeControllerSupplier,
                 keyboardDelegate,
@@ -82,7 +79,6 @@ class ManualFillingCoordinator implements ManualFillingComponent {
             KeyboardAccessoryCoordinator accessoryBar,
             AccessorySheetCoordinator accessorySheet,
             BottomSheetController sheetController,
-            BooleanSupplier isContextualSearchOpened,
             BackPressManager backPressManager,
             Supplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             SoftKeyboardDelegate keyboardDelegate,
@@ -92,7 +88,6 @@ class ManualFillingCoordinator implements ManualFillingComponent {
                 accessorySheet,
                 windowAndroid,
                 sheetController,
-                isContextualSearchOpened,
                 backPressManager,
                 edgeToEdgeControllerSupplier,
                 keyboardDelegate,

@@ -419,7 +419,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchInternalStateHandler.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchManagementDelegate.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchManager.java",
-  "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchManagerSupplier.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchNetworkCommunicator.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchObserver.java",
   "java/src/org/chromium/chrome/browser/contextualsearch/ContextualSearchPolicy.java",

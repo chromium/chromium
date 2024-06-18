@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
+import android.app.Activity;
 import android.content.Context;
 
 import androidx.annotation.Nullable;
@@ -15,6 +16,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -354,20 +356,28 @@ public class ContextualSearchTabHelper extends EmptyTabObserver
 
     /**
      * Gets the {@link ContextualSearchManager} associated with the given tab's activity.
-     *
      * @param tab The {@link Tab} that we're getting the manager for.
      * @return The Contextual Search manager controlling that Tab.
      */
     private ContextualSearchManager getContextualSearchManager(Tab tab) {
-        var supplier = getContextualSearchManagerSupplier(tab);
-        return supplier != null ? supplier.get() : null;
+        ObservableSupplier<ContextualSearchManager> supplier =
+                getContextualSearchManagerSupplier(tab);
+        if (supplier == null) return null;
+        return supplier.get();
     }
 
     private ObservableSupplier<ContextualSearchManager> getContextualSearchManagerSupplier(
             Tab tab) {
         // Window may be null in tests.
-        WindowAndroid window = tab.getWindowAndroid();
-        return window != null ? ContextualSearchManagerSupplier.from(window) : null;
+        if (tab.getWindowAndroid() == null) return null;
+        // TODO(crbug.com/40757075): This shouldn't have a reference to ChromeActivity, find a way
+        // to
+        // inject the supplier instead.
+        Activity activity = tab.getWindowAndroid().getActivity().get();
+        if (activity instanceof ChromeActivity) {
+            return ((ChromeActivity) activity).getContextualSearchManagerSupplier();
+        }
+        return null;
     }
 
     // ============================================================================================

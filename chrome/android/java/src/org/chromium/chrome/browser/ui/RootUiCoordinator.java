@@ -57,7 +57,6 @@ import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTa
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager.ContextualSearchTabPromotionDelegate;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerSupplier;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchObserver;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelection;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionObserver;
@@ -72,7 +71,6 @@ import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
-import org.chromium.chrome.browser.gsa.ContextReporter;
 import org.chromium.chrome.browser.gsa.GSAContextDisplaySelection;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
@@ -225,9 +223,6 @@ public class RootUiCoordinator
     private final UnownedUserDataSupplier<DeviceLockActivityLauncher>
             mDeviceLockActivityLauncherSupplier = new DeviceLockActivityLauncherSupplier();
 
-    protected final UnownedUserDataSupplier<ContextualSearchManager>
-            mContextualSearchManagerSupplier = new ContextualSearchManagerSupplier();
-
     protected AppCompatActivity mActivity;
     protected @Nullable AppMenuCoordinator mAppMenuCoordinator;
     private final MenuOrKeyboardActionController mMenuOrKeyboardActionController;
@@ -338,6 +333,8 @@ public class RootUiCoordinator
             new ObservableSupplierImpl<>();
     protected final BottomControlsStacker mBottomControlsStacker;
     private final Supplier<Long> mLastUserInteractionTimeSupplier;
+    protected final ObservableSupplierImpl<ContextualSearchManager>
+            mContextualSearchManagerSupplier = new ObservableSupplierImpl<>();
     @Nullable private ContextualSearchObserver mReadAloudContextualSearchObserver;
     @Nullable private ContextualSearchSelectionObserver mContextualSearchSelectionObserver;
     @Nullable private PageZoomCoordinator mPageZoomCoordinator;
@@ -799,17 +796,14 @@ public class RootUiCoordinator
     }
 
     private void setupUnownedUserDataSuppliers() {
-        var userDataHost = mWindowAndroid.getUnownedUserDataHost();
-        mTabObscuringHandlerSupplier.attach(userDataHost);
-        mDeviceLockActivityLauncherSupplier.attach(userDataHost);
-        mContextualSearchManagerSupplier.attach(userDataHost);
+        mTabObscuringHandlerSupplier.attach(mWindowAndroid.getUnownedUserDataHost());
+        mDeviceLockActivityLauncherSupplier.attach(mWindowAndroid.getUnownedUserDataHost());
     }
 
     private void destroyUnownedUserDataSuppliers() {
         // TabObscuringHandler doesn't have a destroy method.
         mTabObscuringHandlerSupplier.destroy();
         mDeviceLockActivityLauncherSupplier.destroy();
-        mContextualSearchManagerSupplier.destroy();
     }
 
     @Override
@@ -1015,37 +1009,6 @@ public class RootUiCoordinator
 
     public ObservableSupplier<ContextualSearchManager> getContextualSearchManagerSupplier() {
         return mContextualSearchManagerSupplier;
-    }
-
-    /** Whether contextual search panel is opened. */
-    public boolean isContextualSearchOpened() {
-        return mContextualSearchManagerSupplier.hasValue()
-                && mContextualSearchManagerSupplier.get().isSearchPanelOpened();
-    }
-
-    /** Hide contextual search panel. */
-    public void hideContextualSearch() {
-        if (mContextualSearchManagerSupplier.hasValue()) {
-            mContextualSearchManagerSupplier
-                    .get()
-                    .hideContextualSearch(OverlayPanel.StateChangeReason.UNKNOWN);
-        }
-    }
-
-    public ContextReporter.SelectionReporter getContextReporter() {
-        return getContextualSearchManagerSupplier().hasValue()
-                ? new ContextReporter.SelectionReporter() {
-                    @Override
-                    public void enable(Callback<GSAContextDisplaySelection> callback) {
-                        getContextualSearchManagerSupplier().get().enableContextReporting(callback);
-                    }
-
-                    @Override
-                    public void disable() {
-                        getContextualSearchManagerSupplier().get().disableContextReporting();
-                    }
-                }
-                : null;
     }
 
     /**
