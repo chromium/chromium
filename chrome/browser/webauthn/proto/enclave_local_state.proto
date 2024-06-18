@@ -4,9 +4,10 @@
 
 syntax = "proto3";
 
-option optimize_for = LITE_RUNTIME;
-
 package webauthn_pb;
+
+option objc_class_prefix = "WAP";
+option optimize_for = LITE_RUNTIME;
 
 message EnclaveLocalState {
   // Google Password Manager PINs are assumed to have low entropy and so cannot
