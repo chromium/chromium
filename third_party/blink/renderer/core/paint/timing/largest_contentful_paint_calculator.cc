@@ -174,9 +174,10 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulText(
     return;
   Node* text_node = largest_text.node_;
   largest_reported_size_ = largest_text.recorded_size;
-  // Do not expose element attribution from shadow trees.
+  // Do not expose element attribution from shadow trees. Also note that @page
+  // margin boxes do not create Element nodes.
   Element* text_element =
-      text_node->IsInShadowTree() ? nullptr : To<Element>(text_node);
+      text_node->IsInShadowTree() ? nullptr : DynamicTo<Element>(text_node);
   const AtomicString& text_id =
       text_element ? text_element->GetIdAttribute() : AtomicString();
   // Always use paint time as start time for text LCP candidate.

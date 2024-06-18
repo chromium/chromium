@@ -85,6 +85,9 @@ class CORE_EXPORT PhysicalFragment : public GarbageCollected<PhysicalFragment> {
     // includes a non-optional kPageArea child.
     // See https://drafts.csswg.org/css-page-3/#page-model
     kPageBorderBox,
+    // Page margin fragment (e.g. author-specified header / footer). Used by
+    // printing.
+    kPageMargin,
     // A page area fragment. Used by printing. This is a fragmentainer, into
     // which document contents flow and get fragmented. It is sized with respect
     // to any given @page size when possible, and also honors scaling from print

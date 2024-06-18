@@ -1302,5 +1302,12 @@
       inherited: true,
       invalidate: ["layout", "paint", "scrollbar-color"],
     },
+    {
+      name: "IsPageMarginBox",
+      field_template: "primitive",
+      type_name: "bool",
+      default_value: "false",
+      inherited: false,
+    },
   ],
 }

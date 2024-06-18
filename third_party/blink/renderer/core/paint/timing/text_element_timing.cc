@@ -59,11 +59,18 @@ bool TextElementTiming::CanReportElements() const {
 
 void TextElementTiming::OnTextObjectPainted(const TextRecord& record) {
   Node* node = record.node_;
-  if (!node || node->IsInShadowTree())
-    return;
 
-  // Text aggregators should be Elements!
-  DCHECK(node->IsElementNode());
+  // Text aggregators need to be Elements. This will not be the case if the
+  // aggregator is the LayoutView (a Document node), though. This will be the
+  // only aggregator we have if the text is for an @page margin, since that is
+  // on the outside of the DOM.
+  //
+  // TODO(paint-dev): Document why it's necessary to check for null, and whether
+  // we're in a shadow tree.
+  if (!node || node->IsInShadowTree() || !node->IsElementNode()) {
+    return;
+  }
+
   auto* element = To<Element>(node);
   const AtomicString& id = element->GetIdAttribute();
   if (!element->FastHasAttribute(html_names::kElementtimingAttr))

@@ -37,6 +37,7 @@ class CORE_EXPORT PageRuleCollector {
 
  public:
   PageRuleCollector(const ComputedStyle* root_element_style,
+                    CSSAtRuleID at_rule_id,
                     uint32_t page_index,
                     const AtomicString& page_name,
                     MatchResult&);
@@ -63,6 +64,7 @@ class CORE_EXPORT PageRuleCollector {
 
   const bool is_left_page_;
   const bool is_first_page_;
+  const CSSAtRuleID at_rule_id_;
   const AtomicString page_name_;
 
   MatchResult& result_;

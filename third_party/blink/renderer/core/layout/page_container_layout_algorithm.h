@@ -6,13 +6,15 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_PAGE_CONTAINER_LAYOUT_ALGORITHM_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/block_node.h"
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_algorithm.h"
 
 namespace blink {
 
 class BlockBreakToken;
-class BlockNode;
 struct PageAreaLayoutParams;
 
 // Algorithm that generates a fragment for a page container, which is
@@ -58,6 +60,158 @@ class CORE_EXPORT PageContainerLayoutAlgorithm
   }
 
  private:
+  enum ProgressionDirection {
+    LeftToRight,
+    TopToBottom,
+    RightToLeft,
+    BottomToTop
+  };
+  static bool IsHorizontal(ProgressionDirection dir) {
+    return dir == LeftToRight || dir == RightToLeft;
+  }
+  static bool IsReverse(ProgressionDirection dir) {
+    return dir == RightToLeft || dir == BottomToTop;
+  }
+
+  enum EdgeMarginType {
+    StartMarginBox = 0,
+    CenterMarginBox = 1,
+    EndMarginBox = 2,
+
+    // Used when resolving auto-sized center/middle boxes.
+    FirstResolvee = 0,
+    NonResolvee = 1,
+    SecondResolvee = 2
+  };
+
+  class PreferredSizeInfo {
+   public:
+    PreferredSizeInfo() = default;
+    PreferredSizeInfo(MinMaxSizes min_max, LayoutUnit margin_sum, bool is_auto)
+        : min_max(min_max), margin_sum(margin_sum), is_auto(is_auto) {}
+
+    LayoutUnit MinLength() const { return min_max.min_size + margin_sum; }
+    LayoutUnit MaxLength() const { return min_max.max_size + margin_sum; }
+    LayoutUnit Length() const {
+      DCHECK_EQ(min_max.min_size, min_max.max_size);
+      return MinLength();
+    }
+    LayoutUnit MarginSum() const { return margin_sum; }
+    bool IsAuto() const { return is_auto; }
+
+    PreferredSizeInfo Doubled() const {
+      PreferredSizeInfo doubled(*this);
+      doubled.min_max.min_size *= 2;
+      doubled.min_max.max_size *= 2;
+      doubled.margin_sum *= 2;
+      return doubled;
+    }
+
+   private:
+    MinMaxSizes min_max;
+    LayoutUnit margin_sum;
+    bool is_auto = false;
+  };
+
+  void LayoutPageBorderBox(LogicalSize containing_block_size,
+                           LogicalOffset target_offset);
+
+  void LayoutAllMarginBoxes(const BoxStrut& logical_margins);
+
+  // Specify which page box edges a page margin box (or group of 3 page margin
+  // boxes on one side) is adjacent to. This matters when it comes to resolving
+  // auto margins, and also overconstrainedness.
+  enum EdgeAdjacencyFlag {
+    LeftEdge = 1,
+    RightEdge = 2,
+    TopEdge = 4,
+    BottomEdge = 8,
+  };
+  typedef int EdgeAdjacency;
+  bool IsAtTopEdge(EdgeAdjacency mask) const { return mask & TopEdge; }
+  bool IsAtLeftEdge(EdgeAdjacency mask) const { return mask & LeftEdge; }
+  bool IsAtHorizontalEdge(EdgeAdjacency mask) const {
+    return mask & (LeftEdge | RightEdge);
+  }
+  bool IsAtVerticalEdge(EdgeAdjacency mask) const {
+    return mask & (TopEdge | BottomEdge);
+  }
+
+  // Lay out a page margin box in one of the four corners.
+  //
+  // EdgeAdjacency defines which page edges we're adjacent to. Since this is a
+  // corner, two of LeftEdge, RightEdge, TopEdge, and BottomEdge will be set.
+  // (e.g. for bottom-right-corner it will be RightEdge | BottomEdge)
+  void LayoutCornerMarginNode(const ComputedStyle* corner_style,
+                              const PhysicalRect&,
+                              EdgeAdjacency);
+
+  // Lay out page margin boxes at one of the four edges.
+  //
+  // They will be positioned within `edge_rect`. This rectangle also represents
+  // the available size as far as percentage resolution and cross axis margins
+  // are concerned.
+  //
+  // EdgeAdjacency defines which page edges we're adjacent to. Since we're
+  // laying out edge boxes, one, and only one, of LeftEdge, RightEdge, TopEdge,
+  // and BottomEdge will be set.
+  void LayoutEdgeMarginNodes(const ComputedStyle* start_box_style,
+                             const ComputedStyle* center_box_style,
+                             const ComputedStyle* end_box_style,
+                             const PhysicalRect& edge_rect,
+                             EdgeAdjacency);
+
+  // Create a block node based on computed style for an @page margin box. This
+  // includes creating children for the content property. Will return
+  // BlockNode(nullptr) if there's nothing to lay out for this margin box,
+  // e.g. when there's no content property.
+  BlockNode CreateBlockNodeIfNeeded(const ComputedStyle*) const;
+
+  // Calculate the preferred main size for one of the page margin boxes along
+  // one of the four edges.
+  PreferredSizeInfo EdgeMarginNodePreferredSize(
+      const BlockNode& child,
+      LogicalSize containing_block_size,
+      ProgressionDirection) const;
+
+  // Based on available size, size properties and intrinsic sizes, calculate the
+  // main-axis size for each of the (up to) three page margin boxes along one of
+  // the four edges, and place the result in `final_main_axis_sizes`.
+  void CalculateEdgeMarginBoxSizes(PhysicalSize available_physical_size,
+                                   const BlockNode nodes[3],
+                                   ProgressionDirection,
+                                   LayoutUnit final_main_axis_sizes[3]) const;
+
+  // Resolve at most two auto size values. The first and last entry in
+  // preferred_main_axis_sizes may be auto. The one in the middle is required to
+  // be non-auto.
+  static void ResolveTwoEdgeMarginBoxLengths(
+      const PreferredSizeInfo preferred_main_axis_sizes[3],
+      LayoutUnit available_main_axis_size,
+      LayoutUnit* first_main_axis_size,
+      LayoutUnit* second_main_axis_size);
+
+  // Lay out one of the (up to) three page margin box nodes at one of the four
+  // edges. It will be positioned within `edge_rect`. This rectangle also
+  // represents the available size as far as percentage resolution and cross
+  // axis margins are concerned. The main axis size (width for margins at
+  // top/bottom edges, and height for left/right edges) has already been
+  // calculated at this point.
+  void LayoutEdgeMarginNode(const BlockNode& child,
+                            const PhysicalRect& edge_rect,
+                            LayoutUnit main_axis_size,
+                            EdgeMarginType,
+                            EdgeAdjacency,
+                            ProgressionDirection);
+
+  // Resolve margins after layout. This includes adding auto margins to resolve
+  // any overconstrainedness.
+  PhysicalBoxStrut ResolveMargins(const ConstraintSpace& child_space,
+                                  const ComputedStyle& child_style,
+                                  PhysicalSize child_size,
+                                  PhysicalSize available_size,
+                                  EdgeAdjacency) const;
+
   wtf_size_t page_index_;
   const AtomicString& page_name_;
   const BlockNode& content_node_;

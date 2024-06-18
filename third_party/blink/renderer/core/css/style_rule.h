@@ -194,6 +194,7 @@ class CORE_EXPORT StyleRuleBase : public GarbageCollected<StyleRuleBase> {
     }
 
     wtf_size_t size() const { return rules_.size() - num_invisible_rules_; }
+    bool empty() const { return !size(); }
 
     void AddChildRule(StyleRuleBase* rule);
     void WrapperInsertRule(unsigned index, StyleRuleBase*);

@@ -76,6 +76,9 @@ PhysicalFragment::BoxType FragmentBuilder::GetBoxType() const {
   if (layout_object_->IsRenderedLegend()) {
     return PhysicalFragment::BoxType::kRenderedLegend;
   }
+  if (layout_object_->StyleRef().IsPageMarginBox()) {
+    return PhysicalFragment::BoxType::kPageMargin;
+  }
   if (layout_object_->IsInline()) {
     // Check |IsAtomicInlineLevel()| after |IsInline()| because |LayoutReplaced|
     // sets |IsAtomicInlineLevel()| even when it's block-level. crbug.com/567964

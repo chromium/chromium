@@ -1208,7 +1208,8 @@ PaintLayer* LayoutObject::PaintingLayer(int max_depth) const {
       // LayoutView paint layer for such objects.
       const PhysicalBoxFragment& fragment = *box->GetPhysicalFragment(0);
       if (fragment.GetBoxType() == PhysicalFragment::kPageContainer ||
-          fragment.GetBoxType() == PhysicalFragment::kPageBorderBox) {
+          fragment.GetBoxType() == PhysicalFragment::kPageBorderBox ||
+          fragment.GetBoxType() == PhysicalFragment::kPageMargin) {
         return box->View()->Layer();
       }
     }
@@ -2624,7 +2625,8 @@ void LayoutObject::SetPseudoElementStyle(const ComputedStyle* pseudo_style,
          pseudo_style->StyleType() == kPseudoIdAfter ||
          pseudo_style->StyleType() == kPseudoIdMarker ||
          pseudo_style->StyleType() == kPseudoIdFirstLetter ||
-         pseudo_style->StyleType() == kPseudoIdScrollMarkerGroup);
+         pseudo_style->StyleType() == kPseudoIdScrollMarkerGroup ||
+         pseudo_style->IsPageMarginBox());
 
   // FIXME: We should consider just making all pseudo items use an inherited
   // style.

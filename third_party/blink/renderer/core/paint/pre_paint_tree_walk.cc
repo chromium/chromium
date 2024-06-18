@@ -892,6 +892,18 @@ void PrePaintTreeWalk::WalkPageContainer(
       StitchedPageContentRect(page_container).offset;
 
   for (const PhysicalFragmentLink& grandchild : page_container.Children()) {
+    if (grandchild->GetBoxType() == PhysicalFragment::kPageMargin) {
+      // This is one of 16 possible page margin boxes, e.g. used to display page
+      // headers or footers.
+      PrePaintTreeWalkContext margin_box_context(
+          parent_context, parent_context.NeedsTreeBuilderContext());
+      PrePaintInfo margin_pre_paint_info =
+          CreatePrePaintInfo(grandchild, margin_box_context);
+      Walk(*grandchild->GetLayoutObject(), margin_box_context,
+           &margin_pre_paint_info);
+      continue;
+    }
+
     DCHECK_EQ(grandchild->GetBoxType(), PhysicalFragment::kPageBorderBox);
 
     // This is a page border box, which contains the page contents area fragment

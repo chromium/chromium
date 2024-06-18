@@ -36,9 +36,9 @@ class PageRuleCollectorTest : public PageTestBase {
 
     STACK_UNINITIALIZED StyleCascade cascade(state);
 
-    PageRuleCollector collector(&initial_style, /* page_index */ 0,
-                                /* page_name */ AtomicString("page"),
-                                cascade.MutableMatchResult());
+    PageRuleCollector collector(
+        &initial_style, CSSAtRuleID::kCSSAtRulePage, /* page_index */ 0,
+        /* page_name */ AtomicString("page"), cascade.MutableMatchResult());
 
     collector.MatchPageRules(ua_ruleset, CascadeOrigin::kUserAgent,
                              nullptr /* tree_scope */, nullptr /* layer_map */);

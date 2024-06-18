@@ -284,7 +284,6 @@ class CORE_EXPORT ConstraintSpace final {
       // @page margin and padding are different from those on regular CSS boxes.
       // Inline percentages are resolved against the inline-size of the margin
       // box, and block percentages are resolved against its block-size.
-      DCHECK(!IsOrthogonalWritingModeRoot());
       return PercentageResolutionSize();
     }
 

@@ -15,7 +15,7 @@ namespace blink {
 namespace {
 
 BlockContentAlignment ComputeContentAlignment(const ComputedStyle& style,
-                                              bool is_table_cell,
+                                              bool behave_like_table_cell,
                                               UseCounter* use_counter) {
   const StyleContentAlignmentData& alignment = style.AlignContent();
   ContentPosition position = alignment.GetPosition();
@@ -42,13 +42,15 @@ BlockContentAlignment ComputeContentAlignment(const ComputedStyle& style,
   }
 
   if (use_counter) {
-    if (!is_table_cell && position != ContentPosition::kNormal &&
-        position != ContentPosition::kStart &&
-        position != ContentPosition::kBaseline &&
-        position != ContentPosition::kFlexStart) {
-      UseCounter::Count(*use_counter,
-                        WebFeature::kEffectiveAlignContentForBlock);
-    } else if (is_table_cell && position != ContentPosition::kNormal &&
+    if (!behave_like_table_cell) {
+      if (position != ContentPosition::kNormal &&
+          position != ContentPosition::kStart &&
+          position != ContentPosition::kBaseline &&
+          position != ContentPosition::kFlexStart) {
+        UseCounter::Count(*use_counter,
+                          WebFeature::kEffectiveAlignContentForBlock);
+      }
+    } else if (position != ContentPosition::kNormal &&
                position != ContentPosition::kCenter) {
       UseCounter::Count(*use_counter,
                         WebFeature::kEffectiveAlignContentForTableCell);
@@ -73,7 +75,7 @@ BlockContentAlignment ComputeContentAlignment(const ComputedStyle& style,
                      : BlockContentAlignment::kUnsafeEnd;
 
     case ContentPosition::kNormal:
-      if (!is_table_cell) {
+      if (!behave_like_table_cell) {
         return BlockContentAlignment::kStart;
       }
       switch (style.VerticalAlign()) {
@@ -165,13 +167,15 @@ BlockContentAlignment ComputeContentAlignmentForBlock(
   if (!style.IsDisplayBlockContainer()) {
     return BlockContentAlignment::kStart;
   }
-  return ComputeContentAlignment(style, /* is_table_cell */ false, use_counter);
+  bool behave_like_table_cell = style.IsPageMarginBox();
+  return ComputeContentAlignment(style, behave_like_table_cell, use_counter);
 }
 
 BlockContentAlignment ComputeContentAlignmentForTableCell(
     const ComputedStyle& style,
     UseCounter* use_counter) {
-  return ComputeContentAlignment(style, /* is_table_cell */ true, use_counter);
+  return ComputeContentAlignment(style, /*behave_like_table_cell=*/true,
+                                 use_counter);
 }
 
 void AlignBlockContent(const ComputedStyle& style,

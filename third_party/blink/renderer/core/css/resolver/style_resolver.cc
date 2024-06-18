@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/core/css/element_rule_collector.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
 #include "third_party/blink/renderer/core/css/out_of_flow_data.h"
+#include "third_party/blink/renderer/core/css/page_margins_style.h"
 #include "third_party/blink/renderer/core/css/page_rule_collector.h"
 #include "third_party/blink/renderer/core/css/part_names.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
@@ -1790,7 +1791,8 @@ const ComputedStyle* StyleResolver::StyleForPage(uint32_t page_index,
 
   STACK_UNINITIALIZED StyleCascade cascade(state);
 
-  PageRuleCollector collector(parent_style, page_index, page_name,
+  PageRuleCollector collector(parent_style, CSSAtRuleID::kCSSAtRulePage,
+                              page_index, page_name,
                               cascade.MutableMatchResult());
 
   collector.MatchPageRules(
@@ -1845,6 +1847,66 @@ const ComputedStyle* StyleResolver::StyleForPage(uint32_t page_index,
 
   // Now return the style.
   return state.TakeStyle();
+}
+
+void StyleResolver::StyleForPageMargins(const ComputedStyle& page_style,
+                                        uint32_t page_index,
+                                        const AtomicString& page_name,
+                                        PageMarginsStyle* margins_style) {
+  Element* root_element = GetDocument().documentElement();
+  if (!root_element) {
+    return;
+  }
+
+  struct Entry {
+    PageMarginsStyle::MarginSlot slot;
+    CSSAtRuleID at_rule_id;
+  };
+  const Entry table[] = {
+      {PageMarginsStyle::TopLeft, CSSAtRuleID::kCSSAtRuleTopLeft},
+      {PageMarginsStyle::TopCenter, CSSAtRuleID::kCSSAtRuleTopCenter},
+      {PageMarginsStyle::TopRight, CSSAtRuleID::kCSSAtRuleTopRight},
+      {PageMarginsStyle::RightTop, CSSAtRuleID::kCSSAtRuleRightTop},
+      {PageMarginsStyle::RightMiddle, CSSAtRuleID::kCSSAtRuleRightMiddle},
+      {PageMarginsStyle::RightBottom, CSSAtRuleID::kCSSAtRuleRightBottom},
+      {PageMarginsStyle::BottomLeft, CSSAtRuleID::kCSSAtRuleBottomLeft},
+      {PageMarginsStyle::BottomCenter, CSSAtRuleID::kCSSAtRuleBottomCenter},
+      {PageMarginsStyle::BottomRight, CSSAtRuleID::kCSSAtRuleBottomRight},
+      {PageMarginsStyle::LeftTop, CSSAtRuleID::kCSSAtRuleLeftTop},
+      {PageMarginsStyle::LeftMiddle, CSSAtRuleID::kCSSAtRuleLeftMiddle},
+      {PageMarginsStyle::LeftBottom, CSSAtRuleID::kCSSAtRuleLeftBottom},
+      {PageMarginsStyle::TopLeftCorner, CSSAtRuleID::kCSSAtRuleTopLeftCorner},
+      {PageMarginsStyle::TopRightCorner, CSSAtRuleID::kCSSAtRuleTopRightCorner},
+      {PageMarginsStyle::BottomRightCorner,
+       CSSAtRuleID::kCSSAtRuleBottomRightCorner},
+      {PageMarginsStyle::BottomLeftCorner,
+       CSSAtRuleID::kCSSAtRuleBottomLeftCorner}};
+
+  for (const Entry& entry : table) {
+    StyleResolverState margin_state(GetDocument(), *root_element,
+                                    /*StyleRecalcContext=*/nullptr,
+                                    StyleRequest(&page_style));
+    margin_state.CreateNewStyle(*InitialStyleForElement(), page_style);
+    margin_state.StyleBuilder().SetDisplay(EDisplay::kBlock);
+    margin_state.StyleBuilder().SetIsPageMarginBox(true);
+
+    STACK_UNINITIALIZED StyleCascade margin_cascade(margin_state);
+    PageRuleCollector margin_rule_collector(
+        &page_style, entry.at_rule_id, page_index, page_name,
+        margin_cascade.MutableMatchResult());
+    margin_rule_collector.MatchPageRules(
+        CSSDefaultStyleSheets::Instance().DefaultPrintStyle(),
+        CascadeOrigin::kUserAgent, /*tree_scope=*/nullptr,
+        /*layer_map=*/nullptr);
+
+    if (ScopedStyleResolver* scoped_resolver =
+            GetDocument().GetScopedStyleResolver()) {
+      scoped_resolver->MatchPageRules(margin_rule_collector);
+    }
+
+    margin_cascade.Apply();
+    (*margins_style)[entry.slot] = margin_state.TakeStyle();
+  }
 }
 
 const ComputedStyle& StyleResolver::InitialStyle() const {
