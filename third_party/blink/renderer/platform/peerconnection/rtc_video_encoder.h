@@ -104,7 +104,11 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
   bool CodecSettingsUsableForFrameSizeChange(
       const webrtc::VideoCodec& codec_settings) const;
 
-  int32_t DrainEncoderAndUpdateFrameSize(const gfx::Size& frame_size);
+  int32_t DrainEncoderAndUpdateFrameSize(
+      const gfx::Size& input_visible_size,
+      const webrtc::VideoEncoder::RateControlParameters& params,
+      const std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>&
+          spatial_layers);
 
   const media::VideoCodecProfile profile_;
 

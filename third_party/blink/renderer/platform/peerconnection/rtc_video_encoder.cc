@@ -254,6 +254,33 @@ uint8_t GetDropFrameThreshold(const webrtc::VideoCodec& codec_settings) {
   }
   return 0;
 }
+
+webrtc::VideoBitrateAllocation AllocateBitrateForVEAConfig(
+    const media::VideoEncodeAccelerator::Config& config) {
+  // The same bitrate factors as the software encoder.
+  // https://source.chromium.org/chromium/chromium/src/+/main:media/video/vpx_video_encoder.cc;l=131;drc=d383d0b3e4f76789a6de2a221c61d3531f4c59da
+  constexpr double kTemporalLayersBitrateScaleFactors[][3] = {
+      {1.00, 0.00, 0.00},  // For one temporal layer.
+      {0.60, 0.40, 0.00},  // For two temporal layers.
+      {0.50, 0.20, 0.30},  // For three temporal layers.
+  };
+  DCHECK_EQ(config.bitrate.mode(), media::Bitrate::Mode::kConstant);
+  webrtc::VideoBitrateAllocation bitrate_allocation;
+  bitrate_allocation.SetBitrate(0, 0, config.bitrate.target_bps());
+
+  for (size_t sid = 0; sid < config.spatial_layers.size(); ++sid) {
+    const auto& sl = config.spatial_layers[sid];
+    CHECK_EQ(sl.num_of_temporal_layers <= 3, true);
+    for (size_t tid = 0; tid < sl.num_of_temporal_layers; ++tid) {
+      const double factor =
+          kTemporalLayersBitrateScaleFactors[sl.num_of_temporal_layers - 1]
+                                            [tid];
+      bitrate_allocation.SetBitrate(sid, tid, sl.bitrate_bps * factor);
+    }
+  }
+  return bitrate_allocation;
+}
+
 }  // namespace
 
 namespace WTF {
@@ -655,6 +682,8 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   void RequestEncodingParametersChangeWithSizeChange(
       const webrtc::VideoEncoder::RateControlParameters& parameters,
       const gfx::Size& input_visible_size,
+      const std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>&
+          spatial_layers,
       SignaledValue event);
 
   // Request encoding parameter change for the underlying encoder.
@@ -1115,41 +1144,41 @@ void RTCVideoEncoder::Impl::RequestEncodingParametersChangeInternal(
   if (!video_encoder_)
     return;
 
+  uint32_t framerate =
+      std::max(1u, static_cast<uint32_t>(parameters.framerate_fps + 0.5));
   // This is a workaround to zero being temporarily provided, as part of the
   // initial setup, by WebRTC.
   media::VideoBitrateAllocation allocation;
   if (parameters.bitrate.get_sum_bps() == 0u) {
     allocation.SetBitrate(0, 0, 1u);
-  }
-  uint32_t framerate =
-      std::max(1u, static_cast<uint32_t>(parameters.framerate_fps + 0.5));
-
-  active_spatial_layers_.begin_index = 0;
-  active_spatial_layers_.end_index = 0;
-  for (size_t spatial_id = 0;
-       spatial_id < media::VideoBitrateAllocation::kMaxSpatialLayers;
-       ++spatial_id) {
-    for (size_t temporal_id = 0;
-         temporal_id < media::VideoBitrateAllocation::kMaxTemporalLayers;
-         ++temporal_id) {
-      // TODO(sprang): Clean this up if/when webrtc struct moves to int.
-      uint32_t temporal_layer_bitrate = base::checked_cast<int>(
-          parameters.bitrate.GetBitrate(spatial_id, temporal_id));
-      if (!allocation.SetBitrate(spatial_id, temporal_id,
-                                 temporal_layer_bitrate)) {
-        LOG(WARNING) << "Overflow in bitrate allocation: "
-                     << parameters.bitrate.ToString();
-        break;
-      }
-      if (temporal_layer_bitrate > 0) {
-        if (active_spatial_layers_.end_index == 0) {
-          active_spatial_layers_.begin_index = spatial_id;
+  } else {
+    active_spatial_layers_.begin_index = 0;
+    active_spatial_layers_.end_index = 0;
+    for (size_t spatial_id = 0;
+         spatial_id < media::VideoBitrateAllocation::kMaxSpatialLayers;
+         ++spatial_id) {
+      for (size_t temporal_id = 0;
+           temporal_id < media::VideoBitrateAllocation::kMaxTemporalLayers;
+           ++temporal_id) {
+        // TODO(sprang): Clean this up if/when webrtc struct moves to int.
+        uint32_t temporal_layer_bitrate = base::checked_cast<int>(
+            parameters.bitrate.GetBitrate(spatial_id, temporal_id));
+        if (!allocation.SetBitrate(spatial_id, temporal_id,
+                                   temporal_layer_bitrate)) {
+          LOG(WARNING) << "Overflow in bitrate allocation: "
+                       << parameters.bitrate.ToString();
+          break;
         }
-        active_spatial_layers_.end_index = spatial_id + 1;
+        if (temporal_layer_bitrate > 0) {
+          if (active_spatial_layers_.end_index == 0) {
+            active_spatial_layers_.begin_index = spatial_id;
+          }
+          active_spatial_layers_.end_index = spatial_id + 1;
+        }
       }
     }
+    DCHECK_EQ(allocation.GetSumBps(), parameters.bitrate.get_sum_bps());
   }
-  DCHECK_EQ(allocation.GetSumBps(), parameters.bitrate.get_sum_bps());
   video_encoder_->RequestEncodingParametersChange(allocation, framerate,
                                                   input_visible_size);
 }
@@ -1157,6 +1186,8 @@ void RTCVideoEncoder::Impl::RequestEncodingParametersChangeInternal(
 void RTCVideoEncoder::Impl::RequestEncodingParametersChangeWithSizeChange(
     const webrtc::VideoEncoder::RateControlParameters& parameters,
     const gfx::Size& input_visible_size,
+    const std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>&
+        spatial_layers,
     SignaledValue event) {
   DVLOG(3) << __func__ << " bitrate=" << parameters.bitrate.ToString()
            << ", framerate=" << parameters.framerate_fps
@@ -1165,22 +1196,34 @@ void RTCVideoEncoder::Impl::RequestEncodingParametersChangeWithSizeChange(
 
   DCHECK_EQ(status_, WEBRTC_VIDEO_CODEC_UNINITIALIZED);
 
-  std::optional<gfx::Size> new_size;
-  if (input_visible_size != input_visible_size_) {
-    DVLOG(3) << __func__ << " expecting new buffers, old size "
-             << input_visible_size_.ToString();
-    new_size = input_visible_size;
-  }
   async_init_event_ = ScopedSignaledValue(std::move(event));
-
-  RequestEncodingParametersChangeInternal(parameters, new_size);
-
-  input_visible_size_ = input_visible_size;
-
-  if (!new_size.has_value()) {
+  if (input_visible_size == input_visible_size_) {
+    // If the input visible size is the same, we expect all the resolution of
+    // spatial layers should be the same.
+    CHECK_EQ(init_spatial_layer_resolutions_.size(), spatial_layers.size());
+    for (size_t i = 0; i < spatial_layers.size(); ++i) {
+      wtf_size_t wtf_i = base::checked_cast<wtf_size_t>(i);
+      CHECK_EQ(init_spatial_layer_resolutions_[wtf_i].width(),
+               spatial_layers[i].width);
+      CHECK_EQ(init_spatial_layer_resolutions_[wtf_i].height(),
+               spatial_layers[i].height);
+    }
+    RequestEncodingParametersChangeInternal(parameters, std::nullopt);
     status_ = WEBRTC_VIDEO_CODEC_OK;
     async_init_event_.SetAndReset(WEBRTC_VIDEO_CODEC_OK);
+    return;
   }
+
+  DVLOG(3) << __func__ << " expecting new buffers, old size "
+           << input_visible_size_.ToString();
+  init_spatial_layer_resolutions_.clear();
+  for (const auto& layer : spatial_layers) {
+    init_spatial_layer_resolutions_.emplace_back(layer.width, layer.height);
+  }
+
+  RequestEncodingParametersChangeInternal(parameters, input_visible_size);
+
+  input_visible_size_ = input_visible_size;
 }
 
 void RTCVideoEncoder::Impl::RecordTimestampMatchUMA() const {
@@ -2000,7 +2043,10 @@ RTCVideoEncoder::~RTCVideoEncoder() {
 }
 
 int32_t RTCVideoEncoder::DrainEncoderAndUpdateFrameSize(
-    const gfx::Size& input_visible_size) {
+    const gfx::Size& input_visible_size,
+    const webrtc::VideoEncoder::RateControlParameters& params,
+    const std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>&
+        spatial_layers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
 
   base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
@@ -2026,13 +2072,12 @@ int32_t RTCVideoEncoder::DrainEncoderAndUpdateFrameSize(
     }
   }
 
-  webrtc::VideoEncoder::RateControlParameters params;
   DVLOG(3) << __func__ << ": updating frame size on existing instance";
   PostCrossThreadTask(
       *gpu_task_runner_.get(), FROM_HERE,
       CrossThreadBindOnce(
           &RTCVideoEncoder::Impl::RequestEncodingParametersChangeWithSizeChange,
-          weak_impl_, params, input_visible_size,
+          weak_impl_, params, input_visible_size, spatial_layers,
           SignaledValue(&initialization_waiter, &initialization_retval)));
   initialization_waiter.Wait();
   return initialization_retval;
@@ -2071,27 +2116,39 @@ int32_t RTCVideoEncoder::InitializeEncoder(
     RecordInitEncodeUMA(initialization_retval, profile_);
   } else {
     DCHECK(frame_size_change_supported_);
-    initialization_retval =
-        DrainEncoderAndUpdateFrameSize(vea_config.input_visible_size);
+    webrtc::VideoEncoder::RateControlParameters params(
+        AllocateBitrateForVEAConfig(vea_config), vea_config.framerate);
+    initialization_retval = DrainEncoderAndUpdateFrameSize(
+        vea_config.input_visible_size, params, vea_config.spatial_layers);
   }
   return initialization_retval;
 }
 
 bool RTCVideoEncoder::CodecSettingsUsableForFrameSizeChange(
     const webrtc::VideoCodec& codec_settings) const {
-  if (codec_settings.GetScalabilityMode() !=
-          codec_settings_.GetScalabilityMode() ||
-      codec_settings.GetFrameDropEnabled() !=
-          codec_settings_.GetFrameDropEnabled() ||
-      codec_settings.mode != codec_settings_.mode) {
+  if (codec_settings.codecType != codec_settings_.codecType) {
     return false;
   }
-  if (codec_settings.codecType == webrtc::kVideoCodecVP9 &&
-      (codec_settings.VP9().numberOfTemporalLayers !=
-           codec_settings_.VP9().numberOfTemporalLayers ||
-       codec_settings.VP9().numberOfSpatialLayers !=
-           codec_settings_.VP9().numberOfSpatialLayers)) {
+  if (codec_settings.GetScalabilityMode() !=
+      codec_settings_.GetScalabilityMode()) {
     return false;
+  }
+  if (codec_settings.GetFrameDropEnabled() !=
+      codec_settings_.GetFrameDropEnabled()) {
+    return false;
+  }
+  if (codec_settings.mode != codec_settings_.mode) {
+    return false;
+  }
+
+  if (codec_settings.codecType == webrtc::kVideoCodecVP9) {
+    const auto vp9 = codec_settings_.VP9();
+    const auto new_vp9 = codec_settings.VP9();
+    if (vp9.numberOfTemporalLayers != new_vp9.numberOfTemporalLayers ||
+        vp9.numberOfSpatialLayers != new_vp9.numberOfSpatialLayers ||
+        vp9.interLayerPred != new_vp9.interLayerPred) {
+      return false;
+    }
   }
   return true;
 }
