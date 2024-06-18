@@ -16,6 +16,7 @@ from count import Count
 from data_points import DataPoints
 from measure import Measure
 from metric import Metric
+from time_consumption import TimeConsumption
 
 # The file name is used as the key when being loaded into the ResultDB and
 # shouldn't be changed.
@@ -45,6 +46,10 @@ def count(*name_pieces: str) -> Count:
 
 def data_points(*name_pieces: str) -> DataPoints:
   return _register(DataPoints(_create_name(*name_pieces)))
+
+
+def time_consumption(*name_pieces: str) -> TimeConsumption:
+  return _register(TimeConsumption(_create_name(*name_pieces)))
 
 
 # TODO(crbug.com/343242386): May need to implement a lock and reset logic to
