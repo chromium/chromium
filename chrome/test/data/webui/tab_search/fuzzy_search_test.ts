@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {SearchOptions} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {fuzzySearch, TabData, TabItemType} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {fuzzySearch, getHostname, getTitle, TabData, TabItemType} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {createTab} from './tab_search_test_data.js';
@@ -44,10 +44,12 @@ suite('FuzzySearchTest', () => {
       keys: [
         {
           name: 'tab.title',
+          getter: getTitle,
           weight: 1,
         },
         {
           name: 'hostname',
+          getter: getHostname,
           weight: 1,
         },
       ],
@@ -161,10 +163,12 @@ suite('FuzzySearchTest', () => {
       keys: [
         {
           name: 'tab.title',
+          getter: getTitle,
           weight: 1,
         },
         {
           name: 'hostname',
+          getter: getHostname,
           weight: 1,
         },
       ],
@@ -211,10 +215,12 @@ suite('FuzzySearchTest', () => {
       keys: [
         {
           name: 'tab.title',
+          getter: getTitle,
           weight: 1,
         },
         {
           name: 'hostname',
+          getter: getHostname,
           weight: 1,
         },
       ],
@@ -244,10 +250,12 @@ suite('FuzzySearchTest', () => {
           keys: [
             {
               name: 'tab.title',
+              getter: getTitle,
               weight: 1,
             },
             {
               name: 'hostname',
+              getter: getHostname,
               weight: 1,
             },
           ],
@@ -275,10 +283,12 @@ suite('FuzzySearchTest', () => {
       keys: [
         {
           name: 'tab.title',
+          getter: getTitle,
           weight: 2,
         },
         {
           name: 'hostname',
+          getter: getHostname,
           weight: 1,
         },
       ],

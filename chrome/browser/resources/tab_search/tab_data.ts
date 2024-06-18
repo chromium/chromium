@@ -117,3 +117,23 @@ export function normalizeURL(url: string): string {
   // consistent with how the Omnibox handles empty URLs.
   return url || 'about:blank';
 }
+
+export function getTitle(data: TabData|TabGroupData): string|undefined {
+  if (data.type === TabItemType.RECENTLY_CLOSED_TAB_GROUP) {
+    return undefined;
+  }
+
+  return (data as TabData).tab.title;
+}
+
+export function getHostname(data: TabData|TabGroupData): string|undefined {
+  if (data.type === TabItemType.RECENTLY_CLOSED_TAB_GROUP) {
+    return undefined;
+  }
+
+  return (data as TabData).hostname;
+}
+
+export function getTabGroupTitle(data: TabData|TabGroupData): string|undefined {
+  return data.tabGroup?.title;
+}

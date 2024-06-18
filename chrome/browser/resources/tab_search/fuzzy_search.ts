@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import {quoteString} from 'chrome://resources/js/util.js';
-import {get as deepGet} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {ItemData} from './tab_data.js';
+import type {ItemData, TabData, TabGroupData} from './tab_data.js';
 
 export interface OptionKeyObject {
-  name: string|string[];
+  name: string;
+  getter: (data: TabData|TabGroupData) => string | undefined;
   weight: number;
 }
 
@@ -81,12 +81,12 @@ function exactSearch<T extends ItemData>(
     let matchFound = false;
     const matchedRecord = cloneTabDataObj(tabDataRecord);
     // Searches for fields or nested fields in the record.
-    for (const fieldPath in searchFieldWeights) {
-      const text = deepGet(tabDataRecord, fieldPath);
+    for (const key of options.keys) {
+      const text = key.getter(tabDataRecord as TabData | TabGroupData);
       if (text) {
         const ranges = getRanges(text, searchText);
         if (ranges.length !== 0) {
-          matchedRecord.highlightRanges[fieldPath] = ranges;
+          matchedRecord.highlightRanges[key.name] = ranges;
           matchFound = true;
         }
       }
@@ -105,8 +105,7 @@ function exactSearch<T extends ItemData>(
 
   // Reorder match result by priorities.
   return prioritizeMatchResult(
-      searchText, Object.keys(searchFieldWeights),
-      exactMatches.map(item => item.tab));
+      searchText, options.keys, exactMatches.map(item => item.tab));
 }
 
 /**
@@ -114,9 +113,9 @@ function exactSearch<T extends ItemData>(
  * at the beginning of the string.
  */
 function hasMatchStringStart(
-    tab: ItemData, searchText: string, keys: string[]): boolean {
-  return keys.some((key) => {
-    const value = deepGet(tab, key);
+    tab: ItemData, searchText: string, keys: OptionKeyObject[]): boolean {
+  return keys.some(key => {
+    const value = key.getter(tab as TabData | TabGroupData);
     return value !== undefined && value.startsWith(searchText);
   });
 }
@@ -125,9 +124,10 @@ function hasMatchStringStart(
  * Determines whether the given tab has a match for the given regexp in its
  * search fields.
  */
-function hasRegexMatch(tab: ItemData, regexp: RegExp, keys: string[]): boolean {
+function hasRegexMatch(
+    tab: ItemData, regexp: RegExp, keys: OptionKeyObject[]): boolean {
   return keys.some((key) => {
-    const value = deepGet(tab, key);
+    const value = key.getter(tab as TabData | TabGroupData);
     return value !== undefined && value.search(regexp) !== -1;
   });
 }
@@ -185,7 +185,7 @@ function scoringFunction(
  *    the string.
  */
 function prioritizeMatchResult<T extends ItemData>(
-    searchText: string, keys: string[], result: T[]): T[] {
+    searchText: string, keys: OptionKeyObject[], result: T[]): T[] {
   const itemsMatchingStringStart = [];
   const itemsMatchingWordStart = [];
   const others = [];

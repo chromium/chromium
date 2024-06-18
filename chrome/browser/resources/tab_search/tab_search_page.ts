@@ -26,7 +26,7 @@ import type {SearchOptions} from './fuzzy_search.js';
 import {fuzzySearch} from './fuzzy_search.js';
 import type {InfiniteList} from './infinite_list.js';
 import {NO_SELECTION, selectorNavigationKeys} from './infinite_list.js';
-import {ariaLabel, type ItemData, normalizeURL, TabData, TabGroupData, TabItemType, tokenEquals, tokenToString} from './tab_data.js';
+import {ariaLabel, getHostname, getTabGroupTitle, getTitle, type ItemData, normalizeURL, TabData, TabGroupData, TabItemType, tokenEquals, tokenToString} from './tab_data.js';
 import type {ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup, TabsRemovedInfo, TabUpdateInfo} from './tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from './tab_search_api_proxy.js';
 import {TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
@@ -106,14 +106,17 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
         [
           {
             name: 'tab.title',
+            getter: getTitle,
             weight: 2,
           },
           {
             name: 'hostname',
+            getter: getHostname,
             weight: 1,
           },
           {
             name: 'tabGroup.title',
+            getter: getTabGroupTitle,
             weight: 1.5,
           },
         ],
@@ -691,11 +694,11 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
           tabData => tabHasMediaAlerts(tabData.tab as Tab));
     }
 
-    const filteredMediaTabs =
-        fuzzySearch(this.searchText_, mediaTabs, this.fuzzySearchOptions_);
+    const filteredMediaTabs = fuzzySearch<TabData>(
+        this.searchText_, mediaTabs, this.fuzzySearchOptions_);
 
-    let filteredOpenTabs =
-        fuzzySearch(this.searchText_, this.openTabs_, this.fuzzySearchOptions_);
+    let filteredOpenTabs = fuzzySearch<TabData>(
+        this.searchText_, this.openTabs_, this.fuzzySearchOptions_);
 
     // The MRU tab that is not the active tab is either the first tab in the
     // Audio and Video section (if it exists) or the first tab in the Open Tabs
@@ -727,7 +730,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
           Number(bTime.internalValue - aTime.internalValue) :
           0;
     });
-    let filteredRecentlyClosedItems = fuzzySearch(
+    let filteredRecentlyClosedItems = fuzzySearch<TabData|TabGroupData>(
         this.searchText_, recentlyClosedItems, this.fuzzySearchOptions_);
 
     // Limit the number of recently closed items to the default display count
