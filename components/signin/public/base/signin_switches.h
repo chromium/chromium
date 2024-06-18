@@ -140,6 +140,15 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kUpdateMetricsServicesStateInRestore);
 #endif
 
+#if BUILDFLAG(IS_IOS)
+// This flag enables IdentityManager to load all accounts when having no primary
+// accounts. And it makes IdentityManager reloads AccountInfo when an update
+// notification is sent by ChromeAccountManagerService. The data are reloaded
+// from ChromeAccountManagerService instead of contacting Gaia server.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kAlwaysLoadDeviceAccounts);
+#endif
+
 }  // namespace switches
 
 // TODO(crbug.com/337879458): Move switches below into the switches namespace.
