@@ -33,6 +33,8 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/browser.h"
@@ -369,6 +371,22 @@ std::u16string GetUpgradeDialogSubstringText() {
   return std::u16string();
 }
 
+std::u16string GetSigninStatusChipString(Profile* profile) {
+  const AccountInfo account_info = GetAccountInfoFromProfile(profile);
+
+  if (IsSyncPaused(profile) || account_info.IsEmpty()) {
+    return l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE);
+  }
+
+  if (signin_util::IsSigninPending(
+          IdentityManagerFactory::GetForProfile(profile))) {
+    // TODO(b/347011002): Use a non sync related string.
+    return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PAUSED);
+  }
+
+  return l10n_util::GetStringUTF16(IDS_PROFILE_ROW_SIGNED_IN_MESSAGE);
+}
+
 // Helper method that adds a bespoke chip to the profile related menu items.
 void AddSignedInChipToProfileMenuItem(
     Profile* profile,
@@ -384,12 +402,6 @@ void AddSignedInChipToProfileMenuItem(
   raw_ptr<views::Label> profile_chip_label;
   const MenuConfig& config = MenuConfig::instance();
 
-  const AccountInfo account_info = GetAccountInfoFromProfile(profile);
-
-  const std::u16string signed_in_status =
-      (IsSyncPaused(profile) || account_info.IsEmpty())
-          ? l10n_util::GetStringUTF16(IDS_PROFILES_LOCAL_PROFILE_STATE)
-          : l10n_util::GetStringUTF16(IDS_PROFILE_ROW_SIGNED_IN_MESSAGE);
   // We need to have the label of the profile chip within a
   // BoxLayoutView and inside border insets because MenuItemView will
   // layout the child items to the full height of the menu item in
@@ -400,7 +412,7 @@ void AddSignedInChipToProfileMenuItem(
               gfx::Insets::VH(config.item_vertical_margin, 0))
           .AddChildren(
               views::Builder<views::Label>()
-                  .SetText(signed_in_status)
+                  .SetText(GetSigninStatusChipString(profile))
                   .CopyAddressTo(&profile_chip_label)
                   .SetBackground(views::CreateThemedRoundedRectBackground(
                       item->IsSelected()
