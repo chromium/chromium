@@ -60,8 +60,10 @@ PrerenderNoVarySearchHintCommitDeferringCondition::MaybeCreate(
   // Don't create if associated PrerenderHost has already received headers.
   FrameTreeNode* prerender_frame_tree_node = GetRootPrerenderFrameTreeNode(
       candidate_prerender_frame_tree_node_id.value());
-  // The prerender FrameTreeNode should be here.
-  CHECK(prerender_frame_tree_node);
+  // If there is no prerender frame tree node stop here.
+  if (!prerender_frame_tree_node) {
+    return nullptr;
+  }
   PrerenderHost& prerender_host =
       PrerenderHost::GetFromFrameTreeNode(*prerender_frame_tree_node);
   if (prerender_host.were_headers_received()) {
