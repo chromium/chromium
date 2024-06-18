@@ -97,6 +97,9 @@ class EventObserverBase {
       base::OnceCallback<void(EventBasedUploadStatus)> on_upload_triggered,
       base::TimeDelta upload_wait_period = base::Hours(24));
 
+  void SetLogUploaderForTesting(
+      std::unique_ptr<EventBasedLogUploader> log_uploader);
+
  private:
   // Checks if the upload wait period is finished since the last event based log
   // upload for `GetEventType()`.

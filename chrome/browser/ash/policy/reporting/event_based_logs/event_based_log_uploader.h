@@ -20,17 +20,38 @@ namespace policy {
 
 class EventBasedLogUploader {
  public:
+  using UploadCallback = base::OnceCallback<void(reporting::Status)>;
+
   EventBasedLogUploader();
 
   EventBasedLogUploader(const EventBasedLogUploader&) = delete;
   EventBasedLogUploader& operator=(const EventBasedLogUploader&) = delete;
 
-  ~EventBasedLogUploader();
+  virtual ~EventBasedLogUploader();
 
   // Generated a GUID to identify the log upload. This upload ID can be used in
   // server to connect the events with the log files. It'll use
   // base::uuid::GenerateRandomV4() to create this ID.
   static std::string GenerateUploadId();
+
+  // Uploads the logs from `data_collectors` to File Storage Server. Runs
+  // `on_upload_completed` with upload status when upload is completed.
+  virtual void UploadEventBasedLogs(
+      std::set<support_tool::DataCollectorType> data_collectors,
+      ash::reporting::TriggerEventType event_type,
+      std::optional<std::string> upload_id,
+      UploadCallback on_upload_completed) = 0;
+
+ private:
+  SEQUENCE_CHECKER(sequence_checker_);
+  base::WeakPtrFactory<EventBasedLogUploader> weak_ptr_factory_{this};
+};
+
+class EventBasedLogUploaderImpl : public EventBasedLogUploader {
+ public:
+  EventBasedLogUploaderImpl();
+
+  ~EventBasedLogUploaderImpl() override;
 
   // TODO: b/330675989 - Note that this function doesn't do anything yet. It's
   // just a placeholder. Add real log upload logic when the blocker is resolved
@@ -39,7 +60,7 @@ class EventBasedLogUploader {
       std::set<support_tool::DataCollectorType> data_collectors,
       ash::reporting::TriggerEventType event_type,
       std::optional<std::string> upload_id,
-      base::OnceCallback<void(reporting::Status)> on_upload_completed);
+      UploadCallback on_upload_completed) override;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);

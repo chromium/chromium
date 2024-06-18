@@ -11,6 +11,7 @@
 #include "base/notreached.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/policy/reporting/event_based_logs/event_observer_base.h"
+#include "chrome/browser/ash/policy/reporting/event_based_logs/event_observers/os_update_event_observer.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -20,7 +21,8 @@ namespace {
 // `EnumerateEnumValues()` is not available on Chromium so we have hard-coded
 // list of available enum values.
 constexpr ash::reporting::TriggerEventType kAllTriggerEventTypes[] = {
-    ash::reporting::TRIGGER_EVENT_TYPE_UNSPECIFIED};
+    ash::reporting::TRIGGER_EVENT_TYPE_UNSPECIFIED,
+    ash::reporting::OS_UPDATE_FAILED};
 
 }  // namespace
 
@@ -72,20 +74,16 @@ void EventBasedLogManager::MaybeAddAllEventObservers() {
   }
   for (const auto event_type : kAllTriggerEventTypes) {
     switch (event_type) {
-      // TODO: b/332839740 - Add all available event observers here.
+      case ash::reporting::TriggerEventType::OS_UPDATE_FAILED:
+        event_observers_.emplace(event_type,
+                                 std::make_unique<OsUpdateEventObserver>());
+        break;
       case ash::reporting::TRIGGER_EVENT_TYPE_UNSPECIFIED:
         continue;
       default:
         NOTREACHED_NORETURN();
     }
   }
-}
-
-void EventBasedLogManager::AddEventObserverForTesting(
-    ash::reporting::TriggerEventType event_type,
-    std::unique_ptr<EventObserverBase> event_observer) {
-  CHECK_IS_TEST();
-  event_observers_.emplace(event_type, std::move(event_observer));
 }
 
 const std::map<ash::reporting::TriggerEventType,

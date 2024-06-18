@@ -25,11 +25,14 @@ std::string EventBasedLogUploader::GenerateUploadId() {
   return base::Uuid::GenerateRandomV4().AsLowercaseString();
 }
 
-void EventBasedLogUploader::UploadEventBasedLogs(
+EventBasedLogUploaderImpl::EventBasedLogUploaderImpl() = default;
+EventBasedLogUploaderImpl::~EventBasedLogUploaderImpl() = default;
+
+void EventBasedLogUploaderImpl::UploadEventBasedLogs(
     std::set<support_tool::DataCollectorType> data_collectors,
     ash::reporting::TriggerEventType event_type,
     std::optional<std::string> upload_id,
-    base::OnceCallback<void(reporting::Status)> on_upload_completed) {
+    UploadCallback on_upload_completed) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // TODO: b/330675989 - Add real log upload logic when the blocker is resolved
   // and File Storage Server accepts event based log uploads.

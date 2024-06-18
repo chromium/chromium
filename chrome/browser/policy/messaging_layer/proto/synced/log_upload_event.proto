@@ -48,6 +48,7 @@ message RemoteCommandDetails {
 // The event type that triggers event based log upload.
 enum TriggerEventType {
   TRIGGER_EVENT_TYPE_UNSPECIFIED = 0;
+  OS_UPDATE_FAILED = 1;
 }
 
 // The event details for the event that triggered the event based log upload.

@@ -386,4 +386,9 @@ HeartbeatScheduler*
 DeviceCloudPolicyManagerAsh::GetHeartbeatSchedulerForTesting() const {
   return heartbeat_scheduler_.get();
 }
+
+reporting::OsUpdatesReporter*
+DeviceCloudPolicyManagerAsh::GetOsUpdatesReporter() const {
+  return os_updates_reporter_.get();
+}
 }  // namespace policy

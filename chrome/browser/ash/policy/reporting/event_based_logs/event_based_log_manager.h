@@ -32,10 +32,6 @@ class EventBasedLogManager {
   // any related policies specific to events they're observing.
   void OnLogUploadEnabledPolicyUpdated();
 
-  void AddEventObserverForTesting(
-      ash::reporting::TriggerEventType event_type,
-      std::unique_ptr<EventObserverBase> event_observer);
-
   const std::map<ash::reporting::TriggerEventType,
                  std::unique_ptr<EventObserverBase>>&
   GetEventObserversForTesting() const;

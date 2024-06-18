@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
@@ -58,6 +59,12 @@ std::string EventObserverBase::GetEventName() const {
   return ash::reporting::TriggerEventType_Name(GetEventType());
 }
 
+void EventObserverBase::SetLogUploaderForTesting(
+    std::unique_ptr<EventBasedLogUploader> log_uploader) {
+  CHECK_IS_TEST();
+  log_uploader_ = std::move(log_uploader);
+}
+
 void EventObserverBase::TriggerLogUpload(
     std::optional<std::string> upload_id,
     base::OnceCallback<void(EventBasedUploadStatus)> on_upload_triggered,
@@ -71,7 +78,10 @@ void EventObserverBase::TriggerLogUpload(
     return;
   }
   on_log_upload_triggered_ = std::move(on_upload_triggered);
-  log_uploader_ = std::make_unique<EventBasedLogUploader>();
+  // `log_uploader_` could already be set for testing.
+  if (!log_uploader_) {
+    log_uploader_ = std::make_unique<EventBasedLogUploaderImpl>();
+  }
   log_uploader_->UploadEventBasedLogs(
       GetDataCollectorTypes(), GetEventType(), upload_id,
       base::BindOnce(&EventObserverBase::OnLogUploaderDone,
@@ -80,7 +90,6 @@ void EventObserverBase::TriggerLogUpload(
 
 void EventObserverBase::OnLogUploaderDone(reporting::Status status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  log_uploader_.reset();
   if (!status.ok()) {
     LOG(ERROR)
         << GetEventName()

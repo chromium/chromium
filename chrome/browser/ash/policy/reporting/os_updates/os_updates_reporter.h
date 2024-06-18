@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/os_events.pb.h"
@@ -22,6 +24,15 @@ namespace reporting {
 class OsUpdatesReporter : public ash::UpdateEngineClient::Observer,
                           public ash::SessionManagerClient::Observer {
  public:
+  // Interface for observing OS update failures for event based log upload. The
+  // observer lifetime is managed by `EventBasedLogManager`.
+  class OsUpdateEventBasedLogObserver : public base::CheckedObserver {
+   public:
+    // Called when update failure is detected and will trigger log
+    // upload with `upload_id`.
+    virtual void OnOsUpdateFailed(std::string upload_id) = 0;
+  };
+
   // For prod. Uses the default implementation of UserEventReporterHelper.
   static std::unique_ptr<OsUpdatesReporter> Create();
 
@@ -34,6 +45,9 @@ class OsUpdatesReporter : public ash::UpdateEngineClient::Observer,
 
   ~OsUpdatesReporter() override;
 
+  void AddObserver(OsUpdateEventBasedLogObserver* observer);
+  void RemoveObserver(const OsUpdateEventBasedLogObserver* observer);
+
   // ash::UpdateEngineClient::Observer:
   void UpdateStatusChanged(const update_engine::StatusResult& status) override;
   // ash::SessionManagerClient::Observer:
@@ -43,6 +57,13 @@ class OsUpdatesReporter : public ash::UpdateEngineClient::Observer,
   explicit OsUpdatesReporter(std::unique_ptr<UserEventReporterHelper> helper);
 
   void MaybeReportEvent(ash::reporting::OsEventsRecord record);
+
+  // Notifies `OsUpdateEventBasedLogObserver` that the update failed. Returns
+  // the upload id attached to the triggered upload if any observer is notified.
+  // Returns nullopt if no observers are notified.
+  std::optional<std::string> NotifyOsUpdateFailed();
+
+  base::ObserverList<OsUpdateEventBasedLogObserver> observers_;
 
   std::unique_ptr<UserEventReporterHelper> helper_;
 
