@@ -63,20 +63,8 @@ function dragGesture(deltaX, deltaY, scroller, options = {}) {
   options.adjust_for_touch_slop =  true;
   // Suppress pause to enable fling momentum.
   const position = elementCenter(box);
-  if (scroller == container) {
-    // Container will process a scrollend event.
-    return touchScroll(position.x, position.y, deltaX, deltaY, scroller,
-                       options);
-  } else {
-    // Scrolling in the input field will not trigger a scrollend event.
-    return touchDrag(position.x, position.y, deltaX, deltaY,
-                     options).then(() => {
-      // Rare exception where we can't use waitForScrollendEvent.
-      return waitForAnimationEndTimeBased(() => {
-        return scroller.scrollLeft;
-      });
-    });
-  }
+  return touchScroll(position.x, position.y, deltaX, deltaY, scroller,
+                     options);
 }
 function swipeGesture(deltaX, deltaY, scroller) {
   // Suppress pause to enable fling momentum.
