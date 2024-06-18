@@ -2669,7 +2669,7 @@
   {
     "name": "enable-cros-hindi-inscript-layout",
     "owners": [ "jshin@chromium.org", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 117
+    "expiry_milestone": 250
   },
   {
     "name": "enable-cros-ime-assist-emoji-enhanced",
