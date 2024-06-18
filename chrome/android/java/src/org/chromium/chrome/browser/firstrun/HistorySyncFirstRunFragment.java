@@ -75,8 +75,10 @@ public class HistorySyncFirstRunFragment extends Fragment
     @Override
     public void dismissHistorySync() {
         getPageDelegate().advanceToNextPage();
-        mHistorySyncCoordinator.destroy();
-        mHistorySyncCoordinator = null;
+        if (mHistorySyncCoordinator != null) {
+            mHistorySyncCoordinator.destroy();
+            mHistorySyncCoordinator = null;
+        }
     }
 
     @Override
