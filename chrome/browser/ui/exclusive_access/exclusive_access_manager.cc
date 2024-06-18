@@ -38,6 +38,8 @@ constexpr char kHistogramFullscreenLockStateAtEntryViaApi[] =
     "WebCore.Fullscreen.LockStateAtEntryViaApi";
 constexpr char kHistogramFullscreenLockStateAtEntryViaBrowserUi[] =
     "WebCore.Fullscreen.LockStateAtEntryViaBrowserUi";
+constexpr char kHistogramEscKeyPressedDownWithModifier[] =
+    "Browser.EscKeyPressedDownWithModifier";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -159,6 +161,16 @@ bool ExclusiveAccessManager::HandleUserKeyEvent(
   if (event.windows_key_code != ui::VKEY_ESCAPE) {
     OnUserInput();
     return false;
+  }
+
+  // When `features::kPressAndHoldEscToExitBrowserFullscreen` is enabled, the
+  // `esc_key_hold_timer_` starts on `kRawKeyDown` events, unless the key press
+  // event comes with a modifier key. This metrics records how often the timer
+  // does not start due to using the modifier key.
+  if (event.GetType() == input::NativeWebKeyboardEvent::Type::kRawKeyDown) {
+    base::UmaHistogramBoolean(
+        kHistogramEscKeyPressedDownWithModifier,
+        event.GetModifiers() != blink::WebInputEvent::kNoModifiers);
   }
 
   if (base::FeatureList::IsEnabled(

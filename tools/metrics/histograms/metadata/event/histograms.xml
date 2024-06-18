@@ -87,6 +87,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Event.EscKeyPressedDownWithModifier" enum="Boolean"
+    expires_after="2024-07-15">
+  <owner>muyaoxu@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records whether the Esc key is pressed down with another modifier key.
+    Recorded when a Esc Key press event is prehandled by the browser, regardless
+    of whether keyboard/pointer/fullscreen is enabled.
+  </summary>
+</histogram>
+
 <histogram name="Event.GestureCreated" enum="UIEventType"
     expires_after="2024-12-08">
   <owner>kuscher@google.com</owner>
