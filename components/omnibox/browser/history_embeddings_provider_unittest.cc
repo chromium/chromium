@@ -68,9 +68,11 @@ class HistoryEmbeddingsProviderTest : public testing::Test {
 };
 
 TEST_F(HistoryEmbeddingsProviderTest, Start) {
-  AutocompleteInput input(u"query query query",
-                          metrics::OmniboxEventProto::OTHER,
-                          TestSchemeClassifier());
+  AutocompleteInput short_input(u"query", metrics::OmniboxEventProto::OTHER,
+                                TestSchemeClassifier());
+  AutocompleteInput long_input(u"query query query",
+                               metrics::OmniboxEventProto::OTHER,
+                               TestSchemeClassifier());
 
   // When the feature is disabled, should early exit.
   base::test::ScopedFeatureList disabled_feature;
@@ -79,17 +81,23 @@ TEST_F(HistoryEmbeddingsProviderTest, Start) {
   EXPECT_CALL(*history_embeddings_service_,
               Search(testing::_, testing::_, testing::_, testing::_))
       .Times(0);
-  history_embeddings_provider_->Start(input, false);
+  history_embeddings_provider_->Start(long_input, false);
 
   base::test::ScopedFeatureList enabled_feature{
       history_embeddings::kHistoryEmbeddings};
 
-  // When the feature is enabled, should call `Search()`.
+  // Short queries should be blocked.
+  EXPECT_CALL(*history_embeddings_service_,
+              Search(testing::_, testing::_, testing::_, testing::_))
+      .Times(0);
+  history_embeddings_provider_->Start(short_input, false);
+
+  // Long queries should pass.
   EXPECT_CALL(
       *history_embeddings_service_,
       Search("query query query", std::optional<base::Time>{}, 3u, testing::_))
       .Times(1);
-  history_embeddings_provider_->Start(input, false);
+  history_embeddings_provider_->Start(long_input, false);
 }
 
 TEST_F(HistoryEmbeddingsProviderTest, Stop) {

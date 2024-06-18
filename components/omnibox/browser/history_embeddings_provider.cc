@@ -47,6 +47,13 @@ void HistoryEmbeddingsProvider::Start(const AutocompleteInput& input,
           input, client_->GetTemplateURLService());
   starter_pack_engine_ = starter_pack_engine;
 
+  int num_terms =
+      history_embeddings::CountWords(base::UTF16ToUTF8(adjusted_input.text()));
+  if (num_terms < history_embeddings::kSearchQueryMinimumWordCount.Get()) {
+    matches_.clear();
+    return;
+  }
+
   history_embeddings::HistoryEmbeddingsService* service =
       client_->GetHistoryEmbeddingsService();
   CHECK(service);

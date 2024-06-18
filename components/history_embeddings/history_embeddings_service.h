@@ -53,6 +53,15 @@ namespace history_embeddings {
 class Answerer;
 class Embedder;
 
+// Counts the # of ' ' vanilla-space characters in `s`.
+// TODO(crbug.com/343256907): Should work on international inputs which may:
+//   a) Use special whitespace, OR
+//   b) Not use whitespace for word breaks (e.g. Thai).
+//   `String16VectorFromString16()` is the omnibox solution. We could probably
+//   just replace-all `CountWords(s)` ->
+//   `String16VectorFromString16(CleanUpTitleForMatching(s, nullptr)).size()`.
+size_t CountWords(const std::string& s);
+
 // A single item that forms part of a search result; combines metadata found in
 // the history embeddings database with additional info from history database.
 struct ScoredUrlRow {
