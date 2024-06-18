@@ -29,25 +29,25 @@ class EnclaveManager;
 // paste it in asciiflow.com.
 //
 //         ChangePinController                   AuthenticatorRequestDialogModel
-// ┌─────────────────────────────────┐             ┌───────────────────────┐
-// │                                 │             │                       │
-// │ StartChangePin ─────────────────┼─────────────┼───────────┐           │
-// │                                 │             │           │           │
-// │                                 │ Cancelled   │           ▼           │
-// │ OnRecoverSecurityDomainClosed ◄─┼─────────────┼── kGpmReauthAccount   │
-// │                                 │             │           │           │
-// │        ┌────────────────────────┼─────────────┼───────────┘           │
-// │        │                        │ Success     │                       │
-// │        ▼                        │             │                       │
-// │ OnReauthComplete ───────────────┼─────────────┼───────────┐           │
-// │                                 │             │           │           │
-// │                                 │ Cancelled   │           ▼           │
-// │ CancelAuthenticatorRequest ◄────┼─────────────┼── kGPMChangePin*      │
-// │                                 │             │           │           │
-// │                                 │ PIN entered │           │           │
-// │        ┌────────────────────────┼─────────────┼───────────┘           │
-// │        │                        │             │                       │
-// │        ▼                        │             └───────────────────────┘
+// ┌─────────────────────────────────┐             ┌─────────────────────────┐
+// │                                 │             │                         │
+// │ StartChangePin ─────────────────┼─────────────┼───────────┐             │
+// │                                 │             │           │             │
+// │                                 │ Cancelled   │           ▼             │
+// │ OnRecoverSecurityDomainClosed ◄─┼─────────────┼── kGpmReauthForPinReset │
+// │                                 │             │           │             │
+// │        ┌────────────────────────┼─────────────┼───────────┘             │
+// │        │                        │ Success     │                         │
+// │        ▼                        │             │                         │
+// │ OnReauthComplete ───────────────┼─────────────┼───────────┐             │
+// │                                 │             │           │             │
+// │                                 │ Cancelled   │           ▼             │
+// │ CancelAuthenticatorRequest ◄────┼─────────────┼── kGPMChangePin*        │
+// │                                 │             │           │             │
+// │                                 │ PIN entered │           │             │
+// │        ┌────────────────────────┼─────────────┼───────────┘             │
+// │        │                        │             │                         │
+// │        ▼                        │             └─────────────────────────┘
 // │ OnGPMPinEntered ────────────────┼─────┐         EnclaveManager
 // │                                 │     │       ┌────────────────┐
 // │                                 │     │       │                │
