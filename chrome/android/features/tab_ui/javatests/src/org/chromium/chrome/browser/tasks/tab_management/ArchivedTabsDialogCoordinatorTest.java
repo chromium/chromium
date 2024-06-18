@@ -15,6 +15,7 @@ import static org.junit.Assert.assertEquals;
 import android.view.ViewGroup;
 
 import androidx.test.filters.MediumTest;
+import androidx.test.platform.app.InstrumentationRegistry;
 
 import org.junit.After;
 import org.junit.Before;
@@ -30,6 +31,7 @@ import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.Observer;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.settings.SettingsActivity;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
@@ -37,6 +39,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
+import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
@@ -129,6 +132,29 @@ public class ArchivedTabsDialogCoordinatorTest {
         mRobot.resultRobot.verifyTabListEditorIsHidden();
         assertEquals(3, mRegularTabModel.getCount());
         assertEquals(0, mArchivedTabModel.getCount());
+    }
+
+    @Test
+    @MediumTest
+    public void testSettings() throws Exception {
+        addArchivedTab(new GURL("https://google.com"), "test 1");
+        addArchivedTab(new GURL("https://google.com"), "test 2");
+        showDialog(2);
+
+        SettingsActivity activity =
+                ActivityTestUtils.waitForActivity(
+                        InstrumentationRegistry.getInstrumentation(),
+                        SettingsActivity.class,
+                        new Runnable() {
+                            @Override
+                            public void run() {
+                                mRobot.actionRobot
+                                        .clickToolbarMenuButton()
+                                        .clickToolbarMenuItem("Settings");
+                            }
+                        });
+        mRobot.resultRobot.verifyTabListEditorIsHidden();
+        ActivityTestUtils.waitForFragmentToAttach(activity, TabArchiveSettingsFragment.class);
     }
 
     private void showDialog(int numTabs) {

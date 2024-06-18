@@ -14,6 +14,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
@@ -57,7 +58,8 @@ public class ArchivedTabsDialogCoordinator {
 
                 @Override
                 public void openArchiveSettings() {
-                    // TODO(crbug.com/345011191): Implement this.
+                    new SettingsLauncherImpl()
+                            .launchSettingsActivity(mContext, TabArchiveSettingsFragment.class);
                 }
 
                 @Override
