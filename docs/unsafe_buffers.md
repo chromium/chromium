@@ -1,8 +1,8 @@
 # Preventing OOB through Unsafe Buffers errors (aka Spanification)
 
-Out-of-bounds (OOB) security bugs commonly happen through pointers which
+Out-of-bounds (OOB) security bugs commonly happen through C-style pointers which
 have no bounds information associated with them. We can prevent such
-bugs by always using containers. Furthermore, the Clang compiler can
+bugs by always using C++ containers. Furthermore, the Clang compiler can
 warn about unsafe pointer usage that should be converted to containers.
 When an unsafe usage is detected, Clang prints a warning similar to
 ```
@@ -49,7 +49,105 @@ a TODO() is permitted, along the lines of
 Code introducing UNSAFE_BUFFER() macro invocations without corresponding
 `// SAFETY:` comment should be summarily rejected during code review.
 
-## Use of std::array<T>.
+## Container-based ecosystem
+
+Containers may be owning types or view types. The common owning containers that
+us contiguous storage are `std::vector`, `std::string`, `base::HeapArray`,
+`std::array`. Their common view types are `base::span`, `std::string_view`,
+`base::cstring_view`.
+
+Other owning containers include maps, sets, deques, etc. These are not
+compatible with `base::span` as they are not contiguous and generally do not
+have an associated view type at this time.
+
+We are using `base::span` instead of `std::span` in order to provide a type that
+can do more than the standard type. We also have other types and functions to
+work with ranges and spans instead of unbounded pointers and iterators.
+
+The common conversions to spans are:
+- `base::span<T>` replaces `T* ptr, size_t size`.
+- `base::span<T, N>` replaces `T (&ptr)[N]` (a reference to a compile-time-sized
+  array).
+- `base::raw_span<T>` replaces `base::span<T>` (and `T* ptr, size_t size`) for
+  class fields.
+
+### Span construction
+- `base::span()` constructor can make a span, and deduce the type and size,
+  from:
+  - a `T[N]` array
+  - `std::array<T, N>`
+  - `std::vector`
+  - `std::string`
+  - any contiguous range with `begin()` and `end()` methods.
+  - any type with `T* data()` and `size_t size()` methods.
+- `base::make_span<N>()` can make a fixed-size span from any range.
+- `base::as_bytes()` and `base::as_chars()` convert a span’s inner type to
+   `uint8_t` or `char` respectively, making a byte-span or char-span.
+- `base::span_from_ref()` and `base::byte_span_from_ref()` make a span, or
+  byte-span, from a single object.
+- `base::as_byte_span()` and `base::as_writable_byte_span()` to make a
+   byte-span (const or mutable) from any container that can convert to a
+   `base::span<T>`, such as `std::string` or `std::vector<Stuff>`.
+
+#### Padding bytes
+
+Note that if the type contains padding bytes that were not somehow explicitly
+initialized, this can create reads of uninitialized memory. Conversion to a
+byte-span is most commonly used for spans of primitive types, such as going from
+`char` (such as in `std::string`) or `uint32_t` (in a `std::vector`) to
+`unit8_t`.
+
+### Dynamic read/write of a span
+- `base::SpanReader` reads heterogeneous values from a (typically, byte-) span
+  in a dynamic manner.
+- `base::SpanWriter` writes heterogeneous values into a (typically, byte-) span
+  in a dynamic manner.
+
+### Values to/from byte spans
+In [`//base/numerics/byte_conversions.h`](../base/numerics/byte_conversions.h)
+we have conversions between byte-arrays and big/little endian integers or
+floats. For example (and there are many other variations):
+- `base::U32FromBigEndian` converts from a big-endian byte-span to an unsigned
+  32-bit integer.
+- `base::U32FromLittleEndian` converts from a little-endian byte-span to an
+  unsigned
+- `base::U32ToBigEndian` converts from an integer to a big-endian-encoded
+  4-byte-array.
+- `base::U32ToLittleEndian` converts from an integer to a little-endian-encoded
+  4-byte-array.
+
+### Heap-allocated arrays
+- `base::HeapArray<T>` replaces `std::unique_ptr<T[]>` and places the bounds of
+the array inside the `HeapArray` which makes it a bounds-safe range.
+
+### Copying and filling arrays
+- `base::span::copy_from(span)` replaces `memcpy` and `memmove`, and verifies
+that the source and destination spans have the same size instead of writing
+out of bounds. It lowers to the same code as `memmove` when possible.
+  - Note `std::ranges::copy` is not bounds-safe (though its name sounds like
+    it should be).
+- `std::ranges::fill` replaces `memset` and works with a range so you don't
+  need explicit bounds.
+
+### String pointers
+
+A common form of pointer is `const char*` which is used (sometimes) to represent
+a NUL-terminated string. The standard library gives us two types to replace
+`char*`, which allow us to know the bounds of the character array and work with
+the string as a range:
+
+- `std::string` owns a NUL-terminated string.
+- `std::string_view` is a view of a non-NUL-terminated string.
+
+What’s missing is a view of a string that is guaranteed to be NUL-terminated so
+that you can call `.c_str()` to generate a `const char*` suitable for C APIs.
+
+- `base::cstring_view` is a view of a NUL-terminated string. This avoids the
+  need to construct a `std::string` in order to ensure a terminating NUL is
+  present. Use this as a view type whenever your code bottoms out in a C API
+  that needs NUL-terminated string pointer.
+
+### Use of std::array<T>.
 
 The clang plugin is very particular about indexing a C-style array (e.g.
 `int arr[100]`) with a variable index. Often these issues can be resolved
@@ -62,7 +160,98 @@ For arrays where the size is determined by the compiler (e.g.
 should be used along with the `auto` keyword:
 `auto arr = std::to_array<int>({1, 3, 5});`
 
-## Patterns for spanification.
+## Avoid reinterpret_cast
+
+### Writing to a byte span
+
+A common idiom in older code is to write into a byte array by casting
+the array into a pointer to a larger type (such as `uint32_t` or `float`)
+and then writing through that pointer. This an result in Undefined Behaviour
+and violates the rules of the C++ abstract machine.
+
+Instead, keep the byte array as a `base::span<uint8_t>`, and write to it
+directly by chunking it up into pieces of the size you want to write.
+
+Using `first()`:
+```cc
+void write_floats(base::span<uint8_t> out, float f1, float f2) {
+  out.first<4>().copy_from(base::byte_span_from_ref(f1));
+  out = out.subspan(4u);  // Advance the span past what we wrote.
+  out.first<4>().copy_from(base::byte_span_from_ref(f2));
+}
+```
+
+Using `split_at()`:
+```cc
+void write_floats(base::span<uint8_t> out, float f1, float f2) {
+  auto [write_f1, rem] = out.split_at<4>();
+  auto [write_f2, rem2] = rem.split_at<4>();
+  write_f1.copy_from(base::byte_span_from_ref(f1));
+  write_f2.copy_from(base::byte_span_from_ref(f2));
+}
+```
+
+Using `SpanWriter` and endian-aware `FloatToLittleEndian()`:
+```cc
+void write_floats(base::span<uint8_t> out, float f1, float f2) {
+  auto writer = base::SpanWriter(out);
+  CHECK(writer.Write(base::FloatToLittleEndian(f1)));
+  CHECK(writer.Write(base::FloatToLittleEndian(f2)));
+}
+```
+
+Writing big-endian, with `SpanWriter` and endian-aware `U32ToBigEndian()`:
+```cc
+void write_values(base::span<uint8_t> out, uint32_t i1, uint32_t i2) {
+  auto writer = base::SpanWriter(out);
+  CHECK(writer.Write(base::U32ToBigEndian(i1)));
+  // SpanWriter has a built-in shortcut to do the same thing.
+  CHECK(writer.WriteU32BigEndian(i2));
+  // Verify we wrote to the whole output. We can put a size parameter in the
+  // `out` span to push this check to compile-time when it's a constant.
+  CHECK_EQ(writer.remaining(), 0u);
+}
+```
+
+Writing an array to a byte span with `copy_from()`:
+```cc
+void write_floats(base::span<uint8_t> out, std::vector<const float> floats) {
+  base::span<const uint8_t> byte_floats = base::as_byte_span(floats);
+  // Or skip the first() if you want to CHECK at runtime that all of `out` has
+  // been written to.
+  out.first(byte_floats.size()).copy_from(byte_floats);
+}
+```
+
+### Reading from a byte span
+
+Instead of turning a `span<const uint8_t>` into a pointer of a larger type,
+which can cause Undefined Behaviour, read values out of the byte span and
+convert each one as a value (not as a pointer).
+
+Using `subspan()` and endian-aware conversion `FloatFromLittleEndian`:
+```cc
+void read_floats(base::span<const uint8_t> in, float& f1, float& f2) {
+  f1 = base::FloatFromLittleEndian(in.subspan<0, 4>());
+  f2 = base::FloatFromLittleEndian(in.subspan<4, 4>());
+}
+```
+
+Using `SpanReader` and endian-aware `U32FromBigEndian()`:
+```cc
+void read_values(base::span<const uint8_t> in, int& i1, int& i2, int& i3) {
+  auto reader = base::SpanReader(in);
+  i1 = base::U32FromBigEndian(*reader.Read<4>());
+  i2 = base::U32FromBigEndian(*reader.Read<4>());
+  // SpanReader has a built-in shortcut to do the same thing.
+  CHECK(reader.ReadU32BigEndian(i3));
+  // Verify we read the whole input. We can put a size parameter in the `in`
+  // span to push this check to compile-time when it's a constant.
+  CHECK_EQ(reader.remaining(), 0u);
+}
+```
+
+## Patterns for spanification
 
 Most pointer issues ought to be resolved by converting to containers. In
 particular, one common conversion is to replace `T*` pointers with
