@@ -26,6 +26,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_format_service_utils.h"
 #include "gpu/command_buffer/service/shared_image/skia_gl_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/skia_graphite_dawn_image_representation.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "ui/gl/egl_util.h"
 #include "ui/gl/gl_angle_util_win.h"
@@ -659,9 +660,15 @@ wgpu::Texture D3DImageBacking::BeginAccessDawn(
     wgpu::TextureUsage wgpu_usage,
     wgpu::TextureUsage wgpu_internal_usage,
     std::vector<wgpu::TextureFormat> view_formats) {
-  const bool write_access = wgpu_usage & (wgpu::TextureUsage::CopyDst |
-                                          wgpu::TextureUsage::StorageBinding |
-                                          wgpu::TextureUsage::RenderAttachment);
+  const auto kWriteUsage = wgpu::TextureUsage::CopyDst |
+                           wgpu::TextureUsage::StorageBinding |
+                           wgpu::TextureUsage::RenderAttachment;
+  bool write_access = wgpu_usage & kWriteUsage;
+  if (base::FeatureList::IsEnabled(
+          features::kDawnSIRepsUseClientProvidedInternalUsages) &&
+      (wgpu_internal_usage & kWriteUsage)) {
+    write_access = true;
+  }
 
   if (!ValidateBeginAccess(write_access)) {
     return nullptr;
