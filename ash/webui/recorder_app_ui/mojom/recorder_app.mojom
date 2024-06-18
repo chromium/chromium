@@ -4,6 +4,7 @@
 
 module ash.recorder_app.mojom;
 
+import "chromeos/services/machine_learning/public/mojom/soda.mojom";
 import "mojo/public/mojom/base/uuid.mojom";
 import "services/on_device_model/public/mojom/on_device_model.mojom";
 
@@ -15,4 +16,21 @@ interface PageHandler {
       mojo_base.mojom.Uuid model_id,
       pending_receiver<on_device_model.mojom.OnDeviceModel> model)
       => (on_device_model.mojom.LoadModelResult result);
+
+  // Loads speech recognizer with the given SodaClient and SodaRecognizer
+  // interface.
+  //
+  // The return is a boolean instead of
+  // chromeos.machine_learning.mojom.LoadModelResult, to avoid exposing
+  // implementation details to JS binding.
+  // TODO(pihsun): Move the enum to a separate mojom file and return the full
+  // enum, or have our own enum if different error needs to be treated
+  // differently in frontend.
+  // TODO(pihsun): i18n for selecting the model language. It's always en-US
+  // now.
+  LoadSpeechRecognizer(
+      pending_remote<chromeos.machine_learning.mojom.SodaClient> soda_client,
+      pending_receiver<chromeos.machine_learning.mojom.SodaRecognizer>
+          soda_recognizer)
+      => (bool result);
 };

@@ -9,6 +9,9 @@ assert(is_chromeos_ash, "Recorder app is ash-chrome only")
 
 mojom("mojom") {
   sources = [ "recorder_app.mojom" ]
-  public_deps = [ "//services/on_device_model/public/mojom" ]
+  public_deps = [
+    "//chromeos/services/machine_learning/public/mojom",
+    "//services/on_device_model/public/mojom",
+  ]
   webui_module_path = "/"
 }

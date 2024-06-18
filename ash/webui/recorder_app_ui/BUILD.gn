@@ -10,6 +10,7 @@ static_library("recorder_app_ui") {
   sources = [
     "recorder_app_ui.cc",
     "recorder_app_ui.h",
+    "recorder_app_ui_delegate.h",
     "url_constants.cc",
     "url_constants.h",
   ]
@@ -20,7 +21,13 @@ static_library("recorder_app_ui") {
     "//ash/constants",
     "//ash/webui/common:trusted_types_util",
     "//ash/webui/recorder_app_ui/mojom",
+    "//ash/webui/system_apps/public:system_web_app_config",
+    "//chromeos/services/machine_learning/public/cpp",
+    "//components/soda",
+    "//components/soda:constants",
+    "//components/soda:utils",
     "//content/public/browser",
+    "//google_apis",
     "//mojo/public/cpp/bindings",
     "//ui/webui",
   ]
