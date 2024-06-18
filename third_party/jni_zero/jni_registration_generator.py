@@ -151,15 +151,15 @@ def _Generate(options, native_sources, java_sources, priority_java_sources):
         set(combined_dict['PROXY_NATIVE_METHOD_ARRAY'].split('},\n')))
     combined_dict['PROXY_NATIVE_METHOD_ARRAY'] = '},\n'.join(
         p for p in proxy_native_array_list if p != '') + '}'
-    signature_to_cpp_calls = collections.defaultdict(list)
+    signature_to_fn_names = collections.defaultdict(list)
     for d in dicts:
-      for signature, cases in d['SIGNATURE_TO_CPP_CALLS'].items():
-        signature_to_cpp_calls[signature].extend(cases)
+      for signature, fn_name in d['SIGNATURE_TO_FN_NAME'].items():
+        signature_to_fn_names[signature].extend(fn_name)
     combined_dict['FORWARDING_PROXY_METHODS'] = _InsertMultiplexingSwitchCases(
-        signature_to_cpp_calls, combined_dict['FORWARDING_PROXY_METHODS'],
+        signature_to_fn_names, combined_dict['FORWARDING_PROXY_METHODS'],
         short_gen_jni_class)
     combined_dict['FORWARDING_CALLS'] = _AddForwardingCalls(
-        signature_to_cpp_calls, short_gen_jni_class)
+        signature_to_fn_names, short_gen_jni_class)
 
   if options.header_path:
     combined_dict['NAMESPACE'] = options.namespace or ''
@@ -255,25 +255,19 @@ def _GenerateStubs(natives):
   return final_string
 
 
-def _InsertMultiplexingSwitchCases(signature_to_cpp_calls,
-                                   java_functions_string, short_gen_jni_class):
-  switch_case_method_name_re = re.compile('return (\w+)\(')
+def _InsertMultiplexingSwitchCases(signature_to_fn_names, java_functions_string,
+                                   short_gen_jni_class):
   java_function_call_re = re.compile('public static \S+ (\w+)\(')
-  method_to_switch_num = {}
-  for signature, cases in sorted(signature_to_cpp_calls.items()):
-    for i, case in enumerate(cases):
-      method_name = switch_case_method_name_re.search(case).group(1)
-      method_to_switch_num[method_name] = i
-      if len(cases) > 1:
-        cases[i] = f'''
-          case {i}:
-             {case}'''
+  fn_to_array_idx = {}
+  for signature, fn_names in sorted(signature_to_fn_names.items()):
+    for i, fn in enumerate(fn_names):
+      fn_to_array_idx[fn] = i
 
   swaps = {}
   for match in java_function_call_re.finditer(java_functions_string):
     java_name = match.group(1)
     cpp_full_name = 'Java_' + common.escape_class_name(java_name)
-    switch_num = method_to_switch_num[cpp_full_name]
+    switch_num = fn_to_array_idx[cpp_full_name]
     replace_location = java_functions_string.find(
         _SWITCH_NUM_TO_BE_INERSERTED_LATER_TOKEN, match.end())
     swaps[replace_location] = switch_num
@@ -290,52 +284,59 @@ def _InsertMultiplexingSwitchCases(signature_to_cpp_calls,
   return new_java_functions_string
 
 
-
-
-def _AddForwardingCalls(signature_to_cpp_calls, short_gen_jni_class):
+def _AddForwardingCalls(signature_to_fn_names, short_gen_jni_class):
   fn_def_template = string.Template("""
 JNI_BOUNDARY_EXPORT ${RETURN} Java_${PROXY_FN_NAME}(
     JNIEnv* env,
     jclass jcaller,
-    ${PARAMS_IN_STUB}) {
+    ${PARAMS_IN_DEFN}) {
 ${FN_BODY}
+        return ${FN_NAME}(${PARAMS_IN_CALL});
 }""")
   switch_body_template = string.Template("""
-        switch (switch_num) {
-          ${CASES}
-          default:
-            JNI_ZERO_ILOG("${PROXY_FN_NAME} was called with an \
-invalid switch number: %d", switch_num);
-            JNI_ZERO_DCHECK(false);
-            return${DEFAULT_RETURN};
-        }""")
+        using fnptr = ${RETURN_TYPE}(*)(${PARAM_TYPES});
+        static const fnptr muxing_fn_ptr_array[${SIZE}] = {
+            ${MUXING_NAMES}
+        };
+        JNI_ZERO_DCHECK(switch_num >= 0 && switch_num < ${SIZE});""")
 
   forwarding_function_definitons = []
-  for signature, cases in sorted(signature_to_cpp_calls.items()):
-    params_in_stub = _GetJavaToNativeParamsList(signature.param_types)
+  for signature, fn_names in sorted(signature_to_fn_names.items()):
+    param_types, param_names = _GetMultiplexingParamsList(signature.param_types)
     java_class_name = common.escape_class_name(
         short_gen_jni_class.full_name_with_slashes)
     java_function_name = common.escape_class_name(
         _GetMultiplexProxyName(signature))
     proxy_function_name = f'{java_class_name}_{java_function_name}'
-    all_cases = '\n'.join(cases)
-    if len(cases) > 1:
+    if len(fn_names) > 1:
       fn_body = switch_body_template.substitute({
-          'PROXY_FN_NAME':
-          proxy_function_name,
-          'CASES':
-          all_cases,
-          'DEFAULT_RETURN':
-          '' if signature.return_type.is_void() else ' {}',
+          'RETURN_TYPE':
+          signature.return_type.to_cpp(),
+          'PARAM_TYPES':
+          ', '.join(['JNIEnv*', 'jclass'] + param_types[1:]),
+          'SIZE':
+          str(len(fn_names)),
+          'MUXING_NAMES':
+          ',\n            '.join(fn_names),
       })
+      fn_name = 'muxing_fn_ptr_array[switch_num]'
     else:
-      fn_body = f'        {all_cases}'
+      fn_body = ''
+      fn_name = fn_names[0]
     forwarding_function_definitons.append(
         fn_def_template.substitute({
-            'RETURN': signature.return_type.to_cpp(),
-            'PROXY_FN_NAME': proxy_function_name,
-            'PARAMS_IN_STUB': params_in_stub,
-            'FN_BODY': fn_body,
+            'RETURN':
+            signature.return_type.to_cpp(),
+            'PROXY_FN_NAME':
+            proxy_function_name,
+            'PARAMS_IN_DEFN':
+            ', '.join([f'{a} {b}' for a, b in zip(param_types, param_names)]),
+            'FN_BODY':
+            fn_body,
+            'FN_NAME':
+            fn_name,
+            'PARAMS_IN_CALL':
+            ', '.join(['env', 'jcaller'] + param_names[1:]),
         }))
 
   return ''.join(s for s in forwarding_function_definitons)
@@ -508,20 +509,22 @@ ${EPILOGUE}
   return template.substitute(registration_dict)
 
 
-def _GetJavaToNativeParamsList(param_types):
-  if not param_types:
-    return 'jint switch_num'
+def _GetMultiplexingParamsList(param_types, java_types=False):
+  switch_type = 'int' if java_types else 'jint'
 
   # Parameters are named after their type, with a unique number per parameter
   # type to make sure the names are unique, even within the same types.
   params_type_count = collections.defaultdict(int)
-  params_in_stub = []
+  param_type_strings = [switch_type]
+  param_names = ['switch_num']
   for t in param_types:
-    params_type_count[t] += 1
-    params_in_stub.append('%s %s_param%d' % (t.to_cpp(), t.to_java().replace(
-        '[]', '_array').lower(), params_type_count[t]))
+    typename = t.java_type.to_java() if java_types else t.to_cpp()
+    params_type_count[typename] += 1
+    param_type_strings.append(typename)
+    typename_cleaned = typename.replace('[]', '_array').lower()
+    param_names.append(f'{typename_cleaned}_param{params_type_count[typename]}')
 
-  return 'jint switch_num, ' + ', '.join(params_in_stub)
+  return param_type_strings, param_names
 
 
 def _GetRegistrationFunctionName(fully_qualified_class):
@@ -749,40 +752,12 @@ ${NATIVES}\
     return self._SubstituteNativeMethods(java_classes_with_natives, template)
 
   def _GetMuxingCalls(self):
-    # Switch cases are grouped together by the same proxy signatures.
-    template = string.Template('return ${STUB_NAME}(env, jcaller${PARAMS});')
-
-    signature_to_cpp_calls = collections.defaultdict(list)
+    signature_to_fn_names = collections.defaultdict(list)
     for native in self.proxy_natives:
       signature = native.proxy_signature
-      params = _GetParamsListForMultiplex(native.proxy_params, with_types=False)
-      values = {
-          # We are forced to call the generated stub instead of the impl because
-          # the impl is not guaranteed to have a globally unique name.
-          'STUB_NAME': self.jni_obj.GetStubName(native),
-          'PARAMS': params,
-      }
-      signature_to_cpp_calls[signature].append(template.substitute(values))
+      signature_to_fn_names[signature].append(self.jni_obj.GetStubName(native))
 
-    self.registration_dict['SIGNATURE_TO_CPP_CALLS'] = signature_to_cpp_calls
-
-
-def _GetParamsListForMultiplex(params, *, with_types):
-  if not params:
-    return ''
-
-  # Parameters are named after their type, with a unique number per parameter
-  # type to make sure the names are unique, even within the same types.
-  params_type_count = collections.defaultdict(int)
-  sb = []
-  for p in params:
-    type_str = p.java_type.to_java()
-    params_type_count[type_str] += 1
-    param_type = f'{type_str} ' if with_types else ''
-    sb.append('%s%s_param%d' % (param_type, type_str.replace(
-        '[]', '_array').lower(), params_type_count[type_str]))
-
-  return ', ' + ', '.join(sb)
+    self.registration_dict['SIGNATURE_TO_FN_NAME'] = signature_to_fn_names
 
 
 _MULTIPLEXED_CHAR_BY_TYPE = {
@@ -874,8 +849,10 @@ def _MakeProxySignature(options, proxy_native):
 
     alt_name = None
     proxy_name = _GetMultiplexProxyName(proxy_native.proxy_signature)
-    params_with_types = 'int switch_num' + _GetParamsListForMultiplex(
-        proxy_native.proxy_params, with_types=True)
+    param_types, param_names = _GetMultiplexingParamsList(
+        proxy_native.proxy_params, java_types=True)
+    params_with_types = ', '.join(
+        [f'{a} {b}' for a, b in zip(param_types, param_names)])
   elif options.use_proxy_hash:
     signature_template = string.Template("""
       // Original name: ${ALT_NAME}""" + native_method_line)
