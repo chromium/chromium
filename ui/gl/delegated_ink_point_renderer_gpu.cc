@@ -9,7 +9,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/metrics/histogram_functions.h "
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
