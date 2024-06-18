@@ -25,14 +25,14 @@ namespace net {
 
 SQLitePersistentStoreBackendBase::SQLitePersistentStoreBackendBase(
     const base::FilePath& path,
-    std::string histogram_tag,
+    const std::string& histogram_tag,
     const int current_version_number,
     const int compatible_version_number,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
     bool enable_exclusive_access)
     : path_(path),
-      histogram_tag_(std::move(histogram_tag)),
+      histogram_tag_(histogram_tag),
       current_version_number_(current_version_number),
       compatible_version_number_(compatible_version_number),
       background_task_runner_(std::move(background_task_runner)),
