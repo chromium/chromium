@@ -10,7 +10,6 @@
 
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
-#include "third_party/abseil-cpp/absl/utility/utility.h"
 
 namespace enterprise_companion {
 
@@ -23,22 +22,21 @@ class EnterpriseCompanionStatus {
                                      policy::CloudPolicyValidatorBase::Status>;
   EnterpriseCompanionStatus() = delete;
 
-  bool ok() const { return std::holds_alternative<Ok>(status_variant_); }
-
-  auto operator<=>(const EnterpriseCompanionStatus& other) const = default;
-
   // Constructs an `Ok` status.
   static EnterpriseCompanionStatus Success() {
     return EnterpriseCompanionStatus(Ok());
   }
+
+  bool ok() const { return std::holds_alternative<Ok>(status_variant_); }
+
+  auto operator<=>(const EnterpriseCompanionStatus& other) const = default;
 
   // policy::DeviceManagementStatus:
   static EnterpriseCompanionStatus FromDeviceManagementStatus(
       policy::DeviceManagementStatus status) {
     return status == policy::DM_STATUS_SUCCESS ? Success() : From<1>(status);
   }
-  bool EqualsDeviceManagementStatus(
-      const policy::DeviceManagementStatus& other) {
+  bool EqualsDeviceManagementStatus(policy::DeviceManagementStatus other) {
     return operator==(From<1>(other));
   }
 
@@ -50,12 +48,13 @@ class EnterpriseCompanionStatus {
                : From<2>(status);
   }
   bool EqualsCloudPolicyValidationResult(
-      const policy::CloudPolicyValidatorBase::Status& other) {
+      policy::CloudPolicyValidatorBase::Status other) {
     return operator==(From<2>(other));
   }
 
  private:
-  StatusVariant status_variant_;
+  explicit EnterpriseCompanionStatus(StatusVariant&& status_variant)
+      : status_variant_(std::move(status_variant)) {}
 
   template <size_t I, typename T>
   static EnterpriseCompanionStatus From(T&& status) {
@@ -63,8 +62,7 @@ class EnterpriseCompanionStatus {
         StatusVariant(std::in_place_index_t<I>(), std::forward<T>(status)));
   }
 
-  explicit EnterpriseCompanionStatus(StatusVariant&& status_variant)
-      : status_variant_(std::move(status_variant)) {}
+  StatusVariant status_variant_;
 };
 
 }  // namespace enterprise_companion
