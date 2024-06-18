@@ -138,6 +138,10 @@ ContentSettingsType kPermissionType[] = {
     ContentSettingsType::CAPTURED_SURFACE_CONTROL,
 #endif  // !BUILDFLAG(IS_ANDROID)
     ContentSettingsType::AUTOMATIC_FULLSCREEN,
+#if !BUILDFLAG(IS_ANDROID)
+    ContentSettingsType::KEYBOARD_LOCK,
+    ContentSettingsType::POINTER_LOCK,
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 // The list of setting types which request permission for a pair of requesting
