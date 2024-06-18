@@ -106,9 +106,8 @@ class AboutThisSiteTabHelperTest : public PlatformTest {
   void InitOTRService() {
     ChromeBrowserState* otr_browser_state =
         browser_state_->CreateOffTheRecordBrowserStateWithTestingFactories(
-            {std::make_pair(
-                OptimizationGuideServiceFactory::GetInstance(),
-                OptimizationGuideServiceFactory::GetDefaultFactory())});
+            {{OptimizationGuideServiceFactory::GetInstance(),
+              OptimizationGuideServiceFactory::GetDefaultFactory()}});
     optimization_guide_service_otr_ =
         OptimizationGuideServiceFactory::GetForBrowserState(otr_browser_state);
     optimization_guide_service_otr_->DoFinalInit();

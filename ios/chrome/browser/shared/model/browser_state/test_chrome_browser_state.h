@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#import "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #include "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"
@@ -18,6 +18,7 @@
 #include "ios/chrome/browser/policy/model/browser_state_policy_connector.h"
 #include "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace sync_preferences {
 class PrefServiceSyncable;
@@ -31,15 +32,32 @@ class UserCloudPolicyManager;
 // This class is the implementation of ChromeBrowserState used for testing.
 class TestChromeBrowserState final : public ChromeBrowserState {
  public:
-  typedef std::vector<
-      std::pair<BrowserStateKeyedServiceFactory*,
-                BrowserStateKeyedServiceFactory::TestingFactory>>
-      TestingFactories;
+  // Wrapper over absl::variant to help type deduction when calling
+  // AddTestingFactories(). See example call in the method's comment.
+  struct TestingFactory {
+    TestingFactory(
+        BrowserStateKeyedServiceFactory* service_factory,
+        BrowserStateKeyedServiceFactory::TestingFactory testing_factory);
 
-  typedef std::vector<
-      std::pair<RefcountedBrowserStateKeyedServiceFactory*,
-                RefcountedBrowserStateKeyedServiceFactory::TestingFactory>>
-      RefcountedTestingFactories;
+    TestingFactory(RefcountedBrowserStateKeyedServiceFactory* service_factory,
+                   RefcountedBrowserStateKeyedServiceFactory::TestingFactory
+                       testing_factory);
+
+    TestingFactory(const TestingFactory&);
+    TestingFactory& operator=(const TestingFactory&);
+
+    ~TestingFactory();
+
+    absl::variant<
+        std::pair<BrowserStateKeyedServiceFactory*,
+                  BrowserStateKeyedServiceFactory::TestingFactory>,
+        std::pair<RefcountedBrowserStateKeyedServiceFactory*,
+                  RefcountedBrowserStateKeyedServiceFactory::TestingFactory>>
+        service_factory_and_testing_factory;
+  };
+
+  // List of TestingFactory.
+  using TestingFactories = std::vector<TestingFactory>;
 
   TestChromeBrowserState(const TestChromeBrowserState&) = delete;
   TestChromeBrowserState& operator=(const TestChromeBrowserState&) = delete;
@@ -103,28 +121,37 @@ class TestChromeBrowserState final : public ChromeBrowserState {
     ~Builder();
 
     // Adds a testing factory to the TestChromeBrowserState. These testing
-    // factories are installed before the ProfileKeyedServices are created.
-    void AddTestingFactory(
+    // factories are installed before the BrowserStateKeyedServices are created.
+    Builder& AddTestingFactory(
         BrowserStateKeyedServiceFactory* service_factory,
         BrowserStateKeyedServiceFactory::TestingFactory testing_factory);
-    void AddTestingFactory(
+    Builder& AddTestingFactory(
         RefcountedBrowserStateKeyedServiceFactory* service_factory,
         RefcountedBrowserStateKeyedServiceFactory::TestingFactory
             testing_factory);
 
+    // Adds multiple testing factories to TestChromeBrowserState. These testing
+    // factories are installed before the BrowserStateKeyedServices are created.
+    // Example use:
+    //
+    // AddTestingFactories(
+    //     {{RegularServiceFactory::GetInstance(), test_factory},
+    //      {RefcountedServiceFactory::GetInstance(), test_factory2}});
+    Builder& AddTestingFactories(TestingFactories testing_factories);
+
     // Sets the path to the directory to be used to hold ChromeBrowserState
     // data.
-    void SetPath(const base::FilePath& path);
+    Builder& SetPath(const base::FilePath& path);
 
     // Sets the PrefService to be used by the ChromeBrowserState.
-    void SetPrefService(
+    Builder& SetPrefService(
         std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs);
 
-    void SetPolicyConnector(
+    Builder& SetPolicyConnector(
         std::unique_ptr<BrowserStatePolicyConnector> policy_connector);
 
     // Sets a UserCloudPolicyManager for test.
-    void SetUserCloudPolicyManager(
+    Builder& SetUserCloudPolicyManager(
         std::unique_ptr<policy::UserCloudPolicyManager>
             user_cloud_policy_manager);
 
@@ -143,7 +170,6 @@ class TestChromeBrowserState final : public ChromeBrowserState {
     std::unique_ptr<BrowserStatePolicyConnector> policy_connector_;
 
     TestingFactories testing_factories_;
-    RefcountedTestingFactories refcounted_testing_factories_;
   };
 
  private:
@@ -154,7 +180,6 @@ class TestChromeBrowserState final : public ChromeBrowserState {
       const base::FilePath& state_path,
       std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
       TestingFactories testing_factories,
-      RefcountedTestingFactories refcounted_testing_factories,
       std::unique_ptr<BrowserStatePolicyConnector> policy_connector,
       std::unique_ptr<policy::UserCloudPolicyManager>
           user_cloud_policy_manager);

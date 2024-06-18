@@ -83,6 +83,12 @@ constexpr struct {
      PasswordReuseLookup::REQUEST_FAILURE},
     {RequestOutcome::DISABLED_DUE_TO_USER_POPULATION,
      PasswordReuseLookup::REQUEST_FAILURE}};
+
+// A test factory to create a FakeUserEventService.
+std::unique_ptr<KeyedService> CreateFakeUserEventService(
+    web::BrowserState* browser_state) {
+  return std::make_unique<syncer::FakeUserEventService>();
+}
 }  // namespace
 
 class FakeChromePasswordProtectionService
@@ -144,11 +150,8 @@ class ChromePasswordProtectionServiceTest : public PlatformTest {
         base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
                             web::BrowserState,
                             password_manager::MockPasswordStoreInterface>));
-    builder.AddTestingFactory(
-        IOSUserEventServiceFactory::GetInstance(),
-        base::BindRepeating(
-            &ChromePasswordProtectionServiceTest::CreateFakeUserEventService,
-            base::Unretained(this)));
+    builder.AddTestingFactory(IOSUserEventServiceFactory::GetInstance(),
+                              base::BindRepeating(&CreateFakeUserEventService));
     browser_state_ = builder.Build();
 
     web::WebState::CreateParams params(browser_state_.get());
@@ -172,14 +175,6 @@ class ChromePasswordProtectionServiceTest : public PlatformTest {
     fake_web_state_.SetBrowserState(browser_state_.get());
   }
 
-  TestChromeBrowserState::TestingFactories GetTestingFactories() {
-    return {
-        {IOSUserEventServiceFactory::GetInstance(),
-         base::BindRepeating(
-             &ChromePasswordProtectionServiceTest::CreateFakeUserEventService,
-             base::Unretained(this))}};
-  }
-
   void NavigateAndCommit(const GURL& url) {
     fake_navigation_manager_->AddItem(
         url, ui::PageTransition::PAGE_TRANSITION_TYPED);
@@ -192,11 +187,6 @@ class ChromePasswordProtectionServiceTest : public PlatformTest {
   syncer::FakeUserEventService* GetUserEventService() {
     return static_cast<syncer::FakeUserEventService*>(
         IOSUserEventServiceFactory::GetForBrowserState(browser_state_.get()));
-  }
-
-  std::unique_ptr<KeyedService> CreateFakeUserEventService(
-      web::BrowserState* browser_state) {
-    return std::make_unique<syncer::FakeUserEventService>();
   }
 
   CoreAccountInfo SetPrimaryAccount(const std::string& email) {

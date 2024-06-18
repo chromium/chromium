@@ -37,15 +37,6 @@ const char kOpenSearchXmlFilePath[] =
     "/ios/testing/data/http_server_files/opensearch.xml";
 const char kPonyHtmlFilePath[] =
     "/ios/testing/data/http_server_files/pony.html";
-
-// A BrowserStateKeyedServiceFactory::TestingFactory that creates a testing
-// TemplateURLService. The created TemplateURLService may contain some default
-// TemplateURLs.
-std::unique_ptr<KeyedService> CreateTestingTemplateURLService(
-    web::BrowserState*) {
-  return std::make_unique<TemplateURLService>(/*initializers=*/nullptr,
-                                              /*count=*/0);
-}
 }
 
 // Test fixture for SearchEngineTabHelper class.
@@ -87,11 +78,6 @@ class SearchEngineTabHelperTest : public PlatformTest {
     server_.ServeFilesFromSourceDirectory(".");
     ASSERT_TRUE(server_.Start());
     template_url_service()->Load();
-  }
-
-  TestChromeBrowserState::TestingFactories GetTestingFactories() {
-    return {{ios::TemplateURLServiceFactory::GetInstance(),
-             base::BindRepeating(&CreateTestingTemplateURLService)}};
   }
 
   // Returns the testing TemplateURLService.

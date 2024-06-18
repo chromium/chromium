@@ -33,6 +33,27 @@
 #import "ios/web/public/thread/web_thread.h"
 #import "net/url_request/url_request_test_util.h"
 
+TestChromeBrowserState::TestingFactory::TestingFactory(
+    BrowserStateKeyedServiceFactory* service_factory,
+    BrowserStateKeyedServiceFactory::TestingFactory testing_factory)
+    : service_factory_and_testing_factory(
+          std::make_pair(service_factory, testing_factory)) {}
+
+TestChromeBrowserState::TestingFactory::TestingFactory(
+    RefcountedBrowserStateKeyedServiceFactory* service_factory,
+    RefcountedBrowserStateKeyedServiceFactory::TestingFactory testing_factory)
+    : service_factory_and_testing_factory(
+          std::make_pair(service_factory, testing_factory)) {}
+
+TestChromeBrowserState::TestingFactory::TestingFactory(const TestingFactory&) =
+    default;
+
+TestChromeBrowserState::TestingFactory&
+TestChromeBrowserState::TestingFactory::operator=(const TestingFactory&) =
+    default;
+
+TestChromeBrowserState::TestingFactory::~TestingFactory() = default;
+
 TestChromeBrowserState::TestChromeBrowserState(
     const base::FilePath& state_path,
     TestChromeBrowserState* original_browser_state,
@@ -46,8 +67,9 @@ TestChromeBrowserState::TestChromeBrowserState(
   // method can be called.
   DCHECK(original_browser_state_);
 
-  for (const auto& pair : testing_factories) {
-    pair.first->SetTestingFactory(this, std::move(pair.second));
+  for (auto& item : testing_factories) {
+    absl::visit([this](auto& p) { p.first->SetTestingFactory(this, p.second); },
+                item.service_factory_and_testing_factory);
   }
 
   profile_metrics::SetBrowserProfileType(
@@ -58,7 +80,6 @@ TestChromeBrowserState::TestChromeBrowserState(
     const base::FilePath& state_path,
     std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs,
     TestingFactories testing_factories,
-    RefcountedTestingFactories refcounted_testing_factories,
     std::unique_ptr<BrowserStatePolicyConnector> policy_connector,
     std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager)
     : ChromeBrowserState(
@@ -71,12 +92,9 @@ TestChromeBrowserState::TestChromeBrowserState(
       policy_connector_(std::move(policy_connector)),
       otr_browser_state_(nullptr),
       original_browser_state_(nullptr) {
-  for (const auto& pair : testing_factories) {
-    pair.first->SetTestingFactory(this, std::move(pair.second));
-  }
-
-  for (const auto& pair : refcounted_testing_factories) {
-    pair.first->SetTestingFactory(this, std::move(pair.second));
+  for (auto& item : testing_factories) {
+    absl::visit([this](auto& p) { p.first->SetTestingFactory(this, p.second); },
+                item.service_factory_and_testing_factory);
   }
 
   profile_metrics::SetBrowserProfileType(
@@ -196,7 +214,7 @@ TestChromeBrowserState::CreateOffTheRecordBrowserStateWithTestingFactories(
   DCHECK(!IsOffTheRecord());
   DCHECK(!otr_browser_state_);
   otr_browser_state_.reset(new TestChromeBrowserState(
-      GetOffTheRecordStatePath(), this, testing_factories));
+      GetOffTheRecordStatePath(), this, std::move(testing_factories)));
   otr_browser_state_->Init();
   return otr_browser_state_.get();
 }
@@ -242,47 +260,6 @@ TestChromeBrowserState::GetTestingPrefService() {
   return testing_prefs_;
 }
 
-TestChromeBrowserState::Builder::Builder() : build_called_(false) {}
-
-TestChromeBrowserState::Builder::~Builder() {}
-
-void TestChromeBrowserState::Builder::AddTestingFactory(
-    BrowserStateKeyedServiceFactory* service_factory,
-    BrowserStateKeyedServiceFactory::TestingFactory testing_factory) {
-  DCHECK(!build_called_);
-  testing_factories_.emplace_back(service_factory, std::move(testing_factory));
-}
-
-void TestChromeBrowserState::Builder::AddTestingFactory(
-    RefcountedBrowserStateKeyedServiceFactory* service_factory,
-    RefcountedBrowserStateKeyedServiceFactory::TestingFactory testing_factory) {
-  DCHECK(!build_called_);
-  refcounted_testing_factories_.emplace_back(service_factory,
-                                             std::move(testing_factory));
-}
-
-void TestChromeBrowserState::Builder::SetPath(const base::FilePath& path) {
-  DCHECK(!build_called_);
-  state_path_ = path;
-}
-
-void TestChromeBrowserState::Builder::SetPrefService(
-    std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs) {
-  DCHECK(!build_called_);
-  pref_service_ = std::move(prefs);
-}
-
-void TestChromeBrowserState::Builder::SetPolicyConnector(
-    std::unique_ptr<BrowserStatePolicyConnector> policy_connector) {
-  DCHECK(!build_called_);
-  policy_connector_ = std::move(policy_connector);
-}
-
-void TestChromeBrowserState::Builder::SetUserCloudPolicyManager(
-    std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager) {
-  user_cloud_policy_manager_ = std::move(user_cloud_policy_manager);
-}
-
 policy::UserCloudPolicyManager*
 TestChromeBrowserState::GetUserCloudPolicyManager() {
   return user_cloud_policy_manager_.get();
@@ -291,6 +268,80 @@ TestChromeBrowserState::GetUserCloudPolicyManager() {
 void TestChromeBrowserState::DestroyOffTheRecordChromeBrowserState() {
   DCHECK(!IsOffTheRecord());
   otr_browser_state_.reset();
+}
+
+scoped_refptr<network::SharedURLLoaderFactory>
+TestChromeBrowserState::GetSharedURLLoaderFactory() {
+  return test_shared_url_loader_factory_
+             ? test_shared_url_loader_factory_
+             : BrowserState::GetSharedURLLoaderFactory();
+}
+
+void TestChromeBrowserState::SetSharedURLLoaderFactory(
+    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
+  test_shared_url_loader_factory_ = std::move(shared_url_loader_factory);
+}
+
+TestChromeBrowserState::Builder::Builder() : build_called_(false) {}
+
+TestChromeBrowserState::Builder::~Builder() {}
+
+TestChromeBrowserState::Builder&
+TestChromeBrowserState::Builder::AddTestingFactory(
+    BrowserStateKeyedServiceFactory* service_factory,
+    BrowserStateKeyedServiceFactory::TestingFactory testing_factory) {
+  DCHECK(!build_called_);
+  testing_factories_.emplace_back(service_factory, std::move(testing_factory));
+  return *this;
+}
+
+TestChromeBrowserState::Builder&
+TestChromeBrowserState::Builder::AddTestingFactory(
+    RefcountedBrowserStateKeyedServiceFactory* service_factory,
+    RefcountedBrowserStateKeyedServiceFactory::TestingFactory testing_factory) {
+  DCHECK(!build_called_);
+  testing_factories_.emplace_back(service_factory, std::move(testing_factory));
+  return *this;
+}
+
+TestChromeBrowserState::Builder&
+TestChromeBrowserState::Builder::AddTestingFactories(
+    TestingFactories testing_factories) {
+  DCHECK(!build_called_);
+  for (auto& item : testing_factories) {
+    testing_factories.emplace_back(std::move(item));
+  }
+  return *this;
+}
+
+TestChromeBrowserState::Builder& TestChromeBrowserState::Builder::SetPath(
+    const base::FilePath& path) {
+  DCHECK(!build_called_);
+  state_path_ = path;
+  return *this;
+}
+
+TestChromeBrowserState::Builder&
+TestChromeBrowserState::Builder::SetPrefService(
+    std::unique_ptr<sync_preferences::PrefServiceSyncable> prefs) {
+  DCHECK(!build_called_);
+  pref_service_ = std::move(prefs);
+  return *this;
+}
+
+TestChromeBrowserState::Builder&
+TestChromeBrowserState::Builder::SetPolicyConnector(
+    std::unique_ptr<BrowserStatePolicyConnector> policy_connector) {
+  DCHECK(!build_called_);
+  policy_connector_ = std::move(policy_connector);
+  return *this;
+}
+
+TestChromeBrowserState::Builder&
+TestChromeBrowserState::Builder::SetUserCloudPolicyManager(
+    std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager) {
+  user_cloud_policy_manager_ = std::move(user_cloud_policy_manager);
+  return *this;
 }
 
 std::unique_ptr<TestChromeBrowserState>
@@ -306,18 +357,5 @@ TestChromeBrowserState::Builder::Build() {
 
   return base::WrapUnique(new TestChromeBrowserState(
       state_path_, std::move(pref_service_), std::move(testing_factories_),
-      std::move(refcounted_testing_factories_), std::move(policy_connector_),
-      std::move(user_cloud_policy_manager_)));
-}
-
-scoped_refptr<network::SharedURLLoaderFactory>
-TestChromeBrowserState::GetSharedURLLoaderFactory() {
-  return test_shared_url_loader_factory_
-             ? test_shared_url_loader_factory_
-             : BrowserState::GetSharedURLLoaderFactory();
-}
-
-void TestChromeBrowserState::SetSharedURLLoaderFactory(
-    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory) {
-  test_shared_url_loader_factory_ = std::move(shared_url_loader_factory);
+      std::move(policy_connector_), std::move(user_cloud_policy_manager_)));
 }

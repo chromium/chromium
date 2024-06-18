@@ -67,6 +67,7 @@ source_set("test_support") {
   public_deps = [
     ":browser_state",
     "//base",
+    "//third_party/abseil-cpp:absl",
   ]
 
   deps = [
