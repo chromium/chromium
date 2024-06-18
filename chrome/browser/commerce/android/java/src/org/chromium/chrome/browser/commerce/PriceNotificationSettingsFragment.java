@@ -71,7 +71,7 @@ public class PriceNotificationSettingsFragment extends ChromeBaseSettingsFragmen
         CoreAccountInfo info =
                 IdentityServicesProvider.get()
                         .getIdentityManager(getProfile())
-                        .getPrimaryAccountInfo(ConsentLevel.SYNC);
+                        .getPrimaryAccountInfo(ConsentLevel.SIGNIN);
         if (info != null) {
             String email = info.getEmail();
             mEmailNotificationsSwitch.setSummary(
