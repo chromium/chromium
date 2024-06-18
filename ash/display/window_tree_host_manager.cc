@@ -400,9 +400,6 @@ void WindowTreeHostManager::InitHosts() {
       EnableRoundedCorners(display);
     }
   }
-
-  for (auto& observer : observers_)
-    observer.OnDisplaysInitialized();
 }
 
 void WindowTreeHostManager::AddObserver(Observer* observer) {
@@ -877,8 +874,7 @@ void WindowTreeHostManager::CloseMirroringDisplayIfNotNecessary() {
 void WindowTreeHostManager::PreDisplayConfigurationChange(bool clear_focus) {
   // Pause occlusion tracking during display configuration updates.
   scoped_pause_ = std::make_unique<aura::WindowOcclusionTracker::ScopedPause>();
-  for (auto& observer : observers_)
-    observer.OnDisplayConfigurationChanging();
+
   focus_activation_store_->Store(clear_focus);
   display::Screen* screen = display::Screen::GetScreen();
   gfx::Point point_in_screen = screen->GetCursorScreenPoint();
@@ -986,8 +982,6 @@ void WindowTreeHostManager::SetPrimaryDisplayId(int64_t id) {
 void WindowTreeHostManager::PostDisplayConfigurationChange() {
   focus_activation_store_->Restore();
 
-  for (auto& observer : observers_)
-    observer.OnDisplayConfigurationChanged();
   UpdateMouseLocationAfterDisplayChange();
 
   // Enable cursor compositing, so that cursor could be mirrored to

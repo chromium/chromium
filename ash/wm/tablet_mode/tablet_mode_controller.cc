@@ -394,7 +394,7 @@ TabletModeController::TabletModeController()
   // InTabletMode to check for the existence of the
   // controller.
   if (IsBoardTypeMarkedAsTabletCapable()) {
-    Shell::Get()->window_tree_host_manager()->AddObserver(this);
+    Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
     AccelerometerReader::GetInstance()->AddObserver(this);
     ui::DeviceDataManager::GetInstance()->AddObserver(this);
     bluetooth_devices_observer_ =
@@ -435,7 +435,7 @@ void TabletModeController::Shutdown() {
   Shell::Get()->RemoveShellObserver(this);
 
   if (IsBoardTypeMarkedAsTabletCapable()) {
-    Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
+    Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
     AccelerometerReader::GetInstance()->RemoveObserver(this);
     ui::DeviceDataManager::GetInstance()->RemoveObserver(this);
   }
@@ -575,7 +575,7 @@ void TabletModeController::OnShellInitialized() {
   }
 }
 
-void TabletModeController::OnDisplayConfigurationChanged() {
+void TabletModeController::OnDidApplyDisplayChanges() {
   if (!tablet_mode_behavior_.observe_display_events)
     return;
 

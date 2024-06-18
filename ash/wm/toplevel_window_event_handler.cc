@@ -28,6 +28,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/base/hit_test.h"
+#include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/views/widget/widget.h"
@@ -219,14 +220,14 @@ void ToplevelWindowEventHandler::ScopedWindowResizer::OnWindowDestroying(
 
 ToplevelWindowEventHandler::ToplevelWindowEventHandler()
     : first_finger_hittest_(HTNOWHERE) {
-  Shell::Get()->window_tree_host_manager()->AddObserver(this);
+  Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
   if (features::IsPipDoubleTapToResizeEnabled()) {
     pip_double_tap_ = std::make_unique<PipDoubleTapHandler>();
   }
 }
 
 ToplevelWindowEventHandler::~ToplevelWindowEventHandler() {
-  Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
+  Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
   // It's possible that `ToplevelWindowEventHandler` was not removed as the
   // window observer of its observed window `gesture_target_` yet, so remove it
   // here to avoid hitting the CHECK error in WindowObserver's destructor.
@@ -1105,7 +1106,7 @@ void ToplevelWindowEventHandler::ResizerWindowDestroyed() {
   CompleteDrag(DragResult::WINDOW_DESTROYED);
 }
 
-void ToplevelWindowEventHandler::OnDisplayConfigurationChanging() {
+void ToplevelWindowEventHandler::OnWillApplyDisplayChanges() {
   CompleteDrag(DragResult::REVERT);
 }
 

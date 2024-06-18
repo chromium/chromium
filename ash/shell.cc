@@ -1708,14 +1708,15 @@ void Shell::Init(
   hotspot_info_cache_ = std::make_unique<HotspotInfoCache>();
 
   window_tree_host_manager_->InitHosts();
+  display_manager_->NotifyDisplaysInitialized();
 
   if (ash::features::IsBootAnimationEnabled()) {
     booting_animation_controller_ =
         std::make_unique<BootingAnimationController>();
   }
 
-  // Create virtual keyboard after WindowTreeHostManager::InitHosts() since
-  // it may enable the virtual keyboard immediately, which requires a
+  // Create virtual keyboard after WindowTreeHostManager::InitHosts() since it
+  // may enable the virtual keyboard immediately, which requires a
   // WindowTreeHostManager to host the keyboard window.
   keyboard_controller_->CreateVirtualKeyboard(std::move(keyboard_ui_factory));
 

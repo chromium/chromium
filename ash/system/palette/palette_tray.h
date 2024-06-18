@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/projector/projector_session.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/shelf/shelf_observer.h"
@@ -20,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/display/manager/display_manager_observer.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
 class PrefChangeRegistrar;
@@ -58,7 +58,7 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
                                public SessionObserver,
                                public ShelfObserver,
                                public ShellObserver,
-                               public WindowTreeHostManager::Observer,
+                               public display::DisplayManagerObserver,
                                public PaletteToolManager::Delegate,
                                public ui::InputDeviceEventObserver,
                                public ProjectorSessionObserver {
@@ -96,8 +96,8 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
   void OnShellInitialized() override;
   void OnShellDestroying() override;
 
-  // WindowTreeHostManager::Observer:
-  void OnDisplayConfigurationChanged() override;
+  // display::DisplayManagerObserver:
+  void OnDidApplyDisplayChanges() override;
 
   // TrayBackgroundView:
   void ClickedOutsideBubble(const ui::LocatedEvent& event) override;

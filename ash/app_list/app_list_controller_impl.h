@@ -18,7 +18,6 @@
 #include "ash/app_list/quick_app_access_model.h"
 #include "ash/ash_export.h"
 #include "ash/assistant/model/assistant_ui_model_observer.h"
-#include "ash/display/window_tree_host_manager.h"
 #include "ash/public/cpp/app_list/app_list_client.h"
 #include "ash/public/cpp/app_list/app_list_controller.h"
 #include "ash/public/cpp/app_list/app_list_model_delegate.h"
@@ -43,6 +42,7 @@
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/throughput_tracker.h"
 #include "ui/display/display_observer.h"
+#include "ui/display/manager/display_manager_observer.h"
 #include "ui/display/types/display_constants.h"
 
 class PrefRegistrySimple;
@@ -78,7 +78,7 @@ class ASH_EXPORT AppListControllerImpl
       public KeyboardControllerObserver,
       public WallpaperControllerObserver,
       public AssistantStateObserver,
-      public WindowTreeHostManager::Observer,
+      public display::DisplayManagerObserver,
       public aura::WindowObserver,
       public AssistantControllerObserver,
       public AssistantUiModelObserver,
@@ -256,8 +256,8 @@ class ASH_EXPORT AppListControllerImpl
   void OnAssistantFeatureAllowedChanged(
       assistant::AssistantAllowedState state) override;
 
-  // WindowTreeHostManager::Observer:
-  void OnDisplayConfigurationChanged() override;
+  // display::DisplayManagerObserver:
+  void OnDidApplyDisplayChanges() override;
 
   // aura::WindowObserver:
   void OnWindowVisibilityChanging(aura::Window* window, bool visible) override;

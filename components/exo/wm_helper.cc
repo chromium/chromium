@@ -392,13 +392,13 @@ void WMHelper::RemoveTabletModeObserver(ash::TabletModeObserver* observer) {
 }
 
 void WMHelper::AddDisplayConfigurationObserver(
-    ash::WindowTreeHostManager::Observer* observer) {
-  ash::Shell::Get()->window_tree_host_manager()->AddObserver(observer);
+    display::DisplayManagerObserver* observer) {
+  ash::Shell::Get()->display_manager()->AddDisplayManagerObserver(observer);
 }
 
 void WMHelper::RemoveDisplayConfigurationObserver(
-    ash::WindowTreeHostManager::Observer* observer) {
-  ash::Shell::Get()->window_tree_host_manager()->RemoveObserver(observer);
+    display::DisplayManagerObserver* observer) {
+  ash::Shell::Get()->display_manager()->RemoveDisplayManagerObserver(observer);
 }
 
 void WMHelper::AddFrameThrottlingObserver() {

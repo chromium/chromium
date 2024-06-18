@@ -8,9 +8,9 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/display/window_tree_host_manager.h"
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "ui/display/manager/display_manager_observer.h"
 #include "ui/events/event_handler.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -26,7 +26,7 @@ class MouseWarpController;
 // environment.
 class ASH_EXPORT MouseCursorEventFilter
     : public ui::EventHandler,
-      public WindowTreeHostManager::Observer {
+      public display::DisplayManagerObserver {
  public:
   MouseCursorEventFilter();
 
@@ -43,9 +43,9 @@ class ASH_EXPORT MouseCursorEventFilter
   void ShowSharedEdgeIndicator(aura::Window* from);
   void HideSharedEdgeIndicator();
 
-  // WindowTreeHostManager::Observer:
+  // display::DisplayManagerObserver:
   void OnDisplaysInitialized() override;
-  void OnDisplayConfigurationChanged() override;
+  void OnDidApplyDisplayChanges() override;
 
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;

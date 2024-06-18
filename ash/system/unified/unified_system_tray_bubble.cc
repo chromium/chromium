@@ -209,7 +209,7 @@ int UnifiedSystemTrayBubble::GetCurrentTrayHeight() const {
   return quick_settings_view_->GetCurrentHeight();
 }
 
-void UnifiedSystemTrayBubble::OnDisplayConfigurationChanged() {
+void UnifiedSystemTrayBubble::OnDidApplyDisplayChanges() {
   UpdateBubbleBounds();
 }
 

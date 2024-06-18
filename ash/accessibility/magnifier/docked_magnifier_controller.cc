@@ -11,6 +11,7 @@
 #include "ash/accessibility/magnifier/magnifier_utils.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/display/cursor_window_controller.h"
+#include "ash/display/window_tree_host_manager.h"
 #include "ash/host/ash_window_tree_host.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -28,6 +29,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
@@ -99,7 +101,7 @@ DockedMagnifierController::~DockedMagnifierController() {
   shell->session_controller()->RemoveObserver(this);
 
   if (GetEnabled()) {
-    shell->window_tree_host_manager()->RemoveObserver(this);
+    shell->display_manager()->RemoveDisplayManagerObserver(this);
     shell->RemovePreTargetHandler(this);
   }
   CHECK(!views::WidgetObserver::IsInObserverList());
@@ -323,7 +325,7 @@ void DockedMagnifierController::OnWidgetDestroying(views::Widget* widget) {
                                         false /* update_old_root_workarea */);
 }
 
-void DockedMagnifierController::OnDisplayConfigurationChanged() {
+void DockedMagnifierController::OnDidApplyDisplayChanges() {
   DCHECK(GetEnabled());
 
   // The viewport might have been on a display that just got removed, and hence
@@ -470,7 +472,7 @@ void DockedMagnifierController::MaybePerformViewportResizing(
         SetScreenHeightDivisor(std::clamp(new_screen_height_divisor,
                                           kMinScreenHeightDivisor,
                                           kMaxScreenHeightDivisor));
-        OnDisplayConfigurationChanged();
+        OnDidApplyDisplayChanges();
       }
       break;
     default:
@@ -604,9 +606,9 @@ void DockedMagnifierController::OnEnabledPrefChanged() {
     // scroll events.
     shell->AddAccessibilityEventHandler(
         this, AccessibilityEventHandlerManager::HandlerType::kDockedMagnifier);
-    shell->window_tree_host_manager()->AddObserver(this);
+    shell->display_manager()->AddDisplayManagerObserver(this);
   } else {
-    shell->window_tree_host_manager()->RemoveObserver(this);
+    shell->display_manager()->RemoveDisplayManagerObserver(this);
     shell->RemoveAccessibilityEventHandler(this);
     MaybeResetResizingCursor();
 

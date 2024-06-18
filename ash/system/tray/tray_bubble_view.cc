@@ -369,11 +369,11 @@ TrayBubbleView::TrayBubbleView(const InitParams& init_params)
   }
 
   message_center::MessageCenter::Get()->AddObserver(this);
-  Shell::Get()->display_manager()->AddObserver(this);
+  Shell::Get()->display_manager()->AddDisplayObserver(this);
 }
 
 TrayBubbleView::~TrayBubbleView() {
-  Shell::Get()->display_manager()->RemoveObserver(this);
+  Shell::Get()->display_manager()->RemoveDisplayObserver(this);
   message_center::MessageCenter::Get()->RemoveObserver(this);
 
   mouse_watcher_.reset();

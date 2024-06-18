@@ -28,8 +28,8 @@
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
+#include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
-#include "ui/display/tablet_state.h"
 
 namespace ash {
 
@@ -122,7 +122,7 @@ ShelfController::ShelfController() {
   ShelfModel::SetInstance(&model_);
 
   Shell::Get()->session_controller()->AddObserver(this);
-  Shell::Get()->window_tree_host_manager()->AddObserver(this);
+  Shell::Get()->display_manager()->AddDisplayManagerObserver(this);
   model_.AddObserver(this);
 }
 
@@ -136,7 +136,7 @@ void ShelfController::Init() {
 
 void ShelfController::Shutdown() {
   model_.RemoveObserver(this);
-  Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
+  Shell::Get()->display_manager()->RemoveDisplayManagerObserver(this);
   Shell::Get()->session_controller()->RemoveObserver(this);
 }
 
@@ -252,7 +252,7 @@ void ShelfController::OnDisplayTabletStateChanged(display::TabletState state) {
   }
 }
 
-void ShelfController::OnDisplayConfigurationChanged() {
+void ShelfController::OnDidApplyDisplayChanges() {
   // Update the alignment and auto-hide state from prefs, because a display may
   // have been added, or the display ids for existing shelf instances may have
   // changed. See https://crbug.com/748291
