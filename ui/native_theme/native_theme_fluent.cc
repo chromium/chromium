@@ -108,25 +108,10 @@ void NativeThemeFluent::PaintScrollbarThumb(
     ColorScheme color_scheme) const {
   DCHECK_NE(state, NativeTheme::kDisabled);
 
-  auto get_color = [color_provider, state, extra_params]() {
-    ColorId thumb_color_id = kColorWebNativeControlScrollbarThumb;
-    if (state == NativeTheme::kPressed) {
-      thumb_color_id = kColorWebNativeControlScrollbarThumbPressed;
-    } else if (state == NativeTheme::kHovered) {
-      thumb_color_id = kColorWebNativeControlScrollbarThumbHovered;
-    } else if (extra_params.is_thumb_minimal_mode) {
-      thumb_color_id = kColorWebNativeControlScrollbarThumbOverlayMinimalMode;
-    }
-    return color_provider->GetColor(thumb_color_id);
-  };
-  // TODO(crbug.com/40596569): Adjust extra param `thumb_color` based on
-  // `state`.
-  const SkColor thumb_color = extra_params.thumb_color.value_or(get_color());
-
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setColor(thumb_color);
-  SkRect sk_rect = gfx::RectToSkRect(rect);
+  flags.setColor(GetScrollbarThumbColor(*color_provider, state, extra_params));
+  const SkRect sk_rect = gfx::RectToSkRect(rect);
   if (extra_params.is_web_test) {
     // Web tests draw the thumb as a square to avoid issues that come with the
     // differences in calculation of anti-aliasing and rounding in different
@@ -137,6 +122,26 @@ void NativeThemeFluent::PaintScrollbarThumb(
                                           kFluentScrollbarPartsRadius),
                       flags);
   }
+}
+
+SkColor4f NativeThemeFluent::GetScrollbarThumbColor(
+    const ui::ColorProvider& color_provider,
+    State state,
+    const ScrollbarThumbExtraParams& extra_params) const {
+  auto get_color_id = [&] {
+    if (state == NativeTheme::kPressed) {
+      return kColorWebNativeControlScrollbarThumbPressed;
+    } else if (state == NativeTheme::kHovered) {
+      return kColorWebNativeControlScrollbarThumbHovered;
+    } else if (extra_params.is_thumb_minimal_mode) {
+      return kColorWebNativeControlScrollbarThumbOverlayMinimalMode;
+    }
+    return kColorWebNativeControlScrollbarThumb;
+  };
+  // TODO(crbug.com/40596569): Adjust extra param `thumb_color` based on
+  // `state`.
+  return SkColor4f::FromColor(extra_params.thumb_color.value_or(
+      color_provider.GetColor(get_color_id())));
 }
 
 void NativeThemeFluent::PaintScrollbarCorner(

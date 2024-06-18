@@ -11,10 +11,12 @@
 #include "third_party/blink/renderer/platform/graphics/scrollbar_theme_settings.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_conversions.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/native_theme/native_theme_features.h"
+#include "ui/native_theme/native_theme_fluent.h"
 #include "ui/native_theme/overlay_scrollbar_constants_aura.h"
 
 namespace blink {
@@ -249,6 +251,23 @@ void WebThemeEngineDefault::Paint(
       in_forced_colors, accent_color);
 }
 
+SkColor4f WebThemeEngineDefault::GetFluentScrollbarThumbColor(
+    WebThemeEngine::State state,
+    const WebThemeEngine::ExtraParams* extra_params,
+    const ui::ColorProvider* color_provider) const {
+  CHECK(IsFluentScrollbarEnabled());
+  const ui::NativeTheme::ScrollbarThumbExtraParams native_theme_extra_params =
+      absl::get<ui::NativeTheme::ScrollbarThumbExtraParams>(
+          GetNativeThemeExtraParams(
+              /*part=*/WebThemeEngine::kPartScrollbarVerticalThumb, state,
+              extra_params));
+
+  return static_cast<ui::NativeThemeFluent*>(
+             ui::NativeTheme::GetInstanceForWeb())
+      ->GetScrollbarThumbColor(*color_provider, NativeThemeState(state),
+                               native_theme_extra_params);
+}
+
 void WebThemeEngineDefault::GetOverlayScrollbarStyle(ScrollbarStyle* style) {
   if (IsFluentOverlayScrollbarEnabled()) {
     style->fade_out_delay = ui::kFluentOverlayScrollbarFadeDelay;
@@ -276,6 +295,10 @@ gfx::Size WebThemeEngineDefault::NinePatchCanvasSize(Part part) const {
 gfx::Rect WebThemeEngineDefault::NinePatchAperture(Part part) const {
   return ui::NativeTheme::GetInstanceForWeb()->GetNinePatchAperture(
       NativeThemePart(part));
+}
+
+bool WebThemeEngineDefault::IsFluentScrollbarEnabled() const {
+  return ui::IsFluentScrollbarEnabled();
 }
 
 bool WebThemeEngineDefault::IsFluentOverlayScrollbarEnabled() const {

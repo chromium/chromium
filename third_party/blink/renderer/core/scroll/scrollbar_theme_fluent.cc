@@ -117,6 +117,10 @@ bool ScrollbarThemeFluent::UsesOverlayScrollbars() const {
   return is_fluent_overlay_scrollbar_enabled_;
 }
 
+bool ScrollbarThemeFluent::UsesFluentScrollbars() const {
+  return true;
+}
+
 bool ScrollbarThemeFluent::UsesFluentOverlayScrollbars() const {
   return UsesOverlayScrollbars();
 }
@@ -172,7 +176,7 @@ void ScrollbarThemeFluent::PaintButton(GraphicsContext& context,
 }
 WebThemeEngine::ScrollbarThumbExtraParams
 ScrollbarThemeFluent::BuildScrollbarThumbExtraParams(
-    const Scrollbar& scrollbar) {
+    const Scrollbar& scrollbar) const {
   WebThemeEngine::ScrollbarThumbExtraParams scrollbar_thumb;
   if (scrollbar.ScrollbarThumbColor().has_value()) {
     scrollbar_thumb.thumb_color =
@@ -241,6 +245,25 @@ gfx::Rect ScrollbarThemeFluent::ShrinkMainThreadedMinimalModeThumbRect(
     thumb_rect.set_width(rect.width() * idle_thickness_scale);
   }
   return gfx::ToEnclosingRect(thumb_rect);
+}
+
+SkColor4f ScrollbarThemeFluent::FluentThumbColor(
+    const Scrollbar& scrollbar) const {
+  WebThemeEngine::State state;
+  if (scrollbar.PressedPart() == kThumbPart) {
+    state = WebThemeEngine::kStatePressed;
+  } else if (scrollbar.HoveredPart() == kThumbPart) {
+    state = WebThemeEngine::kStateHover;
+  } else {
+    state = WebThemeEngine::kStateNormal;
+  }
+  const ui::ColorProvider* color_provider =
+      scrollbar.GetScrollableArea()->GetColorProvider(
+          scrollbar.UsedColorScheme());
+  WebThemeEngine::ExtraParams params(BuildScrollbarThumbExtraParams(scrollbar));
+
+  return WebThemeEngineHelper::GetNativeThemeEngine()
+      ->GetFluentScrollbarThumbColor(state, &params, color_provider);
 }
 
 }  // namespace blink

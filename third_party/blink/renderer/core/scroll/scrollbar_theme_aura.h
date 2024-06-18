@@ -63,7 +63,7 @@ class CORE_EXPORT ScrollbarThemeAura : public ScrollbarTheme {
                   const Scrollbar&,
                   const gfx::Rect&) override;
   virtual WebThemeEngine::ScrollbarThumbExtraParams
-  BuildScrollbarThumbExtraParams(const Scrollbar&);
+  BuildScrollbarThumbExtraParams(const Scrollbar&) const;
 
   bool ShouldRepaintAllPartsOnInvalidation() const override;
   ScrollbarPart PartsToInvalidateOnThumbPositionChange(

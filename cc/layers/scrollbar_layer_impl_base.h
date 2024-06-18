@@ -41,6 +41,8 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
   void set_is_overlay_scrollbar(bool is_overlay) {
     is_overlay_scrollbar_ = is_overlay;
   }
+  bool is_web_test() const { return is_web_test_; }
+  void set_is_web_test(bool is_web_test) { is_web_test_ = is_web_test; }
 
   ScrollbarOrientation orientation() const { return orientation_; }
   bool is_left_side_vertical_scrollbar() const {
@@ -56,7 +58,7 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
   virtual gfx::Rect ComputeHitTestableThumbQuadRect() const;
   virtual gfx::Rect ComputeHitTestableExpandedThumbQuadRect() const;
 
-  float thumb_thickness_scale_factor() {
+  float thumb_thickness_scale_factor() const {
     return thumb_thickness_scale_factor_;
   }
   void SetThumbThicknessScaleFactor(float thumb_thickness_scale_factor);
@@ -116,6 +118,7 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
 
   ElementId scroll_element_id_;
   bool is_overlay_scrollbar_;
+  bool is_web_test_;
 
   float thumb_thickness_scale_factor_;
   float current_pos_;

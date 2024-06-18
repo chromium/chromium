@@ -48,7 +48,9 @@ PaintedScrollbarLayer::PaintedScrollbarLayer(scoped_refptr<Scrollbar> scrollbar)
       has_thumb_(scrollbar_.Read(*this)->HasThumb()),
       jump_on_track_click_(scrollbar_.Read(*this)->JumpOnTrackClick()),
       supports_drag_snap_back_(scrollbar_.Read(*this)->SupportsDragSnapBack()),
-      is_overlay_(scrollbar_.Read(*this)->IsOverlay()) {}
+      is_overlay_(scrollbar_.Read(*this)->IsOverlay()),
+      is_fluent_(scrollbar_.Read(*this)->IsFluent()),
+      is_web_test_(scrollbar_.Read(*this)->IsRunningWebTest()) {}
 
 PaintedScrollbarLayer::~PaintedScrollbarLayer() = default;
 
@@ -98,6 +100,12 @@ void PaintedScrollbarLayer::PushPropertiesTo(
   scrollbar_layer->SetScrollbarPaintedOpacity(painted_opacity_.Read(*this));
 
   scrollbar_layer->set_is_overlay_scrollbar(is_overlay_);
+  scrollbar_layer->set_is_web_test(is_web_test_);
+
+  if (is_fluent_ && fluent_thumb_color_.Read(*this).has_value()) {
+    scrollbar_layer->SetFluentThumbColor(
+        fluent_thumb_color_.Read(*this).value());
+  }
 }
 
 void PaintedScrollbarLayer::SetLayerTreeHost(LayerTreeHost* host) {
@@ -207,6 +215,31 @@ bool PaintedScrollbarLayer::Update() {
                                ScrollbarPart::kTrackButtonsTickmarks));
     SetNeedsPushProperties();
     updated = true;
+  }
+
+  updated |= UpdateThumbIfNeeded();
+  return updated;
+}
+
+bool PaintedScrollbarLayer::UpdateThumbIfNeeded() {
+  bool updated = false;
+  // Fluent scrollbars paint the thumb on the compositor thread. Instead of
+  // generating a bitmap they send the correct color for the thumb to the Impl
+  // class.
+  if (is_fluent_) {
+    if (scrollbar_.Read(*this)->NeedsRepaintPart(ScrollbarPart::kThumb) ||
+        !fluent_thumb_color_.Read(*this).has_value()) {
+      const SkColor4f thumb_color = scrollbar_.Read(*this)->FluentThumbColor();
+      if (!fluent_thumb_color_.Read(*this).has_value() ||
+          thumb_color != fluent_thumb_color_.Read(*this).value()) {
+        fluent_thumb_color_.Write(*this) = thumb_color;
+        SetNeedsPushProperties();
+        updated = true;
+      }
+      // Clear thumb needs repaint regardless of if the thumb's color changed.
+      scrollbar_.Write(*this)->ClearThumbNeedsRepaint();
+    }
+    return updated;
   }
 
   gfx::Size scaled_thumb_size = LayerSizeToContentSize(thumb_size_.Read(*this));

@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
 #include "third_party/blink/renderer/platform/graphics/scrollbar_theme_settings.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace ui {
@@ -83,6 +84,7 @@ class CORE_EXPORT ScrollbarTheme {
     NOTREACHED_NORETURN();
   }
   virtual bool UsesOverlayScrollbars() const { return false; }
+  virtual bool UsesFluentScrollbars() const { return false; }
   virtual bool UsesFluentOverlayScrollbars() const { return false; }
   virtual gfx::Rect ShrinkMainThreadedMinimalModeThumbRect(
       const Scrollbar&,
@@ -125,6 +127,9 @@ class CORE_EXPORT ScrollbarTheme {
   virtual void PaintTickmarks(GraphicsContext&,
                               const Scrollbar&,
                               const gfx::Rect&);
+  virtual SkColor4f FluentThumbColor(const Scrollbar&) const {
+    NOTREACHED_NORETURN();
+  }
 
   virtual bool ShouldCenterOnThumb(const Scrollbar&,
                                    const WebMouseEvent&) const {
