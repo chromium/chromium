@@ -621,7 +621,8 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, MultiSelectDefaultHandler) {
 // QuickOffice is not installed.
 // NOTE: For the Crosapi variant, Lacros must be a branded build as well,
 // otherwise the test will fail.
-IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, QuickOffice) {
+// Disabled due to crbug.com/347884251.
+IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, DISABLED_QuickOffice) {
   std::vector<Expectation> expectations = {
       {"doc", extension_misc::kQuickOfficeComponentExtensionId},
       {"docx", extension_misc::kQuickOfficeComponentExtensionId},
