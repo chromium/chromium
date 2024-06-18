@@ -50,6 +50,10 @@ class VIZ_SERVICE_EXPORT OverlayProcessorOzone
       const OverlayCandidate& candidate) const override;
   void RegisterOverlayRequirement(bool requires_overlay) override;
 
+  // Forwards this message to the OverlayCandidates, which can react to swap
+  // result accordingly.
+  void OnSwapBuffersComplete(gfx::SwapResult swap_result) override;
+
  private:
   // Populates |native_pixmap| and |native_pixmap_unique_id| in |candidate|
   // based on |mailbox|. |is_primary| should be true if this is the primary

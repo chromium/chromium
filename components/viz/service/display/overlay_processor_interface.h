@@ -25,6 +25,7 @@
 #include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/overlay_priority_hint.h"
+#include "ui/gfx/swap_result.h"
 
 #if BUILDFLAG(IS_WIN)
 #include "components/viz/service/display/dc_layer_overlay.h"
@@ -207,6 +208,9 @@ class VIZ_SERVICE_EXPORT OverlayProcessorInterface {
   // ink. It marks the current frame as having delegated ink, and is cleared in
   // the next ProcessForOverlays call.
   virtual void SetFrameHasDelegatedInk() {}
+
+  // Notifies the OverlayProcessor about the status of the last swap.
+  virtual void OnSwapBuffersComplete(gfx::SwapResult swap_result) {}
 
  protected:
   OverlayProcessorInterface() = default;

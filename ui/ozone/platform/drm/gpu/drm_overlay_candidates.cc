@@ -37,4 +37,8 @@ void DrmOverlayCandidates::RegisterOverlayRequirement(bool requires_overlay) {
   overlay_manager_->RegisterOverlayRequirement(widget_, requires_overlay);
 }
 
+void DrmOverlayCandidates::OnSwapBuffersComplete(gfx::SwapResult swap_result) {
+  overlay_manager_->OnSwapBuffersComplete(swap_result);
+}
+
 }  // namespace ui

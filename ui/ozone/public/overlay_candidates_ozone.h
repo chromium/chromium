@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "ui/gfx/swap_result.h"
 #include "ui/ozone/public/hardware_capabilities.h"
 #include "ui/ozone/public/overlay_surface_candidate.h"
 
@@ -39,6 +40,10 @@ class COMPONENT_EXPORT(OZONE_BASE) OverlayCandidatesOzone {
   // This should be invoked during overlay processing to indicate if there are
   // any candidates for this processor that have an overlay requirement.
   virtual void RegisterOverlayRequirement(bool requires_overlay) {}
+
+  // Invoked on each swap completion. |swap_result| is the result of the last
+  // swap.
+  virtual void OnSwapBuffersComplete(gfx::SwapResult swap_result) {}
 
   virtual ~OverlayCandidatesOzone();
 };

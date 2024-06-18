@@ -1297,6 +1297,10 @@ void SkiaRenderer::SwapBuffersSkipped() {
   if (use_partial_swap_)
     root_pass_damage_rect.Intersect(swap_buffer_rect_);
 
+  if (overlay_processor_) {
+    overlay_processor_->OnSwapBuffersComplete(gfx::SwapResult::SWAP_SKIPPED);
+  }
+
   pending_overlay_locks_.pop_back();
   skia_output_surface_->SwapBuffersSkipped(root_pass_damage_rect);
   if (buffer_queue_) {
@@ -1313,6 +1317,10 @@ void SkiaRenderer::SwapBuffersComplete(
   auto& read_lock_release_fence_overlay_locks =
       read_lock_release_fence_overlay_locks_.emplace_back();
   auto read_fence_lock_iter = committed_overlay_locks_.end();
+
+  if (overlay_processor_) {
+    overlay_processor_->OnSwapBuffersComplete(params.swap_response.result);
+  }
 
   if (buffer_queue_) {
     if (params.swap_response.result ==

@@ -216,6 +216,10 @@ void DrmOverlayManager::RegisterOverlayRequirement(
     widgets_with_required_overlays_.erase(widget);
 }
 
+void DrmOverlayManager::OnSwapBuffersComplete(gfx::SwapResult swap_result) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
 bool DrmOverlayManager::CanHandleCandidate(
     const OverlaySurfaceCandidate& candidate,
     gfx::AcceleratedWidget widget) const {

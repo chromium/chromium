@@ -437,6 +437,12 @@ void OverlayProcessorOzone::RegisterOverlayRequirement(bool requires_overlay) {
     overlay_candidates_->RegisterOverlayRequirement(requires_overlay);
 }
 
+void OverlayProcessorOzone::OnSwapBuffersComplete(gfx::SwapResult swap_result) {
+  if (overlay_candidates_) {
+    overlay_candidates_->OnSwapBuffersComplete(swap_result);
+  }
+}
+
 bool OverlayProcessorOzone::SetNativePixmapForCandidate(
     ui::OverlaySurfaceCandidate* candidate,
     const gpu::Mailbox& mailbox,

@@ -63,6 +63,10 @@ class DrmOverlayManager : public OverlayManagerOzone {
   void RegisterOverlayRequirement(gfx::AcceleratedWidget widget,
                                   bool requires_overlay);
 
+  // Should be called by the overlay processor to indicate status of the last
+  // swap.
+  void OnSwapBuffersComplete(gfx::SwapResult swap_result);
+
  protected:
   // Sends a request to see if overlay configuration will work. Implementations
   // should call UpdateCacheForOverlayCandidates() with the response.
