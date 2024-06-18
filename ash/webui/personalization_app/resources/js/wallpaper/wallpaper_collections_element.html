@@ -46,8 +46,7 @@
     justify-content: center;
   }
 
-  wallpaper-grid-item[data-google-photos] iron-icon[icon^='personalization:managed'],
-  wallpaper-grid-item[data-sea-pen] iron-icon[icon^='personalization:managed'] {
+  wallpaper-grid-item[data-google-photos] iron-icon[icon^='personalization:managed'] {
     --iron-icon-fill-color: var(--cros-icon-color-secondary);
     --iron-icon-height: 16px;
     --iron-icon-width: 16px;
@@ -56,8 +55,14 @@
     margin-inline-end: 8px;
   }
 
-  wallpaper-grid-item[data-sea-pen][aria-disabled='true'] iron-icon[icon^='personalization:managed'] {
-    --iron-icon-fill-color: white;
+  wallpaper-grid-item[data-sea-pen] #tooltipIcon {
+    --cr-tooltip-icon-fill-color: white;
+    --cr-icon-size: 16px;
+    display: none;
+    margin-inline-end: 8px;
+  }
+
+  wallpaper-grid-item[data-sea-pen][aria-disabled='true'] #tooltipIcon {
     display: block;
   }
 
@@ -201,7 +206,12 @@
                 tabindex$="[[tabIndex]]">
               <template is="dom-if" if="[[!isSelectableTile_(item)]]" restamp>
                 <div slot="secondaryText" class="secondary-text">
-                  <iron-icon icon="personalization:managed" title$="$i18n{managedSetting}"></iron-icon>
+                  <cr-tooltip-icon
+                      id="tooltipIcon"
+                      icon-class="personalization:managed"
+                      tooltip-text="$i18n{managedSetting}"
+                      icon-aria-label="$i18n{managedSetting}">
+                  </cr-tooltip-icon>
                   <p title$="$i18n{seaPenManagedLabel}">$i18n{seaPenManagedLabel}</p>
                 </div>
               </template>

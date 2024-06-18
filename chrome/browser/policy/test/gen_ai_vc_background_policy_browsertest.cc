@@ -26,9 +26,7 @@ IN_PROC_BROWSER_TEST_F(GenAIVcBackgroundPolicyTest,
   profile->GetProfilePolicyConnector()->OverrideIsManagedForTesting(true);
   UpdateProviderPolicy(PolicyMap());
 
-  EXPECT_TRUE(profile->GetPrefs()->IsManagedPreference(
-      ash::prefs::kGenAIVcBackgroundSettings));
-  EXPECT_FALSE(
+  EXPECT_TRUE(
       ash::personalization_app::IsManagedSeaPenVcBackgroundEnabled(profile));
 }
 

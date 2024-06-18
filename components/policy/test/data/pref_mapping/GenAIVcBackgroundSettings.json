@@ -9,7 +9,7 @@
         "policies": {},
         "prefs": {
           "ash.vc_background_ui.gen_ai_vc_background_enterprise_policy_settings": {
-            "value": 0,
+            "default_value": 1,
             "location": "user_profile"
           }
         }

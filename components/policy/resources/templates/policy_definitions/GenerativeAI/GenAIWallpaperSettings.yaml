@@ -1,13 +1,13 @@
-caption: Control the enablement of ChromeOS Wallpaper "Create with AI" feature
+caption: Control the enablement of <ph name="GEN_AI_WALLPAPER_FEATURE_NAME">"GenAI Wallpaper"</ph> feature in <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>
 desc: |-
-  This policy enables or disables Wallpaper "Create with AI" for ChromeOS.
-  0 = Disable the feature for users.
+  This policy enables or disables <ph name="GEN_AI_WALLPAPER_FEATURE_NAME">"GenAI Wallpaper"</ph> for <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
+  0 = Do not allow <ph name="GEN_AI_WALLPAPER_FEATURE_NAME">"GenAI Wallpaper"</ph>.
 
-  1 = Enable the feature for users. Note that no data is sent to Google to train or improve AI models.
+  1 = Allow <ph name="GEN_AI_WALLPAPER_FEATURE_NAME">"GenAI Wallpaper"</ph> without improving AI models.
 
-  If this policy is set to Unset, Wallpaper "Create with AI" feature is disabled for enterprise users.
+  If this policy is set to Unset, <ph name="GEN_AI_WALLPAPER_FEATURE_NAME">"GenAI Wallpaper"</ph> feature is allowed without improving AI models for enterprise and EDU users.
+  In M127, the policy was disabled for enterprise users by default.
 default: 1
-default_for_enterprise_users: 0
 example_value: 0
 features:
   dynamic_refresh: true
@@ -15,11 +15,11 @@ features:
 owners:
 - file://ash/webui/personalization_app/OWNERS
 items:
-- caption: Disable the feature
+- caption: Do not allow "GenAI Wallpaper"
   name: Disabled
   value: 0
-- caption: Enable the feature
-  name: Enabled
+- caption: Allow "GenAI Wallpaper" without improving AI models
+  name: AllowedWithoutLogging
   value: 1
 schema:
   enum:
