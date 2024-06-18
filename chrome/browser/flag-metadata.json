@@ -684,7 +684,7 @@
   {
     "name": "autofill-enable-dynamically-loading-fields-on-input",
     "owners": [ "vidhanj@google.com" ],
-    "expiry_milestone": 127
+    "expiry_milestone": 129
   },
   {
     "name": "autofill-enable-fido-progress-dialog",
