@@ -45,7 +45,7 @@ class MockRenderInputRouter;
 // (https://docs.google.com/document/d/1mcydbkgFCO_TT9NuFE962L8PLJWT2XOfXUAPO88VuKE),
 // this will also be used to handle input events on VizCompositorThread (GPU
 // process).
-class CONTENT_EXPORT RenderInputRouter : public input::InputRouterImplClient,
+class CONTENT_EXPORT RenderInputRouter : public input::InputRouterClient,
                                          public input::InputDispositionHandler {
  public:
   RenderInputRouter(const RenderInputRouter&) = delete;
@@ -53,7 +53,7 @@ class CONTENT_EXPORT RenderInputRouter : public input::InputRouterImplClient,
 
   ~RenderInputRouter() override;
 
-  RenderInputRouter(input::InputRouterImplClient* host,
+  RenderInputRouter(input::InputRouterClient* host,
                     std::unique_ptr<input::FlingSchedulerBase> fling_scheduler,
                     RenderInputRouterDelegate* delegate,
                     scoped_refptr<base::SingleThreadTaskRunner> task_runner);
@@ -78,7 +78,7 @@ class CONTENT_EXPORT RenderInputRouter : public input::InputRouterImplClient,
 
   void SetView(RenderWidgetHostViewInput* view);
 
-  // InputRouterImplClient overrides.
+  // InputRouterClient overrides.
   blink::mojom::WidgetInputHandler* GetWidgetInputHandler() override;
   void OnImeCompositionRangeChanged(
       const gfx::Range& range,
@@ -97,8 +97,6 @@ class CONTENT_EXPORT RenderInputRouter : public input::InputRouterImplClient,
       bool unadjusted_movement,
       input::InputRouterImpl::RequestMouseLockCallback response) override;
   gfx::Size GetRootWidgetViewportSize() override;
-
-  // InputRouterClient overrides.
   blink::mojom::InputEventResultState FilterInputEvent(
       const blink::WebInputEvent& event,
       const ui::LatencyInfo& latency_info) override;
@@ -214,7 +212,7 @@ class CONTENT_EXPORT RenderInputRouter : public input::InputRouterImplClient,
 
   std::unique_ptr<input::PeakGpuMemoryTracker> scroll_peak_gpu_mem_tracker_;
 
-  raw_ptr<input::InputRouterImplClient> input_router_impl_client_;
+  raw_ptr<input::InputRouterClient> input_router_impl_client_;
   raw_ptr<RenderInputRouterDelegate> delegate_;
 
   mojo::Remote<viz::mojom::InputTargetClient> input_target_client_;

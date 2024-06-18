@@ -130,4 +130,17 @@ gfx::Vector2dF MockInputRouterClient::GetPixelsPerInch(
                         input::kDefaultPixelsPerInch);
 }
 
+blink::mojom::WidgetInputHandler*
+MockInputRouterClient::GetWidgetInputHandler() {
+  return &widget_input_handler_;
+}
+
+input::StylusInterface* MockInputRouterClient::GetStylusInterface() {
+  return render_widget_host_view_;
+}
+
+void MockInputRouterClient::OnStartStylusWriting() {
+  on_start_stylus_writing_called_ = true;
+}
+
 }  // namespace content

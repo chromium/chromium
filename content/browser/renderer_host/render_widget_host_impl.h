@@ -148,7 +148,7 @@ class VisibleTimeRequestTrigger;
 class CONTENT_EXPORT RenderWidgetHostImpl
     : public RenderWidgetHost,
       public FrameTokenMessageQueue::Client,
-      public input::InputRouterImplClient,
+      public input::InputRouterClient,
       public RenderProcessHostObserver,
       public RenderProcessHostPriorityClient,
       public SyntheticGestureController::Delegate,
@@ -792,7 +792,7 @@ class CONTENT_EXPORT RenderWidgetHostImpl
   // there are any queued messages belonging to it, they will be processed.
   void DidProcessFrame(uint32_t frame_token, base::TimeTicks activation_time);
 
-  // InputRouterImplClient overrides.
+  // InputRouterClient overrides.
   blink::mojom::WidgetInputHandler* GetWidgetInputHandler() override;
   void OnImeCompositionRangeChanged(
       const gfx::Range& range,

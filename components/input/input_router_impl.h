@@ -45,26 +45,6 @@ namespace input {
 
 class InputDispositionHandler;
 
-class StylusInterface {
- public:
-  virtual ~StylusInterface() = default;
-
-  virtual bool ShouldInitiateStylusWriting() = 0;
-  virtual void NotifyHoverActionStylusWritable(bool stylus_writable) = 0;
-};
-
-class COMPONENT_EXPORT(INPUT) InputRouterImplClient : public InputRouterClient {
- public:
-  virtual blink::mojom::WidgetInputHandler* GetWidgetInputHandler() = 0;
-  virtual void OnImeCancelComposition() = 0;
-  virtual void OnImeCompositionRangeChanged(
-      const gfx::Range& range,
-      const std::optional<std::vector<gfx::Rect>>& character_bounds,
-      const std::optional<std::vector<gfx::Rect>>& line_bounds) = 0;
-  virtual StylusInterface* GetStylusInterface() = 0;
-  virtual void OnStartStylusWriting() = 0;
-};
-
 // A default implementation for browser input event routing.
 class COMPONENT_EXPORT(INPUT) InputRouterImpl
     : public InputRouter,
@@ -75,7 +55,7 @@ class COMPONENT_EXPORT(INPUT) InputRouterImpl
       public TouchpadPinchEventQueueClient,
       public blink::mojom::WidgetInputHandlerHost {
  public:
-  InputRouterImpl(InputRouterImplClient* client,
+  InputRouterImpl(InputRouterClient* client,
                   InputDispositionHandler* disposition_handler,
                   FlingControllerSchedulerClient* fling_scheduler_client,
                   const Config& config);
@@ -262,7 +242,7 @@ class COMPONENT_EXPORT(INPUT) InputRouterImpl
   void ProcessDeferredGestureEventQueue();
   void OnSetCompositorAllowedTouchAction(cc::TouchAction touch_action);
 
-  raw_ptr<InputRouterImplClient> client_;
+  raw_ptr<InputRouterClient> client_;
   raw_ptr<InputDispositionHandler> disposition_handler_;
 
   // Whether the TouchScrollStarted event has been sent for the current

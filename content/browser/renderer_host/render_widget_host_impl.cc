@@ -45,7 +45,6 @@
 #include "cc/trees/browser_controls_params.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "components/input/input_router_config_helper.h"
-#include "components/input/input_router_impl.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/input/timeout_monitor.h"
 #include "components/viz/common/features.h"

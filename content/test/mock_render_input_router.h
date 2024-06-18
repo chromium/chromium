@@ -21,7 +21,7 @@ class MockRenderInputRouter : public RenderInputRouter {
   using RenderInputRouter::input_router_;
 
   explicit MockRenderInputRouter(
-      input::InputRouterImplClient* host,
+      input::InputRouterClient* host,
       std::unique_ptr<input::FlingSchedulerBase> fling_scheduler,
       RenderInputRouterDelegate* delegate,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);

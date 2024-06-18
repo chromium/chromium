@@ -25,6 +25,7 @@
 #include "components/input/switches.h"
 #include "content/browser/renderer_host/input/mock_input_disposition_handler.h"
 #include "content/browser/renderer_host/input/mock_input_router_client.h"
+#include "content/browser/renderer_host/input/mock_render_widget_host_view_for_stylus_writing.h"
 #include "content/browser/renderer_host/mock_render_widget_host.h"
 #include "content/browser/scheduler/browser_ui_thread_scheduler.h"
 #include "content/browser/site_instance_group.h"
@@ -96,173 +97,6 @@ WebInputEvent& GetEventWithType(WebInputEvent::Type type) {
 
 }  // namespace
 
-class MockRenderWidgetHostViewForStylusWriting
-    : public TestRenderWidgetHostView {
- public:
-  MockRenderWidgetHostViewForStylusWriting(RenderWidgetHost* host)
-      : TestRenderWidgetHostView(host) {}
-  ~MockRenderWidgetHostViewForStylusWriting() override = default;
-
-  bool ShouldInitiateStylusWriting() override {
-    return supports_stylus_writing_;
-  }
-
-  void NotifyHoverActionStylusWritable(bool stylus_writable) override {
-    hover_action_stylus_writable_ = stylus_writable;
-  }
-
-  void set_supports_stylus_writing(bool supports) {
-    supports_stylus_writing_ = supports;
-  }
-
-  bool hover_action_stylus_writable() { return hover_action_stylus_writable_; }
-
- private:
-  bool supports_stylus_writing_ = false;
-  bool hover_action_stylus_writable_ = false;
-};
-
-// TODO(dtapuska): Remove this class when we don't have multiple implementations
-// of InputRouters.
-class MockInputRouterImplClient : public input::InputRouterImplClient {
- public:
-  blink::mojom::WidgetInputHandler* GetWidgetInputHandler() override {
-    return &widget_input_handler_;
-  }
-
-  void OnImeCompositionRangeChanged(
-      const gfx::Range& range,
-      const std::optional<std::vector<gfx::Rect>>& character_bounds,
-      const std::optional<std::vector<gfx::Rect>>& line_bounds) override {}
-
-  void OnImeCancelComposition() override {}
-
-  input::StylusInterface* GetStylusInterface() override {
-    return render_widget_host_view_;
-  }
-
-  void OnStartStylusWriting() override {
-    on_start_stylus_writing_called_ = true;
-  }
-
-  void SetMouseCapture(bool capture) override {}
-
-  void SetAutoscrollSelectionActiveInMainFrame(
-      bool autoscroll_selection) override {}
-
-  void RequestMouseLock(
-      bool from_user_gesture,
-      bool unadjusted_movement,
-      blink::mojom::WidgetInputHandlerHost::RequestMouseLockCallback response)
-      override {}
-
-  gfx::Size GetRootWidgetViewportSize() override {
-    return gfx::Size(1920, 1080);
-  }
-
-  void OnInvalidInputEventSource() override {}
-
-  MockWidgetInputHandler::MessageVector GetAndResetDispatchedMessages() {
-    return widget_input_handler_.GetAndResetDispatchedMessages();
-  }
-
-  blink::mojom::InputEventResultState FilterInputEvent(
-      const blink::WebInputEvent& input_event,
-      const ui::LatencyInfo& latency_info) override {
-    return input_router_client_.FilterInputEvent(input_event, latency_info);
-  }
-
-  void IncrementInFlightEventCount() override {
-    input_router_client_.IncrementInFlightEventCount();
-  }
-
-  void NotifyUISchedulerOfGestureEventUpdate(
-      blink::WebInputEvent::Type gesture_event) override {}
-
-  void DecrementInFlightEventCount(
-      blink::mojom::InputEventResultSource ack_source) override {
-    input_router_client_.DecrementInFlightEventCount(ack_source);
-  }
-
-  void DidOverscroll(const ui::DidOverscrollParams& params) override {
-    input_router_client_.DidOverscroll(params);
-  }
-
-  void DidStartScrollingViewport() override {
-    input_router_client_.DidStartScrollingViewport();
-  }
-
-  void ForwardWheelEventWithLatencyInfo(
-      const blink::WebMouseWheelEvent& wheel_event,
-      const ui::LatencyInfo& latency_info) override {
-    input_router_client_.ForwardWheelEventWithLatencyInfo(wheel_event,
-                                                          latency_info);
-  }
-
-  void ForwardGestureEventWithLatencyInfo(
-      const blink::WebGestureEvent& gesture_event,
-      const ui::LatencyInfo& latency_info) override {
-    input_router_client_.ForwardGestureEventWithLatencyInfo(gesture_event,
-                                                            latency_info);
-  }
-
-  bool IsWheelScrollInProgress() override {
-    return input_router_client_.IsWheelScrollInProgress();
-  }
-
-  bool IsAutoscrollInProgress() override {
-    return input_router_client_.IsAutoscrollInProgress();
-  }
-
-  void OnSetCompositorAllowedTouchAction(
-      cc::TouchAction touch_action) override {
-    input_router_client_.OnSetCompositorAllowedTouchAction(touch_action);
-  }
-
-  bool GetAndResetFilterEventCalled() {
-    return input_router_client_.GetAndResetFilterEventCalled();
-  }
-
-  ui::DidOverscrollParams GetAndResetOverscroll() {
-    return input_router_client_.GetAndResetOverscroll();
-  }
-
-  cc::TouchAction GetAndResetCompositorAllowedTouchAction() {
-    return input_router_client_.GetAndResetCompositorAllowedTouchAction();
-  }
-
-  void set_input_router(input::InputRouter* input_router) {
-    input_router_client_.set_input_router(input_router);
-  }
-
-  void set_filter_state(blink::mojom::InputEventResultState filter_state) {
-    input_router_client_.set_filter_state(filter_state);
-  }
-  int in_flight_event_count() const {
-    return input_router_client_.in_flight_event_count();
-  }
-  blink::WebInputEvent::Type last_in_flight_event_type() const {
-    return input_router_client_.last_in_flight_event_type();
-  }
-  void set_allow_send_event(bool allow) {
-    input_router_client_.set_allow_send_event(allow);
-  }
-  const blink::WebInputEvent* last_filter_event() const {
-    return input_router_client_.last_filter_event();
-  }
-  bool on_start_stylus_writing_called() {
-    return on_start_stylus_writing_called_;
-  }
-  void set_render_widget_host_view(
-      MockRenderWidgetHostViewForStylusWriting* view) {
-    render_widget_host_view_ = view;
-  }
-
-  MockInputRouterClient input_router_client_;
-  MockWidgetInputHandler widget_input_handler_;
-  raw_ptr<MockRenderWidgetHostViewForStylusWriting> render_widget_host_view_;
-  bool on_start_stylus_writing_called_ = false;
-};
 
 class InputRouterImplTestBase : public testing::Test {
  public:
@@ -278,11 +112,10 @@ class InputRouterImplTestBase : public testing::Test {
   void SetUp() override {
     base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
     command_line->AppendSwitch(input::switches::kValidateInputEventStream);
-    client_ = std::make_unique<MockInputRouterImplClient>();
+    client_ = std::make_unique<MockInputRouterClient>();
     disposition_handler_ = std::make_unique<MockInputDispositionHandler>();
     input_router_ = std::make_unique<input::InputRouterImpl>(
-        client_.get(), disposition_handler_.get(),
-        &client_->input_router_client_, config_);
+        client_.get(), disposition_handler_.get(), client_.get(), config_);
 
     client_->set_input_router(input_router());
     disposition_handler_->set_input_router(input_router());
@@ -604,7 +437,7 @@ class InputRouterImplTestBase : public testing::Test {
   const float radius_x_ = 20.0f;
   const float radius_y_ = 20.0f;
   input::InputRouter::Config config_;
-  std::unique_ptr<MockInputRouterImplClient> client_;
+  std::unique_ptr<MockInputRouterClient> client_;
   std::unique_ptr<input::InputRouterImpl> input_router_;
   std::unique_ptr<MockInputDispositionHandler> disposition_handler_;
   raw_ptr<MockRenderWidgetHostViewForStylusWriting, DanglingUntriaged>

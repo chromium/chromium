@@ -2631,6 +2631,8 @@ test("content_unittests") {
     "../browser/renderer_host/input/mock_input_disposition_handler.h",
     "../browser/renderer_host/input/mock_input_router_client.cc",
     "../browser/renderer_host/input/mock_input_router_client.h",
+    "../browser/renderer_host/input/mock_render_widget_host_view_for_stylus_writing.cc",
+    "../browser/renderer_host/input/mock_render_widget_host_view_for_stylus_writing.h",
     "../browser/renderer_host/input/motion_event_web_unittest.cc",
     "../browser/renderer_host/input/render_input_router_latency_tracker_unittest.cc",
     "../browser/renderer_host/input/stylus_text_selector_unittest.cc",

@@ -19,7 +19,15 @@ struct DidOverscrollParams;
 
 namespace input {
 
-class InputRouterClient {
+class StylusInterface {
+ public:
+  virtual ~StylusInterface() = default;
+
+  virtual bool ShouldInitiateStylusWriting() = 0;
+  virtual void NotifyHoverActionStylusWritable(bool stylus_writable) = 0;
+};
+
+class COMPONENT_EXPORT(INPUT) InputRouterClient {
  public:
   virtual ~InputRouterClient() {}
 
@@ -97,6 +105,15 @@ class InputRouterClient {
 
   // Called when an invalid input event source is sent from the renderer.
   virtual void OnInvalidInputEventSource() = 0;
+
+  virtual blink::mojom::WidgetInputHandler* GetWidgetInputHandler() = 0;
+  virtual void OnImeCancelComposition() = 0;
+  virtual void OnImeCompositionRangeChanged(
+      const gfx::Range& range,
+      const std::optional<std::vector<gfx::Rect>>& character_bounds,
+      const std::optional<std::vector<gfx::Rect>>& line_bounds) = 0;
+  virtual StylusInterface* GetStylusInterface() = 0;
+  virtual void OnStartStylusWriting() = 0;
 };
 
 }  // namespace input

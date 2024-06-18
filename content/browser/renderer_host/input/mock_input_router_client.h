@@ -13,7 +13,9 @@
 #include "components/input/fling_controller.h"
 #include "components/input/input_router.h"
 #include "components/input/input_router_client.h"
+#include "content/browser/renderer_host/input/mock_render_widget_host_view_for_stylus_writing.h"
 #include "content/browser/scheduler/browser_ui_thread_scheduler.h"
+#include "content/test/mock_widget_input_handler.h"
 #include "ui/events/blink/did_overscroll_params.h"
 
 namespace content {
@@ -54,6 +56,14 @@ class MockInputRouterClient : public input::InputRouterClient,
       override {}
   gfx::Size GetRootWidgetViewportSize() override;
   void OnInvalidInputEventSource() override {}
+  blink::mojom::WidgetInputHandler* GetWidgetInputHandler() override;
+  void OnImeCancelComposition() override {}
+  void OnImeCompositionRangeChanged(
+      const gfx::Range& range,
+      const std::optional<std::vector<gfx::Rect>>& character_bounds,
+      const std::optional<std::vector<gfx::Rect>>& line_bounds) override {}
+  input::StylusInterface* GetStylusInterface() override;
+  void OnStartStylusWriting() override;
 
   bool GetAndResetFilterEventCalled();
   ui::DidOverscrollParams GetAndResetOverscroll();
@@ -77,6 +87,16 @@ class MockInputRouterClient : public input::InputRouterClient,
   }
   const blink::WebInputEvent* last_filter_event() const {
     return last_filter_event_.get();
+  }
+  bool on_start_stylus_writing_called() const {
+    return on_start_stylus_writing_called_;
+  }
+  MockWidgetInputHandler::MessageVector GetAndResetDispatchedMessages() {
+    return widget_input_handler_.GetAndResetDispatchedMessages();
+  }
+  void set_render_widget_host_view(
+      MockRenderWidgetHostViewForStylusWriting* view) {
+    render_widget_host_view_ = view;
   }
 
   // FlingControllerSchedulerClient
@@ -103,6 +123,9 @@ class MockInputRouterClient : public input::InputRouterClient,
   cc::TouchAction compositor_allowed_touch_action_;
 
   bool is_wheel_scroll_in_progress_ = false;
+  MockWidgetInputHandler widget_input_handler_;
+  raw_ptr<MockRenderWidgetHostViewForStylusWriting> render_widget_host_view_;
+  bool on_start_stylus_writing_called_ = false;
 };
 
 }  // namespace content
