@@ -81,6 +81,32 @@ TEST_F(LocationBarSteadyViewMediatorTest, DisableShareForOverlays) {
   EXPECT_TRUE(consumer_.locationShareable);
 }
 
+// Tests that the share button is enabled when the URL represents a downloaded
+// file.
+TEST_F(LocationBarSteadyViewMediatorTest, EnableShareForDownloadedFiles) {
+  const GURL kDownloadedFileUrl("chrome://downloads/fileName.pdf");
+  auto passed_web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebState* web_state = passed_web_state.get();
+  web_state->SetCurrentURL(kDownloadedFileUrl);
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(passed_web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
+  ASSERT_TRUE(consumer_.locationShareable);
+}
+
+// Tests that the share button is enabled when the URL represents an external
+// file.
+TEST_F(LocationBarSteadyViewMediatorTest, EnableShareForExternalFiles) {
+  const GURL kExternalFileUrl("chrome://external-file/fileName.pdf");
+  auto passed_web_state = std::make_unique<web::FakeWebState>();
+  web::FakeWebState* web_state = passed_web_state.get();
+  web_state->SetCurrentURL(kExternalFileUrl);
+  browser_->GetWebStateList()->InsertWebState(
+      std::move(passed_web_state),
+      WebStateList::InsertionParams::Automatic().Activate());
+  ASSERT_TRUE(consumer_.locationShareable);
+}
+
 // Tests that the location text and page icon are updated when an HTTP auth
 // dialog is displayed.
 TEST_F(LocationBarSteadyViewMediatorTest, HTTPAuthDialog) {
