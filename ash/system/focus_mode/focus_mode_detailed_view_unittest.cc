@@ -132,6 +132,10 @@ class FocusModeDetailedViewTest : public AshTestBase {
                                   scroll_view->GetVisibleRect().bottom());
   }
 
+  views::ScrollView* GetScrollView() {
+    return focus_mode_detailed_view_->scroll_view_for_testing();
+  }
+
   views::Label* GetToggleRowLabel() {
     return focus_mode_detailed_view_->toggle_view_->text_label();
   }
@@ -782,6 +786,29 @@ TEST_F(FocusModeDetailedViewTest, StartSessionWithActiveTimerTextfield) {
       base::Minutes(1),
       Shell::Get()->session_controller()->GetActivePrefService()->GetTimeDelta(
           prefs::kFocusModeSessionDuration));
+}
+
+// Tests that when scrolling on the chip carousel, the scroll view of the focus
+// panel will be scrolled.
+TEST_F(FocusModeDetailedViewTest, ChipsNotAcceptVerticalScrollGesture) {
+  auto* chip_carousel = GetTaskView()->chip_carousel_for_testing();
+  EXPECT_TRUE(chip_carousel->HasTasks());
+  EXPECT_TRUE(chip_carousel->GetVisible());
+
+  // Before scrolling the focus panel, the visible rect for the scroll view
+  // should be in an initialized state.
+  auto* scroll_view = GetScrollView();
+  EXPECT_EQ(scroll_view->GetVisibleRect().y(), 0);
+
+  const auto center_point = chip_carousel->GetBoundsInScreen().CenterPoint();
+  const gfx::Vector2d offset(0, -100);
+  // Scroll down the chip carousel with `offset`.
+  GetEventGenerator()->GestureScrollSequence(
+      center_point, center_point + offset, base::Milliseconds(300), 3);
+
+  // After scrolling up the focus panel, the visible rect for the scroll view
+  // has been changed.
+  EXPECT_GT(scroll_view->GetVisibleRect().y(), 0);
 }
 
 class FocusModeDetailedViewWithLotsOfTasksTest

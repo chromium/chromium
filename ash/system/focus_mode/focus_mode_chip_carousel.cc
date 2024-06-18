@@ -12,6 +12,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/events/gesture_event_details.h"
 #include "ui/gfx/geometry/linear_gradient.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/accessibility/view_accessibility.h"
@@ -80,6 +81,24 @@ void SetupOverflowIcon(views::ImageButton* overflow_icon, bool left) {
   overflow_icon->layer()->SetFillsBoundsOpaquely(false);
 }
 
+bool IsVerticalScrollGesture(const ui::Event& event) {
+  if (!event.IsGestureEvent()) {
+    return false;
+  }
+
+  auto is_vertical = [](float x_offset, float y_offset) -> bool {
+    return std::fabs(x_offset) <= std::fabs(y_offset);
+  };
+
+  const auto& details = event.AsGestureEvent()->details();
+  return (event.type() == ui::ET_GESTURE_SCROLL_UPDATE &&
+          is_vertical(details.scroll_x(), details.scroll_y())) ||
+         (event.type() == ui::ET_GESTURE_SCROLL_BEGIN &&
+          is_vertical(details.scroll_x_hint(), details.scroll_y_hint())) ||
+         (event.type() == ui::ET_SCROLL_FLING_START &&
+          is_vertical(details.velocity_x(), details.velocity_y()));
+}
+
 class ChipCarouselScrollView : public views::ScrollView {
   METADATA_HEADER(ChipCarouselScrollView, views::ScrollView)
 
@@ -93,6 +112,14 @@ class ChipCarouselScrollView : public views::ScrollView {
     // it; if the user scrolls on it vertically, we want the outer scroll view
     // to handle it.
     return horizontal_scroll_bar()->OnScroll(event.x_offset(), 0);
+  }
+
+  // views::View:
+  bool CanAcceptEvent(const ui::Event& event) override {
+    // The vertical scroll gesture event should be handled by the outer scroll
+    // view instead of this view.
+    return views::ScrollView::CanAcceptEvent(event) &&
+           !IsVerticalScrollGesture(event);
   }
 };
 BEGIN_METADATA(ChipCarouselScrollView)
