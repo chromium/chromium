@@ -4,21 +4,32 @@
 
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_permission_pane_view_mac.h"
 
+#include "base/apple/foundation_util.h"
+#include "base/mac/launch_application.h"
 #include "base/mac/mac_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/branded_strings.h"
+#include "chrome/grit/component_extension_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_util_mac.h"
+#include "ui/lottie/animation.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
+
+BASE_FEATURE(kAnimationForDesktopCapturePermissionChecker,
+             "AnimationForDesktopCapturePermissionChecker",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 namespace {
 
@@ -58,6 +69,54 @@ std::u16string GetLabelText(DesktopMediaList::Type type) {
   NOTREACHED_NORETURN();
 }
 
+std::unique_ptr<views::View> MakeToggleAnimation() {
+  if (!base::FeatureList::IsEnabled(
+          kAnimationForDesktopCapturePermissionChecker)) {
+    return nullptr;
+  }
+
+  NSImage* app_icon = [NSImage imageNamed:NSImageNameApplicationIcon];
+  if (!app_icon) {
+    return nullptr;
+  }
+
+  std::optional<std::vector<uint8_t>> toggle_animation =
+      ui::ResourceBundle::GetSharedInstance().GetLottieData(
+          SCREEN_SHARING_TOGGLE_ANIMATION_JSON);
+  if (!toggle_animation.has_value()) {
+    return nullptr;
+  }
+
+  auto animation_container = std::make_unique<views::View>();
+  views::BoxLayout* animation_layout =
+      animation_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal));
+  animation_layout->set_main_axis_alignment(
+      views::BoxLayout::MainAxisAlignment::kCenter);
+  animation_layout->set_between_child_spacing(50);
+
+  views::ImageView* logo_image_view =
+      animation_container->AddChildView(std::make_unique<views::ImageView>());
+  logo_image_view->SetImage(gfx::ImageSkiaFromNSImage(app_icon));
+  logo_image_view->SetImageSize(gfx::Size(55, 55));
+  // Adds a margin on the left side of the logo to balance the right margin that
+  // is included in the toggle animation. This visually centers the content of
+  // |animation_container|.
+  logo_image_view->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::TLBR(0, 30, 0, 0)));
+
+  views::AnimatedImageView* animation = animation_container->AddChildView(
+      std::make_unique<views::AnimatedImageView>());
+  animation->SetAnimatedImage(std::make_unique<lottie::Animation>(
+      cc::SkottieWrapper::UnsafeCreateSerializable(
+          std::move(*toggle_animation))));
+
+  animation->SetHorizontalAlignment(views::ImageViewBase::Alignment::kTrailing);
+  animation->SetImageSize(gfx::Size(80, 80));
+  animation->Play();
+  return animation_container;
+}
+
 }  // namespace
 
 DesktopMediaPermissionPaneViewMac::DesktopMediaPermissionPaneViewMac(
@@ -83,6 +142,9 @@ DesktopMediaPermissionPaneViewMac::DesktopMediaPermissionPaneViewMac(
               DISTANCE_UNRELATED_CONTROL_VERTICAL_LARGE)));
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kCenter);
 
+  if (std::unique_ptr<views::View> toggle_view = MakeToggleAnimation()) {
+    AddChildView(std::move(toggle_view));
+  }
   views::Label* label =
       AddChildView(std::make_unique<views::Label>(GetLabelText(type_)));
   label->SetMultiLine(true);
