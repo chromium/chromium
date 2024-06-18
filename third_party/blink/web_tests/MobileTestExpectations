@@ -43,7 +43,7 @@ crbug.com/329441838 [ Webview ] external/wpt/pointerevents/pointerevent_touch-ac
 crbug.com/329441838 [ Webview ] external/wpt/pointerevents/pointerlock/pointerevent_movementxy_with_pointerlock.html [ Failure ]
 crbug.com/329441838 external/wpt/pointerevents/coalesced_events_attributes_under_load.https.html?mouse [ Skip Timeout ]
 crbug.com/329441838 external/wpt/pointerevents/coalesced_events_attributes_under_load.https.html?pen [ Skip Timeout ]
-crbug.com/329441838 external/wpt/pointerevents/coalesced_events_attributes_under_load.https.html?touch [ Timeout Failure ]
+crbug.com/329441838 external/wpt/pointerevents/coalesced_events_attributes_under_load.https.html?touch [ Failure Timeout ]
 crbug.com/329441838 external/wpt/pointerevents/compat/pointerevent_touch_target_after_pointerdown_target_removed.tentative.html [ Failure ]
 crbug.com/329441838 external/wpt/pointerevents/pointer-events-none-skip-scroll-in-iframe.html [ Failure Pass ]
 crbug.com/329441838 external/wpt/pointerevents/pointerevent_contextmenu_is_a_pointerevent.html?touch [ Timeout ]
@@ -110,7 +110,7 @@ crbug.com/421921 [ Webview ] external/wpt/push-api/idlharness.https.any.servicew
 [ Webview ] external/wpt/uievents/idlharness.window.html [ Failure ]
 external/wpt/css/cssom-view/idlharness.html [ Failure ]
 external/wpt/web-animations/idlharness.window.html [ Failure ]
-external/wpt/webrtc/idlharness.https.window.html [ Timeout Skip ]
+external/wpt/webrtc/idlharness.https.window.html [ Skip Timeout ]
 
 # Flaky tests
 [ Android ] external/wpt/visual-viewport/page-and-offset-in-iframe.html [ Failure Pass ]
