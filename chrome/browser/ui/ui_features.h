@@ -148,9 +148,6 @@ BASE_DECLARE_FEATURE(kResponsiveToolbar);
 BASE_DECLARE_FEATURE(kScrollableTabStrip);
 extern const char kMinimumTabWidthFeatureParameterName[];
 
-BASE_DECLARE_FEATURE(kScrollableTabStripWithDragging);
-extern const char kTabScrollingWithDraggingModeName[];
-
 BASE_DECLARE_FEATURE(kTabStripCollectionStorage);
 
 BASE_DECLARE_FEATURE(kTabScrollingButtonPosition);

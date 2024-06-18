@@ -15,6 +15,13 @@ BASE_FEATURE(kSplitTabStrip,
              "SplitTabStrip",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables tab scrolling while dragging tabs in tabstrip
+// https://crbug.com/1145747
+BASE_FEATURE(kScrollableTabStripWithDragging,
+             "kScrollableTabStripWithDragging",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const char kTabScrollingWithDraggingModeName[] = "tabScrollWithDragMode";
+
 BASE_FEATURE(kTabSearchPositionSetting,
              "TabSearchPositionSetting",
              base::FEATURE_DISABLED_BY_DEFAULT);

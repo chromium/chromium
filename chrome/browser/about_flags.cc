@@ -2001,10 +2001,11 @@ const FeatureEntry::FeatureVariation kTabScrollingButtonPositionVariations[] = {
     {" - on both sides of the tabstrip", kTabScrollingButtonPositionSplit,
      std::size(kTabScrollingButtonPositionSplit), nullptr}};
 
+#if !BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kTabScrollingWithDraggingWithConstantSpeed[] =
-    {{features::kTabScrollingWithDraggingModeName, "1"}};
+    {{tabs::kTabScrollingWithDraggingModeName, "1"}};
 const FeatureEntry::FeatureParam kTabScrollingWithDraggingWithVariableSpeed[] =
-    {{features::kTabScrollingWithDraggingModeName, "2"}};
+    {{tabs::kTabScrollingWithDraggingModeName, "2"}};
 
 const FeatureEntry::FeatureVariation kTabScrollingWithDraggingVariations[] = {
     {" - tabs scrolling with constant speed",
@@ -2013,6 +2014,7 @@ const FeatureEntry::FeatureVariation kTabScrollingWithDraggingVariations[] = {
     {" - tabs scrolling with variable speed region",
      kTabScrollingWithDraggingWithVariableSpeed,
      std::size(kTabScrollingWithDraggingWithVariableSpeed), nullptr}};
+#endif
 
 const FeatureEntry::FeatureParam kScrollableTabStripOverflowDivider[] = {
     {features::kScrollableTabStripOverflowModeName, "1"}};
@@ -6760,12 +6762,14 @@ const FeatureEntry kFeatureEntries[] = {
                                     kTabScrollingButtonPositionVariations,
                                     "TabScrollingButtonPosition")},
 
+#if !BUILDFLAG(IS_ANDROID)
     {flag_descriptions::kScrollableTabStripWithDraggingFlagId,
      flag_descriptions::kScrollableTabStripWithDraggingName,
      flag_descriptions::kScrollableTabStripWithDraggingDescription, kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kScrollableTabStripWithDragging,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(tabs::kScrollableTabStripWithDragging,
                                     kTabScrollingWithDraggingVariations,
                                     "TabScrollingWithDragging")},
+#endif
 
     {flag_descriptions::kTabStripCollectionStorageFlagId,
      flag_descriptions::kTabStripCollectionStorageName,

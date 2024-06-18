@@ -13,6 +13,9 @@ namespace tabs {
 
 BASE_DECLARE_FEATURE(kSplitTabStrip);
 
+BASE_DECLARE_FEATURE(kScrollableTabStripWithDragging);
+extern const char kTabScrollingWithDraggingModeName[];
+
 BASE_DECLARE_FEATURE(kTabSearchPositionSetting);
 
 extern bool CanShowTabSearchPositionSetting();

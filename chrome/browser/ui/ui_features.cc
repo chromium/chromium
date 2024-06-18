@@ -287,13 +287,6 @@ BASE_FEATURE(kTabScrollingButtonPosition,
              base::FEATURE_ENABLED_BY_DEFAULT);
 const char kTabScrollingButtonPositionParameterName[] = "buttonPosition";
 
-// Enables tab scrolling while dragging tabs in tabstrip
-// https://crbug.com/1145747
-BASE_FEATURE(kScrollableTabStripWithDragging,
-             "kScrollableTabStripWithDragging",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const char kTabScrollingWithDraggingModeName[] = "tabScrollWithDragMode";
-
 // Enables different methods of overflow when scrolling tabs in tabstrip
 // https://crbug.com/951078
 BASE_FEATURE(kScrollableTabStripOverflow,

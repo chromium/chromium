@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/sad_tab_helper.h"
+#include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/organization/metrics.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
@@ -485,10 +486,10 @@ TabDragController::Liveness TabDragController::Init(
   ref->window_finder_ = std::make_unique<WindowFinder>();
 
   if (base::FeatureList::IsEnabled(features::kScrollableTabStrip) &&
-      base::FeatureList::IsEnabled(features::kScrollableTabStripWithDragging)) {
+      base::FeatureList::IsEnabled(tabs::kScrollableTabStripWithDragging)) {
     const int drag_with_scroll_mode = base::GetFieldTrialParamByFeatureAsInt(
-        features::kScrollableTabStripWithDragging,
-        features::kTabScrollingWithDraggingModeName, 1);
+        tabs::kScrollableTabStripWithDragging,
+        tabs::kTabScrollingWithDraggingModeName, 1);
 
     switch (drag_with_scroll_mode) {
       case static_cast<int>(ScrollWithDragStrategy::kConstantSpeed):
