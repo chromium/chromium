@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -264,16 +265,15 @@ void TestWrite(const V8TestingScope& scope,
 
   mojo::ScopedDataPipeConsumerHandle& output_consumer =
       scoped_web_transport->Stub()->OutputConsumer();
-  const void* buffer = nullptr;
-  size_t buffer_num_bytes = 0;
-  MojoResult mojo_result = output_consumer->BeginReadData(
-      &buffer, &buffer_num_bytes, MOJO_BEGIN_READ_DATA_FLAG_NONE);
+  base::span<const uint8_t> buffer;
+  MojoResult mojo_result =
+      output_consumer->BeginReadData(MOJO_BEGIN_READ_DATA_FLAG_NONE, buffer);
 
   ASSERT_EQ(mojo_result, MOJO_RESULT_OK);
-  EXPECT_EQ(buffer_num_bytes, 1u);
-  EXPECT_EQ(reinterpret_cast<const char*>(buffer)[0], 'A');
+  EXPECT_EQ(buffer.size(), 1u);
+  EXPECT_EQ(base::as_string_view(buffer), "A");
 
-  output_consumer->EndReadData(buffer_num_bytes);
+  output_consumer->EndReadData(buffer.size());
 }
 
 TEST(BidirectionalStreamTest, CreateLocallyAndWrite) {
@@ -305,10 +305,12 @@ void TestRead(V8TestingScope& scope,
               BidirectionalStream* bidirectional_stream) {
   mojo::ScopedDataPipeProducerHandle& input_producer =
       scoped_web_transport->Stub()->InputProducer();
-  constexpr char input[] = {'B'};
-  size_t input_num_bytes = sizeof(input);
+  constexpr std::string_view input = "B";
+  size_t actually_written_bytes = 0;
   MojoResult mojo_result = input_producer->WriteData(
-      input, &input_num_bytes, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
+      base::as_byte_span(input), MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
+      actually_written_bytes);
+  // Ok to ignore `actually_written_bytes` because of `...ALL_OR_NONE` flag.
 
   ASSERT_EQ(mojo_result, MOJO_RESULT_OK);
 

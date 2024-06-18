@@ -57,7 +57,7 @@ class BLINK_PLATFORM_EXPORT WebThreadSafeData {
   void Reset();
 
   size_t size() const;
-  const char* Data() const;
+  const char* data() const;
 
   bool IsEmpty() const { return !size(); }
 
@@ -71,7 +71,7 @@ class BLINK_PLATFORM_EXPORT WebThreadSafeData {
 #else
   operator std::string() const {
     size_t len = size();
-    return len ? std::string(Data(), len) : std::string();
+    return len ? std::string(data(), len) : std::string();
   }
 #endif
 

@@ -33,6 +33,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -123,7 +124,7 @@ void BlobData::SetContentType(const String& content_type) {
 }
 
 void BlobData::AppendData(scoped_refptr<RawData> data) {
-  AppendDataInternal(base::make_span(data->data(), data->length()), data);
+  AppendDataInternal(base::span(*data), data);
 }
 
 void BlobData::AppendBlob(scoped_refptr<BlobDataHandle> data_handle,
@@ -153,8 +154,7 @@ void BlobData::AppendText(const String& text,
         BlobBytesProvider::kMaxConsolidatedItemSizeInBytes) {
       auto raw_data = RawData::Create();
       NormalizeLineEndingsToNative(utf8_text, *raw_data->MutableData());
-      AppendDataInternal(base::make_span(raw_data->data(), raw_data->length()),
-                         raw_data);
+      AppendDataInternal(base::span(*raw_data), raw_data);
     } else {
       Vector<char> buffer;
       NormalizeLineEndingsToNative(utf8_text, buffer);

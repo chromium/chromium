@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -81,7 +82,7 @@ TEST_F(BlobBytesProviderTest, Consolidation) {
   data->AppendData(base::make_span("ps2", 3u));
 
   EXPECT_EQ(1u, data->data_.size());
-  EXPECT_EQ(12u, data->data_[0]->length());
+  EXPECT_EQ(12u, data->data_[0]->size());
   EXPECT_EQ(0, memcmp(data->data_[0]->data(), "abcdefps1ps2", 12));
 
   auto large_data = std::make_unique<char[]>(
@@ -90,9 +91,9 @@ TEST_F(BlobBytesProviderTest, Consolidation) {
       large_data.get(), BlobBytesProvider::kMaxConsolidatedItemSizeInBytes));
 
   EXPECT_EQ(2u, data->data_.size());
-  EXPECT_EQ(12u, data->data_[0]->length());
+  EXPECT_EQ(12u, data->data_[0]->size());
   EXPECT_EQ(BlobBytesProvider::kMaxConsolidatedItemSizeInBytes,
-            data->data_[1]->length());
+            data->data_[1]->size());
 }
 
 TEST_F(BlobBytesProviderTest, RequestAsReply) {
@@ -353,16 +354,17 @@ TEST_F(BlobBytesProviderTest, RequestAsStream) {
             }
 
             size_t num_bytes = 0;
-            MojoResult query_result =
-                pipe.ReadData(nullptr, &num_bytes, MOJO_READ_DATA_FLAG_QUERY);
+            MojoResult query_result = pipe.ReadData(
+                MOJO_READ_DATA_FLAG_QUERY, base::span<uint8_t>(), num_bytes);
             if (query_result == MOJO_RESULT_SHOULD_WAIT)
               return;
             EXPECT_EQ(MOJO_RESULT_OK, query_result);
 
             Vector<uint8_t> bytes(num_bytes);
-            EXPECT_EQ(MOJO_RESULT_OK,
-                      pipe.ReadData(bytes.data(), &num_bytes,
-                                    MOJO_READ_DATA_FLAG_ALL_OR_NONE));
+            EXPECT_EQ(
+                MOJO_RESULT_OK,
+                pipe.ReadData(MOJO_READ_DATA_FLAG_ALL_OR_NONE,
+                              base::as_writable_byte_span(bytes), num_bytes));
             bytes_out->AppendVector(bytes);
           },
           consumer_handle.get(), loop.QuitClosure(), &received_data));

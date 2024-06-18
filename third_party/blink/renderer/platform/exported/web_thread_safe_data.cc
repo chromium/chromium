@@ -50,10 +50,10 @@ void WebThreadSafeData::Assign(const WebThreadSafeData& other) {
 size_t WebThreadSafeData::size() const {
   if (private_.IsNull())
     return 0;
-  return private_->length();
+  return private_->size();
 }
 
-const char* WebThreadSafeData::Data() const {
+const char* WebThreadSafeData::data() const {
   if (private_.IsNull())
     return nullptr;
   return private_->data();

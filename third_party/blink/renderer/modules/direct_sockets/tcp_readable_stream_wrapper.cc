@@ -92,10 +92,9 @@ void TCPReadableStreamWrapper::Pull() {
 
   DCHECK(data_pipe_);
 
-  const void* data_buffer = nullptr;
-  size_t data_length = 0;
-  auto result = data_pipe_->BeginReadData(&data_buffer, &data_length,
-                                          MOJO_BEGIN_READ_DATA_FLAG_NONE);
+  base::span<const uint8_t> data_buffer;
+  auto result =
+      data_pipe_->BeginReadData(MOJO_BEGIN_READ_DATA_FLAG_NONE, data_buffer);
   switch (result) {
     case MOJO_RESULT_OK: {
       // respond() or enqueue() will only throw if their arguments are invalid
@@ -109,16 +108,16 @@ void TCPReadableStreamWrapper::Pull() {
 
       if (ReadableStreamBYOBRequest* request = Controller()->byobRequest()) {
         DOMArrayPiece view(request->view().Get());
-        data_length = std::min(data_length, view.ByteLength());
-        std::memcpy(view.Data(), data_buffer, data_length);
-        request->respond(script_state, data_length, exception_state);
+        data_buffer =
+            data_buffer.first(std::min(data_buffer.size(), view.ByteLength()));
+        view.ByteSpan().first(data_buffer.size()).copy_from(data_buffer);
+        request->respond(script_state, data_buffer.size(), exception_state);
       } else {
-        auto buffer = NotShared(DOMUint8Array::Create(
-            static_cast<const uint8_t*>(data_buffer), data_length));
+        auto buffer = NotShared(DOMUint8Array::Create(data_buffer));
         Controller()->enqueue(script_state, buffer, exception_state);
       }
 
-      result = data_pipe_->EndReadData(data_length);
+      result = data_pipe_->EndReadData(data_buffer.size());
       DCHECK_EQ(result, MOJO_RESULT_OK);
 
       break;

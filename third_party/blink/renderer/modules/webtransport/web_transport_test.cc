@@ -1763,13 +1763,14 @@ TEST_F(WebTransportTest, CreateReceiveStream) {
 
   ReceiveStream* receive_stream = ReadReceiveStream(scope, web_transport);
 
-  const char data[] = "what";
-  size_t num_bytes = 4u;
+  const std::string_view data = "what";
+  size_t actually_written_bytes = 0;
 
-  EXPECT_EQ(
-      producer->WriteData(data, &num_bytes, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE),
-      MOJO_RESULT_OK);
-  EXPECT_EQ(num_bytes, 4u);
+  EXPECT_EQ(producer->WriteData(base::as_byte_span(data),
+                                MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
+                                actually_written_bytes),
+            MOJO_RESULT_OK);
+  EXPECT_EQ(actually_written_bytes, 4u);
 
   producer.reset();
   web_transport->OnIncomingStreamClosed(/*stream_id=*/0, true);

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/fetch/bytes_uploader.h"
 
+#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -125,11 +127,16 @@ void BytesUploader::WriteDataOnPipe() {
         break;
     }
     DCHECK_EQ(consumer_result, BytesConsumer::Result::kOk);
-    size_t written_bytes = available;
+    // SAFETY: `BeginRead` promises to return a valid pointer and size.
+    base::span<const char> chars =
+        UNSAFE_BUFFERS(base::span(buffer, available));
+    base::span<const uint8_t> bytes = base::as_bytes(chars);
+
+    size_t actually_written_bytes = 0;
     const MojoResult mojo_result = upload_pipe_->WriteData(
-        buffer, &written_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+        bytes, MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
     DVLOG(3) << "  upload_pipe_->WriteData()=" << mojo_result
-             << ", mojo_written=" << written_bytes;
+             << ", mojo_written=" << actually_written_bytes;
     if (mojo_result == MOJO_RESULT_SHOULD_WAIT) {
       // Wait for the pipe to have more capacity available
       consumer_result = consumer_->EndRead(0);
@@ -141,10 +148,10 @@ void BytesUploader::WriteDataOnPipe() {
       return;
     }
 
-    consumer_result = consumer_->EndRead(written_bytes);
+    consumer_result = consumer_->EndRead(actually_written_bytes);
     DVLOG(3) << "  consumer_->EndRead()=" << consumer_result;
 
-    if (!base::CheckAdd(total_size_, written_bytes)
+    if (!base::CheckAdd(total_size_, actually_written_bytes)
              .AssignIfValid(&total_size_)) {
       CloseOnError();
       return;

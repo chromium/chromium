@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
@@ -72,14 +73,15 @@ static constexpr char kTestData[] = "Hello world";
 constexpr size_t kDataPipeCapacity = 4096;
 
 std::string ReadOneChunk(mojo::ScopedDataPipeConsumerHandle* handle) {
-  char buffer[kDataPipeCapacity];
-  size_t read_bytes = kDataPipeCapacity;
-  MojoResult result =
-      (*handle)->ReadData(buffer, &read_bytes, MOJO_READ_DATA_FLAG_NONE);
+  std::string buffer(kDataPipeCapacity, '\0');
+  size_t actually_read_bytes = 0;
+  MojoResult result = (*handle)->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                                          base::as_writable_byte_span(buffer),
+                                          actually_read_bytes);
   if (result != MOJO_RESULT_OK) {
     return "";
   }
-  return std::string(buffer, read_bytes);
+  return buffer.substr(0, actually_read_bytes);
 }
 
 // Returns a fake TimeTicks based on the given microsecond offset.

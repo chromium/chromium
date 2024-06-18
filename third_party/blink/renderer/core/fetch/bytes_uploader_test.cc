@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/fetch/bytes_uploader.h"
 
+#include "base/containers/span.h"
 #include "base/test/mock_callback.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"
@@ -131,10 +132,11 @@ TEST_F(BytesUploaderTest, ReadEmpty) {
   test::RunPendingTasks();
 
   checkpoint.Call(3);
-  char buffer[20] = {};
-  size_t num_bytes = sizeof(buffer);
-  MojoResult rv =
-      Readable()->ReadData(buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
+  std::string buffer(20, '\0');
+  size_t actually_read_bytes = 0;
+  MojoResult rv = Readable()->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                                       base::as_writable_byte_span(buffer),
+                                       actually_read_bytes);
   EXPECT_EQ(MOJO_RESULT_SHOULD_WAIT, rv);
 }
 
@@ -171,12 +173,14 @@ TEST_F(BytesUploaderTest, ReadSmall) {
   test::RunPendingTasks();
 
   checkpoint.Call(3);
-  char buffer[20] = {};
-  size_t num_bytes = sizeof(buffer);
+  std::string buffer(20, '\0');
+  size_t actually_read_bytes = 0;
   EXPECT_EQ(MOJO_RESULT_OK,
-            Readable()->ReadData(buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE));
-  EXPECT_EQ(6u, num_bytes);
-  EXPECT_STREQ("foobar", buffer);
+            Readable()->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                                 base::as_writable_byte_span(buffer),
+                                 actually_read_bytes));
+  EXPECT_EQ(6u, actually_read_bytes);
+  EXPECT_EQ("foobar", buffer.substr(0, 6));
 }
 
 TEST_F(BytesUploaderTest, ReadOverPipeCapacity) {
@@ -231,21 +235,24 @@ TEST_F(BytesUploaderTest, ReadOverPipeCapacity) {
   test::RunPendingTasks();
 
   checkpoint.Call(3);
-  char buffer[20] = {};
-  size_t num_bytes = sizeof(buffer);
+  std::string buffer(20, '\0');
+  size_t actually_read_bytes = 0;
   EXPECT_EQ(MOJO_RESULT_OK,
-            Readable()->ReadData(buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE));
-  EXPECT_EQ(10u, num_bytes);
-  EXPECT_STREQ("foobarFOOB", buffer);
+            Readable()->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                                 base::as_writable_byte_span(buffer),
+                                 actually_read_bytes));
+  EXPECT_EQ(10u, actually_read_bytes);
+  EXPECT_EQ("foobarFOOB", buffer.substr(0, 10));
 
   checkpoint.Call(4);
   test::RunPendingTasks();
-  char buffer2[20] = {};
-  num_bytes = sizeof(buffer2);
-  EXPECT_EQ(MOJO_RESULT_OK, Readable()->ReadData(buffer2, &num_bytes,
-                                                 MOJO_READ_DATA_FLAG_NONE));
-  EXPECT_EQ(2u, num_bytes);
-  EXPECT_STREQ("AR", buffer2);
+  std::string buffer2(20, '\0');
+  EXPECT_EQ(MOJO_RESULT_OK,
+            Readable()->ReadData(MOJO_READ_DATA_FLAG_NONE,
+                                 base::as_writable_byte_span(buffer2),
+                                 actually_read_bytes));
+  EXPECT_EQ(2u, actually_read_bytes);
+  EXPECT_EQ("AR", buffer2.substr(0, 2));
 }
 
 TEST_F(BytesUploaderTest, StartReadingWithoutGetSize) {

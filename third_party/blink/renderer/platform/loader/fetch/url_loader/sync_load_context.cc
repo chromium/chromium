@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
@@ -290,10 +291,9 @@ void SyncLoadContext::OnBodyReadable(MojoResult,
                                      const mojo::HandleSignalsState&) {
   DCHECK_EQ(Mode::kDataPipe, mode_);
   DCHECK(body_handle_.is_valid());
-  const void* buffer = nullptr;
-  size_t read_bytes = 0;
-  MojoResult result = body_handle_->BeginReadData(&buffer, &read_bytes,
-                                                  MOJO_READ_DATA_FLAG_NONE);
+  base::span<const uint8_t> buffer;
+  MojoResult result =
+      body_handle_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
   if (result == MOJO_RESULT_SHOULD_WAIT) {
     body_watcher_.ArmOrNotify();
     return;
@@ -315,13 +315,13 @@ void SyncLoadContext::OnBodyReadable(MojoResult,
     return;
   }
 
+  base::span<const char> chars = base::as_chars(buffer);
   if (!response_->data) {
-    response_->data =
-        SharedBuffer::Create(static_cast<const char*>(buffer), read_bytes);
+    response_->data = SharedBuffer::Create(chars.data(), chars.size());
   } else {
-    response_->data->Append(static_cast<const char*>(buffer), read_bytes);
+    response_->data->Append(chars.data(), chars.size());
   }
-  body_handle_->EndReadData(read_bytes);
+  body_handle_->EndReadData(chars.size());
   body_watcher_.ArmOrNotify();
 }
 

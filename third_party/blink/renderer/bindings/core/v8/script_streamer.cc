@@ -9,6 +9,8 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -134,29 +136,28 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
 
     // Start a new two-phase read, blocking until data is available.
     while (true) {
-      const void* buffer;
-      size_t num_bytes;
-      MojoResult result = data_pipe_->BeginReadData(&buffer, &num_bytes,
-                                                    MOJO_READ_DATA_FLAG_NONE);
+      base::span<const uint8_t> buffer;
+      MojoResult result =
+          data_pipe_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
 
       switch (result) {
         case MOJO_RESULT_OK: {
           // num_bytes could only be 0 if the handle was being read elsewhere.
-          CHECK_GT(num_bytes, 0u);
+          CHECK_GT(buffer.size(), 0u);
 
           if (src) {
             auto copy_for_script_stream =
-                std::make_unique<uint8_t[]>(num_bytes);
-            memcpy(copy_for_script_stream.get(), buffer, num_bytes);
-            *src = copy_for_script_stream.release();
+                base::HeapArray<uint8_t>::CopiedFrom(buffer);
+            *src = std::move(copy_for_script_stream).leak().data();
           }
 
           // TODO(leszeks): It would be nice to get rid of this second copy, and
           // either share ownership of the chunks, or only give chunks back to
           // the client once the streaming completes.
           Vector<char> copy_for_decoder;
-          copy_for_decoder.Append(static_cast<const char*>(buffer),
-                                  base::checked_cast<wtf_size_t>(num_bytes));
+          copy_for_decoder.Append(
+              base::as_chars(buffer).data(),
+              base::checked_cast<wtf_size_t>(buffer.size()));
           if (absl::holds_alternative<ScriptDecoder*>(script_decoder_)) {
             absl::get<ScriptDecoder*>(script_decoder_)
                 ->DidReceiveData(std::move(copy_for_decoder));
@@ -168,10 +169,10 @@ class SourceStream : public v8::ScriptCompiler::ExternalSourceStream {
                                  /*send_to_client=*/true);
           }
 
-          result = data_pipe_->EndReadData(num_bytes);
+          result = data_pipe_->EndReadData(buffer.size());
           CHECK_EQ(result, MOJO_RESULT_OK);
 
-          return num_bytes;
+          return buffer.size();
         }
 
         case MOJO_RESULT_SHOULD_WAIT: {
@@ -834,20 +835,18 @@ void ResourceScriptStreamer::OnDataPipeReadable(
   CHECK(state.readable());
   CHECK(data_pipe_);
 
-  const void* data;
-  size_t data_size;
+  base::span<const uint8_t> data;
   MojoReadDataFlags flags_to_pass = MOJO_READ_DATA_FLAG_NONE;
-  MojoResult begin_read_result =
-      data_pipe_->BeginReadData(&data, &data_size, flags_to_pass);
+  MojoResult begin_read_result = data_pipe_->BeginReadData(flags_to_pass, data);
   // There should be data, so this read should succeed.
   CHECK_EQ(begin_read_result, MOJO_RESULT_OK);
 
-  auto data_span = base::make_span(static_cast<const char*>(data), data_size);
-  response_body_loader_client_->DidReceiveData(data_span);
-  script_decoder_->DidReceiveData(Vector<char>(data_span),
+  std::string_view chars = base::as_string_view(data);
+  response_body_loader_client_->DidReceiveData(chars);
+  script_decoder_->DidReceiveData(Vector<char>(chars),
                                   /*send_to_client=*/false);
 
-  MojoResult end_read_result = data_pipe_->EndReadData(data_size);
+  MojoResult end_read_result = data_pipe_->EndReadData(data.size());
 
   CHECK_EQ(end_read_result, MOJO_RESULT_OK);
 
@@ -1489,14 +1488,13 @@ bool BackgroundResourceScriptStreamer::BackgroundProcessor::
       return false;
   }
   CHECK(state.readable());
-  const void* data;
-  size_t data_size = 0;
-  constexpr size_t kMaximumLengthOfBOM = 4;
+  base::span<const uint8_t> data;
+  constexpr uint32_t kMaximumLengthOfBOM = 4;
   MojoResult begin_read_result =
-      body_->BeginReadData(&data, &data_size, MOJO_READ_DATA_FLAG_NONE);
+      body_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, data);
   CHECK_EQ(begin_read_result, MOJO_RESULT_OK);
-  CHECK_GT(data_size, 0u);
-  if (data_size < kMaximumLengthOfBOM) {
+  CHECK_GT(data.size(), 0u);
+  if (data.size() < kMaximumLengthOfBOM) {
     MojoResult end_read_result = body_->EndReadData(0);
     CHECK_EQ(end_read_result, MOJO_RESULT_OK);
     // We keep `watcher_` to read more data.
@@ -1509,8 +1507,9 @@ bool BackgroundResourceScriptStreamer::BackgroundProcessor::
   std::unique_ptr<TextResourceDecoder> decoder(
       std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
           TextResourceDecoderOptions::kPlainTextContent, encoding_)));
-  decoder->CheckForBOM(reinterpret_cast<const char*>(data),
-                       kMaximumLengthOfBOM);
+  std::string_view chars =
+      base::as_string_view(data.first(kMaximumLengthOfBOM));
+  decoder->CheckForBOM(chars.data(), static_cast<wtf_size_t>(chars.size()));
   MojoResult end_read_result = body_->EndReadData(0);
   CHECK_EQ(end_read_result, MOJO_RESULT_OK);
   v8::ScriptCompiler::StreamedSource::Encoding script_source_encoding =

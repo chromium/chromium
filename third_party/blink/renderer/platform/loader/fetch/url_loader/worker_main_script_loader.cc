@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/worker_main_script_loader.h"
 
+#include "base/containers/span.h"
 #include "services/network/public/cpp/header_util.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
@@ -221,11 +222,8 @@ void WorkerMainScriptLoader::StartLoadingBody() {
 void WorkerMainScriptLoader::OnReadable(MojoResult) {
   // It isn't necessary to handle MojoResult here since BeginReadDataRaw()
   // returns an equivalent error.
-  const char* buffer = nullptr;
-  size_t bytes_read = 0;
-  MojoResult rv =
-      data_pipe_->BeginReadData(reinterpret_cast<const void**>(&buffer),
-                                &bytes_read, MOJO_READ_DATA_FLAG_NONE);
+  base::span<const uint8_t> buffer;
+  MojoResult rv = data_pipe_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
   switch (rv) {
     case MOJO_RESULT_BUSY:
     case MOJO_RESULT_INVALID_ARGUMENT:
@@ -245,14 +243,14 @@ void WorkerMainScriptLoader::OnReadable(MojoResult) {
       return;
   }
 
-  if (bytes_read > 0) {
-    base::span<const char> span = base::make_span(buffer, bytes_read);
-    client_->DidReceiveDataWorkerMainScript(span);
+  if (!buffer.empty()) {
+    base::span<const char> chars = base::as_chars(buffer);
+    client_->DidReceiveDataWorkerMainScript(chars);
     resource_load_observer_->DidReceiveData(initial_request_.InspectorId(),
-                                            span);
+                                            chars);
   }
 
-  rv = data_pipe_->EndReadData(bytes_read);
+  rv = data_pipe_->EndReadData(buffer.size());
   DCHECK_EQ(rv, MOJO_RESULT_OK);
   watcher_->ArmOrNotify();
 }

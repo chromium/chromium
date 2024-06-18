@@ -35,6 +35,7 @@
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -205,10 +206,9 @@ void FileReaderLoader::OnDataPipeReadable(MojoResult result) {
   }
 
   while (true) {
-    size_t num_bytes;
-    const void* buffer;
-    MojoResult pipe_result = consumer_handle_->BeginReadData(
-        &buffer, &num_bytes, MOJO_READ_DATA_FLAG_NONE);
+    base::span<const uint8_t> buffer;
+    MojoResult pipe_result =
+        consumer_handle_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
     if (pipe_result == MOJO_RESULT_SHOULD_WAIT) {
       if (!IsSyncLoad())
         return;
@@ -232,20 +232,20 @@ void FileReaderLoader::OnDataPipeReadable(MojoResult result) {
       return;
     }
 
-    const char* data = static_cast<const char*>(buffer);
-    DCHECK(data);
+    DCHECK(buffer.data());
     DCHECK_EQ(error_code_, FileErrorCode::kOK);
 
-    bytes_loaded_ += num_bytes;
+    bytes_loaded_ += buffer.size();
+    std::string_view chars = base::as_string_view(buffer);
 
     if (auto err = client_->DidReceiveData(
-            data, base::checked_cast<unsigned>(num_bytes));
+            chars.data(), base::checked_cast<unsigned>(chars.size()));
         err != FileErrorCode::kOK) {
       Failed(err, FailureType::kClientFailure);
       return;
     }
 
-    consumer_handle_->EndReadData(num_bytes);
+    consumer_handle_->EndReadData(chars.size());
     if (BytesLoaded() >= total_bytes_) {
       received_all_data_ = true;
       if (received_on_complete_)

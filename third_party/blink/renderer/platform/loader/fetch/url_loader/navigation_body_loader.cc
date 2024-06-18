@@ -6,6 +6,8 @@
 
 #include <algorithm>
 
+#include "base/containers/heap_array.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
@@ -16,6 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/record_ontransfersizeupdate_utils.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
@@ -76,7 +79,7 @@ class BodyReader {
   virtual ~BodyReader() = default;
   virtual bool ShouldContinueReading() = 0;
   virtual void FinishedReading(bool has_error) = 0;
-  virtual bool DataReceived(const char* data, size_t size) = 0;
+  virtual bool DataReceived(base::span<const char> data) = 0;
 };
 
 void ReadFromDataPipeImpl(BodyReader& reader,
@@ -84,10 +87,8 @@ void ReadFromDataPipeImpl(BodyReader& reader,
                           mojo::SimpleWatcher& handle_watcher) {
   size_t num_bytes_consumed = 0;
   while (reader.ShouldContinueReading()) {
-    const void* buffer = nullptr;
-    size_t available = 0;
-    MojoResult result =
-        handle->BeginReadData(&buffer, &available, MOJO_READ_DATA_FLAG_NONE);
+    base::span<const uint8_t> buffer;
+    MojoResult result = handle->BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
     if (result == MOJO_RESULT_SHOULD_WAIT) {
       handle_watcher.ArmOrNotify();
       return;
@@ -102,8 +103,9 @@ void ReadFromDataPipeImpl(BodyReader& reader,
     }
     const size_t chunk_size = network::features::GetLoaderChunkSize();
     DCHECK_LE(num_bytes_consumed, chunk_size);
-    available = std::min(available, chunk_size - num_bytes_consumed);
-    if (available == 0) {
+    buffer = buffer.first(
+        std::min<size_t>(buffer.size(), chunk_size - num_bytes_consumed));
+    if (buffer.empty()) {
       // We've already consumed many bytes in this task. Defer the remaining
       // to the next task.
       result = handle->EndReadData(0);
@@ -111,10 +113,11 @@ void ReadFromDataPipeImpl(BodyReader& reader,
       handle_watcher.ArmOrNotify();
       return;
     }
-    num_bytes_consumed += available;
-    if (!reader.DataReceived(static_cast<const char*>(buffer), available))
+    num_bytes_consumed += buffer.size();
+    if (!reader.DataReceived(base::as_chars(buffer))) {
       return;
-    result = handle->EndReadData(available);
+    }
+    result = handle->EndReadData(buffer.size());
     DCHECK_EQ(MOJO_RESULT_OK, result);
   }
 }
@@ -209,11 +212,12 @@ class NavigationBodyLoader::OffThreadBodyReader : public BodyReader {
 
   void FinishedReading(bool has_error) override {
     has_seen_end_of_data_ = true;
-    AddChunk(decoder_->Flush(), nullptr, 0, has_error);
+    AddChunk(decoder_->Flush(), base::span<const char>(), has_error);
   }
 
-  bool DataReceived(const char* data, size_t size) override {
-    AddChunk(decoder_->Decode(data, size), data, size, /*has_error=*/false);
+  bool DataReceived(base::span<const char> data) override {
+    AddChunk(decoder_->Decode(data.data(), data.size()), data,
+             /*has_error=*/false);
     return true;
   }
 
@@ -235,18 +239,17 @@ class NavigationBodyLoader::OffThreadBodyReader : public BodyReader {
   }
 
   void AddChunk(const String& decoded_data,
-                const char* encoded_data,
-                size_t size,
+                base::span<const char> encoded_data,
                 bool has_error) {
     DCHECK(reader_task_runner_->RunsTasksInCurrentSequence());
     std::unique_ptr<char[]> encoded_data_copy;
     // Avoid copying the encoded data unless the caller needs it.
     if (should_keep_encoded_data_) {
-      encoded_data_copy = std::make_unique<char[]>(size);
-      std::copy_n(encoded_data, size, encoded_data_copy.get());
+      encoded_data_copy.reset(
+          base::HeapArray<char>::CopiedFrom(encoded_data).leak().data());
     }
 
-    bool post_task;
+    bool post_task = false;
     {
       base::AutoLock lock(lock_);
       if (decoded_data && process_background_data_callback_)
@@ -260,7 +263,7 @@ class NavigationBodyLoader::OffThreadBodyReader : public BodyReader {
                     .has_seen_end_of_data = has_seen_end_of_data_,
                     .has_error = has_error,
                     .encoded_data = std::move(encoded_data_copy),
-                    .encoded_data_size = size,
+                    .encoded_data_size = encoded_data.size(),
                     .encoding_data = decoder_->GetEncodingData()});
     }
     if (post_task) {
@@ -313,10 +316,10 @@ class NavigationBodyLoader::MainThreadBodyReader : public BodyReader {
     loader_->NotifyCompletionIfAppropriate();
   }
 
-  bool DataReceived(const char* data, size_t size) override {
+  bool DataReceived(base::span<const char> data) override {
     base::WeakPtr<NavigationBodyLoader> weak_self =
         loader_->weak_factory_.GetWeakPtr();
-    loader_->client_->BodyDataReceived(base::make_span(data, size));
+    loader_->client_->BodyDataReceived(data);
     return weak_self.get();
   }
 
@@ -492,10 +495,13 @@ void NavigationBodyLoader::ProcessOffThreadData() {
   auto chunks =
       off_thread_body_reader_->TakeData(max_data_to_process_per_task_);
   auto weak_self = weak_factory_.GetWeakPtr();
-  for (const auto& chunk : chunks) {
-    client_->DecodedBodyDataReceived(
-        chunk.decoded_data, chunk.encoding_data,
-        base::make_span(chunk.encoded_data.get(), chunk.encoded_data_size));
+  for (const DataChunk& chunk : chunks) {
+    // TODO(https://crbug.com/347786042): Ensure that `chunk.encoded_data.get()`
+    // is not `nullptr`.
+    base::span<const char> encoded_data =
+        base::make_span(chunk.encoded_data.get(), chunk.encoded_data_size);
+    client_->DecodedBodyDataReceived(chunk.decoded_data, chunk.encoding_data,
+                                     encoded_data);
     if (!weak_self)
       return;
 

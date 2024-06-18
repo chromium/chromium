@@ -31,12 +31,14 @@
 #include "third_party/blink/renderer/modules/websockets/websocket_channel_impl.h"
 
 #include <string.h>
+
 #include <algorithm>
 #include <atomic>
 #include <limits>
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -1037,10 +1039,9 @@ void WebSocketChannelImpl::ConsumePendingDataFrames() {
       continue;
     }
 
-    const void* buffer;
-    size_t readable_size;
-    const MojoResult begin_result = readable_->BeginReadData(
-        &buffer, &readable_size, MOJO_READ_DATA_FLAG_NONE);
+    base::span<const uint8_t> buffer;
+    const MojoResult begin_result =
+        readable_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
     if (begin_result == MOJO_RESULT_SHOULD_WAIT) {
       readable_watcher_.ArmOrNotify();
       return;
@@ -1051,9 +1052,9 @@ void WebSocketChannelImpl::ConsumePendingDataFrames() {
     }
     DCHECK_EQ(begin_result, MOJO_RESULT_OK);
 
-    if (readable_size >= data_frame.data_length) {
-      ConsumeDataFrame(data_frame.fin, data_frame.type,
-                       static_cast<const char*>(buffer),
+    std::string_view chars = base::as_string_view(buffer);
+    if (buffer.size() >= data_frame.data_length) {
+      ConsumeDataFrame(data_frame.fin, data_frame.type, chars.data(),
                        data_frame.data_length);
       const MojoResult end_result =
           readable_->EndReadData(data_frame.data_length);
@@ -1062,13 +1063,12 @@ void WebSocketChannelImpl::ConsumePendingDataFrames() {
       continue;
     }
 
-    DCHECK_LT(readable_size, data_frame.data_length);
-    ConsumeDataFrame(false, data_frame.type, static_cast<const char*>(buffer),
-                     readable_size);
-    const MojoResult end_result = readable_->EndReadData(readable_size);
+    DCHECK_LT(chars.size(), data_frame.data_length);
+    ConsumeDataFrame(false, data_frame.type, chars.data(), chars.size());
+    const MojoResult end_result = readable_->EndReadData(buffer.size());
     DCHECK_EQ(end_result, MOJO_RESULT_OK);
     data_frame.type = network::mojom::blink::WebSocketMessageType::CONTINUATION;
-    data_frame.data_length -= readable_size;
+    data_frame.data_length -= chars.size();
   }
 }
 
@@ -1162,16 +1162,16 @@ MojoResult WebSocketChannelImpl::ProduceData(
     base::span<const char>* data,
     uint64_t* consumed_buffered_amount) {
   MojoResult begin_result = MOJO_RESULT_OK;
-  void* buffer;
-  size_t writable_size;
-  while ((writable_size = data->size()) > 0 &&
-         (begin_result = writable_->BeginWriteData(
-              &buffer, &writable_size, MOJO_WRITE_DATA_FLAG_NONE)) ==
-             MOJO_RESULT_OK) {
-    const size_t size_to_write = std::min(writable_size, data->size());
+  base::span<uint8_t> buffer;
+  while (!data->empty() && (begin_result = writable_->BeginWriteData(
+                                data->size(), MOJO_WRITE_DATA_FLAG_NONE,
+                                buffer)) == MOJO_RESULT_OK) {
+    const size_t size_to_write = std::min(buffer.size(), data->size());
     DCHECK_GT(size_to_write, 0u);
 
-    memcpy(buffer, data->data(), size_to_write);
+    base::as_writable_chars(buffer)
+        .first(size_to_write)
+        .copy_from(data->first(size_to_write));
     *data = data->subspan(size_to_write);
 
     const MojoResult end_result = writable_->EndWriteData(size_to_write);

@@ -184,11 +184,12 @@ class MojoURLLoaderClient::BodyBuffer final
     while (!buffered_body_.empty()) {
       // Write the chunk at the front of |buffered_body_|.
       const std::vector<char>& current_chunk = buffered_body_.front();
-      DCHECK_LE(offset_in_current_chunk_, current_chunk.size());
-      size_t bytes_sent = current_chunk.size() - offset_in_current_chunk_;
-      MojoResult result =
-          writable_->WriteData(current_chunk.data() + offset_in_current_chunk_,
-                               &bytes_sent, MOJO_WRITE_DATA_FLAG_NONE);
+      base::span<const uint8_t> bytes =
+          base::as_byte_span(current_chunk).subspan(offset_in_current_chunk_);
+
+      size_t actually_written_bytes = 0;
+      MojoResult result = writable_->WriteData(bytes, MOJO_WRITE_DATA_FLAG_NONE,
+                                               actually_written_bytes);
       switch (result) {
         case MOJO_RESULT_OK:
           break;
@@ -206,7 +207,7 @@ class MojoURLLoaderClient::BodyBuffer final
       }
       // We've sent |bytes_sent| bytes, update the current offset in the
       // frontmost chunk.
-      offset_in_current_chunk_ += bytes_sent;
+      offset_in_current_chunk_ += actually_written_bytes;
       DCHECK_LE(offset_in_current_chunk_, current_chunk.size());
       if (offset_in_current_chunk_ == current_chunk.size()) {
         // We've finished writing the chunk at the front of the queue, pop it so

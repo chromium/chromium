@@ -87,7 +87,7 @@ class PLATFORM_EXPORT RawData : public ThreadSafeRefCounted<RawData> {
   }
 
   const char* data() const { return data_.data(); }
-  size_t length() const { return data_.size(); }
+  size_t size() const { return data_.size(); }
   Vector<char>* MutableData() { return &data_; }
 
  private:

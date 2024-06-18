@@ -149,10 +149,9 @@ void SerialPortUnderlyingSource::Trace(Visitor* visitor) const {
 }
 
 void SerialPortUnderlyingSource::ReadDataOrArmWatcher() {
-  const void* buffer = nullptr;
-  size_t length = 0;
+  base::span<const uint8_t> buffer;
   MojoResult result =
-      data_pipe_->BeginReadData(&buffer, &length, MOJO_READ_DATA_FLAG_NONE);
+      data_pipe_->BeginReadData(MOJO_READ_DATA_FLAG_NONE, buffer);
   switch (result) {
     case MOJO_RESULT_OK: {
       // respond() or enqueue() will only throw if their arguments are invalid
@@ -163,15 +162,14 @@ void SerialPortUnderlyingSource::ReadDataOrArmWatcher() {
 
       if (ReadableStreamBYOBRequest* request = controller_->byobRequest()) {
         DOMArrayPiece view(request->view().Get());
-        length = std::min(view.ByteLength(), length);
-        memcpy(view.Data(), buffer, length);
-        request->respond(script_state_, length, exception_state);
+        buffer = buffer.first(std::min(view.ByteLength(), buffer.size()));
+        view.ByteSpan().first(buffer.size()).copy_from(buffer);
+        request->respond(script_state_, buffer.size(), exception_state);
       } else {
-        auto chunk = NotShared(DOMUint8Array::Create(
-            static_cast<const unsigned char*>(buffer), length));
+        auto chunk = NotShared(DOMUint8Array::Create(buffer));
         controller_->enqueue(script_state_, chunk, exception_state);
       }
-      result = data_pipe_->EndReadData(length);
+      result = data_pipe_->EndReadData(buffer.size());
       DCHECK_EQ(result, MOJO_RESULT_OK);
       break;
     }

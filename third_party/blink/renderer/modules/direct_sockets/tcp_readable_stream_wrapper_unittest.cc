@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_readable_stream_wrapper.h"
 
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
 #include "net/base/net_errors.h"
@@ -63,11 +64,12 @@ class StreamCreator : public GarbageCollected<StreamCreator> {
   void ResetPipe() { data_pipe_producer_.reset(); }
 
   void WriteToPipe(Vector<uint8_t> data) {
-    size_t num_bytes = data.size();
-    EXPECT_EQ(data_pipe_producer_->WriteData(data.data(), &num_bytes,
-                                             MOJO_WRITE_DATA_FLAG_ALL_OR_NONE),
-              MOJO_RESULT_OK);
-    EXPECT_EQ(num_bytes, data.size());
+    size_t actually_written_bytes = 0;
+    EXPECT_EQ(
+        data_pipe_producer_->WriteData(data, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
+                                       actually_written_bytes),
+        MOJO_RESULT_OK);
+    EXPECT_EQ(actually_written_bytes, data.size());
   }
 
   // Copies the contents of a v8::Value containing a Uint8Array to a Vector.

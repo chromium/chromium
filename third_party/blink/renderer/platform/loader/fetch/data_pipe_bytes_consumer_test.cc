@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/data_pipe_bytes_consumer.h"
 
+#include <string_view>
+
+#include "base/containers/span.h"
 #include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/loader/testing/bytes_consumer_test_reader.h"
@@ -27,13 +30,13 @@ TEST_F(DataPipeBytesConsumerTest, TwoPhaseRead) {
   ASSERT_EQ(mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle),
             MOJO_RESULT_OK);
 
-  const std::string kData = "Such hospitality. I'm underwhelmed.";
-  size_t write_size = kData.size();
-
-  MojoResult rv = producer_handle->WriteData(kData.c_str(), &write_size,
-                                             MOJO_WRITE_DATA_FLAG_NONE);
+  const std::string_view kData = "Such hospitality. I'm underwhelmed.";
+  size_t actually_written_bytes = 0;
+  MojoResult rv = producer_handle->WriteData(base::as_byte_span(kData),
+                                             MOJO_WRITE_DATA_FLAG_NONE,
+                                             actually_written_bytes);
   ASSERT_EQ(MOJO_RESULT_OK, rv);
-  ASSERT_EQ(kData.size(), write_size);
+  ASSERT_EQ(kData.size(), actually_written_bytes);
 
   // Close the producer so the consumer will reach the kDone state after
   // completion is signaled below.
@@ -55,13 +58,13 @@ TEST_F(DataPipeBytesConsumerTest, TwoPhaseRead_SignalError) {
   ASSERT_EQ(mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle),
             MOJO_RESULT_OK);
 
-  const std::string kData = "Such hospitality. I'm underwhelmed.";
-  size_t write_size = kData.size();
-
-  MojoResult rv = producer_handle->WriteData(kData.c_str(), &write_size,
-                                             MOJO_WRITE_DATA_FLAG_NONE);
+  const std::string_view kData = "Such hospitality. I'm underwhelmed.";
+  size_t actually_written_bytes = 0;
+  MojoResult rv = producer_handle->WriteData(base::as_byte_span(kData),
+                                             MOJO_WRITE_DATA_FLAG_NONE,
+                                             actually_written_bytes);
   ASSERT_EQ(MOJO_RESULT_OK, rv);
-  ASSERT_EQ(kData.size(), write_size);
+  ASSERT_EQ(kData.size(), actually_written_bytes);
 
   producer_handle.reset();
 
@@ -185,12 +188,13 @@ TEST_F(DataPipeBytesConsumerTest, SignalSizeBeforeRead) {
   DataPipeBytesConsumer* consumer = MakeGarbageCollected<DataPipeBytesConsumer>(
       task_runner_, std::move(readable), &notifier);
 
-  constexpr char kData[] = "hello";
-  size_t write_size = 5;
+  const std::string_view kData = "hello";
+  size_t actually_written_bytes = 0;
   MojoResult write_result =
-      writable->WriteData(kData, &write_size, MOJO_WRITE_DATA_FLAG_NONE);
+      writable->WriteData(base::as_byte_span(kData), MOJO_WRITE_DATA_FLAG_NONE,
+                          actually_written_bytes);
   ASSERT_EQ(MOJO_RESULT_OK, write_result);
-  ASSERT_EQ(5u, write_size);
+  ASSERT_EQ(5u, actually_written_bytes);
 
   EXPECT_EQ(PublicState::kReadableOrWaiting, consumer->GetPublicState());
 
@@ -281,12 +285,13 @@ TEST_F(DataPipeBytesConsumerTest, SignalSizeAfterRead) {
   DataPipeBytesConsumer* consumer = MakeGarbageCollected<DataPipeBytesConsumer>(
       task_runner_, std::move(readable), &notifier);
 
-  constexpr char kData[] = "hello";
-  size_t write_size = 5;
+  const std::string_view kData = "hello";
+  size_t actually_written_bytes = 0;
   MojoResult write_result =
-      writable->WriteData(kData, &write_size, MOJO_WRITE_DATA_FLAG_NONE);
+      writable->WriteData(base::as_byte_span(kData), MOJO_WRITE_DATA_FLAG_NONE,
+                          actually_written_bytes);
   ASSERT_EQ(MOJO_RESULT_OK, write_result);
-  ASSERT_EQ(5u, write_size);
+  ASSERT_EQ(5u, actually_written_bytes);
 
   EXPECT_EQ(PublicState::kReadableOrWaiting, consumer->GetPublicState());
 

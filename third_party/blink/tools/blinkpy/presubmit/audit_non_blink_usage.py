@@ -150,6 +150,7 @@ _CONFIG = [
             'base::as_byte_span',
             'base::as_bytes',
             'base::as_chars',
+            'base::as_string_view',
             'base::as_writable_bytes',
             'base::bit_cast',
             'base::expected',

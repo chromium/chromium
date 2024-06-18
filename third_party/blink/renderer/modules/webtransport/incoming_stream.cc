@@ -239,22 +239,16 @@ void IncomingStream::ReadFromPipeAndEnqueue(ExceptionState& exception_state) {
   }
   DCHECK(!read_pending_);
 
-  const void* buffer = nullptr;
-  size_t buffer_num_bytes = 0;
-  auto result = data_pipe_->BeginReadData(&buffer, &buffer_num_bytes,
-                                          MOJO_BEGIN_READ_DATA_FLAG_NONE);
+  base::span<const uint8_t> buffer;
+  auto result =
+      data_pipe_->BeginReadData(MOJO_BEGIN_READ_DATA_FLAG_NONE, buffer);
   switch (result) {
     case MOJO_RESULT_OK: {
       in_two_phase_read_ = true;
 
-      // SAFETY: `BeginReadData` guarantees that `buffer_num_bytes` is set to
-      // the amount of available space in `buffer`.
-      auto buffer_span = UNSAFE_BUFFERS(
-          base::span(static_cast<const uint8_t*>(buffer), buffer_num_bytes));
-
       // RespondBYOBRequestOrEnqueueBytes() may re-enter this method via pull().
       size_t read_bytes =
-          RespondBYOBRequestOrEnqueueBytes(buffer_span, exception_state);
+          RespondBYOBRequestOrEnqueueBytes(buffer, exception_state);
       if (exception_state.HadException()) {
         return;
       }

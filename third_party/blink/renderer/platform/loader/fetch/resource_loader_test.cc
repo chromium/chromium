@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/scoped_feature_list.h"
 #include "mojo/public/c/system/data_pipe.h"
@@ -169,18 +170,21 @@ TEST_F(ResourceLoaderTest, LoadResponseBody) {
                              /*cached_metadata=*/std::nullopt);
   loader->DidFinishLoading(base::TimeTicks(), 0, 0, 0);
 
-  size_t num_bytes = 2;
-  result = producer->WriteData("he", &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+  size_t actually_written_bytes = 0;
+  result =
+      producer->WriteData(base::byte_span_from_cstring("he"),
+                          MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
   ASSERT_EQ(result, MOJO_RESULT_OK);
-  ASSERT_EQ(num_bytes, 2u);
+  ASSERT_EQ(actually_written_bytes, 2u);
 
   static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get())
       ->RunUntilIdle();
 
-  num_bytes = 3;
-  result = producer->WriteData("llo", &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
+  result =
+      producer->WriteData(base::byte_span_from_cstring("llo"),
+                          MOJO_WRITE_DATA_FLAG_NONE, actually_written_bytes);
   ASSERT_EQ(result, MOJO_RESULT_OK);
-  ASSERT_EQ(num_bytes, 3u);
+  ASSERT_EQ(actually_written_bytes, 3u);
 
   static_cast<scheduler::FakeTaskRunner*>(fetcher->GetTaskRunner().get())
       ->RunUntilIdle();

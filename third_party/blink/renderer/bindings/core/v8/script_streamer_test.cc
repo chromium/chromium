@@ -155,10 +155,12 @@ class NoopLoaderFactory final : public ResourceFetcher::LoaderFactory {
 
 void AppendDataToDataPipe(std::string_view data,
                           mojo::ScopedDataPipeProducerHandle& producer_handle) {
-  size_t data_len = data.size();
+  size_t actually_written_bytes = 0;
   MojoResult result = producer_handle->WriteData(
-      data.data(), &data_len, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
+      base::as_byte_span(data), MOJO_WRITE_DATA_FLAG_ALL_OR_NONE,
+      actually_written_bytes);
   EXPECT_EQ(result, MOJO_RESULT_OK);
+  // Ok to ignore `actually_written_bytes` because of `...ALL_OR_NONE` flag.
 
   // In case the mojo datapipe is being read on the main thread, we need to
   // spin the event loop to allow the watcher to post its "data received"
