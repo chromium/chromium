@@ -3534,11 +3534,15 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTestBase
             factory_.test_safe_browsing_service()->ui_manager().get());
     EXPECT_EQ(tracker->PendingCheckersSizeForTesting(), 1u);
 
+    GURL interstitial_url;
     for (const auto& url_and_server_redirect : url_and_server_redirects) {
       GURL url =
           embedded_test_server()->GetURL(url_and_server_redirect.relative_url);
       ReturnUrlRealTimeVerdictInUrlLoader(url,
                                           url_and_server_redirect.is_unsafe);
+      if (url_and_server_redirect.is_unsafe) {
+        interstitial_url = url;
+      }
     }
     SafeBrowsingBlockingPageTestHelper::MaybeWaitForAsyncChecksToComplete(
         browser()->tab_strip_model()->GetActiveWebContents(),
@@ -3553,7 +3557,7 @@ class SafeBrowsingBlockingPageAsyncChecksTimingTestBase
     // After the navigation is finished, we need to wait for the navigation of
     // the interstitial to complete.
     content::TestNavigationManager interstitial_navigation_manager(
-        browser()->tab_strip_model()->GetActiveWebContents(), final_url);
+        browser()->tab_strip_model()->GetActiveWebContents(), interstitial_url);
     EXPECT_TRUE(interstitial_navigation_manager.WaitForNavigationFinished());
     content::WaitForLoadStop(
         browser()->tab_strip_model()->GetActiveWebContents());
@@ -3922,6 +3926,12 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
        {kMaliciousPage, /* is_unsafe */ false}},
       threat_report_sent_runner->QuitClosure());
 
+  // The original URL is unsafe, so it should be displayed in the URL bar.
+  GURL original_url = embedded_test_server()->GetURL(kRedirectToMalware);
+  EXPECT_EQ(
+      original_url,
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
+
   EXPECT_TRUE(ClickAndWaitForDetach(browser(), "proceed-link"));
   AssertNoInterstitial(browser());  // Assert the interstitial is gone
 
@@ -3939,6 +3949,12 @@ IN_PROC_BROWSER_TEST_P(SafeBrowsingBlockingPageAsyncChecksTimingTest,
       {{kRedirectToMalware, /* is_unsafe */ false},
        {kMaliciousPage, /* is_unsafe */ true}},
       threat_report_sent_runner->QuitClosure());
+
+  // The final URL is unsafe, so it should be displayed in the URL bar.
+  GURL final_url = embedded_test_server()->GetURL(kMaliciousPage);
+  EXPECT_EQ(
+      final_url,
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 
   EXPECT_TRUE(ClickAndWaitForDetach(browser(), "proceed-link"));
   AssertNoInterstitial(browser());  // Assert the interstitial is gone

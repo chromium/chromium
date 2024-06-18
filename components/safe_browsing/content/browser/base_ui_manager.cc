@@ -363,15 +363,7 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
                        true /* A decision is now pending */,
                        resource.threat_type);
 
-  // |entry| can be null if we are on a brand new tab, and a resource is added
-  // via javascript without a navigation.
-  content::NavigationEntry* entry =
-      unsafe_resource_util::GetNavigationEntryForResource(resource);
-
   GURL unsafe_url = resource.url;
-  if (entry && !AsyncCheckTracker::IsMainPageLoadPending(resource)) {
-    unsafe_url = entry->GetURL();
-  }
 
   // If the top-level navigation is still pending, we just mark the resource
   // unsafe and cancel the load from here, the actual interstitial will be shown
