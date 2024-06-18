@@ -14340,6 +14340,14 @@ should be able to be added at any place in this file.
   <description>User tapped on Install Google Drive promo.</description>
 </action>
 
+<action name="IOSDownloadOpen">
+  <owner>erahmaoui@google.com</owner>
+  <owner>olivierrobin@chromium.org</owner>
+  <description>
+    User tapped on Open button in Download Manager after a successful download.
+  </description>
+</action>
+
 <action name="IOSDownloadOpenIn">
   <owner>ewannpv@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>

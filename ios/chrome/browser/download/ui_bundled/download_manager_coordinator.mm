@@ -427,6 +427,7 @@
 
 - (void)openDownloadedFileForDownloadManagerViewController:
     (UIViewController*)controller {
+  base::RecordAction(base::UserMetricsAction("IOSDownloadOpen"));
   base::FilePath path = _mediator.GetDownloadPath();
   GURL filePathURL =
       GURL(base::StringPrintf("%s://%s", "file", path.value().c_str()));
