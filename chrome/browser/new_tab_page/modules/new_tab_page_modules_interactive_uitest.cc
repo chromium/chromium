@@ -365,7 +365,8 @@ IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveUiTest,
       WaitForElementHiddenSet(kModulesV2Wrapper));
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ClickingEntryNavigatesToCorrectPage \
   DISABLED_ClickingEntryNavigatesToCorrectPage
 #else

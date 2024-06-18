@@ -52,6 +52,8 @@ class MostRelevantTabResumptionPageHandler
   void DismissTab(const history::mojom::TabPtr tab) override;
   void RestoreModule(const std::vector<history::mojom::TabPtr> tabs) override;
   void RestoreTab(history::mojom::TabPtr tab) override;
+  void RecordActivatedAction(const std::string& url_key,
+                             int64_t visit_request_id) override;
 
   // Invoked when the URL visit aggregates have been fetched.
   void OnGotRankedURLVisitAggregates(

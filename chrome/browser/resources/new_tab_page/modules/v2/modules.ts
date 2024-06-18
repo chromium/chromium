@@ -435,7 +435,7 @@ export class ModulesV2Element extends AppElementBase {
         wrapper.module.descriptor.id);
   }
 
-  private onDismissModuleElementInstance_(e: DismissModuleElementEvent) {
+  private onDismissModuleElement_(e: DismissModuleElementEvent) {
     const restoreCallback = e.detail.restoreCallback;
     this.undoData_ = {
       message: e.detail.message,

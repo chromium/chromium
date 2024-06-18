@@ -152,6 +152,8 @@ void MostRelevantTabResumptionPageHandler::GetTabs(GetTabsCallback callback) {
       auto tab_mojom = TabToMojom(
           CreateSampleURLVisitAggregateTab(GURL("https://www.google.com")));
       tab_mojom->url = GURL("https://www.google.com");
+      tab_mojom->url_key = "https://www.google.com";
+      tab_mojom->training_request_id = 0;
       tabs_mojom.push_back(std::move(tab_mojom));
     }
     std::move(callback).Run(std::move(tabs_mojom));
@@ -180,11 +182,17 @@ void MostRelevantTabResumptionPageHandler::DismissModule(
     const std::vector<history::mojom::TabPtr> tabs) {
   RemoveOldDismissedTabs();
   ScopedListPrefUpdate tab_list(profile_->GetPrefs(), kDismissedTabsPrefName);
+  auto* visited_url_ranking_service =
+      visited_url_ranking::VisitedURLRankingServiceFactory::GetForProfile(
+          profile_);
   for (const auto& tab : tabs) {
     tab_list->Append(base::Value(
         tab->url_key + ' ' +
         base::NumberToString(
             tab->timestamp->ToDeltaSinceWindowsEpoch().InMicroseconds())));
+    visited_url_ranking_service->RecordAction(
+        visited_url_ranking::ScoredURLUserAction::kDismissed, tab->url_key,
+        segmentation_platform::TrainingRequestId(tab->training_request_id));
   }
 }
 
@@ -196,16 +204,28 @@ void MostRelevantTabResumptionPageHandler::DismissTab(
       tab->url_key + ' ' +
       base::NumberToString(
           tab->timestamp->ToDeltaSinceWindowsEpoch().InMicroseconds())));
+  auto* visited_url_ranking_service =
+      visited_url_ranking::VisitedURLRankingServiceFactory::GetForProfile(
+          profile_);
+  visited_url_ranking_service->RecordAction(
+      visited_url_ranking::ScoredURLUserAction::kDismissed, tab->url_key,
+      segmentation_platform::TrainingRequestId(tab->training_request_id));
 }
 
 void MostRelevantTabResumptionPageHandler::RestoreModule(
     const std::vector<history::mojom::TabPtr> tabs) {
   ScopedListPrefUpdate tab_list(profile_->GetPrefs(), kDismissedTabsPrefName);
+  auto* visited_url_ranking_service =
+      visited_url_ranking::VisitedURLRankingServiceFactory::GetForProfile(
+          profile_);
   for (const auto& tab : tabs) {
     tab_list->EraseValue(base::Value(
         tab->url_key + ' ' +
         base::NumberToString(
             tab->timestamp->ToDeltaSinceWindowsEpoch().InMicroseconds())));
+    visited_url_ranking_service->RecordAction(
+        visited_url_ranking::ScoredURLUserAction::kSeen, tab->url_key,
+        segmentation_platform::TrainingRequestId(tab->training_request_id));
   }
 }
 
@@ -216,6 +236,12 @@ void MostRelevantTabResumptionPageHandler::RestoreTab(
       tab->url_key + ' ' +
       base::NumberToString(
           tab->timestamp->ToDeltaSinceWindowsEpoch().InMicroseconds())));
+  auto* visited_url_ranking_service =
+      visited_url_ranking::VisitedURLRankingServiceFactory::GetForProfile(
+          profile_);
+  visited_url_ranking_service->RecordAction(
+      visited_url_ranking::ScoredURLUserAction::kSeen, tab->url_key,
+      segmentation_platform::TrainingRequestId(tab->training_request_id));
 }
 
 void MostRelevantTabResumptionPageHandler::OnGotRankedURLVisitAggregates(
@@ -232,6 +258,8 @@ void MostRelevantTabResumptionPageHandler::OnGotRankedURLVisitAggregates(
       auto tab_mojom = TabToMojom(*tab);
       tab_mojom->url = **url_visit_aggregate.GetAssociatedURLs().begin();
       tab_mojom->url_key = url_visit_aggregate.url_key;
+      tab_mojom->training_request_id =
+          url_visit_aggregate.request_id.GetUnsafeValue();
       if (IsNewURL(tab_mojom)) {
         tabs_mojom.push_back(std::move(tab_mojom));
         base::UmaHistogramEnumeration(
@@ -247,6 +275,8 @@ void MostRelevantTabResumptionPageHandler::OnGotRankedURLVisitAggregates(
         history_tab_mojom->url =
             **url_visit_aggregate.GetAssociatedURLs().begin();
         history_tab_mojom->url_key = url_visit_aggregate.url_key;
+        history_tab_mojom->training_request_id =
+            url_visit_aggregate.request_id.GetUnsafeValue();
         if (IsNewURL(history_tab_mojom)) {
           tabs_mojom.push_back(std::move(history_tab_mojom));
           base::UmaHistogramEnumeration(
@@ -298,4 +328,15 @@ void MostRelevantTabResumptionPageHandler::RemoveOldDismissedTabs() {
       }
     }
   }
+}
+
+void MostRelevantTabResumptionPageHandler::RecordActivatedAction(
+    const std::string& url_key,
+    int64_t visit_request_id) {
+  auto* visited_url_ranking_service =
+      visited_url_ranking::VisitedURLRankingServiceFactory::GetForProfile(
+          profile_);
+  visited_url_ranking_service->RecordAction(
+      visited_url_ranking::ScoredURLUserAction::kActivated, url_key,
+      segmentation_platform::TrainingRequestId(visit_request_id));
 }
