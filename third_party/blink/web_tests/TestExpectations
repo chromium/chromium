@@ -340,10 +340,6 @@ crbug.com/757605 virtual/gpu-rasterization/images/jpeg-yuv-progressive-image.htm
 
 ########## Bugs to fix ##########
 
-# Updating the PartitionKey from a string to a struct broke these tests. Once CL is landed fix the tests.
-crbug.com/345150439 external/wpt/webdriver/tests/bidi/storage/delete_cookies/partition.py [ Failure ]
-crbug.com/345150439 external/wpt/webdriver/tests/bidi/storage/get_cookies/partition.py [ Failure ]
-
 # This is a missing event and increasing the timeout or using run-after-layout-and-paint doesn't
 # seem to fix it.
 crbug.com/309675 compositing/gestures/gesture-tapHighlight-simple-longPress.html [ Failure ]

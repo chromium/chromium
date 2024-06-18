@@ -5831,7 +5831,8 @@ var mapperTab = (function () {
 	    #logger;
 	    // Keeps track of the previously set viewport.
 	    #previousViewport = { width: 0, height: 0 };
-	    constructor(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, url, logger) {
+	    #originalOpener;
+	    constructor(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, url, originalOpener, logger) {
 	        this.#cdpTarget = cdpTarget;
 	        this.#id = id;
 	        this.#parentId = parentId;
@@ -5841,9 +5842,10 @@ var mapperTab = (function () {
 	        this.#realmStorage = realmStorage;
 	        this.#logger = logger;
 	        this.#url = url;
+	        this.#originalOpener = originalOpener;
 	    }
-	    static create(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, url, logger) {
-	        const context = new BrowsingContextImpl(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, url, logger);
+	    static create(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, url, originalOpener, logger) {
+	        const context = new BrowsingContextImpl(id, parentId, userContext, cdpTarget, eventManager, browsingContextStorage, realmStorage, url, originalOpener, logger);
 	        context.#initListeners();
 	        browsingContextStorage.addContext(context);
 	        if (!context.isTopLevelContext()) {
@@ -5986,6 +5988,7 @@ var mapperTab = (function () {
 	            context: this.#id,
 	            url: this.url,
 	            userContext: this.userContext,
+	            originalOpener: this.#originalOpener ?? null,
 	            children: maxDepth > 0
 	                ? this.directChildren.map((c) => c.serializeToBidiValue(maxDepth - 1, false))
 	                : null,
@@ -7268,6 +7271,9 @@ var mapperTab = (function () {
 	                            args,
 	                        },
 	                    },
+	                }), (error) => ({
+	                    kind: 'error',
+	                    error,
 	                })), browsingContext.id, protocol_js_1$8.ChromiumBidi.Log.EventNames.LogEntryAdded);
 	            }
 	        });
@@ -7298,6 +7304,9 @@ var mapperTab = (function () {
 	                            type: 'javascript',
 	                        },
 	                    },
+	                }), (error) => ({
+	                    kind: 'error',
+	                    error,
 	                })), browsingContext.id, protocol_js_1$8.ChromiumBidi.Log.EventNames.LogEntryAdded);
 	            }
 	        });
@@ -7440,7 +7449,7 @@ var mapperTab = (function () {
 	            // Can restore only not yet known nested frames. The top-level frame is created
 	            // when the target is attached.
 	            const parentBrowsingContext = this.#browsingContextStorage.getContext(frame.parentId);
-	            BrowsingContextImpl_js_1$1.BrowsingContextImpl.create(frame.id, frame.parentId, parentBrowsingContext.userContext, parentBrowsingContext.cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, frame.url, this.#logger);
+	            BrowsingContextImpl_js_1$1.BrowsingContextImpl.create(frame.id, frame.parentId, parentBrowsingContext.userContext, parentBrowsingContext.cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, frame.url, undefined, this.#logger);
 	        }
 	        frameTree.childFrames?.map((frameTree) => this.#restoreFrameTreeState(frameTree));
 	    }
@@ -7605,7 +7614,7 @@ var mapperTab = (function () {
 	            BrowsingContextImpl_js_1.BrowsingContextImpl.create(params.frameId, params.parentFrameId, parentBrowsingContext.userContext, parentBrowsingContext.cdpTarget, this.#eventManager, this.#browsingContextStorage, this.#realmStorage, 
 	            // At this point, we don't know the URL of the frame yet, so it will be updated
 	            // later.
-	            'about:blank', this.#logger);
+	            'about:blank', undefined, this.#logger);
 	        }
 	    }
 	    #handleFrameDetachedEvent(params) {
@@ -7645,7 +7654,7 @@ var mapperTab = (function () {
 	                    // "7.3.2.1 Creating browsing contexts".
 	                    // https://html.spec.whatwg.org/multipage/document-sequences.html#creating-browsing-contexts
 	                    // TODO: check who to deal with non-null creator and its `creatorOrigin`.
-	                    targetInfo.url === '' ? 'about:blank' : targetInfo.url, this.#logger);
+	                    targetInfo.url === '' ? 'about:blank' : targetInfo.url, targetInfo.openerId, this.#logger);
 	                }
 	                return;
 	            }
@@ -8015,6 +8024,7 @@ var mapperTab = (function () {
 	            responseExtraInfoCompleted &&
 	            responseInterceptionCompleted) {
 	            this.#emitEvent(this.#getResponseReceivedEvent.bind(this));
+	            this.#networkStorage.deleteRequest(this.id);
 	        }
 	    }
 	    onRequestWillBeSentEvent(event) {
@@ -14505,6 +14515,10 @@ var mapperTab = (function () {
 		    BrowsingContext.InfoSchema = zod_1.default.lazy(() => zod_1.default.object({
 		        children: zod_1.default.union([BrowsingContext.InfoListSchema, zod_1.default.null()]),
 		        context: BrowsingContext.BrowsingContextSchema,
+		        originalOpener: zod_1.default.union([
+		            BrowsingContext.BrowsingContextSchema,
+		            zod_1.default.null(),
+		        ]),
 		        url: zod_1.default.string(),
 		        userContext: Browser.UserContextSchema,
 		        parent: zod_1.default
