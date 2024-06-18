@@ -51,12 +51,6 @@ BASE_FEATURE(kOnDeviceAppControls,
              "OnDeviceAppControls",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether the advanced documentScan APIs for document scanners
-// are available.
-BASE_FEATURE(kAdvancedDocumentScanAPI,
-             "AdvancedDocumentScanAPI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables the UI to support Ambient EQ if the device supports it.
 // See https://crbug.com/1021193 for more details.
 BASE_FEATURE(kAllowAmbientEQ,
@@ -3276,10 +3270,6 @@ bool IsAdaptiveChargingForTestingEnabled() {
 
 bool IsOnDeviceAppControlsEnabled() {
   return base::FeatureList::IsEnabled(kOnDeviceAppControls);
-}
-
-bool IsAdvancedDocumentScanAPIEnabled() {
-  return base::FeatureList::IsEnabled(kAdvancedDocumentScanAPI);
 }
 
 bool IsAllowAmbientEQEnabled() {

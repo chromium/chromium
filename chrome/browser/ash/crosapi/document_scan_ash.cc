@@ -258,13 +258,6 @@ void DocumentScanAsh::GetScannerList(const std::string& client_id,
   using LocalScannerFilter = ash::LorgnetteScannerManager::LocalScannerFilter;
   using SecureScannerFilter = ash::LorgnetteScannerManager::SecureScannerFilter;
 
-  if (!ash::features::IsAdvancedDocumentScanAPIEnabled()) {
-    auto response = crosapi::mojom::GetScannerListResponse::New();
-    response->result = crosapi::mojom::ScannerOperationResult::kUnsupported;
-    std::move(callback).Run(std::move(response));
-    return;
-  }
-
   ash::LorgnetteScannerManagerFactory::GetForBrowserContext(GetProfile())
       ->GetScannerInfoList(
           client_id,
@@ -278,14 +271,6 @@ void DocumentScanAsh::GetScannerList(const std::string& client_id,
 void DocumentScanAsh::OpenScanner(const std::string& client_id,
                                   const std::string& scanner_id,
                                   OpenScannerCallback callback) {
-  if (!ash::features::IsAdvancedDocumentScanAPIEnabled()) {
-    auto response = crosapi::mojom::OpenScannerResponse::New();
-    response->scanner_id = scanner_id;
-    response->result = crosapi::mojom::ScannerOperationResult::kUnsupported;
-    std::move(callback).Run(std::move(response));
-    return;
-  }
-
   lorgnette::OpenScannerRequest request;
   request.mutable_scanner_id()->set_connection_string(scanner_id);
   request.set_client_id(client_id);
@@ -297,14 +282,6 @@ void DocumentScanAsh::OpenScanner(const std::string& client_id,
 
 void DocumentScanAsh::CloseScanner(const std::string& scanner_handle,
                                    CloseScannerCallback callback) {
-  if (!ash::features::IsAdvancedDocumentScanAPIEnabled()) {
-    auto response = crosapi::mojom::CloseScannerResponse::New();
-    response->scanner_handle = scanner_handle;
-    response->result = crosapi::mojom::ScannerOperationResult::kUnsupported;
-    std::move(callback).Run(std::move(response));
-    return;
-  }
-
   lorgnette::CloseScannerRequest request;
   request.mutable_scanner()->set_token(scanner_handle);
   ash::LorgnetteScannerManagerFactory::GetForBrowserContext(GetProfile())
@@ -316,14 +293,6 @@ void DocumentScanAsh::CloseScanner(const std::string& scanner_handle,
 void DocumentScanAsh::StartPreparedScan(const std::string& scanner_handle,
                                         mojom::StartScanOptionsPtr options,
                                         StartPreparedScanCallback callback) {
-  if (!ash::features::IsAdvancedDocumentScanAPIEnabled()) {
-    auto response = mojom::StartPreparedScanResponse::New();
-    response->result = mojom::ScannerOperationResult::kUnsupported;
-    response->scanner_handle = scanner_handle;
-    std::move(callback).Run(std::move(response));
-    return;
-  }
-
   lorgnette::StartPreparedScanRequest request;
   request.mutable_scanner()->set_token(scanner_handle);
   request.set_image_format(options->format);
@@ -339,14 +308,6 @@ void DocumentScanAsh::StartPreparedScan(const std::string& scanner_handle,
 
 void DocumentScanAsh::ReadScanData(const std::string& job_handle,
                                    ReadScanDataCallback callback) {
-  if (!ash::features::IsAdvancedDocumentScanAPIEnabled()) {
-    auto response = mojom::ReadScanDataResponse::New();
-    response->result = mojom::ScannerOperationResult::kUnsupported;
-    response->job_handle = job_handle;
-    std::move(callback).Run(std::move(response));
-    return;
-  }
-
   lorgnette::ReadScanDataRequest request;
   request.mutable_job_handle()->set_token(job_handle);
 
@@ -358,19 +319,6 @@ void DocumentScanAsh::ReadScanData(const std::string& job_handle,
 void DocumentScanAsh::SetOptions(const std::string& scanner_handle,
                                  std::vector<mojom::OptionSettingPtr> options,
                                  SetOptionsCallback callback) {
-  if (!ash::features::IsAdvancedDocumentScanAPIEnabled()) {
-    auto response = mojom::SetOptionsResponse::New();
-    response->scanner_handle = scanner_handle;
-    for (const mojom::OptionSettingPtr& option : options) {
-      auto result = mojom::SetOptionResult::New();
-      result->name = option->name;
-      result->result = mojom::ScannerOperationResult::kUnsupported;
-      response->results.emplace_back(std::move(result));
-    }
-    std::move(callback).Run(std::move(response));
-    return;
-  }
-
   lorgnette::SetOptionsRequest request;
   request.mutable_scanner()->set_token(scanner_handle);
   // Keep track of the option names so we can bind to our adapter below.
@@ -388,14 +336,6 @@ void DocumentScanAsh::SetOptions(const std::string& scanner_handle,
 
 void DocumentScanAsh::GetOptionGroups(const std::string& scanner_handle,
                                       GetOptionGroupsCallback callback) {
-  if (!ash::features::IsAdvancedDocumentScanAPIEnabled()) {
-    auto response = mojom::GetOptionGroupsResponse::New();
-    response->result = mojom::ScannerOperationResult::kUnsupported;
-    response->scanner_handle = scanner_handle;
-    std::move(callback).Run(std::move(response));
-    return;
-  }
-
   lorgnette::GetCurrentConfigRequest request;
   request.mutable_scanner()->set_token(scanner_handle);
 
@@ -407,14 +347,6 @@ void DocumentScanAsh::GetOptionGroups(const std::string& scanner_handle,
 
 void DocumentScanAsh::CancelScan(const std::string& job_handle,
                                  CancelScanCallback callback) {
-  if (!ash::features::IsAdvancedDocumentScanAPIEnabled()) {
-    auto response = mojom::CancelScanResponse::New();
-    response->job_handle = job_handle;
-    response->result = mojom::ScannerOperationResult::kUnsupported;
-    std::move(callback).Run(std::move(response));
-    return;
-  }
-
   lorgnette::CancelScanRequest request;
   request.mutable_job_handle()->set_token(job_handle);
 

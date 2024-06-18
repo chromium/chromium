@@ -77,11 +77,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "advanced-documentscan-api",
-    "owners": [ "bmgordon@chromium.org", "project-bolton@google.com" ],
-    "expiry_milestone": 127
-  },
-  {
     "name": "align-wakeups",
     "owners": [
       "etiennep@google.com", "fdoray@google.com"

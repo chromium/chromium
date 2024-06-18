@@ -10879,13 +10879,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(feature_engagement::kEsbDownloadRowPromoFeature)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"advanced-documentscan-api",
-     flag_descriptions::kAdvancedDocumentScanApiName,
-     flag_descriptions::kAdvancedDocumentScanApiDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kAdvancedDocumentScanAPI)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(ENABLE_HLS_DEMUXER)
     {"enable-builtin-hls", flag_descriptions::kEnableBuiltinHlsName,
      flag_descriptions::kEnableBuiltinHlsDescription, kOsAll,

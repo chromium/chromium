@@ -186,9 +186,6 @@ IN_PROC_BROWSER_TEST_P(DocumentScanApiTest, PerformScan_ExtensionTrusted) {
   RunTest("perform_scan.html");
 }
 
-// TODO (b/313494616): Add a test that checks for the expected unsupported
-// response when the AdvancedDocumentScan flag is disabled.
-
 INSTANTIATE_TEST_SUITE_P(/**/,
                          DocumentScanApiTest,
                          testing::Values(ExtensionType::kChromeApp,
