@@ -251,6 +251,15 @@ SplitViewOverviewSession* VerifySplitViewOverviewSession(
   return split_view_overview_session;
 }
 
+// Verifies that split view and overview are all inactive for `window`.
+void VerifyNotSplitViewOverviewSession(aura::Window* window) {
+  EXPECT_FALSE(IsInOverviewSession());
+  EXPECT_FALSE(
+      SplitViewController::Get(window->GetRootWindow())->InSplitViewMode());
+  EXPECT_FALSE(
+      RootWindowController::ForWindow(window)->split_view_overview_session());
+}
+
 // Maximize the snapped window which will exit the split view session. This is
 // used in preparation for the next round of testing.
 void MaximizeToClearTheSession(aura::Window* window) {
@@ -470,8 +479,16 @@ TEST_F(FasterSplitScreenTest, DisableSnapWindowSuggestionsPref) {
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   std::unique_ptr<aura::Window> w2(CreateAppWindow());
   SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
-                    chromeos::kDefaultSnapRatio);
-  EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  VerifyNotSplitViewOverviewSession(w1.get());
+
+  // Turn on the pref. Test we start overview.
+  pref->SetBoolean(prefs::kSnapWindowSuggestions, true);
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  VerifySplitViewOverviewSession(w1.get());
 }
 
 TEST_F(FasterSplitScreenTest, Basic) {
@@ -2467,6 +2484,36 @@ class SnapGroupTest : public AshTestBase {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+// Tests that if the user disables the pref for snap window suggestions, we
+// still add snap group.
+TEST_F(SnapGroupTest, DisableSnapWindowSuggestionsPref) {
+  PrefService* pref =
+      Shell::Get()->session_controller()->GetActivePrefService();
+
+  pref->SetBoolean(prefs::kSnapWindowSuggestions, false);
+  ASSERT_FALSE(pref->GetBoolean(prefs::kSnapWindowSuggestions));
+
+  // Snap a window. Test we don't start overview.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  VerifyNotSplitViewOverviewSession(w1.get());
+
+  // Turn on the pref. Test we start overview.
+  pref->SetBoolean(prefs::kSnapWindowSuggestions, true);
+  SnapOneTestWindow(w1.get(), WindowStateType::kPrimarySnapped,
+                    chromeos::kDefaultSnapRatio,
+                    WindowSnapActionSource::kSnapByWindowLayoutMenu);
+  VerifySplitViewOverviewSession(w1.get());
+
+  // Select `w2` from overview. Test we form a group.
+  ClickOverviewItem(GetEventGenerator(), w2.get());
+  EXPECT_TRUE(
+      SnapGroupController::Get()->AreWindowsInSnapGroup(w1.get(), w2.get()));
+}
 
 // Tests that the creation and removal of snap group.
 TEST_F(SnapGroupTest, AddAndRemoveSnapGroupTest) {
