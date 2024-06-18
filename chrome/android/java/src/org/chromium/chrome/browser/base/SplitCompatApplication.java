@@ -384,7 +384,7 @@ public class SplitCompatApplication extends Application {
         // During app update the old apk can still be triggered by broadcasts and spin up an
         // out-of-date application. Kill old applications in this bad state. See
         // http://crbug.com/658130 for more context and http://b.android.com/56296 for the bug.
-        if (ContextUtils.getApplicationAssets() == null) {
+        if (ContextUtils.getApplicationContext().getAssets() == null) {
             throw new RuntimeException("App out of date, getResources() null, closing app.");
         }
     }

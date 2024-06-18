@@ -12,7 +12,6 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.res.AssetManager;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Process;
@@ -134,23 +133,6 @@ public class ContextUtils {
             appContext = new ContextWrapper(appContext);
         }
         sApplicationContext = appContext;
-    }
-
-    /**
-     * In most cases, {@link Context#getAssets()} can be used directly. Modified resources are
-     * used downstream and are set up on application startup, and this method provides access to
-     * regular assets before that initialization is complete.
-     *
-     * This method should ONLY be used for accessing files within the assets folder.
-     *
-     * @return Application assets.
-     */
-    public static AssetManager getApplicationAssets() {
-        Context context = getApplicationContext();
-        while (context instanceof ContextWrapper) {
-            context = ((ContextWrapper) context).getBaseContext();
-        }
-        return context.getAssets();
     }
 
     /**
