@@ -233,6 +233,31 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
     return FirstPartySetsContextConfig();
   }
 
+  const auto canonicalize = [&](const SchemefulSite& site) {
+    const auto it = aliases_.find(site);
+    return it != aliases_.end() ? it->second : site;
+  };
+  std::map<SchemefulSite, std::set<SchemefulSite>> canonical_to_aliases;
+  ForEachAlias([&](const SchemefulSite& alias, const SchemefulSite& canonical) {
+    canonical_to_aliases[canonical].insert(alias);
+  });
+  // Runs the given FunctionRef for all (existing) variants of the given site,
+  // i.e. all the aliases and the "canonical" variant.
+  const auto for_all_variants =
+      [canonical_to_aliases = std::move(canonical_to_aliases),
+       canonicalize = std::move(canonicalize)](
+          const SchemefulSite& site,
+          const base::FunctionRef<void(const SchemefulSite&)> f) {
+        const SchemefulSite canonical = canonicalize(site);
+        f(canonical);
+        if (const auto it = canonical_to_aliases.find(canonical);
+            it != canonical_to_aliases.end()) {
+          for (const auto& alias : it->second) {
+            f(alias);
+          }
+        }
+      };
+
   // Maps a site to its override.
   std::vector<std::pair<SchemefulSite, FirstPartySetEntryOverride>>
       site_to_entry;
@@ -241,9 +266,9 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
       normalized_additions = NormalizeAdditionSets(addition_sets);
 
   // Create flattened versions of the sets for easier lookup.
-  FlattenedSets flattened_replacements =
+  const FlattenedSets flattened_replacements =
       SetListToFlattenedSets(replacement_sets);
-  FlattenedSets flattened_additions =
+  const FlattenedSets flattened_additions =
       SetListToFlattenedSets(normalized_additions);
 
   // All of the custom sets are automatically inserted into site_to_entry.
@@ -264,41 +289,35 @@ FirstPartySetsContextConfig GlobalFirstPartySets::ComputeConfig(
   // Maps an existing primary site to the members it lost due to replacement.
   base::flat_map<SchemefulSite, base::flat_set<SchemefulSite>>
       potential_singletons;
-  for (const auto& [member, set_entry] : flattened_replacements) {
-    if (member == set_entry.primary())
+  // Stores existing primary sites which have left their sets (via
+  // replacement), and whose existing members should be removed from the set
+  // (excluding any custom sets that those members are involved in).
+  base::flat_set<SchemefulSite> replaced_existing_primaries;
+  for (const auto& [new_site, unused_entry] : flattened_replacements) {
+    const auto existing_entry = FindEntry(new_site, /*config=*/nullptr);
+    if (!existing_entry.has_value()) {
       continue;
-    if (const auto existing_entry = FindEntry(member, /*config=*/nullptr);
-        existing_entry.has_value() && existing_entry->primary() != member &&
-        !addition_intersected_primaries.contains(existing_entry->primary()) &&
+    }
+    if (!addition_intersected_primaries.contains(existing_entry->primary()) &&
         !flattened_additions.contains(existing_entry->primary()) &&
         !flattened_replacements.contains(existing_entry->primary())) {
-      potential_singletons[existing_entry->primary()].insert(member);
+      // The existing site's primary isn't involved in any of the customized
+      // sets, so it might become a singleton (if all of its variants and
+      // non-primaries [and their variants] are replaced by the
+      // customizations).
+      for_all_variants(new_site, [&](const SchemefulSite& variant) {
+        if (existing_entry->primary() != variant) {
+          potential_singletons[existing_entry->primary()].insert(variant);
+        }
+      });
     }
-  }
-  // Aliases might refer to a canonical site that's in the replacement sets, so
-  // we need to scan the aliases to find possibly-singleton primaries as well.
-  ForEachAlias([&](const SchemefulSite& alias, const SchemefulSite& canonical) {
-    if (!flattened_replacements.contains(canonical)) {
-      return;
-    }
-    const FirstPartySetEntry existing_entry =
-        FindEntry(canonical, /*config=*/nullptr).value();
-    if (!addition_intersected_primaries.contains(existing_entry.primary()) &&
-        !flattened_additions.contains(existing_entry.primary()) &&
-        !flattened_replacements.contains(existing_entry.primary())) {
-      potential_singletons[existing_entry.primary()].insert(alias);
-    }
-  });
 
-  // Find the existing primary sites that have left their existing sets, and
-  // whose existing members should be removed from their set (excluding any
-  // custom sets that those members are involved in).
-  base::flat_set<SchemefulSite> replaced_existing_primaries;
-  for (const auto& [site, unused_primary] : flattened_replacements) {
-    if (const auto entry = FindEntry(site, /*config=*/nullptr);
-        entry.has_value() && entry->primary() == site) {
-      // Site was an primary in the existing sets.
-      bool inserted = replaced_existing_primaries.emplace(site).second;
+    if (existing_entry->primary() == new_site) {
+      // `new_site` was a primary in the existing sets, but is in the
+      // replacement sets, so its non-primaries (and aliases) might need to be
+      // deleted/hidden.
+      bool inserted =
+          replaced_existing_primaries.emplace(existing_entry->primary()).second;
       CHECK(inserted);
     }
   }
