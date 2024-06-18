@@ -26,7 +26,7 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
                AutofillSuggestionTriggerSource,
                GetSuggestionsCallback),
               (override));
-  MOCK_METHOD(std::optional<autofill::Suggestion>,
+  MOCK_METHOD(autofill::Suggestion,
               GetManagePlusAddressSuggestion,
               (),
               (const override));

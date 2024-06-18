@@ -67,7 +67,6 @@ using ::testing::Conditional;
 using ::testing::ElementsAre;
 using ::testing::Field;
 using ::testing::IsEmpty;
-using ::testing::Optional;
 using ::testing::UnorderedElementsAre;
 
 constexpr char kPlusAddress[] = "plus+remote@plus.plus";
@@ -1369,25 +1368,15 @@ TEST_F(PlusAddressSuggestionsTest,
       kSignupForm, IsSingleFillPlusAddressSuggestion(profile.plus_address)));
 }
 
-// Tests that the "Manage plus addresses..." suggestion is not generated if the
-// `kPlusAddressUIRedesign` feature is disabled.
-TEST_F(PlusAddressSuggestionsTest,
-       GetManagePlusAddressSuggestion_UIRedesignDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kPlusAddressUIRedesign);
-  EXPECT_FALSE(service().GetManagePlusAddressSuggestion());
-}
-
 // Tests the content of the "Manage plus addresses..." suggestion.
 TEST_F(PlusAddressSuggestionsTest,
        GetManagePlusAddressSuggestion_UIRedesignEnabled) {
   base::test::ScopedFeatureList feature_list(features::kPlusAddressUIRedesign);
   EXPECT_THAT(service().GetManagePlusAddressSuggestion(),
-              Optional(EqualsSuggestion(
-                  SuggestionType::kManagePlusAddress,
-                  l10n_util::GetStringUTF16(
-                      IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_TEXT),
-                  Suggestion::Icon::kGoogleMonochrome)));
+              EqualsSuggestion(SuggestionType::kManagePlusAddress,
+                               l10n_util::GetStringUTF16(
+                                   IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_TEXT),
+                               Suggestion::Icon::kGoogleMonochrome));
 }
 
 class PlusAddressAffiliationsTest : public PlusAddressServiceTest {

@@ -1554,13 +1554,9 @@ void BrowserAutofillManager::OnGetPlusAddressSuggestions(
       *this, form.global_id(), field.global_id(), suggestions_context,
       password_form_type, suggestions[0].type);
   if (address_suggestions.empty()) {
-    std::optional<Suggestion> manage_plus_addresses =
-        client().GetPlusAddressDelegate()->GetManagePlusAddressSuggestion();
-    // Present only if the `kPlusAddressUIRedesign` flag is enabled.
-    if (manage_plus_addresses) {
       suggestions.emplace_back(SuggestionType::kSeparator);
-      suggestions.emplace_back(std::move(manage_plus_addresses.value()));
-    }
+      suggestions.push_back(
+          client().GetPlusAddressDelegate()->GetManagePlusAddressSuggestion());
   }
   suggestions.insert(suggestions.cend(),
                      std::make_move_iterator(address_suggestions.begin()),

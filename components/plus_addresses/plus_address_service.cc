@@ -231,11 +231,7 @@ void PlusAddressService::GetSuggestions(
                      std::move(callback)));
 }
 
-std::optional<Suggestion> PlusAddressService::GetManagePlusAddressSuggestion()
-    const {
-  if (!base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign)) {
-    return std::nullopt;
-  }
+Suggestion PlusAddressService::GetManagePlusAddressSuggestion() const {
   Suggestion suggestion(
       l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MANAGE_PLUS_ADDRESSES_TEXT),
       SuggestionType::kManagePlusAddress);
@@ -274,10 +270,7 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
                 IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
       }
     }
-    create_plus_address_suggestion.icon =
-        base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign)
-            ? Suggestion::Icon::kPlusAddressSmall
-            : Suggestion::Icon::kPlusAddress;
+    create_plus_address_suggestion.icon = Suggestion::Icon::kPlusAddressSmall;
     std::move(callback).Run({std::move(create_plus_address_suggestion)});
     return;
   }
@@ -294,10 +287,7 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
             IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT))}};
       }
     }
-    suggestion.icon =
-        base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign)
-            ? Suggestion::Icon::kPlusAddressSmall
-            : Suggestion::Icon::kPlusAddress;
+    suggestion.icon = Suggestion::Icon::kPlusAddressSmall;
 
     // Only suggest filling a plus address whose prefix matches the field's
     // value.

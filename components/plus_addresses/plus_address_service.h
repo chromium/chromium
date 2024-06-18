@@ -89,8 +89,7 @@ class PlusAddressService : public KeyedService,
       std::u16string_view focused_field_value,
       autofill::AutofillSuggestionTriggerSource trigger_source,
       GetSuggestionsCallback callback) override;
-  std::optional<autofill::Suggestion> GetManagePlusAddressSuggestion()
-      const override;
+  autofill::Suggestion GetManagePlusAddressSuggestion() const override;
   void RecordAutofillSuggestionEvent(SuggestionEvent suggestion_event) override;
   void OnPlusAddressSuggestionShown(
       autofill::AutofillManager& manager,

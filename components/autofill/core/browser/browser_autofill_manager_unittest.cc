@@ -8069,6 +8069,8 @@ class BrowserAutofillManagerPlusAddressTest
     BrowserAutofillManagerTest::SetUp();
     auto plus_address_delegate =
         std::make_unique<NiceMock<MockAutofillPlusAddressDelegate>>();
+    ON_CALL(*plus_address_delegate, GetManagePlusAddressSuggestion)
+        .WillByDefault(Return(Suggestion(SuggestionType::kManagePlusAddress)));
     autofill_client_.set_plus_address_delegate(
         std::move(plus_address_delegate));
   }
@@ -8113,8 +8115,6 @@ TEST_F(BrowserAutofillManagerPlusAddressTest,
   EXPECT_CALL(plus_address_delegate(), GetSuggestions)
       .WillOnce(RunOnceCallback<5>(std::vector<Suggestion>{
           Suggestion(SuggestionType::kCreateNewPlusAddress)}));
-  EXPECT_CALL(plus_address_delegate(), GetManagePlusAddressSuggestion)
-      .WillOnce(Return(Suggestion(SuggestionType::kManagePlusAddress)));
   EXPECT_CALL(
       plus_address_delegate(),
       OnPlusAddressSuggestionShown(
@@ -8194,7 +8194,9 @@ TEST_F(BrowserAutofillManagerPlusAddressTest, ManualFallbackPlusAddress) {
   EXPECT_TRUE(external_delegate()->on_suggestions_returned_seen());
   EXPECT_THAT(
       external_delegate()->suggestions(),
-      ElementsAre(EqualsSuggestion(SuggestionType::kCreateNewPlusAddress)));
+      ElementsAre(EqualsSuggestion(SuggestionType::kCreateNewPlusAddress),
+                  EqualsSuggestion(SuggestionType::kSeparator),
+                  EqualsSuggestion(SuggestionType::kManagePlusAddress)));
 }
 
 // Test that plus address inputs are forced to !should_autocomplete

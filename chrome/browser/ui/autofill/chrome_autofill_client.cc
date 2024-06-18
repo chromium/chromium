@@ -464,8 +464,6 @@ void ChromeAutofillClient::ShowAutofillSettings(
       case SuggestionType::kManagePlusAddress:
         CHECK(base::FeatureList::IsEnabled(
             plus_addresses::features::kPlusAddressesEnabled));
-        CHECK(base::FeatureList::IsEnabled(
-            plus_addresses::features::kPlusAddressUIRedesign));
         ShowSingletonTab(
             browser,
             GURL(plus_addresses::features::kPlusAddressManagementUrl.Get()));
