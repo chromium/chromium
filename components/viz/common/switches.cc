@@ -24,6 +24,10 @@ const char kDisableAdpf[] = "disable-adpf";
 
 // Disables begin frame limiting in both cc scheduler and display scheduler.
 // Also implies --disable-gpu-vsync (see //ui/gl/gl_switches.h).
+// TODO(ananta/jonross/sunnyps)
+// http://crbug.com/346931323
+// We should remove or change this once VRR support is implemented for
+// Windows and other platforms potentially.
 const char kDisableFrameRateLimit[] = "disable-frame-rate-limit";
 
 // Sets the number of max pending frames in the GL buffer queue to 1.

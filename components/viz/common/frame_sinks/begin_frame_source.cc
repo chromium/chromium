@@ -311,6 +311,9 @@ void BackToBackBeginFrameSource::SetMaxVrrInterval(
 void BackToBackBeginFrameSource::OnTimerTick() {
   if (RequestCallbackOnGpuAvailable())
     return;
+  if (!time_source_->Active()) {
+    return;
+  }
   base::TimeTicks frame_time = time_source_->LastTickTime();
   base::TimeDelta interval = max_vrr_interval_.value_or(vsync_interval_);
   BeginFrameArgs args = BeginFrameArgs::Create(

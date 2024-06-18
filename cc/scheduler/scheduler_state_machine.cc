@@ -1569,7 +1569,20 @@ void SchedulerStateMachine::DidSubmitCompositorFrame() {
   TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("cc", "Scheduler:pending_submit_frames",
                                     TRACE_ID_LOCAL(this), "pending_frames",
                                     pending_submit_frames_);
-  DCHECK_LT(pending_submit_frames_, kMaxPendingSubmitFrames);
+
+  // If we are running with no frame rate limits, the GPU process can submit
+  // a new BeginFrame request if the deadline for the pending BeginFrame
+  // request expires. It will basically cause this DCHECK to fire as we may
+  // not have received acks for previously submitted requests.
+  // Please see SchedulerStateMachine::IsDrawThrottled() where throttling
+  // is disabled when the disable_frame_rate_limit setting is enabled.
+  // TODO(ananta/jonross/sunnyps)
+  // http://crbug.com/346931323
+  // We should remove or change this once VRR support is implemented for
+  // Windows and other platforms potentially.
+  if (!settings_.disable_frame_rate_limit) {
+    DCHECK_LT(pending_submit_frames_, kMaxPendingSubmitFrames);
+  }
 
   pending_submit_frames_++;
   submit_frames_with_current_layer_tree_frame_sink_++;
