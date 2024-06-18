@@ -1715,6 +1715,9 @@ extern const char kWarmUpCompositorDescription[];
 extern const char kPrerender2WarmUpCompositorName[];
 extern const char kPrerender2WarmUpCompositorDescription[];
 
+extern const char kPrerender2ForNewTabPageAndroidName[];
+extern const char kPrerender2ForNewTabPageAndroidDescription[];
+
 extern const char kEnableOmniboxSearchPrefetchName[];
 extern const char kEnableOmniboxSearchPrefetchDescription[];
 

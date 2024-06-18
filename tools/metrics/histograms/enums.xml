@@ -18500,6 +18500,8 @@ from previous Chrome versions.
       label="OmniboxDefaultTypedNavigationsToHttps:disabled"/>
   <int value="-853404233"
       label="ServiceWorkerSkipIgnorableFetchHandler:enabled"/>
+  <int value="-852882930"
+      label="NewTabPageAndroidTriggerForPrerender2:enabled"/>
   <int value="-852804781"
       label="WebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess:disabled"/>
   <int value="-852474116" label="(Obsolete) CrOSSuspendToDisk:disabled"/>
@@ -22446,6 +22448,8 @@ from previous Chrome versions.
   <int value="851616920" label="EnableTLS13EarlyData:disabled"/>
   <int value="852313529" label="RTCUnifiedPlanByDefault:disabled"/>
   <int value="852703179" label="OptimizeNetworkBuffers:enabled"/>
+  <int value="852931300"
+      label="NewTabPageAndroidTriggerForPrerender2:disabled"/>
   <int value="853279705"
       label="DesktopPWAsAdditionalWindowingControls:disabled"/>
   <int value="853695274" label="ForestFeature:disabled"/>

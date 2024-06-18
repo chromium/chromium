@@ -2960,6 +2960,11 @@ const char kPrerender2WarmUpCompositorDescription[] =
     "initial navigation. Requires chrome://flags/#compositor-warm-up to be "
     "enabled";
 
+const char kPrerender2ForNewTabPageAndroidName[] =
+    "Enable prerendering on New Tab Page Android";
+const char kPrerender2ForNewTabPageAndroidDescription[] =
+    "Enables prerendering for navigations initiated by New Tab Page on Android";
+
 const char kEnableOmniboxSearchPrefetchName[] = "Omnibox prefetch Search";
 const char kEnableOmniboxSearchPrefetchDescription[] =
     "Allows omnibox to prefetch likely search suggestions provided by the "
