@@ -62,11 +62,8 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/shell_integration_win.h"
-#include "content/public/browser/render_widget_host_view.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
-#include "ui/base/ime/text_input_client.h"
-#include "ui/base/ime/win/tsf_input_scope.h"
 #include "ui/base/win/shell.h"
 #endif
 
@@ -330,16 +327,6 @@ std::unique_ptr<VideoOverlayWindowViews> VideoOverlayWindowViews::Create(
           app_user_model_id,
           overlay_window->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
     }
-  }
-
-  bool is_private = !(overlay_window->GetController()
-                          ->GetWebContents()
-                          ->GetRenderWidgetHostView()
-                          ->GetTextInputClient()
-                          ->ShouldDoLearning());
-  if (is_private) {
-    ui::tsf_inputscope::SetPrivateInputScope(
-        overlay_window->GetNativeWindow()->GetHost()->GetAcceleratedWidget());
   }
 #endif  // BUILDFLAG(IS_WIN)
 

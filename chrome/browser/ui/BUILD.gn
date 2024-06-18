@@ -7136,10 +7136,6 @@ static_library("ui") {
     ]
   }
 
-  if (is_win) {
-    deps += [ "//ui/base/ime/win" ]
-  }
-
   if (enable_compose) {
     sources += [
       "webui/compose/compose_untrusted_ui.cc",
