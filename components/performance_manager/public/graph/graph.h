@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
+#include "base/sequence_checker.h"
 #include "components/performance_manager/public/graph/node_set_view.h"
 
 namespace ukm {
@@ -187,7 +188,7 @@ class GraphOwned {
   // Returns a pointer to the owning Graph. The will return nullptr before
   // OnPassedToGraph() and after OnTakenFromGraph(), and a valid pointer at all
   // other times.
-  Graph* GetOwningGraph() const { return graph_.get(); }
+  Graph* GetOwningGraph() const;
 
  private:
   // GraphImpl is allowed to call PassToGraphImpl and TakeFromGraphImpl.
@@ -205,8 +206,10 @@ class GraphOwned {
   virtual void PassToGraphImpl(Graph* graph);
   virtual void TakeFromGraphImpl(Graph* graph);
 
+  SEQUENCE_CHECKER(sequence_checker_);
+
   // Pointer back to the owning graph.
-  raw_ptr<Graph> graph_ = nullptr;
+  raw_ptr<Graph> graph_ GUARDED_BY_CONTEXT(sequence_checker_) = nullptr;
 };
 
 // A default implementation of GraphOwned.

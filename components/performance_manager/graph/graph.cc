@@ -6,6 +6,7 @@
 
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
+#include "base/sequence_checker.h"
 
 namespace performance_manager {
 
@@ -15,17 +16,25 @@ Graph::~Graph() = default;
 GraphOwned::GraphOwned() = default;
 
 GraphOwned::~GraphOwned() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Must be removed from the graph before destruction.
   CHECK_EQ(graph_, nullptr);
 }
 
 void GraphOwned::PassToGraphImpl(Graph* graph) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(graph_, nullptr);
   graph_ = graph;
   OnPassedToGraph(graph);
 }
 
+Graph* GraphOwned::GetOwningGraph() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return graph_.get();
+}
+
 void GraphOwned::TakeFromGraphImpl(Graph* graph) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(graph_, graph);
   OnTakenFromGraph(graph);
   graph_ = nullptr;
