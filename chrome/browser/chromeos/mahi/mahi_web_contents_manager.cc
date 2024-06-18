@@ -273,7 +273,7 @@ bool MahiWebContentsManager::GetPrefValue() const {
     return false;
   }
   return session_controller->GetActivePrefService()->GetBoolean(
-      ash::prefs::kMahiEnabled);
+      ash::prefs::kHmrEnabled);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

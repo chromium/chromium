@@ -40,7 +40,7 @@ void PrefsAshObserver::Init() {
           base::Unretained(this)));
 
   mahi_prefs_observer_ = std::make_unique<CrosapiPrefObserver>(
-      crosapi::mojom::PrefPath::kMahiEnabled,
+      crosapi::mojom::PrefPath::kHmrEnabled,
       base::BindRepeating(&PrefsAshObserver::OnMahiEnabledChanged,
                           base::Unretained(this)));
 

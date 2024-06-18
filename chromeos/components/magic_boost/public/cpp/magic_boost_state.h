@@ -56,6 +56,11 @@ class COMPONENT_EXPORT(MAGIC_BOOST) MagicBoostState {
   // and/or enabled state immediately after the write can read a stale value.
   virtual void AsyncWriteConsentStatus(HMRConsentStatus consent_status) = 0;
 
+  // Writes HMR enabled value to the pref. Note that this method returns BEFORE
+  // a write is completed. Reading consent status and/or enabled state
+  // immediately after the write can read a stale value.
+  virtual void AsyncWriteHMREnabled(bool enabled) = 0;
+
   std::optional<bool> hmr_enabled() const { return hmr_enabled_; }
 
   std::optional<HMRConsentStatus> hmr_consent_status() const {

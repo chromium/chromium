@@ -109,7 +109,7 @@ class MahiManagerImplTest : public NoSessionAshTestBase {
 
   void SetMahiEnabledByUserPref(bool enabled) {
     Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-        ash::prefs::kMahiEnabled, enabled);
+        ash::prefs::kHmrEnabled, enabled);
   }
 
   FakeMahiProvider* GetMahiProvider() {

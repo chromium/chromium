@@ -8672,7 +8672,6 @@ test("unit_tests") {
     sources += [
       "../browser/ash/policy/skyvault/skyvault_rename_handler_unittest.cc",
       "../browser/browser_process_platform_part_ash_unittest.cc",
-      "../browser/chromeos/mahi/mahi_prefs_controller_ash_unittest.cc",
       "../browser/component_updater/cros_component_installer_chromeos_unittest.cc",
       "../browser/component_updater/metadata_table_chromeos_unittest.cc",
       "../browser/device_identity/chromeos/device_oauth2_token_store_chromeos_unittest.cc",
@@ -8998,6 +8997,7 @@ test("unit_tests") {
       "//chromeos/ash/services/secure_channel/public/cpp/client:test_support",
       "//chromeos/components/editor_menu/public/cpp",
       "//chromeos/components/kiosk:kiosk",
+      "//chromeos/components/magic_boost/public/cpp:cpp",
       "//chromeos/components/onc",
       "//chromeos/components/quick_answers:quick_answers",
       "//chromeos/components/quick_answers/public/cpp:cpp",

@@ -21,7 +21,7 @@ namespace {
 
 void SetMahiEnabledByUserPref(bool enabled) {
   Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      ash::prefs::kMahiEnabled, enabled);
+      ash::prefs::kHmrEnabled, enabled);
 }
 
 bool IsMahiNudgeShown() {

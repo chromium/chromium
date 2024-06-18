@@ -43,7 +43,7 @@ void MahiNudgeController::MaybeShowNudge() {
   auto* pref_service = GetPrefService();
 
   // Don't show nudge if the feature has been enabled by the user.
-  if (pref_service->GetBoolean(prefs::kMahiEnabled)) {
+  if (pref_service->GetBoolean(prefs::kHmrEnabled)) {
     return;
   }
 

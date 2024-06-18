@@ -166,7 +166,7 @@ bool SparkyManagerImpl::IsEnabled() {
   // TODO (b/333479467): Update with new pref for this feature.
   return IsSupportedWithCorrectFeatureKey() &&
          Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
-             ash::prefs::kMahiEnabled);
+             ash::prefs::kHmrEnabled);
 }
 
 void SparkyManagerImpl::SetMediaAppPDFFocused() {}

@@ -50,6 +50,10 @@ void MagicBoostStateAsh::AsyncWriteConsentStatus(
       ash::prefs::kHMRConsentStatus, base::to_underlying(consent_status));
 }
 
+void MagicBoostStateAsh::AsyncWriteHMREnabled(bool enabled) {
+  pref_change_registrar_->prefs()->SetBoolean(ash::prefs::kHmrEnabled, enabled);
+}
+
 void MagicBoostStateAsh::OnShellDestroying() {
   session_observation_.Reset();
   shell_observation_.Reset();
@@ -64,7 +68,7 @@ void MagicBoostStateAsh::RegisterPrefChanges(PrefService* pref_service) {
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(pref_service);
   pref_change_registrar_->Add(
-      ash::prefs::kMahiEnabled,
+      ash::prefs::kHmrEnabled,
       base::BindRepeating(&MagicBoostStateAsh::OnHMREnabledUpdated,
                           base::Unretained(this)));
   pref_change_registrar_->Add(
@@ -84,7 +88,7 @@ void MagicBoostStateAsh::RegisterPrefChanges(PrefService* pref_service) {
 
 void MagicBoostStateAsh::OnHMREnabledUpdated() {
   UpdateHMREnabled(
-      pref_change_registrar_->prefs()->GetBoolean(ash::prefs::kMahiEnabled));
+      pref_change_registrar_->prefs()->GetBoolean(ash::prefs::kHmrEnabled));
 }
 
 void MagicBoostStateAsh::OnHMRConsentStatusUpdated() {

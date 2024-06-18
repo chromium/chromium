@@ -73,7 +73,7 @@ std::string_view GetProfilePrefNameForPref(mojom::PrefPath path) {
            DefaultSearchManager::kDefaultSearchProviderDataPrefName},
           {mojom::PrefPath::kIsolatedWebAppsEnabled,
            ash::prefs::kIsolatedWebAppsEnabled},
-          {mojom::PrefPath::kMahiEnabled, ash::prefs::kMahiEnabled},
+          {mojom::PrefPath::kHmrEnabled, ash::prefs::kHmrEnabled},
           {mojom::PrefPath::kUserCameraAllowed, ash::prefs::kUserCameraAllowed},
           {mojom::PrefPath::kUserMicrophoneAllowed,
            ash::prefs::kUserMicrophoneAllowed},
@@ -279,6 +279,7 @@ std::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
     case mojom::PrefPath::kDnsOverHttpsTemplatesWithIdentifiers:
     case mojom::PrefPath::kDnsOverHttpsSalt:
     case mojom::PrefPath::kAccessibilityPdfOcrAlwaysActiveDeprecated:
+    case mojom::PrefPath::kMahiEnabledDeprecated:
       LOG(WARNING) << "Unknown pref path: " << path;
       return std::nullopt;
     case mojom::PrefPath::kMetricsReportingEnabled:
@@ -304,7 +305,7 @@ std::optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
     case mojom::PrefPath::kDefaultSearchProviderDataPrefName:
     case mojom::PrefPath::kIsolatedWebAppsEnabled:
     case mojom::PrefPath::kAccessibilityReducedAnimationsEnabled:
-    case mojom::PrefPath::kMahiEnabled:
+    case mojom::PrefPath::kHmrEnabled:
     case mojom::PrefPath::kUserCameraAllowed:
     case mojom::PrefPath::kUserMicrophoneAllowed: {
       if (!profile_prefs_registrar_) {

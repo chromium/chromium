@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/chromeos/magic_boost/test/mock_magic_boost_controller_crosapi.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -17,6 +18,10 @@
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace chromeos {
 
@@ -58,7 +63,17 @@ class MagicBoostOptInCardTest : public ChromeViewsTestBase {
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
     card_controller_.SetMagicBoostControllerCrosapiForTesting(
         &crosapi_controller_);
+
+    // Instantiates `MagicBoostStateAsh` (the real one is created in
+    // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in
+    // the unit tests).
+    magic_boost_state_ = std::make_unique<ash::MagicBoostStateAsh>();
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  }
+
+  void TearDown() override {
+    magic_boost_state_.reset();
+    ChromeViewsTestBase::TearDown();
   }
 
  protected:
@@ -66,6 +81,7 @@ class MagicBoostOptInCardTest : public ChromeViewsTestBase {
   testing::StrictMock<MockMagicBoostControllerCrosapi> crosapi_controller_;
   mojo::Receiver<crosapi::mojom::MagicBoostController> receiver_{
       &crosapi_controller_};
+  std::unique_ptr<MagicBoostState> magic_boost_state_;
 };
 
 TEST_F(MagicBoostOptInCardTest, PrimaryButtonActions) {

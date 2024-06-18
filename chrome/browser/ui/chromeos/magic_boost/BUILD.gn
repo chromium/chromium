@@ -21,6 +21,7 @@ source_set("magic_boost") {
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/browser/ui/views/editor_menu:utils",
     "//chromeos/components/editor_menu/public/cpp",
+    "//chromeos/components/magic_boost/public/cpp:cpp",
     "//chromeos/crosapi/mojom",
     "//chromeos/ui/vector_icons",
     "//ui/color",

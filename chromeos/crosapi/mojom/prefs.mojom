@@ -133,14 +133,16 @@ enum PrefPath {
   [MinVersion=17] kDnsOverHttpsEffectiveTemplatesChromeOS = 45,
   // M125: prefs::kAccessibilityReducedAnimationsEnabled
   [MinVersion=18] kAccessibilityReducedAnimationsEnabled = 46,
-  // M125: ash::prefs::kMahiEnabled
-  [MinVersion=19] kMahiEnabled = 47,
+  // Deprecated in m128: Use kHmrEnabled to track
+  [MinVersion=19] kMahiEnabledDeprecated = 47,
   // M126: prefs::kOverscrollHistoryNavigationEnabled
   [MinVersion=20] kOverscrollHistoryNavigationEnabled = 48,
   // M128: ash::prefs::kUserCameraAllowed
   [MinVersion=21] kUserCameraAllowed = 49,
   // M128: ash::prefs::kUserMicrophoneAllowed
   [MinVersion=21] kUserMicrophoneAllowed = 50,
+  // M128: ash::prefs::kHmrEnabled
+  [MinVersion=22] kHmrEnabled = 51,
 };
 
 // Information about who or what is controlling a particular pref. This is used

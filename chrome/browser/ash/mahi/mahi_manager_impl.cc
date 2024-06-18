@@ -369,7 +369,7 @@ void MahiManagerImpl::OpenFeedbackDialog() {
 bool MahiManagerImpl::IsEnabled() {
   return IsSupportedWithCorrectFeatureKey() &&
          Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
-             ash::prefs::kMahiEnabled);
+             ash::prefs::kHmrEnabled);
 }
 
 void MahiManagerImpl::SetMediaAppPDFFocused() {
@@ -448,10 +448,12 @@ void MahiManagerImpl::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   CHECK(pref_service);
   // Subscribes again to pref changes.
+  // TODO(b/347771885): Use `MagicBoostState::Observer` instead of directly
+  // subscribe.
   pref_change_registrar_ = std::make_unique<PrefChangeRegistrar>();
   pref_change_registrar_->Init(pref_service);
   pref_change_registrar_->Add(
-      ash::prefs::kMahiEnabled,
+      ash::prefs::kHmrEnabled,
       base::BindRepeating(&MahiManagerImpl::OnMahiPrefChanged,
                           weak_ptr_factory_for_pref_.GetWeakPtr()));
 
@@ -461,7 +463,7 @@ void MahiManagerImpl::OnActiveUserPrefServiceChanged(
 void MahiManagerImpl::OnMahiPrefChanged() {
   CHECK(pref_change_registrar_);
   CHECK(pref_change_registrar_->prefs());
-  if (!pref_change_registrar_->prefs()->GetBoolean(ash::prefs::kMahiEnabled)) {
+  if (!pref_change_registrar_->prefs()->GetBoolean(ash::prefs::kHmrEnabled)) {
     ui_controller_.CloseMahiPanel();
     cache_manager_->ClearCache();
   }

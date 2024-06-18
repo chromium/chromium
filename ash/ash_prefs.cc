@@ -195,7 +195,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry,
     registry->RegisterBooleanPref(prefs::kMouseReverseScroll, false);
     registry->RegisterBooleanPref(prefs::kSendFunctionKeys, false);
     registry->RegisterBooleanPref(prefs::kSuggestedContentEnabled, true);
-    registry->RegisterBooleanPref(prefs::kMahiEnabled, true);
+    registry->RegisterBooleanPref(prefs::kHmrEnabled, true);
     registry->RegisterBooleanPref(::prefs::kLiveCaptionEnabled, false);
     registry->RegisterListPref(
         chromeos::prefs::kKeepFullscreenWithoutNotificationUrlAllowList);

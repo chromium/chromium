@@ -7,10 +7,10 @@
 #include <string>
 
 #include "build/branding_buildflags.h"
-#include "chrome/browser/chromeos/mahi/mahi_prefs_controller.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_constants.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -284,11 +284,12 @@ void MagicBoostOptInCard::OnPrimaryButtonPressed() {
 
 void MagicBoostOptInCard::OnSecondaryButtonPressed() {
   controller_->CloseOptInUi();
-  // TODO(b/341158134): Disable opt-in card from showing again when "No thanks"
-  // is pressed. We should also use `MagicBoostState::Get()` here instead when
-  // it is available.
-  // TODO(b/346622428): fix the bug and uncomment the following line.
-  //   mahi::MahiPrefsController::Get()->SetMahiEnabled(false);
+// TODO(b/341158134): Disable opt-in card from showing again when "No thanks"
+// is pressed. We should also use `MagicBoostState::Get()` here instead when
+// it is available.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  MagicBoostState::Get()->AsyncWriteHMREnabled(false);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 BEGIN_METADATA(MagicBoostOptInCard)

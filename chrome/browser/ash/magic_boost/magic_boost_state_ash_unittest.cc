@@ -83,13 +83,13 @@ TEST_F(MagicBoostStateAshTest, UpdateHMREnabledState) {
 
   // The observer class should get an notification when the pref value
   // changes.
-  prefs()->SetBoolean(ash::prefs::kMahiEnabled, false);
+  MagicBoostState::Get()->AsyncWriteHMREnabled(false);
   EXPECT_FALSE(MagicBoostState::Get()->hmr_enabled().value());
   EXPECT_FALSE(observer()->hmr_enabled());
 
   // The observer class should get an notification when the pref value
   // changes.
-  prefs()->SetBoolean(ash::prefs::kMahiEnabled, true);
+  MagicBoostState::Get()->AsyncWriteHMREnabled(true);
   EXPECT_TRUE(MagicBoostState::Get()->hmr_enabled().value());
   EXPECT_TRUE(observer()->hmr_enabled());
 

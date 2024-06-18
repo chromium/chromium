@@ -5,8 +5,8 @@
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
 
 #include "base/no_destructor.h"
-#include "chrome/browser/chromeos/mahi/mahi_prefs_controller.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_opt_in_card.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -16,11 +16,9 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/magic_boost/magic_boost_controller_ash.h"
-#include "chrome/browser/chromeos/mahi/mahi_prefs_controller_ash.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/chromeos/mahi/mahi_prefs_controller_lacros.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -47,11 +45,7 @@ crosapi::mojom::MagicBoostController& GetMagicBoostControllerAsh() {
 }  // namespace
 
 MagicBoostCardController::MagicBoostCardController() {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  mahi_prefs_controller_ = std::make_unique<mahi::MahiPrefsControllerAsh>();
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  mahi_prefs_controller_ = std::make_unique<mahi::MahiPrefsControllerLacros>();
-
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Bind remote and pass receiver to `MagicBoostController`.
   chromeos::LacrosService::Get()->BindMagicBoostController(
       remote_.BindNewPipeAndPassReceiver());
@@ -131,7 +125,9 @@ void MagicBoostCardController::SetAllFeaturesState(bool enabled) {
 
 void MagicBoostCardController::SetQuickAnswersAndMahiFeaturesState(
     bool enabled) {
-  mahi_prefs_controller_->SetMahiEnabled(enabled);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  MagicBoostState::Get()->AsyncWriteHMREnabled(enabled);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // TODO(b/339043693): Enable/disable Quick Answers.
 }

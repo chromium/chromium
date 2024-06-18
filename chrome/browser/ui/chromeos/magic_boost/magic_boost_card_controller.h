@@ -96,8 +96,6 @@ class MagicBoostCardController : public ReadWriteCardController {
 
   views::UniqueWidgetPtr opt_in_widget_;
 
-  std::unique_ptr<::mahi::MahiPrefsController> mahi_prefs_controller_;
-
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   mojo::Remote<crosapi::mojom::MagicBoostController> remote_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

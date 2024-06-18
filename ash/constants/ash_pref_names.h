@@ -55,8 +55,8 @@ inline constexpr char kOrcaEnabled[] = "assistive_input.orca_enabled";
 inline constexpr char kManagedOrcaEnabled[] =
     "assistive_input.managed.orca_enabled";
 
-// A boolean pref of whether mahi is enabled.
-inline constexpr char kMahiEnabled[] = "settings.mahi_enabled";
+// A boolean pref of whether Help Me Read (HMR) is enabled.
+inline constexpr char kHmrEnabled[] = "settings.mahi_enabled";
 
 // An integer pref that stores the times the Mahi nudge has been shown.
 inline constexpr char kMahiNudgeShownCount[] = "mahi.nudge_shown_count";
