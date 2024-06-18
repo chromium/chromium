@@ -48,7 +48,7 @@ public class ShapeDetectionTest {
     @CommandLineFlags.Add("enable-experimental-web-platform-features")
     @Feature({"ShapeDetection"})
     @LargeTest
-    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_2020W02)
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_20W02)
     @DisabledTest(message = "https://crbug.com/1139470")
     public void testBarcodeDetection() throws TimeoutException {
         EmbeddedTestServer testServer =
@@ -67,7 +67,7 @@ public class ShapeDetectionTest {
     @CommandLineFlags.Add("enable-experimental-web-platform-features")
     @Feature({"ShapeDetection"})
     @LargeTest
-    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_2020W02)
+    @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_20W02)
     public void testTextDetection() throws TimeoutException {
         EmbeddedTestServer testServer =
                 EmbeddedTestServer.createAndStartServer(

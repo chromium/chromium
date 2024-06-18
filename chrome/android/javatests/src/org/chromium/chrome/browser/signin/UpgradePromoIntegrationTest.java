@@ -92,7 +92,7 @@ import org.chromium.ui.test.util.ViewUtils;
 // re-enabled once the new sign-in flow is implemented for automotive.
 @Restriction({
     DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
-    GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_2020W02
+    GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_20W02
 })
 public class UpgradePromoIntegrationTest {
     @Rule

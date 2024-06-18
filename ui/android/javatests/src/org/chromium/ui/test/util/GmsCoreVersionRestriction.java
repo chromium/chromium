@@ -16,19 +16,24 @@ import org.chromium.base.test.util.RestrictionSkipCheck;
  * </code>
  */
 public final class GmsCoreVersionRestriction {
-    /** Specifies the test to run only with the GMS Core version greater or equal 22w30. */
+    /** Specifies the test to run only with the GMS Core version greater than or equal to 24w15. */
+    public static final String RESTRICTION_TYPE_VERSION_GE_24W15 = "GMSCoreVersion24w15";
+
+    /** Specifies the test to run only with the GMS Core version greater than or equal to 22w30. */
     public static final String RESTRICTION_TYPE_VERSION_GE_22W30 = "GMSCoreVersion22w30";
 
-    /** Specifies the test to run only with the GMS Core version greater or equal 2020w02. */
-    public static final String RESTRICTION_TYPE_VERSION_GE_2020W02 = "GMSCoreVersion2020w02";
+    /** Specifies the test to run only with the GMS Core version greater than or equal to 20w02. */
+    public static final String RESTRICTION_TYPE_VERSION_GE_20W02 = "GMSCoreVersion20w02";
 
-    private static final int VERSION_2020W02 = 20415000;
+    private static final int VERSION_24W15 = 241512000;
     private static final int VERSION_22W30 = 223012000;
+    private static final int VERSION_20W02 = 20415000;
     private static Integer sGmsVersion;
 
     public static void registerChecks(RestrictionSkipCheck check) {
+        check.addHandler(RESTRICTION_TYPE_VERSION_GE_24W15, () -> getVersion() < VERSION_24W15);
         check.addHandler(RESTRICTION_TYPE_VERSION_GE_22W30, () -> getVersion() < VERSION_22W30);
-        check.addHandler(RESTRICTION_TYPE_VERSION_GE_2020W02, () -> getVersion() < VERSION_2020W02);
+        check.addHandler(RESTRICTION_TYPE_VERSION_GE_20W02, () -> getVersion() < VERSION_20W02);
     }
 
     private static int tryParseInt(String value, int defaultVal) {
