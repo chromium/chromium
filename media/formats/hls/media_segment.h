@@ -42,16 +42,50 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
     std::optional<types::ByteRange> byte_range_;
   };
 
+  class MEDIA_EXPORT EncryptionData : public base::RefCounted<EncryptionData> {
+   public:
+    using IVContainer = std::optional<std::tuple<uint64_t, uint64_t>>;
+
+    // Corresponds to `XKeyTagMethod`, though a mode of NONE is represented by
+    // a null EncryptionData pointer.
+    enum class Mode {
+      kAES128,
+      kSampleAES,
+      kSampleAESCTR,
+    };
+
+    EncryptionData(GURL uri, Mode mode, IVContainer iv, bool identity);
+    EncryptionData(const EncryptionData& copy) = delete;
+    EncryptionData(EncryptionData&& copy) = delete;
+    EncryptionData& operator=(const EncryptionData& copy) = delete;
+    EncryptionData& operator=(EncryptionData&& copy) = delete;
+
+    const GURL& GetUri() const { return uri_; }
+    Mode GetMode() const { return mode_; }
+    IVContainer GetIV(types::DecimalInteger media_sequence_number) const;
+
+   private:
+    friend class base::RefCounted<EncryptionData>;
+    ~EncryptionData();
+
+    const GURL uri_;
+    const Mode mode_;
+    const IVContainer iv_;
+    const bool identity_;
+  };
+
   MediaSegment(base::TimeDelta duration,
                types::DecimalInteger media_sequence_number,
                types::DecimalInteger discontinuity_sequence_number,
                GURL uri,
                scoped_refptr<InitializationSegment> initialization_segment,
+               scoped_refptr<EncryptionData> encryption_data,
                std::optional<types::ByteRange> byte_range,
                std::optional<types::DecimalInteger> bitrate,
                bool has_discontinuity,
                bool is_gap,
-               bool has_new_init_segment);
+               bool has_new_init_segment,
+               bool has_new_encryption_data);
   MediaSegment(const MediaSegment&) = delete;
   MediaSegment(MediaSegment&&) = delete;
   MediaSegment& operator=(const MediaSegment&) = delete;
@@ -86,6 +120,17 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
   // than the MediaSegment which immediately preceded this.
   bool HasNewInitSegment() const { return has_new_init_segment_; }
 
+  // Returns the encryption data for this media segment, which may be null if
+  // this segment has none. Subsequent media segments may also share the same
+  // encryption data.
+  scoped_refptr<EncryptionData> GetEncryptionData() const {
+    return encryption_data_;
+  }
+
+  // Returns whether this MediaSegment has a different EncryptionData from the
+  // MediaSegment which immediately preceded it.
+  bool HasNewEncryptionData() const { return has_new_encryption_data_; }
+
   // If this media segment is a subrange of its resource, this indicates the
   // range.
   std::optional<types::ByteRange> GetByteRange() const { return byte_range_; }
@@ -111,11 +156,14 @@ class MEDIA_EXPORT MediaSegment : public base::RefCounted<MediaSegment> {
   types::DecimalInteger discontinuity_sequence_number_;
   GURL uri_;
   scoped_refptr<InitializationSegment> initialization_segment_;
+
+  scoped_refptr<EncryptionData> encryption_data_;
   std::optional<types::ByteRange> byte_range_;
   std::optional<types::DecimalInteger> bitrate_;
   bool has_discontinuity_;
   bool is_gap_;
   bool has_new_init_segment_;
+  bool has_new_encryption_data_;
 };
 
 }  // namespace media::hls
