@@ -34,6 +34,12 @@ class ReadAloudAppModel {
   void set_highlight_granularity(int granularity) {
     highlight_granularity_ = granularity;
   }
+  const std::string& default_language_code() const {
+    return default_language_code_;
+  }
+  void set_default_language_code(const std::string code) {
+    default_language_code_ = code;
+  }
 
   bool IsHighlightOn();
   void OnSettingsRestoredFromPrefs(
@@ -59,6 +65,12 @@ class ReadAloudAppModel {
   // The current granularity being used for the reading highlight.
   int highlight_granularity_ =
       (int)read_anything::mojom::HighlightGranularity::kDefaultValue;
+
+  // The default language code, used as a fallback in case the page language
+  // is invalid. It's not guaranteed that default_language_code_ will always
+  // be valid, but as it is tied to the browser language, it is likely more
+  // stable.
+  std::string default_language_code_ = "en";
 };
 
 #endif  // CHROME_RENDERER_ACCESSIBILITY_READ_ALOUD_APP_MODEL_H_

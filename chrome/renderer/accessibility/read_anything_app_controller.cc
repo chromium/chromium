@@ -1326,7 +1326,7 @@ bool ReadAnythingAppController::RequiresDistillation() {
 
 const std::string& ReadAnythingAppController::GetDefaultLanguageCodeForSpeech()
     const {
-  return model_.default_language_code();
+  return read_aloud_model_.default_language_code();
 }
 
 void ReadAnythingAppController::OnConnected() {
@@ -1610,15 +1610,13 @@ void ReadAnythingAppController::OnDeviceLocked() {
 }
 #endif
 
-// TODO(b/336596926): Use the default language code as a fallback when
-// we get a language-unavailable error.
 void ReadAnythingAppController::SetDefaultLanguageCode(
     const std::string& code) {
   std::string default_lang = std::string(language::ExtractBaseLanguage(code));
   // If the default language code is empty, continue to use the default
   // language code, as defined by ReadAnythingAppModel, currently 'en'
   if (default_lang.length() > 0) {
-    model_.set_default_language_code(default_lang);
+    read_aloud_model_.set_default_language_code(default_lang);
   }
 }
 

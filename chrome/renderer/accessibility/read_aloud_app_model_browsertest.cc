@@ -55,6 +55,12 @@ class ReadAnythingReadAloudAppModelTest : public ChromeRenderViewTest {
 
   bool IsHighlightOn() { return model_->IsHighlightOn(); }
 
+  std::string DefaultLanguage() { return model_->default_language_code(); }
+
+  void SetDefaultLanguage(std::string lang) {
+    model_->set_default_language_code(lang);
+  }
+
  private:
   // ReadAloudAppModel constructor and destructor are private so it's
   // not accessible by std::make_unique.
@@ -127,4 +133,16 @@ TEST_F(ReadAnythingReadAloudAppModelTest, Highlight) {
   SetHighlightGranularity(on);
   EXPECT_EQ(HighlightGranularity(), on);
   EXPECT_TRUE(IsHighlightOn());
+}
+
+TEST_F(ReadAnythingReadAloudAppModelTest, DefaultLanguageCode) {
+  EXPECT_EQ(DefaultLanguage(), "en");
+
+  const char* lang1 = "tr";
+  SetDefaultLanguage(lang1);
+  EXPECT_EQ(DefaultLanguage(), lang1);
+
+  const char* lang2 = "hi";
+  SetDefaultLanguage(lang2);
+  EXPECT_EQ(DefaultLanguage(), lang2);
 }

@@ -236,11 +236,6 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
     model_->set_base_language_code(code);
   }
 
-  std::string DefaultLanguageCode() { return model_->default_language_code(); }
-  void SetDefaultLanguageCode(std::string code) {
-    model_->set_default_language_code(code);
-  }
-
   std::vector<std::string> GetSupportedFonts() {
     return model_->GetSupportedFonts();
   }
@@ -1423,21 +1418,6 @@ TEST_F(ReadAnythingAppModelTest, LanguageCode_ReturnsCorrectCode) {
 
   SetLanguageCode("es");
   ASSERT_EQ(LanguageCode(), "es");
-}
-
-TEST_F(ReadAnythingAppModelTest, DefaultLanguageCode_ReturnsCorrectCode) {
-  ASSERT_EQ(DefaultLanguageCode(), "en");
-
-  SetDefaultLanguageCode("es");
-  ASSERT_EQ(DefaultLanguageCode(), "es");
-
-  // The regular base language code isn't impacted.
-  ASSERT_EQ(LanguageCode(), "en");
-
-  // Setting the base language code doesn't impact the default language code.
-  SetLanguageCode("jp");
-  ASSERT_EQ(LanguageCode(), "jp");
-  ASSERT_EQ(DefaultLanguageCode(), "es");
 }
 
 TEST_F(ReadAnythingAppModelTest,
