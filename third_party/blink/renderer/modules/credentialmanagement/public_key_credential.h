@@ -25,6 +25,8 @@ enum class AuthenticatorAttachment;
 class AuthenticatorResponse;
 class PublicKeyCredentialCreationOptions;
 class PublicKeyCredentialCreationOptionsJSON;
+class PublicKeyCredentialRequestOptions;
+class PublicKeyCredentialRequestOptionsJSON;
 class ScriptState;
 class V8UnionAuthenticationResponseJSONOrRegistrationResponseJSON;
 
@@ -41,19 +43,31 @@ class MODULES_EXPORT PublicKeyCredential : public Credential {
       const String& type = g_empty_string);
 
   DOMArrayBuffer* rawId() const { return raw_id_.Get(); }
+
   AuthenticatorResponse* response() const { return response_.Get(); }
+
   std::optional<String> authenticatorAttachment() const {
     return authenticator_attachment_;
   }
+
   static ScriptPromise<IDLBoolean>
   isUserVerifyingPlatformAuthenticatorAvailable(ScriptState*);
+
   AuthenticationExtensionsClientOutputs* getClientExtensionResults() const;
+
   static ScriptPromise<IDLBoolean> isConditionalMediationAvailable(
       ScriptState*);
+
   static const PublicKeyCredentialCreationOptions* parseCreationOptionsFromJSON(
       ScriptState*,
       const PublicKeyCredentialCreationOptionsJSON*,
       ExceptionState&);
+
+  static const PublicKeyCredentialRequestOptions* parseRequestOptionsFromJSON(
+      ScriptState*,
+      const PublicKeyCredentialRequestOptionsJSON*,
+      ExceptionState&);
+
   const V8UnionAuthenticationResponseJSONOrRegistrationResponseJSON* toJSON(
       ScriptState*) const;
 

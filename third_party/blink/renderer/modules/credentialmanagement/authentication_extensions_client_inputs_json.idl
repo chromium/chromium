@@ -1,0 +1,38 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://w3c.github.io/webauthn/#dictdef-authenticationextensionsclientinputsjson
+
+dictionary AuthenticationExtensionsLargeBlobInputsJSON {
+  DOMString support;
+  boolean read;
+  Base64URLString write;
+};
+
+dictionary AuthenticationExtensionsPRFInputsJSON {
+  AuthenticationExtensionsPRFValuesJSON eval;
+  record<USVString, AuthenticationExtensionsPRFValuesJSON> evalByCredential;
+};
+
+dictionary AuthenticationExtensionsPRFValuesJSON {
+  required Base64URLString first;
+  Base64URLString second;
+};
+
+dictionary AuthenticationExtensionsClientInputsJSON {
+  USVString appid;
+  USVString appidExclude;
+  boolean hmacCreateSecret;
+  USVString credentialProtectionPolicy;
+  boolean enforceCredentialProtectionPolicy = false;
+  boolean minPinLength;
+  boolean credProps = false;
+  [RuntimeEnabled=WebAuthenticationLargeBlobExtension] AuthenticationExtensionsLargeBlobInputsJSON largeBlob;
+  Base64URLString credBlob;
+  boolean getCredBlob;
+  [RuntimeEnabled=SecurePaymentConfirmation] AuthenticationExtensionsPaymentInputs payment;
+  [RuntimeEnabled=WebAuthenticationRemoteDesktopSupport] RemoteDesktopClientOverride remoteDesktopClientOverride;
+  [RuntimeEnabled=WebAuthenticationSupplementalPubKeys] AuthenticationExtensionsSupplementalPubKeysInputs supplementalPubKeys;
+  [RuntimeEnabled=WebAuthenticationPRF] AuthenticationExtensionsPRFInputsJSON prf;
+};

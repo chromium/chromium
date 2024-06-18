@@ -173,8 +173,18 @@ PublicKeyCredential::parseCreationOptionsFromJSON(
     ScriptState* script_state,
     const PublicKeyCredentialCreationOptionsJSON* options,
     ExceptionState& exception_state) {
-  return PublicKeyCredentialOptionsFromJSON(script_state, options,
-                                            exception_state);
+  return PublicKeyCredentialCreationOptionsFromJSON(script_state, options,
+                                                    exception_state);
+}
+
+// static
+const PublicKeyCredentialRequestOptions*
+PublicKeyCredential::parseRequestOptionsFromJSON(
+    ScriptState* script_state,
+    const PublicKeyCredentialRequestOptionsJSON* options,
+    ExceptionState& exception_state) {
+  return PublicKeyCredentialRequestOptionsFromJSON(script_state, options,
+                                                   exception_state);
 }
 
 void PublicKeyCredential::Trace(Visitor* visitor) const {

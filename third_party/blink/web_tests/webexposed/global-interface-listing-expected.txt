@@ -7739,6 +7739,7 @@ interface PublicKeyCredential : Credential
     static method isConditionalMediationAvailable
     static method isUserVerifyingPlatformAuthenticatorAvailable
     static method parseCreationOptionsFromJSON
+    static method parseRequestOptionsFromJSON
     attribute @@toStringTag
     getter authenticatorAttachment
     getter rawId

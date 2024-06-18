@@ -1,7 +1,6 @@
 #include "third_party/blink/renderer/modules/credentialmanagement/json.h"
 
 #include "base/numerics/safe_conversions.h"
-#include "base/types/expected.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_client_inputs.h"
@@ -21,6 +20,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options_js_on.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_descriptor_js_on.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_request_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_request_options_js_on.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_user_entity.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_user_entity_js_on.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -45,32 +46,36 @@ std::optional<DOMArrayBuffer*> WebAuthnBase64UrlDecode(const String& in) {
   return DOMArrayBuffer::Create(out.data(), out.size());
 }
 
-base::expected<PublicKeyCredentialUserEntity*, const char*>
-PublicKeyCredentialUserEntityFromJSON(
-    const PublicKeyCredentialUserEntityJSON& json) {
+PublicKeyCredentialUserEntity* PublicKeyCredentialUserEntityFromJSON(
+    const PublicKeyCredentialUserEntityJSON& json,
+    ExceptionState& exception_state) {
   auto* result = PublicKeyCredentialUserEntity::Create();
   if (auto id = WebAuthnBase64UrlDecode(json.id()); id.has_value()) {
     result->setId(
         MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(*id));
   } else {
-    return base::unexpected("'user.id' contains invalid base64url");
+    exception_state.ThrowDOMException(DOMExceptionCode::kEncodingError,
+                                      "'user.id' contains invalid base64url");
+    return nullptr;
   }
   result->setName(json.name());
   result->setDisplayName(json.displayName());
   return result;
 }
 
-base::expected<PublicKeyCredentialDescriptor*, const char*>
-PublicKeyCredentialDescriptorFromJSON(
-    const PublicKeyCredentialDescriptorJSON& json) {
+PublicKeyCredentialDescriptor* PublicKeyCredentialDescriptorFromJSON(
+    const PublicKeyCredentialDescriptorJSON& json,
+    ExceptionState& exception_state) {
   auto* result = PublicKeyCredentialDescriptor::Create();
   if (auto id = WebAuthnBase64UrlDecode(json.id()); id.has_value()) {
     result->setId(
         MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(*id));
   } else {
-    return base::unexpected(
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kEncodingError,
         "'excludeCredentials' contains PublicKeyCredentialDescriptorJSON "
         "with invalid base64url data in 'id'");
+    return nullptr;
   }
   result->setType(json.type());
   if (json.hasTransports()) {
@@ -79,6 +84,22 @@ PublicKeyCredentialDescriptorFromJSON(
       transports.push_back(transport);
     }
     result->setTransports(std::move(transports));
+  }
+  return result;
+}
+
+VectorOf<PublicKeyCredentialDescriptor>
+PublicKeyCredentialDescriptorVectorFromJSON(
+    const VectorOf<PublicKeyCredentialDescriptorJSON> json,
+    ExceptionState& exception_state) {
+  VectorOf<PublicKeyCredentialDescriptor> result;
+  for (const PublicKeyCredentialDescriptorJSON* json_descriptor : json) {
+    auto* descriptor = PublicKeyCredentialDescriptorFromJSON(*json_descriptor,
+                                                             exception_state);
+    if (exception_state.HadException()) {
+      return {};
+    }
+    result.push_back(descriptor);
   }
   return result;
 }
@@ -104,7 +125,7 @@ AuthenticationExtensionsPRFValuesFromJSON(
   return values;
 }
 
-base::expected<AuthenticationExtensionsClientInputs*, const char*>
+AuthenticationExtensionsClientInputs*
 AuthenticationExtensionsClientInputsFromJSON(
     const AuthenticationExtensionsClientInputsJSON& json,
     ExceptionState& exception_state) {
@@ -117,9 +138,6 @@ AuthenticationExtensionsClientInputsFromJSON(
   }
   if (json.hasHmacCreateSecret()) {
     result->setHmacCreateSecret(json.hmacCreateSecret());
-  }
-  if (json.hasUvm()) {
-    result->setUvm(json.uvm());
   }
   if (json.hasCredentialProtectionPolicy()) {
     result->setCredentialProtectionPolicy(json.credentialProtectionPolicy());
@@ -147,8 +165,10 @@ AuthenticationExtensionsClientInputsFromJSON(
             MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
                 write.value()));
       } else {
-        return base::unexpected(
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kEncodingError,
             "'extensions.largeBlob.write' contains invalid base64url data");
+        return nullptr;
       }
     }
     result->setLargeBlob(large_blob);
@@ -160,11 +180,13 @@ AuthenticationExtensionsClientInputsFromJSON(
           MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(
               cred_blob.value()));
     } else {
-      return base::unexpected(
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kEncodingError,
           "'extensions.credBlob' contains invalid base64url data");
+      return nullptr;
     }
   }
-  if (json.getCredBlob()) {
+  if (json.hasGetCredBlob()) {
     result->setGetCredBlob(json.getCredBlob());
   }
   if (json.hasPayment()) {
@@ -182,8 +204,10 @@ AuthenticationExtensionsClientInputsFromJSON(
       std::optional<AuthenticationExtensionsPRFValues*> eval =
           AuthenticationExtensionsPRFValuesFromJSON(*(json.prf()->eval()));
       if (!eval) {
-        return base::unexpected(
+        exception_state.ThrowDOMException(
+            DOMExceptionCode::kEncodingError,
             "'extensions.prf.eval' contains invalid base64url data");
+        return nullptr;
       }
       prf->setEval(eval.value());
     }
@@ -193,9 +217,11 @@ AuthenticationExtensionsClientInputsFromJSON(
         std::optional<AuthenticationExtensionsPRFValues*> values =
             AuthenticationExtensionsPRFValuesFromJSON(*json_values);
         if (!values) {
-          return base::unexpected(
+          exception_state.ThrowDOMException(
+              DOMExceptionCode::kEncodingError,
               "'extensions.prf.evalByCredential' contains invalid base64url "
               "data");
+          return nullptr;
         }
         eval.emplace_back(key, *values);
       }
@@ -287,20 +313,18 @@ AuthenticationExtensionsClientOutputsToJSON(
   return json;
 }
 
-PublicKeyCredentialCreationOptions* PublicKeyCredentialOptionsFromJSON(
+PublicKeyCredentialCreationOptions* PublicKeyCredentialCreationOptionsFromJSON(
     ScriptState* script_sate,
     const PublicKeyCredentialCreationOptionsJSON* json,
     ExceptionState& exception_state) {
   auto* result = PublicKeyCredentialCreationOptions::Create();
   result->setRp(json->rp());
-  if (auto user = PublicKeyCredentialUserEntityFromJSON(*json->user());
-      user.has_value()) {
-    result->setUser(user.value());
-  } else {
-    exception_state.ThrowDOMException(DOMExceptionCode::kEncodingError,
-                                      user.error());
+  auto* user =
+      PublicKeyCredentialUserEntityFromJSON(*json->user(), exception_state);
+  if (exception_state.HadException()) {
     return nullptr;
   }
+  result->setUser(user);
   if (auto challenge = WebAuthnBase64UrlDecode(json->challenge());
       challenge.has_value()) {
     result->setChallenge(
@@ -316,20 +340,13 @@ PublicKeyCredentialCreationOptions* PublicKeyCredentialOptionsFromJSON(
     result->setTimeout(json->timeout());
   }
   if (json->hasExcludeCredentials()) {
-    VectorOf<PublicKeyCredentialDescriptor> exclude_credentials;
-    for (const PublicKeyCredentialDescriptorJSON* json_descriptor :
-         json->excludeCredentials()) {
-      if (auto descriptor =
-              PublicKeyCredentialDescriptorFromJSON(*json_descriptor);
-          descriptor.has_value()) {
-        exclude_credentials.push_back(descriptor.value());
-      } else {
-        exception_state.ThrowDOMException(DOMExceptionCode::kEncodingError,
-                                          descriptor.error());
-        return nullptr;
-      }
+    VectorOf<PublicKeyCredentialDescriptor> credential_descriptors =
+        PublicKeyCredentialDescriptorVectorFromJSON(json->excludeCredentials(),
+                                                    exception_state);
+    if (exception_state.HadException()) {
+      return nullptr;
     }
-    result->setExcludeCredentials(std::move(exclude_credentials));
+    result->setExcludeCredentials(std::move(credential_descriptors));
   }
   if (json->hasAuthenticatorSelection()) {
     result->setAuthenticatorSelection(json->authenticatorSelection());
@@ -341,15 +358,59 @@ PublicKeyCredentialCreationOptions* PublicKeyCredentialOptionsFromJSON(
     result->setAttestation(json->attestation());
   }
   if (json->hasExtensions()) {
-    if (auto extensions = AuthenticationExtensionsClientInputsFromJSON(
-            *json->extensions(), exception_state);
-        extensions.has_value()) {
-      result->setExtensions(extensions.value());
-    } else {
-      exception_state.ThrowDOMException(DOMExceptionCode::kEncodingError,
-                                        extensions.error());
+    auto* extensions = AuthenticationExtensionsClientInputsFromJSON(
+        *json->extensions(), exception_state);
+    if (exception_state.HadException()) {
       return nullptr;
     }
+    result->setExtensions(extensions);
+  }
+  return result;
+}
+
+PublicKeyCredentialRequestOptions* PublicKeyCredentialRequestOptionsFromJSON(
+    ScriptState* script_sate,
+    const PublicKeyCredentialRequestOptionsJSON* json,
+    ExceptionState& exception_state) {
+  auto* result = PublicKeyCredentialRequestOptions::Create();
+  if (auto challenge = WebAuthnBase64UrlDecode(json->challenge());
+      challenge.has_value()) {
+    result->setChallenge(
+        MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferView>(*challenge));
+  } else {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kEncodingError,
+        "'challenge' contains invalid base64url data");
+    return nullptr;
+  }
+  if (json->hasTimeout()) {
+    result->setTimeout(json->timeout());
+  }
+  if (json->hasRpId()) {
+    result->setRpId(json->rpId());
+  }
+  if (json->hasAllowCredentials()) {
+    VectorOf<PublicKeyCredentialDescriptor> credential_descriptors =
+        PublicKeyCredentialDescriptorVectorFromJSON(json->allowCredentials(),
+                                                    exception_state);
+    if (exception_state.HadException()) {
+      return nullptr;
+    }
+    result->setAllowCredentials(std::move(credential_descriptors));
+  }
+  if (json->hasUserVerification()) {
+    result->setUserVerification(json->userVerification());
+  }
+  if (json->hasHints()) {
+    result->setHints(json->hints());
+  }
+  if (json->hasExtensions()) {
+    auto* extensions = AuthenticationExtensionsClientInputsFromJSON(
+        *json->extensions(), exception_state);
+    if (exception_state.HadException()) {
+      return nullptr;
+    }
+    result->setExtensions(extensions);
   }
   return result;
 }
