@@ -4,7 +4,11 @@
 
 assert(is_chromeos)
 
-source_set("experiment_badge") {
+component("views") {
+  output_name = "magic_boost_views"
+
+  defines = [ "IS_MAGIC_BOOST_VIEWS_IMPL" ]
+
   sources = [
     "experiment_badge.cc",
     "experiment_badge.h",

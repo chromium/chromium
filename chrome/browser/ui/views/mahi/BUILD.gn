@@ -25,7 +25,7 @@ source_set("mahi") {
     "//chrome/browser/ui/chromeos/read_write_cards",
     "//chrome/browser/ui/views/editor_menu:utils",
     "//chromeos/components/editor_menu/public/cpp",
-    "//chromeos/components/magic_boost/public/cpp/views:experiment_badge",
+    "//chromeos/components/magic_boost/public/cpp/views",
     "//chromeos/components/mahi/public/cpp",
     "//chromeos/constants:constants",
     "//chromeos/strings:strings_grit",

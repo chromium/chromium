@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_COMPONENTS_MAGIC_BOOST_PUBLIC_CPP_VIEWS_EXPERIMENT_BADGE_H_
 #define CHROMEOS_COMPONENTS_MAGIC_BOOST_PUBLIC_CPP_VIEWS_EXPERIMENT_BADGE_H_
 
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
@@ -17,7 +18,7 @@ class Label;
 namespace chromeos {
 
 // The view for the experiment badge that will be used in Magic Boost.
-class ExperimentBadge : public views::View {
+class COMPONENT_EXPORT(MAGIC_BOOST_VIEWS) ExperimentBadge : public views::View {
   METADATA_HEADER(ExperimentBadge, views::View)
 
  public:

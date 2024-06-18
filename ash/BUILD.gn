@@ -3269,7 +3269,7 @@ component("ash") {
     "//chromeos/components/editor_menu/public/cpp",
     "//chromeos/components/kiosk",
     "//chromeos/components/magic_boost/public/cpp",
-    "//chromeos/components/magic_boost/public/cpp/views:experiment_badge",
+    "//chromeos/components/magic_boost/public/cpp/views",
     "//chromeos/components/mahi/public/cpp",
     "//chromeos/components/quick_answers/public/cpp:prefs",
     "//chromeos/components/sensors:sensors",

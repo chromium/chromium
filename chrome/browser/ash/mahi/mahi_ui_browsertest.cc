@@ -47,13 +47,7 @@ class MahiUiBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
 };
 
-// TODO(b/319735347): Test failing on linux-chromeos-dbg.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_OnContextMenuClickedSummary DISABLED_OnContextMenuClickedSummary
-#else
-#define MAYBE_OnContextMenuClickedSummary OnContextMenuClickedSummary
-#endif
-IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, MAYBE_OnContextMenuClickedSummary) {
+IN_PROC_BROWSER_TEST_F(MahiUiBrowserTest, OnContextMenuClickedSummary) {
   EXPECT_FALSE(FindWidgetWithName(MahiPanelWidget::GetName()));
 
   // Open the Mahi menu by mouse right click on the web contents.
