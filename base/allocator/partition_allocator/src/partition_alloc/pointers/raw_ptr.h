@@ -415,7 +415,10 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
   }
 
   PA_ALWAYS_INLINE constexpr raw_ptr& operator=(const raw_ptr& p) noexcept {
-    // Duplicate before releasing, in case the pointer is assigned to itself.
+    // Increment the ref-count first before releasing, in case the pointer is
+    // assigned to itself. (This is different from the concern in the assign-T*
+    // version of this operator, where a different pointer to the same allocator
+    // slot could cause trouble, which isn't a concern here at all.)
     //
     // Unlike the move version of this operator, don't add |this != &p| branch,
     // for performance reasons. Self-assignment is rare, so unconditionally
@@ -530,7 +533,12 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     // `raw_ptr<T> -> T* -> raw_ptr<>` route will be taken.
     static_assert(Traits == (raw_ptr<T, PassedTraits>::Traits |
                              RawPtrTraits::kMayDangle));
+    // If it was the same type, another overload would've been used.
+    static_assert(!std::is_same_v<raw_ptr, std::decay_t<decltype(p)>>);
 
+    // Unlike the regular varsion of operator=, we don't have an issue of
+    // `*this` and `ptr` being the same object (because it isn't even the same
+    // type, as asserted above), so no need to increment the ref-count first.
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     Impl::Untrace(tracer_.owner_id());
     wrapped_ptr_ = Impl::WrapRawPtrForDuplication(
@@ -587,9 +595,15 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
     return *this;
   }
   PA_ALWAYS_INLINE constexpr raw_ptr& operator=(T* p) noexcept {
+    // Duplicate before releasing, in case the pointers point to the same
+    // allocator slot. Releasing the pointer first could lead to dropping the
+    // ref-count to 0 for the slot, immediately unqurantining and releasing it,
+    // just to immediately reacquire the the ref-count on that slot, leading to
+    // correctness issues.
+    T* new_ptr = Impl::WrapRawPtr(p);
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     Impl::Untrace(tracer_.owner_id());
-    wrapped_ptr_ = Impl::WrapRawPtr(p);
+    wrapped_ptr_ = new_ptr;
     Impl::Trace(tracer_.owner_id(), wrapped_ptr_);
     return *this;
   }
@@ -601,15 +615,12 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
                 !std::is_void_v<typename std::remove_cv<T>::type>>>
   PA_ALWAYS_INLINE constexpr raw_ptr& operator=(
       const raw_ptr<U, Traits>& ptr) noexcept {
-    // Make sure that pointer isn't assigned to itself (look at raw_ptr address,
-    // not its contained pointer value). The comparison is only needed when they
-    // are the same type, otherwise they can't be the same raw_ptr object.
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
-    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    if constexpr (std::is_same_v<raw_ptr, std::decay_t<decltype(ptr)>>) {
-      PA_RAW_PTR_CHECK(this != &ptr);
-    }
-#endif
+    // If it was the same type, another overload would've been used.
+    static_assert(!std::is_same_v<raw_ptr, std::decay_t<decltype(ptr)>>);
+
+    // Unlike the regular varsion of operator=, we don't have an issue of
+    // `*this` and `ptr` being the same object (because it isn't even the same
+    // type, as asserted above), so no need to increment the ref-count first.
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     Impl::Untrace(tracer_.owner_id());
     wrapped_ptr_ =
@@ -623,15 +634,12 @@ class PA_TRIVIAL_ABI PA_GSL_POINTER raw_ptr {
                 !std::is_void_v<typename std::remove_cv<T>::type>>>
   PA_ALWAYS_INLINE constexpr raw_ptr& operator=(
       raw_ptr<U, Traits>&& ptr) noexcept {
-    // Make sure that pointer isn't assigned to itself (look at raw_ptr address,
-    // not its contained pointer value). The comparison is only needed when they
-    // are the same type, otherwise they can't be the same raw_ptr object.
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
-    PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    if constexpr (std::is_same_v<raw_ptr, std::decay_t<decltype(ptr)>>) {
-      PA_RAW_PTR_CHECK(this != &ptr);
-    }
-#endif
+    // If it was the same type, another overload would've been used.
+    static_assert(!std::is_same_v<raw_ptr, std::decay_t<decltype(ptr)>>);
+
+    // Unlike the regular varsion of operator=, we don't have an issue of
+    // `*this` and `ptr` being the same object (because it isn't even the same
+    // type, as asserted above), so no need to increment the ref-count first.
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     Impl::Untrace(tracer_.owner_id());
     wrapped_ptr_ = Impl::template Upcast<T, U>(ptr.wrapped_ptr_);
