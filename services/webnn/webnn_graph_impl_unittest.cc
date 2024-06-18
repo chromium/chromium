@@ -21,7 +21,6 @@
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
 #include "mojo/public/cpp/system/functions.h"
 #include "services/webnn/error.h"
-#include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/ml_buffer_usage.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_buffer.mojom.h"
@@ -6466,6 +6465,7 @@ TEST_F(WebNNGraphImplTest, WhereTest) {
 TEST_F(WebNNGraphImplTest, ValidateInputsTest) {
   auto context_properties = GetContextPropertiesForTesting();
   const std::vector<uint32_t> dimensions = {3, 5};
+  const size_t byte_length = 15;
   // Build the graph with mojo type.
   GraphInfoBuilder builder;
   uint64_t lhs_operand_id =
@@ -6480,8 +6480,6 @@ TEST_F(WebNNGraphImplTest, ValidateInputsTest) {
   EXPECT_TRUE(WebNNGraphImpl::ValidateGraph(*context_properties,
                                             builder.GetGraphInfo()));
 
-  auto byte_length =
-      ValidateAndCalculateByteLength(sizeof(uint8_t), dimensions).value();
   {
     // Validate the inputs match the expected.
     base::flat_map<std::string, mojo_base::BigBuffer> inputs;

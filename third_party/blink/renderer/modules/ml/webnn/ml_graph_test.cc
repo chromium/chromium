@@ -1262,8 +1262,7 @@ TEST_F(MLGraphTest, WebNNGraphDispatchTest) {
   auto* builder = CreateGraphBuilder(scope, options);
   ASSERT_THAT(builder, testing::NotNull());
   const Vector<uint32_t> dimensions = {3, 5};
-  const wtf_size_t number_of_elements = base::checked_cast<wtf_size_t>(
-      webnn::ValidateAndCalculateElementsNumber(dimensions).value());
+  const wtf_size_t number_of_elements = 15;
 
   // Build the graph.
   auto* lhs_operand =
@@ -1829,8 +1828,7 @@ TEST_F(MLGraphTest, WebNNGraphComputeTest) {
   auto* builder = CreateGraphBuilder(scope, options);
   ASSERT_THAT(builder, testing::NotNull());
   const Vector<uint32_t> dimensions = {3, 5};
-  const wtf_size_t number_of_elements = base::checked_cast<wtf_size_t>(
-      webnn::ValidateAndCalculateElementsNumber(dimensions).value());
+  const wtf_size_t number_of_elements = 15;
 
   // Build the graph.
   auto* lhs_operand =
