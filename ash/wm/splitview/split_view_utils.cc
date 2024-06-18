@@ -886,6 +886,7 @@ aura::Window* GetOppositeVisibleSnappedWindow(aura::Window* window) {
   aura::Window::Windows windows =
       GetActiveDeskAppWindowsInZOrder(window->GetRootWindow());
   const auto opposite_snap_type = GetOppositeSnapType(window);
+  auto* overview_session = GetOverviewSession();
 
   // Track the union bounds of the windows that are more recently used than the
   // currently iterated window, i.e. `top_window` below to check the occlusion
@@ -902,8 +903,7 @@ aura::Window* GetOppositeVisibleSnappedWindow(aura::Window* window) {
       continue;
     }
 
-    if (IsInOverviewSession() &&
-        GetOverviewSession()->IsWindowInOverview(top_window)) {
+    if (overview_session && overview_session->IsWindowInOverview(top_window)) {
       // Skip any windows that are in overview, since they are visually not
       // snapped to the user.
       continue;

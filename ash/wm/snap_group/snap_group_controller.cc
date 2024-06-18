@@ -96,47 +96,50 @@ bool SnapGroupController::OnWindowSnapped(
     return false;
   }
 
+  // If there is no opposite snapped window, we are done.
+  aura::Window* opposite = GetOppositeVisibleSnappedWindow(window);
+  if (!opposite) {
+    return false;
+  }
+
   // First attempt snap to replace. Snap groups in overview would be excluded by
   // `GetOppositeVisibleSnappedWindow()`.
-  if (MaybeSnapToReplace(window, snap_action_source)) {
+  if (MaybeSnapToReplace(window, opposite, snap_action_source)) {
     return true;
   }
 
-  if (auto* opposite_window = GetOppositeVisibleSnappedWindow(window)) {
-    if (auto* snap_group =
-            AddSnapGroup(window, opposite_window, /*replace=*/false,
-                         /*carry_over_creation_time=*/std::nullopt)) {
-      aura::Window* target_window = nullptr;
-      switch (snap_action_source) {
-        case WindowSnapActionSource::kSnapByWindowLayoutMenu:
-        case WindowSnapActionSource::kLacrosSnapButtonOrWindowLayoutMenu:
-        case WindowSnapActionSource::kSnapByClamshellTabletTransition:
-          // If the window was snapped via the layout menu, respect its
-          // requested snap ratio. We also refresh the bounds for tablet
-          // transition to ensure no divider gap.
-          target_window = window;
-          break;
-        case WindowSnapActionSource::kDragWindowToEdgeToSnap:
-        case WindowSnapActionSource::kLongPressCaptionButtonToSnap:
-          // Else respect the opposite window's snap ratio. This is to give the
-          // impression of filling the layout and feels more intuitive to the
-          // user.
-          target_window = opposite_window;
-          break;
-        default:
-          // Else no need to refresh the group bounds.
-          return true;
-      }
-      const float snap_ratio =
-          window_util::GetSnapRatioForWindow(target_window);
-      // Apply the target window's snap ratio *after* the group creation so we
-      // can actually enforce it.
-      // TODO(b/346624805): See if we can consolidate this with
-      // `AddSnapGroup()` and/or `ShowDivider()`.
-      snap_group->ApplyPrimarySnapRatio(
-          IsPhysicallyLeftOrTop(target_window) ? snap_ratio : 1.f - snap_ratio);
-      return true;
+  if (auto* snap_group =
+          AddSnapGroup(window, opposite, /*replace=*/false,
+                       /*carry_over_creation_time=*/std::nullopt)) {
+    aura::Window* target_window = nullptr;
+    switch (snap_action_source) {
+      case WindowSnapActionSource::kSnapByWindowLayoutMenu:
+      case WindowSnapActionSource::kLacrosSnapButtonOrWindowLayoutMenu:
+      case WindowSnapActionSource::kSnapByClamshellTabletTransition:
+        // If the window was snapped via the layout menu, respect its
+        // requested snap ratio. We also refresh the bounds for tablet
+        // transition to ensure no divider gap.
+        target_window = window;
+        break;
+      case WindowSnapActionSource::kDragWindowToEdgeToSnap:
+      case WindowSnapActionSource::kLongPressCaptionButtonToSnap:
+        // Else respect the opposite window's snap ratio. This is to give the
+        // impression of filling the layout and feels more intuitive to the
+        // user.
+        target_window = opposite;
+        break;
+      default:
+        // Else no need to refresh the group bounds.
+        return true;
     }
+    const float snap_ratio = window_util::GetSnapRatioForWindow(target_window);
+    // Apply the target window's snap ratio *after* the group creation so we
+    // can actually enforce it.
+    // TODO(b/346624805): See if we can consolidate this with
+    // `AddSnapGroup()` and/or `ShowDivider()`.
+    snap_group->ApplyPrimarySnapRatio(
+        IsPhysicallyLeftOrTop(target_window) ? snap_ratio : 1.f - snap_ratio);
+    return true;
   }
 
   return false;
@@ -432,6 +435,7 @@ void SnapGroupController::OnDisplayTabletStateChanged(
 
 bool SnapGroupController::MaybeSnapToReplace(
     aura::Window* to_be_snapped_window,
+    aura::Window* opposite_snapped_window,
     WindowSnapActionSource snap_action_source) {
   // Early return when
   // 1. In tablet mode;
@@ -444,8 +448,8 @@ bool SnapGroupController::MaybeSnapToReplace(
 
   // TODO(b/331305840): Come up with an API to retrieve the snapped window on
   // the same side as the `to_be_snapped_window` to simplify the logic.
-  SnapGroup* group_to_replace = GetSnapGroupForGivenWindow(
-      GetOppositeVisibleSnappedWindow(to_be_snapped_window));
+  SnapGroup* group_to_replace =
+      GetSnapGroupForGivenWindow(opposite_snapped_window);
   if (!group_to_replace) {
     return false;
   }

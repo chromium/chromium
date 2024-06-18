@@ -121,11 +121,13 @@ class ASH_EXPORT SnapGroupController : public OverviewObserver,
   }
 
  private:
-  // Returns true if the attempt to replace the window within the snap group
-  // positioned directly below with the given `to_be_snapped_window` is
-  // successful, returns false otherwise. The `snap_action_source` determines
-  // the need for snap ratio difference calculations during 'snap to replace'.
+  // Returns true if the attempt to replace the window within the snap group of
+  // `opposite_snapped_window` positioned directly below with the given
+  // `to_be_snapped_window` is successful, returns false otherwise. The
+  // `snap_action_source` determines the need for snap ratio difference
+  // calculations during 'snap to replace'.
   bool MaybeSnapToReplace(aura::Window* to_be_snapped_window,
+                          aura::Window* opposite_snapped_window,
                           WindowSnapActionSource snap_action_source);
 
   // Retrieves the other window that is in the same snap group if any. Returns
