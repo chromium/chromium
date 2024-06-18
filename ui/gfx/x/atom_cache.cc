@@ -160,6 +160,7 @@ constexpr const char* kAtomsToCache[] = {
     "chromium/x-file-system-files",
     "chromium/x-pepper-custom-data",
     "chromium/x-renderer-taint",
+    "chromium/x-source-url",
     "chromium/x-web-custom-data",
     "chromium/x-webkit-paste",
     "image/png",
