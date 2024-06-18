@@ -2,6 +2,7 @@
   var {page, session, dp} = await testRunner.startBlank('Tests that isolation status is reported correctly');
 
   await dp.Page.enable();
+  await dp.Network.enable();
 
   let event = null;
   do {
@@ -21,11 +22,13 @@
 
     session.navigate(
         'https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php?coep-rpt&corp=same-site&coop-rpt');
-    event = await frameNavigated;
+    [event,
+    ] = await Promise.all([frameNavigated, dp.Network.oncePolicyUpdated()]);
     // Retry navigation in case the URL couldn't load
   } while (event.params.frame.unreachableUrl);
   const frameId = event.params.frame.id;
-  const {result} = await session.protocol.Network.getSecurityIsolationStatus({frameId});
+  const {result} =
+      await session.protocol.Network.getSecurityIsolationStatus({frameId});
 
   testRunner.log(`COEP status`);
   testRunner.log(result.status.coep);

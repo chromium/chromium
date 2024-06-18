@@ -7119,6 +7119,9 @@ domain Network
       # The number of obtained Trust Tokens on a successful "Issuance" operation.
       optional integer issuedTokenCount
 
+  # Fired once security policy has been updated.
+  experimental event policyUpdated
+
   # Fired once when parsing the .wbn file has succeeded.
   # The event contains the information about the web bundle contents.
   experimental event subresourceWebBundleMetadataReceived
