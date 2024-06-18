@@ -344,3 +344,34 @@ TEST_F(WebUIContentsPreloadManagerTest, PreloadOnWebUIDestroy) {
   result.web_contents.reset();
   EXPECT_EQ(preload_manager()->preloaded_web_contents()->GetVisibleURL(), url1);
 }
+
+// Tests that `MakeContents(url)` retains the url path if it exists.
+TEST_F(WebUIContentsPreloadManagerTest, MakeContentsURLHasPath) {
+  std::unique_ptr<content::BrowserContext> browser_context =
+      std::make_unique<TestingProfile>();
+  const GURL url1("chrome://example1"), url2("chrome://example2");
+  ON_CALL(preload_candidate_selector(), GetURLToPreload(_))
+      .WillByDefault(Return(url1));
+  preload_manager()->MaybePreloadForBrowserContextForTesting(
+      browser_context.get());
+
+  // Case 1: request a WebUI that is preloaded.
+  {
+    EXPECT_EQ(preload_manager()->preloaded_web_contents()->GetVisibleURL(),
+              url1);
+    const GURL url1_with_path = url1.Resolve("path");
+    MakeContentsResult result =
+        preload_manager()->MakeContents(url1_with_path, browser_context.get());
+    EXPECT_EQ(result.web_contents->GetVisibleURL(), url1_with_path);
+  }
+
+  // Case 2: request a WebUI that is not preloaded.
+  {
+    EXPECT_EQ(preload_manager()->preloaded_web_contents()->GetVisibleURL(),
+              url1);
+    const GURL url2_with_path = url2.Resolve("path");
+    MakeContentsResult result =
+        preload_manager()->MakeContents(url2_with_path, browser_context.get());
+    EXPECT_EQ(result.web_contents->GetVisibleURL(), url2_with_path);
+  }
+}
