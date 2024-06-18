@@ -262,10 +262,18 @@ public class TabSwitcherLayoutTest {
                         .allowExtraRecords(TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT)
                         .build();
 
-        prepareTabs(1, 0, "about:blank");
         simulateJpegHasCachedWithDefaultAspectRatio();
 
         enterTabSwitcher(mActivityTestRule.getActivity());
+
+        onViewWaiting(
+                        allOf(
+                                isDescendantOfA(
+                                        withId(
+                                                TabUiTestHelper.getTabSwitcherAncestorId(
+                                                        mActivityTestRule.getActivity()))),
+                                withId(R.id.tab_thumbnail)))
+                .check(matches(isDisplayed()));
 
         histograms.assertExpected();
     }
