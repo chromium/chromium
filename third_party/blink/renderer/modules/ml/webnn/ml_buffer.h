@@ -51,6 +51,12 @@ class MODULES_EXPORT MLBuffer : public ScriptWrappable {
   Vector<uint32_t> shape() const;
   void destroy();
 
+  // Convenience methods for accessing native types, which avoid a copy
+  // compared to using the corresponding methods which return blink types.
+  const webnn::OperandDescriptor& Descriptor() const;
+  webnn::OperandDataType DataType() const;
+  const std::vector<uint32_t>& Shape() const;
+
   uint64_t PackedByteLength() const;
 
   const base::UnguessableToken& handle() const { return webnn_handle_; }

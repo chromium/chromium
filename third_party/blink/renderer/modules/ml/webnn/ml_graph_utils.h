@@ -95,9 +95,8 @@ webnn::Size2d<uint32_t> CalculateConvTransposeOutputSize2D(
     uint32_t output_padding_height,
     uint32_t output_padding_width);
 
-// TODO(crbug.com/325598628): Consolidate this with the method of the same name
-// in `webnn::OperandDescriptor`.
-size_t GetBytesPerElement(V8MLOperandDataType::Enum data_type);
+V8MLOperandDataType ToBlinkDataType(webnn::OperandDataType data_type);
+webnn::OperandDataType FromBlinkDataType(V8MLOperandDataType::Enum data_type);
 
 }  // namespace blink
 

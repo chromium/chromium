@@ -179,7 +179,7 @@ MLOperand* BuildElementWiseBinary(
   EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
 
   if (IsLogicalBinaryOperator(kind)) {
-    EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kUint8);
+    EXPECT_EQ(output->dataType().AsEnum(), V8MLOperandDataType::Enum::kUint8);
   } else {
     EXPECT_EQ(output->DataType(), a->DataType());
   }
@@ -205,8 +205,8 @@ TEST_F(MLGraphBuilderTest, Cast) {
   MLOperand* output =
       builder->cast(input, int8_datatype.value(), scope.GetExceptionState());
   EXPECT_EQ(output->Kind(), webnn::mojom::blink::Operand::Kind::kOutput);
-  EXPECT_EQ(output->DataType(), V8MLOperandDataType::Enum::kInt8);
-  EXPECT_EQ(output->Dimensions(), input->Dimensions());
+  EXPECT_EQ(output->dataType().AsEnum(), V8MLOperandDataType::Enum::kInt8);
+  EXPECT_EQ(output->Shape(), input->Shape());
   auto* op = output->Operator();
   ASSERT_THAT(op, testing::NotNull());
   EXPECT_EQ(op->Kind(), webnn::mojom::blink::Operation::Tag::kElementWiseUnary);

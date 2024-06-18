@@ -5,14 +5,13 @@
 #include "services/webnn/public/cpp/operand_descriptor.h"
 
 #include <numeric>
-#include <optional>
 
 #include "base/numerics/checked_math.h"
 
 namespace webnn {
 
 // static
-std::optional<OperandDescriptor> OperandDescriptor::Create(
+base::expected<OperandDescriptor, std::string> OperandDescriptor::Create(
     OperandDataType data_type,
     base::span<const uint32_t> shape) {
   base::CheckedNumeric<size_t> checked_number_of_bytes = std::accumulate(
@@ -21,13 +20,21 @@ std::optional<OperandDescriptor> OperandDescriptor::Create(
       std::multiplies());
 
   // TODO(crbug.com/345271830): Consider performing backend-specific checks
-  // here, such as the requirement that Core ML dimensions values must be no
+  // here, such as the requirement that Core ML dimension values must be no
   // larger than INT_MAX.
+  //
+  // TODO(crbug.com/329482489): Define the max rank of an operand.
 
-  if (!checked_number_of_bytes.IsValid() ||
-      checked_number_of_bytes.ValueOrDie() == 0) {
+  size_t number_of_bytes;
+  if (!checked_number_of_bytes.AssignIfValid(&number_of_bytes)) {
+    return base::unexpected(
+        "Invalid descriptor: The byte length is too large.");
+  }
+
+  if (number_of_bytes == 0) {
     // TODO(crbug.com/329471677): Consider supporting size 0 dimensions.
-    return std::nullopt;
+    return base::unexpected(
+        "Invalid descriptor: All dimensions should be positive.");
   }
 
   return OperandDescriptor(data_type,

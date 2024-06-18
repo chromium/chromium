@@ -300,26 +300,45 @@ webnn::Size2d<uint32_t> CalculateConvTransposeOutputSize2D(
                                  .width = output_width.value()};
 }
 
-size_t GetBytesPerElement(V8MLOperandDataType::Enum data_type) {
+V8MLOperandDataType ToBlinkDataType(webnn::OperandDataType data_type) {
+  switch (data_type) {
+    case webnn::OperandDataType::kFloat32:
+      return V8MLOperandDataType(V8MLOperandDataType::Enum::kFloat32);
+    case webnn::OperandDataType::kFloat16:
+      return V8MLOperandDataType(V8MLOperandDataType::Enum::kFloat16);
+    case webnn::OperandDataType::kInt32:
+      return V8MLOperandDataType(V8MLOperandDataType::Enum::kInt32);
+    case webnn::OperandDataType::kUint32:
+      return V8MLOperandDataType(V8MLOperandDataType::Enum::kUint32);
+    case webnn::OperandDataType::kInt64:
+      return V8MLOperandDataType(V8MLOperandDataType::Enum::kInt64);
+    case webnn::OperandDataType::kUint64:
+      return V8MLOperandDataType(V8MLOperandDataType::Enum::kUint64);
+    case webnn::OperandDataType::kInt8:
+      return V8MLOperandDataType(V8MLOperandDataType::Enum::kInt8);
+    case webnn::OperandDataType::kUint8:
+      return V8MLOperandDataType(V8MLOperandDataType::Enum::kUint8);
+  }
+}
+
+webnn::OperandDataType FromBlinkDataType(V8MLOperandDataType::Enum data_type) {
   switch (data_type) {
     case V8MLOperandDataType::Enum::kFloat32:
-      return sizeof(float);
+      return webnn::OperandDataType::kFloat32;
     case V8MLOperandDataType::Enum::kFloat16:
-      // Using Uint16Array for float16 is a workaround of WebNN spec issue:
-      // https://github.com/webmachinelearning/webnn/issues/127
-      return sizeof(uint16_t);
+      return webnn::OperandDataType::kFloat16;
     case V8MLOperandDataType::Enum::kInt32:
-      return sizeof(int32_t);
+      return webnn::OperandDataType::kInt32;
     case V8MLOperandDataType::Enum::kUint32:
-      return sizeof(uint32_t);
+      return webnn::OperandDataType::kUint32;
     case V8MLOperandDataType::Enum::kInt64:
-      return sizeof(int64_t);
+      return webnn::OperandDataType::kInt64;
     case V8MLOperandDataType::Enum::kUint64:
-      return sizeof(uint64_t);
+      return webnn::OperandDataType::kUint64;
     case V8MLOperandDataType::Enum::kInt8:
-      return sizeof(int8_t);
+      return webnn::OperandDataType::kInt8;
     case V8MLOperandDataType::Enum::kUint8:
-      return sizeof(uint8_t);
+      return webnn::OperandDataType::kUint8;
   }
 }
 

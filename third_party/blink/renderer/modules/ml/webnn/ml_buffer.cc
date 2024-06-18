@@ -17,52 +17,6 @@
 
 namespace blink {
 
-namespace {
-
-V8MLOperandDataType ToBlinkDataType(webnn::OperandDataType data_type) {
-  switch (data_type) {
-    case webnn::OperandDataType::kFloat32:
-      return V8MLOperandDataType(V8MLOperandDataType::Enum::kFloat32);
-    case webnn::OperandDataType::kFloat16:
-      return V8MLOperandDataType(V8MLOperandDataType::Enum::kFloat16);
-    case webnn::OperandDataType::kInt32:
-      return V8MLOperandDataType(V8MLOperandDataType::Enum::kInt32);
-    case webnn::OperandDataType::kUint32:
-      return V8MLOperandDataType(V8MLOperandDataType::Enum::kUint32);
-    case webnn::OperandDataType::kInt64:
-      return V8MLOperandDataType(V8MLOperandDataType::Enum::kInt64);
-    case webnn::OperandDataType::kUint64:
-      return V8MLOperandDataType(V8MLOperandDataType::Enum::kUint64);
-    case webnn::OperandDataType::kInt8:
-      return V8MLOperandDataType(V8MLOperandDataType::Enum::kInt8);
-    case webnn::OperandDataType::kUint8:
-      return V8MLOperandDataType(V8MLOperandDataType::Enum::kUint8);
-  }
-}
-
-webnn::OperandDataType FromBlinkDataType(V8MLOperandDataType::Enum data_type) {
-  switch (data_type) {
-    case V8MLOperandDataType::Enum::kFloat32:
-      return webnn::OperandDataType::kFloat32;
-    case V8MLOperandDataType::Enum::kFloat16:
-      return webnn::OperandDataType::kFloat16;
-    case V8MLOperandDataType::Enum::kInt32:
-      return webnn::OperandDataType::kInt32;
-    case V8MLOperandDataType::Enum::kUint32:
-      return webnn::OperandDataType::kUint32;
-    case V8MLOperandDataType::Enum::kInt64:
-      return webnn::OperandDataType::kInt64;
-    case V8MLOperandDataType::Enum::kUint64:
-      return webnn::OperandDataType::kUint64;
-    case V8MLOperandDataType::Enum::kInt8:
-      return webnn::OperandDataType::kInt8;
-    case V8MLOperandDataType::Enum::kUint8:
-      return webnn::OperandDataType::kUint8;
-  }
-}
-
-}  // namespace
-
 // static
 MLBuffer* MLBuffer::Create(ScopedMLTrace scoped_trace,
                            ExecutionContext* execution_context,
@@ -76,17 +30,17 @@ MLBuffer* MLBuffer::Create(ScopedMLTrace scoped_trace,
   // TODO(crbug.com/343638938): Decide whether it is valid to create an empty
   // MLBuffer.
 
-  std::optional<webnn::OperandDescriptor> validated_descriptor =
-      webnn::OperandDescriptor::Create(
-          FromBlinkDataType(descriptor->dataType().AsEnum()),
-          descriptor->dimensions());
-  if (!validated_descriptor.has_value()) {
-    exception_state.ThrowTypeError("Invalid operand descriptor.");
-    return nullptr;
-  }
+  ASSIGN_OR_RETURN(webnn::OperandDescriptor validated_descriptor,
+                   webnn::OperandDescriptor::Create(
+                       FromBlinkDataType(descriptor->dataType().AsEnum()),
+                       descriptor->dimensions()),
+                   [&exception_state](std::string error) {
+                     exception_state.ThrowTypeError(String(error));
+                     return nullptr;
+                   });
 
   auto* buffer = MakeGarbageCollected<MLBuffer>(
-      execution_context, ml_context, *std::move(validated_descriptor));
+      execution_context, ml_context, std::move(validated_descriptor));
   scoped_trace.AddStep("MLBuffer::Create");
 
   // Create `WebNNBuffer` message pipe with `WebNNContext` mojo interface.
@@ -127,6 +81,18 @@ void MLBuffer::destroy() {
   // the service. The remote buffer must remain unbound after calling destroy()
   // because it is valid to call destroy() multiple times.
   remote_buffer_.reset();
+}
+
+const webnn::OperandDescriptor& MLBuffer::Descriptor() const {
+  return descriptor_;
+}
+
+webnn::OperandDataType MLBuffer::DataType() const {
+  return descriptor_.data_type();
+}
+
+const std::vector<uint32_t>& MLBuffer::Shape() const {
+  return descriptor_.shape();
 }
 
 uint64_t MLBuffer::PackedByteLength() const {

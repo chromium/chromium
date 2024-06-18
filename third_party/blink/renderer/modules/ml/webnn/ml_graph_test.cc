@@ -560,8 +560,8 @@ MLBuffer* CreateMLBufferForOperand(V8TestingScope& scope,
                                    const MLOperand* operand) {
   auto array_buffer_view = CreateArrayBufferViewForOperand(operand);
   auto* desc = MLBufferDescriptor::Create();
-  desc->setDataType(operand->DataType());
-  desc->setDimensions(operand->Dimensions());
+  desc->setDataType(operand->dataType());
+  desc->setDimensions(operand->shape());
 
   MLBuffer* ml_buffer = ml_context->createBuffer(scope.GetScriptState(), desc,
                                                  scope.GetExceptionState());
@@ -805,7 +805,7 @@ struct ArrayBufferViewHelper {
 NotShared<DOMArrayBufferView> CreateArrayBufferViewForOperand(
     const MLOperand* operand) {
   return CreateDOMArrayBufferView(operand->NumberOfElements(),
-                                  operand->DataType());
+                                  operand->dataType().AsEnum());
 }
 
 TEST_F(MLGraphTest, CreateNamedArrayBufferViewsTest) {

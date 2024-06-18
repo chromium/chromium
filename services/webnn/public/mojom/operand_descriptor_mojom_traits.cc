@@ -7,6 +7,7 @@
 #include <numeric>
 
 #include "base/numerics/checked_math.h"
+#include "base/types/expected.h"
 
 namespace mojo {
 
@@ -71,11 +72,11 @@ bool StructTraits<webnn::mojom::OperandDescriptorDataView,
   mojo::ArrayDataView<uint32_t> shape;
   data.GetShapeDataView(&shape);
 
-  std::optional<webnn::OperandDescriptor> descriptor =
+  base::expected<webnn::OperandDescriptor, std::string> descriptor =
       webnn::OperandDescriptor::Create(FromMojoDataType(data.data_type()),
                                        base::make_span(shape));
 
-  if (!descriptor) {
+  if (!descriptor.has_value()) {
     return false;
   }
 

@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/types/expected_macros.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
@@ -43,6 +44,7 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink_mojom = webnn::mojom::blink;
 
@@ -109,17 +111,9 @@ TypeConverter<blink_mojom::OperandPtr, blink::MLOperand*>::Convert(
   if (!ml_operand) {
     return nullptr;
   }
-  auto operand_descriptor = webnn::OperandDescriptor::Create(
-      ToOperandDataType(ml_operand->DataType()), ml_operand->Dimensions());
-  // TODO(crbug.com/325598628): Remove this failure case once we've required
-  // that that every `blink::MLOperand` is created with a
-  // `webnn::OperandDescriptor`.
-  if (!operand_descriptor.has_value()) {
-    return nullptr;
-  }
 
   auto mojo_operand = blink_mojom::Operand::New();
-  mojo_operand->descriptor = *std::move(operand_descriptor);
+  mojo_operand->descriptor = ml_operand->Descriptor();
 
   switch (ml_operand->Kind()) {
     case webnn::mojom::blink::Operand::Kind::kInput:
@@ -141,7 +135,7 @@ webnn::Size2d<uint32_t> GetInputOperandSize2d(
     const blink::MLOperand* input,
     blink::V8MLInputOperandLayout::Enum type) {
   CHECK(input);
-  const auto input_shape = input->Dimensions();
+  const auto input_shape = input->Shape();
   CHECK_EQ(input_shape.size(), 4u);
   uint32_t input_height, input_width;
   switch (type) {
@@ -195,34 +189,26 @@ uint64_t GetOperatorOutputId(const MLOperator* op,
 }
 
 uint64_t InsertTemporaryOperand(const OperandToIdMap& operand_to_id_map,
-                                V8MLOperandDataType data_type,
-                                base::span<const uint32_t> dimensions,
+                                webnn::OperandDescriptor descriptor,
                                 blink_mojom::GraphInfo* graph_info) {
   uint64_t operand_id = NextOperandId(*graph_info);
 
-  auto operand_descriptor = webnn::OperandDescriptor::Create(
-      mojo::ToOperandDataType(data_type.AsEnum()), dimensions);
-  // TODO(crbug.com/325598628): Refactor this method to take a
-  // `webnn::OperandDescriptor` such that this CHECK is not required and
-  // inserting a temporary operand will always succeed.
-  CHECK(operand_descriptor.has_value());
-
   auto mojo_operand = blink_mojom::Operand::New();
   mojo_operand->kind = blink_mojom::Operand::Kind::kOutput;
-  mojo_operand->descriptor = *std::move(operand_descriptor);
+  mojo_operand->descriptor = std::move(descriptor);
 
   graph_info->id_to_operand_map.insert(operand_id, std::move(mojo_operand));
   return operand_id;
 }
 
-Vector<uint32_t> PermuteArray(const Vector<uint32_t>& array,
+Vector<uint32_t> PermuteShape(base::span<const uint32_t> shape,
                               base::span<const uint32_t> permutation) {
-  wtf_size_t array_size = array.size();
-  Vector<uint32_t> permuted_array(array_size);
+  wtf_size_t shape_size = base::checked_cast<wtf_size_t>(shape.size());
+  Vector<uint32_t> permuted_array(shape_size);
 
-  CHECK_EQ(array_size, permutation.size());
-  for (wtf_size_t i = 0; i < array_size; ++i) {
-    permuted_array[i] = array[permutation[i]];
+  CHECK_EQ(shape_size, permutation.size());
+  for (wtf_size_t i = 0; i < shape_size; ++i) {
+    permuted_array[i] = shape[permutation[i]];
   }
 
   return permuted_array;
@@ -235,8 +221,10 @@ uint64_t InsertInputTranspose(const OperandToIdMap& operand_to_id_map,
                               base::span<const uint32_t> permutation,
                               blink_mojom::GraphInfo* graph_info) {
   uint64_t operand_id = InsertTemporaryOperand(
-      operand_to_id_map, operand->dataType(),
-      PermuteArray(operand->Dimensions(), permutation), graph_info);
+      operand_to_id_map,
+      *webnn::OperandDescriptor::Create(
+          operand->DataType(), PermuteShape(operand->Shape(), permutation)),
+      graph_info);
 
   auto transpose = blink_mojom::Transpose::New();
   transpose->input_operand_id = operand_to_id_map.at(operand);
@@ -525,7 +513,7 @@ OperationPtr CreateArgMinMaxOperation(const OperandToIdMap& operand_to_id_map,
   const auto* options =
       static_cast<const blink::MLArgMinMaxOptions*>(arg_min_max->Options());
   CHECK(options);
-  const auto input_rank = arg_min_max->Inputs()[0]->Dimensions().size();
+  const wtf_size_t input_rank = arg_min_max->Inputs()[0]->Rank();
   const auto axes = options->getAxesOr(CreateAllAxes(input_rank));
   CHECK_LE(axes.size(), input_rank);
   arg_min_max_mojo->axes = axes;
@@ -593,11 +581,11 @@ bool IsDepthwiseConv2d(const MLOperator* conv2d) {
 
   const MLOperand* input = conv2d->Inputs()[0];
   CHECK(input);
-  const Vector<uint32_t>& input_shape = input->Dimensions();
+  const std::vector<uint32_t>& input_shape = input->Shape();
   CHECK_EQ(input_shape.size(), 4u);
   const MLOperand* output = conv2d->Outputs()[0].Get();
   CHECK(output);
-  const Vector<uint32_t>& output_shape = output->Dimensions();
+  const std::vector<uint32_t>& output_shape = output->Shape();
   CHECK_EQ(output_shape.size(), 4u);
 
   uint32_t input_channels, output_channels;
@@ -654,8 +642,10 @@ std::optional<String> SerializeConv2dOperation(
         operand_to_id_map, input_operand, *input_permutation, graph_info);
 
     output_operand_id = InsertTemporaryOperand(
-        operand_to_id_map, output_operand->dataType(),
-        PermuteArray(output_operand->Dimensions(), *input_permutation),
+        operand_to_id_map,
+        *webnn::OperandDescriptor::Create(
+            output_operand->DataType(),
+            PermuteShape(output_operand->Shape(), *input_permutation)),
         graph_info);
   } else {
     conv2d_mojo->input_operand_id = operand_to_id_map.at(input_operand);
@@ -938,9 +928,9 @@ OperationPtr CreateLayerNormalizationOperation(
         operand_to_id_map.at(options->bias());
   }
 
-  wtf_size_t input_rank = layer_normalization->Inputs()[0]->Dimensions().size();
   layer_normalization_mojo->axes =
-      options->getAxesOr(CreateLayerNormalizationDefaultAxes(input_rank));
+      options->getAxesOr(CreateLayerNormalizationDefaultAxes(
+          layer_normalization->Inputs()[0]->Rank()));
 
   layer_normalization_mojo->epsilon = options->epsilon();
 
@@ -1224,7 +1214,7 @@ OperationPtr CreateReduceOperator(const OperandToIdMap& operand_to_id_map,
   const auto* options =
       static_cast<const blink::MLReduceOptions*>(reduce->Options());
   CHECK(options);
-  const auto input_rank = reduce->Inputs()[0]->Dimensions().size();
+  const wtf_size_t input_rank = reduce->Inputs()[0]->Rank();
   const auto axes = options->getAxesOr(CreateAllAxes(input_rank));
   CHECK_LE(axes.size(), input_rank);
   reduce_mojo->axes = axes;
@@ -1367,7 +1357,7 @@ OperationPtr CreateTransposeOperation(const OperandToIdMap& operand_to_id_map,
       static_cast<const MLTransposeOptions*>(transpose->Options());
   CHECK(options);
 
-  auto input_rank = transpose->Inputs()[0]->Dimensions().size();
+  wtf_size_t input_rank = transpose->Inputs()[0]->Rank();
   transpose_mojo->permutation =
       options->getPermutationOr(CreateDefaultPermutation(input_rank));
   CHECK_EQ(transpose_mojo->permutation.size(), input_rank);

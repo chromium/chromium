@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ML_WEBNN_ML_GRAPH_H_
 
 #include "base/types/pass_key.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom-blink-forward.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -68,9 +69,9 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   // for the implementation.
   //
   // TODO(crbug.com/325612086): Consider removing this struct in favor of
-  // something like MLOperand::ValidatedDescriptor.
+  // something like `webnn::OperandDescriptor`.
   struct ResourceInfo {
-    V8MLOperandDataType::Enum data_type;
+    webnn::OperandDataType data_type;
     Vector<uint32_t> shape;
   };
 

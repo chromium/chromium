@@ -5,11 +5,11 @@
 #ifndef SERVICES_WEBNN_PUBLIC_CPP_OPERAND_DESCRIPTOR_H_
 #define SERVICES_WEBNN_PUBLIC_CPP_OPERAND_DESCRIPTOR_H_
 
-#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/types/expected.h"
 #include "mojo/public/cpp/bindings/default_construct_tag.h"
 
 namespace webnn {
@@ -30,7 +30,9 @@ enum class OperandDataType {
 
 class COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) OperandDescriptor {
  public:
-  static std::optional<OperandDescriptor> Create(
+  // Creates a valid `OperandDescriptor` or returns an error message which may
+  // be returned to script if the inputs are not valid.
+  static base::expected<OperandDescriptor, std::string> Create(
       OperandDataType data_type,
       base::span<const uint32_t> shape);
 
