@@ -23,11 +23,11 @@ namespace gfx {
 // signaling fence or in list of fences to wait for next access.
 class GFX_EXPORT D3DSharedFence : public base::RefCounted<D3DSharedFence> {
  public:
-  // Create a new ID3D11Fence with initial value 0 on given |d3d11_device|. The
-  // provided device is considered the owning device for the fence, and is the
-  // device used for signaling the fence.
+  // Create a new ID3D11Fence with initial value 0 on given
+  // |d3d11_signal_device|. The provided device is considered the owning device
+  // for the fence, and is the device used for signaling the fence.
   static scoped_refptr<D3DSharedFence> CreateForD3D11(
-      Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
+      Microsoft::WRL::ComPtr<ID3D11Device> d3d11_signal_device);
 
   // Create from existing scoped shared handle e.g. from IPC. The ID3D11Fence
   // is lazily created on Wait or Signal for the device provided to those calls.
@@ -67,12 +67,13 @@ class GFX_EXPORT D3DSharedFence : public base::RefCounted<D3DSharedFence> {
   void Update(uint64_t fence_value);
 
   // Issue a wait for the fence on the immediate context of |d3d11_device| using
-  // |wait_value|. The wait is skipped if the passed in device is the same as
-  // |d3d11_device_|. Returns true on success.
-  bool WaitD3D11(Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device);
+  // |fence_value_|. The wait is skipped if the passed in device is the same as
+  // |d3d11_signal_device_|. Returns true on success.
+  bool WaitD3D11(Microsoft::WRL::ComPtr<ID3D11Device> d3d11_wait_device);
 
-  // Issue a signal for the fence on the immediate context of |d3d11_device_|
-  // using |signal_value|. Returns true on success.
+  // Increment |fence_value_| and issue a signal for the fence on the immediate
+  // context of |d3d11_signal_device_| using |fence_value_|. Returns true on
+  // success.
   bool IncrementAndSignalD3D11();
 
  private:
@@ -96,8 +97,8 @@ class GFX_EXPORT D3DSharedFence : public base::RefCounted<D3DSharedFence> {
   DXGIHandleToken dxgi_token_;
 
   // If present, this is the D3D11 device that the fence was created on, and
-  // used to signal |d3d11_fence_|.
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
+  // used to signal |d3d11_signal_fence_|.
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_signal_device_;
 
   // If present, this is the D3D11 fence object this fence was created with and
   // used for signaling.
