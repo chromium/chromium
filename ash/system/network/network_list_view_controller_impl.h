@@ -242,10 +242,9 @@ class ASH_EXPORT NetworkListViewControllerImpl
   // otherwise the system icon.
   raw_ptr<views::ImageView> connection_warning_icon_ = nullptr;
   // Owned by `connection_warning_`.
-  raw_ptr<views::Label, DanglingUntriaged> connection_warning_label_ = nullptr;
+  raw_ptr<views::Label> connection_warning_label_ = nullptr;
 
-  raw_ptr<NetworkListWifiHeaderView, DanglingUntriaged> wifi_header_view_ =
-      nullptr;
+  raw_ptr<NetworkListWifiHeaderView> wifi_header_view_ = nullptr;
   raw_ptr<TrayInfoLabel> wifi_status_message_ = nullptr;
 
   raw_ptr<TrayInfoLabel> tether_hosts_status_message_ = nullptr;
@@ -277,8 +276,7 @@ class ASH_EXPORT NetworkListViewControllerImpl
   // cross-device suite of features.
   bool has_phone_eligible_for_setup_ = false;
 
-  raw_ptr<NetworkDetailedNetworkView, DanglingUntriaged>
-      network_detailed_network_view_;
+  raw_ptr<NetworkDetailedNetworkView> network_detailed_network_view_;
   NetworkIdToViewMap network_id_to_view_map_;
 
   // Timer for repeatedly requesting network scans with a delay between

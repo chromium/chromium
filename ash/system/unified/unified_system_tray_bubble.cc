@@ -218,6 +218,7 @@ void UnifiedSystemTrayBubble::OnWidgetDestroying(views::Widget* widget) {
   bubble_widget_->RemoveObserver(this);
   bubble_widget_ = nullptr;
 
+  controller_->ShutDownDetailedViewController();
   bubble_view_->RemoveAllChildViews();
   quick_settings_view_ = nullptr;
   bubble_view_->ResetDelegate();

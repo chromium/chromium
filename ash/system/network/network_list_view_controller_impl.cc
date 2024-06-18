@@ -1027,9 +1027,10 @@ void NetworkListViewControllerImpl::ShowConnectionWarning(
 }
 
 void NetworkListViewControllerImpl::HideConnectionWarning() {
-  // If `connection_warning_icon_` existed, it must be cleared first because
-  // `connection_warning_` owns it.
+  // If `connection_warning_icon_` or `connection_warning_label_` existed, they
+  // must be cleared first because `connection_warning_` owns them.
   RemoveAndResetViewIfExists(&connection_warning_icon_);
+  RemoveAndResetViewIfExists(&connection_warning_label_);
   RemoveAndResetViewIfExists(&connection_warning_);
 }
 
