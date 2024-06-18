@@ -653,7 +653,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                     Comparator(GREATER_THAN_OR_EQUAL, 1), 21, 360));
     return config;
   }
-
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   if (kEsbDownloadRowPromoFeature.name == feature->name) {
     // A config that allows a promotion row referring users to enable Enhanced
     // Safe Browsing (ESB), to be shown on the Downloads manager page. It
@@ -689,6 +689,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
 
     return config;
   }
+#endif
 
   if (kIPHBackNavigationMenuFeature.name == feature->name) {
     std::optional<FeatureConfig> config = FeatureConfig();

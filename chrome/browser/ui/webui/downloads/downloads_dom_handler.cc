@@ -656,6 +656,7 @@ void DownloadsDOMHandler::ReviewDangerousRequiringGesture(
   }
 }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // This function will be called when a user clicks on the ESB
 // (Enhanced Safe Browsing) download row promo. It will notify
 // the feature engagement backend to record the event that the
@@ -695,7 +696,6 @@ void DownloadsDOMHandler::IsEligibleForEsbPromo(
     std::move(callback).Run(false);
     return;
   }
-
   bool should_show_esb_promo = false;
   if (feature_engagement::Tracker* tracker =
           feature_engagement::TrackerFactory::GetForBrowserContext(
@@ -722,6 +722,23 @@ void DownloadsDOMHandler::LogEsbPromotionRowViewed() {
   base::UmaHistogramEnumeration("SafeBrowsing.EsbDownloadRowPromo.Outcome",
                                 SafeBrowsingEsbDownloadRowPromoOutcome::kShown);
 }
+#else
+// These next three functions are empty implementations for the non-branded
+// chromium build since the ESB download row promo only runs on branded
+// google chrome.
+void DownloadsDOMHandler::OpenEsbSettings() {
+  return;
+}
+
+void DownloadsDOMHandler::IsEligibleForEsbPromo(
+    IsEligibleForEsbPromoCallback callback) {
+  std::move(callback).Run(false);
+}
+
+void DownloadsDOMHandler::LogEsbPromotionRowViewed() {
+  return;
+}
+#endif
 
 // DownloadsDOMHandler, private: --------------------------------------------
 

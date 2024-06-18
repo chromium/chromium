@@ -10939,7 +10939,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableMantaServiceDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(manta::features::kMantaService)},
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
     {"esb-download-row-promo",
      flag_descriptions::kEsbDownloadRowPromoFeatureName,
      flag_descriptions::kEsbDownloadRowPromoFeatureDescription, kOsDesktop,

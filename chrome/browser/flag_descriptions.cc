@@ -4964,12 +4964,14 @@ const char kEnableCrOSSodaLanguagesDescription[] =
     "Enable language expansion for SODA on device to "
     "impact dictation and Live Captions.";
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 const char kEsbDownloadRowPromoFeatureName[] =
     "Enable ESB Download Row promotion";
 const char kEsbDownloadRowPromoFeatureDescription[] =
     "Promotes Enhanced Safe Browsing (ESB) on a user's most recent "
     "dangerous/suspicious download by adding an extra row under the download "
     "that links to the chrome://settings/security page.";
+#endif
 
 const char kForceSigninFlowInProfilePickerName[] =
     "Force Signin Flows in Profile Picker";
