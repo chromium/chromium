@@ -42,12 +42,29 @@ constexpr wgpu::TextureUsage kUsage =
 
 }  // namespace
 
-SkiaOutputDeviceDawn::SkiaOutputDeviceDawn(
+std::unique_ptr<SkiaOutputDeviceDawn> SkiaOutputDeviceDawn::Create(
     scoped_refptr<gpu::SharedContextState> context_state,
     gfx::SurfaceOrigin origin,
     gpu::SurfaceHandle surface_handle,
     gpu::MemoryTracker* memory_tracker,
-    DidSwapBufferCompleteCallback did_swap_buffer_complete_callback)
+    DidSwapBufferCompleteCallback did_swap_buffer_complete_callback) {
+  auto output_device = std::make_unique<SkiaOutputDeviceDawn>(
+      context_state, origin, memory_tracker,
+      std::move(did_swap_buffer_complete_callback), PassKey());
+
+  if (!output_device->Initialize(surface_handle)) {
+    return nullptr;
+  }
+
+  return output_device;
+}
+
+SkiaOutputDeviceDawn::SkiaOutputDeviceDawn(
+    scoped_refptr<gpu::SharedContextState> context_state,
+    gfx::SurfaceOrigin origin,
+    gpu::MemoryTracker* memory_tracker,
+    DidSwapBufferCompleteCallback did_swap_buffer_complete_callback,
+    base::PassKey<SkiaOutputDeviceDawn>)
     : SkiaOutputDevice(
           /*gr_context=*/nullptr,
           context_state->graphite_context(),
@@ -67,7 +84,9 @@ SkiaOutputDeviceDawn::SkiaOutputDeviceDawn(
       kSurfaceColorType;
   capabilities_.sk_color_types[static_cast<int>(gfx::BufferFormat::BGRX_8888)] =
       kSurfaceColorType;
+}
 
+bool SkiaOutputDeviceDawn::Initialize(gpu::SurfaceHandle surface_handle) {
   wgpu::SurfaceDescriptor surface_desc;
 
 #if BUILDFLAG(IS_WIN)
@@ -117,19 +136,20 @@ SkiaOutputDeviceDawn::SkiaOutputDeviceDawn(
 
   surface_ = context_provider->GetInstance().CreateSurface(&surface_desc);
 
-  // With Dawn/Vulkan the Vulkan surface is created lazily when needed, like
-  // here for GetCapabilities(), and not when `surface_` is created. This may
-  // fail.
   wgpu::SurfaceCapabilities caps;
   wgpu::Status result =
       surface_.GetCapabilities(context_provider->GetAdapter(), &caps);
-  // TOOD(crbug.com/347047834): This is where vkCreateAndroidSurfaceKHR()
-  // failures first show up. Have SkiaOutputDeviceDawn creation fail instead of
-  // crashing the GPU process.
-  CHECK_EQ(result, wgpu::Status::Success);
+  if (result == wgpu::Status::Error) {
+    // With Dawn/Vulkan the Vulkan surface is created lazily when needed, like
+    // here for GetCapabilities(), and not when `surface_` is created.
+    LOG(ERROR) << "Surface::GetCapabilities() failed";
+    return false;
+  }
 
   // Verify `surface_` supports all the required usage for the swap chain.
   CHECK_EQ(~caps.usages & kUsage, 0);
+
+  return true;
 }
 
 SkiaOutputDeviceDawn::~SkiaOutputDeviceDawn() = default;

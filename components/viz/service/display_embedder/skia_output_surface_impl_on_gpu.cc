@@ -2152,10 +2152,13 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
         presenter_, feature_info_, shared_gpu_deps_->memory_tracker(),
         GetDidSwapBuffersCompleteCallback());
   } else {
-    auto output_device = std::make_unique<SkiaOutputDeviceDawn>(
+    auto output_device = SkiaOutputDeviceDawn::Create(
         context_state_, gfx::SurfaceOrigin::kTopLeft,
         dependency_->GetSurfaceHandle(), shared_gpu_deps_->memory_tracker(),
         GetDidSwapBuffersCompleteCallback());
+    if (!output_device) {
+      return false;
+    }
     gpu::SurfaceHandle child_handle = output_device->GetChildSurfaceHandle();
     if (child_handle != gpu::kNullSurfaceHandle) {
       AddChildWindowToBrowser(child_handle);
@@ -2169,11 +2172,11 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
 
 #if BUILDFLAG(IS_ANDROID)
   if (!presenter_) {
-    output_device_ = std::make_unique<SkiaOutputDeviceDawn>(
+    output_device_ = SkiaOutputDeviceDawn::Create(
         context_state_, gfx::SurfaceOrigin::kTopLeft,
         dependency_->GetSurfaceHandle(), shared_gpu_deps_->memory_tracker(),
         GetDidSwapBuffersCompleteCallback());
-    return true;
+    return !!output_device_;
   }
 #elif BUILDFLAG(IS_MAC)
   presenter_->SetVSyncDisplayID(renderer_settings_.display_id);

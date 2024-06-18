@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
 #include "third_party/dawn/include/dawn/native/DawnNative.h"
@@ -33,12 +34,21 @@ namespace viz {
 
 class SkiaOutputDeviceDawn : public SkiaOutputDevice {
  public:
-  SkiaOutputDeviceDawn(
+  using PassKey = base::PassKey<SkiaOutputDeviceDawn>;
+
+  static std::unique_ptr<SkiaOutputDeviceDawn> Create(
       scoped_refptr<gpu::SharedContextState> context_state,
       gfx::SurfaceOrigin origin,
       gpu::SurfaceHandle surface_handle,
       gpu::MemoryTracker* memory_tracker,
       DidSwapBufferCompleteCallback did_swap_buffer_complete_callback);
+
+  SkiaOutputDeviceDawn(
+      scoped_refptr<gpu::SharedContextState> context_state,
+      gfx::SurfaceOrigin origin,
+      gpu::MemoryTracker* memory_tracker,
+      DidSwapBufferCompleteCallback did_swap_buffer_complete_callback,
+      base::PassKey<SkiaOutputDeviceDawn>);
 
   SkiaOutputDeviceDawn(const SkiaOutputDeviceDawn&) = delete;
   SkiaOutputDeviceDawn& operator=(const SkiaOutputDeviceDawn&) = delete;
@@ -61,6 +71,8 @@ class SkiaOutputDeviceDawn : public SkiaOutputDevice {
   void EndPaint() override;
 
  private:
+  bool Initialize(gpu::SurfaceHandle surface_handle);
+
   scoped_refptr<gpu::SharedContextState> context_state_;
   wgpu::Surface surface_;
   wgpu::SwapChain swap_chain_;
