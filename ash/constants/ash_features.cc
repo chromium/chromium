@@ -2933,6 +2933,12 @@ BASE_FEATURE(kUseAuthPanelInSettings,
              "UseAuthPanelInSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This feature dictates whether AuthPanel is restricted to only passwords,
+// or has the full suite of auth factors available.
+BASE_FEATURE(kAuthPanelUsesOnlyPassword,
+             "AuthPanelUsesOnlyPassword",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Use the staging URL as part of the "Messages" feature under "Connected
 // Devices" settings.
 BASE_FEATURE(kUseMessagesStagingUrl,
@@ -4729,6 +4735,10 @@ bool IsUseAuthPanelInPasswordManagerEnabled() {
 
 bool IsUseAuthPanelInSettingsEnabled() {
   return base::FeatureList::IsEnabled(kUseAuthPanelInSettings);
+}
+
+bool IsAuthPanelUsingOnlyPassword() {
+  return base::FeatureList::IsEnabled(kAuthPanelUsesOnlyPassword);
 }
 
 bool ShouldEnterOverviewFromWallpaper() {

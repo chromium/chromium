@@ -4,7 +4,9 @@
 
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
@@ -30,6 +32,8 @@ using testing::Invoke;
 class AuthHubTest : public LoginManagerTest {
  public:
   AuthHubTest() {
+    feature_list_.InitAndDisableFeature(
+        ash::features::kAuthPanelUsesOnlyPassword);
   }
   ~AuthHubTest() override = default;
 
@@ -77,6 +81,8 @@ class AuthHubTest : public LoginManagerTest {
       {gaia_password_user_, gaia_password_and_pin_user_},
       nullptr,
       &cryptohome_mixin_};
+
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AuthHubTest, LoginScreenWithPasswordOnly) {

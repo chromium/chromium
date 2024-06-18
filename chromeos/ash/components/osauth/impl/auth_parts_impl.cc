@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/check_op.h"
@@ -71,10 +72,14 @@ void AuthPartsImpl::CreateDefaultComponents(PrefService* local_state) {
   cryptohome_core_ =
       std::make_unique<CryptohomeCoreImpl>(UserDataAuthClient::Get());
   RegisterEngineFactory(std::make_unique<CryptohomePasswordEngineFactory>());
-  RegisterEngineFactory(
-      std::make_unique<CryptohomePinEngineFactory>(local_state));
-  RegisterEngineFactory(std::make_unique<CryptohomeSmartCardEngineFactory>());
-  RegisterEngineFactory(std::make_unique<PrefsPinEngineFactory>(*local_state));
+
+  if (!features::IsAuthPanelUsingOnlyPassword()) {
+    RegisterEngineFactory(
+        std::make_unique<CryptohomePinEngineFactory>(local_state));
+    RegisterEngineFactory(std::make_unique<CryptohomeSmartCardEngineFactory>());
+    RegisterEngineFactory(
+        std::make_unique<PrefsPinEngineFactory>(*local_state));
+  }
 
   login_screen_policy_connector_ =
       std::make_unique<LoginScreenAuthPolicyConnector>(local_state);
