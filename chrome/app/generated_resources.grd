@@ -889,6 +889,10 @@ are declared in tools/grit/grit_rule.gni.
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD" desc="This is a context menu entry in the passwords submenu. It triggers password generation." translateable="false">
             Suggest password...
           </message>
+          <!-- TODO(321678141): Finalize the strings and make them translatable -->
+          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS" desc="This is a context menu entry in the passwords submenu which is not selectable. It informs the user that they have no saved passwords." translateable="false">
+            No saved passwords
+          </message>
         </if>
         <if expr="use_titlecase">
           <message name="IDS_CONTENT_CONTEXT_BACK" desc="In Title Case: The name of the Back command in the content area context menu">
@@ -1218,6 +1222,10 @@ are declared in tools/grit/grit_rule.gni.
           <!-- TODO(321678141): Finalize the strings and make them translatable -->
           <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD" desc="In Title Case: This is a context menu entry in the passwords submenu. It triggers password generation." translateable="false">
             Suggest Password...
+          </message>
+          <!-- TODO(321678141): Finalize the strings and make them translatable -->
+          <message name="IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS" desc="In Title Case: This is a context menu entry in the passwords submenu which is not selectable. It informs the user that they have no saved passwords." translateable="false">
+            No Saved Passwords
           </message>
         </if>
 

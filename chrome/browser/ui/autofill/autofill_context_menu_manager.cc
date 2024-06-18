@@ -154,7 +154,8 @@ bool IsAutofillCustomCommandId(
        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS,
        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD,
        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS,
-       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD});
+       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD,
+       IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS});
   return kAutofillCommands.contains(command_id.value());
 }
 
@@ -248,7 +249,8 @@ bool AutofillContextMenuManager::IsCommandIdSupported(int command_id) {
 }
 
 bool AutofillContextMenuManager::IsCommandIdEnabled(int command_id) {
-  return true;
+  return command_id !=
+         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS;
 }
 
 void AutofillContextMenuManager::ExecuteCommand(int command_id) {
@@ -516,49 +518,49 @@ bool AutofillContextMenuManager::ShouldAddPasswordsManualFallbackItem(
 
 void AutofillContextMenuManager::AddPasswordsManualFallbackItems(
     ContentPasswordManagerDriver& password_manager_driver) {
-  int regular_password_entry_command_id;
-  int regular_password_entry_string_id;
-  const bool user_is_syncing =
+  const bool password_generation_enabled =
       password_manager_util::ManualPasswordGenerationEnabled(
           &password_manager_driver);
+  const bool user_has_passwords_saved =
+      UserHasPasswordsSaved(password_manager_driver);
+  const bool add_select_password_submenu_option =
+      password_generation_enabled && user_has_passwords_saved;
+  const bool add_import_passwords_submenu_option = !user_has_passwords_saved;
+  const bool add_submenu =
+      add_select_password_submenu_option || add_import_passwords_submenu_option;
 
-  // TODO(crbug.com/321678141): Update strings once we have UX decision.
-  if (UserHasPasswordsSaved(password_manager_driver)) {
-    regular_password_entry_command_id =
-        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD;
-    regular_password_entry_string_id =
-        user_is_syncing
-            ? IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD
-            : IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS;
-  } else {
-    // If the user doesn't have passwords saved, display "Import passwords"
-    // option.
-    regular_password_entry_command_id =
-        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS;
-    regular_password_entry_string_id =
-        IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS;
+  if (add_select_password_submenu_option) {
+    passwords_submenu_model_.AddItemWithStringId(
+        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD,
+        IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD);
+  } else if (add_import_passwords_submenu_option) {
+    // This entry is disabled (i.e. it is greyed out and doesn't do anything
+    // upon clicking). The logic which disables it is in
+    // `AutofillContextMenuManager::IsCommandIdEnabled()`.
+    passwords_submenu_model_.AddItemWithStringId(
+        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS,
+        IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS);
+    passwords_submenu_model_.AddItemWithStringId(
+        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS,
+        IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS);
   }
 
-  if (user_is_syncing) {
-    // If the user is syncing, create a passwords submenu. The submenu
-    // contains the regular passwords manual fallback entry, plus an extra
-    // entry for generating passwords.
-    passwords_submenu_model_.AddItemWithStringId(
-        regular_password_entry_command_id, regular_password_entry_string_id);
-
+  if (password_generation_enabled) {
+    CHECK(add_submenu);
     passwords_submenu_model_.AddItemWithStringId(
         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD,
         IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD);
+  }
 
+  if (add_submenu) {
     menu_model_->AddSubMenuWithStringId(
         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS,
         IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS,
         &passwords_submenu_model_);
   } else {
-    // If the user is not syncing, add the regular passwords manual fallback
-    // passwords entry.
-    menu_model_->AddItemWithStringId(regular_password_entry_command_id,
-                                     regular_password_entry_string_id);
+    menu_model_->AddItemWithStringId(
+        IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD,
+        IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS);
   }
 }
 

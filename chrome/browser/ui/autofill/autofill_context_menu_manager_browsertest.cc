@@ -189,54 +189,76 @@ MATCHER(AddressAndPaymentsFallbacksAdded, "") {
 }
 
 // Checks if the context menu model contains the passwords manual fallback
-// entries with correct UI strings when the user is syncing. `arg` must be
-// of type `ui::SimpleMenuModel`, `has_passwords_saved` must be bool.
+// entries with correct UI strings. `arg` must be of type `ui::SimpleMenuModel`,
+// `has_passwords_saved` and `is_password_generation_enabled` must be bool.
 // `has_passwords_saved` is true if the user has any account or profile
 // passwords stored.
-MATCHER_P(OnlyPasswordsSyncingFallbackAdded, has_passwords_saved, "") {
+// `is_password_generation_enabled` is true if the password generation feature
+// is enabled for this user (note that some non-syncing users can also generate
+// passwords, in special conditions).
+MATCHER_P2(OnlyPasswordsFallbackAdded,
+           has_passwords_saved,
+           is_password_generation_enabled,
+           "") {
   EXPECT_EQ(arg->GetItemCount(), 3u);
-  if (arg->GetTypeAt(1) != ui::MenuModel::ItemType::TYPE_SUBMENU) {
-    return false;
+  EXPECT_EQ(arg->GetTypeAt(0), ui::MenuModel::ItemType::TYPE_TITLE);
+  EXPECT_EQ(
+      arg->GetLabelAt(0),
+      l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE));
+  EXPECT_EQ(arg->GetLabelAt(1),
+            l10n_util::GetStringUTF16(
+                IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS));
+  EXPECT_EQ(arg->GetTypeAt(2), ui::MenuModel::ItemType::TYPE_SEPARATOR);
+
+  const bool add_select_password_submenu_option =
+      is_password_generation_enabled && has_passwords_saved;
+  const bool add_import_passwords_submenu_option = !has_passwords_saved;
+  const bool add_submenu =
+      add_select_password_submenu_option || add_import_passwords_submenu_option;
+
+  if (!add_submenu) {
+    return arg->GetTypeAt(1) == ui::MenuModel::ItemType::TYPE_COMMAND;
   }
+
+  EXPECT_EQ(arg->GetTypeAt(1), ui::MenuModel::ItemType::TYPE_SUBMENU);
   ui::MenuModel* submenu = arg->GetSubmenuModelAt(1);
-  EXPECT_EQ(submenu->GetItemCount(), 2u);
 
-  return arg->GetTypeAt(0) == ui::MenuModel::ItemType::TYPE_TITLE &&
-         arg->GetLabelAt(0) ==
-             l10n_util::GetStringUTF16(
-                 IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE) &&
-         arg->GetLabelAt(1) ==
-             l10n_util::GetStringUTF16(
-                 IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS) &&
-         arg->GetTypeAt(2) == ui::MenuModel::ItemType::TYPE_SEPARATOR &&
-         submenu->GetLabelAt(0) ==
-             l10n_util::GetStringUTF16(
-                 has_passwords_saved
-                     ? IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD
-                     : IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS) &&
-         submenu->GetLabelAt(1) ==
-             l10n_util::GetStringUTF16(
-                 IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD);
-}
+  if (add_select_password_submenu_option) {
+    EXPECT_EQ(submenu->GetItemCount(), 2u);
+    EXPECT_EQ(
+        submenu->GetLabelAt(0),
+        l10n_util::GetStringUTF16(
+            IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD));
+    EXPECT_EQ(
+        submenu->GetLabelAt(1),
+        l10n_util::GetStringUTF16(
+            IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD));
+  } else if (add_import_passwords_submenu_option) {
+    if (is_password_generation_enabled) {
+      EXPECT_EQ(submenu->GetItemCount(), 3u);
+      EXPECT_EQ(
+          submenu->GetLabelAt(2),
+          l10n_util::GetStringUTF16(
+              IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD));
+    } else {
+      EXPECT_EQ(submenu->GetItemCount(), 2u);
+    }
 
-// Checks if the context menu model contains the passwords manual fallback
-// entries with correct UI strings when the user is not syncing. `arg` must be
-// of type `ui::SimpleMenuModel`, `has_passwords_saved` must be bool.
-// `has_passwords_saved` is true if the user has any account or profile
-// passwords stored.
-MATCHER_P(OnlyPasswordsNotSyncingFallbackAdded, has_passwords_saved, "") {
-  EXPECT_EQ(arg->GetItemCount(), 3u);
-  return arg->GetTypeAt(0) == ui::MenuModel::ItemType::TYPE_TITLE &&
-         arg->GetLabelAt(0) ==
-             l10n_util::GetStringUTF16(
-                 IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_TITLE) &&
-         arg->GetTypeAt(1) == ui::MenuModel::ItemType::TYPE_COMMAND &&
-         arg->GetLabelAt(1) ==
-             l10n_util::GetStringUTF16((
-                 has_passwords_saved
-                     ? IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS
-                     : IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS)) &&
-         arg->GetTypeAt(2) == ui::MenuModel::ItemType::TYPE_SEPARATOR;
+    EXPECT_EQ(
+        submenu->GetLabelAt(0),
+        l10n_util::GetStringUTF16(
+            IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS));
+    EXPECT_EQ(submenu->IsEnabledAt(0), false);
+    EXPECT_EQ(
+        submenu->GetLabelAt(1),
+        l10n_util::GetStringUTF16(
+            IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS));
+  } else {
+    EXPECT_FALSE(true)
+        << "If a submenu exists, it has to contain either a 'Select password' "
+           "entry or an 'Import passwords' entry";
+  }
+  return true;
 }
 
 // Generates a ContextMenuParams for the Autofill context menu options.
@@ -917,6 +939,8 @@ class PasswordsFallbackTest : public BaseAutofillContextMenuManagerTest {
                                 blink::mojom::FormControlType::kInputPassword));
   }
 
+  // This method is used in order to enable/disable password generation. Syncing
+  // users are one category of users who have password generation enabled.
   void UpdateSyncStatus(bool sync_enabled) {
     SyncServiceFactory::GetForProfile(profile())
         ->GetUserSettings()
@@ -934,20 +958,22 @@ class PasswordsFallbackTest : public BaseAutofillContextMenuManagerTest {
 
 IN_PROC_BROWSER_TEST_F(
     PasswordsFallbackTest,
-    SyncingUser_NoPasswordsSaved_ManualFallbackAddedWithGeneratePasswordOptionAndImportPasswordsOption) {
+    PasswordGenerationEnabled_NoPasswordsSaved_ManualFallbackAddedWithGeneratePasswordOptionAndImportPasswordsOption) {
   UpdateSyncStatus(/*sync_enabled=*/true);
   autofill_context_menu_manager()->AppendItems();
-  EXPECT_THAT(menu_model(),
-              OnlyPasswordsSyncingFallbackAdded(/*has_passwords_saved=*/false));
+  EXPECT_THAT(menu_model(), OnlyPasswordsFallbackAdded(
+                                /*has_passwords_saved=*/false,
+                                /*is_password_generation_enabled=*/true));
 }
 
 IN_PROC_BROWSER_TEST_F(
     PasswordsFallbackTest,
-    NotSyncingUser_NoPasswordsSaved_ManualFallbackAddedWithImportPasswordsOption) {
+    PasswordGenerationDisabled_NoPasswordsSaved_ManualFallbackAddedWithImportPasswordsOption) {
   UpdateSyncStatus(/*sync_enabled=*/false);
   autofill_context_menu_manager()->AppendItems();
-  EXPECT_THAT(menu_model(), OnlyPasswordsNotSyncingFallbackAdded(
-                                /*has_passwords_saved=*/false));
+  EXPECT_THAT(menu_model(), OnlyPasswordsFallbackAdded(
+                                /*has_passwords_saved=*/false,
+                                /*is_password_generation_enabled=*/false));
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordsFallbackTest,
@@ -1150,26 +1176,28 @@ class PasswordsFallbackWithPasswordDatabaseEntriesTest
 
 IN_PROC_BROWSER_TEST_P(
     PasswordsFallbackWithPasswordDatabaseEntriesTest,
-    SyncingUser_HasPasswordDatabaseEntries_ManualFallbackAddedWithGeneratePasswordOption) {
+    PasswordGenerationEnabled_HasPasswordDatabaseEntries_ManualFallbackAddedWithGeneratePasswordOption) {
   UpdateSyncStatus(/*sync_enabled=*/true);
   AddPasswordToStore();
 
   autofill_context_menu_manager()->AppendItems();
   EXPECT_THAT(menu_model(),
-              OnlyPasswordsSyncingFallbackAdded(
-                  /*has_passwords_saved=*/has_autofillable_credentials()));
+              OnlyPasswordsFallbackAdded(
+                  /*has_passwords_saved=*/has_autofillable_credentials(),
+                  /*is_password_generation_enabled=*/true));
 }
 
 IN_PROC_BROWSER_TEST_P(
     PasswordsFallbackWithPasswordDatabaseEntriesTest,
-    NotSyncingUser_HasPasswordDatabaseEntries_ManualFallbackAddedWithoutGeneratePasswordOption) {
+    PasswordGenerationDisabled_HasPasswordDatabaseEntries_ManualFallbackAddedWithoutGeneratePasswordOption) {
   UpdateSyncStatus(/*sync_enabled=*/false);
   AddPasswordToStore();
 
   autofill_context_menu_manager()->AppendItems();
   EXPECT_THAT(menu_model(),
-              OnlyPasswordsNotSyncingFallbackAdded(
-                  /*has_passwords_saved=*/has_autofillable_credentials()));
+              OnlyPasswordsFallbackAdded(
+                  /*has_passwords_saved=*/has_autofillable_credentials(),
+                  /*is_password_generation_enabled=*/false));
 }
 
 INSTANTIATE_TEST_SUITE_P(

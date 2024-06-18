@@ -30178,6 +30178,8 @@ Called by update_net_error_codes.py.-->
       label="IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_IMPORT_PASSWORDS"/>
   <int value="149"
       label="IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD"/>
+  <int value="150"
+      label="IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_NO_SAVED_PASSWORDS"/>
 </enum>
 
 <enum name="ReportProcessingResult">

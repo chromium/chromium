@@ -87,12 +87,29 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
       password_manager::ContentPasswordManagerDriver& password_manager_driver);
 
   // Adds the passwords manual fallback context menu entries.
-  // If the user has passwords saved, display "Select password" (if the user
-  // is syncing) or "Passwords" (if the user is not syncing) option.
-  // The latter doesn't open a submenu, instead it behaves like the "Select
-  // password" entry.
-  // If the user doesn't have passwords saved, display "Import passwords".
-  // Additionally, a syncing user will have a "Suggest password" entry.
+  //
+  // Regardless of the state of the user, only one entry is displayed in the
+  // top-level context menu: "Passwords".
+  //
+  // If the user has passwords saved and cannot generate passwords, clicking on
+  // the "Passwords" entry behaves exactly like "Select password" (it will
+  // trigger password suggestions).
+  //
+  // In all the other cases, the "Passwords" entry doesn't do anything upon
+  // clicking, but hovering on it opens a sub-menu.
+  //
+  // In the sub-menu, if the user doesn't have passwords saved, the first entry
+  // is "No saved passwords". This entry is greyed out and doesn't do anything
+  // upon clicking. It is just informative. If the user has passwords saved,
+  // this entry is missing.
+  //
+  // The next entry in the sub-menu is either "Select password" (which triggers
+  // password suggestions) or "Import passwords" (which opens
+  // chrome://password-manager), depending on whether the user has passwords
+  // saved or not.
+  //
+  // If the user can also generate passwords, the final entry is "Suggest
+  // password...". Otherwise, this entry is missing.
   void AddPasswordsManualFallbackItems(
       password_manager::ContentPasswordManagerDriver& password_manager_driver);
 
