@@ -38,12 +38,14 @@ namespace web_app {
 class OsIntegrationTestOverrideImpl;
 class WebAppProvider;
 
-// Base class for tests of user interface support for web applications.
 #if BUILDFLAG(IS_CHROMEOS)
-class WebAppBrowserTestBase : public ChromeOSBrowserUITest {
+using WebAppBrowserTestBaseParent = ChromeOSBrowserUITest;
 #else
-class WebAppBrowserTestBase : public MixinBasedInProcessBrowserTest {
+using WebAppBrowserTestBaseParent = MixinBasedInProcessBrowserTest;
 #endif
+
+// Base class for tests of user interface support for web applications.
+class WebAppBrowserTestBase : public WebAppBrowserTestBaseParent {
  public:
   WebAppBrowserTestBase();
   WebAppBrowserTestBase(const WebAppBrowserTestBase&) = delete;
