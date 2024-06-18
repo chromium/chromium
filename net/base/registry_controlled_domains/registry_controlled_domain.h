@@ -115,10 +115,12 @@
 
 #include <stddef.h>
 
+#include <cstdint>
 #include <optional>
 #include <string>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "net/base/net_export.h"
 
 class GURL;
@@ -308,8 +310,7 @@ NET_EXPORT_PRIVATE void ResetFindDomainGraphForTesting();
 
 // Used for unit tests, so that a frozen list of domains is used.
 NET_EXPORT_PRIVATE void SetFindDomainGraphForTesting(
-    const unsigned char* domains,
-    size_t length);
+    base::span<const uint8_t> domains);
 
 }  // namespace net::registry_controlled_domains
 

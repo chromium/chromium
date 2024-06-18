@@ -4,6 +4,8 @@
 
 #include "chrome/browser/media/media_engagement_preloaded_list.h"
 
+#include <cstdint>
+
 #include "base/files/file_util.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -60,9 +62,9 @@ bool MediaEngagementPreloadedList::LoadFromFile(const base::FilePath& path) {
   }
 
   // Copy data from the protobuf message.
-  dafsa_ = std::vector<unsigned char>(
-      message.dafsa().c_str(),
-      message.dafsa().c_str() + message.dafsa().length());
+  dafsa_ =
+      std::vector<uint8_t>(message.dafsa().c_str(),
+                           message.dafsa().c_str() + message.dafsa().length());
 
   is_loaded_ = true;
   return true;
@@ -121,6 +123,5 @@ MediaEngagementPreloadedList::DafsaResult
 MediaEngagementPreloadedList::CheckStringIsPresent(
     const std::string& input) const {
   return static_cast<MediaEngagementPreloadedList::DafsaResult>(
-      net::LookupStringInFixedSet(dafsa_.data(), dafsa_.size(), input.c_str(),
-                                  input.size()));
+      net::LookupStringInFixedSet(dafsa_, input.c_str(), input.size()));
 }

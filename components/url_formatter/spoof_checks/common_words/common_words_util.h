@@ -5,23 +5,22 @@
 #ifndef COMPONENTS_URL_FORMATTER_SPOOF_CHECKS_COMMON_WORDS_COMMON_WORDS_UTIL_H_
 #define COMPONENTS_URL_FORMATTER_SPOOF_CHECKS_COMMON_WORDS_COMMON_WORDS_UTIL_H_
 
+#include <cstdint>
 #include <string_view>
 
-namespace url_formatter {
+#include "base/containers/span.h"
 
-namespace common_words {
+namespace url_formatter::common_words {
 
 // Returns true if |word| is included in Chrome's common word list.
 bool IsCommonWord(std::string_view word);
 
 // Overwrite the dafsa used, only for testing.
-void SetCommonWordDAFSAForTesting(const unsigned char* dafsa, size_t length);
+void SetCommonWordDAFSAForTesting(base::span<const uint8_t> dafsa);
 
 // Reset the dafsa used, only for testing.
 void ResetCommonWordDAFSAForTesting();
 
-}  // namespace common_words
-
-}  // namespace url_formatter
+}  // namespace url_formatter::common_words
 
 #endif  // COMPONENTS_URL_FORMATTER_SPOOF_CHECKS_COMMON_WORDS_COMMON_WORDS_UTIL_H_

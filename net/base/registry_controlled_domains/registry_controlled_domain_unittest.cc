@@ -4,6 +4,9 @@
 
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
+#include <cstdint>
+
+#include "base/containers/span.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/buildflags.h"
@@ -85,10 +88,9 @@ size_t GetCanonicalHostRegistryLengthIncludingPrivate(const std::string& host) {
 
 class RegistryControlledDomainTest : public testing::Test {
  protected:
-  template <typename Graph>
-  void UseDomainData(const Graph& graph) {
+  void UseDomainData(base::span<const uint8_t> graph) {
     // This is undone in TearDown.
-    SetFindDomainGraphForTesting(graph, sizeof(Graph));
+    SetFindDomainGraphForTesting(graph);
   }
 
   bool CompareDomains(const std::string& url1, const std::string& url2) {

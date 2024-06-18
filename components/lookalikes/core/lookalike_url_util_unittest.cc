@@ -76,8 +76,7 @@ class LookalikeUrlUtilTest : public testing::Test {
         test_top_bucket_domains::kNumTopBucketEditDistanceSkeletons};
     lookalikes::SetTopBucketDomainsParamsForTesting(top_bucket_params);
 
-    url_formatter::common_words::SetCommonWordDAFSAForTesting(
-        test::kDafsa, sizeof(test::kDafsa));
+    url_formatter::common_words::SetCommonWordDAFSAForTesting(test::kDafsa);
   }
 
   void TearDown() override {

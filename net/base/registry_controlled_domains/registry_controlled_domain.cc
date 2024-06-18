@@ -45,10 +45,12 @@
 
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
+#include <cstdint>
 #include <ostream>
 #include <string_view>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -67,9 +69,8 @@ namespace {
 
 // See make_dafsa.py for documentation of the generated dafsa byte array.
 
-// These are mutable so that they can be overridden for testing.
-const unsigned char* g_graph = kDafsa;
-size_t g_graph_length = sizeof(kDafsa);
+// This is mutable so that it can be overridden for testing.
+base::span<const uint8_t> g_graph = kDafsa;
 
 struct MappedHostComponent {
   size_t original_begin;
@@ -99,8 +100,7 @@ RegistryLengthOutput GetRegistryLengthInTrimmedHost(
     PrivateRegistryFilter private_filter) {
   size_t length;
   int type = LookupSuffixInReversedSet(
-      g_graph, g_graph_length, private_filter == INCLUDE_PRIVATE_REGISTRIES,
-      host, &length);
+      g_graph, private_filter == INCLUDE_PRIVATE_REGISTRIES, host, &length);
 
   CHECK_LE(length, host.size());
 
@@ -500,14 +500,11 @@ size_t PermissiveGetHostRegistryLength(std::u16string_view host,
 
 void ResetFindDomainGraphForTesting() {
   g_graph = kDafsa;
-  g_graph_length = sizeof(kDafsa);
 }
 
-void SetFindDomainGraphForTesting(const unsigned char* domains, size_t length) {
-  CHECK(domains);
-  CHECK_NE(length, 0u);
+void SetFindDomainGraphForTesting(base::span<const uint8_t> domains) {
+  CHECK(!domains.empty());
   g_graph = domains;
-  g_graph_length = length;
 }
 
 }  // namespace net::registry_controlled_domains
