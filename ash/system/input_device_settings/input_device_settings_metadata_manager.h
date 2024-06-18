@@ -51,6 +51,11 @@ class ASH_EXPORT InputDeviceSettingsMetadataManager {
   std::optional<std::string> GetCachedDeviceImageDataUri(
       const std::string& device_key);
 
+  const base::flat_map<std::string, std::vector<ImageDownloadCallback>>&
+  GetDeviceCallbackMapForTesting() {
+    return device_callback_map_;
+  }
+
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
  private:

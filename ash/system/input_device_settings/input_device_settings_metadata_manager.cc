@@ -12,6 +12,15 @@
 
 namespace ash {
 
+namespace {
+
+std::string GenerateImageRequestKey(const std::string& key,
+                                    DeviceImageDestination destination) {
+  return key + "_" + base::NumberToString(static_cast<int>(destination));
+}
+
+}  // namespace
+
 InputDeviceSettingsMetadataManager::InputDeviceSettingsMetadataManager(
     std::unique_ptr<DeviceImageDownloader> image_downloader,
     std::unique_ptr<DeviceImageStorage> image_storage)
@@ -54,7 +63,8 @@ void InputDeviceSettingsMetadataManager::OnDeviceImageFetched(
     device_image_storage_->PersistDeviceImage(device_key,
                                               device_image.data_url());
   }
-  auto it = device_callback_map_.find(device_key);
+  auto it = device_callback_map_.find(
+      GenerateImageRequestKey(device_key, destination));
 
   if (it == device_callback_map_.end()) {
     return;
@@ -82,7 +92,8 @@ void InputDeviceSettingsMetadataManager::GetDeviceImagePreferringCache(
     std::move(callback).Run(DeviceImage(device_key, device_image.value()));
     return;
   }
-  device_callback_map_[device_key].push_back(std::move(callback));
+  device_callback_map_[GenerateImageRequestKey(device_key, destination)]
+      .push_back(std::move(callback));
   image_downloader_->DownloadImage(
       device_key, account_id, destination,
       base::BindOnce(&InputDeviceSettingsMetadataManager::OnDeviceImageFetched,
