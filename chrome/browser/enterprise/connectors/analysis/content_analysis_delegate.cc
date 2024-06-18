@@ -299,11 +299,15 @@ std::optional<std::u16string> ContentAnalysisDelegate::GetCustomMessage()
 }
 
 std::optional<GURL> ContentAnalysisDelegate::GetCustomLearnMoreUrl() const {
-  auto element = data_.settings.tags.find(final_result_tag_);
-  if (element != data_.settings.tags.end() &&
-      element->second.custom_message.learn_more_url.is_valid() &&
-      !element->second.custom_message.learn_more_url.is_empty()) {
-    return element->second.custom_message.learn_more_url;
+  // Rule-based custom messages which don't have learn more urls take
+  // precedence over policy-based.
+  if (custom_rule_message_.message_segments().empty()) {
+    auto element = data_.settings.tags.find(final_result_tag_);
+    if (element != data_.settings.tags.end() &&
+        element->second.custom_message.learn_more_url.is_valid() &&
+        !element->second.custom_message.learn_more_url.is_empty()) {
+      return element->second.custom_message.learn_more_url;
+    }
   }
 
   return std::nullopt;
