@@ -12,6 +12,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.junit.Assert.assertEquals;
 
+import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
+
 import android.view.ViewGroup;
 
 import androidx.test.filters.MediumTest;
@@ -26,10 +28,11 @@ import org.junit.runner.RunWith;
 import org.chromium.base.SysUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.Observer;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -49,6 +52,7 @@ import org.chromium.url.GURL;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @DoNotBatch(reason = "fdsa")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER})
 public class ArchivedTabsDialogCoordinatorTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -98,7 +102,6 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "347886347: failing on android-arm")
     public void testOneInactiveTab() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 2");
         showDialog(1);
@@ -114,7 +117,6 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "347886347: failing on android-arm")
     public void testTwoInactiveTabs() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
@@ -124,7 +126,6 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "347886347: failing on android-arm")
     public void testRestoreAllInactiveTabs() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
@@ -140,7 +141,6 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "347886347: failing on android-arm")
     public void testSettings() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
@@ -165,7 +165,7 @@ public class ArchivedTabsDialogCoordinatorTest {
     private void showDialog(int numTabs) {
         // Enter the tab switcher and click the message.
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());
-        onView(
+        onViewWaiting(
                         withText(
                                 mActivityTestRule
                                         .getActivity()
