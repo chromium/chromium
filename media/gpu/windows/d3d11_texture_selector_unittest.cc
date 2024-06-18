@@ -116,7 +116,7 @@ TEST_F(D3D11TextureSelectorUnittest, P010BindsP010InHDR) {
       CreateWithDefaultGPUInfo(DXGI_FORMAT_P010, ZeroCopyEnabled::kTrue,
                                TextureSelector::HDRMode::kSDROrHDR);
 
-  EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_P016LE);
+  EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_P010LE);
   EXPECT_EQ(tex_sel->OutputDXGIFormat(), DXGI_FORMAT_P010);
   EXPECT_FALSE(tex_sel->WillCopyForTesting());
   // TODO(liberato): Check output color space.
@@ -156,7 +156,7 @@ TEST_F(D3D11TextureSelectorUnittest,
       CreateWithDefaultGPUInfo(DXGI_FORMAT_P010, ZeroCopyEnabled::kTrue,
                                TextureSelector::HDRMode::kSDROnly);
 
-  EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_P016LE);
+  EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_P010LE);
   EXPECT_EQ(tex_sel->OutputDXGIFormat(), DXGI_FORMAT_P010);
   EXPECT_FALSE(tex_sel->WillCopyForTesting());
 }
@@ -171,7 +171,7 @@ TEST_F(D3D11TextureSelectorUnittest,
       CreateWithDefaultGPUInfo(DXGI_FORMAT_P010, ZeroCopyEnabled::kTrue,
                                TextureSelector::HDRMode::kSDROnly);
 
-  EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_P016LE);
+  EXPECT_EQ(tex_sel->PixelFormat(), PIXEL_FORMAT_P010LE);
   EXPECT_EQ(tex_sel->OutputDXGIFormat(), DXGI_FORMAT_P010);
   EXPECT_FALSE(tex_sel->WillCopyForTesting());
 }

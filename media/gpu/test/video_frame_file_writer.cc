@@ -166,7 +166,7 @@ void VideoFrameFileWriter::ProcessVideoFrameTask(
       IsIntelMediaCompressedModifier(modifier);
   EXPECT_TRUE(!is_intel_media_compressed_buffer ||
               (frame->format() == PIXEL_FORMAT_NV12 ||
-               frame->format() == PIXEL_FORMAT_P016LE));
+               frame->format() == PIXEL_FORMAT_P010LE));
 
   if (!is_intel_media_compressed_buffer) {
     if (frame->storage_type() == VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {

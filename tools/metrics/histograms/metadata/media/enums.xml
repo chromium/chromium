@@ -2228,7 +2228,7 @@ chromium-metrics-reviews@google.com.
   <int value="26" label="Y16"/>
   <int value="27" label="ABGR"/>
   <int value="28" label="XBGR"/>
-  <int value="29" label="P016LE"/>
+  <int value="29" label="P010LE"/>
   <int value="30" label="XR30"/>
   <int value="31" label="XB30"/>
   <int value="32" label="BGRA"/>
@@ -2241,8 +2241,8 @@ chromium-metrics-reviews@google.com.
   <int value="39" label="NV12A"/>
   <int value="40" label="NV16"/>
   <int value="41" label="NV24"/>
-  <int value="42" label="P216LE"/>
-  <int value="43" label="P416LE"/>
+  <int value="42" label="P210LE"/>
+  <int value="43" label="P410LE"/>
 </enum>
 
 <enum name="VideoResolutionDesignation">

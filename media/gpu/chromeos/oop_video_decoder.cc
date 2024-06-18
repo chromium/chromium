@@ -98,7 +98,7 @@ scoped_refptr<FrameResource> MojoVideoFrameToFrameResource(
     stable::mojom::VideoFramePtr mojo_frame) {
   if (mojo_frame->metadata.protected_video &&
       mojo_frame->metadata.needs_detiling &&
-      mojo_frame->format == PIXEL_FORMAT_P016LE) {
+      mojo_frame->format == PIXEL_FORMAT_P010LE) {
     // This is a tiled, protected MTK format that is true 10bpp so it will
     // not pass the tests in VerifyGpuMemoryBufferHandle for P016. Instead just
     // do the basic tests that would be done in that call here. This is safe to

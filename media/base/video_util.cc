@@ -68,7 +68,7 @@ void FillRegionOutsideVisibleRect(uint8_t* data,
 }
 
 VideoPixelFormat ReadbackFormat(const VideoFrame& frame) {
-  // The |frame|.BitDepth() restriction is to avoid treating a P016LE frame as a
+  // The |frame|.BitDepth() restriction is to avoid treating a P010LE frame as a
   // low-bit depth frame.
   if (frame.RequiresExternalSampler() && frame.BitDepth() == 8u)
     return PIXEL_FORMAT_XRGB;
@@ -732,9 +732,9 @@ MEDIA_EXPORT SkColorType SkColorTypeForPlane(VideoPixelFormat format,
                      plane == VideoFrame::Plane::kATriPlanar
                  ? kAlpha_8_SkColorType
                  : kR8G8_unorm_SkColorType;
-    case PIXEL_FORMAT_P016LE:
-    case PIXEL_FORMAT_P216LE:
-    case PIXEL_FORMAT_P416LE:
+    case PIXEL_FORMAT_P010LE:
+    case PIXEL_FORMAT_P210LE:
+    case PIXEL_FORMAT_P410LE:
       return plane == VideoFrame::Plane::kY ? kA16_unorm_SkColorType
                                             : kR16G16_unorm_SkColorType;
     case PIXEL_FORMAT_XBGR:
@@ -808,13 +808,13 @@ VideoPixelFormatToSkiaValues(VideoPixelFormat video_format) {
   // To expand support for additional VideoFormats expand this switch.
   switch (video_format) {
     case PIXEL_FORMAT_NV12:
-    case PIXEL_FORMAT_P016LE:
+    case PIXEL_FORMAT_P010LE:
       return {SkYUVAInfo::PlaneConfig::kY_UV, SkYUVAInfo::Subsampling::k420};
     case PIXEL_FORMAT_NV16:
-    case PIXEL_FORMAT_P216LE:
+    case PIXEL_FORMAT_P210LE:
       return {SkYUVAInfo::PlaneConfig::kY_UV, SkYUVAInfo::Subsampling::k422};
     case PIXEL_FORMAT_NV24:
-    case PIXEL_FORMAT_P416LE:
+    case PIXEL_FORMAT_P410LE:
       return {SkYUVAInfo::PlaneConfig::kY_UV, SkYUVAInfo::Subsampling::k444};
     case PIXEL_FORMAT_NV12A:
       return {SkYUVAInfo::PlaneConfig::kY_UV_A, SkYUVAInfo::Subsampling::k420};

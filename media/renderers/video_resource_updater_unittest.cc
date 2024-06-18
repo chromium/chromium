@@ -303,7 +303,7 @@ class VideoResourceUpdaterTest : public testing::Test {
     gfx::Size size(kDimension, kDimension);
 
     scoped_refptr<VideoFrame> video_frame(VideoFrame::CreateFrame(
-        PIXEL_FORMAT_P016LE, size, gfx::Rect(size), size, base::TimeDelta()));
+        PIXEL_FORMAT_P010LE, size, gfx::Rect(size), size, base::TimeDelta()));
     EXPECT_TRUE(video_frame);
     return video_frame;
   }
@@ -1210,7 +1210,7 @@ TEST_F(VideoResourceUpdaterTest, CreateForHardwarePlanes_SingleP016HDR) {
   std::unique_ptr<VideoResourceUpdater> updater = CreateUpdaterForHardware();
   EXPECT_EQ(0u, GetSharedImageCount());
   scoped_refptr<VideoFrame> video_frame = CreateTestHardwareVideoFrame(
-      PIXEL_FORMAT_P016LE, GL_TEXTURE_EXTERNAL_OES);
+      PIXEL_FORMAT_P010LE, GL_TEXTURE_EXTERNAL_OES);
 #if BUILDFLAG(IS_OZONE)
   video_frame->set_shared_image_format_type(
       SharedImageFormatType::kSharedImageFormatExternalSampler);

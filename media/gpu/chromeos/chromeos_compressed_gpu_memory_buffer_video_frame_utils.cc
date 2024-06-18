@@ -31,7 +31,7 @@ scoped_refptr<VideoFrame> WrapChromeOSCompressedGpuMemoryBufferAsVideoFrame(
   const std::optional<VideoPixelFormat> format =
       GfxBufferFormatToVideoPixelFormat(gpu_memory_buffer->GetFormat());
   if (!format ||
-      (*format != PIXEL_FORMAT_NV12 && *format != PIXEL_FORMAT_P016LE)) {
+      (*format != PIXEL_FORMAT_NV12 && *format != PIXEL_FORMAT_P010LE)) {
     return nullptr;
   }
 

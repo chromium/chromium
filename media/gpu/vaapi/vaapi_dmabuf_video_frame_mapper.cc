@@ -96,7 +96,7 @@ scoped_refptr<VideoFrame> CreateMappedVideoFrame(
 }
 
 bool IsFormatSupported(VideoPixelFormat format) {
-  return format == PIXEL_FORMAT_NV12 || format == PIXEL_FORMAT_P016LE;
+  return format == PIXEL_FORMAT_NV12 || format == PIXEL_FORMAT_P010LE;
 }
 
 }  // namespace
@@ -192,7 +192,7 @@ scoped_refptr<VideoFrame> VaapiDmaBufVideoFrameMapper::MapFrame(
   }
 
   // Map tiled NV12 or P010 buffer by CreateVaImage so that mapped buffers can
-  // be accessed as non-tiled NV12 or P016LE buffer.
+  // be accessed as non-tiled NV12 or P010LE buffer.
   const VAImageFormat va_image_format =
       video_frame->format() == PIXEL_FORMAT_NV12 ? kImageFormatNV12
                                                  : kImageFormatP010;

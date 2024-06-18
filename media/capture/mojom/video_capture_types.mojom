@@ -34,7 +34,7 @@ enum VideoCapturePixelFormat {
   Y16,
   ABGR,
   XBGR,
-  P016LE,
+  P010LE,
   XR30,
   XB30,
   BGRA,
@@ -47,8 +47,8 @@ enum VideoCapturePixelFormat {
   [MinVersion=2] NV12A,
   [MinVersion=3] NV16,
   [MinVersion=3] NV24,
-  [MinVersion=3] P216LE,
-  [MinVersion=3] P416LE,
+  [MinVersion=3] P210LE,
+  [MinVersion=3] P410LE,
 };
 
 [Stable, Extensible]

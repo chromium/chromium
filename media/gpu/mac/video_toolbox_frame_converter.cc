@@ -76,11 +76,11 @@ VideoPixelFormat PixelFormatToVideoPixelFormat(OSType pixel_format) {
     case kCVPixelFormatType_444YpCbCr8BiPlanarVideoRange:
       return PIXEL_FORMAT_NV24;
     case kCVPixelFormatType_420YpCbCr10BiPlanarVideoRange:
-      return PIXEL_FORMAT_P016LE;
+      return PIXEL_FORMAT_P010LE;
     case kCVPixelFormatType_422YpCbCr10BiPlanarVideoRange:
-      return PIXEL_FORMAT_P216LE;
+      return PIXEL_FORMAT_P210LE;
     case kCVPixelFormatType_444YpCbCr10BiPlanarVideoRange:
-      return PIXEL_FORMAT_P416LE;
+      return PIXEL_FORMAT_P410LE;
     case kCVPixelFormatType_420YpCbCr8VideoRange_8A_TriPlanar:
       return PIXEL_FORMAT_NV12A;
     default:

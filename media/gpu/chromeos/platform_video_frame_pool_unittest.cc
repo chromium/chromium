@@ -141,7 +141,7 @@ class PlatformVideoFramePoolTest
       public testing::WithParamInterface<VideoPixelFormat> {};
 
 constexpr VideoPixelFormat kPixelFormats[] = {
-    PIXEL_FORMAT_YV12, PIXEL_FORMAT_NV12, PIXEL_FORMAT_P016LE};
+    PIXEL_FORMAT_YV12, PIXEL_FORMAT_NV12, PIXEL_FORMAT_P010LE};
 INSTANTIATE_TEST_SUITE_P(
     All,
     PlatformVideoFramePoolTest,
@@ -386,7 +386,7 @@ TEST_P(PlatformVideoFramePoolWithMediaCompressionTest,
   const VideoPixelFormat pixel_format = std::get<0>(GetParam());
   const uint64_t modifier = std::get<1>(GetParam());
   if (pixel_format != PIXEL_FORMAT_NV12 &&
-      pixel_format != PIXEL_FORMAT_P016LE) {
+      pixel_format != PIXEL_FORMAT_P010LE) {
     GTEST_SKIP() << "Pixel format doesn't support compressed GPU memory buffer";
   }
   const auto fourcc = Fourcc::FromVideoPixelFormat(pixel_format);

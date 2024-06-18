@@ -38,7 +38,7 @@ std::optional<VideoPixelFormat> GfxBufferFormatToVideoPixelFormat(
       return PIXEL_FORMAT_NV12A;
 
     case gfx::BufferFormat::P010:
-      return PIXEL_FORMAT_P016LE;
+      return PIXEL_FORMAT_P010LE;
 
     case gfx::BufferFormat::RGBA_1010102:
       return PIXEL_FORMAT_XR30;
@@ -74,7 +74,7 @@ std::optional<gfx::BufferFormat> VideoPixelFormatToGfxBufferFormat(
     case PIXEL_FORMAT_XBGR:
       return gfx::BufferFormat::RGBX_8888;
 
-    case PIXEL_FORMAT_P016LE:
+    case PIXEL_FORMAT_P010LE:
       return gfx::BufferFormat::P010;
 
     case PIXEL_FORMAT_XR30:

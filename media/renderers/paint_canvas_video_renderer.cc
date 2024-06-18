@@ -144,9 +144,9 @@ const gpu::MailboxHolder& GetVideoFrameMailboxHolder(VideoFrame* video_frame) {
          PIXEL_FORMAT_NV16 == video_frame->format() ||
          PIXEL_FORMAT_NV24 == video_frame->format() ||
          PIXEL_FORMAT_NV12A == video_frame->format() ||
-         PIXEL_FORMAT_P016LE == video_frame->format() ||
-         PIXEL_FORMAT_P216LE == video_frame->format() ||
-         PIXEL_FORMAT_P416LE == video_frame->format() ||
+         PIXEL_FORMAT_P010LE == video_frame->format() ||
+         PIXEL_FORMAT_P210LE == video_frame->format() ||
+         PIXEL_FORMAT_P410LE == video_frame->format() ||
          PIXEL_FORMAT_RGBAF16 == video_frame->format() ||
          PIXEL_FORMAT_BGRA == video_frame->format())
       << "Format: " << VideoPixelFormatToString(video_frame->format());
@@ -626,8 +626,8 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
                                  plane_meta[VideoFrame::Plane::kUV].stride,
                                  pixels, row_bytes, matrix, width, rows);
       break;
-    case PIXEL_FORMAT_P016LE:
-      libyuv::P016ToARGBMatrix(
+    case PIXEL_FORMAT_P010LE:
+      libyuv::P010ToARGBMatrix(
           reinterpret_cast<const uint16_t*>(
               plane_meta[VideoFrame::Plane::kY].data.get()),
           plane_meta[VideoFrame::Plane::kY].stride,
@@ -654,8 +654,8 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
     case PIXEL_FORMAT_NV16:
     case PIXEL_FORMAT_NV24:
     case PIXEL_FORMAT_NV12A:
-    case PIXEL_FORMAT_P216LE:
-    case PIXEL_FORMAT_P416LE:
+    case PIXEL_FORMAT_P210LE:
+    case PIXEL_FORMAT_P410LE:
     case PIXEL_FORMAT_YUY2:
     case PIXEL_FORMAT_ARGB:
     case PIXEL_FORMAT_BGRA:

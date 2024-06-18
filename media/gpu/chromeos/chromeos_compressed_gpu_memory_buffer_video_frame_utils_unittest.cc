@@ -33,7 +33,7 @@ class ChromeOSCompressedGpuMemoryBufferTest
 };
 
 constexpr VideoPixelFormat kPixelFormats[] = {PIXEL_FORMAT_NV12,
-                                              PIXEL_FORMAT_P016LE};
+                                              PIXEL_FORMAT_P010LE};
 constexpr uint64_t kCompressedBufferModifiers[] = {
     I915_FORMAT_MOD_Y_TILED_GEN12_MC_CCS, I915_FORMAT_MOD_4_TILED_MTL_MC_CCS};
 

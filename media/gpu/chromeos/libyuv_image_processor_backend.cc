@@ -552,7 +552,7 @@ int LibYUVImageProcessorBackend::DoConversion(const FrameResource* const input,
     }
   }
 
-  if (output->format() == PIXEL_FORMAT_P016LE) {
+  if (output->format() == PIXEL_FORMAT_P010LE) {
     if (input_config_.fourcc == Fourcc(Fourcc::MT2T)) {
       // stride is 5/4 because MT2T is a packed 10bit format
       const uint32_t src_stride_mt2t =

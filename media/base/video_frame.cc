@@ -137,7 +137,7 @@ gfx::Size VideoFrame::SampleSize(VideoPixelFormat format, size_t plane) {
         case PIXEL_FORMAT_I444A:
         case PIXEL_FORMAT_YUV444AP10:
         case PIXEL_FORMAT_NV24:
-        case PIXEL_FORMAT_P416LE:
+        case PIXEL_FORMAT_P410LE:
           return gfx::Size(1, 1);
 
         case PIXEL_FORMAT_I422:
@@ -147,7 +147,7 @@ gfx::Size VideoFrame::SampleSize(VideoPixelFormat format, size_t plane) {
         case PIXEL_FORMAT_I422A:
         case PIXEL_FORMAT_YUV422AP10:
         case PIXEL_FORMAT_NV16:
-        case PIXEL_FORMAT_P216LE:
+        case PIXEL_FORMAT_P210LE:
           return gfx::Size(2, 1);
 
         case PIXEL_FORMAT_YV12:
@@ -158,7 +158,7 @@ gfx::Size VideoFrame::SampleSize(VideoPixelFormat format, size_t plane) {
         case PIXEL_FORMAT_YUV420P9:
         case PIXEL_FORMAT_YUV420P10:
         case PIXEL_FORMAT_YUV420P12:
-        case PIXEL_FORMAT_P016LE:
+        case PIXEL_FORMAT_P010LE:
         case PIXEL_FORMAT_YUV420AP10:
           return gfx::Size(2, 2);
 
@@ -233,9 +233,9 @@ static bool RequiresEvenSizeAllocation(VideoPixelFormat format) {
     case PIXEL_FORMAT_YUV444P12:
     case PIXEL_FORMAT_I420A:
     case PIXEL_FORMAT_UYVY:
-    case PIXEL_FORMAT_P016LE:
-    case PIXEL_FORMAT_P216LE:
-    case PIXEL_FORMAT_P416LE:
+    case PIXEL_FORMAT_P010LE:
+    case PIXEL_FORMAT_P210LE:
+    case PIXEL_FORMAT_P410LE:
     case PIXEL_FORMAT_I422A:
     case PIXEL_FORMAT_I444A:
     case PIXEL_FORMAT_YUV420AP10:
@@ -376,8 +376,8 @@ scoped_refptr<VideoFrame> VideoFrame::CreateFrameForNativeTexturesInternal(
       format != PIXEL_FORMAT_NV24 && format != PIXEL_FORMAT_NV12A &&
       format != PIXEL_FORMAT_I420 && format != PIXEL_FORMAT_ABGR &&
       format != PIXEL_FORMAT_XBGR && format != PIXEL_FORMAT_XR30 &&
-      format != PIXEL_FORMAT_XB30 && format != PIXEL_FORMAT_P016LE &&
-      format != PIXEL_FORMAT_P216LE && format != PIXEL_FORMAT_P416LE &&
+      format != PIXEL_FORMAT_XB30 && format != PIXEL_FORMAT_P010LE &&
+      format != PIXEL_FORMAT_P210LE && format != PIXEL_FORMAT_P410LE &&
       format != PIXEL_FORMAT_RGBAF16 && format != PIXEL_FORMAT_YV12 &&
       format != PIXEL_FORMAT_BGRA) {
     DLOG(ERROR) << "Unsupported pixel format: "
@@ -1260,9 +1260,9 @@ int VideoFrame::BytesPerElement(VideoPixelFormat format, size_t plane) {
       DCHECK_LT(plane, std::size(bytes_per_element));
       return bytes_per_element[plane];
     }
-    case PIXEL_FORMAT_P016LE:
-    case PIXEL_FORMAT_P216LE:
-    case PIXEL_FORMAT_P416LE: {
+    case PIXEL_FORMAT_P010LE:
+    case PIXEL_FORMAT_P210LE:
+    case PIXEL_FORMAT_P410LE: {
       static const int bytes_per_element[] = {1, 2};
       DCHECK_LT(plane, std::size(bytes_per_element));
       return bytes_per_element[plane] * 2;
@@ -1493,7 +1493,7 @@ gfx::ColorSpace VideoFrame::CompatRGBColorSpace() const {
 bool VideoFrame::RequiresExternalSampler() const {
   const bool is_multiplanar_pixel_format = format() == PIXEL_FORMAT_NV12 ||
                                            format() == PIXEL_FORMAT_YV12 ||
-                                           format() == PIXEL_FORMAT_P016LE;
+                                           format() == PIXEL_FORMAT_P010LE;
 
   // With SharedImageFormats NumTextures() is always 1. Use
   // SharedImageFormatType to check for NumTextures for legacy formats and

@@ -107,7 +107,7 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
       CHECK_EQ(frame.shared_image_format_type(),
                SharedImageFormatType::kSharedImageFormatExternalSampler);
 
-      // The format must be one of NV12/YV12/P016LE, as these are the only
+      // The format must be one of NV12/YV12/P010LE, as these are the only
       // formats for which VideoFrame::RequiresExternalSampler() will return
       // true.
       // NOTE: If this is ever expanded to include NV12A, it will be necessary
@@ -121,7 +121,7 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
         case PIXEL_FORMAT_YV12:
           si_formats[0] = viz::MultiPlaneFormat::kYV12;
           break;
-        case PIXEL_FORMAT_P016LE:
+        case PIXEL_FORMAT_P010LE:
           si_formats[0] = viz::MultiPlaneFormat::kP010;
           break;
         default:
@@ -250,7 +250,7 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
         return VideoFrameResourceType::RGBA;
       }
 
-    case PIXEL_FORMAT_P016LE:
+    case PIXEL_FORMAT_P010LE:
       if (frame.shared_image_format_type() == SharedImageFormatType::kLegacy) {
         DCHECK_EQ(num_textures, 2u);
         // TODO(mcasas): Support other formats such as e.g. P012.
@@ -269,12 +269,12 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
         return VideoFrameResourceType::RGB;
       }
 
-    case PIXEL_FORMAT_P216LE:
+    case PIXEL_FORMAT_P210LE:
       DCHECK_EQ(num_textures, 1u);
       si_formats[0] = viz::MultiPlaneFormat::kP210;
       return VideoFrameResourceType::RGB;
 
-    case PIXEL_FORMAT_P416LE:
+    case PIXEL_FORMAT_P410LE:
       DCHECK_EQ(num_textures, 1u);
       si_formats[0] = viz::MultiPlaneFormat::kP410;
       return VideoFrameResourceType::RGB;
@@ -482,9 +482,9 @@ viz::SharedImageFormat VideoPixelFormatToMultiPlanarSharedImageFormat(
       return viz::MultiPlaneFormat::kI420A;
     case PIXEL_FORMAT_NV16:
     case PIXEL_FORMAT_NV24:
-    case PIXEL_FORMAT_P016LE:
-    case PIXEL_FORMAT_P216LE:
-    case PIXEL_FORMAT_P416LE:
+    case PIXEL_FORMAT_P010LE:
+    case PIXEL_FORMAT_P210LE:
+    case PIXEL_FORMAT_P410LE:
     case PIXEL_FORMAT_ARGB:
     case PIXEL_FORMAT_XRGB:
     case PIXEL_FORMAT_ABGR:
@@ -939,7 +939,7 @@ void VideoResourceUpdater::AppendQuads(
       if (frame->HasTextures()) {
         if (frame_resource_type_ == VideoFrameResourceType::YUV) {
           DCHECK(frame->format() == PIXEL_FORMAT_NV12 ||
-                 frame->format() == PIXEL_FORMAT_P016LE ||
+                 frame->format() == PIXEL_FORMAT_P010LE ||
                  frame->format() == PIXEL_FORMAT_I420);
         } else {
           DCHECK_EQ(frame->format(), PIXEL_FORMAT_NV12A);

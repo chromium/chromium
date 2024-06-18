@@ -52,11 +52,11 @@ viz::SharedImageFormat VideoPixelFormatToSharedImageFormat(
       return viz::MultiPlaneFormat::kNV24;
     case PIXEL_FORMAT_NV12A:
       return viz::MultiPlaneFormat::kNV12A;
-    case PIXEL_FORMAT_P016LE:
+    case PIXEL_FORMAT_P010LE:
       return viz::MultiPlaneFormat::kP010;
-    case PIXEL_FORMAT_P216LE:
+    case PIXEL_FORMAT_P210LE:
       return viz::MultiPlaneFormat::kP210;
-    case PIXEL_FORMAT_P416LE:
+    case PIXEL_FORMAT_P410LE:
       return viz::MultiPlaneFormat::kP410;
     case PIXEL_FORMAT_I420:
       return viz::MultiPlaneFormat::kI420;

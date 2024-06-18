@@ -145,7 +145,7 @@ double ComputeSimilarity(const VideoFrame* frame1,
       frame1->visible_rect().size() == frame2->visible_rect().size(),
       static_cast<double>(std::numeric_limits<std::size_t>::max()));
   // Ideally, frame1->BitDepth() should be the same as frame2->BitDepth()
-  // always. But in the 10 bit case, the 10 bit frame can be carried with P016LE
+  // always. But in the 10 bit case, the 10 bit frame can be carried with P010LE
   // whose bit depth is regarded to be 16. This is due to a lack of NV12 10-bit
   // buffer format in media::VideoPixelFormat. As a workaround for this, we
   // determine the common bit depth as the smaller one.

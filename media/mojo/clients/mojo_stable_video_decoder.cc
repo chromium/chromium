@@ -46,7 +46,7 @@ std::optional<viz::SharedImageFormat> GetSharedImageFormat(
     case PIXEL_FORMAT_NV12:
       si_format = viz::MultiPlaneFormat::kNV12;
       break;
-    case PIXEL_FORMAT_P016LE:
+    case PIXEL_FORMAT_P010LE:
       si_format = viz::MultiPlaneFormat::kP010;
       break;
     case PIXEL_FORMAT_YV12:
