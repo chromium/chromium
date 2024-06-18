@@ -828,6 +828,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   void ProcessDeferredAccessibilityEventsImpl(Document&);
   void UpdateLifecycleIfNeeded(Document& document);
 
+  // Helper for ProcessDeferredAccessibilityEvents. Checks if layout is ready.
+  bool IsReadyToProcessDeferredEvents();
+
   // Is the main document currently parsing content, as opposed to being blocked
   // by script execution or being load complete state.
   bool IsParsingMainDocument() const;
