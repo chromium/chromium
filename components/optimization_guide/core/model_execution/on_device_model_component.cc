@@ -48,15 +48,11 @@ base::WeakPtr<OnDeviceModelComponentStateManager>& GetInstance() {
 }
 
 bool WasAnyOnDeviceEligibleFeatureRecentlyUsed(const PrefService& local_state) {
-  // TODO(b/322818928): Change this to iterate over all on-device model
-  // execution features, including kPromptApi and KTest.
-  for (const auto& feature : kAllUserVisibleFeatureKeys) {
-    if (!features::internal::IsOnDeviceModelEnabled(
-            ToModelBasedCapabilityKey(feature))) {
+  for (const ModelBasedCapabilityKey key : kAllModelBasedCapabilityKeys) {
+    if (!features::internal::IsOnDeviceModelEnabled(key)) {
       continue;
     }
-    if (WasOnDeviceEligibleFeatureRecentlyUsed(
-            ToModelBasedCapabilityKey(feature), local_state)) {
+    if (WasOnDeviceEligibleFeatureRecentlyUsed(key, local_state)) {
       return true;
     }
   }

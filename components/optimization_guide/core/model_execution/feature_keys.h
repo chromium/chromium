@@ -26,6 +26,16 @@ enum class ModelBasedCapabilityKey {
   kPromptApi = proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_PROMPT_API,
 };
 
+inline constexpr std::array<ModelBasedCapabilityKey, 6>
+    kAllModelBasedCapabilityKeys = {
+        ModelBasedCapabilityKey::kCompose,
+        ModelBasedCapabilityKey::kTabOrganization,
+        ModelBasedCapabilityKey::kWallpaperSearch,
+        ModelBasedCapabilityKey::kTest,
+        ModelBasedCapabilityKey::kTextSafety,
+        ModelBasedCapabilityKey::kPromptApi,
+};
+
 // A "real" feature implemented by a model-based capability.
 // These will have their own prefs / settings / policies etc.
 enum class UserVisibleFeatureKey {
