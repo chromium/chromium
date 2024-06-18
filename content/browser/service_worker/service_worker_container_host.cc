@@ -2018,6 +2018,16 @@ void ServiceWorkerClient::InheritControllerFrom(
                               false /* notify_controllerchange */);
   }
   creator_host.SetInherited();
+  // TODO(crbug.com/330928087): remove followings when fixed.
+  static bool dumped = false;
+  if (!dumped &&
+      creator_host.is_in_back_forward_cache() != is_in_back_forward_cache()) {
+    SCOPED_CRASH_KEY_BOOL("SWC_ICF", "creator_in_bfcache",
+                          creator_host.is_in_back_forward_cache());
+    SCOPED_CRASH_KEY_BOOL("SWC_ICF", "in_bfcache", is_in_back_forward_cache());
+    base::debug::DumpWithoutCrashing();
+    dumped = true;
+  }
 }
 
 mojo::PendingReceiver<blink::mojom::ServiceWorkerRunningStatusCallback>

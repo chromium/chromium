@@ -405,6 +405,7 @@ class CONTENT_EXPORT ServiceWorkerClient final
 
   void EnterBackForwardCacheForTesting() { is_in_back_forward_cache_ = true; }
   void LeaveBackForwardCacheForTesting() { is_in_back_forward_cache_ = false; }
+  bool is_in_back_forward_cache() { return is_in_back_forward_cache_; }
 
   // For service worker clients. Returns the URL that is used for scope matching
   // algorithm. This can be different from url() in the case of blob URL
