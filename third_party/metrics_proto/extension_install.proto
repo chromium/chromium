@@ -87,6 +87,8 @@ message ExtensionInstallProto {
   // If the extension is a bookmark app that was generated from a web page. This
   // is distinct from install_location above, which specifies from where on the
   // user’s machine the install originated.
+  // Deprecated: This field is no longer populated as bookmark apps are no
+  // longer supported.
   optional bool is_from_bookmark = 9;
 
   // If the extension was created from a user script. This is distinct from
@@ -152,6 +154,8 @@ message ExtensionInstallProto {
     // Policy requires the extension to be published and available for download
     // from the web store.
     PUBLISHED_IN_STORE_REQUIRED_BY_POLICY = 19;
+    // The extension is using an unsupported manifest version.
+    UNSUPPORTED_MANIFEST_VERSION = 20;
   }
   // Any DisableReasons in effect for the extension. An empty list means the
   // extension is not disabled. Note that an extension that is not disabled may

@@ -436,7 +436,7 @@ message OmniboxEventProto {
     // (excluding Navsuggest and Document URLs) and only when there is a click
     // on a URL suggestion.
     // Only recorded on desktop platforms (Windows, Mac, Linux, ChromeOS).
-    // Next tag: 27
+    // Next tag: 28
     message ScoringSignals {
       // Number of times the URL was navigated to using the Omnibox for this
       // profile on this device, and all other devices syncing with this
@@ -562,6 +562,14 @@ message OmniboxEventProto {
       //            an entity
       //   - Unset: Otherwise (due to unexpected client-side behavior)
       optional bool is_search_suggest_entity = 26;
+      // Whether this suggestion is a verbatim match with respect to the user's
+      // input (e.g. URL_WHAT_YOU_TYPED). As such, this signal will take on the
+      // following values:
+      //   - True:  Suggestion is a verbatim match (URL_WHAT_YOU_TYPED,
+      //            SEARCH_WHAT_YOU_TYPED, etc.)
+      //   - False: Suggestion is not a verbatim match
+      //   - Unset: Otherwise (due to unexpected client-side behavior)
+      optional bool is_verbatim = 27;
     }
     optional ScoringSignals scoring_signals = 10;
   }

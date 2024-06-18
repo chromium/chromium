@@ -177,13 +177,6 @@ message SystemProfileProto {
     // The fingerprint of the build.  This field is used only on Android.
     optional string build_fingerprint = 3;
 
-    // Whether the version of iOS appears to be "jailbroken". This field is
-    // used only on iOS. Chrome for iOS detects whether device contains a
-    // DynamicLibraries/ directory. It's a necessary but insufficient indicator
-    // of whether the operating system has been jailbroken.
-    // Deprecated 01/2023. This was never set.
-    optional bool DEPRECATED_is_jailbroken = 4 [deprecated = true];
-
     // The build number for the OS version. The same OS version may have a
     // different build number. The meaning of this field is OS-dependent.
     optional string build_number = 5;
@@ -530,26 +523,6 @@ message SystemProfileProto {
     }
     // The connection type according to NetworkChangeNotifier.
     optional ConnectionType connection_type = 2;
-
-    // Set to true if wifi_phy_layer_protocol changed during the lifetime of the
-    // log.
-    optional bool wifi_phy_layer_protocol_is_ambiguous = 3;
-
-    // See net::WifiPHYLayerProtocol.
-    enum WifiPHYLayerProtocol {
-      WIFI_PHY_LAYER_PROTOCOL_NONE = 0;
-      WIFI_PHY_LAYER_PROTOCOL_ANCIENT = 1;
-      WIFI_PHY_LAYER_PROTOCOL_A = 2;
-      WIFI_PHY_LAYER_PROTOCOL_B = 3;
-      WIFI_PHY_LAYER_PROTOCOL_G = 4;
-      WIFI_PHY_LAYER_PROTOCOL_N = 5;
-      WIFI_PHY_LAYER_PROTOCOL_UNKNOWN = 6;
-      WIFI_PHY_LAYER_PROTOCOL_AC = 7;
-      WIFI_PHY_LAYER_PROTOCOL_AD = 8;
-      WIFI_PHY_LAYER_PROTOCOL_AX = 9;
-    }
-    // The physical layer mode of the associated wifi access point, if any.
-    optional WifiPHYLayerProtocol wifi_phy_layer_protocol = 4;
 
     // Derived from net::NetworkQualityEstimator::EffectiveConnectionType
     // translated through NetworkMetricsProvider::GetConnectionType.
@@ -1068,7 +1041,9 @@ message SystemProfileProto {
     CROS_SMART_DIM = 26;
     ZXCVBN_DATA = 27;
     AUTOFILL_REGEX_CONSTANTS = 28;
-    WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST = 29;
+    // Removed in cl/643485319:
+    reserved 29;
+    reserved "WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST";
     // Hardware Decryption CDM only for Chrome on Windows.
     MEDIA_FOUNDATION_WIDEVINE_CDM = 30;
     CROWD_DENY = 31;

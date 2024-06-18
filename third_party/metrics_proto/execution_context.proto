@@ -105,6 +105,9 @@ enum Thread {
   // https://source.chromium.org/chromium/chromium/src/+/main:content/renderer/renderer_blink_platform_impl.cc;l=988;drc=7172fffc3c545134d5c88af8ab07b04fcb1d628e.
   VIDEO_FRAME_COMPOSITOR_THREAD = 27;
 
+  // Display Compositor thread (in GPU process).
+  DISPLAY_COMPOSITOR_THREAD = 28;
+
   // A Chrome thread not identified by any other enum. Defined for the benefit
   // of Chrome OS. Do not use for the Chrome sampling profiler; define a new
   // enum instead.
