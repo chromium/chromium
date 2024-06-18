@@ -83,17 +83,20 @@ class HistorySyncView extends LinearLayout {
     private void createButtonBar(@ScreenMode int restrictionStatus) {
         DualControlLayout buttonBar = findViewById(R.id.dual_control_button_bar);
 
-        @DualControlLayout.ButtonType
-        int acceptButtonType =
-                restrictionStatus == ScreenMode.UNRESTRICTED
-                        ? DualControlLayout.ButtonType.PRIMARY_FILLED
-                        : DualControlLayout.ButtonType.PRIMARY_TEXT;
+        final @DualControlLayout.ButtonType int acceptButtonType;
+        final @DualControlLayout.ButtonType int declineButtonType;
+        if (restrictionStatus == ScreenMode.UNRESTRICTED) {
+            acceptButtonType = DualControlLayout.ButtonType.PRIMARY_FILLED;
+            declineButtonType = DualControlLayout.ButtonType.SECONDARY;
+        } else {
+            acceptButtonType = DualControlLayout.ButtonType.PRIMARY_OUTLINED;
+            declineButtonType = DualControlLayout.ButtonType.SECONDARY_OUTLINED;
+        }
 
         mAcceptButton =
                 DualControlLayout.createButtonForLayout(getContext(), acceptButtonType, "", null);
         mDeclineButton =
-                DualControlLayout.createButtonForLayout(
-                        getContext(), DualControlLayout.ButtonType.SECONDARY, "", null);
+                DualControlLayout.createButtonForLayout(getContext(), declineButtonType, "", null);
 
         buttonBar.addView(mAcceptButton);
         buttonBar.addView(mDeclineButton);
@@ -103,10 +106,12 @@ class HistorySyncView extends LinearLayout {
 
     private void createButtonsForPortraitLayout(@ScreenMode int restrictionStatus) {
         // TODO(b/345663992) Allow buttons to be added dynamically
-        mAcceptButton =
-                restrictionStatus == ScreenMode.UNRESTRICTED
-                        ? findViewById(R.id.button_primary)
-                        : findViewById(R.id.button_primary_minor_mode);
-        mDeclineButton = findViewById(R.id.button_secondary);
+        if (restrictionStatus == ScreenMode.UNRESTRICTED) {
+            mAcceptButton = findViewById(R.id.button_primary);
+            mDeclineButton = findViewById(R.id.button_secondary);
+        } else {
+            mAcceptButton = findViewById(R.id.button_primary_minor_mode);
+            mDeclineButton = findViewById(R.id.button_secondary_minor_mode);
+        }
     }
 }

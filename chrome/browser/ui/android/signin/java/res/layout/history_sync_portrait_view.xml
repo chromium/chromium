@@ -108,9 +108,10 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:visibility="gone"/>
 
+    <!--   TODO(b/345663992) Allow buttons to be added dynamically-->
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/button_primary_minor_mode"
-        style="@style/TextButton"
+        style="@style/OutlinedButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"/>
@@ -118,6 +119,14 @@ found in the LICENSE file.
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/button_secondary"
         style="@style/TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <!--   TODO(b/345663992) Allow buttons to be added dynamically-->
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/button_secondary_minor_mode"
+        style="@style/OutlinedButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"/>

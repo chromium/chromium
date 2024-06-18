@@ -289,7 +289,7 @@ public class HistorySyncTest {
                     Button primaryButton =
                             historySyncActivity.findViewById(R.id.button_primary_minor_mode);
                     Button secondaryButton =
-                            historySyncActivity.findViewById(R.id.button_secondary);
+                            historySyncActivity.findViewById(R.id.button_secondary_minor_mode);
                     Assert.assertEquals(View.VISIBLE, primaryButton.getVisibility());
                     Assert.assertEquals(View.VISIBLE, secondaryButton.getVisibility());
 
@@ -404,9 +404,14 @@ public class HistorySyncTest {
                             historySyncActivity.findViewById(R.id.button_primary_minor_mode);
                     Button secondaryButton =
                             historySyncActivity.findViewById(R.id.button_secondary);
+                    Button secondaryButtonMinorMode =
+                            historySyncActivity.findViewById(R.id.button_secondary_minor_mode);
+
                     Assert.assertEquals(View.GONE, primaryButton.getVisibility());
                     Assert.assertEquals(View.GONE, primaryButtonMinorMode.getVisibility());
+
                     Assert.assertEquals(View.GONE, secondaryButton.getVisibility());
+                    Assert.assertEquals(View.GONE, secondaryButtonMinorMode.getVisibility());
                 });
 
         // Capability is received as MINOR_MODE_REQUIRED after an arbitrary amount of time that is
@@ -418,7 +423,7 @@ public class HistorySyncTest {
                             AccountManagerTestRule.AADC_UNRESOLVED_ACCOUNT.getId());
                 });
 
-        onViewWaiting(withId(org.chromium.chrome.R.id.button_secondary));
+        onViewWaiting(withId(org.chromium.chrome.R.id.button_secondary_minor_mode));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -427,14 +432,18 @@ public class HistorySyncTest {
                             historySyncActivity.findViewById(R.id.button_primary_minor_mode);
                     Button secondaryButton =
                             historySyncActivity.findViewById(R.id.button_secondary);
+                    Button secondaryButtonMinorMode =
+                            historySyncActivity.findViewById(R.id.button_secondary_minor_mode);
 
-                    // Button for non minor mode users should still be hidden
+                    // Buttons for non minor mode users should still be hidden
                     Assert.assertEquals(View.GONE, primaryButton.getVisibility());
+                    Assert.assertEquals(View.GONE, secondaryButton.getVisibility());
+
                     Assert.assertEquals(View.VISIBLE, primaryButtonMinorMode.getVisibility());
-                    Assert.assertEquals(View.VISIBLE, secondaryButton.getVisibility());
+                    Assert.assertEquals(View.VISIBLE, secondaryButtonMinorMode.getVisibility());
                     Assert.assertEquals(
                             primaryButtonMinorMode.getTextColors().getDefaultColor(),
-                            secondaryButton.getTextColors().getDefaultColor());
+                            secondaryButtonMinorMode.getTextColors().getDefaultColor());
                 });
     }
 
@@ -451,7 +460,7 @@ public class HistorySyncTest {
         // History sync opt-in screen should be displayed.
         onView(withId(R.id.history_sync_illustration)).check(matches(isDisplayed()));
 
-        ViewUtils.waitForVisibleView(withId(R.id.button_secondary));
+        ViewUtils.waitForVisibleView(withId(R.id.button_secondary_minor_mode));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -460,14 +469,18 @@ public class HistorySyncTest {
                             historySyncActivity.findViewById(R.id.button_primary_minor_mode);
                     Button secondaryButton =
                             historySyncActivity.findViewById(R.id.button_secondary);
+                    Button secondaryButtonMinorMode =
+                            historySyncActivity.findViewById(R.id.button_secondary_minor_mode);
 
                     // Button for non minor mode users should still be hidden
                     Assert.assertEquals(View.GONE, primaryButton.getVisibility());
+                    Assert.assertEquals(View.GONE, secondaryButton.getVisibility());
+
                     Assert.assertEquals(View.VISIBLE, primaryButtonMinorMode.getVisibility());
-                    Assert.assertEquals(View.VISIBLE, secondaryButton.getVisibility());
+                    Assert.assertEquals(View.VISIBLE, secondaryButtonMinorMode.getVisibility());
                     Assert.assertEquals(
                             primaryButtonMinorMode.getTextColors().getDefaultColor(),
-                            secondaryButton.getTextColors().getDefaultColor());
+                            secondaryButtonMinorMode.getTextColors().getDefaultColor());
                 });
     }
 
