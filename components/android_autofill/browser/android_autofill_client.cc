@@ -176,10 +176,6 @@ void AndroidAutofillClient::ConfirmSaveAddressProfile(
   NOTIMPLEMENTED();
 }
 
-bool AndroidAutofillClient::HasCreditCardScanFeature() const {
-  return false;
-}
-
 bool AndroidAutofillClient::ShowTouchToFillCreditCard(
     base::WeakPtr<autofill::TouchToFillDelegate> delegate,
     base::span<const autofill::CreditCard> cards_to_suggest,

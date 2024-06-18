@@ -267,7 +267,9 @@ AutofillManager* TouchToFillDelegateAndroidImpl::GetManager() {
 }
 
 bool TouchToFillDelegateAndroidImpl::ShouldShowScanCreditCard() {
-  if (!manager_->client().HasCreditCardScanFeature()) {
+  if (!manager_->client()
+           .GetPaymentsAutofillClient()
+           ->HasCreditCardScanFeature()) {
     return false;
   }
 

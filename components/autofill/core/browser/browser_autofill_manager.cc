@@ -687,8 +687,8 @@ BrowserAutofillManager::GetCreditCardAccessManager() const {
 
 bool BrowserAutofillManager::ShouldShowScanCreditCard(
     const FormData& form,
-    const FormFieldData& field) const {
-  if (!client().HasCreditCardScanFeature() ||
+    const FormFieldData& field) {
+  if (!client().GetPaymentsAutofillClient()->HasCreditCardScanFeature() ||
       !IsAutofillPaymentMethodsEnabled()) {
     return false;
   }
@@ -2666,7 +2666,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
     const FormData& form,
     const FormFieldData& trigger_field,
     FieldType trigger_field_type,
-    AutofillSuggestionTriggerSource trigger_source) const {
+    AutofillSuggestionTriggerSource trigger_source) {
   credit_card_form_event_logger_->OnDidPollSuggestions(
       trigger_field, signin_state_for_metrics_);
 

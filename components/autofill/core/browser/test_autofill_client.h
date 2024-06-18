@@ -320,8 +320,6 @@ class TestAutofillClientTemplate : public T {
       AutofillClient::AddressProfileDeleteDialogCallback delete_dialog_callback)
       override {}
 
-  bool HasCreditCardScanFeature() const override { return false; }
-
   bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const autofill::CreditCard> cards_to_suggest,

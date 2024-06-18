@@ -503,6 +503,7 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
       : payments::TestPaymentsAutofillClient(client) {}
   ~MockPaymentsAutofillClient() override = default;
 
+  MOCK_METHOD(bool, HasCreditCardScanFeature, (), (const override));
   MOCK_METHOD(void,
               OnVirtualCardDataAvailable,
               (const VirtualCardManualFallbackBubbleOptions&),
@@ -542,7 +543,6 @@ class MockAutofillClient : public TestAutofillClient {
                AutofillTriggerSource trigger_source,
                bool is_refill),
               (override));
-  MOCK_METHOD(bool, HasCreditCardScanFeature, (), (const override));
   MOCK_METHOD(void,
               TriggerUserPerceptionOfAutofillSurvey,
               (FillingProduct, (const std::map<std::string, std::string>&)),
@@ -7245,7 +7245,7 @@ TEST_F(BrowserAutofillManagerTest, ShowNothingIfTouchToFillAlreadyShown) {
 // Test that 'Scan New Card' suggestion is shown based on whether autofill
 // credit card is enabled or disabled.
 TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnAutofillPreference) {
-  ON_CALL(autofill_client_, HasCreditCardScanFeature())
+  ON_CALL(payments_client(), HasCreditCardScanFeature())
       .WillByDefault(Return(true));
 
   FormData form =
@@ -7279,13 +7279,13 @@ TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnPlatformSupport) {
   ASSERT_EQ(card_number_field.name(), u"cardnumber");
 
   // Test case where device and platform support scanning credit cards.
-  ON_CALL(autofill_client_, HasCreditCardScanFeature())
+  ON_CALL(payments_client(), HasCreditCardScanFeature())
       .WillByDefault(Return(true));
   EXPECT_TRUE(browser_autofill_manager_->ShouldShowScanCreditCard(
       form, card_number_field));
 
   // Test case where device and platform do not support scanning credit cards.
-  ON_CALL(autofill_client_, HasCreditCardScanFeature())
+  ON_CALL(payments_client(), HasCreditCardScanFeature())
       .WillByDefault(Return(false));
   EXPECT_FALSE(browser_autofill_manager_->ShouldShowScanCreditCard(
       form, card_number_field));
@@ -7294,7 +7294,7 @@ TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnPlatformSupport) {
 // Test that 'Scan New Card' suggestion is shown based on whether form field
 // chosen is a credit card number field.
 TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnCreditCardNumberField) {
-  ON_CALL(autofill_client_, HasCreditCardScanFeature())
+  ON_CALL(payments_client(), HasCreditCardScanFeature())
       .WillByDefault(Return(true));
 
   FormData form =
@@ -7317,7 +7317,7 @@ TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnCreditCardNumberField) {
 // Test that 'Scan New Card' suggestion is shown based on whether the form is
 // secure.
 TEST_F(BrowserAutofillManagerTest, ScanCreditCardBasedOnIsFormSecure) {
-  ON_CALL(autofill_client_, HasCreditCardScanFeature())
+  ON_CALL(payments_client(), HasCreditCardScanFeature())
       .WillByDefault(Return(true));
 
   // Test case for HTTP form.

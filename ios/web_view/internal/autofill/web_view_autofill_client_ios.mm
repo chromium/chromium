@@ -234,10 +234,6 @@ void WebViewAutofillClientIOS::ShowDeleteAddressProfileDialog(
   NOTREACHED_IN_MIGRATION();
 }
 
-bool WebViewAutofillClientIOS::HasCreditCardScanFeature() const {
-  return false;
-}
-
 bool WebViewAutofillClientIOS::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const autofill::CreditCard> cards_to_suggest,

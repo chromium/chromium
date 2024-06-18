@@ -107,7 +107,6 @@ class AndroidAutofillClient : public autofill::ContentAutofillClient {
   void ShowDeleteAddressProfileDialog(
       const autofill::AutofillProfile& profile,
       AddressProfileDeleteDialogCallback delete_dialog_callback) override;
-  bool HasCreditCardScanFeature() const override;
   bool ShowTouchToFillCreditCard(
       base::WeakPtr<autofill::TouchToFillDelegate> delegate,
       base::span<const autofill::CreditCard> cards_to_suggest,

@@ -347,10 +347,6 @@ void ChromeAutofillClientIOS::ShowDeleteAddressProfileDialog(
   NOTREACHED_NORETURN();
 }
 
-bool ChromeAutofillClientIOS::HasCreditCardScanFeature() const {
-  return false;
-}
-
 bool ChromeAutofillClientIOS::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const CreditCard> cards_to_suggest,

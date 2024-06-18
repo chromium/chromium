@@ -244,6 +244,10 @@ void ChromePaymentsAutofillClient::
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
+bool ChromePaymentsAutofillClient::HasCreditCardScanFeature() const {
+  return CreditCardScannerController::HasCreditCardScanFeature();
+}
+
 void ChromePaymentsAutofillClient::ScanCreditCard(
     ChromePaymentsAutofillClient::CreditCardScanCallback callback) {
   CreditCardScannerController::ScanCreditCard(web_contents(),

@@ -199,6 +199,10 @@ class PaymentsAutofillClient : public RiskDataLoader {
           callback);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
+  // Returns true if both the platform and the device support scanning credit
+  // cards. Should be called before ScanCreditCard().
+  virtual bool HasCreditCardScanFeature() const;
+
   // Shows the user interface for scanning a credit card. Invokes the `callback`
   // when a credit card is scanned successfully. Should be called only if
   // HasCreditCardScanFeature() returns true.
