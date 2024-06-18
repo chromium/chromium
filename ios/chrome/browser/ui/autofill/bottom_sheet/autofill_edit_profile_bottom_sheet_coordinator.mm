@@ -118,6 +118,7 @@
   _navigationController =
       [[TableViewNavigationController alloc] initWithTable:_viewController];
   _navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
+  _navigationController.modalInPresentation = YES;
   _navigationController.modalTransitionStyle =
       UIModalTransitionStyleCoverVertical;
 
