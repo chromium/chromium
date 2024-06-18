@@ -248,8 +248,8 @@ void SetFallbackImageToImageView(UIImageView* image_view,
   UIImageView* salientView = [[UIImageView alloc] init];
 
   // Compute the size of the image.
-  CGFloat width = _item.salientImage.size.width;
-  CGFloat height = _item.salientImage.size.height;
+  CGFloat width = _item.contentImage.size.width;
+  CGFloat height = _item.contentImage.size.height;
   if (width > height) {
     width = (width * containerSize) / height;
     height = containerSize;
@@ -260,7 +260,7 @@ void SetFallbackImageToImageView(UIImageView* image_view,
 
   // Resize the salient image.
   UIGraphicsBeginImageContextWithOptions(CGSize(width, height), NO, 0.0);
-  [_item.salientImage drawInRect:CGRectMake(0, 0, width, height)];
+  [_item.contentImage drawInRect:CGRectMake(0, 0, width, height)];
   UIImage* scaledImage = UIGraphicsGetImageFromCurrentImageContext();
   UIGraphicsEndImageContext();
   [salientView setImage:scaledImage];
@@ -291,8 +291,8 @@ void SetFallbackImageToImageView(UIImageView* image_view,
 
   BOOL hasSalientImage = NO;
   CGFloat containerSize;
-  if (_item.salientImage && IsTabResumption1_5SalientImageEnabled() &&
-      _item.salientImage.size.width && _item.salientImage.size.height) {
+  if (_item.contentImage && IsTabResumption1_5SalientImageEnabled() &&
+      _item.contentImage.size.width && _item.contentImage.size.height) {
     hasSalientImage = YES;
     containerSize = kImageSalientContainerSize;
     UIView* salientView =

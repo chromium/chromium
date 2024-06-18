@@ -47,8 +47,8 @@ enum TabResumptionItemType {
 // The favicon image of the tab if any.
 @property(nonatomic, strong) UIImage* faviconImage;
 
-// The favicon image of the tab if any.
-@property(nonatomic, strong) UIImage* salientImage;
+// The image representing the content of the tab if any.
+@property(nonatomic, strong) UIImage* contentImage;
 
 // Command handler for user actions.
 @property(nonatomic, weak) id<TabResumptionCommands> commandHandler;

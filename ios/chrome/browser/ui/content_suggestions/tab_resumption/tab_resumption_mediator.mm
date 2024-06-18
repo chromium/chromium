@@ -27,6 +27,8 @@
 #import "ios/chrome/browser/page_image/model/page_image_service_factory.h"
 #import "ios/chrome/browser/sessions/session_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -34,6 +36,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_opener.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/sync/model/session_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
@@ -463,15 +466,57 @@ const char kGStatic[] = ".gstatic.com";
 
 // Fetches a relevant image for the `item` to display.
 - (void)fetchImageForItem:(TabResumptionItem*)item {
-  if (IsTabResumption1_5SalientImageEnabled() && _pageImageService &&
-      base::FeatureList::IsEnabled(page_image_service::kImageService)) {
+  if (item.itemType == kMostRecentTab) {
+    [self fetchSnapshotForItem:item];
+  } else {
     [self fetchSalientImageForItem:item];
   }
   [self fetchFaviconForItem:item];
 }
 
+// Fetches the snapshot of the tab showing `item`.
+- (void)fetchSnapshotForItem:(TabResumptionItem*)item {
+  if (!IsTabResumption1_5SalientImageEnabled()) {
+    return [self fetchSalientImageForItem:item];
+  }
+  BrowserList* browserList =
+      BrowserListFactory::GetForBrowserState(_browser->GetBrowserState());
+  for (Browser* browser : browserList->AllRegularBrowsers()) {
+    int index =
+        browser->GetWebStateList()->GetIndexOfWebStateWithURL(item.tabURL);
+    if (index == WebStateList::kInvalidIndex) {
+      continue;
+    }
+    web::WebState* webState = _webStateList->GetWebStateAt(index);
+    if (!webState) {
+      continue;
+    }
+    __weak TabResumptionMediator* weakSelf = self;
+    SnapshotTabHelper* snapshotTabHelper =
+        SnapshotTabHelper::FromWebState(webState);
+    snapshotTabHelper->RetrieveColorSnapshot(^(UIImage* image) {
+      [weakSelf snapshotFetched:image forItem:item];
+    });
+    return;
+  }
+  return [self fetchSalientImageForItem:item];
+}
+
+// The snapshot of the tab showing `item` was fetched.
+- (void)snapshotFetched:(UIImage*)image forItem:(TabResumptionItem*)item {
+  if (!image) {
+    return [self fetchSalientImageForItem:item];
+  }
+  item.contentImage = image;
+  [self showItem:item];
+}
+
 // Fetches the salient image for `item`.
 - (void)fetchSalientImageForItem:(TabResumptionItem*)item {
+  if (!IsTabResumption1_5SalientImageEnabled() || !_pageImageService ||
+      !base::FeatureList::IsEnabled(page_image_service::kImageService)) {
+    return;
+  }
   __weak TabResumptionMediator* weakSelf = self;
   page_image_service::mojom::Options options;
   options.optimization_guide_images = true;
@@ -490,7 +535,6 @@ const char kGStatic[] = ".gstatic.com";
   __weak TabResumptionMediator* weakSelf = self;
   if (!URL.is_valid() || !URL.SchemeIsCryptographic() ||
       !base::EndsWith(URL.host(), kGStatic)) {
-    [self fetchFaviconForItem:item];
     return;
   }
   _imageFetcher->FetchImageData(
@@ -509,10 +553,9 @@ const char kGStatic[] = ".gstatic.com";
       [UIImage imageWithData:[NSData dataWithBytes:imageData.c_str()
                                             length:imageData.size()]];
   if (!image) {
-    [self fetchFaviconForItem:item];
     return;
   }
-  item.salientImage = image;
+  item.contentImage = image;
   [self showItem:item];
 }
 
