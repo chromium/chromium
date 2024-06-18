@@ -2,17 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(https://crbug.com/344639839): fix the unsafe buffer errors in this file,
-// then remove this pragma.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/views/debug_utils.h"
 
 #include <ostream>
 
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -66,13 +61,7 @@ void PrintFocusHierarchyImp(const View* view,
 
 #if !defined(NDEBUG)
 std::string PrintViewGraphImpl(const View* view) {
-  // 64-bit pointer = 16 bytes of hex + "0x" + '\0' = 19.
-  const size_t kMaxPointerStringLength = 19;
-
   std::string result;
-
-  // Node characteristics.
-  char p[kMaxPointerStringLength];
 
   const std::string class_name(view->GetClassName());
   size_t base_name_index = class_name.find_last_of('/');
@@ -81,40 +70,24 @@ std::string PrintViewGraphImpl(const View* view) {
   else
     base_name_index++;
 
-  constexpr size_t kBoundsBufferSize = 512;
-  char bounds_buffer[kBoundsBufferSize];
-
   // Information about current node.
-  base::snprintf(p, kBoundsBufferSize, "%p", view);
   result.append("  N");
-  result.append(p + 2);
+  result.append(base::StringPrintf("%p", view));
   result.append(" [label=\"");
 
   result.append(class_name.substr(base_name_index).c_str());
 
-  base::snprintf(bounds_buffer, kBoundsBufferSize,
-                 "\\n bounds: (%d, %d), (%dx%d)", view->bounds().x(),
-                 view->bounds().y(), view->bounds().width(),
-                 view->bounds().height());
-  result.append(bounds_buffer);
+  result.append(base::StringPrintf(
+      "\\n bounds: (%d, %d), (%dx%d)", view->bounds().x(), view->bounds().y(),
+      view->bounds().width(), view->bounds().height()));
 
   if (!view->GetTransform().IsIdentity()) {
-    if (std::optional<gfx::DecomposedTransform> decomp =
-            view->GetTransform().Decompose()) {
-      base::snprintf(bounds_buffer, kBoundsBufferSize,
-                     "\\n translation: (%f, %f)", decomp->translate[0],
-                     decomp->translate[1]);
-      result.append(bounds_buffer);
-
-      base::snprintf(bounds_buffer, kBoundsBufferSize, "\\n rotation: %3.2f",
-                     base::RadToDeg(std::acos(decomp->quaternion.w()) * 2));
-      result.append(bounds_buffer);
-
-      base::snprintf(bounds_buffer, kBoundsBufferSize,
-                     "\\n scale: (%2.4f, %2.4f)", decomp->scale[0],
-                     decomp->scale[1]);
-      result.append(bounds_buffer);
-    }
+    gfx::Vector2dF translation = view->GetTransform().To2dTranslation();
+    gfx::Vector2dF scale = view->GetTransform().To2dScale();
+    result.append(base::StringPrintf("\\n translation: (%f, %f)",
+                                     translation.x(), translation.y()));
+    result.append(
+        base::StringPrintf("\\n scale: (%2.4f, %2.4f)", scale.x(), scale.y()));
   }
 
   result.append("\"");
@@ -133,14 +106,7 @@ std::string PrintViewGraphImpl(const View* view) {
 
   // Link to parent.
   if (view->parent()) {
-    char pp[kMaxPointerStringLength];
-
-    base::snprintf(pp, kMaxPointerStringLength, "%p", view->parent());
-    result.append("  N");
-    result.append(pp + 2);
-    result.append(" -> N");
-    result.append(p + 2);
-    result.append("\n");
+    result.append(base::StringPrintf(" N%p -> N%p\n", view->parent(), view));
   }
 
   for (const View* child : view->children())
