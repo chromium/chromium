@@ -2,15 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Implementation of SafeBrowsing for WebSockets. This code runs inside the
-// render process, calling the interface defined in safe_browsing.mojom to
-// communicate with the SafeBrowsing service.
+// SafeBrowsing hook for WebSockets, used for extension telemetry. This code
+// runs inside the render process, calling the interface defined in
+// safe_browsing.mojom to communicate with the extension telemetry service.
 
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_WEBSOCKET_SB_HANDSHAKE_THROTTLE_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_WEBSOCKET_SB_HANDSHAKE_THROTTLE_H_
-
-#include <memory>
-#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/types/optional_ref.h"
@@ -24,15 +21,10 @@ namespace safe_browsing {
 
 class WebSocketSBHandshakeThrottle : public blink::WebSocketHandshakeThrottle {
  public:
-  WebSocketSBHandshakeThrottle(
-      mojom::SafeBrowsing* safe_browsing,
-      base::optional_ref<const blink::LocalFrameToken> local_frame_token);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // |extension_web_request_reporter_pending_remote| is used for sending
   // extension web requests to the browser.
-  WebSocketSBHandshakeThrottle(
-      mojom::SafeBrowsing* safe_browsing,
-      base::optional_ref<const blink::LocalFrameToken> local_frame_token,
+  explicit WebSocketSBHandshakeThrottle(
       mojom::ExtensionWebRequestReporter* extension_web_request_reporter);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -49,10 +41,7 @@ class WebSocketSBHandshakeThrottle : public blink::WebSocketHandshakeThrottle {
                              completion_callback) override;
 
  private:
-  const std::optional<const blink::LocalFrameToken> frame_token_;
   GURL url_;
-  blink::WebSocketHandshakeThrottle::OnCompletion completion_callback_;
-  raw_ptr<mojom::SafeBrowsing> safe_browsing_;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Send web request data to the browser if the request

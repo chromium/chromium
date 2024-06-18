@@ -15,7 +15,6 @@
 WebSocketHandshakeThrottleProviderImpl::WebSocketHandshakeThrottleProviderImpl(
     blink::ThreadSafeBrowserInterfaceBrokerProxy* broker) {
   DETACH_FROM_THREAD(thread_checker_);
-  broker->GetInterface(pending_safe_browsing_.InitWithNewPipeAndPassReceiver());
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   broker->GetInterface(
       pending_extension_web_request_reporter_.InitWithNewPipeAndPassReceiver());
@@ -30,9 +29,6 @@ WebSocketHandshakeThrottleProviderImpl::
 WebSocketHandshakeThrottleProviderImpl::WebSocketHandshakeThrottleProviderImpl(
     const WebSocketHandshakeThrottleProviderImpl& other) {
   DETACH_FROM_THREAD(thread_checker_);
-  DCHECK(other.safe_browsing_);
-  other.safe_browsing_->Clone(
-      pending_safe_browsing_.InitWithNewPipeAndPassReceiver());
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   DCHECK(other.extension_web_request_reporter_);
   other.extension_web_request_reporter_->Clone(
@@ -44,9 +40,6 @@ std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
 WebSocketHandshakeThrottleProviderImpl::Clone(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (pending_safe_browsing_) {
-    safe_browsing_.Bind(std::move(pending_safe_browsing_), task_runner);
-  }
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (pending_extension_web_request_reporter_) {
     extension_web_request_reporter_.Bind(
@@ -61,22 +54,15 @@ WebSocketHandshakeThrottleProviderImpl::CreateThrottle(
     base::optional_ref<const blink::LocalFrameToken> local_frame_token,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (pending_safe_browsing_) {
-    safe_browsing_.Bind(std::move(pending_safe_browsing_),
-                        std::move(task_runner));
-  }
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   if (pending_extension_web_request_reporter_) {
     extension_web_request_reporter_.Bind(
         std::move(pending_extension_web_request_reporter_));
   }
-  auto throttle = std::make_unique<safe_browsing::WebSocketSBHandshakeThrottle>(
-      safe_browsing_.get(), local_frame_token,
+  return std::make_unique<safe_browsing::WebSocketSBHandshakeThrottle>(
       extension_web_request_reporter_.get());
 #else
-  auto throttle = std::make_unique<safe_browsing::WebSocketSBHandshakeThrottle>(
-      safe_browsing_.get(), local_frame_token);
+  return nullptr;
 #endif
-  return throttle;
 }

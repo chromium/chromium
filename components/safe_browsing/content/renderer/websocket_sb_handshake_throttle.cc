@@ -11,7 +11,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/safe_browsing/core/common/scheme_logger.h"
 #include "content/public/renderer/render_frame.h"
 #include "ipc/ipc_message.h"
 #include "net/http/http_request_headers.h"
@@ -27,22 +26,10 @@
 
 namespace safe_browsing {
 
-// TODO(crbug.com/40934395) [Also TODO(thefrog)]: Remove constructor,
-// `frame_token_`, and `safe_browsing_`.
-WebSocketSBHandshakeThrottle::WebSocketSBHandshakeThrottle(
-    mojom::SafeBrowsing* safe_browsing,
-    base::optional_ref<const blink::LocalFrameToken> local_frame_token)
-    : frame_token_(local_frame_token.CopyAsOptional()),
-      safe_browsing_(safe_browsing) {}
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 WebSocketSBHandshakeThrottle::WebSocketSBHandshakeThrottle(
-    mojom::SafeBrowsing* safe_browsing,
-    base::optional_ref<const blink::LocalFrameToken> local_frame_token,
     mojom::ExtensionWebRequestReporter* extension_web_request_reporter)
-    : frame_token_(local_frame_token.CopyAsOptional()),
-      safe_browsing_(safe_browsing),
-      extension_web_request_reporter_(
+    : extension_web_request_reporter_(
           std::move(extension_web_request_reporter)) {}
 #endif
 
@@ -53,19 +40,13 @@ void WebSocketSBHandshakeThrottle::ThrottleHandshake(
     const blink::WebSecurityOrigin& creator_origin,
     const blink::WebSecurityOrigin& isolated_world_origin,
     blink::WebSocketHandshakeThrottle::OnCompletion completion_callback) {
-  DCHECK(!completion_callback_);
-  completion_callback_ = std::move(completion_callback);
   url_ = url;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   MaybeSendExtensionWebRequestData(url, creator_origin, isolated_world_origin);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-  // TODO(crbug.com/40934395) [Also TODO(thefrog)]: Remove histogram.
-  scheme_logger::LogScheme(url, "SafeBrowsing.WebSocketCheck.UrlScheme");
-  // TODO(crbug.com/40934395) [Also TODO(thefrog)]: Remove histogram.
-  base::UmaHistogramBoolean("SafeBrowsing.WebSocketCheck.Skipped", true);
-  std::move(completion_callback_).Run(std::nullopt);
+  std::move(completion_callback).Run(std::nullopt);
   // |this| is destroyed here.
 }
 

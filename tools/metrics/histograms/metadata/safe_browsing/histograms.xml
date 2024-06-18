@@ -3263,26 +3263,6 @@ failing to fetch the updates which puts users' security at risk. -->
   </summary>
 </histogram>
 
-<histogram name="SafeBrowsing.WebSocketCheck.Skipped" enum="BooleanSkipped"
-    expires_after="2024-11-03">
-  <owner>thefrog@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logged when a web socket throttle decides whether to skip its associated
-    Safe Browsing check.
-  </summary>
-</histogram>
-
-<histogram name="SafeBrowsing.WebSocketCheck.UrlScheme"
-    enum="SafeBrowsingUrlScheme" expires_after="2024-12-08">
-  <owner>thefrog@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Logged when a web socket throttle is determining whether to run a Safe
-    Browsing check. Records the scheme of the URL that would be checked.
-  </summary>
-</histogram>
-
 <histogram name="SafeBrowsing.WebView.AppOptIn" enum="SafeBrowsingAppOptIn"
     expires_after="2024-06-05">
   <owner>ntfschr@chromium.org</owner>

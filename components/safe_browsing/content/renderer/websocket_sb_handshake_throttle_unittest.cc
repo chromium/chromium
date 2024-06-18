@@ -12,12 +12,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
-#include "components/safe_browsing/core/common/safe_browsing_url_checker.mojom.h"
-#include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/http/http_request_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
@@ -28,9 +25,8 @@ namespace safe_browsing {
 
 namespace {
 
-constexpr char kTestUrl[] = "wss://test/";
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
+constexpr char kTestUrl[] = "wss://test/";
 constexpr char kTestExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
 constexpr char kTestExtensionUrl[] =
     "chrome-extension://abcdefghijklmnopabcdefghijklmnop/";
@@ -67,53 +63,6 @@ class FakeExtensionWebRequestReporter
 };
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-class FakeSafeBrowsing : public mojom::SafeBrowsing {
- public:
-  FakeSafeBrowsing()
-      : load_flags_(-1),
-        has_user_gesture_(false),
-        originated_from_service_worker_(false) {}
-
-  void CreateCheckerAndCheck(
-      const std::optional<blink::LocalFrameToken>& frame_token,
-      mojo::PendingReceiver<mojom::SafeBrowsingUrlChecker> receiver,
-      const GURL& url,
-      const std::string& method,
-      const net::HttpRequestHeaders& headers,
-      int32_t load_flags,
-      bool has_user_gesture,
-      bool originated_from_service_worker,
-      CreateCheckerAndCheckCallback callback) override {
-    frame_token_ = frame_token;
-    receiver_ = std::move(receiver);
-    url_ = url;
-    method_ = method;
-    headers_ = headers;
-    load_flags_ = load_flags;
-    has_user_gesture_ = has_user_gesture;
-    originated_from_service_worker_ = originated_from_service_worker;
-    callback_ = std::move(callback);
-    run_loop_.Quit();
-  }
-
-  void Clone(mojo::PendingReceiver<mojom::SafeBrowsing> receiver) override {
-    NOTREACHED_IN_MIGRATION();
-  }
-
-  void RunUntilCalled() { run_loop_.Run(); }
-
-  std::optional<blink::LocalFrameToken> frame_token_;
-  mojo::PendingReceiver<mojom::SafeBrowsingUrlChecker> receiver_;
-  GURL url_;
-  std::string method_;
-  net::HttpRequestHeaders headers_;
-  int32_t load_flags_;
-  bool has_user_gesture_;
-  bool originated_from_service_worker_;
-  CreateCheckerAndCheckCallback callback_;
-  base::RunLoop run_loop_;
-};
-
 class FakeCallback {
  public:
   enum Result { RESULT_NOT_CALLED, RESULT_SUCCESS, RESULT_ERROR };
@@ -145,31 +94,18 @@ class WebSocketSBHandshakeThrottleTest : public ::testing::Test {
  protected:
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   WebSocketSBHandshakeThrottleTest()
-      : safe_browsing_receiver_(&safe_browsing_),
-        extension_web_request_reporter_receiver_(
+      : extension_web_request_reporter_receiver_(
             &extension_web_request_reporter_) {
-    safe_browsing_receiver_.Bind(
-        safe_browsing_remote_.BindNewPipeAndPassReceiver());
     extension_web_request_reporter_receiver_.Bind(
         extension_web_request_reporter_remote_.BindNewPipeAndPassReceiver());
     throttle_ = std::make_unique<WebSocketSBHandshakeThrottle>(
-        safe_browsing_remote_.get(), std::nullopt,
         extension_web_request_reporter_remote_.get());
   }
 #else
-  WebSocketSBHandshakeThrottleTest()
-      : safe_browsing_receiver_(&safe_browsing_) {
-    safe_browsing_receiver_.Bind(
-        safe_browsing_remote_.BindNewPipeAndPassReceiver());
-    throttle_ = std::make_unique<WebSocketSBHandshakeThrottle>(
-        safe_browsing_remote_.get(), std::nullopt);
-  }
+  WebSocketSBHandshakeThrottleTest() {}
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   base::test::TaskEnvironment message_loop_;
-  FakeSafeBrowsing safe_browsing_;
-  mojo::Receiver<mojom::SafeBrowsing> safe_browsing_receiver_;
-  mojo::Remote<mojom::SafeBrowsing> safe_browsing_remote_;
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   FakeExtensionWebRequestReporter extension_web_request_reporter_;
   mojo::Receiver<mojom::ExtensionWebRequestReporter>
@@ -182,19 +118,6 @@ class WebSocketSBHandshakeThrottleTest : public ::testing::Test {
 };
 
 TEST_F(WebSocketSBHandshakeThrottleTest, Construction) {}
-
-// TODO(crbug.com/40934395) [Also TODO(thefrog)]: Remove test case.
-TEST_F(WebSocketSBHandshakeThrottleTest, DoesNotRunCheck) {
-  base::HistogramTester histogram_tester;
-  throttle_->ThrottleHandshake(
-      GURL(kTestUrl), blink::WebSecurityOrigin::CreateFromString(kTestUrl),
-      blink::WebSecurityOrigin(),
-      base::BindOnce(&FakeCallback::OnCompletion,
-                     base::Unretained(&fake_callback_)));
-  EXPECT_EQ(FakeCallback::RESULT_SUCCESS, fake_callback_.result_);
-  histogram_tester.ExpectUniqueSample("SafeBrowsing.WebSocketCheck.Skipped",
-                                      true, 1);
-}
 
 // TODO(crbug.com/40934395) [Also TODO(thefrog)]: Move entire file to
 // ENABLE_EXTENSIONS-only build and remove in-code build checks.
