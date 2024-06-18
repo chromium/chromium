@@ -85,6 +85,15 @@ class DISPLAY_EXPORT DisplayLinkMac : public base::RefCounted<DisplayLinkMac> {
 
   // Get the panel/monitor refresh rate
   double GetRefreshRate() const;
+  void GetRefreshIntervalRange(base::TimeDelta& min_interval,
+                               base::TimeDelta& max_interval,
+                               base::TimeDelta& granularity) const;
+
+  void SetPreferredInterval(base::TimeDelta interval);
+  void SetPreferredIntervalRange(base::TimeDelta min_interval,
+                                 base::TimeDelta max_interval,
+                                 base::TimeDelta preferred_interval);
+  bool IsPreferredIntervalSupported();
 
   // Retrieves the current (“now”) time of a given display link. Returns
   // base::TimeTicks() if the current time is not available.

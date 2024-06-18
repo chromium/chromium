@@ -77,6 +77,7 @@ std::unique_ptr<CADisplayLinkWrapper> CADisplayLinkWrapper::Create(
     objc_state->display_link =
         [objc_state->ns_screen displayLinkWithTarget:objc_state->target
                                             selector:@selector(step:)];
+
     if (!objc_state->display_link) {
       return nullptr;
     }
@@ -92,7 +93,7 @@ std::unique_ptr<CADisplayLinkWrapper> CADisplayLinkWrapper::Create(
                                                     .preferred = refresh_rate}];
 
     [objc_state->display_link addToRunLoop:NSRunLoop.mainRunLoop
-                                   forMode:NSRunLoopCommonModes];
+                                   forMode:NSDefaultRunLoopMode];
 
     std::unique_ptr<CADisplayLinkWrapper> wrapper(
         new CADisplayLinkWrapper(std::move(objc_state)));
@@ -104,6 +105,11 @@ std::unique_ptr<CADisplayLinkWrapper> CADisplayLinkWrapper::Create(
 
     wrapper->display_id_ = display_id;
     wrapper->callback_ = display_link_callback;
+    wrapper->min_interval_ =
+        base::Seconds(1) *
+        wrapper->objc_state_->ns_screen.minimumRefreshInterval;
+    wrapper->max_interval_ = wrapper->min_interval_;
+    wrapper->preferred_interval_ = wrapper->min_interval_;
 
     return wrapper;
   }
@@ -124,8 +130,8 @@ CADisplayLinkWrapper::~CADisplayLinkWrapper() {
   if (@available(macos 14.0, *)) {
     DCHECK(objc_state_);
     DCHECK(objc_state_->display_link);
-    [objc_state_->target setCallback:base::RepeatingClosure()];
 
+    [objc_state_->target setCallback:base::RepeatingClosure()];
     [objc_state_->display_link invalidate];
     objc_state_->display_link = nil;
   }
@@ -174,8 +180,11 @@ void CADisplayLinkWrapper::GetRefreshIntervalRange(
 
 void CADisplayLinkWrapper::SetPreferredInterval(
     base::TimeDelta preferred_interval) {
-  SetPreferredIntervalRange(preferred_interval, preferred_interval,
-                            preferred_interval);
+  // The |preferred_interval| must be a supported interval if a fixed refresh
+  // rate is requested, otherwise CVDisplayLink terminates app due to uncaught
+  // exception 'NSInvalidArgumentException', reason: 'invalid range'.
+  auto interval = AdjustedToSupportedInterval(preferred_interval);
+  SetPreferredIntervalRange(interval, interval, interval);
 }
 
 void CADisplayLinkWrapper::SetPreferredIntervalRange(
@@ -230,6 +239,14 @@ void CADisplayLinkWrapper::SetPreferredIntervalRange(
   }
 }
 
+bool CADisplayLinkWrapper::IsPreferredIntervalSupported() {
+  if (@available(macos 12.0, *)) {
+    return (objc_state_->ns_screen.minimumRefreshInterval !=
+            objc_state_->ns_screen.maximumRefreshInterval);
+  }
+  return false;
+}
+
 void CADisplayLinkWrapper::Step() {
   if (@available(macos 14.0, *)) {
     base::TimeTicks callbackTime =
@@ -260,6 +277,32 @@ void CADisplayLinkWrapper::Step() {
 
     callback_.Run(params);
   }
+}
+
+base::TimeDelta CADisplayLinkWrapper::AdjustedToSupportedInterval(
+    base::TimeDelta interval) {
+  base::TimeDelta min_interval;
+  base::TimeDelta max_interval;
+  base::TimeDelta granularity;
+  GetRefreshIntervalRange(min_interval, max_interval, granularity);
+
+  // The screen supports any update rate between the minimum and maximum refresh
+  // intervals if granularity is 0.
+  if (granularity.is_zero()) {
+    return interval;
+  }
+
+  auto multiplier = std::round((interval - min_interval) / granularity);
+  base::TimeDelta target_interval = min_interval + granularity * multiplier;
+
+  if (target_interval <= min_interval) {
+    return min_interval;
+  }
+  if (target_interval >= max_interval) {
+    return max_interval;
+  }
+
+  return target_interval;
 }
 
 }  // namespace ui

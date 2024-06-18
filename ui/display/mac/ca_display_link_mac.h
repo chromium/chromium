@@ -36,6 +36,9 @@ class CADisplayLinkWrapper {
   void SetPreferredIntervalRange(base::TimeDelta min_interval,
                                  base::TimeDelta max_interval,
                                  base::TimeDelta preferred_interval);
+
+  bool IsPreferredIntervalSupported();
+
   // CVDisplayLink callback.
   void Step();
 
@@ -45,6 +48,9 @@ class CADisplayLinkWrapper {
   explicit CADisplayLinkWrapper(std::unique_ptr<ObjCState> objc_state);
   CADisplayLinkWrapper(const CADisplayLinkWrapper&) = delete;
   CADisplayLinkWrapper& operator=(const CADisplayLinkWrapper&) = delete;
+
+  // Return a nearest refresh interval that is supported by CADisplaylink.
+  base::TimeDelta AdjustedToSupportedInterval(base::TimeDelta interval);
 
   std::unique_ptr<ObjCState> objc_state_;
 
@@ -65,8 +71,6 @@ class CADisplayLinkWrapper {
   base::TimeDelta min_interval_;
 
   DisplayLinkCallback callback_;
-
-  // base::WeakPtrFactory<CADisplayLinkWrapper> weak_factory_{this};
 };
 
 }  // namespace ui

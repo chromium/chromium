@@ -124,6 +124,16 @@ class DisplayLinkMacSharedState {
   void Release();
 
   double GetRefreshRate() const;
+  void GetRefreshIntervalRange(base::TimeDelta& min_interval,
+                               base::TimeDelta& max_interval,
+                               base::TimeDelta& granularity) const;
+
+  void SetPreferredInterval(base::TimeDelta interval);
+  void SetPreferredIntervalRange(base::TimeDelta min_interval,
+                                 base::TimeDelta max_interval,
+                                 base::TimeDelta preferred_interval);
+  bool IsPreferredIntervalSupported();
+
   base::TimeTicks GetCurrentTime() const;
 
   // Run all callbacks. This is called during the CVDisplayLink or CADisplayLink
@@ -366,6 +376,49 @@ double DisplayLinkMacSharedState::GetRefreshRate() const {
   return refresh_rate;
 }
 
+void DisplayLinkMacSharedState::GetRefreshIntervalRange(
+    base::TimeDelta& min_interval,
+    base::TimeDelta& max_interval,
+    base::TimeDelta& granularity) const {
+  if (ca_display_link_wrapper_) {
+    ca_display_link_wrapper_->GetRefreshIntervalRange(
+        min_interval, max_interval, granularity);
+  } else {
+    double refresh_rate = GetRefreshRate();
+    if (refresh_rate) {
+      min_interval = base::Seconds(1) / refresh_rate;
+      max_interval = min_interval;
+      granularity = min_interval;
+    } else {
+      min_interval = base::TimeDelta();
+      max_interval = base::TimeDelta();
+    }
+  }
+}
+
+void DisplayLinkMacSharedState::SetPreferredInterval(base::TimeDelta interval) {
+  if (ca_display_link_wrapper_) {
+    ca_display_link_wrapper_->SetPreferredInterval(interval);
+  }
+}
+void DisplayLinkMacSharedState::SetPreferredIntervalRange(
+    base::TimeDelta min_interval,
+    base::TimeDelta max_interval,
+    base::TimeDelta preferred_interval) {
+  if (ca_display_link_wrapper_) {
+    ca_display_link_wrapper_->SetPreferredIntervalRange(
+        min_interval, max_interval, preferred_interval);
+  }
+}
+
+bool DisplayLinkMacSharedState::IsPreferredIntervalSupported() {
+  if (ca_display_link_wrapper_) {
+    return ca_display_link_wrapper_->IsPreferredIntervalSupported();
+  } else {
+    return false;
+  }
+}
+
 base::TimeTicks DisplayLinkMacSharedState::GetCurrentTime() const {
   CVTimeStamp out_time;
   if (ca_display_link_wrapper_) {
@@ -485,6 +538,30 @@ scoped_refptr<DisplayLinkMac> DisplayLinkMac::GetForDisplay(
 
 double DisplayLinkMac::GetRefreshRate() const {
   return shared_state_->GetRefreshRate();
+}
+
+void DisplayLinkMac::GetRefreshIntervalRange(
+    base::TimeDelta& min_interval,
+    base::TimeDelta& max_interval,
+    base::TimeDelta& granularity) const {
+  return shared_state_->GetRefreshIntervalRange(min_interval, max_interval,
+                                                granularity);
+}
+
+void DisplayLinkMac::SetPreferredInterval(base::TimeDelta interval) {
+  return shared_state_->SetPreferredInterval(interval);
+}
+
+void DisplayLinkMac::SetPreferredIntervalRange(
+    base::TimeDelta min_interval,
+    base::TimeDelta max_interval,
+    base::TimeDelta preferred_interval) {
+  return shared_state_->SetPreferredIntervalRange(min_interval, max_interval,
+                                                  preferred_interval);
+}
+
+bool DisplayLinkMac::IsPreferredIntervalSupported() {
+  return shared_state_->IsPreferredIntervalSupported();
 }
 
 base::TimeTicks DisplayLinkMac::GetCurrentTime() const {
