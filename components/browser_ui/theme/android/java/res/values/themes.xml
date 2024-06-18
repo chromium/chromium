@@ -297,4 +297,9 @@ found in the LICENSE file.
         <item name="defaultFontFamily">@font/default_font</item>
         <item name="defaultMediumFontFamily">@string/sans_serif_medium_fontFamily</item>
     </style>
+
+    <style name="ThemeOverlay.BrowserUI.DevTestingDefaultFontFamilyThemeOverlay" parent="">
+        <item name="defaultFontFamily">@string/casual</item>
+        <item name="defaultMediumFontFamily">@string/cursive</item>
+    </style>
 </resources>

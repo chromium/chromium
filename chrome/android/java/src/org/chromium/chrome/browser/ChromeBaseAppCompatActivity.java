@@ -38,6 +38,7 @@ import org.chromium.base.BuildInfo;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -104,6 +105,13 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         /** Automotive toolbar is not added. */
         int NONE = -1;
     }
+
+    public static final String DEFAULT_FONT_FAMILY_TESTING_PARAM = "dev_testing";
+    public static final BooleanCachedFieldTrialParameter DEFAULT_FONT_FAMILY_TESTING =
+            ChromeFeatureList.newBooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.ANDROID_GOOGLE_SANS_TEXT,
+                    DEFAULT_FONT_FAMILY_TESTING_PARAM,
+                    false);
 
     private final ObservableSupplierImpl<ModalDialogManager> mModalDialogManagerSupplier =
             new ObservableSupplierImpl<>();
@@ -344,7 +352,9 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         if (Build.VERSION.SDK_INT >= VERSION_CODES.TIRAMISU
                 && ChromeFeatureList.sAndroidGoogleSansText.isEnabled()) {
             int defaultFontFamilyOverlay =
-                    R.style.ThemeOverlay_BrowserUI_DefaultFontFamilyThemeOverlay;
+                    DEFAULT_FONT_FAMILY_TESTING.getValue()
+                            ? R.style.ThemeOverlay_BrowserUI_DevTestingDefaultFontFamilyThemeOverlay
+                            : R.style.ThemeOverlay_BrowserUI_DefaultFontFamilyThemeOverlay;
             getTheme().applyStyle(defaultFontFamilyOverlay, true);
             mThemeResIds.add(defaultFontFamilyOverlay);
         }

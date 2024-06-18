@@ -18,6 +18,7 @@ import org.chromium.base.cached_flags.CachedFlagUtils;
 import org.chromium.base.cached_flags.CachedFlagsSafeMode;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.build.BuildConfig;
+import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.JankTrackerExperiment;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
@@ -88,6 +89,7 @@ public class ChromeCachedFlags {
                 List.of(
                         BackPressManager.TAB_HISTORY_RECOVER,
                         ChimeFeatures.ALWAYS_REGISTER,
+                        ChromeBaseAppCompatActivity.DEFAULT_FONT_FAMILY_TESTING,
                         CustomTabIntentDataProvider.AUTO_TRANSLATE_ALLOW_ALL_FIRST_PARTIES,
                         CustomTabIntentDataProvider.AUTO_TRANSLATE_PACKAGE_NAME_ALLOWLIST,
                         CustomTabIntentDataProvider.THIRD_PARTIES_DEFAULT_POLICY,

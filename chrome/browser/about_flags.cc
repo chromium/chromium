@@ -527,6 +527,13 @@ const FeatureEntry::Choice kWebXrForceRuntimeChoices[] = {
 #endif  // ENABLE_VR
 
 #if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kAndroidDefaultFontFamilyDevTesting[] = {
+    {"dev_testing", "true"}};
+
+const FeatureEntry::FeatureVariation kAndroidDefaultFontFamilyVariations[] = {
+    {"Use dev testing font families", kAndroidDefaultFontFamilyDevTesting,
+     std::size(kAndroidDefaultFontFamilyDevTesting), nullptr}};
+
 const FeatureEntry::FeatureParam kCCTMinimizedDefaultIcon[] = {
     {"icon_variant", "0"}};
 const FeatureEntry::FeatureParam kCCTMinimizedAlternativeIcon[] = {
@@ -7746,7 +7753,10 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"android-google-sans-text", flag_descriptions::kAndroidGoogleSansTextName,
      flag_descriptions::kAndroidGoogleSansTextDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidGoogleSansText)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidGoogleSansText,
+                                    kAndroidDefaultFontFamilyVariations,
+                                    "AndroidDefaultFontFamilyVariations")},
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_WIN)
