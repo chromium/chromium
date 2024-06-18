@@ -188,7 +188,7 @@ export class CdpTargetManager {
             // https://html.spec.whatwg.org/multipage/document-sequences.html#creating-browsing-contexts
             // TODO: check who to deal with non-null creator and its `creatorOrigin`.
             targetInfo.url === '' ? 'about:blank' : targetInfo.url,
-            targetInfo.openerId,
+            targetInfo.openerFrameId ?? targetInfo.openerId,
             this.#logger
           );
         }
