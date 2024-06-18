@@ -352,13 +352,6 @@ void ReportImportResultsMetrics(const ImportResults& results,
   base::UmaHistogramCounts1M(
       "PasswordManager.Import.PerFile.AllLoginFieldsEmtpy",
       empty_all_login_fields);
-
-  if (all_errors_count > 0) {
-    base::UmaHistogramBoolean("PasswordManager.Import.OnlyConflicts",
-                              all_errors_count == conflicts_count);
-    base::UmaHistogramBoolean("PasswordManager.Import.OnlyMissingPasswords",
-                              all_errors_count == missing_only_password_rows);
-  }
 }
 
 bool DefaultDeleteFunction(const base::FilePath& file) {

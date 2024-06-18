@@ -1545,21 +1545,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.Import.Only{ErrorType}" enum="Boolean"
-    expires_after="2024-06-30">
-  <owner>eliaskh@chromium.org</owner>
-  <owner>natiahlyi@google.com</owner>
-  <summary>
-    Tracks how many succesful imports contained only {ErrorType} as errors.
-    Recorded during the passwords import process triggered from settings, after
-    parsing the input file.
-  </summary>
-  <token key="ErrorType">
-    <variant name="Conflicts" summary="conflicts"/>
-    <variant name="MissingPasswords" summary="missing passwords"/>
-  </token>
-</histogram>
-
 <histogram name="PasswordManager.Import.PerFile.ConflictsResolved"
     units="saved credentials" expires_after="2024-09-01">
   <owner>natiahlyi@google.com</owner>

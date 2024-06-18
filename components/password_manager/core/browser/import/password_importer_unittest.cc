@@ -747,8 +747,6 @@ TEST_F(PasswordImporterTest, CSVImportEmptyPasswordReported) {
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.ImportedPasswordsPerUserInCSV", 0, 1);
   histogram_tester.ExpectUniqueSample(
-      "PasswordManager.Import.PerFile.OnlyPasswordMissing", 1, 1);
-  histogram_tester.ExpectUniqueSample(
       "PasswordManager.Import.PerFile.PasswordAndUsernameMissing", 1, 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.Import.PerFile.AllLoginFieldsEmtpy", 1, 1);
