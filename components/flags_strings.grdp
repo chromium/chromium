@@ -96,9 +96,6 @@
       $2<ex>cookies</ex>
     </ph>'
   </message>
-  <message name="IDS_DEPRECATED_FEATURES_OWNER_WARNING" desc="A warning stating what system-wide features can only be set by the owner.">
-    Features that apply system-wide can only be set by the owner: <ph name="OWNER_EMAIL">$1<ex>owner@email.com</ex></ph>
-  </message>
   <message name="IDS_DEPRECATED_FEATURES_SEARCH_PLACEHOLDER" desc="The placeholder for the search box on the about:enterprise-settings page.">
     Search features
   </message>
