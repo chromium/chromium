@@ -16,9 +16,6 @@ namespace {
 
 constexpr char kProjectorToolbarHistogramName[] = "Ash.Projector.Toolbar";
 
-constexpr char kProjectorMarkerColorHistogramName[] =
-    "Ash.Projector.MarkerColor";
-
 constexpr char kProjectorCreationFlowHistogramName[] =
     "Ash.Projector.CreationFlow";
 
@@ -62,11 +59,6 @@ inline std::string GetSpeechRecognitionHistogramName(bool is_on_device) {
 void RecordToolbarMetrics(ProjectorToolbar button) {
   base::UmaHistogramEnumeration(
       GetHistogramName(kProjectorToolbarHistogramName), button);
-}
-
-void RecordMarkerColorMetrics(ProjectorMarkerColor color) {
-  base::UmaHistogramEnumeration(
-      GetHistogramName(kProjectorMarkerColorHistogramName), color);
 }
 
 void RecordCreationFlowMetrics(ProjectorCreationFlow step) {

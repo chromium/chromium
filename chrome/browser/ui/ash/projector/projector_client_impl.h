@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "ash/public/cpp/annotator/annotator_tool_controller.h"
 #include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/projector/speech_recognition_availability.h"
@@ -22,23 +21,15 @@
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
-namespace views {
-class WebView;
-}  // namespace views
-
 class SpeechRecognitionRecognizerClientImpl;
 
 // The client implementation for the ProjectorController in ash/. This client is
 // responsible for handling requests that have browser dependencies.
 class ProjectorClientImpl : public ash::ProjectorClient,
                             public SpeechRecognizerDelegate,
-                            public ash::AnnotatorToolController,
                             drive::DriveIntegrationService::Observer,
                             session_manager::SessionManagerObserver {
  public:
-  // RecordingOverlayViewImpl calls this function to initialize the annotator
-  // tool.
-  static void InitForProjectorAnnotator(views::WebView* web_view);
 
   explicit ProjectorClientImpl(ash::ProjectorController* controller);
 
@@ -77,12 +68,6 @@ class ProjectorClientImpl : public ash::ProjectorClient,
   void OnSpeechRecognitionStopped() override;
   void OnLanguageIdentificationEvent(
       media::mojom::LanguageIdentificationEventPtr event) override;
-
-  // ash::AnnotatorToolController:
-  void SetTool(const ash::AnnotatorTool& tool) override;
-  void Undo() override;
-  void Redo() override;
-  void Clear() override;
 
   // DriveIntegrationService::Observer implementation.
   void OnFileSystemMounted() override;

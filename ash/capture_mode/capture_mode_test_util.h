@@ -13,6 +13,7 @@
 #include "ash/capture_mode/test_capture_mode_delegate.h"
 #include "ash/capture_mode/user_nudge_controller.h"
 #include "ash/public/cpp/test/mock_projector_client.h"
+#include "ash/webui/annotator/test/mock_annotator_client.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "ui/events/event_constants.h"
@@ -191,6 +192,7 @@ class ProjectorCaptureModeIntegrationHelper {
 
  private:
   MockProjectorClient projector_client_;
+  MockAnnotatorClient annotator_client_;
 };
 
 // Defines a waiter to observe the visibility change of the view.

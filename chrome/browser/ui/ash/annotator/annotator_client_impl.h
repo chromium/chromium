@@ -5,18 +5,28 @@
 #ifndef CHROME_BROWSER_UI_ASH_ANNOTATOR_ANNOTATOR_CLIENT_IMPL_H_
 #define CHROME_BROWSER_UI_ASH_ANNOTATOR_ANNOTATOR_CLIENT_IMPL_H_
 
+#include "ash/annotator/annotator_controller.h"
 #include "ash/public/cpp/annotator/annotator_tool.h"
-#include "ash/webui/annotator/annotator_client.h"
+#include "ash/webui/annotator/public/cpp/annotator_client.h"
 #include "ash/webui/annotator/untrusted_annotator_page_handler_impl.h"
 #include "base/memory/raw_ptr.h"
+
+namespace views {
+class WebView;
+}  // namespace views
 
 // Implements the interface for the Annotator tool.
 class AnnotatorClientImpl : public ash::AnnotatorClient {
  public:
+  explicit AnnotatorClientImpl(ash::AnnotatorController* annotator_controller);
   AnnotatorClientImpl();
   AnnotatorClientImpl(const AnnotatorClientImpl&) = delete;
   AnnotatorClientImpl& operator=(const AnnotatorClientImpl&) = delete;
   ~AnnotatorClientImpl() override;
+
+  // RecordingOverlayViewImpl calls this function to initialize the annotator
+  // tool.
+  static void InitForProjectorAnnotator(views::WebView* web_view);
 
   // ash::AnnotatorClient:
   void SetAnnotatorPageHandler(
@@ -31,6 +41,7 @@ class AnnotatorClientImpl : public ash::AnnotatorClient {
   }
 
  private:
+  raw_ptr<ash::AnnotatorController> annotator_controller_ = nullptr;
   raw_ptr<ash::UntrustedAnnotatorPageHandlerImpl> annotator_handler_ = nullptr;
 };
 

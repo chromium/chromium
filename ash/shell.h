@@ -106,6 +106,7 @@ class AccessibilityFocusRingControllerImpl;
 class AdaptiveChargingController;
 class AmbientController;
 class AnchoredNudgeManagerImpl;
+class AnnotatorController;
 class AppListControllerImpl;
 class AppListFeatureUsageMetrics;
 class AshAcceleratorConfiguration;
@@ -839,6 +840,10 @@ class ASH_EXPORT Shell : public SessionObserver,
     return projector_controller_.get();
   }
 
+  AnnotatorController* annotator_controller() {
+    return annotator_controller_.get();
+  }
+
   PciePeripheralNotificationController*
   pcie_peripheral_notification_controller() {
     return pcie_peripheral_notification_controller_.get();
@@ -1245,6 +1250,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<FrameThrottlingController> frame_throttling_controller_;
 
   std::unique_ptr<ProjectorControllerImpl> projector_controller_;
+
+  std::unique_ptr<AnnotatorController> annotator_controller_;
 
   std::unique_ptr<AccessibilityEventHandlerManager>
       accessibility_event_handler_manager_;

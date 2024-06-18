@@ -8,8 +8,8 @@
 
 #include "ash/public/cpp/annotator/annotator_tool.h"
 #include "ash/public/cpp/projector/projector_controller.h"
-#include "ash/webui/annotator/annotator_client.h"
 #include "ash/webui/annotator/mojom/untrusted_annotator.mojom.h"
+#include "ash/webui/annotator/public/cpp/annotator_client.h"
 #include "ash/webui/annotator/public/mojom/annotator_structs.mojom.h"
 #include "base/check.h"
 #include "base/json/values_util.h"

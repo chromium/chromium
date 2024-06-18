@@ -42,8 +42,6 @@ component("cpp") {
     "android_intent_helper.h",
     "annotator/annotator_tool.cc",
     "annotator/annotator_tool.h",
-    "annotator/annotator_tool_controller.cc",
-    "annotator/annotator_tool_controller.h",
     "app_list/app_list_client.h",
     "app_list/app_list_config.cc",
     "app_list/app_list_config.h",

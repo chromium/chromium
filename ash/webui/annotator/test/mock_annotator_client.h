@@ -5,7 +5,7 @@
 #ifndef ASH_WEBUI_ANNOTATOR_TEST_MOCK_ANNOTATOR_CLIENT_H_
 #define ASH_WEBUI_ANNOTATOR_TEST_MOCK_ANNOTATOR_CLIENT_H_
 
-#include "ash/webui/annotator/annotator_client.h"
+#include "ash/webui/annotator/public/cpp/annotator_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {

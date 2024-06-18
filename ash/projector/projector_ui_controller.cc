@@ -5,14 +5,13 @@
 #include "ash/projector/projector_ui_controller.h"
 
 #include "ash/accessibility/caption_bubble_context_ash.h"
+#include "ash/annotator/annotator_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/notifier_catalogs.h"
 #include "ash/projector/projector_annotation_tray.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/projector_metrics.h"
-#include "ash/public/cpp/annotator/annotator_tool.h"
-#include "ash/public/cpp/annotator/annotator_tool_controller.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/system/toast_data.h"
@@ -160,7 +159,7 @@ void ProjectorUiController::ShowAnnotationTray(aura::Window* current_root) {
 }
 
 void ProjectorUiController::HideAnnotationTray() {
-  ResetTools();
+  ResetCanvas();
   // Hide the tray icon.
   if (auto* projector_annotation_tray =
           GetProjectorAnnotationTrayForRoot(current_root_)) {
@@ -179,16 +178,11 @@ void ProjectorUiController::EnableAnnotatorTool() {
   }
 }
 
-void ProjectorUiController::SetAnnotatorTool(const AnnotatorTool& tool) {
-  ash::AnnotatorToolController::Get()->SetTool(tool);
-  RecordMarkerColorMetrics(GetMarkerColorForMetrics(tool.color));
-}
-
-void ProjectorUiController::ResetTools() {
+void ProjectorUiController::ResetCanvas() {
   if (annotator_enabled_) {
     ToggleAnnotatorCanvas();
     annotator_enabled_ = false;
-    ash::AnnotatorToolController::Get()->Clear();
+    Shell::Get()->annotator_controller()->ResetTools();
   }
 }
 
@@ -224,17 +218,7 @@ void ProjectorUiController::OnRecordedWindowChangingRoot(
 
 void ProjectorUiController::OnProjectorSessionActiveStateChanged(bool active) {
   if (!active)
-    ResetTools();
-}
-
-ProjectorMarkerColor ProjectorUiController::GetMarkerColorForMetrics(
-    SkColor color) {
-  std::map<SkColor, ProjectorMarkerColor> marker_colors_map = {
-      {kProjectorMagentaPenColor, ProjectorMarkerColor::kMagenta},
-      {kProjectorBluePenColor, ProjectorMarkerColor::kBlue},
-      {kProjectorRedPenColor, ProjectorMarkerColor::kRed},
-      {kProjectorYellowPenColor, ProjectorMarkerColor::kYellow}};
-  return marker_colors_map[color];
+    ResetCanvas();
 }
 
 void ProjectorUiController::UpdateTrayEnabledState() {

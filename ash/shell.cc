@@ -34,6 +34,7 @@
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
 #include "ash/ambient/ambient_controller.h"
+#include "ash/annotator/annotator_controller.h"
 #include "ash/api/tasks/tasks_controller.h"
 #include "ash/api/tasks/tasks_delegate.h"
 #include "ash/app_list/app_list_controller_impl.h"
@@ -907,6 +908,7 @@ Shell::~Shell() {
   // `game_dashboard_controller_` need to be destroyed before
   // `capture_mode_controller_`.
   projector_controller_.reset();
+  annotator_controller_.reset();
   game_dashboard_controller_.reset();
 
   // This must be called before `capture_mode_controller_` is destroyed. Note
@@ -1773,6 +1775,7 @@ void Shell::Init(
         shell_delegate_->CreateTasksDelegate());
   }
 
+  annotator_controller_ = std::make_unique<AnnotatorController>();
   projector_controller_ = std::make_unique<ProjectorControllerImpl>();
 
   float_controller_ = std::make_unique<FloatController>();

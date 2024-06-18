@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "ash/annotator/annotator_controller.h"
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/constants/ash_pref_names.h"
@@ -376,13 +377,13 @@ void ProjectorControllerImpl::EnableAnnotatorTool() {
 }
 
 void ProjectorControllerImpl::SetAnnotatorTool(const AnnotatorTool& tool) {
-  DCHECK(ui_controller_);
-  ui_controller_->SetAnnotatorTool(tool);
+  DCHECK(Shell::Get()->annotator_controller());
+  Shell::Get()->annotator_controller()->SetAnnotatorTool(tool);
 }
 
 void ProjectorControllerImpl::ResetTools() {
   if (ui_controller_) {
-    ui_controller_->ResetTools();
+    ui_controller_->ResetCanvas();
   }
 }
 

@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/projector/projector_controller_impl.h"
-
 #include <initializer_list>
 #include <memory>
 #include <string>
 #include <vector>
 
+#include "ash/annotator/annotator_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/projector/model/projector_session_impl.h"
+#include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/projector_metadata_controller.h"
 #include "ash/projector/projector_metrics.h"
 #include "ash/projector/test/mock_projector_metadata_controller.h"
@@ -20,6 +20,7 @@
 #include "ash/public/cpp/test/mock_projector_client.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/webui/annotator/test/mock_annotator_client.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -156,6 +157,9 @@ class ProjectorControllerTest : public AshTestBase {
     ON_CALL(mock_client_, GetSpeechRecognitionAvailability)
         .WillByDefault(testing::Return(availability));
     controller_->SetClient(&mock_client_);
+
+    auto* annotator_controller = Shell::Get()->annotator_controller();
+    annotator_controller->SetToolClient(&mock_annotator_client_);
   }
 
   void InitializeRealMetadataController() {
@@ -196,6 +200,7 @@ class ProjectorControllerTest : public AshTestBase {
       metadata_controller_;
   raw_ptr<ProjectorControllerImpl, DanglingUntriaged> controller_;
   MockProjectorClient mock_client_;
+  MockAnnotatorClient mock_annotator_client_;
   base::HistogramTester histogram_tester_;
   base::ScopedTempDir temp_dir_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -286,8 +291,8 @@ TEST_F(ProjectorControllerTest, EnableAnnotatorTool) {
 
 TEST_F(ProjectorControllerTest, SetAnnotatorTool) {
   AnnotatorTool tool;
-  // Verify that |SetAnnotatorTool| in |ProjectorUiController| is called.
-  EXPECT_CALL(*mock_ui_controller_, SetAnnotatorTool(tool));
+  // Verify that |SetTool| in |AnnotatorClient| is called.
+  EXPECT_CALL(mock_annotator_client_, SetTool(tool));
   controller_->SetAnnotatorTool(tool);
 }
 

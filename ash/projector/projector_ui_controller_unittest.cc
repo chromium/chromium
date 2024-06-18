@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/annotator/annotator_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/projector/projector_annotation_tray.h"
@@ -19,6 +20,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/webui/annotator/test/mock_annotator_client.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -41,8 +43,6 @@ namespace {
 
 constexpr char kProjectorCreationFlowErrorHistogramName[] =
     "Ash.Projector.CreationFlowError.ClamshellMode";
-constexpr char kProjectorMarkerColorHistogramName[] =
-    "Ash.Projector.MarkerColor.ClamshellMode";
 constexpr char kProjectorToolbarHistogramName[] =
     "Ash.Projector.Toolbar.ClamshellMode";
 
@@ -79,11 +79,15 @@ class ProjectorUiControllerTest : public AshTestBase {
     auto* projector_controller = Shell::Get()->projector_controller();
     projector_controller->SetClient(&projector_client_);
     controller_ = projector_controller->ui_controller();
+
+    auto* annotator_controller = Shell::Get()->annotator_controller();
+    annotator_controller->SetToolClient(&annotator_client_);
   }
 
  protected:
   raw_ptr<ProjectorUiController, DanglingUntriaged> controller_;
   MockProjectorClient projector_client_;
+  MockAnnotatorClient annotator_client_;
 };
 
 TEST_F(ProjectorUiControllerTest, ShowAndHideTray) {
@@ -152,8 +156,7 @@ TEST_F(ProjectorUiControllerTest, EnablingDisablingMarker) {
   controller_->EnableAnnotatorTool();
   EXPECT_TRUE(controller_->is_annotator_enabled());
 
-  EXPECT_CALL(projector_client_, Clear());
-  controller_->ResetTools();
+  controller_->ResetCanvas();
   EXPECT_FALSE(controller_->is_annotator_enabled());
 
   histogram_tester.ExpectUniqueSample(kProjectorToolbarHistogramName,
@@ -177,11 +180,6 @@ TEST_F(ProjectorUiControllerTest, SetAnnotatorTool) {
   auto* projector_annotation_tray = Shell::GetPrimaryRootWindowController()
                                         ->GetStatusAreaWidget()
                                         ->projector_annotation_tray();
-  base::HistogramTester histogram_tester;
-  AnnotatorTool tool;
-  tool.color = kProjectorDefaultPenColor;
-  EXPECT_CALL(projector_client_, SetTool(tool));
-
   // Assert that the initial pref is unset.
   PrefService* pref_service =
       Shell::Get()->session_controller()->GetActivePrefService();
@@ -206,9 +204,6 @@ TEST_F(ProjectorUiControllerTest, SetAnnotatorTool) {
   EXPECT_EQ(
       pref_service->GetUint64(prefs::kProjectorAnnotatorLastUsedMarkerColor),
       kProjectorDefaultPenColor);
-  histogram_tester.ExpectUniqueSample(kProjectorMarkerColorHistogramName,
-                                      ProjectorMarkerColor::kMagenta,
-                                      /*count=*/1);
 }
 
 // Tests that right clicking the ProjectorAnnotationTray shows a bubble.

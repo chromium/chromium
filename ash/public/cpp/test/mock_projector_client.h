@@ -5,8 +5,6 @@
 #ifndef ASH_PUBLIC_CPP_TEST_MOCK_PROJECTOR_CLIENT_H_
 #define ASH_PUBLIC_CPP_TEST_MOCK_PROJECTOR_CLIENT_H_
 
-#include "ash/public/cpp/annotator/annotator_tool.h"
-#include "ash/public/cpp/annotator/annotator_tool_controller.h"
 #include "ash/public/cpp/projector/projector_client.h"
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/public/cpp/projector/speech_recognition_availability.h"
@@ -20,8 +18,7 @@ class FilePath;
 namespace ash {
 
 // A mock implementation of ProjectorClient for use in tests.
-class MockProjectorClient : public ProjectorClient,
-                            public AnnotatorToolController {
+class MockProjectorClient : public ProjectorClient {
  public:
   MockProjectorClient();
   MockProjectorClient(const MockProjectorClient&) = delete;
@@ -44,12 +41,6 @@ class MockProjectorClient : public ProjectorClient,
                      void(const NewScreencastPrecondition&));
   MOCK_METHOD2(ToggleFileSyncingNotificationForPaths,
                void(const std::vector<base::FilePath>&, bool));
-
-  // ProjectorAnnotatorController:
-  MOCK_METHOD1(SetTool, void(const AnnotatorTool&));
-  MOCK_METHOD0(Undo, void());
-  MOCK_METHOD0(Redo, void());
-  MOCK_METHOD0(Clear, void());
 
  private:
   base::ScopedTempDir screencast_container_path_;

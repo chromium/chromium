@@ -13,7 +13,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "third_party/skia/include/core/SkColor.h"
 
 namespace aura {
 class Window;
@@ -22,7 +21,6 @@ class Window;
 namespace ash {
 
 class ProjectorControllerImpl;
-struct AnnotatorTool;
 
 // The controller in charge of UI.
 class ASH_EXPORT ProjectorUiController : public ProjectorSessionObserver {
@@ -48,10 +46,8 @@ class ASH_EXPORT ProjectorUiController : public ProjectorSessionObserver {
   virtual void HideAnnotationTray();
   // Invoked when marker button is pressed. Virtual for testing.
   virtual void EnableAnnotatorTool();
-  // Sets the annotator tool.
-  virtual void SetAnnotatorTool(const AnnotatorTool& tool);
-  // Resets and disables the annotator tools and clears the canvas.
-  void ResetTools();
+  // Resets the canvas.
+  void ResetCanvas();
   // Invoked when the canvas has either succeeded or failed to initialize.
   void OnCanvasInitialized(bool success);
   // Returns if the annotation canvas has been initialized.
@@ -66,8 +62,6 @@ class ASH_EXPORT ProjectorUiController : public ProjectorSessionObserver {
  private:
   // ProjectorSessionObserver:
   void OnProjectorSessionActiveStateChanged(bool active) override;
-
-  ProjectorMarkerColor GetMarkerColorForMetrics(SkColor color);
 
   void UpdateTrayEnabledState();
 

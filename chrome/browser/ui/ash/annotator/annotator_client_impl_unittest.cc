@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/annotator/annotator_client_impl.h"
 
+#include "ash/annotator/annotator_controller.h"
 #include "ash/public/cpp/annotator/annotator_tool.h"
 #include "ash/webui/annotator/mojom/untrusted_annotator.mojom.h"
 #include "ash/webui/annotator/public/mojom/annotator_structs.mojom.h"
@@ -24,6 +25,8 @@ class AnnotatorClientImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
+    annotator_client_ =
+        std::make_unique<AnnotatorClientImpl>(&annotator_controller_);
     annotator_ = std::make_unique<MockUntrustedAnnotatorPage>();
     handler_ = std::make_unique<UntrustedAnnotatorPageHandlerImpl>(
         annotator().remote().BindNewPipeAndPassReceiver(),
@@ -33,15 +36,16 @@ class AnnotatorClientImplTest : public testing::Test {
     // Annotator client has the handler's reference at this point, as it is set
     // in the handler's constructor.
     EXPECT_EQ(handler_.get(),
-              annotator_client_.get_annotator_handler_for_test());
+              annotator_client_->get_annotator_handler_for_test());
   }
 
   void TearDown() override {
     handler_.reset();
     annotator_.reset();
+    annotator_client_.reset();
   }
 
-  AnnotatorClientImpl& annotator_client() { return annotator_client_; }
+  AnnotatorClientImpl& annotator_client() { return *annotator_client_; }
   MockUntrustedAnnotatorPage& annotator() { return *annotator_; }
   UntrustedAnnotatorPageHandlerImpl* handler() { return handler_.get(); }
   base::test::SingleThreadTaskEnvironment& task_environment() {
@@ -53,7 +57,8 @@ class AnnotatorClientImplTest : public testing::Test {
 
   std::unique_ptr<MockUntrustedAnnotatorPage> annotator_;
   std::unique_ptr<UntrustedAnnotatorPageHandlerImpl> handler_;
-  AnnotatorClientImpl annotator_client_;
+  std::unique_ptr<AnnotatorClientImpl> annotator_client_;
+  AnnotatorController annotator_controller_;
 };
 
 TEST_F(AnnotatorClientImplTest, SetTool) {

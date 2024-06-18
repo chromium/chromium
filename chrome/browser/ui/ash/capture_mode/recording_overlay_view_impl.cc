@@ -10,7 +10,7 @@
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/projector/projector_client_impl.h"
+#include "chrome/browser/ui/ash/annotator/annotator_client_impl.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
@@ -37,7 +37,7 @@ RecordingOverlayViewImpl::RecordingOverlayViewImpl(Profile* profile)
 RecordingOverlayViewImpl::~RecordingOverlayViewImpl() = default;
 
 void RecordingOverlayViewImpl::InitializeAnnotator() {
-  ProjectorClientImpl::InitForProjectorAnnotator(web_view_);
+  AnnotatorClientImpl::InitForProjectorAnnotator(web_view_);
 }
 
 BEGIN_METADATA(RecordingOverlayViewImpl)

@@ -4,11 +4,31 @@
 
 #include "chrome/browser/ui/ash/annotator/annotator_client_impl.h"
 
+#include "annotator_client_impl.h"
+#include "ash/annotator/annotator_controller.h"
+#include "ash/public/cpp/annotator/annotator_tool.h"
+#include "ash/shell.h"
 #include "ash/webui/annotator/untrusted_annotator_page_handler_impl.h"
+#include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
+#include "ui/views/controls/webview/webview.h"
+#include "url/gurl.h"
 
-AnnotatorClientImpl::AnnotatorClientImpl() = default;
+AnnotatorClientImpl::AnnotatorClientImpl(
+    ash::AnnotatorController* annotator_controller)
+    : annotator_controller_(annotator_controller) {
+  annotator_controller_->SetToolClient(this);
+}
 
-AnnotatorClientImpl::~AnnotatorClientImpl() = default;
+AnnotatorClientImpl::AnnotatorClientImpl()
+    : AnnotatorClientImpl(ash::Shell::Get()->annotator_controller()) {}
+
+AnnotatorClientImpl::~AnnotatorClientImpl() {
+  annotator_controller_->SetToolClient(nullptr);
+}
+
+void AnnotatorClientImpl::InitForProjectorAnnotator(views::WebView* web_view) {
+  web_view->LoadInitialURL(GURL(ash::kChromeUIUntrustedAnnotatorUrl));
+}
 
 void AnnotatorClientImpl::SetAnnotatorPageHandler(
     ash::UntrustedAnnotatorPageHandlerImpl* handler) {

@@ -9,7 +9,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/projector/projector_metrics.h"
-#include "ash/public/cpp/annotator/annotator_tool.h"
 #include "ash/public/cpp/projector/projector_controller.h"
 #include "ash/public/cpp/projector/projector_new_screencast_precondition.h"
 #include "ash/webui/projector_app/projector_app_client.h"
@@ -29,7 +28,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/speech_recognition_recognizer_client_impl.h"
-#include "chrome/browser/ui/ash/annotator/annotator_client_impl.h"
 #include "chrome/browser/ui/ash/projector/projector_utils.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -47,7 +45,6 @@
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
-#include "ui/views/controls/webview/webview.h"
 #include "url/gurl.h"
 
 namespace {
@@ -105,11 +102,6 @@ ash::OnDeviceToServerSpeechRecognitionFallbackReason GetFallbackReason(
 }
 
 }  // namespace
-
-// static
-void ProjectorClientImpl::InitForProjectorAnnotator(views::WebView* web_view) {
-  web_view->LoadInitialURL(GURL(ash::kChromeUIUntrustedAnnotatorUrl));
-}
 
 // Using base::Unretained for callback is safe since the ProjectorClientImpl
 // owns `drive_helper_`.
@@ -313,20 +305,6 @@ void ProjectorClientImpl::OnSpeechRecognitionStopped() {
 void ProjectorClientImpl::OnLanguageIdentificationEvent(
     media::mojom::LanguageIdentificationEventPtr event) {
   // For now, this is ignored by projector.
-}
-
-void ProjectorClientImpl::SetTool(const ash::AnnotatorTool& tool) {
-  ash::AnnotatorClient::Get()->SetTool(tool);
-}
-
-// TODO(b/220202359): Implement undo.
-void ProjectorClientImpl::Undo() {}
-
-// TODO(b/220202359): Implement redo.
-void ProjectorClientImpl::Redo() {}
-
-void ProjectorClientImpl::Clear() {
-  ash::AnnotatorClient::Get()->Clear();
 }
 
 void ProjectorClientImpl::OnFileSystemMounted() {
