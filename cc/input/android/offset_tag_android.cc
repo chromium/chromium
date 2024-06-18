@@ -42,9 +42,6 @@ cc::BrowserControlsOffsetTagsInfo FromJavaBrowserControlsOffsetTagsInfo(
   tags_info.top_controls_height =
       Java_BrowserControlsOffsetTagsInfo_getTopControlsHeight(
           env, jbrowser_controls_offset_tags_info);
-  tags_info.top_controls_width =
-      Java_BrowserControlsOffsetTagsInfo_getTopControlsWidth(
-          env, jbrowser_controls_offset_tags_info);
   return tags_info;
 }
 

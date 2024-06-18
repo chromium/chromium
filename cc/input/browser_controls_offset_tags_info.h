@@ -16,7 +16,6 @@ namespace cc {
 struct CC_EXPORT BrowserControlsOffsetTagsInfo {
   viz::OffsetTag top_controls_offset_tag;
   int top_controls_height;
-  int top_controls_width;
 };
 
 }  // namespace cc

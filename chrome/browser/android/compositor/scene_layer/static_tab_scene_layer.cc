@@ -6,11 +6,13 @@
 
 #include <vector>
 
+#include "cc/input/android/offset_tag_android.h"
 #include "cc/slim/filter.h"
 #include "cc/slim/layer.h"
 #include "chrome/browser/android/compositor/layer/content_layer.h"
 #include "chrome/browser/android/compositor/layer_title_cache.h"
 #include "chrome/browser/android/compositor/tab_content_manager.h"
+#include "components/viz/common/quads/offset_tag.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/resources/resource_manager_impl.h"
 
@@ -98,7 +100,8 @@ void StaticTabSceneLayer::UpdateTabLayer(
   content_layer_->layer()->SetPosition(gfx::PointF(x, y));
   content_layer_->layer()->SetIsDrawable(true);
 
-  // TODO(peilinwang): update content_layer with this new tag.
+  viz::OffsetTag tag = cc::android::FromJavaOffsetTag(env, joffset_tag);
+  content_layer_->layer()->SetOffsetTag(tag);
 }
 
 void StaticTabSceneLayer::SetTabContentManager(

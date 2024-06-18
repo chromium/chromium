@@ -209,9 +209,11 @@ public class StaticLayout extends Layout {
                     public void onControlsConstraintsChanged(
                             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
                             BrowserControlsOffsetTagsInfo offsetTagsInfo) {
-                        mModel.set(
-                                LayoutTab.CONTENT_OFFSET_TAG,
-                                offsetTagsInfo.getTopControlsOffsetTag());
+                        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
+                            mModel.set(
+                                    LayoutTab.CONTENT_OFFSET_TAG,
+                                    offsetTagsInfo.getTopControlsOffsetTag());
+                        }
                     }
 
                     @Override
@@ -221,9 +223,11 @@ public class StaticLayout extends Layout {
                             int bottomOffset,
                             int bottomControlsMinHeightOffset,
                             boolean needsAnimate) {
-                        mModel.set(
-                                LayoutTab.CONTENT_OFFSET,
-                                mBrowserControlsStateProvider.getContentOffset());
+                        if (!ChromeFeatureList.sBrowserControlsInViz.isEnabled() || needsAnimate) {
+                            mModel.set(
+                                    LayoutTab.CONTENT_OFFSET,
+                                    mBrowserControlsStateProvider.getContentOffset());
+                        }
                     }
                 };
         mBrowserControlsStateProvider.addObserver(mBrowserControlsStateProviderObserver);

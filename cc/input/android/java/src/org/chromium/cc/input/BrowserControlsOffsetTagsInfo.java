@@ -13,7 +13,6 @@ import org.jni_zero.CalledByNative;
 public final class BrowserControlsOffsetTagsInfo {
     public OffsetTag mTopControlsOffsetTag;
     public int mTopControlsHeight;
-    public int mTopControlsWidth;
 
     public BrowserControlsOffsetTagsInfo(OffsetTag topControlsOffsetTag) {
         mTopControlsOffsetTag = topControlsOffsetTag;
@@ -27,10 +26,5 @@ public final class BrowserControlsOffsetTagsInfo {
     @CalledByNative
     public int getTopControlsHeight() {
         return mTopControlsHeight;
-    }
-
-    @CalledByNative
-    public int getTopControlsWidth() {
-        return mTopControlsWidth;
     }
 }

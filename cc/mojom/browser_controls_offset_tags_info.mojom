@@ -11,5 +11,4 @@ import "services/viz/public/mojom/compositing/offset_tag.mojom";
 struct BrowserControlsOffsetTagsInfo {
   viz.mojom.OffsetTag top_controls_offset_tag;
   int32 top_controls_height;
-  int32 top_controls_width;
 };

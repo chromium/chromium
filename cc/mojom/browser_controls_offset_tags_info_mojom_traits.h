@@ -25,11 +25,6 @@ struct StructTraits<cc::mojom::BrowserControlsOffsetTagsInfoDataView,
     return input.top_controls_height;
   }
 
-  static int top_controls_width(
-      const cc::BrowserControlsOffsetTagsInfo& input) {
-    return input.top_controls_width;
-  }
-
   static bool Read(cc::mojom::BrowserControlsOffsetTagsInfoDataView data,
                    cc::BrowserControlsOffsetTagsInfo* out) {
     return data.ReadTopControlsOffsetTag(&out->top_controls_offset_tag);

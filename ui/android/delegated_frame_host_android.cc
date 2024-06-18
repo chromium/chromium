@@ -130,7 +130,11 @@ void DelegatedFrameHostAndroid::RegisterOffsetTags(
   const viz::OffsetTag top_controls_offset_tag =
       tags_info.top_controls_offset_tag;
   if (!top_controls_offset_tag.IsEmpty()) {
-    // TODO(peilinwang) register tag in content_layer_
+    int top_controls_height = tags_info.top_controls_height;
+    viz::OffsetTagConstraints top_controls_constraints(0, 0,
+                                                       -top_controls_height, 0);
+    content_layer_->RegisterOffsetTag(top_controls_offset_tag,
+                                      top_controls_constraints);
   }
 }
 
@@ -139,7 +143,7 @@ void DelegatedFrameHostAndroid::UnregisterOffsetTags(
   const viz::OffsetTag top_controls_offset_tag =
       tags_info.top_controls_offset_tag;
   if (!top_controls_offset_tag.IsEmpty()) {
-    // TODO(peilinwang) unregister tag in content_layer_
+    content_layer_->UnregisterOffsetTag(top_controls_offset_tag);
   }
 }
 

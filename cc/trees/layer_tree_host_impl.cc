@@ -2398,9 +2398,25 @@ viz::CompositorFrameMetadata LayerTreeHostImpl::MakeCompositorFrameMetadata() {
   metadata.min_page_scale_factor = active_tree_->min_page_scale_factor();
 
   if (browser_controls_offset_manager_->TopControlsHeight() > 0) {
-    metadata.top_controls_visible_height.emplace(
+    float visible_height =
         browser_controls_offset_manager_->TopControlsHeight() *
-        browser_controls_offset_manager_->TopControlsShownRatio());
+        browser_controls_offset_manager_->TopControlsShownRatio();
+    metadata.top_controls_visible_height.emplace(visible_height);
+
+#if BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(features::kAndroidBrowserControlsInViz)) {
+      const viz::OffsetTag& tag =
+          browser_controls_offset_manager_->TopControlsOffsetTag();
+      if (tag) {
+        float offset = browser_controls_offset_manager_->TopControlsHeight() -
+                       visible_height;
+        // ViewAndroid::OnTopControlsChanged() also rounds the offset before
+        // handing it off to Android.
+        gfx::Vector2dF offset2d(0.0f, -std::round(offset));
+        metadata.offset_tag_values.emplace_back(tag, offset2d);
+      }
+    }
+#endif
   }
 
   if (InnerViewportScrollNode()) {
@@ -2525,16 +2541,15 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
            metadata.bottom_controls_height ||
        last_draw_render_frame_metadata_->selection != metadata.selection ||
        last_draw_render_frame_metadata_->has_transparent_background !=
-           metadata.has_transparent_background);
+           metadata.has_transparent_background ||
+       last_draw_render_frame_metadata_->bottom_controls_shown_ratio !=
+           metadata.bottom_controls_shown_ratio);
 
-  if (!base::FeatureList::IsEnabled(
-          features::kAndroidNoSurfaceSyncForBrowserControls)) {
+  if (!base::FeatureList::IsEnabled(features::kAndroidBrowserControlsInViz)) {
     allocate_new_local_surface_id |=
         last_draw_render_frame_metadata_ &&
         (last_draw_render_frame_metadata_->top_controls_shown_ratio !=
-             metadata.top_controls_shown_ratio ||
-         last_draw_render_frame_metadata_->bottom_controls_shown_ratio !=
-             metadata.bottom_controls_shown_ratio);
+         metadata.top_controls_shown_ratio);
   }
 #else
       last_draw_render_frame_metadata_ &&

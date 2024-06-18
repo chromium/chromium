@@ -280,20 +280,19 @@ public class BrowserControlsManager implements ActivityStateListener, BrowserCon
                             Tab tab,
                             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
                             BrowserControlsOffsetTagsInfo offsetTagsInfo) {
-                        if (tab == getTab() && tab.isUserInteractable() && !tab.isNativePage()) {
-                            WebContents webContents = tab.getWebContents();
-                            if (webContents != null) {
-                                // TODO(peilinwang) Refactor so this this function only gets passed
-                                // OffsetTags as only this class needs to know/use the width/height
-                                // for creating the OffsetTagConstraint.
-                                offsetTagsInfo.mTopControlsHeight = mTopControlContainerHeight;
-                                offsetTagsInfo.mTopControlsWidth =
-                                        mControlContainer.getView().getWidth();
-                                webContents.notifyControlsConstraintsChanged(
-                                        oldOffsetTagsInfo, offsetTagsInfo);
-                            }
-                            notifyConstraintsChanged(oldOffsetTagsInfo, offsetTagsInfo);
+                        WebContents webContents = tab.getWebContents();
+                        if (webContents == null) {
+                            return;
                         }
+                        // TODO(peilinwang) Refactor so this this function only gets passed
+                        // OffsetTags as only this class needs to know/use the height for
+                        // creating the OffsetTagConstraint.
+                        offsetTagsInfo.mTopControlsHeight = mTopControlContainerHeight;
+
+                        webContents.notifyControlsConstraintsChanged(
+                                oldOffsetTagsInfo, offsetTagsInfo);
+
+                        notifyConstraintsChanged(oldOffsetTagsInfo, offsetTagsInfo);
                     }
 
                     @Override

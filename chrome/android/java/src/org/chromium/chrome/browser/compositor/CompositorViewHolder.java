@@ -1030,7 +1030,16 @@ public class CompositorViewHolder extends FrameLayout
             int bottomControlsMinHeightOffset,
             boolean needsAnimate) {
         onViewportChanged();
-        if (needsAnimate) requestRender();
+
+        // When scrolling browser controls in viz, don't produce new browser frames unless it's
+        // forced with |needs_animate|
+        boolean scrollingWithBciv =
+                ChromeFeatureList.sBrowserControlsInViz.isEnabled()
+                        && (mInGesture || mContentViewScrolling);
+        if (needsAnimate && !scrollingWithBciv) {
+            requestRender();
+        }
+
         updateContentViewChildrenDimension();
     }
 

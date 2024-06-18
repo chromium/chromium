@@ -15,6 +15,7 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.cc.input.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -157,10 +158,11 @@ public class TopToolbarOverlayMediator {
                         // when status indicator is visible or tab strip is hidden), and the toolbar
                         // needs to be positioned at the bottom of the top controls regardless of
                         // the total height.
-                        mModel.set(
-                                TopToolbarOverlayProperties.CONTENT_OFFSET,
-                                mBrowserControlsStateProvider.getContentOffset());
-
+                        if (!ChromeFeatureList.sBrowserControlsInViz.isEnabled() || needsAnimate) {
+                            mModel.set(
+                                    TopToolbarOverlayProperties.CONTENT_OFFSET,
+                                    mBrowserControlsStateProvider.getContentOffset());
+                        }
                         updateShadowState();
                         updateVisibility();
                     }
@@ -177,9 +179,11 @@ public class TopToolbarOverlayMediator {
                     public void onControlsConstraintsChanged(
                             BrowserControlsOffsetTagsInfo oldOffsetTagsInfo,
                             BrowserControlsOffsetTagsInfo offsetTagsInfo) {
-                        mModel.set(
-                                TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG,
-                                offsetTagsInfo.getTopControlsOffsetTag());
+                        if (ChromeFeatureList.sBrowserControlsInViz.isEnabled()) {
+                            mModel.set(
+                                    TopToolbarOverlayProperties.TOOLBAR_OFFSET_TAG,
+                                    offsetTagsInfo.getTopControlsOffsetTag());
+                        }
                     }
                 };
         mBrowserControlsStateProvider.addObserver(mBrowserControlsObserver);
