@@ -168,6 +168,11 @@ class TestBirchClient : public BirchClient {
             base::BindRepeating(&BirchModel::SetSelfShareItems,
                                 base::Unretained(birch_model)),
             prefs::kBirchUseSelfShare);
+    lost_media_provider_ =
+        std::make_unique<TestBirchDataProvider<BirchLostMediaItem>>(
+            base::BindRepeating(&BirchModel::SetLostMediaItems,
+                                base::Unretained(birch_model)),
+            prefs::kBirchUseLostMedia);
     release_notes_provider_ =
         std::make_unique<TestBirchDataProvider<BirchReleaseNotesItem>>(
             base::BindRepeating(&BirchModel::SetReleaseNotesItems,
@@ -214,6 +219,10 @@ class TestBirchClient : public BirchClient {
     self_share_provider_->set_items(items);
   }
 
+  void SetLostMediaItems(const std::vector<BirchLostMediaItem>& items) {
+    lost_media_provider_->set_items(items);
+  }
+
   void SetWeatherItems(const std::vector<BirchWeatherItem>& items) {
     ASSERT_TRUE(weather_provider_);
     weather_provider_->set_items(items);
@@ -227,6 +236,7 @@ class TestBirchClient : public BirchClient {
     last_active_provider_->ClearItems();
     release_notes_provider_->ClearItems();
     self_share_provider_->ClearItems();
+    lost_media_provider_->ClearItems();
     if (weather_provider_) {
       weather_provider_->ClearItems();
     }
@@ -250,6 +260,9 @@ class TestBirchClient : public BirchClient {
   }
   BirchDataProvider* GetSelfShareProvider() override {
     return self_share_provider_.get();
+  }
+  BirchDataProvider* GetLostMediaProvider() override {
+    return lost_media_provider_.get();
   }
   BirchDataProvider* GetReleaseNotesProvider() override {
     return release_notes_provider_.get();
@@ -285,6 +298,8 @@ class TestBirchClient : public BirchClient {
       most_visited_provider_;
   std::unique_ptr<TestBirchDataProvider<BirchSelfShareItem>>
       self_share_provider_;
+  std::unique_ptr<TestBirchDataProvider<BirchLostMediaItem>>
+      lost_media_provider_;
   std::unique_ptr<TestBirchDataProvider<BirchReleaseNotesItem>>
       release_notes_provider_;
   std::unique_ptr<TestBirchDataProvider<BirchWeatherItem>> weather_provider_;

@@ -60,6 +60,7 @@ BirchModel::BirchModel()
       last_active_data_(prefs::kBirchUseLastActive, "LastActive"),
       most_visited_data_(prefs::kBirchUseMostVisited, "MostVisited"),
       self_share_data_(prefs::kBirchUseSelfShare, "SelfShare"),
+      lost_media_data_(prefs::kBirchUseLostMedia, "LostMedia"),
       release_notes_data_(prefs::kBirchUseReleaseNotes, "ReleaseNotes"),
       weather_data_(prefs::kBirchUseWeather, "Weather"),
       icon_cache_(std::make_unique<BirchIconCache>()) {
@@ -94,6 +95,7 @@ void BirchModel::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kBirchUseLastActive, true);
   registry->RegisterBooleanPref(prefs::kBirchUseMostVisited, true);
   registry->RegisterBooleanPref(prefs::kBirchUseSelfShare, true);
+  registry->RegisterBooleanPref(prefs::kBirchUseLostMedia, true);
   registry->RegisterBooleanPref(prefs::kBirchUseWeather, true);
   registry->RegisterBooleanPref(prefs::kBirchUseReleaseNotes, true);
   // NOTE: If you add a pref here, also update birch_browsertest.cc and
@@ -167,6 +169,11 @@ void BirchModel::SetMostVisitedItems(
 void BirchModel::SetSelfShareItems(
     const std::vector<BirchSelfShareItem>& self_share_items) {
   SetItems(self_share_data_, self_share_items, /*record_latency=*/true);
+}
+
+void BirchModel::SetLostMediaItems(
+    const std::vector<BirchLostMediaItem>& lost_media_items) {
+  SetItems(lost_media_data_, lost_media_items, /*record_latency=*/true);
 }
 
 void BirchModel::SetWeatherItems(
@@ -298,6 +305,8 @@ void BirchModel::RequestBirchDataFetch(bool is_post_login,
                            birch_client_->GetMostVisitedProvider());
     StartDataFetchIfNeeded(self_share_data_,
                            birch_client_->GetSelfShareProvider());
+    StartDataFetchIfNeeded(lost_media_data_,
+                           birch_client_->GetLostMediaProvider());
     StartDataFetchIfNeeded(release_notes_data_,
                            birch_client_->GetReleaseNotesProvider());
   }
@@ -330,6 +339,7 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
   ranker.RankSelfShareItems(&self_share_data_.items);
   ranker.RankWeatherItems(&weather_data_.items);
   ranker.RankReleaseNotesItems(&release_notes_data_.items);
+  ranker.RankLostMediaItems(&lost_media_data_.items);
 
   // Avoid showing a duplicate last-active tab with a recent tab by removing
   // the item with the higher ranking.
@@ -436,6 +446,9 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
   for (auto& event : url_to_self_share_item) {
     all_items.push_back(std::make_unique<BirchSelfShareItem>(event.second));
   }
+  for (auto& item : lost_media_data_.items) {
+    all_items.push_back(std::make_unique<BirchLostMediaItem>(item));
+  }
   for (auto& file_suggestion : file_suggest_data_.items) {
     all_items.push_back(std::make_unique<BirchFileItem>(file_suggestion));
   }
@@ -481,7 +494,8 @@ bool BirchModel::IsDataFresh() {
       (calendar_data_.is_fresh && attachment_data_.is_fresh &&
        file_suggest_data_.is_fresh && recent_tab_data_.is_fresh &&
        last_active_data_.is_fresh && most_visited_data_.is_fresh &&
-       self_share_data_.is_fresh && release_notes_data_.is_fresh);
+       self_share_data_.is_fresh && lost_media_data_.is_fresh &&
+       release_notes_data_.is_fresh);
 
   // Use the same logic for weather.
   bool is_weather_fresh = !GetWeatherProvider() || weather_data_.is_fresh;
@@ -605,6 +619,8 @@ void BirchModel::ClearAllItems() {
   last_active_data_.items.clear();
   most_visited_data_.items.clear();
   weather_data_.items.clear();
+  self_share_data_.items.clear();
+  lost_media_data_.items.clear();
   release_notes_data_.items.clear();
 }
 
@@ -616,6 +632,8 @@ void BirchModel::MarkDataNotFresh() {
   last_active_data_.is_fresh = false;
   most_visited_data_.is_fresh = false;
   weather_data_.is_fresh = false;
+  self_share_data_.is_fresh = false;
+  lost_media_data_.is_fresh = false;
   release_notes_data_.is_fresh = false;
 }
 
@@ -654,6 +672,11 @@ void BirchModel::InitPrefChangeRegistrars() {
   self_share_pref_registrar_.Add(
       prefs::kBirchUseSelfShare,
       base::BindRepeating(&BirchModel::OnSelfSharePrefChanged,
+                          base::Unretained(this)));
+  lost_media_pref_registrar_.Init(prefs);
+  lost_media_pref_registrar_.Add(
+      prefs::kBirchUseLostMedia,
+      base::BindRepeating(&BirchModel::OnLostMediaPrefChanged,
                           base::Unretained(this)));
   weather_pref_registrar_.Init(prefs);
   weather_pref_registrar_.Add(
@@ -712,6 +735,13 @@ void BirchModel::OnSelfSharePrefChanged() {
   }
 }
 
+void BirchModel::OnLostMediaPrefChanged() {
+  if (birch_client_) {
+    StartDataFetchIfNeeded(lost_media_data_,
+                           birch_client_->GetLostMediaProvider());
+  }
+}
+
 void BirchModel::OnWeatherPrefChanged() {
   StartDataFetchIfNeeded(weather_data_, GetWeatherProvider());
 }
@@ -741,6 +771,8 @@ void BirchModel::RecordProviderHiddenHistograms() {
                             !prefs->GetBoolean(prefs::kBirchUseMostVisited));
   base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.SelfShare",
                             !prefs->GetBoolean(prefs::kBirchUseSelfShare));
+  base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.LostMedia",
+                            !prefs->GetBoolean(prefs::kBirchUseLostMedia));
   base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.Weather",
                             !prefs->GetBoolean(prefs::kBirchUseWeather));
   base::UmaHistogramBoolean("Ash.Birch.ProviderHidden.ReleaseNotes",

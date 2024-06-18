@@ -23,6 +23,7 @@ class BirchMostVisitedProvider;
 class BirchRecentTabsProvider;
 class BirchReleaseNotesProvider;
 class BirchSelfShareProvider;
+class BirchLostMediaProvider;
 class BirchWeatherV2Provider;
 class RefreshTokenWaiter;
 class Shell;
@@ -57,6 +58,7 @@ class BirchKeyedService : public KeyedService,
   BirchDataProvider* GetMostVisitedProvider() override;
   BirchDataProvider* GetReleaseNotesProvider() override;
   BirchDataProvider* GetSelfShareProvider() override;
+  BirchDataProvider* GetLostMediaProvider() override;
   BirchDataProvider* GetWeatherV2Provider() override;
 
   void WaitForRefreshTokens(base::OnceClosure callback) override;
@@ -103,6 +105,8 @@ class BirchKeyedService : public KeyedService,
   std::unique_ptr<BirchReleaseNotesProvider> release_notes_provider_;
 
   std::unique_ptr<BirchSelfShareProvider> self_share_provider_;
+
+  std::unique_ptr<BirchLostMediaProvider> lost_media_provider_;
 
   std::unique_ptr<BirchWeatherV2Provider> weather_v2_provider_;
 

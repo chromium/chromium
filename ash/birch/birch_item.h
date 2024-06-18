@@ -30,7 +30,8 @@ enum class BirchItemType {
   kSelfShare = 7,     // Tabs shared to self from ChromeSync API.
   kMostVisited = 8,   // Most frequently visited URLs.
   kLastActive = 9,    // Last active URL.
-  kMaxValue = kLastActive,
+  kLostMedia = 10,
+  kMaxValue = kLostMedia,
 };
 
 // The base item which is stored by the birch model.
@@ -372,6 +373,39 @@ class ASH_EXPORT BirchSelfShareItem : public BirchItem {
   // `activation_callback_` is triggered when the item is clicked by the user,
   // calling `OnItemPressed()` in `BirchSelfShareProvider` to mark the
   // corresponding `SendTabToSelfEntry` as opened.
+  base::RepeatingClosure activation_callback_;
+};
+
+// A birch item which contains information about a tab that is currently playing
+// media.
+class ASH_EXPORT BirchLostMediaItem : public BirchItem {
+ public:
+  BirchLostMediaItem(const std::u16string& source_title,
+                     const std::u16string& media_title,
+                     ui::ImageModel icon_image,
+                     base::RepeatingClosure activation_callback);
+  BirchLostMediaItem(BirchLostMediaItem&&);
+  BirchLostMediaItem(const BirchLostMediaItem&);
+  BirchLostMediaItem& operator=(const BirchLostMediaItem&);
+  bool operator==(const BirchLostMediaItem& rhs) const;
+  ~BirchLostMediaItem() override;
+
+  // BirchItem:
+  BirchItemType GetType() const override;
+  std::string ToString() const override;
+  void PerformAction() override;
+  void PerformSecondaryAction() override;
+  void LoadIcon(LoadIconCallback callback) const override;
+
+  const std::u16string& source_title() const { return source_title_; }
+  const std::u16string& media_title() const { return media_title_; }
+
+ private:
+  static std::u16string GetSubtitle(const std::u16string& media_title);
+
+  std::u16string source_title_;
+  std::u16string media_title_;
+  ui::ImageModel icon_image_;
   base::RepeatingClosure activation_callback_;
 };
 

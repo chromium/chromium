@@ -2713,6 +2713,8 @@ static_library("ui") {
       "ash/birch/birch_keyed_service_factory.h",
       "ash/birch/birch_last_active_provider.cc",
       "ash/birch/birch_last_active_provider.h",
+      "ash/birch/birch_lost_media_provider.cc",
+      "ash/birch/birch_lost_media_provider.h",
       "ash/birch/birch_most_visited_provider.cc",
       "ash/birch/birch_most_visited_provider.h",
       "ash/birch/birch_recent_tabs_provider.cc",

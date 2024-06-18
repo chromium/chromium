@@ -101,6 +101,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   void SetMostVisitedItems(const std::vector<BirchMostVisitedItem>& items);
   void SetSelfShareItems(
       const std::vector<BirchSelfShareItem>& self_share_items);
+  void SetLostMediaItems(const std::vector<BirchLostMediaItem>& items);
   void SetReleaseNotesItems(
       const std::vector<BirchReleaseNotesItem>& release_notes_items);
   void SetWeatherItems(const std::vector<BirchWeatherItem>& weather_items);
@@ -132,6 +133,9 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   }
   std::vector<BirchSelfShareItem>& GetSelfShareItemsForTest() {
     return self_share_data_.items;
+  }
+  std::vector<BirchLostMediaItem>& GetLostMediaItemsForTest() {
+    return lost_media_data_.items;
   }
   const std::vector<BirchReleaseNotesItem>& GetReleaseNotesItemsForTest()
       const {
@@ -204,6 +208,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   void OnLastActivePrefChanged();
   void OnMostVisitedPrefChanged();
   void OnSelfSharePrefChanged();
+  void OnLostMediaPrefChanged();
   void OnWeatherPrefChanged();
   void OnReleaseNotesPrefChanged();
 
@@ -246,6 +251,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   DataTypeInfo<BirchLastActiveItem> last_active_data_;
   DataTypeInfo<BirchMostVisitedItem> most_visited_data_;
   DataTypeInfo<BirchSelfShareItem> self_share_data_;
+  DataTypeInfo<BirchLostMediaItem> lost_media_data_;
   DataTypeInfo<BirchReleaseNotesItem> release_notes_data_;
   DataTypeInfo<BirchWeatherItem> weather_data_;
 
@@ -269,6 +275,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   PrefChangeRegistrar last_active_pref_registrar_;
   PrefChangeRegistrar most_visited_pref_registrar_;
   PrefChangeRegistrar self_share_pref_registrar_;
+  PrefChangeRegistrar lost_media_pref_registrar_;
   PrefChangeRegistrar weather_pref_registrar_;
   PrefChangeRegistrar release_notes_pref_registrar_;
 

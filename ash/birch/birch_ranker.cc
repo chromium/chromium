@@ -221,6 +221,13 @@ void BirchRanker::RankSelfShareItems(std::vector<BirchSelfShareItem>* items) {
   }
 }
 
+void BirchRanker::RankLostMediaItems(std::vector<BirchLostMediaItem>* items) {
+  CHECK(items);
+  for (BirchLostMediaItem& item : *items) {
+    item.set_ranking(11.0f);
+  }
+}
+
 void BirchRanker::RankWeatherItems(std::vector<BirchWeatherItem>* items) {
   // TODO(jamescook): Limit weather to `IsMorning()`. For now show it at a much
   // lower priority during non-morning hours as this helps with debugging and

@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/ash/birch/birch_calendar_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_file_suggest_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_last_active_provider.h"
+#include "chrome/browser/ui/ash/birch/birch_lost_media_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_most_visited_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_recent_tabs_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_release_notes_provider.h"
@@ -44,6 +45,7 @@ BirchKeyedService::BirchKeyedService(Profile* profile)
       release_notes_provider_(
           std::make_unique<BirchReleaseNotesProvider>(profile)),
       self_share_provider_(std::make_unique<BirchSelfShareProvider>(profile)),
+      lost_media_provider_(std::make_unique<BirchLostMediaProvider>(profile)),
       weather_v2_provider_(std::make_unique<BirchWeatherV2Provider>(
           profile,
           base::BindRepeating([](std::vector<BirchWeatherItem> items) {
@@ -107,6 +109,10 @@ BirchDataProvider* BirchKeyedService::GetSelfShareProvider() {
     return self_share_provider_for_test_;
   }
   return self_share_provider_.get();
+}
+
+BirchDataProvider* BirchKeyedService::GetLostMediaProvider() {
+  return lost_media_provider_.get();
 }
 
 BirchDataProvider* BirchKeyedService::GetWeatherV2Provider() {

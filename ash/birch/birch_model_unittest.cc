@@ -114,6 +114,9 @@ class StubBirchClient : public BirchClient {
   BirchDataProvider* GetSelfShareProvider() override {
     return &self_share_provider_;
   }
+  BirchDataProvider* GetLostMediaProvider() override {
+    return &lost_media_provider_;
+  }
   BirchDataProvider* GetReleaseNotesProvider() override {
     return &release_notes_provider_;
   }
@@ -136,6 +139,7 @@ class StubBirchClient : public BirchClient {
   StubBirchDataProvider last_active_provider_;
   StubBirchDataProvider most_visited_provider_;
   StubBirchDataProvider self_share_provider_;
+  StubBirchDataProvider lost_media_provider_;
   StubBirchDataProvider release_notes_provider_;
   std::unique_ptr<StubBirchDataProvider> weather_provider_;
 
@@ -264,6 +268,7 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
   model->SetLastActiveItems(std::vector<BirchLastActiveItem>());
   model->SetMostVisitedItems(std::vector<BirchMostVisitedItem>());
   model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
+  model->SetLostMediaItems(std::vector<BirchLostMediaItem>());
   model->SetFileSuggestItems(std::vector<BirchFileItem>());
   model->SetReleaseNotesItems(std::vector<BirchReleaseNotesItem>());
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
@@ -277,6 +282,7 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
   model->SetLastActiveItems(std::vector<BirchLastActiveItem>());
   model->SetMostVisitedItems(std::vector<BirchMostVisitedItem>());
   model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
+  model->SetLostMediaItems(std::vector<BirchLostMediaItem>());
 
   // Consumer is not notified until all data sources have responded.
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
@@ -305,6 +311,7 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
   model->SetLastActiveItems(std::vector<BirchLastActiveItem>());
   model->SetMostVisitedItems(std::vector<BirchMostVisitedItem>());
   model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
+  model->SetLostMediaItems(std::vector<BirchLostMediaItem>());
   model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/2));
   model->SetWeatherItems({});
   model->SetCalendarItems({});
@@ -333,6 +340,7 @@ TEST_F(BirchModelTest, RequestBirchDataFetchRecordsHistograms) {
   model->SetLastActiveItems({});
   model->SetMostVisitedItems({});
   model->SetSelfShareItems({});
+  model->SetLostMediaItems({});
   model->SetFileSuggestItems({});
   model->SetWeatherItems({});
   model->SetReleaseNotesItems({});
@@ -375,6 +383,7 @@ TEST_F(BirchModelTest, RequestBirchDataFetchRecordsTotalLatencyHistogram) {
   model->SetLastActiveItems({});
   model->SetMostVisitedItems({});
   model->SetSelfShareItems({});
+  model->SetLostMediaItems({});
   model->SetFileSuggestItems({});
   model->SetWeatherItems({});
   model->SetReleaseNotesItems({});
@@ -392,6 +401,7 @@ TEST_F(BirchModelTest, RequestBirchDataFetchRecordsTotalLatencyHistogram) {
   model->SetLastActiveItems({});
   model->SetMostVisitedItems({});
   model->SetSelfShareItems({});
+  model->SetLostMediaItems({});
   model->SetFileSuggestItems({});
   model->SetWeatherItems({});
   model->SetReleaseNotesItems({});
@@ -435,6 +445,7 @@ TEST_F(BirchModelTest, DisablingAllPrefsCausesNoFetch) {
   model->SetLastActiveItems({});
   model->SetMostVisitedItems({});
   model->SetSelfShareItems({});
+  model->SetLostMediaItems({});
   model->SetWeatherItems({});
   model->SetReleaseNotesItems({});
   ASSERT_TRUE(model->IsDataFresh());
@@ -449,6 +460,7 @@ TEST_F(BirchModelTest, DisablingAllPrefsCausesNoFetch) {
   prefs->SetBoolean(prefs::kBirchUseLastActive, false);
   prefs->SetBoolean(prefs::kBirchUseMostVisited, false);
   prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
+  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
   prefs->SetBoolean(prefs::kBirchUseWeather, false);
 
@@ -474,6 +486,7 @@ TEST_F(BirchModelTest, DisablingAllPrefsCausesNoFetch) {
   EXPECT_FALSE(client.last_active_provider_.did_request_birch_data_fetch_);
   EXPECT_FALSE(client.most_visited_provider_.did_request_birch_data_fetch_);
   EXPECT_FALSE(client.self_share_provider_.did_request_birch_data_fetch_);
+  EXPECT_FALSE(client.lost_media_provider_.did_request_birch_data_fetch_);
   EXPECT_FALSE(client.release_notes_provider_.did_request_birch_data_fetch_);
   EXPECT_FALSE(weather_provider_ptr->did_request_birch_data_fetch_);
   EXPECT_TRUE(model->IsDataFresh());
@@ -492,6 +505,7 @@ TEST_F(BirchModelTest, EnablingOnePrefsCausesFetch) {
   prefs->SetBoolean(prefs::kBirchUseLastActive, false);
   prefs->SetBoolean(prefs::kBirchUseMostVisited, false);
   prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
+  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
   prefs->SetBoolean(prefs::kBirchUseWeather, false);
 
@@ -511,6 +525,7 @@ TEST_F(BirchModelTest, EnablingOnePrefsCausesFetch) {
   EXPECT_FALSE(client.last_active_provider_.did_request_birch_data_fetch_);
   EXPECT_FALSE(client.most_visited_provider_.did_request_birch_data_fetch_);
   EXPECT_FALSE(client.self_share_provider_.did_request_birch_data_fetch_);
+  EXPECT_FALSE(client.lost_media_provider_.did_request_birch_data_fetch_);
   EXPECT_FALSE(client.release_notes_provider_.did_request_birch_data_fetch_);
   EXPECT_FALSE(weather_provider_ptr->did_request_birch_data_fetch_);
 }
@@ -549,6 +564,11 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
   release_notes_item_list.emplace_back(
       u"note", u"explore", GURL("https://www.example.com/"), base::Time());
   model->SetReleaseNotesItems(release_notes_item_list);
+  std::vector<BirchLostMediaItem> lost_media_item_list;
+  lost_media_item_list.emplace_back(u"source title", u"media title",
+                                    ui::ImageModel(), base::DoNothing());
+  model->SetLostMediaItems(lost_media_item_list);
+
   ASSERT_TRUE(model->IsDataFresh());
 
   // Disable all the prefs for data providers.
@@ -561,6 +581,7 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
   prefs->SetBoolean(prefs::kBirchUseLastActive, false);
   prefs->SetBoolean(prefs::kBirchUseMostVisited, false);
   prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
+  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
   prefs->SetBoolean(prefs::kBirchUseWeather, false);
 
@@ -573,6 +594,7 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
   EXPECT_TRUE(model->GetLastActiveItemsForTest().empty());
   EXPECT_TRUE(model->GetMostVisitedItemsForTest().empty());
   EXPECT_TRUE(model->GetSelfShareItemsForTest().empty());
+  EXPECT_TRUE(model->GetLostMediaItemsForTest().empty());
   EXPECT_TRUE(model->GetWeatherForTest().empty());
   EXPECT_TRUE(model->GetReleaseNotesItemsForTest().empty());
 }
@@ -591,6 +613,7 @@ TEST_F(BirchModelTest, DisablingPrefsMarksDataFresh) {
   prefs->SetBoolean(prefs::kBirchUseLastActive, false);
   prefs->SetBoolean(prefs::kBirchUseMostVisited, false);
   prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
+  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
   prefs->SetBoolean(prefs::kBirchUseWeather, false);
 
@@ -646,6 +669,7 @@ TEST_F(BirchModelTest, FetchWithOnePrefDisabledMarksDataFresh) {
   model->SetLastActiveItems({});
   model->SetMostVisitedItems({});
   model->SetSelfShareItems({});
+  model->SetLostMediaItems({});
   model->SetReleaseNotesItems({});
 
   // Consumer was notified that fetch was complete.
@@ -669,6 +693,7 @@ TEST_F(BirchModelTest, EnablePrefsDuringFetchCausesDataFetchRequest) {
   prefs->SetBoolean(prefs::kBirchUseLastActive, false);
   prefs->SetBoolean(prefs::kBirchUseMostVisited, false);
   prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
+  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
 
   // Request a fetch, creating a pending fetch request.
@@ -681,6 +706,7 @@ TEST_F(BirchModelTest, EnablePrefsDuringFetchCausesDataFetchRequest) {
   EXPECT_FALSE(client.last_active_provider_.did_request_birch_data_fetch_);
   EXPECT_FALSE(client.most_visited_provider_.did_request_birch_data_fetch_);
   EXPECT_FALSE(client.self_share_provider_.did_request_birch_data_fetch_);
+  EXPECT_FALSE(client.lost_media_provider_.did_request_birch_data_fetch_);
   EXPECT_FALSE(client.release_notes_provider_.did_request_birch_data_fetch_);
 
   // Enable prefs and then expect that data fetch requests are called for each
@@ -691,6 +717,8 @@ TEST_F(BirchModelTest, EnablePrefsDuringFetchCausesDataFetchRequest) {
   prefs->SetBoolean(prefs::kBirchUseLastActive, true);
   prefs->SetBoolean(prefs::kBirchUseMostVisited, true);
   prefs->SetBoolean(prefs::kBirchUseSelfShare, true);
+  prefs->SetBoolean(prefs::kBirchUseLostMedia, true);
+
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, true);
   EXPECT_TRUE(client.calendar_provider_.did_request_birch_data_fetch_);
   EXPECT_TRUE(client.file_suggest_provider_.did_request_birch_data_fetch_);
@@ -698,6 +726,7 @@ TEST_F(BirchModelTest, EnablePrefsDuringFetchCausesDataFetchRequest) {
   EXPECT_TRUE(client.last_active_provider_.did_request_birch_data_fetch_);
   EXPECT_TRUE(client.most_visited_provider_.did_request_birch_data_fetch_);
   EXPECT_TRUE(client.self_share_provider_.did_request_birch_data_fetch_);
+  EXPECT_TRUE(client.lost_media_provider_.did_request_birch_data_fetch_);
   EXPECT_TRUE(client.release_notes_provider_.did_request_birch_data_fetch_);
 }
 
@@ -737,6 +766,7 @@ TEST_F(BirchModelTest, IsDataFresh_Attachments) {
   model->SetLastActiveItems({});
   model->SetMostVisitedItems({});
   model->SetSelfShareItems({});
+  model->SetLostMediaItems({});
   model->SetWeatherItems({});
   model->SetReleaseNotesItems({});
   EXPECT_FALSE(model->IsDataFresh());
@@ -771,6 +801,7 @@ TEST_F(BirchModelTest, MAYBE_DataFetchTimeout) {
   model->SetMostVisitedItems({});
   model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
   model->SetSelfShareItems({});
+  model->SetLostMediaItems({});
   std::vector<BirchWeatherItem> weather_items;
   weather_items.emplace_back(u"desc", 70.f, ui::ImageModel());
   model->SetWeatherItems(std::move(weather_items));
@@ -824,6 +855,7 @@ TEST_F(BirchModelWithoutWeatherTest, MAYBE_DataFetchTimeout) {
   model->SetLastActiveItems({});
   model->SetMostVisitedItems({});
   model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
+  model->SetLostMediaItems({});
   model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
@@ -877,6 +909,7 @@ TEST_F(BirchModelTest, PostLoginDataFetchTimeout) {
   model->SetLastActiveItems({});
   model->SetMostVisitedItems({});
   model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
+  model->SetLostMediaItems({});
   model->SetWeatherItems({});
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
@@ -933,6 +966,7 @@ TEST_F(BirchModelWithoutWeatherTest, AddItemNotifiesCallback) {
   model->SetLastActiveItems({});
   model->SetMostVisitedItems(std::vector<BirchMostVisitedItem>());
   model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
+  model->SetLostMediaItems(std::vector<BirchLostMediaItem>());
   model->SetFileSuggestItems(std::vector<BirchFileItem>());
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
 
@@ -945,6 +979,7 @@ TEST_F(BirchModelWithoutWeatherTest, AddItemNotifiesCallback) {
   model->SetLastActiveItems({});
   model->SetMostVisitedItems(std::vector<BirchMostVisitedItem>());
   model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
+  model->SetLostMediaItems(std::vector<BirchLostMediaItem>());
   // Consumer is not notified until all data sources have responded.
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
 
@@ -972,6 +1007,7 @@ TEST_F(BirchModelWithoutWeatherTest, AddItemNotifiesCallback) {
   model->SetLastActiveItems({});
   model->SetMostVisitedItems(std::vector<BirchMostVisitedItem>());
   model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
+  model->SetLostMediaItems(std::vector<BirchLostMediaItem>());
   model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/2));
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
@@ -1069,11 +1105,15 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
   release_notes_item_list.emplace_back(
       u"note", u"explore", GURL("https://www.example.com/"), base::Time());
   model->SetReleaseNotesItems(release_notes_item_list);
+  std::vector<BirchLostMediaItem> lost_media_item_list;
+  lost_media_item_list.emplace_back(u"source title", u"media title",
+                                    ui::ImageModel(), base::DoNothing());
+  model->SetLostMediaItems(lost_media_item_list);
 
   EXPECT_TRUE(model->IsDataFresh());
 
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0", "1"));
-  EXPECT_EQ(model->GetAllItems().size(), 9u);
+  EXPECT_EQ(model->GetAllItems().size(), 10u);
 
   model->RequestBirchDataFetch(/*is_post_login=*/false,
                                base::BindOnce(&TestModelConsumer::OnItemsReady,
@@ -1090,6 +1130,7 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
   model->SetLastActiveItems({});
   model->SetMostVisitedItems({});
   model->SetSelfShareItems({});
+  model->SetLostMediaItems({});
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
   model->SetReleaseNotesItems({});
@@ -1374,6 +1415,7 @@ TEST_F(BirchModelTest, ModelClearedOnMultiProfileUserSwitch) {
   model->SetLastActiveItems({});
   model->SetMostVisitedItems({});
   model->SetSelfShareItems({});
+  model->SetLostMediaItems({});
   model->SetWeatherItems({});
   model->SetReleaseNotesItems({});
   ASSERT_TRUE(model->IsDataFresh());

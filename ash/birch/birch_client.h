@@ -25,6 +25,7 @@ class ASH_EXPORT BirchClient {
   virtual BirchDataProvider* GetLastActiveProvider() = 0;
   virtual BirchDataProvider* GetMostVisitedProvider() = 0;
   virtual BirchDataProvider* GetSelfShareProvider() = 0;
+  virtual BirchDataProvider* GetLostMediaProvider() = 0;
   virtual BirchDataProvider* GetReleaseNotesProvider() = 0;
   virtual BirchDataProvider* GetWeatherV2Provider() = 0;
 

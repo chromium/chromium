@@ -34,6 +34,7 @@
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/ash/birch/birch_file_suggest_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_keyed_service_factory.h"
+#include "chrome/browser/ui/ash/birch/birch_lost_media_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_self_share_provider.h"
 #include "chrome/browser/ui/ash/holding_space/scoped_test_mount_point.h"
 #include "chrome/common/pref_names.h"
@@ -54,6 +55,7 @@
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "services/media_session/public/cpp/test/test_media_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -325,6 +327,8 @@ std::unique_ptr<KeyedService> BuildFaviconServiceMock(
 // space to remove the dependency on holding space code.
 using ash::holding_space::ScopedTestMountPoint;
 
+using media_session::test::TestMediaController;
+
 class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
  public:
   BirchKeyedServiceTest()
@@ -370,6 +374,13 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
     favicon_service_ =
         static_cast<FaviconServiceMock*>(FaviconServiceFactory::GetForProfile(
             GetProfile(), ServiceAccessType::EXPLICIT_ACCESS));
+
+    // Inject the test media controller into the media controls view.
+    media_controller_ = std::make_unique<TestMediaController>();
+    auto* lost_media_provider = static_cast<BirchLostMediaProvider*>(
+        birch_keyed_service()->GetLostMediaProvider());
+    lost_media_provider->set_media_controller_for_testing(
+        media_controller_->CreateMediaControllerRemote());
   }
 
   void SetSessionServiceToReturnOpenTabsDelegate(bool return_delegate) {
@@ -424,6 +435,24 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
     send_tab_to_self_model_->AddEntry(kUrl, kTitle, kTargetDeviceSyncCacheGuid);
   }
 
+  void SimulateMediaMetadataInit() {
+    media_session::MediaMetadata metadata;
+    metadata.source_title = u"testtube.com-1";
+    metadata.title = u"title-1";
+
+    auto* lost_media_provider = static_cast<BirchLostMediaProvider*>(
+        birch_keyed_service()->GetLostMediaProvider());
+    lost_media_provider->MediaSessionMetadataChanged(metadata);
+  }
+
+  void SimulateMediaMetadataEnd() {
+    media_session::MediaMetadata metadata;
+
+    auto* lost_media_provider = static_cast<BirchLostMediaProvider*>(
+        birch_keyed_service()->GetLostMediaProvider());
+    lost_media_provider->MediaSessionMetadataChanged(metadata);
+  }
+
   void ClearReleaseNotesSurfacesTimesLeftToShowPref() {
     GetProfile()->GetPrefs()->ClearPref(
         ::prefs::kReleaseNotesSuggestionChipTimesLeftToShow);
@@ -460,6 +489,10 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
   }
 
   FaviconServiceMock* favicon_service() { return favicon_service_; }
+
+  TestMediaController* media_controller() const {
+    return media_controller_.get();
+  }
 
   syncer::TestSyncService* sync_service() { return sync_service_; }
 
@@ -507,6 +540,8 @@ class BirchKeyedServiceTest : public BrowserWithTestWindowTest {
   raw_ptr<SendTabToSelfModelMock> send_tab_to_self_model_;
 
   raw_ptr<FaviconServiceMock> favicon_service_;
+
+  std::unique_ptr<TestMediaController> media_controller_;
 
   MockOpenTabsUIDelegate open_tabs_delegate_;
 
@@ -579,6 +614,7 @@ TEST_F(BirchKeyedServiceTest, BirchFileSuggestProvider_NoFilesAvailable) {
   model->SetLastActiveItems({});
   model->SetMostVisitedItems({});
   model->SetSelfShareItems({});
+  model->SetLostMediaItems({});
   model->SetWeatherItems({});
   model->SetReleaseNotesItems({});
   model->SetAttachmentItems({});
@@ -749,6 +785,42 @@ TEST_F(BirchKeyedServiceTest, SelfShareProvider) {
   model->GetSelfShareItemsForTest()[0].PerformAction();
   self_share_provider->RequestBirchDataFetch();
   EXPECT_EQ(model->GetSelfShareItemsForTest().size(), 0u);
+}
+
+TEST_F(BirchKeyedServiceTest, LostMediaProvider) {
+  BirchModel* model = Shell::Get()->birch_model();
+  BirchDataProvider* lost_media_provider =
+      birch_keyed_service()->GetLostMediaProvider();
+
+  EXPECT_EQ(model->GetLostMediaItemsForTest().size(), 0u);
+
+  SimulateMediaMetadataInit();
+  lost_media_provider->RequestBirchDataFetch();
+  model->SetCalendarItems(std::vector<BirchCalendarItem>());
+  model->SetRecentTabItems(std::vector<BirchTabItem>());
+  model->SetFileSuggestItems(std::vector<BirchFileItem>());
+  model->SetReleaseNotesItems(std::vector<BirchReleaseNotesItem>());
+  model->SetSelfShareItems(std::vector<BirchSelfShareItem>());
+
+  auto& lost_media_items = model->GetLostMediaItemsForTest();
+  EXPECT_EQ(lost_media_items.size(), 1u);
+  EXPECT_EQ(lost_media_items[0].source_title(), u"testtube.com-1");
+  EXPECT_EQ(lost_media_items[0].title(), u"title-1");
+
+  // Item should still show after activation.
+  lost_media_items[0].PerformAction();
+  lost_media_items = model->GetLostMediaItemsForTest();
+  lost_media_provider->RequestBirchDataFetch();
+  EXPECT_EQ(lost_media_items.size(), 1u);
+  EXPECT_EQ(lost_media_items[0].source_title(), u"testtube.com-1");
+  EXPECT_EQ(lost_media_items[0].title(), u"title-1");
+
+  // There should be no items if metadata does not have a valid `source_title`
+  // or `title`.
+  SimulateMediaMetadataEnd();
+  lost_media_provider->RequestBirchDataFetch();
+  lost_media_items = model->GetLostMediaItemsForTest();
+  EXPECT_EQ(lost_media_items.size(), 0u);
 }
 
 TEST_F(BirchKeyedServiceTest, NoTabSuggestionsWithDisabledChromeSyncPref) {

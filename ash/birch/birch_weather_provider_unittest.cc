@@ -48,6 +48,7 @@ class StubBirchClient : public BirchClient {
   BirchDataProvider* GetLastActiveProvider() override { return &provider_; }
   BirchDataProvider* GetMostVisitedProvider() override { return &provider_; }
   BirchDataProvider* GetSelfShareProvider() override { return &provider_; }
+  BirchDataProvider* GetLostMediaProvider() override { return &provider_; }
   BirchDataProvider* GetReleaseNotesProvider() override { return &provider_; }
   BirchDataProvider* GetWeatherV2Provider() override {
     // Null because V2 provider and the weather provider tested in this test

@@ -2344,6 +2344,9 @@ inline constexpr char kBirchUseMostVisited[] = "ash.birch.use_most_visited";
 // A boolean pref indicating whether Birch should use self share data.
 inline constexpr char kBirchUseSelfShare[] = "ash.birch.use_self_share";
 
+// A boolean pref indicating whether Birch should use lost media data.
+inline constexpr char kBirchUseLostMedia[] = "ash.birch.use_lost_media";
+
 // A boolean pref indicating whether Birch should use weather data.
 inline constexpr char kBirchUseWeather[] = "ash.birch.use_weather";
 

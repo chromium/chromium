@@ -80,6 +80,7 @@ void BirchItemRemover::RemoveItem(BirchItem* item) {
     }
     case ash::BirchItemType::kReleaseNotes:
     case ash::BirchItemType::kWeather:
+    case ash::BirchItemType::kLostMedia:
     case ash::BirchItemType::kTest: {
       NOTREACHED_NORETURN();
     }

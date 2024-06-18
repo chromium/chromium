@@ -806,6 +806,64 @@ std::u16string BirchSelfShareItem::GetSubtitle(
 
 ////////////////////////////////////////////////////////////////////////////////
 
+BirchLostMediaItem::BirchLostMediaItem(const std::u16string& source_title,
+                                       const std::u16string& media_title,
+                                       ui::ImageModel icon_image,
+                                       base::RepeatingClosure callback)
+    : BirchItem(media_title, GetSubtitle(source_title)),
+      source_title_(source_title),
+      media_title_(media_title),
+      icon_image_(icon_image),
+      activation_callback_(std::move(callback)) {}
+
+BirchLostMediaItem::BirchLostMediaItem(BirchLostMediaItem&&) = default;
+
+BirchLostMediaItem::BirchLostMediaItem(const BirchLostMediaItem&) = default;
+
+BirchLostMediaItem& BirchLostMediaItem::operator=(const BirchLostMediaItem&) =
+    default;
+
+bool BirchLostMediaItem::operator==(const BirchLostMediaItem& rhs) const =
+    default;
+
+BirchLostMediaItem::~BirchLostMediaItem() = default;
+
+BirchItemType BirchLostMediaItem::GetType() const {
+  return BirchItemType::kLostMedia;
+}
+
+std::string BirchLostMediaItem::ToString() const {
+  std::stringstream ss;
+  ss << "Lost Media item: {ranking: " << ranking()
+     << ", Source Title: " << source_title_ << ", Media Title: " << media_title_
+     << "}";
+  return ss.str();
+}
+
+void BirchLostMediaItem::PerformAction() {
+  if (activation_callback_) {
+    activation_callback_.Run();
+  }
+  RecordActionMetrics();
+}
+
+void BirchLostMediaItem::PerformSecondaryAction() {
+  NOTREACHED_IN_MIGRATION();
+}
+
+void BirchLostMediaItem::LoadIcon(LoadIconCallback callback) const {
+  std::move(callback).Run(icon_image_, /*success=*/true);
+}
+
+// static
+std::u16string BirchLostMediaItem::GetSubtitle(
+    const std::u16string& source_title) {
+  // TODO(b/340347606): Add strings to ash_strings.grd.
+  return u"Currently playing media • ";
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 BirchReleaseNotesItem::BirchReleaseNotesItem(
     const std::u16string& release_notes_title,
     const std::u16string& release_notes_text,
