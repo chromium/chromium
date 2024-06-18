@@ -1234,8 +1234,4 @@ void RenderWidgetHostViewBase::SetViewTransitionResources(
   view_transition_resources_ = std::move(resources);
 }
 
-bool RenderWidgetHostViewBase::IsTestRenderWidgetHostView() const {
-  return false;
-}
-
 }  // namespace content

@@ -467,9 +467,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   virtual void SetDisplayFeatureForTesting(
       const DisplayFeature* display_feature) = 0;
 
-  // By default, returns false.
-  virtual bool IsTestRenderWidgetHostView() const;
-
   DevicePosturePlatformProvider* GetDevicePosturePlatformProvider();
 
   // Returns the associated RenderWidgetHostImpl.

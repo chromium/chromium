@@ -19,7 +19,6 @@
 #include "chrome/browser/media/webrtc/desktop_media_picker_factory_impl.h"
 #include "chrome/browser/media/webrtc/native_desktop_media_list.h"
 #include "chrome/browser/media/webrtc/tab_desktop_media_list.h"
-#include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #include "chrome/browser/ui/url_identity.h"
@@ -30,7 +29,6 @@
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
@@ -313,34 +311,6 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(web_contents);
 
-  content::WebContents* ui_web_contents = web_contents;
-
-  // If `web_contents` is the opener of a Document Picture in Picture window,
-  // and if the pip window currently has the focus, then show the request in the
-  // pip window instead.
-  if (content::WebContents* const child_web_contents =
-          web_contents->HasPictureInPictureDocument()
-              ? PictureInPictureWindowManager::GetInstance()
-                    ->GetChildWebContents()
-              : nullptr) {
-    // There should not be more than one pip window.  If `web_contents` believes
-    // that it is a document pip opener, then make sure that the window manager
-    // agrees with it.
-    CHECK_EQ(PictureInPictureWindowManager::GetInstance()->GetWebContents(),
-             web_contents);
-
-    // The media-picker prompt will be associated with the PiP window if the
-    // user's last interaction was with the PiP. (This heuristic could in the
-    // future be replaced with an explicit control surface exposed to the app.)
-    //
-    // Further, note that we use HasFocus() as an indirect way to check which
-    // surface had the most recent user gesture. It's not 100% accurate, but
-    // it's good enough.
-    if (child_web_contents->GetRenderWidgetHostView()->HasFocus()) {
-      ui_web_contents = child_web_contents;
-    }
-  }
-
   std::vector<DesktopMediaList::Type> media_types{
       DesktopMediaList::Type::kWebContents, DesktopMediaList::Type::kWindow};
   if (!pending_request.request.exclude_monitor_type_surfaces) {
@@ -373,8 +343,8 @@ void DisplayMediaAccessHandler::ProcessQueuedPickerRequest(
                      base::Unretained(this), web_contents->GetWeakPtr());
   DesktopMediaPicker::Params picker_params(
       DesktopMediaPicker::Params::RequestSource::kGetDisplayMedia);
-  picker_params.web_contents = ui_web_contents;
-  gfx::NativeWindow parent_window = ui_web_contents->GetTopLevelNativeWindow();
+  picker_params.web_contents = web_contents;
+  gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
   picker_params.context = parent_window;
   picker_params.parent = parent_window;
   picker_params.app_name = GetApplicationTitle(web_contents);

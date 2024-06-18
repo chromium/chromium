@@ -202,13 +202,6 @@ class WebContentsTester {
   virtual void SetMediaCaptureRawDeviceIdsOpened(
       blink::mojom::MediaStreamType type,
       std::vector<std::string> ids) = 0;
-
-  // Set whether this WebContents believes that it is the opener for a document
-  // pip window.
-  virtual void SetHasPictureInPictureDocument(bool has_pip) = 0;
-
-  // Set or remove focus on the primary main frame's RWHV.
-  virtual void SetRenderWidgetHostViewHasFocus(bool has_focus) = 0;
 };
 
 }  // namespace content
