@@ -254,6 +254,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4561051373932531560">Avec Google Chrome, cliquez sur un numéro de téléphone sur le Web et appelez-le dans Skype !</translation>
 <translation id="4567424176335768812">Vous êtes connecté avec l'adresse e-mail <ph name="USER_EMAIL_ADDRESS" />. Vous pouvez maintenant accéder à vos favoris, à l'historique et aux autres paramètres sur tous les appareils sur lesquels vous êtes connecté.</translation>
 <translation id="4571503333518166079">Accéder aux paramètres de notification de Chrome</translation>
+<translation id="4575717501879784448">Chrome peut désactiver ces onglets pour améliorer votre expérience de navigation et libérer des ressources.</translation>
 <translation id="459622048091363950">Une fois l'accès à une ressource accordé à Chrome, les sites Web sont également en mesure de vous demander l'accès.</translation>
 <translation id="4600710005438004015">Échec de l'installation de la dernière version de Chrome. Vous ne disposez donc pas des nouvelles fonctionnalités, ni des correctifs de sécurité.</translation>
 <translation id="4624065194742029982">Navigation privée dans Chrome</translation>
@@ -266,7 +267,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4728575227883772061">Échec de l'installation suite à une erreur non spécifiée. Si Google Chrome est en cours d'exécution, fermez-le puis réessayez.</translation>
 <translation id="4747730611090640388">Chrome peut estimer quels sont vos centres d'intérêt.  Ensuite, un site que vous consultez pourra demander à Chrome de voir vos centres d'intérêt pour personnaliser les annonces qui vous sont présentées.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
-<translation id="4771048833395599659">Chrome a bloqué ce fichier, car ce dernier peut être dangereux.</translation>
 <translation id="479167709087336770">Le correcteur orthographique utilisé est le même que celui employé dans la recherche Google. Le texte que vous saisissez dans le navigateur est envoyé à Google. Vous pouvez toujours modifier ce comportement dans les paramètres.</translation>
 <translation id="4793679854893018356">Découvrir comment Chrome vous protège</translation>
 <translation id="4828579605166583682">Google Chrome tente de remplacer les mots de passe existants. Saisissez votre mot de passe Windows pour autoriser l'opération.</translation>
@@ -285,6 +285,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4970761609246024540">Bienvenue sur la page de profils Chrome</translation>
 <translation id="4970880042055371251">Version de Chrome OS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="4997044641749333913">Chrome peut désactiver ces onglets pour améliorer votre expérience de navigation et maintenir la rapidité du navigateur.</translation>
 <translation id="5003967926796347400">Cliquez sur "Gestionnaire de mots de passe de Google"</translation>
 <translation id="5120334927898581447">Se connecter à Chrome lorsque vous vous connectez aux autres services Google</translation>
 <translation id="5126049312684316860">Chrome précharge davantage de pages susceptibles de vous intéresser afin qu'elles se chargent plus rapidement lorsque vous les consultez</translation>
@@ -349,6 +350,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="608006075545470555">Ajouter un profil professionnel à ce navigateur</translation>
 <translation id="6097822892606850415">Écrivez avec plus d'assurance grâce à l'IA</translation>
 <translation id="6113794647360055231">Chrome s'est amélioré</translation>
+<translation id="6135456723633883042">Ces onglets utilisent des ressources supplémentaires. Pour améliorer les performances, autorisez Chrome à les désactiver.</translation>
 <translation id="6145313976051292476">Ouvrir les PDF dans Chrome</translation>
 <translation id="6157638032135951407">Votre organisation supprime les données Chrome lorsqu'elles ne sont pas utilisées pendant <ph name="TIMEOUT_DURATION" />. Il peut s'agir de l'historique, de la saisie automatique et des téléchargements.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

@@ -1011,6 +1011,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2930577230479659665">Cortar después de cada copia</translation>
 <translation id="2933624813161016821">Lámina con relieve</translation>
 <translation id="2938225289965773019">Abrir vínculos de <ph name="PROTOCOL" /></translation>
+<translation id="2941112035454246133">Baja</translation>
 <translation id="2941878205777356567">Sobre de 22.8 × 30.4 cm</translation>
 <translation id="2941952326391522266">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" />; el certificado de seguridad proviene de <ph name="DOMAIN2" />. Es posible que esto se deba a una configuración incorrecta o a que un atacante interceptó la conexión.</translation>
 <translation id="2942492342931589800">Casual</translation>
@@ -2223,7 +2224,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5263867360296733198">Se debe revisar antes de subir los archivos</translation>
 <translation id="5266128565379329178">Encuadernado en la parte superior</translation>
 <translation id="5269225904387178860">Perforación cuádruple en la parte inferior</translation>
-<translation id="5269999699920406580">El propietario es el único que puede configurar las funciones que se aplican a todo el sistema: <ph name="OWNER_EMAIL" />.</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" no es una condición admitida para "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="5273658854610202413">Advertencia: Esta política no se combinó según la política PolicyDictionaryMultipleSourceMergeList porque no es parte de las políticas del diccionario que se pueden combinar.</translation>
 <translation id="5279286380302340275">Administrar las descargas</translation>
@@ -3064,6 +3064,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6915804003454593391">Usuario:</translation>
 <translation id="6916193791494646625">Proporciona el motivo de la descarga (obligatorio)</translation>
 <translation id="6917795328362592458">La contraseña que acabas de usar se encontró en una violación de la seguridad de los datos. A fin de asegurar tu cuenta, el Administrador de contraseñas te recomienda revisar las contraseñas guardadas.</translation>
+<translation id="6924013822850225188">Elige si quieres ver los beneficios de tu tarjeta durante la confirmación de la compra (se aplican las condiciones del banco)</translation>
 <translation id="6925267999184670015">B+ norteamericano</translation>
 <translation id="6926216138694948720">Arte corporal</translation>
 <translation id="692638818576287323">Vehículos comerciales</translation>
@@ -3833,6 +3834,7 @@ Detalles adicionales:
 <translation id="830498451218851433">Plegado a la mitad</translation>
 <translation id="8308653357438598313">Transmisión de video en vivo</translation>
 <translation id="8311895354659782580">Listados de bienes raíces</translation>
+<translation id="8312841338723044391">EN VIVO</translation>
 <translation id="8316555157357957253">Está en uso</translation>
 <translation id="8319269383395457801">Ventas de viviendas</translation>
 <translation id="831997045666694187">Tarde</translation>

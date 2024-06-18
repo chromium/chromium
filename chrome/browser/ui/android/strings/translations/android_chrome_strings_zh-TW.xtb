@@ -422,6 +422,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 個書籤}other{<ph name="BOOKMARKS_COUNT_MANY" /> 個書籤}}</translation>
 <translation id="3062802207422175757">在 Chrome 上閱讀你有興趣的文章</translation>
 <translation id="3066573403916685335">下移</translation>
+<translation id="3067505415088964188">價格較低</translation>
 <translation id="3070005020161560471">自動翻譯</translation>
 <translation id="3072980200212375806">「<ph name="APP_NAME" />」將在 Chrome 中開啟。選擇繼續即表示您同意《<ph name="BEGIN_LINK1" />Google 服務條款<ph name="END_LINK1" />》以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome OS 的《附加服務條款》<ph name="END_LINK2" />。您也必須遵守《<ph name="BEGIN_LINK3" />隱私權政策<ph name="END_LINK3" />》。</translation>
 <translation id="3080525922482950719">你可以儲存頁面以便稍後閱讀或離線閱讀</translation>

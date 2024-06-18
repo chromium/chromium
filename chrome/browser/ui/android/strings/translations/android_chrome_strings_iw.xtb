@@ -117,6 +117,8 @@
 <translation id="1513814250881909472">אפשר לבצע סנכרון כדי להציג את הכרטיסיות מהמכשירים האחרים שלך</translation>
 <translation id="1513858653616922153">מחיקת סיסמה</translation>
 <translation id="1521774566618522728">סנכרון אחרון: היום</translation>
+<translation id="1544084554881119930">‏אמצעי תשלום וכתובות לא יוצפנו. היסטוריית הגלישה ב-Chrome לא תסונכרן.
+רק מי שיודע את ביטוי הסיסמה יכול לקרוא את הנתונים המוצפנים. ביטוי הסיסמה לא נשלח אל Google ולא מאוחסן ב-Google. אם שכחת את ביטוי הסיסמה או שברצונך לשנות את ההגדרה הזו, <ph name="BEGIN_LINK" />עליך לנקות את נתוני Chrome בחשבון<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">‏כדי לנהל את חשבון Google, יש להקיש על הלחצן "ניהול החשבון"</translation>
 <translation id="154513667535157406">אם סימנת 'אהבתי', יישלח אלינו משוב שאהבת את הסיכום הזה</translation>
 <translation id="1549000191223877751">העברה לחלון האחר</translation>
@@ -422,6 +424,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{סימנייה אחת (<ph name="BOOKMARKS_COUNT_ONE" />)}one{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}two{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}other{<ph name="BOOKMARKS_COUNT_MANY" /> סימניות}}</translation>
 <translation id="3062802207422175757">‏ב-Chrome מחכים לך מאמרים בנושאים שמעניינים אותך</translation>
 <translation id="3066573403916685335">רד למטה</translation>
+<translation id="3067505415088964188">המחיר נמוך</translation>
 <translation id="3070005020161560471">יש לתרגם אוטומטית</translation>
 <translation id="3072980200212375806">‏האפליקציה <ph name="APP_NAME" /> תיפתח ב-Chrome. המשך הפעולה מבטא הסכמה <ph name="BEGIN_LINK1" />לתנאים ולהגבלות של Google<ph name="END_LINK1" /> ו<ph name="BEGIN_LINK2" />לתנאים ולהגבלות הנוספים של Google Chrome ו-ChromeOS<ph name="END_LINK2" />. גם <ph name="BEGIN_LINK3" />מדיניות הפרטיות<ph name="END_LINK3" /> חלה.</translation>
 <translation id="3080525922482950719">ניתן לשמור דפים לקריאה במועד מאוחר יותר או במצב אופליין</translation>
@@ -457,6 +460,7 @@
 <translation id="3264259168916048410">התקבלה מהמחשב בקשה להשתמש במכשיר הזה לצורך כניסה לאתר</translation>
 <translation id="3265093782546847662">כל הדפים של <ph name="DOMAIN" /></translation>
 <translation id="3269093882174072735">טעינת תמונה</translation>
+<translation id="327204079441056603">שינינו את האופן שבו סיסמאות נשמרות במכשיר הזה</translation>
 <translation id="3280562213547448728">חיפוש קולי</translation>
 <translation id="3282568296779691940">‏כניסה ל-Chrome</translation>
 <translation id="3290249595466894471">בנוסף, נשלחת דגימה קטנה שכוללת דפים, הורדות, פעילות של תוספים ופרטי מערכת כדי לאתר איומים חדשים</translation>
@@ -1213,6 +1217,7 @@
 <translation id="6918398787259831832">אם הבעיה נמשכת, <ph name="BEGIN_LINK" />ניתן לעיין במידע נוסף<ph name="END_LINK" /> ב-<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6929224077895306814">‏כל קודי האבטחה שנשמרו במכשיר ובחשבון Google שלך יימחקו</translation>
 <translation id="6937524809504266803">התאמה אישית וקישור</translation>
+<translation id="6937876069006524083">כינוי (אופציונלי)</translation>
 <translation id="6942665639005891494">ניתן תמיד לשנות את מיקום ברירת המחדל להורדות דרך האפשרות 'הגדרות' בתפריט</translation>
 <translation id="694267552845942083">מתבצעת עכשיו התאמה אישית של הגדרות הסנכרון. כדי להשלים את הפעלת הסנכרון יש להקיש על הלחצן 'אישור', קרוב לתחתית המסך. ניווט למעלה</translation>
 <translation id="6945221475159498467">בחירה</translation>
@@ -1276,6 +1281,7 @@
 <translation id="7207760545532569765">שחזור של <ph name="TAB_COUNT" /> כרטיסיות ככרטיסיות חדשות ברקע.</translation>
 <translation id="7217781228893594884">‏כרטיסיות פרטיות ננעלות כשסוגרים את Chrome</translation>
 <translation id="7221869452894271364">רענון הדף</translation>
+<translation id="7224097611345298931">‏כל הסיסמאות שנשמרו רק במכשיר הזה עבור Chrome ו-<ph name="CHROME_CHANNEL" /> מוזגו. אפשר למלא באופן אוטומטי את כל הסיסמאות השמורות בשתי האפליקציות האלו.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{הורדה אחת בהמתנה}one{# הורדות בהמתנה}two{# הורדות בהמתנה}other{# הורדות בהמתנה}}</translation>
 <translation id="72415438529550637">ההצעה לסיסמה נסגרה.</translation>
 <translation id="7252076891734325316">יש להניח את הטלפון בקרבת המחשב</translation>

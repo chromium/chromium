@@ -119,6 +119,7 @@
 <translation id="1383876407941801731">Search</translation>
 <translation id="1391102559483454063">ഓണാണ്</translation>
 <translation id="1394698770495054737">പൂർണ്ണമായി മങ്ങിക്കൽ</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 ദിവസം മുമ്പ്}other{# ദിവസം മുമ്പ്}}</translation>
 <translation id="1404963891829069586">ഫോക്കസ് ശബ്‌ദങ്ങൾ</translation>
 <translation id="1407069428457324124">ഡാർക്ക് തീം</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. തീയതികൾക്കിടയിൽ നാവിഗേറ്റ് ചെയ്യാൻ അമ്പടയാള കീകൾ ഉപയോഗിക്കുക.</translation>
@@ -209,6 +210,7 @@
 <translation id="174102739345480129">മാർക്കർ ഓഫാണ്.</translation>
 <translation id="1743570585616704562">തിരിച്ചറിഞ്ഞില്ല</translation>
 <translation id="1743927604032653654"><ph name="NOTIFICATION_TITLE" /> അറിയിപ്പ് ചുരുക്കുക</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{1 മിനിറ്റിനുള്ളിൽ}=1{1 മണിക്കൂർ മുമ്പ്}other{# മണിക്കൂർ മുമ്പ്}}</translation>
 <translation id="1746730358044914197">ഇൻപുട്ട് രീതികൾ കോൺഫിഗർ ചെയ്യുന്നത് നിങ്ങളുടെ അഡ്‌മിനിസ്‌ട്രേറ്ററാണ്.</translation>
 <translation id="1747336645387973286">അവസാന തീയതി <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">ഓൺ‌ സ്‌ക്രീൻ കീ‌ബോർഡ് പ്രവർത്തനക്ഷമമാക്കി</translation>
@@ -346,6 +348,7 @@
 <translation id="2359808026110333948">തുടരുക</translation>
 <translation id="2360398059912971776">ബാറ്ററി</translation>
 <translation id="2361210043495191221">വൈഫൈ ടോഗിൾ ചെയ്യുക. <ph name="STATE" />.</translation>
+<translation id="236574664504281623"><ph name="SESSION_NAME" /> എന്നതിൽ നിന്ന് അയച്ചത്</translation>
 <translation id="2367186422933365202">നിങ്ങളുടെ Chromebook-ലേക്ക് സൈൻ ഇൻ ചെയ്യാനാകുന്നില്ല</translation>
 <translation id="2367972762794486313">അപ്ലിക്കേഷനുകൾ കാണിക്കുക</translation>
 <translation id="2368828502825385061">കണ്ടെത്തുക</translation>
@@ -506,6 +509,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">മൈക്രോഫോൺ ആക്‌സസ് ഓണാക്കണോ?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> സംഭാഷണ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യാനായില്ല</translation>
+<translation id="2968761508099987738">നിങ്ങളുടെ നിലവിലെ ലൊക്കേഷന് ഇപ്പോൾ പിന്തുണയില്ല.</translation>
 <translation id="2970920913501714344">ആപ്പുകൾ, വിപുലീകരണങ്ങൾ, തീമുകൾ എന്നിവ ഇന്‍സ്‌റ്റാള്‍ ചെയ്യുക</translation>
 <translation id="2977598380246111477">അടുത്ത നമ്പർ</translation>
 <translation id="2985148236010982088">എല്ലാ ആപ്പുകളും കാണുക</translation>
@@ -979,6 +983,7 @@
 <translation id="468293128311738995">ഫോണിലെ ആപ്പുകൾ</translation>
 <translation id="4690510401873698237">സ്‌ക്രീനിൻ്റെ ചുവടെയാണ് ഷെൽഫ്</translation>
 <translation id="4696813013609194136">രക്ഷാകർതൃ കോഡ് ഉപയോഗിച്ച് ഉപകരണം അൺലോക്ക് ചെയ്യുക</translation>
+<translation id="4697357603686181098">ഇക്കാര്യത്തിൽ സഹായിക്കാനാകില്ല. മറ്റൊരു അഭ്യർത്ഥന നടത്തൂ.</translation>
 <translation id="4702647871202761252">സ്വകാര്യതാ സ്‌ക്രീൻ ഓഫാണ്</translation>
 <translation id="4706121060329443414">പിന്നീട് ഡൗൺലോഡ് ചെയ്യാൻ ശ്രമിക്കും. സംഭാഷണം ഇപ്പോൾ പ്രോസസ് ചെയ്യുന്നതിനായി Google-ലേക്ക് അയയ്ക്കും.</translation>
 <translation id="470644585772471629">നിറം വിപരീതമാക്കൽ</translation>
@@ -1902,6 +1907,7 @@
 <translation id="7982878511129296052">ഓഫാക്കുന്നു...</translation>
 <translation id="7984197416080286869">വിരലടയാളം ഉപയോഗിച്ച് നിരവധി ശ്രമങ്ങൾ നടത്തി</translation>
 <translation id="798779949890829624">ഈ ക്രമീകരണം മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ അഡ്‌മിനാണ്</translation>
+<translation id="7989206653429884947">ഇടയ്ക്കിടെ തുറന്നു</translation>
 <translation id="799296642788192631">പ്രധാനപ്പെട്ട ഫയലുകൾ നിങ്ങൾക്ക് പിൻ ചെയ്യാം. പിൻ ചെയ്യാൻ, ഒരു ഇനത്തിന് മുകളിൽ ഹോവർ ചെയ്യുക അല്ലെങ്കിൽ Files തുറന്ന് ഒരു ഇനത്തിൽ വലത്-ക്ലിക്ക് ചെയ്യുക.</translation>
 <translation id="7994370417837006925">ഒന്നിലധികം സൈൻ ഇൻ</translation>
 <translation id="7995804128062002838">സ്ക്രീൻ ചിത്രമെടുക്കാനായില്ല</translation>
@@ -2086,6 +2092,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">സമയം കഴിഞ്ഞു. കൊള്ളാം! 🎉</translation>
+<translation id="8753368202781196133">ഈ ഭാഷയ്ക്ക് ഇപ്പോൾ പിന്തുണയില്ല.</translation>
 <translation id="8755498163081687682">നിങ്ങളുടെ ഐഡന്റിറ്റി പരിശോധിച്ചുറപ്പിക്കുക: ഇത് നിങ്ങൾ തന്നെയാണെന്ന് സ്ഥിരീകരിക്കാൻ <ph name="ORIGIN_NAME" /> ആഗ്രഹിക്കുന്നു</translation>
 <translation id="875593634123171288">VPN ക്രമീകരണം കാണിക്കുക</translation>
 <translation id="8756799553341497810">നിങ്ങൾ ഈ കാഴ്‌ചയിൽ നിന്ന് പുറത്തുകടന്നാൽ നിങ്ങൾക്ക് ആപ്പ് ലേഔട്ട് ഇഷ്‌ടാനുസൃതമാക്കാൻ ആരംഭിക്കാം.</translation>

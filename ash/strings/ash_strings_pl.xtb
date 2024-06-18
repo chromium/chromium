@@ -899,6 +899,7 @@ W celu wydłużenia czasu pracy na baterii niektóre funkcje zostały ograniczo
 <translation id="4381031910344220229">Zezwala to na dostęp do mikrofonu w przypadku aplikacji <ph name="APP_NAME" /> oraz wszystkich aplikacji i stron internetowych, które mają uprawnienia do korzystania z niego</translation>
 <translation id="4382340674111381977">Wróć na poprzednią stronę</translation>
 <translation id="4389184120735010762">Naciśnięto skrót klawiszowy lupy zadokowanej. Czy chcesz ją włączyć?</translation>
+<translation id="4394466652057229831">Kliknij prawym przyciskiem, aby podsumować</translation>
 <translation id="439598569299422042">Wstrzymano, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Nie udało się zapisać screencastu</translation>
 <translation id="4405151984121254935">Typ podłączonego urządzenia peryferyjnego nie jest obsługiwany</translation>
@@ -1932,6 +1933,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="8113423164597455979">Włączono (wszystkie aplikacje)</translation>
 <translation id="8113515504791187892">Przycisk Przeczytaj na głos</translation>
 <translation id="8120151603115102514">Twój telefon nie ma ekranu blokady. Aby odblokować Chromebooka, wpisz hasło.</translation>
+<translation id="8120249852906205273">Uruchom ponownie</translation>
 <translation id="8127095419621171197">Otwórz aplikację Kalkulator</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8130528849632411619">Przejdź na początek dokumentu</translation>
@@ -2026,6 +2028,7 @@ Aby wyłączyć urządzenie, ponownie naciśnij i przytrzymaj na nim przycisk z
 <translation id="85123341071060231">Bluetooth Chromebooka jest wyłączony. Aby odblokować Chromebooka, wpisz hasło.</translation>
 <translation id="8513108775083588393">Autoobracanie</translation>
 <translation id="851458219935658693">Wybrano opcję Pokaż okna z bieżącego biurka</translation>
+<translation id="851660987304951246">Użyj funkcji Pomóż mi czytać, aby szybko podsumować treść lub zadać pytania</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> nie może się ładować, gdy jest włączony.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Wejściem mikrofonu steruje <ph name="APP_NAME" />}few{Wejściem mikrofonu sterują # aplikacje}many{Wejściem mikrofonu steruje # aplikacji}other{Wejściem mikrofonu steruje # aplikacji}}</translation>
 <translation id="8535393432370007982">Cofnij sortowanie według koloru</translation>

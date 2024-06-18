@@ -1011,6 +1011,7 @@
 <translation id="2930577230479659665">完成每个副本后裁切</translation>
 <translation id="2933624813161016821">压纹箔</translation>
 <translation id="2938225289965773019">打开<ph name="PROTOCOL" />链接</translation>
+<translation id="2941112035454246133">低</translation>
 <translation id="2941878205777356567">9 x 12 英寸信封</translation>
 <translation id="2941952326391522266">此服务器无法证明它是<ph name="DOMAIN" />；其安全证书来自<ph name="DOMAIN2" />。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="2942492342931589800">随意</translation>
@@ -2218,7 +2219,6 @@
 <translation id="5263867360296733198">上传前需要检查</translation>
 <translation id="5266128565379329178">装订（顶部）</translation>
 <translation id="5269225904387178860">四孔（底部）</translation>
-<translation id="5269999699920406580">在整个系统范围内应用的功能只能由所有者 <ph name="OWNER_EMAIL" /> 设定</translation>
 <translation id="5271381225185906340">“<ph name="DATA_CONTROLS_ATTRIBUTE" />”不是“<ph name="DATA_CONTROLS_RESTRICTION" />”支持的条件</translation>
 <translation id="5273658854610202413">警告：系统未按照 PolicyDictionaryMultipleSourceMergeList 政策中指定的方式合并此政策，因为此政策不是可合并的字典政策的一部分。</translation>
 <translation id="5279286380302340275">管理下载内容</translation>
@@ -3058,6 +3058,7 @@
 <translation id="6915804003454593391">用户：</translation>
 <translation id="6916193791494646625">请提供下载原因（必填）</translation>
 <translation id="6917795328362592458">系统检测到，您刚才使用的密码遭遇了数据泄露。为确保您的账号安全，密码管理工具建议您检查已保存的所有密码。</translation>
+<translation id="6924013822850225188">选择是否在结账时显示凭卡可享福利（需遵守银行条款）</translation>
 <translation id="6925267999184670015">北美洲 B+</translation>
 <translation id="6926216138694948720">人体艺术</translation>
 <translation id="692638818576287323">商用车</translation>
@@ -3827,6 +3828,7 @@
 <translation id="830498451218851433">对折</translation>
 <translation id="8308653357438598313">实时视频直播</translation>
 <translation id="8311895354659782580">房地产信息</translation>
+<translation id="8312841338723044391">实时</translation>
 <translation id="8316555157357957253">正在使用中</translation>
 <translation id="8319269383395457801">住宅销售</translation>
 <translation id="831997045666694187">晚上</translation>

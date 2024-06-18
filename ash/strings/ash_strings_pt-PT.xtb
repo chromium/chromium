@@ -899,6 +899,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4381031910344220229">Isto permite o acesso ao microfone para a app <ph name="APP_NAME" /> e todas as apps e Websites com a autorização do microfone</translation>
 <translation id="4382340674111381977">Voltar à página anterior</translation>
 <translation id="4389184120735010762">Premiu o atalho de teclado da lupa ancorada. Quer ativá-la?</translation>
+<translation id="4394466652057229831">Clique com o botão direito do rato para resumir</translation>
 <translation id="439598569299422042">Em pausa, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Não é possível guardar a gravação de ecrã</translation>
 <translation id="4405151984121254935">Este tipo de periférico ligado não é suportado</translation>
@@ -1933,6 +1934,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8113423164597455979">Ativado, todas as aplicações</translation>
 <translation id="8113515504791187892">Botão Selecionar para falar</translation>
 <translation id="8120151603115102514">O telemóvel não tem ecrã de bloqueio. Para desbloquear o Chromebook, introduza a palavra-passe.</translation>
+<translation id="8120249852906205273">Reiniciar</translation>
 <translation id="8127095419621171197">Abrir a app calculadora</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8130528849632411619">Ir para o início do documento</translation>
@@ -2027,6 +2029,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="85123341071060231">O Bluetooth do Chromebook está desativado. Para desbloquear, introduza a palavra-passe.</translation>
 <translation id="8513108775083588393">Rotação auto.</translation>
 <translation id="851458219935658693">Mostrar janelas do espaço de trabalho atual, botão de opção selecionado</translation>
+<translation id="851660987304951246">Use Ajuda-me a ler para resumir rapidamente o conteúdo ou fazer perguntas</translation>
 <translation id="8517041960877371778">O <ph name="DEVICE_TYPE" /> pode não carregar enquanto estiver ligado.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Entrada de som do microfone controlada pela app <ph name="APP_NAME" />}other{Entrada de som do microfone controlada por # apps}}</translation>
 <translation id="8535393432370007982">Anular ordenação por cor</translation>

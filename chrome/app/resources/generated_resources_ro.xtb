@@ -301,7 +301,6 @@ Verifică parolele oricând în <ph name="GOOGLE_PASSWORD_MANAGER" />.</translat
 <translation id="1211769675100312947">Comenzile rapide sunt organizate de tine</translation>
 <translation id="1213254615020057352">Trimite date de utilizare și diagnosticare. Contribuie la îmbunătățirea experienței Android a copilului trimițând automat la Google date de diagnosticare și utilizare a dispozitivului și a aplicațiilor. Acestea nu vor fi folosite la identificarea copilului și vor ajuta la stabilitatea sistemului, a aplicațiilor și altele. Unele date cumulate vor ajuta aplicațiile și partenerii Google, cum ar fi dezvoltatorii Android. Această setare este impusă de proprietar. Proprietarul poate alege să trimită date de diagnosticare și utilizare a dispozitivului la Google. Dacă ai activat setarea Activitatea suplimentară de pe web și din aplicații pentru copilul tău, aceste date pot fi salvate în Contul său Google.</translation>
 <translation id="1213726621272705156">Nu vei mai vedea carduri în această pagină</translation>
-<translation id="121384500095351701">Fișierul nu se poate descărca în siguranță</translation>
 <translation id="1214004433265298541">Certificat oferit de administratorul tău care poate vedea datele de conectare pentru <ph name="DOMAIN" /></translation>
 <translation id="1215411991991485844">Nouă aplicație de fundal adăugată</translation>
 <translation id="1216542092748365687">Elimină amprenta</translation>
@@ -2081,7 +2080,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2489829450872380594">Data viitoare, un telefon nou va debloca acest <ph name="DEVICE_TYPE" />. Poți dezactiva Smart Lock în Setări.</translation>
 <translation id="2489918096470125693">Adăugați un &amp;dosar...</translation>
 <translation id="2489931062851778802">Apasă aceste taste pe <ph name="DEVICE_NAME" /></translation>
-<translation id="2490481887078769936">„<ph name="FILE_NAME" />” a fost eliminat din listă</translation>
 <translation id="249098303613516219">Date privind site-urile pe dispozitiv permise</translation>
 <translation id="249113932447298600">Ne pare rău, dispozitivul <ph name="DEVICE_LABEL" /> nu este acceptat în prezent.</translation>
 <translation id="2491587035099903063">previzualizare a vocii pentru <ph name="LANGUAGE" /></translation>
@@ -2473,7 +2471,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2772936498786524345">Ninja</translation>
 <translation id="2773288106548584039">Compatibilitate pentru browsere vechi</translation>
 <translation id="2773621783913034737">Dezactivează filele</translation>
-<translation id="2773802008104670137">Este posibil ca acest tip de fișier să dăuneze computerului.</translation>
 <translation id="2775104091073479743">Editează amprentele</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Extensia <ph name="EXTENSION" /> accesa dispozitive}=1{Extensia <ph name="EXTENSION" /> accesează {0} dispozitiv}few{Extensia <ph name="EXTENSION" /> accesează {0} dispozitive}other{Extensia <ph name="EXTENSION" /> accesează {0} de dispozitive}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Elimină o aplicație neacceptată}few{Elimină # aplicații neacceptate}other{Elimină # de aplicații neacceptate}}</translation>
@@ -3634,7 +3631,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3654682977761834281">Date de la site-urile încorporate</translation>
 <translation id="3656328935986149999">Viteza cursorului</translation>
 <translation id="3658871634334445293">Accelerare TrackPoint</translation>
-<translation id="3659550105763988702">Folosește cheia de acces pentru <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Ai introdus de prea multe ori un cod de acces incorect. Încearcă din nou mai târziu</translation>
 <translation id="3660234220361471169">Nu prezintă încredere</translation>
 <translation id="3661106764436337772">Scrie mai rapid și cu mai multă încredere</translation>
@@ -3727,7 +3723,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3719245268140483218">Eveniment de pe dispozitiv</translation>
 <translation id="3719310907809321183">Formularul pentru <ph name="CARD_IDENTIFIER" /> a fost completat.</translation>
 <translation id="3719826155360621982">Pagina de pornire</translation>
-<translation id="3720543739123045680">Alte file folosesc un proces în comun cu această filă, ceea ce poate duce la o experiență DevTools neașteptată.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Tu și Google</translation>
 <translation id="3721178866505920080">Mai multe informații despre activarea preîncărcării extinse</translation>
@@ -5324,7 +5319,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="4903967893652864401">Astfel, autonomia bateriei este extinsă prin limitarea activității de fundal și a efectelor vizuale, cum ar fi derularea lină.</translation>
 <translation id="4906490889887219338">Configurează sau gestionează spații comune de stocare în rețea. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Alege când poate extensia să citească și să modifice datele privind site-urile</translation>
-<translation id="4907161631261076876">Acest fișier nu este descărcat de obicei și ar putea fi periculos.</translation>
 <translation id="4908811072292128752">Deschide o filă nouă pentru a naviga pe două site-uri simultan</translation>
 <translation id="4909038193460299775">Deoarece acest cont este gestionat de <ph name="DOMAIN" />, vor fi șterse marcajele, istoricul, parolele și alte setări de pe acest dispozitiv. Totuși, datele vor rămâne stocate în Contul Google și pot fi gestionate din <ph name="BEGIN_LINK" />Tabloul de bord Google<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">Aplicația este deja instalată</translation>
@@ -6677,7 +6671,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5935158534896975820">Se pregătește solicitarea de semnare a certificatului (se așteaptă serverul)</translation>
 <translation id="5935656526031444304">Gestionează Navigarea sigură</translation>
 <translation id="5936065461722368675">Tradu pagina completă</translation>
-<translation id="5937347877659196749">Apoi protejează-ți toate cheile de acces cu un PIN de recuperare</translation>
 <translation id="5937977334791924341">Sigla <ph name="APP" /></translation>
 <translation id="5938002010494270685">Este disponibilă o actualizare de securitate</translation>
 <translation id="5939518447894949180">Resetează</translation>
@@ -7439,7 +7432,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6530030995840538405">Imaginea generată <ph name="INDEX" /> din <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">Aceste setări sunt impuse de administrator</translation>
 <translation id="6530267432324197764">Profil gestionat de <ph name="MANAGER" /></translation>
-<translation id="6531282281159901044">Păstrează fișierul periculos</translation>
 <translation id="6532101170117367231">Salvați în Google Drive</translation>
 <translation id="6532106788206463496">Salvează modificările</translation>
 <translation id="6532206849875187177">Securitate și conectare</translation>
@@ -7487,6 +7479,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6557290421156335491">Comenzile mele rapide</translation>
 <translation id="6560061709899140565">Afișează alte sesiuni de proiectare</translation>
 <translation id="6560151649238390891">Sugestie inserată</translation>
+<translation id="656065428026159829">Vezi mai multe</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Stochează jurnale de sistem în directorul Descărcări.</translation>
 <translation id="656293578423618167">Calea sau numele fișierului sunt prea lungi. Salvați utilizând un nume mai scurt sau într-o altă locație.</translation>
@@ -9002,7 +8995,6 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7701040980221191251">Niciuna</translation>
 <translation id="7701869757853594372">Ghidaje UTILIZATOR</translation>
 <translation id="7702463352133825032">Nu mai proiecta pe <ph name="DEVICE_NAME" /></translation>
-<translation id="7702574632857388784">Elimină <ph name="FILE_NAME" /> din listă</translation>
 <translation id="7704305437604973648">Activitate</translation>
 <translation id="7704521324619958564">Deschide Magazinul Play</translation>
 <translation id="7705276765467986571">Nu se poate încărca modelul de marcaj.</translation>
@@ -9451,6 +9443,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8022466874160067884">Introdu Contul Google și parola</translation>
 <translation id="8023133589013344428">Gestionează limbile în setările sistemului de operare Chrome Flex</translation>
 <translation id="8023801379949507775">Actualizează extensiile acum</translation>
+<translation id="8024161440284949905">Continuă cu aceste file</translation>
 <translation id="8025151549289123443">Ecranul de blocare și conectarea</translation>
 <translation id="8025291188699172126">Despre actualizări</translation>
 <translation id="8026471514777758216">Toate dispozitivele tale</translation>

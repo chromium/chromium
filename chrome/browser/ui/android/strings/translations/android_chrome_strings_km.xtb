@@ -424,6 +424,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{ចំណាំ <ph name="BOOKMARKS_COUNT_ONE" />}other{ចំណាំ <ph name="BOOKMARKS_COUNT_MANY" />}}</translation>
 <translation id="3062802207422175757">អត្ថបទអំពីចំណាប់អារម្មណ៍​របស់អ្នកនៅលើ Chrome</translation>
 <translation id="3066573403916685335">ផ្លាស់ទីចុះ</translation>
+<translation id="3067505415088964188">តម្លៃទាប</translation>
 <translation id="3070005020161560471">បកប្រែដោយស្វ័យប្រវត្តិ</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> នឹងបើកនៅក្នុង Chrome។ ប្រសិនបើបន្ត មានន័យថា​អ្នកយល់ព្រម​តាម<ph name="BEGIN_LINK1" />លក្ខខណ្ឌ​ប្រើប្រាស់ Google<ph name="END_LINK1" /> និង<ph name="BEGIN_LINK2" />លក្ខខណ្ឌ​ប្រើប្រាស់​បន្ថែមរបស់ Google Chrome និង ChromeOS<ph name="END_LINK2" />។ <ph name="BEGIN_LINK3" />គោលការណ៍​ឯកជនភាព<ph name="END_LINK3" />ក៏អនុវត្តផងដែរ។</translation>
 <translation id="3080525922482950719">អ្នកអាចរក្សាទុកទំព័រ ដើម្បីអាននៅពេលក្រោយ ឬពេលគ្មានអ៊ីនធឺណិត</translation>

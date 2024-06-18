@@ -1011,6 +1011,7 @@
 <translation id="2930577230479659665">Отрязване след всяко копие</translation>
 <translation id="2933624813161016821">Фолио за гравиране</translation>
 <translation id="2938225289965773019">Да отваря връзки от типа „<ph name="PROTOCOL" />“.</translation>
+<translation id="2941112035454246133">Нисък</translation>
 <translation id="2941878205777356567">Плик 9 x 12 инча</translation>
 <translation id="2941952326391522266">Сървърът не можа да докаже, че е <ph name="DOMAIN" />; сертификатът му за сигурност е от <ph name="DOMAIN2" />. Това може да се дължи на неправилно конфигуриране или на прихващане на връзката ви от атакуващ.</translation>
 <translation id="2942492342931589800">Неформален</translation>
@@ -2222,7 +2223,6 @@
 <translation id="5263867360296733198">Изисква се преглед преди качване</translation>
 <translation id="5266128565379329178">Подвързване в горната част</translation>
 <translation id="5269225904387178860">Четворно перфориране в долната част</translation>
-<translation id="5269999699920406580">Функциите, които се прилагат за цялата система, могат да бъдат зададени само от собственика: <ph name="OWNER_EMAIL" />.</translation>
 <translation id="5271381225185906340"><ph name="DATA_CONTROLS_ATTRIBUTE" /> не е поддържано условие за <ph name="DATA_CONTROLS_RESTRICTION" /></translation>
 <translation id="5273658854610202413">Предупреждение: Това правило не бе обединено според посоченото в правилото PolicyDictionaryMultipleSourceMergeList, тъй като не е част от правилата речници с възможност за обединяване.</translation>
 <translation id="5279286380302340275">Управление на изтеглянията</translation>
@@ -3063,6 +3063,7 @@
 <translation id="6915804003454593391">Потребител:</translation>
 <translation id="6916193791494646625">Посочете причина за изтеглянето (задължително)</translation>
 <translation id="6917795328362592458">Паролата, която току-що използвахте, е разкрита при нарушение на сигурността на данните. За да защитите профилите си, мениджърът на паролите ви препоръчва да проверите запазените си пароли.</translation>
+<translation id="6924013822850225188">Изберете дали да виждате предимствата на картата си при плащане (прилагат се условията на банката)</translation>
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Бодиарт</translation>
 <translation id="692638818576287323">Търговски превозни средства</translation>
@@ -3832,6 +3833,7 @@
 <translation id="830498451218851433">Сгъване в средата</translation>
 <translation id="8308653357438598313">Поточно видео на живо</translation>
 <translation id="8311895354659782580">Обяви за недвижими имоти</translation>
+<translation id="8312841338723044391">НА ЖИВО</translation>
 <translation id="8316555157357957253">Използва се в момента</translation>
 <translation id="8319269383395457801">Жилищни продажби</translation>
 <translation id="831997045666694187">Вечерта</translation>

@@ -118,6 +118,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="2945997411976714835">Installeerfout: Die installeerderproses kon nie begin nie.</translation>
 <translation id="2977470724722393594">Chromium is op datum</translation>
 <translation id="2977506796191543575">As 'n werf probeer om jou wagwoord te steel, of wanneer jy 'n skadelike lêer aflaai, sal Chromium dalk ook URL'e, insluitend stukkies bladsyinhoud, na Veiligblaai toe stuur</translation>
+<translation id="2987208172821108655">Chromium kan hierdie oortjies onaktief maak om jou blaai-ervaring te verbeter en hulpbronne beskikbaar te maak.</translation>
 <translation id="3013473503895162900">Maak <ph name="URL" /> in 'n nuwe oortjie in Chromium oop.</translation>
 <translation id="3032706164202344641">Chromium kan nie jou wagwoorde nagaan nie. Probeer later weer.</translation>
 <translation id="3032787606318309379">Voeg tans by Chromium …</translation>
@@ -319,6 +320,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="6248213926982192922">Maak Chromium die verstekblaaier</translation>
 <translation id="6266342355635466082">Chromium kan nie nagaan of daar opdaterings is nie. Probeer om jou internetverbinding na te gaan.</translation>
 <translation id="6268381023930128611">Meld by Chromium af?</translation>
+<translation id="6270547683008298381">Hierdie oortjies gebruik ekstra hulpbronne. Om jou prestasie te verbeter, laat Chromium hulle onaktief maak.</translation>
 <translation id="6281746429495226318">Pasmaak jou Chromium-profiel</translation>
 <translation id="6290827346642914212">Gee jou Chromium-profiel 'n naam</translation>
 <translation id="6294831894865512704">’n Uitbreiding wil hê dat jy by Chromium moet aanmeld</translation>
@@ -327,6 +329,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="6327105987658262776">Geen opdatering is beskikbaar nie.</translation>
 <translation id="6333502561965082103">'n Ander handeling in Chromium vind tans plaas. Probeer asseblief later weer.</translation>
 <translation id="6334986366598267305">Nou is dit makliker om Chromium met jou Google-rekening en op gedeelde rekenaars te gebruik.</translation>
+<translation id="633626832589656416">Chromium kan hierdie oortjies onaktief maak om jou blaai-ervaring te verbeter en dinge vinnig te hou.</translation>
 <translation id="6347933965114150440">Chromium-kortpad</translation>
 <translation id="6366160072964553914">Chromium het hierdie aflaai geblokkeer omdat die lêer nie algemeen afgelaai word nie en dit gevaarlik kan wees</translation>
 <translation id="6373523479360886564">Is jy seker jy wil Chromium deïnstalleer?</translation>
@@ -453,7 +456,6 @@ Chromium kan nie jou instellings herwin nie.</translation>
 <translation id="8254601181414348851">Meld in ’n nuwe profiel by Chromium aan?</translation>
 <translation id="8266560134891435528">Chromium kan nie jou wagwoorde nagaan nie, want jy is nie aangemeld nie</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium waarsku jou<ph name="END_LINK" /> oor onveilige werwe en aflaaie</translation>
-<translation id="8290862415967981663">Hierdie lêer kan gevaarlik wees en daarom het Chromium dit geblokkeer.</translation>
 <translation id="8318772038038596122">Jou organisasie maak Chromium toe wanneer dit <ph name="TIMEOUT_DURATION" /> lank nie gebruik is nie.</translation>
 <translation id="8330519371938183845">Meld aan om Chromium op al jou toestelle te sinkroniseer en personaliseer</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> het voorheen Chromium gebruik</translation>

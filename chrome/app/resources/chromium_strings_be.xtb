@@ -119,6 +119,7 @@
 <translation id="2945997411976714835">Адбылася памылка. Не ўдалося пачаць усталяванне.</translation>
 <translation id="2977470724722393594">Chromium абноўлены</translation>
 <translation id="2977506796191543575">Пры спробе сайта выкрасці пароль або пры спампоўванні шкоднага файла браўзер Chromium можа таксама адпраўляць у Бяспечны прагляд URL-адрасы, уключаючы фрагменты змесціва старонкі</translation>
+<translation id="2987208172821108655">Каб палепшыць выкарыстанне браўзера і вызваліць рэсурсы, Chromium можа адключыць гэтыя ўкладкі.</translation>
 <translation id="3013473503895162900">Адкрыць <ph name="URL" /> у новай укладцы ў Chromium.</translation>
 <translation id="3032706164202344641">Браўзеру Chromium не ўдаецца праверыць паролі. Паўтарыце спробу пазней.</translation>
 <translation id="3032787606318309379">Дадаецца ў Chromium...</translation>
@@ -321,6 +322,7 @@
 <translation id="6248213926982192922">Зрабіць Chromium стандартным браўзерам</translation>
 <translation id="6266342355635466082">Браўзеру Chromium не ўдаецца праверыць наяўнасць абнаўленняў. Паспрабуйце праверыць падключэнне да інтэрнэту.</translation>
 <translation id="6268381023930128611">Выйсці з уліковага запісу ў браўзеры Chromium?</translation>
+<translation id="6270547683008298381">Гэтыя ўкладкі выкарыстоўваюць дадатковыя рэсурсы. Дазвольце Chromium адключыць іх, каб павысіць прадукцыйнасць працы.</translation>
 <translation id="6281746429495226318">Наладзьце свой профіль Chromium</translation>
 <translation id="6290827346642914212">Дайце назву свайму профілю Chromium</translation>
 <translation id="6294831894865512704">Пашырэнне прапануе вам увайсці ў Chromium</translation>
@@ -329,6 +331,7 @@
 <translation id="6327105987658262776">Няма даступных абнаўленняў.</translation>
 <translation id="6333502561965082103">У Chromium выконваецца іншая аперацыя. Паўтарыце спробу пазней.</translation>
 <translation id="6334986366598267305">Цяпер выкарыстоўваць Chromium з Уліковым запісам Google стала прасцей і на агульнадаступных камп'ютарах.</translation>
+<translation id="633626832589656416">Каб палепшыць выкарыстанне браўзера і забяспечыць хуткую працу, Chromium можа адключыць гэтыя ўкладкі.</translation>
 <translation id="6347933965114150440">Ярлык для Chromium</translation>
 <translation id="6366160072964553914">Браўзер Chromium заблакіраваў спампоўку, бо гэты файл спампоўваюць рэдка і ён можа быць небяспечным</translation>
 <translation id="6373523479360886564">Сапраўды выдаліць Chromium?</translation>
@@ -454,7 +457,6 @@
 <translation id="8254601181414348851">Увайсці ў Chromium праз новы профіль?</translation>
 <translation id="8266560134891435528">Chromium не можа праверыць вашы паролі, пакуль вы не ўвойдзеце ва ўліковы запіс</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium папярэджвае<ph name="END_LINK" /> пра небяспечныя сайты і спампоўкі</translation>
-<translation id="8290862415967981663">Файл можа быць небяспечным, таму Chromium заблакіраваў яго.</translation>
 <translation id="8318772038038596122">Ваша арганізацыя закрывае Chromium, калі ім не карысталіся на працягу <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8330519371938183845">Увайдзіце ў Chromium, каб сінхранізаваць і персаналізаваць яго на сваіх прыладах</translation>
 <translation id="8340674089072921962">Карыстальнік <ph name="USER_EMAIL_ADDRESS" /> раней выкарыстоўваў Chromium</translation>

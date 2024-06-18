@@ -1011,6 +1011,7 @@
 <translation id="2930577230479659665">ຕັດອອກຫຼັງຈາກສຳເນົາແຕ່ລະສະບັບ</translation>
 <translation id="2933624813161016821">ຟອຍລ໌ລາຍນູນ</translation>
 <translation id="2938225289965773019">ເປີດ​ລິ້ງ <ph name="PROTOCOL" /></translation>
+<translation id="2941112035454246133">ຕໍ່າ</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 ນິ້ວ</translation>
 <translation id="2941952326391522266">ເຊີບເວີນີ້ບໍ່ສາມາດພິສູດໄດ້ວ່າ ມັນແມ່ນ <ph name="DOMAIN" />; ໃບຢັ້ງຢືນຄວາມປອດໄພຂອງມັນມາຈາກ <ph name="DOMAIN2" />. ອັນນີ້ອາດຈະເຮັດໃຫ້ເກີດມີການປັບຕັ້ງຄ່າຜິດ ຫຼືຜູ້ໂຈມຕີອາດຈະດັກເອົາການເຊື່ອມຕໍ່ຂອງທ່ານ.</translation>
 <translation id="2942492342931589800">ສະບາຍໆ</translation>
@@ -2222,7 +2223,6 @@
 <translation id="5263867360296733198">ຕ້ອງກວດສອບກ່ອນທີ່ຈະອັບໂຫຼດ</translation>
 <translation id="5266128565379329178">ຫຍິບເຫຼັ້ມຢູ່ເທິງສຸດ</translation>
 <translation id="5269225904387178860">ເຈາະຮູຢູ່ລຸ່ມສຸດສີ່ຮູ</translation>
-<translation id="5269999699920406580">ຄຸນສົມບັດທີ່ນຳໃຊ້ໃນທົ່ວລະບົບສາມາດຕັ້ງຄ່າໄດ້ໂດຍເຈົ້າຂອງເທົ່ານັ້ນ: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" ບໍ່ແມ່ນເງື່ອນໄຂທີ່ຮອງຮັບສຳລັບ "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="5273658854610202413">ຄຳເຕືອນ: ນະໂຍບາຍນີ້ບໍ່ຮວມເຂົ້າກັນຕາມທີ່ລະບຸໄວ້ໃນນະໂຍບາຍ PolicyDictionaryMultipleSourceMergeList ເພາະວ່າມັນບໍ່ແມ່ນສ່ວນໜຶ່ງຂອງນະໂຍບາຍພົດຈະນານຸກົມທີ່ສາມາດຮວມເຂົ້າກັນໄດ້.</translation>
 <translation id="5279286380302340275">ຈັດການການດາວໂຫຼດ</translation>

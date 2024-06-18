@@ -1012,6 +1012,7 @@
 <translation id="2930577230479659665">প্রতিটি কপির পর ট্রিম করুন</translation>
 <translation id="2933624813161016821">এমবসিং ফয়েল</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> লিঙ্কগুলি খুলুন</translation>
+<translation id="2941112035454246133">নিম্ন</translation>
 <translation id="2941878205777356567">এনভেলপ ৯ x ১২ ইঞ্চি</translation>
 <translation id="2941952326391522266">এই সার্ভার প্রমাণ করতে পারেনি যে এটি <ph name="DOMAIN" />; এর নিরাপত্তা সার্টিফিকেট <ph name="DOMAIN2" /> থেকে পাওয়া। কোনো ভুল কনফিগারেশনের কারণে অথবা কোনো আক্রমণকারী আপনার সংযোগ মাঝপথে আটকে দিচ্ছে বলে এমনটা হতে পারে।</translation>
 <translation id="2942492342931589800">ক্যাজুয়াল</translation>
@@ -2223,7 +2224,6 @@
 <translation id="5263867360296733198">আপলোড করার আগে পর্যালোচনা করা প্রয়োজন</translation>
 <translation id="5266128565379329178">উপরে বাঁধাই</translation>
 <translation id="5269225904387178860">নিচে কোয়াড পাঞ্চ</translation>
-<translation id="5269999699920406580">যেসব ফিচার সিস্টেম জুড়ে প্রয়োগ করা হয় সেগুলি শুধুমাত্র মালিক সেট করতে পারবেন: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_RESTRICTION" />"-এর জন্য "<ph name="DATA_CONTROLS_ATTRIBUTE" />" ব্যবহারের কন্ডিশনে নেই</translation>
 <translation id="5273658854610202413">সতর্কতা: এই নীতি ডিকশনারি নীতির অংশ নয় বলে এটিকে PolicyDictionaryMultipleSourceMergeList নীতি অনুযায়ী মার্জ করা হয়নি।</translation>
 <translation id="5279286380302340275">ডাউনলোড ম্যানেজ করুন</translation>

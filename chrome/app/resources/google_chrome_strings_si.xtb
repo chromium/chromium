@@ -256,6 +256,7 @@
 <translation id="4561051373932531560">වෙබ් මත දුරකථනයක් ක්ලික් කර ඊට Skype! මඟින් කථා කිරීමට Google Chrome ඔබට ඉඩ ලබා දේ!</translation>
 <translation id="4567424176335768812">ඔබ <ph name="USER_EMAIL_ADDRESS" /> ලෙස සයින් ඉන් වී තිබේ. ඔබට දැන් ඔබේ පිටු සලකුණු, ඉතිහාසය, සහ අනෙක් පසුතල වෙත ඔබේ අත්සන් කළ උපාංගයෙන් පිවිසිය හැකිය.</translation>
 <translation id="4571503333518166079">Chrome දැනුම් දීම් සැකසීම්වලට යන්න</translation>
+<translation id="4575717501879784448">Chrome හට ඔබේ බ්‍රවුස් කිරීමේ අත්දැකීම වැඩි දියුණු කිරීමට සහ සම්පත් නිදහස් කිරීමට මෙම පටිති අක්‍රිය කළ හැක.</translation>
 <translation id="459622048091363950">Chrome හට ප්‍රවේශය ඇති විට, වෙබ් අඩවි හට ඔබගෙන් ප්‍රවේශය සඳහා ඉල්ලීමට හැකිය.</translation>
 <translation id="4600710005438004015">Chrome අලුත්ම අනුවාදයට යාවත්කාලීන කළ නොහැකිය, එබැවින් ඔබට අලුත් විශේෂාංග සහ ආරක්ෂණ පිළියම් මඟ හැරෙයි.</translation>
 <translation id="4624065194742029982">Chrome අප්‍රසිද්ධ</translation>
@@ -268,7 +269,6 @@
 <translation id="4728575227883772061">අනපේකෂිත දෝෂයක් හේතුවෙන් ස්ථාපනය අසාර්ථක විය. Google Chrome දැනටමත් ධාවනය වෙමින් පවතී නම්, එය වසා නැවත උත්සාහ කරන්න.</translation>
 <translation id="4747730611090640388">Chrome හට ඔබගේ ලැදිකම් තක්සේරු කළ හැකිය.  පසුව, ඔබ පිවිසෙන අඩවියක් ඔබ දකින වෙළඳ දැන්වීම් පුද්ගලිකකරණය කිරීම සඳහා ඔබගේ ලැදිකම් බැලීමට Chrome වෙතින් ඉල්ලිය හැකිය.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
-<translation id="4771048833395599659">මෙම ගොනුව අනතුරුදායක විය හැකිය, එනිසා Chrome එය අවහිර කර ඇත.</translation>
 <translation id="479167709087336770">මෙය Google සෙවීම තුළ භාවිත කෙරෙන අක්‍ෂර පරීක්‍ෂකයම භාවිත කරයි. ඔබ බ්‍රවුසරය තුළ ටයිප් කරන පාඨය Google වෙත යවනු ලැබේ. ඔබට සැම විටම මෙම හැසිරීම සැකසීම් තුළ වෙනස් කළ හැක.</translation>
 <translation id="4793679854893018356">Chrome ඔබව සුරක්ෂිතව තබන ආකාරය ඉගෙන ගන්න</translation>
 <translation id="4828579605166583682">Google Chrome දැනට පවතින මුරපද ප්‍රතිස්ථාපනය කිරීමට උත්සාහ කරයි. මෙයට ඉඩ දීමට ඔබේ Windows මුරපදය ටයිප් කරන්න.</translation>
@@ -287,6 +287,7 @@
 <translation id="4970761609246024540">Chrome පැතිකඩවල් වෙත සාදරයෙන් පිළිගනිමු</translation>
 <translation id="4970880042055371251">ChromeOS අනුවාදය</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="4997044641749333913">Chrome හට ඔබේ බ්‍රවුස් කිරීමේ අත්දැකීම වැඩි දියුණු කිරීමට සහ දේවල් වේගවත්ව තබා ගැනීමට මෙම පටිති අක්‍රිය කළ හැක.</translation>
 <translation id="5003967926796347400">“Google මුරපද කළමනාකරු” ක්ලික් කරන්න</translation>
 <translation id="5120334927898581447">ඔබ වෙනත් Google සේවාවලට පුරන විට Chrome වෙත පුරන්න</translation>
 <translation id="5126049312684316860">Chrome ඔබ පැමිණීමට ඉඩ ඇති පිටුවලටත් වඩා පිටු පූර්ව පූරණය කරයි, එවිට ඔබ ඒවාට පිවිසෙන විට ඒවා ඉක්මනින් පූරණය වේ</translation>
@@ -351,6 +352,7 @@ Google Chrome හට ඔබගේ සැකසුම් ප්‍රතිසා
 <translation id="608006075545470555">මෙම බ්‍රව්සරයට කාර්යාල පැතිකඩ එක් කරන්න</translation>
 <translation id="6097822892606850415">AI වෙතින් උදවු ඇතිව ඉතා විශ්වාසයෙන් ලියන්න</translation>
 <translation id="6113794647360055231">Chrome දැන් වඩාත් හොඳ විය</translation>
+<translation id="6135456723633883042">මෙම පටිති අමතර සම්පත් භාවිතා කරයි. ඔබේ කාර්ය සාධනය වැඩි දියුණු කිරීමට, Chrome හට ඒවා අක්‍රිය කිරීමට ඉඩ දෙන්න.</translation>
 <translation id="6145313976051292476">Chrome හි PDF විවෘත කරන්න</translation>
 <translation id="6157638032135951407">ඔබේ සංවිධානය Chrome දත්ත <ph name="TIMEOUT_DURATION" /> සඳහා භාවිතා නොකරන විට මකයි. මෙයට ඉතිහාසය, ස්වයං පිරවීම, සහ බාගැනීම් ඇතුළත් විය හැක.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

@@ -1011,6 +1011,7 @@
 <translation id="2930577230479659665">ਹਰ ਕਾਪੀ ਤੋਂ ਬਾਅਦ ਕਟਾਈ</translation>
 <translation id="2933624813161016821">ਐਮਬੌਸਿੰਗ ਫ਼ੋਇਲ</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> ਲਿੰਕ ਖੋਲ੍ਹੋ</translation>
+<translation id="2941112035454246133">ਘੱਟ</translation>
 <translation id="2941878205777356567">9 x 12 ਇੰਚ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="2941952326391522266">ਇਹ ਸਰਵਰ ਇਹ ਸਾਬਤ ਨਹੀਂ ਕਰ ਸਕਿਆ ਕਿ ਇਹ <ph name="DOMAIN" /> ਹੈ; ਇਸਦਾ ਸੁਰੱਖਿਆ ਪ੍ਰਮਾਣ-ਪੱਤਰ <ph name="DOMAIN2" /> ਵੱਲੋਂ ਹੈ। ਇਹ ਇੱਕ ਗਲਤ ਸੰਰੂਪਣ ਕਾਰਨ ਹੋ ਸਕਦਾ ਹੈ ਜਾਂ ਕੋਈ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕਨੈਕਸ਼ਨ ਨੂੰ ਰਾਹ ਵਿੱਚ ਰੋਕ ਰਿਹਾ ਹੈ।</translation>
 <translation id="2942492342931589800">ਬੇਕਾਇਦਾ</translation>
@@ -2219,7 +2220,6 @@
 <translation id="5263867360296733198">ਅੱਪਲੋਡ ਕਰਨ ਤੋਂ ਪਹਿਲਾਂ ਸਮੀਖਿਆ ਦੀ ਲੋੜ ਹੈ</translation>
 <translation id="5266128565379329178">ਉੱਪਰ ਜਿਲਦਬੰਦ</translation>
 <translation id="5269225904387178860">ਹੇਠਾਂ ਚਾਰ ਮੋਰੀਆਂ</translation>
-<translation id="5269999699920406580">ਪੂਰੇ ਸਿਸਟਮ 'ਤੇ ਲਾਗੂ ਹੋਣ ਵਾਲੀਆਂ ਵਿਸ਼ੇਸ਼ਤਾਵਾਂ ਸਿਰਫ਼ ਮਾਲਕ ਵੱਲੋਂ ਹੀ ਸੈੱਟ ਕੀਤੀਆਂ ਜਾ ਸਕਦੀਆਂ ਹਨ: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_RESTRICTION" />" ਲਈ "<ph name="DATA_CONTROLS_ATTRIBUTE" />" ਸਮਰਥਿਤ ਸ਼ਰਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="5273658854610202413">ਚਿਤਾਵਨੀ: ਇਹ ਨੀਤੀ PolicyDictionaryMultipleSourceMergeList ਨੀਤੀ ਵਿੱਚ ਨਿਰਧਾਰਤ ਕੀਤੇ ਮੁਤਾਬਕ ਵਿਲੀਨ ਨਹੀਂ ਕੀਤੀ ਗਈ ਕਿਉਂਕਿ ਇਹ ਉਹਨਾਂ ਸ਼ਬਦਕੋਸ਼ ਨੀਤੀਆਂ ਦਾ ਹਿੱਸਾ ਨਹੀਂ ਹੈ ਜਿਨ੍ਹਾਂ ਨੂੰ ਵਿਲੀਨ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="5279286380302340275">ਡਾਊਨਲੋਡਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
@@ -3059,6 +3059,7 @@
 <translation id="6915804003454593391">ਵਰਤੋਂਕਾਰ:</translation>
 <translation id="6916193791494646625">ਡਾਊਨਲੋਡ ਕਰਨ ਦਾ ਕਾਰਨ ਮੁਹੱਈਆ ਕਰਵਾਓ (ਲੋੜੀਂਦਾ)</translation>
 <translation id="6917795328362592458">ਤੁਹਾਡੇ ਵੱਲੋਂ ਹੁਣੇ ਹੀ ਵਰਤਿਆ ਗਿਆ ਪਾਸਵਰਡ ਡਾਟਾ ਉਲੰਘਣਾ ਵਿੱਚ ਮਿਲਿਆ ਸੀ। ਆਪਣੇ ਖਾਤਿਆਂ ਨੂੰ ਸੁਰੱਖਿਅਤ ਕਰਨ ਲਈ, Password Manager ਆਪਣੇ ਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰਨ ਦੀ ਸਿਫ਼ਾਰਸ਼ ਕਰਦਾ ਹੈ।</translation>
+<translation id="6924013822850225188">ਚੁਣੋ ਕਿ ਕੀ ਤੁਹਾਨੂੰ ਚੈੱਕ-ਆਊਟ 'ਤੇ ਆਪਣੇ ਕਾਰਡ ਦੇ ਲਾਭ ਦਿਸਦੇ ਹਨ ਜਾਂ ਨਹੀਂ (ਬੈਂਕ ਦੇ ਨਿਯਮ ਲਾਗੂ ਹਨ)</translation>
 <translation id="6925267999184670015">ਨਾਰਥ ਅਮਰੀਕਨ B+</translation>
 <translation id="6926216138694948720">ਸਰੀਰਕ ਕਲਾ</translation>
 <translation id="692638818576287323">ਵਪਾਰਕ ਵਾਹਨ</translation>
@@ -3828,6 +3829,7 @@
 <translation id="830498451218851433">ਅੱਧੀ ਤਹਿ</translation>
 <translation id="8308653357438598313">ਲਾਈਵ ਵੀਡੀਓ ਸਟ੍ਰੀਮਿੰਗ</translation>
 <translation id="8311895354659782580">ਅਚੱਲ ਸੰਪਤੀ ਸੰਬੰਧੀ ਸੂਚੀਆਂ</translation>
+<translation id="8312841338723044391">ਲਾਈਵ</translation>
 <translation id="8316555157357957253">ਹੁਣ ਵਰਤੋਂ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="8319269383395457801">ਰਿਹਾਇਸ਼ੀ ਮਕਾਨਾਂ ਦੀ ਵਿਕਰੀ</translation>
 <translation id="831997045666694187">ਸ਼ਾਮ</translation>

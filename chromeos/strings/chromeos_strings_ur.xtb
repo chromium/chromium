@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">پیسٹل پیلا</translation>
 <translation id="1056898198331236512">وارننگ</translation>
 <translation id="1059913517121127803">اسکین کرنا شروع نہیں کیا جا سکا</translation>
+<translation id="1061864016440983342">مقام کے بغیر استعمال کریں</translation>
 <translation id="1062823486781306604"><ph name="COUNT" />، <ph name="NAME" /> میں سے <ph name="INDEX" /></translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">فائروال کا پتا چلا</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">مزید ترتیبات</translation>
 <translation id="2082932131694554252">کی بورڈ کلید تفویض کی گئی</translation>
 <translation id="2085089206770112532">ڈسپلے کی چمک کم کرنے کی کلید</translation>
+<translation id="2086091080968010660">وقت پر مبنی تبدیلیاں ممکن ہے درست نہ ہوں۔ ترتیبات میں سسٹم کے مقام کی رسائی کو آن کریں۔</translation>
 <translation id="2102231663024125441">ٹیکسٹ میں ترمیم کرنا</translation>
 <translation id="2105810540595158374">آلہ ایک گیم کنٹرولر ہے۔</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />، ورژن <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">ڈیفالٹس کو بحال کریں</translation>
 <translation id="2286454467119466181">آسان</translation>
 <translation id="2287186687001756809">کوئی تصویر دستیاب نہیں ہے۔ تصاویر شامل کرنے کے لیے، <ph name="LINK" /> پر جائیں</translation>
+<translation id="2294577623958216786">موجودہ شیڈول <ph name="SUNRISE" />-<ph name="SUNSET" /> پر سیٹ ہے۔ غروب آفتاب اور طلوع آفتاب کے شیڈول کو خودکار طور پر اپ ڈیٹ کرنے کے لیے سسٹم کے مقام کی رسائی کو آن کریں۔</translation>
 <translation id="2305172810646967500">سیاہ</translation>
 <translation id="2307344026739914387">موجودہ کلیدوں کا جوڑا استعمال کریں</translation>
 <translation id="2308243864813041101">‏اپ ڈیٹ ہونے کے عمل کو جاری رکھنے کے لیے <ph name="DEVICE_NAME" /> کے USB کیبل کو ان پلگ کریں</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">کی بورڈ کی چمک</translation>
 <translation id="6412715219990689313">پہلے سے شامل کی بورڈ</translation>
 <translation id="6417265370957905582">‏Google اسسٹنٹ</translation>
+<translation id="6419454453018688975">سسٹم کے مقام کی رسائی کو آن کریں</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">کمزور (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">اکاؤنٹ کی ترتیبات پر جائیں</translation>

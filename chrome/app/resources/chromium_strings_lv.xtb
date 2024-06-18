@@ -116,6 +116,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="2945997411976714835">Instalēšanas kļūda: neizdevās palaist instalēšanas programmu.</translation>
 <translation id="2977470724722393594">Chromium ir atjaunināts</translation>
 <translation id="2977506796191543575">Ja kādā vietnē tiek mēģināts nozagt jūsu paroli vai ja jūs lejupielādējat kaitīgu failu, Chromium var arī nosūtīt attiecīgos URL, tostarp lapas satura fragmentus, uz funkciju Droša pārlūkošana.</translation>
+<translation id="2987208172821108655">Lai uzlabotu jūsu pārlūkošanas pieredzi un atbrīvotu resursus, Chromium var padarīt šīs cilnes neaktīvas.</translation>
 <translation id="3013473503895162900">Atveriet vietrādi <ph name="URL" /> jaunā cilnē pārlūkā Chromium.</translation>
 <translation id="3032706164202344641">Pārlūkprogrammā Chromium nevar pārbaudīt jūsu paroles. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="3032787606318309379">Notiek pievienošana pārlūkam Chromium...</translation>
@@ -317,6 +318,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="6248213926982192922">Padarīt Chromium par noklusējuma pārlūku</translation>
 <translation id="6266342355635466082">Pārlūkprogrammā Chromium nevar pārbaudīt atjauninājumu pieejamību. Pārbaudiet interneta savienojumu.</translation>
 <translation id="6268381023930128611">Vai izrakstīties no Chromium?</translation>
+<translation id="6270547683008298381">Šīs cilnes izmanto papildu resursus. Lai uzlabotu veiktspēju, ļaujiet pārlūkam Chromium padarīt tās neaktīvas.</translation>
 <translation id="6281746429495226318">Pielāgot Chromium profilu</translation>
 <translation id="6290827346642914212">Chromium profila nosaukšana</translation>
 <translation id="6294831894865512704">Viens no paplašinājumiem pieprasa, lai jūs pierakstītos pārlūkā Chromium</translation>
@@ -325,6 +327,7 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="6327105987658262776">Atjauninājums nav pieejams.</translation>
 <translation id="6333502561965082103">Tiek veikta cita darbība pārlūkā Chromium. Lūdzu, vēlāk mēģiniet vēlreiz.</translation>
 <translation id="6334986366598267305">Tagad pārlūkā Chromium ir vieglāk izmantot Google kontu, kā arī ir atvieglota lietošana datoros, ko izmanto vairākas personas.</translation>
+<translation id="633626832589656416">Lai uzlabotu jūsu pārlūkošanas pieredzi un paātrinātu darbu, Chromium var padarīt šīs cilnes neaktīvas.</translation>
 <translation id="6347933965114150440">Chromium saīsne</translation>
 <translation id="6366160072964553914">Pārlūkā Chromium šī lejupielāde tika bloķēta, jo fails parasti netiek lejupielādēts un var būt bīstams.</translation>
 <translation id="6373523479360886564">Vai tiešām vēlaties atinstalēt pārlūku Chromium?</translation>
@@ -448,7 +451,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai iz
 <translation id="8254601181414348851">Vai pierakstīties pārlūkā Chromium, izmantojot jaunu profilu?</translation>
 <translation id="8266560134891435528">Pārlūkprogrammā Chromium nevar pārbaudīt jūsu paroles, jo jūs neesat pierakstījies.</translation>
 <translation id="8286943863733751221">Pārlūkā <ph name="BEGIN_LINK" />Chromium tiek rādīti brīdinājumi<ph name="END_LINK" /> par nedrošām vietnēm un lejupielādēm</translation>
-<translation id="8290862415967981663">Šis fails var būt bīstams, tāpēc Chromium to bloķēja.</translation>
 <translation id="8318772038038596122">Jūsu organizācija aizver pārlūku Chromium, ja tas <ph name="TIMEOUT_DURATION" /> netiek izmantots.</translation>
 <translation id="8330519371938183845">Pierakstieties, lai sinhronizētu un personalizētu pārlūku Chromium visās savās ierīcēs.</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> iepriekš izmantoja Chromium</translation>

@@ -119,6 +119,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="2945997411976714835">Gabim gjatë instalimit: Nisja e procesit të instaluesit dështoi.</translation>
 <translation id="2977470724722393594">Chromium është i përditësuar</translation>
 <translation id="2977506796191543575">Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd ose kur shkarkon një skedar të dëmshëm, Chromium mund t'i dërgojë gjithashtu URL-të, duke përfshirë pjesë të përmbajtjes së faqeve, te "Shfletimi i sigurt".</translation>
+<translation id="2987208172821108655">Chromium mund t'i bëjë joaktive këto skeda për të përmirësuar përvojën tënde të shfletimit dhe për të liruar burimet.</translation>
 <translation id="3013473503895162900">Hap <ph name="URL" /> në një skedë të re në Chromium.</translation>
 <translation id="3032706164202344641">Chromium nuk mund t'i kontrollojë fjalëkalimet e tua. Provo përsëri më vonë.</translation>
 <translation id="3032787606318309379">Po shton në Chromium...</translation>
@@ -321,6 +322,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6248213926982192922">Bëje Chromium, shfletuesin tënd të parazgjedhur</translation>
 <translation id="6266342355635466082">Chromium nuk mund të kontrollojë për përditësime. Provo të kontrollosh lidhjen e internetit.</translation>
 <translation id="6268381023930128611">Dëshiron të dalësh nga Chromium?</translation>
+<translation id="6270547683008298381">Këto skeda po përdorin burime shtesë. Për të përmirësuar performancën tënde, lejo që Chromium t'i bëjë ato joaktive.</translation>
 <translation id="6281746429495226318">Personalizo profilin tënd të Chromium</translation>
 <translation id="6290827346642914212">Emërto profilin tënd të Chromium</translation>
 <translation id="6294831894865512704">Një shtesë kërkon që të identifikohesh në Chromium</translation>
@@ -329,6 +331,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6327105987658262776">Nuk ofrohet asnjë përditësim.</translation>
 <translation id="6333502561965082103">Një veprim tjetër në Chromium është në vazhdim. Provo përsëri më vonë.</translation>
 <translation id="6334986366598267305">Tani është më e lehtë të përdorësh Chromium me llogarinë tënde të Google dhe në kompjuter të ndarë.</translation>
+<translation id="633626832589656416">Chromium mund t'i bëjë joaktive këto skeda për të përmirësuar përvojën tënde të shfletimit dhe për të ruajtur shpejtësinë</translation>
 <translation id="6347933965114150440">Shkurtorja e Chromium</translation>
 <translation id="6366160072964553914">Chromium e bllokoi këtë shkarkim sepse skedari nuk është shkarkuar zakonisht dhe mund të jetë i rrezikshëm</translation>
 <translation id="6373523479360886564">Je i sigurt që dëshiron ta çinstalosh Chromium?</translation>
@@ -454,7 +457,6 @@ Chromium nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="8254601181414348851">Do të identifikohesh në Chromium në një profil të ri?</translation>
 <translation id="8266560134891435528">Chromium nuk mund t'i kontrollojë fjalëkalimet e tua sepse nuk je identifikuar</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium të paralajmëron<ph name="END_LINK" /> për sajtet dhe shkarkimet e pasigurta</translation>
-<translation id="8290862415967981663">Ky skedar mund të jetë i rrezikshëm, prandaj Chromium e ka bllokuar.</translation>
 <translation id="8318772038038596122">Organizata jote e mbyll Chromium kur ai nuk përdoret për <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8330519371938183845">Identifikohu për të sinkronizuar dhe personalizuar Chromium nëpër pajisjet e tua</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> ka përdorur më parë Chromium</translation>

@@ -1012,6 +1012,7 @@
 <translation id="2930577230479659665">हर कॉपी के बाद ट्रिम करें</translation>
 <translation id="2933624813161016821">एंबॉसिंग फ़ॉयल</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> लिंक खोलें</translation>
+<translation id="2941112035454246133">कम</translation>
 <translation id="2941878205777356567">9 x 12 इंच का लिफ़ाफ़ा</translation>
 <translation id="2941952326391522266">यह सर्वर यह प्रमाणित नहीं कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाणपत्र <ph name="DOMAIN2" /> की ओर से है. ऐसा गलत कॉन्फ़िगरेशन के कारण या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
 <translation id="2942492342931589800">कैज़ुअल</translation>
@@ -2222,7 +2223,6 @@
 <translation id="5263867360296733198">फ़ाइलें अपलोड करने से पहले, उनकी समीक्षा करना ज़रूरी है</translation>
 <translation id="5266128565379329178">सबसे ऊपर बाइंड</translation>
 <translation id="5269225904387178860">नीचे की ओर क्वाड पंच</translation>
-<translation id="5269999699920406580">सिस्टम से जुड़ी हुई सुविधाओं को सिर्फ़ मालिक ही सेट कर सकता है: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_RESTRICTION" />" के लिए, "<ph name="DATA_CONTROLS_ATTRIBUTE" />" वाली स्थिति का इस्तेमाल नहीं किया जा सकता</translation>
 <translation id="5273658854610202413">चेतावनी: इस नीति को PolicyDictionaryMultipleSourceMergeList नीति में बताए अनुसार नहीं मिलाया जा सकता, क्योंकि यह शब्दकोश की उन नीतियों का हिस्सा नहीं है जिन्हें मिलाया जा सकता है.</translation>
 <translation id="5279286380302340275">डाउनलोड मैनेज करें</translation>

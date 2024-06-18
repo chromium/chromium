@@ -15,6 +15,7 @@
 <translation id="1131805035311359397">如要檢查密碼是否安全，且未受資料外洩或其他安全性問題影響，請<ph name="BEGIN_LINK" />登入 Chromium<ph name="END_LINK" />。</translation>
 <translation id="1153368717515616349">按一下 Chromium 選單</translation>
 <translation id="1185134272377778587">關於 Chromium</translation>
+<translation id="1188705220418984327">如要分享視窗，請前往「系統偏好設定」允許 Chromium 螢幕錄影。</translation>
 <translation id="1203500561924088507">多謝安裝。您必須先重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="1262876892872089030">當此分頁處於閒置狀態時，系統會釋出記憶體，加快 Chromium 的運作速度。您可選擇一律不讓此網站進入閒置狀態。</translation>
 <translation id="1265577313130862557">由於此檔案有危險，因此 Chromium 已禁止下載</translation>
@@ -161,6 +162,7 @@
 <translation id="364817392622123556">{COUNT,plural, =0{Chromium 有可用的更新，重新啟動後即可套用。}=1{Chromium 有可用的更新，重新啟動後即可套用。您的無痕式視窗不會重新開啟。}other{Chromium 有可用的更新，重新啟動後即可套用。您的 # 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="3651803019964686660">如要將號碼從 <ph name="ORIGIN" /> 傳送至 Android 手機，請在這兩部裝置上登入 Chromium。</translation>
 <translation id="3667616615096815454">伺服器無法識別應用程式，因此無法安裝。</translation>
+<translation id="3669334504579945026">如要分享螢幕內容，請前往「系統偏好設定」允許 Chromium 螢幕錄影。</translation>
 <translation id="3685209450716071127">Chromium 無法檢查密碼，請檢查互聯網連線。</translation>
 <translation id="3702352323269013324">前往 Chromium 進一步瞭解廣告個人化</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{管理員要求您重新啟動 Chromium，以套用此更新}=1{管理員要求您重新啟動 Chromium，以套用此更新。您的無痕式視窗不會重新開啟。}other{管理員要求您重新啟動 Chromium，以套用此更新。您的 # 個無痕式視窗不會重新開啟。}}</translation>
@@ -455,13 +457,13 @@ Chromium 無法復原您的設定。</translation>
 <translation id="8254601181414348851">要在新個人檔案中登入 Chromium 嗎？</translation>
 <translation id="8266560134891435528">由於您尚未登入帳戶，因此 Chromium 無法檢查密碼</translation>
 <translation id="8286943863733751221">偵測到不安全的網站和下載內容時，<ph name="BEGIN_LINK" />Chromium 會顯示警告<ph name="END_LINK" /></translation>
-<translation id="8290862415967981663">此檔案可能不安全，因此 Chromium 已封鎖此檔案。</translation>
 <translation id="8318772038038596122">您的機構會在 Chromium 閒置 <ph name="TIMEOUT_DURATION" />後關閉 Chromium。</translation>
 <translation id="8330519371938183845">登入即可在不同裝置上同步和設定個人化的 Chromium</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> 以往曾使用 Chromium</translation>
 <translation id="8357820681460164151">如要透過所有裝置存取 Chromium 瀏覽器資料，請登入並開啟同步處理功能</translation>
 <translation id="8360718212975266891">如要取得日後的 Chromium 更新，您需要使用 Windows 10 或以上版本。此電腦目前版本為 Windows 8。</translation>
 <translation id="8370517070665726704">版權所有 <ph name="YEAR" /> Google LLC。保留所有權利。</translation>
+<translation id="837460953767177950">你將需要重新啟動 Chromium。</translation>
 <translation id="8401454788024434101">此擴充程式已由開發人員取消發佈，且可能不安全。請從 Chromium 中移除此擴充程式，令其無法再查看及變更您瀏覽的網站相關資料，包括您的個人資料。</translation>
 <translation id="8417404458978023919">{0,plural, =1{請在 1 天內重新啟動 Chromium}other{請在 # 天內重新啟動 Chromium}}</translation>
 <translation id="8453117565092476964">安裝程式封存檔案已損毀或無效，請重新下載 Chromium。</translation>

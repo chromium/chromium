@@ -304,7 +304,6 @@
 <translation id="1211769675100312947">لك حرية تنظيم الاختصارات</translation>
 <translation id="1213254615020057352">‏يمكنك إرسال بيانات الاستخدام والتشخيص. يمكنك المساعدة في تحسين تجربة نظام التشغيل Android على حسابك الفرعي من خلال إرسال بيانات التطبيق والجهاز والتشخيص تلقائيًا إلى Google. ولن يتم استخدام هذه البيانات للتعرّف على حسابك الفرعي، بل ستُستخدَم لتعزيز استقرار النظام والتطبيقات وإجراء المزيد من التحسينات. وسيستفيد أيضًا مطوّرو التطبيقات والشركاء في Google، مثل مطوّري البرامج المتوافقة مع Android، من بعض البيانات المجمّعة. ويفرض المالك هذا الإعداد. قد يختار المالك إرسال بيانات الاستخدام والتشخيص لهذا الجهاز إلى Google. في حال تفعيل إعداد "النشاط الإضافي على الويب وفي التطبيقات" لحسابك الفرعي، قد يتم حفظ هذه البيانات في حسابك على Google.</translation>
 <translation id="1213726621272705156">لن يتم عرض بطاقات على هذه الصفحة مجدّدًا.</translation>
-<translation id="121384500095351701">لا يمكن تنزيل هذا الملف بشكل آمن.</translation>
 <translation id="1214004433265298541">الشهادة المقدمة من قِبل المشرف الذي يمكنه عرض بيانات اعتماد <ph name="DOMAIN" /></translation>
 <translation id="1215411991991485844">تمت إضافة تطبيق جديد في الخلفية</translation>
 <translation id="1216542092748365687">إزالة بصمة الإصبع</translation>
@@ -2085,7 +2084,6 @@
 <translation id="2489829450872380594">‏في المرة القادمة، سيفتح هاتفك قفل جهاز <ph name="DEVICE_TYPE" /> هذا. يمكنك إيقاف Smart Lock في "الإعدادات".</translation>
 <translation id="2489918096470125693">إضافة &amp;مجلد...</translation>
 <translation id="2489931062851778802">اضغط على هذه المفاتيح على <ph name="DEVICE_NAME" />.</translation>
-<translation id="2490481887078769936">تمت إزالة "<ph name="FILE_NAME" />" من القائمة</translation>
 <translation id="249098303613516219">تم السماح بحفظ بيانات الموقع الإلكتروني على الجهاز فقط</translation>
 <translation id="249113932447298600">عذرًا، لا يتوفر الجهاز <ph name="DEVICE_LABEL" /> في الوقت الحالي.</translation>
 <translation id="2491587035099903063">معاينة الصوت باللغة <ph name="LANGUAGE" /></translation>
@@ -2478,7 +2476,6 @@
 <translation id="2772936498786524345">التسلل</translation>
 <translation id="2773288106548584039">دعم المتصفِّحات القديمة</translation>
 <translation id="2773621783913034737">إيقاف علامات التبويب</translation>
-<translation id="2773802008104670137">قد يضرّ نوع الملف هذا بجهاز الكمبيوتر.</translation>
 <translation id="2775104091073479743">تعديل بصمات الأصابع</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{إزالة تطبيق واحد تم إيقافه نهائيًا}zero{إزالة # تطبيق تم إيقافه نهائيًا}two{إزالة تطبيقَين تم إيقافهما نهائيًا}few{إزالة # تطبيقات تم إيقافها نهائيًا}many{إزالة # تطبيقًا تم إيقافه نهائيًا}other{إزالة # تطبيق تم إيقافه نهائيًا}}</translation>
 <translation id="2776515114087183002">عرض المواقع الإلكترونية</translation>
@@ -3639,7 +3636,6 @@
 <translation id="3654682977761834281">البيانات الواردة من المواقع الإلكترونية المضمّنة</translation>
 <translation id="3656328935986149999">سرعة المؤشر</translation>
 <translation id="3658871634334445293">‏تسارع TrackPoint</translation>
-<translation id="3659550105763988702">استخدام مفتاح المرور لتسجيل الدخول إلى "<ph name="APP_NAME" />"</translation>
 <translation id="3659929705630080526">لقد أدخلت رمز دخول غير صحيح عدّة مرات. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="3660234220361471169">غير موثوق بها</translation>
 <translation id="3661106764436337772">الكتابة بشكلٍ أسرع وبأسلوب أكثر ثقة</translation>
@@ -3732,7 +3728,6 @@
 <translation id="3719245268140483218">حدث الجهاز</translation>
 <translation id="3719310907809321183">تم ملء نموذج بطاقة الائتمان <ph name="CARD_IDENTIFIER" />.</translation>
 <translation id="3719826155360621982">الصفحة الرئيسية</translation>
-<translation id="3720543739123045680">هناك عملية مشتركة تجري في علامة التبويب هذه وعلامات تبويب أخرى، ما قد يؤدي إلى ظهور أخطاء غير متوقَّعة عند استخدام "أدوات مطوري البرامج".</translation>
 <translation id="372062398998492895">‏إعدادات طابعات CUPS</translation>
 <translation id="3721119614952978349">‏أنت وGoogle</translation>
 <translation id="3721178866505920080">مزيد من المعلومات حول تفعيل التحميل المُسبَق الموسَّع</translation>
@@ -5327,7 +5322,6 @@
 <translation id="4903967893652864401">يؤدي تفعيل هذا الوضع إلى زيادة عمر البطارية عن طريق الحدّ من الأنشطة في الخلفية والتأثيرات المرئية، مثل التمرير السلس.</translation>
 <translation id="4906490889887219338">إعداد خوادم مشاركة الملفات على الشبكة أو إدارتها <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">اختيار الوقت الذي يمكن للإضافة فيه قراءة بيانات الموقع الإلكتروني وتغييرها</translation>
-<translation id="4907161631261076876">لا يتم تنزيل هذا الملف بشكل شائع وقد يكون ضارًا.</translation>
 <translation id="4908811072292128752">فتح علامة تبويب جديدة لتصفح موقعي ويب في وقت واحد</translation>
 <translation id="4909038193460299775">‏نظرًا لأنه تتم إدارة هذا الحساب من قبل <ph name="DOMAIN" />، سيتم محو الإشارات والسجل وكلمات المرور والإعدادات الأخرى من هذا الجهاز. ومع ذلك ستبقى بياناتك مخزنة في حسابك في Google ويمكن إدارتها على <ph name="BEGIN_LINK" />لوحة تحكم Google<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">سَبَق تثبيت هذا التطبيق</translation>
@@ -6681,7 +6675,6 @@
 <translation id="5935158534896975820">جارٍ تحضير طلب توقيع الشهادة (في انتظار الخادم)</translation>
 <translation id="5935656526031444304">إدارة "التصّفح الآمن"</translation>
 <translation id="5936065461722368675">ترجمة الصفحة بأكملها</translation>
-<translation id="5937347877659196749">بعد ذلك، عليك حماية كل مفاتيح المرور باستخدام رقم تعريف شخصي للاسترداد</translation>
 <translation id="5937977334791924341">شعار <ph name="APP" /></translation>
 <translation id="5938002010494270685">ترقية الأمان متاحة</translation>
 <translation id="5939518447894949180">إعادة الضبط</translation>
@@ -7443,7 +7436,6 @@
 <translation id="6530030995840538405">تم إنشاء الصورة رقم <ph name="INDEX" /> بالعنوان "<ph name="SUBJECT" />".</translation>
 <translation id="6530186581263215931">فرض مشرفك هذه الإعدادات</translation>
 <translation id="6530267432324197764">يُدار الملف الشخصي من قِبَل "<ph name="MANAGER" />".</translation>
-<translation id="6531282281159901044">الاحتفاظ بالملف الضار</translation>
 <translation id="6532101170117367231">‏حفظ في Google Drive</translation>
 <translation id="6532106788206463496">حفظ التغييرات</translation>
 <translation id="6532206849875187177">تسجيل الدخول والأمان</translation>
@@ -7491,6 +7483,7 @@
 <translation id="6557290421156335491">اختصاراتي</translation>
 <translation id="6560061709899140565">عرض جلسات البثّ الأخرى</translation>
 <translation id="6560151649238390891">تم إدراج الاقتراح.</translation>
+<translation id="656065428026159829">عرض المزيد</translation>
 <translation id="6561726789132298588">إدخال</translation>
 <translation id="6562117348069327379">يمكنك تخزين سجلّات النظام في دليل "عمليات التنزيل".</translation>
 <translation id="656293578423618167">اسم الملف أو مساره طويل جدًا. يُرجى الحفظ باستخدام اسم أقصر أو في مكان آخر.</translation>
@@ -9012,7 +9005,6 @@
 <translation id="7701040980221191251">لا يوجد</translation>
 <translation id="7701869757853594372">معالجات المستخدم</translation>
 <translation id="7702463352133825032">إيقاف البث على "<ph name="DEVICE_NAME" />"</translation>
-<translation id="7702574632857388784">إزالة الملف <ph name="FILE_NAME" /> من القائمة</translation>
 <translation id="7704305437604973648">المهمة</translation>
 <translation id="7704521324619958564">‏فتح متجر Play</translation>
 <translation id="7705276765467986571">تعذر تحميل نموذج الإشارة.</translation>
@@ -9461,6 +9453,7 @@
 <translation id="8022466874160067884">‏إدخال حسابك على Google وكلمة المرور</translation>
 <translation id="8023133589013344428">‏إدارة اللغات في إعدادات نظام التشغيل ChromeOS Flex</translation>
 <translation id="8023801379949507775">تحديث الإضافات الآن</translation>
+<translation id="8024161440284949905">المتابعة باستخدام علامات التبويب هذه</translation>
 <translation id="8025151549289123443">شاشة القفل وتسجيل الدخول</translation>
 <translation id="8025291188699172126">لمحة عن التحديثات</translation>
 <translation id="8026471514777758216">التصفّح على جميع أجهزتك</translation>

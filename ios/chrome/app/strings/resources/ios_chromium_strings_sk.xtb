@@ -122,6 +122,7 @@
 
 Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje prehliadača Chromium vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Otvorí stránku nastavení spôsobov platby v prehliadači Chromium.</translation>
+<translation id="458786853569524949">Chromium môžete teraz kedykoľvek použiť klepnutím na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>
 <translation id="459080529287102949">Vyhľadať vizuálne prvky v prehliadači Chromium</translation>
 <translation id="4633738821577273991">Získajte aj Zlepšené bezpečné prehliadanie pre tento profil prehliadača Chromium</translation>
 <translation id="4638625642619341392">Tu si stiahnite Chromium.</translation>
@@ -288,6 +289,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje pr
 Vaše údaje boli <ph name="TIME" /> zašifrované pomocou prístupovej frázy. Zadajte ju, keď chcete používať a ukladať údaje prehliadača Chromium vo svojom účte Google.</translation>
 <translation id="9022552996538154597">Prihlásiť sa do prehliadača Chromium</translation>
 <translation id="9050790730841755540">Chromium môžete kedykoľvek použiť klepnutím na odkazy v iných aplikáciách.</translation>
+<translation id="9057082013386654559">Používajte Chromium pre iPad predvolene</translation>
 <translation id="9059693977935746710">Toto heslo si nebudete musieť pamätať. Uloží sa do správcu hesiel v účte <ph name="EMAIL" />.</translation>
 <translation id="9089354809943900324">Prehliadač Chromium je zastaraný</translation>
 <translation id="9110075932708282655">Predvolene používať Chromium</translation>

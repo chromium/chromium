@@ -1015,6 +1015,7 @@
 <translation id="2930577230479659665">සෑම පිටපතකටම පසුව කප්පාදු කරන්න</translation>
 <translation id="2933624813161016821">ලෝපත් ගිල්ලවීම</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> සබැඳි විවෘත කරන්න</translation>
+<translation id="2941112035454246133">අඩු</translation>
 <translation id="2941878205777356567">ලියුම් කවරය අඟල් 9 x 12</translation>
 <translation id="2941952326391522266">මෙම සේවාදායකයට එය <ph name="DOMAIN" /> බව සනාථ කිරීමට නොහැකි විය; එහි ආරක්ෂණ සහතිකය <ph name="DOMAIN2" /> වෙතිනි. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයකු ඔබගේ සබැඳුමට බාධා කිරීමක් නිසා විය හැකිය.</translation>
 <translation id="2942492342931589800">අක්‍රමවත්</translation>
@@ -2235,7 +2236,6 @@
 <translation id="5263867360296733198">උඩුගත කිරීමට පෙර සමාලෝචනය අවශ්‍යයි</translation>
 <translation id="5266128565379329178">ඉහළ බඳින්න</translation>
 <translation id="5269225904387178860">පහළට සිවු වරක් අනින්න</translation>
-<translation id="5269999699920406580">පද්ධතිය පුරා යෙදිය හැකි විශේෂාංග නැවත සැකසීම කළ හැක්කේ හිමිකරුට පමණයි: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" යනු "<ph name="DATA_CONTROLS_RESTRICTION" />" සඳහා සහය දක්වන කොන්දේසියක් නොවේ</translation>
 <translation id="5273658854610202413">අවවාදයයි: මෙය ඒකාබද්ධ කළ හැකි අකාරාදි ප්‍රතිපත්තිවල කොටසක් නොවන බැවින් මෙම ප්‍රතිපත්තිය PolicyDictionaryMultipleSourceMergeList ප්‍රතිපත්තිය තුළ සඳහන් කළ පරිදි ඒකාබද්ධ කළේ නැත.</translation>
 <translation id="5279286380302340275">බාගැනීම් කළමනාකරණය කරන්න</translation>
@@ -3079,6 +3079,7 @@
 <translation id="6915804003454593391">පරිශීලක</translation>
 <translation id="6916193791494646625">බා ගැනීමට හේතුව සපයන්න (අවශ්‍යයි)</translation>
 <translation id="6917795328362592458">ඔබ මේ දැන් භාවිත කළ මුරපදය දත්ත කඩ කිරීමකින් සොයා ගන්නා ලදී. ඔබගේ ගිණුම් සුරක්ෂිත කිරීමට, මුරපද කළමනාකරු ඔබගේ සුරකින ලද මුරපද පරීක්ෂා කිරීම නිර්දේශ කරයි.</translation>
+<translation id="6924013822850225188">ගෙවා පිටවීමේ දී ඔබ ඔබේ කාඩ්පත් ප්‍රතිලාභ දකිනවා ද යන්න තෝරා ගන්න (බැංකු කොන්දේසි අදාළ වේ)</translation>
 <translation id="6925267999184670015">උතුරු ඇමරිකානු B+</translation>
 <translation id="6926216138694948720">ශරීර පින්තාරු කලාව</translation>
 <translation id="692638818576287323">වාණිජ වාහන</translation>
@@ -3850,6 +3851,7 @@
 <translation id="830498451218851433">භාගයට නවන්න</translation>
 <translation id="8308653357438598313">සජීවී වීඩියෝ ප්‍රවාහය</translation>
 <translation id="8311895354659782580">දේපළ වෙළෙඳාම් ලැයිස්තුගත කිරීම්</translation>
+<translation id="8312841338723044391">සජීවී</translation>
 <translation id="8316555157357957253">දැන් භාවිතා කරයි</translation>
 <translation id="8319269383395457801">නේවාසික විකුණුම්</translation>
 <translation id="831997045666694187">සවස</translation>

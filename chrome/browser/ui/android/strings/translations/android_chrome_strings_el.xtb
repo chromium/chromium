@@ -422,6 +422,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> σελιδοδείκτης}other{<ph name="BOOKMARKS_COUNT_MANY" /> σελιδοδείκτες}}</translation>
 <translation id="3062802207422175757">Άρθρα για τα ενδιαφέροντά σας στο Chrome</translation>
 <translation id="3066573403916685335">Μετακίνηση κάτω</translation>
+<translation id="3067505415088964188">Η τιμή είναι χαμηλή</translation>
 <translation id="3070005020161560471">Να γίνεται μετάφραση αυτόματα</translation>
 <translation id="3072980200212375806">Η εφαρμογή <ph name="APP_NAME" /> θα ανοίξει στο Chrome. Εάν συνεχίσετε, συμφωνείτε με τους <ph name="BEGIN_LINK1" />Όρους Παροχής Υπηρεσιών της Google<ph name="END_LINK1" /> και τους <ph name="BEGIN_LINK2" />Πρόσθετους Όρους Παροχής Υπηρεσιών του Google Chrome και του Chrome OS<ph name="END_LINK2" />. Επίσης, ισχύει η <ph name="BEGIN_LINK3" />Πολιτική απορρήτου<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Μπορείτε να αποθηκεύετε σελίδες για ανάγνωση αργότερα ή εκτός σύνδεσης.</translation>

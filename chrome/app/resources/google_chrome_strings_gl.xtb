@@ -254,6 +254,7 @@
 <translation id="4561051373932531560">Google Chrome permíteche facer clic nun número de teléfono da web e chamar con Skype.</translation>
 <translation id="4567424176335768812">Iniciaches sesión como <ph name="USER_EMAIL_ADDRESS" />. Agora podes acceder aos teus marcadores, historial e outras configuracións en todos os dispositivos en que iniciaches sesión.</translation>
 <translation id="4571503333518166079">Ir á configuración de notificacións de Chrome</translation>
+<translation id="4575717501879784448">Chrome pode desactivar estas pestanas para mellorar a experiencia de navegación e liberar recursos.</translation>
 <translation id="459622048091363950">Unha vez que Chrome teña acceso, os sitios web poderán solicitalo tamén.</translation>
 <translation id="4600710005438004015">Chrome non se puido actualizar á última versión, polo que non gozas das novas funcións e solucións de seguranza.</translation>
 <translation id="4624065194742029982">Modo de incógnito de Chrome</translation>
@@ -266,7 +267,6 @@
 <translation id="4728575227883772061">Non se puido efectuar a instalación debido a un erro non especificado. Se Google Chrome se está executando nestes momentos, péchao e téntao de novo.</translation>
 <translation id="4747730611090640388">Chrome pode facer unha estimación dos teus intereses.  Máis tarde, un sitio que visites pode consultarlle a Chrome os teus intereses para personalizar os anuncios que se che mostren.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
-<translation id="4771048833395599659">Este ficheiro pode ser perigoso, así que Chrome bloqueouno.</translation>
 <translation id="479167709087336770">Esta función utiliza o mesmo corrector ortográfico que o usado na busca de Google. O texto que escribas no navegador enviarase a Google. Podes cambiar esta opción na configuración cando queiras.</translation>
 <translation id="4793679854893018356">Descubre como te protexe Chrome</translation>
 <translation id="4828579605166583682">Google Chrome está tentando substituír os contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
@@ -285,6 +285,7 @@
 <translation id="4970761609246024540">Dámosche a benvida aos perfís de Chrome</translation>
 <translation id="4970880042055371251">Versión de Chrome OS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="4997044641749333913">Chrome pode desactivar estas pestanas para mellorar a experiencia de navegación e axilizar as operacións.</translation>
 <translation id="5003967926796347400">Fai clic en Xestor de contrasinais de Google</translation>
 <translation id="5120334927898581447">Iniciar sesión en Chrome cando inicies sesión noutros servizos de Google</translation>
 <translation id="5126049312684316860">Chrome precargará aínda máis páxinas que é probable que visites para que carguen máis rapidamente cando accedas a elas</translation>
@@ -349,6 +350,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="608006075545470555">Engadir un perfil de traballo a este navegador</translation>
 <translation id="6097822892606850415">Redacta textos con máis confianza coa axuda da IA</translation>
 <translation id="6113794647360055231">Chrome introduciu melloras</translation>
+<translation id="6135456723633883042">Estas pestanas usan recursos adicionais. Para mellorar o rendemento, permite que Chrome as desactive.</translation>
 <translation id="6145313976051292476">Abrir PDF en Chrome</translation>
 <translation id="6157638032135951407">A túa organización elimina os datos de Chrome cando non se usan durante <ph name="TIMEOUT_DURATION" />. Entre esa información, poden incluírse o historial, os datos da función de autocompletar e as descargas.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

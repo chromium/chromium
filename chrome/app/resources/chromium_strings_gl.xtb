@@ -118,6 +118,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="2945997411976714835">Erro de instalación: Non se puido iniciar o proceso do instalador.</translation>
 <translation id="2977470724722393594">Chromium está actualizado</translation>
 <translation id="2977506796191543575">Se un sitio tenta roubarche o contrasinal ou se descargas un ficheiro daniño, Chromium tamén pode comprobar os enderezos URL, así como fragmentos de contido das páxinas, a través da función Navegación segura</translation>
+<translation id="2987208172821108655">Chromium pode desactivar estas pestanas para mellorar a túa experiencia de navegación e liberar recursos.</translation>
 <translation id="3013473503895162900">Abrir <ph name="URL" /> nunha nova pestana en Chromium.</translation>
 <translation id="3032706164202344641">Chromium non puido comprobar os teus contrasinais. Téntao de novo máis tarde.</translation>
 <translation id="3032787606318309379">Engadindo a Chromium...</translation>
@@ -319,6 +320,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6248213926982192922">Establecer Chromium como navegador predeterminado</translation>
 <translation id="6266342355635466082">Chromium non puido buscar actualizacións. Verifica a conexión a Internet.</translation>
 <translation id="6268381023930128611">Pechar sesión en Chromium?</translation>
+<translation id="6270547683008298381">Estas pestanas usan recursos adicionais. Para mellorar o rendemento, permite que Chromium as desactive.</translation>
 <translation id="6281746429495226318">Personalizar o teu perfil de Chromium</translation>
 <translation id="6290827346642914212">Asígnalle un nome ao teu perfil de Chromium</translation>
 <translation id="6294831894865512704">Unha extensión quere que inicies sesión en Chromium</translation>
@@ -327,6 +329,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="6327105987658262776">Non hai ningunha actualización dispoñible.</translation>
 <translation id="6333502561965082103">Hai outra operación en Chromium que está en progreso. Téntao de novo máis tarde.</translation>
 <translation id="6334986366598267305">Agora é máis fácil utilizar Chromium coa túa conta de Google e en ordenadores compartidos.</translation>
+<translation id="633626832589656416">Chromium pode desactivar estas pestanas para mellorar a experiencia de navegación e axilizar as operacións.</translation>
 <translation id="6347933965114150440">Atallo de Chromium</translation>
 <translation id="6366160072964553914">Chromium bloqueou esta descarga porque este ficheiro non se descarga con frecuencia e pode ser perigoso</translation>
 <translation id="6373523479360886564">Seguro que queres desinstalar Chromium?</translation>
@@ -452,7 +455,6 @@ Chromium non pode recuperar a túa configuración.</translation>
 <translation id="8254601181414348851">Queres iniciar sesión en Chromium cun perfil novo?</translation>
 <translation id="8266560134891435528">Chromium non puido comprobar os teus contrasinais porque non iniciaches sesión</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium avísate<ph name="END_LINK" /> sobre descargas e sitios pouco seguros</translation>
-<translation id="8290862415967981663">Este ficheiro pode ser perigoso, así que Chromium bloqueouno.</translation>
 <translation id="8318772038038596122">A túa organización pecha Chromium cando non se usa durante <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8330519371938183845">Inicia sesión para sincronizar e personalizar Chromium nos teus dispositivos</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> estaba utilizando Chromium previamente</translation>

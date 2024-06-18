@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Purpurová</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Rozbaľte skupinu kariet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_ONE" /> kartou.}few{Rozbaľte skupinu kariet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartami.}many{Expand <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_MANY" /> tabs.}other{Rozbaľte skupinu kariet <ph name="TITLE_OF_GROUP" /> s <ph name="TABS_COUNT_MANY" /> kartami.}}</translation>
 <translation id="427987768447457592">Nová skupina kariet</translation>
+<translation id="4338724047016295066">Neaktívne karty sa automaticky zavrú. Vždy ich nájdete v histórii.</translation>
 <translation id="4371591986692297148">Neaktívne</translation>
 <translation id="4460014764210899310">Zrušiť zoskupenie</translation>
 <translation id="4648718555153979859">Tu sú zoskupené vaše karty</translation>
 <translation id="4686942373615810936">Vytvorená práve teraz</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Zavrieť po 1 dni}few{Zavrieť po <ph name="DAY_COUNT_MANY" /> dňoch}many{Zavrieť po <ph name="DAY_COUNT_MANY" /> dňa}other{Zavrieť po <ph name="DAY_COUNT_MANY" /> dňoch}}</translation>
 <translation id="4777866634702576038">Chcete odstrániť skupinu kariet?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recenzia)}few{(<ph name="REVIEWS_COUNT_MANY" /> recenzie)}many{(<ph name="REVIEWS_COUNT_MANY" /> reviews)}other{(<ph name="REVIEWS_COUNT_MANY" /> recenzií)}}</translation>
 <translation id="4850886885716139402">Zobraziť</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Tu nájdete svoje skupiny kariet</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Zrušiť zoskupenie <ph name="TABS_COUNT_ONE" /> vybranej karty}few{Zrušiť zoskupenie <ph name="TABS_COUNT_MANY" /> vybraných kariet}many{Ungroup <ph name="TABS_COUNT_MANY" /> selected tabs}other{Zrušiť zoskupenie <ph name="TABS_COUNT_MANY" /> vybraných kariet}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> tabs}other{<ph name="TABS_COUNT_MANY" /> kariet}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{Po 1 dni}few{Po <ph name="DAY_COUNT_MANY" /> dňoch}many{Po <ph name="DAY_COUNT_MANY" /> dňa}other{Po <ph name="DAY_COUNT_MANY" /> dňoch}}</translation>
 <translation id="6549021453810473782">Zobraziť informácie o obchode</translation>
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Presunúť kartu doľava</translation>

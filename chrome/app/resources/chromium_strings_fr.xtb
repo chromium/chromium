@@ -117,6 +117,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="2945997411976714835">Erreur d'installation : échec de démarrage du processus d'installation.</translation>
 <translation id="2977470724722393594">Chromium est à jour</translation>
 <translation id="2977506796191543575">Si un site tente de voler votre mot de passe ou si vous téléchargez un fichier dangereux, Chromium peut également envoyer les URL concernées, y compris des extraits du contenu des pages, à la fonctionnalité de navigation sécurisée</translation>
+<translation id="2987208172821108655">Chromium peut désactiver ces onglets pour améliorer votre expérience de navigation et libérer des ressources.</translation>
 <translation id="3013473503895162900">Ouvrir <ph name="URL" /> dans un nouvel onglet dans Chromium.</translation>
 <translation id="3032706164202344641">Chromium ne parvient pas à vérifier vos mots de passe. Réessayez plus tard.</translation>
 <translation id="3032787606318309379">Ajout à Chromium en cours…</translation>
@@ -318,6 +319,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="6248213926982192922">Définir Chromium en tant que navigateur par défaut</translation>
 <translation id="6266342355635466082">Chromium ne parvient pas à rechercher les mises à jour. Vérifiez votre connexion Internet.</translation>
 <translation id="6268381023930128611">Se déconnecter de Chromium ?</translation>
+<translation id="6270547683008298381">Ces onglets utilisent des ressources supplémentaires. Pour améliorer les performances, autorisez Chromium à les désactiver.</translation>
 <translation id="6281746429495226318">Personnaliser votre profil Chromium</translation>
 <translation id="6290827346642914212">Nommer votre profil Chromium</translation>
 <translation id="6294831894865512704">Une extension vous demande de vous connecter à Chromium</translation>
@@ -326,6 +328,7 @@ Les autorisations que vous avez déjà accordées aux sites Web et aux applis pe
 <translation id="6327105987658262776">Aucune mise à jour disponible.</translation>
 <translation id="6333502561965082103">Une autre opération est en cours dans Chromium. Veuillez réessayer plus tard.</translation>
 <translation id="6334986366598267305">Il est désormais plus facile d'utiliser Chromium avec votre compte Google et sur des ordinateurs partagés.</translation>
+<translation id="633626832589656416">Chromium peut désactiver ces onglets pour améliorer votre expérience de navigation et maintenir la rapidité du navigateur.</translation>
 <translation id="6347933965114150440">Raccourci Chromium</translation>
 <translation id="6366160072964553914">Chromium a bloqué ce téléchargement, car le fichier n'est pas souvent téléchargé et peut être dangereux</translation>
 <translation id="6373523479360886564">Voulez-vous vraiment désinstaller Chromium ?</translation>
@@ -452,7 +455,6 @@ Chromium ne peut pas récupérer vos paramètres.</translation>
 <translation id="8254601181414348851">Se connecter à Chromium avec un nouveau profil ?</translation>
 <translation id="8266560134891435528">Chromium ne peut pas vérifier vos mots de passe, car vous n'êtes pas connecté</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium vous avertit<ph name="END_LINK" /> en cas de sites et de téléchargements dangereux</translation>
-<translation id="8290862415967981663">Chromium a bloqué ce fichier, car ce dernier peut être dangereux.</translation>
 <translation id="8318772038038596122">Votre organisation ferme Chromium lorsqu'il n'est pas utilisé pendant <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8330519371938183845">Se connecter pour synchroniser et personnaliser Chromium sur vos appareils</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> utilisait Chromium précédemment</translation>

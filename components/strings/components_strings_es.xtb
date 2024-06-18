@@ -1011,6 +1011,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2930577230479659665">Recortar después de cada copia</translation>
 <translation id="2933624813161016821">Papel de aluminio gofrado</translation>
 <translation id="2938225289965773019">Abrir enlaces de <ph name="PROTOCOL" /></translation>
+<translation id="2941112035454246133">Baja</translation>
 <translation id="2941878205777356567">Sobre de 9x12 pulgadas</translation>
 <translation id="2941952326391522266">Este servidor no ha podido probar que su dominio es <ph name="DOMAIN" />, su certificado de seguridad procede de <ph name="DOMAIN2" />. Este problema puede deberse a una configuración incorrecta o a que un atacante haya interceptado la conexión.</translation>
 <translation id="2942492342931589800">Informal</translation>
@@ -2222,7 +2223,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5263867360296733198">Los archivos deben revisarse antes de subirse</translation>
 <translation id="5266128565379329178">Encuadernar por la parte superior</translation>
 <translation id="5269225904387178860">Perforado cuádruple en la parte inferior</translation>
-<translation id="5269999699920406580">Las funciones que se aplican a todo el sistema solo las puede establecer el propietario: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">La condición "<ph name="DATA_CONTROLS_ATTRIBUTE" />" no se admite en "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="5273658854610202413">Advertencia: Esta política no se ha combinado tal como se especifica en la política PolicyDictionaryMultipleSourceMergeList porque no forma parte de las políticas de diccionario que se pueden combinar.</translation>
 <translation id="5279286380302340275">Gestionar descargas</translation>
@@ -2301,7 +2301,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="5419311651396341287">Es posible que tu administrador pueda ver lo siguiente:</translation>
 <translation id="5421408724705443535">Música rock</translation>
 <translation id="5423269318075950257">Seguir precio</translation>
-<translation id="5425082381151187189">Hogar y decoración de interiores</translation>
+<translation id="5425082381151187189">Decoración del hogar y de interiores</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> quiere enviarte notificaciones</translation>
 <translation id="5430298929874300616">Eliminar marcador</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />no guardará<ph name="END_EMPHASIS" />:

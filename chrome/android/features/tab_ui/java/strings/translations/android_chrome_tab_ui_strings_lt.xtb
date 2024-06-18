@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Violetinė</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Išskleisti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_ONE" /> skirtukas.}one{Išskleisti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukas.}few{Išskleisti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukai.}many{Išskleisti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtuko.}other{Išskleisti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukų.}}</translation>
 <translation id="427987768447457592">Nauja skirtukų grupė</translation>
+<translation id="4338724047016295066">Neaktyvūs skirtukai bus automatiškai uždaryti. Juos visada rasite skiltyje „Istorija“.</translation>
 <translation id="4371591986692297148">Neaktyvus</translation>
 <translation id="4460014764210899310">Išgrupuoti</translation>
 <translation id="4648718555153979859">Čia skirtukai suskirstyti į grupes</translation>
 <translation id="4686942373615810936">Ką tik sukurta</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Uždaryti po 1 dienos}one{Uždaryti po <ph name="DAY_COUNT_MANY" /> dienos}few{Uždaryti po <ph name="DAY_COUNT_MANY" /> dienų}many{Uždaryti po <ph name="DAY_COUNT_MANY" /> dienos}other{Uždaryti po <ph name="DAY_COUNT_MANY" /> dienų}}</translation>
 <translation id="4777866634702576038">Ištrinti skirtukų grupę?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> atsiliepimas)}one{(<ph name="REVIEWS_COUNT_MANY" /> atsiliepimas)}few{(<ph name="REVIEWS_COUNT_MANY" /> atsiliepimai)}many{(<ph name="REVIEWS_COUNT_MANY" /> atsiliepimo)}other{(<ph name="REVIEWS_COUNT_MANY" /> atsiliepimų)}}</translation>
 <translation id="4850886885716139402">Žiūrėti</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Čia rasite skirtukų grupes</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Išgrupuoti <ph name="TABS_COUNT_ONE" /> pasirinktą skirtuką}one{Išgrupuoti <ph name="TABS_COUNT_MANY" /> pasirinktą skirtuką}few{Išgrupuoti <ph name="TABS_COUNT_MANY" /> pasirinktus skirtukus}many{Išgrupuoti <ph name="TABS_COUNT_MANY" /> pasirinkto skirtuko}other{Išgrupuoti <ph name="TABS_COUNT_MANY" /> pasirinktų skirtukų}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> skirtukas}one{<ph name="TABS_COUNT_MANY" /> skirtukas}few{<ph name="TABS_COUNT_MANY" /> skirtukai}many{<ph name="TABS_COUNT_MANY" /> skirtuko}other{<ph name="TABS_COUNT_MANY" /> skirtukų}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{Po 1 dienos}one{Po <ph name="DAY_COUNT_MANY" /> dienos}few{Po <ph name="DAY_COUNT_MANY" /> dienų}many{Po <ph name="DAY_COUNT_MANY" /> dienos}other{Po <ph name="DAY_COUNT_MANY" /> dienų}}</translation>
 <translation id="6549021453810473782">Peržiūrėti parduotuvės informaciją</translation>
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Perkelti skirtuką į kairę</translation>

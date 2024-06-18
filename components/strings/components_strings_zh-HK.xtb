@@ -1011,6 +1011,7 @@
 <translation id="2930577230479659665">完成每次複印後修剪</translation>
 <translation id="2933624813161016821">燙金浮雕壓印</translation>
 <translation id="2938225289965773019">開放<ph name="PROTOCOL" />連結</translation>
+<translation id="2941112035454246133">低</translation>
 <translation id="2941878205777356567">9 x 12 吋信封</translation>
 <translation id="2941952326391522266">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證來自 <ph name="DOMAIN2" /> 網域。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="2942492342931589800">非正式</translation>
@@ -2221,7 +2222,6 @@
 <translation id="5263867360296733198">上載檔案前請務必確認</translation>
 <translation id="5266128565379329178">釘裝 (頂端)</translation>
 <translation id="5269225904387178860">四孔 (底部)</translation>
-<translation id="5269999699920406580">這些功能會套用至整個系統，只有以下擁有者可設定：<ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">「<ph name="DATA_CONTROLS_ATTRIBUTE" />」不是「<ph name="DATA_CONTROLS_RESTRICTION" />」可支援的條件</translation>
 <translation id="5273658854610202413">警告：此政策並非可合併的字典政策，因此未有按PolicyDictionaryMultipleSourceMergeList 政策中指定的方式合併。</translation>
 <translation id="5279286380302340275">管理下載檔案</translation>
@@ -4284,6 +4284,7 @@
 <translation id="920643408853370361">旅遊保險</translation>
 <translation id="9207861905230894330">無法新增文章。</translation>
 <translation id="9210825002219699214">航空旅遊</translation>
+<translation id="9211461151375991073">輸入 @ 可搜尋 <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">自訂外觀</translation>
 <translation id="9215416866750762878">有應用程式令 Chrome 無法安全地連接至此網站</translation>
 <translation id="92178312226016010">你正在追蹤此產品。</translation>

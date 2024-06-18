@@ -1011,6 +1011,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2930577230479659665">Prerje pas çdo kopjeje</translation>
 <translation id="2933624813161016821">Letër alumini me stampim</translation>
 <translation id="2938225289965773019">Hap lidhjet e <ph name="PROTOCOL" /></translation>
+<translation id="2941112035454246133">E ulët</translation>
 <translation id="2941878205777356567">Zarf 9 x 12 inç</translation>
 <translation id="2941952326391522266">Ky server nuk mund të dëshmonte se është <ph name="DOMAIN" />; certifikata e tij e sigurisë është nga <ph name="DOMAIN2" />. Kjo mund të shkaktohet nga një konfigurim i pasaktë ose nga ndërhyrja e një sulmuesi në lidhjen tënde.</translation>
 <translation id="2942492342931589800">Joformal</translation>
@@ -2222,7 +2223,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5263867360296733198">Kërkohet rishikimi përpara ngarkimit</translation>
 <translation id="5266128565379329178">Lidhje lart</translation>
 <translation id="5269225904387178860">Katër shpime poshtë</translation>
-<translation id="5269999699920406580">Veçoritë që zbatohen për të gjithë sistemin mund të caktohen vetëm nga zotëruesi: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" nuk është një kusht i mbështetur për "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="5273658854610202413">Paralajmërim: Kjo politikë nuk është bashkuar siç specifikohet në politikën PolicyDictionaryMultipleSourceMergeList sepse nuk është pjesë e politikave të fjalorit që mund të bashkohen.</translation>
 <translation id="5279286380302340275">Menaxho shkarkimet</translation>
@@ -3062,6 +3062,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6915804003454593391">Përdoruesi:</translation>
 <translation id="6916193791494646625">Jep arsyen për shkarkimin (e detyrueshme)</translation>
 <translation id="6917795328362592458">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. Për të mbrojtur llogaritë e tua, "Menaxheri i fjalëkalimeve" rekomandon që të kontrollosh fjalëkalimet e ruajtura.</translation>
+<translation id="6924013822850225188">Zgjidh nëse do t'i shikosh përfitimet e kartës në përfundim të blerjes (zbatohen kushtet e bankës)</translation>
 <translation id="6925267999184670015">B+ (Amerika e Veriut)</translation>
 <translation id="6926216138694948720">Art trupor</translation>
 <translation id="692638818576287323">Automjete komerciale</translation>
@@ -3831,6 +3832,7 @@ Detaje shtesë:
 <translation id="830498451218851433">Palosje në gjysmë</translation>
 <translation id="8308653357438598313">Transmetim i videove të drejtpërdrejta</translation>
 <translation id="8311895354659782580">Listime të pasurive të paluajtshme</translation>
+<translation id="8312841338723044391">DREJTPËRDREJT</translation>
 <translation id="8316555157357957253">Po përdoret tani</translation>
 <translation id="8319269383395457801">Shitje banesash</translation>
 <translation id="831997045666694187">Mbrëmje</translation>

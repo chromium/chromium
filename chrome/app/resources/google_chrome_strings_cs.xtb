@@ -255,6 +255,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4561051373932531560">Google Chrome umožňuje kliknout na telefonní číslo na webu a volat na něj prostřednictvím aplikace Skype.</translation>
 <translation id="4567424176335768812">Jste přihlášeni pomocí účtu <ph name="USER_EMAIL_ADDRESS" />. Nyní můžete přistupovat ke všem svým záložkám, historii a dalším nastavením ve všech přihlášených zařízeních.</translation>
 <translation id="4571503333518166079">Přejít na nastavení oznámení prohlížeče Chrome</translation>
+<translation id="4575717501879784448">Chrome může tyto karty deaktivovat, aby při procházení vše lépe fungovalo a uvolnily se zdroje.</translation>
 <translation id="459622048091363950">Až bude mít Chrome přístup, budou vás weby moci požádat o přístup.</translation>
 <translation id="4600710005438004015">Chrome nebylo možné aktualizovat na nejnovější verzi. Nemáte proto k dispozici nové funkce a opravy zabezpečení.</translation>
 <translation id="4624065194742029982">Anonymní režim prohlížeče Chrome</translation>
@@ -267,7 +268,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4728575227883772061">Došlo k nespecifikované chybě, instalace se nezdařila. Pokud je Google Chrome právě spuštěný, zavřete jej prosím a zkuste to znovu.</translation>
 <translation id="4747730611090640388">Chrome dokáže odhadovat vaše zájmy.  Později může navštívený web požádat Chrome o sdělení vašich zájmů, aby vám mohl přizpůsobit zobrazované reklamy.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
-<translation id="4771048833395599659">Tento soubor může být nebezpečný, proto jej Chrome zablokoval.</translation>
 <translation id="479167709087336770">Tato funkce využívá stejnou službu kontroly pravopisu, jaká se používá ve vyhledávání Google. Text, který v prohlížeči zadáte, se odešle do Googlu. Toto chování můžete kdykoliv změnit v nastavení.</translation>
 <translation id="4793679854893018356">Přečtěte si, jak vás Chrome chrání</translation>
 <translation id="4828579605166583682">Google Chrome se pokouší nahradit stávající hesla. Tato akce vyžaduje zadání hesla systému Windows.</translation>
@@ -286,6 +286,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4970761609246024540">Vítejte v profilech Chrome</translation>
 <translation id="4970880042055371251">Verze systému ChromeOS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="4997044641749333913">Chrome může tyto karty deaktivovat, aby při procházení vše lépe fungovalo a prohlížeč byl celkově rychlejší.</translation>
 <translation id="5003967926796347400">Klikněte na Správce hesel Google</translation>
 <translation id="5120334927898581447">Přihlášení do Chromu při přihlášení do jiných služeb Google</translation>
 <translation id="5126049312684316860">Chrome předběžně načítá ještě více stránek, které byste pravděpodobně mohli navštívit. Když je navštívíte, načtou se tak rychleji</translation>
@@ -350,6 +351,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="608006075545470555">Přidat do tohoto prohlížeče pracovní profil</translation>
 <translation id="6097822892606850415">Pište s větší jistotou s pomocí AI</translation>
 <translation id="6113794647360055231">Chrome je opět o něco lepší</translation>
+<translation id="6135456723633883042">Tyto karty využívají další zdroje. Ke zlepšení výkonu je Chrome nechte deaktivovat.</translation>
 <translation id="6145313976051292476">Otevírání souborů PDF v Chromu</translation>
 <translation id="6157638032135951407">Když prohlížeč Chrome <ph name="TIMEOUT_DURATION" /> není používán, vaše organizace smaže jeho data. To může zahrnovat historii, automatické vyplňování a stažené soubory.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

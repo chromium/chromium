@@ -422,6 +422,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> 个书签}other{<ph name="BOOKMARKS_COUNT_MANY" /> 个书签}}</translation>
 <translation id="3062802207422175757">Chrome 可提供您感兴趣的报道</translation>
 <translation id="3066573403916685335">下移</translation>
+<translation id="3067505415088964188">价格低</translation>
 <translation id="3070005020161560471">自动翻译</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" />将在 Chrome 中打开。继续操作即表示您同意接受 <ph name="BEGIN_LINK1" />Google 服务条款<ph name="END_LINK1" />以及 <ph name="BEGIN_LINK2" />Google Chrome 和 Chrome 操作系统附加服务条款<ph name="END_LINK2" />。您也必须遵守<ph name="BEGIN_LINK3" />隐私权政策<ph name="END_LINK3" />。</translation>
 <translation id="3080525922482950719">您可保存网页以供日后阅读或离线阅读</translation>

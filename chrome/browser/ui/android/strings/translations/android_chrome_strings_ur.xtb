@@ -117,6 +117,8 @@
 <translation id="1513814250881909472">اپنے دوسرے آلات سے اپنے ٹیبز حاصل کرنے کے لیے مطابقت پذیری کریں</translation>
 <translation id="1513858653616922153">پاس ورڈ حذف کریں</translation>
 <translation id="1521774566618522728">آج فعال کیا گیا</translation>
+<translation id="1544084554881119930">‏ادائیگی کے طریقے اور پتے مرموز کردہ نہیں ہوں گے۔ ‫Chrome سے براؤزنگ کی سرگزشت مطابقت پذیر نہیں ہوگی۔
+صرف آپ کے پاس فریز کا حامل شخص ہی آپ کے مرموز کردہ ڈیٹا کو پڑھ سکتا ہے۔ پاس فریز Google کو نہیں بھیجا جاتا، نہ ہی وہ اسے اسٹور کرتا ہے۔ اگر آپ اپنا پاس فریز بھول جاتے ہیں یا اس ترتیب کو تبدیل کرنا چاہتے ہیں تو <ph name="BEGIN_LINK" />اپنے اکاؤنٹ میں موجود Chrome ڈیٹا کو صاف کریں<ph name="END_LINK" />۔</translation>
 <translation id="1544826120773021464">‏اپنے Google اکاؤنٹ کا نظم کرنے کے لیے، "اکاؤنٹ کا نظم کریں" بٹن پر تھپتھپائیں</translation>
 <translation id="154513667535157406">پسند کریں بٹن سے یہ تاثر دیا جاتا ہے کہ آپ کو یہ خلاصہ پسند ہے</translation>
 <translation id="1549000191223877751">دوسری ونڈو پر جائیں</translation>
@@ -422,6 +424,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> بُک مارک}other{<ph name="BOOKMARKS_COUNT_MANY" /> بُک مارکس}}</translation>
 <translation id="3062802207422175757">‏Chrome پر آپ کی دلچسپیوں سے متعلق مضامین</translation>
 <translation id="3066573403916685335">نیچے لے جائیں</translation>
+<translation id="3067505415088964188">قیمت کم ہے</translation>
 <translation id="3070005020161560471">خودکار طور پر ترجمہ کریں</translation>
 <translation id="3072980200212375806">‏<ph name="APP_NAME" /> Chrome میں کھلے گی۔ جاری رکھ کر آپ، <ph name="BEGIN_LINK1" />Google کی سروس کی شرائط<ph name="END_LINK1" /> اور <ph name="BEGIN_LINK2" />Google Chrome اور ChromeOS کی اضافی سروس کی شرائط سے اتفاق کرتے ہیں<ph name="END_LINK2" />۔ <ph name="BEGIN_LINK3" />رازداری کی پالیسی<ph name="END_LINK3" /> بھی لاگو ہوتی ہے۔</translation>
 <translation id="3080525922482950719">آپ بعد میں یا آف لائن پڑھنے کے لیے صفحات کو محفوظ کر سکتے ہیں</translation>
@@ -457,6 +460,7 @@
 <translation id="3264259168916048410">آپ کا کمپیوٹر اس آلے کو کسی سائٹ میں سائن ان کرنے کیلئے استعمال کرنا چاہتا ہے</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" /> کے سبھی صفحات</translation>
 <translation id="3269093882174072735">تصویر لوڈ کریں</translation>
+<translation id="327204079441056603">ہم نے اس آلے پر پاس ورڈز کو محفوظ کرنے کا طریقہ تبدیل کر دیا ہے</translation>
 <translation id="3280562213547448728">صوتی تلاش</translation>
 <translation id="3282568296779691940">‏Chrome میں سائن ان کریں</translation>
 <translation id="3290249595466894471">نئے خطرات کا پتہ لگانے میں مدد کے لیے صفحات، ڈاؤن لوڈز، ایکسٹینشن کی سرگرمی اور سسٹم کی معلومات کا چھوٹا سا نمونہ بھی بھیجتا ہے</translation>
@@ -1213,6 +1217,7 @@
 <translation id="6918398787259831832">اگر یہ مسئلہ جاری رہتا ہے تو <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> سے <ph name="BEGIN_LINK" />مزید معلومات حاصل کریں<ph name="END_LINK" />۔</translation>
 <translation id="6929224077895306814">‏آپ کے آلے اور آپ کے Google اکاؤنٹ میں محفوظ کردہ تمام سیکیورٹی کوڈز کو حذف کر دیا جائے گا</translation>
 <translation id="6937524809504266803">ذاتی نوعیت سازی اور لنک کرنا</translation>
+<translation id="6937876069006524083">عرفی نام (اختیاری)</translation>
 <translation id="6942665639005891494">ترتیبات کا مینیو اختیار استعمال کر کے ڈاؤن لوڈ کا ڈیفالٹ مقام کسی بھی وقت تبدیل کریں</translation>
 <translation id="694267552845942083">آپ فی الحال اپنی مطابقت پذیری کی ترتیبات کو حسب ضرورت بنا رہے ہیں۔ مطابقت پذیری آن کرنے کا عمل مکمل کرنے کیلئے، اسکرین کے نچلے حصے کے پاس موجود 'تصدیق کریں' بٹن پر تھپتھپائیں۔ اوپر نیویگیٹ کریں</translation>
 <translation id="6945221475159498467">منتخب کریں</translation>
@@ -1276,6 +1281,7 @@
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> ٹیبز کو پس منظر کے نئے ٹیبز کے بطور بحال کریں۔</translation>
 <translation id="7217781228893594884">‏آپ کے Chrome چھوڑنے پر پوشیدگی ٹیبز مقفل ہو جائیں گی</translation>
 <translation id="7221869452894271364">یہ صفحہ دوبارہ لوڈ کریں</translation>
+<translation id="7224097611345298931">‏‫Chrome اور <ph name="CHROME_CHANNEL" /> کے لیے صرف اس آلے پر محفوظ کردہ سبھی پاس ورڈز ضم کر دیے گئے۔ آپ دونوں ایپس پر اپنے تمام محفوظ کردہ پاس ورڈز کو آٹو فل کر سکتے ہیں۔</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 ڈاؤن لوڈ زير التوا ہے}other{# ڈاؤن لوڈز زير التوا ہیں}}</translation>
 <translation id="72415438529550637">پاس ورڈ کی تجویز بند ہے۔</translation>
 <translation id="7252076891734325316">اپنا فون کمپیوٹر کے قریب رکھیں</translation>

@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">בצבע צהוב פסטל</translation>
 <translation id="1056898198331236512">אזהרה</translation>
 <translation id="1059913517121127803">לא ניתן היה להתחיל את הסריקה</translation>
+<translation id="1061864016440983342">שימוש ללא מיקום</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> מתוך <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">זוהתה חומת אש</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">הגדרות נוספות</translation>
 <translation id="2082932131694554252">מקש המקלדת שהוקצה</translation>
 <translation id="2085089206770112532">הפחתת הבהירות של התצוגה</translation>
+<translation id="2086091080968010660">יכול להיות ששינויים שמבוססים על זמן לא יהיו מדויקים. צריך להפעיל את הגישה למיקום בהגדרות המערכת.</translation>
 <translation id="2102231663024125441">עריכת טקסט</translation>
 <translation id="2105810540595158374">המכשיר הוא שלט לגיימינג.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, גרסה <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">שחזור ברירות המחדל</translation>
 <translation id="2286454467119466181">פשוט</translation>
 <translation id="2287186687001756809">אין תמונה זמינה. כדי להוסיף תמונה, צריך לעבור אל <ph name="LINK" /></translation>
+<translation id="2294577623958216786">לוח הזמנים הנוכחי מוגדר ל-<ph name="SUNRISE" />-<ph name="SUNSET" />. כדי לעדכן באופן אוטומטי את לוחות הזמנים של השקיעה והזריחה, צריך להפעיל את הגישה למיקום בהגדרות המערכת.</translation>
 <translation id="2305172810646967500">שחור</translation>
 <translation id="2307344026739914387">שימוש בזוג המפתחות הנוכחי</translation>
 <translation id="2308243864813041101">‏כדי להמשיך בתהליך העדכון, צריך לנתק את כבל ה-USB של <ph name="DEVICE_NAME" /></translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">בהירות המקלדת</translation>
 <translation id="6412715219990689313">מקלדת מובנית</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="6419454453018688975">צריך להפעיל את הגישה למיקום בהגדרות המערכת</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">חלש (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">מעבר אל הגדרות החשבון</translation>
@@ -1094,7 +1098,7 @@
 <translation id="7118522231018231199">‏חשוב לבחור נקודות APN שסופקו על ידי ספק הסלולר או האדמין. בחירת ה-APN תשבית את כל נקודות ה-APN בהתאמה אישית. נקודות APN לא תקינות עלולות לשבש את החיבור לרשת הסלולרית.</translation>
 <translation id="7119389851461848805">הפעלה</translation>
 <translation id="7129287270910503851">נתוני השימוש בחבילת הגלישה יאופסו מדי חודש ביום הזה</translation>
-<translation id="7130438335435247835">‏שם נקודת גישה (APN)</translation>
+<translation id="7130438335435247835">‏שם נקודת הגישה (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{שרת שמות}one{שרתי שמות}two{שרתי שמות}other{שרתי שמות}}</translation>
 <translation id="7135814714616751706">חיפוש מקשי קיצור</translation>
 <translation id="7143207342074048698">מתבצע חיבור</translation>
@@ -1158,7 +1162,7 @@
 <translation id="7415801143053185905">‏משך זמן ההמתנה ל-HTTP ארוך מאוד</translation>
 <translation id="7425037327577270384">עזרה בכתיבה</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7438298994385592770">‏לא ניתן להשבית או להסיר את ה-APN הזה. צריך לוודא שפריטי ה-APN ב<ph name="ATTACH" /> שהופעלו הושבתו או הוסרו.</translation>
+<translation id="7438298994385592770">‏לא ניתן להשבית או להסיר את ה-APN הזה. צריך להשבית או להסיר את פריטי ה-APN שהופעלו מסוג '<ph name="ATTACH" />'.</translation>
 <translation id="7458970041932198923">כדי לראות ולהגדיר דמויות, צריך להתחבר לרשת ולטעון מחדש את הדף.</translation>
 <translation id="7469648432129124067">זוהה פורטל</translation>
 <translation id="7481312909269577407">קדימה</translation>

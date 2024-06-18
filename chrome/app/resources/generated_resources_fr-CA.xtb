@@ -301,7 +301,6 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1211769675100312947">Vous organisez les raccourcis vous-même</translation>
 <translation id="1213254615020057352">Envoyer les données d'utilisation et de diagnostic. Aidez-nous à améliorer l'expérience Android de votre enfant en envoyant automatiquement à Google des données de diagnostic, de l'appareil et d'utilisation des applications. L'envoi de ces données ne sera pas utilisé pour identifier votre enfant, mais pour assurer la stabilité du système et des applications, et pour apporter d'autres améliorations. Certaines données collectées contribueront également à améliorer les applications Google et aideront nos partenaires, comme les développeurs Android. Ce paramètre est appliqué par le propriétaire du compte. C'est à lui de choisir d'envoyer ou non à Google les données de diagnostic et d'utilisation de cet appareil. Si le paramètre relatif aux autres activités sur le Web et dans les applications est activé pour votre enfant, ces données peuvent être enregistrées dans son compte Google.</translation>
 <translation id="1213726621272705156">Vous ne verrez plus de cartes sur cette page</translation>
-<translation id="121384500095351701">Ce fichier ne peut pas être téléchargé de manière sécuritaire</translation>
 <translation id="1214004433265298541">Certificat fourni par votre administrateur qui peut afficher les authentifiants pour <ph name="DOMAIN" /></translation>
 <translation id="1215411991991485844">Nouvelle application en arrière-plan ajoutée</translation>
 <translation id="1216542092748365687">Supprimer l'empreinte digitale</translation>
@@ -2081,7 +2080,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2489829450872380594">La prochaine fois, un nouveau téléphone déverrouillera votre <ph name="DEVICE_TYPE" />. Vous pouvez désactiver Smart Lock dans le menu Paramètres.</translation>
 <translation id="2489918096470125693">Ajouter un &amp;dossier...</translation>
 <translation id="2489931062851778802">Appuyez sur ces touches sur votre <ph name="DEVICE_NAME" /></translation>
-<translation id="2490481887078769936">« <ph name="FILE_NAME" /> » a été supprimé de la liste</translation>
 <translation id="249098303613516219">Données relatives aux sites sur l'appareil autorisées</translation>
 <translation id="249113932447298600">Désolés, le périphérique <ph name="DEVICE_LABEL" /> n'est pas compatible pour le moment.</translation>
 <translation id="2491587035099903063">Aperçu de la voix pour <ph name="LANGUAGE" /></translation>
@@ -2474,7 +2472,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="2772936498786524345">Sournois</translation>
 <translation id="2773288106548584039">Prise en charge de navigateurs hérités</translation>
 <translation id="2773621783913034737">Rendre les onglets inactifs</translation>
-<translation id="2773802008104670137">Ce type de fichier peut endommager votre ordinateur.</translation>
 <translation id="2775104091073479743">Modifier les empreintes digitales</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Retirer 1 application non prise en charge}one{Retirer # application non prise en charge}other{Retirer # applications non prises en charge}}</translation>
 <translation id="2776515114087183002">Afficher les sites</translation>
@@ -3637,7 +3634,6 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3654682977761834281">Données des sites intégrés</translation>
 <translation id="3656328935986149999">Vitesse du curseur</translation>
 <translation id="3658871634334445293">Accélération TrackPoint</translation>
-<translation id="3659550105763988702">Utilisez votre clé d'accès pour <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Vous avez entré un trop grand nombre de codes d'accès incorrects. Réessayez plus tard</translation>
 <translation id="3660234220361471169">Non fiable</translation>
 <translation id="3661106764436337772">Écrire plus vite et avec plus de confiance</translation>
@@ -3730,7 +3726,6 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3719245268140483218">Événement de l'appareil</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> a été rempli.</translation>
 <translation id="3719826155360621982">Page d'accueil</translation>
-<translation id="3720543739123045680">D'autres onglets partagent un processus avec cet onglet, ce qui peut entraîner une utilisation inattendue des outils pour les développeurs.</translation>
 <translation id="372062398998492895">Imprimantes CUPS</translation>
 <translation id="3721119614952978349">Vous et Google</translation>
 <translation id="3721178866505920080">Plus de renseignements sur l'activation du préchargement étendu</translation>
@@ -5327,7 +5322,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4903967893652864401">Ce mode prolonge l'autonomie de la pile en limitant l'activité en arrière-plan et les effets visuels comme le défilement fluide.</translation>
 <translation id="4906490889887219338">Configurez ou gérez les partages de fichiers sur le réseau. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Choisir quand cette extension peut lire et modifier vos données relatives aux sites</translation>
-<translation id="4907161631261076876">Ce fichier n'est pas souvent téléchargé et peut être dangereux.</translation>
 <translation id="4908811072292128752">Ouvrez un nouvel onglet pour naviguer sur deux sites en même temps</translation>
 <translation id="4909038193460299775">Comme ce compte est géré par <ph name="DOMAIN" />, vos favoris, votre historique, vos mots de passe et autres paramètres seront supprimés de cet appareil. Cependant, vos données resteront stockées dans votre compte Google et peuvent être gérées sur <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">L'application est déjà installée</translation>
@@ -6680,7 +6674,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="5935158534896975820">Préparation de la requête de signature du certificat (en attente du serveur)</translation>
 <translation id="5935656526031444304">Gérer la navigation sécurisée</translation>
 <translation id="5936065461722368675">Traduire la page entière</translation>
-<translation id="5937347877659196749">Ensuite, protégez tous vos clés d'accès avec un NIP de récupération</translation>
 <translation id="5937977334791924341">Logo de <ph name="APP" /></translation>
 <translation id="5938002010494270685">Mise à niveau de sécurité disponible</translation>
 <translation id="5939518447894949180">Recommencer</translation>
@@ -7442,7 +7435,6 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6530030995840538405">Image <ph name="INDEX" /> de <ph name="SUBJECT" /> générée</translation>
 <translation id="6530186581263215931">Ces paramètres sont imposés par votre administrateur</translation>
 <translation id="6530267432324197764">Profil géré par <ph name="MANAGER" /></translation>
-<translation id="6531282281159901044">Conserver le fichier dangereux</translation>
 <translation id="6532101170117367231">Enregistrer dans Google Disque</translation>
 <translation id="6532106788206463496">Enregistrer les modifications</translation>
 <translation id="6532206849875187177">Sécurité et connexion</translation>
@@ -7490,6 +7482,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="6557290421156335491">Mes raccourcis</translation>
 <translation id="6560061709899140565">Afficher d'autres sessions de diffusion</translation>
 <translation id="6560151649238390891">Suggestion insérée</translation>
+<translation id="656065428026159829">En voir plus</translation>
 <translation id="6561726789132298588">entrée</translation>
 <translation id="6562117348069327379">Stocker les journaux système dans le répertoire Téléchargements.</translation>
 <translation id="656293578423618167">Le chemin d'accès ou le nom du fichier est trop long. Veuillez raccourcir le nom ou enregistrer le fichier à un autre endroit.</translation>
@@ -9004,7 +8997,6 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7701040980221191251">Aucun</translation>
 <translation id="7701869757853594372">Descripteurs de l'UTILISATEUR</translation>
 <translation id="7702463352133825032">Arrêter la diffusion sur <ph name="DEVICE_NAME" /></translation>
-<translation id="7702574632857388784">Supprimer <ph name="FILE_NAME" /> de la liste</translation>
 <translation id="7704305437604973648">Tâche</translation>
 <translation id="7704521324619958564">Ouvrir Google Play Store</translation>
 <translation id="7705276765467986571">Échec de chargement du modèle de favori.</translation>
@@ -9452,6 +9444,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8022466874160067884">Entrez votre compte Google et votre mot de passe</translation>
 <translation id="8023133589013344428">Gérer les langues dans les paramètres de Chrome OS Flex</translation>
 <translation id="8023801379949507775">Mettre à jour les extensions maintenant</translation>
+<translation id="8024161440284949905">Continuer avec ces onglets</translation>
 <translation id="8025151549289123443">Écran de verrouillage et connexion</translation>
 <translation id="8025291188699172126">À propos des mises à jour</translation>
 <translation id="8026471514777758216">Tous vos appareils</translation>

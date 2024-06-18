@@ -899,6 +899,7 @@ Niektoré funkcie sú obmedzené, aby sa predĺžila výdrž batérie.</translat
 <translation id="4381031910344220229">Týmto povolíte prístup k mikrofónu aplikácii <ph name="APP_NAME" /> a všetkým aplikáciám a webom s povolením používať mikrofón</translation>
 <translation id="4382340674111381977">Prejsť na predchádzajúcu stranu</translation>
 <translation id="4389184120735010762">Stlačili ste klávesovú skratku ukotvenej lupy. Chcete ju zapnúť?</translation>
+<translation id="4394466652057229831">Zhŕňajte kliknutím pravým tlačidlom</translation>
 <translation id="439598569299422042">Pozastavené, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Záznam z obrazovky sa nedá uložiť</translation>
 <translation id="4405151984121254935">Pripojený typ periférie nie je podporovaný</translation>
@@ -1933,6 +1934,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8113423164597455979">Zap., vš. apl.</translation>
 <translation id="8113515504791187892">Tlačidlo počúvania vybraného textu</translation>
 <translation id="8120151603115102514">Telefón nemá zámku obrazovky. Ak chcete Chromebook odomknúť, zadajte heslo.</translation>
+<translation id="8120249852906205273">Reštartovať</translation>
 <translation id="8127095419621171197">Otvorenie aplikácie Kalkulačka</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
 <translation id="8130528849632411619">Prechod na začiatok dokumentu</translation>
@@ -2027,6 +2029,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="85123341071060231">V Chromebooku je vypnuté rozhranie Bluetooth. Ak chcete Chromebook odomknúť, zadajte heslo.</translation>
 <translation id="8513108775083588393">Aut. otáčanie</translation>
 <translation id="851458219935658693">Prepínač je prepnutý na možnosť zobrazenia okien z aktuálnej plochy</translation>
+<translation id="851660987304951246">Rýchlo si zhŕňajte obsah alebo sa pýtajte pomocou asistenta pri čítaní</translation>
 <translation id="8517041960877371778">Vaše zariadenie <ph name="DEVICE_TYPE" /> sa nemusí nabíjať, keď je zapnuté.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Vstup mikrofónu ovláda <ph name="APP_NAME" />}few{Vstup mikrofónu ovládajú # aplikácie}many{Mic input controlled by # apps}other{Vstup mikrofónu ovláda # aplikácií}}</translation>
 <translation id="8535393432370007982">Vrátiť späť poradie zoradenia podľa farby</translation>

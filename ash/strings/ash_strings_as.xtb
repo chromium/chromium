@@ -903,6 +903,7 @@
 <translation id="4381031910344220229">এইটোৱে <ph name="APP_NAME" /> আৰু মাইক্ৰ’ফ’নৰ অনুমতি থকা আটাইবোৰ এপ্‌ আৰু ৱেবছাইটৰ বাবে মাইক্ৰ’ফ’ন এক্সেছ কৰাৰ অনুমতি দিয়ে</translation>
 <translation id="4382340674111381977">পূর্বৱর্তী পৃষ্ঠালৈ উভতি যাওক</translation>
 <translation id="4389184120735010762">আপুনি ড'ক কৰা বিৱৰ্ধকৰ বাবে কীব'ৰ্ডৰ শ্বৰ্টকাট টিপিছে। আপুনি এইটো অন কৰিব খোজেনে?</translation>
+<translation id="4394466652057229831">সাৰাংশ লাভ কৰিবলৈ ৰাইট-ক্লিক কৰক</translation>
 <translation id="439598569299422042">পজ কৰা আছে, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">স্ক্ৰীনকাষ্ট ছেভ কৰিব পৰা নগ’ল</translation>
 <translation id="4405151984121254935">সংযোজিত পৰিধীয় ডিভাইচৰ প্ৰকাৰটো সমৰ্থিত নহয়</translation>
@@ -1939,6 +1940,7 @@
 <translation id="8113423164597455979">অন, সকলো এপতে</translation>
 <translation id="8113515504791187892">কথা ক’বলৈ বাছনি কৰক বুটাম</translation>
 <translation id="8120151603115102514">আপোনাৰ ফ’নটোত বন্ধ স্ক্ৰীন নাই। আপোনাৰ Chromebook আনলক কৰিবলৈ পাছৱৰ্ড দিয়ক।</translation>
+<translation id="8120249852906205273">ৰিষ্টাৰ্ট কৰক</translation>
 <translation id="8127095419621171197">কেলকুলেটৰ এপ্‌টো খোলক</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
 <translation id="8130528849632411619">দস্তাবেজৰ আৰম্ভণিলৈ যাওক</translation>
@@ -2033,6 +2035,7 @@
 <translation id="85123341071060231">আপোনাৰ Chromebookৰ ব্লুটুথ অফ হৈ আছে। আপোনাৰ Chromebook আনলক কৰিবলৈ পাছৱৰ্ড দিয়ক।</translation>
 <translation id="8513108775083588393">স্বয়ং-ঘূৰ্ণন</translation>
 <translation id="851458219935658693">বৰ্তমানৰ ডেস্ক ম'ডটোৰ পৰা ৱিণ্ড' দেখুৱাওক, ৰেডিঅ’ বুটাম বাছনি কৰা হ'ল</translation>
+<translation id="851660987304951246">দ্ৰুতভাৱে সমলৰ সাৰাংশ পাবলৈ বা প্ৰশ্ন সুধিবলৈ হেল্প মী ৰীড সুবিধাটো ব্যৱহাৰ কৰক</translation>
 <translation id="8517041960877371778">আপোনাৰ <ph name="DEVICE_TYPE" /> অন কৰি থোৱা অৱস্থাত চার্জ নহ'ব পাৰে।</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{<ph name="APP_NAME" />এ মাইকৰ ইনপুট নিয়ন্ত্ৰণ কৰে}one{# টা এপে মাইকৰ ইনপুট নিয়ন্ত্ৰণ কৰে}other{# টা এপে মাইকৰ ইনপুট নিয়ন্ত্ৰণ কৰে}}</translation>
 <translation id="8535393432370007982">ৰং অনুসৰি সজোৱাটো আনডু কৰক</translation>

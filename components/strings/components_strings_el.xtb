@@ -1011,6 +1011,7 @@
 <translation id="2930577230479659665">Περικοπή μετά από κάθε αντίγραφο</translation>
 <translation id="2933624813161016821">Ανάγλυφο φύλλο αλουμινίου</translation>
 <translation id="2938225289965773019">Άνοιγμα συνδέσμων <ph name="PROTOCOL" /></translation>
+<translation id="2941112035454246133">Χαμηλή</translation>
 <translation id="2941878205777356567">Φάκελος 9 x 12 ίντσες</translation>
 <translation id="2941952326391522266">Ο διακομιστής δεν μπόρεσε να αποδείξει ότι είναι <ph name="DOMAIN" />. Το πιστοποιητικό ασφαλείας του είναι από το <ph name="DOMAIN2" />. Αυτό μπορεί να οφείλεται σε λανθασμένη ρύθμιση ή σε κάποιον τρίτο που επιτίθεται στη σύνδεσή σας.</translation>
 <translation id="2942492342931589800">Απλό</translation>
@@ -2223,7 +2224,6 @@
 <translation id="5263867360296733198">Απαιτείται έλεγχος πριν από τη μεταφόρτωση</translation>
 <translation id="5266128565379329178">Βιβλιοδεσία στο επάνω μέρος</translation>
 <translation id="5269225904387178860">Τετραπλό τρύπημα στο κάτω μέρος</translation>
-<translation id="5269999699920406580">Οι λειτουργίες που ισχύουν για ολόκληρο το σύστημα μπορούν να οριστούν μόνο από τον κάτοχο: <ph name="OWNER_EMAIL" />.</translation>
 <translation id="5271381225185906340">Το στοιχείο <ph name="DATA_CONTROLS_ATTRIBUTE" /> δεν είναι υποστηριζόμενη συνθήκη για το στοιχείο <ph name="DATA_CONTROLS_RESTRICTION" /></translation>
 <translation id="5273658854610202413">Προειδοποίηση: Αυτή η πολιτική δεν συγχωνεύτηκε, όπως ορίζεται στην πολιτική PolicyDictionaryMultipleSourceMergeList, επειδή δεν ανήκει στις πολιτικές λεξικού που μπορούν να συγχωνευτούν.</translation>
 <translation id="5279286380302340275">Διαχείριση στοιχείων λήψης</translation>

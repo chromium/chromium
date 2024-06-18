@@ -422,6 +422,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{လိပ်စာ <ph name="BOOKMARKS_COUNT_ONE" /> ခု}other{လိပ်စာ <ph name="BOOKMARKS_COUNT_MANY" /> ခု}}</translation>
 <translation id="3062802207422175757">Chrome ရှိ သင်စိတ်ဝင်စားသော ဆောင်းပါးများ</translation>
 <translation id="3066573403916685335">အောက်သို့ရွှေ့</translation>
+<translation id="3067505415088964188">ဈေးနှုန်း နိမ့်သည်</translation>
 <translation id="3070005020161560471">အလိုအလျောက် ဘာသာပြန်ပါ</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> ကို Chrome တွင် ဖွင့်ပါမည်။ ရှေ့ဆက်ခြင်းဖြင့် သင်သည် <ph name="BEGIN_LINK1" />Google ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK1" /> နှင့် <ph name="BEGIN_LINK2" />Google Chrome နှင့် ChromeOS ထပ်တိုး ဝန်ဆောင်မှုစည်းမျဉ်းများ<ph name="END_LINK2" /> ကို သဘောတူရာရောက်သည်။ <ph name="BEGIN_LINK3" />ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK3" /> အတွက်လည်း အကျုံးဝင်သည်။</translation>
 <translation id="3080525922482950719">စာမျက်နှာများကို နောက်မှဖတ်ရန် သို့မဟုတ် အော့ဖ်လိုင်းတွင်ဖတ်ရန် သိမ်းနိုင်သည်</translation>

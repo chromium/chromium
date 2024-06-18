@@ -1015,6 +1015,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2930577230479659665">Skraćivanje nakon svakog primjerka</translation>
 <translation id="2933624813161016821">Reljefna folija</translation>
 <translation id="2938225289965773019">Otvoriti linkove protokola <ph name="PROTOCOL" /></translation>
+<translation id="2941112035454246133">Niska</translation>
 <translation id="2941878205777356567">Koverta 9 x 12 in</translation>
 <translation id="2941952326391522266">Ovaj server nije uspio dokazati da je <ph name="DOMAIN" />. Njegova potvrda sigurnosti je s domene <ph name="DOMAIN2" />. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu.</translation>
 <translation id="2942492342931589800">Neformalno</translation>
@@ -2235,7 +2236,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5263867360296733198">Potreban je pregled prije otpremanja</translation>
 <translation id="5266128565379329178">Povezivanje gornje strane</translation>
 <translation id="5269225904387178860">Četverostruko bušenje donje strane</translation>
-<translation id="5269999699920406580">Funkcije koje se primjenjuju na cijeli sistem može postaviti samo vlasnik: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" nije podržano stanje za "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="5273658854610202413">Upozorenje: Ovo pravilo nije objedinjeno kao što je navedeno u pravilu PolicyDictionaryMultipleSourceMergeList jer nije sastavni dio pravila rječnika koja je moguće objediniti.</translation>
 <translation id="5279286380302340275">Upravljajte preuzimanjima</translation>
@@ -3079,7 +3079,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6915804003454593391">Korisnik:</translation>
 <translation id="6916193791494646625">Navedite razlog za preuzimanje (obavezno)</translation>
 <translation id="6917795328362592458">Lozinka koju ste upravo koristili pronađena je prilikom narušavanja podataka. Da osigura vaše račune, Upravitelj lozinki preporučuje da provjerite sačuvane lozinke.</translation>
-<translation id="6924013822850225188">Odaberite hoće li se prilikom naplate prikazivati pogodnosti kartice (primjenjuju se bankovni uvjeti)</translation>
+<translation id="6924013822850225188">Odaberite hoće li vam se prikazivati pogodnosti kartice prilikom nastavka na plaćanje (primjenjuju se uslovi banke)</translation>
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Body art</translation>
 <translation id="692638818576287323">Komercijalna vozila</translation>

@@ -1011,6 +1011,7 @@
 <translation id="2930577230479659665">ପ୍ରତ୍ୟେକ କପି ପରେ ଟ୍ରିମ୍ କରନ୍ତୁ</translation>
 <translation id="2933624813161016821">ଏମ୍ବସିଂ ଫଏଲ</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> ଲିଙ୍କ୍‌ ଖୋଲନ୍ତୁ</translation>
+<translation id="2941112035454246133">କମ୍</translation>
 <translation id="2941878205777356567">ଏନଭେଲପ 9 x 12 in</translation>
 <translation id="2941952326391522266">ଏହା <ph name="DOMAIN" /> ଅଟେ ବୋଲି ଏହି ସର୍ଭର୍ ପ୍ରମାଣ କରିପାରିଲା ନାହିଁ; ଏହାର ସୁରକ୍ଷା ସାର୍ଟିଫିକେଟ୍ <ph name="DOMAIN2" /> ତରଫରୁ ଅଟେ। ଏହା ଏକ ଭୁଲ କନଫିଗ୍‌ରେସନ୍ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କର ସଂଯୋଗକୁ ପ୍ରତିରୋଧ କରୁଥିବା ଯୋଗୁଁ ହୋଇଥାଇପାରେ।</translation>
 <translation id="2942492342931589800">କାଜୁଆଲ</translation>
@@ -2219,7 +2220,6 @@
 <translation id="5263867360296733198">ଅପଲୋଡ କରିବା ପୂର୍ବରୁ ସମୀକ୍ଷା କରିବା ଆବଶ୍ୟକ</translation>
 <translation id="5266128565379329178">ଉପର ପଟରେ ବାଇଣ୍ଡ</translation>
 <translation id="5269225904387178860">ତଳ ପଟରେ ଚାରୋଟି ପଞ୍ଚ୍</translation>
-<translation id="5269999699920406580">ଯେଉଁ ଫିଚର୍‌ଗୁଡ଼ିକ ସିଷ୍ଟମ୍ ସାରା ଲାଗୁ ହୋଇଥାଏ ତାହା କେବଳ ଏହି ମାଲିକଙ୍କ ଦ୍ୱାରା ସେଟ୍ କରାଯାଇପାରିବ: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_RESTRICTION" />" ପାଇଁ "<ph name="DATA_CONTROLS_ATTRIBUTE" />" ଏକ ସମର୍ଥିତ ସର୍ତ୍ତ ନୁହେଁ</translation>
 <translation id="5273658854610202413">ଚେତାବନୀ: ଏହି ନୀତିକୁ ନିର୍ଦ୍ଦିଷ୍ଟ କରାଯାଇଥିବା PolicyDictionaryMultipleSourceMergeList ନୀତିରେ ମିଶାଯାଇ ନଥିଲା କାରଣ ଏହା ଏକ ଅଭିଧାନ ନୀତିରେ ମିଶ୍ରଣ କରାଯିବାର ଅଂଶ ନୁହେଁ।</translation>
 <translation id="5279286380302340275">ଡାଉନଲୋଡଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
@@ -3059,6 +3059,7 @@
 <translation id="6915804003454593391">ୟୁଜର:</translation>
 <translation id="6916193791494646625">ଡାଉନଲୋଡ କରିବାର କାରଣ ପ୍ରଦାନ କରନ୍ତୁ (ଆବଶ୍ୟକ)</translation>
 <translation id="6917795328362592458">ଆପଣ ଏବେ ବ୍ୟବହାର କରିଥିବା ପାସୱାର୍ଡ ଏକ ଡାଟା ଉଲ୍ଲଙ୍ଘନରେ ମିଳିଛି। ଆପଣଙ୍କ ଆକାଉଣ୍ଟଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ ରଖିବା ପାଇଁ, Password Manager ଆପଣ ସେଭ କରିଥିବା ପାସୱାର୍ଡଗୁଡ଼ିକର ଯାଞ୍ଚ କରିବାକୁ ସୁପାରିଶ କରେ।</translation>
+<translation id="6924013822850225188">ଚେକଆଉଟ ବେଳେ ଆପଣଙ୍କ କାର୍ଡର ଲାଭଗୁଡ଼ିକୁ ଆପଣ ଦେଖିବେ ନା ନାହିଁ ତାହା ବାଛନ୍ତୁ (ବେଙ୍କର ସର୍ତ୍ତାବଳୀ ପ୍ରଯୁଜ୍ୟ)</translation>
 <translation id="6925267999184670015">ନର୍ଥ ଆମେରିକାନ B+</translation>
 <translation id="6926216138694948720">ବଡି ଆର୍ଟ</translation>
 <translation id="692638818576287323">କମର୍ସିଆଲ ଗାଡ଼ି</translation>
@@ -3828,6 +3829,7 @@
 <translation id="830498451218851433">ଅଧା ଫୋଲ୍ଡ କରନ୍ତୁ</translation>
 <translation id="8308653357438598313">ଲାଇଭ ଭିଡିଓ ଷ୍ଟ୍ରିମିଂ</translation>
 <translation id="8311895354659782580">ରିଅଲ ଇଷ୍ଟେଟ ତାଲିକାକରଣ</translation>
+<translation id="8312841338723044391">ଲାଇଭ</translation>
 <translation id="8316555157357957253">ବର୍ତ୍ତମାନ ବ୍ୟବହାର କରାଯାଉଛି</translation>
 <translation id="8319269383395457801">ରେସିଡେଣ୍ଟ ସେଲ୍ସ</translation>
 <translation id="831997045666694187">ସନ୍ଧ୍ୟା</translation>

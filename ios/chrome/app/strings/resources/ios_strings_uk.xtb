@@ -532,6 +532,7 @@
 <translation id="371398631992790800">Сховати опцію "Закладки"</translation>
 <translation id="37207012422556617">Популярні запити</translation>
 <translation id="3725081662140949903">Щоб заборонити іншим користувачам використовувати ваш пароль, змініть його в додатку <ph name="APP" /></translation>
+<translation id="372676576864368480">Автоматично заповнити номер картки, що закінчується на <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Створено <ph name="DATE" /></translation>
 <translation id="374357899112510277">Сховати опцію "Завантаження"</translation>
 <translation id="3745190878148784130">Сховати опцію "Масштабувати текст"</translation>
@@ -1097,6 +1098,7 @@
 <translation id="6476800141292307438">Сторінка перекладається такою мовою: <ph name="LANGUAGE" />. Параметри розташовано внизу екрана.</translation>
 <translation id="648164694371393720">Помилка автентифікації</translation>
 <translation id="6494931198667773526">Завершення</translation>
+<translation id="6500795388871406244">Використати запропонований пароль:</translation>
 <translation id="650279896687777322">Докладніше…</translation>
 <translation id="6505334220040167806">Згорнути групу вкладок.</translation>
 <translation id="6507973708545996744">Увійдіть в обліковий запис, щоб мати доступ до списку читання на всіх своїх пристроях.</translation>
@@ -1310,6 +1312,7 @@
 <translation id="7583004045319035904">Використовуйте <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />, щоб розблоковувати анонімні вкладки.</translation>
 <translation id="7598439272585186139">Увімкніть додатковий захист</translation>
 <translation id="7600965453749440009">Ніколи не перекладати з такої мови: <ph name="LANGUAGE" /></translation>
+<translation id="7603308509262646847">Автоматично заповнити ім’я власника картки (<ph name="NAME" />)</translation>
 <translation id="7603852183842204213">Сплив.вікна блок. (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">Групи вкладок</translation>
 <translation id="7607521702806708809">Видалити пароль</translation>
@@ -1342,6 +1345,7 @@
 <translation id="7749790401023484470">Ви не вибрали текст.</translation>
 <translation id="7752405526771734448">Візуальний пошук за допомогою Об’єктива</translation>
 <translation id="7756478488453921771">Меню → Налаштування → Способи оплати</translation>
+<translation id="775755486779745798">Автоматично заповнити місяць закінчення строку дії (<ph name="MONTH" />)</translation>
 <translation id="7760127703945531263">Блокування анонімних вкладок</translation>
 <translation id="7765158879357617694">Перемістити</translation>
 <translation id="7772032839648071052">Підтвердити парольну фразу</translation>
@@ -1518,6 +1522,7 @@
 <translation id="8556590991644167667">{count,plural, =1{Ви відхилили {count} попередження}one{Ви відхилили {count} попередження}few{Ви відхилили {count} попередження}many{Ви відхилили {count} попереджень}other{Ви відхилили {count} попередження}}</translation>
 <translation id="8560253818350321773">Спочатку показувати продукти, які часто використовуються.</translation>
 <translation id="8569721750632860947">Яку URL-адресу ви хочете додати в список читання?</translation>
+<translation id="8577056989960190117">Автоматично заповнити рік закінчення строку дії (<ph name="YEAR" />)</translation>
 <translation id="8588404856427128947">Вимкнено</translation>
 <translation id="8591976964826315682">Блокувати сторонні файли cookie в анонімному режимі</translation>
 <translation id="8593565399399144771">Тут ви можете відкрити нову вкладку.</translation>

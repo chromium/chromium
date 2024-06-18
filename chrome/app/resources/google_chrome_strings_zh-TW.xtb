@@ -251,6 +251,7 @@
 <translation id="4561051373932531560">Google Chrome 可讓你按一下網頁上的電話號碼，隨即透過 Skype 撥打電話！</translation>
 <translation id="4567424176335768812">你已使用 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入，可以在所有登入的裝置上使用你的書籤、記錄和其他設定。</translation>
 <translation id="4571503333518166079">前往 Chrome 通知設定</translation>
+<translation id="4575717501879784448">Chrome 可以讓這些分頁處於閒置狀態，改善瀏覽體驗並釋出資源。</translation>
 <translation id="459622048091363950">Chrome 取得存取權後，網站將可要求你授予存取權。</translation>
 <translation id="4600710005438004015">Chrome 無法更新至最新版本，因此你並未取得最新功能和安全性問題修正。</translation>
 <translation id="4624065194742029982">Chrome 無痕模式</translation>
@@ -263,7 +264,6 @@
 <translation id="4728575227883772061">安裝因不明錯誤而失敗。如果 Google Chrome 目前正在執行中，請將其關閉然後再試一次。</translation>
 <translation id="4747730611090640388">Chrome 可以推測你的興趣喜好。在此之後，你造訪的網站可以要求 Chrome 查看你的興趣喜好，以便向你放送個人化廣告。</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
-<translation id="4771048833395599659">這個檔案可能不安全，因此遭到 Chrome 封鎖。</translation>
 <translation id="479167709087336770">這會使用與 Google 搜尋相同的拼字檢查工具。系統會將你在瀏覽器中輸入的文字傳送給 Google。你隨時可以在設定中變更這項行為。</translation>
 <translation id="4793679854893018356">瞭解 Chrome 如何保護資料安全</translation>
 <translation id="4828579605166583682">Google Chrome 正嘗試更換現有密碼。如果允許，請輸入 Windows 密碼。</translation>
@@ -282,6 +282,7 @@
 <translation id="4970761609246024540">歡迎使用 Chrome 設定檔</translation>
 <translation id="4970880042055371251">Chrome OS 版本</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="4997044641749333913">Chrome 可以讓這些分頁處於閒置狀態，改善瀏覽體驗並維持快速運作。</translation>
 <translation id="5003967926796347400">按一下「Google 密碼管理工具」</translation>
 <translation id="5120334927898581447">登入其他 Google 服務時一併登入 Chrome</translation>
 <translation id="5126049312684316860">Chrome 會預先載入更多你可能會造訪的網頁，以便在你造訪時更快載入</translation>
@@ -344,6 +345,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="608006075545470555">在這個瀏覽器中新增工作資料夾</translation>
 <translation id="6097822892606850415">AI 可以讓你在撰寫內容時更有自信</translation>
 <translation id="6113794647360055231">Chrome 變得更好用了</translation>
+<translation id="6135456723633883042">這些分頁正在使用額外的資源。為提升效能，請讓 Chrome 將其設為閒置分頁。</translation>
 <translation id="6145313976051292476">在 Chrome 中開啟 PDF</translation>
 <translation id="6157638032135951407">由於 Chrome 資料閒置超過 <ph name="TIMEOUT_DURATION" />，貴機構已將其刪除。當中可能包含歷史記錄、自動填入的資料和下載內容。</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

@@ -301,7 +301,6 @@
 <translation id="1211769675100312947">አቋራጮች ተመርጠው የሚሰበሰቡት በእርስዎ ነው</translation>
 <translation id="1213254615020057352">የአጠቃቀም እና የምርመራ ውሂብ ይላኩ። የምርመራ፣ የመሣሪያ እና የመተግበሪያ አጠቃቀም ውሂብ በራስ-ሰር ወደ Google በመላክ የልጅዎን የAndroid ተሞክሮ እንዲሻሻል ያግዙ። ይህ ልጅዎን ለመለየት ሥራ ላይ አይውልም፣ እና የስርዓት እና የመተግበሪያ እርጋታን እና ሌሎች ማሻሻያዎችን ያግዛል። አንዳንድ ውሑድ ውሂብ እንዲሁም የGoogle መተግበሪያዎችን እና እንደ የAndroid ገንቢዎች ያሉ አጋሮችን ያግዛሉ። ይህ ቅንብር በባለቤቱ ተፈጻሚ ይደረጋል። ባለቤቱ የዚህ መሣሪያ የምርመራ እና የአጠቃቀም ለGoogle ለመላክ ሊመርጥ ይችላሉ። የተጨማሪ የድር እና መተግበሪያ እንቅስቃሴ ቅንብር ለልጅዎ በርቶ ከሆነ ይህ ውሂብ ወደ የGoogle መለያቸው ሊቀመጥ ይችላል።</translation>
 <translation id="1213726621272705156">በዚህ ገፅ ላይ ካርዶችን እንደገና አያዩም</translation>
-<translation id="121384500095351701">ይህ ፋይል ደህንነቱ በተጠበቀ ሁኔታ ሊወርድ አይችልም</translation>
 <translation id="1214004433265298541">ለ<ph name="DOMAIN" /> የመግቢያ ማስረጃዎችን ማየት ለሚችለው በአስተዳዳሪዎ የቀረበ የዕውቅና ማረጋገጫ</translation>
 <translation id="1215411991991485844">አዲስ የጀርባ መተግበሪያ ታክሏል</translation>
 <translation id="1216542092748365687">የጣት አሻራን አስወግድ</translation>
@@ -2088,7 +2087,6 @@
 <translation id="2489829450872380594">በሚቀጥለው ጊዜ አዲስ ስልክ ይህን <ph name="DEVICE_TYPE" /> ይከፍተዋል። በቅንብሮች ውስጥ Smart Lockን ማጥፋት ይችላሉ።</translation>
 <translation id="2489918096470125693">&amp;አቃፊ አክል...</translation>
 <translation id="2489931062851778802">እነዚህን ቁልፎች በ<ph name="DEVICE_NAME" /> ላይ ያስገቡ</translation>
-<translation id="2490481887078769936">«<ph name="FILE_NAME" />» ከዝርዝር ተወግዷል</translation>
 <translation id="249098303613516219">የመሣሪያ ላይ የጣቢያ ውሂብ ተፈቅዷል</translation>
 <translation id="249113932447298600">ይቅርታ፣ መሣሪያ <ph name="DEVICE_LABEL" /> በአሁኑ ጊዜ አይደገፍም።</translation>
 <translation id="2491587035099903063">የ<ph name="LANGUAGE" /> ድምጽ ቅድመ እይታ</translation>
@@ -2480,7 +2478,6 @@
 <translation id="2772936498786524345">Sneaky</translation>
 <translation id="2773288106548584039">የቆየ የአሳሽ ድጋፍ</translation>
 <translation id="2773621783913034737">ትሮችን አቦዝን</translation>
-<translation id="2773802008104670137">ይህ የፋይል ዓይነት የእርስዎን ኮምፒውተር ሊጎዳ ይችላል።</translation>
 <translation id="2775104091073479743">የጣት አሻራዎችን አርትዕ</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{ቅጥያ «<ph name="EXTENSION" />» መሣሪያዎችን እየደረሰ ነበር}=1{ቅጥያ «<ph name="EXTENSION" />» {0} መሣሪያ እየደረሰ ነው}one{ቅጥያ «<ph name="EXTENSION" />» {0} መሣሪያ እየደረሰ ነው}other{ቅጥያ «<ph name="EXTENSION" />» {0} መሣሪያዎችን እየደረሰ ነው}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{1 የማይደገፍ መተግበሪያን አስወግድ}one{# የማይደገፉ መተግበሪያዎችን አስወግድ}other{# የማይደገፉ መተግበሪያዎችን አስወግድ}}</translation>
@@ -3642,7 +3639,6 @@
 <translation id="3654682977761834281">ከተከተቱ ጣቢያዎች የመጣ ውሂብ</translation>
 <translation id="3656328935986149999">የጠቋሚ ፍጥነት</translation>
 <translation id="3658871634334445293">የTrackPoint ማፋጠኛ</translation>
-<translation id="3659550105763988702">ለ<ph name="APP_NAME" /> የራስዎን የይለፍ ቁልፍ ይጠቀሙ</translation>
 <translation id="3659929705630080526">የተሳሳተ የመዳረሻ ኮድ ብዙ ጊዜ አስገብተዋል። ቆይተው እንደገና ይሞክሩ</translation>
 <translation id="3660234220361471169">የማይታመን</translation>
 <translation id="3661106764436337772">በፍጥነት እና በበለጠ በራስ መተማመን ይጻፉ</translation>
@@ -3735,7 +3731,6 @@
 <translation id="3719245268140483218">የመሣሪያ ክስተት</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> ተሞልቷል።</translation>
 <translation id="3719826155360621982">መነሻ ገፅ</translation>
-<translation id="3720543739123045680">ሌሎች ትሮች ከዚህ ትር ጋር ሂደት ይጋራሉ፣ ይህም ያልተጠበቀ የDevTools ተሞክሮን ሊያስከትል ይችላል።</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">እርስዎ እና Google</translation>
 <translation id="3721178866505920080">የተራዘመ ቅድሚያ መጫንን ስለማብራት ተጨማሪ መረጃ</translation>
@@ -5330,7 +5325,6 @@
 <translation id="4903967893652864401">ይህ እንደ ለስላሳ ሽብለላ ያሉ የዳራ እንቅስቃሴ እና ምስላዊ ተጽዕኖዎችን በመገደብ የባትሪ ኃይልን ያራዝማል።</translation>
 <translation id="4906490889887219338">የአውታረ መረብ ፋይል ማጋራቶችን ያዋቅሩ ወይም ያቀናብሩ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">ይህ ቅጥያ የጣቢያዎን ውሂብ ማንበብ እና መለወጥ በሚችልበት ጊዜ ይምረጡ</translation>
-<translation id="4907161631261076876">ይህ ፋይል በተለምዶ የሚወርድ አይደለም፣ እና አደገኛ ሊሆን ይችላል።</translation>
 <translation id="4908811072292128752">በአንዴ ሁለት ጣቢያዎችን ለማሰስ አዲስ ትር ይክፈቱ</translation>
 <translation id="4909038193460299775">ይህ መለያ የሚቀናበረው በ<ph name="DOMAIN" /> ስለሆነ የእርስዎ ዕልባቶች፣ ታሪክ፣ የይለፍ ቃላት እና ሌሎች ቅንብሮች ከዚህ መሣሪያ ይጸዳሉ። ይሁንና፣ የእርስዎ ውሂብ በGoogle መለያ ላይ እንዳለ የሚቀር ሲሆን በ<ph name="BEGIN_LINK" />Google ዳሽቦርድ<ph name="END_LINK" /> ላይ መቀናበር ይችላል።</translation>
 <translation id="4910241725741323970">መተግበሪያው አስቀድሞ ተጭኗል</translation>
@@ -6684,7 +6678,6 @@
 <translation id="5935158534896975820">የዕውቅና ማረጋገጫ ፊርማ ጥያቄን በማዘጋጀት ላይ (በአገልጋይ ላይ በመጠበቅ ላይ)</translation>
 <translation id="5935656526031444304">የጥንቃቄ አሰሳን አቀናብር</translation>
 <translation id="5936065461722368675">ሙሉ ገጹን ተርጉም</translation>
-<translation id="5937347877659196749">በመቀጠል ሁሉንም የይለፍ ቁልፎችዎ በመልሶ ማግኛ ፒን ይጠብቁ</translation>
 <translation id="5937977334791924341">የ<ph name="APP" /> ዓርማ</translation>
 <translation id="5938002010494270685">የደህነንት ማላቂያ ይገኛል</translation>
 <translation id="5939518447894949180">ዳግም አስጀምር</translation>
@@ -7446,7 +7439,6 @@
 <translation id="6530030995840538405">የመነጨ የ<ph name="SUBJECT" /> ምስል <ph name="INDEX" /></translation>
 <translation id="6530186581263215931">እነዚህ ቅንብሮች በአስተዳዳሪዎ ነው የሚፈጸሙት</translation>
 <translation id="6530267432324197764">በ<ph name="MANAGER" /> የሚተዳደር መገለጫ</translation>
-<translation id="6531282281159901044">አደገኛ ፋይልን አስቀምጥ</translation>
 <translation id="6532101170117367231">ወደ Google Drive ያስቀምጡ</translation>
 <translation id="6532106788206463496">ለውጦችን አስቀምጥ</translation>
 <translation id="6532206849875187177">ደህንነት እና በመለያ መግባት</translation>
@@ -7494,6 +7486,7 @@
 <translation id="6557290421156335491">የእኔ አቋራጮች</translation>
 <translation id="6560061709899140565">ሌላ የcast ክፍለ-ጊዜዎችን አሳይ</translation>
 <translation id="6560151649238390891">የአስተያየት ጥቆማ ገብቷል</translation>
+<translation id="656065428026159829">ተጨማሪ ይመልከቱ</translation>
 <translation id="6561726789132298588">ያስገቡ</translation>
 <translation id="6562117348069327379">የስርዓት ምዝግብ ማስታወሻዎችን ወደ የውርዶች ማውጫ ያከማቹ።</translation>
 <translation id="656293578423618167">የፋይል ዱካው ወይም ስሙ በጣም ረጅም ነው። እባክዎ ባጠረ ስም ወይም ሌላ ቦታ ላይ ያስቀምጡ።</translation>
@@ -9009,7 +9002,6 @@
 <translation id="7701040980221191251">ምንም</translation>
 <translation id="7701869757853594372">USER መያዣዎች</translation>
 <translation id="7702463352133825032">ወደ <ph name="DEVICE_NAME" /> cast ማድረግን አቁም</translation>
-<translation id="7702574632857388784"><ph name="FILE_NAME" />ን ከዝርዝር አስወግድ</translation>
 <translation id="7704305437604973648">ተግባር</translation>
 <translation id="7704521324619958564">Play መደብሩን ክፈት</translation>
 <translation id="7705276765467986571">የዕልባት ሞዴል መጫን አልተቻለም።</translation>
@@ -9463,6 +9455,7 @@ nil</translation>
 <translation id="8022466874160067884">የእርስዎን Google መለያ እና የይለፍ ቃል ያስገቡ</translation>
 <translation id="8023133589013344428">በChromeOS Flex ቅንብሮች ውስጥ ቋንቋዎችን ያቀናብሩ</translation>
 <translation id="8023801379949507775">ቅጥያዎችን አሁን አዘምን</translation>
+<translation id="8024161440284949905">በእነዚህ ትሮች ላይ ይቀጥሉ</translation>
 <translation id="8025151549289123443">ማያ ገፅ መቆለፊያ እና በመለያ መግባት</translation>
 <translation id="8025291188699172126">ስለዝማኔዎች</translation>
 <translation id="8026471514777758216">ሁሉም መሣሪያዎችዎ</translation>

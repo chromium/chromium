@@ -301,7 +301,6 @@
 <translation id="1211769675100312947">میان‌برها توسط شما گزینش می‌شوند</translation>
 <translation id="1213254615020057352">‏داده‌های استفاده و عیب‌یابی را ارسال کنید. با ارسال خودکار داده‌های عیب‌یابی و داده‌های استفاده از دستگاه و برنامه به Google به بهبود تجربه Android خود کمک کنید. این داده‌ها برای شناسایی فرزندتان استفاده نخواهند شد و به بهبود پایداری سیستم و برنامه و موارد دیگر کمک خواهد کرد. بعضی داده‌های تجمیعی نیز به برنامه‌ها و شرکای Google (مانند «برنامه‌نویس‌های Android») کمک می‌کند. این تنظیم را مالک اعمال می‌کند. ممکن است مالک انتخاب کند داده‌های استفاده و عیب‌یابی این دستگاه به Google ارسال شود. اگر تنظیم «فعالیت‌ها در وب و برنامه» تکمیلی برای فرزندتان روشن باشد، ممکن است این داده‌ها در «حساب Google» او ذخیره شود.</translation>
 <translation id="1213726621272705156">دیگر کارتی در این صفحه نخواهید دید</translation>
-<translation id="121384500095351701">نمی‌توان این فایل را به‌طور ایمن بارگیری کرد</translation>
 <translation id="1214004433265298541">گواهی ارائه‌شده ازطرف سرپرست شما که می‌تواند اطلاعات اعتباری <ph name="DOMAIN" /> را مشاهده کند</translation>
 <translation id="1215411991991485844">برنامه جدید پس‌زمینه اضافه شد</translation>
 <translation id="1216542092748365687">حذف کردن اثر انگشت</translation>
@@ -2095,7 +2094,6 @@
 <translation id="2489829450872380594">‏دفعه بعد، تلفن جدیدی قفل <ph name="DEVICE_TYPE" /> را باز می‌کند. می‌توانید Smart Lock را در «تنظیمات» خاموش کنید.</translation>
 <translation id="2489918096470125693">افزودن &amp;پوشه...</translation>
 <translation id="2489931062851778802">این کلیدها را در <ph name="DEVICE_NAME" /> وارد کنید</translation>
-<translation id="2490481887078769936">«<ph name="FILE_NAME" />» از فهرست برداشته شد</translation>
 <translation id="249098303613516219">ذخیره داده‌های سایت در دستگاه مجاز است</translation>
 <translation id="249113932447298600">متأسفیم، دستگاه <ph name="DEVICE_LABEL" /> در حال حاضر پشتیبانی نمی‌شود.</translation>
 <translation id="2491587035099903063">پیش‌دید کردن صدای <ph name="LANGUAGE" /></translation>
@@ -2487,7 +2485,6 @@
 <translation id="2772936498786524345">مأمور مخفی</translation>
 <translation id="2773288106548584039">پشتیبانی از مرورگر قدیمی</translation>
 <translation id="2773621783913034737">غیرفعال کردن برگه‌ها</translation>
-<translation id="2773802008104670137">این نوع فایل ممکن است به رایانه شما صدمه بزند.</translation>
 <translation id="2775104091073479743">ویرایش اثر انگشت</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{افزونه «<ph name="EXTENSION" />» به دستگاه‌ها دسترسی داشت}=1{افزونه «<ph name="EXTENSION" />» به {0} دستگاه دسترسی دارد}one{افزونه «<ph name="EXTENSION" />» به {0} دستگاه دسترسی دارد}other{افزونه «<ph name="EXTENSION" />» به {0} دستگاه دسترسی دارد}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{برداشتن یک برنامه پشتیبانی‌نشده}one{برداشتن # برنامه پشتیبانی‌نشده}other{برداشتن # برنامه پشتیبانی‌نشده}}</translation>
@@ -3650,7 +3647,6 @@
 <translation id="3654682977761834281">داده‌های برگرفته از سایت‌های جاسازی‌شده</translation>
 <translation id="3656328935986149999">سرعت مکان‌نما</translation>
 <translation id="3658871634334445293">‏شتاب TrackPoint</translation>
-<translation id="3659550105763988702">استفاده از گذرکلید برای <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">کد دسترسی نادرستی را چند بار وارد کرده‌اید. بعداً دوباره امتحان کنید</translation>
 <translation id="3660234220361471169">غیر قابل اطمینان</translation>
 <translation id="3661106764436337772">سریع‌تر و با قاطعیت بیشتر بنویسید</translation>
@@ -3744,7 +3740,6 @@
 <translation id="3719245268140483218">رویداد دستگاه</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> تکمیل شد.</translation>
 <translation id="3719826155360621982">صفحه اصلی</translation>
-<translation id="3720543739123045680">‏سایر برگه‌ها پردازش مشترکی با این برگه دارند که ممکن است منجر به تجربه غیرمنتظره‌ای در DevTools شود.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">‏شما و Google</translation>
 <translation id="3721178866505920080">اطلاعات بیشتر درباره روشن کردن پیش‌بارگذاری گسترده</translation>
@@ -5343,7 +5338,6 @@
 <translation id="4903967893652864401">این ویژگی با محدود کردن فعالیت پس‌زمینه و جلوه‌های بصری مثل پیمایش روان، ماندگاری شارژ باتری را افزایش می‌دهد.</translation>
 <translation id="4906490889887219338">راه‌اندازی یا مدیریت دستگاه‌های ذخیره‌سازی متصل به شبکه. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">انتخاب کنید این افزونه چه زمانی می‌توانید داده‌های سایتتان را بخواند و تغییر دهد</translation>
-<translation id="4907161631261076876">این فایل معمولاً بارگیری نمی‌شود و ممکن است خطرناک باشد.</translation>
 <translation id="4908811072292128752">برای مرور دو سایت به‌طور هم‌زمان، برگه جدیدی را باز کنید</translation>
 <translation id="4909038193460299775">‏از آن‌جا که این حساب توسط <ph name="DOMAIN" /> مدیریت می‌شود، نشانک‌ها، سابقه، گذرواژه‌ها و دیگر تنظیماتتان از این دستگاه پاک می‌شوند. اما داده‌هایتان در حساب Google ذخیره می‌مانند و می‌توانید آن‌ها را در <ph name="BEGIN_LINK" />داشبورد Google<ph name="END_LINK" /> مدیریت کنید.</translation>
 <translation id="4910241725741323970">برنامه قبلاً نصب شده است</translation>
@@ -6698,7 +6692,6 @@
 <translation id="5935158534896975820">آماده‌سازی درخواست امضای گواهینامه (درانتظار سرور)</translation>
 <translation id="5935656526031444304">مدیریت «مرور ایمن»</translation>
 <translation id="5936065461722368675">ترجمه کل صفحه</translation>
-<translation id="5937347877659196749">سپس، با پین بازیابی از همه گذرکلیدهایتان محافظت کنید</translation>
 <translation id="5937977334791924341">نشان‌واره <ph name="APP" /></translation>
 <translation id="5938002010494270685">ارتقای امنیتی دردسترس است</translation>
 <translation id="5939518447894949180">بازنشانی</translation>
@@ -7460,7 +7453,6 @@
 <translation id="6530030995840538405">تصویر تولیدشده <ph name="INDEX" /> از <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">این تنظیمات توسط سرپرست سیستم شما اعمال شده است</translation>
 <translation id="6530267432324197764">نمایه تحت‌مدیریت <ph name="MANAGER" /> است</translation>
-<translation id="6531282281159901044">حفظ فایل خطرناک</translation>
 <translation id="6532101170117367231">‏‫ذخیره در Google Drive</translation>
 <translation id="6532106788206463496">ذخیره تغییرات</translation>
 <translation id="6532206849875187177">امنیت و ورود به سیستم</translation>
@@ -7508,6 +7500,7 @@
 <translation id="6557290421156335491">میان‌برهای من</translation>
 <translation id="6560061709899140565">نمایش جلسه‌های دیگر پخش محتوا</translation>
 <translation id="6560151649238390891">پیشنهاد درج شد</translation>
+<translation id="656065428026159829">موارد بیشتر</translation>
 <translation id="6561726789132298588">Enter</translation>
 <translation id="6562117348069327379">گزارش‌های سیستم را در فهرست راهنمای «بارگیری‌ها» ذخیره کنید.</translation>
 <translation id="656293578423618167">مسیر یا نام فایل خیلی طولانی است. لطفاً با یک نام کوتاه‌تر یا در محل دیگری ذخیره کنید.</translation>
@@ -9024,7 +9017,6 @@
 <translation id="7701040980221191251">هیچ‌کدام</translation>
 <translation id="7701869757853594372">مدیریت کاربر</translation>
 <translation id="7702463352133825032">توقف پخش محتوا در <ph name="DEVICE_NAME" /></translation>
-<translation id="7702574632857388784">برداشتن <ph name="FILE_NAME" /> از فهرست</translation>
 <translation id="7704305437604973648">کار</translation>
 <translation id="7704521324619958564">‏باز کردن فروشگاه Play</translation>
 <translation id="7705276765467986571">مدل نشانک بارگیری نشد.</translation>
@@ -9475,6 +9467,7 @@
 <translation id="8022466874160067884">‏حساب Google و گذرواژه خود را وارد کنید</translation>
 <translation id="8023133589013344428">‏مدیریت زبان‌ها در تنظیمات ChromeOS Flex</translation>
 <translation id="8023801379949507775">اکنون افزونه‌ها به‌روز شوند</translation>
+<translation id="8024161440284949905">ادامه کار با این برگه‌ها</translation>
 <translation id="8025151549289123443">صفحه قفل و ورود به سیستم</translation>
 <translation id="8025291188699172126">درباره به‌روزرسانی‌ها</translation>
 <translation id="8026471514777758216">همه دستگاه‌ها</translation>

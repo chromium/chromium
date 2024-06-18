@@ -422,6 +422,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{북마크 <ph name="BOOKMARKS_COUNT_ONE" />개}other{북마크 <ph name="BOOKMARKS_COUNT_MANY" />개}}</translation>
 <translation id="3062802207422175757">Chrome에서 관심분야 기사를 읽어보세요.</translation>
 <translation id="3066573403916685335">아래로 이동</translation>
+<translation id="3067505415088964188">가격이 저렴함</translation>
 <translation id="3070005020161560471">자동으로 번역</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> 앱이 Chrome에서 열립니다. 계속하면 <ph name="BEGIN_LINK1" />Google 서비스 약관<ph name="END_LINK1" /> 및 <ph name="BEGIN_LINK2" />Chrome 및 ChromeOS 추가 서비스 약관<ph name="END_LINK2" />에 동의하는 것으로 간주됩니다. <ph name="BEGIN_LINK3" />개인정보처리방침<ph name="END_LINK3" />도 적용됩니다.</translation>
 <translation id="3080525922482950719">페이지를 저장하여 나중에 읽거나 오프라인 상태에서 읽을 수 있습니다.</translation>

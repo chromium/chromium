@@ -301,7 +301,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1211769675100312947">Ikaw ang nagku-curate ng mga shortcut</translation>
 <translation id="1213254615020057352">Magpadala ng data ng paggamit at diagnostic. Tumulong sa pagpapaganda ng karanasan sa Android ng iyong anak sa pamamagitan ng awtomatikong pagpapadala ng diagnostic na data, data ng device, at data ng paggamit sa app sa Google. Hindi ito gagamitin para tukuyin ang pagkakakilanlan ng iyong anak, at makakatulong ito sa stability ng system at ng app, at sa iba pang pagpapahusay. Makakatulong din ang ilang pinagsama-samang data sa mga app at partner ng Google, gaya ng mga developer ng Android. Ipinapatupad ng may-ari ang setting na ito. Puwedeng piliin ng may-ari na magpadala ng data ng diagnostic at paggamit para sa device na ito sa Google. Kung naka-on ang karagdagang setting ng Aktibidad sa Web at App para sa iyong anak, posibleng ma-save ang data na ito sa kanyang Google Account.</translation>
 <translation id="1213726621272705156">Hindi ka na makakakita ulit ng mga card sa page na ito</translation>
-<translation id="121384500095351701">Hindi ligtas na mada-download ang file na ito</translation>
 <translation id="1214004433265298541">Certificate na ibinigay ng administrator mo na nakakakita ng mga kredensyal para sa <ph name="DOMAIN" /></translation>
 <translation id="1215411991991485844">Nadagdag ang bagong background na app</translation>
 <translation id="1216542092748365687">Alisin ang fingerprint</translation>
@@ -2094,7 +2093,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2489829450872380594">Sa susunod, ia-unlock ng bagong telepono ang <ph name="DEVICE_TYPE" /> na ito. Puwede mong i-off ang Smart Lock sa Mga Setting.</translation>
 <translation id="2489918096470125693">Magdagdag ng &amp;Folder...</translation>
 <translation id="2489931062851778802">Ilagay ang mga key na ito sa <ph name="DEVICE_NAME" /></translation>
-<translation id="2490481887078769936">Inalis ang '<ph name="FILE_NAME" />' sa listahan</translation>
 <translation id="249098303613516219">Pinapayagan ang on-device na data ng site</translation>
 <translation id="249113932447298600">Paumanhin, hindi sinusuportahan ang device na <ph name="DEVICE_LABEL" /> sa oras na ito.</translation>
 <translation id="2491587035099903063">mag-preview ng boses para sa <ph name="LANGUAGE" /></translation>
@@ -2486,7 +2484,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2772936498786524345">Ninja</translation>
 <translation id="2773288106548584039">Suporta sa Legacy Browser</translation>
 <translation id="2773621783913034737">Gawing Hindi Aktibo ang Mga Tab</translation>
-<translation id="2773802008104670137">Maaaring maapektuhan ng ganitong uri ng file ang iyong computer.</translation>
 <translation id="2775104091073479743">I-edit ang Mga Fingerprint</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Nag-access ang extension na "<ph name="EXTENSION" />" ng mga device}=1{Nag-a-access ang extension na "<ph name="EXTENSION" />" ng {0} device}one{Nag-a-access ang extension na "<ph name="EXTENSION" />" ng {0} device}other{Nag-a-access ang extension na "<ph name="EXTENSION" />" ng {0} na device}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Mag-alis ng 1 hindi sinusuportahang app}one{Mag-alis ng # hindi sinusuportahang app}other{Mag-alis ng # na hindi sinusuportahang app}}</translation>
@@ -3648,7 +3645,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3654682977761834281">Data mula sa mga naka-embed na site</translation>
 <translation id="3656328935986149999">Bilis ng cursor</translation>
 <translation id="3658871634334445293">Pag-accelerate ng TrackPoint</translation>
-<translation id="3659550105763988702">Gamitin ang iyong passkey para sa <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Masyadong maraming beses ka nang naglagay ng maling access code. Subukan ulit sa ibang pagkakataon</translation>
 <translation id="3660234220361471169">Hindi pinagkakatiwalaan</translation>
 <translation id="3661106764436337772">Magsulat nang mas mabilis at mas may kumpiyansa</translation>
@@ -3741,7 +3737,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3719245268140483218">Event sa Device</translation>
 <translation id="3719310907809321183">Napunan ang <ph name="CARD_IDENTIFIER" />.</translation>
 <translation id="3719826155360621982">Homepage</translation>
-<translation id="3720543739123045680">Magka-share sa iisang proseso ang iba pang tab at ang tab na ito, na posibleng magresulta sa hindi inaasahang experience sa DevTools.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Ikaw at ang Google</translation>
 <translation id="3721178866505920080">Higit pang impormasyon tungkol sa pag-on sa extended na pag-preload</translation>
@@ -5338,7 +5333,6 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="4903967893652864401">Pinapatagal nito ang baterya sa pamamagitan ng paglilimita sa aktibidad sa background at mga visual effect tulad ng maayos na pag-scroll</translation>
 <translation id="4906490889887219338">Mag-set up o mamahala ng mga file share ng network. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Piliin kung kailan mari-read at mababago ng extension na ito ang data ng iyong site</translation>
-<translation id="4907161631261076876">Hindi karaniwang dina-download ang app na ito at maaaring mapanganib.</translation>
 <translation id="4908811072292128752">Magbukas ng bagong tab upang mag-browse ng dalawang site nang sabay</translation>
 <translation id="4909038193460299775">Dahil pinamamahalaan ng <ph name="DOMAIN" /> ang account na ito, iki-clear sa device na ito ang iyong mga bookmark, history, password at iba pang mga setting. Gayunpaman, mananatiling naka-store ang data mo sa iyong Google Account at mapamamahalaan ito sa <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">Naka-install na ang app</translation>
@@ -6692,7 +6686,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5935158534896975820">Inihahanda ang certificate signing request (hinihintay sa server)</translation>
 <translation id="5935656526031444304">Pamahalaan ang Ligtas na Pag-browse</translation>
 <translation id="5936065461722368675">Isalin ang buong page</translation>
-<translation id="5937347877659196749">Susunod, protektahan ang lahat ng iyong passkey sa pamamagitan ng PIN sa pag-recover</translation>
 <translation id="5937977334791924341">Logo ng <ph name="APP" /></translation>
 <translation id="5938002010494270685">May available na upgrade sa seguridad</translation>
 <translation id="5939518447894949180">I-reset</translation>
@@ -7454,7 +7447,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6530030995840538405">Nabuong larawan <ph name="INDEX" /> sa <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">Ipinapatupad ng iyong administrator ang mga setting na ito</translation>
 <translation id="6530267432324197764">Pinapamahalaan ng <ph name="MANAGER" /> ang profile</translation>
-<translation id="6531282281159901044">Panatilihin ang mapanganib na file</translation>
 <translation id="6532101170117367231">I-save sa Google Drive</translation>
 <translation id="6532106788206463496">I-save ang mga pagbabago</translation>
 <translation id="6532206849875187177">Seguridad at pag-sign in</translation>
@@ -7502,6 +7494,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6557290421156335491">Aking mga shortcut</translation>
 <translation id="6560061709899140565">Magpakita ng iba pang session ng pag-cast</translation>
 <translation id="6560151649238390891">Inilagay ang suhestyon</translation>
+<translation id="656065428026159829">Tumingin pa</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Mag-store ng mga log ng system sa directory na Mga Download.</translation>
 <translation id="656293578423618167">Masyadong mahaba ang path o pangalan ng file.  Mangyaring i-save nang may mas maikling pangalan o sa isa pang lokasyon.</translation>
@@ -9017,7 +9010,6 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7701040980221191251">Wala</translation>
 <translation id="7701869757853594372">Mga USER Handle</translation>
 <translation id="7702463352133825032">Itigil ang pag-cast sa <ph name="DEVICE_NAME" /></translation>
-<translation id="7702574632857388784">Alisin ang <ph name="FILE_NAME" /> sa listahan</translation>
 <translation id="7704305437604973648">Gawain</translation>
 <translation id="7704521324619958564">Buksan ang Play Store</translation>
 <translation id="7705276765467986571">Hindi ma-load ang modelo ng bookmark.</translation>
@@ -9466,6 +9458,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8022466874160067884">Ilagay ang iyong Google Account at password</translation>
 <translation id="8023133589013344428">Pamahalaan ang mga wika sa mga setting ng ChromeOS Flex</translation>
 <translation id="8023801379949507775">I-update ang mga extension ngayon</translation>
+<translation id="8024161440284949905">Magpatuloy sa mga tab na ito</translation>
 <translation id="8025151549289123443">Lock screen at pag-sign in</translation>
 <translation id="8025291188699172126">Tungkol sa Mga Update</translation>
 <translation id="8026471514777758216">Lahat ng iyong device</translation>

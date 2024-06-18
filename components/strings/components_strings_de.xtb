@@ -1011,6 +1011,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="2930577230479659665">Nach jeder Kopie zuschneiden</translation>
 <translation id="2933624813161016821">Prägefolie</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" />-Links öffnen</translation>
+<translation id="2941112035454246133">Niedrig</translation>
 <translation id="2941878205777356567">Umschlag 9 × 12 Zoll</translation>
 <translation id="2941952326391522266">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat stammt von <ph name="DOMAIN2" />. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
 <translation id="2942492342931589800">Informell</translation>
@@ -2220,7 +2221,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5263867360296733198">Vor dem Upload ist eine Überprüfung erforderlich</translation>
 <translation id="5266128565379329178">Bindung oben</translation>
 <translation id="5269225904387178860">Vierfache Lochung unten</translation>
-<translation id="5269999699920406580">Systemweite Funktionen können nur vom Inhaber festgelegt werden: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">„<ph name="DATA_CONTROLS_ATTRIBUTE" />“ ist keine unterstützte Bedingung für „<ph name="DATA_CONTROLS_RESTRICTION" />“</translation>
 <translation id="5273658854610202413">Warnung: Diese Richtlinie wurde nicht wie in der Richtlinie "PolicyDictionaryMultipleSourceMergeList" vorgesehen zusammengeführt, weil sie nicht Teil der Wörterbuchrichtlinien ist, die zusammengeführt werden können.</translation>
 <translation id="5279286380302340275">Downloads verwalten</translation>
@@ -3061,6 +3061,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6915804003454593391">Nutzer: </translation>
 <translation id="6916193791494646625">Gib den Grund für das Herunterladen an (erforderlich)</translation>
 <translation id="6917795328362592458">Das eingegebene Passwort wurde in einer Datenpanne gefunden. Zum besseren Schutz deiner Konten empfiehlt der Passwortmanager, deine gespeicherten Passwörter zu prüfen.</translation>
+<translation id="6924013822850225188">Du kannst festlegen, ob deine Kartenvorteile an der Kasse angezeigt werden (es gelten die Bedingungen der Bank)</translation>
 <translation id="6925267999184670015">B+ (Nordamerika)</translation>
 <translation id="6926216138694948720">Körperschmuck und -kunst</translation>
 <translation id="692638818576287323">Gewerbefahrzeuge</translation>
@@ -3831,6 +3832,7 @@ Weitere Details:
 <translation id="830498451218851433">Zur Hälfte falten</translation>
 <translation id="8308653357438598313">Live-Videostreaming</translation>
 <translation id="8311895354659782580">Immobilienanzeigen</translation>
+<translation id="8312841338723044391">LIVE</translation>
 <translation id="8316555157357957253">Wird verwendet</translation>
 <translation id="8319269383395457801">Vertrieb von Wohnimmobilien</translation>
 <translation id="831997045666694187">Abends</translation>

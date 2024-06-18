@@ -1011,6 +1011,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2930577230479659665">Bijsnijden na elke kopie</translation>
 <translation id="2933624813161016821">Reliëffolie</translation>
 <translation id="2938225289965773019">Links voor <ph name="PROTOCOL" /> openen</translation>
+<translation id="2941112035454246133">Laag</translation>
 <translation id="2941878205777356567">Envelop 9 x 12 inch</translation>
 <translation id="2941952326391522266">De server kan niet bewijzen dat dit <ph name="DOMAIN" /> is. Het beveiligingscertificaat van de server is afkomstig van <ph name="DOMAIN2" />. Dit kan worden veroorzaakt door een verkeerde configuratie of een aanvaller die je verbinding onderschept.</translation>
 <translation id="2942492342931589800">Casual</translation>
@@ -2217,7 +2218,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5263867360296733198">Check bestanden voordat je ze uploadt</translation>
 <translation id="5266128565379329178">Boven inbinden</translation>
 <translation id="5269225904387178860">Vier perforaties onder</translation>
-<translation id="5269999699920406580">Functies die op het hele systeem van toepassing zijn, kunnen alleen worden ingesteld door de eigenaar: <ph name="OWNER_EMAIL" />.</translation>
 <translation id="5271381225185906340"><ph name="DATA_CONTROLS_ATTRIBUTE" /> is geen ondersteunde voorwaarde voor <ph name="DATA_CONTROLS_RESTRICTION" /></translation>
 <translation id="5273658854610202413">Waarschuwing: Dit beleid is niet samengevoegd zoals gespecificeerd in het beleid PolicyListMultipleSourceMergeList, omdat het geen onderdeel is van het woordenboekbeleid dat kan worden samengevoegd.</translation>
 <translation id="5279286380302340275">Downloads beheren</translation>

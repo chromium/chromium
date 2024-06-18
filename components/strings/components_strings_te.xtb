@@ -1006,6 +1006,7 @@
 <translation id="2930577230479659665">ప్రతి కాపీ తర్వాత కత్తిరించండి</translation>
 <translation id="2933624813161016821">ఎంబాసింగ్ ఫాయిల్</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> లింక్‌లను తెరవండి</translation>
+<translation id="2941112035454246133">తక్కువ</translation>
 <translation id="2941878205777356567">9 x 12 అంగుళాల ఎన్వలప్</translation>
 <translation id="2941952326391522266">ఈ సర్వర్ <ph name="DOMAIN" /> అని నిరూపించుకోలేకపోయింది; దీని భద్రతా ప్రమాణపత్రం <ph name="DOMAIN2" /> నుండి జారీ చేయబడింది. ఇది తప్పుగా కాన్ఫిగర్ చేయడం వలన లేదా దాడిచేసే వ్యక్తి మీ కనెక్షన్‌కు అంతరాయం కలిగించడం వలన జరిగి ఉండవచ్చు.</translation>
 <translation id="2942492342931589800">సాధారణం</translation>
@@ -2217,7 +2218,6 @@
 <translation id="5263867360296733198">అప్‌లోడ్ చేసే ముందు, రివ్యూ చేయడం ముఖ్యం</translation>
 <translation id="5266128565379329178">ఎగువ భాగంలో బైండ్</translation>
 <translation id="5269225904387178860">దిగువ భాగంలో నాలుగు రంధ్రాలు</translation>
-<translation id="5269999699920406580">సిస్టమ్ వ్యాప్తంగా వర్తింపజేయబడే ఫీచర్‌లు యజమాని ద్వారా మాత్రమే సెట్ చేయబడతాయి: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_RESTRICTION" />" విషయంలో, "<ph name="DATA_CONTROLS_ATTRIBUTE" />" కండిషన్‌కు సపోర్ట్ లేదు</translation>
 <translation id="5273658854610202413">హెచ్చరిక: ఈ విధానం విలీనం చేయగల నిఘంటువు విధానాలలో భాగం కానందున, PolicyDictionaryMultipleSourceMergeList విధానంలో పేర్కొన్నట్లుగా ఇది విలీనం చేయబడలేదు.</translation>
 <translation id="5279286380302340275">డౌన్‌లోడ్‌లను మేనేజ్ చేయండి</translation>
@@ -3058,6 +3058,7 @@
 <translation id="6915804003454593391">వినియోగదారు:</translation>
 <translation id="6916193791494646625">డౌన్‌లోడ్ చేయడానికి కారణాన్ని పేర్కొనండి (అవసరం)</translation>
 <translation id="6917795328362592458">మీరు ఇప్పుడే ఉపయోగించిన పాస్‌వర్డ్, డేటా ఉల్లంఘనలో కనగొనబడింది. మీ ఖాతాలను సురక్షితం చేయడానికి, మీరు సేవ్ చేసిన పాస్‌వర్డ్‌లను చెక్ చేయమని పాస్‌వర్డ్ మేనేజర్ సిఫార్సు చేస్తోంది.</translation>
+<translation id="6924013822850225188">చెక్ అవుట్ (బ్యాంక్ నియమాలు వర్తిస్తాయి) సమయంలో మీ కార్డ్ ప్రయోజనాలు కనిపించాలో లేదో ఎంచుకోండి</translation>
 <translation id="6925267999184670015">ఉత్తర అమెరికా B+</translation>
 <translation id="6926216138694948720">టాట్టూలు</translation>
 <translation id="692638818576287323">వాణిజ్యపరమైన వాహనాలు</translation>
@@ -3827,6 +3828,7 @@
 <translation id="830498451218851433">సగం ఫోల్డ్</translation>
 <translation id="8308653357438598313">లైవ్ వీడియో స్ట్రీమింగ్</translation>
 <translation id="8311895354659782580">రియల్ ఎస్టేట్ లిస్టింగ్‌లు</translation>
+<translation id="8312841338723044391">లైవ్‌లో అందుబాటులో ఉంది</translation>
 <translation id="8316555157357957253">ఇప్పుడు ఉపయోగిస్తోంది</translation>
 <translation id="8319269383395457801">ఇళ్ల సేల్స్</translation>
 <translation id="831997045666694187">సాయంత్రం</translation>

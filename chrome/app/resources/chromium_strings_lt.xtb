@@ -211,6 +211,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="4415566066719264597">„Chromium“ leidimas fone</translation>
 <translation id="4423735387467980091">Tinkinkite ir valdykite „Chromium“</translation>
 <translation id="4427306783828095590">Naudojant sustiprintą apsaugą pasitelkiama papildomų priemonių sukčiavimui ir kenkėjiškoms programoms užblokuoti</translation>
+<translation id="4434353761996769206">Diegimo programos klaida: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4447409407328223819">Apie „Chrome for Testing“</translation>
 <translation id="4501471624619070934">Diegimas nepavyko, nes šioje šalyje prieiga ribojama.</translation>
 <translation id="4510853178268397146">Šis plėtinys nepaskelbė privatumo praktikos, pvz., kaip renka ir naudoja duomenis. „Chromium“ rekomenduoja jį pašalinti.</translation>
@@ -456,7 +457,6 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="8254601181414348851">Prisijungti prie „Chromium“ naujame profilyje?</translation>
 <translation id="8266560134891435528">„Chromium“ negali patikrinti jūsų slaptažodžių, nes esate neprisijungę</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />„Chromium“ jus įspėja<ph name="END_LINK" /> apie nesaugias svetaines ir atsisiuntimus</translation>
-<translation id="8290862415967981663">Šis failas gali būti pavojingas, todėl „Chromium“ jį užblokavo.</translation>
 <translation id="8318772038038596122">Organizacija uždaro „Chromium“, kai ji nenaudojama <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8330519371938183845">Prisijunkite, kad galėtumėte sinchronizuoti ir suasmeninti „Chromium“ skirtinguose įrenginiuose</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> anksčiau naudojo „Chromium“</translation>

@@ -1011,6 +1011,7 @@
 <translation id="2930577230479659665">Кратење по секој примерок</translation>
 <translation id="2933624813161016821">Фолија за гравирање</translation>
 <translation id="2938225289965773019">Отвори <ph name="PROTOCOL" /> врски</translation>
+<translation id="2941112035454246133">Низок</translation>
 <translation id="2941878205777356567">Плик 9 x 12 in</translation>
 <translation id="2941952326391522266">Серверот не може да докаже дека е <ph name="DOMAIN" />; неговиот сертификат е од <ph name="DOMAIN2" />. Тоа може да се должи на погрешна конфигурација или на напаѓач што го пресретнува поврзувањето.</translation>
 <translation id="2942492342931589800">Обично</translation>
@@ -2222,7 +2223,6 @@
 <translation id="5263867360296733198">Потребен е преглед пред прикачувањето</translation>
 <translation id="5266128565379329178">Врзување горе</translation>
 <translation id="5269225904387178860">Четири дупки долу</translation>
-<translation id="5269999699920406580">Функциите што се применуваат на целиот систем може да ги постави само сопственикот: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">„<ph name="DATA_CONTROLS_ATTRIBUTE" />“ не е поддржан услов за „<ph name="DATA_CONTROLS_RESTRICTION" />“</translation>
 <translation id="5273658854610202413">Предупредување: правилово не беше споено како што е наведено во правилото PolicyDictionaryMultipleSourceMergeList бидејќи не е дел од правилата на речникот што може да се спојат.</translation>
 <translation id="5279286380302340275">Управувајте со преземањата</translation>
@@ -3063,6 +3063,7 @@
 <translation id="6915804003454593391">Корисник:</translation>
 <translation id="6916193791494646625">Наведете причина за преземањето (задолжително)</translation>
 <translation id="6917795328362592458">Откриено е дека лозинката која штотуку ја употребивте е меѓу лозинките откриени при упад во податоците. За да ја задржите безбедноста на сметките, Password Manager препорачува да ги проверите зачуваните лозинки.</translation>
+<translation id="6924013822850225188">Изберете дали да ги гледате поволностите на вашата картичка при плаќање (важат условите на банката)</translation>
 <translation id="6925267999184670015">Северноамерикански B+</translation>
 <translation id="6926216138694948720">Уметност на тело</translation>
 <translation id="692638818576287323">Комерцијални возила</translation>
@@ -3832,6 +3833,7 @@
 <translation id="830498451218851433">Превиткување на половина</translation>
 <translation id="8308653357438598313">Видеострим во живо</translation>
 <translation id="8311895354659782580">Огласи за недвижности</translation>
+<translation id="8312841338723044391">ВО ЖИВО</translation>
 <translation id="8316555157357957253">Се користи сега</translation>
 <translation id="8319269383395457801">Продажба на живеалишта</translation>
 <translation id="831997045666694187">Приквечер</translation>

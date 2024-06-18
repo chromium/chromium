@@ -1011,6 +1011,7 @@
 <translation id="2930577230479659665">Хуулбар бүрийн дараа тайрах</translation>
 <translation id="2933624813161016821">Товгор тугалган цаас</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> холбоосуудыг нээх</translation>
+<translation id="2941112035454246133">Бага</translation>
 <translation id="2941878205777356567">Дугтуй 9 x 12 инч</translation>
 <translation id="2941952326391522266">Энэ сервер нь <ph name="DOMAIN" />-аа баталж чадсангүй; <ph name="DOMAIN2" />-ээс хамгаалалтын сертификатаа авсан байна. Энэ нь тохиргоо буруу хийгдсэнээс эсвэл халдагч таны холболтонд саад учруулж байж болох юм.</translation>
 <translation id="2942492342931589800">Энгийн</translation>
@@ -2223,7 +2224,6 @@
 <translation id="5263867360296733198">Байршуулахаас өмнө шалгах шаардлагатай</translation>
 <translation id="5266128565379329178">Дээд булан дагуу үдэж хавтаслах</translation>
 <translation id="5269225904387178860">Доод буланд дөрвөн нүх цоолох</translation>
-<translation id="5269999699920406580">Системийн хэмжээнд ашиглаж болохуйц онцлогийг зөвхөн өмчлөгч л тохируулж болно: <ph name="OWNER_EMAIL" />.</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" нь "<ph name="DATA_CONTROLS_RESTRICTION" />"-н хувьд дэмжигдсэн нөхцөл биш юм</translation>
 <translation id="5273658854610202413">Анхааруулга: Энэ удирдамж нь нэгтгэж болдог толь бичгийн удирдамжийн нэг хэсэг биш тул үүнийг PolicyDictionaryMultipleSourceMergeList удирдамжид тодорхойлсны дагуу нэгтгэж чадсангүй.</translation>
 <translation id="5279286380302340275">Таталтуудыг удирдах</translation>

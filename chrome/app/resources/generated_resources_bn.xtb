@@ -301,7 +301,6 @@
 <translation id="1211769675100312947">শর্টকাটগুলি আপনার দেখা ওয়েবসাইটের উপর নির্ভর করে সঙ্কলন করুন</translation>
 <translation id="1213254615020057352">ব্যবহার এবং ডায়াগনস্টিক বিষয়ক ডেটা পাঠান। Google-এ অটোমেটিক ডায়াগনস্টিক, ডিভাইস এবং অ্যাপ ব্যবহারের ডেটা পাঠিয়ে, আপনার সন্তানের Android অভিজ্ঞতাকে উন্নত করতে সাহায্য করুন। এটি আপনার সন্তানকে শনাক্ত করতে ব্যবহার করা হবে না এবং সিস্টেম ও অ্যাপের স্টেবিলিটি বাড়াতে ও অন্যান্য উন্নতিতে সাহায্য করবে। কিছু একত্রিত করা ডেটা Android ডেভেলপারের মতো Google অ্যাপ এবং পার্টনারদেরও সাহায্য করবে। এই সেটিং মালিকের নিয়ন্ত্রণে রয়েছে। এই ডিভাইসের জন্য ডায়াগনস্টিক এবং ব্যবহারের ডেটা Google-কে পাঠানোর বিষয়টি মালিক বেছে নিতে পারেন। অতিরিক্ত 'ওয়েব ও অ্যাপ অ্যাক্টিভিটি' সেটিং আপনার সন্তানের ডিভাইসের জন্য চালু করা থাকলে, এই ডেটা তাদের Google অ্যাকাউন্টে সেভ করা হতে পারে।</translation>
 <translation id="1213726621272705156">আপনি এই পৃষ্ঠাতে আর কার্ড দেখতে পাবেন না</translation>
-<translation id="121384500095351701">এই ফাইলটি নিরাপদে ডাউনলোড করা যাচ্ছে না</translation>
 <translation id="1214004433265298541">আপনার অ্যাডমিনিস্ট্রেটর প্রদত্ত সার্টিফিকেট যা <ph name="DOMAIN" />-এর জন্য ক্রেডেনশিয়াল দেখতে পারেন</translation>
 <translation id="1215411991991485844">নতুন পটভূমি অ্যাপ্লিকেশন জোড়া হয়েছে</translation>
 <translation id="1216542092748365687">আঙ্গুলের ছাপ সরান</translation>
@@ -2094,7 +2093,6 @@
 <translation id="2489829450872380594">পরের বার, নতুন ফোন এই <ph name="DEVICE_TYPE" /> আনলক করবে। সেটিংসে গিয়ে Smart Lock বন্ধ করতে পারেন।</translation>
 <translation id="2489918096470125693">ফোল্ডার যুক্ত &amp;করুন...</translation>
 <translation id="2489931062851778802"><ph name="DEVICE_NAME" />-এ এইসব কী লিখুন</translation>
-<translation id="2490481887078769936">তালিকা থেকে '<ph name="FILE_NAME" />' সরানো হয়েছে</translation>
 <translation id="249098303613516219">অন-ডিভাইস সাইট ডেটাকে অনুমোদন দেওয়া হয়েছে</translation>
 <translation id="249113932447298600">দুঃখিত, <ph name="DEVICE_LABEL" /> ডিভাইসটি এই মুহুর্তে সমর্থিত নয়৷</translation>
 <translation id="2491587035099903063"><ph name="LANGUAGE" />-এর জন্য ভয়েসের প্রিভিউ দেখুন</translation>
@@ -2486,7 +2484,6 @@
 <translation id="2772936498786524345">নিনজা</translation>
 <translation id="2773288106548584039">পুরনো ব্রাউজারের জন্য সমর্থন</translation>
 <translation id="2773621783913034737">ট্যাব বন্ধ করুন</translation>
-<translation id="2773802008104670137">এই ধরনের ফাইল আপনার কম্পিউটারের ক্ষতি করতে পারে।</translation>
 <translation id="2775104091073479743">আঙ্গুলের ছাপ সম্পাদনা করুন</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{"<ph name="EXTENSION" />" এক্সটেনশন ডিভাইসগুলি অ্যাক্সেস করছিল}=1{"<ph name="EXTENSION" />" এক্সটেনশন {0}টি ডিভাইস অ্যাক্সেস করছে}one{"<ph name="EXTENSION" />" এক্সটেনশন {0}টি ডিভাইস অ্যাক্সেস করছে}other{"<ph name="EXTENSION" />" এক্সটেনশন {0}টি ডিভাইস অ্যাক্সেস করছে}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{কাজ করবে না এমন ১টি অ্যাপ সরিয়ে দিন}one{কাজ করবে না এমন #টি অ্যাপ সরিয়ে দিন}other{কাজ করবে না এমন #টি অ্যাপ সরিয়ে দিন}}</translation>
@@ -3648,7 +3645,6 @@
 <translation id="3654682977761834281">এম্বেড করা সাইট থেকে ডেটা</translation>
 <translation id="3656328935986149999">কার্সরের স্পিড</translation>
 <translation id="3658871634334445293">TrackPoint অ্যাক্সিলারেশন</translation>
-<translation id="3659550105763988702"><ph name="APP_NAME" />-এর জন্য 'পাসকী' ব্যবহার করা</translation>
 <translation id="3659929705630080526">আপনি অনেক বার ভুল অ্যাক্সেস কোড লিখেছেন। পরে আবার চেষ্টা করুন</translation>
 <translation id="3660234220361471169">অবিশ্বস্থ</translation>
 <translation id="3661106764436337772">আরও দ্রুত ও বেশি আত্মবিশ্বাসের সাথে লিখুন</translation>
@@ -3741,7 +3737,6 @@
 <translation id="3719245268140483218">ডিভাইসে হওয়া ইভেন্ট</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> পূরণ করা হয়েছে।</translation>
 <translation id="3719826155360621982">হোমপেজ</translation>
-<translation id="3720543739123045680">অন্যান্য ট্যাব এই ট্যাবের সাথে প্রসেস শেয়ার করে, যার ফলে DevTools-এর ক্ষেত্রে অপ্রত্যাশিত অভিজ্ঞতা হতে পারে।</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">আপনি এবং Google</translation>
 <translation id="3721178866505920080">'এক্সটেন্ডেড প্রিলোডিং' ফিচার চালু করার ব্যাপারে আরও তথ্য</translation>
@@ -5339,7 +5334,6 @@
 <translation id="4903967893652864401">এটি ব্যাকগ্রাউন্ড অ্যাক্টিভিটি এবং স্মুথ স্ক্রলিংয়ের মতো কিছু ভিজ্যুয়াল এফেক্টের ব্যবহার সীমিত করে ব্যাটারি সাশ্রয় করে।</translation>
 <translation id="4906490889887219338">নেটওয়ার্ক ফাইল শেয়ার (SMB) সেট-আপ বা ম্যানেজ করুন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">এই এক্সটেনশন কখন সাইট ডেটা পড়তে ও পরিবর্তন করতে পারবে সেটি বেছে নিন</translation>
-<translation id="4907161631261076876">এই ফাইলটি সাধারণভাবে ডাউনলোড করা হয় না এবং এটি বিপজ্জনক হতে পারে।</translation>
 <translation id="4908811072292128752">একসাথে দুটি সাইট ব্রাউজ করতে নতুন ট্যাব খুলুন</translation>
 <translation id="4909038193460299775">এই অ্যাকাউন্টটি <ph name="DOMAIN" /> দ্বারা পরিচালিত হওয়ার কারণে আপনার বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং অন্যান্য সেটিংস এই ডিভাইস থেকে সাফ করা হবে। অবশ্য, আপনার ডেটা আপনার Google অ্যাকাউন্টে সঞ্চিত থাকবে এবং <ph name="BEGIN_LINK" />Google ড্যাশবোর্ড<ph name="END_LINK" /> থেকে তা পরিচালনা করা যাবে।</translation>
 <translation id="4910241725741323970">অ্যাপ আগে থেকেই ইনস্টল করা রয়েছে</translation>
@@ -6694,7 +6688,6 @@
 <translation id="5935158534896975820">সার্টিফিকেটে স্বাক্ষর করার অনুরোধ তৈরি করা হচ্ছে (সার্ভারের জন্য অপেক্ষা করা হচ্ছে)</translation>
 <translation id="5935656526031444304">Safe Browsing ম্যানেজ করুন</translation>
 <translation id="5936065461722368675">সম্পূর্ণ পৃষ্ঠা অনুবাদ করুন</translation>
-<translation id="5937347877659196749">এরপরে, কোনও রিকভারি পিনের মাধ্যমে আপনার সব পাসকী সুরক্ষিত রাখুন</translation>
 <translation id="5937977334791924341"><ph name="APP" /> লোগো</translation>
 <translation id="5938002010494270685">নিরাপত্তার আপগ্রেড উপলভ্য</translation>
 <translation id="5939518447894949180">রিসেট করুন</translation>
@@ -7457,7 +7450,6 @@
 <translation id="6530030995840538405"><ph name="SUBJECT" />-এর <ph name="INDEX" />টি জেনারেট করা ছবি</translation>
 <translation id="6530186581263215931">আপনার অ্যাডমিনিস্ট্রেটর এই সেটিংস প্রয়োগ করেন</translation>
 <translation id="6530267432324197764"><ph name="MANAGER" />-এর মাধ্যমে প্রোফাইল ম্যানেজ করা হয়</translation>
-<translation id="6531282281159901044">বিপজ্জনক ফাইল রাখুন</translation>
 <translation id="6532101170117367231">Google ড্রাইভে সেভ করুন</translation>
 <translation id="6532106788206463496">পরিবর্তন সেভ করুন</translation>
 <translation id="6532206849875187177">নিরাপত্তা ও সাইন-ইন করা</translation>
@@ -7505,6 +7497,7 @@
 <translation id="6557290421156335491">আমার শর্টকাট</translation>
 <translation id="6560061709899140565">অন্যান্য কাস্ট সেশন দেখুন</translation>
 <translation id="6560151649238390891">সাজেশন যোগ করা হয়েছে</translation>
+<translation id="656065428026159829">আরও দেখুন</translation>
 <translation id="6561726789132298588">লিখুন</translation>
 <translation id="6562117348069327379">ডাউনলোড ডিরেক্টরিতে সিস্টেম লগ সেভ করুন।</translation>
 <translation id="656293578423618167">ফাইল পাথ অথবা নাম অত্যন্ত বড়৷ অনুগ্রহ করে একটি সংক্ষিপ্ত নামে বা অন্য কোনো স্থানে সেভণ করুন৷</translation>
@@ -9020,7 +9013,6 @@
 <translation id="7701040980221191251">কিছু নেই</translation>
 <translation id="7701869757853594372">ব্যবহারকারীর হ্যান্ডলগুলি</translation>
 <translation id="7702463352133825032"><ph name="DEVICE_NAME" />-এ কাস্ট করা বন্ধ করুন</translation>
-<translation id="7702574632857388784">তালিকা থেকে <ph name="FILE_NAME" /> সরান</translation>
 <translation id="7704305437604973648">কার্য</translation>
 <translation id="7704521324619958564">Play Store খুলুন</translation>
 <translation id="7705276765467986571">বুকমার্ক মডেল লোড করা যায়নি৷</translation>
@@ -9468,6 +9460,7 @@
 <translation id="8022466874160067884">আপনার Google অ্যাকাউন্ট ও পাসওয়ার্ড লিখুন</translation>
 <translation id="8023133589013344428">ChromeOS Flex সেটিংসে ভাষা ম্যানেজ করুন</translation>
 <translation id="8023801379949507775">এক্সটেনশগুলি এখনই আপডেট করুন</translation>
+<translation id="8024161440284949905">এইসব ট্যাবের মাধ্যমে চালিয়ে যান</translation>
 <translation id="8025151549289123443">লক স্ক্রিন ও সাইন-ইন</translation>
 <translation id="8025291188699172126">আপডেট সম্পর্কে</translation>
 <translation id="8026471514777758216">আপনার সব ডিভাইস</translation>

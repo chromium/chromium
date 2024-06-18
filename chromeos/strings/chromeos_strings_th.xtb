@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">เหลืองพาสเทล</translation>
 <translation id="1056898198331236512">คำเตือน</translation>
 <translation id="1059913517121127803">เริ่มการสแกนไม่ได้</translation>
+<translation id="1061864016440983342">ใช้โดยไม่ใช้ตำแหน่ง</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> จาก <ph name="COUNT" />, <ph name="NAME" /></translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ตรวจพบไฟร์วอลล์</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">การตั้งค่าเพิ่มเติม</translation>
 <translation id="2082932131694554252">แป้นบนแป้นพิมพ์ที่กำหนดแล้ว</translation>
 <translation id="2085089206770112532">ลดความสว่างของหน้าจอ</translation>
+<translation id="2086091080968010660">การเปลี่ยนแปลงตามเวลาอาจไม่ถูกต้อง เปิดการเข้าถึงตำแหน่งของระบบในการตั้งค่า</translation>
 <translation id="2102231663024125441">การแก้ไขข้อความ</translation>
 <translation id="2105810540595158374">อุปกรณ์เป็นอุปกรณ์ควบคุมเกม</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" /> เวอร์ชัน <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">คืนค่าเริ่มต้น</translation>
 <translation id="2286454467119466181">ง่าย</translation>
 <translation id="2287186687001756809">ไม่มีรูปภาพ ไปที่ <ph name="LINK" /> เพื่อเพิ่มรูปภาพ</translation>
+<translation id="2294577623958216786">กำหนดเวลาปัจจุบันคือ <ph name="SUNRISE" /> - <ph name="SUNSET" /> หากต้องการอัปเดตกำหนดเวลาพระอาทิตย์ตกและพระอาทิตย์ขึ้นโดยอัตโนมัติ ให้เปิดการเข้าถึงตำแหน่งของระบบ</translation>
 <translation id="2305172810646967500">ดำ</translation>
 <translation id="2307344026739914387">ใช้คู่คีย์ปัจจุบัน</translation>
 <translation id="2308243864813041101">ถอดสาย USB ของ <ph name="DEVICE_NAME" /> เพื่ออัปเดตต่อ</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">ความสว่างของแป้นพิมพ์</translation>
 <translation id="6412715219990689313">แป้นพิมพ์ในตัว</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="6419454453018688975">เปิดการเข้าถึงตำแหน่งของระบบ</translation>
 <translation id="6423239382391657905">เปิด VPN</translation>
 <translation id="6439505561246192797">อ่อน (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ไปที่การตั้งค่าบัญชี</translation>

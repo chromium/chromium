@@ -532,6 +532,7 @@
 <translation id="371398631992790800">隱藏「書籤」</translation>
 <translation id="37207012422556617">熱門搜尋</translation>
 <translation id="3725081662140949903">如要防止其他人使用你的密碼，請開啟 <ph name="APP" /> 應用程式變更密碼</translation>
+<translation id="372676576864368480">自動填入卡號，尾碼係 <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">於 <ph name="DATE" />建立</translation>
 <translation id="374357899112510277">隱藏「下載檔案」</translation>
 <translation id="3745190878148784130">隱藏「縮放文字」</translation>
@@ -1097,6 +1098,7 @@
 <translation id="6476800141292307438">將網頁翻譯成<ph name="LANGUAGE" />。翻譯選項喺喺接近畫面底部附近。</translation>
 <translation id="648164694371393720">驗證錯誤</translation>
 <translation id="6494931198667773526">結束時間</translation>
+<translation id="6500795388871406244">使用建議的密碼：</translation>
 <translation id="650279896687777322">瞭解詳情…</translation>
 <translation id="6505334220040167806">收埋分頁群組。</translation>
 <translation id="6507973708545996744">登入後，即可從任何裝置取得自己的閱讀清單。</translation>
@@ -1310,6 +1312,7 @@
 <translation id="7583004045319035904">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕式分頁。</translation>
 <translation id="7598439272585186139">提升安全性</translation>
 <translation id="7600965453749440009">永遠不要翻譯<ph name="LANGUAGE" /></translation>
+<translation id="7603308509262646847">自動填入持卡人 <ph name="NAME" /></translation>
 <translation id="7603852183842204213">已封鎖彈出式視窗 (<ph name="NUMBER_OF_BLOCKED_POPUPS" /> 個)</translation>
 <translation id="7606639338662398635">分頁群組</translation>
 <translation id="7607521702806708809">刪除密碼</translation>
@@ -1342,6 +1345,7 @@
 <translation id="7749790401023484470">未選取任何文字。</translation>
 <translation id="7752405526771734448">智能鏡頭視像搜尋</translation>
 <translation id="7756478488453921771">「選單」→「設定」→「付款方法」</translation>
+<translation id="775755486779745798">自動填入到期月份 <ph name="MONTH" /></translation>
 <translation id="7760127703945531263">無痕模式鎖定</translation>
 <translation id="7765158879357617694">移動</translation>
 <translation id="7772032839648071052">確認複雜密碼</translation>
@@ -1518,6 +1522,7 @@
 <translation id="8556590991644167667">{count,plural, =1{您已關閉 {count} 個警告}other{您已關閉 {count} 個警告}}</translation>
 <translation id="8560253818350321773">優先顯示常用項目。</translation>
 <translation id="8569721750632860947">要將邊個網址加去閱讀清單？</translation>
+<translation id="8577056989960190117">自動填入到期年份 <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">閂</translation>
 <translation id="8591976964826315682">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="8593565399399144771">你可在此開啟新分頁。</translation>

@@ -116,6 +116,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="2945997411976714835">Installationsfehler: Das Installationsprogramm konnte nicht gestartet werden.</translation>
 <translation id="2977470724722393594">Chromium ist auf dem neuesten Stand</translation>
 <translation id="2977506796191543575">Wenn eine Website versucht, dein Passwort zu stehlen, oder wenn du eine schädliche Datei herunterlädst, kann Chromium auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden</translation>
+<translation id="2987208172821108655">Chromium kann diese Tabs deaktivieren, um ein besseres Surfen zu ermöglichen und Ressourcen freizugeben.</translation>
 <translation id="3013473503895162900"><ph name="URL" /> in einem neuen Tab in Chromium öffnen.</translation>
 <translation id="3032706164202344641">Chromium kann deine Passwörter nicht prüfen. Versuche es später noch einmal.</translation>
 <translation id="3032787606318309379">Wird zu Chromium hinzugefügt...</translation>
@@ -317,6 +318,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6248213926982192922">Chromium als Standardbrowser verwenden</translation>
 <translation id="6266342355635466082">Chromium kann nicht nach Aktualisierungen suchen. Überprüfe deine Internetverbindung.</translation>
 <translation id="6268381023930128611">Von Chromium abmelden?</translation>
+<translation id="6270547683008298381">Diese Tabs verbrauchen zusätzliche Ressourcen. Du kannst die Leistung verbessern, wenn du zulässt, dass Chromium sie deaktiviert.</translation>
 <translation id="6281746429495226318">Chromium-Profil personalisieren</translation>
 <translation id="6290827346642914212">Chromium-Profil benennen</translation>
 <translation id="6294831894865512704">Eine deiner Erweiterungen fordert dich auf, dich in Chromium anzumelden</translation>
@@ -325,6 +327,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6327105987658262776">Es ist kein Update verfügbar.</translation>
 <translation id="6333502561965082103">In Chromium wird eine andere Aktion durchgeführt. Bitte versuche es später noch einmal.</translation>
 <translation id="6334986366598267305">Du kannst Chromium jetzt noch einfacher mit deinem Google-Konto und auf gemeinsam genutzten Computern verwenden.</translation>
+<translation id="633626832589656416">Chromium kann diese Tabs deaktivieren, um ein besseres und schnelleres Surfen zu ermöglichen.</translation>
 <translation id="6347933965114150440">Chromium-Verknüpfung</translation>
 <translation id="6366160072964553914">Chromium hat diesen Download blockiert, weil die Datei normalerweise nicht heruntergeladen wird und gefährlich sein könnte</translation>
 <translation id="6373523479360886564">Möchtest du Chromium wirklich deinstallieren?</translation>
@@ -450,7 +453,6 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="8254601181414348851">In einem neuen Profil in Chromium anmelden?</translation>
 <translation id="8266560134891435528">Chromium kann deine Passwörter nicht prüfen, da du nicht angemeldet bist</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium warnt dich<ph name="END_LINK" /> vor unsicheren Websites und Downloads</translation>
-<translation id="8290862415967981663">Diese Datei ist eventuell schädlich und wurde von Chromium blockiert.</translation>
 <translation id="8318772038038596122">In deiner Organisation wird Chromium nach <ph name="TIMEOUT_DURATION" /> Inaktivität geschlossen.</translation>
 <translation id="8330519371938183845">Wenn du dich anmeldest, wird Chromium auf allen deinen Geräten synchronisiert und personalisiert</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> hat zuvor Chromium verwendet</translation>

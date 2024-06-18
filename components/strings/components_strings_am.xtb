@@ -1011,6 +1011,7 @@
 <translation id="2930577230479659665">ከእያንዳንዱ ቅጂ በኋላ ከርክም</translation>
 <translation id="2933624813161016821">ፎይልን መቅረጽ</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> አገናኞችን ክፈት</translation>
+<translation id="2941112035454246133">ዝቅተኛ</translation>
 <translation id="2941878205777356567">9 x 12 ኢንች ፖስታ</translation>
 <translation id="2941952326391522266">ይህ አገልጋይ <ph name="DOMAIN" /> መሆኑን ሊያረጋግጥ አልቻለም፤ የደህንነት እውቅና ማረጋገጫው በ<ph name="DOMAIN2" /> ነው የተሰጠው። ይሄ በተሳሳተ አወቃቀር ወይም አንድ አጥቂ ግንኙነትዎን በመጥለፉ የተከሰተ ሊሆን ይችላል።</translation>
 <translation id="2942492342931589800">የተለመደ</translation>
@@ -2221,7 +2222,6 @@
 <translation id="5263867360296733198">ከመስቀል በፊት ግምገማ ያስፈልጋል</translation>
 <translation id="5266128565379329178">ከላይ ጠርዝ</translation>
 <translation id="5269225904387178860">አራቴ ከታች ብሳ</translation>
-<translation id="5269999699920406580">በመላው ስርዓት ላይ የሚተገበሩ ባህሪያት በባለቤቱ ብቻ ነው ሊዋቀሩ የሚችሉት፦ <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">«<ph name="DATA_CONTROLS_ATTRIBUTE" />» ለ«<ph name="DATA_CONTROLS_RESTRICTION" />» የሚደገፍ ሁኔታ አይደለም</translation>
 <translation id="5273658854610202413">ማስጠንቀቂያ፦ ይህ መመሪያ ሊዋሃዱ የሚችሉ የመዝገበ-ቃላት መመሪያዎች አካል ስላልሆነ በPolicyDictionaryMultipleSourceMergeList መመሪያ ላይ በተገለጸው መሠረትት አልተዋሃደም።</translation>
 <translation id="5279286380302340275">ውርዶችን ያቀናብሩ</translation>

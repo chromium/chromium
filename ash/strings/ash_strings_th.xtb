@@ -119,6 +119,7 @@
 <translation id="1383876407941801731">ค้นหา</translation>
 <translation id="1391102559483454063">เปิด</translation>
 <translation id="1394698770495054737">เบลอมาก</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 วันที่แล้ว}other{# วันที่แล้ว}}</translation>
 <translation id="1404963891829069586">เสียงโหมดโฟกัส</translation>
 <translation id="1407069428457324124">ธีมมืด</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" /> ใช้ปุ่มลูกศรเพื่อไปยังวันที่ต่างๆ</translation>
@@ -209,6 +210,7 @@
 <translation id="174102739345480129">ปิดตัวทำเครื่องหมายอยู่</translation>
 <translation id="1743570585616704562">ไม่รู้จักลายนิ้วมือ</translation>
 <translation id="1743927604032653654">ยุบการแจ้งเตือนเกี่ยวกับ<ph name="NOTIFICATION_TITLE" /></translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{ภายใน 1 ชม.}=1{1 ชม. ที่แล้ว}other{# ชม. ที่แล้ว}}</translation>
 <translation id="1746730358044914197">ผู้ดูแลระบบเป็นคนกำหนดค่าวิธีการป้อนข้อมูล</translation>
 <translation id="1747336645387973286">วันที่ครบกำหนด <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">เปิดใช้แป้นพิมพ์บนหน้าจออยู่</translation>
@@ -346,6 +348,7 @@
 <translation id="2359808026110333948">ต่อไป</translation>
 <translation id="2360398059912971776">แบตเตอรี่</translation>
 <translation id="2361210043495191221">เปิด/ปิด Wi-Fi <ph name="STATE" /></translation>
+<translation id="236574664504281623">ส่งจาก <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">ลงชื่อเข้าใช้ Chromebook ไม่ได้</translation>
 <translation id="2367972762794486313">แสดงแอป</translation>
 <translation id="2368828502825385061">ค้นหา</translation>
@@ -506,6 +509,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">เปิดการเข้าถึงไมโครโฟนใช่ไหม</translation>
 <translation id="296762781903199866">ดาวน์โหลดไฟล์คำพูดภาษา<ph name="LANGUAGE" />ไม่สำเร็จ</translation>
+<translation id="2968761508099987738">ปัจจุบันยังไม่รองรับในประเทศของคุณ</translation>
 <translation id="2970920913501714344">ติดตั้งแอป ส่วนขยาย และธีม</translation>
 <translation id="2977598380246111477">ตัวเลขถัดไป</translation>
 <translation id="2985148236010982088">ดูแอปทั้งหมด</translation>
@@ -974,6 +978,7 @@
 <translation id="468293128311738995">แอปจากโทรศัพท์ของคุณ</translation>
 <translation id="4690510401873698237">ชั้นวางอยู่ด้านล่าง</translation>
 <translation id="4696813013609194136">ปลดล็อกอุปกรณ์ด้วยรหัสของผู้ปกครอง</translation>
+<translation id="4697357603686181098">ช่วยไม่ได้ โปรดลองส่งคำขออื่น</translation>
 <translation id="4702647871202761252">หน้าจอส่วนตัวปิดอยู่</translation>
 <translation id="4706121060329443414">ระบบจะพยายามดาวน์โหลดภายหลัง โดยจะส่งคำพูดไปประมวลผลที่ Google ก่อนในขณะนี้</translation>
 <translation id="470644585772471629">การกลับสี</translation>
@@ -1896,6 +1901,7 @@
 <translation id="7982878511129296052">กำลังปิด...</translation>
 <translation id="7984197416080286869">พยายามปลดล็อกด้วยลายนิ้วมือหลายครั้งเกินไป</translation>
 <translation id="798779949890829624">การตั้งค่านี้จัดการโดยผู้ดูแลระบบ</translation>
+<translation id="7989206653429884947">เปิดบ่อยครั้ง</translation>
 <translation id="799296642788192631">คุณปักหมุดไฟล์ที่สำคัญได้ หากต้องการปักหมุด ให้วางเมาส์เหนือรายการหรือเปิด Files และคลิกขวาที่รายการ</translation>
 <translation id="7994370417837006925">การลงชื่อเข้าสู่ระบบพร้อมกันหลายบัญชี</translation>
 <translation id="7995804128062002838">จับภาพหน้าจอไม่สำเร็จ</translation>
@@ -2080,6 +2086,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">หมดเวลา เก่งมาก 🎉</translation>
+<translation id="8753368202781196133">ปัจจุบันระบบยังไม่รองรับภาษานี้</translation>
 <translation id="8755498163081687682">ยืนยันตัวตนของคุณ: <ph name="ORIGIN_NAME" /> ต้องการยืนยันว่าเป็นคุณ</translation>
 <translation id="875593634123171288">แสดงการตั้งค่า VPN</translation>
 <translation id="8756799553341497810">คุณเริ่มปรับแต่งเลย์เอาต์ของแอปได้เมื่อออกจากมุมมองนี้</translation>

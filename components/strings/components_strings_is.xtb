@@ -1011,6 +1011,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2930577230479659665">Klippa eftir hvert eintak</translation>
 <translation id="2933624813161016821">Upphleypingarfilma</translation>
 <translation id="2938225289965773019">Opna tengla fyrir <ph name="PROTOCOL" /></translation>
+<translation id="2941112035454246133">Lítill</translation>
 <translation id="2941878205777356567">Umslag: 23 x 30 cm</translation>
 <translation id="2941952326391522266">Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" />; öryggisvottorð hans er frá <ph name="DOMAIN2" />. Þetta kann að orsakast af vanstillingu eða tölvuþrjóti sem komist hefur inn í tenginguna.</translation>
 <translation id="2942492342931589800">Óformlegt</translation>
@@ -2222,7 +2223,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5263867360296733198">Yfirferðar er krafist fyrir upphleðslu</translation>
 <translation id="5266128565379329178">Innbundið efst</translation>
 <translation id="5269225904387178860">Fjögur göt neðst</translation>
-<translation id="5269999699920406580">Aðeins eigandinn (<ph name="OWNER_EMAIL" />) getur stillt eiginleika sem gilda alls staðar í kerfinu.</translation>
 <translation id="5271381225185906340">„<ph name="DATA_CONTROLS_ATTRIBUTE" />“ er ekki stutt ástand fyrir „<ph name="DATA_CONTROLS_RESTRICTION" />“</translation>
 <translation id="5273658854610202413">Viðvörun: Þessi regla var ekki sameinuð eins og tilgreint er í PolicyDictionaryMultipleSourceMergeList vegna þess að hún er ekki ein af safnsreglunum sem hægt er að sameina.</translation>
 <translation id="5279286380302340275">Stjórna niðurhali</translation>

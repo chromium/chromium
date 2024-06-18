@@ -1011,6 +1011,7 @@
 <translation id="2930577230479659665">Ар бир көчүрүүдөн кийин кыркуу</translation>
 <translation id="2933624813161016821">Эмбоссовка фольгасы</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> шилтемелерин ачуу</translation>
+<translation id="2941112035454246133">Төмөн</translation>
 <translation id="2941878205777356567">Конверт 9 x 12 дюйм</translation>
 <translation id="2941952326391522266">Бул сервер <ph name="DOMAIN" /> экендигин далилдей алган жок; себеби анын коопсуздук тастыктамасы бул жерден <ph name="DOMAIN2" /> алынган. Мындай көйгөй туура эмес конфигурация менен шартталышы мүмкүн же туташууңузга чабуулчу кийлигишип жатат.</translation>
 <translation id="2942492342931589800">Күнүмдүк</translation>
@@ -2221,7 +2222,6 @@
 <translation id="5263867360296733198">Жүктөп берүүдөн мурун текшерүү керек</translation>
 <translation id="5266128565379329178">Жогорку жагын байлоо</translation>
 <translation id="5269225904387178860">Төмөнкү жагын төрт жолу тешүү</translation>
-<translation id="5269999699920406580">Кеңири тутумду колдонгон функцияларды <ph name="OWNER_EMAIL" /> ээси гана коё алат</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" "<ph name="DATA_CONTROLS_RESTRICTION" />" үчүн колдоого алынган шарт эмес</translation>
 <translation id="5273658854610202413">Эскертүү: Бул эреже PolicyDictionaryMultipleSourceMergeList саясатында белгиленгендей бириктирилген жок, себеби ал бириктириле турган сөздүк эрежелеринин бөлүгү эмес.</translation>
 <translation id="5279286380302340275">Жүктөлүп алынгандарды башкаруу</translation>
@@ -3062,6 +3062,7 @@
 <translation id="6915804003454593391">Колдонуучу:</translation>
 <translation id="6916193791494646625">Жүктөп алуунун себебин көрсөтүңүз (милдеттүү)</translation>
 <translation id="6917795328362592458">Жаңы эле колдонгон сырсөзүңүздү кимдир бирөө билип алганы аныкталды. Аккаунттарыңыздын коопсуздугун коргоо үчүн Сырсөздөрдү башкаргыч сакталган сырсөздөрүңүздү текшерүүнү сунуштайт.</translation>
+<translation id="6924013822850225188">Төлөп жатканда картадагы бонустар көрсөтүлүп же көрсөтүлбөй турганын тандаңыз (банктын шарттары колдонулат)</translation>
 <translation id="6925267999184670015">Түндүк америкалык B+</translation>
 <translation id="6926216138694948720">Денеге сүрөт тартуу</translation>
 <translation id="692638818576287323">Кесипкөй унаалар</translation>
@@ -3831,6 +3832,7 @@
 <translation id="830498451218851433">Жарымынан бүктөө</translation>
 <translation id="8308653357438598313">Камерадан түз берүү</translation>
 <translation id="8311895354659782580">Кыймылсыз мүлк тизмелери</translation>
+<translation id="8312841338723044391">ЖАНДУУ</translation>
 <translation id="8316555157357957253">Азыр колдонулуп жатат</translation>
 <translation id="8319269383395457801">Турак жай сатуу</translation>
 <translation id="831997045666694187">Кече</translation>
@@ -4283,6 +4285,7 @@
 <translation id="920643408853370361">Саякатты камсыздандыруу</translation>
 <translation id="9207861905230894330">Макала кошулбай койду.</translation>
 <translation id="9210825002219699214">Аба каттамдары</translation>
+<translation id="9211461151375991073"><ph name="FEATURED_SEARCH_LIST" /> издөө үчүн @ белгисин териңиз</translation>
 <translation id="9213433120051936369">Көрүнүшүн ыңгайлаштыруу</translation>
 <translation id="9215416866750762878">Иштеп жаткан колдонмо Chrome’дун Интернетке коопсуз туташуусуна тоскоол болуп жатат</translation>
 <translation id="92178312226016010">Бул товарга көз салып жатасыз.</translation>

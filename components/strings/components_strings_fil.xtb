@@ -1011,6 +1011,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2930577230479659665">Paikliin pagkatapos ng bawat pagkopya</translation>
 <translation id="2933624813161016821">Embossing Foil</translation>
 <translation id="2938225289965773019">Buksan ang mga link ng <ph name="PROTOCOL" /></translation>
+<translation id="2941112035454246133">Mababa</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 in</translation>
 <translation id="2941952326391522266">Hindi mapatunayan ng server na ito na ito ay <ph name="DOMAIN" />; mula sa <ph name="DOMAIN2" /> ang certificate ng seguridad nito. Maaaring dulot ito ng maling configuration o isang umaatake na hinahadlangan ang iyong koneksyon.</translation>
 <translation id="2942492342931589800">Casual</translation>
@@ -2222,7 +2223,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5263867360296733198">Kinakailangan ang pagsusuri bago i-upload</translation>
 <translation id="5266128565379329178">Bind top</translation>
 <translation id="5269225904387178860">Quad punch bottom</translation>
-<translation id="5269999699920406580">Ang makakapagtakda lang ng mga feature na nalalapat sa buong system ay ang may-ari: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">Hindi sinusuportahang kundisyon ang "<ph name="DATA_CONTROLS_ATTRIBUTE" />" para sa "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="5273658854610202413">Babala: Hindi na-merge ang patakarang ito bilang tinukoy sa patakarang PolicyDictionaryMultipleSourceMergeList dahil hindi ito bahagi ng mga patakaran ng diksyunaryo na puwedeng i-merge.</translation>
 <translation id="5279286380302340275">Pamahalaan ang mga download</translation>

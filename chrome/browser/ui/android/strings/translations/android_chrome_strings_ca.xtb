@@ -170,7 +170,7 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="1825772852827001597">Les formes de pagament i les adreces de Google Pay no s'encriptaran. L'historial de navegació de Chrome no se sincronitzarà.
 Només les persones que sàpiguen la teva frase de contrasenya podran llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="1829244130665387512">Cerca a la pàgina</translation>
-<translation id="1832459821645506983">Sí, ho accepto</translation>
+<translation id="1832459821645506983">Sí, endavant</translation>
 <translation id="185383612275551373">Sincronitza per obtenir el contingut més rellevant de Google</translation>
 <translation id="1871098866036088250">Obre al navegador Chrome</translation>
 <translation id="1877026089748256423">Chrome no està actualitzat</translation>
@@ -422,6 +422,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> adreça d'interès}other{<ph name="BOOKMARKS_COUNT_MANY" /> adreces d'interès}}</translation>
 <translation id="3062802207422175757">Articles relacionats amb els teus interessos a Chrome</translation>
 <translation id="3066573403916685335">Mou cap avall</translation>
+<translation id="3067505415088964188">El preu és baix</translation>
 <translation id="3070005020161560471">Tradueix automàticament</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> s'obrirà a Chrome. En continuar, acceptes les <ph name="BEGIN_LINK1" />condicions del servei de Google<ph name="END_LINK1" /> i les <ph name="BEGIN_LINK2" />condicions del servei addicionals de Google Chrome i Chrome OS<ph name="END_LINK2" />. També s'aplica la <ph name="BEGIN_LINK3" />política de privadesa<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">Pots desar pàgines per llegir-les més endavant o sense connexió</translation>
@@ -1314,7 +1315,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Experiència de primera execució de Chrome</translation>
 <translation id="7411224099004328643">Usuari del Compte de Google</translation>
-<translation id="741204030948306876">Sí, ho accepto</translation>
+<translation id="741204030948306876">Sí, endavant</translation>
 <translation id="7419565702166471774">Utilitza sempre connexions segures</translation>
 <translation id="7431991332293347422">Controla com s'utilitza l'historial de navegació per personalitzar la Cerca i més</translation>
 <translation id="7435356471928173109">Desactivada per l'administrador</translation>

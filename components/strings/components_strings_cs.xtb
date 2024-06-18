@@ -1011,6 +1011,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="2930577230479659665">Oříznout za každou kopií</translation>
 <translation id="2933624813161016821">Razicí fólie</translation>
 <translation id="2938225289965773019">Otevírat odkazy <ph name="PROTOCOL" /></translation>
+<translation id="2941112035454246133">Nízká</translation>
 <translation id="2941878205777356567">Obálka 9 × 12 palců</translation>
 <translation id="2941952326391522266">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Jeho bezpečnostní certifikát pochází z domény <ph name="DOMAIN2" />. Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
 <translation id="2942492342931589800">Neformální</translation>
@@ -2218,7 +2219,6 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="5263867360296733198">Před nahráním je vyžadována kontrola</translation>
 <translation id="5266128565379329178">Vazba nahoře</translation>
 <translation id="5269225904387178860">Čtyři otvory dole</translation>
-<translation id="5269999699920406580">Funkce, které se vztahují na celý systém, může nastavit pouze vlastník: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">„<ph name="DATA_CONTROLS_ATTRIBUTE" />“ není podporovaná podmínka pro „<ph name="DATA_CONTROLS_RESTRICTION" />“</translation>
 <translation id="5273658854610202413">Upozornění: Tato zásada nebyla sloučena podle zásady PolicyDictionaryMultipleSourceMergeList, protože nepatří mezi slovníkové zásady, které lze sloučit.</translation>
 <translation id="5279286380302340275">Spravovat stahování</translation>
@@ -3058,6 +3058,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6915804003454593391">Uživatel:</translation>
 <translation id="6916193791494646625">Uveďte důvod stažení (povinné)</translation>
 <translation id="6917795328362592458">Právě použité heslo bylo nalezeno na seznamu hesel uniklých při incidentu porušení zabezpečení údajů. K zabezpečení vašich účtů doporučuje Správce hesel zkontrolovat uložená hesla.</translation>
+<translation id="6924013822850225188">Vyberte, zda při placení chcete zobrazit výhody karty (platí bankovní podmínky)</translation>
 <translation id="6925267999184670015">Severoamerická B+</translation>
 <translation id="6926216138694948720">Zdobení těla</translation>
 <translation id="692638818576287323">Užitková vozidla</translation>
@@ -3826,6 +3827,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="830498451218851433">Přeložení napůl</translation>
 <translation id="8308653357438598313">Živé přenosy videí</translation>
 <translation id="8311895354659782580">Realitní katalogy</translation>
+<translation id="8312841338723044391">ŽIVĚ</translation>
 <translation id="8316555157357957253">Právě používáno</translation>
 <translation id="8319269383395457801">Prodej rezidenčních nemovitostí</translation>
 <translation id="831997045666694187">Večer</translation>

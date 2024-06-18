@@ -250,6 +250,7 @@
 <translation id="4561051373932531560">Med Google Chrome kan du klikke på et telefonnummer på Internett og ringe ved bruk av Skype!</translation>
 <translation id="4567424176335768812">Du er logget på som <ph name="USER_EMAIL_ADDRESS" />. Nå kan du bruke bokmerkene, loggen og andre innstillinger på alle enhetene du er logget på.</translation>
 <translation id="4571503333518166079">Gå til innstillingene for Chrome-varsler</translation>
+<translation id="4575717501879784448">Chrome kan gjøre disse fanene inaktive for å frigjøre ressurser og gi deg en bedre surfeopplevelse.</translation>
 <translation id="459622048091363950">Når Chrome har fått tilgang, kan nettsteder spørre deg om tilgang.</translation>
 <translation id="4600710005438004015">Chrome kunne ikke oppdateres til den nyeste versjonen, så du går glipp av nye funksjoner og sikkerhetsforbedringer.</translation>
 <translation id="4624065194742029982">Chrome Inkognito</translation>
@@ -262,7 +263,6 @@
 <translation id="4728575227883772061">Installeringen mislyktes på grunn av en uspesifisert feil. Lukk Google Chrome hvis det kjører, og prøv på nytt.</translation>
 <translation id="4747730611090640388">Chrome kan anslå interessene dine.  Senere kan nettsteder du besøker, spørre Chrome om interessene dine for å kunne sette personlig preg på annonsene du ser.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-Inn)</translation>
-<translation id="4771048833395599659">Denne filen kan være farlig, så Chrome har blokkert den.</translation>
 <translation id="479167709087336770">Denne funksjonen bruker den samme stavekontrollen som Google Søk. Tekst du skriver inn i nettleseren, sendes til Google. Du kan når som helst endre dette i innstillingene.</translation>
 <translation id="4793679854893018356">Finn ut hvordan Chrome holder deg trygg</translation>
 <translation id="4828579605166583682">Google Chrome prøver å erstatte eksisterende passord. Skriv inn Windows-passordet ditt for å tillate dette.</translation>
@@ -281,6 +281,7 @@
 <translation id="4970761609246024540">Velkommen til Chrome-profiler</translation>
 <translation id="4970880042055371251">ChromeOS-versjon</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="4997044641749333913">Chrome kan gjøre disse fanene inaktive for å holde seg rask og gi deg en bedre surfeopplevelse.</translation>
 <translation id="5003967926796347400">Klikk på «Google Passordlagring»</translation>
 <translation id="5120334927898581447">Logg på Chrome når du logger på andre Google-tjenester</translation>
 <translation id="5126049312684316860">Chrome forhåndslaster enda flere sider du sannsynligvis kommer til å besøke, slik at de lastes inn raskere når du faktisk besøker dem</translation>
@@ -341,6 +342,7 @@
 <translation id="608006075545470555">Legg til en jobbprofil i denne nettleseren</translation>
 <translation id="6097822892606850415">Skriv med selvsikkerhet ved hjelp av AI</translation>
 <translation id="6113794647360055231">Nå er Chrome blitt enda bedre</translation>
+<translation id="6135456723633883042">Disse fanene bruker ekstra ressurser. For å få bedre ytelse kan du la Chrome gjøre dem inaktive.</translation>
 <translation id="6145313976051292476">Åpne PDF-filer i Chrome</translation>
 <translation id="6157638032135951407">Organisasjonen din sletter Chrome-data når de ikke har vært i bruk på <ph name="TIMEOUT_DURATION" />. Dette kan omfatte loggen, autofyll og nedlastinger.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

@@ -211,6 +211,7 @@
 <translation id="4415566066719264597">Нека Chromium ради у позадини</translation>
 <translation id="4423735387467980091">Прилагодите и контролишите Chromium</translation>
 <translation id="4427306783828095590">Побољшана заштита нуди више могућности за блокирање „пецања“ и малвера</translation>
+<translation id="4434353761996769206">Грешка програма за инсталацију: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4447409407328223819">О верзији Chrome for Testing</translation>
 <translation id="4501471624619070934">Инсталација није успела јер је приступ у овој земљи ограничен.</translation>
 <translation id="4510853178268397146">Овај додатак није објавио праксе приватности, на пример, како прикупља и користи податке. Chromium препоручује да га уклоните.</translation>
@@ -456,7 +457,6 @@ Chromium не може да врати подешавања.</translation>
 <translation id="8254601181414348851">Желите ли да се пријавите у Chromium на новом профилу?</translation>
 <translation id="8266560134891435528">Chromium не може да вам проверава лозинке зато што нисте пријављени</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium вас упозорава<ph name="END_LINK" /> на небезбедне сајтове и преузимања</translation>
-<translation id="8290862415967981663">Ова датотека је можда опасна, па ју је Chromium блокирао.</translation>
 <translation id="8318772038038596122">Организација затвара Chromium када се не користи <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8330519371938183845">Пријавите се да бисте синхронизовали и персонализовали Chromium на свим уређајима</translation>
 <translation id="8340674089072921962">Корисник <ph name="USER_EMAIL_ADDRESS" /> је претходно користио Chromium</translation>

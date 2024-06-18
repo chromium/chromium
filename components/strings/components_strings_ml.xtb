@@ -1011,6 +1011,7 @@
 <translation id="2930577230479659665">ഓരോ പകർപ്പിന് ശേഷവും ട്രിം ചെയ്യുക</translation>
 <translation id="2933624813161016821">എംബോയിസിംഗ് ഫോയിൽ</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> ലിങ്കുകൾ തുറക്കുക</translation>
+<translation id="2941112035454246133">താഴ്ന്ന</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 ഇഞ്ച്</translation>
 <translation id="2941952326391522266">ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; <ph name="DOMAIN2" /> എന്നതിൽ നിന്നുള്ളതാണ് അതിന്റെ സുരക്ഷാ സർട്ടിഫിക്കറ്റ്. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അക്രമണകാരി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
 <translation id="2942492342931589800">സാധാരണം</translation>
@@ -2221,7 +2222,6 @@
 <translation id="5263867360296733198">അപ്‌ലോഡ് ചെയ്യുന്നതിന് മുമ്പ് അവലോകനം ചെയ്യേണ്ടതുണ്ട്</translation>
 <translation id="5266128565379329178">മുകളിൽ ബൈൻഡ് ചെയ്യുക</translation>
 <translation id="5269225904387178860">താഴെ നാല് തവണ പഞ്ച് ചെയ്യുക</translation>
-<translation id="5269999699920406580">സിസ്‌റ്റത്തിലുടനീളം ബാധകമാകുന്ന ഫീച്ചറുകൾ ഉടമയ്‌ക്ക് മാത്രമേ സജ്ജീകരിക്കാനാവൂ: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" എന്നത് "<ph name="DATA_CONTROLS_RESTRICTION" />" എന്നതിനുള്ള പിന്തുണയ്ക്കുന്ന വ്യവസ്ഥയല്ല</translation>
 <translation id="5273658854610202413">മുന്നറിയിപ്പ്: ഈ നയം ലയിപ്പിക്കാവുന്ന നിഘണ്ടു നയങ്ങളുടെ ഭാഗമല്ലാത്തതിനാലാണ് PolicyDictionaryMultipleSourceMergeList നയത്തിൽ വ്യക്തമാക്കിയിരിക്കുന്നത് പോലെ ലയിപ്പിക്കാത്തത്.</translation>
 <translation id="5279286380302340275">ഡൗൺലോഡുകൾ മാനേജ് ചെയ്യുക</translation>
@@ -4283,6 +4283,7 @@
 <translation id="920643408853370361">യാത്രാ ഇൻഷുറൻസ്</translation>
 <translation id="9207861905230894330">ലേഖനം ചേർക്കാനായില്ല.</translation>
 <translation id="9210825002219699214">വ്യോമഗതാഗതം</translation>
+<translation id="9211461151375991073"><ph name="FEATURED_SEARCH_LIST" /> തിരയാൻ @ ടൈപ്പ് ചെയ്യുക</translation>
 <translation id="9213433120051936369">ദൃശ്യമാകുന്ന രീതി ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="9215416866750762878">ഈ സൈറ്റിലേക്ക് സുരക്ഷിതമായി കണക്റ്റ് ചെയ്യുന്നതിൽ നിന്ന് Chrome-നെ ഒരു ആപ്പ് തടയുന്നു</translation>
 <translation id="92178312226016010">നിങ്ങൾ ഈ ഉൽപ്പന്നം ട്രാക്ക് ചെയ്യുന്നു.</translation>

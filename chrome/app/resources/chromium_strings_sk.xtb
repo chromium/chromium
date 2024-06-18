@@ -211,6 +211,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="4415566066719264597">Povoliť prehliadaču Chromium spustenie na pozadí</translation>
 <translation id="4423735387467980091">Prispôsobiť a spravovať Chromium</translation>
 <translation id="4427306783828095590">Rozšírená ochrana efektívnejšie blokuje phishing aj malvér</translation>
+<translation id="4434353761996769206">Chyba inštalátora: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4447409407328223819">Chrome for Testing</translation>
 <translation id="4501471624619070934">Nepodarilo sa nainštalovať, pretože v tejto krajine je obmedzený prístup.</translation>
 <translation id="4510853178268397146">Toto rozšírenie nemá zverejnené spôsoby ochrany súkromia, napríklad to, ako zhromažďuje a používa údaje. Chromium odporúča, aby ste ho odstránili.</translation>
@@ -456,7 +457,6 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="8254601181414348851">Chcete sa prihlásiť do prehliadača Chromium v novom profile?</translation>
 <translation id="8266560134891435528">Chromium nemôže skontrolovať heslá, pretože ste sa neprihlásili</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium vás upozorňuje<ph name="END_LINK" /> na nebezpečné weby a súbory na stiahnutie</translation>
-<translation id="8290862415967981663">Tento súbor môže byť nebezpečný, a preto ho prehliadač Chromium zablokoval.</translation>
 <translation id="8318772038038596122">Ak sa prehliadač Chromium nebude používať <ph name="TIMEOUT_DURATION" />, vaša organizácia ho zavrie.</translation>
 <translation id="8330519371938183845">Po prihlásení budete môcť Chromium synchronizovať a prispôsobiť v rôznych zariadeniach.</translation>
 <translation id="8340674089072921962">Účet <ph name="USER_EMAIL_ADDRESS" /> predtým používal Chromium</translation>

@@ -24,7 +24,7 @@
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> fitxa}other{<ph name="TABS_COUNT_MANY" /> fitxa}}</translation>
 <translation id="2050597508048557928">{TABS_COUNT,plural, =1{Egin hautatutako fitxa <ph name="TABS_COUNT_ONE" />en laster-marka}other{Egin hautatutako <ph name="TABS_COUNT_MANY" /> fitxen laster-markak}}</translation>
 <translation id="2118649612461486615">Dendari buruzko informazioa</translation>
-<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Itxitako fitxak eta taldeak Azken fitxak eta Fitxa taldeak ataletatik ireki daitezke berriro. Zure ezkutuko moduko fitxa ez da egongo erabilgarri.}other{Itxitako fitxak eta taldeak Azken fitxak eta Fitxa taldeak ataletatik ireki daitezke berriro. Zure ezkutuko moduko # fitxak ez dira egongo erabilgarri.}}</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Itxitako fitxak eta taldeak Azkenaldiko fitxak eta Fitxa taldeak ataletatik ireki daitezke berriro. Zure ezkutuko moduko fitxa ez da egongo erabilgarri.}other{Itxitako fitxak eta taldeak Azkenaldiko fitxak eta Fitxa taldeak ataletatik ireki daitezke berriro. Zure ezkutuko moduko # fitxak ez dira egongo erabilgarri.}}</translation>
 <translation id="2162620598375156287">Orain, <ph name="CURRENT_PRICE" /> balio du <ph name="SOURCE_WEBSITE" /> webgunean</translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Kendu fitxa taldetik}other{Kendu fitxak taldetik}}</translation>
 <translation id="2271452184061378400">Hemen gordetzen dira fitxa taldeak</translation>

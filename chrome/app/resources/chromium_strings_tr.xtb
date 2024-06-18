@@ -116,6 +116,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="2945997411976714835">Yükleme hatası: Yükleyici işlemi başlatılamadı.</translation>
 <translation id="2977470724722393594">Chromium güncel durumda</translation>
 <translation id="2977506796191543575">Chromium, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir.</translation>
+<translation id="2987208172821108655">Chromium, göz atma deneyiminizi iyileştirmek ve kaynaklarda yer açmak için aşağıdaki sekmeleri devre dışı bırakabilir.</translation>
 <translation id="3013473503895162900"><ph name="URL" /> adresini Chromium'da yeni bir sekmede açar.</translation>
 <translation id="3032706164202344641">Chromium, şifrelerinizi kontrol edemiyor. Daha sonra tekrar deneyin.</translation>
 <translation id="3032787606318309379">Chromium'a ekleniyor ...</translation>
@@ -315,6 +316,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="6248213926982192922">Chromium varsayılan tarayıcı olsun</translation>
 <translation id="6266342355635466082">Chromium güncellemeleri denetleyemiyor. İnternet bağlantınızı kontrol etmeyi deneyin.</translation>
 <translation id="6268381023930128611">Chromium oturumunu kapatıyor musunuz?</translation>
+<translation id="6270547683008298381">Bu sekmeler ekstra kaynak kullanıyor. Performansınızı artırmak için Chromium'un bu sekmeleri devre dışı bırakmasına izin verin.</translation>
 <translation id="6281746429495226318">Chromium profilinizi özelleştirin</translation>
 <translation id="6290827346642914212">Chromium profilinize bir ad verin</translation>
 <translation id="6294831894865512704">Bir uzantı, Chromium'da oturum açmanızı istiyor</translation>
@@ -323,6 +325,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="6327105987658262776">Kullanılabilir güncelleme yok.</translation>
 <translation id="6333502561965082103">Chromium'da başka bir işlem devam ediyor. Lütfen daha sonra yeniden deneyin.</translation>
 <translation id="6334986366598267305">Chromium'u Google Hesabınızla ve paylaşılan bilgisayarlarda kullanmak artık daha kolay.</translation>
+<translation id="633626832589656416">Chromium, göz atma deneyiminizi iyileştirmek ve her şeyin hızlı çalışmasını sağlamak için aşağıdaki sekmeleri devre dışı bırakabilir.</translation>
 <translation id="6347933965114150440">Chromium Kısayolu</translation>
 <translation id="6366160072964553914">Dosya çok indirilmediği ve tehlikeli olabileceği için Chromium bu indirme işlemini engelledi</translation>
 <translation id="6373523479360886564">Chromium'u kaldırmak istediğinizden emin misiniz?</translation>
@@ -448,7 +451,6 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="8254601181414348851">Chromium'da yeni bir profilde oturum açılsın mı?</translation>
 <translation id="8266560134891435528">Oturum açmadığınız için Chromium, şifrelerinizi kontrol edemiyor</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium sizi uyararak<ph name="END_LINK" /> güvenli olmayan sitelerden ve indirmelerden haberdar olmanızı sağlar</translation>
-<translation id="8290862415967981663">Bu dosya tehlikeli olabileceği için Chromium tarafından engellendi.</translation>
 <translation id="8318772038038596122"><ph name="TIMEOUT_DURATION" /> boyunca kullanılmadığında Chromium kuruluşunuz tarafından kapatılır.</translation>
 <translation id="8330519371938183845">Chromium'u cihazlarınız arasında senkronize etmek ve kişiselleştirmek için oturum açın</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> önceden Chromium kullanıyordu</translation>

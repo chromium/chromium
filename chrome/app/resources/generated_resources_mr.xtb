@@ -300,7 +300,6 @@
 <translation id="1211769675100312947">तुम्ही निवडलेले शॉर्टकट</translation>
 <translation id="1213254615020057352">वापर आणि निदान डेटा पाठवा. Google ला निदान आणि डिव्हाइस आणि अ‍ॅप वापर डेटा आपोआप पाठवून तुमच्या मुलाच्या Android अनुभवात सुधारणा करण्यात मदत करा. हे तुमच्या मुलाला ओळखण्यासाठी वापरले जाणार नाही आणि सिस्टम व अ‍ॅप स्थिरता तसेच इतर सुधारणांमध्ये मदत करेल. काही एकत्रित डेटा Google अ‍ॅप्स आणि Android डेव्हलपर यांसारख्या भागीदारांनादेखील मदत करेल. हे सेटिंग मालकाद्वारे लागू केले जाते. या डिव्हाइससाठी Google ला निदान आणि वापर डेटा पाठवणे मालकाला निवडता येते. तुमच्या मुलासाठी अतिरिक्त वेब आणि अ‍ॅप अ‍ॅक्टिव्हिटी सेटिंग सुरू केलेले असल्यास, हा डेटा त्यांच्या Google खात्यामध्ये स्टोअर केला जाऊ शकतो.</translation>
 <translation id="1213726621272705156">तुम्हाला या पेजवर कार्ड पुन्हा दिसणार नाहीत</translation>
-<translation id="121384500095351701">ही फाइल सुरक्षितपणे डाउनलोड केली जाऊ शकत नाही</translation>
 <translation id="1214004433265298541"><ph name="DOMAIN" /> साठी तुमच्या क्रेडेंशियल पाहू शकणाऱ्या अ‍ॅडमिनिस्ट्रेटरने सर्टिफिकेट दिले आहे</translation>
 <translation id="1215411991991485844">नवीन पार्श्वभूमी ॲप्लिकेशन जोडला</translation>
 <translation id="1216542092748365687">फिंगरप्रिंट काढा</translation>
@@ -2097,7 +2096,6 @@
 <translation id="2489829450872380594">पुढील वेळेस नवीन फोन तुमचे हे <ph name="DEVICE_TYPE" /> अनलॉक करेल. तुम्ही सेटिंग्जमधून Smart Lock बंद करू शकता.</translation>
 <translation id="2489918096470125693">&amp;फोल्डर जोडा...</translation>
 <translation id="2489931062851778802">या की <ph name="DEVICE_NAME" /> वर एंटर करा</translation>
-<translation id="2490481887078769936">सूचीमधून '<ph name="FILE_NAME" />' काढून टाकले</translation>
 <translation id="249098303613516219">डिव्‍हाइसवरील साइट डेटाला अनुमती आहे</translation>
 <translation id="249113932447298600">क्षमस्व, <ph name="DEVICE_LABEL" /> डिव्हाइसला आता सपोर्ट नाही.</translation>
 <translation id="2491587035099903063"><ph name="LANGUAGE" /> साठी आवाजाचे पूर्वावलोकन</translation>
@@ -2489,7 +2487,6 @@
 <translation id="2772936498786524345">Sneaky</translation>
 <translation id="2773288106548584039">लेगसी ब्राउझर सपोर्ट</translation>
 <translation id="2773621783913034737">टॅब इनॅक्टिव्ह करा</translation>
-<translation id="2773802008104670137">या प्रकारची फाइल तुमच्या कॉंप्युटरला हानी पोहोचवू शकते.</translation>
 <translation id="2775104091073479743">फिंगरप्रिंट संपादित करा</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Extension "<ph name="EXTENSION" />" was accessing devices}=1{"<ph name="EXTENSION" />" हे एक्स्टेंशन {0} डिव्हाइस अ‍ॅक्सेस करत आहे}other{"<ph name="EXTENSION" />" हे एक्स्टेंशन {0} डिव्हाइस अ‍ॅक्सेस करत आहे}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{सपोर्ट नसलेले एक अ‍ॅप काढून टाका}other{सपोर्ट नसलेली # अ‍ॅप्स काढून टाका}}</translation>
@@ -3652,7 +3649,6 @@
 <translation id="3654682977761834281">एंबेड केलेल्या साइटवरील डेटा</translation>
 <translation id="3656328935986149999">कर्सरचा वेग</translation>
 <translation id="3658871634334445293">TrackPoint अ‍ॅक्सिलरेशन</translation>
-<translation id="3659550105763988702">तुमची पासकी <ph name="APP_NAME" /> साठी वापरा</translation>
 <translation id="3659929705630080526">तुम्ही खूप वेळा चुकीचा अ‍ॅक्सेस कोड एंटर केला आहे. नंतर पुन्हा प्रयत्न करा</translation>
 <translation id="3660234220361471169">अविश्‍वासू</translation>
 <translation id="3661106764436337772">जलद आणि अधिक आत्मविश्वासाने लिहा</translation>
@@ -3746,7 +3742,6 @@
 <translation id="3719245268140483218">डिव्हाइस इव्‍हेंट</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> भरला आहे.</translation>
 <translation id="3719826155360621982">होम पेज</translation>
-<translation id="3720543739123045680">इतर टॅब हे या टॅबसह प्रक्रिया शेअर करतात, ज्यामुळे अनपेक्षित DevTools अनुभव येऊ शकतो.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">तुम्ही आणि Google</translation>
 <translation id="3721178866505920080">विस्तारित प्रीलोड करणे सुरू करण्याबद्दल अधिक माहिती</translation>
@@ -5343,7 +5338,6 @@
 <translation id="4903967893652864401">हे बॅकग्राउंड अ‍ॅक्टिव्हिटी आणि सहजपणे होणारे स्क्रोलिंग यांसारखे व्हिज्युअल इफेक्ट मर्यादित ठेवून बॅटरीची पॉवर वाढवते.</translation>
 <translation id="4906490889887219338">नेटवर्क फाइल शेअर सेट किंवा व्यवस्थापित करा. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">हे एक्स्टेंशन तुमचा साइट डेटा केव्हा वाचू आणि बदलू शकेल ते निवडा</translation>
-<translation id="4907161631261076876">ही फाईल सामान्यपणे डाउनलोड केली नाही आणि कदाचित धोकादायक असू शकते.</translation>
 <translation id="4908811072292128752">एकाच वेळी दोन साइट ब्राउझ करण्यासाठी एक नवीन टॅब उघडा</translation>
 <translation id="4909038193460299775">हे खाते <ph name="DOMAIN" /> ने व्यवस्थापित केले असल्याने, तुमचे बुकमार्क, इतिहास, पासवर्ड आणि अन्य सेटिंग्ज या डिव्हाइस वरून साफ केल्या जातील. तथापि, तुमचा डेटा आपल्या Google खात्यामध्ये संचयित केलेला असेल आणि <ph name="BEGIN_LINK" />Google डॅशबोर्ड<ph name="END_LINK" /> वर व्यवस्थापित केला जाऊ शकतो.</translation>
 <translation id="4910241725741323970">अ‍ॅप आधीच इंस्टॉल केले आहे</translation>
@@ -6699,7 +6693,6 @@
 <translation id="5935158534896975820">सर्टिफिकेटवर स्वाक्षरी करण्याची विनंती तयार करत आहे (सर्व्हरची प्रतीक्षा करत आहे)</translation>
 <translation id="5935656526031444304">सुरक्षित ब्राउझिंग व्यवस्थापित करा</translation>
 <translation id="5936065461722368675">पूर्ण पेजचे भाषांतर करा</translation>
-<translation id="5937347877659196749">त्यानंतर, रिकव्‍हरी पिन वापरून तुमच्या सर्व पासकीचे संरक्षण करा</translation>
 <translation id="5937977334791924341"><ph name="APP" /> चा लोगो</translation>
 <translation id="5938002010494270685">सुरक्षितता अपग्रेड उपलब्ध आहे</translation>
 <translation id="5939518447894949180">रीसेट करा</translation>
@@ -7461,7 +7454,6 @@
 <translation id="6530030995840538405"><ph name="SUBJECT" /> पैकी <ph name="INDEX" /> जनरेट केलेली इमेज</translation>
 <translation id="6530186581263215931">या सेटिंग्जची अंमलबजावणी तुमच्या ॲडमिनिस्ट्रेटरकडून होते</translation>
 <translation id="6530267432324197764"><ph name="MANAGER" /> द्वारे व्यवस्थापित केलेली प्रोफाइल</translation>
-<translation id="6531282281159901044">धोकादायक फाईल ठेवा</translation>
 <translation id="6532101170117367231">Google ड्राइव्ह मध्ये सेव्ह करा</translation>
 <translation id="6532106788206463496">बदल सेव्ह करा</translation>
 <translation id="6532206849875187177">सुरक्षितता आणि साइन इन करा</translation>
@@ -7509,6 +7501,7 @@
 <translation id="6557290421156335491">माझे शॉर्टकट</translation>
 <translation id="6560061709899140565">इतर कास्‍ट सेशन दाखवा</translation>
 <translation id="6560151649238390891">सूचना घातली</translation>
+<translation id="656065428026159829">आणखी पहा</translation>
 <translation id="6561726789132298588">प्रविष्‍ट करा</translation>
 <translation id="6562117348069327379">सिस्टम लॉग डाउनलोड डिरेक्टरीमध्ये स्टोअर करा.</translation>
 <translation id="656293578423618167">फाइल पथ किंवा नाव खूप मोठे आहे. कृपया एका छोट्या नावाने किंवा दुसर्‍या स्‍थानावर सेव्ह करा.</translation>
@@ -9023,7 +9016,6 @@
 <translation id="7701040980221191251">काहीही नाही</translation>
 <translation id="7701869757853594372">वापरकर्ता हँडल</translation>
 <translation id="7702463352133825032"><ph name="DEVICE_NAME" /> वर कास्ट करणे थांबवा</translation>
-<translation id="7702574632857388784">सूचीमधून <ph name="FILE_NAME" /> काढून टाका</translation>
 <translation id="7704305437604973648">कार्य</translation>
 <translation id="7704521324619958564">Play स्टोअर उघडा</translation>
 <translation id="7705276765467986571">बुकमार्क मॉडेल लोड करणे शक्य नव्हते. </translation>
@@ -9473,6 +9465,7 @@
 <translation id="8022466874160067884">तुमचे Google खाते आणि पासवर्ड एंटर करा</translation>
 <translation id="8023133589013344428">ChromeOS Flex सेटिंग्जमध्ये भाषा व्यवस्थापित करा</translation>
 <translation id="8023801379949507775">एक्स्टेंशन त्वरित अपडेट करा</translation>
+<translation id="8024161440284949905">या टॅबसह पुढे सुरू ठेवा</translation>
 <translation id="8025151549289123443">लॉक स्‍क्रीन आणि साइन-इन</translation>
 <translation id="8025291188699172126">अपडेट यांविषयी</translation>
 <translation id="8026471514777758216">तुमची सर्व डिव्हाइस</translation>

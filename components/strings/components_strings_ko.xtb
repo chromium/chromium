@@ -1011,6 +1011,7 @@
 <translation id="2930577230479659665">각 사본 뒤에 트림</translation>
 <translation id="2933624813161016821">엠보싱 호일</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> 링크 열기</translation>
+<translation id="2941112035454246133">낮음</translation>
 <translation id="2941878205777356567">봉투 9 x 12 in</translation>
 <translation id="2941952326391522266">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 서버의 보안 인증서가 <ph name="DOMAIN2" />에서 제공한 것입니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="2942492342931589800">가벼운 말투로 작성</translation>
@@ -2222,7 +2223,6 @@
 <translation id="5263867360296733198">업로드하기 전에 검토 필요</translation>
 <translation id="5266128565379329178">상단 바인드</translation>
 <translation id="5269225904387178860">하단 4공 펀칭</translation>
-<translation id="5269999699920406580">시스템 전체에 적용되는 기능은 소유자(<ph name="OWNER_EMAIL" />)만 설정할 수 있습니다.</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />"은(는) "<ph name="DATA_CONTROLS_RESTRICTION" />"에 지원되는 조건이 아닙니다.</translation>
 <translation id="5273658854610202413">경고: 이 정책은 병합 가능한 사전 정책의 일부가 아니므로 PolicyDictionaryMultipleSourceMergeList 정책에 명시된 대로 병합되지 않았습니다.</translation>
 <translation id="5279286380302340275">다운로드 관리</translation>

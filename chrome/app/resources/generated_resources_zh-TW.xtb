@@ -300,7 +300,6 @@
 <translation id="1211769675100312947">自訂專屬捷徑</translation>
 <translation id="1213254615020057352">傳送使用狀況與診斷資料。讓系統自動將診斷資料、裝置和應用程式的使用資料傳送給 Google，協助改善貴子女的 Android 使用體驗。這些資料將有助於改善系統和應用程式的穩定性與其他功能，並不會用於識別貴子女的身分。此外，部分匯總資料還能協助 Google 應用程式和合作夥伴 (例如 Android 開發人員) 改善自己的產品和服務。這項設定是由裝置擁有者強制執行。擁有者可選擇將這部裝置的診斷資料與使用資料傳送給 Google。如果貴子女的「其他網路和應用程式活動」設定為開啟，這些資料可能會儲存在他們的 Google 帳戶中。</translation>
 <translation id="1213726621272705156">這個頁面不會再顯示資訊卡</translation>
-<translation id="121384500095351701">無法安全下載這個檔案</translation>
 <translation id="1214004433265298541">這個憑證的提供者為系統管理員 (可查看 <ph name="DOMAIN" /> 的憑證)</translation>
 <translation id="1215411991991485844">已新增新的背景應用程式</translation>
 <translation id="1216542092748365687">移除指紋</translation>
@@ -972,6 +971,7 @@
 <translation id="1697150536837697295">藝術</translation>
 <translation id="1697686431566694143">編輯檔案</translation>
 <translation id="1698796500103229697">付款方式(&amp;P)</translation>
+<translation id="1698899521169711967">鍵盤瀏覽</translation>
 <translation id="1699807488537653303">修正密碼錯誤</translation>
 <translation id="1700201317341192482">移除虛擬卡片</translation>
 <translation id="1700517974991662022">曾經造訪過</translation>
@@ -2079,7 +2079,6 @@
 <translation id="2489829450872380594">手機之後會解鎖這部 <ph name="DEVICE_TYPE" />。你可以在「設定」中停用 Smart Lock。</translation>
 <translation id="2489918096470125693">新增資料夾(&amp;F)...</translation>
 <translation id="2489931062851778802">請按下「<ph name="DEVICE_NAME" />」上的這幾個鍵</translation>
-<translation id="2490481887078769936">已從清單中移除「<ph name="FILE_NAME" />」</translation>
 <translation id="249098303613516219">允許在裝置端儲存網站資料</translation>
 <translation id="249113932447298600">很抱歉，系統目前不支援 <ph name="DEVICE_LABEL" /> 裝置。</translation>
 <translation id="2491587035099903063">試聽<ph name="LANGUAGE" />的語音</translation>
@@ -2470,7 +2469,7 @@
 <translation id="2771816809568414714">乳酪</translation>
 <translation id="2772936498786524345">忍者</translation>
 <translation id="2773288106548584039">舊版瀏覽器支援</translation>
-<translation id="2773802008104670137">這類檔案可能會損害你的電腦。</translation>
+<translation id="2773621783913034737">設為閒置分頁</translation>
 <translation id="2775104091073479743">編輯指紋</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{擴充功能「<ph name="EXTENSION" />」當時正在存取裝置}=1{擴充功能「<ph name="EXTENSION" />」正在存取 {0} 部裝置}other{擴充功能「<ph name="EXTENSION" />」正在存取 {0} 部裝置}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{移除 1 個不支援的應用程式}other{移除 # 個不支援的應用程式}}</translation>
@@ -2550,6 +2549,7 @@
 <translation id="2830528677948328648">管理 Google 帳戶(&amp;G)</translation>
 <translation id="2831430281393059038">須支援裝置</translation>
 <translation id="2832124733806557606">你的孩子可以使用 PIN 碼登入裝置，或將裝置解鎖。</translation>
+<translation id="2833144527504272627">使用文字游標瀏覽</translation>
 <translation id="2835177225987815960">目前的掃描設定將會重設，包含指派的外接切換裝置和自動掃描的速度偏好設定。</translation>
 <translation id="2835547721736623118">語音辨識服務</translation>
 <translation id="2835761321523638096">讀取及變更閱讀清單中的項目</translation>
@@ -3628,7 +3628,6 @@
 <translation id="3654682977761834281">來自嵌入網站的資料</translation>
 <translation id="3656328935986149999">游標速度</translation>
 <translation id="3658871634334445293">TrackPoint 加速</translation>
-<translation id="3659550105763988702">將密碼金鑰用於「<ph name="APP_NAME" />」</translation>
 <translation id="3659929705630080526">存取碼輸入錯誤的次數過多，請稍後再試</translation>
 <translation id="3660234220361471169">不受信任</translation>
 <translation id="3661106764436337772">自信地快速編寫</translation>
@@ -3721,7 +3720,6 @@
 <translation id="3719245268140483218">裝置事件</translation>
 <translation id="3719310907809321183">已填寫 <ph name="CARD_IDENTIFIER" />。</translation>
 <translation id="3719826155360621982">首頁</translation>
-<translation id="3720543739123045680">其他分頁與這個分頁共用處理程序，開發人員工具可能會因此無法正常運作。</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">你與 Google</translation>
 <translation id="3721178866505920080">進一步瞭解如何開啟延伸預先載入模式</translation>
@@ -4102,6 +4100,7 @@
 <translation id="3978325380690188371">ChromeVox 開啟時無法使用相黏鍵</translation>
 <translation id="3979395879372752341">已新增以下擴充功能：<ph name="EXTENSION_NAME" /></translation>
 <translation id="3979748722126423326">啟用 <ph name="NETWORKDEVICE" /></translation>
+<translation id="398095528354975981">隱藏這些分頁</translation>
 <translation id="3981058120448670012">以「<ph name="DEVICE_NAME" />」的名稱向附近的裝置顯示 <ph name="REMAINING_TIME" />...</translation>
 <translation id="3981760180856053153">輸入的儲存類型無效。</translation>
 <translation id="3982375475032951137">只要簡單幾個步驟就能完成瀏覽器設定</translation>
@@ -5316,7 +5315,6 @@
 <translation id="4903967893652864401">在這個模式下，系統會限制背景活動和順暢捲動等視覺效果，以延長電池續航力。</translation>
 <translation id="4906490889887219338">設定或管理網路檔案共用。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">選擇這項擴充功能何時可讀取及變更你的網站資料</translation>
-<translation id="4907161631261076876">一般使用者不常下載這個檔案，代表這個檔案可能不安全。</translation>
 <translation id="4908811072292128752">開啟新分頁即可一次瀏覽兩個網站</translation>
 <translation id="4909038193460299775">這個帳戶是由 <ph name="DOMAIN" /> 所管理，因此系統會將你的書籤、歷史記錄、密碼和其他設定從這個裝置上清除。不過，你的資料仍會儲存在你的 Google 帳戶中，並可透過 <ph name="BEGIN_LINK" />Google 資訊主頁<ph name="END_LINK" />管理。</translation>
 <translation id="4910241725741323970">已安裝應用程式</translation>
@@ -6291,6 +6289,7 @@
 <translation id="5642508497713047">CRL 簽署者</translation>
 <translation id="5643191124441701136">安全碼位於卡片正面</translation>
 <translation id="5643321261065707929">計量付費的網路</translation>
+<translation id="5643717184207603910">維持快速效能</translation>
 <translation id="5646376287012673985">位置</translation>
 <translation id="5646558797914161501">商人</translation>
 <translation id="5648021990716966815">麥克風插孔</translation>
@@ -6395,6 +6394,7 @@
 <translation id="5733109311583381874">將個人常用字詞新增到使用者字典中，以便自訂轉換候選字詞。</translation>
 <translation id="5734362860645681824">通訊</translation>
 <translation id="5734697361979786483">新增檔案共用區</translation>
+<translation id="5735513236153491131">立即提升</translation>
 <translation id="5736092224453113618">{NUM_FILES,plural, =0{這項資料或裝置不符合貴機構的部分安全性政策規定。請洽詢管理員，瞭解需要修正的項目。}=1{這個檔案或裝置不符合貴機構的部分安全性政策規定。請洽詢管理員，瞭解需要修正的項目。}other{這些檔案不符合貴機構的部分安全性政策規定。請洽詢管理員，瞭解需要修正的項目。}}</translation>
 <translation id="5738093759615225354">你必須有這個密碼金鑰，才能登入 Windows 電腦</translation>
 <translation id="5739017626473506901">登入以協助<ph name="USER_NAME" />新增學校帳戶</translation>
@@ -6665,7 +6665,6 @@
 <translation id="5935158534896975820">正在準備憑證簽署要求 (在伺服器上等待)</translation>
 <translation id="5935656526031444304">管理安全瀏覽功能</translation>
 <translation id="5936065461722368675">翻譯整頁內容</translation>
-<translation id="5937347877659196749">接下來，請設定用來保護密碼金鑰的復原 PIN 碼</translation>
 <translation id="5937977334791924341">「<ph name="APP" />」標誌</translation>
 <translation id="5938002010494270685">可進行安全性更新</translation>
 <translation id="5939518447894949180">重設</translation>
@@ -7425,7 +7424,6 @@
 <translation id="6530030995840538405">AI 生成的<ph name="SUBJECT" />圖片 <ph name="INDEX" /></translation>
 <translation id="6530186581263215931">這些是系統管理員強制套用的設定</translation>
 <translation id="6530267432324197764">由「<ph name="MANAGER" />」管理的設定檔</translation>
-<translation id="6531282281159901044">保留不安全的檔案</translation>
 <translation id="6532101170117367231">儲存至 Google 雲端硬碟</translation>
 <translation id="6532106788206463496">儲存變更</translation>
 <translation id="6532206849875187177">安全性與登入</translation>
@@ -7473,6 +7471,7 @@
 <translation id="6557290421156335491">我的捷徑</translation>
 <translation id="6560061709899140565">顯示其他投放工作階段</translation>
 <translation id="6560151649238390891">已插入建議項目</translation>
+<translation id="656065428026159829">顯示更多</translation>
 <translation id="6561726789132298588">Enter 鍵</translation>
 <translation id="6562117348069327379">將系統記錄儲存至「下載」目錄。</translation>
 <translation id="656293578423618167">檔案路徑或檔案名稱過長。請縮短檔案名稱或選擇其他儲存位置。</translation>
@@ -8204,6 +8203,7 @@
 <translation id="7114054701490058191">密碼不符</translation>
 <translation id="7114648273807173152">如要使用 Smart Lock 登入 Google 帳戶，請依序前往 [設定] &gt; [已連接的裝置] &gt; [你的手機] &gt; [Smart Lock]。</translation>
 <translation id="7115361495406486998">沒有可建立連線的聯絡人</translation>
+<translation id="7115731767122970828">立即提升</translation>
 <translation id="7116554090938189816">印表機 SSL 憑證已過期。請重新啟動印表機，然後再試一次。</translation>
 <translation id="7117228822971127758">請稍後再試</translation>
 <translation id="7118268675952955085">螢幕截圖</translation>
@@ -8359,6 +8359,7 @@
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (最佳)</translation>
 <translation id="7246230585855757313">請重新插入安全金鑰，然後再試一次</translation>
 <translation id="724835896049478274">可用於 Android 應用程式的帳戶</translation>
+<translation id="7248802599439396696">設為閒置分頁</translation>
 <translation id="7249197363678284330">前往網址列變更這項設定。</translation>
 <translation id="7249764475759804559">開啟檔案時，將這個應用程式列為選項</translation>
 <translation id="7250616558727237648">你要分享檔案的目標裝置沒有回應，請再試一次。</translation>
@@ -8984,7 +8985,6 @@
 <translation id="7701040980221191251">無</translation>
 <translation id="7701869757853594372">USER 控制代碼</translation>
 <translation id="7702463352133825032">停止投放到「<ph name="DEVICE_NAME" />」</translation>
-<translation id="7702574632857388784">從清單中移除 <ph name="FILE_NAME" /></translation>
 <translation id="7704305437604973648">工作</translation>
 <translation id="7704521324619958564">開啟 Play 商店</translation>
 <translation id="7705276765467986571">無法載入書籤模型。</translation>
@@ -9433,6 +9433,7 @@
 <translation id="8022466874160067884">輸入 Google 帳戶和密碼</translation>
 <translation id="8023133589013344428">在 ChromeOS Flex 設定中管理語言</translation>
 <translation id="8023801379949507775">立即更新擴充功能</translation>
+<translation id="8024161440284949905">繼續使用這些分頁</translation>
 <translation id="8025151549289123443">螢幕鎖定和登入</translation>
 <translation id="8025291188699172126">關於更新</translation>
 <translation id="8026471514777758216">你的所有裝置</translation>
@@ -9954,6 +9955,7 @@
 <translation id="8390392581097975659">正在安裝掃描器軟體</translation>
 <translation id="8390449457866780408">無法與伺服器連線。</translation>
 <translation id="8391218455464584335">黑膠</translation>
+<translation id="8391918125842702622">效能問題快訊</translation>
 <translation id="8392726714909453725">隨選朗讀設定</translation>
 <translation id="8393511274964623038">停止外掛程式</translation>
 <translation id="839363317075970734">藍牙裝置詳細資料</translation>
@@ -10054,6 +10056,7 @@
 <translation id="8466052016039127321">無法繼續執行前一個工作階段</translation>
 <translation id="8467326454809944210">選擇其他語言</translation>
 <translation id="8468087214092422866">不得尋找藍牙裝置</translation>
+<translation id="8469863130477774813">有可用的效能提升方式</translation>
 <translation id="8470513973197838199">已儲存 <ph name="ORIGIN" /> 的密碼</translation>
 <translation id="8471525937465764768">網站通常會連線至 USB 裝置，以提供列印文件或儲存至裝置等功能</translation>
 <translation id="8471959340398751476">折扣搜尋功能已關閉。你可以在自訂選單中開啟這項功能</translation>

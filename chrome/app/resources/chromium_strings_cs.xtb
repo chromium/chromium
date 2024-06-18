@@ -118,6 +118,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="2945997411976714835">Chyba instalace: Instalační proces se nepodařilo spustit.</translation>
 <translation id="2977470724722393594">Chromium je aktuální</translation>
 <translation id="2977506796191543575">Pokud se web pokusí odcizit vám heslo nebo když stáhnete škodlivý soubor, může Chromium Bezpečnému prohlížení odeslat také adresy URL, včetně částí obsahu stránky</translation>
+<translation id="2987208172821108655">Chromium může tyto karty deaktivovat, aby při procházení vše lépe fungovalo a uvolnily se zdroje.</translation>
 <translation id="3013473503895162900">Otevřít adresu <ph name="URL" /> na nové kartě prohlížeče Chromium.</translation>
 <translation id="3032706164202344641">Chromium nemůže zkontrolovat hesla. Zkuste to později.</translation>
 <translation id="3032787606318309379">Přidávání do prohlížeče Chromium...</translation>
@@ -319,6 +320,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6248213926982192922">Nastavit Chromium jako výchozí prohlížeč</translation>
 <translation id="6266342355635466082">Chromium nemůže vyhledat dostupné aktualizace. Zkuste zkontrolovat připojení k internetu.</translation>
 <translation id="6268381023930128611">Odhlásit se z prohlížeče Chromium?</translation>
+<translation id="6270547683008298381">Tyto karty využívají další zdroje. Ke zlepšení výkonu je Chromium nechte deaktivovat.</translation>
 <translation id="6281746429495226318">Upravit profil Chromium</translation>
 <translation id="6290827346642914212">Zadejte název profilu Chromium</translation>
 <translation id="6294831894865512704">Rozšíření vyžaduje, abyste se do prohlížeče Chromium přihlásili</translation>
@@ -327,6 +329,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6327105987658262776">Nejsou k dispozici žádné aktualizace.</translation>
 <translation id="6333502561965082103">V prohlížeči Chromium právě probíhá jiná operace. Zkuste to znovu později.</translation>
 <translation id="6334986366598267305">Používání prohlížeče Chromium se spravovaným účtem Google a sdílenými počítači je teď snazší.</translation>
+<translation id="633626832589656416">Chromium může tyto karty deaktivovat, aby při procházení vše lépe fungovalo a prohlížeč byl celkově rychlejší.</translation>
 <translation id="6347933965114150440">Zkratka prohlížeče Chromium</translation>
 <translation id="6366160072964553914">Prohlížeč Chromium toto stahování zablokoval, protože tento soubor se běžně nestahuje a může být nebezpečný</translation>
 <translation id="6373523479360886564">Jste si jisti, že chcete Chromium odinstalovat?</translation>
@@ -453,7 +456,6 @@ Chromium nemůže vaše nastavení obnovit.</translation>
 <translation id="8254601181414348851">Přihlásit se do prohlížeče Chromium v novém profilu?</translation>
 <translation id="8266560134891435528">Chromium nemůže zkontrolovat vaše hesla, protože nejste přihlášeni</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium vás varuje<ph name="END_LINK" /> před nebezpečnými weby a soubory ke stažení</translation>
-<translation id="8290862415967981663">Tento soubor může být nebezpečný, proto jej prohlížeč Chromium zablokoval.</translation>
 <translation id="8318772038038596122">Když prohlížeč Chromium <ph name="TIMEOUT_DURATION" /> není používán, vaše organizace ho zavře.</translation>
 <translation id="8330519371938183845">Po přihlášení si budete moci Chromium synchronizovat a upravit na různých zařízeních</translation>
 <translation id="8340674089072921962">Před vámi prohlížeč Chromium používal uživatel <ph name="USER_EMAIL_ADDRESS" /></translation>

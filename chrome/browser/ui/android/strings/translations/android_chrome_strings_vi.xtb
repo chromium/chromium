@@ -424,6 +424,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> dấu trang}other{<ph name="BOOKMARKS_COUNT_MANY" /> dấu trang}}</translation>
 <translation id="3062802207422175757">Các bài viết về chủ đề mà bạn quan tâm trên Chrome</translation>
 <translation id="3066573403916685335">Di chuyển xuống</translation>
+<translation id="3067505415088964188">Giá thấp</translation>
 <translation id="3070005020161560471">Tự động dịch</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> sẽ mở trong Chrome. Bằng việc tiếp tục, bạn đồng ý với <ph name="BEGIN_LINK1" />Điều khoản dịch vụ của Google<ph name="END_LINK1" /> cũng như <ph name="BEGIN_LINK2" />Điều khoản dịch vụ bổ sung của Google Chrome và ChromeOS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Chính sách quyền riêng tư<ph name="END_LINK3" /> cũng được áp dụng.</translation>
 <translation id="3080525922482950719">Bạn có thể lưu các trang để đọc vào lúc khác hoặc khi không có kết nối mạng</translation>

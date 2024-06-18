@@ -903,6 +903,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4381031910344220229">Ini membenarkan akses mikrofon untuk <ph name="APP_NAME" /> dan semua apl serta laman web yang mempunyai kebenaran mikrofon</translation>
 <translation id="4382340674111381977">Kembali ke halaman sebelumnya</translation>
 <translation id="4389184120735010762">Anda menekan pintasan papan kekunci untuk penggadang yang didok. Adakah anda ingin menghidupkannya?</translation>
+<translation id="4394466652057229831">Klik kanan untuk membuat ringkasan</translation>
 <translation id="439598569299422042">Dijeda, <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">Tidak dapat menyimpan rakaman skrin</translation>
 <translation id="4405151984121254935">Jenis peranti persisian yang disambungkan tidak disokong</translation>
@@ -1939,6 +1940,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8113423164597455979">Hidup, semua</translation>
 <translation id="8113515504791187892">Butang Pilih untuk Bercakap</translation>
 <translation id="8120151603115102514">Telefon anda tiada skrin kunci. Untuk membuka kunci Chromebook anda, masukkan kata laluan.</translation>
+<translation id="8120249852906205273">Mulakan semula</translation>
 <translation id="8127095419621171197">Buka apl Kalkulator</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
 <translation id="8130528849632411619">Pergi ke bahagian permulaan dokumen</translation>
@@ -2033,6 +2035,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="85123341071060231">Bluetooth Chromebook anda dimatikan. Untuk membuka kunci Chromebook anda, masukkan kata laluan.</translation>
 <translation id="8513108775083588393">Autoputar</translation>
 <translation id="851458219935658693">Tunjukkan tetingkap daripada meja semasa, butang radio dipilih</translation>
+<translation id="851660987304951246">Gunakan Bantu saya baca untuk meringkaskan kandungan dengan pantas atau bertanya soalan</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> anda mungkin tidak akan dicas semasa dihidupkan.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{Input mikrofon dikawal oleh <ph name="APP_NAME" />}other{Input mikrofon dikawal oleh # apl}}</translation>
 <translation id="8535393432370007982">Buat asal tertib isihan mengikut warna</translation>

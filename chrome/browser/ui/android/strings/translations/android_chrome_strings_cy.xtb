@@ -422,6 +422,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> nod tudalen}zero{<ph name="BOOKMARKS_COUNT_MANY" /> nod tudalen}two{<ph name="BOOKMARKS_COUNT_MANY" /> nod tudalen}few{<ph name="BOOKMARKS_COUNT_MANY" /> nod tudalen}many{<ph name="BOOKMARKS_COUNT_MANY" /> nod tudalen}other{<ph name="BOOKMARKS_COUNT_MANY" /> nod tudalen}}</translation>
 <translation id="3062802207422175757">Erthyglau am eich diddordebau ar Chrome</translation>
 <translation id="3066573403916685335">Symud i Lawr</translation>
+<translation id="3067505415088964188">Pris yn isel</translation>
 <translation id="3070005020161560471">Cyfieithu'n awtomatig</translation>
 <translation id="3072980200212375806">Bydd <ph name="APP_NAME" /> yn agor yn Chrome. Drwy barhau, rydych yn cytuno i <ph name="BEGIN_LINK1" />Delerau Gwasanaeth Google<ph name="END_LINK1" />, a <ph name="BEGIN_LINK2" />Thelerau Gwasanaeth Ychwanegol Google Chrome a ChromeOS<ph name="END_LINK2" />. Mae'r <ph name="BEGIN_LINK3" />Polisi Preifatrwydd<ph name="END_LINK3" /> hefyd yn berthnasol.</translation>
 <translation id="3080525922482950719">Gallwch gadw tudalennau i'w darllen yn nes ymlaen neu'n all-lein</translation>

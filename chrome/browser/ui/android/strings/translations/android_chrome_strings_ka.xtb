@@ -424,6 +424,7 @@
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> სანიშნე}other{<ph name="BOOKMARKS_COUNT_MANY" /> სანიშნე}}</translation>
 <translation id="3062802207422175757">თქვენს ინტერესებთან დაკავშირებული სტატიები Chrome-ში</translation>
 <translation id="3066573403916685335">გადაადგილება ქვევით</translation>
+<translation id="3067505415088964188">ფასი დაბალია</translation>
 <translation id="3070005020161560471">ავტომატურად ითარგმნოს</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> გაიხსნება Chrome-ში. გაგრძელებით ეთანხმებით <ph name="BEGIN_LINK1" />Google-ის მომსახურების პირობებს<ph name="END_LINK1" />, ასევე, <ph name="BEGIN_LINK2" />Google Chrome-ისა და ChromeOS-ის მომსახურების დამატებით პირობებს<ph name="END_LINK2" />. გარდა ამისა, მოქმედებს <ph name="BEGIN_LINK3" />კონფიდენციალურობის დებულება<ph name="END_LINK3" />.</translation>
 <translation id="3080525922482950719">სურვილისამებრ, შეგიძლიათ შეინახოთ გვერდები მოგვიანებით ან ხაზგარეშე რეჟიმში წასაკითხად</translation>

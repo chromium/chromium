@@ -454,7 +454,6 @@ Chromium ei voi palauttaa asetuksiasi.</translation>
 <translation id="8254601181414348851">Haluatko kirjautua Chromiumiin uudella profiililla?</translation>
 <translation id="8266560134891435528">Chromium ei voi tarkistaa salasanojasi, koska et ole kirjautuneena sisään</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium varoittaa sinua<ph name="END_LINK" /> vaarallisista sivustoista ja latauksista</translation>
-<translation id="8290862415967981663">Tämä tiedosto voi olla vaarallinen, joten Chromium on estänyt sen.</translation>
 <translation id="8318772038038596122">Kun Chromium on ollut käyttämättömänä <ph name="TIMEOUT_DURATION" />, organisaatiosi sulkee sen.</translation>
 <translation id="8330519371938183845">Kirjaudu sisään, niin voit synkronoida Chromiumin ja tehdä siitä yksilöllisemmän kaikilla laitteilla.</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> käytti aiemmin Chromiumia</translation>

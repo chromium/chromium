@@ -1011,6 +1011,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2930577230479659665">Obrezovanje po vsakem izvodu</translation>
 <translation id="2933624813161016821">Embossing Foil</translation>
 <translation id="2938225289965773019">Odpiranje povezav za <ph name="PROTOCOL" /></translation>
+<translation id="2941112035454246133">Nizka</translation>
 <translation id="2941878205777356567">Kuverta 9 x 12 palcev</translation>
 <translation id="2941952326391522266">Strežniku ni uspelo dokazati, da je res <ph name="DOMAIN" />; njegovo varnostno potrdilo je od <ph name="DOMAIN2" />. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
 <translation id="2942492342931589800">Neformalno</translation>
@@ -2222,7 +2223,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5263867360296733198">Pred nalaganjem je zahtevan pregled</translation>
 <translation id="5266128565379329178">Vezava zgoraj</translation>
 <translation id="5269225904387178860">Četverno luknjanje spodaj</translation>
-<translation id="5269999699920406580">Funkcije, ki se uporabijo v celotnem sistemu, lahko nastavi samo lastnik: <ph name="OWNER_EMAIL" />.</translation>
 <translation id="5271381225185906340">»<ph name="DATA_CONTROLS_ATTRIBUTE" />« ni podprt pogoj za element »<ph name="DATA_CONTROLS_RESTRICTION" />«</translation>
 <translation id="5273658854610202413">Opozorilo: ta pravilnik ni bil združen, kot je določeno v pravilniku PolicyDictionaryMultipleSourceMergeList, ker ne sodi k pravilnikom o slovarjih, ki jih je mogoče združiti.</translation>
 <translation id="5279286380302340275">Upravljanje prenosov</translation>

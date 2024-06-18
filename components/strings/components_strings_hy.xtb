@@ -1017,6 +1017,7 @@
 <translation id="2930577230479659665">Կտրել յուրաքանչյուր օրինակից հետո</translation>
 <translation id="2933624813161016821">Դաջման թաղանթ</translation>
 <translation id="2938225289965773019">Բացել <ph name="PROTOCOL" /> հղումները</translation>
+<translation id="2941112035454246133">Ցածր</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 դյմ</translation>
 <translation id="2941952326391522266">Այս սերվերը չի կարող ապացուցել, որ <ph name="DOMAIN" /> է: Դրա անվտանգության վկայականը <ph name="DOMAIN2" />-ից է: Պատճառը կարող է լինել սխալ կազմաձևումը կամ կապակցման խափանումը հարձակվողի կողմից:</translation>
 <translation id="2942492342931589800">Ոչ պաշտոնական</translation>
@@ -2231,7 +2232,6 @@
 <translation id="5263867360296733198">Նախքան վերբեռնելը ստուգեք ֆայլերը</translation>
 <translation id="5266128565379329178">Ամրակար վերևում</translation>
 <translation id="5269225904387178860">Չորս անցք ներքևում</translation>
-<translation id="5269999699920406580">Գործառույթները, որոնք վերաբերում են ողջ համակարգին, կարող է կարգավորել միայն սեփականատերը` <ph name="OWNER_EMAIL" />:</translation>
 <translation id="5271381225185906340">«<ph name="DATA_CONTROLS_ATTRIBUTE" />»-ը «<ph name="DATA_CONTROLS_RESTRICTION" />»-ի համար աջակցվող պայման չէ</translation>
 <translation id="5273658854610202413">Ուշադրություն: Այս կանոնը չի միավորվել համաձայն PolicyDictionaryMultipleSourceMergeList կանոնի, քանի որ այն բառարանների կանոնների մաս չէ, որոնք կարելի է միավորել:</translation>
 <translation id="5279286380302340275">Կառավարել ներբեռնումները</translation>
@@ -3074,6 +3074,7 @@
 <translation id="6915804003454593391">Օգտատեր`</translation>
 <translation id="6916193791494646625">Նշեք ներբեռնման պատճառը (պարտադիր է)</translation>
 <translation id="6917795328362592458">Գաղտնաբառը, որ հենց նոր օգտագործեցիք, կոտրվել է տվյալների արտահոսքի պատճառով։ Ձեր հաշիվները պաշտպանելու համար Գաղտնաբառերի կառավարիչը խորհուրդ է տալիս ստուգել պահված գաղտնաբառերը։</translation>
+<translation id="6924013822850225188">Ընտրեք՝ արդյոք ցուցադրել քարտի առավելությունները վճարում կատարելիս (գործում են բանկի պայմանները)</translation>
 <translation id="6925267999184670015">B+ (Հյուսիսային Ամերիկա)</translation>
 <translation id="6926216138694948720">Բոդի արտ</translation>
 <translation id="692638818576287323">Կոմերցիոն փոխադրամիջոցներ</translation>
@@ -3843,6 +3844,7 @@
 <translation id="830498451218851433">Ծալում կիսով չափ</translation>
 <translation id="8308653357438598313">Ուղիղ հեռարձակումներ</translation>
 <translation id="8311895354659782580">Անշարժ գույքի կատալոգներ</translation>
+<translation id="8312841338723044391">ՈՒՂԻՂ ԵԹԵՐ</translation>
 <translation id="8316555157357957253">Այժմ օգտագործվում է</translation>
 <translation id="8319269383395457801">Բնակելի անշարժ գույքի վաճառք</translation>
 <translation id="831997045666694187">Մինչև երեկո</translation>

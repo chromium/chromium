@@ -251,6 +251,7 @@
 <translation id="4561051373932531560">Google Chrome te permite hacer clic en un número de teléfono en la web y ¡llamarlo por Skype!</translation>
 <translation id="4567424176335768812">Accediste como <ph name="USER_EMAIL_ADDRESS" />. Ahora puedes ir a los favoritos, al historial y a otras opciones en todos los dispositivos en los que hayas accedido.</translation>
 <translation id="4571503333518166079">Ir a la configuración de notificaciones de Chrome</translation>
+<translation id="4575717501879784448">Chrome puede desactivar estas pestañas para mejorar tu experiencia de navegación y liberar recursos.</translation>
 <translation id="459622048091363950">Una vez que Chrome tenga acceso, los sitios web podrán solicitarte acceso.</translation>
 <translation id="4600710005438004015">Chrome no se pudo actualizar a la última versión, por lo que te estás perdiendo las nuevas funciones y correcciones de seguridad.</translation>
 <translation id="4624065194742029982">Incógnito de Chrome</translation>
@@ -263,7 +264,6 @@
 <translation id="4728575227883772061">No se pudo completar la instalación debido a un error no identificado. Si Google Chrome se está ejecutando en este momento, ciérrelo e intente nuevamente.</translation>
 <translation id="4747730611090640388">Chrome puede estimar tus intereses.  Luego, los sitios que visites pueden consultar tus intereses con Chrome para personalizar los anuncios que te muestran.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (tráfico mDNS entrante)</translation>
-<translation id="4771048833395599659">Chrome bloqueó este archivo porque podría ser peligroso.</translation>
 <translation id="479167709087336770">Se usará el mismo corrector ortográfico que se emplea en la Búsqueda de Google. El texto que escribes en el navegador se envía a Google. Puedes modificar este comportamiento en la configuración en cualquier momento.</translation>
 <translation id="4793679854893018356">Obtén información acerca de cómo Chrome te protege</translation>
 <translation id="4828579605166583682">Google Chrome está intentando reemplazar las contraseñas existentes. Para permitirlo, escribe tu contraseña de Windows.</translation>
@@ -282,6 +282,7 @@
 <translation id="4970761609246024540">Te damos la bienvenida a los perfiles de Chrome</translation>
 <translation id="4970880042055371251">Versión de ChromeOS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="4997044641749333913">Chrome puede desactivar estas pestañas para mejorar tu experiencia de navegación y mantener la velocidad.</translation>
 <translation id="5003967926796347400">Haz clic en "Administrador de contraseñas de Google"</translation>
 <translation id="5120334927898581447">Ingresa a Chrome cuando accedas a otros servicios de Google</translation>
 <translation id="5126049312684316860">Chrome precarga más páginas que probablemente visites para que se carguen más rápido cuando lo hagas</translation>
@@ -342,6 +343,7 @@
 <translation id="608006075545470555">Agrega un perfil de trabajo a este navegador</translation>
 <translation id="6097822892606850415">Escribe con más confianza gracias a la ayuda de la IA</translation>
 <translation id="6113794647360055231">Chrome mejorado</translation>
+<translation id="6135456723633883042">Estas pestañas están usando recursos adicionales. Para mejorar el rendimiento, permite que Chrome las desactive.</translation>
 <translation id="6145313976051292476">Abrir archivos PDF en Chrome</translation>
 <translation id="6157638032135951407">Tu organización borra los datos de Chrome cuando no se usan durante <ph name="TIMEOUT_DURATION" />. Esto puede incluir el historial, los datos de Autocompletar y las descargas.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

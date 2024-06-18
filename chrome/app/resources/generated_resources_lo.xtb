@@ -300,7 +300,6 @@
 <translation id="1211769675100312947">ທາງລັດທີ່ຄັດສັນໂດຍທ່ານ</translation>
 <translation id="1213254615020057352">ສົ່ງຂໍ້ມູນການນຳໃຊ້ ແລະ ການວິເຄາະ. ຊ່ວຍປັບປຸງປະສົບການ Android ຂອງລູກທ່ານໂດຍການສົ່ງຂໍ້ມູນການວິເຄາະ, ຂໍ້ມູນອຸປະກອນ ແລະ ການໃຊ້ແອັບໃຫ້ Google ໂດຍອັດຕະໂນມັດ. ຂໍ້ມູນນີ້ຈະບໍ່ຖືກໃຊ້ເພື່ອລະບຸຕົວລູກຂອງທ່ານ ແລະ ຈະຊ່ວຍປັບປຸງຄວາມສະຖຽນຂອງລະບົບ ແລະ ແອັບ ແລະ ການປັບປຸງອື່ນໆ. ບາງຂໍ້ມູນແບບຮວມກັນຍັງຈະຊ່ວຍແອັບ ແລະ ຮຸ້ນສ່ວນຂອງ Google ນຳອີກ ເຊັ່ນ: ຜູ້ພັດທະນາ Android. ເຈົ້າຂອງບັງຄັບໃຊ້ການຕັ້ງຄ່ານີ້. ເຈົ້າຂອງອາດຈະເລືອກສົ່ງຂໍ້ມູນການວິເຄາະ ແລະ ການໃຊ້ສຳລັບອຸປະກອນນີ້ໃຫ້ Google ກໍໄດ້. ຖ້າເປີດການຕັ້ງຄ່າການເຄື່ອນໄຫວເວັບ ແລະ ແອັບເພີ່ມເຕີມສໍາລັບລູກຂອງທ່ານ, ລະບົບອາດຈະບັນທຶກຂໍ້ມູນນີ້ໄວ້ໃນບັນຊີ Google ຂອງເຂົາເຈົ້າ.</translation>
 <translation id="1213726621272705156">ທ່ານຈະບໍ່ເຫັນບັດຢູ່ໜ້ານີ້ອີກ</translation>
-<translation id="121384500095351701">ບໍ່ສາມາດດາວໂຫຼດໄຟລ໌ນີ້ໄດ້ຢ່າງປອດໄພ</translation>
 <translation id="1214004433265298541">ໃບຮັບຮອງທີ່ໄດ້ຮັບຈາກຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານເຊິ່ງສາມາດເບິ່ງຂໍ້ມູນການເຂົ້າສູ່ລະບົບສຳລັບ <ph name="DOMAIN" /> ໄດ້</translation>
 <translation id="1215411991991485844">ເພີ່ມແອັບພື້ນຫຼັງໃໝ່ແລ້ວ</translation>
 <translation id="1216542092748365687">ລຶບລາຍນິ້ວມືອອກ</translation>
@@ -2092,7 +2091,6 @@
 <translation id="2489829450872380594">ຄັ້ງຕໍ່ໄປ, ໂທລະສັບໃໝ່ຈະປົດລັອກ <ph name="DEVICE_TYPE" /> ນີ້. ທ່ານສາມາດປິດ Smart Lock ໄດ້ໃນການຕັ້ງຄ່າ.</translation>
 <translation id="2489918096470125693">ເພີ່ມ​ໂຟລເດີ...</translation>
 <translation id="2489931062851778802">ກົດປຸ່ມເຫຼົ່ານີ້ຢູ່ <ph name="DEVICE_NAME" /></translation>
-<translation id="2490481887078769936">ລຶບ '<ph name="FILE_NAME" />' ອອກຈາກລາຍການແລ້ວ</translation>
 <translation id="249098303613516219">ອະນຸຍາດໃຫ້ຂໍ້ມູນເວັບໄຊຢູ່ອຸປະກອນແລ້ວ</translation>
 <translation id="249113932447298600">ຂໍອະໄພ, ອຸປະກອນ <ph name="DEVICE_LABEL" /> ບໍ່ຮອງຮັບໃນເວລານີ້.</translation>
 <translation id="2491587035099903063">ຕົວຢ່າງສຽງສຳລັບ <ph name="LANGUAGE" /></translation>
@@ -2484,7 +2482,6 @@
 <translation id="2772936498786524345">ລັບໆລີ້ໆ</translation>
 <translation id="2773288106548584039">ການຮອງຮັບໂປຣແກຣມທ່ອງເວັບເກົ່າ</translation>
 <translation id="2773621783913034737">ເຮັດໃຫ້ແຖບບໍ່ເຮັດວຽກ</translation>
-<translation id="2773802008104670137">ໄຟລ໌ປະເພດນີ້ອາດຈະເປັນອັນຕະລາຍຕໍ່ກັບຄອມພິວເຕີຂອງທ່ານ.</translation>
 <translation id="2775104091073479743">ແກ້ໄຂລາຍນິ້ວມື</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION" />" ໄດ້ກຳລັງເຂົ້າເຖິງອຸປະກອນ}=1{ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION" />" ກຳລັງເຂົ້າເຖິງ {0} ອຸປະກອນ}other{ສ່ວນຂະຫຍາຍ "<ph name="EXTENSION" />" ກຳລັງເຂົ້າເຖິງ {0} ອຸປະກອນ}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{ລຶບ 1 ແອັບທີ່ບໍ່ຮອງຮັບອອກ}other{ລຶບ # ແອັບທີ່ບໍ່ຮອງຮັບອອກ}}</translation>
@@ -3646,7 +3643,6 @@
 <translation id="3654682977761834281">ຂໍ້ມູນຈາກເວັບໄຊທີ່ຝັງຕົວ</translation>
 <translation id="3656328935986149999">ຄວາມໄວຂອງເຄີເຊີ</translation>
 <translation id="3658871634334445293">ການເລັ່ງຄວາມໄວ TrackPoint</translation>
-<translation id="3659550105763988702">ໃຊ້ກະແຈຜ່ານຂອງທ່ານສຳລັບ <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">ທ່ານໃສ່ລະ​ຫັດ​ການ​ເຂົ້າ​ຫາບໍ່ຖືກຕ້ອງຫຼາຍເທື່ອເກີນໄປ. ກະລຸນາລອງໃໝ່ໃນພາຍຫຼັງ</translation>
 <translation id="3660234220361471169">ບໍ່ເຊື່ອຖືໄດ້</translation>
 <translation id="3661106764436337772">ຂຽນໄດ້ໄວຂຶ້ນ ແລະ ມີຄວາມໝັ້ນໃຈຫຼາຍຂຶ້ນ</translation>
@@ -3739,7 +3735,6 @@
 <translation id="3719245268140483218">ເຫດການອຸປະກອນ</translation>
 <translation id="3719310907809321183">ຕື່ມ <ph name="CARD_IDENTIFIER" /> ແລ້ວ.</translation>
 <translation id="3719826155360621982">ຫນ້າ​ຫຼັກ</translation>
-<translation id="3720543739123045680">ແຖບອື່ນໆຈະໃຊ້ຂະບວນການຮ່ວມກັບແຖບນີ້, ເຊິ່ງອາດສົ່ງຜົນໃຫ້ເກີດປະສົບການໃນການນຳໃຊ້ DevTools ແບບບໍ່ຄາດຄິດ.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">ທ່ານ ແລະ Google</translation>
 <translation id="3721178866505920080">ຂໍ້ມູນເພີ່ມເຕີມກ່ຽວກັບການເປີດການໂຫຼດກ່ອນລ່ວງໜ້າແບບຂະຫຍາຍ</translation>
@@ -5336,7 +5331,6 @@
 <translation id="4903967893652864401">ນີ້ຈະຍືດອາຍຸແບັດເຕີຣີໂດຍການຈຳກັດການເຄື່ອນໄຫວໃນພື້ນຫຼັງ ແລະ ເອັບເຟັກດ້ານພາບ ເຊັ່ນ: ການເລື່ອນແບບນຸ້ມນວນ.</translation>
 <translation id="4906490889887219338">ຕັ້ງຄ່າ ຫຼື ຈັດການການແບ່ງປັນໄຟລ໌ຜ່ານເຄືອຂ່າຍ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">ເລືອກວ່າສ່ວນຂະຫຍາຍນີ້ຈະສາມາດອ່ານ ແລະ ປ່ຽນຂໍ້ມູນເວັບໄຊຂອງທ່ານໄດ້ຕອນໃດ</translation>
-<translation id="4907161631261076876">ໄຟລ໌ນີ້ບໍ່ຖືກດາວໂຫລດໂດຍທົ່ວໄປ ແລະ ອາດເປັນອັນຕະລາຍໄດ້.</translation>
 <translation id="4908811072292128752">ເປີດແຖບໃໝ່ເພື່ອເລື່ອນເບິ່ງສອງເວັບໄຊພ້ອມກັນ</translation>
 <translation id="4909038193460299775">ເພາະວ່າບັນຊີນີ້ຖືກຈັດການໂດຍ <ph name="DOMAIN" />, ບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນຂອງທ່ານຈະຖືກລຶບລ້າງອອກຈາກອຸປະກອນນີ້. ແນວໃດກໍຕາມ, ຂໍ້ມູນຂອງທ່ານຈະຍັງຄົງຮັກສາໄວ້ຢູ່ໃນບັນຊີ Google ຂອງທ່ານ ແລະ ສາມາດຖືກຈັດການໄດ້ໃນ <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">ຕິດຕັ້ງແອັບແລ້ວ</translation>
@@ -6689,7 +6683,6 @@
 <translation id="5935158534896975820">ກຳລັງກະກຽມຄຳຂໍເຊັນໃບຮັບຮອງ (ລໍຖ້າໃນເຊີບເວີ)</translation>
 <translation id="5935656526031444304">ຈັດການ Safe Browsing</translation>
 <translation id="5936065461722368675">ແປພາສາໜ້າເຕັມ</translation>
-<translation id="5937347877659196749">ຕໍ່ໄປ, ໃຫ້ປົກປ້ອງກະແຈຜ່ານທັງໝົດຂອງທ່ານດ້ວຍ PIN ການກູ້ຄືນ</translation>
 <translation id="5937977334791924341">ໂລໂກ້ <ph name="APP" /></translation>
 <translation id="5938002010494270685">ມີການອັບເກຣດຄວາມປອດໄພ</translation>
 <translation id="5939518447894949180">ຕັ້ງຄ່າຄືນໃໝ່</translation>
@@ -7451,7 +7444,6 @@
 <translation id="6530030995840538405">ສ້າງຮູບ <ph name="INDEX" /> ຂອງ <ph name="SUBJECT" /> ແລ້ວ</translation>
 <translation id="6530186581263215931">ການຕັ້ງຄ່າເຫຼົ່ານີ້ຖືກບັງຄັບໃຊ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="6530267432324197764">ຈັດການໂປຣໄຟລ໌ໂດຍ <ph name="MANAGER" /></translation>
-<translation id="6531282281159901044">ຮັກສາໄຟລ໌ອັນຕະລາຍໄວ້</translation>
 <translation id="6532101170117367231">ບັນທຶກໄວ້ໃນ Google Drive</translation>
 <translation id="6532106788206463496">ບັນທຶກການປ່ຽນແປງ</translation>
 <translation id="6532206849875187177">ຄວາມປອດໄພ ແລະ ການເຂົ້າສູ່ລະບົບ</translation>
@@ -7499,6 +7491,7 @@
 <translation id="6557290421156335491">ທາງລັດຂອງຂ້ອຍ</translation>
 <translation id="6560061709899140565">ສະແດງເຊດຊັນການສົ່ງສັນຍານອື່ນໆ</translation>
 <translation id="6560151649238390891">ແຊກການແນະນຳແລ້ວ</translation>
+<translation id="656065428026159829">ເບິ່ງເພີ່ມເຕີມ</translation>
 <translation id="6561726789132298588">ປ້ອນເຂົ້າ</translation>
 <translation id="6562117348069327379">ເກັບຮັກສາບັນທຶກລະບົບໄວ້ໃນແຟ້ມການດາວໂຫຼດ.</translation>
 <translation id="656293578423618167">ຊ່ອງທາງ ຫຼືຊື່ໄຟລ໌ຍາວເກີນໄປ. ກະລຸນາບັນທຶກດ້ວຍຊື່ທີ່ສັ້ນກ່ວາ ຫຼືໄປໃສ່ທີ່ຕັ້ງອື່ນ.</translation>
@@ -9010,7 +9003,6 @@
 <translation id="7701040980221191251">ບໍ່​ມີ​</translation>
 <translation id="7701869757853594372">ດ້າມຈັບ​ຜູ້​ໃຊ້</translation>
 <translation id="7702463352133825032">ຢຸດສົ່ງສັນຍານໄປຫາ <ph name="DEVICE_NAME" /></translation>
-<translation id="7702574632857388784">ລຶບ <ph name="FILE_NAME" /> ອອກຈາກລາຍການແລ້ວ</translation>
 <translation id="7704305437604973648">ໜ້າວຽກ​</translation>
 <translation id="7704521324619958564">ເປີດ Play Store</translation>
 <translation id="7705276765467986571">ບໍ່​ສາ​ມາດ​ໂຫຼດ​ລຸ້ນບຸກມາກຄ໌ໄດ້.</translation>
@@ -9457,6 +9449,7 @@
 <translation id="8022466874160067884">ລະບຸບັນຊີ Google ແລະ ລະຫັດຜ່ານຂອງທ່ານ</translation>
 <translation id="8023133589013344428">ຈັດການພາສາໃນການຕັ້ງຄ່າ ChromeOS Flex</translation>
 <translation id="8023801379949507775">ອັບເດດສ່ວນຂະຫຍາຍດຽວນີ້</translation>
+<translation id="8024161440284949905">ສືບຕໍ່ກັບແຖບເຫຼົ່ານີ້</translation>
 <translation id="8025151549289123443">ໜ້າຈໍລັອກ ແລະ ການເຂົ້າສູ່ລະບົບ</translation>
 <translation id="8025291188699172126">ກ່ຽວກັບການອັບເດດ</translation>
 <translation id="8026471514777758216">ອຸປະກອນທັງໝົດຂອງທ່ານ</translation>

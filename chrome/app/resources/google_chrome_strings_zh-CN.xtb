@@ -250,6 +250,7 @@
 <translation id="4561051373932531560">您可以在 Google Chrome 浏览器中点击网上的电话号码，然后通过 Skype 拨打！</translation>
 <translation id="4567424176335768812">您已使用 <ph name="USER_EMAIL_ADDRESS" /> 的身份登录。现在您可在已登录的所有设备上访问您的书签、历史记录和其他设置。</translation>
 <translation id="4571503333518166079">转到 Chrome 通知设置</translation>
+<translation id="4575717501879784448">Chrome 可以让这些标签页处于非活跃状态，以改善您的浏览体验并释放资源。</translation>
 <translation id="459622048091363950">一旦 Chrome 获得了使用权限，网站便能请求您向其授予使用权限。</translation>
 <translation id="4600710005438004015">Chrome 无法更新至最新版本，因此您未能获得最新的功能和安全修复程序。</translation>
 <translation id="4624065194742029982">Chrome 无痕模式</translation>
@@ -262,7 +263,6 @@
 <translation id="4728575227883772061">未知错误导致安装失败。如果 Google Chrome 浏览器正在运行，请将其关闭，然后重试。</translation>
 <translation id="4747730611090640388">Chrome 可以推测出您的兴趣。之后，您访问的网站可向 Chrome 请求查看您的兴趣，以便向您展示个性化广告。</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
-<translation id="4771048833395599659">此文件可能存在危险，因此 Chrome 已将其拦截。</translation>
 <translation id="479167709087336770">这项服务会使用 Google 搜索所用的拼写检查工具。您在浏览器中输入的文字会被发送给 Google。您随时可在“设置”中更改此行为。</translation>
 <translation id="4793679854893018356">了解 Chrome 如何保障您的安全</translation>
 <translation id="4828579605166583682">Google Chrome 正在尝试替换现有密码。请输入您的 Windows 密码以允许此操作。</translation>
@@ -281,6 +281,7 @@
 <translation id="4970761609246024540">欢迎使用 Chrome 个人资料</translation>
 <translation id="4970880042055371251">Chrome 操作系统版本</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="4997044641749333913">Chrome 可以让这些标签页处于非活跃状态，以改善您的浏览体验并保持快速运行。</translation>
 <translation id="5003967926796347400">点击“Google 密码管理工具”</translation>
 <translation id="5120334927898581447">登录其他 Google 服务时登录 Chrome</translation>
 <translation id="5126049312684316860">Chrome 会预加载您可能会访问的更多网页，以便提高这些网页在您访问时的加载速度</translation>
@@ -341,6 +342,7 @@
 <translation id="608006075545470555">向此浏览器添加工作资料</translation>
 <translation id="6097822892606850415">借助 AI 更自信地撰写内容</translation>
 <translation id="6113794647360055231">Chrome现在更好用了</translation>
+<translation id="6135456723633883042">这些标签页正在使用额外的资源。为了提升性能，请让 Chrome 将它们设为非活跃状态。</translation>
 <translation id="6145313976051292476">在 Chrome 中打开 PDF 文件</translation>
 <translation id="6157638032135951407">贵组织会在 Chrome 闲置 <ph name="TIMEOUT_DURATION" />后删除 Chrome 数据，其中可能包括历史记录、自动填充和下载内容。</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

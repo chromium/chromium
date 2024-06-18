@@ -1011,6 +1011,7 @@
 <translation id="2930577230479659665">Обрізати після кожної копії</translation>
 <translation id="2933624813161016821">Фольга для тиснення</translation>
 <translation id="2938225289965773019">Відкрити посилання протоколу <ph name="PROTOCOL" /></translation>
+<translation id="2941112035454246133">Низький</translation>
 <translation id="2941878205777356567">Конверт 9 x 12 дюймів</translation>
 <translation id="2941952326391522266">Цей сервер не зміг довести, що він – домен <ph name="DOMAIN" />. Його сертифікат безпеки походить із домену <ph name="DOMAIN2" />. Імовірні причини: неправильна конфігурація або хтось намагається перехопити ваше з’єднання.</translation>
 <translation id="2942492342931589800">Невимушений</translation>
@@ -2222,7 +2223,6 @@
 <translation id="5263867360296733198">Перевірте файли, перш ніж завантажувати їх із пристрою</translation>
 <translation id="5266128565379329178">Зшити вгорі</translation>
 <translation id="5269225904387178860">Пробити чотири отвори внизу</translation>
-<translation id="5269999699920406580">Функції, які застосовуються до всієї системи, може налаштовувати лише власник: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">Умова <ph name="DATA_CONTROLS_ATTRIBUTE" /> не підтримується для правила <ph name="DATA_CONTROLS_RESTRICTION" /></translation>
 <translation id="5273658854610202413">Застереження: це правило не об'єднано, як указано в PolicyDictionaryMultipleSourceMergeList, оскільки воно не є частиною правил щодо словників, які можна об'єднувати.</translation>
 <translation id="5279286380302340275">Керувати завантаженнями</translation>
@@ -3063,6 +3063,7 @@
 <translation id="6915804003454593391">Користувач:</translation>
 <translation id="6916193791494646625">Укажіть причину завантаження (обов’язково)</translation>
 <translation id="6917795328362592458">Введений пароль розкрито через порушення безпеки даних. Щоб захистити ваші облікові записи, Менеджер паролів радить перевірити збережені паролі.</translation>
+<translation id="6924013822850225188">Виберіть, чи показувати переваги картки під час оформлення замовлення (застосовуються умови банку)</translation>
 <translation id="6925267999184670015">B+ (Північна Америка)</translation>
 <translation id="6926216138694948720">Боді-арт</translation>
 <translation id="692638818576287323">Комерційні транспортні засоби</translation>
@@ -3832,6 +3833,7 @@
 <translation id="830498451218851433">Зігнути посередині</translation>
 <translation id="8308653357438598313">Прямі відеотрансляції</translation>
 <translation id="8311895354659782580">Каталоги об’єктів нерухомості</translation>
+<translation id="8312841338723044391">ВІДТВОРЮЄТЬСЯ</translation>
 <translation id="8316555157357957253">Використовується зараз</translation>
 <translation id="8319269383395457801">Продаж житла</translation>
 <translation id="831997045666694187">Увечері</translation>
@@ -4285,6 +4287,7 @@
 <translation id="920643408853370361">Туристичне страхування</translation>
 <translation id="9207861905230894330">Не вдалося додати статтю.</translation>
 <translation id="9210825002219699214">Авіаподорожі</translation>
+<translation id="9211461151375991073">Введіть @, щоб шукати на вебсайтах <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Налаштувати оформлення</translation>
 <translation id="9215416866750762878">Додаток перешкоджає Chrome безпечно під’єднуватися до цього сайту</translation>
 <translation id="92178312226016010">Ви відстежуєте цей товар.</translation>

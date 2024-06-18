@@ -300,7 +300,6 @@ Comprueba tus contraseñas en cualquier momento en el <ph name="GOOGLE_PASSWORD_
 <translation id="1211769675100312947">Tú gestionas los accesos directos</translation>
 <translation id="1213254615020057352">Envía datos de uso y diagnóstico. Contribuye a mejorar la experiencia de Android de tu hijo enviando automáticamente a Google datos de diagnóstico, del dispositivo y del uso de las aplicaciones. Los datos no se usarán para identificar a tu hijo, sino para aumentar la estabilidad de las aplicaciones y del sistema, y realizar otras mejoras. Parte de los datos agregados también ayudarán a las aplicaciones y a los partners de Google, como los desarrolladores de Android. El propietario ha aplicado este ajuste. El propietario puede elegir si se envían a Google datos de uso y diagnóstico de este dispositivo. Si la opción Actividad en la Web y en Aplicaciones adicional está activada, es posible que estos datos se guarden en la cuenta de Google de tu hijo.</translation>
 <translation id="1213726621272705156">No volverás a ver tarjetas en esta página</translation>
-<translation id="121384500095351701">Este archivo no se puede descargar de forma segura</translation>
 <translation id="1214004433265298541">Certificado proporcionado por tu administrador, que puede ver las credenciales de <ph name="DOMAIN" /></translation>
 <translation id="1215411991991485844">Nueva aplicación en segundo plano añadida</translation>
 <translation id="1216542092748365687">Quitar huella digital</translation>
@@ -2081,7 +2080,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2489829450872380594">La próxima vez, un teléfono nuevo desbloqueará este <ph name="DEVICE_TYPE" />. Puedes desactivar Smart Lock en la configuración.</translation>
 <translation id="2489918096470125693">Añadir &amp;carpeta...</translation>
 <translation id="2489931062851778802">Pulsa estas teclas en el <ph name="DEVICE_NAME" /></translation>
-<translation id="2490481887078769936">Se ha quitado "<ph name="FILE_NAME" />" de la lista</translation>
 <translation id="249098303613516219">Datos de sitios en el dispositivo permitidos</translation>
 <translation id="249113932447298600">Lo sentimos, pero el dispositivo <ph name="DEVICE_LABEL" /> no se admite en este momento.</translation>
 <translation id="2491587035099903063">escuchar muestra de voz en <ph name="LANGUAGE" /></translation>
@@ -2473,7 +2471,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2772936498786524345">Ninja</translation>
 <translation id="2773288106548584039">Compatibilidad con navegadores antiguos</translation>
 <translation id="2773621783913034737">Inactivar pestañas</translation>
-<translation id="2773802008104670137">Este tipo de archivo puede dañar tu ordenador.</translation>
 <translation id="2775104091073479743">Editar huellas digitales</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{La extensión <ph name="EXTENSION" /> estaba accediendo a dispositivos}=1{La extensión <ph name="EXTENSION" /> está accediendo a {0} dispositivo}other{La extensión <ph name="EXTENSION" /> está accediendo a {0} dispositivos}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Quitar 1 aplicación no admitida}other{Quitar # aplicaciones no admitidas}}</translation>
@@ -3634,7 +3631,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3654682977761834281">Datos de sitios insertados</translation>
 <translation id="3656328935986149999">Velocidad del cursor</translation>
 <translation id="3658871634334445293">Aceleración del TrackPoint</translation>
-<translation id="3659550105763988702">Usa tu llave de acceso de <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Has introducido un código de acceso incorrecto demasiadas veces. Vuelve a intentarlo más tarde.</translation>
 <translation id="3660234220361471169">No es de confianza</translation>
 <translation id="3661106764436337772">Escribe más rápido y con más confianza</translation>
@@ -3727,7 +3723,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3719245268140483218">Evento de dispositivo</translation>
 <translation id="3719310907809321183">Se ha rellenado <ph name="CARD_IDENTIFIER" />.</translation>
 <translation id="3719826155360621982">Página principal</translation>
-<translation id="3720543739123045680">Otras pestañas comparten un proceso con esta pestaña, lo que puede provocar una experiencia de DevTools inesperada.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Tú y Google</translation>
 <translation id="3721178866505920080">Más información sobre cómo activar la precarga ampliada</translation>
@@ -5323,7 +5318,6 @@ Usa Ctrl + Alt + Reducir el brillo para reducir la pantalla.</translation>
 <translation id="4903967893652864401">Esto alarga la duración de la batería limitando la actividad en segundo plano y los efectos visuales, como el desplazamiento fluido.</translation>
 <translation id="4906490889887219338">Configurar o gestionar sistemas de archivos compartidos de red. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Elige cuándo puede esta extensión leer y cambiar tus datos del sitio</translation>
-<translation id="4907161631261076876">Este archivo no se descarga habitualmente y puede ser peligroso.</translation>
 <translation id="4908811072292128752">Abre una pestaña nueva para navegar por dos sitios a la vez</translation>
 <translation id="4909038193460299775">Dado que <ph name="DOMAIN" /> administra esta cuenta, tus marcadores, tu historial, tus contraseñas y otros ajustes se borrarán de este dispositivo. No obstante, tus datos permanecerán almacenados en tu cuenta de Google y se podrán gestionar en el <ph name="BEGIN_LINK" />Panel de Control de Google<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">La aplicación ya está instalada</translation>
@@ -6676,7 +6670,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="5935158534896975820">Preparando solicitud de firma de certificado (esperando en el servidor)</translation>
 <translation id="5935656526031444304">Gestionar Navegación segura</translation>
 <translation id="5936065461722368675">Traducir página completa</translation>
-<translation id="5937347877659196749">A continuación, protege todas tus llaves de acceso con un PIN de recuperación</translation>
 <translation id="5937977334791924341">Logotipo de <ph name="APP" /></translation>
 <translation id="5938002010494270685">Actualización de seguridad disponible</translation>
 <translation id="5939518447894949180">Restablecer</translation>
@@ -7438,7 +7431,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6530030995840538405">Imagen generada n.º <ph name="INDEX" /> de <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">El administrador aplica estas opciones</translation>
 <translation id="6530267432324197764">Perfil gestionado por <ph name="MANAGER" /></translation>
-<translation id="6531282281159901044">Conservar archivo peligroso</translation>
 <translation id="6532101170117367231">Guardar en Google Drive</translation>
 <translation id="6532106788206463496">Guardar cambios</translation>
 <translation id="6532206849875187177">Seguridad e inicio de sesión</translation>
@@ -7486,6 +7478,7 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6557290421156335491">Mis accesos directos</translation>
 <translation id="6560061709899140565">Mostrar otras sesiones de envío</translation>
 <translation id="6560151649238390891">Sugerencia insertada</translation>
+<translation id="656065428026159829">Ver más</translation>
 <translation id="6561726789132298588">intro</translation>
 <translation id="6562117348069327379">Almacena registros del sistema en el directorio Descargas.</translation>
 <translation id="656293578423618167">La ruta o el nombre del archivo es demasiado largo. Especifica un nombre más corto o guarda el archivo en otra ubicación.</translation>
@@ -8999,7 +8992,6 @@ Tienes # contraseñas vulneradas más. El Gestor de contraseñas de Google te re
 <translation id="7701040980221191251">No hay</translation>
 <translation id="7701869757853594372">EL USUARIO administra</translation>
 <translation id="7702463352133825032">Detener envío a <ph name="DEVICE_NAME" /></translation>
-<translation id="7702574632857388784">Eliminar <ph name="FILE_NAME" /> de la lista</translation>
 <translation id="7704305437604973648">Tarea</translation>
 <translation id="7704521324619958564">Abrir Play Store</translation>
 <translation id="7705276765467986571">No se ha podido cargar el modelo de marcador.</translation>
@@ -9448,6 +9440,7 @@ Guarda tu archivo de clave en un lugar seguro, ya que lo necesitarás para crear
 <translation id="8022466874160067884">Introduce tu cuenta de Google y tu contraseña</translation>
 <translation id="8023133589013344428">Gestionar idiomas en los ajustes de ChromeOS Flex</translation>
 <translation id="8023801379949507775">Actualizar extensiones ahora</translation>
+<translation id="8024161440284949905">Continuar con estas pestañas</translation>
 <translation id="8025151549289123443">Pantalla de bloqueo e inicio de sesión</translation>
 <translation id="8025291188699172126">Información sobre actualizaciones</translation>
 <translation id="8026471514777758216">Todos tus dispositivos</translation>

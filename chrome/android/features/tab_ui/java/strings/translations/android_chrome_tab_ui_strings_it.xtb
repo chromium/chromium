@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Viola</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> scheda.}other{Espandi il gruppo di schede <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> schede.}}</translation>
 <translation id="427987768447457592">Nuovo gruppo di schede</translation>
+<translation id="4338724047016295066">Le schede inattive verranno chiuse automaticamente. Puoi trovarle nella cronologia in qualsiasi momento.</translation>
 <translation id="4371591986692297148">non attivo</translation>
 <translation id="4460014764210899310">Separa</translation>
 <translation id="4648718555153979859">Le schede sono raggruppate qui</translation>
 <translation id="4686942373615810936">Creato un attimo fa</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Chiudi dopo 1 giorno}other{Chiudi dopo <ph name="DAY_COUNT_MANY" /> giorni}}</translation>
 <translation id="4777866634702576038">Eliminare il gruppo di schede?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recensione)}other{(<ph name="REVIEWS_COUNT_MANY" /> recensioni)}}</translation>
 <translation id="4850886885716139402">Visualizza</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Qui troverai i tuoi gruppi di schede</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Separa <ph name="TABS_COUNT_ONE" /> scheda selezionata}other{Separa <ph name="TABS_COUNT_MANY" /> schede selezionate}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> scheda}other{<ph name="TABS_COUNT_MANY" /> schede}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{Dopo 1 giorno}other{Dopo <ph name="DAY_COUNT_MANY" /> giorni}}</translation>
 <translation id="6549021453810473782">Visualizza informazioni sul negozio</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Sposta scheda a sinistra</translation>

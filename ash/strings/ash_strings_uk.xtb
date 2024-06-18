@@ -119,6 +119,7 @@
 <translation id="1383876407941801731">Пошук</translation>
 <translation id="1391102559483454063">Увімкнено</translation>
 <translation id="1394698770495054737">Максимальне розмиття</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 день тому}one{# день тому}few{# дні тому}many{# днів тому}other{# дня тому}}</translation>
 <translation id="1404963891829069586">Звуки для концентрації уваги</translation>
 <translation id="1407069428457324124">Темна тема</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Використовуйте клавіші зі стрілками, щоб переходити між датами.</translation>
@@ -209,6 +210,7 @@
 <translation id="174102739345480129">Маркер вимкнено.</translation>
 <translation id="1743570585616704562">Не розпізнано</translation>
 <translation id="1743927604032653654">Згорнути сповіщення "<ph name="NOTIFICATION_TITLE" />"</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Менш ніж 1 год тому}=1{1 год тому}one{# год тому}few{# год тому}many{# год тому}other{# год тому}}</translation>
 <translation id="1746730358044914197">Адміністратор налаштував методи введення.</translation>
 <translation id="1747336645387973286">термін виконання: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Екранну клавіатуру ввімкнено</translation>
@@ -346,6 +348,7 @@
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="2360398059912971776">акумулятор</translation>
 <translation id="2361210043495191221">Увімкнути або вимкнути Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Надіслано з пристрою <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Не вдається ввійти в обліковий запис на Chromebook</translation>
 <translation id="2367972762794486313">Показати програми</translation>
 <translation id="2368828502825385061">Знайти</translation>
@@ -506,6 +509,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Надати доступ до мікрофона?</translation>
 <translation id="296762781903199866">Не вдалося завантажити файли живих субтитрів для такої мови: <ph name="LANGUAGE" /></translation>
+<translation id="2968761508099987738">Ваше поточне місцезнаходження зараз не підтримується.</translation>
 <translation id="2970920913501714344">установлювати додатки, розширення й теми</translation>
 <translation id="2977598380246111477">Наступна цифра</translation>
 <translation id="2985148236010982088">Показати всі додатки</translation>
@@ -979,6 +983,7 @@
 <translation id="468293128311738995">Додатки з вашого телефона</translation>
 <translation id="4690510401873698237">Полицю розміщено внизу</translation>
 <translation id="4696813013609194136">Введіть код доступу батьків</translation>
+<translation id="4697357603686181098">Ми не можемо допомогти із цим запитом. Введіть інший.</translation>
 <translation id="4702647871202761252">Екран конфіденційності вимкнено</translation>
 <translation id="4706121060329443414">Спроба завантаження повториться пізніше. Наразі мовлення буде надіслано на сервери Google для обробки.</translation>
 <translation id="470644585772471629">Інверсія кольорів</translation>
@@ -1901,6 +1906,7 @@
 <translation id="7982878511129296052">Вимкнення…</translation>
 <translation id="7984197416080286869">Забагато спроб розблокування відбитком</translation>
 <translation id="798779949890829624">Цим налаштуванням керує адміністратор</translation>
+<translation id="7989206653429884947">Ви часто відкривали</translation>
 <translation id="799296642788192631">Ви можете закріпити важливі файли. Для цього наведіть курсор на об’єкт або відкрийте додаток Файли й натисніть об’єкт правою кнопкою миші.</translation>
 <translation id="7994370417837006925">Паралельний вхід</translation>
 <translation id="7995804128062002838">Не вдалося зробити знімок екрана</translation>
@@ -2085,6 +2091,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Час вийшов. Чудово! 🎉</translation>
+<translation id="8753368202781196133">Ця мова зараз не підтримується.</translation>
 <translation id="8755498163081687682">Потрібне підтвердження: сайт <ph name="ORIGIN_NAME" /> хоче підтвердити вашу особу</translation>
 <translation id="875593634123171288">Показати налаштування VPN</translation>
 <translation id="8756799553341497810">Коли ви вийдете із цього режиму, то зможете налаштовувати макет додатка.</translation>

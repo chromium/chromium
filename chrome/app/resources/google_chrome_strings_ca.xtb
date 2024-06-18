@@ -251,6 +251,7 @@
 <translation id="4561051373932531560">Google Chrome us permet fer clic en un número de telèfon al web i trucar-hi amb Skype!</translation>
 <translation id="4567424176335768812">Has iniciat la sessió com a <ph name="USER_EMAIL_ADDRESS" />. Ja pots accedir a les teves adreces d'interès, al teu historial i a altres paràmetres en tots els dispositius en què tens la sessió iniciada.</translation>
 <translation id="4571503333518166079">Ves a la configuració de notificacions de Chrome</translation>
+<translation id="4575717501879784448">Chrome pot desactivar aquestes pestanyes per millorar la teva experiència de navegació i alliberar recursos.</translation>
 <translation id="459622048091363950">Un cop Chrome tingui accés, els llocs web et podran demanar accés.</translation>
 <translation id="4600710005438004015">Chrome no s'ha pogut actualitzar a la darrera versió, així que no pots gaudir de les funcions noves ni de les correccions de seguretat.</translation>
 <translation id="4624065194742029982">Mode d'incògnit a Chrome</translation>
@@ -263,7 +264,6 @@
 <translation id="4728575227883772061">S'ha produït un error no especificat durant la instal·lació. Si Google Chrome s'està executant en aquests moments, tanca'l i torna-ho a provar.</translation>
 <translation id="4747730611090640388">Chrome pot estimar els teus interessos.  Després, un lloc web que visitis pot demanar els teus interessos a Chrome per personalitzar els anuncis que veus.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
-<translation id="4771048833395599659">Chrome ha bloquejat aquest fitxer perquè pot ser perillós.</translation>
 <translation id="479167709087336770">Fa servir el mateix corrector ortogràfic que s'utilitza a la Cerca de Google. El text que escrius al navegador s'envia a Google. Pots canviar aquest comportament sempre que vulguis a la configuració.</translation>
 <translation id="4793679854893018356">Informació sobre com et protegeix Chrome</translation>
 <translation id="4828579605166583682">Google Chrome està provant de substituir les contrasenyes existents. Escriu la teva contrasenya de Windows per permetre-ho.</translation>
@@ -282,6 +282,7 @@
 <translation id="4970761609246024540">Et donem la benvinguda als perfils de Chrome</translation>
 <translation id="4970880042055371251">Versió de Chrome OS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="4997044641749333913">Chrome pot desactivar aquestes pestanyes per millorar i agilitzar la teva experiència de navegació.</translation>
 <translation id="5003967926796347400">Fes clic a Gestor de contrasenyes de Google</translation>
 <translation id="5120334927898581447">Inicia la sessió a Chrome quan iniciïs la sessió en altres serveis de Google</translation>
 <translation id="5126049312684316860">Chrome precarrega encara més pàgines que és probable que visitis perquè es carreguin més ràpidament quan ho facis</translation>
@@ -342,6 +343,7 @@
 <translation id="608006075545470555">Afegeix un perfil de treball a aquest navegador</translation>
 <translation id="6097822892606850415">Escriu amb més confiança amb l'ajuda de la IA</translation>
 <translation id="6113794647360055231">Chrome és millor que mai</translation>
+<translation id="6135456723633883042">Aquestes pestanyes utilitzen recursos addicionals. Per millorar el rendiment, permet que Chrome les desactivi.</translation>
 <translation id="6145313976051292476">Obre els fitxers PDF a Chrome</translation>
 <translation id="6157638032135951407">La teva organització suprimeix les dades de Chrome quan no s'utilitza durant <ph name="TIMEOUT_DURATION" />. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

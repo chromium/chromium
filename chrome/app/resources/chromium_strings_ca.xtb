@@ -116,6 +116,7 @@
 <translation id="2945997411976714835">Error d'instal·lació: no s'ha pogut iniciar el procés d'instal·lació.</translation>
 <translation id="2977470724722393594">Chromium està actualitzat</translation>
 <translation id="2977506796191543575">Si un lloc web prova de robar-te la contrasenya o si baixes un fitxer maliciós, és possible que Chromium també n'enviï els URL, inclosos fragments de contingut de les pàgines, a Navegació segura.</translation>
+<translation id="2987208172821108655">Chromium pot desactivar aquestes pestanyes per millorar la teva experiència de navegació i alliberar recursos.</translation>
 <translation id="3013473503895162900">Obre <ph name="URL" /> en una pestanya nova a Chromium.</translation>
 <translation id="3032706164202344641">Chromium no pot comprovar les teves contrasenyes. Torna-ho a provar més tard.</translation>
 <translation id="3032787606318309379">S'està afegint a Chromium...</translation>
@@ -317,6 +318,7 @@
 <translation id="6248213926982192922">Estableix Chromium com a navegador predeterminat</translation>
 <translation id="6266342355635466082">Chromium no pot cercar actualitzacions. Comprova la connexió a Internet.</translation>
 <translation id="6268381023930128611">Voleu tancar la sessió de Chromium?</translation>
+<translation id="6270547683008298381">Aquestes pestanyes utilitzen recursos addicionals. Per millorar el rendiment, permet que Chromium les desactivi.</translation>
 <translation id="6281746429495226318">Personalitza el teu perfil de Chromium</translation>
 <translation id="6290827346642914212">Posa nom al teu perfil de Chromium</translation>
 <translation id="6294831894865512704">Una extensió vol que iniciïs la sessió a Chromium</translation>
@@ -325,6 +327,7 @@
 <translation id="6327105987658262776">No hi ha cap actualització disponible.</translation>
 <translation id="6333502561965082103">Hi ha una altra operació en curs a Chromium. Torna-ho a provar més tard.</translation>
 <translation id="6334986366598267305">Ara resulta més fàcil utilitzar Chromium amb el vostre compte de Google i en ordinadors compartits.</translation>
+<translation id="633626832589656416">Chromium pot desactivar aquestes pestanyes per millorar i agilitzar la teva experiència de navegació.</translation>
 <translation id="6347933965114150440">Drecera de Chromium</translation>
 <translation id="6366160072964553914">Chromium ha bloquejat aquesta baixada perquè el fitxer no se sol baixar i pot ser perillós</translation>
 <translation id="6373523479360886564">Confirmeu que voleu desinstal·lar Chromium?</translation>
@@ -451,7 +454,6 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8254601181414348851">Vols iniciar la sessió a Chromium en un altre perfil?</translation>
 <translation id="8266560134891435528">Chromium no pot comprovar les teves contrasenyes perquè no tens la sessió iniciada</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium t'avisa<ph name="END_LINK" /> sobre baixades i llocs web que no són segurs</translation>
-<translation id="8290862415967981663">Chromium ha bloquejat aquest fitxer perquè pot ser perillós.</translation>
 <translation id="8318772038038596122">La teva organització tanca Chromium quan no s'utilitza durant <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8330519371938183845">Inicia la sessió per sincronitzar i personalitzar Chromium en tots els teus dispositius</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> abans utilitzava Chromium</translation>

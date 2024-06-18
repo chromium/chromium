@@ -1011,6 +1011,7 @@
 <translation id="2930577230479659665">ಪ್ರತಿ ಮುದ್ರಣಪ್ರತಿಯ ನಂತರ ಟ್ರಿಮ್ ಮಾಡಿ</translation>
 <translation id="2933624813161016821">ಎಂಬಾಸಿಂಗ್ ಫಾಯಿಲ್</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> ಲಿಂಕ್‌ಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
+<translation id="2941112035454246133">ಕಡಿಮೆ</translation>
 <translation id="2941878205777356567">ಎನ್ವಲಪ್ 9 x 12 ಇಂಚು</translation>
 <translation id="2941952326391522266">ಈ ಸರ್ವರ್ <ph name="DOMAIN" /> ಆಗಿದೆ ಎಂಬುದನ್ನು ಸಾಬೀತುಪಡಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ; ಅದರ ಸುರಕ್ಷತಾ ಪ್ರಮಾಣಪತ್ರವು <ph name="DOMAIN2" /> ದಿಂದ ಆಗಿದೆ. ಇದು ತಪ್ಪು ಕಾನ್ಫಿಗರೇಶನ್‌ನಿಂದ ಅಥವಾ ಆಕ್ರಮಣಕಾರರು ನಿಮ್ಮ ಸಂಪರ್ಕದಲ್ಲಿ ಒಳನುಸುಳಿರುವುದರಿಂದ ಆಗಿರಬಹುದು.</translation>
 <translation id="2942492342931589800">ಸಾಂದರ್ಭಿಕ</translation>
@@ -2219,7 +2220,6 @@
 <translation id="5263867360296733198">ಅಪ್‌ಲೋಡ್ ಮಾಡುವ ಮೊದಲು ಪರಿಶೀಲನೆಯ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="5266128565379329178">ಮೇಲ್ಭಾಗದಲ್ಲಿ ಬೈಂಡ್ ಮಾಡಿ</translation>
 <translation id="5269225904387178860">ಕೆಳಭಾಗದಲ್ಲಿ ನಾಲ್ಕು ತೂತುಗಳನ್ನು ಮಾಡಿ</translation>
-<translation id="5269999699920406580">ಸಿಸ್ಟಮ್‌ನಾದ್ಯಂತ ಅನ್ವಯವಾಗುವ ವೈಶಿಷ್ಟ್ಯಗಳನ್ನು ಮಾಲೀಕರಿಂದ ಮಾತ್ರ ಹೊಂದಿಸಬಹುದು: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_RESTRICTION" />" ಗೆ "<ph name="DATA_CONTROLS_ATTRIBUTE" />" ಬೆಂಬಲಿತ ಸ್ಥಿತಿಯಲ್ಲ</translation>
 <translation id="5273658854610202413">ಎಚ್ಚರಿಕೆ: ಈ ಕಾರ್ಯನೀತಿಯನ್ನು PolicyDictionaryMultipleSourceMergeList ಕಾರ್ಯನೀತಿಯಲ್ಲಿ ನಿರ್ದಿಷ್ಟಪಡಿಸಿರುವಂತೆ ವಿಲೀನಗೊಳಿಸಲಾಗಿಲ್ಲ ಏಕೆಂದರೆ ಅದು ವಿಲೀನಗೊಳಿಸಬಹುದಾದ ನಿಘಂಟಿನ ಕಾರ್ಯನೀತಿಗಳ ಭಾಗವಾಗಿಲ್ಲ.</translation>
 <translation id="5279286380302340275">ಡೌನ್‌ಲೋಡ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>

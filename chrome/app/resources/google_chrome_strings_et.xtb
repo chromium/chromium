@@ -252,6 +252,7 @@
 <translation id="4561051373932531560">Google Chrome võimaldab teil veebis telefoninumbril klõpsata ja sellele Skype'i abil helistada!</translation>
 <translation id="4567424176335768812">Olete sisse logitud aadressiga <ph name="USER_EMAIL_ADDRESS" />. Nüüd on teil juurdepääs oma järjehoidjatele, ajaloole ja muudele seadetele kõigis seadmetes, kuhu olete sisse logitud.</translation>
 <translation id="4571503333518166079">Ava Chrome'i märguandeseaded</translation>
+<translation id="4575717501879784448">Chrome võib teha need vahelehed interaktiivseks, mis täiustab teie sirvimiskogemust ja vabastab ressursse.</translation>
 <translation id="459622048091363950">Kui annate Chrome'ile juurdepääsu, saavad veebisaidid küsida teilt juurdepääsuluba.</translation>
 <translation id="4600710005438004015">Chrome'i ei saanud uusimale versioonile värskendada, mistõttu jääte ilma uutest funktsioonidest ja turvaparandustest.</translation>
 <translation id="4624065194742029982">Chrome'i inkognito režiim</translation>
@@ -264,7 +265,6 @@
 <translation id="4728575227883772061">Install ebaõnnestus määramata vea tõttu. Kui Google Chrome parasjagu töötab, siis palun sulgege see ja proovige uuesti.</translation>
 <translation id="4747730611090640388">Chrome suudab teie huvisid prognoosida.  Hiljem saab teie külastatav sait küsida Chrome'ilt teie huvisid, et isikupärastada teile kuvatavaid reklaame.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
-<translation id="4771048833395599659">Chrome blokeeris faili, kuna see võib olla ohtlik.</translation>
 <translation id="479167709087336770">See kasutab sama õigekirjakontrolli, mida kasutatakse Google'i otsingus. Brauseris sisestatav tekst saadetakse Google'ile. Seda käitumist saab seadetes alati muuta.</translation>
 <translation id="4793679854893018356">Vaadake, kuidas Chrome teid kaitseb</translation>
 <translation id="4828579605166583682">Google Chrome püüab olemasolevaid paroole asendada. Selle lubamiseks sisestage oma Windowsi parool.</translation>
@@ -283,6 +283,7 @@
 <translation id="4970761609246024540">Tere tulemast kasutama Chrome'i profiile</translation>
 <translation id="4970880042055371251">Chrome OS-i versioon</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="4997044641749333913">Chrome võib teha need vahelehed interaktiivseks, mis täiustab teie sirvimiskogemust ja säilitab teenuse kiiruse.</translation>
 <translation id="5003967926796347400">Klõpsake „Google'i paroolihaldur”</translation>
 <translation id="5120334927898581447">Chrome'i sisselogimine teistesse Google'i teenustesse sisselogimisel</translation>
 <translation id="5126049312684316860">Chrome eellaadib veelgi rohkem lehti, mida tõenäoliselt külastada soovite, et need laaditaks avamisel kiiremini</translation>
@@ -300,7 +301,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="5334309298019785904">Google OS ei saanud teie andmeid sünkroonida, sest sünkroonimine pole teie domeenil saadaval.</translation>
 <translation id="5334487786912937552">Chrome vajab failide allalaadimiseks juurdepääsu salvestusruumile</translation>
 <translation id="5337648990166757586">Valikuline. Aidake Chrome OS-i funktsioone ning toimivust täiustada, saates Google'ile automaatselt diagnostika- ja kasutusandmeid.</translation>
-<translation id="5345497718959596593">Saate kasutada oma paroole ja Chrome'is oma Google'i konto muid valikuid, kui olete sisse logitud</translation>
+<translation id="5345497718959596593">Kui olete sisse logitud, siis saate kasutada Chrome'is oma paroole ja oma Google'i konto teisi võimalusi</translation>
 <translation id="5357889879764279201">Hankige abi Chrome OS Flexi kasutamisel</translation>
 <translation id="5368118228313795342">Lisakood: <ph name="EXTRA_CODE" />.</translation>
 <translation id="5386244825306882791">Lisaks juhib Chrome'i käivitamisel kuvatavat lehte või omnikastikese otsingut.</translation>
@@ -345,6 +346,7 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="608006075545470555">Tööprofiili lisamine sellesse brauserisse</translation>
 <translation id="6097822892606850415">Aitame teil AI abiga kirjutada</translation>
 <translation id="6113794647360055231">Chrome muutus just paremaks</translation>
+<translation id="6135456723633883042">Need vahelehed kasutavad lisaressursse. Las Chrome teeb need toimivuse täiustamiseks interaktiivseks.</translation>
 <translation id="6145313976051292476">Ava PDF-id Chrome'is</translation>
 <translation id="6157638032135951407">Teie organisatsioon kustutab Chrome'i andmed, kui neid ei kasutata <ph name="TIMEOUT_DURATION" /> jooksul. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

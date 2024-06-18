@@ -1011,6 +1011,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2930577230479659665">Couper après chaque copie</translation>
 <translation id="2933624813161016821">Feuille gaufrée</translation>
 <translation id="2938225289965773019">Ouvrir les liens "<ph name="PROTOCOL" />"</translation>
+<translation id="2941112035454246133">Faible</translation>
 <translation id="2941878205777356567">Enveloppe 230x305</translation>
 <translation id="2941952326391522266">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car son certificat de sécurité provient du domaine <ph name="DOMAIN2" />. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="2942492342931589800">Informel</translation>
@@ -2222,7 +2223,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5263867360296733198">Examen requis avant l'importation</translation>
 <translation id="5266128565379329178">Reliure en haut</translation>
 <translation id="5269225904387178860">Quadruple perforation en bas</translation>
-<translation id="5269999699920406580">Seul le propriétaire suivant peut définir les fonctionnalités qui s'appliquent à tout le système : <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">La condition "<ph name="DATA_CONTROLS_ATTRIBUTE" />" n'est pas acceptée pour "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="5273658854610202413">Avertissement : Cette règle n'a pas été fusionnée comme indiqué dans la règle PolicyDictionaryMultipleSourceMergeList, car elle ne fait pas partie des règles de dictionnaire fusionnables.</translation>
 <translation id="5279286380302340275">Gérer les téléchargements</translation>
@@ -3063,6 +3063,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6915804003454593391">Utilisateur : </translation>
 <translation id="6916193791494646625">Indiquez le motif du téléchargement (obligatoire)</translation>
 <translation id="6917795328362592458">Le mot de passe que vous venez d'utiliser a été détecté lors d'une violation de données. Pour sécuriser vos comptes, le Gestionnaire de mots de passe vous recommande de vérifier vos mots de passe enregistrés.</translation>
+<translation id="6924013822850225188">Choisissez si vous souhaitez voir les avantages de votre carte lors du paiement (les conditions de la banque s'appliquent)</translation>
 <translation id="6925267999184670015">B+ nord-américain</translation>
 <translation id="6926216138694948720">Tatouages/Piercings</translation>
 <translation id="692638818576287323">Véhicules commerciaux</translation>
@@ -3833,6 +3834,7 @@ Informations supplémentaires :
 <translation id="830498451218851433">Plier en deux</translation>
 <translation id="8308653357438598313">Flux vidéo en direct</translation>
 <translation id="8311895354659782580">Annonces immobilières</translation>
+<translation id="8312841338723044391">EN DIRECT</translation>
 <translation id="8316555157357957253">Utilisée actuellement</translation>
 <translation id="8319269383395457801">Ventes de maisons</translation>
 <translation id="831997045666694187">Soirée</translation>

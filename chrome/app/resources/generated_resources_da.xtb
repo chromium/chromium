@@ -301,7 +301,6 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1211769675100312947">Genveje udvælges af dig</translation>
 <translation id="1213254615020057352">Send brugs- og diagnosticeringsdata. Hjælp med at forbedre dit barns Android-oplevelse ved automatisk at sende diagnosticerings- og enhedsdata samt data om brug af apps til Google. Disse data bruges ikke til at identificere dit barn. De bruges kun til forbedring af bl.a. systemets og appens stabilitet. Visse aggregerede data hjælper også Google-apps og -partnere, f.eks. Android-udviklere. Denne indstilling håndhæves af ejeren. Ejeren kan vælge at sende diagnosticerings- og brugsdata for denne enhed til Google. Hvis indstillingen for yderligere web- og appaktivitet er aktiveret for dit barn, gemmes disse data muligvis på barnets Google-konto.</translation>
 <translation id="1213726621272705156">Du får ikke længere vist kort på denne side</translation>
-<translation id="121384500095351701">Denne fil kan ikke downloades sikkert</translation>
 <translation id="1214004433265298541">Certifikat fra din administrator, som kan se loginoplysninger for <ph name="DOMAIN" /></translation>
 <translation id="1215411991991485844">Der er tilføjet en ny baggrunds-app</translation>
 <translation id="1216542092748365687">Fjern fingeraftryk</translation>
@@ -2094,7 +2093,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2489829450872380594">Næste gang låser en ny telefon op for denne <ph name="DEVICE_TYPE" />. Du kan deaktivere Smart Lock i Indstillinger.</translation>
 <translation id="2489918096470125693">Tilføj &amp;mappe...</translation>
 <translation id="2489931062851778802">Tryk på disse taster på <ph name="DEVICE_NAME" /></translation>
-<translation id="2490481887078769936">"<ph name="FILE_NAME" />" blev fjernet fra listen</translation>
 <translation id="249098303613516219">Websitedata på enheden er tilladt</translation>
 <translation id="249113932447298600">Vi beklager, men enheden <ph name="DEVICE_LABEL" /> understøttes ikke på nuværende tidspunkt.</translation>
 <translation id="2491587035099903063">hør et eksempel på stemmen på <ph name="LANGUAGE" /></translation>
@@ -2486,7 +2484,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2772936498786524345">Ninja</translation>
 <translation id="2773288106548584039">Understøttelse af ældre browsere</translation>
 <translation id="2773621783913034737">Gør faner inaktive</translation>
-<translation id="2773802008104670137">Denne type fil kan skade din computer.</translation>
 <translation id="2775104091073479743">Rediger fingeraftryk</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Udvidelsen "<ph name="EXTENSION" />" havde adgang til enhederne}=1{Udvidelsen "<ph name="EXTENSION" />" har adgang til {0} enhed}one{Udvidelsen "<ph name="EXTENSION" />" har adgang til {0} enhed}other{Udvidelsen "<ph name="EXTENSION" />" har adgang til {0} enheder}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Fjern 1 ikke-understøttet app}one{Fjern # ikke-understøttet app}other{Fjern # ikke-understøttede apps}}</translation>
@@ -3648,7 +3645,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3654682977761834281">Data fra indlejrede websites</translation>
 <translation id="3656328935986149999">Markørens hastighed</translation>
 <translation id="3658871634334445293">TrackPoint-acceleration</translation>
-<translation id="3659550105763988702">Brug din adgangsnøgle til <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Du har angivet en forkert adgangskode for mange gange. Prøv igen senere</translation>
 <translation id="3660234220361471169">Ikke pålidelig</translation>
 <translation id="3661106764436337772">Skriv hurtigere og med større selvsikkerhed</translation>
@@ -3741,7 +3737,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3719245268140483218">Enhedshændelse</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> er udfyldt.</translation>
 <translation id="3719826155360621982">Startside</translation>
-<translation id="3720543739123045680">Andre faner deler en proces med denne fane, hvilket kan medføre en uventet brugeroplevelse i Udviklerværktøjer.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Dig og Google</translation>
 <translation id="3721178866505920080">Flere oplysninger om aktivering af udvidet forudindlæsning</translation>
@@ -5338,7 +5333,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4903967893652864401">Dette forlænger batteriets levetid ved at begrænse baggrundsaktivitet og visuelle effekter såsom jævn rulning.</translation>
 <translation id="4906490889887219338">Konfigurer eller administrer fildeling via netværk. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Vælg, hvornår denne udvidelse kan læse og ændre dine websitedata</translation>
-<translation id="4907161631261076876">Denne fil er ikke downloadet på almindelig vis og kan være farlig.</translation>
 <translation id="4908811072292128752">Åbn en ny fane for at se to websites på én gang</translation>
 <translation id="4909038193460299775">Eftersom denne konto administreres af <ph name="DOMAIN" />, slettes dine bogmærker, din historik, dine adgangskoder og andre indstillinger på denne enhed. Dine data vil dog fortsat være gemt på din Google-konto og kan administreres i <ph name="BEGIN_LINK" />Google Kontrolpanel<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">Appen er allerede installeret</translation>
@@ -6692,7 +6686,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5935158534896975820">Anmodningen om certifikatsignering forberedes (venter på server)</translation>
 <translation id="5935656526031444304">Administrer Beskyttet browsing</translation>
 <translation id="5936065461722368675">Oversæt hele siden</translation>
-<translation id="5937347877659196749">Derefter skal du beskytte alle dine adgangsnøgler med en pinkode til gendannelse</translation>
 <translation id="5937977334791924341"><ph name="APP" />-logo</translation>
 <translation id="5938002010494270685">Der er en tilgængelig sikkerhedsopgradering</translation>
 <translation id="5939518447894949180">Nulstil</translation>
@@ -7454,7 +7447,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6530030995840538405">Billede <ph name="INDEX" /> af <ph name="SUBJECT" /> er genereret</translation>
 <translation id="6530186581263215931">Disse indstillinger håndhæves af din administrator</translation>
 <translation id="6530267432324197764">Profilen administreres af <ph name="MANAGER" /></translation>
-<translation id="6531282281159901044">Behold farlig fil</translation>
 <translation id="6532101170117367231">Gem på Google Drev</translation>
 <translation id="6532106788206463496">Gem ændringer</translation>
 <translation id="6532206849875187177">Sikkerhed og login</translation>
@@ -7502,6 +7494,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="6557290421156335491">Mine genveje</translation>
 <translation id="6560061709899140565">Vis andre Cast-sessioner</translation>
 <translation id="6560151649238390891">Forslaget blev indsat</translation>
+<translation id="656065428026159829">Se mere</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Gem systemlogs i mappen Downloads.</translation>
 <translation id="656293578423618167">Filstien eller -navnet er for langt. Gem med et kortere navn eller på en anden placering.</translation>
@@ -9017,7 +9010,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7701040980221191251">Ingen</translation>
 <translation id="7701869757853594372">BRUGER-håndtag</translation>
 <translation id="7702463352133825032">Stop med at caste til <ph name="DEVICE_NAME" /></translation>
-<translation id="7702574632857388784">Fjern <ph name="FILE_NAME" /> fra listen</translation>
 <translation id="7704305437604973648">Opgave</translation>
 <translation id="7704521324619958564">Åbn Play Butik</translation>
 <translation id="7705276765467986571">Bogmærkemodellen blev ikke indlæst.</translation>
@@ -9465,6 +9457,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8022466874160067884">Angiv din Google-konto og -adgangskode</translation>
 <translation id="8023133589013344428">Administrer sprog i indstillingerne for ChromeOS Flex</translation>
 <translation id="8023801379949507775">Opdater udvidelser nu</translation>
+<translation id="8024161440284949905">Fortsæt med disse faner</translation>
 <translation id="8025151549289123443">Låseskærm og login</translation>
 <translation id="8025291188699172126">Om opdateringer</translation>
 <translation id="8026471514777758216">Alle dine enheder</translation>

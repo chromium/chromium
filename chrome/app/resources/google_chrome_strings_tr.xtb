@@ -250,6 +250,7 @@
 <translation id="4561051373932531560">Google Chrome web'de bir telefon numarasını tıklayarak Skype ile aramanıza olanak sağlar!</translation>
 <translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" /> olarak oturum açtınız. Şimdi oturum açtığınız tüm cihazlarda yer işaretlerinize, geçmişinize ve diğer ayarlarınıza erişebilirsiniz.</translation>
 <translation id="4571503333518166079">Chrome bildirim ayarlarına git</translation>
+<translation id="4575717501879784448">Chrome, göz atma deneyiminizi iyileştirmek ve kaynaklarda yer açmak için aşağıdaki sekmeleri devre dışı bırakabilir.</translation>
 <translation id="459622048091363950">Chrome erişim izni aldıktan sonra, web siteleri de erişim için sizden izin isteyebilecek.</translation>
 <translation id="4600710005438004015">Chrome en son sürüme güncellenemediği için yeni özellikler ve güvenlik düzeltmeleri cihazınızda bulunmuyor.</translation>
 <translation id="4624065194742029982">Chrome Gizli Modu</translation>
@@ -262,7 +263,6 @@
 <translation id="4728575227883772061">Belirlenemeyen bir hata nedeniyle yükleme başarısız oldu. Google Chrome şu anda çalışır durumdaysa, kapatıp yeniden deneyin.</translation>
 <translation id="4747730611090640388">Chrome, ilgi alanlarınızı tahmin edebilir.  Daha sonra ziyaret ettiğiniz bir site, gördüğünüz reklamları kişiselleştirmek için Chrome'dan ilgi alanlarınızı göstermesini isteyebilir.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
-<translation id="4771048833395599659">Bu dosya tehlikeli olabileceği için Chrome tarafından engellendi.</translation>
 <translation id="479167709087336770">Bu işlev, Google Arama'da kullanılan yazım denetiminin aynısını kullanır. Tarayıcıda yazdığınız metin Google'a gönderilir. Bu davranışı istediğiniz zaman ayarlardan değiştirebilirsiniz.</translation>
 <translation id="4793679854893018356">Chrome'un güvenliğinizi nasıl sağladığını öğrenin</translation>
 <translation id="4828579605166583682">Google Chrome mevcut şifreleri değiştirmeye çalışıyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
@@ -281,6 +281,7 @@
 <translation id="4970761609246024540">Chrome profillerine hoş geldiniz</translation>
 <translation id="4970880042055371251">ChromeOS sürümü</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="4997044641749333913">Chrome, göz atma deneyiminizi iyileştirmek ve her şeyin hızlı çalışmasını sağlamak için aşağıdaki sekmeleri devre dışı bırakabilir.</translation>
 <translation id="5003967926796347400">"Google Şifre Yöneticisi"ni tıklayın</translation>
 <translation id="5120334927898581447">Diğer Google hizmetlerinde oturum açtığınızda Chrome'da oturum açın</translation>
 <translation id="5126049312684316860">Chrome, ziyaret etme olasılığınızın yüksek olduğu daha fazla sayfayı önceden yükleyerek bu sayfaları ziyaret ettiğinizde daha hızlı yüklenmelerini sağlar.</translation>
@@ -343,6 +344,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="608006075545470555">Bu tarayıcıya İş Profili ekle</translation>
 <translation id="6097822892606850415">Yapay zekanın yardımı sayesinde kendinize daha fazla güvenerek yazın.</translation>
 <translation id="6113794647360055231">Chrome daha da iyi bir hale geldi</translation>
+<translation id="6135456723633883042">Bu sekmeler ekstra kaynak kullanıyor. Performansınızı artırmak için Chrome'un bu sekmeleri devre dışı bırakmasına izin verin.</translation>
 <translation id="6145313976051292476">PDF'leri Chrome'da aç</translation>
 <translation id="6157638032135951407"><ph name="TIMEOUT_DURATION" /> boyunca kullanılmadığında Chrome verileri kuruluşunuz tarafından silinir. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

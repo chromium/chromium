@@ -1011,6 +1011,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2930577230479659665">Cortar depois de cada cópia</translation>
 <translation id="2933624813161016821">Laminado em relevo</translation>
 <translation id="2938225289965773019">Abrir links de <ph name="PROTOCOL" /></translation>
+<translation id="2941112035454246133">Baixa</translation>
 <translation id="2941878205777356567">Envelope de 23 cm x 30 cm</translation>
 <translation id="2941952326391522266">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança é de <ph name="DOMAIN2" />. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
 <translation id="2942492342931589800">Casual</translation>
@@ -2222,7 +2223,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5263867360296733198">Revise antes de fazer upload dos arquivos</translation>
 <translation id="5266128565379329178">Encadernação na parte superior</translation>
 <translation id="5269225904387178860">Perfuração quádrupla na parte inferior</translation>
-<translation id="5269999699920406580">Recursos aplicáveis a todo o sistema só podem ser definidos pelo proprietário: <ph name="OWNER_EMAIL" />.</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" não é uma condição com suporte a "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="5273658854610202413">Aviso: esta política não foi mesclada conforme especificado na PolicyDictionaryMultipleSourceMergeList porque ela não faz parte das políticas de dicionário que podem ser mescladas.</translation>
 <translation id="5279286380302340275">Gerenciar downloads</translation>
@@ -3063,6 +3063,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6915804003454593391">Usuário:</translation>
 <translation id="6916193791494646625">Informe o motivo do download (obrigatório)</translation>
 <translation id="6917795328362592458">A senha que você usou foi encontrada em uma violação de dados. Para proteger suas contas, o Gerenciador de senhas recomenda que você revise as senhas salvas.</translation>
+<translation id="6924013822850225188">Escolha se você quer conferir os benefícios do seu cartão no pagamento. Sujeito aos termos do banco</translation>
 <translation id="6925267999184670015">B+ (América do Norte)</translation>
 <translation id="6926216138694948720">Arte corporal</translation>
 <translation id="692638818576287323">Veículos comerciais</translation>
@@ -3832,6 +3833,7 @@ Mais detalhes:
 <translation id="830498451218851433">Dobra simples</translation>
 <translation id="8308653357438598313">Streaming de vídeo ao vivo</translation>
 <translation id="8311895354659782580">Listagens de bens imobiliários</translation>
+<translation id="8312841338723044391">AO VIVO</translation>
 <translation id="8316555157357957253">Usando agora</translation>
 <translation id="8319269383395457801">Vendas de casas</translation>
 <translation id="831997045666694187">Noite</translation>

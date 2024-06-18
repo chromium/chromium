@@ -1010,6 +1010,7 @@
 <translation id="2930577230479659665">完成每次複印後裁切</translation>
 <translation id="2933624813161016821">壓紋箔</translation>
 <translation id="2938225289965773019">開啟<ph name="PROTOCOL" />連結</translation>
+<translation id="2941112035454246133">低</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 in</translation>
 <translation id="2941952326391522266">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證來自 <ph name="DOMAIN2" /> 網域。這可能是因為設定錯誤，或有攻擊者攔截你的連線所致。</translation>
 <translation id="2942492342931589800">非正式</translation>
@@ -2220,7 +2221,6 @@
 <translation id="5263867360296733198">上傳檔案前請務必確認</translation>
 <translation id="5266128565379329178">裝訂 (頂端)</translation>
 <translation id="5269225904387178860">四孔 (底部)</translation>
-<translation id="5269999699920406580">這些功能會套用至整個系統，只有以下擁有者可設定：<ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">「<ph name="DATA_CONTROLS_ATTRIBUTE" />」不是「<ph name="DATA_CONTROLS_RESTRICTION" />」可支援的條件</translation>
 <translation id="5273658854610202413">警告：這項政策並非可合併的字典政策，因此未依照 PolicyDictionaryMultipleSourceMergeList 政策中指定的方式進行合併。</translation>
 <translation id="5279286380302340275">管理下載內容</translation>
@@ -3061,6 +3061,7 @@
 <translation id="6915804003454593391">使用者：</translation>
 <translation id="6916193791494646625">請提供要下載的原因 (必填)</translation>
 <translation id="6917795328362592458">系統發現你剛才使用的密碼因為資料侵害事件而遭到外洩。為確保帳戶安全，密碼管理工具建議你立即檢查已儲存的密碼。</translation>
+<translation id="6924013822850225188">選擇是否在結帳時查看卡片福利 (依據銀行條款規定)</translation>
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">人體藝術</translation>
 <translation id="692638818576287323">商用車</translation>
@@ -3830,6 +3831,7 @@
 <translation id="830498451218851433">對折</translation>
 <translation id="8308653357438598313">即時影片串流</translation>
 <translation id="8311895354659782580">房地產資訊</translation>
+<translation id="8312841338723044391">直播</translation>
 <translation id="8316555157357957253">使用中</translation>
 <translation id="8319269383395457801">住宅出售</translation>
 <translation id="831997045666694187">傍晚</translation>

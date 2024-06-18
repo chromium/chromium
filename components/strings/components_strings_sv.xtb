@@ -1011,6 +1011,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2930577230479659665">Beskär efter varje exemplar</translation>
 <translation id="2933624813161016821">Präglingsfolie</translation>
 <translation id="2938225289965773019">Öppna <ph name="PROTOCOL" />-länkar</translation>
+<translation id="2941112035454246133">Låg</translation>
 <translation id="2941878205777356567">Kuvert, 9 x 12 tum</translation>
 <translation id="2941952326391522266">Servern kunde inte bevisa att den är <ph name="DOMAIN" /> eftersom dess säkerhetscertifikat kommer från <ph name="DOMAIN2" />. Detta kan orsakas av en felaktig konfigurering eller att någon spärrar anslutningen.</translation>
 <translation id="2942492342931589800">Informellt</translation>
@@ -2222,7 +2223,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5263867360296733198">Granskning krävs innan du laddar upp</translation>
 <translation id="5266128565379329178">Bindning högst upp</translation>
 <translation id="5269225904387178860">Fyra hål längst ned</translation>
-<translation id="5269999699920406580">Funktioner som gäller hela systemet kan endast ställas in av ägaren: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340"><ph name="DATA_CONTROLS_ATTRIBUTE" /> är inte ett villkor som stöds för <ph name="DATA_CONTROLS_RESTRICTION" />.</translation>
 <translation id="5273658854610202413">Varning: Den här principen kombinerades inte enligt specifikationen i principen PolicyDictionaryMultipleSourceMergeList eftersom den inte ingår i de ordboksprinciper som kan kombineras.</translation>
 <translation id="5279286380302340275">Hantera nedladdningar</translation>

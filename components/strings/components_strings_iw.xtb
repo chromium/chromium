@@ -1011,6 +1011,7 @@
 <translation id="2930577230479659665">חיתוך אחרי כל עותק</translation>
 <translation id="2933624813161016821">Embossing Foil</translation>
 <translation id="2938225289965773019">לפתוח קישורי <ph name="PROTOCOL" /></translation>
+<translation id="2941112035454246133">נמוכה</translation>
 <translation id="2941878205777356567">‏מעטפה – 9x12 אינץ'</translation>
 <translation id="2941952326391522266">השרת הזה לא הצליח להוכיח שהוא <ph name="DOMAIN" />. אישור האבטחה שלו הוא מ-<ph name="DOMAIN2" />. ייתכן שהסיבה לכך היא תצורה שגויה או תוקף המיירט את החיבור שלך.</translation>
 <translation id="2942492342931589800">לא רשמי</translation>
@@ -2226,7 +2227,6 @@ Del</translation>
 <translation id="5263867360296733198">נדרשת בדיקה לפני ההעלאה</translation>
 <translation id="5266128565379329178">כריכה בקצה העליון</translation>
 <translation id="5269225904387178860">4 ניקובים בחלק התחתון</translation>
-<translation id="5269999699920406580">רק הבעלים יכול להגדיר תכונות שחלות על כל המערכת: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">התנאי '<ph name="DATA_CONTROLS_ATTRIBUTE" />' לא נתמך עבור '<ph name="DATA_CONTROLS_RESTRICTION" />'</translation>
 <translation id="5273658854610202413">‏אזהרה: המדיניות הזו לא עברה מיזוג בהתאם למדיניות PolicyDictionaryMultipleSourceMergeList, מאחר שהיא לא חלק מכללי מדיניות המילון שניתן למזג.</translation>
 <translation id="5279286380302340275">ניהול ההורדות</translation>
@@ -4291,6 +4291,7 @@ Del</translation>
 <translation id="920643408853370361">ביטוח נסיעות</translation>
 <translation id="9207861905230894330">הוספת הפריט נכשלה.</translation>
 <translation id="9210825002219699214">טיסות</translation>
+<translation id="9211461151375991073">אפשר להזין @ כדי לחפש <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">התאמה אישית של המראה</translation>
 <translation id="9215416866750762878">‏יישום כלשהו לא מאפשר ל-Chrome להתחבר באופן מאובטח לאתר זה</translation>
 <translation id="92178312226016010">מוגדר מעקב אחרי המוצר הזה.</translation>

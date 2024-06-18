@@ -116,6 +116,7 @@
 <translation id="2945997411976714835">安裝錯誤：無法啟動安裝程式程序。</translation>
 <translation id="2977470724722393594">Chromium 目前是最新版本</translation>
 <translation id="2977506796191543575">如果有網站試圖竊取你的密碼，或當你下載有害檔案時，Chromium 可能也會將網址 (包括部分網頁內容) 傳送給安全瀏覽功能</translation>
+<translation id="2987208172821108655">Chromium 可以讓這些分頁處於閒置狀態，改善瀏覽體驗並釋出資源。</translation>
 <translation id="3013473503895162900">在 Chromium 的新分頁中開啟 <ph name="URL" />。</translation>
 <translation id="3032706164202344641">Chromium 無法檢查你的密碼，請稍後再試。</translation>
 <translation id="3032787606318309379">正在新增至 Chromium...</translation>
@@ -317,6 +318,7 @@
 <translation id="6248213926982192922">將 Chromium 設為預設瀏覽器</translation>
 <translation id="6266342355635466082">Chromium 無法檢查更新，請查看你的網際網路連線狀態。</translation>
 <translation id="6268381023930128611">要登出 Chromium 嗎？</translation>
+<translation id="6270547683008298381">這些分頁正在使用額外的資源。為提升效能，請讓 Chromium 將其設為閒置分頁。</translation>
 <translation id="6281746429495226318">自訂 Chromium 設定檔</translation>
 <translation id="6290827346642914212">為 Chromium 設定檔命名</translation>
 <translation id="6294831894865512704">有擴充功能要求你登入 Chromium</translation>
@@ -325,6 +327,7 @@
 <translation id="6327105987658262776">沒有可用的更新。</translation>
 <translation id="6333502561965082103">Chromium 正在執行另一項作業，請稍後再試。</translation>
 <translation id="6334986366598267305">無論是登入 Google 帳戶使用 Chromium，還是以 Google 帳戶使用共用電腦，現在都變得更容易了。</translation>
+<translation id="633626832589656416">Chromium 可以讓這些分頁處於閒置狀態，改善瀏覽體驗並維持快速運作。</translation>
 <translation id="6347933965114150440">Chromium 捷徑</translation>
 <translation id="6366160072964553914">這不是常有人下載的檔案，可能有危險，因此 Chromium 已禁止下載</translation>
 <translation id="6373523479360886564">你確定要解除安裝 Chromium 嗎？</translation>
@@ -451,7 +454,6 @@ Chromium 無法復原你的設定。</translation>
 <translation id="8254601181414348851">要在新設定檔中登入 Chromium 嗎？</translation>
 <translation id="8266560134891435528">你尚未登入帳戶，因此 Chromium 無法檢查你的密碼</translation>
 <translation id="8286943863733751221">偵測到不安全的網站和下載內容時，<ph name="BEGIN_LINK" />Chromium 會顯示警告<ph name="END_LINK" /></translation>
-<translation id="8290862415967981663">這個檔案可能不安全，因此遭到 Chromium 封鎖。</translation>
 <translation id="8318772038038596122">由於 Chromium 閒置超過 <ph name="TIMEOUT_DURATION" />，貴機構已將其關閉。</translation>
 <translation id="8330519371938183845">登入即可進行同步處理，讓你在所有裝置上享有個人化的 Chromium 體驗</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> 先前使用的是 Chromium</translation>

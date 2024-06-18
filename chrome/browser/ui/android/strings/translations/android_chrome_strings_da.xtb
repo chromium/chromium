@@ -422,6 +422,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3060635849835183725">{BOOKMARKS_COUNT,plural, =1{<ph name="BOOKMARKS_COUNT_ONE" /> bogmærke}one{<ph name="BOOKMARKS_COUNT_MANY" /> bogmærke}other{<ph name="BOOKMARKS_COUNT_MANY" /> bogmærker}}</translation>
 <translation id="3062802207422175757">Artikler om dine interesser i Chrome</translation>
 <translation id="3066573403916685335">Flyt ned</translation>
+<translation id="3067505415088964188">Prisen er lav</translation>
 <translation id="3070005020161560471">Oversæt automatisk</translation>
 <translation id="3072980200212375806"><ph name="APP_NAME" /> åbnes i Chrome. Når du fortsætter, accepterer du <ph name="BEGIN_LINK1" />Googles servicevilkår<ph name="END_LINK1" /> og de <ph name="BEGIN_LINK2" />yderligere servicevilkår for Google Chrome og ChromeOS<ph name="END_LINK2" />. <ph name="BEGIN_LINK3" />Privatlivspolitikken<ph name="END_LINK3" /> vil også gælde.</translation>
 <translation id="3080525922482950719">Du kan gemme sider, som du vil læse senere, eller når du er offline</translation>

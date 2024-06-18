@@ -1011,6 +1011,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2930577230479659665">Kärbi pärast iga koopiat</translation>
 <translation id="2933624813161016821">Reljeefne trükk fooliumlehega</translation>
 <translation id="2938225289965773019">Avada protokolli <ph name="PROTOCOL" /> lingid</translation>
+<translation id="2941112035454246133">Madal</translation>
 <translation id="2941878205777356567">9 × 12-tolline ümbrik</translation>
 <translation id="2941952326391522266">Server ei suutnud tõestada, et see on domeen <ph name="DOMAIN" />, selle turvasertifikaati pärineb domeenilt <ph name="DOMAIN2" />. Selle põhjuseks võib olla vale seadistus või ründaja, kes on sekkunud teie ühendusse.</translation>
 <translation id="2942492342931589800">Lihtne</translation>
@@ -2222,7 +2223,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5263867360296733198">Enne üleslaadimist on ülevaatus nõutav</translation>
 <translation id="5266128565379329178">Köide ülal</translation>
 <translation id="5269225904387178860">Neli auku all</translation>
-<translation id="5269999699920406580">Kogu süsteemis kehtivaid funktsioone saab määrata ainult omanik: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">Tingimust „<ph name="DATA_CONTROLS_ATTRIBUTE" />“ piirangu „<ph name="DATA_CONTROLS_RESTRICTION" />“ puhul ei toetata</translation>
 <translation id="5273658854610202413">Hoiatus! Seda reeglit ei liidetud reeglis PolicyDictionaryMultipleSourceMergeList määratud viisil, kuna see ei ole osa sõnastiku reeglitest, mida saab liita.</translation>
 <translation id="5279286380302340275">Allalaadimiste haldamine</translation>
@@ -3063,6 +3063,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6915804003454593391">Kasutaja:</translation>
 <translation id="6916193791494646625">Esitage allalaadimise põhjus (nõutav)</translation>
 <translation id="6917795328362592458">Äsja kasutatud parool leiti andmetega seotud rikkumisest. Teie kontode turvalisuse kaitsmiseks soovitab Paroolihaldur teil kontrollida oma salvestatud paroole.</translation>
+<translation id="6924013822850225188">Valige, kas näete kassas oma kaardi eeliseid (kehtivad pangatingimused)</translation>
 <translation id="6925267999184670015">Põhja-Ameerika B+</translation>
 <translation id="6926216138694948720">Kehamaalingud</translation>
 <translation id="692638818576287323">Tarbesõidukid</translation>
@@ -3832,6 +3833,7 @@ Lisateave:
 <translation id="830498451218851433">Pooleks volditud</translation>
 <translation id="8308653357438598313">Reaalajas videote voogesitamine</translation>
 <translation id="8311895354659782580">Kinnisvaraloendid</translation>
+<translation id="8312841338723044391">OTSE</translation>
 <translation id="8316555157357957253">Kasutatakse praegu</translation>
 <translation id="8319269383395457801">Elamute ja eluruumide müük</translation>
 <translation id="831997045666694187">Õhtu</translation>

@@ -303,7 +303,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1211769675100312947">Bližnjice izberete vi</translation>
 <translation id="1213254615020057352">Pošiljanje podatkov o uporabi in diagnostičnih podatkov. Pomagajte izboljšati otrokovo izkušnjo z Androidom s samodejnim pošiljanjem diagnostičnih podatkov ter podatkov o uporabi naprave in aplikacij Googlu. Teh podatkov ne bomo uporabljali, da bi prepoznali vašega otroka, temveč za izboljšanje stabilnosti sistema in izvajanja aplikacij ter drugega. Nekateri združeni podatki bodo pomagali tudi Googlovim aplikacijam in partnerjem, na primer razvijalcem za Android. To nastavitev je uveljavil lastnik naprave. Lastnik bo morda izbral, da se za to napravo pošiljajo diagnostični podatki in podatki o uporabi Googlu. Če ste za otroka vklopili dodatno beleženje dejavnosti v spletu in aplikacijah, bodo ti podatki morda shranjeni v njegovem računu Google.</translation>
 <translation id="1213726621272705156">Kartice na tej strani ne bodo več prikazane.</translation>
-<translation id="121384500095351701">Te datoteke ni mogoče varno prenesti</translation>
 <translation id="1214004433265298541">Potrdilo je zagotovil skrbnik, ki si lahko ogleda poverilnice za domeno <ph name="DOMAIN" />.</translation>
 <translation id="1215411991991485844">Dodan je nov program, ki se izvaja v ozadju</translation>
 <translation id="1216542092748365687">Odstranitev prstnega odtisa</translation>
@@ -2101,7 +2100,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2489829450872380594">Naslednjič bo nov telefon odklenil to napravo <ph name="DEVICE_TYPE" />. Funkcijo Smart Lock lahko izklopite v nastavitvah.</translation>
 <translation id="2489918096470125693">Dodaj &amp;mapo ...</translation>
 <translation id="2489931062851778802">Vnesite te ključe v napravi <ph name="DEVICE_NAME" /></translation>
-<translation id="2490481887078769936">Datoteka »<ph name="FILE_NAME" />« je odstranjena s seznama</translation>
 <translation id="249098303613516219">Podatki spletnih mest v napravi so dovoljeni</translation>
 <translation id="249113932447298600">Oprostite, naprava <ph name="DEVICE_LABEL" /> še ni podprta.</translation>
 <translation id="2491587035099903063">predogled glasu za jezik <ph name="LANGUAGE" /></translation>
@@ -2493,7 +2491,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2772936498786524345">Neopazni</translation>
 <translation id="2773288106548584039">Podpora za starejše brskalnike</translation>
 <translation id="2773621783913034737">Zavihke spremeni v neaktivne</translation>
-<translation id="2773802008104670137">Ta vrsta datoteke lahko poškoduje vaš računalnik.</translation>
 <translation id="2775104091073479743">Urejanje prstnih odtisov</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Razširitev »<ph name="EXTENSION" />« je dostopala do naprav}=1{Razširitev »<ph name="EXTENSION" />« dostopa do naprave {0}}one{Razširitev »<ph name="EXTENSION" />« dostopa do {0} naprave}two{Razširitev »<ph name="EXTENSION" />« dostopa do {0} naprav}few{Razširitev »<ph name="EXTENSION" />« dostopa do {0} naprav}other{Razširitev »<ph name="EXTENSION" />« dostopa do {0} naprav}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Odstranitev 1 nepodprte aplikacije}one{Odstranitev # nepodprte aplikacije}two{Odstranitev # nepodprtih aplikacij}few{Odstranitev # nepodprtih aplikacij}other{Odstranitev # nepodprtih aplikacij}}</translation>
@@ -3656,7 +3653,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3654682977761834281">Podatki z vdelanih spletnih mest</translation>
 <translation id="3656328935986149999">Hitrost kazalca</translation>
 <translation id="3658871634334445293">Pospeševanje sledilne palčke</translation>
-<translation id="3659550105763988702">Uporabite ključ za dostop za aplikacijo <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Prevečkrat ste vnesli napačno kodo za dostop. Poskusite znova pozneje.</translation>
 <translation id="3660234220361471169">Ni vredno zaupanja</translation>
 <translation id="3661106764436337772">Pišite hitreje in z več samozavesti</translation>
@@ -3750,7 +3746,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3719245268140483218">Dogodek v napravi</translation>
 <translation id="3719310907809321183">Polje <ph name="CARD_IDENTIFIER" /> je izpolnjeno.</translation>
 <translation id="3719826155360621982">Domača stran</translation>
-<translation id="3720543739123045680">Drugi zavihki souporabljajo proces s tem zavihkom, zaradi česar lahko pride do nepričakovane izkušnje z orodji za razvijalce.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Vi in Google</translation>
 <translation id="3721178866505920080">Več informacij o vklopu razširjenega vnaprejšnjega nalaganja</translation>
@@ -5349,7 +5344,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4903967893652864401">Ta funkcija podaljša čas delovanja baterije tako, da omeji dejavnost v ozadju in vizualne učinke, kot je tekoče drsenje.</translation>
 <translation id="4906490889887219338">Nastavitev ali upravljanje omrežnih datotečnih sredstev v skupni rabi. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Izberite, kdaj lahko ta razširitev bere in spreminja podatke spletnega mesta</translation>
-<translation id="4907161631261076876">Datoteka ni pogosto prenesena in je lahko nevarna.</translation>
 <translation id="4908811072292128752">Odprite nov zavihek, če želite brskati na dveh spletnih mestih hkrati</translation>
 <translation id="4909038193460299775">Ta račun upravlja domena <ph name="DOMAIN" />, zato bodo vaši zaznamki, zgodovina, gesla in druge nastavitve izbrisani iz te naprave. Vaši podatki bodo kljub temu še naprej shranjeni v Google Računu in jih bo mogoče upravljati na <ph name="BEGIN_LINK" />Google Nadzorni plošči<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">Aplikacija je že nameščena</translation>
@@ -6706,7 +6700,6 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="5935158534896975820">Pripravljanje zahteve za podpisovanje potrdila (čakanje na strežnik)</translation>
 <translation id="5935656526031444304">Upravljanje varnega brskanja</translation>
 <translation id="5936065461722368675">Prevedi celotno stran</translation>
-<translation id="5937347877659196749">Nato vse ključe za dostop zaščitite z obnovitveno kodo PIN</translation>
 <translation id="5937977334791924341">Logotip aplikacije <ph name="APP" /></translation>
 <translation id="5938002010494270685">Na voljo je nadgradnja varnosti</translation>
 <translation id="5939518447894949180">Ponastavi</translation>
@@ -7468,7 +7461,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6530030995840538405">Ustvarjena je bila slika št. <ph name="INDEX" /> za »<ph name="SUBJECT" />«</translation>
 <translation id="6530186581263215931">Te nastavitve je uveljavil skrbnik</translation>
 <translation id="6530267432324197764">Upravitelj profila: <ph name="MANAGER" /></translation>
-<translation id="6531282281159901044">Obdrži nevarno datoteko</translation>
 <translation id="6532101170117367231">Shrani v Google Drive</translation>
 <translation id="6532106788206463496">Shrani spremembe</translation>
 <translation id="6532206849875187177">Varnost in prijava</translation>
@@ -7516,6 +7508,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6557290421156335491">Moje bližnjice</translation>
 <translation id="6560061709899140565">Prikaz drugih sej za predvajanje</translation>
 <translation id="6560151649238390891">Predlog je vstavljen</translation>
+<translation id="656065428026159829">Prikaži več</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Shranjevanje sistemskih dnevnikov v mapo Prenosi.</translation>
 <translation id="656293578423618167">Pot datoteke ali ime je predolgo. Shranite s krajšim imenom ali na drugo mesto.</translation>
@@ -9036,7 +9029,6 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7701040980221191251">Nič</translation>
 <translation id="7701869757853594372">Kode za dostop USER</translation>
 <translation id="7702463352133825032">Ustavi predvajanje zavihka v napravi <ph name="DEVICE_NAME" /></translation>
-<translation id="7702574632857388784">Odstrani datoteko <ph name="FILE_NAME" /> s seznama</translation>
 <translation id="7704305437604973648">Opravilo</translation>
 <translation id="7704521324619958564">Odpri Trgovino Play</translation>
 <translation id="7705276765467986571">Modela zaznamka ni bilo mogoče naložiti.</translation>
@@ -9488,6 +9480,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8022466874160067884">Vnesite račun Google in geslo</translation>
 <translation id="8023133589013344428">Upravljanje jezikov v nastavitvah sistema ChromeOS Flex</translation>
 <translation id="8023801379949507775">Posodobi razširitve</translation>
+<translation id="8024161440284949905">Nadaljuj s temi zavihki</translation>
 <translation id="8025151549289123443">Zaklenjen zaslon in prijava</translation>
 <translation id="8025291188699172126">O posodobitvah</translation>
 <translation id="8026471514777758216">Vse vaše naprave</translation>

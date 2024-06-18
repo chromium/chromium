@@ -251,6 +251,7 @@
 <translation id="4561051373932531560">In Google Chrome kannst du auf eine Telefonnummer im Web klicken und diese mit Skype anrufen.</translation>
 <translation id="4567424176335768812">Du bist als <ph name="USER_EMAIL_ADDRESS" /> angemeldet. Auf allen Geräten, auf denen du angemeldet bist, sind nun deine Lesezeichen, dein Verlauf und andere Einstellungen verfügbar.</translation>
 <translation id="4571503333518166079">Chrome-Benachrichtigungseinstellungen aufrufen</translation>
+<translation id="4575717501879784448">Chrome kann diese Tabs deaktivieren, um ein besseres Surfen zu ermöglichen und Ressourcen freizugeben.</translation>
 <translation id="459622048091363950">Sobald Chrome Zugriff hat, können Websites dich um Zugriff bitten.</translation>
 <translation id="4600710005438004015">Chrome konnte nicht auf die neueste Version aktualisiert werden. In deiner Version fehlen daher einige neue Funktionen und Sicherheitspatches.</translation>
 <translation id="4624065194742029982">Der Inkognitomodus von Chrome</translation>
@@ -263,7 +264,6 @@
 <translation id="4728575227883772061">Installation aufgrund von unbekanntem Fehler fehlgeschlagen. Falls Google Chrome bereits ausgeführt wird, schließe es und versuche es noch einmal.</translation>
 <translation id="4747730611090640388">Chrome kann deine Interessen schätzen.  Wenn du eine Website besuchst, kann diese von Chrome dann deine Interessen anfordern, um die dir gezeigte Werbung zu personalisieren.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
-<translation id="4771048833395599659">Diese Datei ist eventuell schädlich und wurde von Chrome blockiert.</translation>
 <translation id="479167709087336770">Es wird dieselbe Rechtschreibprüfung wie in der Google Suche verwendet. Der in den Browser eingegebene Text wird an Google gesendet. Du kannst dies jederzeit in den Einstellungen ändern.</translation>
 <translation id="4793679854893018356">So trägt Chrome zu deinem Schutz bei</translation>
 <translation id="4828579605166583682">Google Chrome versucht, vorhandene Passwörter zu ersetzen. Gib dein Windows-Passwort ein, um dies zuzulassen.</translation>
@@ -282,6 +282,7 @@
 <translation id="4970761609246024540">Willkommen bei den Chrome-Profilen</translation>
 <translation id="4970880042055371251">Chrome OS-Version</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="4997044641749333913">Chrome kann diese Tabs deaktivieren, um ein besseres und schnelleres Surfen zu ermöglichen.</translation>
 <translation id="5003967926796347400">Klicke auf „Google Passwortmanager“</translation>
 <translation id="5120334927898581447">In Chrome anmelden, wenn du dich in anderen Google-Diensten anmeldest</translation>
 <translation id="5126049312684316860">Chrome lädt noch mehr Seiten vorab, die du wahrscheinlich besuchen wirst, sodass sie dann schneller zur Verfügung stehen</translation>
@@ -342,6 +343,7 @@
 <translation id="608006075545470555">Arbeitsprofil zu diesem Browser hinzufügen</translation>
 <translation id="6097822892606850415">KI hilft dir dabei, mit mehr Selbstvertrauen zu schreiben</translation>
 <translation id="6113794647360055231">Chrome ist jetzt noch besser</translation>
+<translation id="6135456723633883042">Diese Tabs verbrauchen zusätzliche Ressourcen. Du kannst die Leistung verbessern, wenn du zulässt, dass Chrome sie deaktiviert.</translation>
 <translation id="6145313976051292476">PDFs in Chrome öffnen</translation>
 <translation id="6157638032135951407">In deiner Organisation werden Chrome-Daten nach <ph name="TIMEOUT_DURATION" /> Inaktivität gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

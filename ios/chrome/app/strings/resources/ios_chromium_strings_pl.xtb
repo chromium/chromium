@@ -122,6 +122,7 @@ Dane zostały zaszyfrowane za pomocą Twojego hasła wielowyrazowego. Podaj to h
 
 Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />usuń dane Chromium na swoim koncie<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Otwiera stronę ustawień form płatności w Chromium.</translation>
+<translation id="458786853569524949">Teraz możesz używać Chromium za każdym razem, gdy klikniesz link w e-mailach, dokumentach i w innych aplikacjach.</translation>
 <translation id="459080529287102949">Wyszukaj elementy wizualne w Chromium</translation>
 <translation id="4633738821577273991">Włącz też Ulepszone Bezpieczne przeglądanie na tym profilu Chromium</translation>
 <translation id="4638625642619341392">Tutaj możesz pobrać Chromium.</translation>
@@ -288,6 +289,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 Dane zostały zaszyfrowane hasłem wielowyrazowym <ph name="TIME" />. Podaj to hasło, aby korzystać z danych Chromium i zapisywać je na swoim koncie Google.</translation>
 <translation id="9022552996538154597">Zaloguj się w Chromium</translation>
 <translation id="9050790730841755540">Używaj Chromium, zawsze gdy klikasz linki w innych aplikacjach.</translation>
+<translation id="9057082013386654559">Domyślnie używaj Chromium na iPada</translation>
 <translation id="9059693977935746710">Nie musisz go zapamiętywać. Menedżer haseł zapisze je na koncie <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium jest nieaktualny</translation>
 <translation id="9110075932708282655">Używaj domyślnie Chromium</translation>

@@ -1012,6 +1012,7 @@
 <translation id="2930577230479659665">القطع بعد كل نسخة</translation>
 <translation id="2933624813161016821">قصدير مزخرف</translation>
 <translation id="2938225289965773019">فتح روابط <ph name="PROTOCOL" /></translation>
+<translation id="2941112035454246133">منخفضة</translation>
 <translation id="2941878205777356567">ظرف مقاس 23 × 30 سم</translation>
 <translation id="2941952326391522266">هذا الخادم لم يتمكن من إثبات أن ذلك <ph name="DOMAIN" />؛ بل إنه شهادة أمان من <ph name="DOMAIN2" />. وربما سبب ذلك خطأ في التكوين أو مهاجمًا يعترض اتصالك.</translation>
 <translation id="2942492342931589800">نص غير رسمي</translation>
@@ -2225,7 +2226,6 @@
 <translation id="5263867360296733198">يجب مراجعة الملفات قبل تحميلها</translation>
 <translation id="5266128565379329178">التجليد من الأعلى</translation>
 <translation id="5269225904387178860">عمل أربعة ثقوب بالأسفل</translation>
-<translation id="5269999699920406580">لا يمكن ضبط الميزات التي تنطبق على مستوى النظام إلا من قِبل المالك: <ph name="OWNER_EMAIL" />.</translation>
 <translation id="5271381225185906340">‫"<ph name="DATA_CONTROLS_ATTRIBUTE" />" ليس شرطًا متوافقًا مع "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="5273658854610202413">‏تحذير: لم يتم دمج هذه السياسة كما هو موضح في سياسة PolicyDictionaryMultipleSourceMergeList؛ لأنها ليست جزءًا من سياسات المعجم التي يمكن دمجها.</translation>
 <translation id="5279286380302340275">إدارة عمليات التنزيل</translation>

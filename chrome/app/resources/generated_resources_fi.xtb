@@ -300,7 +300,6 @@
 <translation id="1211769675100312947">Sinä valitset pikakuvakkeet</translation>
 <translation id="1213254615020057352">Lähetä käyttö- ja diagnostiikkadataa. Auta parantamaan lapsesi Android-käyttökokemusta lähettämällä diagnostiikkadataa sekä laitteen ja sovellusten käyttödataa automaattisesti Googlelle. Dataa ei käytetä lapsesi henkilöllisyyden selvittämiseen – sen avulla parannetaan esimerkiksi järjestelmän ja sovellusten vakautta. Kootusta datasta on hyötyä myös Googlen sovelluksille ja kumppaneille, kuten Android-kehittäjille. Omistaja on ottanut tämän asetuksen käyttöön. Omistaja voi lähettää tätä laitetta koskevaa diagnostiikka- ja käyttödataa Googlelle. Jos muun verkko- ja sovellustoiminnan asetus on lapsella päällä, tätä dataa voidaan tallentaa hänen Google-tililleen.</translation>
 <translation id="1213726621272705156">Et enää näe kortteja tällä sivulla</translation>
-<translation id="121384500095351701">Tätä tiedostoa ei voi ladata turvallisesti.</translation>
 <translation id="1214004433265298541">Järjestelmänvalvojan antama varmenne, jolla on oikeus nähdä verkkotunnuksen <ph name="DOMAIN" /> kirjautumistiedot</translation>
 <translation id="1215411991991485844">Uusi taustasovellus lisätty</translation>
 <translation id="1216542092748365687">Poista sormenjälki</translation>
@@ -2092,7 +2091,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2489829450872380594">Ensi kerralla tämä <ph name="DEVICE_TYPE" /> avataan lukituksesta uudella puhelimella. Voit poistaa Smart Lockin käytöstä asetuksissa.</translation>
 <translation id="2489918096470125693">Lisää kansio...</translation>
 <translation id="2489931062851778802">Paina näitä näppäimiä: <ph name="DEVICE_NAME" /></translation>
-<translation id="2490481887078769936"><ph name="FILE_NAME" /> poistettiin luettelosta</translation>
 <translation id="249098303613516219">Laitepohjainen sivustodata sallittu</translation>
 <translation id="249113932447298600">Laitetta <ph name="DEVICE_LABEL" /> ei tueta tällä hetkellä.</translation>
 <translation id="2491587035099903063">esikuuntele ääni: <ph name="LANGUAGE" /></translation>
@@ -2484,7 +2482,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2772936498786524345">Ninja</translation>
 <translation id="2773288106548584039">Vanhojen selaimien tuki</translation>
 <translation id="2773621783913034737">Tee välilehdet ei-aktiivisiksi</translation>
-<translation id="2773802008104670137">Tämäntyyppinen tiedosto voi vahingoittaa tietokonettasi.</translation>
 <translation id="2775104091073479743">Muokkaa sormenjälkiä</translation>
 <translation id="2775420101802644975">{NUM_CONNECTION,plural, =0{Laajennuksella <ph name="EXTENSION" /> oli pääsy laitteilla}=1{Laajennuksella <ph name="EXTENSION" /> on pääsy {0} laitteelle}other{Laajennuksella <ph name="EXTENSION" /> on pääsy {0} laitteelle}}</translation>
 <translation id="2775858145769350417">{NUM_APPS,plural, =1{Poista 1 ei-tuettu sovellus}other{Poista # ei-tuettua sovellusta}}</translation>
@@ -3646,7 +3643,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3654682977761834281">Data upotetuilta sivustoilta</translation>
 <translation id="3656328935986149999">Kohdistimen nopeus</translation>
 <translation id="3658871634334445293">TrackPoint-nopeuttaminen</translation>
-<translation id="3659550105763988702">Käytä avainkoodiasi täällä: <ph name="APP_NAME" /></translation>
 <translation id="3659929705630080526">Olet lisännyt virheellisen käyttökoodin liian monta kertaa. Yritä myöhemmin uudelleen</translation>
 <translation id="3660234220361471169">Ei-luotettu</translation>
 <translation id="3661106764436337772">Kirjoita nopeammin ja itsevarmemmin</translation>
@@ -3739,7 +3735,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3719245268140483218">Laitetapahtuma</translation>
 <translation id="3719310907809321183"><ph name="CARD_IDENTIFIER" /> täytetty.</translation>
 <translation id="3719826155360621982">Etusivu</translation>
-<translation id="3720543739123045680">Muut välilehdet jakavat tällä välilehdellä tapahtuvan prosessin, mikä voi johtaa odottamattomaan DevTools-kokemukseen.</translation>
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Sinä ja Google</translation>
 <translation id="3721178866505920080">Lisätietoa laajennetun esilatauksen laittamisesta päälle</translation>
@@ -5333,7 +5328,6 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="4903967893652864401">Tämä pidentää akunkestoa rajoittamalla taustatoimintaa ja visuaalisia tehosteita, esimerkiksi sujuvaa vieritystä.</translation>
 <translation id="4906490889887219338">Aloita verkkotiedostojen jakaminen tai muuta sitä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="4907129260985716018">Valitse, kun tämä laajennus voi lukea ja muuttaa sivustodataasi</translation>
-<translation id="4907161631261076876">Tätä tiedostoa ei ladata usein ja se saattaa olla haitallinen.</translation>
 <translation id="4908811072292128752">Avaa uusi välilehti, niin voit selailla kahdella sivulla yhtä aikaa.</translation>
 <translation id="4909038193460299775">Koska <ph name="DOMAIN" /> hallinnoi tätä tiliä, kirjanmerkkisi, historiasi, salasanasi ja muut asetuksesi tyhjennetään tältä laitteelta. Tietosi pysyvät kuitenkin Google-tililläsi ja niitä voidaan hallinnoida <ph name="BEGIN_LINK" />Google Hallintapaneelissa<ph name="END_LINK" />.</translation>
 <translation id="4910241725741323970">Sovellus on jo asennettu</translation>
@@ -6687,7 +6681,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="5935158534896975820">Varmenteen allekirjoituspyyntöä valmistellaan (odotetaan palvelinta)</translation>
 <translation id="5935656526031444304">Muuta Selaussuoja-asetuksia</translation>
 <translation id="5936065461722368675">Käännä koko sivu</translation>
-<translation id="5937347877659196749">Suojaa seuraavaksi kaikki avainkoodit palautuksen PIN-koodin avulla</translation>
 <translation id="5937977334791924341">Logo: <ph name="APP" /></translation>
 <translation id="5938002010494270685">Turvallisuuspäivitys saatavilla</translation>
 <translation id="5939518447894949180">Tyhjennä</translation>
@@ -7449,7 +7442,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6530030995840538405">Luotu kuva <ph name="INDEX" /> / <ph name="SUBJECT" /></translation>
 <translation id="6530186581263215931">Järjestelmänvalvojasi on ottanut nämä asetukset käyttöön</translation>
 <translation id="6530267432324197764">Profiilia hallitsee <ph name="MANAGER" /></translation>
-<translation id="6531282281159901044">Pidä haitallinen tiedosto</translation>
 <translation id="6532101170117367231">Tallenna Google Driveen</translation>
 <translation id="6532106788206463496">Tallenna muutokset</translation>
 <translation id="6532206849875187177">Suojaus ja sisäänkirjautuminen</translation>
@@ -7497,6 +7489,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6557290421156335491">Omat pikakuvakkeet</translation>
 <translation id="6560061709899140565">Näytä muut striimausistunnot</translation>
 <translation id="6560151649238390891">Ehdotus lisättiin</translation>
+<translation id="656065428026159829">Katso lisää</translation>
 <translation id="6561726789132298588">enter</translation>
 <translation id="6562117348069327379">Tallenna järjestelmälokit Lataukset-hakemistoon.</translation>
 <translation id="656293578423618167">Tiedostonimi tai -polku on liian pitkä. Lyhennä nimeä tai tallenna muuhun sijaintiin.</translation>
@@ -9010,7 +9003,6 @@ Sinulla on vielä # vaarantunutta salasanaa. Google Salasanat suosittelee, että
 <translation id="7701040980221191251">Ei mitään</translation>
 <translation id="7701869757853594372">KÄYTTÄJÄ-tunnukset</translation>
 <translation id="7702463352133825032">Lopeta striimaus: <ph name="DEVICE_NAME" /></translation>
-<translation id="7702574632857388784">Poista <ph name="FILE_NAME" /> luettelosta</translation>
 <translation id="7704305437604973648">Tehtävä</translation>
 <translation id="7704521324619958564">Avaa Play Kaupppa</translation>
 <translation id="7705276765467986571">Kirjanmerkkimallin lataaminen epäonnistui.</translation>
@@ -9458,6 +9450,7 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8022466874160067884">Lisää Google-tilisi ja salasanasi</translation>
 <translation id="8023133589013344428">Muuta kielivalintoja ChromeOS Flexin asetuksista</translation>
 <translation id="8023801379949507775">Päivitä laajennukset nyt</translation>
+<translation id="8024161440284949905">Jatka näillä välilehdillä</translation>
 <translation id="8025151549289123443">Lukitusnäyttö ja sisäänkirjautuminen</translation>
 <translation id="8025291188699172126">Tietoa päivityksistä</translation>
 <translation id="8026471514777758216">Kaikki laitteet</translation>

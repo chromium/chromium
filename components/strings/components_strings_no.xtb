@@ -1011,6 +1011,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2930577230479659665">Beskjær etter hver kopi</translation>
 <translation id="2933624813161016821">Pregfolie</translation>
 <translation id="2938225289965773019">åpne linker til <ph name="PROTOCOL" /></translation>
+<translation id="2941112035454246133">Lav</translation>
 <translation id="2941878205777356567">Konvolutt 9 x 12 tommer</translation>
 <translation id="2941952326391522266">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Tjenerens sikkerhetssertifikat er fra <ph name="DOMAIN2" />. Dette kan være forårsaket av en feilkonfigurering eller en angriper som avskjærer tilkoblingen din.</translation>
 <translation id="2942492342931589800">Casual</translation>
@@ -2222,7 +2223,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5263867360296733198">Filene må gjennomgås før de kan lastes opp</translation>
 <translation id="5266128565379329178">Innbinding topp</translation>
 <translation id="5269225904387178860">Fire hull bunn</translation>
-<translation id="5269999699920406580">Funksjoner som gjelder for hele systemet, kan bare angis av eieren: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">«<ph name="DATA_CONTROLS_ATTRIBUTE" />» er ikke en støttet betingelse for «<ph name="DATA_CONTROLS_RESTRICTION" />»</translation>
 <translation id="5273658854610202413">Advarsel: Denne regelen ble ikke sammenslått som angitt i PolicyDictionaryMultipleSourceMergeList-regelen fordi den ikke er en del av ordlistereglene som kan slås sammen.</translation>
 <translation id="5279286380302340275">Administrer nedlastinger</translation>
@@ -3063,6 +3063,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6915804003454593391">Bruker:</translation>
 <translation id="6916193791494646625">Oppgi årsaken til nedlastingen (obligatorisk)</translation>
 <translation id="6917795328362592458">Passordet du nettopp brukte, er funnet i et databrudd. For å sikre kontoene dine anbefaler Passordlagring at du sjekker de lagrede passordene dine.</translation>
+<translation id="6924013822850225188">Velg om du vil se kortfordelene dine i kassen (bankens vilkår gjelder)</translation>
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Kroppsutsmykning</translation>
 <translation id="692638818576287323">Kommersielle kjøretøy</translation>
@@ -3831,6 +3832,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="830498451218851433">Halvfals</translation>
 <translation id="8308653357438598313">Direktesendt videostrøm</translation>
 <translation id="8311895354659782580">Eiendomsannonser</translation>
+<translation id="8312841338723044391">DIREKTE</translation>
 <translation id="8316555157357957253">Brukes nå</translation>
 <translation id="8319269383395457801">Salg av eiendom</translation>
 <translation id="831997045666694187">Kveld</translation>

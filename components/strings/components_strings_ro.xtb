@@ -1011,6 +1011,7 @@
 <translation id="2930577230479659665">Decupare după fiecare exemplar</translation>
 <translation id="2933624813161016821">Folie pentru embosare</translation>
 <translation id="2938225289965773019">Deschide linkurile <ph name="PROTOCOL" /></translation>
+<translation id="2941112035454246133">Redusă</translation>
 <translation id="2941878205777356567">Plic de 9 x 12 inchi</translation>
 <translation id="2941952326391522266">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; certificatul său de securitate provine de la <ph name="DOMAIN2" />. Cauza poate fi o configurare greșită sau interceptarea conexiunii de către un atacator.</translation>
 <translation id="2942492342931589800">Informal</translation>
@@ -2222,7 +2223,6 @@
 <translation id="5263867360296733198">Examinarea este obligatorie înainte de încărcare</translation>
 <translation id="5266128565379329178">Legare în partea de sus</translation>
 <translation id="5269225904387178860">Perforare cvadruplă în partea de jos</translation>
-<translation id="5269999699920406580">Funcțiile care se aplică la nivel de sistem pot fi setate numai de proprietar: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340"><ph name="DATA_CONTROLS_ATTRIBUTE" /> nu este o condiție acceptată pentru <ph name="DATA_CONTROLS_RESTRICTION" /></translation>
 <translation id="5273658854610202413">Atenție: această politică nu a fost îmbinată așa cum este indicat în politica PolicyListMultipleSourceMergeList, deoarece nu este o parte din politicile din dicționar care pot fi îmbinate.</translation>
 <translation id="5279286380302340275">Gestionează descărcările</translation>

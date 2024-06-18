@@ -1012,6 +1012,7 @@
 <translation id="2930577230479659665">Абрэзка пасля кожнай копіі</translation>
 <translation id="2933624813161016821">Фольга для ціснення</translation>
 <translation id="2938225289965773019">Адкрыць спасылкі <ph name="PROTOCOL" /></translation>
+<translation id="2941112035454246133">Нізкі</translation>
 <translation id="2941878205777356567">Канверт 9 x 12 цаляў</translation>
 <translation id="2941952326391522266">Серверу не ўдалося даказаць, што гэта <ph name="DOMAIN" />: яго сертыфікат бяспекі паходзіць з <ph name="DOMAIN2" />. Прычынай могуць быць няправільныя налады або зламыснік, які спрабуе перахапіць падключэнне.</translation>
 <translation id="2942492342931589800">Нефармальны</translation>
@@ -2222,7 +2223,6 @@
 <translation id="5263867360296733198">Перш чым запампоўваць файлы, іх неабходна праверыць</translation>
 <translation id="5266128565379329178">Пераплёт зверху</translation>
 <translation id="5269225904387178860">Чатыры дзіркі знізу</translation>
-<translation id="5269999699920406580">Задаваць агульнасістэмныя функцыі можа толькі ўладальнік: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">Умова "<ph name="DATA_CONTROLS_ATTRIBUTE" />" не падтрымліваецца для правіла "<ph name="DATA_CONTROLS_RESTRICTION" />".</translation>
 <translation id="5273658854610202413">Увага: гэта палітыка не была аб'яднана згодна з параметрамі "PolicyDictionaryMultipleSourceMergeList", бо яна не ўваходзіць у слоўнікавыя палітыкі, якія можна аб'яднаць.</translation>
 <translation id="5279286380302340275">Кіраваць спампоўкамі</translation>
@@ -3063,6 +3063,7 @@
 <translation id="6915804003454593391">Карыстальнік:</translation>
 <translation id="6916193791494646625">Укажыце, па якой прычыне вы хочаце спампаваць файл (абавязкова)</translation>
 <translation id="6917795328362592458">Выкарыстаны вамі пароль трапіў у спіс узламаных даных. Каб абараніць свае ўліковыя запісы, праверце захаваныя паролі ў Менеджары пароляў.</translation>
+<translation id="6924013822850225188">Выберыце, ці будуць бонусы па картцы паказвацца падчас афармлення заказу (дзейнічаюць умовы банка)</translation>
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Бодзі-арт</translation>
 <translation id="692638818576287323">Камерцыйны транспарт</translation>
@@ -3833,6 +3834,7 @@
 <translation id="830498451218851433">Згіб напалову</translation>
 <translation id="8308653357438598313">Жывыя відэатрансляцыі</translation>
 <translation id="8311895354659782580">Нерухомая маёмасць і зямельныя ўчасткі</translation>
+<translation id="8312841338723044391">УЖЫВУЮ</translation>
 <translation id="8316555157357957253">Выкарыстоўваецца зараз</translation>
 <translation id="8319269383395457801">Продаж жылля</translation>
 <translation id="831997045666694187">Вечар</translation>

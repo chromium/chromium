@@ -256,6 +256,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4561051373932531560">Google Chrome të lejon të klikosh një numër telefoni në ueb dhe ta telefonosh me Skype!</translation>
 <translation id="4567424176335768812">Je identifikuar si <ph name="USER_EMAIL_ADDRESS" />. Tani mund të qasesh te faqeshënuesit, historiku dhe cilësime të tjera në të gjitha pajisjet ku je identifikuar.</translation>
 <translation id="4571503333518166079">Shko te "Cilësimet e njoftimeve" të Chrome</translation>
+<translation id="4575717501879784448">Chrome mund t'i bëjë joaktive këto skeda për të përmirësuar përvojën tënde të shfletimit dhe për të liruar burimet.</translation>
 <translation id="459622048091363950">Pasi Chrome të ketë qasje, uebsajtet do të jenë në gjendje të kërkojnë prej teje qasje.</translation>
 <translation id="4600710005438004015">Chrome nuk mund të përditësohej me versionin më të fundit, kështu që të mungojnë rregullimet e sigurisë dhe funksionet e reja.</translation>
 <translation id="4624065194742029982">Modaliteti "i fshehtë" i Chrome</translation>
@@ -268,7 +269,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4728575227883772061">Instalimi dështoi për shkak të një gabimi të paspecifikuar. Nëse Google Chrome është aktualisht në ekzekutim, mbylle dhe provo përsëri.</translation>
 <translation id="4747730611090640388">Chrome mund të përllogarisë interesat e tua.  Më vonë, një sajt që ti viziton mund t'i kërkojë Chrome të shikojë interesat e tua në mënyrë që të personalizojë reklamat që shikon.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
-<translation id="4771048833395599659">Ky skedar mund të jetë i rrezikshëm, prandaj Chrome e ka bllokuar atë.</translation>
 <translation id="479167709087336770">Kjo përdor të njëjtin kontrollues drejtshkrimor që përdoret në kërkimin e Google. Teksti që shkruan në shfletues dërgohet te Google. Mund ta ndryshosh këtë sjellje gjithmonë te cilësimet.</translation>
 <translation id="4793679854893018356">Mëso se si të mban të sigurt Chrome</translation>
 <translation id="4828579605166583682">Google Chrome po përpiqet të zëvendësojë fjalëkalimet ekzistuese. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
@@ -287,6 +287,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4970761609246024540">Mirë se vjen në profilet e Chrome</translation>
 <translation id="4970880042055371251">Versioni i ChromeOS</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="4997044641749333913">Chrome mund t'i bëjë joaktive këto skeda për të përmirësuar përvojën tënde të shfletimit dhe për të ruajtur shpejtësinë</translation>
 <translation id="5003967926796347400">Kliko te “Menaxheri i fjalëkalimeve i Google”</translation>
 <translation id="5120334927898581447">Identifikohu në Chrome kur identifikohesh në shërbimet e tjera të Google</translation>
 <translation id="5126049312684316860">Chrome ngarkon paraprakisht edhe faqe të tjera që mund t'i vizitosh që ato të ngarkohen më shpejt kur t'i vizitosh</translation>
@@ -351,6 +352,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="608006075545470555">Shto profilin e punës në këtë shfletues</translation>
 <translation id="6097822892606850415">Shkruaj me më shumë vetëbesim me ndihmën nga IA-ja</translation>
 <translation id="6113794647360055231">Chrome sapo është përmirësuar</translation>
+<translation id="6135456723633883042">Këto skeda po përdorin burime shtesë. Për të përmirësuar performancën tënde, lejo që Chrome t'i bëjë ato joaktive.</translation>
 <translation id="6145313976051292476">Hap PDF-të në Chrome</translation>
 <translation id="6157638032135951407">Organizata jote i fshin të dhënat e Chrome kur ato nuk përdoren për <ph name="TIMEOUT_DURATION" />. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet.</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>

@@ -117,6 +117,7 @@
 <translation id="2945997411976714835">Грешка при инсталирането: Стартирането на инсталационния процес не бе успешно.</translation>
 <translation id="2977470724722393594">Chromium е актуален</translation>
 <translation id="2977506796191543575">Ако сайт се опита да открадне паролата ви или изтеглите опасен файл, Chromium може също да изпрати до Безопасно сърфиране URL адресите и част от съдържанието на страницата</translation>
+<translation id="2987208172821108655">Chromium може да деактивира тези раздели, за да подобри практическата ви работа при сърфиране и да освободи ресурси.</translation>
 <translation id="3013473503895162900">Отваряне на <ph name="URL" /> в нов раздел в Chromium.</translation>
 <translation id="3032706164202344641">Chromium не може да провери паролите ви. Опитайте пак по-късно.</translation>
 <translation id="3032787606318309379">Добавя се към Chromium...</translation>
@@ -317,6 +318,7 @@
 <translation id="6248213926982192922">Нека Chromium да е браузърът по подразбиране</translation>
 <translation id="6266342355635466082">Chromium не може да провери за актуализации. Проверете връзката си с интернет.</translation>
 <translation id="6268381023930128611">Искате ли да излезете от Chromium?</translation>
+<translation id="6270547683008298381">Тези раздели използват допълнителни ресурси. За да подобрите ефективността, разрешете на Chromium да деактивира съответните раздели.</translation>
 <translation id="6281746429495226318">Персонализиране на потребителския ви профил в Chromium</translation>
 <translation id="6290827346642914212">Наименуване на потребителския ви профил в Chromium</translation>
 <translation id="6294831894865512704">Разширение иска да влезете в профила си в Chromium</translation>
@@ -325,6 +327,7 @@
 <translation id="6327105987658262776">Не е налична актуализация.</translation>
 <translation id="6333502561965082103">Извършва се друго действие, свързано с Chromium. Моля, опитайте отново по-късно.</translation>
 <translation id="6334986366598267305">Вече е по-лесно да използвате Chromium с профила си в Google и на споделени компютри.</translation>
+<translation id="633626832589656416">Chromium може да деактивира тези раздели, за да подобри практическата ви работа при сърфиране и да я запази бърза.</translation>
 <translation id="6347933965114150440">Пряк път към Chromium</translation>
 <translation id="6366160072964553914">Chromium блокира това изтегляне, защото файлът не се изтегля често и може да е опасен</translation>
 <translation id="6373523479360886564">Наистина ли искате да деинсталирате Chromium?</translation>
@@ -447,7 +450,6 @@
 <translation id="8254601181414348851">Искате ли да влезете в Chromium с нов потребителски профил?</translation>
 <translation id="8266560134891435528">Chromium не може да провери паролите ви, защото не сте влезли в профила си</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium ви предупреждава<ph name="END_LINK" /> за опасни сайтове и изтегляния</translation>
-<translation id="8290862415967981663">Chromium блокира този файл, тъй като може да е опасен.</translation>
 <translation id="8318772038038596122">Организацията ви затваря Chromium, когато не се използва в продължение на <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8330519371938183845">Влезте в профила си, за да синхронизирате и персонализирате Chromium на всичките си устройства</translation>
 <translation id="8340674089072921962">По-рано <ph name="USER_EMAIL_ADDRESS" /> използва Chromium</translation>

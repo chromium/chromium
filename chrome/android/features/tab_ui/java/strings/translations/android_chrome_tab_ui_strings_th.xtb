@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">ม่วง</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{ขยายกลุ่มแท็บ <ph name="TITLE_OF_GROUP" /> ที่มีอยู่ <ph name="TABS_COUNT_ONE" /> แท็บ}other{ขยายกลุ่มแท็บ <ph name="TITLE_OF_GROUP" /> ที่มีอยู่ <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="427987768447457592">กลุ่มแท็บใหม่</translation>
+<translation id="4338724047016295066">แท็บที่ไม่ได้ใช้งานจะปิดโดยอัตโนมัติ คุณดูแท็บเหล่านี้ได้ในประวัติการเข้าชมเสมอ</translation>
 <translation id="4371591986692297148">ไม่ได้ใช้งาน</translation>
 <translation id="4460014764210899310">ยกเลิกการจัดกลุ่ม</translation>
 <translation id="4648718555153979859">แท็บของคุณมีการจัดกลุ่มเข้าด้วยกันที่นี่</translation>
 <translation id="4686942373615810936">สร้างเมื่อสักครู่</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{ปิดหลังจาก 1 วัน}other{ปิดหลังจาก <ph name="DAY_COUNT_MANY" /> วัน}}</translation>
 <translation id="4777866634702576038">ลบกลุ่มแท็บใช่ไหม</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> รีวิว)}other{(<ph name="REVIEWS_COUNT_MANY" /> รีวิว)}}</translation>
 <translation id="4850886885716139402">ดู</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">คุณจะเห็นกลุ่มแท็บที่นี่</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{เลิกจัดกลุ่มแท็บที่เลือก <ph name="TABS_COUNT_ONE" /> แท็บ}other{เลิกจัดกลุ่มแท็บที่เลือก <ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> แท็บ}other{<ph name="TABS_COUNT_MANY" /> แท็บ}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{หลังจาก 1 วัน}other{หลังจาก <ph name="DAY_COUNT_MANY" /> วัน}}</translation>
 <translation id="6549021453810473782">ดูข้อมูลร้านค้า</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">ย้ายแท็บไปทางซ้าย</translation>

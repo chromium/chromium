@@ -116,6 +116,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="2945997411976714835">Installasjonsfeil: Installasjonsprosessen kunne ikke startes.</translation>
 <translation id="2977470724722393594">Chromium er oppdatert</translation>
 <translation id="2977506796191543575">Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chromium også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing</translation>
+<translation id="2987208172821108655">Chromium kan gjøre disse fanene inaktive for å frigjøre ressurser og gi deg en bedre surfeopplevelse.</translation>
 <translation id="3013473503895162900">Åpne <ph name="URL" /> i en ny fane i Chromium.</translation>
 <translation id="3032706164202344641">Chromium kan ikke sjekke passordene dine. Prøv på nytt senere.</translation>
 <translation id="3032787606318309379">Legger til i Chromium …</translation>
@@ -317,6 +318,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6248213926982192922">Gjør Chromium til standardnettleser</translation>
 <translation id="6266342355635466082">Chromium kan ikke se etter oppdateringer. Prøv å kontrollere internettilkoblingen.</translation>
 <translation id="6268381023930128611">Vil du logge av Chromium?</translation>
+<translation id="6270547683008298381">Disse fanene bruker ekstra ressurser. For å få bedre ytelse kan du la Chromium gjøre dem inaktive.</translation>
 <translation id="6281746429495226318">Tilpass Chromium-profilen din</translation>
 <translation id="6290827346642914212">Gi navn til Chromium-profilen din</translation>
 <translation id="6294831894865512704">En utvidelse vil at du skal logge på Chromium</translation>
@@ -325,6 +327,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6327105987658262776">Ingen oppdatering er tilgjengelig.</translation>
 <translation id="6333502561965082103">En annen handling er i gang på Chromium. Prøv på nytt senere.</translation>
 <translation id="6334986366598267305">Nå er det enklere å bruke Chromium med Google-kontoen din og på datamaskiner du deler med andre.</translation>
+<translation id="633626832589656416">Chromium kan gjøre disse fanene inaktive for å holde seg rask og gi deg en bedre surfeopplevelse.</translation>
 <translation id="6347933965114150440">Chromium-snarvei</translation>
 <translation id="6366160072964553914">Chromium har blokkert denne nedlastingen fordi filen ikke lastes ned ofte, så den kan være farlig</translation>
 <translation id="6373523479360886564">Er du sikker på at du vil avinstallere Chromium?</translation>
@@ -450,7 +453,6 @@ Chromium kan ikke gjenopprette innstillingen dine.</translation>
 <translation id="8254601181414348851">Vil du logge på Chromium i en ny profil?</translation>
 <translation id="8266560134891435528">Chromium kan ikke sjekke passordene dine, siden du ikke er logget på</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium advarer deg<ph name="END_LINK" /> om utrygge nettsteder og nedlastinger</translation>
-<translation id="8290862415967981663">Denne filen kan være farlig, så Chromium har blokkert den.</translation>
 <translation id="8318772038038596122">Organisasjonen din lukker Chromium når den ikke har vært i bruk på <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8330519371938183845">Logg på for å synkronisere og gi Chromium et personlig preg på alle enhetene dine</translation>
 <translation id="8340674089072921962"><ph name="USER_EMAIL_ADDRESS" /> brukte Chromium tidligere</translation>

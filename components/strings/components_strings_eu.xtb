@@ -1011,6 +1011,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2930577230479659665">Moztu kopia bakoitzaren amaieran</translation>
 <translation id="2933624813161016821">Gofratze-xafla</translation>
 <translation id="2938225289965773019">Ireki <ph name="PROTOCOL" /> estekak</translation>
+<translation id="2941112035454246133">Txikia</translation>
 <translation id="2941878205777356567">23 cm × 30 cm-ko gutun-azala</translation>
 <translation id="2941952326391522266">Zerbitzari honek ezin izan du egiaztatu <ph name="DOMAIN" /> domeinua denik. Bere segurtasun-ziurtagiria <ph name="DOMAIN2" /> domeinukoa da. Baliteke gaizki konfiguratuta dagoelako izatea edo erasotzaile batek zure konexioa atzeman duelako izatea.</translation>
 <translation id="2942492342931589800">Informala</translation>
@@ -2218,7 +2219,6 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5263867360296733198">Kargatu aurretik, berrikusi egin behar da</translation>
 <translation id="5266128565379329178">Koadernatu goitik</translation>
 <translation id="5269225904387178860">Lau zulo behean</translation>
-<translation id="5269999699920406580">Jabeak (<ph name="OWNER_EMAIL" />) soilik ezar ditzake sistema osoan aplikatzen diren eginbideak</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" baldintza ez da onartzen "<ph name="DATA_CONTROLS_RESTRICTION" />" murriztapenean</translation>
 <translation id="5273658854610202413">Abisua: gidalerro hau ez da bateratu PolicyDictionaryMultipleSourceMergeList gidalerroan zehaztu bezala, ez delako sartzen batera daitezkeen hiztegi-gidalerroetan.</translation>
 <translation id="5279286380302340275">Kudeatu deskargak</translation>
@@ -2457,7 +2457,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5717509257172454543">Izotz gaineko patinajea</translation>
 <translation id="5720705177508910913">Oraingo erabiltzailea</translation>
 <translation id="5720895412771013401">Mahaigaineko ordenagailuak</translation>
-<translation id="572328651809341494">Azken fitxak</translation>
+<translation id="572328651809341494">Azkenaldiko fitxak</translation>
 <translation id="5723873695528696965">Zure MIDI gailuak kontrolatu eta berriro programatu</translation>
 <translation id="5725297205162868298">Lasterbidea ezin da hasi "@" karaktereaz: "<ph name="SHORTCUT_NAME" />"</translation>
 <translation id="5729442113829771034">Haur-hezkuntza goiztiarra</translation>
@@ -3108,7 +3108,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6999480632062519056">Fitness-eskolak eta entrenatzaile pertsonalak</translation>
 <translation id="7003278537452757231">Alfonbrak eta moketak</translation>
 <translation id="7003322000677139268">Ibilgailuen piezak eta osagarriak</translation>
-<translation id="7004499039102548441">Azken fitxak</translation>
+<translation id="7004499039102548441">Azkenaldiko fitxak</translation>
 <translation id="7006930604109697472">Bidali hala ere</translation>
 <translation id="7010658264061801199">Jan-edanak</translation>
 <translation id="7012363358306927923">China UnionPay</translation>

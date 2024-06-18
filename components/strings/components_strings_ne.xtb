@@ -1011,6 +1011,7 @@
 <translation id="2930577230479659665">हरेक प्रतिपछि छाँटकाँट गर्नुहोस्</translation>
 <translation id="2933624813161016821">इम्बोसिङ फोइल</translation>
 <translation id="2938225289965773019"><ph name="PROTOCOL" /> लिंकहरू खोल्नुहोस्</translation>
+<translation id="2941112035454246133">निम्न</translation>
 <translation id="2941878205777356567">Envelope 9 x 12 in</translation>
 <translation id="2941952326391522266">यो सर्भरले यो <ph name="DOMAIN" /> हो भनेर प्रमाणित गर्न सकेन; यसको सुरक्षा प्रमाणपत्र <ph name="DOMAIN2" /> बाट हो। यो एक गलत कन्फिगुरेसन वा तपाईंको जडान अवरोध गर्न खोज्ने आक्रमणकारीको हुनसक्छ।</translation>
 <translation id="2942492342931589800">क्याजुअल</translation>
@@ -2220,7 +2221,6 @@
 <translation id="5263867360296733198">अपलोड गर्नुअघि समीक्षा गर्नु पर्ने हुन्छ</translation>
 <translation id="5266128565379329178">सिरानको बाइन्ड</translation>
 <translation id="5269225904387178860">फेदमा चार प्वाल</translation>
-<translation id="5269999699920406580">मालिक <ph name="OWNER_EMAIL" /> ले मात्रै प्रणालीभरि लागू हुने सुविधाहरू सेट गर्न सक्छन्:</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" लाई "<ph name="DATA_CONTROLS_RESTRICTION" />" को सर्तका रूपमा प्रयोग गर्न मिल्दैन</translation>
 <translation id="5273658854610202413">चेतावनी: यो नीति गाभ्न मिल्ने शब्दकोशसम्बन्धी नीतिहरूको भाग नभएका कारण यसलाई PolicyDictionaryMultipleSourceMergeList नीतिमा तोकिएअनुसार गाभिएन।</translation>
 <translation id="5279286380302340275">डाउनलोड गरिएका सामग्री व्यवस्थापन गर्नुहोस्</translation>

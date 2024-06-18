@@ -82,7 +82,7 @@
 <translation id="1416836038590872660">EAP-MD5</translation>
 <translation id="1418991483994088776">orquídea</translation>
 <translation id="142228117786570094">Tenho um par de chaves</translation>
-<translation id="1423591390236870726">Tecla <ph name="KEY_NAME" /> não premida</translation>
+<translation id="1423591390236870726">Tecla <ph name="KEY_NAME" /> não pressionada</translation>
 <translation id="1432110487435300883">Para um resultado aproximado, divida o valor de <ph name="CATEGORY_TEXT" /> por <ph name="CONVERSION_RATE" /></translation>
 <translation id="1435763214710588005">Repõe automaticamente a utilização de dados todos os meses no dia selecionado</translation>
 <translation id="1442433966118452622">Fonte da imagem</translation>
@@ -582,7 +582,7 @@
 <translation id="430786093962686457">chiffon</translation>
 <translation id="4310735698903592804">Imagens de fundo recentes com tecnologia de IA da Google</translation>
 <translation id="4320904097188876154">rosa fluorescente</translation>
-<translation id="4333390807948134856">Tecla <ph name="KEY_NAME" /> premida</translation>
+<translation id="4333390807948134856">Tecla <ph name="KEY_NAME" /> pressionada</translation>
 <translation id="4354430579665871434">tecla</translation>
 <translation id="4361257691546579041">O tipo de APN é predefinido.</translation>
 <translation id="437294888293595148">Repor todos os atalhos</translation>

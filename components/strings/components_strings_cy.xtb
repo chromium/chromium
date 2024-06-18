@@ -1011,6 +1011,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="2930577230479659665">Tocio ar ôl pob copi</translation>
 <translation id="2933624813161016821">Ffoil Boglynnu</translation>
 <translation id="2938225289965773019">Agor dolenni <ph name="PROTOCOL" /></translation>
+<translation id="2941112035454246133">Isel</translation>
 <translation id="2941878205777356567">Amlen 9 x 12 o fodfeddi</translation>
 <translation id="2941952326391522266">Ni allai'r gweinydd hwn brofi ei fod yn <ph name="DOMAIN" />; mae ei dystysgrif ddiogelwch yn dod o <ph name="DOMAIN2" />. Gall hyn gael ei achosi gan gamffurfweddiad neu ymosodwr yn rhyng-gipio'ch cysylltiad.</translation>
 <translation id="2942492342931589800">Achlysurol</translation>
@@ -2222,7 +2223,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5263867360296733198">Mae angen adolygiad cyn uwchlwytho</translation>
 <translation id="5266128565379329178">Rhwymo i'r brig</translation>
 <translation id="5269225904387178860">Pedwar twll ar y gwaelod</translation>
-<translation id="5269999699920406580">Dim ond y perchennog all osod nodweddion sy'n berthnasol i'r system gyfan: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">Nid yw "<ph name="DATA_CONTROLS_ATTRIBUTE" />" yn amod a gefnogir ar gyfer "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="5273658854610202413">Rhybudd: Ni chyfunwyd y polisi hwn fel y nodwyd ym mholisi PolicyDictionaryMultipleSourceMergeList oherwydd nid yw'n rhan o'r polisïau geiriadur y gellir eu cyfuno.</translation>
 <translation id="5279286380302340275">Rheoli lawrlwythiadau</translation>

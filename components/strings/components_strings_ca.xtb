@@ -1011,6 +1011,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2930577230479659665">Retalla després de cada còpia</translation>
 <translation id="2933624813161016821">Làmina de degoteig gofrada</translation>
 <translation id="2938225289965773019">Obrir els enllaços del protocol <ph name="PROTOCOL" /></translation>
+<translation id="2941112035454246133">Baixa</translation>
 <translation id="2941878205777356567">Sobre de 9 x 12 polzades</translation>
 <translation id="2941952326391522266">Aquest servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè el seu certificat de seguretat prové del domini <ph name="DOMAIN2" />. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.</translation>
 <translation id="2942492342931589800">Informal</translation>
@@ -2222,7 +2223,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5263867360296733198">Abans de penjar-los, cal dur a terme una revisió</translation>
 <translation id="5266128565379329178">Enquadernació per la part superior</translation>
 <translation id="5269225904387178860">Encunyació quàdruple a la part inferior</translation>
-<translation id="5269999699920406580">Les funcions que s'apliquen a tot el sistema només les pot definir l'usuari: <ph name="OWNER_EMAIL" /></translation>
 <translation id="5271381225185906340">La condició "<ph name="DATA_CONTROLS_ATTRIBUTE" />" no s'admet per a "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
 <translation id="5273658854610202413">Advertiment: aquesta política no s'ha combinat segons el que s'especifica a la política PolicyDictionaryMultipleSourceMergeList perquè no forma part de les polítiques de diccionari que es poden combinar.</translation>
 <translation id="5279286380302340275">Gestiona les baixades</translation>
@@ -3063,6 +3063,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6915804003454593391">Usuari:</translation>
 <translation id="6916193791494646625">Indica el motiu pel qual el vols baixar (obligatori)</translation>
 <translation id="6917795328362592458">La contrasenya que acabes d'utilitzar s'ha trobat en una violació de les dades. Per protegir els teus comptes, el gestor de contrasenyes recomana que comprovis les contrasenyes desades.</translation>
+<translation id="6924013822850225188">Tria si vols veure els avantatges de la targeta en tramitar una compra (s'hi apliquen les condicions del banc)</translation>
 <translation id="6925267999184670015">B+ nord-americà</translation>
 <translation id="6926216138694948720">Art corporal</translation>
 <translation id="692638818576287323">Vehicles comercials</translation>
@@ -3329,7 +3330,7 @@ Detalls addicionals:
     &lt;li&gt;Visiteu el &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Centre d'ajuda de Chrome&lt;/a&gt; per obtenir informació sobre com podeu suprimir permanentment el programari de l'ordinador.
     &lt;/ol&gt;</translation>
 <translation id="7408613996403626141">Joguines</translation>
-<translation id="741204030948306876">Sí, ho accepto</translation>
+<translation id="741204030948306876">Sí, endavant</translation>
 <translation id="7416351320495623771">Gestiona les contrasenyes…</translation>
 <translation id="7416898721136759658">Subvencions, beques i ajudes financeres</translation>
 <translation id="7418620734632363981">Programació</translation>
@@ -3832,6 +3833,7 @@ Detalls addicionals:
 <translation id="830498451218851433">Plegat per la meitat</translation>
 <translation id="8308653357438598313">Reproducció de vídeo en directe</translation>
 <translation id="8311895354659782580">Anuncis de béns immobles</translation>
+<translation id="8312841338723044391">EN DIRECTE</translation>
 <translation id="8316555157357957253">S'està utilitzant</translation>
 <translation id="8319269383395457801">Vendes d'habitatges</translation>
 <translation id="831997045666694187">Tarda</translation>

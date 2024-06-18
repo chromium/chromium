@@ -243,6 +243,7 @@
 <translation id="4384570495110188418">Chrome non può controllare le tue password perché non hai effettuato l'accesso</translation>
 <translation id="4389991535395284064">Quando navighi in modalità di navigazione in incognito, Chrome ti avvisa prima di caricare un sito utilizzando una connessione non sicura</translation>
 <translation id="4427306783828095590">La protezione avanzata blocca malware e tentativi di phishing con maggiore efficacia</translation>
+<translation id="4434353761996769206">Errore del programma di installazione: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome - Accesso rete - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">C'è un'altra operazione in corso su Google Chrome. Riprova più tardi.</translation>
 <translation id="4459234553906210702">Ad measurement consente ai siti che visiti di chiedere a Chrome informazioni che li aiutino a valutare il rendimento dei loro annunci. Ad measurement limita il tracciamento tra siti trasferendo il minor numero possibile di informazioni tra i siti.</translation>
@@ -263,7 +264,6 @@
 <translation id="4728575227883772061">Installazione non riuscita a causa di un errore non specificato. Se Google Chrome è attivo, chiudilo e riprova.</translation>
 <translation id="4747730611090640388">Chrome può stimare i tuoi interessi.  Dopodiché, un sito che visiti può chiedere a Chrome di conoscere i tuoi interessi per personalizzare gli annunci da mostrarti.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
-<translation id="4771048833395599659">Questo file potrebbe essere pericoloso, pertanto è stato bloccato da Chrome.</translation>
 <translation id="479167709087336770">Viene usato lo stesso controllo ortografico utilizzato nella Ricerca Google. Il testo che digiti nel browser viene inviato a Google. Puoi modificare questo comportamento in qualsiasi momento nelle impostazioni.</translation>
 <translation id="4793679854893018356">Scopri in che modo Chrome ti protegge</translation>
 <translation id="4828579605166583682">Google Chrome sta cercando di sostituire le password esistenti. Digita la tua password di Windows per consentire l'operazione.</translation>
