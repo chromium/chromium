@@ -59,7 +59,7 @@ class InteractiveDetectorTest : public testing::Test,
 
     Document* document = &dummy_page_holder_->GetDocument();
     detector_ = MakeGarbageCollected<InteractiveDetector>(
-        *document, new NetworkActivityCheckerForTest(document));
+        *document, std::make_unique<NetworkActivityCheckerForTest>(document));
     detector_->SetTaskRunnerForTesting(test_task_runner);
     detector_->SetTickClockForTesting(tick_clock);
 
