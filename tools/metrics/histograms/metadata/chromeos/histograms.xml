@@ -1021,29 +1021,6 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
-<histogram name="ChromeOS.CWP.PSIMemPressure.{PType}" units="failures"
-    expires_after="2024-11-03">
-  <owner>raging@google.com</owner>
-  <owner>chromeos-memory@google.com</owner>
-  <summary>
-    Reports periodic memory pressure metrics, as seen ChromeOS-wide. Metrics
-    originally come from /proc/pressure/memory readings, expressed as a
-    percentage with 2 decimal points (99.99%), but expressed as p*100, in an
-    integer in the range (1-9999) meaning (00.01% to 99.99%). Underflow value 0
-    means &quot;no pressure&quot; - 0%.
-  </summary>
-  <token key="PType">
-    <variant name="ArcFull"
-        summary="Percentage of time ARC was fully halted waiting on memory"/>
-    <variant name="ArcSome"
-        summary="Percentage of ARC had some blocking on memory"/>
-    <variant name="Full"
-        summary="Percentage of time fully halted waiting on memory operations"/>
-    <variant name="Some"
-        summary="Percentage of time when there was some blocking on memory"/>
-  </token>
-</histogram>
-
 <histogram name="ChromeOS.CWP.RecordPerf" enum="ChromeOSProfileRecordStatus"
     expires_after="2025-01-14">
   <owner>shantuo@google.com</owner>
@@ -1065,6 +1042,33 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
     Records the number of &quot;perf events&quot; reports included in an UMA
     upload on Chrome OS.
   </summary>
+</histogram>
+
+<histogram name="ChromeOS.CWP.{PPath}.{PType}" units="failures"
+    expires_after="2024-11-03">
+  <owner>raging@google.com</owner>
+  <owner>chromeos-memory@google.com</owner>
+  <summary>
+    Reports pressure metrics every 10 seconds. The percentage of time {PPath} on
+    {PType}. Expressed as a percentage with 2 decimal points (99.99%), but
+    expressed as p*100, in an integer in the range (1-9999) meaning (00.01% to
+    99.99%). Underflow value 0 means &quot;no pressure&quot; - 0%.
+  </summary>
+  <token key="PPath">
+    <variant name="PSICpuPressure"
+        summary="with CPU starvation as measured by /proc/pressure/cpu"/>
+    <variant name="PSIIoPressure"
+        summary="blocked on IO as measured by /proc/pressure/io"/>
+    <variant name="PSIMemPressure"
+        summary="blocked on page allocation as measured by
+                 /proc/pressure/memory"/>
+  </token>
+  <token key="PType">
+    <variant name="ArcFull" summary="all vCPUs in ARCVM"/>
+    <variant name="ArcSome" summary="at least one vCPU in ARCVM"/>
+    <variant name="Full" summary="all CPUs"/>
+    <variant name="Some" summary="at least one CPU"/>
+  </token>
 </histogram>
 
 <histogram name="ChromeOS.Debugd.Perf.GetBigFeedbackLogs.{SubTaskName}"
