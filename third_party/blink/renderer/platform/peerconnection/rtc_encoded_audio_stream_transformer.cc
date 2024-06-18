@@ -206,7 +206,6 @@ void RTCEncodedAudioStreamTransformer::StartShortCircuiting() {
 void RTCEncodedAudioStreamTransformer::SetTransformerCallback(
     TransformerCallback callback) {
   base::AutoLock locker(source_lock_);
-  DCHECK(!transformer_callback_);
   transformer_callback_ = std::move(callback);
 }
 

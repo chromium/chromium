@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/modules/peerconnection/identifiability_metrics.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
+#include "third_party/blink/renderer/modules/peerconnection/peer_connection_features.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_dtls_transport.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_receiver_sink_optimizer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_receiver_source_optimizer.h"
@@ -388,6 +389,8 @@ RTCRtpReceiveParameters* RTCRtpReceiver::getParameters() {
 }
 
 void RTCRtpReceiver::RegisterEncodedAudioStreamCallback() {
+  // TODO: crbug.com/347915599 - set the transformer callback to directly call
+  // `audio_from_encoder_underlying_source_` once that's been created.
   encoded_audio_transformer_->SetTransformerCallback(
       WTF::CrossThreadBindRepeating(
           &RTCRtpReceiver::OnAudioFrameFromDepacketizer,
@@ -413,6 +416,12 @@ void RTCRtpReceiver::SetAudioUnderlyingSource(
     base::AutoLock locker(audio_underlying_source_lock_);
     audio_from_depacketizer_underlying_source_->OnSourceTransferStarted();
     audio_from_depacketizer_underlying_source_ = new_underlying_source;
+    if (base::FeatureList::IsEnabled(kWebRtcEncodedTransformDirectCallback)) {
+      encoded_audio_transformer_->SetTransformerCallback(
+          WTF::CrossThreadBindRepeating(
+              &RTCEncodedAudioUnderlyingSource::OnFrameFromSource,
+              audio_from_depacketizer_underlying_source_));
+    }
   }
 
   encoded_audio_transformer_->SetSourceTaskRunner(
