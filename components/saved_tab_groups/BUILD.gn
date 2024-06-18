@@ -70,6 +70,8 @@ source_set("model") {
     "tab_group_sync_metrics_logger.cc",
     "tab_group_sync_metrics_logger.h",
     "types.h",
+    "utils.cc",
+    "utils.h",
   ]
   deps = [
     "//base",

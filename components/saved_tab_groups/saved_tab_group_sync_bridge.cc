@@ -29,6 +29,7 @@
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/stats.h"
 #include "components/saved_tab_groups/types.h"
+#include "components/saved_tab_groups/utils.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/conflict_resolution.h"
@@ -452,6 +453,14 @@ void SavedTabGroupSyncBridge::SavedTabGroupTabsReorderedLocally(
 
 void SavedTabGroupSyncBridge::SavedTabGroupLocalIdChanged(
     const base::Uuid& group_guid) {
+  // For desktop, the local ID isn't persisted across sessions. Hence there is
+  // no need to rewrite the group to the storage. In fact, it will lead to write
+  // inconsistency since we haven't yet fixed the potentialreentrancy issue on
+  // desktop.
+  if (!AreLocalIdsPersisted()) {
+    return;
+  }
+
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
 
