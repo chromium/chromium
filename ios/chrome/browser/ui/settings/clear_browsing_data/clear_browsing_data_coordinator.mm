@@ -7,14 +7,19 @@
 #import "base/apple/foundation_util.h"
 #import "base/check_op.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_delegate.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
-
-@interface ClearBrowsingDataCoordinator () <ClearBrowsingDataUIDelegate>
+@interface ClearBrowsingDataCoordinator () <BrowserObserving,
+                                            ClearBrowsingDataUIDelegate> {
+  // Observe BrowserObserver to prevent any access to Browser after its
+  // destroyed.
+  std::unique_ptr<BrowserObserverBridge> _browserObserver;
+}
 
 @property(nonatomic, strong) id<ApplicationCommands> handler;
 @property(nonatomic, strong)
@@ -40,6 +45,10 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  DCHECK(!_browserObserver);
+  _browserObserver =
+      std::make_unique<BrowserObserverBridge>(self.browser, self);
+
   self.handler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                     ApplicationCommands);
 
@@ -60,6 +69,8 @@
   self.viewController.dispatcher = nil;
   [self.viewController stop];
   self.viewController = nil;
+  _browserObserver.reset();
+
   [super stop];
 }
 
@@ -91,6 +102,13 @@
     (ClearBrowsingDataTableViewController*)controller {
   DCHECK_EQ(self.viewController, controller);
   [self.delegate clearBrowsingDataCoordinatorViewControllerWasRemoved:self];
+}
+
+#pragma mark - BrowserObserving
+
+- (void)browserDestroyed:(Browser*)browser {
+  DCHECK_EQ(browser, self.browser);
+  [self stop];
 }
 
 @end
