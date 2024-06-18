@@ -195,6 +195,10 @@ inline constexpr char kAutologinEnabled[] = "autologin.enabled";
 inline constexpr char kReverseAutologinRejectedEmailList[] =
     "reverse_autologin.rejected_email_list";
 
+// Deprecated 06/2024.
+constexpr char kObsoletePasswordsPerAccountPrefMigrationDone[] =
+    "sync.passwords_per_account_pref_migration_done";
+
 // Helper function migrating the preference `pref_name` of type "double" from
 // `defaults` to `pref_service`.
 void MigrateDoublePreferenceFromUserDefaults(std::string_view pref_name,
@@ -849,6 +853,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterIntegerPref(prefs::kIosSyncSegmentsNewTabPageDisplayCount,
                                 0);
+
+  registry->RegisterBooleanPref(kObsoletePasswordsPerAccountPrefMigrationDone,
+                                false);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -1081,6 +1088,9 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
   // Added 06/2024.
   MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
       prefs::kBottomOmniboxByDefault, prefs);
+
+  // Added 06/2024.
+  prefs->ClearPref(kObsoletePasswordsPerAccountPrefMigrationDone);
 }
 
 void MigrateObsoleteUserDefault() {

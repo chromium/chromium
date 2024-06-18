@@ -234,24 +234,12 @@ class SyncPrefs {
   void SetPassphrasePromptMutedProductVersion(int major_version);
   void ClearPassphrasePromptMutedProductVersion();
 
-#if BUILDFLAG(IS_IOS)
-  // Before signed-in non-syncing users were migrated to per-account "selected
-  // type" prefs (crbug.com/1485015), an iOS user might have disabled the global
-  // passwords pref via a toggle. If so, this function makes sure the new
-  // per-account setting is also disabled.
-  // Does nothing for signed-out or syncing users.
-  void MaybeMigratePasswordsToPerAccountPref(
-      SyncAccountState account_state,
-      const signin::GaiaIdHash& gaia_id_hash);
-#endif  // BUILDFLAG(IS_IOS)
-
   // Migrates any user settings for pre-existing signed-in users, for the
   // feature `kReplaceSyncPromosWithSignInPromos`. For signed-out users or
   // syncing users, no migration is necessary - this also covers new users (or
   // more precisely, new profiles).
   // This should be called early during browser startup.
   // Returns whether the migration ran, i.e. whether any user settings were set.
-  // On iOS this must run after MaybeMigratePasswordsToPerAccountPref().
   bool MaybeMigratePrefsForSyncToSigninPart1(
       SyncAccountState account_state,
       const signin::GaiaIdHash& gaia_id_hash);

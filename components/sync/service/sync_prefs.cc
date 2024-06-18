@@ -47,13 +47,6 @@ constexpr char kObsoleteAutofillWalletImportEnabled[] =
 constexpr char kObsoleteAutofillWalletImportEnabledMigrated[] =
     "sync.autofill_wallet_import_enabled_migrated";
 
-#if BUILDFLAG(IS_IOS)
-// Pref to record if the one-time MaybeMigratePasswordsToPerAccountPref()
-// migration ran.
-constexpr char kPasswordsPerAccountPrefMigrationDone[] =
-    "sync.passwords_per_account_pref_migration_done";
-#endif  // BUILDFLAG(IS_IOS)
-
 // State of the migration done by
 // MaybeMigratePrefsForSyncToSigninPart1() and
 // MaybeMigratePrefsForSyncToSigninPart2(). Should be cleaned up
@@ -190,9 +183,6 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
   registry->RegisterBooleanPref(kObsoleteAutofillWalletImportEnabledMigrated,
                                 false);
-#if BUILDFLAG(IS_IOS)
-  registry->RegisterBooleanPref(kPasswordsPerAccountPrefMigrationDone, false);
-#endif  // BUILDFLAG(IS_IOS)
   registry->RegisterIntegerPref(kSyncToSigninMigrationState, kNotMigrated);
   registry->RegisterBooleanPref(
       prefs::internal::kMigrateReadingListFromLocalToAccount, false);
@@ -839,54 +829,9 @@ void SyncPrefs::ClearPassphrasePromptMutedProductVersion() {
       prefs::internal::kSyncPassphrasePromptMutedProductVersion);
 }
 
-#if BUILDFLAG(IS_IOS)
-void SyncPrefs::MaybeMigratePasswordsToPerAccountPref(
-    SyncAccountState account_state,
-    const signin::GaiaIdHash& gaia_id_hash) {
-  if (pref_service_->GetBoolean(kPasswordsPerAccountPrefMigrationDone)) {
-    return;
-  }
-
-  pref_service_->SetBoolean(kPasswordsPerAccountPrefMigrationDone, true);
-
-  if (pref_service_->GetInteger(kSyncToSigninMigrationState) != kNotMigrated) {
-    // MaybeMigratePrefsForSyncToSigninPart1() used to contain this precise
-    // logic. If that already ran, no need to run again. The new
-    // MaybeMigratePrefsForSyncToSigninPart1() implementation is invoked after
-    // this method (enforced via CHECK), so it's fine to request kNotMigrated
-    // here.
-    return;
-  }
-
-  switch (account_state) {
-    case SyncAccountState::kNotSignedIn:
-    case SyncAccountState::kSyncing:
-      break;
-    case SyncAccountState::kSignedInNotSyncing:
-      CHECK(gaia_id_hash.IsValid());
-      // Read from the user pref store, and not from PrefService::GetBoolean(),
-      // the latter might be affected by enterprise policies.
-      // An unset pref (!old_pref_value) is considered as enabled here, like in
-      // GetSelectedTypes().
-      const base::Value* old_pref_value = pref_service_->GetUserPrefValue(
-          GetPrefNameForType(UserSelectableType::kPasswords));
-      SetAccountKeyedPrefDictEntry(
-          pref_service_, prefs::internal::kSelectedTypesPerAccount,
-          gaia_id_hash, GetPrefNameForType(UserSelectableType::kPasswords),
-          base::Value(!old_pref_value || old_pref_value->GetBool()));
-      break;
-  }
-}
-#endif  // BUILDFLAG(IS_IOS)
-
 bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
     SyncAccountState account_state,
     const signin::GaiaIdHash& gaia_id_hash) {
-#if BUILDFLAG(IS_IOS)
-  // See comment in MaybeMigratePasswordsToPerAccountPref() as to why.
-  CHECK(pref_service_->GetBoolean(kPasswordsPerAccountPrefMigrationDone));
-#endif
-
   if (!base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos)) {
     // Ensure that the migration runs again when the feature gets enabled.
     pref_service_->ClearPref(kSyncToSigninMigrationState);
