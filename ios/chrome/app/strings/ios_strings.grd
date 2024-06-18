@@ -4750,6 +4750,9 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SIGNIN_PROMO_CONTINUE_AS" desc="Button that the user can press to login without asking the password and continue using Chrome with this acccount. [Length: 9em]">
         Continue as <ph name="NAME">$1<ex>John Doe</ex></ph>
       </message>
+      <message name="IDS_IOS_SIGNIN_PROMO_CONTINUE_AS_TAPPED_ACCESSIBILITY_TITLE" desc="Accessibility label of the 'Continue as' button after it is tapped, during which a spinner replaces the button text. This is spoken by VoiceOver.">
+        Sign-in in progress.
+      </message>
       <message name="IDS_IOS_SIGNIN_PROMO_READING_LIST" desc="This string is on a promo intended to promote signing in to Chrome with the user's Google Account. It appears on the Reading List page when the user is not signed in. We want users to read this promo and click 'Continue as {name}' to sign in to their Google Account. The tone should be informative and lightweight.">
         Sign in to get your reading list on all your devices.
       </message>

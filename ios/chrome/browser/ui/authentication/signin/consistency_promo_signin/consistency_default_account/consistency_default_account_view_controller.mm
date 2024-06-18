@@ -89,6 +89,9 @@ UIFont* GetNavigationBarTitleFont() {
   // Text should not be empty, otherwise the top and bottom can’t apply to the
   // text buttom and top line anymore.
   SetConfigurationTitle(self.primaryButton, @" ");
+  // Set accessibility label so that VoiceOver won't use the empty string.
+  self.primaryButton.accessibilityLabel = l10n_util::GetNSString(
+      IDS_IOS_SIGNIN_PROMO_CONTINUE_AS_TAPPED_ACCESSIBILITY_TITLE);
 }
 
 - (void)stopSpinner {
@@ -103,6 +106,7 @@ UIFont* GetNavigationBarTitleFont() {
   self.primaryButton.enabled = YES;
   DCHECK(self.continueAsTitle);
   SetConfigurationTitle(self.primaryButton, self.continueAsTitle);
+  self.primaryButton.accessibilityLabel = nil;
 }
 
 #pragma mark - UIViewController
