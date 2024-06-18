@@ -82,8 +82,6 @@ class ReportPageProcessesPolicy : public GraphOwned,
   // reporting.
   base::RetainingOneShotTimer delayed_report_timer_;
 
-  raw_ptr<Graph> graph_ = nullptr;
-
   base::flat_map<base::ProcessId, PageState> previously_reported_pages_;
 
   SEQUENCE_CHECKER(sequence_checker_);

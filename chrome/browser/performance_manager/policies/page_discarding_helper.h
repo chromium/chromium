@@ -166,7 +166,6 @@ class PageDiscardingHelper
                               base::TimeDelta minimum_time_in_background =
                                   kNonVisiblePagesUrgentProtectionTime) const;
 
-  void SetGraphForTesting(Graph* graph) { graph_ = graph; }
   static void AddDiscardAttemptMarkerForTesting(PageNode* page_node);
   static void RemovesDiscardAttemptMarkerForTesting(PageNode* page_node);
 
@@ -206,8 +205,6 @@ class PageDiscardingHelper
       profiles_no_discard_patterns_;
 
   memory_pressure::UnnecessaryDiscardMonitor unnecessary_discard_monitor_;
-
-  raw_ptr<Graph> graph_ = nullptr;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

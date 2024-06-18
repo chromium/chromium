@@ -191,17 +191,7 @@ void SiteDataProviderImpl::GetSiteDataDatabaseSize(
 // static
 void SiteDataProviderImpl::OnConnectionError(SiteDataProviderImpl* impl) {
   std::unique_ptr<performance_manager::GraphOwned> owned_impl =
-      impl->graph_->TakeFromGraph(impl);
-}
-
-void SiteDataProviderImpl::OnPassedToGraph(performance_manager::Graph* graph) {
-  DCHECK(!graph_);
-  graph_ = graph;
-}
-
-void SiteDataProviderImpl::OnTakenFromGraph(performance_manager::Graph* graph) {
-  DCHECK_EQ(graph_, graph);
-  graph_ = nullptr;
+      impl->GetOwningGraph()->TakeFromGraph(impl);
 }
 
 void SiteDataProviderImpl::Bind(

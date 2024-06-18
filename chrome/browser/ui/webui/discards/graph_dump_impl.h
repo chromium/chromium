@@ -7,7 +7,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -274,8 +273,6 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
 
   static void OnConnectionError(DiscardsGraphDumpImpl* impl);
 
-  raw_ptr<performance_manager::Graph> graph_ = nullptr;
-
   // Helper that requests favicons on the UI thread. Initialized to null to
   // avoid posting an initialization task to the UI thread during startup.
   // Access this through EnsureFaviconRequestHelper to initialize it on first
@@ -288,7 +285,7 @@ class DiscardsGraphDumpImpl : public discards::mojom::GraphDump,
   NodeId::Generator node_id_generator_;
 
   // The current change subscriber to this dumper. This instance is subscribed
-  // to every node in |graph_| save for the system node, so long as there is a
+  // to every node in the graph save for the system node, so long as there is a
   // subscriber.
   mojo::Remote<discards::mojom::GraphChangeStream> change_subscriber_;
   mojo::Receiver<discards::mojom::GraphDump> receiver_{this};

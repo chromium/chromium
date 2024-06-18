@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/memory/memory_pressure_listener.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -173,8 +172,6 @@ class WorkingSetTrimmerPolicyChromeOS : public WorkingSetTrimmerPolicy {
   std::optional<base::MemoryPressureListener> memory_pressure_listener_;
 
  private:
-  raw_ptr<Graph> graph_ = nullptr;
-
   bool trim_on_freeze_ = false;
   bool trim_arc_on_memory_pressure_ = false;
   bool trim_arcvm_on_memory_pressure_ = false;

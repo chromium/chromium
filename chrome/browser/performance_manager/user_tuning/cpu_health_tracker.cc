@@ -63,10 +63,6 @@ CpuHealthTracker::HealthLevel CpuHealthTracker::GetHealthLevelForTesting() {
   return current_health_status_;
 }
 
-void CpuHealthTracker::OnPassedToGraph(performance_manager::Graph* graph) {
-  graph_ = graph;
-}
-
 base::OnceCallback<void(CpuHealthTracker::ActionableTabsResult)>
 CpuHealthTracker::GetStatusAndActionabilityCallback(
     bool did_status_change,
@@ -163,7 +159,7 @@ bool CpuHealthTracker::CanDiscardPage(
   }
 
   policies::PageDiscardingHelper* const discard_helper =
-      policies::PageDiscardingHelper::GetFromGraph(graph_);
+      policies::PageDiscardingHelper::GetFromGraph(GetOwningGraph());
   CHECK(discard_helper);
 
   const base::TimeDelta measurement_window =

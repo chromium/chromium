@@ -107,7 +107,6 @@ DiscardsGraphDumpImpl::DiscardsGraphDumpImpl() {}
 
 DiscardsGraphDumpImpl::~DiscardsGraphDumpImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!graph_);
   DCHECK(!change_subscriber_);
 }
 
@@ -155,20 +154,21 @@ void DiscardsGraphDumpImpl::SubscribeToChanges(
   change_subscriber_.Bind(std::move(change_subscriber));
 
   // Give all existing nodes an ID.
+  performance_manager::Graph* graph = GetOwningGraph();
   for (const performance_manager::FrameNode* frame_node :
-       graph_->GetAllFrameNodes()) {
+       graph->GetAllFrameNodes()) {
     AddNode(frame_node);
   }
   for (const performance_manager::PageNode* page_node :
-       graph_->GetAllPageNodes()) {
+       graph->GetAllPageNodes()) {
     AddNode(page_node);
   }
   for (const performance_manager::ProcessNode* process_node :
-       graph_->GetAllProcessNodes()) {
+       graph->GetAllProcessNodes()) {
     AddNode(process_node);
   }
   for (const performance_manager::WorkerNode* worker_node :
-       graph_->GetAllWorkerNodes()) {
+       graph->GetAllWorkerNodes()) {
     AddNode(worker_node);
   }
 
@@ -187,10 +187,10 @@ void DiscardsGraphDumpImpl::SubscribeToChanges(
   SendNotificationToAllNodes(/* created = */ false);
 
   // Subscribe to subsequent notifications.
-  graph_->AddFrameNodeObserver(this);
-  graph_->AddPageNodeObserver(this);
-  graph_->AddProcessNodeObserver(this);
-  graph_->AddWorkerNodeObserver(this);
+  graph->AddFrameNodeObserver(this);
+  graph->AddPageNodeObserver(this);
+  graph->AddProcessNodeObserver(this);
+  graph->AddWorkerNodeObserver(this);
 }
 
 void DiscardsGraphDumpImpl::RequestNodeDescriptions(
@@ -198,7 +198,7 @@ void DiscardsGraphDumpImpl::RequestNodeDescriptions(
     RequestNodeDescriptionsCallback callback) {
   base::flat_map<int64_t, std::string> descriptions;
   performance_manager::NodeDataDescriberRegistry* describer_registry =
-      graph_->GetNodeDataDescriberRegistry();
+      GetOwningGraph()->GetNodeDataDescriberRegistry();
   for (int64_t node_id : node_ids) {
     auto it = nodes_by_id_.find(NodeId::FromUnsafeValue(node_id));
     // The requested node may have been removed by the time the request arrives,
@@ -213,23 +213,19 @@ void DiscardsGraphDumpImpl::RequestNodeDescriptions(
 }
 
 void DiscardsGraphDumpImpl::OnPassedToGraph(performance_manager::Graph* graph) {
-  DCHECK(!graph_);
-  graph_ = graph;
+  // Do nothing.
 }
 
 void DiscardsGraphDumpImpl::OnTakenFromGraph(
     performance_manager::Graph* graph) {
-  DCHECK_EQ(graph_, graph);
-
   if (change_subscriber_) {
-    graph_->RemoveFrameNodeObserver(this);
-    graph_->RemovePageNodeObserver(this);
-    graph_->RemoveProcessNodeObserver(this);
-    graph_->RemoveWorkerNodeObserver(this);
+    graph->RemoveFrameNodeObserver(this);
+    graph->RemovePageNodeObserver(this);
+    graph->RemoveProcessNodeObserver(this);
+    graph->RemoveWorkerNodeObserver(this);
   }
 
   change_subscriber_.reset();
-  graph_ = nullptr;
 }
 
 void DiscardsGraphDumpImpl::OnFrameNodeAdded(
@@ -435,13 +431,14 @@ void DiscardsGraphDumpImpl::StartFrameFaviconRequest(
 }
 
 void DiscardsGraphDumpImpl::SendNotificationToAllNodes(bool created) {
+  performance_manager::Graph* graph = GetOwningGraph();
   for (const performance_manager::ProcessNode* process_node :
-       graph_->GetAllProcessNodes()) {
+       graph->GetAllProcessNodes()) {
     SendProcessNotification(process_node, created);
   }
 
   for (const performance_manager::PageNode* page_node :
-       graph_->GetAllPageNodes()) {
+       graph->GetAllPageNodes()) {
     SendPageNotification(page_node, created);
     if (created)
       StartPageFaviconRequest(page_node);
@@ -460,7 +457,7 @@ void DiscardsGraphDumpImpl::SendNotificationToAllNodes(bool created) {
   }
 
   for (const performance_manager::WorkerNode* worker_node :
-       graph_->GetAllWorkerNodes()) {
+       graph->GetAllWorkerNodes()) {
     SendWorkerNotification(worker_node, created);
   }
 }
@@ -485,7 +482,8 @@ void DiscardsGraphDumpImpl::SendFrameNotification(
 
   frame_info->url = frame->GetURL();
   frame_info->description_json =
-      ToJSON(graph_->GetNodeDataDescriberRegistry()->DescribeNodeData(frame));
+      ToJSON(GetOwningGraph()->GetNodeDataDescriberRegistry()->DescribeNodeData(
+          frame));
 
   if (created) {
     change_subscriber_->FrameCreated(std::move(frame_info));
@@ -505,8 +503,9 @@ void DiscardsGraphDumpImpl::SendPageNotification(
   page_info->main_frame_url = page_node->GetMainFrameUrl();
   page_info->opener_frame_id = GetNodeId(page_node->GetOpenerFrameNode());
   page_info->embedder_frame_id = GetNodeId(page_node->GetEmbedderFrameNode());
-  page_info->description_json = ToJSON(
-      graph_->GetNodeDataDescriberRegistry()->DescribeNodeData(page_node));
+  page_info->description_json =
+      ToJSON(GetOwningGraph()->GetNodeDataDescriberRegistry()->DescribeNodeData(
+          page_node));
 
   if (created)
     change_subscriber_->PageCreated(std::move(page_info));
@@ -526,7 +525,8 @@ void DiscardsGraphDumpImpl::SendProcessNotification(
   process_info->private_footprint_kb = process->GetPrivateFootprintKb();
 
   process_info->description_json =
-      ToJSON(graph_->GetNodeDataDescriberRegistry()->DescribeNodeData(process));
+      ToJSON(GetOwningGraph()->GetNodeDataDescriberRegistry()->DescribeNodeData(
+          process));
 
   if (created)
     change_subscriber_->ProcessCreated(std::move(process_info));
@@ -559,7 +559,8 @@ void DiscardsGraphDumpImpl::SendWorkerNotification(
   }
 
   worker_info->description_json =
-      ToJSON(graph_->GetNodeDataDescriberRegistry()->DescribeNodeData(worker));
+      ToJSON(GetOwningGraph()->GetNodeDataDescriberRegistry()->DescribeNodeData(
+          worker));
 
   if (created)
     change_subscriber_->WorkerCreated(std::move(worker_info));
@@ -589,5 +590,6 @@ void DiscardsGraphDumpImpl::SendFaviconNotification(
 
 // static
 void DiscardsGraphDumpImpl::OnConnectionError(DiscardsGraphDumpImpl* impl) {
-  std::unique_ptr<GraphOwned> owned_impl = impl->graph_->TakeFromGraph(impl);
+  std::unique_ptr<GraphOwned> owned_impl =
+      impl->GetOwningGraph()->TakeFromGraph(impl);
 }

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/ui/webui/discards/site_data.mojom.h"
 #include "components/performance_manager/public/graph/graph.h"
@@ -22,7 +21,7 @@ class SiteDataReader;
 }  // namespace performance_manager
 
 class SiteDataProviderImpl : public discards::mojom::SiteDataProvider,
-                             public performance_manager::GraphOwned {
+                             public performance_manager::GraphOwnedDefaultImpl {
  public:
   explicit SiteDataProviderImpl(const std::string& profile_id);
   ~SiteDataProviderImpl() override;
@@ -49,10 +48,6 @@ class SiteDataProviderImpl : public discards::mojom::SiteDataProvider,
 
   static void OnConnectionError(SiteDataProviderImpl* impl);
 
-  // GraphOwned implementation.
-  void OnPassedToGraph(performance_manager::Graph* graph) override;
-  void OnTakenFromGraph(performance_manager::Graph* graph) override;
-
   // Binds |receiver_| by consuming |receiver|, which must be valid.
   void Bind(mojo::PendingReceiver<discards::mojom::SiteDataProvider> receiver);
 
@@ -62,8 +57,6 @@ class SiteDataProviderImpl : public discards::mojom::SiteDataProvider,
   OriginToReaderMap requested_origins_;
 
   std::string profile_id_;
-
-  raw_ptr<performance_manager::Graph> graph_ = nullptr;
 
   mojo::Receiver<discards::mojom::SiteDataProvider> receiver_{this};
 };

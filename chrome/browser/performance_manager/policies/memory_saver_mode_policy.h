@@ -65,8 +65,6 @@ class MemorySaverModePolicy : public GraphOwned,
       active_discard_timers_;
   user_tuning::prefs::MemorySaverModeAggressiveness mode_ =
       user_tuning::prefs::MemorySaverModeAggressiveness::kMedium;
-
-  raw_ptr<Graph> graph_ = nullptr;
 };
 
 }  // namespace performance_manager::policies

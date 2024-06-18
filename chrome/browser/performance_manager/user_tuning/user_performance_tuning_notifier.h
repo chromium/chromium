@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/raw_ptr.h"
 #include "components/performance_manager/public/decorators/process_metrics_decorator.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -65,7 +64,6 @@ class UserPerformanceTuningNotifier : public performance_manager::GraphOwned,
   void MaybeAddTabAndNotify(const PageNode* page_node);
 
   std::unique_ptr<Receiver> receiver_;
-  raw_ptr<Graph> graph_;
 
   std::unique_ptr<
       performance_manager::ProcessMetricsDecorator::ScopedMetricsInterestToken>

@@ -67,8 +67,6 @@ class OomScorePolicyChromeOS : public GraphOwned,
 
   base::TimeTicks last_oom_scores_assignment_ = base::TimeTicks::Now();
 
-  raw_ptr<Graph> graph_ = nullptr;
-
   // Map maintaining the process handle - oom_score mapping.
   ProcessScoreMap oom_score_map_;
 

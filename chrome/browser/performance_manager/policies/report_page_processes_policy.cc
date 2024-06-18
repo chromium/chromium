@@ -114,14 +114,12 @@ ReportPageProcessesPolicy::~ReportPageProcessesPolicy() = default;
 
 void ReportPageProcessesPolicy::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  graph_ = graph;
   graph->AddPageNodeObserver(this);
 }
 
 void ReportPageProcessesPolicy::OnTakenFromGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   graph->RemovePageNodeObserver(this);
-  graph_ = nullptr;
 }
 
 void ReportPageProcessesPolicy::OnPageNodeAdded(const PageNode* page_node) {
@@ -174,10 +172,10 @@ void ReportPageProcessesPolicy::HandlePageNodeEvents() {
   has_delayed_events_ = false;
 
   PageDiscardingHelper* discarding_helper =
-      PageDiscardingHelper::GetFromGraph(graph_);
+      PageDiscardingHelper::GetFromGraph(GetOwningGraph());
 
   Graph::NodeSetView<const PageNode*> all_page_nodes =
-      graph_->GetAllPageNodes();
+      GetOwningGraph()->GetAllPageNodes();
   std::vector<PageNodeSortProxy> candidates;
   candidates.reserve(all_page_nodes.size());
   for (const PageNode* page_node : all_page_nodes) {

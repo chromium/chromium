@@ -152,7 +152,7 @@ void PageDiscardingHelper::DiscardMultiplePages(
   };
 
   std::vector<PageNodeSortProxy> candidates;
-  for (const PageNode* page_node : graph_->GetAllPageNodes()) {
+  for (const PageNode* page_node : GetOwningGraph()->GetAllPageNodes()) {
     CanDiscardResult can_discard_result =
         CanDiscard(page_node, discard_reason, minimum_time_in_background);
     if (can_discard_result == CanDiscardResult::kMarked) {
@@ -301,7 +301,6 @@ void PageDiscardingHelper::RemovesDiscardAttemptMarkerForTesting(
 
 void PageDiscardingHelper::OnPassedToGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  graph_ = graph;
   graph->GetNodeDataDescriberRegistry()->RegisterDescriber(this,
                                                            kDescriberName);
 }
@@ -309,7 +308,6 @@ void PageDiscardingHelper::OnPassedToGraph(Graph* graph) {
 void PageDiscardingHelper::OnTakenFromGraph(Graph* graph) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   graph->GetNodeDataDescriberRegistry()->UnregisterDescriber(this);
-  graph_ = nullptr;
 }
 
 const PageLiveStateDecorator::Data*
@@ -515,7 +513,7 @@ base::Value::Dict PageDiscardingHelper::DescribePageNodeData(
       TabPageDecorator::FromPageNode(node);
   if (tab_handle) {
     TabRevisitTracker* revisit_tracker =
-        graph_->GetRegisteredObjectAs<TabRevisitTracker>();
+        GetOwningGraph()->GetRegisteredObjectAs<TabRevisitTracker>();
     CHECK(revisit_tracker);
     TabRevisitTracker::StateBundle state =
         revisit_tracker->GetStateForTabHandle(tab_handle);

@@ -35,7 +35,6 @@ UserPerformanceTuningNotifier::~UserPerformanceTuningNotifier() = default;
 
 void UserPerformanceTuningNotifier::OnPassedToGraph(Graph* graph) {
   CHECK_EQ(graph->GetAllPageNodes().size(), 0u);
-  graph_ = graph;
   graph->AddPageNodeObserver(this);
 
   metrics_interest_token_ = performance_manager::ProcessMetricsDecorator::
@@ -48,7 +47,6 @@ void UserPerformanceTuningNotifier::OnTakenFromGraph(Graph* graph) {
   metrics_interest_token_.reset();
 
   graph->RemovePageNodeObserver(this);
-  graph_ = nullptr;
 }
 
 void UserPerformanceTuningNotifier::OnPageNodeAdded(const PageNode* page_node) {
@@ -77,7 +75,8 @@ void UserPerformanceTuningNotifier::OnTypeChanged(const PageNode* page_node,
 void UserPerformanceTuningNotifier::OnProcessMemoryMetricsAvailable(
     const SystemNode* system_node) {
   uint64_t total_rss = 0;
-  for (const ProcessNode* process_node : graph_->GetAllProcessNodes()) {
+  for (const ProcessNode* process_node :
+       GetOwningGraph()->GetAllProcessNodes()) {
     total_rss += process_node->GetResidentSetKb();
   }
 
@@ -92,7 +91,7 @@ void UserPerformanceTuningNotifier::OnProcessMemoryMetricsAvailable(
 
   std::vector<WebContentsAndPmf> web_contents_and_pmf;
   Graph::NodeSetView<const PageNode*> all_page_nodes =
-      graph_->GetAllPageNodes();
+      GetOwningGraph()->GetAllPageNodes();
   web_contents_and_pmf.reserve(all_page_nodes.size());
   for (const PageNode* page_node : all_page_nodes) {
     web_contents_and_pmf.emplace_back(

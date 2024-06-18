@@ -71,8 +71,6 @@ void MemorySaverModePolicy::OnBeforeTabRemoved(
 }
 
 void MemorySaverModePolicy::OnPassedToGraph(Graph* graph) {
-
-  graph_ = graph;
   graph->AddPageNodeObserver(this);
   graph->GetRegisteredObjectAs<TabPageDecorator>()->AddObserver(this);
 }
@@ -91,7 +89,6 @@ void MemorySaverModePolicy::OnTakenFromGraph(Graph* graph) {
     tab_page_decorator->RemoveObserver(this);
   }
   graph->RemovePageNodeObserver(this);
-  graph_ = nullptr;
 }
 
 void MemorySaverModePolicy::OnMemorySaverModeChanged(bool enabled) {
@@ -122,7 +119,7 @@ bool MemorySaverModePolicy::IsMemorySaverDiscardingEnabled() const {
 }
 
 void MemorySaverModePolicy::StartAllDiscardTimers() {
-  for (const PageNode* page_node : graph_->GetAllPageNodes()) {
+  for (const PageNode* page_node : GetOwningGraph()->GetAllPageNodes()) {
     TabPageDecorator::TabHandle* tab_handle =
         TabPageDecorator::FromPageNode(page_node);
     if (tab_handle && !page_node->IsVisible()) {
@@ -137,7 +134,7 @@ void MemorySaverModePolicy::StartDiscardTimerIfEnabled(
     base::TimeDelta time_before_discard) {
   if (IsMemorySaverDiscardingEnabled()) {
     TabRevisitTracker* revisit_tracker =
-        graph_->GetRegisteredObjectAs<TabRevisitTracker>();
+        GetOwningGraph()->GetRegisteredObjectAs<TabRevisitTracker>();
     CHECK(revisit_tracker);
 
     TabRevisitTracker::StateBundle state =
@@ -194,9 +191,11 @@ void MemorySaverModePolicy::DiscardPageTimerCallback(
     StartDiscardTimerIfEnabled(
         tab_handle, requested_time_before_discard - elapsed_not_suspended);
   } else {
-    PageDiscardingHelper::GetFromGraph(graph_)->ImmediatelyDiscardMultiplePages(
-        {tab_handle->page_node()},
-        PageDiscardingHelper::DiscardReason::PROACTIVE);
+    GetOwningGraph()
+        ->GetRegisteredObjectAs<PageDiscardingHelper>()
+        ->ImmediatelyDiscardMultiplePages(
+            {tab_handle->page_node()},
+            PageDiscardingHelper::DiscardReason::PROACTIVE);
   }
 }
 

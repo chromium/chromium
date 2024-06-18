@@ -16,7 +16,6 @@
 #include "base/timer/timer.h"
 #include "base/types/strong_alias.h"
 #include "chrome/browser/performance_manager/public/user_tuning/performance_detection_manager.h"
-#include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_registered.h"
 #include "components/performance_manager/public/resource_attribution/cpu_proportion_tracker.h"
 #include "components/performance_manager/public/resource_attribution/page_context.h"
@@ -45,9 +44,6 @@ class CpuHealthTracker
   ~CpuHealthTracker() override;
 
   HealthLevel GetHealthLevelForTesting();
-
-  // performance_manager::GraphOwned:
-  void OnPassedToGraph(performance_manager::Graph* graph) override;
 
  private:
   friend class CpuHealthTrackerTestHelper;
@@ -120,7 +116,6 @@ class CpuHealthTracker
   HealthLevel current_health_status_ = HealthLevel::kHealthy;
   base::RepeatingTimer cpu_probe_timer_;
   resource_attribution::CPUProportionTracker page_cpu_proportion_tracker_;
-  raw_ptr<Graph> graph_;
   base::WeakPtrFactory<CpuHealthTracker> weak_ptr_factory_{this};
 };
 
