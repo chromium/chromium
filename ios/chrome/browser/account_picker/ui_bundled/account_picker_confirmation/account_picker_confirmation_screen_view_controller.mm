@@ -102,7 +102,15 @@ CGFloat GetPixelLength() {
   _identityButtonControl.enabled = NO;
   _askEveryTimeSwitch.enabled = NO;
   _primaryButton.enabled = NO;
+  // Text should not be empty, otherwise the top and bottom can’t apply to the
+  // text buttom and top line anymore.
   SetConfigurationTitle(_primaryButton, @" ");
+  // Set accessibility label so that VoiceOver won't use the empty string.
+  _primaryButton.accessibilityLabel =
+      _configuration.submitButtonTappedAccessibilityLabel
+          ? _configuration.submitButtonTappedAccessibilityLabel
+          : l10n_util::GetNSString(
+                IDS_IOS_ACCOUNT_PICKER_SUBMIT_TAPPED_ACCESSIBILITY_LABEL);
 }
 
 - (void)stopSpinner {
@@ -120,6 +128,7 @@ CGFloat GetPixelLength() {
   _primaryButton.enabled = YES;
   DCHECK(_submitString);
   SetConfigurationTitle(_primaryButton, _submitString);
+  _primaryButton.accessibilityLabel = nil;
 }
 
 - (void)setIdentityButtonHidden:(BOOL)hidden animated:(BOOL)animated {

@@ -173,6 +173,9 @@
       <message name="IDS_IOS_ACCOUNT_IDENTITY_CHOOSER_CHOOSE_ACCOUNT" desc="Label at the top an account list. The user has to select one of the accounts to sign-in. [Length: 20em] [iOS only]">
         Choose an Account
       </message>
+      <message name="IDS_IOS_ACCOUNT_PICKER_SUBMIT_TAPPED_ACCESSIBILITY_LABEL" desc="Accessibility label of the Submit button after it is tapped, during which a spinner replaces the button text. This is spoken by VoiceOver. [iOS only]" meaning="Accessibility label of the Submit button after it is tapped, during which a spinner replaces the button text. This is spoken by VoiceOver. [iOS only]">
+        Action in progress…
+      </message>
       <message name="IDS_IOS_ACCOUNT_TABLE_ENTER_PASSPHRASE_MESSAGE" desc="The error message to show in the account table when there is a passphrase error. [iOS only]">
         Sync is not working. To start sync enter your passphrase.
       </message>

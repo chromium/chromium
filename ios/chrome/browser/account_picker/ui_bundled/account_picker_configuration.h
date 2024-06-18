@@ -34,6 +34,11 @@
 // set the corner radius to match the UIButton one).
 @property(nonatomic, assign) BOOL defaultCornerRadius;
 
+// Accessibility label for the "Submit" button when it has been tapped and there
+// is a spinner in place of the button title. If nil, a default "Action in
+// progress…" accessibility label is used instead.
+@property(nonatomic, copy) NSString* submitButtonTappedAccessibilityLabel;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_ACCOUNT_PICKER_UI_BUNDLED_ACCOUNT_PICKER_CONFIGURATION_H_
