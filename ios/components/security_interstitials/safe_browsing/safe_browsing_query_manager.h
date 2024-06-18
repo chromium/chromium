@@ -116,7 +116,7 @@ class SafeBrowsingQueryManager
   // class may be constructed on the UI thread but otherwise must only be used
   // and destroyed on the IO thread. If kSafeBrowsingOnUIThread is enabled this
   // is used and destroyed on the UI thread.
-  class UrlCheckerClient : public base::SupportsWeakPtr<UrlCheckerClient> {
+  class UrlCheckerClient final {
    public:
     UrlCheckerClient();
     ~UrlCheckerClient();
@@ -136,6 +136,9 @@ class SafeBrowsingQueryManager
                                 bool show_error_page,
                                 safe_browsing::SafeBrowsingUrlCheckerImpl::
                                     PerformedCheck performed_check)> callback);
+    base::WeakPtr<UrlCheckerClient> AsWeakPtr() {
+      return weak_ptr_factory_.GetWeakPtr();
+    }
 
    private:
     // Called by `url_checker` with the initial result of performing a url
@@ -175,6 +178,7 @@ class SafeBrowsingQueryManager
                            performed_check)>,
                    base::UniquePtrComparator>
         active_url_checkers_;
+    base::WeakPtrFactory<UrlCheckerClient> weak_ptr_factory_{this};
   };
 
   // Used as the completion callback for URL queries executed by
