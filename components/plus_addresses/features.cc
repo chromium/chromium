@@ -75,7 +75,7 @@ BASE_FEATURE(kPlusAddressAffiliations,
 // Enables the redesigned UI for plus addresses on all platforms.
 BASE_FEATURE(kPlusAddressUIRedesign,
              "PlusAddressUIRedesign",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, refresh UI is shown in the bottom sheet on Android.
