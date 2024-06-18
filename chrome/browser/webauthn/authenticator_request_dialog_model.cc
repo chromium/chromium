@@ -1485,7 +1485,9 @@ AuthenticatorRequestDialogController::OnAccountPreselected(
       base::FeatureList::IsEnabled(device::kChromeOsPasskeys) ||
 #endif
       base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator);
-  if (use_gpm) {
+  // `source` should not be `kPhone` here except in some tests, which don't
+  // configure the enclave.
+  if (use_gpm && source != device::AuthenticatorType::kPhone) {
     model_->OnGPMPasskeySelected(credential_id);
     return source;
   }
