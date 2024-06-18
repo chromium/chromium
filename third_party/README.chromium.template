@@ -3,7 +3,7 @@ Short Name (OPTIONAL): Name the package is distributed under (ex. libxml, openss
 URL: The URL where the package lives.
 Version: A searchable version number for the package (if the package does not version or is versioned by date or revision this field should be "N/A" and the revision, or date should be enumerated in the appropriate field).
 Date: (OPTIONAL if Version or Revision is supplied) The date that the package was updated, in format YYYY-MM-DD.
-Revision: (OPTIONAL if Version or Date is supplied) The current revision of the package.
+Revision: (REQUIRED for dependencies which have a git repository as an upstream, OPTIONAL if the upstream is not a git repository and Version or Date is supplied)
 License: The license under which the package is distributed. Standard forms are only accepted, eg MIT/X11/BSD/Apache 2.0/GPL/LGPL. See ANDROID_ALLOWED_LICENSES in PRESUBMIT.py for allowed patterns.
 License File: A file path from //third_party or a relative path from the README.chromium to a child directory, whichever makes more sense for your dependency. The file should contain a copy of the package's license and correspond to the License provided above. For packages which are shipped this is a mandatory inclusion to ensure the accuracy of about:credits.
 Shipped: Either yes or no depending on whether this package should be included in about:credits. Anything shipped as part of a release or by component-updater should be credited.
