@@ -38,7 +38,6 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ActivityTabProvider;
-import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.ChromeActionModeHandler;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.TabReparentingController;
@@ -56,7 +55,6 @@ import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelManager;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager.ContextualSearchTabPromotionDelegate;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchObserver;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelection;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionObserver;
@@ -132,7 +130,6 @@ import org.chromium.chrome.browser.tab.TabObscuringHandlerSupplier;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tab_ui.TabSwitcher;
-import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
@@ -206,7 +203,7 @@ import java.util.function.BooleanSupplier;
  * The root UI coordinator. This class will eventually be responsible for inflating and managing
  * lifecycle of the main UI components.
  *
- * <p>The specific things this component will manage and how it will hook into Chrome*Activity are
+ * The specific things this component will manage and how it will hook into Chrome*Activity are
  * still being discussed See https://crbug.com/931496.
  */
 public class RootUiCoordinator
@@ -215,7 +212,6 @@ public class RootUiCoordinator
                 NativeInitObserver,
                 MenuOrKeyboardActionController.MenuOrKeyboardActionHandler,
                 AppMenuBlocker,
-                ContextualSearchTabPromotionDelegate,
                 WindowFocusChangedObserver {
     protected final UnownedUserDataSupplier<TabObscuringHandler> mTabObscuringHandlerSupplier =
             new TabObscuringHandlerSupplier();
@@ -285,6 +281,7 @@ public class RootUiCoordinator
     private final ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     private final OneshotSupplierImpl<AppMenuCoordinator> mAppMenuSupplier;
     private BottomSheetObserver mBottomSheetObserver;
+    protected final ObservableSupplier<ContextualSearchManager> mContextualSearchManagerSupplier;
     protected final CallbackController mCallbackController;
     protected final BrowserControlsManager mBrowserControlsManager;
     private BrowserControlsStateProvider.Observer mBrowserControlsObserver;
@@ -332,9 +329,6 @@ public class RootUiCoordinator
     protected final ObservableSupplierImpl<ReadAloudController> mReadAloudControllerSupplier =
             new ObservableSupplierImpl<>();
     protected final BottomControlsStacker mBottomControlsStacker;
-    private final Supplier<Long> mLastUserInteractionTimeSupplier;
-    protected final ObservableSupplierImpl<ContextualSearchManager>
-            mContextualSearchManagerSupplier = new ObservableSupplierImpl<>();
     @Nullable private ContextualSearchObserver mReadAloudContextualSearchObserver;
     @Nullable private ContextualSearchSelectionObserver mContextualSearchSelectionObserver;
     @Nullable private PageZoomCoordinator mPageZoomCoordinator;
@@ -362,6 +356,7 @@ public class RootUiCoordinator
      * @param profileSupplier Supplier of the currently applicable profile.
      * @param bookmarkModelSupplier Supplier of the bookmark bridge for the current profile.
      * @param tabBookmarkerSupplier Supplier of {@link TabBookmarker} for bookmarking a given tab.
+     * @param contextualSearchManagerSupplier Supplier of the {@link ContextualSearchManager}.
      * @param tabModelSelectorSupplier Supplies the {@link TabModelSelector}.
      * @param startSurfaceSupplier Supplier of the {@link StartSurface}.
      * @param tabSwitcherSupplier Supplier of the {@link TabSwitcher}.
@@ -369,7 +364,6 @@ public class RootUiCoordinator
      * @param intentMetadataOneshotSupplier Supplier with information about the launching intent.
      * @param layoutStateProviderOneshotSupplier Supplier of the {@link LayoutStateProvider}.
      * @param startSurfaceParentTabSupplier Supplies the parent tab for the StartSurface.
-     * @param lastUserInteractionTimeSupplier Supplies the last user interaction time.
      * @param browserControlsManager Manages the browser controls.
      * @param windowAndroid The current {@link WindowAndroid}.
      * @param activityLifecycleDispatcher Allows observation of the activity lifecycle.
@@ -410,6 +404,7 @@ public class RootUiCoordinator
             @NonNull ObservableSupplier<Profile> profileSupplier,
             @NonNull ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
             @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            @NonNull ObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
             @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @NonNull OneshotSupplier<StartSurface> startSurfaceSupplier,
             @NonNull OneshotSupplier<TabSwitcher> tabSwitcherSupplier,
@@ -417,7 +412,6 @@ public class RootUiCoordinator
             @NonNull OneshotSupplier<ToolbarIntentMetadata> intentMetadataOneshotSupplier,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
             @NonNull Supplier<Tab> startSurfaceParentTabSupplier,
-            @NonNull Supplier<Long> lastUserInteractionTimeSupplier,
             @NonNull BrowserControlsManager browserControlsManager,
             @NonNull ActivityWindowAndroid windowAndroid,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
@@ -517,6 +511,7 @@ public class RootUiCoordinator
         mBookmarkModelSupplier = bookmarkModelSupplier;
         mTabBookmarkerSupplier = tabBookmarkerSupplier;
         mAppMenuSupplier = new OneshotSupplierImpl<>();
+        mContextualSearchManagerSupplier = contextualSearchManagerSupplier;
         mActionModeControllerCallback = new ToolbarActionModeCallback();
 
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
@@ -528,7 +523,6 @@ public class RootUiCoordinator
                 mCallbackController.makeCancelable(this::setLayoutStateProvider));
 
         mStartSurfaceSupplier = startSurfaceSupplier;
-        mLastUserInteractionTimeSupplier = lastUserInteractionTimeSupplier;
         mTabSwitcherSupplier = tabSwitcherSupplier;
         mIncognitoTabSwitcherSupplier = incognitoTabSwitcherSupplier;
         mIntentMetadataOneshotSupplier = intentMetadataOneshotSupplier;
@@ -585,7 +579,6 @@ public class RootUiCoordinator
         mOverviewColorSupplier = overviewColorSupplier;
         mBaseChromeLayout = baseChromeLayout;
         mBottomControlsStacker = new BottomControlsStacker(mBrowserControlsManager);
-        mProfileSupplier.addObserver(profile -> createContextualSearchManager());
     }
 
     // TODO(pnoland, crbug.com/865801): remove this in favor of wiring it directly.
@@ -776,11 +769,6 @@ public class RootUiCoordinator
             readAloudController.destroy();
         }
 
-        if (mContextualSearchManagerSupplier.hasValue()) {
-            mContextualSearchManagerSupplier.get().destroy();
-            mContextualSearchManagerSupplier.set(null);
-        }
-
         if (mEdgeToEdgeController != null) {
             mEdgeToEdgeController.destroy();
             mEdgeToEdgeController = null;
@@ -963,78 +951,6 @@ public class RootUiCoordinator
                 contextualSearchManager.addObserver(mContextualSearchSelectionObserver);
             }
         }
-    }
-
-    protected boolean isContextualSearchEnabled() {
-        return true;
-    }
-
-    public void createContextualSearchManager() {
-        if (!isContextualSearchEnabled()) return;
-
-        mContextualSearchManagerSupplier.set(
-                new ContextualSearchManager(
-                        mActivity,
-                        mProfileSupplier.get(),
-                        this,
-                        mScrimCoordinator,
-                        mActivityTabProvider,
-                        mFullscreenManager,
-                        mBrowserControlsManager,
-                        mWindowAndroid,
-                        mTabModelSelectorSupplier.get(),
-                        mLastUserInteractionTimeSupplier,
-                        mEdgeToEdgeControllerSupplier));
-    }
-
-    public void initContextualSearchManager() {
-        var manager = mContextualSearchManagerSupplier.get();
-        if (manager == null) return;
-
-        int controlContainerHeightId = getControlContainerHeightResource();
-        float toolbarHeightDp =
-                controlContainerHeightId == ActivityUtils.NO_RESOURCE_ID
-                        ? 0f
-                        : mActivity.getResources().getDimension(controlContainerHeightId);
-        manager.initialize(
-                mActivity.findViewById(android.R.id.content),
-                mLayoutManager,
-                getBottomSheetController(),
-                mCompositorViewHolderSupplier.get(),
-                toolbarHeightDp,
-                mToolbarManager,
-                canContextualSearchPromoteToNewTab(),
-                mIntentRequestTracker);
-    }
-
-    public ObservableSupplier<ContextualSearchManager> getContextualSearchManagerSupplier() {
-        return mContextualSearchManagerSupplier;
-    }
-
-    /**
-     * @return The resource id that contains how large the browser controls are.
-     */
-    public int getControlContainerHeightResource() {
-        return ActivityUtils.NO_RESOURCE_ID;
-    }
-
-    protected boolean canContextualSearchPromoteToNewTab() {
-        return false;
-    }
-
-    @Override
-    public void createContextualSearchTab(String searchUrl) {
-        Tab currentTab = mActivityTabProvider.get();
-        if (currentTab == null) return;
-
-        TabCreator tabCreator =
-                mTabCreatorManagerSupplier.get().getTabCreator(currentTab.isIncognito());
-        if (tabCreator == null) return;
-
-        tabCreator.createNewTab(
-                new LoadUrlParams(searchUrl, PageTransition.LINK),
-                TabLaunchType.FROM_LINK,
-                mActivityTabProvider.get());
     }
 
     /** Handle post native initialization of features that require the Profile to be available. */
@@ -1338,7 +1254,6 @@ public class RootUiCoordinator
         }
 
         mOverlayPanelManager.addObserver(mOverlayPanelManagerObserver);
-        initContextualSearchManager();
     }
 
     /**

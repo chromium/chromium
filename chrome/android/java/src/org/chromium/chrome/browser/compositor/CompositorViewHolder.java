@@ -122,16 +122,20 @@ public class CompositorViewHolder extends FrameLayout
         /**
          * Initializes the {@link CompositorViewHolder} with the relevant content it needs to
          * properly show content on the screen.
-         *
-         * @param layoutManager A {@link LayoutManagerImpl} instance. This class is responsible for
-         *     driving all high level screen content and determines which {@link Layout} is shown
-         *     when.
-         * @param urlBar The {@link View} representing the URL bar (must be focusable) or {@code
-         *     null} if none exists.
-         * @param controlContainer A {@link ControlContainer} instance to draw.
+         * @param layoutManager             A {@link LayoutManagerImpl} instance.  This class is
+         *                                  responsible for driving all high level screen content
+         * and determines which {@link Layout} is shown when.
+         * @param urlBar                    The {@link View} representing the URL bar (must be
+         *                                  focusable) or {@code null} if none exists.
+         * @param contentContainer          A {@link ViewGroup} that can have content attached by
+         *                                  {@link Layout}s.
+         * @param controlContainer          A {@link ControlContainer} instance to draw.
          */
         void initializeCompositorContent(
-                LayoutManagerImpl layoutManager, View urlBar, ControlContainer controlContainer);
+                LayoutManagerImpl layoutManager,
+                View urlBar,
+                ViewGroup contentContainer,
+                ControlContainer controlContainer);
     }
 
     private final ObserverList<TouchEventObserver> mTouchEventObservers = new ObserverList<>();

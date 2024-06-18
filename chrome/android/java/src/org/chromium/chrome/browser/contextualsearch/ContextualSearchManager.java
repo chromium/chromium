@@ -42,6 +42,7 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchInternalStateController.InternalState;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionController.SelectionType;
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
+import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
@@ -347,7 +348,7 @@ public class ContextualSearchManager
      * @param compositorViewHolder The {@link CompositorViewHolder} for the current activity.
      * @param toolbarHeightDp The height of the toolbar in dp.
      * @param toolbarManager The manager of the toolbar, used to query toolbar state.
-     * @param canPromoteToNewTab Whether the Conextual search panel can be promoted to a new tab.
+     * @param activityType The type of the current activity.
      * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
      */
     public void initialize(
@@ -357,7 +358,7 @@ public class ContextualSearchManager
             @NonNull CompositorViewHolder compositorViewHolder,
             float toolbarHeightDp,
             @NonNull ToolbarManager toolbarManager,
-            boolean canPromoteToNewTab,
+            @ActivityType int activityType,
             @NonNull IntentRequestTracker intentRequestTracker) {
         mNativeContextualSearchManagerPtr = ContextualSearchManagerJni.get().init(this, mProfile);
 
@@ -377,7 +378,7 @@ public class ContextualSearchManager
                         compositorViewHolder,
                         toolbarHeightDp,
                         toolbarManager,
-                        canPromoteToNewTab,
+                        activityType,
                         mTabSupplier,
                         mEdgeToEdgeControllerSupplier);
         panel.setManagementDelegate(this);

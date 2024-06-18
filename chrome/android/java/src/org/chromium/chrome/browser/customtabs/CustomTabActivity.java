@@ -258,6 +258,12 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     }
 
     @Override
+    public void createContextualSearchTab(String searchUrl) {
+        if (getActivityTab() == null) return;
+        getActivityTab().loadUrl(new LoadUrlParams(searchUrl));
+    }
+
+    @Override
     public String getPackageName() {
         if (mShouldOverridePackage
                 && mIntentDataProvider instanceof CustomTabIntentDataProvider intentDataProvider) {

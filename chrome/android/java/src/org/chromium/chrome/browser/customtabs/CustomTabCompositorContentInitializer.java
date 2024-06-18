@@ -83,6 +83,7 @@ public class CustomTabCompositorContentInitializer implements NativeInitObserver
         mCompositorViewHolderInitializer.initializeCompositorContent(
                 layoutDriver,
                 mActivity.findViewById(org.chromium.chrome.R.id.url_bar),
+                contentContainer,
                 mActivity.findViewById(org.chromium.chrome.R.id.control_container));
 
         for (Callback<LayoutManagerImpl> listener : mListeners) {

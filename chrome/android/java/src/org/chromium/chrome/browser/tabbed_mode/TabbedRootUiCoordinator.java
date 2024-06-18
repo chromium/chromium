@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
+import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteSettingsIPHController;
 import org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinator;
@@ -244,6 +245,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
      * @param tabProvider The {@link ActivityTabProvider} to get current tab of the activity.
      * @param profileSupplier Supplier of the currently applicable profile.
      * @param bookmarkModelSupplier Supplier of the bookmark bridge for the current profile.
+     * @param contextualSearchManagerSupplier Supplier of the {@link ContextualSearchManager}.
      * @param tabModelSelectorSupplier Supplies the {@link TabModelSelector}.
      * @param startSurfaceSupplier Supplier of the {@link StartSurface}.
      * @param tabSwitcherSupplier Supplier of the {@link TabSwitcher}.
@@ -297,6 +299,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull ObservableSupplier<Profile> profileSupplier,
             @NonNull ObservableSupplier<BookmarkModel> bookmarkModelSupplier,
             @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
+            @NonNull ObservableSupplier<ContextualSearchManager> contextualSearchManagerSupplier,
             @NonNull ObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             @NonNull OneshotSupplier<StartSurface> startSurfaceSupplier,
             @NonNull OneshotSupplier<TabSwitcher> tabSwitcherSupplier,
@@ -305,7 +308,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             @NonNull OneshotSupplier<ToolbarIntentMetadata> intentMetadataOneshotSupplier,
             @NonNull OneshotSupplier<LayoutStateProvider> layoutStateProviderOneshotSupplier,
             @NonNull Supplier<Tab> startSurfaceParentTabSupplier,
-            @NonNull Supplier<Long> lastUserInteractionTimeSupplier,
             @NonNull BrowserControlsManager browserControlsManager,
             @NonNull ActivityWindowAndroid windowAndroid,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
@@ -348,6 +350,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 profileSupplier,
                 bookmarkModelSupplier,
                 tabBookmarkerSupplier,
+                contextualSearchManagerSupplier,
                 tabModelSelectorSupplier,
                 startSurfaceSupplier,
                 tabSwitcherSupplier,
@@ -355,7 +358,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                 intentMetadataOneshotSupplier,
                 layoutStateProviderOneshotSupplier,
                 startSurfaceParentTabSupplier,
-                lastUserInteractionTimeSupplier,
                 browserControlsManager,
                 windowAndroid,
                 activityLifecycleDispatcher,
@@ -539,16 +541,6 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         super.onFindToolbarShown();
         EphemeralTabCoordinator coordinator = mEphemeralTabCoordinatorSupplier.get();
         if (coordinator != null && coordinator.isOpened()) coordinator.close();
-    }
-
-    @Override
-    public int getControlContainerHeightResource() {
-        return R.dimen.control_container_height;
-    }
-
-    @Override
-    protected boolean canContextualSearchPromoteToNewTab() {
-        return true;
     }
 
     /** Show navigation history sheet. */
