@@ -41,6 +41,7 @@
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace ash {
 namespace {
@@ -78,6 +79,155 @@ PickerSectionView::PickerSectionView(int section_width,
 }
 
 PickerSectionView::~PickerSectionView() = default;
+
+std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
+    const PickerSearchResult& result,
+    PickerPreviewBubbleController* preview_controller,
+    PickerAssetFetcher* asset_fetcher,
+    SelectResultCallback select_result_callback) {
+  using ReturnType = std::unique_ptr<PickerItemView>;
+  return std::visit(
+      base::Overloaded{
+          [&](const PickerSearchResult::TextData& data) -> ReturnType {
+            auto item_view = std::make_unique<PickerListItemView>(
+                std::move(select_result_callback));
+            item_view->SetPrimaryText(data.primary_text);
+            item_view->SetSecondaryText(data.secondary_text);
+            item_view->SetLeadingIcon(data.icon);
+            return item_view;
+          },
+          [&](const PickerSearchResult::SearchRequestData& data) -> ReturnType {
+            auto item_view = std::make_unique<PickerListItemView>(
+                std::move(select_result_callback));
+            item_view->SetPrimaryText(data.text);
+            item_view->SetLeadingIcon(data.icon);
+            return item_view;
+          },
+          [&](const PickerSearchResult::EmojiData& data) -> ReturnType {
+            NOTREACHED_NORETURN();
+          },
+          [&](const PickerSearchResult::SymbolData& data) -> ReturnType {
+            NOTREACHED_NORETURN();
+          },
+          [&](const PickerSearchResult::EmoticonData& data) -> ReturnType {
+            NOTREACHED_NORETURN();
+          },
+          [&](const PickerSearchResult::ClipboardData& data) -> ReturnType {
+            auto item_view = std::make_unique<PickerListItemView>(
+                std::move(select_result_callback));
+            const gfx::VectorIcon* icon = nullptr;
+            switch (data.display_format) {
+              case PickerSearchResult::ClipboardData::DisplayFormat::kFile:
+                icon = &vector_icons::kContentCopyIcon;
+                item_view->SetPrimaryText(data.display_text);
+                break;
+              case PickerSearchResult::ClipboardData::DisplayFormat::kText:
+                icon = &chromeos::kTextIcon;
+                item_view->SetPrimaryText(data.display_text);
+                break;
+              case PickerSearchResult::ClipboardData::DisplayFormat::kImage:
+                if (!data.display_image.has_value()) {
+                  return nullptr;
+                }
+                icon = &chromeos::kFiletypeImageIcon;
+                item_view->SetPrimaryImage(
+                    std::make_unique<views::ImageView>(*data.display_image));
+                break;
+              case PickerSearchResult::ClipboardData::DisplayFormat::kHtml:
+                icon = &vector_icons::kCodeIcon;
+                item_view->SetPrimaryText(
+                    l10n_util::GetStringUTF16(IDS_PICKER_HTML_CONTENT));
+                break;
+            }
+            if (icon) {
+              item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
+                  *icon, cros_tokens::kCrosSysOnSurface, kIconSize));
+            }
+            return item_view;
+          },
+          [&](const PickerSearchResult::GifData& data) -> ReturnType {
+            // `base::Unretained` is safe because `asset_fetcher` outlives the
+            // return value.
+            auto gif_view = std::make_unique<PickerGifView>(
+                base::BindRepeating(&PickerAssetFetcher::FetchGifFromUrl,
+                                    base::Unretained(asset_fetcher),
+                                    data.preview_url),
+                base::BindRepeating(
+                    &PickerAssetFetcher::FetchGifPreviewImageFromUrl,
+                    base::Unretained(asset_fetcher), data.preview_image_url),
+                data.preview_dimensions,
+                /*accessible_name=*/data.content_description);
+            auto gif_item_view = std::make_unique<PickerImageItemView>(
+                std::move(select_result_callback), std::move(gif_view));
+            return gif_item_view;
+          },
+          [&](const PickerSearchResult::BrowsingHistoryData& data)
+              -> ReturnType {
+            auto item_view = std::make_unique<PickerListItemView>(
+                std::move(select_result_callback));
+            item_view->SetPrimaryText(data.title);
+            item_view->SetSecondaryText(base::UTF8ToUTF16(data.url.spec()));
+            item_view->SetLeadingIcon(data.icon);
+            return item_view;
+          },
+          [&](const PickerSearchResult::LocalFileData& data) -> ReturnType {
+            auto item_view = std::make_unique<PickerListItemView>(
+                std::move(select_result_callback));
+            item_view->SetPrimaryText(data.title);
+            // `base::Unretained` is safe because `asset_fetcher` outlives the
+            // return value.
+            item_view->SetPreview(
+                preview_controller, data.file_path,
+                base::BindRepeating(&PickerAssetFetcher::FetchFileThumbnail,
+                                    base::Unretained(asset_fetcher)),
+                /*update_icon=*/true);
+            return item_view;
+          },
+          [&](const PickerSearchResult::DriveFileData& data) -> ReturnType {
+            auto item_view = std::make_unique<PickerListItemView>(
+                std::move(select_result_callback));
+            item_view->SetPrimaryText(data.title);
+            // TODO: b/333609460 - Handle dark/light mode.
+            item_view->SetLeadingIcon(
+                ui::ImageModel::FromImageSkia(chromeos::GetIconForPath(
+                    data.file_path, /*dark_background=*/false, kIconSize)));
+            // `base::Unretained` is safe because `asset_fetcher` outlives the
+            // return value.
+            item_view->SetPreview(
+                preview_controller, data.file_path,
+                base::BindRepeating(&PickerAssetFetcher::FetchFileThumbnail,
+                                    base::Unretained(asset_fetcher)),
+                /*update_icon=*/false);
+            return item_view;
+          },
+          [&](const PickerSearchResult::CategoryData& data) -> ReturnType {
+            auto item_view = std::make_unique<PickerListItemView>(
+                std::move(select_result_callback));
+            item_view->SetPrimaryText(GetLabelForPickerCategory(data.category));
+            item_view->SetLeadingIcon(GetIconForPickerCategory(data.category));
+            return item_view;
+          },
+          [&](const PickerSearchResult::EditorData& data) -> ReturnType {
+            auto item_view = std::make_unique<PickerListItemView>(
+                std::move(select_result_callback));
+            if (data.category.has_value()) {
+              // Preset write or rewrite.
+              item_view->SetPrimaryText(data.display_name);
+              item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
+                  chromeos::editor_menu::GetIconForPresetQueryCategory(
+                      *data.category),
+                  cros_tokens::kCrosSysOnSurface));
+            } else {
+              // Freeform write or rewrite.
+              const PickerCategory category = GetCategoryForEditorData(data);
+              item_view->SetPrimaryText(GetLabelForPickerCategory(category));
+              item_view->SetLeadingIcon(GetIconForPickerCategory(category));
+            }
+            return item_view;
+          },
+      },
+      result.data());
+}
 
 void PickerSectionView::AddTitleLabel(const std::u16string& title_text) {
   if (title_text.empty()) {
@@ -135,156 +285,26 @@ PickerImageItemView* PickerSectionView::AddImageItem(
   return image_item_ptr;
 }
 
+PickerItemView* PickerSectionView::AddItem(
+    std::unique_ptr<PickerItemView> item) {
+  if (views::IsViewClass<PickerListItemView>(item.get())) {
+    return AddListItem(std::unique_ptr<PickerListItemView>(
+        views::AsViewClass<PickerListItemView>(item.release())));
+  }
+  if (views::IsViewClass<PickerImageItemView>(item.get())) {
+    return AddImageItem(std::unique_ptr<PickerImageItemView>(
+        views::AsViewClass<PickerImageItemView>(item.release())));
+  }
+  NOTREACHED_NORETURN();
+}
+
 PickerItemView* PickerSectionView::AddResult(
     const PickerSearchResult& result,
     PickerPreviewBubbleController* preview_controller,
     SelectResultCallback select_result_callback) {
-  return std::visit(
-      base::Overloaded{
-          [&](const PickerSearchResult::TextData& data) -> PickerItemView* {
-            auto item_view = std::make_unique<PickerListItemView>(
-                std::move(select_result_callback));
-            item_view->SetPrimaryText(data.primary_text);
-            item_view->SetSecondaryText(data.secondary_text);
-            item_view->SetLeadingIcon(data.icon);
-            return AddListItem(std::move(item_view));
-          },
-          [&](const PickerSearchResult::SearchRequestData& data)
-              -> PickerItemView* {
-            auto item_view = std::make_unique<PickerListItemView>(
-                std::move(select_result_callback));
-            item_view->SetPrimaryText(data.text);
-            item_view->SetLeadingIcon(data.icon);
-            return AddListItem(std::move(item_view));
-          },
-          [&](const PickerSearchResult::EmojiData& data) -> PickerItemView* {
-            NOTREACHED_NORETURN();
-          },
-          [&](const PickerSearchResult::SymbolData& data) -> PickerItemView* {
-            NOTREACHED_NORETURN();
-          },
-          [&](const PickerSearchResult::EmoticonData& data) -> PickerItemView* {
-            NOTREACHED_NORETURN();
-          },
-          [&](const PickerSearchResult::ClipboardData& data)
-              -> PickerItemView* {
-            auto item_view = std::make_unique<PickerListItemView>(
-                std::move(select_result_callback));
-            const gfx::VectorIcon* icon = nullptr;
-            switch (data.display_format) {
-              case PickerSearchResult::ClipboardData::DisplayFormat::kFile:
-                icon = &vector_icons::kContentCopyIcon;
-                item_view->SetPrimaryText(data.display_text);
-                break;
-              case PickerSearchResult::ClipboardData::DisplayFormat::kText:
-                icon = &chromeos::kTextIcon;
-                item_view->SetPrimaryText(data.display_text);
-                break;
-              case PickerSearchResult::ClipboardData::DisplayFormat::kImage:
-                if (!data.display_image.has_value()) {
-                  return nullptr;
-                }
-                icon = &chromeos::kFiletypeImageIcon;
-                item_view->SetPrimaryImage(
-                    std::make_unique<views::ImageView>(*data.display_image));
-                break;
-              case PickerSearchResult::ClipboardData::DisplayFormat::kHtml:
-                icon = &vector_icons::kCodeIcon;
-                item_view->SetPrimaryText(
-                    l10n_util::GetStringUTF16(IDS_PICKER_HTML_CONTENT));
-                break;
-            }
-            if (icon) {
-              item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
-                  *icon, cros_tokens::kCrosSysOnSurface, kIconSize));
-            }
-            return AddListItem(std::move(item_view));
-          },
-          [&,
-           this](const PickerSearchResult::GifData& data) -> PickerItemView* {
-            // `base::Unretained` is safe here because `this` will own the gif
-            // view and `asset_fetcher_` outlives `this`.
-            auto gif_view = std::make_unique<PickerGifView>(
-                base::BindRepeating(&PickerAssetFetcher::FetchGifFromUrl,
-                                    base::Unretained(asset_fetcher_),
-                                    data.preview_url),
-                base::BindRepeating(
-                    &PickerAssetFetcher::FetchGifPreviewImageFromUrl,
-                    base::Unretained(asset_fetcher_), data.preview_image_url),
-                data.preview_dimensions,
-                /*accessible_name=*/data.content_description);
-            auto gif_item_view = std::make_unique<PickerImageItemView>(
-                std::move(select_result_callback), std::move(gif_view));
-            return AddImageItem(std::move(gif_item_view));
-          },
-          [&](const PickerSearchResult::BrowsingHistoryData& data)
-              -> PickerItemView* {
-            auto item_view = std::make_unique<PickerListItemView>(
-                std::move(select_result_callback));
-            item_view->SetPrimaryText(data.title);
-            item_view->SetSecondaryText(base::UTF8ToUTF16(data.url.spec()));
-            item_view->SetLeadingIcon(data.icon);
-            return AddListItem(std::move(item_view));
-          },
-          [&](const PickerSearchResult::LocalFileData& data)
-              -> PickerItemView* {
-            auto item_view = std::make_unique<PickerListItemView>(
-                std::move(select_result_callback));
-            item_view->SetPrimaryText(data.title);
-            item_view->SetPreview(
-                preview_controller, data.file_path,
-                // base::Unretained is safe here since asset_fetcher_ outlives
-                // this class.
-                base::BindRepeating(&PickerAssetFetcher::FetchFileThumbnail,
-                                    base::Unretained(asset_fetcher_)),
-                /*update_icon=*/true);
-            return AddListItem(std::move(item_view));
-          },
-          [&](const PickerSearchResult::DriveFileData& data)
-              -> PickerItemView* {
-            auto item_view = std::make_unique<PickerListItemView>(
-                std::move(select_result_callback));
-            item_view->SetPrimaryText(data.title);
-            // TODO: b/333609460 - Handle dark/light mode.
-            item_view->SetLeadingIcon(
-                ui::ImageModel::FromImageSkia(chromeos::GetIconForPath(
-                    data.file_path, /*dark_background=*/false, kIconSize)));
-            item_view->SetPreview(
-                preview_controller, data.file_path,
-                // base::Unretained is safe here since asset_fetcher_ outlives
-                // this class.
-                base::BindRepeating(&PickerAssetFetcher::FetchFileThumbnail,
-                                    base::Unretained(asset_fetcher_)),
-                /*update_icon=*/false);
-            return AddListItem(std::move(item_view));
-          },
-          [&](const PickerSearchResult::CategoryData& data) -> PickerItemView* {
-            auto item_view = std::make_unique<PickerListItemView>(
-                std::move(select_result_callback));
-            item_view->SetPrimaryText(GetLabelForPickerCategory(data.category));
-            item_view->SetLeadingIcon(GetIconForPickerCategory(data.category));
-            return AddListItem(std::move(item_view));
-          },
-          [&](const PickerSearchResult::EditorData& data) -> PickerItemView* {
-            auto item_view = std::make_unique<PickerListItemView>(
-                std::move(select_result_callback));
-            if (data.category.has_value()) {
-              // Preset write or rewrite.
-              item_view->SetPrimaryText(data.display_name);
-              item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
-                  chromeos::editor_menu::GetIconForPresetQueryCategory(
-                      *data.category),
-                  cros_tokens::kCrosSysOnSurface));
-            } else {
-              // Freeform write or rewrite.
-              const PickerCategory category = GetCategoryForEditorData(data);
-              item_view->SetPrimaryText(GetLabelForPickerCategory(category));
-              item_view->SetLeadingIcon(GetIconForPickerCategory(category));
-            }
-            return AddListItem(std::move(item_view));
-          },
-      },
-      result.data());
+  return AddItem(CreateItemFromResult(result, preview_controller,
+                                      asset_fetcher_,
+                                      std::move(select_result_callback)));
 }
 
 void PickerSectionView::ClearItems() {

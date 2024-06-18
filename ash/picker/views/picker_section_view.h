@@ -47,6 +47,17 @@ class ASH_EXPORT PickerSectionView : public views::View {
   PickerSectionView& operator=(const PickerSectionView&) = delete;
   ~PickerSectionView() override;
 
+  // Creates an item based on `result` and adds it to the section view.
+  // `preview_controller` can be null if previews are not needed.
+  // `asset_fetcher` can be null for most result types.
+  // Both `preview_controller` and `asset_fetcher` must outlive the return
+  // value.
+  static std::unique_ptr<PickerItemView> CreateItemFromResult(
+      const PickerSearchResult& result,
+      PickerPreviewBubbleController* preview_controller,
+      PickerAssetFetcher* asset_fetcher,
+      SelectResultCallback select_result_callback);
+
   void AddTitleLabel(const std::u16string& title_text);
   void AddTitleTrailingLink(const std::u16string& link_text,
                             views::Link::ClickedCallback link_callback);
@@ -61,9 +72,11 @@ class ASH_EXPORT PickerSectionView : public views::View {
   PickerImageItemView* AddImageItem(
       std::unique_ptr<PickerImageItemView> image_item);
 
-  // Creates an item based on `result` and adds it to the section view.
-  // `preview_controller` can be null if previews are not needed. If it's not
-  // null, it must outlive this class.
+  // Adds a generic item to the section.
+  PickerItemView* AddItem(std::unique_ptr<PickerItemView> item);
+
+  // Same as `CreateItemFromResult`, but additionally adds the item to this
+  // section.
   PickerItemView* AddResult(const PickerSearchResult& result,
                             PickerPreviewBubbleController* preview_controller,
                             SelectResultCallback select_result_callback);
