@@ -11,6 +11,7 @@
 namespace payments::facilitated {
 
 BASE_DECLARE_FEATURE(kEnablePixDetection);
+BASE_DECLARE_FEATURE(kEnablePixDetectionOnCopyEvent);
 BASE_DECLARE_FEATURE(kEnablePixDetectionOnDomContentLoaded);
 BASE_DECLARE_FEATURE(kEnablePixPayments);
 #if BUILDFLAG(IS_ANDROID)

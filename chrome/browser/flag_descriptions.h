@@ -2530,6 +2530,9 @@ extern const char kEnableEncryptedAV1Description[];
 extern const char kEnablePixDetectionName[];
 extern const char kEnablePixDetectionDescription[];
 
+extern const char kEnablePixDetectionOnCopyEventName[];
+extern const char kEnablePixDetectionOnCopyEventDescription[];
+
 extern const char kEnablePixDetectionOnDomContentLoadedName[];
 extern const char kEnablePixDetectionOnDomContentLoadedDescription[];
 

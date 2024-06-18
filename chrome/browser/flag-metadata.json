@@ -3634,6 +3634,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-pix-detection-on-copy-event",
+    "owners": ["siashah@chromium.org", "vishwasuppoor@chromium.org", "chrome-payments-team@google.com"],
+    "expiry_milestone": 140
+  },
+  {
     "name": "enable-pix-detection-on-dom-content-loaded",
     "owners": [ "vishwasuppoor@google.com", "rouslan@chromium.org", "siashah@chromium.org", "chrome-payments-team@google.com" ],
     "expiry_milestone": 130

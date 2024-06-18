@@ -4288,6 +4288,12 @@ const char kEnablePixDetectionName[] = "Enable PIX detection";
 const char kEnablePixDetectionDescription[] =
     "Enables PIX code detection on allow-listed merchant websites.";
 
+const char kEnablePixDetectionOnCopyEventName[] =
+    "Enable detecting Pix codes when user copies a string to the clipboard";
+const char kEnablePixDetectionOnCopyEventDescription[] =
+    "When enabled, clipboard data will be read on allowlisted webistes to "
+    "detect Pix codes.";
+
 const char kEnablePixDetectionOnDomContentLoadedName[] =
     "Enable triggering PIX code detection when "
     "`WebContentsObserver::DOMContentLoaded` is fired";
