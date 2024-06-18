@@ -2414,6 +2414,10 @@ source_set("browser") {
     ]
   }
 
+  if (is_win) {
+    deps += [ "//components/services/font_data:lib" ]
+  }
+
   if (allow_oop_video_decoder) {
     sources += [ "media/stable_video_decoder_factory.cc" ]
     deps += [ "//media/mojo/mojom/stable:stable_video_decoder" ]

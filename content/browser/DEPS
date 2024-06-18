@@ -15,6 +15,7 @@ include_rules = [
   "+components/grit",
   "+components/power_monitor",
   "+components/services/font",
+  "+components/services/font_data",
   "+components/services/filesystem",
   "+components/services/quarantine/test_support.h",
   "+components/services/quarantine/quarantine.h",

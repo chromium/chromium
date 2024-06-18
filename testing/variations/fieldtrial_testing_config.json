@@ -20696,6 +20696,21 @@
             ]
         }
     ],
+    "SkiaFontService": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SkiaFontService"
+                    ]
+                }
+            ]
+        }
+    ],
     "SkiaGraphite": [
         {
             "platforms": [

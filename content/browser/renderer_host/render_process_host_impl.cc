@@ -262,6 +262,7 @@
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"
 #include "components/app_launch_prefetch/app_launch_prefetch.h"
+#include "components/services/font_data/font_data_service_impl.h"
 #include "content/browser/renderer_host/dwrite_font_proxy_impl_win.h"
 #include "content/public/common/font_cache_dispatcher_win.h"
 #include "content/public/common/font_cache_win.mojom.h"
@@ -1171,6 +1172,17 @@ class RenderProcessHostImpl::IOThreadHostImpl : public mojom::ChildProcessHost {
       if (!receiver)
         return;
     }
+
+#if BUILDFLAG(IS_WIN)
+    if (base::FeatureList::IsEnabled(features::kSkiaFontService)) {
+      if (auto font_data_receiver =
+              receiver.As<font_data_service::mojom::FontDataService>()) {
+        font_data_service::FontDataServiceImpl::ConnectToFontService(
+            std::move(font_data_receiver));
+        return;
+      }
+    }
+#endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     if (auto font_receiver = receiver.As<font_service::mojom::FontService>()) {

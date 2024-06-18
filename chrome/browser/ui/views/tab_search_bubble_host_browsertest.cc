@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/compositor/compositor.h"
@@ -220,6 +221,12 @@ class TabSearchBubbleHostUIBrowserTest : public DialogBrowserTest {
       webui_change_observer.Wait();
     }
   }
+
+ private:
+#if BUILDFLAG(IS_WIN)
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kSkiaFontService};
+#endif
 };
 
 IN_PROC_BROWSER_TEST_F(TabSearchBubbleHostUIBrowserTest, InvokeUi_default) {

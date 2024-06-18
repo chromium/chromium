@@ -119,6 +119,12 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "content/renderer/font_data/font_data_manager.h"
+#include "skia/ext/font_utils.h"
+#include "third_party/blink/public/web/win/web_font_rendering.h"
+#endif
+
 #if BUILDFLAG(IS_MAC)
 #include "content/child/child_process_sandbox_support_impl_mac.h"
 #elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -203,6 +209,17 @@ RendererBlinkPlatformImpl::RendererBlinkPlatformImpl(
         font_service.InitWithNewPipeAndPassReceiver());
     font_loader = sk_make_sp<font_service::FontLoader>(std::move(font_service));
     SkFontConfigInterface::SetGlobal(font_loader);
+#endif
+
+#if BUILDFLAG(IS_WIN)
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kUseSkiaFontManager)) {
+      sk_sp<font_data_service::FontDataManager> font_data_manager =
+          sk_make_sp<font_data_service::FontDataManager>();
+
+      blink::WebFontRendering::SetSkiaFontManager(font_data_manager);
+      skia::OverrideDefaultSkFontMgr(font_data_manager);
+    }
 #endif
   }
 
