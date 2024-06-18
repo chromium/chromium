@@ -268,7 +268,7 @@ BASE_FEATURE(kQuickAnswersMaterialNextUI,
 // Enables the Office files upload workflow to improve Office files support.
 BASE_FEATURE(kUploadOfficeToCloud,
              "UploadOfficeToCloud",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables the Office files upload workflow for enterprise users to improve
 // Office files support.
