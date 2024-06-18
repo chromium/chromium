@@ -6,6 +6,7 @@ include_rules = [
   "+components/ukm/test_ukm_recorder.h",
   "+crypto",
   "+mojo/public/cpp",
+  "+services/data_decoder/public/cpp",
   "+services/metrics/public/cpp",
   "+components/page_content_annotations/core",
   "+services/on_device_model/public",

@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/values.h"
 #include "components/optimization_guide/proto/descriptors.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 
@@ -84,6 +85,11 @@ std::optional<proto::Any> SetProtoValue(const std::string& proto_name,
 std::optional<NestedMessageIterator> GetProtoRepeated(
     const google::protobuf::MessageLite* msg,
     const proto::ProtoField& proto_field);
+
+// Converts a base::Value to a proto of the given type, wrapped in a proto::Any.
+std::optional<proto::Any> ConvertToAnyWrappedProto(
+    const base::Value& object,
+    const std::string& type_name);
 
 }  // namespace optimization_guide
 

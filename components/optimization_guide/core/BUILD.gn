@@ -221,6 +221,8 @@ static_library("core") {
   ]
   if (!is_fuchsia || !optimize_for_size) {
     sources += [
+      "model_execution/json_response_parser.cc",
+      "model_execution/json_response_parser.h",
       "model_execution/model_execution_features.cc",
       "model_execution/model_execution_features.h",
       "model_execution/model_execution_features_controller.cc",
@@ -324,6 +326,7 @@ static_library("core") {
     deps += [
       ":on_device_model_execution_proto_generator",
       "//components/version_info",
+      "//services/data_decoder/public/cpp",
       "//third_party/re2",
     ]
   }
@@ -471,6 +474,7 @@ source_set("unit_tests") {
 
   if (!is_fuchsia || !optimize_for_size) {
     sources += [
+      "model_execution/json_response_parser_unittest.cc",
       "model_execution/model_execution_features_controller_unittest.cc",
       "model_execution/model_execution_features_unittest.cc",
       "model_execution/model_execution_fetcher_unittest.cc",
@@ -529,6 +533,7 @@ source_set("unit_tests") {
     "//components/unified_consent",
     "//components/variations:test_support",
     "//net:test_support",
+    "//services/data_decoder/public/cpp:test_support",
     "//services/network:network_service",
     "//services/network:test_support",
     "//services/on_device_model/public/cpp/test_support",
@@ -623,6 +628,12 @@ action("on_device_model_execution_proto_generator") {
     "--include=\"components/optimization_guide/proto/features/compose.pb.h\"",
     "--include=\"components/optimization_guide/proto/string_value.pb.h\"",
     "--include=\"components/optimization_guide/proto/features/tab_organization.pb.h\"",
+    "--request=.optimization_guide.proto.ComposeRequest",
+    "--request=.optimization_guide.proto.TabOrganizationRequest",
+    "--request=.optimization_guide.proto.StringValue",
+    "--response=.optimization_guide.proto.ComposeResponse",
+    "--response=.optimization_guide.proto.TabOrganizationResponse",
+    "--response=.optimization_guide.proto.StringValue",
   ]
   foreach(file, inputs) {
     args += [
