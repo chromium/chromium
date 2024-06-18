@@ -33,7 +33,7 @@ class SyncError;
 
 // ModelTypeController are responsible for managing the state of a single data
 // type. They are not thread safe and should only be used on the UI thread.
-class ModelTypeController : public base::SupportsWeakPtr<ModelTypeController> {
+class ModelTypeController {
  public:
   // TODO(crbug.com/41461370): Should MODEL_LOADED be renamed to
   // MODEL_READY_TO_CONNECT?
@@ -201,6 +201,10 @@ class ModelTypeController : public base::SupportsWeakPtr<ModelTypeController> {
   // ClientTagBasedModelTypeProcessor callback and must temporarily own it until
   // Connect is called.
   std::unique_ptr<DataTypeActivationResponse> activation_response_;
+
+  // This factory must only be used to bind weak pointers to non-virtual member
+  // functions that don't call any virtual ones.
+  base::WeakPtrFactory<ModelTypeController> weak_ptr_factory_{this};
 };
 
 }  // namespace syncer

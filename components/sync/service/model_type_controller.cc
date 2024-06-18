@@ -173,7 +173,8 @@ void ModelTypeController::LoadModels(
   request.error_handler = base::BindRepeating(
       &ReportErrorOnModelThread, base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindRepeating(&ModelTypeController::ReportModelError,
-                          base::AsWeakPtr(this), SyncError::DATATYPE_ERROR));
+                          weak_ptr_factory_.GetWeakPtr(),
+                          SyncError::DATATYPE_ERROR));
   request.authenticated_account_id = configure_context.authenticated_account_id;
   request.cache_guid = configure_context.cache_guid;
   request.sync_mode = configure_context.sync_mode;
@@ -185,7 +186,7 @@ void ModelTypeController::LoadModels(
   // Ask the delegate to actually start the datatype.
   delegate_->OnSyncStarting(
       request, base::BindOnce(&ModelTypeController::OnDelegateStarted,
-                              base::AsWeakPtr(this)));
+                              weak_ptr_factory_.GetWeakPtr()));
 
   // Ensure that the metadata for any *other* delegate is cleared. Note that
   // this is a no-op for the delegate that was just started. Note^2 that that
