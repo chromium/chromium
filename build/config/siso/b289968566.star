@@ -27,6 +27,7 @@ def __step_config(ctx, step_config):
         # use_cups = true
         # use_remoteexec = true
         "./lacros_clang_x64/obj/chrome/browser/browser/chrome_browser_interface_binders.o",
+        "./lacros_clang_x64/obj/chrome/browser/browser/chrome_browser_main_extra_parts_profiles.o",
         "./lacros_clang_x64/obj/chrome/browser/browser/chrome_content_browser_client.o",
         "./lacros_clang_x64/obj/content/browser/browser/browser_interface_binders.o",
         "./lacros_clang_x64/obj/content/browser/browser/render_frame_host_impl.o",
