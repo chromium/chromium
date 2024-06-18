@@ -166,8 +166,6 @@ aggregate_vector_icons("components_vector_icons") {
     "notifications_off.icon",
     "notifications_off_chrome_refresh.icon",
     "page_info_content_paste.icon",
-    "page_info_content_paste_chrome_refresh.icon",
-    "page_info_content_paste_off_chrome_refresh.icon",
     "passkey.icon",
     "password_manager.icon",
     "pause.icon",

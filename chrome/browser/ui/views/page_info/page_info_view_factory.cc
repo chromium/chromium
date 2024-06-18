@@ -333,8 +333,8 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       break;
     case ContentSettingsType::CLIPBOARD_READ_WRITE:
       icon = show_blocked_badge
-                 ? &vector_icons::kPageInfoContentPasteOffChromeRefreshIcon
-                 : &vector_icons::kPageInfoContentPasteChromeRefreshIcon;
+                 ? &vector_icons::kContentPasteOffChromeRefreshIcon
+                 : &vector_icons::kContentPasteChromeRefreshIcon;
       break;
     case ContentSettingsType::SENSORS:
       icon = show_blocked_badge ? &vector_icons::kSensorsOffChromeRefreshIcon
