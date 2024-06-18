@@ -60,4 +60,9 @@ FileSaveDestination GetScreenCaptureDestination(Profile* profile) {
   return GetDestinationForPref(profile, ash::prefs::kCaptureModePolicySavePath);
 }
 
+bool DownloadToTemp(Profile* profile) {
+  return base::FeatureList::IsEnabled(features::kSkyVaultV2) &&
+         GetDownloadsDestination(profile) == FileSaveDestination::kOneDrive;
+}
+
 }  // namespace policy::local_user_files

@@ -79,7 +79,7 @@ INSTANTIATE_TEST_SUITE_P(LocalUserFiles,
                              /*policy_value*/ testing::Bool()),
                          LocalUserFilesPolicyUtilsBrowserTest::ParamToString);
 
-class FileSaveDestinationPolicyUtilsBrowserTest : public policy::PolicyTest {
+class DownloadsDestinationUtilsTest : public policy::PolicyTest {
  protected:
   void SetDownloadsPolicy(const std::string& destination) {
     policy::PolicyMap policies;
@@ -87,21 +87,9 @@ class FileSaveDestinationPolicyUtilsBrowserTest : public policy::PolicyTest {
                                   base::Value(destination));
     provider_.UpdateChromePolicy(policies);
   }
-
-  void SetScreenCapturePolicy(const std::string& destination) {
-    policy::PolicyMap policies;
-    policy::PolicyTest::SetPolicy(&policies,
-                                  policy::key::kScreenCaptureLocation,
-                                  base::Value(destination));
-    provider_.UpdateChromePolicy(policies);
-  }
-
-  // Enabling while ScreenCaptureLocation policy is not enabled by default.
-  base::test::ScopedFeatureList scoped_feature_list_{features::kSkyVault};
 };
 
-IN_PROC_BROWSER_TEST_F(FileSaveDestinationPolicyUtilsBrowserTest,
-                       DownloadsDestination) {
+IN_PROC_BROWSER_TEST_F(DownloadsDestinationUtilsTest, DownloadsDestination) {
   EXPECT_EQ(FileSaveDestination::kNotSpecified,
             GetDownloadsDestination(browser()->profile()));
 
@@ -118,7 +106,19 @@ IN_PROC_BROWSER_TEST_F(FileSaveDestinationPolicyUtilsBrowserTest,
             GetDownloadsDestination(browser()->profile()));
 }
 
-IN_PROC_BROWSER_TEST_F(FileSaveDestinationPolicyUtilsBrowserTest,
+class ScreenCaptureDestinationUtilsTest : public policy::PolicyTest {
+ protected:
+  void SetScreenCapturePolicy(const std::string& destination) {
+    policy::PolicyMap policies;
+    policy::PolicyTest::SetPolicy(&policies,
+                                  policy::key::kScreenCaptureLocation,
+                                  base::Value(destination));
+    provider_.UpdateChromePolicy(policies);
+  }
+  base::test::ScopedFeatureList scoped_feature_list_{features::kSkyVault};
+};
+
+IN_PROC_BROWSER_TEST_F(ScreenCaptureDestinationUtilsTest,
                        ScreenCaptureDestination) {
   EXPECT_EQ(FileSaveDestination::kNotSpecified,
             GetScreenCaptureDestination(browser()->profile()));
@@ -134,6 +134,21 @@ IN_PROC_BROWSER_TEST_F(FileSaveDestinationPolicyUtilsBrowserTest,
   SetScreenCapturePolicy(kOneDrivePolicyVariableName);
   EXPECT_EQ(FileSaveDestination::kOneDrive,
             GetScreenCaptureDestination(browser()->profile()));
+}
+
+class DownloadsDestinationUtilsTestV2 : public DownloadsDestinationUtilsTest {
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_{features::kSkyVaultV2};
+};
+
+IN_PROC_BROWSER_TEST_F(DownloadsDestinationUtilsTestV2, DownloadToTemp) {
+  EXPECT_EQ(false, DownloadToTemp(browser()->profile()));
+
+  SetDownloadsPolicy(kGoogleDrivePolicyVariableName);
+  EXPECT_EQ(false, DownloadToTemp(browser()->profile()));
+
+  SetDownloadsPolicy(kOneDrivePolicyVariableName);
+  EXPECT_EQ(true, DownloadToTemp(browser()->profile()));
 }
 
 }  // namespace policy::local_user_files

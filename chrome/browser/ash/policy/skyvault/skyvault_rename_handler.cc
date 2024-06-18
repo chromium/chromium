@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/skyvault/skyvault_rename_handler.h"
 
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/policy/skyvault/drive_upload_observer.h"
 #include "chrome/browser/ash/policy/skyvault/odfs_skyvault_uploader.h"
 #include "chrome/browser/ash/policy/skyvault/policy_utils.h"
@@ -79,8 +80,15 @@ void SkyvaultRenameHandler::Start(ProgressCallback progress_callback,
 
     case CloudProvider::kOneDrive:
       // TODO(ayaelattar): Add DCheck that the file is in /tmp.
+
+      auto* file_system_context =
+          file_manager::util::GetFileManagerFileSystemContext(profile_);
+      DCHECK(file_system_context);
+      auto file_system_url = file_system_context->CreateCrackedFileSystemURL(
+          blink::StorageKey(), storage::kFileSystemTypeLocal,
+          download_item_->GetTargetFilePath());
       ash::cloud_upload::OdfsSkyvaultUploader::Upload(
-          profile_, download_item_->GetTargetFilePath(),
+          profile_, file_system_url,
           ash::cloud_upload::OdfsSkyvaultUploader::FileType::kDownload,
           base::BindRepeating(&SkyvaultRenameHandler::OnProgressUpdate,
                               weak_factory_.GetWeakPtr()),

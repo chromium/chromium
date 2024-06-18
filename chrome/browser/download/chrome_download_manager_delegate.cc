@@ -151,6 +151,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/policy/skyvault/policy_utils.h"
 #include "chrome/browser/ash/policy/skyvault/skyvault_rename_handler.h"
 #endif
 
@@ -1364,6 +1365,17 @@ void ChromeDownloadManagerDelegate::DetermineLocalPath(
     const base::FilePath& virtual_path,
     download::LocalPathCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  Profile* profile = Profile::FromBrowserContext(
+      content::DownloadItemUtils::GetBrowserContext(download));
+  DCHECK(profile);
+  base::FilePath temp_dir;
+  if (policy::local_user_files::DownloadToTemp(profile) &&
+      base::GetTempDir(&temp_dir)) {
+    std::move(callback).Run(temp_dir.Append(virtual_path.BaseName()), {});
+    return;
+  }
+#endif
   download::DetermineLocalPath(download, virtual_path, std::move(callback));
 }
 

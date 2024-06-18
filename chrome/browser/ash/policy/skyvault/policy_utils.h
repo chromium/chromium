@@ -31,6 +31,9 @@ FileSaveDestination GetDownloadsDestination(Profile* profile);
 // Get the destination where screen captures are saved.
 FileSaveDestination GetScreenCaptureDestination(Profile* profile);
 
+// Returns whether `download` should be saved to tmp/ directory.
+bool DownloadToTemp(Profile* profile);
+
 }  // namespace policy::local_user_files
 
 #endif  // CHROME_BROWSER_ASH_POLICY_SKYVAULT_POLICY_UTILS_H_

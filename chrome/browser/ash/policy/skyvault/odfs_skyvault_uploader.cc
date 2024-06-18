@@ -27,12 +27,12 @@ void OnUploadDone(
 // static.
 void OdfsSkyvaultUploader::Upload(
     Profile* profile,
-    const base::FilePath& file_path,
+    const storage::FileSystemURL& file_system_url,
     FileType file_type,
     base::RepeatingCallback<void(int64_t)> progress_callback,
     base::OnceCallback<void(bool, storage::FileSystemURL)> upload_callback) {
   scoped_refptr<OdfsSkyvaultUploader> odfs_skyvault_uploader =
-      new OdfsSkyvaultUploader(profile, file_path, file_type,
+      new OdfsSkyvaultUploader(profile, file_system_url, file_type,
                                std::move(progress_callback));
 
   // Keep `odfs_skyvault_uploader` alive until the upload is done.
@@ -42,13 +42,13 @@ void OdfsSkyvaultUploader::Upload(
 
 OdfsSkyvaultUploader::OdfsSkyvaultUploader(
     Profile* profile,
-    const base::FilePath& file_path,
+    const storage::FileSystemURL& file_system_url,
     FileType file_type,
     base::RepeatingCallback<void(int64_t)> progress_callback)
     : profile_(profile),
       file_system_context_(
           file_manager::util::GetFileManagerFileSystemContext(profile)),
-      local_file_path_(file_path),
+      file_system_url_(file_system_url),
       file_type_(file_type),
       progress_callback_(std::move(progress_callback)) {}
 
@@ -130,12 +130,10 @@ void OdfsSkyvaultUploader::CheckReauthenticationAndStartIOTask(
     // TODO(b/340451159): Show notification asking the user to mount or sign-in.
   }
 
-  storage::FileSystemURL source_url =
-      FilePathToFileSystemURL(profile_, file_system_context_, local_file_path_);
-  std::vector<storage::FileSystemURL> source_urls{source_url};
   std::unique_ptr<file_manager::io_task::IOTask> task =
       std::make_unique<file_manager::io_task::CopyOrMoveIOTask>(
-          file_manager::io_task::OperationType::kMove, std::move(source_urls),
+          file_manager::io_task::OperationType::kMove,
+          std::vector<storage::FileSystemURL>{file_system_url_},
           std::move(destination_folder_url), profile_, file_system_context_,
           /*show_notification=*/false);
 

@@ -149,10 +149,9 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, SuccessfulUpload) {
   base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
   base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
   EXPECT_CALL(progress_callback, Run(/*bytes_transferred=*/230096));
-  OdfsSkyvaultUploader::Upload(profile(), source_file_url.path(),
-                               OdfsSkyvaultUploader::FileType::kDownload,
-                               progress_callback.Get(),
-                               upload_callback.GetCallback());
+  OdfsSkyvaultUploader::Upload(
+      profile(), source_file_url, OdfsSkyvaultUploader::FileType::kDownload,
+      progress_callback.Get(), upload_callback.GetCallback());
   EXPECT_EQ(upload_callback.Get<bool>(), true);
 
   // Check that the source file has been moved to OneDrive.
@@ -175,10 +174,9 @@ IN_PROC_BROWSER_TEST_F(OdfsSkyvaultUploaderTest, FailedUpload) {
   // is run.
   base::MockCallback<base::RepeatingCallback<void(int64_t)>> progress_callback;
   base::test::TestFuture<bool, storage::FileSystemURL> upload_callback;
-  OdfsSkyvaultUploader::Upload(profile(), source_file_url.path(),
-                               OdfsSkyvaultUploader::FileType::kDownload,
-                               progress_callback.Get(),
-                               upload_callback.GetCallback());
+  OdfsSkyvaultUploader::Upload(
+      profile(), source_file_url, OdfsSkyvaultUploader::FileType::kDownload,
+      progress_callback.Get(), upload_callback.GetCallback());
   EXPECT_EQ(upload_callback.Get<bool>(), false);
 
   // Check that the source file has not been moved to OneDrive.

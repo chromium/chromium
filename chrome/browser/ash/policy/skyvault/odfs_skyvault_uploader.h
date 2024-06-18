@@ -28,10 +28,10 @@ class OdfsSkyvaultUploader
     kMaxValue = kScreenCapture,
   };
 
-  // Starts uploading the file specified at `file_path`.
+  // Starts uploading the file specified at `file_system_url`.
   static void Upload(
       Profile* profile,
-      const base::FilePath& file_path,
+      const storage::FileSystemURL& file_system_url,
       FileType file_type,
       base::RepeatingCallback<void(int64_t)> progress_callback,
       base::OnceCallback<void(bool, storage::FileSystemURL)> upload_callback);
@@ -44,7 +44,7 @@ class OdfsSkyvaultUploader
 
   OdfsSkyvaultUploader(
       Profile* profile,
-      const base::FilePath& file_path,
+      const storage::FileSystemURL& file_system_url,
       FileType file_type,
       base::RepeatingCallback<void(int64_t)> progress_callback);
   ~OdfsSkyvaultUploader() override;
@@ -72,8 +72,8 @@ class OdfsSkyvaultUploader
   // The Id of the move IOTask.
   ::file_manager::io_task::IOTaskId observed_task_id_ = -1;
 
-  // The observed file local path.
-  base::FilePath local_file_path_;
+  // The url of the file to be uploaded.
+  storage::FileSystemURL file_system_url_;
 
   // The type of the file to be uploaded.
   FileType file_type_;
