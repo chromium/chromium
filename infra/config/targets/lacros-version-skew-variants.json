@@ -1,16 +1,16 @@
 {
   "LACROS_VERSION_SKEW_CANARY": {
     "args": [
-      "--ash-chrome-path-override=../../lacros_version_skew_tests_v128.0.6540.0/test_ash_chrome"
+      "--ash-chrome-path-override=../../lacros_version_skew_tests_v128.0.6542.0/test_ash_chrome"
     ],
-    "description": "Run with ash-chrome version 128.0.6540.0",
+    "description": "Run with ash-chrome version 128.0.6542.0",
     "identifier": "Lacros version skew testing ash canary",
     "swarming": {
       "cipd_packages": [
         {
           "cipd_package": "chromium/testing/linux-ash-chromium/x86_64/ash.zip",
-          "location": "lacros_version_skew_tests_v128.0.6540.0",
-          "revision": "version:128.0.6540.0"
+          "location": "lacros_version_skew_tests_v128.0.6542.0",
+          "revision": "version:128.0.6542.0"
         }
       ]
     }
@@ -49,16 +49,16 @@
   },
   "LACROS_VERSION_SKEW_STABLE": {
     "args": [
-      "--ash-chrome-path-override=../../lacros_version_skew_tests_v125.0.6422.169/test_ash_chrome"
+      "--ash-chrome-path-override=../../lacros_version_skew_tests_v125.0.6422.197/test_ash_chrome"
     ],
-    "description": "Run with ash-chrome version 125.0.6422.169",
+    "description": "Run with ash-chrome version 125.0.6422.197",
     "identifier": "Lacros version skew testing ash stable",
     "swarming": {
       "cipd_packages": [
         {
           "cipd_package": "chromium/testing/linux-ash-chromium/x86_64/ash.zip",
-          "location": "lacros_version_skew_tests_v125.0.6422.169",
-          "revision": "version:125.0.6422.169"
+          "location": "lacros_version_skew_tests_v125.0.6422.197",
+          "revision": "version:125.0.6422.197"
         }
       ]
     }
