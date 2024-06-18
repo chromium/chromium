@@ -84,6 +84,11 @@ class TestFileSuggestProvider : public BirchDataProvider {
                        base::Time::Now() - base::Minutes(30), "file_id",
                        "icon_url");
     Shell::Get()->birch_model()->SetFileSuggestItems(std::move(items));
+
+    // Ensure attachment data is fresh, otherwise the birch data fetch won't
+    // complete. The calendar pref is disabled in the test that uses this
+    // provider, so we must provide attachment data here.
+    Shell::Get()->birch_model()->SetAttachmentItems({});
   }
 };
 
@@ -342,6 +347,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, FileSuggestChip) {
   prefs->SetBoolean(prefs::kBirchUseCalendar, false);
   prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
   prefs->SetBoolean(prefs::kBirchUseLastActive, false);
+  prefs->SetBoolean(prefs::kBirchUseMostVisited, false);
   prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
   prefs->SetBoolean(prefs::kBirchUseWeather, false);

@@ -107,8 +107,9 @@ BirchSuggestionType GetSuggestionTypeFromItemType(BirchItemType item_type) {
     case BirchItemType::kWeather:
       return BirchSuggestionType::kWeather;
     case BirchItemType::kCalendar:
-    case BirchItemType::kAttachment:
       return BirchSuggestionType::kCalendar;
+    // Attachments are considered Drive suggestions in the UI.
+    case BirchItemType::kAttachment:
     case BirchItemType::kFile:
       return BirchSuggestionType::kDrive;
     case BirchItemType::kTab:

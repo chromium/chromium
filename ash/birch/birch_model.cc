@@ -54,7 +54,7 @@ BirchModel::PendingRequest::~PendingRequest() = default;
 
 BirchModel::BirchModel()
     : calendar_data_(prefs::kBirchUseCalendar, "Calendar"),
-      attachment_data_(prefs::kBirchUseCalendar, "Attachment"),
+      attachment_data_(prefs::kBirchUseFileSuggest, "Attachment"),
       file_suggest_data_(prefs::kBirchUseFileSuggest, "File"),
       recent_tab_data_(prefs::kBirchUseRecentTabs, "Tab"),
       last_active_data_(prefs::kBirchUseLastActive, "LastActive"),
@@ -120,11 +120,24 @@ void BirchModel::SetItems(DataTypeInfo<T>& data_info,
 
 void BirchModel::SetCalendarItems(
     const std::vector<BirchCalendarItem>& calendar_items) {
+  if (!GetPrefService()->GetBoolean(prefs::kBirchUseCalendar)) {
+    // If the kBirchUseCalendar pref is disabled, but the kBirchUseFileSuggest
+    // pref is enabled, the call to StartDataFetchIfNeeded(attachment...) for
+    // calendar attachments will cause the calendar provider to receive a data
+    // fetch request.
+    return;
+  }
   SetItems(calendar_data_, calendar_items, /*record_latency=*/true);
 }
 
 void BirchModel::SetAttachmentItems(
     const std::vector<BirchAttachmentItem>& attachment_items) {
+  if (!GetPrefService()->GetBoolean(prefs::kBirchUseFileSuggest)) {
+    // The fetch is controlled by the calendar prefs, but attachments are
+    // considered file suggestions in the UI. Don't SetItems() so we don't
+    // MaybeRespondToDataFetchRequest() for a data type that's disabled by pref.
+    return;
+  }
   // There is no separate latency measurement for attachments because they come
   // from the calendar provider.
   SetItems(attachment_data_, attachment_items, /*record_latency=*/false);
@@ -658,8 +671,6 @@ void BirchModel::OnCalendarPrefChanged() {
   if (birch_client_) {
     StartDataFetchIfNeeded(calendar_data_,
                            birch_client_->GetCalendarProvider());
-    StartDataFetchIfNeeded(attachment_data_,
-                           birch_client_->GetCalendarProvider());
   }
 }
 
@@ -667,6 +678,9 @@ void BirchModel::OnFileSuggestPrefChanged() {
   if (birch_client_) {
     StartDataFetchIfNeeded(file_suggest_data_,
                            birch_client_->GetFileSuggestProvider());
+    // Event attachments are considered file suggestions.
+    StartDataFetchIfNeeded(attachment_data_,
+                           birch_client_->GetCalendarProvider());
   }
 }
 

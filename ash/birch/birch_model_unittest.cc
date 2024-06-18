@@ -598,6 +598,30 @@ TEST_F(BirchModelTest, DisablingPrefsMarksDataFresh) {
   EXPECT_TRUE(model->IsDataFresh());
 }
 
+TEST_F(BirchModelTest, DisablingCalendarPrefBlocksSetCalendarItems) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  prefs->SetBoolean(prefs::kBirchUseCalendar, false);
+
+  // Setting the items is blocked by the pref.
+  model->SetCalendarItems(MakeCalendarItemList(/*event_count=*/1));
+  EXPECT_TRUE(model->GetCalendarItemsForTest().empty());
+}
+
+TEST_F(BirchModelTest, DisablingFileSuggestPrefBlocksSetAttachmentItems) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
+
+  // Setting the items is blocked by the pref.
+  model->SetAttachmentItems(MakeAttachmentItemList(/*item_count=*/1));
+  EXPECT_TRUE(model->GetAttachmentItemsForTest().empty());
+}
+
 TEST_F(BirchModelTest, FetchWithOnePrefDisabledMarksDataFresh) {
   BirchModel* model = Shell::Get()->birch_model();
   TestModelConsumer consumer;
