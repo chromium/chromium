@@ -13,7 +13,7 @@
 edition = "2021"
 rust-version = "1.63"
 name = "cxx"
-version = "1.0.123"
+version = "1.0.124"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 build = "build.rs"
 links = "cxxbridge1"
@@ -45,18 +45,18 @@ license = "MIT OR Apache-2.0"
 repository = "https://github.com/dtolnay/cxx"
 
 [package.metadata.bazel]
-additive_build_file_content = """
+additive_build_file_content = '''
 cc_library(
-    name = \"cxx_cc\",
-    srcs = [\"src/cxx.cc\"],
-    hdrs = [\"include/cxx.h\"],
-    include_prefix = \"rust\",
-    includes = [\"include\"],
+    name = "cxx_cc",
+    srcs = ["src/cxx.cc"],
+    hdrs = ["include/cxx.h"],
+    include_prefix = "rust",
+    includes = ["include"],
     linkstatic = True,
-    strip_include_prefix = \"include\",
-    visibility = [\"//visibility:public\"],
+    strip_include_prefix = "include",
+    visibility = ["//visibility:public"],
 )
-"""
+'''
 deps = [":cxx_cc"]
 gen_build_script = false
 
@@ -97,13 +97,13 @@ name = "unique_ptr"
 path = "tests/unique_ptr.rs"
 
 [dependencies.cxxbridge-macro]
-version = "=1.0.123"
+version = "=1.0.124"
 
 [dependencies.link-cplusplus]
 version = "1.0.9"
 
 [dev-dependencies.cxx-build]
-version = "=1.0.123"
+version = "=1.0.124"
 
 [dev-dependencies.cxx-gen]
 version = "0.7"
@@ -122,7 +122,7 @@ features = ["diff"]
 version = "1.0.83"
 
 [build-dependencies.cxxbridge-flags]
-version = "=1.0.123"
+version = "=1.0.124"
 default-features = false
 
 [features]

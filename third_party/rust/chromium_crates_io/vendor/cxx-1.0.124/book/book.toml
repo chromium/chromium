@@ -1,7 +1,7 @@
 [book]
 #title = "Rust ♡ C++"
 authors = ["David Tolnay"]
-description = "CXX — safe interop between Rust and C++"
+description = "CXX — safe interop between Rust and C++ by David Tolnay. This library provides a safe mechanism for calling C++ code from Rust and Rust code from C++."
 
 [rust]
 edition = "2021"

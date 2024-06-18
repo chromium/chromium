@@ -899,6 +899,7 @@ fn expand_rust_type_layout(ety: &ExternType, types: &Types) -> TokenStream {
     quote_spanned! {ident.span()=>
         {
             #[doc(hidden)]
+            #[allow(clippy::needless_maybe_sized)]
             fn __AssertSized<T: ?#sized + #sized>() -> ::cxx::core::alloc::Layout {
                 ::cxx::core::alloc::Layout::new::<T>()
             }

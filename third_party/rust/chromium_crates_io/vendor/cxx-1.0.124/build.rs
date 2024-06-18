@@ -32,6 +32,7 @@ fn main() {
             println!("cargo:rustc-check-cfg=cfg(compile_error_if_alloc)");
             println!("cargo:rustc-check-cfg=cfg(compile_error_if_std)");
             println!("cargo:rustc-check-cfg=cfg(cxx_experimental_no_alloc)");
+            println!("cargo:rustc-check-cfg=cfg(error_in_core)");
             println!("cargo:rustc-check-cfg=cfg(no_core_ffi_c_char)");
             println!("cargo:rustc-check-cfg=cfg(skip_ui_tests)");
         }
@@ -47,6 +48,11 @@ fn main() {
         if rustc.minor < 64 {
             // core::ffi::c_char
             println!("cargo:rustc-cfg=no_core_ffi_c_char");
+        }
+
+        if rustc.minor >= 81 {
+            // core::error::Error
+            println!("cargo:rustc-cfg=error_in_core");
         }
     }
 }

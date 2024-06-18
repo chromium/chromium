@@ -446,6 +446,11 @@ criteria = "does-not-implement-crypto"
 delta = "1.0.122 -> 1.0.123"
 notes = "safe-to-deploy and ub-risk-2 are provided by exemption"
 
+[[audits.cxx]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = "does-not-implement-crypto"
+delta = "1.0.123 -> 1.0.124"
+
 [[audits.cxxbridge]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
@@ -540,6 +545,12 @@ who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
 delta = "1.0.122 -> 1.0.123"
 
+[[audits.cxxbridge-flags]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-0"]
+delta = "1.0.123 -> 1.0.124"
+notes = "No changes in this delta"
+
 [[audits.cxxbridge-macro]]
 who = "danakj <danakj@chromium.org>"
 criteria = "does-not-implement-crypto"
@@ -554,6 +565,11 @@ safe-to-deploy and ub-risk-2 are provided by exemption.
 who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = "does-not-implement-crypto"
 delta = "1.0.122 -> 1.0.123"
+
+[[audits.cxxbridge-macro]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = "does-not-implement-crypto"
+delta = "1.0.123 -> 1.0.124"
 
 [[audits.either]]
 who = "agl@chromium.org"

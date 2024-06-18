@@ -1,11 +1,11 @@
 module(name = "cxx.rs")
 
-bazel_dep(name = "bazel_skylib", version = "1.5.0")
-bazel_dep(name = "rules_rust", version = "0.42.1")
+bazel_dep(name = "bazel_skylib", version = "1.7.1")
+bazel_dep(name = "rules_rust", version = "0.46.0")
 
 rust = use_extension("@rules_rust//rust:extensions.bzl", "rust")
 rust.toolchain(
-    versions = ["1.78.0"],
+    versions = ["1.79.0"],
 )
 use_repo(rust, "rust_toolchains")
 
