@@ -109,11 +109,9 @@ class RTCRtpSender final : public ScriptWrappable,
 
  private:
   // Insertable Streams audio support methods
-  RTCInsertableStreams* CreateEncodedAudioStreams(ScriptState*,
-                                                  ExceptionState&);
+  RTCInsertableStreams* CreateEncodedAudioStreams(ScriptState*);
   void RegisterEncodedAudioStreamCallback();
   void UnregisterEncodedAudioStreamCallback();
-  void InitializeEncodedAudioStreams(ScriptState*);
   void SetAudioUnderlyingSource(
       RTCEncodedAudioUnderlyingSource* new_underlying_source,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
@@ -123,11 +121,9 @@ class RTCRtpSender final : public ScriptWrappable,
       std::unique_ptr<webrtc::TransformableAudioFrameInterface> frame);
 
   // Insertable Streams video support methods
-  RTCInsertableStreams* CreateEncodedVideoStreams(ScriptState*,
-                                                  ExceptionState&);
+  RTCInsertableStreams* CreateEncodedVideoStreams(ScriptState*);
   void RegisterEncodedVideoStreamCallback();
   void UnregisterEncodedVideoStreamCallback();
-  void InitializeEncodedVideoStreams(ScriptState*);
   void SetVideoUnderlyingSource(
       RTCEncodedVideoUnderlyingSource* new_underlying_source,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
@@ -152,6 +148,7 @@ class RTCRtpSender final : public ScriptWrappable,
   Member<RTCRtpSendParameters> last_returned_parameters_;
   Member<RTCRtpTransceiver> transceiver_;
   bool transform_shortcircuited_ = false;
+  Member<RTCInsertableStreams> encoded_streams_;
 
   // Insertable Streams audio support
   base::Lock audio_underlying_source_lock_;
@@ -162,7 +159,6 @@ class RTCRtpSender final : public ScriptWrappable,
   CrossThreadPersistent<RTCEncodedAudioUnderlyingSink>
       audio_to_packetizer_underlying_sink_
           GUARDED_BY(audio_underlying_sink_lock_);
-  Member<RTCInsertableStreams> encoded_audio_streams_;
   const scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
       encoded_audio_transformer_;
 
@@ -175,7 +171,6 @@ class RTCRtpSender final : public ScriptWrappable,
   CrossThreadPersistent<RTCEncodedVideoUnderlyingSink>
       video_to_packetizer_underlying_sink_
           GUARDED_BY(video_underlying_sink_lock_);
-  Member<RTCInsertableStreams> encoded_video_streams_;
   const scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
       encoded_video_transformer_;
 
