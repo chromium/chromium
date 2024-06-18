@@ -107,6 +107,7 @@ class PLATFORM_EXPORT RTCVideoEncoder : public webrtc::VideoEncoder {
   int32_t DrainEncoderAndUpdateFrameSize(
       const gfx::Size& input_visible_size,
       const webrtc::VideoEncoder::RateControlParameters& params,
+      const media::SVCInterLayerPredMode& inter_layer_pred,
       const std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>&
           spatial_layers);
 

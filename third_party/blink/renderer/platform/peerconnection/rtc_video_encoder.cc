@@ -682,6 +682,8 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   void RequestEncodingParametersChangeWithSizeChange(
       const webrtc::VideoEncoder::RateControlParameters& parameters,
       const gfx::Size& input_visible_size,
+      const media::VideoCodecProfile& profile,
+      const media::SVCInterLayerPredMode& inter_layer_pred,
       const std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>&
           spatial_layers,
       SignaledValue event);
@@ -1186,6 +1188,8 @@ void RTCVideoEncoder::Impl::RequestEncodingParametersChangeInternal(
 void RTCVideoEncoder::Impl::RequestEncodingParametersChangeWithSizeChange(
     const webrtc::VideoEncoder::RateControlParameters& parameters,
     const gfx::Size& input_visible_size,
+    const media::VideoCodecProfile& profile,
+    const media::SVCInterLayerPredMode& inter_layer_pred,
     const std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>&
         spatial_layers,
     SignaledValue event) {
@@ -1220,6 +1224,10 @@ void RTCVideoEncoder::Impl::RequestEncodingParametersChangeWithSizeChange(
   for (const auto& layer : spatial_layers) {
     init_spatial_layer_resolutions_.emplace_back(layer.width, layer.height);
   }
+  encoder_metrics_provider_->Initialize(
+      profile, input_visible_size,
+      /*is_hardware_encoder=*/true,
+      ToSVCScalabilityMode(spatial_layers, inter_layer_pred));
 
   RequestEncodingParametersChangeInternal(parameters, input_visible_size);
 
@@ -2045,6 +2053,7 @@ RTCVideoEncoder::~RTCVideoEncoder() {
 int32_t RTCVideoEncoder::DrainEncoderAndUpdateFrameSize(
     const gfx::Size& input_visible_size,
     const webrtc::VideoEncoder::RateControlParameters& params,
+    const media::SVCInterLayerPredMode& inter_layer_pred,
     const std::vector<media::VideoEncodeAccelerator::Config::SpatialLayer>&
         spatial_layers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(webrtc_sequence_checker_);
@@ -2077,7 +2086,8 @@ int32_t RTCVideoEncoder::DrainEncoderAndUpdateFrameSize(
       *gpu_task_runner_.get(), FROM_HERE,
       CrossThreadBindOnce(
           &RTCVideoEncoder::Impl::RequestEncodingParametersChangeWithSizeChange,
-          weak_impl_, params, input_visible_size, spatial_layers,
+          weak_impl_, params, input_visible_size, profile_, inter_layer_pred,
+          spatial_layers,
           SignaledValue(&initialization_waiter, &initialization_retval)));
   initialization_waiter.Wait();
   return initialization_retval;
@@ -2119,7 +2129,8 @@ int32_t RTCVideoEncoder::InitializeEncoder(
     webrtc::VideoEncoder::RateControlParameters params(
         AllocateBitrateForVEAConfig(vea_config), vea_config.framerate);
     initialization_retval = DrainEncoderAndUpdateFrameSize(
-        vea_config.input_visible_size, params, vea_config.spatial_layers);
+        vea_config.input_visible_size, params, vea_config.inter_layer_pred,
+        vea_config.spatial_layers);
   }
   return initialization_retval;
 }
