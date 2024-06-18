@@ -22,10 +22,10 @@ import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {Token} from 'chrome://resources/mojo/mojo/public/mojom/base/token.mojom-webui.js';
 
-import type {SearchOptions} from './fuzzy_search.js';
-import {fuzzySearch} from './fuzzy_search.js';
 import type {InfiniteList} from './infinite_list.js';
 import {NO_SELECTION, selectorNavigationKeys} from './infinite_list.js';
+import type {SearchOptions} from './search.js';
+import {search} from './search.js';
 import {ariaLabel, getHostname, getTabGroupTitle, getTitle, type ItemData, normalizeURL, TabData, TabGroupData, TabItemType, tokenEquals, tokenToString} from './tab_data.js';
 import type {ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup, TabsRemovedInfo, TabUpdateInfo} from './tab_search.mojom-webui.js';
 import type {TabSearchApiProxy} from './tab_search_api_proxy.js';
@@ -77,10 +77,10 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
       listMaxHeight_: {type: Number},
 
       /**
-       * Options for fuzzy search. Controls how heavily weighted fields are
-       * relative to each other in the scoring via field weights.
+       * Options for search. Controls how heavily weighted fields are relative
+       * to each other in the scoring via field weights.
        */
-      fuzzySearchOptions_: {type: Object},
+      searchOptions_: {type: Object},
       recentlyClosedDefaultItemDisplayCount_: {type: Number},
 
       tabOrganizationEnabled: {
@@ -96,7 +96,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
   private availableHeight_?: number;
   protected listMaxHeight_?: number;
   protected filteredItems_: Array<TitleItem|TabData|TabGroupData> = [];
-  private fuzzySearchOptions_: SearchOptions = {
+  private searchOptions_: SearchOptions = {
     includeScore: true,
     includeMatches: true,
     ignoreLocation: false,
@@ -698,11 +698,11 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
           tabData => tabHasMediaAlerts(tabData.tab as Tab));
     }
 
-    const filteredMediaTabs = fuzzySearch<TabData>(
-        this.searchText_, mediaTabs, this.fuzzySearchOptions_);
+    const filteredMediaTabs =
+        search<TabData>(this.searchText_, mediaTabs, this.searchOptions_);
 
-    let filteredOpenTabs = fuzzySearch<TabData>(
-        this.searchText_, this.openTabs_, this.fuzzySearchOptions_);
+    let filteredOpenTabs =
+        search<TabData>(this.searchText_, this.openTabs_, this.searchOptions_);
 
     // The MRU tab that is not the active tab is either the first tab in the
     // Audio and Video section (if it exists) or the first tab in the Open Tabs
@@ -734,8 +734,8 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
           Number(bTime.internalValue - aTime.internalValue) :
           0;
     });
-    let filteredRecentlyClosedItems = fuzzySearch<TabData|TabGroupData>(
-        this.searchText_, recentlyClosedItems, this.fuzzySearchOptions_);
+    let filteredRecentlyClosedItems = search<TabData|TabGroupData>(
+        this.searchText_, recentlyClosedItems, this.searchOptions_);
 
     // Limit the number of recently closed items to the default display count
     // when no search text has been specified. Filter out recently closed tabs

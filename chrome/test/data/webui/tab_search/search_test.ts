@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import type {SearchOptions} from 'chrome://tab-search.top-chrome/tab_search.js';
-import {fuzzySearch, getHostname, getTitle, TabData, TabItemType} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {search, getHostname, getTitle, TabData, TabItemType} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 import {createTab} from './tab_search_test_data.js';
@@ -14,7 +14,7 @@ import {createTab} from './tab_search_test_data.js';
 function assertSearchOrders(
     input: string, items: TabData[], options: SearchOptions,
     expectedIndices: number[]) {
-  const results = fuzzySearch(input, items, options);
+  const results = search(input, items, options);
   assertEquals(results.length, expectedIndices.length);
   for (let i = 0; i < results.length; ++i) {
     const expectedItem = items[expectedIndices[i]!]!;
@@ -40,7 +40,6 @@ function assertResults(expectedRecords: any[], actualRecords: TabData[]) {
 suite('FuzzySearchTest', () => {
   test('Test the exact match ranking order.', () => {
     const options = {
-      useFuzzySearch: false,
       keys: [
         {
           name: 'tab.title',
@@ -148,18 +147,17 @@ suite('FuzzySearchTest', () => {
     ];
 
     // Empty search should return the full list.
-    assertResults(records, fuzzySearch('', records, options));
-    assertResults(archMatchedRecords, fuzzySearch('arch', records, options));
+    assertResults(records, search('', records, options));
+    assertResults(archMatchedRecords, search('arch', records, options));
     assertResults(
-        searchMatchedRecords, fuzzySearch('search', records, options));
+        searchMatchedRecords, search('search', records, options));
 
     // No matches should return an empty list.
-    assertResults([], fuzzySearch('archh', records, options));
+    assertResults([], search('archh', records, options));
   });
 
   test('Test exact search with escaped characters.', () => {
     const options = {
-      useFuzzySearch: false,
       keys: [
         {
           name: 'tab.title',
@@ -205,13 +203,12 @@ suite('FuzzySearchTest', () => {
     ];
 
     assertResults(
-        backslashMatchedRecords, fuzzySearch('\\test', records, options));
-    assertResults(quoteMatchedRecords, fuzzySearch('\"end', records, options));
+        backslashMatchedRecords, search('\\test', records, options));
+    assertResults(quoteMatchedRecords, search('\"end', records, options));
   });
 
   test('Test exact match result scoring accounts for match position.', () => {
     const options = {
-      useFuzzySearch: false,
       keys: [
         {
           name: 'tab.title',
@@ -246,7 +243,6 @@ suite('FuzzySearchTest', () => {
       'Test exact match result scoring takes into account the number of matches per item.',
       () => {
         const options = {
-          useFuzzySearch: false,
           keys: [
             {
               name: 'tab.title',
@@ -279,7 +275,6 @@ suite('FuzzySearchTest', () => {
 
   test('Test exact match result scoring abides by the key weights.', () => {
     const options = {
-      useFuzzySearch: false,
       keys: [
         {
           name: 'tab.title',

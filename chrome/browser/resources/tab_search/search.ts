@@ -25,7 +25,7 @@ export interface SearchOptions {
  * @return A new array of entries satisfying the input. If no search input is
  *     present, returns a shallow copy of the records.
  */
-export function fuzzySearch<T extends ItemData>(
+export function search<T extends ItemData>(
     input: string, records: T[], options: SearchOptions): T[] {
   if (input.length === 0) {
     return [...records];

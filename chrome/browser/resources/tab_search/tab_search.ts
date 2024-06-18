@@ -6,8 +6,8 @@ import './app.js';
 
 export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 export {TabSearchAppElement} from './app.js';
-export {fuzzySearch, SearchOptions} from './fuzzy_search.js';
 export {InfiniteList} from './infinite_list.js';
+export {search, SearchOptions} from './search.js';
 export {getHostname, getTabGroupTitle, getTitle, ItemData, TabData, TabItemType} from './tab_data.js';
 export {Color as TabGroupColor} from './tab_group_types.mojom-webui.js';
 export {TabOrganizationPageElement} from './tab_organization_page.js';
