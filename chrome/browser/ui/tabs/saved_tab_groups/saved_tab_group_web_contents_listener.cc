@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "components/favicon/content/content_favicon_driver.h"
@@ -52,6 +53,37 @@ bool IsSaveableNavigation(content::NavigationHandle* navigation_handle) {
 
   return SavedTabGroupUtils::IsURLValidForSavedTabGroups(
       navigation_handle->GetURL());
+}
+
+// Returns whether this navigation is user triggered main frame navigation.
+bool IsUserTriggeredMainFrameNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // If this is not a primary frame, it shouldn't impact the state of the
+  // tab.
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
+    return false;
+  }
+
+  // For renderer initiated navigation, we shouldn't change the existing
+  // tab state.
+  if (navigation_handle->IsRendererInitiated()) {
+    return false;
+  }
+
+  // For forward/backward or reload navigations, don't clear tab state if they
+  // are be triggered by scripts.
+  if (!navigation_handle->HasUserGesture()) {
+    if (navigation_handle->GetPageTransition() &
+        ui::PAGE_TRANSITION_FORWARD_BACK) {
+      return false;
+    }
+
+    if (navigation_handle->GetPageTransition() & ui::PAGE_TRANSITION_RELOAD) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 }  // namespace
@@ -119,7 +151,14 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
   // the SavedTabGroupModel.
   if (navigation_handle == handle_from_sync_update_) {
     handle_from_sync_update_ = nullptr;
+    // Create a tab state to indicate that the tab is restricted.
+    SetTabState();
     return;
+  }
+
+  if (IsUserTriggeredMainFrameNavigation(navigation_handle)) {
+    // Once the tab state is remove, restrictions will be removed from it.
+    ResetTabState();
   }
 
   if (!IsSaveableNavigation(navigation_handle)) {
@@ -136,6 +175,11 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
   tab->SetURL(web_contents_->GetURL());
   tab->SetFavicon(favicon::TabFaviconFromWebContents(web_contents_));
   service_->model()->UpdateTabInGroup(group->saved_guid(), *tab);
+}
+
+void SavedTabGroupWebContentsListener::DidGetUserInteraction(
+    const blink::WebInputEvent& event) {
+  ResetTabState();
 }
 
 void SavedTabGroupWebContentsListener::TitleWasSet(
@@ -171,6 +215,18 @@ void SavedTabGroupWebContentsListener::OnFaviconUpdated(
   SavedTabGroupTab* tab = group->GetTab(token_);
   tab->SetFavicon(image);
   service_->model()->UpdateTabInGroup(group->saved_guid(), *tab);
+}
+
+void SavedTabGroupWebContentsListener::SetTabState() {
+  TabGroupSyncTabState* state =
+      TabGroupSyncTabState::FromWebContents(web_contents());
+  if (!state) {
+    TabGroupSyncTabState::CreateForWebContents(web_contents());
+  }
+}
+
+void SavedTabGroupWebContentsListener::ResetTabState() {
+  TabGroupSyncTabState::RemoveTabState(web_contents());
 }
 
 }  // namespace tab_groups

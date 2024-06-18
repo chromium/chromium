@@ -1744,6 +1744,8 @@ static_library("browser") {
     "tab_contents/web_contents_collection.h",
     "tab_group_sync/tab_group_sync_service_factory.cc",
     "tab_group_sync/tab_group_sync_service_factory.h",
+    "tab_group_sync/tab_group_sync_tab_state.cc",
+    "tab_group_sync/tab_group_sync_tab_state.h",
     "tab_group_sync/tab_group_trial.cc",
     "tab_group_sync/tab_group_trial.h",
     "task_manager/web_contents_tags.cc",

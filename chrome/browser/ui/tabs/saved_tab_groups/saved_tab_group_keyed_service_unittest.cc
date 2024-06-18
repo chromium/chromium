@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_model_listener.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_service_factory.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -1141,6 +1142,146 @@ TEST_F(SavedTabGroupKeyedServiceUnitTestV2,
   EXPECT_FALSE(tabstrip->group_model()->ContainsTabGroup(group_id));
   // The group should have closed with its tabs in the tabstrip.
   EXPECT_EQ(1, tabstrip->count());
+}
+
+TEST_F(SavedTabGroupKeyedServiceUnitTest, CreateTabStateOnSyncNavigations) {
+  Browser* const browser = AddBrowser();
+  TabStripModel* const tabstrip = browser->tab_strip_model();
+
+  // Create a saved tab group with one tab.
+  AddTabToBrowser(browser, 0);
+  const tab_groups::TabGroupId group_id = tabstrip->AddToNewGroup({0});
+  service()->SaveGroup(group_id);
+  const GURL url = GURL("https://www.example.com");
+  const GURL url2 = GURL("https://www.example2.com");
+
+  // Manually navigate the webcontents of the saved tab locally.
+  content::WebContents* web_contents = tabstrip->GetWebContentsAt(0);
+  auto* tester = content::WebContentsTester::For(web_contents);
+  tester->NavigateAndCommit(url);
+  EXPECT_EQ(web_contents->GetURL(), url);
+  EXPECT_FALSE(TabGroupSyncTabState::FromWebContents(web_contents));
+
+  // Load a URL through sync.
+  service()
+      ->listener()
+      ->GetLocalTabGroupListenerMapForTesting()
+      .at(group_id)
+      .GetWebContentsTokenMapForTesting()
+      .at(web_contents)
+      .NavigateToUrl(url2);
+  tester->CommitPendingNavigation();
+  EXPECT_EQ(web_contents->GetURL(), url2);
+  EXPECT_TRUE(TabGroupSyncTabState::FromWebContents(web_contents));
+
+  // Manually load a URL again.
+  tester->NavigateAndCommit(url);
+  EXPECT_EQ(web_contents->GetURL(), url);
+  EXPECT_FALSE(TabGroupSyncTabState::FromWebContents(web_contents));
+}
+
+TEST_F(SavedTabGroupKeyedServiceUnitTest, TabStateClearedOnUserInput) {
+  Browser* const browser = AddBrowser();
+  TabStripModel* const tabstrip = browser->tab_strip_model();
+
+  // Create a saved tab group with one tab.
+  AddTabToBrowser(browser, 0);
+  const tab_groups::TabGroupId group_id = tabstrip->AddToNewGroup({0});
+  service()->SaveGroup(group_id);
+  const GURL url = GURL("https://www.example.com");
+
+  // Simulate a sync navigation on the tab.
+  content::WebContents* web_contents = tabstrip->GetWebContentsAt(0);
+  service()
+      ->listener()
+      ->GetLocalTabGroupListenerMapForTesting()
+      .at(group_id)
+      .GetWebContentsTokenMapForTesting()
+      .at(web_contents)
+      .NavigateToUrl(url);
+  auto* tester = content::WebContentsTester::For(web_contents);
+  tester->CommitPendingNavigation();
+  EXPECT_EQ(web_contents->GetURL(), url);
+  EXPECT_TRUE(TabGroupSyncTabState::FromWebContents(web_contents));
+
+  tester->TestDidReceiveMouseDownEvent();
+  EXPECT_FALSE(TabGroupSyncTabState::FromWebContents(web_contents));
+}
+
+TEST_F(SavedTabGroupKeyedServiceUnitTest,
+       TabStateNotClearedOnForwardBackwardNavigations) {
+  Browser* const browser = AddBrowser();
+  TabStripModel* const tabstrip = browser->tab_strip_model();
+
+  // Create a saved tab group with one tab.
+  AddTabToBrowser(browser, 0);
+  const tab_groups::TabGroupId group_id = tabstrip->AddToNewGroup({0});
+  service()->SaveGroup(group_id);
+  const GURL url = GURL("https://www.example.com");
+  const GURL url2 = GURL("https://www.example2.com");
+
+  // Manually navigate the webcontents of the saved tab locally.
+  content::WebContents* web_contents = tabstrip->GetWebContentsAt(0);
+  auto* tester = content::WebContentsTester::For(web_contents);
+  tester->NavigateAndCommit(url);
+  EXPECT_EQ(web_contents->GetURL(), url);
+  EXPECT_FALSE(TabGroupSyncTabState::FromWebContents(web_contents));
+
+  // Simulate a sync navigation on the tab.
+  service()
+      ->listener()
+      ->GetLocalTabGroupListenerMapForTesting()
+      .at(group_id)
+      .GetWebContentsTokenMapForTesting()
+      .at(web_contents)
+      .NavigateToUrl(url2);
+  tester->CommitPendingNavigation();
+  EXPECT_EQ(web_contents->GetURL(), url2);
+  EXPECT_TRUE(TabGroupSyncTabState::FromWebContents(web_contents));
+
+  // Go back to the previous page, tab state shouldn't be reset.
+  web_contents->GetController().GoBack();
+  tester->CommitPendingNavigation();
+  EXPECT_EQ(web_contents->GetURL(), url);
+  EXPECT_TRUE(TabGroupSyncTabState::FromWebContents(web_contents));
+
+  // Go forward to the previous page, tab state shouldn't be reset.
+  web_contents->GetController().GoForward();
+  tester->CommitPendingNavigation();
+  EXPECT_EQ(web_contents->GetURL(), url2);
+  EXPECT_TRUE(TabGroupSyncTabState::FromWebContents(web_contents));
+}
+
+TEST_F(SavedTabGroupKeyedServiceUnitTest, TabStateNotClearedOnReload) {
+  Browser* const browser = AddBrowser();
+  TabStripModel* const tabstrip = browser->tab_strip_model();
+
+  // Create a saved tab group with one tab.
+  AddTabToBrowser(browser, 0);
+  const tab_groups::TabGroupId group_id = tabstrip->AddToNewGroup({0});
+  service()->SaveGroup(group_id);
+  const GURL url = GURL("https://www.example.com");
+  content::WebContents* web_contents = tabstrip->GetWebContentsAt(0);
+  auto* tester = content::WebContentsTester::For(web_contents);
+
+  // Simulate a sync navigation on the tab.
+  service()
+      ->listener()
+      ->GetLocalTabGroupListenerMapForTesting()
+      .at(group_id)
+      .GetWebContentsTokenMapForTesting()
+      .at(web_contents)
+      .NavigateToUrl(url);
+  tester->CommitPendingNavigation();
+  EXPECT_EQ(web_contents->GetURL(), url);
+  EXPECT_TRUE(TabGroupSyncTabState::FromWebContents(web_contents));
+
+  // Reload the page.
+  web_contents->GetController().Reload(content::ReloadType::NORMAL,
+                                       /*check_for_repost=*/true);
+  tester->CommitPendingNavigation();
+  EXPECT_EQ(web_contents->GetURL(), url);
+  EXPECT_TRUE(TabGroupSyncTabState::FromWebContents(web_contents));
 }
 
 }  // namespace tab_groups
