@@ -18,7 +18,13 @@ class TabGroupSyncTabState
   TabGroupSyncTabState(const TabGroupSyncTabState&) = delete;
   TabGroupSyncTabState& operator=(const TabGroupSyncTabState&) = delete;
 
-  static void RemoveTabState(content::WebContents* web_contents);
+  // Creates sync tab state for `web_contents`. Once this completes, this tab
+  // will be restricted on certain activities.
+  static void Create(content::WebContents* web_contents);
+
+  // Removes the tab state for `web_contents`. After this, this tab will
+  // be treated like a normal tab and certain activities will be permitted.
+  static void Reset(content::WebContents* web_contents);
 
  protected:
   explicit TabGroupSyncTabState(content::WebContents* web_contents);

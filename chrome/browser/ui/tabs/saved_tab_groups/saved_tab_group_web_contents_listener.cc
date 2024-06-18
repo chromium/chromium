@@ -124,7 +124,7 @@ SavedTabGroupWebContentsListener::~SavedTabGroupWebContentsListener() {
   if (favicon_driver_) {
     favicon_driver_->RemoveObserver(this);
   }
-  ResetTabState();
+  TabGroupSyncTabState::Reset(web_contents());
 }
 
 void SavedTabGroupWebContentsListener::NavigateToUrl(const GURL& url) {
@@ -153,13 +153,13 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
   if (navigation_handle == handle_from_sync_update_) {
     handle_from_sync_update_ = nullptr;
     // Create a tab state to indicate that the tab is restricted.
-    SetTabState();
+    TabGroupSyncTabState::Create(web_contents());
     return;
   }
 
   if (IsUserTriggeredMainFrameNavigation(navigation_handle)) {
     // Once the tab state is remove, restrictions will be removed from it.
-    ResetTabState();
+    TabGroupSyncTabState::Reset(web_contents());
   }
 
   if (!IsSaveableNavigation(navigation_handle)) {
@@ -180,7 +180,7 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
 
 void SavedTabGroupWebContentsListener::DidGetUserInteraction(
     const blink::WebInputEvent& event) {
-  ResetTabState();
+  TabGroupSyncTabState::Reset(web_contents());
 }
 
 void SavedTabGroupWebContentsListener::TitleWasSet(
@@ -216,18 +216,6 @@ void SavedTabGroupWebContentsListener::OnFaviconUpdated(
   SavedTabGroupTab* tab = group->GetTab(token_);
   tab->SetFavicon(image);
   service_->model()->UpdateTabInGroup(group->saved_guid(), *tab);
-}
-
-void SavedTabGroupWebContentsListener::SetTabState() {
-  TabGroupSyncTabState* state =
-      TabGroupSyncTabState::FromWebContents(web_contents());
-  if (!state) {
-    TabGroupSyncTabState::CreateForWebContents(web_contents());
-  }
-}
-
-void SavedTabGroupWebContentsListener::ResetTabState() {
-  TabGroupSyncTabState::RemoveTabState(web_contents());
 }
 
 }  // namespace tab_groups
