@@ -19,18 +19,18 @@ class WebContents;
 
 namespace tab_groups {
 
-class SavedTabGroupModel;
+class SavedTabGroupKeyedService;
 
 class SavedTabGroupWebContentsListener : public content::WebContentsObserver,
                                          public favicon::FaviconDriverObserver {
  public:
   SavedTabGroupWebContentsListener(content::WebContents* web_contents,
                                    base::Token token,
-                                   SavedTabGroupModel* model);
+                                   SavedTabGroupKeyedService* service);
   SavedTabGroupWebContentsListener(content::WebContents* web_contents,
                                    content::NavigationHandle* navigation_handle,
                                    base::Token token,
-                                   SavedTabGroupModel* model);
+                                   SavedTabGroupKeyedService* service);
   ~SavedTabGroupWebContentsListener() override;
 
   // content::WebContentsObserver
@@ -56,7 +56,7 @@ class SavedTabGroupWebContentsListener : public content::WebContentsObserver,
   const raw_ptr<content::WebContents> web_contents_;
   // Used to update the favicon for this tab.
   const raw_ptr<favicon::FaviconDriver> favicon_driver_;
-  const raw_ptr<SavedTabGroupModel> model_;
+  const raw_ptr<SavedTabGroupKeyedService> service_;
 
   // The NavigationHandle that resulted from the last sync update. Ignored by
   // `DidFinishNavigation` to prevent synclones.

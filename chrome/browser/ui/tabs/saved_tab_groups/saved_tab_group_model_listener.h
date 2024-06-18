@@ -20,7 +20,7 @@ class Profile;
 
 namespace tab_groups {
 
-class SavedTabGroupModel;
+class SavedTabGroupKeyedService;
 
 // Serves to maintain and listen to browsers who contain saved tab groups and
 // update the model if a saved tab group was changed.
@@ -29,7 +29,7 @@ class SavedTabGroupModelListener : public BrowserListObserver,
  public:
   // Used for testing.
   SavedTabGroupModelListener();
-  explicit SavedTabGroupModelListener(SavedTabGroupModel* model,
+  explicit SavedTabGroupModelListener(SavedTabGroupKeyedService* service,
                                       Profile* profile);
   SavedTabGroupModelListener(const SavedTabGroupModelListener&) = delete;
   SavedTabGroupModelListener& operator=(
@@ -90,7 +90,7 @@ class SavedTabGroupModelListener : public BrowserListObserver,
                      LocalTabGroupListener,
                      tab_groups::TabGroupIdHash>
       local_tab_group_listeners_;
-  raw_ptr<SavedTabGroupModel> model_ = nullptr;
+  raw_ptr<SavedTabGroupKeyedService> service_;
   raw_ptr<Profile> profile_;
 };
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_web_contents_listener.h"
 
 #include "chrome/browser/favicon/favicon_utils.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_keyed_service.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
@@ -58,12 +59,12 @@ bool IsSaveableNavigation(content::NavigationHandle* navigation_handle) {
 SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
     content::WebContents* web_contents,
     base::Token token,
-    SavedTabGroupModel* model)
+    SavedTabGroupKeyedService* service)
     : token_(token),
       web_contents_(web_contents),
       favicon_driver_(
           favicon::ContentFaviconDriver::FromWebContents(web_contents)),
-      model_(model) {
+      service_(service) {
   Observe(web_contents_);
   if (favicon_driver_) {
     favicon_driver_->AddObserver(this);
@@ -74,12 +75,12 @@ SavedTabGroupWebContentsListener::SavedTabGroupWebContentsListener(
     content::WebContents* web_contents,
     content::NavigationHandle* navigation_handle,
     base::Token token,
-    SavedTabGroupModel* model)
+    SavedTabGroupKeyedService* service)
     : token_(token),
       web_contents_(web_contents),
       favicon_driver_(
           favicon::ContentFaviconDriver::FromWebContents(web_contents)),
-      model_(model),
+      service_(service),
       handle_from_sync_update_(navigation_handle) {
   Observe(web_contents_);
   if (favicon_driver_) {
@@ -125,19 +126,19 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
     return;
   }
 
-  SavedTabGroup* group = model_->GetGroupContainingTab(token_);
+  SavedTabGroup* group = service_->model()->GetGroupContainingTab(token_);
   CHECK(group);
 
   SavedTabGroupTab* tab = group->GetTab(token_);
   tab->SetTitle(web_contents_->GetTitle());
   tab->SetURL(web_contents_->GetURL());
   tab->SetFavicon(favicon::TabFaviconFromWebContents(web_contents_));
-  model_->UpdateTabInGroup(group->saved_guid(), *tab);
+  service_->model()->UpdateTabInGroup(group->saved_guid(), *tab);
 }
 
 void SavedTabGroupWebContentsListener::TitleWasSet(
     content::NavigationEntry* entry) {
-  SavedTabGroup* group = model_->GetGroupContainingTab(token_);
+  SavedTabGroup* group = service_->model()->GetGroupContainingTab(token_);
   CHECK(group);
 
   // Don't update the title if the URL should not be synced.
@@ -147,7 +148,7 @@ void SavedTabGroupWebContentsListener::TitleWasSet(
 
   SavedTabGroupTab* tab = group->GetTab(token_);
   tab->SetTitle(entry->GetTitleForDisplay());
-  model_->UpdateTabInGroup(group->saved_guid(), *tab);
+  service_->model()->UpdateTabInGroup(group->saved_guid(), *tab);
 }
 
 void SavedTabGroupWebContentsListener::OnFaviconUpdated(
@@ -156,7 +157,7 @@ void SavedTabGroupWebContentsListener::OnFaviconUpdated(
     const GURL& icon_url,
     bool icon_url_changed,
     const gfx::Image& image) {
-  SavedTabGroup* group = model_->GetGroupContainingTab(token_);
+  SavedTabGroup* group = service_->model()->GetGroupContainingTab(token_);
   CHECK(group);
 
   // Don't update the favicon if the URL should not be synced.
@@ -167,7 +168,7 @@ void SavedTabGroupWebContentsListener::OnFaviconUpdated(
 
   SavedTabGroupTab* tab = group->GetTab(token_);
   tab->SetFavicon(image);
-  model_->UpdateTabInGroup(group->saved_guid(), *tab);
+  service_->model()->UpdateTabInGroup(group->saved_guid(), *tab);
 }
 
 }  // namespace tab_groups
