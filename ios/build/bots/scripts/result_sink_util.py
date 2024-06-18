@@ -255,18 +255,22 @@ class ResultSinkClient(object):
     occurrences.datapoints.extend(exception_occurrences)
     any_msg = any_pb2.Any()
     any_msg.Pack(occurrences)
-    invo_data = json.dumps({
-        'invocation': {
-            'extended_properties': {
-                'exception_occurrences': json_format.MessageToDict(any_msg)
+    inv_data = json.dumps(
+        {
+            'invocation': {
+                'extended_properties': {
+                    'exception_occurrences':
+                        json_format.MessageToDict(
+                            any_msg, preserving_proto_field_name=True)
+                }
+            },
+            'update_mask': {
+                'paths': ['extended_properties.exception_occurrences'],
             }
         },
-        'update_mask': {
-            'paths': ['extended_properties.exception_occurrences'],
-        }
-    })
+        sort_keys=True)
 
-    LOGGER.info(invo_data)
+    LOGGER.info(inv_data)
 
     updateInvo_url = (
         'http://%s/prpc/luci.resultsink.v1.Sink/UpdateInvocation' %
@@ -274,6 +278,6 @@ class ResultSinkClient(object):
     res = self._session.post(
         url=updateInvo_url,
         headers=self.headers,
-        data=invo_data,
+        data=inv_data,
     )
     res.raise_for_status()

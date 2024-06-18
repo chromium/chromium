@@ -272,21 +272,25 @@ class UnitTest(unittest.TestCase):
     exception_occurrences.datapoints.extend(occurrences)
     any_msg = any_pb2.Any()
     any_msg.Pack(exception_occurrences)
-    invo_data = json.dumps({
-        'invocation': {
-            'extended_properties': {
-                'exception_occurrences': json_format.MessageToDict(any_msg)
+    inv_data = json.dumps(
+        {
+            'invocation': {
+                'extended_properties': {
+                    'exception_occurrences':
+                        json_format.MessageToDict(
+                            any_msg, preserving_proto_field_name=True)
+                }
+            },
+            'update_mask': {
+                'paths': ['extended_properties.exception_occurrences'],
             }
         },
-        'update_mask': {
-            'paths': ['extended_properties.exception_occurrences'],
-        }
-    })
+        sort_keys=True)
     client = result_sink_util.ResultSinkClient()
 
     client._post_exceptions(occurrences)
     mock_session_post.assert_called_with(
-        url=UPATE_POST_URL, headers=HEADERS, data=invo_data)
+        url=UPATE_POST_URL, headers=HEADERS, data=inv_data)
 
   @mock.patch.object(requests.Session, 'close')
   @mock.patch.object(requests.Session, 'post')
