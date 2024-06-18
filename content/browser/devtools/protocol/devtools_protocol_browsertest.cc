@@ -290,15 +290,6 @@ class PrerenderDevToolsProtocolTest : public DevToolsProtocolTest {
   std::unique_ptr<test::PrerenderTestHelper> prerender_helper_;
 };
 
-class MultiplePrerendersDevToolsProtocolTest
-    : public PrerenderDevToolsProtocolTest {
- public:
-  MultiplePrerendersDevToolsProtocolTest() = default;
-
- private:
-  test::ScopedPrerenderFeatureList prerender_feature_list_;
-};
-
 class SyntheticMouseEventTest : public DevToolsProtocolTest {
  public:
   SyntheticMouseEventTest() {
