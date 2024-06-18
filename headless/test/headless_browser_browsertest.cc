@@ -348,15 +348,10 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, DefaultSizes) {
   const int expected_width = kDefaultOptions.window_size.width();
   const int expected_height = kDefaultOptions.window_size.height();
 
-  // The screen size on macOS appears to be set to the actual desktop size, not
-  // the headless default window size as it is on other platforms. See
-  // https://crbug.com/347324963
-#if !BUILDFLAG(IS_MAC)
   EXPECT_THAT(EvaluateScript(web_contents, "screen.width"),
               DictHasValue("result.result.value", expected_width));
   EXPECT_THAT(EvaluateScript(web_contents, "screen.height"),
               DictHasValue("result.result.value", expected_height));
-#endif
 
   EXPECT_THAT(EvaluateScript(web_contents, "window.outerWidth"),
               DictHasValue("result.result.value", expected_width));

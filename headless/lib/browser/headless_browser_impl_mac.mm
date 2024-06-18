@@ -11,9 +11,11 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "headless/lib/browser/headless_screen.h"
 #include "headless/lib/browser/headless_web_contents_impl.h"
 #include "services/device/public/cpp/geolocation/system_geolocation_source_apple.h"
 #import "ui/base/cocoa/base_view.h"
+#include "ui/display/screen.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 
 // Overrides events and actions for NSPopUpButtonCell.
@@ -74,7 +76,10 @@ void HeadlessBrowserImpl::PlatformInitialize() {
         device::SystemGeolocationSourceApple::
             CreateGeolocationSystemPermissionManager();
   }
-  screen_ = std::make_unique<display::ScopedNativeScreen>();
+
+  HeadlessScreen* screen = HeadlessScreen::Create(options()->window_size);
+  display::Screen::SetScreenInstance(screen);
+
   HeadlessPopUpMethods::Init();
 }
 
