@@ -15,7 +15,7 @@ import {fedcm_test,
         fedcm_get_and_select_first_account} from '/credential-management/support/fedcm-helper.sub.js';
 
 fedcm_test(async t => {
-  const options = request_options_with_mediation_required("../../../wpt_internal/credential-management/resources/fedcm/manifest_caching.py");
+  const options = request_options_with_mediation_required("../../../wpt_internal/fedcm/resources/manifest_caching.py");
   let cred = await fedcm_get_and_select_first_account(t, options);
   assert_equals(cred.token, "token");
   assert_equals(cred.isAutoSelected, false);

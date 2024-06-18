@@ -25,7 +25,7 @@ promise_test(async t => {
 }, "Test that functions exist where we expect them.");
 
 fedcm_test(async t => {
-  const options = alt_request_options_with_mediation_required('../../../wpt_internal/credential-management/resources/fedcm/manifest_with_continue_on.json');
+  const options = alt_request_options_with_mediation_required('../../../wpt_internal/fedcm/resources/manifest_with_continue_on.json');
   await select_manifest(t, options);
   const cred = await fedcm_get_and_select_first_account(t, options);
   assert_equals(cred.token, "account=1234");
