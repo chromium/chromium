@@ -229,14 +229,24 @@ void LayerTreeImpl::DidUpdateScrollOffset(ElementId id) {
     return;
   }
 
-  // This condition controls whether we'll update the transform node based on a
-  // changed scroll offset. If it's false (e.g. if the scroll node has any main
-  // thread repaint reasons), we can mutate scroll nodes but don't want to
-  // produce any immediate changes in the compositor. Instead we want the scroll
-  // to propagate through Blink in a commit and have Blink update properties,
+  bool can_realize_on_active_tree =
+      scroll_tree.CanRealizeScrollsOnActiveTree(*scroll_node);
+  bool can_realize_on_pending_tree =
+      scroll_tree.CanRealizeScrollsOnPendingTree(*scroll_node);
+  // This bit controls whether we'll update the transform node based on a
+  // changed scroll offset. We have mutated the scroll nodes, but if the scroll
+  // needs additional handling in the pending tree or the main thread, we don't
+  // want to produce any immediate changes in the active tree or any compositor
+  // tree. For example, if the scroll needs main thread, we want the scroll to
+  // propagate through Blink in a commit and have Blink update properties,
   // paint, compositing, etc. Thus, we avoid mutating the transform tree in
-  // this case.
-  if (scroll_tree.CanRealizeScrollsOnCompositor(*scroll_node)) {
+  // these cases.
+  bool can_realize_now = can_realize_on_active_tree;
+  if (!IsActiveTree()) {
+    can_realize_now |= can_realize_on_pending_tree;
+  }
+
+  if (can_realize_now) {
     CHECK_NE(scroll_node->transform_id, kInvalidPropertyNodeId);
     TransformTree& transform_tree = property_trees()->transform_tree_mutable();
     auto* transform_node = transform_tree.Node(scroll_node->transform_id);
@@ -249,6 +259,8 @@ void LayerTreeImpl::DidUpdateScrollOffset(ElementId id) {
     transform_node->transform_changed = true;
     property_trees()->set_changed(true);
     set_needs_update_draw_properties();
+  } else if (can_realize_on_pending_tree) {
+    host_impl_->RequestImplSideInvalidationForRasterInducingScroll(id);
   }
 
   if (IsActiveTree()) {
@@ -392,6 +404,17 @@ void LayerTreeImpl::InvalidateRegionForImages(
       base::StringPrintf("no_images[%zu] no_invalidaton[%zu] invalidated[%zu]",
                          no_images_count, no_invalidation_count,
                          invalidated_count));
+}
+
+void LayerTreeImpl::InvalidateRasterInducingScrolls(
+    const base::flat_set<ElementId>& scrolls_to_invalidate) {
+  if (scrolls_to_invalidate.empty()) {
+    return;
+  }
+  DCHECK(IsSyncTree());
+  for (PictureLayerImpl* picture_layer : picture_layers_) {
+    picture_layer->InvalidateRasterInducingScrolls(scrolls_to_invalidate);
+  }
 }
 
 void LayerTreeImpl::UpdateViewportContainerSizes() {

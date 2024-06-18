@@ -756,6 +756,9 @@ class CC_EXPORT LayerTreeImpl {
   void InvalidateRegionForImages(
       const PaintImageIdFlatSet& images_to_invalidate);
 
+  void InvalidateRasterInducingScrolls(
+      const base::flat_set<ElementId>& scrolls_to_invalidate);
+
   void UpdateViewportContainerSizes();
 
   LayerTreeLifecycle& lifecycle() { return lifecycle_; }

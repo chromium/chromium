@@ -1497,8 +1497,14 @@ void ScrollTree::CopyCompleteTreeState(const ScrollTree& other) {
 }
 #endif  // DCHECK_IS_ON()
 
-bool ScrollTree::CanRealizeScrollsOnCompositor(const ScrollNode& node) const {
+bool ScrollTree::CanRealizeScrollsOnActiveTree(const ScrollNode& node) const {
   return node.transform_id != kInvalidPropertyNodeId && node.is_composited &&
+         GetMainThreadRepaintReasons(node) ==
+             MainThreadScrollingReason::kNotScrollingOnMain;
+}
+
+bool ScrollTree::CanRealizeScrollsOnPendingTree(const ScrollNode& node) const {
+  return node.transform_id != kInvalidPropertyNodeId && !node.is_composited &&
          GetMainThreadRepaintReasons(node) ==
              MainThreadScrollingReason::kNotScrollingOnMain;
 }
@@ -1673,14 +1679,19 @@ const gfx::PointF ScrollTree::current_scroll_offset(ElementId id) const {
 gfx::PointF ScrollTree::GetScrollOffsetForScrollTimeline(
     const ScrollNode& scroll_node) const {
   gfx::PointF offset = current_scroll_offset(scroll_node.element_id);
-  if (!property_trees()->is_main_thread() &&
-      !CanRealizeScrollsOnCompositor(scroll_node)) {
-    // Ignore compositor scroll delta if the scroll can't be realized on
-    // compositor because the delta has not been realized yet.
+  if (!property_trees()->is_main_thread()) {
     if (const SyncedScrollOffset* synced_offset =
             GetSyncedScrollOffset(scroll_node.element_id)) {
-      offset = property_trees()->is_active() ? synced_offset->ActiveBase()
-                                             : synced_offset->PendingBase();
+      // Ignore compositor scroll delta if the scroll can't be realized on the
+      // corresponding tree because the delta has not been realized yet.
+      if (property_trees()->is_active()) {
+        if (!CanRealizeScrollsOnActiveTree(scroll_node)) {
+          offset = synced_offset->ActiveBase();
+        }
+      } else if (!CanRealizeScrollsOnActiveTree(scroll_node) &&
+                 !CanRealizeScrollsOnPendingTree(scroll_node)) {
+        offset = synced_offset->PendingBase();
+      }
     }
   }
 

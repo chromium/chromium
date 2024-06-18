@@ -177,6 +177,9 @@ bool PaintArtifactCompositor::NeedsCompositedScrolling(
   if (scroll_translation.HasDirectCompositingReasons()) {
     return true;
   }
+  // Note: main thread scrolling reasons are not checked here because even if
+  // the scroller needs main thread to update scroll, compositing the scroller
+  // can still benefit performance by reducing raster invalidations.
   auto it = painted_scroll_translations_.find(&scroll_translation);
   if (it == painted_scroll_translations_.end()) {
     // Negative z-index scrolling contents in a non-stacking-context scroller

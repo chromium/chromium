@@ -4958,7 +4958,8 @@ TEST_P(PaintArtifactCompositorTest, AddIndirectlyCompositedScrollNodes) {
   EXPECT_TRUE(scroll_node->is_composited);
   EXPECT_EQ(cc::MainThreadScrollingReason::kNotScrollingOnMain,
             scroll_node->main_thread_scrolling_reasons);
-  EXPECT_TRUE(scroll_tree.CanRealizeScrollsOnCompositor(*scroll_node));
+  EXPECT_TRUE(scroll_tree.CanRealizeScrollsOnActiveTree(*scroll_node));
+  EXPECT_FALSE(scroll_tree.CanRealizeScrollsOnPendingTree(*scroll_node));
   EXPECT_FALSE(scroll_tree.ShouldRealizeScrollsOnMain(*scroll_node));
 }
 
@@ -4977,10 +4978,18 @@ TEST_P(PaintArtifactCompositorTest, AddNonCompositedScrollNodes) {
       scroll_state.Transform().ScrollNode()->GetCompositorElementId());
   ASSERT_TRUE(scroll_node);
   EXPECT_FALSE(scroll_node->is_composited);
-  EXPECT_FALSE(scroll_tree.CanRealizeScrollsOnCompositor(*scroll_node));
-  EXPECT_EQ(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText,
-            scroll_node->main_thread_scrolling_reasons);
-  EXPECT_TRUE(scroll_tree.ShouldRealizeScrollsOnMain(*scroll_node));
+  EXPECT_FALSE(scroll_tree.CanRealizeScrollsOnActiveTree(*scroll_node));
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    EXPECT_EQ(cc::MainThreadScrollingReason::kNotScrollingOnMain,
+              scroll_node->main_thread_scrolling_reasons);
+    EXPECT_TRUE(scroll_tree.CanRealizeScrollsOnPendingTree(*scroll_node));
+    EXPECT_FALSE(scroll_tree.ShouldRealizeScrollsOnMain(*scroll_node));
+  } else {
+    EXPECT_EQ(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText,
+              scroll_node->main_thread_scrolling_reasons);
+    EXPECT_FALSE(scroll_tree.CanRealizeScrollsOnPendingTree(*scroll_node));
+    EXPECT_TRUE(scroll_tree.ShouldRealizeScrollsOnMain(*scroll_node));
+  }
 }
 
 TEST_P(PaintArtifactCompositorTest, AddNonCompositedMainThreadScrollNodes) {
@@ -4998,11 +5007,18 @@ TEST_P(PaintArtifactCompositorTest, AddNonCompositedMainThreadScrollNodes) {
       scroll_state.Transform().ScrollNode()->GetCompositorElementId());
   ASSERT_TRUE(scroll_node);
   EXPECT_FALSE(scroll_node->is_composited);
-  EXPECT_EQ(
-      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText |
-          cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
-      scroll_node->main_thread_scrolling_reasons);
-  EXPECT_FALSE(scroll_tree.CanRealizeScrollsOnCompositor(*scroll_node));
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    EXPECT_EQ(
+        cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
+        scroll_node->main_thread_scrolling_reasons);
+  } else {
+    EXPECT_EQ(
+        cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText |
+            cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
+        scroll_node->main_thread_scrolling_reasons);
+  }
+  EXPECT_FALSE(scroll_tree.CanRealizeScrollsOnActiveTree(*scroll_node));
+  EXPECT_FALSE(scroll_tree.CanRealizeScrollsOnPendingTree(*scroll_node));
   EXPECT_TRUE(scroll_tree.ShouldRealizeScrollsOnMain(*scroll_node));
 }
 
@@ -5028,7 +5044,8 @@ TEST_P(PaintArtifactCompositorTest,
   EXPECT_TRUE(scroll_node->is_composited);
   EXPECT_EQ(cc::MainThreadScrollingReason::kHasBackgroundAttachmentFixedObjects,
             scroll_node->main_thread_scrolling_reasons);
-  EXPECT_FALSE(scroll_tree.CanRealizeScrollsOnCompositor(*scroll_node));
+  EXPECT_FALSE(scroll_tree.CanRealizeScrollsOnActiveTree(*scroll_node));
+  EXPECT_FALSE(scroll_tree.CanRealizeScrollsOnPendingTree(*scroll_node));
   EXPECT_TRUE(scroll_tree.ShouldRealizeScrollsOnMain(*scroll_node));
 }
 
@@ -5052,7 +5069,8 @@ TEST_P(PaintArtifactCompositorTest, AddUnpaintedNonCompositedScrollNodes) {
   EXPECT_EQ(scroll_node->transform_id, cc::kInvalidPropertyNodeId);
   EXPECT_EQ(gfx::PointF(-7, -9),
             scroll_tree.current_scroll_offset(scroll_node->element_id));
-  EXPECT_FALSE(scroll_tree.CanRealizeScrollsOnCompositor(*scroll_node));
+  EXPECT_FALSE(scroll_tree.CanRealizeScrollsOnActiveTree(*scroll_node));
+  EXPECT_FALSE(scroll_tree.CanRealizeScrollsOnPendingTree(*scroll_node));
   EXPECT_FALSE(scroll_tree.ShouldRealizeScrollsOnMain(*scroll_node));
 }
 

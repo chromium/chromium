@@ -621,13 +621,12 @@ class CC_EXPORT ScrollTree final : public PropertyTree<ScrollNode> {
   // All of them return false if `node.transform_id` is invalid which means
   // Blink didn't paint the transform node because the scrolling contents
   // were far from the viewport and we don't need to realize the scrolls.
-  bool CanRealizeScrollsOnCompositor(const ScrollNode& node) const;
-  // TODO(crbug.com/40517276): Add realization mode for RasterInducingScroll.
+  bool CanRealizeScrollsOnActiveTree(const ScrollNode& node) const;
+  bool CanRealizeScrollsOnPendingTree(const ScrollNode& node) const;
   bool ShouldRealizeScrollsOnMain(const ScrollNode& node) const;
 
-  // Reports reasons for blocking scroll updates on main-thread repaint. For use
-  // only with scroll unification enabled. Returns bitfield of values from
-  // MainThreadScrollingReason.
+  // Reports reasons for blocking scroll updates on main-thread repaint.
+  // Returns bitfield of values from MainThreadScrollingReason.
   uint32_t GetMainThreadRepaintReasons(const ScrollNode& node) const;
 
  private:

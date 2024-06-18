@@ -1033,7 +1033,7 @@ ScrollOffsetMap PictureLayerImpl::GetRasterInducingScrollOffsets() const {
   if (raster_source_) {
     const ScrollTree& scroll_tree =
         layer_tree_impl()->property_trees()->scroll_tree();
-    for (ElementId element_id :
+    for (auto [element_id, _] :
          raster_source_->GetDisplayItemList()->raster_inducing_scrolls()) {
       map[element_id] = scroll_tree.current_scroll_offset(element_id);
     }
@@ -2081,6 +2081,27 @@ PictureLayerImpl::InvalidateRegionForImages(
   // TODO(crbug.com/40335690): SetNeedsPushProperties() would be needed here if
   // PictureLayerImpl didn't always push properties every activation.
   return ImageInvalidationResult::kInvalidated;
+}
+
+void PictureLayerImpl::InvalidateRasterInducingScrolls(
+    const base::flat_set<ElementId>& scrolls_to_invalidate) {
+  if (!raster_source_ || !raster_source_->GetDisplayItemList()) {
+    return;
+  }
+  const base::flat_map<ElementId, gfx::Rect>& raster_inducing_scrolls =
+      raster_source_->GetDisplayItemList()->raster_inducing_scrolls();
+  Region invalidation;
+  for (ElementId element_id : scrolls_to_invalidate) {
+    auto it = raster_inducing_scrolls.find(element_id);
+    if (it != raster_inducing_scrolls.end()) {
+      UnionUpdateRect(it->second);
+      invalidation.Union(it->second);
+    }
+  }
+  if (!invalidation.IsEmpty()) {
+    invalidation_.Union(invalidation);
+    tilings_->Invalidate(invalidation);
+  }
 }
 
 void PictureLayerImpl::SetPaintWorkletRecord(

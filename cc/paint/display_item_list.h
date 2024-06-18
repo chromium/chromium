@@ -87,10 +87,15 @@ class CC_PAINT_EXPORT DisplayItemList
     size_t offset = paint_op_buffer_.next_op_offset();
     offsets_.push_back(offset);
     const T& op = paint_op_buffer_.push<T>(std::forward<Args>(args)...);
-    ProcessNewOp(op);
     DCHECK(op.IsValid());
     return offset;
   }
+
+  void PushDrawScrollingContentsOp(
+      ElementId scroll_element_id,
+      scoped_refptr<DisplayItemList> display_item_list,
+      gfx::PointF main_scroll_offset,
+      const gfx::Rect& visual_rect);
 
   // Called by blink::PaintChunksToCcLayer when an effect ends, to update the
   // bounds of a SaveLayer[Alpha]Op which was emitted when the effect started.
@@ -222,7 +227,7 @@ class CC_PAINT_EXPORT DisplayItemList
 
   std::optional<gfx::Rect> bounds() const { return rtree_.bounds(); }
 
-  const base::flat_set<ElementId>& raster_inducing_scrolls() const {
+  const base::flat_map<ElementId, gfx::Rect>& raster_inducing_scrolls() const {
     return raster_inducing_scrolls_;
   }
 
@@ -245,26 +250,32 @@ class CC_PAINT_EXPORT DisplayItemList
       visual_rects_[paired_begin_stack_.back().first_index].Union(visual_rect);
   }
 
-  void ProcessNewOp(const PaintOp& op) {}
-  void ProcessNewOp(const DrawScrollingContentsOp& op);
-
   mutable std::optional<DiscardableImageMap> image_map_
       GUARDED_BY(image_generation_lock_);
   mutable base::Lock image_generation_lock_;
 
-  base::flat_set<ElementId> raster_inducing_scrolls_;
+  // Maps scroll element ids of `DrawScrollingContentsOp`s to visual rects.
+  // For a nested `DrawScrollingContentsOp`, the scroll element id is of the
+  // nested op, and the visual rect is of the top-level
+  // `DrawScrollingContentsOp` in this DisplayItemList. This is kept in the
+  // top-level DisplayItemList only after recording.
+  base::flat_map<ElementId, gfx::Rect> raster_inducing_scrolls_;
 
-  // RTree stores offsets into the paint op buffer.
+  // RTree stores offsets into the paint op buffer. It's available after
+  // Finalize().
   RTree<size_t> rtree_;
+
   PaintOpBuffer paint_op_buffer_;
 
-  // The visual rects associated with each of the display items in the
-  // display item list. These rects are intentionally kept separate because they
-  // are used to decide which ops to walk for raster.
+  // The visual rects associated with each of the paint ops in this
+  // DisplayItemList. This is used during recording and is cleared in
+  // Finalize().
   std::vector<gfx::Rect> visual_rects_;
-  // Byte offsets associated with each of the ops.
+  // Byte offsets associated with each of the ops. This is used during
+  // recording and is cleared in Finalize().
   std::vector<size_t> offsets_;
-  // A stack of paired begin sequences that haven't been closed.
+  // A stack of paired begin sequences that haven't been closed. This is used
+  // during recording and should be empty when Finalize() is called.
   struct PairedBeginInfo {
     // Index (into virual_rects_ and offsets_) of the first operation in the
     // paired begin sequence.

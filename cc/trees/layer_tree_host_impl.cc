@@ -832,6 +832,13 @@ void LayerTreeHostImpl::UpdateSyncTreeAfterCommitOrImplSideInvalidation() {
 
   sync_tree()->InvalidateRegionForImages(images_to_invalidate);
 
+  if (!pending_invalidation_raster_inducing_scrolls_.empty()) {
+    base::flat_set<ElementId> scrolls_to_invalidate;
+    std::swap(scrolls_to_invalidate,
+              pending_invalidation_raster_inducing_scrolls_);
+    sync_tree()->InvalidateRasterInducingScrolls(scrolls_to_invalidate);
+  }
+
   // Note that it is important to push the state for checkerboarded and animated
   // images prior to PrepareTiles here when committing to the active tree. This
   // is because new tiles on the active tree depend on tree specific state
@@ -5431,6 +5438,13 @@ bool LayerTreeHostImpl::IsReadyToActivate() const {
 void LayerTreeHostImpl::RequestImplSideInvalidationForRerasterTiling() {
   bool needs_first_draw_on_activation = true;
   client_->SetNeedsImplSideInvalidation(needs_first_draw_on_activation);
+}
+
+void LayerTreeHostImpl::RequestImplSideInvalidationForRasterInducingScroll(
+    ElementId scroll_element_id) {
+  client_->SetNeedsImplSideInvalidation(
+      /*needs_first_draw_on_activation=*/true);
+  pending_invalidation_raster_inducing_scrolls_.insert(scroll_element_id);
 }
 
 base::WeakPtr<LayerTreeHostImpl> LayerTreeHostImpl::AsWeakPtr() {

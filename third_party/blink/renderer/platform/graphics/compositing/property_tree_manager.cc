@@ -127,11 +127,17 @@ bool PropertyTreeManager::DirectlyUpdateScrollOffsetTransform(
     return false;
 
   auto* property_trees = host.property_trees();
-  auto* cc_scroll_node = property_trees->scroll_tree_mutable().Node(
+  auto& scroll_tree = property_trees->scroll_tree_mutable();
+  auto* cc_scroll_node = scroll_tree.Node(
       scroll_node->CcNodeId(property_trees->sequence_number()));
   if (!cc_scroll_node ||
-      property_trees->scroll_tree().ShouldRealizeScrollsOnMain(
-          *cc_scroll_node)) {
+      scroll_tree.ShouldRealizeScrollsOnMain(*cc_scroll_node) ||
+      // Raster-inducing scrolls may affect hit test regions etc. which need
+      // PaintArtifactCompositor::Update() to update.
+      // TODO(crbug.com/346830803): Revisit this if we can make hit test
+      // regions under scrollers not depending on the scroll offset.
+      // At least we can skip layerization.
+      scroll_tree.CanRealizeScrollsOnPendingTree(*cc_scroll_node)) {
     return false;
   }
 
@@ -225,13 +231,14 @@ void PropertyTreeManager::DropCompositorScrollDeltaNextCommit(
 
 static uint32_t NonCompositedMainThreadScrollingReasons(
     const ScrollPaintPropertyNode& scroll) {
-  // TODO(crbug.com/1414885): We can't distinguish kNotOpaqueForTextAndLCDText
-  // and kCantPaintScrollingBackgroundAndLCDText here. We should probably
-  // merge the two reasons.
-  return scroll.GetCompositedScrollingPreference() ==
-                 CompositedScrollingPreference::kNotPreferred
-             ? cc::MainThreadScrollingReason::kPreferNonCompositedScrolling
-             : cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText;
+  if (scroll.GetCompositedScrollingPreference() ==
+      CompositedScrollingPreference::kNotPreferred) {
+    return cc::MainThreadScrollingReason::kPreferNonCompositedScrolling;
+  }
+  if (RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    return cc::MainThreadScrollingReason::kNotScrollingOnMain;
+  }
+  return cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText;
 }
 
 uint32_t PropertyTreeManager::GetMainThreadScrollingReasons(

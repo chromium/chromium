@@ -159,12 +159,15 @@ TEST_P(ScrollMetricsTest, TouchAndWheelGeneralTest) {
   // The below reasons are reported because #box is not composited.
   EXPECT_TOUCH_BUCKET(
       BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion), 1);
-  EXPECT_TOUCH_BUCKET(
-      BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
-      1);
+  if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    EXPECT_TOUCH_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
+        1);
+  }
   EXPECT_TOUCH_BUCKET(
       cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
-  EXPECT_TOUCH_TOTAL(3);
+  EXPECT_TOUCH_TOTAL(RuntimeEnabledFeatures::RasterInducingScrollEnabled() ? 2
+                                                                           : 3);
 
   // Reset histogram tester.
   histogram_tester.emplace();
@@ -175,12 +178,15 @@ TEST_P(ScrollMetricsTest, TouchAndWheelGeneralTest) {
   // The below reasons are reported because #box is not composited.
   EXPECT_WHEEL_BUCKET(
       BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion), 1);
-  EXPECT_WHEEL_BUCKET(
-      BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
-      1);
+  if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    EXPECT_WHEEL_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
+        1);
+  }
   EXPECT_WHEEL_BUCKET(
       cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
-  EXPECT_WHEEL_TOTAL(3);
+  EXPECT_WHEEL_TOTAL(RuntimeEnabledFeatures::RasterInducingScrollEnabled() ? 2
+                                                                           : 3);
 }
 
 TEST_P(ScrollMetricsTest, CompositedScrollableAreaTest) {
@@ -204,12 +210,15 @@ TEST_P(ScrollMetricsTest, CompositedScrollableAreaTest) {
   // The below reasons are reported because #box is not composited.
   EXPECT_WHEEL_BUCKET(
       BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion), 1);
-  EXPECT_WHEEL_BUCKET(
-      BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
-      1);
+  if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    EXPECT_WHEEL_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
+        1);
+  }
   EXPECT_WHEEL_BUCKET(
       cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
-  EXPECT_WHEEL_TOTAL(3);
+  EXPECT_WHEEL_TOTAL(RuntimeEnabledFeatures::RasterInducingScrollEnabled() ? 2
+                                                                           : 3);
 
   // Reset histogram tester.
   histogram_tester.emplace();
@@ -244,12 +253,15 @@ TEST_P(ScrollMetricsTest, NotScrollableAreaTest) {
   // The below reasons are reported because #box is not composited.
   EXPECT_WHEEL_BUCKET(
       BucketIndex(cc::MainThreadScrollingReason::kNonFastScrollableRegion), 1);
-  EXPECT_WHEEL_BUCKET(
-      BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
-      1);
+  if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    EXPECT_WHEEL_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
+        1);
+  }
   EXPECT_WHEEL_BUCKET(
       cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
-  EXPECT_WHEEL_TOTAL(3);
+  EXPECT_WHEEL_TOTAL(RuntimeEnabledFeatures::RasterInducingScrollEnabled() ? 2
+                                                                           : 3);
 
   // Reset histogram tester.
   histogram_tester.emplace();
@@ -310,12 +322,17 @@ TEST_P(ScrollMetricsTest, NestedScrollersTest) {
   Scroll(box, WebGestureDevice::kTouchpad);
 
   // The second scroll latches to the non-composited parent.
-  EXPECT_WHEEL_BUCKET(
-      BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
-      1);
-  EXPECT_WHEEL_BUCKET(
-      cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
-  EXPECT_WHEEL_TOTAL(2);
+  if (!RuntimeEnabledFeatures::RasterInducingScrollEnabled()) {
+    EXPECT_WHEEL_BUCKET(
+        BucketIndex(cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText),
+        1);
+    EXPECT_WHEEL_BUCKET(
+        cc::MainThreadScrollingReason::kScrollingOnMainForAnyReason, 1);
+    EXPECT_WHEEL_TOTAL(2);
+  } else {
+    EXPECT_WHEEL_BUCKET(cc::MainThreadScrollingReason::kNotScrollingOnMain, 1);
+    EXPECT_WHEEL_TOTAL(1);
+  }
 }
 
 }  // namespace

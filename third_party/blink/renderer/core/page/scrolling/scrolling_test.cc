@@ -2196,7 +2196,10 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForNonCompositedScroller) {
       noncomposited_element->GetLayoutBoxForScrolling()->GetScrollableArea();
   const auto* scroll_node = ScrollNodeForScrollableArea(scrollable_area);
   ASSERT_NOT_COMPOSITED(
-      scroll_node, cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+      scroll_node,
+      RuntimeEnabledFeatures::RasterInducingScrollEnabled()
+          ? cc::MainThreadScrollingReason::kNotScrollingOnMain
+          : cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
   EXPECT_EQ(scroll_node->element_id, scrollable_area->GetScrollElementId());
 
   // Now remove the box-shadow property and ensure the compositor scroll node
@@ -2255,7 +2258,10 @@ TEST_P(UnifiedScrollingSimTest,
   Compositor().BeginFrame();
 
   ASSERT_NOT_COMPOSITED(
-      scroll_node, cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+      scroll_node,
+      RuntimeEnabledFeatures::RasterInducingScrollEnabled()
+          ? cc::MainThreadScrollingReason::kNotScrollingOnMain
+          : cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
   EXPECT_EQ(scroll_node->element_id, scrollable_area->GetScrollElementId());
 }
 
@@ -2327,7 +2333,9 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForEmbeddedScrollers) {
       ScrollNodeForScrollableArea(child_scrollable_area);
   ASSERT_NOT_COMPOSITED(
       child_scroll_node,
-      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+      RuntimeEnabledFeatures::RasterInducingScrollEnabled()
+          ? cc::MainThreadScrollingReason::kNotScrollingOnMain
+          : cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
   EXPECT_EQ(child_scroll_node->element_id,
             child_scrollable_area->GetScrollElementId());
 }
@@ -2406,7 +2414,9 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForNestedEmbeddedScrollers) {
       ScrollNodeForScrollableArea(child_scrollable_area);
   ASSERT_NOT_COMPOSITED(
       child_scroll_node,
-      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+      RuntimeEnabledFeatures::RasterInducingScrollEnabled()
+          ? cc::MainThreadScrollingReason::kNotScrollingOnMain
+          : cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
   EXPECT_EQ(child_scroll_node->element_id,
             child_scrollable_area->GetScrollElementId());
 }
@@ -2458,7 +2468,9 @@ TEST_P(UnifiedScrollingSimTest, ScrollNodeForInvisibleNonCompositedScroller) {
       ScrollNodeForScrollableArea(invisible_scrollable_area);
   ASSERT_NOT_COMPOSITED(
       invisible_scroll_node,
-      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+      RuntimeEnabledFeatures::RasterInducingScrollEnabled()
+          ? cc::MainThreadScrollingReason::kNotScrollingOnMain
+          : cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
   EXPECT_EQ(invisible_scroll_node->element_id,
             invisible_scrollable_area->GetScrollElementId());
 

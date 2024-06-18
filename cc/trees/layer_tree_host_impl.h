@@ -914,6 +914,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   bool IsReadyToActivate() const;
 
   void RequestImplSideInvalidationForRerasterTiling();
+  void RequestImplSideInvalidationForRasterInducingScroll(
+      ElementId scroll_element_id);
 
   void SetDownsampleMetricsForTesting(bool value) {
     downsample_metrics_ = value;
@@ -1342,6 +1344,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   base::UnguessableToken screenshot_destination_;
 
   float top_controls_visible_height_ = 0.f;
+
+  base::flat_set<ElementId> pending_invalidation_raster_inducing_scrolls_;
 
   // Must be the last member to ensure this is destroyed first in the
   // destruction order and invalidates all weak pointers.

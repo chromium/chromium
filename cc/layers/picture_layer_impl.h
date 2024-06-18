@@ -136,6 +136,9 @@ class CC_EXPORT PictureLayerImpl
   ImageInvalidationResult InvalidateRegionForImages(
       const PaintImageIdFlatSet& images_to_invalidate);
 
+  void InvalidateRasterInducingScrolls(
+      const base::flat_set<ElementId>& scrolls_to_invalidate);
+
   bool can_use_lcd_text() const {
     return lcd_text_disallowed_reason_ == LCDTextDisallowedReason::kNone;
   }

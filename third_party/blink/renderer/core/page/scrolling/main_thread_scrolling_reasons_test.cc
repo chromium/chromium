@@ -457,15 +457,19 @@ TEST_P(NonCompositedMainThreadScrollingReasonsTest, TransformTest) {
 TEST_P(NonCompositedMainThreadScrollingReasonsTest, BackgroundNotOpaqueTest) {
   TestNonCompositedReasons(
       "background-not-opaque",
-      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+      RuntimeEnabledFeatures::RasterInducingScrollEnabled()
+          ? cc::MainThreadScrollingReason::kNotScrollingOnMain
+          : cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
 }
 
 TEST_P(NonCompositedMainThreadScrollingReasonsTest,
        CantPaintScrollingBackgroundTest) {
   TestNonCompositedReasons(
       "cant-paint-scrolling-background",
-      cc::MainThreadScrollingReason::kBackgroundNeedsRepaintOnScroll |
-          cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+      RuntimeEnabledFeatures::RasterInducingScrollEnabled()
+          ? cc::MainThreadScrollingReason::kBackgroundNeedsRepaintOnScroll
+          : cc::MainThreadScrollingReason::kBackgroundNeedsRepaintOnScroll |
+                cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
 }
 
 TEST_P(NonCompositedMainThreadScrollingReasonsTest,
@@ -493,7 +497,9 @@ TEST_P(NonCompositedMainThreadScrollingReasonsTest, BoxShadowTest) {
 TEST_P(NonCompositedMainThreadScrollingReasonsTest, InsetBoxShadowTest) {
   TestNonCompositedReasons(
       "inset-box-shadow",
-      cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
+      RuntimeEnabledFeatures::RasterInducingScrollEnabled()
+          ? cc::MainThreadScrollingReason::kNotScrollingOnMain
+          : cc::MainThreadScrollingReason::kNotOpaqueForTextAndLCDText);
 }
 
 TEST_P(NonCompositedMainThreadScrollingReasonsTest, StackingContextTest) {

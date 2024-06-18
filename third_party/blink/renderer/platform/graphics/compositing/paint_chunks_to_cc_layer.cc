@@ -897,12 +897,10 @@ void ConversionContext<cc::DisplayItemList>::EmitDrawScrollingContentsOp(
 
   EndTransform();
   scrolling_contents_list->Finalize();
-  result_.StartPaint();
-  push<cc::DrawScrollingContentsOp>(
+  result_.PushDrawScrollingContentsOp(
       scroll_translation.ScrollNode()->GetCompositorElementId(),
       std::move(scrolling_contents_list),
-      gfx::PointAtOffsetFromOrigin(-scroll_translation.Get2dTranslation()));
-  result_.EndPaintOfUnpaired(
+      gfx::PointAtOffsetFromOrigin(-scroll_translation.Get2dTranslation()),
       chunk_to_layer_mapper_.MapVisualRect(InfiniteIntRect()));
 }
 
