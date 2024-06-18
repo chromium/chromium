@@ -18,6 +18,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
@@ -108,7 +109,7 @@ uint32_t GetTopK(std::optional<uint32_t> top_k) {
 }
 
 // Handles sending and canceling responses.
-class Responder : public base::SupportsWeakPtr<Responder> {
+class Responder final {
  public:
   explicit Responder(
       mojo::PendingRemote<on_device_model::mojom::StreamingResponder> responder,
@@ -125,7 +126,7 @@ class Responder : public base::SupportsWeakPtr<Responder> {
   ChromeMLCancelFn* GetCancelFn() { return &cancel_; }
 
   ChromeMLExecutionOutputFn CreateOutputFn() {
-    return [weak_ptr = AsWeakPtr(),
+    return [weak_ptr = weak_ptr_factory_.GetWeakPtr(),
             task_runner = base::SequencedTaskRunner::GetCurrentDefault()](
                const ChromeMLExecutionOutput* output) {
       std::optional<std::string> text;
@@ -217,11 +218,12 @@ class Responder : public base::SupportsWeakPtr<Responder> {
   const scoped_refptr<LanguageDetector> language_detector_;
   ChromeMLCancelFn cancel_;
   base::OnceClosure on_complete_;
+  base::WeakPtrFactory<Responder> weak_ptr_factory_{this};
 };
 
 // Handles calling the ContextClient on completion and canceling the context
 // request.
-class ContextHolder : public base::SupportsWeakPtr<ContextHolder> {
+class ContextHolder final {
  public:
   explicit ContextHolder(
       mojo::PendingRemote<on_device_model::mojom::ContextClient> client,
@@ -248,6 +250,10 @@ class ContextHolder : public base::SupportsWeakPtr<ContextHolder> {
 
   ChromeMLContextSavedFn CreateContextSavedFn() {
     return CreateWeakCallbackFn(&ContextHolder::OnComplete, this);
+  }
+
+  base::WeakPtr<ContextHolder> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
   }
 
  private:
@@ -280,6 +286,7 @@ class ContextHolder : public base::SupportsWeakPtr<ContextHolder> {
   base::OnceCallback<void(ContextHolder*)> on_disconnect_;
   ChromeMLCancelFn cancel_;
   base::OnceClosure on_complete_;
+  base::WeakPtrFactory<ContextHolder> weak_ptr_factory_{this};
 };
 
 class SessionImpl : public on_device_model::OnDeviceModel::Session {

@@ -29,9 +29,7 @@ class LanguageDetector;
 
 // Uses the ChromeML API to create a model based on the params passed to
 // |Create()|. This is the main interface for interacting with the model.
-class OnDeviceModelExecutor
-    : public on_device_model::OnDeviceModel,
-      public base::SupportsWeakPtr<OnDeviceModelExecutor> {
+class OnDeviceModelExecutor : public on_device_model::OnDeviceModel {
  public:
   explicit OnDeviceModelExecutor(base::PassKey<OnDeviceModelExecutor>,
                                  const ChromeML& chrome_ml);
