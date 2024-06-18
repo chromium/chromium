@@ -142,6 +142,11 @@ class VideoCaptureServiceImpl::VizGpuContextProvider
     // Ensure destroy context provider and not receive callbacks before clear up
     // |viz_gpu_|
     if (context_provider_) {
+      // Ensure there are no dangling pointers.
+      media::VideoCaptureGpuChannelHost::GetInstance()
+          .SetGpuMemoryBufferManager(nullptr);
+      media::VideoCaptureGpuChannelHost::GetInstance().SetSharedImageInterface(
+          nullptr);
       context_provider_.reset();
     }
   }
