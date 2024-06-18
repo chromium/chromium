@@ -12,6 +12,7 @@
 #include "ash/public/cpp/login_accelerators.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chromeos/ash/components/kiosk/vision/internals_page_processor.h"
 
 class Profile;
 
@@ -78,6 +79,16 @@ class KioskController {
   // * When the Kiosk Vision framework is not yet initialized.
   virtual kiosk_vision::TelemetryProcessor*
   GetKioskVisionTelemetryProcessor() = 0;
+
+  // Returns the `InternalsPageProcessor`.
+  // Can be `nullptr` in the following cases:
+  // * Outside a Kiosk session.
+  // * Before `InitializeSystemSession`.
+  // * When the Kiosk Vision framework is disabled by policy.
+  // * When the Kiosk Vision framework is not yet initialized.
+  // * When the internals page feature flag is disabled.
+  virtual kiosk_vision::InternalsPageProcessor*
+  GetKioskVisionInternalsPageProcessor() = 0;
 };
 
 }  // namespace ash

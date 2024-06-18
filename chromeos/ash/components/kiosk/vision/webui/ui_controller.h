@@ -8,8 +8,9 @@
 #include <memory>
 
 #include "base/containers/span.h"
-#include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "base/scoped_observation.h"
+#include "chromeos/ash/components/kiosk/vision/internals_page_processor.h"
 #include "chromeos/ash/components/kiosk/vision/webui/kiosk_vision_internals.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -24,8 +25,6 @@
 
 namespace ash::kiosk_vision {
 
-BASE_DECLARE_FEATURE(kEnableKioskVisionInternalsPage);
-
 // Alias for a callback with the same signature as the webui helper function
 // `webui::SetupWebUIDataSource`.
 //
@@ -36,13 +35,18 @@ using SetupWebUIDataSourceCallback = base::RepeatingCallback<void(
     base::span<const webui::ResourcePath> resources,
     int default_resource)>;
 
+using GetInternalsPageProcessorCallback =
+    base::RepeatingCallback<InternalsPageProcessor*()>;
+
 // The WebUI controller for chrome://kiosk-vision-internals. This page displays
 // development and debugging information for the Kiosk Vision feature.
 class UIController : public ui::MojoWebUIController,
-                     public mojom::PageConnector {
+                     public mojom::PageConnector,
+                     public InternalsPageProcessor::Observer {
  public:
   UIController(content::WebUI* web_ui,
-               SetupWebUIDataSourceCallback setup_callback);
+               SetupWebUIDataSourceCallback setup_callback,
+               GetInternalsPageProcessorCallback get_processor_callback);
   UIController(const UIController&) = delete;
   UIController& operator=(const UIController&) = delete;
   ~UIController() override;
@@ -54,9 +58,18 @@ class UIController : public ui::MojoWebUIController,
   // `ash::kiosk_vision::mojom::PageConnector` implementation.
   void BindPage(mojo::PendingRemote<mojom::Page> page_remote) override;
 
+  // `InternalsPageProcessor::Observer` implementation.
+  void OnStateChange(const mojom::State& new_state) override;
+
   mojo::Remote<mojom::Page> page_;
 
   mojo::Receiver<mojom::PageConnector> receiver_{this};
+
+  base::ScopedObservation<InternalsPageProcessor,
+                          InternalsPageProcessor::Observer>
+      observation_{this};
+
+  GetInternalsPageProcessorCallback get_processor_callback_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
@@ -64,7 +77,8 @@ class UIController : public ui::MojoWebUIController,
 // The WebUIConfig for chrome://kiosk-vision-internals.
 class UIConfig : public content::WebUIConfig {
  public:
-  explicit UIConfig(SetupWebUIDataSourceCallback setup_callback);
+  explicit UIConfig(SetupWebUIDataSourceCallback setup_callback,
+                    GetInternalsPageProcessorCallback get_processor_callback);
   UIConfig(const UIConfig&) = delete;
   UIConfig& operator=(const UIConfig&) = delete;
   ~UIConfig() override;
@@ -78,6 +92,7 @@ class UIConfig : public content::WebUIConfig {
 
  private:
   SetupWebUIDataSourceCallback setup_callback_;
+  GetInternalsPageProcessorCallback get_processor_callback_;
 };
 
 }  // namespace ash::kiosk_vision

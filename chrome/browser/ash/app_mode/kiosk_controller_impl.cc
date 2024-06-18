@@ -36,6 +36,7 @@
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/common/chrome_switches.h"
+#include "chromeos/ash/components/kiosk/vision/internals_page_processor.h"
 #include "chromeos/ash/components/kiosk/vision/kiosk_vision.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "components/account_id/account_id.h"
@@ -204,6 +205,15 @@ KioskControllerImpl::GetKioskVisionTelemetryProcessor() {
     return nullptr;
   }
   return kiosk_system_session->kiosk_vision().GetTelemetryProcessor();
+}
+
+kiosk_vision::InternalsPageProcessor*
+KioskControllerImpl::GetKioskVisionInternalsPageProcessor() {
+  auto* kiosk_system_session = GetKioskSystemSession();
+  if (!kiosk_system_session) {
+    return nullptr;
+  }
+  return kiosk_system_session->kiosk_vision().GetInternalsPageProcessor();
 }
 
 void KioskControllerImpl::OnUserLoggedIn(const user_manager::User& user) {

@@ -5,6 +5,14 @@
 #include "chrome/browser/ash/app_mode/fake_kiosk_controller.h"
 
 #include <optional>
+#include <string>
+#include <vector>
+
+#include "ash/public/cpp/login_accelerators.h"
+#include "chrome/browser/ash/app_mode/kiosk_app.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
+#include "chromeos/ash/components/kiosk/vision/internals_page_processor.h"
 
 namespace ash {
 
@@ -50,6 +58,11 @@ KioskSystemSession* FakeKioskController::GetKioskSystemSession() {
 kiosk_vision::TelemetryProcessor*
 FakeKioskController::GetKioskVisionTelemetryProcessor() {
   return telemetry_processor_;
+}
+
+kiosk_vision::InternalsPageProcessor*
+FakeKioskController::GetKioskVisionInternalsPageProcessor() {
+  return nullptr;
 }
 
 void FakeKioskController::SetKioskVisionTelemetryProcessor(

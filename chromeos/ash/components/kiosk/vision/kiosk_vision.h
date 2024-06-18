@@ -14,6 +14,7 @@
 #include "chromeos/ash/components/kiosk/vision/internal/camera_service_connector.h"
 #include "chromeos/ash/components/kiosk/vision/internal/detection_observer.h"
 #include "chromeos/ash/components/kiosk/vision/internal/pref_observer.h"
+#include "chromeos/ash/components/kiosk/vision/internals_page_processor.h"
 #include "chromeos/ash/components/kiosk/vision/telemetry_processor.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -39,9 +40,12 @@ class COMPONENT_EXPORT(KIOSK_VISION) KioskVision {
   KioskVision& operator=(const KioskVision&) = delete;
   ~KioskVision();
 
-  // Returns a pointer to the telemetry processor if it is enabled, or `nullptr`
-  // otherwise.
+  // Returns the telemetry processor. `nullptr` if it is disabled.
   TelemetryProcessor* GetTelemetryProcessor();
+
+  // Returns the chrome://kiosk-vision-internals processor. `nullptr` if it is
+  // disabled.
+  InternalsPageProcessor* GetInternalsPageProcessor();
 
   const CameraServiceConnector* GetCameraConnectorForTesting() const;
 
@@ -54,6 +58,9 @@ class COMPONENT_EXPORT(KIOSK_VISION) KioskVision {
 
   // `nullopt` if the telemetry API consumer is disabled.
   std::optional<TelemetryProcessor> telemetry_processor_;
+
+  // `nullopt` if the internals page is disabled.
+  std::optional<InternalsPageProcessor> internals_webui_processor_;
 
   // `nullopt` if this feature is disabled.
   std::optional<DetectionObserver> detection_observer_;

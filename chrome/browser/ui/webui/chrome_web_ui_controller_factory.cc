@@ -173,9 +173,11 @@
 #include "ash/webui/print_preview_cros/url_constants.h"
 #include "ash/webui/recorder_app_ui/url_constants.h"
 #include "ash/webui/vc_background_ui/url_constants.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/extensions/url_constants.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/ui/webui/ash/cellular_setup/mobile_setup_ui.h"
+#include "chromeos/ash/components/kiosk/vision/internals_page_processor.h"
 #include "chromeos/ash/components/kiosk/vision/webui/constants.h"
 #include "chromeos/ash/components/kiosk/vision/webui/ui_controller.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
@@ -326,7 +328,11 @@ template <>
 WebUIController* NewWebUI<ash::kiosk_vision::UIController>(WebUI* web_ui,
                                                            const GURL& url) {
   return new ash::kiosk_vision::UIController(
-      web_ui, base::BindRepeating(webui::SetupWebUIDataSource));
+      web_ui, base::BindRepeating(webui::SetupWebUIDataSource),
+      base::BindRepeating([]() {
+        return ash::KioskController::Get()
+            .GetKioskVisionInternalsPageProcessor();
+      }));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -446,8 +452,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (url.host_piece() ==
           ash::kiosk_vision::kChromeUIKioskVisionInternalsHost &&
-      base::FeatureList::IsEnabled(
-          ash::kiosk_vision::kEnableKioskVisionInternalsPage)) {
+      ash::kiosk_vision::IsInternalsPageEnabled()) {
     return &NewWebUI<ash::kiosk_vision::UIController>;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -9,6 +9,8 @@ assert(is_chromeos_ash)
 component("vision") {
   defines = [ "IS_KIOSK_VISION_IMPL" ]
   sources = [
+    "internals_page_processor.cc",
+    "internals_page_processor.h",
     "kiosk_vision.cc",
     "kiosk_vision.h",
     "telemetry_processor.cc",
@@ -20,6 +22,7 @@ component("vision") {
     "//base",
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/dlcservice:dlcservice_proto",
+    "//chromeos/ash/components/kiosk/vision/webui:mojo_bindings",
     "//components/capture_mode",
     "//components/prefs",
     "//components/reporting/proto:metric_data_proto",

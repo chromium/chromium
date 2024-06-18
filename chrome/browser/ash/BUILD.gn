@@ -5058,6 +5058,7 @@ static_library("test_support") {
     "//chromeos/ash/components/dbus/chunneld",
     "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/dbus/seneschal",
+    "//chromeos/ash/components/kiosk/vision",
     "//chromeos/ash/components/login/login_state",
     "//chromeos/ash/components/nearby/common/connections_manager",
     "//chromeos/dbus/constants",

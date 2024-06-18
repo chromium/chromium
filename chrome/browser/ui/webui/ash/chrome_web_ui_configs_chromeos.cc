@@ -45,6 +45,7 @@
 #include "ash/webui/shortcut_customization_ui/shortcut_customization_app_ui.h"
 #include "ash/webui/status_area_internals/status_area_internals_ui.h"
 #include "ash/webui/vc_background_ui/vc_background_ui.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/eche_app/eche_app_manager_factory.h"
 #include "chrome/browser/ash/mall/chrome_mall_ui_delegate.h"
 #include "chrome/browser/ash/multidevice_debug/proximity_auth_ui_config.h"
@@ -254,7 +255,11 @@ void RegisterAshChromeWebUIConfigs() {
   map.AddWebUIConfig(
       std::make_unique<extended_updates::ExtendedUpdatesUIConfig>());
   map.AddWebUIConfig(std::make_unique<ash::kiosk_vision::UIConfig>(
-      base::BindRepeating(webui::SetupWebUIDataSource)));
+      base::BindRepeating(webui::SetupWebUIDataSource),
+      base::BindRepeating([]() {
+        return ash::KioskController::Get()
+            .GetKioskVisionInternalsPageProcessor();
+      })));
   map.AddWebUIConfig(
       MakeComponentConfigWithDelegate<FilesInternalsUIConfig, FilesInternalsUI,
                                       ChromeFilesInternalsUIDelegate>());

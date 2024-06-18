@@ -7,11 +7,13 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/containers/span.h"
-#include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "chromeos/ash/components/grit/kiosk_vision_internals_resources.h"
 #include "chromeos/ash/components/grit/kiosk_vision_internals_resources_map.h"
+#include "chromeos/ash/components/kiosk/vision/internals_page_processor.h"
 #include "chromeos/ash/components/kiosk/vision/webui/constants.h"
 #include "chromeos/ash/components/kiosk/vision/webui/kiosk_vision_internals.mojom.h"
 #include "content/public/browser/browser_context.h"
@@ -27,13 +29,20 @@
 
 namespace ash::kiosk_vision {
 
-BASE_FEATURE(kEnableKioskVisionInternalsPage,
-             "EnableKioskVisionInternalsPage",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+namespace {
 
-UIController::UIController(content::WebUI* web_ui,
-                           SetupWebUIDataSourceCallback setup_callback)
-    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
+mojom::StatePtr ToState(mojom::Status status) {
+  return mojom::State::New(status, std::vector<mojom::BoxPtr>{});
+}
+
+}  // namespace
+
+UIController::UIController(
+    content::WebUI* web_ui,
+    SetupWebUIDataSourceCallback setup_callback,
+    GetInternalsPageProcessorCallback get_processor_callback)
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true),
+      get_processor_callback_(std::move(get_processor_callback)) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       web_ui->GetWebContents()->GetBrowserContext(),
       std::string(kChromeUIKioskVisionInternalsHost));
@@ -57,22 +66,44 @@ void UIController::BindInterface(
 void UIController::BindPage(mojo::PendingRemote<mojom::Page> page_remote) {
   page_.reset();
   page_.Bind(std::move(page_remote));
+  page_.set_disconnect_handler(
+      base::BindOnce([](UIController* self) { self->observation_.Reset(); },
+                     // Safe because `this` owns `page_`.
+                     base::Unretained(this)));
+
+  if (!IsInternalsPageEnabled()) {
+    page_->Display(ToState(mojom::Status::kFeatureDisabled));
+  } else if (InternalsPageProcessor* processor = get_processor_callback_.Run();
+             processor == nullptr) {
+    page_->Display(ToState(mojom::Status::kFeatureNotInitialized));
+  } else {
+    observation_.Observe(processor);
+  }
 }
 
-UIConfig::UIConfig(SetupWebUIDataSourceCallback setup_callback)
+void UIController::OnStateChange(const mojom::State& new_state) {
+  if (page_.is_bound()) {
+    page_->Display(new_state.Clone());
+  }
+}
+
+UIConfig::UIConfig(SetupWebUIDataSourceCallback setup_callback,
+                   GetInternalsPageProcessorCallback get_processor_callback)
     : WebUIConfig(content::kChromeUIScheme, kChromeUIKioskVisionInternalsHost),
-      setup_callback_(std::move(setup_callback)) {}
+      setup_callback_(std::move(setup_callback)),
+      get_processor_callback_(std::move(get_processor_callback)) {}
 
 UIConfig::~UIConfig() = default;
 
 bool UIConfig::IsWebUIEnabled(content::BrowserContext* browser_context) {
-  return base::FeatureList::IsEnabled(kEnableKioskVisionInternalsPage);
+  return IsInternalsPageEnabled();
 }
 
 std::unique_ptr<content::WebUIController> UIConfig::CreateWebUIController(
     content::WebUI* web_ui,
     const GURL& url) {
-  return std::make_unique<UIController>(web_ui, setup_callback_);
+  return std::make_unique<UIController>(web_ui, setup_callback_,
+                                        get_processor_callback_);
 }
 
 }  // namespace ash::kiosk_vision

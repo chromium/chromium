@@ -18,6 +18,7 @@ static_library("webui") {
 
   deps = [
     "//base",
+    "//chromeos/ash/components/kiosk/vision",
     "//chromeos/ash/components/kiosk/vision/webui:resources",
     "//content/public/browser",
     "//ui/webui:webui",

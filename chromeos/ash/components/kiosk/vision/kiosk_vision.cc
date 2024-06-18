@@ -17,8 +17,10 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice.pb.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
+#include "chromeos/ash/components/kiosk/vision/internal/camera_service_connector.h"
 #include "chromeos/ash/components/kiosk/vision/internal/detection_processor.h"
 #include "chromeos/ash/components/kiosk/vision/internal/pref_observer.h"
+#include "chromeos/ash/components/kiosk/vision/internals_page_processor.h"
 #include "chromeos/ash/components/kiosk/vision/pref_names.h"
 #include "chromeos/ash/components/kiosk/vision/telemetry_processor.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -89,19 +91,30 @@ void KioskVision::Disable() {
 
 void KioskVision::InitializeProcessors(std::string dlc_path) {
   telemetry_processor_.emplace();
-  detection_observer_.emplace(
-      DetectionProcessors({&telemetry_processor_.value()}));
+  DetectionProcessors ps = {&telemetry_processor_.value()};
+  if (IsInternalsPageEnabled()) {
+    internals_webui_processor_.emplace();
+    ps.push_back(&internals_webui_processor_.value());
+  }
+  detection_observer_.emplace(std::move(ps));
   camera_connector_.emplace(std::move(dlc_path), &detection_observer_.value());
   camera_connector_->Start();
 }
 
 TelemetryProcessor* KioskVision::GetTelemetryProcessor() {
-  return telemetry_processor_.has_value() ? &*telemetry_processor_ : nullptr;
+  return telemetry_processor_.has_value() ? &telemetry_processor_.value()
+                                          : nullptr;
+}
+
+InternalsPageProcessor* KioskVision::GetInternalsPageProcessor() {
+  return internals_webui_processor_.has_value()
+             ? &internals_webui_processor_.value()
+             : nullptr;
 }
 
 const CameraServiceConnector* KioskVision::GetCameraConnectorForTesting()
     const {
-  return camera_connector_.has_value() ? &*camera_connector_ : nullptr;
+  return camera_connector_.has_value() ? &camera_connector_.value() : nullptr;
 }
 
 void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {

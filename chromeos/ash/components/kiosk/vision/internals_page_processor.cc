@@ -1,0 +1,82 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chromeos/ash/components/kiosk/vision/internals_page_processor.h"
+
+#include <cstddef>
+#include <utility>
+#include <vector>
+
+#include "base/feature_list.h"
+#include "chromeos/ash/components/kiosk/vision/webui/kiosk_vision_internals.mojom.h"
+#include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-forward.h"
+#include "media/capture/video/chromeos/mojom/cros_camera_service.mojom.h"
+
+namespace ash::kiosk_vision {
+
+namespace {
+
+mojom::StatePtr NewState(mojom::Status status,
+                         std::vector<mojom::BoxPtr> boxes = {}) {
+  return mojom::State::New(status, std::move(boxes));
+}
+
+std::vector<mojom::BoxPtr> DetectionToBoxes(
+    const cros::mojom::KioskVisionDetection& detection) {
+  std::vector<mojom::BoxPtr> boxes;
+  // TODO(crbug.com/336760251): use real `detection` data to populate boxes.
+  constexpr int kBoxesPerRow = 6, kMaxOffset = 24;
+  for (const auto& appearance : detection.appearances) {
+    int offset = appearance->person_id % kMaxOffset;
+    boxes.push_back(
+        mojom::Box::New(/*top=*/10 + 50 * (offset / kBoxesPerRow),
+                        /*left=*/20 + 50 * (offset % kBoxesPerRow),
+                        /*right=*/60 + 50 * (offset % kBoxesPerRow),
+                        /*bottom=*/50 + 50 * (offset / kBoxesPerRow)));
+  }
+  return boxes;
+}
+
+}  // namespace
+
+InternalsPageProcessor::InternalsPageProcessor()
+    : last_state_(NewState(mojom::Status::kUnknown)) {}
+
+InternalsPageProcessor::~InternalsPageProcessor() = default;
+
+void InternalsPageProcessor::OnDetection(
+    const cros::mojom::KioskVisionDetection& detection) {
+  NotifyStateChange(
+      NewState(mojom::Status::kRunning, DetectionToBoxes(detection)));
+}
+
+void InternalsPageProcessor::OnError(cros::mojom::KioskVisionError error) {
+  NotifyStateChange(NewState(mojom::Status::kError));
+}
+
+void InternalsPageProcessor::NotifyStateChange(mojom::StatePtr new_state) {
+  last_state_ = std::move(new_state);
+  for (auto& observer : observers_) {
+    observer.OnStateChange(*last_state_);
+  }
+}
+
+void InternalsPageProcessor::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+  observer->OnStateChange(*last_state_);
+}
+
+void InternalsPageProcessor::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+BASE_FEATURE(kEnableKioskVisionInternalsPage,
+             "EnableKioskVisionInternalsPage",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsInternalsPageEnabled() {
+  return base::FeatureList::IsEnabled(kEnableKioskVisionInternalsPage);
+}
+
+}  // namespace ash::kiosk_vision

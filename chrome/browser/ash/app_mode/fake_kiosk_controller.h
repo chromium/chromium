@@ -5,8 +5,16 @@
 #ifndef CHROME_BROWSER_ASH_APP_MODE_FAKE_KIOSK_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_APP_MODE_FAKE_KIOSK_CONTROLLER_H_
 
+#include <optional>
+#include <string>
+#include <vector>
+
+#include "ash/public/cpp/login_accelerators.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ash/app_mode/kiosk_app.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
+#include "chromeos/ash/components/kiosk/vision/internals_page_processor.h"
 
 namespace ash {
 
@@ -37,6 +45,8 @@ class FakeKioskController : public KioskController {
       const std::optional<std::string>& app_name) override;
   KioskSystemSession* GetKioskSystemSession() override;
   kiosk_vision::TelemetryProcessor* GetKioskVisionTelemetryProcessor() override;
+  kiosk_vision::InternalsPageProcessor* GetKioskVisionInternalsPageProcessor()
+      override;
 
   void SetKioskVisionTelemetryProcessor(
       kiosk_vision::TelemetryProcessor* telemetry_processor);
