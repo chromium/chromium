@@ -50,12 +50,34 @@ class CORE_EXPORT MediaVideoVisibilityTracker final
     int total_ignored_nodes_not_opaque = 0;
   };
 
+  // Struct to hold various variables used during occlusion computations.
+  struct OcclusionState {
+    float occluded_area = 0.0;
+    VectorOf<SkIRect> occluding_rects;
+    PhysicalRect intersection_rect;
+    PhysicalRect video_element_rect;
+  };
+
+  // Indicates if the |ReportVisibilityCb| should be executed, or not.
+  enum class ShouldReportVisibility {
+    kNo,
+    kYes,
+  };
+
   static constexpr base::TimeDelta kMinimumAllowedHitTestInterval =
       base::Milliseconds(500);
 
   using ReportVisibilityCb = base::RepeatingCallback<void(bool)>;
   using TrackerAttachedToDocument = WeakMember<Document>;
   using ClientIdsSet = WTF::HashSet<DisplayItemClientId>;
+
+  // `RequestVisibilityCallback` is used to enable computing video visibility
+  // on-demand, in response to calls to the MediaPlayer interface
+  // `RequestVisibility` method.
+  //
+  // The boolean parameter represents whether a video element meets
+  // `visibility_threshold_`.
+  using RequestVisibilityCallback = base::OnceCallback<void(bool)>;
 
   MediaVideoVisibilityTracker(
       HTMLVideoElement& video,
@@ -79,8 +101,13 @@ class CORE_EXPORT MediaVideoVisibilityTracker final
   void MaybeAddFullscreenEventListeners();
   void MaybeRemoveFullscreenEventListeners();
 
-  // Allows the visibility tracker to compute video visibility on demand.
-  bool ComputeVisibilityOnDemand();
+  // Takes the `RequestVisibilityCallback` and either computes visibility
+  // immediately, or schedules the computation for later, depending on the the
+  // document lifecycle state.
+  //
+  // If this method is called multiple times in a row, the newest callback
+  // always takes precedence. Previous ones are immediately run with `false`.
+  void RequestVisibility(RequestVisibilityCallback request_visibility_callback);
 
   void Trace(Visitor*) const override;
 
@@ -113,7 +140,21 @@ class CORE_EXPORT MediaVideoVisibilityTracker final
                                             const Node& node);
   bool MeetsVisibilityThreshold(Metrics& counters, const PhysicalRect& rect);
   void ReportVisibility(bool meets_visibility_threshold);
-  void OnIntersectionChanged();
+  bool ComputeVisibility();
+
+  // Resets the various member variables used by `ComputeOcclusion()`.
+  void ResetMembers();
+
+  // Computes the area of the video element that is occluded by the viewport.
+  void ComputeAreaOccludedByViewport(const LocalFrameView& local_frame_view);
+
+  // Computes and reports visibility as appropriate. This method is called when
+  // either computing visibility on demand, or continuously. When called to
+  // compute visibility on demand, if the document lifecycle is in the
+  // `DocumentLifecycle::kPaintClean` state, visibility is computed immediately,
+  // otherwise the computation will take place during
+  // `DidFinishLifecycleUpdate`.
+  void MaybeComputeVisibility(ShouldReportVisibility should_report_visibility);
 
   // LocalFrameView::LifecycleNotificationObserver
   void DidFinishLifecycleUpdate(const LocalFrameView&) override;
@@ -125,11 +166,9 @@ class CORE_EXPORT MediaVideoVisibilityTracker final
   // not. A video element with visibility greater or equal than
   // |visibility_threshold_| is considered to meet the visibility threshold.
   float visibility_threshold_ = 1.0;
-  float occluded_area_ = 0.0;
-  VectorOf<SkIRect> occluding_rects_;
-  PhysicalRect intersection_rect_;
-  PhysicalRect video_element_rect_;
+  OcclusionState occlusion_state_;
   ReportVisibilityCb report_visibility_cb_;
+  RequestVisibilityCallback request_visibility_callback_;
   base::TimeTicks last_hit_test_timestamp_;
   const base::TimeDelta hit_test_interval_;
 

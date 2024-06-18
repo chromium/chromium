@@ -405,8 +405,7 @@ void HTMLVideoElement::RequestVisibility(
     return;
   }
 
-  std::move(request_visibility_cb)
-      .Run(visibility_tracker_->ComputeVisibilityOnDemand());
+  visibility_tracker_->RequestVisibility(std::move(request_visibility_cb));
 }
 
 void HTMLVideoElement::PaintCurrentFrame(cc::PaintCanvas* canvas,

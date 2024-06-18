@@ -59,6 +59,9 @@ interface MediaPlayer {
   // Request the media player to check if it has a video that meets the
   // visibility threshold defined by |HTMLVideoElement| (kVisibilityThreshold).
   // The answer is computed by the |MediaVideoVisibilityTracker|.
+  //
+  // If this method is called multiple times in a row, the newest callback
+  // always takes precedence. Previous ones are immediately run with `false`.
   RequestVisibility() => (bool has_sufficiently_visible_video);
 };
 
