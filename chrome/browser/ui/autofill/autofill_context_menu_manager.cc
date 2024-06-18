@@ -57,6 +57,7 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -534,6 +535,8 @@ void AutofillContextMenuManager::AddPasswordsManualFallbackItems(
   const bool add_import_passwords_submenu_option = !user_has_passwords_saved;
   const bool add_submenu =
       add_select_password_submenu_option || add_import_passwords_submenu_option;
+  const ui::ImageModel password_manager_icon = ui::ImageModel::FromVectorIcon(
+      vector_icons::kPasswordManagerIcon, ui::kColorIcon, kContextMenuIconSize);
 
   if (add_select_password_submenu_option) {
     passwords_submenu_model_.AddItemWithStringId(
@@ -559,15 +562,24 @@ void AutofillContextMenuManager::AddPasswordsManualFallbackItems(
   }
 
   if (add_submenu) {
-    menu_model_->AddSubMenuWithStringId(
+    menu_model_->AddSubMenuWithStringIdAndIcon(
         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS,
         IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS,
-        &passwords_submenu_model_);
+        &passwords_submenu_model_, password_manager_icon);
   } else {
-    menu_model_->AddItemWithStringId(
+    menu_model_->AddItemWithStringIdAndIcon(
         IDC_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SELECT_PASSWORD,
-        IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS);
+        IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS, password_manager_icon);
   }
+
+  // Note that the code above adds exactly one entry to `menu_model_` (any other
+  // entries are added to the submenu) and the goal is to display the "NEW"
+  // badge for this entry.
+  menu_model_->SetIsNewFeatureAt(
+      menu_model_->GetItemCount() - 1,
+      UserEducationService::MaybeShowNewBadge(
+          delegate_->GetBrowserContext(),
+          password_manager::features::kPasswordManualFallbackAvailable));
 }
 
 void AutofillContextMenuManager::LogManualFallbackContextMenuEntryShown(
@@ -729,6 +741,9 @@ void AutofillContextMenuManager::ExecuteFallbackForPasswordsCommand(
       AutofillSuggestionTriggerSource::kManualFallbackPasswords);
   LogManualFallbackContextMenuEntryAccepted(autofill_driver,
                                             FillingProduct::kPassword);
+  UserEducationService::MaybeNotifyPromoFeatureUsed(
+      delegate_->GetBrowserContext(),
+      password_manager::features::kPasswordManualFallbackAvailable);
 }
 
 void AutofillContextMenuManager::ExecuteFallbackForAddressesCommand(

@@ -37,6 +37,8 @@ chromium-metrics-reviews@google.com.
       summary="Lens Overlay entry points in app and web context menus."/>
   <variant name="NewBadgeTestFeature"
       summary="Used for testing purposes only."/>
+  <variant name="PasswordManualFallbackAvailable"
+      summary="For passwords manual fallback; shown in the context menu."/>
   <variant name="PlusAddressFallbackFromContextMenu"
       summary="Plus address manual fallback entry point in the context menu."/>
   <variant name="TabOrganization"

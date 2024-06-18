@@ -48,6 +48,7 @@
 #include "components/compose/core/browser/compose_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_features.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/plus_addresses/features.h"
 #include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
 #include "components/saved_tab_groups/features.h"
@@ -1416,6 +1417,12 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
           128, "jkeitel@google.com",
           "Shown in the autofill section of the context menu where manual "
           "fallback for plus addresses is offered.")));
+
+  registry.RegisterFeature(user_education::NewBadgeSpecification(
+      password_manager::features::kPasswordManualFallbackAvailable,
+      user_education::Metadata(
+          128, "theocristea@google.com",
+          "For passwords manual fallback; shown in the context menu.")));
 }
 
 std::unique_ptr<BrowserFeaturePromoController> CreateUserEducationResources(
