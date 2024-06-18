@@ -365,7 +365,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                         // We shouldn't wait indefinitely for the account fetching to succeed, at it
                         // might block certain features. Fall back to an empty list to allow the
                         // user to proceed.
-                        allAccounts = mAllAccounts.get() == null ? mAllAccounts.get() : List.of();
+                        allAccounts = mAllAccounts.get() == null ? List.of() : mAllAccounts.get();
                     }
                 }
                 if (mNumberOfRetries != 0) {
@@ -432,5 +432,11 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
             return capabilityName.substring(ACCOUNT_CAPABILITY_NAME_PREFIX.length());
         }
         return capabilityName;
+    }
+
+    public void resetAccountsForTesting() {
+        mCoreAccountInfosPromise = new Promise<>();
+        mAllAccounts.set(null);
+        updateAccounts();
     }
 }

@@ -116,7 +116,7 @@ public class AccountManagerFacadeImplTest {
     private ShadowPostTaskImpl mPostTaskRunner;
 
     private FakeAccountManagerDelegate mDelegate;
-    private AccountManagerFacade mFacade;
+    private AccountManagerFacadeImpl mFacade;
 
     @Mock private AccountManagerDelegate mDelegateMock;
 
@@ -137,6 +137,7 @@ public class AccountManagerFacadeImplTest {
         ThreadUtils.setThreadAssertsDisabledForTesting(true);
         mDelegate = spy(new FakeAccountManagerDelegate());
         mFacade = new AccountManagerFacadeImpl(mDelegate);
+        mFacade.resetAccountsForTesting();
 
         mFacadeWithSystemDelegate =
                 new AccountManagerFacadeImpl(new SystemAccountManagerDelegate());
@@ -395,6 +396,7 @@ public class AccountManagerFacadeImplTest {
 
     @Test
     public void testGetCoreAccountInfosWithAccountPatternsChange() throws Exception {
+        mDelegate.callOnCoreAccountInfoChanged();
         Assert.assertEquals(List.of(), mFacade.getCoreAccountInfos().getResult());
 
         CoreAccountInfo accountInfo1 = addTestAccount("test1@gmail.com");
