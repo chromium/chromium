@@ -252,9 +252,16 @@ MailboxVideoFrameConverter::MailboxVideoFrameConverter(
   gpu_weak_this_ = gpu_weak_this_factory_.GetWeakPtr();
 }
 
+void MailboxVideoFrameConverter::Initialize(
+    scoped_refptr<base::SequencedTaskRunner> parent_task_runner,
+    OutputCB output_cb) {
+  parent_task_runner_ = std::move(parent_task_runner);
+  output_cb_ = std::move(output_cb);
+}
+
 void MailboxVideoFrameConverter::Destroy() {
-  DCHECK(!parent_task_runner() ||
-         parent_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(!parent_task_runner_ ||
+         parent_task_runner_->RunsTasksInCurrentSequence());
   DVLOGF(2);
 
   parent_weak_this_factory_.InvalidateWeakPtrs();
@@ -283,8 +290,9 @@ bool MailboxVideoFrameConverter::InitializeOnGPUThread() {
   return gpu_delegate_->Initialize();
 }
 
-void MailboxVideoFrameConverter::ConvertFrameImpl(
+void MailboxVideoFrameConverter::ConvertFrame(
     scoped_refptr<FrameResource> frame) {
+  DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
   DVLOGF(4);
 
   if (!frame ||
@@ -293,8 +301,10 @@ void MailboxVideoFrameConverter::ConvertFrameImpl(
     return OnError(FROM_HERE, "Invalid frame.");
   }
 
-  FrameResource* origin_frame = GetOriginalFrame(*frame);
-
+  FrameResource* origin_frame =
+      !get_original_frame_cb_.is_null()
+          ? get_original_frame_cb_.Run(frame->GetSharedMemoryId())
+          : frame.get();
   if (!origin_frame)
     return OnError(FROM_HERE, "Failed to get origin frame.");
 
@@ -322,7 +332,7 @@ void MailboxVideoFrameConverter::WrapSharedImageAndVideoFrameAndOutput(
     FrameResource* origin_frame,
     scoped_refptr<FrameResource> frame,
     scoped_refptr<gpu::ClientSharedImage> shared_image) {
-  DCHECK(parent_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(shared_image);
 
   const UniqueID origin_frame_id = origin_frame->unique_id();
@@ -416,7 +426,7 @@ void MailboxVideoFrameConverter::WrapSharedImageAndVideoFrameAndOutput(
   mailbox_frame->metadata().is_webgpu_compatible =
       frame->metadata().is_webgpu_compatible;
 
-  Output(VideoFrameResource::Create(std::move(mailbox_frame)));
+  output_cb_.Run(VideoFrameResource::Create(std::move(mailbox_frame)));
 }
 
 void MailboxVideoFrameConverter::ConvertFrameOnGPUThread(
@@ -452,7 +462,7 @@ void MailboxVideoFrameConverter::ConvertFrameOnGPUThread(
     }
     if (res) {
       DCHECK(stored_shared_image->HasData());
-      parent_task_runner()->PostTask(
+      parent_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(
               std::move(wrap_shared_image_and_video_frame_and_output_cb),
@@ -473,12 +483,12 @@ void MailboxVideoFrameConverter::ConvertFrameOnGPUThread(
       new_shared_image->shared_image();
   // |origin_frame| is valid as long as |frame| lives. |frame| is kept alive in
   // |wrap_shared_image_and_video_frame_and_output_cb|.
-  parent_task_runner()->PostTask(
+  parent_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&MailboxVideoFrameConverter::RegisterSharedImage,
                      parent_weak_this_, base::Unretained(origin_frame),
                      std::move(new_shared_image)));
-  parent_task_runner()->PostTask(
+  parent_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(wrap_shared_image_and_video_frame_and_output_cb),
                      std::move(new_client_shared_image)));
@@ -563,7 +573,7 @@ void MailboxVideoFrameConverter::RegisterSharedImage(
     FrameResource* origin_frame,
     std::unique_ptr<ScopedSharedImage> scoped_shared_image) {
   DVLOGF(4) << "frame: " << origin_frame->unique_id();
-  DCHECK(parent_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(scoped_shared_image);
   DCHECK(scoped_shared_image->HasData());
   DCHECK(!base::Contains(shared_images_, origin_frame->unique_id()));
@@ -586,7 +596,7 @@ void MailboxVideoFrameConverter::RegisterSharedImage(
                            parent_weak_ptr, origin_frame_id,
                            std::move(shared_image)));
       },
-      std::move(scoped_shared_image), parent_task_runner(), parent_weak_this_,
+      std::move(scoped_shared_image), parent_task_runner_, parent_weak_this_,
       origin_frame->unique_id()));
 }
 
@@ -614,7 +624,7 @@ void MailboxVideoFrameConverter::WaitOnSyncTokenAndReleaseFrameOnGPUThread(
 void MailboxVideoFrameConverter::UnregisterSharedImage(
     UniqueID origin_frame_id,
     std::unique_ptr<ScopedSharedImage> scoped_shared_image) {
-  DCHECK(parent_task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
   DVLOGF(4);
 
   auto it = shared_images_.find(origin_frame_id);
@@ -623,24 +633,46 @@ void MailboxVideoFrameConverter::UnregisterSharedImage(
   shared_images_.erase(it);
 }
 
-void MailboxVideoFrameConverter::AbortPendingFramesImpl() {
+void MailboxVideoFrameConverter::AbortPendingFrames() {
+  DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
   DVLOGF(4) << "Number of pending frames: " << input_frame_queue_.size();
 
   input_frame_queue_ = {};
 }
 
-bool MailboxVideoFrameConverter::HasPendingFramesImpl() const {
+bool MailboxVideoFrameConverter::HasPendingFrames() const {
+  DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
   DVLOGF(4) << "Number of pending frames: " << input_frame_queue_.size();
 
   return !input_frame_queue_.empty();
 }
 
+void MailboxVideoFrameConverter::set_get_original_frame_cb(
+    GetOriginalFrameCB get_original_frame_cb) {
+  DCHECK(parent_task_runner_->RunsTasksInCurrentSequence());
+  get_original_frame_cb_ = std::move(get_original_frame_cb);
+}
+
 void MailboxVideoFrameConverter::OnError(const base::Location& location,
                                          const std::string& msg) {
-  parent_task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&FrameResourceConverter::AbortPendingFrames,
-                                parent_weak_this_));
+  VLOGF(1) << "(" << location.ToString() << ") " << msg;
 
-  FrameResourceConverter::OnError(location, msg);
+  parent_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&MailboxVideoFrameConverter::AbortPendingFrames,
+                                parent_weak_this_));
+  // Currently we don't have a dedicated callback to notify client that error
+  // occurs. Output a null frame to indicate any error occurs.
+  // TODO(akahuang): Create an error notification callback.
+  parent_task_runner_->PostTask(FROM_HERE, base::BindOnce(output_cb_, nullptr));
 }
+
 }  // namespace media
+
+namespace std {
+
+void default_delete<media::MailboxVideoFrameConverter>::operator()(
+    media::MailboxVideoFrameConverter* ptr) const {
+  ptr->Destroy();
+}
+
+}  // namespace std
