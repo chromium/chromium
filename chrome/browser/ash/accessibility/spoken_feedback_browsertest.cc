@@ -7,6 +7,7 @@
 #include <queue>
 
 #include "ash/accessibility/accessibility_controller.h"
+#include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -46,6 +47,8 @@
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
 #include "chrome/browser/ash/accessibility/automation_test_utils.h"
+#include "chrome/browser/ash/accessibility/fullscreen_magnifier_test_helper.h"
+#include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/input_method/ui/candidate_window_view.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
@@ -73,6 +76,7 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/background_script_executor.h"
 #include "extensions/browser/browsertest_util.h"
+#include "extensions/browser/extension_host_test_helper.h"
 #include "extensions/common/constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -2539,6 +2543,160 @@ IN_PROC_BROWSER_TEST_F(SpokenFeedbackWithCandidateWindowTest,
   });
   sm_.ExpectSpeech(test::SpeechMonitor::Expectation("value 2").WithoutText(
       {"value 0", "value 1", "value 3"}));
+
+  sm_.Replay();
+}
+
+class SpokenFeedbackWithMagnifierTest : public SpokenFeedbackTest {
+ protected:
+  SpokenFeedbackWithMagnifierTest() {}
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    scoped_feature_list_.InitAndEnableFeature(
+        ::features::kAccessibilityMagnifierFollowsChromeVox);
+    SpokenFeedbackTest::SetUpCommandLine(command_line);
+  }
+
+  void EnableMagnifier() {
+    Profile* profile = AccessibilityManager::Get()->profile();
+    extensions::ExtensionHostTestHelper host_helper(
+        profile, extension_misc::kAccessibilityCommonExtensionId);
+    profile->GetPrefs()->SetBoolean(prefs::kAccessibilityScreenMagnifierEnabled,
+                                    true);
+
+    FullscreenMagnifierController* fullscreen_magnifier_controller =
+        Shell::Get()->fullscreen_magnifier_controller();
+    MagnifierAnimationWaiter waiter(fullscreen_magnifier_controller);
+    waiter.Wait();
+
+    ASSERT_TRUE(MagnificationManager::Get()->IsMagnifierEnabled());
+    host_helper.WaitForHostCompletedFirstLoad();
+    FullscreenMagnifierTestHelper::WaitForMagnifierJSReady(profile);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(TestAsNormalAndGuestUser,
+                         SpokenFeedbackWithMagnifierTest,
+                         ::testing::Values(kTestAsNormalUser,
+                                           kTestAsGuestUser));
+
+// TODO(b/347952840): Address flaky tests before feature flag
+// enable-accessibility-magnifier-follows-chromevox is enabled by default.
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackWithMagnifierTest,
+                       DISABLED_FullscreenMagnifierStaticTextSingleLine) {
+  EnableMagnifier();
+  EnableChromeVox();
+
+  AutomationTestUtils test_utils(extension_misc::kChromeVoxExtensionId);
+  gfx::Rect focus_bounds;
+
+  sm_.Call([this, &test_utils, &focus_bounds]() {
+    test_utils.SetUpTestSupport();
+
+    // Load a page with non-interactive text node that would not get keyboard
+    // focus so would not already get magnifier focus.
+    NavigateToUrl(GURL(R"(data:text/html;charset=utf-8,
+        <p>Hello world</p>)"));
+
+    // Set magnifier scale to something quite big so that the initial bounds
+    // of the text are not within the magnifier bounds.
+    AccessibilityManager::Get()->profile()->GetPrefs()->SetDouble(
+        prefs::kAccessibilityScreenMagnifierScale, 4.0);
+
+    gfx::Rect initial_viewport =
+        Shell::Get()->fullscreen_magnifier_controller()->GetViewportRect();
+    EXPECT_FALSE(initial_viewport.IsEmpty());
+
+    focus_bounds = test_utils.GetNodeBoundsInRoot("Hello world", "staticText");
+    EXPECT_FALSE(focus_bounds.size().IsEmpty());
+
+    // Ensure magnifier viewport is not currently already intersecting node.
+    EXPECT_FALSE(initial_viewport.Intersects(focus_bounds));
+
+    // Press right key to focus the text node.
+    SendKeyPressWithSearch(ui::VKEY_RIGHT);
+  });
+
+  sm_.ExpectSpeech("Hello world");
+
+  sm_.Call([&focus_bounds]() {
+    FullscreenMagnifierController* fullscreen_magnifier_controller =
+        Shell::Get()->fullscreen_magnifier_controller();
+    MagnifierAnimationWaiter waiter(fullscreen_magnifier_controller);
+
+    // Magnifier should now move to the focused area.
+    while (!fullscreen_magnifier_controller->GetViewportRect().Intersects(
+        focus_bounds)) {
+      waiter.Wait();
+    }
+
+    // Check that magnifier viewport is on node.
+    gfx::Rect final_viewport =
+        fullscreen_magnifier_controller->GetViewportRect();
+    EXPECT_TRUE(final_viewport.Intersects(focus_bounds));
+  });
+
+  sm_.Replay();
+}
+
+// TODO(b/347952840): Address flaky tests before feature flag
+// enable-accessibility-magnifier-follows-chromevox is enabled by default.
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackWithMagnifierTest,
+                       DISABLED_FullscreenMagnifierButton) {
+  EnableMagnifier();
+  EnableChromeVox();
+
+  AutomationTestUtils test_utils(extension_misc::kChromeVoxExtensionId);
+  gfx::Rect focus_bounds;
+
+  sm_.Call([this, &test_utils, &focus_bounds]() {
+    test_utils.SetUpTestSupport();
+
+    // Load a page with interactive text node that would get keyboard
+    // focus and should get magnifier focus.
+    NavigateToUrl(GURL(R"(data:text/html;charset=utf-8,
+        <button>Hello world</button>)"));
+
+    // Set magnifier scale to something quite big so that the initial bounds
+    // of the button are not within the magnifier bounds.
+    AccessibilityManager::Get()->profile()->GetPrefs()->SetDouble(
+        prefs::kAccessibilityScreenMagnifierScale, 4.0);
+
+    gfx::Rect initial_viewport =
+        Shell::Get()->fullscreen_magnifier_controller()->GetViewportRect();
+    EXPECT_FALSE(initial_viewport.IsEmpty());
+
+    focus_bounds = test_utils.GetNodeBoundsInRoot("Hello world", "button");
+    EXPECT_FALSE(focus_bounds.size().IsEmpty());
+
+    // Ensure magnifier viewport is not currently already intersecting node.
+    EXPECT_FALSE(initial_viewport.Intersects(focus_bounds));
+
+    // Press right key to focus the button.
+    SendKeyPressWithSearch(ui::VKEY_RIGHT);
+  });
+
+  sm_.ExpectSpeech("Hello world");
+
+  sm_.Call([&focus_bounds]() {
+    FullscreenMagnifierController* fullscreen_magnifier_controller =
+        Shell::Get()->fullscreen_magnifier_controller();
+    MagnifierAnimationWaiter waiter(fullscreen_magnifier_controller);
+
+    // Magnifier should now move to the focused area.
+    while (!fullscreen_magnifier_controller->GetViewportRect().Intersects(
+        focus_bounds)) {
+      waiter.Wait();
+    }
+
+    // Check that magnifier viewport is on node.
+    gfx::Rect final_viewport =
+        fullscreen_magnifier_controller->GetViewportRect();
+    EXPECT_TRUE(final_viewport.Intersects(focus_bounds));
+  });
 
   sm_.Replay();
 }

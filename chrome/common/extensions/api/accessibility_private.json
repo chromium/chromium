@@ -548,9 +548,21 @@
         ]
       },
       {
+        "name": "setChromeVoxFocus",
+        "type": "function",
+        "description": "Informs the system where Chrome Vox's focus is in screen coordinates when Magnifier is enabled. No-op when Magnifier is not enabled. Causes chrome.accessibilityPrivate.onChromeVoxFocusChanged to be fired within the AccessibilityCommon component extension.",
+        "parameters": [
+          {
+            "name": "bounds",
+            "$ref": "ScreenRect",
+            "description": "Bounds of current ChromeVox focus ring."
+          }
+        ]
+      },
+      {
         "name": "setSelectToSpeakFocus",
         "type": "function",
-        "description": "Informs the system where Select to Speak's reading focus is in screen coordinates. Causes chrome.accessibilityPrivate.onSelectToSpeakFocusChanged to be fired within the AccessibilityCommon component extension.",
+        "description": "Informs the system where Select to Speak's reading focus is in screen coordinates when Magnifier is enabled. No-op when Magnifier is not enabled. Causes chrome.accessibilityPrivate.onSelectToSpeakFocusChanged to be fired within the AccessibilityCommon component extension.",
         "parameters": [
           {
             "name": "bounds",
@@ -1042,6 +1054,18 @@
         "description": "Fired whenever ChromeVox should output introduction."
       },
       {
+        "name": "onChromeVoxFocusChanged",
+        "type": "function",
+        "description": "Fired when the ChromeVox focus changes and Magnifier is enabled.",
+        "parameters": [
+          {
+            "name": "bounds",
+            "$ref": "ScreenRect",
+            "description": "ChromeVox's focus bounds in global screen coordinates."
+          }
+        ]
+      },
+      {
         "name": "onAccessibilityGesture",
         "type": "function",
         "description": "Fired when an accessibility gesture is detected by the touch exploration controller.",
@@ -1069,7 +1093,7 @@
       {
         "name": "onSelectToSpeakFocusChanged",
         "type": "function",
-        "description": "Fired when the Select to Speak reading focus changes.",
+        "description": "Fired when the Select to Speak reading focus changes and Magnifier is enabled.",
         "parameters": [
           {
             "name": "bounds",

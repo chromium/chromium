@@ -350,6 +350,8 @@ declare global {
       export function setKeyboardListener(enabled: boolean, capture: boolean):
           void;
 
+      export function setChromeVoxFocus(bounds: ScreenRect): void;
+
       export function setSelectToSpeakFocus(bounds: ScreenRect): void;
 
       export function darkenScreen(darken: boolean): void;
@@ -441,6 +443,9 @@ declare global {
       export function showToast(type: ToastType): void;
 
       export const onIntroduceChromeVox: ChromeEvent<() => void>;
+
+      export const onChromeVoxFocusChanged:
+          ChromeEvent<(bounds: ScreenRect) => void>;
 
       export const onAccessibilityGesture:
           ChromeEvent<(gesture: Gesture, x: number, y: number) => void>;

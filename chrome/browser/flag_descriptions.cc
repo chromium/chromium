@@ -1161,6 +1161,11 @@ const char kAccessibilityFaceGazeName[] = "Experimental FaceGaze integration";
 const char kAccessibilityFaceGazeDescription[] =
     "This option enables the experimental FaceGaze ChromeOS integration";
 
+const char kAccessibilityMagnifierFollowsChromeVoxName[] =
+    "Magnifier follows ChromeVox focus";
+const char kAccessibilityMagnifierFollowsChromeVoxDescription[] =
+    "This option enables the fullscreen magnifier to follow ChromeVox's focus.";
+
 const char kAccessibilityMagnifierFollowsStsName[] =
     "Magnifier follows Select to Speak focus";
 const char kAccessibilityMagnifierFollowsStsDescription[] =

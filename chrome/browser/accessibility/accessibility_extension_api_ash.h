@@ -236,6 +236,14 @@ class AccessibilityPrivateSetHighlightsFunction : public ExtensionFunction {
                              ACCESSIBILITY_PRIVATE_SETHIGHLIGHTS)
 };
 
+// API function that is called when the ChromeVox focus changes.
+class AccessibilityPrivateSetChromeVoxFocusFunction : public ExtensionFunction {
+  ~AccessibilityPrivateSetChromeVoxFocusFunction() override {}
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.setChromeVoxFocus",
+                             ACCESSIBILITY_PRIVATE_SETCHROMEVOXFOCUS)
+};
+
 // API function that is called when the Select to Speak reading position
 // changes.
 class AccessibilityPrivateSetSelectToSpeakFocusFunction

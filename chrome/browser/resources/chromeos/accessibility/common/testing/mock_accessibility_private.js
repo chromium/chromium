@@ -206,6 +206,11 @@ class MockAccessibilityPrivate {
       removeListener: listener => {},
     };
 
+    this.onChromeVoxFocusChanged = {
+      addListener: listener => {},
+      removeListener: listener => {},
+    };
+
     this.onSelectToSpeakFocusChanged = {
       addListener: listener => {},
       removeListener: listener => {},

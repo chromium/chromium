@@ -191,6 +191,14 @@ bool IsExperimentalAccessibilityDictationContextCheckingEnabled() {
       ::features::kExperimentalAccessibilityDictationContextChecking);
 }
 
+BASE_FEATURE(kAccessibilityMagnifierFollowsChromeVox,
+             "AccessibilityMagnifierFollowsChromeVox",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsAccessibilityMagnifierFollowsChromeVoxEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kAccessibilityMagnifierFollowsChromeVox);
+}
+
 BASE_FEATURE(kAccessibilityMagnifierFollowsSts,
              "AccessibilityMagnifierFollowsSts",
              base::FEATURE_ENABLED_BY_DEFAULT);

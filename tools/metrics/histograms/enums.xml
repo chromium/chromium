@@ -18428,6 +18428,8 @@ from previous Chrome versions.
   <int value="-894185031" label="HighDynamicRange:disabled"/>
   <int value="-893673593" label="BentoOffline:disabled"/>
   <int value="-893625763" label="AutofillEnableManualFallbackIPH:disabled"/>
+  <int value="-893505053"
+      label="AccessibilityMagnifierFollowsChromeVox:disabled"/>
   <int value="-892428689" label="ManualPasswordGenerationAndroid:enabled"/>
   <int value="-892297699" label="EditContext:enabled"/>
   <int value="-891856063" label="MidiManagerAndroid:enabled"/>
@@ -23007,6 +23009,8 @@ from previous Chrome versions.
   <int value="1091520021" label="LauncherKeywordExtractionScoring:disabled"/>
   <int value="1091624595" label="BluetoothAdvertisementMonitoring:enabled"/>
   <int value="1091631619" label="disable-accelerated-video-encode"/>
+  <int value="1091750198"
+      label="AccessibilityMagnifierFollowsChromeVox:enabled"/>
   <int value="1092296990" label="EnableMultiMonitorsInCrd:disabled"/>
   <int value="1092896354" label="EnableFullscreenAppList:disabled"/>
   <int value="1093479250" label="AccessibilitySelectToSpeakShortcut:disabled"/>

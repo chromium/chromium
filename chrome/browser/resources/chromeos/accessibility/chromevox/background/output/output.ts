@@ -441,6 +441,9 @@ export class Output extends OutputInterface {
     // Display.
     if (this.speechCategory_ !== TtsCategory.LIVE && this.drawFocusRing_) {
       FocusBounds.set(this.locations_);
+      if (this.locations_ !== undefined && this.locations_.length !== 0) {
+        chrome.accessibilityPrivate.setChromeVoxFocus(this.locations_[0]);
+      }
     }
   }
 

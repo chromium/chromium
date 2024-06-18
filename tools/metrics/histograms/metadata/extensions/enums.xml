@@ -754,6 +754,7 @@ Called by update_extension_histograms.py.-->
       label="ACCESSIBILITY_PRIVATE_ON_SELECT_TO_SPEAK_FOCUS_CHANGED"/>
   <int value="555" label="TTS_ON_VOICES_CHANGED"/>
   <int value="556" label="OS_DIAGNOSTICS_ON_ROUTINE_FINISHED"/>
+  <int value="557" label="ACCESSIBILITY_PRIVATE_ON_CHROMEVOX_FOCUS_CHANGED"/>
 </enum>
 
 <enum name="ExtensionForceInstalledPreInstalledDeprecatedSite">
@@ -2747,6 +2748,7 @@ Called by update_extension_histograms.py.-->
   <int value="1889" label="WEBSTOREPRIVATE_GETMV2DEPRECATIONSTATUS"/>
   <int value="1890" label="PERMISSIONS_ADDSITEACCESSREQUEST"/>
   <int value="1891" label="PERMISSIONS_REMOVESITEACCESSREQUEST"/>
+  <int value="1892" label="ACCESSIBILITY_PRIVATE_SETCHROMEVOXFOCUS"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">

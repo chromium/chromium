@@ -2323,6 +2323,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-accessibility-magnifier-follows-chromevox",
+    "owners": [ "aldietz@google.com", "//ash/accessibility/OWNERS" ],
+    "expiry_milestone": 146
+  },
+  {
     "name": "enable-accessibility-magnifier-follows-sts",
     "owners": [ "katie@chromium.org", "//ash/accessibility/OWNERS" ],
     "expiry_milestone": 142

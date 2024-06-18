@@ -154,6 +154,10 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(
 AX_BASE_EXPORT bool
 IsExperimentalAccessibilityGoogleTtsHighQualityVoicesEnabled();
 
+// Whether the screen magnifier can follow the ChromeVox focus.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMagnifierFollowsChromeVox);
+AX_BASE_EXPORT bool IsAccessibilityMagnifierFollowsChromeVoxEnabled();
+
 // Whether the screen magnifier can follow the Select to Speak focus.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMagnifierFollowsSts);
 AX_BASE_EXPORT bool IsAccessibilityMagnifierFollowsStsEnabled();

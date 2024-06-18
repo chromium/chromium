@@ -8196,6 +8196,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAccessibilityFaceGazeDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAccessibilityFaceGaze)},
 
+    {"enable-accessibility-magnifier-follows-chromevox",
+     flag_descriptions::kAccessibilityMagnifierFollowsChromeVoxName,
+     flag_descriptions::kAccessibilityMagnifierFollowsChromeVoxDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(features::kAccessibilityMagnifierFollowsChromeVox)},
+
     {"enable-accessibility-magnifier-follows-sts",
      flag_descriptions::kAccessibilityMagnifierFollowsStsName,
      flag_descriptions::kAccessibilityMagnifierFollowsStsDescription, kOsCrOS,

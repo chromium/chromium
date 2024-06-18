@@ -1584,3 +1584,43 @@ AX_TEST_F('ChromeVoxOutputE2ETest', 'TreeGridLevel', async function() {
       'Want to learn how to use them?|row 1 column 2',
       [{value: 'name', start: 0, end: 30}], o);
 });
+
+AX_TEST_F('ChromeVoxOutputE2ETest', 'FocusFollowText', async function() {
+  const site = `<p>Hello World</p>
+                <button>Button</button>
+                <div>New Div</div>`;
+  const root = await this.runWithLoadedTree(site);
+  let called = false;
+  let actualBounds = {};
+
+  // Mock call to Accessibility Common extension
+  chrome.accessibilityPrivate.setChromeVoxFocus = ((bounds) => {
+    called = true;
+    actualBounds = bounds;
+  });
+
+  // Triggers drawing of the focus ring on text node
+  const text = root.find({role: RoleType.STATIC_TEXT});
+  new Output().withSpeech(CursorRange.fromNode(text)).go();
+  assertTrue(called);
+  assertEquals(text.location.left, actualBounds.left);
+  assertEquals(text.location.top, actualBounds.top);
+  assertEquals(text.location.width, actualBounds.width);
+  assertEquals(text.location.height, actualBounds.height);
+
+  // Shift focus to interactive element
+  const button = root.find({role: RoleType.BUTTON});
+  new Output().withSpeech(CursorRange.fromNode(button)).go();
+  assertEquals(button.location.left, actualBounds.left);
+  assertEquals(button.location.top, actualBounds.top);
+  assertEquals(button.location.width, actualBounds.width);
+  assertEquals(button.location.height, actualBounds.height);
+
+  // Ensure focus is shifted to new type of node that contains text
+  const div = root.find({role: RoleType.GENERIC_CONTAINER});
+  new Output().withSpeech(CursorRange.fromNode(div)).go();
+  assertEquals(div.location.left, actualBounds.left);
+  assertEquals(div.location.top, actualBounds.top);
+  assertEquals(div.location.width, actualBounds.width);
+  assertEquals(div.location.height, actualBounds.height);
+});
