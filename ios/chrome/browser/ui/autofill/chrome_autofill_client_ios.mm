@@ -351,10 +351,6 @@ bool ChromeAutofillClientIOS::HasCreditCardScanFeature() const {
   return false;
 }
 
-void ChromeAutofillClientIOS::ScanCreditCard(CreditCardScanCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-}
-
 bool ChromeAutofillClientIOS::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const CreditCard> cards_to_suggest,

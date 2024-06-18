@@ -11,8 +11,12 @@
 #include "chrome/browser/autofill/merchant_promo_code_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+// TODO(crbug.com/40937065): ChromeAutofillClient included while in-migration
+// enums/structs still need to be migrated.
+#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/create_card_unmask_prompt_view.h"
+#include "chrome/browser/ui/autofill/payments/credit_card_scanner_controller.h"
 #include "chrome/browser/ui/autofill/payments/iban_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/mandatory_reauth_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/view_factory.h"
@@ -242,6 +246,12 @@ void ChromePaymentsAutofillClient::
   }
 }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+void ChromePaymentsAutofillClient::ScanCreditCard(
+    ChromeAutofillClient::CreditCardScanCallback callback) {
+  CreditCardScannerController::ScanCreditCard(web_contents(),
+                                              std::move(callback));
+}
 
 void ChromePaymentsAutofillClient::CreditCardUploadCompleted(
     bool card_saved,

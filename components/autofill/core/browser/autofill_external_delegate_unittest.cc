@@ -183,6 +183,10 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
   ~MockPaymentsAutofillClient() override = default;
 
   MOCK_METHOD(void,
+              ScanCreditCard,
+              (AutofillClient::CreditCardScanCallback callback),
+              (override));
+  MOCK_METHOD(void,
               OpenPromoCodeOfferDetailsURL,
               (const GURL& url),
               (override));
@@ -196,10 +200,6 @@ class MockAutofillClient : public TestAutofillClient {
   }
   MockAutofillClient(const MockAutofillClient&) = delete;
   MockAutofillClient& operator=(const MockAutofillClient&) = delete;
-  MOCK_METHOD(void,
-              ScanCreditCard,
-              (CreditCardScanCallback callbacK),
-              (override));
   MOCK_METHOD(void,
               ShowAutofillSuggestions,
               (const autofill::AutofillClient::PopupOpenArgs& open_args,
@@ -2375,7 +2375,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateUndoPreviewForm) {
 // suggestion to scan a credit card.
 TEST_F(AutofillExternalDelegateUnitTest, ScanCreditCardMenuItem) {
   IssueOnQuery();
-  EXPECT_CALL(client(), ScanCreditCard(_));
+  EXPECT_CALL(payments_client(), ScanCreditCard);
   EXPECT_CALL(client(), HideAutofillSuggestions(
                             SuggestionHidingReason::kAcceptSuggestion));
 

@@ -106,6 +106,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   bool CloseWebauthnDialog() override;
   void HideVirtualCardEnrollBubbleAndIconIfVisible() override;
 #endif  // BUILDFLAG(IS_ANDROID)
+  void ScanCreditCard(AutofillClient::CreditCardScanCallback callback) override;
   void CreditCardUploadCompleted(bool card_saved,
                                  std::optional<OnConfirmationClosedCallback>
                                      on_confirmation_closed_callback) override;

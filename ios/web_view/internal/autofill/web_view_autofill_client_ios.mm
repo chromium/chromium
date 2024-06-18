@@ -238,10 +238,6 @@ bool WebViewAutofillClientIOS::HasCreditCardScanFeature() const {
   return false;
 }
 
-void WebViewAutofillClientIOS::ScanCreditCard(CreditCardScanCallback callback) {
-  NOTREACHED_IN_MIGRATION();
-}
-
 bool WebViewAutofillClientIOS::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillDelegate> delegate,
     base::span<const autofill::CreditCard> cards_to_suggest,

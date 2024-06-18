@@ -196,6 +196,11 @@ class PaymentsAutofillClient : public RiskDataLoader {
           callback);
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
+  // Shows the user interface for scanning a credit card. Invokes the `callback`
+  // when a credit card is scanned successfully. Should be called only if
+  // HasCreditCardScanFeature() returns true.
+  virtual void ScanCreditCard(AutofillClient::CreditCardScanCallback callback);
+
   // Shows upload result to users. Called after credit card upload is finished.
   // `card_saved` indicates if the card is successfully saved.
   // `on_confirmation_closed_callback` should run after confirmation prompt is

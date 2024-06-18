@@ -322,9 +322,6 @@ class TestAutofillClientTemplate : public T {
 
   bool HasCreditCardScanFeature() const override { return false; }
 
-  void ScanCreditCard(
-      AutofillClient::CreditCardScanCallback callback) override {}
-
   bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillDelegate> delegate,
       base::span<const autofill::CreditCard> cards_to_suggest,

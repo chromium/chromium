@@ -1381,9 +1381,10 @@ void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(
       manager_->OnUserAcceptedCardsFromAccountOption();
       break;
     case SuggestionType::kScanCreditCard:
-      manager_->client().ScanCreditCard(base::BindOnce(
-          &AutofillExternalDelegate::OnCreditCardScanned, GetWeakPtr(),
-          AutofillTriggerSource::kKeyboardAccessory));
+      manager_->client().GetPaymentsAutofillClient()->ScanCreditCard(
+          base::BindOnce(&AutofillExternalDelegate::OnCreditCardScanned,
+                         GetWeakPtr(),
+                         AutofillTriggerSource::kKeyboardAccessory));
       break;
     default:
       NOTREACHED_NORETURN();  // Should be handled elsewhere

@@ -38,17 +38,31 @@ using ::testing::Pointee;
 using ::testing::Ref;
 using ::testing::Return;
 
+class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
+ public:
+  explicit MockPaymentsAutofillClient(AutofillClient* client)
+      : payments::TestPaymentsAutofillClient(client) {}
+  MockPaymentsAutofillClient(const MockPaymentsAutofillClient&) = delete;
+  MockPaymentsAutofillClient& operator=(const MockPaymentsAutofillClient&) =
+      delete;
+  ~MockPaymentsAutofillClient() override = default;
+
+  MOCK_METHOD(void,
+              ScanCreditCard,
+              (AutofillClient::CreditCardScanCallback callback),
+              (override));
+};
+
 class MockAutofillClient : public TestAutofillClient {
  public:
-  MockAutofillClient() = default;
+  MockAutofillClient() {
+    set_payments_autofill_client(
+        std::make_unique<MockPaymentsAutofillClient>(this));
+  }
   MockAutofillClient(const MockAutofillClient&) = delete;
   MockAutofillClient& operator=(const MockAutofillClient&) = delete;
   ~MockAutofillClient() override = default;
 
-  MOCK_METHOD(void,
-              ScanCreditCard,
-              (CreditCardScanCallback callback),
-              (override));
   MOCK_METHOD(void, ShowAutofillSettings, (SuggestionType), (override));
   MOCK_METHOD(bool,
               ShowTouchToFillCreditCard,
@@ -230,6 +244,11 @@ class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
                                     form_, form_.fields()[0]));
     EXPECT_EQ(expected_success,
               touch_to_fill_delegate_->IsShowingTouchToFill());
+  }
+
+  MockPaymentsAutofillClient& payments_autofill_client() {
+    return *static_cast<MockPaymentsAutofillClient*>(
+        autofill_client_.GetPaymentsAutofillClient());
   }
 
   FormData form_;
@@ -827,7 +846,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
 TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
        ScanCreditCardIsCalled) {
   TryToShowTouchToFill(/*expected_success=*/true);
-  EXPECT_CALL(autofill_client_, ScanCreditCard);
+  EXPECT_CALL(payments_autofill_client(), ScanCreditCard);
   touch_to_fill_delegate_->ScanCreditCard();
 
   CreditCard credit_card = autofill::test::GetCreditCard();

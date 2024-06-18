@@ -512,11 +512,6 @@ class AutofillClient {
   // cards. Should be called before ScanCreditCard().
   virtual bool HasCreditCardScanFeature() const = 0;
 
-  // Shows the user interface for scanning a credit card. Invokes the |callback|
-  // when a credit card is scanned successfully. Should be called only if
-  // HasCreditCardScanFeature() returns true.
-  virtual void ScanCreditCard(CreditCardScanCallback callback) = 0;
-
   // Shows the Touch To Fill surface for filling credit card information, if
   // possible, and returns |true| on success. |delegate| will be notified of
   // events. `card_acceptabilies` is a boolean list denoting if the virtual

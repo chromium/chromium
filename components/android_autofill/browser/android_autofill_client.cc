@@ -180,10 +180,6 @@ bool AndroidAutofillClient::HasCreditCardScanFeature() const {
   return false;
 }
 
-void AndroidAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {
-  NOTIMPLEMENTED();
-}
-
 bool AndroidAutofillClient::ShowTouchToFillCreditCard(
     base::WeakPtr<autofill::TouchToFillDelegate> delegate,
     base::span<const autofill::CreditCard> cards_to_suggest,
