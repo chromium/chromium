@@ -2703,7 +2703,6 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TestNavEntryCommittedUserAction) {
   base::UserActionTester user_action_tester;
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("chrome://newtab")));
   EXPECT_EQ(user_action_tester.GetActionCount("NavEntryCommitted"), 1);
-  EXPECT_EQ(user_action_tester.GetActionCount("NavEntryCommitted.SRP"), 0);
 }
 
 namespace {
@@ -2725,23 +2724,6 @@ void SetTestDefaultSearchProvider(TemplateURLService* service,
 }
 
 }  // namespace
-
-IN_PROC_BROWSER_TEST_F(BrowserTest, TestNavEntryCommittedSRPUserAction) {
-  ASSERT_TRUE(embedded_test_server()->Start());
-  TemplateURLService* service =
-      TemplateURLServiceFactory::GetForProfile(browser()->profile());
-  SetTestDefaultSearchProvider(
-      service,
-      embedded_test_server()->GetURL("a.test", "/title1.html?q={searchTerms}"));
-
-  const GURL srp_url =
-      service->GenerateSearchURLForDefaultSearchProvider(u"testing");
-
-  base::UserActionTester user_action_tester;
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), srp_url));
-  EXPECT_EQ(user_action_tester.GetActionCount("NavEntryCommitted"), 1);
-  EXPECT_EQ(user_action_tester.GetActionCount("NavEntryCommitted.SRP"), 1);
-}
 
 IN_PROC_BROWSER_TEST_F(BrowserTest,
                        TestNavEntryCommittedUserActionOnlyRecordedForTabs) {
@@ -2769,7 +2751,6 @@ IN_PROC_BROWSER_TEST_F(BrowserTest,
   observer.Wait();
 
   EXPECT_EQ(user_action_tester.GetActionCount("NavEntryCommitted"), 0);
-  EXPECT_EQ(user_action_tester.GetActionCount("NavEntryCommitted.SRP"), 0);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserTest, TestTabCountMetrics) {

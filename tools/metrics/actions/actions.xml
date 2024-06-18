@@ -26303,6 +26303,11 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NavEntryCommitted.SRP" not_user_triggered="true">
+  <obsolete>
+    Not reliable. For example, a Google search done using the omnibox (with
+    Google as the default search provider) causes this user action to trigger
+    twice, not once.
+  </obsolete>
   <owner>mpearson@chromium.org</owner>
   <description>
     Emitted when a navigation happens to a page whose URL looks like it's a URL
