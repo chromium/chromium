@@ -162,10 +162,6 @@ class CloudPolicyInvalidator : public invalidation::InvalidationHandler,
   // Acknowledge the latest invalidation.
   void AcknowledgeInvalidation();
 
-  // Determines if the given policy is different from the policy passed in the
-  // previous call.
-  bool IsPolicyChanged(const enterprise_management::PolicyData* policy);
-
   // Determine if invalidations have been enabled longer than the grace period.
   // This is a heuristic attempt to avoid counting initial policy fetches as
   // invalidation-triggered.

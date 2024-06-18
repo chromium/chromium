@@ -93,6 +93,14 @@ std::string ComposeOwnerName(PolicyInvalidationScope scope,
   }
 }
 
+auto CalculatePolicyHash(const enterprise_management::PolicyData* policy) {
+  if (!policy || !policy->has_policy_value()) {
+    return 0u;
+  }
+
+  return base::Hash(policy->policy_value());
+}
+
 }  // namespace
 
 const int CloudPolicyInvalidator::kMissingPayloadDelay = 5;
@@ -257,7 +265,9 @@ void CloudPolicyInvalidator::OnCoreDisconnecting(CloudPolicyCore* core) {
 void CloudPolicyInvalidator::OnStoreLoaded(CloudPolicyStore* store) {
   DCHECK(state_ == STARTED);
   DCHECK(thread_checker_.CalledOnValidThread());
-  bool policy_changed = IsPolicyChanged(store->policy());
+  const auto new_policy_hash = CalculatePolicyHash(store->policy());
+  const bool policy_changed = policy_hash_value_ != new_policy_hash;
+  policy_hash_value_ = new_policy_hash;
 
   if (IsRegistered()) {
     const int64_t store_invalidation_version = store->invalidation_version();
@@ -453,18 +463,6 @@ void CloudPolicyInvalidator::AcknowledgeInvalidation() {
   core_->client()->SetInvalidationInfo(0, std::string());
   // Cancel any scheduled policy refreshes.
   weak_factory_.InvalidateWeakPtrs();
-}
-
-bool CloudPolicyInvalidator::IsPolicyChanged(
-    const enterprise_management::PolicyData* policy) {
-  // Determine if the policy changed by comparing its hash value to the
-  // previous policy's hash value.
-  uint32_t new_hash_value = 0;
-  if (policy && policy->has_policy_value())
-    new_hash_value = base::Hash(policy->policy_value());
-  bool changed = new_hash_value != policy_hash_value_;
-  policy_hash_value_ = new_hash_value;
-  return changed;
 }
 
 bool CloudPolicyInvalidator::
