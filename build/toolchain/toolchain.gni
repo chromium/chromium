@@ -116,15 +116,3 @@ if (host_os == "win") {
 is_a_target_toolchain =
     (current_toolchain != host_toolchain ||
      default_toolchain == host_toolchain) && current_os == target_os
-
-# A toolchain for building tools that run on the host machine and need to use
-# the system allocator. This toolchain does not use PartitionAlloc-Everywhere by
-# design. We use a name with `_host` injected into it to avoid colliding with
-# toolchains of the same name (but different path) between different OSes.
-host_system_allocator_toolchain = "${host_toolchain}_host_with_system_allocator"
-
-# A toolchain for building tools that run on the default target machine and need
-# to use the system allocator. This toolchain does not use
-# PartitionAlloc-Everywhere by design.
-default_system_allocator_toolchain =
-    "${default_toolchain}_with_system_allocator"

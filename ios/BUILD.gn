@@ -39,5 +39,8 @@ group("all") {
     deps = []
   }
 
+  # Force dependency on symupload needed by official builder.
+  deps += [ "//third_party/breakpad:symupload" ]
+
   deps += [ "//ios/intents/app:intents" ]
 }
