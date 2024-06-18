@@ -151,6 +151,10 @@ struct SourceRegistration {
 
   // Specifies aggregatable debug reporting configuration.
   SourceAggregatableDebugReportingConfig aggregatable_debug_reporting_config;
+
+  // Specifies the priority of the destination in regards to source destination
+  // limit.
+  int64 destination_limit_priority;
 };
 
 // Mojo representation of the trigger configuration provided by a reporting

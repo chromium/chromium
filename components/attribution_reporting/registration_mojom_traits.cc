@@ -337,6 +337,7 @@ bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
   out->debug_key = data.debug_key();
   out->debug_reporting = data.debug_reporting();
   out->trigger_data_matching = data.trigger_data_matching();
+  out->destination_limit_priority = data.destination_limit_priority();
   return out->IsValid();
 }
 

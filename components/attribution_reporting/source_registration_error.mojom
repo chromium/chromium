@@ -61,4 +61,6 @@ enum SourceRegistrationError {
   kSummaryBucketsValueInvalid = 40,
 
   kEventLevelEpsilonValueInvalid = 41,
+
+  kDestinationLimitPriorityInvalid = 42,
 };

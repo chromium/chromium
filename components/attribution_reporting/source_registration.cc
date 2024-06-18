@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
@@ -24,6 +25,7 @@
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
+#include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/parsing_utils.h"
@@ -53,7 +55,7 @@ base::TimeDelta AdjustExpiry(base::TimeDelta expiry, SourceType source_type) {
 
 void RecordSourceRegistrationError(SourceRegistrationError error) {
   static_assert(SourceRegistrationError::kMaxValue ==
-                    SourceRegistrationError::kEventLevelEpsilonValueInvalid,
+                    SourceRegistrationError::kDestinationLimitPriorityInvalid,
                 "Update ConversionSourceRegistrationError enum.");
   base::UmaHistogramEnumeration("Conversions.SourceRegistrationError13", error);
 }
@@ -160,6 +162,17 @@ SourceRegistration::Parse(base::Value::Dict registration,
         *std::move(aggregatable_debug_reporting_config);
   }
 
+  if (base::FeatureList::IsEnabled(attribution_reporting::features::
+                                       kAttributionSourceDestinationLimit)) {
+    ASSIGN_OR_RETURN(
+        result.destination_limit_priority,
+        ParseInt64(registration, kDestinationLimitPriority)
+            .transform(&ValueOrZero<int64_t>),
+        [](ParseError) {
+          return SourceRegistrationError::kDestinationLimitPriorityInvalid;
+        });
+  }
+
   CHECK(result.IsValid());
   CHECK(result.IsValidForSourceType(source_type));
   return result;
@@ -222,6 +235,11 @@ base::Value::Dict SourceRegistration::ToJson() const {
   event_level_epsilon.Serialize(dict);
 
   aggregatable_debug_reporting_config.Serialize(dict);
+
+  if (base::FeatureList::IsEnabled(attribution_reporting::features::
+                                       kAttributionSourceDestinationLimit)) {
+    SerializeInt64(dict, kDestinationLimitPriority, destination_limit_priority);
+  }
 
   return dict;
 }

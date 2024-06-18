@@ -1,0 +1,146 @@
+{
+  "description": "Rate limit records deactivated for source destination limit still counted for other rate limits",
+  "api_config": {
+    "needs_source_destination_limit": true,
+    "max_destinations_per_source_site_reporting_site": "1",
+    "rate_limit_max_reporting_origins_per_source_reporting_site": "2"
+  },
+  "input": {
+    "registrations": [
+      {
+        "timestamp": "0",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://a.reporter.test",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination1.test",
+                "source_event_id": "111",
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Should hit the unexpired destination limit with fifo.
+      {
+        "timestamp": "1000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://b.reporter.test",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination2.test",
+                "source_event_id": "222",
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Verifies that the first source was deactivated.
+      {
+        "timestamp": "2000",
+        "registration_request": {
+          "context_origin": "https://destination1.test"
+        },
+        "responses": [
+          {
+            "url": "https://a.reporter.test/register-trigger",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Trigger": {
+                "event_trigger_data": [{}],
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      },
+      // Should hit the reporting origin per source reporting site limit as the
+      // rate-limit record for the first source was not deleted.
+      {
+        "timestamp": "3000",
+        "registration_request": {
+          "context_origin": "https://source.test",
+          "Attribution-Reporting-Eligible": "navigation-source"
+        },
+        "responses": [
+          {
+            "url": "https://c.reporter.test",
+            "debug_permission": true,
+            "response": {
+              "Attribution-Reporting-Register-Source": {
+                "destination": "https://destination2.test",
+                "source_event_id": "333",
+                "debug_reporting": true
+              }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "output": {
+    "reports": [
+      {
+        "payload": [ {
+          "body": {
+            "attribution_destination": "https://destination1.test",
+            "source_event_id": "111",
+            "source_site": "https://source.test"
+          },
+          "type": "source-success"
+        } ],
+        "report_time": "0",
+        "report_url": "https://a.reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+          "body": {
+            "attribution_destination": "https://destination2.test",
+            "source_destination_limit": "1",
+            "source_event_id": "222",
+            "source_site": "https://source.test"
+          },
+          "type": "source-success"
+        } ],
+        "report_time": "1000",
+        "report_url": "https://b.reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+          "body": {
+            "attribution_destination": "https://destination1.test"
+          },
+          "type": "trigger-no-matching-source"
+        } ],
+        "report_time": "2000",
+        "report_url": "https://a.reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
+      {
+        "payload": [ {
+          "body": {
+            "attribution_destination": "https://destination2.test",
+            "limit": "2",
+            "source_event_id": "333",
+            "source_site": "https://source.test"
+          },
+          "type": "source-reporting-origin-per-site-limit"
+        } ],
+        "report_time": "3000",
+        "report_url": "https://c.reporter.test/.well-known/attribution-reporting/debug/verbose"
+      }
+    ]
+  }
+}

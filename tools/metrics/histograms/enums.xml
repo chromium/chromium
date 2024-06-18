@@ -3526,6 +3526,7 @@ Called by update_net_error_codes.py.-->
   <int value="39" label="summary_buckets not a valid list"/>
   <int value="40" label="summary_buckets value invalid"/>
   <int value="41" label="event_level_epsilon value is invalid"/>
+  <int value="42" label="destination_limit_priority is invalid"/>
 </enum>
 
 <enum name="ConversionsRegistrationMethod">

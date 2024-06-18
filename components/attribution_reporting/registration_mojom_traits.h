@@ -316,6 +316,11 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     return source.aggregatable_debug_reporting_config;
   }
 
+  static int64_t destination_limit_priority(
+      const attribution_reporting::SourceRegistration& source) {
+    return source.destination_limit_priority;
+  }
+
   static bool Read(
       attribution_reporting::mojom::SourceRegistrationDataView data,
       attribution_reporting::SourceRegistration* out);

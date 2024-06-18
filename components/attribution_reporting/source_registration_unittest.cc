@@ -97,7 +97,8 @@ TEST(SourceRegistrationTest, Parse) {
               Field(&SourceRegistration::trigger_data_matching,
                     mojom::TriggerDataMatching::kModulus),
               Field(&SourceRegistration::aggregatable_debug_reporting_config,
-                    SourceAggregatableDebugReportingConfig()))),
+                    SourceAggregatableDebugReportingConfig()),
+              Field(&SourceRegistration::destination_limit_priority, 0))),
       },
       {
           "source_event_id_valid",
@@ -455,6 +456,126 @@ TEST(SourceRegistrationTest, ToJson) {
                 }
               ]
             }
+          })json",
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_THAT(test_case.input.ToJson(),
+                base::test::IsJson(test_case.expected_json));
+  }
+}
+
+TEST(SourceRegistrationTest, ParseDestinationLimitPriority) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAttributionSourceDestinationLimit);
+
+  const struct {
+    const char* desc;
+    const char* json;
+    ::testing::Matcher<
+        base::expected<SourceRegistration, SourceRegistrationError>>
+        matches;
+  } kTestCases[] = {
+      {
+          "default",
+          R"json({"destination":"https://d.example"})json",
+          ValueIs(Field(&SourceRegistration::destination_limit_priority, 0)),
+      },
+      {
+          "valid",
+          R"json({
+            "destination_limit_priority": "123",
+            "destination":"https://d.example"
+          })json",
+          ValueIs(Field(&SourceRegistration::destination_limit_priority, 123)),
+      },
+      {
+          "valid-negative",
+          R"json({
+            "destination_limit_priority": "-123",
+            "destination":"https://d.example"
+          })json",
+          ValueIs(Field(&SourceRegistration::destination_limit_priority, -123)),
+      },
+      {
+          "wrong-type",
+          R"json({
+            "destination_limit_priority": 1,
+            "destination":"https://d.example"
+          })json",
+          ErrorIs(SourceRegistrationError::kDestinationLimitPriorityInvalid),
+      },
+      {
+          "invalid-value",
+          R"json({
+            "destination_limit_priority": "x",
+            "destination":"https://d.example"
+          })json",
+          ErrorIs(SourceRegistrationError::kDestinationLimitPriorityInvalid),
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.desc);
+    EXPECT_THAT(
+        SourceRegistration::Parse(test_case.json, SourceType::kNavigation),
+        test_case.matches);
+  }
+}
+
+TEST(SourceRegistrationTest, SerializeDestinationLimit) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAttributionSourceDestinationLimit);
+
+  const DestinationSet destination = *DestinationSet::Create(
+      {net::SchemefulSite::Deserialize("https://d.example")});
+
+  const struct {
+    SourceRegistration input;
+    const char* expected_json;
+  } kTestCases[] = {
+      {
+          SourceRegistration(destination),
+          R"json({
+              "aggregatable_report_window": 2592000,
+              "debug_reporting": false,
+              "destination":"https://d.example",
+              "event_level_epsilon": 14.0,
+              "expiry": 2592000,
+              "max_event_level_reports": 0,
+              "priority": "0",
+              "source_event_id": "0",
+              "trigger_data_matching": "modulus",
+              "trigger_specs": [],
+              "aggregatable_debug_reporting": {
+                "budget": 0,
+                "key_piece": "0x0"
+              },
+              "destination_limit_priority": "0"
+          })json",
+      },
+      {
+          SourceRegistrationWith(destination,
+                                 [](SourceRegistration& r) {
+                                   r.destination_limit_priority = 123;
+                                 }),
+          R"json({
+              "aggregatable_report_window": 2592000,
+              "debug_reporting": false,
+              "destination":"https://d.example",
+              "event_level_epsilon": 14.0,
+              "expiry": 2592000,
+              "max_event_level_reports": 0,
+              "priority": "0",
+              "source_event_id": "0",
+              "trigger_data_matching": "modulus",
+              "trigger_specs": [],
+              "aggregatable_debug_reporting": {
+                "budget": 0,
+                "key_piece": "0x0"
+              },
+              "destination_limit_priority": "123"
           })json",
       },
   };

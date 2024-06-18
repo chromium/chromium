@@ -51,6 +51,8 @@ inline constexpr char kAggregatableReportWindow[] =
     "aggregatable_report_window";
 inline constexpr char kAggregationKeys[] = "aggregation_keys";
 inline constexpr char kDestination[] = "destination";
+inline constexpr char kDestinationLimitPriority[] =
+    "destination_limit_priority";
 inline constexpr char kEndTimes[] = "end_times";
 inline constexpr char kEventLevelEpsilon[] = "event_level_epsilon";
 inline constexpr char kEventReportWindow[] = "event_report_window";
