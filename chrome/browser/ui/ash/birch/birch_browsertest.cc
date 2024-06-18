@@ -92,6 +92,22 @@ class TestFileSuggestProvider : public BirchDataProvider {
   }
 };
 
+// A recent tabs provider that provides a single URL.
+class TestRecentTabsProvider : public BirchDataProvider {
+ public:
+  TestRecentTabsProvider() = default;
+  ~TestRecentTabsProvider() override = default;
+
+  // BirchDataProvider:
+  void RequestBirchDataFetch() override {
+    std::vector<BirchTabItem> items;
+    items.emplace_back(u"tab", GURL("http://example.com/"), base::Time::Now(),
+                       GURL("http://favicon.com/"), "session",
+                       BirchTabItem::DeviceFormFactor::kDesktop);
+    Shell::Get()->birch_model()->SetRecentTabItems(std::move(items));
+  }
+};
+
 // A last active provider that provides a single URL.
 class TestLastActiveProvider : public BirchDataProvider {
  public:
@@ -379,6 +395,53 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, FileSuggestChip) {
   // Clicking the button should attempt to open the file.
   EXPECT_EQ(mock_new_window_delegate_->opened_file_,
             base::FilePath("test-path"));
+}
+
+IN_PROC_BROWSER_TEST_F(BirchBrowserTest, RecentTabsChip) {
+  // Set up a provider that provides a single chip.
+  auto* birch_keyed_service = GetBirchKeyedService();
+  TestRecentTabsProvider recent_tabs_provider;
+  birch_keyed_service->set_recent_tabs_provider_for_test(&recent_tabs_provider);
+
+  // Disable the prefs for data providers other than this one. This ensures
+  // the data is fresh once the test provider replies.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  ASSERT_TRUE(prefs);
+  prefs->SetBoolean(prefs::kBirchUseCalendar, false);
+  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
+  prefs->SetBoolean(prefs::kBirchUseLastActive, false);
+  prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
+  prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
+  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+
+  // Ensure the item remover is initialized, otherwise data fetches won't
+  // complete.
+  EnsureItemRemoverInitialized();
+
+  // Set up a callback for a birch data fetch.
+  base::RunLoop birch_data_fetch_waiter;
+  Shell::Get()->birch_model()->SetDataFetchCallbackForTest(
+      birch_data_fetch_waiter.QuitClosure());
+
+  // Enter overview, which triggers a birch data fetch.
+  ToggleOverview();
+  WaitForOverviewEntered();
+
+  // Wait for fetch callback to complete.
+  birch_data_fetch_waiter.Run();
+
+  // The birch bar is created with a single chip.
+  BirchChipButtonBase* button = GetBirchChipButton();
+  EXPECT_EQ(button->GetItem()->GetType(), BirchItemType::kTab);
+
+  // Clicking the button closes overview and destroys the button, so avoid a
+  // dangling pointer with std::exchange.
+  ClickOnView(std::exchange(button, nullptr));
+
+  // Clicking the button should attempt to open the URL.
+  EXPECT_EQ(mock_new_window_delegate_->opened_url_,
+            GURL("http://example.com/"));
 }
 
 IN_PROC_BROWSER_TEST_F(BirchBrowserTest, LastActiveChip) {

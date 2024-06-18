@@ -78,6 +78,9 @@ BirchDataProvider* BirchKeyedService::GetFileSuggestProvider() {
 }
 
 BirchDataProvider* BirchKeyedService::GetRecentTabsProvider() {
+  if (recent_tabs_provider_for_test_) {
+    return recent_tabs_provider_for_test_;
+  }
   return recent_tabs_provider_.get();
 }
 
