@@ -303,55 +303,6 @@ TEST_F(MenuItemViewLayoutTest, ContainerLayoutRespectsMarginsAndPreferredSize) {
   EXPECT_EQ(child_bounds.height(), child_size.height());
 }
 
-namespace {
-
-// A fake View to check if GetHeightForWidth() is called with the appropriate
-// width value.
-class FakeView : public View {
-  METADATA_HEADER(FakeView, View)
-
- public:
-  explicit FakeView(int expected_width) : expected_width_(expected_width) {}
-  ~FakeView() override = default;
-
-  int GetHeightForWidth(int width) const override {
-    // Simply return a height of 1 for the expected width, and 0 otherwise.
-    if (width == expected_width_)
-      return 1;
-    return 0;
-  }
-
- private:
-  const int expected_width_;
-};
-
-BEGIN_METADATA(FakeView)
-END_METADATA
-
-}  // namespace
-
-// Tests that MenuItemView passes the child's true width to
-// GetHeightForWidth. This is related to https://crbug.com/933706 which was
-// partially caused by it passing the full menu width rather than the width of
-// the child view.
-TEST_F(MenuItemViewLayoutTest, ContainerLayoutPassesTrueWidth) {
-  const gfx::Size child_size(2, 3);
-  const gfx::Insets child_margins(1);
-  FakeView* child_view =
-      test_item()->AddChildView(std::make_unique<FakeView>(child_size.width()));
-  child_view->SetPreferredSize(child_size);
-  child_view->SetProperty(kMarginsKey, child_margins);
-
-  PerformLayout();
-
-  // |child_view| should get laid out with width child_size.width, at which
-  // point child_view->GetHeightForWidth() should be called with the correct
-  // width. FakeView::GetHeightForWidth() will return 1 in this case, and 0
-  // otherwise. Our preferred height is also set to 3 to check verify that
-  // GetHeightForWidth() is even used.
-  EXPECT_EQ(child_view->size().height(), 1);
-}
-
 class MenuItemViewPaintUnitTest : public ViewsTestBase {
  public:
   MenuItemViewPaintUnitTest() = default;

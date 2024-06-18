@@ -592,22 +592,20 @@ void MenuItemView::OnPaint(gfx::Canvas* canvas) {
 }
 
 gfx::Size MenuItemView::CalculatePreferredSize(
-    const SizeBounds& /*available_size*/) const {
+    const SizeBounds& available_size) const {
+  // If this is a container, we can just use the preferred size.
+  if (IsContainer()) {
+    const gfx::Insets margins = GetContainerMargins();
+    gfx::Size content_size =
+        children().front()->GetPreferredSize(available_size.Inset(margins));
+    content_size.set_height(ApplyMinIconHeight(content_size.height()));
+    content_size.Enlarge(margins.width(), margins.height());
+    return content_size;
+  }
+
   const MenuItemDimensions& dimensions(GetDimensions());
   return gfx::Size(dimensions.standard_width + dimensions.children_width,
                    dimensions.height);
-}
-
-int MenuItemView::GetHeightForWidth(int width) const {
-  // If this isn't a container, we can just use the preferred size's height.
-  if (!IsContainer()) {
-    return GetPreferredSize(SizeBounds(width, {})).height();
-  }
-
-  const gfx::Insets margins = GetContainerMargins();
-  return margins.height() +
-         ApplyMinIconHeight(
-             children().front()->GetHeightForWidth(width - margins.width()));
 }
 
 gfx::Rect MenuItemView::GetSubmenuAreaOfActionableSubmenu() const {

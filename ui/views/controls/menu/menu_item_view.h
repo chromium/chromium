@@ -327,12 +327,7 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   // Returns the preferred size of this item.
   gfx::Size CalculatePreferredSize(
-      const SizeBounds& /*available_size*/) const override;
-
-  // Gets the preferred height for the given |width|. This is only different
-  // from GetPreferredSize().width() if the item has a child view with flexible
-  // dimensions.
-  int GetHeightForWidth(int width) const override;
+      const SizeBounds& available_size) const override;
 
   // Returns the bounds of the submenu part of the ACTIONABLE_SUBMENU.
   gfx::Rect GetSubmenuAreaOfActionableSubmenu() const;
