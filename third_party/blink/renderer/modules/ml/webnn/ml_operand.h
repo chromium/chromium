@@ -43,13 +43,8 @@ class MODULES_EXPORT MLOperand final : public ScriptWrappable {
       V8MLOperandDataType::Enum data_type,
       Vector<uint32_t> dimensions,
       const DOMArrayBufferView* array_buffer_view);
-  static base::expected<MLOperand*, String> ValidateAndCreateOutput(
-      MLGraphBuilder* builder,
-      webnn::OperandDataType data_type,
-      base::span<const uint32_t> shape,
-      const MLOperator* ml_operator);
-  // Same as above, but since we're passed `descriptor` we can skip the
-  // validation.
+  // Similar to the methods above, but since we're passed `descriptor` we can
+  // skip the validation.
   static MLOperand* CreateOutput(MLGraphBuilder* builder,
                                  webnn::OperandDescriptor descriptor,
                                  const MLOperator* ml_operator);

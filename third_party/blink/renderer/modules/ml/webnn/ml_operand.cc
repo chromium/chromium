@@ -95,19 +95,6 @@ base::expected<MLOperand*, String> MLOperand::ValidateAndCreateConstant(
 }
 
 // static
-base::expected<MLOperand*, String> MLOperand::ValidateAndCreateOutput(
-    MLGraphBuilder* builder,
-    webnn::OperandDataType data_type,
-    base::span<const uint32_t> shape,
-    const MLOperator* ml_operator) {
-  ASSIGN_OR_RETURN(webnn::OperandDescriptor descriptor,
-                   webnn::OperandDescriptor::Create(data_type, shape),
-                   [](std::string error) { return String(error); });
-
-  return CreateOutput(builder, std::move(descriptor), ml_operator);
-}
-
-// static
 MLOperand* MLOperand::CreateOutput(MLGraphBuilder* builder,
                                    webnn::OperandDescriptor descriptor,
                                    const MLOperator* ml_operator) {

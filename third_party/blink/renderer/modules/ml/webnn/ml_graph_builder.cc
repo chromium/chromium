@@ -550,17 +550,18 @@ MLOperand* BuildElementWiseBinary(
                                          ? webnn::OperandDataType::kUint8
                                          : a->DataType();
 
+  ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
+      webnn::OperandDescriptor output_descriptor,
+      webnn::OperandDescriptor::Create(data_type, *output_shape));
+
   auto* binary = MakeGarbageCollected<MLOperator>(
       builder, /*kind=*/webnn::mojom::blink::Operation::Tag::kElementWiseBinary,
       /*sub_kind=*/kind);
-  auto output = MLOperand::ValidateAndCreateOutput(builder, data_type,
-                                                   *output_shape, binary);
-  if (!output.has_value()) {
-    exception_state.ThrowTypeError(output.error());
-    return nullptr;
-  }
-  binary->Connect({a, b}, {output.value()});
-  return output.value();
+  MLOperand* output =
+      MLOperand::CreateOutput(builder, std::move(output_descriptor), binary);
+
+  binary->Connect({a, b}, {output});
+  return output;
 }
 
 MLOperand* BuildUnaryOperator(
@@ -1128,18 +1129,19 @@ MLOperand* MLGraphBuilder::cast(const MLOperand* input,
                                 ExceptionState& exception_state) {
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(input), nullptr);
 
+  ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
+      webnn::OperandDescriptor output_descriptor,
+      webnn::OperandDescriptor::Create(
+          FromBlinkDataType(output_data_type.AsEnum()), input->Shape()));
+
   auto* cast = MakeGarbageCollected<MLOperator>(
       this, webnn::mojom::blink::Operation::Tag::kElementWiseUnary,
       /*sub_kind=*/webnn::mojom::blink::ElementWiseUnary::Kind::kCast);
-  auto output = MLOperand::ValidateAndCreateOutput(
-      this, FromBlinkDataType(output_data_type.AsEnum()), input->Shape(), cast);
-  if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
-    return nullptr;
-  }
-  cast->Connect({input}, {output.value()});
-  return output.value();
+  MLOperand* output =
+      MLOperand::CreateOutput(this, std::move(output_descriptor), cast);
+
+  cast->Connect({input}, {output});
+  return output;
 }
 
 #define BUILD_REDUCE_OP(op, op_kind)                                     \
@@ -1215,16 +1217,17 @@ MLOperand* MLGraphBuilder::expand(const MLOperand* input,
   }
   CHECK(base::ranges::equal(*output_shape, new_shape));
 
+  ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
+      webnn::OperandDescriptor output_descriptor,
+      webnn::OperandDescriptor::Create(input->DataType(), *output_shape));
+
   auto* expand = MakeGarbageCollected<MLOperator>(
       this, webnn::mojom::blink::Operation::Tag::kExpand);
-  auto output = MLOperand::ValidateAndCreateOutput(
-      this, input->DataType(), output_shape.value(), expand);
-  if (!output.has_value()) {
-    exception_state.ThrowTypeError(output.error());
-    return nullptr;
-  }
-  expand->Connect({input}, {output.value()});
-  return output.value();
+  MLOperand* output =
+      MLOperand::CreateOutput(this, std::move(output_descriptor), expand);
+
+  expand->Connect({input}, {output});
+  return output;
 }
 
 MLOperand* MLGraphBuilder::gather(const MLOperand* input,
@@ -1843,16 +1846,18 @@ MLOperand* MLGraphBuilder::reshape(const MLOperand* input,
         newshape_number_of_elements, input->NumberOfElements()));
     return nullptr;
   }
+
+  ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
+      webnn::OperandDescriptor output_descriptor,
+      webnn::OperandDescriptor::Create(input->DataType(), output_shape));
+
   auto* reshape = MakeGarbageCollected<MLOperator>(
       this, webnn::mojom::blink::Operation::Tag::kReshape);
-  auto output = MLOperand::ValidateAndCreateOutput(
-      this, input->DataType(), std::move(output_shape), reshape);
-  if (!output.has_value()) {
-    exception_state.ThrowTypeError(output.error());
-    return nullptr;
-  }
-  reshape->Connect({input}, {output.value()});
-  return output.value();
+  MLOperand* output =
+      MLOperand::CreateOutput(this, std::move(output_descriptor), reshape);
+
+  reshape->Connect({input}, {output});
+  return output;
 }
 
 MLOperand* MLGraphBuilder::resample2d(const MLOperand* input,
