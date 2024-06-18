@@ -74,7 +74,7 @@ class CORE_EXPORT V8ScriptValueSerializer
     serializer_.WriteRawBytes(data, size);
   }
   void WriteUnguessableToken(const base::UnguessableToken& token);
-  void WriteUTF8String(const String&);
+  void WriteUTF8String(const StringView&);
 
   void WriteAndRequireInterfaceTag(SerializationTag tag) {
     GetTrailerWriter().RequireExposedInterface(tag);
