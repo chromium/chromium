@@ -1468,6 +1468,28 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testCloseTabInGroup_withArchivedTabsMessagePresent() {
+        mMediator.setActionOnAllRelatedTabsForTesting(true);
+        when(mTabGroupModelFilter.tabGroupExistsForRootId(anyInt())).thenReturn(true);
+
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, newTab));
+        createTabGroup(tabs, TAB1_ID, TAB_GROUP_ID);
+        assertThat(mModel.size(), equalTo(2));
+
+        PropertyModel model = mock(PropertyModel.class);
+        when(model.get(CARD_TYPE)).thenReturn(MESSAGE);
+        when(model.get(MESSAGE_TYPE)).thenReturn(ARCHIVED_TABS_MESSAGE);
+        mMediator.addSpecialItemToModel(0, TabProperties.UiType.CUSTOM_MESSAGE, model);
+        assertThat(mModel.size(), equalTo(3));
+
+        // This crashed previously when it tried to update the message instead of the tab group
+        // (crbug.com/347970497).
+        mTabModelObserverCaptor.getValue().willCloseTab(newTab, true);
+        verify(model, times(0)).set(eq(TabProperties.TAB_ID), anyInt());
+    }
+
+    @Test
     @DisableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
     public void tabMergeIntoGroup() {
         // Assume that moveTab in TabModel is finished. Selected tab in the group becomes mTab1.

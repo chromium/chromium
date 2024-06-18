@@ -1139,7 +1139,12 @@ class TabListMediator {
                                 final int currentSelectedTabId =
                                         TabModelUtils.getCurrentTabId(groupFilter.getTabModel());
                                 boolean isSelected = currentSelectedTabId == groupTab.getId();
-                                updateTab(groupIndex, groupTab, isSelected, true, false);
+                                updateTab(
+                                        mModel.indexOfNthTabCard(groupIndex),
+                                        groupTab,
+                                        isSelected,
+                                        true,
+                                        false);
 
                                 return;
                             }
