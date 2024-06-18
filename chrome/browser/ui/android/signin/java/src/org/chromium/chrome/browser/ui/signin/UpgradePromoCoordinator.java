@@ -19,12 +19,14 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
+import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninCoordinator;
 import org.chromium.chrome.browser.ui.signin.fullscreen_signin.FullscreenSigninView;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncHelper;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
+import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -105,8 +107,15 @@ public final class UpgradePromoCoordinator
         } else {
             mSigninCoordinator =
                     new FullscreenSigninCoordinator(
-                            mContext, mModalDialogManager, this, mPrivacyPreferencesManager);
+                            mContext,
+                            mModalDialogManager,
+                            this,
+                            mPrivacyPreferencesManager,
+                            SigninAccessPoint.SIGNIN_PROMO);
             mSigninCoordinator.setView((FullscreenSigninView) mViewSwitcher.getCurrentView());
+            // TODO(crbug.com/347657449): Record other AccountConsistencyPromoActions.
+            SigninMetricsUtils.logAccountConsistencyPromoAction(
+                    AccountConsistencyPromoAction.SHOWN, SigninAccessPoint.SIGNIN_PROMO);
             mDidShowSignin = true;
         }
     }
@@ -286,7 +295,11 @@ public final class UpgradePromoCoordinator
                 mViewSwitcher.setDisplayedChild(ViewSwitcherChild.SIGNIN);
                 mSigninCoordinator =
                         new FullscreenSigninCoordinator(
-                                mContext, mModalDialogManager, this, mPrivacyPreferencesManager);
+                                mContext,
+                                mModalDialogManager,
+                                this,
+                                mPrivacyPreferencesManager,
+                                SigninAccessPoint.SIGNIN_PROMO);
                 mSigninCoordinator.setView((FullscreenSigninView) mViewSwitcher.getCurrentView());
                 mSigninCoordinator.reset();
                 return;
