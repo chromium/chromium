@@ -124,6 +124,7 @@ SavedTabGroupWebContentsListener::~SavedTabGroupWebContentsListener() {
   if (favicon_driver_) {
     favicon_driver_->RemoveObserver(this);
   }
+  ResetTabState();
 }
 
 void SavedTabGroupWebContentsListener::NavigateToUrl(const GURL& url) {

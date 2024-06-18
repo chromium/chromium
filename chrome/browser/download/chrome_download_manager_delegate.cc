@@ -51,6 +51,7 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/tab_group_sync/tab_group_sync_tab_state.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/common/buildflags.h"
@@ -78,6 +79,7 @@
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_search_api/safe_search_util.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/services/quarantine/public/mojom/quarantine.mojom.h"
 #include "components/services/quarantine/quarantine_impl.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -479,6 +481,12 @@ void LogCancelEphemeralWarningEvent(CancelEphemeralWarningEvent event) {
                                 event);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+void OnCheckDownloadAllowedFailed(
+    content::CheckDownloadAllowedCallback check_download_allowed_cb) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(check_download_allowed_cb), false));
+}
 
 }  // namespace
 
@@ -1876,13 +1884,24 @@ void ChromeDownloadManagerDelegate::CheckDownloadAllowed(
     base::FilePath::StringType extension = path.Extension();
     if (!extension.empty() && base::FilePath::CompareEqualIgnoreCase(
                                   extension, FILE_PATH_LITERAL(".pdf"))) {
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-          FROM_HERE,
-          base::BindOnce(std::move(check_download_allowed_cb), false));
+      OnCheckDownloadAllowedFailed(std::move(check_download_allowed_cb));
       return;
     }
   }
 #endif
+  content::WebContents* web_contents = web_contents_getter.Run();
+  if (!web_contents) {
+    OnCheckDownloadAllowedFailed(std::move(check_download_allowed_cb));
+    return;
+  }
+
+  // Check whether download is restricted for saved tab groups.
+  if (tab_groups::RestrictDownloadOnSyncedTabs() &&
+      TabGroupSyncTabState::FromWebContents(web_contents)) {
+    OnCheckDownloadAllowedFailed(std::move(check_download_allowed_cb));
+    return;
+  }
+
   CanDownloadCallback cb = base::BindOnce(
       &ChromeDownloadManagerDelegate::OnCheckDownloadAllowedComplete,
       weak_ptr_factory_.GetWeakPtr(), std::move(check_download_allowed_cb));

@@ -29,6 +29,8 @@ BASE_DECLARE_FEATURE(kAlwaysAcceptServerDataInModel);
 
 BASE_DECLARE_FEATURE(kTabGroupSyncAutoOpenKillSwitch);
 
+BASE_DECLARE_FEATURE(kRestrictDownloadOnSyncedTabs);
+
 extern bool IsTabGroupsSaveV2Enabled();
 
 extern bool IsTabGroupsSaveUIUpdateEnabled();
@@ -37,6 +39,7 @@ extern bool IsMigrationFromJavaSharedPrefsEnabled();
 
 extern bool AlwaysAcceptServerDataInModel();
 
+extern bool RestrictDownloadOnSyncedTabs();
 }  // namespace tab_groups
 
 #endif  // COMPONENTS_SAVED_TAB_GROUPS_FEATURES_H_
