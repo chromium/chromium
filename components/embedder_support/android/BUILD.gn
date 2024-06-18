@@ -297,8 +297,8 @@ android_library("context_menu_java") {
   ]
 
   srcjar_deps = [
-    ":context_menu_jni_headers",
     ":context_menu_image_format_enum_javagen",
+    ":context_menu_jni_headers",
   ]
   sources = [
     "java/src/org/chromium/components/embedder_support/contextmenu/ChipDelegate.java",
@@ -308,6 +308,7 @@ android_library("context_menu_java") {
     "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuParams.java",
     "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuPopulator.java",
     "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuPopulatorFactory.java",
+    "java/src/org/chromium/components/embedder_support/contextmenu/ContextMenuUi.java",
   ]
 }
 

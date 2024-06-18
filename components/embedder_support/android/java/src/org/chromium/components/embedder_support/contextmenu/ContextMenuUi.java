@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.contextmenu;
+package org.chromium.components.embedder_support.contextmenu;
 
 import android.util.Pair;
 
 import org.chromium.base.Callback;
-import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -20,7 +19,7 @@ import java.util.List;
  */
 public interface ContextMenuUi {
     /**
-     * Shows the Context Menu in Chrome.
+     * Shows the Context Menu.
      * @param window Used to inflate the context menu.
      * @param webContents The WebContents that this context menu belongs to.
      * @param params The current parameters for the the context menu.
