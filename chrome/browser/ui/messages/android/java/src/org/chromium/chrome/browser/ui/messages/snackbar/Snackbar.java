@@ -121,6 +121,8 @@ public class Snackbar {
     public static final int UMA_SINGLE_TAB_GROUP_DELETE_UNDO = 66;
     public static final int UMA_SAFETY_HUB_REGRANT_SINGLE_PERMISSION = 67;
     public static final int UMA_SAFETY_HUB_REGRANT_MULTIPLE_PERMISSIONS = 68;
+    public static final int UMA_SAFETY_HUB_SINGLE_SITE_NOTIFICATIONS = 69;
+    public static final int UMA_SAFETY_HUB_MULTIPLE_SITE_NOTIFICATIONS = 70;
 
     private @Nullable SnackbarController mController;
     private CharSequence mText;

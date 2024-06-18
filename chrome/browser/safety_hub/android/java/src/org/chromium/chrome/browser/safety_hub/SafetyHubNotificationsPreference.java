@@ -18,7 +18,8 @@ import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
 
-class SafetyHubNotificationsPreference extends ChromeBasePreference implements ListMenu.Delegate {
+public class SafetyHubNotificationsPreference extends ChromeBasePreference
+        implements ListMenu.Delegate {
     static interface MenuClickListener {
         void onBlockClicked(SafetyHubNotificationsPreference preference);
 

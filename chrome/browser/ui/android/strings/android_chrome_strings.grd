@@ -1739,6 +1739,18 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_ABUSIVE_NOTIFICATION_PERMISSIONS_SUBLABEL" translateable="false">
         Dangerous site. Chrome removed notifications.
       </message>
+      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_BLOCK_SNACKBAR" translateable="false">
+        Notifications not allowed for <ph name="SITE_NAME">%1$s<ex>https://example.com:443</ex></ph>
+      </message>
+      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_ALLOW_SNACKBAR" translateable="false">
+        Notifications allowed for <ph name="SITE_NAME">%1$s<ex>https://example.com:443</ex></ph>
+      </message>
+      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_ASK_SNACKBAR" translateable="false">
+        Notifications not allowed for <ph name="SITE_NAME">%1$s<ex>https://example.com:443</ex></ph>. You'll be asked again on your next visit.
+      </message>
+      <message name="IDS_SAFETY_HUB_NOTIFICATIONS_BULK_BLOCK_SNACKBAR" translateable="false">
+        Notifications not allowed for <ph name="SITE_NUMBER">%1$s<ex>3</ex></ph> sites
+      </message>
 
        <!-- Safe Browsing preferences -->
       <message name="IDS_PREFS_SAFE_BROWSING_TITLE" desc="Title for the Safe Browsing preferences. [CHAR_LIMIT=32]">

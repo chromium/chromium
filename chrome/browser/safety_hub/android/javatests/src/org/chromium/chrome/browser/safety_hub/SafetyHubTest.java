@@ -213,6 +213,11 @@ public final class SafetyHubTest {
         clickOnButtonNextToText(NOTIFICATION_PERMISSIONS_1.getPrimaryPattern());
         onViewWaiting(withText(R.string.safety_hub_block_notifications_menu_item)).perform(click());
         onView(withText(NOTIFICATION_PERMISSIONS_1.getPrimaryPattern())).check(doesNotExist());
+
+        // Click on the action button of the snackbar to undo the above action.
+        onViewWaiting(withText(R.string.undo)).perform(click());
+        onViewWaiting(withText(NOTIFICATION_PERMISSIONS_1.getPrimaryPattern()))
+                .check(matches(isDisplayed()));
     }
 
     @Test
@@ -227,6 +232,11 @@ public final class SafetyHubTest {
         clickOnButtonNextToText(NOTIFICATION_PERMISSIONS_1.getPrimaryPattern());
         onViewWaiting(withText(R.string.safety_hub_allow_notifications_menu_item)).perform(click());
         onView(withText(NOTIFICATION_PERMISSIONS_1.getPrimaryPattern())).check(doesNotExist());
+
+        // Click on the action button of the snackbar to undo the above action.
+        onViewWaiting(withText(R.string.undo)).perform(click());
+        onViewWaiting(withText(NOTIFICATION_PERMISSIONS_1.getPrimaryPattern()))
+                .check(matches(isDisplayed()));
     }
 
     @Test
@@ -241,6 +251,11 @@ public final class SafetyHubTest {
         clickOnButtonNextToText(NOTIFICATION_PERMISSIONS_1.getPrimaryPattern());
         onViewWaiting(withText(R.string.safety_hub_ask_notifications_menu_item)).perform(click());
         onView(withText(NOTIFICATION_PERMISSIONS_1.getPrimaryPattern())).check(doesNotExist());
+
+        // Click on the action button of the snackbar to undo the above action.
+        onViewWaiting(withText(R.string.undo)).perform(click());
+        onViewWaiting(withText(NOTIFICATION_PERMISSIONS_1.getPrimaryPattern()))
+                .check(matches(isDisplayed()));
     }
 
     @Test
@@ -275,10 +290,14 @@ public final class SafetyHubTest {
         onView(withText(R.string.safety_hub_notifications_block_all_button)).perform(click());
 
         // Verify tha the notifications subpage has been dismissed and the state of the
-        // notifications
-        // module has changed.
+        // notification module has changed.
         onViewWaiting(withText(R.string.safety_hub_notifications_review_ok_title))
                 .check(matches(isDisplayed()));
+
+        // Click on the snackbar action button and verify that the warning is displayed
+        // again.
+        onViewWaiting(withText(R.string.undo)).perform(click());
+        onViewWaiting(withText(notificationsTitle)).check(matches(isDisplayed()));
     }
 
     private void clickOnButtonNextToText(String text) {

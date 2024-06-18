@@ -8,6 +8,9 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+
 import java.util.List;
 
 /**
@@ -34,7 +37,22 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
         mNotificationPermissionReviewBridge.removeObserver(this);
 
         if (mBulkActionConfirmed) {
+            List<NotificationPermissions> notificationPermissionsList =
+                    mNotificationPermissionReviewBridge.getNotificationPermissions();
             mNotificationPermissionReviewBridge.bulkBlockNotificationPermissions();
+            showSnackbarOnLastFocusedActivity(
+                    getString(
+                            R.string.safety_hub_notifications_bulk_block_snackbar,
+                            notificationPermissionsList.size()),
+                    Snackbar.UMA_SAFETY_HUB_MULTIPLE_SITE_NOTIFICATIONS,
+                    new SnackbarManager.SnackbarController() {
+                        @Override
+                        public void onAction(Object actionData) {
+                            mNotificationPermissionReviewBridge.bulkAllowNotificationPermissions(
+                                    (List<NotificationPermissions>) actionData);
+                        }
+                    },
+                    notificationPermissionsList);
         }
     }
 
@@ -49,6 +67,9 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
                 ((SafetyHubNotificationsPreference) preference).getNotificationsPermissions();
         mNotificationPermissionReviewBridge.ignoreOriginForNotificationPermissionReview(
                 notificationPermissions.getPrimaryPattern());
+        showSingleSiteSnackbar(
+                R.string.safety_hub_notifications_allow_snackbar,
+                notificationPermissions.getPrimaryPattern());
     }
 
     @Override
@@ -57,6 +78,9 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
                 ((SafetyHubNotificationsPreference) preference).getNotificationsPermissions();
         mNotificationPermissionReviewBridge.blockNotificationPermissionForOrigin(
                 notificationPermissions.getPrimaryPattern());
+        showSingleSiteSnackbar(
+                R.string.safety_hub_notifications_block_snackbar,
+                notificationPermissions.getPrimaryPattern());
     }
 
     @Override
@@ -64,6 +88,9 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
         NotificationPermissions notificationPermissions =
                 ((SafetyHubNotificationsPreference) preference).getNotificationsPermissions();
         mNotificationPermissionReviewBridge.resetNotificationPermissionForOrigin(
+                notificationPermissions.getPrimaryPattern());
+        showSingleSiteSnackbar(
+                R.string.safety_hub_notifications_ask_snackbar,
                 notificationPermissions.getPrimaryPattern());
     }
 
@@ -94,5 +121,19 @@ public class SafetyHubNotificationsFragment extends SafetyHubSubpageFragment
     @Override
     protected int getButtonTextId() {
         return R.string.safety_hub_notifications_block_all_button;
+    }
+
+    private void showSingleSiteSnackbar(int titleResId, String origin) {
+        showSnackbar(
+                getString(titleResId, origin),
+                Snackbar.UMA_SAFETY_HUB_SINGLE_SITE_NOTIFICATIONS,
+                new SnackbarManager.SnackbarController() {
+                    @Override
+                    public void onAction(Object actionData) {
+                        mNotificationPermissionReviewBridge.allowNotificationPermissionForOrigin(
+                                (String) actionData);
+                    }
+                },
+                origin);
     }
 }
