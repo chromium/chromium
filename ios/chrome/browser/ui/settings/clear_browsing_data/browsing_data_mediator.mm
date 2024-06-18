@@ -26,7 +26,7 @@
   NSString* _browsingHistorySummary;
   NSString* _passwordsSummary;
   NSString* _addressesSummary;
-  NSString* _cardsSummary;
+  NSString* _paymentMethodsSummary;
   NSString* _suggestionsSummary;
 
   // Set of `BrowsingDataCounter`s used to create the summaries.
@@ -109,7 +109,7 @@
   _browsingHistorySummary = nil;
   _passwordsSummary = nil;
   _addressesSummary = nil;
-  _cardsSummary = nil;
+  _paymentMethodsSummary = nil;
   _suggestionsSummary = nil;
 
   for (std::set<std::unique_ptr<BrowsingDataCounterWrapper>>::iterator it =
@@ -161,7 +161,7 @@
         static_cast<const browsing_data::AutofillCounter::AutofillResult*>(
             result);
     _addressesSummary = [self addressesSummary:autofillResult];
-    _cardsSummary = [self cardsSummary:autofillResult];
+    _paymentMethodsSummary = [self paymentMethodsSummary:autofillResult];
     _suggestionsSummary = [self suggestionsSummary:autofillResult];
   } else {
     NOTREACHED();
@@ -172,7 +172,7 @@
   // will evaluate to true and a non-placeholder browsing data summary will be
   // dispatched.
   if (_browsingHistorySummary && _passwordsSummary && _addressesSummary &&
-      _cardsSummary && _suggestionsSummary) {
+      _paymentMethodsSummary && _suggestionsSummary) {
     [self dispatchBrowsingDataSummary];
   }
 }
@@ -210,8 +210,8 @@
       [summaryItems addObject:_addressesSummary];
     }
 
-    if (_cardsSummary && _cardsSummary.length > 0) {
-      [summaryItems addObject:_cardsSummary];
+    if (_paymentMethodsSummary && _paymentMethodsSummary.length > 0) {
+      [summaryItems addObject:_paymentMethodsSummary];
     }
 
     if (_suggestionsSummary && _suggestionsSummary.length > 0) {
@@ -269,15 +269,8 @@
     return @"";
   }
 
-  bool hasSyncedPasswords =
-      result->is_sync_enabled() || (result->account_passwords() > 0);
-  return hasSyncedPasswords
-             ? l10n_util::GetPluralNSStringF(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS_SYNCED,
-                   passwordCount)
-             : l10n_util::GetPluralNSStringF(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS,
-                   passwordCount);
+  return l10n_util::GetPluralNSStringF(
+      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS, passwordCount);
 }
 
 // Returns the addresses summary based on `result`. If the count of addresses in
@@ -291,32 +284,24 @@
     return @"";
   }
 
-  return result->is_sync_enabled()
-             ? l10n_util::GetPluralNSStringF(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_ADRESSES_SYNCED,
-                   addressesCount)
-             : l10n_util::GetPluralNSStringF(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_ADRESSES,
-                   addressesCount);
+  return l10n_util::GetPluralNSStringF(
+      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_ADRESSES, addressesCount);
 }
 
-// Returns the cards summary based on `result`. If the count of cards in `result
-// ` is less than 1, then returns an empty string.
-- (NSString*)cardsSummary:
+// Returns the payment methods summary based on `result`. If the count of
+// payment methods in `result ` is less than 1, then returns an empty string.
+- (NSString*)paymentMethodsSummary:
     (const browsing_data::AutofillCounter::AutofillResult*)result {
-  browsing_data::AutofillCounter::ResultInt cardsCount =
+  browsing_data::AutofillCounter::ResultInt paymentMethodsCount =
       result->num_credit_cards();
 
-  if (cardsCount < 1) {
+  if (paymentMethodsCount < 1) {
     return @"";
   }
 
-  return result->is_sync_enabled()
-             ? l10n_util::GetPluralNSStringF(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CARDS_SYNCED,
-                   cardsCount)
-             : l10n_util::GetPluralNSStringF(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CARDS, cardsCount);
+  return l10n_util::GetPluralNSStringF(
+      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PAYMENT_METHODS,
+      paymentMethodsCount);
 }
 
 // Returns the suggestions summary based on `result`. If the count of
@@ -329,13 +314,8 @@
     return @"";
   }
 
-  return result->is_sync_enabled()
-             ? l10n_util::GetPluralNSStringF(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SUGGESTIONS_SYNCED,
-                   suggestionCount)
-             : l10n_util::GetPluralNSStringF(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SUGGESTIONS,
-                   suggestionCount);
+  return l10n_util::GetPluralNSStringF(
+      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SUGGESTIONS, suggestionCount);
 }
 
 @end

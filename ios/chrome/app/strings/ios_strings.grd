@@ -1316,23 +1316,13 @@ See your search engine’s instructions for deleting your search history, if app
           =1 {1 address}
           other {# addresses}}**
       </message>
-      <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_ADRESSES_SYNCED" translateable="false" desc="Summary of the addresses to be deleted when deleting browsing data and when the user syncs their autofill data. [iOS only]">
-       **{COUNT, plural,
-          =1 {1 address (synced)}
-          other {# addresses (synced)}}**
-      </message>
       <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CACHED_FILES" translateable="false" desc="Summary of the cached data to be deleted when deleting browsing data. Should be lower case since it's shown in a list of browsing data items descriptions. [iOS only]">
        **cached files**
       </message>
-      <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CARDS" translateable="false" desc="Summary of the cards to be deleted when deleting browsing data. [iOS only]">
+      <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PAYMENT_METHODS" translateable="false" desc="Summary of the payment methods to be deleted when deleting browsing data. [iOS only]">
        **{COUNT, plural,
-          =1 {1 card}
-          other {# cards}}**
-      </message>
-      <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CARDS_SYNCED" translateable="false" desc="Summary of the cards to be deleted when deleting browsing data and when the user syncs their autofill data. [iOS only]">
-       **{COUNT, plural,
-          =1 {1 card (synced)}
-          other {# cards (synced)}}**
+          =1 {1 payment method}
+          other {# payment method}}**
       </message>
       <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA" translateable="false" desc="Placeholder for the browsing data summary when there is no browsing data to delete. [iOS only]">
         **None**
@@ -1341,11 +1331,6 @@ See your search engine’s instructions for deleting your search history, if app
        **{COUNT, plural,
           =1 {1 password}
           other {# passwords}}**
-      </message>
-      <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS_SYNCED" translateable="false" desc="Summary of the passwords to be deleted when deleting browsing data and when the user has passwords saved into their google account. [iOS only]">
-       **{COUNT, plural,
-          =1 {1 password (synced)}
-          other {# passwords (synced)}}**
       </message>
       <!-- IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SEPARATOR should include a space after the comma. This is achieved by adding ''' after the space. -->
       <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SEPARATOR" translateable="false" desc="Text/punctuation that separates items in a list. For example, this is used in a list of browsing data items descriptions, e.g. '1 Site, Site Data, 2 passwords'.">
@@ -1361,18 +1346,13 @@ See your search engine’s instructions for deleting your search history, if app
       </message>
       <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITES_SYNCED" translateable="false" desc="Summary of the sites to be deleted when deleting browsing data and when the user synced their browsing history. [iOS only]">
        **{COUNT, plural,
-          =1 {1 site (more synced)}
-          other {# sites (more synced)}}**
+          =1 {1 site (more on synced devices)}
+          other {# sites (more on synced devices)}}**
       </message>
       <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SUGGESTIONS" translateable="false" desc="Summary of the suggestions to be deleted when deleting browsing data. [iOS only]">
        {COUNT, plural,
           =1 {1 suggestion}
           other {# suggestion}}
-      </message>
-      <message name="IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SUGGESTIONS_SYNCED" translateable="false" desc="Summary of the suggestions to be deleted when deleting browsing data and when the user syncs their autofill data. [iOS only]">
-       **{COUNT, plural,
-          =1 {1 suggestion (synced)}
-          other {# suggestions (synced)}}**
       </message>
       <message name="IDS_IOS_DELETE_BROWSING_DATA_TITLE" translateable="false" desc="Label for the option that summarises the browsing data to be deleted. [iOS only]">
         **Browsing Data**

@@ -582,9 +582,9 @@ void ExpectClearBrowsingDataNavigationHistograms(
                      kPasswordCount))] assertWithMatcher:grey_nil()];
 }
 
-// Tests that the number of cards is shown on the browsing data row if form data
-// is selected as a data type to be deleted.
-- (void)testCardsForDeletion {
+// Tests that the number of payment methods is shown on the browsing data row if
+// form data is selected as a data type to be deleted.
+- (void)testPaymentMethodsForDeletion {
   // Save a card to the payments data manager.
   [AutofillAppInterface saveLocalCreditCard];
 
@@ -604,13 +604,13 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:
                  ContainsPartialText(l10n_util::GetPluralNSStringF(
-                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CARDS, 1))]
+                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PAYMENT_METHODS, 1))]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that the number of cards is not shown on the browsing data row if form
 // data is not selected as a data type to be deleted.
-- (void)testKeepCards {
+- (void)testKeepPaymentMethods {
   // Save a card.
   [AutofillAppInterface saveLocalCreditCard];
 
@@ -631,7 +631,7 @@ void ExpectClearBrowsingDataNavigationHistograms(
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:
                  ContainsPartialText(l10n_util::GetPluralNSStringF(
-                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CARDS, 1))]
+                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PAYMENT_METHODS, 1))]
       assertWithMatcher:grey_nil()];
 }
 

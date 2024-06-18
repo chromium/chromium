@@ -235,13 +235,13 @@ TEST_F(BrowsingDataMediatorTest, TestPasswordsSummary) {
         {0, 0, false, l10n_util::GetNSString(
                    IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA)},
         {1, 1, true, l10n_util::GetPluralNSStringF(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS_SYNCED,
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS,
                    2)},
         {1, 1, false, l10n_util::GetPluralNSStringF(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS_SYNCED,
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS,
                    2)},
         {2, 0, true, l10n_util::GetPluralNSStringF(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS_SYNCED,
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS,
                    2)},
         {1, 0, false, l10n_util::GetPluralNSStringF(
                    IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PASSWORDS, 1)},
@@ -289,11 +289,11 @@ TEST_F(BrowsingDataMediatorTest, TestAddressesSummary) {
         {0, false, l10n_util::GetNSString(
                    IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA)},
         {1, true, l10n_util::GetPluralNSStringF(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_ADRESSES_SYNCED, 1)},
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_ADRESSES, 1)},
         {1, false, l10n_util::GetPluralNSStringF(
                    IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_ADRESSES, 1)},
         {2, true, l10n_util::GetPluralNSStringF(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_ADRESSES_SYNCED, 2)},
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_ADRESSES, 2)},
         {2, false, l10n_util::GetPluralNSStringF(
                    IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_ADRESSES, 2)},
     };
@@ -335,13 +335,13 @@ TEST_F(BrowsingDataMediatorTest, TestCardsSummary) {
         {0, false, l10n_util::GetNSString(
                    IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA)},
         {1, true, l10n_util::GetPluralNSStringF(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CARDS_SYNCED, 1)},
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PAYMENT_METHODS, 1)},
         {1, false, l10n_util::GetPluralNSStringF(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CARDS, 1)},
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PAYMENT_METHODS, 1)},
         {2, true, l10n_util::GetPluralNSStringF(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CARDS_SYNCED, 2)},
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PAYMENT_METHODS, 2)},
         {2, false, l10n_util::GetPluralNSStringF(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CARDS, 2)},
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_PAYMENT_METHODS, 2)},
     };
   // clang-format on
 
@@ -382,12 +382,12 @@ TEST_F(BrowsingDataMediatorTest, TestSuggestionsSummary) {
         {0, false, l10n_util::GetNSString(
                    IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_NO_DATA)},
         {1, true, l10n_util::GetPluralNSStringF(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SUGGESTIONS_SYNCED,
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SUGGESTIONS,
                    1)},
         {1, false, l10n_util::GetPluralNSStringF(
                    IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SUGGESTIONS, 1)},
         {2, true, l10n_util::GetPluralNSStringF(
-                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SUGGESTIONS_SYNCED,
+                   IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SUGGESTIONS,
                    2)},
         {2, false, l10n_util::GetPluralNSStringF(
                    IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SUGGESTIONS, 2)},
