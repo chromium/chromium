@@ -216,19 +216,6 @@ bool BluetoothAdapterMac::IsPresent() const {
   return CFBooleanGetValue(connected.get());
 }
 
-BluetoothAdapter::PermissionStatus BluetoothAdapterMac::GetOsPermissionStatus()
-    const {
-  switch (CBCentralManager.authorization) {
-    case CBManagerAuthorizationNotDetermined:
-      return PermissionStatus::kUndetermined;
-    case CBManagerAuthorizationRestricted:
-    case CBManagerAuthorizationDenied:
-      return PermissionStatus::kDenied;
-    case CBManagerAuthorizationAllowedAlways:
-      return PermissionStatus::kAllowed;
-  }
-}
-
 bool BluetoothAdapterMac::IsPowered() const {
   const_cast<BluetoothAdapterMac*>(this)->LazyInitialize();
   return classic_powered_ || IsLowEnergyPowered();

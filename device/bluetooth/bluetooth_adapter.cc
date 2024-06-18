@@ -82,6 +82,12 @@ BluetoothAdapter::PermissionStatus BluetoothAdapter::GetOsPermissionStatus()
   return PermissionStatus::kAllowed;
 }
 
+void BluetoothAdapter::RequestSystemPermission(
+    BluetoothAdapter::RequestSystemPermissionCallback callback) {
+  ui_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), GetOsPermissionStatus()));
+}
+
 void BluetoothAdapter::SetPowered(bool powered,
                                   base::OnceClosure callback,
                                   ErrorCallback error_callback) {

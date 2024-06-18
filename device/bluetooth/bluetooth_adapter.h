@@ -373,6 +373,15 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
     std::optional<bool> require_authentication;
   };
 
+  enum class DiscoveryState {
+    kStarting = 0,
+    kStopping,
+    kDiscovering,
+    kIdle,
+  };
+
+  enum class PermissionStatus { kUndetermined = 0, kDenied, kAllowed };
+
   // The ErrorCallback is used for methods that can fail in which case it is
   // called, in the success case the callback is simply not called.
   using ErrorCallback = base::OnceClosure;
@@ -402,15 +411,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
   using DiscoverySessionResultCallback =
       base::OnceCallback<void(/*is_error*/ bool,
                               UMABluetoothDiscoverySessionOutcome)>;
-
-  enum class DiscoveryState {
-    kStarting = 0,
-    kStopping,
-    kDiscovering,
-    kIdle,
-  };
-
-  enum class PermissionStatus { kUndetermined = 0, kDenied, kAllowed };
+  using RequestSystemPermissionCallback =
+      base::OnceCallback<void(BluetoothAdapter::PermissionStatus)>;
 
   // Creates a new adapter. Initialize() must be called before the adapter can
   // be used.
@@ -473,6 +475,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapter
 
   // Returns the status of the browser's Bluetooth permission status.
   virtual PermissionStatus GetOsPermissionStatus() const;
+
+  // Request Bluetooth system permission. For platforms that require Bluetooth
+  // system permission for accessing Bluetooth devices, it triggers system
+  // permission prompt. `callback` will be invoked when the system permission is
+  // determined or `this` is destructed.
+  virtual void RequestSystemPermission(
+      RequestSystemPermissionCallback callback);
 
   // Requests a change to the adapter radio power. Setting |powered| to true
   // will turn on the radio and false will turn it off. On success, |callback|

@@ -46,7 +46,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterMac
                ErrorCallback error_callback) override;
   bool IsPresent() const override;
   bool IsPowered() const override;
-  PermissionStatus GetOsPermissionStatus() const override;
   bool IsDiscoverable() const override;
   void SetDiscoverable(bool discoverable,
                        base::OnceClosure callback,
