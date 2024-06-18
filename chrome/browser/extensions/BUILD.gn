@@ -775,7 +775,7 @@ source_set("extensions") {
     # Lots of APIs use headers from the list above.
     "//chrome/browser/extensions/api:api_registration",
 
-    # TODO(crbug.com/40124309): Remove this circular dependency.
+    # TODO(crbug.com/346472679): Remove this circular dependency.
     "//chrome/browser/web_applications/extensions",
 
     # TODO(crbug.com/41437292): Remove this circular dependency.
@@ -869,7 +869,7 @@ source_set("extensions") {
     "//components/webapps/common",
     "//components/webauthn/json",
 
-    # TODO(crbug.com/40124309): Remove this dependency:
+    # TODO(crbug.com/346472679): Remove this dependency:
     "//chrome/browser/web_applications/extensions",
     "//chrome/common/extensions/api:extensions_features",
     "//chrome/common/safe_browsing:proto",

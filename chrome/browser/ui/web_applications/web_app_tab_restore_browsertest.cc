@@ -23,7 +23,7 @@ namespace web_app {
 using WebAppTabRestoreBrowserTest = WebAppNavigationBrowserTest;
 
 // Tests that desktop PWAs are reopened at the correct size.
-// TODO(crbug.com/40124309): Flaky on Linux.
+// TODO(crbug.com/40852083): Flaky on Linux.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_ReopenedPWASizeIsCorrectlyRestored \
   DISABLED_ReopenedPWASizeIsCorrectlyRestored

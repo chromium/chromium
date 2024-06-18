@@ -7,7 +7,7 @@ import("//extensions/buildflags/buildflags.gni")
 
 assert(enable_extensions)
 
-# TODO(crbug.com/40124309): Delete web_applications/extensions/ directory.
+# TODO(crbug.com/346472679): Delete web_applications/extensions/ directory.
 source_set("extensions") {
   sources = [
     "extension_status_utils.cc",
