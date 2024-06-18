@@ -20764,6 +20764,281 @@
        {}
       ]
      ],
+     "margin-boxes": {
+      "auto-margins-001-print.html": [
+       "cf2501385f10483999811024195a79f9f19225f7",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/auto-margins-001-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "auto-margins-002-print.html": [
+       "5b424941cadd75afad2083a619871a9d5aa80749",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/auto-margins-002-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "auto-margins-003-print.html": [
+       "4fe7192a56f2400c71342c3e6b3d6dd7dc62289c",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/auto-margins-003-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "content-001-print.html": [
+       "efaa71b8c848bc13733f191a3c1f004edca80f29",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/content-001-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "dimensions-001-print.html": [
+       "20d4e3059e0df47c0e4f782bfce782c0184789f1",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/dimensions-001-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "dimensions-002-print.html": [
+       "4637a39ed516dc7b26d3bb11a634dc5e3f1262b5",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/dimensions-002-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "dimensions-003-print.html": [
+       "fe9f26da5d7c4dc008cd58539ba4ffc23adc309b",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/dimensions-003-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "dimensions-004-print.html": [
+       "80bcc43fb39b84fb291fb822de9a58bf26181a1c",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/dimensions-004-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "dimensions-005-print.html": [
+       "2823424f39a1ce99f39af781e830378bb62f738a",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/dimensions-005-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "dimensions-006-print.html": [
+       "6ea477f2c84d63b599d673ccbd943ae5ba62be26",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/dimensions-006-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "dimensions-007-print.html": [
+       "cf7e5f507543f0ea8b523e83493d91cdb5b0e94b",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/dimensions-007-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "dimensions-008-print.html": [
+       "8bdf0cdac0bb5796f3e6c99c0f3ded01f13527ee",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/dimensions-008-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "dimensions-009-print.html": [
+       "602cc5680ec315dc8335a8ed294a14f0286b580b",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/dimensions-009-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "dimensions-010-print.html": [
+       "1ebaa6d9288b89bb90c62fa5f99406e2e8fb91bb",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/dimensions-010-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "dimensions-011-print.html": [
+       "e51d1fbd75eea07e2b8bc3106b3a344b944181e6",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/dimensions-011-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "dimensions-012-print.html": [
+       "6b4ac2c28c723f6db09d16c50df301b0884b9af2",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/dimensions-012-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "dimensions-013-print.html": [
+       "4540b07190673da2fe0bbb616fb66a46512acae1",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/dimensions-013-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "dimensions-014-print.html": [
+       "d126f2d0c91c5daba93e78c5075adb7499059c9f",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/dimensions-013-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "inapplicable-properties-print.html": [
+       "f5f7f8ea247a76726f74fcab0d3de187a91f8557",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/inapplicable-properties-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "overconstrained-001-print.html": [
+       "549443ebc3226a2a954c82719a3cf7b25f62230a",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/overconstrained-001-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "paint-order-001-print.html": [
+       "839762f0b9a7de87cba63e13be87d6af66bddd53",
+       [
+        null,
+        [
+         [
+          "/css/css-page/margin-boxes/paint-order-001-print-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ]
+     },
      "media-queries-001-print.html": [
       "01b2a00e470263b6371313b5107c7add544d858c",
       [
@@ -46513,6 +46788,32 @@
         [
          [
           "/css/CSS2/normal-flow/inline-block-zorder-004-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "inline-box-border-line-break.html": [
+       "6688d5e3ada2483288fc5f23c42a915d44a6300b",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/normal-flow/inline-box-border-line-break-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "inline-box-padding-line-break.html": [
+       "70d518f411efb383debce5cd06cf604569217aee",
+       [
+        null,
+        [
+         [
+          "/css/CSS2/normal-flow/inline-box-border-line-break-ref.html",
           "=="
          ]
         ],
@@ -302009,6 +302310,10 @@
        "22204233d95d1deb05ca71ae04a885434db1d3ac",
        []
       ],
+      "inline-box-border-line-break-ref.html": [
+       "6b66951fcc76b42253fb1486563a029bb845b9b2",
+       []
+      ],
       "inline-non-replaced-height-002-ref.xht": [
        "0cc109939200d47938bf06729b150ce54d8dcb55",
        []
@@ -329248,6 +329553,88 @@
       "a779b263c7d2d9a4be7109431798d86844694a51",
       []
      ],
+     "margin-boxes": {
+      "auto-margins-001-print-ref.html": [
+       "70f4a41ab59830856ee7d6c5c8b0946a6b06d40a",
+       []
+      ],
+      "auto-margins-002-print-ref.html": [
+       "56adf2a5401944e58bab8382a14879bd1b655bc3",
+       []
+      ],
+      "auto-margins-003-print-ref.html": [
+       "252633b0581a6b2cd09244b0b000b7e7f7effdb8",
+       []
+      ],
+      "content-001-print-ref.html": [
+       "bd3ba7e0ccf47a6b18b548cccf0b01ae62e5212b",
+       []
+      ],
+      "dimensions-001-print-ref.html": [
+       "dca52cb8bc727c99bc941b24797255e89fbf1811",
+       []
+      ],
+      "dimensions-002-print-ref.html": [
+       "83e144fb3363262de938737671522faef5ca6043",
+       []
+      ],
+      "dimensions-003-print-ref.html": [
+       "c491cdde98ee56e98cfba9f15f91f1fbfe2f9952",
+       []
+      ],
+      "dimensions-004-print-ref.html": [
+       "3f45190e330d2df06ad3b6b4928d0239bdb2ca5e",
+       []
+      ],
+      "dimensions-005-print-ref.html": [
+       "1749b1c71471fcceb9599b8e09105b08921ff090",
+       []
+      ],
+      "dimensions-006-print-ref.html": [
+       "f6aa9e60f48b9949a4dabb5833b0590bef56fe81",
+       []
+      ],
+      "dimensions-007-print-ref.html": [
+       "b91c086879a1967dfcd83c2f433c10cdd8824ad2",
+       []
+      ],
+      "dimensions-008-print-ref.html": [
+       "5bd141a28e1cb394beffd81e656d8eaaa7802908",
+       []
+      ],
+      "dimensions-009-print-ref.html": [
+       "922d165efa1b4af7d2c86a4c074894f07eb0a16c",
+       []
+      ],
+      "dimensions-010-print-ref.html": [
+       "a4c0b4702d54007fbc036fd8f4a8e7ecd8196866",
+       []
+      ],
+      "dimensions-011-print-ref.html": [
+       "54983175e3db5052e46af701975393952853ff06",
+       []
+      ],
+      "dimensions-012-print-ref.html": [
+       "e62880031a164230240d334ffa6e370f0ffeb562",
+       []
+      ],
+      "dimensions-013-print-ref.html": [
+       "a131b564fd62fd9f7935bbd371e0298c74e2f68c",
+       []
+      ],
+      "inapplicable-properties-print-ref.html": [
+       "157cb8effa4d501dd3dab2c8535e8cc45f26b390",
+       []
+      ],
+      "overconstrained-001-print-ref.html": [
+       "de6b55257ca2ef63cb612dff61a3a1165e2874c1",
+       []
+      ],
+      "paint-order-001-print-ref.html": [
+       "2677aee123cba64e023d9be967f71a8d4caa5c20",
+       []
+      ]
+     },
      "media-queries-001-print-ref.html": [
       "35af04dc3c45b06a092d11569227a9a7014c2068",
       []
@@ -477207,7 +477594,7 @@
       ]
      ],
      "revert-in-fallback.html": [
-      "ae99e5192fd2587332c23b6a0ff604956a845e17",
+      "956965ab7abb1dc67713ad90ce6b5bff1284e14d",
       [
        null,
        {}
@@ -543003,6 +543390,13 @@
           "timeout": "long"
          }
         ]
+       ],
+       "target-pseudo-after-reinsertion.html": [
+        "3e46c28104ca1864b97422c8c671d033e4f38602",
+        [
+         null,
+         {}
+        ]
        ]
       },
       "unloading-documents": {
@@ -580651,6 +581045,20 @@
          {}
         ]
        ],
+       "iframe-loading-lazy-history-pushState.html": [
+        "09af8b3693f0d7da84f62ebee1ae43356801d04b",
+        [
+         null,
+         {}
+        ]
+       ],
+       "iframe-loading-lazy-history-replaceState.html": [
+        "ac9117a46cecb52ffa3e08827330eaf6314067e4",
+        [
+         null,
+         {}
+        ]
+       ],
        "iframe-loading-lazy-in-script-disabled-iframe.html": [
         "4f191cd7842675d763079911fe9f8b80bd447506",
         [
@@ -580742,8 +581150,85 @@
          {}
         ]
        ],
+       "iframe-loading-lazy-nav-form-submit.html": [
+        "7f94d6021fafcd95d03d35544f3249609360bd2c",
+        [
+         null,
+         {}
+        ]
+       ],
+       "iframe-loading-lazy-nav-link-click-fragment.html": [
+        "c81a01833a2a8103601829da6660fc1536c77d7b",
+        [
+         null,
+         {}
+        ]
+       ],
+       "iframe-loading-lazy-nav-link-click.html": [
+        "d8d85b62a4bd624c23f9046128289b2234689321",
+        [
+         null,
+         {}
+        ]
+       ],
+       "iframe-loading-lazy-nav-location-assign.html": [
+        "88ec129fbc0da941bd5c64d81a65c494cbde8e17",
+        [
+         null,
+         {}
+        ]
+       ],
+       "iframe-loading-lazy-nav-location-replace-set-src.html": [
+        "e2f0c6dceb9348c80ffb7dc55251cc62edb7309c",
+        [
+         null,
+         {}
+        ]
+       ],
+       "iframe-loading-lazy-nav-location-replace.html": [
+        "9d3c4fbc1320cabe9fc2ff239a83e2ccad3624be",
+        [
+         null,
+         {}
+        ]
+       ],
+       "iframe-loading-lazy-nav-meta-refresh.optional.html": [
+        "0cc7e11041505519a14ba978c4e94c6e97f32df5",
+        [
+         null,
+         {}
+        ]
+       ],
+       "iframe-loading-lazy-nav-navigation-navigate.html": [
+        "1010c540b7fd59521278ece38b34f9e572e4e4a6",
+        [
+         null,
+         {}
+        ]
+       ],
+       "iframe-loading-lazy-nav-window-open.html": [
+        "579c079ce7025a2b20bfe928df69fb47816d6eb4",
+        [
+         null,
+         {}
+        ]
+       ],
        "iframe-loading-lazy-referrerpolicy-change.sub.html": [
         "68734d5708da40b7e5e533cb2ddee41c8a3d719f",
+        [
+         null,
+         {}
+        ]
+       ],
+       "iframe-loading-lazy-reload-location-reload.html": [
+        "a670de1f5c5f815ecbe11cc30026a2db8490435a",
+        [
+         null,
+         {}
+        ]
+       ],
+       "iframe-loading-lazy-reload-navigation-reload.html": [
+        "aefd6c472b5ae888e0786de8e26e8d9ad5111adb",
         [
          null,
          {}
@@ -657311,7 +657796,7 @@
      ]
     ],
     "single-touch-vertical-rl.html": [
-     "857007b1f8a5c548da2e2c306cb80bdea96bf2e5",
+     "3c34a6d9c96a052759d822397124affe3b36319c",
      [
       null,
       {
