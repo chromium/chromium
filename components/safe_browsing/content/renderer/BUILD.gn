@@ -35,8 +35,8 @@ source_set("throttles") {
 
   if (enable_extensions) {
     sources += [
-      "websocket_sb_handshake_throttle.cc",
-      "websocket_sb_handshake_throttle.h",
+      "websocket_sb_extensions_handshake_throttle.cc",
+      "websocket_sb_extensions_handshake_throttle.h",
     ]
   }
 
@@ -64,7 +64,7 @@ source_set("throttles_unittest") {
   testonly = true
   sources = [ "renderer_url_loader_throttle_unittest.cc" ]
   if (enable_extensions) {
-    sources += [ "websocket_sb_handshake_throttle_unittest.cc" ]
+    sources += [ "websocket_sb_extensions_handshake_throttle_unittest.cc" ]
   }
 
   deps = [

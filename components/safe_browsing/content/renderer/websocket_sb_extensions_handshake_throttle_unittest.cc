@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/renderer/websocket_sb_handshake_throttle.h"
+#include "components/safe_browsing/content/renderer/websocket_sb_extensions_handshake_throttle.h"
 
 #include <optional>
 #include <utility>
@@ -88,14 +88,14 @@ class FakeCallback {
   base::RunLoop run_loop_;
 };
 
-class WebSocketSBHandshakeThrottleTest : public ::testing::Test {
+class WebSocketSBExtensionsHandshakeThrottleTest : public ::testing::Test {
  protected:
-  WebSocketSBHandshakeThrottleTest()
+  WebSocketSBExtensionsHandshakeThrottleTest()
       : extension_web_request_reporter_receiver_(
             &extension_web_request_reporter_) {
     extension_web_request_reporter_receiver_.Bind(
         extension_web_request_reporter_remote_.BindNewPipeAndPassReceiver());
-    throttle_ = std::make_unique<WebSocketSBHandshakeThrottle>(
+    throttle_ = std::make_unique<WebSocketSBExtensionsHandshakeThrottle>(
         extension_web_request_reporter_remote_.get());
   }
 
@@ -105,13 +105,14 @@ class WebSocketSBHandshakeThrottleTest : public ::testing::Test {
       extension_web_request_reporter_receiver_;
   mojo::Remote<mojom::ExtensionWebRequestReporter>
       extension_web_request_reporter_remote_;
-  std::unique_ptr<WebSocketSBHandshakeThrottle> throttle_;
+  std::unique_ptr<WebSocketSBExtensionsHandshakeThrottle> throttle_;
   FakeCallback fake_callback_;
 };
 
-TEST_F(WebSocketSBHandshakeThrottleTest, Construction) {}
+TEST_F(WebSocketSBExtensionsHandshakeThrottleTest, Construction) {}
 
-TEST_F(WebSocketSBHandshakeThrottleTest, SendExtensionWebRequestData) {
+TEST_F(WebSocketSBExtensionsHandshakeThrottleTest,
+       SendExtensionWebRequestData) {
   base::HistogramTester histogram_tester;
   throttle_->ThrottleHandshake(
       GURL(kTestUrl),
@@ -136,7 +137,7 @@ TEST_F(WebSocketSBHandshakeThrottleTest, SendExtensionWebRequestData) {
       false, 1);
 }
 
-TEST_F(WebSocketSBHandshakeThrottleTest,
+TEST_F(WebSocketSBExtensionsHandshakeThrottleTest,
        SendExtensionWebRequestData_ContentScript) {
   base::HistogramTester histogram_tester;
   throttle_->ThrottleHandshake(

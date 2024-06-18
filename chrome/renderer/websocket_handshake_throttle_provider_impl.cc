@@ -12,7 +12,7 @@
 #include "third_party/blink/public/platform/websocket_handshake_throttle.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "components/safe_browsing/content/renderer/websocket_sb_handshake_throttle.h"
+#include "components/safe_browsing/content/renderer/websocket_sb_extensions_handshake_throttle.h"
 #endif
 
 WebSocketHandshakeThrottleProviderImpl::WebSocketHandshakeThrottleProviderImpl(
@@ -63,7 +63,8 @@ WebSocketHandshakeThrottleProviderImpl::CreateThrottle(
     extension_web_request_reporter_.Bind(
         std::move(pending_extension_web_request_reporter_));
   }
-  return std::make_unique<safe_browsing::WebSocketSBHandshakeThrottle>(
+  return std::make_unique<
+      safe_browsing::WebSocketSBExtensionsHandshakeThrottle>(
       extension_web_request_reporter_.get());
 #else
   return nullptr;

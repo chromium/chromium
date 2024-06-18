@@ -6,8 +6,8 @@
 // runs inside the render process, calling the interface defined in
 // safe_browsing.mojom to communicate with the extension telemetry service.
 
-#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_WEBSOCKET_SB_HANDSHAKE_THROTTLE_H_
-#define COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_WEBSOCKET_SB_HANDSHAKE_THROTTLE_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_WEBSOCKET_SB_EXTENSIONS_HANDSHAKE_THROTTLE_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_WEBSOCKET_SB_EXTENSIONS_HANDSHAKE_THROTTLE_H_
 
 #include "base/memory/raw_ptr.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
@@ -16,18 +16,20 @@
 
 namespace safe_browsing {
 
-class WebSocketSBHandshakeThrottle : public blink::WebSocketHandshakeThrottle {
+class WebSocketSBExtensionsHandshakeThrottle
+    : public blink::WebSocketHandshakeThrottle {
  public:
   // |extension_web_request_reporter_pending_remote| is used for sending
   // extension web requests to the browser.
-  explicit WebSocketSBHandshakeThrottle(
+  explicit WebSocketSBExtensionsHandshakeThrottle(
       mojom::ExtensionWebRequestReporter* extension_web_request_reporter);
 
-  WebSocketSBHandshakeThrottle(const WebSocketSBHandshakeThrottle&) = delete;
-  WebSocketSBHandshakeThrottle& operator=(const WebSocketSBHandshakeThrottle&) =
-      delete;
+  WebSocketSBExtensionsHandshakeThrottle(
+      const WebSocketSBExtensionsHandshakeThrottle&) = delete;
+  WebSocketSBExtensionsHandshakeThrottle& operator=(
+      const WebSocketSBExtensionsHandshakeThrottle&) = delete;
 
-  ~WebSocketSBHandshakeThrottle() override;
+  ~WebSocketSBExtensionsHandshakeThrottle() override;
 
   void ThrottleHandshake(const blink::WebURL& url,
                          const blink::WebSecurityOrigin& creator_origin,
@@ -50,4 +52,4 @@ class WebSocketSBHandshakeThrottle : public blink::WebSocketHandshakeThrottle {
 
 }  // namespace safe_browsing
 
-#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_WEBSOCKET_SB_HANDSHAKE_THROTTLE_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_RENDERER_WEBSOCKET_SB_EXTENSIONS_HANDSHAKE_THROTTLE_H_

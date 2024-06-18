@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/safe_browsing/content/renderer/websocket_sb_handshake_throttle.h"
+#include "components/safe_browsing/content/renderer/websocket_sb_extensions_handshake_throttle.h"
 
 #include "base/metrics/histogram_functions.h"
 #include "extensions/common/constants.h"
@@ -11,14 +11,15 @@
 
 namespace safe_browsing {
 
-WebSocketSBHandshakeThrottle::WebSocketSBHandshakeThrottle(
+WebSocketSBExtensionsHandshakeThrottle::WebSocketSBExtensionsHandshakeThrottle(
     mojom::ExtensionWebRequestReporter* extension_web_request_reporter)
     : extension_web_request_reporter_(
           std::move(extension_web_request_reporter)) {}
 
-WebSocketSBHandshakeThrottle::~WebSocketSBHandshakeThrottle() = default;
+WebSocketSBExtensionsHandshakeThrottle::
+    ~WebSocketSBExtensionsHandshakeThrottle() = default;
 
-void WebSocketSBHandshakeThrottle::ThrottleHandshake(
+void WebSocketSBExtensionsHandshakeThrottle::ThrottleHandshake(
     const blink::WebURL& url,
     const blink::WebSecurityOrigin& creator_origin,
     const blink::WebSecurityOrigin& isolated_world_origin,
@@ -31,7 +32,7 @@ void WebSocketSBHandshakeThrottle::ThrottleHandshake(
   // |this| is destroyed here.
 }
 
-void WebSocketSBHandshakeThrottle::MaybeSendExtensionWebRequestData(
+void WebSocketSBExtensionsHandshakeThrottle::MaybeSendExtensionWebRequestData(
     const blink::WebURL& url,
     const blink::WebSecurityOrigin& creator_origin,
     const blink::WebSecurityOrigin& isolated_world_origin) {
