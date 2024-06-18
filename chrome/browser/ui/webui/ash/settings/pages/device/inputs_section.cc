@@ -95,6 +95,18 @@ const std::vector<SearchConcept>& GetEmojiSuggestionSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetHelpMeWriteSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_LANGUAGES_HELP_ME_WRITE_SUGGESTIONS,
+       mojom::kInputSubpagePath,
+       mojom::SearchResultIcon::kLanguage,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kShowOrca}},
+  });
+  return *tags;
+}
+
 const std::vector<SearchConcept>& GetSpellCheckSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags({
       {IDS_OS_SETTINGS_TAG_LANGUAGES_EDIT_DICTIONARY,
@@ -378,9 +390,20 @@ InputsSection::InputsSection(Profile* profile,
 
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetDefaultSearchConcepts());
-  if (ShouldShowEmojiSuggestionsSettings()) {
+
+  bool should_show_emoji_suggestions_settings =
+      ShouldShowEmojiSuggestionsSettings();
+  bool should_show_orca_settings = ShouldShowOrcaSettings(editor_mediator_);
+  if (should_show_emoji_suggestions_settings || should_show_orca_settings) {
     updater.AddSearchTags(GetSuggestionsSearchConcepts());
+  }
+
+  if (should_show_emoji_suggestions_settings) {
     updater.AddSearchTags(GetEmojiSuggestionSearchConcepts());
+  }
+
+  if (should_show_orca_settings) {
+    updater.AddSearchTags(GetHelpMeWriteSearchConcepts());
   }
 
   UpdateSpellCheckSearchTags();

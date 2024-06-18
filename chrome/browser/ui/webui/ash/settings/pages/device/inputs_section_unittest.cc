@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/input_method/editor_geolocation_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/settings/search/search_tag_registry.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -25,7 +26,21 @@
 
 namespace ash::settings {
 
-// Test for the device settings page.
+namespace {
+
+constexpr OsSettingsIdentifier kShowOrcaSettingsId = {
+    .setting = chromeos::settings::mojom::Setting::kShowOrca
+};
+
+std::string GetSettingsSearchResultId(OsSettingsIdentifier id, int message_id) {
+  std::stringstream ss;
+  ss << id.setting << "," << message_id;
+  return ss.str();
+}
+
+}  // namespace
+
+// Test for the inputs settings page.
 class InputsSectionTest : public ChromeAshTestBase {
  public:
   InputsSectionTest()
@@ -51,6 +66,7 @@ class InputsSectionTest : public ChromeAshTestBase {
         prefs::kEmojiSuggestionEnterpriseAllowed, true);
     pref_service()->registry()->RegisterBooleanPref(
         spellcheck::prefs::kSpellCheckEnable, true);
+
     ChromeAshTestBase::SetUp();
   }
   void TearDown() override {
@@ -66,7 +82,8 @@ class InputsSectionTest : public ChromeAshTestBase {
   TestingProfile profile_;
 };
 
-TEST_F(InputsSectionTest, InputsSectionIncludesHelpMeWriteSettings) {
+TEST_F(InputsSectionTest,
+       InputsSectionShouldIncludeHelpMeWriteSettingsWhenMagicBoostIsDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       /*enabled_features=*/
@@ -114,6 +131,30 @@ TEST_F(InputsSectionTest,
 
   EXPECT_FALSE(
       html_source->GetLocalizedStrings()->FindBool("allowOrca").value());
+}
+
+TEST_F(InputsSectionTest, SearchResultShouldIncludeHelpMeWrite) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {
+          chromeos::features::kFeatureManagementOrca,
+      },
+      /*disabled_features=*/{ash::features::kOrcaUseAccountCapabilities,
+                             chromeos::features::kMagicBoost});
+
+  auto mock_geolocation_provider =
+      std::make_unique<input_method::EditorGeolocationMockProvider>("us");
+  input_method::EditorMediator editor_mediator(
+      profile(), std::move(mock_geolocation_provider));
+  inputs_section_ = std::make_unique<InputsSection>(
+      profile(), search_tag_registry(), pref_service(), &editor_mediator);
+
+  std::string result_id = GetSettingsSearchResultId(
+      kShowOrcaSettingsId,
+      IDS_OS_SETTINGS_TAG_LANGUAGES_HELP_ME_WRITE_SUGGESTIONS);
+
+  EXPECT_TRUE(search_tag_registry()->GetTagMetadata(result_id));
 }
 
 }  // namespace ash::settings
