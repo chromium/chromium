@@ -1177,11 +1177,6 @@ BASE_FEATURE(kAndroidOpenPdfInline,
 // enables the associated UI.
 BASE_FEATURE(kSmartZoom, "SmartZoom", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the mojo based gin java bridge implementation.
-BASE_FEATURE(kGinJavaBridgeMojo,
-             "GinJavaBridgeMojo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Skips clearing objects on main document ready. Only has an impact
 // when gin java bridge is enabled.
 BASE_FEATURE(kGinJavaBridgeMojoSkipClearObjectsOnMainDocumentReady,

@@ -62,7 +62,6 @@ class GinJavaBridgeDispatcherHost
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
   void PrimaryMainDocumentElementAvailable() override;
-  void PrimaryPageChanged(Page& page) override;
 
   // GinJavaMethodInvocationHelper::DispatcherDelegate
   JavaObjectWeakGlobalRef GetObjectWeakRef(
@@ -118,8 +117,6 @@ class GinJavaBridgeDispatcherHost
                                       bool should_create);
 
   // Run on the UI thread.
-  void InstallFilterAndRegisterAllRoutingIds();
-  void InstallFilterAndRegisterRoutingId(RenderFrameHost* render_frame_host);
   WebContentsImpl* web_contents() const;
   void RemoteDisconnected(const content::GlobalRenderFrameHostId& routing_id);
 
@@ -172,7 +169,6 @@ class GinJavaBridgeDispatcherHost
            mojo::AssociatedRemote<mojom::GinJavaBridge>>
       remotes_;
 
-  const bool mojo_enabled_;
   const bool mojo_skip_clear_on_main_document_;
 };
 

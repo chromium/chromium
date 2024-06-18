@@ -48,17 +48,8 @@ class GinJavaBridgeDispatcher final : public mojom::GinJavaBridge,
   ~GinJavaBridgeDispatcher() override;
 
   // RenderFrameObserver override:
-  bool OnMessageReceived(const IPC::Message& message) override;
   void DidClearWindowObject() override;
 
-  void GetJavaMethods(ObjectID object_id, std::vector<std::string>* methods);
-
-  bool HasJavaMethod(ObjectID object_id, const std::string& method_name);
-  std::unique_ptr<base::Value> InvokeJavaMethod(
-      ObjectID object_id,
-      const std::string& method_name,
-      base::Value::List arguments,
-      mojom::GinJavaBridgeError* error);
   GinJavaBridgeObject* GetObject(ObjectID object_id);
   void OnGinJavaBridgeObjectDeleted(GinJavaBridgeObject* object);
 
@@ -76,7 +67,6 @@ class GinJavaBridgeDispatcher final : public mojom::GinJavaBridge,
   NamedObjectMap named_objects_;
   ObjectMap objects_;
   bool inside_did_clear_window_object_ = false;
-  const bool enable_mojo_;
 
   mojo::Remote<mojom::GinJavaBridgeHost> remote_;
 

@@ -1953,14 +1953,6 @@ RenderFrameImpl::RenderFrameImpl(CreateParams params)
       g_routing_id_frame_map.Get().insert(std::make_pair(routing_id_, this));
   CHECK(result.second) << "Inserting a duplicate item.";
 #endif
-
-  // Everything below subclasses RenderFrameObserver and is automatically
-  // deleted when the RenderFrame gets deleted.
-#if BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(features::kGinJavaBridgeMojo)) {
-    new GinJavaBridgeDispatcher(this);
-  }
-#endif
 }
 
 mojom::FrameHost* RenderFrameImpl::GetFrameHost() {
@@ -6277,11 +6269,9 @@ void RenderFrameImpl::RegisterMojoInterfaces() {
           base::Unretained(render_accessibility_manager_.get())));
 
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kGinJavaBridgeMojo)) {
-    GetAssociatedInterfaceRegistry()->AddInterface<mojom::GinJavaBridge>(
-        base::BindRepeating(&RenderFrameImpl::BindGinJavaBridge,
-                            weak_factory_.GetWeakPtr()));
-  }
+  GetAssociatedInterfaceRegistry()->AddInterface<mojom::GinJavaBridge>(
+      base::BindRepeating(&RenderFrameImpl::BindGinJavaBridge,
+                          weak_factory_.GetWeakPtr()));
 #endif
 }
 

@@ -87,9 +87,6 @@ v8::Local<v8::Value> GinJavaFunctionInvocationHelper::Invoke(
     } else {
       error = mojom::GinJavaBridgeError::kGinJavaBridgeObjectIsGone;
     }
-  } else {
-    result = dispatcher_->InvokeJavaMethod(object->object_id(), method_name_,
-                                           std::move(arguments), &error);
   }
   if (!result.get()) {
     args->isolate()->ThrowException(v8::Exception::Error(gin::StringToV8(
