@@ -267,6 +267,20 @@ std::string GetSnapshotDataDescriptor(const base::CommandLine& command_line) {
 
 #endif
 
+#if defined(ADDRESS_SANITIZER)
+NO_SANITIZE("address")
+void AsanProcessInfoCB(const char*, bool*) {
+  auto* cmd_line = base::CommandLine::ForCurrentProcess();
+#if BUILDFLAG(IS_WIN)
+  std::string cmd_string = base::WideToUTF8(cmd_line->GetCommandLineString());
+#else
+  std::string cmd_string = cmd_line->GetCommandLineString();
+#endif
+  base::debug::AsanService::GetInstance()->Log("\nCommand line: `%s`\n",
+                                               cmd_string.c_str());
+}
+#endif  // defined(ADDRESS_SANITIZER)
+
 void LoadV8SnapshotFile(const base::CommandLine& command_line) {
   const gin::V8SnapshotFileType snapshot_type = GetSnapshotType(command_line);
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
@@ -1094,6 +1108,8 @@ int NO_STACK_PROTECTOR ContentMainRunnerImpl::Run() {
 
 #if defined(ADDRESS_SANITIZER)
   base::debug::AsanService::GetInstance()->Initialize();
+  // Report the command line of this process in ASAN's Additional Info area.
+  base::debug::AsanService::GetInstance()->AddErrorCallback(AsanProcessInfoCB);
 #endif
 
   // Run this logic on all child processes.
