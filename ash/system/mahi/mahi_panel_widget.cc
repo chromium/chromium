@@ -127,8 +127,10 @@ views::UniqueWidgetPtr MahiPanelWidget::CreateAndShowPanelWidget(
       views::Widget::InitParams::NATIVE_WIDGET_OWNS_WIDGET,
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
   params.name = GetName();
-  // TODO(b/319467834): Decide what container this widget should be on.
-  params.parent = Shell::GetContainer(root_window, kShellWindowId_PipContainer);
+  // `SystemModalContainer` can travel across displays, is not automatically
+  // resizable on limited screen size and stays on top on full-screen.
+  params.parent =
+      Shell::GetContainer(root_window, kShellWindowId_SystemModalContainer);
 
   // The widget's view handles round corners and blur via layers.
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;

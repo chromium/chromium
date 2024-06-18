@@ -5,15 +5,19 @@
 #include "ash/system/mahi/mahi_panel_widget.h"
 
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/system/mahi/fake_mahi_manager.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/system/mahi/mahi_ui_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/wm/window_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -158,6 +162,62 @@ TEST_F(MahiPanelWidgetTest, WidgetBoundsAfterRefreshBannerUpdate) {
   // the refresh banner was shown.
   EXPECT_EQ(panel_widget->GetWindowBoundsInScreen(), kInitialPanelWidgetBounds);
   EXPECT_EQ(panel_view->GetBoundsInScreen(), kInitialPanelViewBounds);
+}
+
+// Tests that the Mahi panel widget should not resize due to a screen size
+// change e.g. due to using docked magnifier.
+TEST_F(MahiPanelWidgetTest, WidgetDoesNotResize) {
+  // Set a window size that fits the panel and cache the widget size.
+  UpdateDisplay("800x700");
+  auto widget = MahiPanelWidget::CreateAndShowPanelWidget(
+      GetPrimaryDisplay().id(),
+      /*mahi_menu_bounds=*/gfx::Rect(gfx::Point(10, 10), gfx::Size(300, 300)),
+      &ui_controller_);
+  const auto panel_widget_size = widget->GetSize();
+
+  // Reduce the screen size such that the panel widget would not entirely fit.
+  // It should keep its original size.
+  UpdateDisplay("200x180");
+  EXPECT_EQ(widget->GetSize(), panel_widget_size);
+}
+
+// Tests that the Mahi panel widget stays visible when another window goes
+// full-screen.
+TEST_F(MahiPanelWidgetTest, WidgetDoesNotHideOnFullScreen) {
+  // Create and show the panel widget. It should be visible.
+  auto widget = MahiPanelWidget::CreateAndShowPanelWidget(
+      GetPrimaryDisplay().id(),
+      /*mahi_menu_bounds=*/gfx::Rect(gfx::Point(10, 10), gfx::Size(300, 300)),
+      &ui_controller_);
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Create a fullscreen window. The panel widget should still be visible.
+  auto window = CreateTestWindow();
+  window->SetProperty(aura::client::kShowStateKey, ui::SHOW_STATE_FULLSCREEN);
+  EXPECT_TRUE(widget->IsVisible());
+
+  // Expect the mahi panel widget to be in the top-most window compared to the
+  // regular window.
+  EXPECT_EQ(window_util::GetTopMostWindow(
+                {window->parent(), widget->GetNativeWindow()->parent()}),
+            widget->GetNativeWindow()->parent());
+}
+
+// Tests that the Mahi panel widget is activatable by selecting its textfield.
+TEST_F(MahiPanelWidgetTest, WidgetIsActivatable) {
+  // Create and show the panel widget, it should be activatable.
+  auto widget = MahiPanelWidget::CreateAndShowPanelWidget(
+      GetPrimaryDisplay().id(),
+      /*mahi_menu_bounds=*/gfx::Rect(gfx::Point(10, 10), gfx::Size(300, 300)),
+      &ui_controller_);
+  EXPECT_TRUE(widget->CanActivate());
+
+  // Click on the textfield which should add focus to it, meaning that the
+  // widget is activatable.
+  auto* question_textfield = widget->GetContentsView()->GetViewByID(
+      mahi_constants::ViewId::kQuestionTextfield);
+  LeftClickOn(question_textfield);
+  EXPECT_TRUE(question_textfield->HasFocus());
 }
 
 }  // namespace ash
