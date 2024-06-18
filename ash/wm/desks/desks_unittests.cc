@@ -4933,6 +4933,26 @@ TEST_F(FloatAllDesksWithZOrderTest, FloatThenAllDesks) {
   ASSERT_EQ(0u, desks_controller->visible_on_all_desks_windows().size());
 }
 
+// Regression test for b/345815639.
+TEST_F(FloatAllDesksWithZOrderTest, AllDesksThenFloatThenClose) {
+  // Start the test with two desks.
+  NewDesk();
+
+  auto window = CreateAppWindow();
+
+  // Make the window visible on all desks.
+  views::Widget::GetWidgetForNativeWindow(window.get())
+      ->SetVisibleOnAllWorkspaces(true);
+
+  // Float the window and then close it.
+  PressAndReleaseKey(ui::VKEY_F, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  EXPECT_TRUE(WindowState::Get(window.get())->IsFloated());
+  window.reset();
+
+  // Then switch desks.
+  ActivateDesk(DesksController::Get()->GetDeskAtIndex(1));
+}
+
 class FloatAllDesksWithoutZOrderTest : public AshTestBase {
  public:
   FloatAllDesksWithoutZOrderTest() {

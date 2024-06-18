@@ -1185,6 +1185,8 @@ FloatController::FloatedWindowInfo* FloatController::MaybeGetFloatedWindowInfo(
 }
 
 void FloatController::OnFloatedWindowDestroying(aura::Window* floated_window) {
+  DesksController::Get()->MaybeRemoveVisibleOnAllDesksWindow(floated_window);
+
   floated_window_info_map_.erase(floated_window);
   if (floated_window_info_map_.empty()) {
     desks_controller_observation_.Reset();
