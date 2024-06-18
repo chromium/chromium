@@ -54,6 +54,8 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
   ~SavedTabGroupSyncBridge() override;
 
   // syncer::ModelTypeSyncBridge:
+  void OnSyncStarting(
+      const syncer::DataTypeActivationRequest& request) override;
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
       override;
   std::optional<syncer::ModelError> MergeFullSyncData(
@@ -200,6 +202,10 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
   // and subsequently writes the updated data to storage.
   void UpdateLocalCacheGuidForGroups(
       syncer::ModelTypeStore::WriteBatch* write_batch);
+
+  // Helper method to determine if a tab group was created from a remote device
+  // based on the group's cache guid.
+  bool IsRemoteGroup(const SavedTabGroup& group);
 
   // The ModelTypeStore used for local storage.
   std::unique_ptr<syncer::ModelTypeStore> store_;

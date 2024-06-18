@@ -109,6 +109,7 @@ class SavedTabGroup {
       base::Time update_time_windows_epoch_micros);
   SavedTabGroup& SetPosition(size_t position);
   SavedTabGroup& SetPinned(bool pinned);
+  SavedTabGroup& SetIsRemoteGroup(bool is_remote_group);
 
   // Tab mutators.
   // Add `tab` into its position in `saved_tabs_` if it is set. Otherwise add it

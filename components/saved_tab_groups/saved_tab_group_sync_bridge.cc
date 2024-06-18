@@ -33,6 +33,7 @@
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/conflict_resolution.h"
+#include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
@@ -125,6 +126,15 @@ SavedTabGroupSyncBridge::SavedTabGroupSyncBridge(
 }
 
 SavedTabGroupSyncBridge::~SavedTabGroupSyncBridge() = default;
+
+void SavedTabGroupSyncBridge::OnSyncStarting(
+    const syncer::DataTypeActivationRequest& request) {
+  for (SavedTabGroup& group : model_->saved_tab_groups()) {
+    if (IsRemoteGroup(group)) {
+      group.SetIsRemoteGroup(true);
+    }
+  }
+}
 
 std::unique_ptr<syncer::MetadataChangeList>
 SavedTabGroupSyncBridge::CreateMetadataChangeList() {
@@ -606,8 +616,12 @@ void SavedTabGroupSyncBridge::AddDataToLocalStorage(
       }
     } else {
       // We do not have this group. Add the group from sync into local storage.
+      SavedTabGroup new_group = DataToSavedTabGroup(data);
+      if (IsRemoteGroup(new_group)) {
+        new_group.SetIsRemoteGroup(true);
+      }
       write_batch->WriteData(guid, data.SerializeAsString());
-      model_->AddedFromSync(DataToSavedTabGroup(data));
+      model_->AddedFromSync(std::move(new_group));
     }
 
     return;
@@ -983,6 +997,16 @@ void SavedTabGroupSyncBridge::UpdateLocalCacheGuidForGroups(
     proto::SavedTabGroupData data = SavedTabGroupTabToData(*tab);
     write_batch->WriteData(data.specifics().guid(), data.SerializeAsString());
   }
+}
+
+bool SavedTabGroupSyncBridge::IsRemoteGroup(const SavedTabGroup& group) {
+  std::optional<std::string> local_cache_guid = GetLocalCacheGuid();
+  std::optional<std::string> group_cache_guid = group.creator_cache_guid();
+  if (!local_cache_guid || !group_cache_guid) {
+    return false;
+  }
+
+  return local_cache_guid.value() != group_cache_guid.value();
 }
 
 }  // namespace tab_groups
