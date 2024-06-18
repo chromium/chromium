@@ -5,8 +5,8 @@
 #ifndef UI_GFX_RANGE_RANGE_F_H_
 #define UI_GFX_RANGE_RANGE_F_H_
 
+#include <iosfwd>
 #include <limits>
-#include <ostream>
 #include <string>
 
 #include "ui/gfx/range/gfx_range_export.h"

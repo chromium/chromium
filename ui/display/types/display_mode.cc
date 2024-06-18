@@ -4,6 +4,8 @@
 
 #include "ui/display/types/display_mode.h"
 
+#include <ostream>
+
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
 

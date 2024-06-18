@@ -5,8 +5,8 @@
 #ifndef UI_DISPLAY_TYPES_DISPLAY_MODE_H_
 #define UI_DISPLAY_TYPES_DISPLAY_MODE_H_
 
+#include <iosfwd>
 #include <memory>
-#include <ostream>
 #include <string>
 
 #include "ui/display/types/display_types_export.h"

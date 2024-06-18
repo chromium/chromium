@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <ostream>
 
 #include "base/format_macros.h"
 #include "base/strings/stringprintf.h"

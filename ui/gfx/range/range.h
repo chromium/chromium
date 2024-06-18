@@ -9,8 +9,8 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <iosfwd>
 #include <limits>
-#include <ostream>
 #include <string>
 
 #include "base/numerics/safe_conversions.h"
