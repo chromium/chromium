@@ -32,6 +32,8 @@ enum RelaunchPolicy : long {
 struct AppLaunchConfiguration {
   // Enabled features.
   std::vector<base::test::FeatureRef> features_enabled;
+  // Enabled features with params.
+  std::vector<base::test::FeatureRefAndParams> features_enabled_and_params;
   // Disabled features.
   std::vector<base::test::FeatureRef> features_disabled;
   // Enabled variations.

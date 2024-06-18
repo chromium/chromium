@@ -5,6 +5,7 @@
 #import "base/strings/escape.h"
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/plus_addresses/features.h"
 #import "components/plus_addresses/metrics/plus_address_metrics.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
@@ -100,9 +101,12 @@ void ExpectModalTimeSample(
   // to force an invalid response, and must not be used long-term.
   std::string fakeLocalUrl =
       base::EscapeQueryParamValue("chrome://version", /*use_plus=*/false);
-  config.additional_args.push_back(base::StringPrintf(
-      "--enable-features=PlusAddressesEnabled:server-url/%s/manage-url/%s",
-      fakeLocalUrl.c_str(), fakeLocalUrl.c_str()));
+  config.features_enabled_and_params.push_back(
+      {plus_addresses::features::kPlusAddressesEnabled,
+       {{
+           {"server-url", {fakeLocalUrl}},
+           {"manage-url", {fakeLocalUrl}},
+       }}});
   return config;
 }
 

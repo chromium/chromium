@@ -7,14 +7,56 @@
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 
+namespace {
+
+// Escapes separators used by enable-features command line.
+// E.g. Feature '<' Study '.' Group ':' param1 '/' value1 ','
+// ('*' is not a separator. No need to escape it.)
+std::string EscapeValue(const std::string& value) {
+  std::string escaped_str;
+  for (const auto ch : value) {
+    if (ch == ',' || ch == '/' || ch == ':' || ch == '<' || ch == '.') {
+      escaped_str.append(base::StringPrintf("%%%02X", ch));
+    } else {
+      escaped_str.append(1, ch);
+    }
+  }
+  return escaped_str;
+}
+}  // namespace
+
 NSArray<NSString*>* ArgumentsFromConfiguration(
     AppLaunchConfiguration configuration) {
+  CHECK(configuration.features_enabled.empty() ||
+        configuration.features_enabled_and_params.empty());
+
   NSMutableArray<NSString*>* namesToEnable = [NSMutableArray array];
   NSMutableArray<NSString*>* namesToDisable = [NSMutableArray array];
   NSMutableArray<NSString*>* variations = [NSMutableArray array];
 
   for (const auto& feature : configuration.features_enabled) {
     [namesToEnable addObject:base::SysUTF8ToNSString(feature->name)];
+  }
+
+  for (const auto& featureWithParam :
+       configuration.features_enabled_and_params) {
+    // If features.params has 2 params whose values are value1 and value2,
+    // `params` will be "param1/value1/param2/value2/".
+    std::string params;
+    for (const auto& param : featureWithParam.params) {
+      // Add separator from previous param information if it exists.
+      if (!params.empty()) {
+        params.append(1, '/');
+      }
+      params.append(EscapeValue(param.first));
+      params.append(1, '/');
+      params.append(EscapeValue(param.second));
+    }
+
+    std::string featureWithParamString =
+        std::string(featureWithParam.feature->name) + ":" + params;
+
+    [namesToEnable addObject:base::SysUTF8ToNSString(featureWithParamString)];
   }
 
   for (const auto& feature : configuration.features_disabled) {
