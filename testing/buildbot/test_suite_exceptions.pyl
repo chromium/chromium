@@ -3842,14 +3842,6 @@
   },
   'ozone_unittests': {
     'modifications': {
-      'Linux MSan Tests': {
-        'swarming': {
-          'dimensions': {
-            # TODO(crbug.com/347676165): Remove this focal exception.
-            'os': 'Ubuntu-20.04',
-          },
-        },
-      },
       'chromeos-betty-pi-arc-chrome': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.ozone_unittests.filter',

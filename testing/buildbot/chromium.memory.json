@@ -7121,7 +7121,7 @@
         "swarming": {
           "dimensions": {
             "cpu": "x86-64",
-            "os": "Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
