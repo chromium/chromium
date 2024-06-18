@@ -156,6 +156,14 @@ public class TabGroupListMediatorUnitTest {
 
     @Test
     @SmallTest
+    public void testNoTabGroupSyncService() {
+        mTabGroupSyncService = null;
+        createMediator();
+        assertEquals(0, mModelList.size());
+    }
+
+    @Test
+    @SmallTest
     public void testOneGroup() {
         SavedTabGroup group = new SavedTabGroup();
         group.syncId = SYNC_GROUP_ID1;

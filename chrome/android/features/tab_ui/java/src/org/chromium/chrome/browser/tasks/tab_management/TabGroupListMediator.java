@@ -17,6 +17,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGroupRowProper
 import android.graphics.drawable.Drawable;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 import androidx.core.util.Pair;
 
 import org.chromium.base.Callback;
@@ -88,7 +89,7 @@ public class TabGroupListMediator {
     private final PropertyModel mPropertyModel;
     private final TabGroupModelFilter mFilter;
     private final BiConsumer<GURL, Callback<Drawable>> mFaviconResolver;
-    private final TabGroupSyncService mTabGroupSyncService;
+    private final @Nullable TabGroupSyncService mTabGroupSyncService;
     private final PaneManager mPaneManager;
     private final TabGroupUiActionHandler mTabGroupUiActionHandler;
     private final ActionConfirmationManager mActionConfirmationManager;
@@ -167,7 +168,7 @@ public class TabGroupListMediator {
             PropertyModel propertyModel,
             TabGroupModelFilter filter,
             BiConsumer<GURL, Callback<Drawable>> faviconResolver,
-            TabGroupSyncService tabGroupSyncService,
+            @Nullable TabGroupSyncService tabGroupSyncService,
             PaneManager paneManager,
             TabGroupUiActionHandler tabGroupUiActionHandler,
             ActionConfirmationManager actionConfirmationManager,
@@ -183,7 +184,9 @@ public class TabGroupListMediator {
         mSyncService = syncService;
 
         mFilter.addObserver(mTabModelObserver);
-        mTabGroupSyncService.addObserver(mTabGroupSyncObserver);
+        if (mTabGroupSyncService != null) {
+            mTabGroupSyncService.addObserver(mTabGroupSyncObserver);
+        }
         mSyncService.addSyncStateChangedListener(mSyncStateChangeListener);
 
         repopulateModelList();
@@ -193,7 +196,9 @@ public class TabGroupListMediator {
     /** Clean up observers used by this class. */
     public void destroy() {
         mFilter.removeObserver(mTabModelObserver);
-        mTabGroupSyncService.removeObserver(mTabGroupSyncObserver);
+        if (mTabGroupSyncService != null) {
+            mTabGroupSyncService.removeObserver(mTabGroupSyncObserver);
+        }
         mSyncService.removeSyncStateChangedListener(mSyncStateChangeListener);
         mCallbackController.destroy();
     }
@@ -222,6 +227,8 @@ public class TabGroupListMediator {
 
     private List<SavedTabGroup> getSortedGroupList() {
         List<SavedTabGroup> groupList = new ArrayList<>();
+        if (mTabGroupSyncService == null) return groupList;
+
         for (String syncGroupId : mTabGroupSyncService.getAllGroupIds()) {
             SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(syncGroupId);
             assert !savedTabGroup.savedTabs.isEmpty();

@@ -22,7 +22,10 @@ import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.LoadHint;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -41,6 +44,7 @@ import java.util.function.DoubleConsumer;
 
 /** Unit tests for {@link TabGroupsPane}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures({ChromeFeatureList.TAB_GROUP_SYNC_ANDROID})
 public class TabGroupsPaneUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public JniMocker mJniMocker = new JniMocker();
@@ -113,5 +117,12 @@ public class TabGroupsPaneUnitTest {
     public void testDestroy_NoLoadHint() {
         mTabGroupsPane.destroy();
         assertEquals(0, mTabGroupsPane.getRootView().getChildCount());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID)
+    public void testWithoutSyncFeature() {
+        mTabGroupsPane.notifyLoadHint(LoadHint.HOT);
+        assertNotEquals(0, mTabGroupsPane.getRootView().getChildCount());
     }
 }
