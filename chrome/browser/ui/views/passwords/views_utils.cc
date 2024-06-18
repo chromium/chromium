@@ -19,6 +19,7 @@
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/vector_icon_utils.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/editable_combobox/editable_combobox.h"
@@ -236,7 +237,7 @@ std::unique_ptr<views::EditableCombobox> CreateUsernameEditableCombobox(
       /*filter_on_edit=*/false, /*show_on_empty=*/true,
       views::style::CONTEXT_BUTTON, views::style::STYLE_PRIMARY, kDisplayArrow);
   combobox->SetText(form.username_value);
-  combobox->SetAccessibleName(
+  combobox->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_USERNAME_LABEL));
   // In case of long username, ensure that the beginning of value is visible.
   combobox->SelectRange(gfx::Range(0));
@@ -268,7 +269,7 @@ std::unique_ptr<views::EditablePasswordCombobox> CreateEditablePasswordCombobox(
   combobox->SetPasswordIconTooltips(
       l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_SHOW_PASSWORD),
       l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_HIDE_PASSWORD));
-  combobox->SetAccessibleName(
+  combobox->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_PASSWORD_LABEL));
   return combobox;
 }
@@ -302,7 +303,7 @@ std::unique_ptr<views::Combobox> CreateDestinationCombobox(
     combobox->SetSelectedRow(1);
   }
 
-  combobox->SetAccessibleName(l10n_util::GetStringUTF16(
+  combobox->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
       IDS_PASSWORD_MANAGER_DESTINATION_DROPDOWN_ACCESSIBLE_NAME));
   combobox->SetProperty(views::kElementIdentifierKey,
                         kSavePasswordComboboxElementId);

@@ -12,6 +12,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace {
 
@@ -35,7 +36,7 @@ OverlayWindowMinimizeButton::OverlayWindowMinimizeButton(
   // Accessibility.
   const std::u16string button_label(
       l10n_util::GetStringUTF16(IDS_PICTURE_IN_PICTURE_MINIMIZE_CONTROL_TEXT));
-  SetAccessibleName(button_label);
+  GetViewAccessibility().SetName(button_label);
   SetTooltipText(button_label);
 }
 

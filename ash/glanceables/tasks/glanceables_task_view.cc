@@ -291,9 +291,9 @@ class GlanceablesTaskView::TaskTitleButton : public views::LabelButton {
 
   void SetText(const std::u16string& text) override {
     views::LabelButton::SetText(text);
-    SetAccessibleName(text, text.empty()
-                                ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
-                                : ax::mojom::NameFrom::kAttribute);
+    GetViewAccessibility().SetName(
+        text, text.empty() ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
+                           : ax::mojom::NameFrom::kAttribute);
   }
 };
 

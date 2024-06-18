@@ -951,7 +951,8 @@ void ContentAnalysisDialog::AddJustificationTextAreaToDialog() {
 
   bypass_justification_ =
       contents_layout_->AddChildView(std::make_unique<views::Textarea>());
-  bypass_justification_->SetAccessibleName(justification_text_label_);
+  bypass_justification_->GetViewAccessibility().SetName(
+      *justification_text_label_);
   bypass_justification_->SetController(this);
 }
 

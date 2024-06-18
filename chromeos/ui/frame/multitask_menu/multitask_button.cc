@@ -9,6 +9,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
@@ -25,7 +26,7 @@ MultitaskButton::MultitaskButton(PressedCallback callback,
       paint_as_active_(paint_as_active) {
   views::InstallRoundRectHighlightPathGenerator(
       this, gfx::Insets(), kMultitaskBaseButtonBorderRadius);
-  SetAccessibleName(name);
+  GetViewAccessibility().SetName(name);
 }
 
 void MultitaskButton::StateChanged(views::Button::ButtonState old_state) {

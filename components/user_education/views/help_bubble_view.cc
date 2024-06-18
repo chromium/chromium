@@ -200,7 +200,7 @@ class ClosePromoButton : public views::ImageButton {
     views::HighlightPathGenerator::Install(
         this,
         std::make_unique<views::CircleHighlightPathGenerator>(gfx::Insets()));
-    SetAccessibleName(accessible_name);
+    GetViewAccessibility().SetName(accessible_name);
     SetTooltipText(accessible_name);
 
     constexpr int kIconSize = 16;
@@ -582,7 +582,7 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
         0);
     icon_view_->SetPreferredSize(
         gfx::Size(kBodyIconBackgroundSize, kBodyIconBackgroundSize));
-    icon_view_->SetAccessibleName(params.body_icon_alt_text);
+    icon_view_->GetViewAccessibility().SetName(params.body_icon_alt_text);
   }
 
   // Add title (optional) and body label.

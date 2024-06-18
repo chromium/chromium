@@ -13,6 +13,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/caption_button_layout_constants.h"
 #include "ui/views/window/frame_caption_button.h"
@@ -26,7 +27,8 @@ FrameBackButton::FrameBackButton()
                          HTMENU) {
   SetPreferredSize(views::GetCaptionButtonLayoutSize(
       views::CaptionButtonLayoutSize::kNonBrowserCaption));
-  SetAccessibleName(l10n_util::GetStringUTF16(IDS_APP_ACCNAME_BACK));
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_APP_ACCNAME_BACK));
 }
 
 FrameBackButton::~FrameBackButton() = default;

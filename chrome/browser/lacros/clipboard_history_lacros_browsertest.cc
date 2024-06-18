@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/lacros/clipboard_history_lacros.h"
+
 #include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/lacros/clipboard_history_lacros.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/grit/generated_resources.h"
@@ -22,6 +23,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_test_api.h"
 #include "ui/views/widget/widget.h"
@@ -173,7 +175,7 @@ IN_PROC_BROWSER_TEST_P(ClipboardHistoryRefreshLacrosTest,
   textfield_widget->Init(std::move(params));
   views::Textfield* textfield =
       textfield_widget->SetContentsView(std::make_unique<views::Textfield>());
-  textfield->SetAccessibleName(u"Textfield");
+  textfield->GetViewAccessibility().SetName(u"Textfield");
   textfield_widget->Show();
 
   views::TextfieldTestApi api(textfield);

@@ -225,10 +225,10 @@ void IconLabelBubbleView::SetLabel(const std::u16string& label_text,
                                    const std::u16string& accessible_name) {
   // TODO(crbug.com/40890218): Under what conditions, if any, will the text be
   // empty? Read the description of the bug and update accordingly.
-  SetAccessibleName(accessible_name,
-                    accessible_name.empty()
-                        ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
-                        : ax::mojom::NameFrom::kAttribute);
+  GetViewAccessibility().SetName(
+      accessible_name, accessible_name.empty()
+                           ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
+                           : ax::mojom::NameFrom::kAttribute);
   label()->SetText(label_text);
   separator_view_->SetVisible(ShouldShowSeparator());
   separator_view_->UpdateOpacity();

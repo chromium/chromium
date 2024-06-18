@@ -273,7 +273,7 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
           keyword,
           popup_view_->controller()->client()->GetTemplateURLService());
       keyword_button_->SetText(names.full_name);
-      keyword_button_->SetAccessibleName(
+      keyword_button_->GetViewAccessibility().SetName(
           l10n_util::GetStringFUTF16(IDS_ACC_KEYWORD_MODE, names.short_name));
     }
   }
@@ -291,7 +291,8 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
       const auto label_strings = action->GetLabelStrings();
       action_button->SetText(label_strings.hint);
       action_button->SetTooltipText(label_strings.suggestion_contents);
-      action_button->SetAccessibleName(label_strings.accessibility_hint);
+      action_button->GetViewAccessibility().SetName(
+          label_strings.accessibility_hint);
       action_button->SetIcon(action->GetVectorIcon());
     }
   }

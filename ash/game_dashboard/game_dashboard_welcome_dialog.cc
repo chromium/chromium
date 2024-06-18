@@ -189,7 +189,7 @@ void GameDashboardWelcomeDialog::AddShortcutInfoRow() {
 
   const bool has_launcher_keyboard_button =
       Shell::Get()->keyboard_capability()->HasLauncherButtonOnAnyKeyboard();
-  styled_label->SetAccessibleName(l10n_util::GetStringFUTF16(
+  styled_label->GetViewAccessibility().SetName(l10n_util::GetStringFUTF16(
       IDS_ASH_GAME_DASHBOARD_WELCOME_DIALOG_SHORTCUT,
       l10n_util::GetStringUTF16(has_launcher_keyboard_button
                                     ? IDS_ASH_SHORTCUT_MODIFIER_LAUNCHER

@@ -26,6 +26,7 @@
 #include "ui/gfx/text_constants.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/strings/grit/ui_strings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/caption_button_layout_constants.h"
@@ -53,7 +54,8 @@ FrameCenterButton::FrameCenterButton(PressedCallback callback)
     : FrameCaptionButton(std::move(callback),
                          views::CAPTION_BUTTON_ICON_CENTER,
                          HTMENU) {
-  SetAccessibleName(l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CENTER));
+  GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CENTER));
   background_color_changed_subscription_ = AddBackgroundColorChangedCallback(
       base::BindRepeating(&FrameCenterButton::OnBackgroundColorChanged,
                           base::Unretained(this)));

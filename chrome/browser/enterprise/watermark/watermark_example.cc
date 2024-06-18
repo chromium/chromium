@@ -85,7 +85,7 @@ void WatermarkExample::CreateExampleView(views::View* container) {
   auto* watermark_textarea = checkbox_container->AddChildView(
       std::make_unique<WatermarkTextArea>(watermark_view_));
   watermark_textarea->SetController(this);
-  watermark_textarea->SetAccessibleName(u"WM textarea");
+  watermark_textarea->GetViewAccessibility().SetName(u"WM textarea");
   watermark_textarea->SetDefaultWidthInChars(100);
 
   box_layout->SetFlexForView(checkbox_container, 1);

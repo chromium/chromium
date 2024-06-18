@@ -19,6 +19,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
@@ -44,7 +45,8 @@ class CloseFullscreenButton : public views::Button {
         views::kIcCloseIcon, SK_ColorWHITE, kCloseIconSize));
     // Not focusable by default, only for accessibility.
     SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-    SetAccessibleName(l10n_util::GetStringUTF16(IDS_EXIT_FULLSCREEN_MODE));
+    GetViewAccessibility().SetName(
+        l10n_util::GetStringUTF16(IDS_EXIT_FULLSCREEN_MODE));
     AddChildView(close_image_view.release());
     SetLayoutManager(std::make_unique<views::FillLayout>());
   }

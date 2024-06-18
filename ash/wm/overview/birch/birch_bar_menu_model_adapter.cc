@@ -17,6 +17,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/submenu_view.h"
@@ -104,7 +105,7 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
       item_view->SetHighlightWhenSelectedWithChildViews(true);
       auto* switch_button =
           item_view->AddChildView(CreateShowSuggestionSwitch());
-      switch_button->SetAccessibleName(label);
+      switch_button->GetViewAccessibility().SetName(label);
       return item_view;
     }
     case base::to_underlying(CommandId::kWeatherSuggestions):
@@ -156,7 +157,7 @@ views::MenuItemView* BirchBarMenuModelAdapter::AppendMenuItem(
                             BirchBarController::Get()->GetShowSuggestionType(
                                 CommandIdToSuggestionType(command_id)));
       checkbox->set_delegate(this);
-      checkbox->SetAccessibleName(label);
+      checkbox->GetViewAccessibility().SetName(label);
       checkbox->SetLabelStyle(TypographyToken::kCrosButton2);
       checkbox->SetLabelColorId(cros_tokens::kCrosSysOnSurface);
       // Checkboxes don't support minor text, so we use minor text for tooltip.

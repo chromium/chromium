@@ -16,6 +16,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
@@ -99,7 +100,7 @@ void PasswordSaveUnsyncedCredentialsLocallyView::CreateLayout() {
     checkbox->SetChecked(true);
     num_selected_checkboxes_++;
     auto* username_label = row_view->AddChildView(CreateUsernameLabel(form));
-    checkbox->SetAccessibleName(username_label);
+    checkbox->GetViewAccessibility().SetName(*username_label);
     auto* password_label = row_view->AddChildView(CreatePasswordLabel(form));
     auto* row_layout =
         row_view->SetLayoutManager(std::make_unique<views::BoxLayout>(

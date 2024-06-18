@@ -19,6 +19,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/font_list.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/focus_ring.h"
@@ -71,11 +72,11 @@ AuthTextfield::AuthTextfield(AuthType auth_type)
 
   // Set Accessible name
   if (auth_type_ == AuthType::kPassword) {
-    SetAccessibleName(l10n_util::GetStringUTF16(
+    GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
         IDS_ASH_AUTH_TEXTFIELD_PASSWORD_ACCESSIBLE_NAME));
   } else {
     CHECK_EQ(auth_type_, AuthType::kPin);
-    SetAccessibleName(
+    GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_ASH_AUTH_TEXTFIELD_PIN_ACCESSIBLE_NAME));
   }
 }

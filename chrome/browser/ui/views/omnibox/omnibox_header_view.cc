@@ -176,8 +176,9 @@ void OmniboxHeaderView::UpdateUI() {
   header_toggle_button_->SetImageModel(views::Button::STATE_NORMAL, arrow_up);
   header_toggle_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON));
-  header_toggle_button_->SetAccessibleName(l10n_util::GetStringFUTF16(
-      IDS_ACC_HEADER_HIDE_SUGGESTIONS_BUTTON, header_text_));
+  header_toggle_button_->GetViewAccessibility().SetName(
+      l10n_util::GetStringFUTF16(IDS_ACC_HEADER_HIDE_SUGGESTIONS_BUTTON,
+                                 header_text_));
 
   // The "toggled" button state corresponds with the group being hidden.
   // The button's action is therefore to Show the group, when clicked.

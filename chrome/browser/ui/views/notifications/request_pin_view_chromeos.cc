@@ -22,6 +22,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/events/event.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
@@ -178,7 +179,7 @@ void RequestPinView::Init() {
   textfield_ = AddChildView(std::make_unique<chromeos::PassphraseTextfield>());
   textfield_->set_controller(this);
   textfield_->SetEnabled(true);
-  textfield_->SetAccessibleName(header_label_);
+  textfield_->GetViewAccessibility().SetName(*header_label_);
   textfield_->SetDefaultWidthInChars(kDefaultTextWidthChars);
 
   // Error label.

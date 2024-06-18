@@ -87,7 +87,7 @@ SplitViewDividerView::SplitViewDividerView(SplitViewDivider* divider)
 
   SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
   set_allow_deactivate_on_esc(true);
-  SetAccessibleName(
+  GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ASH_SNAP_GROUP_DIVIDER_A11Y_NAME));
   GetViewAccessibility().SetDescription(l10n_util::GetStringUTF16(
       horizontal ? IDS_ASH_SNAP_GROUP_DIVIDER_A11Y_DESCRIPTION_HORIZONTAL

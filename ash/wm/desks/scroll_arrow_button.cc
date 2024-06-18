@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/accessibility/view_accessibility.h"
 
 namespace {
 base::TimeDelta kScrollTimeInterval = base::Seconds(1);
@@ -27,7 +28,7 @@ ScrollArrowButton::ScrollArrowButton(base::RepeatingClosure on_scroll,
                               base::Unretained(this)))),
       is_left_arrow_(is_left_arrow),
       bar_view_(bar_view) {
-  SetAccessibleName(base::UTF8ToUTF16(GetClassName()));
+  GetViewAccessibility().SetName(base::UTF8ToUTF16(GetClassName()));
 }
 
 ScrollArrowButton::~ScrollArrowButton() = default;

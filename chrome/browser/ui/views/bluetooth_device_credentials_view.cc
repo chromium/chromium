@@ -18,6 +18,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
@@ -141,7 +142,7 @@ void BluetoothDeviceCredentialsView::InitControls(
     passkey_text_->SetDefaultWidthInChars(kDefaultTextfieldNumChars);
     passkey_text_->SetMinimumWidthInChars(kMinimumTextfieldNumChars);
     passkey_text_->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
-    passkey_text_->SetAccessibleName(passkey_prompt_label_ptr);
+    passkey_text_->GetViewAccessibility().SetName(*passkey_prompt_label_ptr);
     // TODO(cmumford): Windows Narrator says "no item in view".
   }
 

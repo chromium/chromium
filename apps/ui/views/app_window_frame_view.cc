@@ -23,6 +23,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image.h"
 #include "ui/strings/grit/ui_strings.h"  // Accessibility names
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -66,7 +67,7 @@ void AppWindowFrameView::Init() {
         views::Button::STATE_PRESSED,
         ui::ImageModel::FromResourceId(IDR_APP_WINDOW_CLOSE_P));
     close_button->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-    close_button->SetAccessibleName(
+    close_button->GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_APP_ACCNAME_CLOSE));
     close_button_ = AddChildView(std::move(close_button));
     // STATE_NORMAL images are set in SetButtonImagesForFrame, not here.
@@ -83,7 +84,7 @@ void AppWindowFrameView::Init() {
         views::Button::STATE_DISABLED,
         ui::ImageModel::FromResourceId(IDR_APP_WINDOW_MAXIMIZE_D));
     maximize_button->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-    maximize_button->SetAccessibleName(
+    maximize_button->GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MAXIMIZE));
     maximize_button_ = AddChildView(std::move(maximize_button));
     auto restore_button =
@@ -96,7 +97,7 @@ void AppWindowFrameView::Init() {
         views::Button::STATE_PRESSED,
         ui::ImageModel::FromResourceId(IDR_APP_WINDOW_RESTORE_P));
     restore_button->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-    restore_button->SetAccessibleName(
+    restore_button->GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_APP_ACCNAME_RESTORE));
     restore_button_ = AddChildView(std::move(restore_button));
     auto minimize_button =
@@ -109,7 +110,7 @@ void AppWindowFrameView::Init() {
         views::Button::STATE_PRESSED,
         ui::ImageModel::FromResourceId(IDR_APP_WINDOW_MINIMIZE_P));
     minimize_button->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-    minimize_button->SetAccessibleName(
+    minimize_button->GetViewAccessibility().SetName(
         l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MINIMIZE));
     minimize_button_ = AddChildView(std::move(minimize_button));
 

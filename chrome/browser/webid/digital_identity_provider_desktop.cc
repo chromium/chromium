@@ -17,6 +17,7 @@
 #include "device/fido/cable/v2_handshake.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/dialog_model.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/widget/widget.h"
@@ -41,7 +42,7 @@ std::unique_ptr<views::View> MakeQrCodeImageView(const std::string& qr_url) {
   CHECK(qr_code.has_value());
   auto image_view = std::make_unique<views::ImageView>(
       ui::ImageModel::FromImageSkia(qr_code.value()));
-  image_view->SetAccessibleName(
+  image_view->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_WEB_DIGITAL_CREDENTIALS_QR_CODE_ALT_TEXT));
   image_view->SetImageSize(gfx::Size(kQrCodeSize, kQrCodeSize));
   return std::move(image_view);

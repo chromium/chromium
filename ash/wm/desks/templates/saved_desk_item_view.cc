@@ -41,6 +41,7 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
@@ -394,7 +395,7 @@ void SavedDeskItemView::UpdateSavedDesk(
   auto new_name = saved_desk_->template_name();
   DCHECK(!new_name.empty());
   name_view_->SetText(new_name);
-  SetAccessibleName(ComputeAccessibleName());
+  GetViewAccessibility().SetName(ComputeAccessibleName());
 
   // This will trigger `name_view_` to compute its new preferred bounds and
   // invalidate the layout for `this`
@@ -756,7 +757,7 @@ void SavedDeskItemView::OnSavedDeskNameChanged(const std::u16string& new_name) {
   DCHECK(!new_name.empty());
   name_view_->SetText(new_name);
   name_view_->ResetTemporaryName();
-  SetAccessibleName(ComputeAccessibleName());
+  GetViewAccessibility().SetName(ComputeAccessibleName());
 
   // This will trigger `name_view_` to compute its new preferred bounds and
   // invalidate the layout for `this`.

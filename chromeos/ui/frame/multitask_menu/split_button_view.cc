@@ -15,6 +15,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/highlight_path_generator.h"
 
 namespace chromeos {
@@ -200,9 +201,9 @@ void SplitButtonView::UpdateButtons(bool is_portrait_mode, bool is_reversed) {
           ? gfx::Size(kMultitaskHalfButtonHeight, right_bottom_width)
           : gfx::Size(right_bottom_width, kMultitaskHalfButtonHeight));
 
-  left_top_button_->SetAccessibleName(
+  left_top_button_->GetViewAccessibility().SetName(
       GetA11yName(type_, /*left_top=*/!is_reversed, is_portrait_mode));
-  right_bottom_button_->SetAccessibleName(
+  right_bottom_button_->GetViewAccessibility().SetName(
       GetA11yName(type_, /*left_top=*/is_reversed, is_portrait_mode));
 }
 
