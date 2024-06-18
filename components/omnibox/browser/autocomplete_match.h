@@ -669,7 +669,7 @@ struct AutocompleteMatch {
   // no provider (or memory of the user's selection).
   raw_ptr<AutocompleteProvider> provider = nullptr;
 
-  // The relevance of this match. See table in autocomplete.h for scores
+  // The relevance of this match. See table in autocomplete_provider.h for scores
   // returned by various providers. This is used to rank matches among all
   // responding providers, so different providers must be carefully tuned to
   // supply matches with appropriate relevance.
