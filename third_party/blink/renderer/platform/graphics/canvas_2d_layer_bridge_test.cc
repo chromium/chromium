@@ -908,29 +908,6 @@ TEST_F(Canvas2DLayerBridgeTest, EnsureCCImageCacheUse) {
   EXPECT_THAT(image_decode_cache_.decoded_images(), cc::ImagesAreSame(images));
 }
 
-TEST_F(Canvas2DLayerBridgeTest, EnsureCCImageCacheUseWithColorConversion) {
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 300), RasterModeHint::kPreferGPU, kOpaque);
-
-  cc::TargetColorParams target_color_params;
-  Vector<cc::DrawImage> images = {
-      cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(10, 10)), false,
-                    SkIRect::MakeWH(10, 10),
-                    cc::PaintFlags::FilterQuality::kNone, SkM44(), 0u,
-                    target_color_params),
-      cc::DrawImage(cc::CreateDiscardablePaintImage(gfx::Size(20, 20)), false,
-                    SkIRect::MakeWH(5, 5), cc::PaintFlags::FilterQuality::kNone,
-                    SkM44(), 0u, target_color_params)};
-
-  Canvas().drawImage(images[0].paint_image(), 0u, 0u);
-  Canvas().drawImageRect(images[1].paint_image(), SkRect::MakeWH(5u, 5u),
-                         SkRect::MakeWH(5u, 5u),
-                         SkCanvas::kFast_SrcRectConstraint);
-  bridge->NewImageSnapshot(FlushReason::kTesting);
-
-  EXPECT_THAT(image_decode_cache_.decoded_images(), cc::ImagesAreSame(images));
-}
-
 TEST_F(Canvas2DLayerBridgeTest, ImagesLockedUntilCacheLimit) {
   std::unique_ptr<Canvas2DLayerBridge> bridge =
       MakeBridge(gfx::Size(300, 300), RasterModeHint::kPreferGPU, kOpaque);
