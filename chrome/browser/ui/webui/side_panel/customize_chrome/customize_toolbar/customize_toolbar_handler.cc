@@ -6,13 +6,16 @@
 
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_toolbar/customize_toolbar.mojom.h"
+#include "chrome/browser/ui/webui/util/image_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/display/screen.h"
 
 namespace {
 std::optional<side_panel::customize_chrome::mojom::ActionId>
@@ -138,12 +141,18 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
   actions::ActionItem* const scope_action =
       browser_->browser_actions()->root_action_item();
   const PinnedToolbarActionsModel* const model = model_;
+  const ui::ColorProvider* const provider =
+      browser_->window()->GetColorProvider();
+  const float scale_factor =
+      display::Screen::GetScreen()
+          ->GetDisplayNearestWindow(browser_->window()->GetNativeWindow())
+          .device_scale_factor();
 
   // TODO(crbug.com/337938827): GetText() is wrong here; it returns "&Print..."
   // instead of "Print". We my need to introduce new strings instead of reusing
   // the action item text.
   const auto add_action =
-      [&actions, model, scope_action](
+      [&actions, model, provider, scale_factor, scope_action](
           actions::ActionId id,
           side_panel::customize_chrome::mojom::CategoryId category) {
         const actions::ActionItem* const action_item =
@@ -155,7 +164,9 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
         auto mojo_action = side_panel::customize_chrome::mojom::Action::New(
             MojoActionForChromeAction(id).value(),
             base::UTF16ToUTF8(action_item->GetText()), model->Contains(id),
-            category);
+            category,
+            GURL(webui::EncodePNGAndMakeDataURI(
+                action_item->GetImage().Rasterize(provider), scale_factor)));
         actions.push_back(std::move(mojo_action));
       };
 

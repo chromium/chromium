@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 import 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
+import 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 
 import type {SpHeadingElement} from 'chrome://customize-chrome-side-panel.top-chrome/shared/sp_heading.js';
+import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import type {Action, Category, CustomizeToolbarHandlerInterface} from '../customize_toolbar.mojom-webui.js';
@@ -16,6 +18,7 @@ import {getHtml} from './toolbar.html.js';
 export interface ToolbarElement {
   $: {
     heading: SpHeadingElement,
+    pinningSelectionCard: HTMLDivElement,
   };
 }
 
@@ -51,6 +54,8 @@ export class ToolbarElement extends CrLitElement {
 
     this.handler_.listActions().then(({actions}) => {
       this.actions_ = actions;
+      assert(this.actions_.every(
+          action => action.iconUrl.url.startsWith('data:')));
     });
 
     this.handler_.listCategories().then(({categories}) => {

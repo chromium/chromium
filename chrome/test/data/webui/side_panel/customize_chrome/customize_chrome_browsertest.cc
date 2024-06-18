@@ -70,6 +70,10 @@ IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, ThemeSnapshot) {
   RunTest("side_panel/customize_chrome/theme_snapshot_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SidePanelCustomizeChromeTest, Toolbar) {
+  RunTest("side_panel/customize_chrome/toolbar_test.js", "mocha.run()");
+}
+
 using CustomizeChromeWallpaperSearchTest = SidePanelCustomizeChromeTest;
 
 IN_PROC_BROWSER_TEST_F(CustomizeChromeWallpaperSearchTest, Misc) {

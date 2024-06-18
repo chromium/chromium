@@ -4,6 +4,8 @@
 
 module side_panel.customize_chrome.mojom;
 
+import "url/mojom/url.mojom";
+
 // Unique identifiers for actions that can be pinned to the toolbar.
 enum ActionId {
   kShowBookmarks,
@@ -47,7 +49,8 @@ struct Action {
   bool pinned;
   // The category the action belongs to.
   CategoryId category;
-  // TODO(crbug.com/323964874): Also include icon data.
+  // The icon to display for this action, encoded as a data scheme URL.
+  url.mojom.Url icon_url;
 };
 
 // A category actions can belong to.

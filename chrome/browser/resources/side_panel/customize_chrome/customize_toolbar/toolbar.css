@@ -20,7 +20,7 @@
 .toggle-container {
   align-items: center;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
 }
 
 .choose-icons-row {
@@ -28,5 +28,12 @@
 }
 
 .toggle-title {
+  flex-grow: 1;
   margin: 0;
+}
+
+.toggle-icon {
+  object-fit: fill;
+  width: 20px;
+  height: 20px;
 }
