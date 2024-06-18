@@ -208,6 +208,10 @@ String FontPlatformData::FontFamilyName() const {
                           localized_string.fString.size());
 }
 
+bool FontPlatformData::IsAhem() const {
+  return EqualIgnoringASCIICase(FontFamilyName(), "ahem");
+}
+
 SkTypeface* FontPlatformData::Typeface() const {
   return typeface_.get();
 }

@@ -543,24 +543,25 @@ ContentTypeOptionsDisposition ParseContentTypeOptionsHeader(
   if (value.empty())
     return kContentTypeOptionsNone;
 
-  String decodedAndSplitHeaderValue;
+  String decoded_and_split_header_value;
   if (base::FeatureList::IsEnabled(
           features::kLegacyParsingOfXContentTypeOptions)) {
     // Header parsing, as used until M120.
     Vector<String> results;
     value.Split(",", results);
     if (results.size()) {
-      decodedAndSplitHeaderValue = results[0].StripWhiteSpace();
+      decoded_and_split_header_value = results[0].StripWhiteSpace();
     }
   } else {
     // Header parsing, as demanded by the spec.
     Vector<String> results;
     value.Split(",", /* allow_empty_entries */ true, results);
     CHECK(results.size());  // allow_empty_entries guarantees >= 1 results.
-    decodedAndSplitHeaderValue = results[0].StripWhiteSpace(IsHTTPTabOrSpace);
+    decoded_and_split_header_value =
+        results[0].StripWhiteSpace(IsHTTPTabOrSpace);
   }
 
-  if (decodedAndSplitHeaderValue.LowerASCII() == "nosniff") {
+  if (EqualIgnoringASCIICase(decoded_and_split_header_value, "nosniff")) {
     return kContentTypeOptionsNosniff;
   }
   return kContentTypeOptionsNone;
