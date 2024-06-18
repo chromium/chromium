@@ -74,6 +74,7 @@ BubbleSignInPromoView::BubbleSignInPromoView(
   std::u16string button_text =
       l10n_util::GetStringUTF16(IDS_PROFILES_DICE_SIGNIN_BUTTON);
   const int title_max_width = 218;
+  std::u16string accessibility_text = std::u16string();
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (access_point ==
@@ -95,6 +96,11 @@ BubbleSignInPromoView::BubbleSignInPromoView(
         button_text = l10n_util::GetStringFUTF16(
             IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_ACCEPT_TEXT,
             {base::UTF8ToUTF16(account.given_name)});
+        // TODO(crbug.com/347011002): Replace with correct string.
+        accessibility_text = l10n_util::GetStringFUTF16(
+            IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_CHROME_SIGNIN_ACCEPT_TEXT,
+            {base::UTF8ToUTF16(
+                base::StrCat({account.given_name, " ", account.email}))});
         break;
       case SignedInState::kSignInPending:
         title_resource_id = IDS_AUTOFILL_VERIFY_PROMO_SUBTITLE_PASSWORD;
@@ -164,7 +170,7 @@ BubbleSignInPromoView::BubbleSignInPromoView(
     }
     signin_button_pointer = std::make_unique<BubbleSignInPromoSignInButtonView>(
         account, account_icon, std::move(callback), access_point,
-        std::move(button_text), /*use_account_name_as_title=*/true);
+        std::move(button_text), std::move(accessibility_text));
 
     signin_button_view_ = AddChildView(std::move(signin_button_pointer));
   }

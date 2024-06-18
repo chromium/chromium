@@ -160,7 +160,7 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
 
     // Only non-federated credentials bubble has a username field and can
     // change states between Save and Update. Therefore, we need to have the
-    // `accessibility_alert_` to inform screen readers about thatchange.
+    // `accessibility_alert_` to inform screen readers about that change.
     accessibility_alert_ =
         root_view->AddChildView(std::make_unique<views::View>());
     AddChildView(accessibility_alert_.get());
@@ -255,6 +255,10 @@ bool PasswordSaveUpdateView::CloseOrReplaceWithPromo() {
       signin::SignInAutofillBubblePromoType::Passwords,
       controller_.pending_password());
   AddChildView(std::move(sign_in_promo));
+
+  // Notify the screen reader that the bubble changed.
+  accessibility_alert_ = AddChildView(std::make_unique<views::View>());
+  AnnounceBubbleChange();
 
   is_signin_promo_bubble_ = true;
   GetBubbleFrameView()->SetProperty(views::kElementIdentifierKey,
@@ -383,7 +387,7 @@ void PasswordSaveUpdateView::UpdateBubbleUIElements() {
   UpdateFootnote();
 
   if (should_announce_save_update_change) {
-    AnnounceSaveUpdateChange();
+    AnnounceBubbleChange();
   }
 
   // Nothing else to do if the account picker hasn't been created.
@@ -493,7 +497,7 @@ void PasswordSaveUpdateView::CloseIPHBubbleIfOpen() {
       user_education::EndFeaturePromoReason::kAbortPromo);
 }
 
-void PasswordSaveUpdateView::AnnounceSaveUpdateChange() {
+void PasswordSaveUpdateView::AnnounceBubbleChange() {
   // Federated credentials bubbles don't change the state between Update and
   // Save, and hence they don't have an `accessibility_alert_` view created.
   if (!accessibility_alert_) {

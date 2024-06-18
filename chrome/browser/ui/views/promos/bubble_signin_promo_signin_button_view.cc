@@ -20,6 +20,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/canvas.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -64,16 +65,13 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
     views::Button::PressedCallback callback,
     signin_metrics::AccessPoint access_point,
     std::u16string button_text,
-    bool use_account_name_as_title)
+    std::u16string button_accessibility_text)
     : account_(account) {
   bool is_autofill_promo =
       access_point == signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE;
 
   DCHECK(!account_icon.IsEmpty());
-  auto card_title =
-      use_account_name_as_title
-          ? base::UTF8ToUTF16(account.full_name)
-          : l10n_util::GetStringUTF16(IDS_PROFILES_DICE_NOT_SYNCING_TITLE);
+  auto card_title = base::UTF8ToUTF16(account.full_name);
 
   const views::BoxLayout::Orientation orientation =
       is_autofill_promo ? views::BoxLayout::Orientation::kVertical
@@ -118,6 +116,11 @@ BubbleSignInPromoSignInButtonView::BubbleSignInPromoSignInButtonView(
                        .SetStyle(ui::ButtonStyle::kProminent)
                        .CopyAddressTo(&text_button))
       .BuildChildren();
+
+  if (!button_accessibility_text.empty()) {
+    text_button->GetViewAccessibility().SetName(
+        std::move(button_accessibility_text));
+  }
 
   // Add the callback to the button with a delay if it is an autofill sign in
   // promo.
