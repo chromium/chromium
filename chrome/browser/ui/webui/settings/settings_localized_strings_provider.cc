@@ -1336,6 +1336,10 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
   html_source->AddString(
       "plusAddressManagementUrl",
       plus_addresses::features::kPlusAddressManagementUrl.Get());
+  html_source->AddBoolean(
+      "plusAddressUiRedesign",
+      base::FeatureList::IsEnabled(
+          plus_addresses::features::kPlusAddressUIRedesign));
 }
 
 void AddSignOutDialogStrings(content::WebUIDataSource* html_source,
