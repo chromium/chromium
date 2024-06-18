@@ -257,12 +257,6 @@ BASE_FEATURE(kAllowForceMergeRenderPassWithRequireOverlayQuads,
              "AllowForceMergeRenderPassWithRequireOverlayQuads",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Used to gate calling SetPurgeable on OutputPresenter::Image from
-// SkiaOutputDeviceBufferQueue.
-BASE_FEATURE(kBufferQueueImageSetPurgeable,
-             "BufferQueueImageSetPurgeable",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // On platforms using SkiaOutputDeviceBufferQueue and not yet universally using
 // SkiaRenderer-allocated images, when this is true SkiaRenderer will allocate

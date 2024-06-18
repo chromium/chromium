@@ -285,11 +285,10 @@ void SkiaOutputDeviceBufferQueue::PageFlipComplete(
   num_pending_swap_completion_callbacks_for_testing_--;
 
   // If there is no displayed image, then purge one available image.
-  if (base::FeatureList::IsEnabled(features::kBufferQueueImageSetPurgeable)) {
-    if (!displayed_image_) {
-      for (auto* image_to_discard : available_images_) {
-        if (image_to_discard->SetPurgeable())
-          break;
+  if (!displayed_image_) {
+    for (auto* image_to_discard : available_images_) {
+      if (image_to_discard->SetPurgeable()) {
+        break;
       }
     }
   }
