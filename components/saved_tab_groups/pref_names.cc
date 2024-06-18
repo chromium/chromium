@@ -40,6 +40,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterBooleanPref(prefs::kSavedTabGroupSpecificsToDataMigration,
                                 false);
+  registry->RegisterDictionaryPref(prefs::kDeletedTabGroupIds,
+                                   base::Value::Dict());
 }
 
 }  // namespace tab_groups::prefs

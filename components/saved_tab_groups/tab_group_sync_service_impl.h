@@ -136,6 +136,16 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
       std::pair<base::Uuid, std::optional<LocalTabGroupID>> id_pair,
       TriggerSource source);
 
+  // Read and write deleted local group IDs to disk. We add a local ID in
+  // response to a group deletion event from sync. We clear that ID only when
+  // RemoveLocalTabGroupMapping is invoked from the UI.
+  // On startup, UI invokes GetDeletedGroupIdsFromPref to clean up any deleted
+  // groups from tab model.
+  std::vector<LocalTabGroupID> GetDeletedGroupIdsFromPref();
+  void AddDeletedGroupIdToPref(const LocalTabGroupID& local_id,
+                               const base::Uuid& sync_id);
+  void RemoveDeletedGroupIdFromPref(const LocalTabGroupID& local_id);
+
   // Wrapper function that calls all metric recording functions.
   void RecordMetrics();
 
@@ -160,6 +170,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
 
   // Stores tab group ID mapping (Sync ID -> Local ID) and some local metadata.
   std::unique_ptr<TabGroupStore> tab_group_store_;
+
+  // The pref service for storing migration status.
+  raw_ptr<PrefService> pref_service_;
 
   // Helper class for logging metrics.
   std::unique_ptr<TabGroupSyncMetricsLogger> metrics_logger_;

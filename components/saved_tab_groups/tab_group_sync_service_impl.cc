@@ -11,6 +11,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
+#include "components/saved_tab_groups/features.h"
+#include "components/saved_tab_groups/pref_names.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_sync_bridge.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
@@ -19,6 +22,7 @@
 #include "components/saved_tab_groups/tab_group_store.h"
 #include "components/saved_tab_groups/tab_group_sync_metrics_logger.h"
 #include "components/saved_tab_groups/types.h"
+#include "components/saved_tab_groups/utils.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_controller_delegate.h"
@@ -54,6 +58,7 @@ TabGroupSyncServiceImpl::TabGroupSyncServiceImpl(
           pref_service,
           std::move(migrated_android_local_ids)),
       tab_group_store_(std::move(tab_group_store)),
+      pref_service_(pref_service),
       metrics_logger_(std::move(metrics_logger)) {
   if (shared_tab_group_configuration) {
     shared_bridge_ = std::make_unique<SharedTabGroupDataSyncBridge>(
@@ -279,6 +284,10 @@ std::optional<SavedTabGroup> TabGroupSyncServiceImpl::GetGroup(
 }
 
 std::vector<LocalTabGroupID> TabGroupSyncServiceImpl::GetDeletedGroupIds() {
+  if (IsMigrationFromJavaSharedPrefsEnabled()) {
+    return GetDeletedGroupIdsFromPref();
+  }
+
   std::vector<LocalTabGroupID> deleted_ids;
 
   // Deleted groups are groups that have been deleted from sync, but we haven't
@@ -313,6 +322,8 @@ void TabGroupSyncServiceImpl::UpdateLocalTabGroupMapping(
 void TabGroupSyncServiceImpl::RemoveLocalTabGroupMapping(
     const LocalTabGroupID& local_id) {
   VLOG(2) << __func__;
+  RemoveDeletedGroupIdFromPref(local_id);
+
   auto* group = model_->Get(local_id);
   if (!group) {
     return;
@@ -443,9 +454,48 @@ void TabGroupSyncServiceImpl::HandleTabGroupRemoved(
     return;
   }
 
+  // For sync initiated deletions, cache the local ID in prefs until the group
+  // is closed in the UI.
+  if (source == TriggerSource::REMOTE) {
+    AddDeletedGroupIdToPref(local_id.value(), id_pair.first);
+  }
+
   for (auto& observer : observers_) {
     observer.OnTabGroupRemoved(local_id.value(), source);
   }
+}
+
+std::vector<LocalTabGroupID>
+TabGroupSyncServiceImpl::GetDeletedGroupIdsFromPref() {
+  std::vector<LocalTabGroupID> deleted_ids;
+
+  ScopedDictPrefUpdate update(pref_service_, prefs::kDeletedTabGroupIds);
+  base::Value::Dict& pref_data = update.Get();
+
+  for (const auto [serialized_local_id, serialized_sync_id] : pref_data) {
+    auto local_id = LocalTabGroupIDFromString(serialized_local_id);
+    DCHECK(local_id.has_value());
+    if (!local_id.has_value()) {
+      continue;
+    }
+
+    deleted_ids.emplace_back(local_id.value());
+  }
+
+  return deleted_ids;
+}
+
+void TabGroupSyncServiceImpl::AddDeletedGroupIdToPref(
+    const LocalTabGroupID& local_id,
+    const base::Uuid& sync_id) {
+  ScopedDictPrefUpdate update(pref_service_, prefs::kDeletedTabGroupIds);
+  update->Set(LocalTabGroupIDToString(local_id), sync_id.AsLowercaseString());
+}
+
+void TabGroupSyncServiceImpl::RemoveDeletedGroupIdFromPref(
+    const LocalTabGroupID& local_id) {
+  ScopedDictPrefUpdate update(pref_service_, prefs::kDeletedTabGroupIds);
+  update->Remove(LocalTabGroupIDToString(local_id));
 }
 
 void TabGroupSyncServiceImpl::SavedTabGroupLocalIdChanged(

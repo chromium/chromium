@@ -17,4 +17,22 @@ bool AreLocalIdsPersisted() {
 #endif
 }
 
+std::string LocalTabGroupIDToString(const LocalTabGroupID& local_tab_group_id) {
+  return local_tab_group_id.ToString();
+}
+
+std::optional<LocalTabGroupID> LocalTabGroupIDFromString(
+    const std::string& serialized_local_tab_group_id) {
+#if BUILDFLAG(IS_ANDROID)
+  return base::Token::FromString(serialized_local_tab_group_id);
+#else
+  auto token = base::Token::FromString(serialized_local_tab_group_id);
+  if (!token.has_value()) {
+    return std::nullopt;
+  }
+
+  return tab_groups::TabGroupId::FromRawToken(token.value());
+#endif
+}
+
 }  // namespace tab_groups

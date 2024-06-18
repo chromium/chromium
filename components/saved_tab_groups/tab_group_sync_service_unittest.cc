@@ -5,10 +5,12 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/saved_tab_groups/empty_tab_group_store_delegate.h"
+#include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/pref_names.h"
 #include "components/saved_tab_groups/saved_tab_group_model.h"
 #include "components/saved_tab_groups/saved_tab_group_test_utils.h"
@@ -97,6 +99,8 @@ class TabGroupSyncServiceTest : public testing::Test {
     tab_group_store_ = tab_group_store.get();
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kSavedTabGroupSpecificsToDataMigration, false);
+    pref_service_.registry()->RegisterDictionaryPref(prefs::kDeletedTabGroupIds,
+                                                     base::Value::Dict());
 
     std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids;
     auto metrics_logger =
@@ -212,6 +216,7 @@ class TabGroupSyncServiceTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple pref_service_;
   raw_ptr<SavedTabGroupModel> model_;
   testing::NiceMock<syncer::MockModelTypeChangeProcessor> processor_;
@@ -260,7 +265,11 @@ TEST_F(TabGroupSyncServiceTest, GetGroup) {
   test::CompareSavedTabGroupTabs(group->saved_tabs(), group_1_.saved_tabs());
 }
 
-TEST_F(TabGroupSyncServiceTest, GetDeletedGroupIds) {
+TEST_F(TabGroupSyncServiceTest, GetDeletedGroupIdsWithMigrationDisabled) {
+  // Disable migration from Java SharedPrefs.
+  feature_list_.InitWithFeatures({},
+                                 {tab_groups::kMigrationFromJavaSharedPrefs});
+
   // Setup TabGroupStore with 3 IDs: 2 in both sync and store, 1 in sync but not
   // in store, and 1 in store but not in sync.
   std::map<base::Uuid, TabGroupIDMetadata> id_metadatas;
@@ -279,6 +288,33 @@ TEST_F(TabGroupSyncServiceTest, GetDeletedGroupIds) {
   auto deleted_ids = tab_group_sync_service_->GetDeletedGroupIds();
   EXPECT_EQ(deleted_ids.size(), 1u);
   EXPECT_TRUE(base::Contains(deleted_ids, id_metadata_4.local_tab_group_id));
+}
+
+TEST_F(TabGroupSyncServiceTest, GetDeletedGroupIdsUsingPrefs) {
+  // Delete a group from sync. It should add the deleted ID to the pref.
+  model_->RemovedFromSync(group_1_.saved_guid());
+  task_environment_.RunUntilIdle();
+
+  auto deleted_ids = tab_group_sync_service_->GetDeletedGroupIds();
+  EXPECT_EQ(1u, deleted_ids.size());
+  EXPECT_TRUE(base::Contains(deleted_ids, local_group_id_1_));
+
+  // Now close out the group from tab model and notify service.
+  // The entry should be cleaned up from prefs.
+  tab_group_sync_service_->RemoveLocalTabGroupMapping(local_group_id_1_);
+
+  deleted_ids = tab_group_sync_service_->GetDeletedGroupIds();
+  EXPECT_EQ(0u, deleted_ids.size());
+}
+
+TEST_F(TabGroupSyncServiceTest,
+       GetDeletedGroupIdsUsingPrefsWhileRemovedFromLocal) {
+  // Delete a group from local. It should not add the entry to the prefs.
+  model_->Remove(group_1_.saved_guid());
+  task_environment_.RunUntilIdle();
+
+  auto deleted_ids = tab_group_sync_service_->GetDeletedGroupIds();
+  EXPECT_EQ(0u, deleted_ids.size());
 }
 
 TEST_F(TabGroupSyncServiceTest, AddGroup) {
