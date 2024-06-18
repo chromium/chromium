@@ -12,7 +12,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/format_macros.h"
 #include "base/hash/hash.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
