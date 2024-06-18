@@ -23,6 +23,7 @@
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image/shared_memory_image_backing.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl_shared_memory.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
 #include "third_party/skia/include/core/SkPixmap.h"
@@ -292,6 +293,11 @@ class WrappedDawnCompoundImageRepresentation : public DawnImageRepresentation {
                             wgpu::TextureUsage internal_usage) final {
     AccessMode access_mode =
         webgpu_usage & kWriteUsage ? AccessMode::kWrite : AccessMode::kRead;
+    if (base::FeatureList::IsEnabled(
+            features::kDawnSIRepsUseClientProvidedInternalUsages) &&
+        (internal_usage & kWriteUsage)) {
+      access_mode = AccessMode::kWrite;
+    }
     compound_backing()->NotifyBeginAccess(SharedImageAccessStream::kDawn,
                                           access_mode);
     return wrapped_->BeginAccess(webgpu_usage, internal_usage);
