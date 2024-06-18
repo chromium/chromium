@@ -52,11 +52,19 @@ in it the trybot mirrors of all CI builders gardened by the main Chromium
 gardening rotations. It also unconditionally applies
 `Include-Ci-Only-Tests: true` to its builds (see [below](#options)).
 
+If you find that the Mega CQ isn't covering a build or test config that it
+should, please file a general [trooper bug](https://g.co/bugatrooper) for the
+missing coverage.
+
 ### Mega-CQ Full-Run
 
 Runs all the same tests as the Mega-CQ dry-run. Will submit the CL if
 everything passes. Triggered via the `Mega CQ: Submit` button under the
-three-dot menu in Gerrit.
+three-dot menu in Gerrit. The amount of builds and tests the Mega CQ runs makes
+a passing run much more unlikely than a normal CQ run. Consequently, when
+running the Mega CQ, you'll likely want to spot-check the failures listed on
+Gerrit for anything that looks particularly relevant to your CL. Then you can use
+the normal `SUBMIT TO CQ` button to land once all failures look unrelated.
 
 ## Options
 
