@@ -41,6 +41,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -61,7 +62,6 @@ import java.io.IOException;
 /** Integration tests for signin FRE UMA dialog. */
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
-@EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
 public class UMADialogTest {
@@ -113,6 +113,71 @@ public class UMADialogTest {
 
     @Test
     @MediumTest
+    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void
+            testTurningOnAllowCrashUploadWhenCrashUploadByNotAllowedDefault_replaceSyncBySigninDisabled() {
+        showFreUMADialog(/* allowMetricsAndCrashUploading= */ false);
+
+        onView(withId(R.id.fre_uma_dialog_switch))
+                .inRoot(isDialog())
+                .check(matches(not(isChecked())))
+                .perform(click());
+        onView(withText(R.string.done)).inRoot(isDialog()).perform(click());
+
+        onView(withText(R.string.signin_fre_uma_dialog_title)).check(doesNotExist());
+        verify(mListenerMock).onAllowMetricsAndCrashUploadingChecked(true);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void
+            testTurningOffAllowCrashUploadWhenCrashUploadAllowedByDefault_replaceSyncBySigninDisabled() {
+        showFreUMADialog(/* allowMetricsAndCrashUploading= */ true);
+
+        onView(withId(R.id.fre_uma_dialog_switch)).inRoot(isDialog()).perform(click());
+
+        onView(withText(R.string.done)).perform(click());
+        onView(withText(R.string.signin_fre_uma_dialog_title)).check(doesNotExist());
+        verify(mListenerMock).onAllowMetricsAndCrashUploadingChecked(false);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    public void testLeavingAllowCrashUploadOn_replaceSyncBySigninDisabled() {
+        showFreUMADialog(/* allowMetricsAndCrashUploading= */ true);
+        onView(withId(R.id.fre_uma_dialog_switch)).inRoot(isDialog()).check(matches(isChecked()));
+
+        onView(withText(R.string.done)).perform(click());
+
+        onView(withText(R.string.signin_fre_uma_dialog_title)).check(doesNotExist());
+        verify(mListenerMock, never()).onAllowMetricsAndCrashUploadingChecked(anyBoolean());
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testFreUMADialogView_replaceSyncBySigninDisabled(boolean nightModeEnabled)
+            throws IOException {
+        showFreUMADialog(/* allowMetricsAndCrashUploading= */ true);
+
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    return mCoordinator
+                            .getDialogViewForTesting()
+                            .findViewById(R.id.fre_uma_dialog_dismiss_button)
+                            .isShown();
+                });
+        mRenderTestRule.render(
+                mCoordinator.getDialogViewForTesting(), "fre_uma_dialog_uno_disabled");
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testTurningOnAllowCrashUploadWhenCrashUploadByNotAllowedDefault() {
         showFreUMADialog(/* allowMetricsAndCrashUploading= */ false);
 
@@ -128,6 +193,7 @@ public class UMADialogTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testTurningOffAllowCrashUploadWhenCrashUploadAllowedByDefault() {
         showFreUMADialog(/* allowMetricsAndCrashUploading= */ true);
 
@@ -140,6 +206,7 @@ public class UMADialogTest {
 
     @Test
     @MediumTest
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     public void testLeavingAllowCrashUploadOn() {
         showFreUMADialog(/* allowMetricsAndCrashUploading= */ true);
         onView(withId(R.id.fre_uma_dialog_switch)).inRoot(isDialog()).check(matches(isChecked()));
@@ -153,6 +220,7 @@ public class UMADialogTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
+    @EnableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testFreUMADialogView(boolean nightModeEnabled) throws IOException {
         showFreUMADialog(/* allowMetricsAndCrashUploading= */ true);
