@@ -1092,8 +1092,6 @@ static_library("browser") {
     "performance_manager/decorators/helpers/page_live_state_decorator_helper.h",
     "performance_manager/mechanisms/working_set_trimmer.cc",
     "performance_manager/mechanisms/working_set_trimmer.h",
-    "performance_manager/metrics/memory_pressure_metrics.cc",
-    "performance_manager/metrics/memory_pressure_metrics.h",
     "performance_manager/metrics/metrics_provider_common.cc",
     "performance_manager/metrics/metrics_provider_common.h",
     "performance_manager/metrics/page_resource_monitor.cc",
