@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
+#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
@@ -115,7 +116,7 @@ void ShowSendingMessage(CommandDispatcher* dispatcher, NSString* deviceName) {
   NSString* text =
       l10n_util::GetNSStringF(IDS_IOS_SEND_TAB_TO_SELF_SNACKBAR_MESSAGE,
                               base::SysNSStringToUTF16(deviceName));
-  MDCSnackbarMessage* message = [MDCSnackbarMessage messageWithText:text];
+  MDCSnackbarMessage* message = CreateSnackbarMessage(text);
   message.accessibilityLabel = text;
   message.duration = 2.0;
   message.category = kActivityServicesSnackbarCategory;

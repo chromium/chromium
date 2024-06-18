@@ -21,6 +21,8 @@ source_set("signout_action_sheet") {
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:snackbar_util",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:constants",
     "//ios/chrome/browser/sync/model",

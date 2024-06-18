@@ -57,6 +57,7 @@ source_set("authentication") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:snackbar_util",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:capabilities_types",
     "//ios/chrome/browser/signin/model:system_identity",

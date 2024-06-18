@@ -126,6 +126,10 @@ void SignalAppLaunched();
 // duration as it can make test flaky.
 base::TimeDelta PasswordCheckMinimumDuration();
 
+// Duration for snackbars. If the value is 0, the default value from
+// -[MDCSnackbarMessage duration] should not be updated.
+base::TimeDelta GetOverriddenSnackbarDuration();
+
 // Returns a Drive service instance that should be used in EG tests. The real
 // instance will be used if this hook returns a nullptr.
 std::unique_ptr<drive::DriveService> GetOverriddenDriveService();

@@ -80,9 +80,6 @@ NSString* const kUnreadTitle2 = @"I am another unread entry";
 NSString* const kUnreadURL2 = @"http://unreadfoobar2.com";
 const size_t kNumberReadEntries = 2;
 const size_t kNumberUnreadEntries = 2;
-constexpr base::TimeDelta kSnackbarAppearanceTimeout = base::Seconds(5);
-// kSnackbarDisappearanceTimeout = MDCSnackbarMessageDurationMax + 1
-constexpr base::TimeDelta kSnackbarDisappearanceTimeout = base::Seconds(10 + 1);
 constexpr base::TimeDelta kDelayForSlowWebServer = base::Seconds(4);
 constexpr base::TimeDelta kLongPressDuration = base::Seconds(1);
 constexpr base::TimeDelta kDistillationTimeout = base::Seconds(5);
@@ -292,17 +289,10 @@ void AddCurrentPageToReadingList() {
   [ChromeEarlGreyUI
       tapToolsMenuAction:chrome_test_util::ButtonWithAccessibilityLabelId(
                              IDS_IOS_SHARE_MENU_READING_LIST_ACTION)];
-
-  // Wait for the snackbar to appear.
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:AddedToLocalReadingListSnackbar()
-                                  timeout:kSnackbarAppearanceTimeout];
-
-  // Wait for the snackbar to disappear.
-  [ChromeEarlGrey
-      waitForUIElementToDisappearWithMatcher:AddedToLocalReadingListSnackbar()
-                                     timeout:kSnackbarDisappearanceTimeout];
-
+  id<GREYMatcher> matcher =
+      grey_allOf(reading_list_test_utils::AddedToLocalReadingListSnackbar(),
+                 grey_sufficientlyVisible(), nil);
+  [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
   [ReadingListAppInterface notifyWifiConnection];
 }
 

@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
+#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/policy/idle/constants.h"
 #import "ios/chrome/browser/ui/policy/idle/idle_timeout_confirmation_coordinator.h"
@@ -265,8 +266,7 @@
 }
 
 - (void)showSnackbar:(NSString*)messageText {
-  MDCSnackbarMessage* message =
-      [MDCSnackbarMessage messageWithText:messageText];
+  MDCSnackbarMessage* message = CreateSnackbarMessage(messageText);
   message.duration = kIdleTimeoutSnackbarDuration;
   message.accessibilityLabel = messageText;
   [_snackbarHandler showSnackbarMessage:message];

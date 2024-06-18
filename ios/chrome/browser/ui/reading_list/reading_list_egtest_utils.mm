@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/reading_list/reading_list_egtest_utils.h"
 
+#import "base/i18n/message_formatter.h"
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_app_interface.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
@@ -52,7 +54,7 @@ void OpenReadingList() {
                                                           kReadingListViewID)];
 }
 
-void AddURLToReadingList(const GURL& URL) {
+void AddURLToReadingListWithoutSnackbarDismiss(const GURL& URL) {
   // Open the URL.
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey waitForPageToFinishLoading];
@@ -61,6 +63,25 @@ void AddURLToReadingList(const GURL& URL) {
   [ChromeEarlGreyUI
       tapToolsMenuAction:chrome_test_util::ButtonWithAccessibilityLabelId(
                              IDS_IOS_SHARE_MENU_READING_LIST_ACTION)];
+}
+
+void AddURLToReadingListWithSnackbarDismiss(const GURL& URL, NSString* email) {
+  AddURLToReadingListWithoutSnackbarDismiss(URL);
+  id<GREYMatcher> matcher = nil;
+  if (email) {
+    std::u16string pattern = l10n_util::GetStringUTF16(
+        IDS_IOS_READING_LIST_SNACKBAR_MESSAGE_FOR_ACCOUNT);
+    std::u16string utf16Text =
+        base::i18n::MessageFormatter::FormatWithNamedArgs(
+            pattern, "count", 1, "email", base::SysNSStringToUTF16(email));
+    NSString* snackbarMessage = base::SysUTF16ToNSString(utf16Text);
+    matcher = grey_allOf(
+        grey_accessibilityID(@"MDCSnackbarMessageTitleAutomationIdentifier"),
+        grey_text(snackbarMessage), nil);
+  } else {
+    matcher = reading_list_test_utils::AddedToLocalReadingListSnackbar();
+  }
+  [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
 }
 
 }  // namespace reading_list_test_utils

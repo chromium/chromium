@@ -71,6 +71,19 @@ source_set("util") {
   ]
 }
 
+source_set("snackbar_util") {
+  sources = [
+    "snackbar_util.h",
+    "snackbar_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/app:tests_hook",
+    "//ios/third_party/material_components_ios",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("util_bridge") {
   sources = [
     "uikit_ui_util_bridge.h",

@@ -123,6 +123,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:snackbar_util",
     "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:capabilities_types",

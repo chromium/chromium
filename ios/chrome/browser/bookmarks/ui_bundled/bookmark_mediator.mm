@@ -22,13 +22,14 @@
 #import "ios/chrome/browser/bookmarks/model/bookmarks_utils.h"
 #import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/bookmarks/ui_bundled/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "net/base/apple/url_conversions.h"
@@ -124,7 +125,7 @@ using bookmarks::BookmarkNode;
       folderTitle, !IsLastUsedBookmarkFolderSet(_prefs), bookmarkModelType,
       /*showCount=*/false, /*count=*/1, _authenticationService, _syncService);
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  MDCSnackbarMessage* message = [MDCSnackbarMessage messageWithText:text];
+  MDCSnackbarMessage* message = CreateSnackbarMessage(text);
   message.action = action;
   message.category = bookmark_utils_ios::kBookmarksSnackbarCategory;
   return message;
@@ -194,7 +195,7 @@ using bookmarks::BookmarkNode;
       _syncService);
 
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  MDCSnackbarMessage* message = [MDCSnackbarMessage messageWithText:result];
+  MDCSnackbarMessage* message = CreateSnackbarMessage(result);
   message.action = action;
   message.category = bookmark_utils_ios::kBookmarksSnackbarCategory;
 
@@ -224,7 +225,7 @@ using bookmarks::BookmarkNode;
       folderTitle, /*choosenByUser=*/YES, bookmarkModelType,
       /*showCount=*/false, URLs.count, _authenticationService, _syncService);
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  MDCSnackbarMessage* message = [MDCSnackbarMessage messageWithText:text];
+  MDCSnackbarMessage* message = CreateSnackbarMessage(text);
   message.category = bookmark_utils_ios::kBookmarksSnackbarCategory;
   return message;
 }

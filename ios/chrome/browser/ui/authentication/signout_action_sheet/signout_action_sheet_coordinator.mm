@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
@@ -553,8 +554,9 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
               HasManagedSyncDataType(syncService)
           ? IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE_ENTERPRISE
           : IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE;
-  return
-      [MDCSnackbarMessage messageWithText:l10n_util::GetNSString(message_id)];
+  MDCSnackbarMessage* message =
+      CreateSnackbarMessage(l10n_util::GetNSString(message_id));
+  return message;
 }
 
 // Calls `self.completion` if available, and sets it to `null` before the call.

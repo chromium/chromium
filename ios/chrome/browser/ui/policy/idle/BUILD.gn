@@ -24,6 +24,7 @@ source_set("idle_timeout_policy_scene_agent") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/shared/ui/util:snackbar_util",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/ui/scoped_ui_blocker",
     "//ios/third_party/material_components_ios",

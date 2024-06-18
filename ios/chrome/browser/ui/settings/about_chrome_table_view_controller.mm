@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/legacy_chrome_table_view_styler.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/pasteboard_util.h"
+#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/terms_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/settings/cells/version_item.h"
@@ -165,8 +166,7 @@ const CGFloat kDefaultHeight = 70;
 
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
   NSString* messageText = l10n_util::GetNSString(IDS_IOS_VERSION_COPIED);
-  MDCSnackbarMessage* message =
-      [MDCSnackbarMessage messageWithText:messageText];
+  MDCSnackbarMessage* message = CreateSnackbarMessage(messageText);
   message.category = @"version copied";
   [self.snackbarHandler showSnackbarMessage:message bottomOffset:0];
 }

@@ -29,8 +29,12 @@ id<GREYMatcher> VisibleLocalItemIcon(NSString* title);
 // Opens the reading list.
 void OpenReadingList();
 
-// Opens a URL and add it to the Reading List.
-void AddURLToReadingList(const GURL& URL);
+// Opens a URL and add it to the Reading List, without dismissing the snackbar.
+void AddURLToReadingListWithoutSnackbarDismiss(const GURL& URL);
+
+// Opens a URL and add it to the Reading List, and dismisses the snackbar.
+// Needs to give `email` if the primary account is set.
+void AddURLToReadingListWithSnackbarDismiss(const GURL& URL, NSString* email);
 
 }  // namespace reading_list_test_utils
 

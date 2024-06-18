@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
@@ -72,8 +73,7 @@ void ReadingListBrowserAgent::AddURLsToReadingList(
         l10n_util::GetNSString(IDS_IOS_READING_LIST_SNACKBAR_MESSAGE);
   }
 
-  MDCSnackbarMessage* message =
-      [MDCSnackbarMessage messageWithText:snackbar_text];
+  MDCSnackbarMessage* message = CreateSnackbarMessage(snackbar_text);
   message.accessibilityLabel = snackbar_text;
   message.action = snackbar_action;
 
@@ -145,7 +145,7 @@ void ReadingListBrowserAgent::BulkAddURLsToReadingListWithViewSnackbar(
   MDCSnackbarMessageAction* action = CreateViewAction();
 
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  MDCSnackbarMessage* message = [MDCSnackbarMessage messageWithText:result];
+  MDCSnackbarMessage* message = CreateSnackbarMessage(result);
   message.action = action;
 
   CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();

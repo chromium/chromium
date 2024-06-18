@@ -330,7 +330,8 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
   [ChromeEarlGrey disconnectFakeSyncServerNetwork];
 
-  reading_list_test_utils::AddURLToReadingList(GURL("https://example.com"));
+  reading_list_test_utils::AddURLToReadingListWithSnackbarDismiss(
+      GURL("https://example.com"), fakeIdentity.userEmail);
 
   [ChromeEarlGreyUI openSettingsMenu];
   [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
@@ -945,7 +946,8 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // contains the correct string for reading list.
 - (void)testBulkUploadDescriptionTextForReadingList {
   // Add local data.
-  reading_list_test_utils::AddURLToReadingList(GURL("https://example.com"));
+  reading_list_test_utils::AddURLToReadingListWithSnackbarDismiss(
+      GURL("https://example.com"), nil);
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -970,7 +972,8 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   // Add local data.
   password_manager_test_utils::SavePasswordFormToProfileStore(
       @"password", @"user", @"https://example.com");
-  reading_list_test_utils::AddURLToReadingList(GURL("https://example.com"));
+  reading_list_test_utils::AddURLToReadingListWithSnackbarDismiss(
+      GURL("https://example.com"), nil);
   SaveBookmark(@"foo", @"https://www.foo.com");
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -998,7 +1001,8 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   // Add local data.
   password_manager_test_utils::SavePasswordFormToProfileStore(
       @"password", @"user", @"https://example.com");
-  reading_list_test_utils::AddURLToReadingList(GURL("https://example.com"));
+  reading_list_test_utils::AddURLToReadingListWithSnackbarDismiss(
+      GURL("https://example.com"), nil);
   SaveBookmark(@"foo", @"https://www.foo.com");
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -1146,7 +1150,8 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   // Add local data.
   password_manager_test_utils::SavePasswordFormToProfileStore(
       @"password", @"user", @"https://example.com");
-  reading_list_test_utils::AddURLToReadingList(GURL("https://example.com"));
+  reading_list_test_utils::AddURLToReadingListWithSnackbarDismiss(
+      GURL("https://example.com"), nil);
   SaveBookmark(@"foo", @"https://www.foo.com");
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -1236,7 +1241,8 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   // Add local data.
   password_manager_test_utils::SavePasswordFormToProfileStore(
       @"password", @"user", @"https://example.com");
-  reading_list_test_utils::AddURLToReadingList(GURL("https://example.com"));
+  reading_list_test_utils::AddURLToReadingListWithSnackbarDismiss(
+      GURL("https://example.com"), nil);
   SaveBookmark(@"foo", @"https://www.foo.com");
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
@@ -1311,7 +1317,8 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   // Add local data.
   password_manager_test_utils::SavePasswordFormToProfileStore(
       @"password", @"user", @"https://example.com");
-  reading_list_test_utils::AddURLToReadingList(GURL("https://example.com"));
+  reading_list_test_utils::AddURLToReadingListWithSnackbarDismiss(
+      GURL("https://example.com"), nil);
   SaveBookmark(@"foo", @"https://www.foo.com");
 
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];

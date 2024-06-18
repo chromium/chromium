@@ -84,6 +84,10 @@ base::TimeDelta PasswordCheckMinimumDuration() {
   return base::Seconds(0);
 }
 
+base::TimeDelta GetOverriddenSnackbarDuration() {
+  return base::Seconds(0);
+}
+
 std::unique_ptr<drive::DriveService> GetOverriddenDriveService() {
   return nullptr;
 }

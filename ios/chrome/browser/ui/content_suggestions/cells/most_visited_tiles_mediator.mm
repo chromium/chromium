@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_tile_view.h"
@@ -416,9 +417,8 @@ const CGFloat kMagicStackMostVisitedFaviconMinimalSize = 18;
   action.accessibilityIdentifier = @"Undo";
 
   TriggerHapticFeedbackForNotification(UINotificationFeedbackTypeSuccess);
-  MDCSnackbarMessage* message = [MDCSnackbarMessage
-      messageWithText:l10n_util::GetNSString(
-                          IDS_IOS_NEW_TAB_MOST_VISITED_ITEM_REMOVED)];
+  MDCSnackbarMessage* message = CreateSnackbarMessage(
+      l10n_util::GetNSString(IDS_IOS_NEW_TAB_MOST_VISITED_ITEM_REMOVED));
   message.action = action;
   message.category = @"MostVisitedUndo";
   [self.snackbarHandler showSnackbarMessage:message];
