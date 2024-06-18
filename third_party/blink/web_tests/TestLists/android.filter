@@ -10,6 +10,10 @@
 # Further documentation:
 # https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_test_expectations.md
 
+external/wpt/pointerevents/
+external/wpt/virtual-keyboard/
+external/wpt/visual-viewport/
+
 external/wpt/FileAPI/idlharness.any.html
 external/wpt/FileAPI/idlharness.any.worker.html
 external/wpt/FileAPI/idlharness.html
@@ -194,8 +198,6 @@ external/wpt/permissions-revoke/idlharness.any.worker.html
 external/wpt/permissions/idlharness.any.html
 external/wpt/permissions/idlharness.any.worker.html
 external/wpt/picture-in-picture/idlharness.window.html
-external/wpt/pointerevents/
-external/wpt/pointerevents/idlharness.window.html
 external/wpt/pointerlock/idlharness.window.html
 external/wpt/portals/idlharness.window.html
 external/wpt/presentation-api/controlling-ua/idlharness.https.html
@@ -258,9 +260,6 @@ external/wpt/user-timing/idlharness.any.sharedworker.html
 external/wpt/user-timing/idlharness.any.worker.html
 external/wpt/vibration/idlharness.window.html
 external/wpt/video-rvfc/idlharness.window.html
-external/wpt/virtual-keyboard/
-external/wpt/virtual-keyboard/idlharness.https.window.html
-external/wpt/visual-viewport/
 external/wpt/wasm/jsapi/idlharness.any.html
 external/wpt/wasm/jsapi/idlharness.any.worker.html
 external/wpt/wasm/webapi/idlharness.any.html
@@ -285,8 +284,6 @@ external/wpt/webidl/idlharness-shadowrealm.window.html
 external/wpt/webidl/idlharness.any.html
 external/wpt/webidl/idlharness.any.worker.html
 external/wpt/webmidi/idlharness.https.window.html
-external/wpt/webnn/idlharness.https.any.html
-external/wpt/webnn/idlharness.https.any.worker.html
 external/wpt/webrtc-encoded-transform/idlharness.https.window.html
 external/wpt/webrtc-identity/idlharness.https.window.html
 external/wpt/webrtc-stats/idlharness.window.html
@@ -312,10 +309,3 @@ external/wpt/worklets/idlharness.https.any.worker.html
 external/wpt/xhr/idlharness.any.html
 external/wpt/xhr/idlharness.any.sharedworker.html
 external/wpt/xhr/idlharness.any.worker.html
-wpt_internal/sanitizer-api/idlharness.https.window.html
-wpt_internal/storage/buckets/idlharness-worker.https.any.html
-wpt_internal/storage/buckets/idlharness-worker.https.any.serviceworker.html
-wpt_internal/storage/buckets/idlharness-worker.https.any.sharedworker.html
-wpt_internal/storage/buckets/idlharness-worker.https.any.worker.html
-wpt_internal/system-wake-lock/idlharness-worker.https.window.html
-wpt_internal/system-wake-lock/idlharness.https.window.html

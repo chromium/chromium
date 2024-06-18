@@ -1,11 +1,9 @@
 This is a testharness.js-based test.
-Found 11 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 10 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] TextMetrics interface: attribute emHeightAscent
   assert_true: The prototype object must have a property "emHeightAscent" expected true got false
 [FAIL] TextMetrics interface: attribute emHeightDescent
   assert_true: The prototype object must have a property "emHeightDescent" expected true got false
-[FAIL] OffscreenCanvasRenderingContext2D interface: operation commit()
-  assert_own_property: interface prototype object missing non-static operation expected property "commit" missing
 [FAIL] UserActivation interface: existence and properties of interface object
   assert_false: expected false got true
 [FAIL] PromiseRejectionEvent interface: attribute promise

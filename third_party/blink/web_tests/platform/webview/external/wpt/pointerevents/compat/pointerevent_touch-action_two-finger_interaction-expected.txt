@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection
-[NOTRUN] touch two-finger pan on 'touch-action: pan-x pan-y'
-[NOTRUN] touch two-finger pan on 'touch-action: pinch-zoom'
-Harness: the test ran to completion.
