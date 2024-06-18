@@ -183,6 +183,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       WaitForShow(kToolbarPerformanceInterventionButtonElementId),
       WaitForShow(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      FlushEvents(),
       PressButton(kToolbarPerformanceInterventionButtonElementId),
       WaitForHide(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
@@ -197,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
 // Making an actionable tab active should hide the intervention toolbar button
 // because the actionable tab list is no longer valid.
 IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
-                       DISABLED_ActivateActionableTab) {
+                       ActivateActionableTab) {
   RunTestSequence(
       InstrumentTab(kFirstTab, 0), AddInstrumentedTab(kSecondTab, GetURL()),
       AddInstrumentedTab(kThirdTab, GetURL()),
@@ -206,6 +207,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       WaitForShow(kToolbarPerformanceInterventionButtonElementId),
       WaitForShow(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      FlushEvents(),
       PressButton(kToolbarPerformanceInterventionButtonElementId),
       WaitForHide(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
@@ -250,6 +252,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
       SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
                               kSkipPixelTestsReason),
+      EnsurePresent(kToolbarPerformanceInterventionButtonElementId),
       Screenshot(kToolbarPerformanceInterventionButtonElementId,
                  /*screenshot_name=*/"InterventionToolbarButton",
                  /*baseline_cl=*/"5503223"));
@@ -264,6 +267,7 @@ IN_PROC_BROWSER_TEST_F(PerformanceInterventionInteractiveTest,
       WaitForShow(kToolbarPerformanceInterventionButtonElementId),
       WaitForShow(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
+      FlushEvents(),
       PressButton(kToolbarPerformanceInterventionButtonElementId),
       WaitForHide(
           PerformanceInterventionBubble::kPerformanceInterventionDialogBody),
