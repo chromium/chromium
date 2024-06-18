@@ -239,15 +239,24 @@ export enum PerfEvent {
   // shown in the preview. The result might now be shown if it is empty or if
   // other scanners have detected results.
   OCR_SCANNING = 'ocr-scanning',
-  PHOTO_CAPTURE_POST_PROCESSING = 'photo-capture-post-processing',
+  // In Photo mode, the duration between a shutter sound being played and the
+  // result file being saved.
+  PHOTO_CAPTURE_POST_PROCESSING_SAVING = 'photo-capture-post-processing-saving',
   PHOTO_CAPTURE_SHUTTER = 'photo-capture-shutter',
-  PORTRAIT_MODE_CAPTURE_POST_PROCESSING =
-      'portrait-mode-capture-post-processing',
+  // In Portrait mode, the duration between a shutter sound being played and the
+  // two result files being saved.
+  PORTRAIT_MODE_CAPTURE_POST_PROCESSING_SAVING =
+      'portrait-mode-capture-post-processing-saving',
   // In Video mode, the duration between clicking the video snapshot button and
   // the file is being saved.
   SNAPSHOT_TAKING = 'snapshot-taking',
-  TIME_LAPSE_CAPTURE_POST_PROCESSING = 'time-lapse-capture-post-processing',
-  VIDEO_CAPTURE_POST_PROCESSING = 'video-capture-post-processing',
+  // In Time lapse mode, the duration between a shutter sound being played and
+  // the result file being saved.
+  TIME_LAPSE_CAPTURE_POST_PROCESSING_SAVING =
+      'time-lapse-capture-post-processing-saving',
+  // In Video mode, the duration between clicking a shutter button to stop
+  // recording and the result file being saved.
+  VIDEO_CAPTURE_POST_PROCESSING_SAVING = 'video-capture-post-processing-saving',
 }
 
 export interface ImageBlob {

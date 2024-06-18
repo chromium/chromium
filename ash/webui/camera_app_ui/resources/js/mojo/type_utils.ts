@@ -371,18 +371,18 @@ export function convertPerfEventTypeToMojo(perfEventType: PerfEvent):
       return mojoType.PerfEventType.kModeSwitching;
     case PerfEvent.OCR_SCANNING:
       return mojoType.PerfEventType.kOcrScanning;
-    case PerfEvent.PHOTO_CAPTURE_POST_PROCESSING:
-      return mojoType.PerfEventType.kPhotoCapturePostProcessing;
+    case PerfEvent.PHOTO_CAPTURE_POST_PROCESSING_SAVING:
+      return mojoType.PerfEventType.kPhotoCapturePostProcessingSaving;
     case PerfEvent.PHOTO_CAPTURE_SHUTTER:
       return mojoType.PerfEventType.kPhotoCaptureShutter;
-    case PerfEvent.PORTRAIT_MODE_CAPTURE_POST_PROCESSING:
-      return mojoType.PerfEventType.kPortraitModeCapturePostProcessing;
+    case PerfEvent.PORTRAIT_MODE_CAPTURE_POST_PROCESSING_SAVING:
+      return mojoType.PerfEventType.kPortraitModeCapturePostProcessingSaving;
     case PerfEvent.SNAPSHOT_TAKING:
       return mojoType.PerfEventType.kSnapshotTaking;
-    case PerfEvent.TIME_LAPSE_CAPTURE_POST_PROCESSING:
-      return mojoType.PerfEventType.kTimelapseCapturePostProcessing;
-    case PerfEvent.VIDEO_CAPTURE_POST_PROCESSING:
-      return mojoType.PerfEventType.kVideoCapturePostProcessing;
+    case PerfEvent.TIME_LAPSE_CAPTURE_POST_PROCESSING_SAVING:
+      return mojoType.PerfEventType.kTimelapseCapturePostProcessingSaving;
+    case PerfEvent.VIDEO_CAPTURE_POST_PROCESSING_SAVING:
+      return mojoType.PerfEventType.kVideoCapturePostProcessingSaving;
     default:
       assertNotReached();
   }

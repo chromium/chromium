@@ -989,7 +989,7 @@
   </event>
 </project>
 
-<project name="CrOSEvents" cros_events="true" targets="webui,chromium">
+<project name="CrOSEvents" cros_events="true" targets="chromium,webui">
   <owner>jongahn@chromium.org</owner>
   <id>per-project</id>
   <scope>device</scope>
@@ -1129,12 +1129,12 @@
     <variant value="3">LAUNCHING_FROM_LAUNCH_APP_WARM</variant>
     <variant value="4">LAUNCHING_FROM_WINDOW_CREATION</variant>
     <variant value="5">MODE_SWITCHING</variant>
-    <variant value="6">PHOTO_CAPTURE_POST_PROCESSING</variant>
+    <variant value="6">PHOTO_CAPTURE_POST_PROCESSING_SAVING</variant>
     <variant value="7">PHOTO_CAPTURE_SHUTTER</variant>
     <variant value="8">PHOTO_TAKING</variant>
-    <variant value="9">PORTRAIT_MODE_CAPTURE_POST_PROCESSING</variant>
-    <variant value="10">TIMELAPSE_CAPTURE_POST_PROCESSING</variant>
-    <variant value="11">VIDEO_CAPTURE_POST_PROCESSING</variant>
+    <variant value="9">PORTRAIT_MODE_CAPTURE_POST_PROCESSING_SAVING</variant>
+    <variant value="10">TIMELAPSE_CAPTURE_POST_PROCESSING_SAVING</variant>
+    <variant value="11">VIDEO_CAPTURE_POST_PROCESSING_SAVING</variant>
     <variant value="12">SNAPSHOT_TAKING</variant>
     <variant value="13">DOCUMENT_CAPTURE_POST_PROCESSING</variant>
     <variant value="14">DOCUMENT_PDF_SAVING</variant>

@@ -325,7 +325,7 @@ TEST_F(CameraAppEventsSenderTest, BarcodeDetected) {
 TEST_F(CameraAppEventsSenderTest, Perf) {
   auto params = ash::camera_app::mojom::PerfEventParams::New();
   params->event_type =
-      ash::camera_app::mojom::PerfEventType::kVideoCapturePostProcessing;
+      ash::camera_app::mojom::PerfEventType::kVideoCapturePostProcessingSaving;
   params->duration = 10000;
   params->facing = ash::camera_app::mojom::Facing::kUnknown;
   params->resolution_width = 1920;

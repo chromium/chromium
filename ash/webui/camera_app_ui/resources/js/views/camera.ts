@@ -510,7 +510,7 @@ export class Camera extends View implements CameraViewUI {
 
   async onPhotoCaptureDone(pendingPhotoResult: Promise<PhotoResult>):
       Promise<void> {
-    state.set(PerfEvent.PHOTO_CAPTURE_POST_PROCESSING, true);
+    state.set(PerfEvent.PHOTO_CAPTURE_POST_PROCESSING_SAVING, true);
 
     pendingPhotoResult = this.cropIfUsingSquareResolution(pendingPhotoResult);
 
@@ -537,11 +537,12 @@ export class Camera extends View implements CameraViewUI {
         throw e;
       }
       state.set(
-          PerfEvent.PHOTO_CAPTURE_POST_PROCESSING, false,
+          PerfEvent.PHOTO_CAPTURE_POST_PROCESSING_SAVING, false,
           {resolution, facing: this.getFacing()});
     } catch (e) {
       state.set(
-          PerfEvent.PHOTO_CAPTURE_POST_PROCESSING, false, {hasError: true});
+          PerfEvent.PHOTO_CAPTURE_POST_PROCESSING_SAVING, false,
+          {hasError: true});
       throw e;
     }
     ChromeHelper.getInstance().maybeTriggerSurvey();
@@ -550,7 +551,7 @@ export class Camera extends View implements CameraViewUI {
   async onPortraitCaptureDone(
       pendingReference: Promise<PhotoResult>,
       pendingPortrait: Promise<PhotoResult>): Promise<void> {
-    state.set(PerfEvent.PORTRAIT_MODE_CAPTURE_POST_PROCESSING, true);
+    state.set(PerfEvent.PORTRAIT_MODE_CAPTURE_POST_PROCESSING_SAVING, true);
 
     let filenamer: Filenamer;
 
@@ -615,7 +616,7 @@ export class Camera extends View implements CameraViewUI {
     }
     const hasError = error !== null;
     state.set(
-        PerfEvent.PORTRAIT_MODE_CAPTURE_POST_PROCESSING, false,
+        PerfEvent.PORTRAIT_MODE_CAPTURE_POST_PROCESSING_SAVING, false,
         {hasError, facing: this.getFacing()});
     if (hasError) {
       throw error;
@@ -812,7 +813,7 @@ export class Camera extends View implements CameraViewUI {
     if (autoStopped) {
       this.showLowStorageDialog(LowStorageDialogType.AUTO_STOP);
     }
-    state.set(PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, true);
+    state.set(PerfEvent.VIDEO_CAPTURE_POST_PROCESSING_SAVING, true);
     try {
       metrics.sendCaptureEvent({
         recordType: metrics.RecordType.NORMAL_VIDEO,
@@ -828,11 +829,12 @@ export class Camera extends View implements CameraViewUI {
       const file = assertExists(await videoSaver.endWrite());
       await this.resultSaver.saveVideo(file);
       state.set(
-          PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, false,
+          PerfEvent.VIDEO_CAPTURE_POST_PROCESSING_SAVING, false,
           {resolution, facing: this.getFacing()});
     } catch (e) {
       state.set(
-          PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, false, {hasError: true});
+          PerfEvent.VIDEO_CAPTURE_POST_PROCESSING_SAVING, false,
+          {hasError: true});
       throw e;
     }
     ChromeHelper.getInstance().maybeTriggerSurvey();
@@ -845,7 +847,7 @@ export class Camera extends View implements CameraViewUI {
       this.showLowStorageDialog(LowStorageDialogType.AUTO_STOP);
     }
     nav.open(ViewName.FLASH, I18nString.MSG_PROCESSING_VIDEO);
-    state.set(PerfEvent.TIME_LAPSE_CAPTURE_POST_PROCESSING, true);
+    state.set(PerfEvent.TIME_LAPSE_CAPTURE_POST_PROCESSING_SAVING, true);
     try {
       metrics.sendCaptureEvent({
         recordType: metrics.RecordType.TIME_LAPSE,
@@ -862,11 +864,11 @@ export class Camera extends View implements CameraViewUI {
       const file = assertExists(await timeLapseSaver.endWrite());
       await this.resultSaver.saveVideo(file);
       state.set(
-          PerfEvent.TIME_LAPSE_CAPTURE_POST_PROCESSING, false,
+          PerfEvent.TIME_LAPSE_CAPTURE_POST_PROCESSING_SAVING, false,
           {resolution, facing: this.getFacing()});
     } catch (e) {
       state.set(
-          PerfEvent.TIME_LAPSE_CAPTURE_POST_PROCESSING, false,
+          PerfEvent.TIME_LAPSE_CAPTURE_POST_PROCESSING_SAVING, false,
           {hasError: true});
       throw e;
     } finally {
