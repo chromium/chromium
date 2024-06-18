@@ -1527,8 +1527,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.Import.DesktopInteractions"
     enum="PasswordsImportDesktopInteractions" expires_after="2024-11-03">
-  <owner>eliaskh@chromium.org</owner>
   <owner>natiahlyi@google.com</owner>
+  <owner>markusheintz@google.com</owner>
   <summary>
     Records the user actions related to passwords import flow on desktop.
     Reported upon interactions with the password settings page.
@@ -1536,9 +1536,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.Import.FileDeletionSelected" enum="Boolean"
-    expires_after="2024-06-30">
-  <owner>eliaskh@chromium.org</owner>
+    expires_after="2025-02-25">
   <owner>natiahlyi@google.com</owner>
+  <owner>markusheintz@google.com</owner>
   <summary>
     Records if the user selected to delete a file after a succesful import with
     no errors. Reported before the import success dialog is closed.
@@ -1562,8 +1562,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.Import.PerFile.ConflictsResolved"
     units="saved credentials" expires_after="2024-09-01">
-  <owner>eliaskh@chromium.org</owner>
   <owner>natiahlyi@google.com</owner>
+  <owner>markusheintz@google.com</owner>
   <summary>
     Records number of passwords that were resolved in Passwords Import -
     Conflict resolution. Basically the number of conflicting passwords that were
@@ -1573,9 +1573,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.Import.PerFile.Notes.{Type}" units="units"
-    expires_after="2024-06-30">
-  <owner>eliaskh@chromium.org</owner>
+    expires_after="2025-02-25">
   <owner>natiahlyi@google.com</owner>
+  <owner>markusheintz@google.com</owner>
   <summary>
     Tracks the number of {Type} per one imported CSV file with Google Password
     Manager in Settings UI. Recorded during the passwords import process
@@ -1599,8 +1599,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.Import.PerFile.{ErrorType}" units="units"
     expires_after="2024-11-03">
-  <owner>eliaskh@chromium.org</owner>
   <owner>natiahlyi@google.com</owner>
+  <owner>markusheintz@google.com</owner>
   <summary>
     Tracks the number of rows with {ErrorType} per one imported CSV file with
     Google Password Manager in Settings UI. Recorded during the passwords import
@@ -1626,8 +1626,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.ImportDuration" units="ms"
     expires_after="2024-11-03">
-  <owner>eliaskh@chromium.org</owner>
   <owner>natiahlyi@google.com</owner>
+  <owner>markusheintz@google.com</owner>
   <summary>
     Tracks the time it takes to import credentials in passwords import flow. The
     time that is tracked is the time needed to process the credentials, checking
@@ -1649,8 +1649,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.ImportEntryStatus"
     enum="PasswordManagerImportEntryStatus" expires_after="2024-12-08">
-  <owner>eliaskh@chromium.org</owner>
   <owner>natiahlyi@google.com</owner>
+  <owner>markusheintz@google.com</owner>
   <summary>
     Tracks the individual status of a single password entry from the provided
     CSV File after it has been processed in the Passwords Import flow in
@@ -1661,8 +1661,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.ImportFileSize" units="bytes"
     expires_after="2024-11-03">
-  <owner>eliaskh@chromium.org</owner>
   <owner>natiahlyi@google.com</owner>
+  <owner>markusheintz@google.com</owner>
   <summary>
     The size of the CSV file (to import passwords from) selected by a user in
     bytes. Recorded when the user tries to import passwords from a CSV file. The
@@ -1672,8 +1672,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PasswordManager.ImportResultsStatus2"
     enum="PasswordManagerImportResultsStatus" expires_after="2024-11-10">
-  <owner>eliaskh@chromium.org</owner>
   <owner>natiahlyi@google.com</owner>
+  <owner>markusheintz@google.com</owner>
   <summary>
     Tracks the final outcome status of importing a CSV File to Chrome Password
     Manager in settings UI. Recorded when the import flow finishes within
