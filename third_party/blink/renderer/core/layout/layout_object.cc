@@ -1180,6 +1180,11 @@ PaintLayer* LayoutObject::PaintingLayer(int max_depth) const {
     // LayoutNG. LayoutNG floats are painted by the correct painting layer.
     if (object.IsFloating() && !object.IsInLayoutNGInlineFormattingContext())
       return object.ContainingBlock();
+    // Physical fragments and fragment items for ruby-text boxes are not
+    // managed by inline parents, and stored in a separated line of the IFC.
+    if (object.IsInlineRubyText()) {
+      return object.ContainingBlock();
+    }
     if (IsA<LayoutView>(object))
       return object.GetFrame()->OwnerLayoutObject();
     return object.Parent();
