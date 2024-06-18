@@ -90,13 +90,7 @@
       assertWithMatcher:grey_notVisible()];
 }
 
-// TODO(crbug.com/341916045): Test is failing consistently on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testTapBehaviors testTapBehaviors
-#else
-#define MAYBE_testTapBehaviors DISABLED_testTapBehaviors
-#endif
-- (void)MAYBE_testTapBehaviors {
+- (void)testTapBehaviors {
   [OmniboxEarlGrey openPage:omnibox::Page(1) testServer:self.testServer];
 
   GURL fullPage1GURL = self.testServer->GetURL(
