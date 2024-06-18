@@ -5338,6 +5338,7 @@ static_library("browser") {
       "//chrome/browser/ash/smart_reader",
       "//chrome/browser/ash/system_web_apps",
       "//chrome/browser/ash/system_web_apps/types",
+      "//chrome/browser/ash/usb",
       "//chrome/browser/ash/wallpaper_handlers",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/ash",
       "//chrome/browser/nearby_sharing:share_target",
@@ -5515,6 +5516,7 @@ static_library("browser") {
       "//chrome/browser/ash/privacy_hub",
       "//chrome/browser/ash/sharesheet",
       "//chrome/browser/ash/system_web_apps",
+      "//chrome/browser/ash/usb",
       "//chrome/browser/ash/wallpaper_handlers",
     ]
 

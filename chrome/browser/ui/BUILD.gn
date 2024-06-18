@@ -4120,6 +4120,7 @@ static_library("ui") {
     public_deps += [
       "//chrome/browser/ash/accessibility",
       "//chrome/browser/ash/accessibility/service",
+      "//chrome/browser/ash/usb",
       "//chrome/browser/ui/webui/ash/crostini_installer:mojo_bindings",
       "//chrome/browser/ui/webui/ash/emoji:mojo_bindings",
       "//chrome/browser/ui/webui/ash/emoji:seal_mojom",
@@ -4135,6 +4136,7 @@ static_library("ui") {
       "//chrome/browser/ash/privacy_hub",
       "//chrome/browser/ash/sharesheet",
       "//chrome/browser/ash/tether",
+      "//chrome/browser/ash/usb",
       "//chrome/browser/chromeos/extensions/wm",
     ]
 
