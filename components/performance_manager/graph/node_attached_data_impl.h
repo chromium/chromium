@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/memory/aligned_memory.h"
 #include "base/memory/ptr_util.h"
 #include "components/performance_manager/graph/node_attached_data.h"
 
@@ -345,6 +346,7 @@ DataType* NodeAttachedDataImpl<DataType>::NodeAttachedDataInternalOnNodeType<
   InternalNodeAttachedDataStorage<sizeof(DataType)>* storage =
       DataType::GetInternalStorage(const_cast<NodeType*>(node));
   if (!storage->Get()) {
+    CHECK(base::IsAligned(storage->buffer(), alignof(DataType)));
     NodeAttachedData* data = new (storage->buffer()) DataType(node);
     InternalNodeAttachedDataStorageAccess::Set(storage, data);
   }
