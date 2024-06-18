@@ -350,7 +350,8 @@ TEST_P(ClientSideDetectionServiceTest, SendClientReportPhishingRequest) {
   profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnabled, true);
   base::Time before = base::Time::Now();
 
-  // Invalid response body from the server.
+  // Invalid response body from the server, but we will still track it as a
+  // ping count.
   SetClientReportPhishingResponse("invalid proto response", net::OK);
   EXPECT_FALSE(SendClientReportPhishingRequest(url, score, access_token));
 
@@ -359,10 +360,10 @@ TEST_P(ClientSideDetectionServiceTest, SendClientReportPhishingRequest) {
   response.set_phishy(true);
   SetClientReportPhishingResponse(response.SerializeAsString(), net::OK);
   EXPECT_TRUE(SendClientReportPhishingRequest(url, score, access_token));
-  EXPECT_TRUE(SendClientReportPhishingRequest(url, score, access_token));
-  EXPECT_TRUE(SendClientReportPhishingRequest(url, score, access_token));
 
-  // This request will fail
+  // This request will fail, but not because of the cap, but because the network
+  // failed, but we will still log the number of pings sent.
+  EXPECT_FALSE(AtPhishingReportLimit());
   GURL second_url("http://b.com/");
   response.set_phishy(false);
   SetClientReportPhishingResponse(response.SerializeAsString(),
@@ -370,11 +371,24 @@ TEST_P(ClientSideDetectionServiceTest, SendClientReportPhishingRequest) {
   EXPECT_FALSE(
       SendClientReportPhishingRequest(second_url, score, access_token));
 
+  // We have sent 3 pings so far, which is the cap.
+  EXPECT_TRUE(AtPhishingReportLimit());
+
+  GURL third_url("http://c.com/");
+  response.set_phishy(true);
+  SetClientReportPhishingResponse(response.SerializeAsString(), net::OK);
+
+  // Although this is a normal behavior, we are capped in the number of pings,
+  // so this will expect false.
+  EXPECT_FALSE(SendClientReportPhishingRequest(third_url, score, access_token));
+
   base::Time after = base::Time::Now();
 
-  // Check that we have recorded all 5 requests within the correct time range.
+  // Check that we have recorded 3 requests within the correct time range. The
+  // third_url is not recorded because the send was attempted while we are at
+  // the limit.
   std::deque<base::Time>& report_times = GetPhishingReportTimes();
-  EXPECT_EQ(5U, report_times.size());
+  EXPECT_EQ(3U, report_times.size());
   EXPECT_TRUE(AtPhishingReportLimit());
   while (!report_times.empty()) {
     base::Time time = report_times.back();
@@ -391,6 +405,10 @@ TEST_P(ClientSideDetectionServiceTest, SendClientReportPhishingRequest) {
   EXPECT_FALSE(
       csd_service_->GetValidCachedResult(second_url, &is_second_url_phishing));
   EXPECT_FALSE(is_second_url_phishing);
+  bool is_third_url_phishing = false;
+  EXPECT_FALSE(
+      csd_service_->GetValidCachedResult(third_url, &is_third_url_phishing));
+  EXPECT_FALSE(is_third_url_phishing);
 }
 
 TEST_P(ClientSideDetectionServiceTest,
@@ -458,15 +476,15 @@ TEST_P(ClientSideDetectionServiceTest, GetNumReportTest) {
 
   base::Time now = base::Time::Now();
   base::TimeDelta twenty_five_hours = base::Hours(25);
-  csd_service_->AddPhishingReport(now - twenty_five_hours);
-  csd_service_->AddPhishingReport(now - twenty_five_hours);
-  csd_service_->AddPhishingReport(now);
-  csd_service_->AddPhishingReport(now);
+  EXPECT_TRUE(csd_service_->AddPhishingReport(now - twenty_five_hours));
+  EXPECT_TRUE(csd_service_->AddPhishingReport(now - twenty_five_hours));
+  EXPECT_TRUE(csd_service_->AddPhishingReport(now));
+  EXPECT_TRUE(csd_service_->AddPhishingReport(now));
 
   EXPECT_EQ(2, csd_service_->GetPhishingNumReports());
   EXPECT_FALSE(AtPhishingReportLimit());
 
-  csd_service_->AddPhishingReport(now);
+  EXPECT_TRUE(csd_service_->AddPhishingReport(now));
   EXPECT_EQ(3, csd_service_->GetPhishingNumReports());
   EXPECT_TRUE(AtPhishingReportLimit());
 }
@@ -522,19 +540,19 @@ TEST_P(ClientSideDetectionServiceTest, GetNumReportTestESB) {
 
   base::Time now = base::Time::Now();
   base::TimeDelta twenty_five_hours = base::Hours(25);
-  csd_service_->AddPhishingReport(now - twenty_five_hours);
-  csd_service_->AddPhishingReport(now - twenty_five_hours);
-  csd_service_->AddPhishingReport(now - twenty_five_hours);
-  csd_service_->AddPhishingReport(now - twenty_five_hours);
-  csd_service_->AddPhishingReport(now);
-  csd_service_->AddPhishingReport(now);
+  EXPECT_TRUE(csd_service_->AddPhishingReport(now - twenty_five_hours));
+  EXPECT_TRUE(csd_service_->AddPhishingReport(now - twenty_five_hours));
+  EXPECT_TRUE(csd_service_->AddPhishingReport(now - twenty_five_hours));
+  EXPECT_TRUE(csd_service_->AddPhishingReport(now - twenty_five_hours));
+  EXPECT_TRUE(csd_service_->AddPhishingReport(now));
+  EXPECT_TRUE(csd_service_->AddPhishingReport(now));
 
   EXPECT_EQ(2, csd_service_->GetPhishingNumReports());
   // We have not quite hit the limit for both ESB and SSB users.
   EXPECT_FALSE(AtPhishingReportLimit());
 
   // Adding one more will hit the limit just for SSB users.
-  csd_service_->AddPhishingReport(now);
+  EXPECT_TRUE(csd_service_->AddPhishingReport(now));
 
   EXPECT_EQ(3, csd_service_->GetPhishingNumReports());
   if (base::FeatureList::IsEnabled(kSafeBrowsingDailyPhishingReportsLimit)) {
@@ -545,13 +563,24 @@ TEST_P(ClientSideDetectionServiceTest, GetNumReportTestESB) {
 
   // Adding 7 more to 10 reports total will hit the limit for ESB users as the
   // limit is predefined in this class.
-  csd_service_->AddPhishingReport(now);
-  csd_service_->AddPhishingReport(now);
-  csd_service_->AddPhishingReport(now);
-  csd_service_->AddPhishingReport(now);
-  csd_service_->AddPhishingReport(now);
-  csd_service_->AddPhishingReport(now);
-  csd_service_->AddPhishingReport(now);
+
+  if (base::FeatureList::IsEnabled(kSafeBrowsingDailyPhishingReportsLimit)) {
+    EXPECT_TRUE(csd_service_->AddPhishingReport(now));
+    EXPECT_TRUE(csd_service_->AddPhishingReport(now));
+    EXPECT_TRUE(csd_service_->AddPhishingReport(now));
+    EXPECT_TRUE(csd_service_->AddPhishingReport(now));
+    EXPECT_TRUE(csd_service_->AddPhishingReport(now));
+    EXPECT_TRUE(csd_service_->AddPhishingReport(now));
+    EXPECT_TRUE(csd_service_->AddPhishingReport(now));
+  } else {
+    EXPECT_FALSE(csd_service_->AddPhishingReport(now));
+    EXPECT_FALSE(csd_service_->AddPhishingReport(now));
+    EXPECT_FALSE(csd_service_->AddPhishingReport(now));
+    EXPECT_FALSE(csd_service_->AddPhishingReport(now));
+    EXPECT_FALSE(csd_service_->AddPhishingReport(now));
+    EXPECT_FALSE(csd_service_->AddPhishingReport(now));
+    EXPECT_FALSE(csd_service_->AddPhishingReport(now));
+  }
 
   EXPECT_TRUE(AtPhishingReportLimit());
 }
