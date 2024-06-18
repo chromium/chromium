@@ -154,42 +154,7 @@ TEST(OnDeviceModelFeatureAdapterTest, ConstructOutputMetadata_NoOutputConfig) {
   EXPECT_EQ(maybe_metadata.error(), ResponseParsingError::kFailed);
 }
 
-TEST(OnDeviceModelFeatureAdapterTest, ConstructOutputMetadata_BadProto) {
-  proto::OnDeviceModelExecutionFeatureConfig config;
-  auto* oc = config.mutable_output_config();
-  oc->set_proto_type("garbage type");
-  oc->mutable_proto_field()->add_proto_descriptors()->set_tag_number(1);
-  auto adapter =
-      base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config));
-
-  ParseResponseFuture response_future;
-  adapter->ParseResponse(base::test::TestMessage(), "output",
-                         response_future.GetCallback());
-  auto maybe_metadata = response_future.Get();
-
-  EXPECT_FALSE(maybe_metadata.has_value());
-  EXPECT_EQ(maybe_metadata.error(), ResponseParsingError::kFailed);
-}
-
-TEST(OnDeviceModelFeatureAdapterTest,
-     ConstructOutputMetadata_DescriptorSpecifiedNotStringValue) {
-  proto::OnDeviceModelExecutionFeatureConfig config;
-  auto* oc = config.mutable_output_config();
-  oc->set_proto_type("optimization_guide.proto.ComposeRequest");
-  oc->mutable_proto_field()->add_proto_descriptors()->set_tag_number(7);
-  auto adapter =
-      base::MakeRefCounted<OnDeviceModelFeatureAdapter>(std::move(config));
-
-  ParseResponseFuture response_future;
-  adapter->ParseResponse(base::test::TestMessage(), "output",
-                         response_future.GetCallback());
-  auto maybe_metadata = response_future.Get();
-
-  EXPECT_FALSE(maybe_metadata.has_value());
-  EXPECT_EQ(maybe_metadata.error(), ResponseParsingError::kFailed);
-}
-
-TEST(OnDeviceModelFeatureAdapterTest, ConstructOutputMetadata_DescriptorValid) {
+TEST(OnDeviceModelFeatureAdapterTest, ConstructOutputMetadata_DefaultSimple) {
   proto::OnDeviceModelExecutionFeatureConfig config;
   auto* oc = config.mutable_output_config();
   oc->set_proto_type("optimization_guide.proto.ComposeResponse");

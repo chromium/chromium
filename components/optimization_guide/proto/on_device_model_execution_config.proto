@@ -13,6 +13,7 @@ import "components/optimization_guide/proto/descriptors.proto";
 import "components/optimization_guide/proto/redaction.proto";
 import "components/optimization_guide/proto/substitution.proto";
 import "components/optimization_guide/proto/model_execution.proto";
+import "components/optimization_guide/proto/parser_kind.proto";
 
 message OnDeviceModelExecutionConfig {
   // The set of configs for features that leverage the on-device model.
@@ -73,6 +74,9 @@ message OnDeviceModelExecutionOutputConfig {
 
   // Rules that result in redacting the output.
   optional RedactRules redact_rules = 3;
+
+  // Which output parsing implementation to use.
+  optional ParserKind parser_kind = 4;
 }
 
 message TextSafetyFallbackConfig {
