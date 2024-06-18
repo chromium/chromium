@@ -404,8 +404,21 @@ std::optional<ui::ImageModel> ToolbarController::GetMenuIcon(
   return absl::visit(
       base::Overloaded{
           [this](actions::ActionId id) {
-            return std::make_optional(
-                pinned_actions_delegate_->GetActionItemFor(id)->GetImage());
+            // Resize the vector icon to `kDefaultIconSize`.
+            const ui::ImageModel& pinned_icon_image =
+                pinned_actions_delegate_->GetActionItemFor(id)->GetImage();
+            if (!pinned_icon_image.IsEmpty() &&
+                pinned_icon_image.IsVectorIcon()) {
+              ui::VectorIconModel vector_icon_model =
+                  pinned_icon_image.GetVectorIcon();
+
+              return std::make_optional(ui::ImageModel::FromVectorIcon(
+                  *vector_icon_model.vector_icon(),
+                  vector_icon_model.color_id(),
+                  ui::SimpleMenuModel::kDefaultIconSize));
+            } else {
+              return std::make_optional(pinned_icon_image);
+            }
           },
           [&](ToolbarController::ElementIdInfo info)
               -> std::optional<ui::ImageModel> {
