@@ -135,6 +135,8 @@ void VcBackgroundUI::AddBooleans(content::WebUIDataSource* source) {
                          ::ash::features::IsSeaPenEnterpriseEnabled());
   source->AddBoolean("isLacrosEnabled",
                      ::crosapi::lacros_startup_state::IsLacrosEnabled());
+  source->AddBoolean("isVcResizeThumbnailEnabled",
+                     ::ash::features::IsVcResizeThumbnailEnabled());
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(VcBackgroundUI)

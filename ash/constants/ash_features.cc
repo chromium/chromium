@@ -3045,6 +3045,11 @@ BASE_FEATURE(kVcBackgroundReplace,
              "VCBackgroundReplace",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Whether to resize thumbnail in VcBackgroundApp.
+BASE_FEATURE(kVcResizeThumbnail,
+             "VcResizeThumbnail",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Controls whether the DLC downloading UI for video conferencing tiles is
 // enabled.
 BASE_FEATURE(kVcDlcUi, "VcDlcUi", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -4696,6 +4701,10 @@ bool IsStopAllScreenShareEnabled() {
 bool IsVcBackgroundReplaceEnabled() {
   return base::FeatureList::IsEnabled(kVcBackgroundReplace) &&
          IsVideoConferenceEnabled();
+}
+
+bool IsVcResizeThumbnailEnabled() {
+  return base::FeatureList::IsEnabled(kVcResizeThumbnail);
 }
 
 bool IsVcDlcUiEnabled() {
