@@ -124,7 +124,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
   private recentlyClosedDefaultItemDisplayCount_: number =
       loadTimeData.getValue('recentlyClosedDefaultItemDisplayCount');
   protected searchResultText_: string = '';
-  protected activeSelectionId_: string;
+  protected activeSelectionId_?: string;
   protected shortcut_: string = loadTimeData.getString('shortcutText');
   override autofocus: boolean;
 
@@ -420,7 +420,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     const target =
         e.currentTarget as TabSearchItemElement | TabSearchGroupItemElement;
     const tabItem = target.data;
-    const tabIndex = target.index;
+    const tabIndex = Number(target.dataset['selectionIndex']);
     this.tabItemAction_(tabItem, tabIndex);
   }
 
@@ -483,7 +483,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     performance.mark('tab_search:close_tab:metric_begin');
     const target = e.currentTarget as TabSearchItemElement;
     const tabItem = target.data;
-    const tabIndex = target.index;
+    const tabIndex = Number(target.dataset['selectionIndex']);
     const tabId = tabItem.tab.tabId;
     this.recordMetricsForAction('CloseTab', tabIndex);
     this.apiProxy_.closeTab(tabId);
@@ -504,7 +504,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     const target =
         e.currentTarget as TabSearchItemElement | TabSearchGroupItemElement;
     const itemData = target.data;
-    const tabIndex = Number(target.index);
+    const tabIndex = Number(target.dataset['selectionIndex']);
     this.tabItemAction_(itemData, tabIndex);
   }
 
@@ -542,7 +542,7 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
     // item in the list.
     const target =
         e.currentTarget as TabSearchItemElement | TabSearchGroupItemElement;
-    const index = target.index;
+    const index = Number(target.dataset['selectionIndex']);
     this.$.tabsList.setSelected(index);
   }
 
@@ -619,8 +619,12 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
       e.preventDefault();
 
     } else if (e.key === 'Enter') {
-      const itemData = this.$.tabsList.selectedItem as ItemData;
-      this.tabItemAction_(itemData, this.getSelectedIndex());
+      if (this.$.tabsList.selectedItem) {
+        const itemData = (this.$.tabsList.selectedItem as TabSearchItemElement |
+                          TabSearchGroupItemElement)
+                             .data;
+        this.tabItemAction_(itemData, this.getSelectedIndex());
+      }
       e.stopPropagation();
     }
   }
@@ -811,9 +815,16 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
   }
 
   protected onSelectedItemChanged_(
-      e: CustomEvent<{value: TabData | TabGroupData | null}>) {
-    const item = e.detail.value;
-    this.activeSelectionId_ = item ? (item as any)?.tab?.tabId : null;
+      e: CustomEvent<
+          {item: TabSearchItemElement | TabSearchGroupItemElement}>) {
+    const itemData = e.detail.item.data;
+    this.activeSelectionId_ = (itemData && itemData instanceof TabData) ?
+        itemData.tab.tabId.toString() :
+        undefined;
+  }
+
+  protected onSelectedItemDeselected_() {
+    this.activeSelectionId_ = undefined;
   }
 }
 

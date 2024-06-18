@@ -62,7 +62,6 @@ export class TabSearchItemElement extends TabSearchItemBase {
     return {
       data: {type: Object},
       buttonRipples_: {type: Boolean},
-      index: {type: Number},
       inSuggestedGroup: {type: Boolean},
 
       compact: {
@@ -74,7 +73,6 @@ export class TabSearchItemElement extends TabSearchItemBase {
 
   data: TabData;
   protected buttonRipples_: boolean = loadTimeData.getBoolean('useRipples');
-  index: number;
   inSuggestedGroup: boolean = false;
   compact: boolean = false;
 

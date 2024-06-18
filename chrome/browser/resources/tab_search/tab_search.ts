@@ -6,7 +6,6 @@ import './app.js';
 
 export {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 export {TabSearchAppElement} from './app.js';
-export {BiMap} from './bimap.js';
 export {fuzzySearch, SearchOptions} from './fuzzy_search.js';
 export {InfiniteList} from './infinite_list.js';
 export {getHostname, getTabGroupTitle, getTitle, ItemData, TabData, TabItemType} from './tab_data.js';

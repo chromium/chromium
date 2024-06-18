@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {html} from '//resources/lit/v3_0/lit.rollup.js';
+import {html, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {TabSearchPageElement} from './tab_search_page.js';
 
@@ -24,7 +24,7 @@ export function getHtml(this: TabSearchPageElement) {
           @search="${this.onSearchTermSearch}"
           @input="${this.onSearchTermInput}"
           type="search" spellcheck="false" role="combobox"
-          aria-activedescendant="${this.activeSelectionId_}"
+          aria-activedescendant="${this.activeSelectionId_ || nothing}"
           aria-controls="tabsList" aria-owns="tabsList">
     </div>
   </div>
@@ -33,13 +33,14 @@ export function getHtml(this: TabSearchPageElement) {
     <infinite-list id="tabsList"
         max-height="${this.listMaxHeight_}"
         .items="${this.filteredItems_}"
-        @selected-item-changed="${this.onSelectedItemChanged_}"
+        @iron-select="${this.onSelectedItemChanged_}"
+        @iron-deselect="${this.onSelectedItemDeselected_}"
         role="listbox"
-        .selectable=${(item: any) => {
+        .isSelectable=${(item: any) => {
           return item.constructor.name === 'TabData' ||
               item.constructor.name === 'TabGroupData';
         }}
-        .template=${(item: any, selectionIndex: number) => {
+        .template=${(item: any) => {
       switch (item.constructor.name) {
        case 'TitleItem':
         return html`
@@ -61,7 +62,6 @@ export function getHtml(this: TabSearchPageElement) {
         return html`<tab-search-item id="${item.tab.tabId}"
             aria-label="${this.ariaLabel_(item)}"
             class="mwb-list-item selectable" .data="${item}"
-            .index="${selectionIndex}"
             @click="${this.onItemClick_}"
             @close="${this.onItemClose_}"
             @focus="${this.onItemFocus_}"
@@ -71,7 +71,7 @@ export function getHtml(this: TabSearchPageElement) {
         </tab-search-item>`;
        case 'TabGroupData':
         return html`<tab-search-group-item id="${item.tabGroup.id}"
-            class="mwb-list-item selectable" .index="${selectionIndex}"
+            class="mwb-list-item selectable"
             .data="${item}"
             aria-label="${this.ariaLabel_(item)}"
             @click="${this.onItemClick_}"

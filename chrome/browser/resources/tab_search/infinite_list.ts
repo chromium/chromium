@@ -11,43 +11,36 @@
  * Each list item's HTML element is creating using the template property, which
  * should be set to a function returning a TemplateResult corresponding to a
  * passed in list item and selection index. The `items` property specifies an
- * array of list item data. The component leverages an <iron-selector> to manage
- * item selection and styling. Selectable items should be designated as follows:
+ * array of list item data. The component leverages CrSelectableMixin to manage
+ * item selection. Selectable items should be designated as follows:
  * - The top level HTML element in the template result for such items should
  *   should have a "selectable" CSS class.
- * - The selectable property on infinite-list should be set to a function that
+ * - The isSelectable property on infinite-list should be set to a function that
  *   returns whether an item passed to it is selectable.
  */
 
-import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-
+import {CrSelectableMixin} from 'chrome://resources/cr_elements/cr_selectable_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {CrLitElement, html, render} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues, TemplateResult} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
-import {BiMap} from './bimap.js';
 import {getCss} from './infinite_list.css.js';
 
 export const NO_SELECTION: number = -1;
 
-/**
- * HTML class name used to recognize selectable items.
- */
-const SELECTABLE_CLASS_NAME: string = 'selectable';
-
 export const selectorNavigationKeys: readonly string[] =
     Object.freeze(['ArrowUp', 'ArrowDown', 'Home', 'End']);
 
+const InfiniteListElementBase = CrSelectableMixin(CrLitElement);
+
 export interface InfiniteList {
   $: {
-    selector: IronSelectorElement,
     container: HTMLElement,
   };
 }
 
-export class InfiniteList<T = object> extends CrLitElement {
+export class InfiniteList<T = object> extends InfiniteListElementBase {
   static get is() {
     return 'infinite-list';
   }
@@ -59,24 +52,15 @@ export class InfiniteList<T = object> extends CrLitElement {
   override render() {
     // Render items into light DOM using the client provided template
     render(
-        this.items.slice(0, this.numItemsDisplayed_).map((item, index) => {
-          const selectionIndex = this.selectable(item) ?
-              this.selectableIndexToItemIndex_.invGet(index)! :
-              -1;
-          return this.template(item, selectionIndex);
-        }),
+        this.items.slice(0, this.numItemsDisplayed_)
+            .map(item => this.template(item)),
         this, {
           host: (this.getRootNode() as ShadowRoot).host,
         });
 
-    // Render container, selector + slot into shadow DOM
-    return html`<div id="container">
-      <iron-selector id="selector" @keydown="${this.onKeyDown_}"
-          @iron-select="${this.onSelectedChanged_}"
-          .selectable="${this.selectableSelector_()}" selected-class="selected"
-          @selected-item-changed="${this.onSelectedItemChanged_}">
-        <slot></slot>
-      </iron-selector>
+    // Render container + slot into shadow DOM
+    return html`<div id="container" @keydown=${this.onKeyDown_}>
+      <slot></slot>
     </div>`;
   }
 
@@ -85,24 +69,23 @@ export class InfiniteList<T = object> extends CrLitElement {
       maxHeight: {type: Number},
       numItemsDisplayed_: {type: Number},
       items: {type: Array},
-      selectable: {type: Object},
-      selectedItem: {
-        type: Object,
-        notify: true,
-      },
+      isSelectable: {type: Object},
       template: {type: Object},
-      selectableIndexToItemIndex_: {type: Object},
     };
   }
 
   maxHeight?: number;
   items: T[] = [];
-  template: (item: T, index: number) => TemplateResult = () => html``;
-  selectedItem: T|null = null;
-  selectable: (item: T) => boolean = (_item) => false;
+  template: (item: T) => TemplateResult = () => html``;
+  // Overridden from CrSelectableMixin
+  override selectable: string = '.selectable';
+  isSelectable: (item: T) => boolean = (_item) => false;
   protected numItemsDisplayed_: number = 0;
 
-  private selectableIndexToItemIndex_: BiMap<number, number> = new BiMap();
+  // Map for mapping the index in the selectable items to the index in the
+  // full list of items. Used to set numItemsDisplayed_ when a specific
+  // selectable item is specified.
+  private selectableIndexToItemIndex_: Map<number, number> = new Map();
 
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
@@ -119,14 +102,14 @@ export class InfiniteList<T = object> extends CrLitElement {
     if (changedProperties.has('items') || changedProperties.has('selectable')) {
       // Perform state updates.
       if (this.items.length === 0) {
-        this.selectableIndexToItemIndex_ = new BiMap();
+        this.selectableIndexToItemIndex_.clear();
         this.numItemsDisplayed_ = 0;
       } else {
-        this.selectableIndexToItemIndex_ = new BiMap();
+        this.selectableIndexToItemIndex_.clear();
         this.items.forEach((item, index) => {
-          if (this.selectable(item)) {
-            this.selectableIndexToItemIndex_!.set(
-                this.selectableIndexToItemIndex_!.size(), index);
+          if (this.isSelectable(item)) {
+            this.selectableIndexToItemIndex_.set(
+                this.selectableIndexToItemIndex_.size, index);
           }
         });
         this.numItemsDisplayed_ =
@@ -143,6 +126,10 @@ export class InfiniteList<T = object> extends CrLitElement {
       if (previous !== undefined || this.items.length !== 0) {
         this.onItemsChanged_(previous ? (previous as T[]).length : 0);
       }
+    }
+
+    if (changedProperties.has('selected')) {
+      this.onSelectedChanged_();
     }
   }
 
@@ -170,7 +157,7 @@ export class InfiniteList<T = object> extends CrLitElement {
 
   async scrollIndexIntoView(index: number) {
     assert(
-        index >= 0 && index < this.selectableIndexToItemIndex_!.size(),
+        index >= 0 && index < this.selectableIndexToItemIndex_.size,
         'Index is out of range.');
     await this.ensureSelectableDomItemAvailable_(index);
     this.getSelectableDomItem_(index)!.scrollIntoView(
@@ -182,31 +169,29 @@ export class InfiniteList<T = object> extends CrLitElement {
    * @param focusItem Whether to focus the selected item.
    */
   async navigate(key: string, focusItem?: boolean) {
-    const selector = this.$.selector;
-
-    if ((key === 'ArrowUp' && selector.selected === 0) || key === 'End') {
+    if ((key === 'ArrowUp' && this.selected === 0) || key === 'End') {
       await this.ensureAllDomItemsAvailable();
-      selector.selected = this.selectableIndexToItemIndex_!.size() - 1;
+      this.selected = this.selectableIndexToItemIndex_.size - 1;
     } else {
       switch (key) {
         case 'ArrowUp':
-          selector.selectPrevious();
+          this.selectPrevious();
           break;
         case 'ArrowDown':
-          selector.selectNext();
+          this.selectNext();
           break;
         case 'Home':
-          selector.selected = 0;
+          this.selected = 0;
           break;
         case 'End':
-          this.$.selector.selected =
-              this.selectableIndexToItemIndex_!.size() - 1;
+          this.selected = this.selectableIndexToItemIndex_.size - 1;
           break;
       }
     }
 
     if (focusItem) {
-      (selector.selectedItem as HTMLElement).focus({preventScroll: true});
+      await this.updateComplete;
+      (this.selectedItem as HTMLElement).focus({preventScroll: true});
     }
   }
 
@@ -232,7 +217,7 @@ export class InfiniteList<T = object> extends CrLitElement {
    */
   private async ensureSelectableDomItemAvailable_(selectableItemIndex: number) {
     const itemIndex =
-        this.selectableIndexToItemIndex_!.get(selectableItemIndex)!;
+        this.selectableIndexToItemIndex_.get(selectableItemIndex)!;
     if (itemIndex >= this.numItemsDisplayed_) {
       await this.updateNumItemsDisplayed_(itemIndex + 1);
     }
@@ -247,7 +232,7 @@ export class InfiniteList<T = object> extends CrLitElement {
   private getSelectableDomItem_(selectableItemIndex: number): HTMLElement
       |undefined {
     return this.getDomItem_(
-        this.selectableIndexToItemIndex_!.get(selectableItemIndex)!);
+        this.selectableIndexToItemIndex_.get(selectableItemIndex)!);
   }
 
   async fillCurrentViewHeight() {
@@ -315,21 +300,14 @@ export class InfiniteList<T = object> extends CrLitElement {
    * @return Whether a list item is selected and focused.
    */
   private isItemSelectedAndFocused_(): boolean {
-    const selectedItemIndex = this.$.selector.selected;
-    if (selectedItemIndex !== undefined) {
-      const selectedItem =
-          this.getSelectableDomItem_(selectedItemIndex as number);
-      if (selectedItem === undefined) {
-        return false;
-      }
-      const deepActiveElement = getDeepActiveElement();
-
-      return selectedItem === deepActiveElement ||
-          (!!selectedItem.shadowRoot &&
-           selectedItem.shadowRoot.activeElement === deepActiveElement);
+    if (!this.selectedItem) {
+      return false;
     }
+    const deepActiveElement = getDeepActiveElement();
 
-    return false;
+    return this.selectedItem === deepActiveElement ||
+        (!!this.selectedItem.shadowRoot &&
+         this.selectedItem.shadowRoot.activeElement === deepActiveElement);
   }
 
   /**
@@ -342,8 +320,7 @@ export class InfiniteList<T = object> extends CrLitElement {
       return;
     }
 
-    const selector = this.$.selector;
-    if (selector.selected === undefined) {
+    if (this.selected === undefined) {
       // No tabs matching the search text criteria.
       return;
     }
@@ -373,15 +350,13 @@ export class InfiniteList<T = object> extends CrLitElement {
       // Since the new selectable items' length might be smaller than the old
       // selectable items' length, we need to check if the selected index is
       // still valid and if not adjust it.
-      const selector = this.$.selector;
-      if ((selector.selected as number) >=
-          this.selectableIndexToItemIndex_!.size()) {
-        selector.selected = this.selectableIndexToItemIndex_!.size() - 1;
+      if ((this.selected as number) >= this.selectableIndexToItemIndex_.size) {
+        this.selected = this.selectableIndexToItemIndex_.size - 1;
       }
 
       // Restore focus to the selected item if necessary.
-      if (itemSelectedAndFocused && selector.selected !== NO_SELECTION) {
-        this.getSelectableDomItem_(selector.selected as number)!.focus();
+      if (itemSelectedAndFocused && this.selected !== NO_SELECTION) {
+        (this.selectedItem as HTMLElement).focus();
       }
     }
 
@@ -428,32 +403,30 @@ export class InfiniteList<T = object> extends CrLitElement {
    * approach followed below might not be desired by all component users.
    */
   protected async onSelectedChanged_() {
-    const selector = this.$.selector;
-    if (selector.selected === undefined) {
+    if (this.selected === undefined) {
       return;
     }
 
-    const selectedIndex = selector.selected;
+    const selectedIndex = this.selected;
     if (selectedIndex === 0) {
       this.scrollTo({top: 0, behavior: 'smooth'});
       return;
     }
 
-    if (selectedIndex === this.selectableIndexToItemIndex_!.size() - 1) {
-      this.getSelectableDomItem_(selectedIndex)!.scrollIntoView(
-          {behavior: 'smooth'});
+    if (selectedIndex === this.selectableIndexToItemIndex_.size - 1) {
+      this.selectedItem!.scrollIntoView({behavior: 'smooth'});
       return;
     }
 
     const previousItem =
-        this.getSelectableDomItem_((selector.selected as number) - 1)!;
+        this.getSelectableDomItem_((this.selected as number) - 1)!;
     if (previousItem.offsetTop < this.scrollTop) {
       previousItem.scrollIntoView({behavior: 'smooth', block: 'nearest'});
       return;
     }
 
-    const nextItemIndex = (selector.selected as number) + 1;
-    if (nextItemIndex < this.selectableIndexToItemIndex_!.size()) {
+    const nextItemIndex = (this.selected as number) + 1;
+    if (nextItemIndex < this.selectableIndexToItemIndex_.size) {
       await this.ensureSelectableDomItemAvailable_(nextItemIndex);
 
       const nextItem = this.getSelectableDomItem_(nextItemIndex)!;
@@ -470,11 +443,7 @@ export class InfiniteList<T = object> extends CrLitElement {
    * IronSelectableBehavior's annotations for the selected property.
    */
   resetSelected() {
-    this.$.selector.selected = undefined as unknown as string | number;
-  }
-
-  protected selectableSelector_(): string {
-    return '.' + SELECTABLE_CLASS_NAME;
+    this.selected = undefined as unknown as string | number;
   }
 
   async setSelected(index: number) {
@@ -483,25 +452,18 @@ export class InfiniteList<T = object> extends CrLitElement {
       return;
     }
 
-    const selector = this.$.selector;
-    if (index !== selector.selected) {
+    if (index !== this.selected) {
       assert(
-          index < this.selectableIndexToItemIndex_!.size(),
+          index < this.selectableIndexToItemIndex_.size,
           'Selection index is out of range.');
       await this.ensureSelectableDomItemAvailable_(index);
-      selector.selected = index;
+      this.selected = index;
     }
   }
 
   /** @return The selected index or -1 if none selected. */
   getSelected(): number {
-    return this.$.selector.selected !== undefined ?
-        this.$.selector.selected as number :
-        NO_SELECTION;
-  }
-
-  protected onSelectedItemChanged_() {
-    this.selectedItem = (this.$.selector.selectedItem as any)?.data;
+    return this.selected !== undefined ? this.selected as number : NO_SELECTION;
   }
 }
 

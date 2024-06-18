@@ -37,12 +37,10 @@ export class TabSearchGroupItemElement extends TabSearchGroupItemBase {
 
   static override get properties() {
     return {
-      index: {type: Number},
       data: {type: Object},
     };
   }
 
-  index: number;
   data: TabGroupData;
 
   override willUpdate(changedProperties: PropertyValues<this>) {

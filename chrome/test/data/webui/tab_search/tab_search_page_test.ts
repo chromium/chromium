@@ -791,4 +791,26 @@ suite('TabSearchAppTest', () => {
     await microtasksFinished();
     assertEquals(numRows, queryListTitle().length + queryRows().length);
   });
+
+  test('KeyPressOnSearchFieldTriggersActions', async () => {
+    await setupTest(createProfileData());
+
+    // Ensure there is a selected item.
+    assertEquals(0, tabSearchPage.getSelectedIndex());
+
+    keyDownOn(tabSearchPage.getSearchInput(), 0, [], 'Enter');
+    await testProxy.whenCalled('switchToTab');
+  });
+
+  test('KeyPressOnItemTriggersActions', async () => {
+    await setupTest(createProfileData());
+
+    // Ensure there is a selected item.
+    assertEquals(0, tabSearchPage.getSelectedIndex());
+    const tabSearchItem =
+        tabSearchPage.$.tabsList.querySelector('tab-search-item')!;
+
+    keyDownOn(tabSearchItem, 0, [], 'Enter');
+    await testProxy.whenCalled('switchToTab');
+  });
 });

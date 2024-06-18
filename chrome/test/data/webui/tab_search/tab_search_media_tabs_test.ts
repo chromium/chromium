@@ -8,7 +8,7 @@ import type {ProfileData, Tab, TabSearchPageElement} from 'chrome://tab-search.t
 import {TabAlertState, TabSearchApiProxyImpl} from 'chrome://tab-search.top-chrome/tab_search.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {MockedMetricsReporter} from 'chrome://webui-test/mocked_metrics_reporter.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createProfileData, createTab, SAMPLE_WINDOW_DATA, SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB, SAMPLE_WINDOW_HEIGHT} from './tab_search_test_data.js';
 import {initLoadTimeDataWithDefaults} from './tab_search_test_helper.js';
@@ -53,7 +53,8 @@ suite('TabSearchMediaTabsTest', () => {
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     document.body.appendChild(tabSearchPage);
-    await flushTasks();
+    await eventToPromise('iron-select', tabSearchPage.$.tabsList);
+    await microtasksFinished();
   }
 
   test('Verify initially selected tab is most recently used tab', async () => {
@@ -65,12 +66,14 @@ suite('TabSearchMediaTabsTest', () => {
     assertEquals(1, tabSearchPage.getSelectedIndex());
     const tabSearchItems = queryRows();
     keyDownOn(tabSearchItems[1]!, 0, [], 'ArrowUp');
+    await eventToPromise('iron-select', tabSearchPage.$.tabsList);
+    await microtasksFinished();
     assertEquals(0, tabSearchPage.getSelectedIndex());
 
     Object.defineProperty(
         document, 'visibilityState', {value: 'hidden', writable: true});
     document.dispatchEvent(new Event('visibilitychange'));
-    await flushTasks();
+    await microtasksFinished();
     // Note that unlike the 'Verify hiding document resets selection and
     // search text' test case, if no search query was originally provided
     // onSearchChanged will not be called when hidden and the index is not
@@ -81,20 +84,20 @@ suite('TabSearchMediaTabsTest', () => {
     Object.defineProperty(
         document, 'visibilityState', {value: 'visible', writable: true});
     document.dispatchEvent(new Event('visibilitychange'));
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(1, tabSearchPage.getSelectedIndex());
 
     // During search there should be no Audio & Video section and the selected
     // index should be 0.
     tabSearchPage.setValue('Google');
-    await flushTasks();
+    await microtasksFinished();
     verifyTabIds(queryRows(), [2, 1]);
     assertEquals(0, tabSearchPage.getSelectedIndex());
 
     // When the search query is reset the initially selected index should also
     // be reset.
     tabSearchPage.setValue('');
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(1, tabSearchPage.getSelectedIndex());
   });
 
@@ -171,7 +174,7 @@ suite('TabSearchMediaTabsTest', () => {
       tab: updatedTab,
     };
     testProxy.getCallbackRouterRemote().tabUpdated(tabUpdateInfo);
-    await flushTasks();
+    await microtasksFinished();
     // Three non-media tabs.
     assertEquals(3, queryRows().length);
     // Only "Open Tabs" section should exist.
@@ -196,7 +199,7 @@ suite('TabSearchMediaTabsTest', () => {
       tab: updatedTab,
     };
     testProxy.getCallbackRouterRemote().tabUpdated(tabUpdateInfo);
-    await flushTasks();
+    await microtasksFinished();
     // One media tab, the rest are non-media tabs.
     assertEquals(6, queryRows().length);
     // "Audio and Video" and "Open Tabs" section should both exist.
@@ -208,7 +211,7 @@ suite('TabSearchMediaTabsTest', () => {
     await setupTest(
         createProfileData({windows: SAMPLE_WINDOW_DATA_WITH_MEDIA_TAB}));
     tabSearchPage.setValue('google');
-    await flushTasks();
+    await microtasksFinished();
     // No media tabs section when there is a search query.
     assertEquals(1, queryListTitle().length);
     assertEquals(2, queryRows().length);

@@ -40,7 +40,6 @@ build_webui("build") {
   non_web_component_files = [
     "app.html.ts",
     "app.ts",
-    "bimap.ts",
     "fuzzy_search.ts",
     "infinite_list.ts",
     "tab_data.ts",

@@ -13,7 +13,6 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
 import type {TabOrganizationGroupElement} from './tab_organization_group.js';
 import {getCss} from './tab_organization_results.css.js';
@@ -29,7 +28,6 @@ export interface TabOrganizationResultsElement {
     header: HTMLElement,
     learnMore: HTMLElement,
     scrollable: HTMLElement,
-    selector: IronSelectorElement,
   };
 }
 

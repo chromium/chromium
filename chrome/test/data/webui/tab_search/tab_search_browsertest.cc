@@ -19,10 +19,6 @@ IN_PROC_BROWSER_TEST_F(TabSearchTest, Page) {
   RunTest("tab_search/tab_search_page_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(TabSearchTest, BiMap) {
-  RunTest("tab_search/bimap_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(TabSearchTest, FuzzySearch) {
   RunTest("tab_search/fuzzy_search_test.js", "mocha.run()");
 }

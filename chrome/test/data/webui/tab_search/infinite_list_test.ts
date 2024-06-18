@@ -28,8 +28,8 @@ class TestApp extends CrLitElement {
   override render() {
     return html`
     <infinite-list max-height="${this.maxHeight_}"
-        .selectable=${(item: any) => item.constructor.name === 'TabData'}
-        .template=${(item: any, _selectionIndex: number) => {
+        .isSelectable=${(item: any) => item.constructor.name === 'TabData'}
+        .template=${(item: any) => {
       switch (item.constructor.name) {
         case 'TitleItem':
           return html`<div class="section-title">${item.title}</div>`;
@@ -230,7 +230,9 @@ suite('InfiniteListTest', () => {
       await infiniteList.navigate('ArrowDown');
 
       assertEquals((i + 1) % selectableItemCount, infiniteList.getSelected());
-      assertTrue(infiniteList.selectedItem instanceof TabData);
+      assertTrue(!!infiniteList.selectedItem);
+      const item = infiniteList.selectedItem as TabSearchItemElement;
+      assertTrue(item.data instanceof TabData);
     }
 
     infiniteList.items = [];

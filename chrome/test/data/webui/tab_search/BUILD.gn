@@ -6,7 +6,6 @@ import("../build_webui_tests.gni")
 
 build_webui_tests("build") {
   files = [
-    "bimap_test.ts",
     "fuzzy_search_test.ts",
     "infinite_list_test.ts",
     "tab_organization_page_test.ts",
