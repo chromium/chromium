@@ -89,6 +89,14 @@ IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest,
 IN_PROC_BROWSER_TEST_F(TabGroupEditorBubbleViewDialogBrowserTest, Ungroup) {
   base::HistogramTester histogram_tester;
 
+  // Allow the Ungroup command to be immediately performed for saved groups.
+  if (browser()->tab_group_deletion_dialog_controller()) {
+    browser()
+        ->tab_group_deletion_dialog_controller()
+        ->SetPrefsPreventShowingDialogForTesting(
+            /*should_prevent_dialog=*/true);
+  }
+
   ShowUi("SetUp");
 
   TabStripModel* tsm = browser()->tab_strip_model();

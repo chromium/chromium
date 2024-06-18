@@ -251,6 +251,23 @@ bool DeletionDialogController::MaybeShowDialog(
   return true;
 }
 
+void DeletionDialogController::SetPrefsPreventShowingDialogForTesting(
+    bool should_prevent_dialog) {
+  auto* prefs = browser_->profile()->GetPrefs();
+  prefs->SetBoolean(
+      saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnDelete,
+      should_prevent_dialog);
+  prefs->SetBoolean(
+      saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnUngroup,
+      should_prevent_dialog);
+  prefs->SetBoolean(
+      saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnRemoveTab,
+      should_prevent_dialog);
+  prefs->SetBoolean(
+      saved_tab_groups::prefs::kTabGroupsDeletionSkipDialogOnCloseTab,
+      should_prevent_dialog);
+}
+
 void DeletionDialogController::OnDialogOk() {
   if (state_->dialog_model &&
       state_->dialog_model

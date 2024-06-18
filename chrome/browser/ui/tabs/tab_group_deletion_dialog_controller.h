@@ -78,6 +78,8 @@ class DeletionDialogController {
                        int tab_count,
                        int group_count);
 
+  void SetPrefsPreventShowingDialogForTesting(bool should_prevent_dialog);
+
  private:
   // Builds a DialogModel for showing the dialog.
   std::unique_ptr<ui::DialogModel> BuildDialogModel(DialogType type,
