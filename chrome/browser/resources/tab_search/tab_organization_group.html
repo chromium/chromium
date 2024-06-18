@@ -35,9 +35,8 @@
         @keydown="${this.onInputKeyDown_}">
     </cr-input>
   `}
-  <iron-selector id="selector" role="listbox"
+  <cr-page-selector id="selector" role="listbox" show-all
       @keydown="${this.onListKeyDown_}"
-      selected-class="selected"
       selectable="tab-search-item"
       @iron-select="${this.onSelectedChanged_}">
     ${this.tabDatas_.map((item, index) => html`
@@ -55,7 +54,7 @@
           in-suggested-group>
       </tab-search-item>
     `)}
-  </iron-selector>
+  </cr-page-selector>
   ${!this.multiTabOrganization ? html`
     <tab-organization-results-actions
         @create-group-click="${this.onCreateGroupClick_}">

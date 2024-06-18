@@ -5,7 +5,7 @@
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
+import 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import './strings.m.js';
 import './tab_organization_new_badge.js';
 import './tab_organization_results_actions.js';
@@ -13,10 +13,10 @@ import './tab_search_item.js';
 
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import type {CrPageSelectorElement} from 'chrome://resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
-import type {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
 
 import {normalizeURL, TabData, TabItemType} from './tab_data.js';
 import {getCss} from './tab_organization_group.css.js';
@@ -30,7 +30,7 @@ function getEventTargetIndex(e: Event): number {
 
 export interface TabOrganizationGroupElement {
   $: {
-    selector: IronSelectorElement,
+    selector: CrPageSelectorElement,
   };
 }
 
@@ -202,7 +202,8 @@ export class TabOrganizationGroupElement extends CrLitElement {
       const selectedItemCloseButton =
           selectedItem.shadowRoot!.querySelector(`cr-icon-button`)!;
       selectedItemCloseButton.focus();
-      this.lastFocusedIndex_ = this.$.selector.indexOf(selectedItem);
+      this.lastFocusedIndex_ =
+          Number.parseInt(selectedItem.dataset['index']!, 10);
     }
   }
 
@@ -223,7 +224,7 @@ export class TabOrganizationGroupElement extends CrLitElement {
     // Ensure the selector deselects its current selection on blur. If
     // selection should move to another element in the list, this will be done
     // in onTabFocus_.
-    this.$.selector.selectIndex(-1);
+    this.$.selector.select(-1);
   }
 
   protected onEditClick_() {

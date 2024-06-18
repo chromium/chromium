@@ -27,14 +27,34 @@ suite('cr-page-selector', () => {
     element.selected = 'a';
     await element.updateComplete;
 
+    assertTrue(!!document.body.querySelector('#a.selected'));
     assertTrue(isVisible(document.body.querySelector('#a')));
     assertFalse(isVisible(document.body.querySelector('#b')));
     assertFalse(isVisible(document.body.querySelector('#c')));
 
     element.selected = 'c';
     await element.updateComplete;
+    assertTrue(!!document.body.querySelector('#c.selected'));
     assertFalse(isVisible(document.body.querySelector('#a')));
     assertFalse(isVisible(document.body.querySelector('#b')));
+    assertTrue(isVisible(document.body.querySelector('#c')));
+  });
+
+  test('show-all', async () => {
+    element.toggleAttribute('show-all', true);
+    element.selected = 'a';
+    await element.updateComplete;
+
+    assertTrue(!!document.body.querySelector('#a.selected'));
+    assertTrue(isVisible(document.body.querySelector('#a')));
+    assertTrue(isVisible(document.body.querySelector('#b')));
+    assertTrue(isVisible(document.body.querySelector('#c')));
+
+    element.selected = 'c';
+    await element.updateComplete;
+    assertTrue(!!document.body.querySelector('#c.selected'));
+    assertTrue(isVisible(document.body.querySelector('#a')));
+    assertTrue(isVisible(document.body.querySelector('#b')));
     assertTrue(isVisible(document.body.querySelector('#c')));
   });
 

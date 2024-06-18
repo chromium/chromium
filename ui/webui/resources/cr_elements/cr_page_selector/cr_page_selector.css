@@ -11,6 +11,6 @@
   display: block;
 }
 
-:host > ::slotted(:not(slot):not(.selected)) {
+:host(:not([show-all])) > ::slotted(:not(slot):not(.selected)) {
   display: none !important;
 }

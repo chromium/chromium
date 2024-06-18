@@ -270,6 +270,7 @@ suite('TabOrganizationPageTest', () => {
 
     group.$.selector.dispatchEvent(
         new KeyboardEvent('keydown', {key: 'ArrowUp'}));
+    await microtasksFinished();
 
     assertFalse(closeButton0.matches(':focus'));
     assertFalse(closeButton1.matches(':focus'));
@@ -277,6 +278,7 @@ suite('TabOrganizationPageTest', () => {
 
     group.$.selector.dispatchEvent(
         new KeyboardEvent('keydown', {key: 'ArrowDown'}));
+    await microtasksFinished();
 
     assertTrue(closeButton0.matches(':focus'));
     assertFalse(closeButton1.matches(':focus'));
