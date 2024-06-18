@@ -45,11 +45,10 @@ IdentityTestEnvironmentProfileAdaptor::CreateProfileForIdentityTestEnvironment(
 void IdentityTestEnvironmentProfileAdaptor::
     SetIdentityTestEnvironmentFactoriesOnBrowserContext(
         content::BrowserContext* context) {
-  for (const auto& f : GetIdentityTestEnvironmentFactories()) {
-    CHECK_EQ(f.service_factory_and_testing_factory.index(), 0u);
-    const auto& [service_factory, testing_factory] =
-        absl::get<0>(f.service_factory_and_testing_factory);
-    service_factory->SetTestingFactory(context, testing_factory);
+  for (auto& f : GetIdentityTestEnvironmentFactories()) {
+    absl::visit(
+        [context](auto& p) { p.first->SetTestingFactory(context, p.second); },
+        f.service_factory_and_testing_factory);
   }
 }
 
