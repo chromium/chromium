@@ -68,7 +68,6 @@ build_webui("build") {
     "tab_organization_results_actions.css",
     "tab_organization_results.css",
     "tab_organization_shared_style.css",
-    "tab_organization_shared_style_lit.css",
     "tab_search_group_item.css",
     "tab_search_item.css",
   ]

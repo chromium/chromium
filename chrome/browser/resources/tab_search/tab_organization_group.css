@@ -8,9 +8,9 @@
  * #import=chrome://resources/cr_elements/cr_shared_vars.css.js
  * #import=chrome://resources/cr_elements/mwb_shared_style_lit.css.js
  * #import=./icons.html.js
- * #import=./tab_organization_shared_style_lit.css.js
+ * #import=./tab_organization_shared_style.css.js
  * #scheme=relative
- * #include=mwb-shared-style-lit tab-organization-shared-style-lit cr-icons-lit
+ * #include=mwb-shared-style-lit tab-organization-shared-style cr-icons-lit
  * #css_wrapper_metadata_end */
 
 cr-icon-button {
