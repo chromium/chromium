@@ -129,6 +129,10 @@ MATCHER_P2(HasProductSpecsNameUrl, name, urls, "") {
   return arg.name() == name && arg.urls() == urls;
 }
 
+MATCHER_P(HasProductSpecsName, name, "") {
+  return arg == name;
+}
+
 }  // namespace
 
 namespace commerce {
@@ -145,6 +149,11 @@ class MockProductSpecificationsSetObserver
               OnProductSpecificationsSetUpdate,
               (const ProductSpecificationsSet& before,
                const ProductSpecificationsSet& after),
+              (override));
+
+  MOCK_METHOD(void,
+              OnProductSpecificationsSetNameUpdate,
+              (const std::string& before, const std::string& after),
               (override));
 
   MOCK_METHOD(void,
@@ -368,13 +377,17 @@ TEST_F(ProductSpecificationsServiceTest, TestSetName) {
 
   const base::Uuid uuid_to_modify = specifications[0].uuid();
 
+  const std::string new_name = "updated name";
   EXPECT_CALL(*observer(),
               OnProductSpecificationsSetUpdate(
                   HasAllProductSpecs(kProductComparisonSpecifics[0]),
                   IsSetWithUuid(uuid_to_modify)))
       .Times(1);
-
-  const std::string new_name = "updated name";
+  EXPECT_CALL(*observer(),
+              OnProductSpecificationsSetNameUpdate(
+                  HasProductSpecsName(kProductComparisonSpecifics[0].name()),
+                  HasProductSpecsName(new_name)))
+      .Times(1);
 
   service()->SetName(uuid_to_modify, new_name);
 
@@ -401,6 +414,10 @@ TEST_F(ProductSpecificationsServiceTest, TestSetNameAndUrls_BadId) {
 
   EXPECT_CALL(*observer(),
               OnProductSpecificationsSetUpdate(testing::_, testing::_))
+      .Times(0);
+
+  EXPECT_CALL(*observer(),
+              OnProductSpecificationsSetNameUpdate(testing::_, testing::_))
       .Times(0);
 
   const std::vector<GURL> new_urls = {GURL("http://example.com/updated")};

@@ -31,10 +31,16 @@ class ProductSpecificationsSet {
         const ProductSpecificationsSet& product_specifications_set) {}
 
     // Invoked when a ProductSpecificationsSet is updated and provides the
-    // current and preious values.
+    // current and previous values.
     virtual void OnProductSpecificationsSetUpdate(
         const ProductSpecificationsSet& before,
         const ProductSpecificationsSet& after) {}
+
+    // Invoked when the name of a ProductSpecificationSet is updated and
+    // provides the current and previous values.
+    virtual void OnProductSpecificationsSetNameUpdate(
+        const std::string& before,
+        const std::string& after) {}
 
     virtual void OnProductSpecificationsSetRemoved(
         const ProductSpecificationsSet& product_specifications_set) {}

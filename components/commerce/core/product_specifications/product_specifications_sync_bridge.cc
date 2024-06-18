@@ -329,6 +329,11 @@ void ProductSpecificationsSyncBridge::OnSpecificsUpdated(
     observer.OnProductSpecificationsSetUpdate(
         ProductSpecificationsSet::FromProto(before),
         ProductSpecificationsSet::FromProto(after));
+
+    if (before.name() != after.name()) {
+      observer.OnProductSpecificationsSetNameUpdate(before.name(),
+                                                    after.name());
+    }
   }
 }
 
