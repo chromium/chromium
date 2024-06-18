@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_VISITED_URL_RANKING_INTERNAL_TRANSFORMER_RECENCY_FILTER_TRANSFORMER_H_
 #define COMPONENTS_VISITED_URL_RANKING_INTERNAL_TRANSFORMER_RECENCY_FILTER_TRANSFORMER_H_
 
-#include "base/time/time.h"
 #include "components/visited_url_ranking/internal/transformer/bookmarks_url_visit_aggregates_transformer.h"
 
 namespace visited_url_ranking {
@@ -22,11 +21,10 @@ class RecencyFilterTransformer : public URLVisitAggregatesTransformer {
 
   // URLVisitAggregatesTransformer:
   void Transform(std::vector<URLVisitAggregate> aggregates,
+                 const FetchOptions& options,
                  OnTransformCallback callback) override;
 
  private:
-  const base::TimeDelta history_age_threshold_;
-  const base::TimeDelta tab_age_threshold_;
   const size_t aggregate_count_limit_;
 };
 

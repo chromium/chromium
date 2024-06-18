@@ -37,6 +37,7 @@
 #include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/fetch_result.h"
 #include "components/visited_url_ranking/public/url_visit.h"
+#include "components/visited_url_ranking/public/url_visit_aggregates_transformer.h"
 #include "components/visited_url_ranking/public/url_visit_schema.h"
 #include "components/visited_url_ranking/public/url_visit_util.h"
 #include "components/visited_url_ranking/public/visited_url_ranking_service.h"
@@ -124,6 +125,7 @@ void SortScoredAggregatesAndCallback(
     // Sort such that higher scored entries precede lower scored entries.
     return c1.score > c2.score;
   });
+  VLOG(2) << "visited_url_ranking: result size " << scored_visits.size();
   if (VLOG_IS_ON(2)) {
     for (const auto& visit : scored_visits) {
       VLOG(2) << "visited_url_ranking: Ordered ranked visit: " << visit.url_key
@@ -158,9 +160,10 @@ VisitedURLRankingServiceImpl::~VisitedURLRankingServiceImpl() = default;
 void VisitedURLRankingServiceImpl::FetchURLVisitAggregates(
     const FetchOptions& options,
     GetURLVisitAggregatesCallback callback) {
-  auto merge_visits_and_callback = base::BindOnce(
-      &VisitedURLRankingServiceImpl::MergeVisitsAndCallback,
-      weak_ptr_factory_.GetWeakPtr(), std::move(callback), options.transforms);
+  auto merge_visits_and_callback =
+      base::BindOnce(&VisitedURLRankingServiceImpl::MergeVisitsAndCallback,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     options, options.transforms);
 
   const auto fetch_barrier_callback = base::BarrierCallback<FetchResult>(
       options.fetcher_sources.size(), std::move(merge_visits_and_callback));
@@ -255,6 +258,7 @@ void VisitedURLRankingServiceImpl::TriggerTrainingData(
 
 void VisitedURLRankingServiceImpl::MergeVisitsAndCallback(
     GetURLVisitAggregatesCallback callback,
+    const FetchOptions& options,
     const std::vector<URLVisitAggregatesTransformType>& ordered_transforms,
     std::vector<FetchResult> fetcher_results) {
   std::queue<URLVisitAggregatesTransformType> transform_type_queue;
@@ -263,13 +267,14 @@ void VisitedURLRankingServiceImpl::MergeVisitsAndCallback(
   }
 
   TransformVisitsAndCallback(
-      std::move(callback), std::move(transform_type_queue),
+      std::move(callback), options, std::move(transform_type_queue),
       URLVisitAggregatesTransformer::Status::kSuccess,
       ComputeURLVisitAggregates(std::move(fetcher_results)));
 }
 
 void VisitedURLRankingServiceImpl::TransformVisitsAndCallback(
     GetURLVisitAggregatesCallback callback,
+    const FetchOptions& options,
     std::queue<URLVisitAggregatesTransformType> transform_type_queue,
     URLVisitAggregatesTransformer::Status status,
     std::vector<URLVisitAggregate> aggregates) {
@@ -291,10 +296,10 @@ void VisitedURLRankingServiceImpl::TransformVisitsAndCallback(
     return;
   }
   it->second->Transform(
-      std::move(aggregates),
+      std::move(aggregates), options,
       base::BindOnce(&VisitedURLRankingServiceImpl::TransformVisitsAndCallback,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(transform_type_queue)));
+                     options, std::move(transform_type_queue)));
 }
 
 void VisitedURLRankingServiceImpl::GetNextResult(

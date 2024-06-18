@@ -20,6 +20,7 @@
 #include "components/segmentation_platform/public/testing/mock_database_client.h"
 #include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
 #include "components/segmentation_platform/public/trigger.h"
+#include "components/visited_url_ranking/public/fetch_options.h"
 #include "components/visited_url_ranking/public/test_support.h"
 #include "components/visited_url_ranking/public/url_visit.h"
 #include "components/visited_url_ranking/public/url_visit_aggregates_transformer.h"
@@ -72,8 +73,9 @@ class MockURLVisitAggregatesTransformer : public URLVisitAggregatesTransformer {
       const MockURLVisitAggregatesTransformer&) = delete;
   ~MockURLVisitAggregatesTransformer() override = default;
 
-  MOCK_METHOD2(Transform,
+  MOCK_METHOD3(Transform,
                void(std::vector<URLVisitAggregate> aggregates,
+                    const FetchOptions& options,
                     OnTransformCallback callback));
 };
 
@@ -228,10 +230,11 @@ TEST_F(VisitedURLRankingServiceImplTest,
        FetchURLVisitAggregatesWithTransforms) {
   auto mock_bookmark_transformer =
       std::make_unique<MockURLVisitAggregatesTransformer>();
-  EXPECT_CALL(*mock_bookmark_transformer, Transform(_, _))
+  EXPECT_CALL(*mock_bookmark_transformer, Transform(_, _, _))
       .Times(1)
       .WillOnce(testing::Invoke(
           [](std::vector<URLVisitAggregate> aggregates,
+             const FetchOptions& options,
              URLVisitAggregatesTransformer::OnTransformCallback callback) {
             std::move(callback).Run(
                 URLVisitAggregatesTransformer::Status::kSuccess,
