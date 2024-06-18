@@ -1068,3 +1068,34 @@ TEST_F(FeatureEngagementTest,
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSOverflowMenuCustomizationFeature));
 }
+
+// Verifies that the Enhanced Safe Browsing Inline Promo IPH is triggered when
+// notified and not triggered when the promo is closed by the user.
+TEST_F(FeatureEngagementTest, TestEnhancedSafeBrowsingInlinePromoIsShown) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeatures(
+      {feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Make sure tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature));
+
+  // Executing one of the pre-determined events should trigger the promo...
+  tracker->NotifyEvent(
+      feature_engagement::events::kEnhancedSafeBrowsingPromoCriterionMet);
+
+  EXPECT_TRUE(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature));
+
+  // The promo should not be displayed if the user taps the promo's 'x' button.
+  tracker->NotifyEvent(
+      feature_engagement::events::kInlineEnhancedSafeBrowsingPromoClosed);
+
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSInlineEnhancedSafeBrowsingPromoFeature));
+}
