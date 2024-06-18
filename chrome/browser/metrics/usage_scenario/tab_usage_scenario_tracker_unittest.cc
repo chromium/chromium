@@ -17,15 +17,33 @@
 #include "content/public/test/web_contents_tester.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/display/screen.h"
-#include "ui/display/test/test_screen.h"
-#include "ui/gfx/geometry/rect.h"
 
 namespace metrics {
 
 namespace {
 
 constexpr base::TimeDelta kInterval = base::Minutes(2);
+
+class MockTabUsageScenarioTracker : public TabUsageScenarioTracker {
+ public:
+  explicit MockTabUsageScenarioTracker(
+      UsageScenarioDataStoreImpl* usage_scenario_data_store)
+      : TabUsageScenarioTracker(usage_scenario_data_store) {}
+
+  void SetNumDisplays(int num_displays) {
+    num_displays_ = num_displays;
+    OnNumDisplaysChanged();
+  }
+
+  void SetNumDisplaysWithoutNotification(int num_displays) {
+    num_displays_ = num_displays;
+  }
+
+  int GetNumDisplays() override { return num_displays_; }
+
+ private:
+  int num_displays_ = 1;
+};
 
 // Inherit from ChromeRenderViewHostTestHarness for access to test profile.
 class TabUsageScenarioTrackerTest : public ChromeRenderViewHostTestHarness {
@@ -40,16 +58,14 @@ class TabUsageScenarioTrackerTest : public ChromeRenderViewHostTestHarness {
       delete;
 
   void SetUp() override {
-    display::Screen::SetScreenInstance(&screen_);
     ChromeRenderViewHostTestHarness::SetUp();
-    tab_usage_scenario_tracker_ =
-        std::make_unique<TabUsageScenarioTracker>(&usage_scenario_data_store_);
+    tab_usage_scenario_tracker_ = std::make_unique<MockTabUsageScenarioTracker>(
+        &usage_scenario_data_store_);
   }
 
   void TearDown() override {
     tab_usage_scenario_tracker_.reset();
     ChromeRenderViewHostTestHarness::TearDown();
-    display::Screen::SetScreenInstance(nullptr);
   }
 
   std::unique_ptr<content::WebContents> CreateWebContents() {
@@ -81,9 +97,8 @@ class TabUsageScenarioTrackerTest : public ChromeRenderViewHostTestHarness {
   }
 
  protected:
-  display::test::TestScreen screen_;
   UsageScenarioDataStoreImpl usage_scenario_data_store_;
-  std::unique_ptr<TabUsageScenarioTracker> tab_usage_scenario_tracker_;
+  std::unique_ptr<MockTabUsageScenarioTracker> tab_usage_scenario_tracker_;
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
 };
 
@@ -215,10 +230,8 @@ TEST_F(TabUsageScenarioTrackerTest, FullScreenVideoSingleMonitor) {
 
   // Add a second display, this should stop the fullscreen video on single
   // monitor session.
-  int64_t kDisplayID = 42;
   task_environment()->FastForwardBy(kInterval);
-  screen_.display_list().AddDisplay({kDisplayID, gfx::Rect(100, 100, 801, 802)},
-                                    display::DisplayList::Type::NOT_PRIMARY);
+  tab_usage_scenario_tracker_->SetNumDisplays(2);
   task_environment()->FastForwardBy(kInterval);
 
   interval_data = usage_scenario_data_store_.ResetIntervalData();
@@ -234,7 +247,7 @@ TEST_F(TabUsageScenarioTrackerTest, FullScreenVideoSingleMonitor) {
 
   // Removing the secondary display while there's still some video playing
   // fullscreen should resume the session.
-  screen_.display_list().RemoveDisplay(kDisplayID);
+  tab_usage_scenario_tracker_->SetNumDisplays(1);
   task_environment()->FastForwardBy(kInterval);
   interval_data = usage_scenario_data_store_.ResetIntervalData();
   EXPECT_EQ(interval_data.time_playing_video_full_screen_single_monitor,
@@ -254,9 +267,7 @@ TEST_F(TabUsageScenarioTrackerTest,
 
   // Add a second display, this should stop the fullscreen video on single
   // monitor session.
-  int64_t kDisplayID = 42;
-  screen_.display_list().AddDisplay({kDisplayID, gfx::Rect(100, 100, 801, 802)},
-                                    display::DisplayList::Type::NOT_PRIMARY);
+  tab_usage_scenario_tracker_->SetNumDisplays(2);
   task_environment()->FastForwardBy(kInterval);
 
   // Stop playing video in fullscreen in `contents` while there are 2 displays.
@@ -265,7 +276,7 @@ TEST_F(TabUsageScenarioTrackerTest,
   task_environment()->FastForwardBy(kInterval);
 
   // Remove the second display.
-  screen_.display_list().RemoveDisplay(kDisplayID);
+  tab_usage_scenario_tracker_->SetNumDisplays(1);
   task_environment()->FastForwardBy(kInterval);
 
   // `contents2` starts playing video in fullscreen.
@@ -280,6 +291,40 @@ TEST_F(TabUsageScenarioTrackerTest,
   auto interval_data = usage_scenario_data_store_.ResetIntervalData();
   EXPECT_EQ(interval_data.time_playing_video_full_screen_single_monitor,
             2 * kInterval);
+}
+
+// Regression test for crbug.com/341488142.
+TEST_F(TabUsageScenarioTrackerTest,
+       FullScreenVideoSingleMonitor_NumDisplaysChangeWithoutNotification) {
+  auto contents = CreateWebContents();
+  tab_usage_scenario_tracker_->OnTabAdded(contents.get());
+
+  // Add a second display.
+  tab_usage_scenario_tracker_->SetNumDisplays(2);
+
+  // `contents` plays video in fullscreen. There are 2 displays so time isn't
+  // accumulated in `time_playing_video_full_screen_single_monitor`.
+  tab_usage_scenario_tracker_->OnMediaEffectivelyFullscreenChanged(
+      contents.get(), true);
+  task_environment()->FastForwardBy(kInterval);
+
+  // Remove the 2nd display without dispatching a notification yet, to mimic
+  // `XDisplayManager`'s delayed notification
+  // (https://source.chromium.org/chromium/chromium/src/+/main:ui/base/x/x11_display_manager.cc;l=130-135;drc=90cac1911508d3d682a67c97aa62483eb712f69a).
+  tab_usage_scenario_tracker_->SetNumDisplaysWithoutNotification(1);
+  task_environment()->FastForwardBy(kInterval);
+
+  // Stop playing video in fullscreen in `contents` while there is 1 display,
+  // but the display removal notification hasn't been dispatched yet. This
+  // shouldn't crash.
+  tab_usage_scenario_tracker_->OnMediaEffectivelyFullscreenChanged(
+      contents.get(), false);
+
+  // Expect no time playing video in fullscreen, since the display removal
+  // notification was never dispatched.
+  auto interval_data = usage_scenario_data_store_.ResetIntervalData();
+  EXPECT_EQ(interval_data.time_playing_video_full_screen_single_monitor,
+            base::TimeDelta());
 }
 
 TEST_F(TabUsageScenarioTrackerTest, VideoInVisibleTab) {

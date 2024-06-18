@@ -56,9 +56,16 @@ class TabUsageScenarioTracker : public TabStatsObserver,
   void OnDisplayAdded(const display::Display& new_display) override;
   void OnDisplaysRemoved(const display::Displays& removed_displays) override;
 
+ protected:
+  // Invoked when displays are added or removed.
+  void OnNumDisplaysChanged();
+
  private:
   using VisibleTabsMap = base::flat_map<content::WebContents*,
                                         std::pair<ukm::SourceId, url::Origin>>;
+
+  // Can be overridden in tests.
+  virtual int GetNumDisplays();
 
   // Should be called when |visible_tab_iter| switch from being visible to non
   // visible. |visible_tab_iter| should be an iterator in |visible_contents_|.
@@ -71,9 +78,6 @@ class TabUsageScenarioTracker : public TabStatsObserver,
   void OnWebContentsRemoved(content::WebContents* web_contents);
 
   void InsertContentsInMapOfVisibleTabs(content::WebContents* web_contents);
-
-  // Invoked when displays are added or removed.
-  void OnNumDisplaysChanged();
 
   // Non-owning. Needs to outlive this class.
   raw_ptr<UsageScenarioDataStoreImpl> usage_scenario_data_store_
