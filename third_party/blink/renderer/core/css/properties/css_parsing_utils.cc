@@ -2583,11 +2583,12 @@ bool SystemAccentColorAllowed(const CSSParserContext& context) {
     return false;
   }
 
-  if (RuntimeEnabledFeatures::PreventReadingSystemAccentColorEnabled()) {
-    if (const auto* document = context.GetDocument()) {
-      if (document->GetPage()->GetChromeClient().IsIsolatedSVGChromeClient()) {
-        return false;
-      }
+  // We should not allow the system accent color to be rendered in image
+  // contexts because it could be read back by the page and used for
+  // fingerprinting.
+  if (const auto* document = context.GetDocument()) {
+    if (document->GetPage()->GetChromeClient().IsIsolatedSVGChromeClient()) {
+      return false;
     }
   }
 

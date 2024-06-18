@@ -269,10 +269,10 @@ std::optional<SkColor> GetAccentColor(const ComputedStyle& style,
   if (css_accent_color)
     return css_accent_color->Rgb();
 
-  bool in_image =
-      document.GetPage()->GetChromeClient().IsIsolatedSVGChromeClient();
-  if (!RuntimeEnabledFeatures::PreventReadingSystemAccentColorEnabled() ||
-      !in_image) {
+  // We should not allow the system accent color to be rendered in image
+  // contexts because it could be read back by the page and used for
+  // fingerprinting.
+  if (!document.GetPage()->GetChromeClient().IsIsolatedSVGChromeClient()) {
     mojom::blink::ColorScheme color_scheme = style.UsedColorScheme();
     LayoutTheme& layout_theme = LayoutTheme::GetTheme();
     if (layout_theme.IsAccentColorCustomized(color_scheme)) {

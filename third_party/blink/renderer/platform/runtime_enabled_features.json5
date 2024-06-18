@@ -3159,12 +3159,6 @@
       name:"PrettyPrintJSONDocument",
       status: "stable",
     },
-    {
-      // Privacy intervention to disable reading the system accent-color via
-      // images.
-      name: "PreventReadingSystemAccentColor",
-      status: "stable",
-    },
     // The RTE feature encompasses multiple APIs, including: Attribution
     // Reporting, FLEDGE, Topics and Fenced Frames.
     {
