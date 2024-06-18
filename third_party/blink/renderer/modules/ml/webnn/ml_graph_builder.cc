@@ -744,10 +744,10 @@ MLOperand* BuildPool2d(MLGraphBuilder* builder,
 // Determines the input and output resources required for this computational
 // graph by traversing the graph from `named_outputs` to its inputs.
 // This may fail if the graph is not valid.
-base::expected<std::pair<HashMap<String, MLGraph::ResourceInfo>,
-                         HashMap<String, MLGraph::ResourceInfo>>,
+base::expected<std::pair<MLGraph::NamedOperandDescriptors,
+                         MLGraph::NamedOperandDescriptors>,
                String>
-DetermineGraphResourcesFromOutputs(const MLNamedOperands& named_outputs) {
+DetermineGraphConstraintsFromOutputs(const MLNamedOperands& named_outputs) {
   // The outputs should not be empty.
   if (named_outputs.empty()) {
     return base::unexpected("At least one output needs to be provided.");
@@ -759,8 +759,8 @@ DetermineGraphResourcesFromOutputs(const MLNamedOperands& named_outputs) {
   HeapDeque<Member<const MLOperator>> operators_queue;
   HeapHashSet<Member<const MLOperator>> visited_operators;
 
-  HashMap<String, MLGraph::ResourceInfo> input_resources_info;
-  HashMap<String, MLGraph::ResourceInfo> output_resources_info;
+  MLGraph::NamedOperandDescriptors input_constraints;
+  MLGraph::NamedOperandDescriptors output_constraints;
 
   // Validate the named outputs, setup corresponding output resource info and
   // initialize the queue and visited set with their dependent operators.
@@ -774,9 +774,7 @@ DetermineGraphResourcesFromOutputs(const MLNamedOperands& named_outputs) {
           name.Utf8().c_str()));
     }
     // Setup resource info for this output operand.
-    output_resources_info.insert(
-        name, MLGraph::ResourceInfo({.data_type = operand->DataType(),
-                                     .shape = operand->shape()}));
+    output_constraints.insert(name, operand->Descriptor());
     // Mark its dependent operator is visited.
     visited_operators.insert(operand->Operator());
     // Enqueue its dependent operator.
@@ -811,16 +809,13 @@ DetermineGraphResourcesFromOutputs(const MLNamedOperands& named_outputs) {
           visited_input_operands.insert(operand);
           // If the operand is an input operand, validate whether its name is
           // unique.
-          if (input_resources_info.Contains(operand->Name())) {
+          if (input_constraints.Contains(operand->Name())) {
             return base::unexpected(
                 String::Format("The input name \"%s\" is duplicated.",
                                operand->Name().Utf8().c_str()));
           }
           // Setup resource info for this input operand.
-          input_resources_info.insert(
-              operand->Name(),
-              MLGraph::ResourceInfo({.data_type = operand->DataType(),
-                                     .shape = operand->shape()}));
+          input_constraints.insert(operand->Name(), operand->Descriptor());
           break;
         case webnn::mojom::blink::Operand::Kind::kConstant:
           // If the operand has been validated, it doesn't need to be verified
@@ -846,8 +841,8 @@ DetermineGraphResourcesFromOutputs(const MLNamedOperands& named_outputs) {
       }
     }
   }
-  return std::make_pair(std::move(input_resources_info),
-                        std::move(output_resources_info));
+  return std::make_pair(std::move(input_constraints),
+                        std::move(output_constraints));
 }
 
 base::expected<webnn::mojom::blink::GraphInfoPtr, String> BuildWebNNGraphInfo(
@@ -2420,9 +2415,9 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
-  auto graph_resources_info = DetermineGraphResourcesFromOutputs(named_outputs);
-  if (!graph_resources_info.has_value()) {
-    resolver->RejectWithTypeError(graph_resources_info.error());
+  auto graph_constraints = DetermineGraphConstraintsFromOutputs(named_outputs);
+  if (!graph_constraints.has_value()) {
+    resolver->RejectWithTypeError(graph_constraints.error());
     return promise;
   }
 
@@ -2441,7 +2436,7 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
         *std::move(graph_info),
         WTF::BindOnce(&MLGraphBuilder::DidCreateWebNNGraph,
                       WrapPersistent(this), WrapPersistent(resolver),
-                      *std::move(graph_resources_info)));
+                      *std::move(graph_constraints)));
     return promise;
   }
 
@@ -2452,9 +2447,8 @@ ScriptPromise<MLGraph> MLGraphBuilder::build(
 
 void MLGraphBuilder::DidCreateWebNNGraph(
     ScriptPromiseResolver<blink::MLGraph>* resolver,
-    std::pair<HashMap<String, MLGraph::ResourceInfo>,
-              HashMap<String, MLGraph::ResourceInfo>>
-        input_and_output_resources,
+    std::pair<MLGraph::NamedOperandDescriptors,
+              MLGraph::NamedOperandDescriptors> input_and_output_constraints,
     webnn::mojom::blink::CreateGraphResultPtr result) {
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state) {
@@ -2472,8 +2466,8 @@ void MLGraphBuilder::DidCreateWebNNGraph(
   auto* graph = MakeGarbageCollected<MLGraph>(
       resolver->GetExecutionContext(), ml_context_,
       std::move(result->get_graph_remote()),
-      std::move(input_and_output_resources.first),
-      std::move(input_and_output_resources.second),
+      std::move(input_and_output_constraints.first),
+      std::move(input_and_output_constraints.second),
       base::PassKey<MLGraphBuilder>());
 
   resolver->Resolve(graph);

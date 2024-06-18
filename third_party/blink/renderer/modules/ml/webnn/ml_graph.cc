@@ -46,17 +46,17 @@ namespace {
 
 base::expected<void, String> ValidateNamedArrayBufferViews(
     const MLNamedArrayBufferViews& named_array_buffer_views,
-    const HashMap<String, MLGraph::ResourceInfo>& resources_info) {
+    const MLGraph::NamedOperandDescriptors& expected_named_descriptors) {
   if (named_array_buffer_views.size() !=
-      base::checked_cast<wtf_size_t>(resources_info.size())) {
+      base::checked_cast<wtf_size_t>(expected_named_descriptors.size())) {
     return base::unexpected(String::Format(
         "The number (%u) of the array buffer views doesn't match the "
         "expectation (%u).",
-        named_array_buffer_views.size(), resources_info.size()));
+        named_array_buffer_views.size(), expected_named_descriptors.size()));
   }
   for (const auto& named_array_buffer_view : named_array_buffer_views) {
     const auto& [name, array_buffer_view] = named_array_buffer_view;
-    if (!resources_info.Contains(name)) {
+    if (!expected_named_descriptors.Contains(name)) {
       return base::unexpected(String::Format(
           "The name \"%s\" isn't part of the graph.", name.Utf8().c_str()));
     }
@@ -65,25 +65,21 @@ base::expected<void, String> ValidateNamedArrayBufferViews(
           String::Format("The array buffer view with name \"%s\" is detached.",
                          name.Utf8().c_str()));
     }
-    const auto& info = resources_info.at(name);
+    const auto& info = expected_named_descriptors.at(name);
     if (array_buffer_view->GetType() !=
-        GetArrayBufferViewType(info.data_type)) {
+        GetArrayBufferViewType(info->data_type())) {
       return base::unexpected(String::Format(
           "The type (%s) of the array buffer view with name \"%s\" doesn't "
           "match the expected operand data type (%s).",
           array_buffer_view->TypeName(), name.Utf8().c_str(),
-          V8MLOperandDataType(ToBlinkDataType(info.data_type)).AsCStr()));
+          V8MLOperandDataType(ToBlinkDataType(info->data_type())).AsCStr()));
     }
-    auto expected_byte_length = webnn::ValidateAndCalculateByteLength(
-        webnn::OperandDescriptor::GetBytesPerElement(info.data_type),
-        info.shape);
-    CHECK(expected_byte_length.has_value());
-    if (array_buffer_view->byteLength() != *expected_byte_length) {
+    if (array_buffer_view->byteLength() != info->PackedByteLength()) {
       return base::unexpected(String::Format(
           "The byte length (%zu) of the array buffer view with name \"%s\" "
           "doesn't match the expected byte length (%zu).",
           array_buffer_view->byteLength(), name.Utf8().c_str(),
-          *expected_byte_length));
+          info->PackedByteLength()));
     }
   }
   return base::ok();
@@ -92,29 +88,29 @@ base::expected<void, String> ValidateNamedArrayBufferViews(
 base::expected<void, String> ValidateNamedMLBuffers(
     const MLContext* context,
     const MLNamedBuffers& named_buffers,
-    const HashMap<String, MLGraph::ResourceInfo>& resources_info) {
+    const MLGraph::NamedOperandDescriptors& expected_named_descriptors) {
   if (named_buffers.size() !=
-      base::checked_cast<wtf_size_t>(resources_info.size())) {
-    return base::unexpected(
-        String::Format("The number (%u) of MLBuffer(s) doesn't match the "
-                       "expectation (%u).",
-                       named_buffers.size(), resources_info.size()));
+      base::checked_cast<wtf_size_t>(expected_named_descriptors.size())) {
+    return base::unexpected(String::Format(
+        "The number (%u) of MLBuffer(s) doesn't match the "
+        "expectation (%u).",
+        named_buffers.size(), expected_named_descriptors.size()));
   }
   for (const auto& [name, buffer] : named_buffers) {
-    if (!resources_info.Contains(name)) {
+    if (!expected_named_descriptors.Contains(name)) {
       return base::unexpected(String::Format(
           "The name \"%s\" isn't part of the graph.", name.Utf8().c_str()));
     }
-    const auto& info = resources_info.at(name);
-    if (buffer->DataType() != info.data_type) {
+    const auto& info = expected_named_descriptors.at(name);
+    if (buffer->DataType() != info->data_type()) {
       return base::unexpected(String::Format(
           "The data type \"%s\""
           ", of the MLBuffer with name \"%s\" "
           "doesn't match the expected data type (%s).",
           buffer->dataType().AsCStr(), name.Utf8().c_str(),
-          V8MLOperandDataType(ToBlinkDataType(info.data_type)).AsCStr()));
+          V8MLOperandDataType(ToBlinkDataType(info->data_type())).AsCStr()));
     }
-    if (buffer->shape() != info.shape) {
+    if (buffer->Shape() != info->shape()) {
       return base::unexpected(
           String::Format("The shape of the MLBuffer with name \"%s\" "
                          "doesn't match the expected shape.",
@@ -160,11 +156,11 @@ MLGraph::MLGraph(ExecutionContext* execution_context,
                  MLContext* context,
                  mojo::PendingAssociatedRemote<webnn::mojom::blink::WebNNGraph>
                      pending_graph_remote,
-                 HashMap<String, ResourceInfo> input_resources_info,
-                 HashMap<String, ResourceInfo> output_resources_info,
+                 NamedOperandDescriptors input_constraints,
+                 NamedOperandDescriptors output_constraints,
                  base::PassKey<MLGraphBuilder> /*pass_key*/)
-    : input_resources_info_(std::move(input_resources_info)),
-      output_resources_info_(std::move(output_resources_info)),
+    : input_constraints_(std::move(input_constraints)),
+      output_constraints_(std::move(output_constraints)),
       ml_context_(context),
       remote_graph_(execution_context) {
   // Bind the end point of `WebNNGraph` mojo interface in the blink side.
@@ -181,14 +177,12 @@ void MLGraph::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-const HashMap<String, MLGraph::ResourceInfo>& MLGraph::GetInputResourcesInfo()
-    const {
-  return input_resources_info_;
+const MLGraph::NamedOperandDescriptors& MLGraph::GetInputConstraints() const {
+  return input_constraints_;
 }
 
-const HashMap<String, MLGraph::ResourceInfo>& MLGraph::GetOutputResourcesInfo()
-    const {
-  return output_resources_info_;
+const MLGraph::NamedOperandDescriptors& MLGraph::GetOutputConstraints() const {
+  return output_constraints_;
 }
 
 ScriptPromise<MLComputeResult> MLGraph::Compute(
@@ -199,10 +193,10 @@ ScriptPromise<MLComputeResult> MLGraph::Compute(
     ExceptionState& exception_state) {
   // Validate the MLNamedArrayBufferViews.
   THROW_AND_RETURN_TYPE_IF_ERROR(
-      ValidateNamedArrayBufferViews(inputs, input_resources_info_),
+      ValidateNamedArrayBufferViews(inputs, input_constraints_),
       ScriptPromise<MLComputeResult>(), "Invalid inputs: ");
   THROW_AND_RETURN_TYPE_IF_ERROR(
-      ValidateNamedArrayBufferViews(outputs, output_resources_info_),
+      ValidateNamedArrayBufferViews(outputs, output_constraints_),
       ScriptPromise<MLComputeResult>(), "Invalid outputs: ");
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver<MLComputeResult>>(
@@ -245,10 +239,10 @@ void MLGraph::Dispatch(ScopedMLTrace scoped_trace,
                        ExceptionState& exception_state) {
   // Validate the MLNamedBuffers.
   THROW_AND_RETURN_IF_ERROR(
-      ValidateNamedMLBuffers(Context(), inputs, input_resources_info_),
+      ValidateNamedMLBuffers(Context(), inputs, input_constraints_),
       "Invalid inputs: ");
   THROW_AND_RETURN_IF_ERROR(
-      ValidateNamedMLBuffers(Context(), outputs, output_resources_info_),
+      ValidateNamedMLBuffers(Context(), outputs, output_constraints_),
       "Invalid outputs: ");
   THROW_AND_RETURN_IF_ERROR(ValidateMLBufferUsage(inputs, outputs),
                             "Invalid dispatch: ");

@@ -382,11 +382,11 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                                ExceptionState& exception_state);
 
  private:
-  void DidCreateWebNNGraph(ScriptPromiseResolver<blink::MLGraph>* resolver,
-                           std::pair<HashMap<String, MLGraph::ResourceInfo>,
-                                     HashMap<String, MLGraph::ResourceInfo>>
-                               input_and_output_resources,
-                           webnn::mojom::blink::CreateGraphResultPtr result);
+  void DidCreateWebNNGraph(
+      ScriptPromiseResolver<blink::MLGraph>* resolver,
+      std::pair<MLGraph::NamedOperandDescriptors,
+                MLGraph::NamedOperandDescriptors> input_and_output_constraints,
+      webnn::mojom::blink::CreateGraphResultPtr result);
 
   // Performs platform-agnostic and operand-agnostic validation checks which
   // must be run for each built operand. Returns an error message which may be

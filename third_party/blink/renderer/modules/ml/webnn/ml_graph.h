@@ -60,34 +60,21 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // The members of ResourceInfo are used to validate the inputs and outputs of
-  // an MLGraph execution. The validation steps are described by WebNN spec of
-  // the MLContext.compute() method:
-  // https://www.w3.org/TR/webnn/#api-mlcontext-compute The plain struct
-  // ResourceInfo is introduced instead of using MLOperandDescriptor because
-  // neither byte length calculation from dimensions nor GC support is needed
-  // for the implementation.
-  //
-  // TODO(crbug.com/325612086): Consider removing this struct in favor of
-  // something like `webnn::OperandDescriptor`.
-  struct ResourceInfo {
-    webnn::OperandDataType data_type;
-    Vector<uint32_t> shape;
-  };
+  using NamedOperandDescriptors =
+      HashMap<String, std::optional<webnn::OperandDescriptor>>;
 
   // Instances should only be constructed via `MLGraphBuilder.build()`.
   // This method is public as required by the `MakeGarbageCollected` helper.
   //
   // `pending_graph_remote` is a handle to the computational graph.
-  // `input_resources_info` and `output_resources_info` describe the constraints
-  // on the inputs and outputs which may be used to execute the respective
-  // graph.
+  // `input_constraints` and `output_constraints` describe the constraints on
+  // the inputs and outputs which may be used to execute the respective graph.
   MLGraph(ExecutionContext* execution_context,
           MLContext* context,
           mojo::PendingAssociatedRemote<webnn::mojom::blink::WebNNGraph>
               pending_graph_remote,
-          HashMap<String, ResourceInfo> input_resources_info,
-          HashMap<String, ResourceInfo> output_resources_info,
+          NamedOperandDescriptors input_constraints,
+          NamedOperandDescriptors output_constraints,
           base::PassKey<MLGraphBuilder> pass_key);
 
   MLGraph(const MLGraph&) = delete;
@@ -97,8 +84,8 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
 
   void Trace(Visitor* visitor) const override;
 
-  const HashMap<String, ResourceInfo>& GetInputResourcesInfo() const;
-  const HashMap<String, ResourceInfo>& GetOutputResourcesInfo() const;
+  const NamedOperandDescriptors& GetInputConstraints() const;
+  const NamedOperandDescriptors& GetOutputConstraints() const;
 
   // Execute the compiled platform graph asynchronously.
   //
@@ -139,8 +126,12 @@ class MODULES_EXPORT MLGraph : public ScriptWrappable {
                            ScriptPromiseResolver<MLGraph>* resolver,
                            webnn::mojom::blink::CreateGraphResultPtr result);
 
-  const HashMap<String, ResourceInfo> input_resources_info_;
-  const HashMap<String, ResourceInfo> output_resources_info_;
+  // Describes the constraints on the inputs or outputs to this graph.
+  // Note that `WTF::HashMap` values must be nullable, but
+  // `webnn::OperandDescriptor` lacks a default constructor, so an optional is
+  // used. Do not add std::nullopt values to these maps.
+  const NamedOperandDescriptors input_constraints_;
+  const NamedOperandDescriptors output_constraints_;
 
   Member<MLContext> ml_context_;
 

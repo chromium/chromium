@@ -675,14 +675,12 @@ TEST_F(MLGraphTest, BuildTest) {
     auto [graph, error_name, error_message] =
         BuildGraph(scope, builder, {{"b", output}});
     ASSERT_THAT(graph, testing::NotNull());
-    const auto& inputs = graph->GetInputResourcesInfo();
+    const auto& inputs = graph->GetInputConstraints();
     EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
-    EXPECT_EQ(inputs.at("a").data_type, a->DataType());
-    EXPECT_EQ(inputs.at("a").shape, a->shape());
-    const auto& outputs = graph->GetOutputResourcesInfo();
+    EXPECT_EQ(*inputs.at("a"), a->Descriptor());
+    const auto& outputs = graph->GetOutputConstraints();
     EXPECT_EQ(outputs.size(), static_cast<uint32_t>(1));
-    EXPECT_EQ(outputs.at("b").data_type, output->DataType());
-    EXPECT_EQ(outputs.at("b").shape, output->shape());
+    EXPECT_EQ(*outputs.at("b"), output->Descriptor());
   }
   {
     // Test building a graph with two operators sharing a same input:
@@ -701,16 +699,13 @@ TEST_F(MLGraphTest, BuildTest) {
     auto [graph, error_name, error_message] =
         BuildGraph(scope, builder, {{"b", b}, {"c", c}});
     ASSERT_THAT(graph, testing::NotNull());
-    const auto& inputs = graph->GetInputResourcesInfo();
+    const auto& inputs = graph->GetInputConstraints();
     EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
-    EXPECT_EQ(inputs.at("a").data_type, a->DataType());
-    EXPECT_EQ(inputs.at("a").shape, a->shape());
-    const auto& outputs = graph->GetOutputResourcesInfo();
+    EXPECT_EQ(*inputs.at("a"), a->Descriptor());
+    const auto& outputs = graph->GetOutputConstraints();
     EXPECT_EQ(outputs.size(), static_cast<uint32_t>(2));
-    EXPECT_EQ(outputs.at("b").data_type, b->DataType());
-    EXPECT_EQ(outputs.at("b").shape, b->shape());
-    EXPECT_EQ(outputs.at("c").data_type, b->DataType());
-    EXPECT_EQ(outputs.at("c").shape, b->shape());
+    EXPECT_EQ(*outputs.at("b"), b->Descriptor());
+    EXPECT_EQ(*outputs.at("c"), c->Descriptor());
   }
   {
     // Test building a fake graph with two inputs, one gemm operation and one
@@ -726,16 +721,13 @@ TEST_F(MLGraphTest, BuildTest) {
     auto [graph, error_name, error_message] =
         BuildGraph(scope, builder, {{"c", c}});
     ASSERT_THAT(graph, testing::NotNull());
-    const auto& inputs = graph->GetInputResourcesInfo();
+    const auto& inputs = graph->GetInputConstraints();
     EXPECT_EQ(inputs.size(), static_cast<uint32_t>(2));
-    EXPECT_EQ(inputs.at("a").data_type, a->DataType());
-    EXPECT_EQ(inputs.at("a").shape, a->shape());
-    EXPECT_EQ(inputs.at("b").data_type, b->DataType());
-    EXPECT_EQ(inputs.at("b").shape, b->shape());
-    const auto& outputs = graph->GetOutputResourcesInfo();
+    EXPECT_EQ(*inputs.at("a"), a->Descriptor());
+    EXPECT_EQ(*inputs.at("b"), b->Descriptor());
+    const auto& outputs = graph->GetOutputConstraints();
     EXPECT_EQ(outputs.size(), static_cast<uint32_t>(1));
-    EXPECT_EQ(outputs.at("c").data_type, c->DataType());
-    EXPECT_EQ(outputs.at("c").shape, c->shape());
+    EXPECT_EQ(*outputs.at("c"), c->Descriptor());
   }
   {
     // Test building a fake graph with conv2d, add and relu operations.
@@ -757,14 +749,12 @@ TEST_F(MLGraphTest, BuildTest) {
     auto [graph, error_name, error_message] =
         BuildGraph(scope, builder, {{"output", output}});
     ASSERT_THAT(graph, testing::NotNull());
-    const auto& inputs = graph->GetInputResourcesInfo();
+    const auto& inputs = graph->GetInputConstraints();
     EXPECT_EQ(inputs.size(), static_cast<uint32_t>(1));
-    EXPECT_EQ(inputs.at("input").data_type, input->DataType());
-    EXPECT_EQ(inputs.at("input").shape, input->shape());
-    const auto& outputs = graph->GetOutputResourcesInfo();
+    EXPECT_EQ(*inputs.at("input"), input->Descriptor());
+    const auto& outputs = graph->GetOutputConstraints();
     EXPECT_EQ(outputs.size(), static_cast<uint32_t>(1));
-    EXPECT_EQ(outputs.at("output").data_type, output->DataType());
-    EXPECT_EQ(outputs.at("output").shape, output->shape());
+    EXPECT_EQ(*outputs.at("output"), output->Descriptor());
   }
   {
     // Testing throwing exception if the ArrayBufferView of a constant operand
