@@ -201,4 +201,10 @@ bool UserUninstalledPreinstalledWebAppPrefs::AppIdContainsAllUrls(
   return true;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void UserUninstalledPreinstalledWebAppPrefs::ClearAllApps() {
+  pref_service_->ClearPref(prefs::kUserUninstalledPreinstalledWebAppPref);
+}
+#endif
+
 }  // namespace web_app

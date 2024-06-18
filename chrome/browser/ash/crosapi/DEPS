@@ -117,6 +117,7 @@ include_rules = [
   "+chrome/browser/web_applications/web_app_provider.h",
   "+chrome/browser/web_applications/web_app_ui_manager.h",
   "+chrome/browser/web_applications/web_app_utils.h",
+  "+chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h",
   "+chrome/common/chrome_constants.h",
   "+chrome/common/chrome_features.h",
   "+chrome/common/chrome_paths.h",
