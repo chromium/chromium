@@ -1244,6 +1244,7 @@ source_set("extensions") {
       "//chrome/browser/ash/attestation",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
+      "//chrome/browser/ash/customization",
       "//chrome/browser/devtools",
       "//chrome/browser/nearby_sharing/common",
       "//chromeos/ash/components/attestation",
@@ -1304,6 +1305,7 @@ source_set("extensions") {
       "//chrome/browser/ash/accessibility",
       "//chrome/browser/ash/attestation",
       "//chrome/browser/ash/crosapi",
+      "//chrome/browser/ash/customization",
     ]
 
     if (is_cfm) {

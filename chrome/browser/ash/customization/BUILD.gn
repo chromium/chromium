@@ -1,0 +1,60 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+source_set("customization") {
+  sources = [
+    "customization_document.cc",
+    "customization_document.h",
+    "customization_wallpaper_downloader.cc",
+    "customization_wallpaper_downloader.h",
+    "customization_wallpaper_util.cc",
+    "customization_wallpaper_util.h",
+  ]
+
+  deps = [
+    "//ash",
+    "//base",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles",
+    "//chrome/common",
+    "//chromeos/ash/components/system",
+    "//components/pref_registry",
+    "//content/public/browser",
+
+    # TODO(b/335293584): Remove these when customization deps on c/b/a/login.
+    "//chromeos/ash/components/nearby/common/connections_manager",
+    "//third_party/private_membership",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [
+    "customization_document_browsertest.cc",
+    "customization_wallpaper_downloader_browsertest.cc",
+  ]
+
+  deps = [
+    ":customization",
+    "//chrome/browser/ash:test_support",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "customization_document_unittest.cc" ]
+
+  deps = [
+    ":customization",
+    "//chrome/browser/ash:test_support",
+  ]
+}
