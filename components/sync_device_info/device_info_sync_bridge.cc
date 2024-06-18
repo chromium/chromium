@@ -704,6 +704,7 @@ void DeviceInfoSyncBridge::OnStoreCreated(
   }
 
   store_ = std::move(store);
+  CHECK(store_);
 
   GetLocalDeviceNameInfo(
       base::BindOnce(&DeviceInfoSyncBridge::OnLocalDeviceNameInfoRetrieved,
@@ -800,7 +801,7 @@ void DeviceInfoSyncBridge::OnReadAllMetadata(
   // is needed to prevent an unnecessary DeviceInfo commit on browser startup
   // when the SyncInvalidationsService is not initialized.
   auto iter = all_data_.find(local_cache_guid_);
-  DCHECK(iter != all_data_.end());
+  CHECK(iter != all_data_.end());
 
   local_device_info_provider_->Initialize(
       local_cache_guid_, GetLocalClientName(),
@@ -830,12 +831,14 @@ void DeviceInfoSyncBridge::OnCommit(
 
 bool DeviceInfoSyncBridge::ReconcileLocalAndStored() {
   TRACE_EVENT0("sync", "DeviceInfoSyncBridge::ReconcileLocalAndStored");
+  CHECK(store_);
+
   const DeviceInfo* current_info =
       local_device_info_provider_->GetLocalDeviceInfo();
   DCHECK(current_info);
 
   auto iter = all_data_.find(current_info->guid());
-  DCHECK(iter != all_data_.end());
+  CHECK(iter != all_data_.end());
 
   // Convert |iter->second| to a DeviceInfo for comparison.
   const DeviceInfo& previous_device_info = iter->second.device_info();
@@ -875,12 +878,14 @@ bool DeviceInfoSyncBridge::ReconcileLocalAndStored() {
 }
 
 void DeviceInfoSyncBridge::SendLocalData() {
+  CHECK(store_);
+  CHECK(IsSyncing());
   SendLocalDataWithBatch(store_->CreateWriteBatch());
 }
 
 void DeviceInfoSyncBridge::SendLocalDataWithBatch(
     std::unique_ptr<ModelTypeStore::WriteBatch> batch) {
-  DCHECK(store_);
+  CHECK(store_);
   DCHECK(local_device_info_provider_->GetLocalDeviceInfo());
   DCHECK(change_processor()->IsTrackingMetadata());
 
@@ -899,6 +904,7 @@ void DeviceInfoSyncBridge::SendLocalDataWithBatch(
 
 void DeviceInfoSyncBridge::CommitAndNotify(std::unique_ptr<WriteBatch> batch,
                                            bool should_notify) {
+  CHECK(store_);
   store_->CommitWriteBatch(std::move(batch),
                            base::BindOnce(&DeviceInfoSyncBridge::OnCommit,
                                           weak_ptr_factory_.GetWeakPtr()));
@@ -978,6 +984,7 @@ DeviceInfoSyncBridge::CountActiveDevicesByType() const {
 }
 
 void DeviceInfoSyncBridge::ExpireOldEntries() {
+  CHECK(store_);
   TRACE_EVENT0("sync", "DeviceInfoSyncBridge::ExpireOldEntries");
   const base::Time expiration_threshold =
       base::Time::Now() - kExpirationThreshold;
