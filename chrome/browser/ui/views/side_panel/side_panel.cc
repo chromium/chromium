@@ -572,6 +572,9 @@ void SidePanel::UpdateVisibility() {
       animation_.Hide();
     }
   } else {
+    // Set the animation value so that it accurately reflects what state the
+    // side panel should be in for layout.
+    animation_.Reset(should_be_open ? 1 : 0);
     SetVisible(should_be_open);
   }
 }
