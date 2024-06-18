@@ -214,7 +214,13 @@ bool InkModule::StartInkStroke(const gfx::PointF& position) {
       .elapsed_time_seconds = 0,
   });
 
-  // TODO(crbug.com/335517471): Invalidate the appropriate rect here.
+  // Invalidate area around this one point.
+  client_->Invalidate(state.ink_brush->GetInvalidateArea(position, position));
+
+  // Remember this location to support invalidating all of the area between
+  // this location and the next position.
+  state.ink_input_last_event_position = position;
+
   return true;
 }
 
@@ -233,7 +239,16 @@ bool InkModule::ContinueInkStroke(const gfx::PointF& position) {
     // TODO(crbug.com/335517469):  The stroke should be broken into segments,
     // to avoid having an extra line connecting where this point to where a
     // stroke might re-enter the page.
-    // TODO(crbug.com/335517471): Invalidate the appropriate rect here.
+
+    // Invalidate area covering a straight line between this position and the
+    // previous one.
+    client_->Invalidate(state.ink_brush->GetInvalidateArea(
+        position, state.ink_input_last_event_position));
+    // TODO(crbug.com/335517469):  The invalidation should not need to update
+    // `ink_input_last_event_position` once segments are supported, since a new
+    // segment would only need to invalidate around a single point, similar to
+    // `StartInkStroke()`.
+    state.ink_input_last_event_position = position;
     return true;
   }
 
@@ -254,7 +269,13 @@ bool InkModule::ContinueInkStroke(const gfx::PointF& position) {
       .elapsed_time_seconds = static_cast<float>(time_diff.InSecondsF()),
   });
 
-  // TODO(crbug.com/335517471): Invalidate the appropriate rect here.
+  // Invalidate area covering a straight line between this position and the
+  // previous one.  Update last location to support invalidating from here to
+  // the next position.
+  client_->Invalidate(state.ink_brush->GetInvalidateArea(
+      position, state.ink_input_last_event_position));
+  state.ink_input_last_event_position = position;
+
   return true;
 }
 

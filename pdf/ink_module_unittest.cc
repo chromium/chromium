@@ -24,6 +24,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace chrome_pdf {
@@ -63,6 +64,10 @@ class FakeClient : public InkModule::Client {
 
   void InkStrokeFinished() override { ++ink_stroke_finished_count_; }
 
+  void Invalidate(const gfx::Rect& rect) override {
+    invalidations_.push_back(rect);
+  }
+
   int VisiblePageIndexFromPoint(const gfx::PointF& point) override {
     // Assumes that all pages are visible.
     for (size_t i = 0; i < pages_layout_.size(); ++i) {
@@ -76,6 +81,8 @@ class FakeClient : public InkModule::Client {
   }
 
   int ink_stroke_finished_count() const { return ink_stroke_finished_count_; }
+
+  const std::vector<gfx::Rect>& invalidations() const { return invalidations_; }
 
   // Provide the sequence of pages and the coordinates and dimensions for how
   // they are laid out in a viewer plane.  It is upon the caller to ensure the
@@ -100,6 +107,7 @@ class FakeClient : public InkModule::Client {
   PageOrientation orientation_ = PageOrientation::kOriginal;
   gfx::Vector2dF viewport_origin_offset_;
   float zoom_ = 1.0f;
+  std::vector<gfx::Rect> invalidations_;
 };
 
 class InkModuleTest : public testing::Test {
@@ -393,6 +401,20 @@ TEST_F(InkModuleStrokeTest, DrawRenderTransform) {
                                              0.0f,  -1.0f, 44.0f};
   // Just one transform provided, to match the captured stroke.
   EXPECT_THAT(draw_render_transforms, testing::ElementsAre(kDrawTransform));
+}
+
+TEST_F(InkModuleStrokeTest, InvalidationsFromStroke) {
+  InitializeSimpleSinglePageBasicLayout();
+  RunStrokeCheckTest(/*annotation_mode_enabled=*/true);
+
+  // The default brush param size is 1.0.
+  const gfx::Rect kInvalidationAreaMouseDown(gfx::Point(9.0f, 14.0f),
+                                             gfx::Size(2.0f, 2.0f));
+  const gfx::Rect kInvalidationAreaMouseMove(gfx::Point(9.0f, 14.0f),
+                                             gfx::Size(12.0f, 12.0f));
+  EXPECT_THAT(client().invalidations(),
+              testing::ElementsAre(kInvalidationAreaMouseDown,
+                                   kInvalidationAreaMouseMove));
 }
 
 }  // namespace

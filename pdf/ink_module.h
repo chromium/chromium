@@ -18,6 +18,7 @@
 #include "pdf/ink/ink_stroke_input.h"
 #include "pdf/page_orientation.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 
 static_assert(BUILDFLAG(ENABLE_PDF_INK2), "ENABLE_PDF_INK2 not set to true");
@@ -28,10 +29,6 @@ namespace blink {
 class WebInputEvent;
 class WebMouseEvent;
 }  // namespace blink
-
-namespace gfx {
-class PointF;
-}  // namespace gfx
 
 namespace chrome_pdf {
 
@@ -69,6 +66,11 @@ class InkModule {
 
     // Notifies the client that a stroke has finished drawing or erasing.
     virtual void InkStrokeFinished() {}
+
+    // Notifies the client to invalidate the `rect`.  Coordinates are
+    // screen-based, based on the same viewport origin that was used to specify
+    // the `blink::WebMouseEvent` positions during stroking.
+    virtual void Invalidate(const gfx::Rect& rect) {}
 
     // Returns the 0-based page index for the given `point` if it is on a
     // visible page, or -1 if `point` is not on a visible page.
@@ -117,6 +119,12 @@ class InkModule {
 
     // The 0-based page index which is currently being stroked.
     int ink_page_index = -1;
+
+    // The event position for the last ink input.  Coordinates match the
+    // screen-based position that are provided during stroking from
+    // `blink::WebMouseEvent` positions.  Used after stroking has already
+    // started, to support invalidation.
+    gfx::PointF ink_input_last_event_position;
 
     // The points that make up the current stroke. Coordinates for each
     // `InkStrokeInput` are stored in a canonical format specified in
