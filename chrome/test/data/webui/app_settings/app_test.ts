@@ -6,7 +6,10 @@ import 'chrome://app-settings/web_app_settings.js';
 
 import type {App, AppManagementSupportedLinksItemElement, AppManagementSupportedLinksOverlappingAppsDialogElement, PermissionItemElement, PermissionTypeIndex, ToggleRowElement, WebAppSettingsAppElement} from 'chrome://app-settings/web_app_settings.js';
 import {AppType, BrowserProxy, createTriStatePermission, getPermissionValueBool, InstallReason, InstallSource, PermissionType, RunOnOsLoginMode, TriState, WindowMode} from 'chrome://app-settings/web_app_settings.js';
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -461,7 +464,18 @@ suite('AppSettingsAppTest', () => {
 
     // Check that the dialog is shown after clicking on the app content row.
     assertTrue(appContentItem.showAppContentDialog);
-    assertTrue(!!appContentItem.shadowRoot!.querySelector(
-        'app-management-app-content-dialog'));
+    const appContentDialogElement = appContentItem.shadowRoot!.querySelector(
+        'app-management-app-content-dialog');
+    assertTrue(!!appContentDialogElement);
+
+    const dialog = appContentDialogElement.shadowRoot!.querySelector('#dialog');
+    assertTrue(!!dialog);
+    const closeButton =
+        dialog.shadowRoot!.querySelector<CrIconButtonElement>('#close');
+    assertTrue(!!closeButton);
+
+    // Check that the focus stays on the close button.
+    keyDownOn(appContentDialogElement, 0, '', 'Tab');
+    assertEquals(getDeepActiveElement(), closeButton);
   });
 });

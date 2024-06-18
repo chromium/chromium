@@ -1,21 +1,11 @@
-<style include="app-management-shared-style">
-  :host {
-    cursor: pointer;
-  }
-
-  #appContent {
-  /* Remove unnecessary padding. */
-    padding: 0;
-  }
-</style>
 <cr-link-row
-  id="appContent"
-  label="[[i18n('appManagementAppContentLabel')]]"
-  sub-label="[[i18n('appManagementAppContentSublabel')]]"
-  on-click="onAppContentClick_">
+    id="appContent"
+    label="${this.i18n('appManagementAppContentLabel')}"
+    sub-label="${this.i18n('appManagementAppContentSublabel')}"
+    @click="${this.onAppContentClick_}">
 </cr-link-row>
-<template is="dom-if" if="[[showAppContentDialog]]" restamp>
-  <app-management-app-content-dialog id="appContentDialog" app="[[app]]"
-      on-close="onAppContentDialogClose_">
+${this.showAppContentDialog ? html`
+  <app-management-app-content-dialog id="appContentDialog" .app="${this.app}"
+      @close="${this.onAppContentDialogClose_}">
   </app-management-app-content-dialog>
-</template>
+` : ''}

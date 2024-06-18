@@ -35,8 +35,12 @@ build_webui("build") {
   ]
 
   css_files = [
+    "app_content_dialog.css",
+    "app_content_item.css",
     "app_management_shared_style.css",
     "app_management_shared_style_lit.css",
+    "file_handling_item.css",
+    "more_permissions_item.css",
     "permission_item.css",
     "shared_vars.css",
     "toggle_row.css",

@@ -6,18 +6,17 @@
 import 'chrome://app-settings/file_handling_item.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 
-import type {AppManagementFileHandlingItemElement} from 'chrome://app-settings/file_handling_item.js';
+import type {FileHandlingItemElement} from 'chrome://app-settings/file_handling_item.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {createTestApp, TestAppManagementBrowserProxy} from './app_management_test_support.js';
 
 suite('AppManagementFileHandlingItemTest', function() {
-  let fileHandlingItem: AppManagementFileHandlingItemElement;
+  let fileHandlingItem: FileHandlingItemElement;
   let testProxy: TestAppManagementBrowserProxy;
   let app: App;
 
@@ -38,7 +37,7 @@ suite('AppManagementFileHandlingItemTest', function() {
         document.createElement('app-management-file-handling-item');
     fileHandlingItem.app = app;
     document.body.appendChild(fileHandlingItem);
-    await waitAfterNextRender(fileHandlingItem);
+    await microtasksFinished();
   });
 
   test('File Handling overflow', async function() {
@@ -53,7 +52,7 @@ suite('AppManagementFileHandlingItemTest', function() {
     app2.fileHandlingState!.userVisibleTypesLabel =
         'TXT, CSV, MD, DOC (<a href="#">and 1 more</a>)';
     fileHandlingItem.app = app2;
-    await flushTasks();
+    await microtasksFinished();
     link = typeList.shadowRoot!.querySelector<HTMLElement>('a');
     assertTrue(!!link);
 
@@ -63,7 +62,7 @@ suite('AppManagementFileHandlingItemTest', function() {
     assertTrue(!dialog);
     const originalUrl = location.href;
     link.click();
-    flush();
+    await microtasksFinished();
 
     // Clicking the link doesn't change the URL, and does open the dialog.
     assertEquals(originalUrl, location.href);
@@ -83,7 +82,7 @@ suite('AppManagementFileHandlingItemTest', function() {
     const app2 = createTestApp('app');
     app2.fileHandlingState!.learnMoreUrl = null;
     fileHandlingItem.app = app2;
-    await flushTasks();
+    await microtasksFinished();
     link = learnMore.shadowRoot!.querySelector<HTMLAnchorElement>('a');
     assertTrue(!!link);
     assertEquals(link.getAttribute('href'), '#');
