@@ -25,7 +25,6 @@ namespace safe_browsing {
 
 namespace {
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 constexpr char kTestUrl[] = "wss://test/";
 constexpr char kTestExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
 constexpr char kTestExtensionUrl[] =
@@ -61,7 +60,6 @@ class FakeExtensionWebRequestReporter
   mojom::WebRequestContactInitiatorType contact_initiator_type_;
   base::RunLoop run_loop_;
 };
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 class FakeCallback {
  public:
@@ -92,7 +90,6 @@ class FakeCallback {
 
 class WebSocketSBHandshakeThrottleTest : public ::testing::Test {
  protected:
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   WebSocketSBHandshakeThrottleTest()
       : extension_web_request_reporter_receiver_(
             &extension_web_request_reporter_) {
@@ -101,27 +98,19 @@ class WebSocketSBHandshakeThrottleTest : public ::testing::Test {
     throttle_ = std::make_unique<WebSocketSBHandshakeThrottle>(
         extension_web_request_reporter_remote_.get());
   }
-#else
-  WebSocketSBHandshakeThrottleTest() {}
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   base::test::TaskEnvironment message_loop_;
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   FakeExtensionWebRequestReporter extension_web_request_reporter_;
   mojo::Receiver<mojom::ExtensionWebRequestReporter>
       extension_web_request_reporter_receiver_;
   mojo::Remote<mojom::ExtensionWebRequestReporter>
       extension_web_request_reporter_remote_;
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
   std::unique_ptr<WebSocketSBHandshakeThrottle> throttle_;
   FakeCallback fake_callback_;
 };
 
 TEST_F(WebSocketSBHandshakeThrottleTest, Construction) {}
 
-// TODO(crbug.com/40934395) [Also TODO(thefrog)]: Move entire file to
-// ENABLE_EXTENSIONS-only build and remove in-code build checks.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
 TEST_F(WebSocketSBHandshakeThrottleTest, SendExtensionWebRequestData) {
   base::HistogramTester histogram_tester;
   throttle_->ThrottleHandshake(
@@ -171,7 +160,6 @@ TEST_F(WebSocketSBHandshakeThrottleTest,
       "SafeBrowsing.ExtensionTelemetry.WebSocketRequestDataSentOrReceived",
       false, 1);
 }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 }  // namespace
 
