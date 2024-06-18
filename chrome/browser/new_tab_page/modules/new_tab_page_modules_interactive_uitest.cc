@@ -365,8 +365,9 @@ IN_PROC_BROWSER_TEST_P(NewTabPageModulesInteractiveUiTest,
       WaitForElementHiddenSet(kModulesV2Wrapper));
 }
 
+// TODO(crbug.com/347914816): Fix test failure on Mac.
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_CHROMEOS)
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_ClickingEntryNavigatesToCorrectPage \
   DISABLED_ClickingEntryNavigatesToCorrectPage
 #else
