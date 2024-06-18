@@ -103,6 +103,15 @@ public class TabSwitcherPaneMediator
                 notifyBackPressStateChangedInternal();
             };
 
+    /** Interface for getting scroll positions of tabs. */
+    @FunctionalInterface
+    public interface TabIndexLookup {
+        /**
+         * Returns the scroll position of a tab from its filter index in the TabListRecyclerView.
+         */
+        int getNthTabIndexInModel(int filterIndex);
+    }
+
     private final TabSwitcherResetHandler mResetHandler;
     private final ObservableSupplier<TabModelFilter> mTabModelFilterSupplier;
     private final LazyOneshotSupplier<DialogController> mTabGridDialogControllerSupplier;
@@ -112,6 +121,7 @@ public class TabSwitcherPaneMediator
     private final ObservableSupplier<Boolean> mIsAnimatingSupplier;
     private final Runnable mOnTabSwitcherShown;
     private final Callback<Integer> mOnTabClickCallback;
+    private final TabIndexLookup mTabIndexLookup;
 
     private @Nullable ObservableSupplier<TabListEditorController> mTabListEditorControllerSupplier;
     private @Nullable TransitiveObservableSupplier<TabListEditorController, Boolean>
@@ -132,6 +142,7 @@ public class TabSwitcherPaneMediator
      * @param isVisibleSupplier Supplier for visibility of the pane.
      * @param isAnimatingSupplier Supplier for when the pane is animating in or out of visibility.
      * @param onTabClickCallback Callback to invoke when a tab is clicked.
+     * @param tabIndexLookup Lookup for scroll position from tab index.
      */
     public TabSwitcherPaneMediator(
             @NonNull TabSwitcherResetHandler resetHandler,
@@ -142,8 +153,10 @@ public class TabSwitcherPaneMediator
             @NonNull Runnable onTabSwitcherShown,
             @NonNull ObservableSupplier<Boolean> isVisibleSupplier,
             @NonNull ObservableSupplier<Boolean> isAnimatingSupplier,
-            @NonNull Callback<Integer> onTabClickCallback) {
+            @NonNull Callback<Integer> onTabClickCallback,
+            @NonNull TabIndexLookup tabIndexLookup) {
         mResetHandler = resetHandler;
+        mTabIndexLookup = tabIndexLookup;
         mOnTabClickCallback = onTabClickCallback;
         mTabModelFilterSupplier = tabModelFilterSupplier;
         var filter = mTabModelFilterSupplier.addObserver(mOnTabModelFilterChanged);
@@ -210,7 +223,7 @@ public class TabSwitcherPaneMediator
 
     /** Scrolls to the currently selected tab. */
     public void setInitialScrollIndexOffset() {
-        scrollToTab(mTabModelFilterSupplier.get().index());
+        scrollToTab(mTabIndexLookup.getNthTabIndexInModel(mTabModelFilterSupplier.get().index()));
     }
 
     @Override
@@ -270,10 +283,8 @@ public class TabSwitcherPaneMediator
     }
 
     @Override
-    public void scrollToTab(int tabIndex) {
-        // TODO(crbug.com/40946413): This doesn't account for non-tab message cards, it probably
-        // should.
-        mContainerViewModel.set(INITIAL_SCROLL_INDEX, tabIndex);
+    public void scrollToTab(int tabIndexInModel) {
+        mContainerViewModel.set(INITIAL_SCROLL_INDEX, tabIndexInModel);
     }
 
     /** Scroll to a given tab or tab group by id. */
@@ -285,7 +296,7 @@ public class TabSwitcherPaneMediator
             tab = tabModel.getTabById(tab.getRootId());
         }
         int index = filter.indexOf(tab);
-        scrollToTab(index);
+        scrollToTab(mTabIndexLookup.getNthTabIndexInModel(index));
     }
 
     @Override

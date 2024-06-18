@@ -2571,6 +2571,11 @@ class TabListMediator {
         }
     }
 
+    /** Returns the index of the nth tab card in the model of TabList.INVALID_TAB_INDEX. */
+    int getIndexOfNthTabCard(int n) {
+        return mModel.indexOfNthTabCardOrInvalid(n);
+    }
+
     /**
      * @param tab the {@link Tab} to find the group index of.
      * @return the index for the tab group within {@link mModel}

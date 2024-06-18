@@ -3162,6 +3162,18 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    public void testIndexOfNthTabCardOrInvalid() {
+        initAndAssertAllProperties();
+        addSpecialItem(1, TabProperties.UiType.LARGE_MESSAGE, PRICE_MESSAGE);
+
+        assertThat(mModel.lastIndexForMessageItemFromType(PRICE_MESSAGE), equalTo(1));
+        assertThat(mMediator.getIndexOfNthTabCard(-1), equalTo(TabModel.INVALID_TAB_INDEX));
+        assertThat(mMediator.getIndexOfNthTabCard(0), equalTo(0));
+        assertThat(mMediator.getIndexOfNthTabCard(1), equalTo(2));
+        assertThat(mMediator.getIndexOfNthTabCard(2), equalTo(TabModel.INVALID_TAB_INDEX));
+    }
+
+    @Test
     public void testGetTabCardCountsBefore() {
         initAndAssertAllProperties();
         addSpecialItem(1, TabProperties.UiType.LARGE_MESSAGE, PRICE_MESSAGE);

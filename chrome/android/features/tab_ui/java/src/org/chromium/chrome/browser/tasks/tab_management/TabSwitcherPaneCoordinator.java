@@ -182,7 +182,8 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
                             this::onTabSwitcherShown,
                             isVisibleSupplier,
                             isAnimatingSupplier,
-                            onTabClickCallback);
+                            onTabClickCallback,
+                            this::getNthTabIndexInModel);
 
             mMultiThumbnailCardProvider =
                     new MultiThumbnailCardProvider(
@@ -488,6 +489,16 @@ public class TabSwitcherPaneCoordinator implements BackPressHandler {
 
     public void showQuickDeleteAnimation(Runnable onAnimationEnd, List<Tab> tabs) {
         mTabListCoordinator.showQuickDeleteAnimation(onAnimationEnd, tabs);
+    }
+
+    private int getNthTabIndexInModel(int filterIndex) {
+        assert mTabListCoordinator != null;
+        int indexInModel = mTabListCoordinator.getIndexOfNthTabCard(filterIndex);
+        // If the tab list coordinator doesn't contain tab data yet assume filterIndex is a
+        // sufficient approximation as the offset would be caused by message cards.
+        if (indexInModel == TabList.INVALID_TAB_INDEX) return filterIndex;
+
+        return indexInModel;
     }
 
     /**

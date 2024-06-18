@@ -840,6 +840,10 @@ public class TabListCoordinator
         mModel.get(index).model.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, true);
     }
 
+    int getIndexOfNthTabCard(int index) {
+        return mMediator.getIndexOfNthTabCard(index);
+    }
+
     void runAnimationOnNextLayout(Runnable runnable) {
         mRecyclerView.runAnimationOnNextLayout(runnable);
     }

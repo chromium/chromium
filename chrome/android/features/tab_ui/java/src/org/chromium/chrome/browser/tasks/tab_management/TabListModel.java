@@ -71,6 +71,26 @@ class TabListModel extends ModelList {
 
     /**
      * Find the Nth TAB card in the {@link TabListModel}.
+     *
+     * @param n N of the Nth TAB card.
+     * @return The index of Nth TAB card in the {@link TabListModel} or TabModel.INVALID_TAB_INDEX
+     *     if not enough tabs exist.
+     */
+    public int indexOfNthTabCardOrInvalid(int n) {
+        if (n < 0) return TabModel.INVALID_TAB_INDEX;
+        int tabCount = 0;
+        for (int i = 0; i < size(); i++) {
+            PropertyModel model = get(i).model;
+            if (model.get(CARD_TYPE) == TAB) {
+                if (tabCount++ == n) return i;
+            }
+        }
+        return TabModel.INVALID_TAB_INDEX;
+    }
+
+    /**
+     * Find the Nth TAB card in the {@link TabListModel}.
+     *
      * @param n N of the Nth TAB card.
      * @return The index of Nth TAB card in the {@link TabListModel}.
      */
