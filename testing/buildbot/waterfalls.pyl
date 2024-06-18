@@ -5190,7 +5190,7 @@
       },
       'Linux ChromiumOS MSan Tests': {
         'mixins': [
-          'linux-focal',
+          'linux-jammy',
           'x86-64',
         ],
         'test_suites': {
@@ -5204,7 +5204,7 @@
       },
       'Linux MSan Tests': {
         'mixins': [
-          'linux-focal',
+          'linux-jammy',
           'x86-64',
         ],
         'test_suites': {
