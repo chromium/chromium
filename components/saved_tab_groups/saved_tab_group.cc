@@ -137,21 +137,18 @@ SavedTabGroup& SavedTabGroup::SetColor(tab_groups::TabGroupColorId color) {
 SavedTabGroup& SavedTabGroup::SetLocalGroupId(
     std::optional<LocalTabGroupID> tab_group_id) {
   local_group_id_ = tab_group_id;
-  SetUpdateTimeWindowsEpochMicros(base::Time::Now());
   return *this;
 }
 
 SavedTabGroup& SavedTabGroup::SetCreatorCacheGuid(
     std::optional<std::string> new_cache_guid) {
   creator_cache_guid_ = new_cache_guid;
-  SetUpdateTimeWindowsEpochMicros(base::Time::Now());
   return *this;
 }
 
 SavedTabGroup& SavedTabGroup::SetLastUpdaterCacheGuid(
     std::optional<std::string> cache_guid) {
   last_updater_cache_guid_ = cache_guid;
-  SetUpdateTimeWindowsEpochMicros(base::Time::Now());
   return *this;
 }
 

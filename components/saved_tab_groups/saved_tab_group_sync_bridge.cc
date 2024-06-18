@@ -477,7 +477,8 @@ void SavedTabGroupSyncBridge::SavedTabGroupLocalIdChanged(
   const SavedTabGroup* const group = model_->Get(group_guid);
   CHECK(group);
 
-  UpsertEntitySpecific(SavedTabGroupToData(*group), write_batch.get());
+  auto data = SavedTabGroupToData(*group);
+  write_batch->WriteData(data.specifics().guid(), data.SerializeAsString());
   store_->CommitWriteBatch(std::move(write_batch), base::DoNothing());
 }
 
