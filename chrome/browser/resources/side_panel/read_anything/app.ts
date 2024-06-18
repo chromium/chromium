@@ -78,93 +78,6 @@ class TwoWayMap<K, V> extends Map<K, V> {
   }
 }
 
-/////////////////////////////////////////////////////////////////////
-// Called by ReadAnythingUntrustedPageHandler via callback router. //
-/////////////////////////////////////////////////////////////////////
-
-// The chrome.readingMode context is created by the ReadAnythingAppController
-// which is only instantiated when the kReadAnything feature is enabled. This
-// check if chrome.readingMode exists prevents runtime errors when the feature
-// is disabled.
-if (chrome.readingMode) {
-  chrome.readingMode.updateContent = () => {
-    const readAnythingApp = document.querySelector('read-anything-app');
-    assert(readAnythingApp, 'no app');
-    readAnythingApp.updateContent();
-  };
-
-  chrome.readingMode.updateLinks = () => {
-    const readAnythingApp = document.querySelector('read-anything-app');
-    assert(readAnythingApp, 'no app');
-    readAnythingApp.updateLinks();
-  };
-
-  chrome.readingMode.updateImages = () => {
-    const readAnythingApp = document.querySelector('read-anything-app');
-    assert(readAnythingApp, 'no app');
-    readAnythingApp.updateImages();
-  };
-
-  chrome.readingMode.updateImage = (nodeId) => {
-    const readAnythingApp = document.querySelector('read-anything-app');
-    assert(readAnythingApp, 'no app');
-    readAnythingApp.updateImage(nodeId);
-  };
-
-  chrome.readingMode.updateSelection = () => {
-    const readAnythingApp = document.querySelector('read-anything-app');
-    assert(readAnythingApp, 'no app');
-    readAnythingApp.updateSelection();
-  };
-
-  chrome.readingMode.updateVoicePackStatus = (lang: string, status: string) => {
-    const readAnythingApp = document.querySelector('read-anything-app');
-    if (readAnythingApp) {
-      readAnythingApp.updateVoicePackStatus(lang, status);
-    }
-  };
-
-  chrome.readingMode.updateVoicePackStatusFromInstallResponse =
-      (lang: string, status: string) => {
-        const readAnythingApp = document.querySelector('read-anything-app');
-        if (readAnythingApp) {
-          readAnythingApp.updateVoicePackStatusFromInstallResponse(
-              lang, status);
-        }
-      };
-
-  chrome.readingMode.showLoading = () => {
-    const readAnythingApp = document.querySelector('read-anything-app');
-    assert(readAnythingApp, 'no app');
-    readAnythingApp.showLoading();
-  };
-
-  chrome.readingMode.showEmpty = () => {
-    const readAnythingApp = document.querySelector('read-anything-app');
-    assert(readAnythingApp, 'no app');
-    readAnythingApp.showEmpty();
-  };
-
-  chrome.readingMode.restoreSettingsFromPrefs = () => {
-    const readAnythingApp = document.querySelector('read-anything-app');
-    assert(readAnythingApp, 'no app');
-    readAnythingApp.restoreSettingsFromPrefs();
-  };
-
-  chrome.readingMode.languageChanged = () => {
-    const readAnythingApp = document.querySelector('read-anything-app');
-    assert(readAnythingApp, 'no app');
-    readAnythingApp.languageChanged();
-  };
-
-  chrome.readingMode.onLockScreen = () => {
-    const readAnythingApp = document.querySelector('read-anything-app');
-    assert(readAnythingApp, 'no app');
-    readAnythingApp.onLockScreen();
-  };
-}
-
-
 export enum PauseActionSource {
   DEFAULT,
   BUTTON_CLICK,
@@ -480,6 +393,59 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     document.oncopy = () => {
       chrome.readingMode.onCopy();
       return false;
+    };
+
+    /////////////////////////////////////////////////////////////////////
+    // Called by ReadAnythingUntrustedPageHandler via callback router. //
+    /////////////////////////////////////////////////////////////////////
+    chrome.readingMode.updateContent = () => {
+      this.updateContent();
+    };
+
+    chrome.readingMode.updateLinks = () => {
+      this.updateLinks();
+    };
+
+    chrome.readingMode.updateImages = () => {
+      this.updateImages();
+    };
+
+    chrome.readingMode.updateImage = (nodeId) => {
+      this.updateImage(nodeId);
+    };
+
+    chrome.readingMode.updateSelection = () => {
+      this.updateSelection();
+    };
+
+    chrome.readingMode.updateVoicePackStatus =
+        (lang: string, status: string) => {
+          this.updateVoicePackStatus(lang, status);
+        };
+
+    chrome.readingMode.updateVoicePackStatusFromInstallResponse =
+        (lang: string, status: string) => {
+          this.updateVoicePackStatusFromInstallResponse(lang, status);
+        };
+
+    chrome.readingMode.showLoading = () => {
+      this.showLoading();
+    };
+
+    chrome.readingMode.showEmpty = () => {
+      this.showEmpty();
+    };
+
+    chrome.readingMode.restoreSettingsFromPrefs = () => {
+      this.restoreSettingsFromPrefs();
+    };
+
+    chrome.readingMode.languageChanged = () => {
+      this.languageChanged();
+    };
+
+    chrome.readingMode.onLockScreen = () => {
+      this.onLockScreen();
     };
   }
 
