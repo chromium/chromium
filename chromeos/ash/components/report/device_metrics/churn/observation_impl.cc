@@ -444,22 +444,18 @@ std::optional<FresnelImportData> ObservationImpl::GenerateObservationImportData(
     if (!first_active_week_ts.has_value() ||
         first_active_week_ts.value() == base::Time() ||
         first_active_week_ts.value() == base::Time::UnixEpoch()) {
-      LOG(ERROR) << "Failed to retrieve first active week from VPD. Leaving "
-                    "first active and last powerwash week unset.";
+      LOG(ERROR) << "Failed to retrieve first active week from VPD. "
+                    "Setting first active and last powerwash week to UNKNOWN.";
+      observation_metadata->set_first_active_week("UNKNOWN");
+      observation_metadata->set_last_powerwash_week("UNKNOWN");
     } else {
-      bool within_date_range = utils::IsFirstActiveUnderFourMonthsAgo(
-          active_ts, first_active_week_ts.value());
-
-      PrefService* local_state = GetParams()->GetLocalState();
-      bool is_new_churn_metadata_attached_previously = local_state->GetBoolean(
-          prefs::kDeviceActiveChurnObservationFirstObservedNewChurnMetadata);
+      int max_days_in_4_months = 31 * 4;
+      bool within_date_range = utils::IsFirstActiveUnderNDaysAgo(
+          active_ts, first_active_week_ts.value(), max_days_in_4_months);
 
       // Privacy approved 4 months of first active week history.
       // Reference b/316402479.
-      // In order for analysts to avoid double counting on the server-side,
-      // We also want to confirm the device never attached the new device
-      // churn metadata in previous observation pings.
-      if (within_date_range && !is_new_churn_metadata_attached_previously) {
+      if (within_date_range) {
         observation_metadata->set_first_active_week(
             utils::ConvertTimeToISO8601String(first_active_week_ts.value()));
 
@@ -467,14 +463,6 @@ std::optional<FresnelImportData> ObservationImpl::GenerateObservationImportData(
         // |ReportControllerInitializer|.
         observation_metadata->set_last_powerwash_week(
             GetParams()->GetChromeDeviceParams().last_powerwash_week);
-
-        // New device churn metadata is attached in only one observation ping
-        // on a device. Devices that perform anything other than a safe
-        // powerwash will reset the |last_powerwash_week| and
-        // |is_new_churn_metadata_attached_previously| values.
-        local_state->SetBoolean(
-            prefs::kDeviceActiveChurnObservationFirstObservedNewChurnMetadata,
-            true);
       }
     }
   }

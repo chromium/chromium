@@ -94,6 +94,13 @@ message ChurnCohortMetadata {
   // Compare the first active weeks obtained from the VPD to determine if the
   // device is new during the cohort month.
   optional bool is_first_active_in_cohort = 2;
+
+  // Device ActivateDate, read from VPD. In YYYY-WW ISO8601 format.
+  // Value exists after first OOBE completion and device restart.
+  // Statistics provider loads VPD file in the chrome browser preloop,
+  // before ActivateDate may be first written.
+  // Field is only set if ActivateDate is <= 5 weeks old.
+  optional string first_active_week = 4;
 }
 
 // The metadata which is related to Churn Observation request.

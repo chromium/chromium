@@ -44,9 +44,10 @@ std::optional<base::Time> GetPreviousYear(base::Time ts);
 // Return if |ts1| and |ts2| have the same month and year.
 bool IsSameYearAndMonth(base::Time ts1, base::Time ts2);
 
-// Checks if first active week is under 4 months before active_ts.
-bool IsFirstActiveUnderFourMonthsAgo(base::Time active_ts,
-                                     base::Time first_active_week);
+// Check if first active week is under num_days before active ts.
+bool IsFirstActiveUnderNDaysAgo(base::Time active_ts,
+                                base::Time first_active_week,
+                                int num_days);
 
 // Formats |ts| as a GMT string in the format "YYYY-MM-DD 00:00:00.000 GMT".
 std::string FormatTimestampToMidnightGMTString(base::Time ts);

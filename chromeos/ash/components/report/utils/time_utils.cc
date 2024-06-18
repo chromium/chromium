@@ -137,11 +137,11 @@ bool IsSameYearAndMonth(base::Time ts1, base::Time ts2) {
          (ts1_exploded.month == ts2_exploded.month);
 }
 
-bool IsFirstActiveUnderFourMonthsAgo(base::Time active_ts,
-                                     base::Time first_active_week) {
-  // Simplify calculation to determine whether device was first active
-  // within 4 months in the past. Assume max of 31 days in a month.
-  base::Time starting_point = active_ts - base::Days(4 * 31);
+bool IsFirstActiveUnderNDaysAgo(base::Time active_ts,
+                                base::Time first_active_week,
+                                int num_days) {
+  // Checks for the starting point which is num of days before active_ts.
+  base::Time starting_point = active_ts - base::Days(num_days);
 
   // Check if first_active_week is after the starting point
   return first_active_week >= starting_point;

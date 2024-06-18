@@ -438,9 +438,9 @@ TEST_F(ObservationImplDirectCheckInTest, GenerateObservationImportData) {
     const std::string expected_first_active_week;
     const std::string expected_last_powerwash_week;
   } kTestCases[] = {
-      {0, false, true, std::string(), std::string()},
-      {1, true, false, std::string(), std::string()},
-      {2, false, true, std::string(), std::string()},
+      {0, false, true, "UNKNOWN", "UNKNOWN"},
+      {1, true, false, "UNKNOWN", "UNKNOWN"},
+      {2, false, true, "UNKNOWN", "UNKNOWN"},
   };
 
   // Validate observation import data.
@@ -481,17 +481,19 @@ TEST_F(ObservationImplDirectCheckInTest, ObservationImportDataNewDeviceChurn) {
 
   struct {
     const std::string activate_date_vpd;
-    bool is_first_active_week_set_obs_0;
-    bool is_first_active_week_set_obs_1;
-    bool is_first_active_week_set_obs_2;
+    std::string first_active_week_obs_0;
+    std::string first_active_week_obs_1;
+    std::string first_active_week_obs_2;
   } kTestCases[] = {
-      {"2023-01", true, false, false},
-      {"2022-36", true, false, false},
+      {"2023-01", "2023-01", "2023-01", "2023-01"},
+      {"2022-36", "2022-36", "2022-36", "2022-36"},
 
-      /* ActivateDate is > 4 months old */ {"2022-35", false, false, false},
-      /* ActivateDate is undefined */ {std::string(), false, false, false},
+      /* ActivateDate is > 4 months old */
+      {"2022-35", "", "", ""},
+      /* ActivateDate is undefined */
+      {std::string(), "UNKNOWN", "UNKNOWN", "UNKNOWN"},
       /* ActivateDate is incorrectly formatted */
-      {"123-456", false, false, false},
+      {"123-456", "UNKNOWN", "UNKNOWN", "UNKNOWN"},
   };
 
   // Initialize fake statistics provider to test various activate date inputs.
@@ -502,11 +504,6 @@ TEST_F(ObservationImplDirectCheckInTest, ObservationImportDataNewDeviceChurn) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(testing::Message() << "Test input Activate Date VPD as: "
                                     << test_case.activate_date_vpd);
-    // Reset boolean to indicate device didn't attach new device churn metadata
-    // in previous observation pings.
-    GetLocalState()->SetBoolean(
-        prefs::kDeviceActiveChurnObservationFirstObservedNewChurnMetadata,
-        false);
 
     // Set ActivateDate field in FakeStatisticsProvider before reading
     // ActivateDate in the GenerateImportRequestBody method.
@@ -526,12 +523,12 @@ TEST_F(ObservationImplDirectCheckInTest, ObservationImportDataNewDeviceChurn) {
     ASSERT_TRUE(obs_data_1.has_churn_observation_metadata());
     ASSERT_TRUE(obs_data_2.has_churn_observation_metadata());
 
-    EXPECT_EQ(obs_data_0.churn_observation_metadata().has_first_active_week(),
-              test_case.is_first_active_week_set_obs_0);
-    EXPECT_EQ(obs_data_1.churn_observation_metadata().has_first_active_week(),
-              test_case.is_first_active_week_set_obs_1);
-    EXPECT_EQ(obs_data_2.churn_observation_metadata().has_first_active_week(),
-              test_case.is_first_active_week_set_obs_2);
+    EXPECT_EQ(obs_data_0.churn_observation_metadata().first_active_week(),
+              test_case.first_active_week_obs_0);
+    EXPECT_EQ(obs_data_1.churn_observation_metadata().first_active_week(),
+              test_case.first_active_week_obs_1);
+    EXPECT_EQ(obs_data_2.churn_observation_metadata().first_active_week(),
+              test_case.first_active_week_obs_2);
   }
 
   // Set statistics test provider to nullptr after tests.
