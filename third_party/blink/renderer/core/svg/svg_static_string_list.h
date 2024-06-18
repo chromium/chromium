@@ -63,7 +63,7 @@ class SVGStaticStringList final : public GarbageCollected<SVGStaticStringList>,
   bool IsAnimating() const override;
   void SetAnimatedValue(SVGPropertyBase*) override;
 
-  SVGParsingError AttributeChanged(const AtomicString&) override;
+  SVGParsingError AttributeChanged(const String&) override;
 
   SVGStringListBase* Value() { return value_.Get(); }
   SVGStringListTearOff* TearOff();

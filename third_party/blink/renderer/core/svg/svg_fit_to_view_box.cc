@@ -39,11 +39,10 @@ class SVGAnimatedViewBoxRect : public SVGAnimatedRect {
   SVGAnimatedViewBoxRect(SVGElement* context_element)
       : SVGAnimatedRect(context_element, svg_names::kViewBoxAttr) {}
 
-  SVGParsingError AttributeChanged(const AtomicString&) override;
+  SVGParsingError AttributeChanged(const String&) override;
 };
 
-SVGParsingError SVGAnimatedViewBoxRect::AttributeChanged(
-    const AtomicString& value) {
+SVGParsingError SVGAnimatedViewBoxRect::AttributeChanged(const String& value) {
   SVGParsingError parse_status = SVGAnimatedRect::AttributeChanged(value);
 
   if (parse_status == SVGParseStatus::kNoError &&

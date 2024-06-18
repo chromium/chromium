@@ -71,8 +71,7 @@ SVGStringListTearOff* SVGStaticStringList::TearOff() {
   return tear_off_.Get();
 }
 
-SVGParsingError SVGStaticStringList::AttributeChanged(
-    const AtomicString& value) {
+SVGParsingError SVGStaticStringList::AttributeChanged(const String& value) {
   ClearBaseValueNeedsSynchronization();
   return value_->SetValueAsString(value);
 }
