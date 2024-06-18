@@ -117,15 +117,6 @@ static_library("renderer") {
     "worker_content_settings_client.h",
   ]
 
-  if (enable_bound_session_credentials) {
-    sources += [
-      "bound_session_credentials/bound_session_request_throttled_handler_renderer_impl.cc",
-      "bound_session_credentials/bound_session_request_throttled_handler_renderer_impl.h",
-      "bound_session_credentials/bound_session_request_throttled_in_renderer_manager.cc",
-      "bound_session_credentials/bound_session_request_throttled_in_renderer_manager.h",
-    ]
-  }
-
   defines = []
 
   public_deps = [
@@ -247,6 +238,15 @@ static_library("renderer") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
+  if (enable_bound_session_credentials) {
+    sources += [
+      "bound_session_credentials/bound_session_request_throttled_handler_renderer_impl.cc",
+      "bound_session_credentials/bound_session_request_throttled_handler_renderer_impl.h",
+      "bound_session_credentials/bound_session_request_throttled_in_renderer_manager.cc",
+      "bound_session_credentials/bound_session_request_throttled_in_renderer_manager.h",
+    ]
+  }
+
   if (enable_nacl) {
     deps += [ "//components/nacl/renderer" ]
 
@@ -299,13 +299,6 @@ static_library("renderer") {
     deps += [
       "//components/pdf/renderer",
       "//pdf:features",
-    ]
-  }
-
-  if (is_chromeos_ash) {
-    deps += [
-      "//ash/constants",
-      "//ash/webui/file_manager:constants",
     ]
   }
 
@@ -369,6 +362,7 @@ static_library("renderer") {
     ]
     public_deps += [ "//ipc" ]
   }
+
   if (enable_spellcheck) {
     deps += [ "//components/spellcheck/renderer:renderer" ]
   }
@@ -398,29 +392,19 @@ static_library("renderer") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_android) {
     sources += [
-      "extensions/api/file_browser_handler_custom_bindings.cc",
-      "extensions/api/file_browser_handler_custom_bindings.h",
-      "extensions/api/platform_keys_natives.cc",
-      "extensions/api/platform_keys_natives.h",
+      "net/available_offline_content_helper.cc",
+      "net/available_offline_content_helper.h",
+      "net/page_auto_fetcher_helper_android.cc",
+      "net/page_auto_fetcher_helper_android.h",
+      "sandbox_status_extension_android.cc",
+      "sandbox_status_extension_android.h",
+      "wallet/boarding_pass_extractor.cc",
+      "wallet/boarding_pass_extractor.h",
     ]
-    if (use_cups) {
-      sources += [
-        "extensions/api/printing_hooks_delegate.cc",
-        "extensions/api/printing_hooks_delegate.h",
-      ]
-    }
-  }
-
-  if (is_chromeos_ash) {
-    sources += [
-      "extensions/api/file_manager_private_custom_bindings.cc",
-      "extensions/api/file_manager_private_custom_bindings.h",
-    ]
-  }
-
-  if (!is_android) {
+    deps += [ "//chrome/common/wallet:mojo_bindings" ]
+  } else {
     sources += [
       "accessibility/ax_tree_distiller.cc",
       "accessibility/ax_tree_distiller.h",
@@ -451,18 +435,19 @@ static_library("renderer") {
     ]
   }
 
-  if (is_android) {
+  if (is_chromeos) {
     sources += [
-      "net/available_offline_content_helper.cc",
-      "net/available_offline_content_helper.h",
-      "net/page_auto_fetcher_helper_android.cc",
-      "net/page_auto_fetcher_helper_android.h",
-      "sandbox_status_extension_android.cc",
-      "sandbox_status_extension_android.h",
-      "wallet/boarding_pass_extractor.cc",
-      "wallet/boarding_pass_extractor.h",
+      "extensions/api/file_browser_handler_custom_bindings.cc",
+      "extensions/api/file_browser_handler_custom_bindings.h",
+      "extensions/api/platform_keys_natives.cc",
+      "extensions/api/platform_keys_natives.h",
     ]
-    deps += [ "//chrome/common/wallet:mojo_bindings" ]
+    if (use_cups) {
+      sources += [
+        "extensions/api/printing_hooks_delegate.cc",
+        "extensions/api/printing_hooks_delegate.h",
+      ]
+    }
   }
 
   if (is_chromeos_ash) {
@@ -471,10 +456,15 @@ static_library("renderer") {
       "ash_merge_session_loader_throttle.h",
       "chromeos_delayed_callback_group.cc",
       "chromeos_delayed_callback_group.h",
+      "extensions/api/file_manager_private_custom_bindings.cc",
+      "extensions/api/file_manager_private_custom_bindings.h",
     ]
-  }
 
-  if (is_chromeos_ash) {
+    deps += [
+      "//ash/constants",
+      "//ash/webui/file_manager:constants",
+    ]
+
     if (target_cpu == "x64") {
       sources += [
         "performance_manager/mechanisms/userspace_swap_impl_chromeos.cc",
