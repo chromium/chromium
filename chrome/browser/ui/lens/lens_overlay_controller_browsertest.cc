@@ -288,17 +288,34 @@ class LensOverlayQueryControllerFake : public lens::LensOverlayQueryController {
       lens::mojom::CenterRotatedBoxPtr region,
       std::map<std::string, std::string> additional_search_query_params,
       std::optional<SkBitmap> region_bytes) override {
+    Reset();
     last_queried_region_ = region->Clone();
     last_queried_region_bytes_ = region_bytes;
     LensOverlayQueryController::SendRegionSearch(
         std::move(region), additional_search_query_params, region_bytes);
   }
 
+  void SendMultimodalRequest(
+      lens::mojom::CenterRotatedBoxPtr region,
+      const std::string& query_text,
+      lens::LensOverlaySelectionType multimodal_selection_type,
+      std::map<std::string, std::string> additional_search_query_params)
+      override {
+    Reset();
+    last_queried_region_ = region.Clone();
+    last_queried_text_ = query_text;
+    last_multimodal_selection_type_ = multimodal_selection_type;
+  }
+
   void Reset() {
+    last_multimodal_selection_type_ = lens::UNKNOWN_SELECTION_TYPE;
     last_queried_region_.reset();
+    last_queried_text_.clear();
     last_queried_region_bytes_ = std::nullopt;
   }
 
+  std::string last_queried_text_;
+  lens::LensOverlaySelectionType last_multimodal_selection_type_;
   lens::mojom::CenterRotatedBoxPtr last_queried_region_;
   std::optional<SkBitmap> last_queried_region_bytes_;
 };
@@ -1981,6 +1998,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
                             second_search_url);
   EXPECT_TRUE(loaded_search_query->selected_region_thumbnail_uri_.empty());
   EXPECT_FALSE(loaded_search_query->selected_region_);
+  EXPECT_TRUE(loaded_search_query->selected_region_bitmap_.drawsNothing());
   EXPECT_TRUE(loaded_search_query->selected_text_);
   GURL url_without_start_time_or_size =
       RemoveStartTimeAndSizeParams(observer.last_navigation_url());
@@ -2026,6 +2044,159 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
   VerifySearchQueryParameters(pop_observer.last_navigation_url());
   VerifyTextQueriesAreEqual(pop_observer.last_navigation_url(),
                             first_search_url);
+}
+
+IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,
+                       PopAndLoadQueryFromHistoryWithMultimodalRequest) {
+  WaitForPaint();
+
+  // State should start in off.
+  auto* controller = browser()
+                         ->tab_strip_model()
+                         ->GetActiveTab()
+                         ->tab_features()
+                         ->lens_overlay_controller();
+  ASSERT_EQ(controller->state(), State::kOff);
+
+  // Showing UI should change the state to screenshot and eventually to overlay.
+  controller->ShowUIWithPendingRegion(
+      LensOverlayInvocationSource::kContentAreaContextMenuImage,
+      kTestRegion->Clone(), CreateNonEmptyBitmap(100, 100));
+  ASSERT_EQ(controller->state(), State::kScreenshot);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return controller->state() == State::kOverlayAndResults; }));
+  EXPECT_TRUE(content::WaitForLoadStop(GetOverlayWebContents()));
+  EXPECT_TRUE(controller->GetOverlayViewForTesting()->GetVisible());
+
+  // Loading a url in the side panel should show the results page.
+  const GURL first_search_url(
+      "https://www.google.com/"
+      "search?source=chrome.cr.ctxi&q=&lns_fp=1&lns_mode=un"
+      "&gsc=1&hl=en-US&cs=0");
+  controller->LoadURLInResultsFrame(first_search_url);
+  EXPECT_TRUE(content::WaitForLoadStop(
+      controller->GetSidePanelWebContentsForTesting()));
+
+  // The search query history stack should be empty and the currently loaded
+  // query should be set.
+  EXPECT_TRUE(controller->get_search_query_history_for_testing().empty());
+  auto loaded_search_query = controller->get_loaded_search_query_for_testing();
+  EXPECT_TRUE(loaded_search_query);
+  EXPECT_TRUE(loaded_search_query->search_query_text_.empty());
+  VerifySearchQueryParameters(loaded_search_query->search_query_url_);
+  VerifyTextQueriesAreEqual(loaded_search_query->search_query_url_,
+                            first_search_url);
+  EXPECT_FALSE(loaded_search_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_EQ(loaded_search_query->selected_region_, kTestRegion);
+  EXPECT_FALSE(loaded_search_query->selected_region_bitmap_.drawsNothing());
+  EXPECT_EQ(loaded_search_query->selected_region_bitmap_.width(), 100);
+  EXPECT_EQ(loaded_search_query->selected_region_bitmap_.height(), 100);
+  EXPECT_EQ(loaded_search_query->multimodal_selection_type_,
+            lens::UNKNOWN_SELECTION_TYPE);
+  EXPECT_FALSE(loaded_search_query->selected_text_);
+
+  // Loading a second url in the side panel should show the results page.
+  const GURL second_search_url(
+      "https://www.google.com/"
+      "search?source=chrome.gsc&ie=UTF-8&oq=green&vsint=KgwKAggHEgIIEhgAIAI&"
+      "gsc=1&hl=en-US&cs=0&q=green&lns_mode=mu&lns_fp=1&udm=24");
+  // We can't use content::WaitForLoadStop here since the last navigation is
+  // successful.
+  content::TestNavigationObserver first_searchbox_query_observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->IssueSearchBoxRequestForTesting(
+      "green", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      /*is_zero_prefix_suggestion=*/false,
+      std::map<std::string, std::string>());
+  controller->LoadURLInResultsFrame(second_search_url);
+  first_searchbox_query_observer.WaitForNavigationFinished();
+
+  // The search query history stack should have 1 entry and the currently loaded
+  // query should be set to the new query
+  EXPECT_EQ(controller->get_search_query_history_for_testing().size(), 1UL);
+  loaded_search_query.reset();
+  loaded_search_query = controller->get_loaded_search_query_for_testing();
+  EXPECT_TRUE(loaded_search_query);
+  EXPECT_EQ(loaded_search_query->search_query_text_, "green");
+  VerifySearchQueryParameters(loaded_search_query->search_query_url_);
+  VerifyTextQueriesAreEqual(loaded_search_query->search_query_url_,
+                            second_search_url);
+  EXPECT_FALSE(loaded_search_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_TRUE(loaded_search_query->selected_region_);
+  EXPECT_FALSE(loaded_search_query->selected_text_);
+  EXPECT_EQ(loaded_search_query->multimodal_selection_type_,
+            lens::MULTIMODAL_SEARCH);
+
+  // Loading a third search url in the side panel should show the results page.
+  const GURL third_search_url(
+      "https://www.google.com/"
+      "search?source=chrome.gsc&ie=UTF-8&oq=red&vsint=KgwKAggHEgIIEhgAIAI&"
+      "gsc=1&hl=en-US&cs=0&q=red&lns_mode=mu&lns_fp=1&udm=24");
+  // We can't use content::WaitForLoadStop here since the last navigation is
+  // successful.
+  content::TestNavigationObserver second_searchbox_query_observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->IssueSearchBoxRequestForTesting(
+      "red", AutocompleteMatchType::Type::SEARCH_WHAT_YOU_TYPED,
+      /*is_zero_prefix_suggestion=*/true, std::map<std::string, std::string>());
+  controller->LoadURLInResultsFrame(third_search_url);
+  second_searchbox_query_observer.WaitForNavigationFinished();
+
+  // The search query history stack should have 2 entries and the currently
+  // loaded query should be set to the new query
+  EXPECT_EQ(controller->get_search_query_history_for_testing().size(), 2UL);
+  loaded_search_query.reset();
+  loaded_search_query = controller->get_loaded_search_query_for_testing();
+  EXPECT_TRUE(loaded_search_query);
+  EXPECT_EQ(loaded_search_query->search_query_text_, "red");
+  VerifySearchQueryParameters(loaded_search_query->search_query_url_);
+  VerifyTextQueriesAreEqual(loaded_search_query->search_query_url_,
+                            third_search_url);
+  EXPECT_FALSE(loaded_search_query->selected_region_thumbnail_uri_.empty());
+  EXPECT_TRUE(loaded_search_query->selected_region_);
+  EXPECT_FALSE(loaded_search_query->selected_text_);
+  EXPECT_EQ(loaded_search_query->multimodal_selection_type_,
+            lens::MULTIMODAL_SUGGEST_ZERO_PREFIX);
+
+  // Popping a query with a region should resend a multimodal request.
+  auto* fake_query_controller = static_cast<LensOverlayQueryControllerFake*>(
+      controller->get_lens_overlay_query_controller_for_testing());
+  fake_query_controller->Reset();
+  controller->PopAndLoadQueryFromHistory();
+
+  // Verify the new interaction request was sent.
+  // TODO(b/348003311): Add support for sending the selected region bitmap
+  // in the multimodal request.
+  EXPECT_EQ(controller->get_selected_region_for_testing(), kTestRegion);
+  EXPECT_FALSE(controller->get_selected_text_for_region());
+  EXPECT_EQ(fake_query_controller->last_queried_region_, kTestRegion);
+  EXPECT_FALSE(fake_query_controller->last_queried_region_bytes_);
+  EXPECT_EQ(fake_query_controller->last_queried_text_, "green");
+  EXPECT_EQ(fake_query_controller->last_multimodal_selection_type_,
+            lens::MULTIMODAL_SEARCH);
+
+  // The full sequence of events necessary to load Lens search results is not
+  // currently testable, so load the expected URL manually.
+  content::TestNavigationObserver pop_observer(
+      controller->GetSidePanelWebContentsForTesting());
+  controller->LoadURLInResultsFrame(second_search_url);
+  pop_observer.Wait();
+
+  // Popping the query stack again should show the initial query.
+  fake_query_controller->Reset();
+  controller->PopAndLoadQueryFromHistory();
+
+  // Verify that the last queried data did not contain any query text or
+  // multimodal selection type.
+  EXPECT_EQ(controller->get_selected_region_for_testing(), kTestRegion);
+  EXPECT_FALSE(controller->get_selected_text_for_region());
+  EXPECT_EQ(fake_query_controller->last_queried_region_, kTestRegion);
+  EXPECT_TRUE(fake_query_controller->last_queried_region_bytes_);
+  EXPECT_EQ(fake_query_controller->last_queried_region_bytes_->width(), 100);
+  EXPECT_EQ(fake_query_controller->last_queried_region_bytes_->height(), 100);
+  EXPECT_TRUE(fake_query_controller->last_queried_text_.empty());
+  EXPECT_EQ(fake_query_controller->last_multimodal_selection_type_,
+            lens::UNKNOWN_SELECTION_TYPE);
 }
 
 IN_PROC_BROWSER_TEST_F(LensOverlayControllerBrowserTest,

@@ -91,7 +91,7 @@ class LensOverlayQueryController {
       std::map<std::string, std::string> additional_search_query_params);
 
   // Sends a multimodal interaction. Expected to be called multiple times.
-  void SendMultimodalRequest(
+  virtual void SendMultimodalRequest(
       lens::mojom::CenterRotatedBoxPtr region,
       const std::string& query_text,
       lens::LensOverlaySelectionType multimodal_selection_type,

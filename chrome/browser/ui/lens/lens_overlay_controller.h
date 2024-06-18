@@ -116,6 +116,8 @@ class LensOverlayController : public LensSearchboxClient,
     std::map<std::string, std::string> additional_search_query_params_;
     // The url that the search query loaded into the results frame.
     GURL search_query_url_;
+    // The multimodal selection type of the current multimodal request, if any.
+    lens::LensOverlaySelectionType multimodal_selection_type_;
   };
 
   // Returns whether the lens overlay feature is enabled.
@@ -335,6 +337,13 @@ class LensOverlayController : public LensSearchboxClient,
       const std::string& content_language,
       int selection_start_index,
       int selection_end_index);
+
+  // Testing function to issue a searchbox request.
+  void IssueSearchBoxRequestForTesting(
+      const std::string& search_box_text,
+      AutocompleteMatchType::Type match_type,
+      bool is_zero_prefix_suggestion,
+      std::map<std::string, std::string> additional_query_params);
 
   // Gets string for invocation source enum, used for logging metrics.
   std::string GetInvocationSourceString();
@@ -733,6 +742,12 @@ class LensOverlayController : public LensSearchboxClient,
   // the overlay. If the user hasn't made any selection or has made a text
   // selection this will contain an empty string. Returned by GetThumbnail().
   std::string selected_region_thumbnail_uri_;
+
+  // The multimodal selection type of the current multimodal request. If the
+  // user is not currently viewing results for a multimodal query, this will be
+  // set to UNKNOWN_SELECTION_TYPE.
+  lens::LensOverlaySelectionType multimodal_selection_type_ =
+      lens::UNKNOWN_SELECTION_TYPE;
 
   // Connections to and from the overlay WebUI. Only valid while
   // `overlay_view_` is showing, and after the WebUI has started executing JS
