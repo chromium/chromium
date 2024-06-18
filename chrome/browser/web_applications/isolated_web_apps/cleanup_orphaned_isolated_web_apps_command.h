@@ -36,6 +36,9 @@ std::ostream& operator<<(
     const CleanupOrphanedIsolatedWebAppsCommandSuccess& success);
 
 struct CleanupOrphanedIsolatedWebAppsCommandError {
+  enum class Type { kCouldNotDeleteAllBundles, kSystemShutdown };
+
+  Type type;
   std::string message;
 };
 

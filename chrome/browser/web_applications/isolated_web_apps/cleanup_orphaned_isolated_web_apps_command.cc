@@ -77,8 +77,10 @@ GetResult(int number_of_deleted_directories, bool success) {
     return CleanupOrphanedIsolatedWebAppsCommandSuccess(
         /*number_of_cleaned_up_directories=*/number_of_deleted_directories);
   }
-  return base::unexpected(CleanupOrphanedIsolatedWebAppsCommandError(
-      "Could not delete all orphaned isolated web apps."));
+  return base::unexpected(CleanupOrphanedIsolatedWebAppsCommandError{
+      .type = CleanupOrphanedIsolatedWebAppsCommandError::Type::
+          kCouldNotDeleteAllBundles,
+      .message = "Could not delete all orphaned isolated web apps."});
 }
 
 }  // namespace
@@ -107,8 +109,19 @@ std::ostream& operator<<(
 std::ostream& operator<<(
     std::ostream& os,
     const CleanupOrphanedIsolatedWebAppsCommandError& error) {
-  return os << "CleanupOrphanedIsolatedWebAppsCommandError { message = \""
-            << error.message << "\" }.";
+  std::string type;
+  switch (error.type) {
+    case CleanupOrphanedIsolatedWebAppsCommandError::Type::
+        kCouldNotDeleteAllBundles:
+      type = "CouldNotDeleteAllBundles";
+      break;
+    case CleanupOrphanedIsolatedWebAppsCommandError::Type::kSystemShutdown:
+      type = "SystemShutdown";
+  }
+  return os << base::Value::Dict()
+                   .Set("message", error.message)
+                   .Set("type", type)
+                   .DebugString();
 }
 
 CleanupOrphanedIsolatedWebAppsCommand::CleanupOrphanedIsolatedWebAppsCommand(
@@ -122,6 +135,8 @@ CleanupOrphanedIsolatedWebAppsCommand::CleanupOrphanedIsolatedWebAppsCommand(
           std::move(callback),
           /*args_for_shutdown=*/
           base::unexpected(CleanupOrphanedIsolatedWebAppsCommandError{
+              .type = CleanupOrphanedIsolatedWebAppsCommandError::Type::
+                  kSystemShutdown,
               .message = std::string("System shutting down.")})),
       profile_(profile) {}
 
