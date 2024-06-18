@@ -348,10 +348,12 @@ TestImageBacking::ProduceSkiaGanesh(
       // Use the format and size per plane for multiplanar formats.
       gfx::Size plane_size = format().GetPlaneSize(plane_index, size());
       GLFormatDesc format_desc = caps.ToGLFormatDesc(format(), plane_index);
+      // TODO(b/346406519): Investigate if possible to change target to
+      // GL_TEXTURE_2D.
       auto backend_texture = GrBackendTextures::MakeGL(
           plane_size.width(), plane_size.height(), skgpu::Mipmapped::kNo,
           GrGLTextureInfo{
-              GL_TEXTURE_2D, textures_[plane_index]->service_id(),
+              GL_TEXTURE_EXTERNAL_OES, textures_[plane_index]->service_id(),
               static_cast<GrGLenum>(format_desc.storage_internal_format)});
 
       if (!backend_texture.isValid()) {

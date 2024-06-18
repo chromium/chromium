@@ -23,6 +23,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/command_buffer/common/discardable_handle.h"
@@ -69,23 +70,40 @@ class Buffer;
 namespace {
 
 struct CleanUpContext {
-  scoped_refptr<base::SingleThreadTaskRunner> main_task_runner;
-  raw_ptr<SharedContextState> shared_context_state = nullptr;
-  std::unique_ptr<SkiaImageRepresentation> skia_representation;
-  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess> skia_scoped_access;
+  scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
+  raw_ptr<SharedContextState> shared_context_state_ = nullptr;
+  std::unique_ptr<SkiaImageRepresentation> skia_representation_;
+  std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
+      skia_scoped_access_;
+  size_t num_callbacks_pending_;
+  CleanUpContext(scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
+                 raw_ptr<SharedContextState> shared_context_state,
+                 std::unique_ptr<SkiaImageRepresentation> skia_representation,
+                 std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess>
+                     skia_scoped_access)
+      : main_task_runner_(main_task_runner),
+        shared_context_state_(shared_context_state),
+        skia_representation_(std::move(skia_representation)),
+        skia_scoped_access_(std::move(skia_scoped_access)),
+        num_callbacks_pending_(skia_representation_->NumPlanesExpected()) {}
 };
 
 void CleanUpResource(SkImages::ReleaseContext context) {
   auto* clean_up_context = static_cast<CleanUpContext*>(context);
-  DCHECK(clean_up_context->main_task_runner->BelongsToCurrentThread());
+  DCHECK(clean_up_context->main_task_runner_->BelongsToCurrentThread());
 
   // The context should be current as we set it to be current earlier, and this
   // call is coming from Skia itself.
   DCHECK(
-      clean_up_context->shared_context_state->IsCurrent(/*surface=*/nullptr));
+      clean_up_context->shared_context_state_->IsCurrent(/*surface=*/nullptr));
+  clean_up_context->skia_scoped_access_->ApplyBackendSurfaceEndState();
 
-  clean_up_context->skia_scoped_access->ApplyBackendSurfaceEndState();
-  delete clean_up_context;
+  CHECK_GT(clean_up_context->num_callbacks_pending_, 0u);
+  clean_up_context->num_callbacks_pending_--;
+
+  if (clean_up_context->num_callbacks_pending_ == 0u) {
+    delete clean_up_context;
+  }
 }
 
 }  // namespace
@@ -230,35 +248,9 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
   std::vector<sk_sp<SkImage>> plane_sk_images;
   std::optional<base::ScopedClosureRunner> notify_gl_state_changed;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Right now, we only support YUV 4:2:0 for the output of the decoder (either
-  // as YV12 or NV12).
-  //
-  // TODO(andrescj): change to gfx::BufferFormat::YUV_420 once
-  // https://crrev.com/c/1573718 lands.
-  DCHECK(completed_decode->buffer_format == gfx::BufferFormat::YVU_420 ||
-         completed_decode->buffer_format ==
-             gfx::BufferFormat::YUV_420_BIPLANAR);
   DCHECK_EQ(
       gfx::NumberOfPlanesForLinearBufferFormat(completed_decode->buffer_format),
       completed_decode->handle.native_pixmap_handle.planes.size());
-
-  // Calculate the dimensions of each of the planes.
-  const gfx::Size y_plane_size = completed_decode->visible_size;
-  base::CheckedNumeric<int> safe_uv_width(y_plane_size.width());
-  base::CheckedNumeric<int> safe_uv_height(y_plane_size.height());
-  safe_uv_width += 1;
-  safe_uv_width /= 2;
-  safe_uv_height += 1;
-  safe_uv_height /= 2;
-  int uv_width;
-  int uv_height;
-  if (!safe_uv_width.AssignIfValid(&uv_width) ||
-      !safe_uv_height.AssignIfValid(&uv_height)) {
-    DLOG(ERROR) << "Could not calculate subsampled dimensions";
-    return;
-  }
-  gfx::Size uv_plane_size = gfx::Size(uv_width, uv_height);
-
   // We should notify the SharedContextState that we or Skia may have modified
   // the driver's GL state. We put this in a ScopedClosureRunner so that if we
   // return early, the SharedContextState ends up in a consistent state.
@@ -270,91 +262,79 @@ void ImageDecodeAcceleratorStub::ProcessCompletedDecode(
       },
       shared_context_state));
 
-  // Create an SkImage for each plane.
   const size_t num_planes =
       completed_decode->handle.native_pixmap_handle.planes.size();
   plane_sk_images.resize(num_planes);
-  for (size_t plane = 0u; plane < num_planes; plane++) {
-    gfx::Size plane_size = plane == 0 ? y_plane_size : uv_plane_size;
 
-    // Extract the plane out of |completed_decode->handle| and put it in its own
-    // gfx::GpuMemoryBufferHandle so that we can create a SharedImage for the
-    // plane.
-    gfx::GpuMemoryBufferHandle plane_handle;
-    plane_handle.type = completed_decode->handle.type;
-    plane_handle.native_pixmap_handle.planes.push_back(
-        std::move(completed_decode->handle.native_pixmap_handle.planes[plane]));
-    // Note that the buffer format for the plane is R_8 for all planes if the
-    // result of the decode is in YV12. For NV12, the first plane (luma) is R_8
-    // and the second plane (chroma) is RG_88.
-    const bool is_nv12_chroma_plane = completed_decode->buffer_format ==
-                                          gfx::BufferFormat::YUV_420_BIPLANAR &&
-                                      plane == 1u;
-    const auto plane_format = is_nv12_chroma_plane
-                                  ? viz::SinglePlaneFormat::kRG_88
-                                  : viz::SinglePlaneFormat::kR_8;
+  // Right now, we only support YUV 4:2:0 for the output of the decoder (either
+  // as YV12 or NV12).
+  CHECK(completed_decode->buffer_format == gfx::BufferFormat::YVU_420 ||
+        completed_decode->buffer_format == gfx::BufferFormat::YUV_420_BIPLANAR);
+  const auto format =
+      viz::GetSharedImageFormat(completed_decode->buffer_format);
+  const gfx::Size shared_image_size = completed_decode->visible_size;
+  const gpu::Mailbox mailbox = gpu::Mailbox::Generate();
+  if (!channel_->shared_image_stub()->CreateSharedImage(
+          mailbox, std::move(completed_decode->handle), format,
+          shared_image_size, gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin,
+          kOpaque_SkAlphaType,
+          SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_OOP_RASTERIZATION,
+          "ImageDecodeAccelerator")) {
+    DLOG(ERROR) << "Could not create SharedImage";
+    return;
+  }
 
-    // NOTE: The SurfaceHandle would typically be used to know what gpu adapter
-    // the buffer belongs to, but here we already have the buffer handle, so it
-    // should be OK to pass a null SurfaceHandle (it's not clear what
-    // SurfaceHandle was used to create the original buffers).
-    gpu::Mailbox mailbox = gpu::Mailbox::Generate();
-    if (!channel_->shared_image_stub()->CreateSharedImage(
-            mailbox, std::move(plane_handle), plane_format, plane_size,
-            gfx::ColorSpace(), kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType,
-            SHARED_IMAGE_USAGE_RASTER_READ |
-                SHARED_IMAGE_USAGE_OOP_RASTERIZATION,
-            "ImageDecodeAccelerator")) {
-      DLOG(ERROR) << "Could not create SharedImage";
-      return;
-    }
+  // Create the SkiaRepresentation::ScopedReadAccess from the SharedImage.
+  // There is a need to be careful here as the SkiaRepresentation can outlive
+  // the channel: the representation is effectively owned by the transfer
+  // cache, which is owned by SharedContextState, which is destroyed by
+  // GpuChannelManager *after* GpuChannelManager destroys the channels. Hence,
+  // we cannot supply the channel's SharedImageStub as a MemoryTracker to
+  // create a SharedImageRepresentationFactory here (the factory creates a
+  // MemoryTypeTracker instance backed by that MemoryTracker that needs to
+  // outlive the representation). Instead, we create the Skia representation
+  // directly using the SharedContextState's MemoryTypeTracker instance.
+  std::unique_ptr<SkiaImageRepresentation> skia_representation =
+      channel_->gpu_channel_manager()->shared_image_manager()->ProduceSkia(
+          mailbox, shared_context_state->memory_type_tracker(),
+          shared_context_state);
+  // Note that per the above reasoning, we have to make sure that the factory
+  // representation doesn't outlive the channel (since it *was* created via
+  // the channel). We can destroy it now that the Skia representation has been
+  // created (or if creation failed, we'll early out shortly, but we still need
+  // to destroy the SharedImage to avoid leaks).
+  channel_->shared_image_stub()->factory()->DestroySharedImage(mailbox);
+  if (!skia_representation) {
+    DLOG(ERROR) << "Could not create a SkiaImageRepresentation";
+    return;
+  }
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+  auto skia_scoped_access = skia_representation->BeginScopedReadAccess(
+      &begin_semaphores, &end_semaphores);
 
-    // Create the SkiaRepresentation::ScopedReadAccess from the SharedImage.
-    // There is a need to be careful here as the SkiaRepresentation can outlive
-    // the channel: the representation is effectively owned by the transfer
-    // cache, which is owned by SharedContextState, which is destroyed by
-    // GpuChannelManager *after* GpuChannelManager destroys the channels. Hence,
-    // we cannot supply the channel's SharedImageStub as a MemoryTracker to
-    // create a SharedImageRepresentationFactory here (the factory creates a
-    // MemoryTypeTracker instance backed by that MemoryTracker that needs to
-    // outlive the representation). Instead, we create the Skia representation
-    // directly using the SharedContextState's MemoryTypeTracker instance.
-    auto skia_representation =
-        channel_->gpu_channel_manager()->shared_image_manager()->ProduceSkia(
-            mailbox, shared_context_state->memory_type_tracker(),
-            shared_context_state);
+  if (!skia_scoped_access) {
+    DLOG(ERROR) << "Could not get scoped access to SkiaImageRepresentation";
+    return;
+  }
 
-    // Note that per the above reasoning, we have to make sure that the factory
-    // representation doesn't outlive the channel (since it *was* created via
-    // the channel). We can destroy it now that the skia representation is
-    // alive.
-    channel_->shared_image_stub()->factory()->DestroySharedImage(mailbox);
+  // As this SharedImage has just been created, there should not be any
+  // semaphores.
+  DCHECK(begin_semaphores.empty());
+  DCHECK(end_semaphores.empty());
 
-    std::vector<GrBackendSemaphore> begin_semaphores;
-    std::vector<GrBackendSemaphore> end_semaphores;
-    auto skia_scoped_access = skia_representation->BeginScopedReadAccess(
-        &begin_semaphores, &end_semaphores);
-
-    if (!skia_scoped_access) {
-      DLOG(ERROR) << "Could not get scoped access to SkiaImageRepresentation";
-      return;
-    }
-
-    // As this SharedImage has just been created, there should not be any
-    // semaphores.
-    DCHECK(begin_semaphores.empty());
-    DCHECK(end_semaphores.empty());
-
-    // Create the SkImage, handing over lifetime management of the
-    // skia image representation and scoped access.
-    CleanUpContext* resource = new CleanUpContext{};
-    resource->main_task_runner = channel_->task_runner();
-    resource->shared_context_state = shared_context_state.get();
-    resource->skia_representation = std::move(skia_representation);
-    resource->skia_scoped_access = std::move(skia_scoped_access);
-
-    plane_sk_images[plane] = resource->skia_scoped_access->CreateSkImage(
-        shared_context_state.get(), CleanUpResource, resource);
+  // Create the SkImage for each plane, handing over lifetime management of the
+  // skia image representation and scoped access.
+  CleanUpContext* resource = new CleanUpContext(
+      channel_->task_runner(), shared_context_state.get(),
+      std::move(skia_representation), std::move(skia_scoped_access));
+  const size_t num_planes_expected =
+      resource->skia_representation_->NumPlanesExpected();
+  for (size_t plane = 0u; plane < num_planes_expected; plane++) {
+    plane_sk_images[plane] =
+        resource->skia_scoped_access_->CreateSkImageForPlane(
+            base::checked_cast<int>(plane), shared_context_state.get(),
+            CleanUpResource, resource);
     if (!plane_sk_images[plane]) {
       DLOG(ERROR) << "Could not create planar SkImage";
       return;
