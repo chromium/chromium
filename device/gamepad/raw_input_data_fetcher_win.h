@@ -17,7 +17,6 @@
 #include <memory>
 
 #include "base/containers/heap_array.h"
-#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/win/message_window.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
@@ -27,8 +26,7 @@
 
 namespace device {
 
-class RawInputDataFetcher : public GamepadDataFetcher,
-                            public base::SupportsWeakPtr<RawInputDataFetcher> {
+class RawInputDataFetcher : public GamepadDataFetcher {
  public:
   using Factory = GamepadDataFetcherFactoryImpl<RawInputDataFetcher,
                                                 GamepadSource::kWinRaw>;
