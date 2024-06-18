@@ -420,7 +420,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyUser.DeviceOwner" enum="Boolean"
-    expires_after="2024-06-30">
+    expires_after="2024-12-12">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
@@ -684,7 +684,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ManagedUsers.RequestPermissionSource"
-    enum="ManagedUserURLRequestPermissionSource" expires_after="2024-06-30">
+    enum="ManagedUserURLRequestPermissionSource" expires_after="2024-12-12">
   <owner>agawronska@chromium.org</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
