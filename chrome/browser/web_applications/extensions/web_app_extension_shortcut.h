@@ -60,17 +60,6 @@ void CreateShortcuts(ShortcutCreationReason reason,
                      const extensions::Extension* app,
                      CreateShortcutsCallback callback);
 
-// Creates shortcuts for a webapp. This loads the app's icon from disk, and
-// calls CreateShortcutsWithInfo(). If you already have a ShortcutInfo with the
-// app's icon loaded, you should use CreateShortcutsWithInfo() directly.
-// TODO(crbug.com/40250591): Clean up after OS integration sub managers have
-// been released.
-void CreateShortcutsForWebApp(ShortcutCreationReason reason,
-                              const ShortcutLocations& locations,
-                              Profile* profile,
-                              const std::string& app_id,
-                              CreateShortcutsCallback callback);
-
 // Delete all shortcuts that have been created for the given profile and
 // extension.
 void DeleteAllShortcuts(Profile* profile, const extensions::Extension* app);

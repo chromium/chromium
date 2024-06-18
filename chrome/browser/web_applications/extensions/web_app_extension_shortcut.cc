@@ -260,20 +260,6 @@ void CreateShortcuts(ShortcutCreationReason reason,
                                        locations, std::move(callback)));
 }
 
-void CreateShortcutsForWebApp(ShortcutCreationReason reason,
-                              const ShortcutLocations& locations,
-                              Profile* profile,
-                              const std::string& app_id,
-                              CreateShortcutsCallback callback) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  WebAppProvider::GetForWebApps(profile)
-      ->os_integration_manager()
-      .GetShortcutInfoForApp(
-          app_id, base::BindOnce(&CreateShortcutsWithInfo, reason, locations,
-                                 std::move(callback)));
-}
-
 void DeleteAllShortcuts(Profile* profile, const extensions::Extension* app) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
