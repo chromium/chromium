@@ -53,8 +53,9 @@ std::string NormalizeLanguageCode(std::string language) {
   const std::vector<std::string> tokens = base::SplitString(
       language, "-_", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
-  if (tokens.size() == 0)
+  if (tokens.size() == 0) {
     return "";
+  }
 
   // Normalize the language portion to lowercase.
   const std::string language_only = base::ToLowerASCII(tokens[0]);
@@ -96,8 +97,9 @@ std::string NormalizeLanguageCode(std::string language) {
 mojom::AnnotationPtr ParseJsonOcrAnnotation(const base::Value& ocr_engine,
                                             const double min_ocr_confidence) {
   const base::Value::Dict* const ocr_engine_dict = ocr_engine.GetIfDict();
-  if (!ocr_engine_dict)
+  if (!ocr_engine_dict) {
     return mojom::AnnotationPtr(nullptr);
+  }
 
   // No OCR regions is valid - it just means there is no text.
   const base::Value* const ocr_regions = ocr_engine_dict->Find("ocrRegions");
@@ -107,54 +109,64 @@ mojom::AnnotationPtr ParseJsonOcrAnnotation(const base::Value& ocr_engine,
                                   std::string() /* text */);
   }
 
-  if (!ocr_regions->is_list())
+  if (!ocr_regions->is_list()) {
     return mojom::AnnotationPtr(nullptr);
+  }
 
   std::string all_ocr_text;
   int word_count = 0;
   double word_confidence_sum = 0.0;
   for (const base::Value& ocr_region : ocr_regions->GetList()) {
-    if (!ocr_region.is_dict())
+    if (!ocr_region.is_dict()) {
       continue;
+    }
 
     const base::Value::List* const words =
         ocr_region.GetDict().FindList("words");
-    if (!words)
+    if (!words) {
       continue;
+    }
 
     std::string region_ocr_text;
     for (const base::Value& word : *words) {
       const base::Value::Dict* word_dict = word.GetIfDict();
-      if (!word_dict)
+      if (!word_dict) {
         continue;
+      }
 
       const std::string* const detected_text =
           word_dict->FindString("detectedText");
-      if (!detected_text)
+      if (!detected_text) {
         continue;
+      }
 
       // A confidence value of 0 or 1 is interpreted as an int and not a double.
       std::optional<double> confidence =
           word_dict->FindDouble("confidenceScore");
-      if (!confidence.has_value() || *confidence < 0.0 || *confidence > 1.0)
+      if (!confidence.has_value() || *confidence < 0.0 || *confidence > 1.0) {
         continue;
+      }
 
-      if (*confidence < min_ocr_confidence)
+      if (*confidence < min_ocr_confidence) {
         continue;
+      }
 
-      if (detected_text->empty())
+      if (detected_text->empty()) {
         continue;
+      }
 
-      if (!region_ocr_text.empty())
+      if (!region_ocr_text.empty()) {
         region_ocr_text += " ";
+      }
 
       region_ocr_text += *detected_text;
       ++word_count;
       word_confidence_sum += *confidence;
     }
 
-    if (!all_ocr_text.empty() && !region_ocr_text.empty())
+    if (!all_ocr_text.empty() && !region_ocr_text.empty()) {
       all_ocr_text += "\n";
+    }
     all_ocr_text += region_ocr_text;
   }
 
@@ -181,8 +193,9 @@ std::tuple<bool, std::vector<mojom::AnnotationPtr>> ParseJsonDescAnnotations(
   std::vector<mojom::AnnotationPtr> results;
 
   const base::Value::Dict* desc_engine_dict = desc_engine.GetIfDict();
-  if (!desc_engine_dict)
+  if (!desc_engine_dict) {
     return {adult, std::move(results)};
+  }
 
   // If there is a failure reason, log it and track whether it is due to adult
   // content.
@@ -197,34 +210,41 @@ std::tuple<bool, std::vector<mojom::AnnotationPtr>> ParseJsonDescAnnotations(
 
   const base::Value::Dict* const desc_list_dict =
       desc_engine_dict->FindDict("descriptionList");
-  if (!desc_list_dict)
+  if (!desc_list_dict) {
     return {adult, std::move(results)};
+  }
 
   const base::Value::List* const desc_list =
       desc_list_dict->FindList("descriptions");
-  if (!desc_list)
+  if (!desc_list) {
     return {adult, std::move(results)};
+  }
 
   for (const base::Value& desc : *desc_list) {
     const base::Value::Dict* const desc_dict = desc.GetIfDict();
-    if (!desc_dict)
+    if (!desc_dict) {
       continue;
+    }
 
     const std::string* const type = desc_dict->FindString("type");
-    if (!type)
+    if (!type) {
       continue;
+    }
 
     const auto type_lookup = kAnnotationTypes->find(*type);
-    if (type_lookup == kAnnotationTypes->end())
+    if (type_lookup == kAnnotationTypes->end()) {
       continue;
+    }
 
     const std::optional<double> score = desc_dict->FindDouble("score");
-    if (!score.has_value())
+    if (!score.has_value()) {
       continue;
+    }
 
     const std::string* const text = desc_dict->FindString("text");
-    if (!text)
+    if (!text) {
       continue;
+    }
 
     ReportDescAnnotation(type_lookup->second, *score, text->empty());
 
@@ -248,27 +268,32 @@ std::tuple<bool, std::vector<mojom::AnnotationPtr>> ParseJsonDescAnnotations(
 mojom::AnnotationPtr ParseJsonIconAnnotations(const base::Value& icon_engine) {
   mojom::AnnotationPtr result;
   const base::Value::Dict* icon_engine_dict = icon_engine.GetIfDict();
-  if (!icon_engine_dict)
+  if (!icon_engine_dict) {
     return {};
+  }
 
   const base::Value::List* const icon_list = icon_engine_dict->FindList("icon");
-  if (!icon_list)
+  if (!icon_list) {
     return {};
+  }
 
   for (const base::Value& icon : *icon_list) {
     const base::Value::Dict* icon_dict = icon.GetIfDict();
-    if (!icon_dict)
+    if (!icon_dict) {
       continue;
+    }
 
     const std::string* const icon_type = icon_dict->FindString("iconType");
-    if (!icon_type)
+    if (!icon_type) {
       continue;
+    }
 
     std::string icon_type_value = *icon_type;
 
     const std::optional<double> score = icon_dict->FindDouble("score");
-    if (!score.has_value())
+    if (!score.has_value()) {
       continue;
+    }
 
     // Only return the first matching icon.
     auto type = mojom::AnnotationType::kIcon;
@@ -281,25 +306,29 @@ mojom::AnnotationPtr ParseJsonIconAnnotations(const base::Value& icon_engine) {
 // Returns the integer status code for this engine, or -1 if no status can be
 // extracted.
 int ExtractStatusCode(const base::Value::Dict* const status_dict) {
-  if (!status_dict)
+  if (!status_dict) {
     return -1;
+  }
 
   const base::Value* const code_value = status_dict->Find("code");
 
   // A missing code is the same as a default (i.e. OK) code.
-  if (!code_value)
+  if (!code_value) {
     return 0;
+  }
 
-  if (!code_value->is_int())
+  if (!code_value->is_int()) {
     return -1;
+  }
   const int code = code_value->GetInt();
 
 #ifndef NDEBUG
   // Also log error status messages (which are helpful for debugging).
   const std::string* const message = status_dict->FindString("message");
-  if (code != 0 && message)
+  if (code != 0 && message) {
     DVLOG(1) << "Engine failed with status " << code << " and message '"
              << *message << "'";
+  }
 #endif
 
   return code;
@@ -311,27 +340,32 @@ std::map<std::string, mojom::AnnotateImageResultPtr> UnpackJsonResponse(
     const base::Value& json_data,
     const double min_ocr_confidence) {
   const base::Value::Dict* json_dict = json_data.GetIfDict();
-  if (!json_dict)
+  if (!json_dict) {
     return {};
+  }
 
   const base::Value::List* const results = json_dict->FindList("results");
-  if (!results)
+  if (!results) {
     return {};
+  }
 
   std::map<std::string, mojom::AnnotateImageResultPtr> out;
   for (const base::Value& result : *results) {
     const base::Value::Dict* result_dict = result.GetIfDict();
-    if (!result_dict)
+    if (!result_dict) {
       continue;
+    }
 
     const std::string* const image_id = result_dict->FindString("imageId");
-    if (!image_id)
+    if (!image_id) {
       continue;
+    }
 
     const base::Value::List* const engine_results =
         result_dict->FindList("engineResults");
-    if (!engine_results)
+    if (!engine_results) {
       continue;
+    }
 
     // We expect the engine result list to have exactly two results: one for OCR
     // and one for image descriptions. However, we "robustly" handle missing
@@ -343,8 +377,9 @@ std::map<std::string, mojom::AnnotateImageResultPtr> UnpackJsonResponse(
     mojom::AnnotationPtr icon_annotation;
     for (const base::Value& engine_result : *engine_results) {
       const base::Value::Dict* engine_result_dict = engine_result.GetIfDict();
-      if (!engine_result_dict)
+      if (!engine_result_dict) {
         continue;
+      }
 
       // A non-zero status code means the following:
       //  -1:                       The status dict could not be parsed. We
@@ -532,8 +567,9 @@ void Annotator::AnnotateImage(
 
   // Don't start local work if it would duplicate some already-ongoing work.
   if (base::Contains(local_processors_, request_key) ||
-      base::Contains(pending_requests_, request_key))
+      base::Contains(pending_requests_, request_key)) {
     return;
+  }
 
   local_processors_.insert(
       {request_key, &request_info_list.back().image_processor});
@@ -548,15 +584,17 @@ void Annotator::AnnotateImage(
 
 // static
 bool Annotator::IsWithinDescPolicy(const int32_t width, const int32_t height) {
-  if (width < kDescMinDimension || height < kDescMinDimension)
+  if (width < kDescMinDimension || height < kDescMinDimension) {
     return false;
+  }
 
   // Can't be 0 or inf because |kDescMinDimension| is guaranteed positive (via a
   // static_assert).
   const double aspect_ratio = static_cast<double>(width) / height;
   if (aspect_ratio < 1.0 / kDescMaxAspectRatio ||
-      aspect_ratio > kDescMaxAspectRatio)
+      aspect_ratio > kDescMaxAspectRatio) {
     return false;
+  }
 
   return true;
 }
@@ -572,8 +610,9 @@ bool Annotator::IsWithinIconPolicy(const int32_t width, const int32_t height) {
   // static_assert).
   const double aspect_ratio = static_cast<double>(width) / height;
   if (aspect_ratio < 1.0 / kIconMaxAspectRatio ||
-      aspect_ratio > kIconMaxAspectRatio)
+      aspect_ratio > kIconMaxAspectRatio) {
     return false;
+  }
 
   return true;
 }
@@ -733,8 +772,9 @@ void Annotator::OnJpgImageDataReceived(
   pending_requests_.insert(request_key);
 
   // Start sending batches to the server.
-  if (!server_request_timer_->IsRunning())
+  if (!server_request_timer_->IsRunning()) {
     server_request_timer_->Reset();
+  }
 }
 
 void Annotator::SendRequestBatchToServer() {
@@ -832,9 +872,10 @@ void Annotator::ProcessResults(
 
     // Populate the result struct for this image and copy it into the cache if
     // necessary.
-    if (result_lookup != results.end())
+    if (result_lookup != results.end()) {
       cached_results_.insert(
           std::make_pair(request_key, result_lookup->second.Clone()));
+    }
 
     // This should not happen, since only this method removes entries of
     // |request_infos_|, and this method should only execute once per request
@@ -914,8 +955,9 @@ void Annotator::RemoveRequestInfo(
 std::string Annotator::ComputePreferredLanguage(
     const std::string& in_page_language) const {
   DCHECK(!server_languages_.empty());
-  if (in_page_language.empty())
+  if (in_page_language.empty()) {
     return "";
+  }
 
   std::string page_language = NormalizeLanguageCode(in_page_language);
   std::vector<std::string> accept_languages = client_->GetAcceptLanguages();
@@ -949,20 +991,23 @@ std::string Annotator::ComputePreferredLanguage(
   // Sometimes the top languages are empty. Try any accept language that's
   // a server language.
   for (const std::string& accept_language : accept_languages) {
-    if (base::Contains(server_languages_, accept_language))
+    if (base::Contains(server_languages_, accept_language)) {
       return accept_language;
+    }
   }
 
   // If that still fails, try any top language that's a server language.
   for (const std::string& top_language : top_languages) {
-    if (base::Contains(server_languages_, top_language))
+    if (base::Contains(server_languages_, top_language)) {
       return top_language;
+    }
   }
 
   // If all else fails, return the first accept language. The server can
   // still do OCR and it can log this language request.
-  if (!accept_languages.empty())
+  if (!accept_languages.empty()) {
     return accept_languages[0];
+  }
 
   // If that fails, return the page language. The server can
   // still do OCR and it can log this language request.
@@ -970,8 +1015,9 @@ std::string Annotator::ComputePreferredLanguage(
 }
 
 void Annotator::FetchServerLanguages() {
-  if (langs_server_url_.is_empty())
+  if (langs_server_url_.is_empty()) {
     return;
+  }
 
   langs_url_loader_ = MakeRequestLoader(langs_server_url_, api_key_);
   langs_url_loader_->AttachStringForUpload("", "application/json");
