@@ -129,6 +129,8 @@ void SavedTabGroupWebContentsListener::DidFinishNavigation(
   SavedTabGroup* group = service_->model()->GetGroupContainingTab(token_);
   CHECK(group);
 
+  service_->UpdateAttributions(group->local_group_id().value(), token_);
+
   SavedTabGroupTab* tab = group->GetTab(token_);
   tab->SetTitle(web_contents_->GetTitle());
   tab->SetURL(web_contents_->GetURL());
