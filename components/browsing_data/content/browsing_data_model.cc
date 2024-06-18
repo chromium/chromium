@@ -973,7 +973,7 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
   bool is_shared_dictionary_enabled = base::FeatureList::IsEnabled(
       network::features::kCompressionDictionaryTransportBackend);
   bool is_interest_group_enabled =
-      base::FeatureList::IsEnabled(blink::features::kAdInterestGroupAPI);
+      base::FeatureList::IsEnabled(blink::features::kInterestGroupStorage);
   bool is_attribution_reporting_enabled = base::FeatureList::IsEnabled(
       attribution_reporting::features::kConversionMeasurement);
   bool is_private_aggregation_enabled =
@@ -1022,8 +1022,12 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
 
   // Interest Groups
   if (is_interest_group_enabled) {
-    storage_partition_->GetInterestGroupManager()->GetAllInterestGroupDataKeys(
-        base::BindOnce(&OnInterestGroupsLoaded, this, completion));
+    content::InterestGroupManager* manager =
+        storage_partition_->GetInterestGroupManager();
+    if (manager) {
+      manager->GetAllInterestGroupDataKeys(
+          base::BindOnce(&OnInterestGroupsLoaded, this, completion));
+    }
   }
 
   // Attribution Reporting
