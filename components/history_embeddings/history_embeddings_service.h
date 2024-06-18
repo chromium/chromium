@@ -110,9 +110,7 @@ class HistoryEmbeddingsService : public KeyedService,
   // When extraction completes, the passages will be stored in the database
   // and then given to the callback.
   // Note: A `WeakDocumentPtr` is essentially a `WeakPtr<RenderFrameHost>`.
-  void RetrievePassages(history::URLID url_id,
-                        history::VisitID visit_id,
-                        base::Time visit_time,
+  void RetrievePassages(const history::VisitRow& visit_row,
                         content::WeakDocumentPtr weak_render_frame_host);
 
   // Find top `count` URL visit info entries nearest given `query`. Pass
@@ -179,10 +177,6 @@ class HistoryEmbeddingsService : public KeyedService,
     // when the model changes.
     std::vector<UrlPassages> CollectPassagesWithoutEmbeddings();
 
-    // Retrieves passages and embeddings from the database for use as a cache
-    // to avoid recomputing embeddings that exist for identical passages.
-    std::optional<UrlPassagesEmbeddings> GetUrlData(history::URLID url_id);
-
     // A VectorDatabase implementation that holds data in memory.
     VectorDatabaseInMemory vector_database;
 
@@ -202,20 +196,15 @@ class HistoryEmbeddingsService : public KeyedService,
   // with data and sent on destruction. Default implementation returns null.
   virtual QualityLogEntry PrepareQualityLogEntry();
 
-  // Called indirectly via `RetrievePassagesWithUrlData` when passage extraction
-  // completes.
-  void OnPassagesRetrieved(
-      std::optional<UrlPassagesEmbeddings> existing_url_data,
-      UrlPassages url_passages,
-      std::vector<std::string> passages);
+  // Called indirectly via RetrievePassages when passage extraction completes.
+  void OnPassagesRetrieved(UrlPassages url_passages,
+                           std::vector<std::string> passages);
 
   // Invoked after the embeddings for `passages` has been computed.
-  void OnPassagesEmbeddingsComputed(
-      std::unordered_map<std::string, Embedding> embedding_cache,
-      UrlPassages url_passages,
-      std::vector<std::string> passages,
-      std::vector<Embedding> embeddings,
-      ComputeEmbeddingsStatus status);
+  void OnPassagesEmbeddingsComputed(UrlPassages url_passages,
+                                    std::vector<std::string> passages,
+                                    std::vector<Embedding> passages_embeddings,
+                                    ComputeEmbeddingsStatus status);
 
   // Invoked after the embedding for the original search query has been
   // computed.
@@ -251,16 +240,6 @@ class HistoryEmbeddingsService : public KeyedService,
 
   // Rebuild absent embeddings from source passages.
   void RebuildAbsentEmbeddings(std::vector<UrlPassages> all_url_passages);
-
-  // This continues with passage extraction after any existing data is fetched
-  // for the same `url_id`.
-  void RetrievePassagesWithUrlData(
-      history::URLID url_id,
-      history::VisitID visit_id,
-      base::Time visit_time,
-      content::WeakDocumentPtr weak_render_frame_host,
-      base::Time time_before_database_access,
-      std::optional<UrlPassagesEmbeddings> existing_url_data);
 
   raw_ptr<os_crypt_async::OSCryptAsync> os_crypt_async_;
 
@@ -313,28 +292,6 @@ class HistoryEmbeddingsService : public KeyedService,
 
   base::WeakPtrFactory<HistoryEmbeddingsService> weak_ptr_factory_;
 };
-
-// This corresponds to UMA histogram enum `EmbeddingsExtractionCancelled`
-// in tools/metrics/histograms/metadata/history/enums.xml
-enum class ExtractionCancelled {
-  UNKNOWN = 0,
-  TAB_HELPER_DID_FINISH_LOAD = 1,
-  TAB_HELPER_EXTRACT_PASSAGES_URL = 2,
-  TAB_HELPER_EXTRACT_PASSAGES_RESCHEDULE = 3,
-  TAB_HELPER_EXTRACT_PASSAGES_WITH_HISTORY_DATA_RESULTS = 4,
-  TAB_HELPER_EXTRACT_PASSAGES_WITH_HISTORY_DATA_TIME = 5,
-  TAB_HELPER_EXTRACT_PASSAGES_WITH_HISTORY_DATA_GUID = 6,
-  SERVICE_RETRIEVE_PASSAGES = 7,
-  SERVICE_RETRIEVE_PASSAGES_WITH_URL_DATA = 8,
-
-  // These enum values are logged in UMA. Do not reuse or skip any values.
-  // The order doesn't need to be chronological, but keep identities stable.
-  ENUM_COUNT,
-};
-
-// Record UMA histogram with cancellation reason when extraction,
-// embedding, etc. is cancelled before completion and storage.
-void RecordExtractionCancelled(ExtractionCancelled reason);
 
 }  // namespace history_embeddings
 

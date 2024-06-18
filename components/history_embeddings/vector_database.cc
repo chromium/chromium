@@ -136,14 +136,6 @@ SearchInfo::~SearchInfo() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-UrlPassagesEmbeddings::UrlPassagesEmbeddings(history::URLID url_id,
-                                             history::VisitID visit_id,
-                                             base::Time visit_time)
-    : url_passages(url_id, visit_id, visit_time),
-      url_embeddings(url_id, visit_id, visit_time) {}
-
-////////////////////////////////////////////////////////////////////////////////
-
 SearchInfo VectorDatabase::FindNearest(
     std::optional<base::Time> time_range_start,
     size_t count,

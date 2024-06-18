@@ -39,14 +39,6 @@ void SchedulingEmbedder::ComputePassagesEmbeddings(
     PassageKind kind,
     std::vector<std::string> passages,
     ComputePassagesEmbeddingsCallback callback) {
-  // Zero size jobs are expected, and can be called back immediately
-  // instead of waiting in line for nothing.
-  if (passages.empty()) {
-    std::move(callback).Run(
-        /*passages=*/{}, /*embeddings=*/{}, ComputeEmbeddingsStatus::SUCCESS);
-    return;
-  }
-
   // Only start work if none is in progress. If work is already begun
   // then it will continue later when embeddings are returned.
   bool submit = jobs_.empty();
