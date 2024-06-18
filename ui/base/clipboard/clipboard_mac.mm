@@ -251,8 +251,8 @@ void ClipboardMac::ReadAvailableTypes(
   types->clear();
   *types = GetStandardFormats(buffer, data_dst);
 
-  if ([pb.types containsObject:kUTTypeChromiumWebCustomData]) {
-    NSData* data = [pb dataForType:kUTTypeChromiumWebCustomData];
+  if ([pb.types containsObject:kUTTypeChromiumDataTransferCustomData]) {
+    NSData* data = [pb dataForType:kUTTypeChromiumDataTransferCustomData];
     if ([data length]) {
       ReadCustomDataTypes(
           base::span(reinterpret_cast<const uint8_t*>([data bytes]),
@@ -372,8 +372,8 @@ void ClipboardMac::ReadDataTransferCustomData(
   RecordRead(ClipboardFormatMetric::kCustomData);
 
   NSPasteboard* pb = GetPasteboard();
-  if ([[pb types] containsObject:kUTTypeChromiumWebCustomData]) {
-    NSData* data = [pb dataForType:kUTTypeChromiumWebCustomData];
+  if ([[pb types] containsObject:kUTTypeChromiumDataTransferCustomData]) {
+    NSData* data = [pb dataForType:kUTTypeChromiumDataTransferCustomData];
     if ([data length]) {
       if (std::optional<std::u16string> maybe_result = ReadCustomDataForType(
               base::span(reinterpret_cast<const uint8_t*>([data bytes]),

@@ -208,7 +208,7 @@ STATIC_ASSERT_ENUM(NSDragOperationMove, ui::DragDropTypes::DRAG_MOVE);
   [self registerForDraggedTypes:@[
     NSPasteboardTypeFileURL, NSPasteboardTypeHTML, NSPasteboardTypeRTF,
     NSPasteboardTypeString, NSPasteboardTypeURL,
-    ui::kUTTypeChromiumInitiatedDrag, ui::kUTTypeChromiumWebCustomData,
+    ui::kUTTypeChromiumInitiatedDrag, ui::kUTTypeChromiumDataTransferCustomData,
     ui::kUTTypeWebKitWebURLsWithTitles
   ]];
 }

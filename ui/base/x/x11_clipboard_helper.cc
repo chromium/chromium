@@ -226,7 +226,7 @@ std::vector<std::string> XClipboardHelper::GetAvailableTypes(
   }
   if (target_list.ContainsFormat(
           ClipboardFormatType::DataTransferCustomType())) {
-    available_types.push_back(kMimeTypeWebCustomData);
+    available_types.push_back(kMimeTypeDataTransferCustomData);
   }
 
   return available_types;

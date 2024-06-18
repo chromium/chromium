@@ -40,7 +40,7 @@ const char kMimeTypeDataTransferEndpoint[] =
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if !BUILDFLAG(IS_APPLE)
-const char kMimeTypeWebCustomData[] = "chromium/x-web-custom-data";
+const char kMimeTypeDataTransferCustomData[] = "chromium/x-web-custom-data";
 const char kMimeTypeWebkitSmartPaste[] = "chromium/x-webkit-paste";
 #endif  // BUILDFLAG(IS_APPLE)
 

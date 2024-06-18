@@ -550,12 +550,13 @@ TYPED_TEST(ClipboardTest, ChromiumCustomFormatTest) {
 
   EXPECT_THAT(this->GetAvailableTypes(ClipboardBuffer::kCopyPaste),
               Contains(ASCIIToUTF16(kMimeTypeHTML)));
-  EXPECT_THAT(this->GetAvailableTypes(ClipboardBuffer::kCopyPaste),
-              testing::Not(Contains(ASCIIToUTF16(kMimeTypeWebCustomData))));
+  EXPECT_THAT(
+      this->GetAvailableTypes(ClipboardBuffer::kCopyPaste),
+      testing::Not(Contains(ASCIIToUTF16(kMimeTypeDataTransferCustomData))));
   {
     ScopedClipboardWriter clipboard_writer(ClipboardBuffer::kCopyPaste);
     base::flat_map<std::u16string, std::u16string> custom_data;
-    custom_data[ASCIIToUTF16(kMimeTypeWebCustomData)] = u"data";
+    custom_data[ASCIIToUTF16(kMimeTypeDataTransferCustomData)] = u"data";
     base::Pickle pickle;
     WriteCustomDataToPickle(custom_data, &pickle);
     clipboard_writer.WritePickledData(
@@ -564,7 +565,7 @@ TYPED_TEST(ClipboardTest, ChromiumCustomFormatTest) {
   EXPECT_THAT(this->GetAvailableTypes(ClipboardBuffer::kCopyPaste),
               testing::Not(Contains(ASCIIToUTF16(kMimeTypeHTML))));
   EXPECT_THAT(this->GetAvailableTypes(ClipboardBuffer::kCopyPaste),
-              Contains(ASCIIToUTF16(kMimeTypeWebCustomData)));
+              Contains(ASCIIToUTF16(kMimeTypeDataTransferCustomData)));
 }
 #endif  // BUILDFLAG(IS_WIN)
 

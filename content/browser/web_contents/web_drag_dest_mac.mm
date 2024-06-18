@@ -487,8 +487,9 @@ DropData PopulateDropDataFromPasteboard(NSPasteboard* pboard) {
   drop_data.filenames = ui::clipboard_util::FilesFromPasteboard(pboard);
 
   // Get custom MIME data.
-  if ([types containsObject:ui::kUTTypeChromiumWebCustomData]) {
-    NSData* customData = [pboard dataForType:ui::kUTTypeChromiumWebCustomData];
+  if ([types containsObject:ui::kUTTypeChromiumDataTransferCustomData]) {
+    NSData* customData =
+        [pboard dataForType:ui::kUTTypeChromiumDataTransferCustomData];
     if (std::optional<std::unordered_map<std::u16string, std::u16string>>
             maybe_custom_data = ui::ReadCustomDataIntoMap(
                 base::span(reinterpret_cast<const uint8_t*>([customData bytes]),

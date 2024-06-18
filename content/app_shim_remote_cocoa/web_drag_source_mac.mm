@@ -206,7 +206,7 @@
   }
 
   if (!_dropData.custom_data.empty()) {
-    [writableTypes addObject:ui::kUTTypeChromiumWebCustomData];
+    [writableTypes addObject:ui::kUTTypeChromiumDataTransferCustomData];
   }
 
   return writableTypes;
@@ -295,7 +295,7 @@
   }
 
   // Custom MIME data.
-  if ([type isEqualToString:ui::kUTTypeChromiumWebCustomData]) {
+  if ([type isEqualToString:ui::kUTTypeChromiumDataTransferCustomData]) {
     base::Pickle pickle;
     ui::WriteCustomDataToPickle(_dropData.custom_data, &pickle);
     return [NSData dataWithBytes:pickle.data() length:pickle.size()];

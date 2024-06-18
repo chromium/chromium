@@ -40,7 +40,8 @@ TEST(WaylandExchangeDataProviderTest, ExtractPickledData) {
   std::string extracted;
 
   EXPECT_FALSE(provider.ExtractData(kMimeTypeText, &extracted));
-  EXPECT_FALSE(provider.ExtractData(kMimeTypeWebCustomData, &extracted));
+  EXPECT_FALSE(
+      provider.ExtractData(kMimeTypeDataTransferCustomData, &extracted));
 
   extracted.clear();
   provider.SetString(u"dnd-string");
@@ -52,7 +53,8 @@ TEST(WaylandExchangeDataProviderTest, ExtractPickledData) {
   pickle.WriteString("pickled-str");
   provider.SetPickledData(ClipboardFormatType::DataTransferCustomType(),
                           pickle);
-  EXPECT_TRUE(provider.ExtractData(kMimeTypeWebCustomData, &extracted));
+  EXPECT_TRUE(
+      provider.ExtractData(kMimeTypeDataTransferCustomData, &extracted));
 
   // Ensure Pickle "reconstruction" works as expected.
   std::string read_pickled_str;
@@ -130,7 +132,8 @@ TEST(WaylandExchangeDataProviderTest, AddAndExtractMultipleData) {
 
   EXPECT_FALSE(provider.ExtractData(kMimeTypeDataTransferEndpoint, &extracted));
   extracted.clear();
-  EXPECT_FALSE(provider.ExtractData(kMimeTypeWebCustomData, &extracted));
+  EXPECT_FALSE(
+      provider.ExtractData(kMimeTypeDataTransferCustomData, &extracted));
   extracted.clear();
 
   // Add DataTransferEndpoint.
@@ -148,13 +151,14 @@ TEST(WaylandExchangeDataProviderTest, AddAndExtractMultipleData) {
 
   std::vector<std::string> mime_types = provider.BuildMimeTypesList();
   EXPECT_THAT(mime_types, ::testing::Contains(kMimeTypeDataTransferEndpoint));
-  EXPECT_THAT(mime_types, ::testing::Contains(kMimeTypeWebCustomData));
+  EXPECT_THAT(mime_types, ::testing::Contains(kMimeTypeDataTransferCustomData));
 
   EXPECT_TRUE(provider.ExtractData(kMimeTypeDataTransferEndpoint, &extracted));
   EXPECT_EQ(kExpectedEncodedDte, extracted);
 
   extracted.clear();
-  EXPECT_TRUE(provider.ExtractData(kMimeTypeWebCustomData, &extracted));
+  EXPECT_TRUE(
+      provider.ExtractData(kMimeTypeDataTransferCustomData, &extracted));
   base::Pickle read_pickle =
       base::Pickle::WithData(base::as_byte_span(extracted));
   base::PickleIterator pickle_iter(read_pickle);

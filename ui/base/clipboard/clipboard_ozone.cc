@@ -586,7 +586,7 @@ void ClipboardOzone::ReadDataTransferCustomData(
   DCHECK(CalledOnValidThread());
 
   auto custom_data = async_clipboard_ozone_->ReadClipboardDataAndWait(
-      buffer, kMimeTypeWebCustomData);
+      buffer, kMimeTypeDataTransferCustomData);
 
   if (!IsReadAllowed(GetSource(buffer), data_dst, custom_data))
     return;

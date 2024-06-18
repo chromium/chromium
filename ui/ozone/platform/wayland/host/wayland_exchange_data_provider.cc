@@ -70,8 +70,9 @@ int MimeTypeToFormat(const std::string& mime_type) {
   if (!GetApplicationOctetStreamName(mime_type).empty()) {
     return OSExchangeData::FILE_CONTENTS;
   }
-  if (mime_type == ui::kMimeTypeWebCustomData)
+  if (mime_type == ui::kMimeTypeDataTransferCustomData) {
     return OSExchangeData::PICKLED_DATA;
+  }
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (mime_type == ui::kMimeTypeDataTransferEndpoint)
     return OSExchangeData::DATA_TRANSFER_ENDPOINT;
@@ -324,7 +325,7 @@ bool WaylandExchangeDataProvider::ExtractData(const std::string& mime_type,
     out_content->append(file_contents->file_contents);
     return true;
   }
-  if (mime_type == ui::kMimeTypeWebCustomData &&
+  if (mime_type == ui::kMimeTypeDataTransferCustomData &&
       HasCustomFormat(ui::ClipboardFormatType::DataTransferCustomType())) {
     std::optional<base::Pickle> pickle =
         GetPickledData(ui::ClipboardFormatType::DataTransferCustomType());
