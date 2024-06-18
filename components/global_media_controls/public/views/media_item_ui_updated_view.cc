@@ -4,6 +4,7 @@
 
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "components/global_media_controls/media_view_utils.h"
 #include "components/global_media_controls/public/media_item_ui_observer.h"
 #include "components/media_message_center/media_notification_item.h"
@@ -507,6 +508,31 @@ MediaActionButton* MediaItemUIUpdatedView::CreateMediaActionButton(
 }
 
 void MediaItemUIUpdatedView::MediaActionButtonPressed(views::Button* button) {
+  switch (static_cast<MediaSessionAction>(button->GetID())) {
+    case MediaSessionAction::kPlay:
+    case MediaSessionAction::kPause:
+    case MediaSessionAction::kPreviousTrack:
+    case MediaSessionAction::kNextTrack:
+    case MediaSessionAction::kSeekBackward:
+    case MediaSessionAction::kSeekForward:
+      base::UmaHistogramEnumeration(
+          kMediaItemUIUpdatedViewActionHistogram,
+          static_cast<MediaItemUIUpdatedViewAction>(button->GetID()));
+      break;
+    case MediaSessionAction::kEnterPictureInPicture:
+      base::UmaHistogramEnumeration(
+          kMediaItemUIUpdatedViewActionHistogram,
+          MediaItemUIUpdatedViewAction::kEnterPictureInPicture);
+      break;
+    case MediaSessionAction::kExitPictureInPicture:
+      base::UmaHistogramEnumeration(
+          kMediaItemUIUpdatedViewActionHistogram,
+          MediaItemUIUpdatedViewAction::kExitPictureInPicture);
+      break;
+    default:
+      NOTREACHED_NORETURN();
+  }
+
   if (button->GetID() == static_cast<int>(MediaSessionAction::kSeekBackward)) {
     item_->SeekTo(
         std::max(base::Seconds(0), position_.GetPosition() - kSeekTime));
@@ -556,6 +582,23 @@ void MediaItemUIUpdatedView::OnProgressDragStateChange(DragState drag_state) {
   drag_state_ = drag_state;
   UpdateMediaActionButtonsVisibility();
   UpdateTimestampLabelsVisibility();
+
+  // Record to metrics whether user is using the progress view to seek forward
+  // or backward.
+  if (drag_state_ == DragState::kDragStarted) {
+    position_on_drag_started_ = position_.GetPosition();
+  } else if (!position_on_drag_started_.is_max()) {
+    if (position_.GetPosition() > position_on_drag_started_) {
+      base::UmaHistogramEnumeration(
+          kMediaItemUIUpdatedViewActionHistogram,
+          MediaItemUIUpdatedViewAction::kProgressViewSeekForward);
+    } else {
+      base::UmaHistogramEnumeration(
+          kMediaItemUIUpdatedViewActionHistogram,
+          MediaItemUIUpdatedViewAction::kProgressViewSeekBackward);
+    }
+    position_on_drag_started_ = base::TimeDelta::Max();
+  }
 }
 
 void MediaItemUIUpdatedView::OnPlaybackStateChangeForProgressDrag(
@@ -580,8 +623,14 @@ void MediaItemUIUpdatedView::StartCastingButtonPressed() {
   CHECK(device_selector_view_);
   if (device_selector_view_->IsDeviceSelectorExpanded()) {
     device_selector_view_->HideDevices();
+    base::UmaHistogramEnumeration(
+        kMediaItemUIUpdatedViewActionHistogram,
+        MediaItemUIUpdatedViewAction::kHideDeviceListForCasting);
   } else {
     device_selector_view_->ShowDevices();
+    base::UmaHistogramEnumeration(
+        kMediaItemUIUpdatedViewActionHistogram,
+        MediaItemUIUpdatedViewAction::kShowDeviceListForCasting);
   }
 }
 

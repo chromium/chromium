@@ -75,6 +75,9 @@ class CastDeviceSelectorView
   // Update the visibility of the whole view which changes its size too.
   void UpdateVisibility();
 
+  // Callback for when the close button is pressed.
+  void CloseButtonPressed();
+
   bool is_expanded_ = false;
 
   raw_ptr<global_media_controls::MediaItemUIUpdatedView>

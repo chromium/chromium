@@ -3710,6 +3710,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Media.GlobalMediaControls.MediaItemUIUpdatedViewAction"
+    enum="MediaItemUIUpdatedViewAction" expires_after="2025-04-01">
+  <owner>yrw@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Recorded when a user action is performed on the updated media item UI view
+    in the media dialog view on non-CrOS desktop platforms.
+  </summary>
+</histogram>
+
 <histogram name="Media.GlobalMediaControls.NumberOfAvailableAudioDevices"
     units="devices" expires_after="2022-12-04">
   <owner>steimel@chromium.org</owner>

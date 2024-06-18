@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/global_media_controls/cast_device_selector_view.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_helper.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_entry_ui.h"
@@ -71,7 +72,7 @@ CastDeviceSelectorView::CastDeviceSelectorView(
   // Create the close button.
   auto close_button =
       std::make_unique<global_media_controls::MediaActionButton>(
-          base::BindRepeating(&CastDeviceSelectorView::HideDevices,
+          base::BindRepeating(&CastDeviceSelectorView::CloseButtonPressed,
                               base::Unretained(this)),
           global_media_controls::kEmptyMediaActionButtonId,
           IDS_GLOBAL_MEDIA_CONTROLS_CLOSE_DEVICE_LIST_TEXT,
@@ -199,6 +200,14 @@ void CastDeviceSelectorView::UpdateVisibility() {
   if (media_item_ui_updated_view_) {
     media_item_ui_updated_view_->UpdateDeviceSelectorVisibility(is_expanded_);
   }
+}
+
+void CastDeviceSelectorView::CloseButtonPressed() {
+  base::UmaHistogramEnumeration(
+      global_media_controls::kMediaItemUIUpdatedViewActionHistogram,
+      global_media_controls::MediaItemUIUpdatedViewAction::
+          kCloseDeviceListForCasting);
+  HideDevices();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

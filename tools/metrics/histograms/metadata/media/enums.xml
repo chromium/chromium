@@ -1165,6 +1165,22 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="MEDIA_REQUEST_IOC_REINIT"/>
 </enum>
 
+<enum name="MediaItemUIUpdatedViewAction">
+  <int value="0" label="Play"/>
+  <int value="1" label="Pause"/>
+  <int value="2" label="Previous track"/>
+  <int value="3" label="Next track"/>
+  <int value="4" label="Replay 10 seconds"/>
+  <int value="5" label="Forward 10 seconds"/>
+  <int value="6" label="Progress view seek backward"/>
+  <int value="7" label="Progress view seek forward"/>
+  <int value="8" label="Show device list for casting"/>
+  <int value="9" label="Hide device list for casting"/>
+  <int value="10" label="Close device list for casting"/>
+  <int value="11" label="Enter picture in picture"/>
+  <int value="12" label="Exit picture in picture"/>
+</enum>
+
 <enum name="MediaLicenseStorageHostOpenError">
   <int value="0" label="InvalidBucket"/>
   <int value="1" label="kNoFileSpecified"/>

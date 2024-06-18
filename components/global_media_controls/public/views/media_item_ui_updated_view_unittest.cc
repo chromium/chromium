@@ -4,6 +4,7 @@
 
 #include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "components/global_media_controls/public/test/mock_media_item_ui_device_selector.h"
 #include "components/global_media_controls/public/test/mock_media_item_ui_footer.h"
 #include "components/global_media_controls/public/test/mock_media_item_ui_observer.h"
@@ -91,6 +92,12 @@ class MediaItemUIUpdatedViewTest : public views::ViewsTestBase {
                        ui::EventTimeForNow(), 0, 0));
   }
 
+  void ExpectActionHistogramCount(MediaItemUIUpdatedViewAction action,
+                                  int count = 1) {
+    histogram_tester_.ExpectBucketCount(kMediaItemUIUpdatedViewActionHistogram,
+                                        action, count);
+  }
+
   MediaItemUIUpdatedView* view() { return view_; }
   MockMediaNotificationItem& item() { return *item_; }
   MockMediaItemUIObserver& observer() { return *observer_; }
@@ -103,6 +110,7 @@ class MediaItemUIUpdatedViewTest : public views::ViewsTestBase {
   std::unique_ptr<MockMediaItemUIObserver> observer_;
   raw_ptr<MockMediaItemUIDeviceSelector> device_selector_;
   std::unique_ptr<views::Widget> widget_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(MediaItemUIUpdatedViewTest, ProgressViewCheck) {
@@ -143,6 +151,7 @@ TEST_F(MediaItemUIUpdatedViewTest,
   EXPECT_CALL(item(),
               OnMediaSessionActionButtonPressed(MediaSessionAction::kPause));
   SimulateButtonClick(MediaSessionAction::kPause);
+  ExpectActionHistogramCount(MediaItemUIUpdatedViewAction::kPause);
 
   session_info->playback_state =
       media_session::mojom::MediaPlaybackState::kPaused;
@@ -152,6 +161,7 @@ TEST_F(MediaItemUIUpdatedViewTest,
   EXPECT_CALL(item(),
               OnMediaSessionActionButtonPressed(MediaSessionAction::kPlay));
   SimulateButtonClick(MediaSessionAction::kPlay);
+  ExpectActionHistogramCount(MediaItemUIUpdatedViewAction::kPlay);
 }
 
 TEST_F(MediaItemUIUpdatedViewTest, UpdateWithMediaSessionInfoForPiPButton) {
@@ -166,6 +176,8 @@ TEST_F(MediaItemUIUpdatedViewTest, UpdateWithMediaSessionInfoForPiPButton) {
   EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(
                           MediaSessionAction::kExitPictureInPicture));
   SimulateButtonClick(MediaSessionAction::kExitPictureInPicture);
+  ExpectActionHistogramCount(
+      MediaItemUIUpdatedViewAction::kExitPictureInPicture);
 
   session_info->picture_in_picture_state =
       media_session::mojom::MediaPictureInPictureState::kNotInPictureInPicture;
@@ -176,6 +188,8 @@ TEST_F(MediaItemUIUpdatedViewTest, UpdateWithMediaSessionInfoForPiPButton) {
   EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(
                           MediaSessionAction::kEnterPictureInPicture));
   SimulateButtonClick(MediaSessionAction::kEnterPictureInPicture);
+  ExpectActionHistogramCount(
+      MediaItemUIUpdatedViewAction::kEnterPictureInPicture);
 }
 
 TEST_F(MediaItemUIUpdatedViewTest, UpdateWithMediaMetadata) {
@@ -231,15 +245,21 @@ TEST_F(MediaItemUIUpdatedViewTest, MediaActionButtonPressed) {
 
   EXPECT_CALL(item(), SeekTo(testing::_));
   SimulateButtonClick(MediaSessionAction::kSeekForward);
+  ExpectActionHistogramCount(MediaItemUIUpdatedViewAction::kForward10Seconds);
+
   EXPECT_CALL(item(), SeekTo(testing::_));
   SimulateButtonClick(MediaSessionAction::kSeekBackward);
+  ExpectActionHistogramCount(MediaItemUIUpdatedViewAction::kReplay10Seconds);
 
   EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(
                           MediaSessionAction::kPreviousTrack));
   SimulateButtonClick(MediaSessionAction::kPreviousTrack);
+  ExpectActionHistogramCount(MediaItemUIUpdatedViewAction::kPreviousTrack);
+
   EXPECT_CALL(item(), OnMediaSessionActionButtonPressed(
                           MediaSessionAction::kNextTrack));
   SimulateButtonClick(MediaSessionAction::kNextTrack);
+  ExpectActionHistogramCount(MediaItemUIUpdatedViewAction::kNextTrack);
 }
 
 TEST_F(MediaItemUIUpdatedViewTest, DeviceSelectorViewCheck) {
@@ -258,6 +278,8 @@ TEST_F(MediaItemUIUpdatedViewTest, DeviceSelectorViewCheck) {
   views::test::ButtonTestApi(view()->GetStartCastingButtonForTesting())
       .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
+  ExpectActionHistogramCount(
+      MediaItemUIUpdatedViewAction::kShowDeviceListForCasting);
 
   // Device selector view will call to update visibility.
   EXPECT_CALL(*device_selector(), IsDeviceSelectorExpanded())
@@ -276,6 +298,8 @@ TEST_F(MediaItemUIUpdatedViewTest, DeviceSelectorViewCheck) {
   views::test::ButtonTestApi(view()->GetStartCastingButtonForTesting())
       .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
+  ExpectActionHistogramCount(
+      MediaItemUIUpdatedViewAction::kHideDeviceListForCasting);
 
   // Device selector view will call to update visibility.
   EXPECT_CALL(*device_selector(), IsDeviceSelectorExpanded())
@@ -301,11 +325,11 @@ TEST_F(MediaItemUIUpdatedViewTest, FooterViewCheck) {
   EXPECT_EQ(footer_ptr, view()->GetFooterForTesting());
 }
 
-TEST_F(MediaItemUIUpdatedViewTest, DragProgressForPlayingMedia) {
+TEST_F(MediaItemUIUpdatedViewTest, DragProgressBackwardForPlayingMedia) {
   EnableAllMediaActions();
   media_session::MediaPosition media_position(
       /*playback_rate=*/1, /*duration=*/base::Seconds(10),
-      /*position=*/base::Seconds(5), /*end_of_media=*/false);
+      /*position=*/base::Seconds(7), /*end_of_media=*/false);
   view()->UpdateWithMediaPosition(media_position);
   auto* progress_view = view()->GetProgressViewForTesting();
 
@@ -326,6 +350,10 @@ TEST_F(MediaItemUIUpdatedViewTest, DragProgressForPlayingMedia) {
   EXPECT_FALSE(IsMediaActionButtonVisible(MediaSessionAction::kSeekBackward));
 
   // Ends dragging the progress view should resume the media.
+  media_session::MediaPosition media_position_released(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(10),
+      /*position=*/base::Seconds(5), /*end_of_media=*/false);
+  view()->UpdateWithMediaPosition(media_position_released);
   ui::MouseEvent released_event = ui::MouseEvent(
       ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
@@ -339,13 +367,16 @@ TEST_F(MediaItemUIUpdatedViewTest, DragProgressForPlayingMedia) {
   EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kNextTrack));
   EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kSeekForward));
   EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kSeekBackward));
+
+  ExpectActionHistogramCount(
+      MediaItemUIUpdatedViewAction::kProgressViewSeekBackward);
 }
 
-TEST_F(MediaItemUIUpdatedViewTest, DragProgressForPausedMedia) {
+TEST_F(MediaItemUIUpdatedViewTest, DragProgressForwardForPausedMedia) {
   EnableAllMediaActions();
   media_session::MediaPosition media_position(
       /*playback_rate=*/0, /*duration=*/base::Seconds(10),
-      /*position=*/base::Seconds(5), /*end_of_media=*/false);
+      /*position=*/base::Seconds(3), /*end_of_media=*/false);
   view()->UpdateWithMediaPosition(media_position);
   auto* progress_view = view()->GetProgressViewForTesting();
 
@@ -365,6 +396,10 @@ TEST_F(MediaItemUIUpdatedViewTest, DragProgressForPausedMedia) {
   EXPECT_FALSE(IsMediaActionButtonVisible(MediaSessionAction::kSeekBackward));
 
   // Ends dragging the progress view.
+  media_session::MediaPosition media_position_released(
+      /*playback_rate=*/1, /*duration=*/base::Seconds(10),
+      /*position=*/base::Seconds(5), /*end_of_media=*/false);
+  view()->UpdateWithMediaPosition(media_position_released);
   ui::MouseEvent released_event = ui::MouseEvent(
       ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(), ui::EventTimeForNow(),
       ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
@@ -377,6 +412,9 @@ TEST_F(MediaItemUIUpdatedViewTest, DragProgressForPausedMedia) {
   EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kNextTrack));
   EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kSeekForward));
   EXPECT_TRUE(IsMediaActionButtonVisible(MediaSessionAction::kSeekBackward));
+
+  ExpectActionHistogramCount(
+      MediaItemUIUpdatedViewAction::kProgressViewSeekForward);
 }
 
 TEST_F(MediaItemUIUpdatedViewTest, TimestampLabelsCheck) {

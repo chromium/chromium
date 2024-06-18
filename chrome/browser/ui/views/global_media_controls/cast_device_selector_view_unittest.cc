@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/views/global_media_controls/cast_device_selector_view.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/global_media_controls/public/test/mock_device_service.h"
+#include "components/global_media_controls/public/views/media_item_ui_updated_view.h"
 #include "components/media_message_center/mock_media_notification_view.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/test/button_test_api.h"
@@ -92,6 +94,7 @@ TEST_F(CastDeviceSelectorViewTest, ShowOrHideDevices) {
 }
 
 TEST_F(CastDeviceSelectorViewTest, CloseButtonCheck) {
+  base::HistogramTester histogram_tester;
   CreateCastDeviceSelectorView(/*show_devices=*/true);
   view()->OnDevicesUpdated(CreateDevices());
   EXPECT_NE(view()->GetCloseButtonForTesting(), nullptr);
@@ -101,6 +104,12 @@ TEST_F(CastDeviceSelectorViewTest, CloseButtonCheck) {
       .NotifyClick(ui::MouseEvent(ui::ET_MOUSE_PRESSED, gfx::Point(),
                                   gfx::Point(), ui::EventTimeForNow(), 0, 0));
   EXPECT_FALSE(view()->GetVisible());
+
+  histogram_tester.ExpectBucketCount(
+      global_media_controls::kMediaItemUIUpdatedViewActionHistogram,
+      global_media_controls::MediaItemUIUpdatedViewAction::
+          kCloseDeviceListForCasting,
+      1);
 }
 
 TEST_F(CastDeviceSelectorViewTest, DeviceEntryCheck) {

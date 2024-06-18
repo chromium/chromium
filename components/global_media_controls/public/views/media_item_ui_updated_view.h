@@ -33,6 +33,31 @@ namespace global_media_controls {
 
 class MediaItemUIObserver;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(MediaItemUIUpdatedViewAction)
+enum class MediaItemUIUpdatedViewAction {
+  kPlay = 0,
+  kPause = 1,
+  kPreviousTrack = 2,
+  kNextTrack = 3,
+  kReplay10Seconds = 4,
+  kForward10Seconds = 5,
+  kProgressViewSeekBackward = 6,
+  kProgressViewSeekForward = 7,
+  kShowDeviceListForCasting = 8,
+  kHideDeviceListForCasting = 9,
+  kCloseDeviceListForCasting = 10,
+  kEnterPictureInPicture = 11,
+  kExitPictureInPicture = 12,
+  kMaxValue = kExitPictureInPicture,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml:MediaItemUIUpdatedViewAction)
+
+const char kMediaItemUIUpdatedViewActionHistogram[] =
+    "Media.GlobalMediaControls.MediaItemUIUpdatedViewAction";
+
 // MediaItemUIUpdatedView holds the media information and playback controls for
 // a media session or cast session. This will be displayed within
 // MediaDialogView on non-CrOS desktop platforms and replace MediaItemUIView and
@@ -161,6 +186,11 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaItemUIUpdatedView
   base::flat_set<media_session::mojom::MediaSessionAction> media_actions_;
 
   media_session::MediaPosition position_;
+
+  // Records the media position when user starts dragging the progress view. Use
+  // Max() as its default value to indicate that no dragging has started and the
+  // previous dragging has ended if there was one.
+  base::TimeDelta position_on_drag_started_ = base::TimeDelta::Max();
 
   base::ObserverList<MediaItemUIObserver> observers_;
 
