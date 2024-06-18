@@ -9,7 +9,6 @@
 
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
 #include "content/public/test/browser_test_utils.h"
@@ -18,9 +17,6 @@
 #include "printing/printing_utils.h"
 #endif
 
-namespace base {
-class RunLoop;
-}
 namespace content {
 class WebContents;
 }
@@ -77,9 +73,7 @@ class TestPrintPreviewObserver : PrintPreviewUI::TestDelegate {
   const bool wait_for_loaded_;
   raw_ptr<content::WebContents, FlakyDanglingUntriaged> preview_dialog_ =
       nullptr;
-  // This field is not a raw_ptr<> because it was filtered by the rewriter for:
-  // #addr-of
-  RAW_PTR_EXCLUSION base::RunLoop* run_loop_ = nullptr;
+  base::OnceClosure quit_closure_;
 };
 
 }  // namespace printing

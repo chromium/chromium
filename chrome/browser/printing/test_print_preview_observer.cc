@@ -32,7 +32,7 @@ TestPrintPreviewObserver::~TestPrintPreviewObserver() {
 TestPrintPreviewObserver::WaitUntilPreviewIsReadyAndReturnPreviewDialog() {
   if (rendered_page_count_ < expected_rendered_page_count_) {
     base::RunLoop run_loop;
-    base::AutoReset<base::RunLoop*> auto_reset(&run_loop_, &run_loop);
+    quit_closure_ = run_loop.QuitClosure();
     run_loop.Run();
 
     if (queue_.has_value()) {
@@ -87,8 +87,8 @@ void TestPrintPreviewObserver::DidRenderPreviewPage(
   DVLOG(2) << "Rendered preview page " << rendered_page_count_
            << " of a total expected " << expected_rendered_page_count_;
   CHECK_LE(rendered_page_count_, expected_rendered_page_count_);
-  if (rendered_page_count_ == expected_rendered_page_count_ && run_loop_) {
-    run_loop_->Quit();
+  if (rendered_page_count_ == expected_rendered_page_count_ && quit_closure_) {
+    std::move(quit_closure_).Run();
     preview_dialog_ = preview_dialog;
 
     if (wait_for_loaded_) {
@@ -106,8 +106,8 @@ void TestPrintPreviewObserver::PreviewDocumentReady(
 
   // This runs after `DidGetPreviewPageCount()` for modifiable content, but is
   // otherwise the only notification.
-  if (run_loop_ && run_loop_->running()) {
-    run_loop_->Quit();
+  if (quit_closure_) {
+    std::move(quit_closure_).Run();
     preview_dialog_ = preview_dialog;
 
     if (wait_for_loaded_) {
