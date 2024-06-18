@@ -48,7 +48,17 @@ SVGResourceDocumentContent* SVGResourceDocumentCache::Get(const CacheKey& key) {
 
 void SVGResourceDocumentCache::Put(const CacheKey& key,
                                    SVGResourceDocumentContent* content) {
-  entries_.Set(key, content);
+  auto result = entries_.insert(key, content);
+  // No existing entry, we're done.
+  if (result.is_new_entry) {
+    return;
+  }
+  // Existing entry. Replace with the new content and then dispose of the old.
+  SVGResourceDocumentContent* old_content =
+      std::exchange(result.stored_value->value, content);
+  if (old_content) {
+    old_content->Dispose();
+  }
 }
 
 void SVGResourceDocumentCache::WillBeDestroyed() {
