@@ -62,15 +62,6 @@
         var(--ntp-module-item-border-radius) 0 0;
   }
 
-  .tab:last-of-type {
-    border-radius: 0 0 var(--ntp-module-item-border-radius)
-        var(--ntp-module-item-border-radius);
-  }
-
-  :host([is-single-tab_]) .tab {
-    border-radius: var(--ntp-module-item-border-radius);
-  }
-
   .icon {
     background-color: var(--color-new-tab-page-module-icon-background);
     margin-inline: 10px;
@@ -129,16 +120,15 @@
       display: block;
   }
 
-  #see-more-button-container {
-    color: var(--color-new-tab-page-link);
+  #seeMoreButtonContainer {
     font-size: 13px;
     line-height: 20px;
-    margin: 0 0 8px 8px;
     padding: 8px 16px 8px 16px;
     width: fit-content;
   }
 
-  #see-more-button {
+  #seeMoreButton {
+    color: var(--color-new-tab-page-link);
     text-decoration: none;
   }
 </style>
@@ -185,13 +175,12 @@
       </cr-icon-button>
     </a>
   </template>
+  <div id="seeMoreButtonContainer">
+    <a id="seeMoreButton" href="chrome://history/syncedTabs">
+      $i18n{modulesMostRelevantTabResumptionSeeMore}
+    </a>
+  </div>
 </div>
-<div id="see-more-button-container">
-  <a id="see-more-button" href="chrome://history/syncedTabs">
-    $i18n{modulesMostRelevantTabResumptionSeeMore}
-  </a>
-</div>
-
 <cr-lazy-render id="infoDialogRender">
   <template>
     <ntp-info-dialog
