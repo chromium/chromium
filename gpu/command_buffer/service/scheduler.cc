@@ -403,10 +403,10 @@ void Scheduler::Sequence::RemoveClientWait(CommandBufferId command_buffer_id) {
 
 Scheduler::Scheduler(SyncPointManager* sync_point_manager,
                      const GpuPreferences& gpu_preferences)
-    : sync_point_manager_(sync_point_manager) {
+    : sync_point_manager_(sync_point_manager), task_graph_(sync_point_manager) {
   if (base::FeatureList::IsEnabled(features::kUseGpuSchedulerDfs)) {
     scheduler_dfs_ =
-        std::make_unique<SchedulerDfs>(sync_point_manager, gpu_preferences);
+        std::make_unique<SchedulerDfs>(&task_graph_, gpu_preferences);
   }
 }
 

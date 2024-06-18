@@ -19,7 +19,6 @@
 #include "base/trace_event/trace_event.h"
 #include "gpu/command_buffer/common/scheduling_priority.h"
 #include "gpu/command_buffer/service/scheduler.h"
-#include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/config/gpu_preferences.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
@@ -56,32 +55,6 @@ bool SchedulerDfs::SchedulingState::operator==(
          std::tie(rhs.sequence_id, rhs.priority, rhs.order_num);
 }
 
-SchedulerDfs::Sequence::Task::Task(base::OnceClosure closure,
-                                   uint32_t order_num,
-                                   ReportingCallback report_callback)
-    : closure(std::move(closure)),
-      order_num(order_num),
-      report_callback(std::move(report_callback)) {}
-
-SchedulerDfs::Sequence::Task::Task(Task&& other) = default;
-SchedulerDfs::Sequence::Task::~Task() {
-  CHECK(report_callback.is_null());
-}
-
-SchedulerDfs::Sequence::Task& SchedulerDfs::Sequence::Task::operator=(
-    Task&& other) = default;
-
-SchedulerDfs::Sequence::WaitFence::WaitFence(const SyncToken& sync_token,
-                                             uint32_t order_num,
-                                             SequenceId release_sequence_id)
-    : sync_token(sync_token),
-      order_num(order_num),
-      release_sequence_id(release_sequence_id) {}
-SchedulerDfs::Sequence::WaitFence::WaitFence(WaitFence&& other) = default;
-SchedulerDfs::Sequence::WaitFence::~WaitFence() = default;
-SchedulerDfs::Sequence::WaitFence& SchedulerDfs::Sequence::WaitFence::operator=(
-    WaitFence&& other) = default;
-
 SchedulerDfs::PerThreadState::PerThreadState() = default;
 SchedulerDfs::PerThreadState::PerThreadState(PerThreadState&& other) = default;
 SchedulerDfs::PerThreadState::~PerThreadState() = default;
@@ -90,16 +63,15 @@ SchedulerDfs::PerThreadState& SchedulerDfs::PerThreadState::operator=(
 
 SchedulerDfs::Sequence::Sequence(
     SchedulerDfs* scheduler,
-    SequenceId sequence_id,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    SchedulingPriority priority,
-    scoped_refptr<SyncPointOrderData> order_data)
-    : scheduler_(scheduler),
-      sequence_id_(sequence_id),
+    SchedulingPriority priority)
+    : TaskGraph::Sequence(scheduler->task_graph_,
+                          base::BindRepeating(&Sequence::OnFrontTaskUnblocked,
+                                              base::Unretained(this))),
+      scheduler_(scheduler),
       task_runner_(std::move(task_runner)),
       default_priority_(priority),
-      current_priority_(priority),
-      order_data_(std::move(order_data)) {}
+      current_priority_(priority) {}
 
 SchedulerDfs::Sequence::~Sequence() {
   for (const auto& wait_fence : wait_fences_) {
@@ -109,18 +81,6 @@ SchedulerDfs::Sequence::~Sequence() {
       scheduler_->TryScheduleSequence(release_sequence);
     }
   }
-
-  order_data_->Destroy();
-}
-
-bool SchedulerDfs::Sequence::IsNextTaskUnblocked() const {
-  return !tasks_.empty() &&
-         (wait_fences_.empty() ||
-          wait_fences_.begin()->order_num > tasks_.front().order_num);
-}
-
-bool SchedulerDfs::Sequence::HasTasks() const {
-  return enabled_ && !tasks_.empty();
 }
 
 bool SchedulerDfs::Sequence::ShouldYieldTo(const Sequence* other) const {
@@ -149,7 +109,7 @@ void SchedulerDfs::Sequence::SetEnabled(bool enabled) {
 }
 
 SchedulerDfs::SchedulingState SchedulerDfs::Sequence::SetScheduled() {
-  DCHECK(HasTasks());
+  DCHECK(HasTasksAndEnabled());
   DCHECK_NE(running_state_, RUNNING);
 
   running_state_ = SCHEDULED;
@@ -168,117 +128,52 @@ void SchedulerDfs::Sequence::UpdateRunningPriority() {
 
 void SchedulerDfs::Sequence::ContinueTask(base::OnceClosure closure) {
   DCHECK_EQ(running_state_, RUNNING);
-  uint32_t order_num = order_data_->current_order_num();
-
-  tasks_.push_front({std::move(closure), order_num, ReportingCallback()});
-  order_data_->PauseProcessingOrderNumber(order_num);
+  TaskGraph::Sequence::ContinueTask(std::move(closure));
 }
 
-uint32_t SchedulerDfs::Sequence::ScheduleTask(
+uint32_t SchedulerDfs::Sequence::AddTask(
     base::OnceClosure closure,
-    ReportingCallback report_callback) {
-  uint32_t order_num = order_data_->GenerateUnprocessedOrderNumber();
+    std::vector<SyncToken> wait_fences,
+    TaskGraph::ReportingCallback report_callback) {
+  uint32_t order_num = TaskGraph::Sequence::AddTask(
+      std::move(closure), std::move(wait_fences), std::move(report_callback));
+
   TRACE_EVENT_WITH_FLOW0("gpu,toplevel.flow", "SchedulerDfs::ScheduleTask",
                          GetTaskFlowId(sequence_id_.value(), order_num),
                          TRACE_EVENT_FLAG_FLOW_OUT);
-  tasks_.push_back({std::move(closure), order_num, std::move(report_callback)});
   return order_num;
-}
-
-base::TimeDelta SchedulerDfs::Sequence::FrontTaskWaitingDependencyDelta() {
-  DCHECK(!tasks_.empty());
-  if (tasks_.front().first_dependency_added.is_null()) {
-    // didn't wait for dependencies.
-    return base::TimeDelta();
-  }
-  return tasks_.front().running_ready - tasks_.front().first_dependency_added;
-}
-
-base::TimeDelta SchedulerDfs::Sequence::FrontTaskSchedulingDelay() {
-  DCHECK(!tasks_.empty());
-  return base::TimeTicks::Now() - tasks_.front().running_ready;
 }
 
 uint32_t SchedulerDfs::Sequence::BeginTask(base::OnceClosure* closure) {
-  DCHECK(closure);
-  DCHECK(!tasks_.empty());
   DCHECK_EQ(running_state_, SCHEDULED);
 
-  DVLOG(10) << "Sequence " << sequence_id() << " is now running.";
   running_state_ = RUNNING;
 
-  *closure = std::move(tasks_.front().closure);
-  uint32_t order_num = tasks_.front().order_num;
-  if (!tasks_.front().report_callback.is_null()) {
-    std::move(tasks_.front().report_callback).Run(tasks_.front().running_ready);
-  }
-  tasks_.pop_front();
-
-  return order_num;
+  return TaskGraph::Sequence::BeginTask(closure);
 }
 
 void SchedulerDfs::Sequence::FinishTask() {
   DCHECK_EQ(running_state_, RUNNING);
   running_state_ = SCHEDULED;
-  DVLOG(10) << "Sequence " << sequence_id() << " is now ending.";
+  TaskGraph::Sequence::FinishTask();
 }
 
-void SchedulerDfs::Sequence::SetLastTaskFirstDependencyTimeIfNeeded() {
-  DCHECK(!tasks_.empty());
-  if (tasks_.back().first_dependency_added.is_null()) {
-    // Fence are always added for the last task (which should always exists).
-    tasks_.back().first_dependency_added = base::TimeTicks::Now();
-  }
+void SchedulerDfs::Sequence::OnFrontTaskUnblocked() {
+  scheduler_->TryScheduleSequence(this);
 }
 
-void SchedulerDfs::Sequence::AddWaitFence(const SyncToken& sync_token,
-                                          uint32_t order_num,
-                                          SequenceId release_sequence_id) {
-  auto it =
-      wait_fences_.find(WaitFence{sync_token, order_num, release_sequence_id});
-  if (it != wait_fences_.end())
-    return;
-
-  wait_fences_.emplace(sync_token, order_num, release_sequence_id);
-}
-
-void SchedulerDfs::Sequence::RemoveWaitFence(const SyncToken& sync_token,
-                                             uint32_t order_num,
-                                             SequenceId release_sequence_id) {
-  DVLOG(10) << "Sequence " << sequence_id_.value()
-            << " removing wait fence that was released by sequence "
-            << release_sequence_id.value() << ".";
-  auto it =
-      wait_fences_.find(WaitFence{sync_token, order_num, release_sequence_id});
-  if (it != wait_fences_.end()) {
-    wait_fences_.erase(it);
-    for (auto& task : tasks_) {
-      if (order_num == task.order_num) {
-        // The fence applies to this task, bump the readiness timestamp
-        task.running_ready = base::TimeTicks::Now();
-        break;
-      } else if (order_num < task.order_num) {
-        // Updated all task related to this fence.
-        break;
-      }
-    }
-
-    scheduler_->TryScheduleSequence(this);
-  }
-}
-
-SchedulerDfs::SchedulerDfs(SyncPointManager* sync_point_manager,
+SchedulerDfs::SchedulerDfs(TaskGraph* task_graph,
                            const GpuPreferences& gpu_preferences)
-    : sync_point_manager_(sync_point_manager) {}
+    : task_graph_(task_graph) {}
 
 SchedulerDfs::~SchedulerDfs() {
-  base::AutoLock auto_lock(lock_);
+  base::AutoLock auto_lock(lock());
 
   // Sequences as well as tasks posted to the threads have "this" pointer of the
   // SchedulerDfs. Hence adding DCHECKS to make sure sequences are
   // finished/destroyed and none of the threads are running by the time
   // scheduler is destroyed.
-  DCHECK(sequence_map_.empty());
+  DCHECK(scheduler_sequence_map_.empty());
   for (const auto& per_thread_state : per_thread_state_map_)
     DCHECK(!per_thread_state.second.running);
 }
@@ -286,15 +181,18 @@ SchedulerDfs::~SchedulerDfs() {
 SequenceId SchedulerDfs::CreateSequence(
     SchedulingPriority priority,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-  base::AutoLock auto_lock(lock_);
-  scoped_refptr<SyncPointOrderData> order_data =
-      sync_point_manager_->CreateSyncPointOrderData();
-  SequenceId sequence_id = order_data->sequence_id();
   auto sequence =
-      std::make_unique<Sequence>(this, sequence_id, std::move(task_runner),
-                                 priority, std::move(order_data));
-  sequence_map_.emplace(sequence_id, std::move(sequence));
-  return sequence_id;
+      std::make_unique<Sequence>(this, std::move(task_runner), priority);
+  SequenceId id = sequence->sequence_id();
+  Sequence* sequence_ptr = sequence.get();
+  task_graph_->AddSequence(std::move(sequence));
+
+  {
+    base::AutoLock auto_lock(lock());
+    CHECK_EQ(task_graph_->GetSequence(id), sequence_ptr);
+    scheduler_sequence_map_.emplace(id, sequence_ptr);
+  }
+  return sequence_ptr->sequence_id();
 }
 
 SequenceId SchedulerDfs::CreateSequenceForTesting(SchedulingPriority priority) {
@@ -304,33 +202,31 @@ SequenceId SchedulerDfs::CreateSequenceForTesting(SchedulingPriority priority) {
 }
 
 void SchedulerDfs::DestroySequence(SequenceId sequence_id) {
-    base::AutoLock auto_lock(lock_);
+  {
+    base::AutoLock auto_lock(lock());
+    scheduler_sequence_map_.erase(sequence_id);
+  }
 
-    // We want to destroy the sequence after removing it from the sequence map
-    // so that looping over the sequence map does not access a destroyed sequence.
-    std::unique_ptr<Sequence> sequence =
-        std::move(sequence_map_.at(sequence_id));
-    CHECK(sequence);
-    sequence_map_.erase(sequence_id);
+  task_graph_->DestroySequence(sequence_id);
 }
 
 SchedulerDfs::Sequence* SchedulerDfs::GetSequence(SequenceId sequence_id) {
-  lock_.AssertAcquired();
-  auto it = sequence_map_.find(sequence_id);
-  if (it != sequence_map_.end())
-    return it->second.get();
+  auto it = scheduler_sequence_map_.find(sequence_id);
+  if (it != scheduler_sequence_map_.end()) {
+    return it->second;
+  }
   return nullptr;
 }
 
 void SchedulerDfs::EnableSequence(SequenceId sequence_id) {
-  base::AutoLock auto_lock(lock_);
+  base::AutoLock auto_lock(lock());
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
   sequence->SetEnabled(true);
 }
 
 void SchedulerDfs::DisableSequence(SequenceId sequence_id) {
-  base::AutoLock auto_lock(lock_);
+  base::AutoLock auto_lock(lock());
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
   sequence->SetEnabled(false);
@@ -338,7 +234,7 @@ void SchedulerDfs::DisableSequence(SequenceId sequence_id) {
 
 SchedulingPriority SchedulerDfs::GetSequenceDefaultPriority(
     SequenceId sequence_id) {
-  base::AutoLock auto_lock(lock_);
+  base::AutoLock auto_lock(lock());
   Sequence* sequence = GetSequence(sequence_id);
   if (sequence) {
     return sequence->default_priority_;
@@ -348,7 +244,7 @@ SchedulingPriority SchedulerDfs::GetSequenceDefaultPriority(
 
 void SchedulerDfs::SetSequencePriority(SequenceId sequence_id,
                                        SchedulingPriority priority) {
-  base::AutoLock auto_lock(lock_);
+  base::AutoLock auto_lock(lock());
   Sequence* sequence = GetSequence(sequence_id);
   if (sequence) {
     sequence->current_priority_ = priority;
@@ -356,12 +252,12 @@ void SchedulerDfs::SetSequencePriority(SequenceId sequence_id,
 }
 
 void SchedulerDfs::ScheduleTask(Task task) {
-  base::AutoLock auto_lock(lock_);
+  base::AutoLock auto_lock(lock());
   ScheduleTaskHelper(std::move(task));
 }
 
 void SchedulerDfs::ScheduleTasks(std::vector<Task> tasks) {
-  base::AutoLock auto_lock(lock_);
+  base::AutoLock auto_lock(lock());
   for (auto& task : tasks)
     ScheduleTaskHelper(std::move(task));
 }
@@ -371,32 +267,15 @@ void SchedulerDfs::ScheduleTaskHelper(Task task) {
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
 
-  auto* task_runner = sequence->task_runner();
-  uint32_t order_num = sequence->ScheduleTask(std::move(task.closure),
-                                              std::move(task.report_callback));
-
-  for (const SyncToken& sync_token : ReduceSyncTokens(task.sync_token_fences)) {
-    SequenceId release_sequence_id =
-        sync_point_manager_->GetSyncTokenReleaseSequenceId(sync_token);
-    // base::Unretained is safe here since all sequences and corresponding sync
-    // point callbacks will be released before the scheduler is destroyed (even
-    // though sync point manager itself outlives the scheduler briefly).
-    if (sync_point_manager_->WaitNonThreadSafe(
-            sync_token, sequence_id, order_num, task_runner,
-            base::BindOnce(&SchedulerDfs::SyncTokenFenceReleased,
-                           base::Unretained(this), sync_token, order_num,
-                           release_sequence_id, sequence_id))) {
-      sequence->AddWaitFence(sync_token, order_num, release_sequence_id);
-      sequence->SetLastTaskFirstDependencyTimeIfNeeded();
-    }
-  }
+  sequence->AddTask(std::move(task.closure), std::move(task.sync_token_fences),
+                    std::move(task.report_callback));
 
   TryScheduleSequence(sequence);
 }
 
 void SchedulerDfs::ContinueTask(SequenceId sequence_id,
                                 base::OnceClosure closure) {
-  base::AutoLock auto_lock(lock_);
+  base::AutoLock auto_lock(lock());
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
   DCHECK(sequence->task_runner()->BelongsToCurrentThread());
@@ -404,7 +283,7 @@ void SchedulerDfs::ContinueTask(SequenceId sequence_id,
 }
 
 bool SchedulerDfs::ShouldYield(SequenceId sequence_id) {
-  base::AutoLock auto_lock(lock_);
+  base::AutoLock auto_lock(lock());
 
   Sequence* running_sequence = GetSequence(sequence_id);
   DCHECK(running_sequence);
@@ -426,24 +305,11 @@ bool SchedulerDfs::ShouldYield(SequenceId sequence_id) {
 
 base::SingleThreadTaskRunner* SchedulerDfs::GetTaskRunnerForTesting(
     SequenceId sequence_id) {
-  base::AutoLock auto_lock(lock_);
+  base::AutoLock auto_lock(lock());
   return GetSequence(sequence_id)->task_runner();
 }
 
-void SchedulerDfs::SyncTokenFenceReleased(const SyncToken& sync_token,
-                                          uint32_t order_num,
-                                          SequenceId release_sequence_id,
-                                          SequenceId waiting_sequence_id) {
-  base::AutoLock auto_lock(lock_);
-  Sequence* sequence = GetSequence(waiting_sequence_id);
-
-  if (sequence)
-    sequence->RemoveWaitFence(sync_token, order_num, release_sequence_id);
-}
-
 void SchedulerDfs::TryScheduleSequence(Sequence* sequence) {
-  lock_.AssertAcquired();
-
   auto* task_runner = sequence->task_runner();
   auto& thread_state = per_thread_state_map_[task_runner];
 
@@ -457,7 +323,7 @@ void SchedulerDfs::TryScheduleSequence(Sequence* sequence) {
     sequence->UpdateRunningPriority();
   } else {
     // Insert into scheduling queue if sequence isn't already scheduled.
-    if (!sequence->scheduled() && sequence->HasTasks()) {
+    if (!sequence->scheduled() && sequence->HasTasksAndEnabled()) {
       sequence->SetScheduled();
     }
     // Wake up RunNextTask if the sequence has work to do. (If the thread is not
@@ -484,8 +350,8 @@ SchedulerDfs::GetSortedRunnableSequences(
       thread_state.sorted_sequences;
 
   sorted_sequences.clear();
-  for (const auto& kv : sequence_map_) {
-    Sequence* sequence = kv.second.get();
+  for (const auto& kv : scheduler_sequence_map_) {
+    Sequence* sequence = kv.second;
     // Add any sequence that is enabled, not already running, and has any tasks.
     if (sequence->IsRunnable()) {
       SchedulingState scheduling_state = sequence->SetScheduled();
@@ -504,10 +370,10 @@ bool SchedulerDfs::HasAnyUnblockedTasksOnRunner(
     const base::SingleThreadTaskRunner* task_runner) const {
   // Loop over all sequences and check if any of them are unblocked and belong
   // to |task_runner|.
-  for (const auto& [_, sequence] : sequence_map_) {
+  for (const auto& [_, sequence] : scheduler_sequence_map_) {
     CHECK(sequence);
     if (sequence->task_runner() == task_runner && sequence->enabled() &&
-        sequence->IsNextTaskUnblocked()) {
+        sequence->IsFrontTaskUnblocked()) {
       return true;
     }
   }
@@ -555,7 +421,7 @@ SchedulerDfs::Sequence* SchedulerDfs::FindNextTaskFromRoot(
     Sequence* release_sequence = GetSequence(fence_iter->release_sequence_id);
     // ShouldYield might be calling this function, and a dependency might depend
     // on the calling sequence, which might have not released its fences yet.
-    if (release_sequence && release_sequence->HasTasks() &&
+    if (release_sequence && release_sequence->HasTasksAndEnabled() &&
         release_sequence->tasks_.front().order_num >= fence_iter->order_num) {
       continue;
     }
@@ -612,7 +478,7 @@ void SchedulerDfs::RunNextTask() {
   DCHECK(sequence_id.is_null());
 
   {
-    base::AutoLock auto_lock(lock_);
+    base::AutoLock auto_lock(lock());
     auto* task_runner = base::SingleThreadTaskRunner::GetCurrentDefault().get();
     auto* thread_state = &per_thread_state_map_[task_runner];
     DVLOG(10) << "RunNextTask: Task runner is " << (uint64_t)task_runner;
@@ -656,7 +522,7 @@ void SchedulerDfs::RunNextTask() {
 
   // Finally, reschedule RunNextTask if there is any potential remaining work.
   {
-    base::AutoLock auto_lock(lock_);
+    base::AutoLock auto_lock(lock());
     auto* task_runner = base::SingleThreadTaskRunner::GetCurrentDefault().get();
     auto* thread_state = &per_thread_state_map_[task_runner];
 
@@ -674,7 +540,7 @@ void SchedulerDfs::RunNextTask() {
 }
 
 void SchedulerDfs::ExecuteSequence(const SequenceId sequence_id) {
-  base::AutoLock auto_lock(lock_);
+  base::AutoLock auto_lock(lock());
   auto* task_runner = base::SingleThreadTaskRunner::GetCurrentDefault().get();
   auto* thread_state = &per_thread_state_map_[task_runner];
 
@@ -690,7 +556,7 @@ void SchedulerDfs::ExecuteSequence(const SequenceId sequence_id) {
 
   Sequence* sequence = GetSequence(sequence_id);
   DCHECK(sequence);
-  DCHECK(sequence->HasTasks());
+  DCHECK(sequence->HasTasksAndEnabled());
   DCHECK_EQ(sequence->task_runner(), task_runner);
 
   DVLOG(10) << "Executing sequence " << sequence_id.value() << ".";
@@ -724,7 +590,7 @@ void SchedulerDfs::ExecuteSequence(const SequenceId sequence_id) {
 
   base::TimeDelta blocked_time;
   {
-    base::AutoUnlock auto_unlock(lock_);
+    base::AutoUnlock auto_unlock(lock());
     order_data->BeginProcessingOrderNumber(order_num);
 
     std::move(closure).Run();
@@ -735,7 +601,7 @@ void SchedulerDfs::ExecuteSequence(const SequenceId sequence_id) {
 
   total_blocked_time_ += blocked_time;
 
-  // Reset pointers after reaquiring the lock.
+  // Reset pointers after reacquiring the lock.
   sequence = GetSequence(sequence_id);
   if (sequence) {
     sequence->FinishTask();

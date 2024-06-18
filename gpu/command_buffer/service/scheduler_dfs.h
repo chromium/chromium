@@ -5,13 +5,9 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_SCHEDULER_DFS_H_
 #define GPU_COMMAND_BUFFER_SERVICE_SCHEDULER_DFS_H_
 
-#include <queue>
 #include <vector>
 
-#include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
-#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
@@ -22,6 +18,7 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/sequence_id.h"
+#include "gpu/command_buffer/service/task_graph.h"
 #include "gpu/gpu_export.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
@@ -30,23 +27,16 @@ class SingleThreadTaskRunner;
 }
 
 namespace gpu {
-class SyncPointManager;
 struct GpuPreferences;
 
 class GPU_EXPORT SchedulerDfs {
-  // A callback to be used for reporting when the task is ready to run (when the
-  // dependencies have been solved).
-  using ReportingCallback =
-      base::OnceCallback<void(base::TimeTicks task_ready)>;
-
  public:
-  SchedulerDfs(SyncPointManager* sync_point_manager,
-               const GpuPreferences& gpu_preferences);
+  SchedulerDfs(TaskGraph* task_graph, const GpuPreferences& gpu_preferences);
 
   SchedulerDfs(const SchedulerDfs&) = delete;
   SchedulerDfs& operator=(const SchedulerDfs&) = delete;
 
-  ~SchedulerDfs();
+  ~SchedulerDfs() LOCKS_EXCLUDED(lock());
 
   // Create a sequence with given priority. Returns an identifier for the
   // sequence that can be used with SyncPointManager for creating sync point
@@ -54,43 +44,49 @@ class GPU_EXPORT SchedulerDfs {
   // Sequence is bound to the provided |task_runner|.
   SequenceId CreateSequence(
       SchedulingPriority priority,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+      LOCKS_EXCLUDED(lock());
 
   // Should be only used for tests.
-  SequenceId CreateSequenceForTesting(SchedulingPriority priority);
+  SequenceId CreateSequenceForTesting(SchedulingPriority priority)
+      LOCKS_EXCLUDED(lock());
 
   // Destroy the sequence and run any scheduled tasks immediately. Sequence
   // could be destroyed outside of GPU thread.
-  void DestroySequence(SequenceId sequence_id);
+  void DestroySequence(SequenceId sequence_id) LOCKS_EXCLUDED(lock());
 
   // Enables the sequence so that its tasks may be scheduled.
-  void EnableSequence(SequenceId sequence_id);
+  void EnableSequence(SequenceId sequence_id) LOCKS_EXCLUDED(lock());
 
   // Disables the sequence.
-  void DisableSequence(SequenceId sequence_id);
+  void DisableSequence(SequenceId sequence_id) LOCKS_EXCLUDED(lock());
 
   // Gets the priority that the sequence was created with.
-  SchedulingPriority GetSequenceDefaultPriority(SequenceId sequence_id);
+  SchedulingPriority GetSequenceDefaultPriority(SequenceId sequence_id)
+      LOCKS_EXCLUDED(lock());
 
   // Changes a sequence's priority. Used in WaitForGetOffset/TokenInRange to
   // temporarily increase a sequence's priority.
-  void SetSequencePriority(SequenceId sequence_id, SchedulingPriority priority);
+  void SetSequencePriority(SequenceId sequence_id, SchedulingPriority priority)
+      LOCKS_EXCLUDED(lock());
 
   // Schedules task (closure) to run on the sequence. The task is blocked until
   // the sync token fences are released or determined to be invalid. Tasks are
   // run in the order in which they are submitted.
-  void ScheduleTask(Scheduler::Task task);
+  void ScheduleTask(Scheduler::Task task) LOCKS_EXCLUDED(lock());
 
-  void ScheduleTasks(std::vector<Scheduler::Task> tasks);
+  void ScheduleTasks(std::vector<Scheduler::Task> tasks) LOCKS_EXCLUDED(lock());
 
   // Continue running task on the sequence with the closure. This must be called
   // while running a previously scheduled task.
-  void ContinueTask(SequenceId sequence_id, base::OnceClosure closure);
+  void ContinueTask(SequenceId sequence_id, base::OnceClosure closure)
+      LOCKS_EXCLUDED(lock());
 
   // If the sequence should yield so that a higher priority sequence may run.
-  bool ShouldYield(SequenceId sequence_id);
+  bool ShouldYield(SequenceId sequence_id) LOCKS_EXCLUDED(lock());
 
-  base::SingleThreadTaskRunner* GetTaskRunnerForTesting(SequenceId sequence_id);
+  base::SingleThreadTaskRunner* GetTaskRunnerForTesting(SequenceId sequence_id)
+      LOCKS_EXCLUDED(lock());
 
  private:
   struct SchedulingState {
@@ -113,201 +109,132 @@ class GPU_EXPORT SchedulerDfs {
     uint32_t order_num = 0;
   };
 
-  class GPU_EXPORT Sequence {
+  // All public methods except constructor must be accessed under TaskGraph's
+  // lock. Please see locking annotation of individual methods.
+  class GPU_EXPORT Sequence : public TaskGraph::Sequence {
    public:
     Sequence(SchedulerDfs* scheduler,
-             SequenceId sequence_id,
              scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-             SchedulingPriority priority,
-             scoped_refptr<SyncPointOrderData> order_data);
+             SchedulingPriority priority);
 
     Sequence(const Sequence&) = delete;
     Sequence& operator=(const Sequence&) = delete;
 
-    ~Sequence();
-
-    SequenceId sequence_id() const { return sequence_id_; }
-
-    const scoped_refptr<SyncPointOrderData>& order_data() const {
-      return order_data_;
-    }
+    ~Sequence() override EXCLUSIVE_LOCKS_REQUIRED(lock());
 
     base::SingleThreadTaskRunner* task_runner() const {
       return task_runner_.get();
     }
 
-    bool enabled() const { return enabled_; }
+    bool enabled() const EXCLUSIVE_LOCKS_REQUIRED(lock()) { return enabled_; }
 
-    bool scheduled() const { return running_state_ == SCHEDULED; }
+    bool scheduled() const EXCLUSIVE_LOCKS_REQUIRED(lock()) {
+      return running_state_ == SCHEDULED;
+    }
 
-    bool running() const { return running_state_ == RUNNING; }
+    bool running() const EXCLUSIVE_LOCKS_REQUIRED(lock()) {
+      return running_state_ == RUNNING;
+    }
 
-    bool HasTasks() const;
+    bool HasTasksAndEnabled() const EXCLUSIVE_LOCKS_REQUIRED(lock()) {
+      return enabled() && HasTasks();
+    }
 
     // A sequence is runnable if it is enabled, is not already running, and has
     // tasks in its queue. Note that this does *not* necessarily mean that its
     // first task unblocked.
-    bool IsRunnable() const { return enabled() && !running() && HasTasks(); }
+    bool IsRunnable() const EXCLUSIVE_LOCKS_REQUIRED(lock()) {
+      return enabled() && !running() && HasTasks();
+    }
 
     // Returns true if this sequence should yield to another sequence. Uses the
     // cached scheduling state for comparison.
-    bool ShouldYieldTo(const Sequence* other) const;
+    bool ShouldYieldTo(const Sequence* other) const
+        EXCLUSIVE_LOCKS_REQUIRED(lock());
 
     // Enables or disables the sequence.
-    void SetEnabled(bool enabled);
+    void SetEnabled(bool enabled) EXCLUSIVE_LOCKS_REQUIRED(lock());
 
     // Sets running state to SCHEDULED. Returns scheduling state for this
     // sequence used for inserting in the scheduling queue.
-    SchedulingState SetScheduled();
+    SchedulingState SetScheduled() EXCLUSIVE_LOCKS_REQUIRED(lock());
 
     // Update cached scheduling priority while running.
-    void UpdateRunningPriority();
+    void UpdateRunningPriority() EXCLUSIVE_LOCKS_REQUIRED(lock());
 
-    // The time delta it took for the front task's dependencies to be completed.
-    base::TimeDelta FrontTaskWaitingDependencyDelta();
-
-    // The delay between when the front task was ready to run (no more
-    // dependencies) and now. This is used when the task is actually started to
-    // check for low scheduling delays.
-    base::TimeDelta FrontTaskSchedulingDelay();
+    uint32_t AddTask(base::OnceClosure closure,
+                     std::vector<SyncToken> wait_fences,
+                     TaskGraph::ReportingCallback report_callback) override
+        EXCLUSIVE_LOCKS_REQUIRED(lock());
 
     // Returns the next order number and closure. Sets running state to RUNNING.
-    uint32_t BeginTask(base::OnceClosure* closure);
+    uint32_t BeginTask(base::OnceClosure* closure) override
+        EXCLUSIVE_LOCKS_REQUIRED(lock());
 
     // Called after running the closure returned by BeginTask. Sets running
     // state to SCHEDULED.
-    void FinishTask();
-
-    // Enqueues a task in the sequence and returns the generated order number.
-    uint32_t ScheduleTask(base::OnceClosure closure,
-                          ReportingCallback report_callback);
+    void FinishTask() override EXCLUSIVE_LOCKS_REQUIRED(lock());
 
     // Continue running the current task with the given closure. Must be called
     // in between |BeginTask| and |FinishTask|.
-    void ContinueTask(base::OnceClosure closure);
+    void ContinueTask(base::OnceClosure closure) override
+        EXCLUSIVE_LOCKS_REQUIRED(lock());
 
-    // Sets the first dependency added time on the last task if it wasn't
-    // already set, no-op otherwise.
-    void SetLastTaskFirstDependencyTimeIfNeeded();
-
-    // Add a sync token fence that this sequence should wait on.
-    void AddWaitFence(const SyncToken& sync_token,
-                      uint32_t order_num,
-                      SequenceId release_sequence_id);
-
-    // Remove a waiting sync token fence.
-    void RemoveWaitFence(const SyncToken& sync_token,
-                         uint32_t order_num,
-                         SequenceId release_sequence_id);
-
-    SchedulingPriority current_priority() const { return current_priority_; }
+    SchedulingPriority current_priority() const
+        EXCLUSIVE_LOCKS_REQUIRED(lock()) {
+      return current_priority_;
+    }
 
    private:
     friend class SchedulerDfs;
 
     enum RunningState { IDLE, SCHEDULED, RUNNING };
 
-    struct WaitFence {
-      WaitFence(WaitFence&& other);
-      WaitFence(const SyncToken& sync_token,
-                uint32_t order_num,
-                SequenceId release_sequence_id);
-      ~WaitFence();
-      WaitFence& operator=(WaitFence&& other);
-
-      SyncToken sync_token;
-      uint32_t order_num;
-      SequenceId release_sequence_id;
-
-      bool operator==(const WaitFence& other) const {
-        return std::tie(order_num, release_sequence_id, sync_token) ==
-               std::tie(other.order_num, release_sequence_id, other.sync_token);
-      }
-
-      bool operator<(const WaitFence& other) const {
-        return std::tie(order_num, release_sequence_id, sync_token) <
-               std::tie(other.order_num, release_sequence_id, other.sync_token);
-      }
-    };
-
-    struct Task {
-      Task(Task&& other);
-      Task(base::OnceClosure closure,
-           uint32_t order_num,
-           ReportingCallback report_callback);
-      ~Task();
-      Task& operator=(Task&& other);
-
-      base::OnceClosure closure;
-      uint32_t order_num;
-
-      ReportingCallback report_callback;
-      // Note: this time is only correct once the last fence has been removed,
-      // as it is updated for all fences.
-      base::TimeTicks running_ready = base::TimeTicks::Now();
-      base::TimeTicks first_dependency_added;
-    };
-
-    // Returns true if the sequence is not empty, and the first task does not
-    // have any pending dependencies.
-    bool IsNextTaskUnblocked() const;
+    void OnFrontTaskUnblocked() EXCLUSIVE_LOCKS_REQUIRED(lock());
 
     // If the sequence is enabled. Sequences are disabled/enabled based on when
     // the command buffer is descheduled/scheduled.
-    bool enabled_ = true;
+    bool enabled_ GUARDED_BY(lock()) = true;
 
     // TODO(elgarawany): This is no longer needed. Replace with bool running_.
-    RunningState running_state_ = IDLE;
+    RunningState running_state_ GUARDED_BY(lock()) = IDLE;
 
     // Cached scheduling state used for comparison with other sequences while
     // running. Updated in |SetScheduled| and |UpdateRunningPriority|.
-    SchedulingState scheduling_state_;
+    SchedulingState scheduling_state_ GUARDED_BY(lock());
 
     // RAW_PTR_EXCLUSION: SchedulerDfs was added to raw_ptr unsupported type for
     // performance reasons. See raw_ptr.h for more info.
     RAW_PTR_EXCLUSION SchedulerDfs* const scheduler_ = nullptr;
-    const SequenceId sequence_id_;
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+    const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
     const SchedulingPriority default_priority_;
-    SchedulingPriority current_priority_;
-
-    scoped_refptr<SyncPointOrderData> order_data_;
-
-    // Deque of tasks. Tasks are inserted at the back with increasing order
-    // number generated from SyncPointOrderData. If a running task needs to be
-    // continued, it is inserted at the front with the same order number.
-    base::circular_deque<Task> tasks_;
-
-    // Map of fences that this sequence is waiting on. Fences are ordered in
-    // increasing order number but may be removed out of order. Tasks are
-    // blocked if there's a wait fence with order number less than or equal to
-    // the task's order number.
-    base::flat_set<WaitFence> wait_fences_;
+    SchedulingPriority current_priority_ GUARDED_BY(lock());
   };
 
-  Sequence* GetSequence(SequenceId sequence_id);
+  base::Lock& lock() const LOCK_RETURNED(task_graph_->lock()) {
+    return task_graph_->lock();
+  }
 
-  void SyncTokenFenceReleased(const SyncToken& sync_token,
-                              uint32_t order_num,
-                              SequenceId release_sequence_id,
-                              SequenceId waiting_sequence_id);
+  Sequence* GetSequence(SequenceId sequence_id)
+      EXCLUSIVE_LOCKS_REQUIRED(lock());
 
-  void ScheduleTaskHelper(Scheduler::Task task) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  void ScheduleTaskHelper(Scheduler::Task task)
+      EXCLUSIVE_LOCKS_REQUIRED(lock());
 
-  void TryScheduleSequence(Sequence* sequence);
+  void TryScheduleSequence(Sequence* sequence) EXCLUSIVE_LOCKS_REQUIRED(lock());
 
   // Returns a sorted list of runnable sequences.
   const std::vector<SchedulingState>& GetSortedRunnableSequences(
       base::SingleThreadTaskRunner* task_runner)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      EXCLUSIVE_LOCKS_REQUIRED(lock());
 
   // Returns true if there are *any* unblocked tasks in sequences assigned to
   // |task_runner|. This is used to decide if RunNextTask needs to be
   // rescheduled.
   bool HasAnyUnblockedTasksOnRunner(
       const base::SingleThreadTaskRunner* task_runner) const
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      EXCLUSIVE_LOCKS_REQUIRED(lock());
 
   // Finds the sequence of the next task that can be run under |root_sequence|'s
   // dependency graph. This function will visit sequences that are tied to other
@@ -316,15 +243,15 @@ class GPU_EXPORT SchedulerDfs {
   // returned only if DrDC is enabled and when a sequence's only dependency is a
   // sequence that is tied to another thread.
   Sequence* FindNextTaskFromRoot(Sequence* root_sequence)
-      EXCLUSIVE_LOCKS_REQUIRED(lock_);
+      EXCLUSIVE_LOCKS_REQUIRED(lock());
 
   // Calls |FindNextTaskFromRoot| on the ordered list of all sequences, and
   // returns the first runnable task. Returns nullptr if there is no work to do.
-  Sequence* FindNextTask() EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  Sequence* FindNextTask() EXCLUSIVE_LOCKS_REQUIRED(lock());
 
   // Executes the closure of the first task for |sequence_id|. Assumes that
   // the sequence has tasks, and that the first task is unblocked.
-  void ExecuteSequence(SequenceId sequence_id) LOCKS_EXCLUDED(lock_);
+  void ExecuteSequence(SequenceId sequence_id) LOCKS_EXCLUDED(lock());
 
   // The scheduler's main loop. At each tick, it will call FindNextTask on the
   // sorted list of sequences to find the highest priority available sequence.
@@ -332,16 +259,15 @@ class GPU_EXPORT SchedulerDfs {
   // any unblocked task. If there are multiple choices at any node, the
   // scheduler picks the dependency with the lowest SchedulingState, effectively
   // ordering the dependencies by priority and order_num.
-  void RunNextTask() LOCKS_EXCLUDED(lock_);
+  void RunNextTask() LOCKS_EXCLUDED(lock());
 
-  mutable base::Lock lock_;
+  const raw_ptr<TaskGraph> task_graph_;
 
-  const raw_ptr<SyncPointManager> sync_point_manager_;
+  // The Sequence instances in the map are owned by `task_graph_`.
+  base::flat_map<SequenceId, Sequence*> scheduler_sequence_map_
+      GUARDED_BY(lock());
 
-  base::flat_map<SequenceId, std::unique_ptr<Sequence>> sequence_map_
-      GUARDED_BY(lock_);
-
-  base::MetricsSubSampler metrics_subsampler_ GUARDED_BY(lock_);
+  base::MetricsSubSampler metrics_subsampler_ GUARDED_BY(lock());
 
   // Each thread will have its own priority queue to schedule sequences
   // created on that thread.
@@ -363,10 +289,10 @@ class GPU_EXPORT SchedulerDfs {
     base::TimeTicks run_next_task_scheduled;
   };
   base::flat_map<base::SingleThreadTaskRunner*, PerThreadState>
-      per_thread_state_map_ GUARDED_BY(lock_);
+      per_thread_state_map_ GUARDED_BY(lock());
 
   // Accumulated time the thread was blocked during running task
-  base::TimeDelta total_blocked_time_ GUARDED_BY(lock_);
+  base::TimeDelta total_blocked_time_ GUARDED_BY(lock());
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SchedulerDfsTest, StreamPriorities);

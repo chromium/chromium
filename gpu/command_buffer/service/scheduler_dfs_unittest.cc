@@ -784,7 +784,7 @@ TEST_F(SchedulerDfsTest, StreamPriorities) {
   CommandBufferId command_buffer_id1 = CommandBufferId::FromUnsafeValue(1);
   CommandBufferId command_buffer_id2 = CommandBufferId::FromUnsafeValue(2);
 
-  base::AutoLock auto_lock(scheduler()->GetSchedulerDfsForTesting()->lock_);
+  base::AutoLock auto_lock(scheduler()->GetSchedulerDfsForTesting()->lock());
 
   SchedulerDfs::Sequence* seq1 =
       scheduler()->GetSchedulerDfsForTesting()->GetSequence(seq_id1);
@@ -802,15 +802,15 @@ TEST_F(SchedulerDfsTest, StreamPriorities) {
   SyncToken sync_token2(namespace_id, command_buffer_id2, 1);
 
   // Make sure that waiting for fences does not change sequence priorities.
-  seq2->AddWaitFence(sync_token1, 1, seq_id1);
-  seq3->AddWaitFence(sync_token2, 2, seq_id2);
+  seq2->AddTask(/*closure=*/{}, {sync_token1}, /*report_callback=*/{});
+  seq3->AddTask(/*closure=*/{}, {sync_token2}, /*report_callback=*/{});
   EXPECT_EQ(SchedulingPriority::kLow, seq1->current_priority());
   EXPECT_EQ(SchedulingPriority::kNormal, seq2->current_priority());
   EXPECT_EQ(SchedulingPriority::kHigh, seq3->current_priority());
 
   {
     base::AutoUnlock auto_unlock(
-        scheduler()->GetSchedulerDfsForTesting()->lock_);
+        scheduler()->GetSchedulerDfsForTesting()->lock());
     scheduler()->DestroySequence(seq_id1);
     scheduler()->DestroySequence(seq_id2);
     scheduler()->DestroySequence(seq_id3);
