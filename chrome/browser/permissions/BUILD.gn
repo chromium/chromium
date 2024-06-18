@@ -126,8 +126,6 @@ source_set("permissions") {
 
   if (is_chromeos_ash) {
     deps += [ "//chrome/browser/ash" ]
-  } else if (is_chromeos_lacros) {
-    deps += [ "//chromeos/lacros" ]
   }
 
   if (is_mac) {
@@ -135,8 +133,6 @@ source_set("permissions") {
     deps += [ "//chrome//browser/web_applications" ]
   } else if (is_chromeos_ash) {
     sources += [ "system/system_permission_settings_chromeos.cc" ]
-  } else if (is_chromeos_lacros) {
-    sources += [ "system/system_permission_settings_lacros.cc" ]
   } else {
     sources += [ "system/system_permission_settings_default.cc" ]
   }

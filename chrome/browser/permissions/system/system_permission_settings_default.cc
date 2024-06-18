@@ -6,7 +6,6 @@
 #include "chrome/browser/permissions/system/system_permission_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 
-static_assert(!BUILDFLAG(IS_CHROMEOS_LACROS));
 static_assert(!BUILDFLAG(IS_CHROMEOS_ASH));
 static_assert(!BUILDFLAG(IS_MAC));
 
