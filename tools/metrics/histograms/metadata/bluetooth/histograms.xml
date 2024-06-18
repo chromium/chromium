@@ -1908,8 +1908,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bluetooth.Web.Characteristic.ReadValue.Outcome"
-    enum="WebBluetoothGATTOperationOutcome" expires_after="2024-07-28">
-  <owner>cmumford@chromium.org</owner>
+    enum="WebBluetoothGATTOperationOutcome" expires_after="2025-07-28">
+  <owner>alvinji@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
     Records the outcome of a call to characteristic.readValue(). Used to know
