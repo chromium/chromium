@@ -32,12 +32,12 @@ class DiskUnmounterMac;
 // Manages a write within the utility thread.  This class holds all the state
 // around the writing and communicates with the ImageWriterHandler to dispatch
 // messages.
-class ImageWriter : public base::SupportsWeakPtr<ImageWriter> {
+class ImageWriter final {
  public:
   explicit ImageWriter(ImageWriterHandler* handler,
                        const base::FilePath& image_path,
                        const base::FilePath& device_path);
-  virtual ~ImageWriter();
+  ~ImageWriter();
 
   // Starts a write from |image_path_| to |device_path_|.
   void Write();
@@ -60,6 +60,10 @@ class ImageWriter : public base::SupportsWeakPtr<ImageWriter> {
   const base::FilePath& GetImagePath();
   // Return the current device path.
   const base::FilePath& GetDevicePath();
+
+  base::WeakPtr<ImageWriter> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
 
  private:
   // Convenience wrappers.
@@ -93,6 +97,7 @@ class ImageWriter : public base::SupportsWeakPtr<ImageWriter> {
 #endif
 
   raw_ptr<ImageWriterHandler> handler_;
+  base::WeakPtrFactory<ImageWriter> weak_ptr_factory_{this};
 };
 
 }  // namespace image_writer
