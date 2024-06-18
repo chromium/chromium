@@ -109,7 +109,10 @@ void ListFamilyMembersService::OnPrimaryAccountChanged(
       event_details.GetEventTypeFor(signin::ConsentLevel::kSignin);
   if (event_type == signin::PrimaryAccountChangeEvent::Type::kCleared) {
     StopFetch();
-    // TODO(b/281999451): Notify consumers with empty response.
+    // Notify consumers that family member information is cleared following a
+    // sign-out event.
+    kidsmanagement::ListMembersResponse empty_response;
+    successful_fetch_repeating_consumers_.Notify(empty_response);
   }
 }
 

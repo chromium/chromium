@@ -195,3 +195,48 @@ TEST_F(ListFamilyMembersServiceTest, AccountEligibilityUpdated) {
 
   test_list_family_members_service_->Shutdown();
 }
+
+// Sign-out test is not supported for ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(ListFamilyMembersServiceTest, ListFamilyFetcherClearsResponseOnSignout) {
+  // Mock of supervised_user::FamilyPreferencesService::SetFamily, taking the
+  // list family response from fetches. We check if the response is correct at
+  // the last step with `hoh_username`.
+  std::string hoh_username;
+  auto extract_hoh_display_name_from_response = base::BindLambdaForTesting(
+      [&](const kidsmanagement::ListMembersResponse& response) {
+        if (response.members().empty()) {
+          hoh_username = "";
+        } else {
+          hoh_username = response.members().at(0).profile().display_name();
+        }
+      });
+
+  // Subscribe to the mock method.
+  base::CallbackListSubscription subscription =
+      test_list_family_members_service_->SubscribeToSuccessfulFetches(
+          extract_hoh_display_name_from_response);
+
+  // Test the `fetcher_`.
+  AccountInfo primary_account = identity_test_env_.MakePrimaryAccountAvailable(
+      "user_child@gmail.com", signin::ConsentLevel::kSignin);
+  AccountCapabilitiesTestMutator mutator(&primary_account.capabilities);
+  mutator.set_is_subject_to_parental_controls(true);
+  identity_test_env_.UpdateAccountInfoForAccount(primary_account);
+  test_list_family_members_service_->Init();
+
+  // Perform the sequence of obtaining an access token, simulating response and
+  // verifying the result.
+  identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", base::Time::Max());
+  ASSERT_EQ(1, test_url_loader_factory_.NumPending());
+  SimulateResponseForPendingRequest("username_hoh");
+  ASSERT_EQ(0, test_url_loader_factory_.NumPending());
+  EXPECT_EQ(hoh_username, "username_hoh");
+
+  identity_test_env_.ClearPrimaryAccount();
+  EXPECT_EQ(hoh_username, "");
+
+  test_list_family_members_service_->Shutdown();
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
