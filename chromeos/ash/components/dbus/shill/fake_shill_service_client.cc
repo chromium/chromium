@@ -328,8 +328,9 @@ void FakeShillServiceClient::Disconnect(const dbus::ObjectPath& service_path,
       base::BindOnce(&FakeShillServiceClient::SetProperty,
                      weak_ptr_factory_.GetWeakPtr(), service_path,
                      shill::kStateProperty, base::Value(shill::kStateIdle),
-                     std::move(callback), std::move(error_callback)),
+                     base::DoNothing(), std::move(error_callback)),
       GetInteractiveDelay());
+  std::move(callback).Run();
 }
 
 void FakeShillServiceClient::Remove(const dbus::ObjectPath& service_path,
