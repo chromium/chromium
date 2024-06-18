@@ -18,6 +18,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/manta/anchovy/anchovy_provider.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -101,6 +102,7 @@ class Annotator : public mojom::Annotator {
             int batch_size,
             double min_ocr_confidence,
             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+            std::unique_ptr<manta::AnchovyProvider> anchovy_provider,
             std::unique_ptr<Client> client);
 
   Annotator(const Annotator&) = delete;
@@ -248,6 +250,7 @@ class Annotator : public mojom::Annotator {
   void OnServerLangsResponseJsonParsed(std::optional<base::Value> json_data,
                                        const std::optional<std::string>& error);
 
+  const std::unique_ptr<manta::AnchovyProvider> anchovy_provider_;
   const std::unique_ptr<Client> client_;
 
   // Maps from request key to previously-obtained annotation results.

@@ -500,8 +500,10 @@ Annotator::Annotator(
     const int batch_size,
     const double min_ocr_confidence,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    std::unique_ptr<manta::AnchovyProvider> anchovy_provider,
     std::unique_ptr<Client> client)
-    : client_(std::move(client)),
+    : anchovy_provider_(std::move(anchovy_provider)),
+      client_(std::move(client)),
       url_loader_factory_(std::move(url_loader_factory)),
       pixels_server_url_(std::move(pixels_server_url)),
       langs_server_url_(std::move(langs_server_url)),

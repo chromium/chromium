@@ -17,6 +17,7 @@ source_set("lib") {
   deps = [
     "//base",
     "//components/google/core/common",
+    "//components/manta",
     "//mojo/public/cpp/bindings",
     "//net",
     "//services/data_decoder/public/mojom",

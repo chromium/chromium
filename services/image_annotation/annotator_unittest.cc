@@ -429,11 +429,11 @@ TEST(AnnotatorTest, OcrSuccessAndCache) {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
-  Annotator annotator(GURL(kTestServerUrl), GURL(""),
-                      std::string() /* api_key */, kThrottle,
-                      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
-                      test_url_factory.AsSharedURLLoaderFactory(),
-                      std::make_unique<TestAnnotatorClient>());
+  Annotator annotator(
+      GURL(kTestServerUrl), GURL(""), std::string() /* api_key */, kThrottle,
+      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
+      test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
+      std::make_unique<TestAnnotatorClient>());
   TestImageProcessor processor;
 
   // First call performs original image annotation.
@@ -536,11 +536,11 @@ TEST(AnnotatorTest, DescriptionSuccess) {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
-  Annotator annotator(GURL(kTestServerUrl), GURL(""),
-                      std::string() /* api_key */, kThrottle,
-                      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
-                      test_url_factory.AsSharedURLLoaderFactory(),
-                      std::make_unique<TestAnnotatorClient>());
+  Annotator annotator(
+      GURL(kTestServerUrl), GURL(""), std::string() /* api_key */, kThrottle,
+      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
+      test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
+      std::make_unique<TestAnnotatorClient>());
   TestImageProcessor processor;
 
   std::optional<mojom::AnnotateImageError> error;
@@ -644,11 +644,11 @@ TEST(AnnotatorTest, DoubleOcrResult) {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
-  Annotator annotator(GURL(kTestServerUrl), GURL(""),
-                      std::string() /* api_key */, kThrottle,
-                      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
-                      test_url_factory.AsSharedURLLoaderFactory(),
-                      std::make_unique<TestAnnotatorClient>());
+  Annotator annotator(
+      GURL(kTestServerUrl), GURL(""), std::string() /* api_key */, kThrottle,
+      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
+      test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
+      std::make_unique<TestAnnotatorClient>());
   TestImageProcessor processor;
 
   std::optional<mojom::AnnotateImageError> error;
@@ -760,11 +760,11 @@ TEST(AnnotatorTest, HttpError) {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
-  Annotator annotator(GURL(kTestServerUrl), GURL(""),
-                      std::string() /* api_key */, kThrottle,
-                      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
-                      test_url_factory.AsSharedURLLoaderFactory(),
-                      std::make_unique<TestAnnotatorClient>());
+  Annotator annotator(
+      GURL(kTestServerUrl), GURL(""), std::string() /* api_key */, kThrottle,
+      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
+      test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
+      std::make_unique<TestAnnotatorClient>());
 
   TestImageProcessor processor;
   std::optional<mojom::AnnotateImageError> error;
@@ -817,11 +817,11 @@ TEST(AnnotatorTest, BackendError) {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
-  Annotator annotator(GURL(kTestServerUrl), GURL(""),
-                      std::string() /* api_key */, kThrottle,
-                      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
-                      test_url_factory.AsSharedURLLoaderFactory(),
-                      std::make_unique<TestAnnotatorClient>());
+  Annotator annotator(
+      GURL(kTestServerUrl), GURL(""), std::string() /* api_key */, kThrottle,
+      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
+      test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
+      std::make_unique<TestAnnotatorClient>());
 
   TestImageProcessor processor;
   std::optional<mojom::AnnotateImageError> error;
@@ -901,11 +901,11 @@ TEST(AnnotatorTest, OcrBackendError) {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
-  Annotator annotator(GURL(kTestServerUrl), GURL(""),
-                      std::string() /* api_key */, kThrottle,
-                      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
-                      test_url_factory.AsSharedURLLoaderFactory(),
-                      std::make_unique<TestAnnotatorClient>());
+  Annotator annotator(
+      GURL(kTestServerUrl), GURL(""), std::string() /* api_key */, kThrottle,
+      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
+      test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
+      std::make_unique<TestAnnotatorClient>());
 
   TestImageProcessor processor;
   std::optional<mojom::AnnotateImageError> error;
@@ -996,11 +996,11 @@ TEST(AnnotatorTest, DescriptionBackendError) {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
-  Annotator annotator(GURL(kTestServerUrl), GURL(""),
-                      std::string() /* api_key */, kThrottle,
-                      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
-                      test_url_factory.AsSharedURLLoaderFactory(),
-                      std::make_unique<TestAnnotatorClient>());
+  Annotator annotator(
+      GURL(kTestServerUrl), GURL(""), std::string() /* api_key */, kThrottle,
+      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
+      test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
+      std::make_unique<TestAnnotatorClient>());
 
   TestImageProcessor processor;
   std::optional<mojom::AnnotateImageError> error;
@@ -1087,11 +1087,11 @@ TEST(AnnotatorTest, ServerError) {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
-  Annotator annotator(GURL(kTestServerUrl), GURL(""),
-                      std::string() /* api_key */, kThrottle,
-                      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
-                      test_url_factory.AsSharedURLLoaderFactory(),
-                      std::make_unique<TestAnnotatorClient>());
+  Annotator annotator(
+      GURL(kTestServerUrl), GURL(""), std::string() /* api_key */, kThrottle,
+      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
+      test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
+      std::make_unique<TestAnnotatorClient>());
 
   TestImageProcessor processor;
   std::optional<mojom::AnnotateImageError> error;
@@ -1146,11 +1146,11 @@ TEST(AnnotatorTest, AdultError) {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
-  Annotator annotator(GURL(kTestServerUrl), GURL(""),
-                      std::string() /* api_key */, kThrottle,
-                      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
-                      test_url_factory.AsSharedURLLoaderFactory(),
-                      std::make_unique<TestAnnotatorClient>());
+  Annotator annotator(
+      GURL(kTestServerUrl), GURL(""), std::string() /* api_key */, kThrottle,
+      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
+      test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
+      std::make_unique<TestAnnotatorClient>());
 
   TestImageProcessor processor;
   std::optional<mojom::AnnotateImageError> error;
@@ -1222,11 +1222,11 @@ TEST(AnnotatorTest, ProcessorFails) {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
-  Annotator annotator(GURL(kTestServerUrl), GURL(""),
-                      std::string() /* api_key */, kThrottle,
-                      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
-                      test_url_factory.AsSharedURLLoaderFactory(),
-                      std::make_unique<TestAnnotatorClient>());
+  Annotator annotator(
+      GURL(kTestServerUrl), GURL(""), std::string() /* api_key */, kThrottle,
+      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
+      test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
+      std::make_unique<TestAnnotatorClient>());
 
   TestImageProcessor processor[3];
   std::optional<mojom::AnnotateImageError> error[3];
@@ -1303,11 +1303,11 @@ TEST(AnnotatorTest, ProcessorFailedPreviously) {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
-  Annotator annotator(GURL(kTestServerUrl), GURL(""),
-                      std::string() /* api_key */, kThrottle,
-                      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
-                      test_url_factory.AsSharedURLLoaderFactory(),
-                      std::make_unique<TestAnnotatorClient>());
+  Annotator annotator(
+      GURL(kTestServerUrl), GURL(""), std::string() /* api_key */, kThrottle,
+      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
+      test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
+      std::make_unique<TestAnnotatorClient>());
 
   TestImageProcessor processor[2];
   std::optional<mojom::AnnotateImageError> error[2];
@@ -1373,11 +1373,11 @@ TEST(AnnotatorTest, ProcessorDies) {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
-  Annotator annotator(GURL(kTestServerUrl), GURL(""),
-                      std::string() /* api_key */, kThrottle,
-                      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
-                      test_url_factory.AsSharedURLLoaderFactory(),
-                      std::make_unique<TestAnnotatorClient>());
+  Annotator annotator(
+      GURL(kTestServerUrl), GURL(""), std::string() /* api_key */, kThrottle,
+      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
+      test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
+      std::make_unique<TestAnnotatorClient>());
 
   TestImageProcessor processor[3];
   std::optional<mojom::AnnotateImageError> error[3];
@@ -1449,11 +1449,11 @@ TEST(AnnotatorTest, ConcurrentSameBatch) {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
-  Annotator annotator(GURL(kTestServerUrl), GURL(""),
-                      std::string() /* api_key */, kThrottle,
-                      3 /* batch_size */, 1.0 /* min_ocr_confidence */,
-                      test_url_factory.AsSharedURLLoaderFactory(),
-                      std::make_unique<TestAnnotatorClient>());
+  Annotator annotator(
+      GURL(kTestServerUrl), GURL(""), std::string() /* api_key */, kThrottle,
+      3 /* batch_size */, 1.0 /* min_ocr_confidence */,
+      test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
+      std::make_unique<TestAnnotatorClient>());
 
   TestImageProcessor processor[3];
   std::optional<mojom::AnnotateImageError> error[3];
@@ -1537,11 +1537,11 @@ TEST(AnnotatorTest, ConcurrentSeparateBatches) {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
-  Annotator annotator(GURL(kTestServerUrl), GURL(""),
-                      std::string() /* api_key */, kThrottle,
-                      3 /* batch_size */, 1.0 /* min_ocr_confidence */,
-                      test_url_factory.AsSharedURLLoaderFactory(),
-                      std::make_unique<TestAnnotatorClient>());
+  Annotator annotator(
+      GURL(kTestServerUrl), GURL(""), std::string() /* api_key */, kThrottle,
+      3 /* batch_size */, 1.0 /* min_ocr_confidence */,
+      test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
+      std::make_unique<TestAnnotatorClient>());
 
   TestImageProcessor processor[2];
   std::optional<mojom::AnnotateImageError> error[2];
@@ -1682,11 +1682,11 @@ TEST(AnnotatorTest, DuplicateWork) {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
-  Annotator annotator(GURL(kTestServerUrl), GURL(""),
-                      std::string() /* api_key */, kThrottle,
-                      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
-                      test_url_factory.AsSharedURLLoaderFactory(),
-                      std::make_unique<TestAnnotatorClient>());
+  Annotator annotator(
+      GURL(kTestServerUrl), GURL(""), std::string() /* api_key */, kThrottle,
+      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
+      test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
+      std::make_unique<TestAnnotatorClient>());
 
   TestImageProcessor processor[4];
   std::optional<mojom::AnnotateImageError> error[4];
@@ -1791,11 +1791,11 @@ TEST(AnnotatorTest, DescPolicy) {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
-  Annotator annotator(GURL(kTestServerUrl), GURL(""),
-                      std::string() /* api_key */, kThrottle,
-                      3 /* batch_size */, 1.0 /* min_ocr_confidence */,
-                      test_url_factory.AsSharedURLLoaderFactory(),
-                      std::make_unique<TestAnnotatorClient>());
+  Annotator annotator(
+      GURL(kTestServerUrl), GURL(""), std::string() /* api_key */, kThrottle,
+      3 /* batch_size */, 1.0 /* min_ocr_confidence */,
+      test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
+      std::make_unique<TestAnnotatorClient>());
 
   TestImageProcessor processor[3];
   std::optional<mojom::AnnotateImageError> error[3];
@@ -1996,11 +1996,11 @@ TEST(AnnotatorTest, DescLanguage) {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
-  Annotator annotator(GURL(kTestServerUrl), GURL(""),
-                      std::string() /* api_key */, kThrottle,
-                      3 /* batch_size */, 1.0 /* min_ocr_confidence */,
-                      test_url_factory.AsSharedURLLoaderFactory(),
-                      std::make_unique<TestAnnotatorClient>());
+  Annotator annotator(
+      GURL(kTestServerUrl), GURL(""), std::string() /* api_key */, kThrottle,
+      3 /* batch_size */, 1.0 /* min_ocr_confidence */,
+      test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
+      std::make_unique<TestAnnotatorClient>());
   annotator.server_languages_ = {"en", "it", "fr"};
 
   TestImageProcessor processor[3];
@@ -2195,11 +2195,11 @@ TEST(AnnotatorTest, LanguageFallback) {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
   base::HistogramTester histogram_tester;
 
-  Annotator annotator(GURL(kTestServerUrl), GURL(""),
-                      std::string() /* api_key */, kThrottle,
-                      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
-                      test_url_factory.AsSharedURLLoaderFactory(),
-                      std::make_unique<TestAnnotatorClient>());
+  Annotator annotator(
+      GURL(kTestServerUrl), GURL(""), std::string() /* api_key */, kThrottle,
+      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
+      test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
+      std::make_unique<TestAnnotatorClient>());
   annotator.server_languages_ = {"en", "it", "fr"};
 
   TestImageProcessor processor;
@@ -2303,6 +2303,7 @@ TEST(AnnotatorTest, ApiKey) {
     Annotator annotator(GURL(kTestServerUrl), GURL(""), "my_api_key", kThrottle,
                         1 /* batch_size */, 1.0 /* min_ocr_confidence */,
                         test_url_factory.AsSharedURLLoaderFactory(),
+                        /*anchovy_provider=*/nullptr,
                         std::make_unique<TestAnnotatorClient>());
     TestImageProcessor processor;
 
@@ -2337,6 +2338,7 @@ TEST(AnnotatorTest, ApiKey) {
                         GURL(""), "my_api_key", kThrottle, 1 /* batch_size */,
                         1.0 /* min_ocr_confidence */,
                         test_url_factory.AsSharedURLLoaderFactory(),
+                        /*anchovy_provider=*/nullptr,
                         std::make_unique<TestAnnotatorClient>());
     TestImageProcessor processor;
 
@@ -2364,11 +2366,11 @@ TEST(AnnotatorTest, ApiKey) {
   {
     TestServerURLLoaderFactory test_url_factory("https://datascraper.com/");
 
-    Annotator annotator(GURL("https://datascraper.com/annotation"), GURL(""),
-                        "my_api_key", kThrottle, 1 /* batch_size */,
-                        1.0 /* min_ocr_confidence */,
-                        test_url_factory.AsSharedURLLoaderFactory(),
-                        std::make_unique<TestAnnotatorClient>());
+    Annotator annotator(
+        GURL("https://datascraper.com/annotation"), GURL(""), "my_api_key",
+        kThrottle, 1 /* batch_size */, 1.0 /* min_ocr_confidence */,
+        test_url_factory.AsSharedURLLoaderFactory(),
+        /*anchovy_provider=*/nullptr, std::make_unique<TestAnnotatorClient>());
     TestImageProcessor processor;
 
     annotator.AnnotateImage(kImage1Url, kDescLang, processor.GetPendingRemote(),
@@ -2399,11 +2401,11 @@ TEST(AnnotatorTest, ComputePreferredLanguage) {
   TestAnnotatorClient* annotator_client = new TestAnnotatorClient();
   TestServerURLLoaderFactory test_url_factory(
       "https://ia-pa.googleapis.com/v1/");
-  Annotator annotator(GURL("https://datascraper.com/annotation"), GURL(""),
-                      "my_api_key", kThrottle, 1 /* batch_size */,
-                      1.0 /* min_ocr_confidence */,
-                      test_url_factory.AsSharedURLLoaderFactory(),
-                      base::WrapUnique(annotator_client));
+  Annotator annotator(
+      GURL("https://datascraper.com/annotation"), GURL(""), "my_api_key",
+      kThrottle, 1 /* batch_size */, 1.0 /* min_ocr_confidence */,
+      test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
+      base::WrapUnique(annotator_client));
 
   // Simplest case: the page language is in the list of top languages,
   // accept languages, and server languages.
@@ -2467,11 +2469,11 @@ TEST(AnnotatorTest, FetchServerLanguages) {
       "https://ia-pa.googleapis.com/v1/");
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
 
-  Annotator annotator(GURL(kTestServerUrl), GURL(kLangsServerUrl),
-                      std::string() /* api_key */, kThrottle,
-                      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
-                      test_url_factory.AsSharedURLLoaderFactory(),
-                      std::make_unique<TestAnnotatorClient>());
+  Annotator annotator(
+      GURL(kTestServerUrl), GURL(kLangsServerUrl), std::string() /* api_key */,
+      kThrottle, 1 /* batch_size */, 1.0 /* min_ocr_confidence */,
+      test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
+      std::make_unique<TestAnnotatorClient>());
 
   // Assert that initially server_languages_ doesn't contain the made-up
   // language code zz.
@@ -2502,11 +2504,11 @@ TEST(AnnotatorTest, ServerLanguagesMustContainEnglish) {
       "https://ia-pa.googleapis.com/v1/");
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
 
-  Annotator annotator(GURL(kTestServerUrl), GURL(kLangsServerUrl),
-                      std::string() /* api_key */, kThrottle,
-                      1 /* batch_size */, 1.0 /* min_ocr_confidence */,
-                      test_url_factory.AsSharedURLLoaderFactory(),
-                      std::make_unique<TestAnnotatorClient>());
+  Annotator annotator(
+      GURL(kTestServerUrl), GURL(kLangsServerUrl), std::string() /* api_key */,
+      kThrottle, 1 /* batch_size */, 1.0 /* min_ocr_confidence */,
+      test_url_factory.AsSharedURLLoaderFactory(), /*anchovy_provider=*/nullptr,
+      std::make_unique<TestAnnotatorClient>());
 
   // Assert that initially server_languages_ does contain "en" but
   // doesn't contain the made-up language code zz.

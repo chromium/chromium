@@ -8,6 +8,7 @@
 
 #include "base/version_info/channel.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -63,7 +64,12 @@ MantaServiceFactory::BuildServiceInstanceForBrowserContext(
   std::string chrome_version, locale;
   if (PrefService* pref_service = profile->GetPrefs()) {
     chrome_version = pref_service->GetString(prefs::kProfileCreatedByVersion);
+    // Check to make sure that the locale pref is set before accessing.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     locale = pref_service->GetString(language::prefs::kApplicationLocale);
+#else
+    locale = g_browser_process->GetApplicationLocale();
+#endif
   }
 
   return std::make_unique<MantaService>(
