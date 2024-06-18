@@ -1097,7 +1097,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.RawProcessingSupportedWin" enum="BooleanSupported"
-    expires_after="2024-06-30">
+    expires_after="2025-06-30">
   <owner>henrika@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -4484,7 +4484,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.MicrophoneMuted" enum="MicrophoneMuteResult"
-    expires_after="2024-06-30">
+    expires_after="2025-06-30">
   <owner>henrika@chromium.org</owner>
   <owner>webrtc-audio@google.com</owner>
   <summary>
