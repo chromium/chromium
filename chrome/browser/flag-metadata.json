@@ -856,6 +856,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "autofill-show-manual-fill-for-virtual-cards",
+    "owners": [ "siyua@chromium.org", "payments-autofill-team@google.com"],
+    "expiry_milestone": 135
+  },
+  {
     "name": "autofill-skip-android-bottom-sheet-for-iban",
     "owners": [ "qihuizhao@google.com", "jsaul@google.com", "payments-autofill-team@google.com" ],
     "expiry_milestone": 136

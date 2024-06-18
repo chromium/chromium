@@ -136,6 +136,11 @@ extern const char kAutofillParseVcnCardOnFileStandaloneCvcFieldsDescription[];
 extern const char kAutofillPruneSuggestionsName[];
 extern const char kAutofillPruneSuggestionsDescription[];
 
+// Title and description for the flag that shows the manual fill view directly
+// on form focusing events for virtual cards.
+extern const char kAutofillShowManualFillForVirtualCardsName[];
+extern const char kAutofillShowManualFillForVirtualCardsDescription[];
+
 // Title and description for the flag that makes the autofill infobars sticky.
 extern const char kAutofillStickyInfobarName[];
 extern const char kAutofillStickyInfobarDescription[];

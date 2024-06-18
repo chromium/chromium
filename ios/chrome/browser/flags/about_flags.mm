@@ -1878,6 +1878,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDefaultBrowserPromoIPadExperimentalStringDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kDefaultBrowserPromoIPadExperimentalString)},
+    {"autofill-show-manual-fill-for-virtual-cards",
+     flag_descriptions::kAutofillShowManualFillForVirtualCardsName,
+     flag_descriptions::kAutofillShowManualFillForVirtualCardsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillShowManualFillForVirtualCards)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

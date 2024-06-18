@@ -204,6 +204,14 @@ BASE_FEATURE(kAutofillRequireValidLocalCardsInSettings,
              "AutofillRequireValidLocalCardsInSettings",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_IOS)
+// When enabled, manual fill view will be shown directly from form focusing
+// events, if a virtual card has been retrieved previously.
+BASE_FEATURE(kAutofillShowManualFillForVirtualCards,
+             "AutofillShowManualFillForVirtualCards",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 // When enabled, IBAN Autofill suggestions are shown via the keyboard accessory
 // instead of the bottom sheet.
