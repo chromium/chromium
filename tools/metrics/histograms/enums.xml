@@ -5619,6 +5619,21 @@ Called by update_document_policy_enum.py.-->
   <int value="3" label="Wheel"/>
 </enum>
 
+<enum name="EventTimingClickInteractionEvents">
+  <int value="0" label="Click detected"/>
+  <int value="1" label="Pointer click with pointerdown and pointerup"/>
+  <int value="2" label="Pointer click with missing pointerdown only"/>
+  <int value="3" label="Pointer click with missing pointerup only"/>
+  <int value="4" label="Pointer click with missing pointerdown and pointerup"/>
+  <int value="5"
+      label="Pointer click PointerId differ from LastPointerId but exist in
+             the map"/>
+  <int value="6"
+      label="Pointer click PointerId differ from LastPointerId and not in the
+             map"/>
+  <int value="7" label="Keyboard click"/>
+</enum>
+
 <enum name="Experiment3pcBlockStatus">
   <int value="0" label="kAllowedAndExperimentBlocked"/>
   <int value="1" label="kAllowedAndExperimentAllowed"/>

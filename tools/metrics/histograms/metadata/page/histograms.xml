@@ -2588,6 +2588,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PageLoad.Internal.EventTiming.ClickInteractionEvents"
+    enum="EventTimingClickInteractionEvents" expires_after="2024-12-17">
+  <owner>zuoaoyuan@chromium.org</owner>
+  <owner>speed-metrics-dev@chromium.org</owner>
+  <summary>
+    Records eight properties of click events in Event Timing. They are: total
+    number of clicks, number of clicks that are triggered by a keyboard
+    interaction, number of pointer clicks (that are triggered by a pointer
+    device) that are accompanied by both pointerdown and pointerup, number of
+    pointer clicks that only have their pointerdown missing, number of pointer
+    clicks that only have their pointerup missing, number of pointer clicks that
+    have both their pointerdown and pointerup missing, number of clicks that
+    have a pointer_id different from last_pointer_id but exist in the map,
+    number of clicks that have a pointer_id different from last_pointer_id and
+    also not exist in the map. This is recorded at most three times for each JS
+    trusted Click event dispatch. Once for total number of clicks; potentially
+    once if the pointer_id of the click is different from last_pointer_id; and
+    potentially once for all other types.
+  </summary>
+</histogram>
+
 <histogram name="PageLoad.Internal.PageLoadTimingStatus{Condition}"
     enum="PageLoadTimingStatus" expires_after="2024-11-03">
   <owner>toyoshim@chromium.org</owner>
