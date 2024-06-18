@@ -318,7 +318,9 @@ std::u16string OfflineItemUtils::GetFailStateMessage(FailState fail_state) {
       break;
 
     case FailState::NO_FAILURE:
-      DUMP_WILL_BE_NOTREACHED();
+      // We reach here if the received bytes is zero. Ideally, we should have a
+      // separate FailState outside of download interrupt reasons, and pass the
+      // bytes info to every function that invokes this.
       [[fallthrough]];
     case FailState::CANNOT_DOWNLOAD:
       [[fallthrough]];
