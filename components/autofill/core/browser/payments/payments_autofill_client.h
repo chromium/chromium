@@ -119,6 +119,9 @@ class PaymentsAutofillClient : public RiskDataLoader {
   using WebauthnDialogCallback =
       base::RepeatingCallback<void(WebauthnDialogCallbackType)>;
 
+  // Callback to run when the credit card has been scanned.
+  using CreditCardScanCallback = base::OnceCallback<void(const CreditCard&)>;
+
 #if BUILDFLAG(IS_ANDROID)
   // Gets the AutofillSaveCardBottomSheetBridge or creates one if it doesn't
   // exist.
@@ -199,7 +202,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // Shows the user interface for scanning a credit card. Invokes the `callback`
   // when a credit card is scanned successfully. Should be called only if
   // HasCreditCardScanFeature() returns true.
-  virtual void ScanCreditCard(AutofillClient::CreditCardScanCallback callback);
+  virtual void ScanCreditCard(CreditCardScanCallback callback);
 
   // Shows upload result to users. Called after credit card upload is finished.
   // `card_saved` indicates if the card is successfully saved.

@@ -67,8 +67,7 @@ void PaymentsAutofillClient::ConfirmExpirationDateFixFlow(
         callback) {}
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
-void PaymentsAutofillClient::ScanCreditCard(
-    AutofillClient::CreditCardScanCallback callback) {}
+void PaymentsAutofillClient::ScanCreditCard(CreditCardScanCallback callback) {}
 
 void PaymentsAutofillClient::CreditCardUploadCompleted(
     bool card_saved,

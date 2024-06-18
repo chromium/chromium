@@ -308,8 +308,6 @@ class AutofillClient {
       SaveCardOfferUserDecision user_decision,
       const UserProvidedCardDetails& user_provided_card_details)>;
 
-  using CreditCardScanCallback = base::OnceCallback<void(const CreditCard&)>;
-
   // Callback to run when the user makes a decision on whether to save the
   // profile. If the user edits the Autofill profile and then accepts edits, the
   // edited version of the profile should be passed as the second parameter. No

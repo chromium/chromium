@@ -49,7 +49,7 @@ class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
 
   MOCK_METHOD(void,
               ScanCreditCard,
-              (AutofillClient::CreditCardScanCallback callback),
+              (CreditCardScanCallback callback),
               (override));
 };
 

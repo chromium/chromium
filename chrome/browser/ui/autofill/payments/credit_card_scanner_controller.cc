@@ -25,7 +25,7 @@ namespace {
 class Controller final : public CreditCardScannerViewDelegate {
  public:
   Controller(content::WebContents* web_contents,
-             AutofillClient::CreditCardScanCallback callback)
+             payments::PaymentsAutofillClient::CreditCardScanCallback callback)
       : callback_(std::move(callback)) {
     view_ = CreditCardScannerView::Create(weak_ptr_factory_.GetWeakPtr(),
                                           web_contents);
@@ -62,7 +62,7 @@ class Controller final : public CreditCardScannerViewDelegate {
   std::unique_ptr<CreditCardScannerView> view_;
 
   // The callback to be invoked when scanning completes successfully.
-  AutofillClient::CreditCardScanCallback callback_;
+  payments::PaymentsAutofillClient::CreditCardScanCallback callback_;
 
   // The time when the UI was shown.
   base::TimeTicks show_time_;
@@ -81,7 +81,7 @@ bool CreditCardScannerController::HasCreditCardScanFeature() {
 // static
 void CreditCardScannerController::ScanCreditCard(
     content::WebContents* web_contents,
-    AutofillClient::CreditCardScanCallback callback) {
+    payments::PaymentsAutofillClient::CreditCardScanCallback callback) {
   (new Controller(web_contents, std::move(callback)))->Show();
 }
 
