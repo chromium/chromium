@@ -26,44 +26,89 @@ namespace content {
 
 namespace {
 
-void MakeTable(ui::AXNodeData* table, int id, int row_count, int col_count) {
-  table->id = id;
-  table->role = ax::mojom::Role::kTable;
-  table->AddIntAttribute(ax::mojom::IntAttribute::kTableRowCount, row_count);
-  table->AddIntAttribute(ax::mojom::IntAttribute::kTableColumnCount, col_count);
-}
+enum class TableHeaderOption { NoHeaders, RowHeaders, ColumnHeaders };
 
-void MakeRow(ui::AXNodeData* row, int id) {
-  row->id = id;
+void MakeRow(ui::AXNodeData* row, int row_id) {
+  row->id = row_id;
   row->role = ax::mojom::Role::kRow;
 }
 
 void MakeCell(ui::AXNodeData* cell,
-              int id,
+              int cell_id,
               int row_index,
-              int col_index,
+              int column_index,
               int row_span = 1,
-              int col_span = 1) {
-  cell->id = id;
+              int column_span = 1) {
+  cell->id = cell_id;
   cell->role = ax::mojom::Role::kCell;
   cell->AddIntAttribute(ax::mojom::IntAttribute::kTableCellRowIndex, row_index);
   cell->AddIntAttribute(ax::mojom::IntAttribute::kTableCellColumnIndex,
-                        col_index);
-  if (row_span > 1)
+                        column_index);
+  if (row_span > 1) {
     cell->AddIntAttribute(ax::mojom::IntAttribute::kTableCellRowSpan, row_span);
-  if (col_span > 1)
+  }
+  if (column_span > 1) {
     cell->AddIntAttribute(ax::mojom::IntAttribute::kTableCellColumnSpan,
-                          col_span);
+                          column_span);
+  }
+}
+
+void MakeRowHeader(ui::AXNodeData* cell,
+                   int cell_id,
+                   int row_index,
+                   int column_index,
+                   int row_span = 1,
+                   int column_span = 1) {
+  MakeCell(cell, cell_id, row_index, column_index, row_span, column_span);
+  cell->role = ax::mojom::Role::kRowHeader;
 }
 
 void MakeColumnHeader(ui::AXNodeData* cell,
-                      int id,
+                      int cell_id,
                       int row_index,
-                      int col_index,
+                      int column_index,
                       int row_span = 1,
-                      int col_span = 1) {
-  MakeCell(cell, id, row_index, col_index, row_span, col_span);
+                      int column_span = 1) {
+  MakeCell(cell, cell_id, row_index, column_index, row_span, column_span);
   cell->role = ax::mojom::Role::kColumnHeader;
+}
+
+void MakeTable(ui::AXTreeUpdate* initial_state,
+               int row_count,
+               int column_count,
+               TableHeaderOption header_option = TableHeaderOption::NoHeaders) {
+  int next_id = 1;
+  initial_state->root_id = next_id++;
+
+  // Node count is the table, plus each row, plus all cells.
+  initial_state->nodes.resize(1 + row_count + row_count * column_count);
+  int next_node_index = 0;
+
+  ui::AXNodeData* table = &initial_state->nodes[next_node_index++];
+  table->id = initial_state->root_id;
+  table->role = ax::mojom::Role::kTable;
+  table->AddIntAttribute(ax::mojom::IntAttribute::kTableRowCount, row_count);
+  table->AddIntAttribute(ax::mojom::IntAttribute::kTableColumnCount,
+                         column_count);
+
+  for (int row = 0; row < row_count; row++) {
+    ui::AXNodeData* row_node = &initial_state->nodes[next_node_index++];
+    MakeRow(row_node, next_id++);
+    table->child_ids.push_back(row_node->id);
+
+    for (int column = 0; column < column_count; column++) {
+      ui::AXNodeData* cell_node = &initial_state->nodes[next_node_index++];
+      if (header_option == TableHeaderOption::RowHeaders && column == 0) {
+        MakeRowHeader(cell_node, next_id++, row, column);
+      } else if (header_option == TableHeaderOption::ColumnHeaders &&
+                 row == 0) {
+        MakeColumnHeader(cell_node, next_id++, row, column);
+      } else {
+        MakeCell(cell_node, next_id++, row, column);
+      }
+      row_node->child_ids.push_back(cell_node->id);
+    }
+  }
 }
 
 }  // namespace
@@ -245,18 +290,10 @@ TEST_F(BrowserAccessibilityMacTest, TestComputeTextEdit) {
 // Test Mac-specific table APIs.
 TEST_F(BrowserAccessibilityMacTest, TableAPIs) {
   ui::AXTreeUpdate initial_state;
-  initial_state.root_id = 1;
-  initial_state.nodes.resize(7);
-  MakeTable(&initial_state.nodes[0], 1, 0, 0);
-  initial_state.nodes[0].child_ids = {2, 3};
-  MakeRow(&initial_state.nodes[1], 2);
-  initial_state.nodes[1].child_ids = {4, 5};
-  MakeRow(&initial_state.nodes[2], 3);
-  initial_state.nodes[2].child_ids = {6, 7};
-  MakeColumnHeader(&initial_state.nodes[3], 4, 0, 0);
-  MakeColumnHeader(&initial_state.nodes[4], 5, 0, 1);
-  MakeCell(&initial_state.nodes[5], 6, 1, 0);
-  MakeCell(&initial_state.nodes[6], 7, 1, 1);
+  const int kNumberOfRows = 2;
+  const int kNumberOfColumns = 2;
+  MakeTable(&initial_state, kNumberOfRows, kNumberOfColumns,
+            TableHeaderOption::ColumnHeaders);
 
   manager_ =
       std::make_unique<BrowserAccessibilityManagerMac>(initial_state, nullptr);
@@ -290,21 +327,112 @@ TEST_F(BrowserAccessibilityMacTest, TableAPIs) {
   EXPECT_NSEQ(@"AXCell", [col_children[1] role]);
 }
 
+// Test table row header support.
+TEST_F(BrowserAccessibilityMacTest, TableWithRowHeaders) {
+  // A non-table object should return nil for rowHeaders.
+  root_ = ui::AXNodeData();
+  root_.id = 1;
+  root_.role = ax::mojom::Role::kTextField;
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      MakeAXTreeUpdateForTesting(root_), nullptr);
+  BrowserAccessibilityCocoa* ax_textfield =
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  NSArray* row_headers = [ax_textfield rowHeaders];
+  EXPECT_EQ(nil, row_headers);
+
+  // A table with no row headers should return nil for rowHeaders.
+  ui::AXTreeUpdate headerless_table_state;
+  const int kNumberOfRows = 2;
+  const int kNumberOfColumns = 2;
+  MakeTable(&headerless_table_state, kNumberOfRows, kNumberOfColumns);
+  manager_ = std::make_unique<BrowserAccessibilityManagerMac>(
+      headerless_table_state, nullptr);
+  BrowserAccessibilityCocoa* ax_table =
+      manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  ax_table = manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+  row_headers = [ax_table rowHeaders];
+  EXPECT_EQ(nil, row_headers);
+
+  // Create a table with row headers.
+  ui::AXTreeUpdate table_state;
+  MakeTable(&table_state, kNumberOfRows, kNumberOfColumns,
+            TableHeaderOption::RowHeaders);
+  manager_ =
+      std::make_unique<BrowserAccessibilityManagerMac>(table_state, nullptr);
+  ax_table = manager_->GetBrowserAccessibilityRoot()->GetNativeViewAccessible();
+
+  // Confirm the AX structure is as expected.
+  NSArray* ax_table_children = ax_table.children;
+  EXPECT_EQ(5U, ax_table_children.count);
+
+  id first_row = ax_table_children[0];
+  EXPECT_NSEQ(@"AXRow", [first_row role]);
+  EXPECT_EQ(2U, [first_row children].count);
+  id first_row_children = [first_row children];
+  EXPECT_EQ(2U, [first_row_children count]);
+  EXPECT_NSEQ(@"AXCell", [first_row_children[0] role]);
+  EXPECT_NSEQ(@"AXCell", [first_row_children[1] role]);
+
+  id second_row = ax_table_children[1];
+  EXPECT_NSEQ(@"AXRow", [second_row role]);
+  EXPECT_EQ(2U, [second_row children].count);
+  id second_row_children = [second_row children];
+  EXPECT_EQ(2U, [second_row_children count]);
+  EXPECT_NSEQ(@"AXCell", [second_row_children[0] role]);
+  EXPECT_NSEQ(@"AXCell", [second_row_children[1] role]);
+
+  id first_column = ax_table_children[2];
+  EXPECT_NSEQ(@"AXColumn", [first_column role]);
+  id first_column_children = [first_column children];
+  EXPECT_EQ(2U, [first_column_children count]);
+  EXPECT_NSEQ(@"AXCell", [first_column_children[0] role]);
+  EXPECT_NSEQ(@"AXCell", [first_column_children[1] role]);
+
+  id second_column = ax_table_children[3];
+  EXPECT_NSEQ(@"AXColumn", [second_column role]);
+  id second_column_children = [second_column children];
+  EXPECT_EQ(2U, [second_column_children count]);
+  EXPECT_NSEQ(@"AXCell", [second_column_children[0] role]);
+  EXPECT_NSEQ(@"AXCell", [second_column_children[1] role]);
+
+  EXPECT_EQ(first_row_children[0], first_column_children[0]);
+  EXPECT_EQ(first_row_children[1], second_column_children[0]);
+  EXPECT_EQ(second_row_children[0], first_column_children[1]);
+  EXPECT_EQ(second_row_children[1], second_column_children[1]);
+
+  id table_group = ax_table_children[4];
+  EXPECT_NSEQ(@"AXGroup", [table_group role]);
+  EXPECT_EQ(0U, [table_group children].count);
+
+  // Confirm the table has row headers, and that they match the expected cells
+  // in the table.
+  row_headers = [ax_table rowHeaders];
+  EXPECT_EQ(2U, [row_headers count]);
+  id first_row_header_cell = row_headers[0];
+  EXPECT_EQ(first_row_header_cell, first_row_children[0]);
+  id second_row_header_cell = row_headers[1];
+  EXPECT_EQ(second_row_header_cell, second_row_children[0]);
+
+  // If we ask a row header cell for its rowHeaders, we should get that
+  // cell back.
+  row_headers = [first_row_header_cell rowHeaders];
+  EXPECT_EQ(1U, [row_headers count]);
+  EXPECT_EQ(first_row_header_cell, row_headers[0]);
+
+  // A non-row-header cell should return the header for its row.
+  id last_cell_second_row = second_row_children[1];
+  row_headers = [last_cell_second_row rowHeaders];
+  EXPECT_EQ(1U, [row_headers count]);
+  EXPECT_NSEQ(second_row_header_cell, row_headers[0]);
+}
+
 // Test Mac indirect columns and descendants.
 TEST_F(BrowserAccessibilityMacTest, TableColumnsAndDescendants) {
   ui::AXTreeUpdate initial_state;
-  initial_state.root_id = 1;
-  initial_state.nodes.resize(7);
-  MakeTable(&initial_state.nodes[0], 1, 0, 0);
-  initial_state.nodes[0].child_ids = {2, 3};
-  MakeRow(&initial_state.nodes[1], 2);
-  initial_state.nodes[1].child_ids = {4, 5};
-  MakeRow(&initial_state.nodes[2], 3);
-  initial_state.nodes[2].child_ids = {6, 7};
-  MakeColumnHeader(&initial_state.nodes[3], 4, 0, 0);
-  MakeColumnHeader(&initial_state.nodes[4], 5, 0, 1);
-  MakeCell(&initial_state.nodes[5], 6, 1, 0);
-  MakeCell(&initial_state.nodes[6], 7, 1, 1);
+  const int kNumberOfRows = 2;
+  const int kNumberOfColumns = 2;
+  MakeTable(&initial_state, kNumberOfRows, kNumberOfColumns,
+            TableHeaderOption::ColumnHeaders);
 
   // This relation is the key to force
   // AXEventGenerator::FireRelationSourceEvents to trigger addition of an event
