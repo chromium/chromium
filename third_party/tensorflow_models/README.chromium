@@ -2,7 +2,7 @@ Name: TensorFlow Models
 Short Name: tensorflow_models
 URL: https://github.com/tensorflow/models
 Version: 02bbd23f37fc85bbc4ad0540a08c383dddc9b501
-Date: 2023/05/23
+Date: 2023-05-23
 License: Apache 2.0
 License File: src/LICENSE
 Security Critical: Yes
@@ -26,3 +26,6 @@ Update Process/Notes:
 The owners update this repository as needed, using the `update.sh` script. If
 you need to roll this library sooner, please reach out to one of the owners so
 all the dependencies and necessary validation tests can be run.
+
+Local modifications with their associated descriptions are contained in the
+patches/ subdirectory.

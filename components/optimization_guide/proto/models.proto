@@ -269,6 +269,9 @@ enum ModelEngineVersion {
   // A model using only operations that are supported by 2.16.0. This raises the
   // max_version for FULLY_CONNECTED to version 12.
   MODEL_ENGINE_VERSION_TFLITE_2_16_1 = 16;
+  // A model using only operations that are supported by 2.17, and adds int8
+  // quantization support in the seq_flow_lite custom ops.
+  MODEL_ENGINE_VERSION_TFLITE_2_17 = 17;
 }
 
 // The set of parameters that the server can use to vary the served model for
