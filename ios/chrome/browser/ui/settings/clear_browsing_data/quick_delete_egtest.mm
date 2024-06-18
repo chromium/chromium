@@ -191,6 +191,12 @@ void ExpectClearBrowsingDataNavigationHistograms(
       @"Settings.ClearBrowsingData.OpenMyActivity histogram not logged.");
 }
 
+// Returns the given `string` with the first letter capitalized.
+- (NSString*)capitalizeFirstLetter:(NSString*)string {
+  return [[[string substringToIndex:1] uppercaseString]
+      stringByAppendingString:[string substringFromIndex:1]];
+}
+
 // Tests if the Quick Delete UI is shown correctly from Privacy settings.
 - (void)testOpenAndDismissQuickDeleteFromPrivacySettings {
   [self openQuickDeleteFromPrivacySettings];
@@ -426,8 +432,10 @@ void ExpectClearBrowsingDataNavigationHistograms(
                                           IDS_IOS_DELETE_BROWSING_DATA_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:
-                 ContainsPartialText(l10n_util::GetNSString(
-                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITE_DATA))]
+                 ContainsPartialText([self
+                     capitalizeFirstLetter:
+                         l10n_util::GetNSString(
+                             IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITE_DATA)])]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -450,8 +458,10 @@ void ExpectClearBrowsingDataNavigationHistograms(
                                           IDS_IOS_DELETE_BROWSING_DATA_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
   [[EarlGrey selectElementWithMatcher:
-                 ContainsPartialText(l10n_util::GetNSString(
-                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITE_DATA))]
+                 ContainsPartialText([self
+                     capitalizeFirstLetter:
+                         l10n_util::GetNSString(
+                             IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SITE_DATA)])]
       assertWithMatcher:grey_nil()];
 }
 
@@ -461,6 +471,8 @@ void ExpectClearBrowsingDataNavigationHistograms(
   // Set pref to select deletion of cache.
   [ChromeEarlGrey setBoolValue:true
                    forUserPref:browsing_data::prefs::kDeleteCache];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteCookies];
 
   [self openQuickDeleteFromThreeDotMenu];
 
@@ -472,9 +484,12 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_IOS_DELETE_BROWSING_DATA_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:
-                 ContainsPartialText(l10n_util::GetNSString(
-                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CACHED_FILES))]
+  [[EarlGrey
+      selectElementWithMatcher:
+          ContainsPartialText([self
+              capitalizeFirstLetter:
+                  l10n_util::GetNSString(
+                      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CACHED_FILES)])]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -484,6 +499,8 @@ void ExpectClearBrowsingDataNavigationHistograms(
   // Set pref to keep cache.
   [ChromeEarlGrey setBoolValue:false
                    forUserPref:browsing_data::prefs::kDeleteCache];
+  [ChromeEarlGrey setBoolValue:false
+                   forUserPref:browsing_data::prefs::kDeleteCookies];
 
   [self openQuickDeleteFromThreeDotMenu];
 
@@ -496,9 +513,12 @@ void ExpectClearBrowsingDataNavigationHistograms(
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_IOS_DELETE_BROWSING_DATA_TITLE))]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:
-                 ContainsPartialText(l10n_util::GetNSString(
-                     IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CACHED_FILES))]
+  [[EarlGrey
+      selectElementWithMatcher:
+          ContainsPartialText([self
+              capitalizeFirstLetter:
+                  l10n_util::GetNSString(
+                      IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_CACHED_FILES)])]
       assertWithMatcher:grey_nil()];
 }
 

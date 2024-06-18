@@ -228,12 +228,15 @@
 
   // TODO(crbug.com/342185075): Check if the comma is translated correctly for
   // right to left languages, e.g. arabic.
+  NSString* summary =
+      [summaryItems componentsJoinedByString:
+                        l10n_util::GetNSString(
+                            IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SEPARATOR)];
+
   _placeholderSummaryWasDispatched = NO;
-  [_consumer setBrowsingDataSummary:
-                 [summaryItems
-                     componentsJoinedByString:
-                         l10n_util::GetNSString(
-                             IDS_IOS_DELETE_BROWSING_DATA_SUMMARY_SEPARATOR)]];
+  NSString* summaryWithFirstLetterCapitalized = [[[summary substringToIndex:1]
+      uppercaseString] stringByAppendingString:[summary substringFromIndex:1]];
+  [_consumer setBrowsingDataSummary:summaryWithFirstLetterCapitalized];
 }
 
 // Returns the browsing history summary based on `result`. If the count of
