@@ -148,9 +148,6 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
           ->GetDisplayNearestWindow(browser_->window()->GetNativeWindow())
           .device_scale_factor();
 
-  // TODO(crbug.com/337938827): GetText() is wrong here; it returns "&Print..."
-  // instead of "Print". We my need to introduce new strings instead of reusing
-  // the action item text.
   const auto add_action =
       [&actions, model, provider, scale_factor, scope_action](
           actions::ActionId id,
@@ -170,24 +167,21 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
         actions.push_back(std::move(mojo_action));
       };
 
-  // TODO(crbug.com/323961924): Enable the remaining actions as they are created
-  // in the action manager.
-
-  // add_action(kActionHome,
-  // side_panel::customize_chrome::mojom::CategoryId::kNavigation);
-  // add_action(kActionForward,
-  // side_panel::customize_chrome::mojom::CategoryId::kNavigation);
+  add_action(kActionHome,
+             side_panel::customize_chrome::mojom::CategoryId::kNavigation);
+  add_action(kActionForward,
+             side_panel::customize_chrome::mojom::CategoryId::kNavigation);
   add_action(kActionNewIncognitoWindow,
              side_panel::customize_chrome::mojom::CategoryId::kNavigation);
 
-  // add_action(kActionShowPasswordManager,
-  // side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
-  // add_action(kActionShowPaymentMethods,
-  // side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
-  // add_action(kActionShowAddresses,
-  // side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
-  // add_action(kActionShowDownloads,
-  // side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
+  add_action(kActionShowPasswordManager,
+             side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
+  add_action(kActionShowPaymentMethods,
+             side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
+  add_action(kActionShowAddresses,
+             side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
+  add_action(kActionShowDownloads,
+             side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
   add_action(kActionClearBrowsingData,
              side_panel::customize_chrome::mojom::CategoryId::kYourChrome);
 
@@ -199,25 +193,25 @@ void CustomizeToolbarHandler::ListActions(ListActionsCallback callback) {
              side_panel::customize_chrome::mojom::CategoryId::kSidePanels);
   add_action(kActionSidePanelShowReadingList,
              side_panel::customize_chrome::mojom::CategoryId::kSidePanels);
-  // add_action(kActionSidePanelShowSideSearch,
-  // side_panel::customize_chrome::mojom::CategoryId::kSidePanels);
+  add_action(kActionSidePanelShowSideSearch,
+             side_panel::customize_chrome::mojom::CategoryId::kSidePanels);
 
   add_action(kActionPrint,
              side_panel::customize_chrome::mojom::CategoryId::kTools);
-  // add_action(kActionShowTranslate,
-  // side_panel::customize_chrome::mojom::CategoryId::kTools);
-  // add_action(kActionSendTabToSelf,
-  // side_panel::customize_chrome::mojom::CategoryId::kTools);
-  // add_action(kActionQrCodeGenerator,
-  // side_panel::customize_chrome::mojom::CategoryId::kTools);
-  // add_action(kActionRouteMedia,
-  // side_panel::customize_chrome::mojom::CategoryId::kTools);
+  add_action(kActionShowTranslate,
+             side_panel::customize_chrome::mojom::CategoryId::kTools);
+  add_action(kActionSendTabToSelf,
+             side_panel::customize_chrome::mojom::CategoryId::kTools);
+  add_action(kActionQrCodeGenerator,
+             side_panel::customize_chrome::mojom::CategoryId::kTools);
+  add_action(kActionRouteMedia,
+             side_panel::customize_chrome::mojom::CategoryId::kTools);
   add_action(kActionTaskManager,
              side_panel::customize_chrome::mojom::CategoryId::kTools);
   add_action(kActionDevTools,
              side_panel::customize_chrome::mojom::CategoryId::kTools);
-  // add_action(kActionShowChromeLabs,
-  // side_panel::customize_chrome::mojom::CategoryId::kTools);
+  add_action(kActionShowChromeLabs,
+             side_panel::customize_chrome::mojom::CategoryId::kTools);
 
   std::move(callback).Run(std::move(actions));
 }

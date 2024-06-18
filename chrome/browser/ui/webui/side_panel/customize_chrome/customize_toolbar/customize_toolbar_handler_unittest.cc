@@ -164,7 +164,8 @@ TEST_F(CustomizeToolbarHandlerTest, ListActions) {
                }) != actions.end();
   };
 
-  EXPECT_EQ(actions.size(), 8u);
+  // 11 actions are currently pinnable; more should be pinnable in the future.
+  EXPECT_GE(actions.size(), 11u);
 
   // History clusters aren't enabled for this testing profile. The rest of the
   // commented out ones aren't pinnable yet.
@@ -196,12 +197,12 @@ TEST_F(CustomizeToolbarHandlerTest, ListActions) {
       side_panel::customize_chrome::mojom::ActionId::kClearBrowsingData));
   EXPECT_TRUE(
       contains_action(side_panel::customize_chrome::mojom::ActionId::kPrint));
-  // EXPECT_TRUE(contains_action(
-  //     side_panel::customize_chrome::mojom::ActionId::kShowTranslate));
-  // EXPECT_TRUE(contains_action(
-  //     side_panel::customize_chrome::mojom::ActionId::kSendTabToSelf));
-  // EXPECT_TRUE(contains_action(
-  //     side_panel::customize_chrome::mojom::ActionId::kQrCodeGenerator));
+  EXPECT_TRUE(contains_action(
+      side_panel::customize_chrome::mojom::ActionId::kShowTranslate));
+  EXPECT_TRUE(contains_action(
+      side_panel::customize_chrome::mojom::ActionId::kSendTabToSelf));
+  EXPECT_TRUE(contains_action(
+      side_panel::customize_chrome::mojom::ActionId::kQrCodeGenerator));
   // EXPECT_TRUE(contains_action(
   //     side_panel::customize_chrome::mojom::ActionId::kRouteMedia));
   EXPECT_TRUE(contains_action(
