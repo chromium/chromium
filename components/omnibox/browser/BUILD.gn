@@ -928,6 +928,7 @@ source_set("unit_tests") {
     ]
     deps += [
       "//components/history_embeddings",
+      "//components/history_embeddings:unit_tests",
       "//ui/base/clipboard:clipboard_test_support",
     ]
   }

@@ -67,6 +67,8 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   history::HistoryService* GetHistoryService() override;
   history_clusters::HistoryClustersService* GetHistoryClustersService()
       override;
+  history_embeddings::HistoryEmbeddingsService* GetHistoryEmbeddingsService()
+      override;
   bookmarks::BookmarkModel* GetBookmarkModel() override;
   InMemoryURLIndex* GetInMemoryURLIndex() override;
   scoped_refptr<ShortcutsBackend> GetShortcutsBackend() override;
@@ -93,6 +95,11 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   void set_history_clusters_service(
       history_clusters::HistoryClustersService* service) {
     history_clusters_service_ = service;
+  }
+
+  void set_history_embeddings_service(
+      history_embeddings::HistoryEmbeddingsService* service) {
+    history_embeddings_service_ = service;
   }
 
   // There should be no reason to set this unless the tested provider actually
@@ -122,6 +129,8 @@ class FakeAutocompleteProviderClient : public MockAutocompleteProviderClient {
   std::unique_ptr<history::HistoryService> history_service_;
   raw_ptr<history_clusters::HistoryClustersService> history_clusters_service_ =
       nullptr;
+  raw_ptr<history_embeddings::HistoryEmbeddingsService>
+      history_embeddings_service_ = nullptr;
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   scoped_refptr<ShortcutsBackend> shortcuts_backend_;

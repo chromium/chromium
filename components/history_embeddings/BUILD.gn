@@ -55,6 +55,8 @@ source_set("unit_tests") {
   sources = [
     "history_embeddings_service_unittest.cc",
     "ml_embedder_unittest.cc",
+    "mock_history_embeddings_service.cc",
+    "mock_history_embeddings_service.h",
     "passages_util_unittest.cc",
     "sql_database_unittest.cc",
     "vector_database_unittest.cc",

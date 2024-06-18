@@ -113,15 +113,15 @@ class HistoryEmbeddingsService : public KeyedService,
   void RetrievePassages(const history::VisitRow& visit_row,
                         content::WeakDocumentPtr weak_render_frame_host);
 
-  // Find top `count` URL visit info entries nearest given `query`. Pass
-  // results to given `callback` when search completes. Search will be narrowed
-  // to a time range if `time_range_start` is provided. In that case, the
-  // start of the time range is inclusive and the end is unbounded.
-  // Practically, this can be thought of as [start, now) but now isn't fixed.
-  void Search(std::string query,
-              std::optional<base::Time> time_range_start,
-              size_t count,
-              SearchResultCallback callback);
+  // Find top `count` URL visit info entries nearest given `query`. Pass results
+  // to given `callback` when search completes. Search will be narrowed to a
+  // time range if `time_range_start` is provided. In that case, the start of
+  // the time range is inclusive and the end is unbounded. Practically, this can
+  // be thought of as [start, now) but now isn't fixed. Virtual for testing.
+  virtual void Search(std::string query,
+                      std::optional<base::Time> time_range_start,
+                      size_t count,
+                      SearchResultCallback callback);
 
   // Weak `this` provider method.
   base::WeakPtr<HistoryEmbeddingsService> AsWeakPtr();
