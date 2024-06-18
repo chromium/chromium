@@ -539,6 +539,14 @@ void StatisticsProviderImpl::LoadMachineStatistics(bool load_oem_manifest) {
                    << crossystem_wpsw;
       machine_info_[kFirmwareWriteProtectCurrentKey] = crossystem_wpsw;
     }
+
+    // TODO(b/315929204): Remove temporary logging.
+    if (machine_info_.find(kFirmwareWriteProtectCurrentKey) ==
+        machine_info_.end()) {
+      LOG(WARNING) << "Write-protect value unknown.";
+    } else if (machine_info_[kFirmwareWriteProtectCurrentKey] != "1") {
+      LOG(WARNING) << "Write-protect disabled.";
+    }
   }
 
   if (load_oem_manifest) {
