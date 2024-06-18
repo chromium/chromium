@@ -1330,6 +1330,47 @@ TEST_P(SavedTabGroupModelObserverTest, UpdateLocalCacheGuid) {
             edit_to_cache_guid);
 }
 
+TEST_P(SavedTabGroupModelObserverTest, UpdateLocalCacheGuidForTabs) {
+  const std::string cache_guid1 = "cache_guid1";
+  const std::string cache_guid2 = "cache_guid2";
+  const std::string cache_guid_tab2 = "cache_guid_tab2";
+
+  SavedTabGroup group = test::CreateTestSavedTabGroup();
+  base::Uuid group_id = group.saved_guid();
+  SavedTabGroupTab tab1(GURL(url::kAboutBlankURL), std::u16string(u"title"),
+                        group.saved_guid(), /*position=*/std::nullopt,
+                        std::nullopt, std::nullopt);
+  SavedTabGroupTab tab2(GURL(url::kAboutBlankURL), std::u16string(u"title"),
+                        group.saved_guid(), /*position=*/std::nullopt,
+                        std::nullopt, std::nullopt);
+  tab2.SetCreatorCacheGuid(cache_guid_tab2);
+  group.AddTabLocally(tab1);
+  group.AddTabLocally(tab2);
+  saved_tab_group_model_->Add(group);
+
+  base::Uuid tab1_id = tab1.saved_tab_guid();
+  base::Uuid tab2_id = tab2.saved_tab_guid();
+  const SavedTabGroup* retrieved_group = saved_tab_group_model_->Get(group_id);
+  const SavedTabGroupTab* retrieved_tab1 = retrieved_group->GetTab(tab1_id);
+  const SavedTabGroupTab* retrieved_tab2 = retrieved_group->GetTab(tab2_id);
+
+  saved_tab_group_model_->UpdateLocalCacheGuid(std::nullopt, cache_guid1);
+
+  EXPECT_EQ(retrieved_group->creator_cache_guid(), cache_guid1);
+  EXPECT_EQ(retrieved_tab1->creator_cache_guid(), cache_guid1);
+  EXPECT_EQ(retrieved_tab2->creator_cache_guid(), cache_guid_tab2);
+
+  saved_tab_group_model_->UpdateLocalCacheGuid(cache_guid1, cache_guid2);
+  EXPECT_EQ(retrieved_group->creator_cache_guid(), cache_guid2);
+  EXPECT_EQ(retrieved_tab1->creator_cache_guid(), cache_guid2);
+  EXPECT_EQ(retrieved_tab2->creator_cache_guid(), cache_guid_tab2);
+
+  saved_tab_group_model_->UpdateLocalCacheGuid(cache_guid_tab2, std::nullopt);
+  EXPECT_EQ(retrieved_group->creator_cache_guid(), cache_guid2);
+  EXPECT_EQ(retrieved_tab1->creator_cache_guid(), cache_guid2);
+  EXPECT_EQ(retrieved_tab2->creator_cache_guid(), std::nullopt);
+}
+
 INSTANTIATE_TEST_SUITE_P(SavedTabGroupModel,
                          SavedTabGroupModelTest,
                          testing::Bool());

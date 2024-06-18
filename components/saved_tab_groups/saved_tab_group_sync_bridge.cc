@@ -140,16 +140,9 @@ std::optional<syncer::ModelError> SavedTabGroupSyncBridge::MergeFullSyncData(
   // MergeFullSyncData is the first command called when the user signs in/or
   // turns sync on. When this happens, a cache guid  will be added to the
   // metadata of the change processor. This cache guid should be used on all
-  // groups that previously didnt have a cache guid attached.
+  // groups and tabs that previously didnt have a cache guid attached.
   CHECK(change_processor()->IsTrackingMetadata());
-  std::set<base::Uuid> updated_group_ids =
-      model_->UpdateLocalCacheGuid(std::nullopt, GetLocalCacheGuid());
-
-  for (const base::Uuid& saved_guid : updated_group_ids) {
-    proto::SavedTabGroupData data =
-        SavedTabGroupToData(*model_->Get(saved_guid));
-    write_batch->WriteData(data.specifics().guid(), data.SerializeAsString());
-  }
+  UpdateLocalCacheGuidForGroups(write_batch.get());
 
   // Merge sync to local data.
   for (const auto& change : entity_changes) {
@@ -301,14 +294,8 @@ void SavedTabGroupSyncBridge::ApplyDisableSyncChanges(
     write_batch->DeleteData(group_id.AsLowercaseString());
   }
 
-  // Reset the cache guid on sign-out.
-  std::set<base::Uuid> updated_group_ids =
-      model_->UpdateLocalCacheGuid(GetLocalCacheGuid(), std::nullopt);
-  for (const base::Uuid& saved_guid : updated_group_ids) {
-    proto::SavedTabGroupData data =
-        SavedTabGroupToData(*model_->Get(saved_guid));
-    write_batch->WriteData(data.specifics().guid(), data.SerializeAsString());
-  }
+  // Reset the cache guids for groups and tabs on sign-out.
+  UpdateLocalCacheGuidForGroups(write_batch.get());
 
   store_->CommitWriteBatch(std::move(write_batch), base::DoNothing());
 }
@@ -964,6 +951,29 @@ void SavedTabGroupSyncBridge::OnDatabaseSave(
   }
 
   // TODO(dljames): React to store failures when a save is not successful.
+}
+
+void SavedTabGroupSyncBridge::UpdateLocalCacheGuidForGroups(
+    syncer::ModelTypeStore::WriteBatch* write_batch) {
+  std::pair<std::set<base::Uuid>, std::set<base::Uuid>> updated_ids =
+      model_->UpdateLocalCacheGuid(std::nullopt, GetLocalCacheGuid());
+  const std::set<base::Uuid>& updated_group_ids = updated_ids.first;
+  const std::set<base::Uuid>& updated_tab_ids = updated_ids.second;
+
+  for (const base::Uuid& saved_guid : updated_group_ids) {
+    proto::SavedTabGroupData data =
+        SavedTabGroupToData(*model_->Get(saved_guid));
+    write_batch->WriteData(data.specifics().guid(), data.SerializeAsString());
+  }
+
+  for (const base::Uuid& tab_guid : updated_tab_ids) {
+    const SavedTabGroup* group = model_->GetGroupContainingTab(tab_guid);
+    DCHECK(group);
+    const SavedTabGroupTab* tab = group->GetTab(tab_guid);
+    DCHECK(tab);
+    proto::SavedTabGroupData data = SavedTabGroupTabToData(*tab);
+    write_batch->WriteData(data.specifics().guid(), data.SerializeAsString());
+  }
 }
 
 }  // namespace tab_groups

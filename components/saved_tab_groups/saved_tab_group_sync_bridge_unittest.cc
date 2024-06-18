@@ -419,6 +419,7 @@ TEST_F(SavedTabGroupSyncBridgeTest,
   SavedTabGroupTab tab_1(GURL("https://website1.com"), u"Website Title1",
                          group1.saved_guid(), /*position=*/std::nullopt);
   group1.AddTabLocally(tab_1);
+  group1.SetCreatorCacheGuid("cache_guid_local");
 
   SavedTabGroup group2(u"Test Title2", tab_groups::TabGroupColorId::kCyan, {},
                        1, std::nullopt, std::nullopt, std::nullopt,
@@ -427,6 +428,7 @@ TEST_F(SavedTabGroupSyncBridgeTest,
   SavedTabGroupTab tab_2(GURL("https://website2.com"), u"Website Title2",
                          group2.saved_guid(), /*position=*/std::nullopt);
   group2.AddTabLocally(tab_2);
+  group2.SetCreatorCacheGuid("cache_guid_local");
 
   base::Uuid group_id1 = group1.saved_guid();
   base::Uuid group_id2 = group2.saved_guid();
@@ -446,6 +448,8 @@ TEST_F(SavedTabGroupSyncBridgeTest,
 
   EXPECT_TRUE(group1_from_model->created_before_syncing_tab_groups());
   EXPECT_FALSE(group2_from_model->created_before_syncing_tab_groups());
+  EXPECT_EQ("cache_guid_local", group1_from_model->creator_cache_guid());
+  EXPECT_EQ("cache_guid_local", group2_from_model->creator_cache_guid());
 
   // Disable sync. Expect group 2 to be removed from model, and group 1 should
   // still be in the model. None of them should be deleted from sync.
@@ -459,7 +463,8 @@ TEST_F(SavedTabGroupSyncBridgeTest,
   VerifyEntriesCount(2u);
 
   group1_from_model = saved_tab_group_model_.Get(group_id1);
-  EXPECT_EQ(std::nullopt, group1_from_model->creator_cache_guid());
+  group2_from_model = saved_tab_group_model_.Get(group_id2);
+  EXPECT_EQ("cache_guid_local", group1_from_model->creator_cache_guid());
 }
 
 // Verify orphaned tabs (tabs missing their group) are added into the correct
