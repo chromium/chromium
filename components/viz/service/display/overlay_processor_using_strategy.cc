@@ -71,9 +71,6 @@ enum class PromotingMaskCandidates {
   kMaxValue = kNoDrmRejected
 };
 
-constexpr char kShouldAttemptMultipleOverlaysHistogramName[] =
-    "Compositing.Display.OverlayProcessorUsingStrategy."
-    "ShouldAttemptMultipleOverlays";
 constexpr char kNumOverlaysPromotedHistogramName[] =
     "Compositing.Display.OverlayProcessorUsingStrategy.NumOverlaysPromoted";
 constexpr char kNumOverlaysAttemptedHistogramName[] =
@@ -916,8 +913,6 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategies(
 bool OverlayProcessorUsingStrategy::ShouldAttemptMultipleOverlays(
     const std::vector<OverlayProposedCandidate>& sorted_candidates) {
   if (max_overlays_config_ <= 1) {
-    UMA_HISTOGRAM_ENUMERATION(kShouldAttemptMultipleOverlaysHistogramName,
-                              AttemptingMultipleOverlays::kNoFeatureDisabled);
     return false;
   }
 
@@ -926,8 +921,6 @@ bool OverlayProcessorUsingStrategy::ShouldAttemptMultipleOverlays(
     // different scale factors. This becomes complicated when using multiple
     // overlays at once so we won't attempt multiple in that case.
     if (proposed.candidate.requires_overlay) {
-      UMA_HISTOGRAM_ENUMERATION(kShouldAttemptMultipleOverlaysHistogramName,
-                                AttemptingMultipleOverlays::kNoRequiredOverlay);
       return false;
     }
     // Using multiple overlays only makes sense with SingleOnTop and Underlay
@@ -935,15 +928,10 @@ bool OverlayProcessorUsingStrategy::ShouldAttemptMultipleOverlays(
     OverlayStrategy type = proposed.strategy->GetUMAEnum();
     if (type != OverlayStrategy::kSingleOnTop &&
         type != OverlayStrategy::kUnderlay) {
-      UMA_HISTOGRAM_ENUMERATION(
-          kShouldAttemptMultipleOverlaysHistogramName,
-          AttemptingMultipleOverlays::kNoUnsupportedStrategy);
       return false;
     }
   }
 
-  UMA_HISTOGRAM_ENUMERATION(kShouldAttemptMultipleOverlaysHistogramName,
-                            AttemptingMultipleOverlays::kYes);
   return true;
 }
 

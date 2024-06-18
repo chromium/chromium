@@ -325,8 +325,6 @@ void DrmThread::CheckOverlayCapabilitiesSync(
     const OverlaySurfaceCandidateList& overlays,
     std::vector<OverlayStatus>* result) {
   TRACE_EVENT0("drm,hwoverlays", "DrmThread::CheckOverlayCapabilitiesSync");
-  base::ElapsedTimer timer;
-
   DrmWindow* window = screen_manager_->GetWindow(widget);
   if (!window) {
     result->clear();
@@ -334,14 +332,6 @@ void DrmThread::CheckOverlayCapabilitiesSync(
     return;
   }
   *result = window->TestPageFlip(overlays);
-
-  base::TimeDelta time = timer.Elapsed();
-  static constexpr base::TimeDelta kMinTime = base::Microseconds(1);
-  static constexpr base::TimeDelta kMaxTime = base::Milliseconds(10);
-  static constexpr int kTimeBuckets = 50;
-  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-      "Compositing.Display.DrmThread.CheckOverlayCapabilitiesSyncUs", time,
-      kMinTime, kMaxTime, kTimeBuckets);
 }
 
 void DrmThread::GetHardwareCapabilities(

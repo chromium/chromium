@@ -397,49 +397,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Compositing.Display.DrmOverlayManager.FirstTestPageFlipPassed"
-    enum="Boolean" expires_after="2023-08-20">
-  <owner>khaslett@chromium.org</owner>
-  <owner>kylechar@chromium.org</owner>
-  <summary>
-    Logged zero or more times per frame, whether the first call to
-    HardwareDisplayController.TestPageFlip succeeded.
-  </summary>
-</histogram>
-
-<histogram name="Compositing.Display.DrmOverlayManager.TestPageFlipCount"
-    units="units" expires_after="2024-09-01">
-  <owner>khaslett@chromium.org</owner>
-  <owner>kylechar@chromium.org</owner>
-  <summary>
-    Logged zero or more times per frame, the number of times TestPageFlip is
-    called on the HardwareDisplayController.
-  </summary>
-</histogram>
-
-<histogram name="Compositing.Display.DrmOverlayManager.TestPageFlipUs"
-    units="microseconds" expires_after="2024-09-01">
-  <owner>khaslett@chromium.org</owner>
-  <owner>kylechar@chromium.org</owner>
-  <summary>
-    Logged zero or more times per frame, the duration of calling TestPageFlip on
-    the HardwareDisplayController. Only reported for platforms supporting high
-    resolution clocks.
-  </summary>
-</histogram>
-
-<histogram name="Compositing.Display.DrmThread.CheckOverlayCapabilitiesSyncUs"
-    units="microseconds" expires_after="2023-06-18">
-  <owner>khaslett@chromium.org</owner>
-  <owner>kylechar@chromium.org</owner>
-  <summary>
-    Logged zero or more times per frame, the duration of
-    DrmThread::CheckOverlayCapabilitiesSync(). This is the total time spent on
-    the DRM thread to check a set of overlay candidates. Only reported for
-    platforms supporting high resolution clocks.
-  </summary>
-</histogram>
-
 <histogram name="Compositing.Display.FlattenedRenderPassCount" units="units"
     expires_after="2024-11-03">
   <owner>jonross@chromium.org</owner>
@@ -530,17 +487,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Logged once per frame, the number of quads considered for promotion to
     overlay. Note: this metric was expired from 2023-06-18 to 2024-02-05.
-  </summary>
-</histogram>
-
-<histogram
-    name="Compositing.Display.OverlayProcessorUsingStrategy.ShouldAttemptMultipleOverlays"
-    enum="AttemptingMultipleOverlays" expires_after="2024-02-25">
-  <owner>khaslett@chromium.org</owner>
-  <owner>kylechar@chromium.org</owner>
-  <summary>
-    Logged zero or one times per frame, whether we're using the
-    AttemptingMultipleOverlays codepath this frame or why we arent.
   </summary>
 </histogram>
 
