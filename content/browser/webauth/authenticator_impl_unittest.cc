@@ -8968,7 +8968,8 @@ class ICloudKeychainAuthenticatorImplTest : public AuthenticatorImplTest {
   InspectTAIAuthenticatorRequestDelegate::Callback tai_callback_;
 };
 
-TEST_F(ICloudKeychainAuthenticatorImplTest, Discovery) {
+// Gardener 2024-06-18: Disabled due to asan failures (crbug.com/347287026).
+TEST_F(ICloudKeychainAuthenticatorImplTest, DISABLED_Discovery) {
   if (__builtin_available(macOS 13.5, *)) {
     NavigateAndCommit(GURL(kTestOrigin1));
     device::fido::icloud_keychain::ScopedTestEnvironment test_environment(
