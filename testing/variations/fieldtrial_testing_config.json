@@ -25199,7 +25199,7 @@
                     "name": "Enabled",
                     "params": {
                         "RelaxLimitAImageReaderMaxSizeToOneBlocklist": "*Broadcom*|*Google*",
-                        "RelaxLimitAImageReaderMaxSizeToOneManufacturerBlocklist": "*Google*",
+                        "RelaxLimitAImageReaderMaxSizeToOneManufacturerBlocklist": "*Broadcom*|*Google*",
                         "RelaxLimitAImageReaderMaxSizeToOneSoCBlocklist": "*Broadcom*"
                     },
                     "enable_features": [
