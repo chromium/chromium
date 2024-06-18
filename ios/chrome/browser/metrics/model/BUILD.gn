@@ -146,6 +146,7 @@ source_set("model") {
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/supervised_user/model",
     "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:device_info_sync_service_factory",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/translate/model",
     "//ios/chrome/browser/ui/ntp:feature_flags",

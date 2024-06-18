@@ -16,8 +16,10 @@
 #import "components/sync/base/report_unrecoverable_error.h"
 #import "components/sync/model/client_tag_based_model_type_processor.h"
 #import "components/sync/model/model_type_store_service.h"
+#import "components/sync_device_info/device_info_sync_service.h"
 #import "ios/chrome/browser/saved_tab_groups/model/ios_tab_group_sync_delegate.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/sync/model/device_info_sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/model_type_store_service_factory.h"
 #import "ios/chrome/common/channel_info.h"
 #import "ios/web/public/browser_state.h"
@@ -65,8 +67,6 @@ TabGroupSyncServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   auto model = std::make_unique<SavedTabGroupModel>();
   ChromeBrowserState* browser_state = static_cast<ChromeBrowserState*>(context);
-  // TODO(b/346624020): Fix dependency for DeviceInfoSyncService and pass
-  // metrics logger.
   auto saved_config = CreateSavedTabGroupDataTypeConfiguration(browser_state);
 
   std::unique_ptr<TabGroupStoreDelegate> tab_group_store_delegate =
@@ -76,11 +76,17 @@ TabGroupSyncServiceFactory::BuildServiceInstanceFor(
       std::make_unique<TabGroupStore>(std::move(tab_group_store_delegate));
   std::map<base::Uuid, LocalTabGroupID> migrated_android_local_ids;
 
+  syncer::DeviceInfoTracker* device_info_tracker =
+      DeviceInfoSyncServiceFactory::GetForBrowserState(browser_state)
+          ->GetDeviceInfoTracker();
+  auto metrics_logger =
+      std::make_unique<TabGroupSyncMetricsLogger>(device_info_tracker);
+
   std::unique_ptr<TabGroupSyncServiceImpl> service =
       std::make_unique<TabGroupSyncServiceImpl>(
           std::move(model), std::move(saved_config), nullptr,
           std::move(tab_group_store), browser_state->GetPrefs(),
-          std::move(migrated_android_local_ids), /*metrics_logger=*/nullptr);
+          std::move(migrated_android_local_ids), std::move(metrics_logger));
 
   std::unique_ptr<IOSTabGroupSyncDelegate> delegate =
       std::make_unique<IOSTabGroupSyncDelegate>(browser_state);

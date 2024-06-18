@@ -133,6 +133,7 @@ source_set("webui_internal") {
     "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model",
+    "//ios/chrome/browser/sync/model:sync_invalidations_service_factory",
     "//ios/chrome/browser/webui/ui_bundled/gcm",
     "//ios/chrome/browser/webui/ui_bundled/interstitials",
     "//ios/chrome/browser/webui/ui_bundled/local_state",

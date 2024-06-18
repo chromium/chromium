@@ -4,8 +4,6 @@
 
 source_set("model") {
   sources = [
-    "device_info_sync_service_factory.h",
-    "device_info_sync_service_factory.mm",
     "enterprise_utils.cc",
     "enterprise_utils.h",
     "ios_chrome_sync_client.h",
@@ -16,15 +14,15 @@ source_set("model") {
     "send_tab_to_self_sync_service_factory.mm",
     "session_sync_service_factory.h",
     "session_sync_service_factory.mm",
-    "sync_invalidations_service_factory.h",
-    "sync_invalidations_service_factory.mm",
     "sync_observer_bridge.h",
     "sync_observer_bridge.mm",
     "sync_service_factory.h",
     "sync_service_factory.mm",
   ]
   deps = [
+    ":device_info_sync_service_factory",
     ":model_type_store_service_factory",
+    ":sync_invalidations_service_factory",
     "//base",
     "//components/autofill/core/browser",
     "//components/browser_sync",
@@ -104,9 +102,47 @@ source_set("model") {
   allow_circular_includes_from = [
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/passwords/model:store_factory",
-    "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/sync/model/glue",
+  ]
+}
+
+source_set("device_info_sync_service_factory") {
+  sources = [
+    "device_info_sync_service_factory.h",
+    "device_info_sync_service_factory.mm",
+  ]
+  deps = [
+    ":model_type_store_service_factory",
+    ":sync_invalidations_service_factory",
+    "//base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//components/send_tab_to_self",
+    "//components/signin/public/base",
+    "//components/sync/invalidations",
+    "//components/sync/model",
+    "//components/sync_device_info",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/common",
+  ]
+}
+
+source_set("sync_invalidations_service_factory") {
+  sources = [
+    "sync_invalidations_service_factory.h",
+    "sync_invalidations_service_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/gcm_driver",
+    "//components/gcm_driver/instance_id",
+    "//components/keyed_service/ios",
+    "//components/sync/invalidations",
+    "//ios/chrome/browser/gcm/model",
+    "//ios/chrome/browser/gcm/model/instance_id",
+    "//ios/chrome/browser/shared/model/browser_state",
   ]
 }
 
