@@ -12,14 +12,43 @@
 
 namespace ui {
 
+void SetSystemColorForCurrentApperance(ColorMixer& mixer) {
+  const SkColor system_highlight_color =
+      skia::NSSystemColorToSkColor(NSColor.selectedTextBackgroundColor);
+  mixer[kColorCssSystemHighlight] = {system_highlight_color};
+}
+
 // Maps the native Mac system colors to their corresponding CSS system
 // colors.
 void MapNativeColorsToCssSystemColors(ColorMixer& mixer, ColorProviderKey key) {
   // TODO(samomekarajr): Consider pulling other system colors for forced colors
   // mode.
-  const SkColor system_highlight_color =
-      skia::NSSystemColorToSkColor(NSColor.selectedTextBackgroundColor);
-  mixer[kColorCssSystemHighlight] = {system_highlight_color};
+  if (@available(macOS 11, *)) {
+    if (key.color_mode == ColorProviderKey::ColorMode::kLight) {
+      [[NSAppearance appearanceNamed:NSAppearanceNameAqua]
+          performAsCurrentDrawingAppearance:^{
+            SetSystemColorForCurrentApperance(mixer);
+          }];
+    } else {
+      [[NSAppearance appearanceNamed:NSAppearanceNameDarkAqua]
+          performAsCurrentDrawingAppearance:^{
+            SetSystemColorForCurrentApperance(mixer);
+          }];
+    }
+  } else {
+    NSAppearance* saved_appearance = NSAppearance.currentAppearance;
+    if (key.color_mode == ColorProviderKey::ColorMode::kLight) {
+      NSAppearance.currentAppearance =
+          [NSAppearance appearanceNamed:NSAppearanceNameAqua];
+      SetSystemColorForCurrentApperance(mixer);
+    } else {
+      NSAppearance.currentAppearance =
+          [NSAppearance appearanceNamed:NSAppearanceNameDarkAqua];
+      SetSystemColorForCurrentApperance(mixer);
+    }
+    NSAppearance.currentAppearance = saved_appearance;
+  }
+
   mixer[kColorCssSystemHighlightText] = {SK_ColorBLACK};
 }
 
