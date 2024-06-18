@@ -491,7 +491,8 @@ TEST_F(iCloudKeychainTest, GetAssertion) {
   }
 }
 
-TEST_F(iCloudKeychainTest, FetchCredentialMetadata) {
+// Gardener 2024-06-18: Disabled due to asan failures (crbug.com/347287026).
+TEST_F(iCloudKeychainTest, DISABLED_FetchCredentialMetadata) {
   if (@available(macOS 13.5, *)) {
     const std::vector<DiscoverableCredentialMetadata> creds = {
         {AuthenticatorType::kICloudKeychain,
@@ -518,7 +519,8 @@ TEST_F(iCloudKeychainTest, FetchCredentialMetadata) {
   }
 }
 
-TEST_F(iCloudKeychainTest, FetchCredentialMetadataWithAllowlist) {
+// Gardener 2024-06-18: Disabled due to asan failures (crbug.com/347287026).
+TEST_F(iCloudKeychainTest, DISABLED_FetchCredentialMetadataWithAllowlist) {
   if (@available(macOS 13.5, *)) {
     const std::vector<DiscoverableCredentialMetadata> creds = {
         {AuthenticatorType::kICloudKeychain,
