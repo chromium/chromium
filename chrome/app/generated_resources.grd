@@ -9701,7 +9701,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
             </message>
           </if>
           <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_SUBTITLE" desc="The subtitle for the iOS desktop address promo bubble which lets the user know they can access their saved addresses.">
-            You can access it in your Saved Addresses.
+            You can find it in your Addresses and More
           </message>
           <message name="IDS_IOS_DESKTOP_ADDRESS_PROMO_BUBBLE_FOOTER_DESCRIPTION_QR" desc="The description for the iOS desktop address promo bubble footer which lets the user know how to use their saved addresses on their phone: follow the QR code, download Chrome for iOS and sign in to their account.">
             Download Chrome with this QR code, and sign in to your Google Account.
