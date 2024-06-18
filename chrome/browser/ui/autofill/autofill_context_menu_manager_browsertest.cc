@@ -51,6 +51,7 @@
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_test_api.h"
 #include "components/autofill/core/common/password_generation_util.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -190,15 +191,15 @@ MATCHER(AddressAndPaymentsFallbacksAdded, "") {
 
 // Checks if the context menu model contains the passwords manual fallback
 // entries with correct UI strings. `arg` must be of type `ui::SimpleMenuModel`,
-// `has_passwords_saved` and `is_password_generation_enabled` must be bool.
-// `has_passwords_saved` is true if the user has any account or profile
-// passwords stored.
-// `is_password_generation_enabled` is true if the password generation feature
-// is enabled for this user (note that some non-syncing users can also generate
-// passwords, in special conditions).
+// `has_passwords_saved` and `is_password_generation_enabled_for_current_field`
+// must be bool. `has_passwords_saved` is true if the user has any account or
+// profile passwords stored. `is_password_generation_enabled_for_current_field`
+// is true if the password generation feature is enabled for this user (note
+// that some non-syncing users can also generate passwords, in special
+// conditions) and for the current field.
 MATCHER_P2(OnlyPasswordsFallbackAdded,
            has_passwords_saved,
-           is_password_generation_enabled,
+           is_password_generation_enabled_for_current_field,
            "") {
   EXPECT_EQ(arg->GetItemCount(), 3u);
   EXPECT_EQ(arg->GetTypeAt(0), ui::MenuModel::ItemType::TYPE_TITLE);
@@ -211,7 +212,7 @@ MATCHER_P2(OnlyPasswordsFallbackAdded,
   EXPECT_EQ(arg->GetTypeAt(2), ui::MenuModel::ItemType::TYPE_SEPARATOR);
 
   const bool add_select_password_submenu_option =
-      is_password_generation_enabled && has_passwords_saved;
+      is_password_generation_enabled_for_current_field && has_passwords_saved;
   const bool add_import_passwords_submenu_option = !has_passwords_saved;
   const bool add_submenu =
       add_select_password_submenu_option || add_import_passwords_submenu_option;
@@ -234,7 +235,7 @@ MATCHER_P2(OnlyPasswordsFallbackAdded,
         l10n_util::GetStringUTF16(
             IDS_CONTENT_CONTEXT_AUTOFILL_FALLBACK_PASSWORDS_SUGGEST_PASSWORD));
   } else if (add_import_passwords_submenu_option) {
-    if (is_password_generation_enabled) {
+    if (is_password_generation_enabled_for_current_field) {
       EXPECT_EQ(submenu->GetItemCount(), 3u);
       EXPECT_EQ(
           submenu->GetLabelAt(2),
@@ -947,7 +948,7 @@ class PasswordsFallbackTest : public BaseAutofillContextMenuManagerTest {
         ->SetSelectedType(syncer::UserSelectableType::kPasswords, sync_enabled);
   }
 
-  FormData& form() { return form_; }
+  const FormData& form() { return form_; }
 
  private:
   base::test::ScopedFeatureList feature_{
@@ -961,9 +962,10 @@ IN_PROC_BROWSER_TEST_F(
     PasswordGenerationEnabled_NoPasswordsSaved_ManualFallbackAddedWithGeneratePasswordOptionAndImportPasswordsOption) {
   UpdateSyncStatus(/*sync_enabled=*/true);
   autofill_context_menu_manager()->AppendItems();
-  EXPECT_THAT(menu_model(), OnlyPasswordsFallbackAdded(
-                                /*has_passwords_saved=*/false,
-                                /*is_password_generation_enabled=*/true));
+  EXPECT_THAT(menu_model(),
+              OnlyPasswordsFallbackAdded(
+                  /*has_passwords_saved=*/false,
+                  /*is_password_generation_enabled_for_current_field=*/true));
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -971,9 +973,28 @@ IN_PROC_BROWSER_TEST_F(
     PasswordGenerationDisabled_NoPasswordsSaved_ManualFallbackAddedWithImportPasswordsOption) {
   UpdateSyncStatus(/*sync_enabled=*/false);
   autofill_context_menu_manager()->AppendItems();
-  EXPECT_THAT(menu_model(), OnlyPasswordsFallbackAdded(
-                                /*has_passwords_saved=*/false,
-                                /*is_password_generation_enabled=*/false));
+  EXPECT_THAT(menu_model(),
+              OnlyPasswordsFallbackAdded(
+                  /*has_passwords_saved=*/false,
+                  /*is_password_generation_enabled_for_current_field=*/false));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    PasswordsFallbackTest,
+    PasswordGenerationEnabled_NonPasswordField_NoPasswordsSaved_ManualFallbackAddedWithImportPasswordsOptionAndWithoutGeneratePasswordOption) {
+  UpdateSyncStatus(/*sync_enabled=*/true);
+
+  FormData form = CreateAndAttachUnclassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.renderer_id(),
+                              form.fields()[0].renderer_id(),
+                              blink::mojom::FormControlType::kInputText));
+
+  autofill_context_menu_manager()->AppendItems();
+  EXPECT_THAT(menu_model(),
+              OnlyPasswordsFallbackAdded(
+                  /*has_passwords_saved=*/false,
+                  /*is_password_generation_enabled_for_current_field=*/false));
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordsFallbackTest,
@@ -1184,7 +1205,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_THAT(menu_model(),
               OnlyPasswordsFallbackAdded(
                   /*has_passwords_saved=*/has_autofillable_credentials(),
-                  /*is_password_generation_enabled=*/true));
+                  /*is_password_generation_enabled_for_current_field=*/true));
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -1197,7 +1218,26 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_THAT(menu_model(),
               OnlyPasswordsFallbackAdded(
                   /*has_passwords_saved=*/has_autofillable_credentials(),
-                  /*is_password_generation_enabled=*/false));
+                  /*is_password_generation_enabled_for_current_field=*/false));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    PasswordsFallbackWithPasswordDatabaseEntriesTest,
+    PasswordGenerationEnabled_NonPasswordField_HasPasswordDatabaseEntries_ManualFallbackAddedWithoutGeneratePasswordOption) {
+  UpdateSyncStatus(/*sync_enabled=*/true);
+  AddPasswordToStore();
+
+  FormData form = CreateAndAttachUnclassifiedForm();
+  autofill_context_menu_manager()->set_params_for_testing(
+      CreateContextMenuParams(form.renderer_id(),
+                              form.fields()[0].renderer_id(),
+                              blink::mojom::FormControlType::kInputText));
+
+  autofill_context_menu_manager()->AppendItems();
+  EXPECT_THAT(menu_model(),
+              OnlyPasswordsFallbackAdded(
+                  /*has_passwords_saved=*/has_autofillable_credentials(),
+                  /*is_password_generation_enabled_for_current_field=*/false));
 }
 
 INSTANTIATE_TEST_SUITE_P(

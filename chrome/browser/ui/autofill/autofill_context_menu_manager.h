@@ -108,8 +108,8 @@ class AutofillContextMenuManager : public RenderViewContextMenuObserver {
   // chrome://password-manager), depending on whether the user has passwords
   // saved or not.
   //
-  // If the user can also generate passwords, the final entry is "Suggest
-  // password...". Otherwise, this entry is missing.
+  // If the user can also generate passwords for the current field, the final
+  // entry is "Suggest password...". Otherwise, this entry is missing.
   void AddPasswordsManualFallbackItems(
       password_manager::ContentPasswordManagerDriver& password_manager_driver);
 
