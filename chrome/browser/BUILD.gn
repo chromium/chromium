@@ -8103,8 +8103,6 @@ static_library("browser") {
       "compose/compose_text_usage_logger.h",
       "compose/proactive_nudge_tracker.cc",
       "compose/proactive_nudge_tracker.h",
-      "compose/translate_language_provider.cc",
-      "compose/translate_language_provider.h",
     ]
 
     deps += [

@@ -147,7 +147,6 @@ void ChromeComposeClient::FieldChangeObserver::SetSkipSuggestionTypeForTest(
 ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<ChromeComposeClient>(*web_contents),
-      translate_language_provider_(new TranslateLanguageProvider()),
       profile_(
           Profile::FromBrowserContext(GetWebContents().GetBrowserContext())),
       nudge_tracker_(segmentation_platform::SegmentationPlatformServiceFactory::
@@ -162,8 +161,7 @@ ChromeComposeClient::ChromeComposeClient(content::WebContents* web_contents)
   proactive_nudge_enabled_.Init(prefs::kEnableProactiveNudge, pref_service_);
 
   compose_enabling_ = std::make_unique<ComposeEnabling>(
-      translate_language_provider_.get(), profile_,
-      IdentityManagerFactory::GetForProfileIfExists(profile_),
+      profile_, IdentityManagerFactory::GetForProfileIfExists(profile_),
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile_));
 
   if (GetOptimizationGuide()) {
