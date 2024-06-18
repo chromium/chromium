@@ -511,10 +511,6 @@ static void GL_BINDING_CALL Mock_glDrawArraysInstancedANGLE(GLenum mode,
                                                             GLint first,
                                                             GLsizei count,
                                                             GLsizei primcount);
-static void GL_BINDING_CALL Mock_glDrawArraysInstancedARB(GLenum mode,
-                                                          GLint first,
-                                                          GLsizei count,
-                                                          GLsizei primcount);
 static void GL_BINDING_CALL
 Mock_glDrawArraysInstancedBaseInstance(GLenum mode,
                                        GLint first,
@@ -535,8 +531,6 @@ Mock_glDrawArraysInstancedBaseInstanceEXT(GLenum mode,
                                           GLuint baseinstance);
 static void GL_BINDING_CALL Mock_glDrawBuffer(GLenum mode);
 static void GL_BINDING_CALL Mock_glDrawBuffers(GLsizei n, const GLenum* bufs);
-static void GL_BINDING_CALL Mock_glDrawBuffersARB(GLsizei n,
-                                                  const GLenum* bufs);
 static void GL_BINDING_CALL Mock_glDrawBuffersEXT(GLsizei n,
                                                   const GLenum* bufs);
 static void GL_BINDING_CALL Mock_glDrawElements(GLenum mode,
@@ -557,11 +551,6 @@ Mock_glDrawElementsInstancedANGLE(GLenum mode,
                                   GLenum type,
                                   const void* indices,
                                   GLsizei primcount);
-static void GL_BINDING_CALL Mock_glDrawElementsInstancedARB(GLenum mode,
-                                                            GLsizei count,
-                                                            GLenum type,
-                                                            const void* indices,
-                                                            GLsizei primcount);
 static void GL_BINDING_CALL
 Mock_glDrawElementsInstancedBaseVertexBaseInstance(GLenum mode,
                                                    GLsizei count,

@@ -325,14 +325,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   ext.b_GL_APPLE_sync = gfx::HasExtension(extensions, "GL_APPLE_sync");
   ext.b_GL_APPLE_vertex_array_object =
       gfx::HasExtension(extensions, "GL_APPLE_vertex_array_object");
-  ext.b_GL_ARB_ES2_compatibility =
-      gfx::HasExtension(extensions, "GL_ARB_ES2_compatibility");
-  ext.b_GL_ARB_base_instance =
-      gfx::HasExtension(extensions, "GL_ARB_base_instance");
-  ext.b_GL_ARB_draw_buffers =
-      gfx::HasExtension(extensions, "GL_ARB_draw_buffers");
-  ext.b_GL_ARB_draw_instanced =
-      gfx::HasExtension(extensions, "GL_ARB_draw_instanced");
   ext.b_GL_ARB_framebuffer_object =
       gfx::HasExtension(extensions, "GL_ARB_framebuffer_object");
   ext.b_GL_ARB_instanced_arrays =
@@ -342,8 +334,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   ext.b_GL_ARB_occlusion_query =
       gfx::HasExtension(extensions, "GL_ARB_occlusion_query");
   ext.b_GL_ARB_robustness = gfx::HasExtension(extensions, "GL_ARB_robustness");
-  ext.b_GL_ARB_texture_swizzle =
-      gfx::HasExtension(extensions, "GL_ARB_texture_swizzle");
   ext.b_GL_ARB_timer_query =
       gfx::HasExtension(extensions, "GL_ARB_timer_query");
   ext.b_GL_ARB_vertex_array_object =
@@ -955,17 +945,13 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
     fn.glDrawArraysInstancedANGLEFn =
         reinterpret_cast<glDrawArraysInstancedANGLEProc>(
             GetGLProcAddress("glDrawArraysInstanced"));
-  } else if (ext.b_GL_ARB_draw_instanced) {
-    fn.glDrawArraysInstancedANGLEFn =
-        reinterpret_cast<glDrawArraysInstancedANGLEProc>(
-            GetGLProcAddress("glDrawArraysInstancedARB"));
   } else if (ext.b_GL_ANGLE_instanced_arrays) {
     fn.glDrawArraysInstancedANGLEFn =
         reinterpret_cast<glDrawArraysInstancedANGLEProc>(
             GetGLProcAddress("glDrawArraysInstancedANGLE"));
   }
 
-  if (ver->IsAtLeastGL(4u, 2u) || ext.b_GL_ARB_base_instance) {
+  if (ver->IsAtLeastGL(4u, 2u)) {
     fn.glDrawArraysInstancedBaseInstanceANGLEFn =
         reinterpret_cast<glDrawArraysInstancedBaseInstanceANGLEProc>(
             GetGLProcAddress("glDrawArraysInstancedBaseInstance"));
@@ -987,9 +973,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   if (!ver->is_es || ver->IsAtLeastGLES(3u, 0u)) {
     fn.glDrawBuffersARBFn = reinterpret_cast<glDrawBuffersARBProc>(
         GetGLProcAddress("glDrawBuffers"));
-  } else if (ext.b_GL_ARB_draw_buffers) {
-    fn.glDrawBuffersARBFn = reinterpret_cast<glDrawBuffersARBProc>(
-        GetGLProcAddress("glDrawBuffersARB"));
   } else if (ext.b_GL_EXT_draw_buffers) {
     fn.glDrawBuffersARBFn = reinterpret_cast<glDrawBuffersARBProc>(
         GetGLProcAddress("glDrawBuffersEXT"));
@@ -1004,17 +987,13 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
     fn.glDrawElementsInstancedANGLEFn =
         reinterpret_cast<glDrawElementsInstancedANGLEProc>(
             GetGLProcAddress("glDrawElementsInstanced"));
-  } else if (ext.b_GL_ARB_draw_instanced) {
-    fn.glDrawElementsInstancedANGLEFn =
-        reinterpret_cast<glDrawElementsInstancedANGLEProc>(
-            GetGLProcAddress("glDrawElementsInstancedARB"));
   } else if (ext.b_GL_ANGLE_instanced_arrays) {
     fn.glDrawElementsInstancedANGLEFn =
         reinterpret_cast<glDrawElementsInstancedANGLEProc>(
             GetGLProcAddress("glDrawElementsInstancedANGLE"));
   }
 
-  if (ver->IsAtLeastGL(4u, 2u) || ext.b_GL_ARB_base_instance) {
+  if (ver->IsAtLeastGL(4u, 2u)) {
     fn.glDrawElementsInstancedBaseVertexBaseInstanceANGLEFn = reinterpret_cast<
         glDrawElementsInstancedBaseVertexBaseInstanceANGLEProc>(
         GetGLProcAddress("glDrawElementsInstancedBaseVertexBaseInstance"));
@@ -1770,8 +1749,7 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
             GetGLProcAddress("glGetShaderivRobustANGLE"));
   }
 
-  if (ver->IsAtLeastGL(4u, 1u) || ver->is_es ||
-      ext.b_GL_ARB_ES2_compatibility) {
+  if (ver->IsAtLeastGL(4u, 1u) || ver->is_es) {
     fn.glGetShaderPrecisionFormatFn =
         reinterpret_cast<glGetShaderPrecisionFormatProc>(
             GetGLProcAddress("glGetShaderPrecisionFormat"));

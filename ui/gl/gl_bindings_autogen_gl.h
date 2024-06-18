@@ -1937,16 +1937,11 @@ struct ExtensionsGL {
   bool b_GL_APPLE_fence;
   bool b_GL_APPLE_sync;
   bool b_GL_APPLE_vertex_array_object;
-  bool b_GL_ARB_ES2_compatibility;
-  bool b_GL_ARB_base_instance;
-  bool b_GL_ARB_draw_buffers;
-  bool b_GL_ARB_draw_instanced;
   bool b_GL_ARB_framebuffer_object;
   bool b_GL_ARB_instanced_arrays;
   bool b_GL_ARB_internalformat_query;
   bool b_GL_ARB_occlusion_query;
   bool b_GL_ARB_robustness;
-  bool b_GL_ARB_texture_swizzle;
   bool b_GL_ARB_timer_query;
   bool b_GL_ARB_vertex_array_object;
   bool b_GL_CHROMIUM_bind_uniform_location;
