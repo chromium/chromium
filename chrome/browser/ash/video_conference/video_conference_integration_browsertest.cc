@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -1177,8 +1178,8 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
 
 IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
                        TrayTriggeredByCaptureCamera) {
+  ASSERT_EQ(1u, ash::WaitForCameraAvailabilityWithTimeout(base::Seconds(5)));
   ash::CaptureModeTestApi test_api;
-  ASSERT_EQ(1u, test_api.GetNumberOfAvailableCameras());
   test_api.SelectCameraAtIndex(0);
   test_api.StartForFullscreen(/*for_video=*/true);
   ASSERT_TRUE(test_api.IsSessionActive());
@@ -1189,8 +1190,8 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
 
 IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
                        TrayTriggeredByCaptureMicrophone) {
+  ASSERT_EQ(1u, ash::WaitForCameraAvailabilityWithTimeout(base::Seconds(5)));
   ash::CaptureModeTestApi test_api;
-  ASSERT_EQ(1u, test_api.GetNumberOfAvailableCameras());
   test_api.SetAudioRecordingMode(AudioRecordingMode::kMicrophone);
   test_api.StartForFullscreen(/*for_video=*/true);
   ASSERT_TRUE(test_api.IsSessionActive());

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/capture_mode/capture_mode_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
@@ -853,8 +854,8 @@ class CaptureModeCameraBrowserTests : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
+    ASSERT_EQ(1u, ash::WaitForCameraAvailabilityWithTimeout(base::Seconds(5)));
     ash::CaptureModeTestApi test_api;
-    ASSERT_EQ(1u, test_api.GetNumberOfAvailableCameras());
     test_api.SelectCameraAtIndex(0);
   }
 

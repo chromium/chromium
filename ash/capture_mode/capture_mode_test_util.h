@@ -16,6 +16,7 @@
 #include "ash/webui/annotator/test/mock_annotator_client.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/time/time.h"
 #include "ui/events/event_constants.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_observer.h"
@@ -163,6 +164,11 @@ void AddFakeCamera(
 void RemoveFakeCamera(const std::string& device_id);
 void AddDefaultCamera();
 void RemoveDefaultCamera();
+
+// Waits until at least one camera becomes available, up to the specified
+// `time_out`. Returns the number of available cameras, or 0 if none are
+// found within the time limit.
+size_t WaitForCameraAvailabilityWithTimeout(base::TimeDelta time_out);
 
 // Defines a helper class to allow setting up and testing the Projector feature
 // in multiple test fixtures. Note that this helper initializes the Projector-
