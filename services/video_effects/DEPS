@@ -3,6 +3,7 @@ include_rules = [
   "+content/public/common",
   "+gpu/command_buffer/client",
   "+gpu/command_buffer/common",
+  "+gpu/GLES2/gl2extchromium.h",
   "+gpu/ipc/client",
   "+gpu/webgpu",
   "+media/base",
@@ -11,6 +12,7 @@ include_rules = [
   "+services/viz/public/mojom",
   "+services/video_effects/public/mojom",
   "+third_party/dawn/include/dawn",
+  "+third_party/khronos/GLES2/gl2.h",
 ]
 
 specific_include_rules = {

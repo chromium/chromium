@@ -8,8 +8,12 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "components/viz/common/gpu/raster_context_provider.h"
+#include "media/capture/mojom/video_capture_buffer.mojom-forward.h"
+#include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 #include "third_party/dawn/include/dawn/webgpu.h"
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"
+#include "third_party/khronos/GLES2/gl2.h"
 
 namespace viz {
 class ContextProviderCommandBuffer;
@@ -26,6 +30,9 @@ class VideoEffectsProcessorWebGpu {
   // not be called synchronously from the ctor and from `Initialize()` method.
   explicit VideoEffectsProcessorWebGpu(
       scoped_refptr<viz::ContextProviderCommandBuffer> context_provider,
+      scoped_refptr<viz::RasterContextProvider>
+          raster_interface_context_provider,
+      scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface,
       base::OnceClosure on_unrecoverable_error);
   ~VideoEffectsProcessorWebGpu();
 
@@ -38,6 +45,13 @@ class VideoEffectsProcessorWebGpu {
   // This does not mean that the processor is fully initialized - WebGPU
   // initialization may still proceed asynchronously.
   bool Initialize();
+
+  void PostProcess(
+      media::mojom::VideoBufferHandlePtr input_frame_data,
+      media::mojom::VideoFrameInfoPtr input_frame_info,
+      media::mojom::VideoBufferHandlePtr result_frame_data,
+      media::VideoPixelFormat result_pixel_format,
+      mojom::VideoEffectsProcessor::PostProcessCallback post_process_cb);
 
  private:
   // Ensures that awaiting WebGPUInterface commands are flushed.
@@ -64,13 +78,34 @@ class VideoEffectsProcessorWebGpu {
                               char const* message,
                               void* userdata);
 
+  void QueryDone(
+      GLuint query_id,
+      uint64_t trace_id,
+      media::mojom::VideoBufferHandlePtr input_frame_data,
+      media::mojom::VideoFrameInfoPtr input_frame_info,
+      media::mojom::VideoBufferHandlePtr result_frame_data,
+      media::VideoPixelFormat result_pixel_format,
+      mojom::VideoEffectsProcessor::PostProcessCallback post_process_cb);
+
+  wgpu::ComputePipeline CreateComputePipeline();
+
   scoped_refptr<viz::ContextProviderCommandBuffer> context_provider_;
+  scoped_refptr<viz::RasterContextProvider> raster_interface_context_provider_;
+  scoped_refptr<gpu::ClientSharedImageInterface> shared_image_interface_;
 
   base::OnceClosure on_unrecoverable_error_;
 
   wgpu::Instance instance_;
   wgpu::Adapter adapter_;
   wgpu::Device device_;
+
+  // `device_`'s default queue. Initialized after `device_` was obtained.
+  wgpu::Queue default_queue_;
+  // Compute pipeline executing basic compute shader on a video frame.
+  wgpu::ComputePipeline compute_pipeline_;
+
+  // WebGPU buffer that we use to send the parameters to our compute shader.
+  wgpu::Buffer uniforms_buffer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

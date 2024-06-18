@@ -31,6 +31,7 @@ source_set("service") {
   ]
 
   deps = [
+    "//gpu/command_buffer/client:raster_interface",
     "//gpu/command_buffer/client:webgpu_interface",
     "//gpu/webgpu:common",
     "//third_party/dawn/include/dawn:cpp_headers",

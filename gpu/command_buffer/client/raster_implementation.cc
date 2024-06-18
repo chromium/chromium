@@ -838,7 +838,7 @@ GLenum RasterImplementation::GetGLError() {
 #if defined(RASTER_CLIENT_FAIL_GL_ERRORS)
 void RasterImplementation::FailGLError(GLenum error) {
   if (error != GL_NO_ERROR) {
-    NOTREACHED_IN_MIGRATION() << "Error";
+    NOTREACHED_IN_MIGRATION() << "Error:" << error;
   }
 }
 // NOTE: Calling GetGLError overwrites data in the result buffer.

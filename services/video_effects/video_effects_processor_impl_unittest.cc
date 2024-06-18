@@ -82,6 +82,7 @@ TEST_F(VideoEffectsProcessorTest, InitializeSucceeds) {
                  client,
              gpu::ContextResult* result, gpu::Capabilities* capabilities,
              gpu::GLCapabilities* gl_capabilities) -> bool {
+            capabilities->sync_query = true;
             receiver.EnableUnassociatedUsage();
             *result = gpu::ContextResult::kSuccess;
             return true;

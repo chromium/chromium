@@ -830,6 +830,10 @@ void VideoCaptureDeviceClient::OnIncomingCapturedBufferExt(
       // The buffers were reserved but has not yet been reported as ready to the
       // `receiver_`. Once the post-processor has completed, we will call
       // `OnPostProcessDone()` & thus notify the receiver from there.
+
+      // TODO(https://crbug.com/345688428): drop the frame if we're already
+      // waiting for processing to finish for too many. Maybe if pool
+      // utilization is approaching 70%?
       effects_processor_->PostProcessBuffer(
           std::move(buffer), std::move(info), in_buffer_type,
           std::move(out_buffer), format, out_buffer_type,

@@ -13,6 +13,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/types/expected.h"
+#include "gpu/command_buffer/client/shared_image_interface.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/mojom/video_capture_buffer.mojom-forward.h"
 #include "media/capture/video/video_capture_device.h"
@@ -99,9 +100,17 @@ class CAPTURE_EXPORT VideoCaptureEffectsProcessor {
 
  private:
   struct PostProcessContext {
+    // Creates the context. If `in_buffer` is set, then `in_shared_image` must
+    // also be set for buffers that had shared images created from them. Same
+    // requirement applies for `out_buffer` and `out_shared_image`. If we don't
+    // maintain the ownership of shared images backed by the buffers, the dtors
+    // of `gpu::ClientSharedImage` will be invoked and the shared images won't
+    // be visible on the other side of the IPC, despite being exported for IPC.
     PostProcessContext(
         std::optional<VideoCaptureDevice::Client::Buffer> in_buffer,
+        scoped_refptr<gpu::ClientSharedImage> in_shared_image,
         VideoCaptureDevice::Client::Buffer out_buffer,
+        scoped_refptr<gpu::ClientSharedImage> out_shared_image,
         VideoCaptureEffectsProcessor::PostProcessDoneCallback post_process_cb);
     ~PostProcessContext();
 
@@ -118,7 +127,11 @@ class CAPTURE_EXPORT VideoCaptureEffectsProcessor {
     // May be std::nullopt if the context was created for a post-process request
     // that operates on on-CPU data - we won't have an `in_buffer` in this case.
     std::optional<VideoCaptureDevice::Client::Buffer> in_buffer;
+    // May be null if `in_buffer` is not set.
+    scoped_refptr<gpu::ClientSharedImage> in_shared_image;
+
     VideoCaptureDevice::Client::Buffer out_buffer;
+    scoped_refptr<gpu::ClientSharedImage> out_shared_image;
     VideoCaptureEffectsProcessor::PostProcessDoneCallback post_process_cb;
   };
 
