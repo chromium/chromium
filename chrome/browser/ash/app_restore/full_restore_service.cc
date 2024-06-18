@@ -314,7 +314,7 @@ void FullRestoreService::Init(bool& show_notification) {
       break;
     case RestoreOption::kDoNotRestore:
       if (IsForestFeatureEnabled()) {
-        MaybeShowInformedRestoreOnboarding();
+        MaybeShowInformedRestoreOnboarding(/*restore_on=*/false);
       }
       ::full_restore::FullRestoreSaveHandler::GetInstance()->AllowSave();
       MaybeInitiateAdminTemplateAutoLaunch();
@@ -526,7 +526,7 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
   const bool last_session_crashed = id == kRestoreForCrashNotificationId;
   if (!app_launch_handler_->HasRestoreData()) {
     CHECK(IsForestFeatureEnabled());
-    MaybeShowInformedRestoreOnboarding();
+    MaybeShowInformedRestoreOnboarding(/*restore_on=*/true);
     return;
   }
   CHECK(app_launch_handler_->HasRestoreData());
@@ -829,13 +829,11 @@ void FullRestoreService::OnSessionInformationReceived(
   delegate_->MaybeStartInformedRestoreOverviewSession(std::move(contents_data));
 }
 
-void FullRestoreService::MaybeShowInformedRestoreOnboarding() {
-  if (Shell::HasInstance()) {
-    RestoreOption restore_pref = static_cast<RestoreOption>(
-        profile_->GetPrefs()->GetInteger(prefs::kRestoreAppsAndPagesPrefName));
+void FullRestoreService::MaybeShowInformedRestoreOnboarding(bool restore_on) {
+  if (Shell::HasInstance() && !profile_->IsNewProfile()) {
     CHECK(Shell::Get()->pine_controller());
     Shell::Get()->pine_controller()->MaybeShowInformedRestoreOnboarding(
-        /*restore_on=*/restore_pref == RestoreOption::kAskEveryTime);
+        restore_on);
   }
 }
 

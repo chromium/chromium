@@ -194,7 +194,7 @@ class FullRestoreService : public KeyedService,
       bool last_session_crashed);
 
   // Shows the informed restore onboarding dialog when there is no restore data.
-  void MaybeShowInformedRestoreOnboarding();
+  void MaybeShowInformedRestoreOnboarding(bool restore_on);
 
   raw_ptr<Profile> profile_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;
