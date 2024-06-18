@@ -56,7 +56,7 @@ class MockClipboardHost : public blink::mojom::ClipboardHost {
   void WriteHtml(const std::u16string& markup, const GURL& url) override;
   void WriteSvg(const std::u16string& markup) override;
   void WriteSmartPasteMarker() override;
-  void WriteCustomData(
+  void WriteDataTransferCustomData(
       const base::flat_map<std::u16string, std::u16string>& data) override;
   void WriteBookmark(const std::string& url,
                      const std::u16string& title) override;

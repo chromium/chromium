@@ -593,7 +593,7 @@ void ClipboardHostImpl::WriteSmartPasteMarker() {
   clipboard_writer_->WriteWebSmartPaste();
 }
 
-void ClipboardHostImpl::WriteCustomData(
+void ClipboardHostImpl::WriteDataTransferCustomData(
     const base::flat_map<std::u16string, std::u16string>& data) {
   ClipboardPasteData clipboard_paste_data;
   clipboard_paste_data.custom_data = data;

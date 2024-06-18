@@ -388,13 +388,13 @@ TEST_F(ClipboardHostImplWriteTest, WriteBitmap_Empty) {
   EXPECT_TRUE(png.empty());
 }
 
-TEST_F(ClipboardHostImplWriteTest, WriteCustomData) {
+TEST_F(ClipboardHostImplWriteTest, WriteDataTransferCustomData) {
   base::flat_map<std::u16string, std::u16string> custom_data;
   custom_data[u"text/type1"] = u"data1";
   custom_data[u"text/type2"] = u"data2";
   custom_data[u"text/type3"] = u"data3";
 
-  clipboard_host_impl()->WriteCustomData(custom_data);
+  clipboard_host_impl()->WriteDataTransferCustomData(custom_data);
   clipboard_host_impl()->CommitWrite();
 
   base::test::TestFuture<const std::u16string&> future_1;
@@ -413,11 +413,11 @@ TEST_F(ClipboardHostImplWriteTest, WriteCustomData) {
   EXPECT_EQ(custom_data[u"text/type3"], future_3.Take());
 }
 
-TEST_F(ClipboardHostImplWriteTest, WriteCustomData_Empty) {
+TEST_F(ClipboardHostImplWriteTest, WriteDataTransferCustomData_Empty) {
   base::flat_map<std::u16string, std::u16string> custom_data;
   custom_data[u"text/type1"] = u"";
 
-  clipboard_host_impl()->WriteCustomData(custom_data);
+  clipboard_host_impl()->WriteDataTransferCustomData(custom_data);
   clipboard_host_impl()->CommitWrite();
 
   base::test::TestFuture<const std::u16string&> future_1;

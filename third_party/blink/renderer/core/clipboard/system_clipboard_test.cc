@@ -274,7 +274,7 @@ TEST_F(SystemClipboardTest, CustomData) {
   EXPECT_EQ(system_clipboard().ReadDataTransferCustomData("a"), "");
 
   // Setting text in the host is visible in system.
-  clipboard_host()->WriteCustomData({{"a", "first"}});
+  clipboard_host()->WriteDataTransferCustomData({{"a", "first"}});
   EXPECT_EQ(system_clipboard().ReadDataTransferCustomData("a"), "first");
 
   // Inside a snapshot scope, the first read from the system clipboard
@@ -282,10 +282,11 @@ TEST_F(SystemClipboardTest, CustomData) {
   {
     ScopedSystemClipboardSnapshot snapshot(system_clipboard());
 
-    clipboard_host()->WriteCustomData({{"a", "second"}});
+    clipboard_host()->WriteDataTransferCustomData({{"a", "second"}});
     EXPECT_EQ(system_clipboard().ReadDataTransferCustomData("a"), "second");
 
-    clipboard_host()->WriteCustomData({{"a", "third"}, {"b", "fourth"}});
+    clipboard_host()->WriteDataTransferCustomData(
+        {{"a", "third"}, {"b", "fourth"}});
     EXPECT_EQ(system_clipboard().ReadDataTransferCustomData("a"), "second");
     EXPECT_EQ(system_clipboard().ReadDataTransferCustomData("b"), "fourth");
   }

@@ -168,7 +168,8 @@ void MockClipboardHost::WriteSmartPasteMarker() {
   write_smart_paste_ = true;
 }
 
-void MockClipboardHost::WriteCustomData(const HashMap<String, String>& data) {
+void MockClipboardHost::WriteDataTransferCustomData(
+    const HashMap<String, String>& data) {
   if (needs_reset_)
     Reset();
   for (auto& it : data)

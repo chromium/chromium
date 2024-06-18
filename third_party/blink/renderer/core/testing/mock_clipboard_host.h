@@ -60,7 +60,8 @@ class MockClipboardHost : public mojom::blink::ClipboardHost {
   void WriteHtml(const String& markup, const KURL& url) override;
   void WriteSvg(const String& markup) override;
   void WriteSmartPasteMarker() override;
-  void WriteCustomData(const HashMap<String, String>& data) override;
+  void WriteDataTransferCustomData(
+      const HashMap<String, String>& data) override;
   void WriteBookmark(const String& url, const String& title) override;
   void WriteImage(const SkBitmap& bitmap) override;
   void CommitWrite() override;

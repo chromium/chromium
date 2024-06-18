@@ -159,7 +159,7 @@ void MockClipboardHost::WriteSmartPasteMarker() {
   write_smart_paste_ = true;
 }
 
-void MockClipboardHost::WriteCustomData(
+void MockClipboardHost::WriteDataTransferCustomData(
     const base::flat_map<std::u16string, std::u16string>& data) {
   if (needs_reset_)
     Reset();
