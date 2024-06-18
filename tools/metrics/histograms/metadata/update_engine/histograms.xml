@@ -319,7 +319,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.Check.TargetVersion"
-    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2024-10-13">
+    enum="UpdateEngineChromeOsVersionPrefix" expires_after="2024-12-15">
   <owner>mpolzer@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
   <summary>
@@ -503,7 +503,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.InstallDateProvisioningSource"
-    enum="UpdateEngineInstallDateProvisioningSource" expires_after="2024-10-13">
+    enum="UpdateEngineInstallDateProvisioningSource" expires_after="2024-12-15">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>
@@ -704,7 +704,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UpdateEngine.SuccessfulUpdate.RebootCount" units="count"
-    expires_after="2024-10-13">
+    expires_after="2024-12-15">
   <owner>kimjae@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>

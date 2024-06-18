@@ -187,7 +187,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.GwpAsan.CrashAnalysisResult.{Allocator}"
-    enum="GwpAsanCrashAnalysisResult" expires_after="2024-08-25">
+    enum="GwpAsanCrashAnalysisResult" expires_after="2024-12-15">
   <owner>glazunov@google.com</owner>
   <owner>mpdenton@chromium.org</owner>
   <owner>chrome-memory-tok@google.com</owner>
@@ -409,7 +409,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Security.PageInfo.AdPersonalizationRowShown" enum="Boolean"
-    expires_after="M130">
+    expires_after="2024-12-15">
   <owner>dullweber@chromium.org</owner>
   <owner>sauski@google.com</owner>
   <summary>
@@ -1004,7 +1004,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.SavedUserTriggeredIsolatedOrigins.Size"
-    units="origins" expires_after="2024-08-20">
+    units="origins" expires_after="2024-12-15">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -1017,7 +1017,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SiteIsolation.SavedWebTriggeredIsolatedOrigins.Size"
-    units="origins" expires_after="2024-08-20">
+    units="origins" expires_after="2024-12-15">
   <owner>alexmos@chromium.org</owner>
   <owner>creis@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>

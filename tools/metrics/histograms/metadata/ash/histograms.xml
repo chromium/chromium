@@ -1129,7 +1129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.BrowserDataBackMigrator.NumberOfLacrosSecondaryProfiles"
-    units="profiles" expires_after="2024-10-01">
+    units="profiles" expires_after="2024-12-15">
   <owner>janagrill@google.com</owner>
   <owner>artyomchen@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -1702,7 +1702,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Calendar.TimeToSeeTodaysEventDotsForMultiCalendar"
-    units="ms" expires_after="2024-09-04">
+    units="ms" expires_after="2024-12-15">
   <owner>newcomer@google.com</owner>
   <owner>cros-status-area-eng@google.com</owner>
   <summary>
@@ -2225,7 +2225,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.CaptureModeController.ScreenshotsPerWeek" units="int"
-    expires_after="2024-09-22">
+    expires_after="2024-12-15">
   <owner>afakhry@chromium.org</owner>
   <owner>gzadina@google.com</owner>
   <summary>
@@ -2615,7 +2615,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.DeskLifetime_{DeskIndex}" units="hr"
-    expires_after="2024-10-13">
+    expires_after="2024-12-15">
   <owner>afakhry@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
@@ -3118,7 +3118,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeskTemplate.LaunchFromTemplate" enum="BooleanHit"
-    expires_after="2024-09-27">
+    expires_after="2024-12-15">
   <owner>richui@chromium.org</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
@@ -6279,7 +6279,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Personalization.App.Duration" units="ms"
-    expires_after="2024-10-13">
+    expires_after="2024-12-15">
   <owner>pzliu@google.com</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -6289,7 +6289,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Personalization.DynamicColor.ColorScheme.Settled"
-    enum="PersonalizationDynamicColorColorScheme" expires_after="2024-10-13">
+    enum="PersonalizationDynamicColorColorScheme" expires_after="2024-12-15">
   <owner>ericamlee@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -6309,7 +6309,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Personalization.DynamicColor.StaticColor.Settled"
-    enum="PersonalizationDynamicColorStaticColor" expires_after="2024-10-13">
+    enum="PersonalizationDynamicColorStaticColor" expires_after="2024-12-15">
   <owner>ericamlee@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -7533,7 +7533,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Ash.Search.FileSuggestions.DriveRecents.DurationOnError.{SearchType}"
-    units="ms" expires_after="2024-10-01">
+    units="ms" expires_after="2024-12-15">
   <owner>tbarzic@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
   <summary>
@@ -9282,7 +9282,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Window.AnimationSmoothness.Snap" units="%"
-    expires_after="2024-10-16">
+    expires_after="2024-12-15">
   <owner>oshima@chromium.org</owner>
   <owner>sammiequon@chromium.org</owner>
   <owner>chromeos-wmp@google.com</owner>

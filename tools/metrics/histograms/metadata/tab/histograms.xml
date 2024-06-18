@@ -444,7 +444,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tab.PerceivedRestoreTime" units="ms"
-    expires_after="2024-10-13">
+    expires_after="2024-12-15">
   <owner>ckitagawa@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
@@ -1344,7 +1344,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Tabs.DroppedDuplicatesCountOn{Occasion}" units="tabs"
-    expires_after="2024-10-16">
+    expires_after="2024-12-15">
   <owner>lpromero@google.com</owner>
   <owner>chromeleon@google.com</owner>
   <summary>

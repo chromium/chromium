@@ -1265,7 +1265,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ImageLabels.ModalDialogAccepted"
-    enum="BooleanAccepted" expires_after="2024-10-13">
+    enum="BooleanAccepted" expires_after="2024-12-15">
   <owner>katie@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>
   <summary>
@@ -1367,7 +1367,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.iOS.NewLargerTextCategory" enum="BooleanHit"
-    expires_after="2024-10-16">
+    expires_after="2024-12-15">
   <owner>gambard@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
   <summary>
@@ -1665,7 +1665,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.CharactersTranslated"
-    units="count" expires_after="2024-10-13">
+    units="count" expires_after="2024-12-15">
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1675,7 +1675,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.EnableFrom{Entrypoint}"
-    enum="BooleanEnabled" expires_after="2024-10-13">
+    enum="BooleanEnabled" expires_after="2024-12-15">
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1691,7 +1691,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.SourceLanguage"
-    enum="LocaleCodeISO639" expires_after="2024-10-13">
+    enum="LocaleCodeISO639" expires_after="2024-12-15">
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -1701,7 +1701,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.LiveTranslate.TargetLanguage"
-    enum="LocaleCodeISO639" expires_after="2024-10-13">
+    enum="LocaleCodeISO639" expires_after="2024-12-15">
   <owner>evliu@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -2464,7 +2464,7 @@ even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.ReadAloud{Action}SessionCount"
-    units="count" expires_after="2024-09-30">
+    units="count" expires_after="2024-12-15">
   <owner>lwinston@google.com</owner>
   <owner>komo-eng@google.com</owner>
   <summary>

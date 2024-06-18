@@ -130,7 +130,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.OptInFlow.GetSettingsRequestTime" units="ms"
-    expires_after="2024-10-15">
+    expires_after="2024-12-15">
   <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>

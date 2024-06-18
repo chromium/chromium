@@ -358,7 +358,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.ConfigureTime_{ConfigurationType}.{Result}" units="ms"
-    expires_after="2024-10-13">
+    expires_after="2024-12-15">
   <owner>victorvianna@google.com</owner>
   <summary>
     Time spent configuring data types for {ConfigurationType}. Recorded when
@@ -763,7 +763,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.InvalidBookmarkSpecifics"
-    enum="InvalidBookmarkSpecificsError" expires_after="2024-10-13">
+    enum="InvalidBookmarkSpecificsError" expires_after="2024-12-15">
   <owner>mastiz@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <summary>
@@ -1074,7 +1074,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Sync.ModelTypeUndecryptablePendingUpdatesDropped{SyncModelType}"
-    units="SyncEntity" expires_after="2024-10-10">
+    units="SyncEntity" expires_after="2024-12-15">
   <owner>victorvianna@google.com</owner>
   <owner>mastiz@chromium.org</owner>
   <summary>
@@ -1397,7 +1397,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Sync.SharingMessage.CommitResult"
-    enum="SyncSharingMessageCommitErrorCode" expires_after="2024-10-13">
+    enum="SyncSharingMessageCommitErrorCode" expires_after="2024-12-15">
   <owner>rushans@google.com</owner>
   <owner>treib@chromium.org</owner>
   <summary>

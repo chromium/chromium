@@ -2045,7 +2045,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FencedFrame.CreationOrNavigationOutcome"
-    enum="FencedFrameCreationOutcome" expires_after="2024-10-13">
+    enum="FencedFrameCreationOutcome" expires_after="2024-12-15">
   <owner>shivanisha@chromium.org</owner>
   <owner>dom@chromium.org</owner>
   <owner>lbrady@google.com</owner>
@@ -2057,7 +2057,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FencedFrame.FailedSandboxLoadInTopLevelFrame"
-    enum="BooleanYesNo" expires_after="2024-10-13">
+    enum="BooleanYesNo" expires_after="2024-12-15">
   <owner>shivanisha@chromium.org</owner>
   <owner>dom@chromium.org</owner>
   <owner>lbrady@google.com</owner>
@@ -2099,7 +2099,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FencedFrame.MandatoryUnsandboxedFlagsSandboxed"
-    enum="WebSandboxFlags" expires_after="2024-10-13">
+    enum="WebSandboxFlags" expires_after="2024-12-15">
   <owner>shivanisha@chromium.org</owner>
   <owner>dom@chromium.org</owner>
   <owner>lbrady@google.com</owner>
@@ -2137,7 +2137,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.FetchQueuedPreloadsTime.{FrameType}.{IsInitial}"
-    units="ms" expires_after="2024-10-13">
+    units="ms" expires_after="2024-12-15">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
@@ -3908,7 +3908,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.ScanAndPreloadTime.{FrameType}.{IsInitial}" units="ms"
-    expires_after="2024-10-13">
+    expires_after="2024-12-15">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
@@ -4716,7 +4716,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.{CookieOperation}Time" units="ms"
-    expires_after="2024-10-13">
+    expires_after="2024-12-15">
   <owner>cduvall@chromium.org</owner>
   <owner>jam@chromium.org</owner>
   <summary>

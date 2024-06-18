@@ -1235,7 +1235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.PaintOpReader.DeserializationError"
-    enum="PaintOpDeserializationError" expires_after="2024-10-13">
+    enum="PaintOpDeserializationError" expires_after="2024-12-15">
   <owner>junov@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -1675,7 +1675,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.{GraphiteDawnOrWebGPU}.Support.{FeatureName}"
-    enum="Boolean" expires_after="2024-10-13">
+    enum="Boolean" expires_after="2024-12-15">
   <owner>enga@chromium.org</owner>
   <owner>mdb.webgpu-dev-team@google.com</owner>
   <summary>

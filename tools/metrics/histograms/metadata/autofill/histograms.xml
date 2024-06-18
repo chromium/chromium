@@ -3851,7 +3851,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.PlusAddresses.Modal.Events"
-    enum="PlusAddressModalEvent" expires_after="2024-09-24">
+    enum="PlusAddressModalEvent" expires_after="2024-12-15">
   <owner>mreichhoff@chromium.org</owner>
   <owner>kaklilu@chromium.org</owner>
   <summary>
@@ -4235,7 +4235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Autofill.ProfileImport.MigrateProfileEditedType"
-    enum="AutofillSettingsVisibleTypes" expires_after="2024-09-22">
+    enum="AutofillSettingsVisibleTypes" expires_after="2024-12-15">
   <owner>koerber@google.com</owner>
   <owner>fleimgruber@google.com</owner>
   <owner>src/components/autofill/OWNERS</owner>
@@ -5073,7 +5073,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Autofill.SharedStorageServerCardDataSetResult"
     enum="AutofillSharedStorageServerCardDataSetResult"
-    expires_after="2024-10-13">
+    expires_after="2024-12-15">
   <owner>nburris@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
   <summary>

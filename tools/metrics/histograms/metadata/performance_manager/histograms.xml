@@ -187,7 +187,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.DiskStats.UserDataDirFreeSpacePercent"
-    units="%" expires_after="2024-09-22">
+    units="%" expires_after="2024-12-15">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -524,7 +524,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.TabRevisitTracker.TimeToClose2"
-    units="seconds" expires_after="2024-10-13">
+    units="seconds" expires_after="2024-12-15">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -534,7 +534,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.TabRevisitTracker.TimeToRevisit2"
-    units="seconds" expires_after="2024-10-13">
+    units="seconds" expires_after="2024-12-15">
   <owner>anthonyvd@chromium.org</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>

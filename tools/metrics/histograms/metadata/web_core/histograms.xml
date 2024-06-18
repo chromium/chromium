@@ -107,7 +107,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.Fullscreen.LockStateAtEntryViaApi"
-    enum="FullscreenLockState" expires_after="2024-10-13">
+    enum="FullscreenLockState" expires_after="2024-12-15">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -120,7 +120,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.Fullscreen.LockStateAtEntryViaBrowserUi"
-    enum="FullscreenLockState" expires_after="2024-10-13">
+    enum="FullscreenLockState" expires_after="2024-12-15">
   <owner>takumif@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
   <summary>
@@ -256,7 +256,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebCore.IndexedDB.BackingStore.OverlyLargeOriginLength"
-    units="characters" expires_after="2024-09-29">
+    units="characters" expires_after="2024-12-15">
   <owner>estade@chromium.org</owner>
   <owner>chrome-owp-storage@google.com</owner>
   <summary>

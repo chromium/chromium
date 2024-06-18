@@ -100,7 +100,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.HasTapToSeekFoundMatch" enum="BooleanSuccess"
-    expires_after="2024-10-06">
+    expires_after="2024-12-15">
   <owner>andreaxg@google.com</owner>
   <owner>basiaz@google.com</owner>
   <owner>iwells@chromium.org</owner>
@@ -111,7 +111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.HighlightingEnabled" enum="BooleanEnabled"
-    expires_after="2024-10-13">
+    expires_after="2024-12-15">
   <owner>andreaxg@google.com</owner>
   <owner>basiaz@google.com</owner>
   <owner>iwells@chromium.org</owner>
@@ -253,7 +253,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadAloud.SpeedChange" enum="ReadAloudSpeed"
-    expires_after="2024-10-13">
+    expires_after="2024-12-15">
   <owner>andreaxg@google.com</owner>
   <owner>basiaz@google.com</owner>
   <owner>iwells@chromium.org</owner>
@@ -287,7 +287,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ReadAloud.TapToSeekTime" units="ms" expires_after="2024-08-04">
+<histogram name="ReadAloud.TapToSeekTime" units="ms" expires_after="2024-12-15">
   <owner>andreaxg@google.com</owner>
   <owner>basiaz@google.com</owner>
   <owner>iwells@chromium.org</owner>

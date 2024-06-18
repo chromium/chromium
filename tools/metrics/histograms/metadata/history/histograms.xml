@@ -1451,7 +1451,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.DatabaseBasicMetricsTime" units="ms"
-    expires_after="2024-10-13">
+    expires_after="2024-12-15">
   <owner>sophiechang@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <component>1456716</component>

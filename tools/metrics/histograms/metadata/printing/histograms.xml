@@ -624,7 +624,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PrintPreview.GetPrintersTime.{PrinterType}" units="ms"
-    expires_after="2024-10-16">
+    expires_after="2024-12-15">
   <owner>gavinwill@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
   <summary>

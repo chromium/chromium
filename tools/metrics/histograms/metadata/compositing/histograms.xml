@@ -546,7 +546,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Compositing.Display.OverlayProcessorUsingStrategy.ShouldPromoteCandidatesWithMasks"
-    enum="PromotingMaskCandidates" expires_after="2024-08-30">
+    enum="PromotingMaskCandidates" expires_after="2024-12-15">
   <owner>zoraiznaeem@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>

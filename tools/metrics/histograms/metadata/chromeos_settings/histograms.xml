@@ -93,7 +93,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="ChromeOS.Settings.Accessibility.FullscreenMagnifierFocusFollowing"
-    enum="BooleanToggled" expires_after="2024-10-16">
+    enum="BooleanToggled" expires_after="2024-12-15">
   <owner>katie@chromium.org</owner>
   <owner>chromium-accessibility@chromium.org</owner>
   <summary>
@@ -115,7 +115,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Accessibility.{SettingType}.Enabled"
-    enum="BooleanToggled" expires_after="2024-10-16">
+    enum="BooleanToggled" expires_after="2024-12-15">
   <owner>katie@chromium.org</owner>
   <owner>chromium-accessibility@chromium.org</owner>
   <summary>
@@ -238,7 +238,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.Device.KeyboardFunctionKeys"
-    enum="BooleanToggled" expires_after="2024-08-11">
+    enum="BooleanToggled" expires_after="2024-12-15">
   <owner>jimmyxgong@chromium.org</owner>
   <owner>zentaro@chromium.org</owner>
   <owner>cros-peripherals@google.com</owner>
@@ -650,7 +650,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.OverscrollHistoryNavigation.Enabled"
-    enum="BooleanEnabled" expires_after="2024-10-16">
+    enum="BooleanEnabled" expires_after="2024-12-15">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -829,7 +829,7 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChromeOS.Settings.SnapWindowSuggestions" enum="BooleanToggled"
-    expires_after="2024-10-13">
+    expires_after="2024-12-15">
   <owner>sophiewen@chromium.org</owner>
   <owner>michelefan@chromium.org</owner>
   <summary>

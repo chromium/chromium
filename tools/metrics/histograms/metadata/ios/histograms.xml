@@ -120,7 +120,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="IOS.Allocator.ShimInstalled" enum="Boolean"
-    expires_after="2024-10-13">
+    expires_after="2024-12-15">
   <owner>rohitrao@chromium.org</owner>
   <owner>justincohen@chromium.org</owner>
   <summary>
@@ -170,7 +170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.BackgroundTimeBeforeColdStart" units="minutes"
-    expires_after="2024-10-13">
+    expires_after="2024-12-15">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -280,7 +280,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.BringAndroidTabs.TabCount" units="count"
-    expires_after="2024-09-01">
+    expires_after="2024-12-15">
   <owner>hiramahmood@google.com</owner>
   <owner>ginnyhuang@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
@@ -1116,7 +1116,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.ExperienceKitCalendar.Present"
-    enum="ExperienceKitCalendarTypes" expires_after="2024-09-29">
+    enum="ExperienceKitCalendarTypes" expires_after="2024-12-15">
   <owner>djean@chromium.org</owner>
   <owner>erahmaoui@google.com</owner>
   <summary>
@@ -1135,7 +1135,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.ExperienceKitCalendar.TextClassifierModelAvailable"
-    enum="BooleanAvailable" expires_after="2024-09-15">
+    enum="BooleanAvailable" expires_after="2024-12-15">
   <owner>rajendrant@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -2115,7 +2115,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Notifications.Tips.Cleared" enum="IOSTipsNotificationType"
-    expires_after="2024-09-29">
+    expires_after="2024-12-15">
   <owner>scottyoder@chromium.org</owner>
   <owner>hiramahmood@google.com</owner>
   <summary>Logs when a tips notification is cleared by the client.</summary>
@@ -2151,7 +2151,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Notifications.Tips.Sent" enum="IOSTipsNotificationType"
-    expires_after="2024-09-29">
+    expires_after="2024-12-15">
   <owner>scottyoder@chromium.org</owner>
   <owner>hiramahmood@google.com</owner>
   <summary>
@@ -2924,7 +2924,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.PushNotification.ChimeDeviceRegistration"
-    enum="BooleanSuccess" expires_after="2024-10-13">
+    enum="BooleanSuccess" expires_after="2024-12-15">
   <owner>ajuma@google.com</owner>
   <owner>danieltwhite@google.com</owner>
   <summary>
@@ -2948,7 +2948,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.PushNotification.EnabledPermisisons"
-    enum="PushNotificationPermissionPromptStatus" expires_after="2024-09-29">
+    enum="PushNotificationPermissionPromptStatus" expires_after="2024-12-15">
   <owner>ajuma@google.com</owner>
   <owner>danieltwhite@google.com</owner>
   <summary>
@@ -2994,7 +2994,7 @@ the generic promo launch. -->
 <histogram
     name="IOS.PushNotification.NotificationAutorizationStatusChangedToAuthorized"
     enum="PushNotificationSettingsAuthorizationStatus"
-    expires_after="2024-10-16">
+    expires_after="2024-12-15">
   <owner>danieltwhite@google.com</owner>
   <owner>ajuma@google.com</owner>
   <summary>
@@ -3023,7 +3023,7 @@ the generic promo launch. -->
 
 <histogram name="IOS.PushNotification.NotificationSettingsAuthorizationStatus"
     enum="PushNotificationSettingsAuthorizationStatus"
-    expires_after="2024-10-11">
+    expires_after="2024-12-15">
   <owner>danieltwhite@google.com</owner>
   <owner>ajuma@google.com</owner>
   <summary>
@@ -3037,7 +3037,7 @@ the generic promo launch. -->
 <histogram
     name="IOS.PushNotification.NotificationSettingsAuthorizationStatus.ByProvider"
     enum="PushNotificationSettingsAuthorizationStatus"
-    expires_after="2024-10-13">
+    expires_after="2024-12-15">
   <owner>guiperez@google.com</owner>
   <owner>chrome-sherlock@google.com</owner>
   <summary>
@@ -3711,7 +3711,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SetUpList.AllItemsCompleted" enum="Boolean"
-    expires_after="2024-10-10">
+    expires_after="2024-12-15">
   <owner>scottyoder@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -3721,7 +3721,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SetUpList.Displayed" enum="Boolean"
-    expires_after="2024-10-10">
+    expires_after="2024-12-15">
   <owner>scottyoder@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -3731,7 +3731,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SetUpList.ItemCompleted" enum="IOSSetUpListItemType"
-    expires_after="2024-10-10">
+    expires_after="2024-12-15">
   <owner>scottyoder@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -3752,7 +3752,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.SetUpList.ItemSelected" enum="IOSSetUpListItemType"
-    expires_after="2024-10-10">
+    expires_after="2024-12-15">
   <owner>scottyoder@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>
   <summary>
@@ -3868,7 +3868,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Spotlight.BookmarksReindexRestarted" units="units"
-    expires_after="2024-08-11">
+    expires_after="2024-12-15">
   <owner>ameurhosni@google.com</owner>
   <owner>stkhapugin@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -4305,7 +4305,7 @@ the generic promo launch. -->
 
 <histogram
     name="IOS.TextSelection.EntityDetection.TFLiteModelEvaluationDuration"
-    units="ms" expires_after="2024-09-22">
+    units="ms" expires_after="2024-12-15">
   <owner>rajendrant@chromium.org</owner>
   <owner>sophiechang@chromium.org</owner>
   <summary>
@@ -4451,7 +4451,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.Web.FileInput.Clicked" enum="IOSWebFileInputAttributes"
-    expires_after="2024-10-13">
+    expires_after="2024-12-15">
   <owner>olivierrobin@chromium.org</owner>
   <owner>qpubert@google.com</owner>
   <summary>
@@ -4482,7 +4482,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.WhatsNew.InstructionsShown" enum="WhatsNewType"
-    expires_after="2024-10-13">
+    expires_after="2024-12-15">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>
@@ -4492,7 +4492,7 @@ the generic promo launch. -->
 </histogram>
 
 <histogram name="IOS.WhatsNew.ItemsClickedCount" units="count"
-    expires_after="2024-10-13">
+    expires_after="2024-12-15">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>The number of clicked What's New items per impression</summary>

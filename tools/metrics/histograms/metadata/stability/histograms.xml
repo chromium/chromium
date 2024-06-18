@@ -293,7 +293,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.ChildFrameCrash.ShownAfterCrashingReason"
-    enum="ShownAfterCrashingReason" expires_after="2024-10-13">
+    enum="ShownAfterCrashingReason" expires_after="2024-12-15">
   <owner>alexmos@chromium.org</owner>
   <owner>boliu@chromium.org</owner>
   <owner>lukasza@chromium.org</owner>
@@ -305,7 +305,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.ChildFrameCrash.TabMarkedForReload"
-    enum="BooleanMarkedForReload" expires_after="2024-10-13">
+    enum="BooleanMarkedForReload" expires_after="2024-12-15">
   <owner>alexmos@chromium.org</owner>
   <owner>boliu@chromium.org</owner>
   <summary>
@@ -315,7 +315,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Stability.ChildFrameCrash.TabMarkedForReload.Visibility"
-    enum="FrameVisibility" expires_after="2024-10-13">
+    enum="FrameVisibility" expires_after="2024-12-15">
   <owner>alexmos@chromium.org</owner>
   <owner>boliu@chromium.org</owner>
   <summary>

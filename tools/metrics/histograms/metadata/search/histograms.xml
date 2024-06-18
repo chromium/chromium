@@ -206,7 +206,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceScreenSelectedEngineIndex" units="index"
-    expires_after="2024-10-13">
+    expires_after="2024-12-15">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -229,7 +229,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.ChoiceScreenShowedEngineAt.Index{Index}"
-    enum="OmniboxSearchEngineType" expires_after="2024-10-13">
+    enum="OmniboxSearchEngineType" expires_after="2024-12-15">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-waffle-eng@google.com</owner>
   <summary>
@@ -1134,7 +1134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.SearchEngineListedInPromoDialog"
-    enum="OmniboxSearchEngineType" expires_after="M130">
+    enum="OmniboxSearchEngineType" expires_after="2024-12-15">
 <!-- Name completed by histogram_suffixes name="SearchEnginePromoOrdering" and name="SearchEnginePromoDeviceType" -->
 
   <owner>yusufo@chromium.org</owner>
@@ -1150,7 +1150,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Search.SearchEngineSelectionInPromoDialog"
-    enum="OmniboxSearchEngineType" expires_after="M130">
+    enum="OmniboxSearchEngineType" expires_after="2024-12-15">
 <!-- Name completed by histogram_suffixes name="SearchEnginePromoDeviceType" -->
 
   <owner>yusufo@chromium.org</owner>

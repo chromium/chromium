@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Bruschetta.InstallResult" enum="BruschettaInstallResult"
-    expires_after="2024-09-29">
+    expires_after="2024-12-15">
   <owner>davidmunro@google.com</owner>
   <owner>src/chrome/browser/ash/bruschetta/OWNERS</owner>
   <summary>The result of an attempt to install Bruschetta.</summary>
