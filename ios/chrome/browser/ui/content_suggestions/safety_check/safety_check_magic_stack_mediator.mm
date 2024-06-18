@@ -171,8 +171,6 @@
   _safetyCheckState.audience = self;
   if (IsIOSMagicStackCollectionViewEnabled()) {
     [_safetyCheckConsumer safetyCheckStateDidChange:_safetyCheckState];
-  } else {
-    [self.consumer showSafetyCheck:_safetyCheckState];
   }
 }
 

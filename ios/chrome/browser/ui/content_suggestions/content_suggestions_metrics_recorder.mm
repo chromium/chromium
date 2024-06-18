@@ -121,11 +121,6 @@ const float kMaxModuleEngagementIndex = 50;
   }
 }
 
-- (void)recordTrendingQueryTappedAtIndex:(int)index {
-  UMA_HISTOGRAM_ENUMERATION(kTrendingQueriesHistogram, index,
-                            kMaxTrendingQueries);
-}
-
 - (void)recordTabResumptionTabOpened {
   base::RecordAction(base::UserMetricsAction(kOpenMostRecentTabAction));
 }

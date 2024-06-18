@@ -106,7 +106,6 @@ NSString* HostnameFromGURL(GURL URL) {
       "--enable-features=" + std::string(kTabResumption.name) + ":" +
       kTabResumptionParameterName + "/" + kTabResumptionAllTabsParam + "," +
       syncer::kSyncSessionOnVisibilityChanged.name);
-  config.features_enabled.push_back(kIOSMagicStackCollectionView);
   if ([self isUsingTabResumption15]) {
     config.features_enabled.push_back(kTabResumption1_5);
   } else {

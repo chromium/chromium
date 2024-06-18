@@ -84,11 +84,6 @@ extern const CGFloat kMostVisitedBottomMargin;
 // Most Visited Tiles favicon width when kMagicStack is enabled.
 extern const CGFloat kMagicStackFaviconWidth;
 
-// Maximum number of Trending Queries shown.
-// If the value of this constant is updated, please also update the
-// TrendingQueryIndex enum so it can capture a higher max value.
-const int kMaxTrendingQueries = 4;
-
 // Returns the matching ContentSuggestionsModuleType for a given
 // SetUpListItemType `type`.
 ContentSuggestionsModuleType SetUpListModuleTypeForSetUpListType(

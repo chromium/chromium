@@ -40,9 +40,6 @@ enum class SetUpListItemType;
 // Logs a metric for a shortcut tile being tapped.
 - (void)recordShortcutTileTapped:(NTPCollectionShortcutType)shortcutType;
 
-// Logs a trending query opened at `index` in the module.
-- (void)recordTrendingQueryTappedAtIndex:(int)index;
-
 // Logs a tab resumption tab opened.
 - (void)recordTabResumptionTabOpened;
 

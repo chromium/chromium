@@ -10,9 +10,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 
 @protocol ContentSuggestionsViewControllerAudience;
-@protocol ParcelTrackingOptInCommands;
 @class ContentSuggestionsMetricsRecorder;
-@class LayoutGuideCenter;
 class UrlLoadingBrowserAgent;
 
 // CollectionViewController to display the suggestions items.
@@ -33,16 +31,6 @@ class UrlLoadingBrowserAgent;
 // Recorder for content suggestions metrics.
 @property(nonatomic, weak)
     ContentSuggestionsMetricsRecorder* contentSuggestionsMetricsRecorder;
-
-// Handler for the Parcel Tracking Commands.
-@property(nonatomic, weak) id<ParcelTrackingOptInCommands>
-    parcelTrackingCommandHandler;
-
-// The layout guide center to use to refer to the Magic Stack.
-@property(nonatomic, strong) LayoutGuideCenter* layoutGuideCenter;
-
-// Called when the module width has changed.
-- (void)moduleWidthDidUpdate;
 
 @end
 

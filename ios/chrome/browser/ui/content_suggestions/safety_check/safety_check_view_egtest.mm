@@ -85,7 +85,6 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.features_enabled.push_back(kIOSMagicStackCollectionView);
   config.features_enabled.push_back(kSafetyCheckMagicStack);
   config.features_enabled.push_back(
       password_manager::features::kIOSPasswordAuthOnEntryV2);

@@ -163,8 +163,6 @@
     _shortcutsConfig.shortcutItems = [self shortcutItems];
     if (IsIOSMagicStackCollectionViewEnabled()) {
       [_consumers shortcutsItemConfigDidChange:_readingListItem];
-    } else {
-      [self.consumer setShortcutTilesConfig:_shortcutsConfig];
     }
   }
 }

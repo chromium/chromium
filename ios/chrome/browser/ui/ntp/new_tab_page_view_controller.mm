@@ -1744,8 +1744,6 @@ const CGFloat kModuleMinMargin = 16;
   if (existingConstraintUpdated) {
     if (IsIOSMagicStackCollectionViewEnabled()) {
       [self.magicStackCollectionView moduleWidthDidUpdate];
-    } else {
-      [self.contentSuggestionsViewController moduleWidthDidUpdate];
     }
   }
 }

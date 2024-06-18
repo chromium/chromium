@@ -10,7 +10,6 @@
 #import "base/ios/block_types.h"
 
 class AuthenticationService;
-@protocol ContentSuggestionsConsumer;
 @protocol ContentSuggestionsDelegate;
 @class ContentSuggestionsMetricsRecorder;
 @protocol ContentSuggestionsViewControllerAudience;
@@ -71,9 +70,6 @@ class SyncService;
 // Returns YES if the conditions are right to display the Set Up List.
 - (BOOL)shouldShowSetUpList;
 
-// Sends the SetUpList items up to the consumer.
-- (void)showSetUpList;
-
 // Returns the Set Up List module configuration(s) to show.
 - (NSArray<SetUpListConfig*>*)setUpListConfigs;
 
@@ -89,9 +85,6 @@ class SyncService;
 
 // Indicates to the mediator to disable SetUpList entirely.
 - (void)disableModule;
-
-// Consumer for this mediator.
-@property(nonatomic, weak) id<ContentSuggestionsConsumer> consumer;
 
 // Receiver for Set Up List actions.
 @property(nonatomic, weak) id<ContentSuggestionsViewControllerAudience>

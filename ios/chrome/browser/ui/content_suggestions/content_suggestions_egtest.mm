@@ -112,7 +112,6 @@ void TapSecondaryActionButton() {
       [self isRunningTest:@selector(testMagicStackEditButton)] ||
       [self isRunningTest:@selector
             (testMagicStackCompactedSetUpListCompleteAllItems)]) {
-    config.features_enabled.push_back(kIOSMagicStackCollectionView);
     config.features_disabled.push_back(kContentPushNotifications);
     config.features_disabled.push_back(kIOSTipsNotifications);
   }

@@ -426,9 +426,6 @@ TEST_F(MagicStackRankingModelTest, TestModuleClickIndexMetric) {
 // Test that the ranking model passed an expected list of module configs in
 // -didGetLatestRankingOrder:
 TEST_F(MagicStackRankingModelTest, TestModelDidGetLatestRankingOrder) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      {{kIOSMagicStackCollectionView, {}}}, {});
   FakeMagicStackRankingModelDelegate* delegate_ =
       [[FakeMagicStackRankingModelDelegate alloc] init];
   _magicStackRankingModel.delegate = delegate_;
@@ -439,7 +436,7 @@ TEST_F(MagicStackRankingModelTest, TestModelDidGetLatestRankingOrder) {
         base::RunLoop().RunUntilIdle();
         return [delegate_.rank count] > 0;
       }));
-  NSArray* expectedModuleRank = @[ @(5), @(1), @(10), @(11) ];
+  NSArray* expectedModuleRank = @[ @(5), @(0), @(1), @(10), @(11) ];
   EXPECT_EQ([delegate_.rank count], [expectedModuleRank count]);
   for (NSUInteger i = 0; i < [expectedModuleRank count]; i++) {
     MagicStackModule* config = delegate_.rank[i];
@@ -451,10 +448,6 @@ TEST_F(MagicStackRankingModelTest, TestModelDidGetLatestRankingOrder) {
 // Tests that the ranking model sends insertion signals to its delgate in
 // response to feature delegate signals.
 TEST_F(MagicStackRankingModelTest, TestFeatureInsertCalls) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeaturesAndParameters(
-      {{kIOSMagicStackCollectionView, {}}}, {});
-
   FakeMagicStackRankingModelDelegate* delegate_ =
       [[FakeMagicStackRankingModelDelegate alloc] init];
   _magicStackRankingModel.delegate = delegate_;
@@ -466,12 +459,12 @@ TEST_F(MagicStackRankingModelTest, TestFeatureInsertCalls) {
       }));
 
   [_magicStackRankingModel newParcelsAvailable];
-  EXPECT_EQ(delegate_.lastInsertionIndex, 3u);
+  EXPECT_EQ(delegate_.lastInsertionIndex, 4u);
   EXPECT_EQ(delegate_.lastInsertedItem,
             _parcelTrackingMediator.parcelTrackingItemToShow);
 
   [_magicStackRankingModel tabResumptionHelperDidReceiveItem];
-  EXPECT_EQ(delegate_.lastInsertionIndex, 2u);
+  EXPECT_EQ(delegate_.lastInsertionIndex, 3u);
   EXPECT_EQ(delegate_.lastInsertedItem, _tabResumptionMediator.itemConfig);
 }
 
@@ -480,9 +473,7 @@ TEST_F(MagicStackRankingModelTest, TestFeatureInsertCalls) {
 TEST_F(MagicStackRankingModelTest, TestMostVisitedTilesMediatorDelegate) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitWithFeaturesAndParameters(
-      {{kMagicStack, {{kMagicStackMostVisitedModuleParam, "true"}}},
-       {kIOSMagicStackCollectionView, {}}},
-      {});
+      {{kMagicStack, {{kMagicStackMostVisitedModuleParam, "true"}}}}, {});
 
   // Assert that delegate API isn't called if rank has not been received yet.
   id mockDelegate =

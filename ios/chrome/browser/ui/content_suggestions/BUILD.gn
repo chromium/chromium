@@ -275,7 +275,6 @@ source_set("unit_tests") {
   sources = [
     "content_suggestions_collection_utils_unittest.mm",
     "content_suggestions_mediator_unittest.mm",
-    "content_suggestions_view_controller_unittest.mm",
     "magic_stack_half_sheet_mediator_unittest.mm",
     "magic_stack_half_sheet_table_view_controller_unittest.mm",
   ]

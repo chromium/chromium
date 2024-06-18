@@ -370,10 +370,6 @@
         UrlLoadingBrowserAgent::FromBrowser(self.browser);
     viewController.contentSuggestionsMetricsRecorder =
         self.contentSuggestionsMetricsRecorder;
-    viewController.layoutGuideCenter =
-        LayoutGuideCenterForBrowser(self.browser);
-    viewController.parcelTrackingCommandHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), ParcelTrackingOptInCommands);
     self.contentSuggestionsViewController = viewController;
   }
 
@@ -382,14 +378,7 @@
         [[MagicStackCollectionViewController alloc] init];
     _magicStackCollectionView.audience = self;
   }
-
-  if (_magicStackRankingModel) {
-    _magicStackRankingModel.consumer = self.contentSuggestionsViewController;
-  }
-  _shortcutsMediator.consumer = self.contentSuggestionsViewController;
-  _safetyCheckMediator.consumer = self.contentSuggestionsViewController;
   _mostVisitedTilesMediator.consumer = self.contentSuggestionsViewController;
-  _setUpListMediator.consumer = self.contentSuggestionsViewController;
 
   if (IsIOSMagicStackCollectionViewEnabled()) {
     self.contentSuggestionsMediator.magicStackConsumer =

@@ -30,7 +30,6 @@
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
 #import "ios/chrome/browser/sync/model/sync_observer_bridge.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/set_up_list/set_up_list_config.h"
@@ -244,18 +243,6 @@ bool DefaultBrowserPromoCompleted() {
   return YES;
 }
 
-- (void)showSetUpList {
-  DCHECK(!IsIOSMagicStackCollectionViewEnabled());
-  [self.consumer showSetUpListModuleWithConfigs:[self setUpListConfigs]];
-  [self.contentSuggestionsMetricsRecorder recordSetUpListShown];
-  for (SetUpListConfig* config in [self setUpListConfigs]) {
-    for (SetUpListItemViewData* item in config.setUpListItems) {
-      [self.contentSuggestionsMetricsRecorder
-          recordSetUpListItemShown:item.type];
-    }
-  }
-}
-
 - (NSArray<SetUpListConfig*>*)setUpListConfigs {
   if (!_setUpListConfigs) {
     NSArray<SetUpListItemViewData*>* items = [self setUpListItems];
@@ -308,7 +295,6 @@ bool DefaultBrowserPromoCompleted() {
 
 - (void)setUpListItemDidComplete:(SetUpListItem*)item
                allItemsCompleted:(BOOL)completed {
-  __weak __typeof(self) weakSelf = self;
   // Can resend signal to mediator from Set Up List after SetUpListItemView
   // completes animation
   ProceduralBlock completion = ^{
@@ -317,13 +303,7 @@ bool DefaultBrowserPromoCompleted() {
         SetUpListConfig* config = [[SetUpListConfig alloc] init];
         config.setUpListItems = @[ [self allSetItem] ];
         [self.audience replaceSetUpListWithAllSet:config];
-      } else {
-        [weakSelf.consumer showSetUpListDoneWithAnimations:^{
-        }];
       }
-    } else {
-      [weakSelf.consumer scrollToNextMagicStackModuleForCompletedModule:
-                             SetUpListModuleTypeForSetUpListType(item.type)];
     }
   };
     [_consumers setUpListItemDidComplete:item
@@ -472,10 +452,6 @@ bool DefaultBrowserPromoCompleted() {
     [self.audience removeSetUpList];
     return;
   }
-  __weak __typeof(self) weakSelf = self;
-  [self.consumer hideSetUpListWithAnimations:^{
-    [weakSelf.delegate contentSuggestionsWasUpdated];
-  }];
 }
 
 // Checks if the CPE is enabled and marks the SetUpList Autofill item complete

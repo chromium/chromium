@@ -21,7 +21,6 @@
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_config.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/shortcuts_mediator.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_consumer.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_ranking_model_delegate.h"
@@ -129,34 +128,6 @@
 
 - (void)fetchLatestMagicStackRanking {
     [self fetchMagicStackModuleRankingFromSegmentationPlatform];
-  if (!IsIOSMagicStackCollectionViewEnabled()) {
-    if ([self shouldShowTabResumption]) {
-      [self.consumer
-          showTabResumptionWithItem:_tabResumptionMediator.itemConfig];
-    }
-    if (ShouldPutMostVisitedSitesInMagicStack() &&
-        [_mostVisitedTilesMediator.mostVisitedConfig.mostVisitedItems count] >
-            0) {
-      [self.consumer setMostVisitedTilesConfig:_mostVisitedTilesMediator
-                                                   .mostVisitedConfig];
-    }
-    if ([_setUpListMediator shouldShowSetUpList]) {
-      [_setUpListMediator showSetUpList];
-    }
-    if (IsSafetyCheckMagicStackEnabled() &&
-        !safety_check_prefs::IsSafetyCheckInMagicStackDisabled(_localState) &&
-        _safetyCheckMediator.safetyCheckState.runningState ==
-            RunningSafetyCheckState::kDefault) {
-      [self.consumer showSafetyCheck:_safetyCheckMediator.safetyCheckState];
-    }
-    if (IsIOSParcelTrackingEnabled() &&
-        !IsParcelTrackingDisabled(GetApplicationContext()->GetLocalState()) &&
-        _parcelTrackingMediator.parcelTrackingItemToShow) {
-      [self.consumer showParcelTrackingItem:_parcelTrackingMediator
-                                                .parcelTrackingItemToShow];
-    }
-    [self.consumer setShortcutTilesConfig:_shortcutsMediator.shortcutsConfig];
-  }
 }
 
 - (void)logMagicStackEngagementForType:(ContentSuggestionsModuleType)type {
@@ -193,12 +164,6 @@
                  didRemoveItem:_safetyCheckMediator.safetyCheckState];
     return;
   }
-  MagicStackOrderChange change{MagicStackOrderChange::Type::kRemove};
-  change.old_module = ContentSuggestionsModuleType::kSafetyCheck;
-  change.index = [self
-      indexForMagicStackModule:ContentSuggestionsModuleType::kSafetyCheck];
-  CHECK(change.index != NSNotFound);
-  [self.consumer updateMagicStackOrder:change];
 }
 
 #pragma mark - TabResumptionHelperDelegate
@@ -232,7 +197,6 @@
                             didRemoveItem:_tabResumptionMediator.itemConfig];
     return;
   }
-  [self.consumer hideTabResumption];
 }
 
 #pragma mark - ParcelTrackingMediatorDelegate
@@ -247,24 +211,6 @@
                                   atIndex:index];
     return;
   }
-
-  _latestMagicStackOrder = [self segmentationMagicStackOrder];
-  if ([self isMagicStackOrderReady]) {
-    for (NSUInteger index = 0; index < [_latestMagicStackOrder count];
-         index++) {
-      ContentSuggestionsModuleType type = (ContentSuggestionsModuleType)
-          [_latestMagicStackOrder[index] intValue];
-      if (type == ContentSuggestionsModuleType::kParcelTracking) {
-        MagicStackOrderChange change{MagicStackOrderChange::Type::kInsert};
-        change.new_module = type;
-        change.index = index;
-        [self.consumer updateMagicStackOrder:change];
-      }
-    }
-  }
-
-  [self.consumer showParcelTrackingItem:[_parcelTrackingMediator
-                                            parcelTrackingItemToShow]];
 }
 
 - (void)parcelTrackingDisabled {
@@ -275,19 +221,6 @@
                             didRemoveItem:_parcelTrackingMediator
                                               .parcelTrackingItemToShow];
     return;
-  }
-
-  // Find all parcel tracking modules and remove them.
-  for (NSUInteger i = 0; i < [_latestMagicStackOrder count]; i++) {
-    ContentSuggestionsModuleType type =
-        (ContentSuggestionsModuleType)[_latestMagicStackOrder[i] intValue];
-    if (type == ContentSuggestionsModuleType::kParcelTracking) {
-      MagicStackOrderChange change{MagicStackOrderChange::Type::kRemove};
-      change.old_module = type;
-      change.index = [self indexForMagicStackModule:type];
-      CHECK(change.index != NSNotFound);
-      [self.consumer updateMagicStackOrder:change];
-    }
   }
 }
 
@@ -465,9 +398,6 @@
     _latestMagicStackConfigOrder = [self latestMagicStackConfigRank];
     [self.delegate magicStackRankingModel:self
                  didGetLatestRankingOrder:_latestMagicStackConfigOrder];
-  } else {
-    _latestMagicStackOrder = [self segmentationMagicStackOrder];
-    [self.consumer setMagicStackOrder:_latestMagicStackOrder];
   }
 }
 
@@ -620,28 +550,6 @@
                                   atIndex:index];
     return;
   }
-
-  if (!self.consumer) {
-    return;
-  }
-  _latestMagicStackOrder = [self segmentationMagicStackOrder];
-  if ([self isMagicStackOrderReady]) {
-    // Only indicate the need for an explicit insertion if the tab resumption
-    // item was received after building the initial Magic Stack order or getting
-    // the Magic Stack Order from Segmentation.
-    NSUInteger insertionIndex = [self
-        indexForMagicStackModule:ContentSuggestionsModuleType::kTabResumption];
-    if (insertionIndex == NSNotFound) {
-      return;
-    }
-    // Only continue on to insert Tab Resumption after `isMagicStackOrderReady`
-    // if it is in the Magic Stack order
-    MagicStackOrderChange change{MagicStackOrderChange::Type::kInsert,
-                                 ContentSuggestionsModuleType::kTabResumption};
-    change.index = insertionIndex;
-    [self.consumer updateMagicStackOrder:change];
-  }
-  [self.consumer showTabResumptionWithItem:item];
 }
 
 // Returns YES if the tab resumption module should added into the Magic Stack.
