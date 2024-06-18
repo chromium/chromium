@@ -35,17 +35,6 @@ extern const base::FeatureParam<std::string> kDevToolsConsoleInsightsModelId;
 extern const base::FeatureParam<double> kDevToolsConsoleInsightsTemperature;
 extern const base::FeatureParam<bool> kDevToolsConsoleInsightsOptIn;
 
-BASE_DECLARE_FEATURE(kDevToolsConsoleInsightsDogfood);
-extern const base::FeatureParam<std::string>
-    kDevToolsConsoleInsightsDogfoodAidaScope;
-extern const base::FeatureParam<std::string>
-    kDevToolsConsoleInsightsDogfoodAidaEndpoint;
-extern const base::FeatureParam<std::string>
-    kDevToolsConsoleInsightsDogfoodModelId;
-extern const base::FeatureParam<double>
-    kDevToolsConsoleInsightsDogfoodTemperature;
-extern const base::FeatureParam<bool> kDevToolsConsoleInsightsDogfoodOptIn;
-
 BASE_DECLARE_FEATURE(kDevToolsFreestylerDogfood);
 
 BASE_DECLARE_FEATURE(kDevToolsSharedProcessInfobar);

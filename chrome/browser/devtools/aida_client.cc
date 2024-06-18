@@ -45,26 +45,10 @@ constexpr auto kAidaSupportedCountries =
          "tv", "tw", "tz", "ug", "um", "us", "uy", "uz", "vc", "ve", "vg", "vi",
          "vn", "vu", "wf", "ws", "ye", "za", "zm", "zw"});
 
-std::string GetAidaEndpoint() {
-  if (base::FeatureList::IsEnabled(
-          ::features::kDevToolsConsoleInsightsDogfood)) {
-    return features::kDevToolsConsoleInsightsDogfoodAidaEndpoint.Get();
-  }
-  return features::kDevToolsConsoleInsightsAidaEndpoint.Get();
-}
-
-std::string GetAidaScope() {
-  if (base::FeatureList::IsEnabled(
-          ::features::kDevToolsConsoleInsightsDogfood)) {
-    return features::kDevToolsConsoleInsightsDogfoodAidaScope.Get();
-  }
-  return features::kDevToolsConsoleInsightsAidaScope.Get();
-}
-
 AidaClient::AidaClient(Profile* profile)
     : profile_(*profile),
-      aida_endpoint_(GetAidaEndpoint()),
-      aida_scope_(GetAidaScope()) {}
+      aida_endpoint_(features::kDevToolsConsoleInsightsAidaEndpoint.Get()),
+      aida_scope_(features::kDevToolsConsoleInsightsAidaScope.Get()) {}
 
 AidaClient::~AidaClient() = default;
 
@@ -105,12 +89,6 @@ AidaClient::BlockedReason AidaClient::CanUseAida(Profile* profile) {
   result.blocked_by_feature_flag = true;
   return result;
 #else
-  // Console insights is always available for Google dogfooders
-  if (base::FeatureList::IsEnabled(
-          ::features::kDevToolsConsoleInsightsDogfood)) {
-    result.blocked = false;
-    return result;
-  }
   // Console insights is not available if the feature flag is off
   if (!base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights)) {
     result.blocked = true;

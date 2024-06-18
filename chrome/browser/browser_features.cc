@@ -91,23 +91,6 @@ const base::FeatureParam<double> kDevToolsConsoleInsightsTemperature{
 const base::FeatureParam<bool> kDevToolsConsoleInsightsOptIn{
     &kDevToolsConsoleInsights, "opt_in", /*default*/ false};
 
-// Separate dogfood feature for DevTools console insights,
-// not restricted by enterprise policy or location.
-BASE_FEATURE(kDevToolsConsoleInsightsDogfood,
-             "DevToolsConsoleInsightsDogfood",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-const base::FeatureParam<std::string> kDevToolsConsoleInsightsDogfoodAidaScope{
-    &kDevToolsConsoleInsightsDogfood, "aida_scope", /*default*/ ""};
-const base::FeatureParam<std::string>
-    kDevToolsConsoleInsightsDogfoodAidaEndpoint{
-        &kDevToolsConsoleInsightsDogfood, "aida_endpoint", /*default*/ ""};
-const base::FeatureParam<std::string> kDevToolsConsoleInsightsDogfoodModelId{
-    &kDevToolsConsoleInsightsDogfood, "aida_model_id", /*default*/ ""};
-const base::FeatureParam<double> kDevToolsConsoleInsightsDogfoodTemperature{
-    &kDevToolsConsoleInsightsDogfood, "aida_temperature", /*default*/ 0.2};
-const base::FeatureParam<bool> kDevToolsConsoleInsightsDogfoodOptIn{
-    &kDevToolsConsoleInsightsDogfood, "opt_in", /*default*/ true};
-
 // Whether the DevTools styling assistant dogfood is enabled.
 BASE_FEATURE(kDevToolsFreestylerDogfood,
              "DevToolsFreestylerDogfood",
