@@ -428,8 +428,12 @@ bool BackGestureEventHandler::MaybeHandleBackGesture(
                               back_gesture_affordance_ != nullptr);
         SCOPED_CRASH_KEY_BOOL("286590216", "going_back_started_2",
                               going_back_started_);
-        CHECK(back_gesture_affordance_);
-        back_gesture_affordance_->Complete();
+        // `back_gesture_affordance_` could be reset after receiving the event,
+        // depends on the timing that receives the display rotation
+        // notification.
+        if (back_gesture_affordance_) {
+          back_gesture_affordance_->Complete();
+        }
       } else {
         back_gesture_affordance_->Abort();
         RecordEndScenarioType(GetEndScenarioType(
