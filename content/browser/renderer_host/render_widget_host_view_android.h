@@ -23,7 +23,6 @@
 #include "base/process/process.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/mojom/render_frame_metadata.mojom-shared.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "components/viz/common/quads/selection.h"
@@ -51,6 +50,10 @@
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/selection_bound.h"
 #include "ui/touch_selection/touch_selection_controller.h"
+
+namespace cc {
+struct BrowserControlsOffsetTagsInfo;
+}  // namespace cc
 
 namespace cc::slim {
 class SurfaceLayer;

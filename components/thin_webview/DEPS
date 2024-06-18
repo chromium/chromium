@@ -1,4 +1,5 @@
 include_rules = [
+  "+cc/input/browser_controls_offset_tags_info.h",
   "+cc/input/browser_controls_state.h",
   "+components/embedder_support/android",
   "+content/public/android/java/src/org/chromium/content_public",

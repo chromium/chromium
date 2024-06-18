@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/input/browser_controls_state.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/history/history_service_factory.h"

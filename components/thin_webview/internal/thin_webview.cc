@@ -5,6 +5,7 @@
 #include "components/thin_webview/internal/thin_webview.h"
 
 #include "base/android/jni_android.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/slim/layer.h"
 #include "components/embedder_support/android/delegate/web_contents_delegate_android.h"
@@ -43,7 +44,7 @@ ThinWebView::ThinWebView(JNIEnv* env,
       window_android_(window_android),
       web_contents_(nullptr) {}
 
-ThinWebView::~ThinWebView() {}
+ThinWebView::~ThinWebView() = default;
 
 void ThinWebView::Destroy(JNIEnv* env, const JavaParamRef<jobject>& object) {
   delete this;

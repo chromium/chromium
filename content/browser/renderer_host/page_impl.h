@@ -13,7 +13,6 @@
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/input/browser_controls_state.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/renderer_host/stored_page.h"
@@ -31,6 +30,10 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
 #include "url/gurl.h"
+
+namespace cc {
+struct BrowserControlsOffsetTagsInfo;
+}  // namespace cc
 
 namespace input {
 class PeakGpuMemoryTracker;

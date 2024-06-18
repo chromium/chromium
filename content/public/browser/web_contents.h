@@ -25,7 +25,6 @@
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/input/browser_controls_state.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/invalidate_type.h"
@@ -76,6 +75,10 @@ class WebInputEvent;
 struct UserAgentOverride;
 struct RendererPreferences;
 }  // namespace blink
+
+namespace cc {
+struct BrowserControlsOffsetTagsInfo;
+}  // namespace cc
 
 namespace device {
 namespace mojom {

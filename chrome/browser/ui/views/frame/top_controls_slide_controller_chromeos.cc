@@ -9,6 +9,7 @@
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/input/browser_controls_state.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/search.h"

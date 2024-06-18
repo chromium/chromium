@@ -31,7 +31,6 @@
 #include "base/timer/timer.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
 #include "cc/mojom/render_frame_metadata.mojom.h"
 #include "components/input/event_with_latency_info.h"
 #include "components/input/input_disposition_handler.h"
@@ -89,6 +88,10 @@ namespace blink {
 class WebInputEvent;
 class WebMouseEvent;
 }  // namespace blink
+
+namespace cc {
+struct BrowserControlsOffsetTagsInfo;
+}  // namespace cc
 
 namespace gfx {
 class Image;

@@ -29,7 +29,6 @@
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "cc/input/browser_controls_offset_tags_info.h"
 #include "components/download/public/common/download_url_parameters.h"
 #include "content/browser/media/audio_stream_monitor.h"
 #include "content/browser/media/forwarding_audio_stream_factory.h"
