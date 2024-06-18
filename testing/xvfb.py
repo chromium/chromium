@@ -167,16 +167,26 @@ def run_executable(cmd,
   return test_env.run_executable(cmd, env, stdoutfile, cwd)
 
 
+def _re_search_command(regex, args, **kwargs):
+  """Runs a subprocess defined by `args` and returns a regex match for the
+  given expression on the output."""
+  return re.search(
+      regex,
+      subprocess.check_output(args,
+                              stderr=subprocess.STDOUT,
+                              text=True,
+                              **kwargs), re.IGNORECASE)
+
+
 def _make_xorg_modeline(width, height, refresh):
   """Generates a tuple of a modeline (list of parameters) and label based off a
   specified width, height and refresh rate.
   See: https://www.x.org/archive/X11R7.0/doc/html/chips4.html"""
-  cvt_output = subprocess.check_output(
+  re_matches = _re_search_command(
+      'Modeline "(.*)"\s+(.*)',
       ['cvt', str(width), str(height),
        str(refresh)],
-      stderr=subprocess.STDOUT,
-      text=True)
-  re_matches = re.search('Modeline "(.*)"\s+(.*)', cvt_output, re.IGNORECASE)
+  )
   modeline_label = re_matches.group(1)
   modeline = re_matches.group(2)
   # Split the modeline string on spaces, and filter out empty element (cvt adds
@@ -184,12 +194,35 @@ def _make_xorg_modeline(width, height, refresh):
   return (modeline_label, list(filter(lambda a: a != '', modeline.split(' '))))
 
 
-def _make_xorg_config():
+def _get_supported_virtual_sizes(default_whd):
+  """Returns a list of tuples (width, height) for supported monitor resolutions.
+  The list will always include the default size defined in `default_whd`"""
+  # Note: 4K resolution 3840x2160 doesn't seem to be supported and the mode
+  # silently gets dropped which makes subsequent calls to xrandr --addmode fail.
+  (default_width, default_height, _) = default_whd.split('x')
+  default_size = (int(default_width), int(default_height))
+  return sorted(
+      set([default_size, (800, 600), (1024, 768), (1920, 1080), (1600, 1200)]))
+
+
+def _make_xorg_config(default_whd):
   """Generates an Xorg config file and returns the file path. See:
   https://www.x.org/releases/current/doc/man/man5/xorg.conf.5.xhtml"""
+  (_, _, depth) = default_whd.split('x')
+  mode_sizes = _get_supported_virtual_sizes(default_whd)
+  modelines = []
+  mode_labels = []
+  for width, height in mode_sizes:
+    (modeline_label, modeline) = _make_xorg_modeline(width, height, 60)
+    modelines.append("Modeline \"%s\" %s" %
+                     (modeline_label, " ".join(modeline)))
+    mode_labels.append("\"%s\"" % modeline_label)
   config = """
 Section "Monitor"
   Identifier "Monitor0"
+  HorizSync 5.0 - 1000.0
+  VertRefresh 5.0 - 200.0
+  %s
 EndSection
 Section "Device"
   Identifier "Device0"
@@ -201,25 +234,19 @@ Section "Screen"
   Identifier "Screen0"
   Device "Device0"
   Monitor "Monitor0"
+  SubSection "Display"
+    Depth %s
+    Modes %s
+  EndSubSection
 EndSection
-  """
+  """ % ("\n".join(modelines), depth, " ".join(mode_labels))
   config_file = os.path.join(tempfile.gettempdir(), 'xorg.config')
   with open(config_file, 'w') as f:
     f.write(config)
   return config_file
 
-
 def _setup_xrandr(env, default_whd):
-  """Configures xrandr dummy displays from xserver-xorg-video-dummy package."""
-  (width, height, _) = default_whd.split('x')
-  default_size = (int(width), int(height))
-  xrandr_sizes = [(800, 600), (1024, 768), (1920, 1080), (1600, 1200),
-                  (3840, 2160)]
-  if (default_size not in xrandr_sizes):
-    xrandr_sizes.append(default_size)
-    xrandr_sizes = sorted(xrandr_sizes)
-  output_names = ['DUMMY0', 'DUMMY1', 'DUMMY2', 'DUMMY3', 'DUMMY4']
-  refresh_rate = 60
+  """Configures xrandr display(s)"""
 
   # Calls xrandr with the provided argument array
   def call_xrandr(args):
@@ -228,26 +255,33 @@ def _setup_xrandr(env, default_whd):
                           stdout=subprocess.DEVNULL,
                           stderr=subprocess.STDOUT)
 
-  for width, height in xrandr_sizes:
-    (modeline_label, modeline) = _make_xorg_modeline(width, height,
-                                                     refresh_rate)
-    call_xrandr(['--newmode', modeline_label] + modeline)
-    for output_name in output_names:
-      call_xrandr(['--addmode', output_name, modeline_label])
+  (default_width, default_height, _) = default_whd.split('x')
+  default_size = (int(default_width), int(default_height))
 
-  (default_mode_label, _) = _make_xorg_modeline(*default_size, refresh_rate)
+  # The minimum version of xserver-xorg-video-dummy is 0.4.0-1 which adds
+  # XRANDR support. Older versions will be missing the "DUMMY" outputs.
+  # Reliably checking the version is difficult, so check if the xrandr output
+  # includes the DUMMY displays before trying to configure them.
+  dummy_displays_available = _re_search_command('DUMMY[0-9]', ['xrandr', '-q'],
+                                                env=env)
+  if dummy_displays_available:
+    screen_sizes = _get_supported_virtual_sizes(default_whd)
+    output_names = ['DUMMY0', 'DUMMY1', 'DUMMY2', 'DUMMY3', 'DUMMY4']
+    refresh_rate = 60
+    for width, height in screen_sizes:
+      (modeline_label, _) = _make_xorg_modeline(width, height, 60)
+      for output_name in output_names:
+        call_xrandr(['--addmode', output_name, modeline_label])
+    (default_mode_label, _) = _make_xorg_modeline(*default_size, refresh_rate)
+    # Set the mode of all monitors to connect and activate them.
+    for i in range(0, len(output_names)):
+      args = ['--output', output_names[i], '--mode', default_mode_label]
+      if (i > 0):
+        args += ['--right-of', output_names[i - 1]]
+      call_xrandr(args)
 
-  # Set the mode of all monitors to connect and activate them.
-  for i in range(0, len(output_names)):
-    args = ['--output', output_names[i], '--mode', default_mode_label]
-    if (i > 0):
-      args += ['--right-of', output_names[i - 1]]
-    call_xrandr(args)
-
-  # Sets the primary monitor (DUMMY0) to the default size and marks the rest as
-  # disabled.
+  # Sets the primary monitor to the default size and marks the rest as disabled.
   call_xrandr(["-s", "%dx%d" % default_size])
-
   # Set the DPI to something realistic (as required by some desktops).
   call_xrandr(['--dpi', '96'])
 
@@ -271,7 +305,7 @@ def _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr, use_xorg,
 
   dbus_pid = None
   x11_binary = 'Xorg' if use_xorg else 'Xvfb'
-  xorg_config_file = _make_xorg_config() if use_xorg else None
+  xorg_config_file = _make_xorg_config(xvfb_whd) if use_xorg else None
   try:
     signal.signal(signal.SIGTERM, raise_x11_error)
     signal.signal(signal.SIGINT, raise_x11_error)
@@ -284,7 +318,7 @@ def _run_with_x11(cmd, env, stdoutfile, use_openbox, use_xcompmgr, use_xorg,
 
       x11_cmd = None
       if use_xorg:
-        x11_cmd = ['Xorg', display, '-config', xorg_config_file]
+        x11_cmd = ['Xorg', display, '-noreset', '-config', xorg_config_file]
       else:
         x11_cmd = [
             'Xvfb', display, '-screen', '0', xvfb_whd, '-ac', '-nolisten',
