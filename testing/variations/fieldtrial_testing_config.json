@@ -8619,6 +8619,25 @@
             ]
         }
     ],
+    "EnablePreferencesAccountStorage": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnablePreferencesAccountStorage"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableSessionSerializationOptimizations": [
         {
             "platforms": [
