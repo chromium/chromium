@@ -93,6 +93,7 @@ class HistoryAnswerFeatureTypeMap {
   using LoggingData = proto::HistoryAnswerLoggingData;
   using Request = proto::HistoryAnswerRequest;
   using Response = proto::HistoryAnswerResponse;
+  using Quality = proto::HistoryAnswerQuality;
 
   static LoggingData* GetLoggingData(proto::LogAiDataRequest& ai_data_request) {
     return ai_data_request.mutable_history_answer();
