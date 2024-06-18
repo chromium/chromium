@@ -19,7 +19,9 @@
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -29,6 +31,7 @@
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
+#include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
@@ -38,6 +41,7 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/template_url_data.h"
+#include "components/sync/base/features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
 #include "extensions/browser/pref_names.h"
@@ -1329,3 +1333,100 @@ class PrefHashBrowserTestExtensionDictTypeChanged
 
 PREF_HASH_BROWSER_TEST(PrefHashBrowserTestExtensionDictTypeChanged,
                        ExtensionDictTypeChanged);
+
+// Verifies that changing the account value of a tracked pref results in it
+// being reported under the same id as the local value (and reset if the
+// protection level allows it).
+class PrefHashBrowserTestAccountValueUntrustedAddition
+    : public PrefHashBrowserTestBase {
+ public:
+  PrefHashBrowserTestAccountValueUntrustedAddition()
+      : feature_list_(syncer::kEnablePreferencesAccountStorage) {}
+
+  void SetupPreferences() override {
+    EXPECT_FALSE(profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
+  }
+
+  void AttackPreferencesOnDisk(
+      base::Value::Dict* unprotected_preferences,
+      base::Value::Dict* protected_preferences) override {
+    base::Value::Dict* selected_prefs =
+        protection_level_ >= PROTECTION_ENABLED_BASIC ? protected_preferences
+                                                      : unprotected_preferences;
+    // `selected_prefs` should never be NULL under the protection level picking
+    // it.
+    ASSERT_TRUE(selected_prefs);
+    selected_prefs->SetByDottedPath(
+        base::StringPrintf("%s.%s", chrome_prefs::kAccountPreferencesPrefix,
+                           prefs::kShowHomeButton),
+        true);
+  }
+
+  void VerifyReactionToPrefAttack() override {
+    // Expect a single Changed event for tracked pref #0 (show home button).
+    EXPECT_EQ(protection_level_ > PROTECTION_DISABLED_ON_PLATFORM ? 1 : 0,
+              GetTrackedPrefHistogramCount(
+                  user_prefs::tracked::kTrackedPrefHistogramChanged,
+                  BEGIN_ALLOW_SINGLE_BUCKET + 0));
+    EXPECT_EQ(
+        protection_level_ > PROTECTION_DISABLED_ON_PLATFORM
+            ? num_tracked_prefs() - 1
+            : 0,
+        GetTrackedPrefHistogramCount(
+            user_prefs::tracked::kTrackedPrefHistogramUnchanged, ALLOW_ANY));
+
+    EXPECT_EQ((protection_level_ > PROTECTION_DISABLED_ON_PLATFORM &&
+               protection_level_ < PROTECTION_ENABLED_BASIC)
+                  ? 1
+                  : 0,
+              GetTrackedPrefHistogramCount(
+                  user_prefs::tracked::kTrackedPrefHistogramWantedReset,
+                  BEGIN_ALLOW_SINGLE_BUCKET + 0));
+    EXPECT_EQ(protection_level_ >= PROTECTION_ENABLED_BASIC ? 1 : 0,
+              GetTrackedPrefHistogramCount(
+                  user_prefs::tracked::kTrackedPrefHistogramReset,
+                  BEGIN_ALLOW_SINGLE_BUCKET + 0));
+
+// TODO(gab): This doesn't work on OS_CHROMEOS because we fail to attack
+// Preferences.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+    // Explicitly verify the result of reported resets.
+    EXPECT_EQ(protection_level_ < PROTECTION_ENABLED_BASIC,
+              profile()->GetPrefs()->GetBoolean(prefs::kShowHomeButton));
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+    // Nothing else should have triggered.
+    EXPECT_EQ(
+        0, GetTrackedPrefHistogramCount(
+               user_prefs::tracked::kTrackedPrefHistogramCleared, ALLOW_NONE));
+    EXPECT_EQ(0, GetTrackedPrefHistogramCount(
+                     user_prefs::tracked::kTrackedPrefHistogramInitialized,
+                     ALLOW_NONE));
+    EXPECT_EQ(0,
+              GetTrackedPrefHistogramCount(
+                  user_prefs::tracked::kTrackedPrefHistogramTrustedInitialized,
+                  ALLOW_NONE));
+    EXPECT_EQ(0, GetTrackedPrefHistogramCount(
+                     user_prefs::tracked::kTrackedPrefHistogramNullInitialized,
+                     ALLOW_NONE));
+    EXPECT_EQ(
+        0, GetTrackedPrefHistogramCount(
+               user_prefs::tracked::kTrackedPrefHistogramMigratedLegacyDeviceId,
+               ALLOW_NONE));
+
+    if (SupportsRegistryValidation()) {
+      // Expect a single Changed event for tracked pref #0 (show home button).
+      EXPECT_EQ(protection_level_ > PROTECTION_DISABLED_ON_PLATFORM ? 1 : 0,
+                GetTrackedPrefHistogramCount(
+                    user_prefs::tracked::kTrackedPrefHistogramChanged,
+                    user_prefs::tracked::kTrackedPrefRegistryValidationSuffix,
+                    BEGIN_ALLOW_SINGLE_BUCKET + 0));
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+PREF_HASH_BROWSER_TEST(PrefHashBrowserTestAccountValueUntrustedAddition,
+                       AccountValueUntrustedAddition);

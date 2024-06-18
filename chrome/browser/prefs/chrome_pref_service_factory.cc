@@ -17,6 +17,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
@@ -31,6 +32,7 @@
 #include "chrome/browser/prefs/profile_pref_store_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
+#include "chrome/browser/sync/prefs/chrome_syncable_prefs_database.h"
 #include "chrome/browser/ui/profiles/profile_error_dialog.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
@@ -225,6 +227,7 @@ GetTrackingConfiguration() {
   const SettingsEnforcementGroup enforcement_group =
       GetSettingsEnforcementGroup();
 
+  browser_sync::ChromeSyncablePrefsDatabase syncable_prefs_db;
   std::vector<prefs::mojom::TrackedPreferenceMetadataPtr> result;
   for (size_t i = 0; i < std::size(kTrackedPrefs); ++i) {
     prefs::mojom::TrackedPreferenceMetadataPtr data =
@@ -249,6 +252,16 @@ GetTrackingConfiguration() {
       data->enforcement_level = EnforcementLevel::ENFORCE_ON_LOAD;
     }
 #endif
+    // Add the account value equivalent for syncable prefs for tracking, by
+    // prefixing the pref name with `kAccountPreferencesPrefix`.
+    if (base::FeatureList::IsEnabled(
+            syncer::kEnablePreferencesAccountStorage) &&
+        syncable_prefs_db.IsPreferenceSyncable(data->name)) {
+      auto account_data = data->Clone();
+      account_data->name = base::StringPrintf(
+          "%s.%s", chrome_prefs::kAccountPreferencesPrefix, data->name.c_str());
+      result.push_back(std::move(account_data));
+    }
 
     result.push_back(std::move(data));
   }
@@ -447,11 +460,52 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreateProfilePrefs(
         /*pref_filter=*/nullptr,
         /*file_task_runner=*/io_task_runner));
 #else
+    /**
+     * Account values will live under `kAccountPreferencesPrefix` as a
+     * dictionary in the main preference file and will be operated upon by a
+     * WrapWithPrefixPrefStore.
+     * {
+     *   "A": ...
+     *   "B": ...
+     *   "C": ...
+     *   "account_values": {
+     *     "A": ...
+     *     "B": ...
+     *     "D": ...
+     *   }
+     * }
+     *
+     * To achieve the above, a WrapWithPrefixPrefStore is used to prefix the
+     * prefs with `kAccountPreferencesPrefix` to allow easy access to the
+     * account values. A DualLayerUserPrefStore then wraps this pref store along
+     * with the main pref store. The callers of the DualLayerUserPrefStore will
+     * be unaware of where a preference value is coming from, the local store or
+     * the account store.
+     *
+     * +---------------------+   +------------------+   +-------------+
+     * | DualLayerUserPref   |   | SegregatedPref   |   | Secure      |
+     * | Store               |   | Store            |   | Preferences |
+     * | +------------+      |   | +--------------+ |   | .json       |
+     * | | Local Pref |      |   | |Protected Pref|-|-->|             |
+     * | | Store      |---- -|-->| |Store         | |   |             |
+     * | +------------+      |   | +--------------+ |   |             |
+     * |                     |   |                  |   +-------------+
+     * | +-----------------+ |   |                  |   +-------------+
+     * | | WrapWithPrefix  | |   |                  |   | Preferences |
+     * | | PrefStore       | |   | +-------------+  |   | .json       |
+     * | | +-------------+ | |   | |Unprotected  |--|-->|             |
+     * | | | Local Pref  | | |   | |Pref Store   |  |   |             |
+     * | | | Store (same | | |
+     * | | | as above)   | | |   | +-------------+  |   |             |
+     * | | +-------------+ | |   +------------------+   +-------------+
+     * | +-----------------+ |
+     * +---------------------+
+     */
+    factory.SetAccountPrefStore(base::MakeRefCounted<WrapWithPrefixPrefStore>(
+        std::move(user_pref_store), kAccountPreferencesPrefix));
     // Register `kAccountPreferencesPrefix` as dictionary pref. This prevents
     // others from using the prefix as a preference.
     pref_registry->RegisterDictionaryPref(kAccountPreferencesPrefix);
-    factory.SetAccountPrefStore(base::MakeRefCounted<WrapWithPrefixPrefStore>(
-        std::move(user_pref_store), kAccountPreferencesPrefix));
 #endif
   }
 
