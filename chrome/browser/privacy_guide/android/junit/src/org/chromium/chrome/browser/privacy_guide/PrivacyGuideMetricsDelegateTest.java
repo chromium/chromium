@@ -46,6 +46,7 @@ import java.util.Set;
 
 /** JUnit tests of the class {@link PrivacyGuideMetricsDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures({ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS})
 public class PrivacyGuideMetricsDelegateTest {
     private static final String SETTINGS_STATES_HISTOGRAM = "Settings.PrivacyGuide.SettingsStates";
     private static final String NEXT_NAVIGATION_HISTOGRAM = "Settings.PrivacyGuide.NextNavigation";
