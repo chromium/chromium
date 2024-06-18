@@ -439,9 +439,11 @@ public class RichAnswerTextTest {
     @EnableFeatures(OmniboxFeatureList.OMNIBOX_ANSWER_ACTIONS)
     public void testRichAnswerCard() {
         OmniboxFeatures.sAnswerActionsShowRichCard.setForTesting(true);
-        FormattedString headline = FormattedString.newBuilder().setText("redmond weather").build();
-        FormattedString subhead =
+        // The backend sends the lines in Answer > query order for some answer types (dictionary,
+        // sports, weather, finance, knowledge graph). These should not have their order reversed.
+        FormattedString headline =
                 FormattedString.newBuilder().setText("64•F Thu - Redmond, WA").build();
+        FormattedString subhead = FormattedString.newBuilder().setText("redmond weather").build();
 
         RichAnswerTemplate richAnswerTemplate =
                 RichAnswerTemplate.newBuilder()

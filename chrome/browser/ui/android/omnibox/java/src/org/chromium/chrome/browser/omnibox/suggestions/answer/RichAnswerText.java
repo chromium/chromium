@@ -79,31 +79,42 @@ class RichAnswerText implements AnswerText {
                             /* isAnswerLine= */ false,
                             reverseStockTextColor);
             result[1].mMaxLines = maxLines;
-        } else {
-            // Construct the Answer card presenting Answers in Suggest in Answer > Query order.
-            result[0] =
-                    new RichAnswerText(
-                            context,
-                            richAnswerTemplate.getAnswers(0).getSubhead(),
-                            answerType,
-                            /* isAnswerLine= */ true,
-                            reverseStockTextColor);
-            result[1] =
-                    new RichAnswerText(
-                            context,
-                            richAnswerTemplate.getAnswers(0).getHeadline(),
-                            answerType,
-                            /* isAnswerLine= */ false,
-                            reverseStockTextColor);
-            result[0].mMaxLines = maxLines;
-
-            // Note: Despite Answers in Suggest being presented in reverse order (first answer, then
-            // query) we want to ensure that the query is announced first to visually impaired
-            // people to avoid confusion, so we swap a11y texts.
-            String temp = result[1].mAccessibilityDescription;
-            result[1].mAccessibilityDescription = result[0].mAccessibilityDescription;
-            result[0].mAccessibilityDescription = temp;
+            return result;
         }
+
+        FormattedString firstLine;
+        FormattedString secondLine;
+        if (shouldSkipTextReversal(answerType)) {
+            firstLine = richAnswerTemplate.getAnswers(0).getHeadline();
+            secondLine = richAnswerTemplate.getAnswers(0).getSubhead();
+        } else {
+            firstLine = richAnswerTemplate.getAnswers(0).getSubhead();
+            secondLine = richAnswerTemplate.getAnswers(0).getHeadline();
+        }
+
+        // Construct the Answer card presenting Answers in Suggest in Answer > Query order.
+        result[0] =
+                new RichAnswerText(
+                        context,
+                        firstLine,
+                        answerType,
+                        /* isAnswerLine= */ true,
+                        reverseStockTextColor);
+        result[1] =
+                new RichAnswerText(
+                        context,
+                        secondLine,
+                        answerType,
+                        /* isAnswerLine= */ false,
+                        reverseStockTextColor);
+        result[0].mMaxLines = maxLines;
+
+        // Note: Despite Answers in Suggest being presented in reverse order (first answer, then
+        // query) we want to ensure that the query is announced first to visually impaired
+        // people to avoid confusion, so we swap a11y texts.
+        String temp = result[1].mAccessibilityDescription;
+        result[1].mAccessibilityDescription = result[0].mAccessibilityDescription;
+        result[0].mAccessibilityDescription = temp;
         return result;
     }
 
@@ -232,5 +243,19 @@ class RichAnswerText implements AnswerText {
         return (answerType == AnswerType.DICTIONARY || answerType == AnswerType.TRANSLATION)
                 ? 3
                 : 1;
+    }
+
+    /**
+     * When shouldShowAnswerActions() is true, the backend provides dictionary, finance, sports,
+     * knowledge graph, and weather answer in reversed form already. Dictionary is handled
+     * separately, but for the remainder we want to skip reversing the text but continue to swap
+     * a11y content.
+     */
+    private static boolean shouldSkipTextReversal(@AnswerType int answerType) {
+        return OmniboxFeatures.shouldShowAnswerActions()
+                && (answerType == AnswerType.FINANCE
+                        || answerType == AnswerType.SPORTS
+                        || answerType == AnswerType.KNOWLEDGE_GRAPH
+                        || answerType == AnswerType.WEATHER);
     }
 }
