@@ -1537,12 +1537,6 @@ TEST_P(FeatureInfoTest, ParseDriverBugWorkaroundsMultiple) {
   EXPECT_EQ(4096, info_->workarounds().webgl_or_caps_max_texture_size);
 }
 
-TEST_P(FeatureInfoTest, InitializeWithARBSync) {
-  SetupInitExpectations("GL_ARB_sync");
-  EXPECT_TRUE(info_->feature_flags().chromium_sync_query);
-  EXPECT_TRUE(gl::GLFence::IsSupported());
-}
-
 TEST_P(FeatureInfoTest, InitializeWithNVFence) {
   SetupInitExpectations("GL_NV_fence");
   EXPECT_TRUE(info_->feature_flags().chromium_sync_query);

@@ -117,10 +117,10 @@ class RasterDecoderTestBase : public ::testing::TestWithParam<bool>,
     InitState();
     ~InitState();
 
-    std::vector<std::string> extensions = {"GL_ARB_sync"};
+    std::vector<std::string> extensions = {};
     bool lose_context_when_out_of_memory = false;
     gpu::GpuDriverBugWorkarounds workarounds;
-    std::string gl_version = "2.1";
+    std::string gl_version = "OpenGL ES 3.0";
     ContextType context_type = CONTEXT_TYPE_OPENGLES2;
   };
 

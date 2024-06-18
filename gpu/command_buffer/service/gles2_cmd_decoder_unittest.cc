@@ -911,8 +911,8 @@ TEST_P(GLES2DecoderTest, SetDisjointValueSync) {
 
 TEST_P(GLES2DecoderManualInitTest, BeginEndQueryEXTCommandsCompletedCHROMIUM) {
   InitState init;
-  init.extensions = "GL_EXT_occlusion_query_boolean GL_ARB_sync";
-  init.gl_version = "OpenGL ES 2.0";
+  init.extensions = "GL_EXT_occlusion_query_boolean";
+  init.gl_version = "OpenGL ES 3.0";
   init.has_alpha = true;
   init.request_alpha = true;
   init.bind_generates_resource = true;
@@ -1585,8 +1585,8 @@ class GLES2DecoderDescheduleUntilFinishedTest : public GLES2DecoderTest {
 
   void SetUp() override {
     InitState init;
-    init.gl_version = "4.4";
-    init.extensions += " GL_ARB_compatibility GL_ARB_sync";
+    init.gl_version = "OpenGL ES 3.0";
+    init.extensions += " GL_ARB_compatibility";
     InitDecoder(init);
 
     EXPECT_CALL(*gl_, FenceSync(GL_SYNC_GPU_COMMANDS_COMPLETE, 0))
