@@ -1045,7 +1045,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UMA.UserActionsCount" enum="Boolean"
-    expires_after="2024-07-01">
+    expires_after="2025-07-01">
   <owner>mpearson@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
