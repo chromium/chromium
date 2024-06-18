@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.SysUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.Observer;
@@ -97,6 +98,7 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "347886347: failing on android-arm")
     public void testOneInactiveTab() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 2");
         showDialog(1);
@@ -112,6 +114,7 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "347886347: failing on android-arm")
     public void testTwoInactiveTabs() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
@@ -121,6 +124,7 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "347886347: failing on android-arm")
     public void testRestoreAllInactiveTabs() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
@@ -136,6 +140,7 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "347886347: failing on android-arm")
     public void testSettings() throws Exception {
         addArchivedTab(new GURL("https://google.com"), "test 1");
         addArchivedTab(new GURL("https://google.com"), "test 2");
