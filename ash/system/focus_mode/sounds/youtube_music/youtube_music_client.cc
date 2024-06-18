@@ -4,11 +4,11 @@
 
 #include "ash/system/focus_mode/sounds/youtube_music/youtube_music_client.h"
 
-#include <algorithm>
 #include <memory>
 #include <optional>
 
 #include "ash/system/focus_mode/sounds/youtube_music/youtube_music_types.h"
+#include "ash/system/focus_mode/sounds/youtube_music/youtube_music_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "google_apis/common/request_sender.h"
@@ -55,118 +55,6 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
             "implemented."
         }
     )");
-
-// Returns the pointer of the most appropriate image to use. When there are
-// images that meet the minimal width and height requirements, it uses the
-// smallest image to speed things up; otherwise it uses the largest image
-// available.
-google_apis::youtube_music::Image* FindAppropriateImage(
-    std::vector<std::unique_ptr<google_apis::youtube_music::Image>>* images) {
-  if (!images || images->empty()) {
-    return nullptr;
-  }
-
-  auto bigger_in_size =
-      [](const std::unique_ptr<google_apis::youtube_music::Image>& img1,
-         const std::unique_ptr<google_apis::youtube_music::Image>& img2) {
-        if (!img1) {
-          return false;
-        }
-        if (!img2) {
-          return true;
-        }
-        return img1->width() * img1->height() > img2->width() * img2->height();
-      };
-  auto qualified =
-      [](const std::unique_ptr<google_apis::youtube_music::Image>& img) {
-        return img && img->width() >= kImageMinimalWidth &&
-               img->height() >= kImageMinimalHeight;
-      };
-  size_t smallest_qualified_index = images->size();
-  for (size_t i = 0; i < images->size(); i++) {
-    if (qualified(images->at(i)) &&
-        (smallest_qualified_index == images->size() ||
-         bigger_in_size(images->at(smallest_qualified_index), images->at(i)))) {
-      smallest_qualified_index = i;
-    }
-  }
-
-  return smallest_qualified_index < images->size()
-             ? images->at(smallest_qualified_index).get()
-             : std::max_element(images->begin(), images->end(), bigger_in_size)
-                   ->get();
-}
-
-// Gets `Image` from API image. Please note, `api_iamge` could be null.
-// TODO(yongshun): Consider add a default image.
-Image FromApiImage(const google_apis::youtube_music::Image* api_iamge) {
-  auto image = Image(0, 0, GURL());
-  if (api_iamge) {
-    image.width = api_iamge->width();
-    image.height = api_iamge->height();
-    image.url = api_iamge->url();
-  }
-  return image;
-}
-
-// Gets a vector of `Playlist` from `top_level_music_recommendations`.
-std::optional<std::vector<Playlist>>
-GetPlaylistsFromTopLevelMusicRecommendations(
-    google_apis::youtube_music::TopLevelMusicRecommendations*
-        top_level_music_recommendations) {
-  if (!top_level_music_recommendations) {
-    return std::nullopt;
-  }
-
-  std::vector<Playlist> playlists;
-  for (auto& top_level_recommendation :
-       *top_level_music_recommendations
-            ->mutable_top_level_music_recommendations()) {
-    for (auto& music_recommendation : *top_level_recommendation->music_section()
-                                           .mutable_music_recommendations()) {
-      auto& playlist = music_recommendation->playlist();
-      playlists.emplace_back(
-          playlist.name(), playlist.title(), playlist.owner().title(),
-          FromApiImage(FindAppropriateImage(playlist.mutable_images())));
-    }
-  }
-  return playlists;
-}
-
-// Gets `Playlist` from API playlist.
-std::optional<Playlist> GetPlaylistFromApiPlaylist(
-    google_apis::youtube_music::Playlist* playlist) {
-  if (!playlist) {
-    return std::nullopt;
-  }
-
-  return Playlist(
-      playlist->name(), playlist->title(), playlist->owner().title(),
-      FromApiImage(FindAppropriateImage(playlist->mutable_images())));
-}
-
-// Gets `PlaybackContext` from `queue`.
-std::optional<PlaybackContext> GetPlaybackContextFromPlaybackQueue(
-    google_apis::youtube_music::Queue* queue) {
-  if (!queue) {
-    return std::nullopt;
-  }
-
-  auto& playback_context = queue->playback_context();
-  auto& track = playback_context.queue_item().track();
-  // TODO(yongshun): Consider to add retry when there is no stream in the
-  // response.
-  GURL stream_url = GURL();
-  if (auto* mutable_streams =
-          playback_context.playback_manifest().mutable_streams();
-      !mutable_streams->empty()) {
-    stream_url = mutable_streams->begin()->get()->url();
-  }
-  return PlaybackContext(
-      track.name(), track.title(), track.explicit_type(),
-      FromApiImage(FindAppropriateImage(track.mutable_images())), stream_url,
-      queue->name());
-}
 
 }  // namespace
 
@@ -268,7 +156,8 @@ void YouTubeMusicClient::OnGetMusicSectionRequestDone(
 
   std::move(music_section_callback_)
       .Run(google_apis::HTTP_SUCCESS,
-           GetPlaylistsFromTopLevelMusicRecommendations(result.value().get()));
+           GetPlaylistsFromApiTopLevelMusicRecommendations(
+               result.value().get()));
 }
 
 void YouTubeMusicClient::OnGetPlaylistRequestDone(
@@ -321,7 +210,7 @@ void YouTubeMusicClient::OnPlaybackQueuePrepareRequestDone(
 
   std::move(playback_context_prepare_callback_)
       .Run(google_apis::HTTP_SUCCESS,
-           GetPlaybackContextFromPlaybackQueue(result.value().get()));
+           GetPlaybackContextFromApiQueue(result.value().get()));
 }
 
 void YouTubeMusicClient::OnPlaybackQueueNextRequestDone(
@@ -346,7 +235,7 @@ void YouTubeMusicClient::OnPlaybackQueueNextRequestDone(
 
   std::move(playback_context_next_callback_)
       .Run(google_apis::HTTP_SUCCESS,
-           GetPlaybackContextFromPlaybackQueue(&result.value()->queue()));
+           GetPlaybackContextFromApiQueue(&result.value()->queue()));
 }
 
 }  // namespace ash::youtube_music

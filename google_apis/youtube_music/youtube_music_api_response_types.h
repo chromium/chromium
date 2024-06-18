@@ -53,7 +53,7 @@ class Owner {
 
   static void RegisterJSONConverter(base::JSONValueConverter<Owner>* converter);
 
-  const std::string title() const { return title_; }
+  const std::string& title() const { return title_; }
 
   std::string ToString() const;
 
@@ -75,13 +75,13 @@ class Playlist {
 
   static std::unique_ptr<Playlist> CreateFrom(const base::Value& value);
 
-  const std::string name() const { return name_; }
-  const std::string title() const { return title_; }
-  const std::string description() const { return description_; }
+  const std::string& name() const { return name_; }
+  const std::string& title() const { return title_; }
+  const std::string& description() const { return description_; }
   int item_count() const { return item_count_; }
   const std::vector<std::unique_ptr<Image>>& images() const { return images_; }
   std::vector<std::unique_ptr<Image>>* mutable_images() { return &images_; }
-  Owner& owner() { return owner_; }
+  const Owner& owner() const { return owner_; }
 
   std::string ToString() const;
 
@@ -107,7 +107,7 @@ class MusicRecommendation {
   static void RegisterJSONConverter(
       base::JSONValueConverter<MusicRecommendation>* converter);
 
-  Playlist& playlist() { return playlist_; }
+  const Playlist& playlist() const { return playlist_; }
 
   std::string ToString() const;
 
@@ -165,7 +165,7 @@ class TopLevelMusicRecommendation {
   static std::unique_ptr<TopLevelMusicRecommendation> CreateFrom(
       const base::Value& value);
 
-  MusicSection& music_section() { return music_section_; }
+  const MusicSection& music_section() const { return music_section_; }
 
   std::string ToString() const;
 
@@ -250,7 +250,7 @@ class QueueItem {
 
   static std::unique_ptr<QueueItem> CreateFrom(const base::Value& value);
 
-  Track& track() { return track_; }
+  const Track& track() const { return track_; }
 
   std::string ToString() const;
 
@@ -321,8 +321,10 @@ class PlaybackContext {
 
   static std::unique_ptr<PlaybackContext> CreateFrom(const base::Value& value);
 
-  QueueItem& queue_item() { return queue_item_; }
-  PlaybackManifest& playback_manifest() { return playback_manifest_; }
+  const QueueItem& queue_item() const { return queue_item_; }
+  const PlaybackManifest& playback_manifest() const {
+    return playback_manifest_;
+  }
 
   std::string ToString() const;
 
@@ -346,7 +348,7 @@ class Queue {
 
   const std::string name() const { return name_; }
   int size() const { return size_; }
-  PlaybackContext& playback_context() { return playback_context_; }
+  const PlaybackContext& playback_context() const { return playback_context_; }
 
   std::string ToString() const;
 
@@ -371,7 +373,7 @@ class QueueContainer {
 
   static std::unique_ptr<QueueContainer> CreateFrom(const base::Value& value);
 
-  Queue& queue() { return queue_; }
+  const Queue& queue() const { return queue_; }
 
   std::string ToString() const;
 

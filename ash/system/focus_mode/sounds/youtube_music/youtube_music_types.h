@@ -27,6 +27,7 @@ inline constexpr int kImageMinimalHeight = 72 * 2;
 // the values can be found at:
 //   https://developers.google.com/youtube/mediaconnect/reference/rest/v1/Image
 struct ASH_EXPORT Image {
+  Image();
   Image(const int width, const int height, const GURL& url);
   ~Image();
 

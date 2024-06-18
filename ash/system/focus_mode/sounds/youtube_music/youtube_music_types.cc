@@ -6,8 +6,11 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "url/gurl.h"
 
 namespace ash::youtube_music {
+
+Image::Image() : Image(0, 0, GURL()) {}
 
 Image::Image(const int width, const int height, const GURL& url)
     : width(width), height(height), url(url) {}
