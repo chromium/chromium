@@ -9,6 +9,10 @@ pkg_config("system_absl_absl_log") {
   packages = [ "absl_absl_log" ]
 }
 
+pkg_config("system_absl_check") {
+  packages = [ "absl_check" ]
+}
+
 pkg_config("system_absl_die_if_null") {
   packages = [ "absl_die_if_null" ]
 }
@@ -16,6 +20,15 @@ pkg_config("system_absl_die_if_null") {
 pkg_config("system_absl_log") {
   packages = [ "absl_log" ]
 }
+
+pkg_config("system_absl_log_globals") {
+  packages = [ "absl_log_globals" ]
+}
+
+pkg_config("system_absl_log_initialize") {
+  packages = [ "absl_log_initialize" ]
+}
+
 shim_headers("absl_check_shim") {
   root_path = "."
   prefix = "absl/log/"
@@ -38,6 +51,17 @@ source_set("absl_log") {
   public_configs = [ ":system_absl_absl_log" ]
 }
 
+shim_headers("check_shim") {
+  root_path = "."
+  prefix = "absl/log/"
+  headers = [ "check.h" ]
+}
+
+source_set("check") {
+  deps = [ ":check_shim" ]
+  public_configs = [ ":system_absl_check" ]
+}
+
 shim_headers("die_if_null_shim") {
   root_path = "."
   prefix = "absl/log/"
@@ -47,6 +71,28 @@ shim_headers("die_if_null_shim") {
 source_set("die_if_null") {
   deps = [ ":die_if_null_shim" ]
   public_configs = [ ":system_absl_die_if_null" ]
+}
+
+shim_headers("globals_shim") {
+  root_path = "."
+  prefix = "absl/log/"
+  headers = [ "globals.h" ]
+}
+
+source_set("globals") {
+  deps = [ ":globals_shim" ]
+  public_configs = [ ":system_absl_log_globals" ]
+}
+
+shim_headers("initialize_shim") {
+  root_path = "."
+  prefix = "absl/log/"
+  headers = [ "initialize.h" ]
+}
+
+source_set("initialize") {
+  deps = [ ":initialize_shim" ]
+  public_configs = [ ":system_absl_log_initialize" ]
 }
 
 shim_headers("log_shim") {

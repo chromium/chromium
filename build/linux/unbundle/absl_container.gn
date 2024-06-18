@@ -117,6 +117,8 @@ source_set("flat_hash_map_test") {
 }
 source_set("flat_hash_set_test") {
 }
+source_set("hash_function_defaults_test") {
+}
 source_set("inlined_vector_test") {
 }
 source_set("node_slot_policy_test") {

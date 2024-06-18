@@ -3,12 +3,17 @@
 # found in the LICENSE file.
 
 import("//build/config/c++/c++.gni")
+import("//build/config/linux/pkg_config.gni")
 import("//build/shim_headers.gni")
 
 assert(!use_custom_libcxx,
        "Usage of the system libre2.so is not supported with " +
            "use_custom_libcxx=true because the library's interface relies on " +
            "libstdc++'s std::string and std::vector.")
+
+pkg_config("re2_config") {
+  packages = [ "re2" ]
+}
 
 shim_headers("re2_shim") {
   root_path = "src"
@@ -23,5 +28,5 @@ shim_headers("re2_shim") {
 
 source_set("re2") {
   deps = [ ":re2_shim" ]
-  libs = [ "re2" ]
+  public_configs = [ ":re2_config" ]
 }
