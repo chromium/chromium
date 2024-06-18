@@ -603,10 +603,10 @@ group("gn_all") {
         "//mojo:mojo_perftests",
         "//services/service_manager/public/cpp",
         "//testing/gmock:gmock_main",
-        "//third_party/breakpad:dump_syms($host_toolchain)",
-        "//third_party/breakpad:microdump_stackwalk($host_toolchain)",
-        "//third_party/breakpad:minidump_dump($host_toolchain)",
-        "//third_party/breakpad:minidump_stackwalk($host_toolchain)",
+        "//third_party/breakpad:dump_syms($host_system_allocator_toolchain)",
+        "//third_party/breakpad:microdump_stackwalk($host_system_allocator_toolchain)",
+        "//third_party/breakpad:minidump_dump($host_system_allocator_toolchain)",
+        "//third_party/breakpad:minidump_stackwalk($host_system_allocator_toolchain)",
       ]
     }
 
@@ -628,7 +628,7 @@ group("gn_all") {
 
     if (is_mac) {
       deps += [
-        "//third_party/breakpad:dump_syms",
+        "//third_party/breakpad:dump_syms($host_system_allocator_toolchain)",
 
         # The following are accessibility API tools.
         "//tools/accessibility/inspect:ax_dump_events",
@@ -672,8 +672,10 @@ group("gn_all") {
           host_os == "win") {
         deps += [ "//chrome/test/mini_installer:mini_installer_tests" ]
       }
-    } else if (!is_android && !is_ios && !is_fuchsia) {
-      deps += [ "//third_party/breakpad:symupload($host_toolchain)" ]
+    } else if (!is_android && !is_fuchsia) {
+      deps += [
+        "//third_party/breakpad:symupload($host_system_allocator_toolchain)",
+      ]
     }
 
     if (is_cast_android || is_castos || (is_fuchsia && enable_cast_receiver)) {
@@ -978,7 +980,7 @@ if (is_win) {
       "//net:net_unittests",
       "//printing:printing_unittests",
       "//sql:sql_unittests",
-      "//third_party/breakpad:symupload($host_toolchain)",
+      "//third_party/breakpad:symupload($host_system_allocator_toolchain)",
       "//ui/base:ui_base_unittests",
       "//ui/gfx:gfx_unittests",
       "//ui/touch_selection:ui_touch_selection_unittests",
@@ -1006,7 +1008,7 @@ if (is_chromeos_ash) {
       "//media/capture:capture_unittests",
       "//sandbox/linux:chrome_sandbox",
       "//sandbox/linux:sandbox_linux_unittests",
-      "//third_party/breakpad:minidump_stackwalk($host_toolchain)",
+      "//third_party/breakpad:minidump_stackwalk($host_system_allocator_toolchain)",
       "//third_party/dawn/src/dawn/tests:dawn_end2end_tests",
       "//third_party/dawn/src/dawn/tests:dawn_unittests",
       "//ui/ozone:ozone_integration_tests",
@@ -1180,28 +1182,40 @@ if (use_blink && !is_cronet_build) {
     if (is_android) {
       data_deps += [
         "//third_party/breakpad:breakpad_unittests",
+        "//tools/android/forwarder2",
+
+        # Using the target toolchain for this tool, as it's run during tests not
+        # during the build. This places a symlink in the root_build_dir for
+        # scrips to use.
         "//third_party/breakpad:dump_syms",
         "//third_party/breakpad:microdump_stackwalk",
         "//third_party/breakpad:minidump_dump",
         "//third_party/breakpad:minidump_stackwalk",
         "//third_party/breakpad:symupload",
-        "//tools/android/forwarder2",
       ]
     } else {
       data_deps += [ "//content/web_test:web_test_common_mojom_js_data_deps" ]
     }
 
     if (!is_win && !is_android) {
-      data_deps +=
-          [ "//third_party/breakpad:minidump_stackwalk($host_toolchain)" ]
+      # Using the default toolchain for this tool, as it's run during tests not
+      # during the build. This places a symlink in the root_build_dir for scrips
+      # to use.
+      data_deps += [ "//third_party/breakpad:minidump_stackwalk" ]
     }
 
     if (is_mac) {
-      data_deps += [ "//third_party/breakpad:dump_syms($host_toolchain)" ]
+      # Using the default toolchain for this tool, as it's run during tests not
+      # during the build, and on Mac we support cross-building from a different
+      # architecture.
+      data_deps += [ "//third_party/breakpad:dump_syms" ]
     }
 
     if (is_linux || is_chromeos) {
-      data_deps += [ "//third_party/breakpad:dump_syms($host_toolchain)" ]
+      # Using the default toolchain for this tool, as it's run during tests not
+      # during the build. This places a symlink in the root_build_dir for scrips
+      # to use.
+      data_deps += [ "//third_party/breakpad:dump_syms" ]
     }
 
     if (is_fuchsia) {
@@ -1665,8 +1679,7 @@ group("chromium_builder_perf") {
     }
 
     if (!is_win) {
-      data_deps +=
-          [ "//third_party/breakpad:minidump_stackwalk($host_toolchain)" ]
+      data_deps += [ "//third_party/breakpad:minidump_stackwalk($host_system_allocator_toolchain)" ]
     }
   }
 

@@ -5,11 +5,68 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/rust.gni")
 import("//build/symlink.gni")
+import("//build/toolchain/toolchain.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 if (is_win) {
   import("//build/config/win/visual_studio_version.gni")
+}
+
+# Breakpad executables are only built with the system allocator toolchains,
+# because when built with PartitionAlloc-Everywhere enabled, we see that they
+# OOM and crash: https://crbug.com/345514993.
+#
+# IMPORTANT: The executables here may almost all be built for the *host*
+# machine, not the target machine. However they are still built into the
+# root_build_dir where normally you'd find the outputs of the default_toolchain
+# which are meant to run on the *target* machine. This is quite abnormal, but
+# our GN dependencies and test scripts expect the binary to be in the
+# root_build_dir, and expect to run it on the host machine any time the tests
+# are run in a VM or on a device (such as IOS, Android, and ChromeOS). In other
+# cases, where the test launcher is the same as the target (such as any desktop
+# platform), we expect to run it on the target machine.
+#
+# As such, if the executables are built for the default toolchain, they will be
+# built with the host or the default toolchain's settings depending on if we
+# expect the tests to be launched from the target machine or from a host
+# machine. Then they are copied up to the `root_out_dir` of the
+# `default_toolchain.
+#
+# There is no support for building these on host A, launching tests on host B,
+# and running tests on target C, where A and B are different machine types.
+if (is_ios || is_android || is_chromeos ||
+    # The breakpad exes do not compile successfully for Windows ARM.
+    (is_win && (current_cpu == "arm" || current_cpu == "arm64"))) {
+  # We build Windows ARM executables as Windows x64, targeting the host machine
+  # because they will run on the Arm machine still (through emulation) and
+  # because the code does not compile when targeting Windows ARM. This doesn't
+  # work for other hosts obviously.
+  assert(!is_win || host_os == "win")
+  _tests_launcher_toolchain = host_system_allocator_toolchain
+} else {
+  _tests_launcher_toolchain = default_system_allocator_toolchain
+}
+
+# Copies an executable target to the root directory of the current toolchain.
+# Used to copy from another toolchain. This requires that the executable is
+# built without component build enabled (see comment in //build/symlink.gni),
+# which is true for the `host_system_allocator_toolchain` and
+# `default_system_allocator_toolchain` toolchains in order to support this use
+# case.
+template("copy_exe") {
+  copy(target_name) {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "public_deps" ])
+    public_deps = [ invoker.target ]
+    if (is_win) {
+      _exe = ".exe"
+    } else {
+      _exe = ""
+    }
+    sources = [ get_label_info(invoker.target, "root_out_dir") + "/" +
+                get_label_info(invoker.target, "name") + _exe ]
+    outputs = [ "$root_out_dir/{{source_file_part}}" ]
+  }
 }
 
 config("tools_config") {
@@ -80,7 +137,8 @@ if (use_fuzzing_engine) {
 # {micro,mini}dump_stackwalk and minidump_dump are tool-type executables
 # that do not build on Windows.
 if (!is_win) {
-  if (current_toolchain == host_toolchain || target_os == "mac") {
+  if (current_toolchain == host_system_allocator_toolchain ||
+      current_toolchain == default_system_allocator_toolchain) {
     # Contains the code shared by both {micro,mini}dump_stackwalk.
     static_library("stackwalk_common") {
       # Binaries that use this library are not debugged frequently and
@@ -296,16 +354,17 @@ if (!is_win) {
       configs -= [ "//build/config/compiler:chromium_code" ]
       configs += [ "//build/config/compiler:no_chromium_code" ]
     }
-  } else {
-    # Aliases for convenience.
-    binary_symlink("microdump_stackwalk") {
-      binary_label = ":$target_name($host_toolchain)"
+  } else if (current_toolchain == default_toolchain) {
+    # The default toolchain builds the system-allocator binaries, which are
+    # placed in the output dir of the default toolchain.
+    copy_exe("microdump_stackwalk") {
+      target = ":$target_name($_tests_launcher_toolchain)"
     }
-    binary_symlink("minidump_stackwalk") {
-      binary_label = ":$target_name($host_toolchain)"
+    copy_exe("minidump_stackwalk") {
+      target = ":$target_name($_tests_launcher_toolchain)"
     }
-    binary_symlink("minidump_dump") {
-      binary_label = ":$target_name($host_toolchain)"
+    copy_exe("minidump_dump") {
+      target = ":$target_name($_tests_launcher_toolchain)"
     }
   }
 }
@@ -313,7 +372,8 @@ if (!is_win) {
 # Mac --------------------------------------------------------------------------
 
 if (is_mac) {
-  if (current_toolchain == host_toolchain || target_os != "ios") {
+  if (current_toolchain == host_system_allocator_toolchain ||
+      current_toolchain == default_system_allocator_toolchain) {
     source_set("common") {
       sources = [
         "breakpad/src/common/dwarf/bytereader.cc",
@@ -452,27 +512,32 @@ if (is_mac) {
              ] + [ "-go_src" ] + rebase_path(_go_sources, root_build_dir) +
              [ "-extra" ] + rebase_path(_extra_sources, root_build_dir)
     }
-  } else {
-    binary_symlink("dump_syms") {
-      binary_label = ":$target_name($host_toolchain)"
+  } else if (current_toolchain == default_toolchain) {
+    # The default toolchain builds the system-allocator binaries, which are
+    # placed in the output dir of the default toolchain.
+    copy_exe("dump_syms") {
+      target = ":$target_name($_tests_launcher_toolchain)"
     }
-    binary_symlink("symupload") {
-      binary_label = ":$target_name($host_toolchain)"
+    copy_exe("symupload") {
+      target = ":$target_name($_tests_launcher_toolchain)"
     }
   }
 }
 
 if (is_ios) {
-  binary_symlink("dump_syms") {
-    binary_label = ":$target_name($host_toolchain)"
-  }
-  binary_symlink("symupload") {
-    binary_label = ":$target_name($host_toolchain)"
+  if (current_toolchain == default_toolchain) {
+    copy_exe("dump_syms") {
+      target = ":$target_name($_tests_launcher_toolchain)"
+    }
+    copy_exe("symupload") {
+      target = ":$target_name($_tests_launcher_toolchain)"
+    }
   }
 }
 
 if (is_linux || is_chromeos || is_android) {
-  if (current_toolchain == host_toolchain) {
+  if (current_toolchain == host_system_allocator_toolchain ||
+      current_toolchain == default_system_allocator_toolchain) {
     executable("symupload") {
       sources = [
         "breakpad/src/common/linux/http_upload.cc",
@@ -573,13 +638,14 @@ if (is_linux || is_chromeos || is_android) {
 
       libs = [ "z" ]
     }
-  } else {
-    # Aliases for convenience.
-    binary_symlink("dump_syms") {
-      binary_label = ":dump_syms($host_toolchain)"
+  } else if (current_toolchain == default_toolchain) {
+    # The default toolchain builds the system-allocator binaries, which are
+    # placed in the output dir of the default toolchain.
+    copy_exe("dump_syms") {
+      target = ":$target_name($_tests_launcher_toolchain)"
     }
-    binary_symlink("symupload") {
-      binary_label = ":symupload($host_toolchain)"
+    copy_exe("symupload") {
+      target = ":$target_name($_tests_launcher_toolchain)"
     }
   }
 
@@ -770,85 +836,90 @@ if (is_linux || is_chromeos || is_android) {
     configs += [ ":breakpad_unittest_config" ]
   }
 
-  executable("linux_dumper_unittest_helper") {
-    testonly = true
-    sources = [ "breakpad/src/client/linux/minidump_writer/linux_dumper_unittest_helper.cc" ]
-    deps = [ ":processor_support" ]
+  if (current_toolchain == host_system_allocator_toolchain ||
+      current_toolchain == default_system_allocator_toolchain) {
+    executable("linux_dumper_unittest_helper") {
+      testonly = true
+      sources = [ "breakpad/src/client/linux/minidump_writer/linux_dumper_unittest_helper.cc" ]
+      deps = [ ":processor_support" ]
 
-    configs += [ ":client_config" ]
+      configs += [ ":client_config" ]
 
-    if (is_component_build) {
-      ldflags = [ "-Wl,-rpath,\$ORIGIN" ]
+      if (is_component_build) {
+        ldflags = [ "-Wl,-rpath,\$ORIGIN" ]
+      }
     }
-  }
 
-  executable("generate_test_dump") {
-    testonly = true
-    sources = [ "linux/generate-test-dump.cc" ]
+    executable("generate_test_dump") {
+      testonly = true
+      sources = [ "linux/generate-test-dump.cc" ]
 
-    # This file has an unused variable warning.
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [
-      ":client_config",
-      "//build/config/compiler:no_chromium_code",
-    ]
+      # This file has an unused variable warning.
+      configs -= [ "//build/config/compiler:chromium_code" ]
+      configs += [
+        ":client_config",
+        "//build/config/compiler:no_chromium_code",
+      ]
 
-    deps = [ ":client" ]
+      deps = [ ":client" ]
 
-    if (is_android) {
-      libs = [ "log" ]
+      if (is_android) {
+        libs = [ "log" ]
+      }
     }
-  }
 
-  executable("minidump-2-core") {
-    sources = [
-      "breakpad/src/common/path_helper.cc",
-      "breakpad/src/common/path_helper.h",
-      "breakpad/src/tools/linux/md2core/minidump-2-core.cc",
-      "breakpad/src/tools/linux/md2core/minidump_memory_range.h",
-    ]
+    executable("minidump-2-core") {
+      sources = [
+        "breakpad/src/common/path_helper.cc",
+        "breakpad/src/common/path_helper.h",
+        "breakpad/src/tools/linux/md2core/minidump-2-core.cc",
+        "breakpad/src/tools/linux/md2core/minidump_memory_range.h",
+      ]
 
-    include_dirs = [ "breakpad/src" ]
+      include_dirs = [ "breakpad/src" ]
 
-    deps = [ ":client" ]
-  }
+      deps = [ ":client" ]
+    }
 
-  executable("core-2-minidump") {
-    sources = [
-      "breakpad/src/common/path_helper.cc",
-      "breakpad/src/common/path_helper.h",
-      "breakpad/src/tools/linux/core2md/core2md.cc",
-    ]
+    executable("core-2-minidump") {
+      sources = [
+        "breakpad/src/common/path_helper.cc",
+        "breakpad/src/common/path_helper.h",
+        "breakpad/src/tools/linux/core2md/core2md.cc",
+      ]
 
-    deps = [ ":client" ]
+      deps = [ ":client" ]
 
-    include_dirs = [ "breakpad/src" ]
+      include_dirs = [ "breakpad/src" ]
+    }
+  } else if (current_toolchain == default_toolchain) {
+    # The default toolchain builds the system-allocator binaries, which are
+    # linked from the output dir of the default toolchain.
+
+    # Most breakpad binaries are only built for the `_tests_launcher_toolchain`.
+    # This is different, as it's used _inside_ a test, and thus needs to be
+    # built for the target machine, not the test-launcher machine.
+    copy_exe("linux_dumper_unittest_helper") {
+      testonly = true
+      target = ":$target_name($default_system_allocator_toolchain)"
+    }
+
+    copy_exe("generate_test_dump") {
+      testonly = true
+      target = ":$target_name($_tests_launcher_toolchain)"
+    }
+    copy_exe("minidump-2-core") {
+      target = ":$target_name($_tests_launcher_toolchain)"
+    }
+    copy_exe("core-2-minidump") {
+      target = ":$target_name($_tests_launcher_toolchain)"
+    }
   }
 }
 
 if (is_win) {
-  # Force a native symupload, since Chrome tries to be "helpful" and not really
-  # differentiate target vs. host for x86/x64 builds.
-  #
-  # Normally, this would just use the (current_toolchain == host_toolchain)
-  # condition, which would cause these targets to only be compiled for the host
-  # CPU (i.e. to only build "native" binaries), but the Chrome Windows build
-  # will "always use the target CPU for host builds for x86/x64":
-  # https://crrev.com/3258ed4d9d755a3564d98bef8707bbdb5f8a7974/config/BUILDCONFIG.gn#199
-  # This means that host_toolchain will be x86 (32-bit) if the target is x86,
-  # even when the host is actually x64 (64-bit), which causes this to create
-  # 32-bit binaries, despite wanting native, 64-bit binaries.
-  #
-  # Adding the second condition enables this block for the "true" host
-  # toolchain as well, which allows creating 64-bit binaries even when the host
-  # toolchain is redefined to a 32-bit target.
-  if (is_clang) {
-    symupload_toolchain = "//build/toolchain/win:win_clang_$host_cpu"
-  } else {
-    symupload_toolchain = "//build/toolchain/win:$host_cpu"
-  }
-  if (current_toolchain == host_toolchain ||
-      current_toolchain == symupload_toolchain) {
+  if (current_toolchain == host_system_allocator_toolchain ||
+      current_toolchain == default_system_allocator_toolchain) {
     static_library("common_windows") {
       include_dirs = [
         "$visual_studio_path/DIA SDK/include",
@@ -926,38 +997,15 @@ if (is_win) {
       }
     }
 
-    group("symupload") {
-      deps = [ ":symupload_win($symupload_toolchain)" ]
-    }
-    executable("symupload_win") {
+    executable("symupload") {
       include_dirs = [
         "$visual_studio_path/DIA SDK/include",
         "breakpad/src",
       ]
       output_name = "symupload"
-
-      # Invert the normal logic which puts binaries built with the default
-      # (target) toolchain into the root output directory, and other toolchain
-      # binaries into subdirs. This gives preference to the native symupload,
-      # which is what's wanted in most situations. The cross-compiled binary
-      # can still be created (by building "symupload_win" instead of
-      # "symupload") and found in the corresponding toolchain subdir (e.g.
-      # //out/Release/win_clang_x86/ when cross-compiling to x86).
-      if (current_toolchain == symupload_toolchain) {
-        output_dir = "$root_build_dir"
-      } else {
-        output_name = "symupload_$target_cpu"
-        toolchain_parts =
-            string_split(get_path_info(current_toolchain, "name"), ":")
-        output_dir = "$root_out_dir/" + toolchain_parts[1]
-      }
-
       sources = [ "breakpad/src/tools/windows/symupload/symupload.cc" ]
-
       deps = [ "//third_party/breakpad:common_windows" ]
-
       ldflags = [ "/LARGEADDRESSAWARE" ]
-
       lib_dirs = []
       if (current_cpu == "x64") {
         lib_dirs += [ "$visual_studio_path/DIA SDK/lib/amd64" ]
@@ -1022,9 +1070,18 @@ if (is_win) {
         cflags = [ "-Wno-microsoft-goto" ]
       }
     }
-  } else {
-    # handle dump_syms appropriately for Windows cross build when necessary,
-    # such as symlinking.
+  } else if (current_toolchain == default_toolchain) {
+    # The default toolchain builds the system-allocator binaries, which are
+    # placed in the output dir of the default toolchain.
+    copy_exe("google_converter") {
+      target = ":$target_name($_tests_launcher_toolchain)"
+    }
+    copy_exe("symupload") {
+      target = ":$target_name($_tests_launcher_toolchain)"
+    }
+    copy_exe("dump_syms") {
+      target = ":$target_name($_tests_launcher_toolchain)"
+    }
   }
 }
 
