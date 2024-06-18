@@ -70,6 +70,12 @@ namespace {
     return return_value;                                   \
   });
 
+#define ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(lhs, rexpr)                \
+  ASSIGN_OR_RETURN(lhs, rexpr, [&exception_state](std::string error) { \
+    exception_state.ThrowTypeError(String::FromUTF8(error));           \
+    return nullptr;                                                    \
+  });
+
 webnn::OperandDataType ComponentDataTypeToOperandDataType(
     webnn::Operand::DataType data_type) {
   switch (data_type) {
@@ -2372,25 +2378,18 @@ MLOperand* MLGraphBuilder::where(const MLOperand* condition,
                                                 false_value};
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
 
-  const auto validated_output = webnn::ValidateWhereAndInferOutput(
-      BlinkOperandToComponent(condition), BlinkOperandToComponent(true_value),
-      BlinkOperandToComponent(false_value));
-  if (!validated_output.has_value()) {
-    exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
-    return nullptr;
-  }
+  ASSIGN_OR_THROW_AND_RETURN_IF_ERROR(
+      webnn::OperandDescriptor output_descriptor,
+      webnn::ValidateWhereAndInferOutput(condition->Descriptor(),
+                                         true_value->Descriptor(),
+                                         false_value->Descriptor()));
 
   auto* where = MakeGarbageCollected<MLOperator>(
       this, webnn::mojom::blink::Operation::Tag::kWhere);
-  const auto output = MLOperand::ValidateAndCreateOutput(
-      this, ComponentDataTypeToOperandDataType(validated_output->data_type),
-      validated_output->dimensions, where);
-  if (!output.has_value()) {
-    exception_state.ThrowTypeError(output.error());
-    return nullptr;
-  }
-  where->Connect(std::move(inputs), {output.value()});
-  return output.value();
+  MLOperand* output =
+      MLOperand::CreateOutput(this, std::move(output_descriptor), where);
+  where->Connect(std::move(inputs), {output});
+  return output;
 }
 
 ScriptPromise<MLGraph> MLGraphBuilder::build(

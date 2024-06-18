@@ -12,6 +12,7 @@
 #include "base/containers/enum_set.h"
 #include "base/containers/span.h"
 #include "base/types/expected.h"
+#include "services/webnn/public/cpp/operand_descriptor.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace webnn {
@@ -21,6 +22,8 @@ namespace webnn {
 //
 // Represents the `MLOperand` which describes not only input and constant
 // operand, but also the output operand of operator.
+//
+// TODO(crbug.com/325598628): Remove this in favor of `OperandDescriptor`.
 struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) Operand {
   // Represents the `MLOperandDataType` in the WebIDL definition.
   enum DataType {
@@ -604,13 +607,13 @@ base::expected<Operand, std::string> COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
 base::expected<Operand, std::string> COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
     ValidateTriangularAndInferOutput(Operand input);
 
-// TODO(crbug.com/40206287): Add the link of the where operator definition in
-// WebIDL.
-// Validate where operator.
-base::expected<Operand, std::string> COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
-    ValidateWhereAndInferOutput(const Operand& condition,
-                                const Operand& true_value,
-                                const Operand& false_value);
+// Validate where operator defined in WebIDL here:
+// https://www.w3.org/TR/webnn/#api-mlgraphbuilder-where.
+base::expected<OperandDescriptor, std::string> COMPONENT_EXPORT(
+    WEBNN_PUBLIC_CPP)
+    ValidateWhereAndInferOutput(const OperandDescriptor& condition,
+                                const OperandDescriptor& true_value,
+                                const OperandDescriptor& false_value);
 
 base::expected<size_t, std::string> COMPONENT_EXPORT(WEBNN_PUBLIC_CPP)
     ValidateAndCalculateElementsNumber(base::span<const uint32_t> dimensions);

@@ -1865,13 +1865,12 @@ bool ValidateWhere(const IdToOperandMap& id_to_operand_map,
     return false;
   }
 
-  auto validated_output = ValidateWhereAndInferOutput(
-      MojoOperandToComponent(condition), MojoOperandToComponent(true_value),
-      MojoOperandToComponent(false_value));
-  if (!validated_output.has_value()) {
+  auto validated_output_descriptor = ValidateWhereAndInferOutput(
+      condition->descriptor, true_value->descriptor, false_value->descriptor);
+  if (!validated_output_descriptor.has_value()) {
     return false;
   }
-  if (validated_output != MojoOperandToComponent(output)) {
+  if (validated_output_descriptor != output->descriptor) {
     return false;
   }
 
