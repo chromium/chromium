@@ -1094,8 +1094,6 @@ void BaseRenderingContext2D::CompositedDraw(
     // unroll into two independently composited passes if drawing shadows
     cc::PaintFlags shadow_flags =
         *state.GetFlags(paint_type, kDrawShadowOnly, image_type);
-    int save_count = c->getSaveCount();
-    c->save();
     if (canvas_filter ||
         ShouldUseDropShadowPaintFilter(paint_type, image_type)) {
       cc::PaintFlags foreground_flags =
@@ -1122,7 +1120,7 @@ void BaseRenderingContext2D::CompositedDraw(
       c->setMatrix(ctm);
       draw_func(c, &shadow_flags);
     }
-    c->restoreToCount(save_count);
+    c->restore();
   }
 
   composite_flags.setImageFilter(std::move(canvas_filter));
