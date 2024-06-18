@@ -55,7 +55,8 @@ enum {
   kDuplicate = 2,
   kIncorrectPIN = 3,
   kPINLocked = 4,
-  kPINOutdated = 5
+  kPINOutdated = 5,
+  kRecoveryKeyStoreDowngrade = 6,
 };
 
 CtapDeviceResponseCode EnclaveErrorToCtapResponseCode(int enclave_code) {
@@ -69,7 +70,8 @@ CtapDeviceResponseCode EnclaveErrorToCtapResponseCode(int enclave_code) {
     case kPINOutdated:
       // This is a temporary error. Allow the request to fail.
     case kDuplicate:
-      // This is not a valid error for a passkey request, deliberate
+    case kRecoveryKeyStoreDowngrade:
+      // These are not a valid error for a passkey request, deliberate
       // fallthrough.
     default:
       return CtapDeviceResponseCode::kCtap2ErrOther;
