@@ -39,8 +39,9 @@ class ReadAnythingMochaBrowserTest : public WebUIMochaBrowserTest {
 using ReadAnythingMochaTest = ReadAnythingMochaBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, CheckmarkVisibleOnSelected) {
-  RunSidePanelTest("side_panel/read_anything/checkmark_visible_on_selected.js",
-                   "mocha.run()");
+  RunSidePanelTest(
+      "side_panel/read_anything/checkmark_visible_on_selected_test.js",
+      "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, Common) {
@@ -137,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, RateSelection) {
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, UpdateContentSelection) {
-  RunSidePanelTest("side_panel/read_anything/update_content_selection.js",
+  RunSidePanelTest("side_panel/read_anything/update_content_selection_test.js",
                    "mocha.run()");
 }
 
@@ -149,7 +150,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest, FakeTreeBuilderTest) {
 IN_PROC_BROWSER_TEST_F(ReadAnythingMochaTest,
                        UpdateContentSelectionWithHighlights) {
   RunSidePanelTest(
-      "side_panel/read_anything/update_content_selection_with_highlights.js",
+      "side_panel/read_anything/"
+      "update_content_selection_with_highlights_test.js",
       "mocha.run()");
 }
 
@@ -195,27 +197,29 @@ class ReadAnythingReadAloudMochaTest : public ReadAnythingMochaBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
                        LinksToggledIntegration) {
-  RunSidePanelTest("side_panel/read_anything/links_toggled_integration.js",
+  RunSidePanelTest("side_panel/read_anything/links_toggled_integration_test.js",
                    "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
                        SpeechUsesMaxTextLength) {
-  RunSidePanelTest("side_panel/read_anything/speech_uses_max_text_length.js",
-                   "mocha.run()");
+  RunSidePanelTest(
+      "side_panel/read_anything/speech_uses_max_text_length_test.js",
+      "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
                        ReadAloud_UpdateContentSelection) {
   RunSidePanelTest(
-      "side_panel/read_anything/read_aloud_update_content_selection.js",
+      "side_panel/read_anything/read_aloud_update_content_selection_test.js",
       "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
                        ReadAloud_UpdateContentSelectionPDF) {
   RunSidePanelTest(
-      "side_panel/read_anything/read_aloud_update_content_selection_pdf.js",
+      "side_panel/read_anything/"
+      "read_aloud_update_content_selection_pdf_test.js",
       "mocha.run()");
 }
 
@@ -227,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest, ReadAloudHighlight) {
 IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudMochaTest,
                        WordBoundariesUsedForSpeech) {
   RunSidePanelTest(
-      "side_panel/read_anything/word_boundaries_used_for_speech.js",
+      "side_panel/read_anything/word_boundaries_used_for_speech_test.js",
       "mocha.run()");
 }
 
@@ -249,6 +253,6 @@ class ReadAnythingReadAloudWordHighlightingMochaTest
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingReadAloudWordHighlightingMochaTest,
                        WordHighlighting) {
-  RunSidePanelTest("side_panel/read_anything/word_highlighting.js",
+  RunSidePanelTest("side_panel/read_anything/word_highlighting_test.js",
                    "mocha.run()");
 }
