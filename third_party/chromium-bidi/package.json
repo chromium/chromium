@@ -183,7 +183,7 @@
     "webdriverio": "8.38.0",
     "websocket": "1.0.35",
     "wireit": "0.14.4",
-    "ws": "8.17.0",
+    "ws": "8.17.1",
     "yargs": "17.7.2"
   },
   "dependencies": {
