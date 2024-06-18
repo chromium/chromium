@@ -138,9 +138,6 @@ class HotspotControllerTest : public ::testing::Test {
     hotspot_config::mojom::HotspotControlResult return_result;
     hotspot_controller_->EnableHotspot(base::BindLambdaForTesting(
         [&](hotspot_config::mojom::HotspotControlResult result) {
-          if (result == hotspot_config::mojom::HotspotControlResult::kSuccess) {
-            SetHotspotStateInShill(shill::kTetheringStateActive);
-          }
           return_result = result;
           run_loop.Quit();
         }));
@@ -158,10 +155,6 @@ class HotspotControllerTest : public ::testing::Test {
     hotspot_controller_->DisableHotspot(
         base::BindLambdaForTesting(
             [&](hotspot_config::mojom::HotspotControlResult result) {
-              if (result ==
-                  hotspot_config::mojom::HotspotControlResult::kSuccess) {
-                SetHotspotStateInShill(shill::kTetheringStateIdle);
-              }
               return_result = result;
               run_loop.Quit();
             }),
@@ -202,7 +195,6 @@ class HotspotControllerTest : public ::testing::Test {
           }));
       run_loop.Run();
     }
-    SetHotspotStateInShill(shill::kTetheringStateActive);
     {
       base::RunLoop run_loop;
       hotspot_controller_->DisableHotspot(
@@ -446,6 +438,7 @@ TEST_F(HotspotControllerTest, PrepareEnableWifi) {
   EXPECT_EQ(hotspot_config::mojom::DisableReason::kWifiEnabled,
             observer_.last_disable_reason());
 
+  SetHotspotStateInShill(shill::kTetheringStateActive);
   network_state_test_helper_.manager_test()->SetSimulateTetheringEnableResult(
       FakeShillSimulatedResult::kSuccess,
       shill::kTetheringEnableResultNetworkSetupFailure);

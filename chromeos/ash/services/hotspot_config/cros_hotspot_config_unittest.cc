@@ -298,6 +298,7 @@ TEST_F(CrosHotspotConfigTest, EnableHotspot) {
       /*readiness_status=*/std::string());
   base::RunLoop().RunUntilIdle();
 
+  SetHotspotStateInShill(shill::kTetheringStateIdle);
   EXPECT_EQ(mojom::HotspotControlResult::kReadinessCheckFailed,
             EnableHotspot());
 }

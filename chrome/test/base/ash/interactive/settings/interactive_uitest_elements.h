@@ -48,8 +48,13 @@ WebContentsInteractionTestUtil::DeepQuery EthernetSummaryItem();
 }  // namespace ethernet
 
 namespace hotspot {
+
 // The hotspot "row" on the top-level internet page.
 WebContentsInteractionTestUtil::DeepQuery HotspotSummaryItem();
+
+// The hotspot toggle in the hotspot "row" of the top-level internet page.
+WebContentsInteractionTestUtil::DeepQuery HotspotToggle();
+
 }  // namespace hotspot
 
 namespace wifi {

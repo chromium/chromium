@@ -74,6 +74,11 @@ WebContentsInteractionTestUtil::DeepQuery HotspotSummaryItem() {
          "div#hotspotSummaryItemRow";
 }
 
+WebContentsInteractionTestUtil::DeepQuery HotspotToggle() {
+  return InternetPage() + "network-summary" + "hotspot-summary-item" +
+         "cr-toggle#enableHotspotToggle";
+}
+
 }  // namespace hotspot
 
 namespace wifi {
