@@ -410,6 +410,7 @@
 <translation id="1293556467332435079">檔案</translation>
 <translation id="1294807885394205587">此程序可能需時幾分鐘。正在啟動容器管理員。</translation>
 <translation id="12951065153783848">你的機構管理你的帳戶</translation>
+<translation id="1296410481664942178">不要顯示「Google 日曆」</translation>
 <translation id="1296911687402551044">固定已選取的分頁</translation>
 <translation id="1297175357211070620">目標</translation>
 <translation id="129770436432446029">提供您對「<ph name="EXPERIMENT_NAME" />」的意見。</translation>
@@ -448,6 +449,7 @@
 <translation id="1327495825214193325">必須重新啟動 <ph name="DEVICE_TYPE" /> 才能啟用 ADB 偵錯。如要停用 ADB 偵錯，則需要將裝置回復原廠設定。</translation>
 <translation id="1327527584824210101">使用您的密鑰</translation>
 <translation id="1327794256477341646">需要所在位置的功能將無法運作</translation>
+<translation id="1328364753167940710"><ph name="NUM_HR" /> 小時後</translation>
 <translation id="1329466763986822896">改善此熱點的私隱</translation>
 <translation id="1331977651797684645">這是我本人。</translation>
 <translation id="1333489022424033687">如不清除其他網站在裝置上儲存的資料，<ph name="ORIGIN" /> 的部分功能可能無法正常運作</translation>
@@ -1005,6 +1007,7 @@
 <translation id="1709762881904163296">網絡設定</translation>
 <translation id="1709916727352927457">刪除密鑰</translation>
 <translation id="1709972045049031556">無法分享</translation>
+<translation id="1712143791363119140">進行中</translation>
 <translation id="1714644264617423774">啟用無障礙功能，讓您使用裝置更輕鬆。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464">要刪除 <ph name="SITE_NAME" /> 和網站已安裝應用程式的網站資料和權限嗎？</translation>
 <translation id="171826447717908393">隔離的網絡應用程式 (Beta 版本)</translation>
@@ -1410,6 +1413,7 @@
 <translation id="200928901437634269">使用子女的 Google 帳戶或學校帳戶。你亦可設定家長監控設定。</translation>
 <translation id="2009590708342941694">Emoji 工具</translation>
 <translation id="2010501376126504057">兼容裝置</translation>
+<translation id="2010636492623189611">揀咗。</translation>
 <translation id="201217432804812273">開啟「儲存群組」</translation>
 <translation id="2012935757369720523">刪除檔案</translation>
 <translation id="2013467735169740431">網站可要求鎖定鍵盤</translation>
@@ -2005,6 +2009,7 @@
 <translation id="2435248616906486374">網絡已中斷連線</translation>
 <translation id="2435457462613246316">顯示密碼</translation>
 <translation id="2436385001956947090">複製連結(&amp;L)</translation>
+<translation id="2437561292559037753">資料分享</translation>
 <translation id="2438853563451647815">未連線至打印機</translation>
 <translation id="2439152382014731627">重設 <ph name="DEVICE_TYPE" /> 密碼</translation>
 <translation id="2439626940657133600">載入緊 <ph name="WINDOW_TITLE" /></translation>
@@ -2581,6 +2586,7 @@
 <translation id="2843698124892775282">已釋出 <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="2844169650293029770">USB-C 裝置 (左側前方連接埠)</translation>
 <translation id="2844809857160214557">查看及管理列印工作</translation>
+<translation id="2845276301195220700">可對「Google 日曆」執行的其他操作</translation>
 <translation id="2845382757467349449">永遠顯示書籤列</translation>
 <translation id="2845751331501453107">瀏覽時是否看到個人化廣告，取決於此設定、<ph name="BEGIN_LINK1" />網站建議的廣告<ph name="LINK_END1" />、<ph name="BEGIN_LINK2" />Cookie 設定<ph name="LINK_END2" />、網站是否顯示個人化廣告</translation>
 <translation id="284581348330507117">設定獨特的密碼</translation>
@@ -3694,6 +3700,7 @@
 <translation id="3694590407685276748">突顯文字游標</translation>
 <translation id="369489984217678710">密碼和其他登入資料</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{已完成安全檢查。您的資料將會上載。}=1{已完成安全檢查。您的檔案將會上載。}other{已完成安全檢查。您的檔案將會上載。}}</translation>
+<translation id="3695339288331169103">來自 <ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" /></translation>
 <translation id="369736917241079046">啟動器鍵 + 向左箭咀鍵</translation>
 <translation id="3697716475445175867">上次開啟日期</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{你可禁止此網站在日後傳送通知。}other{你可禁止這些網站在日後傳送通知。}}</translation>
@@ -4986,6 +4993,7 @@
 <translation id="4650591383426000695">中斷手機與 <ph name="DEVICE_TYPE" /> 的連線</translation>
 <translation id="4651484272688821107">無法使用示範模式的資源載入網上組件。</translation>
 <translation id="4651921906638302153">無法使用此帳戶登入</translation>
+<translation id="4652921642122345344">語音速度 <ph name="RATE" /> 倍</translation>
 <translation id="4652935475563630866">Parallels Desktop 需要重新啟動，相機設定的變更才會生效。重新啟動 Parallels Desktop 即可繼續。</translation>
 <translation id="4653116291358041820">小型陰影</translation>
 <translation id="4653405415038586100">設定 Linux 時發生錯誤</translation>
@@ -5184,6 +5192,7 @@
 <translation id="4809927044794281115">淺色主題背景</translation>
 <translation id="4811212958317149293">「按鈕控制」鍵盤自動掃瞄</translation>
 <translation id="4811503964269049987">將所選分頁分組</translation>
+<translation id="4812073856515324252">選取要儲存 <ph name="APP_NAME" /> 密鑰的地方</translation>
 <translation id="4813512666221746211">網絡錯誤</translation>
 <translation id="4814114628197290459">刪除 IBAN</translation>
 <translation id="4814327014588285482">略過並稍後提醒我</translation>
@@ -5650,6 +5659,7 @@
 <translation id="5160634252433617617">實體鍵盤</translation>
 <translation id="5160857336552977725">登入您的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">來自「<ph name="VENDOR_NAME" />」的 USB 裝置</translation>
+<translation id="5161442190864186925">加入會議</translation>
 <translation id="5161827038979306924">Chrome 中的瀏覽記錄和搜尋記錄有何分別？</translation>
 <translation id="5162905305237671850">已封鎖 <ph name="DEVICE_TYPE" /></translation>
 <translation id="5163910114647549394">分頁移咗去分頁欄嘅最尾</translation>
@@ -7954,6 +7964,7 @@
 <translation id="6912007319859991306">流動網絡 SIM 卡 PIN</translation>
 <translation id="6912380255120084882">嘗試使用其他裝置</translation>
 <translation id="691289340230098384">字幕偏好設定</translation>
+<translation id="6913051485529944333">此頁面不會再顯示「Google 日曆」</translation>
 <translation id="6914812290245989348">在前往不安全的網站前不要顯示任何警告</translation>
 <translation id="6916590542764765824">管理擴充功能</translation>
 <translation id="6918677045355889289">必須更新 Chrome OS</translation>
@@ -9157,6 +9168,7 @@
 <translation id="7810202088502699111">系統已封鎖此網頁的彈出式視窗。</translation>
 <translation id="7810367892333449285">輸入的內容應採用以下格式：<ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ 地址<ph name="LPA_2" />$<ph name="LPA_3" />選填的相符 ID<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">請再試一次，或選取下方其中一個先前生成的主題。</translation>
+<translation id="7812170317334653156">「Google 日曆」已隱藏</translation>
 <translation id="7814090115158024843">一律在這些網站上停用撰寫協助</translation>
 <translation id="7814458197256864873">複製(&amp;C)</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
@@ -9215,6 +9227,7 @@
 <translation id="7853747251428735">更多工具(&amp;L)</translation>
 <translation id="7853999103056713222">使用更安全的密碼</translation>
 <translation id="7855678561139483478">把分頁移至新視窗</translation>
+<translation id="7856117067008941054">隱藏「Google 日曆」</translation>
 <translation id="7857004848504343806">您的電腦具有安全模組，ChromeOS Flex 需要透過該模組來執行許多重要的安全防護功能。如要瞭解詳情，請瀏覽 Chromebook 說明中心：https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">文字建議</translation>
 <translation id="7858120906780498731">ChromeOS 已連接的輸入裝置</translation>
@@ -9223,6 +9236,7 @@
 <translation id="786073089922909430">服務：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">下載(&amp;D)</translation>
 <translation id="7861846108263890455">Google 帳戶語言</translation>
+<translation id="7864114920800968141"><ph name="NUM_MIN" /> 分鐘後</translation>
 <translation id="7864539943188674973">停用藍牙</translation>
 <translation id="7864825798076155402">要儲存在 Google 帳戶中嗎？</translation>
 <translation id="7865127013871431856">翻譯選項</translation>

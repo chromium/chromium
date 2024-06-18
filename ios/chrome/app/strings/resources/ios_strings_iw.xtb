@@ -531,6 +531,7 @@
 <translation id="371398631992790800">הסתרת הסימניות</translation>
 <translation id="37207012422556617">שאילתות חיפוש פופולריות</translation>
 <translation id="3725081662140949903">כדי למנוע מאנשים אחרים להשתמש בסיסמה שלך, צריך לפתוח את האפליקציה <ph name="APP" /> ולשנות את הסיסמה</translation>
+<translation id="372676576864368480">מילוי אוטומטי של מספר הכרטיס שמסתיים בספרות <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">תאריך היצירה: <ph name="DATE" /></translation>
 <translation id="374357899112510277">הסתרת ההורדות</translation>
 <translation id="3745190878148784130">הסתרה של 'הגדלת הטקסט'</translation>
@@ -1096,6 +1097,7 @@
 <translation id="6476800141292307438">מתבצע תרגום של הדף ל<ph name="LANGUAGE" />. האפשרויות מוצגות בחלק התחתון של המסך.</translation>
 <translation id="648164694371393720">שגיאת אימות</translation>
 <translation id="6494931198667773526">מסתיים</translation>
+<translation id="6500795388871406244">שימוש בסיסמה המוצעת</translation>
 <translation id="650279896687777322">למידע נוסף…</translation>
 <translation id="6507973708545996744">כדי שרשימת הקריאה תופיע בכל המכשירים שלך, כדאי להיכנס לחשבון.</translation>
 <translation id="6510072653668207258">קבלת תזכורת מאוחר יותר</translation>
@@ -1308,6 +1310,7 @@
 <translation id="7583004045319035904">ביטול הנעילה של כרטיסיות מצב אנונימי יתבצע באמצעות <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
 <translation id="7598439272585186139">רוצה לשפר את האבטחה?</translation>
 <translation id="7600965453749440009">איני רוצה לקבל תרגום מ<ph name="LANGUAGE" /> בכלל</translation>
+<translation id="7603308509262646847">מילוי אוטומטי של שם בעל הכרטיס: <ph name="NAME" /></translation>
 <translation id="7603852183842204213">חלונות קופצים שנחסמו (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">קבוצות של כרטיסיות</translation>
 <translation id="7607521702806708809">מחיקת הסיסמה</translation>
@@ -1340,6 +1343,7 @@
 <translation id="7749790401023484470">לא בחרת טקסט.</translation>
 <translation id="7752405526771734448">‏חיפוש חזותי ב-Lens</translation>
 <translation id="7756478488453921771">תפריט ← הגדרות ← אמצעי תשלום</translation>
+<translation id="775755486779745798">מילוי אוטומטי של חודש התפוגה: <ph name="MONTH" /></translation>
 <translation id="7760127703945531263">נעילה במצב פרטי</translation>
 <translation id="7765158879357617694">העברה</translation>
 <translation id="7772032839648071052">אישור משפט-סיסמה</translation>
@@ -1516,6 +1520,7 @@
 <translation id="8556590991644167667">{count,plural, =1{סגרת אזהרה אחת ({count})}one{סגרת {count} אזהרות}two{סגרת {count} אזהרות}other{סגרת {count} אזהרות}}</translation>
 <translation id="8560253818350321773">הפריטים שמשתמשים בהם לעתים קרובות יופיעו ראשונים.</translation>
 <translation id="8569721750632860947">‏איזו כתובת URL להוסיף לרשימת הקריאה?</translation>
+<translation id="8577056989960190117">מילוי אוטומטי של שנת התפוגה: <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">כבוי</translation>
 <translation id="8591976964826315682">‏חסימת קובצי cookie של צד שלישי במצב אנונימי</translation>
 <translation id="8593565399399144771">כאן אפשר לפתוח כרטיסייה חדשה.</translation>

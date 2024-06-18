@@ -383,7 +383,6 @@
 <translation id="2904414404539560095">მოწყობილობების სია, რომლებთანაც უნდა გაზიარდეს ჩანართი, გახსნილია სრულ სიმაღლეზე.</translation>
 <translation id="2908243544703713905">წაუკითხავი ამბები მზადაა</translation>
 <translation id="2909615210195135082">Google შეტყობინებების პლატფორმა</translation>
-<translation id="2912296070571964914">მართეთ თქვენთვის საინტერესო თემები</translation>
 <translation id="2912345083818861431">გახსნილი ინკოგნიტო ჩანართების სანახავად გამოიყენეთ ეკრანის დაბლოკვა</translation>
 <translation id="2923908459366352541">სახელი არასწორია</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" />-ის მეხსიერება</translation>
@@ -459,7 +458,6 @@
 <translation id="3259831549858767975">გვერდზე ყველაფრის შემცირება</translation>
 <translation id="3264259168916048410">თქვენს კომპიუტერი ითხოვს ამ მოწყობილობის გამოყენებას ვებსაიტზე შესვლის მიზნით</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" />-ის ყველა გვერდი</translation>
-<translation id="3265534588625245297">მართეთ ვებსაიტები, რომლებსაც თვალს ადევნებთ</translation>
 <translation id="3269093882174072735">სურათის ჩატვირთვა</translation>
 <translation id="327204079441056603">შეიცვალა ამ მოწყობილობაზე პაროლების შენახვის წესი</translation>
 <translation id="3280562213547448728">ხმოვანი ძიება</translation>
@@ -833,7 +831,6 @@
 <translation id="510275257476243843">დარჩენილია 1 საათი</translation>
 <translation id="5114895953710637392">აპების ფილტრის ფურცელი დახურულია.</translation>
 <translation id="5115811374190515607">აქ: <ph name="PRODUCT_NAME" /></translation>
-<translation id="5118713593561876160">ინტერესები</translation>
 <translation id="5122378528687922675">საჭიროებისამებრ, დაიხმარეთ მშობელი (<ph name="PARENT_NAME_1" /> ან <ph name="PARENT_NAME_2" />)</translation>
 <translation id="5123685120097942451">ინკოგნიტო ჩანართი</translation>
 <translation id="5132942445612118989">მოახდინეთ თქვენი პაროლების, ისტორიისა და სხვა კონტენტის სინქრონიზაცია თქვენს ყველა მოწყობილობაზე</translation>
@@ -847,7 +844,6 @@
 <translation id="5171045022955879922">მოძებნეთ ან აკრიფეთ URL</translation>
 <translation id="5174700554036517242">ჩანართი დაბრუნდა თავდაპირველ სიმაღლეზე</translation>
 <translation id="5180063720319462041">გვერდი ითარგმნა შემდეგ ენაზე: <ph name="TARGET_LANGUAGE" /></translation>
-<translation id="5186634140793586141">მართეთ თემები და ძიებები, რომლებიც გაინტერესებთ</translation>
 <translation id="5191251636205085390">შეიტყვეთ იმ ახალი ტექნოლოგიების შესახებ, რომელთა მეშვეობითაც მესამე მხარის ქუქი-ჩანაწერების ჩანაცვლება იგეგმება, ასევე, გაეცანით მათი გაკონტროლების ხერხებს</translation>
 <translation id="5204967432542742771">შეიყვანეთ პაროლი</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{მიმდინარეობს ფაილის ჩამოტვირთვა…}other{მიმდინარეობს # ფაილის ჩამოტვირთვა…}}</translation>
@@ -964,6 +960,7 @@
 <translation id="5793665092639000975">გამოყენებულია <ph name="SPACE_USED" /> / <ph name="SPACE_AVAILABLE" />დან</translation>
 <translation id="5795872532621730126">ძიება და დათვალიერება</translation>
 <translation id="5797949256525811424">დაბლოკილი თემა</translation>
+<translation id="580893287573699959">მართეთ თემები და ვებსაიტები, რომლებიც გაინტერესებთ</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# საათის წინ}other{# საათის წინ}}</translation>
 <translation id="5810288467834065221">© <ph name="YEAR" />, Google LLC. ყველა უფლება დაცულია.</translation>
 <translation id="5814749351757353073">თვალყური ადევნეთ თქვენს რჩეულ საიტებს</translation>

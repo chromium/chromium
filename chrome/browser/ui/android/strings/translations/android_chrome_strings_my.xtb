@@ -381,7 +381,6 @@
 <translation id="2904414404539560095">တဘ်မျှဝေရန် စက်ပစ္စည်းစာရင်း၏ အမြင့်ကို အပြည့်ဖွင့်ထားသည်။</translation>
 <translation id="2908243544703713905">မဖတ်ရသေးသော သတင်းဆောင်းပါးများ အသင့်ဖြစ်ပါပြီ</translation>
 <translation id="2909615210195135082">Google အကြောင်းကြားချက်များ စနစ်</translation>
-<translation id="2912296070571964914">သင်စိတ်ဝင်စားသော အကြောင်းအရာများကို စီမံနိုင်သည်</translation>
 <translation id="2912345083818861431">ဖွင့်ထားသောရုပ်ဖျက်တဘ်များ ကြည့်ရန် ဖန်သားပြင်လော့ခ် သုံးနိုင်သည်</translation>
 <translation id="2923908459366352541">အမည် မမှန်ကန်ပါ</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> သိုလှောင်ခန်း</translation>
@@ -457,7 +456,6 @@
 <translation id="3259831549858767975">စာမျက်နှာပေါ်ရှိ အရာအားလုံးကို ပိုသေးအောင် လုပ်ရန်</translation>
 <translation id="3264259168916048410">သင့်ကွန်ပျူတာသည် ဝဘ်ဆိုက်တစ်ခုသို့ လက်မှတ်ထိုးဝင်ရန် ဤစက်ကို သုံးလိုသည်</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" /> ၏ စာမျက်နှာအားလုံး</translation>
-<translation id="3265534588625245297">သင်လိုက်ကြည့်သော ဝဘ်ဆိုက်များကို စီမံနိုင်သည်</translation>
 <translation id="3269093882174072735">ပုံကူးတင်ရန်</translation>
 <translation id="3280562213547448728">အသံဖြင့် ရှာဖွေခြင်း</translation>
 <translation id="3282568296779691940">Chrome သို့ လက်မှတ်ထိုး ဝင်</translation>
@@ -830,7 +828,6 @@
 <translation id="510275257476243843">၁ နာရီ ကျန်သည်</translation>
 <translation id="5114895953710637392">အက်ပ်စစ်ထုတ်မှု စာမျက်နှာကို ပိတ်ထားသည်။</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> သို့</translation>
-<translation id="5118713593561876160">စိတ်ဝင်စားမှုများ</translation>
 <translation id="5122378528687922675">အကူအညီလိုပါက သင့်မိဘ (<ph name="PARENT_NAME_1" /> သို့မဟုတ်<ph name="PARENT_NAME_2" />) ကိုတောင်းပါ</translation>
 <translation id="5123685120097942451">ရုပ်ဖျက်တဘ်</translation>
 <translation id="5132942445612118989">စက်ပစ္စည်းအားလုံးတွင် သင်၏ စကားဝှက်၊ မှတ်တမ်းနှင့် အခြားအရာများ စင့်ခ်လုပ်ပါ</translation>
@@ -844,7 +841,6 @@
 <translation id="5171045022955879922">ရှာကြည့်ရန် သို့မဟုတ် URL ရိုက်ထည့်ရန်</translation>
 <translation id="5174700554036517242">တဘ်သည် မူလအမြင့်သို့ ပြန်ရောက်သွားပြီ</translation>
 <translation id="5180063720319462041"><ph name="TARGET_LANGUAGE" /> သို့ ဘာသာပြန်ထားသည့် စာမျက်နှာ</translation>
-<translation id="5186634140793586141">သင်စိတ်ဝင်စားသော အကြောင်းအရာများနှင့် ရှာဖွေမှုများကို စီမံနိုင်သည်</translation>
 <translation id="5191251636205085390">ပြင်ပကုမ္ပဏီကွတ်ကီးများကို အစားထိုးမည့် နည်းပညာသစ်များအကြောင်း လေ့လာပြီး စီမံပါ</translation>
 <translation id="5204967432542742771">လျှို့ဝှက်စကားလုံး ရိုက်ထည့်</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{ဖိုင်ကို ဒေါင်းလုဒ်လုပ်နေသည်}other{ဖိုင် # ဖိုင်ကို ဒေါင်းလုဒ်လုပ်နေသည်}}</translation>
@@ -961,6 +957,7 @@
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" /> အနက် <ph name="SPACE_USED" /> ကို သုံးနေသည်</translation>
 <translation id="5795872532621730126">ရှာဖွေခြင်းနှင့် ကြည့်ရှုခြင်း</translation>
 <translation id="5797949256525811424">အကြောင်းအရာကို ပိတ်ပြီးပြီ</translation>
+<translation id="580893287573699959">သင်စိတ်ဝင်စားသော အကြောင်းအရာများ၊ ဝဘ်ဆိုက်များကို စီမံနိုင်သည်</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{လွန်ခဲ့သည့် # နာရီက}other{လွန်ခဲ့သည့် # နာရီက}}</translation>
 <translation id="5810288467834065221">မူပိုင် <ph name="YEAR" /> Google LLC. မူပိုင်ခွင့်အားလုံး ယူထားသည်။</translation>
 <translation id="5814749351757353073">သင်၏အကြိုက်ဆုံးဝဘ်ဆိုက်များကို မျက်ခြည်မပြတ်ကြည့်ပါ</translation>

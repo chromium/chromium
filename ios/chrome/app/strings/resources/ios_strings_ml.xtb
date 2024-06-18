@@ -531,6 +531,7 @@
 <translation id="371398631992790800">ബുക്ക്‌മാർക്കുകൾ മറയ്ക്കുക</translation>
 <translation id="37207012422556617">ട്രെൻഡിംഗ് തിരയലുകൾ</translation>
 <translation id="3725081662140949903">നിങ്ങളുടെ പാസ്‌വേഡ് മറ്റുള്ളവർ ഉപയോഗിക്കുന്നത് തടയാൻ, നിങ്ങളുടെ പാസ്‌വേഡ് മാറ്റുന്നതിന് <ph name="APP" /> ആപ്പ് തുറക്കുക</translation>
+<translation id="372676576864368480"><ph name="LAST_DIGITS" /> എന്നതിൽ അവസാനിക്കുന്ന നിങ്ങളുടെ കാർഡ് നമ്പർ സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="3738428049780661523"><ph name="DATE" />-ന് സൃഷ്ടിച്ചത്</translation>
 <translation id="374357899112510277">ഡൗൺലോഡുകൾ മറയ്ക്കുക</translation>
 <translation id="3745190878148784130">'ടെക്സ്റ്റ് സൂം ചെയ്യുക' മറയ്ക്കുക</translation>
@@ -1096,6 +1097,7 @@
 <translation id="6476800141292307438">പേജ് <ph name="LANGUAGE" /> എന്ന ഭാഷയിലേക്ക് വിവർത്തനം ചെയ്യുന്നു. സ്‌ക്രീനിൻ്റെ ചുവടെ ഓപ്‌ഷനുകൾ ലഭ്യമാണ്.</translation>
 <translation id="648164694371393720">പരിശോധിച്ചുറപ്പിക്കൽ പിശക്</translation>
 <translation id="6494931198667773526">അവസാനിക്കുന്നത്</translation>
+<translation id="6500795388871406244">നിർദ്ദേശിച്ച പാസ്‌വേഡ് ഉപയോഗിക്കുക:</translation>
 <translation id="650279896687777322">കൂടുതലറിയുക...</translation>
 <translation id="6507973708545996744">വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റ് നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ലഭ്യമാക്കാൻ സെെൻ ഇൻ ചെയ്യുക.</translation>
 <translation id="6510072653668207258">എന്നെ പിന്നീട് ഓർമ്മിപ്പിക്കുക</translation>
@@ -1308,6 +1310,7 @@
 <translation id="7583004045319035904">നിങ്ങളുടെ അദൃശ്യ ടാബുകൾ അൺലോക്ക് ചെയ്യാൻ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ഉപയോഗിക്കുക.</translation>
 <translation id="7598439272585186139">കൂടുതൽ സുരക്ഷ നേടൂ</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> ഒരിക്കലും വിവര്‍‌ത്തനം ചെയ്യരുത്</translation>
+<translation id="7603308509262646847">കാർഡുടമ <ph name="NAME" /> സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="7603852183842204213">പോപ്പ്-അപ്പുകൾ തടഞ്ഞു (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">ടാബ് ഗ്രൂപ്പുകൾ</translation>
 <translation id="7607521702806708809">പാസ്‌വേഡ് ഇല്ലാതാക്കുക</translation>
@@ -1340,6 +1343,7 @@
 <translation id="7749790401023484470">നിങ്ങൾ ടെക്സ്റ്റൊന്നും തിരഞ്ഞെടുത്തിട്ടില്ല.</translation>
 <translation id="7752405526771734448">Lens വിഷ്വൽ തിരയൽ</translation>
 <translation id="7756478488453921771">മെനു → ക്രമീകരണം → പേയ്മെന്റ് രീതികൾ</translation>
+<translation id="775755486779745798">കാലഹരണപ്പെടുന്ന മാസം <ph name="MONTH" /> സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="7760127703945531263">അദൃശ്യ മോഡിനുള്ള ലോക്ക്</translation>
 <translation id="7765158879357617694">നീക്കുക</translation>
 <translation id="7772032839648071052">പാസ്ഫ്രേസ് സ്ഥിരീകരിക്കുക</translation>
@@ -1516,6 +1520,7 @@
 <translation id="8556590991644167667">{count,plural, =1{നിങ്ങൾ {count} മുന്നറിയിപ്പ് ഡിസ്‌മിസ് ചെയ്‌തു}other{നിങ്ങൾ {count} മുന്നറിയിപ്പുകൾ ഡിസ്‌മിസ് ചെയ്‌തു}}</translation>
 <translation id="8560253818350321773">ഇടയ്ക്കിടെ ഉപയോഗിക്കുന്ന ഇനങ്ങൾ ആദ്യം കാണിക്കുക.</translation>
 <translation id="8569721750632860947">നിങ്ങൾക്ക് വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റിലേക്ക് ഏത് URL ആണ് ചേർക്കേണ്ടത്?</translation>
+<translation id="8577056989960190117">കാലഹരണപ്പെടുന്ന വർഷം <ph name="YEAR" /> സ്വയമേവ പൂരിപ്പിക്കുക</translation>
 <translation id="8588404856427128947">ഓഫാണ്</translation>
 <translation id="8591976964826315682">അദൃശ്യ മോഡിൽ മൂന്നാം കക്ഷി കുക്കികൾ ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="8593565399399144771">നിങ്ങൾക്ക് ഇവിടെ ഒരു പുതിയ ടാബ് തുറക്കാം.</translation>

@@ -172,6 +172,7 @@
 <translation id="3261565993776444564">試用新顏色自訂瀏覽器</translation>
 <translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3286538390144397061">立即重新啟動</translation>
+<translation id="3292333338048274092">你將需要重新啟動 Chrome。</translation>
 <translation id="3360895254066713204">Chrome 輔助工具</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome 將立即重新啟動}=1{Chrome 將於 1 秒後重新啟動}other{Chrome 將於 # 秒後重新啟動}}</translation>
 <translation id="3396977131400919238">安裝過程中發生作業系統錯誤，請再次下載 Google Chrome。</translation>
@@ -216,6 +217,7 @@
 <translation id="4035053306113201399">必須重新啟動 Chrome OS，才能套用更新。</translation>
 <translation id="4050175100176540509">最新版本提供重大保安改良和新功能。</translation>
 <translation id="4053720452172726777">自訂及控制 Google Chrome</translation>
+<translation id="4084404300720192944">如要分享視窗，請前往「系統偏好設定」允許 Chrome 螢幕錄影。</translation>
 <translation id="4106587138345390261">Chrome 正在探索新功能，讓網站能在使用較少資料的情況下提供相同的瀏覽體驗</translation>
 <translation id="4110895483821904099">設定新的 Chrome 設定檔</translation>
 <translation id="4111566860456076004">Chrome 無法驗證此擴充程式的來源，因此可能不安全。請從 Chrome 中移除此擴充程式，令其無法再查看及變更你瀏覽的網站相關資料，包括個人資料。</translation>
@@ -354,6 +356,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta 版</translation>
 <translation id="6182736845697986886">由於更新伺服器發生內部錯誤，因此無法安裝。</translation>
 <translation id="6200139057479872438">由於最近沒有瀏覽記錄，Chrome 已移除<ph name="PERMISSION_1" />和<ph name="PERMISSION_2" />權限</translation>
+<translation id="621585339844629864">如要分享螢幕內容，請前往「系統偏好設定」允許 Chrome 螢幕錄影。</translation>
 <translation id="6235018212288296708">允許 mDNS 流量的 Google Chrome 輸入規則。</translation>
 <translation id="624230925347970731">Chrome 即將關閉</translation>
 <translation id="6247557882553405851">Google 密碼管理工具</translation>

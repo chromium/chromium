@@ -121,6 +121,7 @@
 <translation id="1383876407941801731">Издөө</translation>
 <translation id="1391102559483454063">Күйүк</translation>
 <translation id="1394698770495054737">Толугу менен бүдөмүктөтүү</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 күн мурун}other{# күн мурун}}</translation>
 <translation id="1404963891829069586">Ынтаа коюу режиминин добушу</translation>
 <translation id="1407069428457324124">Караңгы тема</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Күндөргө өтүү үчүн жебе баскычтарын колдонуңуз.</translation>
@@ -211,6 +212,7 @@
 <translation id="174102739345480129">Белгилегич өчүк.</translation>
 <translation id="1743570585616704562">Таанылган жок</translation>
 <translation id="1743927604032653654"><ph name="NOTIFICATION_TITLE" /> билдирмесин жыйыштыруу</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{1 сааттын ичинде}=1{1 саат мурун}other{# саат мурун}}</translation>
 <translation id="1746730358044914197">Киргизүү ыкмасы администратор тарабынан конфигурацияланат.</translation>
 <translation id="1747336645387973286">бүтүрүү мөөнөтү: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Экрандагы баскычтоп күйгүзүлдү</translation>
@@ -348,6 +350,7 @@
 <translation id="2359808026110333948">Улантуу</translation>
 <translation id="2360398059912971776">батарея</translation>
 <translation id="2361210043495191221">Wi-Fi'ды өчүрүү/күйгүзүү. <ph name="STATE" />.</translation>
+<translation id="236574664504281623"><ph name="SESSION_NAME" /> дарегинен жөнөтүлгөн</translation>
 <translation id="2367186422933365202">Chromebook'ка кирген жоксуз</translation>
 <translation id="2367972762794486313">Колдонмолорду көрсөтүү</translation>
 <translation id="2368828502825385061">Турган жерин аныктоо</translation>
@@ -510,6 +513,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Микрофонду пайдалануу мүмкүнчүлүгүн күйгүзөсүзбү?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> тилиндеги кеп файлдары жүктөлүп алынган жок</translation>
+<translation id="2968761508099987738">Учурдагы жүргөн жериңиз азыркы учурда колдоого алынбайт.</translation>
 <translation id="2970920913501714344">Колдонмолорду, кеңейтүүлөрдү жана темаларды жүктөп алат</translation>
 <translation id="2977598380246111477">Кийинки номер</translation>
 <translation id="2985148236010982088">Бардык колдонмолорду көрүү</translation>
@@ -986,6 +990,7 @@
 <translation id="468293128311738995">Телефонуңуздагы колдонмолор</translation>
 <translation id="4690510401873698237">Текче экрандын ылдый жагында</translation>
 <translation id="4696813013609194136">Түзмөктүн кулпусун ата-эненин коду менен ачуу</translation>
+<translation id="4697357603686181098">Бул боюнча жардам берилбейт. Башка сурамды жазып көрүңүз.</translation>
 <translation id="4702647871202761252">Купуялык экраны өчүк</translation>
 <translation id="4706121060329443414">Жүктөп алууга кийинчерээк аракет жасалат. Азырынча иштетүү үчүн кеп Google'га жөнөтүлөт.</translation>
 <translation id="470644585772471629">Түстөрдү инверсиялоо</translation>
@@ -1902,6 +1907,7 @@
 <translation id="7982878511129296052">Өчүрүлүүдө…</translation>
 <translation id="7984197416080286869">Кулпуну манжа изи менен ачууга өтө көп аракет жасалды</translation>
 <translation id="798779949890829624">Бул параметрди администраторуңуз башкарат</translation>
+<translation id="7989206653429884947">Көп ачылат</translation>
 <translation id="799296642788192631">Маанилүү файлдарды кадап койсоңуз болот. Кадоо үчүн чычканды элементтин үстүнө алып келип же Files колдонмосун ачып, элементтин үстүнөн чычкандын оң баскычын басыңыз.</translation>
 <translation id="7994370417837006925">Бир нече аккаунт менен кирүү</translation>
 <translation id="7995804128062002838">Экран сүрөткө тартылбай калды</translation>
@@ -2088,6 +2094,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Убакыт бүттү. Азаматсыз! 🎉</translation>
+<translation id="8753368202781196133">Бул тил учурда колдоого алынбайт.</translation>
 <translation id="8755498163081687682">Өздүгүңүздү ырастаңыз: <ph name="ORIGIN_NAME" /> өздүгүңүздү ырастоону суранып жатат</translation>
 <translation id="875593634123171288">VPN параметрлерин көрсөтүү</translation>
 <translation id="8756799553341497810">Бул көрүнүштөн чыккандан кийин колдонмонун калыбын тууралап баштасаңыз болот.</translation>

@@ -121,6 +121,7 @@
 <translation id="1383876407941801731">تلاش کریں</translation>
 <translation id="1391102559483454063">آن</translation>
 <translation id="1394698770495054737">پورا دھندلا</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{‫1 دن پہلے}other{‫# دن پہلے}}</translation>
 <translation id="1404963891829069586">فوکس کی آوازیں</translation>
 <translation id="1407069428457324124">گہری تھیم</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />۔ تواریخ کے درمیان نیویگیٹ کرنے کے لیے تیر کے نشان والی کلیدوں کا استعمال کریں۔</translation>
@@ -211,6 +212,7 @@
 <translation id="174102739345480129">مارکر آف ہے۔</translation>
 <translation id="1743570585616704562">شناخت نہیں ہو سکی</translation>
 <translation id="1743927604032653654"><ph name="NOTIFICATION_TITLE" /> اطلاع کو سُکیڑیں</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{‫1 گھنٹے میں}=1{‫1 گھنٹہ پہلے}other{‫# گھنٹے پہلے}}</translation>
 <translation id="1746730358044914197">ان پٹ کے طریقے آپ کے منتظم کے ذریعے کنفیگر کئے جاتے ہیں۔</translation>
 <translation id="1747336645387973286">آخری تاریخ <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">آن اسکرین کی بورڈ فعال ہے</translation>
@@ -348,6 +350,7 @@
 <translation id="2359808026110333948">جاری رکھیں</translation>
 <translation id="2360398059912971776">بیٹری</translation>
 <translation id="2361210043495191221">‏Wi-Fi کو ٹوگل کریں۔ <ph name="STATE" />۔</translation>
+<translation id="236574664504281623">‫<ph name="SESSION_NAME" /> سے بھیجا گیا</translation>
 <translation id="2367186422933365202">‏اپنے Chromebook میں سائن ان نہیں کر سکتے</translation>
 <translation id="2367972762794486313">ایپس دکھائیں</translation>
 <translation id="2368828502825385061">پتا لگانا</translation>
@@ -510,6 +513,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">مائیکروفون تک رسائی آن کریں؟</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> کی اسپیچ فائلز ڈاؤن لوڈ نہیں کر سکے</translation>
+<translation id="2968761508099987738">آپ کا موجودہ مقام اس وقت تعاون یافتہ نہیں ہے۔</translation>
 <translation id="2970920913501714344">ایپس، ایکسٹینشنز اور تھیمز انسٹال کریں</translation>
 <translation id="2977598380246111477">اگلا نمبر</translation>
 <translation id="2985148236010982088">سبھی ایپس دیکھیں</translation>
@@ -986,6 +990,7 @@
 <translation id="468293128311738995">آپ کے فون سے ایپس</translation>
 <translation id="4690510401873698237">شیلف نچلے حصے میں ہے</translation>
 <translation id="4696813013609194136">والدین کے کوڈ سے آلہ غیر مقفل کریں</translation>
+<translation id="4697357603686181098">اس سلسلے میں مدد نہیں کی جا سکتی۔ دوسری درخواست آزمائیں۔</translation>
 <translation id="4702647871202761252">رازداری کی اسکرین آف ہے</translation>
 <translation id="4706121060329443414">‏بعد میں ڈاؤن لوڈ کرنے کی کوشش کی جائے گی۔ اسپیچ اب پروسیسنگ کیلئے Google کو بھیجی جائے گی۔</translation>
 <translation id="470644585772471629">رنگوں کی تقلیب</translation>
@@ -1901,6 +1906,7 @@
 <translation id="7982878511129296052">آف ہو رہا ہے...</translation>
 <translation id="7984197416080286869">فنگر پرنٹ سے غیر مقفل کرنے کی کافی زیادہ کوششیں کی گئیں</translation>
 <translation id="798779949890829624">یہ ترتیب آپ کے منتظم کے زیر انتظام ہے</translation>
+<translation id="7989206653429884947">کثرت سے کھولا گیا</translation>
 <translation id="799296642788192631">آپ اہم فائلز کو پن کر سکتے ہیں۔ پن کرنے کے لیے، کسی آئٹم پر گھمائیں یا فائلز کھولیں اور کسی آئٹم پر دائیں کلک کریں۔</translation>
 <translation id="7994370417837006925">متعدد سائن ان</translation>
 <translation id="7995804128062002838">اسکرین کیپچر کرنے میں نا کام</translation>
@@ -2087,6 +2093,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />،
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">وقت ختم ہو گیا۔ بہترین! 🎉</translation>
+<translation id="8753368202781196133">اس وقت یہ زبان تعاون یافتہ نہیں ہے۔</translation>
 <translation id="8755498163081687682">اپنی شناخت کی توثیق کریں: <ph name="ORIGIN_NAME" /> اس بات کی تصدیق کرنا چاہتی ہے کہ یہ آپ ہی ہیں</translation>
 <translation id="875593634123171288">‏VPN کی ترتیبات دکھائیں</translation>
 <translation id="8756799553341497810">اس منظر سے باہر نکلنے کے بعد آپ اپنے ایپ لے آؤٹ کو حسب ضرورت بنانا شروع کر سکتے ہیں۔</translation>

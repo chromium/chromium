@@ -158,6 +158,7 @@
 <translation id="3602290021589620013">പ്രിവ്യൂ</translation>
 <translation id="3628308229821498208">നിർദ്ദേശിക്കുന്ന തിരയലുകൾ</translation>
 <translation id="3697164069658504920">ഓണായിരിക്കുമ്പോൾ, USB ഉപകരണങ്ങൾ ഉപയോഗിക്കാൻ സൈറ്റുകൾക്ക് അനുമതി തേടാം. ഓഫായിരിക്കുമ്പോൾ, സൈറ്റുകൾക്ക് USB ഉപകരണങ്ങൾ ഉപയോഗിക്കാനാകില്ല.</translation>
+<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">പ്രധാനമായും നിങ്ങളൊരു ബോട്ട് അല്ലെന്ന് സാധൂകരിക്കുന്ന കുറച്ച് വിവരങ്ങൾ, നിങ്ങൾ സന്ദർശിക്കുന്ന സൈറ്റിന് Chrome-ൽ സംരക്ഷിക്കാനാകും</translation>
 <translation id="3721953990244350188">ഡിസ്മിസ് ചെയ്ത ശേഷം, ലഭ്യമായ അടുത്ത പ്രവർത്തനം കാണിക്കുക</translation>
 <translation id="3744111561329211289">പശ്ചാത്തല സമന്വയിപ്പിക്കൽ</translation>
@@ -227,6 +228,7 @@
 <translation id="4962975101802056554">ഉപകരണത്തിനുള്ള എല്ലാ അനുമതികളും അസാധുവാക്കുക</translation>
 <translation id="497421865427891073">മുന്നോട്ട് പോകുക</translation>
 <translation id="4976702386844183910">അവസാനം സന്ദർശിച്ചത് <ph name="DATE" />-ന് ആണ്</translation>
+<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">ഈ സൈറ്റിനായി നിങ്ങൾ മൂന്നാം കക്ഷി കുക്കികൾ അനുവദിച്ചു</translation>
 <translation id="4994033804516042629">കോൺടാക്റ്റുകളൊന്നും കണ്ടെത്തിയില്ല</translation>
 <translation id="4996978546172906250">ഇതുവഴി പങ്കിടുക</translation>

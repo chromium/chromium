@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">പാസ്‌റ്റൽ മഞ്ഞ</translation>
 <translation id="1056898198331236512">മുന്നറിയിപ്പ്</translation>
 <translation id="1059913517121127803">സ്‌കാൻ ചെയ്യൽ ആരംഭിക്കാനായില്ല</translation>
+<translation id="1061864016440983342">ലൊക്കേഷൻ ഇല്ലാതെ ഉപയോഗിക്കുക</translation>
 <translation id="1062823486781306604"><ph name="COUNT" />-ൽ <ph name="INDEX" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ഫയര്‍വാള്‍ കണ്ടെത്തി</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">കൂടുതൽ ക്രമീകരണങ്ങൾ</translation>
 <translation id="2082932131694554252">അസൈൻ ചെയ്ത കീബോർഡ് കീ</translation>
 <translation id="2085089206770112532">ഡിസ്‌പ്ലേ തെളിച്ചം കുറയ്‌ക്കുക</translation>
+<translation id="2086091080968010660">സമയം അടിസ്ഥാനമാക്കിയുള്ള മാറ്റങ്ങൾ കൃത്യമാകാനിടയില്ല. ക്രമീകരണത്തിൽ സിസ്റ്റം ലൊക്കേഷൻ ആക്‌സസ് ഓണാക്കുക.</translation>
 <translation id="2102231663024125441">ടെക്‌സ്റ്റ് തിരുത്തൽ</translation>
 <translation id="2105810540595158374">ഉപകരണം ഒരു ഗെയിം കൺട്രോളറാണ്.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, പതിപ്പ് <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">ഡിഫോൾട്ടുകൾ പുനഃസ്ഥാപിക്കുക</translation>
 <translation id="2286454467119466181">ലളിതം</translation>
 <translation id="2287186687001756809">ചിത്രമൊന്നും ലഭ്യമല്ല. ഫോട്ടോകൾ ചേർക്കാൻ <ph name="LINK" /> -ലേക്ക് പോകുക</translation>
+<translation id="2294577623958216786">നിലവിലെ ഷെഡ്യൂൾ <ph name="SUNRISE" />-<ph name="SUNSET" /> എന്ന് സജ്ജീകരിച്ചിരിക്കുന്നു. ഉദയാസ്‌തമയ ഷെഡ്യൂൾ സ്വയമേവ അപ്ഡേറ്റ് ചെയ്യാൻ, സിസ്റ്റം ലൊക്കേഷൻ ആക്‌സസ് ഓണാക്കുക.</translation>
 <translation id="2305172810646967500">കറുപ്പ്</translation>
 <translation id="2307344026739914387">നിലവിലെ കീ ജോടി ഉപയോഗിക്കുക</translation>
 <translation id="2308243864813041101">അപ്‌ഡേറ്റ് പ്രക്രിയ തുടരുന്നതിന് <ph name="DEVICE_NAME" /> എന്നതിന്റെ USB കേബിൾ അൺപ്ലഗ് ചെയ്യുക</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">കീബോർഡ് തെളിച്ചം</translation>
 <translation id="6412715219990689313">ബിൽറ്റ് ഇൻ കീബോർഡ്</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="6419454453018688975">സിസ്റ്റം ലൊക്കേഷൻ ആക്‌സസ് ഓണാക്കുക</translation>
 <translation id="6423239382391657905">VPNതുറക്കുക</translation>
 <translation id="6439505561246192797">ദുർബലം (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">അക്കൗണ്ട് ക്രമീകരണത്തിലേക്ക് പോകുക</translation>

@@ -531,6 +531,7 @@
 <translation id="371398631992790800">Кыстармаларды жашыруу</translation>
 <translation id="37207012422556617">Көп изделген нерселер</translation>
 <translation id="3725081662140949903">Башкаларга сырсөзүңүздү колдонууга тыюу салуу үчүн <ph name="APP" /> колдонмосун ачып, сырсөзүңүздү өзгөртүңүз</translation>
+<translation id="372676576864368480"><ph name="LAST_DIGITS" /> менен аяктаган картаны автотолтуруу</translation>
 <translation id="3738428049780661523"><ph name="DATE" /> түзүлгөн</translation>
 <translation id="374357899112510277">Жүктөлүп алынгандарды жашыруу</translation>
 <translation id="3745190878148784130">"Текстти чоңойтуп/кичирейтүү" дегенди жашыруу</translation>
@@ -1096,6 +1097,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="6476800141292307438">Барак <ph name="LANGUAGE" /> тилине которулууда. Параметрлер экрандын төмөн жагында жеткиликтүү.</translation>
 <translation id="648164694371393720">Аныктыгын текшерүү катасы</translation>
 <translation id="6494931198667773526">Качан бүтөт</translation>
+<translation id="6500795388871406244">Сунушталган сырсөздү колдонуу:</translation>
 <translation id="650279896687777322">Кеңири маалымат...</translation>
 <translation id="6507973708545996744">Окуу тизмеңизди бардык түзмөктөрүңүздө көрүү үчүн аккаунтуңузга кириңиз.</translation>
 <translation id="6510072653668207258">Мага кийинчерээк эскертилсин</translation>
@@ -1308,6 +1310,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7583004045319035904">Жашыруун өтмөктөрүңүздүн кулпусун <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> менен ачыңыз.</translation>
 <translation id="7598439272585186139">Коопсуздукту арттырыңыз</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> эч качан которулбасын</translation>
+<translation id="7603308509262646847"><ph name="NAME" /> карточканын ээсин автотолтуруу</translation>
 <translation id="7603852183842204213">Калкп чыкм бөгөтт (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">Өтмөктөр тобу</translation>
 <translation id="7607521702806708809">Сырсөздү жок кылуу</translation>
@@ -1340,6 +1343,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="7749790401023484470">Текст тандаңыз.</translation>
 <translation id="7752405526771734448">Lens аркылуу сүрөт менен издөө</translation>
 <translation id="7756478488453921771">Меню → Тууралоо → Төлөм ыкмалары</translation>
+<translation id="775755486779745798">Мөөнөтү аяктоочу айды <ph name="MONTH" /> автотолтуруу</translation>
 <translation id="7760127703945531263">Жашыруун өтмөктөрдү кулпулоо</translation>
 <translation id="7765158879357617694">Жылуу</translation>
 <translation id="7772032839648071052">Купуя сөз айкашын ырастаңыз</translation>
@@ -1516,6 +1520,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8556590991644167667">{count,plural, =1{{count} эскертүүнү жаптыңыз}other{{count} эскертүүнү жаптыңыз}}</translation>
 <translation id="8560253818350321773">Алгач көп колдонулган нерселерди көрсөтүү.</translation>
 <translation id="8569721750632860947">Окуу тизмеңизге кайсы URL'ди кошкуңуз келет?</translation>
+<translation id="8577056989960190117">Мөөнөтү аяктоочу жылды <ph name="YEAR" /> автотолтуруу</translation>
 <translation id="8588404856427128947">Өчүк</translation>
 <translation id="8591976964826315682">Жашыруун режимде үчүнчү тараптын cookie файлдарын бөгөттөө</translation>
 <translation id="8593565399399144771">Бул жерде жаңы өтмөктү ача аласыз.</translation>

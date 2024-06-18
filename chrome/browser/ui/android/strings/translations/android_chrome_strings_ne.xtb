@@ -383,7 +383,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="2904414404539560095">ट्याब आदान प्रदान गरिनु पर्ने डिभाइसहरूको सूची पूर्ण उचाइमा खोलिएको छ।</translation>
 <translation id="2908243544703713905">नपढिएका स्टोरिज तयार छन्</translation>
 <translation id="2909615210195135082">Google का सूचनाहरूको प्लेटफर्म</translation>
-<translation id="2912296070571964914">आफूलाई रुचि भएका विषयहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="2912345083818861431">तपाईं हाल खोलिएका इन्कोग्निटो ट्याब हेर्न चाहनुहुन्छ भने स्क्रिन लक प्रयोग गर्नुहोस्</translation>
 <translation id="2923908459366352541">नाम मान्य छैन</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> को भण्डारण</translation>
@@ -459,7 +458,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="3259831549858767975">पृष्ठमा रहेको सबै कुरालाई अझ सानो बनाउनुहोस्</translation>
 <translation id="3264259168916048410">तपाईंको कम्प्युटर कुनै साइटमा साइन इन गर्ने प्रयोजनका लागि यो डिभाइस प्रयोग गर्न चाहन्छ</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" /> का सबै पेजहरू</translation>
-<translation id="3265534588625245297">आफूले फलो गर्ने साइटहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="3269093882174072735">छवि लोड गर्नुहोस्</translation>
 <translation id="327204079441056603">हामीले यो डिभाइसमा पासवर्ड सेभ गरिने तरिका परिवर्तन गरेका छौँ</translation>
 <translation id="3280562213547448728">भ्वाइस सर्च</translation>
@@ -832,7 +830,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="510275257476243843">१ घन्टा बाँकी छ</translation>
 <translation id="5114895953710637392">एप फिल्टर सिट बन्द छ।</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> मा</translation>
-<translation id="5118713593561876160">रूचिहरू</translation>
 <translation id="5122378528687922675">मद्दत चाहिएका खण्डमा आफ्ना अभिभावक (<ph name="PARENT_NAME_1" /> वा <ph name="PARENT_NAME_2" />) लाई अनुरोध गर्नुहोस्</translation>
 <translation id="5123685120097942451">इन्कोग्निटो ट्याब</translation>
 <translation id="5132942445612118989">सबै यन्त्रहरूमा आफ्ना पासवर्ड, इतिहास र थप कुरा सिंक गर्नुहोस्</translation>
@@ -846,7 +843,6 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5171045022955879922">युआरएल खोल्नुहोस् वा टाइप गर्नुहोस्</translation>
 <translation id="5174700554036517242">ट्याबको उचाइ पहिले जत्तिकै बनाइयो</translation>
 <translation id="5180063720319462041">यो पेज <ph name="TARGET_LANGUAGE" /> भाषामा अनुवाद गरिएको छ</translation>
-<translation id="5186634140793586141">आफूलाई रुचि लाग्ने विषय र खोजहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5191251636205085390">तेस्रो पक्षीय कुकीहरूलाई प्रतिस्थापन गर्ने प्रविधिका बारेमा जानकारी प्राप्त गर्नुहोस् र तिनलाई नियन्त्रण गर्ने तरिका सिक्नुहोस्</translation>
 <translation id="5204967432542742771">पासवर्ड प्रविष्टि गर्नुहोस्</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{एउटा फाइल डाउनलोड गरिँदै छ…}other{# वटा फाइल डाउनलोड गरिँदै छन्…}}</translation>
@@ -963,6 +959,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" /> मध्ये <ph name="SPACE_USED" /> प्रयोग गरिँदै</translation>
 <translation id="5795872532621730126">खोज्नुहोस् तथा ब्राउज गर्नुहोस्</translation>
 <translation id="5797949256525811424">ब्लक गरिएको विषय</translation>
+<translation id="580893287573699959">आफूलाई रुचि लाग्ने विषय र साइटहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# घन्टा अघि}other{# घन्टा अघि}}</translation>
 <translation id="5810288467834065221">प्रतिलिपि अधिकार <ph name="YEAR" /> Google LLC। सर्वाधिकार सुरक्षित।</translation>
 <translation id="5814749351757353073">आफ्ना मन पर्ने साइटहरू फलो गर्नुहोस्</translation>

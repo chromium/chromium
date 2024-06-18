@@ -413,6 +413,7 @@
 <translation id="1293556467332435079">Файли</translation>
 <translation id="1294807885394205587">Це може зайняти кілька хвилин. Запуск менеджера контейнера.</translation>
 <translation id="12951065153783848">Вашим обліковим записом керує організація</translation>
+<translation id="1296410481664942178">Не показувати Google Календар</translation>
 <translation id="1296911687402551044">Закріпити вибрану вкладку</translation>
 <translation id="1297175357211070620">Місце призначення</translation>
 <translation id="129770436432446029">Надішліть відгук про експеримент "<ph name="EXPERIMENT_NAME" />"</translation>
@@ -451,6 +452,7 @@
 <translation id="1327495825214193325">Щоб увімкнути налагодження ADB, потрібно перезапустити пристрій <ph name="DEVICE_TYPE" />. Якщо вимкнути ADB, доведеться відновити заводські налаштування.</translation>
 <translation id="1327527584824210101">Використайте ключ доступу</translation>
 <translation id="1327794256477341646">Функції, яким потрібен доступ до геоданих, не працюватимуть</translation>
+<translation id="1328364753167940710">Через <ph name="NUM_HR" /> год</translation>
 <translation id="1329466763986822896">Підвищити рівень конфіденційності для цієї точки доступу</translation>
 <translation id="1331977651797684645">Це я.</translation>
 <translation id="1333489022424033687">Деякі функції на сайті <ph name="ORIGIN" /> можуть не працювати, доки ви не видалите дані, які інші сайти зберегли на вашому пристрої</translation>
@@ -1009,6 +1011,7 @@
 <translation id="1709762881904163296">Мережеві налаштування</translation>
 <translation id="1709916727352927457">Видалити ключ доступу</translation>
 <translation id="1709972045049031556">Не вдалося надіслати</translation>
+<translation id="1712143791363119140">Триває</translation>
 <translation id="1714644264617423774">Увімкніть функції доступності, щоб полегшити користування своїм пристроєм. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464">Видалити дані й дозволи для сайту <ph name="SITE_NAME" /> і встановленого додатка?</translation>
 <translation id="171826447717908393">Ізольовані веб-додатки (бета-версія)</translation>
@@ -1413,6 +1416,7 @@
 <translation id="200928901437634269">Використовувати обліковий запис Google або обліковий запис закладу освіти дитини. Ви також можете налаштувати батьківський контроль.</translation>
 <translation id="2009590708342941694">Інструмент "Смайли"</translation>
 <translation id="2010501376126504057">Сумісні пристрої</translation>
+<translation id="2010636492623189611">Вибрано.</translation>
 <translation id="201217432804812273">Увімкніть опцію "Зберегти групу"</translation>
 <translation id="2012935757369720523">Видалити файл</translation>
 <translation id="2013467735169740431">Сайти можуть просити дозвіл заблокувати клавіатуру</translation>
@@ -2008,6 +2012,7 @@
 <translation id="2435248616906486374">Немає з’єднання з мережею</translation>
 <translation id="2435457462613246316">Показати пароль</translation>
 <translation id="2436385001956947090">Копіювати &amp;посилання</translation>
+<translation id="2437561292559037753">Передавання даних</translation>
 <translation id="2438853563451647815">Принтер не підключений</translation>
 <translation id="2439152382014731627">Скинути пароль пристрою <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Завантажується сервіс <ph name="WINDOW_TITLE" /></translation>
@@ -2585,6 +2590,7 @@
 <translation id="2843698124892775282">Звільнено <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="2844169650293029770">Пристрій, під’єднаний до порту USB-C (ліворуч на передній панелі)</translation>
 <translation id="2844809857160214557">Перегляд завдань друку й керування ними</translation>
+<translation id="2845276301195220700">Більше дій для Google Календаря</translation>
 <translation id="2845382757467349449">Завжди показувати панель закладок</translation>
 <translation id="2845751331501453107">Персоналізація реклами залежить від цього параметра, <ph name="BEGIN_LINK1" />пропонованих сайтами оголошень<ph name="LINK_END1" /> і <ph name="BEGIN_LINK2" />налаштувань файлів cookie<ph name="LINK_END2" />, а також від налаштувань персоналізації, визначених сайтом, який ви переглядаєте</translation>
 <translation id="284581348330507117">Створіть унікальні паролі</translation>
@@ -3700,6 +3706,7 @@
 <translation id="3694590407685276748">Виділити текстовий курсор</translation>
 <translation id="369489984217678710">Паролі й інші дані для входу</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Перевірку безпеки завершено. Ваші дані буде завантажено.}=1{Перевірку безпеки завершено. Ваш файл буде завантажено.}one{Перевірку безпеки завершено. Ваші файли буде завантажено.}few{Перевірку безпеки завершено. Ваші файли буде завантажено.}many{Перевірку безпеки завершено. Ваші файли буде завантажено.}other{Перевірку безпеки завершено. Ваші файли буде завантажено.}}</translation>
+<translation id="3695339288331169103">Джерело: <ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" /></translation>
 <translation id="369736917241079046">клавіша Панелі запуску + стрілка вліво</translation>
 <translation id="3697716475445175867">востаннє відкриті</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{Ви можете вимкнути сповіщення із цього сайту.}one{Ви можете вимкнути сповіщення із цих сайтів.}few{Ви можете вимкнути сповіщення із цих сайтів.}many{Ви можете вимкнути сповіщення із цих сайтів.}other{Ви можете вимкнути сповіщення із цих сайтів.}}</translation>
@@ -4999,6 +5006,7 @@
 <translation id="4650591383426000695">Від'єднати телефон від <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Не вдалося завантажити онлайн-компонент із ресурсами демо-режиму.</translation>
 <translation id="4651921906638302153">Не вдалося ввійти за допомогою цього облікового запису</translation>
+<translation id="4652921642122345344">Швидкість голосу: <ph name="RATE" />x</translation>
 <translation id="4652935475563630866">Щоб зміни в налаштуваннях камери почали діяти, а ви могли продовжити роботу, перезапустіть додаток Parallels Desktop.</translation>
 <translation id="4653116291358041820">Невелика тінь</translation>
 <translation id="4653405415038586100">Не вдається налаштувати Linux</translation>
@@ -5197,6 +5205,7 @@
 <translation id="4809927044794281115">Світла тема</translation>
 <translation id="4811212958317149293">Автосканування клавіатури в режимі кнопкового доступу</translation>
 <translation id="4811503964269049987">Додати вибрану вкладку в групу</translation>
+<translation id="4812073856515324252">Виберіть, де зберегти ключ доступу для <ph name="APP_NAME" /></translation>
 <translation id="4813512666221746211">Помилка мережі</translation>
 <translation id="4814114628197290459">Видалити IBAN</translation>
 <translation id="4814327014588285482">Пропустити й нагадати пізніше</translation>
@@ -5663,6 +5672,7 @@
 <translation id="5160634252433617617">Фізична клавіатура</translation>
 <translation id="5160857336552977725">Увійдіть в обліковий запис на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">Пристрої USB від постачальника "<ph name="VENDOR_NAME" />"</translation>
+<translation id="5161442190864186925">Приєднатися до зустрічі</translation>
 <translation id="5161827038979306924">Чим історія вебперегляду в Chrome відрізняється від історії пошуку?</translation>
 <translation id="5162905305237671850">Пристрій <ph name="DEVICE_TYPE" /> заблоковано</translation>
 <translation id="5163910114647549394">Вкладку переміщено на кінець панелі</translation>
@@ -7972,6 +7982,7 @@
 <translation id="6912007319859991306">PIN-код SIM-карти</translation>
 <translation id="6912380255120084882">Скористайтесь іншим пристроєм</translation>
 <translation id="691289340230098384">Налаштування субтитрів</translation>
+<translation id="6913051485529944333">Ви більше не побачите Google Календар на цій сторінці</translation>
 <translation id="6914812290245989348">Не показувати попереджень перед переходом на небезпечні сайти</translation>
 <translation id="6916590542764765824">Керувати розширеннями</translation>
 <translation id="6918677045355889289">Оновіть ОС Chrome</translation>
@@ -9175,6 +9186,7 @@
 <translation id="7810202088502699111">На цій сторінці спливаючі вікна заблоковано.</translation>
 <translation id="7810367892333449285">Введіть дані у форматі: <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ адреса<ph name="LPA_2" />$<ph name="LPA_3" />необов’язковий ідентифікатор зіставлення<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">Повторіть спробу або виберіть одну з раніше створених тем нижче.</translation>
+<translation id="7812170317334653156">Google Календар приховано</translation>
 <translation id="7814090115158024843">Ніколи не пропонувати допомогу з написанням тексту на цих сайтах</translation>
 <translation id="7814458197256864873">&amp;Копіювати</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
@@ -9233,6 +9245,7 @@
 <translation id="7853747251428735">Інші інструменти</translation>
 <translation id="7853999103056713222">Використовуйте надійніший пароль</translation>
 <translation id="7855678561139483478">Перемістити вкладку в нове вікно</translation>
+<translation id="7856117067008941054">Приховати Google Календар</translation>
 <translation id="7857004848504343806">Ваш комп’ютер містить модуль безпеки, який виконує багато важливих функцій захисту в ОС Chrome Flex. Щоб дізнатися більше, відвідайте Довідковий центр Chromebook: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Підказки тексту</translation>
 <translation id="7858120906780498731">Підключені до ChromeOS пристрої введення</translation>
@@ -9241,6 +9254,7 @@
 <translation id="786073089922909430">Сервіс: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Завантаження</translation>
 <translation id="7861846108263890455">Мова облікового запису Google</translation>
+<translation id="7864114920800968141">Через <ph name="NUM_MIN" /> хв</translation>
 <translation id="7864539943188674973">Вимкнути Bluetooth</translation>
 <translation id="7864825798076155402">Зберегти у вашому обліковому записі Google?</translation>
 <translation id="7865127013871431856">Параметри перекладу</translation>

@@ -41,7 +41,7 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="1749104137266986751">Kui HTTPS pole saadaval, kasutab Chromium ebaturvalist ühendust ilma teid hoiatamata</translation>
 <translation id="1774152462503052664">Luba Chromiumil taustal töötada</translation>
 <translation id="1779356040007214683">Chromiumi turvalisemaks muutmiseks keelasime mõned laiendused, mida ei leidu veebipoes <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> ja mille lisamisest te ei pruugi teadlik olla.</translation>
-<translation id="1804128559285178512">Saate kasutada oma paroole ja Chromiumis oma Google'i konto muid valikuid, kui olete sisse logitud</translation>
+<translation id="1804128559285178512">Kui olete sisse logitud, siis saate kasutada Chromiumis oma paroole ja oma Google'i konto teisi võimalusi</translation>
 <translation id="1808667845054772817">Installi Chromium uuesti</translation>
 <translation id="1820835682567584003">Chromium püüab teha järgmist: <ph name="AUTHENTICATION_PURPOSE" /></translation>
 <translation id="18552579716432081">Sirvimisandmete kustutamiseks ainult sellest seadmest, kuid jättes need oma Google'i kontole alles, <ph name="BEGIN_LINK" />logige Chromiumist välja<ph name="END_LINK" />.</translation>

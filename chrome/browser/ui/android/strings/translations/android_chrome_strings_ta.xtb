@@ -381,7 +381,6 @@
 <translation id="2904414404539560095">தாவலைப் பகிர்வதற்கான சாதனங்களின் பட்டியல் திரையின் முழு அளவிற்குத் திறக்கப்பட்டுள்ளது.</translation>
 <translation id="2908243544703713905">படிக்காத செய்திகள் உள்ளன</translation>
 <translation id="2909615210195135082">Google அறிவிப்புகள் பிளாட்ஃபார்ம்</translation>
-<translation id="2912296070571964914">உங்களுக்கு ஆர்வமுள்ள தலைப்புகளை நிர்வகிக்கலாம்</translation>
 <translation id="2912345083818861431">திறந்துள்ள மறைநிலைப் பக்கங்களைப் பார்க்க, திரைப் பூட்டு அம்சத்தைப் பயன்படுத்தவும்</translation>
 <translation id="2923908459366352541">தவறான பெயர்</translation>
 <translation id="2932150158123903946">Google <ph name="APP_NAME" /> இன் சேமிப்பகம்</translation>
@@ -457,7 +456,6 @@
 <translation id="3259831549858767975">பக்கத்திலுள்ள அனைத்தையும் சிறிதாக்கும்</translation>
 <translation id="3264259168916048410">இணையதளத்தில் உள்நுழைய உங்கள் கம்ப்யூட்டர் இந்தச் சாதனத்தைப் பயன்படுத்த விரும்புகிறது</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" /> டொமைனின் அனைத்துப் பக்கங்களும்</translation>
-<translation id="3265534588625245297">பின்தொடரும் தளங்களை நிர்வகிக்கலாம்</translation>
 <translation id="3269093882174072735">படத்தை ஏற்று</translation>
 <translation id="3280562213547448728">குரல் தேடல்</translation>
 <translation id="3282568296779691940">Chrome இல் உள்நுழைக</translation>
@@ -830,7 +828,6 @@
 <translation id="510275257476243843">1 மணிநேரம் மீதமுள்ளது</translation>
 <translation id="5114895953710637392">ஆப்ஸ் ஃபில்டர் தாள் மூடப்பட்டது.</translation>
 <translation id="5115811374190515607"><ph name="PRODUCT_NAME" /> இல்</translation>
-<translation id="5118713593561876160">ஆர்வங்கள்</translation>
 <translation id="5122378528687922675">உங்களுக்கு உதவி தேவைப்பட்டால் பெற்றோரிடம் (<ph name="PARENT_NAME_1" /> அல்லது <ph name="PARENT_NAME_2" />) கேளுங்கள்</translation>
 <translation id="5123685120097942451">மறைநிலைத் தாவல்</translation>
 <translation id="5132942445612118989">எல்லாச் சாதனங்களிலும் உங்கள் கடவுச்சொற்கள், இதுவரையான செயல்பாடுகள் மற்றும் பலவற்றை ஒத்திசைக்கலாம்</translation>
@@ -844,7 +841,6 @@
 <translation id="5171045022955879922">தேடுக அல்லது URLலை உள்ளிடுக</translation>
 <translation id="5174700554036517242">உலாவிப் பக்கம் தொடக்க உயரத்திற்கு மீண்டும் அமைக்கப்பட்டது</translation>
 <translation id="5180063720319462041">பக்கம் <ph name="TARGET_LANGUAGE" /> மொழிக்கு மொழிபெயர்க்கப்பட்டது</translation>
-<translation id="5186634140793586141">நீங்கள் ஆர்வம் காட்டக்கூடிய தலைப்புகளையும் தேடல்களையும் நிர்வகிக்கலாம்</translation>
 <translation id="5191251636205085390">மூன்றாம் தரப்புக் குக்கீகளுக்கு மாற்றாகப் பயன்படுத்த உதவும் புதிய தொழில்நுட்பங்கள் குறித்தும் அவற்றைக் கட்டுப்படுத்துவது குறித்தும் மேலும் அறிக</translation>
 <translation id="5204967432542742771">கடவுச்சொல்</translation>
 <translation id="5206168361184759344">{FILE_COUNT,plural, =1{ஃபைலைப் பதிவிறக்குகிறது…}other{# ஃபைல்களைப் பதிவிறக்குகிறது…}}</translation>
@@ -961,6 +957,7 @@
 <translation id="5793665092639000975"><ph name="SPACE_AVAILABLE" /> இல் <ph name="SPACE_USED" /> பயன்படுத்தப்படுகிறது</translation>
 <translation id="5795872532621730126">தேடல் &amp; உலாவல்</translation>
 <translation id="5797949256525811424">தடுக்கப்பட்ட தலைப்பு</translation>
+<translation id="580893287573699959">உங்களுக்கு ஆர்வமுள்ள தலைப்புகளையும் தளங்களையும் நிர்வகிக்கலாம்</translation>
 <translation id="5809361687334836369">{HOURS,plural, =1{# மணிநேரம் முன்பு}other{# மணிநேரம் முன்பு}}</translation>
 <translation id="5810288467834065221">பதிப்புரிமை <ph name="YEAR" /> Google LLC. அனைத்து உரிமைகளும் பாதுகாக்கப்பட்டுள்ளன.</translation>
 <translation id="5814749351757353073">உங்களுக்குப் பிடித்த தளங்களைத் தவறாமல் பார்க்கலாம்</translation>

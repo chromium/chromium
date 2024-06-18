@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">пастельно-жовтий</translation>
 <translation id="1056898198331236512">Застереження</translation>
 <translation id="1059913517121127803">Не вдається почати сканування</translation>
+<translation id="1061864016440983342">Використовувати без геоданих</translation>
 <translation id="1062823486781306604"><ph name="NAME" /> (<ph name="INDEX" /> з <ph name="COUNT" />).</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">виявлено брандмауер</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Інші налаштування</translation>
 <translation id="2082932131694554252">Призначена клавіша</translation>
 <translation id="2085089206770112532">Зменшити яскравість екрана</translation>
+<translation id="2086091080968010660">Зміни на основі часу можуть бути неточними. Увімкніть доступ до геоданих системи в налаштуваннях.</translation>
 <translation id="2102231663024125441">Редагування тексту</translation>
 <translation id="2105810540595158374">Це ігровий контролер.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версія <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Відновити налаштування за умовчанням</translation>
 <translation id="2286454467119466181">Простий</translation>
 <translation id="2287186687001756809">Немає зображень. Щоб додати фото, перейдіть на сторінку <ph name="LINK" /></translation>
+<translation id="2294577623958216786">Поточний розклад: з <ph name="SUNRISE" /> до <ph name="SUNSET" />. Щоб автоматично оновлювати розклад сходу й заходу сонця, увімкніть доступ до геоданих системи.</translation>
 <translation id="2305172810646967500">чорний</translation>
 <translation id="2307344026739914387">Використовувати поточну пару ключів</translation>
 <translation id="2308243864813041101">Щоб продовжити оновлення, від’єднайте кабель USB від пристрою <ph name="DEVICE_NAME" /></translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">яскравість клавіатури</translation>
 <translation id="6412715219990689313">Вбудована клавіатура</translation>
 <translation id="6417265370957905582">Google Асистент</translation>
+<translation id="6419454453018688975">Надайте доступ до геоданих системи</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Слабкий сигнал (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Перейти до налаштувань облікового запису</translation>

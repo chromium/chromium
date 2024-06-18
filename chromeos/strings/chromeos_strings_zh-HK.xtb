@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">淡彩黃</translation>
 <translation id="1056898198331236512">警告</translation>
 <translation id="1059913517121127803">無法開始掃瞄</translation>
+<translation id="1061864016440983342">在不啟用位置功能的情況下使用</translation>
 <translation id="1062823486781306604">名稱：<ph name="NAME" /> (第 <ph name="INDEX" /> 項，總共 <ph name="COUNT" /> 項)。</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">偵測到防火牆</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">顯示更多設定</translation>
 <translation id="2082932131694554252">指定的鍵盤按鍵</translation>
 <translation id="2085089206770112532">顯示屏校暗亮度</translation>
+<translation id="2086091080968010660">時間相關的變更可能不準確。請在設定中開啟系統位置資料存取權。</translation>
 <translation id="2102231663024125441">文字編輯</translation>
 <translation id="2105810540595158374">裝置類型係遊戲控制器。</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">還原預設值</translation>
 <translation id="2286454467119466181">簡單</translation>
 <translation id="2287186687001756809">沒有圖片。如要新增相片，請前往 <ph name="LINK" /></translation>
+<translation id="2294577623958216786">目前的時間表設定為<ph name="SUNRISE" />至<ph name="SUNSET" />。如要自動更新日落和日出時間表，請開啟系統位置資料存取權。</translation>
 <translation id="2305172810646967500">黑色</translation>
 <translation id="2307344026739914387">使用目前的配對金鑰</translation>
 <translation id="2308243864813041101">請拔除「<ph name="DEVICE_NAME" />」的 USB 連接線，以繼續更新程序</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">鍵盤亮度</translation>
 <translation id="6412715219990689313">內置鍵盤</translation>
 <translation id="6417265370957905582">Google 助理</translation>
+<translation id="6419454453018688975">開啟系統位置資料存取權</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">弱 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">去帳戶設定</translation>
