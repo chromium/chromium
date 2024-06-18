@@ -29,6 +29,7 @@
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/actions/omnibox_action_concepts.h"
 #include "components/omnibox/browser/actions/omnibox_action_in_suggest.h"
+#include "components/omnibox/browser/actions/omnibox_answer_action.h"
 #include "components/omnibox/browser/autocomplete_match_type.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 #include "components/omnibox/browser/document_provider.h"
@@ -1522,6 +1523,17 @@ void AutocompleteMatch::FilterAndSortActionsInSuggest() {
   for (auto pair : actions_in_suggest_to_reinsert) {
     actions.emplace_back(std::move(pair.second));
   }
+}
+
+void AutocompleteMatch::RemoveAnswerActions() {
+  if (actions.empty()) {
+    return;
+  }
+
+  std::erase_if(actions, [&](const auto& action) {
+    auto* ans_action = OmniboxAnswerAction::FromAction(action.get());
+    return ans_action != nullptr;
+  });
 }
 
 bool AutocompleteMatch::IsTrivialAutocompletion() const {

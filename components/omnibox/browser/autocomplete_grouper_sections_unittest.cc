@@ -1865,7 +1865,8 @@ TEST(AutocompleteGrouperSectionsTest,
   feature_list.InitAndEnableFeatureWithParameters(
       omnibox::kOmniboxAnswerActions,
       {{OmniboxFieldTrial::kAnswerActionsShowRichCard.name, "true"},
-       {OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.name, "true"}});
+       {OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.name, "true"},
+       {OmniboxFieldTrial::kAnswerActionsShowIfUrlsPresent.name, "true"}});
   auto test = [](ACMatches matches, std::vector<int> expected_relevances) {
     PSections sections;
     omnibox::GroupConfigMap group_configs;
@@ -1918,6 +1919,69 @@ TEST(AutocompleteGrouperSectionsTest,
       // 20 -- rich answer card
       // 8, 7 -- below the fold matches
       {19, 10, 9, 18, 20, 8, 7});
+}
+
+TEST(AutocompleteGrouperSectionsTest,
+     AndroidNonZPSSection_hideCardWhenUrlsPresent) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      omnibox::kOmniboxAnswerActions,
+      {{OmniboxFieldTrial::kAnswerActionsShowRichCard.name, "true"},
+       {OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.name, "true"},
+       {OmniboxFieldTrial::kAnswerActionsShowIfUrlsPresent.name, "false"}});
+
+  auto test = [](ACMatches matches, std::vector<int> expected_relevances) {
+    PSections sections;
+    omnibox::GroupConfigMap group_configs;
+    AndroidNonZPSSection::set_num_visible_matches(5);
+    sections.push_back(
+        std::make_unique<AndroidNonZPSSection>(false, group_configs));
+    auto out_matches = Section::GroupMatches(std::move(sections), matches);
+    VerifyMatches(out_matches, expected_relevances);
+  };
+
+  auto make_search = [](int score) {
+    auto match = CreateMatch(score, omnibox::GROUP_SEARCH);
+    match.type = AutocompleteMatchType::SEARCH_HISTORY;
+    return match;
+  };
+
+  auto make_url = [](int score) {
+    auto match = CreateMatch(score, omnibox::GROUP_OTHER_NAVS);
+    match.type = AutocompleteMatchType::NAVSUGGEST;
+    return match;
+  };
+
+  auto make_rich_card = [](int score) {
+    auto match = CreateMatch(score, omnibox::GROUP_MOBILE_RICH_ANSWER);
+    match.type = AutocompleteMatchType::SEARCH_HISTORY;
+    omnibox::RichAnswerTemplate answer_template;
+    match.answer_template = answer_template;
+    return match;
+  };
+
+  {
+    SCOPED_TRACE("No matches, no crashes.");
+    test({}, {});
+  }
+
+  SCOPED_TRACE("Card in last position of visible matches");
+  test(
+      {
+          make_url(19),
+          make_url(18),
+          make_rich_card(20),
+          make_search(10),
+          make_search(9),
+          make_search(8),
+          make_search(7),
+      },
+      // 19     -- default match url
+      // 20, 10 -- top searches.
+      // Answer(20) counts as a plain search due to presence of urls.
+      // 18 -- remaining URL.
+      // 9, 8, 7 -- below the fold matches
+      {19, 20, 10, 18, 9, 8, 7});
 }
 
 #endif

@@ -643,6 +643,7 @@ void BaseSearchProvider::AddMatchToMap(
     if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
         less_relevant_duplicate_match.answer_template &&
         !existing_match.answer_template) {
+      existing_match.actions = less_relevant_duplicate_match.actions;
       existing_match.answer_template =
           less_relevant_duplicate_match.answer_template;
       existing_match.answer_type = less_relevant_duplicate_match.answer_type;

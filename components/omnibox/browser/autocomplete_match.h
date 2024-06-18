@@ -564,6 +564,9 @@ struct AutocompleteMatch {
   // ActionsInSuggest.
   void FilterAndSortActionsInSuggest();
 
+  // Remove all Answer Actions.
+  void RemoveAnswerActions();
+
   // Returns whether the autocompletion is trivial enough that we consider it
   // an autocompletion for which the omnibox autocompletion code did not add
   // any value.

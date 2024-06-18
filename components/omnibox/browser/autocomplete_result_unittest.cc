@@ -3061,6 +3061,7 @@ TEST_F(AutocompleteResultTest, Mobile_TrimOmniboxActions) {
   scoped_refptr<FakeAutocompleteProvider> provider =
       new FakeAutocompleteProvider(AutocompleteProvider::Type::TYPE_SEARCH);
   using OmniboxActionId::ACTION_IN_SUGGEST;
+  using OmniboxActionId::ANSWER_ACTION;
   using OmniboxActionId::PEDAL;
   using OmniboxActionId::UNKNOWN;
   const std::set<OmniboxActionId> all_actions_to_test{ACTION_IN_SUGGEST, PEDAL};
@@ -3070,6 +3071,7 @@ TEST_F(AutocompleteResultTest, Mobile_TrimOmniboxActions) {
     std::vector<std::vector<OmniboxActionId>> input_matches_and_actions;
     std::vector<std::vector<OmniboxActionId>> result_matches_and_actions_zps;
     std::vector<std::vector<OmniboxActionId>> result_matches_and_actions_typed;
+    bool include_url = false;
   } test_cases[]{
       {"No actions attached to matches",
        {{}, {}, {}, {}},
@@ -3109,6 +3111,25 @@ TEST_F(AutocompleteResultTest, Mobile_TrimOmniboxActions) {
        {{PEDAL}, {PEDAL}, {PEDAL}, {}},
        // Typed
        {{ACTION_IN_SUGGEST}, {PEDAL}, {PEDAL}, {}}},
+      {"Answer actions promoted over pedals; can go in any position",
+       {{ANSWER_ACTION, PEDAL},
+        {ANSWER_ACTION, PEDAL},
+        {ANSWER_ACTION, PEDAL},
+        {ANSWER_ACTION, PEDAL}},
+       // ZPS
+       {{ANSWER_ACTION}, {ANSWER_ACTION}, {ANSWER_ACTION}, {ANSWER_ACTION}},
+       // Typed
+       {{ANSWER_ACTION}, {ANSWER_ACTION}, {ANSWER_ACTION}, {ANSWER_ACTION}}},
+      {"Answer actions suppressed when there are urls",
+       {{PEDAL, ANSWER_ACTION},
+        {ANSWER_ACTION},
+        {ANSWER_ACTION},
+        {ANSWER_ACTION}},
+       // ZPS
+       {{PEDAL}, {}, {}, {}},
+       // Typed
+       {{PEDAL}, {}, {}, {}},
+       /* include_url= */ true},
   };
 
   // Crete matches following the `input_matches_and_actions` input.
@@ -3121,8 +3142,10 @@ TEST_F(AutocompleteResultTest, Mobile_TrimOmniboxActions) {
     AutocompleteResult zps_result;
     AutocompleteResult typed_result;
     for (const auto& actions : data.input_matches_and_actions) {
-      AutocompleteMatch match(provider.get(), 1, false,
-                              AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
+      AutocompleteMatch match(
+          provider.get(), 1, false,
+          data.include_url ? AutocompleteMatchType::URL_WHAT_YOU_TYPED
+                           : AutocompleteMatchType::SEARCH_SUGGEST_ENTITY);
       for (auto& action_id : actions) {
         if (action_id == OmniboxActionId::ACTION_IN_SUGGEST) {
           omnibox::ActionInfo info;

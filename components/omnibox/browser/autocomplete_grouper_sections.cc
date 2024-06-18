@@ -156,17 +156,30 @@ AndroidNonZPSSection::AndroidNonZPSSection(
           omnibox::GroupConfig_SideType_DEFAULT_PRIMARY) {}
 
 void AndroidNonZPSSection::InitFromMatches(ACMatches& matches) {
+  auto rich_answer_match = base::ranges::find_if(
+      matches,
+      [&](const auto& match) { return match.answer_template.has_value(); });
+  bool has_rich_answer = rich_answer_match != matches.end();
+  if (!has_rich_answer) {
+    return;
+  }
+
+  bool has_url = base::ranges::any_of(matches, [](const auto& match) {
+    return !AutocompleteMatch::IsSearchType(match.type);
+  });
+  bool hide_if_urls_present =
+      !OmniboxFieldTrial::kAnswerActionsShowIfUrlsPresent.Get();
+  if (has_url && hide_if_urls_present) {
+    rich_answer_match->suggestion_group_id = omnibox::GROUP_SEARCH;
+  }
+
   if (!OmniboxFieldTrial::kAnswerActionsShowRichCard.Get() ||
       !OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.Get()) {
     return;
   }
 
   auto& above_keyboard_group = groups_[1];
-  bool has_answer = base::ranges::any_of(
-      matches, [](const auto& match) { return match.answer_template; });
-  if (has_answer) {
-    above_keyboard_group.set_limit(above_keyboard_group.limit() - 1);
-  }
+  above_keyboard_group.set_limit(above_keyboard_group.limit() - 1);
 }
 
 AndroidNTPZpsSection::AndroidNTPZpsSection(
