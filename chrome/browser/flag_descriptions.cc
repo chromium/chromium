@@ -3674,6 +3674,18 @@ const char kVcBackgroundReplaceDescription[] =
     "Enables background replacement feature for video conferencing on "
     "chromebooks. THIS WILL OVERRIDE BACKGROUND BLUR.";
 
+const char kVcRelightingInferenceBackendName[] =
+    "Select relighting backend for video conferencing";
+const char kVcRelightingInferenceBackendDescription[] =
+    "Select relighting backend to be used for running model inference during "
+    "video conferencing, which may offload work from GPU.";
+
+const char kVcSegmentationInferenceBackendName[] =
+    "Select segmentation backend for video conferencing";
+const char kVcSegmentationInferenceBackendDescription[] =
+    "Select segmentation backend to be used for running model inference "
+    "during video conferencing, which may offload work from GPU.";
+
 const char kVcSegmentationModelName[] = "Use a different segmentation model";
 const char kVcSegmentationModelDescription[] =
     "Allows a different segmentation model to be used for blur and relighting, "

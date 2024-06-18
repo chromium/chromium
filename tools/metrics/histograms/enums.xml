@@ -15832,6 +15832,7 @@ from previous Chrome versions.
   <int value="-1999824144" label="NewDragSpecInLauncher:disabled"/>
   <int value="-1999617045" label="PDFAnnotations:disabled"/>
   <int value="-1998927516" label="enable-md-settings"/>
+  <int value="-1998811299" label="VcSegmentationInferenceBackend:enabled"/>
   <int value="-1996592771" label="FedCmAccountAutoSelectedFlag:enabled"/>
   <int value="-1996233283"
       label="OmniboxGroupSuggestionsBySearchVsUrl:enabled"/>
@@ -19146,6 +19147,7 @@ from previous Chrome versions.
   <int value="-570005880"
       label="AutofillFixServerQueriesIfPasswordManagerIsEnabled:disabled"/>
   <int value="-569256428" label="MacAddressRandomization:enabled"/>
+  <int value="-569208004" label="VcSegmentationInferenceBackend:disabled"/>
   <int value="-568448085" label="SharedClipboardReceiver:disabled"/>
   <int value="-567920515" label="disable-experimental-hotwording"/>
   <int value="-567743697" label="EnableInputNoiseCancellationUi:enabled"/>
@@ -22356,6 +22358,7 @@ from previous Chrome versions.
   <int value="806063284" label="LacrosColorManagement:enabled"/>
   <int value="806334184" label="AndroidSpellChecker:enabled"/>
   <int value="806783713" label="DesktopPWAsTabStripLinkCapturing:enabled"/>
+  <int value="807268968" label="VcRelightingInferenceBackend:disabled"/>
   <int value="807394992" label="ReadAloud:disabled"/>
   <int value="807447752" label="ChromeMemex:disabled"/>
   <int value="807723668" label="(Obsolete) TranslateAssistContent:enabled"/>
@@ -23891,6 +23894,7 @@ from previous Chrome versions.
   <int value="1476781717" label="AutofillUpstreamUpdatedUi:disabled"/>
   <int value="1478075250" label="QuickAnswersTextAnnotator:disabled"/>
   <int value="1478461926" label="GlobalMediaControlsPictureInPicture:enabled"/>
+  <int value="1478835676" label="VcRelightingInferenceBackend:enabled"/>
   <int value="1479248574" label="disable-voice-input"/>
   <int value="1480073052" label="WallpaperSearchSettingsVisibility:enabled"/>
   <int value="1480507924" label="EnableNetworkingInDiagnosticsApp:enabled"/>

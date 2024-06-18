@@ -8911,6 +8911,26 @@
     "expiry_milestone": 120
   },
   {
+    "name": "vc-relighting-inference-backend",
+    "owners": [
+      "shik@chromium.org",
+      "chingkang@chromium.org",
+      "jcliang@chromium.org",
+      "cros-odml-foundations-eng@google.com"
+    ],
+    "expiry_milestone": 133
+  },
+  {
+    "name": "vc-segmentation-inference-backend",
+    "owners": [
+      "shik@chromium.org",
+      "chingkang@chromium.org",
+      "jcliang@chromium.org",
+      "cros-odml-foundations-eng@google.com"
+    ],
+    "expiry_milestone": 133
+  },
+  {
     "name": "vc-segmentation-model",
     "owners": [ "ardoerlemans@chromium.org", "jmpollock@chromium.org", "nbowe@chromium.org" ],
     "expiry_milestone": 116

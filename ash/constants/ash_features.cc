@@ -2999,6 +2999,12 @@ BASE_FEATURE(kVcPortraitRelight,
              "VcPortraitRelight",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables alternative inference backends for running ChromeOS video
+// conferencing portrait relighing models.
+BASE_FEATURE(kVcRelightingInferenceBackend,
+             "VcRelightingInferenceBackend",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // This is only used as a way to disable stopAllScreenShare.
 BASE_FEATURE(kVcStopAllScreenShare,
              "VcStopAllScreenShare",
@@ -3008,6 +3014,12 @@ BASE_FEATURE(kVcStopAllScreenShare,
 // UI. Only meaningful in the emulator.
 BASE_FEATURE(kVcControlsUiFakeEffects,
              "VcControlsUiFakeEffects",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables or disables alternative inference backends for running ChromeOS video
+// conferencing segmentation models.
+BASE_FEATURE(kVcSegmentationInferenceBackend,
+             "VcSegmentationInferenceBackend",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables alternative segmentation models for ChromeOS video

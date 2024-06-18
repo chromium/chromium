@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Next min version: 5
+// Next min version: 6
 
 module cros.mojom;
 
@@ -53,9 +53,16 @@ enum SegmentationModel {
   kLowerResolution = 2,
 };
 
+// Defines the backends to run the ML model inference.
+[Extensible]
+enum InferenceBackend {
+  [Default] kGpu = 0,
+  kNpu = 1,
+};
+
 // Structure used for configuring and enabling video conferencing effects.
 // This should be kept in sync with the google3 version found in:
-// chromeos/ml/effects_pipeline/effects_config.h
+// chromeos/ml/effects_pipeline/public/effects_pipeline_types.h
 struct EffectsConfig {
   // Name of the effect to enable.
   CameraEffect effect = kNone;
@@ -88,4 +95,10 @@ struct EffectsConfig {
 
   // Light intensity for relighting.
   [MinVersion=4] float? light_intensity;
+
+  // The inference backend to run segmentation model.
+  [MinVersion=5] InferenceBackend segmentation_inference_backend;
+
+  // The inference backend to run portrait relighing model.
+  [MinVersion=5] InferenceBackend relighting_inference_backend;
 };

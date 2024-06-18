@@ -2138,6 +2138,12 @@ extern const char kVerticalAutomotiveBackButtonToolbarDescription[];
 extern const char kVcBackgroundReplaceName[];
 extern const char kVcBackgroundReplaceDescription[];
 
+extern const char kVcRelightingInferenceBackendName[];
+extern const char kVcRelightingInferenceBackendDescription[];
+
+extern const char kVcSegmentationInferenceBackendName[];
+extern const char kVcSegmentationInferenceBackendDescription[];
+
 extern const char kVcSegmentationModelName[];
 extern const char kVcSegmentationModelDescription[];
 

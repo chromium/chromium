@@ -373,6 +373,21 @@ void SetBackgroundReplaceUiVisible(bool visible) {
   }
 }
 
+cros::mojom::InferenceBackend GetInferenceBackend(
+    const base::Feature& feature) {
+  const std::string value =
+      GetFieldTrialParamValueByFeature(feature, "inference_backend");
+  if (value == "GPU") {
+    return cros::mojom::InferenceBackend::kGpu;
+  } else if (value == "NPU") {
+    return cros::mojom::InferenceBackend::kNpu;
+  } else {
+    // If the feature is disabled, or enabled without a specific value, we will
+    // get an empty string and fall into this case.
+    return cros::mojom::InferenceBackend::kDefaultValue;
+  }
+}
+
 }  // namespace
 
 // static
@@ -810,6 +825,11 @@ void CameraEffectsController::SetCameraEffects(
   if (intensity > 0.0) {
     config->light_intensity = intensity;
   }
+
+  config->segmentation_inference_backend =
+      GetInferenceBackend(ash::features::kVcSegmentationInferenceBackend);
+  config->relighting_inference_backend =
+      GetInferenceBackend(ash::features::kVcRelightingInferenceBackend);
 
   if (config->replace_enabled &&
       config->background_filepath != current_effects_->background_filepath) {
