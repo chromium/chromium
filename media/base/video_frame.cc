@@ -765,6 +765,16 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalYuvData(
 scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
+    std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer) {
+  return CreateFrameForGpuMemoryBufferInternal(
+      visible_rect, natural_size, std::move(gpu_memory_buffer),
+      base::NullCallback(), base::TimeDelta());
+}
+
+// static
+scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
+    const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
     std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
     scoped_refptr<gpu::ClientSharedImage> shared_images[kMaxPlanes],
     const gpu::SyncToken& sync_token,
