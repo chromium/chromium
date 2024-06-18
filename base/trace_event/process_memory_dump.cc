@@ -16,6 +16,7 @@
 #include <vector>
 
 #include "base/bits.h"
+#include "base/containers/heap_array.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
 #include "base/memory/ptr_util.h"
@@ -115,13 +116,14 @@ std::optional<size_t> ProcessMemoryDump::CountResidentBytes(
   const size_t kMaxChunkSize = 8 * 1024 * 1024;
   size_t max_vec_size =
       GetSystemPageCount(std::min(mapped_size, kMaxChunkSize), page_size);
+
 #if BUILDFLAG(IS_WIN)
-  std::unique_ptr<PSAPI_WORKING_SET_EX_INFORMATION[]> vec(
-      new PSAPI_WORKING_SET_EX_INFORMATION[max_vec_size]);
+  auto vec =
+      base::HeapArray<PSAPI_WORKING_SET_EX_INFORMATION>::WithSize(max_vec_size);
 #elif BUILDFLAG(IS_APPLE)
-  std::unique_ptr<char[]> vec(new char[max_vec_size]);
+  auto vec = base::HeapArray<char>::WithSize(max_vec_size);
 #elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
-  std::unique_ptr<unsigned char[]> vec(new unsigned char[max_vec_size]);
+  auto vec = base::HeapArray<unsigned char>::WithSize(max_vec_size);
 #endif
 
   while (offset < mapped_size) {
@@ -134,9 +136,10 @@ std::optional<size_t> ProcessMemoryDump::CountResidentBytes(
       vec[i].VirtualAddress =
           reinterpret_cast<void*>(chunk_start + i * page_size);
     }
-    DWORD vec_size = static_cast<DWORD>(
-        page_count * sizeof(PSAPI_WORKING_SET_EX_INFORMATION));
-    failure = !QueryWorkingSetEx(GetCurrentProcess(), vec.get(), vec_size);
+
+    auto span = vec.first(page_count);
+    failure = !QueryWorkingSetEx(GetCurrentProcess(), span.data(),
+                                 static_cast<DWORD>(span.size_bytes()));
 
     for (size_t i = 0; i < page_count; i++)
       resident_page_count += vec[i].VirtualAttributes.Valid;
@@ -149,7 +152,7 @@ std::optional<size_t> ProcessMemoryDump::CountResidentBytes(
 #elif BUILDFLAG(IS_APPLE)
     // mincore in MAC does not fail with EAGAIN.
     failure =
-        !!mincore(reinterpret_cast<void*>(chunk_start), chunk_size, vec.get());
+        !!mincore(reinterpret_cast<void*>(chunk_start), chunk_size, vec.data());
     for (size_t i = 0; i < page_count; i++)
       resident_page_count += vec[i] & MINCORE_INCORE ? 1 : 0;
 #elif BUILDFLAG(IS_POSIX)
@@ -160,9 +163,9 @@ std::optional<size_t> ProcessMemoryDump::CountResidentBytes(
       result =
 #if BUILDFLAG(IS_AIX)
           mincore(reinterpret_cast<char*>(chunk_start), chunk_size,
-                  reinterpret_cast<char*>(vec.get()));
+                  reinterpret_cast<char*>(vec.data()));
 #else
-          mincore(reinterpret_cast<void*>(chunk_start), chunk_size, vec.get());
+          mincore(reinterpret_cast<void*>(chunk_start), chunk_size, vec.data());
 #endif
     } while (result == -1 && errno == EAGAIN && error_counter++ < 100);
     failure = !!result;
