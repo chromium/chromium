@@ -151,6 +151,10 @@ BrowserState::GetSharedURLLoaderFactory() {
   return shared_url_loader_factory_;
 }
 
+const std::string& BrowserState::GetWebKitStorageID() const {
+  return base::EmptyString();
+}
+
 URLDataManagerIOSBackend*
 BrowserState::GetURLDataManagerIOSBackendOnIOThread() {
   DCHECK_CURRENTLY_ON(web::WebThread::IO);

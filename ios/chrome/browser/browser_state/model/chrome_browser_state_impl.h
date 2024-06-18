@@ -53,6 +53,7 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
 
   // BrowserState:
   bool IsOffTheRecord() const override;
+  const std::string& GetWebKitStorageID() const override;
 
  private:
   friend class ChromeBrowserState;
@@ -97,6 +98,10 @@ class ChromeBrowserStateImpl final : public ChromeBrowserState {
   std::unique_ptr<ChromeBrowserStateImplIOData::Handle> io_data_;
 
   std::unique_ptr<PrefProxyConfigTracker> pref_proxy_config_tracker_;
+
+  // `storage_uuid_` can be empty if the profile already existed and no value is
+  // stored in PrefService. Use a default data store if it's empty.
+  std::string storage_uuid_;
 
   base::WeakPtrFactory<ChromeBrowserStateImpl> weak_ptr_factory_{this};
 

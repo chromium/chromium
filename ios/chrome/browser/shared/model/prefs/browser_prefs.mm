@@ -856,6 +856,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterBooleanPref(kObsoletePasswordsPerAccountPrefMigrationDone,
                                 false);
+
+  registry->RegisterStringPref(prefs::kBrowserStateStorageIdentifier,
+                               std::string());
 }
 
 // This method should be periodically pruned of year+ old migrations.

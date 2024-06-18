@@ -158,9 +158,10 @@ StartupProfilePathInfo GetStartupProfilePath(
     const base::CommandLine& command_line,
     bool ignore_profile_picker);
 
-bool EnsureBrowserStateDirectoriesCreated(const base::FilePath&,
-                                          const base::FilePath&,
-                                          const base::FilePath&);
+int EnsureBrowserStateDirectoriesCreated(const base::FilePath&,
+                                         const base::FilePath&,
+                                         const base::FilePath&);
+
 Profile* GetLastProfileMac();
 bool HasWaylandDisplay(base::Environment* env);
 
@@ -675,9 +676,9 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBlocking {
 #endif
 
   // Sorted by function name (with namespace), ignoring the return type.
-  friend bool ::EnsureBrowserStateDirectoriesCreated(const base::FilePath&,
-                                                     const base::FilePath&,
-                                                     const base::FilePath&);
+  friend int ::EnsureBrowserStateDirectoriesCreated(const base::FilePath&,
+                                                    const base::FilePath&,
+                                                    const base::FilePath&);
   friend Profile* ::GetLastProfileMac();  // http://crbug.com/1176734
   // Note: This function return syntax is required so the "::" doesn't get
   // mis-parsed. See https://godbolt.org/z/KGhnPxfc8 for the issue.

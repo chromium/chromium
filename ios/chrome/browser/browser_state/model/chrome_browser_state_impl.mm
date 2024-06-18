@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/browser_state/model/chrome_browser_state_impl.h"
 
+#import <Foundation/Foundation.h>
+
 #import <utility>
 
 #import "base/apple/backup_util.h"
@@ -11,6 +13,7 @@
 #import "base/feature_list.h"
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/threading/thread_restrictions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
@@ -49,11 +52,18 @@
 #import "ios/chrome/browser/supervised_user/model/supervised_user_settings_service_factory.h"
 #import "ios/web/public/thread/web_thread.h"
 
-// Returns a bool indicating whether the necessary directories were able to be
-// created (or already existed).
-bool EnsureBrowserStateDirectoriesCreated(const base::FilePath& path,
-                                          const base::FilePath& otr_path,
-                                          const base::FilePath& cache_path) {
+enum class BrowserStateCreationResult {
+  kCreated,
+  kExisting,
+  kFailed,
+};
+
+// Returns an integer corresponded to a BrowserStateCreationResult enum
+// indicating if the necessary directories were newly created, already existed,
+// or failed to be created.
+int EnsureBrowserStateDirectoriesCreated(const base::FilePath& path,
+                                         const base::FilePath& otr_path,
+                                         const base::FilePath& cache_path) {
   // Create the browser state directory synchronously otherwise we would need to
   // sequence every otherwise independent I/O operation inside the browser state
   // directory with this operation. base::CreateDirectory() should be a
@@ -62,21 +72,33 @@ bool EnsureBrowserStateDirectoriesCreated(const base::FilePath& path,
   // thread.
   base::ScopedAllowBlocking allow_blocking_to_create_directory;
 
-  if (!base::PathExists(path) && !base::CreateDirectory(path)) {
-    return false;
+  BrowserStateCreationResult result = BrowserStateCreationResult::kExisting;
+
+  if (!base::PathExists(path)) {
+    result = BrowserStateCreationResult::kCreated;
+    if (!base::CreateDirectory(path)) {
+      return static_cast<int>(BrowserStateCreationResult::kFailed);
+    }
   }
+
   // Create the directory for the OTR stash state now, even though it won't
   // necessarily be needed: the OTR browser state itself is created
   // synchronously on an as-needed basis on the UI thread, so creation of its
   // stash state directory cannot easily be done at that point.
-  if (!base::PathExists(otr_path) && !base::CreateDirectory(otr_path)) {
-    return false;
+  if (!base::PathExists(otr_path)) {
+    result = BrowserStateCreationResult::kCreated;
+    if (!base::CreateDirectory(otr_path)) {
+      return static_cast<int>(BrowserStateCreationResult::kFailed);
+    }
   }
   base::apple::SetBackupExclusion(otr_path);
-  if (!base::PathExists(cache_path) && !base::CreateDirectory(cache_path)) {
-    return false;
+  if (!base::PathExists(cache_path)) {
+    result = BrowserStateCreationResult::kCreated;
+    if (!base::CreateDirectory(cache_path)) {
+      return static_cast<int>(BrowserStateCreationResult::kFailed);
+    }
   }
-  return true;
+  return static_cast<int>(result);
 }
 
 namespace {
@@ -125,9 +147,11 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
   base::FilePath base_cache_path;
   ios::GetUserCacheDirectory(state_path, &base_cache_path);
 
-  bool directories_created = EnsureBrowserStateDirectoriesCreated(
-      state_path, GetOffTheRecordStatePath(), base_cache_path);
-  DCHECK(directories_created);
+  BrowserStateCreationResult directories_created =
+      static_cast<BrowserStateCreationResult>(
+          EnsureBrowserStateDirectoriesCreated(
+              state_path, GetOffTheRecordStatePath(), base_cache_path));
+  DCHECK_NE(directories_created, BrowserStateCreationResult::kFailed);
 
   // Bring up the policy system before creating `prefs_`.
   BrowserPolicyConnectorIOS* connector =
@@ -199,6 +223,18 @@ ChromeBrowserStateImpl::ChromeBrowserStateImpl(
   base::FilePath cookie_path = state_path.Append(kIOSChromeCookieFilename);
   base::FilePath cache_path = GetCachePath(base_cache_path);
   int cache_max_size = 0;
+
+  // `storage_uuid_` can be empty when the profile is newly created or already
+  // existed.
+  storage_uuid_ = GetPrefs()->GetString(prefs::kBrowserStateStorageIdentifier);
+  // For newly created profiles, generate a UUID and use a separated data store.
+  // TODO(crbug.com/346754380): Remove a default data store completely.
+  if (storage_uuid_.empty() &&
+      directories_created == BrowserStateCreationResult::kCreated) {
+    storage_uuid_ = base::SysNSStringToUTF8([NSUUID UUID].UUIDString);
+    // Store the UUID value to PrefService locally.
+    GetPrefs()->SetString(prefs::kBrowserStateStorageIdentifier, storage_uuid_);
+  }
 
   // Make sure we initialize the io_data_ after everything else has been
   // initialized that we might be reading from the IO thread.
@@ -277,6 +313,10 @@ ChromeBrowserStateImpl::GetSyncablePrefs() {
 
 bool ChromeBrowserStateImpl::IsOffTheRecord() const {
   return false;
+}
+
+const std::string& ChromeBrowserStateImpl::GetWebKitStorageID() const {
+  return storage_uuid_;
 }
 
 void ChromeBrowserStateImpl::SetOffTheRecordChromeBrowserState(

@@ -59,6 +59,9 @@ inline constexpr char kBrowserStatesLastActive[] =
 // browser states directories.
 inline constexpr char kBrowserStatesNumCreated[] = "profile.profiles_created";
 
+// A string of NSUUID used to access the WebKit storage per BrowserState.
+inline constexpr char kBrowserStateStorageIdentifier[] = "profile.storage_id";
+
 // Boolean which indicates whether browsing data migration is/was possible in
 // this or a previous cold start.
 inline constexpr char kBrowsingDataMigrationHasBeenPossible[] =
