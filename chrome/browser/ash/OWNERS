@@ -11,7 +11,6 @@ xiyuan@chromium.org
 per-file BUILD.gn=*
 
 per-file *active_directory*=file://chrome/browser/ash/authpolicy/OWNERS
-per-file note_taking*=glenrob@chromium.org
 per-file camera_presence_notifier*=file://ash/webui/camera_app_ui/OWNERS
 per-file set_time_dialog*=file://chrome/browser/resources/ash/settings/OWNERS
 
