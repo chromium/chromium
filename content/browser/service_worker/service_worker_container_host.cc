@@ -1455,13 +1455,13 @@ void ServiceWorkerClient::OnEnterBackForwardCache() {
   DCHECK(IsBackForwardCacheEnabled());
   if (controller_) {
     // TODO(crbug.com/330928087): remove check when this issue resolved.
-    SCOPED_CRASH_KEY_NUMBER("SWV_RCFBCM", "client_type",
+    SCOPED_CRASH_KEY_NUMBER("SWC_OnEBFC", "client_type",
                             static_cast<int32_t>(GetClientType()));
-    SCOPED_CRASH_KEY_BOOL("SWV_RCFBCM", "is_execution_ready",
+    SCOPED_CRASH_KEY_BOOL("SWC_OnEBFC", "is_execution_ready",
                           is_execution_ready());
-    SCOPED_CRASH_KEY_BOOL("SWV_RCFBCM", "is_blob_url",
+    SCOPED_CRASH_KEY_BOOL("SWC_OnEBFC", "is_blob_url",
                           url() != GetUrlForScopeMatch());
-    SCOPED_CRASH_KEY_BOOL("SWV_RCFBCM", "is_inherited", is_inherited());
+    SCOPED_CRASH_KEY_BOOL("SWC_OnEBFC", "is_inherited", is_inherited());
     CHECK(!controller_->BFCacheContainsControllee(client_uuid()));
     controller_->MoveControlleeToBackForwardCacheMap(client_uuid());
   }
@@ -1471,6 +1471,12 @@ void ServiceWorkerClient::OnEnterBackForwardCache() {
 void ServiceWorkerClient::OnRestoreFromBackForwardCache() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(IsBackForwardCacheEnabled());
+  // TODO(crbug.com/330928087): remove check when this issue resolved.
+  SCOPED_CRASH_KEY_BOOL("SWC_OnRFBFC", "is_in_bfcache",
+                        is_in_back_forward_cache_);
+  SCOPED_CRASH_KEY_BOOL("SWC_OnRFBFC", "is_blob_url",
+                        url() != GetUrlForScopeMatch());
+  SCOPED_CRASH_KEY_BOOL("SWC_OnRFBFC", "is_inherited", is_inherited());
   if (controller_)
     controller_->RestoreControlleeFromBackForwardCacheMap(client_uuid());
   is_in_back_forward_cache_ = false;
