@@ -254,17 +254,17 @@ class ReadAnythingAppModelTest : public ChromeRenderViewTest {
   void ResetReadAloudState() { model_->ResetReadAloudState(); }
 
   ui::AXNodePosition::AXPositionInstance GetNextNodePosition() {
-    ReadAnythingAppModel::ReadAloudCurrentGranularity granularity =
-        ReadAnythingAppModel::ReadAloudCurrentGranularity();
+    a11y::ReadAloudCurrentGranularity granularity =
+        a11y::ReadAloudCurrentGranularity();
     return model_->GetNextValidPositionFromCurrentPosition(granularity);
   }
 
   ui::AXNodePosition::AXPositionInstance GetNextNodePosition(
-      ReadAnythingAppModel::ReadAloudCurrentGranularity granularity) {
+      a11y::ReadAloudCurrentGranularity granularity) {
     return model_->GetNextValidPositionFromCurrentPosition(granularity);
   }
 
-  ReadAnythingAppModel::ReadAloudCurrentGranularity GetNextNodes() {
+  a11y::ReadAloudCurrentGranularity GetNextNodes() {
     return model_->GetNextNodes();
   }
 
@@ -1806,8 +1806,7 @@ TEST_F(
   ProcessDisplayNodes({static_text1.id, static_text2.id, static_text3.id});
   InitAXPosition(update.nodes[0].id);
 
-  ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity =
-      GetNextNodes();
+  a11y::ReadAloudCurrentGranularity current_granularity = GetNextNodes();
   // Expect that current_granularity contains static_text1
   // Expect that the indices aren't returned correctly
   // Expect that GetNextValidPosition fails without inserted the granularity.
@@ -1860,21 +1859,18 @@ TEST_F(ReadAnythingAppModelTest,
   InitAXPosition(update.nodes[0].id);
 
   // Get first and second granularity.
-  ReadAnythingAppModel::ReadAloudCurrentGranularity first_granularity =
-      GetNextNodes();
+  a11y::ReadAloudCurrentGranularity first_granularity = GetNextNodes();
   EXPECT_EQ((int)first_granularity.node_ids.size(), 1);
   EXPECT_TRUE(base::Contains(first_granularity.node_ids, static_text1.id));
   EXPECT_EQ(first_granularity.text, sentence1);
-  ReadAnythingAppModel::ReadAloudCurrentGranularity next_granularity =
-      GetNextNodes();
+  a11y::ReadAloudCurrentGranularity next_granularity = GetNextNodes();
   EXPECT_EQ((int)next_granularity.node_ids.size(), 1);
   EXPECT_TRUE(base::Contains(next_granularity.node_ids, static_text2.id));
   EXPECT_EQ(next_granularity.text, sentence2);
 
   // If we init without resetting we should just go to the next sentence
   InitAXPosition(update.nodes[0].id);
-  ReadAnythingAppModel::ReadAloudCurrentGranularity last_granularity =
-      GetNextNodes();
+  a11y::ReadAloudCurrentGranularity last_granularity = GetNextNodes();
   EXPECT_EQ((int)last_granularity.node_ids.size(), 1);
   EXPECT_TRUE(base::Contains(last_granularity.node_ids, static_text3.id));
   EXPECT_EQ(last_granularity.text, sentence3);
@@ -1882,8 +1878,7 @@ TEST_F(ReadAnythingAppModelTest,
   // After reset and then init, we should get the first sentence again.
   ResetReadAloudState();
   InitAXPosition(update.nodes[0].id);
-  ReadAnythingAppModel::ReadAloudCurrentGranularity after_reset =
-      GetNextNodes();
+  a11y::ReadAloudCurrentGranularity after_reset = GetNextNodes();
   EXPECT_EQ((int)after_reset.node_ids.size(), 1);
   EXPECT_TRUE(base::Contains(after_reset.node_ids, static_text1.id));
   EXPECT_EQ(first_granularity.text, sentence1);

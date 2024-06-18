@@ -14,7 +14,6 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/renderer/accessibility/read_aloud_traversal_utils.h"
 #include "content/public/renderer/render_thread.h"
-#include "read_anything_app_model.h"
 #include "services/strings/grit/services_strings.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_enum_util.h"
@@ -60,17 +59,6 @@ ReadAnythingAppModel::AXTreeInfo::AXTreeInfo(
 }
 
 ReadAnythingAppModel::AXTreeInfo::~AXTreeInfo() = default;
-
-ReadAnythingAppModel::ReadAloudCurrentGranularity::
-    ReadAloudCurrentGranularity() {
-  segments = std::map<ui::AXNodeID, ReadAloudTextSegment>();
-}
-
-ReadAnythingAppModel::ReadAloudCurrentGranularity::ReadAloudCurrentGranularity(
-    const ReadAloudCurrentGranularity& other) = default;
-
-ReadAnythingAppModel::ReadAloudCurrentGranularity::
-    ~ReadAloudCurrentGranularity() = default;
 
 void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
     read_anything::mojom::LineSpacing line_spacing,
@@ -1211,8 +1199,7 @@ void ReadAnythingAppModel::MovePositionToPreviousGranularity() {
 std::vector<ui::AXNodeID> ReadAnythingAppModel::GetCurrentText() {
   while (processed_granularities_on_current_page_.size() <=
          processed_granularity_index_) {
-    ReadAnythingAppModel::ReadAloudCurrentGranularity next_granularity =
-        GetNextNodes();
+    a11y::ReadAloudCurrentGranularity next_granularity = GetNextNodes();
 
     if (next_granularity.node_ids.size() == 0) {
       // TODO(crbug.com/40927698) think about behavior when increment happened
@@ -1230,10 +1217,9 @@ std::vector<ui::AXNodeID> ReadAnythingAppModel::GetCurrentText() {
 // TODO(crbug.com/40927698): Update to use AXRange to better handle multiple
 // nodes. This may require updating GetText in ax_range.h to return AXNodeIds.
 // AXRangeType#ExpandToEnclosingTextBoundary may also be useful.
-ReadAnythingAppModel::ReadAloudCurrentGranularity
-ReadAnythingAppModel::GetNextNodes() {
-  ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity =
-      ReadAnythingAppModel::ReadAloudCurrentGranularity();
+a11y::ReadAloudCurrentGranularity ReadAnythingAppModel::GetNextNodes() {
+  a11y::ReadAloudCurrentGranularity current_granularity =
+      a11y::ReadAloudCurrentGranularity();
 
   // Make sure we're adequately returning at the end of content.
   if (!ax_position_ || ax_position_->AtEndOfAXTree() ||
@@ -1362,7 +1348,7 @@ ReadAnythingAppModel::GetNextNodes() {
         // Add the current node to the list of nodes to be returned, with a
         // text range from 0 to the start of the next sentence
         // (index_in_new_node);
-        ReadAnythingAppModel::ReadAloudTextSegment segment;
+        ReadAloudTextSegment segment;
         segment.id = anchor_node->id();
         segment.text_start = 0;
         segment.text_end = index_in_new_node;
@@ -1406,7 +1392,7 @@ ReadAnythingAppModel::GetNextNodes() {
     // Add the current node to the list of nodes to be returned, with a
     // text range from the starting index (the end of the previous piece of
     // the sentence) to the start of the next sentence.
-    ReadAnythingAppModel::ReadAloudTextSegment segment;
+    ReadAloudTextSegment segment;
     segment.id = anchor_node->id();
     segment.text_start = start_index;
     segment.text_end = new_current_text_index;
@@ -1434,8 +1420,7 @@ ReadAnythingAppModel::GetNextNodes() {
 // Some of the checks here right now are probably unneeded.
 ui::AXNodePosition::AXPositionInstance
 ReadAnythingAppModel::GetNextValidPositionFromCurrentPosition(
-    const ReadAnythingAppModel::ReadAloudCurrentGranularity&
-        current_granularity) {
+    const a11y::ReadAloudCurrentGranularity& current_granularity) {
   ui::AXNodePosition::AXPositionInstance new_position =
       ui::AXNodePosition::CreateNullPosition();
 
@@ -1513,13 +1498,12 @@ int ReadAnythingAppModel::GetCurrentTextStartIndex(
     return -1;
   }
 
-  ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity =
+  a11y::ReadAloudCurrentGranularity current_granularity =
       processed_granularities_on_current_page_[processed_granularity_index_];
   if (!current_granularity.segments.count(node_id)) {
     return -1;
   }
-  ReadAnythingAppModel::ReadAloudTextSegment segment =
-      current_granularity.segments[node_id];
+  ReadAloudTextSegment segment = current_granularity.segments[node_id];
 
   return segment.text_start;
 }
@@ -1530,7 +1514,7 @@ int ReadAnythingAppModel::GetHighlightStartIndex(const ui::AXNodeID& node_id,
     return -1;
   }
 
-  ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity =
+  a11y::ReadAloudCurrentGranularity current_granularity =
       processed_granularities_on_current_page_[processed_granularity_index_];
   if (!current_granularity.segments.count(node_id)) {
     return -1;
@@ -1564,25 +1548,23 @@ int ReadAnythingAppModel::GetCurrentTextEndIndex(const ui::AXNodeID& node_id) {
     return -1;
   }
 
-  ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity =
+  a11y::ReadAloudCurrentGranularity current_granularity =
       processed_granularities_on_current_page_[processed_granularity_index_];
   if (!current_granularity.segments.count(node_id)) {
     return -1;
   }
-  ReadAnythingAppModel::ReadAloudTextSegment segment =
-      current_granularity.segments[node_id];
+  ReadAloudTextSegment segment = current_granularity.segments[node_id];
 
   return segment.text_end;
 }
 
 bool ReadAnythingAppModel::NodeBeenOrWillBeSpoken(
-    const ReadAnythingAppModel::ReadAloudCurrentGranularity&
-        current_granularity,
+    const a11y::ReadAloudCurrentGranularity& current_granularity,
     const ui::AXNodeID& id) const {
   if (base::Contains(current_granularity.segments, id)) {
     return true;
   }
-  for (ReadAnythingAppModel::ReadAloudCurrentGranularity granularity :
+  for (a11y::ReadAloudCurrentGranularity granularity :
        processed_granularities_on_current_page_) {
     if (base::Contains(granularity.segments, id)) {
       return true;
@@ -1620,15 +1602,14 @@ bool ReadAnythingAppModel::IsTextForReadAnything(
 // our current granularity segment.
 bool ReadAnythingAppModel::ShouldSplitAtParagraph(
     const ui::AXNodePosition::AXPositionInstance& position,
-    const ReadAloudCurrentGranularity& current_granularity) const {
+    const a11y::ReadAloudCurrentGranularity& current_granularity) const {
   return position->AtStartOfParagraph() &&
          (current_granularity.node_ids.size() > 0);
 }
 
 bool ReadAnythingAppModel::IsValidAXPosition(
     const ui::AXNodePosition::AXPositionInstance& position,
-    const ReadAnythingAppModel::ReadAloudCurrentGranularity&
-        current_granularity) const {
+    const a11y::ReadAloudCurrentGranularity& current_granularity) const {
   ui::AXNode* anchor_node = GetAnchorNode(position);
   bool was_previously_spoken =
       NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());
@@ -1649,7 +1630,7 @@ ui::AXNodeID ReadAnythingAppModel::GetNodeIdForCurrentSegmentIndex(
     return ui::kInvalidAXNodeID;
   }
 
-  ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity =
+  a11y::ReadAloudCurrentGranularity current_granularity =
       processed_granularities_on_current_page_[processed_granularity_index_];
   std::map<std::pair<int, int>, ui::AXNodeID> index_map =
       current_granularity.index_map;
@@ -1674,7 +1655,7 @@ int ReadAnythingAppModel::GetNextWordHighlightLength(int start_index) {
     return 0;
   }
 
-  ReadAnythingAppModel::ReadAloudCurrentGranularity current_granularity =
+  a11y::ReadAloudCurrentGranularity current_granularity =
       processed_granularities_on_current_page_[processed_granularity_index_];
   if (start_index > (int)current_granularity.text.length()) {
     return 0;

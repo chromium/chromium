@@ -6,6 +6,16 @@
 
 #include "ui/accessibility/ax_text_utils.h"
 
+namespace a11y {
+
+ReadAloudCurrentGranularity::ReadAloudCurrentGranularity() = default;
+
+ReadAloudCurrentGranularity::ReadAloudCurrentGranularity(
+    const ReadAloudCurrentGranularity& other) = default;
+
+ReadAloudCurrentGranularity::~ReadAloudCurrentGranularity() = default;
+}  // namespace a11y
+
 namespace {
 
 // Returns the index of the next granularity of the given text, such that the

@@ -11,6 +11,7 @@
 #include "base/values.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
 #include "chrome/common/accessibility/read_anything_constants.h"
+#include "chrome/renderer/accessibility/read_aloud_traversal_utils.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/accessibility/ax_event_generator.h"
 #include "ui/accessibility/ax_node.h"
@@ -20,6 +21,10 @@
 #include "ui/accessibility/ax_selection.h"
 #include "ui/accessibility/ax_tree_manager.h"
 #include "ui/accessibility/ax_tree_update_forward.h"
+
+namespace a11y {
+struct ReadAloudCurrentGranularity;
+}  // namespace a11y
 
 namespace ui {
 class AXNode;
@@ -66,61 +71,6 @@ class ReadAnythingAppModel {
     // particular AXTree, namely is_pdf. Right now, this is set every time the
     // active ax tree id changes; instead, it should be set once when a new tree
     // is added.
-  };
-
-  // A current segment of text that will be consumed by Read Aloud.
-  struct ReadAloudTextSegment {
-    // The AXNodeID associated with this particular text segment.
-    ui::AXNodeID id;
-
-    // The starting index for the text with the node of the given id.
-    int text_start;
-
-    // The ending index for the text with the node of the given id.
-    int text_end;
-  };
-
-  // A representation of multiple ReadAloudTextSegments that are processed
-  // by Read Aloud at a single moment. For example, when using sentence
-  // granularity, the list of ReadAloudTextSegments in a
-  // ReadAloudCurrentGranularity will include all ReadAloudTextSegments
-  // necessary to represent a single sentence.
-  struct ReadAloudCurrentGranularity {
-    ReadAloudCurrentGranularity();
-    ReadAloudCurrentGranularity(const ReadAloudCurrentGranularity& other);
-    ~ReadAloudCurrentGranularity();
-
-    // Adds a segment to the current granularity.
-    void AddSegment(ReadAloudTextSegment segment) {
-      segments[segment.id] = segment;
-      node_ids.push_back(segment.id);
-    }
-
-    // All of the ReadAloudTextSegments in the current granularity.
-    std::map<ui::AXNodeID, ReadAloudTextSegment> segments;
-
-    // Because GetCurrentText returns a vector of node ids to be used by
-    // TypeScript also store the node ids as a vector for easier retrieval.
-    std::vector<ui::AXNodeID> node_ids;
-
-    // Map of text start and end indices of text to a specific AXNodeID.
-    // The text for a given segment may span multiple AXNodes, such as
-    // Node 1: This is a
-    // Node 2: link
-    // Node 3: in a separate node.
-    // which is presented as a single segment when using sentence granularity.
-    // However, when we get word callbacks, we get them in terms of the text
-    // index across the entire segment of text, not by node. Therefore, this
-    // mapping helps us better parse callbacks for different types of
-    // granularity highlighting.
-    // TODO(b/40927698): Investigate using this to replace
-    // highlightedNodeToOffsetInParent in app.ts
-    std::map<std::pair<int, int>, ui::AXNodeID> index_map;
-
-    // The human readable text represented by this segment of node ids. This
-    // is stored separately for easier retrieval for non-sentence granularity
-    // highlighting.
-    std::u16string text;
   };
 
   bool requires_distillation() { return requires_distillation_; }
@@ -332,8 +282,7 @@ class ReadAnythingAppModel {
   // Returns the next valid AXNodePosition.
   ui::AXNodePosition::AXPositionInstance
   GetNextValidPositionFromCurrentPosition(
-      const ReadAnythingAppModel::ReadAloudCurrentGranularity&
-          current_granularity);
+      const a11y::ReadAloudCurrentGranularity& current_granularity);
 
   // Inits the AXPosition with a starting node.
   // TODO(crbug.com/40927698): We should be able to use AXPosition in a way
@@ -362,7 +311,7 @@ class ReadAnythingAppModel {
   void MovePositionToPreviousGranularity();
 
   // Helper method for GetCurrentText.
-  ReadAloudCurrentGranularity GetNextNodes();
+  a11y::ReadAloudCurrentGranularity GetNextNodes();
 
   // Returns the Read Aloud starting text index for a node. For example,
   // if the entire text of the node should be read by Read Aloud at a particular
@@ -421,7 +370,7 @@ class ReadAnythingAppModel {
 
   bool ShouldSplitAtParagraph(
       const ui::AXNodePosition::AXPositionInstance& position,
-      const ReadAloudCurrentGranularity& current_granularity) const;
+      const a11y::ReadAloudCurrentGranularity& current_granularity) const;
 
   // Returns true if the node was previously spoken or we expect to speak it
   // to be spoken once the current run of #GetCurrentText which called
@@ -439,14 +388,12 @@ class ReadAnythingAppModel {
   // process them as 5, 10. Without checking for previously spoken nodes,
   // id 5 will be spoken twice.
   bool NodeBeenOrWillBeSpoken(
-      const ReadAnythingAppModel::ReadAloudCurrentGranularity&
-          current_granularity,
+      const a11y::ReadAloudCurrentGranularity& current_granularity,
       const ui::AXNodeID& id) const;
 
   bool IsValidAXPosition(
       const ui::AXNodePosition::AXPositionInstance& positin,
-      const ReadAnythingAppModel::ReadAloudCurrentGranularity&
-          current_granularity) const;
+      const a11y::ReadAloudCurrentGranularity& current_granularity) const;
 
   // We want to group superscripts with the utterance preceding it.
   bool IsSuperscript(ui::AXNode* node);
@@ -556,7 +503,7 @@ class ReadAnythingAppModel {
   // TODO(crbug.com/40927698): Use this to assist in navigating forwards /
   // backwards.
   // Previously processed granularities on the current page.
-  std::vector<ReadAnythingAppModel::ReadAloudCurrentGranularity>
+  std::vector<a11y::ReadAloudCurrentGranularity>
       processed_granularities_on_current_page_;
 
   // Metrics for logging. Any metric that we want to track 0-counts of should
