@@ -106,7 +106,7 @@
 /mocha
 /mockito/src
 /nacl_sdk_binaries/
-/ninja/ninja*
+/ninja
 /node/*.tar.gz
 /node/linux/
 /node/mac/
