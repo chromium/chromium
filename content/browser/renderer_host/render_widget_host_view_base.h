@@ -78,6 +78,7 @@ class TextInputManager;
 class TouchSelectionControllerClientManager;
 class WebContentsAccessibility;
 class DelegatedFrameHost;
+class SyntheticGestureTarget;
 
 // Basic implementation shared by concrete RenderWidgetHostView subclasses.
 class CONTENT_EXPORT RenderWidgetHostViewBase
@@ -97,6 +98,11 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
 
   // Returns the focused RenderWidgetHost inside this |view|'s RWH.
   RenderWidgetHostImpl* GetFocusedWidget() const;
+
+  // Create a platform specific SyntheticGestureTarget implementation that will
+  // be used to inject synthetic input events.
+  virtual std::unique_ptr<SyntheticGestureTarget>
+  CreateSyntheticGestureTarget() = 0;
 
   // RenderWidgetHostView implementation.
   RenderWidgetHost* GetRenderWidgetHost() final;

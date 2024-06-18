@@ -33,7 +33,6 @@ namespace content {
 
 class CursorManager;
 class RenderInputRouter;
-class SyntheticGestureTarget;
 class RenderWidgetHostViewInputObserver;
 
 // RenderWidgetHostViewInput is an interface implemented by an object that acts
@@ -188,11 +187,6 @@ class CONTENT_EXPORT RenderWidgetHostViewInput : public input::StylusInterface {
   virtual void ChildDidAckGestureEvent(
       const blink::WebGestureEvent& event,
       blink::mojom::InputEventResultState ack_result) = 0;
-
-  // Create a platform specific SyntheticGestureTarget implementation that will
-  // be used to inject synthetic input events.
-  virtual std::unique_ptr<SyntheticGestureTarget>
-  CreateSyntheticGestureTarget() = 0;
 
   // Extracts information about any active pointers and cancels any existing
   // active pointers by dispatching synthetic cancel events.
