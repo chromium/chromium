@@ -444,7 +444,7 @@ public class AwContentsGarbageCollectionTest extends AwParameterizedTest {
                 CriteriaHelper.pollInstrumentationThread(
                         criteria, timeoutBetweenGcMs, CHECK_INTERVAL);
                 break;
-            } catch (CriteriaHelper.TimeoutException e) {
+            } catch (AssertionError e) {
                 Runtime.getRuntime().gc();
             }
         }

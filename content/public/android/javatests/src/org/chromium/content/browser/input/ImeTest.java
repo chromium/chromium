@@ -725,6 +725,7 @@ public class ImeTest {
     @Test
     @SmallTest
     @Feature({"TextInput"})
+    @SuppressWarnings("TryFailThrowable") // TODO(tedchoc): Remove after fixing timeout.
     public void testPhysicalKeyboard_AttachDetach() throws Throwable {
         mRule.attachPhysicalKeyboard();
         // We still call showSoftKeyboard, which will be ignored by physical keyboard.
@@ -747,7 +748,7 @@ public class ImeTest {
         mRule.detachPhysicalKeyboard();
 
         // We should not show soft keyboard here because focus has been lost.
-        thrown.expect(CriteriaHelper.TimeoutException.class);
+        thrown.expect(AssertionError.class);
         CriteriaHelper.pollUiThread(
                 () -> mRule.getInputMethodManagerWrapper().isShowWithoutHideOutstanding());
     }

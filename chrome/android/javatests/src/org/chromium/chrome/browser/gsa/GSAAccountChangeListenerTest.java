@@ -13,7 +13,6 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
-import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -28,7 +27,7 @@ public class GSAAccountChangeListenerTest {
     private static final String ACCOUNT_NAME2 = "you@gmail.com";
     private static final String PERMISSION = "permission.you.dont.have";
 
-    @Test
+    @Test(expected = AssertionError.class)
     @SmallTest
     public void testReceivesBroadcastIntents() {
         final Context context = ApplicationProvider.getApplicationContext();
@@ -61,16 +60,12 @@ public class GSAAccountChangeListenerTest {
         context.sendBroadcast(intent, "permission.you.dont.have");
 
         // This is ugly, but so is checking that some asynchronous call was never received.
-        Assert.assertThrows(
-                CriteriaHelper.TimeoutException.class,
+        CriteriaHelper.pollUiThread(
                 () -> {
-                    CriteriaHelper.pollUiThread(
-                            () -> {
-                                String currentAccount = GSAState.getInstance().getGsaAccount();
-                                Criteria.checkThat(currentAccount, Matchers.is(ACCOUNT_NAME2));
-                            },
-                            1000,
-                            100);
-                });
+                    String currentAccount = GSAState.getInstance().getGsaAccount();
+                    Criteria.checkThat(currentAccount, Matchers.is(ACCOUNT_NAME2));
+                },
+                1000,
+                100);
     }
 }
