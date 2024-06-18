@@ -25,14 +25,16 @@ class CastRendererBlockData : public base::SupportsUserData::Data {
                                              bool blocked);
   static void SetApplicationMediaInfoManagerForWebContents(
       content::WebContents* web_contents,
-      media::ApplicationMediaInfoManager* application_media_info_manager);
+      base::WeakPtr<media::ApplicationMediaInfoManager>
+          application_media_info_manager);
   CastRendererBlockData();
   ~CastRendererBlockData() override;
 
   bool blocked() const { return blocked_; }
   void SetBlocked(bool blocked);
   void SetApplicationMediaInfoManager(
-      media::ApplicationMediaInfoManager* application_media_info_manager);
+      base::WeakPtr<media::ApplicationMediaInfoManager>
+          application_media_info_manager);
 
  private:
   bool blocked_;

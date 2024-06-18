@@ -62,7 +62,8 @@ ApplicationMediaInfoManager::ApplicationMediaInfoManager(
       mixer_audio_enabled_(mixer_audio_enabled),
       renderer_blocked_(false) {
   shell::CastRendererBlockData::SetApplicationMediaInfoManagerForWebContents(
-      content::WebContents::FromRenderFrameHost(&render_frame_host), this);
+      content::WebContents::FromRenderFrameHost(&render_frame_host),
+      weak_ptr_factory_.GetWeakPtr());
 }
 
 ApplicationMediaInfoManager::~ApplicationMediaInfoManager() = default;
