@@ -25,6 +25,7 @@
 #include "ash/style/typography.h"
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"
+#include "chromeos/components/editor_menu/public/cpp/icon.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/vector_icons/vector_icons.h"
@@ -267,9 +268,19 @@ PickerItemView* PickerSectionView::AddResult(
           [&](const PickerSearchResult::EditorData& data) -> PickerItemView* {
             auto item_view = std::make_unique<PickerListItemView>(
                 std::move(select_result_callback));
-            const PickerCategory category = GetCategoryForEditorData(data);
-            item_view->SetPrimaryText(GetLabelForPickerCategory(category));
-            item_view->SetLeadingIcon(GetIconForPickerCategory(category));
+            if (data.category.has_value()) {
+              // Preset write or rewrite.
+              item_view->SetPrimaryText(data.display_name);
+              item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
+                  chromeos::editor_menu::GetIconForPresetQueryCategory(
+                      *data.category),
+                  cros_tokens::kCrosSysOnSurface));
+            } else {
+              // Freeform write or rewrite.
+              const PickerCategory category = GetCategoryForEditorData(data);
+              item_view->SetPrimaryText(GetLabelForPickerCategory(category));
+              item_view->SetLeadingIcon(GetIconForPickerCategory(category));
+            }
             return AddListItem(std::move(item_view));
           },
       },

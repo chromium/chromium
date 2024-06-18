@@ -29,7 +29,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chromeos/components/editor_menu/public/cpp/icon.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -317,21 +316,10 @@ void PickerZeroStateView::OnFetchZeroStateEditorResults(
 
   PickerSectionView* section_view = GetOrCreateSectionView(category);
   for (const PickerSearchResult& result : results) {
-    const auto* editor_data =
-        std::get_if<PickerSearchResult::EditorData>(&result.data());
-    CHECK(editor_data);
-
-    auto item_view = std::make_unique<PickerListItemView>(
+    section_view->AddResult(
+        result, &preview_controller_,
         base::BindRepeating(&PickerZeroStateView::OnResultSelected,
                             weak_ptr_factory_.GetWeakPtr(), result));
-    item_view->SetPrimaryText(editor_data->display_name);
-    if (editor_data->category.has_value()) {
-      item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
-          chromeos::editor_menu::GetIconForPresetQueryCategory(
-              *editor_data->category),
-          cros_tokens::kCrosSysOnSurface));
-    }
-    section_view->AddListItem(std::move(item_view));
   }
   section_view->SetVisible(true);
   MovePseudoFocusToTopIfNeeded();

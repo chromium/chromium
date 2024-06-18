@@ -26,6 +26,7 @@
 #include "ash/test/view_drawn_waiter.h"
 #include "base/functional/callback_helpers.h"
 #include "base/test/test_future.h"
+#include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -205,12 +206,14 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsAsItems) {
             PickerSearchResult::Editor(
                 PickerSearchResult::EditorData::Mode::kRewrite,
                 /*display_name=*/u"a",
-                /*category=(*/ std::nullopt, "query_a",
+                /*category=*/
+                chromeos::editor_menu::PresetQueryCategory::kUnknown, "query_a",
                 /*freeform_text=*/std::nullopt),
             PickerSearchResult::Editor(
                 PickerSearchResult::EditorData::Mode::kRewrite,
                 /*display_name=*/u"b",
-                /*category=(*/ std::nullopt, "query_b",
+                /*category=*/
+                chromeos::editor_menu::PresetQueryCategory::kUnknown, "query_b",
                 /*freeform_text=*/std::nullopt),
         });
       });
