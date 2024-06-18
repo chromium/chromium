@@ -44,7 +44,12 @@ DawnGLTextureRepresentation::~DawnGLTextureRepresentation() {
 wgpu::Texture DawnGLTextureRepresentation::BeginAccess(
     wgpu::TextureUsage usage,
     wgpu::TextureUsage internal_usage) {
-  gl_representation_->BeginAccess(ToSharedImageAccessGLMode(usage));
+  auto usage_to_check = usage;
+  if (base::FeatureList::IsEnabled(
+          features::kDawnSIRepsUseClientProvidedInternalUsages)) {
+    usage_to_check |= internal_usage;
+  }
+  gl_representation_->BeginAccess(ToSharedImageAccessGLMode(usage_to_check));
   wgpu::TextureDescriptor texture_descriptor = {};
   texture_descriptor.nextInChain = nullptr;
 
