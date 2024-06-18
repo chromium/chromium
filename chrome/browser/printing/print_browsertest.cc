@@ -368,13 +368,13 @@ class TestPrintViewManagerForDLP : public TestPrintViewManager {
 
   void PrintPreviewRejectedForTesting() override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    run_loop_->Quit();
+    TestPrintViewManager::PrintPreviewRejectedForTesting();
     allowance_ = PrintAllowance::kDisallowed;
   }
 
   void PrintPreviewAllowedForTesting() override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-    run_loop_->Quit();
+    TestPrintViewManager::PrintPreviewAllowedForTesting();
     allowance_ = PrintAllowance::kAllowed;
   }
 
