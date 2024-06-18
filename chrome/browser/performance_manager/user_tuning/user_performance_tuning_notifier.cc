@@ -6,19 +6,12 @@
 
 #include <memory>
 #include <utility>
-#include <vector>
 
 #include "base/check_op.h"
-#include "base/memory/weak_ptr.h"
-#include "components/performance_manager/public/features.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
-#include "content/public/browser/web_contents.h"
 
 namespace performance_manager::user_tuning {
-
-using WebContentsAndPmf =
-    std::pair<base::WeakPtr<content::WebContents>, uint64_t>;
 
 const int UserPerformanceTuningNotifier::kTabCountThresholdForPromo = 10;
 const int UserPerformanceTuningNotifier::kMemoryPercentThresholdForPromo = 70;
@@ -88,15 +81,6 @@ void UserPerformanceTuningNotifier::OnProcessMemoryMetricsAvailable(
   }
 
   previous_total_rss_ = total_rss;
-
-  std::vector<WebContentsAndPmf> web_contents_and_pmf;
-  Graph::NodeSetView<const PageNode*> all_page_nodes =
-      GetOwningGraph()->GetAllPageNodes();
-  web_contents_and_pmf.reserve(all_page_nodes.size());
-  for (const PageNode* page_node : all_page_nodes) {
-    web_contents_and_pmf.emplace_back(
-        page_node->GetWebContents(), page_node->EstimatePrivateFootprintSize());
-  }
 }
 
 void UserPerformanceTuningNotifier::MaybeAddTabAndNotify(
