@@ -33,13 +33,8 @@ class ComboboxModelExample : public ui::ComboboxModel {
 
   std::u16string GetItemAt(size_t index) const override {
     CHECK_LT(index, item_num_);
-    return base::UTF8ToUTF16(
-        base::StringPrintf("%c item", static_cast<char>('A' + index)));
-  }
-
-  std::u16string GetDropDownTextAt(size_t index) const override {
-    CHECK_LT(index, item_num_);
-    return base::NumberToString16(index) + u". " + GetItemAt(index);
+    return base::UTF8ToUTF16(base::StringPrintf(
+        "%zu. %c item", index, static_cast<char>('A' + index)));
   }
 
   const size_t item_num_;

@@ -213,7 +213,7 @@ class Combobox::ComboboxMenuView : public views::View {
     for (size_t i = 0; i < combobox_->model_->GetItemCount(); i++) {
       auto* item = menu_item_group_->AddButton(
           base::BindRepeating(&Combobox::MenuSelectionAt, combobox_, i),
-          combobox_->model_->GetDropDownTextAt(i));
+          combobox_->model_->GetItemAt(i));
       item->SetLabelStyle(TypographyToken::kCrosButton2);
       item->SetLabelColorId(kMenuTextColorId);
       item->SetSelected(combobox_->selected_index_.value_or(-1) == i);

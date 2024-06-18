@@ -16,10 +16,6 @@ ComboboxModel::~ComboboxModel() {
     observer.OnComboboxModelDestroying(this);
 }
 
-std::u16string ComboboxModel::GetDropDownTextAt(size_t index) const {
-  return GetItemAt(index);
-}
-
 std::u16string ComboboxModel::GetDropDownSecondaryTextAt(size_t index) const {
   return std::u16string();
 }

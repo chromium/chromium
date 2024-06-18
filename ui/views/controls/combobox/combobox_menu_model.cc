@@ -39,7 +39,7 @@ int ComboboxMenuModel::GetCommandIdAt(size_t index) const {
 std::u16string ComboboxMenuModel::GetLabelAt(size_t index) const {
   // Inserting the Unicode formatting characters if necessary so that the
   // text is displayed correctly in right-to-left UIs.
-  std::u16string text = model_->GetDropDownTextAt(index);
+  std::u16string text = model_->GetItemAt(index);
   base::i18n::AdjustStringForLocaleDirection(&text);
   return text;
 }
