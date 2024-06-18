@@ -29,7 +29,6 @@ export class BlockAppItemElement extends PolymerElement {
 
   app: App;
   private mojoInterfaceProvider: AppParentalControlsHandlerInterface;
-  private iconVersionCounter: number = 0;
 
   constructor() {
     super();
@@ -50,20 +49,11 @@ export class BlockAppItemElement extends PolymerElement {
   }
 
   private getIconUrl_(app: App): string {
-    // Use a no-op query param that is incremented when the app has an update.
+    // Use a no-op query param that reflects the app blocked state.
     // This ensures that the icon is fetched every time the state of the app is
     // updated. Otherwise, the icon is cached if the src stays the same.
     return `chrome://app-icon/${app.id}/64?` +
-        `parental_controls_version=${this.getIconVersion_()}`;
-  }
-
-  private getIconVersion_(): number {
-    if (this.iconVersionCounter + 1 === Number.MAX_SAFE_INTEGER) {
-      this.iconVersionCounter = 0;
-    } else {
-      this.iconVersionCounter++;
-    }
-    return this.iconVersionCounter;
+        `parental_controls_blocked=${app.isBlocked}`;
   }
 }
 
