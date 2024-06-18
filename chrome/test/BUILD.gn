@@ -784,6 +784,8 @@ static_library("test_support") {
       "../browser/ui/chromeos/test_util.h",
       "../browser/ui/views/frame/immersive_mode_tester.cc",
       "../browser/ui/views/frame/immersive_mode_tester.h",
+      "../browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.cc",
+      "../browser/web_applications/isolated_web_apps/isolated_web_app_update_server_mixin.h",
       "base/chromeos/crosier/annotations.cc",
       "base/chromeos/crosier/annotations.h",
       "base/chromeos/crosier/aura_window_title_observer.cc",
