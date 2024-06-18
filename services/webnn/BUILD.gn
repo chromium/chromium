@@ -58,8 +58,6 @@ component("webnn_service") {
     "webnn_context_impl.h",
     "webnn_context_provider_impl.cc",
     "webnn_context_provider_impl.h",
-    "webnn_context_provider_manager.cc",
-    "webnn_context_provider_manager.h",
     "webnn_graph_impl.cc",
     "webnn_graph_impl.h",
     "webnn_object_impl.cc",

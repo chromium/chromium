@@ -25,25 +25,28 @@ class WebNNContextImpl;
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
     : public mojom::WebNNContextProvider {
  public:
+  explicit WebNNContextProviderImpl(
+#if !BUILDFLAG(IS_CHROMEOS)
+      scoped_refptr<gpu::SharedContextState> shared_context_state,
+      gpu::GpuFeatureInfo gpu_feature_info,
+      gpu::GPUInfo gpu_info
+#endif
+  );
+
   WebNNContextProviderImpl(const WebNNContextProviderImpl&) = delete;
   WebNNContextProviderImpl& operator=(const WebNNContextProviderImpl&) = delete;
 
   ~WebNNContextProviderImpl() override;
 
-  // Called when the WebNNContextProviderImpl's receiver must be self-owned.
-#if BUILDFLAG(IS_CHROMEOS)
   static void Create(
-      mojo::PendingReceiver<mojom::WebNNContextProvider> receiver);
-#else
-  // Called when the WebNNContextProviderImpl's receiver will be owned by a
-  // provider manager instead of being created as a self-owned receiver.
-  static std::unique_ptr<WebNNContextProviderImpl> Create(
-      mojo::PendingReceiver<mojom::WebNNContextProvider> receiver,
-      base::OnceClosure on_disconnect_handler,
+      mojo::PendingReceiver<mojom::WebNNContextProvider> receiver
+#if !BUILDFLAG(IS_CHROMEOS)
+      ,
       scoped_refptr<gpu::SharedContextState> shared_context_state,
       gpu::GpuFeatureInfo gpu_feature_info,
-      gpu::GPUInfo gpu_info);
+      gpu::GPUInfo gpu_info
 #endif
+  );
 
   static void CreateForTesting(
       mojo::PendingReceiver<mojom::WebNNContextProvider> receiver,
@@ -67,22 +70,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   static void SetBackendForTesting(BackendForTesting* backend_for_testing);
 
  private:
-#if BUILDFLAG(IS_CHROMEOS)
-  WebNNContextProviderImpl();
-#else
-  WebNNContextProviderImpl(
-      scoped_refptr<gpu::SharedContextState> shared_context_state,
-      gpu::GpuFeatureInfo gpu_feature_info,
-      gpu::GPUInfo gpu_info);
-
-  WebNNContextProviderImpl(
-      mojo::PendingReceiver<WebNNContextProvider> receiver,
-      base::OnceClosure on_disconnect_handler,
-      scoped_refptr<gpu::SharedContextState> shared_context_state,
-      gpu::GpuFeatureInfo gpu_feature_info,
-      gpu::GPUInfo gpu_info);
-#endif
-
   // mojom::WebNNContextProvider
   void CreateWebNNContext(mojom::CreateContextOptionsPtr options,
                           CreateWebNNContextCallback callback) override;
@@ -91,10 +78,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   scoped_refptr<gpu::SharedContextState> shared_context_state_;
   const gpu::GpuFeatureInfo gpu_feature_info_;
   const gpu::GPUInfo gpu_info_;
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  std::optional<mojo::Receiver<mojom::WebNNContextProvider>> receiver_;
-#endif
 };
 
 }  // namespace webnn

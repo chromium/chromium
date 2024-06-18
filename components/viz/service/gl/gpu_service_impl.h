@@ -89,12 +89,6 @@ namespace media {
 class MediaGpuChannelManager;
 }  // namespace media
 
-#if !BUILDFLAG(IS_CHROMEOS)
-namespace webnn {
-class WebNNContextProviderManager;
-}  // namespace webnn
-#endif
-
 namespace viz {
 
 class VulkanContextProvider;
@@ -588,11 +582,6 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   std::unique_ptr<gpu::SyncPointManager> owned_sync_point_manager_;
 
   std::unique_ptr<gpu::SharedImageManager> owned_shared_image_manager_;
-
-#if !BUILDFLAG(IS_CHROMEOS)
-  std::unique_ptr<webnn::WebNNContextProviderManager>
-      owned_webnn_context_provider_manager_;
-#endif
 
   std::unique_ptr<gpu::Scheduler> owned_scheduler_;
   raw_ptr<gpu::Scheduler, DanglingUntriaged> scheduler_;
