@@ -96,8 +96,37 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         public void run(Context targetContext, FrameworkMethod testMethod);
     }
 
+    /**
+     * Thrown if a prior test in the same batch also failed thus possibly causing the current test's
+     * failure.
+     */
+    public static class CascadingFailureException extends RuntimeException {
+        private CascadingFailureException(String message) {
+            super(message);
+        }
+
+        @Override
+        public String toString() {
+            // Shorten full name to just simple name.
+            return getClass().getSimpleName() + ": " + getLocalizedMessage();
+        }
+
+        /**
+         * Returns a new CascadingFailureException with the originalException marked as suppressed.
+         *
+         * @param message Error message for the CascadingFailureException
+         * @param originalException The original throwable being suppressed.
+         */
+        public static CascadingFailureException wrap(String message, Throwable originalException) {
+            CascadingFailureException exception = new CascadingFailureException(message);
+            exception.addSuppressed(originalException);
+            return exception;
+        }
+    }
+
     protected final RestrictionSkipCheck mRestrictionSkipCheck = new RestrictionSkipCheck();
     private long mTestStartTimeMs;
+    private String mFailedBatchTestName;
 
     /**
      * Create a BaseJUnit4ClassRunner to run {@code klass} and initialize values.
@@ -288,9 +317,17 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
         BaseJUnit4ClassRunner.getApplication().getSystemService(JobScheduler.class).cancelAll();
     }
 
-    private static void blockUnitTestsFromStartingBrowser(FrameworkMethod testMethod) {
+    private static boolean isInUnitTestBatch(FrameworkMethod testMethod) {
         Batch annotation = testMethod.getDeclaringClass().getAnnotation(Batch.class);
-        if (annotation != null && annotation.value().equals(Batch.UNIT_TESTS)) {
+        return annotation != null && annotation.value().equals(Batch.UNIT_TESTS);
+    }
+
+    private static boolean isBatchedTest(FrameworkMethod testMethod) {
+        return testMethod.getDeclaringClass().getAnnotation(Batch.class) != null;
+    }
+
+    private static void blockUnitTestsFromStartingBrowser(FrameworkMethod testMethod) {
+        if (isInUnitTestBatch(testMethod)) {
             if (testMethod.getAnnotation(RequiresRestart.class) != null) return;
             LibraryLoader.setBrowserProcessStartupBlockedForTesting();
         }
@@ -353,10 +390,28 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
                     }
                 }
                 if (exception != null) {
+                    exception = wrapExceptionIfCascadingFailure(exception);
+                    markBatchTestFailed(method);
                     throw exception;
                 }
             }
         };
+    }
+
+    private void markBatchTestFailed(FrameworkMethod method) {
+        if (mFailedBatchTestName == null && isBatchedTest(method) && !isInUnitTestBatch(method)) {
+            mFailedBatchTestName = method.getName();
+        }
+    }
+
+    private Throwable wrapExceptionIfCascadingFailure(Throwable originalFailure) {
+        if (mFailedBatchTestName == null) return originalFailure;
+        return CascadingFailureException.wrap(
+                "A previous batched test ("
+                        + mFailedBatchTestName
+                        + ") failed and may be the cause of the current failure. See suppressed"
+                        + " failure below.",
+                originalFailure);
     }
 
     private void onBeforeTestMethod(FrameworkMethod method) {
