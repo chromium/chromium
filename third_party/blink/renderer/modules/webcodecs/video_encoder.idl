@@ -56,4 +56,8 @@
     // Call prior to configure() to determine whether config will be supported.
     [CallWith=ScriptState, RaisesException]
     static Promise<VideoEncoderSupport> isConfigSupported(VideoEncoderConfig config);
+
+    // Returns a list of all buffers that can be used while encoding
+    [CallWith=ScriptState, RaisesException, RuntimeEnabled=WebCodecsVideoEncoderBuffers]
+    sequence<VideoEncoderBuffer> getAllFrameBuffers();
 };

@@ -929,6 +929,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/webcodecs/video_decoder_init.idl",
   "//third_party/blink/renderer/modules/webcodecs/video_decoder_support.idl",
   "//third_party/blink/renderer/modules/webcodecs/video_encoder.idl",
+  "//third_party/blink/renderer/modules/webcodecs/video_encoder_buffer.idl",
   "//third_party/blink/renderer/modules/webcodecs/video_encoder_config.idl",
   "//third_party/blink/renderer/modules/webcodecs/video_encoder_encode_options.idl",
   "//third_party/blink/renderer/modules/webcodecs/video_encoder_encode_options_for_av1.idl",

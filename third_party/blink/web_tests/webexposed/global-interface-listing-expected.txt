@@ -10470,8 +10470,13 @@ interface VideoEncoder : EventTarget
     method constructor
     method encode
     method flush
+    method getAllFrameBuffers
     method reset
     setter ondequeue
+interface VideoEncoderBuffer
+    attribute @@toStringTag
+    getter id
+    method constructor
 interface VideoFrame
     attribute @@toStringTag
     getter codedHeight

@@ -77,6 +77,8 @@ blink_modules_sources("webcodecs") {
     "video_decoder_helper.h",
     "video_encoder.cc",
     "video_encoder.h",
+    "video_encoder_buffer.cc",
+    "video_encoder_buffer.h",
     "video_frame.cc",
     "video_frame.h",
     "video_frame_attachment.cc",

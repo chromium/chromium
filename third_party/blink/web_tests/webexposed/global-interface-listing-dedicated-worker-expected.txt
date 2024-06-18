@@ -2371,8 +2371,13 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method constructor
 [Worker]     method encode
 [Worker]     method flush
+[Worker]     method getAllFrameBuffers
 [Worker]     method reset
 [Worker]     setter ondequeue
+[Worker] interface VideoEncoderBuffer
+[Worker]     attribute @@toStringTag
+[Worker]     getter id
+[Worker]     method constructor
 [Worker] interface VideoFrame
 [Worker]     attribute @@toStringTag
 [Worker]     getter codedHeight

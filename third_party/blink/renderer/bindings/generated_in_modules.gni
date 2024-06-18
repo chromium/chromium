@@ -2760,6 +2760,8 @@ generated_interface_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_video_decoder.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_video_encoder.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_video_encoder.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_buffer.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_video_encoder_buffer.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_video_frame.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_video_playback_quality.cc",

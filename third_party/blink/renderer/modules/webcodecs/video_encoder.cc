@@ -73,6 +73,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/gpu_factories_retriever.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_color_space.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_encoder_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/enumeration_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -1601,6 +1602,15 @@ ScriptPromise<VideoEncoderSupport> VideoEncoder::isConfigSupported(
   }
 
   return promise;
+}
+
+HeapVector<Member<VideoEncoderBuffer>> VideoEncoder::getAllFrameBuffers(
+    ScriptState*,
+    ExceptionState& exception_state) {
+  exception_state.ThrowDOMException(
+      DOMExceptionCode::kNotSupportedError,
+      "getAllFrameBuffers() only supported with manual scalability mode.");
+  return {};
 }
 
 }  // namespace blink

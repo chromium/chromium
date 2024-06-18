@@ -4478,6 +4478,10 @@
       status: "experimental",
     },
     {
+      name: "WebCodecsVideoEncoderBuffers",
+      status: "experimental",
+    },
+    {
       name: "WebCryptoCurve25519",
       status: "experimental",
     },

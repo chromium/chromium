@@ -9,4 +9,11 @@ dictionary VideoEncoderEncodeOptions {
   VideoEncoderEncodeOptionsForVp9 vp9;
   VideoEncoderEncodeOptionsForAv1 av1;
   VideoEncoderEncodeOptionsForAvc avc;
+
+  // Buffers that can be used for inter-frame prediction while encoding a given
+  // frame. If this array is empty we basically ask for an intra-frame.
+  sequence<VideoEncoderBuffer> referenceBuffers;
+
+  // A buffer where the encoded frame should be saved after encoding.
+  VideoEncoderBuffer updateBuffer;
 };
