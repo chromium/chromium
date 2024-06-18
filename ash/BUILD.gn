@@ -1061,6 +1061,8 @@ component("ash") {
     "picker/views/picker_image_item_view.h",
     "picker/views/picker_item_view.cc",
     "picker/views/picker_item_view.h",
+    "picker/views/picker_item_with_submenu_view.cc",
+    "picker/views/picker_item_with_submenu_view.h",
     "picker/views/picker_key_event_handler.cc",
     "picker/views/picker_key_event_handler.h",
     "picker/views/picker_list_item_container_view.cc",
