@@ -30,6 +30,13 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_test.h"
 
+namespace {
+
+const char histogram_name[] =
+    "Settings.SafetyHub.UnusedSitePermissionsModule.AutoRevoked";
+
+}  // namespace
+
 class UnusedSitePermissionsServiceBrowserTest : public InProcessBrowserTest {
  public:
   UnusedSitePermissionsServiceBrowserTest() {
@@ -168,8 +175,6 @@ IN_PROC_BROWSER_TEST_F(UnusedSitePermissionsServiceBrowserTest,
   service->SetClockForTesting(&clock);
 
   GURL url = embedded_test_server()->GetURL("/title1.html");
-  const std::string histogram_name =
-      "Settings.SafetyHub.UnusedSitePermissionsModule.AutoRevoked";
   base::HistogramTester histogram_tester;
 
   // TODO(b/338365161): Remove the skip list, once the bug is fixed. Currently,
@@ -296,6 +301,7 @@ IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
       UnusedSitePermissionsServiceFactory::GetForProfile(browser()->profile());
   const GURL url("https://example1.com");
   AddDangerousUrl(url);
+  base::HistogramTester histogram_tester;
 
   // Create granted abusive notification permission.
   map->SetContentSettingDefaultScope(
@@ -312,6 +318,11 @@ IN_PROC_BROWSER_TEST_F(AbusiveNotificationPermissionsRevocationBrowserTest,
   EXPECT_EQ(
       CONTENT_SETTING_ASK,
       map->GetContentSetting(url, url, ContentSettingsType::NOTIFICATIONS));
+
+  // Assert notification auto-revocation is recorded in UMA metrics.
+  EXPECT_EQ(1u, histogram_tester.GetAllSamples(histogram_name).size());
+  histogram_tester.ExpectBucketCount(histogram_name,
+                                     ContentSettingsType::NOTIFICATIONS, 1);
 }
 
 // Test that revocation is happen correctly when auto-revoke is on for a site
