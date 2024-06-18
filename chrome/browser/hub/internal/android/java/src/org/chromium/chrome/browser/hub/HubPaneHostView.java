@@ -95,7 +95,9 @@ public class HubPaneHostView extends FrameLayout {
         @ColorInt int backgroundColor = HubColors.getBackgroundColor(context, colorScheme);
         mPaneFrame.setBackgroundColor(backgroundColor);
 
-        ColorStateList iconColor = HubColors.getIconColor(context, colorScheme);
+        ColorStateList iconColor =
+                ColorStateList.valueOf(
+                        HubColors.getOnSecondaryContainerColor(context, colorScheme));
         TextViewCompat.setCompoundDrawableTintList(mActionButton, iconColor);
 
         ColorStateList buttonColor =

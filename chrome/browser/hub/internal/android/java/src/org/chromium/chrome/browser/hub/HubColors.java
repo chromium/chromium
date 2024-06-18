@@ -99,13 +99,27 @@ public final class HubColors {
         }
     }
 
+    /** Returns the color for the icon in the floating action button. */
+    public static @ColorInt int getOnSecondaryContainerColor(
+            Context context, @HubColorScheme int colorScheme) {
+        switch (colorScheme) {
+            case HubColorScheme.DEFAULT:
+                return SemanticColorUtils.getColorOnSecondaryContainer(context);
+            case HubColorScheme.INCOGNITO:
+                return ContextCompat.getColor(context, R.color.baseline_secondary_90);
+            default:
+                assert false;
+                return Color.TRANSPARENT;
+        }
+    }
+
     /** Returns the color most text should use for the given color scheme. */
     public static @StyleRes int getTextAppearanceMedium(@HubColorScheme int colorScheme) {
         switch (colorScheme) {
             case HubColorScheme.DEFAULT:
-                return R.style.TextAppearance_TextMedium_Primary;
+                return R.style.TextAppearance_FloatingActionButton;
             case HubColorScheme.INCOGNITO:
-                return R.style.TextAppearance_TextMedium_Primary_Baseline_Light;
+                return R.style.TextAppearance_FloatingActionButton_Incognito;
             default:
                 assert false;
                 return Resources.ID_NULL;

@@ -180,4 +180,8 @@ public class SemanticColorUtils {
     public static @ColorInt int getChipBgSelectedColor(Context context) {
         return resolve(R.attr.colorSecondaryContainer, context);
     }
+
+    public static @ColorInt int getColorOnSecondaryContainer(Context context) {
+        return resolve(R.attr.colorOnSecondaryContainer, context);
+    }
 }
