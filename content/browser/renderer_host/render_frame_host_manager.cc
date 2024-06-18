@@ -1189,10 +1189,12 @@ void RenderFrameHostManager::UnloadOldFrame(
 
 void RenderFrameHostManager::DiscardUnusedFrame(
     std::unique_ptr<RenderFrameHostImpl> render_frame_host) {
-  // RenderDocument: In the case of a local<->local RenderFrameHost Swap, just
+  // RenderDocument: In the case of a local<->local RenderFrameHost swap, just
   // discard the RenderFrameHost. There are no other proxies associated.
-  if (render_frame_host->GetSiteInstance() ==
-      render_frame_host_->GetSiteInstance()) {
+  // SiteInstanceGroup: RenderFrameHosts in the same SiteInstanceGroup are all
+  // local frames, even if they have different SiteInstances.
+  if (render_frame_host->GetSiteInstance()->group() ==
+      render_frame_host_->GetSiteInstance()->group()) {
     return;  // |render_frame_host| is released here.
   }
 
