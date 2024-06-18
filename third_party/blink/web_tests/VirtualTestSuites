@@ -844,7 +844,7 @@
     "args": ["--enable-features=FluentScrollbar",
              "--enable-threaded-compositing",
              "--disable-smooth-scrolling"],
-    "expires": "Jul 1, 2024",
+    "expires": "Jul 1, 2025",
     "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
   },
   {
@@ -854,7 +854,7 @@
     "args": ["--enable-features=FluentScrollbar",
              "--enable-threaded-compositing",
              "--force-device-scale-factor=1.5"],
-    "expires": "Jul 1, 2024",
+    "expires": "Jul 1, 2025",
     "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
   },
   {
@@ -864,7 +864,7 @@
     "args": ["--enable-features=FluentScrollbar",
              "--enable-threaded-compositing",
              "--force-device-scale-factor=2"],
-    "expires": "Jul 1, 2024",
+    "expires": "Jul 1, 2025",
     "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
   },
   {
@@ -875,7 +875,7 @@
     "args": ["--enable-features=FluentScrollbar",
              "--enable-threaded-compositing",
              "--force-high-contrast"],
-    "expires": "Jul 1, 2024",
+    "expires": "Jul 1, 2025",
     "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
   },
   {
@@ -885,7 +885,7 @@
               "virtual/fluent-non-overlay-scrollbar/hover-over-scrollbar-thumb.html"],
     "args": ["--enable-features=FluentScrollbar",
              "--blink-settings=preferredColorScheme=0,forceDarkModeEnabled=true"],
-    "expires": "Jul 1, 2024",
+    "expires": "Jul 1, 2025",
     "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
   },
   {
@@ -897,7 +897,7 @@
     "args": ["--enable-features=FluentOverlayScrollbar",
              "--enable-threaded-compositing",
              "--disable-smooth-scrolling"],
-    "expires": "Jul 1, 2024",
+    "expires": "Jul 1, 2025",
     "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
   },
   {
@@ -907,7 +907,7 @@
     "args": ["--enable-features=FluentOverlayScrollbar",
              "--enable-threaded-compositing",
              "--force-high-contrast"],
-    "expires": "Jul 1, 2024",
+    "expires": "Jul 1, 2025",
     "owners": ["gastonr@microsoft.com", "gerchiko@microsoft.com", "yshalivskyy@microsoft.com"]
   },
   {
