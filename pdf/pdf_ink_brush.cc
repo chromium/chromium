@@ -13,6 +13,8 @@
 #include "pdf/ink/ink_brush_family.h"
 #include "pdf/ink/ink_brush_paint.h"
 #include "pdf/ink/ink_brush_tip.h"
+#include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace chrome_pdf {
 
@@ -64,6 +66,17 @@ std::unique_ptr<InkBrush> CreateInkBrush(PdfInkBrush::Type type,
                           /*epsilon=*/0.1f);
 }
 
+// Determine the area to invalidate centered around a point where a brush is
+// applied.
+gfx::Rect GetPointInvalidateArea(float brush_diameter,
+                                 const gfx::PointF& center) {
+  // Choose a rectangle that surrounds the point for the brush radius.
+  float brush_radius = brush_diameter / 2;
+  return gfx::ToEnclosingRect(gfx::RectF(center.x() - brush_radius,
+                                         center.y() - brush_radius,
+                                         brush_diameter, brush_diameter));
+}
+
 }  // namespace
 
 // static
@@ -87,6 +100,19 @@ PdfInkBrush::~PdfInkBrush() = default;
 
 const InkBrush& PdfInkBrush::GetInkBrush() const {
   return *ink_brush_;
+}
+
+// Determine the area to invalidate encompassing a line between two
+// consecutive points where a brush is applied.
+gfx::Rect PdfInkBrush::GetInvalidateArea(const gfx::PointF& center1,
+                                         const gfx::PointF& center2) const {
+  // For a line connecting `center1` to `center2`, the invalidate
+  // region is the union between the areas affected by them both.
+  float brush_diameter = ink_brush_->GetSize();
+  gfx::Rect area1 = GetPointInvalidateArea(brush_diameter, center1);
+  gfx::Rect area2 = GetPointInvalidateArea(brush_diameter, center2);
+  area2.Union(area1);
+  return area2;
 }
 
 }  // namespace chrome_pdf

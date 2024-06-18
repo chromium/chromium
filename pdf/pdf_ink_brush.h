@@ -10,13 +10,18 @@
 #include <string>
 
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/rect.h"
+
+namespace gfx {
+class PointF;
+}
 
 namespace chrome_pdf {
 
 class InkBrush;
 
-// A wrapper class used to create ink brushes specifically for PDF annotation
-// mode.
+// A class used to create ink brushes for PDF annotation mode and support
+// invalidation for rendering.
 class PdfInkBrush {
  public:
   // The types of brushes supported in PDF annotation mode.
@@ -36,6 +41,13 @@ class PdfInkBrush {
   PdfInkBrush(const PdfInkBrush&) = delete;
   PdfInkBrush& operator=(const PdfInkBrush&) = delete;
   ~PdfInkBrush();
+
+  // Determine the area to invalidate encompassing a line between two
+  // consecutive points where a brush is applied.  Values are in screen-based
+  // coordinates.  The area to invalidated is correlated to the size of the
+  // brush.
+  gfx::Rect GetInvalidateArea(const gfx::PointF& center1,
+                              const gfx::PointF& center2) const;
 
   // Converts `brush_type` to a `Type`, returning `std::nullopt` if `brush_type`
   // does not correspond to any `Type`.

@@ -457,6 +457,7 @@ if (enable_pdf) {
     if (enable_pdf_ink2) {
       sources += [
         "ink_module_unittest.cc",
+        "pdf_ink_brush_unittest.cc",
         "pdf_ink_transform_unittest.cc",
         "pdf_ink_undo_redo_model_unittest.cc",
       ]
