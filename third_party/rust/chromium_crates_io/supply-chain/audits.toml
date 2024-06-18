@@ -513,6 +513,12 @@ who = "Adrian Taylor <adetaylor@chromium.org>"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
 delta = "1.0.122 -> 1.0.123"
 
+[[audits.cxxbridge-cmd]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = ["safe-to-run", "does-not-implement-crypto"]
+delta = "1.0.123 -> 1.0.124"
+notes = "No changes except to dependencies"
+
 [[audits.cxxbridge-flags]]
 who = "danakj@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
