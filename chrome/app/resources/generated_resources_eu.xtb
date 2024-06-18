@@ -5,7 +5,7 @@
 <translation id="1002085272681738789">Fitxa aktibo dago berriro</translation>
 <translation id="1003088604756913841">Ireki esteka <ph name="APP" /> aplikazioaren beste leiho batean</translation>
 <translation id="100323615638474026">USB bidezko gailua (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003917207516838287">Azken deskargen historia</translation>
+<translation id="1003917207516838287">Azkenaldiko deskargen historia</translation>
 <translation id="1004218526896219317">Webgunerako sarbidea</translation>
 <translation id="1005274289863221750">Erabili mikrofonoa eta kamera</translation>
 <translation id="1005333234656240382">ADB arazketa gaitu nahi duzu?</translation>
@@ -2921,7 +2921,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3117791853215125017">{COUNT,plural, =1{Ezin izan zaio bidali <ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> gailuari}other{Ezin izan zaizkio bidali <ph name="ATTACHMENTS" /> <ph name="DEVICE_NAME" /> gailuari}}</translation>
 <translation id="3118319026408854581"><ph name="PRODUCT_NAME" /> laguntza</translation>
 <translation id="3118748462829336648">Ireki alboko panela</translation>
-<translation id="3119743309973425629">Testuko kurtsorearen keinu-tasa</translation>
+<translation id="3119743309973425629">Testuko kurtsorearen keinu-maiztasuna</translation>
 <translation id="3119948370277171654">Zer eduki edo URL ari zinen igortzen?</translation>
 <translation id="3122464029669770682">PUZ</translation>
 <translation id="3122496702278727796">Ezin izan da sortu datuen direktorioa</translation>
@@ -3400,7 +3400,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="350397915809787283">Konturik ez baduzu, hautatu lehenengo aukera eta sortu bat.</translation>
 <translation id="3503995387997205657">Aurretik zenituen aplikazioak lehenera ditzakezu</translation>
 <translation id="3505100368357440862">erosketei buruzko iradokizunak</translation>
-<translation id="3505602163050943406">Eginbide batzuk erabiltzen dituzunean, irekitako orrien zatiak bidal diezazkiokezu Google-ri, baita erlazionatutako azken orriak eta haien URLak ere.</translation>
+<translation id="3505602163050943406">Eginbide batzuk erabiltzen dituzunean, irekitako orrien zatiak bidal diezazkiokezu Google-ri, baita erlazionatutako azkenaldiko orriak eta haien URLak ere.</translation>
 <translation id="3507132249039706973">Babes estandarra aktibatuta dago</translation>
 <translation id="3507888235492474624">Bilatu berriro Bluetooth bidezko gailuak</translation>
 <translation id="3508492320654304609">Ezin izan dira ezabatu saioa hasteko datuak</translation>
@@ -6327,7 +6327,7 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5719854774000914513">Webguneek HID gailuetara konektatzea eska dezakete</translation>
 <translation id="572155275267014074">Android-en ezarpenak</translation>
 <translation id="5722086096420375088">Berdea eta zuria</translation>
-<translation id="572328651809341494">Azken fitxak</translation>
+<translation id="572328651809341494">Azkenaldiko fitxak</translation>
 <translation id="5723508132121499792">Ez da aplikaziorik atzeko planoan abian</translation>
 <translation id="5723967018671998714">Hirugarrenen cookieak blokeatuta daude ezkutuko moduan</translation>
 <translation id="5725112283692663422">Bidali "Sortu gai bat AA bidez" aukerari buruzko oharrak</translation>
@@ -7547,7 +7547,7 @@ Arriskuan dauden # pasahitz gehiago dauzkazu. Google-ren Pasahitz-kudeatzailea z
 <translation id="6669195257625975787">Ikusten ari zaren webgunea bezala tratatzen dira datuak.</translation>
 <translation id="6670142487971298264">Erabilgarri dago <ph name="APP_NAME" /></translation>
 <translation id="6670767097276846646">Luzapen batzuek bilatzaileak gehitzen dituzte Chrome-n</translation>
-<translation id="6670983860904543332">Eguneratze automatikoekin, azken eginbideak edukiko dituzu. Arakatu azken eguneratzeetako berritasun aipagarrienak.</translation>
+<translation id="6670983860904543332">Eguneratze automatikoekin, azken eginbideak edukiko dituzu. Arakatu azkenaldiko eguneratzeetako berritasun aipagarrienak.</translation>
 <translation id="6671320560732140690">{COUNT,plural, =1{helbide bat}other{# helbide}}</translation>
 <translation id="6671497123040790595">Kudeaketa konfiguratzen ari da <ph name="MANAGER" /></translation>
 <translation id="6672917148207387131">Gehitu <ph name="DOMAIN" /></translation>
@@ -8007,7 +8007,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7003723821785740825">Konfiguratu gailua desblokeatzeko modu bizkorrago bat</translation>
 <translation id="7003844668372540529"><ph name="VENDOR_NAME" /> saltzailearen <ph name="PRODUCT_ID" /> produktu ezezaguna</translation>
 <translation id="7004402701596653846">MIDI gailuak erabil ditzake webguneak</translation>
-<translation id="7004499039102548441">Azken fitxak</translation>
+<translation id="7004499039102548441">Azkenaldiko fitxak</translation>
 <translation id="7004562620237466965">Deszifratzeko soilik</translation>
 <translation id="7004969808832734860">Gehieneko deskontua: <ph name="DISCOUNT_UP_TO_AMOUNT" /></translation>
 <translation id="7005496624875927304">Baimen gehigarriak</translation>
@@ -8721,7 +8721,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="756445078718366910">Ireki arakatzailearen leihoa</translation>
 <translation id="7564847347806291057">Amaitu prozesua</translation>
 <translation id="756503097602602175"><ph name="LINK_BEGIN" />Ezarpenak<ph name="LINK_END" /> atalean kudea ditzakezu saioa hasita daukaten Google-ko kontuak. Baliteke webguneei eta aplikazioei emandako baimenak kontu guztiei aplikatzea. Webguneek eta aplikazioek zure kontuko informazioa atzitzerik nahi ez baduzu, hasi saioa gonbidatu gisa <ph name="DEVICE_TYPE" /> gailuan edo arakatu sarea <ph name="LINK_2_BEGIN" />ezkutuko moduko leiho<ph name="LINK_2_END" /> bat erabilita.</translation>
-<translation id="756583107125124860">Eginbide batzuek irekitako orrietako eta erlazionatutako azken orrien edukia erabil dezakete informazio edo iradokizun erabilgarriagoak emateko</translation>
+<translation id="756583107125124860">Eginbide batzuek irekitako orrietako eta erlazionatutako azkenaldiko orrien edukia erabil dezakete informazio edo iradokizun erabilgarriagoak emateko</translation>
 <translation id="7566118625369982896">Kudeatu Play-ko aplikazioen estekak</translation>
 <translation id="7566723889363720618">F12</translation>
 <translation id="7566969018588966785">Sortu tekla-konbinazio bat</translation>

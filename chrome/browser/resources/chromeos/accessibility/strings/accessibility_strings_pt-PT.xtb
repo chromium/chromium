@@ -251,7 +251,7 @@
 <translation id="2697786971245905543">Candidato a conversão do texto</translation>
 <translation id="2704429362613743330">{COUNT,plural, =1{parêntese esquerdo}other{# parênteses esquerdos}}</translation>
 <translation id="270523456882008230">Sugestão: toque duas vezes com um dedo para ativar o item atual.</translation>
-<translation id="2705875883745373140">Não premido</translation>
+<translation id="2705875883745373140">Não pressionado</translation>
 <translation id="2708078563826046398">Pêssego</translation>
 <translation id="2713444072780614174">Branco</translation>
 <translation id="2717271541250958000">tabpnl</translation>
@@ -380,9 +380,9 @@
 <translation id="3419269701801640163">colar</translation>
 <translation id="3435494200763325275">Navegação com a tecla Tab continuada</translation>
 <translation id="344800400831402066">Peru</translation>
-<translation id="3457000393508828486">Parcialmente premido</translation>
+<translation id="3457000393508828486">Parcialmente pressionado</translation>
 <translation id="3458865416877308321"><ph name="NAME" />, desligar</translation>
-<translation id="3466530247399808663">Uma tecla premida inválida</translation>
+<translation id="3466530247399808663">Uma tecla pressionada inválida</translation>
 <translation id="3468959318854349468">Sem título</translation>
 <translation id="3469413619751135069">Verde-pálido</translation>
 <translation id="3490765818161916458">Lista grelha</translation>
@@ -536,7 +536,7 @@
 <translation id="4562381607973973258">Cabeçalho</translation>
 <translation id="4597532268155981612">formulário</translation>
 <translation id="4601367666219428522">tbl <ph name="TABLENAME" /> <ph name="TABLEROWS" /> x <ph name="TABLECOLS" /></translation>
-<translation id="4615592953348396470">Ignorar tecla premida seguinte</translation>
+<translation id="4615592953348396470">Ignorar tecla pressionada seguinte</translation>
 <translation id="4617384941327705512">Modo fixo inteligente desativado</translation>
 <translation id="4623097797855662355">Colofão</translation>
 <translation id="4624970070706497034">O TalkBack já não disponibiliza personalização para Chromebooks. Ainda o pode usar, mas com os atalhos de teclado predefinidos do TalkBack. Prima Pesquisar + A e, em seguida, K para ver os atalhos disponíveis. Se ainda quiser usar o TalkBack, prima o comando novamente.</translation>
@@ -779,7 +779,7 @@
 <translation id="6282062888058716985">nav</translation>
 <translation id="6295699829709583154">Teclas essenciais: pesquisa</translation>
 <translation id="6305702903308659374">Reproduzir num volume normal mesmo se o ChromeVox estiver a falar</translation>
-<translation id="6307969636681130414">Premido</translation>
+<translation id="6307969636681130414">Pressionado</translation>
 <translation id="6315652249189065725">Abrir menu de atalhos de teclado</translation>
 <translation id="6320690422100602757">Não existe nenhum item de lista seguinte.</translation>
 <translation id="6322856989298155004">Sons</translation>
@@ -845,7 +845,7 @@
 <translation id="6858047746862060282">Prólogo</translation>
 <translation id="6859876496651143278">Deslizar com um dedo para a esquerda</translation>
 <translation id="6865519907510167493">Erro ortográfico</translation>
-<translation id="6873188295213080042">Sugestão: mantenha premida a tecla de pesquisa e prima as teclas de seta para navegar.</translation>
+<translation id="6873188295213080042">Sugestão: mantenha pressionada a tecla de pesquisa e prima as teclas de seta para navegar.</translation>
 <translation id="6894148351896207544">Diga a data e hora atuais.</translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6897341342232909480">Mover para a esquerda</translation>
@@ -1073,7 +1073,7 @@
 <translation id="8473540203671727883">Pronunciar o texto sob o rato</translation>
 <translation id="8476408756881832830">Colocar reprodução em pausa quando o ChromeVox estiver a falar</translation>
 <translation id="8476508772960940536">vista geral das janelas</translation>
-<translation id="8480873377842220259">Agora, irá aprender alguma navegação básica. Pode manter premida a tecla de pesquisa e premir as teclas de seta para se deslocar no ecrã. Para continuar, prima a tecla de pesquisa + seta para a direita.</translation>
+<translation id="8480873377842220259">Agora, irá aprender alguma navegação básica. Pode manter pressionada a tecla de pesquisa e premir as teclas de seta para se deslocar no ecrã. Para continuar, prima a tecla de pesquisa + seta para a direita.</translation>
 <translation id="8503360654911991865">Diminuir nível de detalhe da navegação</translation>
 <translation id="8520472399088452386">Botão giratório</translation>
 <translation id="8534394844575788431">Formatação</translation>

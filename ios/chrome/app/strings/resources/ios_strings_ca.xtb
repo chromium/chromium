@@ -1252,7 +1252,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7402602673739047753">{count,plural, =1{Hi ha 1 adreça d'interès desada només en aquest dispositiu. Per utilitzar-la en altres dispositius, desa-la al teu Compte de Google ({email}).}other{Hi ha {count} adreces d'interès desades només en aquest dispositiu. Per utilitzar-les en altres dispositius, desa-les al teu Compte de Google ({email}).}}</translation>
 <translation id="7409985198648820906"><ph name="UNREAD_COUNT" /> articles sense llegir.</translation>
 <translation id="7412027924265291969">Continua</translation>
-<translation id="741204030948306876">Sí, ho accepto</translation>
+<translation id="741204030948306876">Sí, endavant</translation>
 <translation id="7417689656810783109">Canvia el nom del grup</translation>
 <translation id="7418640008860669073">Desa a...</translation>
 <translation id="7425346204213733349">Els canvis que es facin a les adreces d'interès, l'historial, les contrasenyes i altres opcions de configuració es deixaran de sincronitzar amb el Compte de Google. No obstant això, les dades actuals hi continuaran emmagatzemades.</translation>
@@ -1571,7 +1571,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8909135823018751308">Comparteix...</translation>
 <translation id="8909459547399237818">Selecciona Gestor de contrasenyes i, a continuació, toca Afegeix un widget</translation>
 <translation id="891282356902782456">La contrasenya només es desarà en aquest dispositiu. Per utilitzar-la en altres dispositius, desa-la al teu Compte de Google <ph name="EMAIL" />.</translation>
-<translation id="8917490105272468696">Sí, ho accepto</translation>
+<translation id="8917490105272468696">Sí, endavant</translation>
 <translation id="8928133177108699615">Ordinador</translation>
 <translation id="8937676484307616731">Activa les notificacions per a <ph name="FEATURE_NAME" /></translation>
 <translation id="894191600409472540">Crea contrasenyes segures</translation>

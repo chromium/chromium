@@ -590,7 +590,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4101475238162928417">Sincronize para acessar seus favoritos, senhas e muito mais em outros dispositivos</translation>
 <translation id="4108314971463891922">Seguir</translation>
 <translation id="4108998448622696017">Detecta e avisa você sobre eventos perigosos quando eles acontecerem.</translation>
-<translation id="4116038641877404294">Faça o download de páginas e acesse off-line</translation>
+<translation id="4116038641877404294">Baixe páginas e acesse off-line</translation>
 <translation id="4121654769234887259">Você não precisa se lembrar dessa senha. Ela vai ficar salva na conta <ph name="USERNAME" /> do Gerenciador de senhas do Google</translation>
 <translation id="4124152339699379357">Fluxo de permissão de notificações aberto no tamanho máximo</translation>
 <translation id="4126285640274188657">Insights da página</translation>
@@ -1196,7 +1196,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7025769836128625875">Esse é um recurso de IA experimental e nem sempre acerta. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="7027549951530753705">Download de <ph name="ITEM_TITLE" /> restaurado</translation>
 <translation id="7029809446516969842">Senhas</translation>
-<translation id="7030304022046916278">Envia URLs para a verificação do Navegação segura</translation>
+<translation id="7030304022046916278">Envia URLs para a verificação pelo recurso Navegação segura</translation>
 <translation id="7035701931849773472">Outras opções</translation>
 <translation id="7053983685419859001">Bloquear</translation>
 <translation id="7054588988317389591">Ver descrições de imagens?</translation>
@@ -1208,7 +1208,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="707702207692430409">{BOOKMARK_COUNT,plural, =1{Favorito salvo em "<ph name="FOLDER_NAME" />" na conta <ph name="ACCOUNT_EMAIL" />.}one{Favorito salvo em "<ph name="FOLDER_NAME" />" na conta <ph name="ACCOUNT_EMAIL" />.}other{Favoritos salvos em "<ph name="FOLDER_NAME" />" na conta <ph name="ACCOUNT_EMAIL" />.}}</translation>
 <translation id="7077143737582773186">Cartão SD</translation>
 <translation id="7078916049958741685">Excluir também seus dados do Chrome deste dispositivo</translation>
-<translation id="7080806333218412752">Envia URLs para a verificação pelo Navegação segura. Também envia uma pequena amostra de páginas, downloads, atividades de extensões e informações do sistema para ajudar a descobrir novas ameaças. Vincula temporariamente esses dados à sua Conta do Google quando ela está conectada para proteger você nos apps do Google.</translation>
+<translation id="7080806333218412752">Envia URLs para a verificação pelo recurso Navegação segura. Também envia uma pequena amostra de páginas, downloads, atividades de extensões e informações do sistema para ajudar a descobrir novas ameaças. Vincula temporariamente esses dados à sua Conta do Google quando ela está conectada para proteger você nos apps do Google.</translation>
 <translation id="7085332316435785646">Escolha se você quer incluir o histórico do Chrome para ter experiências mais personalizadas nos Serviços do Google</translation>
 <translation id="7088681679121566888">O Chrome está atualizado</translation>
 <translation id="7094933634769755999">Conteúdo incorreto</translation>

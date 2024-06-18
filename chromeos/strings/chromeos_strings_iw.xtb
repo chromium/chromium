@@ -1093,7 +1093,7 @@
 <translation id="7118522231018231199">‏חשוב לבחור נקודות APN שסופקו על ידי ספק הסלולר או האדמין. בחירת ה-APN תשבית את כל נקודות ה-APN בהתאמה אישית. נקודות APN לא תקינות עלולות לשבש את החיבור לרשת הסלולרית.</translation>
 <translation id="7119389851461848805">הפעלה</translation>
 <translation id="7129287270910503851">נתוני השימוש בחבילת הגלישה יאופסו מדי חודש ביום הזה</translation>
-<translation id="7130438335435247835">‏שם נקודת גישה (APN)</translation>
+<translation id="7130438335435247835">‏שם נקודת הגישה (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{שרת שמות}one{שרתי שמות}two{שרתי שמות}other{שרתי שמות}}</translation>
 <translation id="7135814714616751706">חיפוש מקשי קיצור</translation>
 <translation id="7143207342074048698">מתבצע חיבור</translation>
@@ -1157,7 +1157,7 @@
 <translation id="7415801143053185905">‏משך זמן ההמתנה ל-HTTP ארוך מאוד</translation>
 <translation id="7425037327577270384">עזרה בכתיבה</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
-<translation id="7438298994385592770">‏לא ניתן להשבית או להסיר את ה-APN הזה. צריך לוודא שפריטי ה-APN ב<ph name="ATTACH" /> שהופעלו הושבתו או הוסרו.</translation>
+<translation id="7438298994385592770">‏לא ניתן להשבית או להסיר את ה-APN הזה. צריך להשבית או להסיר את פריטי ה-APN שהופעלו מסוג '<ph name="ATTACH" />'.</translation>
 <translation id="7458970041932198923">כדי לראות ולהגדיר דמויות, צריך להתחבר לרשת ולטעון מחדש את הדף.</translation>
 <translation id="7469648432129124067">זוהה פורטל</translation>
 <translation id="7481312909269577407">קדימה</translation>

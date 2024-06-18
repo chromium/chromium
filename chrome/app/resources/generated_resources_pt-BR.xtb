@@ -723,7 +723,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1536883206862903762">Isso vai desativar as extensões e redefinir as configurações para os padrões seguros. Guias, arquivos e cookies serão preservados. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="1537254971476575106">Lupa de tela cheia</translation>
 <translation id="15373452373711364">Cursor grande do mouse</translation>
-<translation id="1539727654733007771">Nenhuma rede móvel configurada. Faça o download de um novo <ph name="BEGIN_LINK" />perfil<ph name="END_LINK" />.</translation>
+<translation id="1539727654733007771">Nenhuma rede móvel configurada. Baixe um novo <ph name="BEGIN_LINK" />perfil<ph name="END_LINK" />.</translation>
 <translation id="1540265419569299117">Serviço de app ChromeOS</translation>
 <translation id="1540605929960647700">Ativar modo de demonstração</translation>
 <translation id="1541346352678737112">Nenhuma rede encontrada</translation>
@@ -4014,7 +4014,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="3923676227229836009">Esta página tem permissão para ver arquivos</translation>
 <translation id="3924145049010392604">Meta</translation>
 <translation id="3924259174674732591">Tamanho de exibição e de texto: <ph name="DISPLAY_ZOOM" />%</translation>
-<translation id="3924487862883651986">Envia URLs para a verificação do "Navegação segura". Também envia uma pequena amostra de páginas, downloads, atividades de extensões e informações do sistema para ajudar a descobrir novas ameaças. Vincula temporariamente esses dados à sua Conta do Google quando ela está conectada para proteger você nos apps do Google.</translation>
+<translation id="3924487862883651986">Envia URLs para a verificação pelo recurso Navegação segura. Também envia uma pequena amostra de páginas, downloads, atividades de extensões e informações do sistema para ajudar a descobrir novas ameaças. Vincula temporariamente esses dados à sua Conta do Google quando ela está conectada para proteger você nos apps do Google.</translation>
 <translation id="3925573269917483990">Câmera:</translation>
 <translation id="3925926055063465902">Outros usuários deste dispositivo também podem usar esta rede</translation>
 <translation id="3926002189479431949">Smartphone com Smart Lock alterado</translation>
@@ -4742,7 +4742,7 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4482990632723642375">Guia fechada recentemente</translation>
 <translation id="4485245862007675842">Com o Chrome, sua navegação na Web fica ainda melhor</translation>
 <translation id="4486333480498805415">Precisão de local</translation>
-<translation id="4487489714832036847">Chromebooks usam apps em vez de softwares tradicionais. Faça o download de apps de produtividade, entretenimento e muito mais.</translation>
+<translation id="4487489714832036847">Chromebooks usam apps em vez de softwares tradicionais. Baixe apps de produtividade, entretenimento e muito mais.</translation>
 <translation id="4488257340342212116">Permitir o uso da câmera</translation>
 <translation id="4490086832405043258">Usar as configurações de proxy do ChromeOS para este perfil.</translation>
 <translation id="4490798467014431984">Não são permitidas extensões neste site</translation>
@@ -8066,7 +8066,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7029307918966275733">O Crostini não está instalado. Instale o Crostini para ver os créditos.</translation>
 <translation id="7029809446516969842">Senhas</translation>
 <translation id="7030050505233848371">Site perigoso. O Chrome removeu as notificações.</translation>
-<translation id="7030304022046916278">Envia URLs para a verificação do Navegação segura</translation>
+<translation id="7030304022046916278">Envia URLs para a verificação pelo recurso Navegação segura</translation>
 <translation id="7030695672997239647">Clique com o botão direito do mouse em uma guia e selecione as opções "Adicionar guia ao grupo" e "Novo grupo"</translation>
 <translation id="7031608529463141342"><ph name="WINDOW_TITLE" />: porta serial conectada</translation>
 <translation id="7033616203784997570">A entrada precisa ter no máximo 62 caracteres</translation>

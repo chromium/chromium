@@ -1154,7 +1154,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1829192082282182671">&amp;Redueix</translation>
 <translation id="1830550083491357902">Sessió no iniciada</translation>
 <translation id="1831848493690504725">No podem accedir a Google a través de la xarxa connectada. Prova de triar una altra xarxa o comprova la configuració de la xarxa o la configuració del servidor intermediari (si en fas servir un).</translation>
-<translation id="1832459821645506983">Sí, ho accepto</translation>
+<translation id="1832459821645506983">Sí, endavant</translation>
 <translation id="1832511806131704864">Canvi de telèfon actualitzat</translation>
 <translation id="1832848789136765277">Per assegurar-te de poder accedir a les dades sincronitzades en qualsevol moment, verifica la teva identitat</translation>
 <translation id="1834503245783133039">Error en la baixada: <ph name="FILE_NAME" /></translation>
@@ -8518,7 +8518,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7410344089573941623">Pregunta si <ph name="HOST" /> vol accedir a la càmera i al micròfon</translation>
 <translation id="7410421966064092098">Els llocs web no poden ajudar a verificar que no ets un bot</translation>
 <translation id="7410852728357935715">Emet a un dispositiu</translation>
-<translation id="741204030948306876">Sí, ho accepto</translation>
+<translation id="741204030948306876">Sí, endavant</translation>
 <translation id="7412226954991670867">Memòria de la GPU</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Configuració completada</translation>
@@ -10582,7 +10582,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8915307125957890427">Fes clic amb el botó dret en una pestanya i selecciona Afegeix una pestanya al grup. A continuació, selecciona Grup nou.</translation>
 <translation id="8915370057835397490">S'estan carregant els suggeriments</translation>
 <translation id="8916476537757519021">Submarc d'incògnit: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="8917490105272468696">Sí, ho accepto</translation>
+<translation id="8917490105272468696">Sí, endavant</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> de <ph name="GIVEN_NAME" /></translation>
 <translation id="8918900204934259333">S'està instal·lant l'aplicació...</translation>
 <translation id="891931289445130855">Suprimeix les dades i els permisos</translation>

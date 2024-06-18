@@ -2922,7 +2922,7 @@
 <translation id="3117791853215125017">{COUNT,plural, =1{Даныя (<ph name="ATTACHMENTS" />) не ўдалося адправіць на прыладу "<ph name="DEVICE_NAME" />"}one{Даныя (<ph name="ATTACHMENTS" />) не ўдалося адправіць на прыладу "<ph name="DEVICE_NAME" />"}few{Даныя (<ph name="ATTACHMENTS" />) не ўдалося адправіць на прыладу "<ph name="DEVICE_NAME" />"}many{Даныя (<ph name="ATTACHMENTS" />) не ўдалося адправіць на прыладу "<ph name="DEVICE_NAME" />"}other{Даныя (<ph name="ATTACHMENTS" />) не ўдалося адправіць на прыладу "<ph name="DEVICE_NAME" />"}}</translation>
 <translation id="3118319026408854581">Даведка <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118748462829336648">Адкрыць бакавую панэль</translation>
-<translation id="3119743309973425629">Частата мігання тэкставага курсора</translation>
+<translation id="3119743309973425629">Частата міргання тэкставага курсора</translation>
 <translation id="3119948370277171654">Якое змесціва вы трансліравалі і які URL-адрас выкарыстоўвалі?</translation>
 <translation id="3122464029669770682">Працэсар</translation>
 <translation id="3122496702278727796">Не ўдалося стварыць каталог даных</translation>
