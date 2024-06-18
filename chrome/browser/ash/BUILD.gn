@@ -623,31 +623,6 @@ source_set("ash") {
     "arc/window_predictor/window_predictor.h",
     "arc/window_predictor/window_predictor_utils.cc",
     "arc/window_predictor/window_predictor_utils.h",
-    "attestation/attestation_ca_client.cc",
-    "attestation/attestation_ca_client.h",
-    "attestation/certificate_util.cc",
-    "attestation/certificate_util.h",
-    "attestation/enrollment_certificate_uploader.h",
-    "attestation/enrollment_certificate_uploader_impl.cc",
-    "attestation/enrollment_certificate_uploader_impl.h",
-    "attestation/enrollment_id_upload_manager.cc",
-    "attestation/enrollment_id_upload_manager.h",
-    "attestation/machine_certificate_uploader.h",
-    "attestation/machine_certificate_uploader_impl.cc",
-    "attestation/machine_certificate_uploader_impl.h",
-    "attestation/platform_verification_flow.cc",
-    "attestation/platform_verification_flow.h",
-    "attestation/soft_bind_attestation_flow.h",
-    "attestation/soft_bind_attestation_flow_impl.cc",
-    "attestation/soft_bind_attestation_flow_impl.h",
-    "attestation/tpm_challenge_key.cc",
-    "attestation/tpm_challenge_key.h",
-    "attestation/tpm_challenge_key_result.cc",
-    "attestation/tpm_challenge_key_result.h",
-    "attestation/tpm_challenge_key_subtle.cc",
-    "attestation/tpm_challenge_key_subtle.h",
-    "attestation/tpm_challenge_key_with_timeout.cc",
-    "attestation/tpm_challenge_key_with_timeout.h",
     "audio/audio_survey_handler.cc",
     "audio/audio_survey_handler.h",
     "audio/cras_audio_handler_delegate_impl.cc",
@@ -3625,6 +3600,7 @@ source_set("ash") {
     "//chrome/browser/apps/platform_apps/api",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/accessibility/service",
+    "//chrome/browser/ash/attestation",
     "//chrome/browser/ash/bluetooth",
     "//chrome/browser/ash/assistant",
     "//chrome/browser/ash/crosapi",
@@ -4139,6 +4115,7 @@ source_set("ash") {
     "//chrome/browser/ash/accessibility/live_caption",
     "//chrome/browser/ash/accessibility/service",
     "//chrome/browser/ash/assistant",
+    "//chrome/browser/ash/attestation",
     "//chrome/browser/ash/authpolicy",
     "//chrome/browser/ash/bluetooth",
     "//chrome/browser/ash/cryptauth",
@@ -4707,16 +4684,6 @@ static_library("test_support") {
     "arc/tracing/test/overview_tracing_test_base.h",
     "arc/tracing/test/overview_tracing_test_handler.cc",
     "arc/tracing/test/overview_tracing_test_handler.h",
-    "attestation/fake_soft_bind_attestation_flow.cc",
-    "attestation/fake_soft_bind_attestation_flow.h",
-    "attestation/mock_enrollment_certificate_uploader.cc",
-    "attestation/mock_enrollment_certificate_uploader.h",
-    "attestation/mock_machine_certificate_uploader.cc",
-    "attestation/mock_machine_certificate_uploader.h",
-    "attestation/mock_tpm_challenge_key.cc",
-    "attestation/mock_tpm_challenge_key.h",
-    "attestation/mock_tpm_challenge_key_subtle.cc",
-    "attestation/mock_tpm_challenge_key_subtle.h",
     "borealis/borealis_context_manager_mock.cc",
     "borealis/borealis_context_manager_mock.h",
     "borealis/borealis_service_fake.cc",
@@ -5081,6 +5048,7 @@ static_library("test_support") {
     "//chrome/browser/apps/app_service/app_icon:util",
     "//chrome/browser/ash:arc_test_support",
     "//chrome/browser/ash:print_job_info_proto",
+    "//chrome/browser/ash/attestation:test_support",
     "//chrome/browser/ash/wallpaper_handlers:test_support",
     "//chrome/browser/extensions",
     "//chrome/browser/extensions:test_support",
@@ -5451,16 +5419,6 @@ source_set("unit_tests") {
     "arc/vmm/arc_vmm_swap_scheduler_unittest.cc",
     "arc/vmm/arcvm_working_set_trim_executor_unittest.cc",
     "arc/wallpaper/arc_wallpaper_service_unittest.cc",
-    "attestation/attestation_ca_client_unittest.cc",
-    "attestation/attestation_policy_unittest.cc",
-    "attestation/certificate_util_unittest.cc",
-    "attestation/enrollment_certificate_uploader_impl_unittest.cc",
-    "attestation/enrollment_id_upload_manager_unittest.cc",
-    "attestation/machine_certificate_uploader_impl_unittest.cc",
-    "attestation/platform_verification_flow_unittest.cc",
-    "attestation/tpm_challenge_key_result_unittest.cc",
-    "attestation/tpm_challenge_key_subtle_unittest.cc",
-    "attestation/tpm_challenge_key_unittest.cc",
     "audio/audio_survey_handler_unittest.cc",
     "borealis/borealis_app_launcher_unittest.cc",
     "borealis/borealis_app_uninstaller_unittest.cc",
@@ -6305,6 +6263,9 @@ source_set("unit_tests") {
     "//chrome/browser/ash/app_list/vector_icons",
     "//chrome/browser/ash/arc/input_overlay/db/proto",
     "//chrome/browser/ash/assistant:unit_tests",
+    "//chrome/browser/ash/attestation",
+    "//chrome/browser/ash/attestation:test_support",
+    "//chrome/browser/ash/attestation:unit_tests",
     "//chrome/browser/ash/authpolicy",
     "//chrome/browser/ash/bluetooth:unit_tests",
     "//chrome/browser/ash/borealis:borealis_installer_types_mojom",
@@ -6787,7 +6748,7 @@ source_set("unit_tests") {
     "//url",
 
     # Gather unit tests from subdirectories.
-    ":test_with_shadow_variables",
+    "//chrome/browser/ash/attestation:test_with_shadow_variables",
     "//chrome/browser/ash/crosapi:unit_tests",
     "//chrome/browser/ash/login/oobe_quick_start:unit_tests",
     "//chrome/browser/ash/magic_boost:unit_tests",
@@ -6834,31 +6795,6 @@ source_set("unit_tests") {
 
     # Needed by os_settings_manager_unittest.cc.
     "//tools/metrics/histograms/metadata/chromeos_settings/enums.xml",
-  ]
-}
-
-config("allow_shadow_variables") {
-  cflags = [ "-Wno-shadow" ]
-}
-
-# TODO(b/247823913): Merge this target back into the unit_tests target above
-# when third_party/securemessage code stops generating -Wshadow warnings.
-source_set("test_with_shadow_variables") {
-  testonly = true
-  sources = [ "attestation/soft_bind_attestation_flow_impl_unittest.cc" ]
-  configs += [ ":allow_shadow_variables" ]
-  deps = [
-    ":ash",
-    ":test_support",
-    "//base",
-    "//chromeos/ash/components/attestation:test_support",
-    "//chromeos/ash/components/settings",
-    "//content/test:test_support",
-    "//crypto",
-    "//net",
-    "//testing/gtest",
-    "//third_party/securemessage",
-    "//third_party/securemessage:securemessage_cpp_protobuf",
   ]
 }
 

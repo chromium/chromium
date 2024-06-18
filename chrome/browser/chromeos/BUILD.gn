@@ -433,7 +433,10 @@ source_set("chromeos") {
       "reporting/websites/website_usage_telemetry_periodic_collector_ash.cc",
       "reporting/websites/website_usage_telemetry_periodic_collector_ash.h",
     ]
-    allow_circular_includes_from += [ "//chrome/browser/ash/crosapi" ]
+    allow_circular_includes_from += [
+      "//chrome/browser/ash/attestation",
+      "//chrome/browser/ash/crosapi",
+    ]
     public_deps += [
       "//ash/constants",
       "//chrome/browser/ash/crosapi",
@@ -447,6 +450,7 @@ source_set("chromeos") {
       "//ash/webui/file_manager:file_manager_ui",
       "//ash/webui/file_manager:file_manager_untrusted_ui",
       "//chrome/browser/ash/accessibility",
+      "//chrome/browser/ash/attestation",
       "//chrome/browser/ash/mahi:mahi_ash",
       "//chrome/browser/ui/ash/system_web_apps:system_web_apps",
       "//chromeos/ash/components/browser_context_helper",

@@ -1241,6 +1241,7 @@ source_set("extensions") {
       "//ash/webui/resources:media_app_bundle_resources_grit",
       "//ash/webui/settings/public/constants:mojom",
       "//chrome/browser/ash/accessibility",
+      "//chrome/browser/ash/attestation",
       "//chrome/browser/ash/crosapi",
       "//chrome/browser/ash/crostini:crostini_installer_types_mojom",
       "//chrome/browser/devtools",
@@ -1301,6 +1302,7 @@ source_set("extensions") {
 
     allow_circular_includes_from += [
       "//chrome/browser/ash/accessibility",
+      "//chrome/browser/ash/attestation",
       "//chrome/browser/ash/crosapi",
     ]
 

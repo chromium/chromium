@@ -20,6 +20,7 @@ source_set("ash") {
 
   deps = [
     "//chrome/browser/ash",
+    "//chrome/browser/ash/attestation",
     "//chrome/browser/enterprise/connectors/device_trust/common",
     "//chrome/browser/profiles:profile",
     "//components/device_signals/core/common",
