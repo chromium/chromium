@@ -201,12 +201,9 @@ void HistoryEmbeddingsService::OnOsCryptAsyncReady(
 
 void HistoryEmbeddingsService::OnEmbedderMetadataReady(
     EmbedderMetadata metadata) {
-  // TODO: Remove kEncryptSyncCompat option once async code will not be
-  // reverted.
   subscription_ = os_crypt_async_->GetInstance(
       base::BindOnce(&HistoryEmbeddingsService::OnOsCryptAsyncReady,
-                     weak_ptr_factory_.GetWeakPtr(), metadata),
-      os_crypt_async::Encryptor::Option::kEncryptSyncCompat);
+                     weak_ptr_factory_.GetWeakPtr(), metadata));
 }
 
 void HistoryEmbeddingsService::RetrievePassages(
