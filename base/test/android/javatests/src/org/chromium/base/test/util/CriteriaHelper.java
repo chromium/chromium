@@ -56,6 +56,13 @@ import java.util.concurrent.atomic.AtomicReference;
  * </pre>
  */
 public class CriteriaHelper {
+    /** Exception thrown for timeouts. */
+    public static class TimeoutException extends RuntimeException {
+        private TimeoutException(String message, Throwable causedBy) {
+            super(message, causedBy);
+        }
+    }
+
     /** The default maximum time to wait for a criteria to become valid. */
     public static final long DEFAULT_MAX_TIME_TO_POLL = 3000L;
 
@@ -120,7 +127,7 @@ public class CriteriaHelper {
                 }
             }
         }
-        throw new AssertionError(throwable);
+        throw new TimeoutException("Timed out after " + maxTimeoutMs + " milliseconds", throwable);
     }
 
     private static void sleepThread(long checkIntervalMs) {
@@ -269,8 +276,8 @@ public class CriteriaHelper {
                             });
                     Throwable throwable = throwableRef.get();
                     if (throwable != null) {
-                        if (throwable instanceof CriteriaNotSatisfiedException) {
-                            throw new CriteriaNotSatisfiedException(throwable);
+                        if (throwable instanceof Error) {
+                            throw (Error) throwable;
                         } else if (throwable instanceof RuntimeException) {
                             throw (RuntimeException) throwable;
                         } else {
