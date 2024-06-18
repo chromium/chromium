@@ -344,12 +344,12 @@ class PrerenderOmniboxSearchSuggestionBrowserTest
     TemplateURLData data;
     data.SetShortName(kSearchDomain16);
     data.SetKeyword(data.short_name());
-    data.SetURL(
-        search_engine_server_
-            .GetURL(kSearchDomain,
-                    prerender_page_target_ +
-                        "?q={searchTerms}&{google:prefetchSource}type=test")
-            .spec());
+    data.SetURL(search_engine_server_
+                    .GetURL(kSearchDomain,
+                            prerender_page_target_ +
+                                "?q={searchTerms}&{google:assistedQueryStats}{"
+                                "google:prefetchSource}type=test")
+                    .spec());
     TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
     ASSERT_TRUE(template_url);
     model->SetUserSelectedDefaultSearchProvider(template_url);

@@ -580,6 +580,14 @@ SearchPrefetchService::GetSearchPrefetchStatusForTesting(
   return prefetches_[canonical_search_url]->current_status();
 }
 
+GURL SearchPrefetchService::GetRealPrefetchUrlForTesting(
+    const GURL& canonical_search_url) {
+  if (prefetches_.find(canonical_search_url) == prefetches_.end()) {
+    return GURL();
+  }
+  return prefetches_[canonical_search_url]->prefetch_url();
+}
+
 SearchPrefetchURLLoader::RequestHandler
 SearchPrefetchService::TakePrefetchResponseFromMemoryCache(
     const network::ResourceRequest& tentative_resource_request) {

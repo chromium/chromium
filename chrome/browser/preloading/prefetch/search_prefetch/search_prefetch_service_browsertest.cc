@@ -3352,7 +3352,9 @@ class SearchPrefetchServiceNavigationPrefetchBrowserTest
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
                        NavigationPrefetchIsServedMouseDown) {
   SetDSEWithURL(
-      GetSearchServerQueryURL("{searchTerms}&{google:prefetchSource}"), true);
+      GetSearchServerQueryURL(
+          "{searchTerms}&{google:assistedQueryStats}{google:prefetchSource}"),
+      true);
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   std::string search_terms = "terms of service";
@@ -3433,7 +3435,9 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
                        NavigationPrefetchIsServedArrowDown) {
   SetDSEWithURL(
-      GetSearchServerQueryURL("{searchTerms}&{google:prefetchSource}"), true);
+      GetSearchServerQueryURL("{searchTerms}&{google:google:assistedQueryStats}"
+                              "{google:prefetchSource}"),
+      true);
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   std::string search_terms = "terms of service";
@@ -3515,7 +3519,9 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
                        NavigationPrefetchIsServedTouchDown) {
   SetDSEWithURL(
-      GetSearchServerQueryURL("{searchTerms}&{google:prefetchSource}"), true);
+      GetSearchServerQueryURL(
+          "{searchTerms}&{google:assistedQueryStats}{google:prefetchSource}"),
+      true);
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   std::string search_terms = "terms of service";
@@ -3596,7 +3602,9 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
                        NavigationPrefetchDoesNotReplaceError) {
   SetDSEWithURL(
-      GetSearchServerQueryURL("{searchTerms}&{google:prefetchSource}"), true);
+      GetSearchServerQueryURL(
+          "{searchTerms}&{google:assistedQueryStats}{google:prefetchSource}"),
+      true);
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   std::string search_terms = kOmniboxErrorQuery;
@@ -3645,7 +3653,9 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
                        NavigationPrefetchDoesntReplaceComplete) {
   SetDSEWithURL(
-      GetSearchServerQueryURL("{searchTerms}&{google:prefetchSource}"), true);
+      GetSearchServerQueryURL(
+          "{searchTerms}&{google:assistedQueryStats}{google:prefetchSource}"),
+      true);
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   std::string search_terms = "terms of service";
@@ -3702,7 +3712,9 @@ IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
 IN_PROC_BROWSER_TEST_F(SearchPrefetchServiceNavigationPrefetchBrowserTest,
                        DSEDoesNotAllowPrefetch) {
   SetDSEWithURL(
-      GetSearchServerQueryURL("{searchTerms}&{google:prefetchSource}"), false);
+      GetSearchServerQueryURL(
+          "{searchTerms}&{google:assistedQueryStats}{google:prefetchSource}"),
+      false);
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   std::string search_terms = "terms of service";
@@ -3800,7 +3812,9 @@ class SearchNavigationPrefetchHoldbackBrowserTest
 IN_PROC_BROWSER_TEST_F(SearchNavigationPrefetchHoldbackBrowserTest,
                        NoPrefetchInsideHoldback) {
   SetDSEWithURL(
-      GetSearchServerQueryURL("{searchTerms}&{google:prefetchSource}"), true);
+      GetSearchServerQueryURL(
+          "{searchTerms}&{google:assistedQueryStats}{google:prefetchSource}"),
+      true);
   std::string search_terms = "terms of service";
   std::string user_input = "terms";
 
@@ -3954,7 +3968,9 @@ class SearchNavigationPrefetchDefaultMatchBrowserTest
 IN_PROC_BROWSER_TEST_F(SearchNavigationPrefetchDefaultMatchBrowserTest,
                        NotDefaultMatch) {
   SetDSEWithURL(
-      GetSearchServerQueryURL("{searchTerms}&{google:prefetchSource}"), true);
+      GetSearchServerQueryURL(
+          "{searchTerms}&{google:assistedQueryStats}{google:prefetchSource}"),
+      true);
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   std::string search_terms = "search";

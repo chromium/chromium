@@ -4,14 +4,16 @@
 
 #include "chrome/browser/ui/webui/searchbox/realbox_handler.h"
 
+#include <gtest/gtest.h>
+
 #include <string>
 #include <unordered_map>
 #include <utility>
 #include <vector>
 
-#include <gtest/gtest.h>
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_features.h"
@@ -213,14 +215,18 @@ IN_PROC_BROWSER_TEST_F(RealboxSearchPreloadBrowserTest, SearchPreloadSuccess) {
   std::string search_terms = "prerender";
   AddNewSuggestionRule(input_query, {search_terms}, /*prefetch_index=*/0,
                        /*prerender_index=*/0);
-  auto [_, prerender_url] = GetSearchPrefetchAndNonPrefetch(search_terms);
+  auto [search_url, _] = GetSearchPrefetchAndNonPrefetch(search_terms);
   // Fake a WebUI input.
   remote_page_handler->QueryAutocomplete(base::ASCIIToUTF16(input_query),
                                          /*prevent_inline_autocomplete=*/false);
   remote_page_handler.FlushForTesting();
 
   // Prerender and Prefetch should be triggered.
-  WaitUntilStatusChangesTo(GetCanonicalSearchURL(prerender_url),
+  WaitUntilStatusChangesTo(GetCanonicalSearchURL(search_url),
                            SearchPrefetchStatus::kComplete);
+  std::string prefetch_url_raw =
+      GetRealPrefetchUrlForTesting(GetCanonicalSearchURL(search_url)).spec();
+  base::ReplaceFirstSubstringAfterOffset(&prefetch_url_raw, 0, "pf=cs&", "");
+  GURL prerender_url = GURL(prefetch_url_raw);
   registry_observer.WaitForTrigger(prerender_url);
 }

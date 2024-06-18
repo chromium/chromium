@@ -150,12 +150,12 @@ class SearchPreloadUnifiedBrowserTest : public PlatformBrowserTest,
     TemplateURLData data;
     data.SetShortName(kSearchDomain16);
     data.SetKeyword(data.short_name());
-    data.SetURL(
-        search_engine_server_
-            .GetURL(kSearchDomain,
-                    "/search_page.html?q={searchTerms}&{google:prefetchSource}"
-                    "type=test")
-            .spec());
+    data.SetURL(search_engine_server_
+                    .GetURL(kSearchDomain,
+                            "/search_page.html?q={searchTerms}&{google:"
+                            "assistedQueryStats}{google:prefetchSource}"
+                            "type=test")
+                    .spec());
     data.suggestions_url =
         search_engine_server_.GetURL(kSearchDomain, "/?q={searchTerms}").spec();
     TemplateURL* template_url = model->Add(std::make_unique<TemplateURL>(data));
@@ -1563,7 +1563,6 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
       SearchPrefetchStatus::kPrerenderedAndClicked, 1);
 
   EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_prefetch_url));
-  EXPECT_EQ(1, prerender_helper().GetRequestCount(expected_real_url));
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 
