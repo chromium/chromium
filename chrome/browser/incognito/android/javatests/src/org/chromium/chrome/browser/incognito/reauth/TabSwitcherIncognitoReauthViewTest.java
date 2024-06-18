@@ -31,7 +31,6 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -49,7 +48,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.UiDisableIf;
 
 import java.io.IOException;
 
@@ -137,40 +135,6 @@ public class TabSwitcherIncognitoReauthViewTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // https://crbug.com/338972172
-    @DisableFeatures(ChromeFeatureList.ANDROID_HUB)
-    public void testIncognitoReauthView_TabSwitcherRenderTest() throws IOException {
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        openIncognitoReauth(cta);
-
-        onView(withId(R.id.tab_switcher_toolbar)).check(matches(isDisplayed()));
-
-        if (!cta.isTablet()) {
-            onView(withId(R.id.new_tab_button)).check(matches(not(isEnabled())));
-        } else {
-            onView(withId(R.id.new_tab_view)).check(matches(not(isEnabled())));
-            onView(withId(R.id.new_tab_view_button)).check(matches(not(isEnabled())));
-            onView(withId(R.id.new_tab_view_desc)).check(matches(not(isEnabled())));
-        }
-
-        onView(withId(R.id.incognito_reauth_menu_button)).check(matches(not(isDisplayed())));
-        onView(withId(R.id.incognito_reauth_unlock_incognito_button)).check(matches(isDisplayed()));
-        onView(withText(R.string.incognito_reauth_page_unlock_incognito_button_label))
-                .check(matches(isDisplayed()));
-
-        onView(withId(R.id.incognito_reauth_see_other_tabs_label))
-                .check(matches(not(isDisplayed())));
-        onView(withText(R.string.incognito_reauth_page_see_other_tabs_label))
-                .check(matches(not(isDisplayed())));
-
-        mRenderTestRule.render(
-                cta.findViewById(R.id.action_bar_root), "incognito_reauth_view_tab_switcher_v2");
-    }
-
-    @Test
-    @MediumTest
-    @Feature("RenderTest")
-    @EnableFeatures(ChromeFeatureList.ANDROID_HUB)
     @DisableFeatures(ChromeFeatureList.ANDROID_HUB_FLOATING_ACTION_BUTTON)
     public void testIncognitoReauthView_HubRenderTest() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
@@ -196,10 +160,7 @@ public class TabSwitcherIncognitoReauthViewTest {
     @Test
     @MediumTest
     @Feature("RenderTest")
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_HUB,
-        ChromeFeatureList.ANDROID_HUB_FLOATING_ACTION_BUTTON
-    })
+    @EnableFeatures({ChromeFeatureList.ANDROID_HUB_FLOATING_ACTION_BUTTON})
     public void testIncognitoReauthView_HubRenderTest_FloatingActionButton() throws IOException {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         openIncognitoReauth(cta);

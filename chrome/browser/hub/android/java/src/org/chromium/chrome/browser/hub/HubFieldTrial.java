@@ -29,9 +29,10 @@ public class HubFieldTrial {
             ChromeFeatureList.newBooleanCachedFieldTrialParameter(
                     ChromeFeatureList.ANDROID_HUB_V2, SUPPORTS_SEARCH_PARAM, false);
 
+    // TODO(crbug/346852431): Remove this from all call sites.
     /** Returns whether the hub is enabled. */
     public static boolean isHubEnabled() {
-        return ChromeFeatureList.sAndroidHub.isEnabled();
+        return true;
     }
 
     /** Returns whether the hub V2 is enabled. */

@@ -12,7 +12,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.atLeastOnce;
@@ -27,18 +26,15 @@ import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.view.View;
-import android.widget.ImageButton;
 
 import androidx.annotation.ColorInt;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.graphics.ColorUtils;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
@@ -57,23 +53,16 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.layouts.LayoutTestUtils;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.SearchEngineUtils;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ButtonData;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
@@ -332,339 +321,6 @@ public class ToolbarPhoneTest {
                 });
         verify(mLocationbarBackgroundDrawable, atLeastOnce()).setTint(anyInt());
         verify(mLocationbarBackgroundDrawable, atLeastOnce()).setCornerRadius(nonFocusedRadius);
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
-    @DisableFeatures({ChromeFeatureList.ANDROID_HUB})
-    public void testEnterTabSwitcher_toolbarVisibleUntilTransitionEnds_startSurfaceEnabled() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        TabModelSelector tabModelSelector = cta.getTabModelSelectorSupplier().get();
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(tabModelSelector.isTabStateInitialized(), Matchers.is(true));
-                    Criteria.checkThat(tabModelSelector.getTotalTabCount(), Matchers.is(1));
-                });
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    cta.findViewById(R.id.tab_switcher_button).performClick();
-                });
-
-        // When the Start surface refactoring is enabled, the ToolbarPhone is shown on the grid tab
-        // switcher rather than the Start surface toolbar.
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    RecyclerView tabList = cta.findViewById(R.id.tab_list_recycler_view);
-                    RecyclerView.ViewHolder viewHolder =
-                            tabList == null ? null : tabList.findViewHolderForAdapterPosition(0);
-                    if (viewHolder != null) {
-                        viewHolder.itemView.performClick();
-                        return true;
-                    }
-                    return false;
-                });
-        CriteriaHelper.pollUiThread(() -> mToolbar.getVisibility() == View.VISIBLE);
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
-    @DisableFeatures({ChromeFeatureList.ANDROID_HUB})
-    @DisableAnimationsTestRule.EnsureAnimationsOn
-    public void
-            testEnterTabSwitcher_toolbarVisibleUntilTransitionEnds_startSurfaceEnabled_animationsEnabled() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        TabModelSelector tabModelSelector = cta.getTabModelSelectorSupplier().get();
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(tabModelSelector.isTabStateInitialized(), Matchers.is(true));
-                    Criteria.checkThat(tabModelSelector.getTotalTabCount(), Matchers.is(1));
-                });
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    cta.findViewById(R.id.tab_switcher_button).performClick();
-                });
-
-        boolean isTabToGtsAnimationEnabled =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> {
-                            return TabUiFeatureUtilities.isTabToGtsAnimationEnabled(cta);
-                        });
-        if (isTabToGtsAnimationEnabled) {
-            Assert.assertTrue(mToolbar.getVisibility() == View.VISIBLE);
-        }
-
-        // When the Start surface refactoring is enabled, the ToolbarPhone is shown on the grid tab
-        // switcher rather than the Start surface toolbar.
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    RecyclerView tabList = cta.findViewById(R.id.tab_list_recycler_view);
-                    RecyclerView.ViewHolder viewHolder =
-                            tabList == null ? null : tabList.findViewHolderForAdapterPosition(0);
-                    if (viewHolder != null) {
-                        viewHolder.itemView.performClick();
-                        return true;
-                    }
-                    return false;
-                });
-        CriteriaHelper.pollUiThread(() -> mToolbar.getVisibility() == View.VISIBLE);
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID, ChromeFeatureList.ANDROID_HUB})
-    @DisableAnimationsTestRule.EnsureAnimationsOn
-    public void testEnterTabSwitcher_toolbarVisibleUntilTransitionEnds_startSurfaceDisabled() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        TabModelSelector tabModelSelector = cta.getTabModelSelectorSupplier().get();
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(tabModelSelector.isTabStateInitialized(), Matchers.is(true));
-                    Criteria.checkThat(tabModelSelector.getTotalTabCount(), Matchers.is(1));
-                });
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    cta.findViewById(R.id.tab_switcher_button).performClick();
-                });
-
-        boolean isTabToGtsAnimationEnabled =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> {
-                            return TabUiFeatureUtilities.isTabToGtsAnimationEnabled(cta);
-                        });
-        if (isTabToGtsAnimationEnabled) {
-            Assert.assertTrue(mToolbar.getVisibility() == View.VISIBLE);
-        }
-
-        CriteriaHelper.pollUiThread(() -> mToolbar.getVisibility() != View.VISIBLE);
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    RecyclerView tabList = cta.findViewById(R.id.tab_list_recycler_view);
-                    RecyclerView.ViewHolder viewHolder =
-                            tabList == null ? null : tabList.findViewHolderForAdapterPosition(0);
-                    if (viewHolder != null) {
-                        viewHolder.itemView.performClick();
-                        return true;
-                    }
-                    return false;
-                });
-        CriteriaHelper.pollUiThread(() -> mToolbar.getVisibility() == View.VISIBLE);
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION})
-    @DisableFeatures({ChromeFeatureList.ANDROID_HUB})
-    @DisableAnimationsTestRule.EnsureAnimationsOn
-    public void testToolbarTabSwitcherButtonNotClickableDuringTransition_startSurfaceEnabled() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        TabModelSelector tabModelSelector = cta.getTabModelSelectorSupplier().get();
-        ImageButton tabSwitcherButton =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> {
-                            return cta.findViewById(R.id.tab_switcher_button);
-                        });
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(tabModelSelector.isTabStateInitialized(), Matchers.is(true));
-                    Criteria.checkThat(tabModelSelector.getTotalTabCount(), Matchers.is(1));
-                    Criteria.checkThat(tabSwitcherButton.isClickable(), Matchers.is(true));
-                });
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    tabSwitcherButton.performClick();
-                });
-
-        boolean isTabToGtsAnimationEnabled =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> {
-                            return TabUiFeatureUtilities.isTabToGtsAnimationEnabled(cta);
-                        });
-        if (isTabToGtsAnimationEnabled) {
-            Assert.assertTrue(mToolbar.getVisibility() == View.VISIBLE);
-        }
-
-        CriteriaHelper.pollUiThread(() -> mToolbar.getVisibility() != View.VISIBLE);
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    RecyclerView tabList = cta.findViewById(R.id.tab_list_recycler_view);
-                    RecyclerView.ViewHolder viewHolder =
-                            tabList == null ? null : tabList.findViewHolderForAdapterPosition(0);
-                    if (viewHolder != null) {
-                        viewHolder.itemView.performClick();
-                        return true;
-                    }
-                    return false;
-                });
-
-        if (isTabToGtsAnimationEnabled) {
-            assertFalse(
-                    "Tab switcher button should not be clickable", tabSwitcherButton.isClickable());
-        }
-
-        CriteriaHelper.pollUiThread(() -> mToolbar.getVisibility() == View.VISIBLE);
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    // Check that clicks become enabled after the transition.
-                    return tabSwitcherButton.isClickable();
-                },
-                "Tab switcher button did not become clickable.");
-        // Ensure it is possible to return to tab switcher.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    tabSwitcherButton.performClick();
-                });
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
-    }
-
-    @Test
-    @MediumTest
-    @DisableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION, ChromeFeatureList.ANDROID_HUB})
-    @DisableAnimationsTestRule.EnsureAnimationsOn
-    public void
-            testToolbarTabSwitcherButtonNotClickableDuringTransition_startSurfaceEnabled_noAnimation() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        TabModelSelector tabModelSelector = cta.getTabModelSelectorSupplier().get();
-        ImageButton tabSwitcherButton =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> {
-                            return cta.findViewById(R.id.tab_switcher_button);
-                        });
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(tabModelSelector.isTabStateInitialized(), Matchers.is(true));
-                    Criteria.checkThat(tabModelSelector.getTotalTabCount(), Matchers.is(1));
-                    Criteria.checkThat(tabSwitcherButton.isClickable(), Matchers.is(true));
-                });
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    tabSwitcherButton.performClick();
-                });
-
-        boolean isTabToGtsAnimationEnabled =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> {
-                            return TabUiFeatureUtilities.isTabToGtsAnimationEnabled(cta);
-                        });
-        if (isTabToGtsAnimationEnabled) {
-            Assert.assertTrue(mToolbar.getVisibility() == View.VISIBLE);
-        }
-
-        CriteriaHelper.pollUiThread(() -> mToolbar.getVisibility() != View.VISIBLE);
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    RecyclerView tabList = cta.findViewById(R.id.tab_list_recycler_view);
-                    RecyclerView.ViewHolder viewHolder =
-                            tabList == null ? null : tabList.findViewHolderForAdapterPosition(0);
-                    if (viewHolder != null) {
-                        viewHolder.itemView.performClick();
-                        return true;
-                    }
-                    return false;
-                });
-
-        if (isTabToGtsAnimationEnabled) {
-            assertFalse(
-                    "Tab switcher button should not be clickable", tabSwitcherButton.isClickable());
-        }
-
-        CriteriaHelper.pollUiThread(() -> mToolbar.getVisibility() == View.VISIBLE);
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    // Check that clicks become enabled after the transition.
-                    return tabSwitcherButton.isClickable();
-                },
-                "Tab switcher button did not become clickable.");
-        // Ensure it is possible to return to tab switcher.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    tabSwitcherButton.performClick();
-                });
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    @DisableFeatures({ChromeFeatureList.START_SURFACE_ANDROID, ChromeFeatureList.ANDROID_HUB})
-    @DisableAnimationsTestRule.EnsureAnimationsOn
-    public void testToolbarTabSwitcherButtonNotClickableDuringTransition_startSurfaceDisabled() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        TabModelSelector tabModelSelector = cta.getTabModelSelectorSupplier().get();
-        ImageButton tabSwitcherButton =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> {
-                            return cta.findViewById(R.id.tab_switcher_button);
-                        });
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(tabModelSelector.isTabStateInitialized(), Matchers.is(true));
-                    Criteria.checkThat(tabModelSelector.getTotalTabCount(), Matchers.is(1));
-                    Criteria.checkThat(tabSwitcherButton.isClickable(), Matchers.is(true));
-                });
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    tabSwitcherButton.performClick();
-                });
-
-        boolean isTabToGtsAnimationEnabled =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        () -> {
-                            return TabUiFeatureUtilities.isTabToGtsAnimationEnabled(cta);
-                        });
-        if (isTabToGtsAnimationEnabled) {
-            Assert.assertTrue(mToolbar.getVisibility() == View.VISIBLE);
-        }
-
-        CriteriaHelper.pollUiThread(() -> mToolbar.getVisibility() != View.VISIBLE);
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    RecyclerView tabList = cta.findViewById(R.id.tab_list_recycler_view);
-                    RecyclerView.ViewHolder viewHolder =
-                            tabList == null ? null : tabList.findViewHolderForAdapterPosition(0);
-                    if (viewHolder != null) {
-                        viewHolder.itemView.performClick();
-                        assertFalse(
-                                "Clickable should be false during transition.",
-                                tabSwitcherButton.isClickable());
-                        return true;
-                    }
-                    return false;
-                });
-
-        if (isTabToGtsAnimationEnabled) {
-            assertFalse(
-                    "Tab switcher button should not be clickable", tabSwitcherButton.isClickable());
-        }
-        CriteriaHelper.pollUiThread(() -> mToolbar.getVisibility() == View.VISIBLE);
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    // Check that clicks become enabled after the transition.
-                    return tabSwitcherButton.isClickable();
-                },
-                "Tab switcher button did not become clickable.");
-        // Ensure it is possible to return to tab switcher.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    tabSwitcherButton.performClick();
-                });
-        LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.TAB_SWITCHER);
     }
 
     @Test

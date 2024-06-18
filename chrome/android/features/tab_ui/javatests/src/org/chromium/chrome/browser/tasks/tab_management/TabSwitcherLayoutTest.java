@@ -4,9 +4,6 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static android.os.Build.VERSION_CODES.O_MR1;
-import static android.os.Build.VERSION_CODES.Q;
-
 import static androidx.test.espresso.Espresso.closeSoftKeyboard;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
@@ -15,7 +12,6 @@ import static androidx.test.espresso.action.ViewActions.pressImeActionButton;
 import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
@@ -26,11 +22,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withParent;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import static org.hamcrest.Matchers.not;
 import static org.hamcrest.core.AllOf.allOf;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -41,7 +34,6 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.c
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.createTabs;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.getSwipeToDismissAction;
-import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.leaveTabSwitcher;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.mergeAllNormalTabsToAGroup;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.switchTabModel;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabModelTabCount;
@@ -49,21 +41,17 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.v
 import static org.chromium.components.embedder_support.util.UrlConstants.NTP_URL;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
-import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
-import android.os.Build;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 import androidx.test.espresso.ViewAssertion;
@@ -76,47 +64,32 @@ import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
-import org.chromium.base.GarbageCollectionTestUtils;
-import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.layouts.LayoutTestUtils;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tab.TabObserver;
-import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
-import org.chromium.chrome.browser.tab_ui.TabSwitcher;
 import org.chromium.chrome.browser.tab_ui.TabThumbnailView;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupColorUtils;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
-import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -124,19 +97,16 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
-import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
@@ -149,7 +119,6 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.atomic.AtomicReference;
 
 /** Tests for the {@link TabSwitcherLayout}. */
 @SuppressWarnings("ConstantConditions")
@@ -158,7 +127,7 @@ import java.util.concurrent.atomic.AtomicReference;
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "force-fieldtrials=Study/Group"
 })
-@DisableFeatures({ChromeFeatureList.ANDROID_HUB, ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
+@DisableFeatures({ChromeFeatureList.TAB_GROUP_PARITY_ANDROID})
 @Restriction({
     UiRestriction.RESTRICTION_TYPE_PHONE,
     Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE
@@ -170,31 +139,17 @@ public class TabSwitcherLayoutTest {
 
     private static final String TEST_URL = "/chrome/test/data/android/google.html";
 
-    // Tests need animation on.
-    @ClassRule
-    public static DisableAnimationsTestRule sEnableAnimationsRule =
-            new DisableAnimationsTestRule(true);
-
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
-    @Rule
-    public ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus()
-                    .setRevision(5)
-                    .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_MOBILE_START)
-                    .build();
 
     @SuppressWarnings("FieldCanBeLocal")
     private EmbeddedTestServer mTestServer;
 
-    private TabSwitcherLayout mTabSwitcherLayout;
     private String mUrl;
     private int mRepeat;
     private List<WeakReference<Bitmap>> mAllBitmaps = new LinkedList<>();
     private Callback<Bitmap> mBitmapListener =
             (bitmap) -> mAllBitmaps.add(new WeakReference<>(bitmap));
-    private TabSwitcher.TabListDelegate mTabListDelegate;
     private ModalDialogManager mModalDialogManager;
 
     @Before
@@ -205,27 +160,14 @@ public class TabSwitcherLayoutTest {
         mActivityTestRule.startMainActivityWithURL(NTP_URL);
 
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        Layout layout = TabUiTestHelper.getTabSwitcherLayoutAndVerify(cta);
-        mTabSwitcherLayout = (TabSwitcherLayout) layout;
         mUrl = mTestServer.getURL("/chrome/test/data/android/navigate/simple.html");
         mRepeat = 1;
 
-        mTabListDelegate = getTabListDelegateFromUIThread();
-        mTabListDelegate.setBitmapCallbackForTesting(mBitmapListener);
-        assertEquals(0, mTabListDelegate.getBitmapFetchCountForTesting());
+        cta.getTabContentManager().setCaptureMinRequestTimeForTesting(0);
 
-        mActivityTestRule
-                .getActivity()
-                .getTabContentManager()
-                .setCaptureMinRequestTimeForTesting(0);
-
-        CriteriaHelper.pollUiThread(
-                mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
+        CriteriaHelper.pollUiThread(cta.getTabModelSelector()::isTabStateInitialized);
         mModalDialogManager =
-                TestThreadUtils.runOnUiThreadBlockingNoException(
-                        mActivityTestRule.getActivity()::getModalDialogManager);
-
-        assertEquals(0, mTabListDelegate.getBitmapFetchCountForTesting());
+                TestThreadUtils.runOnUiThreadBlockingNoException(cta::getModalDialogManager);
     }
 
     @After
@@ -237,276 +179,6 @@ public class TabSwitcherLayoutTest {
         dismissAllModalDialogs();
     }
 
-    // TODO(crbug/324919909): Delete this test once Hub is launched. It is migrated to
-    // TabSwitcherLayoutPTTest.java.
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @DisableAnimationsTestRule.EnsureAnimationsOn
-    @CommandLineFlags.Add({BASE_PARAMS})
-    @DisabledTest(message = "crbug.com/1469431")
-    public void testRenderGrid_3WebTabs() throws IOException {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        prepareTabs(3, 0, "about:blank");
-        // Make sure all thumbnails are there before switching tabs.
-        enterGTSWithThumbnailRetry();
-        leaveTabSwitcher(cta);
-
-        ChromeTabUtils.switchTabInCurrentTabModel(cta, 0);
-        enterTabSwitcher(cta);
-        mRenderTestRule.render(cta.findViewById(R.id.tab_list_recycler_view), "3_web_tabs");
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. It is migrated to
-    // TabSwitcherLayoutPTTest.java.
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    @CommandLineFlags.Add({BASE_PARAMS})
-    @DisableAnimationsTestRule.EnsureAnimationsOn
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    public void testRenderGrid_10WebTabs() throws IOException {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        prepareTabs(10, 0, "about:blank");
-        // Make sure all thumbnails are there before switching tabs.
-        enterGTSWithThumbnailRetry();
-        leaveTabSwitcher(cta);
-
-        ChromeTabUtils.switchTabInCurrentTabModel(cta, 0);
-        enterTabSwitcher(cta);
-        mRenderTestRule.render(cta.findViewById(R.id.tab_list_recycler_view), "10_web_tabs");
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. It is migrated to
-    // TabSwitcherLayoutPTTest.java.
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    @CommandLineFlags.Add({BASE_PARAMS})
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    public void testRenderGrid_10WebTabs_InitialScroll() throws IOException {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        prepareTabs(10, 0, "about:blank");
-        assertEquals(9, cta.getTabModelSelector().getCurrentModel().index());
-        enterGTSWithThumbnailRetry();
-        // Make sure the grid tab switcher is scrolled down to show the selected tab.
-        mRenderTestRule.render(
-                cta.findViewById(R.id.tab_list_recycler_view), "10_web_tabs-select_last");
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. It is migrated to
-    // TabSwitcherPanePublicTransitTest.
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @CommandLineFlags.Add({BASE_PARAMS})
-    public void testSwitchTabModel_ScrollToSelectedTab() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        prepareTabs(10, 0, "about:blank");
-        assertEquals(9, cta.getCurrentTabModel().index());
-        createTabs(cta, true, 1);
-        CriteriaHelper.pollUiThread(() -> cta.getCurrentTabModel().isIncognito());
-        enterTabSwitcher(cta);
-        switchTabModel(cta, false);
-        // Make sure the grid tab switcher is scrolled down to show the selected tab.
-        onView(tabSwitcherViewMatcher())
-                .check(
-                        (v, noMatchException) -> {
-                            if (noMatchException != null) throw noMatchException;
-                            assertTrue(v instanceof RecyclerView);
-                            LinearLayoutManager layoutManager =
-                                    (LinearLayoutManager) ((RecyclerView) v).getLayoutManager();
-                            assertEquals(9, layoutManager.findLastVisibleItemPosition());
-                        });
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. It is migrated to
-    // TabSwitcherLayoutPTTest.java.
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @CommandLineFlags.Add({BASE_PARAMS})
-    @DisableIf.Build(
-            message =
-                    "Flaky on emulators; see https://crbug.com/1324721 " + "and crbug.com/1077552",
-            supported_abis_includes = "x86")
-    public void testRenderGrid_Incognito() throws IOException {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        // Prepare some incognito tabs and enter tab switcher.
-        prepareTabs(1, 3, "about:blank");
-        assertTrue(cta.getCurrentTabModel().isIncognito());
-        // Make sure all thumbnails are there before switching tabs.
-        enterGTSWithThumbnailRetry();
-        leaveTabSwitcher(cta);
-
-        ChromeTabUtils.switchTabInCurrentTabModel(cta, 0);
-        enterTabSwitcher(cta);
-        ChromeRenderTestRule.sanitize(cta.findViewById(R.id.tab_list_recycler_view));
-        mRenderTestRule.render(
-                cta.findViewById(R.id.tab_list_recycler_view), "3_incognito_web_tabs");
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. It is migrated to
-    // TabSwitcherLayoutPTTest.java.
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    @CommandLineFlags.Add({BASE_PARAMS})
-    @DisableIf.Build(
-            message = "Flaky on emulators; see https://crbug.com/1313747",
-            supported_abis_includes = "x86")
-    public void testRenderGrid_3NativeTabs() throws IOException {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        // Prepare some incognito native tabs and enter tab switcher.
-        // NTP in incognito mode is chosen for its consistency in look, and we don't have to mock
-        // away the MV tiles, login promo, feed, etc.
-        prepareTabs(1, 3, null);
-        assertTrue(cta.getCurrentTabModel().isIncognito());
-        // Make sure all thumbnails are there before switching tabs.
-        enterGTSWithThumbnailRetry();
-        leaveTabSwitcher(cta);
-
-        ChromeTabUtils.switchTabInCurrentTabModel(cta, 0);
-        enterTabSwitcher(cta);
-        mRenderTestRule.render(cta.findViewById(R.id.tab_list_recycler_view), "3_incognito_ntps");
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. It is migrated to
-    // TabSwitcherLayoutPTTest.java.
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
-    @CommandLineFlags.Add({BASE_PARAMS})
-    public void testRenderGrid_1TabGroup_ColorIcon() throws IOException {
-        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        createTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        verifyTabSwitcherCardCount(cta, 2);
-        // Create a tab group.
-        mergeNormalTabsToAGroupWithDialog(cta, 2);
-        verifyGroupVisualDataDialogOpenedAndDismiss(cta);
-        verifyTabSwitcherCardCount(cta, 1);
-        // Hardcode TabGroupColorId.GREY as the tab group color for render testing purposes.
-        Tab tab = cta.getTabModelSelector().getCurrentTab();
-        TabGroupModelFilter filter = getTabGroupModelFilter();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> filter.setTabGroupColor(tab.getRootId(), TabGroupColorId.GREY));
-        // Leave and re enter GTS to refetch the favicon.
-        leaveTabSwitcher(cta);
-        enterTabSwitcher(cta);
-        mRenderTestRule.render(
-                cta.findViewById(R.id.tab_list_recycler_view),
-                "1_tab_group_GTS_card_item_color_icon");
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. A variant is migrated to
-    // TabSwitcherLayoutPTTest.java.
-    @Test
-    @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    @CommandLineFlags.Add({BASE_PARAMS})
-    @DisableIf.Build(
-            message = "https://crbug.com/1365708",
-            supported_abis_includes = "x86",
-            sdk_is_greater_than = O_MR1,
-            sdk_is_less_than = Q)
-    public void testTabToGridFromLiveTab() throws InterruptedException {
-        assertFalse(
-                TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
-
-        prepareTabs(2, 0, NTP_URL);
-        testTabToGrid(mUrl);
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. A variant is migrated to
-    // TabSwitcherLayoutPTTest.java.
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study")
-    @CommandLineFlags.Add({BASE_PARAMS})
-    @DisabledTest(message = "crbug.com/991852 This test is flaky")
-    public void testTabToGridFromLiveTabAnimation() throws InterruptedException {
-        assertTrue(
-                TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
-
-        prepareTabs(2, 0, NTP_URL);
-        testTabToGrid(mUrl);
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. A variant is migrated to
-    // TabSwitcherLayoutPTTest.java.
-    @Test
-    @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    @DisableIf.Build(
-            message = "https://crbug.com/1365708",
-            supported_abis_includes = "x86",
-            sdk_is_greater_than = O_MR1,
-            sdk_is_less_than = Q)
-    public void testTabToGridFromLiveTabWarm() throws InterruptedException {
-        assertFalse(
-                TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
-
-        prepareTabs(2, 0, NTP_URL);
-        testTabToGrid(mUrl);
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. A variant is migrated to
-    // TabSwitcherLayoutPTTest.java.
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study")
-    @CommandLineFlags.Add({BASE_PARAMS})
-    @DisabledTest(message = "https://crbug.com/1207875")
-    public void testTabToGridFromLiveTabWarmAnimation() throws InterruptedException {
-        assertTrue(
-                TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
-        prepareTabs(2, 0, NTP_URL);
-        testTabToGrid(mUrl);
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. A variant is migrated to
-    // TabSwitcherLayoutPTTest.java.
-    @Test
-    @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    public void testTabToGridFromLiveTabSoft() throws InterruptedException {
-        assertFalse(
-                TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
-
-        prepareTabs(2, 0, NTP_URL);
-        testTabToGrid(mUrl);
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. A variant is migrated to
-    // TabSwitcherLayoutPTTest.java.
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study")
-    @CommandLineFlags.Add({BASE_PARAMS})
-    @DisabledTest(message = "https://crbug.com/1272561")
-    public void testTabToGridFromLiveTabSoftAnimation() throws InterruptedException {
-        assertTrue(
-                TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
-        prepareTabs(2, 0, NTP_URL);
-        testTabToGrid(mUrl);
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. A variant is migrated to
-    // TabSwitcherLayoutPTTest.java.
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @CommandLineFlags.Add({BASE_PARAMS})
-    public void testTabToGridFromNtp() throws InterruptedException {
-        prepareTabs(2, 0, NTP_URL);
-        testTabToGrid(NTP_URL);
-    }
-
     /**
      * Make Chrome have {@code numTabs} of regular Tabs and {@code numIncognitoTabs} of incognito
      * tabs with {@code url} loaded, and assert no bitmap fetching occurred.
@@ -516,410 +188,7 @@ public class TabSwitcherLayoutTest {
      * @param url The URL to load.
      */
     private void prepareTabs(int numTabs, int numIncognitoTabs, @Nullable String url) {
-        int oldCount = mTabListDelegate.getBitmapFetchCountForTesting();
         TabUiTestHelper.prepareTabsWithThumbnail(mActivityTestRule, numTabs, numIncognitoTabs, url);
-        assertEquals(0, mTabListDelegate.getBitmapFetchCountForTesting() - oldCount);
-    }
-
-    private void testTabToGrid(String fromUrl) throws InterruptedException {
-        mActivityTestRule.loadUrl(fromUrl);
-
-        for (int i = 0; i < mRepeat; i++) {
-            enterGTSWithThumbnailChecking();
-            leaveGTSAndVerifyThumbnailsAreReleased();
-        }
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. The "testTabToGrid" category of
-    // tests is covered in HubLayoutPublicTransitTest. Also many of the cases here don't contribute
-    // much to coverage as the status of the selected tab should be irrelevant to the transition.
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    public void testGridToTabToCurrentNtp() throws InterruptedException {
-        prepareTabs(1, 0, NTP_URL);
-        testGridToTab(false, false);
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. The "testTabToGrid" category of
-    // tests is covered in HubLayoutPublicTransitTest. Also many of the cases here don't contribute
-    // much to coverage as the status of the selected tab should be irrelevant to the transition.
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    public void testGridToTabToOtherNtp() throws InterruptedException {
-        prepareTabs(2, 0, NTP_URL);
-        testGridToTab(true, false);
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. The "testTabToGrid" category of
-    // tests is covered in HubLayoutPublicTransitTest. Also many of the cases here don't contribute
-    // much to coverage as the status of the selected tab should be irrelevant to the transition.
-    @Test
-    @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    @DisableIf.Build(
-            message = "https://crbug.com/1365708",
-            supported_abis_includes = "x86",
-            sdk_is_greater_than = O_MR1,
-            sdk_is_less_than = Q)
-    public void testGridToTabToCurrentLive() throws InterruptedException {
-        assertFalse(
-                TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
-        prepareTabs(1, 0, mUrl);
-        testGridToTab(false, false);
-    }
-
-    // From https://stackoverflow.com/a/21505193
-    private static boolean isEmulator() {
-        return Build.FINGERPRINT.startsWith("generic")
-                || Build.FINGERPRINT.startsWith("unknown")
-                || Build.MODEL.contains("google_sdk")
-                || Build.MODEL.contains("Emulator")
-                || Build.MODEL.contains("Android SDK built for x86")
-                || Build.MANUFACTURER.contains("Genymotion")
-                || (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
-                || "google_sdk".equals(Build.PRODUCT);
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. Thumbnail capture is no longer
-    // controlled by the tab switcher and HubLayout has separate tests for this.
-    /**
-     * Test that even if there are tabs with stuck pending thumbnail readback, it doesn't block
-     * thumbnail readback for the current tab.
-     */
-    @Test
-    @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    @DisableIf.Build(
-            message = "Flaky on emulators; see https://crbug.com/1094492",
-            supported_abis_includes = "x86")
-    public void testGridToTabToCurrentLiveDetached() throws Exception {
-        assertFalse(
-                TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
-        // This works on emulators but not on real devices. See crbug.com/986047.
-        if (!isEmulator()) return;
-
-        for (int i = 0; i < 10; i++) {
-            ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-            // Quickly create some tabs, navigate to web pages, and don't wait for thumbnail
-            // capturing.
-            mActivityTestRule.loadUrl(mUrl);
-            ChromeTabUtils.newTabFromMenu(
-                    InstrumentationRegistry.getInstrumentation(), cta, false, false);
-            mActivityTestRule.loadUrl(mUrl);
-            // Hopefully we are in a state where some pending readbacks are stuck because their tab
-            // is not attached to the view.
-            if (cta.getTabContentManager().getInFlightCapturesForTesting() > 0) {
-                break;
-            }
-
-            // Restart Chrome.
-            // Although we're destroying the activity, the Application will still live on since its
-            // in the same process as this test.
-            TestThreadUtils.runOnUiThreadBlocking(() -> cta.getTabModelSelector().closeAllTabs());
-            TabUiTestHelper.finishActivity(cta);
-            mActivityTestRule.startMainActivityOnBlankPage();
-            assertEquals(1, mActivityTestRule.tabsCount(false));
-        }
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        assertNotEquals(0, cta.getTabContentManager().getInFlightCapturesForTesting());
-        assertEquals(1, cta.getCurrentTabModel().index());
-
-        // The last tab should still get thumbnail even though readbacks for other tabs are stuck.
-        enterTabSwitcher(cta);
-        TabUiTestHelper.checkThumbnailsExist(cta.getTabModelSelector().getCurrentTab());
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. The "testTabToGrid" category of
-    // tests is covered in HubLayoutPublicTransitTest. Also many of the cases here don't contribute
-    // much to coverage as the status of the selected tab should be irrelevant to the transition.
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study")
-    @DisabledTest(message = "crbug.com/993201 This test fails deterministically on Nexus 5X")
-    public void testGridToTabToCurrentLiveWithAnimation() throws InterruptedException {
-        assertTrue(
-                TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
-        prepareTabs(1, 0, mUrl);
-        testGridToTab(false, false);
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. The "testTabToGrid" category of
-    // tests is covered in HubLayoutPublicTransitTest. Also many of the cases here don't contribute
-    // much to coverage as the status of the selected tab should be irrelevant to the transition.
-    @Test
-    @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    @DisabledTest(message = "crbug.com/1313972")
-    public void testGridToTabToOtherLive() throws InterruptedException {
-        assertFalse(
-                TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
-        prepareTabs(2, 0, mUrl);
-        testGridToTab(true, false);
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. The "testTabToGrid" category of
-    // tests is covered in HubLayoutPublicTransitTest. Also many of the cases here don't contribute
-    // much to coverage as the status of the selected tab should be irrelevant to the transition.
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study")
-    @DisabledTest(message = "crbug.com/993201 This test fails deterministically on Nexus 5X")
-    public void testGridToTabToOtherLiveWithAnimation() throws InterruptedException {
-        assertTrue(
-                TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
-        prepareTabs(2, 0, mUrl);
-        testGridToTab(true, false);
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. The "testTabToGrid" category of
-    // tests is covered in HubLayoutPublicTransitTest. Also many of the cases here don't contribute
-    // much to coverage as the status of the selected tab should be irrelevant to the transition.
-    @Test
-    @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    @DisabledTest(message = "crbug.com/1237623 test is flaky")
-    public void testGridToTabToOtherFrozen() throws InterruptedException {
-        assertFalse(
-                TabUiFeatureUtilities.isTabToGtsAnimationEnabled(mActivityTestRule.getActivity()));
-        prepareTabs(2, 0, mUrl);
-        testGridToTab(true, true);
-    }
-
-    private void testGridToTab(boolean switchToAnotherTab, boolean killBeforeSwitching)
-            throws InterruptedException {
-        for (int i = 0; i < mRepeat; i++) {
-            enterGTSWithThumbnailChecking();
-
-            final int index = mActivityTestRule.getActivity().getCurrentTabModel().index();
-            final int targetIndex = switchToAnotherTab ? 1 - index : index;
-            Tab targetTab =
-                    mActivityTestRule.getActivity().getCurrentTabModel().getTabAt(targetIndex);
-            if (killBeforeSwitching) {
-                WebContentsUtils.simulateRendererKilled(targetTab.getWebContents());
-            }
-
-            if (switchToAnotherTab) {
-                waitForCaptureRateControl();
-            }
-            onView(tabSwitcherViewMatcher()).perform(actionOnItemAtPosition(targetIndex, click()));
-            CriteriaHelper.pollUiThread(
-                    () -> {
-                        boolean doneHiding =
-                                !mActivityTestRule
-                                        .getActivity()
-                                        .getLayoutManager()
-                                        .isLayoutVisible(LayoutType.TAB_SWITCHER);
-                        if (!doneHiding) {
-                            // Before overview hiding animation is done, the tab index should not
-                            // change.
-                            Criteria.checkThat(
-                                    mActivityTestRule.getActivity().getCurrentTabModel().index(),
-                                    Matchers.is(index));
-                        }
-                        return doneHiding;
-                    },
-                    "Overview not hidden yet");
-        }
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. Thumbnail fetching is tested
-    // by a variety of unit tests and in TabSwitcherLayoutPTTest.
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @CommandLineFlags.Add({BASE_PARAMS})
-    public void testRestoredTabsDontFetch() throws Exception {
-        prepareTabs(2, 0, mUrl);
-        int oldCount = mTabListDelegate.getBitmapFetchCountForTesting();
-
-        // Restart Chrome.
-        // Although we're destroying the activity, the Application will still live on since its in
-        // the same process as this test.
-        TabUiTestHelper.finishActivity(mActivityTestRule.getActivity());
-        mActivityTestRule.startMainActivityOnBlankPage();
-        assertEquals(3, mActivityTestRule.tabsCount(false));
-
-        TabUiTestHelper.getTabSwitcherLayoutAndVerify(mActivityTestRule.getActivity());
-        assertEquals(0, mTabListDelegate.getBitmapFetchCountForTesting() - oldCount);
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. This behavior is no longer
-    // possible post-Hub as the UI is torn down and observers are unregistered.
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @CommandLineFlags.Add({BASE_PARAMS})
-    public void testInvisibleTabsDontFetch() throws InterruptedException {
-        // Open a few new tabs.
-        final int count = mTabListDelegate.getBitmapFetchCountForTesting();
-        for (int i = 0; i < 3; i++) {
-            MenuUtils.invokeCustomMenuActionSync(
-                    InstrumentationRegistry.getInstrumentation(),
-                    mActivityTestRule.getActivity(),
-                    R.id.new_tab_menu_id);
-        }
-        // Fetching might not happen instantly.
-        Thread.sleep(1000);
-
-        // No fetching should happen.
-        assertEquals(0, mTabListDelegate.getBitmapFetchCountForTesting() - count);
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. This behavior is no longer
-    // possible post-Hub as the UI is torn down and observers are unregistered.
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @CommandLineFlags.Add({BASE_PARAMS})
-    @DisabledTest(message = "crbug.com/1130830")
-    public void testInvisibleTabsDontFetchWarm() throws InterruptedException {
-        // Get the GTS in the warm state.
-        prepareTabs(2, 0, NTP_URL);
-        testTabToGrid(NTP_URL);
-
-        Thread.sleep(1000);
-
-        // Open a few new tabs.
-        final int count = mTabListDelegate.getBitmapFetchCountForTesting();
-        for (int i = 0; i < 3; i++) {
-            MenuUtils.invokeCustomMenuActionSync(
-                    InstrumentationRegistry.getInstrumentation(),
-                    mActivityTestRule.getActivity(),
-                    R.id.new_tab_menu_id);
-        }
-        // Fetching might not happen instantly.
-        Thread.sleep(1000);
-
-        // No fetching should happen.
-        assertEquals(0, mTabListDelegate.getBitmapFetchCountForTesting() - count);
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. This behavior is no longer
-    // possible post-Hub as the UI is torn down and observers are unregistered.
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @CommandLineFlags.Add({BASE_PARAMS})
-    @DisabledTest(message = "crbug.com/1130830")
-    public void testInvisibleTabsDontFetchSoft() throws InterruptedException {
-        // Get the GTS in the soft cleaned up state.
-        prepareTabs(2, 0, NTP_URL);
-        testTabToGrid(NTP_URL);
-
-        Thread.sleep(1000);
-
-        // Open a few new tabs.
-        final int count = mTabListDelegate.getBitmapFetchCountForTesting();
-        for (int i = 0; i < 3; i++) {
-            MenuUtils.invokeCustomMenuActionSync(
-                    InstrumentationRegistry.getInstrumentation(),
-                    mActivityTestRule.getActivity(),
-                    R.id.new_tab_menu_id);
-        }
-        // Fetching might not happen instantly.
-        Thread.sleep(1000);
-
-        // No fetching should happen.
-        assertEquals(0, mTabListDelegate.getBitmapFetchCountForTesting() - count);
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. Covered by
-    // HubLayoutPublicTransitTest and TabSwitcherLayoutPTTest.
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @CommandLineFlags.Add({BASE_PARAMS})
-    @DisabledTest(
-            message =
-                    "http://crbug/1005865 - Test was previously flaky but only on bots.Was not"
-                        + " locally reproducible. Disabling until verified that it's deflaked on"
-                        + " bots.")
-    public void testIncognitoEnterGts() throws InterruptedException {
-        prepareTabs(1, 1, null);
-        enterGTSWithThumbnailChecking();
-        onView(tabSwitcherViewMatcher()).check(TabCountAssertion.havingTabCount(1));
-
-        onView(tabSwitcherViewMatcher()).perform(actionOnItemAtPosition(0, click()));
-        LayoutTestUtils.waitForLayout(
-                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
-
-        enterGTSWithThumbnailChecking();
-        onView(tabSwitcherViewMatcher()).check(TabCountAssertion.havingTabCount(1));
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. This is covered by unit tests.
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @CommandLineFlags.Add({BASE_PARAMS})
-    public void testIncognitoToggle_tabCount() throws InterruptedException {
-        mActivityTestRule.loadUrl(mUrl);
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-
-        // Prepare two incognito tabs and enter tab switcher.
-        createTabs(cta, true, 2);
-        enterTabSwitcher(cta);
-        onView(tabSwitcherViewMatcher()).check(TabCountAssertion.havingTabCount(2));
-
-        for (int i = 0; i < mRepeat; i++) {
-            switchTabModel(cta, false);
-            onView(tabSwitcherViewMatcher()).check(TabCountAssertion.havingTabCount(1));
-
-            switchTabModel(cta, true);
-            onView(tabSwitcherViewMatcher()).check(TabCountAssertion.havingTabCount(2));
-        }
-        leaveGTSAndVerifyThumbnailsAreReleased();
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. Bitmap fetching is covered by
-    // integration testing and incognito toggle is covered by HubLayoutPublicTransitTest.
-    @Test
-    @MediumTest
-    @CommandLineFlags.Add({BASE_PARAMS})
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @DisabledTest(message = "https://crbug.com/1233169")
-    public void testIncognitoToggle_thumbnailFetchCount() throws InterruptedException {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        int oldFetchCount = mTabListDelegate.getBitmapFetchCountForTesting();
-
-        // Prepare two incognito tabs and enter tab switcher.
-        prepareTabs(1, 2, mUrl);
-        enterGTSWithThumbnailChecking();
-
-        int currentFetchCount = mTabListDelegate.getBitmapFetchCountForTesting();
-        assertEquals(2, currentFetchCount - oldFetchCount);
-        oldFetchCount = currentFetchCount;
-        int oldHistogramRecord =
-                RecordHistogram.getHistogramValueCountForTesting(
-                        TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
-                        TabContentManager.ThumbnailFetchingResult.GOT_JPEG);
-
-        for (int i = 0; i < mRepeat; i++) {
-            switchTabModel(cta, false);
-            currentFetchCount = mTabListDelegate.getBitmapFetchCountForTesting();
-            int currentHistogramRecord =
-                    RecordHistogram.getHistogramValueCountForTesting(
-                            TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
-                            TabContentManager.ThumbnailFetchingResult.GOT_JPEG);
-            assertEquals(1, currentFetchCount - oldFetchCount);
-            assertEquals(1, currentHistogramRecord - oldHistogramRecord);
-            oldFetchCount = currentFetchCount;
-            oldHistogramRecord = currentHistogramRecord;
-
-            switchTabModel(cta, true);
-            currentFetchCount = mTabListDelegate.getBitmapFetchCountForTesting();
-            currentHistogramRecord =
-                    RecordHistogram.getHistogramValueCountForTesting(
-                            TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
-                            TabContentManager.ThumbnailFetchingResult.GOT_JPEG);
-            assertEquals(2, currentFetchCount - oldFetchCount);
-            assertEquals(2, currentHistogramRecord - oldHistogramRecord);
-            oldFetchCount = currentFetchCount;
-            oldHistogramRecord = currentHistogramRecord;
-        }
-        leaveGTSAndVerifyThumbnailsAreReleased();
     }
 
     @Test
@@ -927,18 +196,15 @@ public class TabSwitcherLayoutTest {
     @CommandLineFlags.Add({BASE_PARAMS})
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     public void testUrlUpdatedNotCrashing_ForUndoableClosedTab() throws Exception {
-        mActivityTestRule.getActivity().getSnackbarManager().disableForTesting();
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        cta.getSnackbarManager().disableForTesting();
         prepareTabs(2, 0, null);
-        enterGTSWithThumbnailChecking();
+        enterTabSwitcher(cta);
 
-        Tab tab = mActivityTestRule.getActivity().getTabModelSelector().getCurrentTab();
+        Tab tab = cta.getTabModelSelector().getCurrentTab();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mActivityTestRule
-                            .getActivity()
-                            .getTabModelSelector()
-                            .getCurrentModel()
-                            .closeTab(tab, false, true);
+                    cta.getTabModelSelector().getCurrentModel().closeTab(tab, false, true);
                 });
         mActivityTestRule.loadUrlInTab(
                 mUrl, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR, tab);
@@ -951,7 +217,7 @@ public class TabSwitcherLayoutTest {
     public void testUrlUpdatedNotCrashing_ForTabNotInCurrentModel() throws Exception {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         prepareTabs(1, 1, null);
-        enterGTSWithThumbnailChecking();
+        enterTabSwitcher(cta);
 
         Tab tab = cta.getTabModelSelector().getCurrentTab();
         switchTabModel(cta, false);
@@ -984,33 +250,6 @@ public class TabSwitcherLayoutTest {
     @Test
     @MediumTest
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @CommandLineFlags.Add({
-        BASE_PARAMS,
-        // TODO(crbug.com/40285326): This fails with the field trial testing config.
-        "disable-field-trial-config"
-    })
-    public void testThumbnailFetchingResult_liveLayer() {
-        // May be called when setting both grid card size and thumbnail fetcher.
-        var histograms =
-                HistogramWatcher.newBuilder()
-                        .expectIntRecord(
-                                TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT,
-                                TabContentManager.ThumbnailFetchingResult.GOT_NOTHING)
-                        .allowExtraRecords(TabContentManager.UMA_THUMBNAIL_FETCHING_RESULT)
-                        .build();
-
-        prepareTabs(1, 0, "about:blank");
-        enterTabSwitcher(mActivityTestRule.getActivity());
-        // There might be an additional one from capturing thumbnail for the live layer.
-        CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(mAllBitmaps.size(), Matchers.greaterThanOrEqualTo(1)));
-
-        histograms.assertExpected();
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     @CommandLineFlags.Add({BASE_PARAMS})
     public void testThumbnailFetchingResult_jpeg() throws Exception {
         // May be called when setting both grid card size and thumbnail fetcher.
@@ -1026,9 +265,6 @@ public class TabSwitcherLayoutTest {
         simulateJpegHasCachedWithDefaultAspectRatio();
 
         enterTabSwitcher(mActivityTestRule.getActivity());
-        // There might be an additional one from capturing thumbnail for the live layer.
-        CriteriaHelper.pollUiThread(
-                () -> Criteria.checkThat(mAllBitmaps.size(), Matchers.greaterThanOrEqualTo(1)));
 
         histograms.assertExpected();
     }
@@ -1047,32 +283,12 @@ public class TabSwitcherLayoutTest {
 
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @CommandLineFlags.Add({BASE_PARAMS})
-    public void testExpandTab() throws InterruptedException {
-        prepareTabs(1, 0, mUrl);
-        enterTabSwitcher(mActivityTestRule.getActivity());
-        leaveGTSAndVerifyThumbnailsAreReleased();
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @CommandLineFlags.Add({BASE_PARAMS})
-    public void testExpandTab_ThumbnailCacheRefactor() throws InterruptedException {
-        prepareTabs(1, 0, mUrl);
-        enterTabSwitcher(mActivityTestRule.getActivity());
-        leaveGTSAndVerifyThumbnailsAreReleased();
-    }
-
-    @Test
-    @MediumTest
     @CommandLineFlags.Add({BASE_PARAMS})
     @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
     public void testCloseTabViaCloseButton() throws Exception {
         mActivityTestRule.getActivity().getSnackbarManager().disableForTesting();
         prepareTabs(1, 0, null);
-        enterGTSWithThumbnailChecking();
+        enterTabSwitcher(mActivityTestRule.getActivity());
 
         onView(
                         allOf(
@@ -1171,32 +387,6 @@ public class TabSwitcherLayoutTest {
         }
     }
 
-    private static class TabCountAssertion implements ViewAssertion {
-        private int mExpectedCount;
-
-        public static TabCountAssertion havingTabCount(int tabCount) {
-            return new TabCountAssertion(tabCount);
-        }
-
-        public TabCountAssertion(int expectedCount) {
-            mExpectedCount = expectedCount;
-        }
-
-        @Override
-        public void check(View view, NoMatchingViewException noMatchException) {
-            if (noMatchException != null) throw noMatchException;
-
-            RecyclerView.Adapter adapter = ((RecyclerView) view).getAdapter();
-            int tabCount = 0;
-            for (int i = 0; i < adapter.getItemCount(); i++) {
-                if (adapter.getItemViewType(i) == UiType.TAB) {
-                    tabCount++;
-                }
-            }
-            assertEquals(mExpectedCount, tabCount);
-        }
-    }
-
     private static class ThumbnailAspectRatioAssertion implements ViewAssertion {
         private double mExpectedRatio;
 
@@ -1245,52 +435,6 @@ public class TabSwitcherLayoutTest {
             }
             assertTrue("should have at least one valid ViewHolder", hasAtLeastOneValidViewHolder);
         }
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. This is covered by
-    // TabSwitcherListEditorPTTest.
-    @Test
-    @MediumTest
-    @DisableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    @DisabledTest(message = "crbug.com/1096997")
-    public void testTabGroupManualSelection() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        TabListEditorTestingRobot robot = new TabListEditorTestingRobot();
-        createTabs(cta, false, 3);
-        enterTabSwitcher(cta);
-        onView(tabSwitcherViewMatcher()).check(TabCountAssertion.havingTabCount(3));
-
-        enterTabListEditor(cta);
-        robot.resultRobot.verifyTabListEditorIsVisible();
-
-        // Group first two tabs.
-        robot.actionRobot.clickItemAtAdapterPosition(0);
-        robot.actionRobot.clickItemAtAdapterPosition(1);
-        robot.actionRobot.clickToolbarMenuButton().clickToolbarMenuItem("Group tabs");
-
-        // Exit manual selection mode, back to tab switcher.
-        robot.resultRobot.verifyTabListEditorIsHidden();
-        onView(tabSwitcherViewMatcher()).check(TabCountAssertion.havingTabCount(2));
-        onViewWaiting(withText("2 tabs grouped"));
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. This is covered by
-    // TabSwitcherListEditorPTTest.
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
-    public void testTabListEditor_SystemBackDismiss() {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        TabListEditorTestingRobot robot = new TabListEditorTestingRobot();
-        createTabs(cta, false, 2);
-        enterTabSwitcher(cta);
-        onView(tabSwitcherViewMatcher()).check(TabCountAssertion.havingTabCount(2));
-        enterTabListEditor(cta);
-        robot.resultRobot.verifyTabListEditorIsVisible();
-
-        // Pressing system back should dismiss the selection editor.
-        Espresso.pressBack();
-        robot.resultRobot.verifyTabListEditorIsHidden();
     }
 
     @Test
@@ -2507,247 +1651,9 @@ public class TabSwitcherLayoutTest {
                 });
     }
 
-    // TODO(crbug/324919909): Delete this test once Hub is launched. It is migrated to
-    // TabSwitcherPanePublicTransitTest as a combined testEmptyStateView case.
-    @Test
-    @MediumTest
-    public void testEmptyStateView_DeleteLastNormalTab() throws Exception {
-        prepareTabs(1, 0, NTP_URL);
-        enterGTSWithThumbnailChecking();
-
-        // Close the last tab.
-        Tab tab = mActivityTestRule.getActivity().getTabModelSelector().getCurrentTab();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActivityTestRule
-                            .getActivity()
-                            .getTabModelSelector()
-                            .getCurrentModel()
-                            .closeTab(tab, false, true);
-                });
-
-        // Check empty view should show up.
-        Context appContext = ApplicationProvider.getApplicationContext();
-        onView(
-                        allOf(
-                                withId(R.id.empty_state_container),
-                                isDescendantOfA(
-                                        withId(
-                                                TabUiTestHelper.getTabSwitcherAncestorId(
-                                                        appContext)))))
-                .check(matches(isDisplayed()));
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. It is migrated to
-    // TabSwitcherPanePublicTransitTest as a combined testEmptyStateView case.
-    @Test
-    @MediumTest
-    public void testEmptyStateView_ToggleIncognito() {
-        mActivityTestRule.loadUrl(mUrl);
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-
-        // Prepare one incognito tab and one normal and enter tab switcher.
-        createTabs(cta, true, 1);
-        createTabs(cta, false, 1);
-        enterTabSwitcher(cta);
-
-        // Go into normal tab switcher.
-        switchTabModel(cta, false);
-
-        // Close the last normal tab.
-        Tab tab = mActivityTestRule.getActivity().getTabModelSelector().getCurrentTab();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActivityTestRule
-                            .getActivity()
-                            .getTabModelSelector()
-                            .getCurrentModel()
-                            .closeTab(tab, false, true);
-                });
-
-        // Go into incognito tab switcher.
-        switchTabModel(cta, true);
-
-        // Check empty view should never show up in incognito tab switcher.
-        Context appContext = ApplicationProvider.getApplicationContext();
-        onView(
-                        allOf(
-                                withId(R.id.empty_state_container),
-                                isDescendantOfA(
-                                        withId(
-                                                TabUiTestHelper.getTabSwitcherAncestorId(
-                                                        appContext)))))
-                .check(matches(not(isDisplayed())));
-
-        // Close the last incognito tab.
-        Tab incognitoTab = mActivityTestRule.getActivity().getTabModelSelector().getCurrentTab();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActivityTestRule
-                            .getActivity()
-                            .getTabModelSelector()
-                            .getCurrentModel()
-                            .closeTab(incognitoTab, false, true);
-                });
-
-        // Incognito tab switcher should exit to go to normal tab switcher and we should see empty
-        // view.
-        onView(
-                        allOf(
-                                withId(R.id.empty_state_container),
-                                isDescendantOfA(
-                                        withId(
-                                                TabUiTestHelper.getTabSwitcherAncestorId(
-                                                        appContext)))))
-                .check(matches(isDisplayed()));
-    }
-
-    // TODO(crbug/324919909): Delete this test once Hub is launched. It is covered in
-    // HubLayoutUnitTest.
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
-    @CommandLineFlags.Add({BASE_PARAMS})
-    public void testHideTabOnTabSwitcher() throws Exception {
-        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
-        mActivityTestRule.loadUrlInNewTab("about:blank");
-        final Tab currentTab = cta.getActivityTab();
-        final CallbackHelper shownHelper = new CallbackHelper();
-        final CallbackHelper hiddenHelper = new CallbackHelper();
-        TabObserver observer =
-                new EmptyTabObserver() {
-                    @Override
-                    public void onShown(Tab tab, @TabSelectionType int type) {
-                        assertEquals("Unexpected tab shown", tab, currentTab);
-                        shownHelper.notifyCalled();
-                    }
-
-                    @Override
-                    public void onHidden(Tab tab, @TabHidingType int type) {
-                        assertEquals("Unexpected tab hidden", tab, currentTab);
-                        assertEquals(
-                                "Unexpected hiding type", type, TabHidingType.TAB_SWITCHER_SHOWN);
-                        hiddenHelper.notifyCalled();
-                    }
-                };
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    currentTab.addObserver(observer);
-                });
-
-        enterTabSwitcher(cta);
-        hiddenHelper.waitForFirst();
-
-        leaveTabSwitcher(cta);
-        shownHelper.waitForFirst();
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    currentTab.removeObserver(observer);
-                });
-    }
-
-    private TabSwitcher.TabListDelegate getTabListDelegateFromUIThread() {
-        AtomicReference<TabSwitcher.TabListDelegate> tabListDelegate = new AtomicReference<>();
-        TestThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        tabListDelegate.set(
-                                mTabSwitcherLayout
-                                        .getTabSwitcherForTesting()
-                                        .getTabListDelegate()));
-        return tabListDelegate.get();
-    }
-
     private void enterTabListEditor(ChromeTabbedActivity cta) {
         MenuUtils.invokeCustomMenuActionSync(
                 InstrumentationRegistry.getInstrumentation(), cta, R.id.menu_select_tabs);
-    }
-
-    /** TODO(wychen): move some of the callers to {@link TabUiTestHelper#enterTabSwitcher}. */
-    private void enterGTSWithThumbnailChecking() throws InterruptedException {
-        Tab currentTab = mActivityTestRule.getActivity().getTabModelSelector().getCurrentTab();
-        // Native tabs need to be invalidated first to trigger thumbnail taking, so skip them.
-        boolean checkThumbnail = !currentTab.isNativePage();
-
-        if (checkThumbnail) {
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        mActivityTestRule
-                                .getActivity()
-                                .getTabContentManager()
-                                .removeTabThumbnail(currentTab.getId());
-                    });
-        }
-
-        waitForCaptureRateControl();
-        // TODO(wychen): use TabUiTestHelper.enterTabSwitcher() instead.
-        //  Might increase flakiness though. See crbug.com/1024742.
-        LayoutTestUtils.startShowingAndWaitForLayout(
-                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.TAB_SWITCHER, true);
-
-        TabUiTestHelper.verifyAllTabsHaveThumbnail(
-                mActivityTestRule.getActivity().getCurrentTabModel());
-    }
-
-    /** Like {@link TabUiTestHelper#enterTabSwitcher}, but make sure all tabs have thumbnail. */
-    private void enterGTSWithThumbnailRetry() {
-        enterTabSwitcher(mActivityTestRule.getActivity());
-        try {
-            TabUiTestHelper.verifyAllTabsHaveThumbnail(
-                    mActivityTestRule.getActivity().getCurrentTabModel());
-        } catch (AssertionError ae) {
-            // If the last thumbnail is missing, try without animation.
-            Espresso.pressBack();
-            TestThreadUtils.runOnUiThreadBlocking(
-                    () ->
-                            mActivityTestRule
-                                    .getActivity()
-                                    .getLayoutManager()
-                                    .showLayout(LayoutType.TAB_SWITCHER, false));
-            TabUiTestHelper.verifyAllTabsHaveThumbnail(
-                    mActivityTestRule.getActivity().getCurrentTabModel());
-        }
-    }
-
-    /**
-     * If thumbnail checking is not needed, use {@link TabUiTestHelper#leaveTabSwitcher} instead.
-     */
-    private void leaveGTSAndVerifyThumbnailsAreReleased() throws InterruptedException {
-        assertTrue(
-                mActivityTestRule
-                        .getActivity()
-                        .getLayoutManager()
-                        .isLayoutVisible(LayoutType.TAB_SWITCHER));
-
-        TabUiTestHelper.pressBackOnTabSwitcher(mTabSwitcherLayout);
-        // TODO(wychen): using default timeout or even converting to
-        //  OverviewModeBehaviorWatcher shouldn't increase flakiness.
-        LayoutTestUtils.waitForLayout(
-                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING);
-        assertThumbnailsAreReleased();
-    }
-
-    private void waitForCaptureRateControl() throws InterruptedException {
-        // Needs to wait for at least |kCaptureMinRequestTimeMs| in order to capture another one.
-        // TODO(wychen): find out why waiting is still needed after setting
-        //               |kCaptureMinRequestTimeMs| to 0.
-        Thread.sleep(2000);
-    }
-
-    private void assertThumbnailsAreReleased() {
-        // Could not directly assert canAllBeGarbageCollected() because objects can be in Cleaner.
-        CriteriaHelper.pollUiThread(() -> canAllBeGarbageCollected(mAllBitmaps));
-        mAllBitmaps.clear();
-    }
-
-    private boolean canAllBeGarbageCollected(List<WeakReference<Bitmap>> bitmaps) {
-        for (WeakReference<Bitmap> bitmap : bitmaps) {
-            if (!GarbageCollectionTestUtils.canBeGarbageCollected(bitmap)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     private void simulateJpegHasCachedWithAspectRatio(double aspectRatio) throws IOException {

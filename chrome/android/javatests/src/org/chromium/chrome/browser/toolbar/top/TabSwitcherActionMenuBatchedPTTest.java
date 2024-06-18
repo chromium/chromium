@@ -16,24 +16,21 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.BatchedPublicTransitRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPoints;
-import org.chromium.chrome.test.transit.IncognitoTabSwitcherStation;
+import org.chromium.chrome.test.transit.HubIncognitoTabSwitcherStation;
+import org.chromium.chrome.test.transit.HubTabSwitcherStation;
 import org.chromium.chrome.test.transit.PageAppMenuFacility;
 import org.chromium.chrome.test.transit.PageStation;
-import org.chromium.chrome.test.transit.RegularTabSwitcherStation;
 import org.chromium.chrome.test.transit.TabSwitcherActionMenuFacility;
-import org.chromium.ui.test.util.UiRestriction;
 
 /**
  * Instrumentation tests for tab switcher long-press menu popup.
@@ -42,8 +39,6 @@ import org.chromium.ui.test.util.UiRestriction;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-@DisableFeatures(ChromeFeatureList.ANDROID_HUB)
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherActionMenuBatchedPTTest {
 
@@ -64,8 +59,12 @@ public class TabSwitcherActionMenuBatchedPTTest {
 
         // Closing the only tab should lead to the Tab Switcher.
         TabSwitcherActionMenuFacility actionMenu = page.openTabSwitcherActionMenu();
-        RegularTabSwitcherStation tabSwitcher =
-                actionMenu.selectCloseTab(RegularTabSwitcherStation.class);
+        HubTabSwitcherStation tabSwitcher = actionMenu.selectCloseTab(HubTabSwitcherStation.class);
+
+        // TODO(crbug.com/347301237): The FAB and snackbar overlap. To avoid accidentally clicking
+        // undo dismiss the snackbar for now.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getActivity().getSnackbarManager().dismissAllSnackbars());
 
         assertEquals(0, getCurrentTabModel().getCount());
 
@@ -132,18 +131,17 @@ public class TabSwitcherActionMenuBatchedPTTest {
 
         // Close first regular tab opened.
         actionMenu = page.openTabSwitcherActionMenu();
-        RegularTabSwitcherStation regularTabSwitcher =
-                actionMenu.selectCloseTab(RegularTabSwitcherStation.class);
+        HubTabSwitcherStation regularTabSwitcher =
+                actionMenu.selectCloseTab(HubTabSwitcherStation.class);
 
         // Only the incognito tab should still remain.
         assertEquals(0, regularTabModel.getCount());
         assertEquals(1, incognitoTabModel.getCount());
 
         // Return to one non-incognito blank tab
-        IncognitoTabSwitcherStation incognitoTabSwitcher =
+        HubIncognitoTabSwitcherStation incognitoTabSwitcher =
                 regularTabSwitcher.selectIncognitoTabList();
-        regularTabSwitcher =
-                incognitoTabSwitcher.closeTabAtIndex(0, RegularTabSwitcherStation.class);
+        regularTabSwitcher = incognitoTabSwitcher.closeTabAtIndex(0, HubTabSwitcherStation.class);
         page = regularTabSwitcher.openNewTab();
         assertFinalDestination(page);
     }
