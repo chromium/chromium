@@ -319,13 +319,15 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
         // IntentCallback to resume the flow when Chrome is killed.
         final WindowAndroid.IntentCallback onAddAccountCompleted =
                 (int resultCode, Intent data) -> {
-                    final String accountEmail =
-                            data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-                    if (resultCode != Activity.RESULT_OK || accountEmail == null) {
+                    if (data == null
+                            || resultCode != Activity.RESULT_OK
+                            || data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME) == null) {
                         onFlowComplete();
                         return;
                     }
 
+                    final String accountEmail =
+                            data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                     if (mUpgradePromoCoordinator != null) {
                         mUpgradePromoCoordinator.onAccountSelected(accountEmail);
                     } else {
