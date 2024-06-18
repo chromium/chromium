@@ -10,19 +10,19 @@
 
 #include "base/json/json_reader.h"
 #include "base/values.h"
-#include "device/fido/enclave/verify/hash.h"
+#include "device/fido/enclave/verify/proto/digest.pb.h"
 
 namespace device::enclave {
 
 Subject::Subject() = default;
-Subject::Subject(std::string name, Hash digest)
+Subject::Subject(std::string name, HexDigest digest)
     : name(std::move(name)), digest(std::move(digest)) {}
 Subject::~Subject() = default;
 
 ClaimEvidence::ClaimEvidence() = default;
 ClaimEvidence::ClaimEvidence(std::optional<std::string> role,
                              std::string uri,
-                             Hash digest)
+                             HexDigest digest)
     : role(std::move(role)), uri(std::move(uri)), digest(std::move(digest)) {}
 ClaimEvidence::~ClaimEvidence() = default;
 ClaimEvidence::ClaimEvidence(const ClaimEvidence& claim_evidence) = default;
@@ -92,8 +92,7 @@ std::optional<ClaimPredicate<Claimless>> CreateClaimPredicate(
   return predicate_struct;
 }
 
-std::optional<Hash> CreateHash(const base::Value::Dict* subject) {
-  Hash hash;
+std::optional<HexDigest> CreateDigest(const base::Value::Dict* subject) {
   const base::Value::Dict* digest_dict = subject->FindDict("digest");
   if (!digest_dict) {
     return std::nullopt;
@@ -102,10 +101,9 @@ std::optional<Hash> CreateHash(const base::Value::Dict* subject) {
   if (!sha256) {
     return std::nullopt;
   }
-  // TODO(livseibert): Convert Hash to HexDigest.
-  hash.hash_type = kSHA256;
-  hash.bytes = std::vector<uint8_t>(sha256->begin(), sha256->end());
-  return hash;
+  HexDigest digest;
+  digest.set_sha2_256(*sha256);
+  return digest;
 }
 
 std::optional<std::vector<Subject>> CreateSubjectVector(
@@ -122,11 +120,11 @@ std::optional<std::vector<Subject>> CreateSubjectVector(
       return std::nullopt;
     }
     subject_struct.name = *name;
-    std::optional<Hash> hash = CreateHash(subject);
-    if (!hash.has_value()) {
+    std::optional<HexDigest> digest = CreateDigest(subject);
+    if (!digest.has_value()) {
       return std::nullopt;
     }
-    subject_struct.digest = std::move(*hash);
+    subject_struct.digest = std::move(*digest);
     subject_vector.emplace_back(std::move(subject_struct));
   }
   return subject_vector;
