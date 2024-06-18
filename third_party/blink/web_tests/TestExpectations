@@ -4551,7 +4551,8 @@ crbug.com/1149734 http/tests/devtools/sources/debugger-ui/inline-scope-variables
 
 #Sheriff 2020-11-24
 crbug.com/1087242 crbug.com/1271141 http/tests/inspector-protocol/service-worker/network-extrainfo-main-request.js [ Pass Timeout ]
-crbug.com/1152532 http/tests/devtools/service-workers/user-agent-override.js [ Pass Timeout ]
+# TODO(crbug.com/347621713): Re-enable this test.
+crbug.com/1152532 http/tests/devtools/service-workers/user-agent-override.js [ Failure Pass Timeout ]
 
 #Sheriff 2020-11-26
 crbug.com/931646 [ Mac ] http/tests/preload/meta-viewport-link-headers-imagesrcset.html [ Failure Pass ]
