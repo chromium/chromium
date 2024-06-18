@@ -1422,6 +1422,12 @@ mode and begin normal operation the next time it runs periodic tasks.
 Once operating normally, the updater only returns to eula-required mode when
 it is uninstalled and then reinstalled with `--eularequired`.
 
+### Windows: checking if EULA has already been accepted
+*   Applications can check if the EULA has already been accepted by checking
+    whether the value `eulaaccepted` does not exist at
+    `HKCU|HKLM\SOFTWARE\{Company}\Update`, or if it does exist, that it has a
+    value of `(DWORD): 1`.
+
 ### Usage Stats Acceptance
 The updater may upload its crash reports and send usage stats if and only if
 any piece of software it manages is permitted to send usage stats.

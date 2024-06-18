@@ -233,6 +233,10 @@ bool SetRegistryKey(HKEY root,
                     const std::wstring& name,
                     const std::wstring& value);
 
+// Deletes or sets the `eulaaccepted` value in the `Google\Update` key, based on
+// whether `eula_accepted` is `true` or `false`. Returns `true` on success.
+bool SetEulaAccepted(UpdaterScope scope, bool eula_accepted);
+
 // Returns `true` if the token is an elevated administrator. If
 // `token` is `NULL`, the current thread token is used.
 HResultOr<bool> IsTokenAdmin(HANDLE token);

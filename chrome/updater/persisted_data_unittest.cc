@@ -24,6 +24,7 @@
 
 #include "base/win/registry.h"
 #include "chrome/updater/util/win_util.h"
+#include "chrome/updater/win/win_constants.h"
 #endif
 
 namespace updater {
@@ -290,6 +291,34 @@ TEST(PersistedDataTest, LastOSVersion) {
   EXPECT_EQ(metadata_os.wServicePackMinor, os.wServicePackMinor);
   EXPECT_EQ(metadata_os.wSuiteMask, os.wSuiteMask);
   EXPECT_EQ(metadata_os.wProductType, os.wProductType);
+}
+
+TEST(PersistedDataTest, SetEulaRequired) {
+  auto pref = std::make_unique<TestingPrefServiceSimple>();
+  update_client::RegisterPrefs(pref->registry());
+  RegisterPersistedDataPrefs(pref->registry());
+  auto metadata = base::MakeRefCounted<PersistedData>(
+      GetUpdaterScopeForTesting(), pref.get(), nullptr);
+
+  EXPECT_FALSE(metadata->GetEulaRequired());
+
+  // This will set "eula_required=true" in the persisted data and also persist
+  // `eulaaccepted=0` in the registry.
+  metadata->SetEulaRequired(/*eula_required=*/true);
+  EXPECT_TRUE(metadata->GetEulaRequired());
+  DWORD eula_accepted = 0;
+  const HKEY root = UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting());
+  EXPECT_EQ(base::win::RegKey(root, UPDATER_KEY, Wow6432(KEY_READ))
+                .ReadValueDW(L"eulaaccepted", &eula_accepted),
+            ERROR_SUCCESS);
+  EXPECT_EQ(eula_accepted, 0ul);
+
+  // This will set "eula_required=false" in the persisted data and also delete
+  // the `eulaaccepted` value in the registry.
+  metadata->SetEulaRequired(/*eula_required=*/false);
+  EXPECT_FALSE(metadata->GetEulaRequired());
+  EXPECT_FALSE(base::win::RegKey(root, UPDATER_KEY, Wow6432(KEY_READ))
+                   .HasValue(L"eulaaccepted"));
 }
 #endif
 

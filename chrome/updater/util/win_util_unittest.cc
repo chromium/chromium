@@ -664,4 +664,22 @@ TEST(WinUtil, GetUniqueTempFilePath) {
   EXPECT_TRUE(base::Uuid::ParseLowercase(base::WideToUTF8(p_base)).is_valid());
 }
 
+TEST(WinUtil, SetEulaAccepted) {
+  // This will set `eulaaccepted=0` in the registry.
+  EXPECT_TRUE(
+      SetEulaAccepted(GetUpdaterScopeForTesting(), /*eula_accepted=*/false));
+  DWORD eula_accepted = 0;
+  const HKEY root = UpdaterScopeToHKeyRoot(GetUpdaterScopeForTesting());
+  EXPECT_EQ(base::win::RegKey(root, UPDATER_KEY, Wow6432(KEY_READ))
+                .ReadValueDW(L"eulaaccepted", &eula_accepted),
+            ERROR_SUCCESS);
+  EXPECT_EQ(eula_accepted, 0ul);
+
+  // This will delete the `eulaaccepted` value in the registry.
+  EXPECT_TRUE(
+      SetEulaAccepted(GetUpdaterScopeForTesting(), /*eula_accepted=*/true));
+  EXPECT_FALSE(base::win::RegKey(root, UPDATER_KEY, Wow6432(KEY_READ))
+                   .HasValue(L"eulaaccepted"));
+}
+
 }  // namespace updater::test

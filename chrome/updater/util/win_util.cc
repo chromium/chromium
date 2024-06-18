@@ -374,6 +374,14 @@ bool SetRegistryKey(HKEY root,
   return result == ERROR_SUCCESS;
 }
 
+bool SetEulaAccepted(UpdaterScope scope, bool eula_accepted) {
+  const HKEY root = UpdaterScopeToHKeyRoot(scope);
+  return eula_accepted
+             ? DeleteRegValue(root, UPDATER_KEY, L"eulaaccepted")
+             : base::win::RegKey(root, UPDATER_KEY, Wow6432(KEY_WRITE))
+                       .WriteValue(L"eulaaccepted", 0ul) == ERROR_SUCCESS;
+}
+
 HResultOr<bool> IsTokenAdmin(HANDLE token) {
   SID_IDENTIFIER_AUTHORITY nt_authority = SECURITY_NT_AUTHORITY;
   PSID administrators_group = nullptr;
