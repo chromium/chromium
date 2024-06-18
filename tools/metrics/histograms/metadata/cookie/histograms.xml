@@ -1048,7 +1048,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cookie.SessionAgeInHoursLTEOneWeek2" units="hours"
-    expires_after="2024-07-25">
+    expires_after="2024-12-01">
   <owner>arichiv@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
   <summary>
