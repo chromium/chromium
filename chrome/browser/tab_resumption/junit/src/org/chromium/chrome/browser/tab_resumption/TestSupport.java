@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+/** Static constants and helpers shared across Tab Resumption Module unit tests. */
 public class TestSupport {
     static final long BASE_TIME_MS = 1705000000000L; // 2024-01-11, 14:06:40 EST.
 

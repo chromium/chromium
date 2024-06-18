@@ -26,7 +26,6 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Features.JUnitProcessor;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
@@ -36,14 +35,13 @@ import org.chromium.components.sync.SyncService;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class TabResumptionModuleEnablementUnitTest {
+public class TabResumptionModuleEnablementUnitTest extends TestSupportExtended {
     @Rule public JUnitProcessor mFeaturesProcessor = new JUnitProcessor();
 
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private SyncService mSyncService;
     @Mock private IdentityManager mIdentityManager;
     @Mock private Profile mProfile;
-    @Mock private ModuleDelegate mModuleDelegate;
     private FeatureList.TestValues mFeatureListValues;
 
     @Before
