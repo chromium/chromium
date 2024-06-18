@@ -77,19 +77,6 @@ class ReadAnythingAppTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/40910623): unflake and re-enable
-IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest,
-                       DISABLED_ConnectedCallback_ShowLoadingScreen) {
-  ASSERT_TRUE(RunTest("connected_callback_show_loading_screen.js"));
-}
-
-IN_PROC_BROWSER_TEST_F(
-    ReadAnythingAppTest,
-    OnSelectionChange_NothingSelectedOnLoadingScreenSelection) {
-  ASSERT_TRUE(RunTest(
-      "on_selection_change_nothing_selected_on_loading_screen_selection.js"));
-}
-
 IN_PROC_BROWSER_TEST_F(ReadAnythingAppTest, UpdateContent_AllHeadings) {
   ASSERT_TRUE(RunTest("update_content_all_headings.js"));
 }

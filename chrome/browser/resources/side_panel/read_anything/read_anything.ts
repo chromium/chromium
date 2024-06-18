@@ -4,6 +4,7 @@
 
 import './app.js';
 
+export type {SpEmptyStateElement} from '//read-anything-side-panel.top-chrome/shared/sp_empty_state.js';
 export {BrowserProxy} from '//resources/cr_components/color_change_listener/browser_proxy.js';
 export {PageCallbackRouter} from '//resources/cr_components/color_change_listener/color_change_listener.mojom-webui.js';
 export type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
