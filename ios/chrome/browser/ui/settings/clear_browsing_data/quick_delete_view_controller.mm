@@ -37,11 +37,11 @@ constexpr CGFloat kTrashIconContainerViewCornerRadius = 15;
 // Trash icon size that sits inside the entire view.
 constexpr CGFloat kTrashIconSize = 32;
 
-// Bottom padding for the trash icon view.
-constexpr CGFloat kTrashIconContainerViewBottomPadding = 18;
-
 // Top padding for the trash icon view.
 constexpr CGFloat kTrashIconContainerViewTopPadding = 33;
+
+// Vertical padding for the title.
+constexpr CGFloat kTitleVerticalPadding = 22;
 
 // TableView's header and footer section heights.
 constexpr CGFloat kSectionHeaderHeight = 10;
@@ -98,6 +98,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   self.aboveTitleView = [self trashIconView];
   self.titleTextStyle = UIFontTextStyleTitle2;
   self.titleString = l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_TITLE);
+  self.customSpacing = kTitleVerticalPadding;
   self.primaryActionString = l10n_util::GetNSString(IDS_IOS_CLEAR_BUTTON);
   self.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_CANCEL);
@@ -454,8 +455,7 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   AddSameCenterXConstraint(outerView, iconContainerView);
   AddSameConstraintsToSidesWithInsets(
       iconContainerView, outerView, LayoutSides::kTop | LayoutSides::kBottom,
-      NSDirectionalEdgeInsetsMake(kTrashIconContainerViewTopPadding, 0,
-                                  kTrashIconContainerViewBottomPadding, 0));
+      NSDirectionalEdgeInsetsMake(kTrashIconContainerViewTopPadding, 0, 0, 0));
 
   return outerView;
 }
