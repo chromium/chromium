@@ -427,9 +427,6 @@ LoginPasswordView::LoginPasswordView()
       l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
   submit_button_->SetEnabled(false);
 
-  // Initialize the capslock icon without a highlight.
-  is_capslock_higlight_ = false;
-
   // Make sure the textfield always starts with focus.
   RequestFocus();
 
@@ -648,8 +645,6 @@ void LoginPasswordView::SubmitPassword() {
 }
 
 void LoginPasswordView::SetCapsLockHighlighted(bool highlight) {
-  is_capslock_higlight_ = highlight;
-
   const bool is_jelly = chromeos::features::IsJellyrollEnabled();
   const ui::ColorId enabled_icon_color_id =
       is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
