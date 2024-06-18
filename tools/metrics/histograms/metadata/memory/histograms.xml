@@ -141,17 +141,6 @@ chromium-metrics-reviews@google.com.
   <token key="Process" variants="ProfiledProcess"/>
 </histogram>
 
-<histogram name="HeapProfiling.SamplingIntervalKB" units="KB"
-    expires_after="2024-06-30">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-memory@google.com</owner>
-  <summary>
-    The mean number of kilobytes between samples used by the
-    SamplingHeapProfiler. Emitted each time the profiler is started, which
-    happens at Chrome launch when HeapProfiling.InProcess.Enabled is true.
-  </summary>
-</histogram>
-
 <histogram name="Memory.BackingStore" units="units" expires_after="M85">
   <owner>hajimehoshi@chromium.org</owner>
   <owner>kenjibaheux@google.com</owner>

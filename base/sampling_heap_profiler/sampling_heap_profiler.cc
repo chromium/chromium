@@ -166,18 +166,9 @@ uint32_t SamplingHeapProfiler::Start() {
   }
   unwinder_.store(unwinder);
 
-  auto* poisson_allocation_sampler = PoissonAllocationSampler::Get();
-
-  // Sampling interval is in bytes. Record it in KB since the extra precision
-  // isn't needed for metrics and HeapProfilerController can set the interval to
-  // center around 10M bytes, which would overflow the buckets.
-  base::UmaHistogramCounts10M(
-      "HeapProfiling.SamplingIntervalKB",
-      static_cast<int>(poisson_allocation_sampler->SamplingInterval() / 1024));
-
   AutoLock lock(start_stop_mutex_);
   if (!running_sessions_++)
-    poisson_allocation_sampler->AddSamplesObserver(this);
+    PoissonAllocationSampler::Get()->AddSamplesObserver(this);
   return last_sample_ordinal_;
 }
 
