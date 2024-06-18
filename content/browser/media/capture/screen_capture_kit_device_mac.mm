@@ -146,10 +146,12 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
   explicit ScreenCaptureKitDeviceMac(const DesktopMediaID& source)
       : source_(source),
         device_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {
-    SampleCallback sample_callback = base::BindRepeating(
-        &ScreenCaptureKitDeviceMac::OnStreamSample, weak_factory_.GetWeakPtr());
+    SampleCallback sample_callback = base::BindPostTask(
+        device_task_runner_,
+        base::BindRepeating(&ScreenCaptureKitDeviceMac::OnStreamSample,
+                            weak_factory_.GetWeakPtr()));
     ErrorCallback error_callback = base::BindPostTask(
-        base::SingleThreadTaskRunner::GetCurrentDefault(),
+        device_task_runner_,
         base::BindRepeating(&ScreenCaptureKitDeviceMac::OnStreamError,
                             weak_factory_.GetWeakPtr()));
     helper_ = [[ScreenCaptureKitDeviceHelper alloc]
