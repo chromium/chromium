@@ -56,7 +56,8 @@
 const double kTestEngagementScore = 29;
 
 class ChromePermissionRequestManagerTest
-    : public ChromeRenderViewHostTestHarness {
+    : public ChromeRenderViewHostTestHarness,
+      public testing::WithParamInterface<std::pair<std::string, bool>> {
  public:
   ChromePermissionRequestManagerTest()
       : ChromeRenderViewHostTestHarness(
@@ -694,6 +695,44 @@ TEST_F(ChromePermissionRequestManagerTest, TestWebKioskModeDifferentOrigin) {
   EXPECT_FALSE(request->granted());
   EXPECT_TRUE(request->finished());
 }
+
+TEST_P(ChromePermissionRequestManagerTest,
+       TestWebKioskModeDifferentOriginWhenAllowedByFeature) {
+  base::test::ScopedFeatureList feature_list;
+  base::FieldTrialParams feature_params;
+  feature_params
+      [permissions::feature_params::kWebKioskBrowserPermissionsAllowlist.name] =
+          GetParam().first;
+  feature_list.InitAndEnableFeatureWithParameters(
+      permissions::features::kAllowMultipleOriginsForWebKioskPermissions,
+      feature_params);
+
+  auto request =
+      MakeRequestInWebKioskMode(/*url*/ GURL("https://example.com/page"),
+                                /*app_url*/ GURL("https://google.com/launch"));
+
+  WaitForBubbleToBeShown();
+
+  // It should be granted as the origin is allowlisted.
+  EXPECT_EQ(request->granted(), GetParam().second);
+  EXPECT_TRUE(request->finished());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    TestWebKioskModeDifferentOriginWhenAllowedByFeature,
+    ChromePermissionRequestManagerTest,
+    testing::ValuesIn(
+        {std::pair<std::string, bool>("*", false),
+         std::pair<std::string, bool>(".example.com", false),
+         std::pair<std::string, bool>("example.", false),
+         std::pair<std::string, bool>("file://example*", false),
+         std::pair<std::string, bool>("invalid-example.com", false),
+         std::pair<std::string, bool>("https://example.com", true),
+         std::pair<std::string, bool>("https://example.com/sample", true),
+         std::pair<std::string, bool>("example.com", true),
+         std::pair<std::string, bool>("*://example.com:*/", true),
+         std::pair<std::string, bool>("[*.]example.com", true)}));
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class ChromePermissionRequestManagerAdaptiveQuietUiActivationTest

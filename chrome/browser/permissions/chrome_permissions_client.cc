@@ -15,6 +15,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/ash/shimless_rma/chrome_shimless_rma_delegate.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
 #include "chrome/browser/browser_process.h"
@@ -490,13 +491,15 @@ std::optional<permissions::PermissionAction>
 ChromePermissionsClient::GetAutoApprovalStatus(
     content::BrowserContext* browser_context,
     const GURL& origin) {
-  std::optional<url::Origin> auto_approval_origin =
-      GetAutoApprovalOrigin(browser_context);
-
   if (base::FeatureList::IsEnabled(
           permissions::features::kAllowMultipleOriginsForWebKioskPermissions)) {
-    // TODO(b/343010457): Add logic for reading origins allowlist.
+    if (chrome::IsWebKioskOriginAllowed(origin)) {
+      return permissions::PermissionAction::GRANTED;
+    }
   }
+
+  std::optional<url::Origin> auto_approval_origin =
+      GetAutoApprovalOrigin(browser_context);
 
   if (!auto_approval_origin.has_value()) {
     return std::nullopt;
