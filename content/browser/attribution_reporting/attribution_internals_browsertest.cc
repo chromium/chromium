@@ -460,14 +460,16 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         // Event-Level Dedup Keys
         tds[15]?.children[0]?.children[0]?.innerText === '13' &&
         tds[15]?.children[0]?.children[1]?.innerText === '17' &&
-        // Budget Consumed
+        // Remaining Aggregatable Attribution Budget
         tds[17]?.innerText === '1300 / 65536' &&
         // Aggregation Keys
         tds[18]?.innerText === '{\n "a": "0x1"\n}' &&
         // Aggregatable Dedup Keys
         tds[19]?.children[0]?.children[0]?.innerText === '14' &&
         tds[19]?.children[0]?.children[1]?.innerText === '18' &&
+        // Remaining Aggregatable Debug Budget
         tds[20]?.innerText === '100 / 65536' &&
+        // Aggregatable Debug Key Piece
         tds[21]?.innerText === '0xf'
       ) {
         if (obs) {
