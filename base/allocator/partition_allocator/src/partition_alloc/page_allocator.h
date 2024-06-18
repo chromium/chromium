@@ -173,6 +173,14 @@ void FreePages(void* address, size_t length);
 //
 // Returns true if the permission change succeeded. In most cases you must
 // |CHECK| the result.
+//
+// Note: On Windows, setting permissions to `PAGE_NOACCESS` will also decommit
+// pages. This is desirable because clients assume that pages with no access
+// rights should be "free" from a resource standpoint. In particular this allows
+// clients to map a large amount of memory, set its access rights to
+// `PAGE_NOACCESS` and not worry about commit limit exhaustion.
+// On the flip side, this means that changing permissions can often fail on this
+// platform.
 [[nodiscard]] PA_COMPONENT_EXPORT(PARTITION_ALLOC) bool TrySetSystemPagesAccess(
     uintptr_t address,
     size_t length,
@@ -187,6 +195,8 @@ void FreePages(void* address, size_t length);
 // bytes.
 //
 // Performs a CHECK that the operation succeeds.
+//
+// See the note above for Windows-specific behavior.
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 void SetSystemPagesAccess(uintptr_t address,
                           size_t length,
@@ -321,6 +331,13 @@ void RecommitSystemPages(
 // that the page is required again. Once written to, the content of the page is
 // guaranteed stable once more. After being written to, the page content may be
 // based on the original page content, or a page of zeroes.
+//
+// WARNING: Do not discard a large amount of pages, for a potentially long
+// duration. Discarded pages are *not* decommitted on Windows, where total
+// system-wide committed memory is limited. As most Chromium OOM crashes are
+// commit limit related, this will both impact Private Memory Footprint (which
+// reports committed memory) and stability (since we will bump into the limit
+// more often).
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 void DiscardSystemPages(uintptr_t address, size_t length);
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
