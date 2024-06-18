@@ -41,7 +41,7 @@ message HistoryQueryResponse {
   reserved 1, 2;
 }
 
-// Next Id: 9
+// Next Id: 10
 message HistoryQueryQuality {
   // The history search query entered by the user.
   string query = 4;
@@ -71,6 +71,10 @@ message HistoryQueryQuality {
   optional uint32 num_days = 7;
 
   UserFeedback user_feedback = 8;
+
+  // The session id of the user query. Use this to join with HistoryAnswer
+  // protos from the same session.
+  string session_id = 9;
 }
 
 // Next ID: 5

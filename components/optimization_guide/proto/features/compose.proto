@@ -106,7 +106,7 @@ message ComposeQuality {
   int64 request_latency_ms = 4;
 
   // How much was the text modified before commit only valid iff
-  // final_status = INSERTED.
+  // final_status = INSERTED
   optional int64 edit_distance = 5;
 
   // A unique ID for each compose session.
