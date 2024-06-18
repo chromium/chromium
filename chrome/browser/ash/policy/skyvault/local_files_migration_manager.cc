@@ -34,6 +34,22 @@ namespace {
 // Delay the migration for 24 hours.
 const base::TimeDelta kMigrationTimeout = base::Hours(24);
 
+// Returns the migration destination, which is based on DownloadDirectory.
+// TODO(aidazolic): Remove when we use dedicated policy.
+std::string GetDestination(Profile* profile) {
+  CHECK(profile);
+
+  const PrefService* const prefs = profile->GetPrefs();
+  CHECK(prefs);
+  return prefs->GetString(prefs::kFilesAppDefaultLocation);
+}
+
+// Returns true if `DownloadDirectory` is forced to Google Drive or OneDrive.
+bool IsMigrationEnabled(const std::string& destination) {
+  return destination == download_dir_util::kLocationGoogleDrive ||
+         destination == download_dir_util::kLocationOneDrive;
+}
+
 }  // namespace
 
 LocalFilesMigrationManager::LocalFilesMigrationManager(
@@ -41,6 +57,8 @@ LocalFilesMigrationManager::LocalFilesMigrationManager(
     : context_(context),
       notification_manager_(std::make_unique<MigrationNotificationManager>()),
       start_delay_timer_(std::make_unique<base::WallClockTimer>()) {
+  CHECK(base::FeatureList::IsEnabled(features::kSkyVaultV2));
+
   pref_change_registrar_.Init(g_browser_process->local_state());
   pref_change_registrar_.Add(
       prefs::kLocalUserFilesMigrationEnabled,
@@ -74,57 +92,46 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
   bool local_user_files_migration_enabled =
       g_browser_process->local_state()->GetBoolean(
           prefs::kLocalUserFilesMigrationEnabled);
-
-  if (local_user_files_allowed_ != local_user_files_allowed ||
-      local_user_files_migration_enabled_ !=
-          local_user_files_migration_enabled) {
-    local_user_files_allowed_ = local_user_files_allowed;
-    local_user_files_migration_enabled_ = local_user_files_migration_enabled;
-    MaybeMigrateFiles();
-  }
-}
-
-bool LocalFilesMigrationManager::ShouldStart() {
-  if (!base::FeatureList::IsEnabled(features::kSkyVaultV2)) {
-    return false;
-  }
-
-  // Migration is enabled only if local files are disabled and the migration
-  // policy is set to true...
-  if (local_user_files_allowed_ || !local_user_files_migration_enabled_) {
-    // TODO(aidazolic): Stop migration if the policy resets?
-    return false;
-  }
-
-  // ... and the FilesAppDefaultLocation (derived from DownloadDirectory) is set
-  // to Google Drive or OneDrive.
   Profile* profile = Profile::FromBrowserContext(context_);
   CHECK(profile);
-  const PrefService* const prefs = profile->GetPrefs();
-  CHECK(prefs);
-  const std::string defaultLocation =
-      prefs->GetString(prefs::kFilesAppDefaultLocation);
-  const bool download_directory_set =
-      defaultLocation == download_dir_util::kLocationGoogleDrive ||
-      defaultLocation == download_dir_util::kLocationOneDrive;
-  if (!download_directory_set) {
-    // SkyVault is misconfigured.
-    // TODO(aidazolic): Stop migration if the policy resets?
-    // TODO(aidazolic): Show an error notification if there are any files.
-    return false;
-  }
+  std::string destination = GetDestination(profile);
 
-  if (in_progress_) {
-    return false;
-  }
-
-  return true;
-}
-
-void LocalFilesMigrationManager::MaybeMigrateFiles() {
-  if (!ShouldStart()) {
+  if (local_user_files_allowed_ == local_user_files_allowed &&
+      local_user_files_migration_enabled_ ==
+          local_user_files_migration_enabled &&
+      destination_ == destination) {
+    // No change.
     return;
   }
+
+  // If local files are allowed or migration is turned off, just stop ongoing
+  // migration if any.
+  if (local_user_files_allowed || !local_user_files_migration_enabled ||
+      !IsMigrationEnabled(destination)) {
+    MaybeStopMigration();
+    local_user_files_allowed_ = local_user_files_allowed;
+    local_user_files_migration_enabled_ = local_user_files_migration_enabled;
+    destination_ = destination;
+    return;
+  }
+
+  // If the destination changed, stop ongoing migration if any.
+  if (destination_ != destination) {
+    MaybeStopMigration();
+  }
+
+  // Local files are disabled and migration destination is set - initiate
+  // migration.
+  local_user_files_allowed_ = local_user_files_allowed;
+  local_user_files_migration_enabled_ = local_user_files_migration_enabled;
+  destination_ = destination;
+  InitiateMigration();
+}
+
+void LocalFilesMigrationManager::InitiateMigration() {
+  CHECK(!local_user_files_allowed_);
+  CHECK(IsMigrationEnabled(destination_));
+
   notification_manager_->ShowMigrationInfoDialog(
       kMigrationTimeout,
       base::BindOnce(&LocalFilesMigrationManager::SkipMigrationDelay,
@@ -163,6 +170,13 @@ void LocalFilesMigrationManager::OnMigrationDone() {
     // TODO(aidazolic): Pass the path of the folder that files are uploaded to.
     notification_manager_->ShowMigrationCompletedNotification(base::FilePath());
     VLOG(1) << "Local files migration done";
+  }
+}
+
+void LocalFilesMigrationManager::MaybeStopMigration() {
+  // TODO(aidazolic): Implementation.
+  if (in_progress_) {
+    in_progress_ = false;
   }
 }
 

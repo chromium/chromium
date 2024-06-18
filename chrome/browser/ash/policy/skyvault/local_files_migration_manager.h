@@ -60,16 +60,11 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   // policy::local_user_files::Observer overrides:
   void OnLocalUserFilesPolicyChanged() override;
 
-  // Determines if the migration should start based on the following conditions:
-  //    * Migration is not already in progress.
-  //    * SkyVault policies are set.
-  bool ShouldStart();
-
   // If conditions are met, schedules the file migration to the cloud in 24
   // hours. The migration starts automatically after the delay elapses. If the
   // user chooses to skip the delay (via the info dialog), the migration starts
   // immediately.
-  void MaybeMigrateFiles();
+  void InitiateMigration();
 
   // Bypasses the migration delay and initiates the upload process immediately.
   // Called when the user clicks the "Upload now" button in the info dialog.
@@ -80,6 +75,9 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
 
   // Handles the completion of the migration process (success or failure).
   void OnMigrationDone();
+
+  // Stops the migration if currently ongoing.
+  void MaybeStopMigration();
 
   // Observers for migration events.
   base::ObserverList<Observer>::Unchecked observers_;
@@ -92,6 +90,9 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
 
   // Whether migration is enabled by policy.
   bool local_user_files_migration_enabled_ = false;
+
+  // Migration destination.
+  std::string destination_;
 
   // Stores any error that occurred during migration.
   std::optional<std::string> error_;
