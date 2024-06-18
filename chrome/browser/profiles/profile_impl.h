@@ -222,6 +222,10 @@ class ProfileImpl : public Profile {
   // Called to initialize Data Reduction Proxy.
   void InitializeDataReductionProxy();
 
+  // Called after a profile is initialized, to record 'one per profile creation'
+  // metrics relating to user prefs.
+  void RecordPrefValuesAfterProfileInitialization();
+
   policy::ConfigurationPolicyProvider* configuration_policy_provider();
 
   PrefChangeRegistrar pref_change_registrar_;
