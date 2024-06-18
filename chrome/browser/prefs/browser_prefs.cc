@@ -3048,6 +3048,11 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   profile_prefs->ClearPref(kTrackingProtectionOffboardedSince);
   profile_prefs->ClearPref(kTrackingProtectionOffboardingAckAction);
 
+#if !BUILDFLAG(IS_ANDROID)
+  // Added 06/2024.
+  syncer::SyncPrefs::MaybeMigratePasswordsToPerAccountPref(profile_prefs);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS
 
