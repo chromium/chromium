@@ -30,6 +30,7 @@ source_set("unit_tests") {
 
   deps = [
     ":android",
+    "//base",
     "//chrome/test:test_support",
     "//content/public/browser:browser",
     "//testing/gtest",

@@ -43,6 +43,7 @@ class FacilitatedPaymentsControllerTest
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+    mock_view_ = std::make_unique<MockFacilitatedPaymentsBottomSheetBridge>();
   }
 
   void TearDown() override {
@@ -60,7 +61,6 @@ class FacilitatedPaymentsControllerTest
 // Test Show method returns true when FacilitatedPaymentsBottomSheetBridge
 // is able to show.
 TEST_F(FacilitatedPaymentsControllerTest, Show_BridgeWasAbleToShow) {
-  mock_view_ = std::make_unique<MockFacilitatedPaymentsBottomSheetBridge>();
   ON_CALL(*mock_view_, RequestShowContent).WillByDefault(Return(true));
 
   EXPECT_CALL(*mock_view_,
@@ -79,22 +79,19 @@ TEST_F(FacilitatedPaymentsControllerTest, Show_BridgeWasAbleToShow) {
 // Test Show method returns false when FacilitatedPaymentsBottomSheetBridge
 // returns false.
 TEST_F(FacilitatedPaymentsControllerTest, Show_BridgeWasNotAbleToShow) {
-  mock_view_ = std::make_unique<MockFacilitatedPaymentsBottomSheetBridge>();
   ON_CALL(*mock_view_, RequestShowContent).WillByDefault(Return(false));
 
   EXPECT_CALL(*mock_view_,
               RequestShowContent(testing::ElementsAreArray(bank_accounts_),
                                  &controller_, _));
 
-  // The  call should return false when bridge fails to show a bottom sheet.
+  // The call should return false when bridge fails to show a bottom sheet.
   EXPECT_FALSE(controller_.Show(web_contents(), std::move(mock_view_),
                                 bank_accounts_, base::DoNothing()));
 }
 
 // Test Show method returns false when there's no bank account.
 TEST_F(FacilitatedPaymentsControllerTest, Show_NoBankAccounts) {
-  mock_view_ = std::make_unique<MockFacilitatedPaymentsBottomSheetBridge>();
-
   EXPECT_CALL(*mock_view_, RequestShowContent).Times(0);
 
   // The call should return false when there's no bank account.
@@ -106,7 +103,6 @@ TEST_F(FacilitatedPaymentsControllerTest, Show_NoBankAccounts) {
 TEST_F(FacilitatedPaymentsControllerTest, OnDismissed) {
   base::MockCallback<base::OnceCallback<void(bool, int64_t)>>
       mock_on_user_decision_callback;
-  mock_view_ = std::make_unique<MockFacilitatedPaymentsBottomSheetBridge>();
   ON_CALL(*mock_view_, RequestShowContent).WillByDefault(Return(true));
 
   // view_ is assigned when the bottom sheet is shown.
@@ -114,9 +110,28 @@ TEST_F(FacilitatedPaymentsControllerTest, OnDismissed) {
                    mock_on_user_decision_callback.Get());
   EXPECT_NE(controller_.view_, nullptr);
 
-  EXPECT_CALL(mock_on_user_decision_callback, Run(false, -1L));
+  EXPECT_CALL(mock_on_user_decision_callback,
+              Run(/*is_selected=*/false, /*selected_bank_account_id=*/-1L));
 
   // view_ is reset when the bottom sheet is dismissed.
   controller_.OnDismissed(nullptr);
   EXPECT_EQ(controller_.view_, nullptr);
+}
+
+// Test onBankAccountSelected method.
+TEST_F(FacilitatedPaymentsControllerTest, onBankAccountSelected) {
+  base::MockCallback<base::OnceCallback<void(bool, int64_t)>>
+      mock_on_user_decision_callback;
+  ON_CALL(*mock_view_, RequestShowContent).WillByDefault(Return(true));
+
+  // view_ is assigned when the bottom sheet is shown.
+  controller_.Show(web_contents(), std::move(mock_view_), bank_accounts_,
+                   mock_on_user_decision_callback.Get());
+
+  // When bank account is selected, call back should be called with true and
+  // instrument id from selected bank account.
+  EXPECT_CALL(mock_on_user_decision_callback,
+              Run(/*is_selected=*/true, /*selected_bank_account_id=*/100L));
+
+  controller_.OnBankAccountSelected(nullptr, 100L);
 }

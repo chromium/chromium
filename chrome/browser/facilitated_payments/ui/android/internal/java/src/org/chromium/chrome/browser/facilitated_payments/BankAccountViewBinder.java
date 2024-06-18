@@ -38,6 +38,7 @@ class BankAccountViewBinder {
         } else if (propertyKey == BANK_ACCOUNT_SUMMARY) {
             TextView bankAccountSummary = view.findViewById(R.id.bank_account_summary);
             bankAccountSummary.setText(model.get(BANK_ACCOUNT_SUMMARY));
+            // TODO(b:340576807): Show actual icon for the bank account.
         } else if (propertyKey == BANK_ACCOUNT_DRAWABLE_ID) {
             ImageView bankAccountIcon = view.findViewById(R.id.bank_account_icon);
             bankAccountIcon.setImageDrawable(

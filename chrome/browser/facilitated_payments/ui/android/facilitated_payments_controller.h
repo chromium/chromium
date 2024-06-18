@@ -36,6 +36,8 @@ class FacilitatedPaymentsController {
   // Called whenever the surface gets hidden (regardless of the cause).
   virtual void OnDismissed(JNIEnv* env);
 
+  void OnBankAccountSelected(JNIEnv* env, long instrument_id);
+
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
  private:
@@ -47,8 +49,7 @@ class FacilitatedPaymentsController {
   // The corresponding Java FacilitatedPaymentsControllerBridge. This bridge is
   // used to delegate user actions from Java to native.
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
-
-  // Called after showing the PIX the payment prompt.
+  // Called after showing PIX payment prompt.
   base::OnceCallback<void(bool, int64_t)> on_user_decision_callback_;
 };
 

@@ -54,6 +54,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
     }
 
     boolean showSheet(List<BankAccount> bankAccounts) {
+        mInputProtector.markShowTime();
         if (bankAccounts == null || bankAccounts.isEmpty()) {
             return false;
         }
@@ -116,11 +117,11 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                         .with(BANK_ACCOUNT_DRAWABLE_ID, R.drawable.ic_account_balance)
                         .with(
                                 ON_BANK_ACCOUNT_CLICK_ACTION,
-                                () -> this.onSelectedBankAccount(bankAccount));
+                                () -> this.onBankAccountSelected(bankAccount));
         return bankAccountModelBuilder.build();
     }
 
-    public void onSelectedBankAccount(BankAccount bankAccount) {
+    public void onBankAccountSelected(BankAccount bankAccount) {
         if (!mInputProtector.shouldInputBeProcessed()) return;
         mDelegate.onBankAccountSelected(bankAccount.getInstrumentId());
     }
@@ -167,5 +168,9 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                         .get()
                         .model;
         sheetItems.add(new ListItem(CONTINUE_BUTTON, model));
+    }
+
+    void setInputProtectorForTesting(InputProtector inputProtector) {
+        mInputProtector = inputProtector;
     }
 }

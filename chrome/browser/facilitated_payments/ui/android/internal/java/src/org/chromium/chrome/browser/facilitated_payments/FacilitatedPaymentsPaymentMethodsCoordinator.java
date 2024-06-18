@@ -106,4 +106,8 @@ public class FacilitatedPaymentsPaymentMethodsCoordinator
     PropertyModel getModelForTesting() {
         return mFacilitatedPaymentsPaymentMethodsModel;
     }
+
+    FacilitatedPaymentsPaymentMethodsMediator getMediatorForTesting() {
+        return mMediator;
+    }
 }

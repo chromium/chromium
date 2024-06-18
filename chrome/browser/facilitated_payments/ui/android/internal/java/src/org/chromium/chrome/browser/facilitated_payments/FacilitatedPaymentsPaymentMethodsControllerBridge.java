@@ -36,11 +36,17 @@ class FacilitatedPaymentsPaymentMethodsControllerBridge
     }
 
     @Override
-    // TODO(b:344904949): Pass click events on the bottomsheet to the fp controller
-    public void onBankAccountSelected(long instrumentId) {}
+    public void onBankAccountSelected(long instrumentId) {
+        if (mNativeFacilitatedPaymentsController != 0) {
+            FacilitatedPaymentsPaymentMethodsControllerBridgeJni.get()
+                    .onBankAccountSelected(mNativeFacilitatedPaymentsController, instrumentId);
+        }
+    }
 
     @NativeMethods
     interface Natives {
         void onDismissed(long nativeFacilitatedPaymentsController);
+
+        void onBankAccountSelected(long nativeFacilitatedPaymentsController, long instrumentId);
     }
 }

@@ -75,6 +75,8 @@ robolectric_library("junit") {
     "//components/browser_ui/bottomsheet/android:factory_java",
     "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/bottomsheet/android:manager_java",
+    "//components/payments/content/android:full_java",
+    "//components/payments/content/android:payments_java_test_support",
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_espresso_espresso_core_java",

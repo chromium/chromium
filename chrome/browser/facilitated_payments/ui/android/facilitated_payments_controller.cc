@@ -49,6 +49,13 @@ void FacilitatedPaymentsController::OnDismissed(JNIEnv* env) {
   }
 }
 
+void FacilitatedPaymentsController::OnBankAccountSelected(JNIEnv* env,
+                                                          long instrument_id) {
+  if (on_user_decision_callback_) {
+    std::move(on_user_decision_callback_).Run(true, instrument_id);
+  }
+}
+
 base::android::ScopedJavaLocalRef<jobject>
 FacilitatedPaymentsController::GetJavaObject() {
   if (!java_object_) {
