@@ -1420,7 +1420,6 @@
     // The fieldtrial_testing_config currently disables this feature for tests.
     {
       name: "DOMParserIncludeShadowRoots",
-      status: "stable",
     },
     // Controls whether DOMParser.parseFromString() attempts to use the
     // html fast path parser. This flag is to be used as a killswitch in case
