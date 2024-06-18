@@ -412,7 +412,6 @@ IN_PROC_BROWSER_TEST_F(BrowserViewTest, GetAccessibleTabModalDialogTree) {
   EXPECT_NE(ui::AXPlatformNodeTestHelper::FindChildByName(ax_node, "OK"),
             nullptr);
 }
-#endif  // !BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(ENTERPRISE_WATERMARK)
 
@@ -587,7 +586,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewDataProtectionTest,
                   ->has_text_for_testing());
 }
 
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+// TODO(crbug.com/322519161): Add test for Mac platform once implemented.
+#if BUILDFLAG(IS_WIN)
 
 IN_PROC_BROWSER_TEST_F(BrowserViewDataProtectionTest, DC_Screenshot) {
   data_controls::SetDataControls(browser()->profile()->GetPrefs(), {R"(
@@ -609,6 +609,8 @@ IN_PROC_BROWSER_TEST_F(BrowserViewDataProtectionTest, DC_Screenshot) {
   EXPECT_TRUE(widget->AreScreenshotsAllowed());
 }
 
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN)
 
 #endif  // BUILDFLAG(ENTERPRISE_WATERMARK)
+
+#endif  // !BUILDFLAG(IS_MAC)
