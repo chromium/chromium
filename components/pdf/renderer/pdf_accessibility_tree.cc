@@ -34,6 +34,7 @@
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
+#include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/ax_node_id_forward.h"
@@ -49,6 +50,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/metrics_hashes.h"
 #include "components/language/core/common/language_util.h"  // nogncheck
+#include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
 namespace pdf {
@@ -1153,7 +1155,44 @@ void PdfAccessibilityTree::OnOcrDataReceived(
       VLOG(1) << "Empty OCR data received.";
       // This can happen if OCR returns an empty result, or the image draws
       // nothing. Need to keep iterating the rest of `tree_updates` as there
-      // can be some updates after this empty update in `tree_updates`.
+      // can be some updates after this empty update in `tree_updates`. If the
+      // image doesn't have alt text, it needs to be labeled with the default
+      // label, `IDS_AX_UNLABELED_IMAGE_ROLE_DESCRIPTION`, which is set to an
+      // image without alt text on a PDF or webpage.
+      if (unserialized_node_exist) {
+        const auto image_node_iter = ranges::find_if(
+            nodes_,
+            [&ocr_request](const std::unique_ptr<ui::AXNodeData>& node) {
+              return node->id == ocr_request.image_node_id;
+            });
+        CHECK(image_node_iter != ranges::end(nodes_));
+        if (ocr_request.image.alt_text.empty()) {
+          // TODO(crbug.com/289010799): Add a CHECK to ensure that the image
+          // node was labeled with `IDS_PDF_OCR_IN_PROGRESS_AX_UNLABELED_IMAGE`
+          // when it's sent to OCR.
+          (*image_node_iter)
+              ->SetNameChecked(l10n_util::GetStringUTF8(
+                  IDS_AX_UNLABELED_IMAGE_ROLE_DESCRIPTION));
+        }
+      } else {
+        // No pending updates contained in `nodes_`, so we call `Unserialize()`
+        // directly.
+        ui::AXNode* image_node = tree_.GetFromId(ocr_request.image_node_id);
+        CHECK(image_node);
+        ui::AXNodeData image_node_data = image_node->data();
+        if (ocr_request.image.alt_text.empty()) {
+          // TODO(crbug.com/289010799): Add a CHECK to ensure that the image
+          // node was labeled with `IDS_PDF_OCR_IN_PROGRESS_AX_UNLABELED_IMAGE`
+          // when it's sent to OCR.
+          image_node_data.SetNameChecked(l10n_util::GetStringUTF8(
+              IDS_AX_UNLABELED_IMAGE_ROLE_DESCRIPTION));
+        }
+        tree_update.root_id = doc_node_->id;
+        tree_update.nodes.emplace_back(std::move(image_node_data));
+        if (!tree_.Unserialize(tree_update)) {
+          LOG(FATAL) << tree_.error();
+        }
+      }
       continue;
     }
 

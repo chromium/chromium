@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversion_utils.h"
 #include "components/pdf/renderer/pdf_ocr_helper.h"
 #include "components/strings/grit/components_strings.h"
+#include "pdf/accessibility_structs.h"
 #include "pdf/pdf_features.h"
 #include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
 #include "third_party/blink/public/web/web_ax_object.h"
@@ -1070,11 +1071,16 @@ void PdfAccessibilityTreeBuilder::AddRemainingAnnotations(
 
   // Push all the images not anchored to any text run to the last paragraph.
   for (size_t i = current_image_index_; i < images_->size(); i++) {
-    ui::AXNodeData* image_node = CreateImageNode((*images_)[i]);
+    const chrome_pdf::AccessibilityImageInfo& image_info = (*images_)[i];
+    ui::AXNodeData* image_node = CreateImageNode(image_info);
     para_node->child_ids.push_back(image_node->id);
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
     if (!has_accessible_text_ && ocr_available) {
-      ocr_requests.emplace(image_node->id, (*images_)[i], root_node_->id,
+      if (image_info.alt_text.empty()) {
+        image_node->SetNameChecked(l10n_util::GetStringUTF8(
+            IDS_PDF_OCR_IN_PROGRESS_AX_UNLABELED_IMAGE));
+      }
+      ocr_requests.emplace(image_node->id, image_info, root_node_->id,
                            para_node->id, page_node_->id, page_index_);
     }
 #endif

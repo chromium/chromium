@@ -2834,6 +2834,24 @@ TEST_P(PdfOcrHelperTest, EmptyOCRResults) {
       "This PDF is inaccessible. No text extracted";
   ASSERT_EQ(kPdfOcrNoResult,
             status_node->GetStringAttribute(ax::mojom::StringAttribute::kName));
+  for (uint32_t i = 0; i < page_count; ++i) {
+    // All children nodes stay the same, except for image nodes. Image nodes
+    // should have the label set for an image without alt text.
+    ui::AXNode* page_node = root_node->GetChildAtIndex(i + 1);
+    ASSERT_NE(nullptr, page_node);
+    ui::AXNode* paragraph_node = page_node->GetChildAtIndex(0);
+    ASSERT_NE(nullptr, paragraph_node);
+    ui::AXNode* image1_node = paragraph_node->GetChildAtIndex(0);
+    ASSERT_NE(nullptr, image1_node);
+    EXPECT_EQ(l10n_util::GetStringUTF8(IDS_AX_UNLABELED_IMAGE_ROLE_DESCRIPTION),
+              image1_node->GetNameUTF8());
+    ui::AXNode* image2_node = paragraph_node->GetChildAtIndex(1);
+    ASSERT_NE(nullptr, image2_node);
+    EXPECT_EQ(l10n_util::GetStringUTF8(IDS_AX_UNLABELED_IMAGE_ROLE_DESCRIPTION),
+              image2_node->GetNameUTF8());
+    EXPECT_FALSE(image2_node->HasStringAttribute(
+        ax::mojom::StringAttribute::kDescription));
+  }
 }
 
 TEST_P(PdfOcrHelperTest, OCRCompleteNotification) {

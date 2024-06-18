@@ -365,6 +365,18 @@
     <message name="IDS_PDF_OCR_IN_PROGRESS" is_accessibility_with_no_ui="true" desc="Notification to inform the user that OCR is in progress.">
       This PDF is inaccessible. Extracting text, powered by Google AI
     </message>
+    <if expr="is_win">
+      <then>
+        <message name="IDS_PDF_OCR_IN_PROGRESS_AX_UNLABELED_IMAGE" is_accessibility_with_no_ui="true" desc="Notification to inform the user that OCR is running on a graphic (image) in a PDF, which does not have a description for blind users.">
+          Unlabeled graphic. Extracting text, powered by Google AI
+        </message>
+      </then>
+      <else>
+        <message name="IDS_PDF_OCR_IN_PROGRESS_AX_UNLABELED_IMAGE" is_accessibility_with_no_ui="true" desc="Notification to inform the user that OCR is running on a graphic (image) in a PDF, which does not have a description for blind users.">
+          Unlabeled image. Extracting text, powered by Google AI
+        </message>
+      </else>
+    </if>
     <message name="IDS_PDF_OCR_COMPLETED" is_accessibility_with_no_ui="true" desc="Notification to inform the user that OCR is completed.">
       This PDF is inaccessible. Text extracted, powered by Google AI
     </message>
