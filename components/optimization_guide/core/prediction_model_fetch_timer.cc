@@ -90,10 +90,9 @@ void PredictionModelFetchTimer::ScheduleFetchOnModelRegistration() {
       break;
     case PredictionModelFetchTimerState::kPeriodicFetch:
       state_ = PredictionModelFetchTimerState::kNewRegistrationFetch;
-      fetch_timer_.Start(FROM_HERE,
-                         features::PredictionModelNewRegistrationFetchDelay() +
-                             RandomFetchDelay(),
-                         this, &PredictionModelFetchTimer::OnFetchTimerFired);
+      fetch_timer_.Start(
+          FROM_HERE, features::PredictionModelNewRegistrationFetchRandomDelay(),
+          this, &PredictionModelFetchTimer::OnFetchTimerFired);
       break;
     case PredictionModelFetchTimerState::kFirstFetch:
     case PredictionModelFetchTimerState::kNewRegistrationFetch:

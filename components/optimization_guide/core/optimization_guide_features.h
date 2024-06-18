@@ -283,11 +283,11 @@ base::TimeDelta PredictionModelFetchStartupDelay();
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 base::TimeDelta PredictionModelFetchInterval();
 
-// Returns the time to wait for starting a model fetch when a new optimization
-// target observer registration happens, after the initial model fetch is
-// completed.
+// Returns the random delay time to wait for starting a model fetch when a new
+// optimization target observer registration happens, after the initial model
+// fetch is completed.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-base::TimeDelta PredictionModelNewRegistrationFetchDelay();
+base::TimeDelta PredictionModelNewRegistrationFetchRandomDelay();
 
 // Whether to use the model execution watchdog.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
