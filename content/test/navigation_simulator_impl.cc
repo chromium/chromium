@@ -701,8 +701,8 @@ void NavigationSimulatorImpl::Commit() {
 
   // Keep a pointer to the current RenderFrameHost that may be pending deletion
   // after commit.
-  RenderFrameHostImpl* previous_rfh =
-      render_frame_host_->frame_tree_node()->current_frame_host();
+  base::WeakPtr<RenderFrameHostImpl> previous_rfh =
+      render_frame_host_->frame_tree_node()->current_frame_host()->GetWeakPtr();
 
   // RenderDocument: Do not dispatch UnloadACK if the navigation was committed
   // in the same SiteInstance. This has already been dispatched during the
@@ -737,8 +737,10 @@ void NavigationSimulatorImpl::Commit() {
       request_, std::move(params),
       std::move(browser_interface_broker_receiver_), same_document_);
 
-  if (previous_rfh)
-    SimulateUnloadCompletionCallbackForPreviousFrameIfNeeded(previous_rfh);
+  if (previous_rfh) {
+    SimulateUnloadCompletionCallbackForPreviousFrameIfNeeded(
+        previous_rfh.get());
+  }
 
   loading_scenario_ =
       TestRenderFrameHost::LoadingScenario::NewDocumentNavigation;
