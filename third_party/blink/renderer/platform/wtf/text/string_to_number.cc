@@ -5,9 +5,12 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 #include <type_traits>
+
 #include "third_party/blink/renderer/platform/wtf/dtoa.h"
 #include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
 namespace WTF {
@@ -202,6 +205,15 @@ int CharactersToInt(const UChar* data,
                     NumberParsingOptions options,
                     bool* ok) {
   return ToIntegralType<int, UChar, 10>(data, length, options, ok);
+}
+
+int CharactersToInt(const StringView& string,
+                    NumberParsingOptions options,
+                    bool* ok) {
+  return WTF::VisitCharacters(
+      string, [&](const auto* chars, wtf_size_t length) {
+        return CharactersToInt(chars, length, options, ok);
+      });
 }
 
 unsigned CharactersToUInt(const LChar* data,

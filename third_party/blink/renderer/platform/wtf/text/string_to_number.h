@@ -11,6 +11,8 @@
 
 namespace WTF {
 
+class StringView;
+
 enum class NumberParsingResult {
   kSuccess,
   kError,
@@ -28,6 +30,9 @@ WTF_EXPORT int CharactersToInt(const LChar*,
                                bool* ok);
 WTF_EXPORT int CharactersToInt(const UChar*,
                                size_t,
+                               NumberParsingOptions,
+                               bool* ok);
+WTF_EXPORT int CharactersToInt(const StringView&,
                                NumberParsingOptions,
                                bool* ok);
 

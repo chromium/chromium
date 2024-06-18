@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/size.h"
@@ -116,8 +117,12 @@ bool IsStringIncrementedByOne(const String& source, const String& target) {
     target_right++;
   }
 
-  int source_number = source.Substring(left, source_right - left).ToInt();
-  int target_number = target.Substring(left, target_right - left).ToInt();
+  int source_number =
+      CharactersToInt(StringView(source, left, source_right - left),
+                      WTF::NumberParsingOptions(), /*ok=*/nullptr);
+  int target_number =
+      CharactersToInt(StringView(target, left, target_right - left),
+                      WTF::NumberParsingOptions(), /*ok=*/nullptr);
 
   // The second number should increment by one and the rest of the strings
   // should be the same.
