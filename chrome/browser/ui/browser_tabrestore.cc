@@ -157,14 +157,33 @@ WebContents* AddRestoredTabImpl(std::unique_ptr<WebContents> web_contents,
                       ->ListTabs()
                       .end();
     }
+
+    // `tab_index` should respect group contiguity.
+    if (group.has_value() &&
+        tab_strip_model->group_model()->ContainsTabGroup(group.value())) {
+      gfx::Range group_indices = tab_strip_model->group_model()
+                                     ->GetTabGroup(group.value())
+                                     ->ListTabs();
+      tab_index = std::clamp(tab_index, static_cast<int>(group_indices.start()),
+                             static_cast<int>(group_indices.end()));
+    }
   }
 
   WebContents* raw_web_contents = web_contents.get();
-  const int actual_index = tab_strip_model->InsertWebContentsAt(
-      tab_index, std::move(web_contents), add_types);
 
-  if (group.has_value()) {
+  // The two cases we could run into are -
+  // 1. Tab was a part of a group that is no longer present.
+  // 2. Tab is added to a group that is present in the tabstrip model or is an
+  // ungrouped tab.
+  if (group.has_value() && tab_strip_model->group_model() &&
+      !tab_strip_model->group_model()->ContainsTabGroup(group.value())) {
+    // Insert as a ungrouped tab and then add it to the new group.
+    const int actual_index = tab_strip_model->InsertWebContentsAt(
+        tab_index, std::move(web_contents), add_types);
     tab_strip_model->AddToGroupForRestore({actual_index}, group.value());
+  } else {
+    tab_strip_model->InsertWebContentsAt(tab_index, std::move(web_contents),
+                                         add_types, group);
   }
 
   // We set the size of the view here, before Blink does its initial layout.
