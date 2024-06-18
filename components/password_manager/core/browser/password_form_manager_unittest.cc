@@ -415,14 +415,14 @@ class PasswordFormManagerTest : public testing::Test,
     field.set_name_attribute(field.name());
     field.set_form_control_type(autofill::FormControlType::kInputText);
     field.set_renderer_id(autofill::FieldRendererId(2));
-    test_api(observed_form_).fields().push_back(field);
+    test_api(observed_form_).Append(field);
 
     field.set_name(u"username");
     field.set_id_attribute(field.name());
     field.set_name_attribute(field.name());
     field.set_form_control_type(autofill::FormControlType::kInputText);
     field.set_renderer_id(autofill::FieldRendererId(3));
-    test_api(observed_form_).fields().push_back(field);
+    test_api(observed_form_).Append(field);
 
     non_password_form_ = observed_form_;
 
@@ -431,25 +431,23 @@ class PasswordFormManagerTest : public testing::Test,
     field.set_name_attribute(field.name());
     field.set_form_control_type(autofill::FormControlType::kInputPassword);
     field.set_renderer_id(autofill::FieldRendererId(4));
-    test_api(observed_form_).fields().push_back(field);
-    test_api(observed_form_only_password_fields_).fields().push_back(field);
+    test_api(observed_form_).Append(field);
+    test_api(observed_form_only_password_fields_).Append(field);
 
     field.set_name(u"password2");
     field.set_id_attribute(field.name());
     field.set_name_attribute(field.name());
     field.set_form_control_type(autofill::FormControlType::kInputPassword);
     field.set_renderer_id(autofill::FieldRendererId(5));
-    test_api(observed_form_only_password_fields_).fields().push_back(field);
+    test_api(observed_form_only_password_fields_).Append(field);
 
     submitted_form_ = observed_form_;
-    test_api(submitted_form_).fields()[kUsernameFieldIndex].set_value(u"user1");
-    test_api(submitted_form_)
-        .fields()[kPasswordFieldIndex]
-        .set_value(u"secret1");
+    test_api(submitted_form_).field(kUsernameFieldIndex).set_value(u"user1");
+    test_api(submitted_form_).field(kPasswordFieldIndex).set_value(u"secret1");
 
     submitted_non_password_form_ = non_password_form_;
     test_api(submitted_non_password_form_)
-        .fields()[kUsernameFieldIndex]
+        .field(kUsernameFieldIndex)
         .set_value(u"user1");
 
     saved_match_.url = origin;
@@ -737,10 +735,7 @@ TEST_P(PasswordFormManagerTest, AutofillNotMoreThan5Times) {
 // the form was misclassified.
 TEST_P(PasswordFormManagerTest, AutofillSignUpForm) {
   // Make |observed_form_| to be sign-up form.
-  test_api(observed_form_)
-      .fields()
-      .back()
-      .set_autocomplete_attribute("new-password");
+  test_api(observed_form_).field(-1).set_autocomplete_attribute("new-password");
 
   PasswordFormFillData fill_data;
   EXPECT_CALL(driver_, SetPasswordFillData).WillOnce(SaveArg<0>(&fill_data));
@@ -769,10 +764,7 @@ TEST_P(PasswordFormManagerTest, AutofillSignUpForm) {
 // fields are marked with autocomplete attribute.
 TEST_P(PasswordFormManagerTest, GenerationOnNewAndConfirmPasswordFields) {
   // Make |observed_form_| to be sign-up form.
-  test_api(observed_form_)
-      .fields()
-      .back()
-      .set_autocomplete_attribute("new-password");
+  test_api(observed_form_).field(-1).set_autocomplete_attribute("new-password");
   const autofill::FieldRendererId new_password_render_id =
       observed_form_.fields().back().renderer_id();
   // Add a confirmation field.
@@ -782,7 +774,7 @@ TEST_P(PasswordFormManagerTest, GenerationOnNewAndConfirmPasswordFields) {
   field.set_renderer_id(confirm_password_render_id);
   field.set_form_control_type(autofill::FormControlType::kInputPassword);
   field.set_autocomplete_attribute("new-password");
-  test_api(observed_form_).fields().push_back(field);
+  test_api(observed_form_).Append(field);
 
   PasswordFormGenerationData generation_data;
   EXPECT_CALL(driver_, FormEligibleForGenerationFound(_))
@@ -967,10 +959,10 @@ TEST_P(PasswordFormManagerTest, CreatePendingCredentialsAlreadySaved) {
   SetNonFederatedAndNotifyFetchCompleted({saved_match_});
 
   test_api(submitted_form_)
-      .fields()[kUsernameFieldIndex]
+      .field(kUsernameFieldIndex)
       .set_value(saved_match_.username_value);
   test_api(submitted_form_)
-      .fields()[kPasswordFieldIndex]
+      .field(kPasswordFieldIndex)
       .set_value(saved_match_.password_value);
 
   // Tests that depending on whether we fill on page load or account select that
@@ -1002,10 +994,10 @@ TEST_P(PasswordFormManagerTest, CreatePendingCredentialsPSLMatchSaved) {
   SetNonFederatedAndNotifyFetchCompleted({saved_match_});
 
   test_api(submitted_form_)
-      .fields()[kUsernameFieldIndex]
+      .field(kUsernameFieldIndex)
       .set_value(saved_match_.username_value);
   test_api(submitted_form_)
-      .fields()[kPasswordFieldIndex]
+      .field(kPasswordFieldIndex)
       .set_value(saved_match_.password_value);
 
   EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form_, &driver_,
@@ -1022,10 +1014,10 @@ TEST_P(PasswordFormManagerTest, CreatePendingCredentialsPasswordOverridden) {
   expected.password_value += u"1";
 
   test_api(submitted_form_)
-      .fields()[kUsernameFieldIndex]
+      .field(kUsernameFieldIndex)
       .set_value(saved_match_.username_value);
   test_api(submitted_form_)
-      .fields()[kPasswordFieldIndex]
+      .field(kPasswordFieldIndex)
       .set_value(expected.password_value);
   EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form_, &driver_,
                                                possible_usernames_));
@@ -1038,8 +1030,8 @@ TEST_P(PasswordFormManagerTest, CreatePendingCredentialsUpdate) {
   SetNonFederatedAndNotifyFetchCompleted({saved_match_});
 
   FormData submitted_form = observed_form_only_password_fields_;
-  test_api(submitted_form).fields()[0].set_value(u"strongpassword");
-  test_api(submitted_form).fields()[1].set_value(u"verystrongpassword");
+  test_api(submitted_form).field(0).set_value(u"strongpassword");
+  test_api(submitted_form).field(1).set_value(u"verystrongpassword");
 
   PasswordForm expected = saved_match_;
   expected.password_value = u"verystrongpassword";
@@ -1057,8 +1049,8 @@ TEST_P(PasswordFormManagerTest, CreatePendingCredentialsUpdateMultipleSaved) {
   SetNonFederatedAndNotifyFetchCompleted({saved_match_, another_saved_match});
 
   FormData submitted_form = observed_form_only_password_fields_;
-  test_api(submitted_form).fields()[0].set_value(u"strongpassword");
-  test_api(submitted_form).fields()[1].set_value(u"verystrongpassword");
+  test_api(submitted_form).field(0).set_value(u"strongpassword");
+  test_api(submitted_form).field(1).set_value(u"verystrongpassword");
 
   PasswordForm expected = saved_match_;
   expected.password_value = u"verystrongpassword";
@@ -1074,8 +1066,8 @@ TEST_P(PasswordFormManagerTest, CreatePendingCredentialsEmptyName) {
 
   FormData anonymous_signup = observed_form_;
   // There is an anonymous password field.
-  test_api(anonymous_signup).fields()[2].set_name({});
-  test_api(anonymous_signup).fields()[2].set_value(u"a password");
+  test_api(anonymous_signup).field(2).set_name({});
+  test_api(anonymous_signup).field(2).set_value(u"a password");
   // Mark the password field as new-password.
   std::map<FormSignature, FormPredictions> predictions = CreatePredictions(
       observed_form_, {std::make_pair(2, autofill::ACCOUNT_CREATION_PASSWORD)});
@@ -1093,13 +1085,13 @@ TEST_P(PasswordFormManagerTest, CreatePendingCredentialsEmptyName) {
 TEST_P(PasswordFormManagerTest, NoCrashOnNonPasswordForm) {
   FormData form_without_password_fields = observed_form_;
   // Remove the password field.
-  test_api(form_without_password_fields).fields().resize(kPasswordFieldIndex);
+  test_api(form_without_password_fields).Resize(kPasswordFieldIndex);
   CreateFormManager(form_without_password_fields);
   fetcher_->NotifyFetchCompleted();
 
   FormData submitted_form = observed_form_;
-  test_api(submitted_form).fields()[kUsernameFieldIndex].set_value(u"username");
-  test_api(submitted_form).fields()[kPasswordFieldIndex].set_value(u"password");
+  test_api(submitted_form).field(kUsernameFieldIndex).set_value(u"username");
+  test_api(submitted_form).field(kPasswordFieldIndex).set_value(u"password");
 
   // Expect no crash.
   form_manager_->ProvisionallySave(submitted_form, &driver_,
@@ -1111,10 +1103,10 @@ TEST_P(PasswordFormManagerTest, IsEqualToSubmittedForm) {
 
   FormData submitted_form = observed_form_;
   test_api(submitted_form)
-      .fields()[kUsernameFieldIndex]
+      .field(kUsernameFieldIndex)
       .set_value(saved_match_.username_value);
   test_api(submitted_form)
-      .fields()[kPasswordFieldIndex]
+      .field(kPasswordFieldIndex)
       .set_value(saved_match_.password_value);
 
   // No submitted form yet.
@@ -1142,12 +1134,8 @@ TEST_P(PasswordFormManagerTest, SaveNewCredentials) {
   FormData submitted_form = observed_form_;
   std::u16string new_username = saved_match_.username_value + u"1";
   std::u16string new_password = saved_match_.password_value + u"1";
-  test_api(submitted_form)
-      .fields()[kUsernameFieldIndex]
-      .set_value(new_username);
-  test_api(submitted_form)
-      .fields()[kPasswordFieldIndex]
-      .set_value(new_password);
+  test_api(submitted_form).field(kUsernameFieldIndex).set_value(new_username);
+  test_api(submitted_form).field(kPasswordFieldIndex).set_value(new_password);
 
   EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames_));
@@ -1195,10 +1183,10 @@ TEST_P(PasswordFormManagerTest, SavePSLToAlreadySaved) {
   FormData submitted_form = observed_form_;
   // Change
   test_api(submitted_form)
-      .fields()[kUsernameFieldIndex]
+      .field(kUsernameFieldIndex)
       .set_value(psl_saved_match_.username_value);
   test_api(submitted_form)
-      .fields()[kPasswordFieldIndex]
+      .field(kPasswordFieldIndex)
       .set_value(psl_saved_match_.password_value);
 
   EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
@@ -1232,10 +1220,8 @@ TEST_P(PasswordFormManagerTest, OverridePassword) {
   FormData submitted_form = observed_form_;
   std::u16string username = saved_match_.username_value;
   std::u16string new_password = saved_match_.password_value + u"1";
-  test_api(submitted_form).fields()[kUsernameFieldIndex].set_value(username);
-  test_api(submitted_form)
-      .fields()[kPasswordFieldIndex]
-      .set_value(new_password);
+  test_api(submitted_form).field(kUsernameFieldIndex).set_value(username);
+  test_api(submitted_form).field(kPasswordFieldIndex).set_value(new_password);
 
   EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames_));
@@ -1266,9 +1252,9 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordOnChangePasswordForm) {
       {saved_match_, not_best_saved_match, saved_match_another_username});
 
   FormData submitted_form = observed_form_only_password_fields_;
-  test_api(submitted_form).fields()[0].set_value(saved_match_.password_value);
+  test_api(submitted_form).field(0).set_value(saved_match_.password_value);
   std::u16string new_password = saved_match_.password_value + u"1";
-  test_api(submitted_form).fields()[1].set_value(new_password);
+  test_api(submitted_form).field(1).set_value(new_password);
 
   EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames_));
@@ -1300,9 +1286,9 @@ TEST_P(PasswordFormManagerTest, VotesUploadingOnPasswordUpdate) {
     SetNonFederatedAndNotifyFetchCompleted({saved_match_});
 
     FormData submitted_form = observed_form_only_password_fields_;
-    test_api(submitted_form).fields()[0].set_value(saved_match_.password_value);
+    test_api(submitted_form).field(0).set_value(saved_match_.password_value);
     auto new_password = saved_match_.password_value + u"1";
-    test_api(submitted_form).fields()[1].set_value(new_password);
+    test_api(submitted_form).field(1).set_value(new_password);
 
     EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                  possible_usernames_));
@@ -1358,18 +1344,18 @@ TEST_P(PasswordFormManagerTest, UsernameCorrectionVote) {
     FormFieldData text_field;
     text_field.set_name(alternative.name);
     text_field.set_form_control_type(autofill::FormControlType::kInputText);
-    test_api(saved_match_.form_data).fields().push_back(text_field);
+    test_api(saved_match_.form_data).Append(text_field);
   }
   FormFieldData password_field;
   password_field.set_name(saved_match_.password_element);
   password_field.set_form_control_type(
       autofill::FormControlType::kInputPassword);
-  test_api(saved_match_.form_data).fields().push_back(password_field);
+  test_api(saved_match_.form_data).Append(password_field);
   SetNonFederatedAndNotifyFetchCompleted({saved_match_});
 
   // On a login form, the user uses the password value.
   test_api(submitted_form_)
-      .fields()[kPasswordFieldIndex]
+      .field(kPasswordFieldIndex)
       .set_value(saved_match_.password_value);
   // The username should be corrected. To intensify testing, simulate that the
   // user changes the username value many times.
@@ -1380,7 +1366,7 @@ TEST_P(PasswordFormManagerTest, UsernameCorrectionVote) {
         std::u16string(u"random"), std::u16string(),
         saved_match_.all_alternative_usernames[0].value}) {
     test_api(submitted_form_)
-        .fields()[kUsernameFieldIndex]
+        .field(kUsernameFieldIndex)
         .set_value(new_username_value);
     EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form_, &driver_,
                                                  possible_usernames_));
@@ -1428,22 +1414,22 @@ TEST_P(PasswordFormManagerTest, CredentialsReusedVote) {
     FormFieldData field;
     field.set_name(alternative.name);
     field.set_form_control_type(autofill::FormControlType::kInputText);
-    test_api(saved_match_.form_data).fields().push_back(field);
+    test_api(saved_match_.form_data).Append(field);
   }
   FormFieldData password_field;
   password_field.set_name(saved_match_.password_element);
   password_field.set_form_control_type(
       autofill::FormControlType::kInputPassword);
-  test_api(saved_match_.form_data).fields().push_back(password_field);
+  test_api(saved_match_.form_data).Append(password_field);
 
   SetNonFederatedAndNotifyFetchCompleted({saved_match_});
 
   // On a login form, the user reuses the username value and password value.
   test_api(submitted_form_)
-      .fields()[kUsernameFieldIndex]
+      .field(kUsernameFieldIndex)
       .set_value(saved_match_.username_value);
   test_api(submitted_form_)
-      .fields()[kPasswordFieldIndex]
+      .field(kPasswordFieldIndex)
       .set_value(saved_match_.password_value);
 
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form_, &driver_,
@@ -1502,10 +1488,8 @@ TEST_P(PasswordFormManagerTest, UpdateUsernameToAnotherFieldValue) {
   std::u16string user_chosen_username = u"user_chosen_username";
   std::u16string automatically_chosen_username =
       u"automatically_chosen_username";
-  test_api(submitted_form_).fields()[0].set_value(user_chosen_username);
-  test_api(submitted_form_)
-      .fields()[1]
-      .set_value(automatically_chosen_username);
+  test_api(submitted_form_).field(0).set_value(user_chosen_username);
+  test_api(submitted_form_).field(1).set_value(automatically_chosen_username);
   form_manager_->ProvisionallySave(submitted_form_, &driver_,
                                    possible_usernames_);
   EXPECT_EQ(automatically_chosen_username,
@@ -1571,7 +1555,7 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueToAlreadyExisting) {
 
   // Emulate submitting form with known username and different password.
   test_api(submitted_form_)
-      .fields()[kUsernameFieldIndex]
+      .field(kUsernameFieldIndex)
       .set_value(saved_match_.username_value);
   form_manager_->ProvisionallySave(submitted_form_, &driver_,
                                    possible_usernames_);
@@ -1590,13 +1574,13 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueToUnknownValueFromPrompt) {
 
   // Emulate submitting form that updates the password for a known username.
   test_api(submitted_form_)
-      .fields()[kUsernameFieldIndex]
+      .field(kUsernameFieldIndex)
       .set_value(saved_match_.username_value);
   test_api(submitted_form_)
-      .fields()[kPasswordFieldIndex]
+      .field(kPasswordFieldIndex)
       .set_autocomplete_attribute("new-password");
   test_api(submitted_form_)
-      .fields()[kPasswordFieldIndex]
+      .field(kPasswordFieldIndex)
       .set_value(u"new_password_field_value");
   form_manager_->ProvisionallySave(submitted_form_, &driver_,
                                    possible_usernames_);
@@ -1626,8 +1610,8 @@ TEST_P(PasswordFormManagerTest, UpdatePasswordValueMultiplePasswordFields) {
   fetcher_->NotifyFetchCompleted();
   std::u16string password = u"password1";
   std::u16string pin = u"pin";
-  test_api(form).fields()[0].set_value(password);
-  test_api(form).fields()[1].set_value(pin);
+  test_api(form).field(0).set_value(password);
+  test_api(form).field(1).set_value(pin);
   form_manager_->ProvisionallySave(form, &driver_, possible_usernames_);
 
   // Check that a second password field is chosen for saving.
@@ -1836,8 +1820,9 @@ TEST_P(PasswordFormManagerTest, PresaveGeneratedPasswordEmptyStore) {
 
   // Check that when the generated password is edited, then it's presaved.
   form_with_generated_password.password_value += u"1";
-  test_api(form_data).fields()[kPasswordFieldIndex].set_value(
-      form_with_generated_password.password_value);
+  test_api(form_data)
+      .field(kPasswordFieldIndex)
+      .set_value(form_with_generated_password.password_value);
   EXPECT_CALL(form_saver,
               UpdateReplace(_, IsEmpty(), testing::Eq(u""),
                             FormHasUniqueKey(form_with_generated_password)))
@@ -1885,8 +1870,9 @@ TEST_P(PasswordFormManagerTest, PresaveGenerated_ModifiedUsername) {
 
   // Check that when the username is edited, then it's presaved.
   form_with_generated_password.username_value += u"1";
-  test_api(form_data).fields()[kUsernameFieldIndex].set_value(
-      form_with_generated_password.username_value);
+  test_api(form_data)
+      .field(kUsernameFieldIndex)
+      .set_value(form_with_generated_password.username_value);
 
   EXPECT_CALL(form_saver, UpdateReplace(_, IsEmpty(), testing::Eq(u""),
                                         FormHasUniqueKey(saved_form)))
@@ -2019,8 +2005,9 @@ TEST_P(PasswordFormManagerTest, PresaveGeneratedPasswordExistingCredential) {
 
   // Check that the generated password is saved with the empty username when
   // there is already a saved credential with the same username.
-  test_api(form_data).fields()[kUsernameFieldIndex].set_value(
-      saved_match_.username_value);
+  test_api(form_data)
+      .field(kUsernameFieldIndex)
+      .set_value(saved_match_.username_value);
   form_manager_->PresaveGeneratedPassword(
       form_with_generated_password.form_data,
       form_with_generated_password.password_value);
@@ -2055,8 +2042,9 @@ TEST_P(PasswordFormManagerTest, UserEventsForGeneration) {
     CreateFormManager(observed_form_);
     form_manager_->PresaveGeneratedPassword(submitted_form.form_data,
                                             submitted_form.password_value);
-    test_api(form_data).fields()[kPasswordFieldIndex].set_value(
-        form_data.fields()[kPasswordFieldIndex].value() + u"1");
+    test_api(form_data)
+        .field(kPasswordFieldIndex)
+        .set_value(form_data.fields()[kPasswordFieldIndex].value() + u"1");
     submitted_form.password_value =
         form_data.fields()[kPasswordFieldIndex].value();
     form_manager_->PresaveGeneratedPassword(submitted_form.form_data,
@@ -2072,8 +2060,9 @@ TEST_P(PasswordFormManagerTest, UserEventsForGeneration) {
     CreateFormManager(observed_form_);
     form_manager_->PresaveGeneratedPassword(submitted_form.form_data,
                                             submitted_form.password_value);
-    test_api(form_data).fields()[kPasswordFieldIndex].set_value(
-        form_data.fields()[kPasswordFieldIndex].value() + u"2");
+    test_api(form_data)
+        .field(kPasswordFieldIndex)
+        .set_value(form_data.fields()[kPasswordFieldIndex].value() + u"2");
     submitted_form.password_value =
         form_data.fields()[kPasswordFieldIndex].value();
     form_manager_->PresaveGeneratedPassword(submitted_form.form_data,
@@ -2091,8 +2080,10 @@ TEST_P(PasswordFormManagerTest, HasObservedFormChangedRendererIds) {
   base::HistogramTester histogram_tester;
 
   FormData form = observed_form_;
-  test_api(form).fields()[kUsernameFieldIndex].set_renderer_id(FieldRendererId(
-      form.fields()[kUsernameFieldIndex].renderer_id().value() + 100));
+  test_api(form)
+      .field(kUsernameFieldIndex)
+      .set_renderer_id(FieldRendererId(
+          form.fields()[kUsernameFieldIndex].renderer_id().value() + 100));
   EXPECT_TRUE(HasObservedFormChanged(form, *form_manager_));
   form_manager_.reset();
 
@@ -2106,8 +2097,9 @@ TEST_P(PasswordFormManagerTest, HasObservedFormChangedNames) {
   base::HistogramTester histogram_tester;
 
   FormData form = observed_form_;
-  test_api(form).fields()[kUsernameFieldIndex].set_name(
-      form.fields()[kUsernameFieldIndex].name() + u"123");
+  test_api(form)
+      .field(kUsernameFieldIndex)
+      .set_name(form.fields()[kUsernameFieldIndex].name() + u"123");
   EXPECT_TRUE(HasObservedFormChanged(form, *form_manager_));
   form_manager_.reset();
 
@@ -2121,8 +2113,10 @@ TEST_P(PasswordFormManagerTest, HasObservedFormChangedAutocompleteAttribute) {
   base::HistogramTester histogram_tester;
 
   FormData form = observed_form_;
-  test_api(form).fields()[kUsernameFieldIndex].set_autocomplete_attribute(
-      form.fields()[kUsernameFieldIndex].autocomplete_attribute() + "...");
+  test_api(form)
+      .field(kUsernameFieldIndex)
+      .set_autocomplete_attribute(
+          form.fields()[kUsernameFieldIndex].autocomplete_attribute() + "...");
   EXPECT_TRUE(HasObservedFormChanged(form, *form_manager_));
   form_manager_.reset();
 
@@ -2136,8 +2130,9 @@ TEST_P(PasswordFormManagerTest, HasObservedFormChangedFormControlsType) {
   base::HistogramTester histogram_tester;
 
   FormData form = observed_form_;
-  test_api(form).fields()[kUsernameFieldIndex].set_form_control_type(
-      autofill::FormControlType::kInputPassword);
+  test_api(form)
+      .field(kUsernameFieldIndex)
+      .set_form_control_type(autofill::FormControlType::kInputPassword);
   EXPECT_TRUE(HasObservedFormChanged(form, *form_manager_));
   form_manager_.reset();
 
@@ -2151,7 +2146,7 @@ TEST_P(PasswordFormManagerTest, HasObservedFormChangedFieldsNumber) {
   base::HistogramTester histogram_tester;
 
   FormData form = observed_form_;
-  test_api(form).fields().push_back(autofill::test::CreateTestFormField(
+  test_api(form).Append(autofill::test::CreateTestFormField(
       "label", "new field", "", autofill::FormControlType::kInputText));
   EXPECT_TRUE(HasObservedFormChanged(form, *form_manager_));
   form_manager_.reset();
@@ -2166,7 +2161,7 @@ TEST_P(PasswordFormManagerTest, HasObservedFormChangedCssClasses) {
   base::HistogramTester histogram_tester;
 
   FormData form = observed_form_;
-  test_api(form).fields()[kUsernameFieldIndex].set_css_classes(u"class1");
+  test_api(form).field(kUsernameFieldIndex).set_css_classes(u"class1");
   EXPECT_FALSE(HasObservedFormChanged(form, *form_manager_));
   form_manager_.reset();
 
@@ -2182,14 +2177,21 @@ TEST_P(PasswordFormManagerTest, UpdateFormAndFill) {
   Mock::VerifyAndClearExpectations(&driver_);
 
   FormData form = observed_form_;
-  test_api(form).fields()[kUsernameFieldIndex].set_renderer_id(FieldRendererId(
-      form.fields()[kUsernameFieldIndex].renderer_id().value() + 1000));
-  test_api(form).fields()[kUsernameFieldIndex].set_name(
-      form.fields()[kUsernameFieldIndex].name() + u"1");
-  test_api(form).fields()[kUsernameFieldIndex].set_id_attribute(
-      form.fields()[kUsernameFieldIndex].id_attribute() + u"1");
-  test_api(form).fields()[kPasswordFieldIndex].set_renderer_id(FieldRendererId(
-      form.fields()[kPasswordFieldIndex].renderer_id().value() + 1000));
+  test_api(form)
+      .field(kUsernameFieldIndex)
+      .set_renderer_id(FieldRendererId(
+          form.fields()[kUsernameFieldIndex].renderer_id().value() + 1000));
+  test_api(form)
+      .field(kUsernameFieldIndex)
+      .set_name(form.fields()[kUsernameFieldIndex].name() + u"1");
+  test_api(form)
+      .field(kUsernameFieldIndex)
+      .set_id_attribute(form.fields()[kUsernameFieldIndex].id_attribute() +
+                        u"1");
+  test_api(form)
+      .field(kPasswordFieldIndex)
+      .set_renderer_id(FieldRendererId(
+          form.fields()[kPasswordFieldIndex].renderer_id().value() + 1000));
 
   PasswordFormFillData fill_data;
   EXPECT_CALL(driver_, SetPasswordFillData).WillOnce(SaveArg<0>(&fill_data));
@@ -2237,12 +2239,12 @@ TEST_P(PasswordFormManagerTest, UpdateFormManagerWithFormChangesResetsTimer) {
 
   FormData changed_form = observed_form_;
   test_api(changed_form)
-      .fields()[kUsernameFieldIndex]
+      .field(kUsernameFieldIndex)
       .set_renderer_id(FieldRendererId(
           changed_form.fields()[kUsernameFieldIndex].renderer_id().value() +
           1000));
   test_api(changed_form)
-      .fields()[kPasswordFieldIndex]
+      .field(kPasswordFieldIndex)
       .set_renderer_id(FieldRendererId(
           changed_form.fields()[kPasswordFieldIndex].renderer_id().value() +
           1000));
@@ -2283,10 +2285,8 @@ TEST_P(PasswordFormManagerTest, Update) {
   FormData submitted_form = observed_form_;
   std::u16string username = saved_match_.username_value;
   std::u16string new_password = saved_match_.password_value + u"1";
-  test_api(submitted_form).fields()[kUsernameFieldIndex].set_value(username);
-  test_api(submitted_form)
-      .fields()[kPasswordFieldIndex]
-      .set_value(new_password);
+  test_api(submitted_form).field(kUsernameFieldIndex).set_value(username);
+  test_api(submitted_form).field(kPasswordFieldIndex).set_value(new_password);
 
   EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames_));
@@ -2314,16 +2314,16 @@ TEST_P(PasswordFormManagerTest, FillingAssistanceMetric) {
 
   // Simulate that the user fills the saved credentials manually.
   test_api(submitted_form_)
-      .fields()[kUsernameFieldIndex]
+      .field(kUsernameFieldIndex)
       .set_value(saved_match_.username_value);
   test_api(submitted_form_)
-      .fields()[kUsernameFieldIndex]
+      .field(kUsernameFieldIndex)
       .set_properties_mask(FieldPropertiesFlags::kAutofilledOnUserTrigger);
   test_api(submitted_form_)
-      .fields()[kPasswordFieldIndex]
+      .field(kPasswordFieldIndex)
       .set_value(saved_match_.password_value);
   test_api(submitted_form_)
-      .fields()[kPasswordFieldIndex]
+      .field(kPasswordFieldIndex)
       .set_properties_mask(FieldPropertiesFlags::kAutofilledOnUserTrigger);
 
   base::HistogramTester histogram_tester;
@@ -2351,13 +2351,13 @@ TEST_P(PasswordFormManagerTest, FillingAssistanceMetric_SingleUsernameForm) {
 
   // Simulate that the user fills the saved username manually.
   test_api(non_password_form_)
-      .fields()[kUsernameFieldIndex]
+      .field(kUsernameFieldIndex)
       .set_value(saved_match_.username_value);
   test_api(non_password_form_)
-      .fields()[kUsernameFieldIndex]
+      .field(kUsernameFieldIndex)
       .set_autocomplete_attribute("username");
   test_api(non_password_form_)
-      .fields()[kUsernameFieldIndex]
+      .field(kUsernameFieldIndex)
       .set_properties_mask(FieldPropertiesFlags::kAutofilledOnUserTrigger);
 
   base::HistogramTester histogram_tester;
@@ -2578,9 +2578,9 @@ TEST_P(PasswordFormManagerTest, iOSPresavedGeneratedPassword) {
   FormData form_to_presave = observed_form_;
   const std::u16string typed_username = u"user1";
   FormFieldData& username_field =
-      test_api(form_to_presave).fields()[kUsernameFieldIndex];
+      test_api(form_to_presave).field(kUsernameFieldIndex);
   FormFieldData& password_field =
-      test_api(form_to_presave).fields()[kPasswordFieldIndex];
+      test_api(form_to_presave).field(kPasswordFieldIndex);
   username_field.set_value(typed_username);
   password_field.set_value(u"not_password");
   // Use |generated_password| different from value in field to test that the
@@ -2704,7 +2704,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowProvisionalSave) {
       /*autocomplete_attribute_has_username=*/false, /*is_likely_otp=*/false);
 
   FormData submitted_form = observed_form_only_password_fields_;
-  test_api(submitted_form).fields()[0].set_value(u"strongpassword");
+  test_api(submitted_form).field(0).set_value(u"strongpassword");
 
   base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>
       possible_usernames = MakePossibleUsernamesCache({possible_username_data});
@@ -2754,7 +2754,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowDifferentDomains) {
       possible_usernames = MakePossibleUsernamesCache({possible_username_data});
 
   FormData submitted_form = observed_form_only_password_fields_;
-  test_api(submitted_form).fields()[0].set_value(u"strongpassword");
+  test_api(submitted_form).field(0).set_value(u"strongpassword");
 
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames));
@@ -2785,7 +2785,7 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameFromPSLMatch) {
       possible_usernames = MakePossibleUsernamesCache({possible_username_data});
 
   FormData submitted_form = observed_form_only_password_fields_;
-  test_api(submitted_form).fields()[0].set_value(u"strongpassword");
+  test_api(submitted_form).field(0).set_value(u"strongpassword");
 
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames));
@@ -2817,10 +2817,8 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowSignupForm) {
 
   FormData submitted_form = observed_form_only_password_fields_;
   // Imitate sign-up flow: the only filled password field is a new password.
-  test_api(submitted_form)
-      .fields()[0]
-      .set_autocomplete_attribute("new-password");
-  test_api(submitted_form).fields()[0].set_value(u"strongpassword");
+  test_api(submitted_form).field(0).set_autocomplete_attribute("new-password");
+  test_api(submitted_form).field(0).set_value(u"strongpassword");
 
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames));
@@ -2863,8 +2861,8 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowUsernameInThePasswordForm) {
 
   // Simulate submitting the form.
   FormData submitted_form = observed_form_;
-  test_api(submitted_form).fields()[1].set_value(possible_username);
-  test_api(submitted_form).fields()[2].set_value(u"strongpassword");
+  test_api(submitted_form).field(1).set_value(possible_username);
+  test_api(submitted_form).field(2).set_value(u"strongpassword");
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames));
 
@@ -2913,10 +2911,10 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
     // Simulate submitting a form without a username. Data from
     // |possible_username_data| will be taken for setting username.
     FormData submitted_form = observed_form_only_password_fields_;
-    test_api(submitted_form).fields()[0].set_value(u"oldpassword");
+    test_api(submitted_form).field(0).set_value(u"oldpassword");
     // Simulate password reset flow for password update case.
     if (is_password_update) {
-      test_api(submitted_form).fields()[1].set_value(u"newpassword");
+      test_api(submitted_form).field(1).set_value(u"newpassword");
     }
 
     ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
@@ -3069,7 +3067,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowInFormOverruleVotes) {
 
   // Simulate submitting a password form.
   test_api(submitted_form_)
-      .fields()[kPasswordFieldIndex]
+      .field(kPasswordFieldIndex)
       .set_value(u"strongpassword");
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form_, &driver_,
                                                possible_usernames));
@@ -3129,7 +3127,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowPositiveInFormOverruleVote) {
 
   // Simulate submitting a password form.
   test_api(submitted_form_)
-      .fields()[kPasswordFieldIndex]
+      .field(kPasswordFieldIndex)
       .set_value(u"strongpassword");
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form_, &driver_,
                                                possible_usernames));
@@ -3192,7 +3190,7 @@ TEST_P(PasswordFormManagerTest,
 
   // Simulate submitting a password form.
   test_api(submitted_form_)
-      .fields()[kPasswordFieldIndex]
+      .field(kPasswordFieldIndex)
       .set_value(u"strongpassword");
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form_, &driver_,
                                                possible_usernames));
@@ -3361,7 +3359,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowSendVotesOnRecentFields) {
 
   // Simulate submitting a password form.
   FormData submitted_form = observed_form_only_password_fields_;
-  test_api(submitted_form).fields()[0].set_value(u"strongpassword");
+  test_api(submitted_form).field(0).set_value(u"strongpassword");
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames));
 
@@ -3487,7 +3485,7 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
   // Simulate submission a form without username. Data from
   // |possible_username_data| will be taken for setting username.
   FormData submitted_form = observed_form_only_password_fields_;
-  test_api(submitted_form).fields()[0].set_value(u"strongpassword");
+  test_api(submitted_form).field(0).set_value(u"strongpassword");
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames));
 
@@ -3555,7 +3553,7 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameLikelyOTP) {
   CreateFormManager(submitted_form);
   fetcher_->NotifyFetchCompleted();
   // User types a password value.
-  test_api(submitted_form).fields()[0].set_value(u"strongpassword");
+  test_api(submitted_form).field(0).set_value(u"strongpassword");
 
   // User entered single username data on the previous form.
   const std::u16string single_username_value = u"single_username_value";
@@ -3646,7 +3644,7 @@ TEST_P(PasswordFormManagerTest, NoSingleUsernameVotingOnUnrelatedWebsite) {
   FormData submitted_form = observed_form_only_password_fields_;
   CreateFormManager(observed_form_only_password_fields_);
   fetcher_->NotifyFetchCompleted();
-  test_api(submitted_form).fields()[0].set_value(u"strongpassword");
+  test_api(submitted_form).field(0).set_value(u"strongpassword");
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames));
   EXPECT_EQ(form_manager_->GetPendingCredentials().username_value,
@@ -3686,7 +3684,7 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameServerPredictions) {
       /*is_likely_otp=*/false);
 
   FormData submitted_form = observed_form_only_password_fields_;
-  test_api(submitted_form).fields()[0].set_value(u"strongpassword");
+  test_api(submitted_form).field(0).set_value(u"strongpassword");
 
   for (FieldType prediction : {SINGLE_USERNAME, NOT_USERNAME}) {
     SCOPED_TRACE(testing::Message("prediction=") << prediction);
@@ -3739,7 +3737,7 @@ TEST_P(PasswordFormManagerTest, PossibleUsernamesPrioritizeServerPrediction) {
       /*is_likely_otp=*/false);
 
   FormData submitted_form = observed_form_only_password_fields_;
-  test_api(submitted_form).fields()[0].set_value(u"strongpassword");
+  test_api(submitted_form).field(0).set_value(u"strongpassword");
 
   possible_username_data_with_prediction.form_predictions =
       MakeSingleUsernamePredictions(kSingleUsernameFormSignature,
@@ -3770,7 +3768,7 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameFromAutocomplete) {
   fetcher_->NotifyFetchCompleted();
 
   // User types a password value.
-  test_api(submitted_form).fields()[0].set_value(u"strongpassword");
+  test_api(submitted_form).field(0).set_value(u"strongpassword");
 
   // User entered single username data on the previous form.
   const std::u16string single_username_value = u"single_username_value";
@@ -3800,7 +3798,7 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameLikelyOTPWithServerOverride) {
   fetcher_->NotifyFetchCompleted();
 
   // User types a password value.
-  test_api(submitted_form).fields()[0].set_value(u"strongpassword");
+  test_api(submitted_form).field(0).set_value(u"strongpassword");
 
   // User entered single username data on the previous form.
   const std::u16string possible_username = u"test@example.org";
@@ -3830,8 +3828,8 @@ TEST_P(PasswordFormManagerTest, PossibleUsernameLikelyOTPWithServerOverride) {
 TEST_P(PasswordFormManagerTest, ChangePasswordFormWithoutUsernameSubmitted) {
   // A form with old and new password fields without username.
   FormData submitted_form = observed_form_only_password_fields_;
-  test_api(submitted_form).fields()[0].set_value(u"oldpassword");
-  test_api(submitted_form).fields()[1].set_value(u"newpassword");
+  test_api(submitted_form).field(0).set_value(u"oldpassword");
+  test_api(submitted_form).field(1).set_value(u"newpassword");
 
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames_));
@@ -3852,15 +3850,15 @@ TEST_P(PasswordFormManagerTest, ChangePasswordFormWithUsernameSubmitted) {
       .fields()
       .insert(std::begin(submitted_form.fields()), username_field);
 
-  test_api(submitted_form).fields()[1].set_value(u"oldpassword");
-  test_api(submitted_form).fields()[2].set_value(u"newpassword");
+  test_api(submitted_form).field(1).set_value(u"oldpassword");
+  test_api(submitted_form).field(2).set_value(u"newpassword");
 
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames_));
   EXPECT_TRUE(form_manager_->HasLikelyChangeOrResetFormSubmitted());
 
   // A form with username and new password fields (most likely sign-up).
-  test_api(submitted_form).fields()[1].set_value(u"newpassword");
+  test_api(submitted_form).field(1).set_value(u"newpassword");
 
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames_));
@@ -3872,8 +3870,8 @@ TEST_P(PasswordFormManagerTest, ChangePasswordFormWithUsernameSubmitted) {
 TEST_P(PasswordFormManagerTest, ResetPasswordFormSubmitted) {
   // A form with new and confirmation password fields without username.
   FormData submitted_form = observed_form_only_password_fields_;
-  test_api(submitted_form).fields()[0].set_value(u"newpassword");
-  test_api(submitted_form).fields()[1].set_value(u"newpassword");
+  test_api(submitted_form).field(0).set_value(u"newpassword");
+  test_api(submitted_form).field(1).set_value(u"newpassword");
 
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames_));
@@ -3905,10 +3903,10 @@ TEST_P(PasswordFormManagerTest, NotMovableToAccountStoreWhenBlocked) {
   SetNonFederatedAndNotifyFetchCompleted({saved_match});
 
   test_api(submitted_form_)
-      .fields()[kUsernameFieldIndex]
+      .field(kUsernameFieldIndex)
       .set_value(saved_match_.username_value);
   test_api(submitted_form_)
-      .fields()[kPasswordFieldIndex]
+      .field(kPasswordFieldIndex)
       .set_value(saved_match_.password_value);
 
   form_manager_->Fill();
@@ -3934,10 +3932,10 @@ TEST_P(PasswordFormManagerTest, MovableToAccountStore) {
   SetNonFederatedAndNotifyFetchCompleted({saved_match});
 
   test_api(submitted_form_)
-      .fields()[kUsernameFieldIndex]
+      .field(kUsernameFieldIndex)
       .set_value(saved_match_.username_value);
   test_api(submitted_form_)
-      .fields()[kPasswordFieldIndex]
+      .field(kPasswordFieldIndex)
       .set_value(saved_match_.password_value);
 
   form_manager_->Fill();
@@ -4072,7 +4070,7 @@ TEST_P(PasswordFormManagerTest, StrongForgotPasswordFormVotes) {
 
   // Simulate submitting a password form.
   FormData submitted_form = observed_form_only_password_fields_;
-  test_api(submitted_form).fields()[0].set_value(u"strongpassword");
+  test_api(submitted_form).field(0).set_value(u"strongpassword");
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames_));
   form_manager_->SaveSuggestedUsernameValueToVotesUploader();
@@ -4128,7 +4126,7 @@ TEST_P(PasswordFormManagerTest, WeakForgotPasswordFormVotes) {
   // Simulate submitting a password form. A previously saved username value
   // (`saved_match_.username_value`) is offered as username in the prompt
   FormData submitted_form = observed_form_only_password_fields_;
-  test_api(submitted_form).fields()[0].set_value(u"strongpassword");
+  test_api(submitted_form).field(0).set_value(u"strongpassword");
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames_));
   form_manager_->SaveSuggestedUsernameValueToVotesUploader();
@@ -4179,8 +4177,8 @@ TEST_P(PasswordFormManagerTest,
 
   // Simulate submitting a password form.
   FormData submitted_form = observed_form_;
-  test_api(submitted_form).fields()[1].set_value(kPossibleUsername);
-  test_api(submitted_form).fields()[2].set_value(u"strongpassword");
+  test_api(submitted_form).field(1).set_value(kPossibleUsername);
+  test_api(submitted_form).field(2).set_value(u"strongpassword");
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames_));
   form_manager_->SaveSuggestedUsernameValueToVotesUploader();
@@ -4239,7 +4237,7 @@ TEST_P(PasswordFormManagerTest, ForgotPasswordFormVotesOnLikelyOTPField) {
 
   // Simulate submitting a password form.
   FormData submitted_form = observed_form_only_password_fields_;
-  test_api(submitted_form).fields()[0].set_value(u"strongpassword");
+  test_api(submitted_form).field(0).set_value(u"strongpassword");
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames_));
   // kPossibleUsername is suggested in the prompt, because the field has a
@@ -4287,7 +4285,7 @@ TEST_P(PasswordFormManagerTest, ForgotPasswordFormUsernamePopulatedInPrompt) {
 
   // Provisionally save the form on password input.
   FormData submitted_form = observed_form_only_password_fields_;
-  test_api(submitted_form).fields()[0].set_value(u"strong_password");
+  test_api(submitted_form).field(0).set_value(u"strong_password");
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames_));
 
@@ -4318,7 +4316,7 @@ TEST_P(PasswordFormManagerTest,
 
   // Provisionally save the form on password input.
   FormData submitted_form = observed_form_only_password_fields_;
-  test_api(submitted_form).fields()[0].set_value(u"strong_password");
+  test_api(submitted_form).field(0).set_value(u"strong_password");
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames_));
 
@@ -4337,7 +4335,7 @@ TEST_P(PasswordFormManagerTest, ServerPredictionsIgnoredOnLocalhost) {
   FormFieldData field;
   field.set_form_control_type(autofill::FormControlType::kInputText);
   field.set_renderer_id(kSingleUsernameFieldRendererId);
-  test_api(observed_form).fields().push_back(field);
+  test_api(observed_form).Append(field);
   CreateFormManager(observed_form);
 
   // Expect no filling on receiving saved matches, because single username
@@ -4646,12 +4644,8 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, SaveCredentials) {
   FormData submitted_form = observed_form_;
   std::u16string new_username = saved_match_.username_value + u"1";
   std::u16string new_password = saved_match_.password_value + u"1";
-  test_api(submitted_form)
-      .fields()[kUsernameFieldIndex]
-      .set_value(new_username);
-  test_api(submitted_form)
-      .fields()[kPasswordFieldIndex]
-      .set_value(new_password);
+  test_api(submitted_form).field(kUsernameFieldIndex).set_value(new_username);
+  test_api(submitted_form).field(kPasswordFieldIndex).set_value(new_password);
   EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames_));
   PasswordForm updated_form;
@@ -4684,12 +4678,8 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
   FormData submitted_form = observed_form_;
   std::u16string new_username = saved_match_.username_value + u"1";
   std::u16string new_password = saved_match_.password_value + u"1";
-  test_api(submitted_form)
-      .fields()[kUsernameFieldIndex]
-      .set_value(new_username);
-  test_api(submitted_form)
-      .fields()[kPasswordFieldIndex]
-      .set_value(new_password);
+  test_api(submitted_form).field(kUsernameFieldIndex).set_value(new_username);
+  test_api(submitted_form).field(kPasswordFieldIndex).set_value(new_password);
   EXPECT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                possible_usernames_));
 
@@ -4726,10 +4716,8 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
   std::u16string user_chosen_username = u"user_chosen_username";
   std::u16string automatically_chosen_username =
       u"automatically_chosen_username";
-  test_api(submitted_form_).fields()[0].set_value(user_chosen_username);
-  test_api(submitted_form_)
-      .fields()[1]
-      .set_value(automatically_chosen_username);
+  test_api(submitted_form_).field(0).set_value(user_chosen_username);
+  test_api(submitted_form_).field(1).set_value(automatically_chosen_username);
   EXPECT_CALL(
       *mock_password_save_manager(),
       CreatePendingCredentials(
@@ -4782,8 +4770,8 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
   fetcher_->NotifyFetchCompleted();
   std::u16string password = u"password1";
   std::u16string pin = u"pin";
-  test_api(form).fields()[0].set_value(password);
-  test_api(form).fields()[1].set_value(pin);
+  test_api(form).field(0).set_value(password);
+  test_api(form).field(1).set_value(pin);
   // Check that a second password field is chosen for saving.
   EXPECT_CALL(*mock_password_save_manager(),
               CreatePendingCredentials(FormHasPassword(pin), _, _, _, _));
@@ -5036,7 +5024,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, UsernameFirstFlow) {
       possible_usernames = MakePossibleUsernamesCache({possible_username_data});
 
   FormData submitted_form = observed_form_only_password_fields_;
-  test_api(submitted_form).fields()[0].set_value(u"strongpassword");
+  test_api(submitted_form).field(0).set_value(u"strongpassword");
   // Check that a username is chosen from |possible_username_data|.
   EXPECT_CALL(*mock_password_save_manager(),
               CreatePendingCredentials(FormHasUsernameValue(possible_username),
@@ -5065,7 +5053,7 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
       possible_usernames = MakePossibleUsernamesCache({possible_username_data});
 
   FormData submitted_form = observed_form_only_password_fields_;
-  test_api(submitted_form).fields()[0].set_value(u"strongpassword");
+  test_api(submitted_form).field(0).set_value(u"strongpassword");
   PasswordForm parsed_submitted_form;
   EXPECT_CALL(*mock_password_save_manager(), CreatePendingCredentials)
       .WillOnce(SaveArg<0>(&parsed_submitted_form));

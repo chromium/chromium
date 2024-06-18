@@ -103,8 +103,8 @@ TEST_F(SuggestionsListMetricsTest, AcceptanceFieldValueLength) {
                   {.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"},
                   {.role = CREDIT_CARD_NUMBER,
                    .autocomplete_attribute = "cc-number"}}});
-  test_api(form).fields().front().set_value(std::u16string(3, 'a'));
-  test_api(form).fields().back().set_value(std::u16string(2, 'a'));
+  test_api(form).field(0).set_value(std::u16string(3, 'a'));
+  test_api(form).field(-1).set_value(std::u16string(2, 'a'));
   autofill_manager().OnFormsSeen({form}, {});
   {
     Suggestion address_suggestion;

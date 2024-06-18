@@ -218,14 +218,14 @@ FormData CreateAutofillFormData(blink::WebLocalFrame* main_frame) {
   field_data.set_value(u"John");
   field_data.set_is_autofilled(true);
   field_data.set_renderer_id(form_util::GetFieldRendererId(fname_element));
-  test_api(data).fields().push_back(field_data);
+  test_api(data).Append(field_data);
 
   if (!lname_element.IsNull()) {
     field_data.set_name(u"lname");
     field_data.set_value(u"Smith");
     field_data.set_is_autofilled(true);
     field_data.set_renderer_id(form_util::GetFieldRendererId(lname_element));
-    test_api(data).fields().push_back(field_data);
+    test_api(data).Append(field_data);
   }
 
   return data;
@@ -336,20 +336,20 @@ class FormAutocompleteTest : public ChromeRenderViewTest {
     field.set_value(u"John");
     field.set_is_autofilled(true);
     field.set_renderer_id(form_util::GetFieldRendererId(fname_element));
-    test_api(form).fields().push_back(field);
+    test_api(form).Append(field);
 
     field.set_name(u"lname");
     field.set_value(u"Smith");
     field.set_is_autofilled(true);
     field.set_renderer_id(form_util::GetFieldRendererId(lname_element));
-    test_api(form).fields().push_back(field);
+    test_api(form).Append(field);
 
     // Additional non-autofillable field.
     field.set_name(u"mname");
     field.set_value(u"James");
     field.set_is_autofilled(false);
     field.set_renderer_id(form_util::GetFieldRendererId(mname_element));
-    test_api(form).fields().push_back(field);
+    test_api(form).Append(field);
 
     // This call is necessary to setup the autofill agent appropriate for the
     // user selection; simulates the menu actually popping up.

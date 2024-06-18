@@ -20,17 +20,17 @@ TEST(SignaturesTest, StripDigits) {
   FormFieldData field1;
   field1.set_form_control_type(FormControlType::kInputText);
   field1.set_name(u"field_name_12345");
-  test_api(actual_form).fields().push_back(field1);
+  test_api(actual_form).Append(field1);
 
   FormFieldData field2;
   field2.set_form_control_type(FormControlType::kInputText);
   field2.set_name(u"field_name_1234");
-  test_api(actual_form).fields().push_back(field2);
+  test_api(actual_form).Append(field2);
 
   // Sequences of 5 digits or longer should be stripped.
   FormData expected_form(actual_form);
   expected_form.set_name(u"form_name_");
-  test_api(expected_form).fields()[0].set_name(u"field_name_");
+  test_api(expected_form).field(0).set_name(u"field_name_");
 
   EXPECT_EQ(CalculateFormSignature(expected_form).value(),
             CalculateFormSignature(actual_form).value());
@@ -45,19 +45,19 @@ TEST(SignaturesTest, AlternativeFormSignatureLarge) {
 
   FormFieldData field1;
   field1.set_form_control_type(FormControlType::kInputText);
-  test_api(large_form).fields().push_back(field1);
+  test_api(large_form).Append(field1);
 
   FormFieldData field2;
   field2.set_form_control_type(FormControlType::kInputText);
-  test_api(large_form).fields().push_back(field2);
+  test_api(large_form).Append(field2);
 
   FormFieldData field3;
   field3.set_form_control_type(FormControlType::kInputEmail);
-  test_api(large_form).fields().push_back(field3);
+  test_api(large_form).Append(field3);
 
   FormFieldData field4;
   field4.set_form_control_type(FormControlType::kInputTelephone);
-  test_api(large_form).fields().push_back(field4);
+  test_api(large_form).Append(field4);
 
   // Alternative form signature string of a form with more than two fields
   // should only concatenate scheme, host, and field types.
@@ -71,11 +71,11 @@ TEST(SignaturesTest, AlternativeFormSignatureSmallPath) {
 
   FormFieldData field1;
   field1.set_form_control_type(FormControlType::kInputText);
-  test_api(small_form_path).fields().push_back(field1);
+  test_api(small_form_path).Append(field1);
 
   FormFieldData field2;
   field2.set_form_control_type(FormControlType::kInputText);
-  test_api(small_form_path).fields().push_back(field2);
+  test_api(small_form_path).Append(field2);
 
   // Alternative form signature string of a form with 2 fields or less should
   // concatenate scheme, host, field types, and path if it is non-empty.
@@ -89,11 +89,11 @@ TEST(SignaturesTest, AlternativeFormSignatureSmallRef) {
 
   FormFieldData field1;
   field1.set_form_control_type(FormControlType::kInputText);
-  test_api(small_form_ref).fields().push_back(field1);
+  test_api(small_form_ref).Append(field1);
 
   FormFieldData field2;
   field2.set_form_control_type(FormControlType::kInputText);
-  test_api(small_form_ref).fields().push_back(field2);
+  test_api(small_form_ref).Append(field2);
 
   // Alternative form signature string of a form with 2 fields or less and
   // without a path should concatenate scheme, host, field types, and reference
@@ -108,11 +108,11 @@ TEST(SignaturesTest, AlternativeFormSignatureSmallQuery) {
 
   FormFieldData field1;
   field1.set_form_control_type(FormControlType::kInputText);
-  test_api(small_form_query).fields().push_back(field1);
+  test_api(small_form_query).Append(field1);
 
   FormFieldData field2;
   field2.set_form_control_type(FormControlType::kInputText);
-  test_api(small_form_query).fields().push_back(field2);
+  test_api(small_form_query).Append(field2);
 
   // Alternative form signature string of a form with 2 fields or less and
   // without a path or reference should concatenate scheme, host, field types,

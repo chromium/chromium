@@ -103,9 +103,9 @@ TEST_F(SingleFieldFormFillRouterTest,
   FormData form_data;
   size_t number_of_fields_for_testing = 3;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  test_api(form_data).fields().resize(3 * number_of_fields_for_testing);
+  test_api(form_data).Resize(3 * number_of_fields_for_testing);
 #else
-  test_api(form_data).fields().resize(2 * number_of_fields_for_testing);
+  test_api(form_data).Resize(2 * number_of_fields_for_testing);
 #endif
 
   FormStructure form_structure{form_data};

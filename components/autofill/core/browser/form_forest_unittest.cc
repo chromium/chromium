@@ -983,9 +983,7 @@ TEST_F(FormForestTestUpdateTree, EraseForm_ParentReset) {
   GetMockedFrame("leaf").parent_form = std::nullopt;
   MockFlattening({{"main"}});
   MockFlattening({{"leaf"}});
-  base::ranges::copy(
-      test_api(GetFlattenedForm("leaf")).fields(),
-      std::back_inserter(test_api(GetFlattenedForm("main")).fields()));
+  test_api(GetFlattenedForm("main")).Append(GetFlattenedForm("leaf").fields());
   GetFlattenedForm("leaf").set_fields({});
   ASSERT_EQ(GetFlattenedForm("main").fields().size(), 12u);
   ASSERT_EQ(GetFlattenedForm("leaf").fields().size(), 0u);
@@ -1051,9 +1049,7 @@ TEST_P(FormForestTestUpdateEraseFrame, EraseFrame_ParentReset) {
   GetMockedFrame("leaf").parent_form = std::nullopt;
   MockFlattening({{"main"}});
   MockFlattening({{"leaf"}});
-  base::ranges::copy(
-      GetFlattenedForm("leaf").fields(),
-      std::back_inserter(test_api(GetFlattenedForm("main")).fields()));
+  test_api(GetFlattenedForm("main")).Append(GetFlattenedForm("leaf").fields());
   GetFlattenedForm("leaf").set_fields({});
   ASSERT_EQ(GetFlattenedForm("main").fields().size(), 12u);
   ASSERT_EQ(GetFlattenedForm("leaf").fields().size(), 0u);
@@ -1579,10 +1575,10 @@ TEST_F(FormForestTestUnflatten, MainOriginPolicy) {
       WithValues(GetMockedForm("child2"), Profile(2))};
   // Clear sensitive fields: the credit card number (field index 2) and CVC
   // (field index 5) in the two main-origin forms.
-  test_api(expectation[0]).fields()[2].set_value({});
-  test_api(expectation[0]).fields()[5].set_value({});
-  test_api(expectation[1]).fields()[2].set_value({});
-  test_api(expectation[1]).fields()[5].set_value({});
+  test_api(expectation[0]).field(2).set_value({});
+  test_api(expectation[0]).field(5).set_value({});
+  test_api(expectation[1]).field(2).set_value({});
+  test_api(expectation[1]).field(5).set_value({});
   EXPECT_THAT(GetRendererFormsOfBrowserFields("main", Origin(kIframeUrl),
                                               FieldTypeMap("main")),
               UnorderedArrayEquals(expectation));

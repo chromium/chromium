@@ -156,14 +156,13 @@ class PlusAddressSubmissionLoggerTest : public ::testing::Test {
 TEST_F(PlusAddressSubmissionLoggerTest, NoMetricForSignedOutUsers) {
   FormData form = GetEmailForm();
   submission_logger().OnPlusAddressSuggestionShown(
-      autofill_manager(), form.global_id(),
-      test_api(form).fields()[0].global_id(),
+      autofill_manager(), form.global_id(), test_api(form).field(0).global_id(),
       SuggestionContext::kAutofillProfileOnEmailField,
       PasswordFormType::kNoPasswordForm,
       SuggestionType::kFillExistingPlusAddress,
       /*plus_address_count=*/1);
 
-  test_api(form).fields()[0].set_value(kSamplePlusAddress_U16);
+  test_api(form).field(0).set_value(kSamplePlusAddress_U16);
   autofill_manager().OnFormSubmitted(form, /*known_success=*/true,
                                      kSubmissionSource);
   EXPECT_THAT(GetUkmMetrics(), IsEmpty());
@@ -254,11 +253,11 @@ TEST_P(PlusAddressSubmissionTestWithParam, SubmittingFormRecordsUkm) {
     }
   }();
   submission_logger().OnPlusAddressSuggestionShown(
-      autofill_manager(), form.global_id(),
-      test_api(form).fields()[0].global_id(), input.context, input.form_type,
-      input.suggestion_type, input.plus_address_count);
+      autofill_manager(), form.global_id(), test_api(form).field(0).global_id(),
+      input.context, input.form_type, input.suggestion_type,
+      input.plus_address_count);
 
-  test_api(form).fields()[0].set_value(input.submitted_value);
+  test_api(form).field(0).set_value(input.submitted_value);
   autofill_manager().OnFormSubmitted(form, /*known_success=*/true,
                                      kSubmissionSource);
   EXPECT_THAT(GetUkmMetrics(), ElementsAreArray(GetParam().ukms));

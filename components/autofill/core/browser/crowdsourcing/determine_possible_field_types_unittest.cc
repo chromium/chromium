@@ -318,8 +318,8 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
   form.set_name(u"MyForm");
   form.set_url(GURL("https://myform.com/form.html"));
   form.set_action(GURL("https://myform.com/submit.html"));
-  test_api(form).fields().push_back(CreateTestFormField(
-      "", "1", test_case.input_value, FormControlType::kInputText));
+  test_api(form).Append(CreateTestFormField("", "1", test_case.input_value,
+                                            FormControlType::kInputText));
 
   FormStructure form_structure(form);
 
@@ -619,13 +619,13 @@ TEST_F(DeterminePossibleFieldTypesForUploadTest,
   profiles.push_back(profile);
 
   FormData form;
-  test_api(form).fields().push_back(CreateTestFormField(
-      "foo", "foo", "invalidemail", FormControlType::kInputText));
+  test_api(form).Append(CreateTestFormField("foo", "foo", "invalidemail",
+                                            FormControlType::kInputText));
   // The email value is different from the stored profile's email. The
   // classification is then extracted from matching the value and not the
   // profile's email.
-  test_api(form).fields().push_back(CreateTestFormField(
-      "foo", "foo", "myemail@gmail.com", FormControlType::kInputText));
+  test_api(form).Append(CreateTestFormField("foo", "foo", "myemail@gmail.com",
+                                            FormControlType::kInputText));
 
   FormStructure form_structure(form);
   DeterminePossibleFieldTypesForUpload(profiles, {}, std::u16string(), "en-us",

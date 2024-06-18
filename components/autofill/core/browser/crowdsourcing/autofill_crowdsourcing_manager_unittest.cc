@@ -880,9 +880,9 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryTooManyFieldsTest) {
   std::vector<std::unique_ptr<FormStructure>> form_structures;
   for (auto& form : forms) {
     for (size_t i = 0; i < 5; ++i) {
-      test_api(form).fields().push_back(
-          CreateTestFormField(base::NumberToString(i), base::NumberToString(i),
-                              "", FormControlType::kInputText));
+      test_api(form).Append(CreateTestFormField(base::NumberToString(i),
+                                                base::NumberToString(i), "",
+                                                FormControlType::kInputText));
     }
     form_structures.push_back(std::make_unique<FormStructure>(form));
   }
@@ -898,9 +898,9 @@ TEST_F(AutofillCrowdsourcingManagerTest, QueryNotTooManyFieldsTest) {
   std::vector<std::unique_ptr<FormStructure>> form_structures;
   for (auto& form : forms) {
     for (size_t i = 0; i < 4; ++i) {
-      test_api(form).fields().push_back(
-          CreateTestFormField(base::NumberToString(i), base::NumberToString(i),
-                              "", FormControlType::kInputText));
+      test_api(form).Append(CreateTestFormField(base::NumberToString(i),
+                                                base::NumberToString(i), "",
+                                                FormControlType::kInputText));
     }
     form_structures.push_back(std::make_unique<FormStructure>(form));
   }
@@ -1454,7 +1454,7 @@ TEST_P(AutofillQueryTest, Metadata) {
   field.set_form_control_type(FormControlType::kInputText);
   field.set_css_classes(u"field-css-classes");
   field.set_placeholder(u"field-placeholder");
-  test_api(form).fields().push_back(field);
+  test_api(form).Append(field);
 
   // Add field 1.
   field.set_id_attribute(u"field-id-attribute-2");
@@ -1466,7 +1466,7 @@ TEST_P(AutofillQueryTest, Metadata) {
   field.set_form_control_type(FormControlType::kInputText);
   field.set_css_classes(u"field-css-classes");
   field.set_placeholder(u"field-placeholder");
-  test_api(form).fields().push_back(field);
+  test_api(form).Append(field);
 
   // Add field 2.
   field.set_id_attribute(u"field-id-attribute-3");
@@ -1478,7 +1478,7 @@ TEST_P(AutofillQueryTest, Metadata) {
   field.set_form_control_type(FormControlType::kInputText);
   field.set_css_classes(u"field-css-classes");
   field.set_placeholder(u"field-placeholder");
-  test_api(form).fields().push_back(field);
+  test_api(form).Append(field);
 
   // Setup the form structures to query.
   AutofillCrowdsourcingManager crowdsourcing_manager(
@@ -1541,7 +1541,7 @@ TEST_P(AutofillUploadTest, RichMetadata) {
   field.set_form_control_type(FormControlType::kInputText);
   field.set_css_classes(u"field-css-classes");
   field.set_placeholder(u"field-placeholder");
-  test_api(form).fields().push_back(field);
+  test_api(form).Append(field);
 
   field.set_id_attribute(u"field-id-attribute-2");
   field.set_name_attribute(u"field-name-attribute-2");
@@ -1552,7 +1552,7 @@ TEST_P(AutofillUploadTest, RichMetadata) {
   field.set_form_control_type(FormControlType::kInputText);
   field.set_css_classes(u"field-css-classes");
   field.set_placeholder(u"field-placeholder");
-  test_api(form).fields().push_back(field);
+  test_api(form).Append(field);
 
   field.set_id_attribute(u"field-id-attribute-3");
   field.set_name_attribute(u"field-name-attribute-3");
@@ -1563,7 +1563,7 @@ TEST_P(AutofillUploadTest, RichMetadata) {
   field.set_form_control_type(FormControlType::kInputText);
   field.set_css_classes(u"field-css-classes");
   field.set_placeholder(u"field-placeholder");
-  test_api(form).fields().push_back(field);
+  test_api(form).Append(field);
 
   AutofillCrowdsourcingManager crowdsourcing_manager(
       &client(), version_info::Channel::UNKNOWN, nullptr);

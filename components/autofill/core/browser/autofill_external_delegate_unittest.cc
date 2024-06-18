@@ -2137,7 +2137,7 @@ TEST_F(AutofillExternalDelegateUnitTest,
       .renderer_id = form_id.renderer_id,
   });
   // make sure the field bounds contain the caret.
-  test_api(form_data).fields().front().set_bounds(gfx::RectF(
+  test_api(form_data).field(0).set_bounds(gfx::RectF(
       /*x=*/0, /*y=*/0, caret_bounds.width() * 2, caret_bounds.height() * 2));
 
   IssueOnQuery(std::move(form_data), caret_bounds);
@@ -2181,7 +2181,7 @@ TEST_F(
   // make sure the field bounds contain the caret.
   const gfx::RectF field_bounds = gfx::RectF(
       /*x=*/0, /*y=*/0, caret_bounds.width() * 2, caret_bounds.height() * 2);
-  test_api(form_data).fields().front().set_bounds(field_bounds);
+  test_api(form_data).field(0).set_bounds(field_bounds);
 
   IssueOnQuery(std::move(form_data), caret_bounds);
 
@@ -2221,7 +2221,7 @@ TEST_F(
       /*x=*/caret_bounds.x() + caret_bounds.width() + 1,
       /*y=*/caret_bounds.y() + caret_bounds.height() + 1, caret_bounds.width(),
       caret_bounds.height());
-  test_api(form_data).fields().front().set_bounds(field_bounds);
+  test_api(form_data).field(0).set_bounds(field_bounds);
 
   IssueOnQuery(std::move(form_data), caret_bounds);
 

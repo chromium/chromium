@@ -651,7 +651,7 @@ PasswordForm ConvertToPasswordForm(
       password_form.username_value = value;
     }
 
-    test_api(password_form.form_data).fields().push_back(form_field);
+    test_api(password_form.form_data).Append(form_field);
   }
   return password_form;
 }

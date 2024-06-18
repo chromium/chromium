@@ -29,7 +29,7 @@ void AddField(const std::string& label,
   field.set_label(ASCIIToUTF16(label));
   field.set_name(ASCIIToUTF16(name));
   field.set_form_control_type(control_type);
-  test_api(*form_data).fields().push_back(field);
+  test_api(*form_data).Append(field);
 }
 
 // We run ProcessServerPredictionsQueryResponse twice with hardcoded forms

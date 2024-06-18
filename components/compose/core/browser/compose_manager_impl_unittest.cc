@@ -390,7 +390,7 @@ TEST_F(ComposeManagerImplTest, TestOpenCompose_FormFieldDataMissing) {
   // Creates a form and removes the last element, whose now unlisted ID is used.
   autofill::FormData form_data = CreateTestFormDataWith3TextAreaFields();
   const autofill::FormFieldData selected_form_field = form_data.fields().back();
-  test_api(form_data).fields().pop_back();
+  test_api(form_data).Remove(-1);
 
   // Emulates the expected Autofill driver response.
   EXPECT_CALL(mock_autofill_driver(), ExtractForm(_, _))

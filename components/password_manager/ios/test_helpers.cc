@@ -81,12 +81,12 @@ void SetFormData(const std::string& origin,
   field.set_value(base::UTF8ToUTF16(username_value));
   field.set_form_control_type(autofill::FormControlType::kInputText);
   field.set_renderer_id(FieldRendererId(username_field_id));
-  test_api(*form_data).fields().push_back(field);
+  test_api(*form_data).Append(field);
 
   field.set_value(base::UTF8ToUTF16(password_value));
   field.set_form_control_type(autofill::FormControlType::kInputPassword);
   field.set_renderer_id(FieldRendererId(password_field_id));
-  test_api(*form_data).fields().push_back(field);
+  test_api(*form_data).Append(field);
 }
 
 autofill::FormData MakeSimpleFormData() {
@@ -101,14 +101,14 @@ autofill::FormData MakeSimpleFormData() {
   field.set_name_attribute(field.name());
   field.set_value(u"googleuser");
   field.set_form_control_type(autofill::FormControlType::kInputText);
-  test_api(form_data).fields().push_back(field);
+  test_api(form_data).Append(field);
 
   field.set_name(u"Passwd");
   field.set_id_attribute(field.name());
   field.set_name_attribute(field.name());
   field.set_value(u"p4ssword");
   field.set_form_control_type(autofill::FormControlType::kInputPassword);
-  test_api(form_data).fields().push_back(field);
+  test_api(form_data).Append(field);
 
   return form_data;
 }

@@ -180,7 +180,7 @@ FormData ConstructFormDateFromTypeValuePairs(
 
   for (const auto& [type, value] : type_value_pairs) {
     const auto& [name, label] = GetLabelAndNameForType(type);
-    test_api(form).fields().push_back(CreateTestFormField(
+    test_api(form).Append(CreateTestFormField(
         name, label, value,
         type == ADDRESS_HOME_STREET_ADDRESS ? FormControlType::kTextArea
                                             : FormControlType::kInputText));
@@ -374,8 +374,8 @@ std::unique_ptr<FormStructure> ConstructDefaultEmailFormStructure() {
   FormData form =
       ConstructFormDateFromTypeValuePairs({{EMAIL_ADDRESS, kDefaultMail}});
   const char* autocomplete = "email";
-  test_api(form).fields()[0].set_autocomplete_attribute(autocomplete);
-  test_api(form).fields()[0].set_parsed_autocomplete(
+  test_api(form).field(0).set_autocomplete_attribute(autocomplete);
+  test_api(form).field(0).set_parsed_autocomplete(
       ParseAutocompleteAttribute(autocomplete));
   return ConstructFormStructureFromFormData(form);
 }
@@ -1413,12 +1413,12 @@ TEST_F(FormDataImporterTest,
        {ADDRESS_HOME_ZIP, kDefaultZip},
        {ADDRESS_HOME_COUNTRY, kDefaultCountry}});
 
-  test_api(form_data).fields()[3].set_max_length(3);
-  test_api(form_data).fields()[4].set_max_length(3);
-  test_api(form_data).fields()[5].set_max_length(4);
-  test_api(form_data).fields()[6].set_max_length(3);
-  test_api(form_data).fields()[7].set_max_length(3);
-  test_api(form_data).fields()[8].set_max_length(4);
+  test_api(form_data).field(3).set_max_length(3);
+  test_api(form_data).field(4).set_max_length(3);
+  test_api(form_data).field(5).set_max_length(4);
+  test_api(form_data).field(6).set_max_length(3);
+  test_api(form_data).field(7).set_max_length(3);
+  test_api(form_data).field(8).set_max_length(4);
 
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(form_data);
@@ -1521,9 +1521,9 @@ TEST_F(FormDataImporterTest,
 
   // Define the length of the phone number fields to allow the parser to
   // identify them as area code, prefix and suffix.
-  test_api(form_data).fields()[3].set_max_length(3);
-  test_api(form_data).fields()[4].set_max_length(3);
-  test_api(form_data).fields()[5].set_max_length(4);
+  test_api(form_data).field(3).set_max_length(3);
+  test_api(form_data).field(4).set_max_length(3);
+  test_api(form_data).field(5).set_max_length(4);
 
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(form_data);
@@ -1607,9 +1607,7 @@ TEST_F(FormDataImporterTest,
   }
 
   // Append the fields of the second form to the first form.
-  test_api(form_data).fields().insert(form_data.fields().end(),
-                                      hidden_second_form.fields().begin(),
-                                      hidden_second_form.fields().end());
+  test_api(form_data).Append(hidden_second_form.fields());
 
   std::unique_ptr<FormStructure> form_structure =
       ConstructFormStructureFromFormData(form_data);
@@ -1901,7 +1899,7 @@ TEST_F(FormDataImporterTest,
   FormFieldData cvc_field =
       CreateTestFormField("CVC", "cvc", "001", FormControlType::kInputText);
   cvc_field.set_user_input(u"002");
-  test_api(form).fields().push_back(cvc_field);
+  test_api(form).Append(cvc_field);
 
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,
@@ -1963,7 +1961,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_MonthSelectInvalidText) {
       "Biggie Smalls", "4111-1111-1111-1111", "Feb (2)", "2999");
   // Add option values and contents to the expiration month field.
   ASSERT_EQ(u"exp_month", form.fields()[2].name());
-  test_api(form).fields()[2].set_options({
+  test_api(form).field(2).set_options({
       {.value = u"1", .content = u"Jan (1)"},
       {.value = u"2", .content = u"Feb (2)"},
       {.value = u"3", .content = u"Mar (3)"},
@@ -2091,7 +2089,7 @@ TEST_F(FormDataImporterTest, ExtractCreditCard_2DigitYear) {
                            FormControlType::kInputText),
        CreateTestFormField("Exp Year:", "exp_year", "45",
                            FormControlType::kInputText)});
-  test_api(form).fields().back().set_max_length(2);
+  test_api(form).field(-1).set_max_length(2);
 
   SubmitFormAndExpectImportedCardWithData(form, "John Smith",
                                           "4111111111111111", "05", "2045");
@@ -2277,7 +2275,7 @@ TEST_F(FormDataImporterTest,
   // Create a form with CVC field present and filled.
   FormData form2 = CreateFullCreditCardForm(
       "Biggie Smalls", "4111 1111 1111 1111", "01", "2998");
-  test_api(form2).fields().push_back(
+  test_api(form2).Append(
       CreateTestFormField("CVC:", "cvc", "123", FormControlType::kInputText));
 
   FormStructure form_structure2(form2);
@@ -2909,7 +2907,7 @@ TEST_F(FormDataImporterTest,
   // expiration date.
   FormData form = CreateFullCreditCardForm("Biggie Smalls",
                                            "4111 1111 1111 1111", "02", "2999");
-  test_api(form).fields().push_back(
+  test_api(form).Append(
       CreateTestFormField("CVC:", "cvc", "123", FormControlType::kInputText));
   FormStructure form_structure(form);
   form_structure.DetermineHeuristicTypes(GeoIpCountryCode(""), nullptr,

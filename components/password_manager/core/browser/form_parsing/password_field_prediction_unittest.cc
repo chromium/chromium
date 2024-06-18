@@ -118,7 +118,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions) {
     prediction.may_use_prefilled_placeholder =
         test_fields[i].may_use_prefilled_placeholder;
     autofill_predictions.insert({field.global_id(), std::move(prediction)});
-    test_api(form_data).fields().push_back(std::move(field));
+    test_api(form_data).Append(std::move(field));
   }
 
   constexpr int driver_id = 1000;
@@ -189,7 +189,7 @@ TEST(FormPredictionsTest, ConvertToFormPredictions_SynthesiseConfirmation) {
       autofill_predictions.insert(
           {field.global_id(), std::move(new_prediction)});
 
-      test_api(form_data).fields().push_back(std::move(field));
+      test_api(form_data).Append(std::move(field));
     }
 
     FormPredictions actual_predictions = ConvertToFormPredictions(

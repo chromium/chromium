@@ -113,7 +113,7 @@ std::pair<FormData, std::string> CreateFormAndServerClassification(
     field.set_host_form_id(
         field_template.host_form.value_or(form.global_id()).renderer_id);
     field.set_renderer_id(test::MakeFieldRendererId());
-    test_api(form).fields().push_back(std::move(field));
+    test_api(form).Append(std::move(field));
   }
 
   // Build the response of the Autofill Server with field classifications.

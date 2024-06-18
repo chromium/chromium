@@ -282,28 +282,28 @@ FormData CreateTestCreditCardFormData(bool is_https,
   FormData form = ConstructFormWithNameRenderIdAndProtocol(is_https);
 
   if (split_names) {
-    test_api(form).fields().push_back(
+    test_api(form).Append(
         CreateTestFormField("First Name on Card", "firstnameoncard", "",
                             FormControlType::kInputText, "cc-given-name"));
-    test_api(form).fields().push_back(
+    test_api(form).Append(
         CreateTestFormField("Last Name on Card", "lastnameoncard", "",
                             FormControlType::kInputText, "cc-family=name"));
   } else {
-    test_api(form).fields().push_back(CreateTestFormField(
-        "Name on Card", "nameoncard", "", FormControlType::kInputText));
+    test_api(form).Append(CreateTestFormField("Name on Card", "nameoncard", "",
+                                              FormControlType::kInputText));
   }
-  test_api(form).fields().push_back(CreateTestFormField(
-      "Card Number", "cardnumber", "", FormControlType::kInputText));
+  test_api(form).Append(CreateTestFormField("Card Number", "cardnumber", "",
+                                            FormControlType::kInputText));
   if (use_month_type) {
-    test_api(form).fields().push_back(CreateTestFormField(
-        "Expiration Date", "ccmonth", "", FormControlType::kInputMonth));
+    test_api(form).Append(CreateTestFormField("Expiration Date", "ccmonth", "",
+                                              FormControlType::kInputMonth));
   } else {
-    test_api(form).fields().push_back(CreateTestFormField(
-        "Expiration Date", "ccmonth", "", FormControlType::kInputText));
-    test_api(form).fields().push_back(
+    test_api(form).Append(CreateTestFormField("Expiration Date", "ccmonth", "",
+                                              FormControlType::kInputText));
+    test_api(form).Append(
         CreateTestFormField("", "ccyear", "", FormControlType::kInputText));
   }
-  test_api(form).fields().push_back(
+  test_api(form).Append(
       CreateTestFormField("CVC", "cvc", "", FormControlType::kInputText));
   return form;
 }

@@ -166,12 +166,12 @@ void FillInDummyFormData(FormData* data) {
   field_data.set_text_direction(base::i18n::RIGHT_TO_LEFT);
   field_data.set_options({{.value = u"First", .content = u"First"},
                           {.value = u"Second", .content = u"Second"}});
-  test_api(*data).fields().push_back(field_data);
+  test_api(*data).Append(field_data);
 
   // Change a few fields.
   field_data.set_max_length(150);
   field_data.set_options({{.value = u"Third", .content = u"Third"}});
-  test_api(*data).fields().push_back(field_data);
+  test_api(*data).Append(field_data);
 }
 
 }  // namespace

@@ -38,7 +38,7 @@ class DisambiguatePossibleFieldTypesTest : public ::testing::Test {
       const std::vector<TestFieldData>& test_fields) {
     FormData form;
     for (size_t i = 0; i < test_fields.size(); ++i) {
-      test_api(form).fields().push_back(
+      test_api(form).Append(
           CreateTestFormField("", "", "", FormControlType::kInputText));
     }
     FormStructure form_structure(form);

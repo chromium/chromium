@@ -397,7 +397,7 @@ FormFieldData ParseFieldFromJsonDict(const base::Value::Dict& field_dict,
     if (!field_json.is_dict()) {
       return AssertionFailure() << "A field is no dict in " << site_url;
     }
-    test_api(form_data).fields().push_back(
+    test_api(form_data).Append(
         ParseFieldFromJsonDict(field_json.GetDict(), form_data));
   }
 

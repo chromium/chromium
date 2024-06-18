@@ -271,8 +271,7 @@ TEST_F(AutofillOptimizationGuideTest,
        FormWithMultipleOptimizationTypesToRegisterFound) {
   FormData form_data = CreateTestCreditCardFormData(/*is_https=*/true,
                                                     /*use_month_type=*/false);
-  base::ranges::move(CreateTestIbanFormData().fields(),
-                     std::back_inserter(test_api(form_data).fields()));
+  test_api(form_data).Append(CreateTestIbanFormData().fields());
   FormStructure form_structure{form_data};
   const std::vector<FieldType> field_types = {
       CREDIT_CARD_NAME_FIRST, CREDIT_CARD_NAME_LAST,        CREDIT_CARD_NUMBER,

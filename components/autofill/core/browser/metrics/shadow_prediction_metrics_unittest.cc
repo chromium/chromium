@@ -150,9 +150,9 @@ class AutofillShadowPredictionMetricsTest : public AutofillMetricsBaseTest,
 TEST_F(AutofillShadowPredictionMetricsTest,
        SubmissionWithoutShadowPredictions) {
   FormData form = GetFormWith2Fields(autofill_client_->form_origin());
-  test_api(form).fields()[0].set_value(
+  test_api(form).field(0).set_value(
       u"Elvis Aaron Presley");  // A known `NAME_FULL`.
-  test_api(form).fields()[1].set_value(
+  test_api(form).field(1).set_value(
       u"buddy@gmail.com");  // A known `EMAIL_ADDRESS`.
 
   std::vector<FieldType> heuristic_types = {NAME_FULL, EMAIL_ADDRESS};
@@ -182,9 +182,9 @@ TEST_F(AutofillShadowPredictionMetricsTest,
 TEST_F(AutofillShadowPredictionMetricsTest,
        SubmissionWithAgreeingShadowPredictions) {
   FormData form = GetFormWith2Fields(autofill_client_->form_origin());
-  test_api(form).fields()[0].set_value(
+  test_api(form).field(0).set_value(
       u"Elvis Aaron Presley");  // A known `NAME_FULL`.
-  test_api(form).fields()[1].set_value(
+  test_api(form).field(1).set_value(
       u"buddy@gmail.com");  // A known `EMAIL_ADDRESS`.
 
   std::vector<FieldType> server_types = {NAME_FULL, EMAIL_ADDRESS};
@@ -221,9 +221,9 @@ TEST_F(AutofillShadowPredictionMetricsTest, CompareHeuristicsAndServer) {
   constexpr HeuristicSource source = HeuristicSource::kDefault;
 
   FormData form = GetFormWith2Fields(autofill_client_->form_origin());
-  test_api(form).fields()[0].set_value(
+  test_api(form).field(0).set_value(
       u"Elvis Aaron Presley");  // A known `NAME_FULL`.
-  test_api(form).fields()[1].set_value(
+  test_api(form).field(1).set_value(
       u"buddy@gmail.com");  // A known `EMAIL_ADDRESS`.
 
   std::vector<FieldType> server_types = {NAME_FULL, EMAIL_ADDRESS};

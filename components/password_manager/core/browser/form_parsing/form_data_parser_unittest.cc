@@ -327,7 +327,7 @@ class FormParserTest : public testing::Test {
       if (!field_description.user_input.empty()) {
         field.set_user_input(field_description.user_input);
       }
-      test_api(form_data).fields().push_back(field);
+      test_api(form_data).Append(field);
       if (field_description.role == ElementRole::NONE) {
         UpdateResultWithIdByRole(fill_result, renderer_id,
                                  field_description.role_filling);

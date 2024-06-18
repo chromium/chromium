@@ -401,15 +401,15 @@ TEST_F(AndroidAutofillProviderTest, NotifyAboutVisibilityChangeOnFocus) {
   FormData form = CreateFormDataForFrame(
       CreateTestPersonalInformationFormData(), main_frame_token());
   // For Android Autofill, focusability is the same as visibility.
-  test_api(form).fields()[0].set_is_focusable(false);
-  test_api(form).fields()[2].set_is_focusable(false);
+  test_api(form).field(0).set_is_focusable(false);
+  test_api(form).field(2).set_is_focusable(false);
 
   // Start an Autofill session.
   android_autofill_manager().SimulateOnAskForValuesToFill(form,
                                                           form.fields()[1]);
 
-  test_api(form).fields()[0].set_is_focusable(true);
-  test_api(form).fields()[2].set_is_focusable(true);
+  test_api(form).field(0).set_is_focusable(true);
+  test_api(form).field(2).set_is_focusable(true);
 
   EXPECT_CALL(provider_bridge(), OnFormFieldVisibilitiesDidChange(
                                      /*indices=*/UnorderedElementsAre(0, 2)));
@@ -530,7 +530,7 @@ TEST_F(AndroidAutofillProviderTest, OnTextFieldDidChange) {
   // Simulate a value change.
   EXPECT_CALL(provider_bridge(),
               OnFormFieldDidChange(EqualsFieldInfo(/*index=*/1)));
-  test_api(form).fields()[1].set_value(form.fields()[1].value() + u"x");
+  test_api(form).field(1).set_value(form.fields()[1].value() + u"x");
   android_autofill_manager().SimulateOnTextFieldDidChange(form,
                                                           form.fields()[1]);
   // The `FormDataAndroid` object owned by the provider is also updated.
@@ -555,7 +555,7 @@ TEST_F(AndroidAutofillProviderTest, OnTextFieldDidChangeInUnrelatedForm) {
 
   // Simulate a value change in a different form.
   EXPECT_CALL(provider_bridge(), OnFormFieldDidChange).Times(0);
-  test_api(form2).fields()[1].set_value(form2.fields()[1].value() + u"x");
+  test_api(form2).field(1).set_value(form2.fields()[1].value() + u"x");
   android_autofill_manager().SimulateOnTextFieldDidChange(form2,
                                                           form2.fields()[1]);
 }
@@ -1072,7 +1072,7 @@ TEST_P(AndroidAutofillProviderPrefillRequestTest,
   Mock::VerifyAndClearExpectations(&provider_bridge());
 
   FormData changed_form = form;
-  test_api(changed_form).fields().pop_back();
+  test_api(changed_form).Remove(-1);
   android_autofill_manager().OnFormsSeen({changed_form},
                                          /*removed_forms=*/{});
   SessionId autofill_session_id = SessionId(0);

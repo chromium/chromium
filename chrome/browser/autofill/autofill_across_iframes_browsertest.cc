@@ -584,7 +584,7 @@ class AutofillAcrossIframesTest_DeletedFrame
         R"( document.getElementsByTagName('iframe')[1].remove(); )");
     EXPECT_EQ(4u, num_frames());
     FillCard(main_frame(), form, trigger_field);
-    test_api(form).fields().erase(form.fields().begin() + 1);
+    test_api(form).Remove(1);
     return AllFieldValues(web_contents(), form);
   }
 

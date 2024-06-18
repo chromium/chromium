@@ -267,9 +267,9 @@ std::unique_ptr<PasswordFormManager> ManagePasswordsTest::CreateFormManager(
   observed_form.set_url(password_form_.url);
   autofill::FormFieldData field;
   field.set_form_control_type(autofill::FormControlType::kInputText);
-  test_api(observed_form).fields().push_back(field);
+  test_api(observed_form).Append(field);
   field.set_form_control_type(autofill::FormControlType::kInputPassword);
-  test_api(observed_form).fields().push_back(field);
+  test_api(observed_form).Append(field);
 
   std::unique_ptr<password_manager::FormSaver> form_saver;
   if (profile_store) {
@@ -299,7 +299,7 @@ std::unique_ptr<PasswordFormManager> ManagePasswordsTest::CreateFormManager(
   fetcher_.NotifyFetchCompleted();
 
   autofill::FormData submitted_form = observed_form;
-  test_api(submitted_form).fields()[1].set_value(u"new_password");
+  test_api(submitted_form).field(1).set_value(u"new_password");
   form_manager->ProvisionallySave(
       submitted_form, &driver_,
       base::LRUCache<PossibleUsernameFieldIdentifier, PossibleUsernameData>(

@@ -330,8 +330,8 @@ TEST_F(AutofillManagerTest, ObserverReceiveCalls) {
   EXPECT_CALL(observer, OnFieldTypesDetermined(m, g, heuristics));
   task_environment_.RunUntilIdle();
 
-  test_api(form).fields().push_back(form.fields().back());
-  test_api(form).fields().back().set_renderer_id(test::MakeFieldRendererId());
+  test_api(form).Append(form.fields().back());
+  test_api(form).field(-1).set_renderer_id(test::MakeFieldRendererId());
 
   // The form was just changed, which causes a reparse. The reparse is
   // asynchronous, so OnAfterTextFieldDidChange() is asynchronous, too.

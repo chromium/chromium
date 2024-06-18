@@ -192,12 +192,12 @@ TEST_F(FormDataAndroidTest, SimilarFormAs_Fields) {
 
   // Forms with similar fields are similar.
   f = af.form();
-  test_api(f).fields().front().set_value(f.fields().front().value() + u"x");
+  test_api(f).field(0).set_value(f.fields().front().value() + u"x");
   EXPECT_TRUE(af.SimilarFormAs(f));
 
   // Forms with fields that are not similar, are not similar either.
   f = af.form();
-  test_api(f).fields().front().set_name(f.fields().front().name() + u"x");
+  test_api(f).field(0).set_name(f.fields().front().name() + u"x");
   EXPECT_FALSE(af.SimilarFormAs(f));
 }
 
@@ -212,7 +212,7 @@ TEST_F(FormDataAndroidTest, GetFieldIndex) {
 
   // As updates in `f` are not propagated to the Android version `af`, the
   // lookup fails.
-  test_api(f).fields()[1].set_name(u"name3");
+  test_api(f).field(1).set_name(u"name3");
   EXPECT_FALSE(af.GetFieldIndex(f.fields()[1], &index));
 }
 
@@ -225,13 +225,13 @@ TEST_F(FormDataAndroidTest, GetSimilarFieldIndex) {
   size_t index = 100;
   // Value is not part of a field similarity check, so this field is similar to
   // af.form().fields[1].
-  test_api(f).fields()[1].set_value(u"some value");
+  test_api(f).field(1).set_value(u"some value");
   EXPECT_TRUE(af.GetSimilarFieldIndex(f.fields()[1], &index));
   EXPECT_EQ(index, 1u);
 
   // Name is a part of the field similarity check, so there is no field similar
   // to this one.
-  test_api(f).fields()[1].set_name(u"name3");
+  test_api(f).field(1).set_name(u"name3");
   EXPECT_FALSE(af.GetSimilarFieldIndex(f.fields()[1], &index));
 }
 
@@ -340,9 +340,8 @@ TEST_F(FormDataAndroidTest, UpdateFieldTypes_ChangedForm) {
 TEST_F(FormDataAndroidTest, UpdateFieldVisibilities) {
   FormData form = CreateTestForm();
   form.set_fields({CreateTestField(), CreateTestField(), CreateTestField()});
-  test_api(form).fields()[0].set_role(
-      FormFieldData::RoleAttribute::kPresentation);
-  test_api(form).fields()[1].set_is_focusable(false);
+  test_api(form).field(0).set_role(FormFieldData::RoleAttribute::kPresentation);
+  test_api(form).field(1).set_is_focusable(false);
   EXPECT_FALSE(form.fields()[0].IsFocusable());
   EXPECT_FALSE(form.fields()[1].IsFocusable());
   EXPECT_TRUE(form.fields()[2].IsFocusable());
@@ -355,8 +354,8 @@ TEST_F(FormDataAndroidTest, UpdateFieldVisibilities) {
 
   // `form_android` created a copy of `form` - therefore modifying the fields
   // here does not change the values inside `form_android`.
-  test_api(form).fields()[0].set_role(FormFieldData::RoleAttribute::kOther);
-  test_api(form).fields()[1].set_is_focusable(true);
+  test_api(form).field(0).set_role(FormFieldData::RoleAttribute::kOther);
+  test_api(form).field(1).set_is_focusable(true);
   EXPECT_TRUE(form.fields()[0].IsFocusable());
   EXPECT_TRUE(form.fields()[1].IsFocusable());
   EXPECT_TRUE(form.fields()[2].IsFocusable());

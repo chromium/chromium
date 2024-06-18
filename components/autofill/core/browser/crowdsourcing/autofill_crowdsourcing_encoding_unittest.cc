@@ -283,7 +283,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
 
   // Add 2 address fields - this should be still a valid form.
   for (size_t i = 0; i < 2; ++i) {
-    test_api(form).fields().push_back(
+    test_api(form).Append(
         test::GetFormFieldData({.label = u"Address", .name = u"address"}));
     test::InitializePossibleTypes(possible_field_types,
                                   {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2});
@@ -321,7 +321,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest) {
   // Add 300 address fields - now the form is invalid, as it has too many
   // fields.
   for (size_t i = 0; i < 300; ++i) {
-    test_api(form).fields().push_back(
+    test_api(form).Append(
         test::GetFormFieldData({.label = u"Address", .name = u"address"}));
     test::InitializePossibleTypes(possible_field_types,
                                   {ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2});
@@ -1202,7 +1202,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeUploadRequest_RichMetadata) {
     field.set_autocomplete_attribute(f.autocomplete);
     field.set_parsed_autocomplete(ParseAutocompleteAttribute(f.autocomplete));
     field.set_renderer_id(test::MakeFieldRendererId());
-    test_api(form).fields().push_back(field);
+    test_api(form).Append(field);
   }
   RandomizedEncoder encoder("seed for testing",
                             AutofillRandomizedValue_EncodingType_ALL_BITS,
@@ -1577,31 +1577,31 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
   field.set_name(u"name_on_card");
   field.set_renderer_id(test::MakeFieldRendererId());
   field.set_host_form_signature(form_signature);
-  test_api(form).fields().push_back(field);
+  test_api(form).Append(field);
 
   field.set_label(u"Address");
   field.set_name(u"billing_address");
   field.set_renderer_id(test::MakeFieldRendererId());
   field.set_host_form_signature(FormSignature(12345UL));
-  test_api(form).fields().push_back(field);
+  test_api(form).Append(field);
 
   field.set_label(u"Card Number");
   field.set_name(u"card_number");
   field.set_renderer_id(test::MakeFieldRendererId());
   field.set_host_form_signature(FormSignature(67890UL));
-  test_api(form).fields().push_back(field);
+  test_api(form).Append(field);
 
   field.set_label(u"Expiration Date");
   field.set_name(u"expiration_month");
   field.set_renderer_id(test::MakeFieldRendererId());
   field.set_host_form_signature(FormSignature(12345UL));
-  test_api(form).fields().push_back(field);
+  test_api(form).Append(field);
 
   field.set_label(u"Expiration Year");
   field.set_name(u"expiration_year");
   field.set_renderer_id(test::MakeFieldRendererId());
   field.set_host_form_signature(FormSignature(12345UL));
-  test_api(form).fields().push_back(field);
+  test_api(form).Append(field);
 
   // Add checkable field.
   FormFieldData checkable_field;
@@ -1611,7 +1611,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
   checkable_field.set_name(u"Checkable1");
   checkable_field.set_renderer_id(test::MakeFieldRendererId());
   checkable_field.set_host_form_signature(form_signature);
-  test_api(form).fields().push_back(checkable_field);
+  test_api(form).Append(checkable_field);
 
   FormStructure form_structure(form);
 
@@ -1680,7 +1680,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
     field.set_name(u"address");
     field.set_renderer_id(test::MakeFieldRendererId());
     field.set_host_form_signature(form_signature3);
-    test_api(form).fields().push_back(field);
+    test_api(form).Append(field);
   }
 
   FormStructure form_structure3(form);
@@ -1711,7 +1711,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
   EXPECT_THAT(encoded_query3, SerializesSameAs(query));
 
   // |form_structures4| will have the same signature as |form_structure3|.
-  test_api(form).fields().back().set_name(u"address123456789");
+  test_api(form).field(-1).set_name(u"address123456789");
 
   FormStructure form_structure4(form);
   forms.push_back(&form_structure4);
@@ -1730,7 +1730,7 @@ TEST_F(AutofillCrowdsourcingEncoding, EncodeAutofillPageQueryRequest) {
     field.set_label(u"Address");
     field.set_name(u"address");
     field.set_renderer_id(test::MakeFieldRendererId());
-    test_api(malformed_form).fields().push_back(field);
+    test_api(malformed_form).Append(field);
   }
 
   FormStructure malformed_form_structure(malformed_form);
@@ -1919,7 +1919,7 @@ TEST_F(AutofillCrowdsourcingEncoding, AllowBigForms) {
   form.set_url(GURL("http://foo.com"));
   // Check that the form with 250 fields are processed correctly.
   for (size_t i = 0; i < 250; ++i) {
-    test_api(form).fields().push_back(test::GetFormFieldData({
+    test_api(form).Append(test::GetFormFieldData({
         .name = u"text" + base::NumberToString16(i),
     }));
   }
@@ -3312,7 +3312,7 @@ TEST_F(AutofillCrowdsourcingEncoding,
     field.set_name(base::NumberToString16(i));
     field.set_label((base::NumberToString16(i)));
     field.set_renderer_id(test::MakeFieldRendererId());
-    test_api(form_data).fields().push_back(field);
+    test_api(form_data).Append(field);
   }
 
   FormStructure form(form_data);

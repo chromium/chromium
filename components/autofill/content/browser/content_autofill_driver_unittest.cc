@@ -517,7 +517,7 @@ class ContentAutofillDriverWithMultiFrameCreditCardForm
                             std::string_view name,
                             content::RenderFrameHost* target_rfh = nullptr) {
     FormData form;
-    test_api(form).fields().push_back(test::CreateTestFormField(
+    test_api(form).Append(test::CreateTestFormField(
         /*label=*/name, /*name=*/name, /*value=*/"",
         FormControlType::kInputText,
         /*autocomplete=*/base::StrCat({"cc-", name})));
@@ -552,7 +552,7 @@ TEST_F(ContentAutofillDriverTest, NavigatedMainFramePrerenderedPageActivation) {
 TEST_F(ContentAutofillDriverTest, Lift_Form) {
   NavigateAndCommit(GURL("https://username:password@hostname/path?query#hash"));
   FormData form;
-  test_api(form).fields().emplace_back();
+  test_api(form).Append(FormFieldData());
   test_api(driver()).LiftForTest(form);
 
   EXPECT_EQ(form.host_frame(), frame_token());

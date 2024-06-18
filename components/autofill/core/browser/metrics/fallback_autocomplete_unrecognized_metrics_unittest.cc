@@ -43,7 +43,7 @@ class AutocompleteUnrecognizedFallbackEventLoggerTest
 TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
        FillAfterSuggestion_NotFilled) {
   FormData form = test::CreateTestAddressFormData();
-  test_api(form).fields()[0].set_parsed_autocomplete(
+  test_api(form).field(0).set_parsed_autocomplete(
       AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized});
   SeeForm(form);
   ShowSuggestions(form);
@@ -63,7 +63,7 @@ TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
 TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
        FillAfterSuggestion_Filled) {
   FormData form = test::CreateTestAddressFormData();
-  test_api(form).fields()[0].set_parsed_autocomplete(
+  test_api(form).field(0).set_parsed_autocomplete(
       AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized});
   ShowSuggestions(form);
   // Fill the suggestion.
@@ -94,7 +94,7 @@ TEST_F(AutocompleteUnrecognizedFallbackEventLoggerTest,
   // Dynamically change the autocomplete attribute before accepting the
   // suggestion. This causes `OnDidFillFormFillingSuggestion()` to be called,
   // even though `OnDidShowSuggestions()` was never called.
-  test_api(form).fields()[0].set_parsed_autocomplete(
+  test_api(form).field(0).set_parsed_autocomplete(
       AutocompleteParsingResult{.field_type = HtmlFieldType::kUnrecognized});
   SeeForm(form);
   autofill_manager().FillOrPreviewProfileForm(

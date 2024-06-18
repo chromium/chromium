@@ -218,7 +218,7 @@ void AutofillMergeTest::MergeProfiles(const std::string& profiles,
       field.set_value(value);
       field.set_form_control_type(FormControlType::kInputText);
       field.set_is_focusable(true);
-      test_api(form).fields().push_back(field);
+      test_api(form).Append(field);
     }
 
     // The first line is always a profile separator, and the last profile is not

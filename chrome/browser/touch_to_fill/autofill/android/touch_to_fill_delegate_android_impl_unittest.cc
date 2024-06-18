@@ -202,7 +202,7 @@ class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
   void ConfigureForCreditCards(const CreditCard& card) {
     form_ = test::CreateTestCreditCardFormData(/*is_https=*/true,
                                                /*use_month_type=*/false);
-    test_api(form_).fields()[0].set_is_focusable(true);
+    test_api(form_).field(0).set_is_focusable(true);
     autofill_client_.GetPersonalDataManager()
         ->payments_data_manager()
         .AddCreditCard(card);
@@ -216,7 +216,7 @@ class TouchToFillDelegateAndroidImplUnitTest : public testing::Test {
                            ->test_payments_data_manager()
                            .AddAsLocalIban(std::move(iban));
     form_ = test::CreateTestIbanFormData(/*value=*/"");
-    test_api(form_).fields()[0].set_is_focusable(true);
+    test_api(form_).field(0).set_is_focusable(true);
     return guid;
   }
 
@@ -306,10 +306,9 @@ TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
 
 TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
        TryToShowTouchToFillFailsIfNotSpecificField) {
-  test_api(form_).fields().insert(
-      form_.fields().begin(),
-      test::CreateTestFormField("Arbitrary", "arbitrary", "",
-                                FormControlType::kInputText));
+  test_api(form_).Insert(
+      0, test::CreateTestFormField("Arbitrary", "arbitrary", "",
+                                   FormControlType::kInputText));
 
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 
@@ -409,7 +408,7 @@ TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
 
 TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
        TryToShowTouchToFillFailsForPaymentMethodIfFieldIsNotFocusable) {
-  test_api(form_).fields()[0].set_is_focusable(false);
+  test_api(form_).field(0).set_is_focusable(false);
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 
   TryToShowTouchToFill(/*expected_success=*/false);
@@ -421,7 +420,7 @@ TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
 TEST_P(TouchToFillDelegateAndroidImplPaymentMethodUnitTest,
        TryToShowTouchToFillFailsForPaymentMethodIfFieldHasValue) {
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
-  test_api(form_).fields()[0].set_value(u"Initial value");
+  test_api(form_).field(0).set_value(u"Initial value");
 
   TryToShowTouchToFill(/*expected_success=*/false);
   histogram_tester_.ExpectUniqueSample(
@@ -485,9 +484,9 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
        TryToShowTouchToFillFailsForIncompleteForm) {
   // Erase expiration month and expiration year fields.
   ASSERT_EQ(form_.fields()[2].name(), u"ccmonth");
-  test_api(form_).fields().erase(form_.fields().begin() + 2);
+  test_api(form_).Remove(2);
   ASSERT_EQ(form_.fields()[2].name(), u"ccyear");
-  test_api(form_).fields().erase(form_.fields().begin() + 2);
+  test_api(form_).Remove(2);
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 
   TryToShowTouchToFill(/*expected_success=*/false);
@@ -505,7 +504,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
   // Set credit card value.
   // TODO(crbug.com/40900766): Retrieve the card number field by name here.
   ASSERT_EQ(form_.fields()[1].name(), u"cardnumber");
-  test_api(form_).fields()[1].set_value(u"411111111111");
+  test_api(form_).field(1).set_value(u"411111111111");
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 
   TryToShowTouchToFill(/*expected_success=*/false);
@@ -523,7 +522,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
   // Set card expiration year.
   // TODO(crbug.com/40900766): Retrieve the card expiry year field by name here.
   ASSERT_EQ(form_.fields()[3].name(), u"ccyear");
-  test_api(form_).fields()[3].set_value(u"2023");
+  test_api(form_).field(3).set_value(u"2023");
   ASSERT_FALSE(touch_to_fill_delegate_->IsShowingTouchToFill());
 
   TryToShowTouchToFill(/*expected_success=*/true);
@@ -563,7 +562,7 @@ TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
 
 TEST_F(TouchToFillDelegateAndroidImplCreditCardUnitTest,
        TryToShowTouchToFillToleratesFormattingCharacters) {
-  test_api(form_).fields()[0].set_value(u"____-____-____-____");
+  test_api(form_).field(0).set_value(u"____-____-____-____");
 
   TryToShowTouchToFill(/*expected_success=*/true);
   histogram_tester_.ExpectBucketCount(

@@ -52,7 +52,7 @@ class ProfileTokenQualityTest : public testing::Test {
   void EditFieldValue(FormData& form,
                       size_t field_index,
                       std::u16string new_value) {
-    FormFieldData& field = test_api(form).fields()[field_index];
+    FormFieldData& field = test_api(form).field(field_index);
     field.set_value(std::move(new_value));
     bam_.OnTextFieldDidChange(form, field.global_id(), base::TimeTicks::Now());
   }
