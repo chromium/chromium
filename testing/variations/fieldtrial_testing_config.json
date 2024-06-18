@@ -6650,6 +6650,25 @@
             ]
         }
     ],
+    "CrabbyAvif": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_CrabbyAvif",
+                    "enable_features": [
+                        "CrabbyAvif"
+                    ]
+                }
+            ]
+        }
+    ],
     "CreateSpareRendererOnBrowserContextCreation": [
         {
             "platforms": [
