@@ -50,11 +50,11 @@ enum class RateLimitResult : int;
 class CONTENT_EXPORT AttributionStorageSql {
  public:
   // Version number of the database.
-  static constexpr int kCurrentVersionNumber = 62;
+  static constexpr int kCurrentVersionNumber = 63;
 
   // Earliest version which can use a `kCurrentVersionNumber` database
   // without failing.
-  static constexpr int kCompatibleVersionNumber = 62;
+  static constexpr int kCompatibleVersionNumber = 63;
 
   // Latest version of the database that cannot be upgraded to
   // `kCurrentVersionNumber` without razing the database.
@@ -359,6 +359,10 @@ class CONTENT_EXPORT AttributionStorageSql {
       int& num_event_reports_deleted,
       int& num_aggregatable_reports_deleted)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
+
+  [[nodiscard]] bool DeactivateSourcesForDestinationLimit(
+      const std::vector<StoredSource::Id>&,
+      base::Time now) VALID_CONTEXT_REQUIRED(sequence_checker_);
 
   // Aggregate Attribution:
 

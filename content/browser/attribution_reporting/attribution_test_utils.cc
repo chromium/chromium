@@ -245,6 +245,11 @@ SourceBuilder& SourceBuilder::SetAggregatableDebugReportingConfig(
   return *this;
 }
 
+SourceBuilder& SourceBuilder::SetDestinationLimitPriority(int64_t priority) {
+  registration_.destination_limit_priority = priority;
+  return *this;
+}
+
 StorableSource SourceBuilder::Build() const {
   StorableSource source(reporting_origin_, registration_, source_origin_,
                         source_type_, is_within_fenced_frame_);

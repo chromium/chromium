@@ -812,6 +812,7 @@ void AttributionManagerImpl::ProcessNextEvent(bool registration_allowed,
                       std::move(source),
                       /*is_noised=*/false,
                       /*source_time=*/base::Time::Now(),
+                      /*destination_limit=*/std::nullopt,
                       StoreSourceResult::ProhibitedByBrowserPolicy()));
             }
           },

@@ -129,7 +129,8 @@
       },
       // The first source falls outside the destination per-day rate-limit
       // window, therefore this source doesn't hit the destination per-day
-      // limit. Should be reported as `source-destination-limit`.
+      // limit. Should be reported as `source-success` with
+      // `source_destination_limit` and deactivate https://destination1.test.
       {
         "timestamp": "86400000",
         "registration_request": {
@@ -153,9 +154,9 @@
           }
         ]
       },
-      // Changes to a new reporting origin, therefore this source doesn't hit
-      // the unexpired destination limit. Should be reported as `source-success`
-      // (time-based destination limit).
+      // The earliest destination was already deactivated, therefore this
+      // source doesn't hit the unexpired destination limit. Should be reported
+      // as `source-success` (time-based destination limit).
       {
         "timestamp": "86401000",
         "registration_request": {
@@ -164,7 +165,7 @@
         },
         "responses": [
           {
-            "url": "https://reporter3.test",
+            "url": "https://reporter1.test",
             "debug_permission": true,
             "response": {
               "Attribution-Reporting-Register-Source": {
@@ -184,12 +185,12 @@
       {
         "timestamp": "86402000",
         "registration_request": {
-          "context_origin": "https://destination4.test",
+          "context_origin": "https://destination5.test",
           "Attribution-Reporting-Eligible": "trigger"
         },
         "responses": [
           {
-            "url": "https://reporter3.test/register-trigger",
+            "url": "https://reporter1.test/register-trigger",
             "debug_permission": true,
             "response": {
               "Attribution-Reporting-Register-Trigger": {
@@ -274,11 +275,11 @@
         "payload": [ {
           "body": {
             "attribution_destination": [ "https://destination4.test", "https://destination5.test" ],
-            "limit": "3",
+            "source_destination_limit": "3",
             "source_event_id": "666",
             "source_site": "https://source.test"
           },
-          "type": "source-destination-limit"
+          "type": "source-success"
         } ],
         "report_time": "86400000",
         "report_url": "https://reporter1.test/.well-known/attribution-reporting/debug/verbose"
@@ -293,17 +294,17 @@
           "type": "source-success"
         } ],
         "report_time": "86401000",
-        "report_url": "https://reporter3.test/.well-known/attribution-reporting/debug/verbose"
+        "report_url": "https://reporter1.test/.well-known/attribution-reporting/debug/verbose"
       },
       {
         "payload": [ {
           "body": {
-            "attribution_destination": "https://destination4.test"
+            "attribution_destination": "https://destination5.test"
           },
           "type": "trigger-no-matching-source"
         } ],
         "report_time": "86402000",
-        "report_url": "https://reporter3.test/.well-known/attribution-reporting/debug/verbose"
+        "report_url": "https://reporter1.test/.well-known/attribution-reporting/debug/verbose"
       }
     ]
   }

@@ -44,4 +44,6 @@ CREATE INDEX rate_limit_source_id_idx ON rate_limits(source_id);
 
 CREATE INDEX rate_limit_report_id_idx ON rate_limits(scope,report_id)WHERE (scope=1 OR scope=2) AND report_id!=-1;
 
+INSERT INTO rate_limits VALUES (0,0,2,'3','4','5','https://a.r.test','https://r.test',6,7,8);
+
 COMMIT;

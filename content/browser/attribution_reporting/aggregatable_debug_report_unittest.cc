@@ -169,6 +169,7 @@ TEST_F(AggregatableDebugReportTest, SourceDebugReport_Enablement) {
                     .SetAggregatableDebugReportingConfig(test_case.config)
                     .Build(),
                 /*is_noised=*/false, kSourceTime,
+                /*destination_limit=*/std::nullopt,
                 StoreSourceResult::InternalError())),
         test_case.matches);
   }
@@ -179,6 +180,7 @@ TEST_F(AggregatableDebugReportTest, SourceDebugReport) {
     DebugDataType type;
     StoreSourceResult::Result result;
     bool is_noised = false;
+    std::optional<int> destination_limit;
   } kTestCases[] = {
       {
           DebugDataType::kSourceChannelCapacityLimit,
@@ -187,6 +189,12 @@ TEST_F(AggregatableDebugReportTest, SourceDebugReport) {
       {
           DebugDataType::kSourceDestinationGlobalRateLimit,
           StoreSourceResult::DestinationGlobalLimitReached(),
+      },
+      {
+          DebugDataType::kSourceDestinationGlobalRateLimit,
+          StoreSourceResult::DestinationGlobalLimitReached(),
+          false,
+          10,
       },
       {
           DebugDataType::kSourceDestinationLimit,
@@ -211,8 +219,21 @@ TEST_F(AggregatableDebugReportTest, SourceDebugReport) {
           true,
       },
       {
+          DebugDataType::kSourceNoised,
+          StoreSourceResult::Success(/*min_fake_report_time=*/std::nullopt,
+                                     kSourceId),
+          true,
+          10,
+      },
+      {
           DebugDataType::kSourceReportingOriginLimit,
           StoreSourceResult::ExcessiveReportingOrigins(),
+      },
+      {
+          DebugDataType::kSourceReportingOriginLimit,
+          StoreSourceResult::ExcessiveReportingOrigins(),
+          false,
+          10,
       },
       {
           DebugDataType::kSourceReportingOriginPerSiteLimit,
@@ -228,6 +249,13 @@ TEST_F(AggregatableDebugReportTest, SourceDebugReport) {
                                      kSourceId),
       },
       {
+          DebugDataType::kSourceSuccess,
+          StoreSourceResult::Success(/*min_fake_report_time=*/std::nullopt,
+                                     kSourceId),
+          false,
+          10,
+      },
+      {
           DebugDataType::kSourceTriggerStateCardinalityLimit,
           StoreSourceResult::ExceedsMaxTriggerStateCardinality(3),
       },
@@ -239,6 +267,15 @@ TEST_F(AggregatableDebugReportTest, SourceDebugReport) {
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.type);
+
+    std::vector<AggregatableReportHistogramContribution> expected_contributions(
+        {AggregatableReportHistogramContribution(
+            /*bucket=*/3, /*value=*/5,
+            /*filtering_id=*/std::nullopt)});
+    if (test_case.destination_limit.has_value()) {
+      expected_contributions.emplace_back(/*bucket=*/5, /*value=*/6,
+                                          /*filtering_id=*/std::nullopt);
+    }
 
     EXPECT_THAT(
         AggregatableDebugReport::Create(
@@ -256,17 +293,19 @@ TEST_F(AggregatableDebugReportTest, SourceDebugReport) {
                                      *AggregatableDebugReportingContribution::
                                          Create(
                                              /*key_piece=*/2, /*value=*/5)},
+                                    {DebugDataType::
+                                         kSourceDestinationLimitReplaced,
+                                     *AggregatableDebugReportingContribution::
+                                         Create(
+                                             /*key+piece=*/4, /*value=*/6)},
                                 },
                                 /*aggregation_coordinator_origin=*/
                                 std::nullopt)))
                     .Build(),
                 /*is_noised=*/test_case.is_noised, kSourceTime,
-                test_case.result)),
-        Optional(Property(
-            &AggregatableDebugReport::contributions,
-            UnorderedElementsAre(AggregatableReportHistogramContribution(
-                /*bucket=*/3, /*value=*/5,
-                /*filtering_id=*/std::nullopt)))));
+                test_case.destination_limit, test_case.result)),
+        Optional(Property(&AggregatableDebugReport::contributions,
+                          UnorderedElementsAreArray(expected_contributions))));
   }
 }
 
@@ -296,6 +335,7 @@ TEST_F(AggregatableDebugReportTest, SourceDebugReport_Unsupported) {
         AggregatableDebugReport::Create(
             &OperationAllowed,
             StoreSourceResult(source, /*is_noised=*/false, kSourceTime,
+                              /*destination_limit=*/std::nullopt,
                               test_case.result)),
         Optional(Property(&AggregatableDebugReport::contributions, IsEmpty())));
   }
@@ -895,6 +935,7 @@ TEST_F(AggregatableDebugReportTest, SourceDebugReport_Data) {
                               aggregation_coordinator_origin)))
                   .Build(),
               /*is_noised=*/false, source_time,
+              /*destination_limit=*/std::nullopt,
               StoreSourceResult::InternalError())),
       Optional(AllOf(
           Property(&AggregatableDebugReport::context_site,

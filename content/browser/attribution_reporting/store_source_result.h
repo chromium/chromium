@@ -93,6 +93,7 @@ class CONTENT_EXPORT StoreSourceResult {
   StoreSourceResult(StorableSource,
                     bool is_noised,
                     base::Time source_time,
+                    std::optional<int> destination_limit,
                     Result);
 
   ~StoreSourceResult();
@@ -111,12 +112,15 @@ class CONTENT_EXPORT StoreSourceResult {
 
   base::Time source_time() const { return source_time_; }
 
+  std::optional<int> destination_limit() const { return destination_limit_; }
+
   const Result& result() const { return result_; }
 
  private:
   StorableSource source_;
   bool is_noised_;
   base::Time source_time_;
+  std::optional<int> destination_limit_;
   Result result_;
 };
 

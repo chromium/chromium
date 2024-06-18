@@ -18,6 +18,7 @@
 #include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
@@ -56,10 +57,15 @@ constexpr char kAttributionDestination[] = "attribution_destination";
 struct DebugDataTypeAndBody {
   DebugDataType debug_data_type;
   base::Value limit;
+  base::Value::Dict additional_fields;
 
-  explicit DebugDataTypeAndBody(DebugDataType debug_data_type,
-                                base::Value limit = base::Value())
-      : debug_data_type(debug_data_type), limit(std::move(limit)) {}
+  explicit DebugDataTypeAndBody(
+      DebugDataType debug_data_type,
+      base::Value limit = base::Value(),
+      base::Value::Dict additional_fields = base::Value::Dict())
+      : debug_data_type(debug_data_type),
+        limit(std::move(limit)),
+        additional_fields(std::move(additional_fields)) {}
 };
 
 // This is a temporary measure until we phase out the use of uint128.
@@ -79,6 +85,18 @@ base::Value GetLimit(absl::uint128 limit) {
 
 std::optional<DebugDataTypeAndBody> GetReportDataBody(
     const StoreSourceResult& result) {
+  base::Value::Dict additional_fields;
+  if (result.destination_limit().has_value()) {
+    additional_fields.Set("source_destination_limit",
+                          GetLimit(result.destination_limit().value()));
+  }
+
+  const auto make_report_body = [&](DebugDataType type,
+                                    base::Value limit = base::Value()) {
+    return std::make_optional(DebugDataTypeAndBody(
+        type, std::move(limit), std::move(additional_fields)));
+  };
+
   return absl::visit(
       base::Overloaded{
           [](StoreSourceResult::ProhibitedByBrowserPolicy) {
@@ -93,47 +111,44 @@ std::optional<DebugDataTypeAndBody> GetReportDataBody(
                             // policy.
                             StoreSourceResult::ExcessiveReportingOrigins,
                             StoreSourceResult::DestinationGlobalLimitReached>) {
-            return result.is_noised()
-                       ? std::make_optional<DebugDataTypeAndBody>(
-                             DebugDataType::kSourceNoised)
-                       : std::make_optional<DebugDataTypeAndBody>(
-                             DebugDataType::kSourceSuccess);
+            return make_report_body(result.is_noised()
+                                        ? DebugDataType::kSourceNoised
+                                        : DebugDataType::kSourceSuccess);
           },
-          [](StoreSourceResult::InsufficientUniqueDestinationCapacity v) {
-            return std::make_optional<DebugDataTypeAndBody>(
-                DebugDataType::kSourceDestinationLimit, GetLimit(v.limit));
+          [&](StoreSourceResult::InsufficientUniqueDestinationCapacity v) {
+            return make_report_body(DebugDataType::kSourceDestinationLimit,
+                                    GetLimit(v.limit));
           },
-          [](absl::variant<StoreSourceResult::DestinationReportingLimitReached,
-                           StoreSourceResult::DestinationBothLimitsReached> v) {
-            return std::make_optional<DebugDataTypeAndBody>(
+          [&](absl::variant<StoreSourceResult::DestinationReportingLimitReached,
+                            StoreSourceResult::DestinationBothLimitsReached>
+                  v) {
+            return make_report_body(
                 DebugDataType::kSourceDestinationRateLimit,
                 absl::visit([](auto v) { return GetLimit(v.limit); }, v));
           },
-          [](StoreSourceResult::DestinationPerDayReportingLimitReached v) {
-            return std::make_optional<DebugDataTypeAndBody>(
+          [&](StoreSourceResult::DestinationPerDayReportingLimitReached v) {
+            return make_report_body(
                 DebugDataType::kSourceDestinationPerDayRateLimit,
                 GetLimit(v.limit));
           },
-          [](StoreSourceResult::InsufficientSourceCapacity v) {
-            return std::make_optional<DebugDataTypeAndBody>(
-                DebugDataType::kSourceStorageLimit, GetLimit(v.limit));
+          [&](StoreSourceResult::InsufficientSourceCapacity v) {
+            return make_report_body(DebugDataType::kSourceStorageLimit,
+                                    GetLimit(v.limit));
           },
-          [](StoreSourceResult::InternalError) {
-            return std::make_optional<DebugDataTypeAndBody>(
-                DebugDataType::kSourceUnknownError);
+          [&](StoreSourceResult::InternalError) {
+            return make_report_body(DebugDataType::kSourceUnknownError);
           },
-          [](StoreSourceResult::ReportingOriginsPerSiteLimitReached v) {
-            return std::make_optional<DebugDataTypeAndBody>(
+          [&](StoreSourceResult::ReportingOriginsPerSiteLimitReached v) {
+            return make_report_body(
                 DebugDataType::kSourceReportingOriginPerSiteLimit,
                 GetLimit(v.limit));
           },
-          [](StoreSourceResult::ExceedsMaxChannelCapacity v) {
-            return std::make_optional<DebugDataTypeAndBody>(
-                DebugDataType::kSourceChannelCapacityLimit,
-                base::Value(v.limit));
+          [&](StoreSourceResult::ExceedsMaxChannelCapacity v) {
+            return make_report_body(DebugDataType::kSourceChannelCapacityLimit,
+                                    base::Value(v.limit));
           },
-          [](StoreSourceResult::ExceedsMaxTriggerStateCardinality v) {
-            return std::make_optional<DebugDataTypeAndBody>(
+          [&](StoreSourceResult::ExceedsMaxTriggerStateCardinality v) {
+            return make_report_body(
                 DebugDataType::kSourceTriggerStateCardinalityLimit,
                 GetLimit(v.limit));
           },
@@ -293,7 +308,7 @@ base::Value::Dict GetReportData(DebugDataType type, base::Value::Dict body) {
 void RecordVerboseDebugReportType(DebugDataType type) {
   static_assert(
       DebugDataType::kMaxValue ==
-          DebugDataType::kSourceDestinationPerDayRateLimit,
+          DebugDataType::kSourceDestinationLimitReplaced,
       "Update ConversionVerboseDebugReportType enum if the new type is "
       "supported for verbose debug reports.");
   base::UmaHistogramEnumeration("Conversions.SentVerboseDebugReportType4",
@@ -340,6 +355,11 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
   body.Set(kAttributionDestination, registration.destination_set.ToJson());
   SetSourceData(body, registration.source_event_id,
                 source.common_info().source_site(), registration.debug_key);
+
+  CHECK(base::ranges::none_of(data->additional_fields, [&](const auto& e) {
+    return body.contains(e.first);
+  }));
+  body.Merge(std::move(data->additional_fields));
 
   base::Value::List report_body;
   report_body.Append(GetReportData(data->debug_data_type, std::move(body)));

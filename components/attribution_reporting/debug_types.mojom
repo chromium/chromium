@@ -44,4 +44,5 @@ enum DebugDataType {
   kSourceDestinationGlobalRateLimit = 34,
   kSourceReportingOriginLimit = 35,
   kSourceDestinationPerDayRateLimit = 36,
+  kSourceDestinationLimitReplaced = 37,
 };

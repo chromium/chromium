@@ -130,6 +130,8 @@ class SourceBuilder {
   SourceBuilder& SetAggregatableDebugReportingConfig(
       attribution_reporting::SourceAggregatableDebugReportingConfig);
 
+  SourceBuilder& SetDestinationLimitPriority(int64_t priority);
+
   StorableSource Build() const;
 
   StoredSource BuildStored() const;

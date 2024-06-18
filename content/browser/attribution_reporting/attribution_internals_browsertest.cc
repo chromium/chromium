@@ -1416,6 +1416,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest, DebugReports) {
                             .SetDebugCookieSet(true)
                             .Build(),
                         /*is_noised=*/false, /*source_time=*/base::Time::Now(),
+                        /*destination_limit=*/std::nullopt,
                         StoreSourceResult::InternalError()));
   ASSERT_TRUE(report);
 

@@ -4,6 +4,8 @@
 
 #include "content/browser/attribution_reporting/rate_limit_table.h"
 
+#include <stdint.h>
+
 #include <set>
 #include <string>
 #include <vector>
@@ -13,7 +15,9 @@
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
+#include "base/ranges/functional.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
@@ -24,6 +28,7 @@
 #include "content/browser/attribution_reporting/sql_queries.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
 #include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "net/base/schemeful_site.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -46,6 +51,29 @@ bool IsAttribution(RateLimitTable::Scope scope) {
 
   NOTREACHED_NORETURN();
 }
+
+struct DestinationLimitRecord {
+  std::string serialized_destination;
+  base::Time time;
+  int64_t priority;
+  StoredSource::Id source_id;
+
+  bool operator>(const DestinationLimitRecord& other) const {
+    if (priority > other.priority) {
+      return true;
+    }
+    if (priority < other.priority) {
+      return false;
+    }
+    if (time > other.time) {
+      return true;
+    }
+    if (time < other.time) {
+      return false;
+    }
+    return serialized_destination > other.serialized_destination;
+  }
+};
 
 }  // namespace
 
@@ -76,6 +104,14 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
   // `kAggregatableAttribution` and is set to -1 for `kSource`. Note that -1 is
   // also set for `kEventLevelAttribution` records associated with fake reports,
   // as well as the attribution records from migration.
+  // |deactivated_for_source_destination_limit| indicates whether the record
+  // should be considered for source destination limit. This is only relevant
+  // for `kSource` and is set to 0 for `kEventLevelAttribution` and
+  // `kAggregatableAttribution`.
+  // |destination_limit_priority| indicates the priority of the record in
+  // regards of source destination limit. This is only relevant for `kSource`
+  // and is set to 0 for `kEventLevelAttribution` and
+  // `kAggregatableAttribution`.
   static constexpr char kRateLimitTableSql[] =
       "CREATE TABLE rate_limits("
       "id INTEGER PRIMARY KEY NOT NULL,"
@@ -88,7 +124,9 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
       "reporting_site TEXT NOT NULL,"
       "time INTEGER NOT NULL,"
       "source_expiry_or_attribution_time INTEGER NOT NULL,"
-      "report_id INTEGER NOT NULL)";
+      "report_id INTEGER NOT NULL,"
+      "deactivated_for_source_destination_limit INTEGER NOT NULL,"
+      "destination_limit_priority INTEGER NOT NULL)";
   if (!db->Execute(kRateLimitTableSql)) {
     return false;
   }
@@ -128,12 +166,13 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
 }
 
 bool RateLimitTable::AddRateLimitForSource(sql::Database* db,
-                                           const StoredSource& source) {
+                                           const StoredSource& source,
+                                           int64_t destination_limit_priority) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return AddRateLimit(db, source, /*trigger_time=*/std::nullopt,
                       /*context_origin=*/source.common_info().source_origin(),
                       Scope::kSource,
-                      /*report_id=*/std::nullopt);
+                      /*report_id=*/std::nullopt, destination_limit_priority);
 }
 
 bool RateLimitTable::AddRateLimitForAttribution(
@@ -144,7 +183,8 @@ bool RateLimitTable::AddRateLimitForAttribution(
     AttributionReport::Id report_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return AddRateLimit(db, source, attribution_info.time,
-                      attribution_info.context_origin, scope, report_id);
+                      attribution_info.context_origin, scope, report_id,
+                      /*destination_limit_priority=*/std::nullopt);
 }
 
 bool RateLimitTable::AddRateLimit(
@@ -153,10 +193,12 @@ bool RateLimitTable::AddRateLimit(
     std::optional<base::Time> trigger_time,
     const attribution_reporting::SuitableOrigin& context_origin,
     Scope scope,
-    std::optional<AttributionReport::Id> report_id) {
+    std::optional<AttributionReport::Id> report_id,
+    std::optional<int64_t> destination_limit_priority) {
   const bool is_attribution = IsAttribution(scope);
   CHECK_EQ(trigger_time.has_value(), is_attribution);
   CHECK_EQ(report_id.has_value(), is_attribution);
+  CHECK_NE(destination_limit_priority.has_value(), is_attribution);
 
   const CommonSourceInfo& common_info = source.common_info();
 
@@ -174,21 +216,24 @@ bool RateLimitTable::AddRateLimit(
   }
 
   base::Time source_expiry_or_attribution_time;
-  int64_t report_id_value = kUnsetReportId;
+  int64_t report_id_value = kUnsetRecordId;
+  int64_t destination_limit_priority_value = 0;
   if (is_attribution) {
     source_expiry_or_attribution_time = *trigger_time;
     report_id_value = **report_id;
   } else {
     scope = Scope::kSource;
     source_expiry_or_attribution_time = source.expiry_time();
+    destination_limit_priority_value = *destination_limit_priority;
   }
 
   static constexpr char kStoreRateLimitSql[] =
       "INSERT INTO rate_limits"
       "(scope,source_id,source_site,destination_site,context_origin,"
       "reporting_origin,reporting_site,time,source_expiry_or_attribution_time,"
-      "report_id)"
-      "VALUES(?,?,?,?,?,?,?,?,?,?)";
+      "report_id,deactivated_for_source_destination_limit,"
+      "destination_limit_priority)"
+      "VALUES(?,?,?,?,?,?,?,?,?,?,0,?)";
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kStoreRateLimitSql));
 
@@ -202,6 +247,7 @@ bool RateLimitTable::AddRateLimit(
   statement.BindTime(7, source.source_time());
   statement.BindTime(8, source_expiry_or_attribution_time);
   statement.BindInt64(9, report_id_value);
+  statement.BindInt64(10, destination_limit_priority_value);
 
   const auto insert_row = [&](const net::SchemefulSite& site) {
     statement.BindString(3, site.Serialize());
@@ -321,14 +367,12 @@ RateLimitResult RateLimitTable::SourceAllowedForReportingOriginPerSiteLimit(
   return RateLimitResult::kAllowed;
 }
 
-RateLimitResult RateLimitTable::SourceAllowedForDestinationLimit(
+base::expected<std::vector<StoredSource::Id>, RateLimitTable::Error>
+RateLimitTable::GetSourcesToDeactivateForDestinationLimit(
     sql::Database* db,
     const StorableSource& source,
     base::Time source_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  static_assert(static_cast<int>(Scope::kSource) == 0,
-                "update `scope=0` query below");
 
   // Check the number of unique destinations covered by all source registrations
   // whose [source_time, source_expiry_or_attribution_time] intersect with the
@@ -345,20 +389,75 @@ RateLimitResult RateLimitTable::SourceAllowedForDestinationLimit(
   const int limit = delegate_->GetMaxDestinationsPerSourceSiteReportingSite();
   DCHECK_GT(limit, 0);
 
-  base::flat_set<net::SchemefulSite> destination_sites =
-      source.registration().destination_set.destinations();
+  std::vector<DestinationLimitRecord> records;
+  for (const auto& destination :
+       source.registration().destination_set.destinations()) {
+    records.emplace_back(destination.Serialize(), source_time,
+                         source.registration().destination_limit_priority,
+                         StoredSource::Id(kUnsetRecordId));
+  }
 
   while (statement.Step()) {
-    destination_sites.insert(
-        net::SchemefulSite::Deserialize(statement.ColumnString(0)));
+    const int64_t source_id = statement.ColumnInt64(3);
+    // `source_id` should not be unset.
+    // Note that this could occur in practice, e.g. with deliberate DB
+    // modification or corruption, which would cause this to continue failing
+    // until the offending row expires.
+    if (source_id == kUnsetRecordId) {
+      return base::unexpected(Error());
+    }
+    records.emplace_back(/*serialized_destination=*/statement.ColumnString(0),
+                         /*time=*/statement.ColumnTime(1),
+                         /*priority=*/statement.ColumnInt64(2),
+                         StoredSource::Id(source_id));
   }
 
-  if (destination_sites.size() > static_cast<size_t>(limit)) {
-    return RateLimitResult::kNotAllowed;
+  if (!statement.Succeeded()) {
+    return base::unexpected(Error());
   }
 
-  return statement.Succeeded() ? RateLimitResult::kAllowed
-                               : RateLimitResult::kError;
+  base::ranges::sort(records, base::ranges::greater());
+
+  base::flat_set<net::SchemefulSite> destination_sites;
+  std::vector<StoredSource::Id> source_ids_to_deactivate;
+
+  for (const DestinationLimitRecord& record : records) {
+    net::SchemefulSite destination =
+        net::SchemefulSite::Deserialize(record.serialized_destination);
+    if (destination_sites.size() < static_cast<size_t>(limit)) {
+      destination_sites.emplace(std::move(destination));
+    } else if (!destination_sites.contains(destination)) {
+      source_ids_to_deactivate.push_back(record.source_id);
+    }
+  }
+
+  return base::flat_set<StoredSource::Id>(std::move(source_ids_to_deactivate))
+      .extract();
+}
+
+bool RateLimitTable::DeactivateSourcesForDestinationLimit(
+    sql::Database* db,
+    const std::vector<StoredSource::Id>& source_ids) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  sql::Transaction transaction(db);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  sql::Statement statement(db->GetCachedStatement(
+      SQL_FROM_HERE,
+      attribution_queries::kDeactivateForSourceDestinationLimitSql));
+
+  for (StoredSource::Id id : source_ids) {
+    statement.Reset(/*clear_bound_vars=*/true);
+    statement.BindInt64(0, *id);
+    if (!statement.Run()) {
+      return false;
+    }
+  }
+
+  return transaction.Commit();
 }
 
 RateLimitTable::DestinationRateLimitResult

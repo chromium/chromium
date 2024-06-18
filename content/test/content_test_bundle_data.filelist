@@ -5728,6 +5728,7 @@ data/attribution_reporting/databases/version_59.sql
 data/attribution_reporting/databases/version_60.sql
 data/attribution_reporting/databases/version_61.sql
 data/attribution_reporting/databases/version_62.sql
+data/attribution_reporting/databases/version_63.sql
 data/attribution_reporting/inject_cross_app_web_third_party_ot.js
 data/attribution_reporting/interop/aggregatable_budget.json
 data/attribution_reporting/interop/aggregatable_contributions_creation.json

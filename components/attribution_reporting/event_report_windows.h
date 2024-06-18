@@ -18,10 +18,6 @@
 
 namespace attribution_reporting {
 
-// Calculates the last trigger time that could have produced `report_time`.
-COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-base::Time LastTriggerTimeForReportTime(base::Time report_time);
-
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventReportWindows {
  public:
   // Represents the potential outcomes from checking if a trigger falls within
@@ -78,6 +74,8 @@ class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) EventReportWindows {
                                base::Time trigger_time) const;
 
   base::Time ReportTimeAtWindow(base::Time source_time, int window_index) const;
+
+  base::Time StartTimeAtWindow(base::Time source_time, int window_index) const;
 
   WindowResult FallsWithin(base::TimeDelta trigger_moment) const;
 

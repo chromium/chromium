@@ -3976,6 +3976,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.SourceDestinationLimitResult"
+    enum="AttributionSourceDestinationRateLimitResult"
+    expires_after="2024-11-20">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Records the result of the destination limit covered by unexpired sources
+    (https://wicg.github.io/attribution-reporting-api/#max-destinations-covered-by-unexpired-sources)
+    when the destination limit algorithm feature is enabled. Recorded for every
+    source that was checked against the destination limit in the storage layer.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.SourceRegistrationError13"
     enum="ConversionSourceRegistrationError" expires_after="2024-12-08">
   <owner>tquintanilla@chromium.org</owner>

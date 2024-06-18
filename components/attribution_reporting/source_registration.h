@@ -80,6 +80,7 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) SourceRegistration {
       mojom::TriggerDataMatching::kModulus;
   EventLevelEpsilon event_level_epsilon;
   SourceAggregatableDebugReportingConfig aggregatable_debug_reporting_config;
+  int64_t destination_limit_priority = 0;
 };
 
 }  // namespace attribution_reporting

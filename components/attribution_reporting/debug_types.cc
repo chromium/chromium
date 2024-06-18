@@ -23,6 +23,7 @@ using ::attribution_reporting::mojom::DebugDataType;
   X(kSourceChannelCapacityLimit, "source-channel-capacity-limit")              \
   X(kSourceDestinationGlobalRateLimit, "source-destination-global-rate-limit") \
   X(kSourceDestinationLimit, "source-destination-limit")                       \
+  X(kSourceDestinationLimitReplaced, "source-destination-limit-replaced")      \
   X(kSourceDestinationPerDayRateLimit,                                         \
     "source-destination-per-day-rate-limit")                                   \
   X(kSourceDestinationRateLimit, "source-destination-rate-limit")              \

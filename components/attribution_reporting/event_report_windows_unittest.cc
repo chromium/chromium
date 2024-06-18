@@ -559,6 +559,36 @@ TEST(EventReportWindowsTest, ReportTimeAtWindow) {
   }
 }
 
+TEST(EventReportWindowsTest, StartTimeAtWindow) {
+  const EventReportWindows kDefaultReportWindows = *EventReportWindows::Create(
+      base::Hours(0), {base::Hours(1), base::Days(3), base::Days(7)});
+  base::Time kSourceTime = base::Time();
+
+  const struct {
+    int index;
+    base::Time expected;
+  } kTestCases[] = {
+      {
+          .index = 0,
+          .expected = kSourceTime,
+      },
+      {
+          .index = 1,
+          .expected = kSourceTime + base::Hours(1),
+      },
+      {
+          .index = 2,
+          .expected = kSourceTime + base::Days(3),
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(
+        kDefaultReportWindows.StartTimeAtWindow(kSourceTime, test_case.index),
+        test_case.expected);
+  }
+}
+
 TEST(EventReportWindowsTest, FallsWithin) {
   const EventReportWindows kDefaultReportWindows =
       *EventReportWindows::Create(base::Hours(1), {base::Hours(2)});
@@ -638,11 +668,6 @@ TEST(EventReportWindowsTest, Serialize) {
     test_case.input.Serialize(actual);
     EXPECT_THAT(actual, base::test::IsJson(test_case.expected));
   }
-}
-
-TEST(EventReportWindowsTest, LastTriggerTimeForReportTime) {
-  const base::Time time = base::Time::Now();
-  EXPECT_EQ(LastTriggerTimeForReportTime(time), time - base::Milliseconds(1));
 }
 
 }  // namespace

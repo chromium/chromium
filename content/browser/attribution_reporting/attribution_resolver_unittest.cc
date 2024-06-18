@@ -1696,7 +1696,7 @@ TEST_F(AttributionResolverTest, FalselyAttributeImpression_ReportStored) {
   base::TimeDelta kFirstWindow = base::Days(1);
   base::TimeDelta kExpiry = base::Days(30);
   const base::Time fake_report_time = base::Time::Now() + kFirstWindow;
-  const base::Time fake_trigger_time = fake_report_time - base::Milliseconds(1);
+  const base::Time fake_trigger_time = base::Time::Now();
 
   SourceBuilder builder = TestAggregatableSourceProvider().GetBuilder();
   builder.SetSourceEventId(4)
@@ -4507,6 +4507,334 @@ TEST_F(AttributionResolverSourceDestinationLimitTest,
                         .Build())
                 .status(),
             StorableSource::Result::kSuccess);
+}
+
+TEST_F(AttributionResolverSourceDestinationLimitTest,
+       LimitHit_DestinationDeactivated) {
+  delegate()->set_max_destinations_per_source_site_reporting_site(1);
+
+  EXPECT_THAT(
+      storage()->StoreSource(
+          SourceBuilder()
+              .SetSourceEventId(1)
+              .SetDestinationSites(
+                  {net::SchemefulSite::Deserialize("https://d1.test")})
+              .Build()),
+      AllOf(Property(&StoreSourceResult::result,
+                     VariantWith<StoreSourceResult::Success>(_)),
+            Property(&StoreSourceResult::destination_limit, Eq(std::nullopt))));
+
+  EXPECT_THAT(
+      storage()->StoreSource(
+          SourceBuilder()
+              .SetSourceEventId(2)
+              .SetDestinationSites(
+                  {net::SchemefulSite::Deserialize("https://d2.test")})
+              .Build()),
+      AllOf(Property(&StoreSourceResult::result,
+                     VariantWith<StoreSourceResult::Success>(_)),
+            Property(&StoreSourceResult::destination_limit, Optional(1))));
+
+  EXPECT_THAT(storage()->GetActiveSources(),
+              UnorderedElementsAre(SourceEventIdIs(2)));
+}
+
+TEST_F(AttributionResolverSourceDestinationLimitTest,
+       PriorityTooLow_SourceDropped) {
+  delegate()->set_max_destinations_per_source_site_reporting_site(1);
+
+  EXPECT_THAT(
+      storage()->StoreSource(
+          SourceBuilder()
+              .SetSourceEventId(1)
+              .SetDestinationLimitPriority(1)
+              .SetDestinationSites(
+                  {net::SchemefulSite::Deserialize("https://d1.test")})
+              .Build()),
+      AllOf(Property(&StoreSourceResult::result,
+                     VariantWith<StoreSourceResult::Success>(_)),
+            Property(&StoreSourceResult::destination_limit, Eq(std::nullopt))));
+
+  EXPECT_THAT(
+      storage()->StoreSource(
+          SourceBuilder()
+              .SetSourceEventId(2)
+              .SetDestinationSites(
+                  {net::SchemefulSite::Deserialize("https://d2.test")})
+              .Build()),
+      Property(
+          &StoreSourceResult::result,
+          VariantWith<
+              StoreSourceResult::InsufficientUniqueDestinationCapacity>(Field(
+              &StoreSourceResult::InsufficientUniqueDestinationCapacity::limit,
+              1))));
+
+  EXPECT_THAT(storage()->GetActiveSources(),
+              UnorderedElementsAre(SourceEventIdIs(1)));
+}
+
+TEST_F(AttributionResolverSourceDestinationLimitTest,
+       LimitHit_EventLevelReportNotDeleted) {
+  delegate()->set_max_destinations_per_source_site_reporting_site(1);
+
+  EXPECT_THAT(
+      storage()->StoreSource(
+          SourceBuilder()
+              .SetSourceEventId(1)
+              .SetDestinationSites(
+                  {net::SchemefulSite::Deserialize("https://d1.test")})
+              .Build()),
+      AllOf(Property(&StoreSourceResult::result,
+                     VariantWith<StoreSourceResult::Success>(_)),
+            Property(&StoreSourceResult::destination_limit, Eq(std::nullopt))));
+
+  EXPECT_EQ(MaybeCreateAndStoreEventLevelReport(
+                TriggerBuilder()
+                    .SetDestinationOrigin(
+                        *SuitableOrigin::Deserialize("https://d1.test"))
+                    .Build()),
+            AttributionTrigger::EventLevelResult::kSuccess);
+
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+
+  // This should deactivate the source, but doesn't delete the pending report.
+  EXPECT_THAT(
+      storage()->StoreSource(
+          SourceBuilder()
+              .SetSourceEventId(2)
+              .SetDestinationSites(
+                  {net::SchemefulSite::Deserialize("https://d2.test")})
+              .Build()),
+      AllOf(Property(&StoreSourceResult::result,
+                     VariantWith<StoreSourceResult::Success>(_)),
+            Property(&StoreSourceResult::destination_limit, Optional(1))));
+  EXPECT_THAT(storage()->GetActiveSources(),
+              UnorderedElementsAre(SourceEventIdIs(2)));
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), SizeIs(1));
+}
+
+TEST_F(AttributionResolverSourceDestinationLimitTest,
+       LimitHit_AggregatableReportDeleted) {
+  delegate()->set_rate_limits([]() {
+    AttributionConfig::RateLimitConfig r;
+    r.max_attributions = 1;
+    return r;
+  }());
+
+  delegate()->set_max_destinations_per_source_site_reporting_site(1);
+
+  StorableSource source =
+      TestAggregatableSourceProvider()
+          .GetBuilder()
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://d1.test")})
+          .Build();
+  AttributionTrigger trigger =
+      DefaultAggregatableTriggerBuilder()
+          .SetDestinationOrigin(*SuitableOrigin::Deserialize("https://d1.test"))
+          .Build(
+              /*generate_event_trigger_data=*/false);
+
+  EXPECT_THAT(
+      storage()->StoreSource(source),
+      AllOf(Property(&StoreSourceResult::result,
+                     VariantWith<StoreSourceResult::Success>(_)),
+            Property(&StoreSourceResult::destination_limit, Eq(std::nullopt))));
+
+  EXPECT_EQ(MaybeCreateAndStoreAggregatableReport(trigger),
+            AttributionTrigger::AggregatableResult::kSuccess);
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), SizeIs(1));
+  EXPECT_EQ(MaybeCreateAndStoreAggregatableReport(trigger),
+            AttributionTrigger::AggregatableResult::kExcessiveAttributions);
+
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+
+  // This should deactivate the previous source, delete the pending report, and
+  // the corresponding attribution rate-limit record.
+  EXPECT_THAT(
+      storage()->StoreSource(
+          SourceBuilder()
+              .SetDestinationSites(
+                  {net::SchemefulSite::Deserialize("https://d2.test")})
+              .Build()),
+      AllOf(Property(&StoreSourceResult::result,
+                     VariantWith<StoreSourceResult::Success>(_)),
+            Property(&StoreSourceResult::destination_limit, Optional(1))));
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()), IsEmpty());
+
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+
+  EXPECT_THAT(
+      storage()->StoreSource(source),
+      AllOf(Property(&StoreSourceResult::result,
+                     VariantWith<StoreSourceResult::Success>(_)),
+            Property(&StoreSourceResult::destination_limit, Optional(1))));
+  EXPECT_EQ(MaybeCreateAndStoreAggregatableReport(trigger),
+            AttributionTrigger::AggregatableResult::kSuccess);
+}
+
+TEST_F(AttributionResolverSourceDestinationLimitTest,
+       LimitHit_FakeReportDeleted) {
+  delegate()->set_rate_limits([]() {
+    AttributionConfig::RateLimitConfig r;
+    r.max_attributions = 1;
+    return r;
+  }());
+
+  delegate()->set_max_destinations_per_source_site_reporting_site(1);
+
+  delegate()->set_randomized_response(
+      std::vector<attribution_reporting::FakeEventLevelReport>{
+          {.trigger_data = 0, .window_index = 0},
+          {.trigger_data = 1, .window_index = 1}});
+
+  EXPECT_THAT(
+      storage()->StoreSource(
+          SourceBuilder()
+              .SetDestinationSites(
+                  {net::SchemefulSite::Deserialize("https://d1.test")})
+              .SetTriggerSpecs(TriggerSpecs(
+                  SourceType::kEvent,
+                  *attribution_reporting::EventReportWindows::Create(
+                      base::Days(0), {base::Days(1), base::Days(2)})))
+              .Build()),
+      AllOf(Property(&StoreSourceResult::result,
+                     VariantWith<StoreSourceResult::Success>(_)),
+            Property(&StoreSourceResult::destination_limit, Eq(std::nullopt))));
+  delegate()->set_randomized_response(std::nullopt);
+
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
+              UnorderedElementsAre(EventLevelDataIs(TriggerDataIs(0)),
+                                   EventLevelDataIs(TriggerDataIs(1))));
+
+  StorableSource source =
+      SourceBuilder()
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://d1.test")})
+          .Build();
+  AttributionTrigger trigger =
+      TriggerBuilder()
+          .SetDestinationOrigin(*SuitableOrigin::Deserialize("https://d1.test"))
+          .Build();
+
+  EXPECT_THAT(
+      storage()->StoreSource(source),
+      AllOf(Property(&StoreSourceResult::result,
+                     VariantWith<StoreSourceResult::Success>(_)),
+            Property(&StoreSourceResult::destination_limit, Eq(std::nullopt))));
+  EXPECT_EQ(MaybeCreateAndStoreEventLevelReport(trigger),
+            AttributionTrigger::EventLevelResult::kExcessiveAttributions);
+
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+
+  // This should deactivate the sources and delete the second fake report, but
+  // not deleting the corresponding attribution rate-limit record.
+  EXPECT_THAT(
+      storage()->StoreSource(
+          SourceBuilder()
+              .SetDestinationSites(
+                  {net::SchemefulSite::Deserialize("https://d2.test")})
+              .Build()),
+      AllOf(Property(&StoreSourceResult::result,
+                     VariantWith<StoreSourceResult::Success>(_)),
+            Property(&StoreSourceResult::destination_limit, Optional(1))));
+  EXPECT_THAT(storage()->GetAttributionReports(base::Time::Max()),
+              UnorderedElementsAre(EventLevelDataIs(TriggerDataIs(0))));
+
+  task_environment_.FastForwardBy(base::Milliseconds(1));
+
+  EXPECT_THAT(
+      storage()->StoreSource(source),
+      AllOf(Property(&StoreSourceResult::result,
+                     VariantWith<StoreSourceResult::Success>(_)),
+            Property(&StoreSourceResult::destination_limit, Optional(1))));
+  EXPECT_EQ(MaybeCreateAndStoreEventLevelReport(trigger),
+            AttributionTrigger::EventLevelResult::kExcessiveAttributions);
+}
+
+TEST_F(
+    AttributionResolverSourceDestinationLimitTest,
+    LimitHitAndDestinationGlobalRateLimitHit_DestinationDeactivatedAndSourceDropped) {
+  delegate()->set_max_destinations_per_source_site_reporting_site(1);
+  delegate()->set_destination_rate_limit([]() {
+    AttributionConfig::DestinationRateLimit limit;
+    limit.max_total = 1;
+    limit.rate_limit_window = base::Minutes(1);
+    return limit;
+  }());
+
+  storage()->StoreSource(
+      SourceBuilder()
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://d1.test")})
+          .Build());
+
+  EXPECT_THAT(
+      storage()->StoreSource(
+          SourceBuilder()
+              .SetDestinationSites(
+                  {net::SchemefulSite::Deserialize("https://d2.test")})
+              .Build()),
+      AllOf(
+          Property(
+              &StoreSourceResult::result,
+              VariantWith<StoreSourceResult::DestinationGlobalLimitReached>(_)),
+          Property(&StoreSourceResult::destination_limit, Optional(1))));
+  EXPECT_THAT(storage()->GetActiveSources(), IsEmpty());
+}
+
+TEST_F(AttributionResolverSourceDestinationLimitTest,
+       DestinationLimitResultMetrics) {
+  delegate()->set_max_destinations_per_source_site_reporting_site(1);
+
+  StorableSource source =
+      SourceBuilder()
+          .SetDestinationSites(
+              {net::SchemefulSite::Deserialize("https://d1.test")})
+          .Build();
+
+  const struct {
+    const char* desc;
+    const char* destination;
+    int64_t priority = 0;
+    int expected;
+  } kTestCases[] = {
+      {
+          .desc = "allowed",
+          .destination = "https://d1.test",
+          .expected = 0,  // kAllowed
+      },
+      {
+          .desc = "allowed-limit-hit",
+          .destination = "https://d2.test",
+          .priority = 1,
+          .expected = 1,  // kAllowedLimitHit
+      },
+      {
+          .desc = "not-allowed",
+          .destination = "https://d2.test",
+          .priority = -1,
+          .expected = 2,  // kNotAllowed
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.desc);
+
+    storage()->StoreSource(source);
+
+    base::HistogramTester histograms;
+    storage()->StoreSource(
+        SourceBuilder()
+            .SetDestinationLimitPriority(test_case.priority)
+            .SetDestinationSites(
+                {net::SchemefulSite::Deserialize(test_case.destination)})
+            .Build());
+    storage()->ClearData(base::Time::Min(), base::Time::Max(),
+                         base::NullCallback());
+    histograms.ExpectBucketCount("Conversions.SourceDestinationLimitResult",
+                                 test_case.expected, 1);
+  }
 }
 
 }  // namespace content

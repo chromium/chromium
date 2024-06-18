@@ -777,6 +777,12 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="4" label="Internal error"/>
 </enum>
 
+<enum name="AttributionSourceDestinationRateLimitResult">
+  <int value="0" label="Allowed"/>
+  <int value="1" label="Allowed but limit hit"/>
+  <int value="2" label="Disallowed"/>
+</enum>
+
 <enum name="AuctionInvalidServerResponseReason">
   <int value="0" label="Unknown"/>
   <int value="1" label="Not Witnessed"/>

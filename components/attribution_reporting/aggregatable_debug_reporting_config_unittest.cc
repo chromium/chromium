@@ -41,7 +41,7 @@ using ::testing::Pair;
 using ::testing::Property;
 using ::testing::SizeIs;
 
-constexpr size_t kNumSourceDebugDataTypes = 12;
+constexpr size_t kNumSourceDebugDataTypes = 13;
 constexpr size_t kNumTriggerDebugDataTypes = 21;
 
 TEST(AggregatableDebugReportingConfig, Parse) {
@@ -753,6 +753,10 @@ TEST(AggregatableDebugReportingConfig, SourceDebugDataTypes) {
       {
           "source-destination-limit",
           DebugDataType::kSourceDestinationLimit,
+      },
+      {
+          "source-destination-limit-replaced",
+          DebugDataType::kSourceDestinationLimitReplaced,
       },
       {
           "source-destination-per-day-rate-limit",

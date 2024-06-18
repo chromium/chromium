@@ -20,6 +20,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/containers/enum_set.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
@@ -126,6 +127,42 @@ void RecordReportsDeleted(int event_count, int aggregatable_count) {
   UMA_HISTOGRAM_COUNTS_1000(
       "Conversions.ReportsDeletedInDataClearOperation.Aggregatable",
       aggregatable_count);
+}
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class DestinationLimitResult {
+  // Destinations allowed without hitting the limit.
+  kAllowed = 0,
+  // Destinations allowed but hitting the limit, deactivating destinations with
+  // lowest priority or time.
+  kAllowedLimitHit = 1,
+  // Destinations not allowed due to lower priority while hitting the limit.
+  kNotAllowed = 2,
+  kMaxValue = kNotAllowed,
+};
+
+DestinationLimitResult GetDestinationLimitResult(
+    const std::vector<StoredSource::Id>& sources_to_deactivate) {
+  const bool destination_limit_hit = !sources_to_deactivate.empty();
+
+  if (!base::FeatureList::IsEnabled(attribution_reporting::features::
+                                        kAttributionSourceDestinationLimit)) {
+    return destination_limit_hit ? DestinationLimitResult::kNotAllowed
+                                 : DestinationLimitResult::kAllowed;
+  }
+
+  DestinationLimitResult result =
+      destination_limit_hit
+          ? (base::Contains(sources_to_deactivate,
+                            StoredSource::Id(RateLimitTable::kUnsetRecordId))
+                 ? DestinationLimitResult::kNotAllowed
+                 : DestinationLimitResult::kAllowedLimitHit)
+          : DestinationLimitResult::kAllowed;
+
+  base::UmaHistogramEnumeration("Conversions.SourceDestinationLimitResult",
+                                result);
+  return result;
 }
 
 int64_t SerializeUint64(uint64_t data) {
@@ -519,6 +556,76 @@ bool AttributionStorageSql::DeactivateSources(
   return transaction.Commit();
 }
 
+bool AttributionStorageSql::DeactivateSourcesForDestinationLimit(
+    const std::vector<StoredSource::Id>& sources,
+    base::Time now) {
+  if (sources.empty()) {
+    return true;
+  }
+
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return false;
+  }
+
+  if (!DeactivateSources(sources)) {
+    return false;
+  }
+
+  if (!rate_limit_table_.DeactivateSourcesForDestinationLimit(&db_, sources)) {
+    return false;
+  }
+
+  // Note that this may also delete true reports if the user configured the
+  // clock between the trigger time and now.
+  sql::Statement delete_event_level_reports_statement(db_.GetCachedStatement(
+      SQL_FROM_HERE,
+      attribution_queries::kDeleteEventLevelReportsForDestinationLimitSql));
+
+  delete_event_level_reports_statement.BindTime(1, now);
+
+  for (StoredSource::Id id : sources) {
+    delete_event_level_reports_statement.Reset(/*clear_bound_vars=*/false);
+    delete_event_level_reports_statement.BindInt64(0, *id);
+    while (delete_event_level_reports_statement.Step()) {
+      // Note that this is a no-op for fake reports whose report IDs were not
+      // stored in the rate-limits record.
+      AttributionReport::Id report_id(
+          delete_event_level_reports_statement.ColumnInt64(0));
+      if (!rate_limit_table_.DeleteAttributionRateLimit(
+              &db_, RateLimitTable::Scope::kEventLevelAttribution, report_id)) {
+        return false;
+      }
+    }
+    if (!delete_event_level_reports_statement.Succeeded()) {
+      return false;
+    }
+  }
+
+  sql::Statement delete_aggregatable_reports_statement(db_.GetCachedStatement(
+      SQL_FROM_HERE,
+      attribution_queries::kDeleteAggregatableReportsForDestinationLimitSql));
+
+  for (StoredSource::Id id : sources) {
+    delete_aggregatable_reports_statement.Reset(/*clear_bound_vars=*/true);
+    delete_aggregatable_reports_statement.BindInt64(0, *id);
+    while (delete_aggregatable_reports_statement.Step()) {
+      AttributionReport::Id report_id(
+          delete_aggregatable_reports_statement.ColumnInt64(0));
+      if (!rate_limit_table_.DeleteAttributionRateLimit(
+              &db_, RateLimitTable::Scope::kAggregatableAttribution,
+              report_id)) {
+        return false;
+      }
+    }
+    if (!delete_aggregatable_reports_statement.Succeeded()) {
+      return false;
+    }
+  }
+
+  return transaction.Commit();
+}
+
 StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -526,12 +633,17 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
         source.common_info().debug_cookie_set());
 
   bool is_noised = false;
+  std::optional<int> destination_limit;
 
   const base::Time source_time = base::Time::Now();
 
   const auto make_result = [&](StoreSourceResult::Result&& result) {
+    if (absl::holds_alternative<StoreSourceResult::InternalError>(result)) {
+      is_noised = false;
+      destination_limit.reset();
+    }
     return StoreSourceResult(std::move(source), is_noised, source_time,
-                             std::move(result));
+                             destination_limit, std::move(result));
   };
 
   // TODO(crbug.com/40287976): Support multiple specs.
@@ -657,19 +769,44 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
     }
   }
 
-  switch (rate_limit_table_.SourceAllowedForDestinationLimit(&db_, source,
-                                                             source_time)) {
-    case RateLimitResult::kAllowed:
-      break;
-    case RateLimitResult::kNotAllowed:
+  base::expected<std::vector<StoredSource::Id>, RateLimitTable::Error>
+      source_ids_to_deactivate =
+          rate_limit_table_.GetSourcesToDeactivateForDestinationLimit(
+              &db_, source, source_time);
+  if (!source_ids_to_deactivate.has_value()) {
+    return make_result(StoreSourceResult::InternalError());
+  }
+
+  switch (GetDestinationLimitResult(*source_ids_to_deactivate)) {
+    case DestinationLimitResult::kNotAllowed:
       return make_result(
           StoreSourceResult::InsufficientUniqueDestinationCapacity(
               delegate_->GetMaxDestinationsPerSourceSiteReportingSite()));
-    case RateLimitResult::kError:
-      return make_result(StoreSourceResult::InternalError());
+    case DestinationLimitResult::kAllowedLimitHit:
+      destination_limit.emplace(
+          delegate_->GetMaxDestinationsPerSourceSiteReportingSite());
+      break;
+    case DestinationLimitResult::kAllowed:
+      break;
   }
 
   is_noised = randomized_response_data.response().has_value();
+
+  sql::Transaction transaction(&db_);
+  if (!transaction.Begin()) {
+    return make_result(StoreSourceResult::InternalError());
+  }
+
+  if (!DeactivateSourcesForDestinationLimit(*source_ids_to_deactivate,
+                                            source_time)) {
+    return make_result(StoreSourceResult::InternalError());
+  }
+
+  const auto commit_and_return = [&](StoreSourceResult::Result&& result) {
+    return transaction.Commit()
+               ? make_result(std::move(result))
+               : make_result(StoreSourceResult::InternalError());
+  };
 
   // IMPORTANT: The following rate-limits are shared across reporting sites and
   // therefore security sensitive. It's important to ensure that these
@@ -677,7 +814,8 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
   // side-channel leakage of the cross-origin data.
 
   if (hit_global_destination_limit) {
-    return make_result(StoreSourceResult::DestinationGlobalLimitReached());
+    return commit_and_return(
+        StoreSourceResult::DestinationGlobalLimitReached());
   }
 
   switch (rate_limit_table_.SourceAllowedForReportingOriginLimit(&db_, source,
@@ -685,14 +823,9 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
     case RateLimitResult::kAllowed:
       break;
     case RateLimitResult::kNotAllowed:
-      return make_result(StoreSourceResult::ExcessiveReportingOrigins());
+      return commit_and_return(StoreSourceResult::ExcessiveReportingOrigins());
     case RateLimitResult::kError:
       return make_result(StoreSourceResult::InternalError());
-  }
-
-  sql::Transaction transaction(&db_);
-  if (!transaction.Begin()) {
-    return make_result(StoreSourceResult::InternalError());
   }
 
   const base::Time expiry_time = source_time + reg.expiry;
@@ -799,7 +932,9 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
       remaining_aggregatable_debug_budget);
 
   if (!stored_source.has_value() ||
-      !rate_limit_table_.AddRateLimitForSource(&db_, *stored_source)) {
+      !rate_limit_table_.AddRateLimitForSource(
+          &db_, *stored_source,
+          source.registration().destination_limit_priority)) {
     return make_result(StoreSourceResult::InternalError());
   }
 
@@ -815,10 +950,10 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
 
       base::Time report_time =
           windows.ReportTimeAtWindow(source_time, fake_report.window_index);
-      // The last trigger time will always fall within a report window, no
-      // matter the report window's start time.
+      // The report start time will always fall within a report window, no
+      // matter the report window's end time.
       base::Time trigger_time =
-          attribution_reporting::LastTriggerTimeForReportTime(report_time);
+          windows.StartTimeAtWindow(source_time, fake_report.window_index);
       DCHECK_EQ(windows.ComputeReportTime(source_time, trigger_time),
                 report_time);
 
@@ -853,7 +988,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
                             /*debug_key=*/std::nullopt,
                             /*context_origin=*/common_info.source_origin()),
             *stored_source, RateLimitTable::Scope::kEventLevelAttribution,
-            AttributionReport::Id(kUnsetRecordId))) {
+            AttributionReport::Id(RateLimitTable::kUnsetRecordId))) {
       return make_result(StoreSourceResult::InternalError());
     }
   }

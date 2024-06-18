@@ -209,6 +209,9 @@ std::optional<AggregatableDebugReport> AggregatableDebugReport::Create(
   if (std::optional<DebugDataType> type = GetDebugType(result)) {
     types.Put(*type);
   }
+  if (result.destination_limit().has_value()) {
+    types.Put(DebugDataType::kSourceDestinationLimitReplaced);
+  }
 
   return AggregatableDebugReport(
       GetAggregatableContributions(config.config().key_piece,

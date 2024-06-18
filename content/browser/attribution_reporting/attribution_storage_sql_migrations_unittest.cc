@@ -625,4 +625,45 @@ TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion61ToCurrent) {
   histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
 }
 
+TEST_F(AttributionStorageSqlMigrationsTest, MigrateVersion62ToCurrent) {
+  base::HistogramTester histograms;
+  LoadDatabase(GetVersionFilePath(62), DbPath());
+
+  // Verify pre-conditions.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+    ASSERT_FALSE(db.DoesColumnExist(
+        "rate_limits", "deactivated_for_source_destination_limit"));
+    ASSERT_FALSE(
+        db.DoesColumnExist("rate_limits", "destination_limit_priority"));
+  }
+  MigrateDatabase();
+
+  // Verify schema is current.
+  {
+    sql::Database db;
+    ASSERT_TRUE(db.Open(DbPath()));
+
+    CheckVersionNumbers(&db);
+
+    // Compare normalized schemas
+    EXPECT_EQ(NormalizeSchema(GetCurrentSchema()),
+              NormalizeSchema(db.GetSchema()));
+
+    sql::Statement s(
+        db.GetUniqueStatement("SELECT "
+                              "deactivated_for_source_destination_limit,"
+                              "destination_limit_priority FROM rate_limits"));
+    ASSERT_TRUE(s.Step());
+    ASSERT_EQ(0, s.ColumnInt(0));
+    ASSERT_EQ(0, s.ColumnInt(1));
+    ASSERT_FALSE(s.Step());
+  }
+
+  // DB creation histograms should be recorded.
+  histograms.ExpectTotalCount("Conversions.Storage.CreationTime", 0);
+  histograms.ExpectTotalCount("Conversions.Storage.MigrationTime", 1);
+}
+
 }  // namespace content

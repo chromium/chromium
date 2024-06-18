@@ -169,6 +169,24 @@ inline constexpr const char kUpdateFailedReportSql[] =
   "failed_send_attempts=failed_send_attempts+1 "
   "WHERE report_id=?";
 
+static_assert(static_cast<int>(
+                  attribution_reporting::mojom::ReportType::kEventLevel) == 0,
+              "update `report_type=0` clause below");
+inline constexpr const char kDeleteEventLevelReportsForDestinationLimitSql[] =
+  "DELETE FROM reports "
+  "WHERE report_type=0 AND source_id=? AND trigger_time>=? "
+  "RETURNING report_id";
+
+static_assert(
+    static_cast<int>(
+        attribution_reporting::mojom::ReportType::kAggregatableAttribution) ==
+        1,
+    "update `report_type=1` clause below");
+inline constexpr char kDeleteAggregatableReportsForDestinationLimitSql[] =
+  "DELETE FROM reports "
+  "WHERE report_type=1 AND source_id=? "
+  "RETURNING report_id";
+
 // clang-format on
 
 inline constexpr const char kRateLimitAttributionAllowedSql[] =
@@ -192,11 +210,13 @@ static_assert(
 #define RATE_LIMIT_ATTRIBUTION_CONDITION "(scope=1 OR scope=2)"
 
 inline constexpr const char kRateLimitSourceAllowedSql[] =
-    "SELECT destination_site FROM rate_limits "
+    "SELECT destination_site,time,destination_limit_priority,source_id "
+    "FROM rate_limits "
     "WHERE " RATE_LIMIT_SOURCE_CONDITION
     " AND source_site=?"
     " AND reporting_site=?"
-    " AND source_expiry_or_attribution_time>?";
+    " AND source_expiry_or_attribution_time>?"
+    " AND deactivated_for_source_destination_limit=0";
 
 inline constexpr const char kRateLimitSourceAllowedDestinationRateLimitSql[] =
     "SELECT destination_site,reporting_site FROM rate_limits "
@@ -236,7 +256,7 @@ inline constexpr const char kRateLimitSelectSourceReportingOriginsBySiteSql[] =
     " AND reporting_site=?"
     " AND time>?";
 
-static_assert(RateLimitTable::kUnsetReportId == -1,
+static_assert(RateLimitTable::kUnsetRecordId == -1,
               "update `report_id!=-1` query below");
 #define RATE_LIMIT_REPORT_ID_SET_CONDITION "report_id!=-1"
 
@@ -265,6 +285,11 @@ inline constexpr const char kDeleteExpiredRateLimitsSql[] =
 
 inline constexpr const char kDeleteRateLimitsBySourceIdSql[] =
     "DELETE FROM rate_limits WHERE source_id=?";
+
+inline constexpr const char kDeactivateForSourceDestinationLimitSql[] =
+    "UPDATE rate_limits "
+    "SET deactivated_for_source_destination_limit=1 "
+    "WHERE " RATE_LIMIT_SOURCE_CONDITION " AND source_id=?";
 
 #undef RATE_LIMIT_SOURCE_CONDITION
 

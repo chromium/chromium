@@ -172,6 +172,21 @@ TEST_F(AttributionSqlQueryPlanTest, kUpdateFailedReportSql) {
               ValueIs(UsesPrimaryKey()));
 }
 
+TEST_F(AttributionSqlQueryPlanTest,
+       kDeleteEventLevelReportsForDestinationLimitSql) {
+  EXPECT_THAT(
+      GetPlan(
+          attribution_queries::kDeleteEventLevelReportsForDestinationLimitSql),
+      ValueIs(UsesIndex("reports_by_source_id_report_type")));
+}
+
+TEST_F(AttributionSqlQueryPlanTest,
+       kDeleteAggregatableReportsForDestinationLimitSql) {
+  EXPECT_THAT(GetPlan(attribution_queries::
+                          kDeleteAggregatableReportsForDestinationLimitSql),
+              ValueIs(UsesIndex("reports_by_source_id_report_type")));
+}
+
 TEST_F(AttributionSqlQueryPlanTest, kRateLimitAttributionAllowedSql) {
   EXPECT_THAT(GetPlan(attribution_queries::kRateLimitAttributionAllowedSql),
               ValueIs(UsesIndex("rate_limit_reporting_origin_idx",
@@ -245,6 +260,12 @@ TEST_F(AttributionSqlQueryPlanTest, kDeleteExpiredRateLimitsSql) {
 TEST_F(AttributionSqlQueryPlanTest, kDeleteRateLimitsBySourceIdSql) {
   EXPECT_THAT(GetPlan(attribution_queries::kDeleteRateLimitsBySourceIdSql),
               ValueIs(UsesIndex("rate_limit_source_id_idx")));
+}
+
+TEST_F(AttributionSqlQueryPlanTest, kDeactivateForSourceDestinationLimitSql) {
+  EXPECT_THAT(
+      GetPlan(attribution_queries::kDeactivateForSourceDestinationLimitSql),
+      ValueIs(UsesIndex("rate_limit_source_id_idx")));
 }
 
 TEST_F(AttributionSqlQueryPlanTest, kDeleteAttributionRateLimitByReportIdSql) {

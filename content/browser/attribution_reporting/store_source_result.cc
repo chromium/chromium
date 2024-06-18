@@ -4,6 +4,7 @@
 
 #include "content/browser/attribution_reporting/store_source_result.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/overloaded.h"
@@ -20,10 +21,12 @@ using Status = ::attribution_reporting::mojom::StoreSourceResult;
 StoreSourceResult::StoreSourceResult(StorableSource source,
                                      bool is_noised,
                                      base::Time source_time,
+                                     std::optional<int> destination_limit,
                                      Result result)
     : source_(std::move(source)),
       is_noised_(is_noised),
       source_time_(source_time),
+      destination_limit_(destination_limit),
       result_(std::move(result)) {
   if (const auto* success = absl::get_if<Success>(&result_)) {
     CHECK(!success->min_fake_report_time.has_value() || is_noised_);

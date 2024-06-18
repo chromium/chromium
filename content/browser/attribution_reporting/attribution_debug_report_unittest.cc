@@ -81,6 +81,7 @@ TEST(AttributionDebugReportTest, NoDebugReporting_NoReportReturned) {
       StoreSourceResult(
           SourceBuilder().Build(),
           /*is_noised=*/false, kSourceTime,
+          /*destination_limit=*/std::nullopt,
           StoreSourceResult::InsufficientUniqueDestinationCapacity(3))));
 
   EXPECT_FALSE(AttributionDebugReport::Create(
@@ -98,6 +99,7 @@ TEST(AttributionDebugReportTest, OperationProhibited_NoReportReturned) {
       StoreSourceResult(
           SourceBuilder().SetDebugReporting(true).Build(),
           /*is_noised=*/false, kSourceTime,
+          /*destination_limit=*/std::nullopt,
           StoreSourceResult::InsufficientUniqueDestinationCapacity(3))));
 
   EXPECT_FALSE(AttributionDebugReport::Create(
@@ -119,6 +121,7 @@ TEST(AttributionDebugReportTest,
               .SetDebugCookieSet(true)
               .Build(),
           /*is_noised=*/false, kSourceTime,
+          /*destination_limit=*/std::nullopt,
           StoreSourceResult::InsufficientUniqueDestinationCapacity(3)));
   ASSERT_TRUE(report);
 
@@ -149,6 +152,7 @@ TEST(AttributionDebugReportTest, WithinFencedFrame_NoDebugReport) {
               .SetIsWithinFencedFrame(true)
               .Build(),
           /*is_noised=*/false, kSourceTime,
+          /*destination_limit=*/std::nullopt,
           StoreSourceResult::InsufficientUniqueDestinationCapacity(3))));
 
   EXPECT_FALSE(AttributionDebugReport::Create(
@@ -168,6 +172,7 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
     StoreSourceResult::Result result;
     std::optional<uint64_t> debug_key;
     bool is_noised = false;
+    std::optional<int> destination_limit;
     const char* expected_report_body = nullptr;
   } kTestCases[] = {
       {
@@ -227,6 +232,35 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
       {
           .result = StoreSourceResult::Success(
               /*min_fake_report_time=*/std::nullopt, kSourceId),
+          .destination_limit = 3,
+          .expected_report_body = R"json([{
+            "body": {
+              "attribution_destination": "https://conversion.test",
+              "source_destination_limit": "3",
+              "source_event_id": "123",
+              "source_site": "https://impression.test"
+            },
+            "type": "source-success"
+          }])json",
+      },
+      {
+          .result = StoreSourceResult::Success(
+              /*min_fake_report_time=*/std::nullopt, kSourceId),
+          .is_noised = true,
+          .destination_limit = 3,
+          .expected_report_body = R"json([{
+            "body": {
+              "attribution_destination": "https://conversion.test",
+              "source_destination_limit": "3",
+              "source_event_id": "123",
+              "source_site": "https://impression.test"
+            },
+            "type": "source-noised"
+          }])json",
+      },
+      {
+          .result = StoreSourceResult::Success(
+              /*min_fake_report_time=*/std::nullopt, kSourceId),
           .is_noised = true,
           .expected_report_body = R"json([{
             "body": {
@@ -244,6 +278,21 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
             "body": {
               "attribution_destination": "https://conversion.test",
               "source_debug_key": "789",
+              "source_event_id": "123",
+              "source_site": "https://impression.test"
+            },
+            "type": "source-success"
+          }])json",
+      },
+      {
+          .result = StoreSourceResult::ExcessiveReportingOrigins(),
+          .debug_key = 789,
+          .destination_limit = 5,
+          .expected_report_body = R"json([{
+            "body": {
+              "attribution_destination": "https://conversion.test",
+              "source_debug_key": "789",
+              "source_destination_limit": "5",
               "source_event_id": "123",
               "source_site": "https://impression.test"
             },
@@ -271,6 +320,21 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
             "body": {
               "attribution_destination": "https://conversion.test",
               "source_debug_key": "789",
+              "source_event_id": "123",
+              "source_site": "https://impression.test"
+            },
+            "type": "source-success"
+          }])json",
+      },
+      {
+          .result = StoreSourceResult::DestinationGlobalLimitReached(),
+          .debug_key = 789,
+          .destination_limit = 3,
+          .expected_report_body = R"json([{
+            "body": {
+              "attribution_destination": "https://conversion.test",
+              "source_debug_key": "789",
+              "source_destination_limit": "3",
               "source_event_id": "123",
               "source_site": "https://impression.test"
             },
@@ -377,7 +441,7 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
                                    .SetDebugCookieSet(is_debug_cookie_set)
                                    .Build(),
                                test_case.is_noised, kSourceTime,
-                               test_case.result);
+                               test_case.destination_limit, test_case.result);
 
       SCOPED_TRACE(Message() << "is_debug_cookie_set: " << is_debug_cookie_set
                              << ", result: " << result.status());
@@ -412,6 +476,7 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
                     })
                     .Build(),
                 /*is_noised=*/true, kSourceTime,
+                /*destination_limit=*/std::nullopt,
                 StoreSourceResult::Success(
                     /*min_fake_report_time=*/std::nullopt, kSourceId)));
 
