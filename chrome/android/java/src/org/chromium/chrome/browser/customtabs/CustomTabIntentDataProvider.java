@@ -1351,21 +1351,6 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         return !mDisableDownload;
     }
 
-    @Override
-    public boolean isIncognito() {
-        return false;
-    }
-
-    @Override
-    public boolean isOffTheRecord() {
-        return false;
-    }
-
-    @Override
-    public boolean isIncognitoBranded() {
-        return false;
-    }
-
     @Nullable
     @Override
     public TrustedWebActivityDisplayMode getTwaDisplayMode() {

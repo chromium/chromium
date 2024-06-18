@@ -36,6 +36,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityCoordinator;
@@ -256,13 +257,14 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
             @Nullable
             @Override
             protected OTRProfileID createOffTheRecordProfileID() {
-                if (getIntentDataProvider().isIncognitoBranded()) {
-                    return OTRProfileID.createUnique("CCT:Incognito");
-                } else if (getIntentDataProvider().isOffTheRecord()) {
-                    return OTRProfileID.createUnique("CCT:Ephemeral");
-                } else {
-                    throw new IllegalStateException(
-                            "Attempting to create an OTR profile in a non-OTR session");
+                switch (getIntentDataProvider().getCustomTabMode()) {
+                    case CustomTabProfileType.INCOGNITO:
+                        return OTRProfileID.createUnique("CCT:Incognito");
+                    case CustomTabProfileType.EPHEMERAL:
+                        return OTRProfileID.createUnique("CCT:Ephemeral");
+                    default:
+                        throw new IllegalStateException(
+                                "Attempting to create an OTR profile in a non-OTR session");
                 }
             }
         };
@@ -337,7 +339,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
         BrowserServicesIntentDataProvider intentDataProvider = getIntentDataProvider();
 
-        if (intentDataProvider.isIncognitoBranded()) {
+        if (intentDataProvider.getCustomTabMode() == CustomTabProfileType.INCOGNITO) {
             component.resolveCustomTabIncognitoManager();
         }
 
@@ -561,7 +563,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
                 mIntentDataProvider.shouldShowShareMenuItem(),
                 mIntentDataProvider.shouldShowStarButton(),
                 mIntentDataProvider.shouldShowDownloadButton(),
-                mIntentDataProvider.isIncognitoBranded(),
+                mIntentDataProvider.getCustomTabMode() == CustomTabProfileType.INCOGNITO,
                 isMenuIconAtStart,
                 mBaseCustomTabRootUiCoordinator::isPageInsightsHubEnabled,
                 mBaseCustomTabRootUiCoordinator.getReadAloudControllerSupplier(),

@@ -79,9 +79,25 @@ public abstract class BrowserServicesIntentDataProvider {
     @Retention(RetentionPolicy.SOURCE)
     public @interface ActivitySideSheetSlideInBehavior {}
 
+    // The type of Profile and UI that is used by the custom tab.
+    @IntDef({
+        CustomTabProfileType.REGULAR,
+        CustomTabProfileType.INCOGNITO,
+        CustomTabProfileType.EPHEMERAL
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface CustomTabProfileType {
+        // The normal user profile.
+        int REGULAR = 0;
+        // An off-the-record profile with incognito UI.
+        int INCOGNITO = 1;
+        // An off-the-record profile without references to incognito mode.
+        int EPHEMERAL = 2;
+    }
+
     /**
-     * Side sheet's default slide-in behavior. Same as
-     * {@link ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE}.
+     * Side sheet's default slide-in behavior. Same as {@link
+     * ACTIVITY_SIDE_SHEET_SLIDE_IN_FROM_SIDE}.
      */
     public static final int ACTIVITY_SIDE_SHEET_SLIDE_IN_DEFAULT = 0;
 
@@ -335,27 +351,18 @@ public abstract class BrowserServicesIntentDataProvider {
     }
 
     /**
-     * @return Whether the Activity should be opened in off-the-record mode.
+     * @return Whether the Activity uses an off-the-record profile.
      */
     public boolean isOffTheRecord() {
-        return false;
+        return getCustomTabMode() == CustomTabProfileType.EPHEMERAL
+                || getCustomTabMode() == CustomTabProfileType.INCOGNITO;
     }
 
     /**
-     * @return Whether the Activity should be opened in off-the-record with incognito theme.
+     * @return Whether the Activity is a regular, incognito or ephemeral custom tab.
      */
-    public boolean isIncognitoBranded() {
-        return false;
-    }
-
-    /**
-     * @return Whether the Activity should be opened in incognito mode.
-     * @deprecated in favor of {@link #isOffTheRecord()} and {@link #isIncognitoBranded()}.
-     */
-    // TODO(crbug.com/335609494): Remove after updating internal usages.
-    @Deprecated
-    public boolean isIncognito() {
-        return false;
+    public @CustomTabProfileType int getCustomTabMode() {
+        return CustomTabProfileType.REGULAR;
     }
 
     /**

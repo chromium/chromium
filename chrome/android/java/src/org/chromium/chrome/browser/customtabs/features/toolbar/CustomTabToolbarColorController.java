@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType.INCOGNITO;
+
 import android.app.Activity;
 import android.content.res.ColorStateList;
 
@@ -218,10 +220,11 @@ public class CustomTabToolbarColorController {
 
     private @BrandedColorScheme int computeBrandedColorScheme(
             @ToolbarColorType int toolbarColorType, @ColorInt int toolbarColor) {
+        final boolean isIncognitoBranded = mIntentDataProvider.getCustomTabMode() == INCOGNITO;
         return switch (toolbarColorType) {
             case ToolbarColorType.THEME_COLOR -> OmniboxResourceProvider.getBrandedColorScheme(
-                    mActivity, mIntentDataProvider.isIncognitoBranded(), toolbarColor);
-            case ToolbarColorType.DEFAULT_COLOR -> mIntentDataProvider.isIncognitoBranded()
+                    mActivity, isIncognitoBranded, toolbarColor);
+            case ToolbarColorType.DEFAULT_COLOR -> isIncognitoBranded
                     ? BrandedColorScheme.INCOGNITO
                     : BrandedColorScheme.APP_DEFAULT;
             case ToolbarColorType.INTENT_TOOLBAR_COLOR -> ColorUtils
@@ -234,7 +237,7 @@ public class CustomTabToolbarColorController {
 
     private int getDefaultColor() {
         return ChromeColors.getDefaultThemeColor(
-                mActivity, mIntentDataProvider.isIncognitoBranded());
+                mActivity, mIntentDataProvider.getCustomTabMode() == INCOGNITO);
     }
 
     private static boolean shouldUseDefaultThemeColorForFullscreen(

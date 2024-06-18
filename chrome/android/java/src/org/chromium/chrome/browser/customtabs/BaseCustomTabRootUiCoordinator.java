@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType.INCOGNITO;
 import static org.chromium.chrome.browser.privacy_sandbox.ActivityTypeMapper.INVALID_ACTIVITY_TYPE;
 
 import android.content.Intent;
@@ -258,7 +259,7 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
         mIntentDataProvider = intentDataProvider;
         if (intentDataProvider.get().getActivityType() == ActivityType.CUSTOM_TAB
                 && !intentDataProvider.get().isOpenedByChrome()
-                && !intentDataProvider.get().isIncognitoBranded()) {
+                && intentDataProvider.get().getCustomTabMode() != INCOGNITO) {
             String appId = mIntentDataProvider.get().getClientPackageName();
             if (TextUtils.isEmpty(appId)) {
                 appId = CustomTabIntentDataProvider.getAppIdFromReferrer(activity);

@@ -79,6 +79,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
         mSendersPackageName = getClientPackageNameFromSessionOrCallingActivity(intent, mSession);
         mIsTrustedIntent = isTrustedCustomTab(intent, mSession);
         mIsIncognitoBranded = isIncognitoBranded;
+        assert isOffTheRecord();
         mAnimationBundle =
                 IntentUtils.safeGetBundleExtra(
                         intent, CustomTabsIntent.EXTRA_EXIT_ANIMATION_BUNDLE);
@@ -325,7 +326,7 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
 
     @Override
     public boolean shouldShowShareMenuItem() {
-        return mShowShareItem || !isIncognitoBranded();
+        return mShowShareItem || !mIsIncognitoBranded;
     }
 
     @Override
@@ -345,22 +346,14 @@ public class IncognitoCustomTabIntentDataProvider extends BrowserServicesIntentD
 
     @Override
     public boolean shouldShowDownloadButton() {
-        return !isIncognitoBranded();
+        return !mIsIncognitoBranded;
     }
 
     @Override
-    public boolean isIncognito() {
-        return true;
-    }
-
-    @Override
-    public boolean isIncognitoBranded() {
-        return mIsIncognitoBranded;
-    }
-
-    @Override
-    public boolean isOffTheRecord() {
-        return true;
+    public @CustomTabProfileType int getCustomTabMode() {
+        return mIsIncognitoBranded
+                ? CustomTabProfileType.INCOGNITO
+                : CustomTabProfileType.EPHEMERAL;
     }
 
     @Override

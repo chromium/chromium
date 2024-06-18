@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs.content;
 
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType.INCOGNITO;
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason.OTHER;
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason.REPARENTING;
 import static org.chromium.chrome.browser.customtabs.content.CustomTabActivityNavigationController.FinishReason.USER_NAVIGATION;
@@ -362,7 +363,8 @@ public class CustomTabActivityNavigationController
         }
 
         boolean willChromeHandleIntent =
-                mIntentDataProvider.isOpenedByChrome() || mIntentDataProvider.isIncognitoBranded();
+                mIntentDataProvider.isOpenedByChrome()
+                        || mIntentDataProvider.getCustomTabMode() == INCOGNITO;
 
         // If the tab is opened by TWA or Webapp, do not reparent and finish the Custom Tab
         // activity because we still want to keep the app alive.

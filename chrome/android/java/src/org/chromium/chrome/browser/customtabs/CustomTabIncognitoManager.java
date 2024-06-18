@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType.INCOGNITO;
+
 import android.app.Activity;
 
 import androidx.annotation.Nullable;
@@ -60,7 +62,7 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
 
     @Override
     public void onFinishNativeInitialization() {
-        if (mIntentDataProvider.isIncognitoBranded()) {
+        if (mIntentDataProvider.getCustomTabMode() == INCOGNITO) {
             initializeIncognito();
         }
     }
@@ -96,7 +98,8 @@ public class CustomTabIncognitoManager implements NativeInitObserver, DestroyObs
         if (!CommandLine.getInstance()
                 .hasSwitch(ChromeSwitches.ENABLE_INCOGNITO_SNAPSHOTS_IN_ANDROID_RECENTS)) {
             new IncognitoCustomTabSnapshotController(
-                    mActivity.getWindow(), () -> mIntentDataProvider.isIncognitoBranded());
+                    mActivity.getWindow(),
+                    () -> mIntentDataProvider.getCustomTabMode() == INCOGNITO);
         }
     }
 
