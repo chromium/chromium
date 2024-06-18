@@ -213,6 +213,11 @@ class FakeGaia {
   // Returns the rart param from the embedded setup URL if any.
   const std::string& reauth_request_token() { return reauth_request_token_; }
 
+  // Returns the pwl param from the embedded setup URL if any.
+  const std::string& passwordless_support_level() {
+    return passwordless_support_level_;
+  }
+
   // Returns the fake server's URL that browser tests can visit to trigger a
   // RemoveLocalAccount event.
   GURL GetFakeRemoveLocalAccountURL(const std::string& gaia_id) const;
@@ -360,6 +365,7 @@ class FakeGaia {
   std::string is_supervised_;
   std::string is_device_owner_;
   std::string reauth_request_token_;
+  std::string passwordless_support_level_;
   GaiaAuthConsumer::ReAuthProofTokenStatus next_reauth_status_ =
       GaiaAuthConsumer::ReAuthProofTokenStatus::kSuccess;
   GURL embedded_setup_chromeos_iframe_url_;

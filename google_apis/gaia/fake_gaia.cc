@@ -535,6 +535,7 @@ void FakeGaia::HandleEmbeddedSetupChromeos(const HttpRequest& request,
 
   GetQueryParameter(request_url.query(), "Email", &prefilled_email_);
   GetQueryParameter(request_url.query(), "rart", &reauth_request_token_);
+  GetQueryParameter(request_url.query(), "pwl", &passwordless_support_level_);
 
   http_response->set_code(net::HTTP_OK);
   http_response->set_content(GetEmbeddedSetupChromeosResponseContent());
@@ -557,6 +558,7 @@ void FakeGaia::HandleEmbeddedReauthChromeos(const HttpRequest& request,
   GetQueryParameter(request_url.query(), "is_device_owner", &is_device_owner_);
   GetQueryParameter(request_url.query(), "Email", &prefilled_email_);
   GetQueryParameter(request_url.query(), "rart", &reauth_request_token_);
+  GetQueryParameter(request_url.query(), "pwl", &passwordless_support_level_);
 
   http_response->set_code(net::HTTP_OK);
   http_response->set_content(GetEmbeddedSetupChromeosResponseContent());

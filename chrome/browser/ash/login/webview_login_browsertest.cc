@@ -37,6 +37,7 @@
 #include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/ash/login/signin_partition_manager.h"
+#include "chrome/browser/ash/login/test/auth_ui_utils.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/fake_recovery_service_mixin.h"
@@ -910,22 +911,60 @@ IN_PROC_BROWSER_TEST_F(WebviewDeviceOwnedLoginTest, AllowNewUser) {
 
 class ReauthWebviewLoginTest : public WebviewLoginTest {
  protected:
-  LoginManagerMixin::TestUserInfo reauth_user_{
-      AccountId::FromUserEmailGaiaId(FakeGaiaMixin::kFakeUserEmail,
-                                     FakeGaiaMixin::kFakeUserGaiaId),
-      test::UserAuthConfig::Create(test::kDefaultAuthSetup).RequireReauth()};
-  LoginManagerMixin login_manager_mixin_{&mixin_host_, {reauth_user_}};
+  LoginManagerMixin::TestUserInfo user_with_gaia_pw_{
+      LoginManagerMixin::CreateConsumerAccountId(1),
+      test::UserAuthConfig::Create({AshAuthFactor::kGaiaPassword})
+          .RequireReauth()};
+  LoginManagerMixin::TestUserInfo user_with_local_pw_{
+      LoginManagerMixin::CreateConsumerAccountId(2),
+      test::UserAuthConfig::Create({AshAuthFactor::kLocalPassword})
+          .RequireReauth()};
+  CryptohomeMixin cryptohome_{&mixin_host_};
+  LoginManagerMixin login_manager_mixin_{
+      &mixin_host_,
+      {user_with_gaia_pw_, user_with_local_pw_},
+      &fake_gaia_,
+      &cryptohome_};
+
+  void TriggerOnlineSignin(const LoginManagerMixin::TestUserInfo& test_user) {
+    test::OnLoginScreen()->SelectUserPod(test_user.account_id);
+    EXPECT_TRUE(LoginScreenTestApi::IsForcedOnlineSignin(test_user.account_id));
+    // Focus triggers online signin.
+    EXPECT_TRUE(LoginScreenTestApi::FocusUser(test_user.account_id));
+    WaitForGaiaPageLoad();
+    EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(ReauthWebviewLoginTest, EmailPrefill) {
-  EXPECT_TRUE(
-      LoginScreenTestApi::IsForcedOnlineSignin(reauth_user_.account_id));
-  // Focus triggers online signin.
-  EXPECT_TRUE(LoginScreenTestApi::FocusUser(reauth_user_.account_id));
-  WaitForGaiaPageLoad();
-  EXPECT_TRUE(LoginScreenTestApi::IsOobeDialogVisible());
+  TriggerOnlineSignin(user_with_gaia_pw_);
   EXPECT_EQ(fake_gaia_.fake_gaia()->prefilled_email(),
-            reauth_user_.account_id.GetUserEmail());
+            user_with_gaia_pw_.account_id.GetUserEmail());
+}
+
+class ReauthWebviewPasswordlessLoginTest : public ReauthWebviewLoginTest {
+ public:
+  ReauthWebviewPasswordlessLoginTest() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kPasswordlessGaiaForConsumers);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(ReauthWebviewPasswordlessLoginTest, GaiaPasswordFactor) {
+  TriggerOnlineSignin(user_with_gaia_pw_);
+  // Passwordless login is disallowed when Gaia password factor is
+  // configured.
+  EXPECT_TRUE(fake_gaia_.fake_gaia()->passwordless_support_level().empty());
+}
+
+IN_PROC_BROWSER_TEST_F(ReauthWebviewPasswordlessLoginTest,
+                       LocalPasswordFactor) {
+  TriggerOnlineSignin(user_with_local_pw_);
+  // Passwordless login is allowed when only local password factor is
+  // configured.
+  EXPECT_EQ(fake_gaia_.fake_gaia()->passwordless_support_level(),
+            base::ToString(GaiaView::PasswordlessSupportLevel::kConsumersOnly));
 }
 
 class ReauthTokenWebviewLoginTest : public ReauthWebviewLoginTest {

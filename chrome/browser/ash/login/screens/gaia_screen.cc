@@ -328,8 +328,12 @@ void GaiaScreen::OnGetAuthFactorsConfiguration(
         password_factor && auth::IsGaiaPassword(*password_factor);
   }
 
-  if (is_gaia_password_configured) {
-    // Disallow passwordless login when Gaia password is configured.
+  // Disallow passwordless login when Gaia password is configured during
+  // reauthentication or recovery flow.
+  auto flow = context()->knowledge_factor_setup.auth_setup_flow;
+  if ((flow == WizardContext::AuthChangeFlow::kReauthentication ||
+       flow == WizardContext::AuthChangeFlow::kRecovery) &&
+      is_gaia_password_configured) {
     view_->SetIsGaiaPasswordRequired(true);
   }
 
