@@ -13,6 +13,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "components/invalidation/public/invalidation.h"
@@ -186,6 +187,11 @@ class CloudPolicyInvalidator : public invalidation::InvalidationHandler,
   // The cloud policy core.
   raw_ptr<CloudPolicyCore> core_;
 
+  base::ScopedObservation<CloudPolicyCore, CloudPolicyInvalidator>
+      core_observation_{this};
+  base::ScopedObservation<CloudPolicyStore, CloudPolicyInvalidator>
+      store_observation_{this};
+
   // Schedules delayed tasks.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
@@ -195,6 +201,10 @@ class CloudPolicyInvalidator : public invalidation::InvalidationHandler,
   // The invalidation service.
   raw_ptr<invalidation::InvalidationService, AcrossTasksDanglingUntriaged>
       invalidation_service_;
+
+  base::ScopedObservation<invalidation::InvalidationService,
+                          CloudPolicyInvalidator>
+      invalidation_service_observation_{this};
 
   // The time that invalidations became enabled.
   std::optional<base::Time> invalidations_enabled_time_;

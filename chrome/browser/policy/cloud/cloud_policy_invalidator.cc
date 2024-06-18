@@ -197,7 +197,7 @@ void CloudPolicyInvalidator::Initialize(
   DCHECK(invalidation_service);
   invalidation_service_ = invalidation_service;
   state_ = STOPPED;
-  core_->AddObserver(this);
+  core_observation_.Observe(core_);
   if (core_->refresh_scheduler())
     OnRefreshSchedulerStarted(core_);
 }
@@ -205,15 +205,12 @@ void CloudPolicyInvalidator::Initialize(
 void CloudPolicyInvalidator::Shutdown() {
   DCHECK(state_ != SHUT_DOWN);
   DCHECK(thread_checker_.CalledOnValidThread());
+
+  invalidation_service_observation_.Reset();
   if (state_ == STARTED) {
-    if (IsRegistered()) {
-      invalidation_service_->RemoveObserver(this);
-    }
-    core_->store()->RemoveObserver(this);
     weak_factory_.InvalidateWeakPtrs();
   }
-  if (state_ != UNINITIALIZED)
-    core_->RemoveObserver(this);
+  core_observation_.Reset();
   state_ = SHUT_DOWN;
 }
 
@@ -249,7 +246,7 @@ void CloudPolicyInvalidator::OnRefreshSchedulerStarted(CloudPolicyCore* core) {
   DCHECK(thread_checker_.CalledOnValidThread());
   state_ = STARTED;
   OnStoreLoaded(core_->store());
-  core_->store()->AddObserver(this);
+  store_observation_.Observe(core_->store());
 }
 
 void CloudPolicyInvalidator::OnCoreDisconnecting(CloudPolicyCore* core) {
@@ -257,7 +254,7 @@ void CloudPolicyInvalidator::OnCoreDisconnecting(CloudPolicyCore* core) {
   DCHECK(thread_checker_.CalledOnValidThread());
   if (state_ == STARTED) {
     Unregister();
-    core_->store()->RemoveObserver(this);
+    store_observation_.Reset();
     state_ = STOPPED;
   }
 }
@@ -296,7 +293,9 @@ void CloudPolicyInvalidator::OnStoreLoaded(CloudPolicyStore* store) {
 void CloudPolicyInvalidator::OnStoreError(CloudPolicyStore* store) {}
 
 bool CloudPolicyInvalidator::IsRegistered() const {
-  return invalidation_service_ && invalidation_service_->HasObserver(this);
+  return invalidation_service_ &&
+         invalidation_service_observation_.IsObservingSource(
+             invalidation_service_);
 }
 
 bool CloudPolicyInvalidator::AreInvalidationsEnabled() const {
@@ -388,7 +387,7 @@ void CloudPolicyInvalidator::UpdateSubscription(
 void CloudPolicyInvalidator::Register(const invalidation::Topic& topic) {
   // Register this handler with the invalidation service if needed.
   if (!IsRegistered()) {
-    invalidation_service_->AddObserver(this);
+    invalidation_service_observation_.Observe(invalidation_service_);
   }
 
   // Update internal state.
@@ -409,7 +408,7 @@ void CloudPolicyInvalidator::Unregister() {
       AcknowledgeInvalidation();
     CHECK(invalidation_service_->UpdateInterestedTopics(
         this, invalidation::TopicSet()));
-    invalidation_service_->RemoveObserver(this);
+    invalidation_service_observation_.Reset();
     UpdateInvalidationsEnabled();
   }
 }
