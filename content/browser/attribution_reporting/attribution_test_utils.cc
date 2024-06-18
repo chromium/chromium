@@ -77,10 +77,9 @@ SourceBuilder::SourceBuilder(base::Time time)
           {net::SchemefulSite::Deserialize(kDefaultDestinationOrigin)})),
       reporting_origin_(*SuitableOrigin::Deserialize(kDefaultReportOrigin)) {
   registration_.source_event_id = 123;
-  registration_.max_event_level_reports =
-      attribution_reporting::MaxEventLevelReports::Max();
   registration_.trigger_specs = attribution_reporting::TriggerSpecs(
-      source_type_, attribution_reporting::EventReportWindows());
+      source_type_, attribution_reporting::EventReportWindows(),
+      attribution_reporting::MaxEventLevelReports::Max());
 }
 
 SourceBuilder::~SourceBuilder() = default;
@@ -129,7 +128,8 @@ SourceBuilder& SourceBuilder::SetReportingOrigin(SuitableOrigin origin) {
 SourceBuilder& SourceBuilder::SetSourceType(SourceType source_type) {
   source_type_ = source_type;
   registration_.trigger_specs = attribution_reporting::TriggerSpecs(
-      source_type_, attribution_reporting::EventReportWindows());
+      source_type_, attribution_reporting::EventReportWindows(),
+      attribution_reporting::MaxEventLevelReports(source_type));
   return *this;
 }
 
@@ -221,8 +221,8 @@ SourceBuilder& SourceBuilder::SetTriggerSpecs(
 
 SourceBuilder& SourceBuilder::SetMaxEventLevelReports(
     int max_event_level_reports) {
-  registration_.max_event_level_reports =
-      attribution_reporting::MaxEventLevelReports(max_event_level_reports);
+  registration_.trigger_specs.SetMaxEventLevelReportsForTesting(
+      attribution_reporting::MaxEventLevelReports(max_event_level_reports));
   return *this;
 }
 
@@ -265,12 +265,11 @@ StoredSource SourceBuilder::BuildStored() const {
       registration_.source_event_id, registration_.destination_set,
       source_time_, expiry_time, registration_.trigger_specs,
       source_time_ + registration_.aggregatable_report_window,
-      registration_.max_event_level_reports, registration_.priority,
-      registration_.filter_data, registration_.debug_key,
-      registration_.aggregation_keys, attribution_logic_, active_state_,
-      source_id_, remaining_aggregatable_attribution_budget_,
-      randomized_response_rate_, registration_.trigger_data_matching,
-      registration_.event_level_epsilon,
+      registration_.priority, registration_.filter_data,
+      registration_.debug_key, registration_.aggregation_keys,
+      attribution_logic_, active_state_, source_id_,
+      remaining_aggregatable_attribution_budget_, randomized_response_rate_,
+      registration_.trigger_data_matching, registration_.event_level_epsilon,
       registration_.aggregatable_debug_reporting_config.config().key_piece,
       remaining_aggregatable_debug_budget_);
   source.dedup_keys() = dedup_keys_;
@@ -560,9 +559,9 @@ bool operator==(const StoredSource& a, const StoredSource& b) {
         source.common_info(), source.source_event_id(),
         source.destination_sites(), source.source_time(), source.expiry_time(),
         source.trigger_specs(), source.aggregatable_report_window_time(),
-        source.max_event_level_reports(), source.priority(),
-        source.filter_data(), source.debug_key(), source.aggregation_keys(),
-        source.attribution_logic(), source.active_state(), source.dedup_keys(),
+        source.priority(), source.filter_data(), source.debug_key(),
+        source.aggregation_keys(), source.attribution_logic(),
+        source.active_state(), source.dedup_keys(),
         source.remaining_aggregatable_attribution_budget(),
         source.aggregatable_dedup_keys(), source.randomized_response_rate(),
         source.trigger_data_matching(), source.event_level_epsilon(),
@@ -706,7 +705,6 @@ std::ostream& operator<<(std::ostream& out, const StoredSource& source) {
       << ",trigger_specs=" << source.trigger_specs()
       << ",aggregatable_report_window_time="
       << source.aggregatable_report_window_time()
-      << ",max_event_level_reports=" << source.max_event_level_reports()
       << ",priority=" << source.priority()
       << ",filter_data=" << source.filter_data() << ",debug_key="
       << (source.debug_key() ? base::NumberToString(*source.debug_key())

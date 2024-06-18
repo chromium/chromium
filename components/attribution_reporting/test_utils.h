@@ -25,6 +25,7 @@ class AggregatableValues;
 class AggregationKeys;
 class DestinationSet;
 class EventReportWindows;
+class MaxEventLevelReports;
 class RandomizedResponseData;
 class SuitableOrigin;
 class SummaryBuckets;
@@ -46,7 +47,8 @@ FiltersDisjunction FiltersForSourceType(
 // assuming it is possible (i.e. `windows_per_type` contains a single distinct
 // value).
 TriggerSpecs SpecsFromWindowList(const std::vector<int>& windows_per_type,
-                                 bool collapse_into_single_spec);
+                                 bool collapse_into_single_spec,
+                                 MaxEventLevelReports);
 
 std::ostream& operator<<(std::ostream&, const AggregationKeys&);
 

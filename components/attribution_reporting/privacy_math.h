@@ -19,7 +19,6 @@
 
 namespace attribution_reporting {
 
-class MaxEventLevelReports;
 class TriggerSpecs;
 
 struct FakeEventLevelReport {
@@ -38,9 +37,7 @@ struct FakeEventLevelReport {
 using RandomizedResponse = std::optional<std::vector<FakeEventLevelReport>>;
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-bool IsValid(const RandomizedResponse&,
-             const TriggerSpecs&,
-             MaxEventLevelReports);
+bool IsValid(const RandomizedResponse&, const TriggerSpecs&);
 
 enum class RandomizedResponseError {
   kExceedsChannelCapacityLimit,
@@ -83,7 +80,7 @@ double GetRandomizedResponseRate(absl::uint128 num_states, double epsilon);
 
 // Returns the number of possible output states for the given API configuration.
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
-absl::uint128 GetNumStates(const TriggerSpecs& specs, MaxEventLevelReports);
+absl::uint128 GetNumStates(const TriggerSpecs& specs);
 
 // Determines the randomized response flip probability for the given API
 // configuration, and performs randomized response on that output space.
@@ -93,7 +90,6 @@ absl::uint128 GetNumStates(const TriggerSpecs& specs, MaxEventLevelReports);
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::expected<RandomizedResponseData, RandomizedResponseError>
 DoRandomizedResponse(const TriggerSpecs& specs,
-                     MaxEventLevelReports,
                      double epsilon,
                      absl::uint128 max_trigger_state_cardinality,
                      double max_channel_capacity);
@@ -163,7 +159,6 @@ double ComputeChannelCapacity(absl::uint128 num_states,
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
     const TriggerSpecs&,
-    int max_event_level_reports,
     absl::uint128 random_stars_and_bars_sequence_index);
 
 // Note: this method for sampling is not 1:1 with the above function for the
@@ -176,7 +171,6 @@ using StateMap = std::map<ConfigForCache, absl::uint128>;
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
     const TriggerSpecs& specs,
-    int max_reports,
     absl::uint128 index,
     StateMap& map);
 
@@ -185,7 +179,6 @@ std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::expected<RandomizedResponseData, RandomizedResponseError>
 DoRandomizedResponseWithCache(const TriggerSpecs& specs,
-                              int max_reports,
                               double epsilon,
                               StateMap& map,
                               absl::uint128 max_trigger_state_cardinality,

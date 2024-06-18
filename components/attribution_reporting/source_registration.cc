@@ -27,7 +27,6 @@
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/filters.h"
-#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
@@ -122,9 +121,6 @@ SourceRegistration::Parse(base::Value::Dict registration,
   } else {
     result.aggregatable_report_window = result.expiry;
   }
-
-  ASSIGN_OR_RETURN(result.max_event_level_reports,
-                   MaxEventLevelReports::Parse(registration, source_type));
 
   ASSIGN_OR_RETURN(result.trigger_data_matching,
                    ParseTriggerDataMatching(registration));
@@ -227,8 +223,6 @@ base::Value::Dict SourceRegistration::ToJson() const {
 
   SerializeDebugKey(dict, debug_key);
   SerializeDebugReporting(dict, debug_reporting);
-
-  max_event_level_reports.Serialize(dict);
 
   Serialize(dict, trigger_data_matching);
 

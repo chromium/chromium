@@ -25,6 +25,7 @@
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -200,8 +201,14 @@ bool StructTraits<attribution_reporting::mojom::TriggerSpecsDataView,
     return false;
   }
 
+  attribution_reporting::MaxEventLevelReports max_event_level_reports;
+  if (!max_event_level_reports.SetIfValid(data.max_event_level_reports())) {
+    return false;
+  }
+
   auto result = attribution_reporting::TriggerSpecs::Create(
-      std::move(trigger_data_indices), std::move(specs));
+      std::move(trigger_data_indices), std::move(specs),
+      max_event_level_reports);
   if (!result.has_value()) {
     return false;
   }
@@ -315,11 +322,6 @@ bool StructTraits<attribution_reporting::mojom::SourceRegistrationDataView,
   }
 
   if (!data.ReadAggregationKeys(&out->aggregation_keys)) {
-    return false;
-  }
-
-  if (!out->max_event_level_reports.SetIfValid(
-          data.max_event_level_reports())) {
     return false;
   }
 

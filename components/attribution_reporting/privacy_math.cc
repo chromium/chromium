@@ -197,8 +197,8 @@ void GetReportsFromIndexRecursive(TriggerSpecs::Iterator it,
 }
 
 absl::uint128 GetNumStatesCached(const TriggerSpecs& specs,
-                                 int max_reports,
                                  internal::StateMap& map) {
+  const int max_reports = specs.max_event_level_reports();
   if (specs.empty() || max_reports == 0) {
     return 1;
   }
@@ -252,33 +252,28 @@ double GetRandomizedResponseRate(absl::uint128 num_states, double epsilon) {
   return num_states_double / (num_states_double - 1 + std::exp(epsilon));
 }
 
-absl::uint128 GetNumStates(const TriggerSpecs& specs,
-                           MaxEventLevelReports max_reports) {
+absl::uint128 GetNumStates(const TriggerSpecs& specs) {
   internal::StateMap map;
-  return GetNumStatesCached(specs, max_reports, map);
+  return GetNumStatesCached(specs, map);
 }
 
 base::expected<RandomizedResponseData, RandomizedResponseError>
 DoRandomizedResponse(const TriggerSpecs& specs,
-                     MaxEventLevelReports max_reports,
                      double epsilon,
                      absl::uint128 max_trigger_state_cardinality,
                      double max_channel_capacity) {
   internal::StateMap map;
   return internal::DoRandomizedResponseWithCache(
-      specs, max_reports, epsilon, map, max_trigger_state_cardinality,
-      max_channel_capacity);
+      specs, epsilon, map, max_trigger_state_cardinality, max_channel_capacity);
 }
 
-bool IsValid(const RandomizedResponse& response,
-             const TriggerSpecs& specs,
-             const MaxEventLevelReports max_reports) {
+bool IsValid(const RandomizedResponse& response, const TriggerSpecs& specs) {
   if (!response.has_value()) {
     return true;
   }
 
   return base::MakeStrictNum(response->size()) <=
-             static_cast<int>(max_reports) &&
+             static_cast<int>(specs.max_event_level_reports()) &&
          base::ranges::all_of(*response, [&](const FakeEventLevelReport&
                                                  report) {
            const auto spec = specs.find(report.trigger_data,
@@ -410,11 +405,11 @@ std::vector<int> GetKCombinationAtIndex(absl::uint128 combination_index,
 
 std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
     const TriggerSpecs& specs,
-    int max_reports,
     absl::uint128 index,
     StateMap& map) {
   std::vector<FakeEventLevelReport> reports;
 
+  const int max_reports = specs.max_event_level_reports();
   if (specs.empty() || max_reports == 0) {
     return reports;
   }
@@ -480,12 +475,12 @@ double ComputeChannelCapacity(absl::uint128 num_states,
 
 std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
     const TriggerSpecs& specs,
-    int max_reports,
     absl::uint128 random_stars_and_bars_sequence_index) {
   const TriggerSpec* single_spec = specs.SingleSharedSpec();
   CHECK(single_spec);
 
   const int trigger_data_cardinality = specs.size();
+  const int max_reports = specs.max_event_level_reports();
 
   const std::vector<int> bars_preceding_each_star =
       GetBarsPrecedingEachStar(GetStarIndices(
@@ -525,12 +520,11 @@ std::vector<FakeEventLevelReport> GetFakeReportsForSequenceIndex(
 
 base::expected<RandomizedResponseData, RandomizedResponseError>
 DoRandomizedResponseWithCache(const TriggerSpecs& specs,
-                              int max_reports,
                               double epsilon,
                               StateMap& map,
                               absl::uint128 max_trigger_state_cardinality,
                               double max_channel_capacity) {
-  const absl::uint128 num_states = GetNumStatesCached(specs, max_reports, map);
+  const absl::uint128 num_states = GetNumStatesCached(specs, map);
   if (num_states > max_trigger_state_cardinality) {
     return base::unexpected(
         RandomizedResponseError::kExceedsTriggerStateCardinalityLimit);
@@ -555,11 +549,11 @@ DoRandomizedResponseWithCache(const TriggerSpecs& specs,
     const absl::uint128 sequence_index = RandGenerator(num_states);
     DCHECK_GE(sequence_index, 0);
     DCHECK_LT(sequence_index, kMaxNumCombinations);
-    fake_reports = specs.SingleSharedSpec()
-                       ? internal::GetFakeReportsForSequenceIndex(
-                             specs, max_reports, sequence_index)
-                       : internal::GetFakeReportsForSequenceIndex(
-                             specs, max_reports, sequence_index, map);
+    fake_reports =
+        specs.SingleSharedSpec()
+            ? internal::GetFakeReportsForSequenceIndex(specs, sequence_index)
+            : internal::GetFakeReportsForSequenceIndex(specs, sequence_index,
+                                                       map);
   }
   return RandomizedResponseData(rate, std::move(fake_reports));
 }

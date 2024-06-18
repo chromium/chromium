@@ -22,6 +22,7 @@
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -49,7 +50,8 @@ FiltersDisjunction FiltersForSourceType(
 }
 
 TriggerSpecs SpecsFromWindowList(const std::vector<int>& windows_per_type,
-                                 bool collapse_into_single_spec) {
+                                 bool collapse_into_single_spec,
+                                 MaxEventLevelReports max_event_level_reports) {
   if (windows_per_type.empty()) {
     return TriggerSpecs();
   }
@@ -85,8 +87,8 @@ TriggerSpecs SpecsFromWindowList(const std::vector<int>& windows_per_type,
     }
   }
 
-  return *attribution_reporting::TriggerSpecs::Create(std::move(indices),
-                                                      std::move(raw_specs));
+  return *attribution_reporting::TriggerSpecs::Create(
+      std::move(indices), std::move(raw_specs), max_event_level_reports);
 }
 
 std::ostream& operator<<(std::ostream& out,

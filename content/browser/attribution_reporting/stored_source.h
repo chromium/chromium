@@ -16,7 +16,6 @@
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/filters.h"
-#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_data_matching.mojom-forward.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -56,7 +55,6 @@ class CONTENT_EXPORT StoredSource {
       base::Time expiry_time,
       attribution_reporting::TriggerSpecs,
       base::Time aggregatable_report_window_time,
-      attribution_reporting::MaxEventLevelReports,
       int64_t priority,
       attribution_reporting::FilterData,
       std::optional<uint64_t> debug_key,
@@ -97,10 +95,6 @@ class CONTENT_EXPORT StoredSource {
 
   const attribution_reporting::TriggerSpecs& trigger_specs() const {
     return trigger_specs_;
-  }
-
-  attribution_reporting::MaxEventLevelReports max_event_level_reports() const {
-    return max_event_level_reports_;
   }
 
   int64_t priority() const { return priority_; }
@@ -164,7 +158,6 @@ class CONTENT_EXPORT StoredSource {
                base::Time expiry_time,
                attribution_reporting::TriggerSpecs,
                base::Time aggregatable_report_window_time,
-               attribution_reporting::MaxEventLevelReports,
                int64_t priority,
                attribution_reporting::FilterData,
                std::optional<uint64_t> debug_key,
@@ -187,7 +180,6 @@ class CONTENT_EXPORT StoredSource {
   base::Time expiry_time_;
   attribution_reporting::TriggerSpecs trigger_specs_;
   base::Time aggregatable_report_window_time_;
-  attribution_reporting::MaxEventLevelReports max_event_level_reports_;
   int64_t priority_;
   attribution_reporting::FilterData filter_data_;
   std::optional<uint64_t> debug_key_;

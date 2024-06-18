@@ -24,7 +24,6 @@
 namespace attribution_reporting {
 class EventLevelEpsilon;
 class EventReportWindows;
-class MaxEventLevelReports;
 class TriggerSpecs;
 }  // namespace attribution_reporting
 
@@ -142,7 +141,6 @@ class CONTENT_EXPORT AttributionResolverDelegate {
   // for the lifetime of the delegate for calls with identical inputs.
   virtual double GetRandomizedResponseRate(
       const attribution_reporting::TriggerSpecs&,
-      attribution_reporting::MaxEventLevelReports,
       attribution_reporting::EventLevelEpsilon) const = 0;
 
   using GetRandomizedResponseResult =
@@ -155,7 +153,6 @@ class CONTENT_EXPORT AttributionResolverDelegate {
   virtual GetRandomizedResponseResult GetRandomizedResponse(
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::TriggerSpecs&,
-      attribution_reporting::MaxEventLevelReports,
       attribution_reporting::EventLevelEpsilon) = 0;
 
   int GetMaxAggregatableReportsPerSource() const;

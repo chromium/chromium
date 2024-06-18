@@ -210,7 +210,6 @@ interface Source {
   expiryTime: Date;
   triggerSpecs: string;
   aggregatableReportWindowTime: Date;
-  maxEventLevelReports: number;
   sourceType: string;
   filterData: string;
   aggregationKeys: string;
@@ -240,7 +239,6 @@ function newSource(mojo: WebUISource): Source {
     expiryTime: new Date(mojo.expiryTime),
     triggerSpecs: mojo.triggerSpecsJson,
     aggregatableReportWindowTime: new Date(mojo.aggregatableReportWindowTime),
-    maxEventLevelReports: mojo.maxEventLevelReports,
     sourceType: sourceTypeText[mojo.sourceType],
     priority: mojo.priority,
     filterData: JSON.stringify(mojo.filterData.filterValues, null, ' '),
@@ -284,7 +282,6 @@ function initSourceTable(panel: HTMLElement):
         valueColumn('Filter Data', 'filterData', asCode),
         valueColumn('Debug Cookie Set', 'debugCookieSet', asStringOrBool),
         'Event-Level Fields',
-        valueColumn('Max Reports', 'maxEventLevelReports', asNumber),
         valueColumn(
             'Epsilon', 'eventLevelEpsilon',
             asCustomNumber((v: number) => v.toFixed(3))),

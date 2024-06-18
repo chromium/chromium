@@ -124,7 +124,6 @@ struct WebUISource {
   // formatting.
   string trigger_specs_json;
   double aggregatable_report_window_time;
-  int32 max_event_level_reports;
   attribution_reporting.mojom.SourceType source_type;
   int64 priority;
   uint64? debug_key;

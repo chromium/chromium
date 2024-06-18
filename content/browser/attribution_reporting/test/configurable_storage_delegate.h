@@ -39,12 +39,10 @@ class ConfigurableStorageDelegate : public AttributionResolverDelegate {
       std::vector<network::TriggerVerification>&) override;
   double GetRandomizedResponseRate(
       const attribution_reporting::TriggerSpecs&,
-      attribution_reporting::MaxEventLevelReports,
       attribution_reporting::EventLevelEpsilon) const override;
   GetRandomizedResponseResult GetRandomizedResponse(
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::TriggerSpecs&,
-      attribution_reporting::MaxEventLevelReports,
       attribution_reporting::EventLevelEpsilon) override;
   bool GenerateNullAggregatableReportForLookbackDay(
       int lookback_day,

@@ -19,7 +19,6 @@
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/filters.h"
-#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/trigger_config.h"
 #include "components/attribution_reporting/trigger_data_matching.mojom-forward.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -72,7 +71,6 @@ std::optional<StoredSource> StoredSource::Create(
     base::Time expiry_time,
     attribution_reporting::TriggerSpecs trigger_specs,
     base::Time aggregatable_report_window_time,
-    attribution_reporting::MaxEventLevelReports max_event_level_reports,
     int64_t priority,
     attribution_reporting::FilterData filter_data,
     std::optional<uint64_t> debug_key,
@@ -97,12 +95,11 @@ std::optional<StoredSource> StoredSource::Create(
   return StoredSource(
       std::move(common_info), source_event_id, std::move(destination_sites),
       source_time, expiry_time, std::move(trigger_specs),
-      aggregatable_report_window_time, max_event_level_reports, priority,
-      std::move(filter_data), debug_key, std::move(aggregation_keys),
-      attribution_logic, active_state, source_id,
-      remaining_aggregatable_attribution_budget, randomized_response_rate,
-      trigger_data_matching, event_level_epsilon, aggregatable_debug_key_piece,
-      remaining_aggregatable_debug_budget);
+      aggregatable_report_window_time, priority, std::move(filter_data),
+      debug_key, std::move(aggregation_keys), attribution_logic, active_state,
+      source_id, remaining_aggregatable_attribution_budget,
+      randomized_response_rate, trigger_data_matching, event_level_epsilon,
+      aggregatable_debug_key_piece, remaining_aggregatable_debug_budget);
 }
 
 StoredSource::StoredSource(
@@ -113,7 +110,6 @@ StoredSource::StoredSource(
     base::Time expiry_time,
     attribution_reporting::TriggerSpecs trigger_specs,
     base::Time aggregatable_report_window_time,
-    attribution_reporting::MaxEventLevelReports max_event_level_reports,
     int64_t priority,
     attribution_reporting::FilterData filter_data,
     std::optional<uint64_t> debug_key,
@@ -134,7 +130,6 @@ StoredSource::StoredSource(
       expiry_time_(expiry_time),
       trigger_specs_(std::move(trigger_specs)),
       aggregatable_report_window_time_(aggregatable_report_window_time),
-      max_event_level_reports_(max_event_level_reports),
       priority_(priority),
       filter_data_(std::move(filter_data)),
       debug_key_(debug_key),

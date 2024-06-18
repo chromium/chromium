@@ -23,7 +23,6 @@
 #include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/features.h"
-#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
@@ -170,24 +169,22 @@ void AttributionResolverDelegateImpl::ShuffleTriggerVerifications(
 
 double AttributionResolverDelegateImpl::GetRandomizedResponseRate(
     const attribution_reporting::TriggerSpecs& trigger_specs,
-    attribution_reporting::MaxEventLevelReports max_event_level_reports,
     attribution_reporting::EventLevelEpsilon epsilon) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return attribution_reporting::GetRandomizedResponseRate(
-      GetNumStates(trigger_specs, max_event_level_reports), epsilon);
+      GetNumStates(trigger_specs), epsilon);
 }
 
 AttributionResolverDelegate::GetRandomizedResponseResult
 AttributionResolverDelegateImpl::GetRandomizedResponse(
     SourceType source_type,
     const attribution_reporting::TriggerSpecs& trigger_specs,
-    attribution_reporting::MaxEventLevelReports max_event_level_reports,
     attribution_reporting::EventLevelEpsilon epsilon) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   ASSIGN_OR_RETURN(auto response,
                    attribution_reporting::DoRandomizedResponse(
-                       trigger_specs, max_event_level_reports, epsilon,
+                       trigger_specs, epsilon,
                        config_.event_level_limit.max_trigger_state_cardinality,
                        GetMaxChannelCapacity(source_type)));
 

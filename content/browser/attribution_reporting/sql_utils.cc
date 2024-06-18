@@ -169,7 +169,6 @@ void SetReadOnlySourceData(
 
 std::string SerializeReadOnlySourceData(
     const attribution_reporting::TriggerSpecs& trigger_specs,
-    attribution_reporting::MaxEventLevelReports max_event_level_reports,
     double randomized_response_rate,
     TriggerDataMatching trigger_data_matching,
     bool debug_cookie_set,
@@ -188,7 +187,7 @@ std::string SerializeReadOnlySourceData(
       auto* mutable_trigger_data = msg.mutable_trigger_data();
       const TriggerSpec* trigger_spec = trigger_specs.SingleSharedSpec()) {
     SetReadOnlySourceData(&trigger_spec->event_report_windows(),
-                          max_event_level_reports, msg);
+                          trigger_specs.max_event_level_reports(), msg);
 
     for (auto [trigger_data, _] : trigger_specs.trigger_data_indices()) {
       mutable_trigger_data->add_trigger_data(trigger_data);
@@ -198,7 +197,7 @@ std::string SerializeReadOnlySourceData(
     DCHECK(trigger_specs.empty());
 
     SetReadOnlySourceData(/*event_report_windows=*/nullptr,
-                          max_event_level_reports, msg);
+                          trigger_specs.max_event_level_reports(), msg);
   }
 
   msg.set_randomized_response_rate(randomized_response_rate);
@@ -416,7 +415,8 @@ bool DeserializeReportMetadata(base::span<const uint8_t> blob,
 
 std::optional<TriggerSpecs> DeserializeTriggerSpecs(
     const proto::AttributionReadOnlySourceData& msg,
-    SourceType source_type) {
+    SourceType source_type,
+    attribution_reporting::MaxEventLevelReports max_event_level_reports) {
   if (msg.has_trigger_data() && msg.trigger_data().trigger_data().empty()) {
     return TriggerSpecs();
   }
@@ -436,7 +436,8 @@ std::optional<TriggerSpecs> DeserializeTriggerSpecs(
   }
 
   if (!msg.has_trigger_data()) {
-    return TriggerSpecs(source_type, *std::move(event_report_windows));
+    return TriggerSpecs(source_type, *std::move(event_report_windows),
+                        max_event_level_reports);
   }
 
   std::vector<TriggerSpec> specs;
@@ -449,7 +450,7 @@ std::optional<TriggerSpecs> DeserializeTriggerSpecs(
                                              return std::make_pair(trigger_data,
                                                                    uint8_t{0});
                                            }),
-      std::move(specs));
+      std::move(specs), max_event_level_reports);
 }
 
 }  // namespace content

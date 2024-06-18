@@ -394,8 +394,8 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
     }
 
     if (source_type.has_value()) {
-      trigger_specs =
-          DeserializeTriggerSpecs(*read_only_source_data_msg, *source_type);
+      trigger_specs = DeserializeTriggerSpecs(
+          *read_only_source_data_msg, *source_type, max_event_level_reports);
       if (!trigger_specs.has_value()) {
         corruption_causes.Put(
             ReportCorruptionStatus::kSourceInvalidTriggerSpecs);
@@ -463,19 +463,19 @@ AttributionStorageSql::ReadSourceFromStatement(sql::Statement& statement) {
   double randomized_response_rate =
       read_only_source_data_msg->has_randomized_response_rate()
           ? read_only_source_data_msg->randomized_response_rate()
-          : delegate_->GetRandomizedResponseRate(
-                *trigger_specs, max_event_level_reports, event_level_epsilon);
+          : delegate_->GetRandomizedResponseRate(*trigger_specs,
+                                                 event_level_epsilon);
 
   std::optional<StoredSource> stored_source = StoredSource::Create(
       CommonSourceInfo(*std::move(source_origin), *std::move(reporting_origin),
                        *source_type, debug_cookie_set),
       source_event_id, *std::move(destination_set), source_time, expiry_time,
-      *std::move(trigger_specs), aggregatable_report_window_time,
-      max_event_level_reports, priority, *std::move(filter_data), debug_key,
-      *std::move(aggregation_keys), *attribution_logic, *active_state,
-      source_id, remaining_aggregatable_attribution_budget,
-      randomized_response_rate, trigger_data_matching, event_level_epsilon,
-      aggregatable_debug_key_piece, remaining_aggregatable_debug_budget);
+      *std::move(trigger_specs), aggregatable_report_window_time, priority,
+      *std::move(filter_data), debug_key, *std::move(aggregation_keys),
+      *attribution_logic, *active_state, source_id,
+      remaining_aggregatable_attribution_budget, randomized_response_rate,
+      trigger_data_matching, event_level_epsilon, aggregatable_debug_key_piece,
+      remaining_aggregatable_debug_budget);
   if (!stored_source.has_value()) {
     // TODO(crbug.com/40287459): Consider enumerating errors from StoredSource.
     return base::unexpected(ReportCorruptionStatusSetAndIds(
@@ -656,9 +656,9 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
 
   ASSIGN_OR_RETURN(
       const auto randomized_response_data,
-      delegate_->GetRandomizedResponse(
-          common_info.source_type(), reg.trigger_specs,
-          reg.max_event_level_reports, reg.event_level_epsilon),
+      delegate_->GetRandomizedResponse(common_info.source_type(),
+                                       reg.trigger_specs,
+                                       reg.event_level_epsilon),
       [&](auto error) -> StoreSourceResult {
         DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
         switch (error) {
@@ -674,8 +674,7 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
         }
       });
   DCHECK(attribution_reporting::IsValid(randomized_response_data.response(),
-                                        reg.trigger_specs,
-                                        reg.max_event_level_reports));
+                                        reg.trigger_specs));
 
   // Force the creation of the database if it doesn't exist, as we need to
   // persist the source.
@@ -891,9 +890,8 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
   statement.BindBlob(16, SerializeFilterData(reg.filter_data));
   statement.BindBlob(
       17, SerializeReadOnlySourceData(
-              reg.trigger_specs, reg.max_event_level_reports,
-              randomized_response_data.rate(), reg.trigger_data_matching,
-              common_info.debug_cookie_set(),
+              reg.trigger_specs, randomized_response_data.rate(),
+              reg.trigger_data_matching, common_info.debug_cookie_set(),
               reg.aggregatable_debug_reporting_config.config().key_piece));
   statement.BindInt(18, remaining_aggregatable_debug_budget);
 
@@ -922,10 +920,9 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source) {
   std::optional<StoredSource> stored_source = StoredSource::Create(
       source.common_info(), reg.source_event_id, reg.destination_set,
       source_time, expiry_time, reg.trigger_specs,
-      aggregatable_report_window_time, reg.max_event_level_reports,
-      reg.priority, reg.filter_data, reg.debug_key, reg.aggregation_keys,
-      attribution_logic, *active_state, source_id,
-      remaining_aggregatable_attribution_budget,
+      aggregatable_report_window_time, reg.priority, reg.filter_data,
+      reg.debug_key, reg.aggregation_keys, attribution_logic, *active_state,
+      source_id, remaining_aggregatable_attribution_budget,
       randomized_response_data.rate(), reg.trigger_data_matching,
       reg.event_level_epsilon,
       reg.aggregatable_debug_reporting_config.config().key_piece,
@@ -1035,7 +1032,7 @@ AttributionStorageSql::MaybeReplaceLowerPriorityEventLevelReport(
   DCHECK(source.trigger_specs().SingleSharedSpec());
 
   // If there's already capacity for the new report, there's nothing to do.
-  if (num_attributions < source.max_event_level_reports()) {
+  if (num_attributions < source.trigger_specs().max_event_level_reports()) {
     return ReplaceReportResult::kAddNewReport;
   }
 

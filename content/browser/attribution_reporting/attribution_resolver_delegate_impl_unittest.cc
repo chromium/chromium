@@ -75,7 +75,6 @@ TEST(AttributionResolverDelegateImplTest,
     auto result = AttributionResolverDelegateImpl(AttributionNoiseMode::kNone)
                       .GetRandomizedResponse(source.common_info().source_type(),
                                              source.trigger_specs(),
-                                             source.max_event_level_reports(),
                                              source.event_level_epsilon());
     ASSERT_TRUE(result.has_value());
     ASSERT_GT(result->rate(), 0);
@@ -126,9 +125,9 @@ TEST(AttributionResolverDelegateImplTest,
     const auto source =
         SourceBuilder().SetSourceType(test_case.source_type).BuildStored();
 
-    auto result = delegate->GetRandomizedResponse(
-        test_case.source_type, source.trigger_specs(),
-        source.max_event_level_reports(), source.event_level_epsilon());
+    auto result = delegate->GetRandomizedResponse(test_case.source_type,
+                                                  source.trigger_specs(),
+                                                  source.event_level_epsilon());
 
     EXPECT_EQ(result.has_value(), test_case.expected_ok);
   }

@@ -20,7 +20,6 @@
 #include "base/types/expected.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/event_report_windows.h"
-#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/privacy_math.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
@@ -123,7 +122,6 @@ void ConfigurableStorageDelegate::ShuffleTriggerVerifications(
 
 double ConfigurableStorageDelegate::GetRandomizedResponseRate(
     const attribution_reporting::TriggerSpecs&,
-    attribution_reporting::MaxEventLevelReports,
     attribution_reporting::EventLevelEpsilon) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return randomized_response_rate_;
@@ -133,7 +131,6 @@ AttributionResolverDelegate::GetRandomizedResponseResult
 ConfigurableStorageDelegate::GetRandomizedResponse(
     attribution_reporting::mojom::SourceType,
     const attribution_reporting::TriggerSpecs&,
-    attribution_reporting::MaxEventLevelReports,
     attribution_reporting::EventLevelEpsilon) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (exceeds_channel_capacity_limit_) {

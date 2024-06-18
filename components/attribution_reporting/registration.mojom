@@ -87,6 +87,10 @@ struct TriggerSpecs {
 
   // Keys are trigger data. Values are indices into `specs`.
   map<uint32, uint8> trigger_data_indices;
+
+  // Specifies how many event-level reports can be generated across all trigger
+  // specs for the source.
+  int32 max_event_level_reports;
 };
 
 // Aggregatable contribution for aggregatable debug types.
@@ -123,9 +127,6 @@ struct SourceRegistration {
   // Specifies how long after source registration an aggregatable
   // report can be generated with this source.
   mojo_base.mojom.TimeDelta aggregatable_report_window;
-
-  // Specifies how many event-level reports can be generated with this source.
-  int32 max_event_level_reports;
 
   // Priority for this source.
   int64 priority = 0;

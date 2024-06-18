@@ -81,14 +81,14 @@ TEST(SourceRegistrationTest, Parse) {
               Field(&SourceRegistration::source_event_id, 0),
               Field(&SourceRegistration::destination_set, destination),
               Field(&SourceRegistration::expiry, base::Days(30)),
-              Field(&SourceRegistration::trigger_specs,
-                    TriggerSpecs(SourceType::kNavigation,
-                                 *EventReportWindows::FromDefaults(
-                                     base::Days(30), SourceType::kNavigation))),
+              Field(
+                  &SourceRegistration::trigger_specs,
+                  TriggerSpecs(SourceType::kNavigation,
+                               *EventReportWindows::FromDefaults(
+                                   base::Days(30), SourceType::kNavigation),
+                               MaxEventLevelReports(SourceType::kNavigation))),
               Field(&SourceRegistration::aggregatable_report_window,
                     base::Days(30)),
-              Field(&SourceRegistration::max_event_level_reports,
-                    MaxEventLevelReports(SourceType::kNavigation)),
               Field(&SourceRegistration::priority, 0),
               Field(&SourceRegistration::filter_data, FilterData()),
               Field(&SourceRegistration::debug_key, std::nullopt),
@@ -197,11 +197,12 @@ TEST(SourceRegistrationTest, Parse) {
           "event_report_window_valid",
           R"json({"event_report_window":"86401",
           "destination":"https://d.example"})json",
-          ValueIs(Field(
-              &SourceRegistration::trigger_specs,
-              TriggerSpecs(SourceType::kEvent,
-                           *EventReportWindows::FromDefaults(
-                               base::Seconds(86401), SourceType::kEvent)))),
+          ValueIs(
+              Field(&SourceRegistration::trigger_specs,
+                    TriggerSpecs(SourceType::kEvent,
+                                 *EventReportWindows::FromDefaults(
+                                     base::Seconds(86401), SourceType::kEvent),
+                                 MaxEventLevelReports(SourceType::kEvent)))),
           SourceType::kEvent,
       },
       {
@@ -215,8 +216,9 @@ TEST(SourceRegistrationTest, Parse) {
           ValueIs(Field(
               &SourceRegistration::trigger_specs,
               TriggerSpecs(SourceType::kNavigation,
-                           *EventReportWindows::Create(
-                               base::Seconds(0), {base::Seconds(86401)})))),
+                           *EventReportWindows::Create(base::Seconds(0),
+                                                       {base::Seconds(86401)}),
+                           MaxEventLevelReports(SourceType::kNavigation)))),
       },
       {
           "aggregatable_report_window_valid",
@@ -271,20 +273,6 @@ TEST(SourceRegistrationTest, Parse) {
           R"json({"aggregatable_report_window":259200,"expiry":172800,"destination":"https://d.example"})json",
           ValueIs(Field(&SourceRegistration::aggregatable_report_window,
                         base::Seconds(172800))),
-      },
-      {
-          // Tested more thoroughly in `max_event_level_reports_unittest.cc`
-          "max_event_level_reports_valid",
-          R"json({"max_event_level_reports":5,
-          "destination":"https://d.example"})json",
-          ValueIs(Field(&SourceRegistration::max_event_level_reports, 5)),
-      },
-      {
-          // Tested more thoroughly in `max_event_level_reports_unittest.cc`
-          "max_event_level_reports_invalid",
-          R"json({"max_event_level_reports":null,
-          "destination":"https://d.example"})json",
-          ErrorIs(SourceRegistrationError::kMaxEventLevelReportsValueInvalid),
       },
       {
           "debug_key_valid",
@@ -409,11 +397,11 @@ TEST(SourceRegistrationTest, ToJson) {
                 r.filter_data = *FilterData::Create({{"b", {}}});
                 r.priority = -6;
                 r.source_event_id = 7;
-                r.max_event_level_reports = MaxEventLevelReports(8);
                 r.trigger_data_matching = mojom::TriggerDataMatching::kExact;
                 r.event_level_epsilon = EventLevelEpsilon(0);
                 r.trigger_specs =
-                    TriggerSpecs(SourceType::kNavigation, EventReportWindows());
+                    TriggerSpecs(SourceType::kNavigation, EventReportWindows(),
+                                 MaxEventLevelReports(8));
                 r.aggregatable_debug_reporting_config =
                     *SourceAggregatableDebugReportingConfig::Create(
                         /*budget=*/123,
@@ -595,9 +583,11 @@ TEST(SourceRegistrationTest, IsValid) {
   EXPECT_FALSE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
                  r.expiry = base::Days(1) - base::Microseconds(1);
                  r.aggregatable_report_window = r.expiry;
-                 r.trigger_specs = TriggerSpecs(
-                     SourceType::kEvent, *EventReportWindows::FromDefaults(
-                                             r.expiry, SourceType::kEvent));
+                 r.trigger_specs =
+                     TriggerSpecs(SourceType::kEvent,
+                                  *EventReportWindows::FromDefaults(
+                                      r.expiry, SourceType::kEvent),
+                                  MaxEventLevelReports(SourceType::kEvent));
                }).IsValid());
 
   EXPECT_FALSE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
@@ -606,23 +596,28 @@ TEST(SourceRegistrationTest, IsValid) {
                  r.trigger_specs =
                      TriggerSpecs(SourceType::kEvent,
                                   *EventReportWindows::FromDefaults(
-                                      base::Days(30), SourceType::kEvent));
+                                      base::Days(30), SourceType::kEvent),
+                                  MaxEventLevelReports(SourceType::kEvent));
                }).IsValid());
 
   EXPECT_TRUE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
                 r.expiry = base::Days(1);
                 r.aggregatable_report_window = r.expiry;
-                r.trigger_specs = TriggerSpecs(
-                    SourceType::kEvent, *EventReportWindows::FromDefaults(
-                                            r.expiry, SourceType::kEvent));
+                r.trigger_specs =
+                    TriggerSpecs(SourceType::kEvent,
+                                 *EventReportWindows::FromDefaults(
+                                     r.expiry, SourceType::kEvent),
+                                 MaxEventLevelReports(SourceType::kEvent));
               }).IsValid());
 
   EXPECT_TRUE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
                 r.expiry = base::Days(30);
                 r.aggregatable_report_window = r.expiry;
-                r.trigger_specs = TriggerSpecs(
-                    SourceType::kEvent, *EventReportWindows::FromDefaults(
-                                            r.expiry, SourceType::kEvent));
+                r.trigger_specs =
+                    TriggerSpecs(SourceType::kEvent,
+                                 *EventReportWindows::FromDefaults(
+                                     r.expiry, SourceType::kEvent),
+                                 MaxEventLevelReports(SourceType::kEvent));
               }).IsValid());
 
   EXPECT_FALSE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
@@ -634,9 +629,11 @@ TEST(SourceRegistrationTest, IsValid) {
                  r.expiry = base::Days(1);
                  r.aggregatable_report_window =
                      r.expiry + base::Microseconds(1);
-                 r.trigger_specs = TriggerSpecs(
-                     SourceType::kEvent, *EventReportWindows::FromDefaults(
-                                             r.expiry, SourceType::kEvent));
+                 r.trigger_specs =
+                     TriggerSpecs(SourceType::kEvent,
+                                  *EventReportWindows::FromDefaults(
+                                      r.expiry, SourceType::kEvent),
+                                  MaxEventLevelReports(SourceType::kEvent));
                }).IsValid());
 
   EXPECT_FALSE(SourceRegistrationWith(destination, [](SourceRegistration& r) {
@@ -645,7 +642,8 @@ TEST(SourceRegistrationTest, IsValid) {
                  r.trigger_specs = TriggerSpecs(
                      SourceType::kEvent,
                      *EventReportWindows::FromDefaults(
-                         r.expiry + base::Microseconds(1), SourceType::kEvent));
+                         r.expiry + base::Microseconds(1), SourceType::kEvent),
+                     MaxEventLevelReports(SourceType::kEvent));
                }).IsValid());
 
   EXPECT_TRUE(SourceRegistrationWith(destination, [](SourceRegistration& r) {

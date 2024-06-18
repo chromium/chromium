@@ -38,6 +38,7 @@
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/os_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/registrar.h"
@@ -565,7 +566,8 @@ TEST_F(AttributionDataHostManagerImplTest,
   source_data.trigger_specs = attribution_reporting::TriggerSpecs(
       SourceType::kEvent,
       *attribution_reporting::EventReportWindows::FromDefaults(
-          source_data.expiry, SourceType::kEvent));
+          source_data.expiry, SourceType::kEvent),
+      attribution_reporting::MaxEventLevelReports());
 
   {
     mojo::test::BadMessageObserver bad_message_observer;

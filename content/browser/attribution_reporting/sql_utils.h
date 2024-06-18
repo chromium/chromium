@@ -52,7 +52,6 @@ void SetReadOnlySourceData(const attribution_reporting::EventReportWindows*,
 
 std::string SerializeReadOnlySourceData(
     const attribution_reporting::TriggerSpecs&,
-    attribution_reporting::MaxEventLevelReports,
     double randomized_response_rate,
     attribution_reporting::mojom::TriggerDataMatching,
     bool debug_cookie_set,
@@ -69,7 +68,8 @@ std::optional<attribution_reporting::FilterData> DeserializeFilterData(
 
 std::optional<attribution_reporting::TriggerSpecs> DeserializeTriggerSpecs(
     const proto::AttributionReadOnlySourceData&,
-    attribution_reporting::mojom::SourceType);
+    attribution_reporting::mojom::SourceType,
+    attribution_reporting::MaxEventLevelReports);
 
 std::string SerializeAggregationKeys(
     const attribution_reporting::AggregationKeys&);

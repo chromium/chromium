@@ -25,6 +25,7 @@
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
@@ -159,6 +160,11 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
     return specs.trigger_data_indices();
   }
 
+  static int max_event_level_reports(
+      const attribution_reporting::TriggerSpecs& specs) {
+    return specs.max_event_level_reports();
+  }
+
   static bool Read(attribution_reporting::mojom::TriggerSpecsDataView data,
                    attribution_reporting::TriggerSpecs* out);
 };
@@ -267,11 +273,6 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
   static const attribution_reporting::TriggerSpecs& trigger_specs(
       const attribution_reporting::SourceRegistration& source) {
     return source.trigger_specs;
-  }
-
-  static int max_event_level_reports(
-      const attribution_reporting::SourceRegistration& source) {
-    return source.max_event_level_reports;
   }
 
   static int64_t priority(

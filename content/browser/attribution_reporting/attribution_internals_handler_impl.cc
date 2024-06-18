@@ -88,9 +88,8 @@ attribution_internals::mojom::WebUISourcePtr WebUISource(
       SerializeAttributionJson(source.trigger_specs().ToJson(),
                                /*pretty_print=*/true),
       source.aggregatable_report_window_time().InMillisecondsFSinceUnixEpoch(),
-      source.max_event_level_reports(), common_info.source_type(),
-      source.priority(), source.debug_key(), source.dedup_keys(),
-      source.filter_data(),
+      common_info.source_type(), source.priority(), source.debug_key(),
+      source.dedup_keys(), source.filter_data(),
       base::MakeFlatMap<std::string, std::string>(
           source.aggregation_keys().keys(), {},
           [](const auto& key) {

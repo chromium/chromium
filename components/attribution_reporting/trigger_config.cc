@@ -20,6 +20,7 @@
 #include "base/types/expected_macros.h"
 #include "base/values.h"
 #include "components/attribution_reporting/constants.h"
+#include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
@@ -203,6 +204,12 @@ TriggerSpecs::ParseFullFlexForTesting(
         SourceRegistrationError::kTopLevelTriggerDataAndTriggerSpecs);
   }
 
+  ASSIGN_OR_RETURN(auto max_event_level_reports,
+                   MaxEventLevelReports::Parse(registration, source_type));
+
+  // TODO(apaseltiner): If `max_event_level_reports` is 0, consider validating
+  // but not accumulating the specs below.
+
   const base::Value::List* list = trigger_specs->GetIfList();
   if (!list) {
     return base::unexpected(SourceRegistrationError::kTriggerSpecsWrongType);
@@ -248,7 +255,8 @@ TriggerSpecs::ParseFullFlexForTesting(
   RETURN_IF_ERROR(ValidateSpecsForTriggerDataMatching(trigger_data_indices,
                                                       trigger_data_matching));
 
-  return TriggerSpecs(std::move(trigger_data_indices), std::move(specs));
+  return TriggerSpecs(std::move(trigger_data_indices), std::move(specs),
+                      max_event_level_reports);
 }
 
 // static
@@ -258,9 +266,16 @@ TriggerSpecs::ParseTopLevelTriggerData(
     SourceType source_type,
     EventReportWindows default_report_windows,
     TriggerDataMatching trigger_data_matching) {
+  ASSIGN_OR_RETURN(auto max_event_level_reports,
+                   MaxEventLevelReports::Parse(registration, source_type));
+
+  // TODO(apaseltiner): If `max_event_level_reports` is 0, consider validating
+  // but not accumulating the specs below.
+
   const base::Value* trigger_data = registration.Find(kTriggerData);
   if (!trigger_data) {
-    return TriggerSpecs(source_type, std::move(default_report_windows));
+    return TriggerSpecs(source_type, std::move(default_report_windows),
+                        max_event_level_reports);
   }
 
   TriggerDataIndices trigger_data_indices;
@@ -280,11 +295,14 @@ TriggerSpecs::ParseTopLevelTriggerData(
     specs.emplace_back(std::move(default_report_windows));
   }
 
-  return TriggerSpecs(std::move(trigger_data_indices), std::move(specs));
+  return TriggerSpecs(std::move(trigger_data_indices), std::move(specs),
+                      max_event_level_reports);
 }
 
 TriggerSpecs::TriggerSpecs(SourceType source_type,
-                           EventReportWindows event_report_windows) {
+                           EventReportWindows event_report_windows,
+                           MaxEventLevelReports max_event_level_reports)
+    : max_event_level_reports_(max_event_level_reports) {
   specs_.emplace_back(std::move(event_report_windows));
 
   uint32_t cardinality = DefaultTriggerDataCardinality(source_type);
@@ -302,17 +320,21 @@ TriggerSpecs::TriggerSpecs(SourceType source_type,
 // static
 std::optional<TriggerSpecs> TriggerSpecs::Create(
     TriggerDataIndices trigger_data_indices,
-    std::vector<TriggerSpec> specs) {
+    std::vector<TriggerSpec> specs,
+    MaxEventLevelReports max_event_level_reports) {
   if (!AreSpecsValid(trigger_data_indices, specs)) {
     return std::nullopt;
   }
-  return TriggerSpecs(std::move(trigger_data_indices), std::move(specs));
+  return TriggerSpecs(std::move(trigger_data_indices), std::move(specs),
+                      max_event_level_reports);
 }
 
 TriggerSpecs::TriggerSpecs(TriggerDataIndices trigger_data_indices,
-                           std::vector<TriggerSpec> specs)
+                           std::vector<TriggerSpec> specs,
+                           MaxEventLevelReports max_event_level_reports)
     : trigger_data_indices_(std::move(trigger_data_indices)),
-      specs_(std::move(specs)) {
+      specs_(std::move(specs)),
+      max_event_level_reports_(max_event_level_reports) {
   CHECK(AreSpecsValid(trigger_data_indices_, specs_));
 }
 
@@ -351,6 +373,7 @@ base::Value::List TriggerSpecs::ToJson() const {
 
 void TriggerSpecs::Serialize(base::Value::Dict& dict) const {
   dict.Set(kTriggerSpecs, ToJson());
+  max_event_level_reports_.Serialize(dict);
 }
 
 TriggerSpecs::Iterator::Iterator(const TriggerSpecs& specs,

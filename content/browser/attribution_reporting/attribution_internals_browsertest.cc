@@ -453,24 +453,22 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
         tds[10]?.innerText === '{\n "a": [\n  "b",\n  "c"\n ]\n}' &&
         // Debug Cookie Set
         tds[11]?.innerText === 'true' &&
-        // Max Reports
-        tds[12]?.innerText === '3' &&
         // Epsilon
-        tds[13]?.innerText === '14.000' &&
+        tds[12]?.innerText === '14.000' &&
         // Trigger Data Matching
-        tds[14]?.innerText === 'modulus' &&
+        tds[13]?.innerText === 'modulus' &&
         // Event-Level Dedup Keys
-        tds[16]?.children[0]?.children[0]?.innerText === '13' &&
-        tds[16]?.children[0]?.children[1]?.innerText === '17' &&
+        tds[15]?.children[0]?.children[0]?.innerText === '13' &&
+        tds[15]?.children[0]?.children[1]?.innerText === '17' &&
         // Budget Consumed
-        tds[18]?.innerText === '1300 / 65536' &&
+        tds[17]?.innerText === '1300 / 65536' &&
         // Aggregation Keys
-        tds[19]?.innerText === '{\n "a": "0x1"\n}' &&
+        tds[18]?.innerText === '{\n "a": "0x1"\n}' &&
         // Aggregatable Dedup Keys
-        tds[20]?.children[0]?.children[0]?.innerText === '14' &&
-        tds[20]?.children[0]?.children[1]?.innerText === '18' &&
-        tds[21]?.innerText === '100 / 65536' &&
-        tds[22]?.innerText === '0xf'
+        tds[19]?.children[0]?.children[0]?.innerText === '14' &&
+        tds[19]?.children[0]?.children[1]?.innerText === '18' &&
+        tds[20]?.innerText === '100 / 65536' &&
+        tds[21]?.innerText === '0xf'
       ) {
         if (obs) {
           obs.disconnect();
