@@ -29,16 +29,26 @@ def ArgumentParser(standalone=False):
   parser.add_argument(
       '-v', '--verbose', action='count', dest='verbosity', default=0,
       help='Increase verbosity level (repeat as needed)')
+  parser.add_argument('-q',
+                      '--quiet',
+                      action='count',
+                      default=0,
+                      help='Decrease verbosity level (repeat as needed)')
   group.add_argument(
-      '--output-format', action='append', dest='output_formats',
-      metavar='FORMAT', choices=all_output_formats, required=standalone,
-      help=Sentences(
-          'Output format to produce.',
-          'May be used multiple times to produce multiple outputs.',
-          'Avaliable formats: %(choices)s.',
-          '' if standalone else 'Defaults to: html.'))
+      '--output-format',
+      action='append',
+      dest='output_formats',
+      metavar='FORMAT',
+      choices=all_output_formats,
+      required=standalone,
+      help=Sentences('Output format to produce.',
+                     'May be used multiple times to produce multiple outputs.',
+                     'Avaliable formats: %(choices)s.',
+                     '' if standalone else 'Defaults to: html.'))
   group.add_argument(
-      '--intermediate-dir', metavar='DIR_PATH', required=standalone,
+      '--intermediate-dir',
+      metavar='DIR_PATH',
+      required=standalone,
       help=Sentences(
           'Path to a directory where intermediate results are stored.',
           '' if standalone else 'If not provided, the default is to create a '
@@ -141,10 +151,15 @@ def ProcessOptions(options):
   Args:
     options: An options object with values parsed from the command line.
   """
-  if options.verbosity >= 2:
+  log_verbosity = options.verbosity - options.quiet
+  if log_verbosity >= 2:
     logging.getLogger().setLevel(logging.DEBUG)
-  elif options.verbosity == 1:
+  elif log_verbosity == 1:
     logging.getLogger().setLevel(logging.INFO)
+  elif log_verbosity <= -2:
+    logging.getLogger().setLevel(logging.CRITICAL)
+  elif log_verbosity == -1:
+    logging.getLogger().setLevel(logging.ERROR)
   else:
     logging.getLogger().setLevel(logging.WARNING)
 
