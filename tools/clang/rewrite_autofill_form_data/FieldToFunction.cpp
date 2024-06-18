@@ -314,7 +314,6 @@ class FieldWriteAccessRewriter
       // Replace `=` with ``.
       clang::CharSourceRange range =
           clang::CharSourceRange::getTokenRange(assignment->getExprLoc());
-      std::string replacement_text = "";
       output_helper_.Delete(range, *result.SourceManager,
                             result.Context->getLangOpts());
     }
