@@ -33,7 +33,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/rand_util.h"
 #include "build/build_config.h"
-#include "components/viz/common/resources/transferable_resource.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
@@ -134,7 +133,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
   mutable SnapshotState snapshot_state_;
 
   raw_ptr<CanvasResourceHost> resource_host_;
-  viz::TransferableResource previous_frame_resource_;
 
   base::WeakPtrFactory<Canvas2DLayerBridge> weak_ptr_factory_{this};
 };
