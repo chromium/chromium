@@ -134,6 +134,10 @@ public class LocalTabGroupMutationHelper {
         int rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, tabGroup.localId);
         List<Tab> tabs = mTabGroupModelFilter.getRelatedTabListForRootId(rootId);
         assert !tabs.isEmpty();
+        if (tabs.isEmpty()) {
+            LogUtils.log(TAG, "Found no tabs in the local group");
+            return;
+        }
 
         // We want to reconcile the local group with the synced group.
         // The algorithm is different depending on whether we are running this on startup or for a
@@ -145,11 +149,7 @@ public class LocalTabGroupMutationHelper {
                 tabsToClose = tabs.subList(tabGroup.savedTabs.size(), tabs.size());
             }
         } else {
-            tabsToClose = findLocalTabsNotInSync(tabGroup);
-        }
-
-        if (!tabsToClose.isEmpty()) {
-            getTabModel().closeMultipleTabs(tabsToClose, /* canUndo= */ false);
+            tabsToClose = findLocalTabsNotInSyncPostStartup(tabGroup);
         }
 
         // Update the remaining tabs. If the tab is already there, ensure its URL is up-to-date.
@@ -186,6 +186,9 @@ public class LocalTabGroupMutationHelper {
             getTabModel().moveTab(localTab.getId(), desiredTabModelIndex);
         }
 
+        if (!tabsToClose.isEmpty()) {
+            getTabModel().closeMultipleTabs(tabsToClose, /* canUndo= */ false);
+        }
         updateTabGroupVisuals(tabGroup, rootId);
         // TODO(crbug.com/346406221): This currently causes the layout strip to flicker as events
         // still escape the filter and kick off animations. Rework somehow to avoid.
@@ -227,9 +230,12 @@ public class LocalTabGroupMutationHelper {
         mTabGroupSyncService.removeLocalTabGroupMapping(tabGroupId);
     }
 
-    private List<Tab> findLocalTabsNotInSync(SavedTabGroup savedTabGroup) {
+    private List<Tab> findLocalTabsNotInSyncPostStartup(SavedTabGroup savedTabGroup) {
         assert savedTabGroup.localId != null;
 
+        // We have been through startup reconcile earlier, so the tabs should have IDs mapped
+        // already.
+        // Find the ones that are not in sync. These are the ones that should be closed.
         Set<Integer> savedTabIds = new HashSet<>();
         for (SavedTabGroupTab savedTab : savedTabGroup.savedTabs) {
             if (savedTab.localId == null) continue;
