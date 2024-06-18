@@ -116,7 +116,7 @@ bool MigrateCardsRequest::IsResponseComplete() {
 }
 
 void MigrateCardsRequest::RespondToDelegate(
-    AutofillClient::PaymentsRpcResult result) {
+    PaymentsAutofillClient::PaymentsRpcResult result) {
   std::move(callback_).Run(result, std::move(save_result_), display_text_);
 }
 

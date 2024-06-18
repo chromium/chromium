@@ -131,7 +131,8 @@ void FullCardRequest::GetFullCardImpl(
     NOTREACHED_IN_MIGRATION();
     if (ui_delegate_) {
       ui_delegate_->OnUnmaskVerificationResult(
-          AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure);
+          PaymentsAutofillClient::PaymentsRpcResult::
+              kVcnRetrievalPermanentFailure);
     }
 
     if (result_delegate_) {
@@ -397,7 +398,7 @@ void FullCardRequest::OnDidGetRealPan(
       break;
     }
 
-    case AutofillClient::PaymentsRpcResult::kNone:
+    case PaymentsAutofillClient::PaymentsRpcResult::kNone:
       NOTREACHED_IN_MIGRATION();
       break;
   }

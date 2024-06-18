@@ -143,7 +143,7 @@ void PaymentsAutofillClient::ShowUnmaskPrompt(
     base::WeakPtr<CardUnmaskDelegate> delegate) {}
 
 void PaymentsAutofillClient::OnUnmaskVerificationResult(
-    AutofillClient::PaymentsRpcResult result) {}
+    PaymentsRpcResult result) {}
 
 VirtualCardEnrollmentManager*
 PaymentsAutofillClient::GetVirtualCardEnrollmentManager() {

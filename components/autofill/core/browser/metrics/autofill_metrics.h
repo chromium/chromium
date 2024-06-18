@@ -446,7 +446,7 @@ class AutofillMetrics {
   };
 
   // Possible results of Payments RPCs.
-  enum PaymentsRpcResult {
+  enum PaymentsRpcMetricResult {
     // Request succeeded.
     PAYMENTS_RESULT_SUCCESS = 0,
     // Request failed; try again.
@@ -902,21 +902,21 @@ class AutofillMetrics {
   // Logs |result| to the get real pan result histogram. |card_type| indicates
   // the type of the credit card that the request fetched.
   static void LogRealPanResult(
-      AutofillClient::PaymentsRpcResult result,
+      payments::PaymentsAutofillClient::PaymentsRpcResult result,
       payments::PaymentsAutofillClient::PaymentsRpcCardType card_type);
 
   // Logs |result| to duration of the GetRealPan RPC. |card_type| indicates the
   // type of the credit card that the request fetched.
   static void LogRealPanDuration(
       const base::TimeDelta& duration,
-      AutofillClient::PaymentsRpcResult result,
+      payments::PaymentsAutofillClient::PaymentsRpcResult result,
       payments::PaymentsAutofillClient::PaymentsRpcCardType card_type);
 
   // Logs |result| to the get real pan result histogram. |card_type| indicates
   // the type of the credit card that the request fetched.
   static void LogUnmaskingDuration(
       const base::TimeDelta& duration,
-      AutofillClient::PaymentsRpcResult result,
+      payments::PaymentsAutofillClient::PaymentsRpcResult result,
       payments::PaymentsAutofillClient::PaymentsRpcCardType card_type);
 
   // This should be called when a form that has been Autofilled is submitted.
@@ -1201,7 +1201,7 @@ std::string GetCreditCardTypeSuffix(
     payments::PaymentsAutofillClient::PaymentsRpcCardType card_type);
 
 const std::string PaymentsRpcResultToMetricsSuffix(
-    AutofillClient::PaymentsRpcResult result);
+    payments::PaymentsAutofillClient::PaymentsRpcResult result);
 
 }  // namespace autofill
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_METRICS_AUTOFILL_METRICS_H_

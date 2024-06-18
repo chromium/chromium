@@ -5,14 +5,19 @@
 #include "components/autofill/core/browser/payments/credit_card_otp_authenticator.h"
 
 #include "base/check_deref.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
 #include "components/autofill/core/browser/payments/otp_unmask_result.h"
-#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 
 namespace autofill {
+namespace {
+
+using PaymentsRpcResult = payments::PaymentsAutofillClient::PaymentsRpcResult;
+
+}  // namespace
 
 CreditCardOtpAuthenticator::OtpAuthenticationResponse::
     OtpAuthenticationResponse() = default;
@@ -171,7 +176,7 @@ void CreditCardOtpAuthenticator::SendSelectChallengeOptionRequest() {
 }
 
 void CreditCardOtpAuthenticator::OnDidSelectChallengeOption(
-    AutofillClient::PaymentsRpcResult result,
+    PaymentsRpcResult result,
     const std::string& context_token) {
   selected_challenge_option_request_ongoing_ = false;
 
@@ -181,7 +186,7 @@ void CreditCardOtpAuthenticator::OnDidSelectChallengeOption(
         selected_challenge_option_.type);
   }
 
-  bool server_success = result == AutofillClient::PaymentsRpcResult::kSuccess;
+  bool server_success = result == PaymentsRpcResult::kSuccess;
   // Dismiss the pending authentication selection dialog if it is visible so
   // that other dialogs can be shown.
   autofill_client_->GetPaymentsAutofillClient()
@@ -210,13 +215,11 @@ void CreditCardOtpAuthenticator::OnDidSelectChallengeOption(
   autofill_client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
       AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
           /*is_permanent_error=*/result ==
-          AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure));
+          PaymentsRpcResult::kVcnRetrievalPermanentFailure));
   if (requester_) {
     OtpAuthenticationResponse response;
-    if (result ==
-            AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
-        result ==
-            AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
+    if (result == PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
+        result == PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
       autofill_metrics::LogOtpAuthResult(
           autofill_metrics::OtpAuthEvent::
               kSelectedChallengeOptionVirtualCardRetrievalError,
@@ -272,7 +275,7 @@ void CreditCardOtpAuthenticator::SendUnmaskCardRequest() {
 }
 
 void CreditCardOtpAuthenticator::OnDidGetRealPan(
-    AutofillClient::PaymentsRpcResult result,
+    PaymentsRpcResult result,
     const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
         response_details) {
   if (unmask_card_request_timestamp_.has_value()) {
@@ -281,7 +284,7 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
         selected_challenge_option_.type);
   }
 
-  if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
+  if (result == PaymentsRpcResult::kSuccess) {
     if (response_details.card_type !=
         payments::PaymentsAutofillClient::PaymentsRpcCardType::kVirtualCard) {
       // Currently we offer OTP authentication only for virtual cards.
@@ -362,10 +365,8 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
   // cases since currently only virtual card is supported.
   if (requester_) {
     OtpAuthenticationResponse response;
-    if (result ==
-            AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
-        result ==
-            AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
+    if (result == PaymentsRpcResult::kVcnRetrievalPermanentFailure ||
+        result == PaymentsRpcResult::kVcnRetrievalTryAgainFailure) {
       response.result =
           OtpAuthenticationResponse::Result::kVirtualCardRetrievalError;
       autofill_metrics::LogOtpAuthResult(
@@ -392,7 +393,7 @@ void CreditCardOtpAuthenticator::OnDidGetRealPan(
     autofill_client_->GetPaymentsAutofillClient()->ShowAutofillErrorDialog(
         AutofillErrorDialogContext::WithVirtualCardPermanentOrTemporaryError(
             /*is_permanent_error=*/result ==
-            AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure));
+            PaymentsRpcResult::kVcnRetrievalPermanentFailure));
   }
   Reset();
 }

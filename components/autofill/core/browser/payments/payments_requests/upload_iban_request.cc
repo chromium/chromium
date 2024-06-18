@@ -23,7 +23,8 @@ const char kUploadIbanRequestFormat[] =
 UploadIbanRequest::UploadIbanRequest(
     const PaymentsNetworkInterface::UploadIbanRequestDetails& details,
     bool full_sync_enabled,
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback)
+    base::OnceCallback<
+        void(payments::PaymentsAutofillClient::PaymentsRpcResult)> callback)
     : request_details_(details),
       full_sync_enabled_(full_sync_enabled),
       callback_(std::move(callback)) {}
@@ -78,7 +79,7 @@ bool UploadIbanRequest::IsResponseComplete() {
 }
 
 void UploadIbanRequest::RespondToDelegate(
-    AutofillClient::PaymentsRpcResult result) {
+    payments::PaymentsAutofillClient::PaymentsRpcResult result) {
   std::move(callback_).Run(result);
 }
 

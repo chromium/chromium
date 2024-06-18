@@ -12,18 +12,19 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_client.h"
-#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill::payments {
-
 namespace {
+
+using PaymentsRpcResult = PaymentsAutofillClient::PaymentsRpcResult;
+
 // Base64 encoding of "This is a test challenge".
 constexpr char kTestChallenge[] = "VGhpcyBpcyBhIHRlc3QgY2hhbGxlbmdl";
 constexpr int kTestTimeoutSeconds = 180;
+
 }  // namespace
 
 TestPaymentsNetworkInterface::TestPaymentsNetworkInterface(
@@ -44,18 +45,17 @@ TestPaymentsNetworkInterface::TestPaymentsNetworkInterface(
 TestPaymentsNetworkInterface::~TestPaymentsNetworkInterface() = default;
 
 void TestPaymentsNetworkInterface::GetUnmaskDetails(
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+    base::OnceCallback<void(PaymentsRpcResult,
                             PaymentsNetworkInterface::UnmaskDetails&)> callback,
     const std::string& app_locale) {
   if (should_return_unmask_details_)
-    std::move(callback).Run(AutofillClient::PaymentsRpcResult::kSuccess,
-                            unmask_details_);
+    std::move(callback).Run(PaymentsRpcResult::kSuccess, unmask_details_);
 }
 
 void TestPaymentsNetworkInterface::UnmaskCard(
     const UnmaskRequestDetails& unmask_request,
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                            const UnmaskResponseDetails&)> callback) {
+    base::OnceCallback<void(PaymentsRpcResult, const UnmaskResponseDetails&)>
+        callback) {
   unmask_request_ = unmask_request;
 }
 
@@ -64,7 +64,7 @@ void TestPaymentsNetworkInterface::GetCardUploadDetails(
     const int detected_values,
     const std::vector<ClientBehaviorConstants>& client_behavior_signals,
     const std::string& app_locale,
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+    base::OnceCallback<void(PaymentsRpcResult,
                             const std::u16string&,
                             std::unique_ptr<base::Value::Dict>,
                             std::vector<std::pair<int, int>>)> callback,
@@ -78,9 +78,8 @@ void TestPaymentsNetworkInterface::GetCardUploadDetails(
   billing_customer_number_ = billing_customer_number;
   upload_card_source_ = upload_card_source;
   std::move(callback).Run(
-      app_locale == "en-US"
-          ? AutofillClient::PaymentsRpcResult::kSuccess
-          : AutofillClient::PaymentsRpcResult::kPermanentFailure,
+      app_locale == "en-US" ? PaymentsRpcResult::kSuccess
+                            : PaymentsRpcResult::kPermanentFailure,
       u"this is a context token", TestPaymentsNetworkInterface::LegalMessage(),
       supported_card_bin_ranges_);
 }
@@ -89,11 +88,11 @@ void TestPaymentsNetworkInterface::UploadCard(
     const payments::PaymentsNetworkInterface::UploadCardRequestDetails&
         request_details,
     base::OnceCallback<void(
-        AutofillClient::PaymentsRpcResult,
+        PaymentsRpcResult,
         const PaymentsNetworkInterface::UploadCardResponseDetails&)> callback) {
   upload_card_addresses_ = request_details.profiles;
   client_behavior_signals_ = request_details.client_behavior_signals;
-  std::move(callback).Run(AutofillClient::PaymentsRpcResult::kSuccess,
+  std::move(callback).Run(PaymentsRpcResult::kSuccess,
                           upload_card_response_details_);
 }
 
@@ -102,15 +101,14 @@ void TestPaymentsNetworkInterface::MigrateCards(
     const MigrationRequestDetails& details,
     const std::vector<MigratableCreditCard>& migratable_credit_cards,
     MigrateCardsCallback callback) {
-  std::move(callback).Run(AutofillClient::PaymentsRpcResult::kSuccess,
-                          std::move(save_result_), "this is display text");
+  std::move(callback).Run(PaymentsRpcResult::kSuccess, std::move(save_result_),
+                          "this is display text");
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void TestPaymentsNetworkInterface::SelectChallengeOption(
     const SelectChallengeOptionRequestDetails& details,
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                            const std::string&)> callback) {
+    base::OnceCallback<void(PaymentsRpcResult, const std::string&)> callback) {
   select_challenge_option_request_ = details;
   // If select_challenge_option_result_ is set, use the provided result.
   // Otherwise, always return success with fake context token.
@@ -119,13 +117,13 @@ void TestPaymentsNetworkInterface::SelectChallengeOption(
                             /*context_token=*/"");
     return;
   }
-  std::move(callback).Run(AutofillClient::PaymentsRpcResult::kSuccess,
+  std::move(callback).Run(PaymentsRpcResult::kSuccess,
                           "context_token from SelectChallengeOption");
 }
 
 void TestPaymentsNetworkInterface::GetVirtualCardEnrollmentDetails(
     const GetDetailsForEnrollmentRequestDetails& request_details,
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+    base::OnceCallback<void(PaymentsRpcResult,
                             const payments::PaymentsNetworkInterface::
                                 GetDetailsForEnrollmentResponseDetails&)>
         callback) {
@@ -133,12 +131,12 @@ void TestPaymentsNetworkInterface::GetVirtualCardEnrollmentDetails(
 }
 
 void TestPaymentsNetworkInterface::UpdateVirtualCardEnrollment(
-    const TestPaymentsNetworkInterface::UpdateVirtualCardEnrollmentRequestDetails&
-        request_details,
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback) {
+    const TestPaymentsNetworkInterface::
+        UpdateVirtualCardEnrollmentRequestDetails& request_details,
+    base::OnceCallback<void(PaymentsRpcResult)> callback) {
   update_virtual_card_enrollment_request_details_ = std::move(request_details);
   std::move(callback).Run(update_virtual_card_enrollment_result_.value_or(
-      AutofillClient::PaymentsRpcResult::kSuccess));
+      PaymentsRpcResult::kSuccess));
 }
 
 void TestPaymentsNetworkInterface::ShouldReturnUnmaskDetailsImmediately(

@@ -10,13 +10,15 @@
 
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/full_card_request.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/card_unmask_prompt_options.h"
 
 namespace autofill {
+
+class AutofillClient;
 
 namespace autofill_metrics {
 class AutofillMetricsBaseTest;
@@ -112,7 +114,7 @@ class CreditCardCvcAuthenticator
       const CardUnmaskPromptOptions& card_unmask_prompt_options,
       base::WeakPtr<CardUnmaskDelegate> delegate) override;
   void OnUnmaskVerificationResult(
-      AutofillClient::PaymentsRpcResult result) override;
+      payments::PaymentsAutofillClient::PaymentsRpcResult result) override;
 #if BUILDFLAG(IS_ANDROID)
   bool ShouldOfferFidoAuth() const override;
   bool UserOptedInToFidoFromSettingsPageOnMobile() const override;

@@ -18,7 +18,7 @@ const char kOptChangeRequestPath[] =
 OptChangeRequest::OptChangeRequest(
     const PaymentsNetworkInterface::OptChangeRequestDetails& request_details,
     base::OnceCallback<
-        void(AutofillClient::PaymentsRpcResult,
+        void(PaymentsAutofillClient::PaymentsRpcResult,
              PaymentsNetworkInterface::OptChangeResponseDetails&)> callback,
     const bool full_sync_enabled)
     : request_details_(request_details),
@@ -112,7 +112,7 @@ bool OptChangeRequest::IsResponseComplete() {
 }
 
 void OptChangeRequest::RespondToDelegate(
-    AutofillClient::PaymentsRpcResult result) {
+    PaymentsAutofillClient::PaymentsRpcResult result) {
   std::move(callback_).Run(result, response_details_);
 }
 

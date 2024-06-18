@@ -8,11 +8,15 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/metrics/payments/card_unmask_authentication_metrics.h"
 #include "components/autofill/core/browser/payments/autofill_payments_feature_availability.h"
-#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 
 namespace autofill {
+namespace {
+
+using PaymentsRpcResult = payments::PaymentsAutofillClient::PaymentsRpcResult;
+
+}  // namespace
 
 CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse::
     RiskBasedAuthenticationResponse() = default;
@@ -103,7 +107,7 @@ void CreditCardRiskBasedAuthenticator::OnDidGetUnmaskRiskData(
 }
 
 void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
-    AutofillClient::PaymentsRpcResult result,
+    PaymentsRpcResult result,
     const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
         response_details) {
   if (unmask_card_request_timestamp_.has_value()) {
@@ -125,7 +129,7 @@ void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
   }
 
   RiskBasedAuthenticationResponse response;
-  if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
+  if (result == PaymentsRpcResult::kSuccess) {
     if (!response_details.real_pan.empty()) {
       // The Payments server indicates no further authentication is required.
       response.result =
@@ -156,7 +160,7 @@ void CreditCardRiskBasedAuthenticator::OnUnmaskResponseReceived(
     response.result = RiskBasedAuthenticationResponse::Result::kError;
     CHECK(card_.record_type() == CreditCard::RecordType::kMaskedServerCard);
     response.error_dialog_context.type =
-        result == AutofillClient::PaymentsRpcResult::kNetworkError
+        result == PaymentsRpcResult::kNetworkError
             ? AutofillErrorDialogType::
                   kMaskedServerCardRiskBasedUnmaskingNetworkError
             : AutofillErrorDialogType::

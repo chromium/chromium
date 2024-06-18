@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 
 namespace base {
@@ -104,7 +104,7 @@ void LogGetDetailsForEnrollmentRequestResult(VirtualCardEnrollmentSource source,
                                              bool succeeded);
 void LogGetDetailsForEnrollmentRequestLatency(
     VirtualCardEnrollmentSource source,
-    AutofillClient::PaymentsRpcResult result,
+    payments::PaymentsAutofillClient::PaymentsRpcResult result,
     base::TimeDelta latency);
 
 // UpdateVirtualCardEnrollmentRequest related metrics. Attempts and results

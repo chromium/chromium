@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/values.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 
@@ -20,7 +20,7 @@ class UnmaskIbanRequest : public PaymentsRequest {
   UnmaskIbanRequest(
       const PaymentsNetworkInterface::UnmaskIbanRequestDetails& request_details,
       bool full_sync_enabled,
-      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               const std::u16string&)> callback);
   UnmaskIbanRequest(const UnmaskIbanRequest&) = delete;
   UnmaskIbanRequest& operator=(const UnmaskIbanRequest&) = delete;
@@ -32,7 +32,8 @@ class UnmaskIbanRequest : public PaymentsRequest {
   std::string GetRequestContent() override;
   void ParseResponse(const base::Value::Dict& response) override;
   bool IsResponseComplete() override;
-  void RespondToDelegate(AutofillClient::PaymentsRpcResult result) override;
+  void RespondToDelegate(
+      PaymentsAutofillClient::PaymentsRpcResult result) override;
 
   const std::u16string& value_for_testing() const { return value_; }
 
@@ -40,7 +41,7 @@ class UnmaskIbanRequest : public PaymentsRequest {
   const PaymentsNetworkInterface::UnmaskIbanRequestDetails request_details_;
   const bool full_sync_enabled_;
   std::u16string value_;
-  base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+  base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                           const std::u16string&)>
       callback_;
 };

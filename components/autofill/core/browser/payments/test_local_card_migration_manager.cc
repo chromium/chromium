@@ -48,11 +48,11 @@ void TestLocalCardMigrationManager::EnablePaymentsWalletSyncInTransportMode() {
 
 void TestLocalCardMigrationManager::OnDidGetUploadDetails(
     bool is_from_settings_page,
-    AutofillClient::PaymentsRpcResult result,
+    payments::PaymentsAutofillClient::PaymentsRpcResult result,
     const std::u16string& context_token,
     std::unique_ptr<base::Value::Dict> legal_message,
     std::vector<std::pair<int, int>> supported_bin_ranges) {
-  if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
+  if (result == payments::PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
     local_card_migration_was_triggered_ = true;
   }
   LocalCardMigrationManager::OnDidGetUploadDetails(

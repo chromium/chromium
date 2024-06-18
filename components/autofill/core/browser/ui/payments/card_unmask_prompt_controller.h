@@ -8,7 +8,7 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace base {
 class TimeDelta;
@@ -54,7 +54,8 @@ class CardUnmaskPromptController {
   virtual std::u16string GetCvcImageAnnouncement() const = 0;
 #endif
   virtual base::TimeDelta GetSuccessMessageDuration() const = 0;
-  virtual AutofillClient::PaymentsRpcResult GetVerificationResult() const = 0;
+  virtual payments::PaymentsAutofillClient::PaymentsRpcResult
+  GetVerificationResult() const = 0;
   virtual bool IsVirtualCard() const = 0;
   virtual const CreditCard& GetCreditCard() const = 0;
 #if !BUILDFLAG(IS_IOS)

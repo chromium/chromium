@@ -145,7 +145,7 @@ void CreditCardCvcAuthenticator::ShowUnmaskPrompt(
 }
 
 void CreditCardCvcAuthenticator::OnUnmaskVerificationResult(
-    AutofillClient::PaymentsRpcResult result) {
+    payments::PaymentsAutofillClient::PaymentsRpcResult result) {
   client_->GetPaymentsAutofillClient()->OnUnmaskVerificationResult(result);
 }
 

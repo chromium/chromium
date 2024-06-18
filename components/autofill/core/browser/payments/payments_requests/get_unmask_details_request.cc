@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/json/json_writer.h"
-#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 
 namespace autofill::payments {
 
@@ -17,7 +16,7 @@ const char kGetUnmaskDetailsRequestPath[] =
 }  // namespace
 
 GetUnmaskDetailsRequest::GetUnmaskDetailsRequest(
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+    base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                             PaymentsNetworkInterface::UnmaskDetails&)> callback,
     const std::string& app_locale,
     const bool full_sync_enabled)
@@ -88,7 +87,7 @@ bool GetUnmaskDetailsRequest::IsResponseComplete() {
 }
 
 void GetUnmaskDetailsRequest::RespondToDelegate(
-    AutofillClient::PaymentsRpcResult result) {
+    PaymentsAutofillClient::PaymentsRpcResult result) {
   std::move(callback_).Run(result, unmask_details_);
 }
 

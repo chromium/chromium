@@ -149,8 +149,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
           confirm_unmask_challenge_option_callback,
       base::OnceClosure cancel_unmasking_closure) override;
   void DismissUnmaskAuthenticatorSelectionDialog(bool server_success) override;
-  void OnUnmaskVerificationResult(
-      AutofillClient::PaymentsRpcResult result) override;
+  void OnUnmaskVerificationResult(PaymentsRpcResult result) override;
   VirtualCardEnrollmentManager* GetVirtualCardEnrollmentManager() override;
   CreditCardCvcAuthenticator& GetCvcAuthenticator() override;
   CreditCardOtpAuthenticator* GetOtpAuthenticator() override;

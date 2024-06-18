@@ -8,10 +8,10 @@
 #include <string>
 
 #include "base/values.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 
 namespace autofill::payments {
@@ -39,7 +39,8 @@ class PaymentsRequest {
 
   // Invokes the appropriate callback in the delegate based on what type of
   // request this is.
-  virtual void RespondToDelegate(AutofillClient::PaymentsRpcResult result) = 0;
+  virtual void RespondToDelegate(
+      PaymentsAutofillClient::PaymentsRpcResult result) = 0;
 
   // Returns true if the response indicates that we received an error that is
   // retryable, false otherwise. If this returns true, the PaymentsRpcResult for

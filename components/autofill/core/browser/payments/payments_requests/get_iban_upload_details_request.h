@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/values.h"
-#include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 
 namespace autofill::payments {
@@ -22,7 +22,7 @@ class GetIbanUploadDetailsRequest : public PaymentsRequest {
       int64_t billing_customer_number,
       int billable_service_number,
       const std::string& country_code,
-      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               const std::u16string& validation_regex,
                               const std::u16string& context_token,
                               std::unique_ptr<base::Value::Dict>)> callback);
@@ -37,7 +37,8 @@ class GetIbanUploadDetailsRequest : public PaymentsRequest {
   std::string GetRequestContent() override;
   void ParseResponse(const base::Value::Dict& response) override;
   bool IsResponseComplete() override;
-  void RespondToDelegate(AutofillClient::PaymentsRpcResult result) override;
+  void RespondToDelegate(
+      PaymentsAutofillClient::PaymentsRpcResult result) override;
 
   std::u16string context_token_for_testing() const { return context_token_; }
   base::Value::Dict* legal_message_for_testing() const {
@@ -53,7 +54,7 @@ class GetIbanUploadDetailsRequest : public PaymentsRequest {
   const int64_t billing_customer_number_;
   const int billable_service_number_;
   std::string country_code_;
-  base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+  base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                           const std::u16string& validation_regex,
                           const std::u16string& context_token,
                           std::unique_ptr<base::Value::Dict>)>

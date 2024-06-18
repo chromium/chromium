@@ -11,12 +11,14 @@
 #include "base/memory/raw_ref.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/otp_unmask_delegate.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 
 namespace autofill {
+
+class AutofillClient;
 
 // TODO(crbug.com/40186650): Extract common functions to a parent class after
 // full card request is removed from the flow.
@@ -106,8 +108,9 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
   // the latest version. On a success, this will trigger the otp dialog by
   // calling |ShowOtpDialog()|. If server returns error, show the error dialog
   // and end session.
-  void OnDidSelectChallengeOption(AutofillClient::PaymentsRpcResult result,
-                                  const std::string& context_token);
+  void OnDidSelectChallengeOption(
+      payments::PaymentsAutofillClient::PaymentsRpcResult result,
+      const std::string& context_token);
 
   // Callback function invoked when the client receives a response from the
   // server. Updates locally-cached |context_token_| to the latest version. If
@@ -115,7 +118,7 @@ class CreditCardOtpAuthenticator : public OtpUnmaskDelegate {
   // information to the CreditCardAccessManager, otherwise update the UI to show
   // the correct error message and end the session.
   void OnDidGetRealPan(
-      AutofillClient::PaymentsRpcResult result,
+      payments::PaymentsAutofillClient::PaymentsRpcResult result,
       const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
           response_details);
 

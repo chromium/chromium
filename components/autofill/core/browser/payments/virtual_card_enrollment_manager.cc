@@ -25,6 +25,11 @@
 #include "ui/gfx/image/image.h"
 
 namespace autofill {
+namespace {
+
+using PaymentsRpcResult = payments::PaymentsAutofillClient::PaymentsRpcResult;
+
+}  // namespace
 
 VirtualCardEnrollmentFields::VirtualCardEnrollmentFields() = default;
 VirtualCardEnrollmentFields::VirtualCardEnrollmentFields(
@@ -252,10 +257,10 @@ void VirtualCardEnrollmentManager::SetSaveCardBubbleAcceptedTimestamp(
 
 void VirtualCardEnrollmentManager::OnDidGetUpdateVirtualCardEnrollmentResponse(
     VirtualCardEnrollmentRequestType type,
-    AutofillClient::PaymentsRpcResult result) {
+    PaymentsRpcResult result) {
   // Add a strike if enrollment attempt was not successful.
   if (type == VirtualCardEnrollmentRequestType::kEnroll &&
-      result != AutofillClient::PaymentsRpcResult::kSuccess) {
+      result != PaymentsRpcResult::kSuccess) {
     AddStrikeToBlockOfferingVirtualCardEnrollment(base::NumberToString(
         state_.virtual_card_enrollment_fields.credit_card.instrument_id()));
   }
@@ -264,12 +269,12 @@ void VirtualCardEnrollmentManager::OnDidGetUpdateVirtualCardEnrollmentResponse(
   // payments delegate if the editor was already closed.
   if (virtual_card_enrollment_update_response_callback_.has_value()) {
     std::move(virtual_card_enrollment_update_response_callback_.value())
-        .Run(result == AutofillClient::PaymentsRpcResult::kSuccess);
+        .Run(result == PaymentsRpcResult::kSuccess);
   }
 
   LogUpdateVirtualCardEnrollmentRequestResult(
       state_.virtual_card_enrollment_fields.virtual_card_enrollment_source,
-      type, result == AutofillClient::PaymentsRpcResult::kSuccess);
+      type, result == PaymentsRpcResult::kSuccess);
   Reset();
 }
 
@@ -409,7 +414,7 @@ void VirtualCardEnrollmentManager::GetDetailsForEnroll() {
 }
 
 void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
-    AutofillClient::PaymentsRpcResult result,
+    PaymentsRpcResult result,
     const payments::PaymentsNetworkInterface::
         GetDetailsForEnrollmentResponseDetails& response) {
   if (get_details_for_enrollment_request_sent_timestamp_.has_value()) {
@@ -423,12 +428,12 @@ void VirtualCardEnrollmentManager::OnDidGetDetailsForEnrollResponse(
 
   LogGetDetailsForEnrollmentRequestResult(
       state_.virtual_card_enrollment_fields.virtual_card_enrollment_source,
-      /*succeeded=*/result == AutofillClient::PaymentsRpcResult::kSuccess);
+      /*succeeded=*/result == PaymentsRpcResult::kSuccess);
 
   // Show the virtual card permanent error dialog if server explicitly returned
   // permanent error, show temporary error dialog for the rest of the failure
   // cases since currently only virtual card is supported.
-  if (result != AutofillClient::PaymentsRpcResult::kSuccess) {
+  if (result != PaymentsRpcResult::kSuccess) {
     // Showing an error dialog here would provide a confusing user experience as
     // it is an error for a flow that is not user-initiated, so we fail
     // silently.

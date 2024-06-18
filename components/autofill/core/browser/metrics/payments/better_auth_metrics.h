@@ -133,7 +133,7 @@ enum class WebauthnResultMetric {
 // indicates the type of the credit card that the request fetched.
 void LogCardUnmaskDurationAfterWebauthn(
     const base::TimeDelta& duration,
-    AutofillClient::PaymentsRpcResult result,
+    payments::PaymentsAutofillClient::PaymentsRpcResult result,
     payments::PaymentsAutofillClient::PaymentsRpcCardType card_type);
 
 // Logs the number of times that we initiate the card unmask preflight flow.

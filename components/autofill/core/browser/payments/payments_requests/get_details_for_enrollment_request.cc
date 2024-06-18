@@ -30,7 +30,7 @@ const int kDownstreamEnrollBillableServiceNumber =
 GetDetailsForEnrollmentRequest::GetDetailsForEnrollmentRequest(
     const PaymentsNetworkInterface::GetDetailsForEnrollmentRequestDetails&
         request_details,
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+    base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                             const PaymentsNetworkInterface::
                                 GetDetailsForEnrollmentResponseDetails&)>
         callback)
@@ -128,7 +128,7 @@ bool GetDetailsForEnrollmentRequest::IsResponseComplete() {
 }
 
 void GetDetailsForEnrollmentRequest::RespondToDelegate(
-    AutofillClient::PaymentsRpcResult result) {
+    PaymentsAutofillClient::PaymentsRpcResult result) {
   std::move(callback_).Run(result, response_details_);
 }
 

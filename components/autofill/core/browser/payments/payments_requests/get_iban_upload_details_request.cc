@@ -21,7 +21,7 @@ GetIbanUploadDetailsRequest::GetIbanUploadDetailsRequest(
     int64_t billing_customer_number,
     int billable_service_number,
     const std::string& country_code,
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+    base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                             const std::u16string& validation_regex,
                             const std::u16string& context_token,
                             std::unique_ptr<base::Value::Dict>)> callback)
@@ -89,7 +89,7 @@ bool GetIbanUploadDetailsRequest::IsResponseComplete() {
 }
 
 void GetIbanUploadDetailsRequest::RespondToDelegate(
-    AutofillClient::PaymentsRpcResult result) {
+    PaymentsAutofillClient::PaymentsRpcResult result) {
   std::move(callback_).Run(result, validation_regex_, context_token_,
                            std::move(legal_message_));
 }

@@ -14,10 +14,10 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/local_card_migration_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/strike_databases/payments/local_card_migration_strike_database.h"
 
@@ -163,7 +163,7 @@ class LocalCardMigrationManager {
   // directly. If not, trigger the intermediate prompt. Exposed for testing.
   virtual void OnDidGetUploadDetails(
       bool is_from_settings_page,
-      AutofillClient::PaymentsRpcResult result,
+      payments::PaymentsAutofillClient::PaymentsRpcResult result,
       const std::u16string& context_token,
       std::unique_ptr<base::Value::Dict> legal_message,
       std::vector<std::pair<int, int>> supported_card_bin_ranges);
@@ -173,7 +173,7 @@ class LocalCardMigrationManager {
   // trigger a window showing the migration result together with display text to
   // the user.
   void OnDidMigrateLocalCards(
-      AutofillClient::PaymentsRpcResult result,
+      payments::PaymentsAutofillClient::PaymentsRpcResult result,
       std::unique_ptr<std::unordered_map<std::string, std::string>> save_result,
       const std::string& display_text);
 

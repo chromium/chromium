@@ -31,7 +31,7 @@ UploadCardRequest::UploadCardRequest(
     const PaymentsNetworkInterface::UploadCardRequestDetails& request_details,
     const bool full_sync_enabled,
     base::OnceCallback<void(
-        AutofillClient::PaymentsRpcResult,
+        PaymentsAutofillClient::PaymentsRpcResult,
         const PaymentsNetworkInterface::UploadCardResponseDetails&)> callback)
     : request_details_(request_details),
       full_sync_enabled_(full_sync_enabled),
@@ -194,7 +194,7 @@ bool UploadCardRequest::IsResponseComplete() {
 }
 
 void UploadCardRequest::RespondToDelegate(
-    AutofillClient::PaymentsRpcResult result) {
+    PaymentsAutofillClient::PaymentsRpcResult result) {
   std::move(callback_).Run(result, upload_card_response_details_);
 }
 

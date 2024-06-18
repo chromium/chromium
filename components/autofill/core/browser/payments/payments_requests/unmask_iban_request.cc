@@ -21,7 +21,7 @@ const char kUnmaskIbanRequestFormat[] =
 UnmaskIbanRequest::UnmaskIbanRequest(
     const PaymentsNetworkInterface::UnmaskIbanRequestDetails& request_details,
     bool full_sync_enabled,
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+    base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                             const std::u16string&)> callback)
     : request_details_(request_details),
       full_sync_enabled_(full_sync_enabled),
@@ -73,7 +73,7 @@ bool UnmaskIbanRequest::IsResponseComplete() {
 }
 
 void UnmaskIbanRequest::RespondToDelegate(
-    AutofillClient::PaymentsRpcResult result) {
+    PaymentsAutofillClient::PaymentsRpcResult result) {
   std::move(callback_).Run(result, value_);
 }
 

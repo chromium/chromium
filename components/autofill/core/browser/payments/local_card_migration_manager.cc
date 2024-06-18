@@ -23,7 +23,6 @@
 #include "components/autofill/core/browser/metrics/payments/local_card_migration_metrics.h"
 #include "components/autofill/core/browser/payments/client_behavior_constants.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
-#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
@@ -33,6 +32,11 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 
 namespace autofill {
+namespace {
+
+using PaymentsRpcResult = payments::PaymentsAutofillClient::PaymentsRpcResult;
+
+}  // namespace
 
 MigratableCreditCard::MigratableCreditCard(const CreditCard& credit_card)
     : credit_card_(credit_card) {}
@@ -217,14 +221,14 @@ bool LocalCardMigrationManager::IsCreditCardMigrationEnabled() {
 
 void LocalCardMigrationManager::OnDidGetUploadDetails(
     bool is_from_settings_page,
-    AutofillClient::PaymentsRpcResult result,
+    PaymentsRpcResult result,
     const std::u16string& context_token,
     std::unique_ptr<base::Value::Dict> legal_message,
     std::vector<std::pair<int, int>> supported_card_bin_ranges) {
   if (observer_for_testing_)
     observer_for_testing_->OnReceivedGetUploadDetailsResponse();
 
-  if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
+  if (result == PaymentsRpcResult::kSuccess) {
     LegalMessageLine::Parse(*legal_message, &legal_message_lines_,
                             /*escape_apostrophes=*/true);
 
@@ -294,7 +298,7 @@ void LocalCardMigrationManager::OnDidGetUploadDetails(
 }
 
 void LocalCardMigrationManager::OnDidMigrateLocalCards(
-    AutofillClient::PaymentsRpcResult result,
+    PaymentsRpcResult result,
     std::unique_ptr<std::unordered_map<std::string, std::string>> save_result,
     const std::string& display_text) {
   if (observer_for_testing_)
@@ -303,7 +307,7 @@ void LocalCardMigrationManager::OnDidMigrateLocalCards(
   if (!save_result)
     return;
 
-  if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
+  if (result == PaymentsRpcResult::kSuccess) {
     std::vector<CreditCard> migrated_cards;
     // Traverse the migratable credit cards to update each migrated card status.
     for (MigratableCreditCard& card : migratable_credit_cards_) {
@@ -341,8 +345,8 @@ void LocalCardMigrationManager::OnDidMigrateLocalCards(
   }
 
   client_->GetPaymentsAutofillClient()->ShowLocalCardMigrationResults(
-      result != AutofillClient::PaymentsRpcResult::kSuccess,
-      base::UTF8ToUTF16(display_text), migratable_credit_cards_,
+      result != PaymentsRpcResult::kSuccess, base::UTF8ToUTF16(display_text),
+      migratable_credit_cards_,
       base::BindRepeating(
           &LocalCardMigrationManager::OnUserDeletedLocalCardViaMigrationDialog,
           weak_ptr_factory_.GetWeakPtr()));

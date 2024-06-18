@@ -76,7 +76,7 @@ void LogGetDetailsForEnrollmentRequestResult(VirtualCardEnrollmentSource source,
 
 void LogGetDetailsForEnrollmentRequestLatency(
     VirtualCardEnrollmentSource source,
-    AutofillClient::PaymentsRpcResult result,
+    payments::PaymentsAutofillClient::PaymentsRpcResult result,
     base::TimeDelta latency) {
   base::UmaHistogramMediumTimes(
       "Autofill.VirtualCard.GetDetailsForEnrollment.Latency." +

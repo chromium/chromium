@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUESTS_GET_DETAILS_FOR_ENROLLMENT_REQUEST_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_PAYMENTS_PAYMENTS_REQUESTS_GET_DETAILS_FOR_ENROLLMENT_REQUEST_H_
 
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 
@@ -17,7 +18,7 @@ class GetDetailsForEnrollmentRequest : public PaymentsRequest {
   GetDetailsForEnrollmentRequest(
       const PaymentsNetworkInterface::GetDetailsForEnrollmentRequestDetails&
           request_details,
-      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               const PaymentsNetworkInterface::
                                   GetDetailsForEnrollmentResponseDetails&)>
           callback);
@@ -33,7 +34,8 @@ class GetDetailsForEnrollmentRequest : public PaymentsRequest {
   std::string GetRequestContent() override;
   void ParseResponse(const base::Value::Dict& response) override;
   bool IsResponseComplete() override;
-  void RespondToDelegate(AutofillClient::PaymentsRpcResult result) override;
+  void RespondToDelegate(
+      PaymentsAutofillClient::PaymentsRpcResult result) override;
 
  private:
   friend class GetDetailsForEnrollmentRequestTest;
@@ -49,7 +51,7 @@ class GetDetailsForEnrollmentRequest : public PaymentsRequest {
 
   // The callback function to be invoked when the response is received.
   base::OnceCallback<void(
-      AutofillClient::PaymentsRpcResult,
+      PaymentsAutofillClient::PaymentsRpcResult,
       const PaymentsNetworkInterface::GetDetailsForEnrollmentResponseDetails&)>
       callback_;
 };

@@ -53,6 +53,8 @@ class PaymentsAutofillClient : public RiskDataLoader {
  public:
   ~PaymentsAutofillClient() override;
 
+  using PaymentsRpcResult = AutofillClient::PaymentsRpcResult;
+
   // The type of the credit card the Payments RPC fetches.
   enum class PaymentsRpcCardType {
     // Unknown type.
@@ -308,8 +310,7 @@ class PaymentsAutofillClient : public RiskDataLoader {
       const CreditCard& card,
       const CardUnmaskPromptOptions& card_unmask_prompt_options,
       base::WeakPtr<CardUnmaskDelegate> delegate);
-  virtual void OnUnmaskVerificationResult(
-      AutofillClient::PaymentsRpcResult result);
+  virtual void OnUnmaskVerificationResult(PaymentsRpcResult result);
 
   // Returns a pointer to a VirtualCardEnrollmentManager that is owned by
   // PaymentsAutofillClient. VirtualCardEnrollmentManager is used for virtual

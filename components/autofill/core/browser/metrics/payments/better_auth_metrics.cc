@@ -11,7 +11,7 @@ namespace autofill::autofill_metrics {
 
 void LogCardUnmaskDurationAfterWebauthn(
     const base::TimeDelta& duration,
-    AutofillClient::PaymentsRpcResult result,
+    payments::PaymentsAutofillClient::PaymentsRpcResult result,
     payments::PaymentsAutofillClient::PaymentsRpcCardType card_type) {
   base::UmaHistogramLongTimes("Autofill.BetterAuth.CardUnmaskDuration.Fido",
                               duration);

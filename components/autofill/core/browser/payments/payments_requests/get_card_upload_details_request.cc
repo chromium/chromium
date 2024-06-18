@@ -26,7 +26,7 @@ GetCardUploadDetailsRequest::GetCardUploadDetailsRequest(
     const std::vector<ClientBehaviorConstants>& client_behavior_signals,
     const bool full_sync_enabled,
     const std::string& app_locale,
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+    base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                             const std::u16string&,
                             std::unique_ptr<base::Value::Dict>,
                             std::vector<std::pair<int, int>>)> callback,
@@ -142,7 +142,7 @@ bool GetCardUploadDetailsRequest::IsResponseComplete() {
 }
 
 void GetCardUploadDetailsRequest::RespondToDelegate(
-    AutofillClient::PaymentsRpcResult result) {
+    PaymentsAutofillClient::PaymentsRpcResult result) {
   std::move(callback_).Run(result, context_token_, std::move(legal_message_),
                            supported_card_bin_ranges_);
 }

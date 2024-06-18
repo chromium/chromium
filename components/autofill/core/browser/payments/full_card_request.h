@@ -89,7 +89,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
         const CardUnmaskPromptOptions& card_unmask_prompt_options,
         base::WeakPtr<CardUnmaskDelegate> delegate) = 0;
     virtual void OnUnmaskVerificationResult(
-        AutofillClient::PaymentsRpcResult result) = 0;
+        PaymentsAutofillClient::PaymentsRpcResult result) = 0;
 
 #if BUILDFLAG(IS_ANDROID)
     // Returns whether or not the user, while on the CVC prompt, should be
@@ -175,7 +175,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
 
   // Called by the PaymentsNetworkInterface when a card has been unmasked.
   void OnDidGetRealPan(
-      AutofillClient::PaymentsRpcResult result,
+      PaymentsAutofillClient::PaymentsRpcResult result,
       const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
           response_details);
 

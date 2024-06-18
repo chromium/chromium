@@ -110,6 +110,8 @@ using PlusAddressCallback = base::OnceCallback<void(const std::string&)>;
 // with" (e.g. for the tab the BrowserAutofillManager is attached to).
 class AutofillClient {
  public:
+  // TODO(crbug.com/40937065): Complete the migration of PaymentsRpcResult by
+  // moving it to `payments_autofill_client.h`.
   enum class PaymentsRpcResult {
     // Empty result. Used for initializing variables and should generally
     // not be returned nor passed as arguments unless explicitly allowed by

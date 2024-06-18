@@ -42,6 +42,11 @@
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 namespace autofill::payments {
+namespace {
+
+using PaymentsRpcResult = PaymentsAutofillClient::PaymentsRpcResult;
+
+}  // namespace
 
 PaymentsNetworkInterface::UnmaskDetails::UnmaskDetails() = default;
 
@@ -267,7 +272,7 @@ void PaymentsNetworkInterface::Prepare() {
 }
 
 void PaymentsNetworkInterface::GetUnmaskDetails(
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+    base::OnceCallback<void(PaymentsRpcResult,
                             PaymentsNetworkInterface::UnmaskDetails&)> callback,
     const std::string& app_locale) {
   IssueRequest(std::make_unique<GetUnmaskDetailsRequest>(
@@ -278,7 +283,7 @@ void PaymentsNetworkInterface::GetUnmaskDetails(
 void PaymentsNetworkInterface::UnmaskCard(
     const PaymentsNetworkInterface::UnmaskRequestDetails& request_details,
     base::OnceCallback<void(
-        AutofillClient::PaymentsRpcResult,
+        PaymentsRpcResult,
         const PaymentsNetworkInterface::UnmaskResponseDetails&)> callback) {
   IssueRequest(std::make_unique<UnmaskCardRequest>(
       request_details,
@@ -288,8 +293,8 @@ void PaymentsNetworkInterface::UnmaskCard(
 
 void PaymentsNetworkInterface::UnmaskIban(
     const UnmaskIbanRequestDetails& request_details,
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                            const std::u16string&)> callback) {
+    base::OnceCallback<void(PaymentsRpcResult, const std::u16string&)>
+        callback) {
   IssueRequest(std::make_unique<UnmaskIbanRequest>(
       request_details,
       account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
@@ -298,9 +303,9 @@ void PaymentsNetworkInterface::UnmaskIban(
 
 void PaymentsNetworkInterface::OptChange(
     const OptChangeRequestDetails request_details,
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                            PaymentsNetworkInterface::OptChangeResponseDetails&)>
-        callback) {
+    base::OnceCallback<
+        void(PaymentsRpcResult,
+             PaymentsNetworkInterface::OptChangeResponseDetails&)> callback) {
   IssueRequest(std::make_unique<OptChangeRequest>(
       request_details, std::move(callback),
       account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics()));
@@ -311,7 +316,7 @@ void PaymentsNetworkInterface::GetCardUploadDetails(
     const int detected_values,
     const std::vector<ClientBehaviorConstants>& client_behavior_signals,
     const std::string& app_locale,
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+    base::OnceCallback<void(PaymentsRpcResult,
                             const std::u16string&,
                             std::unique_ptr<base::Value::Dict>,
                             std::vector<std::pair<int, int>>)> callback,
@@ -327,7 +332,7 @@ void PaymentsNetworkInterface::GetCardUploadDetails(
 
 void PaymentsNetworkInterface::UploadCard(
     const PaymentsNetworkInterface::UploadCardRequestDetails& request_details,
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+    base::OnceCallback<void(PaymentsRpcResult,
                             const UploadCardResponseDetails&)> callback) {
   IssueRequest(std::make_unique<UploadCardRequest>(
       request_details,
@@ -340,7 +345,7 @@ void PaymentsNetworkInterface::GetIbanUploadDetails(
     int64_t billing_customer_number,
     int billable_service_number,
     const std::string& country_code,
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+    base::OnceCallback<void(PaymentsRpcResult,
                             const std::u16string& validation_regex,
                             const std::u16string& context_token,
                             std::unique_ptr<base::Value::Dict>)> callback) {
@@ -352,7 +357,7 @@ void PaymentsNetworkInterface::GetIbanUploadDetails(
 
 void PaymentsNetworkInterface::UploadIban(
     const UploadIbanRequestDetails& details,
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback) {
+    base::OnceCallback<void(PaymentsRpcResult)> callback) {
   IssueRequest(std::make_unique<UploadIbanRequest>(
       details,
       account_info_getter_->IsSyncFeatureEnabledForPaymentsServerMetrics(),
@@ -373,15 +378,14 @@ void PaymentsNetworkInterface::MigrateCards(
 
 void PaymentsNetworkInterface::SelectChallengeOption(
     const SelectChallengeOptionRequestDetails& request_details,
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                            const std::string&)> callback) {
+    base::OnceCallback<void(PaymentsRpcResult, const std::string&)> callback) {
   IssueRequest(std::make_unique<SelectChallengeOptionRequest>(
       request_details, std::move(callback)));
 }
 
 void PaymentsNetworkInterface::GetVirtualCardEnrollmentDetails(
     const GetDetailsForEnrollmentRequestDetails& request_details,
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+    base::OnceCallback<void(PaymentsRpcResult,
                             const PaymentsNetworkInterface::
                                 GetDetailsForEnrollmentResponseDetails&)>
         callback) {
@@ -391,7 +395,7 @@ void PaymentsNetworkInterface::GetVirtualCardEnrollmentDetails(
 
 void PaymentsNetworkInterface::UpdateVirtualCardEnrollment(
     const UpdateVirtualCardEnrollmentRequestDetails& request_details,
-    base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback) {
+    base::OnceCallback<void(PaymentsRpcResult)> callback) {
   IssueRequest(std::make_unique<UpdateVirtualCardEnrollmentRequest>(
       request_details, std::move(callback)));
 }

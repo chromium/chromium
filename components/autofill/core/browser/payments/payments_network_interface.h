@@ -19,7 +19,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
@@ -56,7 +55,7 @@ namespace payments {
 // unique id (guid) for each card and value is the server save result string.
 // |display_text| is the returned tip from Payments to show on the UI.
 typedef base::OnceCallback<void(
-    AutofillClient::PaymentsRpcResult result,
+    PaymentsAutofillClient::PaymentsRpcResult result,
     std::unique_ptr<std::unordered_map<std::string, std::string>> save_result,
     const std::string& display_text)>
     MigrateCardsCallback;
@@ -477,14 +476,14 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
   // card. This request returns what method of authentication is suggested,
   // along with any information to facilitate the authentication.
   virtual void GetUnmaskDetails(
-      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               UnmaskDetails&)> callback,
       const std::string& app_locale);
 
   // The user has attempted to unmask a card with the given cvc.
   virtual void UnmaskCard(
       const UnmaskRequestDetails& request_details,
-      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               const UnmaskResponseDetails&)> callback);
 
   // Triggers a request to the Payments server to unmask an IBAN. `callback` is
@@ -492,14 +491,15 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
   // the server and the full IBAN value is returned via callback.
   virtual void UnmaskIban(
       const UnmaskIbanRequestDetails& request_details,
-      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               const std::u16string&)> callback);
 
   // Opts-in or opts-out the user to use FIDO authentication for card unmasking
   // on this device.
-  void OptChange(const OptChangeRequestDetails request_details,
-                 base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                                         OptChangeResponseDetails&)> callback);
+  void OptChange(
+      const OptChangeRequestDetails request_details,
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
+                              OptChangeResponseDetails&)> callback);
 
   // Determine if the user meets the Payments service's conditions for upload.
   // The service uses |addresses| (from which names and phone numbers are
@@ -518,7 +518,7 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
       const int detected_values,
       const std::vector<ClientBehaviorConstants>& client_behavior_signals,
       const std::string& app_locale,
-      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               const std::u16string&,
                               std::unique_ptr<base::Value::Dict>,
                               std::vector<std::pair<int, int>>)> callback,
@@ -533,7 +533,7 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
   virtual void UploadCard(
       const UploadCardRequestDetails& details,
       base::OnceCallback<
-          void(AutofillClient::PaymentsRpcResult,
+          void(PaymentsAutofillClient::PaymentsRpcResult,
                const PaymentsNetworkInterface::UploadCardResponseDetails&)>
           callback);
 
@@ -555,7 +555,7 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
       int64_t billing_customer_number,
       int billable_service_number,
       const std::string& country_code,
-      base::OnceCallback<void(AutofillClient::PaymentsRpcResult result,
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult result,
                               const std::u16string& validation_regex,
                               const std::u16string& context_token,
                               std::unique_ptr<base::Value::Dict>)> callback);
@@ -567,7 +567,8 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
   // triggered when a response is received from the server.
   virtual void UploadIban(
       const UploadIbanRequestDetails& details,
-      base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback);
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult)>
+          callback);
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // The user has indicated that they would like to migrate their local credit
@@ -583,7 +584,7 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
   // selected challenge option to server to continue the unmask flow.
   virtual void SelectChallengeOption(
       const SelectChallengeOptionRequestDetails& details,
-      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               const std::string&)> callback);
 
   // Retrieve information necessary for the enrollment from the server. This is
@@ -591,7 +592,7 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
   // enrollment.
   virtual void GetVirtualCardEnrollmentDetails(
       const GetDetailsForEnrollmentRequestDetails& request_details,
-      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               const PaymentsNetworkInterface::
                                   GetDetailsForEnrollmentResponseDetails&)>
           callback);
@@ -602,7 +603,8 @@ class PaymentsNetworkInterface : public PaymentsNetworkInterfaceBase {
   // that the server understands the context for the request.
   virtual void UpdateVirtualCardEnrollment(
       const UpdateVirtualCardEnrollmentRequestDetails& request_details,
-      base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback);
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult)>
+          callback);
 
  private:
   friend class PaymentsNetworkInterfaceTest;

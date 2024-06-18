@@ -23,23 +23,26 @@ class MockTestPaymentsNetworkInterface : public payments::TestPaymentsNetworkInt
                int64_t,
                int,
                const std::string&,
-               (base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                                        const std::u16string&,
-                                        const std::u16string&,
-                                        std::unique_ptr<base::Value::Dict>)>)),
+               (base::OnceCallback<
+                   void(payments::PaymentsAutofillClient::PaymentsRpcResult,
+                        const std::u16string&,
+                        const std::u16string&,
+                        std::unique_ptr<base::Value::Dict>)>)),
               (override));
   MOCK_METHOD(
       void,
       UnmaskIban,
       (const payments::PaymentsNetworkInterface::UnmaskIbanRequestDetails&,
-       (base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                                const std::u16string&)>)),
+       (base::OnceCallback<
+           void(payments::PaymentsAutofillClient::PaymentsRpcResult,
+                const std::u16string&)>)),
       (override));
   MOCK_METHOD(
       void,
       UploadIban,
       (const UploadIbanRequestDetails&,
-       (base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback)),
+       (base::OnceCallback<void(
+            payments::PaymentsAutofillClient::PaymentsRpcResult)> callback)),
       (override));
 };
 
