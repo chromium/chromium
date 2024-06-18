@@ -3388,6 +3388,20 @@
       "features": [
         "disable_d3d11_update_subresource1"
       ]
+    },
+    {
+      "id": 430,
+      "cr_bugs": [
+        341327464
+      ],
+      "description": "Block all NPU drivers until newer versions work with WebNN",
+      "os": {
+        "type": "win"
+      },
+      "multi_gpu_category": "npu",
+      "features": [
+        "disable_webnn_for_npu"
+      ]
     }
   ]
 }
