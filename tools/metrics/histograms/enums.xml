@@ -29095,6 +29095,21 @@ Called by update_net_error_codes.py.-->
     network context cannot be configured to use the prefetch proxy for a single
     prefetch request. See crbug.com/1439986.
   </int>
+  <int value="47" label="Prefetch Not Eligible: Battery Saver Enabled">
+    The prefetch was not made because the `Battery Saver` setting was enabled.
+  </int>
+  <int value="48" label="Prefetch Not Eligible: Preloading Disabled">
+    The prefetch was not made because preloading was disabled.
+  </int>
+  <int value="50" label="Prefetch Evicted: Candidate Removed">
+    The prefetch was evicted to make room for a newer prefetch because the
+    corresponding SpeculationCandidate was removed. This currently only happens
+    when |kPrefetchNewLimits| is enabled.
+  </int>
+  <int value="51" label="Prefetch Evicted: Old Prefetch">
+    The prefetch was evicted to make room for a newer prefetch beacuse it was
+    old. This currently only happens when |kPrefetchNewLimits| is enabled.
+  </int>
 </enum>
 
 <enum name="PrefetchRedirectNetworkContextTransition">
