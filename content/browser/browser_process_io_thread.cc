@@ -100,10 +100,7 @@ void BrowserProcessIOThread::IOThreadRun(base::RunLoop* run_loop) {
   }
 
   Thread::Run(run_loop);
-
-  // Inhibit tail calls of Run and inhibit code folding.
-  const int line_number = __LINE__;
-  base::debug::Alias(&line_number);
+  NO_CODE_FOLDING();
 }
 
 void BrowserProcessIOThread::ProcessHostCleanUp() {

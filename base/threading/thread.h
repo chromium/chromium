@@ -12,6 +12,7 @@
 
 #include "base/base_export.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
@@ -259,8 +260,9 @@ class BASE_EXPORT Thread : PlatformThread::Delegate {
   // Called just prior to starting the message loop
   virtual void Init() {}
 
-  // Called to start the run loop
-  virtual void Run(RunLoop* run_loop);
+  // Called to start the run loop. Inhibit tail calls to this function so that
+  // the caller will be on the stack for profiling and crash analysis.
+  NOT_TAIL_CALLED virtual void Run(RunLoop* run_loop);
 
   // Called just after the message loop ends
   virtual void CleanUp() {}
