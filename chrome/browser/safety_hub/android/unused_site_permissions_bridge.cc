@@ -18,6 +18,7 @@
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/page_info/page_info_ui.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -111,6 +112,17 @@ void RestoreRevokedPermissionsReviewList(
   }
 }
 
+std::vector<std::u16string> ContentSettingsTypeToString(
+    std::vector<int32_t>& content_settings_type_list) {
+  std::vector<std::u16string> content_settings_string_list;
+  for (int32_t content_settings_type : content_settings_type_list) {
+    content_settings_string_list.push_back(
+        PageInfoUI::PermissionTypeToUIStringMidSentence(
+            static_cast<ContentSettingsType>(content_settings_type)));
+  }
+  return content_settings_string_list;
+}
+
 static std::vector<PermissionsData>
 JNI_UnusedSitePermissionsBridge_GetRevokedPermissions(JNIEnv* env,
                                                       Profile* profile) {
@@ -142,4 +154,11 @@ static void JNI_UnusedSitePermissionsBridge_RestoreRevokedPermissionsReviewList(
     Profile* profile,
     std::vector<PermissionsData>& permissions_data_list) {
   RestoreRevokedPermissionsReviewList(profile, permissions_data_list);
+}
+
+static std::vector<std::u16string>
+JNI_UnusedSitePermissionsBridge_ContentSettingsTypeToString(
+    JNIEnv* env,
+    std::vector<std::int32_t>& content_settings_type_list) {
+  return ContentSettingsTypeToString(content_settings_type_list);
 }

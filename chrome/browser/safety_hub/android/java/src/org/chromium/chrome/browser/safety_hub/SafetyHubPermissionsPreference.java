@@ -15,9 +15,12 @@ import androidx.preference.PreferenceViewHolder;
 import org.chromium.chrome.browser.settings.FaviconLoader;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
 import org.chromium.components.browser_ui.settings.FaviconViewUtils;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.url.GURL;
+
+import java.util.stream.IntStream;
 
 class SafetyHubPermissionsPreference extends ChromeBasePreference implements View.OnClickListener {
     private final @NonNull PermissionsData mPermissionsData;
@@ -33,8 +36,7 @@ class SafetyHubPermissionsPreference extends ChromeBasePreference implements Vie
         mPermissionsData = permissionsData;
         mLargeIconBridge = largeIconBridge;
         setTitle(mPermissionsData.getOrigin());
-        // TODO(crbug.com/324562205): Display correct substring based on revoked
-        // permissions.
+        setSummary(createSummary());
 
         setSelectable(false);
         setDividerAllowedBelow(false);
@@ -77,6 +79,47 @@ class SafetyHubPermissionsPreference extends ChromeBasePreference implements Vie
     private void onFaviconAvailable(Drawable drawable) {
         if (drawable != null) {
             setIcon(drawable);
+        }
+    }
+
+    private String createSummary() {
+        if (IntStream.of(mPermissionsData.getPermissions())
+                .anyMatch(x -> x == ContentSettingsType.NOTIFICATIONS)) {
+            return getContext()
+                    .getString(R.string.safety_hub_abusive_notification_permissions_sublabel);
+        }
+
+        String[] permissionNames =
+                UnusedSitePermissionsBridge.contentSettingsTypeToString(
+                        mPermissionsData.getPermissions());
+        assert permissionNames.length > 0 : "Site does not have revoked permissions.";
+
+        switch (permissionNames.length) {
+            case 1:
+                return getContext()
+                        .getString(
+                                R.string.safety_hub_removed_one_permission_sublabel,
+                                permissionNames[0]);
+            case 2:
+                return getContext()
+                        .getString(
+                                R.string.safety_hub_removed_two_permissions_sublabel,
+                                permissionNames[0],
+                                permissionNames[1]);
+            case 3:
+                return getContext()
+                        .getString(
+                                R.string.safety_hub_removed_three_permissions_sublabel,
+                                permissionNames[0],
+                                permissionNames[1],
+                                permissionNames[2]);
+            default:
+                return getContext()
+                        .getString(
+                                R.string.safety_hub_removed_four_or_more_permissions_sublabel,
+                                permissionNames[0],
+                                permissionNames[1],
+                                permissionNames.length - 2);
         }
     }
 }

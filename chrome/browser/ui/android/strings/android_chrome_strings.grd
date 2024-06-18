@@ -1724,6 +1724,21 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_SAFETY_HUB_NOTIFICATIONS_BLOCK_ALL_BUTTON" translateable="false">
         Block all
       </message>
+      <message name="IDS_SAFETY_HUB_REMOVED_ONE_PERMISSION_SUBLABEL" translateable="false">
+        You haven't visited recently. Chrome removed <ph name="PERMISSION">%1$s<ex>location</ex></ph>
+      </message>
+      <message name="IDS_SAFETY_HUB_REMOVED_TWO_PERMISSIONS_SUBLABEL" translateable="false">
+        You haven't visited recently. Chrome removed <ph name="PERMISSION_1">%1$s<ex>location</ex></ph>, <ph name="PERMISSION_2">%2$s<ex>notifications</ex></ph>
+      </message>
+      <message name="IDS_SAFETY_HUB_REMOVED_THREE_PERMISSIONS_SUBLABEL" translateable="false">
+        You haven't visited recently. Chrome removed <ph name="PERMISSION_1">%1$s<ex>location</ex></ph>, <ph name="PERMISSION_2">%2$s<ex>notifications</ex></ph>, <ph name="PERMISSION_3">%3$s<ex>camera</ex></ph>
+      </message>
+      <message name="IDS_SAFETY_HUB_REMOVED_FOUR_OR_MORE_PERMISSIONS_SUBLABEL" translateable="false">
+        You haven't visited recently. Chrome removed <ph name="PERMISSION_1">%1$s<ex>location</ex></ph>, <ph name="PERMISSION_2">%2$s<ex>notifications</ex></ph>, and <ph name="COUNT">%3$s<ex>2</ex></ph> more
+      </message>
+      <message name="IDS_SAFETY_HUB_ABUSIVE_NOTIFICATION_PERMISSIONS_SUBLABEL" translateable="false">
+        Dangerous site. Chrome removed notifications.
+      </message>
 
        <!-- Safe Browsing preferences -->
       <message name="IDS_PREFS_SAFE_BROWSING_TITLE" desc="Title for the Safe Browsing preferences. [CHAR_LIMIT=32]">

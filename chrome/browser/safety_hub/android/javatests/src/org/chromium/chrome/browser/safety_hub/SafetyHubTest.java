@@ -65,8 +65,18 @@ public final class SafetyHubTest {
             PermissionsData.create(
                     "http://example2.com",
                     new int[] {
-                        ContentSettingsType.MEDIASTREAM_CAMERA, ContentSettingsType.MEDIASTREAM_MIC
+                        ContentSettingsType.MEDIASTREAM_CAMERA,
+                        ContentSettingsType.MEDIASTREAM_MIC,
+                        ContentSettingsType.GEOLOCATION,
+                        ContentSettingsType.BACKGROUND_SYNC
                     },
+                    0,
+                    0);
+
+    private static final PermissionsData PERMISSIONS_DATA_3 =
+            PermissionsData.create(
+                    "http://example3.com",
+                    new int[] {ContentSettingsType.NOTIFICATIONS, ContentSettingsType.GEOLOCATION},
                     0,
                     0);
     private static final NotificationPermissions NOTIFICATION_PERMISSIONS_1 =
@@ -116,7 +126,7 @@ public final class SafetyHubTest {
     @Feature({"RenderTest", "SafetyHubPermissions"})
     public void testPermissionsSubpageAppearance() throws IOException {
         mUnusedPermissionsBridge.setPermissionsDataForReview(
-                new PermissionsData[] {PERMISSIONS_DATA_1, PERMISSIONS_DATA_2});
+                new PermissionsData[] {PERMISSIONS_DATA_1, PERMISSIONS_DATA_2, PERMISSIONS_DATA_3});
         mPermissionsFragmentTestRule.startSettingsActivity();
         mRenderTestRule.render(
                 getRootViewSanitized(R.string.safety_hub_permissions_page_title),

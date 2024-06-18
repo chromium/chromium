@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.safety_hub;
 
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.components.content_settings.ContentSettingsType;
 
 import java.util.HashMap;
 
@@ -42,5 +43,31 @@ class FakeUnusedSitePermissionsBridge implements UnusedSitePermissionsBridge.Nat
     public void restoreRevokedPermissionsReviewList(
             Profile profile, PermissionsData[] permissionsDataList) {
         setPermissionsDataForReview(permissionsDataList);
+    }
+
+    @Override
+    public String[] contentSettingsTypeToString(int[] contentSettingsTypeList) {
+        String[] contentSettingsNamesList = new String[contentSettingsTypeList.length];
+        for (int i = 0; i < contentSettingsTypeList.length; i++) {
+            String contentSettingsName = "default";
+            switch (contentSettingsTypeList[i]) {
+                case ContentSettingsType.MEDIASTREAM_CAMERA:
+                    contentSettingsName = "camera";
+                    break;
+                case ContentSettingsType.MEDIASTREAM_MIC:
+                    contentSettingsName = "microphone";
+                    break;
+                case ContentSettingsType.GEOLOCATION:
+                    contentSettingsName = "location";
+                    break;
+                case ContentSettingsType.BACKGROUND_SYNC:
+                    contentSettingsName = "background sync";
+                    break;
+                default:
+                    assert false : "Unreached";
+            }
+            contentSettingsNamesList[i] = contentSettingsName;
+        }
+        return contentSettingsNamesList;
     }
 }
