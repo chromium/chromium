@@ -121,10 +121,15 @@ class ArcNetHostImpl : public KeyedService,
       mojom::SocketConnectionEventPtr msg) override;
 
   // Overridden from ash::NetworkStateHandlerObserver.
+
+  // TODO(b/329552433): Delete this method after pi-arc is removed.
+  // Deprecated. ArcWifiHostImpl::ScanCompleted() should be used.
   void ScanCompleted(const ash::DeviceState* /*unused*/) override;
   void OnShuttingDown() override;
   void NetworkConnectionStateChanged(const ash::NetworkState* network) override;
   void NetworkListChanged() override;
+  // TODO(b/329552433): Delete this method after pi-arc is removed.
+  // Deprecated. ArcWifiHostImpl::DeviceListChanged() should be used.
   void DeviceListChanged() override;
   void NetworkPropertiesUpdated(const ash::NetworkState* network) override;
 

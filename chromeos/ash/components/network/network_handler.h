@@ -70,6 +70,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
   // Sets the global instance. Must be called before any calls to Get().
   static void Initialize();
 
+  // Sets the global fake instance.
+  static void InitializeFake();
+
   // Destroys the global instance.
   static void Shutdown();
 
@@ -145,7 +148,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkHandler {
  private:
   friend class ConnectionInfoMetricsLoggerTest;
 
-  NetworkHandler();
+  NetworkHandler(std::unique_ptr<NetworkStateHandler> handler);
   virtual ~NetworkHandler();
 
   void Init();

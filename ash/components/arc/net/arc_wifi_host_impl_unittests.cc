@@ -15,6 +15,7 @@
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_clients.h"
 #include "chromeos/ash/components/dbus/shill/shill_manager_client.h"
+#include "chromeos/ash/components/network/fake_network_state_handler.h"
 #include "chromeos/ash/components/network/network_handler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -26,6 +27,11 @@ class ArcWifiHostImplTest : public testing::Test {
  public:
   ArcWifiHostImplTest(const ArcWifiHostImplTest&) = delete;
   ArcWifiHostImplTest& operator=(const ArcWifiHostImplTest&) = delete;
+
+  ash::FakeNetworkStateHandler* GetStateHandler() {
+    return static_cast<ash::FakeNetworkStateHandler*>(
+        ash::NetworkHandler::Get()->network_state_handler());
+  }
 
  protected:
   ArcWifiHostImplTest()
@@ -85,5 +91,22 @@ TEST_F(ArcWifiHostImplTest, ToggleWifiEnabledState) {
   ASSERT_FALSE(future.Take());
 }
 
+TEST_F(ArcWifiHostImplTest, OnConnectionReadyAndClosed) {
+  GetStateHandler()->ClearObserverList();
+  EXPECT_TRUE(GetStateHandler()->ObserverListEmpty());
+  service()->OnConnectionReady();
+  EXPECT_FALSE(GetStateHandler()->ObserverListEmpty());
+  service()->OnConnectionClosed();
+  EXPECT_TRUE(GetStateHandler()->ObserverListEmpty());
+}
+
+TEST_F(ArcWifiHostImplTest, OnShuttingDown) {
+  GetStateHandler()->ClearObserverList();
+  EXPECT_TRUE(GetStateHandler()->ObserverListEmpty());
+  service()->OnConnectionReady();
+  EXPECT_FALSE(GetStateHandler()->ObserverListEmpty());
+  service()->OnShuttingDown();
+  EXPECT_TRUE(GetStateHandler()->ObserverListEmpty());
+}
 }  // namespace
 }  // namespace arc

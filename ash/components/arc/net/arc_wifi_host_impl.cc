@@ -123,6 +123,16 @@ void ArcWifiHostImpl::StartScan() {
   GetStateHandler()->RequestScan(ash::NetworkTypePattern::WiFi());
 }
 
+void ArcWifiHostImpl::ScanCompleted(const ash::DeviceState* /*unused*/) {
+  auto* arc_wifi_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->arc_wifi(), ScanCompleted);
+  if (!arc_wifi_instance) {
+    return;
+  }
+
+  arc_wifi_instance->ScanCompleted();
+}
+
 void ArcWifiHostImpl::GetScanResults(GetScanResultsCallback callback) {
   ash::NetworkTypePattern network_pattern =
       ash::onc::NetworkTypePatternFromOncType(onc::network_type::kWiFi);
@@ -133,6 +143,34 @@ void ArcWifiHostImpl::GetScanResults(GetScanResultsCallback callback) {
       kGetScanResultsListLimit, &network_states);
 
   std::move(callback).Run(net_utils::TranslateScanResults(network_states));
+}
+
+void ArcWifiHostImpl::OnConnectionReady() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  if (ash::NetworkHandler::IsInitialized()) {
+    GetStateHandler()->AddObserver(this, FROM_HERE);
+  }
+}
+
+void ArcWifiHostImpl::OnConnectionClosed() {
+  GetStateHandler()->RemoveObserver(this, FROM_HERE);
+}
+
+void ArcWifiHostImpl::OnShuttingDown() {
+  GetStateHandler()->RemoveObserver(this, FROM_HERE);
+}
+
+void ArcWifiHostImpl::DeviceListChanged() {
+  auto* arc_wifi_instance = ARC_GET_INSTANCE_FOR_METHOD(
+      arc_bridge_service_->arc_wifi(), WifiEnabledStateChanged);
+  if (!arc_wifi_instance) {
+    return;
+  }
+
+  bool is_enabled =
+      GetStateHandler()->IsTechnologyEnabled(ash::NetworkTypePattern::WiFi());
+  arc_wifi_instance->WifiEnabledStateChanged(is_enabled);
 }
 
 }  // namespace arc

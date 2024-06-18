@@ -24,6 +24,7 @@
 #include "base/uuid.h"
 #include "base/values.h"
 #include "chromeos/ash/components/network/device_state.h"
+#include "chromeos/ash/components/network/fake_network_state_handler.h"
 #include "chromeos/ash/components/network/network_connection_handler.h"
 #include "chromeos/ash/components/network/network_event_log.h"
 #include "chromeos/ash/components/network/network_handler_callbacks.h"

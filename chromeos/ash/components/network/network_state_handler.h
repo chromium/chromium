@@ -129,10 +129,10 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   using Observer = NetworkStateHandlerObserver;
 
   void AddObserver(Observer* observer, const base::Location& from_here);
-  void AddObserver(Observer* observer);
+  virtual void AddObserver(Observer* observer);
 
   void RemoveObserver(Observer* observer, const base::Location& from_here);
-  void RemoveObserver(Observer* observer);
+  virtual void RemoveObserver(Observer* observer);
 
   bool HasObserver(Observer* observer) {
     return observers_.HasObserver(observer);
@@ -532,6 +532,9 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
   // test observers.
   void InitShillPropertyHandler();
 
+  // Observer list
+  base::ObserverList<Observer, true>::Unchecked observers_;
+
  private:
   typedef std::map<std::string, std::string> SpecifierGuidMap;
   friend class DeviceStateTest;
@@ -753,9 +756,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkStateHandler
 
   // Shill property handler instance, owned by this class.
   std::unique_ptr<internal::ShillPropertyHandler> shill_property_handler_;
-
-  // Observer list
-  base::ObserverList<Observer, true>::Unchecked observers_;
 
   // List of managed network states
   ManagedStateList network_list_;

@@ -9,6 +9,7 @@
 #include "ash/components/arc/session/connection_observer.h"
 #include "base/files/scoped_file.h"
 #include "base/threading/thread_checker.h"
+#include "chromeos/ash/components/network/network_state_handler_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {
@@ -22,6 +23,7 @@ class ArcBridgeService;
 // Private implementation of ArcWifiHost.
 class ArcWifiHostImpl : public KeyedService,
                         public ConnectionObserver<mojom::ArcWifiInstance>,
+                        public ash::NetworkStateHandlerObserver,
                         public mojom::ArcWifiHost {
  public:
   // Returns singleton instance for the given BrowserContext,
@@ -46,6 +48,18 @@ class ArcWifiHostImpl : public KeyedService,
                            SetWifiEnabledStateCallback callback) override;
   void StartScan() override;
   void GetScanResults(GetScanResultsCallback callback) override;
+
+  // Overridden from ash::NetworkStateHandlerObserver.
+  void ScanCompleted(const ash::DeviceState* /*unused*/) override;
+  void OnShuttingDown() override;
+  // This method is triggered when WiFi enabled state changes, while note that
+  // different from the method name suggests, normally the WiFi Device is never
+  // removed in the platform in spite of WiFi enabled states.
+  void DeviceListChanged() override;
+
+  // Overridden from ConnectionObserver<mojom::ArcWifiInstance>:
+  void OnConnectionReady() override;
+  void OnConnectionClosed() override;
 
   static void EnsureFactoryBuilt();
 
