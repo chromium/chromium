@@ -25,7 +25,6 @@ UnsafeResource::UrlCheckResult::UrlCheckResult(
 
 UnsafeResource::UnsafeResource()
     : threat_type(safe_browsing::SBThreatType::SB_THREAT_TYPE_SAFE),
-      request_destination(network::mojom::RequestDestination::kDocument),
       is_delayed_warning(false),
       is_async_check(false) {}
 

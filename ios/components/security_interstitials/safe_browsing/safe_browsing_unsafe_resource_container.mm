@@ -37,8 +37,6 @@ SafeBrowsingUnsafeResourceContainer::~SafeBrowsingUnsafeResourceContainer() =
 void SafeBrowsingUnsafeResourceContainer::StoreMainFrameUnsafeResource(
     const security_interstitials::UnsafeResource& resource) {
   DCHECK_EQ(resource.weak_web_state.get(), web_state_);
-  DCHECK_EQ(network::mojom::RequestDestination::kDocument,
-            resource.request_destination);
 
   // For main frame navigations, the copy is stored in
   // `main_frame_unsafe_resource_`.  It corresponds with the pending

@@ -149,7 +149,6 @@ TEST_F(SafeBrowsingQueryManagerTest, UnsafeURLQuery) {
   resource.url = url;
   resource.threat_type =
       safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
-  resource.request_destination = network::mojom::RequestDestination::kDocument;
   manager()->StoreUnsafeResource(resource);
   base::RunLoop().RunUntilIdle();
 }
@@ -173,7 +172,6 @@ TEST_F(SafeBrowsingQueryManagerTest, MultipleUnsafeURLQueries) {
   resource.url = url;
   resource.threat_type =
       safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
-  resource.request_destination = network::mojom::RequestDestination::kDocument;
   manager()->StoreUnsafeResource(resource);
   manager()->StoreUnsafeResource(resource);
   base::RunLoop().RunUntilIdle();
@@ -197,7 +195,6 @@ TEST_F(SafeBrowsingQueryManagerTest, StoreUnsafeResourceMultipleQueries) {
   resource.url = url;
   resource.threat_type =
       safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
-  resource.request_destination = network::mojom::RequestDestination::kDocument;
   manager()->StoreUnsafeResource(resource);
   base::RunLoop().RunUntilIdle();
 }
@@ -286,7 +283,6 @@ TEST_F(SafeBrowsingQueryManagerWebStateDestructionTest, UnsafeURLQuery) {
   resource.url = url;
   resource.threat_type =
       safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
-  resource.request_destination = network::mojom::RequestDestination::kDocument;
   manager()->StoreUnsafeResource(resource);
   base::RunLoop().RunUntilIdle();
 }

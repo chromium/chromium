@@ -274,7 +274,6 @@ UnsafeResource SafeBrowsingUrlCheckerImpl::MakeUnsafeResource(
   }
   resource.threat_type = threat_type;
   resource.threat_metadata = metadata;
-  resource.request_destination = network::mojom::RequestDestination::kDocument;
   resource.callback = base::BindRepeating(
       &SafeBrowsingUrlCheckerImpl::OnBlockingPageCompleteAndMaybeDeleteSelf,
       weak_factory_.GetWeakPtr(), performed_check);

@@ -34,8 +34,6 @@ class SafeBrowsingUnsafeResourceContainerTest : public PlatformTest {
         safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
     resource.callback =
         base::BindRepeating([](UnsafeResource::UrlCheckResult result) {});
-    resource.request_destination =
-        network::mojom::RequestDestination::kDocument;
     resource.weak_web_state = web_state_.GetWeakPtr();
     allow_list()->AddPendingUnsafeNavigationDecision(resource.url,
                                                      resource.threat_type);

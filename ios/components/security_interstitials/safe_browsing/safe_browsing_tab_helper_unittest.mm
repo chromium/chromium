@@ -134,8 +134,6 @@ class SafeBrowsingTabHelperTest
   void StoreUnsafeResource(const GURL& url) {
     security_interstitials::UnsafeResource resource;
     resource.url = url;
-    resource.request_destination =
-        network::mojom::RequestDestination::kDocument;
     resource.weak_web_state = web_state_.GetWeakPtr();
     SafeBrowsingQueryManager::FromWebState(&web_state_)
         ->StoreUnsafeResource(resource);
