@@ -270,10 +270,6 @@ extern const char kEnableExpKitTextClassifierEmailDescription[];
 extern const char kEnableFamilyLinkControlsName[];
 extern const char kEnableFamilyLinkControlsDescription[];
 
-// Title and description for popout omnibox on iPad feature.
-extern const char kEnablePopoutOmniboxIpadName[];
-extern const char kEnablePopoutOmniboxIpadDescription[];
-
 // Title and description for the flag to enable the Credential
 // Provider Extension promo.
 extern const char kCredentialProviderExtensionPromoName[];

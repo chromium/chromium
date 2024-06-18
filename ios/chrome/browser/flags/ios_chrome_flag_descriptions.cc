@@ -314,11 +314,6 @@ extern const char kOneTapForMapsName[] = "Enable one Tap Experience for Maps";
 extern const char kOneTapForMapsDescription[] =
     "Enables the one tap experience for maps experience kit.";
 
-const char kEnablePopoutOmniboxIpadName[] = "Popout omnibox (iPad)";
-const char kEnablePopoutOmniboxIpadDescription[] =
-    "Make omnibox popup appear in a detached rounded rectangle below the "
-    "omnibox.";
-
 extern const char kMagicStackName[] = "Enable Magic Stack";
 extern const char kMagicStackDescription[] =
     "When enabled, a Magic Stack will be shown in the Home surface displaying "

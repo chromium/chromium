@@ -8,10 +8,6 @@
 #import "components/omnibox/common/omnibox_features.h"
 #import "ui/base/device_form_factor.h"
 
-BASE_FEATURE(kEnablePopoutOmniboxIpad,
-             "EnablePopoutOmniboxIpad",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kOmniboxLockIconEnabled,
              "OmniboxLockIconEnabled",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -21,8 +17,7 @@ BASE_FEATURE(kOmniboxActionsInSuggest,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsIpadPopoutOmniboxEnabled() {
-  return base::FeatureList::IsEnabled(kEnablePopoutOmniboxIpad) &&
-         ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
+  return ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET;
 }
 
 bool IsRichAutocompletionEnabled() {

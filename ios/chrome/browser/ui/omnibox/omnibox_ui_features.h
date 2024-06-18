@@ -7,10 +7,7 @@
 
 #import "base/feature_list.h"
 
-// Feature flag to make omnibox popup a floating rounded rect.
-BASE_DECLARE_FEATURE(kEnablePopoutOmniboxIpad);
-
-// Returns if kEnablePopoutOmniboxIpad feature is enabled.
+// Returns whether the popout omnibox is enabled.
 bool IsIpadPopoutOmniboxEnabled();
 
 // Kill switch to revert the removal of lock icon. When this feature is

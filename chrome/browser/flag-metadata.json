@@ -7021,11 +7021,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "popout-omnibox-ipad",
-    "owners": [ "stkhapugin@chromium.org", "christianxu@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "power-bookmark-backend",
     "owners": [ "wylieb@chromium.org", "skym@chromium.org" ],
     "expiry_milestone": 125
