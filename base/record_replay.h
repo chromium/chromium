@@ -121,8 +121,8 @@ int PointerId(const void* ptr);
 void* IdPointer(int id);
 
 void OnEvent(const char* aEvent, bool aBefore);
-void OnMouseEvent(const char* kind, size_t clientX, size_t clientY);
-void OnKeyEvent(const char* kind, const char* key);
+void OnMouseEvent(const char* kind, size_t clientX, size_t clientY, bool synthetic);
+void OnKeyEvent(const char* kind, const char* key, bool synthetic);
 void OnNavigationEvent(const char* kind, const char* url);
 
 // Create new identifiers, as with RegisterPointer/PointerId but with less

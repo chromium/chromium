@@ -277,7 +277,7 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
     auto pos = mouse_event.PositionInRootFrame();
     auto x = (size_t)pos.x();
     auto y = (size_t)pos.y();
-    recordreplay::OnMouseEvent(mouse_event_type.Ascii().c_str(), x, y);
+    recordreplay::OnMouseEvent(mouse_event_type.Utf8().c_str(), x, y, false);
   }
   
   WebInputEventResult input_event_result = WebInputEventResult::kNotHandled;

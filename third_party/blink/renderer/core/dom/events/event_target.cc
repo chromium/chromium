@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/record_replay_events.h"
+#include "third_party/blink/renderer/core/events/keyboard_event.h"
 
 namespace blink {
 namespace {
@@ -419,7 +420,7 @@ bool EventTarget::AddEventListenerInternal(
     const AtomicString& event_type,
     EventListener* listener,
     const AddEventListenerOptionsResolved* options) {
-  recordreplay::Assert(
+  REPLAY_ASSERT(
       "[RUN-1260-1332] EventTarget::AddEventListenerInternal A %d %d %d %s",
       !!listener, options->hasSignal() && options->signal()->aborted(),
       !!GetExecutionContext(), event_type.GetString().Utf8().c_str());
@@ -445,7 +446,7 @@ bool EventTarget::AddEventListenerInternal(
       !execution_context->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kUnload,
           ReportOptions::kReportOnFailure)) {
-    recordreplay::Assert("[RUN-1260-1332] EventTarget::AddEventListenerInternal B");
+    REPLAY_ASSERT("[RUN-1260-1332] EventTarget::AddEventListenerInternal B");
     return false;
   }
 
@@ -457,7 +458,7 @@ bool EventTarget::AddEventListenerInternal(
         if (frame->IsInFencedFrameTree()) {
           window->PrintErrorMessage(
               "unload/beforeunload handlers are prohibited in fenced frames.");
-          recordreplay::Assert(
+          REPLAY_ASSERT(
               "[RUN-1260-1332] EventTarget::AddEventListenerInternal C");
           return false;
         }
@@ -492,7 +493,7 @@ bool EventTarget::AddEventListenerInternal(
   bool added = EnsureEventTargetData().event_listener_map.Add(
       event_type, listener, options, &registered_listener);
 
-  recordreplay::Assert(
+  REPLAY_ASSERT(
       "[RUN-1260-1332] EventTarget::AddEventListenerInternal D %d", added);
 
   if (added) {
@@ -624,7 +625,7 @@ bool EventTarget::RemoveEventListenerInternal(
 
   if (!recordreplay::AreEventsDisallowed()) {
     // don't Assert during GC
-    recordreplay::Assert(
+    REPLAY_ASSERT(
         "[RUN-1260-1332] EventTarget::RemoveEventListenerInternal %s",
         event_type.GetString().Utf8().c_str());
   }
@@ -723,6 +724,27 @@ bool EventTarget::dispatchEventForBindings(Event* event,
     return false;
 
   event->SetTrusted(false);
+  
+  if (recordreplay::IsRecordingOrReplaying()) {
+    if (event->IsMouseEvent() &&
+      (event->type() == event_type_names::kMouseup ||
+      event->type() == event_type_names::kMousedown ||
+      event->type() == event_type_names::kMousemove)
+    ) {
+      auto* mouseEvent = DynamicTo<MouseEvent>(event);
+      size_t x = (size_t)std::round(mouseEvent->clientX());
+      size_t y = (size_t)std::round(mouseEvent->clientY());
+      recordreplay::OnMouseEvent(event->type().Utf8().c_str(), x, y, true);
+    } else if (event->IsKeyboardEvent() &&
+      (event->type() == event_type_names::kKeydown ||
+      event->type() == event_type_names::kKeyup ||
+      event->type() == event_type_names::kKeypress)
+    ) {
+      recordreplay::OnKeyEvent(event->type().Utf8().c_str(),
+                               DynamicTo<KeyboardEvent>(event)->key().Utf8().c_str(),
+                               true);
+    }
+  }
 
   // Return whether the event was cancelled or not to JS not that it
   // might have actually been default handled; so check only against
@@ -822,7 +844,7 @@ DispatchEventResult EventTarget::FireEventListeners(Event& event) {
   DCHECK(event.WasInitialized());
 
   EventTargetData* d = GetEventTargetData();
-  recordreplay::Assert("[RUN-1260] EventTarget::FireEventListeners 1 %d",
+  REPLAY_ASSERT("[RUN-1260] EventTarget::FireEventListeners 1 %d",
                        !!d);
   if (!d)
     return DispatchEventResult::kNotCanceled;
@@ -836,7 +858,7 @@ DispatchEventResult EventTarget::FireEventListeners(Event& event) {
       d->event_listener_map.Find(event.type());
 
   bool fired_event_listeners = false;
-  recordreplay::Assert(
+  REPLAY_ASSERT(
       "[RUN-1260] EventTarget::FireEventListeners 2 %d %d %d",
       listeners_vector ? listeners_vector->size() : -1,
       legacy_listeners_vector ? legacy_listeners_vector->size() : -1,
@@ -986,7 +1008,7 @@ void EventTarget::RemoveAllEventListeners() {
 
   if (!recordreplay::AreEventsDisallowed()) {
     // don't Assert during GC
-    recordreplay::Assert("[RUN-1260-1332] EventTarget::RemoveAllEventListeners");
+    REPLAY_ASSERT("[RUN-1260-1332] EventTarget::RemoveAllEventListeners");
   }
 
   d->event_listener_map.Clear();

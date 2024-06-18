@@ -68,7 +68,7 @@ void ReplayNotifyBeforeEvent(const String& eventName,
   if (ShouldNotifyEvent(eventName)) {
     String replayEventType =
         MakeReplayEventType(eventName, eventTarget, isCallback);
-    Assert("[RUN-1271] ReplayNotifyBeforeEvent %d %s", gIsEventInFlight,
+    REPLAY_ASSERT("[RUN-1271] ReplayNotifyBeforeEvent %d %s", gIsEventInFlight,
            replayEventType.Ascii().c_str());
     OnEvent(replayEventType.Ascii().c_str(), true);
     ++gIsEventInFlight;
@@ -81,7 +81,7 @@ void ReplayNotifyAfterEvent(const String& eventName,
   if (ShouldNotifyEvent(eventName)) {
     String replayEventType =
         MakeReplayEventType(eventName, eventTarget, isCallback);
-    Assert("[RUN-1271] ReplayNotifyAfterEvent %d %s", gIsEventInFlight,
+    REPLAY_ASSERT("[RUN-1271] ReplayNotifyAfterEvent %d %s", gIsEventInFlight,
            replayEventType.Ascii().c_str());
     OnEvent(replayEventType.Ascii().c_str(), false);
     --gIsEventInFlight;

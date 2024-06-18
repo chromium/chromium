@@ -29,7 +29,7 @@ steps:
       - "runtimeType=chromiumbuild"
       - "os=linux"
       - "queue=runtime"
-  - label: "Build chromium - Linux"
+  - label: "🔨 Chromium (linux-x86_64)"
     key: "build-chromium-linux-x86_64"
     depends_on: "preflight-checks"
     timeout_in_minutes: 60
@@ -69,7 +69,7 @@ steps:
       - "queue=runtime"
     artifact_paths:
       - "build_id/linux/x86_64/**"
-  - label: "Build chromium - Mac (x86)"
+  - label: "🔨 Chromium (mac-x86_64)"
     key: "build-chromium-mac-x86_64"
     depends_on: "preflight-checks"
     timeout_in_minutes: 60
@@ -109,7 +109,7 @@ steps:
       - "queue=runtime"
     artifact_paths:
       - "build_id/macOS/x86_64/**"
-  - label: "Build chromium - Mac (arm64)"
+  - label: "🔨 Chromium (mac-arm64)"
     key: "build-chromium-mac-arm64"
     depends_on: "preflight-checks"
     timeout_in_minutes: 60
@@ -151,7 +151,7 @@ steps:
     artifact_paths:
       - "build_id/macOS/arm64/**"
     # TODO(dmiller): enable rbe on Windows
-  - label: "Build chromium - Windows"
+  - label: "🔨 Chromium (windows)"
     key: "build-chromium-windows"
     depends_on: "preflight-checks"
     timeout_in_minutes: 60
@@ -178,7 +178,7 @@ steps:
       - "build_id/windows/x86_64/**"
     soft_fail: true
 
-  - label: "Verify cross-arch build integrity :sleuth_or_spy:"
+  - label: "🕵️‍♀️ Verify cross-arch build integrity"
     key: "verify-cross-arch-pak-sizes"
     commands:
       - "be_cmd download-macos-arm64-gclient_entries -- buildkite-agent artifact download build_id/macOS/arm64/entries ."
@@ -204,14 +204,19 @@ steps:
       - "os=linux"
       - "queue=runtime"
 
-  - label: "Trigger Live Tests :hammer:"
+  - label: "📝 Command Tests (macos-arm64)"
+    trigger: "runtime-command-tests"
+    depends_on:
+      - "build-chromium-mac-arm64"
+
+  - label: "📝 Live Tests"
     trigger: "testing-runtime-e2e"
     depends_on:
       - "build-chromium-linux-x86_64"
       - "build-chromium-mac-x86_64"
       - "build-chromium-mac-arm64"
 
-  - label: "Trigger FE E2E Tests (linux-x86_64) :hammer:"
+  - label: "📝 E2E Tests (linux-x86_64)"
     trigger: "runtime-fe-end-to-end-tests"
     depends_on:
       - "build-chromium-linux-x86_64"
@@ -226,7 +231,7 @@ steps:
         # this is passed as a git URL which the replay plugin expects and parses
         RUNTIME_REPO: "${BUILDKITE_PULL_REQUEST_REPO}"
 
-  - label: "Trigger FE E2E Tests (macos-arm64) :hammer:"
+  - label: "📝 E2E Tests (macos-arm64)"
     trigger: "runtime-fe-end-to-end-tests"
     depends_on:
       - "build-chromium-mac-arm64"
@@ -243,16 +248,11 @@ steps:
         # This is used by packages/e2e-tests/playwright.config.ts
         CI: "1"
 
-  - label: "Trigger Runtime Command Tests (macos-arm64) :hammer:"
-    trigger: "runtime-command-tests"
-    depends_on:
-      - "build-chromium-mac-arm64"
-
   # wait for all steps above, but also continue if they fail
   - wait: ~
     continue_on_failure: true
 
-  - label: "Buildevents Watch"
+  - label: "🕵️‍♀️ Buildevents Watch"
     key: "buildevents-watch"
     plugins:
       - thedyrt/skip-checkout#v0.1.1:

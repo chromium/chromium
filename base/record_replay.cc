@@ -114,10 +114,11 @@ namespace recordreplay {
   Macro(V8RecordReplayOnEvent,                                          \
         (const char* event, bool before), (event, before))              \
   Macro(V8RecordReplayOnMouseEvent,                                     \
-        (const char* kind, size_t clientX, size_t clientY),             \
-        (kind, clientX, clientY))                                       \
+        (const char* kind, size_t clientX, size_t clientY, bool synthetic),\
+        (kind, clientX, clientY, synthetic))                            \
   Macro(V8RecordReplayOnKeyEvent,                                       \
-        (const char* kind, const char* key), (kind, key))               \
+        (const char* kind, const char* key, bool synthetic),            \
+        (kind, key, synthetic))                                         \
   Macro(V8RecordReplayOnNavigationEvent,                                \
         (const char* kind, const char* url), (kind, url))               \
   Macro(V8RecordReplayAddDependencyGraphEdge,                           \
@@ -462,12 +463,15 @@ void OnEvent(const char* aEvent, bool aBefore) {
   V8RecordReplayOnEvent(aEvent, aBefore);
 }
 void OnMouseEvent(const char* kind,
-                                size_t clientX,
-                                size_t clientY) {
-  V8RecordReplayOnMouseEvent(kind, clientX, clientY);
+                  size_t clientX,
+                  size_t clientY,
+                  bool synthetic) {
+  V8RecordReplayOnMouseEvent(kind, clientX, clientY, synthetic);
 }
-void OnKeyEvent(const char* kind, const char* key) {
-  V8RecordReplayOnKeyEvent(kind, key);
+void OnKeyEvent(const char* kind,
+                const char* key,
+                bool synthetic) {
+  V8RecordReplayOnKeyEvent(kind, key, synthetic);
 }
 void OnNavigationEvent(const char* kind, const char* url) {
   V8RecordReplayOnNavigationEvent(kind, url);
