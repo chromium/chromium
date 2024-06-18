@@ -2543,7 +2543,7 @@ class CORE_EXPORT Document : public ContainerNode,
 
   bool should_update_selection_after_layout_ = false;
 
-  Member<Element> css_target_;
+  WeakMember<Element> css_target_;
   bool css_target_is_selector_fragment_ = false;
 
   bool was_discarded_;

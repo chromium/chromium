@@ -3126,7 +3126,8 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
   ContainerNode::RemovedFrom(insertion_point);
 
   if (was_in_document) {
-    if (this == document.CssTarget()) {
+    if (!RuntimeEnabledFeatures::KeepCSSTargetAfterReattachEnabled() &&
+        this == document.CssTarget()) {
       document.SetCSSTarget(nullptr);
     }
 
