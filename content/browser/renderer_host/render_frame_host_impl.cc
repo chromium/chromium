@@ -2451,7 +2451,7 @@ bool RenderFrameHostImpl::IsCrossProcessSubframe() {
 bool RenderFrameHostImpl::RequiresProxyToParent() {
   if (is_main_frame())
     return false;
-  return GetSiteInstance() != parent_->GetSiteInstance();
+  return GetSiteInstance()->group() != parent_->GetSiteInstance()->group();
 }
 
 WebExposedIsolationLevel RenderFrameHostImpl::GetWebExposedIsolationLevel() {
