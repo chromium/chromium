@@ -6,6 +6,7 @@
 #include <optional>
 
 #include "ash/auth/views/pin_keyboard_view.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
 #include "ash/test/pixel/ash_pixel_differ.h"
@@ -49,6 +50,11 @@ class PinKeyboardPixelTest : public AshTestBase {
 
     view_ = widget_->SetContentsView(std::make_unique<PinKeyboardView>());
     view_->AddObserver(observer_.get());
+
+    auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
+    dark_light_mode_controller->SetAutoScheduleEnabled(false);
+    // Test Base should setup the dark mode.
+    EXPECT_EQ(dark_light_mode_controller->IsDarkModeEnabled(), true);
   }
 
   void TearDown() override {
@@ -67,9 +73,17 @@ class PinKeyboardPixelTest : public AshTestBase {
 
 // Verify the pin keyboard component look like in DayMode
 TEST_F(PinKeyboardPixelTest, DayMode) {
+  DarkLightModeControllerImpl::Get()->SetDarkModeEnabledForTest(false);
   //  Verify the UI.
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "DayMode", /*revision_number=*/0, view_));
+      "DayMode", /*revision_number=*/1, view_));
+}
+
+// Verify the pin keyboard component look like in DayMode
+TEST_F(PinKeyboardPixelTest, NightMode) {
+  //  Verify the UI.
+  EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
+      "NightMode", /*revision_number=*/1, view_));
 }
 
 }  // namespace
