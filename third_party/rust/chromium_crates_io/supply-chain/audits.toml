@@ -747,6 +747,11 @@ I grepped for \"crypt\", \"cipher\", \"fs\", \"net\" - there were no hits.  I al
 through the 0.4.20 => 0.4.21 delta and there was no new crypto-related code AFAICT.
 """
 
+[[audits.memchr]]
+who = "Dustin J. Mitchell <djmitche@chromium.org>"
+criteria = "does-not-implement-crypto"
+delta = "2.7.2 -> 2.7.4"
+
 [[audits.minimal-lexical]]
 who = "danakj@chromium.org"
 criteria = "ub-risk-3"

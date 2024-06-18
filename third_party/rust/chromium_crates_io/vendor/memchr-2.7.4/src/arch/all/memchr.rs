@@ -993,4 +993,30 @@ mod tests {
         let count = One::new(b'\n').count(haystack.as_bytes());
         assert_eq!(4, count);
     }
+
+    // A test[1] that failed on some big endian targets after a perf
+    // improvement was merged[2].
+    //
+    // At first it seemed like the test suite somehow missed the regression,
+    // but in actuality, CI was not running tests with `cross` but instead with
+    // `cargo` specifically. This is because those steps were using `cargo`
+    // instead of `${{ env.CARGO }}`. So adding this regression test doesn't
+    // really help catch that class of failure, but we add it anyway for good
+    // measure.
+    //
+    // [1]: https://github.com/BurntSushi/memchr/issues/152
+    // [2]: https://github.com/BurntSushi/memchr/pull/151
+    #[test]
+    fn regression_big_endian1() {
+        assert_eq!(One::new(b':').find(b"1:23"), Some(1));
+    }
+
+    // Interestingly, I couldn't get `regression_big_endian1` to fail for me
+    // on the `powerpc64-unknown-linux-gnu` target. But I found another case
+    // through quickcheck that does.
+    #[test]
+    fn regression_big_endian2() {
+        let data = [0, 0, 0, 0, 0, 0, 0, 0];
+        assert_eq!(One::new(b'\x00').find(&data), Some(0));
+    }
 }

@@ -13,11 +13,12 @@
 edition = "2021"
 rust-version = "1.61"
 name = "memchr"
-version = "2.7.2"
+version = "2.7.4"
 authors = [
     "Andrew Gallant <jamslam@gmail.com>",
     "bluss",
 ]
+build = false
 exclude = [
     "/.github",
     "/benchmarks",
@@ -25,6 +26,10 @@ exclude = [
     "/scripts",
     "/tmp",
 ]
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = """
 Provides extremely fast (uses SIMD on x86_64, aarch64 and wasm32) routines for
 1, 2 or 3 byte search and single substring search.
@@ -57,6 +62,7 @@ debug = 2
 
 [lib]
 name = "memchr"
+path = "src/lib.rs"
 bench = false
 
 [dependencies.compiler_builtins]

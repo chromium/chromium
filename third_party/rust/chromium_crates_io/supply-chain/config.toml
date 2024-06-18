@@ -134,7 +134,7 @@ criteria = []
 [policy."log:0.4.21"]
 criteria = ["crypto-safe", "safe-to-run"]
 
-[policy."memchr:2.7.2"]
+[policy."memchr:2.7.4"]
 criteria = ["crypto-safe", "safe-to-deploy", "ub-risk-2"]
 
 [policy."minimal-lexical:0.2.1"]
@@ -333,7 +333,7 @@ Exemption updated to 1.0.123 in June 2024.
 """
 
 [[exemptions.memchr]]
-version = "2.7.2"
+version = "2.7.4"
 criteria = ["safe-to-deploy", "ub-risk-2"]
 notes = """
 Grandparented-in when setting up `cargo vet` in Jan 2024
@@ -348,6 +348,8 @@ and straightfoward (focusing on `target_feature = \"simd128\"`).  Note that an
 unfinished audit of 2.7.1 has been started at https://crrev.com/c/5367005 and
 I hear that Fuchsia has also been working on reviewing 2.7.1 (so we should check
 later if maybe we can just import their audit).
+
+Bumped up the exemption to 2.7.4 in June 2024, with a small and benign delta.
 """
 
 [[exemptions.rand_core]]

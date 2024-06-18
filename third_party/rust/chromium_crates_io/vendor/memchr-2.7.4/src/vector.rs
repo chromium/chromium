@@ -15,8 +15,6 @@
 /// to ensure they get appropriately inlined. (inline(always) cannot be used
 /// with target_feature.)
 pub(crate) trait Vector: Copy + core::fmt::Debug {
-    /// The number of bits in the vector.
-    const BITS: usize;
     /// The number of bytes in the vector. That is, this is the size of the
     /// vector in memory.
     const BYTES: usize;
@@ -200,7 +198,6 @@ mod x86sse2 {
     use super::{SensibleMoveMask, Vector};
 
     impl Vector for __m128i {
-        const BITS: usize = 128;
         const BYTES: usize = 16;
         const ALIGN: usize = Self::BYTES - 1;
 
@@ -250,7 +247,6 @@ mod x86avx2 {
     use super::{SensibleMoveMask, Vector};
 
     impl Vector for __m256i {
-        const BITS: usize = 256;
         const BYTES: usize = 32;
         const ALIGN: usize = Self::BYTES - 1;
 
@@ -300,7 +296,6 @@ mod aarch64neon {
     use super::{MoveMask, Vector};
 
     impl Vector for uint8x16_t {
-        const BITS: usize = 128;
         const BYTES: usize = 16;
         const ALIGN: usize = Self::BYTES - 1;
 
@@ -471,7 +466,6 @@ mod wasm_simd128 {
     use super::{SensibleMoveMask, Vector};
 
     impl Vector for v128 {
-        const BITS: usize = 128;
         const BYTES: usize = 16;
         const ALIGN: usize = Self::BYTES - 1;
 
