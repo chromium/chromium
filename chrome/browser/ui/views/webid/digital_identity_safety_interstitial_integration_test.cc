@@ -43,9 +43,8 @@ void OnDialogShown(bool* was_dialog_shown,
 // content::DigitalIdentityProvider which:
 // - always succeeds
 // - offers method to wait till DigitalIdentityProvider::Request() is invoked.
-class TestDigitalIdentityProvider
-    : public content::DigitalIdentityProvider,
-      public base::SupportsWeakPtr<TestDigitalIdentityProvider> {
+class TestDigitalIdentityProvider final
+    : public content::DigitalIdentityProvider {
  public:
   TestDigitalIdentityProvider() = default;
   ~TestDigitalIdentityProvider() override = default;
@@ -74,9 +73,14 @@ class TestDigitalIdentityProvider
     }
   }
 
+  base::WeakPtr<TestDigitalIdentityProvider> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
  private:
   bool did_request_credential_ = false;
   base::OnceClosure credential_request_observer_;
+  base::WeakPtrFactory<TestDigitalIdentityProvider> weak_ptr_factory_{this};
 };
 
 // ChromeContentBrowserClient which returns custom
