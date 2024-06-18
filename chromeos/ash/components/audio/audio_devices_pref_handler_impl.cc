@@ -10,6 +10,7 @@
 #include <optional>
 #include <unordered_set>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -469,13 +470,23 @@ AudioDevicesPrefHandlerImpl::AudioDevicesPrefHandlerImpl(
   LoadDevicesMutePref();
   LoadDevicesVolumePref();
   LoadDevicesGainPref();
-  LoadDevicesStatePref();
   LoadInputDevicesUserPriorityPref();
   LoadOutputDevicesUserPriorityPref();
-  LoadInputDevicePreferenceSetPref();
-  LoadOutputDevicePreferenceSetPref();
-  LoadMostRecentActivatedInputDeviceIdsPref();
-  LoadMostRecentActivatedOutputDeviceIdsPref();
+
+  // Reset set-based audio selection preference pref for testing purpose.
+  if (features::IsResetAudioSelectionImprovementPrefEnabled()) {
+    SaveDevicesStatePref();
+    SaveInputDevicePreferenceSetPref();
+    SaveOutputDevicePreferenceSetPref();
+    SaveMostRecentActivatedInputDeviceIdsPref();
+    SaveMostRecentActivatedOutputDeviceIdsPref();
+  } else {
+    LoadDevicesStatePref();
+    LoadInputDevicePreferenceSetPref();
+    LoadOutputDevicePreferenceSetPref();
+    LoadMostRecentActivatedInputDeviceIdsPref();
+    LoadMostRecentActivatedOutputDeviceIdsPref();
+  }
 }
 
 AudioDevicesPrefHandlerImpl::~AudioDevicesPrefHandlerImpl() = default;

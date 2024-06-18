@@ -9,8 +9,10 @@
 #include <memory>
 #include <optional>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/memory/ref_counted.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/time/time_override.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/audio_device_id.h"
@@ -155,6 +157,11 @@ class AudioDevicesPrefHandlerTest : public testing::TestWithParam<bool> {
 
   void TearDown() override { audio_pref_handler_.reset(); }
 
+  void ResetPrefHandler() {
+    audio_pref_handler_.reset();
+    audio_pref_handler_ = new AudioDevicesPrefHandlerImpl(pref_service_.get());
+  }
+
  protected:
   void ReloadPrefHandler() {
     audio_pref_handler_ = new AudioDevicesPrefHandlerImpl(pref_service_.get());
@@ -259,6 +266,7 @@ class AudioDevicesPrefHandlerTest : public testing::TestWithParam<bool> {
 
   scoped_refptr<AudioDevicesPrefHandler> audio_pref_handler_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(Input, AudioDevicesPrefHandlerTest, Values(true));
@@ -701,6 +709,65 @@ TEST_P(AudioDevicesPrefHandlerTest, MostRecentActivatedDeviceIdList) {
       GetDeviceIdString(device),
       audio_pref_handler_->GetMostRecentActivatedDeviceIdList(device.is_input)
           .back());
+}
+
+// Tests set-based audio selection preference is reset when flag is on.
+TEST_P(AudioDevicesPrefHandlerTest, ResetAudioSelectionPrefFlagOn) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{ash::features::kResetAudioSelectionImprovementPref},
+      /*disabled_features=*/{});
+
+  AudioDevice device = GetDeviceWithVersion(2);
+  AudioDevice device2 = GetSecondaryDeviceWithVersion(2);
+  AudioDeviceList devices = {device, device2};
+
+  // No preferred device among this set of devices yet.
+  EXPECT_EQ(std::nullopt,
+            audio_pref_handler_->GetPreferredDeviceFromPreferenceSet(
+                device.is_input, devices));
+
+  // Set preferred device and verify.
+  audio_pref_handler_->UpdateDevicePreferenceSet(devices, device);
+  EXPECT_EQ(device.stable_device_id,
+            audio_pref_handler_->GetPreferredDeviceFromPreferenceSet(
+                device.is_input, devices));
+
+  ResetPrefHandler();
+  // Expect that no preferred device is set.
+  EXPECT_EQ(std::nullopt,
+            audio_pref_handler_->GetPreferredDeviceFromPreferenceSet(
+                device.is_input, devices));
+}
+
+// Tests set-based audio selection preference is not reset when flag is off.
+TEST_P(AudioDevicesPrefHandlerTest, ResetAudioSelectionPrefFlagOff) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/{},
+      /*disabled_features=*/{
+          ash::features::kResetAudioSelectionImprovementPref});
+
+  AudioDevice device = GetDeviceWithVersion(2);
+  AudioDevice device2 = GetSecondaryDeviceWithVersion(2);
+  AudioDeviceList devices = {device, device2};
+
+  // No preferred device among this set of devices yet.
+  EXPECT_EQ(std::nullopt,
+            audio_pref_handler_->GetPreferredDeviceFromPreferenceSet(
+                device.is_input, devices));
+
+  // Set preferred device and verify.
+  audio_pref_handler_->UpdateDevicePreferenceSet(devices, device);
+  EXPECT_EQ(device.stable_device_id,
+            audio_pref_handler_->GetPreferredDeviceFromPreferenceSet(
+                device.is_input, devices));
+
+  ResetPrefHandler();
+  // Expect that preferred device is set.
+  EXPECT_EQ(device.stable_device_id,
+            audio_pref_handler_->GetPreferredDeviceFromPreferenceSet(
+                device.is_input, devices));
 }
 
 }  // namespace ash
