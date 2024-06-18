@@ -13,6 +13,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
+#include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
@@ -302,9 +303,19 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsBrowserTest,
       PrivacySandboxSettingsImpl::Status::kAttestationsFileNotPresent, 1);
 }
 
-// If there is no attestation list in user directory, the pre-installed version
-// should be used.
-IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsBrowserTest,
+class PrivacySandboxAttestationPreInstallBrowserTest
+    : public PrivacySandboxAttestationsBrowserTest,
+      public base::test::WithFeatureOverride {
+ public:
+  PrivacySandboxAttestationPreInstallBrowserTest()
+      : base::test::WithFeatureOverride(
+            kPrivacySandboxAttestationsLoadPreInstalledComponent) {}
+};
+
+// If there is no attestation list in user directory and feature
+// "PrivacySandboxAttestationsLoadPreInstalledComponent" is enabled, the
+// pre-installed version should be used.
+IN_PROC_BROWSER_TEST_P(PrivacySandboxAttestationPreInstallBrowserTest,
                        PreinstalledAttestationListPresent) {
   // Allow blocking for file IO.
   base::ScopedAllowBlockingForTesting allow_blocking;
@@ -318,26 +329,44 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsBrowserTest,
   PrivacySandboxAttestations::GetInstance()
       ->SetLoadAttestationsDoneCallbackForTesting(run_loop.QuitClosure());
 
-  // Register the privacy sandbox attestations component, which should detect
-  // the pre-installed attestations file on disk and start parsing.
+  // Register the privacy sandbox attestations component, which should parse
+  // the pre-installed attestations file on disk if feature
+  // "PrivacySandboxAttestationsLoadPreInstalledComponent" is enabled.
   RegisterPrivacySandboxAttestationsComponent(
       g_browser_process->component_updater());
 
-  // Wait until the attestations parsing is done.
-  run_loop.Run();
+  if (IsParamFeatureEnabled()) {
+    // Wait until the attestations parsing is done.
+    run_loop.Run();
 
-  EXPECT_TRUE(PrivacySandboxAttestations::GetInstance()
-                  ->GetVersionForTesting()
-                  .IsValid());
+    EXPECT_TRUE(PrivacySandboxAttestations::GetInstance()
+                    ->GetVersionForTesting()
+                    .IsValid());
 
-  // Make an attestation check to verify the data point is recorded to the
-  // correct histogram bucket.
-  PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
-      net::SchemefulSite(GURL("https://example.com")),
-      PrivacySandboxAttestationsGatedAPI::kTopics);
-  histogram_tester().ExpectTotalCount(kAttestationsFileSource, 1);
-  histogram_tester().ExpectBucketCount(kAttestationsFileSource,
-                                       FileSource::kPreInstalled, 1);
+    // Make an attestation check to verify the data point is recorded to the
+    // correct histogram bucket.
+    PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+        net::SchemefulSite(GURL("https://example.com")),
+        PrivacySandboxAttestationsGatedAPI::kTopics);
+    histogram_tester().ExpectTotalCount(kAttestationsFileSource, 1);
+    histogram_tester().ExpectBucketCount(kAttestationsFileSource,
+                                         FileSource::kPreInstalled, 1);
+  } else {
+    // If feature off, the attestation component should not parse the
+    // pre-installed file.
+    run_loop.RunUntilIdle();
+
+    ASSERT_FALSE(PrivacySandboxAttestations::GetInstance()
+                     ->GetVersionForTesting()
+                     .IsValid());
+    PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
+        net::SchemefulSite(GURL("https://example.com")),
+        PrivacySandboxAttestationsGatedAPI::kTopics);
+    histogram_tester().ExpectTotalCount(kAttestationsFileSource, 0);
+  }
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    PrivacySandboxAttestationPreInstallBrowserTest);
 
 }  // namespace privacy_sandbox

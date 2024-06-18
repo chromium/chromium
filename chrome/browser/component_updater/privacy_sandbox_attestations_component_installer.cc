@@ -133,6 +133,13 @@ void PrivacySandboxAttestationsComponentInstallerPolicy::ComponentReady(
 
   bool is_pre_installed = manifest.FindBool("pre_installed").value_or(false);
 
+  if (is_pre_installed &&
+      !base::FeatureList::IsEnabled(
+          privacy_sandbox::
+              kPrivacySandboxAttestationsLoadPreInstalledComponent)) {
+    return;
+  }
+
   // Record the time taken for the downloaded attestations file to be detected.
   startup_metric_utils::GetBrowser().RecordPrivacySandboxAttestationsFirstReady(
       base::TimeTicks::Now());
