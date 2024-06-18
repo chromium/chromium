@@ -850,21 +850,20 @@ DecodeStatus AV1VaapiVideoDecoderDelegate::SubmitDecode(
       return DecodeStatus::kFail;
   }
 
-  // Create VASliceData buffer |encoded_data| every frame so that decoding
-  // can be more asynchronous than reusing the buffer.
+  // TODO(hiroh): Don't submit the entire coded data to the buffer. Instead,
+  // only pass the data starting from the tile list OBU to reduce the size of
+  // the VA buffer. When this is changed, the encrypted subsample ranges must
+  // also be adjusted.
+  // Create VASliceData buffer |encoded_data| every frame so that decoding can
+  // be more asynchronous than reusing the buffer.
   std::unique_ptr<ScopedVABuffer> encoded_data;
+
   std::vector<std::pair<VABufferID, VaapiWrapper::VABufferDescriptor>> buffers =
       {{picture_params_->id(),
         {picture_params_->type(), picture_params_->size(), &pic_param}}};
   buffers.reserve(3 + slice_params.size());
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (IsTranscrypted()) {
-    // TODO(hiroh): Don't submit the entire coded data to the buffer. Instead,
-    // only pass the data starting from the tile list OBU to reduce the size of
-    // the VA buffer. When this is changed, the transcrypted subsample
-    // ranges must also be adjusted. This is already done in the
-    // non-transcrypted code path.
     CHECK(decrypt_config);
     CHECK_EQ(decrypt_config->subsamples().size(), 2u);
     if (!protected_params_) {
@@ -889,42 +888,13 @@ DecodeStatus AV1VaapiVideoDecoderDelegate::SubmitDecode(
           data.data() + decrypt_config->subsamples()[0].clear_bytes}});
   } else {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    // We don't need to send the driver the entire |data|. Instead, we only need
-    // to send the smallest subset of |data| that contains all the tiles. Here,
-    // we find that portion and adjust the offsets in |slice_params| so that
-    // they refer to this portion instead of the entire |data|.
-
-    CHECK(!tile_buffers.empty());
-    // Get the offset to the beginning of the first tile of this frame.
-    const uint8_t* first_tile_start = tile_buffers[0].data;
-    const uint32_t first_tile_offset =
-        base::checked_cast<uint32_t>(first_tile_start - data.data());
-
-    // Get a pointer past the end of the last tile.
-    const libgav1::TileBuffer& last_tile = tile_buffers.back();
-    const uint8_t* last_tile_end = last_tile.data + last_tile.size;
-    CHECK_LE(last_tile_end, data.data() + data.size());
-    CHECK_LT(first_tile_start, last_tile_end);
-
-    // This is how many bytes we'll send to the driver.
-    const size_t num_bytes_from_first_to_last_tile =
-        base::checked_cast<size_t>(last_tile_end - first_tile_start);
-    // Now adjust the tile offsets in |slice_params| to refer to the computed
-    // subset of |data| instead of to the entirety of it.
-    CHECK(!slice_params.empty());
-    CHECK_EQ(slice_params[0].slice_data_offset, first_tile_offset);
-    for (auto& slice_param : slice_params) {
-      slice_param.slice_data_offset -= first_tile_offset;
-    }
-
-    encoded_data = vaapi_wrapper_->CreateVABuffer(
-        VASliceDataBufferType, num_bytes_from_first_to_last_tile);
+    encoded_data = vaapi_wrapper_->CreateVABuffer(VASliceDataBufferType,
+                                                  data.size_bytes());
     if (!encoded_data)
       return DecodeStatus::kFail;
-
     buffers.push_back(
         {encoded_data->id(),
-         {encoded_data->type(), encoded_data->size(), first_tile_start}});
+         {encoded_data->type(), encoded_data->size(), data.data()}});
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   }
   if (uses_crypto) {
