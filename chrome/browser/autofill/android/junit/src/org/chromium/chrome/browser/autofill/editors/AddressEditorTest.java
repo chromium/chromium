@@ -231,7 +231,6 @@ public class AddressEditorTest {
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
         when(mIdentityManager.getPrimaryAccountInfo(anyInt())).thenReturn(mAccountInfo);
 
-        when(mSyncService.isSyncFeatureEnabled()).thenReturn(false);
         when(mSyncService.getSelectedTypes()).thenReturn(new HashSet());
         SyncServiceFactory.setInstanceForTesting(mSyncService);
 
@@ -550,7 +549,6 @@ public class AddressEditorTest {
     @SmallTest
     public void validateUIStrings_LocalOrSyncAddressProfile_AddressSyncEnabled() {
         setUpAddressUiComponents(new ArrayList());
-        when(mSyncService.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncService.getSelectedTypes())
                 .thenReturn(Collections.singleton(UserSelectableType.AUTOFILL));
         mAddressEditor =
@@ -606,7 +604,6 @@ public class AddressEditorTest {
     @SmallTest
     public void validateUIStrings_UpdateLocalOrSyncAddressProfile_AddressSyncEnabled() {
         setUpAddressUiComponents(new ArrayList());
-        when(mSyncService.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncService.getSelectedTypes())
                 .thenReturn(Collections.singleton(UserSelectableType.AUTOFILL));
         mAddressEditor =
@@ -668,7 +665,6 @@ public class AddressEditorTest {
     @SmallTest
     public void validateUIStrings_SyncAddressProfile_MigrationToAccount() {
         setUpAddressUiComponents(new ArrayList());
-        when(mSyncService.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncService.getSelectedTypes())
                 .thenReturn(Collections.singleton(UserSelectableType.AUTOFILL));
         mAddressEditor =

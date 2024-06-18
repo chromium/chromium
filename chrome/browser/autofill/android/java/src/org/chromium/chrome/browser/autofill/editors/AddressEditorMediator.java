@@ -488,8 +488,7 @@ class AddressEditorMediator {
 
     private boolean isAddressSyncOn() {
         if (mSyncService == null) return false;
-        return mSyncService.isSyncFeatureEnabled()
-                && mSyncService.getSelectedTypes().contains(UserSelectableType.AUTOFILL);
+        return mSyncService.getSelectedTypes().contains(UserSelectableType.AUTOFILL);
     }
 
     private EditorFieldValidator getEmailValidator() {
