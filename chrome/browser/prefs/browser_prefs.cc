@@ -1183,6 +1183,10 @@ constexpr char kHoldingSpaceWallpaperNudgeUserEligibleForNudge[] =
     "ash.holding_space.wallpaper_nudge.user_eligible";
 constexpr char kHoldingSpaceWallpaperNudgeUserFirstEligibleSessionTime[] =
     "ash.holding_space.wallpaper_nudge.first_eligible_session_time";
+
+// Deprecated 06/2024.
+constexpr char kLocalUserFilesMigrationEnabled[] =
+    "filebrowser.local_user_files_migration_enabled";
 #endif
 
 // Register local state used only for migration (clearing or moving to a new
@@ -1325,6 +1329,11 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
 #if !BUILDFLAG(IS_ANDROID)
   // Deprecated 05/2024.
   registry->RegisterBooleanPref(kHasShownRefreshWhatsNew, false);
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Deprecated 06/2024.
+  registry->RegisterBooleanPref(kLocalUserFilesMigrationEnabled, false);
 #endif
 }
 
@@ -2655,6 +2664,11 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 05/2024.
   local_state->ClearPref(kHasShownRefreshWhatsNew);
 #endif
+
+// Added 06/2024.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  local_state->ClearPref(kLocalUserFilesMigrationEnabled);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

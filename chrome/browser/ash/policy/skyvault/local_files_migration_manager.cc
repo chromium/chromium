@@ -34,17 +34,7 @@ namespace {
 // Delay the migration for 24 hours.
 const base::TimeDelta kMigrationTimeout = base::Hours(24);
 
-// Returns the migration destination, which is based on DownloadDirectory.
-// TODO(aidazolic): Remove when we use dedicated policy.
-std::string GetDestination(Profile* profile) {
-  CHECK(profile);
-
-  const PrefService* const prefs = profile->GetPrefs();
-  CHECK(prefs);
-  return prefs->GetString(prefs::kFilesAppDefaultLocation);
-}
-
-// Returns true if `DownloadDirectory` is forced to Google Drive or OneDrive.
+// Returns true if `destination` is set to Google Drive or OneDrive.
 bool IsMigrationEnabled(const std::string& destination) {
   return destination == download_dir_util::kLocationGoogleDrive ||
          destination == download_dir_util::kLocationOneDrive;
@@ -61,7 +51,7 @@ LocalFilesMigrationManager::LocalFilesMigrationManager(
 
   pref_change_registrar_.Init(g_browser_process->local_state());
   pref_change_registrar_.Add(
-      prefs::kLocalUserFilesMigrationEnabled,
+      prefs::kLocalUserFilesMigrationDestination,
       base::BindRepeating(
           &LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged,
           base::Unretained(this)));
@@ -89,16 +79,10 @@ void LocalFilesMigrationManager::RemoveObserver(Observer* observer) {
 
 void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
   bool local_user_files_allowed = LocalUserFilesAllowed();
-  bool local_user_files_migration_enabled =
-      g_browser_process->local_state()->GetBoolean(
-          prefs::kLocalUserFilesMigrationEnabled);
-  Profile* profile = Profile::FromBrowserContext(context_);
-  CHECK(profile);
-  std::string destination = GetDestination(profile);
+  std::string destination = g_browser_process->local_state()->GetString(
+      prefs::kLocalUserFilesMigrationDestination);
 
   if (local_user_files_allowed_ == local_user_files_allowed &&
-      local_user_files_migration_enabled_ ==
-          local_user_files_migration_enabled &&
       destination_ == destination) {
     // No change.
     return;
@@ -106,11 +90,9 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
 
   // If local files are allowed or migration is turned off, just stop ongoing
   // migration if any.
-  if (local_user_files_allowed || !local_user_files_migration_enabled ||
-      !IsMigrationEnabled(destination)) {
+  if (local_user_files_allowed || !IsMigrationEnabled(destination)) {
     MaybeStopMigration();
     local_user_files_allowed_ = local_user_files_allowed;
-    local_user_files_migration_enabled_ = local_user_files_migration_enabled;
     destination_ = destination;
     return;
   }
@@ -123,7 +105,6 @@ void LocalFilesMigrationManager::OnLocalUserFilesPolicyChanged() {
   // Local files are disabled and migration destination is set - initiate
   // migration.
   local_user_files_allowed_ = local_user_files_allowed;
-  local_user_files_migration_enabled_ = local_user_files_migration_enabled;
   destination_ = destination;
   InitiateMigration();
 }

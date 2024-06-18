@@ -1267,9 +1267,10 @@ policies:
   1266: LensOverlaySettings
   1267: ThirdPartyPasswordManagersAllowed
   1268: DeviceAllowEnterpriseRemoteAccessConnections
-  1269: LocalUserFilesMigrationEnabled
+  1269: ''
   1270: FocusModeSoundsEnabled
   1271: ExtensionDeveloperModeSettings
+  1272: LocalUserFilesMigrationDestination
 
 atomic_groups:
   1: Homepage

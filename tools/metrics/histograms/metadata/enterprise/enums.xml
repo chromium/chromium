@@ -2133,9 +2133,9 @@ chromium-metrics-reviews@google.com.
   <int value="1266" label="LensOverlaySettings"/>
   <int value="1267" label="ThirdPartyPasswordManagersAllowed"/>
   <int value="1268" label="DeviceAllowEnterpriseRemoteAccessConnections"/>
-  <int value="1269" label="LocalUserFilesMigrationEnabled"/>
   <int value="1270" label="FocusModeSoundsEnabled"/>
   <int value="1271" label="ExtensionDeveloperModeSettings"/>
+  <int value="1272" label="LocalUserFilesMigrationDestination"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

@@ -49,14 +49,14 @@ class LocalFilesMigrationManagerTest : public policy::PolicyTest {
 
  protected:
   void SetMigrationPolicies(bool local_user_files_allowed,
-                            bool local_user_files_migration_enabled) {
+                            const std::string& destination) {
     policy::PolicyMap policies;
     policy::PolicyTest::SetPolicy(&policies,
                                   policy::key::kLocalUserFilesAllowed,
                                   base::Value(local_user_files_allowed));
     policy::PolicyTest::SetPolicy(
-        &policies, policy::key::kLocalUserFilesMigrationEnabled,
-        base::Value(local_user_files_migration_enabled));
+        &policies, policy::key::kLocalUserFilesMigrationDestination,
+        base::Value(destination));
     provider_.UpdateChromePolicy(policies);
   }
 
@@ -75,7 +75,7 @@ class LocalFilesMigrationManagerLocationTest
   ~LocalFilesMigrationManagerLocationTest() = default;
 
  protected:
-  std::string DefaultLocation() { return GetParam(); }
+  std::string MigrationDestination() { return GetParam(); }
 };
 
 IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
@@ -86,12 +86,10 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
   LocalFilesMigrationManager manager(browser()->profile());
   manager.AddObserver(&observer);
 
-  browser()->profile()->GetPrefs()->SetString(prefs::kFilesAppDefaultLocation,
-                                              GetParam());
   // Changing the LocalUserFilesAllowed policy should trigger the migration and
   // update, after the timeout.
   SetMigrationPolicies(/*local_user_files_allowed=*/false,
-                       /*local_user_files_migration_enabled=*/true);
+                       /*destination=*/MigrationDestination());
   task_runner->FastForwardBy(base::TimeDelta(base::Hours(24)));
 }
 
@@ -102,10 +100,8 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
   LocalFilesMigrationManager manager(browser()->profile());
   manager.AddObserver(&observer);
 
-  browser()->profile()->GetPrefs()->SetString(prefs::kFilesAppDefaultLocation,
-                                              DefaultLocation());
   SetMigrationPolicies(/*local_user_files_allowed=*/true,
-                       /*local_user_files_migration_enabled=*/true);
+                       /*destination=*/MigrationDestination());
 }
 
 IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
@@ -115,10 +111,8 @@ IN_PROC_BROWSER_TEST_P(LocalFilesMigrationManagerLocationTest,
   LocalFilesMigrationManager manager(browser()->profile());
   manager.AddObserver(&observer);
 
-  browser()->profile()->GetPrefs()->SetString(prefs::kFilesAppDefaultLocation,
-                                              DefaultLocation());
   SetMigrationPolicies(/*local_user_files_allowed=*/false,
-                       /*local_user_files_migration_enabled=*/false);
+                       /*destination=*/MigrationDestination());
 }
 
 IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
@@ -128,10 +122,8 @@ IN_PROC_BROWSER_TEST_F(LocalFilesMigrationManagerTest,
   LocalFilesMigrationManager manager(browser()->profile());
   manager.AddObserver(&observer);
 
-  browser()->profile()->GetPrefs()->SetString(prefs::kFilesAppDefaultLocation,
-                                              "");
   SetMigrationPolicies(/*local_user_files_allowed=*/false,
-                       /*local_user_files_migration_enabled=*/true);
+                       /*destination=*/"read-only");
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -1,0 +1,52 @@
+[
+  {
+    "can_be_recommended": false,
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+          "policies": {},
+          "prefs": {
+            "filebrowser.local_user_files_migration_destination": {
+              "location": "local_state",
+              "default_value": "read_only"
+            }
+          }
+      },
+      {
+          "policies": {
+              "LocalUserFilesMigrationDestination": "google_drive"
+          },
+          "prefs": {
+            "filebrowser.local_user_files_migration_destination": {
+              "location": "local_state",
+              "value": "google_drive"
+            }
+          }
+      },
+      {
+          "policies": {
+              "LocalUserFilesMigrationDestination": "microsoft_onedrive"
+          },
+          "prefs": {
+            "filebrowser.local_user_files_migration_destination": {
+              "location": "local_state",
+              "value": "microsoft_onedrive"
+            }
+          }
+      },
+      {
+          "policies": {
+              "LocalUserFilesMigrationDestination": "read_only"
+          },
+          "prefs": {
+            "filebrowser.local_user_files_migration_destination": {
+              "location": "local_state",
+              "value": "read_only"
+            }
+          }
+      }
+    ]
+  }
+]

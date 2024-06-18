@@ -88,10 +88,8 @@ class LocalFilesMigrationManager : public LocalUserFilesPolicyObserver,
   // Whether local user files are allowed by policy.
   bool local_user_files_allowed_ = true;
 
-  // Whether migration is enabled by policy.
-  bool local_user_files_migration_enabled_ = false;
-
-  // Migration destination.
+  // Migration destination. Can be a cloud destination or read-only in which
+  // case no migration happens.
   std::string destination_;
 
   // Stores any error that occurred during migration.

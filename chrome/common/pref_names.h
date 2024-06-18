@@ -2194,9 +2194,10 @@ inline constexpr char kOfficeFileMovedToGoogleDrive[] =
 inline constexpr char kLocalUserFilesAllowed[] =
     "filebrowser.local_user_files_allowed";
 
-// Pref that contains the value of the LocalUserFilesMigrationEnabled policy.
-inline constexpr char kLocalUserFilesMigrationEnabled[] =
-    "filebrowser.local_user_files_migration_enabled";
+// Pref that contains the value of the LocalUserFilesMigrationDestination
+// policy.
+inline constexpr char kLocalUserFilesMigrationDestination[] =
+    "filebrowser.local_user_files_migration_destination";
 
 // Whether the user can remove OneDrive.
 inline constexpr char kAllowUserToRemoveODFS[] = "allow_user_to_remove_odfs";
