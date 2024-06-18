@@ -67,7 +67,7 @@ class ClientSideDetectionService
       public content::RenderProcessHostCreationObserver {
  public:
   // void(GURL phishing_url, bool is_phishing,
-  // absl::optional<net::HttpStatusCode> response_code).
+  // std::optional<net::HttpStatusCode> response_code).
   typedef base::OnceCallback<
       void(GURL, bool, std::optional<net::HttpStatusCode>)>
       ClientReportPhishingRequestCallback;
