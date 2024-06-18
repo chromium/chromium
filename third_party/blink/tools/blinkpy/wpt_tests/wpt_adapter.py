@@ -126,7 +126,9 @@ class StructuredLogAdapter(logging.Handler):
         log = getattr(self._logger, record.levelname.lower(),
                       self._logger.debug)
         try:
-            log(record.getMessage(), component=record.name)
+            log(record.getMessage(),
+                component=record.name,
+                exc_info=record.exc_info)
         except mozlog.structuredlog.LoggerShutdownError:
             self._fallback_handler.emit(record)
 

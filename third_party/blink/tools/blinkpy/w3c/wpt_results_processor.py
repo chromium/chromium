@@ -319,6 +319,18 @@ class Event(NamedTuple):
     pid: int
     source: str
 
+    @classmethod
+    def make_raw_event(cls, action: str, **extra: Any) -> Dict[str, Any]:
+        """Create a raw synthetic `mozlog` event."""
+        return {
+            'action': action,
+            'time': time.time() * 1000,  # Time since epoch in ms
+            'thread': threading.current_thread().name,
+            'pid': os.getpid(),
+            'source': __name__,
+            **extra,  # Action-specific fields
+        }
+
 
 class EventProcessingError(ValueError):
     """Non-fatal exception raised when an event cannot be processed.
@@ -523,7 +535,7 @@ class WPTResultsProcessor:
             # Send a shutdown event, if one has not been sent already, to tell
             # the worker to exit.
             _log.info('Sending shutdown event to stop the worker...')
-            events.put({'action': 'shutdown'}, timeout=timeout)
+            events.put(Event.make_raw_event('shutdown'), timeout=timeout)
             worker.join(timeout=timeout)
 
     def _consume_events(self, events: queue.SimpleQueue):
