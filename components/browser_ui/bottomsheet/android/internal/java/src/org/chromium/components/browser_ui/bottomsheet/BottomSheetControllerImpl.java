@@ -571,20 +571,9 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         return false;
     }
 
-    @Override
-    public void maximizeSheet() {
-        if (mBottomSheet == null || mSuppressionTokens.hasTokens() || mBottomSheet.isHiding()) {
-            return;
-        }
-
-        if (mBottomSheet.getCurrentSheetContent() == null) return;
-        mBottomSheet.setSheetState(SheetState.FULL, true);
-    }
-
     /**
      * Show the next {@link BottomSheetContent} if it is available and peek the sheet. If no content
      * is available the sheet's content is set to null.
-     *
      * @param animate Whether the sheet should animate opened.
      */
     private void showNextContent(boolean animate) {

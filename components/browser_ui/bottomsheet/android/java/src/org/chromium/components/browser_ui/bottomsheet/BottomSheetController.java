@@ -117,25 +117,17 @@ public interface BottomSheetController {
     void expandSheet();
 
     /**
-     * Collapse the current sheet to peek state. Sheet may not change the state if the state is not
-     * allowed.
-     *
+     * Collapse the current sheet to peek state. Sheet may not change the state if the state
+     * is not allowed.
      * @param animate {@code true} for animation effect.
      * @return {@code true} if the sheet could go to the peek state.
      */
     boolean collapseSheet(boolean animate);
 
-    /** Expand the sheet to full size. If there is no content in the sheet, this is a noop. */
-    void maximizeSheet();
-
-    /**
-     * @return The content currently showing in the bottom sheet.
-     */
+    /** @return The content currently showing in the bottom sheet. */
     BottomSheetContent getCurrentSheetContent();
 
-    /**
-     * @return The current state of the bottom sheet.
-     */
+    /** @return The current state of the bottom sheet. */
     @SheetState
     int getSheetState();
 
