@@ -63,14 +63,12 @@ class OmniboxTextView : public views::View {
                           bool deemphasize);
   // Sets the styling for FormattedString's FormattedStringFragments.
   // |fragment_index| specifies where to start appending and styling text from.
-  void SetTextWithStyling(
-      const omnibox::FormattedString& formatted_string,
-      size_t fragment_index,
-      const omnibox::RichAnswerTemplate::AnswerType& answer_type);
+  void SetTextWithStyling(const omnibox::FormattedString& formatted_string,
+                          size_t fragment_index,
+                          const SuggestionAnswer::AnswerType& answer_type);
   // Sets |render_text_| to be multiline whenever necessary.
-  void SetMultilineText(
-      const omnibox::FormattedString& formatted_string,
-      const omnibox::RichAnswerTemplate::AnswerType& answer_type);
+  void SetMultilineText(const omnibox::FormattedString& formatted_string,
+                        const SuggestionAnswer::AnswerType& answer_type);
 
   // Adds the "additional" and "status" text from |line|, if any.
   void AppendExtraText(const SuggestionAnswer::ImageLine& line);

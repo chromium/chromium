@@ -134,10 +134,9 @@ void ApplyTextStyleFromColorType(
 }
 
 // Dictionary and translation answers have a max number of lines > 1.
-bool AnswerHasDefinedMaxLines(
-    omnibox::RichAnswerTemplate::AnswerType answer_type) {
-  return answer_type == omnibox::RichAnswerTemplate::DICTIONARY ||
-         answer_type == omnibox::RichAnswerTemplate::TRANSLATION;
+bool AnswerHasDefinedMaxLines(SuggestionAnswer::AnswerType answer_type) {
+  return answer_type == SuggestionAnswer::ANSWER_TYPE_DICTIONARY ||
+         answer_type == SuggestionAnswer::ANSWER_TYPE_TRANSLATION;
 }
 
 }  // namespace
@@ -251,7 +250,7 @@ void OmniboxTextView::SetTextWithStyling(
 void OmniboxTextView::SetTextWithStyling(
     const omnibox::FormattedString& formatted_string,
     size_t fragment_index,
-    const omnibox::RichAnswerTemplate::AnswerType& answer_type) {
+    const SuggestionAnswer::AnswerType& answer_type) {
   use_deemphasized_font_ = false;
   cached_classifications_.reset();
   wrap_text_lines_ = AnswerHasDefinedMaxLines(answer_type);
@@ -272,7 +271,7 @@ void OmniboxTextView::SetTextWithStyling(
 
 void OmniboxTextView::SetMultilineText(
     const omnibox::FormattedString& formatted_string,
-    const omnibox::RichAnswerTemplate::AnswerType& answer_type) {
+    const SuggestionAnswer::AnswerType& answer_type) {
   render_text_ = CreateRenderText(u"");
   if (formatted_string.fragments_size() > 0 &&
       AnswerHasDefinedMaxLines(answer_type)) {

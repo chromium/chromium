@@ -281,11 +281,11 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
     omnibox::AnswerData answer_data = match_.answer_template->answers(0);
     suggestion_view_->content()->SetTextWithStyling(
         /*formatted_string=*/answer_data.headline(), /*fragment_index=*/1u,
-        /*answer_type=*/match_.answer_template->answer_type());
+        /*answer_type=*/match_.answer_type);
     // The subhead text may be multiline.
     suggestion_view_->description()->SetMultilineText(
         /*formatted_string=*/answer_data.subhead(),
-        /*answer_type=*/match_.answer_template->answer_type());
+        /*answer_type=*/match_.answer_type);
   } else if (match_.answer) {
     suggestion_view_->content()->AppendExtraText(match_.answer->first_line());
     suggestion_view_->description()->SetTextWithStyling(

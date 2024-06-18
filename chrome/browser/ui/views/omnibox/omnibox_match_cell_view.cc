@@ -333,14 +333,13 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
     // Determine if we have a local icon (or else it will be downloaded).
     if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
         match.answer_template.has_value()) {
-      if (match.answer_template->answer_type() ==
-          omnibox::RichAnswerTemplate::WEATHER) {
+      if (match.answer_type == SuggestionAnswer::ANSWER_TYPE_WEATHER) {
         // Weather icons are downloaded. We just need to set the correct size.
         answer_image_view_->SetImageSize(
             gfx::Size(GetAnswerImageSize(), GetAnswerImageSize()));
       } else {
-        apply_vector_icon(AutocompleteMatch::AnswerTypeToAnswerIcon(
-            match.answer_template->answer_type()));
+        apply_vector_icon(
+            AutocompleteMatch::AnswerTypeToAnswerIcon(match.answer_type));
       }
     } else if (match.answer) {
       if (match.answer->type() == SuggestionAnswer::ANSWER_TYPE_WEATHER) {
@@ -348,8 +347,8 @@ void OmniboxMatchCellView::OnMatchUpdate(const OmniboxResultView* result_view,
         answer_image_view_->SetImageSize(
             gfx::Size(GetAnswerImageSize(), GetAnswerImageSize()));
       } else {
-        apply_vector_icon(AutocompleteMatch::AnswerTypeToAnswerIconDeprecated(
-            match.answer->type()));
+        apply_vector_icon(
+            AutocompleteMatch::AnswerTypeToAnswerIcon(match.answer->type()));
       }
     } else {
       SkColor color = GetColorProvider()->GetColor(
@@ -412,8 +411,7 @@ void OmniboxMatchCellView::SetImage(const gfx::ImageSkia& image,
   bool is_weather_answer =
       omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled
           ? (match.answer_template.has_value() &&
-             match.answer_template->answer_type() ==
-                 omnibox::RichAnswerTemplate::WEATHER)
+             match.answer_type == SuggestionAnswer::ANSWER_TYPE_WEATHER)
           : (match.answer &&
              match.answer->type() == SuggestionAnswer::ANSWER_TYPE_WEATHER);
 

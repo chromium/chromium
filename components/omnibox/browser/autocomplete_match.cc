@@ -489,8 +489,7 @@ AutocompleteMatch& AutocompleteMatch::operator=(
 
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
 // static
-const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIconDeprecated(
-    int type) {
+const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIcon(int type) {
   switch (static_cast<SuggestionAnswer::AnswerType>(type)) {
     case SuggestionAnswer::ANSWER_TYPE_CURRENCY:
       return omnibox::kAnswerCurrencyChromeRefreshIcon;
@@ -509,27 +508,6 @@ const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIconDeprecated(
   }
 }
 
-// static
-const gfx::VectorIcon& AutocompleteMatch::AnswerTypeToAnswerIcon(
-    omnibox::RichAnswerTemplate::AnswerType type) {
-  switch (type) {
-    case omnibox::RichAnswerTemplate::DICTIONARY:
-      return omnibox::kAnswerDictionaryChromeRefreshIcon;
-    case omnibox::RichAnswerTemplate::FINANCE:
-      return omnibox::kAnswerFinanceChromeRefreshIcon;
-    case omnibox::RichAnswerTemplate::SUNRISE_SUNSET:
-      return omnibox::kAnswerSunriseChromeRefreshIcon;
-    case omnibox::RichAnswerTemplate::TRANSLATION:
-      return omnibox::kAnswerTranslationChromeRefreshIcon;
-    case omnibox::RichAnswerTemplate::WHEN_IS:
-      return omnibox::kAnswerWhenIsChromeRefreshIcon;
-    case omnibox::RichAnswerTemplate::CURRENCY:
-      return omnibox::kAnswerCurrencyChromeRefreshIcon;
-    default:
-      return omnibox::kAnswerDefaultIcon;
-  }
-}
-
 const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     bool is_bookmark,
     const TemplateURL* turl) const {
@@ -537,9 +515,9 @@ const gfx::VectorIcon& AutocompleteMatch::GetVectorIcon(
     return omnibox::kBookmarkChromeRefreshIcon;
   if (omnibox_feature_configs::SuggestionAnswerMigration::Get().enabled &&
       answer_template.has_value()) {
-    return AnswerTypeToAnswerIcon(answer_template->answer_type());
+    return AnswerTypeToAnswerIcon(answer_type);
   } else if (answer.has_value()) {
-    return AnswerTypeToAnswerIconDeprecated(answer->type());
+    return AnswerTypeToAnswerIcon(answer->type());
   }
 
   switch (type) {

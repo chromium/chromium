@@ -265,14 +265,8 @@ struct AutocompleteMatch {
 #endif
 
 #if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
-  // TODO(b/327497146) Migrate SuggestionAnswer::AnswerType to
-  // omnibox::RichAnswerTemplate::AnswerType and remove function.
   // Converts SuggestionAnswer::AnswerType to an answer vector icon.
-  static const gfx::VectorIcon& AnswerTypeToAnswerIconDeprecated(int type);
-
-  // Converts omnibox::RichAnswerTemplate::AnswerType to an answer vector icon.
-  static const gfx::VectorIcon& AnswerTypeToAnswerIcon(
-      omnibox::RichAnswerTemplate::AnswerType type);
+  static const gfx::VectorIcon& AnswerTypeToAnswerIcon(int type);
 
   // Gets the vector icon identifier for the icon to be shown for this match. If
   // `is_bookmark` is true, returns a bookmark icon rather than what the type
