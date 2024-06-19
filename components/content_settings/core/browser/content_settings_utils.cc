@@ -248,6 +248,7 @@ const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrants() {
 #if !BUILDFLAG(IS_ANDROID)
       ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
 #endif
+      ContentSettingsType::KEYBOARD_LOCK,
       ContentSettingsType::GEOLOCATION,
       ContentSettingsType::MEDIASTREAM_MIC,
       ContentSettingsType::MEDIASTREAM_CAMERA,
@@ -261,6 +262,7 @@ const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrantsInHcsm() {
 #if !BUILDFLAG(IS_ANDROID)
       ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
 #endif
+      ContentSettingsType::KEYBOARD_LOCK,
       ContentSettingsType::GEOLOCATION,
       ContentSettingsType::MEDIASTREAM_MIC,
       ContentSettingsType::MEDIASTREAM_CAMERA,

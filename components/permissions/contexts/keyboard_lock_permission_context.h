@@ -19,15 +19,6 @@ class KeyboardLockPermissionContext
   KeyboardLockPermissionContext(const KeyboardLockPermissionContext&) = delete;
   KeyboardLockPermissionContext& operator=(
       const KeyboardLockPermissionContext&) = delete;
-
-  void NotifyPermissionSet(const PermissionRequestID& id,
-                           const GURL& requesting_origin,
-                           const GURL& embedding_origin,
-                           BrowserPermissionCallback callback,
-                           bool persist,
-                           ContentSetting content_setting,
-                           bool is_one_time,
-                           bool is_final_decision) override;
 };
 
 }  // namespace permissions
