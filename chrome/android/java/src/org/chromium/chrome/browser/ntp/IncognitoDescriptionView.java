@@ -129,7 +129,10 @@ public class IncognitoDescriptionView extends LinearLayout {
 
     public void formatTrackingProtectionText(Context context, View layout) {
         TextView view = (TextView) layout.findViewById(R.id.tracking_protection_description_two);
-        if (view == null) return;
+        if (view == null) {
+            adjustCookieControlsCard();
+            return;
+        }
 
         String text =
                 context.getResources()
