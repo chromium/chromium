@@ -68,6 +68,10 @@ export class TranscriptionView extends ReactiveLitElement {
     }
 
     .timestamp {
+      /*
+       * Note that this need to be 0px instead of 0, since it's used in calc().
+       */
+      --md-focus-ring-outward-offset: 0px;
       --md-focus-ring-shape: 4px;
 
       font: var(--cros-body-2-font);
