@@ -63,9 +63,6 @@ tast_disabled_tests_from_chrome_all = [
   "arc.Drivefs",
   "arc.Drivefs.vm",
 
-  # https://crbug.com/1392911
-  "login.RestrictSignin",
-
   # b/287525851
   "arc.AudioValidity.playback",
   "arc.AudioValidity.record",
