@@ -95,7 +95,7 @@ void SparkyManagerImpl::AnswerQuestion(const std::u16string& question,
     sparky_provider_->QuestionAndAnswer(
         base::UTF16ToUTF8(current_panel_content_->page_content),
         current_panel_qa_, base::UTF16ToUTF8(question),
-        manta::proto::Task::TASK_PLANNER, nullptr,
+        manta::proto::Task::TASK_PLANNER, /*diagnostics_data=*/nullptr,
         base::BindOnce(&SparkyManagerImpl::OnSparkyProviderQAResponse,
                        weak_ptr_factory_.GetWeakPtr(), question,
                        std::move(callback)));
@@ -235,7 +235,7 @@ void SparkyManagerImpl::OnGetPageContentForQA(
   sparky_provider_->QuestionAndAnswer(
       base::UTF16ToUTF8(current_panel_content_->page_content),
       current_panel_qa_, base::UTF16ToUTF8(question),
-      manta::proto::Task::TASK_PLANNER, nullptr,
+      manta::proto::Task::TASK_PLANNER, /*diagnostics_data=*/nullptr,
       base::BindOnce(&SparkyManagerImpl::OnSparkyProviderQAResponse,
                      weak_ptr_factory_.GetWeakPtr(), question,
                      std::move(callback)));

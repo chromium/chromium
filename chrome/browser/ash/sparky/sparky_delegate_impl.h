@@ -7,11 +7,11 @@
 
 #include <memory>
 #include <optional>
-#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
+#include "chromeos/ash/components/sparky/snapshot_util.h"
 #include "components/manta/sparky/sparky_delegate.h"
 
 class Profile;
@@ -31,6 +31,7 @@ class SparkyDelegateImpl : public manta::SparkyDelegate {
   SettingsDataList* GetSettingsList() override;
   std::optional<base::Value> GetSettingValue(
       const std::string& setting_id) override;
+  void GetScreenshot(manta::ScreenshotDataCallback callback) override;
 
  private:
   friend class SparkyDelegateImplTest;
@@ -39,9 +40,11 @@ class SparkyDelegateImpl : public manta::SparkyDelegate {
       const std::string& pref_name,
       extensions::api::settings_private::PrefType settings_pref_type,
       std::optional<base::Value> value);
+
   const raw_ptr<Profile> profile_;
   std::unique_ptr<extensions::PrefsUtil> prefs_util_;
   SettingsDataList current_prefs_;
+  std::unique_ptr<sparky::ScreenshotHandler> screenshot_handler_;
 };
 
 }  // namespace ash

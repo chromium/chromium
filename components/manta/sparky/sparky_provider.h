@@ -12,6 +12,7 @@
 
 #include "base/component_export.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -62,7 +63,7 @@ class COMPONENT_EXPORT(MANTA) SparkyProvider : virtual public BaseProvider {
                               MantaStatus)>;
 
   void QuestionAndAnswer(const std::string& content,
-                         const std::vector<SparkyQAPair> QAHistory,
+                         const std::vector<SparkyQAPair>& QAHistory,
                          const std::string& question,
                          proto::Task task,
                          std::unique_ptr<DiagnosticsData> diagnostics_data,
@@ -82,15 +83,24 @@ class COMPONENT_EXPORT(MANTA) SparkyProvider : virtual public BaseProvider {
   // additional call to QuestionAndAnswer.
   void RequestAdditionalInformation(proto::ContextRequest,
                                     const std::string& original_content,
-                                    const std::vector<SparkyQAPair> QAHistory,
+                                    const std::vector<SparkyQAPair>& QAHistory,
                                     const std::string& question,
                                     SparkyShowAnswerCallback done_callback,
                                     manta::MantaStatus status);
 
+  void OnScreenshotObtained(
+      const std::string& content,
+      const std::vector<SparkyQAPair>& QAHistory,
+      const std::string& question,
+      proto::Task task,
+      std::unique_ptr<DiagnosticsData> diagnostics_data,
+      SparkyShowAnswerCallback done_callback,
+      scoped_refptr<base::RefCountedMemory> jpeg_screenshot);
+
   void OnResponseReceived(
       SparkyShowAnswerCallback done_callback,
       const std::string& original_content,
-      const std::vector<SparkyQAPair> QAHistory,
+      const std::vector<SparkyQAPair>& QAHistory,
       const std::string& question,
       std::unique_ptr<proto::SparkyResponse> sparky_response,
       manta::MantaStatus status);
@@ -105,7 +115,7 @@ class COMPONENT_EXPORT(MANTA) SparkyProvider : virtual public BaseProvider {
                         manta::MantaStatus status);
 
   void OnDiagnosticsReceived(const std::string& original_content,
-                             const std::vector<SparkyQAPair> QAHistory,
+                             const std::vector<SparkyQAPair>& QAHistory,
                              const std::string& question,
                              SparkyShowAnswerCallback done_callback,
                              manta::MantaStatus status,

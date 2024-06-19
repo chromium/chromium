@@ -11,6 +11,9 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/functional/callback.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/values.h"
 
 namespace manta {
@@ -44,6 +47,9 @@ struct COMPONENT_EXPORT(MANTA) SettingsData {
   void UpdateValue(std::optional<base::Value> new_value);
 };
 
+using ScreenshotDataCallback =
+    base::OnceCallback<void(scoped_refptr<base::RefCountedMemory>)>;
+
 // Virtual class to handle the information requests and actions taken within
 // Sparky Provider which have a Chrome dependency.
 class COMPONENT_EXPORT(MANTA) SparkyDelegate {
@@ -59,6 +65,7 @@ class COMPONENT_EXPORT(MANTA) SparkyDelegate {
   virtual SettingsDataList* GetSettingsList() = 0;
   virtual std::optional<base::Value> GetSettingValue(
       const std::string& setting_id) = 0;
+  virtual void GetScreenshot(ScreenshotDataCallback callback) = 0;
 };
 
 }  // namespace manta

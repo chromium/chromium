@@ -8,6 +8,8 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
 component("sparky") {
   sources = [
+    "snapshot_util.cc",
+    "snapshot_util.h",
     "system_info_delegate_impl.cc",
     "system_info_delegate_impl.h",
   ]
@@ -15,6 +17,7 @@ component("sparky") {
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_SPARKY_IMPL" ]
 
   deps = [
+    "//ash",
     "//ash/strings:strings",
     "//base",
     "//chromeos/ash/components/system_info",
@@ -25,6 +28,8 @@ component("sparky") {
     "//components/manta",
     "//mojo/public/cpp/bindings",
     "//ui/base",
+    "//ui/gfx",
+    "//ui/snapshot",
   ]
 }
 

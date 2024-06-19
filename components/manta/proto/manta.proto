@@ -118,10 +118,6 @@ message Request {
   repeated InputData input_data = 4;
 }
 
-message Image {
-  optional bytes serialized_bytes = 1;
-}
-
 message OutputData {
   reserved 4;
   oneof output_data {

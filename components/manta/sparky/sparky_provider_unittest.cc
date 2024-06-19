@@ -83,6 +83,10 @@ class FakeSparkyDelegate : public SparkyDelegate {
     }
   }
 
+  void GetScreenshot(ScreenshotDataCallback callback) override {
+    std::move(callback).Run(nullptr);
+  }
+
  private:
   SettingsDataList current_prefs_;
 };

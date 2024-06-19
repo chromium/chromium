@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <string>
 
 #include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,7 +23,8 @@ using SettingsPrivatePrefType = extensions::api::settings_private::PrefType;
 
 SparkyDelegateImpl::SparkyDelegateImpl(Profile* profile)
     : profile_(profile),
-      prefs_util_(std::make_unique<extensions::PrefsUtil>(profile)) {}
+      prefs_util_(std::make_unique<extensions::PrefsUtil>(profile)),
+      screenshot_handler_(std::make_unique<sparky::ScreenshotHandler>()) {}
 
 SparkyDelegateImpl::~SparkyDelegateImpl() = default;
 
@@ -114,6 +116,10 @@ std::optional<base::Value> SparkyDelegateImpl::GetSettingValue(
   } else {
     return std::nullopt;
   }
+}
+
+void SparkyDelegateImpl::GetScreenshot(manta::ScreenshotDataCallback callback) {
+  screenshot_handler_->TakeScreenshot(std::move(callback));
 }
 
 }  // namespace ash

@@ -96,11 +96,25 @@ SparkyProvider::~SparkyProvider() = default;
 
 void SparkyProvider::QuestionAndAnswer(
     const std::string& original_content,
-    const std::vector<SparkyQAPair> QAHistory,
+    const std::vector<SparkyQAPair>& QAHistory,
     const std::string& question,
     proto::Task task,
     std::unique_ptr<DiagnosticsData> diagnostics_data,
     SparkyShowAnswerCallback done_callback) {
+  sparky_delegate_->GetScreenshot(base::BindOnce(
+      &SparkyProvider::OnScreenshotObtained, weak_ptr_factory_.GetWeakPtr(),
+      original_content, QAHistory, question, task, std::move(diagnostics_data),
+      std::move(done_callback)));
+}
+
+void SparkyProvider::OnScreenshotObtained(
+    const std::string& original_content,
+    const std::vector<SparkyQAPair>& QAHistory,
+    const std::string& question,
+    proto::Task task,
+    std::unique_ptr<DiagnosticsData> diagnostics_data,
+    SparkyShowAnswerCallback done_callback,
+    scoped_refptr<base::RefCountedMemory> jpeg_screenshot) {
   proto::Request request;
   request.set_feature_name(proto::FeatureName::CHROMEOS_SPARKY);
 
@@ -125,6 +139,17 @@ void SparkyProvider::QuestionAndAnswer(
 
   sparky_context_data->set_task(task);
   sparky_context_data->set_page_contents(original_content);
+
+  if (jpeg_screenshot) {
+    proto::Image* image_proto = sparky_context_data->mutable_screenshot();
+
+    // This copies the raw data from jpeg_screenshot (handling constness).
+    const uint8_t* data_ptr =
+        reinterpret_cast<const uint8_t*>(jpeg_screenshot->front());
+    size_t data_size = jpeg_screenshot->size();
+    image_proto->set_serialized_bytes(std::string(
+        data_ptr, data_ptr + data_size));  // Construct string from data
+  }
 
   if (task == proto::Task::TASK_SETTINGS) {
     auto* settings_list = sparky_delegate_->GetSettingsList();
@@ -153,7 +178,7 @@ void SparkyProvider::QuestionAndAnswer(
 void SparkyProvider::OnResponseReceived(
     SparkyShowAnswerCallback done_callback,
     const std::string& original_content,
-    const std::vector<SparkyQAPair> QAHistory,
+    const std::vector<SparkyQAPair>& QAHistory,
     const std::string& question,
     std::unique_ptr<proto::SparkyResponse> sparky_response,
     manta::MantaStatus status) {
@@ -181,14 +206,14 @@ void SparkyProvider::OnResponseReceived(
 void SparkyProvider::RequestAdditionalInformation(
     proto::ContextRequest context_request,
     const std::string& original_content,
-    const std::vector<SparkyQAPair> QAHistory,
+    const std::vector<SparkyQAPair>& QAHistory,
     const std::string& question,
     SparkyShowAnswerCallback done_callback,
     manta::MantaStatus status) {
   if (context_request.has_settings()) {
     if (!sparky_delegate_->GetSettingsList()->empty()) {
       QuestionAndAnswer(original_content, QAHistory, question,
-                        proto::TASK_SETTINGS, nullptr,
+                        proto::TASK_SETTINGS, /*diagnostics_data=*/nullptr,
                         std::move(done_callback));
       return;
     }
@@ -207,7 +232,6 @@ void SparkyProvider::RequestAdditionalInformation(
       return;
     }
     std::move(done_callback).Run("No diagnostics were requested", status);
-    return;
   }
 
   // Occurs if no valid request can be found.
@@ -216,7 +240,7 @@ void SparkyProvider::RequestAdditionalInformation(
 
 void SparkyProvider::OnDiagnosticsReceived(
     const std::string& original_content,
-    const std::vector<SparkyQAPair> QAHistory,
+    const std::vector<SparkyQAPair>& QAHistory,
     const std::string& question,
     SparkyShowAnswerCallback done_callback,
     manta::MantaStatus status,

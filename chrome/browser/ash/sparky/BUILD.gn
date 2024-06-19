@@ -17,6 +17,7 @@ source_set("sparky_ash") {
     "//base",
     "//chrome/browser/extensions",
     "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/sparky",
     "//components/manta",
     "//components/prefs",
   ]

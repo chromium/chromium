@@ -5,6 +5,8 @@
 syntax = "proto3";
 option optimize_for = LITE_RUNTIME;
 
+import "components/manta/proto/common.proto";
+
 package manta.proto;
 
 enum Task {
@@ -124,4 +126,5 @@ message SparkyContextData {
   optional DiagnosticsData diagnostics_data = 3;
   optional SettingsData settings_data = 4;
   repeated InputText q_and_a = 8;
+  optional Image screenshot = 9;
 }
