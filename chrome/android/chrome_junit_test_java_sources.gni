@@ -191,6 +191,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabVersionCompatTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/features/toolbar/BrandingSecurityButtonAnimationDelegateUnitTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabHistoryIPHControllerUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarCoordinatorUnitTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarUnitTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/shadows/ShadowExternalNavigationDelegateImpl.java",
   "junit/src/org/chromium/chrome/browser/desktop_site/DesktopSiteSettingsIPHControllerUnitTest.java",

@@ -49,6 +49,7 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
     private String mDescription;
     private boolean mShouldTint;
     private boolean mIsOnToolbar;
+    private @ButtonType int mType;
 
     @VisibleForTesting
     static final String SHOW_ON_TOOLBAR = "android.support.customtabs.customaction.SHOW_ON_TOOLBAR";
@@ -59,13 +60,15 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
             String description,
             @Nullable PendingIntent pendingIntent,
             boolean tinted,
-            boolean onToolbar) {
+            boolean onToolbar,
+            @ButtonType int type) {
         mId = id;
         mIcon = icon;
         mDescription = description;
         mPendingIntent = pendingIntent;
         mShouldTint = tinted;
         mIsOnToolbar = onToolbar;
+        mType = type;
     }
 
     /** Replaces the current icon and description with new ones. */
@@ -118,6 +121,11 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
     @Override
     public PendingIntent getPendingIntent() {
         return mPendingIntent;
+    }
+
+    @Override
+    public @ButtonType int getType() {
+        return mType;
     }
 
     /**
@@ -302,11 +310,12 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
         }
 
         return new CustomButtonParamsImpl(
-                id, bitmap, description, pendingIntent, tinted, onToolbar);
+                id, bitmap, description, pendingIntent, tinted, onToolbar, ButtonType.OTHER);
     }
 
     /** Creates and returns a {@link CustomButtonParams} for a share button in the toolbar. */
-    static CustomButtonParams createShareButton(Context context, int backgroundColor) {
+    @VisibleForTesting
+    public static CustomButtonParams createShareButton(Context context, int backgroundColor) {
         int id = CustomTabsIntent.TOOLBAR_ACTION_BUTTON_ID;
         String description = context.getResources().getString(R.string.share);
         Intent shareIntent = new Intent(context, CustomTabsShareBroadcastReceiver.class);
@@ -325,12 +334,18 @@ public class CustomButtonParamsImpl implements CustomButtonParams {
         Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
 
         return new CustomButtonParamsImpl(
-                id, bitmap, description, pendingIntent, /* tinted= */ true, /* onToolbar= */ true);
+                id,
+                bitmap,
+                description,
+                pendingIntent,
+                /* tinted= */ true,
+                /* onToolbar= */ true,
+                ButtonType.CCT_SHARE_BUTTON);
     }
 
     /**
      * @return The bitmap contained in the given {@link Bundle}. Will return null if input is
-     *         invalid.
+     *     invalid.
      */
     static Bitmap parseBitmapFromBundle(Bundle bundle) {
         if (bundle == null) return null;

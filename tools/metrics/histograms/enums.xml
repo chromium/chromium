@@ -31426,6 +31426,7 @@ Called by update_net_error_codes.py.-->
   <int value="8" label="FEED"/>
   <int value="9" label="PAGE_INSIGHTS"/>
   <int value="10" label="GOOGLE_BOTTOM_BAR"/>
+  <int value="11" label="CUSTOM_TAB_SHARE_BUTTON"/>
 </enum>
 
 <enum name="ShareSourceAndroid">

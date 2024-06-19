@@ -31,7 +31,7 @@ public class ShareDelegateSupplier extends UnownedUserDataSupplier<ShareDelegate
         super(KEY);
     }
 
-    static void setInstanceForTesting(ShareDelegateSupplier instanceForTesting) {
+    public static void setInstanceForTesting(ShareDelegateSupplier instanceForTesting) {
         sInstanceForTesting = instanceForTesting;
         ResettersForTesting.register(() -> sInstanceForTesting = null);
     }

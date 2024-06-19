@@ -26,6 +26,7 @@ public interface ShareDelegate {
         ShareOrigin.FEED,
         ShareOrigin.PAGE_INSIGHTS,
         ShareOrigin.GOOGLE_BOTTOM_BAR,
+        ShareOrigin.CUSTOM_TAB_SHARE_BUTTON,
         ShareOrigin.COUNT
     })
     public @interface ShareOrigin {
@@ -40,9 +41,10 @@ public interface ShareDelegate {
         int FEED = 8;
         int PAGE_INSIGHTS = 9;
         int GOOGLE_BOTTOM_BAR = 10;
+        int CUSTOM_TAB_SHARE_BUTTON = 11;
 
         // Must be the last one.
-        int COUNT = 11;
+        int COUNT = 12;
     }
 
     /**
