@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_ECHE_APP_ECHE_APP_ACCESSIBILITY_PROVIDER_PROXY_H_
 
 #include "ash/webui/eche_app_ui/accessibility_provider.h"
-#include "third_party/abseil-cpp//absl//types/optional.h"
 
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 

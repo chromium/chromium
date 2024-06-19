@@ -45,6 +45,7 @@ source_set("browser_tests") {
     "//ash/webui/boca_ui",
     "//ash/webui/demo_mode_app_ui",
     "//ash/webui/diagnostics_ui",
+    "//ash/webui/eche_app_ui",
     "//ash/webui/firmware_update_ui",
     "//ash/webui/help_app_ui:buildflags",
     "//ash/webui/help_app_ui/search:mojo_bindings",

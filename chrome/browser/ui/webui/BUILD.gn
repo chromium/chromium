@@ -76,6 +76,7 @@ source_set("configs") {
       "//ash/webui/status_area_internals",
       "//ash/webui/vc_background_ui",
       "//chrome/browser/ash",
+      "//chrome/browser/ash/eche_app",
       "//chrome/browser/ash/mall",
       "//chromeos/ash/components/kiosk/vision/webui",
       "//components/cross_device/logging",
