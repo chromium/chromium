@@ -119,6 +119,9 @@
     close-text="[[i18n('close')]]">
   <div slot="title" aria-live="polite">[[i18n('networkSimLockedTitle')]]</div>
   <div slot="body">
+    <div id="enterPinSubtitle">
+      [[i18n('networkSimLockedPinSubtitle')]]
+    </div>
     <template is="dom-if" if="[[isSimPinLockRestricted_]]">
       <div id="adminSubtitle">
         [[i18n('networkSimLockPolicyAdminSubtitle')]]

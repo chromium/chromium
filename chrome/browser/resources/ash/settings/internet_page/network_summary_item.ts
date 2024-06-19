@@ -125,6 +125,9 @@ export class NetworkSummaryItemElement extends NetworkSummaryItemElementBase {
     }
 
     if (this.isPortalState_(this.activeNetworkState!.portalState)) {
+      if (this.deviceState && this.deviceState.type === NetworkType.kCellular) {
+        return this.i18n('networkListItemCellularSignIn');
+      }
       return this.i18n('networkListItemSignIn');
     }
 

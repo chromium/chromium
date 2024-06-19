@@ -1157,6 +1157,9 @@ export class SettingsInternetDetailPageElement extends
 
     if (OncMojo.connectionStateIsConnected(managedProperties.connectionState)) {
       if (this.isPortalState_(managedProperties.portalState)) {
+        if (managedProperties.type === NetworkType.kCellular) {
+          return this.i18n('networkListItemCellularSignIn');
+        }
         return this.i18n('networkListItemSignIn');
       }
       if (managedProperties.portalState === PortalState.kNoInternet) {

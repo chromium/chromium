@@ -719,6 +719,9 @@ Polymer({
     const connectionState = this.networkState.connectionState;
     if (OncMojo.connectionStateIsConnected(connectionState)) {
       if (this.isPortalState_(this.networkState.portalState)) {
+        if (this.networkState.type === NetworkType.kCellular) {
+          return this.i18n('networkListItemCellularSignIn');
+        }
         return this.i18n('networkListItemSignIn');
       }
       if (this.networkState.portalState === PortalState.kNoInternet) {

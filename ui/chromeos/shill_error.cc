@@ -128,6 +128,9 @@ std::u16string GetShillErrorString(const std::string& error,
   if (error == shill::kErrorTooManySTAs) {
     return l10n_util::GetStringUTF16(IDS_NETWORK_NETWORK_TO_MANY_STAS_ERROR);
   }
+  if (error == shill::kErrorResultInvalidApn) {
+    return l10n_util::GetStringUTF16(IDS_CHROMEOS_NETWORK_ERROR_INVALID_APN);
+  }
 
   if (base::ToLowerASCII(error) == base::ToLowerASCII(shill::kUnknownString)) {
     return l10n_util::GetStringUTF16(IDS_CHROMEOS_NETWORK_ERROR_UNKNOWN);
