@@ -5,7 +5,7 @@
 <translation id="1002085272681738789">Вкладка вновь активна</translation>
 <translation id="1003088604756913841">Открыть ссылку в новом окне приложения "<ph name="APP" />"</translation>
 <translation id="100323615638474026">USB-устройство (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
-<translation id="1003917207516838287">История последних скачиваний</translation>
+<translation id="1003917207516838287">Последние скачанные файлы</translation>
 <translation id="1004218526896219317">Доступ к сайтам</translation>
 <translation id="1005274289863221750">Использование микрофона и камеры</translation>
 <translation id="1005333234656240382">Включить отладку с ADB?</translation>
@@ -1204,7 +1204,7 @@
 <translation id="1868617395637139709">Определение местоположения при использовании приложений и сервисов Android.</translation>
 <translation id="1869433484041798909">Кнопка добавления в закладки</translation>
 <translation id="1871098866036088250">Открывать в браузере Chrome</translation>
-<translation id="1871131409931646355">Вся история скачиваний</translation>
+<translation id="1871131409931646355">Все скачанные файлы</translation>
 <translation id="187145082678092583">Меньше приложений</translation>
 <translation id="1871534214638631766">Показывать информацию о контенте, когда вы выбираете его с помощью правого клика или долгого нажатия</translation>
 <translation id="1871615898038944731">На вашем устройстве <ph name="DEVICE_TYPE" /> установлены все необходимые обновления</translation>
@@ -6276,7 +6276,7 @@
 <translation id="567643736130151854">Чтобы закладки, пароли и другие данные стали доступны на всех ваших устройствах, войдите в Chrome и включите синхронизацию.</translation>
 <translation id="567740581294087470">Выберите категорию отзыва:</translation>
 <translation id="5677503058916217575">Язык страницы:</translation>
-<translation id="5677928146339483299">Заблокированы</translation>
+<translation id="5677928146339483299">Заблокировано</translation>
 <translation id="5678550637669481956">Предоставлен доступ к тому <ph name="VOLUME_NAME" /> (чтение и запись данных).</translation>
 <translation id="5678821117681811450">Отправка в <ph name="WEB_DRIVE" /></translation>
 <translation id="5678955352098267522">Просмотр данных на сайте <ph name="WEBSITE_1" /></translation>
@@ -8870,7 +8870,7 @@
 <translation id="76641554187607347">Клавиатура не подключена</translation>
 <translation id="7665082356120621510">Зарезервировать диск</translation>
 <translation id="7665369617277396874">Добавить аккаунт</translation>
-<translation id="7665445336029073980">Вся история скачиваний</translation>
+<translation id="7665445336029073980">Все скачанные файлы</translation>
 <translation id="766560638707011986">Показать домены</translation>
 <translation id="766635563210446220">Не удалось импортировать пароли. Убедитесь, что у файла <ph name="FILENAME" /> правильный формат. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="7666531788977935712">Кнопка "Продолжить" доступна</translation>
@@ -9714,7 +9714,7 @@
     <ph name="BEGIN_PARAGRAPH4" />Если включена запись дополнительной истории приложений и веб-поиска, информация будет сохраняться в аккаунте вашего ребенка. Узнать больше об этих настройках можно на странице families.google.com.<ph name="END_PARAGRAPH4" /></translation>
 <translation id="826905130698769948">Недействительный сертификат клиента.</translation>
 <translation id="8270320981823560179">Диск</translation>
-<translation id="82706708334564640">История последних скачиваний</translation>
+<translation id="82706708334564640">Последние скачанные файлы</translation>
 <translation id="8270946420566049889">Настраивайте Chrome как хотите:
       &lt;ul&gt;
         &lt;li&gt;&lt;em&gt;Лучшее от Google&lt;/em&gt; для всех желающих. Например, вы можете установить Google Поиск как поисковую систему по умолчанию в Chrome и использовать Google Менеджер паролей для доступа к паролям на любых устройствах. &lt;/li&gt;
