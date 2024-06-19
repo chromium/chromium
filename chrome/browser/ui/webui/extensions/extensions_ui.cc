@@ -463,9 +463,9 @@ content::WebUIDataSource* CreateAndAddExtensionsSource(Profile* profile,
                      base::FeatureList::IsEnabled(features::kSafetyHub));
 
   auto* mv2_experiment_manager = ManifestV2ExperimentManager::Get(profile);
-  source->AddInteger(
-      "MV2ExperimentStage",
-      static_cast<int>(mv2_experiment_manager->GetCurrentExperimentStage()));
+  source->AddBoolean("MV2DeprecationPanelEnabled",
+                     mv2_experiment_manager->GetCurrentExperimentStage() ==
+                         MV2ExperimentStage::kWarning);
   source->AddBoolean(
       "MV2DeprecationPanelDismissed",
       mv2_experiment_manager->DidUserAcknowledgeWarningGlobally());

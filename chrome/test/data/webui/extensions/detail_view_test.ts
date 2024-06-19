@@ -25,10 +25,6 @@ suite('ExtensionDetailViewTest', function() {
 
   // Initialize an extension item before each test.
   setup(function() {
-    setupElement();
-  });
-
-  function setupElement() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     extensionData = createExtensionInfo({
       incognitoAccess: {isEnabled: true, isActive: false},
@@ -46,7 +42,7 @@ suite('ExtensionDetailViewTest', function() {
     document.body.appendChild(item);
     const toastManager = document.createElement('cr-toast-manager');
     document.body.appendChild(toastManager);
-  }
+  });
 
   test('Layout', function() {
     flush();
@@ -689,24 +685,20 @@ suite('ExtensionDetailViewTest', function() {
     assertTrue(safetyWarningText!.textContent!.includes('Test Message'));
   });
 
-  test('Mv2DeprecationMessage_None', function() {
-    // Message is hidden for experiment on stage 0 (none).
-    loadTimeData.overrideValues({MV2ExperimentStage: 0});
-    setupElement();
-    flush();
+  test('Mv2DeprecationMessageWarning_Disabled', function() {
+    // Warning is hidden if feature is disabled.
+    loadTimeData.overrideValues({MV2DeprecationPanelEnabled: false});
     testVisible(item, '#mv2DeprecationMessage', false);
   });
 
-  test('Mv2DeprecationMessage_Warning', async function() {
-    // Message is hidden for experiment on stage 1 (warning) when extension is
-    // not affected by the MV2 deprecation.
-    loadTimeData.overrideValues({MV2ExperimentStage: 1});
-    setupElement();
-    flush();
+  test('Mv2DeprecationMessageWarning_Enabled', async function() {
+    // Warning is hidden if feature is enabled but extension is not affected by
+    // the MV2 deprecation.
+    loadTimeData.overrideValues({MV2DeprecationPanelEnabled: true});
     testVisible(item, '#mv2DeprecationMessage', false);
 
-    // Message is visible for experiment on stage 1 (warning) when extension is
-    // affected by the MV2 deprecation.
+    // Warning is visible if feature is enabled and extension is affected by the
+    // MV2 deprecation.
     item.set('data.isAffectedByMV2Deprecation', true);
     flush();
     testVisible(item, '#mv2DeprecationMessage', true);
@@ -735,16 +727,6 @@ suite('ExtensionDetailViewTest', function() {
     // correct delegate call.
     await mockDelegate.testClickingCalls(
         findAlternativeButton, 'openUrl', [recommendationsUrl]);
-  });
-
-  test('Mv2DeprecationMessage_DisableWithReEnable', function() {
-    // Message is hidden for experiment on stage 2 (disable with re-enable).
-    // TODO(crbug.com/339061151): verify message is visible once functionality
-    // is added.
-    loadTimeData.overrideValues({MV2ExperimentStage: 2});
-    setupElement();
-    flush();
-    testVisible(item, '#mv2DeprecationMessage', false);
   });
 
   test('PinnedToToolbar', async function() {

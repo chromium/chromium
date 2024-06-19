@@ -60,7 +60,6 @@ build_webui("build") {
     "extensions.ts",
     "item_mixin.ts",
     "item_util.ts",
-    "mv2_deprecation_util.ts",
     "keyboard_shortcut_delegate.ts",
     "navigation_helper.ts",
     "service.ts",
