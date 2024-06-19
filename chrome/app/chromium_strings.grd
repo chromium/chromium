@@ -1127,6 +1127,14 @@ Permissions you've already given to websites and apps may apply to this account.
             Use Chromium Without an Account
           </message>
         </if>
+        <message name="IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_ACCESSIBILITY_LABEL"
+          desc="Accessibility label (read by the accessibility tools) of the avatar button when the Chromium Signin bubble is shown. The text implies that the expanded bubble underneath the button is closable by clicking on the button. The actual text is 'Sign in to Chromium?' with a bubble shown under it.">
+          Click to close the Chromium sign-in dialog
+        </message>
+        <message name="IDS_AVATAR_BUTTON_SIGNIN_PENDING_ACCESSIBILITY_LABEL"
+          desc="Accessibility label (read by the accessibility tools) of the avatar button when Chromium is in 'Sign-in pending' state. This state means that the account associated with Chromium does not have valid credentials anymore and needs to be re-authenticated.">
+          Chromium account requires re-authentication
+        </message>
 
         <message name="IDS_SIGNIN_CONTINUE_AS_BUTTON_ACCESSIBILITY_LABEL"
           desc="Label of the 'Continue as' button of Chromium Signin promos">

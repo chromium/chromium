@@ -1081,6 +1081,14 @@ Permissions you've already given to websites and apps may apply to this account.
             Use Chrome Without an Account
           </message>
         </if>
+        <message name="IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_ACCESSIBILITY_LABEL"
+          desc="Accessibility label (read by the accessibility tools) of the avatar button when the Chrome Signin bubble is shown. The text implies that the expanded bubble underneath the button is closable by clicking on the button. The actual text is 'Sign in to Chrome?' with a bubble shown under it.">
+          Click to close the Chrome sign-in dialog
+        </message>
+        <message name="IDS_AVATAR_BUTTON_SIGNIN_PENDING_ACCESSIBILITY_LABEL"
+          desc="Accessibility label (read by the accessibility tools) of the avatar button when Chrome is in 'Sign-in pending' state. This state means that the account associated with Chrome does not have valid credentials anymore and needs to be re-authenticated.">
+          Chrome account requires re-authentication
+        </message>
 
          <message name="IDS_SIGNIN_CONTINUE_AS_BUTTON_ACCESSIBILITY_LABEL"
           desc="Label of the 'Continue as' button of Chrome Signin promos. Spoken by screen readers when the button is focused.">

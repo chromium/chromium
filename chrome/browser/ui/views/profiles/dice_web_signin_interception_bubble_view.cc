@@ -89,8 +89,8 @@ std::optional<std::u16string> InteractionTypeToIdentityPillAccessibilityLabel(
     WebSigninInterceptor::SigninInterceptionType interception_type) {
   switch (interception_type) {
     case WebSigninInterceptor::SigninInterceptionType::kChromeSignin:
-      // TODO(b/347011002): Final string to be added.
-      return l10n_util::GetStringUTF16(IDS_CLOSE);
+      return l10n_util::GetStringUTF16(
+          IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_ACCESSIBILITY_LABEL);
     case WebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
     case WebSigninInterceptor::SigninInterceptionType::kMultiUser:
     case WebSigninInterceptor::SigninInterceptionType::kEnterprise:

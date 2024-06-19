@@ -1330,20 +1330,15 @@ AvatarToolbarButtonDelegate::GetAccessibilityLabel() const {
     case ButtonState::kNormal:
       break;
     case ButtonState::kSigninPending: {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
       const internal::SigninPendingStateProvider* signin_pending_state =
           internal::StateProviderGetter(
               *state_manager_->GetActiveStateProvider())
               .AsSigninPending();
       CHECK(signin_pending_state);
-      // Only set the accessibility label if the original text is not showing.
-      // We are setting the same string, this is done not to duplicate the
-      // message read by the screen reader.
-      if (!signin_pending_state->ShouldShowText()) {
-        // TODO(b/347011002): Final string to be added, condition will not hold
-        // if the text is different.
-        accessibility_label =
-            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PAUSED);
-      }
+      accessibility_label = l10n_util::GetStringUTF16(
+          IDS_AVATAR_BUTTON_SIGNIN_PENDING_ACCESSIBILITY_LABEL);
+#endif
       break;
     }
     case ButtonState::kExplicitTextShowing:
