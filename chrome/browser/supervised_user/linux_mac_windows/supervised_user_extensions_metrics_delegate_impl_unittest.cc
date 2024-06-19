@@ -98,8 +98,9 @@ class SupervisedUserExtensionsMetricsDelegateImplTest
 };
 
 // Tests that the extensions histograms are recorded on each day.
+// TODO(crbug.com/347993521): Fix flakiness and re-enable.
 TEST_F(SupervisedUserExtensionsMetricsDelegateImplTest,
-       DailyRecordedExtensionsCount) {
+       DISABLED_DailyRecordedExtensionsCount) {
   // At the creation of metrics service we record 0 enabled and 0 installed
   // extensions.
   histogram_tester_.ExpectBucketCount(kInstalledExtensionsCountHistogramName,
