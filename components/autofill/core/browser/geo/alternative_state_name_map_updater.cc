@@ -94,7 +94,7 @@ void AlternativeStateNameMapUpdater::PopulateAlternativeStateNameMap(
                          address_data_manager_->app_locale())));
 
     const AlternativeStateNameMap::StateName state_name(profile->GetInfo(
-        AutofillType(ADDRESS_HOME_STATE), address_data_manager_->app_locale()));
+        ADDRESS_HOME_STATE, address_data_manager_->app_locale()));
     const AlternativeStateNameMap::StateName normalized_state =
         AlternativeStateNameMap::NormalizeStateName(state_name);
 

@@ -1965,7 +1965,7 @@ void BrowserAutofillManager::OnSelectOrSelectListFieldOptionsDidChangeImpl(
     return;
   }
 
-  driver().SendAutofillTypePredictionsToRenderer({form_structure});
+  driver().SendTypePredictionsToRenderer({form_structure});
 
   if (form_filler_->ShouldTriggerRefill(
           *form_structure, RefillTriggerReason::kSelectOptionsChanged)) {

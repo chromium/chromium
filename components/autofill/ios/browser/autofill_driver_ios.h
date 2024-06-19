@@ -106,7 +106,7 @@ class AutofillDriverIOS : public AutofillDriver,
       FormGlobalId form,
       base::OnceCallback<void(AutofillDriver*, const std::optional<FormData>&)>
           response_callback) override;
-  void SendAutofillTypePredictionsToRenderer(
+  void SendTypePredictionsToRenderer(
       const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms)
       override;
   void RendererShouldClearPreviewedForm() override;

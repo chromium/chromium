@@ -558,8 +558,7 @@ void CreditCard::GetMatchingTypes(const std::u16string& text,
                                   FieldTypeSet* matching_types) const {
   FormGroup::GetMatchingTypes(text, app_locale, matching_types);
 
-  std::u16string card_number =
-      GetInfo(AutofillType(CREDIT_CARD_NUMBER), app_locale);
+  std::u16string card_number = GetInfo(CREDIT_CARD_NUMBER, app_locale);
   if (!card_number.empty()) {
     // We only have the last four digits for masked cards, so match against
     // that if |this| is a masked card.
@@ -614,8 +613,8 @@ void CreditCard::SetNickname(const std::u16string& nickname) {
 
 bool CreditCard::UpdateFromImportedCard(const CreditCard& imported_card,
                                         const std::string& app_locale) {
-  if (this->GetInfo(AutofillType(CREDIT_CARD_NUMBER), app_locale) !=
-      imported_card.GetInfo(AutofillType(CREDIT_CARD_NUMBER), app_locale)) {
+  if (this->GetInfo(CREDIT_CARD_NUMBER, app_locale) !=
+      imported_card.GetInfo(CREDIT_CARD_NUMBER, app_locale)) {
     return false;
   }
 
@@ -1018,14 +1017,14 @@ std::u16string CreditCard::CardIdentifierStringAndDescriptiveExpiration(
   return l10n_util::GetStringFUTF16(
       IDS_AUTOFILL_CREDIT_CARD_TWO_LINE_LABEL_FROM_NAME,
       CardNameAndLastFourDigits(customized_nickname),
-      GetInfo(AutofillType(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR), app_locale));
+      GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale));
 }
 
 std::u16string CreditCard::DescriptiveExpiration(
     const std::string& app_locale) const {
   return l10n_util::GetStringFUTF16(
       IDS_AUTOFILL_CREDIT_CARD_TWO_LINE_LABEL_FROM_CARD_NUMBER,
-      GetInfo(AutofillType(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR), app_locale));
+      GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale));
 }
 
 std::u16string CreditCard::AbbreviatedExpirationDateForDisplay(

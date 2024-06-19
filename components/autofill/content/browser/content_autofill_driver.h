@@ -216,7 +216,7 @@ class ContentAutofillDriver : public AutofillDriver,
   void RendererShouldTriggerSuggestions(
       const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source) override;
-  void SendAutofillTypePredictionsToRenderer(
+  void SendTypePredictionsToRenderer(
       const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms)
       override;
 

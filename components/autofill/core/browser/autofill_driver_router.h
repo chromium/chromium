@@ -294,7 +294,7 @@ class AutofillDriverRouter {
       RoutedCallback<FieldRendererId, AutofillSuggestionTriggerSource> callback,
       const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source);
-  void SendAutofillTypePredictionsToRenderer(
+  void SendTypePredictionsToRenderer(
       RoutedCallback<const std::vector<FormDataPredictions>&> callback,
       const std::vector<FormDataPredictions>& type_predictions);
 

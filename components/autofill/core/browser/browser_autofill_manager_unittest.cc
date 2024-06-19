@@ -798,7 +798,7 @@ class MockAutofillDriver : public TestAutofillDriver {
               (override));
   MOCK_METHOD(
       void,
-      SendAutofillTypePredictionsToRenderer,
+      SendTypePredictionsToRenderer,
       ((const std::vector<raw_ptr<FormStructure, VectorExperimental>>&)),
       (override));
 };
@@ -1469,8 +1469,7 @@ TEST_F(BrowserAutofillManagerTest, OnFormsSeen_DifferentFormStructures) {
 
 // Test that when forms are seen, the renderer is updated with the predicted
 // field types
-TEST_F(BrowserAutofillManagerTest,
-       OnFormsSeen_SendAutofillTypePredictionsToRenderer) {
+TEST_F(BrowserAutofillManagerTest, OnFormsSeen_SendTypePredictionsToRenderer) {
   // Set up a queryable form.
   FormData form1 = CreateTestAddressFormData();
 
@@ -1487,8 +1486,7 @@ TEST_F(BrowserAutofillManagerTest,
   // Package the forms for observation.
 
   // Setup expectations.
-  EXPECT_CALL(*autofill_driver_, SendAutofillTypePredictionsToRenderer(_))
-      .Times(2);
+  EXPECT_CALL(*autofill_driver_, SendTypePredictionsToRenderer).Times(2);
   FormsSeen({form1, form2});
 }
 

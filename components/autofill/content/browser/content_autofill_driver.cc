@@ -437,15 +437,15 @@ void ContentAutofillDriver::ExtractForm(FormGlobalId form_id,
       form_id, WithNewVersion(std::move(final_handler)));
 }
 
-void ContentAutofillDriver::SendAutofillTypePredictionsToRenderer(
+void ContentAutofillDriver::SendTypePredictionsToRenderer(
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms) {
   std::vector<FormDataPredictions> type_predictions =
       FormStructure::GetFieldTypePredictions(forms);
   // TODO(crbug.com/40753022) Send the FormDataPredictions object only if the
   // debugging flag is enabled.
-  RouteToAgent(
-      router(), &AutofillDriverRouter::SendAutofillTypePredictionsToRenderer,
-      &mojom::AutofillAgent::FieldTypePredictionsAvailable, type_predictions);
+  RouteToAgent(router(), &AutofillDriverRouter::SendTypePredictionsToRenderer,
+               &mojom::AutofillAgent::FieldTypePredictionsAvailable,
+               type_predictions);
 }
 
 void ContentAutofillDriver::RendererShouldAcceptDataListSuggestion(

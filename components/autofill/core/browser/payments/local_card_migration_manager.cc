@@ -419,7 +419,7 @@ int LocalCardMigrationManager::GetDetectedValues() const {
   for (MigratableCreditCard migratable_credit_card : migratable_credit_cards_) {
     all_cards_have_cardholder_name &=
         !migratable_credit_card.credit_card()
-             .GetInfo(AutofillType(CREDIT_CARD_NAME_FULL), app_locale_)
+             .GetInfo(CREDIT_CARD_NAME_FULL, app_locale_)
              .empty();
   }
   if (all_cards_have_cardholder_name)

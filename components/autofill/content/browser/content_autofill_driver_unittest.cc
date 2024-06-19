@@ -752,8 +752,7 @@ TEST_F(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
 
   base::RunLoop run_loop;
   agent().SetQuitLoopClosure(run_loop.QuitClosure());
-  driver().browser_events().SendAutofillTypePredictionsToRenderer(
-      form_structures);
+  driver().browser_events().SendTypePredictionsToRenderer(form_structures);
   run_loop.RunUntilIdle();
 
   EXPECT_EQ(expected_type_predictions,

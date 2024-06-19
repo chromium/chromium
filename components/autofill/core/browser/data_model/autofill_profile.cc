@@ -87,16 +87,13 @@ const std::array<FieldType, 7> kStructuredDataTypes = {
 // first, middle, and last name field types, and groups phone number types
 // similarly.
 FieldType GetStorableTypeCollapsingGroupsForPartialType(FieldType type) {
-  FieldType storable_type = AutofillType(type).GetStorableType();
-  if (GroupTypeOfFieldType(storable_type) == FieldTypeGroup::kName) {
+  if (GroupTypeOfFieldType(type) == FieldTypeGroup::kName) {
     return NAME_FULL;
   }
-
-  if (GroupTypeOfFieldType(storable_type) == FieldTypeGroup::kPhone) {
+  if (GroupTypeOfFieldType(type) == FieldTypeGroup::kPhone) {
     return PHONE_HOME_WHOLE_NUMBER;
   }
-
-  return storable_type;
+  return type;
 }
 
 // Like `GetStorableTypeCollapsingGroupsForPartialType()`, but also similarly
@@ -117,9 +114,7 @@ FieldType GetStorableTypeCollapsingGroupsForPartialType(FieldType type) {
 // `ADDRESS_HOME_LINE1` in the label candidates.
 FieldType GetStorableTypeCollapsingGroups(FieldType type,
                                           bool use_improved_labels_order) {
-  FieldType storable_type = AutofillType(type).GetStorableType();
-  if ((storable_type == ADDRESS_HOME_LINE1 ||
-       storable_type == ADDRESS_HOME_STREET_ADDRESS) &&
+  if ((type == ADDRESS_HOME_LINE1 || type == ADDRESS_HOME_STREET_ADDRESS) &&
       use_improved_labels_order) {
     return ADDRESS_HOME_LINE1;
   }
@@ -392,11 +387,10 @@ base::android::ScopedJavaLocalRef<jobject> AutofillProfile::CreateJavaObject(
     // TODO(crbug.com/40278253): Reconcile usage of GetInfo and GetRawInfo
     // below.
     if (type == NAME_FULL) {
-      Java_AutofillProfile_setInfo(
-          env, jprofile, static_cast<jint>(type),
-          base::android::ConvertUTF16ToJavaString(
-              env, GetInfo(AutofillType(type), app_locale)),
-          status);
+      Java_AutofillProfile_setInfo(env, jprofile, static_cast<jint>(type),
+                                   base::android::ConvertUTF16ToJavaString(
+                                       env, GetInfo(type, app_locale)),
+                                   status);
     } else {
       Java_AutofillProfile_setInfo(
           env, jprofile, static_cast<jint>(type),
@@ -479,7 +473,7 @@ void AutofillProfile::GetMatchingTypes(const std::u16string& text,
 }
 
 std::u16string AutofillProfile::GetRawInfo(FieldType type) const {
-  const FormGroup* form_group = FormGroupForType(AutofillType(type));
+  const FormGroup* form_group = FormGroupForType(type);
   if (!form_group)
     return std::u16string();
   return form_group->GetRawInfo(type);
@@ -489,7 +483,7 @@ void AutofillProfile::SetRawInfoWithVerificationStatus(
     FieldType type,
     const std::u16string& value,
     VerificationStatus status) {
-  FormGroup* form_group = MutableFormGroupForType(AutofillType(type));
+  FormGroup* form_group = MutableFormGroupForType(type);
   if (form_group) {
     form_group->SetRawInfoWithVerificationStatus(type, value, status);
   }
@@ -976,12 +970,11 @@ std::u16string AutofillProfile::ConstructInferredLabel(
       continue;
     }
 
-    AutofillType autofill_type(included_fields[i]);
-    std::u16string field_value = GetInfo(autofill_type, app_locale);
-    if (field_value.empty())
+    std::u16string field_value = GetInfo(included_fields[i], app_locale);
+    if (field_value.empty()) {
       continue;
-
-    trimmed_profile.SetInfo(autofill_type, field_value, app_locale);
+    }
+    trimmed_profile.SetInfo(included_fields[i], field_value, app_locale);
     --num_fields_to_use;
   }
 
@@ -1000,7 +993,7 @@ std::u16string AutofillProfile::ConstructInferredLabel(
     if (*it == PHONE_HOME_WHOLE_NUMBER)
       field_value = GetRawInfo(*it);
     else
-      field_value = GetInfo(AutofillType(*it), app_locale);
+      field_value = GetInfo(*it, app_locale);
     if (field_value.empty())
       continue;
 
@@ -1050,7 +1043,7 @@ void AutofillProfile::LogVerificationStatuses() {
 
 VerificationStatus AutofillProfile::GetVerificationStatusImpl(
     const FieldType type) const {
-  const FormGroup* form_group = FormGroupForType(AutofillType(type));
+  const FormGroup* form_group = FormGroupForType(type);
   if (!form_group)
     return VerificationStatus::kNoStatus;
 
@@ -1060,10 +1053,10 @@ VerificationStatus AutofillProfile::GetVerificationStatusImpl(
 std::u16string AutofillProfile::GetInfoImpl(
     const AutofillType& type,
     const std::string& app_locale) const {
-  const FormGroup* form_group = FormGroupForType(type);
-  if (!form_group)
+  const FormGroup* form_group = FormGroupForType(type.GetStorableType());
+  if (!form_group) {
     return std::u16string();
-
+  }
   return form_group->GetInfoImpl(type, app_locale);
 }
 
@@ -1072,10 +1065,10 @@ bool AutofillProfile::SetInfoWithVerificationStatusImpl(
     const std::u16string& value,
     const std::string& app_locale,
     VerificationStatus status) {
-  FormGroup* form_group = MutableFormGroupForType(type);
-  if (!form_group)
+  FormGroup* form_group = MutableFormGroupForType(type.GetStorableType());
+  if (!form_group) {
     return false;
-
+  }
   std::u16string trimmed_value;
   base::TrimWhitespace(value, base::TRIM_ALL, &trimmed_value);
 
@@ -1088,7 +1081,7 @@ void AutofillProfile::CreateInferredLabelsHelper(
     const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
         profiles,
     const std::list<size_t>& indices,
-    const std::vector<FieldType>& fields,
+    const std::vector<FieldType>& field_types,
     size_t num_fields_to_include,
     const std::string& app_locale,
     std::vector<std::u16string>* labels) {
@@ -1096,14 +1089,13 @@ void AutofillProfile::CreateInferredLabelsHelper(
   // each value's frequency.
   std::map<FieldType, std::map<std::u16string, size_t>>
       field_text_frequencies_by_field;
-  for (const FieldType& field : fields) {
+  for (const FieldType& field_type : field_types) {
     std::map<std::u16string, size_t>& field_text_frequencies =
-        field_text_frequencies_by_field[field];
+        field_text_frequencies_by_field[field_type];
 
     for (const auto& it : indices) {
       const AutofillProfile* profile = profiles[it];
-      std::u16string field_text =
-          profile->GetInfo(AutofillType(field), app_locale);
+      std::u16string field_text = profile->GetInfo(field_type, app_locale);
 
       // If this label is not already in the map, add it with frequency 0.
       if (!field_text_frequencies.count(field_text))
@@ -1126,15 +1118,14 @@ void AutofillProfile::CreateInferredLabelsHelper(
 
     std::vector<FieldType> label_fields;
     bool found_differentiating_field = false;
-    for (auto field : fields) {
+    for (FieldType field_type : field_types) {
       // Skip over empty fields.
-      std::u16string field_text =
-          profile->GetInfo(AutofillType(field), app_locale);
+      std::u16string field_text = profile->GetInfo(field_type, app_locale);
       if (field_text.empty())
         continue;
 
       std::map<std::u16string, size_t>& field_text_frequencies =
-          field_text_frequencies_by_field[field];
+          field_text_frequencies_by_field[field_type];
       found_differentiating_field |=
           !field_text_frequencies.count(std::u16string()) &&
           (field_text_frequencies[field_text] == 1);
@@ -1145,7 +1136,7 @@ void AutofillProfile::CreateInferredLabelsHelper(
           (field_text_frequencies.size() == 1))
         continue;
 
-      label_fields.push_back(field);
+      label_fields.push_back(field_type);
 
       // If we've (1) found a differentiating field and (2) found at least
       // |num_fields_to_include| non-empty fields, we're done!
@@ -1159,28 +1150,22 @@ void AutofillProfile::CreateInferredLabelsHelper(
   }
 }
 
-const FormGroup* AutofillProfile::FormGroupForType(
-    const AutofillType& type) const {
+const FormGroup* AutofillProfile::FormGroupForType(FieldType type) const {
   return const_cast<AutofillProfile*>(this)->MutableFormGroupForType(type);
 }
 
-FormGroup* AutofillProfile::MutableFormGroupForType(const AutofillType& type) {
-  switch (type.group()) {
+FormGroup* AutofillProfile::MutableFormGroupForType(FieldType type) {
+  switch (GroupTypeOfFieldType(type)) {
     case FieldTypeGroup::kName:
       return &name_;
-
     case FieldTypeGroup::kEmail:
       return &email_;
-
     case FieldTypeGroup::kCompany:
       return &company_;
-
     case FieldTypeGroup::kPhone:
       return &phone_number_;
-
     case FieldTypeGroup::kAddress:
       return &address_;
-
     case FieldTypeGroup::kNoGroup:
     case FieldTypeGroup::kCreditCard:
     case FieldTypeGroup::kIban:
@@ -1191,7 +1176,6 @@ FormGroup* AutofillProfile::MutableFormGroupForType(const AutofillType& type) {
     case FieldTypeGroup::kUnfillable:
       return nullptr;
   }
-
   NOTREACHED_IN_MIGRATION();
   return nullptr;
 }

@@ -142,7 +142,7 @@ bool CachedFormNeedsUpdate(const FormData& live_form,
 }  // namespace
 
 // static
-void AutofillManager::LogAutofillTypePredictionsAvailable(
+void AutofillManager::LogTypePredictionsAvailable(
     LogManager* log_manager,
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms) {
   LogBuffer buffer(IsLoggingActive(log_manager));
@@ -344,10 +344,10 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
   // Send the current type predictions to the renderer. For non-queryable forms
   // this is all the information about them that will ever be available. The
   // queryable forms will be updated once the field type query is complete.
-  driver().SendAutofillTypePredictionsToRenderer(non_queryable_forms);
-  driver().SendAutofillTypePredictionsToRenderer(queryable_forms);
-  LogAutofillTypePredictionsAvailable(log_manager_, non_queryable_forms);
-  LogAutofillTypePredictionsAvailable(log_manager_, queryable_forms);
+  driver().SendTypePredictionsToRenderer(non_queryable_forms);
+  driver().SendTypePredictionsToRenderer(queryable_forms);
+  LogTypePredictionsAvailable(log_manager_, non_queryable_forms);
+  LogTypePredictionsAvailable(log_manager_, queryable_forms);
 
   // Query the server if at least one of the forms was parsed.
   if (!queryable_forms.empty() && client().GetCrowdsourcingManager()) {
@@ -876,8 +876,8 @@ void AutofillManager::OnLoadedServerPredictions(
 
   // Send field type predictions to the renderer so that it can possibly
   // annotate forms with the predicted types or add console warnings.
-  driver().SendAutofillTypePredictionsToRenderer(queried_forms);
-  LogAutofillTypePredictionsAvailable(log_manager_, queried_forms);
+  driver().SendTypePredictionsToRenderer(queried_forms);
+  LogTypePredictionsAvailable(log_manager_, queried_forms);
 
   for (const FormStructure* form : queried_forms) {
     NotifyObservers(&Observer::OnFieldTypesDetermined, form->global_id(),

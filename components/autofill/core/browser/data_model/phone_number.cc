@@ -130,8 +130,7 @@ void PhoneNumber::GetMatchingTypes(const std::u16string& text,
   // "+33249197070" whereas the US number "+1 (234) 567-8901" would be
   // normalized to "12345678901".
   if (!matching_types->contains(PHONE_HOME_WHOLE_NUMBER)) {
-    std::u16string whole_number =
-        GetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER), app_locale);
+    std::u16string whole_number = GetInfo(PHONE_HOME_WHOLE_NUMBER, app_locale);
     if (!whole_number.empty()) {
       std::u16string normalized_number =
           i18n::NormalizePhoneNumber(text, GetRegion(*profile_, app_locale));
@@ -144,8 +143,7 @@ void PhoneNumber::GetMatchingTypes(const std::u16string& text,
   // the digits extracted from the `stripped_text` match the `country_code`.
   std::u16string candidate =
       data_util::FindPossiblePhoneCountryCode(stripped_text);
-  std::u16string country_code =
-      GetInfo(AutofillType(PHONE_HOME_COUNTRY_CODE), app_locale);
+  std::u16string country_code = GetInfo(PHONE_HOME_COUNTRY_CODE, app_locale);
   if (candidate.size() > 0 && candidate == country_code)
     matching_types->insert(PHONE_HOME_COUNTRY_CODE);
 

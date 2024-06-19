@@ -192,7 +192,7 @@ class AutofillManager
   // TODO(crbug.com/40733066): Move to anonymous namespace once
   // BrowserAutofillManager::OnLoadedServerPredictions() moves to
   // AutofillManager.
-  static void LogAutofillTypePredictionsAvailable(
+  static void LogTypePredictionsAvailable(
       LogManager* log_manager,
       const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms);
 

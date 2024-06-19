@@ -310,6 +310,8 @@ class AutofillProfile : public AutofillDataModel {
   // Returns the type that should be used to fill a field given `field_type`.
   // It is possible that this type is not necessarily `field_type`, if it does
   // not yield a value for filling.
+  // TODO(crbug.com/40264633): Pass and return a `FieldType` instead of
+  // `AutofillType`.
   AutofillType GetFillingType(AutofillType field_type) const;
 
  private:
@@ -334,7 +336,7 @@ class AutofillProfile : public AutofillDataModel {
       const std::vector<raw_ptr<const AutofillProfile, VectorExperimental>>&
           profiles,
       const std::list<size_t>& indices,
-      const std::vector<FieldType>& fields,
+      const std::vector<FieldType>& field_types,
       size_t num_fields_to_include,
       const std::string& app_locale,
       std::vector<std::u16string>* labels);
@@ -346,8 +348,8 @@ class AutofillProfile : public AutofillDataModel {
     return {&name_, &email_, &company_, &phone_number_, &address_};
   }
 
-  const FormGroup* FormGroupForType(const AutofillType& type) const;
-  FormGroup* MutableFormGroupForType(const AutofillType& type);
+  const FormGroup* FormGroupForType(FieldType type) const;
+  FormGroup* MutableFormGroupForType(FieldType type);
 
   // Same as operator==, but ignores differences in GUID.
   bool EqualsSansGuid(const AutofillProfile& profile) const;

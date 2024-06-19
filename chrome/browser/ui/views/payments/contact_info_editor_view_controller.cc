@@ -148,7 +148,7 @@ void ContactInfoEditorViewController::PopulateProfile(
     autofill::AutofillProfile* profile) {
   for (const auto& field : text_fields()) {
     profile->SetInfoWithVerificationStatus(
-        autofill::AutofillType(field.second.type), field.first->GetText(),
+        field.second.type, field.first->GetText(),
         state()->GetApplicationLocale(),
         autofill::VerificationStatus::kUserVerified);
   }

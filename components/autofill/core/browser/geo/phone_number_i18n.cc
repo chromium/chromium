@@ -318,8 +318,8 @@ std::u16string GetFormattedPhoneNumberForDisplay(const AutofillProfile& profile,
   // The reason for this is international phone numbers for another country. For
   // example, without adding a "+", the US number 1-415-123-1234 for an AU
   // address would be wrongly formatted as +61 1-415-123-1234 which is invalid.
-  std::string phone = base::UTF16ToUTF8(
-      profile.GetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER), locale));
+  std::string phone =
+      base::UTF16ToUTF8(profile.GetInfo(PHONE_HOME_WHOLE_NUMBER, locale));
   std::string tentative_intl_phone = "+" + phone;
 
   // Always favor the tentative international phone number if it's determined as

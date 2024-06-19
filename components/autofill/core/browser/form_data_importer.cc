@@ -250,8 +250,8 @@ bool FormDataImporter::ComplementCountry(AutofillProfile& profile,
         << CTag{};
   }
   return profile.SetInfoWithVerificationStatus(
-      AutofillType(ADDRESS_HOME_COUNTRY), base::ASCIIToUTF16(fallback),
-      app_locale_, VerificationStatus::kObserved);
+      ADDRESS_HOME_COUNTRY, base::ASCIIToUTF16(fallback), app_locale_,
+      VerificationStatus::kObserved);
 }
 
 bool FormDataImporter::SetPhoneNumber(
@@ -493,37 +493,32 @@ FormDataImporter::GetAddressObservedFieldValues(
     if (!field->IsFieldFillable() || value.empty()) {
       continue;
     }
-
     // If the field was filled with a fallback type, skip it in order to not
     // introduce noise to the map's data, as this would add an entry for
     // field type X with a value retrieved from another field type Y.
     if (field->WasAutofilledWithFallback()) {
       continue;
     }
-
     // When the experimental plus addresses feature is enabled, and the value is
     // a plus address, exclude it from the resulting address profile.
     if (plus_address_delegate &&
         plus_address_delegate->IsPlusAddress(base::UTF16ToUTF8(value))) {
       continue;
     }
-
     // Don't import from ac=unrecognized fields.
     if (field->ShouldSuppressSuggestionsAndFillingByDefault()) {
       continue;
     }
 
-    AutofillType autofill_type = field->Type();
-
-    // Credit card fields are handled by ExtractCreditCard().
-    if (autofill_type.group() == FieldTypeGroup::kCreditCard) {
+    FieldType field_type = field->Type().GetStorableType();
+    // Only address types are relevant in this function, other types are treated
+    // in different flows.
+    if (GroupTypeOfFieldType(field_type) == FieldTypeGroup::kCreditCard) {
       continue;
     }
-
     // There can be multiple email fields (e.g. in the case of 'confirm email'
     // fields) but they must all contain the same value, else the profile is
     // invalid.
-    FieldType field_type = autofill_type.GetStorableType();
     if (field_type == EMAIL_ADDRESS) {
       auto email_it = observed_field_values.find(EMAIL_ADDRESS);
       if (email_it != observed_field_values.end() &&
@@ -541,10 +536,9 @@ FormDataImporter::GetAddressObservedFieldValues(
                                   import_log_buffer)) {
       has_invalid_field_types = true;
     }
-
     // Found phone number component field.
     // TODO(crbug.com/40735892) Remove feature check when launched.
-    if (autofill_type.group() == FieldTypeGroup::kPhone &&
+    if (GroupTypeOfFieldType(field_type) == FieldTypeGroup::kPhone &&
         base::FeatureList::IsEnabled(
             features::kAutofillEnableImportWhenMultiplePhoneNumbers)) {
       if (ignore_phone_number_fields) {
@@ -560,18 +554,16 @@ FormDataImporter::GetAddressObservedFieldValues(
       }
     }
 
-    observed_field_values.insert_or_assign(autofill_type.GetStorableType(),
-                                           value);
+    observed_field_values.insert_or_assign(field_type, value);
     // The `autofill_source_profile_guid()` is not reset when a field is
     // manually edited or filled with non-address information later.
     import_metadata.filled_types_to_autofill_guid.insert_or_assign(
-        autofill_type.GetStorableType(),
-        field->is_autofilled() &&
-                field->filling_product() == FillingProduct::kAddress
-            ? field->autofill_source_profile_guid()
-            : std::nullopt);
+        field_type, field->is_autofilled() &&
+                            field->filling_product() == FillingProduct::kAddress
+                        ? field->autofill_source_profile_guid()
+                        : std::nullopt);
 
-    if (FieldTypeGroupToFormType(autofill_type.group()) ==
+    if (FieldTypeGroupToFormType(GroupTypeOfFieldType(field_type)) ==
         FormType::kAddressForm) {
       has_address_related_fields = true;
       if (field->parsed_autocomplete()) {
@@ -1070,20 +1062,16 @@ Iban FormDataImporter::ExtractIbanFromForm(const FormStructure& form) {
   // Creates an IBAN candidate with `kUnknown` record type as it is currently
   // unknown if this IBAN already exists locally or on the server.
   Iban candidate_iban;
-
   for (const auto& field : form) {
     if (!field->IsFieldFillable() || field->value().empty()) {
       continue;
     }
-
-    AutofillType autofill_type = field->Type();
-    if (autofill_type.GetStorableType() == IBAN_VALUE &&
-        Iban::IsValid(field->value())) {
-      candidate_iban.SetInfo(autofill_type, field->value(), app_locale_);
+    FieldType field_type = field->Type().GetStorableType();
+    if (field_type == IBAN_VALUE && Iban::IsValid(field->value())) {
+      candidate_iban.SetInfo(IBAN_VALUE, field->value(), app_locale_);
       break;
     }
   }
-
   return candidate_iban;
 }
 

@@ -125,9 +125,9 @@ base::Value::Dict PaymentsRequest::BuildCreditCardDictionary(
   card.Set("unique_id", credit_card.guid());
 
   const std::u16string exp_month =
-      credit_card.GetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), app_locale);
-  const std::u16string exp_year = credit_card.GetInfo(
-      AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), app_locale);
+      credit_card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale);
+  const std::u16string exp_year =
+      credit_card.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, app_locale);
   int value = 0;
   if (base::StringToInt(exp_month, &value))
     card.Set("expiration_month", value);
@@ -159,7 +159,7 @@ void PaymentsRequest::SetStringIfNotEmpty(const AutofillDataModel& profile,
                                           const std::string& app_locale,
                                           const std::string& path,
                                           base::Value::Dict& dictionary) {
-  std::u16string value = profile.GetInfo(AutofillType(type), app_locale);
+  std::u16string value = profile.GetInfo(type, app_locale);
   if (!value.empty())
     dictionary.Set(path, std::move(value));
 }

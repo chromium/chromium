@@ -390,9 +390,8 @@ bool AutofillProfileComparator::MergeNames(const AutofillProfile& p1,
                                            NameInfo& name_info) const {
   DCHECK(HaveMergeableNames(p1, p2));
 
-  const AutofillType kFullName(NAME_FULL);
-  const std::u16string full_name_1 = p1.GetInfo(kFullName, app_locale_);
-  const std::u16string full_name_2 = p2.GetInfo(kFullName, app_locale_);
+  const std::u16string full_name_1 = p1.GetInfo(NAME_FULL, app_locale_);
+  const std::u16string full_name_2 = p2.GetInfo(NAME_FULL, app_locale_);
 
   // At this state it is already determined that the two names are mergeable.
   // This can mean of of the following things:
@@ -475,8 +474,7 @@ bool AutofillProfileComparator::MergeCJKNames(const AutofillProfile& p1,
       name_parts_candidate->surname.empty()) {
     // The name was not split correctly into a given/surname, so use the logic
     // from |SplitName()|.
-    info.SetInfo(AutofillType(NAME_FULL), full_name_candidate->full,
-                 app_locale_);
+    info.SetInfo(NAME_FULL, full_name_candidate->full, app_locale_);
   } else {
     // The name was already split into a given/surname, so keep those intact.
     if (!full_name_candidate->full.empty()) {
@@ -538,9 +536,8 @@ bool AutofillProfileComparator::MergeEmailAddresses(
     EmailInfo& email_info) const {
   DCHECK(HaveMergeableEmailAddresses(p1, p2));
 
-  const AutofillType kEmailAddress(EMAIL_ADDRESS);
-  const std::u16string& e1 = p1.GetInfo(kEmailAddress, app_locale_);
-  const std::u16string& e2 = p2.GetInfo(kEmailAddress, app_locale_);
+  const std::u16string& e1 = p1.GetInfo(EMAIL_ADDRESS, app_locale_);
+  const std::u16string& e2 = p2.GetInfo(EMAIL_ADDRESS, app_locale_);
   const std::u16string* best = nullptr;
 
   if (e1.empty()) {
@@ -551,7 +548,7 @@ bool AutofillProfileComparator::MergeEmailAddresses(
     best = p2.use_date() > p1.use_date() ? &e2 : &e1;
   }
 
-  email_info.SetInfo(kEmailAddress, *best, app_locale_);
+  email_info.SetInfo(EMAIL_ADDRESS, *best, app_locale_);
   return true;
 }
 
@@ -559,9 +556,8 @@ bool AutofillProfileComparator::MergeCompanyNames(
     const AutofillProfile& p1,
     const AutofillProfile& p2,
     CompanyInfo& company_info) const {
-  const AutofillType kCompanyName(COMPANY_NAME);
-  const std::u16string& c1 = p1.GetInfo(kCompanyName, app_locale_);
-  const std::u16string& c2 = p2.GetInfo(kCompanyName, app_locale_);
+  const std::u16string& c1 = p1.GetInfo(COMPANY_NAME, app_locale_);
+  const std::u16string& c2 = p2.GetInfo(COMPANY_NAME, app_locale_);
   const std::u16string* best = nullptr;
 
   DCHECK(HaveMergeableCompanyNames(p1, p2))
@@ -585,8 +581,7 @@ bool AutofillProfileComparator::MergeCompanyNames(
       best = p2.use_date() > p1.use_date() ? &c2 : &c1;
       break;
   }
-
-  company_info.SetInfo(kCompanyName, *best, app_locale_);
+  company_info.SetInfo(COMPANY_NAME, *best, app_locale_);
   return true;
 }
 

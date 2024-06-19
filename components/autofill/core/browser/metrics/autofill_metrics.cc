@@ -560,16 +560,17 @@ FieldType GetActualFieldType(const FieldTypeSet& possible_types,
   // Collapse field types that Chrome treats as identical, e.g. home and
   // billing address fields.
   FieldTypeSet collapsed_field_types;
-  for (auto type : possible_types) {
+  for (FieldType type : possible_types) {
     DCHECK_NE(type, EMPTY_TYPE);
     DCHECK_NE(type, UNKNOWN_TYPE);
 
     // A phone number that's only missing its country code is (for metrics
     // purposes) the same as the whole phone number.
-    if (type == PHONE_HOME_CITY_AND_NUMBER)
+    if (type == PHONE_HOME_CITY_AND_NUMBER) {
       collapsed_field_types.insert(PHONE_HOME_WHOLE_NUMBER);
-    else
-      collapsed_field_types.insert(AutofillType(type).GetStorableType());
+    } else {
+      collapsed_field_types.insert(type);
+    }
   }
 
   // Capture the field's type, if it is unambiguous.
@@ -1252,8 +1253,7 @@ void AutofillMetrics::LogHeuristicPredictionQualityMetrics(
     const AutofillField& field,
     QualityMetricType metric_type) {
   LogPredictionQualityMetrics(
-      PREDICTION_SOURCE_HEURISTIC,
-      AutofillType(field.heuristic_type()).GetStorableType(),
+      PREDICTION_SOURCE_HEURISTIC, field.heuristic_type(),
       form_interactions_ukm_logger, form, field, metric_type,
       false /*log_rationalization_metrics*/);
 }
@@ -1264,11 +1264,10 @@ void AutofillMetrics::LogServerPredictionQualityMetrics(
     const FormStructure& form,
     const AutofillField& field,
     QualityMetricType metric_type) {
-  LogPredictionQualityMetrics(
-      PREDICTION_SOURCE_SERVER,
-      AutofillType(field.server_type()).GetStorableType(),
-      form_interactions_ukm_logger, form, field, metric_type,
-      false /*log_rationalization_metrics*/);
+  LogPredictionQualityMetrics(PREDICTION_SOURCE_SERVER, field.server_type(),
+                              form_interactions_ukm_logger, form, field,
+                              metric_type,
+                              false /*log_rationalization_metrics*/);
 }
 
 // static

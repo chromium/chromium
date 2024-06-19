@@ -468,7 +468,7 @@ void AutofillDriverRouter::ExtractForm(
   }
 }
 
-void AutofillDriverRouter::SendAutofillTypePredictionsToRenderer(
+void AutofillDriverRouter::SendTypePredictionsToRenderer(
     RoutedCallback<const std::vector<FormDataPredictions>&> callback,
     const std::vector<FormDataPredictions>& browser_fdps) {
   // Splits each FrameDataPredictions according to the respective FormData's

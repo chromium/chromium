@@ -82,10 +82,10 @@ std::string UploadCardRequest::GetRequestContent() {
   request_dict.Set("context_token", request_details_.context_token);
 
   int value = 0;
-  const std::u16string exp_month = request_details_.card.GetInfo(
-      AutofillType(CREDIT_CARD_EXP_MONTH), app_locale);
-  const std::u16string exp_year = request_details_.card.GetInfo(
-      AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), app_locale);
+  const std::u16string exp_month =
+      request_details_.card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale);
+  const std::u16string exp_year =
+      request_details_.card.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, app_locale);
   if (base::StringToInt(exp_month, &value))
     request_dict.Set("expiration_month", value);
   if (base::StringToInt(exp_year, &value))
@@ -95,8 +95,8 @@ std::string UploadCardRequest::GetRequestContent() {
     request_dict.Set("nickname", request_details_.card.nickname());
   }
 
-  const std::u16string pan = request_details_.card.GetInfo(
-      AutofillType(CREDIT_CARD_NUMBER), app_locale);
+  const std::u16string pan =
+      request_details_.card.GetInfo(CREDIT_CARD_NUMBER, app_locale);
   std::string json_request;
   base::JSONWriter::Write(request_dict, &json_request);
   std::string request_content;

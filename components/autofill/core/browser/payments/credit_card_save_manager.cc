@@ -137,11 +137,9 @@ bool CreditCardSaveManager::AttemptToOfferCardLocalSave(
   // If the card data does not have the expiration month or the year, then do
   // not offer to save to save locally, as the local save bubble does not
   // support the expiration date fix flow.
-  if (card_save_candidate_
-          .GetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), app_locale_)
+  if (card_save_candidate_.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale_)
           .empty() ||
-      card_save_candidate_
-          .GetInfo(AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), app_locale_)
+      card_save_candidate_.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, app_locale_)
           .empty()) {
     return false;
   }
@@ -480,11 +478,9 @@ void CreditCardSaveManager::OnDidUploadCard(
     // flow.
     if (base::FeatureList::IsEnabled(
             features::kAutofillEnableSaveCardLocalSaveFallback) &&
-        !upload_request_.card
-             .GetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), app_locale_)
+        !upload_request_.card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale_)
              .empty() &&
-        !upload_request_.card
-             .GetInfo(AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), app_locale_)
+        !upload_request_.card.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, app_locale_)
              .empty()) {
       autofill_metrics::LogCreditCardUploadRanLocalSaveFallbackMetric(
           /*new_local_card_added=*/payments_data_manager().SaveCardLocallyIfNew(
@@ -925,7 +921,7 @@ void CreditCardSaveManager::SetProfilesForCreditCardUpload(
   // server-side by Google Payments and ensures that we don't send upload
   // requests that are guaranteed to fail.
   const std::u16string card_name =
-      card.GetInfo(AutofillType(CREDIT_CARD_NAME_FULL), app_locale_);
+      card.GetInfo(CREDIT_CARD_NAME_FULL, app_locale_);
   std::u16string verified_name;
   if (candidate_profiles.empty()) {
     verified_name = card_name;
@@ -960,7 +956,6 @@ void CreditCardSaveManager::SetProfilesForCreditCardUpload(
   // If any of the candidate addresses have a non-empty zip that doesn't match
   // any other non-empty zip, then the candidate set is invalid.
   std::u16string verified_zip;
-  const AutofillType kZipCode(ADDRESS_HOME_ZIP);
   for (const AutofillProfile& profile : candidate_profiles) {
     const std::u16string zip = profile.GetRawInfo(ADDRESS_HOME_ZIP);
     if (!zip.empty()) {
@@ -1007,8 +1002,7 @@ int CreditCardSaveManager::GetDetectedValues() const {
 
   // If cardholder name exists, set it as detected as long as
   // UPLOAD_NOT_OFFERED_CONFLICTING_NAMES was not set.
-  if (!upload_request_.card
-           .GetInfo(AutofillType(CREDIT_CARD_NAME_FULL), app_locale_)
+  if (!upload_request_.card.GetInfo(CREDIT_CARD_NAME_FULL, app_locale_)
            .empty() &&
       !(upload_decision_metrics_ &
         autofill_metrics::UPLOAD_NOT_OFFERED_CONFLICTING_NAMES)) {
@@ -1055,13 +1049,11 @@ int CreditCardSaveManager::GetDetectedValues() const {
 
   // If expiration date month or expiration year are missing, signal that
   // expiration date will be explicitly requested in the offer-to-save bubble.
-  if (!upload_request_.card
-           .GetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), app_locale_)
+  if (!upload_request_.card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale_)
            .empty()) {
     detected_values |= DetectedValue::CARD_EXPIRATION_MONTH;
   }
-  if (!(upload_request_.card
-            .GetInfo(AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), app_locale_)
+  if (!(upload_request_.card.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, app_locale_)
             .empty())) {
     detected_values |= DetectedValue::CARD_EXPIRATION_YEAR;
   }
@@ -1072,13 +1064,12 @@ int CreditCardSaveManager::GetDetectedValues() const {
       detected_values & DetectedValue::CARD_EXPIRATION_YEAR) {
     int month_value = 0, year_value = 0;
     bool parsable =
-        base::StringToInt(upload_request_.card.GetInfo(
-                              AutofillType(CREDIT_CARD_EXP_MONTH), app_locale_),
-                          &month_value) &&
         base::StringToInt(
-            upload_request_.card.GetInfo(
-                AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), app_locale_),
-            &year_value);
+            upload_request_.card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale_),
+            &month_value) &&
+        base::StringToInt(upload_request_.card.GetInfo(
+                              CREDIT_CARD_EXP_4_DIGIT_YEAR, app_locale_),
+                          &year_value);
     DCHECK(parsable);
     if (!IsValidCreditCardExpirationDate(year_value, month_value,
                                          AutofillClock::Now())) {
@@ -1418,12 +1409,9 @@ void CreditCardSaveManager::LogCardUploadDecisionsToAutofillInternals(
 
 void CreditCardSaveManager::LogSaveCardRequestExpirationDateReasonMetric() {
   bool is_month_empty =
-      upload_request_.card
-          .GetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), app_locale_)
-          .empty();
+      upload_request_.card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale_).empty();
   bool is_year_empty =
-      upload_request_.card
-          .GetInfo(AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), app_locale_)
+      upload_request_.card.GetInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, app_locale_)
           .empty();
 
   if (is_month_empty && is_year_empty) {
@@ -1441,13 +1429,12 @@ void CreditCardSaveManager::LogSaveCardRequestExpirationDateReasonMetric() {
   } else {
     int month = 0, year = 0;
     bool parsable =
-        base::StringToInt(
-            upload_request_.card.GetInfo(
-                AutofillType(CREDIT_CARD_EXP_4_DIGIT_YEAR), app_locale_),
-            &year) &&
         base::StringToInt(upload_request_.card.GetInfo(
-                              AutofillType(CREDIT_CARD_EXP_MONTH), app_locale_),
-                          &month);
+                              CREDIT_CARD_EXP_4_DIGIT_YEAR, app_locale_),
+                          &year) &&
+        base::StringToInt(
+            upload_request_.card.GetInfo(CREDIT_CARD_EXP_MONTH, app_locale_),
+            &month);
     DCHECK(parsable);
     // Month and year are not empty, so they must be expired.
     DCHECK(!IsValidCreditCardExpirationDate(year, month, AutofillClock::Now()));

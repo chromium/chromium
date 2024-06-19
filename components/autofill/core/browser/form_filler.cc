@@ -1101,8 +1101,7 @@ bool FormFiller::FillField(
     manager_->client().DidFillOrPreviewField(
         /*autofilled_value=*/profile->GetInfo(autofill_field.Type(),
                                               app_locale_),
-        /*profile_full_name=*/profile->GetInfo(AutofillType(NAME_FULL),
-                                               app_locale_));
+        /*profile_full_name=*/profile->GetInfo(NAME_FULL, app_locale_));
   }
   return true;
 }

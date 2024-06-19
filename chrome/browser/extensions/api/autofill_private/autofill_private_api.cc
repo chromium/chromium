@@ -215,8 +215,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
   for (const api::autofill_private::AddressField& field : address->fields) {
     if (field.type == autofill_private::FieldType::kNameFull) {
       profile.SetInfoWithVerificationStatus(
-          autofill::AutofillType(autofill::NAME_FULL),
-          base::UTF8ToUTF16(field.value),
+          autofill::NAME_FULL, base::UTF8ToUTF16(field.value),
           g_browser_process->GetApplicationLocale(), kUserVerified);
     } else {
       profile.SetRawInfoWithVerificationStatus(

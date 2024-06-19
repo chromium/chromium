@@ -171,7 +171,7 @@ void AutofillDriverIOS::ExtractForm(
   NOTIMPLEMENTED();
 }
 
-void AutofillDriverIOS::SendAutofillTypePredictionsToRenderer(
+void AutofillDriverIOS::SendTypePredictionsToRenderer(
     const std::vector<raw_ptr<FormStructure, VectorExperimental>>& forms) {
   web::WebFrame* frame = web_frame();
   if (!frame) {
