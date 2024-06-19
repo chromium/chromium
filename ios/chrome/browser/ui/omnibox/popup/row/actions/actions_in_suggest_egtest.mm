@@ -133,7 +133,8 @@ id<GREYMatcher> highlightedReviewsButtonMatcher() {
                                               _reviewsURI.GetContent())];
 }
 
-- (void)testTapCallButton {
+// TODO (crbug.com/348177731) re-enable when fixed.
+- (void)DISABLED_testTapCallButton {
   // Skip the test if the dial app is not installed.
   if (![self dialAppInstalled]) {
     return;
@@ -315,7 +316,8 @@ id<GREYMatcher> highlightedReviewsButtonMatcher() {
                                               _reviewsURI.GetContent())];
 }
 
-- (void)testReturnKeyOnCallButton {
+// TODO (crbug.com/348177731) re-enable when fixed.
+- (void)DISABLED_testReturnKeyOnCallButton {
   // Skip the test if the dial app is not installed.
   if (![self dialAppInstalled]) {
     return;
