@@ -354,11 +354,6 @@ class FilesRequestHandlerTest : public BaseTest {
     return response;
   }
 
-  void EnableResumableUploads() {
-    scoped_feature_list_.InitAndEnableFeature(
-        enterprise_connectors::kResumableUploadEnabled);
-  }
-
   bool was_upload_performed() { return upload_performed_; }
 
  private:
@@ -558,34 +553,8 @@ TEST_F(FilesRequestHandlerTest, FileIsEncrypted_PolicyAllows) {
   EXPECT_THAT((*results)[0],
               MatchesRequestHandlerResult(
                   true, FinalContentAnalysisResult::SUCCESS, ""));
-  EXPECT_FALSE(was_upload_performed());
-}
-
-TEST_F(FilesRequestHandlerTest,
-       FileIsEncrypted_ResumableEnabled_UploadPerformed) {
-  content::InProcessUtilityThreadHelper in_process_utility_thread_helper;
-
-  EnableResumableUploads();
-
-  enterprise_connectors::test::SetAnalysisConnector(
-      profile_->GetPrefs(), AnalysisConnector::FILE_ATTACHED,
-      kBlockingScansForDlpAndMalware);
-  GURL url(kTestUrl);
-  std::vector<base::FilePath> paths;
-
-  base::FilePath test_zip;
-  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_zip));
-  test_zip = test_zip.AppendASCII("safe_browsing")
-                 .AppendASCII("download_protection")
-                 .AppendASCII("encrypted.zip");
-  paths.emplace_back(test_zip);
-
-  auto results = ScanUpload(paths);
-  ASSERT_TRUE(results.has_value());
-  EXPECT_EQ(1u, results->size());
-  EXPECT_THAT((*results)[0],
-              MatchesRequestHandlerResult(
-                  true, FinalContentAnalysisResult::SUCCESS, ""));
+  // When the resumable upload protocol is in use and the policy does not block
+  // encrypted files by default, the file's metadata is uploaded for scanning.
   EXPECT_TRUE(was_upload_performed());
 }
 
@@ -692,35 +661,8 @@ TEST_F(FilesRequestHandlerTest, FileIsLarge_PolicyAllows) {
   EXPECT_THAT((*results)[0],
               MatchesRequestHandlerResult(
                   true, FinalContentAnalysisResult::SUCCESS, ""));
-  EXPECT_FALSE(was_upload_performed());
-}
-
-TEST_F(FilesRequestHandlerTest, FileIsLarge_ResumableEnabled_UploadPerformed) {
-  content::InProcessUtilityThreadHelper in_process_utility_thread_helper;
-
-  EnableResumableUploads();
-
-  enterprise_connectors::test::SetAnalysisConnector(
-      profile_->GetPrefs(), AnalysisConnector::FILE_ATTACHED,
-      kBlockingScansForDlpAndMalware);
-  GURL url(kTestUrl);
-  std::vector<base::FilePath> paths;
-
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  base::FilePath file_path = temp_dir.GetPath().AppendASCII("large.doc");
-  std::string contents(
-      safe_browsing::BinaryUploadService::kMaxUploadSizeBytes + 1, 'a');
-  base::WriteFile(file_path, contents);
-  paths.emplace_back(file_path);
-  SetExpectedUserActionRequestsCount(1);
-
-  auto results = ScanUpload(paths);
-  ASSERT_TRUE(results.has_value());
-  EXPECT_EQ(1u, results->size());
-  EXPECT_THAT((*results)[0],
-              MatchesRequestHandlerResult(
-                  true, FinalContentAnalysisResult::SUCCESS, ""));
+  // When the resumable upload protocol is in use and the policy does not block
+  // large files by default, the file's metadata is uploaded for scanning.
   EXPECT_TRUE(was_upload_performed());
 }
 

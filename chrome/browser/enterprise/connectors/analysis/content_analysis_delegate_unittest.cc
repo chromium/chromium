@@ -952,8 +952,9 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileIsEncrypted_PolicyAllows) {
                  },
                  &called));
   RunUntilDone();
-  // "FILE_ATTACHED" is exempt from scanning.
-  EXPECT_EQ(0,
+  // When resumable upload is in use and the policy does not block encrypted
+  // files by default, the file's metadata is uploaded for scanning.
+  EXPECT_EQ(1,
             test::FakeContentAnalysisDelegate::GetTotalAnalysisRequestsCount());
   EXPECT_TRUE(called);
 }
