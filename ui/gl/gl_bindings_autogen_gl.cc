@@ -327,12 +327,8 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
       gfx::HasExtension(extensions, "GL_APPLE_vertex_array_object");
   ext.b_GL_ARB_framebuffer_object =
       gfx::HasExtension(extensions, "GL_ARB_framebuffer_object");
-  ext.b_GL_ARB_instanced_arrays =
-      gfx::HasExtension(extensions, "GL_ARB_instanced_arrays");
   ext.b_GL_ARB_internalformat_query =
       gfx::HasExtension(extensions, "GL_ARB_internalformat_query");
-  ext.b_GL_ARB_occlusion_query =
-      gfx::HasExtension(extensions, "GL_ARB_occlusion_query");
   ext.b_GL_ARB_robustness = gfx::HasExtension(extensions, "GL_ARB_robustness");
   ext.b_GL_ARB_timer_query =
       gfx::HasExtension(extensions, "GL_ARB_timer_query");
@@ -465,9 +461,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   if (!ver->is_es || ver->IsAtLeastGLES(3u, 0u)) {
     fn.glBeginQueryFn =
         reinterpret_cast<glBeginQueryProc>(GetGLProcAddress("glBeginQuery"));
-  } else if (ext.b_GL_ARB_occlusion_query) {
-    fn.glBeginQueryFn =
-        reinterpret_cast<glBeginQueryProc>(GetGLProcAddress("glBeginQueryARB"));
   } else if (ext.b_GL_EXT_disjoint_timer_query ||
              ext.b_GL_EXT_occlusion_query_boolean) {
     fn.glBeginQueryFn =
@@ -840,9 +833,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   if (!ver->is_es || ver->IsAtLeastGLES(3u, 0u)) {
     fn.glDeleteQueriesFn = reinterpret_cast<glDeleteQueriesProc>(
         GetGLProcAddress("glDeleteQueries"));
-  } else if (ext.b_GL_ARB_occlusion_query) {
-    fn.glDeleteQueriesFn = reinterpret_cast<glDeleteQueriesProc>(
-        GetGLProcAddress("glDeleteQueriesARB"));
   } else if (ext.b_GL_EXT_disjoint_timer_query ||
              ext.b_GL_EXT_occlusion_query_boolean) {
     fn.glDeleteQueriesFn = reinterpret_cast<glDeleteQueriesProc>(
@@ -1041,9 +1031,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   if (!ver->is_es || ver->IsAtLeastGLES(3u, 0u)) {
     fn.glEndQueryFn =
         reinterpret_cast<glEndQueryProc>(GetGLProcAddress("glEndQuery"));
-  } else if (ext.b_GL_ARB_occlusion_query) {
-    fn.glEndQueryFn =
-        reinterpret_cast<glEndQueryProc>(GetGLProcAddress("glEndQueryARB"));
   } else if (ext.b_GL_EXT_disjoint_timer_query ||
              ext.b_GL_EXT_occlusion_query_boolean) {
     fn.glEndQueryFn =
@@ -1221,9 +1208,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   if (!ver->is_es || ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGenQueriesFn =
         reinterpret_cast<glGenQueriesProc>(GetGLProcAddress("glGenQueries"));
-  } else if (ext.b_GL_ARB_occlusion_query) {
-    fn.glGenQueriesFn =
-        reinterpret_cast<glGenQueriesProc>(GetGLProcAddress("glGenQueriesARB"));
   } else if (ext.b_GL_EXT_disjoint_timer_query ||
              ext.b_GL_EXT_occlusion_query_boolean) {
     fn.glGenQueriesFn =
@@ -1613,9 +1597,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   if (!ver->is_es || ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGetQueryivFn =
         reinterpret_cast<glGetQueryivProc>(GetGLProcAddress("glGetQueryiv"));
-  } else if (ext.b_GL_ARB_occlusion_query) {
-    fn.glGetQueryivFn =
-        reinterpret_cast<glGetQueryivProc>(GetGLProcAddress("glGetQueryivARB"));
   } else if (ext.b_GL_EXT_disjoint_timer_query ||
              ext.b_GL_EXT_occlusion_query_boolean) {
     fn.glGetQueryivFn =
@@ -1645,9 +1626,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   if (!ver->is_es) {
     fn.glGetQueryObjectivFn = reinterpret_cast<glGetQueryObjectivProc>(
         GetGLProcAddress("glGetQueryObjectiv"));
-  } else if (ext.b_GL_ARB_occlusion_query) {
-    fn.glGetQueryObjectivFn = reinterpret_cast<glGetQueryObjectivProc>(
-        GetGLProcAddress("glGetQueryObjectivARB"));
   } else if (ext.b_GL_EXT_disjoint_timer_query) {
     fn.glGetQueryObjectivFn = reinterpret_cast<glGetQueryObjectivProc>(
         GetGLProcAddress("glGetQueryObjectivEXT"));
@@ -1676,9 +1654,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   if (!ver->is_es || ver->IsAtLeastGLES(3u, 0u)) {
     fn.glGetQueryObjectuivFn = reinterpret_cast<glGetQueryObjectuivProc>(
         GetGLProcAddress("glGetQueryObjectuiv"));
-  } else if (ext.b_GL_ARB_occlusion_query) {
-    fn.glGetQueryObjectuivFn = reinterpret_cast<glGetQueryObjectuivProc>(
-        GetGLProcAddress("glGetQueryObjectuivARB"));
   } else if (ext.b_GL_EXT_disjoint_timer_query ||
              ext.b_GL_EXT_occlusion_query_boolean) {
     fn.glGetQueryObjectuivFn = reinterpret_cast<glGetQueryObjectuivProc>(
@@ -1986,9 +1961,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
   if (!ver->is_es || ver->IsAtLeastGLES(3u, 0u)) {
     fn.glIsQueryFn =
         reinterpret_cast<glIsQueryProc>(GetGLProcAddress("glIsQuery"));
-  } else if (ext.b_GL_ARB_occlusion_query) {
-    fn.glIsQueryFn =
-        reinterpret_cast<glIsQueryProc>(GetGLProcAddress("glIsQueryARB"));
   } else if (ext.b_GL_EXT_disjoint_timer_query ||
              ext.b_GL_EXT_occlusion_query_boolean) {
     fn.glIsQueryFn =
@@ -2803,10 +2775,6 @@ void DriverGL::InitializeDynamicBindings(const GLVersionInfo* ver,
     fn.glVertexAttribDivisorANGLEFn =
         reinterpret_cast<glVertexAttribDivisorANGLEProc>(
             GetGLProcAddress("glVertexAttribDivisor"));
-  } else if (ext.b_GL_ARB_instanced_arrays) {
-    fn.glVertexAttribDivisorANGLEFn =
-        reinterpret_cast<glVertexAttribDivisorANGLEProc>(
-            GetGLProcAddress("glVertexAttribDivisorARB"));
   } else if (ext.b_GL_ANGLE_instanced_arrays) {
     fn.glVertexAttribDivisorANGLEFn =
         reinterpret_cast<glVertexAttribDivisorANGLEProc>(

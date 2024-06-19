@@ -22,7 +22,6 @@ static void GL_BINDING_CALL Mock_glAttachShader(GLuint program, GLuint shader);
 static void GL_BINDING_CALL
 Mock_glBeginPixelLocalStorageANGLE(GLsizei n, const GLenum* loadops);
 static void GL_BINDING_CALL Mock_glBeginQuery(GLenum target, GLuint id);
-static void GL_BINDING_CALL Mock_glBeginQueryARB(GLenum target, GLuint id);
 static void GL_BINDING_CALL Mock_glBeginQueryEXT(GLenum target, GLuint id);
 static void GL_BINDING_CALL Mock_glBeginTransformFeedback(GLenum primitiveMode);
 static void GL_BINDING_CALL
@@ -455,8 +454,6 @@ static void GL_BINDING_CALL Mock_glDeleteProgram(GLuint program);
 static void GL_BINDING_CALL
 Mock_glDeleteProgramPipelines(GLsizei n, const GLuint* pipelines);
 static void GL_BINDING_CALL Mock_glDeleteQueries(GLsizei n, const GLuint* ids);
-static void GL_BINDING_CALL Mock_glDeleteQueriesARB(GLsizei n,
-                                                    const GLuint* ids);
 static void GL_BINDING_CALL Mock_glDeleteQueriesEXT(GLsizei n,
                                                     const GLuint* ids);
 static void GL_BINDING_CALL
@@ -592,7 +589,6 @@ static void GL_BINDING_CALL Mock_glEnableiOES(GLenum target, GLuint index);
 static void GL_BINDING_CALL
 Mock_glEndPixelLocalStorageANGLE(GLsizei n, const GLenum* storeops);
 static void GL_BINDING_CALL Mock_glEndQuery(GLenum target);
-static void GL_BINDING_CALL Mock_glEndQueryARB(GLenum target);
 static void GL_BINDING_CALL Mock_glEndQueryEXT(GLenum target);
 static void GL_BINDING_CALL Mock_glEndTilingQCOM(GLbitfield preserveMask);
 static void GL_BINDING_CALL Mock_glEndTransformFeedback(void);
@@ -692,7 +688,6 @@ static void GL_BINDING_CALL Mock_glGenFramebuffersEXT(GLsizei n,
 static GLuint GL_BINDING_CALL Mock_glGenProgramPipelines(GLsizei n,
                                                          GLuint* pipelines);
 static void GL_BINDING_CALL Mock_glGenQueries(GLsizei n, GLuint* ids);
-static void GL_BINDING_CALL Mock_glGenQueriesARB(GLsizei n, GLuint* ids);
 static void GL_BINDING_CALL Mock_glGenQueriesEXT(GLsizei n, GLuint* ids);
 static void GL_BINDING_CALL Mock_glGenRenderbuffers(GLsizei n,
                                                     GLuint* renderbuffers);
@@ -1026,9 +1021,6 @@ Mock_glGetQueryObjecti64vRobustANGLE(GLuint id,
 static void GL_BINDING_CALL Mock_glGetQueryObjectiv(GLuint id,
                                                     GLenum pname,
                                                     GLint* params);
-static void GL_BINDING_CALL Mock_glGetQueryObjectivARB(GLuint id,
-                                                       GLenum pname,
-                                                       GLint* params);
 static void GL_BINDING_CALL Mock_glGetQueryObjectivEXT(GLuint id,
                                                        GLenum pname,
                                                        GLint* params);
@@ -1052,9 +1044,6 @@ Mock_glGetQueryObjectui64vRobustANGLE(GLuint id,
 static void GL_BINDING_CALL Mock_glGetQueryObjectuiv(GLuint id,
                                                      GLenum pname,
                                                      GLuint* params);
-static void GL_BINDING_CALL Mock_glGetQueryObjectuivARB(GLuint id,
-                                                        GLenum pname,
-                                                        GLuint* params);
 static void GL_BINDING_CALL Mock_glGetQueryObjectuivEXT(GLuint id,
                                                         GLenum pname,
                                                         GLuint* params);
@@ -1066,9 +1055,6 @@ static void GL_BINDING_CALL Mock_glGetQueryObjectuivRobustANGLE(GLuint id,
 static void GL_BINDING_CALL Mock_glGetQueryiv(GLenum target,
                                               GLenum pname,
                                               GLint* params);
-static void GL_BINDING_CALL Mock_glGetQueryivARB(GLenum target,
-                                                 GLenum pname,
-                                                 GLint* params);
 static void GL_BINDING_CALL Mock_glGetQueryivEXT(GLenum target,
                                                  GLenum pname,
                                                  GLint* params);
@@ -1365,7 +1351,6 @@ static GLboolean GL_BINDING_CALL Mock_glIsFramebufferEXT(GLuint framebuffer);
 static GLboolean GL_BINDING_CALL Mock_glIsProgram(GLuint program);
 static GLboolean GL_BINDING_CALL Mock_glIsProgramPipeline(GLuint pipeline);
 static GLboolean GL_BINDING_CALL Mock_glIsQuery(GLuint query);
-static GLboolean GL_BINDING_CALL Mock_glIsQueryARB(GLuint query);
 static GLboolean GL_BINDING_CALL Mock_glIsQueryEXT(GLuint query);
 static GLboolean GL_BINDING_CALL Mock_glIsRenderbuffer(GLuint renderbuffer);
 static GLboolean GL_BINDING_CALL Mock_glIsRenderbufferEXT(GLuint renderbuffer);
@@ -2139,8 +2124,6 @@ static void GL_BINDING_CALL Mock_glVertexAttribDivisor(GLuint index,
                                                        GLuint divisor);
 static void GL_BINDING_CALL Mock_glVertexAttribDivisorANGLE(GLuint index,
                                                             GLuint divisor);
-static void GL_BINDING_CALL Mock_glVertexAttribDivisorARB(GLuint index,
-                                                          GLuint divisor);
 static void GL_BINDING_CALL Mock_glVertexAttribDivisorEXT(GLuint index,
                                                           GLuint divisor);
 static void GL_BINDING_CALL Mock_glVertexAttribFormat(GLuint attribindex,

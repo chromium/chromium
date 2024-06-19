@@ -62,12 +62,6 @@ void GL_BINDING_CALL MockGLInterface::Mock_glBeginQuery(GLenum target,
   interface_->BeginQuery(target, id);
 }
 
-void GL_BINDING_CALL MockGLInterface::Mock_glBeginQueryARB(GLenum target,
-                                                           GLuint id) {
-  MakeGlMockFunctionUnique("glBeginQueryARB");
-  interface_->BeginQuery(target, id);
-}
-
 void GL_BINDING_CALL MockGLInterface::Mock_glBeginQueryEXT(GLenum target,
                                                            GLuint id) {
   MakeGlMockFunctionUnique("glBeginQueryEXT");
@@ -1003,12 +997,6 @@ void GL_BINDING_CALL MockGLInterface::Mock_glDeleteQueries(GLsizei n,
 }
 
 void GL_BINDING_CALL
-MockGLInterface::Mock_glDeleteQueriesARB(GLsizei n, const GLuint* ids) {
-  MakeGlMockFunctionUnique("glDeleteQueriesARB");
-  interface_->DeleteQueries(n, ids);
-}
-
-void GL_BINDING_CALL
 MockGLInterface::Mock_glDeleteQueriesEXT(GLsizei n, const GLuint* ids) {
   MakeGlMockFunctionUnique("glDeleteQueriesEXT");
   interface_->DeleteQueries(n, ids);
@@ -1388,11 +1376,6 @@ void GL_BINDING_CALL MockGLInterface::Mock_glEndQuery(GLenum target) {
   interface_->EndQuery(target);
 }
 
-void GL_BINDING_CALL MockGLInterface::Mock_glEndQueryARB(GLenum target) {
-  MakeGlMockFunctionUnique("glEndQueryARB");
-  interface_->EndQuery(target);
-}
-
 void GL_BINDING_CALL MockGLInterface::Mock_glEndQueryEXT(GLenum target) {
   MakeGlMockFunctionUnique("glEndQueryEXT");
   interface_->EndQuery(target);
@@ -1667,12 +1650,6 @@ MockGLInterface::Mock_glGenProgramPipelines(GLsizei n, GLuint* pipelines) {
 void GL_BINDING_CALL MockGLInterface::Mock_glGenQueries(GLsizei n,
                                                         GLuint* ids) {
   MakeGlMockFunctionUnique("glGenQueries");
-  interface_->GenQueries(n, ids);
-}
-
-void GL_BINDING_CALL MockGLInterface::Mock_glGenQueriesARB(GLsizei n,
-                                                           GLuint* ids) {
-  MakeGlMockFunctionUnique("glGenQueriesARB");
   interface_->GenQueries(n, ids);
 }
 
@@ -2427,14 +2404,6 @@ void GL_BINDING_CALL MockGLInterface::Mock_glGetQueryObjectiv(GLuint id,
 }
 
 void GL_BINDING_CALL
-MockGLInterface::Mock_glGetQueryObjectivARB(GLuint id,
-                                            GLenum pname,
-                                            GLint* params) {
-  MakeGlMockFunctionUnique("glGetQueryObjectivARB");
-  interface_->GetQueryObjectiv(id, pname, params);
-}
-
-void GL_BINDING_CALL
 MockGLInterface::Mock_glGetQueryObjectivEXT(GLuint id,
                                             GLenum pname,
                                             GLint* params) {
@@ -2487,14 +2456,6 @@ void GL_BINDING_CALL MockGLInterface::Mock_glGetQueryObjectuiv(GLuint id,
 }
 
 void GL_BINDING_CALL
-MockGLInterface::Mock_glGetQueryObjectuivARB(GLuint id,
-                                             GLenum pname,
-                                             GLuint* params) {
-  MakeGlMockFunctionUnique("glGetQueryObjectuivARB");
-  interface_->GetQueryObjectuiv(id, pname, params);
-}
-
-void GL_BINDING_CALL
 MockGLInterface::Mock_glGetQueryObjectuivEXT(GLuint id,
                                              GLenum pname,
                                              GLuint* params) {
@@ -2516,13 +2477,6 @@ void GL_BINDING_CALL MockGLInterface::Mock_glGetQueryiv(GLenum target,
                                                         GLenum pname,
                                                         GLint* params) {
   MakeGlMockFunctionUnique("glGetQueryiv");
-  interface_->GetQueryiv(target, pname, params);
-}
-
-void GL_BINDING_CALL MockGLInterface::Mock_glGetQueryivARB(GLenum target,
-                                                           GLenum pname,
-                                                           GLint* params) {
-  MakeGlMockFunctionUnique("glGetQueryivARB");
   interface_->GetQueryiv(target, pname, params);
 }
 
@@ -3182,11 +3136,6 @@ MockGLInterface::Mock_glIsProgramPipeline(GLuint pipeline) {
 
 GLboolean GL_BINDING_CALL MockGLInterface::Mock_glIsQuery(GLuint query) {
   MakeGlMockFunctionUnique("glIsQuery");
-  return interface_->IsQuery(query);
-}
-
-GLboolean GL_BINDING_CALL MockGLInterface::Mock_glIsQueryARB(GLuint query) {
-  MakeGlMockFunctionUnique("glIsQueryARB");
   return interface_->IsQuery(query);
 }
 
@@ -4951,12 +4900,6 @@ MockGLInterface::Mock_glVertexAttribDivisorANGLE(GLuint index, GLuint divisor) {
 }
 
 void GL_BINDING_CALL
-MockGLInterface::Mock_glVertexAttribDivisorARB(GLuint index, GLuint divisor) {
-  MakeGlMockFunctionUnique("glVertexAttribDivisorARB");
-  interface_->VertexAttribDivisorANGLE(index, divisor);
-}
-
-void GL_BINDING_CALL
 MockGLInterface::Mock_glVertexAttribDivisorEXT(GLuint index, GLuint divisor) {
   MakeGlMockFunctionUnique("glVertexAttribDivisorEXT");
   interface_->VertexAttribDivisorANGLE(index, divisor);
@@ -5101,8 +5044,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
         Mock_glBeginPixelLocalStorageANGLE);
   if (strcmp(name, "glBeginQuery") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glBeginQuery);
-  if (strcmp(name, "glBeginQueryARB") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glBeginQueryARB);
   if (strcmp(name, "glBeginQueryEXT") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glBeginQueryEXT);
   if (strcmp(name, "glBeginTransformFeedback") == 0)
@@ -5340,8 +5281,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
         Mock_glDeleteProgramPipelines);
   if (strcmp(name, "glDeleteQueries") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glDeleteQueries);
-  if (strcmp(name, "glDeleteQueriesARB") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glDeleteQueriesARB);
   if (strcmp(name, "glDeleteQueriesEXT") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glDeleteQueriesEXT);
   if (strcmp(name, "glDeleteRenderbuffers") == 0)
@@ -5467,8 +5406,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
         Mock_glEndPixelLocalStorageANGLE);
   if (strcmp(name, "glEndQuery") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glEndQuery);
-  if (strcmp(name, "glEndQueryARB") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glEndQueryARB);
   if (strcmp(name, "glEndQueryEXT") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glEndQueryEXT);
   if (strcmp(name, "glEndTilingQCOM") == 0)
@@ -5562,8 +5499,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_glGenProgramPipelines);
   if (strcmp(name, "glGenQueries") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glGenQueries);
-  if (strcmp(name, "glGenQueriesARB") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glGenQueriesARB);
   if (strcmp(name, "glGenQueriesEXT") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glGenQueriesEXT);
   if (strcmp(name, "glGenRenderbuffers") == 0)
@@ -5780,8 +5715,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
         Mock_glGetQueryObjecti64vRobustANGLE);
   if (strcmp(name, "glGetQueryObjectiv") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glGetQueryObjectiv);
-  if (strcmp(name, "glGetQueryObjectivARB") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glGetQueryObjectivARB);
   if (strcmp(name, "glGetQueryObjectivEXT") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glGetQueryObjectivEXT);
   if (strcmp(name, "glGetQueryObjectivRobustANGLE") == 0)
@@ -5797,8 +5730,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
         Mock_glGetQueryObjectui64vRobustANGLE);
   if (strcmp(name, "glGetQueryObjectuiv") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glGetQueryObjectuiv);
-  if (strcmp(name, "glGetQueryObjectuivARB") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glGetQueryObjectuivARB);
   if (strcmp(name, "glGetQueryObjectuivEXT") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glGetQueryObjectuivEXT);
   if (strcmp(name, "glGetQueryObjectuivRobustANGLE") == 0)
@@ -5806,8 +5737,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
         Mock_glGetQueryObjectuivRobustANGLE);
   if (strcmp(name, "glGetQueryiv") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glGetQueryiv);
-  if (strcmp(name, "glGetQueryivARB") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glGetQueryivARB);
   if (strcmp(name, "glGetQueryivEXT") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glGetQueryivEXT);
   if (strcmp(name, "glGetQueryivRobustANGLE") == 0)
@@ -6004,8 +5933,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
     return reinterpret_cast<GLFunctionPointerType>(Mock_glIsProgramPipeline);
   if (strcmp(name, "glIsQuery") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glIsQuery);
-  if (strcmp(name, "glIsQueryARB") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(Mock_glIsQueryARB);
   if (strcmp(name, "glIsQueryEXT") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glIsQueryEXT);
   if (strcmp(name, "glIsRenderbuffer") == 0)
@@ -6482,9 +6409,6 @@ MockGLInterface::GetGLProcAddress(const char* name) {
   if (strcmp(name, "glVertexAttribDivisorANGLE") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glVertexAttribDivisorANGLE);
-  if (strcmp(name, "glVertexAttribDivisorARB") == 0)
-    return reinterpret_cast<GLFunctionPointerType>(
-        Mock_glVertexAttribDivisorARB);
   if (strcmp(name, "glVertexAttribDivisorEXT") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glVertexAttribDivisorEXT);
