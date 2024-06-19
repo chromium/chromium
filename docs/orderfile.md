@@ -47,6 +47,34 @@ be added to the local branch and uploaded to Gerrit along with
 `build/config/compiler/BUILD.gn`. This Gerrit change can then be used as an
 "experiment patch" for a Pinpoint try job.
 
+## Triaging Performance Regressions
+
+Occasionally, an orderfile roll will cause performance problems on perfbots.
+This typically triggers an alert in the form of a bug report, which contains a
+group of related regressions like the one shown
+[here](https://crbug.com/344654892).
+
+In such cases it is important to keep in mind that effectiveness of the
+orderfile is coupled with using a recent PGO profile when building the native
+code. As a result some orderfile improvements (or effective no-ops) register as
+regressions on perfbots using non-PGO builds, which is the most common perfbot
+configuration.
+
+If a new regression does not include alerts from the
+[android-pixel6-perf-pgo](https://ci.chromium.org/ui/p/chrome/builders/luci.chrome.ci/android-pixel6-perf-pgo)
+(the only Android PGO perfbot as of 2024-06) then the first thing to check is to
+query the same benchmark+metric combinations for the PGO bot. If the graphs
+demonstrate no regression, feel free to close the issue as WontFix(Intended
+Behavior). However, not all benchmarks are exercised on the PGO bot
+continuously. If there is no PGO coverage for a particular benchmark+metric
+combination, this combination can be checked on Pinpoint with the right perfbot
+choice ([example](https://crbug.com/344665295)).
+
+Finally, the PGO+orderfile coupling exists only on arm64. Most speed
+optimization efforts on Android are focused on this configuration. On arm32 the
+most important orderfile optimization is for reducing memory used by machine
+code. Only one benchmark measures it: `system_health.memory_mobile`.
+
 ## Orderfile Pipeline
 
 The `orderfile_generator_backend.py` script runs several key steps:
@@ -57,7 +85,6 @@ Clang command line option to insert instrumentation for function entry. The
 build will be generated in `out/arm_instrumented_out/` or
 `out/arm64_instrumented_out`, depending on the CPU architecture (instruction
 set).
-
 
 2. **Run the benchmarks and collect profiles.** These benchmarks can be found
 in [orderfile.py](../tools/perf/contrib/orderfile/orderfile.py). These profiles
