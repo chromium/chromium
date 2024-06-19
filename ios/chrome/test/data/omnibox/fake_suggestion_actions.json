@@ -1,0 +1,53 @@
+[
+  [
+    "local restaurant",
+    [
+      "local restaurant",
+      "local restaurant",
+    ],
+    [
+      "",
+      "",
+    ],
+    [
+
+    ],
+    {
+      "google:verbatimrelevance" : 1300,
+      "google:suggestsubtypes" : [
+        [
+          512,
+          355
+        ],
+        [
+          175,
+          199,
+          314,
+          512,
+          654
+        ],
+      ],
+      "google:suggesttype" : [
+        "QUERY",
+        "ENTITY",
+      ],
+      "google:clientdata" : {
+        "bpc" : false,
+        "tlw" : false
+      },
+      "google:suggestdetail" : [
+        {
+
+        },
+        {
+          "google:entityinfo" : "CggvbS8wNXF0ahIQbG9jYWwgcmVzdGF1cmFudDIAOhBsb2NhbCByZXN0YXVyYW50SgcjMmY3MDc1Uitnc19zc3A9ZUp6ajR0RFAxVGN3TFN6Sk1tRDBZaTFJTE1vc0JnQXItUVV4YhQaEHRlbDovLzAxMjM0NTY3ODlAA2IkGiBodHRwOi8vbG9jYWxob3N0OjMwMDAvZGlyZWN0aW9uc0ACYiEaHWh0dHA6Ly9sb2NhbGhvc3Q6MzAwMC9yZXZpZXdzQBRwDHAa"
+        },
+      ],
+      "google:suggestrelevance" : [
+        1250,
+        1251,
+      ]
+    }
+  ]
+]
+

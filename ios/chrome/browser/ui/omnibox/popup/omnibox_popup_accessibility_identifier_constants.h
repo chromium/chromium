@@ -28,6 +28,19 @@ extern NSString* const kOmniboxCarouselCellAccessibilityIdentifier;
 /// A11y identifier for the label of Carousel Control.
 extern NSString* const kOmniboxCarouselControlLabelAccessibilityIdentifier;
 
+/// A11y identifier for direction action button being highlighted.
+extern NSString* const kDirectionsActionHighlightedIdentifier;
+/// A11y identifier for direction action button
+extern NSString* const kDirectionsActionIdentifier;
+/// A11y identifier for call action button being highlighted.
+extern NSString* const kCallActionHighlightedIdentifier;
+/// A11y identifier for call action button.
+extern NSString* const kCallActionIdentifier;
+/// A11y identifier for reviews action button being highlighted.
+extern NSString* const kReviewsActionHighlightedIdentifier;
+/// A11y identifier for reviews action button.
+extern NSString* const kReviewsActionIdentifier;
+
 /// Helper to generate omnibox popup accessibility identifiers.
 @interface OmniboxPopupAccessibilityIdentifierHelper : NSObject
 

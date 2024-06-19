@@ -215,6 +215,7 @@ chrome_ios_eg2_test("ios_chrome_ui_eg2tests_module") {
     "//ios/chrome/browser/ui/omnibox:eg2_tests",
     "//ios/chrome/browser/ui/omnibox/popup:eg2_tests",
     "//ios/chrome/browser/ui/omnibox/popup/carousel:eg2_tests",
+    "//ios/chrome/browser/ui/omnibox/popup/row/actions:eg2_tests",
     "//ios/chrome/browser/ui/page_info:eg2_tests",
     "//ios/chrome/browser/ui/permissions:eg2_tests",
     "//ios/chrome/browser/ui/phone_number:eg2_tests",

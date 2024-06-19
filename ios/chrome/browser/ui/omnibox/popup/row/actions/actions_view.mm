@@ -193,6 +193,10 @@ const CGFloat kLeadingTrailingPadding = 61;
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisVertical];
 
+  button.accessibilityIdentifier =
+      [suggestAction.class accessibilityIdentifierWithType:suggestAction.type
+                                               highlighted:highlighted];
+
   NSAttributedString* attributedTitle = [[NSAttributedString alloc]
       initWithString:suggestAction.title
           attributes:@{

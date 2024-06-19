@@ -27,6 +27,21 @@ NSString* const kOmniboxCarouselCellAccessibilityIdentifier =
 NSString* const kOmniboxCarouselControlLabelAccessibilityIdentifier =
     @"OmniboxCarouselControlLabelAccessibilityIdentifier";
 
+NSString* const kDirectionsActionHighlightedIdentifier =
+    @"kDirectionsActionHighlightedIdentifier";
+
+NSString* const kDirectionsActionIdentifier = @"kDirectionsActionIdentifier";
+
+NSString* const kCallActionHighlightedIdentifier =
+    @"kCallActionHighlightedIdentifier";
+
+NSString* const kCallActionIdentifier = @"kCallActionIdentifier";
+
+NSString* const kReviewsActionHighlightedIdentifier =
+    @"kReviewsActionHighlightedIdentifier";
+
+NSString* const kReviewsActionIdentifier = @"kReviewsActionIdentifier";
+
 @implementation OmniboxPopupAccessibilityIdentifierHelper
 
 + (NSString*)accessibilityIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath {

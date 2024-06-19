@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/row/actions/suggest_action.h"
 
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
@@ -35,6 +36,22 @@
     default:
       return nil;
   }
+}
+
++ (NSString*)accessibilityIdentifierWithType:
+                 (omnibox::ActionInfo::ActionType)type
+                                 highlighted:(BOOL)highlighted {
+  if (type == omnibox::ActionInfo_ActionType_CALL) {
+    return highlighted ? kCallActionHighlightedIdentifier
+                       : kCallActionIdentifier;
+  } else if (type == omnibox::ActionInfo_ActionType_DIRECTIONS) {
+    return highlighted ? kDirectionsActionHighlightedIdentifier
+                       : kDirectionsActionIdentifier;
+  } else if (type == omnibox::ActionInfo_ActionType_REVIEWS) {
+    return highlighted ? kReviewsActionHighlightedIdentifier
+                       : kReviewsActionIdentifier;
+  }
+  return nil;
 }
 
 - (instancetype)initWithAction:(OmniboxActionInSuggest*)action {
