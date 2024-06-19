@@ -12,8 +12,7 @@
 
 namespace media {
 
-D3D12ReferenceFrameList::D3D12ReferenceFrameList(
-    Microsoft::WRL::ComPtr<ID3D12VideoDecoderHeap> heap)
+D3D12ReferenceFrameList::D3D12ReferenceFrameList(ComD3D12VideoDecoderHeap heap)
     : heap_(std::move(heap)) {
   std::fill(heaps_.begin(), heaps_.end(), heap_.Get());
 }
@@ -39,7 +38,7 @@ void D3D12ReferenceFrameList::emplace(size_t index,
   subresources_[index] = subresource;
 }
 
-Microsoft::WRL::ComPtr<ID3D12Device> CreateD3D12Device(IDXGIAdapter* adapter) {
+ComD3D12Device CreateD3D12Device(IDXGIAdapter* adapter) {
   if (!adapter) {
     // We've had at least a couple of scenarios where two calls to EnumAdapters
     // return different default adapters on multi-adapter systems due to race
@@ -48,7 +47,7 @@ Microsoft::WRL::ComPtr<ID3D12Device> CreateD3D12Device(IDXGIAdapter* adapter) {
     CHECK_IS_TEST();
   }
 
-  Microsoft::WRL::ComPtr<ID3D12Device> device;
+  ComD3D12Device device;
   HRESULT hr =
       D3D12CreateDevice(adapter, D3D_FEATURE_LEVEL_11_0, IID_PPV_ARGS(&device));
   if (FAILED(hr)) {

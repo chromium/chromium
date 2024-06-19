@@ -5,9 +5,6 @@
 #ifndef MEDIA_GPU_WINDOWS_D3D12_HELPERS_H_
 #define MEDIA_GPU_WINDOWS_D3D12_HELPERS_H_
 
-#include <d3d12.h>
-#include <d3d12video.h>
-#include <dxgi.h>
 #include <wrl.h>
 
 #include <array>
@@ -19,6 +16,7 @@
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/h264_dpb.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/gpu/windows/d3d_com_defs.h"
 #include "media/video/h265_parser.h"
 #include "third_party/abseil-cpp/absl/container/inlined_vector.h"
 #include "third_party/libgav1/src/src/utils/constants.h"
@@ -28,8 +26,7 @@ namespace media {
 // Manages reference frame buffers, for reference frame descriptors to index on.
 class MEDIA_GPU_EXPORT D3D12ReferenceFrameList {
  public:
-  explicit D3D12ReferenceFrameList(
-      Microsoft::WRL::ComPtr<ID3D12VideoDecoderHeap> heap);
+  explicit D3D12ReferenceFrameList(ComD3D12VideoDecoderHeap heap);
   ~D3D12ReferenceFrameList();
 
   void WriteTo(D3D12_VIDEO_DECODE_REFERENCE_FRAMES* dest);
@@ -45,7 +42,7 @@ class MEDIA_GPU_EXPORT D3D12ReferenceFrameList {
                 static_cast<size_t>(libgav1::kNumReferenceFrameTypes)}) +
       limits::kMaxVideoFrames + 2;
 
-  Microsoft::WRL::ComPtr<ID3D12VideoDecoderHeap> heap_;
+  ComD3D12VideoDecoderHeap heap_;
   size_t size_ = 0;
   // D3D12_VIDEO_DECODE_REFERENCE_FRAMES has ID3D12Resource** ppTexture2Ds, so
   // we have to store raw pointer array here. The pointers are only passed to
@@ -61,8 +58,7 @@ class MEDIA_GPU_EXPORT D3D12ReferenceFrameList {
   std::array<ID3D12VideoDecoderHeap*, kMaxSize> heaps_;
 };
 
-MEDIA_GPU_EXPORT Microsoft::WRL::ComPtr<ID3D12Device> CreateD3D12Device(
-    IDXGIAdapter* adapter);
+MEDIA_GPU_EXPORT ComD3D12Device CreateD3D12Device(IDXGIAdapter* adapter);
 
 // In D3D12 resource barriers, subresource id is not only being composed of mip
 // level id and array index id, but also plane id. This method is to create an

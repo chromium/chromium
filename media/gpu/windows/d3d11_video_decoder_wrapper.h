@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "media/base/video_decoder_config.h"
-#include "media/gpu/windows/d3d11_com_defs.h"
 #include "media/gpu/windows/d3d11_decoder_configurator.h"
+#include "media/gpu/windows/d3d_com_defs.h"
 #include "media/gpu/windows/d3d_video_decoder_wrapper.h"
 
 namespace media {

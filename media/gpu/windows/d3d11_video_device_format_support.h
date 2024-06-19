@@ -9,7 +9,7 @@
 
 #include "media/base/media_log.h"
 #include "media/gpu/media_gpu_export.h"
-#include "media/gpu/windows/d3d11_com_defs.h"
+#include "media/gpu/windows/d3d_com_defs.h"
 
 namespace media {
 

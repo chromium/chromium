@@ -6,8 +6,6 @@
 
 #include <Windows.h>
 
-#include <d3d12.h>
-
 #include "base/check_op.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
@@ -44,16 +42,15 @@ class ScopedD3D12ResourceBuffer;
 
 class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
  public:
-  D3D12VideoDecoderWrapperImpl(
-      MediaLog* media_log,
-      Microsoft::WRL::ComPtr<ID3D12Device> device,
-      Microsoft::WRL::ComPtr<ID3D12CommandQueue> command_queue,
-      Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator,
-      Microsoft::WRL::ComPtr<ID3D12VideoDevice> video_device,
-      Microsoft::WRL::ComPtr<ID3D12VideoDecoder> video_decoder,
-      Microsoft::WRL::ComPtr<ID3D12VideoDecoderHeap> video_decoder_heap,
-      Microsoft::WRL::ComPtr<ID3D12VideoDecodeCommandList> command_list,
-      scoped_refptr<D3D12Fence> fence)
+  D3D12VideoDecoderWrapperImpl(MediaLog* media_log,
+                               ComD3D12Device device,
+                               ComD3D12CommandQueue command_queue,
+                               ComD3D12CommandAllocator command_allocator,
+                               ComD3D12VideoDevice video_device,
+                               ComD3D12VideoDecoder video_decoder,
+                               ComD3D12VideoDecoderHeap video_decoder_heap,
+                               ComD3D12VideoDecodeCommandList command_list,
+                               scoped_refptr<D3D12Fence> fence)
       : D3D12VideoDecoderWrapper(media_log),
         device_(std::move(device)),
         video_device_(std::move(video_device)),
@@ -98,8 +95,7 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
       command_list_->ResourceBarrier(barriers.size(), barriers.data());
     }
 
-    Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture2d =
-        output_picture->Texture();
+    ComD3D11Texture2D d3d11_texture2d = output_picture->Texture();
     D3D11_TEXTURE2D_DESC desc;
     d3d11_texture2d->GetDesc(&desc);
     CHECK(desc.MiscFlags & D3D11_RESOURCE_MISC_SHARED_NTHANDLE)
@@ -111,7 +107,7 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
     if (!d3d12_resource_or_error.has_value()) {
       return false;
     }
-    Microsoft::WRL::ComPtr<ID3D12Resource> d3d12_resource =
+    ComD3D12Resource d3d12_resource =
         std::move(d3d12_resource_or_error).value();
 
     output_stream_arguments_ = {
@@ -218,20 +214,20 @@ class D3D12VideoDecoderWrapperImpl : public D3D12VideoDecoderWrapper {
   std::unique_ptr<ScopedD3DBuffer> GetBuffer(BufferType type,
                                              uint32_t desired_size) override;
 
-  Microsoft::WRL::ComPtr<ID3D12Device> device_;
-  Microsoft::WRL::ComPtr<ID3D12VideoDevice> video_device_;
-  Microsoft::WRL::ComPtr<ID3D12CommandQueue> command_queue_;
-  Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator_;
-  Microsoft::WRL::ComPtr<ID3D12VideoDecodeCommandList> command_list_;
+  ComD3D12Device device_;
+  ComD3D12VideoDevice video_device_;
+  ComD3D12CommandQueue command_queue_;
+  ComD3D12CommandAllocator command_allocator_;
+  ComD3D12VideoDecodeCommandList command_list_;
 
-  Microsoft::WRL::ComPtr<ID3D12VideoDecoder> video_decoder_;
-  Microsoft::WRL::ComPtr<ID3D12VideoDecoderHeap> video_decoder_heap_;
+  ComD3D12VideoDecoder video_decoder_;
+  ComD3D12VideoDecoderHeap video_decoder_heap_;
   D3D12_VIDEO_DECODE_INPUT_STREAM_ARGUMENTS input_stream_arguments_{};
   D3D12_VIDEO_DECODE_OUTPUT_STREAM_ARGUMENTS output_stream_arguments_{};
   std::vector<uint8_t> picture_parameters_buffer_;
   std::vector<uint8_t> inverse_quantization_matrix_buffer_;
   std::vector<uint8_t> slice_control_buffer_;
-  Microsoft::WRL::ComPtr<ID3D12Resource> compressed_bitstream_;
+  ComD3D12Resource compressed_bitstream_;
   D3D12ReferenceFrameList reference_frame_list_;
 
   scoped_refptr<D3D12Fence> fence_{};
@@ -362,7 +358,7 @@ std::unique_ptr<ScopedD3DBuffer> D3D12VideoDecoderWrapperImpl::GetBuffer(
 // static
 std::unique_ptr<D3D12VideoDecoderWrapper> D3D12VideoDecoderWrapper::Create(
     MediaLog* media_log,
-    Microsoft::WRL::ComPtr<ID3D12VideoDevice> video_device,
+    ComD3D12VideoDevice video_device,
     VideoDecoderConfig config,
     uint8_t bit_depth,
     VideoChromaSampling chroma_sampling) {
@@ -397,7 +393,7 @@ std::unique_ptr<D3D12VideoDecoderWrapper> D3D12VideoDecoderWrapper::Create(
     return nullptr;
   }
 
-  Microsoft::WRL::ComPtr<ID3D12VideoDecoder> video_decoder;
+  ComD3D12VideoDecoder video_decoder;
   D3D12_VIDEO_DECODER_DESC desc{.Configuration = {guid}};
   hr = video_device->CreateVideoDecoder(&desc, IID_PPV_ARGS(&video_decoder));
   RETURN_IF_FAILED2(hr, "D3D12VideoDevice CreateVideoDecoder failed");
@@ -408,29 +404,29 @@ std::unique_ptr<D3D12VideoDecoderWrapper> D3D12VideoDecoderWrapper::Create(
       .DecodeHeight = static_cast<UINT>(config.coded_size().height()),
       .Format = decode_format,
   };
-  Microsoft::WRL::ComPtr<ID3D12VideoDecoderHeap> video_decoder_heap;
+  ComD3D12VideoDecoderHeap video_decoder_heap;
   hr = video_device->CreateVideoDecoderHeap(&heap_desc,
                                             IID_PPV_ARGS(&video_decoder_heap));
   RETURN_IF_FAILED2(hr, "D3D12VideoDevice CreateVideoDecoderHeap failed");
 
-  Microsoft::WRL::ComPtr<ID3D12Device> device;
+  ComD3D12Device device;
   hr = video_decoder->GetDevice(IID_PPV_ARGS(&device));
   CHECK_EQ(hr, S_OK);
 
   // TODO(crbug.com/40233230): Share the command queue across video decoders.
-  Microsoft::WRL::ComPtr<ID3D12CommandQueue> command_queue;
+  ComD3D12CommandQueue command_queue;
   D3D12_COMMAND_QUEUE_DESC command_queue_desc{
       D3D12_COMMAND_LIST_TYPE_VIDEO_DECODE};
   hr = device->CreateCommandQueue(&command_queue_desc,
                                   IID_PPV_ARGS(&command_queue));
   RETURN_IF_FAILED2(hr, "D3D12Device CreateCommandQueue failed");
 
-  Microsoft::WRL::ComPtr<ID3D12CommandAllocator> command_allocator;
+  ComD3D12CommandAllocator command_allocator;
   hr = device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_VIDEO_DECODE,
                                       IID_PPV_ARGS(&command_allocator));
   RETURN_IF_FAILED2(hr, "D3D12Device CreateCommandAllocator failed");
 
-  Microsoft::WRL::ComPtr<ID3D12VideoDecodeCommandList> command_list;
+  ComD3D12VideoDecodeCommandList command_list;
   hr = device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_VIDEO_DECODE,
                                  command_allocator.Get(), nullptr,
                                  IID_PPV_ARGS(&command_list));

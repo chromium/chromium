@@ -12,7 +12,7 @@
 namespace media {
 
 D3D12VideoProcessorWrapper::D3D12VideoProcessorWrapper(
-    Microsoft::WRL::ComPtr<ID3D12VideoDevice> video_device)
+    ComD3D12VideoDevice video_device)
     : video_device_(video_device) {
   CHECK_EQ(video_device.As(&device_), S_OK);
 }

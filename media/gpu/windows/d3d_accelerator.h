@@ -8,9 +8,9 @@
 #include <memory>
 #include <string_view>
 
-#include "media/gpu/windows/d3d11_com_defs.h"
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_video_decoder_client.h"
+#include "media/gpu/windows/d3d_com_defs.h"
 
 namespace media {
 

@@ -10,13 +10,12 @@
 
 namespace media {
 
-D3D12Fence::D3D12Fence(Microsoft::WRL::ComPtr<ID3D12Fence> fence)
-    : fence_(std::move(fence)) {}
+D3D12Fence::D3D12Fence(ComD3D12Fence fence) : fence_(std::move(fence)) {}
 
 // static
 scoped_refptr<D3D12Fence> D3D12Fence::Create(ID3D12Device* device,
                                              D3D12_FENCE_FLAGS flags) {
-  Microsoft::WRL::ComPtr<ID3D12Fence> d3d12_fence;
+  ComD3D12Fence d3d12_fence;
   HRESULT hr = device->CreateFence(0, flags, IID_PPV_ARGS(&d3d12_fence));
   if (FAILED(hr)) {
     DLOG(ERROR) << "Failed to create D3D12Fence: "

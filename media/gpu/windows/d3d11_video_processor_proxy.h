@@ -7,12 +7,13 @@
 
 #include <d3d11.h>
 #include <wrl/client.h>
+
 #include <cstdint>
 
 #include "base/memory/ref_counted.h"
 #include "media/gpu/media_gpu_export.h"
-#include "media/gpu/windows/d3d11_com_defs.h"
 #include "media/gpu/windows/d3d11_status.h"
+#include "media/gpu/windows/d3d_com_defs.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/hdr_metadata.h"
 

@@ -4,10 +4,6 @@
 
 #include "media/gpu/windows/supported_profile_helpers.h"
 
-#include <d3d12video.h>
-#include <d3d9.h>
-#include <dxva2api.h>
-
 #include <algorithm>
 #include <memory>
 
@@ -71,8 +67,7 @@ class D3D11VideoDeviceWrapper : public D3DVideoDeviceWrapper {
 
 class D3D12VideoDeviceWrapper : public D3DVideoDeviceWrapper {
  public:
-  explicit D3D12VideoDeviceWrapper(
-      Microsoft::WRL::ComPtr<ID3D12VideoDevice> video_device)
+  explicit D3D12VideoDeviceWrapper(ComD3D12VideoDevice video_device)
       : video_device_(video_device) {
     CHECK(video_device);
   }
@@ -113,7 +108,7 @@ class D3D12VideoDeviceWrapper : public D3DVideoDeviceWrapper {
   }
 
  private:
-  Microsoft::WRL::ComPtr<ID3D12VideoDevice> video_device_;
+  ComD3D12VideoDevice video_device_;
 };
 
 // Windows Media Foundation H.264 decoding does not support decoding videos
@@ -392,7 +387,7 @@ SupportedResolutionRangeMap GetSupportedD3DVideoDecoderResolutions(
 SupportedResolutionRangeMap GetSupportedD3D11VideoDecoderResolutions(
     ComD3D11Device device,
     const gpu::GpuDriverBugWorkarounds& workarounds) {
-  Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device;
+  ComD3D11VideoDevice video_device;
   std::unique_ptr<D3D11VideoDeviceWrapper> video_device_wrapper;
   if (device && SUCCEEDED(device.As(&video_device))) {
     video_device_wrapper =
@@ -403,9 +398,9 @@ SupportedResolutionRangeMap GetSupportedD3D11VideoDecoderResolutions(
 }
 
 SupportedResolutionRangeMap GetSupportedD3D12VideoDecoderResolutions(
-    Microsoft::WRL::ComPtr<ID3D12Device> device,
+    ComD3D12Device device,
     const gpu::GpuDriverBugWorkarounds& workarounds) {
-  Microsoft::WRL::ComPtr<ID3D12VideoDevice> video_device;
+  ComD3D12VideoDevice video_device;
   std::unique_ptr<D3D12VideoDeviceWrapper> video_device_wrapper;
   if (device && SUCCEEDED(device.As(&video_device))) {
     video_device_wrapper =
