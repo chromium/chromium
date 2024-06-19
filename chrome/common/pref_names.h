@@ -3110,6 +3110,11 @@ inline constexpr char kKioskMetrics[] = "kiosk-metrics";
 inline constexpr char kKioskTroubleshootingToolsEnabled[] =
     "kiosk_troubleshooting_tools_enabled";
 
+// Pref name for providing additional urls which can access browser permissions
+// already available to the kiosk web apps.
+inline constexpr char kKioskBrowserPermissionsAllowedForOrigins[] =
+    "policy.kiosk_browser_permissions_allowed_for_origins";
+
 // A boolean pref which determines whether a Web Kiosk can open more than one
 // browser window.
 inline constexpr char kNewWindowsInKioskAllowed[] =

@@ -2136,6 +2136,7 @@ chromium-metrics-reviews@google.com.
   <int value="1270" label="FocusModeSoundsEnabled"/>
   <int value="1271" label="ExtensionDeveloperModeSettings"/>
   <int value="1272" label="LocalUserFilesMigrationDestination"/>
+  <int value="1273" label="KioskBrowserPermissionsAllowedForOrigins"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
