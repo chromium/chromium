@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/files/scoped_file.h"
@@ -60,41 +59,29 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       bool preferred_only,
       chromeos::DBusMethodCallback<lorgnette::ListScannersResponse> callback)
       override {
-    if (features::IsAsynchronousScannerDiscoveryEnabled()) {
-      // The client ID is required for asynchronous discovery.  If none is
-      // provided, exit early with an error result.
-      if (client_id.empty()) {
-        lorgnette::ListScannersResponse response;
-        response.set_result(lorgnette::OPERATION_RESULT_INVALID);
-        base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindOnce(std::move(callback), std::move(response)));
-        return;
-      }
-
-      lorgnette::StartScannerDiscoveryRequest request;
-      request.set_client_id(client_id);
-      request.set_preferred_only(preferred_only);
-      request.set_local_only(local_only);
-
-      StartScannerDiscovery(
-          std::move(request),
-          base::BindRepeating(
-              &LorgnetteManagerClientImpl::ListScannersDiscoveryScannersUpdated,
-              weak_ptr_factory_.GetWeakPtr()),
-          base::BindOnce(
-              &LorgnetteManagerClientImpl::OnListScannersDiscoverySession,
-              weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-
+    // The client ID is required for asynchronous discovery.  If none is
+    // provided, exit early with an error result.
+    if (client_id.empty()) {
+      lorgnette::ListScannersResponse response;
+      response.set_result(lorgnette::OPERATION_RESULT_INVALID);
+      base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), std::move(response)));
       return;
     }
 
-    dbus::MethodCall method_call(lorgnette::kManagerServiceInterface,
-                                 lorgnette::kListScannersMethod);
-    lorgnette_daemon_proxy_->CallMethod(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&LorgnetteManagerClientImpl::OnListScanners,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+    lorgnette::StartScannerDiscoveryRequest request;
+    request.set_client_id(client_id);
+    request.set_preferred_only(preferred_only);
+    request.set_local_only(local_only);
+
+    StartScannerDiscovery(
+        std::move(request),
+        base::BindRepeating(
+            &LorgnetteManagerClientImpl::ListScannersDiscoveryScannersUpdated,
+            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(
+            &LorgnetteManagerClientImpl::OnListScannersDiscoverySession,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
   }
 
   void GetScannerCapabilities(
@@ -290,7 +277,6 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
           signal_callback,
       chromeos::DBusMethodCallback<lorgnette::StartScannerDiscoveryResponse>
           response_callback) override {
-    CHECK(features::IsAsynchronousScannerDiscoveryEnabled());
     dbus::MethodCall method_call(lorgnette::kManagerServiceInterface,
                                  lorgnette::kStartScannerDiscoveryMethod);
     dbus::MessageWriter writer(&method_call);
@@ -323,7 +309,6 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       const lorgnette::StopScannerDiscoveryRequest& request,
       chromeos::DBusMethodCallback<lorgnette::StopScannerDiscoveryResponse>
           callback) override {
-    CHECK(features::IsAsynchronousScannerDiscoveryEnabled());
     dbus::MethodCall method_call(lorgnette::kManagerServiceInterface,
                                  lorgnette::kStopScannerDiscoveryMethod);
     dbus::MessageWriter writer(&method_call);
@@ -525,27 +510,6 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
     CancelScan(request,
                base::BindOnce(&LorgnetteManagerClientImpl::OnCancelScanResponse,
                               weak_ptr_factory_.GetWeakPtr(), uuid));
-  }
-
-  // Called when ListScanners completes.
-  void OnListScanners(
-      chromeos::DBusMethodCallback<lorgnette::ListScannersResponse> callback,
-      dbus::Response* response) {
-    if (!response) {
-      LOG(ERROR) << "Failed to obtain ListScannersResponse";
-      std::move(callback).Run(std::nullopt);
-      return;
-    }
-
-    lorgnette::ListScannersResponse response_proto;
-    dbus::MessageReader reader(response);
-    if (!reader.PopArrayOfBytesAsProto(&response_proto)) {
-      LOG(ERROR) << "Failed to read ListScannersResponse";
-      std::move(callback).Run(std::nullopt);
-      return;
-    }
-
-    std::move(callback).Run(std::move(response_proto));
   }
 
   // Handles the response received after calling GetScannerCapabilities().

@@ -5970,12 +5970,6 @@ const char kAshSplitKeyboardRefactorName[] = "Split keyboard refactor";
 const char kAshSplitKeyboardRefactorDescription[] =
     "Enable split keyboard refactor on ChromeOS.";
 
-const char kAsynchronousScannerDiscoveryName[] =
-    "Asynchronous scanner discovery";
-const char kAsynchronousScannerDiscoveryDescription[] =
-    "Use the newer asynchronous document scanner discovery API for the Scan "
-    "app and extension APIs.";
-
 const char kAssistantIphName[] = "Assistant IPH";
 const char kAssistantIphDescription[] =
     "Enables showing Assistant IPH on ChromeOS.";

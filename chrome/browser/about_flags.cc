@@ -10806,13 +10806,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnablePrefetchingRiskDataForRetrieval)},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"asynchronous-scanner-discovery",
-     flag_descriptions::kAsynchronousScannerDiscoveryName,
-     flag_descriptions::kAsynchronousScannerDiscoveryDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kAsynchronousScannerDiscovery)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if BUILDFLAG(IS_ANDROID)
     {"read-aloud", flag_descriptions::kReadAloudName,
      flag_descriptions::kReadAloudDescription, kOsAndroid,
