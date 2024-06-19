@@ -1717,17 +1717,9 @@ void AuthenticatorCommonImpl::OnRegisterResponse(
       RequestSource(), device::FidoRequestType::kMakeCredential,
       authenticator->GetType());
 
-  std::optional<device::FidoTransportProtocol> transport =
-      authenticator->AuthenticatorTransport();
-  bool is_transport_used_internal = false;
-  bool is_transport_used_cable = false;
-  if (transport) {
-    is_transport_used_internal =
-        *transport == device::FidoTransportProtocol::kInternal;
-    is_transport_used_cable =
-        *transport == device::FidoTransportProtocol::kHybrid;
-  }
-
+  const bool is_transport_used_internal =
+      authenticator->AuthenticatorTransport() ==
+      device::FidoTransportProtocol::kInternal;
   const auto attestation =
       req_state_->ctap_make_credential_request->attestation_preference;
   std::optional<AttestationErasureOption> attestation_erasure;
@@ -1748,11 +1740,6 @@ void AuthenticatorCommonImpl::OnRegisterResponse(
     // If enterprise attestation was requested, not approved by policy, and
     // not approved by the authenticator, then any attestation is stripped.
     attestation_erasure = AttestationErasureOption::kEraseAttestationAndAaguid;
-  } else if (is_transport_used_cable) {
-    // Attestation is not returned when caBLEv2 is used, but the AAGUID is
-    // maintained.
-    attestation_erasure =
-        AttestationErasureOption::kEraseAttestationButIncludeAaguid;
   } else if (is_transport_used_internal) {
     // Direct attestation from platform authenticators is known to be
     // privacy preserving, so we always return it when requested. Also,
