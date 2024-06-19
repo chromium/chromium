@@ -112,9 +112,10 @@ SkiaOutputSurfaceDependencyImpl::CreatePresenter() {
   }
 #endif
 
+  auto* dawn_context_provider = context_state->dawn_context_provider();
   return gpu::ImageTransportSurface::CreatePresenter(
       context_state->display(), GetGpuDriverBugWorkarounds(),
-      GetGpuFeatureInfo(), surface_handle_);
+      GetGpuFeatureInfo(), surface_handle_, dawn_context_provider);
 }
 
 scoped_refptr<gl::GLSurface> SkiaOutputSurfaceDependencyImpl::CreateGLSurface(

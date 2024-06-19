@@ -35,7 +35,8 @@ namespace gpu {
 
 class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
  public:
-  ImageTransportSurfaceOverlayMacEGL();
+  ImageTransportSurfaceOverlayMacEGL(
+      DawnContextProvider* dawn_context_provider);
 
   // Presenter implementation
   bool Resize(const gfx::Size& size,
@@ -105,6 +106,8 @@ class ImageTransportSurfaceOverlayMacEGL : public gl::Presenter {
 #endif
 
   int cap_max_pending_swaps_ = 1;
+
+  raw_ptr<DawnContextProvider> dawn_context_provider_ = nullptr;
 
   base::WeakPtrFactory<ImageTransportSurfaceOverlayMacEGL> weak_ptr_factory_;
 };

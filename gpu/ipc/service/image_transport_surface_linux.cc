@@ -14,7 +14,8 @@ scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
     gl::GLDisplay* display,
     const GpuDriverBugWorkarounds& workarounds,
     const GpuFeatureInfo& gpu_feature_info,
-    SurfaceHandle surface_handle) {
+    SurfaceHandle surface_handle,
+    DawnContextProvider* dawn_context_provider) {
   DCHECK_NE(surface_handle, kNullSurfaceHandle);
 #if BUILDFLAG(IS_OZONE)
   return gl::init::CreateSurfacelessViewGLSurface(display, surface_handle);
