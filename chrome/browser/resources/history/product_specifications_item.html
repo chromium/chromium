@@ -1,18 +1,25 @@
 <style include="shared-style cr-icons">
   #link {
     cursor: pointer;
-  }
-
-  #item-container {
-    margin: 0 20px;
+    width: fit-content;
   }
 
   #item-container {
     align-items: center;
     display: flex;
+    margin: 0 20px;
     min-height: var(--item-height);
     padding-inline-start: 10px;
     pointer-events: auto;
+  }
+
+  #link-container{
+    flex: 1;
+  }
+
+  #menu {
+    --cr-icon-button-margin-end: 12px;
+    --cr-icon-button-margin-start: 12px;
   }
 </style>
 
@@ -21,9 +28,14 @@
     <cr-checkbox id="checkbox" checked="{{checked_}}"
         on-change="onCheckboxChange_">
     </cr-checkbox>
-    <div id="link">
-      <cr-icon icon="history:table-chart-organize"></cr-icon>
-      [[getItemTitle_(productSet)]] [[productSet.uuid.value]]
+    <div id="link-container">
+      <div id="link" on-click="onLinkClick_"
+          aria-label="[[getMenuAriaLabel_(item)]]">
+        <cr-icon icon="history:table-chart-organize"></cr-icon>
+        [[getItemTitle_(item)]] [[item.uuid.value]]
+      </div>
     </div>
+    <cr-icon-button id="menu" iron-icon="cr:more-vert"
+      on-click="onMenuButtonClick_"></cr-icon-button>
   </div>
 </div>

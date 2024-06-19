@@ -24,6 +24,7 @@
     margin-bottom: var(--card-first-last-item-padding);
   }
 </style>
+
 <div class="history-cards" id="history-item-container">
   <div id="card-title-header" class="card-title" role="row">
     <div role="rowheader">
@@ -32,10 +33,21 @@
       </div>
     </div>
   </div>
-  <template is="dom-repeat" items="[[allProductSpecificationsSets_]]" as="set"
+  <template is="dom-repeat" items="[[allItems_]]" as="item"
       on-dom-change="updateFocusGrid_">
-    <product-specifications-item product-set="[[set]]"
-        on-item-checkbox-select="onItemSelected_">
+    <product-specifications-item item="[[item]]"
+        on-item-checkbox-select="onItemSelected_"
+        on-item-menu-open="onOpenMenu_">
     </product-specifications-item>
   </template>
+
+  <cr-lazy-render id="sharedMenu">
+    <template>
+      <cr-action-menu>
+        <button class="dropdown-item" on-click="onRemoveItemClick_">
+          $i18n{productSpecificationsHistoryRemove}
+        </button>
+      </cr-action-menu>
+    </template>
+  </cr-lazy-render>
 </div>

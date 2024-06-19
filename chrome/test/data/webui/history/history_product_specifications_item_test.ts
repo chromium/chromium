@@ -5,16 +5,19 @@
 import 'chrome://history/history.js';
 
 import type {ProductSpecificationsItemElement} from 'chrome://history/history.js';
-import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {ShoppingBrowserProxyImpl} from 'chrome://history/history.js';
+import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {TestMock} from 'chrome://webui-test/test_mock.js';
 
 suite('ProductSpecificationsItemTest', () => {
+  const shoppingServiceApi = TestMock.fromClass(ShoppingBrowserProxyImpl);
   let productSpecificationsItem: ProductSpecificationsItemElement;
 
   function createProductSpecsItem() {
     productSpecificationsItem =
         document.createElement('product-specifications-item');
-    productSpecificationsItem.productSet = {
+    productSpecificationsItem.item = {
       name: 'example1',
       uuid: {value: 'ex1'},
       urls: [{url: 'dot com 1'}],
@@ -52,11 +55,48 @@ suite('ProductSpecificationsItemTest', () => {
     assertEquals('ex1', uuid);
   });
 
+  test('menu click fires event', async () => {
+    let uuid = '';
+    let clicked = false;
+    let target = null;
+    productSpecificationsItem.addEventListener('item-menu-open', function(e) {
+      clicked = true;
+      uuid = e.detail.uuid.value;
+      target = e.detail.target;
+    });
+    const menu = productSpecificationsItem.$.menu;
+    menu.click();
+
+    assertEquals(true, clicked);
+    assertEquals(menu, target);
+    assertEquals('ex1', uuid);
+  });
+
   test('focus elements', async () => {
     const focusRow = productSpecificationsItem.createFocusRow();
     const elements = focusRow.getElements();
-    assertEquals(2, elements.length);
+    assertEquals(3, elements.length);
     assertEquals('checkbox', elements[0]!.id);
     assertEquals('link', elements[1]!.id);
+    assertEquals('menu', elements[2]!.id);
+  });
+
+  suite('Tests using ShoppingServiceApi', () => {
+    suiteSetup(() => {
+      shoppingServiceApi.reset();
+      ShoppingBrowserProxyImpl.setInstance(shoppingServiceApi);
+    });
+
+    test('link click shows product specs table', async () => {
+      productSpecificationsItem.$.link.click();
+
+      assertEquals(
+          1,
+          shoppingServiceApi.getCallCount(
+              'showProductSpecificationsSetForUuid'));
+      assertDeepEquals(
+          {value: 'ex1'},
+          shoppingServiceApi.getArgs('showProductSpecificationsSetForUuid')[0]);
+    });
   });
 });

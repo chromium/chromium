@@ -32,6 +32,7 @@ export interface BrowserProxy {
   switchToOrOpenTab(url: Url): void;
   getParentBookmarkFolderNameForCurrentUrl(): Promise<{name: String16}>;
   showBookmarkEditorForCurrentUrl(): void;
+  showProductSpecificationsSetForUuid(uuid: Uuid): void;
   showFeedback(): void;
   getCallbackRouter(): PageCallbackRouter;
   getProductInfoForUrl(url: Url): Promise<{productInfo: ProductInfo}>;

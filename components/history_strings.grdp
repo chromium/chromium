@@ -171,7 +171,13 @@
   <message name="IDS_PRODUCT_SPECIFICATIONS_HEADER" desc="Header text for product specifications tab in history." translateable="false">
     Product Specifications lists
   </message>
-  <message name="IDS_PRODUCT_SPECIFICATIONS_ROW" desc="Text for a single row in Product Specifications" translateable="false">
+  <message name="IDS_PRODUCT_SPECIFICATIONS_HISTORY_REMOVE" desc="Text for deleting a single row in Product Specifications history" translateable="false">
+    Remove from lists
+  </message>
+  <message name="IDS_PRODUCT_SPECIFICATIONS_MENU_ARIA_LABEL" desc="Aria label for menu button for a row in Product Specifications history" translateable="false">
+    More actions for product set <ph name="PRODUCT_SPECIFICATIONS_SET_NAME"><ex>e-bikes</ex>$1</ph>
+  </message>
+  <message name="IDS_PRODUCT_SPECIFICATIONS_ROW" desc="Text for a single row in Product Specifications history" translateable="false">
     Analyze <ph name="PRODUCT_SPECIFICATIONS_SET_NAME"><ex>e-bikes</ex>$1</ph> &#183; <ph name="ITEMS"><ex>3</ex>$2</ph> items
   </message>
 </grit-part>

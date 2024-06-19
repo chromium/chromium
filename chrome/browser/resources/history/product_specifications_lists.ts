@@ -8,16 +8,26 @@ import './shared_style.css.js';
 import type {BrowserProxy} from '//resources/cr_components/commerce/browser_proxy.js';
 import {BrowserProxyImpl} from '//resources/cr_components/commerce/browser_proxy.js';
 import type {ProductSpecificationsSet} from 'chrome://resources/cr_components/commerce/shopping_service.mojom-webui.js';
+import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {FocusGrid} from 'chrome://resources/js/focus_grid.js';
+import type {Uuid} from 'chrome://resources/mojo/mojo/public/mojom/base/uuid.mojom-webui.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {ItemCheckboxSelectEvent} from './product_specifications_item.js';
+import type {ItemCheckboxSelectEvent, ItemMenuOpenEvent} from './product_specifications_item.js';
 import {getTemplate} from './product_specifications_lists.html.js';
+
+export interface ProductSpecificationsListsElement {
+  $: {
+    'sharedMenu': CrLazyRenderElement<CrActionMenuElement>,
+  };
+}
 
 declare global {
   interface HTMLElementEventMap {
     'item-checkbox-select': ItemCheckboxSelectEvent;
+    'item-menu-open': ItemMenuOpenEvent;
   }
 }
 export class ProductSpecificationsListsElement extends PolymerElement {
@@ -32,15 +42,17 @@ export class ProductSpecificationsListsElement extends PolymerElement {
   static get properties() {
     return {
       selectedItems: Object,
-      allProductSpecificationsSets_: Array,
+      allItems_: Array,
+      uuidOfOpenMenu_: Object,
     };
   }
 
   selectedItems: Set<string> = new Set();
 
   private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
-  private allProductSpecificationsSets_: ProductSpecificationsSet[] = [];
+  private allItems_: ProductSpecificationsSet[] = [];
   private focusGrid_: FocusGrid|null = null;
+  private uuidOfOpenMenu_: Uuid|null = null;
 
   override async connectedCallback() {
     super.connectedCallback();
@@ -49,7 +61,7 @@ export class ProductSpecificationsListsElement extends PolymerElement {
     if (!sets) {
       return;
     }
-    this.allProductSpecificationsSets_ = sets;
+    this.allItems_ = sets;
   }
 
   override disconnectedCallback() {
@@ -75,6 +87,27 @@ export class ProductSpecificationsListsElement extends PolymerElement {
       this.selectedItems.add(e.detail.uuid);
     } else {
       this.selectedItems.delete(e.detail.uuid);
+    }
+  }
+
+  private onOpenMenu_(e: ItemMenuOpenEvent) {
+    this.$.sharedMenu.get().showAt(e.detail.target);
+    this.uuidOfOpenMenu_ = e.detail.uuid;
+  }
+
+  // TODO: b/335670350 - add checkbox support for deleting multiple items.
+  private deleteItems_(items: string[]): Promise<void[]> {
+    const promises: void[] = [];
+    for (const uuid of items) {
+      promises.push(
+          this.shoppingApi_.deleteProductSpecificationsSet({value: uuid}));
+    }
+    return Promise.all(promises);
+  }
+
+  private onRemoveItemClick_() {
+    if (this.uuidOfOpenMenu_ !== null) {
+      this.deleteItems_([this.uuidOfOpenMenu_.value]);
     }
   }
 

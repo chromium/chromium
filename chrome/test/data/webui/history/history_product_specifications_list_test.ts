@@ -4,7 +4,7 @@
 
 import 'chrome://history/history.js';
 
-import {ShoppingBrowserProxyImpl} from 'chrome://history/history.js';
+import {ensureLazyLoaded, ShoppingBrowserProxyImpl} from 'chrome://history/history.js';
 import type {CrCheckboxElement, ProductSpecificationsListsElement} from 'chrome://history/history.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
@@ -47,28 +47,28 @@ suite('ProductSpecificationsListTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     initProductSets();
     createProductSpecsList();
-    return flushTasks();
+    return Promise.all([flushTasks]).then(() => {
+      shoppingServiceApi.whenCalled('getAllProductSpecificationsSets');
+    });
   });
 
   test('load', async () => {
-    await shoppingServiceApi.whenCalled('getAllProductSpecificationsSets');
     const items = productSpecificationsList.shadowRoot!.querySelectorAll(
         'product-specifications-item');
     assertEquals(2, items.length);
-    const firstSet = items[0]!.productSet;
-    assertEquals('example1', firstSet.name);
-    assertEquals('ex1', firstSet.uuid.value);
-    assertEquals('dot com 1', firstSet.urls[0]);
+    const firstItem = items[0]!.item;
+    assertEquals('example1', firstItem.name);
+    assertEquals('ex1', firstItem.uuid.value);
+    assertEquals('dot com 1', firstItem.urls[0]);
 
-    const secondSet = items[1]!.productSet;
-    assertEquals('example2', secondSet.name);
-    assertEquals('ex2', secondSet.uuid.value);
-    assertEquals('dot com 2a', secondSet.urls[0]);
-    assertEquals('dot com 2b', secondSet.urls[1]);
+    const secondItem = items[1]!.item;
+    assertEquals('example2', secondItem.name);
+    assertEquals('ex2', secondItem.uuid.value);
+    assertEquals('dot com 2a', secondItem.urls[0]);
+    assertEquals('dot com 2b', secondItem.urls[1]);
   });
 
   test('displays correct header', async () => {
-    await shoppingServiceApi.whenCalled('getAllProductSpecificationsSets');
     const items = productSpecificationsList.shadowRoot!.querySelectorAll(
         'product-specifications-item');
     assertEquals(2, items.length);
@@ -85,13 +85,12 @@ suite('ProductSpecificationsListTest', () => {
   test(
       'selecting product set adds uuid to selected items list',
       async function() {
-        await shoppingServiceApi.whenCalled('getAllProductSpecificationsSets');
         const items = productSpecificationsList.shadowRoot!.querySelectorAll(
             'product-specifications-item');
         assertDeepEquals(new Set(), productSpecificationsList.selectedItems);
 
-        const secondSet = items[1]!;
-        const checkbox = secondSet.$['checkbox'] as CrCheckboxElement;
+        const secondItem = items[1]!;
+        const checkbox = secondItem.$.checkbox as CrCheckboxElement;
         checkbox.click();
 
         await checkbox.updateComplete;
@@ -99,8 +98,56 @@ suite('ProductSpecificationsListTest', () => {
             new Set(['ex2']), productSpecificationsList.selectedItems);
       });
 
+  test('consuming menu event opens menu', async function() {
+    await ensureLazyLoaded();
+    const menu = productSpecificationsList.$.sharedMenu.get();
+    assertFalse(menu.open);
+
+    const items = productSpecificationsList.shadowRoot!.querySelectorAll(
+        'product-specifications-item');
+    assertEquals(2, items.length);
+
+    const secondItem = items[1]!;
+    secondItem.dispatchEvent(new CustomEvent('item-menu-open', {
+      bubbles: true,
+      composed: true,
+      detail: {target: secondItem, uuid: {value: 'ex2'}},
+    }));
+    assertTrue(menu.open);
+
+    const button = menu.querySelector('button');
+    assertTrue(!!button);
+    const buttonText = button!.textContent;
+    assertTrue(!!buttonText);
+    assertEquals('Remove from lists', buttonText.trim());
+  });
+
+  test('clicking remove on menu removes the correct uuid', async function() {
+    await ensureLazyLoaded();
+    const items = productSpecificationsList.shadowRoot!.querySelectorAll(
+        'product-specifications-item');
+    assertEquals(2, items.length);
+    const firstItem = items[0]!;
+    firstItem.dispatchEvent(new CustomEvent('item-menu-open', {
+      bubbles: true,
+      composed: true,
+      detail: {target: firstItem, uuid: {value: 'ex1'}},
+    }));
+
+    const menu = productSpecificationsList.$.sharedMenu.get();
+    const button = menu.querySelector('button');
+    assertTrue(!!button);
+    button.click();
+    assertEquals(
+        1, shoppingServiceApi.getCallCount('deleteProductSpecificationsSet'));
+    assertDeepEquals(
+        {value: 'ex1'},
+        shoppingServiceApi.getArgs('deleteProductSpecificationsSet')[0]);
+  });
+
+
+
   test('focus with arrow keys', async () => {
-    await shoppingServiceApi.whenCalled('getAllProductSpecificationsSets');
     const items = productSpecificationsList.shadowRoot!.querySelectorAll(
         'product-specifications-item');
 

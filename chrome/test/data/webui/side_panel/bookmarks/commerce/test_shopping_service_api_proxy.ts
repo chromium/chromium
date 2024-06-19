@@ -62,6 +62,7 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
       'setPriceTrackingStatusForCurrentUrl',
       'getParentBookmarkFolderNameForCurrentUrl',
       'showBookmarkEditorForCurrentUrl',
+      'showProductSpecificationsSetForUuid',
       'getProductInfoForUrl',
       'getProductSpecificationsForUrls',
       'getAllProductSpecificationsSets',
@@ -176,6 +177,10 @@ export class TestBrowserProxy extends BaseTestBrowserProxy implements
 
   showBookmarkEditorForCurrentUrl() {
     this.methodCalled('showBookmarkEditorForCurrentUrl');
+  }
+
+  showProductSpecificationsSetForUuid(uuid: Uuid) {
+    this.methodCalled('showProductSpecificationsSetForUuid', uuid);
   }
 
   getAllProductSpecificationsSets() {

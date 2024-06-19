@@ -26,6 +26,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/webui/commerce/shopping_ui_handler_delegate.h"
 #include "chrome/browser/ui/webui/cr_components/history_clusters/history_clusters_util.h"
 #include "chrome/browser/ui/webui/cr_components/history_embeddings/history_embeddings_handler.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
@@ -112,10 +113,14 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       {"noResults", IDS_HISTORY_NO_RESULTS},
       {"noSearchResults", IDS_HISTORY_NO_SEARCH_RESULTS},
       {"noSyncedResults", IDS_HISTORY_NO_SYNCED_RESULTS},
+      {"productSpecificationsHistoryRemove",
+       IDS_PRODUCT_SPECIFICATIONS_HISTORY_REMOVE},
       {"productSpecificationsHeader", IDS_PRODUCT_SPECIFICATIONS_HEADER},
       {"productSpecificationsListsMenuItem",
        IDS_PRODUCT_SPECIFICATIONS_HISTORY_MENU_ITEM},
       {"productSpecificationsRow", IDS_PRODUCT_SPECIFICATIONS_ROW},
+      {"productSpecificationsMenuAriaLabel",
+       IDS_PRODUCT_SPECIFICATIONS_MENU_ARIA_LABEL},
       {"removeBookmark", IDS_HISTORY_REMOVE_BOOKMARK},
       {"removeFromHistory", IDS_HISTORY_REMOVE_PAGE},
       {"removeSelected", IDS_HISTORY_REMOVE_SELECTED_ITEMS},
@@ -342,7 +347,9 @@ void HistoryUI::CreateShoppingServiceHandler(
   shopping_service_handler_ =
       std::make_unique<commerce::ShoppingServiceHandler>(
           std::move(page), std::move(receiver), bookmark_model,
-          shopping_service, profile->GetPrefs(), tracker, nullptr);
+          shopping_service, profile->GetPrefs(), tracker,
+          std::make_unique<commerce::ShoppingUiHandlerDelegate>(nullptr,
+                                                                profile));
 }
 
 void HistoryUI::UpdateDataSource() {
