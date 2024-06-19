@@ -32,8 +32,7 @@ namespace proxy {
 class PluginResource;
 class ResourceMessageReplyParams;
 
-class PPAPI_PROXY_EXPORT DeviceEnumerationResourceHelper
-    : public base::SupportsWeakPtr<DeviceEnumerationResourceHelper> {
+class PPAPI_PROXY_EXPORT DeviceEnumerationResourceHelper final {
  public:
   // |owner| must outlive this object.
   explicit DeviceEnumerationResourceHelper(PluginResource* owner);
@@ -79,6 +78,7 @@ class PPAPI_PROXY_EXPORT DeviceEnumerationResourceHelper
   std::unique_ptr<ThreadAwareCallback<PP_MonitorDeviceChangeCallback>>
       monitor_callback_;
   void* monitor_user_data_;
+  base::WeakPtrFactory<DeviceEnumerationResourceHelper> weak_ptr_factory_{this};
 };
 
 }  // namespace proxy
