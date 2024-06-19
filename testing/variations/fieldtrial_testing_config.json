@@ -643,6 +643,21 @@
             ]
         }
     ],
+    "AnimationForDesktopCapturePermissionChecker": [
+        {
+            "platforms": [
+                "mac"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AnimationForDesktopCapturePermissionChecker"
+                    ]
+                }
+            ]
+        }
+    ],
     "AomVpxUseChromeThreads": [
         {
             "platforms": [
