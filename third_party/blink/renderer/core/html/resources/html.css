@@ -1534,11 +1534,71 @@ dialog:popover-open {
 
 @media print {
   @page {
-    /* FIXME: Define the right default values for page properties. */
-    size: auto;
-
-    padding: 0px;
-    border-width: 0px;
+    /* https://drafts.csswg.org/css-page-3/#margin-text-alignment */
+    @top-left-corner {
+      text-align: right;
+      vertical-align: middle;
+    }
+    @top-left {
+      text-align: left;
+      vertical-align: middle;
+    }
+    @top-center {
+      text-align: center;
+      vertical-align: middle;
+    }
+    @top-right {
+      text-align: right;
+      vertical-align: middle;
+    }
+    @top-right-corner {
+      text-align: left;
+      vertical-align: middle;
+    }
+    @right-top {
+      text-align: center;
+      vertical-align: top;
+    }
+    @right-middle {
+      text-align: center;
+      vertical-align: middle;
+    }
+    @right-bottom {
+      text-align: center;
+      vertical-align: bottom;
+    }
+    @bottom-right-corner {
+      text-align: left;
+      vertical-align: middle;
+    }
+    @bottom-right {
+      text-align: right;
+      vertical-align: middle;
+    }
+    @bottom-center {
+      text-align: center;
+      vertical-align: middle;
+    }
+    @bottom-left {
+      text-align: left;
+      vertical-align: middle;
+    }
+    @bottom-left-corner {
+      text-align: right;
+      vertical-align: middle;
+    }
+    @left-bottom {
+      text-align: center;
+      vertical-align: bottom;
+    }
+    @left-middle {
+      text-align: center;
+      vertical-align: middle;
+    }
+    @left-top {
+      text-align: center;
+      vertical-align: top;
+    }
   }
 
   /* Allows table headers and footers to print at the top / bottom of each
