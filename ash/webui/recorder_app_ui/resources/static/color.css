@@ -1,0 +1,64 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/*
+ * Default light theme from https://m3.material.io/theme-builder#/custom
+ *
+ * TODO: b/336963138 - Remove this when we don't directly use material
+ * components, or hook this to corresponding CrOS color tokens if we still need
+ * to use some of the material components. Change unused ones into some obvious
+ * wrong color (like pink?) so it's easier to see places that are not using
+ * dynamic color.
+ */
+body {
+  --md-sys-color-primary: rgb(72 93 146);
+  --md-sys-color-surface-tint: rgb(72 93 146);
+  --md-sys-color-on-primary: rgb(255 255 255);
+  --md-sys-color-primary-container: rgb(218 226 255);
+  --md-sys-color-on-primary-container: rgb(0 25 71);
+  --md-sys-color-secondary: rgb(88 94 113);
+  --md-sys-color-on-secondary: rgb(255 255 255);
+  --md-sys-color-secondary-container: rgb(220 226 249);
+  --md-sys-color-on-secondary-container: rgb(21 27 44);
+  --md-sys-color-tertiary: rgb(115 85 114);
+  --md-sys-color-on-tertiary: rgb(255 255 255);
+  --md-sys-color-tertiary-container: rgb(254 215 250);
+  --md-sys-color-on-tertiary-container: rgb(42 18 44);
+  --md-sys-color-error: rgb(186 26 26);
+  --md-sys-color-on-error: rgb(255 255 255);
+  --md-sys-color-error-container: rgb(255 218 214);
+  --md-sys-color-on-error-container: rgb(65 0 2);
+  --md-sys-color-background: rgb(250 248 255);
+  --md-sys-color-on-background: rgb(26 27 33);
+  --md-sys-color-surface: rgb(250 248 255);
+  --md-sys-color-on-surface: rgb(26 27 33);
+  --md-sys-color-surface-variant: rgb(225 226 236);
+  --md-sys-color-on-surface-variant: rgb(68 70 79);
+  --md-sys-color-outline: rgb(117 119 128);
+  --md-sys-color-outline-variant: rgb(197 198 208);
+  --md-sys-color-shadow: rgb(0 0 0);
+  --md-sys-color-scrim: rgb(0 0 0);
+  --md-sys-color-inverse-surface: rgb(47 48 54);
+  --md-sys-color-inverse-on-surface: rgb(241 240 247);
+  --md-sys-color-inverse-primary: rgb(177 197 255);
+  --md-sys-color-primary-fixed: rgb(218 226 255);
+  --md-sys-color-on-primary-fixed: rgb(0 25 71);
+  --md-sys-color-primary-fixed-dim: rgb(177 197 255);
+  --md-sys-color-on-primary-fixed-variant: rgb(48 69 120);
+  --md-sys-color-secondary-fixed: rgb(220 226 249);
+  --md-sys-color-on-secondary-fixed: rgb(21 27 44);
+  --md-sys-color-secondary-fixed-dim: rgb(192 198 220);
+  --md-sys-color-on-secondary-fixed-variant: rgb(64 70 89);
+  --md-sys-color-tertiary-fixed: rgb(254 215 250);
+  --md-sys-color-on-tertiary-fixed: rgb(42 18 44);
+  --md-sys-color-tertiary-fixed-dim: rgb(224 187 221);
+  --md-sys-color-on-tertiary-fixed-variant: rgb(89 61 89);
+  --md-sys-color-surface-dim: rgb(218 217 224);
+  --md-sys-color-surface-bright: rgb(250 248 255);
+  --md-sys-color-surface-container-lowest: rgb(255 255 255);
+  --md-sys-color-surface-container-low: rgb(244 243 250);
+  --md-sys-color-surface-container: rgb(238 237 244);
+  --md-sys-color-surface-container-high: rgb(232 231 239);
+  --md-sys-color-surface-container-highest: rgb(226 226 233);
+}

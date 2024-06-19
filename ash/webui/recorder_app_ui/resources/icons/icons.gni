@@ -1,0 +1,35 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+icons = [
+  "arrow_back.svg",
+  "chevron_down.svg",
+  "chevron_up.svg",
+  "circle_fill.svg",
+  "close.svg",
+  "delete.svg",
+  "delete_forever.svg",
+  "done.svg",
+  "forward_10.svg",
+  "mic.svg",
+  "more_vertical.svg",
+  "notes.svg",
+  "pause.svg",
+  "pause_hero.svg",
+  "pen_spark.svg",
+  "play_arrow.svg",
+  "play_hero.svg",
+  "rate_1_0.svg",
+  "replay_10.svg",
+  "search.svg",
+  "settings.svg",
+  "sort_by.svg",
+  "stop.svg",
+  "summarize_auto.svg",
+  "thumb_down.svg",
+  "thumb_down_filled.svg",
+  "thumb_up.svg",
+  "thumb_up_filled.svg",
+  "volume_up.svg",
+]

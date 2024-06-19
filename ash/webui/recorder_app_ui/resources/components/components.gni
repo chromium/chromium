@@ -1,0 +1,22 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+component_files = [
+  "audio-waveform.ts",
+  "cra/cra-button.ts",
+  "cra/cra-dialog.ts",
+  "cra/cra-icon-button.ts",
+  "cra/cra-icon.ts",
+  "cra/cra-tooltip.ts",
+  "genai-placeholder.ts",
+  "mic-selection-menu.ts",
+  "recording-file-list.ts",
+  "recording-title-suggestion.ts",
+  "recording-title.ts",
+  "secondary-button.ts",
+  "settings-menu.ts",
+  "settings-row.ts",
+  "summarization-view.ts",
+  "transcription-view.ts",
+]

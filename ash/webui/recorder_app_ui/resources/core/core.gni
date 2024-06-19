@@ -1,0 +1,37 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+core_files = [
+  "audio_constants.ts",
+  "data_dir.ts",
+  "i18n.ts",
+  "init.ts",
+  "lit/animation_frame_controller.ts",
+  "lit/context.ts",
+  "platform_handler.ts",
+  "reactive/lit.ts",
+  "reactive/local_storage.ts",
+  "reactive/signal/impl.ts",
+  "reactive/signal.ts",
+  "reactive/signal/types.ts",
+  "reactive/signal_utils.ts",
+  "recording_data_manager.ts",
+  "recording_session.ts",
+  "soda/soda.ts",
+  "soda/types.ts",
+  "state/route.ts",
+  "state/settings.ts",
+  "utils/assert.ts",
+  "utils/async_job_queue.ts",
+  "utils/datetime.ts",
+  "utils/draft.ts",
+  "utils/iterable_weak_set.ts",
+  "utils/local_storage.ts",
+  "utils/observer_list.ts",
+  "utils/schema.ts",
+  "utils/type_utils.ts",
+  "utils/ulid.ts",
+  "utils/utils.ts",
+  "utils/waitable_event.ts",
+]

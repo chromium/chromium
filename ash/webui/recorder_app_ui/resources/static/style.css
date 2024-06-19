@@ -1,0 +1,73 @@
+/* Copyright 2024 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+@font-face {
+  font-family: "Google Sans Clock";
+
+  /* TODO(pihsun): Preload the font. */
+  src: url("./GoogleSansClock.ttf");
+}
+
+:root {
+  /*
+   * From https://www.w3.org/TR/css-backgrounds-3/#corner-overlap.
+   * Setting border-radius to this to force the element to be round on the
+   * shorter side.
+   */
+  --border-radius-rounded-with-short-side: 9999999px;
+  --monospace-font-family: "Google Sans Clock";
+  --small-viewport: 0;
+
+  @media (width <= 960px) {
+    --small-viewport: 1;
+  }
+
+  /*
+   * Determine if the app should be shown in dark or light theme.
+   *
+   * Note that this shouldn't be needed often, since most light/dark theme
+   * should already be handled directly via system color tokens. But this can
+   * be used together with @container style {} query in the rare case that the
+   * color tokens are different in light and dark theme.
+   *
+   * This is preferred over prefers-color-scheme media query since this will
+   * also consider the theme override in local dev environment.
+   */
+  --dark-theme: 0;
+
+  @media (prefers-color-scheme: dark) {
+    --dark-theme: 1;
+  }
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  padding: 0;
+  width: 100%;
+}
+
+body {
+  background-color: var(--cros-sys-app_base_shaded);
+  color: var(--cros-sys-on_surface);
+
+  /*
+   * Common styling for material components.
+   */
+  --md-focus-ring-duration: 0s;
+  --md-focus-ring-color: var(--cros-sys-focus_ring);
+  --md-focus-ring-width: 2px;
+
+  /*
+   * From go/cros-tokens
+   */
+  --cros-sys-app_elevation1: 0 4px 4px 0 rgba(var(--cros-sys-shadow-rgb), 0.2),
+    0 0 4px 0 rgba(var(--cros-sys-shadow-rgb), 0.1);
+  --cros-sys-app_elevation3: 0 12px 12px 0 rgba(var(--cros-sys-shadow-rgb), 0.2),
+    0 0 12px 0 rgba(var(--cros-sys-shadow-rgb), 0.1);
+  --cros-sys-app_elevation5: 0 24px 24px 0 rgba(var(--cros-sys-shadow-rgb), 0.2),
+    0 0 24px 0 rgba(var(--cros-sys-shadow-rgb), 0.1);
+}
