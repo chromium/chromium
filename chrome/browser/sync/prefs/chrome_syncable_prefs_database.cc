@@ -1297,7 +1297,7 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       sync_preferences::MergeBehavior::kNone}},
     {prefs::kURLsToRestoreOnStartup,
      {syncable_prefs_ids::kURLsToRestoreOnStartup, syncer::PREFERENCES,
-      sync_preferences::PrefSensitivity::kNone,
+      sync_preferences::PrefSensitivity::kSensitiveRequiresHistory,
       sync_preferences::MergeBehavior::kMergeableListWithRewriteOnUpdate}},
     {prefs::kUserColor,
      {syncable_prefs_ids::kUserColor, syncer::PREFERENCES,
