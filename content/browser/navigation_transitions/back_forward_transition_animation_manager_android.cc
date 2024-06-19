@@ -157,9 +157,11 @@ void BackForwardTransitionAnimationManagerAndroid::
         NavigationRequest* navigation_request,
         RenderFrameHostImpl* old_host,
         RenderFrameHostImpl* new_host) {
-  if (animator_) {
-    animator_->OnDidNavigatePrimaryMainFramePreCommit(navigation_request,
-                                                      old_host, new_host);
+  if (animator_
+      && !animator_->OnDidNavigatePrimaryMainFramePreCommit(navigation_request,
+                                                            old_host,
+                                                            new_host)) {
+    SynchronouslyDestroyAnimator();
   }
 }
 

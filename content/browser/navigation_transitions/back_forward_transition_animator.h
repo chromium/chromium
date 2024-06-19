@@ -73,7 +73,9 @@ class CONTENT_EXPORT BackForwardTransitionAnimator
   void OnGestureProgressed(const ui::BackGestureEvent& gesture);
   void OnGestureCancelled();
   void OnGestureInvoked();
-  void OnDidNavigatePrimaryMainFramePreCommit(
+  // Returns false if the navigation is unexpected and the animation should
+  // be aborted.
+  bool OnDidNavigatePrimaryMainFramePreCommit(
       NavigationRequest* navigation_request,
       RenderFrameHostImpl* old_host,
       RenderFrameHostImpl* new_host);

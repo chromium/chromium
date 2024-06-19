@@ -274,7 +274,7 @@ void BackForwardTransitionAnimator::OnGestureInvoked() {
   AdvanceAndProcessState(State::kDisplayingInvokeAnimation);
 }
 
-void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
+bool BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
     NavigationRequest* navigation_request,
     RenderFrameHostImpl* old_host,
     RenderFrameHostImpl* new_host) {
@@ -290,7 +290,7 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
   // ignored.
   CHECK(navigation_request->IsInPrimaryMainFrame());
 
-  bool skip_all_animations_and_self_destroy = false;
+  bool skip_all_animations = false;
 
   switch (state_) {
     case State::kStarted:
@@ -299,7 +299,7 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       // A new navigation finished in the primary main frame while the user is
       // swiping across the screen. For simplicity, destroy this class if the
       // new navigation was from the primary main frame.
-      skip_all_animations_and_self_destroy = true;
+      skip_all_animations = true;
       break;
     case State::kDisplayingInvokeAnimation: {
       // We can only get to `kDisplayingInvokeAnimation` if we have started
@@ -311,7 +311,7 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
             primary_main_frame_navigation_request_id_of_gesture_nav_.value()) {
           // A previously pending navigation has committed since we started
           // tracking our gesture navigation. Ignore this committed navigation.
-          return;
+          return true;
         }
 
         // Before we display the crossfade animation to show the new page, we
@@ -344,7 +344,7 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
         }
 
         if (!land_on_error_page && different_commit_origin) {
-          skip_all_animations_and_self_destroy = true;
+          skip_all_animations = true;
           break;
         }
 
@@ -372,7 +372,7 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
         // commit-pending invoke animation to bring B.com's screenshot to the
         // center of the viewport.
         CHECK_EQ(navigation_state_, NavigationState::kCommitted);
-        skip_all_animations_and_self_destroy = true;
+        skip_all_animations = true;
       }
       break;
     }
@@ -388,7 +388,7 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
 
       // A navigation finished while we are displaying the cancel animation.
       // For simplicity, destroy `this` and reset everything.
-      skip_all_animations_and_self_destroy = true;
+      skip_all_animations = true;
       break;
     }
     case State::kWaitingForNewRendererToDraw:
@@ -397,14 +397,14 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       // redirects to C.com, before B.com's renderer even submits a new frame.
       CHECK_EQ(navigation_state_, NavigationState::kCommitted);
       CHECK(primary_main_frame_navigation_request_id_of_gesture_nav_);
-      skip_all_animations_and_self_destroy = true;
+      skip_all_animations = true;
       break;
     case State::kWaitingForContentForNavigationEntryShown:
       // Our navigation has already committed while waiting for a native
       // entry to be finished drawing by the embedder.
       CHECK_EQ(navigation_state_, NavigationState::kCommitted);
       CHECK(primary_main_frame_navigation_request_id_of_gesture_nav_);
-      skip_all_animations_and_self_destroy = true;
+      skip_all_animations = true;
       break;
     case State::kDisplayingCrossFadeAnimation: {
       // Our navigation has already committed while a second navigation commits.
@@ -413,7 +413,7 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       // to whatever is underneath the screenshot.
       CHECK_EQ(navigation_state_, NavigationState::kCommitted);
       CHECK(primary_main_frame_navigation_request_id_of_gesture_nav_);
-      skip_all_animations_and_self_destroy = true;
+      skip_all_animations = true;
       break;
     }
     case State::kWaitingForBeforeUnloadResponse:
@@ -428,13 +428,7 @@ void BackForwardTransitionAnimator::OnDidNavigatePrimaryMainFramePreCommit(
       break;
   }
 
-  // TODO(liuwilliam): We should return this bool and let the caller to destroy
-  // the animator.
-  if (skip_all_animations_and_self_destroy) {
-    animation_manager_->SynchronouslyDestroyAnimator();
-    // *DO NOT* add code after this. `this` will be destroyed at the end of
-    // `SynchronouslyDestroyAnimator()`.
-  }
+  return !skip_all_animations;
 }
 
 void BackForwardTransitionAnimator::OnNavigationCancelledBeforeStart(
