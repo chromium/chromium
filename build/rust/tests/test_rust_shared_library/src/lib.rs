@@ -12,8 +12,9 @@ mod ffi {
     extern "Rust" {
         fn say_hello();
         fn alloc_aligned();
-        fn allocate_via_rust() -> Box<SomeStruct>;
         fn add_two_ints_via_rust(x: i32, y: i32) -> i32;
+        fn allocate_via_rust() -> Box<SomeStruct>;
+        fn allocate_huge_via_rust(size: usize, align: usize) -> bool;
     }
 }
 
@@ -40,8 +41,20 @@ pub fn add_two_ints_via_rust(x: i32, y: i32) -> i32 {
     x + y
 }
 
-// The next function is used from the RustComponentUsesPartitionAlloc unit
-// tests.
+// Used from the RustComponentUsesPartitionAlloc unit tests.
 pub fn allocate_via_rust() -> Box<ffi::SomeStruct> {
     Box::new(ffi::SomeStruct { a: 43 })
+}
+
+// Used from the RustLargeAllocationFailure unit tests.
+pub fn allocate_huge_via_rust(size: usize, align: usize) -> bool {
+    let layout = std::alloc::Layout::from_size_align(size, align).unwrap();
+    let p = unsafe { std::alloc::alloc(layout) };
+    // Rust can optimize out allocations. By printing the pointer value we ensure
+    // the allocation actually happens (and can thus fail).
+    dbg!(p);
+    if !p.is_null() {
+        unsafe { std::alloc::dealloc(p, layout) };
+    }
+    !p.is_null()
 }
