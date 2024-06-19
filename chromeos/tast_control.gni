@@ -128,9 +128,6 @@ tast_disabled_tests_from_chrome_all = [
 # The test disabled here will not impact it running in chrome on chromeOS
 # pipeline.
 tast_disabled_tests_from_lacros_all = [
-  # https://crbug.com/1329764
-  "policy.HistoryClustersVisible",
-
   # https://crbug.com/1361163
   "lacros.AudioPinnedStream.play",
   "lacros.AudioPinnedStream.record",
@@ -143,9 +140,6 @@ tast_disabled_tests_from_lacros_all = [
 
   # https://crbug.com/1446233
   "arc.IntentForward.lacros_vm",
-
-  # https://b/294268366
-  "ui.ForceRegion.lacros",
 
   # https://crbug.com/1470305
   "inputs.VirtualKeyboardTypingOmnibox.a11y_lacros",
