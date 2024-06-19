@@ -7,11 +7,10 @@ desc: |-
 
   Setting this policy to <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_DISABLED">Disabled</ph> (value 0) will prevent the browser from requesting the client certificate. If a profile's managed client certificate had already been provisioned, due to this policy being enabled before, it will not be deleted, but it won't be available for mTLS connections and won't be renewed when it expires.
 
-future_on:
-- chrome.linux
 supported_on:
 - chrome.win:126-
 - chrome.mac:126-
+- chrome.linux:128-
 features:
   dynamic_refresh: true
   per_profile: true
