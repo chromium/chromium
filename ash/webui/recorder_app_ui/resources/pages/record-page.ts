@@ -4,6 +4,7 @@
 
 import '../components/audio-waveform.js';
 import '../components/cra/cra-button.js';
+import '../components/cra/cra-dialog.js';
 import '../components/cra/cra-icon-button.js';
 import '../components/recording-file-list.js';
 import '../components/secondary-button.js';
@@ -17,6 +18,7 @@ import {
   PropertyDeclarations,
 } from 'chrome://resources/mwc/lit/index.js';
 
+import {CraDialog} from '../components/cra/cra-dialog.js';
 import {i18n} from '../core/i18n.js';
 import {
   usePlatformHandler,
@@ -27,7 +29,7 @@ import {signal} from '../core/reactive/signal.js';
 import {RecordingCreateParams} from '../core/recording_data_manager.js';
 import {AudioSource, RecordingSession} from '../core/recording_session.js';
 import {navigateTo} from '../core/state/route.js';
-import {checkEnumVariant} from '../core/utils/assert.js';
+import {assertInstanceof, checkEnumVariant} from '../core/utils/assert.js';
 import {formatDuration} from '../core/utils/datetime.js';
 
 function getDefaultTitle(): string {
@@ -226,6 +228,10 @@ export class RecordPage extends ReactiveLitElement {
         width: 32px;
       }
     }
+
+    #delete-dialog {
+      width: 368px;
+    }
   `;
 
   static override properties: PropertyDeclarations = {
@@ -326,6 +332,24 @@ export class RecordPage extends ReactiveLitElement {
     this.showTranscription.update((s) => !s);
   }
 
+  private get deleteDialog(): CraDialog|null {
+    const el = this.shadowRoot?.querySelector('#delete-dialog') ?? null;
+    if (el === null) {
+      return null;
+    }
+    return assertInstanceof(el, CraDialog);
+  }
+
+  private onDeleteButtonClick() {
+    this.deleteDialog?.show();
+  }
+
+  private async deleteRecording() {
+    // TODO(pihsun): Make this function sync since it's called as event handler.
+    await this.cancelRecording();
+    navigateTo('/');
+  }
+
   private renderAudioWaveform() {
     if (this.recordingSession.value === null) {
       return nothing;
@@ -380,6 +404,27 @@ export class RecordPage extends ReactiveLitElement {
     </cra-button>`;
   }
 
+  private closeDeleteDialog() {
+    this.deleteDialog?.close();
+  }
+
+  private renderDeleteRecordingDialog() {
+    return html`<cra-dialog id="delete-dialog">
+      <div slot="headline">${i18n('Delete current recording?')}</div>
+      <div slot="actions">
+        <cra-button
+          .label=${i18n('Cancel')}
+          button-style="secondary"
+          @click=${this.closeDeleteDialog}
+        ></cra-button>
+        <cra-button
+          .label=${i18n('Delete')}
+          @click=${this.deleteRecording}
+        ></cra-button>
+      </div>
+    </cra-dialog>`;
+  }
+
   override render(): RenderResult {
     const mainSectionClasses = {
       'show-transcription': this.showTranscription.value,
@@ -417,8 +462,7 @@ export class RecordPage extends ReactiveLitElement {
       <div id="footer">
         <div id="timer">${this.renderTimer()}</div>
         <div id="actions">
-          <secondary-button>
-            <!-- TODO: b/336963138 - Implements delete -->
+          <secondary-button @click=${this.onDeleteButtonClick}>
             <cra-icon slot="icon" name="delete"></cra-icon>
           </secondary-button>
           ${this.renderStopRecordButton()}
@@ -428,6 +472,7 @@ export class RecordPage extends ReactiveLitElement {
           </secondary-button>
         </div>
       </div>
+      ${this.renderDeleteRecordingDialog()}
     `;
   }
 }

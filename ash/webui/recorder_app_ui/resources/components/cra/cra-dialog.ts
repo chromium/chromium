@@ -15,6 +15,19 @@ export class CraDialog extends MdDialog {
   static override styles = [
     ...MdDialog.styles,
     css`
+      :host {
+        --md-dialog-container-shape: 20px;
+        --md-dialog-container-color: var(--cros-sys-dialog_container);
+        --md-dialog-content-font: var(--cros-body-1-font-family);
+        --md-dialog-content-line-height: var(--cros-body-1-line-height);
+        --md-dialog-content-size: var(--cros-body-1-font-size);
+        --md-dialog-content-weight: var(--cros-body-1-font-weight);
+        --md-dialog-headline-font: var(--cros-display-7-font-family);
+        --md-dialog-headline-line-height: var(--cros-display-7-line-height);
+        --md-dialog-headline-size: var(--cros-display-7-font-size);
+        --md-dialog-headline-weight: var(--cros-display-7-font-weight);
+      }
+
       .scrim {
         background: var(--cros-sys-scrim);
 
@@ -30,6 +43,22 @@ export class CraDialog extends MdDialog {
       .container {
         /* To not hide the box-shadow. */
         overflow: initial;
+      }
+
+      slot[name="headline"]::slotted(*) {
+        padding: 32px 32px 0;
+      }
+
+      slot[name="content"]::slotted(*) {
+        padding: 16px 32px 0;
+      }
+
+      .has-actions slot[name="content"]::slotted(*) {
+        padding-bottom: 0;
+      }
+
+      slot[name="actions"]::slotted(*) {
+        padding: 32px 32px 28px;
       }
     `,
   ];

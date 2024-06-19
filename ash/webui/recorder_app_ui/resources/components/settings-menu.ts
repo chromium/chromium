@@ -26,7 +26,6 @@ export class SettingsMenu extends ReactiveLitElement {
 
     cra-dialog {
       --md-dialog-container-color: var(--cros-sys-surface3);
-      --md-dialog-container-shape: 20px;
 
       /* 16px margin for each side at minimum size. */
       max-height: calc(100% - 32px);
