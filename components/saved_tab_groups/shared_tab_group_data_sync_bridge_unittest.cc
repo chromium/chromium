@@ -17,6 +17,7 @@
 #include "components/saved_tab_groups/saved_tab_group_model_observer.h"
 #include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/saved_tab_groups/saved_tab_group_test_utils.h"
+#include "components/sync/model/data_batch.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/shared_tab_group_data_specifics.pb.h"
@@ -47,6 +48,20 @@ MATCHER_P3(HasSharedGroupMetadata, title, color, collaboration_id, "") {
 
 MATCHER_P2(HasTabMetadata, title, url, "") {
   return base::UTF16ToUTF8(arg.title()) == title && arg.url() == GURL(url);
+}
+
+MATCHER_P3(HasGroupEntityData, title, color, collaboration_id, "") {
+  const sync_pb::SharedTabGroup& arg_tab_group =
+      arg.specifics.shared_tab_group_data().tab_group();
+  return arg_tab_group.title() == title && arg_tab_group.color() == color &&
+         arg.collaboration_id == collaboration_id;
+}
+
+MATCHER_P3(HasTabEntityData, title, url, collaboration_id, "") {
+  const sync_pb::SharedTab& arg_tab =
+      arg.specifics.shared_tab_group_data().tab();
+  return arg_tab.title() == title && arg_tab.url() == url &&
+         arg.collaboration_id == collaboration_id;
 }
 
 class MockTabGroupModelObserver : public SavedTabGroupModelObserver {
@@ -113,6 +128,16 @@ std::unique_ptr<syncer::EntityChange> CreateUpdateEntityChange(
   const std::string& storage_key = specifics.guid();
   return syncer::EntityChange::CreateUpdate(
       storage_key, CreateEntityData(specifics, collaboration_id));
+}
+
+std::vector<syncer::EntityData> ExtractEntityDataFromBatch(
+    std::unique_ptr<syncer::DataBatch> batch) {
+  std::vector<syncer::EntityData> result;
+  while (batch->HasNext()) {
+    const syncer::KeyAndData& data_pair = batch->Next();
+    result.push_back(std::move(*data_pair.second));
+  }
+  return result;
 }
 
 class SharedTabGroupDataSyncBridgeTest : public testing::Test {
@@ -491,6 +516,110 @@ TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldNotifyObserversOnDisableSync) {
   // SavedTabGroupUpdatedFromSync(Eq(group.saved_guid()),
   // Eq(tab2.saved_tab_guid())));
   bridge()->ApplyDisableSyncChanges(bridge()->CreateMetadataChangeList());
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnGroupDataForCommit) {
+  InitializeBridge();
+
+  SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
+                      /*urls=*/{}, /*position=*/std::nullopt);
+  group.SetCollaborationId("collaboration");
+  SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
+      "http://google.com", u"tab 1", group.saved_guid(), /*position=*/0);
+  SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
+      "http://google.com", u"tab 2", group.saved_guid(), /*position=*/1);
+
+  model()->Add(group);
+  model()->AddTabToGroupLocally(group.saved_guid(), tab1);
+  model()->AddTabToGroupLocally(group.saved_guid(), tab2);
+  ASSERT_TRUE(model()->Contains(group.saved_guid()));
+  ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
+
+  std::vector<syncer::EntityData> entity_data_list;
+  base::RunLoop run_loop;
+  bridge()->GetDataForCommit(
+      {group.saved_guid().AsLowercaseString()},
+      base::BindLambdaForTesting([&run_loop, &entity_data_list](
+                                     std::unique_ptr<syncer::DataBatch> batch) {
+        entity_data_list = ExtractEntityDataFromBatch(std::move(batch));
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  EXPECT_THAT(entity_data_list, UnorderedElementsAre(HasGroupEntityData(
+                                    "title", sync_pb::SharedTabGroup_Color_GREY,
+                                    "collaboration")));
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnTabDataForCommit) {
+  InitializeBridge();
+
+  SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
+                      /*urls=*/{}, /*position=*/std::nullopt);
+  group.SetCollaborationId("collaboration");
+  SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
+      "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
+  SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
+      "http://google.com/2", u"tab 2", group.saved_guid(), /*position=*/1);
+
+  model()->Add(group);
+  model()->AddTabToGroupLocally(group.saved_guid(), tab1);
+  model()->AddTabToGroupLocally(group.saved_guid(), tab2);
+  ASSERT_TRUE(model()->Contains(group.saved_guid()));
+  ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
+
+  std::vector<syncer::EntityData> entity_data_list;
+  base::RunLoop run_loop;
+  bridge()->GetDataForCommit(
+      {tab2.saved_tab_guid().AsLowercaseString(),
+       tab1.saved_tab_guid().AsLowercaseString()},
+      base::BindLambdaForTesting([&run_loop, &entity_data_list](
+                                     std::unique_ptr<syncer::DataBatch> batch) {
+        entity_data_list = ExtractEntityDataFromBatch(std::move(batch));
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  EXPECT_THAT(
+      entity_data_list,
+      UnorderedElementsAre(
+          HasTabEntityData("tab 2", "http://google.com/2", "collaboration"),
+          HasTabEntityData("tab 1", "http://google.com/1", "collaboration")));
+}
+
+TEST_F(SharedTabGroupDataSyncBridgeTest, ShouldReturnAllDataForDebugging) {
+  InitializeBridge();
+
+  SavedTabGroup group(u"title", tab_groups::TabGroupColorId::kGrey,
+                      /*urls=*/{}, /*position=*/std::nullopt);
+  group.SetCollaborationId("collaboration");
+  SavedTabGroupTab tab1 = test::CreateSavedTabGroupTab(
+      "http://google.com/1", u"tab 1", group.saved_guid(), /*position=*/0);
+  SavedTabGroupTab tab2 = test::CreateSavedTabGroupTab(
+      "http://google.com/2", u"tab 2", group.saved_guid(), /*position=*/1);
+
+  model()->Add(group);
+  model()->AddTabToGroupLocally(group.saved_guid(), tab1);
+  model()->AddTabToGroupLocally(group.saved_guid(), tab2);
+  ASSERT_TRUE(model()->Contains(group.saved_guid()));
+  ASSERT_EQ(model()->Get(group.saved_guid())->saved_tabs().size(), 2u);
+
+  std::vector<syncer::EntityData> entity_data_list;
+  base::RunLoop run_loop;
+  bridge()->GetAllDataForDebugging(base::BindLambdaForTesting(
+      [&run_loop, &entity_data_list](std::unique_ptr<syncer::DataBatch> batch) {
+        entity_data_list = ExtractEntityDataFromBatch(std::move(batch));
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
+  EXPECT_THAT(
+      entity_data_list,
+      UnorderedElementsAre(
+          HasTabEntityData("tab 2", "http://google.com/2", "collaboration"),
+          HasTabEntityData("tab 1", "http://google.com/1", "collaboration"),
+          HasGroupEntityData("title", sync_pb::SharedTabGroup_Color_GREY,
+                             "collaboration")));
 }
 
 }  // namespace

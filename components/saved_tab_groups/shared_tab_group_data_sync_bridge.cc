@@ -5,6 +5,7 @@
 #include "components/saved_tab_groups/shared_tab_group_data_sync_bridge.h"
 
 #include <map>
+#include <set>
 
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -13,6 +14,7 @@
 #include "base/uuid.h"
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
+#include "components/saved_tab_groups/saved_tab_group_tab.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
@@ -170,6 +172,30 @@ sync_pb::SharedTabGroupDataSpecifics SharedTabGroupTabToSpecifics(
   return specifics;
 }
 
+std::unique_ptr<syncer::EntityData> CreateEntityData(
+    sync_pb::SharedTabGroupDataSpecifics specifics,
+    const std::string& collaboration_id) {
+  CHECK(!collaboration_id.empty());
+  std::unique_ptr<syncer::EntityData> entity_data =
+      std::make_unique<syncer::EntityData>();
+  entity_data->name = specifics.guid();
+  entity_data->specifics.mutable_shared_tab_group_data()->Swap(&specifics);
+  entity_data->collaboration_id = collaboration_id;
+  return entity_data;
+}
+
+void AddEntryToBatch(syncer::MutableDataBatch* batch,
+                     sync_pb::SharedTabGroupDataSpecifics specifics,
+                     const std::string& collaboration_id) {
+  std::unique_ptr<syncer::EntityData> entity_data =
+      CreateEntityData(std::move(specifics), collaboration_id);
+
+  // Copy because our key is the name of `entity_data`.
+  std::string name = entity_data->name;
+
+  batch->Put(name, std::move(entity_data));
+}
+
 }  // namespace
 
 SharedTabGroupDataSyncBridge::SharedTabGroupDataSyncBridge(
@@ -272,16 +298,54 @@ SharedTabGroupDataSyncBridge::ApplyIncrementalSyncChanges(
 void SharedTabGroupDataSyncBridge::GetDataForCommit(StorageKeyList storage_keys,
                                                     DataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTIMPLEMENTED();
   auto batch = std::make_unique<syncer::MutableDataBatch>();
+
+  std::set<base::Uuid> parsed_guids;
+  for (const std::string& guid : storage_keys) {
+    base::Uuid parsed_guid = base::Uuid::ParseLowercase(guid);
+    CHECK(parsed_guid.is_valid());
+    parsed_guids.insert(std::move(parsed_guid));
+  }
+
+  // Iterate over all the shared groups and tabs to find corresponding entities
+  // for commit.
+  for (const SavedTabGroup& group : model_->saved_tab_groups()) {
+    if (!group.is_shared_tab_group()) {
+      continue;
+    }
+    CHECK(group.collaboration_id().has_value());
+
+    if (parsed_guids.contains(group.saved_guid())) {
+      AddEntryToBatch(batch.get(), SharedTabGroupToSpecifics(group),
+                      group.collaboration_id().value());
+    }
+    for (const SavedTabGroupTab& tab : group.saved_tabs()) {
+      if (parsed_guids.contains(tab.saved_tab_guid())) {
+        AddEntryToBatch(batch.get(), SharedTabGroupTabToSpecifics(tab),
+                        group.collaboration_id().value());
+      }
+    }
+  }
   std::move(callback).Run(std::move(batch));
 }
 
 void SharedTabGroupDataSyncBridge::GetAllDataForDebugging(
     DataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NOTIMPLEMENTED();
   auto batch = std::make_unique<syncer::MutableDataBatch>();
+  for (const SavedTabGroup& group : model_->saved_tab_groups()) {
+    if (!group.is_shared_tab_group()) {
+      continue;
+    }
+
+    CHECK(group.collaboration_id().has_value());
+    AddEntryToBatch(batch.get(), SharedTabGroupToSpecifics(group),
+                    group.collaboration_id().value());
+    for (const SavedTabGroupTab& tab : group.saved_tabs()) {
+      AddEntryToBatch(batch.get(), SharedTabGroupTabToSpecifics(tab),
+                      group.collaboration_id().value());
+    }
+  }
   std::move(callback).Run(std::move(batch));
 }
 
