@@ -265,6 +265,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Compositing.DirectRenderer.TotalPixelsRendered" units="pixels"
+    expires_after="2025-06-09">
+  <owner>petermcneeley@chromium.org</owner>
+  <owner>graphics-dev@chromium.org</owner>
+  <summary>
+    Record every frame the sum of all rendered pixels from all render passes.
+  </summary>
+</histogram>
+
 <histogram name="Compositing.Display.AdpfHintUs" units="microseconds"
     expires_after="2024-09-01">
   <owner>boliu@chromium.org</owner>

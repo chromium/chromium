@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_DIRECT_RENDERER_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_DIRECT_RENDERER_H_
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <utility>
@@ -451,6 +452,7 @@ class VIZ_SERVICE_EXPORT DirectRenderer {
   gfx::Size device_viewport_size_;
   gfx::OverlayTransform reshape_display_transform_ =
       gfx::OVERLAY_TRANSFORM_INVALID;
+  uint64_t total_pixels_rendered_this_frame_ = 0;
 };
 
 }  // namespace viz

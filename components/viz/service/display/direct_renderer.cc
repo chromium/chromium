@@ -383,6 +383,7 @@ void DirectRenderer::DrawFrame(
   DecideRenderPassAllocationsForFrame(*render_passes_in_draw_order);
 
   // Draw all non-root render passes except for the root render pass.
+  total_pixels_rendered_this_frame_ = 0;
   for (const auto& pass : *render_passes_in_draw_order) {
     if (pass.get() == root_render_pass)
       break;
@@ -403,8 +404,19 @@ void DirectRenderer::DrawFrame(
   if (needs_full_frame_redraw)
     current_frame()->root_damage_rect = gfx::Rect(device_viewport_size);
 
-  if (!skip_drawing_root_render_pass)
+  if (!skip_drawing_root_render_pass) {
     DrawRenderPassAndExecuteCopyRequests(root_render_pass);
+  }
+
+  // Displays 4k in size or greater are relatively common.
+  constexpr uint64_t kMaxPixelCount = 30'000'000;
+  constexpr uint64_t kMinPixelCount = 1;
+  constexpr uint64_t kNumBucketsPixelCount = 50;
+  UMA_HISTOGRAM_CUSTOM_COUNTS("Compositing.DirectRenderer.TotalPixelsRendered",
+                              total_pixels_rendered_this_frame_, kMinPixelCount,
+                              kMaxPixelCount, kNumBucketsPixelCount);
+  DBG_LOG("direct.renderer.total_pixels", "Total Pixels: %" PRIu64,
+          total_pixels_rendered_this_frame_);
 
   if (overlay_processor_)
     overlay_processor_->TakeOverlayCandidates(&current_frame()->overlay_list);
@@ -685,6 +697,9 @@ void DirectRenderer::DrawRenderPass(const AggregatedRenderPass* render_pass) {
   if (!is_root_render_pass && !IsRenderPassResourceAllocated(render_pass->id)) {
     return;
   }
+
+  total_pixels_rendered_this_frame_ +=
+      render_pass_scissor_in_draw_space.size().Area64();
 
   const bool render_pass_is_clipped =
       !render_pass_scissor_in_draw_space.Contains(surface_rect_in_draw_space);
