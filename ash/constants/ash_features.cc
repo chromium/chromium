@@ -2148,6 +2148,11 @@ BASE_FEATURE(kOobeLazyLoading,
              "OobeLazyLoading",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables OOBE perks discovery feature.
+BASE_FEATURE(kOobePerksDiscovery,
+             "OobePerksDiscovery",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables OOBE ai intro feature.
 BASE_FEATURE(kOobeAiIntro, "OobeAiIntro", base::FEATURE_ENABLED_BY_DEFAULT);
 
@@ -4171,6 +4176,10 @@ bool IsOobeTunaEnabled() {
 
 bool IsOobeLazyLoadingEnabled() {
   return base::FeatureList::IsEnabled(kOobeLazyLoading);
+}
+
+bool IsOobePerksDiscoveryEnabled() {
+  return base::FeatureList::IsEnabled(kOobePerksDiscovery);
 }
 
 bool IsOobeQuickStartEnabled() {
