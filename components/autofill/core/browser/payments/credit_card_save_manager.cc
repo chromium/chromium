@@ -62,8 +62,9 @@
 #include "url/gurl.h"
 
 namespace autofill {
-
 namespace {
+
+using PaymentsRpcResult = payments::PaymentsAutofillClient::PaymentsRpcResult;
 
 // If |name| consists of three whitespace-separated parts and the second of the
 // three parts is a single character or a single character followed by a period,
@@ -443,14 +444,14 @@ bool CreditCardSaveManager::IsCreditCardUploadEnabled() {
 }
 
 void CreditCardSaveManager::OnDidUploadCard(
-    AutofillClient::PaymentsRpcResult result,
+    PaymentsRpcResult result,
     const payments::PaymentsNetworkInterface::UploadCardResponseDetails&
         upload_card_response_details) {
   if (observer_for_testing_) {
     observer_for_testing_->OnReceivedUploadCardResponse();
   }
 
-  if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
+  if (result == PaymentsRpcResult::kSuccess) {
     // Log how many strikes the card had when it was saved.
     LogStrikesPresentWhenCardSaved(
         /*is_local=*/false,
@@ -502,7 +503,7 @@ void CreditCardSaveManager::OnDidUploadCard(
   std::optional<payments::PaymentsNetworkInterface::
                     GetDetailsForEnrollmentResponseDetails>
       get_details_for_enrollment_response_details = PrepareForVirtualCardEnroll(
-          /*card_saved=*/result == AutofillClient::PaymentsRpcResult::kSuccess,
+          /*card_saved=*/result == PaymentsRpcResult::kSuccess,
           std::move(upload_card_response_details),
           /*uploaded_card=*/&upload_request_.card);
 
@@ -517,7 +518,7 @@ void CreditCardSaveManager::OnDidUploadCard(
 
   // Show credit card upload feedback.
   client_->GetPaymentsAutofillClient()->CreditCardUploadCompleted(
-      result == AutofillClient::PaymentsRpcResult::kSuccess,
+      result == PaymentsRpcResult::kSuccess,
       std::move(on_confirmation_closed_callback));
 
   // Init virtual card enrollment since there is no save card
@@ -617,14 +618,14 @@ CreditCardSaveManager::GetLocalCardMigrationStrikeDatabase() {
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void CreditCardSaveManager::OnDidGetUploadDetails(
-    AutofillClient::PaymentsRpcResult result,
+    PaymentsRpcResult result,
     const std::u16string& context_token,
     std::unique_ptr<base::Value::Dict> legal_message,
     std::vector<std::pair<int, int>> supported_card_bin_ranges) {
   if (observer_for_testing_) {
     observer_for_testing_->OnReceivedGetUploadDetailsResponse();
   }
-  if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
+  if (result == PaymentsRpcResult::kSuccess) {
     LegalMessageLine::Parse(*legal_message, &legal_message_lines_,
                             /*escape_apostrophes=*/true);
 

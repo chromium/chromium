@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/metrics/payments/credit_card_save_metrics.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/strike_databases/payments/credit_card_save_strike_database.h"
 #include "components/autofill/core/browser/strike_databases/payments/cvc_storage_strike_database.h"
@@ -170,11 +171,11 @@ class CreditCardSaveManager {
 
  protected:
   // Returns the result of an upload request. If |result| ==
-  // |AutofillClient::PaymentsRpcResult::kSuccess|, clears strikes for the saved
-  // card. Additionally, |server_id| may, optionally, contain the opaque
-  // identifier for the card on the server. Exposed for testing.
+  // |PaymentsRpcResult::kSuccess|, clears strikes for the saved card.
+  // Additionally, |server_id| may, optionally, contain the opaque identifier
+  // for the card on the server. Exposed for testing.
   virtual void OnDidUploadCard(
-      AutofillClient::PaymentsRpcResult result,
+      payments::PaymentsAutofillClient::PaymentsRpcResult result,
       const payments::PaymentsNetworkInterface::UploadCardResponseDetails&
           upload_card_response_details);
 
@@ -223,7 +224,7 @@ class CreditCardSaveManager {
   // are supported, with the first and second number in the pair being the start
   // and end of the range.
   void OnDidGetUploadDetails(
-      AutofillClient::PaymentsRpcResult result,
+      payments::PaymentsAutofillClient::PaymentsRpcResult result,
       const std::u16string& context_token,
       std::unique_ptr<base::Value::Dict> legal_message,
       std::vector<std::pair<int, int>> supported_card_bin_ranges);

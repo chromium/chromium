@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
@@ -22,11 +21,12 @@
 
 namespace autofill {
 
-class BrowserAutofillManagerTest;
+class AutofillClient;
 class AutofillMetricsTest;
+class BrowserAutofillManagerTest;
+class CreditCard;
 class CreditCardAccessManagerTest;
 class CreditCardCvcAuthenticatorTest;
-class CreditCard;
 class FormFillerTest;
 class PersonalDataManager;
 
@@ -73,7 +73,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
    public:
     virtual ~ResultDelegate() = default;
     virtual void OnFullCardRequestSucceeded(
-        const payments::FullCardRequest& full_card_request,
+        const FullCardRequest& full_card_request,
         const CreditCard& card,
         const std::u16string& cvc) = 0;
     virtual void OnFullCardRequestFailed(CreditCard::RecordType card_type,
@@ -109,10 +109,9 @@ class FullCardRequest final : public CardUnmaskDelegate {
   };
 
   // The parameters should outlive the FullCardRequest.
-  FullCardRequest(
-      AutofillClient* autofill_client,
-      payments::PaymentsNetworkInterface* payments_network_interface,
-      PersonalDataManager* personal_data_manager);
+  FullCardRequest(AutofillClient* autofill_client,
+                  PaymentsNetworkInterface* payments_network_interface,
+                  PersonalDataManager* personal_data_manager);
 
   FullCardRequest(const FullCardRequest&) = delete;
   FullCardRequest& operator=(const FullCardRequest&) = delete;
@@ -128,7 +127,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // expiration date, then this function will write the new information to
   // autofill table on disk.
   void GetFullCard(const CreditCard& card,
-                   payments::PaymentsAutofillClient::UnmaskCardReason reason,
+                   PaymentsAutofillClient::UnmaskCardReason reason,
                    base::WeakPtr<ResultDelegate> result_delegate,
                    base::WeakPtr<UIDelegate> ui_delegate,
                    const url::Origin& merchant_domain_for_footprints,
@@ -140,7 +139,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // unmasking a Virtual Card via CVC authentication.
   void GetFullVirtualCardViaCVC(
       const CreditCard& card,
-      payments::PaymentsAutofillClient::UnmaskCardReason reason,
+      PaymentsAutofillClient::UnmaskCardReason reason,
       base::WeakPtr<ResultDelegate> result_delegate,
       base::WeakPtr<UIDelegate> ui_delegate,
       const GURL& last_committed_primary_main_frame_origin,
@@ -165,7 +164,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // autofill table on disk.
   void GetFullCardViaFIDO(
       const CreditCard& card,
-      payments::PaymentsAutofillClient::UnmaskCardReason reason,
+      PaymentsAutofillClient::UnmaskCardReason reason,
       base::WeakPtr<ResultDelegate> result_delegate,
       base::Value::Dict fido_assertion_info,
       const url::Origin& merchant_domain_for_footprints,
@@ -176,19 +175,18 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // Called by the PaymentsNetworkInterface when a card has been unmasked.
   void OnDidGetRealPan(
       PaymentsAutofillClient::PaymentsRpcResult result,
-      const payments::PaymentsNetworkInterface::UnmaskResponseDetails&
-          response_details);
+      const PaymentsNetworkInterface::UnmaskResponseDetails& response_details);
 
   // Called when verification is cancelled. This is used only by
   // CreditCardFidoAuthenticator to cancel the flow for opted-in users.
   void OnFIDOVerificationCancelled();
 
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails
-  unmask_response_details() const {
+  PaymentsNetworkInterface::UnmaskResponseDetails unmask_response_details()
+      const {
     return unmask_response_details_;
   }
 
-  payments::PaymentsNetworkInterface::UnmaskRequestDetails*
+  PaymentsNetworkInterface::UnmaskRequestDetails*
   GetUnmaskRequestDetailsForTesting() const {
     return request_.get();
   }
@@ -227,7 +225,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // autofill table on disk.
   void GetFullCardImpl(
       const CreditCard& card,
-      payments::PaymentsAutofillClient::UnmaskCardReason reason,
+      PaymentsAutofillClient::UnmaskCardReason reason,
       base::WeakPtr<ResultDelegate> result_delegate,
       base::WeakPtr<UIDelegate> ui_delegate,
       std::optional<base::Value::Dict> fido_assertion_info,
@@ -256,7 +254,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   const raw_ref<AutofillClient> autofill_client_;
 
   // Responsible for unmasking a masked server card.
-  const raw_ptr<payments::PaymentsNetworkInterface> payments_network_interface_;
+  const raw_ptr<PaymentsNetworkInterface> payments_network_interface_;
 
   // Responsible for updating the server card on disk after it's been unmasked.
   const raw_ptr<PersonalDataManager> personal_data_manager_;
@@ -268,8 +266,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   base::WeakPtr<UIDelegate> ui_delegate_;
 
   // The pending request to get a card's full PAN and CVC.
-  std::unique_ptr<payments::PaymentsNetworkInterface::UnmaskRequestDetails>
-      request_;
+  std::unique_ptr<PaymentsNetworkInterface::UnmaskRequestDetails> request_;
 
   // Whether the card unmask request should be sent to the payment server.
   bool should_unmask_card_;
@@ -279,8 +276,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
   base::TimeTicks real_pan_request_timestamp_;
 
   // Includes all details from GetRealPan response.
-  payments::PaymentsNetworkInterface::UnmaskResponseDetails
-      unmask_response_details_;
+  PaymentsNetworkInterface::UnmaskResponseDetails unmask_response_details_;
 
   // Enables destroying FullCardRequest while CVC prompt is showing or a server
   // communication is pending.

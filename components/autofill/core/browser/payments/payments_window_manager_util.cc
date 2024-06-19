@@ -87,11 +87,11 @@ CreateUnmaskRequestDetailsForVcn3ds(
 
 PaymentsWindowManager::Vcn3dsAuthenticationResponse
 CreateVcn3dsAuthenticationResponse(
-    AutofillClient::PaymentsRpcResult result,
+    PaymentsAutofillClient::PaymentsRpcResult result,
     const PaymentsNetworkInterface::UnmaskResponseDetails& response_details,
     CreditCard card) {
   PaymentsWindowManager::Vcn3dsAuthenticationResponse response;
-  if (result == AutofillClient::PaymentsRpcResult::kSuccess) {
+  if (result == PaymentsAutofillClient::PaymentsRpcResult::kSuccess) {
     card.SetNumber(base::UTF8ToUTF16(response_details.real_pan));
     card.SetExpirationMonthFromString(
         base::UTF8ToUTF16(response_details.expiration_month),

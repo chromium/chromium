@@ -9,6 +9,7 @@
 #include "base/types/expected.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
+#include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_network_interface.h"
 #include "components/autofill/core/browser/payments/payments_window_manager.h"
 
@@ -44,7 +45,7 @@ CreateUnmaskRequestDetailsForVcn3ds(
 // UnmaskCardRequest that was sent during the VCN 3DS authentication.
 PaymentsWindowManager::Vcn3dsAuthenticationResponse
 CreateVcn3dsAuthenticationResponse(
-    AutofillClient::PaymentsRpcResult result,
+    PaymentsAutofillClient::PaymentsRpcResult result,
     const PaymentsNetworkInterface::UnmaskResponseDetails& response_details,
     CreditCard card);
 
