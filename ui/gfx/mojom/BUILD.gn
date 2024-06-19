@@ -104,6 +104,10 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "gfx.mojom.ContentColorUsage"
+          cpp = "::gfx::ContentColorUsage"
+        },
+        {
           mojom = "gfx.mojom.DisplayColorSpaces"
           cpp = "::gfx::DisplayColorSpaces"
         },
