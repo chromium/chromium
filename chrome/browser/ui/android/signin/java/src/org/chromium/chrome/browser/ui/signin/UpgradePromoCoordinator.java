@@ -154,10 +154,6 @@ public final class UpgradePromoCoordinator
 
     /** Implements {@link FullscreenSigninCoordinator.Delegate} */
     @Override
-    public void acceptTermsOfService(boolean allowMetricsAndCrashUploading) {}
-
-    /** Implements {@link FullscreenSigninCoordinator.Delegate} */
-    @Override
     public void advanceToNextPage() {
         if (!isSignedIn() || mCurrentView == ChildView.HISTORY_SYNC) {
             mDelegate.onFlowComplete();
@@ -177,26 +173,6 @@ public final class UpgradePromoCoordinator
     public void displayDeviceLockPage(Account selectedAccount) {
         // TODO(b/41496906): Maybe implement this method.
     }
-
-    /** Implements {@link FullscreenSigninCoordinator.Delegate} */
-    @Override
-    public void recordFreProgressHistogram(int state) {}
-
-    /** Implements {@link FullscreenSigninCoordinator.Delegate} */
-    @Override
-    public void recordNativePolicyAndChildStatusLoadedHistogram() {
-        // TODO(b/41493788): Maybe implement this method.
-    }
-
-    /** Implements {@link FullscreenSigninCoordinator.Delegate} */
-    @Override
-    public void recordNativeInitializedHistogram() {
-        // TODO(b/41493788): Maybe implement this method.
-    }
-
-    /** Implements {@link FullscreenSigninCoordinator.Delegate} */
-    @Override
-    public void showInfoPage(int url) {}
 
     /** Implements {@link FullscreenSigninCoordinator.Delegate} */
     @Override
