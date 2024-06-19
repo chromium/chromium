@@ -230,6 +230,8 @@ class GraphBuilderTflite final {
   OperatorOffset SerializeExpand(const mojom::Expand& expand);
   base::expected<OperatorOffset, std::string> SerializeGather(
       const mojom::Gather& gather);
+  base::expected<OperatorOffset, std::string> SerializeGelu(
+      const mojom::Gelu& gelu);
   base::expected<OperatorOffset, std::string> SerializeGemm(
       const mojom::Gemm& gemm);
   OperatorOffset SerializeHardSigmoid(const mojom::HardSigmoid& hard_sigmoid);

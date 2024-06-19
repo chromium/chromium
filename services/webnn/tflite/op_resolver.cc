@@ -86,6 +86,10 @@ OpResolver::OpResolver(const mojom::CreateContextOptions& options) {
              ::tflite::ops::builtin::Register_GATHER(),
              /* min_version = */ 1,
              /* max_version = */ 3);
+  AddBuiltin(::tflite::BuiltinOperator_GELU,
+             ::tflite::ops::builtin::Register_GELU(),
+             /* min_version = */ 1,
+             /* max_version = */ 2);
   AddBuiltin(::tflite::BuiltinOperator_GREATER,
              ::tflite::ops::builtin::Register_GREATER(),
              /* min_version = */ 1,

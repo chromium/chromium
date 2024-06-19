@@ -332,6 +332,10 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
       ASSIGN_OR_RETURN(operator_offset, SerializeGather(*op.get_gather()));
       break;
     }
+    case mojom::Operation::Tag::kGelu: {
+      ASSIGN_OR_RETURN(operator_offset, SerializeGelu(*op.get_gelu()));
+      break;
+    }
     case mojom::Operation::Tag::kGemm: {
       ASSIGN_OR_RETURN(operator_offset, SerializeGemm(*op.get_gemm()));
       break;
@@ -423,7 +427,6 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
     case mojom::Operation::Tag::kWhere:
       operator_offset = SerializeWhere(*op.get_where());
       break;
-    case mojom::Operation::Tag::kGelu:
     case mojom::Operation::Tag::kGru:
     case mojom::Operation::Tag::kGruCell:
     case mojom::Operation::Tag::kLstm:
@@ -1333,6 +1336,22 @@ auto GraphBuilderTflite::SerializeGather(const mojom::Gather& gather)
       builder_, operator_code_index, builder_.CreateVector<int32_t>(op_inputs),
       builder_.CreateVector<int32_t>(op_outputs),
       ::tflite::BuiltinOptions_GatherOptions, gather_options.Union());
+}
+
+auto GraphBuilderTflite::SerializeGelu(const mojom::Gelu& gelu)
+    -> base::expected<OperatorOffset, std::string> {
+  // TODO(crbug.com/339654398): Support 16-bit float with dequantize operator
+  // https://www.tensorflow.org/mlir/tfl_ops#tfldequantize_tfldequantizeop.
+  const mojom::Operand& input_operand = GetOperand(gelu.input_operand_id);
+  if (input_operand.descriptor.data_type() == OperandDataType::kFloat16) {
+    return base::unexpected("The 16-bit float data type isn't supported.");
+  }
+  CHECK_EQ(input_operand.descriptor.data_type(), OperandDataType::kFloat32);
+
+  return SerializeUnaryOperation(
+      ::tflite::BuiltinOperator_GELU,
+      operand_to_index_map_.at(gelu.input_operand_id),
+      operand_to_index_map_.at(gelu.output_operand_id));
 }
 
 auto GraphBuilderTflite::SerializeGemm(const mojom::Gemm& gemm)
