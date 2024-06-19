@@ -51,6 +51,9 @@ class ResizeToggleMenu : public views::WidgetObserver,
 
     void SetSelected(bool is_selected);
 
+    // views::View:
+    void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+
    private:
     // views::View:
     void OnThemeChanged() override;
@@ -66,6 +69,7 @@ class ResizeToggleMenu : public views::WidgetObserver,
 
     const raw_ref<const gfx::VectorIcon> icon_;
     bool is_selected_{false};
+    const int title_string_id_;
   };
 
   ResizeToggleMenu(base::OnceClosure on_bubble_widget_closing_callback,

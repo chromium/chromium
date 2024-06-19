@@ -80,7 +80,9 @@ END_METADATA
 ResizeToggleMenu::MenuButtonView::MenuButtonView(PressedCallback callback,
                                                  const gfx::VectorIcon& icon,
                                                  int title_string_id)
-    : views::Button(std::move(callback)), icon_(icon) {
+    : views::Button(std::move(callback)),
+      icon_(icon),
+      title_string_id_(title_string_id) {
   // Don't use FlexLayout here because it breaks the focus ring's bounds.
   // TODO(b/193195191): Investigate why we can't use FlexLayout.
   SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -110,9 +112,6 @@ ResizeToggleMenu::MenuButtonView::MenuButtonView(PressedCallback callback,
     ash::TypographyProvider::Get()->StyleLabel(
         ash::TypographyToken::kCrosButton2, *label);
   }
-
-  GetViewAccessibility().SetName(l10n_util::GetStringUTF16(title_string_id));
-  GetViewAccessibility().SetRole(ax::mojom::Role::kMenuItem);
 
   constexpr int kBorderThicknessDp = 1;
   const auto button_radius =
@@ -445,6 +444,13 @@ void ResizeToggleMenu::CloseBubble() {
     return;
 
   bubble_widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+}
+
+void ResizeToggleMenu::MenuButtonView::GetAccessibleNodeData(
+    ui::AXNodeData* node_data) {
+  views::Button::GetAccessibleNodeData(node_data);
+  node_data->role = ax::mojom::Role::kMenuItem;
+  node_data->SetName(l10n_util::GetStringUTF16(title_string_id_));
 }
 
 }  // namespace arc
