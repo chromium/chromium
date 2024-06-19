@@ -748,6 +748,14 @@
                         "AppInstallServiceUri",
                         "CrosMall"
                     ]
+                },
+                {
+                    "name": "Enabled_20240619",
+                    "enable_features": [
+                        "AppInstallServiceUri",
+                        "CrosMall",
+                        "CrosMallSwa"
+                    ]
                 }
             ]
         }
