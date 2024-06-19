@@ -2068,6 +2068,12 @@ data/accessibility/event/add-alert-expected-android.txt
 data/accessibility/event/add-alert-expected-mac.txt
 data/accessibility/event/add-alert-expected-uia-win.txt
 data/accessibility/event/add-alert-expected-win.txt
+data/accessibility/event/add-alert-with-empty-text-expected-android.txt
+data/accessibility/event/add-alert-with-empty-text-expected-auralinux.txt
+data/accessibility/event/add-alert-with-empty-text-expected-mac.txt
+data/accessibility/event/add-alert-with-empty-text-expected-uia-win.txt
+data/accessibility/event/add-alert-with-empty-text-expected-win.txt
+data/accessibility/event/add-alert-with-empty-text.html
 data/accessibility/event/add-alert-with-role-change-expected-android.txt
 data/accessibility/event/add-alert-with-role-change-expected-auralinux.txt
 data/accessibility/event/add-alert-with-role-change-expected-mac.txt

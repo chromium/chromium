@@ -1889,6 +1889,18 @@ bool BrowserAccessibilityManager::ShouldFireEventForNode(
   if (node->GetRole() == ax::mojom::Role::kInlineTextBox)
     return false;
 
+  // Don't fire events when the node has the role of "alert" and has no
+  // text content.
+  if (node->GetRole() == ax::mojom::Role::kAlert) {
+    std::u16string node_text = node->GetTextContentUTF16();
+
+    // The string is empty or contains only whitespace characters
+    if (node_text.empty() ||
+        base::ContainsOnlyChars(node_text, base::kWhitespaceUTF16)) {
+      return false;
+    }
+  }
+
   return true;
 }
 

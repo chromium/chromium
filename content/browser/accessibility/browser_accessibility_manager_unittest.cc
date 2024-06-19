@@ -1382,6 +1382,43 @@ TEST_F(BrowserAccessibilityManagerTest, TestShouldFireEventForNode) {
 #endif
 }
 
+TEST_F(BrowserAccessibilityManagerTest,
+       TestShouldFireEventForAlertEventWithEmptyName) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++11 kParagraph
+    ++++++111 kAlert
+    ++++++++1111 kStaticText
+  )HTML"));
+
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      CreateBrowserAccessibilityManager(
+          update, test_browser_accessibility_delegate_.get()));
+
+  EXPECT_TRUE(manager->ShouldFireEventForNode(manager->GetFromID(1)));
+  EXPECT_TRUE(manager->ShouldFireEventForNode(manager->GetFromID(11)));
+  EXPECT_FALSE(manager->ShouldFireEventForNode(manager->GetFromID(111)));
+}
+
+TEST_F(BrowserAccessibilityManagerTest,
+       TestShouldFireEventForAlertEventWithNonEmptyName) {
+  ui::TestAXTreeUpdate update(std::string(R"HTML(
+    ++1 kRootWebArea
+    ++++11 kParagraph
+    ++++++111 kAlert
+    ++++++++1111 kStaticText
+  )HTML"));
+
+  update.nodes[3].SetName("Test alert message.");
+  std::unique_ptr<BrowserAccessibilityManager> manager(
+      CreateBrowserAccessibilityManager(
+          update, test_browser_accessibility_delegate_.get()));
+
+  EXPECT_TRUE(manager->ShouldFireEventForNode(manager->GetFromID(1)));
+  EXPECT_TRUE(manager->ShouldFireEventForNode(manager->GetFromID(11)));
+  EXPECT_TRUE(manager->ShouldFireEventForNode(manager->GetFromID(111)));
+}
+
 TEST_F(BrowserAccessibilityManagerTest, NestedChildRoot) {
   ui::AXNodeData root;
   root.id = 1;
