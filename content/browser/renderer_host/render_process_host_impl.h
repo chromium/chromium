@@ -102,6 +102,11 @@
 #include "media/fuchsia_media_codec_provider_impl.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "content/browser/child_thread_type_switcher_linux.h"
+#include "media/mojo/mojom/video_encode_accelerator.mojom.h"
+#endif
+
 namespace base {
 class CommandLine;
 class PersistentMemoryAllocator;
@@ -920,6 +925,49 @@ class CONTENT_EXPORT RenderProcessHostImpl
 #endif
   };
 
+  // A RenderProcessHostImpl's IO thread implementation of the
+  // |mojom::ChildProcessHost| interface. This exists to allow the process host
+  // to bind incoming receivers on the IO-thread without a main-thread hop if
+  // necessary. Also owns the RPHI's |mojom::ChildProcess| remote.
+  class IOThreadHostImpl : public mojom::ChildProcessHost {
+   public:
+    IOThreadHostImpl(
+        int render_process_id,
+        base::WeakPtr<RenderProcessHostImpl> weak_host,
+        std::unique_ptr<service_manager::BinderRegistry> binders,
+        mojo::PendingReceiver<mojom::ChildProcessHost> host_receiver);
+    ~IOThreadHostImpl() override;
+
+    IOThreadHostImpl(const IOThreadHostImpl& other) = delete;
+    IOThreadHostImpl& operator=(const IOThreadHostImpl& other) = delete;
+
+    void SetPid(base::ProcessId child_pid);
+
+    void GetInterfacesForTesting(std::vector<std::string>& out);
+
+   private:
+    // mojom::ChildProcessHost implementation:
+    void Ping(PingCallback callback) override;
+
+    // To enforce security review for IPC, these 2 methods are defined in
+    // render_process_host_impl_receiver_bindings.cc.
+    void BindHostReceiver(mojo::GenericPendingReceiver receiver) override;
+    static void BindHostReceiverOnUIThread(
+        base::WeakPtr<RenderProcessHostImpl> weak_host,
+        mojo::GenericPendingReceiver receiver);
+
+    const int render_process_id_;
+    const base::WeakPtr<RenderProcessHostImpl> weak_host_;
+    std::unique_ptr<service_manager::BinderRegistry> binders_;
+    mojo::Receiver<mojom::ChildProcessHost> receiver_{this};
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    mojo::Remote<media::mojom::VideoEncodeAcceleratorProviderFactory>
+        video_encode_accelerator_factory_remote_;
+    ChildThreadTypeSwitcher child_thread_type_switcher_;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  };
+
   // Use CreateRenderProcessHost() instead of calling this constructor
   // directly.
   RenderProcessHostImpl(BrowserContext* browser_context,
@@ -943,6 +991,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void CreateMessageFilters();
 
   // Registers Mojo interfaces to be exposed to the renderer.
+  // To enforce security review for IPC, this method is defined in
+  // render_process_host_impl_receiver_bindings.cc.
   void RegisterMojoInterfaces();
 
   // mojom::RendererHost
@@ -971,8 +1021,10 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void BindVideoEncoderMetricsProvider(
       mojo::PendingReceiver<media::mojom::VideoEncoderMetricsProvider>
           receiver);
+#if BUILDFLAG(IS_ANDROID)
   void BindWebDatabaseHostImpl(
       mojo::PendingReceiver<blink::mojom::WebDatabaseHost> receiver);
+#endif  // BUILDFLAG(IS_ANDROID)
   void BindAecDumpManager(
       mojo::PendingReceiver<blink::mojom::AecDumpManager> receiver);
   void CreateMediaLogRecordHost(
@@ -1455,8 +1507,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // bound to a mojo receiver callback using a base::Unretained.  This is
   // necessary to ensure those objects stop receiving mojo messages before their
   // destruction.
-  class IOThreadHostImpl;
-  friend class IOThreadHostImpl;
   std::optional<base::SequenceBound<IOThreadHostImpl>> io_thread_host_impl_;
 
   std::unique_ptr<FileBackedBlobFactoryWorkerImpl> file_backed_blob_factory_;

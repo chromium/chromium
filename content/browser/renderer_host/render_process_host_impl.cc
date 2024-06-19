@@ -68,8 +68,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
-#include "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom.h"
-#include "components/discardable_memory/service/discardable_shared_memory_manager.h"
 #include "components/metrics/histogram_controller.h"
 #include "components/metrics/single_sample_metrics.h"
 #include "components/services/storage/privileged/mojom/indexed_db_control.mojom.h"
@@ -105,7 +103,6 @@
 #include "content/browser/media/frameless_media_interface_proxy.h"
 #include "content/browser/media/media_internals.h"
 #include "content/browser/metrics/histogram_shared_memory_config.h"
-#include "content/browser/mime_registry_impl.h"
 #include "content/browser/network_service_instance_impl.h"
 #include "content/browser/notifications/platform_notification_context_impl.h"
 #include "content/browser/payments/payment_app_context_impl.h"
@@ -129,7 +126,6 @@
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/theme_helper.h"
 #include "content/browser/tracing/background_tracing_manager_impl.h"
-#include "content/browser/web_database/web_database_host_impl.h"
 #include "content/browser/websockets/websocket_connector_impl.h"
 #include "content/browser/webui/web_ui_controller_factory_registry.h"
 #include "content/common/child_process.mojom.h"
@@ -142,7 +138,6 @@
 #include "content/public/browser/browser_or_resource_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_host.h"
-#include "content/public/browser/device_service.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/isolated_context_util.h"
@@ -176,6 +171,7 @@
 #include "media/base/media_switches.h"
 #include "media/capture/capture_switches.h"
 #include "media/media_buildflags.h"
+#include "media/mojo/services/mojo_video_encoder_metrics_provider_service.h"
 #include "media/mojo/services/video_decode_perf_history.h"
 #include "media/mojo/services/webrtc_video_perf_history.h"
 #include "media/webrtc/webrtc_features.h"
@@ -187,9 +183,6 @@
 #include "services/device/public/mojom/power_monitor.mojom.h"
 #include "services/device/public/mojom/screen_orientation.mojom.h"
 #include "services/device/public/mojom/time_zone_monitor.mojom.h"
-#include "services/metrics/public/cpp/ukm_recorder.h"
-#include "services/metrics/public/mojom/ukm_interface.mojom.h"
-#include "services/metrics/ukm_recorder_factory_impl.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -217,9 +210,8 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/child_process_binding_types.h"
-#include "content/browser/android/java_interfaces_impl.h"
 #include "content/browser/font_unique_name_lookup/font_unique_name_lookup_service.h"
-#include "content/public/browser/android/java_interfaces.h"
+#include "content/browser/web_database/web_database_host_impl.h"
 #include "media/audio/android/audio_manager_android.h"
 #include "third_party/blink/public/mojom/android_font_lookup/android_font_lookup.mojom.h"
 #endif
@@ -232,9 +224,7 @@
 #include "third_party/blink/public/mojom/memory_usage_monitor_linux.mojom.h"  // nogncheck
 
 #include "content/browser/child_thread_type_switcher_linux.h"
-#include "content/browser/media/video_encode_accelerator_provider_launcher.h"
 #include "content/common/thread_type_switcher.mojom.h"
-#include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #endif
 
 #if BUILDFLAG(ALLOW_OOP_VIDEO_DECODER)
@@ -243,11 +233,6 @@
 
 #if BUILDFLAG(IS_APPLE)
 #include "content/browser/child_process_task_port_provider_mac.h"
-#endif
-
-#if BUILDFLAG(IS_MAC)
-#include "content/browser/sandbox_support_mac_impl.h"
-#include "content/common/sandbox_support_mac.mojom.h"
 #endif
 
 #if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
@@ -262,7 +247,6 @@
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"
 #include "components/app_launch_prefetch/app_launch_prefetch.h"
-#include "components/services/font_data/font_data_service_impl.h"
 #include "content/browser/renderer_host/dwrite_font_proxy_impl_win.h"
 #include "content/public/common/font_cache_dispatcher_win.h"
 #include "content/public/common/font_cache_win.mojom.h"
@@ -285,10 +269,6 @@
 
 #if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
 #include "ipc/ipc_logging.h"
-#endif
-
-#if BUILDFLAG(USE_MINIKIN_HYPHENATION)
-#include "content/browser/hyphenation/hyphenation_impl.h"
 #endif
 
 #if BUILDFLAG(IS_OZONE)
@@ -981,13 +961,6 @@ size_t GetPlatformProcessLimit() {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-RenderProcessHost::BindHostReceiverInterceptor&
-GetBindHostReceiverInterceptor() {
-  static base::NoDestructor<RenderProcessHost::BindHostReceiverInterceptor>
-      interceptor;
-  return *interceptor;
-}
-
 RenderProcessHostImpl::BadMojoMessageCallbackForTesting&
 GetBadMojoMessageCallbackForTesting() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -1132,158 +1105,33 @@ BASE_FEATURE(kEnsureExistingRendererAlive,
 
 }  // namespace
 
-// A RenderProcessHostImpl's IO thread implementation of the
-// |mojom::ChildProcessHost| interface. This exists to allow the process host
-// to bind incoming receivers on the IO-thread without a main-thread hop if
-// necessary. Also owns the RPHI's |mojom::ChildProcess| remote.
-class RenderProcessHostImpl::IOThreadHostImpl : public mojom::ChildProcessHost {
- public:
-  IOThreadHostImpl(int render_process_id,
-                   base::WeakPtr<RenderProcessHostImpl> weak_host,
-                   std::unique_ptr<service_manager::BinderRegistry> binders,
-                   mojo::PendingReceiver<mojom::ChildProcessHost> host_receiver)
-      : render_process_id_(render_process_id),
-        weak_host_(std::move(weak_host)),
-        binders_(std::move(binders)),
-        receiver_(this, std::move(host_receiver)) {}
-  ~IOThreadHostImpl() override = default;
+RenderProcessHostImpl::IOThreadHostImpl::IOThreadHostImpl(
+    int render_process_id,
+    base::WeakPtr<RenderProcessHostImpl> weak_host,
+    std::unique_ptr<service_manager::BinderRegistry> binders,
+    mojo::PendingReceiver<mojom::ChildProcessHost> host_receiver)
+    : render_process_id_(render_process_id),
+      weak_host_(std::move(weak_host)),
+      binders_(std::move(binders)),
+      receiver_(this, std::move(host_receiver)) {}
 
-  IOThreadHostImpl(const IOThreadHostImpl& other) = delete;
-  IOThreadHostImpl& operator=(const IOThreadHostImpl& other) = delete;
+RenderProcessHostImpl::IOThreadHostImpl::~IOThreadHostImpl() = default;
 
-  void SetPid(base::ProcessId child_pid) {
+void RenderProcessHostImpl::IOThreadHostImpl::SetPid(
+    base::ProcessId child_pid) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-    child_thread_type_switcher_.SetPid(child_pid);
+  child_thread_type_switcher_.SetPid(child_pid);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  }
+}
 
-  void GetInterfacesForTesting(std::vector<std::string>& out) {
-    binders_->GetInterfacesForTesting(out);  // IN-TEST
-  }
+void RenderProcessHostImpl::IOThreadHostImpl::GetInterfacesForTesting(
+    std::vector<std::string>& out) {
+  binders_->GetInterfacesForTesting(out);  // IN-TEST
+}
 
- private:
-  // mojom::ChildProcessHost implementation:
-  void Ping(PingCallback callback) override { std::move(callback).Run(); }
-
-  void BindHostReceiver(mojo::GenericPendingReceiver receiver) override {
-    const auto& interceptor = GetBindHostReceiverInterceptor();
-    if (interceptor) {
-      interceptor.Run(render_process_id_, &receiver);
-      if (!receiver)
-        return;
-    }
-
-#if BUILDFLAG(IS_WIN)
-    if (base::FeatureList::IsEnabled(features::kSkiaFontService)) {
-      if (auto font_data_receiver =
-              receiver.As<font_data_service::mojom::FontDataService>()) {
-        font_data_service::FontDataServiceImpl::ConnectToFontService(
-            std::move(font_data_receiver));
-        return;
-      }
-    }
-#endif
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-    if (auto font_receiver = receiver.As<font_service::mojom::FontService>()) {
-      ConnectToFontService(std::move(font_receiver));
-      return;
-    }
-
-    if (base::FeatureList::IsEnabled(media::kUseOutOfProcessVideoEncoding)) {
-      if (auto r =
-              receiver.As<media::mojom::VideoEncodeAcceleratorProvider>()) {
-        if (!video_encode_accelerator_factory_remote_.is_bound()) {
-          LaunchVideoEncodeAcceleratorProviderFactory(
-              video_encode_accelerator_factory_remote_
-                  .BindNewPipeAndPassReceiver());
-          video_encode_accelerator_factory_remote_.reset_on_disconnect();
-        }
-
-        if (!video_encode_accelerator_factory_remote_.is_bound())
-          return;
-
-        video_encode_accelerator_factory_remote_
-            ->CreateVideoEncodeAcceleratorProvider(std::move(r));
-        return;
-      }
-    }
-
-    if (auto r = receiver.As<mojom::ThreadTypeSwitcher>()) {
-      child_thread_type_switcher_.Bind(std::move(r));
-      return;
-    }
-#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
-
-#if BUILDFLAG(IS_WIN)
-    if (auto r = receiver.As<mojom::FontCacheWin>()) {
-      FontCacheDispatcher::Create(std::move(r));
-      return;
-    }
-#endif
-
-#if BUILDFLAG(IS_MAC)
-    if (auto r = receiver.As<mojom::SandboxSupportMac>()) {
-      static base::NoDestructor<SandboxSupportMacImpl> sandbox_support;
-      sandbox_support->BindReceiver(std::move(r));
-      return;
-    }
-#endif
-
-    if (auto r = receiver.As<
-                 discardable_memory::mojom::DiscardableSharedMemoryManager>()) {
-      discardable_memory::DiscardableSharedMemoryManager::Get()->Bind(
-          std::move(r));
-      return;
-    }
-
-    if (auto r = receiver.As<ukm::mojom::UkmRecorderFactory>()) {
-      metrics::UkmRecorderFactoryImpl::Create(ukm::UkmRecorder::Get(),
-                                              std::move(r));
-      return;
-    }
-
-#if BUILDFLAG(IS_ANDROID)
-    // Bind the font lookup on the IO thread as an optimization to avoid
-    // running navigation critical path tasks on the UI thread.
-    if (auto r = receiver.As<blink::mojom::AndroidFontLookup>()) {
-      GetGlobalJavaInterfacesOnIOThread()->GetInterface(std::move(r));
-      return;
-    }
-#endif
-
-    std::string interface_name = *receiver.interface_name();
-    mojo::ScopedMessagePipeHandle pipe = receiver.PassPipe();
-    if (binders_->TryBindInterface(interface_name, &pipe))
-      return;
-
-    receiver = mojo::GenericPendingReceiver(interface_name, std::move(pipe));
-    if (!receiver)
-      return;
-
-    GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&IOThreadHostImpl::BindHostReceiverOnUIThread,
-                                  weak_host_, std::move(receiver)));
-  }
-
-  static void BindHostReceiverOnUIThread(
-      base::WeakPtr<RenderProcessHostImpl> weak_host,
-      mojo::GenericPendingReceiver receiver) {
-    if (weak_host)
-      weak_host->OnBindHostReceiver(std::move(receiver));
-  }
-
-  const int render_process_id_;
-  const base::WeakPtr<RenderProcessHostImpl> weak_host_;
-  std::unique_ptr<service_manager::BinderRegistry> binders_;
-  mojo::Receiver<mojom::ChildProcessHost> receiver_{this};
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  mojo::Remote<media::mojom::VideoEncodeAcceleratorProviderFactory>
-      video_encode_accelerator_factory_remote_;
-  ChildThreadTypeSwitcher child_thread_type_switcher_;
-#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-};
+void RenderProcessHostImpl::IOThreadHostImpl::Ping(PingCallback callback) {
+  std::move(callback).Run();
+}
 
 // static
 scoped_refptr<base::SingleThreadTaskRunner>
@@ -2366,216 +2214,6 @@ void RenderProcessHostImpl::WriteIntoTrace(
     dict.Add("process_lock", GetProcessLock().ToString());
 }
 
-void RenderProcessHostImpl::RegisterMojoInterfaces() {
-  auto registry = std::make_unique<service_manager::BinderRegistry>();
-
-  registry->AddInterface(base::BindRepeating(
-      [](int rph_id, scoped_refptr<RenderWidgetHelper> helper,
-         mojo::PendingReceiver<mojom::RenderMessageFilter> receiver) {
-        // We should only ever see one instance of this created per
-        // RenderProcessHost since it is maintained by the `RenderThreadImpl`.
-        mojo::MakeSelfOwnedReceiver(
-            std::make_unique<RenderMessageFilter>(rph_id, helper.get()),
-            std::move(receiver));
-      },
-      GetID(), widget_helper_));
-
-  AddUIThreadInterface(
-      registry.get(),
-      base::BindRepeating(
-          [](mojo::PendingReceiver<device::mojom::TimeZoneMonitor> receiver) {
-            GetDeviceService().BindTimeZoneMonitor(std::move(receiver));
-          }));
-
-  AddUIThreadInterface(
-      registry.get(),
-      base::BindRepeating(
-          [](mojo::PendingReceiver<device::mojom::PowerMonitor> receiver) {
-            GetDeviceService().BindPowerMonitor(std::move(receiver));
-          }));
-
-  AddUIThreadInterface(
-      registry.get(),
-      base::BindRepeating(
-          [](mojo::PendingReceiver<device::mojom::ScreenOrientationListener>
-                 receiver) {
-            GetDeviceService().BindScreenOrientationListener(
-                std::move(receiver));
-          }));
-
-  AddUIThreadInterface(
-      registry.get(),
-      base::BindRepeating(
-          &RenderProcessHostImpl::CreateEmbeddedFrameSinkProvider,
-          instance_weak_factory_.GetWeakPtr()));
-
-  AddUIThreadInterface(
-      registry.get(),
-      base::BindRepeating(&RenderProcessHostImpl::BindCompositingModeReporter,
-                          instance_weak_factory_.GetWeakPtr()));
-
-  AddUIThreadInterface(
-      registry.get(),
-      base::BindRepeating(&RenderProcessHostImpl::CreateDomStorageProvider,
-                          instance_weak_factory_.GetWeakPtr()));
-
-#if BUILDFLAG(IS_ANDROID)
-  // TODO(crbug.com/333756088): WebSQL is disabled everywhere except Android
-  // WebView.
-  AddUIThreadInterface(
-      registry.get(),
-      base::BindRepeating(&RenderProcessHostImpl::BindWebDatabaseHostImpl,
-                          instance_weak_factory_.GetWeakPtr()));
-#endif  // BUILDFLAG(IS_ANDROID)
-
-  AddUIThreadInterface(
-      registry.get(),
-      base::BindRepeating(
-          [](base::WeakPtr<RenderProcessHostImpl> host,
-             mojo::PendingReceiver<
-                 memory_instrumentation::mojom::CoordinatorConnector>
-                 receiver) {
-            if (!host)
-              return;
-            host->coordinator_connector_receiver_.reset();
-            host->coordinator_connector_receiver_.Bind(std::move(receiver));
-            if (!host->GetProcess().IsValid()) {
-              // We only want to accept messages from this interface once we
-              // have a known PID.
-              host->coordinator_connector_receiver_.Pause();
-            }
-          },
-          instance_weak_factory_.GetWeakPtr()));
-
-  registry->AddInterface(
-      base::BindRepeating(&MimeRegistryImpl::Create),
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
-           base::TaskPriority::USER_BLOCKING}));
-#if BUILDFLAG(USE_MINIKIN_HYPHENATION)
-#if !BUILDFLAG(IS_ANDROID)
-  hyphenation::HyphenationImpl::RegisterGetDictionary();
-#endif
-  registry->AddInterface(
-      base::BindRepeating(&hyphenation::HyphenationImpl::Create),
-      hyphenation::HyphenationImpl::GetTaskRunner());
-#endif
-#if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kFontSrcLocalMatching)) {
-    registry->AddInterface(
-        base::BindRepeating(&FontUniqueNameLookupService::Create),
-        FontUniqueNameLookupService::GetTaskRunner());
-  }
-#endif
-
-#if BUILDFLAG(IS_WIN)
-  registry->AddInterface(
-      base::BindRepeating(&DWriteFontProxyImpl::Create),
-      base::ThreadPool::CreateSequencedTaskRunner(
-          {base::TaskPriority::USER_BLOCKING, base::MayBlock()}));
-#endif
-
-  file_system_manager_impl_.reset(new FileSystemManagerImpl(
-      GetID(), storage_partition_impl_->GetFileSystemContext(),
-      ChromeBlobStorageContext::GetFor(GetBrowserContext())));
-
-  AddUIThreadInterface(
-      registry.get(), base::BindRepeating(&viz::GpuClient::Add,
-                                          base::Unretained(gpu_client_.get())));
-
-  registry->AddInterface(
-      base::BindRepeating(&GpuDataManagerImpl::BindReceiver));
-
-  // Note, the base::Unretained() is safe because the target object has an IO
-  // thread deleter and the callback is also targeting the IO thread.  When
-  // the RPHI is destroyed it also triggers the destruction of the registry
-  // on the IO thread.
-  media_stream_track_metrics_host_.reset(new MediaStreamTrackMetricsHost());
-  registry->AddInterface(base::BindRepeating(
-      &MediaStreamTrackMetricsHost::BindReceiver,
-      base::Unretained(media_stream_track_metrics_host_.get())));
-
-  registry->AddInterface(
-      base::BindRepeating(&metrics::CreateSingleSampleMetricsProvider));
-
-  AddUIThreadInterface(
-      registry.get(),
-      base::BindRepeating(&RenderProcessHostImpl::CreateMediaLogRecordHost,
-                          instance_weak_factory_.GetWeakPtr()));
-
-  AddUIThreadInterface(registry.get(),
-                       base::BindRepeating(&FieldTrialRecorder::Create));
-
-  associated_interfaces_ =
-      std::make_unique<blink::AssociatedInterfaceRegistry>();
-  blink::AssociatedInterfaceRegistry* associated_registry =
-      associated_interfaces_.get();
-
-  // This base::Unretained() usage is safe since the associated_registry is
-  // owned by this RPHI.
-  associated_registry->AddInterface<mojom::RendererHost>(base::BindRepeating(
-      &RenderProcessHostImpl::CreateRendererHost, base::Unretained(this)));
-
-  registry->AddInterface(
-      base::BindRepeating(&BlobRegistryWrapper::Bind,
-                          storage_partition_impl_->GetBlobRegistry(), GetID()));
-
-#if BUILDFLAG(ENABLE_PLUGINS)
-  // Initialization can happen more than once (in the case of a child process
-  // crash), but we don't want to lose the plugin registry in this case.
-  if (!plugin_registry_) {
-    plugin_registry_ = std::make_unique<PluginRegistryImpl>(GetID());
-  }
-  AddUIThreadInterface(
-      registry.get(),
-      base::BindRepeating(&RenderProcessHostImpl::BindPluginRegistry,
-                          instance_weak_factory_.GetWeakPtr()));
-#else
-  // On platforms where plugins are disabled, the PluginRegistry interface is
-  // never bound. This still results in posting a task on the UI thread to
-  // look for the interface which can be slow. Instead, drop the interface
-  // immediately on the IO thread by binding en empty interface handler.
-  registry->AddInterface(base::BindRepeating(
-      [](mojo::PendingReceiver<blink::mojom::PluginRegistry> receiver) {}));
-#endif
-
-  AddUIThreadInterface(
-      registry.get(),
-      base::BindRepeating(&RenderProcessHostImpl::BindMediaInterfaceProxy,
-                          instance_weak_factory_.GetWeakPtr()));
-
-  AddUIThreadInterface(
-      registry.get(),
-      base::BindRepeating(
-          &RenderProcessHostImpl::BindVideoEncoderMetricsProvider,
-          instance_weak_factory_.GetWeakPtr()));
-
-  AddUIThreadInterface(
-      registry.get(),
-      base::BindRepeating(&RenderProcessHostImpl::BindAecDumpManager,
-                          instance_weak_factory_.GetWeakPtr()));
-
-#if BUILDFLAG(IS_FUCHSIA)
-  AddUIThreadInterface(
-      registry.get(),
-      base::BindRepeating(&RenderProcessHostImpl::BindMediaCodecProvider,
-                          instance_weak_factory_.GetWeakPtr()));
-#endif
-
-  // ---- Please do not register interfaces below this line ------
-  //
-  // This call should be done after registering all interfaces above, so that
-  // embedder can override any interfaces. The fact that registry calls
-  // the last registration for the name allows us to easily override interfaces.
-  GetContentClient()->browser()->ExposeInterfacesToRenderer(
-      registry.get(), associated_interfaces_.get(), this);
-
-  DCHECK(child_host_pending_receiver_);
-  io_thread_host_impl_.emplace(
-      GetIOThreadTaskRunner({}), GetID(), instance_weak_factory_.GetWeakPtr(),
-      std::move(registry), std::move(child_host_pending_receiver_));
-}
-
 void RenderProcessHostImpl::CreateEmbeddedFrameSinkProvider(
     mojo::PendingReceiver<blink::mojom::EmbeddedFrameSinkProvider> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -2603,9 +2241,10 @@ void RenderProcessHostImpl::CreateDomStorageProvider(
 
 void RenderProcessHostImpl::BindMediaInterfaceProxy(
     mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver) {
-  if (!media_interface_proxy_)
+  if (!media_interface_proxy_) {
     media_interface_proxy_ =
         std::make_unique<FramelessMediaInterfaceProxy>(this);
+  }
   media_interface_proxy_->Add(std::move(receiver));
 }
 
@@ -2615,6 +2254,7 @@ void RenderProcessHostImpl::BindVideoEncoderMetricsProvider(
                                                         std::move(receiver));
 }
 
+#if BUILDFLAG(IS_ANDROID)
 void RenderProcessHostImpl::BindWebDatabaseHostImpl(
     mojo::PendingReceiver<blink::mojom::WebDatabaseHost> receiver) {
   storage::DatabaseTracker* db_tracker =
@@ -2625,6 +2265,8 @@ void RenderProcessHostImpl::BindWebDatabaseHostImpl(
       base::BindOnce(&WebDatabaseHostImpl::Create, GetID(),
                      base::WrapRefCounted(db_tracker), std::move(receiver)));
 }
+#endif  // BULDFLAG(IS_ANDROID)
+
 void RenderProcessHostImpl::BindAecDumpManager(
     mojo::PendingReceiver<blink::mojom::AecDumpManager> receiver) {
   aec_dump_manager_.AddReceiver(std::move(receiver));
@@ -2677,8 +2319,9 @@ void RenderProcessHostImpl::BindPluginRegistry(
 #if BUILDFLAG(IS_FUCHSIA)
 void RenderProcessHostImpl::BindMediaCodecProvider(
     mojo::PendingReceiver<media::mojom::FuchsiaMediaCodecProvider> receiver) {
-  if (!media_codec_provider_)
+  if (!media_codec_provider_) {
     media_codec_provider_ = std::make_unique<FuchsiaMediaCodecProviderImpl>();
+  }
   media_codec_provider_->AddReceiver(std::move(receiver));
 }
 #endif
@@ -5653,26 +5296,6 @@ void RenderProcessHostImpl::StopTrackingProcessForShutdownDelay() {
 void RenderProcessHostImpl::BindTracedProcess(
     mojo::PendingReceiver<tracing::mojom::TracedProcess> receiver) {
   BindReceiver(std::move(receiver));
-}
-
-void RenderProcessHostImpl::OnBindHostReceiver(
-    mojo::GenericPendingReceiver receiver) {
-#if BUILDFLAG(IS_ANDROID)
-  // content::GetGlobalJavaInterfaces() works only on the UI Thread.
-  if (auto r = receiver.As<blink::mojom::AndroidFontLookup>()) {
-    content::GetGlobalJavaInterfaces()->GetInterface(std::move(r));
-    return;
-  }
-#endif
-
-  GetContentClient()->browser()->BindHostReceiverForRenderer(
-      this, std::move(receiver));
-}
-
-// static
-void RenderProcessHost::InterceptBindHostReceiverForTesting(
-    BindHostReceiverInterceptor callback) {
-  GetBindHostReceiverInterceptor() = std::move(callback);
 }
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)

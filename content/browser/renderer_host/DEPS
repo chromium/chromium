@@ -35,7 +35,7 @@ specific_include_rules = {
   "embedded_frame_sink_provider_impl_unittest\.cc": [
     "+components/viz/service",
   ],
-  "render_process_host_impl\.cc": [
+  "render_process_host_impl(_receiver_bindings)?\.cc": [
     "+google_apis/gaia/gaia_config.h",
     "+google_apis/gaia/gaia_switches.h",
     # TODO(crbug.com/41326135): Dependencies on ozone should be removed, as content

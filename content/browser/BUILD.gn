@@ -1861,6 +1861,7 @@ source_set("browser") {
     "renderer_host/render_process_host_creation_observer.cc",
     "renderer_host/render_process_host_impl.cc",
     "renderer_host/render_process_host_impl.h",
+    "renderer_host/render_process_host_impl_receiver_bindings.cc",
     "renderer_host/render_process_host_internal_observer.cc",
     "renderer_host/render_process_host_internal_observer.h",
     "renderer_host/render_view_host_delegate.cc",
