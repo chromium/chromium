@@ -14,7 +14,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
@@ -90,7 +89,6 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/fake_profile_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -4096,13 +4094,10 @@ class ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest
   ChromeBrowsingDataRemoverDelegateWithAccountPasswordsTest() {
 #if BUILDFLAG(IS_ANDROID)
     // Using the account store on Android requires enabling the flag for UPM
-    // support of local passwords. Skip the Gms version check, otherwise the
-    // flag won't do anything in bots that have outdated GmsCore.
+    // support of local passwords.
     feature_list_.InitAndEnableFeature(
         password_manager::features::
             kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration);
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kSkipLocalUpmGmsCoreVersionCheckForTesting);
 #endif
   }
 

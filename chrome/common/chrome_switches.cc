@@ -581,13 +581,6 @@ const char kSimulateUpgrade[] = "simulate-upgrade";
 // possible) for testing purposes.
 const char kSimulateIdleTimeout[] = "simulate-idle-timeout";
 
-// Causes password_manager_android_util::SetUsesSplitStoresAndUPMForLocal() to
-// ignore the min GmsCore version requirement.
-// TODO(crbug.com/324370397): Remove once min GmsCore version running on the
-// bots is above the checked value.
-const char kSkipLocalUpmGmsCoreVersionCheckForTesting[] =
-    "skip-local-upm-gms-core-version-check-for-testing";
-
 // Specifies the maximum SSL/TLS version ("tls1.2" or "tls1.3").
 const char kSSLVersionMax[] = "ssl-version-max";
 
