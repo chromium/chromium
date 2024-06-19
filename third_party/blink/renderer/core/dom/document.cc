@@ -181,6 +181,7 @@
 #include "third_party/blink/renderer/core/dom/xml_document.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/ime/edit_context.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
@@ -5558,6 +5559,21 @@ bool Document::SetFocusedElement(Element* new_focused_element,
   UpdateStyleAndLayoutTree();
   if (LocalFrame* frame = GetFrame())
     frame->Selection().DidChangeFocus();
+
+  // EditContext's activation is synced with the associated element being
+  // focused or not. If an element loses focus, its associated EditContext
+  // is deactivated. If getting focus, the EditContext is activated.
+  if (old_focused_element) {
+    if (auto* old_edit_context = old_focused_element->editContext()) {
+      old_edit_context->Blur();
+    }
+  }
+  if (new_focused_element) {
+    if (auto* edit_context = new_focused_element->editContext()) {
+      edit_context->Focus();
+    }
+  }
+
   return !focus_change_blocked;
 }
 
