@@ -41,6 +41,7 @@
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/frame/user_activation_state.h"
@@ -855,7 +856,8 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
   AutomaticFullscreenTest() {
     feature_list_.InitWithFeatures(
         {features::kIsolatedWebApps, features::kIsolatedWebAppDevMode,
-         features::kAutomaticFullscreenContentSetting},
+         features::kAutomaticFullscreenContentSetting,
+         blink::features::kAutomaticFullscreenPermissionsQuery},
         {});
   }
 
@@ -866,31 +868,36 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
               url, url, ContentSettingsType::AUTOMATIC_FULLSCREEN,
               CONTENT_SETTING_ALLOW);
     };
+
+    // Support multiple sites on the test server.
+    host_resolver()->AddRule("*", "127.0.0.1");
+
     if (GetParam()) {
-      iwa_test_server_ = web_app::CreateAndStartDevServer(
-          FILE_PATH_LITERAL("web_apps/simple_isolated_app"));
+      embedded_https_test_server().ServeFilesFromSourceDirectory(
+          GetChromeTestDataDir().AppendASCII("web_apps/simple_isolated_app"));
+      ASSERT_TRUE(embedded_https_test_server().Start());
       auto url_info = web_app::InstallDevModeProxyIsolatedWebApp(
-          browser()->profile(), iwa_test_server_->GetOrigin());
+          browser()->profile(), embedded_https_test_server().GetOrigin());
       allow_automatic_fullscreen(url_info.origin().GetURL());
       auto* frame =
           web_app::OpenIsolatedWebApp(browser()->profile(), url_info.app_id());
       web_contents_ = content::WebContents::FromRenderFrameHost(frame);
     } else {
-      ASSERT_TRUE(embedded_test_server()->Start());
-      const GURL url = embedded_test_server()->GetURL("/simple.html");
+      ASSERT_TRUE(embedded_https_test_server().Start());
+      GURL url = embedded_https_test_server().GetURL("a.com", "/simple.html");
       allow_automatic_fullscreen(url);
-      ASSERT_TRUE(AddTabAtIndex(0, url, ui::PAGE_TRANSITION_TYPED));
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
       web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
     }
+    ASSERT_TRUE(WaitForRenderFrameReady(web_contents_->GetPrimaryMainFrame()));
   }
 
   void TearDownOnMainThread() override { web_contents_ = nullptr; }
 
-  bool RequestFullscreen(bool gesture = false) {
+  bool RequestFullscreen(bool gesture = false,
+                         content::RenderFrameHost* rfh = nullptr) {
     static constexpr char kScript[] = R"JS(
         (async () => {
-          if (navigator.userActivation.isActive != $1)
-            return false;
           try { await document.body.requestFullscreen(); } catch {}
           return !!document.fullscreenElement;
         })();
@@ -898,10 +905,16 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
 
     auto options = gesture ? content::EXECUTE_SCRIPT_DEFAULT_OPTIONS
                            : content::EXECUTE_SCRIPT_NO_USER_GESTURE;
-    auto script = content::JsReplace(kScript, gesture);
-    Browser* browser = chrome::FindBrowserWithTab(web_contents_);
+    rfh = rfh ? rfh : web_contents_->GetPrimaryMainFrame();
+    content::WebContents* tab = content::WebContents::FromRenderFrameHost(rfh);
+    Browser* browser = chrome::FindBrowserWithTab(tab);
+    if (!gesture) {
+      // Ensure nothing inadvertently triggered user activation beforehand.
+      EXPECT_EQ(false, EvalJs(rfh, "navigator.userActivation.isActive",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+    }
     ui_test_utils::FullscreenWaiter waiter(browser, {.tab_fullscreen = true});
-    auto result = EvalJs(web_contents_, script, options);
+    auto result = EvalJs(rfh, kScript, options);
     if (result.error.empty() && result.ExtractBool()) {
       waiter.Wait();
     }
@@ -954,9 +967,24 @@ class AutomaticFullscreenTest : public FullscreenControllerInteractiveTest,
     return popup->window()->IsFullscreen();
   }
 
+  std::string QueryPermission(
+      const content::ToRenderFrameHost& target,
+      std::optional<bool> allow_without_gesture = true) {
+    const std::string options =
+        allow_without_gesture.has_value()
+            ? content::JsReplace(", allowWithoutGesture: $1",
+                                 allow_without_gesture.value())
+            : "";
+    const std::string descriptor = "{name: 'fullscreen'" + options + "}";
+    const std::string script =
+        "navigator.permissions.query(" + descriptor +
+        ").then(permission => permission.state).catch(e => e.name);";
+    return EvalJs(target, script, content::EXECUTE_SCRIPT_NO_USER_GESTURE)
+        .ExtractString();
+  }
+
  protected:
   raw_ptr<content::WebContents> web_contents_ = nullptr;
-  std::unique_ptr<net::EmbeddedTestServer> iwa_test_server_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -1061,6 +1089,44 @@ IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, BlockingContentsDoesNotExit) {
   static_cast<web_modal::WebContentsModalDialogManagerDelegate*>(browser)
       ->SetWebContentsBlocked(web_contents_, true);
   EXPECT_TRUE(web_contents_->IsFullscreen());
+}
+
+IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, QueryPermissionWithGesture) {
+  // Expect an API TypeError when allowWithoutGesture is false or unspecified.
+  EXPECT_EQ(
+      "TypeError",
+      QueryPermission(web_contents_, /*allow_without_gesture=*/std::nullopt));
+  EXPECT_EQ("TypeError",
+            QueryPermission(web_contents_, /*allow_without_gesture=*/false));
+}
+
+IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, QueryPermissionWithoutGesture) {
+  // Permission is pre-granted on the initial test origin and denied elsewhere.
+  EXPECT_EQ("granted", QueryPermission(web_contents_));
+  const GURL url = embedded_https_test_server().GetURL("b.com", "/simple.html");
+  content::RenderFrameHost* rfh = ui_test_utils::NavigateToURL(browser(), url);
+  EXPECT_EQ("denied", QueryPermission(rfh));
+}
+
+IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, CrossOriginIFrameDenied) {
+  // Append a cross-origin iframe without the permission policy.
+  const GURL src = embedded_https_test_server().GetURL("b.com", "/simple.html");
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+  web_app::CreateIframe(rfh, "", src, /*permissions_policy=*/"");
+  content::RenderFrameHost* child = ChildFrameAt(rfh, 0);
+  EXPECT_EQ("denied", QueryPermission(child));
+  EXPECT_FALSE(RequestFullscreen(/*gesture=*/false, child));
+}
+
+IN_PROC_BROWSER_TEST_P(AutomaticFullscreenTest, CrossOriginIFrameGranted) {
+  // Append a cross-origin iframe with the permission policy.
+  const GURL src = embedded_https_test_server().GetURL("b.com", "/simple.html");
+  content::RenderFrameHost* rfh = web_contents_->GetPrimaryMainFrame();
+  web_app::CreateIframe(rfh, "", src, /*permissions_policy=*/"fullscreen *");
+  content::RenderFrameHost* child = ChildFrameAt(rfh, 0);
+  EXPECT_EQ("granted", QueryPermission(child));
+  EXPECT_TRUE(RequestFullscreen(child));
+  EXPECT_TRUE(ExitFullscreen());
 }
 
 INSTANTIATE_TEST_SUITE_P(, AutomaticFullscreenTest, ::testing::Bool());

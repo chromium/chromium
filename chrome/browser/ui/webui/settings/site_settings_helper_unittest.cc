@@ -1081,6 +1081,8 @@ TEST_F(SiteSettingsHelperTest, HideAutograntedRWSPermissions) {
 
 TEST_F(SiteSettingsHelperTest, AutomaticFullscreenVisibility) {
   TestingProfile profile;
+  profile.SetPermissionControllerDelegate(
+      permissions::GetPermissionControllerDelegate(&profile));
   base::test::ScopedFeatureList feature_list{
       features::kAutomaticFullscreenContentSetting};
   const ContentSettingsType type = ContentSettingsType::AUTOMATIC_FULLSCREEN;

@@ -1367,6 +1367,8 @@ domain Browser
       optional boolean userVisibleOnly
       # For "clipboard" permission, may specify allowWithoutSanitization.
       optional boolean allowWithoutSanitization
+      # For "fullscreen" permission, must specify allowWithoutGesture:true.
+      optional boolean allowWithoutGesture
       # For "camera" permission, may specify panTiltZoom.
       optional boolean panTiltZoom
 

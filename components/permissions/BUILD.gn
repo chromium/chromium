@@ -31,6 +31,8 @@ source_set("permissions") {
     "chooser_controller.h",
     "contexts/accessibility_permission_context.cc",
     "contexts/accessibility_permission_context.h",
+    "contexts/automatic_fullscreen_permission_context.cc",
+    "contexts/automatic_fullscreen_permission_context.h",
     "contexts/bluetooth_chooser_context.cc",
     "contexts/bluetooth_chooser_context.h",
     "contexts/camera_pan_tilt_zoom_permission_context.cc",

@@ -37,6 +37,7 @@ enum PermissionName {
   SPEAKER_SELECTION,
   KEYBOARD_LOCK,
   POINTER_LOCK,
+  FULLSCREEN,
 };
 
 struct MidiPermissionDescriptor {
@@ -62,12 +63,18 @@ struct TopLevelStorageAccessPermissionDescriptor {
   url.mojom.Origin requestedOrigin;
 };
 
+struct FullscreenPermissionDescriptor {
+  // True if the descriptor pertains to fullscreen without transient activation.
+  bool allow_without_user_gesture;
+};
+
 // Union of possible extensions to the base PermissionDescriptor type.
 union PermissionDescriptorExtension {
   MidiPermissionDescriptor midi;
   ClipboardPermissionDescriptor clipboard;
   CameraDevicePermissionDescriptor camera_device;
   TopLevelStorageAccessPermissionDescriptor top_level_storage_access;
+  FullscreenPermissionDescriptor fullscreen;
 };
 
 // This struct roughly corresponds to the PermissionDescriptor dictionary as

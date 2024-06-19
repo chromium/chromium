@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_camera_device_permission_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_clipboard_permission_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_fullscreen_permission_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_midi_permission_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_permission_descriptor.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_permission_name.h"
@@ -134,6 +135,8 @@ String PermissionNameToString(PermissionName name) {
       return "keyboard-lock";
     case PermissionName::POINTER_LOCK:
       return "pointer-lock";
+    case PermissionName::FULLSCREEN:
+      return "fullscreen";
   }
 }
 
@@ -188,6 +191,17 @@ PermissionDescriptorPtr CreateTopLevelStorageAccessPermissionDescriptor(
   descriptor->extension =
       mojom::blink::PermissionDescriptorExtension::NewTopLevelStorageAccess(
           std::move(top_level_storage_access_extension));
+  return descriptor;
+}
+
+PermissionDescriptorPtr CreateFullscreenPermissionDescriptor(
+    bool allow_without_user_gesture) {
+  auto descriptor = CreatePermissionDescriptor(PermissionName::FULLSCREEN);
+  auto fullscreen_extension = mojom::blink::FullscreenPermissionDescriptor::New(
+      allow_without_user_gesture);
+  descriptor->extension =
+      mojom::blink::PermissionDescriptorExtension::NewFullscreen(
+          std::move(fullscreen_extension));
   return descriptor;
 }
 
@@ -386,6 +400,28 @@ PermissionDescriptorPtr ParsePermissionDescriptor(
   }
   if (name == V8PermissionName::Enum::kPointerLock) {
     return CreatePermissionDescriptor(PermissionName::POINTER_LOCK);
+  }
+  if (name == V8PermissionName::Enum::kFullscreen) {
+    FullscreenPermissionDescriptor* fullscreen_permission =
+        NativeValueTraits<FullscreenPermissionDescriptor>::NativeValue(
+            script_state->GetIsolate(), raw_descriptor.V8Value(),
+            exception_state);
+    if (exception_state.HadException()) {
+      return nullptr;
+    }
+    if (!fullscreen_permission->allowWithoutGesture()) {
+      // There is no permission state for fullscreen with user gesture.
+      exception_state.ThrowTypeError(
+          "Fullscreen Permission only supports allowWithoutGesture:true.");
+      return nullptr;
+    }
+    if (!RuntimeEnabledFeatures::AutomaticFullscreenPermissionsQueryEnabled()) {
+      exception_state.ThrowTypeError(
+          "Fullscreen Permissions API query support is not enabled.");
+      return nullptr;
+    }
+    return CreateFullscreenPermissionDescriptor(
+        fullscreen_permission->allowWithoutGesture());
   }
   return nullptr;
 }

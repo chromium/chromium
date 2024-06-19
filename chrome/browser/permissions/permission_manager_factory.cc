@@ -29,6 +29,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "components/background_sync/background_sync_permission_context.h"
 #include "components/embedder_support/permission_context_utils.h"
+#include "components/permissions/contexts/automatic_fullscreen_permission_context.h"
 #include "components/permissions/contexts/keyboard_lock_permission_context.h"
 #include "components/permissions/contexts/local_fonts_permission_context.h"
 #include "components/permissions/contexts/pointer_lock_permission_context.h"
@@ -88,6 +89,12 @@ permissions::PermissionManager::PermissionContextMap CreatePermissionContexts(
   // Add additional Chrome specific permission contexts. Please add a comment
   // when adding new contexts here explaining why it can't be shared with other
   // Content embedders by adding it to CreateDefaultPermissionContexts().
+
+  // TODO(crbug.com/40941384): Still in development for Android so we don't
+  // support it on WebLayer yet.
+  permission_contexts[ContentSettingsType::AUTOMATIC_FULLSCREEN] =
+      std::make_unique<permissions::AutomaticFullscreenPermissionContext>(
+          profile);
 
   // Depends on Chrome-only DownloadRequestLimiter.
   permission_contexts[ContentSettingsType::BACKGROUND_FETCH] =

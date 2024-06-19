@@ -92,6 +92,7 @@ PermissionToSchedulingFeature(PermissionType permission_name) {
     case PermissionType::SPEAKER_SELECTION:
     case PermissionType::KEYBOARD_LOCK:
     case PermissionType::POINTER_LOCK:
+    case PermissionType::AUTOMATIC_FULLSCREEN:
       return std::nullopt;
   }
 }

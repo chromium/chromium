@@ -350,6 +350,7 @@ void AwPermissionManager::RequestPermissions(
       case PermissionType::SPEAKER_SELECTION:
       case PermissionType::KEYBOARD_LOCK:
       case PermissionType::POINTER_LOCK:
+      case PermissionType::AUTOMATIC_FULLSCREEN:
         NOTIMPLEMENTED() << "RequestPermissions is not implemented for "
                          << static_cast<int>(permissions[i]);
         pending_request_raw->SetPermissionStatus(permissions[i],
@@ -605,6 +606,7 @@ void AwPermissionManager::CancelPermissionRequest(int request_id) {
       case PermissionType::SPEAKER_SELECTION:
       case PermissionType::KEYBOARD_LOCK:
       case PermissionType::POINTER_LOCK:
+      case PermissionType::AUTOMATIC_FULLSCREEN:
         NOTIMPLEMENTED() << "CancelPermission not implemented for "
                          << static_cast<int>(permission);
         break;

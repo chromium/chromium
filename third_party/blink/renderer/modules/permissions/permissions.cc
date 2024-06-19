@@ -390,7 +390,9 @@ std::optional<PermissionType> Permissions::GetPermissionType(
       descriptor.extension && descriptor.extension->is_clipboard() &&
           descriptor.extension->get_clipboard()->will_be_sanitized,
       descriptor.extension && descriptor.extension->is_clipboard() &&
-          descriptor.extension->get_clipboard()->has_user_gesture);
+          descriptor.extension->get_clipboard()->has_user_gesture,
+      descriptor.extension && descriptor.extension->is_fullscreen() &&
+          descriptor.extension->get_fullscreen()->allow_without_user_gesture);
 }
 
 mojom::blink::PermissionDescriptorPtr

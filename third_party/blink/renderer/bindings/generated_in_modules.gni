@@ -432,6 +432,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_file_system_remove_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_formatted_text_run.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_formatted_text_run.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_fullscreen_permission_descriptor.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_fullscreen_permission_descriptor.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gain_options.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gain_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_gamepad_axis_event_init.cc",

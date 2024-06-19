@@ -41,6 +41,7 @@ enum PermissionName {
     "speaker-selection",
     "keyboard-lock",
     "pointer-lock",
+    "fullscreen",
 };
 
 // The PermissionDescriptor dictionary is a base to describe permissions. Some

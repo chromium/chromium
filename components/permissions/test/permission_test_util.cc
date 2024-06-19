@@ -82,6 +82,10 @@ PermissionManager::PermissionContextMap CreatePermissionContexts(
       std::make_unique<FakePermissionContext>(
           browser_context, ContentSettingsType::MEDIASTREAM_MIC,
           blink::mojom::PermissionsPolicyFeature::kMicrophone);
+  permission_contexts[ContentSettingsType::AUTOMATIC_FULLSCREEN] =
+      std::make_unique<FakePermissionContext>(
+          browser_context, ContentSettingsType::AUTOMATIC_FULLSCREEN,
+          blink::mojom::PermissionsPolicyFeature::kFullscreen);
   return permission_contexts;
 }
 

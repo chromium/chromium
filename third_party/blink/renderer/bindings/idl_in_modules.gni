@@ -644,6 +644,7 @@ static_idl_files_in_modules = [
   "//third_party/blink/renderer/modules/peerconnection/rtc_track_event_init.idl",
   "//third_party/blink/renderer/modules/permissions/camera_device_permission_descriptor.idl",
   "//third_party/blink/renderer/modules/permissions/clipboard_permission_descriptor.idl",
+  "//third_party/blink/renderer/modules/permissions/fullscreen_permission_descriptor.idl",
   "//third_party/blink/renderer/modules/permissions/midi_permission_descriptor.idl",
   "//third_party/blink/renderer/modules/permissions/navigator_permissions.idl",
   "//third_party/blink/renderer/modules/permissions/permission_descriptor.idl",

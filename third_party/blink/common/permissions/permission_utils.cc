@@ -96,6 +96,8 @@ std::string GetPermissionString(PermissionType permission) {
       return "KeyboardLock";
     case PermissionType::POINTER_LOCK:
       return "PointerLock";
+    case PermissionType::AUTOMATIC_FULLSCREEN:
+      return "AutomaticFullscreen";
     case PermissionType::NUM:
       NOTREACHED_IN_MIGRATION();
       return std::string();
@@ -149,6 +151,8 @@ PermissionTypeToPermissionsPolicyFeature(PermissionType permission) {
       return mojom::PermissionsPolicyFeature::kCapturedSurfaceControl;
     case PermissionType::SPEAKER_SELECTION:
       return mojom::PermissionsPolicyFeature::kSpeakerSelection;
+    case PermissionType::AUTOMATIC_FULLSCREEN:
+      return mojom::PermissionsPolicyFeature::kFullscreen;
 
     case PermissionType::PERIODIC_BACKGROUND_SYNC:
     case PermissionType::DURABLE_STORAGE:
@@ -206,7 +210,9 @@ std::optional<PermissionType> PermissionDescriptorToPermissionType(
       descriptor->extension && descriptor->extension->is_clipboard() &&
           descriptor->extension->get_clipboard()->will_be_sanitized,
       descriptor->extension && descriptor->extension->is_clipboard() &&
-          descriptor->extension->get_clipboard()->has_user_gesture);
+          descriptor->extension->get_clipboard()->has_user_gesture,
+      descriptor->extension && descriptor->extension->is_fullscreen() &&
+          descriptor->extension->get_fullscreen()->allow_without_user_gesture);
 }
 
 std::optional<PermissionType> PermissionDescriptorInfoToPermissionType(
@@ -214,7 +220,8 @@ std::optional<PermissionType> PermissionDescriptorInfoToPermissionType(
     bool midi_sysex,
     bool camera_ptz,
     bool clipboard_will_be_sanitized,
-    bool clipboard_has_user_gesture) {
+    bool clipboard_has_user_gesture,
+    bool fullscreen_allow_without_user_gesture) {
   switch (name) {
     case PermissionName::GEOLOCATION:
       return PermissionType::GEOLOCATION;
@@ -292,6 +299,13 @@ std::optional<PermissionType> PermissionDescriptorInfoToPermissionType(
       return PermissionType::KEYBOARD_LOCK;
     case PermissionName::POINTER_LOCK:
       return PermissionType::POINTER_LOCK;
+    case PermissionName::FULLSCREEN:
+      if (fullscreen_allow_without_user_gesture) {
+        return PermissionType::AUTOMATIC_FULLSCREEN;
+      }
+      // There is no PermissionType for fullscreen with user gesture.
+      NOTIMPLEMENTED_LOG_ONCE();
+      return std::nullopt;
     default:
       NOTREACHED_IN_MIGRATION();
       return std::nullopt;

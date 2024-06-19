@@ -175,7 +175,8 @@ void CreateIframe(content::RenderFrameHost* parent_frame,
               document.body.appendChild(f);
             });
         )",
-                                         iframe_id, url, permissions_policy)));
+                                         iframe_id, url, permissions_policy),
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
 // TODO(crbug.com/40274184): This function should probably be built on top of

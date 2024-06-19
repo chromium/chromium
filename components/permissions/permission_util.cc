@@ -206,6 +206,9 @@ bool PermissionUtil::GetPermissionType(ContentSettingsType type,
     case ContentSettingsType::POINTER_LOCK:
       *out = PermissionType::POINTER_LOCK;
       break;
+    case ContentSettingsType::AUTOMATIC_FULLSCREEN:
+      *out = PermissionType::AUTOMATIC_FULLSCREEN;
+      break;
     default:
       return false;
   }
@@ -349,6 +352,8 @@ ContentSettingsType PermissionUtil::PermissionTypeToContentSettingTypeSafe(
       return ContentSettingsType::KEYBOARD_LOCK;
     case PermissionType::POINTER_LOCK:
       return ContentSettingsType::POINTER_LOCK;
+    case PermissionType::AUTOMATIC_FULLSCREEN:
+      return ContentSettingsType::AUTOMATIC_FULLSCREEN;
     case PermissionType::NUM:
       break;
   }
