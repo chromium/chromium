@@ -21,12 +21,6 @@ namespace chrome_test_util {
 // successful or timed out.
 [[nodiscard]] bool ClearCookiesAndSiteData();
 
-// Clears browsing data and returns whether clearing was successful or timed
-// out.
-// TODO(crbug.com/40654601): The method will time out if it's called from
-// EarlGrey2 with `off_the_record` = true.
-[[nodiscard]] bool ClearAllBrowsingData(bool off_the_record);
-
 // Clears all the default WKWebsiteDataStore data including the WK back/forward
 // cache.
 // NOTE: This leaves objects inside //ios/web which manage JavaScriptFeatures in

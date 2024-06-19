@@ -44,6 +44,7 @@ bool ClearBrowsingData(bool off_the_record, BrowsingDataRemoveMask mask) {
         return did_complete;
       });
 }
+
 }  // namespace
 
 namespace chrome_test_util {
@@ -61,10 +62,6 @@ bool ClearBrowsingHistory() {
 bool ClearCookiesAndSiteData() {
   return ClearBrowsingData(/*off_the_record=*/false,
                            BrowsingDataRemoveMask::REMOVE_SITE_DATA);
-}
-
-bool ClearAllBrowsingData(bool off_the_record) {
-  return ClearBrowsingData(off_the_record, BrowsingDataRemoveMask::REMOVE_ALL);
 }
 
 bool ClearAllWebStateBrowsingData() {
