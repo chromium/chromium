@@ -61,6 +61,7 @@ from blinkpy.web_tests.models.test_run_results import convert_to_hierarchical_vi
 from blinkpy.web_tests.models.typ_types import (
     Artifacts,
     Expectation,
+    ExpectationType,
     Result,
     ResultSinkReporter,
     ResultType,
@@ -155,7 +156,7 @@ class WPTResult(Result):
     def __init__(self,
                  *args,
                  test_type: Optional[str] = None,
-                 exp_line: Optional[Expectation] = None,
+                 exp_line: Optional[ExpectationType] = None,
                  baseline: Optional[List[TestharnessLine]] = None,
                  **kwargs):
         kwargs.setdefault('expected', exp_line.results)

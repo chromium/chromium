@@ -258,7 +258,7 @@ class ImportNotifier:
                     failures.exp_by_file[changed_file].append(line)
 
     def _read_exp_lines(self, path: str,
-                        ref: str) -> List[typ_types.Expectation]:
+                        ref: str) -> List[typ_types.ExpectationType]:
         abs_path = self.finder.path_from_chromium_base(path)
         expectations = TestExpectations(
             self.default_port,
@@ -465,7 +465,7 @@ class DirectoryFailures:
 
     This corresponds 1-1 to a filed bug.
     """
-    exp_by_file: MutableMapping[str, List[typ_types.Expectation]] = field(
+    exp_by_file: MutableMapping[str, List[typ_types.ExpectationType]] = field(
         default_factory=lambda: defaultdict(list))
     baseline_failures: List[BaselineFailure] = field(default_factory=list)
 

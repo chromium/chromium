@@ -799,8 +799,8 @@ class TestImporter:
         expectations: TestExpectations,
         bug: BuganizerIssue,
         path: str,
-        target_line: typ_types.Expectation,
-    ) -> Optional[typ_types.Expectation]:
+        target_line: typ_types.ExpectationType,
+    ) -> Optional[typ_types.ExpectationType]:
         """Add a bug for a matching line, if any, in a given file.
 
         Returns:

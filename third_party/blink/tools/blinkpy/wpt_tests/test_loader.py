@@ -35,7 +35,7 @@ from blinkpy.web_tests.models.testharness_results import (
     TestharnessLine,
     parse_testharness_baseline,
 )
-from blinkpy.web_tests.models.typ_types import Expectation, ResultType
+from blinkpy.web_tests.models.typ_types import (ExpectationType, ResultType)
 from blinkpy.web_tests.port.base import Port
 
 path_finder.bootstrap_wpt_imports()
@@ -162,7 +162,7 @@ class TestLoader(testloader.TestLoader):
     def _build_test_ast(
         self,
         test_type: TestType,
-        exp_line: Expectation,
+        exp_line: ExpectationType,
         testharness_lines: List[TestharnessLine],
     ) -> wptnode.DataNode:
         test_statuses = chromium_to_wptrunner_statuses(

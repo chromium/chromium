@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import functools
+
 from blinkpy.common import path_finder
 
 path_finder.add_typ_dir_to_sys_path()
@@ -9,11 +11,34 @@ path_finder.add_typ_dir_to_sys_path()
 from typ import host, json_results, expectations_parser, artifacts, result_sink
 from typ.fakes import host_fake
 
+
+# Some test names include spaces, which aren't allowed in typ's expectation
+# test names. So, provide a way to encode/decode URI-encoded spaces.
+def _uri_encode_spaces(s):
+    s = s.replace('%', '%25')
+    s = s.replace(' ', '%20')
+    return s
+
+
+def _uri_decode_spaces(s):
+    s = s.replace('%20', ' ')
+    s = s.replace('%25', '%')
+    return s
+
+
 # Adds symbols from typ that are used in blinkpy
 Result = json_results.Result
 ResultType = json_results.ResultType
-Expectation = expectations_parser.Expectation
-TestExpectations = expectations_parser.TestExpectations
+# Automatically apply Blink's encoding/decoding to test names.
+Expectation = functools.partial(expectations_parser.Expectation,
+                                encode_func=_uri_encode_spaces)
+TestExpectations = functools.partial(expectations_parser.TestExpectations,
+                                     encode_func=_uri_encode_spaces,
+                                     decode_func=_uri_decode_spaces)
+# Type aliases for use with type hinting since the class references are
+# overridden with partials.
+ExpectationType = expectations_parser.Expectation
+TestExpectationsType = expectations_parser.TestExpectations
 Artifacts = artifacts.Artifacts
 ResultSinkReporter = result_sink.ResultSinkReporter
 RESULT_TAGS = expectations_parser.RESULT_TAGS
