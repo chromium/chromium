@@ -147,7 +147,7 @@ const std::vector<std::tuple<PasswordFillingParams, SubmissionReadinessState>>
              /*password_field_index=*/2,
              /*focused_field_renderer_id_=*/autofill::FieldRendererId(),
              SubmissionReadinessState::kNoInformation),
-         SubmissionReadinessState::kTwoFields},
+         SubmissionReadinessState::kFieldAfterPasswordField},
         // There is a checkbox field after the password field.
         {PasswordFillingParams(
              PrepareFormData({FormFieldFocusabilityType::kFocusableInput,
