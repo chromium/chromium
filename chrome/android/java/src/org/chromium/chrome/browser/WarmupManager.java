@@ -607,10 +607,18 @@ public class WarmupManager {
                 return;
             }
 
-            if (mSpareWebContents == null) {
+            WebContents webContents = null;
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.CCT_PREWARM_TAB)
+                    && mSpareTab != null) {
+                webContents = mSpareTab.getWebContents();
+            } else {
+                webContents = mSpareWebContents;
+            }
+
+            if (webContents == null) {
                 Log.e(
                         TAG,
-                        "Prefetch failed because mSpareWebContents is null. warmup() is required"
+                        "Prefetch failed because spare WebContents is null. warmup() is required"
                                 + " beforehand.");
                 return;
             }
@@ -620,7 +628,7 @@ public class WarmupManager {
                 origin = Origin.create(new GURL(verifiedSourceOrigin));
             }
             WarmupManagerJni.get()
-                    .startPrefetchFromCCT(mSpareWebContents, gurl, usePrefetchProxy, origin);
+                    .startPrefetchFromCCT(webContents, gurl, usePrefetchProxy, origin);
         }
     }
 
