@@ -32,6 +32,11 @@ if (headless_enable_commands) {
 }
 
 bundle_hyphen_data = (is_linux || is_win) && !headless_use_embedded_resources
+should_strip_binary = is_chrome_for_testing && is_linux
+
+if (should_strip_binary) {
+  import("//build/linux/strip_binary.gni")
+}
 
 # If supported, field trials need to be enabled by --enable-field-trial-config switch.
 headless_support_field_trials = headless_use_prefs
@@ -895,6 +900,17 @@ action("generate_headless_shell_license_file") {
     ".",
   ]
   outputs = [ _license_path ]
+}
+
+if (should_strip_binary) {
+  strip_binary("strip_headless_shell_binary") {
+    binary_input = "$root_out_dir/headless_shell"
+    deps = [ ":headless_shell" ]
+  }
+
+  group("strip_chrome_for_testing_linux_files") {
+    deps = [ ":strip_headless_shell_binary" ]
+  }
 }
 
 executable("headless_shell") {
