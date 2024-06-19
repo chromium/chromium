@@ -114,6 +114,12 @@ class ASH_PUBLIC_EXPORT MockInputDeviceSettingsController
               OnGraphicsTabletButtonPressed,
               (DeviceId device_id, const mojom::Button& button),
               (override));
+  MOCK_METHOD(
+      void,
+      GetDeviceImageDataUrl,
+      (const std::string& device_key,
+       base::OnceCallback<void(const std::optional<std::string>&)> callback),
+      (override));
   MOCK_METHOD(void, AddObserver, (Observer * observer), (override));
   MOCK_METHOD(void, RemoveObserver, (Observer * observer), (override));
 };

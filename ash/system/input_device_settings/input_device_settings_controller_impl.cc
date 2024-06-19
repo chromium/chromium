@@ -2332,6 +2332,26 @@ void InputDeviceSettingsControllerImpl::OnMouseButtonPressed(
           base::Unretained(this)));
 }
 
+void InputDeviceSettingsControllerImpl::OnDeviceImageForSettingsDownloaded(
+    base::OnceCallback<void(const std::optional<std::string>&)> callback,
+    const DeviceImage& device_image) {
+  std::move(callback).Run(device_image.data_url());
+}
+
+void InputDeviceSettingsControllerImpl::GetDeviceImageDataUrl(
+    const std::string& device_key,
+    base::OnceCallback<void(const std::optional<std::string>&)> callback) {
+  if (!ShouldFetchDeviceImage()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  metadata_manager_->GetDeviceImage(
+      device_key, active_account_id_.value(), DeviceImageDestination::kSettings,
+      base::BindOnce(&InputDeviceSettingsControllerImpl::
+                         OnDeviceImageForSettingsDownloaded,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
 void InputDeviceSettingsControllerImpl::OnGraphicsTabletButtonPressed(
     DeviceId device_id,
     const mojom::Button& button) {
@@ -2691,13 +2711,13 @@ void InputDeviceSettingsControllerImpl::GetDeviceImage(
   metadata_manager_->GetDeviceImage(
       device_key, active_account_id_.value(),
       DeviceImageDestination::kNotification,
-      base::BindOnce(
-          &InputDeviceSettingsControllerImpl::OnDeviceImageDownloaded,
-          weak_ptr_factory_.GetWeakPtr(), id));
+      base::BindOnce(&InputDeviceSettingsControllerImpl::
+                         OnDeviceNotificationImageDownloaded,
+                     weak_ptr_factory_.GetWeakPtr(), id));
 }
 
 // TODO(b/329686601): Handle case where a device is both a mouse and keyboard.
-void InputDeviceSettingsControllerImpl::OnDeviceImageDownloaded(
+void InputDeviceSettingsControllerImpl::OnDeviceNotificationImageDownloaded(
     DeviceId id,
     const DeviceImage& device_image) {
   if (auto* kb = FindKeyboard(id); kb != nullptr) {

@@ -103,6 +103,10 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
                             const mojom::Button& button) override;
   void OnGraphicsTabletButtonPressed(DeviceId device_id,
                                      const mojom::Button& button) override;
+  void GetDeviceImageDataUrl(
+      const std::string& device_key,
+      base::OnceCallback<void(const std::optional<std::string>&)> callback)
+      override;
   void AddObserver(InputDeviceSettingsController::Observer* observer) override;
   void RemoveObserver(
       InputDeviceSettingsController::Observer* observer) override;
@@ -288,7 +292,14 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
   // Callback function triggered when a device image has been downloaded.
   // The DeviceId is used to identify the type of input device the image is
   // associated with.
-  void OnDeviceImageDownloaded(DeviceId id, const DeviceImage& device_image);
+  void OnDeviceNotificationImageDownloaded(DeviceId id,
+                                           const DeviceImage& device_image);
+
+  // Callback function triggered when a device image to be displayed in the
+  // Settings UI has been downloaded.
+  void OnDeviceImageForSettingsDownloaded(
+      base::OnceCallback<void(const std::optional<std::string>&)> callback,
+      const DeviceImage& device_image);
 
   mojom::Mouse* FindMouse(DeviceId id);
   mojom::Touchpad* FindTouchpad(DeviceId id);

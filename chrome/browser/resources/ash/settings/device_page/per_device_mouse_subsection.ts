@@ -200,6 +200,18 @@ export class SettingsPerDeviceMouseSubsectionElement extends
       currentMouseChanged: {
         type: Boolean,
       },
+
+      isWelcomeExperienceEnabled: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean('enableWelcomeExperience');
+        },
+        readOnly: true,
+      },
+
+      deviceImageDataUrl: {
+        type: String,
+      },
     };
   }
 
@@ -216,7 +228,7 @@ export class SettingsPerDeviceMouseSubsectionElement extends
     ];
   }
 
-  override currentRouteChanged(route: Route): void {
+  override async currentRouteChanged(route: Route): Promise<void> {
     // Avoid override currentMouseChanged when on the customization subpage.
     if (route === routes.CUSTOMIZE_MOUSE_BUTTONS) {
       return;
@@ -227,6 +239,12 @@ export class SettingsPerDeviceMouseSubsectionElement extends
       // Reset the boolean when on other pages.
       this.currentMouseChanged = false;
       return;
+    }
+    if (this.isWelcomeExperienceEnabled) {
+      this.deviceImageDataUrl =
+          (await this.inputDeviceSettingsProvider.getDeviceIconImage(
+               this.mouse.deviceKey))
+              ?.dataUrl;
     }
 
     // If multiple mice are available, focus on the first one.
@@ -246,6 +264,8 @@ export class SettingsPerDeviceMouseSubsectionElement extends
     this.currentMouseChanged = false;
   }
 
+  isWelcomeExperienceEnabled: boolean;
+  deviceImageDataUrl: string|null = null;
   private mouse: Mouse;
   protected mousePolicies: MousePolicies;
   private primaryRightPref: chrome.settingsPrivate.PrefObject;

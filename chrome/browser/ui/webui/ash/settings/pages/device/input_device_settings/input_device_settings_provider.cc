@@ -11,6 +11,7 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/rgb_keyboard/rgb_keyboard_manager.h"
 #include "ash/shell.h"
+#include "ash/system/input_device_settings/input_device_settings_pref_names.h"
 #include "ash/system/keyboard_brightness_control_delegate.h"
 #include "base/containers/flat_set.h"
 #include "base/metrics/histogram_functions.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.mojom-forward.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
@@ -693,6 +695,23 @@ void InputDeviceSettingsProvider::SetWidgetForTesting(views::Widget* widget) {
   widget_ = widget;
   widget_->AddObserver(this);
   HandleObserving();
+}
+
+void InputDeviceSettingsProvider::OnReceiveDeviceImage(
+    GetDeviceIconImageCallback callback,
+    const std::optional<std::string>& data_url) {
+  std::move(callback).Run(data_url);
+}
+
+void InputDeviceSettingsProvider::GetDeviceIconImage(
+    const std::string& device_key,
+    GetDeviceIconImageCallback callback) {
+  CHECK(features::IsWelcomeExperienceEnabled());
+  CHECK(InputDeviceSettingsController::Get());
+  InputDeviceSettingsController::Get()->GetDeviceImageDataUrl(
+      device_key,
+      base::BindOnce(&InputDeviceSettingsProvider::OnReceiveDeviceImage,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void InputDeviceSettingsProvider::

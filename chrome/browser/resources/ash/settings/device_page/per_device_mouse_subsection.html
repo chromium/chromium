@@ -16,9 +16,39 @@
   .subsection-subtitle {
     padding-top: 15px;
   }
+
+  .device-info {
+    display: flex;
+    align-items: center;
+    padding-inline-start: 16px;
+  }
+
+  .device-info-header {
+    padding-inline-start: 0;
+  }
+
+  .device-image-icon {
+    height: 32px;
+    width: 32px;
+    margin-inline-end: 16px;
+    border-radius: 50%;
+  }
 </style>
 <div id="mouse">
-  <h2 class="subsection-header" id="mouseName">[[mouse.name]]</h2>
+  <template is="dom-if" if="[[isWelcomeExperienceEnabled]]">
+    <div class="device-info">
+      <img
+          class="device-image-icon"
+          src="[[deviceImageDataUrl]]"
+          hidden="[[!deviceImageDataUrl]]">
+      <h2 class="subsection-header device-info-header" id="mouseName">
+        [[mouse.name]]
+      </h2>
+    </div>
+  </template>
+  <template is="dom-if" if="[[!isWelcomeExperienceEnabled]]">
+    <h2 class="subsection-header" id="mouseName">[[mouse.name]]</h2>
+  </template>
   <template is="dom-if" if="[[showSwapToggleButton(
       customizationRestriction, isPeripheralCustomizationEnabled_)]]">
     <settings-toggle-button id="mouseSwapToggleButton"

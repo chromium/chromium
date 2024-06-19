@@ -4,6 +4,8 @@
 
 #include "ash/system/input_device_settings/device_image_downloader.h"
 
+#include <string>
+
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/system/input_device_settings/device_image.h"
 #include "ash/system/input_device_settings/input_device_settings_metadata.h"

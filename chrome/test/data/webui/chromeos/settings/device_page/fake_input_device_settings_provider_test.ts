@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {fakeGraphicsTabletButtonActions, fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakeMouseButtonActions, fakePointingSticks, fakeStyluses, fakeTouchpads, Keyboard, MetaKey, ModifierKey, SixPackKeyInfo, SixPackShortcutModifier} from 'chrome://os-settings/os_settings.js';
-import {assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('FakeInputDeviceSettings', () => {
   let provider: FakeInputDeviceSettingsProvider;
@@ -182,5 +182,12 @@ suite('FakeInputDeviceSettings', () => {
     provider.setFakeIsRgbKeyboardSupported(false);
     isRgbKeyboardSupported = await provider.isRgbKeyboardSupported();
     assertDeepEquals(isRgbKeyboardSupported, {isRgbKeyboardSupported: false});
+  });
+
+  test('getDeviceIconImage', async () => {
+    const expectedDataUrl = 'data:image/png;base64,gg==';
+    provider.setDeviceIconImage(expectedDataUrl);
+    const imageDataUrl = await provider.getDeviceIconImage();
+    assertEquals(expectedDataUrl, imageDataUrl.dataUrl);
   });
 });

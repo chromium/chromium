@@ -188,4 +188,8 @@ interface InputDeviceSettingsProvider {
   // Records metric each time user changes the keyboard brightness through
   // the slider.
   RecordKeyboardBrightnessChangeFromSlider(double percent);
+
+  // Returns the device image as a Data URL. Returns null if the device doesn't
+  // have a corresponding image.
+  GetDeviceIconImage(string device_key) => (string? data_url);
 };

@@ -130,6 +130,9 @@ class InputDeviceSettingsProvider
   void StopObserving() override;
   void GetActionsForMouseButtonCustomization(
       GetActionsForMouseButtonCustomizationCallback callback) override;
+
+  void GetDeviceIconImage(const std::string& device_key,
+                          GetDeviceIconImageCallback callback) override;
   void GetActionsForGraphicsTabletButtonCustomization(
       GetActionsForGraphicsTabletButtonCustomizationCallback callback) override;
 
@@ -179,6 +182,9 @@ class InputDeviceSettingsProvider
 
   void OnReceiveKeyboardAmbientLightSensorEnabled(
       std::optional<bool> keyboard_ambient_light_sensor_enabled);
+
+  void OnReceiveDeviceImage(GetDeviceIconImageCallback callback,
+                            const std::optional<std::string>& data_url);
 
   // Denotes whether button observing should be paused due to the settings app
   // being out of focus or minimized. Default to true to require a valid widget
