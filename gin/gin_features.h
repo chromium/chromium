@@ -12,6 +12,14 @@
 
 namespace features {
 
+// For many V8 flags, the canonical location of the default value of the flag is
+// inside V8. For these flags, the equivalent Chromium base::Feature state is
+// ignored if it is not explicitly overridden. For these cases, the
+// base::Feature default value is arbitrary and this constant is used for
+// documentation.
+inline constexpr base::FeatureState kFeatureDefaultStateControlledByV8 =
+    base::FEATURE_DISABLED_BY_DEFAULT;
+
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8CompactCodeSpaceWithStack);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8CompactWithStack);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8ConcurrentSparkplug);
