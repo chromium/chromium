@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "chromeos/components/editor_menu/public/cpp/read_write_card_controller.h"
 #include "chromeos/crosapi/mojom/magic_boost.mojom.h"
@@ -62,8 +63,9 @@ class MagicBoostCardController : public ReadWriteCardController {
       int64_t display_id,
       crosapi::mojom::MagicBoostController::TransitionAction action);
 
-  // Whether the Quick Answers and Mahi features should show the opt in UI.
-  virtual bool ShouldQuickAnswersAndMahiShowOptIn();
+  // Checks consent status of Help me read to decide if we should show the opt
+  // in UI or not.
+  virtual bool ShouldShowHmrOptIn();
 
   // Enables or disables all the features (including Quick Answers, Orca, and
   // Mahi).
@@ -88,6 +90,8 @@ class MagicBoostCardController : public ReadWriteCardController {
       crosapi::mojom::MagicBoostController* delegate);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+  base::WeakPtr<MagicBoostCardController> GetWeakPtr();
+
   views::Widget* opt_in_widget_for_test() { return opt_in_widget_.get(); }
 
  private:
@@ -99,6 +103,8 @@ class MagicBoostCardController : public ReadWriteCardController {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   mojo::Remote<crosapi::mojom::MagicBoostController> remote_;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  base::WeakPtrFactory<MagicBoostCardController> weak_factory_{this};
 };
 
 }  // namespace chromeos

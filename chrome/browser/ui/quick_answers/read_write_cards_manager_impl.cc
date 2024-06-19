@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/quick_answers/read_write_cards_manager_impl.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -12,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/hash/sha1.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/views/editor_menu/editor_menu_controller_impl.h"
 #include "chrome/browser/ui/views/editor_menu/utils/editor_types.h"
@@ -42,6 +44,10 @@ ReadWriteCardsManagerImpl::ReadWriteCardsManagerImpl()
   if (chromeos::features::IsMahiEnabled()) {
     mahi_menu_controller_.emplace(ui_controller_);
   }
+
+  if (chromeos::features::IsMagicBoostEnabled()) {
+    magic_boost_card_controller_.emplace();
+  }
 }
 
 ReadWriteCardsManagerImpl::~ReadWriteCardsManagerImpl() = default;
@@ -65,7 +71,7 @@ void ReadWriteCardsManagerImpl::FetchController(
     return;
   }
 
-  std::move(callback).Run(GetMahiOrQuickAnswerControllersIfEligible(params));
+  std::move(callback).Run(GetControllers(params, /*editor_mode=*/std::nullopt));
 }
 
 void ReadWriteCardsManagerImpl::SetContextMenuBounds(
@@ -77,29 +83,59 @@ void ReadWriteCardsManagerImpl::OnGetEditorModeResult(
     const content::ContextMenuParams& params,
     editor_menu::FetchControllersCallback callback,
     editor_menu::EditorMode editor_mode) {
-  if (editor_mode != editor_menu::EditorMode::kBlocked) {
-    std::move(callback).Run({editor_menu_controller_->GetWeakPtr()});
-    return;
-  }
-  editor_menu_controller_->LogEditorMode(editor_menu::EditorMode::kBlocked);
-  std::move(callback).Run(GetMahiOrQuickAnswerControllersIfEligible(params));
+  std::move(callback).Run(GetControllers(params, editor_mode));
 }
 
 std::vector<base::WeakPtr<chromeos::ReadWriteCardController>>
-ReadWriteCardsManagerImpl::GetMahiOrQuickAnswerControllersIfEligible(
-    const content::ContextMenuParams& params) {
-  std::vector<base::WeakPtr<chromeos::ReadWriteCardController>> result;
+ReadWriteCardsManagerImpl::GetControllers(
+    const content::ContextMenuParams& params,
+    std::optional<editor_menu::EditorMode> editor_mode) {
+  // Display Quick Answers card if it is eligible and there's selected text.
+  const bool should_show_qa = QuickAnswersState::Get()->is_eligible() &&
+                              !params.selection_text.empty() &&
+                              quick_answers_controller_;
+  const bool should_show_mahi =
+      mahi_menu_controller_ && chromeos::features::IsMahiEnabled();
 
-  if (mahi_menu_controller_ && chromeos::features::IsMahiEnabled()) {
-    result.emplace_back(mahi_menu_controller_->GetWeakPtr());
+  // Check if we should go through Magic Boost opt-in flow.
+  const bool should_opt_in_orca_with_magic_boost =
+      editor_mode == editor_menu::EditorMode::kPromoCard;
+  const bool should_opt_in_hmr_with_magic_boost =
+      (!editor_mode || editor_mode == editor_menu::EditorMode::kBlocked) &&
+      (should_show_mahi || should_show_qa) && magic_boost_card_controller_ &&
+      magic_boost_card_controller_->ShouldShowHmrOptIn();
+
+  if (magic_boost_card_controller_ && (should_opt_in_hmr_with_magic_boost ||
+                                       should_opt_in_orca_with_magic_boost)) {
+    return {magic_boost_card_controller_->GetWeakPtr()};
   }
 
-  if (QuickAnswersState::Get()->is_eligible() &&
-      !params.selection_text.empty() && quick_answers_controller_) {
-    result.emplace_back(quick_answers_controller_->GetWeakPtr());
+  // If Magic Boost is not enabled, each feature (besides Mahi which only uses
+  // Magic Boost) will have its own opt-in flow, provided within each individual
+  // controller.
+  if (editor_mode) {
+    // Use editor menu if available.
+    if (editor_mode.value() != editor_menu::EditorMode::kBlocked) {
+      return {editor_menu_controller_->GetWeakPtr()};
+    }
+
+    editor_menu_controller_->LogEditorMode(editor_menu::EditorMode::kBlocked);
   }
 
-  return result;
+  // Otherwise, use Quick Answers and Mahi if available.
+  std::vector<base::WeakPtr<chromeos::ReadWriteCardController>> controllers;
+
+  if (should_show_qa) {
+    controllers.emplace_back(quick_answers_controller_->GetWeakPtr());
+  }
+
+  if (should_show_mahi) {
+    // TODO(b/347355740): Maybe check for consent status and disable showing the
+    // card here.
+    controllers.emplace_back(mahi_menu_controller_->GetWeakPtr());
+  }
+
+  return controllers;
 }
 
 }  // namespace chromeos

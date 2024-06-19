@@ -6,9 +6,11 @@
 
 #include <memory>
 
+#include "chrome/browser/ash/magic_boost/magic_boost_state_ash.h"
 #include "chrome/browser/ui/chromeos/magic_boost/magic_boost_opt_in_card.h"
 #include "chrome/browser/ui/chromeos/magic_boost/test/mock_magic_boost_controller_crosapi.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -42,9 +44,17 @@ class MagicBoostCardControllerTest : public ChromeViewsTestBase {
     card_controller_.SetMagicBoostControllerCrosapiForTesting(
         &crosapi_controller_);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+    magic_boost_state_ = std::make_unique<ash::MagicBoostStateAsh>();
+  }
+
+  void TearDown() override {
+    magic_boost_state_.reset();
+    ChromeViewsTestBase::TearDown();
   }
 
  protected:
+  std::unique_ptr<ash::MagicBoostStateAsh> magic_boost_state_;
   MagicBoostCardController card_controller_;
   testing::StrictMock<MockMagicBoostControllerCrosapi> crosapi_controller_;
   mojo::Receiver<crosapi::mojom::MagicBoostController> receiver_{
@@ -131,6 +141,17 @@ TEST_F(MagicBoostCardControllerTest, ShowOptInCardAgain) {
                                    /*selected_text=*/"",
                                    /*surrounding_text=*/"");
   ASSERT_TRUE(card_controller_.opt_in_widget_for_test());
+}
+
+TEST_F(MagicBoostCardControllerTest, ShouldShowHmrOptIn) {
+  magic_boost_state_->AsyncWriteConsentStatus(HMRConsentStatus::kUnset);
+  EXPECT_TRUE(card_controller_.ShouldShowHmrOptIn());
+
+  magic_boost_state_->AsyncWriteConsentStatus(HMRConsentStatus::kDeclined);
+  EXPECT_FALSE(card_controller_.ShouldShowHmrOptIn());
+
+  magic_boost_state_->AsyncWriteConsentStatus(HMRConsentStatus::kApproved);
+  EXPECT_FALSE(card_controller_.ShouldShowHmrOptIn());
 }
 
 }  // namespace chromeos

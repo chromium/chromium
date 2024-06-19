@@ -27,7 +27,7 @@ class MockMagicBoostCardController : public MagicBoostCardController {
               SetQuickAnswersAndMahiFeaturesState,
               (bool enabled),
               (override));
-  MOCK_METHOD(bool, ShouldQuickAnswersAndMahiShowOptIn, (), (override));
+  MOCK_METHOD(bool, ShouldShowHmrOptIn, (), (override));
 };
 
 }  // namespace chromeos

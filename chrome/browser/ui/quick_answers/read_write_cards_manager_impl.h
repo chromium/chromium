@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "chrome/browser/ui/chromeos/magic_boost/magic_boost_card_controller.h"
 #include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/views/editor_menu/utils/editor_types.h"
 #include "chrome/browser/ui/views/mahi/mahi_menu_controller.h"
@@ -58,9 +59,9 @@ class ReadWriteCardsManagerImpl : public ReadWriteCardsManager {
                              editor_menu::FetchControllersCallback callback,
                              editor_menu::EditorMode editor_mode);
 
-  std::vector<base::WeakPtr<chromeos::ReadWriteCardController>>
-  GetMahiOrQuickAnswerControllersIfEligible(
-      const content::ContextMenuParams& params);
+  std::vector<base::WeakPtr<chromeos::ReadWriteCardController>> GetControllers(
+      const content::ContextMenuParams& params,
+      std::optional<editor_menu::EditorMode> editor_mode);
 
   chromeos::ReadWriteCardsUiController ui_controller_;
 
@@ -68,6 +69,8 @@ class ReadWriteCardsManagerImpl : public ReadWriteCardsManager {
   std::unique_ptr<chromeos::editor_menu::EditorMenuControllerImpl>
       editor_menu_controller_;
   std::optional<chromeos::mahi::MahiMenuController> mahi_menu_controller_;
+  std::optional<chromeos::MagicBoostCardController>
+      magic_boost_card_controller_;
 
   base::WeakPtrFactory<ReadWriteCardsManagerImpl> weak_factory_{this};
 };

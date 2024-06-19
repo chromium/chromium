@@ -113,9 +113,10 @@ void MagicBoostCardController::ShowDisclaimerUi(
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
-bool MagicBoostCardController::ShouldQuickAnswersAndMahiShowOptIn() {
-  // TODO(b/341485303): Check for Magic Boost consent status.
-  return false;
+bool MagicBoostCardController::ShouldShowHmrOptIn() {
+  auto consent_status = MagicBoostState::Get()->hmr_consent_status();
+  return consent_status ? consent_status.value() == HMRConsentStatus::kUnset
+                        : false;
 }
 
 void MagicBoostCardController::SetAllFeaturesState(bool enabled) {
@@ -134,6 +135,10 @@ void MagicBoostCardController::SetQuickAnswersAndMahiFeaturesState(
 
 void MagicBoostCardController::SetIsOrcaIncludedForTest(bool include) {
   is_orca_included_ = include;
+}
+
+base::WeakPtr<MagicBoostCardController> MagicBoostCardController::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
