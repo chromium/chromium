@@ -23506,30 +23506,6 @@
             ]
         }
     ],
-    "V8SynchronousSparkplug": [
-        {
-            "platforms": [
-                "chromeos_lacros",
-                "chromeos",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows",
-                "android",
-                "android_weblayer",
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "disable_features": [
-                        "V8BaselineBatchCompilation",
-                        "V8ConcurrentSparkplug"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8Turboshaft": [
         {
             "platforms": [
