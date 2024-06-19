@@ -3729,13 +3729,6 @@ void NetworkHandler::OnSubresourceWebBundleInnerResponseError(
           : Maybe<std::string>());
 }
 
-void NetworkHandler::OnPolicyContainerHostUpdated() {
-  if (!enabled_) {
-    return;
-  }
-  frontend()->PolicyUpdated();
-}
-
 String NetworkHandler::BuildPrivateNetworkRequestPolicy(
     network::mojom::PrivateNetworkRequestPolicy policy) {
   switch (policy) {

@@ -3261,7 +3261,6 @@ void RenderFrameHostImpl::SetPolicyContainerHost(
   // Top-level document are never credentialless.
   // Note: It is never inherited from the opener, because they are forced to
   // open windows using noopener.
-  devtools_instrumentation::DidUpdatePolicyContainerHost(frame_tree_node_);
   CHECK(parent_ || !IsCredentialless());
 }
 

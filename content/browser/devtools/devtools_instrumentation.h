@@ -268,8 +268,6 @@ void DidActivatePrerender(const NavigationRequest& nav_request,
                           const std::optional<base::UnguessableToken>&
                               initiator_devtools_navigation_token);
 
-void DidUpdatePolicyContainerHost(FrameTreeNode* ftn);
-
 void DidUpdatePrefetchStatus(
     FrameTreeNode* ftn,
     const base::UnguessableToken& initiator_devtools_navigation_token,
