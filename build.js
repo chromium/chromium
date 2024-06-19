@@ -42,21 +42,12 @@ if (currentPlatform() == "macOS") {
 const archSuffix = buildArm ? "-arm" : "";
 
 if (!REPLAY_LOCAL_DRIVER_DIR) {
-  // Download the record/replay driver archive, using the latest version unless
-  // it was overridden via the environment.
+  // Download the record/replay driver archive, using the version stored in
+  // REPLAY_BACKEND_REV unless it was overridden via the environment.
   console.log(`Downloading driver...`);
-  let driverArchive = `${currentPlatform()}-recordreplay${archSuffix}.tgz`;
-  let downloadArchive = driverArchive;
-  let driverRevisionOverride = DRIVER_REVISION;
-  if (driverRevisionIsSet) {
-    driverRevisionOverride = driverRevisionOverride.substring(0, 12);
-    if (driverRevisionOverride.length !== 12) {
-      throw new Error(
-        `Invalid DRIVER_REVISION was "${driverRevisionOverride}" but must have a length of exactly 12`
-      );
-    }
-    downloadArchive = `${currentPlatform()}-recordreplay-${driverRevisionOverride}${archSuffix}.tgz`;
-  }
+  const driverArchive = `${currentPlatform()}-recordreplay${archSuffix}.tgz`;
+  const driverRevision = driverRevisionIsSet ? DRIVER_REVISION : fs.readFileSync("REPLAY_BACKEND_REV", "utf8");
+  const downloadArchive = `${currentPlatform()}-recordreplay-${driverRevision.trim().substring(0,12)}${archSuffix}.tgz`;
   spawnChecked(
     "curl",
     [
