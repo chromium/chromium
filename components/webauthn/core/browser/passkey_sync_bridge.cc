@@ -371,6 +371,38 @@ bool PasskeySyncBridge::DeletePasskey(const std::string& credential_id,
   return true;
 }
 
+// The following implementation is more efficient than the simple one which
+// would iterate over all passkeys and delete them one by one.
+// Deleting all passkeys individually would also send out a notification to
+// the observers for each individual deletion. This implementation only sends
+// out a single notification for all deletions.
+// Shadow chains are not handled separately since all passkeys are deleted
+// anyway.
+void PasskeySyncBridge::DeleteAllPasskeys() {
+  std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
+      store_->CreateWriteBatch();
+  std::vector<PasskeyModelChange> changes;
+  for (const auto& [sync_id, passkey] : data_) {
+    //    std::string sync_id(data_map_entry.first);
+    //    auto passkey = data_map_entry.second;
+
+    changes.emplace_back(PasskeyModelChange::ChangeType::REMOVE,
+                         std::move(passkey));
+    change_processor()->Delete(sync_id,
+                               syncer::DeletionOrigin::FromLocation(FROM_HERE),
+                               write_batch->GetMetadataChangeList());
+    write_batch->DeleteData(sync_id);
+  }
+  data_.clear();
+  store_->CommitWriteBatch(
+      std::move(write_batch),
+      base::BindOnce(&PasskeySyncBridge::OnStoreCommitWriteBatch,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  // Sends out only a single notification for all deleted passkeys.
+  NotifyPasskeysChanged(std::move(changes));
+}
+
 bool PasskeySyncBridge::UpdatePasskey(const std::string& credential_id,
                                       PasskeyUpdate change) {
   // Find the credential with the given |credential_id|.

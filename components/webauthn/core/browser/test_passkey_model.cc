@@ -140,6 +140,10 @@ bool TestPasskeyModel::DeletePasskey(const std::string& credential_id,
   return true;
 }
 
+void TestPasskeyModel::DeleteAllPasskeys() {
+  credentials_.clear();
+}
+
 bool TestPasskeyModel::UpdatePasskey(const std::string& credential_id,
                                      PasskeyUpdate change) {
   const auto credential_it =

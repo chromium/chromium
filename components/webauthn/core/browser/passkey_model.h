@@ -113,6 +113,9 @@ class PasskeyModel : public KeyedService {
   virtual bool DeletePasskey(const std::string& credential_id,
                              const base::Location& location) = 0;
 
+  // Deletes all passkeys.
+  virtual void DeleteAllPasskeys() = 0;
+
   // Updates attributes of the passkey with the given `credential_id`. Returns
   // true if the credential was found and updated, false otherwise.
   virtual bool UpdatePasskey(const std::string& credential_id,
