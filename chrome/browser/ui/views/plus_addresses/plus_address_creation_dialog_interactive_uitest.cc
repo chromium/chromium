@@ -110,9 +110,7 @@ class ScopedPlusAddressFeatureList {
                                 {"oauth-scope", {kFakeOauthScope}},
                                 {"manage-url", {kFakeManagementUrl}},
                                 {"error-report-url", {kFakeErrorReportUrl}}}},
-                              {features::kPlusAddressRefresh, {}},
-                              {features::kPlusAddressRefreshUiInDesktopModal,
-                               {}}},
+                              {features::kPlusAddressRefresh, {}}},
         /*disabled_features=*/{});
   }
 

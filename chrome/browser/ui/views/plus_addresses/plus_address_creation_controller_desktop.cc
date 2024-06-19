@@ -13,7 +13,6 @@
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/ui/views/plus_addresses/plus_address_creation_dialog_delegate.h"
 #include "components/constrained_window/constrained_window_views.h"
-#include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -81,12 +80,9 @@ void PlusAddressCreationControllerDesktop::OfferCreation(
   metrics::RecordModalEvent(metrics::PlusAddressModalEvent::kModalShown);
   modal_shown_time_ = clock_->Now();
   if (!suppress_ui_for_testing_) {
-    const bool offer_refresh =
-        plus_address_service->IsRefreshingSupported(relevant_origin_) &&
-        base::FeatureList::IsEnabled(
-            features::kPlusAddressRefreshUiInDesktopModal);
     dialog_delegate_ = std::make_unique<PlusAddressCreationDialogDelegate>(
-        GetWeakPtr(), &GetWebContents(), maybe_email.value(), offer_refresh);
+        GetWeakPtr(), &GetWebContents(), maybe_email.value(),
+        plus_address_service->IsRefreshingSupported(relevant_origin_));
     constrained_window::ShowWebModalDialogViews(dialog_delegate_.get(),
                                                 &GetWebContents());
   }

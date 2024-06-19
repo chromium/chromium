@@ -55,11 +55,6 @@ BASE_FEATURE(kPlusAddressRefresh,
              "PlusAddressRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, refresh UI is shown in the modal creation dialog on Desktop.
-BASE_FEATURE(kPlusAddressRefreshUiInDesktopModal,
-             "PlusAddressRefreshUiInDesktopModal",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, refresh UI is shown in the bottom sheet on iOS.
 BASE_FEATURE(kPlusAddressRefreshUiInIOS,
              "PlusAddressRefreshUiInIOS",
