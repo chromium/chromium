@@ -7,9 +7,7 @@
 #import "base/strings/string_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_mock_clock_override.h"
-#import "base/test/with_feature_override.h"
 #import "base/time/time.h"
-#import "components/plus_addresses/features.h"
 #import "components/plus_addresses/metrics/plus_address_metrics.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -42,13 +40,8 @@ std::string FormatRefreshHistogramNameFor(
 
 }  // namespace
 
-class PlusAddressBottomSheetViewControllerTest
-    : public PlatformTest,
-      public base::test::WithFeatureOverride {
+class PlusAddressBottomSheetViewControllerTest : public PlatformTest {
  public:
-  PlusAddressBottomSheetViewControllerTest()
-      : base::test::WithFeatureOverride(
-            plus_addresses::features::kPlusAddressUIRedesign) {}
 
   void SetUp() override {
     PlatformTest::SetUp();
@@ -72,7 +65,7 @@ class PlusAddressBottomSheetViewControllerTest
 
 // Ensure that tapping confirm button on bottom sheet confirms plus_address
 // and collects relevant metrics.
-TEST_P(PlusAddressBottomSheetViewControllerTest, ConfirmButtonTapped) {
+TEST_F(PlusAddressBottomSheetViewControllerTest, ConfirmButtonTapped) {
   OCMExpect([delegate_ reservePlusAddress]);
   [view_controller_ loadViewIfNeeded];
 
@@ -110,7 +103,7 @@ TEST_P(PlusAddressBottomSheetViewControllerTest, ConfirmButtonTapped) {
 
 // Ensure that tapping cancel button dismisses bottom sheet
 // and collects relevant metrics.
-TEST_P(PlusAddressBottomSheetViewControllerTest, CancelButtonTapped) {
+TEST_F(PlusAddressBottomSheetViewControllerTest, CancelButtonTapped) {
   OCMExpect([delegate_ reservePlusAddress]);
   OCMExpect([browser_coordinator_commands_ dismissPlusAddressBottomSheet]);
   [view_controller_ loadViewIfNeeded];
@@ -147,7 +140,7 @@ TEST_P(PlusAddressBottomSheetViewControllerTest, CancelButtonTapped) {
 
 // Simulate a swipe to dismisses bottom sheet and ensure that
 // relevant metrics are collected.
-TEST_P(PlusAddressBottomSheetViewControllerTest, SwipeToDismiss) {
+TEST_F(PlusAddressBottomSheetViewControllerTest, SwipeToDismiss) {
   OCMExpect([delegate_ reservePlusAddress]);
   OCMExpect([browser_coordinator_commands_ dismissPlusAddressBottomSheet]);
   [view_controller_ loadViewIfNeeded];
@@ -185,7 +178,7 @@ TEST_P(PlusAddressBottomSheetViewControllerTest, SwipeToDismiss) {
 
 // Ensure that when confirmation error occurs, user can tap cancel button to
 // dismiss the bottom sheet and metric for the confirmation error is collected.
-TEST_P(PlusAddressBottomSheetViewControllerTest, CancelAfterConfirmError) {
+TEST_F(PlusAddressBottomSheetViewControllerTest, CancelAfterConfirmError) {
   OCMExpect([delegate_ reservePlusAddress]);
   OCMExpect([browser_coordinator_commands_ dismissPlusAddressBottomSheet]);
 
@@ -233,7 +226,7 @@ TEST_P(PlusAddressBottomSheetViewControllerTest, CancelAfterConfirmError) {
 
 // Ensure that when reservation error occurs, user can tap cancel button to
 // dismiss the bottom sheet and metric for the reservation error is collected.
-TEST_P(PlusAddressBottomSheetViewControllerTest, CancelAfterReserveError) {
+TEST_F(PlusAddressBottomSheetViewControllerTest, CancelAfterReserveError) {
   OCMExpect([delegate_ reservePlusAddress]);
   OCMExpect([browser_coordinator_commands_ dismissPlusAddressBottomSheet]);
 
@@ -272,7 +265,7 @@ TEST_P(PlusAddressBottomSheetViewControllerTest, CancelAfterReserveError) {
 
 // Ensure that when confirmation error occurs, user swipe to dismiss the bottom
 // sheet and metric for the confirmation error is collected.
-TEST_P(PlusAddressBottomSheetViewControllerTest, DismissAfterConfirmError) {
+TEST_F(PlusAddressBottomSheetViewControllerTest, DismissAfterConfirmError) {
   OCMExpect([delegate_ reservePlusAddress]);
   OCMExpect([browser_coordinator_commands_ dismissPlusAddressBottomSheet]);
 
@@ -325,7 +318,7 @@ TEST_P(PlusAddressBottomSheetViewControllerTest, DismissAfterConfirmError) {
 
 // Ensure that tapping on the refresh button and then confirming the plusAddress
 // logs appopriate metrics.
-TEST_P(PlusAddressBottomSheetViewControllerTest,
+TEST_F(PlusAddressBottomSheetViewControllerTest,
        RefreshAndConfirmButtonTapped) {
   OCMExpect([delegate_ reservePlusAddress]);
   [view_controller_ loadViewIfNeeded];
@@ -365,6 +358,3 @@ TEST_P(PlusAddressBottomSheetViewControllerTest,
               kModalConfirmed),
       /*refresh_count=*/1, 1);
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    PlusAddressBottomSheetViewControllerTest);

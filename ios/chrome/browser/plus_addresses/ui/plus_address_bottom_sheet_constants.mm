@@ -16,12 +16,6 @@ const CGFloat kPlusAddressSheetBeforeImageTopMargin = 10;
 
 const CGFloat kPlusAddressSheetAfterImageMargin = 0;
 
-const CGFloat kPlusAddressSheetImageSize = 32;
-
-const CGFloat kPlusAddressSheetBrandedImageWidth = 40;
-
-const CGFloat kPlusAddressSheetScrollViewBottomInsets = 26;
-
 const CGFloat kPlusAddressSheetTableViewCellCornerRadius = 10;
 
 const CGFloat kPlusAddressSheetTableViewCellHeight = 64;
