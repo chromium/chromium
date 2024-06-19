@@ -158,6 +158,7 @@
 <translation id="3602290021589620013">Esikatselu</translation>
 <translation id="3628308229821498208">Ehdotetut haut</translation>
 <translation id="3697164069658504920">Kun tämä on päällä, sivustot voivat pyytää lupaa käyttää USB-laitteita. Kun tämä on pois päältä, sivustot eivät voi käyttää USB-laitteita.</translation>
+<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">Avaamasi sivusto voi tallentaa pienen määrän tietoja Chromeen tarkistaakseen, ettet ole botti</translation>
 <translation id="3721953990244350188">Hylkää ja näytä seuraava saatavilla oleva toiminto</translation>
 <translation id="3744111561329211289">Taustasynkronointi</translation>
@@ -227,6 +228,7 @@
 <translation id="4962975101802056554">Peru kaikki laitteen käyttöoikeudet</translation>
 <translation id="497421865427891073">Siirry eteenpäin</translation>
 <translation id="4976702386844183910">Viimeksi avattu <ph name="DATE" /></translation>
+<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">Olet sallinut kolmannen osapuolen evästeet tällä sivustolla</translation>
 <translation id="4994033804516042629">Kontakteja ei löytynyt</translation>
 <translation id="4996978546172906250">Jaa palvelussa:</translation>

@@ -410,6 +410,7 @@
 <translation id="1293556467332435079">文件</translation>
 <translation id="1294807885394205587">此过程可能需要几分钟的时间。正在启动容器管理器。</translation>
 <translation id="12951065153783848">贵组织负责管理您的账号</translation>
+<translation id="1296410481664942178">不显示 Google 日历</translation>
 <translation id="1296911687402551044">固定所选标签页</translation>
 <translation id="1297175357211070620">目标打印机</translation>
 <translation id="129770436432446029">针对实验“<ph name="EXPERIMENT_NAME" />”发送反馈</translation>
@@ -448,6 +449,7 @@
 <translation id="1327495825214193325">要启用 ADB 调试，您必须重启此<ph name="DEVICE_TYPE" />。要停用它，则必须将此设备恢复出厂设置。</translation>
 <translation id="1327527584824210101">使用通行密钥</translation>
 <translation id="1327794256477341646">所有需要使用您的位置信息的功能都将无法正常运行</translation>
+<translation id="1328364753167940710"><ph name="NUM_HR" /> 小时后</translation>
 <translation id="1329466763986822896">加强对此热点的隐私保护</translation>
 <translation id="1331977651797684645">是我本人。</translation>
 <translation id="1333489022424033687">请清除您设备上存储的其他网站的数据，否则 <ph name="ORIGIN" /> 上的某些功能可能无法正常运行</translation>
@@ -992,6 +994,7 @@
 <translation id="1709762881904163296">网络设置</translation>
 <translation id="1709916727352927457">删除通行密钥</translation>
 <translation id="1709972045049031556">无法分享</translation>
+<translation id="1712143791363119140">进行中</translation>
 <translation id="1714644264617423774">启用无障碍功能，让设备更易于使用。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464">为 <ph name="SITE_NAME" /> 及其已安装的应用删除网站数据和权限？</translation>
 <translation id="171826447717908393">独立式 Web 应用（Beta 版）</translation>
@@ -1393,6 +1396,7 @@
 <translation id="200928901437634269">使用孩子的 Google 账号或学校账号。您还可以设置家长控制功能。</translation>
 <translation id="2009590708342941694">表情符号工具</translation>
 <translation id="2010501376126504057">兼容的设备</translation>
+<translation id="2010636492623189611">已选择。</translation>
 <translation id="201217432804812273">开启“保存组”</translation>
 <translation id="2012935757369720523">删除文件</translation>
 <translation id="2013467735169740431">网站可以请求锁定键盘</translation>
@@ -1985,6 +1989,7 @@
 <translation id="2435248616906486374">网络连接已断开</translation>
 <translation id="2435457462613246316">显示密码</translation>
 <translation id="2436385001956947090">复制链接(&amp;L)</translation>
+<translation id="2437561292559037753">数据共享</translation>
 <translation id="2438853563451647815">未连接到打印机</translation>
 <translation id="2439152382014731627">重置 <ph name="DEVICE_TYPE" /> 密码</translation>
 <translation id="2439626940657133600">正在加载“<ph name="WINDOW_TITLE" />”</translation>
@@ -2561,6 +2566,7 @@
 <translation id="2843698124892775282">已释放 <ph name="MEMORY_SAVINGS" /></translation>
 <translation id="2844169650293029770">USB-C 设备（左侧前端端口）</translation>
 <translation id="2844809857160214557">查看和管理打印任务</translation>
+<translation id="2845276301195220700">可对 Google 日历执行的更多操作</translation>
 <translation id="2845382757467349449">总是显示书签栏</translation>
 <translation id="2845751331501453107">您在浏览时是否会看到个性化广告取决于此设置、<ph name="BEGIN_LINK1" />网站建议的广告<ph name="LINK_END1" />、您的 <ph name="BEGIN_LINK2" />Cookie 设置<ph name="LINK_END2" />，以及您正查看的网站是否会展示个性化广告</translation>
 <translation id="284581348330507117">创建互不重复的密码</translation>
@@ -3674,6 +3680,7 @@
 <translation id="3694590407685276748">突出显示文本光标</translation>
 <translation id="369489984217678710">密码和其他登录数据</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{已完成安全检查。系统将会上传您的数据。}=1{已完成安全检查。系统将会上传您的文件。}other{已完成安全检查。系统将会上传您的文件。}}</translation>
+<translation id="3695339288331169103">来自 <ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" /></translation>
 <translation id="369736917241079046">启动器键 + 向左键</translation>
 <translation id="3697716475445175867">上次打开时间</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{您可以阻止这个网站继续发送通知。}other{您可以阻止这些网站继续发送通知。}}</translation>
@@ -4972,6 +4979,7 @@
 <translation id="4650591383426000695">将手机与 <ph name="DEVICE_TYPE" /> 断开连接</translation>
 <translation id="4651484272688821107">无法加载包含演示模式资源的在线组件。</translation>
 <translation id="4651921906638302153">无法使用此账号登录</translation>
+<translation id="4652921642122345344">语速：<ph name="RATE" /> 倍</translation>
 <translation id="4652935475563630866">重新启动 Parallels Desktop 后，对摄像头设置做出的更改才能生效。请重新启动 Parallels Desktop 以继续。</translation>
 <translation id="4653116291358041820">小阴影</translation>
 <translation id="4653405415038586100">配置 Linux 时出错</translation>
@@ -5170,6 +5178,7 @@
 <translation id="4809927044794281115">浅色主题</translation>
 <translation id="4811212958317149293">开关控制键盘自动扫描</translation>
 <translation id="4811503964269049987">为所选标签页建组</translation>
+<translation id="4812073856515324252">选择保存 <ph name="APP_NAME" /> 通行密钥的位置</translation>
 <translation id="4813512666221746211">网络错误</translation>
 <translation id="4814114628197290459">删除 IBAN</translation>
 <translation id="4814327014588285482">跳过，稍后再提醒我</translation>
@@ -5636,6 +5645,7 @@
 <translation id="5160634252433617617">实体键盘</translation>
 <translation id="5160857336552977725">登录您的<ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">由<ph name="VENDOR_NAME" />提供的 USB 设备</translation>
+<translation id="5161442190864186925">加入会议</translation>
 <translation id="5161827038979306924">Chrome 中的浏览记录与搜索记录有何区别？</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> 已被禁用</translation>
 <translation id="5163910114647549394">此标签页已移至标签栏的末尾</translation>
@@ -7939,6 +7949,7 @@
 <translation id="6912007319859991306">移动网络 SIM 卡 PIN 码</translation>
 <translation id="6912380255120084882">尝试改用其他设备</translation>
 <translation id="691289340230098384">字幕偏好设置</translation>
+<translation id="6913051485529944333">此页面不会再显示 Google 日历</translation>
 <translation id="6914812290245989348">在您访问不安全的网站前不发出任何警告</translation>
 <translation id="6916590542764765824">管理扩展程序</translation>
 <translation id="6918677045355889289">需要更新 Chrome 操作系统</translation>
@@ -9143,6 +9154,7 @@
 <translation id="7810202088502699111">已拦截此网页上的弹出式窗口。</translation>
 <translation id="7810367892333449285">所输入代码的格式应为：<ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ 地址<ph name="LPA_2" />$<ph name="LPA_3" />可选匹配 ID<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">请重试，或从之前生成的以下主题中任选其一。</translation>
+<translation id="7812170317334653156">Google 日历已隐藏</translation>
 <translation id="7814090115158024843">在这些网站上一律停用写作帮助</translation>
 <translation id="7814458197256864873">复制(&amp;C)</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
@@ -9201,6 +9213,7 @@
 <translation id="7853747251428735">更多工具(&amp;L)</translation>
 <translation id="7853999103056713222">使用更安全的密码</translation>
 <translation id="7855678561139483478">将标签页移至新窗口</translation>
+<translation id="7856117067008941054">隐藏 Google 日历</translation>
 <translation id="7857004848504343806">您的计算机包含一个安全模块，该模块可用于在 ChromeOS Flex 中实现许多关键的安全功能。如需了解详情，请访问 Chromebook 帮助中心：https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">文字建议</translation>
 <translation id="7858120906780498731">ChromeOS 连接的输入设备</translation>
@@ -9209,6 +9222,7 @@
 <translation id="786073089922909430">服务：<ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">下载内容(&amp;D)</translation>
 <translation id="7861846108263890455">Google 账号语言</translation>
+<translation id="7864114920800968141"><ph name="NUM_MIN" /> 分钟后</translation>
 <translation id="7864539943188674973">停用蓝牙</translation>
 <translation id="7864825798076155402">保存到您的 Google 账号中？</translation>
 <translation id="7865127013871431856">翻译选项</translation>

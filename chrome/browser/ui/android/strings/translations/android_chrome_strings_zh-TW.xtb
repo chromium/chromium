@@ -117,6 +117,8 @@
 <translation id="1513814250881909472">進行同步處理，取得你在其他裝置上的分頁</translation>
 <translation id="1513858653616922153">刪除密碼</translation>
 <translation id="1521774566618522728">上次使用時間：今天</translation>
+<translation id="1544084554881119930">系統將不會加密付款方式和地址，也不會同步 Chrome 中的瀏覽記錄。
+只有知道通關密語的人才能讀取你的加密資料。系統不會將通關密語傳送給 Google，Google 也不會儲存通關密語。如果忘記通關密語或想變更這項設定，請<ph name="BEGIN_LINK" />清除帳戶中的 Chrome 資料<ph name="END_LINK" />。</translation>
 <translation id="1544826120773021464">如要管理你的 Google 帳戶，請輕觸 [管理帳戶] 按鈕</translation>
 <translation id="154513667535157406">按讚可給予這則摘要正面評價</translation>
 <translation id="1549000191223877751">移至其他視窗</translation>
@@ -457,6 +459,7 @@
 <translation id="3264259168916048410">你的電腦想要透過這部裝置登入網站</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" /> 的所有頁面</translation>
 <translation id="3269093882174072735">載入圖片</translation>
+<translation id="327204079441056603">我們調整了這部裝置的密碼儲存方式</translation>
 <translation id="3280562213547448728">語音搜尋</translation>
 <translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3290249595466894471">另外也會傳送少量網頁、下載內容、擴充功能活動和系統資訊，協助找出新的威脅</translation>
@@ -1214,6 +1217,7 @@
 <translation id="6918398787259831832">如果這個問題持續發生，請洽「<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />」<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" />。</translation>
 <translation id="6929224077895306814">儲存在裝置和 Google 帳戶中的所有安全碼都會刪除</translation>
 <translation id="6937524809504266803">個人化與連結</translation>
+<translation id="6937876069006524083">暱稱 (選填)</translation>
 <translation id="6942665639005891494">你隨時可以使用 [設定] 選單選項變更預設的下載位置</translation>
 <translation id="694267552845942083">你正在自訂同步功能設定。如要開啟同步功能，請輕觸畫面底部附近的 [確認] 按鈕。向上瀏覽</translation>
 <translation id="6945221475159498467">選取</translation>
@@ -1277,6 +1281,7 @@
 <translation id="7207760545532569765">將 <ph name="TAB_COUNT" /> 個分頁還原為新的背景分頁。</translation>
 <translation id="7217781228893594884">系統會在你離開 Chrome 後鎖定無痕分頁</translation>
 <translation id="7221869452894271364">重新載入此頁</translation>
+<translation id="7224097611345298931">只在這部裝置上儲存的所有 Chrome 和 <ph name="CHROME_CHANNEL" />密碼已合併。這兩個應用程式可自動填入所有已儲存的密碼。</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 項下載作業仍待處理}other{# 項下載作業仍待處理}}</translation>
 <translation id="72415438529550637">已關閉密碼建議功能。</translation>
 <translation id="7252076891734325316">請將手機置於電腦附近</translation>

@@ -117,6 +117,8 @@ Siirry <ph name="BEGIN_LINK2" />Googlen palveluihin<ph name="END_LINK2" />, jos 
 <translation id="1513814250881909472">Synkronoi välilehdet muilta laitteilta</translation>
 <translation id="1513858653616922153">Poista salasana</translation>
 <translation id="1521774566618522728">Aktiivinen tänään</translation>
+<translation id="1544084554881119930">Maksutapoja ja osoitteita ei salata. Chromen selaushistoriaa ei synkronoida.
+Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä Googlelle eikä Google tallenna sitä. Jos unohdat tunnuslauseen tai haluat muuttaa asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chrome-data<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Voit ylläpitää Google-tiliäsi napauttamalla Ylläpidä tiliä ‑painiketta</translation>
 <translation id="154513667535157406">Tykkään-palaute kertoo, että pidät tästä yhteenvedosta</translation>
 <translation id="1549000191223877751">Siirrä toiseen ikkunaan</translation>
@@ -457,6 +459,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="3264259168916048410">Tietokoneesi pyytää tämän laitteen käyttämistä sivustolle kirjautumiseen</translation>
 <translation id="3265093782546847662">Kaikki sivut, joiden verkkotunnus on <ph name="DOMAIN" /></translation>
 <translation id="3269093882174072735">Lataa kuva</translation>
+<translation id="327204079441056603">Muutimme tapaa, jolla salasanat tallennetaan tällä laitteella</translation>
 <translation id="3280562213547448728">Puhehaku</translation>
 <translation id="3282568296779691940">Kirjaudu Chromeen</translation>
 <translation id="3290249595466894471">Lähettää myös pienen näytteen sivuista, latauksista, laajennustoiminnasta ja järjestelmätiedoista auttaakseen löytämään uusia uhkia</translation>
@@ -1214,6 +1217,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6918398787259831832">Jos ongelma toistuu, <ph name="BEGIN_LINK" />pyydä lisätietoja<ph name="END_LINK" />: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6929224077895306814">Kaikki laitteelle ja Google-tilille tallennetut turvakoodit poistetaan</translation>
 <translation id="6937524809504266803">Personointi ja linkittäminen</translation>
+<translation id="6937876069006524083">Lyhytnimi (valinnainen)</translation>
 <translation id="6942665639005891494">Muuta oletuslataussijaintia milloin tahansa Asetukset-valikon kautta</translation>
 <translation id="694267552845942083">Valitset parhaillaan synkronointiasetuksia. Viimeistele synkronoinnin käyttöönotto napauttamalla näytön alaosasta Vahvista-painiketta. Siirry ylös</translation>
 <translation id="6945221475159498467">Valitse</translation>
@@ -1277,6 +1281,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />poista tilin Chrome-
 <translation id="7207760545532569765">Palauta <ph name="TAB_COUNT" /> välilehteä uusina taustavälilehtinä.</translation>
 <translation id="7217781228893594884">Incognito-välilehdet lukitaan, kun poistut Chromesta</translation>
 <translation id="7221869452894271364">Lataa tämä sivu uudelleen</translation>
+<translation id="7224097611345298931">Kaikki vain tälle laitteelle tallennetut Chrome- ja <ph name="CHROME_CHANNEL" /> ‑salasanat yhdistettiin. Voit täyttää kaikki tallennetut salasanat automaattisesti molemmissa sovelluksissa.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 lataus odottaa}other{# latausta odottaa}}</translation>
 <translation id="72415438529550637">Salasanaehdotus on suljettu.</translation>
 <translation id="7252076891734325316">Aseta puhelin tietokoneen lähelle</translation>

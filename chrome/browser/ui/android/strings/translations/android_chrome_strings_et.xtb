@@ -117,6 +117,8 @@ Kui soovite näha veel seadeid, mis kasutavad andmeid teie Chrome'i kasutuskogem
 <translation id="1513814250881909472">Oma muudest seadmetest vahelehtede hankimiseks sünkroonige</translation>
 <translation id="1513858653616922153">Kustuta parool</translation>
 <translation id="1521774566618522728">Aktiivne täna</translation>
+<translation id="1544084554881119930">Makseviise ja aadresse ei krüpteerita. Chrome’i sirvimisajalugu ei sünkroonita.
+Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Parooli ei saadeta Google’ile ja Google ei salvesta seda. Kui parooli unustate või soovite seda seadet muuta, <ph name="BEGIN_LINK" />kustutage oma kontol Chrome’i andmed<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Oma Google'i konto haldamiseks puudutage nuppu „Konto haldamine”</translation>
 <translation id="154513667535157406">Meeldivaks märkimine saadab tagasiside, et see kokkuvõte meeldib teile</translation>
 <translation id="1549000191223877751">Teisalda teise aknasse</translation>
@@ -457,6 +459,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3264259168916048410">Teie arvuti soovib seda seadet kasutada saidile sisselogimiseks</translation>
 <translation id="3265093782546847662">Kõik domeeni <ph name="DOMAIN" /> lehed</translation>
 <translation id="3269093882174072735">Laadi kujutis</translation>
+<translation id="327204079441056603">Muutsime paroolide salvestamist selles seadmes</translation>
 <translation id="3280562213547448728">Häälotsing</translation>
 <translation id="3282568296779691940">Chrome'i sisselogimine</translation>
 <translation id="3290249595466894471">Saadab ka lehtede, allalaadimiste, laienduste tegevuse ja süsteemiteabe näidiseid, et aidata uusi ohte tuvastada.</translation>
@@ -1214,6 +1217,7 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6918398787259831832">Kui probleem jääb korduma, <ph name="BEGIN_LINK" />saate lisateavet<ph name="END_LINK" /> teenusest <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6929224077895306814">Kõik teie seadmesse ja Google’i kontole salvestatud turvakoodid kustutatakse</translation>
 <translation id="6937524809504266803">Isikupärastamine ja linkimine</translation>
+<translation id="6937876069006524083">Hüüdnimi (valikuline)</translation>
 <translation id="6942665639005891494">Allalaadimise vaikeasukohta saab menüü Seaded valikuga alati muuta</translation>
 <translation id="694267552845942083">Kohandate praegu oma sünkroonimisseadeid. Sünkroonimise sisselülitamiseks puudutage ekraani alaosas nuppu Kinnita. Navigeeri üles</translation>
 <translation id="6945221475159498467">Vali</translation>
@@ -1277,6 +1281,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> vahelehe taastamine uute taustal olevate vahelehtedena.</translation>
 <translation id="7217781228893594884">Chrome'ist lahkumisel lukustatakse inkognito vahelehed</translation>
 <translation id="7221869452894271364">Laadi see lehekülg uuesti</translation>
+<translation id="7224097611345298931">Kõik paroolid, mis olid salvestatud Chrome'i ja versiooni <ph name="CHROME_CHANNEL" /> jaoks ainult sellesse seadmesse, liideti. Saate kõik salvestatud paroolid mõlemas rakenduses automaatselt sisestada.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 allalaadimine on ootel}other{# allalaadimist on ootel}}</translation>
 <translation id="72415438529550637">Parooli soovitus on suletud.</translation>
 <translation id="7252076891734325316">Asetage telefon arvuti lähedale</translation>

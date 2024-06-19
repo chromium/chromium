@@ -410,6 +410,7 @@
 <translation id="1293556467332435079">ファイル</translation>
 <translation id="1294807885394205587">この処理には数分かかることがあります。コンテナ マネージャーを起動しています。</translation>
 <translation id="12951065153783848">あなたのアカウントは組織が管理しています</translation>
+<translation id="1296410481664942178">Google カレンダーを表示しない</translation>
 <translation id="1296911687402551044">選択したタブを固定</translation>
 <translation id="1297175357211070620">送信先</translation>
 <translation id="129770436432446029"><ph name="EXPERIMENT_NAME" />についてのフィードバックを送信</translation>
@@ -448,6 +449,7 @@
 <translation id="1327495825214193325">ADB デバッグを有効にするには、この <ph name="DEVICE_TYPE" /> を再起動する必要があります。ADB デバッグを無効にする場合は、出荷時の設定へのリセットが必要になります。</translation>
 <translation id="1327527584824210101">パスキーを使用する</translation>
 <translation id="1327794256477341646">位置情報を必要とする機能は動作しなくなります</translation>
+<translation id="1328364753167940710"><ph name="NUM_HR" /> 時間後</translation>
 <translation id="1329466763986822896">このアクセス ポイントのプライバシー保護を強化する</translation>
 <translation id="1331977651797684645">これは私です。</translation>
 <translation id="1333489022424033687">容量不足のため、<ph name="ORIGIN" /> の一部の機能が動作しない可能性があります。デバイスに保存された他のサイトのデータを削除してください</translation>
@@ -996,6 +998,7 @@
 <translation id="1709762881904163296">ネットワーク設定</translation>
 <translation id="1709916727352927457">パスキーの削除</translation>
 <translation id="1709972045049031556">共有できません</translation>
+<translation id="1712143791363119140">進行中</translation>
 <translation id="1714644264617423774">ユーザー補助機能を有効にするとデバイスが使いやすくなります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464"><ph name="SITE_NAME" /> のサイトデータと権限、およびそのサイトのインストール済みのアプリを削除しますか？</translation>
 <translation id="171826447717908393">独立したウェブアプリ（ベータ版）</translation>
@@ -1397,6 +1400,7 @@
 <translation id="200928901437634269">お子様の Google アカウントまたは学校用アカウントを使用します。保護者による使用制限を設定することもできます。</translation>
 <translation id="2009590708342941694">絵文字ツール</translation>
 <translation id="2010501376126504057">対応デバイス</translation>
+<translation id="2010636492623189611">選択しました。</translation>
 <translation id="201217432804812273">[グループを保存する] をオンにする</translation>
 <translation id="2012935757369720523">ファイルを削除</translation>
 <translation id="2013467735169740431">サイトがキーボードのロックを要求できるようにする</translation>
@@ -1987,6 +1991,7 @@
 <translation id="2435248616906486374">ネットワークが切断されました</translation>
 <translation id="2435457462613246316">パスワードを表示</translation>
 <translation id="2436385001956947090">リンクをコピー(&amp;L)</translation>
+<translation id="2437561292559037753">データ共有</translation>
 <translation id="2438853563451647815">プリンタに接続されていません</translation>
 <translation id="2439152382014731627"><ph name="DEVICE_TYPE" /> のパスワードを再設定</translation>
 <translation id="2439626940657133600"><ph name="WINDOW_TITLE" /> を読み込んでいます</translation>
@@ -2563,6 +2568,7 @@
 <translation id="2843698124892775282"><ph name="MEMORY_SAVINGS" /> を解放しました</translation>
 <translation id="2844169650293029770">USB-C デバイス（左手前のポート）</translation>
 <translation id="2844809857160214557">印刷ジョブの表示と管理</translation>
+<translation id="2845276301195220700">Google カレンダーのその他の操作</translation>
 <translation id="2845382757467349449">ブックマーク バーを常に表示</translation>
 <translation id="2845751331501453107">ウェブサイト閲覧中に表示される広告がパーソナライズされるかどうかは、こちらの設定、<ph name="BEGIN_LINK1" />ウェブサイトが提案する広告<ph name="LINK_END1" />、<ph name="BEGIN_LINK2" />Cookie の設定状況<ph name="LINK_END2" />、閲覧しているウェブサイトが広告をパーソナライズしているかどうかによって決まります。</translation>
 <translation id="284581348330507117">新たなパスワードを作成してください</translation>
@@ -3675,6 +3681,7 @@
 <translation id="3694590407685276748">テキスト カーソルをハイライト表示する</translation>
 <translation id="369489984217678710">パスワードとその他のログインデータ</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{セキュリティ チェックが完了しました。データをアップロードします。}=1{セキュリティ チェックが完了しました。ファイルをアップロードします。}other{セキュリティ チェックが完了しました。ファイルをアップロードします。}}</translation>
+<translation id="3695339288331169103">ダウンロード元: <ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" /></translation>
 <translation id="369736917241079046">ランチャー+左矢印</translation>
 <translation id="3697716475445175867">最終使用日</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{今後、このサイトからの通知の送信を停止できます。}other{今後、これらのサイトからの通知の送信を停止できます。}}</translation>
@@ -4972,6 +4979,7 @@
 <translation id="4650591383426000695">スマートフォンを <ph name="DEVICE_TYPE" /> から切断します</translation>
 <translation id="4651484272688821107">デモモード リソースでオンライン コンポーネントを読み込めませんでした。</translation>
 <translation id="4651921906638302153">このアカウントではログインできません</translation>
+<translation id="4652921642122345344">音声の速度 <ph name="RATE" /> 倍</translation>
 <translation id="4652935475563630866">カメラの設定を変更するには、Parallels Desktop を再起動する必要があります。続行するには、Parallels Desktop を再起動してください。</translation>
 <translation id="4653116291358041820">小さいシャドウ</translation>
 <translation id="4653405415038586100">Linux の設定中にエラーが発生しました</translation>
@@ -5170,6 +5178,7 @@
 <translation id="4809927044794281115">ライトモード</translation>
 <translation id="4811212958317149293">スイッチ アクセスのキーボード自動スキャン</translation>
 <translation id="4811503964269049987">選択したタブをグループ化する</translation>
+<translation id="4812073856515324252"><ph name="APP_NAME" /> のパスキーを保存する場所を選択してください</translation>
 <translation id="4813512666221746211">ネットワーク エラー</translation>
 <translation id="4814114628197290459">IBAN の削除</translation>
 <translation id="4814327014588285482">スキップして後で通知</translation>
@@ -5636,6 +5645,7 @@
 <translation id="5160634252433617617">物理キーボード</translation>
 <translation id="5160857336552977725"><ph name="DEVICE_TYPE" /> にログインしてください</translation>
 <translation id="5161251470972801814"><ph name="VENDOR_NAME" /> の USB デバイス</translation>
+<translation id="5161442190864186925">ミーティングに参加</translation>
 <translation id="5161827038979306924">Chrome の閲覧履歴と検索履歴の違い</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> をブロックしました</translation>
 <translation id="5163910114647549394">タブをタブバーの右端に移動しました</translation>
@@ -7938,6 +7948,7 @@
 <translation id="6912007319859991306">モバイル SIM PIN</translation>
 <translation id="6912380255120084882">別のデバイスを試す</translation>
 <translation id="691289340230098384">字幕の設定</translation>
+<translation id="6913051485529944333">今後このページに Google カレンダーは表示されません</translation>
 <translation id="6914812290245989348">安全でないサイトにアクセスする前に警告を表示しない</translation>
 <translation id="6916590542764765824">拡張機能を管理</translation>
 <translation id="6918677045355889289">Chrome OS の更新が必要です</translation>
@@ -9140,6 +9151,7 @@
 <translation id="7810202088502699111">このページのポップアップはブロックされました。</translation>
 <translation id="7810367892333449285">エントリは「<ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+ address<ph name="LPA_2" />$<ph name="LPA_3" />optional matching id<ph name="LPA_4" />」という形式にする必要があります</translation>
 <translation id="7811263553491007091">もう一度お試しいただくか、以前に生成された下のテーマから選択してください。</translation>
+<translation id="7812170317334653156">Google カレンダーを非表示にしました</translation>
 <translation id="7814090115158024843">文章作成サポートを表示しないサイト</translation>
 <translation id="7814458197256864873">コピー(&amp;C)</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
@@ -9198,6 +9210,7 @@
 <translation id="7853747251428735">その他のツール(&amp;L)</translation>
 <translation id="7853999103056713222">より安全なパスワードを使用する</translation>
 <translation id="7855678561139483478">タブを新しいウィンドウに移動</translation>
+<translation id="7856117067008941054">Google カレンダーを非表示にする</translation>
 <translation id="7857004848504343806">ご使用のパソコンにはセキュア モジュールが組み込まれています。これは ChromeOS Flex の多くの重要なセキュリティ機能を実装するために使用されます。詳しくは Chromebook ヘルプセンター（https://support.google.com/chromebook/?p=sm）をご覧ください。</translation>
 <translation id="7857093393627376423">テキスト候補</translation>
 <translation id="7858120906780498731">ChromeOS に接続されている入力デバイス</translation>
@@ -9206,6 +9219,7 @@
 <translation id="786073089922909430">サービス: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">ダウンロード(&amp;D)</translation>
 <translation id="7861846108263890455">Google アカウントの言語</translation>
+<translation id="7864114920800968141"><ph name="NUM_MIN" /> 分後</translation>
 <translation id="7864539943188674973">Bluetooth を無効にする</translation>
 <translation id="7864825798076155402">Google アカウントに保存しますか？</translation>
 <translation id="7865127013871431856">翻訳オプション</translation>

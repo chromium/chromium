@@ -121,6 +121,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1383876407941801731">Caută</translation>
 <translation id="1391102559483454063">Activată</translation>
 <translation id="1394698770495054737">Încețoșare completă</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{Acum o zi}few{Acum # zile}other{Acum # de zile}}</translation>
 <translation id="1404963891829069586">Sunete pentru Focus</translation>
 <translation id="1407069428457324124">Temă întunecată</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Folosește tastele săgeți ca să navighezi între date.</translation>
@@ -211,6 +212,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="174102739345480129">Marcatorul este dezactivat.</translation>
 <translation id="1743570585616704562">Nu este recunoscută</translation>
 <translation id="1743927604032653654">Restrânge notificarea <ph name="NOTIFICATION_TITLE" /></translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{În termen de 1 oră}=1{Acum o oră}few{Acum # ore}other{Acum # de ore}}</translation>
 <translation id="1746730358044914197">Metodele de introducere a textului sunt configurate de administratorul tău.</translation>
 <translation id="1747336645387973286">termen limită <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Tastatură pe ecran activată</translation>
@@ -348,6 +350,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2359808026110333948">Continuă</translation>
 <translation id="2360398059912971776">baterie</translation>
 <translation id="2361210043495191221">Comută Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Trimis de la <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Nu te poți conecta la Chromebook</translation>
 <translation id="2367972762794486313">Afișați aplicații</translation>
 <translation id="2368828502825385061">Localizează</translation>
@@ -510,6 +513,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Activezi accesul la microfon?</translation>
 <translation id="296762781903199866">Nu s-au putut descărca fișierele de redare în scris a vorbirii în <ph name="LANGUAGE" /></translation>
+<translation id="2968761508099987738">Locația ta actuală nu este acceptată momentan.</translation>
 <translation id="2970920913501714344">să instaleze aplicații, extensii și teme;</translation>
 <translation id="2977598380246111477">Următorul număr</translation>
 <translation id="2985148236010982088">Vezi toate aplicațiile</translation>
@@ -986,6 +990,7 @@ Un dispozitiv conectat.</translation>
 <translation id="468293128311738995">Aplicații de pe telefon</translation>
 <translation id="4690510401873698237">Raft în partea de jos</translation>
 <translation id="4696813013609194136">Deblochează dispozitivul cu codul părintelui</translation>
+<translation id="4697357603686181098">Nu te pot ajuta. Încearcă altă solicitare.</translation>
 <translation id="4702647871202761252">Ecranul de confidențialitate este dezactivat</translation>
 <translation id="4706121060329443414">Se va încerca descărcarea mai târziu. Momentan, fișierele de redare în scris a vorbirii vor fi trimise la Google pentru procesare.</translation>
 <translation id="470644585772471629">Inversarea culorilor</translation>
@@ -1902,6 +1907,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="7982878511129296052">Se dezactivează...</translation>
 <translation id="7984197416080286869">Prea multe încercări de deblocare cu amprenta</translation>
 <translation id="798779949890829624">Această setare este gestionată de administrator</translation>
+<translation id="7989206653429884947">Deschis frecvent</translation>
 <translation id="799296642788192631">Poți fixa fișiere importante. Pentru a fixa un element, plasează cursorul pe el sau deschide Fișiere și dă clic dreapta pe un element.</translation>
 <translation id="7994370417837006925">Conectare multiplă</translation>
 <translation id="7995804128062002838">Nu s-a putut realiza captura de ecran</translation>
@@ -2088,6 +2094,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Timpul a expirat. Bravo! 🎉</translation>
+<translation id="8753368202781196133">Această limbă nu este acceptată momentan.</translation>
 <translation id="8755498163081687682">Confirmă-ți identitatea: <ph name="ORIGIN_NAME" /> solicită să îți confirmi identitatea</translation>
 <translation id="875593634123171288">Afișează setările VPN</translation>
 <translation id="8756799553341497810">Poți începe să personalizezi aspectul aplicației după ce ieși din această vizualizare.</translation>

@@ -173,6 +173,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="3261565993776444564">Isprobajte novu boju da biste prilagodili pregledač</translation>
 <translation id="3282568296779691940">Prijavljivanje u Chrome</translation>
 <translation id="3286538390144397061">Restartuj odmah</translation>
+<translation id="3292333338048274092">Zatim treba da restartujete Chrome.</translation>
 <translation id="3360895254066713204">Chrome pomoćnik</translation>
 <translation id="3379938682270551431">{0,plural, =0{Ponovo ćemo pokrenuti Chrome}=1{Ponovo ćemo pokrenuti Chrome za 1 sekundu}one{Ponovo ćemo pokrenuti Chrome za # sekundu}few{Ponovo ćemo pokrenuti Chrome za # sekunde}other{Ponovo ćemo pokrenuti Chrome za # sekundi}}</translation>
 <translation id="3396977131400919238">Tokom instalacije je došlo do greške u operativnom sistemu. Preuzmite Google Chrome ponovo.</translation>
@@ -217,6 +218,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="4035053306113201399">Treba da restartujete Chrome OS da biste primenili ažuriranje.</translation>
 <translation id="4050175100176540509">Važna bezbednosna poboljšanja i nove funkcije su dostupni u najnovijoj verziji.</translation>
 <translation id="4053720452172726777">Prilagodite i kontrolišite Google Chrome</translation>
+<translation id="4084404300720192944">Da biste delili prozor, dozvolite snimanje ekrana za Chrome u podešavanjima sistema.</translation>
 <translation id="4106587138345390261">Chrome istražuje nove funkcije koje omogućavaju sajtovima da pružaju isti doživljaj pregledanja, a da koriste manje podataka</translation>
 <translation id="4110895483821904099">Podesite nov Chrome profil</translation>
 <translation id="4111566860456076004">Chrome ne može da potvrdi odakle potiče ovaj dodatak i možda nije bezbedan. Uklonite ga iz Chrome-a da više ne bi mogao da vidi i menja podatke na sajtovima koje posećujete, uključujući lične podatke.</translation>
@@ -355,6 +357,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome beta</translation>
 <translation id="6182736845697986886">Instalacija nije uspela zbog interne greške servera za ažuriranje.</translation>
 <translation id="6200139057479872438">Niste skoro posećivali sajt. Chrome je uklonio dozvole <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" /></translation>
+<translation id="621585339844629864">Da biste delili ekran, dozvolite snimanje ekrana za Chrome u podešavanjima sistema.</translation>
 <translation id="6235018212288296708">Pravilo za dolazni saobraćaj za Google Chrome da biste omogućili mDNS saobraćaj.</translation>
 <translation id="624230925347970731">Chrome će se uskoro zatvoriti</translation>
 <translation id="6247557882553405851">Google menadžeru lozinki</translation>

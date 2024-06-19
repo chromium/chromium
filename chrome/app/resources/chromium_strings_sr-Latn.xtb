@@ -15,6 +15,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="1131805035311359397">Da biste proverili da li su lozinke bezbedne od upada u podatke i drugih bezbednosnih problema, <ph name="BEGIN_LINK" />prijavite se u Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Kliknite na Chromium meni</translation>
 <translation id="1185134272377778587">O Chromium-u</translation>
+<translation id="1188705220418984327">Da biste delili prozor, dozvolite snimanje ekrana za Chromium u podešavanjima sistema.</translation>
 <translation id="1203500561924088507">Hvala vam na instalaciji. Potrebno je da restartujete pregledač pre nego što počnete da koristite <ph name="BUNDLE_NAME" />.</translation>
 <translation id="1262876892872089030">Dok je ova kartica bila neaktivna, memorija je oslobođena da bi Chromium bio brz. Možete da odaberete da uvek izuzmete ovaj sajt iz neaktivnosti.</translation>
 <translation id="1265577313130862557">Chromium je blokirao ovo preuzimanje jer je ovaj fajl opasan</translation>
@@ -159,6 +160,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="364817392622123556">{COUNT,plural, =0{Novo ažuriranje za Chromium je dostupno i primeniće se čim ga ponovo pokrenete.}=1{Novo ažuriranje za Chromium je dostupno i primeniće se čim ga ponovo pokrenete. Prozor bez arhiviranja se neće ponovo otvoriti.}one{Novo ažuriranje za Chromium je dostupno i primeniće se čim ga ponovo pokrenete. # prozor bez arhiviranja se neće ponovo otvoriti.}few{Novo ažuriranje za Chromium je dostupno i primeniće se čim ga ponovo pokrenete. # prozora bez arhiviranja se neće ponovo otvoriti.}other{Novo ažuriranje za Chromium je dostupno i primeniće se čim ga ponovo pokrenete. # prozora bez arhiviranja se neće ponovo otvoriti.}}</translation>
 <translation id="3651803019964686660">Da biste poslali broj sa <ph name="ORIGIN" /> na Android telefon, prijavite se u Chromium na oba uređaja.</translation>
 <translation id="3667616615096815454">Instaliranje nije uspelo, aplikacije je nepoznata serveru.</translation>
+<translation id="3669334504579945026">Da biste delili ekran, dozvolite snimanje ekrana za Chromium u podešavanjima sistema.</translation>
 <translation id="3685209450716071127">Chromium ne može da vam proverava lozinke. Proverite internet vezu.</translation>
 <translation id="3702352323269013324">Saznajte više o personalizaciji oglasa u Chromium-u</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Administrator traži da ponovo pokrenete Chromium da biste primenili ovo ažuriranje}=1{Administrator traži da ponovo pokrenete Chromium da biste primenili ovo ažuriranje. Prozor bez arhiviranja se neće ponovo otvoriti.}one{Administrator traži da ponovo pokrenete Chromium da biste primenili ovo ažuriranje. # prozor bez arhiviranja se neće ponovo otvoriti.}few{Administrator traži da ponovo pokrenete Chromium da biste primenili ovo ažuriranje. # prozora bez arhiviranja se neće ponovo otvoriti.}other{Administrator traži da ponovo pokrenete Chromium da biste primenili ovo ažuriranje. # prozora bez arhiviranja se neće ponovo otvoriti.}}</translation>
@@ -459,6 +461,7 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="8357820681460164151">Da biste pristupali Chromium pregledaču na svim uređajima, prijavite se, pa uključite sinhronizaciju</translation>
 <translation id="8360718212975266891">Da biste dobijali buduća Chromium ažuriranja, treba vam Windows 10 ili novija verzija. Ovaj računar koristi Windows 8.</translation>
 <translation id="8370517070665726704">Autorska prava <ph name="YEAR" />. Google LLC. Sva prava zadržana.</translation>
+<translation id="837460953767177950">Zatim treba da restartujete Chromium.</translation>
 <translation id="8401454788024434101">Programer je objavio ovaj dodatak i on možda nije bezbedan. Uklonite ga iz Chromium-a da više ne bi mogao da vidi i menja podatke na sajtovima koje posećujete, uključujući lične podatke.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Ponovo pokrenite Chromium za jedan dan}one{Ponovo pokrenite Chromium za # dan}few{Ponovo pokrenite Chromium za # dana}other{Ponovo pokrenite Chromium za # dana}}</translation>
 <translation id="8453117565092476964">Arhiva programa za instalaciju je oštećena ili nevažeća. Preuzmite Chromium ponovo.</translation>

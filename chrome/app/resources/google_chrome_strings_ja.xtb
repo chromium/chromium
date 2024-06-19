@@ -168,6 +168,7 @@
 <translation id="3261565993776444564">新しい色でブラウザをカスタマイズできます</translation>
 <translation id="3282568296779691940">Chrome にログイン</translation>
 <translation id="3286538390144397061">今すぐ再起動</translation>
+<translation id="3292333338048274092">その後、Chrome を再起動する必要があります。</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome は今すぐ再起動されます}=1{Chrome は 1 秒後に再起動されます}other{Chrome は # 秒後に再起動されます}}</translation>
 <translation id="3396977131400919238">インストール中にオペレーティング システム エラーが発生しました。Google Chrome をダウンロード直してください。</translation>
@@ -212,6 +213,7 @@
 <translation id="4035053306113201399">更新を適用するには、Chrome OS を再起動する必要があります。</translation>
 <translation id="4050175100176540509">最新バージョンに更新すると、重要なセキュリティ更新と新機能が適用されます。</translation>
 <translation id="4053720452172726777">Google Chrome の設定</translation>
+<translation id="4084404300720192944">ウィンドウを共有するには、[システム環境設定] で Chrome に画面の録画を許可してください。</translation>
 <translation id="4106587138345390261">Chrome では、使用するユーザー情報量を減らしながら、これまでと同様にブラウジングできる新機能をテストしています</translation>
 <translation id="4110895483821904099">新しい Chrome プロファイルの設定</translation>
 <translation id="4111566860456076004">Chrome では、この拡張機能の提供元を確認できないため、安全でない可能性があります。アクセスしたサイトでユーザーデータ（個人情報を含む）が参照、変更されないように、Chrome からこの拡張機能を削除してください。</translation>
@@ -346,6 +348,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6182736845697986886">更新サーバーの内部エラーが発生したため、インストールできませんでした。</translation>
 <translation id="6200139057479872438">最近アクセスしていないため、Chrome で <ph name="PERMISSION_1" /> と <ph name="PERMISSION_2" /> の権限を削除しました</translation>
+<translation id="621585339844629864">画面を共有するには、[システム環境設定] で Chrome に画面の録画を許可してください。</translation>
 <translation id="6235018212288296708">mDNS トラフィックを許可する Google Chrome のインバウンド ルールです。</translation>
 <translation id="624230925347970731">Chrome はまもなく終了します</translation>
 <translation id="6247557882553405851">Google パスワード マネージャー</translation>

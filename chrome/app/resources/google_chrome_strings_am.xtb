@@ -172,6 +172,7 @@
 <translation id="3261565993776444564">አሳሽዎን ለማበጀት አዲስ ቀለም ይሞክሩ</translation>
 <translation id="3282568296779691940">Chrome ውስጥ ይግቡ</translation>
 <translation id="3286538390144397061">አሁን ዳግም አስጀምር</translation>
+<translation id="3292333338048274092">ከዚያ Chromeን እንደገና መጀመር ይኖርብዎታል</translation>
 <translation id="3360895254066713204">Chrome አጋዥ</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome አሁን ዳግም ይጀምራል}=1{Chrome በ1 ሰከንድ ውስጥ ዳግም ይጀምራል}one{Chrome በ# ሰከንዶች ውስጥ ዳግም ይጀምራል}other{Chrome በ# ሰከንዶች ውስጥ ዳግም ይጀምራል}}</translation>
 <translation id="3396977131400919238">በመጫን ጊዜ የሥርዓተ ክወና ስህተት ተፈጥሯል። እባክዎ Google Chromeን እንደገና ያውርዱ።</translation>
@@ -216,6 +217,7 @@
 <translation id="4035053306113201399">ChromeOS ዝማኔውን ለመተግበር ዳግም መጀመር አለበት።</translation>
 <translation id="4050175100176540509">አስፈላጊ የደህንነት ማሻሻያዎች እና አዲስ ባህሪያት በቅርብ ጊዜው ስሪቱ ላይ ይገኛሉ።</translation>
 <translation id="4053720452172726777">Google Chromeን ያብጁ እና ይቆጣጠሩ</translation>
+<translation id="4084404300720192944">መስኮትዎን ለማጋራት በሥርዓት ምርጫዎች ውስጥ ለChrome የማያ ገጽ መቅረጽን ይፍቀዱ</translation>
 <translation id="4106587138345390261">Chrome ጣቢያዎች ያነሰ መረጃዎን ተጠቅመው ተመሳሳይ የአሰሳ ተሞክሮ እንዲያቀርቡ የሚያስችሏቸውን አዲስ ባህሪያት እያሰሰ ነው።</translation>
 <translation id="4110895483821904099">አዲሱን የChrome መገለጫዎ ያቀናብሩት</translation>
 <translation id="4111566860456076004">Chrome ይህ ቅጥያ ከየት እንደመጣ ማረጋገጥ አይችልም፣ እና ደህንነቱ ያልተጠበቀ ሊሆን ይችላል። የግል መረጃን ጨምሮ ከእንግዲህ እርስዎ በሚጎበኟቸው ጣቢያዎች ላይ ያለዎን ውሂብ ማየት እና መለወጥ እንዳይችል ከChrome ያስወግዱት።</translation>
@@ -354,6 +356,7 @@ Google Chrome ቅንጅቶችዎን ማስመለስ አልቻለም።</translat
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome ቅድመ-ይሁንታ</translation>
 <translation id="6182736845697986886">በዝማኔ አገልጋይ የውስጥ ስህተት ምክንያት መጫኑ አልተሳካም።</translation>
 <translation id="6200139057479872438">በቅርብ ጊዜ አልጎበኙም። Chrome <ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" /> አስወግዷል</translation>
+<translation id="621585339844629864">ማያ ገጽዎን ለማጋራት በሥርዓት ምርጫዎች ውስጥ ለChrome የማያ ገጽ መቅረጽን ይፍቀዱ</translation>
 <translation id="6235018212288296708">Google Chrome ለmDNS ትራፊክ ለመፍቀድ የውስጥ ደንብ።</translation>
 <translation id="624230925347970731">Chrome በቅርቡ ይዘጋል</translation>
 <translation id="6247557882553405851">Google የይለፍ ቃል አስተዳዳሪ</translation>

@@ -121,6 +121,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1383876407941801731">Hanapin</translation>
 <translation id="1391102559483454063">Naka-on</translation>
 <translation id="1394698770495054737">Ganap na Blur</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 araw ang nakalipas}one{# araw ang nakalipas}other{# na araw ang nakalipas}}</translation>
 <translation id="1404963891829069586">Mga tunog para sa pag-focus</translation>
 <translation id="1407069428457324124">Madilim na tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Gamitin ang mga arrow key para mag-navigate sa pagitan ng mga petsa.</translation>
@@ -211,6 +212,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="174102739345480129">Naka-off ang marker.</translation>
 <translation id="1743570585616704562">Hindi nakilala</translation>
 <translation id="1743927604032653654">I-collapse ang notification na <ph name="NOTIFICATION_TITLE" /></translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Sa loob ng 1 oras}=1{1 oras na ang nakalipas}one{# oras ang nakalipas}other{# na oras ang nakalipas}}</translation>
 <translation id="1746730358044914197">Isinasaayos ng iyong administrator ang mga pamamaraan sa pag-input.</translation>
 <translation id="1747336645387973286">takdang petsa sa <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Naka-enable ang on-screen na keyboard</translation>
@@ -348,6 +350,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2360398059912971776">baterya</translation>
 <translation id="2361210043495191221">I-toggle ang Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Ipinadala mula sa <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Hindi makapag-sign in sa iyong Chromebook</translation>
 <translation id="2367972762794486313">Ipakita ang apps</translation>
 <translation id="2368828502825385061">Hanapin</translation>
@@ -510,6 +513,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">I-on ang access sa mikropono?</translation>
 <translation id="296762781903199866">Hindi ma-download ang mga <ph name="LANGUAGE" /> na speech file</translation>
+<translation id="2968761508099987738">Hindi pa sinusuportahan ang iyong kasalukuyang lokasyon sa ngayon.</translation>
 <translation id="2970920913501714344">Mag-install ng mga app, extension, at tema</translation>
 <translation id="2977598380246111477">Susunod na numero</translation>
 <translation id="2985148236010982088">Tingnan ang lahat ng app</translation>
@@ -986,6 +990,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="468293128311738995">Mga app mula sa iyong telepono</translation>
 <translation id="4690510401873698237">Nasa ibaba ang shelf</translation>
 <translation id="4696813013609194136">I-unlock ang device gamit ang parent code</translation>
+<translation id="4697357603686181098">Hindi makakatulong dito. Sumubok ng ibang request.</translation>
 <translation id="4702647871202761252">Naka-off ang privacy screen</translation>
 <translation id="4706121060329443414">Susubukan mamaya ang pag-download. Ipapadala ang speech sa Google para sa pagpoproseso sa ngayon.</translation>
 <translation id="470644585772471629">Pag-invert ng kulay</translation>
@@ -1901,6 +1906,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7982878511129296052">Ino-off...</translation>
 <translation id="7984197416080286869">Masyadong maraming beses sumubok gamit ang fingerprint</translation>
 <translation id="798779949890829624">Pinapamahalaan ng iyong administrator ang setting na ito</translation>
+<translation id="7989206653429884947">Madalas na binubuksan</translation>
 <translation id="799296642788192631">Puwede kang mag-pin ng mahahalagang file. Para mag-pin, mag-hover sa item at buksan ang Mga File at mag-right click sa item.</translation>
 <translation id="7994370417837006925">Multiple na pag-sign in</translation>
 <translation id="7995804128062002838">Hindi na-capture ang screen</translation>
@@ -2086,6 +2092,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Ina-activate...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Tapos na ang oras. Magaling! 🎉</translation>
+<translation id="8753368202781196133">Hindi pa sinusuportahan ang wikang ito sa ngayon.</translation>
 <translation id="8755498163081687682">I-verify ang pagkakakilanlan mo: Gustong kumpirmahin ng <ph name="ORIGIN_NAME" /> na ikaw ito</translation>
 <translation id="875593634123171288">Ipakita ang mga setting ng VPN</translation>
 <translation id="8756799553341497810">Puwede mo nang simulang i-customize ang layout ng iyong app kapag lumabas ka na sa view na ito.</translation>

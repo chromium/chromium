@@ -117,6 +117,8 @@ Du hittar fler inställningar som använder data för att förbättra Chrome-upp
 <translation id="1513814250881909472">Synkronisera om du få tillgång till flikar från dina andra enheter</translation>
 <translation id="1513858653616922153">Radera lösenord</translation>
 <translation id="1521774566618522728">Aktiv idag</translation>
+<translation id="1544084554881119930">Betalningsmetoder och adresser krypteras inte. Webbhistorik från Chrome synkroniseras inte.
+Din krypterade data kan endast läsas av en person som har din lösenfras. Lösenfrasen varken skickas till eller lagras av Google. Om du glömmer lösenfrasen eller vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du kontots Chrome-data<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Tryck på knappen Hantera kontot om du vill hantera ditt Google-konto</translation>
 <translation id="154513667535157406">Gilla-markera för att visa att du gillar översikten</translation>
 <translation id="1549000191223877751">Flytta till annat fönster</translation>
@@ -457,6 +459,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="3264259168916048410">Datorn vill använda den här enheten för att logga in på en webbplats</translation>
 <translation id="3265093782546847662">Alla sidor på <ph name="DOMAIN" /></translation>
 <translation id="3269093882174072735">Läs in bild</translation>
+<translation id="327204079441056603">Vi har ändrat hur lösenord på den här enheten sparas</translation>
 <translation id="3280562213547448728">Röstsökning</translation>
 <translation id="3282568296779691940">Logga in i Chrome</translation>
 <translation id="3290249595466894471">Ett litet urval av sidor, nedladdning, tilläggsaktivitet och systeminformation skickas även för att upptäcka nya hot</translation>
@@ -1215,6 +1218,7 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="6918398787259831832">Om problemet kvarstår kan du <ph name="BEGIN_LINK" />läsa mer<ph name="END_LINK" /> på <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6929224077895306814">Alla säkerhetskoder som sparas på enheten och i Google-kontot raderas</translation>
 <translation id="6937524809504266803">Anpassning och länkning</translation>
+<translation id="6937876069006524083">Namn (valfritt)</translation>
 <translation id="6942665639005891494">Ändra standardplats för nedladdningar när som helst via alternativet i inställningsmenyn</translation>
 <translation id="694267552845942083">Du anpassar synkroniseringsinställningarna. Aktivera synkroniseringen genom att trycka på Bekräfta längst ned på skärmen. Navigera uppåt</translation>
 <translation id="6945221475159498467">Välj</translation>
@@ -1278,6 +1282,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />raderar du Chr
 <translation id="7207760545532569765">Återställ <ph name="TAB_COUNT" /> flikar som nya flikar i bakgrunden.</translation>
 <translation id="7217781228893594884">Inkognitoflikar låses när du lämnar Chrome</translation>
 <translation id="7221869452894271364">Hämta sidan igen</translation>
+<translation id="7224097611345298931">Alla lösenord som endast sparats på den här enheten för Chrome och <ph name="CHROME_CHANNEL" /> slogs samman. Du kan fylla i alla sparade lösenord automatiskt i båda apparna.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 nedladdning väntar}other{# nedladdningar väntar}}</translation>
 <translation id="72415438529550637">Lösenordsförslaget har stängts.</translation>
 <translation id="7252076891734325316">Lägg telefonen nära datorn</translation>

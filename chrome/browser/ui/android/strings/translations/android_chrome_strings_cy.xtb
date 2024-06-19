@@ -117,6 +117,8 @@ Am ragor o osodiadau sy'n defnyddio data i wella'ch profiad Chrome, ewch i <ph n
 <translation id="1513814250881909472">Cysonwch i gael eich tabiau o'ch dyfeisiau eraill</translation>
 <translation id="1513858653616922153">Dileu'r cyfrinair</translation>
 <translation id="1521774566618522728">Yma heddiw</translation>
+<translation id="1544084554881119930">Ni fydd dulliau talu a chyfeiriadau yn cael eu hamgryptio. Ni fydd hanes pori o Chrome yn cysoni.
+Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamgryptio. Nid yw'r cyfrinymadrodd yn cael ei anfon at Google na'i storio. Os byddwch yn anghofio'ch cyfrinymadrodd neu eisiau newid y gosodiad hwn, <ph name="BEGIN_LINK" />cliriwch y data Chrome yn eich cyfrif<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">I reoli'ch cyfrif Google, tapiwch y botwm "Rheoli cyfrif"</translation>
 <translation id="154513667535157406">Mae bawd i fyny yn cyflwyno adborth eich bod yn hoffi'r crynodeb hwn</translation>
 <translation id="1549000191223877751">Symud i ffenestr arall</translation>
@@ -457,6 +459,7 @@ Dim ond rhywun sydd â'ch cyfrinymadrodd all ddarllen eich data sydd wedi'u hamg
 <translation id="3264259168916048410">Mae eich cyfrifiadur eisiau defnyddio'r ddyfais hon i fewngofnodi i wefan</translation>
 <translation id="3265093782546847662">Pob tudalen o <ph name="DOMAIN" /></translation>
 <translation id="3269093882174072735">Llwytho llun</translation>
+<translation id="327204079441056603">Rydym wedi newid sut mae cyfrineiriau ar y ddyfais hon yn cael eu cadw</translation>
 <translation id="3280562213547448728">Chwilio â llais</translation>
 <translation id="3282568296779691940">Mewngofnodi i Chrome</translation>
 <translation id="3290249595466894471">Hefyd yn anfon sampl fach o dudalennau, lawrlwythiadau, gweithgarwch estyniadau, a gwybodaeth system i helpu i ddarganfod bygythiadau newydd</translation>
@@ -1214,6 +1217,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="6918398787259831832">Os bydd y mater hwn yn dal i ddigwydd, <ph name="BEGIN_LINK" />gallwch gael rhagor o wybodaeth<ph name="END_LINK" /> gan <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6929224077895306814">Bydd yr holl godau diogelwch sy'n cael eu cadw ar eich dyfais a'ch Cyfrif Google yn cael eu dileu</translation>
 <translation id="6937524809504266803">Personoleiddio a Chysylltu</translation>
+<translation id="6937876069006524083">Llysenw (dewisol)</translation>
 <translation id="6942665639005891494">Newidiwch y lleoliad lawrlwythiadau diofyn unrhyw bryd gan ddefnyddio opsiwn dewislen y Gosodiadau</translation>
 <translation id="694267552845942083">Ar hyn o bryd rydych yn personoleiddio'ch gosodiadau Cysoni. I orffen troi cysoni ymlaen, tapiwch y botwm Cadarnhau ger gwaelod y sgrîn. Llywio i fyny</translation>
 <translation id="6945221475159498467">Dewis</translation>
@@ -1277,6 +1281,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />dileu'r data Chrome yn eich cyfr
 <translation id="7207760545532569765">Adfer <ph name="TAB_COUNT" /> o dabiau fel tabiau cefndirol newydd.</translation>
 <translation id="7217781228893594884">Bydd tabiau anhysbys yn cael eu cloi pan fyddwch yn gadael Chrome</translation>
 <translation id="7221869452894271364">Ail-lwytho'r dudalen hon</translation>
+<translation id="7224097611345298931">Cyfunwyd yr holl gyfrineiriau a gadwyd i'r ddyfais hon yn unig ar gyfer Chrome a <ph name="CHROME_CHANNEL" />. Gallwch awtolenwi'ch holl gyfrineiriau sydd wedi'u cadw ar y ddau ap.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Mae 1 lawrlwythiad ar y gweill}zero{Mae # lawrlwythiad ar y gweill}two{Mae # lawrlwythiad ar y gweill}few{Mae # lawrlwythiad ar y gweill}many{Mae # lawrlwythiad ar y gweill}other{Mae # lawrlwythiad ar y gweill}}</translation>
 <translation id="72415438529550637">Mae'r awgrym cyfrinair ar gau.</translation>
 <translation id="7252076891734325316">Rhowch eich ffôn yn agos at y cyfrifiadur</translation>

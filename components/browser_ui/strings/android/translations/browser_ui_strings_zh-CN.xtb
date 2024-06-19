@@ -158,6 +158,7 @@
 <translation id="3602290021589620013">预览</translation>
 <translation id="3628308229821498208">建议的搜索</translation>
 <translation id="3697164069658504920">开启此设置后，网站可以请求使用 USB 设备。关闭此设置后，网站无法使用 USB 设备。</translation>
+<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">您访问的网站可将少量信息保存在 Chrome 中，主要用于验证您不是机器人</translation>
 <translation id="3721953990244350188">关闭此操作并显示下一项可查看的操作</translation>
 <translation id="3744111561329211289">后台同步</translation>
@@ -227,6 +228,7 @@
 <translation id="4962975101802056554">撤消设备的所有权限</translation>
 <translation id="497421865427891073">前进</translation>
 <translation id="4976702386844183910">上次访问日期：<ph name="DATE" /></translation>
+<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">您已允许此网站使用第三方 Cookie</translation>
 <translation id="4994033804516042629">找不到任何联系人</translation>
 <translation id="4996978546172906250">分享方式</translation>

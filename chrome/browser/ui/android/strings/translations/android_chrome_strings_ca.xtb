@@ -117,6 +117,8 @@ Per veure més opcions de configuració que utilitzin dades per millorar la teva
 <translation id="1513814250881909472">Sincronitza per obtenir les pestanyes dels teus altres dispositius</translation>
 <translation id="1513858653616922153">Suprimeix la contrasenya</translation>
 <translation id="1521774566618522728">Actiu avui</translation>
+<translation id="1544084554881119930">Les formes de pagament i les adreces no s'encriptaran. L'historial de navegació de Chrome no se sincronitzarà.
+Només les persones que sàpiguen la teva frase de contrasenya podran llegir les dades encriptades. La frase de contrasenya no s'envia a Google, i Google tampoc no l'emmagatzema. Si oblides la frase de contrasenya o vols canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />esborra les dades de Chrome del compte<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Per gestionar el teu Compte de Google, toca el botó Gestiona el compte</translation>
 <translation id="154513667535157406">La icona M'agrada indica que aquest resum t'agrada</translation>
 <translation id="1549000191223877751">Mou a l'altra finestra</translation>
@@ -457,6 +459,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3264259168916048410">L'ordinador vol utilitzar aquest dispositiu per iniciar la sessió en un lloc web</translation>
 <translation id="3265093782546847662">Totes les pàgines de <ph name="DOMAIN" /></translation>
 <translation id="3269093882174072735">Carrega la imatge</translation>
+<translation id="327204079441056603">Hem canviat la manera com es desen les contrasenyes en aquest dispositiu</translation>
 <translation id="3280562213547448728">Cerca per veu</translation>
 <translation id="3282568296779691940">Inicia la sessió a Chrome</translation>
 <translation id="3290249595466894471">També envia una petita mostra de pàgines, baixades, activitat d'extensions i informació del sistema per ajudar a detectar amenaces noves</translation>
@@ -1214,6 +1217,7 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="6918398787259831832">Si el problema persisteix, <ph name="BEGIN_LINK" />obtén més informació<ph name="END_LINK" /> de <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6929224077895306814">Se suprimiran tots els codis de seguretat desats al teu dispositiu i al teu Compte de Google</translation>
 <translation id="6937524809504266803">Personalització i enllaçaments</translation>
+<translation id="6937876069006524083">Àlies (opcional)</translation>
 <translation id="6942665639005891494">Canvia la ubicació predeterminada de baixada en qualsevol moment amb l'opció del menú Configuració</translation>
 <translation id="694267552845942083">Estàs personalitzant la configuració de la sincronització. Per acabar d'activar la sincronització, toca el botó Confirma que hi ha a la part inferior de la pantalla. Navega cap amunt.</translation>
 <translation id="6945221475159498467">Selecciona</translation>
@@ -1277,6 +1281,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7207760545532569765">Restaura <ph name="TAB_COUNT" /> pestanyes com noves pestanyes en segon pla.</translation>
 <translation id="7217781228893594884">Les pestanyes d'incògnit es bloquejaran quan surtis de Chrome</translation>
 <translation id="7221869452894271364">Torna a carregar aquesta pàgina</translation>
+<translation id="7224097611345298931">S'han combinat totes les contrasenyes desades només en aquest dispositiu per a Chrome i <ph name="CHROME_CHANNEL" />. Pots emplenar automàticament totes les contrasenyes desades a les dues aplicacions.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 baixada pendent}other{# baixades pendents}}</translation>
 <translation id="72415438529550637">El suggeriment de contrasenya s'ha tancat.</translation>
 <translation id="7252076891734325316">Acosta el telèfon a l'ordinador</translation>

@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">pastellinkeltainen</translation>
 <translation id="1056898198331236512">Varoitus</translation>
 <translation id="1059913517121127803">Skannauksen aloittaminen ei onnistunut</translation>
+<translation id="1061864016440983342">Käytä ilman sijaintia</translation>
 <translation id="1062823486781306604"><ph name="INDEX" />/<ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Palomuuri havaittu</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Lisää asetuksia</translation>
 <translation id="2082932131694554252">Asetettu näppäimistön näppäin</translation>
 <translation id="2085089206770112532">Vähennä näytön kirkkautta</translation>
+<translation id="2086091080968010660">Aikaan perustuvat muutokset eivät välttämättä ole tarkkoja. Laita järjestelmän sijainti päälle asetuksissa.</translation>
 <translation id="2102231663024125441">Tekstin muokkaaminen</translation>
 <translation id="2105810540595158374">Laite on peliohjain.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versio <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Palauta oletukset</translation>
 <translation id="2286454467119466181">Yksinkertainen</translation>
 <translation id="2287186687001756809">Kuvia ei saatavilla. Jos haluat lisätä kuvia, avaa <ph name="LINK" /></translation>
+<translation id="2294577623958216786">Aikataulu on tällä hetkellä <ph name="SUNRISE" />–<ph name="SUNSET" />. Jos haluat päivittää auringonlaskun ja auringonnousun aikataulun automaattisesti, laita järjestelmän sijainnin käyttöoikeus päälle.</translation>
 <translation id="2305172810646967500">musta</translation>
 <translation id="2307344026739914387">Käytä tämänhetkistä avainparia</translation>
 <translation id="2308243864813041101">Irrota USB-johto (<ph name="DEVICE_NAME" />) jatkaaksesi päivitysprosessia</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">näppäimistön kirkkaus</translation>
 <translation id="6412715219990689313">Sisäänrakennettu näppäimistö</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="6419454453018688975">Ota käyttöön järjestelmän sijainnin käyttö</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Heikko (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Siirry tilin asetuksiin</translation>

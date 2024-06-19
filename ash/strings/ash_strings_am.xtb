@@ -121,6 +121,7 @@
 <translation id="1383876407941801731">ፍለጋ </translation>
 <translation id="1391102559483454063">አብራ</translation>
 <translation id="1394698770495054737">ሙሉ ብዥታ</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{ከ1 ቀን በፊት}one{ከ# ቀን በፊት}other{ከ# ቀናት በፊት}}</translation>
 <translation id="1404963891829069586">የትኩረት ድምፆች</translation>
 <translation id="1407069428457324124">ጠቆር ያለ ገጽታ</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />። በቀኖች መካከል ለማሰስ የቀስት ቁልፎችን ይጠቀሙ።</translation>
@@ -211,6 +212,7 @@
 <translation id="174102739345480129">ምልክት ማድረጊያ ጠፍቷል።</translation>
 <translation id="1743570585616704562">አልታወቀም</translation>
 <translation id="1743927604032653654">የ<ph name="NOTIFICATION_TITLE" /> ማሳወቂያን ሰብስብ</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{በ1 ሰዓት ውስጥ}=1{ከ1 ሰዓት በፊት}one{ከ# ሰዓት በፊት}other{ከ# ሰዓታት በፊት}}</translation>
 <translation id="1746730358044914197">የግቤት ስልቶች በእርስዎ አስተዳዳሪ ይዋቀራሉ።</translation>
 <translation id="1747336645387973286">የማብቂያ ቀን <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">በማያ ገፅ ላይ የቁልፍ ሰሌዳ ነቅቷል</translation>
@@ -348,6 +350,7 @@
 <translation id="2359808026110333948">ቀጥል</translation>
 <translation id="2360398059912971776">ባትሪ</translation>
 <translation id="2361210043495191221">Wi-Fiን ቀያይር። <ph name="STATE" />።</translation>
+<translation id="236574664504281623">ከ<ph name="SESSION_NAME" /> የተላከ</translation>
 <translation id="2367186422933365202">ወደ የእርስዎ Chromebook መግባት አልተቻለም</translation>
 <translation id="2367972762794486313">መተግበሪያዎችን አሳይ</translation>
 <translation id="2368828502825385061">ቦታውን አግኝ</translation>
@@ -510,6 +513,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">የማይክሮፎን መዳረሻ ይብራ?</translation>
 <translation id="296762781903199866">የ<ph name="LANGUAGE" /> የንግግር ፋይሎችን ማውረድ አልተቻለም</translation>
+<translation id="2968761508099987738">የአሁኑ አካባቢዎ አሁን ላይ አይደገፍም።</translation>
 <translation id="2970920913501714344">መተግበሪያዎችን፣ ቅጥያዎችን እና ገጽታዎችን ይጫኑ</translation>
 <translation id="2977598380246111477">ቀጣይ ቁጥር</translation>
 <translation id="2985148236010982088">ሁሉንም መተግበሪያዎች ይመልከቱ</translation>
@@ -986,6 +990,7 @@
 <translation id="468293128311738995">መተግበሪያዎች ከስልክዎ</translation>
 <translation id="4690510401873698237">መደርደሪያ ከታች</translation>
 <translation id="4696813013609194136">በወላጅ ኮድ መሣሪያን ክፈት</translation>
+<translation id="4697357603686181098">በዚህ ላይ መርዳት አልተቻለም። ሌላ ጥያቄ ይሞክሩ።</translation>
 <translation id="4702647871202761252">የግላዊነት ማያ ገፅ ጠፍቷል</translation>
 <translation id="4706121060329443414">ማውረድ በኋላ ላይ ይሞከራል። ለአሁን ንግግር ለመሰናዳት ወደ Google ይላካል።</translation>
 <translation id="470644585772471629">ተቃራኒ ቀለም</translation>
@@ -1903,6 +1908,7 @@
 <translation id="7982878511129296052">በማጥፋት ላይ...</translation>
 <translation id="7984197416080286869">ከልክ በላይ ብዙ የጣት አሻራ ሙከራዎች</translation>
 <translation id="798779949890829624">ይህ ቅንብር በአስተዳዳሪዎ የሚቀናበር ነው</translation>
+<translation id="7989206653429884947">በተደጋጋሚ የተከፈተ</translation>
 <translation id="799296642788192631">አስፈላጊ ፋይሎችን ፒን ማድረግ ይችላሉ። ፒን ለማድረግ፣ አንድ ንጥል ላይ ያንዣብቡ ወይም ፋይሎችን ይክፈቱ እና አንድ ንጥል ላይ የቀኝ ጠቅታ ያድርጉ።</translation>
 <translation id="7994370417837006925">ባለብዙ በመለያ-መግቢያ</translation>
 <translation id="7995804128062002838">የማያ ገፅ ፎቶን ማንሳት አልተሳካም</translation>
@@ -2089,6 +2095,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />፣
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">ጊዜው አብቅቷል። ጥሩ ሠርተዋል! 🎉</translation>
+<translation id="8753368202781196133">ይህ ቋንቋ አሁን ላይ አይደገፍም።</translation>
 <translation id="8755498163081687682">የእርስዎን ማንነት ያረጋግጡ፦ <ph name="ORIGIN_NAME" /> እርስዎ መሆንዎን ማረጋገጥ ይፈልጋል</translation>
 <translation id="875593634123171288">የቪፒኤን ቅንብሮችን አሳይ</translation>
 <translation id="8756799553341497810">አንዴ ከዚህ ዕይታ ከወጡ በኋላ የመተግበሪያዎን አቀማመጥ ማበጀት መጀመር ይችላሉ።</translation>

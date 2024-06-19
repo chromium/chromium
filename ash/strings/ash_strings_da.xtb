@@ -121,6 +121,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1383876407941801731">Søg</translation>
 <translation id="1391102559483454063">Til</translation>
 <translation id="1394698770495054737">Fuld sløring</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{For 1 dag siden}one{for # dag siden}other{for # dage siden}}</translation>
 <translation id="1404963891829069586">Fokuslyde</translation>
 <translation id="1407069428457324124">Mørkt tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Brug piletasterne til at navigere mellem datoer.</translation>
@@ -211,6 +212,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="174102739345480129">Tuschen er deaktiveret.</translation>
 <translation id="1743570585616704562">Ikke genkendt</translation>
 <translation id="1743927604032653654">Skjul <ph name="NOTIFICATION_TITLE" />-notifikationen</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Inden for 1 t.}=1{For 1 t. siden}one{For # t. siden}other{For # t. siden}}</translation>
 <translation id="1746730358044914197">Indtastningsmetoder konfigureres af din administrator.</translation>
 <translation id="1747336645387973286">frist <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Skærmtastaturet er aktiveret</translation>
@@ -348,6 +350,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2359808026110333948">Fortsæt</translation>
 <translation id="2360398059912971776">batteri</translation>
 <translation id="2361210043495191221">Slå Wi-Fi til/fra. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Sendt fra <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Det lykkedes ikke at logge ind på din Chromebook</translation>
 <translation id="2367972762794486313">Vis apps</translation>
 <translation id="2368828502825385061">Find</translation>
@@ -510,6 +513,7 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Vil du aktivere mikrofonadgangen?</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" /> talefiler kunne ikke downloades</translation>
+<translation id="2968761508099987738">Din aktuelle lokation understøttes ikke i øjeblikket</translation>
 <translation id="2970920913501714344">Installer apps, udvidelser og temaer</translation>
 <translation id="2977598380246111477">Næste tal</translation>
 <translation id="2985148236010982088">Se alle apps</translation>
@@ -986,6 +990,7 @@ Nogle funktioner er begrænset for at forlænge batteritiden.</translation>
 <translation id="468293128311738995">Apps fra din telefon</translation>
 <translation id="4690510401873698237">Hylden er i bunden</translation>
 <translation id="4696813013609194136">Lås enheden op med forældrekode</translation>
+<translation id="4697357603686181098">Det kan vi ikke hjælpe med. Prøv en anden anmodning.</translation>
 <translation id="4702647871202761252">Privatlivsskærmen er slået fra</translation>
 <translation id="4706121060329443414">Downloaden forsøges senere. Tale sendes i mellemtiden til behandling hos Google.</translation>
 <translation id="470644585772471629">Ombytning af farver</translation>
@@ -1902,6 +1907,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="7982878511129296052">Deaktiverer…</translation>
 <translation id="7984197416080286869">Du har brugt for mange forsøg på at logge ind med fingeraftryk</translation>
 <translation id="798779949890829624">Denne indstilling administreres af din administrator</translation>
+<translation id="7989206653429884947">Åbnes ofte</translation>
 <translation id="799296642788192631">Du kan fastgøre vigtige filer. Fastgør ved at holde markøren over et element eller åbne Filer og højreklikke på et element.</translation>
 <translation id="7994370417837006925">Samlet login fra flere konti</translation>
 <translation id="7995804128062002838">Screenshottet blev ikke gemt</translation>
@@ -2088,6 +2094,7 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Tiden er gået. Stærkt arbejde! 🎉</translation>
+<translation id="8753368202781196133">Dette sprog understøttes ikke i øjeblikket.</translation>
 <translation id="8755498163081687682">Verificer din identitet: <ph name="ORIGIN_NAME" /> ønsker, at du bekræfter din identitet</translation>
 <translation id="875593634123171288">Vis VPN-indstillinger</translation>
 <translation id="8756799553341497810">Du kan begynde at tilpasse dit applayout, når du har lukket denne visning.</translation>

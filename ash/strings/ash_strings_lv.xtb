@@ -121,6 +121,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1383876407941801731">Meklēt</translation>
 <translation id="1391102559483454063">Ieslēgta</translation>
 <translation id="1394698770495054737">Pilnīgs aizmiglojums</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{Pirms 1 dienas}zero{Pirms # dienām}one{Pirms # dienas}other{Pirms # dienām}}</translation>
 <translation id="1404963891829069586">Fokusa skaņas</translation>
 <translation id="1407069428457324124">Tumšais motīvs</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Izmantojiet bultiņas, lai pārvietotos starp datumiem.</translation>
@@ -211,6 +212,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="174102739345480129">Marķieris ir izslēgts.</translation>
 <translation id="1743570585616704562">Nav atpazīts</translation>
 <translation id="1743927604032653654">Sakļaut paziņojumu <ph name="NOTIFICATION_TITLE" /></translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Pēdējās stundas laikā}=1{Pirms 1 h}zero{Pirms # h}one{Pirms # h}other{Pirms # h}}</translation>
 <translation id="1746730358044914197">Administrators konfigurē ievades metodes.</translation>
 <translation id="1747336645387973286">izpildes datums: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Ekrāna tastatūra iespējota</translation>
@@ -348,6 +350,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="2359808026110333948">Turpināt</translation>
 <translation id="2360398059912971776">akumulators</translation>
 <translation id="2361210043495191221">Pārslēgt Wi-Fi savienojumu. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Nosūtīts no: <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Nevar pierakstīties Chromebook datorā.</translation>
 <translation id="2367972762794486313">Rādīt lietotnes</translation>
 <translation id="2368828502825385061">Atrast</translation>
@@ -510,6 +513,7 @@ Pievienoto ierīču skaits: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Vai ieslēgt piekļuvi mikrofonam?</translation>
 <translation id="296762781903199866">Nevarēja lejupielādēt runas failus šādā valodā: <ph name="LANGUAGE" /></translation>
+<translation id="2968761508099987738">Jūsu pašreizējā atrašanās vieta pašlaik netiek atbalstīta.</translation>
 <translation id="2970920913501714344">Instalēt lietotnes, paplašinājumus un motīvus</translation>
 <translation id="2977598380246111477">Nākamais cipars</translation>
 <translation id="2985148236010982088">Skatīt visas lietotnes</translation>
@@ -986,6 +990,7 @@ Pievienota viena ierīce.</translation>
 <translation id="468293128311738995">Lietotnes no jūsu tālruņa</translation>
 <translation id="4690510401873698237">Plaukts tiek rādīts apakšā</translation>
 <translation id="4696813013609194136">Ierīces atbloķēšana, ievadot vecāku kodu</translation>
+<translation id="4697357603686181098">Ar to diemžēl nevaram palīdzēt. Izmēģiniet citu pieprasījumu.</translation>
 <translation id="4702647871202761252">Konfidencialitātes ekrāns ir izslēgts</translation>
 <translation id="4706121060329443414">Tiks mēģināts veikt lejupielādi vēlāk. Pagaidām uzņēmumam Google tiks nosūtīta runa apstrādei.</translation>
 <translation id="470644585772471629">Krāsu inversija</translation>
@@ -1902,6 +1907,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="7982878511129296052">Notiek izslēgšana…</translation>
 <translation id="7984197416080286869">Pārāk daudz mēģinājumu atbloķēt ar pirksta nospiedumu</translation>
 <translation id="798779949890829624">Šo iestatījumu pārvalda jūsu administrators</translation>
+<translation id="7989206653429884947">Bieži atvērta</translation>
 <translation id="799296642788192631">Varat piespraust svarīgus failus. Lai piespraustu failu, virziet kursoru virs tā vai atveriet lietotni Faili un noklikšķiniet uz vienuma ar labo pogu.</translation>
 <translation id="7994370417837006925">Vairākkārtēja pierakstīšanās</translation>
 <translation id="7995804128062002838">Neizdevās izveidot ekrānuzņēmumu.</translation>
@@ -2088,6 +2094,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />.
         <ph name="SCREEN_SHARE_STATUS" />.</translation>
 <translation id="8749787185286745219">Laiks ir beidzies! Lieliski! 🎉</translation>
+<translation id="8753368202781196133">Šī valoda pašlaik netiek atbalstīta.</translation>
 <translation id="8755498163081687682">Identitātes apstiprināšana: <ph name="ORIGIN_NAME" /> vēlas apstiprināt jūsu identitāti</translation>
 <translation id="875593634123171288">Rādīt VPN iestatījumus</translation>
 <translation id="8756799553341497810">Kad iziesiet no šī skata, varēsiet sākt pielāgot lietotnes izkārtojumu.</translation>

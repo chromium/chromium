@@ -13,6 +13,7 @@
 <translation id="1131805035311359397">Ha ellenőrizni szeretné, hogy jelszavai biztonságban vannak-e az adatvédelmi incidensektől és más biztonsági problémáktól, <ph name="BEGIN_LINK" />jelentkezzen be a Chromiumba<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Kattintson a Chromium-menüre</translation>
 <translation id="1185134272377778587">A Chromium névjegye</translation>
+<translation id="1188705220418984327">Az ablak megosztásához engedélyezze a Chromium számára a képernyőrögzítést a Rendszerbeállításokban.</translation>
 <translation id="1203500561924088507">Köszönjük, hogy elvégezte a telepítést. A(z) <ph name="BUNDLE_NAME" /> használata előtt újra kell indítania a böngészőt.</translation>
 <translation id="1262876892872089030">Amíg ez a lap inaktív volt, a rendszer memóriát szabadított fel, hogy a Chromium gyors maradjon. Dönthet úgy, hogy mindig kizárja ezt a webhelyet az inaktív állapotból.</translation>
 <translation id="1265577313130862557">A Chromium letiltotta ezt a letöltést, mert a fájl veszélyes</translation>
@@ -157,6 +158,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="364817392622123556">{COUNT,plural, =0{Új Chromium-frissítés jelent meg, amely az újraindítás után azonnal érvénybe lép.}=1{Új Chromium-frissítés jelent meg, amely az újraindítás után azonnal érvénybe lép. Az inkognitó ablak nem fog újra megnyílni.}other{Új Chromium-frissítés jelent meg, amely az újraindítás után azonnal érvénybe lép. A(z) # inkognitó ablak nem fog újra megnyílni.}}</translation>
 <translation id="3651803019964686660">Ha innen: <ph name="ORIGIN" /> szeretne számot küldeni Android-telefonjára, jelentkezzen be a Chromiumba mindkét eszközén.</translation>
 <translation id="3667616615096815454">A telepítés sikertelen volt, mert az alkalmazás ismeretlen a szerver számára.</translation>
+<translation id="3669334504579945026">A képernyő megosztásához engedélyezze a Chromium számára a képernyőrögzítést a Rendszerbeállításokban.</translation>
 <translation id="3685209450716071127">A Chromium nem tudja ellenőrizni a jelszavakat. Ellenőrizze az internetkapcsolatot.</translation>
 <translation id="3702352323269013324">További információ a hirdetések személyre szabásáról a Chromiumban</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Rendszergazdája arra kéri, hogy indítsa újra a Chromiumot a frissítés alkalmazásához.}=1{Rendszergazdája arra kéri, hogy indítsa újra a Chromiumot a frissítés alkalmazásához. Az inkognitó ablak nem fog újra megnyílni.}other{Rendszergazdája arra kéri, hogy indítsa újra a Chromiumot a frissítés alkalmazásához. A(z) # inkognitó ablak nem fog újra megnyílni.}}</translation>
@@ -455,6 +457,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="8357820681460164151">Ha szeretne minden eszközén hozzáférni Chromium böngészőhöz tartozó anyagaihoz, jelentkezzen be, majd kapcsolja be a szinkronizálást.</translation>
 <translation id="8360718212975266891">Ha a jövőben Chromium-frissítéseket szeretne kapni, akkor a Windows 10 vagy újabb rendszerre lesz szüksége. Ezen a számítógépen a Windows 8 operációs rendszer fut.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Minden jog fenntartva.</translation>
+<translation id="837460953767177950">Ezután újra kell indítania a Chromiumot.</translation>
 <translation id="8401454788024434101">A bővítmény közzétételét visszavonta a fejlesztő, és előfordulhat, hogy nem biztonságos. Távolítsa el a Chromiumból, így a továbbiakban már nem láthatja és módosíthatja az Ön felkeresett webhelyekkel kapcsolatos adatait, beleértve a személyes adatokat is.</translation>
 <translation id="8417404458978023919">{0,plural, =1{A Chromiumot 1 napon belül újra kell indítani}other{A Chromiumot # napon belül újra kell indítani}}</translation>
 <translation id="8453117565092476964">A telepítő tömörített állománya megsérült vagy érvénytelen. Kérjük, töltse le újra a Chromium böngészőt.</translation>

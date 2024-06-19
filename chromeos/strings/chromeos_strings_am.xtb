@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">ፓስቴል ቢጫ</translation>
 <translation id="1056898198331236512">ማስጠንቀቂያ</translation>
 <translation id="1059913517121127803">ቅኝትን መጀመር አልተቻለም</translation>
+<translation id="1061864016440983342">ያለአካባቢ ተጠቀም</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> ከ<ph name="COUNT" />፣ <ph name="NAME" />።</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">ኬላ ተገኝቷል</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">ተጨማሪ ቅንብሮች</translation>
 <translation id="2082932131694554252">የተመደበ የቁልፍ ሰሌዳ ቁልፍ</translation>
 <translation id="2085089206770112532">የማሳያ ብሩህነት መቀነሻ</translation>
+<translation id="2086091080968010660">ጊዜ-ተኮር ለውጦች ትክክለኛ ላይሆኑ ይችላሉ። በቅንብሮች ውስጥ የስርዓት አካባቢ መዳረሻን ያብሩ።</translation>
 <translation id="2102231663024125441">የጽሁፍ አርትዖት</translation>
 <translation id="2105810540595158374">መሣሪያ የጨዋታ መቆጣጠሪያ ነው።</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />፣ ስሪት <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">ወደ ነባሪዎች እነበረበት መልስ</translation>
 <translation id="2286454467119466181">ቀላል</translation>
 <translation id="2287186687001756809">ምንም ምስል አልተገኘም። ፎቶዎችን ለማከል ወደ <ph name="LINK" /> ይሂዱ</translation>
+<translation id="2294577623958216786">የአሁኑ መርሐግብር <ph name="SUNRISE" />-<ph name="SUNSET" /> ላይ ተቀናብሯል። የጸሐይ መጥለቂያ እና የጸሐይ መውጫ መርሐግብርን በራስ-ሰር ለማዘመን የስርዓት የአካባቢ መዳረሻን ያብሩ።</translation>
 <translation id="2305172810646967500">ጥቁር</translation>
 <translation id="2307344026739914387">የአሁኑን የቁልፍ ጥምር ይጠቀሙ</translation>
 <translation id="2308243864813041101">የማዘመን ሂደቱን ለመቀጠል የ<ph name="DEVICE_NAME" /> ዩኤስቢ ገመዱን ይንቀሉት</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">የቁልፍ ሰሌዳ ብሩህነት</translation>
 <translation id="6412715219990689313">አብሮገነብ ቁልፍሰሌዳ</translation>
 <translation id="6417265370957905582">Google ረዳት</translation>
+<translation id="6419454453018688975">የስርዓት አካባቢ መዳረሻን ያብሩ</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">ደካማ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ወደ የመለያ ቅንብሮች ሂድ</translation>

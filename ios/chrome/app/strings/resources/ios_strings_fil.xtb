@@ -531,6 +531,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="371398631992790800">I-hide ang Mga Bookmark</translation>
 <translation id="37207012422556617">Mga Trending na Paghahanap</translation>
 <translation id="3725081662140949903">Para mapigilan ang ibang tao na gamitin ang iyong password, buksan ang <ph name="APP" /> app para palitan ang password mo</translation>
+<translation id="372676576864368480">I-autofill ang numero ng card na nagtatapos sa <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Ginawa noong <ph name="DATE" /></translation>
 <translation id="374357899112510277">I-hide ang Mga Download</translation>
 <translation id="3745190878148784130">Itago ang Text ng Zoom</translation>
@@ -1096,6 +1097,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="6476800141292307438">Isinasalin ang page sa <ph name="LANGUAGE" />. May mga opsyon malapit sa ibaba ng screen.</translation>
 <translation id="648164694371393720">Error sa Pag-authenticate</translation>
 <translation id="6494931198667773526">Matatapos sa</translation>
+<translation id="6500795388871406244">Gamitin ang Iminumungkahing Password:</translation>
 <translation id="650279896687777322">Matuto pa...</translation>
 <translation id="6507973708545996744">Mag-sign in para makuha ang iyong listahan ng babasahin sa lahat ng device mo.</translation>
 <translation id="6510072653668207258">Paalalahanan Ako Sa Ibang Pagkakataon</translation>
@@ -1308,6 +1310,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7583004045319035904">Gamitin ang <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> para i-unlock ang iyong mga tab na Incognito.</translation>
 <translation id="7598439272585186139">Magkaroon ng higit pang seguridad</translation>
 <translation id="7600965453749440009">Huwag isalin kailanman ang <ph name="LANGUAGE" /></translation>
+<translation id="7603308509262646847">I-autofill ang cardholder ng <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Na-block na mga pop-up (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">Mga Grupo ng Tab</translation>
 <translation id="7607521702806708809">I-delete ang Password</translation>
@@ -1340,6 +1343,7 @@ Habang nasa Incognito, hindi magagamit ng mga site ang cookies para makita ang i
 <translation id="7749790401023484470">Wala kang piniling anumang text.</translation>
 <translation id="7752405526771734448">Visual na Paghahanap sa Lens</translation>
 <translation id="7756478488453921771">Menu → Mga Setting → Mga Paraan ng Pagbabayad</translation>
+<translation id="775755486779745798">I-autofill ang buwan ng pag-expire ng <ph name="MONTH" /></translation>
 <translation id="7760127703945531263">Pag-lock sa Incognito</translation>
 <translation id="7765158879357617694">Ilipat</translation>
 <translation id="7772032839648071052">Kumpirmahin ang passphrase</translation>
@@ -1516,6 +1520,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8556590991644167667">{count,plural, =1{Nag-dismiss ka ng {count} babala}one{Nag-dismiss ka ng {count} babala}other{Nag-dismiss ka ng {count} na babala}}</translation>
 <translation id="8560253818350321773">Unang ipakita ang mga item na madalas gamitin.</translation>
 <translation id="8569721750632860947">Anong URL ang gusto mong idagdag sa iyong listahan ng babasahin?</translation>
+<translation id="8577056989960190117">I-autofill ang taon ng pag-expire ng <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Naka-off</translation>
 <translation id="8591976964826315682">I-block ang Third-Party na Cookies sa Incognito</translation>
 <translation id="8593565399399144771">Puwede kang magbukas ng bagong tab dito.</translation>

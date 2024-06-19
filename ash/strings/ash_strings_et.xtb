@@ -121,6 +121,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1383876407941801731">Otsi</translation>
 <translation id="1391102559483454063">Sees</translation>
 <translation id="1394698770495054737">Täielikult hägustatud</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 päev tagasi}other{# päeva tagasi}}</translation>
 <translation id="1404963891829069586">Keskendumise režiimi helid</translation>
 <translation id="1407069428457324124">Tume teema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Kasutage kuupäevade vahel liikumiseks nooleklahve.</translation>
@@ -211,6 +212,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="174102739345480129">Marker on välja lülitatud.</translation>
 <translation id="1743570585616704562">Ei tuvastatud</translation>
 <translation id="1743927604032653654">Märguande <ph name="NOTIFICATION_TITLE" /> ahendamine</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{1 h jooksul}=1{1 h tagasi}other{# h tagasi}}</translation>
 <translation id="1746730358044914197">Sisestusmeetodid seadistab teie administraator.</translation>
 <translation id="1747336645387973286">tähtaeg <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Ekraanil kuvatav klaviatuur on lubatud</translation>
@@ -348,6 +350,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="2360398059912971776">aku</translation>
 <translation id="2361210043495191221">Lülita WiFi sisse/välja. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Saadetud seadmest <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Teie Chromebooki ei õnnestu sisse logida</translation>
 <translation id="2367972762794486313">Rakenduste kuvamine</translation>
 <translation id="2368828502825385061">Leidmine</translation>
@@ -510,6 +513,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Kas lülitada sisse juurdepääs mikrofonile?</translation>
 <translation id="296762781903199866">Kõnefaile <ph name="LANGUAGE" /> keeles ei õnnestunud alla laadida</translation>
+<translation id="2968761508099987738">Teie praegust asukohta praegu ei toetata.</translation>
 <translation id="2970920913501714344">Installige rakendusi, laiendusi ja teemasid</translation>
 <translation id="2977598380246111477">Järgmine number</translation>
 <translation id="2985148236010982088">Vaadake kõiki rakendusi</translation>
@@ -987,6 +991,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="468293128311738995">Rakendused teie telefonist</translation>
 <translation id="4690510401873698237">Riiul asub allpool</translation>
 <translation id="4696813013609194136">Avage seade lapsevanema koodiga</translation>
+<translation id="4697357603686181098">Funktsioon ei saa sellega aidata. Proovige mõnda muud päringut.</translation>
 <translation id="4702647871202761252">Privaatsuskuva on väljas</translation>
 <translation id="4706121060329443414">Hiljem üritatakse uuesti alla laadida. Kõne saadetakse praegu töötlemiseks Google'ile.</translation>
 <translation id="470644585772471629">Värvide ümberpööramine</translation>
@@ -1903,6 +1908,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7982878511129296052">Väljalülitamine ...</translation>
 <translation id="7984197416080286869">Liiga palju sõrmejäljega avamise katseid</translation>
 <translation id="798779949890829624">Seda seadet haldab administraator</translation>
+<translation id="7989206653429884947">Sageli avatud</translation>
 <translation id="799296642788192631">Võite kinnitada olulised failid. Kinnitamiseks hõljutage kursorit üksuse kohal või avage rakendus Failid ning paremklõpsake üksusel.</translation>
 <translation id="7994370417837006925">Mitmele kontole sisselogimine</translation>
 <translation id="7995804128062002838">Ekraanikuva jäädvustamine ebaõnnestus</translation>
@@ -2089,6 +2095,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Aeg on läbi. Väga tubli! 🎉</translation>
+<translation id="8753368202781196133">Seda keelt praegu ei toetata</translation>
 <translation id="8755498163081687682">Kinnitage oma isik: <ph name="ORIGIN_NAME" /> soovib teie isiku kinnitada</translation>
 <translation id="875593634123171288">Kuvab VPN-i seaded</translation>
 <translation id="8756799553341497810">Saate oma rakenduse paigutuse kohandamist alustada, kui väljute sellest vaatest.</translation>

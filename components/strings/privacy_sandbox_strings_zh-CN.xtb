@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-CN">
-<translation id="2252052615723281030">在您登录 Chrome 后，此设置有助于确保您的 IP 地址不会外泄。如果 Chrome 怀疑某个网站可能跟踪您，或许会通过隐私保护服务器来发送您的某些流量。</translation>
+<translation id="2252052615723281030">登录 Chrome 后，此设置有助于确保您的 IP 地址不会外泄。如果 Chrome 怀疑某个网站可能跟踪您，或许会通过隐私保护服务器来发送您的某些流量。</translation>
 <translation id="33479675708419823">在您登录 Chrome 后，此设置有助于确保您的 IP 地址不会外泄。如果 Chrome 怀疑某个网站可能跟踪您，或许会通过隐私保护服务器来发送您的某些流量。详细了解<ph name="LINK_BEGIN" />“IP 地址保护”的运作方式<ph name="LINK_END" /></translation>
 <translation id="3529311220178827364">详细了解如何隐藏您的 IP 地址</translation>
 <translation id="4301151630239508244">广告主题只是网站用来展示个性化广告的众多方法之一。即使没有广告主题，网站仍可以向您展示广告，但这些广告可能不够个性化。详细了解如何<ph name="BEGIN_LINK_1" />管理广告隐私权<ph name="END_LINK_1" />。</translation>

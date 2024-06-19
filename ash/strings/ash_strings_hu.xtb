@@ -121,6 +121,7 @@
 <translation id="1383876407941801731">Keresés</translation>
 <translation id="1391102559483454063">Be</translation>
 <translation id="1394698770495054737">Teljes homályosítás</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 napja}other{# napja}}</translation>
 <translation id="1404963891829069586">Összpontosítást segítő hangok</translation>
 <translation id="1407069428457324124">Sötét téma</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. A dátumok között a nyílbillentyűkkel navigálhat.</translation>
@@ -211,6 +212,7 @@
 <translation id="174102739345480129">Jelölő kikapcsolva.</translation>
 <translation id="1743570585616704562">Nem sikerült felismerni</translation>
 <translation id="1743927604032653654">A következővel kapcsolatos értesítés összecsukása: <ph name="NOTIFICATION_TITLE" /></translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Kevesebb mint 1 órája}=1{1 órája}other{# órája}}</translation>
 <translation id="1746730358044914197">A rendszergazda állította be a beviteli módszereket.</translation>
 <translation id="1747336645387973286">határidő: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Képernyő-billentyűzet bekapcsolva</translation>
@@ -348,6 +350,7 @@
 <translation id="2359808026110333948">Tovább</translation>
 <translation id="2360398059912971776">akkumulátor</translation>
 <translation id="2361210043495191221">Wi-Fi be-/kikapcsolása. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">A(z) <ph name="SESSION_NAME" /> eszközről</translation>
 <translation id="2367186422933365202">Nem lehet bejelentkezni a Chromebookra</translation>
 <translation id="2367972762794486313">Alkalmazások megjelenítése</translation>
 <translation id="2368828502825385061">Helymeghatározás</translation>
@@ -510,6 +513,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Aktiválja a mikrofon-hozzáférést?</translation>
 <translation id="296762781903199866">Nem sikerült letölteni a(z) <ph name="LANGUAGE" /> nyelvű beszédfájlokat</translation>
+<translation id="2968761508099987738">Az Ön aktuális tartózkodási helye jelenleg nem támogatott.</translation>
 <translation id="2970920913501714344">Alkalmazások, bővítmények és témák telepítése</translation>
 <translation id="2977598380246111477">Következő szám</translation>
 <translation id="2985148236010982088">Összes alkalmazás megjelenítése</translation>
@@ -987,6 +991,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="468293128311738995">Alkalmazások a telefonjáról</translation>
 <translation id="4690510401873698237">A polc alul található</translation>
 <translation id="4696813013609194136">Zárolás feloldása szülői kóddal</translation>
+<translation id="4697357603686181098">Ebben nem tudok segíteni. Próbálkozzon egy másik kéréssel.</translation>
 <translation id="4702647871202761252">Az adatvédelmi képernyő ki van kapcsolva</translation>
 <translation id="4706121060329443414">A letöltést később kísérli meg a rendszer. A beszédet a rendszer egyelőre elküldi a Google-nak feldolgozásra.</translation>
 <translation id="470644585772471629">Színek invertálása</translation>
@@ -1903,6 +1908,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7982878511129296052">Kikapcsolás…</translation>
 <translation id="7984197416080286869">Túl sok próbálkozás ujjlenyomattal</translation>
 <translation id="798779949890829624">Ezt a beállítást a rendszergazdája kezeli</translation>
+<translation id="7989206653429884947">Gyakran nyitotta meg</translation>
 <translation id="799296642788192631">Kitűzheti a fontos fájlokat. A kitűzéshez mutasson az egérrel egy elemre, vagy nyissa meg a Fájlok alkalmazást, és kattintson jobb egérgombbal a kívánt elemre.</translation>
 <translation id="7994370417837006925">Többfiókos bejelentkezés</translation>
 <translation id="7995804128062002838">Nem sikerült képernyőfelvételt készíteni</translation>
@@ -2089,6 +2095,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Az idő lejárt! Kiváló! 🎉</translation>
+<translation id="8753368202781196133">Ez a nyelv jelenleg nem támogatott.</translation>
 <translation id="8755498163081687682">Igazolja személyazonosságát, a következő szeretne meggyőződni a személyazonosságáról: <ph name="ORIGIN_NAME" /></translation>
 <translation id="875593634123171288">VPN-beállítások megjelenítése</translation>
 <translation id="8756799553341497810">Az alkalmazás elrendezésének személyre szabását a nézetből való kilépés után kezdheti el.</translation>

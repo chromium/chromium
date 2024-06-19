@@ -158,6 +158,7 @@
 <translation id="3602290021589620013">Предварительный просмотр</translation>
 <translation id="3628308229821498208">Варианты поисковых запросов</translation>
 <translation id="3697164069658504920">Когда этот параметр включен, сайты могут запрашивать разрешение на использование USB-устройств. Когда параметр отключен, сайтам запрещено использовать такие устройства.</translation>
+<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">Сайт, который вы посещаете, может сохранять небольшой объем информации в Chrome, в основном для подтверждения того, что вы не бот.</translation>
 <translation id="3721953990244350188">Закрыть и показать следующее доступное действие</translation>
 <translation id="3744111561329211289">Фоновая синхронизация</translation>
@@ -227,6 +228,7 @@
 <translation id="4962975101802056554">Отозвать все разрешения для устройства</translation>
 <translation id="497421865427891073">Вперед</translation>
 <translation id="4976702386844183910">Последнее посещение: <ph name="DATE" /></translation>
+<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">Вы разрешили сторонние файлы cookie для этого сайта.</translation>
 <translation id="4994033804516042629">Контакты не найдены</translation>
 <translation id="4996978546172906250">Способ отправки</translation>
@@ -273,7 +275,7 @@
 <translation id="5591840828808741583">Заблокировано для сайта <ph name="SITE_NAME" /></translation>
 <translation id="5649053991847567735">Автоматическое скачивание</translation>
 <translation id="5668404140385795438">Игнорировать запросы сайтов на запрет масштабирования</translation>
-<translation id="5677928146339483299">Заблокированы</translation>
+<translation id="5677928146339483299">Заблокировано</translation>
 <translation id="5689516760719285838">Геоданные</translation>
 <translation id="5690795753582697420">Камера выключена в настройках Android.</translation>
 <translation id="5691080386278724773"><ph name="SITE" /> может использовать ваши данные при просмотре сайтов</translation>

@@ -173,6 +173,7 @@
 <translation id="3261565993776444564">Испробајте нову боју да бисте прилагодили прегледач</translation>
 <translation id="3282568296779691940">Пријављивање у Chrome</translation>
 <translation id="3286538390144397061">Рестартуј одмах</translation>
+<translation id="3292333338048274092">Затим треба да рестартујете Chrome.</translation>
 <translation id="3360895254066713204">Chrome помоћник</translation>
 <translation id="3379938682270551431">{0,plural, =0{Поново ћемо покренути Chrome}=1{Поново ћемо покренути Chrome за 1 секунду}one{Поново ћемо покренути Chrome за # секунду}few{Поново ћемо покренути Chrome за # секунде}other{Поново ћемо покренути Chrome за # секунди}}</translation>
 <translation id="3396977131400919238">Током инсталације је дошло до грешке у оперативном систему. Преузмите Google Chrome поново.</translation>
@@ -217,6 +218,7 @@
 <translation id="4035053306113201399">Треба да рестартујете Chrome OS да бисте применили ажурирање.</translation>
 <translation id="4050175100176540509">Важна безбедносна побољшања и нове функције су доступни у најновијој верзији.</translation>
 <translation id="4053720452172726777">Прилагодите и контролишите Google Chrome</translation>
+<translation id="4084404300720192944">Да бисте делили прозор, дозволите снимање екрана за Chrome у подешавањима система.</translation>
 <translation id="4106587138345390261">Chrome истражује нове функције које омогућавају сајтовима да пружају исти доживљај прегледања, а да користе мање података</translation>
 <translation id="4110895483821904099">Подесите нов Chrome профил</translation>
 <translation id="4111566860456076004">Chrome не може да потврди одакле потиче овај додатак и можда није безбедан. Уклоните га из Chrome-а да више не би могао да види и мења податке на сајтовима које посећујете, укључујући личне податке.</translation>
@@ -355,6 +357,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome бета</translation>
 <translation id="6182736845697986886">Инсталација није успела због интерне грешке сервера за ажурирање.</translation>
 <translation id="6200139057479872438">Нисте скоро посећивали сајт. Chrome је уклонио дозволе <ph name="PERMISSION_1" /> и <ph name="PERMISSION_2" /></translation>
+<translation id="621585339844629864">Да бисте делили екран, дозволите снимање екрана за Chrome у подешавањима система.</translation>
 <translation id="6235018212288296708">Правило за долазни саобраћај за Google Chrome да бисте омогућили mDNS саобраћај.</translation>
 <translation id="624230925347970731">Chrome ће се ускоро затворити</translation>
 <translation id="6247557882553405851">Google менаџеру лозинки</translation>

@@ -13,6 +13,7 @@
 <translation id="1131805035311359397">Ca să verifici dacă parolele sunt protejate împotriva încălcării securității datelor și a altor probleme de securitate, <ph name="BEGIN_LINK" />conectează-te la Chromium<ph name="END_LINK" />.</translation>
 <translation id="1153368717515616349">Dă clic pe meniul Chromium</translation>
 <translation id="1185134272377778587">Despre Chromium</translation>
+<translation id="1188705220418984327">Pentru a permite accesul la fereastră, permite înregistrarea ecranului pentru Chromium din Preferințe de sistem.</translation>
 <translation id="1203500561924088507">Mulțumim pentru instalare. Înainte să folosești <ph name="BUNDLE_NAME" /> trebuie să repornești browserul.</translation>
 <translation id="1262876892872089030">Cât timp fila a fost inactivă, memoria a fost eliberată pentru a menține viteza ridicată a browserului Chromium. Poți alege ca acest site să nu fie mereu inactiv.</translation>
 <translation id="1265577313130862557">Chromium a blocat descărcarea, deoarece fișierul este periculos</translation>
@@ -157,6 +158,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="364817392622123556">{COUNT,plural, =0{Este disponibilă o nouă actualizare pentru Chromium, iar aceasta va fi aplicată după ce îl relansezi.}=1{Este disponibilă o nouă actualizare pentru Chromium, iar aceasta va fi aplicată după ce îl relansezi. Fereastra incognito nu se va mai deschide.}few{Este disponibilă o nouă actualizare pentru Chromium, iar aceasta va fi aplicată după ce îl relansezi. Cele # ferestre incognito nu se vor mai deschide.}other{Este disponibilă o nouă actualizare pentru Chromium, iar aceasta va fi aplicată după ce îl relansezi. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
 <translation id="3651803019964686660">Pentru a trimite un număr de pe <ph name="ORIGIN" /> pe telefonul Android, conectează-te la Chromium pe ambele dispozitive.</translation>
 <translation id="3667616615096815454">Nu se poate instala. Aplicația nu este cunoscută de server.</translation>
+<translation id="3669334504579945026">Pentru a permite accesul la ecran, permite înregistrarea ecranului pentru Chromium din Preferințe de sistem.</translation>
 <translation id="3685209450716071127">Chromium nu îți poate verifica parolele. Verifică-ți conexiunea la internet.</translation>
 <translation id="3702352323269013324">Află mai multe despre personalizarea anunțurilor în Chromium</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{Administratorul solicită să relansezi Chromium pentru a aplica această actualizare}=1{Administratorul solicită să relansezi Chromium pentru a aplica această actualizare. Fereastra incognito nu se va mai deschide.}few{Administratorul solicită să relansezi Chromium pentru a aplica această actualizare. Cele # ferestre incognito nu se vor mai deschide.}other{Administratorul solicită să relansezi Chromium pentru a aplica această actualizare. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
@@ -456,6 +458,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="8357820681460164151">Pentru a accesa informațiile din Chromium pe toate dispozitivele, conectează-te, apoi activează sincronizarea.</translation>
 <translation id="8360718212975266891">Pentru a primi actualizările Chromium viitoare, vei avea nevoie de Windows 10 sau o versiune ulterioară. Acest computer folosește Windows 8.</translation>
 <translation id="8370517070665726704">Drept de autor <ph name="YEAR" /> Google LLC. Toate drepturile rezervate.</translation>
+<translation id="837460953767177950">Apoi va trebui să repornești Chromium.</translation>
 <translation id="8401454788024434101">Dezvoltatorul a anulat publicarea acestei extensii și ar putea fi nesigură. Elimin-o din Chromium ca să nu mai poată vedea și modifica datele tale de pe site-urile pe care le accesezi, inclusiv informațiile cu caracter personal.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Relansează Chromium în cel mult o zi}few{Relansează Chromium în cel mult # zile}other{Relansează Chromium în cel mult # de zile}}</translation>
 <translation id="8453117565092476964">Arhiva programului de instalare este deteriorată sau nevalidă. Descărcați din nou Chromium.</translation>

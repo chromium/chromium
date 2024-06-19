@@ -173,6 +173,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="3261565993776444564">Sumubok ng bagong kulay para i-customize ang iyong browser</translation>
 <translation id="3282568296779691940">Mag-sign in sa Chrome</translation>
 <translation id="3286538390144397061">I-restart Ngayon</translation>
+<translation id="3292333338048274092">Pagkatapos, kakailanganin mong i-restart ang Chrome.</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Muli nang ilulunsad ang Chrome ngayon}=1{Muli nang ilulunsad ang Chrome sa loob ng 1 segundo}one{Muli nang ilulunsad ang Chrome sa loob ng # segundo}other{Muli nang ilulunsad ang Chrome sa loob ng # na segundo}}</translation>
 <translation id="3396977131400919238">Nagkaroon ng error sa operating system habang nag-i-install. Paki-download muli ang Google Chrome.</translation>
@@ -217,6 +218,7 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="4035053306113201399">Kailangang ma-restart ang ChromeOS para mailapat ang update.</translation>
 <translation id="4050175100176540509">May available na mahahalagang pagpapahusay sa seguridad at mga bagong feature sa pinakabagong bersyon.</translation>
 <translation id="4053720452172726777">I-customize at kontrolin ang Google Chrome</translation>
+<translation id="4084404300720192944">Para i-share ang iyong window, payagan ang pag-record ng screen para sa Chrome sa Mga Preference sa System.</translation>
 <translation id="4106587138345390261">Nag-e-explore ang Chrome ng mga bagong feature na nagbibigay-daan sa mga site na ihatid ang parehong karanasan sa pag-browse nang hindi gaanong gumagamit ng iyong impormasyon</translation>
 <translation id="4110895483821904099">I-set up ang iyong bagong profile sa Chrome</translation>
 <translation id="4111566860456076004">Hindi ma-verify ng Chrome kung saan galing ang extension na ito, at posibleng hindi ito ligtas. Alisin ito sa Chrome para hindi na nito makita at mabago ang iyong data sa mga site na binibisita mo, kabilang ang personal na impormasyon.</translation>
@@ -355,6 +357,7 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6182736845697986886">Hindi na-install dahil sa isang internal na error sa server ng update.</translation>
 <translation id="6200139057479872438">Hindi mo ito binisita kamakailan. Inalis ng Chrome ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
+<translation id="621585339844629864">Para i-share ang iyong screen, payagan ang pag-record ng screen para sa Chrome sa Mga Preference sa System.</translation>
 <translation id="6235018212288296708">Inbound na panuntunan para sa Google Chrome upang payagan ang trapiko ng mDNS.</translation>
 <translation id="624230925347970731">Malapit nang magsara ang Chrome</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>

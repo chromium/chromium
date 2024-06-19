@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">pasteļdzeltenā</translation>
 <translation id="1056898198331236512">Brīdinājums</translation>
 <translation id="1059913517121127803">Nevarēja sākt skenēšanu.</translation>
+<translation id="1061864016440983342">Izmantot bez atrašanās vietas</translation>
 <translation id="1062823486781306604"><ph name="NAME" />: <ph name="INDEX" />. no <ph name="COUNT" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Konstatēts ugunsmūris</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Vairāk iestatījumu</translation>
 <translation id="2082932131694554252">Piešķirtais tastatūras taustiņš</translation>
 <translation id="2085089206770112532">Samazināt displeja spilgtumu</translation>
+<translation id="2086091080968010660">Uz laiku balstītās izmaiņas var nebūt precīzas. Iestatījumos ieslēdziet sistēmas piekļuvi atrašanās vietas datiem.</translation>
 <translation id="2102231663024125441">Teksta rediģēšana</translation>
 <translation id="2105810540595158374">Ierīce ir spēļu vadāmierīce.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versija <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Atjaunot noklusējuma iestatījumus</translation>
 <translation id="2286454467119466181">Vienkārša</translation>
 <translation id="2287186687001756809">Nav pieejams neviens attēls. Lai pievienotu fotoattēlus, pārejiet uz vietni <ph name="LINK" />.</translation>
+<translation id="2294577623958216786">Pašreizējais grafiks: <ph name="SUNRISE" />–<ph name="SUNSET" />. Lai automātiski atjauninātu saulrieta un saullēkta grafiku, ieslēdziet sistēmas piekļuvi atrašanās vietas datiem.</translation>
 <translation id="2305172810646967500">melnā krāsā</translation>
 <translation id="2307344026739914387">Izmantot pašreizējo atslēgu pāri</translation>
 <translation id="2308243864813041101">Lai turpinātu atjaunināšanas procesu, atvienojiet ierīces (<ph name="DEVICE_NAME" />) USB vadu.</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">tastatūras spilgtums</translation>
 <translation id="6412715219990689313">Iebūvētā tastatūra</translation>
 <translation id="6417265370957905582">Google asistents</translation>
+<translation id="6419454453018688975">Ieslēgt sistēmas piekļuvi atrašanās vietas datiem</translation>
 <translation id="6423239382391657905">Atvērt VPN</translation>
 <translation id="6439505561246192797">Vājš (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Pāriet uz konta iestatījumiem</translation>

@@ -239,7 +239,7 @@
 <translation id="2258326562203545455">{count,plural, =1{Pots desar l'adreça d'interès al teu Compte de Google ({email}).}other{Pots desar les adreces d'interès al teu Compte de Google ({email}).}}</translation>
 <translation id="225943865679747347">Codi d'error: <ph name="ERROR_CODE" /></translation>
 <translation id="2267753748892043616">Afegeix un compte</translation>
-<translation id="2268044343513325586">Restringeix</translation>
+<translation id="2268044343513325586">Refina</translation>
 <translation id="2269277877025820298">Mostra'n més</translation>
 <translation id="2271452184061378400">Els teus grups de pestanyes es desen aquí</translation>
 <translation id="2273327106802955778">Més opcions del menú</translation>
@@ -531,6 +531,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="371398631992790800">Amaga l'opció Adreces d'interès</translation>
 <translation id="37207012422556617">Tendències</translation>
 <translation id="3725081662140949903">Per evitar que altres persones utilitzin la teva contrasenya, obre l'aplicació <ph name="APP" /> i canvia la contrasenya</translation>
+<translation id="372676576864368480">Emplena automàticament el número de la targeta acabada en <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Data de creació: <ph name="DATE" /></translation>
 <translation id="374357899112510277">Amaga l'opció Baixades</translation>
 <translation id="3745190878148784130">Amaga Amplia el text</translation>
@@ -1096,6 +1097,7 @@ Els llocs web no poden fer servir galetes per veure la teva activitat de navegac
 <translation id="6476800141292307438">La pàgina s'està traduint a <ph name="LANGUAGE" />. Tens opcions disponibles a la part inferior de la pantalla.</translation>
 <translation id="648164694371393720">Error d’autenticació</translation>
 <translation id="6494931198667773526">Finalitza</translation>
+<translation id="6500795388871406244">Utilitza la contrasenya suggerida:</translation>
 <translation id="650279896687777322">Més informació...</translation>
 <translation id="6507973708545996744">Inicia la sessió per accedir a la llista de lectura en tots els teus dispositius.</translation>
 <translation id="6510072653668207258">Recorda-m'ho més tard</translation>
@@ -1308,6 +1310,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7583004045319035904">Utilitza <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> per desbloquejar les pestanyes d'incògnit.</translation>
 <translation id="7598439272585186139">Més seguretat</translation>
 <translation id="7600965453749440009">No tradueixis mai de: <ph name="LANGUAGE" /></translation>
+<translation id="7603308509262646847">Emplena automàticament el titular de la targeta (<ph name="NAME" />)</translation>
 <translation id="7603852183842204213">Finestres emergents bloquejades (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">Grups de pestanyes</translation>
 <translation id="7607521702806708809">Suprimeix la contrasenya</translation>
@@ -1340,6 +1343,7 @@ En mode d'incògnit, els llocs web no poden fer servir galetes per veure la teva
 <translation id="7749790401023484470">No has seleccionat cap text.</translation>
 <translation id="7752405526771734448">Cerca visual de Lens</translation>
 <translation id="7756478488453921771">Menú → Configuració → Formes de pagament</translation>
+<translation id="775755486779745798">Emplena automàticament el mes de caducitat (<ph name="MONTH" />)</translation>
 <translation id="7760127703945531263">Bloqueig d'incògnit</translation>
 <translation id="7765158879357617694">Mou</translation>
 <translation id="7772032839648071052">Confirmeu la frase de contrasenya</translation>
@@ -1516,6 +1520,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8556590991644167667">{count,plural, =1{Has ignorat {count} advertiment}other{Has ignorat {count} advertiments}}</translation>
 <translation id="8560253818350321773">Mostra primer els elements que s'utilitzen més sovint.</translation>
 <translation id="8569721750632860947">Quin URL vols afegir a la teva llista de lectura?</translation>
+<translation id="8577056989960190117">Emplena automàticament l'any de caducitat (<ph name="YEAR" />)</translation>
 <translation id="8588404856427128947">Desactivada</translation>
 <translation id="8591976964826315682">Bloqueja les galetes de tercers en mode d'incògnit</translation>
 <translation id="8593565399399144771">Aquí pots obrir una pestanya nova.</translation>

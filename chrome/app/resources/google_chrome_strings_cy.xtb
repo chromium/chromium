@@ -173,6 +173,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="3261565993776444564">Rhowch gynnig ar liw newydd i addasu eich porwr</translation>
 <translation id="3282568296779691940">Mewngofnodi i Chrome</translation>
 <translation id="3286538390144397061">Ailddechrau Nawr</translation>
+<translation id="3292333338048274092">Yna bydd angen i chi ailgychwyn Chrome.</translation>
 <translation id="3360895254066713204">Helpwr Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Bydd Chrome yn ail-lansio nawr}=1{Bydd Chrome yn ail-lansio mewn 1 eiliad}two{Bydd Chrome yn ail-lansio mewn # eiliad}few{Bydd Chrome yn ail-lansio mewn # eiliad}many{Bydd Chrome yn ail-lansio mewn # eiliad}other{Bydd Chrome yn ail-lansio mewn # eiliad}}</translation>
 <translation id="3396977131400919238">Bu gwall system weithredu wrth osod. Lawrlwythwch Google Chrome eto.</translation>
@@ -217,6 +218,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="4035053306113201399">Mae angen ailgychwyn ChromeOS i gymhwyso'r diweddariad.</translation>
 <translation id="4050175100176540509">Mae gwelliannau diogelwch pwysig a nodweddion newydd ar gael yn y fersiwn ddiweddaraf.</translation>
 <translation id="4053720452172726777">Personoleiddio a rheoli Google Chrome</translation>
+<translation id="4084404300720192944">I rannu'ch ffenestr, caniatewch recordiad sgrîn ar gyfer Chrome yn y Dewisiadau System.</translation>
 <translation id="4106587138345390261">Mae Chrome yn archwilio nodweddion newydd sy'n caniatáu i wefannau roi'r un profiad pori gan ddefnyddio llai o'ch gwybodaeth</translation>
 <translation id="4110895483821904099">Gosodwch eich proffil Chrome newydd</translation>
 <translation id="4111566860456076004">Nid yw Chrome yn gallu dilysu o ble mae'r estyniad hwn yn dod, ac mae'n bosib ei fod yn anniogel. Tynnwch ef o Chrome fel na all weld a newid eich data ar wefannau rydych yn ymweld â nhw mwyach, gan gynnwys gwybodaeth bersonol.</translation>
@@ -355,6 +357,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6182736845697986886">Methodd y gosodiad oherwydd gwall mewnol yn y gweinydd diweddaru.</translation>
 <translation id="6200139057479872438">Nid ydych wedi ymweld yn ddiweddar. Mae Chrome wedi tynnu <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
+<translation id="621585339844629864">I rannu'ch sgrîn, caniatewch recordiad sgîin ar gyfer Chrome yn y Dewisiadau System.</translation>
 <translation id="6235018212288296708">Rheol dod i mewn ar gyfer Google Chrome i ganiatáu traffig mDNS.</translation>
 <translation id="624230925347970731">Bydd Chrome yn cau yn fuan</translation>
 <translation id="6247557882553405851">Rheolwr Cyfrineiriau Google</translation>

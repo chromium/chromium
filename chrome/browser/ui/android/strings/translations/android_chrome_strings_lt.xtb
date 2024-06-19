@@ -117,6 +117,8 @@ Jei reikia daugiau nustatymų, pagal kuriuos duomenys naudojami „Chrome“ fun
 <translation id="1513814250881909472">Sinchronizuokite, kad gautumėte skirtukus iš kitų įrenginių</translation>
 <translation id="1513858653616922153">Ištrinti slaptažodį</translation>
 <translation id="1521774566618522728">Aktyvus šiandien</translation>
+<translation id="1544084554881119930">Mokėjimo metodai ir adresai nebus šifruojami. Naršymo istorija iš „Chrome“ nebus sinchronizuojama.
+Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. Slaptafrazė nesiunčiama ir nesaugoma „Google“. Jei pamiršite slaptafrazę ar norėsite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />išvalykite „Chrome“ duomenis paskyroje<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Jei norite tvarkyti „Google“ paskyrą, palieskite mygtuką „Tvarkyti“</translation>
 <translation id="154513667535157406">Mygtukas „Patinka“ – tai atsiliepimas, kad jums patinka ši suvestinė</translation>
 <translation id="1549000191223877751">Perkelti į kitą langą</translation>
@@ -457,6 +459,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="3264259168916048410">Kompiuteris nori naudoti šį įrenginį prisijungiant prie svetainės</translation>
 <translation id="3265093782546847662">Visi <ph name="DOMAIN" /> puslapiai</translation>
 <translation id="3269093882174072735">Įkelti vaizdą</translation>
+<translation id="327204079441056603">Pakeitėme slaptažodžių išsaugojimo šiame įrenginyje būdą</translation>
 <translation id="3280562213547448728">Paieška balsu</translation>
 <translation id="3282568296779691940">Prisijungti prie „Chrome“</translation>
 <translation id="3290249595466894471">Taip pat siunčia nedaug puslapių, atsisiuntimų, plėtinių veiklos ir sistemos informacijos, kad padėtų aptikti naujas grėsmes</translation>
@@ -1214,6 +1217,7 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="6918398787259831832">Jei ši problema kartosis, <ph name="BEGIN_LINK" />gaukite daugiau informacijos<ph name="END_LINK" /> iš „<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />“.</translation>
 <translation id="6929224077895306814">Visi įrenginyje ir „Google“ paskyroje išsaugoti saugos kodai bus ištrinti</translation>
 <translation id="6937524809504266803">Suasmeninimas ir susiejimas</translation>
+<translation id="6937876069006524083">Slapyvardis (nebūtinas)</translation>
 <translation id="6942665639005891494">Numatytąją atsisiuntimo vietą galite bet kada pakeisti naudodami nustatymų meniu parinktį</translation>
 <translation id="694267552845942083">Šiuo metu tinkinate savo sinchronizavimo nustatymus. Jei norite užbaigti sinchronizavimo įjungimo procesą, palieskite mygtuką „Patvirtinti“ netoli ekrano apačios. Eiti į viršų</translation>
 <translation id="6945221475159498467">Pasirinkti</translation>
@@ -1277,6 +1281,7 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />ištrinkite „Chro
 <translation id="7207760545532569765">Atkurkite tiek skirtukų <ph name="TAB_COUNT" /> kaip naujus foninius skirtukus.</translation>
 <translation id="7217781228893594884">Inkognito skirtukai bus užrakinti, kai išeisite iš „Chrome“</translation>
 <translation id="7221869452894271364">Įkelti iš naujo šį puslapį</translation>
+<translation id="7224097611345298931">Visi tik šiame įrenginyje išsaugoti „Chrome“ ir „<ph name="CHROME_CHANNEL" />“ slaptažodžiai buvo sujungti. Galite automatiškai užpildyti visus išsaugotus slaptažodžius abiejose programose.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Laukiama 1 atsisiuntimo}one{Laukiama # atsisiuntimo}few{Laukiama # atsisiuntimų}many{Laukiama # atsisiuntimo}other{Laukiama # atsisiuntimų}}</translation>
 <translation id="72415438529550637">Slaptažodžio pasiūlymas uždarytas.</translation>
 <translation id="7252076891734325316">Padėkite telefoną šalia kompiuterio</translation>

@@ -531,6 +531,7 @@
 <translation id="371398631992790800">ブックマークを非表示</translation>
 <translation id="37207012422556617">急上昇ワード</translation>
 <translation id="3725081662140949903">他のユーザーがパスワードを使用できないようにするには、<ph name="APP" /> アプリを開いてパスワードを変更します</translation>
+<translation id="372676576864368480">カード番号の末尾「<ph name="LAST_DIGITS" />」を自動入力する</translation>
 <translation id="3738428049780661523">作成: <ph name="DATE" /></translation>
 <translation id="374357899112510277">ダウンロードを非表示</translation>
 <translation id="3745190878148784130">[テキストを拡大] を非表示にする</translation>
@@ -1096,6 +1097,7 @@
 <translation id="6476800141292307438">ページを<ph name="LANGUAGE" />に翻訳しています。画面の下の方にオプションがあります。</translation>
 <translation id="648164694371393720">認証エラー</translation>
 <translation id="6494931198667773526">終了</translation>
+<translation id="6500795388871406244">提案されたパスワードを使用:</translation>
 <translation id="650279896687777322">詳細を表示...</translation>
 <translation id="6507973708545996744">ログインすると、どのデバイスでもリーディング リストを利用できます。</translation>
 <translation id="6510072653668207258">後で通知する</translation>
@@ -1308,6 +1310,7 @@
 <translation id="7583004045319035904"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> を使用して、シークレット タブのロックを解除します。</translation>
 <translation id="7598439272585186139">セキュリティを強化</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />を翻訳しない</translation>
+<translation id="7603308509262646847">カード所有者「<ph name="NAME" />」を自動入力する</translation>
 <translation id="7603852183842204213">ブロックしたポップアップ: <ph name="NUMBER_OF_BLOCKED_POPUPS" /></translation>
 <translation id="7606639338662398635">タブグループ</translation>
 <translation id="7607521702806708809">パスワードを削除</translation>
@@ -1340,6 +1343,7 @@
 <translation id="7749790401023484470">テキストが選択されていません。</translation>
 <translation id="7752405526771734448">Google レンズの画像検索</translation>
 <translation id="7756478488453921771">メニュー → 設定 → お支払い方法</translation>
+<translation id="775755486779745798">有効期限（月）「<ph name="MONTH" />」を自動入力する</translation>
 <translation id="7760127703945531263">シークレット モードのロック</translation>
 <translation id="7765158879357617694">移動</translation>
 <translation id="7772032839648071052">パスフレーズの確認</translation>
@@ -1516,6 +1520,7 @@
 <translation id="8556590991644167667">{count,plural, =1{{count} 件の警告を非表示にしました}other{{count} 件の警告を非表示にしました}}</translation>
 <translation id="8560253818350321773">よく使うアイテムを最初に表示します。</translation>
 <translation id="8569721750632860947">どの URL をリーディング リストに追加しますか？</translation>
+<translation id="8577056989960190117">有効期限（年）「<ph name="YEAR" />」を自動入力する</translation>
 <translation id="8588404856427128947">オフ</translation>
 <translation id="8591976964826315682">シークレット モードでサードパーティの Cookie をブロックする</translation>
 <translation id="8593565399399144771">ここで新しいタブを開くことができます。</translation>

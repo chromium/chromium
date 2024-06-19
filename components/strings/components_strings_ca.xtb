@@ -703,7 +703,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="2265192657948645752">Feines en el sector del comerç al detall</translation>
 <translation id="2265356434276802347">Aquesta política no pot tenir més de <ph name="MAX_ITEMS_LIMIT" /> entrades destacades.</translation>
 <translation id="2267047181501709434">S'està verificant la teva identitat...</translation>
-<translation id="2268044343513325586">Restringeix</translation>
+<translation id="2268044343513325586">Refina</translation>
 <translation id="2270484714375784793">Número de telèfon</translation>
 <translation id="2276057643614339130">Base d'impressió</translation>
 <translation id="2277103315734023688">Avança</translation>
@@ -4288,6 +4288,7 @@ Detalls addicionals:
 <translation id="920643408853370361">Assegurança de viatges</translation>
 <translation id="9207861905230894330">No s'ha pogut afegir l'article.</translation>
 <translation id="9210825002219699214">Viatges aeris</translation>
+<translation id="9211461151375991073">Escriu @ per cercar a <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Personalitza l'aspecte</translation>
 <translation id="9215416866750762878">Una aplicació impedeix que Chrome es connecti de manera segura a aquest lloc web</translation>
 <translation id="92178312226016010">Estàs fent el seguiment d'aquest producte.</translation>

@@ -531,6 +531,7 @@
 <translation id="371398631992790800">隐藏“书签”</translation>
 <translation id="37207012422556617">热搜字词</translation>
 <translation id="3725081662140949903">为防止他人使用您的密码，请打开“<ph name="APP" />”应用以更改您的密码</translation>
+<translation id="372676576864368480">自动填充尾号为 <ph name="LAST_DIGITS" /> 的卡号</translation>
 <translation id="3738428049780661523">创建时间：<ph name="DATE" /></translation>
 <translation id="374357899112510277">隐藏“下载内容”</translation>
 <translation id="3745190878148784130">隐藏“缩放文字”</translation>
@@ -1096,6 +1097,7 @@
 <translation id="6476800141292307438">将页面翻译成<ph name="LANGUAGE" />。选项位于屏幕底部附近。</translation>
 <translation id="648164694371393720">身份验证出错</translation>
 <translation id="6494931198667773526">结束日期</translation>
+<translation id="6500795388871406244">使用建议的密码：</translation>
 <translation id="650279896687777322">了解详情…</translation>
 <translation id="6507973708545996744">登录后即可将您的阅读清单同步到您的所有设备上。</translation>
 <translation id="6510072653668207258">以后再提醒我</translation>
@@ -1308,6 +1310,7 @@
 <translation id="7583004045319035904">请使用<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />解锁您的无痕式标签页。</translation>
 <translation id="7598439272585186139">获享更高的安全性</translation>
 <translation id="7600965453749440009">一律不翻译<ph name="LANGUAGE" /></translation>
+<translation id="7603308509262646847">自动填充持卡人<ph name="NAME" /></translation>
 <translation id="7603852183842204213">拦截了弹出式窗口（<ph name="NUMBER_OF_BLOCKED_POPUPS" /> 个）</translation>
 <translation id="7606639338662398635">标签页分组</translation>
 <translation id="7607521702806708809">删除密码</translation>
@@ -1340,6 +1343,7 @@
 <translation id="7749790401023484470">您未选择任何文字。</translation>
 <translation id="7752405526771734448">智能镜头视觉搜索</translation>
 <translation id="7756478488453921771">菜单 → 设置 → 付款方式</translation>
+<translation id="775755486779745798">自动填充失效月份 <ph name="MONTH" /></translation>
 <translation id="7760127703945531263">无痕式标签页锁定</translation>
 <translation id="7765158879357617694">移动</translation>
 <translation id="7772032839648071052">确认密码</translation>
@@ -1516,6 +1520,7 @@
 <translation id="8556590991644167667">{count,plural, =1{您忽略了 {count} 条警告}other{您忽略了 {count} 条警告}}</translation>
 <translation id="8560253818350321773">将常用项显示在最前面。</translation>
 <translation id="8569721750632860947">您想向阅读清单中添加哪些网址？</translation>
+<translation id="8577056989960190117">自动填充失效年份 <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">已关闭</translation>
 <translation id="8591976964826315682">在无痕模式下阻止第三方 Cookie</translation>
 <translation id="8593565399399144771">您可在此处打开新标签页。</translation>

@@ -169,6 +169,7 @@
 <translation id="3261565993776444564">Kokeile uutta väriä ja tee selaimesta näköisesi</translation>
 <translation id="3282568296779691940">Kirjaudu Chromeen</translation>
 <translation id="3286538390144397061">Käynnistä uudelleen</translation>
+<translation id="3292333338048274092">Käynnistä Chrome uudelleen.</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome käynnistetään uudelleen nyt}=1{Chrome käynnistetään uudelleen 1 sekunnin kuluttua}other{Chrome käynnistetään uudelleen # sekunnin kuluttua.}}</translation>
 <translation id="3396977131400919238">Asennuksessa havaittiin käyttöjärjestelmävirhe. Lataa Google Chrome uudelleen.</translation>
@@ -213,6 +214,7 @@
 <translation id="4035053306113201399">Chrome-käyttöjärjestelmä täytyy käynnistää uudelleen, jotta päivitys voidaan ottaa käyttöön.</translation>
 <translation id="4050175100176540509">Uusimmassa versiossa on käytettävissä tärkeitä turvallisuusparannuksia ja uusia ominaisuuksia.</translation>
 <translation id="4053720452172726777">Google Chromen muokkaaminen ja hallinta</translation>
+<translation id="4084404300720192944">Jos haluat jakaa ikkunan, salli Chromen näytön tallennus järjestelmäasetuksista.</translation>
 <translation id="4106587138345390261">Chrome kokeilee uusia ominaisuuksia, joiden avulla sivustot voivat tarjota saman selauskokemuksen vähemmillä tiedoilla.</translation>
 <translation id="4110895483821904099">Luo uusi Chrome-profiili</translation>
 <translation id="4111566860456076004">Chrome ei voi vahvistaa, mistä tämä laajennus on peräisin, ja se saattaa olla vaarallinen. Poista se Chromesta, jotta se ei enää voi nähdä tai muuttaa dataasi (mukaan lukien henkilökohtaisia tietoja) avatuilla sivustoilla.</translation>
@@ -347,6 +349,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6182736845697986886">Asennus epäonnistui päivityspalvelimen sisäisen virheen takia.</translation>
 <translation id="6200139057479872438">Sivut, joilla et ole käynyt viime aikoina. Chrome poisti luvat: <ph name="PERMISSION_1" /> ja <ph name="PERMISSION_2" /></translation>
+<translation id="621585339844629864">Jos haluat jakaa näytön, salli Chromen näytön tallennus järjestelmäasetuksista.</translation>
 <translation id="6235018212288296708">Google Chromen saapuvien yhteyksien sääntö, joka sallii mDNS-liikenteen.</translation>
 <translation id="624230925347970731">Chrome suljetaan pian</translation>
 <translation id="6247557882553405851">Googlen Salasanojen ylläpito</translation>

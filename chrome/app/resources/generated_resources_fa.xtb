@@ -2956,7 +2956,7 @@
 <translation id="3117791853215125017">{COUNT,plural, =1{ارسال <ph name="ATTACHMENTS" /> به <ph name="DEVICE_NAME" /> ناموفق بود}one{ارسال <ph name="ATTACHMENTS" /> به <ph name="DEVICE_NAME" /> ناموفق بود}other{ارسال <ph name="ATTACHMENTS" /> به <ph name="DEVICE_NAME" /> ناموفق بود}}</translation>
 <translation id="3118319026408854581">راهنمای <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118748462829336648">باز کردن پانل کناری</translation>
-<translation id="3119743309973425629">سرعت چشمک زدن مکان‌نمای نوشتار</translation>
+<translation id="3119743309973425629">نرخ چشمک زدن مکان‌نمای نوشتار</translation>
 <translation id="3119948370277171654">درحال ارسال چه محتوا/نشانی وبی بودید؟</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">ایجاد دایرکتوری داده ناموفق بود</translation>

@@ -158,6 +158,7 @@
 <translation id="3602290021589620013">Προεπισκόπηση</translation>
 <translation id="3628308229821498208">Προτεινόμενες αναζητήσεις</translation>
 <translation id="3697164069658504920">Όταν είναι ενεργοποιημένη αυτή η επιλογή, οι ιστότοποι μπορούν να ζητήσουν να χρησιμοποιήσουν συσκευές USB. Όταν είναι απενεργοποιημένη αυτή η επιλογή, οι ιστότοποι δεν μπορούν να χρησιμοποιήσουν συσκευές USB.</translation>
+<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">Ένας ιστότοπος που επισκέπτεστε μπορεί να αποθηκεύσει έναν μικρό όγκο πληροφοριών με το Chrome, κυρίως για να επαληθεύσει ότι δεν είστε bot.</translation>
 <translation id="3721953990244350188">Παράβλεψη και εμφάνιση επόμενης διαθέσιμης ενέργειας</translation>
 <translation id="3744111561329211289">Συγχρονισμός παρασκηνίου</translation>
@@ -227,6 +228,7 @@
 <translation id="4962975101802056554">Ανάκληση όλων των αδειών για τη συσκευή</translation>
 <translation id="497421865427891073">Μετάβαση προς τα εμπρός</translation>
 <translation id="4976702386844183910">Τελευταία επίσκεψη <ph name="DATE" /></translation>
+<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">Επιτρέψατε τα cookie τρίτου μέρους για αυτόν τον ιστότοπο</translation>
 <translation id="4994033804516042629">Δεν βρέθηκαν επαφές</translation>
 <translation id="4996978546172906250">Μοιραστείτε μέσω</translation>

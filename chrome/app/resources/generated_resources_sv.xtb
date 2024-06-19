@@ -410,6 +410,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1293556467332435079">Filer</translation>
 <translation id="1294807885394205587">Detta kan ta några minuter. Startar hanteraren av behållare.</translation>
 <translation id="12951065153783848">Din organisation hanterar ditt konto</translation>
+<translation id="1296410481664942178">Visa inte Google Kalender</translation>
 <translation id="1296911687402551044">Fäst vald flik</translation>
 <translation id="1297175357211070620">Destination</translation>
 <translation id="129770436432446029">Skicka feedback om <ph name="EXPERIMENT_NAME" /></translation>
@@ -448,6 +449,7 @@ Du kan kontrollera dina lösenord när du vill i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1327495825214193325">Du måste starta om <ph name="DEVICE_TYPE" /> om du vill aktivera felsökning med ADB. Om du vill inaktivera funktionen måste du återställa enheten till standardinställningarna.</translation>
 <translation id="1327527584824210101">Använd nyckeln</translation>
 <translation id="1327794256477341646">Funktioner där din plats behövs slutar fungera</translation>
+<translation id="1328364753167940710">Om <ph name="NUM_HR" /> tim</translation>
 <translation id="1329466763986822896">Förbättra integriteten för den här surfzonen</translation>
 <translation id="1331977651797684645">Det var jag.</translation>
 <translation id="1333489022424033687">Vissa funktioner på <ph name="ORIGIN" /> kanske inte fungerar förrän du rensar data som andra webbplatser har lagrat på enheten</translation>
@@ -1006,6 +1008,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1709762881904163296">Nätverksinställningar</translation>
 <translation id="1709916727352927457">Radera nyckel</translation>
 <translation id="1709972045049031556">Det går inte att dela</translation>
+<translation id="1712143791363119140">Pågår</translation>
 <translation id="1714644264617423774">Aktivera tillgänglighetsfunktioner så att enheten blir lättare att använda. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="1716034099915639464">Vill du radera webbplatsdata och behörigheter för <ph name="SITE_NAME" /> och den tillhörande installerade appen?</translation>
 <translation id="171826447717908393">Isolerade webbappar (beta)</translation>
@@ -1410,6 +1413,7 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="200928901437634269">Använd ditt barns Google-konto eller ett skolkonto. Du kan även ställa in föräldrakontroller.</translation>
 <translation id="2009590708342941694">Emojiverktyg</translation>
 <translation id="2010501376126504057">Kompatibla enheter</translation>
+<translation id="2010636492623189611">Vald.</translation>
 <translation id="201217432804812273">Aktivera Spara grupp</translation>
 <translation id="2012935757369720523">Radera fil</translation>
 <translation id="2013467735169740431">Webbplatser får begära tillstånd att låsa tangentbordet</translation>
@@ -2005,6 +2009,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2435248616906486374">Anslutningen till nätverket har avbrutits</translation>
 <translation id="2435457462613246316">Visa lösenord</translation>
 <translation id="2436385001956947090">Kopiera &amp;länk</translation>
+<translation id="2437561292559037753">Datadelning</translation>
 <translation id="2438853563451647815">Inte ansluten till skrivaren</translation>
 <translation id="2439152382014731627">Återställ <ph name="DEVICE_TYPE" />-lösenordet</translation>
 <translation id="2439626940657133600">Läser in <ph name="WINDOW_TITLE" /></translation>
@@ -2582,6 +2587,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2843698124892775282"><ph name="MEMORY_SAVINGS" /> har frigjorts</translation>
 <translation id="2844169650293029770">USB-C-enhet (främre porten på vänster sida)</translation>
 <translation id="2844809857160214557">Visa och hantera utskriftsjobb</translation>
+<translation id="2845276301195220700">Fler åtgärder för Google Kalender</translation>
 <translation id="2845382757467349449">Visa alltid bokmärkesfältet</translation>
 <translation id="2845751331501453107">Huruvida annonser som visas när du surfar anpassas eller inte beror på den här inställningen, <ph name="BEGIN_LINK1" />föreslagna annonser på webbplatser<ph name="LINK_END1" />, dina <ph name="BEGIN_LINK2" />cookieinställningar<ph name="LINK_END2" /> och om webbplatsen du besöker anpassar annonser</translation>
 <translation id="284581348330507117">Skapa unika lösenord</translation>
@@ -3697,6 +3703,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3694590407685276748">Markera textmarkören</translation>
 <translation id="369489984217678710">Lösenord och andra inloggningsuppgifter</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Säkerhetskontrollen är klar. Data laddas upp.}=1{Säkerhetskontrollen är klar. Filen laddas upp.}other{Säkerhetskontrollen är klar. Filerna laddas upp.}}</translation>
+<translation id="3695339288331169103">Från <ph name="BEGIN_LINK" /><ph name="DISPLAY_REFERRER_URL" /><ph name="END_LINK" /></translation>
 <translation id="369736917241079046">Appstartaren + vänsterpil</translation>
 <translation id="3697716475445175867">öppnades senast</translation>
 <translation id="3697732362672163692">{NUM_SITES,plural, =1{Du kan förhindra att den här webbplatsen skickar aviseringar i fortsättningen.}other{Du kan förhindra att dessa webbplatser skickar aviseringar i fortsättningen.}}</translation>
@@ -4996,6 +5003,7 @@ Detta kan omfatta information om installerad mjukvara, filer, webbläsaren och e
 <translation id="4650591383426000695">Koppla från mobilen från <ph name="DEVICE_TYPE" /></translation>
 <translation id="4651484272688821107">Det gick inte att läsa in onlinekomponenten med resurser för demoläge.</translation>
 <translation id="4651921906638302153">Det går inte att logga in med det här kontot</translation>
+<translation id="4652921642122345344">Rösthastighet <ph name="RATE" />x</translation>
 <translation id="4652935475563630866">Ändringen av kamerainställning kräver att Parallels Desktop startas om. Starta om Parallels Desktop för att fortsätta.</translation>
 <translation id="4653116291358041820">Liten skugga</translation>
 <translation id="4653405415038586100">Det gick inte att konfigurera Linux</translation>
@@ -5194,6 +5202,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4809927044794281115">Ljust tema</translation>
 <translation id="4811212958317149293">Automatisk tangentbordsgenomsökning vid brytarstyrning</translation>
 <translation id="4811503964269049987">Lägg till vald flik i gruppen</translation>
+<translation id="4812073856515324252">Välj var du vill spara nyckeln för <ph name="APP_NAME" /></translation>
 <translation id="4813512666221746211">Nätverksfel</translation>
 <translation id="4814114628197290459">Radera IBAN</translation>
 <translation id="4814327014588285482">Hoppa över och påminn mig senare</translation>
@@ -5660,6 +5669,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5160634252433617617">Fysiskt tangentbord</translation>
 <translation id="5160857336552977725">Logga in på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="5161251470972801814">USB-enheter från <ph name="VENDOR_NAME" /></translation>
+<translation id="5161442190864186925">Anslut till möte</translation>
 <translation id="5161827038979306924">Vad är skillnaden mellan webbhistoriken i Chrome och sökhistoriken?</translation>
 <translation id="5162905305237671850"><ph name="DEVICE_TYPE" /> har blockerats</translation>
 <translation id="5163910114647549394">Fliken flyttades till slutet av flikhuvudet</translation>
@@ -7967,6 +7977,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="6912007319859991306">Pinkod för SIM-kort</translation>
 <translation id="6912380255120084882">Testa med en annan enhet</translation>
 <translation id="691289340230098384">Inställningar för textning</translation>
+<translation id="6913051485529944333">Du kommer inte att se Google Kalender på den här sidan igen</translation>
 <translation id="6914812290245989348">Visa inga varningar innan du besöker osäkra webbplatser</translation>
 <translation id="6916590542764765824">Hantera tillägg</translation>
 <translation id="6918677045355889289">Uppdatering av ChromeOS krävs</translation>
@@ -9171,6 +9182,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7810202088502699111">Popup-fönster är blockerade på den här sidan.</translation>
 <translation id="7810367892333449285">Posten ska ha formatet <ph name="LPA_0" />$<ph name="LPA_1" />SM-DP+-adress<ph name="LPA_2" />$<ph name="LPA_3" />valfritt matchnings-id<ph name="LPA_4" /></translation>
 <translation id="7811263553491007091">Försök igen eller välj ett av de teman som genererats tidigare nedan.</translation>
+<translation id="7812170317334653156">Google Kalender har dolts</translation>
 <translation id="7814090115158024843">Erbjud aldrig skrivhjälp på dessa webbplatser</translation>
 <translation id="7814458197256864873">&amp;Kopiera</translation>
 <translation id="7814857791038398352">Microsoft OneDrive</translation>
@@ -9229,6 +9241,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7853747251428735">Fler verk&amp;tyg</translation>
 <translation id="7853999103056713222">Använd ett säkrare lösenord</translation>
 <translation id="7855678561139483478">Flytta fliken till ett nytt fönster</translation>
+<translation id="7856117067008941054">Dölj Google Kalender</translation>
 <translation id="7857004848504343806">Datorn innehåller en säker modul som används för att implementera flera viktiga säkerhetsfunktioner i ChromeOS Flex. Besök hjälpcentret för Chromebook om du vill läsa mer: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Textförslag</translation>
 <translation id="7858120906780498731">Anslutna indataenheter för ChromeOS</translation>
@@ -9237,6 +9250,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="786073089922909430">Tjänst: <ph name="ARC_PROCESS_NAME" /></translation>
 <translation id="7861215335140947162">&amp;Nedladdade filer</translation>
 <translation id="7861846108263890455">Språk för Google-konto</translation>
+<translation id="7864114920800968141">Om <ph name="NUM_MIN" /> min</translation>
 <translation id="7864539943188674973">Inaktivera Bluetooth</translation>
 <translation id="7864825798076155402">Vill du spara det i Google-kontot?</translation>
 <translation id="7865127013871431856">Översättningsalternativ</translation>

@@ -121,6 +121,7 @@
 <translation id="1383876407941801731">検索</translation>
 <translation id="1391102559483454063">オン</translation>
 <translation id="1394698770495054737">ぼかし（強）</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 日前}other{# 日前}}</translation>
 <translation id="1404963891829069586">フォーカス モード用のサウンド</translation>
 <translation id="1407069428457324124">ダークモード</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />。矢印キーを使用して日付を変更します。</translation>
@@ -211,6 +212,7 @@
 <translation id="174102739345480129">マーカーはオフになっています。</translation>
 <translation id="1743570585616704562">認識されませんでした</translation>
 <translation id="1743927604032653654"><ph name="NOTIFICATION_TITLE" /> の通知を閉じる</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{1 時間以内}=1{1 時間前}other{# 時間前}}</translation>
 <translation id="1746730358044914197">入力方法は管理者によって設定されています。</translation>
 <translation id="1747336645387973286">期限 <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">画面キーボードが有効です</translation>
@@ -348,6 +350,7 @@
 <translation id="2359808026110333948">続行</translation>
 <translation id="2360398059912971776">バッテリー</translation>
 <translation id="2361210043495191221">Wi-Fi のオンとオフを切り替える。<ph name="STATE" />。</translation>
+<translation id="236574664504281623">送信元: <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Chromebook にログインできません</translation>
 <translation id="2367972762794486313">アプリを表示</translation>
 <translation id="2368828502825385061">場所</translation>
@@ -510,6 +513,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">マイクへのアクセスをオンにしますか？</translation>
 <translation id="296762781903199866"><ph name="LANGUAGE" />の音声ファイルをダウンロードできませんでした</translation>
+<translation id="2968761508099987738">今いる地域は現在サポートされていません。</translation>
 <translation id="2970920913501714344">アプリ、拡張機能、テーマをインストールする</translation>
 <translation id="2977598380246111477">次の番号</translation>
 <translation id="2985148236010982088">アプリをすべて表示</translation>
@@ -986,6 +990,7 @@
 <translation id="468293128311738995">スマートフォンのアプリ</translation>
 <translation id="4690510401873698237">シェルフは一番下にあります</translation>
 <translation id="4696813013609194136">保護者のコードでデバイスをロック解除</translation>
+<translation id="4697357603686181098">サポートできません。別のリクエストをお試しください。</translation>
 <translation id="4702647871202761252">プライバシー スクリーンはオフになっています</translation>
 <translation id="4706121060329443414">ダウンロードは後で試行されます。音声は処理のためにひとまず Google に送信されます。</translation>
 <translation id="470644585772471629">色反転</translation>
@@ -1903,6 +1908,7 @@
 <translation id="7982878511129296052">オフにしています...</translation>
 <translation id="7984197416080286869">指紋認証の試行回数が上限を超えています</translation>
 <translation id="798779949890829624">この設定は管理者によって管理されています</translation>
+<translation id="7989206653429884947">頻繁に使用されるもの</translation>
 <translation id="799296642788192631">重要なファイルを固定できます。固定するには、該当のファイルにカーソルを合わせるか、ファイルアプリで該当のファイルを右クリックします。</translation>
 <translation id="7994370417837006925">マルチログイン</translation>
 <translation id="7995804128062002838">画面をキャプチャできませんでした</translation>
@@ -2088,6 +2094,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: 有効にしています...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />、<ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">時間です。お疲れさまでした。🎉</translation>
+<translation id="8753368202781196133">この言語は現在サポートされていません。</translation>
 <translation id="8755498163081687682">本人確認: <ph name="ORIGIN_NAME" /> が本人確認をリクエストしています</translation>
 <translation id="875593634123171288">VPN 設定を表示</translation>
 <translation id="8756799553341497810">この画面を離れると、アプリのレイアウトのカスタマイズを開始できます。</translation>

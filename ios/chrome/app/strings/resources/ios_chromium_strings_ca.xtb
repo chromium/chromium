@@ -263,6 +263,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="8386869251364507178">Accions de Chromium</translation>
 <translation id="8409374867500149834">Tens la seguretat més efectiva de Chromium contra llocs web perillosos</translation>
 <translation id="8458950033462118672">Pots obrir enllaços automàticament a Chromium establint-lo com la teva aplicació de navegador predeterminada.</translation>
+<translation id="8543509361021925846">{THRESHOLD,plural, =1{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minut. Se suprimiran les dades que s'han desat només en aquest dispositiu mentre tenies la sessió iniciada. S'hi podrien incloure l'historial i les contrasenyes.}other{Es produeix quan Chromium no s'utilitza durant {THRESHOLD} minuts. Se suprimiran les dades que s'han desat només en aquest dispositiu mentre tenies la sessió iniciada. S'hi podrien incloure l'historial i les contrasenyes.}}</translation>
 <translation id="858114650497379505">Pots utilitzar les contrasenyes que has desat al gestor de contrasenyes en altres aplicacions de l'iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Els autors de Chromium. Tots els drets reservats.</translation>
 <translation id="865600487977764604">Et protegeix a Chromium i és possible que s'utilitzi per millorar la teva seguretat en altres aplicacions de Google quan tinguis la sessió iniciada.</translation>

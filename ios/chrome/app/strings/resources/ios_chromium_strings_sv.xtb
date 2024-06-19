@@ -263,6 +263,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="8386869251364507178">Chromium-åtgärder</translation>
 <translation id="8409374867500149834">Du har den starkaste säkerheten i Chromium mot skadliga webbplatser</translation>
 <translation id="8458950033462118672">Du kan öppna länkar i Chromium automatiskt genom att ställa in den som standardwebbläsare.</translation>
+<translation id="8543509361021925846">{THRESHOLD,plural, =1{Detta händer när Chromium inte har använts på {THRESHOLD} minut. Data som endast har sparats på den här enheten medan du var inloggad kommer att raderas. Detta kan inkludera historik och lösenord.}other{Detta händer när Chromium inte har använts på {THRESHOLD} minuter. Data som endast har sparats på den här enheten medan du var inloggad kommer att raderas. Detta kan inkludera historik och lösenord.}}</translation>
 <translation id="858114650497379505">Du kan använda lösenorden som sparats med Lösenordshantering i andra iPhone-appar.</translation>
 <translation id="8586442755830160949">Upphovsrätt <ph name="YEAR" /> The Chromium Authors. Med ensamrätt.</translation>
 <translation id="865600487977764604">Skyddar dig i Chromium och kan användas för förbättrad säkerhet i andra Google-appar där du är inloggad.</translation>

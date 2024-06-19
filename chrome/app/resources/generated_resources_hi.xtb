@@ -597,7 +597,7 @@
 <translation id="1444628761356461360">यह सेटिंग डिवाइस मालिक, <ph name="OWNER_EMAIL" /> द्वारा प्रबंधित है.</translation>
 <translation id="144518587530125858">थीम के लिए '<ph name="IMAGE_PATH" />' को लोड नहीं कर सका.</translation>
 <translation id="1447531650545977377">सिंक को चालू करें...</translation>
-<translation id="1447895950459090752">टैब पर कर्सर घुमाकर झलक दिखाने वाला कार्ड</translation>
+<translation id="1447895950459090752">टैब पर कर्सर घुमाने पर, झलक दिखाने वाला कार्ड</translation>
 <translation id="1448264954024227422">इस खाते का इस्तेमाल Android ऐप्लिकेशन के साथ किया जा सकता है. अगर आपको किसी और के लिए कोई खाता जोड़ना है, तो अपने <ph name="DEVICE_TYPE" /> में <ph name="LINK_BEGIN" /> एक नया व्यक्ति जोड़ें<ph name="LINK_END" />.
 
 आपने ऐप्लिकेशन को जो अनुमतियां पहले से ही दी हुई हैं वे इस खाते पर लागू हो सकती हैं. <ph name="APPS_LINK_BEGIN" />ऐप्लिकेशन की सेटिंग<ph name="APPS_LINK_END" /> में जाकर, Android ऐप्लिकेशन के लिए अनुमतियों को कंट्रोल किया जा सकता है.</translation>
@@ -3523,7 +3523,7 @@
 <translation id="3563558822383875692">डीएलसी को कॉन्फ़िगर किया जा रहा है.</translation>
 <translation id="3564334271939054422">आप जिस वाई-फ़ाई नेटवर्क (<ph name="NETWORK_ID" />) का उपयोग कर रहे हैं उसके लिए आपको लॉगिन पेज पर जाने की ज़रूरत हो सकती है.</translation>
 <translation id="3564848315152754834">USB सुरक्षा चाबी</translation>
-<translation id="3566211766752891194">टैब की मेमोरी का इस्तेमाल दिखाएं</translation>
+<translation id="3566211766752891194">टैब में मेमोरी का इस्तेमाल दिखाएं</translation>
 <translation id="3566325075220776093">इस डिवाइस से</translation>
 <translation id="3566721612727112615">कोई साइट नहीं जोड़ी गई</translation>
 <translation id="3567168891086460374">दूसरे तरीके से सेव करें</translation>
@@ -4697,7 +4697,7 @@
 <translation id="4415245286584082850">कोई डिवाइस नहीं मिला. नए टैब में सहायता केंद्र लेख खोलें.</translation>
 <translation id="4415276339145661267">अपना Google खाता मैनेज करें</translation>
 <translation id="4415748029120993980">SECG अंडाकार वक्र secp384r1 (अर्थात NIST P-384)</translation>
-<translation id="4415815425191869676">इन साइटों को हमेशा चालू रखें</translation>
+<translation id="4415815425191869676">इन साइटों को हमेशा ऐक्टिव रखें</translation>
 <translation id="4416582610654027550">एक मान्य यूआरएल टाइप करें</translation>
 <translation id="4421932782753506458">फ्लफ़ी</translation>
 <translation id="4423376891418188461">सेटिंग फिर से स्थापित करें</translation>

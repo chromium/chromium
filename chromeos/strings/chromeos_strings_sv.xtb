@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">pastellgul</translation>
 <translation id="1056898198331236512">Varning</translation>
 <translation id="1059913517121127803">Det gick inte att börja söka</translation>
+<translation id="1061864016440983342">Använd utan plats</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> av <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Brandvägg hittades</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Fler inställningar</translation>
 <translation id="2082932131694554252">Tilldelad tangent</translation>
 <translation id="2085089206770112532">Tangenten som minskar skärmens ljusstyrka</translation>
+<translation id="2086091080968010660">Tidsbaserade ändringar kanske inte är korrekta. Aktivera platsåtkomst i inställningarna.</translation>
 <translation id="2102231663024125441">Textredigering</translation>
 <translation id="2105810540595158374">Enheten är en spelkontroll.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Återställ standardinställningar</translation>
 <translation id="2286454467119466181">Enkel</translation>
 <translation id="2287186687001756809">Det finns inga bilder. Du kan lägga till foton via <ph name="LINK" /></translation>
+<translation id="2294577623958216786">Aktuellt schema är inställt på <ph name="SUNRISE" />–<ph name="SUNSET" />. Aktivera systemets platsåtkomst om du vill uppdatera schemat för solnedgång och soluppgång automatiskt.</translation>
 <translation id="2305172810646967500">svart</translation>
 <translation id="2307344026739914387">Använd nuvarande nyckelpar</translation>
 <translation id="2308243864813041101">Koppla från USB-kabeln från <ph name="DEVICE_NAME" /> för att fortsätta uppdateringsprocessen</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">ljusstyrka för tangentbordet</translation>
 <translation id="6412715219990689313">Inbyggt tangentbord</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
+<translation id="6419454453018688975">Aktivera systemets platsåtkomst</translation>
 <translation id="6423239382391657905">Öppen VPN</translation>
 <translation id="6439505561246192797">Svag (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Öppna kontoinställningar</translation>

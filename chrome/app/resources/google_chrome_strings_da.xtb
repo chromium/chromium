@@ -169,6 +169,7 @@
 <translation id="3261565993776444564">Prøv en ny farve for at tilpasse din browser</translation>
 <translation id="3282568296779691940">Log ind i Chrome</translation>
 <translation id="3286538390144397061">Genstart nu</translation>
+<translation id="3292333338048274092">Du skal derefter genstarte Chrome.</translation>
 <translation id="3360895254066713204">Hjælp til Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome genstarter nu}=1{Chrome genstarter om 1 sekund}one{Chrome genstarter om # sekund}other{Chrome genstarter om # sekunder}}</translation>
 <translation id="3396977131400919238">Der opstod en fejl ved operativsystemet under installation. Download Google Chrome igen.</translation>
@@ -213,6 +214,7 @@
 <translation id="4035053306113201399">ChromeOS skal genstartes, før opdateringen kan anvendes.</translation>
 <translation id="4050175100176540509">Vigtige sikkerhedsforbedringer og nye funktioner er tilgængelige i den seneste version.</translation>
 <translation id="4053720452172726777">Tilpas Google Chrome</translation>
+<translation id="4084404300720192944">Tillad skærmoptagelse for Chrome i Systempræferencer for at dele dit vindue.</translation>
 <translation id="4106587138345390261">Chrome afprøver nye funktioner, der giver websites mulighed for at levere den samme browseroplevelse uden at bruge så mange af dine oplysninger</translation>
 <translation id="4110895483821904099">Konfigurer din nye Chrome-profil</translation>
 <translation id="4111566860456076004">Chrome kan ikke verificere, hvor denne udvidelse kommer fra, og den kan derfor være skadelig. Du bør fjerne udvidelsen fra Chrome, så den ikke længere kan se og ændre dine data på de websites, du besøger, bl.a. dine personlige oplysninger.</translation>
@@ -347,6 +349,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome beta</translation>
 <translation id="6182736845697986886">Installationen mislykkedes på grund af en intern fejl i opdateringsserveren.</translation>
 <translation id="6200139057479872438">Du har ikke besøgt websitet for nylig. Chrome har fjernet <ph name="PERMISSION_1" /> og <ph name="PERMISSION_2" /></translation>
+<translation id="621585339844629864">Tillad skærmoptagelse for Chrome i Systempræferencer for at dele din skærm.</translation>
 <translation id="6235018212288296708">Indgående regel for Google Chrome om at tillade mDNS-trafik.</translation>
 <translation id="624230925347970731">Chrome lukkes snart</translation>
 <translation id="6247557882553405851">Google Adgangs­kode­admin­istrator</translation>

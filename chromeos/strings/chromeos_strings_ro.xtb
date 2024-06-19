@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">galben pastelat</translation>
 <translation id="1056898198331236512">Avertisment</translation>
 <translation id="1059913517121127803">Nu s-a putut începe scanarea</translation>
+<translation id="1061864016440983342">Folosește fără locație</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> din <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">S-a detectat un firewall</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Mai multe setări</translation>
 <translation id="2082932131694554252">Tasta de pe tastatură atribuită</translation>
 <translation id="2085089206770112532">Reducerea luminozității ecranului</translation>
+<translation id="2086091080968010660">Este posibil ca modificările în funcție de oră să nu fie precise. Activează accesul la locația sistemului în setări.</translation>
 <translation id="2102231663024125441">Editarea textului</translation>
 <translation id="2105810540595158374">Dispozitivul este un controler de jocuri.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versiunea <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Restabilește valorile prestabilite</translation>
 <translation id="2286454467119466181">Simplă</translation>
 <translation id="2287186687001756809">Nicio imagine disponibilă. Pentru a adăuga fotografii, accesează <ph name="LINK" /></translation>
+<translation id="2294577623958216786">Programul actual este setat la <ph name="SUNRISE" /> – <ph name="SUNSET" />. Pentru a actualiza automat programul pentru apus și răsărit, activează accesul sistemului la locație.</translation>
 <translation id="2305172810646967500">negru</translation>
 <translation id="2307344026739914387">Folosește perechea de chei actuală</translation>
 <translation id="2308243864813041101">Deconectează cablul USB pentru <ph name="DEVICE_NAME" /> pentru a continua procesul de actualizare</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">luminozitatea tastaturii</translation>
 <translation id="6412715219990689313">Tastatură integrată</translation>
 <translation id="6417265370957905582">Asistent Google</translation>
+<translation id="6419454453018688975">Activează accesul la locația sistemului</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Slabă (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Accesează setările contului</translation>

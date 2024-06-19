@@ -531,6 +531,7 @@ Gweler cyfarwyddiadau eich peiriant chwilio er mwyn dileu eich hanes chwilio, os
 <translation id="371398631992790800">Cuddio Nodau Tudalen</translation>
 <translation id="37207012422556617">Chwiliadau Poblogaidd</translation>
 <translation id="3725081662140949903">I atal eraill rhag defnyddio'ch cyfrinair, agorwch yr ap <ph name="APP" /> i newid eich cyfrinair</translation>
+<translation id="372676576864368480">Awtolenwi'r rhif cerdyn sy'n gorffen â <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Crëwyd <ph name="DATE" /></translation>
 <translation id="374357899112510277">Cuddio Lawrlwythiadau</translation>
 <translation id="3745190878148784130">Cuddio Chwyddo Testun</translation>
@@ -1096,6 +1097,7 @@ Ni all gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahano
 <translation id="6476800141292307438">Wrthi'n cyfieithu'r dudalen i <ph name="LANGUAGE" />. Mae'r opsiynau sydd ar gael yn agos at waelod y sgrîn.</translation>
 <translation id="648164694371393720">Gwall Dilysu</translation>
 <translation id="6494931198667773526">Yn gorffen</translation>
+<translation id="6500795388871406244">Defnyddio'r cyfrinair a awgrymir:</translation>
 <translation id="650279896687777322">Dysgu Rhagor...</translation>
 <translation id="6507973708545996744">Mewngofnodwch i gael eich rhestr ddarllen ar eich holl ddyfeisiau.</translation>
 <translation id="6510072653668207258">Atgoffa Fi yn Nes Ymlaen</translation>
@@ -1308,6 +1310,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7583004045319035904">Defnyddiwch <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> i ddatgloi eich tabiau Anhysbys.</translation>
 <translation id="7598439272585186139">Cael mwy o ddiogelwch</translation>
 <translation id="7600965453749440009">Peidio byth â chyfieithu <ph name="LANGUAGE" /></translation>
+<translation id="7603308509262646847">Awtolenwi deiliad y cerdyn <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Mae ffenestri naid wedi'u rhwystro (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">Grwpiau Tabiau</translation>
 <translation id="7607521702806708809">Dileu'r Cyfrinair</translation>
@@ -1340,6 +1343,7 @@ Pan fyddwch yn y modd Anhysbys, ni all gwefannau ddefnyddio cwcis i weld eich gw
 <translation id="7749790401023484470">Ni wnaethoch ddewis unrhyw destun.</translation>
 <translation id="7752405526771734448">Chwiliad Gweledol Lens</translation>
 <translation id="7756478488453921771">Dewislen → Gosodiadau → Dulliau Talu</translation>
+<translation id="775755486779745798">Awtolenwi'r mis darfod <ph name="MONTH" /></translation>
 <translation id="7760127703945531263">Clo Anhysbys</translation>
 <translation id="7765158879357617694">Symud</translation>
 <translation id="7772032839648071052">Cadarnhau cyfrinymadrodd</translation>
@@ -1516,6 +1520,7 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8556590991644167667">{count,plural, =1{Rydych wedi diystyru {count} rhybudd}zero{Rydych wedi diystyru {count} rhybudd}two{Rydych wedi diystyru {count} rybudd}few{Rydych wedi diystyru {count} rhybudd}many{Rydych wedi diystyru {count} rhybudd}other{Rydych wedi diystyru {count} rhybudd}}</translation>
 <translation id="8560253818350321773">Dangos eitemau a ddefnyddir yn aml yn gyntaf.</translation>
 <translation id="8569721750632860947">Pa URL hoffech chi ei ychwanegu at eich rhestr ddarllen?</translation>
+<translation id="8577056989960190117">Awtolenwi'r flwyddyn darfod <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Diffodd</translation>
 <translation id="8591976964826315682">Rhwystro Cwcis Trydydd Parti yn y Modd Anhysbys</translation>
 <translation id="8593565399399144771">Gallwch agor tab newydd yma.</translation>

@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">пастелно жут(а)</translation>
 <translation id="1056898198331236512">Упозорење</translation>
 <translation id="1059913517121127803">Покретање скенирања није успело</translation>
+<translation id="1061864016440983342">Користи без локације</translation>
 <translation id="1062823486781306604"><ph name="INDEX" />. од <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Откривен је заштитни зид</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Више подешавања</translation>
 <translation id="2082932131694554252">Додељени тастер на тастатури</translation>
 <translation id="2085089206770112532">Смањите осветљеност екрана</translation>
+<translation id="2086091080968010660">Промене засноване на времену можда нису прецизне. Укључите приступ локацији система у подешавањима.</translation>
 <translation id="2102231663024125441">Уређивање текста</translation>
 <translation id="2105810540595158374">Уређај је контролер за игре.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, верзија <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Врати на подразумевано</translation>
 <translation id="2286454467119466181">Једноставан</translation>
 <translation id="2287186687001756809">Слика није доступна. Да бисте додали слике, идите на <ph name="LINK" /></translation>
+<translation id="2294577623958216786">Актуелни распоред је подешен на <ph name="SUNRISE" />–<ph name="SUNSET" />. Да бисте аутоматски ажурирали распоред заласка и изласка сунца, укључите приступ локацији система.</translation>
 <translation id="2305172810646967500">црним</translation>
 <translation id="2307344026739914387">Користите актуелни пар кључева</translation>
 <translation id="2308243864813041101">Искључите USB кабл уређаја <ph name="DEVICE_NAME" /> да бисте наставили процес ажурирања</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">осветљеност тастатуре</translation>
 <translation id="6412715219990689313">Уграђена тастатура</translation>
 <translation id="6417265370957905582">Google помоћник</translation>
+<translation id="6419454453018688975">Укључите приступ системској локацији</translation>
 <translation id="6423239382391657905">Отворена VPN</translation>
 <translation id="6439505561246192797">Слаб (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Отворите подешавања налога</translation>

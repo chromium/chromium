@@ -117,6 +117,8 @@ Du kan finde flere indstillinger, der bruger data til at forbedre din Chrome-opl
 <translation id="1513814250881909472">Synkroniser for at få dine faner fra dine andre enheder</translation>
 <translation id="1513858653616922153">Slet adgangskoden</translation>
 <translation id="1521774566618522728">Aktiv i dag</translation>
+<translation id="1544084554881119930">Betalingsmetoder og adresser krypteres ikke. Browserhistorik fra Chrome synkroniseres ikke.
+Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssætningen bliver ikke sendt til eller gemt af Google. Hvis du glemmer din adgangssætning eller vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />rydde Chrome-dataene på din konto<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Tryk på knappen "Administrer konto" for at administrere din Google-konto</translation>
 <translation id="154513667535157406">Hvis du giver et like, indsendes der feedback om, at du kan lide denne oversigt</translation>
 <translation id="1549000191223877751">Flyt til et andet vindue</translation>
@@ -457,6 +459,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="3264259168916048410">Din computer anmoder om at anvende denne enhed til login på et website</translation>
 <translation id="3265093782546847662">Alle sider på <ph name="DOMAIN" /></translation>
 <translation id="3269093882174072735">Indlæs billede</translation>
+<translation id="327204079441056603">Vi har ændret, hvordan adgangskoder på denne enhed gemmes</translation>
 <translation id="3280562213547448728">Stemmesøgning</translation>
 <translation id="3282568296779691940">Log ind i Chrome</translation>
 <translation id="3290249595466894471">Der sendes også et mindre antal sider, downloads, udvidelsesaktivitet og systemoplysninger for at identificere nye trusler</translation>
@@ -1214,6 +1217,7 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6918398787259831832">Hvis problemet fortsætter, kan du <ph name="BEGIN_LINK" />få flere oplysninger<ph name="END_LINK" /> fra <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6929224077895306814">Alle sikkerhedskoder, der er gemt på din enhed og på din Google-konto, slettes</translation>
 <translation id="6937524809504266803">Personlig tilpasning og tilknytning</translation>
+<translation id="6937876069006524083">Kaldenavn (valgfrit)</translation>
 <translation id="6942665639005891494">Du kan til enhver tid ændre standardplaceringen for downloads via menuen Indstillinger</translation>
 <translation id="694267552845942083">Du er i øjeblikket ved at tilpasse dine indstillinger for Synkronisering. Afslut aktiveringen af Synkronisering ved at trykke på knappen Bekræft nederst på skærmen. Gå op</translation>
 <translation id="6945221475159498467">Vælg</translation>
@@ -1277,6 +1281,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />slette Chrome-dat
 <translation id="7207760545532569765">Gendan <ph name="TAB_COUNT" /> faner som nye baggrundsfaner.</translation>
 <translation id="7217781228893594884">Inkognitofaner låses, når du lukker Chrome</translation>
 <translation id="7221869452894271364">Genindlæs denne side</translation>
+<translation id="7224097611345298931">Alle adgangskoder til Chrome og <ph name="CHROME_CHANNEL" />, som kun er gemt på denne enhed, er blevet flettet. Du kan udfylde alle dine gemte adgangskoder automatisk i begge apps.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 download afventer}one{# download afventer}other{# downloads afventer}}</translation>
 <translation id="72415438529550637">Adgangskodeforslaget er lukket.</translation>
 <translation id="7252076891734325316">Placer din telefon tæt på computeren</translation>

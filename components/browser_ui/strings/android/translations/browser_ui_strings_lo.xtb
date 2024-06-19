@@ -158,6 +158,7 @@
 <translation id="3602290021589620013">ເບິ່ງຕົວຢ່າງ</translation>
 <translation id="3628308229821498208">ການຊອກຫາທີ່ແນະນຳ</translation>
 <translation id="3697164069658504920">ເມື່ອເປີດ, ເວັບໄຊສາມາດຂໍໃຊ້ອຸປະກອນ USB ໄດ້. ເມື່ອປິດ, ເວັບໄຊບໍ່ສາມາດໃຊ້ອຸປະກອນ USB ໄດ້.</translation>
+<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງສາມາດບັນທຶກຂໍ້ມູນຈຳນວນໜ້ອຍໜຶ່ງໄດ້ດ້ວຍ Chrome, ສ່ວນໃຫຍ່ແລ້ວແມ່ນໃຊ້ເພື່ອກວດສອບວ່າທ່ານບໍ່ແມ່ນບັອດ</translation>
 <translation id="3721953990244350188">ປິດ ແລະ ສະແດງຄຳສັ່ງຕໍ່ໄປທີ່ພ້ອມໃຫ້ນຳໃຊ້</translation>
 <translation id="3744111561329211289">ການຊິ້ງຂໍ້ມູນໃນພື້ນຫຼັງ</translation>
@@ -227,6 +228,7 @@
 <translation id="4962975101802056554">ຖອນການອະນຸຍາດທັງໝົດສຳລັບອຸປະກອນ</translation>
 <translation id="497421865427891073">ໄປຂ້າງ​ຫນ້າ</translation>
 <translation id="4976702386844183910">ເຂົ້າເບິ່ງຫຼ້າສຸດ <ph name="DATE" /></translation>
+<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">ທ່ານໄດ້ອະນຸຍາດຄຸກກີ້ພາກສ່ວນທີສາມສຳລັບເວັບໄຊນີ້</translation>
 <translation id="4994033804516042629">ບໍ່ເຫັນລາຍຊື່ຕິດຕໍ່</translation>
 <translation id="4996978546172906250">ແຊຣ໌ຜ່ານ</translation>

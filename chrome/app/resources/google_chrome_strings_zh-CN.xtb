@@ -168,6 +168,7 @@
 <translation id="3261565993776444564">试用新颜色来自定义浏览器</translation>
 <translation id="3282568296779691940">登录 Chrome</translation>
 <translation id="3286538390144397061">立即重新启动</translation>
+<translation id="3292333338048274092">然后，您需要重启 Chrome。</translation>
 <translation id="3360895254066713204">Chrome 浏览器帮助应用</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome 将立即重新启动}=1{Chrome 将在 1 秒后重新启动}other{Chrome 将在 # 秒后重新启动}}</translation>
 <translation id="3396977131400919238">安装过程中出现操作系统错误。请重新下载 Google Chrome。</translation>
@@ -212,6 +213,7 @@
 <translation id="4035053306113201399">需要重新启动 Chrome 操作系统以应用更新。</translation>
 <translation id="4050175100176540509">最新版本不仅在安全性方面做出了重要改进，还提供了多项新功能。</translation>
 <translation id="4053720452172726777">自定义及控制 Google Chrome</translation>
+<translation id="4084404300720192944">若要共享窗口，请在“系统偏好设置”中为 Chrome 启用屏幕录制功能。</translation>
 <translation id="4106587138345390261">Chrome 团队正在探索各种新功能，以便让网站既能减少使用您的信息，又能提供同样出色的浏览体验</translation>
 <translation id="4110895483821904099">设置您的新 Chrome 个人资料</translation>
 <translation id="4111566860456076004">Chrome 无法验证此扩展程序的来源，它可能不安全。请将其从 Chrome 中移除，这样它便无法再查看和更改您在所访问的网站上的数据，包括个人信息。</translation>
@@ -346,6 +348,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome 测试版</translation>
 <translation id="6182736845697986886">更新服务器出现内部错误，因此安装失败。</translation>
 <translation id="6200139057479872438">您近期未访问过该网站。Chrome 移除了<ph name="PERMISSION_1" />和<ph name="PERMISSION_2" />权限</translation>
+<translation id="621585339844629864">若要共享屏幕，请在“系统偏好设置”中为 Chrome 启用屏幕录制功能。</translation>
 <translation id="6235018212288296708">Google Chrome的入站规则，允许mDNS流量。</translation>
 <translation id="624230925347970731">Chrome 即将关闭</translation>
 <translation id="6247557882553405851">Google 密码管理工具</translation>

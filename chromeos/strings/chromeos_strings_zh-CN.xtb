@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">粉黄色</translation>
 <translation id="1056898198331236512">警告</translation>
 <translation id="1059913517121127803">无法启动扫描</translation>
+<translation id="1061864016440983342">在不开启位置信息服务的情况下使用</translation>
 <translation id="1062823486781306604">第 <ph name="INDEX" /> 个，共 <ph name="COUNT" /> 个，<ph name="NAME" />。</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">检测到防火墙</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">更多设置</translation>
 <translation id="2082932131694554252">已分配的键盘按键</translation>
 <translation id="2085089206770112532">调低显示屏亮度</translation>
+<translation id="2086091080968010660">基于时间的更改可能不准确。请在设置中开启系统位置信息使用权。</translation>
 <translation id="2102231663024125441">文字修改</translation>
 <translation id="2105810540595158374">设备类型是游戏控制器。</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />，版本 <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">恢复默认设置</translation>
 <translation id="2286454467119466181">简单</translation>
 <translation id="2287186687001756809">没有可显示的图片。若要添加照片，请前往 <ph name="LINK" /></translation>
+<translation id="2294577623958216786">当前时间表设置为<ph name="SUNRISE" /> - <ph name="SUNSET" />。若要自动更新日落和日出时间表，请开启系统位置信息使用权。</translation>
 <translation id="2305172810646967500">黑色</translation>
 <translation id="2307344026739914387">使用当前密钥对</translation>
 <translation id="2308243864813041101">请拔下<ph name="DEVICE_NAME" /> USB 线，以继续更新流程</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">键盘亮度</translation>
 <translation id="6412715219990689313">内置键盘</translation>
 <translation id="6417265370957905582">Google 助理</translation>
+<translation id="6419454453018688975">开启系统位置信息使用权</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">很弱 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">打开账号设置</translation>
