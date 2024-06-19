@@ -162,7 +162,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 
     size_t total_bits_ = 0;
     uintptr_t address_begin_ = 0;
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
     uintptr_t address_end_ = 0;
 #endif
 

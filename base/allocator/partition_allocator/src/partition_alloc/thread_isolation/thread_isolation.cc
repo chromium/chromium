@@ -18,7 +18,7 @@
 
 namespace partition_alloc::internal {
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
 ThreadIsolationSettings ThreadIsolationSettings::settings;
 #endif
 
@@ -80,7 +80,7 @@ void WriteProtectThreadIsolatedGlobals(ThreadIsolationOption thread_isolation) {
       thread_isolation, pkey_reservation_offset_table,
       ReservationOffsetTable::kReservationOffsetTableLength);
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
   WriteProtectThreadIsolatedVariable(thread_isolation,
                                      ThreadIsolationSettings::settings);
 #endif

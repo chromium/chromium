@@ -30,7 +30,7 @@
 
 namespace base::internal {
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
+#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
     PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 PA_COMPONENT_EXPORT(RAW_PTR)
 void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address);
@@ -71,11 +71,11 @@ struct RawPtrBackupRefImpl {
     // address is nullptr.
 #if PA_HAS_BUILTIN(__builtin_constant_p)
     if (__builtin_constant_p(address == 0) && (address == 0)) {
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
+#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
     PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
       PA_BASE_CHECK(
           !partition_alloc::IsManagedByPartitionAllocBRPPool(address));
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON) ||
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON) ||
         // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
       return false;
     }
@@ -102,7 +102,7 @@ struct RawPtrBackupRefImpl {
     // IsManagedByPartitionAllocBRPPool returns true for a valid pointer,
     // it must be at least partition page away from the beginning of a super
     // page.
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
+#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
     PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     if (use_brp) {
       CheckThatAddressIsntWithinFirstPartitionPage(address);
@@ -158,7 +158,7 @@ struct RawPtrBackupRefImpl {
     }
     uintptr_t address = partition_alloc::UntagPtr(UnpoisonPtr(ptr));
     if (IsSupportedAndNotNull(address)) {
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
+#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
     PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
       PA_BASE_CHECK(ptr != nullptr);
 #endif
@@ -193,7 +193,7 @@ struct RawPtrBackupRefImpl {
     }
     uintptr_t address = partition_alloc::UntagPtr(UnpoisonPtr(wrapped_ptr));
     if (IsSupportedAndNotNull(address)) {
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
+#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
     PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
       PA_BASE_CHECK(wrapped_ptr != nullptr);
 #endif
@@ -217,7 +217,7 @@ struct RawPtrBackupRefImpl {
     if (partition_alloc::internal::base::is_constant_evaluated()) {
       return wrapped_ptr;
     }
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
+#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
     PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 #if PA_BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
     PA_BASE_CHECK(!IsPtrOOB(wrapped_ptr));
@@ -227,7 +227,7 @@ struct RawPtrBackupRefImpl {
       PA_BASE_CHECK(wrapped_ptr != nullptr);
       PA_BASE_CHECK(IsPointeeAlive(address));  // Detects use-after-free.
     }
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON) ||
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON) ||
         // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     return wrapped_ptr;
   }

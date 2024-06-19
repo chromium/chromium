@@ -163,7 +163,7 @@ static_assert(sizeof(void*) == 8);
 #endif
 
 // Specifies whether allocation extras need to be added.
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON) || PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 #define PA_CONFIG_EXTRAS_REQUIRED() 1
 #else
 #define PA_CONFIG_EXTRAS_REQUIRED() 0
@@ -204,10 +204,10 @@ static_assert(sizeof(void*) == 8);
 // calling malloc() again.
 //
 // Limitations:
-// - PA_BUILDFLAG(PA_DCHECK_IS_ON) due to runtime cost
+// - PA_BUILDFLAG(DCHECKS_ARE_ON) due to runtime cost
 // - thread_local TLS to simplify the implementation
 // - Not on Android due to bot failures
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) &&               \
+#if PA_BUILDFLAG(DCHECKS_ARE_ON) &&                \
     PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
     PA_CONFIG(THREAD_LOCAL_TLS) && !PA_BUILDFLAG(IS_ANDROID)
 #define PA_CONFIG_HAS_ALLOCATION_GUARD() 1
@@ -253,7 +253,7 @@ constexpr bool kUseLazyCommit = false;
 #define PA_CONFIG_IN_SLOT_METADATA_CHECK_COOKIE()    \
   (!(PA_BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS) && \
      PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)) && \
-   (PA_BUILDFLAG(PA_DCHECK_IS_ON) ||                 \
+   (PA_BUILDFLAG(DCHECKS_ARE_ON) ||                  \
     PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)))
 
 // Use available space in the reference count to store the initially requested
@@ -349,6 +349,6 @@ static_assert(__cplusplus >= 202002L,
 
 // Named pass-through that determines whether or not PA should generally
 // enforce that `SlotStart` instances are in fact slot starts.
-#define PA_CONFIG_ENFORCE_SLOT_STARTS() PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#define PA_CONFIG_ENFORCE_SLOT_STARTS() PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 #endif  // PARTITION_ALLOC_PARTITION_ALLOC_CONFIG_H_

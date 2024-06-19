@@ -315,7 +315,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
       "because the test process cannot use an extended virtual address space. "
       "Temporarily disable ShadowMetadata feature on iOS");
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
   // Check whether the given |ptr| points to an address inside the address space
   // reserved for the regular and brp shadow. However the result |true| doesn't
   // mean the given |ptr| is valid. Because we don't use the entire address
@@ -328,7 +328,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionAddressSpace {
              ptr_as_uintptr < pool_shadow_address_ + BRPPoolSize() ||
              ptr_as_uintptr < pool_shadow_address_ + kConfigurablePoolMaxSize));
   }
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
   static void InitShadowMetadata(PoolHandleMask pool);
   static void MapMetadata(uintptr_t super_page, bool copy_metadata);

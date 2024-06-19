@@ -19,7 +19,7 @@ namespace base::internal {
 template <bool AllowDangling, bool DisableBRP>
 void RawPtrBackupRefImpl<AllowDangling, DisableBRP>::AcquireInternal(
     uintptr_t address) {
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
+#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
     PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   PA_BASE_CHECK(UseBrp(address));
 #endif
@@ -39,7 +39,7 @@ void RawPtrBackupRefImpl<AllowDangling, DisableBRP>::AcquireInternal(
 template <bool AllowDangling, bool DisableBRP>
 void RawPtrBackupRefImpl<AllowDangling, DisableBRP>::ReleaseInternal(
     uintptr_t address) {
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
+#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
     PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   PA_BASE_CHECK(UseBrp(address));
 #endif
@@ -100,7 +100,7 @@ bool RawPtrBackupRefImpl<AllowDangling, DisableBRP>::
 template <bool AllowDangling, bool DisableBRP>
 bool RawPtrBackupRefImpl<AllowDangling, DisableBRP>::IsPointeeAlive(
     uintptr_t address) {
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
+#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
     PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   PA_BASE_CHECK(UseBrp(address));
 #endif
@@ -122,7 +122,7 @@ template struct RawPtrBackupRefImpl</*AllowDangling=*/true,
 template struct RawPtrBackupRefImpl</*AllowDangling=*/true,
                                     /*DisableBRP=*/true>;
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
+#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
     PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address) {
   if (partition_alloc::internal::IsManagedByDirectMap(address)) {
@@ -136,7 +136,7 @@ void CheckThatAddressIsntWithinFirstPartitionPage(uintptr_t address) {
                   partition_alloc::PartitionPageSize());
   }
 }
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON) ||
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON) ||
         // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 
 }  // namespace base::internal

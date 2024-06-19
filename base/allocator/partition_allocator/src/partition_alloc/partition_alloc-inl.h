@@ -57,7 +57,7 @@ PA_ALWAYS_INLINE void SecureMemset(void* ptr, uint8_t value, size_t size) {
 #pragma optimize("", on)
 #endif
 
-#if PA_BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
 // Used to memset() memory for debugging purposes only.
 PA_ALWAYS_INLINE void DebugMemset(void* ptr, int value, size_t size) {
   // Only set the first 512kiB of the allocation. This is enough to detect uses
@@ -71,12 +71,12 @@ PA_ALWAYS_INLINE void DebugMemset(void* ptr, int value, size_t size) {
   size_t size_to_memset = std::min(size, size_t{1} << 19);
   memset(ptr, value, size_to_memset);
 }
-#endif  // PA_BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
+#endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
 
 // Returns true if we've hit the end of a random-length period. We don't want to
 // invoke `RandomValue` too often, because we call this function in a hot spot
 // (`Free`), and `RandomValue` incurs the cost of atomics.
-#if !PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if !PA_BUILDFLAG(DCHECKS_ARE_ON)
 PA_ALWAYS_INLINE bool RandomPeriod() {
   static thread_local uint8_t counter = 0;
   if (PA_UNLIKELY(counter == 0)) {
@@ -87,7 +87,7 @@ PA_ALWAYS_INLINE bool RandomPeriod() {
   counter--;
   return counter == 0;
 }
-#endif  // !PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // !PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 PA_ALWAYS_INLINE uintptr_t ObjectInnerPtr2Addr(const void* ptr) {
   return UntagPtr(ptr);

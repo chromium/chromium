@@ -165,7 +165,7 @@ TEST(PartitionAllocLockTest, AssertAcquired) {
 
 // AssertAcquired() is only enforced with DCHECK()s.
 // DCHECKs don't work with EXPECT_DEATH on official builds.
-#if defined(GTEST_HAS_DEATH_TEST) && PA_BUILDFLAG(PA_DCHECK_IS_ON) && \
+#if defined(GTEST_HAS_DEATH_TEST) && PA_BUILDFLAG(DCHECKS_ARE_ON) && \
     (!defined(OFFICIAL_BUILD) || !defined(NDEBUG))
 
 TEST(PartitionAllocLockTest, AssertAcquiredDeathTest) {
@@ -201,7 +201,7 @@ TEST(PartitionAllocLockTest, AssertAcquiredAnotherThreadHoldsTheLock) {
   base::PlatformThreadForTesting::Join(handle);
 
   // DCHECKs don't work with EXPECT_DEATH on official builds.
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) && \
+#if PA_BUILDFLAG(DCHECKS_ARE_ON) && \
     (!defined(OFFICIAL_BUILD) || !defined(NDEBUG))
   EXPECT_DEATH(lock.AssertAcquired(), "");
 #endif
@@ -241,6 +241,6 @@ TEST(PartitionAllocLockTest, ReinitInOtherThread) PA_NO_THREAD_SAFETY_ANALYSIS {
 }
 #endif  // PA_BUILDFLAG(IS_APPLE)
 
-#endif  // defined(GTEST_HAS_DEATH_TEST) && PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // defined(GTEST_HAS_DEATH_TEST) && PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 }  // namespace partition_alloc::internal

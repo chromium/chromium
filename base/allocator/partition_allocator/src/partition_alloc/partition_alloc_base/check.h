@@ -145,7 +145,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) NotImplemented
 #error "Debug builds are not expected to be optimized as official builds."
 #endif  // defined(OFFICIAL_BUILD) && !defined(NDEBUG)
 
-#if defined(OFFICIAL_BUILD) && !PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if defined(OFFICIAL_BUILD) && !PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 // Discard log strings to reduce code bloat.
 //
@@ -185,7 +185,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) NotImplemented
 
 #endif
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 #define PA_BASE_DCHECK(condition)                                \
   PA_LAZY_CHECK_STREAM(                                          \

@@ -33,11 +33,11 @@
   PA_UNLIKELY(!(condition)) ? PA_IMMEDIATE_CRASH() \
                             : PA_EAT_CHECK_STREAM_PARAMS()
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
 #define PA_DCHECK(condition) PA_CHECK(condition)
 #else
 #define PA_DCHECK(condition) PA_EAT_CHECK_STREAM_PARAMS(!(condition))
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 #define PA_PCHECK(condition)                                 \
   if (!(condition)) {                                        \
@@ -47,11 +47,11 @@
   }                                                          \
   static_assert(true)
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
 #define PA_DPCHECK(condition) PA_PCHECK(condition)
 #else
 #define PA_DPCHECK(condition) PA_EAT_CHECK_STREAM_PARAMS(!(condition))
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 #else  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
        // !PA_BASE_CHECK_WILL_STREAM()
@@ -65,7 +65,7 @@
 // Expensive dchecks that run within *Scan. These checks are only enabled in
 // debug builds with dchecks enabled.
 #if !defined(NDEBUG)
-#define PA_SCAN_DCHECK_IS_ON() PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#define PA_SCAN_DCHECK_IS_ON() PA_BUILDFLAG(DCHECKS_ARE_ON)
 #else
 #define PA_SCAN_DCHECK_IS_ON() 0
 #endif

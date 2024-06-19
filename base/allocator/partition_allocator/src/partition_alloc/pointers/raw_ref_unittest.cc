@@ -557,12 +557,12 @@ TEST(RawRef, GreaterThanOrEqual) {
 }
 
 // Death Tests: If we're only using the no-op version of `raw_ptr` and
-// have `!PA_BUILDFLAG(PA_DCHECK_IS_ON)`, the `PA_RAW_PTR_CHECK()`s used in
+// have `!PA_BUILDFLAG(DCHECKS_ARE_ON)`, the `PA_RAW_PTR_CHECK()`s used in
 // `raw_ref` evaluate to nothing. Therefore, death tests relying on
 // these CHECKs firing are disabled in their absence.
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
-    PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) || PA_BUILDFLAG(PA_DCHECK_IS_ON)
+    PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) || PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 TEST(RawRefDeathTest, CopyConstructAfterMove) {
   int i = 1;
@@ -804,7 +804,7 @@ TEST(RawRefDeathTest, GreaterThanOrEqualAfterMove) {
 
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) ||
         // PA_BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) ||
-        // PA_BUILDFLAG(PA_DCHECK_IS_ON)
+        // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 TEST(RawRef, CTAD) {
   int i = 1;

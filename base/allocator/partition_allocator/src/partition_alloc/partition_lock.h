@@ -24,7 +24,7 @@ class PA_LOCKABLE Lock {
  public:
   inline constexpr Lock();
   void Acquire() PA_EXCLUSIVE_LOCK_FUNCTION() {
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
     LiftThreadIsolationScope lift_thread_isolation_restrictions;
 #endif
@@ -65,7 +65,7 @@ class PA_LOCKABLE Lock {
   }
 
   void Release() PA_UNLOCK_FUNCTION() {
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
     LiftThreadIsolationScope lift_thread_isolation_restrictions;
 #endif
@@ -76,7 +76,7 @@ class PA_LOCKABLE Lock {
   }
   void AssertAcquired() const PA_ASSERT_EXCLUSIVE_LOCK() {
     lock_.AssertAcquired();
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
 #if PA_BUILDFLAG(ENABLE_THREAD_ISOLATION)
     LiftThreadIsolationScope lift_thread_isolation_restrictions;
 #endif
@@ -87,7 +87,7 @@ class PA_LOCKABLE Lock {
 
   void Reinit() PA_UNLOCK_FUNCTION() {
     lock_.AssertAcquired();
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
     owning_thread_ref_.store(base::PlatformThreadRef(),
                              std::memory_order_release);
 #endif
@@ -97,7 +97,7 @@ class PA_LOCKABLE Lock {
  private:
   SpinningMutex lock_;
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
   // Should in theory be protected by |lock_|, but we need to read it to detect
   // recursive lock acquisition (and thus, the allocator becoming reentrant).
   std::atomic<base::PlatformThreadRef> owning_thread_ref_ =

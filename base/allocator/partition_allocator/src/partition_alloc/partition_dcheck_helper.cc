@@ -12,7 +12,7 @@
 
 namespace partition_alloc::internal {
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 void DCheckIsValidSlotSpan(internal::SlotSpanMetadata* slot_span) {
   PartitionRoot* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
@@ -62,6 +62,6 @@ void DCheckRootLockOfSlotSpanIsAcquired(internal::SlotSpanMetadata* slot_span) {
   DCheckRootLockIsAcquired(PartitionRoot::FromSlotSpanMetadata(slot_span));
 }
 
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 }  // namespace partition_alloc::internal

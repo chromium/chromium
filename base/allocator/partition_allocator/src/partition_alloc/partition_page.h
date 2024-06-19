@@ -33,7 +33,7 @@
 #include "partition_alloc/starscan/state_bitmap.h"
 #endif
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
 #include "partition_alloc/tagging.h"
 #endif
 
@@ -482,7 +482,7 @@ PA_ALWAYS_INLINE PartitionPageMetadata* PartitionPageMetadata::FromAddr(
     uintptr_t address) {
   uintptr_t super_page = address & kSuperPageBaseMask;
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
   PA_DCHECK(IsReservationStart(super_page));
   DCheckIsWithInSuperPagePayload(address);
 #endif
@@ -557,11 +557,11 @@ PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromAddr(
 PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromSlotStart(
     uintptr_t slot_start) {
   auto* slot_span = FromAddr(slot_start);
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
   // Checks that the pointer is a multiple of slot size.
   uintptr_t slot_span_start = ToSlotSpanStart(slot_span);
   PA_DCHECK(!((slot_start - slot_span_start) % slot_span->bucket->slot_size));
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
   return slot_span;
 }
 
@@ -584,13 +584,13 @@ PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromObject(void* object) {
 PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromObjectInnerAddr(
     uintptr_t address) {
   auto* slot_span = FromAddr(address);
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
   // Checks that the address is within the expected object boundaries.
   uintptr_t slot_span_start = ToSlotSpanStart(slot_span);
   uintptr_t shift_from_slot_start =
       (address - slot_span_start) % slot_span->bucket->slot_size;
   DCheckIsValidShiftFromSlotStart(slot_span, shift_from_slot_start);
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
   return slot_span;
 }
 
@@ -615,7 +615,7 @@ PA_ALWAYS_INLINE size_t SlotSpanMetadata::GetRawSize() const {
 
 PA_ALWAYS_INLINE void SlotSpanMetadata::SetFreelistHead(
     PartitionFreelistEntry* new_head) {
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
   // |this| is in the metadata region, hence isn't MTE-tagged. Untag |new_head|
   // as well.
   uintptr_t new_head_untagged = UntagPtr(new_head);
@@ -683,7 +683,7 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::AppendFreeList(
     PartitionRoot* root,
     const PartitionFreelistDispatcher* freelist_dispatcher)
     PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root)) {
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
   DCheckRootLockIsAcquired(root);
   PA_DCHECK(!(freelist_dispatcher->GetNext(tail, bucket->slot_size)));
   PA_DCHECK(number_of_freed);
@@ -792,7 +792,7 @@ template <typename Callback>
 void IterateSlotSpans(uintptr_t super_page,
                       bool with_quarantine,
                       Callback callback) {
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
   PA_DCHECK(!(super_page % kSuperPageAlignment));
   auto* extent_entry = PartitionSuperPageToExtent(super_page);
   DCheckRootLockIsAcquired(extent_entry->root);

@@ -1262,7 +1262,6 @@ struct iterator_traits<raw_ptr<T, Traits>> {
 // `std::to_address(pointer)` in C++20 [3].
 //
 // [1] https://wg21.link/pointer.traits.optmem
-
 template <typename T, ::base::RawPtrTraits Traits>
 struct pointer_traits<::raw_ptr<T, Traits>> {
   using pointer = ::raw_ptr<T, Traits>;

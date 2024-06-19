@@ -193,11 +193,11 @@ void SlotSpanMetadata::FreeSlowPath(size_t number_of_freed) {
       return;
     }
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
     const PartitionFreelistDispatcher* freelist_dispatcher =
         PartitionRoot::FromSlotSpanMetadata(this)->get_freelist_dispatcher();
     freelist_dispatcher->CheckFreeList(freelist_head, bucket->slot_size);
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
     // If it's the current active slot span, change it. We bounce the slot span
     // to the empty list as a force towards defragmentation.
@@ -317,7 +317,7 @@ void UnmapNow(uintptr_t reservation_start,
               size_t reservation_size,
               pool_handle pool) {
   PA_DCHECK(reservation_start && reservation_size > 0);
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
   // When ENABLE_BACKUP_REF_PTR_SUPPORT is off, BRP pool isn't used.
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   if (pool == kBRPPoolHandle) {
@@ -356,7 +356,7 @@ void UnmapNow(uintptr_t reservation_start,
               IsManagedByPartitionAllocConfigurablePool(reservation_start));
 #endif
   }
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
   PA_DCHECK((reservation_start & kSuperPageOffsetMask) == 0);
   uintptr_t reservation_end = reservation_start + reservation_size;

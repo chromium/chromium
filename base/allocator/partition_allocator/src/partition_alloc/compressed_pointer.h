@@ -232,7 +232,7 @@ class PA_TRIVIAL_ABI CompressedPointer final {
     static constexpr size_t kMinimalRequiredAlignment = 8;
     static_assert((1 << kOverallBitsToShift) == kMinimalRequiredAlignment);
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
     PA_DCHECK(reinterpret_cast<uintptr_t>(ptr) % kMinimalRequiredAlignment ==
               0);
     PA_DCHECK(internal::CompressedPointerBaseGlobal::IsSet());
@@ -243,7 +243,7 @@ class PA_TRIVIAL_ABI CompressedPointer final {
     PA_DCHECK(!ptr ||
               (base & kCorePoolsBaseMask) ==
                   (reinterpret_cast<uintptr_t>(ptr) & kCorePoolsBaseMask));
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
     const auto uptr = reinterpret_cast<uintptr_t>(ptr);
     // Shift the pointer and truncate.

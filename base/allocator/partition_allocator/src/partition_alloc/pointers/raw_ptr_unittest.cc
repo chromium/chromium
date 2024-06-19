@@ -2330,7 +2330,7 @@ TEST_F(BackupRefPtrTest, Duplicate) {
 }
 #endif  // PA_BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
 
-#if PA_BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
 TEST_F(BackupRefPtrTest, WriteAfterFree) {
   constexpr uint64_t kPayload = 0x1234567890ABCDEF;
 
@@ -2350,7 +2350,7 @@ TEST_F(BackupRefPtrTest, WriteAfterFree) {
       },
       "");
 }
-#endif  // PA_BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
+#endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
 
 namespace {
 constexpr uint8_t kCustomQuarantineByte = 0xff;
@@ -2403,7 +2403,7 @@ TEST_F(BackupRefPtrTest, RawPtrTraits_DisableBRP) {
     // Freeing would  update the MTE tag so use |TagPtr()| to dereference it
     // below.
     allocator_.root()->Free(ptr);
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) || \
+#if PA_BUILDFLAG(DCHECKS_ARE_ON) || \
     PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     // Recreate the raw_ptr so we can use a pointer with the updated MTE tag.
     // Reassigning to |ptr| would hit the PartitionRefCount cookie check rather

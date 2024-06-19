@@ -238,11 +238,9 @@ pa_buildflag_header("raw_ptr_buildflags") {
 pa_buildflag_header("chromecast_buildflags") {
   header = "chromecast_buildflags.h"
 
-  # TODO(https://crbug.com/41481467): Remove the "PA_" prefix, because it
-  # will already be part of the define and the `PA_BUILDFLAG` macro.
   flags = [
-    "PA_IS_CAST_ANDROID=$is_cast_android",
-    "PA_IS_CASTOS=$is_castos",
+    "IS_CAST_ANDROID=$is_cast_android",
+    "IS_CASTOS=$is_castos",
   ]
 }
 
@@ -255,17 +253,15 @@ pa_buildflag_header("debugging_buildflags") {
   header = "debugging_buildflags.h"
   header_dir = rebase_path(".", "//") + "/partition_alloc_base/debug"
 
-  # Duplicates the setup Chromium uses to define `DCHECK_IS_ON()`,
-  # but avails it as a buildflag.
-  _dcheck_is_on = is_debug || dcheck_always_on
+  # Duplicates the setup Chromium uses to define `DCHECK_IS_ON()`, but avails it
+  # as a buildflag.
+  _dchecks_are_on = is_debug || dcheck_always_on
 
-  # TODO(https://crbug.com/41481467): Remove the "PA_" prefix, because it
-  # will already be part of the define and the `PA_BUILDFLAG` macro.
   flags = [
-    "PA_DCHECK_IS_ON=$_dcheck_is_on",
-    "PA_EXPENSIVE_DCHECKS_ARE_ON=$enable_expensive_dchecks",
-    "PA_DCHECK_IS_CONFIGURABLE=$dcheck_is_configurable",
-    "PA_CAN_UNWIND_WITH_FRAME_POINTERS=$can_unwind_with_frame_pointers",
+    "DCHECKS_ARE_ON=$_dchecks_are_on",
+    "EXPENSIVE_DCHECKS_ARE_ON=$enable_expensive_dchecks",
+    "DCHECK_IS_CONFIGURABLE=$dcheck_is_configurable",
+    "CAN_UNWIND_WITH_FRAME_POINTERS=$can_unwind_with_frame_pointers",
   ]
 }
 

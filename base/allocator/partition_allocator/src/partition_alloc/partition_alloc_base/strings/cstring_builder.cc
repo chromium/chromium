@@ -16,7 +16,7 @@
 #include <cstring>
 #include <limits>
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
 #include "partition_alloc/partition_alloc_base/check.h"
 #define PA_RAW_DCHECK PA_RAW_CHECK
 #else

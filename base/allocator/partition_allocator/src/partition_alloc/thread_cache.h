@@ -190,7 +190,7 @@ constexpr ThreadCacheRegistry::ThreadCacheRegistry() = default;
   } while (0)
 #endif  // PA_CONFIG(THREAD_CACHE_ENABLE_STATISTICS)
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 namespace internal {
 
@@ -214,13 +214,13 @@ class ReentrancyGuard {
     x                               \
   }
 
-#else  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#else  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 #define PA_REENTRANCY_GUARD(x) \
   do {                         \
   } while (0)
 
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 // Per-thread cache. *Not* threadsafe, must only be accessed from a single
 // thread.
@@ -457,7 +457,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) ThreadCache {
   PartitionRoot* const root_;
 
   const internal::base::PlatformThreadId thread_id_;
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
   bool is_in_thread_cache_ = false;
 #endif
 

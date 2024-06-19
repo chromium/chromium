@@ -302,11 +302,11 @@ void* PartitionRealloc(const AllocatorDispatch*,
                                                                      size, "");
 }
 
-#if PA_BUILDFLAG(PA_IS_CAST_ANDROID)
+#if PA_BUILDFLAG(IS_CAST_ANDROID)
 extern "C" {
 void __real_free(void*);
 }       // extern "C"
-#endif  // PA_BUILDFLAG(PA_IS_CAST_ANDROID)
+#endif  // PA_BUILDFLAG(IS_CAST_ANDROID)
 
 void PartitionFree(const AllocatorDispatch*, void* object, void* context) {
   partition_alloc::ScopedDisallowAllocations guard{};
@@ -326,7 +326,7 @@ void PartitionFree(const AllocatorDispatch*, void* object, void* context) {
   // malloc() pointer can be passed to PartitionAlloc's free(). If we don't own
   // the pointer, pass it along. This should not have a runtime cost vs regular
   // Android, since on Android we have a PA_CHECK() rather than the branch here.
-#if PA_BUILDFLAG(PA_IS_CAST_ANDROID)
+#if PA_BUILDFLAG(IS_CAST_ANDROID)
   if (PA_UNLIKELY(!partition_alloc::IsManagedByPartitionAlloc(
                       reinterpret_cast<uintptr_t>(object)) &&
                   object)) {
@@ -335,7 +335,7 @@ void PartitionFree(const AllocatorDispatch*, void* object, void* context) {
     // here.
     return __real_free(object);
   }
-#endif  // PA_BUILDFLAG(PA_IS_CAST_ANDROID)
+#endif  // PA_BUILDFLAG(IS_CAST_ANDROID)
 
   partition_alloc::PartitionRoot::FreeInlineInUnknownRoot<
       partition_alloc::FreeFlags::kNoHooks>(object);

@@ -47,7 +47,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) MachLogMessage
 
 }  // namespace partition_alloc::internal::logging
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
 #define PA_MACH_DVLOG_IS_ON(verbose_level) PA_VLOG_IS_ON(verbose_level)
 #else
 #define PA_MACH_DVLOG_IS_ON(verbose_level) 0
@@ -91,9 +91,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC_BASE) MachLogMessage
   PA_LAZY_STREAM(PA_MACH_VLOG_STREAM(verbose_level, mach_err), \
                  PA_MACH_DVLOG_IS_ON(verbose_level) && (condition))
 
-#define PA_MACH_DCHECK(condition, mach_err)                     \
-  PA_LAZY_STREAM(PA_MACH_LOG_STREAM(FATAL, mach_err),           \
-                 PA_BUILDFLAG(PA_DCHECK_IS_ON) && !(condition)) \
+#define PA_MACH_DCHECK(condition, mach_err)                    \
+  PA_LAZY_STREAM(PA_MACH_LOG_STREAM(FATAL, mach_err),          \
+                 PA_BUILDFLAG(DCHECKS_ARE_ON) && !(condition)) \
       << "Check failed: " #condition << ". "
 
 #endif  // PARTITION_ALLOC_PARTITION_ALLOC_BASE_APPLE_MACH_LOGGING_H_

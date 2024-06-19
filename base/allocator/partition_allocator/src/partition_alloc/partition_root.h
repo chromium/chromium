@@ -108,7 +108,7 @@ namespace partition_alloc {
 namespace internal {
 // Avoid including partition_address_space.h from this .h file, by moving the
 // call to IsManagedByPartitionAllocBRPPool into the .cc file.
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
 PA_COMPONENT_EXPORT(PARTITION_ALLOC)
 void DCheckIfManagedByPartitionAllocBRPPool(uintptr_t address);
 #else
@@ -254,11 +254,11 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
     bool with_thread_cache = false;
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
     bool use_cookie = false;
 #else
     static constexpr bool use_cookie = false;
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     bool brp_enabled_ = false;
 #if PA_CONFIG(MAYBE_ENABLE_MAC11_MALLOC_SIZE_HACK)
@@ -1145,7 +1145,7 @@ PartitionAllocGetDirectMapSlotStartAndSizeInBRPPool(uintptr_t address) {
   PA_DCHECK(!page_metadata->slot_span_metadata_offset);
   auto* slot_span = &page_metadata->slot_span_metadata;
   uintptr_t slot_start = SlotSpanMetadata::ToSlotSpanStart(slot_span);
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
   auto* direct_map_metadata =
       PartitionDirectMapMetadata::FromSlotSpanMetadata(slot_span);
   size_t padding_for_alignment =
@@ -1155,7 +1155,7 @@ PartitionAllocGetDirectMapSlotStartAndSizeInBRPPool(uintptr_t address) {
                 PartitionPageSize());
   PA_DCHECK(slot_start ==
             reservation_start + PartitionPageSize() + padding_for_alignment);
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
   return SlotAddressAndSize{.slot_start = slot_start,
                             .size = slot_span->bucket->slot_size};
 }
@@ -1179,12 +1179,12 @@ PartitionAllocGetSlotStartAndSizeInBRPPool(uintptr_t address) {
   }
 
   auto* slot_span = SlotSpanMetadata::FromAddr(address);
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
   auto* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
   // Double check that in-slot metadata is indeed present. Currently that's the
   // case only when BRP is used.
   PA_DCHECK(root->brp_enabled());
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
   // Get the offset from the beginning of the slot span.
   uintptr_t slot_span_start = SlotSpanMetadata::ToSlotSpanStart(slot_span);
@@ -1238,7 +1238,7 @@ PA_ALWAYS_INLINE void PartitionAllocFreeForRefCounting(uintptr_t slot_start) {
                  ->IsAlive());
 
   // Iterating over the entire slot can be really expensive.
-#if PA_BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
   auto hook = PartitionAllocHooks::GetQuarantineOverrideHook();
   // If we have a hook the object segment is not necessarily filled
   // with |kQuarantinedByte|.
@@ -1251,7 +1251,7 @@ PA_ALWAYS_INLINE void PartitionAllocFreeForRefCounting(uintptr_t slot_start) {
   }
   DebugMemset(SlotStartAddr2Ptr(slot_start), kFreedByte,
               slot_span->GetUtilizedSlotSize());
-#endif  // PA_BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
+#endif  // PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
 
   root->total_size_of_brp_quarantined_bytes.fetch_sub(
       slot_span->GetSlotSizeForBookkeeping(), std::memory_order_relaxed);
@@ -1484,7 +1484,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInline(void* object) {
   // On Android Chromecast devices, this is already checked in PartitionFree()
   // in the shim.
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    (PA_BUILDFLAG(IS_ANDROID) && !PA_BUILDFLAG(PA_IS_CAST_ANDROID))
+    (PA_BUILDFLAG(IS_ANDROID) && !PA_BUILDFLAG(IS_CAST_ANDROID))
   uintptr_t object_addr = internal::ObjectPtr2Addr(object);
   PA_CHECK(IsManagedByPartitionAlloc(object_addr));
 #endif
@@ -1646,7 +1646,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediate(
 #endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
   // memset() can be really expensive.
-#if PA_BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
   internal::DebugMemset(internal::SlotStartAddr2Ptr(slot_start),
                         internal::kFreedByte, slot_span->GetUtilizedSlotSize());
 #elif PA_CONFIG(ZERO_RANDOMLY_ON_FREE)
@@ -2198,7 +2198,7 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternalNoHooks(
       // Keep it in sync!
       usable_size = AdjustSizeForExtrasSubtract(slot_size);
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
       // Make sure that the allocated pointer comes from the same place it would
       // for a non-thread cache allocation.
       SlotSpanMetadata* slot_span = SlotSpanMetadata::FromSlotStart(slot_start);
@@ -2246,7 +2246,7 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternalNoHooks(
   //     (f) slot_size
   //
   // Notes:
-  // - Cookie exists only in the PA_BUILDFLAG(PA_DCHECK_IS_ON) case.
+  // - Cookie exists only in the PA_BUILDFLAG(DCHECKS_ARE_ON) case.
   // - Think of raw_size as the minimum size required internally to satisfy
   //   the allocation request (i.e. requested_size + extras)
   // - At most one "empty" or "unused" space can occur at a time. They occur
@@ -2283,7 +2283,7 @@ PA_ALWAYS_INLINE void* PartitionRoot::AllocInternalNoHooks(
   // PA_LIKELY: operator new() calls malloc(), not calloc().
   if constexpr (!zero_fill) {
     // memset() can be really expensive.
-#if PA_BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
     internal::DebugMemset(object, internal::kUninitializedByte, usable_size);
 #endif
   } else if (!is_already_zeroed) {

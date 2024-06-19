@@ -232,7 +232,7 @@ using SlotSpan = SlotSpanMetadata;
 const size_t kTestAllocSize = 16;
 
 constexpr size_t kPointerOffset = 0;
-#if !PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if !PA_BUILDFLAG(DCHECKS_ARE_ON)
 constexpr size_t kExtraAllocSizeWithoutMetadata = 0ull;
 #else
 constexpr size_t kExtraAllocSizeWithoutMetadata = kCookieSize;
@@ -1101,7 +1101,7 @@ TEST_P(PartitionAllocTest, Alloc) {
   // Check that the realloc copied correctly.
   char* new_char_ptr = static_cast<char*>(new_ptr);
   EXPECT_EQ(*new_char_ptr, 'A');
-#if PA_BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
   // Subtle: this checks for an old bug where we copied too much from the
   // source of the realloc. The condition can be detected by a trashing of
   // the uninitialized value in the space of the upsized allocation.
@@ -1217,7 +1217,7 @@ TEST_P(PartitionAllocTest, AllocSizes) {
     allocator.root()->Free(new_ptr_2);
     allocator.root()->Free(ptr4);
 
-#if PA_BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
     // |SlotSpanMetadata::Free| must poison the slot's contents with
     // |kFreedByte|.
     EXPECT_EQ(kFreedByte,
@@ -1668,7 +1668,7 @@ TEST_P(PartitionAllocTest, Realloc) {
   char* char_ptr2 = static_cast<char*>(ptr2);
   EXPECT_EQ('A', char_ptr2[0]);
   EXPECT_EQ('A', char_ptr2[size - 1]);
-#if PA_BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
   EXPECT_EQ(kUninitializedByte, static_cast<unsigned char>(char_ptr2[size]));
 #endif
 
@@ -1680,7 +1680,7 @@ TEST_P(PartitionAllocTest, Realloc) {
   char* char_ptr = static_cast<char*>(ptr);
   EXPECT_EQ('A', char_ptr[0]);
   EXPECT_EQ('A', char_ptr[size - 2]);
-#if PA_BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
   EXPECT_EQ(kUninitializedByte, static_cast<unsigned char>(char_ptr[size - 1]));
 #endif
 
@@ -1700,7 +1700,7 @@ TEST_P(PartitionAllocTest, Realloc) {
   char_ptr2 = static_cast<char*>(ptr2);
   EXPECT_EQ('A', char_ptr2[0]);
   EXPECT_EQ('A', char_ptr2[size - 1]);
-#if PA_BUILDFLAG(PA_EXPENSIVE_DCHECKS_ARE_ON)
+#if PA_BUILDFLAG(EXPENSIVE_DCHECKS_ARE_ON)
   EXPECT_EQ(kUninitializedByte, static_cast<unsigned char>(char_ptr2[size]));
 #endif
   allocator.root()->Free(ptr2);
@@ -1716,7 +1716,7 @@ TEST_P(PartitionAllocTest, Realloc) {
   char_ptr2 = static_cast<char*>(ptr2);
   EXPECT_EQ('A', char_ptr2[0]);
   EXPECT_EQ('A', char_ptr2[size / 2 - 1]);
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
   // For single-slot slot spans, the cookie is always placed immediately after
   // the allocation.
   EXPECT_EQ(kCookieValue[0], static_cast<unsigned char>(char_ptr2[size / 2]));
@@ -2404,7 +2404,7 @@ TEST_P(PartitionAllocTest, LostFreeSlotSpansBug) {
 // Performing them as death tests causes them to be forked into their own
 // process, so they won't pollute other tests.
 //
-// These tests are *very* slow when PA_BUILDFLAG(PA_DCHECK_IS_ON), because they
+// These tests are *very* slow when PA_BUILDFLAG(DCHECKS_ARE_ON), because they
 // memset() many GiB of data (see crbug.com/1168168).
 // TODO(lizeb): make these tests faster.
 TEST_P(PartitionAllocDeathTest, MAYBE_RepeatedAllocReturnNullDirect) {
@@ -2610,9 +2610,9 @@ TEST_P(PartitionAllocDeathTest, FreelistCorruption) {
   allocator.root()->Free(fake_freelist_entry);
 }
 
-// With PA_BUILDFLAG(PA_DCHECK_IS_ON), cookie already handles off-by-one
+// With PA_BUILDFLAG(DCHECKS_ARE_ON), cookie already handles off-by-one
 // detection.
-#if !PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if !PA_BUILDFLAG(DCHECKS_ARE_ON)
 TEST_P(PartitionAllocDeathTest, OffByOneDetection) {
   base::CPU cpu;
   const size_t alloc_size = 2 * sizeof(void*);
@@ -2654,7 +2654,7 @@ TEST_P(PartitionAllocDeathTest, OffByOneDetectionWithRealisticData) {
     array[2] = previous_value;
   }
 }
-#endif  // !PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // !PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 #endif  // !PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) &&
         // PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
@@ -4959,11 +4959,11 @@ TEST_P(PartitionAllocTest, CheckReservationType) {
       partition_alloc::internal::base::bits::AlignDown(address, kSuperPageSize);
 
   // DCHECKs don't work with EXPECT_DEATH on official builds.
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON) && \
+#if PA_BUILDFLAG(DCHECKS_ARE_ON) && \
     (!defined(OFFICIAL_BUILD) || !defined(NDEBUG))
   // Expect to DCHECK on unallocated region.
   EXPECT_DEATH_IF_SUPPORTED(IsReservationStart(address_to_check), "");
-#endif  //  PA_BUILDFLAG(PA_DCHECK_IS_ON) && (!defined(OFFICIAL_BUILD) ||
+#endif  //  PA_BUILDFLAG(DCHECKS_ARE_ON) && (!defined(OFFICIAL_BUILD) ||
         //  !defined(NDEBUG))
 
   EXPECT_FALSE(IsManagedByNormalBuckets(address_to_check));
@@ -5046,7 +5046,7 @@ TEST_P(PartitionAllocDeathTest, CheckTriggered) {
 // failure:
 // https://ci.chromium.org/ui/p/chromium/builders/ci/Cast%20Audio%20Linux/98492/overview
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_USE_DEATH_TESTS() && \
-    !PA_BUILDFLAG(PA_IS_CASTOS)
+    !PA_BUILDFLAG(IS_CASTOS)
 
 namespace {
 
@@ -5123,7 +5123,7 @@ TEST_P(PartitionAllocTest, DISABLED_PreforkHandler) {
 }
 
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) &&
-        // PA_USE_DEATH_TESTS() && !PA_BUILDFLAG(PA_IS_CASTOS)
+        // PA_USE_DEATH_TESTS() && !PA_BUILDFLAG(IS_CASTOS)
 
 // Checks the bucket index logic.
 TEST_P(PartitionAllocTest, GetIndex) {
@@ -5340,8 +5340,7 @@ TEST_P(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
 #endif
 }
 
-#if PA_BUILDFLAG(PA_IS_CAST_ANDROID) && \
-    PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if PA_BUILDFLAG(IS_CAST_ANDROID) && PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 extern "C" {
 void* __real_malloc(size_t);
 }  // extern "C"

@@ -52,7 +52,7 @@ struct ThreadIsolationOption {
 
 namespace partition_alloc::internal {
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 struct PA_THREAD_ISOLATED_ALIGN ThreadIsolationSettings {
   bool enabled = false;
@@ -64,7 +64,7 @@ struct PA_THREAD_ISOLATED_ALIGN ThreadIsolationSettings {
 using LiftThreadIsolationScope = LiftPkeyRestrictionsScope;
 
 #endif  // PA_BUILDFLAG(ENABLE_PKEYS)
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 void WriteProtectThreadIsolatedGlobals(ThreadIsolationOption thread_isolation);
 void UnprotectThreadIsolatedGlobals();

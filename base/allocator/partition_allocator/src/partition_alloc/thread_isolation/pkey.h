@@ -39,7 +39,7 @@ uint32_t Rdpkru();
 // Write the pkru register (the current pkey state).
 void Wrpkru(uint32_t pkru);
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LiftPkeyRestrictionsScope {
  public:
@@ -53,7 +53,7 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) LiftPkeyRestrictionsScope {
   uint32_t saved_pkey_value_;
 };
 
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 
 }  // namespace partition_alloc::internal
 

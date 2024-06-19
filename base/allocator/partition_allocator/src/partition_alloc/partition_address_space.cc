@@ -414,7 +414,7 @@ void PartitionAddressSpace::UninitConfigurablePoolForTesting() {
 void PartitionAddressSpace::UninitThreadIsolatedPoolForTesting() {
   if (IsThreadIsolatedPoolInitialized()) {
     UnprotectThreadIsolatedGlobals();
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
     ThreadIsolationSettings::settings.enabled = false;
 #endif
 

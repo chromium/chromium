@@ -92,7 +92,7 @@ PA_ALWAYS_INLINE void FreeSlotBitmapReset(uintptr_t begin_addr,
     *cell &= ~CellWithAOne(bit_index);
   }
 
-#if PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#if PA_BUILDFLAG(DCHECKS_ARE_ON)
   // Checks if the cells that are meant to contain only unset bits are really 0.
   auto [begin_cell, begin_bit_index] =
       GetFreeSlotBitmapCellPtrAndBitIndex(begin_addr);
@@ -131,7 +131,7 @@ PA_ALWAYS_INLINE void FreeSlotBitmapReset(uintptr_t begin_addr,
   for (FreeSlotBitmapCellType* cell = begin_cell; cell < end_cell; ++cell) {
     PA_DCHECK(*cell == 0u);
   }
-#endif  // PA_BUILDFLAG(PA_DCHECK_IS_ON)
+#endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
 }
 
 }  // namespace partition_alloc::internal
