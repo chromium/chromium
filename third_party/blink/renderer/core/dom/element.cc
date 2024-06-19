@@ -3747,6 +3747,8 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     UpdatePseudoElement(kPseudoIdScrollMarkerGroupBefore, child_change,
                         child_recalc_context);
     UpdatePseudoElement(kPseudoIdMarker, child_change, child_recalc_context);
+    UpdatePseudoElement(kPseudoIdScrollMarker, child_change,
+                        child_recalc_context);
     UpdatePseudoElement(kPseudoIdBefore, child_change, child_recalc_context);
   }
 
@@ -10196,6 +10198,7 @@ Element* Element::ImplicitAnchorElement() const {
       case kPseudoIdBackdrop:
       case kPseudoIdScrollMarkerGroupBefore:
       case kPseudoIdScrollMarkerGroupAfter:
+      case kPseudoIdScrollMarker:
         return pseudo_element->OriginatingElement()->ImplicitAnchorElement();
       default:
         return nullptr;

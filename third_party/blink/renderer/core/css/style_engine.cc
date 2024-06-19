@@ -1687,6 +1687,13 @@ bool HasAttributeDependentGeneratedContent(const Element& element) {
       return true;
     }
   }
+  if (PseudoElement* scroll_marker =
+          element.GetPseudoElement(kPseudoIdScrollMarker)) {
+    const ComputedStyle* style = scroll_marker->GetComputedStyle();
+    if (style && style->HasAttrContent()) {
+      return true;
+    }
+  }
   return false;
 }
 

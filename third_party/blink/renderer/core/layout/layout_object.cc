@@ -2626,7 +2626,8 @@ void LayoutObject::SetPseudoElementStyle(const ComputedStyle* pseudo_style,
          pseudo_style->StyleType() == kPseudoIdMarker ||
          pseudo_style->StyleType() == kPseudoIdFirstLetter ||
          pseudo_style->StyleType() == kPseudoIdScrollMarkerGroup ||
-         pseudo_style->IsPageMarginBox());
+         pseudo_style->IsPageMarginBox() ||
+         pseudo_style->StyleType() == kPseudoIdScrollMarker);
 
   // FIXME: We should consider just making all pseudo items use an inherited
   // style.

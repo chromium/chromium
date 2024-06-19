@@ -389,7 +389,8 @@ Node* Node::PseudoAwarePreviousSibling() const {
 
   // Note the [[fallthrough]] attributes, the order of the cases matters and
   // corresponds to the ordering of pseudo elements in a traversal:
-  // ::scroll-marker-group(before), ::marker, ::before, non-pseudo Elements,
+  // ::scroll-marker-group(before), ::marker, ::scroll-marker, ::before,
+  // non-pseudo Elements,
   // ::after, ::scroll-marker-group(after), ::view-transition. The fallthroughs
   // ensure this ordering by checking for each kind of node in-turn.
   switch (GetPseudoId()) {
@@ -413,6 +414,11 @@ Node* Node::PseudoAwarePreviousSibling() const {
         return previous;
       [[fallthrough]];
     case kPseudoIdBefore:
+      if (Node* previous = parent->GetPseudoElement(kPseudoIdScrollMarker)) {
+        return previous;
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollMarker:
       if (Node* previous = parent->GetPseudoElement(kPseudoIdMarker)) {
         return previous;
       }
@@ -471,6 +477,11 @@ Node* Node::PseudoAwareNextSibling() const {
       }
       [[fallthrough]];
     case kPseudoIdMarker:
+      if (Node* next = parent->GetPseudoElement(kPseudoIdScrollMarker)) {
+        return next;
+      }
+      [[fallthrough]];
+    case kPseudoIdScrollMarker:
       if (Node* next = parent->GetPseudoElement(kPseudoIdBefore))
         return next;
       [[fallthrough]];
@@ -558,6 +569,10 @@ Node* Node::PseudoAwareFirstChild() const {
     }
     if (Node* first = current_element->GetPseudoElement(kPseudoIdMarker))
       return first;
+    if (Node* first =
+            current_element->GetPseudoElement(kPseudoIdScrollMarker)) {
+      return first;
+    }
     if (Node* first = current_element->GetPseudoElement(kPseudoIdBefore))
       return first;
     if (Node* first = current_element->firstChild())
@@ -618,6 +633,9 @@ Node* Node::PseudoAwareLastChild() const {
       return last;
     if (Node* last = current_element->GetPseudoElement(kPseudoIdBefore))
       return last;
+    if (Node* last = current_element->GetPseudoElement(kPseudoIdScrollMarker)) {
+      return last;
+    }
     if (Node* last = current_element->GetPseudoElement(kPseudoIdMarker)) {
       return last;
     }

@@ -88,7 +88,8 @@ PseudoElement* PseudoElement::Create(Element* parent,
   DCHECK(pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdBefore ||
          pseudo_id == kPseudoIdBackdrop || pseudo_id == kPseudoIdMarker ||
          pseudo_id == kPseudoIdScrollMarkerGroupBefore ||
-         pseudo_id == kPseudoIdScrollMarkerGroupAfter);
+         pseudo_id == kPseudoIdScrollMarkerGroupAfter ||
+         pseudo_id == kPseudoIdScrollMarker);
   return MakeGarbageCollected<PseudoElement>(parent, pseudo_id,
                                              view_transition_name);
 }
@@ -121,6 +122,11 @@ const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
       DEFINE_STATIC_LOCAL(QualifiedName, scroll_marker_group,
                           (AtomicString("::scroll-marker-group")));
       return scroll_marker_group;
+    }
+    case kPseudoIdScrollMarker: {
+      DEFINE_STATIC_LOCAL(QualifiedName, scroll_marker,
+                          (AtomicString("::scroll-marker")));
+      return scroll_marker;
     }
     case kPseudoIdViewTransition: {
       DEFINE_STATIC_LOCAL(QualifiedName, transition,
@@ -331,6 +337,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
     case kPseudoIdAfter:
     case kPseudoIdScrollMarkerGroupBefore:
     case kPseudoIdScrollMarkerGroupAfter:
+    case kPseudoIdScrollMarker:
       break;
     default: {
       context.counters_context.LeaveElement(*this);
@@ -447,6 +454,7 @@ bool PseudoElementLayoutObjectIsNeeded(PseudoId pseudo_id,
     case kPseudoIdBefore:
     case kPseudoIdAfter:
       return !pseudo_style.ContentPreventsBoxGeneration();
+    case kPseudoIdScrollMarker:
     case kPseudoIdMarker: {
       if (!pseudo_style.ContentBehavesAsNormal()) {
         return !pseudo_style.ContentPreventsBoxGeneration();

@@ -102,6 +102,7 @@ enum class PseudoPriority {
   kNone,
   kScrollMarkerBefore,
   kMarker,
+  kScrollMarker,
   kBefore,
   kOther,
   kAfter,
@@ -121,6 +122,9 @@ PseudoPriority ConvertPseudoIdtoPriority(const PseudoId& pseudo) {
   }
   if (pseudo == kPseudoIdMarker)
     return PseudoPriority::kMarker;
+  if (pseudo == kPseudoIdScrollMarker) {
+    return PseudoPriority::kScrollMarker;
+  }
   if (pseudo == kPseudoIdBefore)
     return PseudoPriority::kBefore;
   if (pseudo == kPseudoIdAfter)
