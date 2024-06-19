@@ -982,10 +982,10 @@ Permissions you've already given to websites and apps may apply to this account.
       <!-- Extension requests sign in to Chrome through chrome.identity API -->
       <if expr="enable_extensions">
         <message name="IDS_EXTENSION_ASKS_IDENTITY_WHILE_SIGNED_IN_WEB_ONLY_TITLE" desc="This string is the heading of a dialog intended to inform the user that one of their installed extensions wants them to sign in to Chrome to be able to use their Google Account.">
-          The extension \"<ph name="EXTENSION_NAME">$1<ex>Screencast</ex></ph>\" wants you to sign in to Chrome
+          The extension "<ph name="EXTENSION_NAME">$1<ex>Screencast</ex></ph>" wants you to sign in to Chrome
         </message>
-        <message name="IDS_EXTENSION_ASKS_IDENTITY_WHILE_SIGNED_IN_WEB_ONLY_BODY" desc="This string is the body of a dialog intended to inform the user that one of their installed extensions wants them to sign in to Chrome to be able to use their Google Account.">
-          To use this extension as <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph>, sign in to Chrome.\nYou’ll also be able to use and save your passwords and more from your Google Account.
+        <message name="IDS_EXTENSION_ASKS_IDENTITY_WHILE_SIGNED_IN_WEB_ONLY_BODY_PART_1" desc="This string is the body of a dialog intended to inform the user that one of their installed extensions wants them to sign in to Chrome to be able to use their Google Account.">
+          To use this extension as <ph name="USER_EMAIL_ADDRESS">$1<ex>elisa.g.beckett@gmail.com</ex></ph>, sign in to Chrome.
         </message>
         <message name="IDS_EXTENSION_ASKS_IDENTITY_WHILE_SIGNED_IN_WEB_ONLY_TITLE_FALLBACK" desc="This string is the heading of a dialog intended to inform the user that one of their installed extensions wants them to sign in to Chrome to be able to use their Google Account. Used when the extension name couldn't be retrieved.">
           An extension wants you to sign in to Chrome

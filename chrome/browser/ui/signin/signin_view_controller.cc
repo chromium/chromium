@@ -775,23 +775,21 @@ void SigninViewController::ShowChromeSigninDialogForExtensions(
           : l10n_util::GetStringFUTF16(
                 IDS_EXTENSION_ASKS_IDENTITY_WHILE_SIGNED_IN_WEB_ONLY_TITLE,
                 base::UTF8ToUTF16(extension_name));
-  // TODO(msalama): Remove in next milestone.
-  base::RemoveChars(title, u"\\", &title);
 
   std::u16string continue_as_text =
       base::UTF8ToUTF16(!account_info_for_promos.given_name.empty()
                             ? account_info_for_promos.given_name
                             : account_info_for_promos.email);
   std::u16string body = l10n_util::GetStringFUTF16(
-      IDS_EXTENSION_ASKS_IDENTITY_WHILE_SIGNED_IN_WEB_ONLY_BODY,
+      IDS_EXTENSION_ASKS_IDENTITY_WHILE_SIGNED_IN_WEB_ONLY_BODY_PART_1,
       base::UTF8ToUTF16(account_info_for_promos.email));
-  // TODO(msalama): Remove in next milestone.
-  base::ReplaceSubstringsAfterOffset(&body, 0, u"\\n", u"\n");
 
   ui::DialogModel::Builder dialog_builder;
   dialog_builder.SetInternalName("ChromeSigninChoiceForExtensionsPrompt")
       .SetTitle(title)
       .AddParagraph((ui::DialogModelLabel(body)))
+      .AddParagraph(ui::DialogModelLabel(l10n_util::GetStringUTF16(
+          IDS_EXTENSION_ASKS_IDENTITY_WHILE_SIGNED_IN_WEB_ONLY_BODY_PART_2)))
       .AddOkButton(
           base::BindOnce(std::move(ok_callback)),
           ui::DialogModel::Button::Params().SetLabel(l10n_util::GetStringFUTF16(
