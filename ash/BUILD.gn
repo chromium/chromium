@@ -3365,7 +3365,6 @@ component("ash") {
     "//third_party/icu",
     "//third_party/material_color_utilities",
     "//third_party/perfetto:libperfetto",
-    "//third_party/qcms",
     "//third_party/re2",
     "//third_party/rust/fend_core/v1/wrapper:fend_core",
     "//third_party/zlib/google:compression_utils",
