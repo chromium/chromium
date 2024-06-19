@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_COOKIES_CONTENT_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_INFO_COOKIES_CONTENT_VIEW_H_
 
-#include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/controls/rich_controls_container_view.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
@@ -97,24 +96,12 @@ class PageInfoCookiesContentView : public views::View, public PageInfoUI {
   // The button that opens Cookie Dialog and displays a number of allowed sites.
   raw_ptr<RichHoverButton> cookies_dialog_button_ = nullptr;
 
-  // The view that contains toggle for blocking third party cookies
-  // and displays information with a number of blocked sites.
-  // Only displayed when third party cookies are blocked in settings.
-  raw_ptr<RichControlsContainerView> blocking_third_party_cookies_row_ =
-      nullptr;
-
   // The StyledLabel that appears above |third_party_cookies_container|.
   raw_ptr<views::StyledLabel> cookies_description_label_ = nullptr;
-
-  // The Label which is a subtitle of |blocking_third_party_cookies_row|.
-  raw_ptr<views::Label> blocking_third_party_cookies_subtitle_label_ = nullptr;
 
   // The toggle on |blocking_third_party_cookies_row| when state is managed by
   // the user.
   raw_ptr<views::ToggleButton> blocking_third_party_cookies_toggle_ = nullptr;
-
-  // The icon on |blocking_third_party_cookies_row| when state is enforced.
-  raw_ptr<NonAccessibleImageView> enforced_icon_ = nullptr;
 
   // The button that displays First-Party-Set information with a link to
   // 'All sites' settings page.
