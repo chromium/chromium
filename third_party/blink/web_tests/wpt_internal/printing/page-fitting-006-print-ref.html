@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<script>
+  if (window.testRunner) {
+    testRunner.setShouldCenterAndShrinkToFitPaper(false);
+  }
+</script>
+<style>
+  @page {
+    size: 800px 600px;
+    margin: 0;
+  }
+  body {
+    margin: 0;
+  }
+  .square {
+    position: absolute;
+    box-sizing: border-box;
+    border: 5px solid lime;
+    width: 100px;
+    height: 100px;
+    background: green;
+  }
+</style>
+
+<div class="square" style="left:0; top:0;"></div>
+<div class="square" style="right:0; top:0;"></div>
+<div class="square" style="right:0; bottom:0;"></div>
+<div class="square" style="left:0; bottom:0;"></div>
+<div style="box-sizing:border-box; margin-left:300px; margin-top:250px; width:200px; height:100px; border:10px solid;"></div>

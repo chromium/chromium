@@ -157,6 +157,12 @@ const LayoutResult* PageContainerLayoutAlgorithm::Layout() {
 
   LayoutPageBorderBox(containing_block_size, target_offset);
 
+  // Paper fitting may require margins to be reduced. If contents are scaled
+  // down to fit, so are the margins.
+  BoxStrut minimal_margins(GetConstraintSpace().AvailableSize(),
+                           target_page_border_box_rect);
+  margins.Intersect(minimal_margins);
+
   LayoutAllMarginBoxes(margins);
 
   return container_builder_.ToBoxFragment();

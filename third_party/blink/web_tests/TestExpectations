@@ -3543,6 +3543,8 @@ crbug.com/40341678 external/wpt/css/css-page/page-margin-auto-print.html [ Failu
 crbug.com/40341678 external/wpt/css/css-page/page-size-013-print.html [ Failure ]
 crbug.com/40341678 external/wpt/css/css-page/page-size-014-print.html [ Failure ]
 crbug.com/40341678 wpt_internal/printing/icb-scaling-005-print.html [ Failure ]
+crbug.com/40341678 wpt_internal/printing/page-fitting-005-print.html [ Failure ]
+crbug.com/40341678 wpt_internal/printing/page-fitting-006-print.html [ Failure ]
 crbug.com/40341678 virtual/page-margin-boxes/external/wpt/css/css-page/page-background-image-print.html [ Pass ]
 crbug.com/40341678 virtual/page-margin-boxes/external/wpt/css/css-page/page-box-000-print.html [ Pass ]
 crbug.com/40341678 virtual/page-margin-boxes/external/wpt/css/css-page/page-box-001-print.html [ Pass ]
@@ -3561,6 +3563,8 @@ crbug.com/40341678 virtual/page-margin-boxes/external/wpt/css/css-page/page-marg
 crbug.com/40341678 virtual/page-margin-boxes/external/wpt/css/css-page/page-size-013-print.html [ Pass ]
 crbug.com/40341678 virtual/page-margin-boxes/external/wpt/css/css-page/page-size-014-print.html [ Pass ]
 crbug.com/40341678 virtual/page-margin-boxes/wpt_internal/printing/icb-scaling-005-print.html [ Pass ]
+crbug.com/40341678 virtual/page-margin-boxes/wpt_internal/printing/page-fitting-005-print.html [ Pass ]
+crbug.com/40341678 virtual/page-margin-boxes/wpt_internal/printing/page-fitting-006-print.html [ Pass ]
 
 crbug.com/1031667 external/wpt/css/css-pseudo/marker-content-007.tentative.html [ Failure ]
 crbug.com/1031667 external/wpt/css/css-pseudo/marker-content-009.tentative.html [ Failure ]
