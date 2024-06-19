@@ -25,6 +25,12 @@
 #define JNI_BOUNDARY_EXPORT extern "C" __attribute__((visibility("default")))
 #endif
 
+#if defined(JNI_ZERO_MULTIPLEXING_ENABLED)
+#define JNI_POSSIBLE_BOUNDARY_EXPORT extern "C" __attribute__((always_inline))
+#else
+#define JNI_POSSIBLE_BOUNDARY_EXPORT JNI_BOUNDARY_EXPORT
+#endif
+
 #if defined(__cpp_concepts) && __cpp_concepts >= 201907L
 #define JNI_ZERO_ENABLE_TYPE_CONVERSIONS 1
 #else

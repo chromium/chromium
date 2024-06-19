@@ -14,11 +14,11 @@
 
 // Forward declarations (methods).
 
-JNI_BOUNDARY_EXPORT jboolean Java_J_module_1N_MejItBT4(
+JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Java_J_module_1N_MejItBT4(
     JNIEnv* env,
     jclass jcaller,
     jint a);
-JNI_BOUNDARY_EXPORT void Java_J_module_1N_MqDgXQiH(
+JNI_POSSIBLE_BOUNDARY_EXPORT void Java_J_module_1N_MqDgXQiH(
     JNIEnv* env,
     jclass jcaller);
 

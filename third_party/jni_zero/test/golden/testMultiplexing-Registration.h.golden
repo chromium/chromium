@@ -14,75 +14,90 @@
 
 // Forward declarations (methods).
 
-JNI_BOUNDARY_EXPORT jobject Java_org_1jni_11zero_1SampleForAnnotationProcessor_1bar(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_1jni_11zero_1SampleForAnnotationProcessor_1bar(
     JNIEnv* env,
     jclass jcaller,
     jobject sample);
-JNI_BOUNDARY_EXPORT void Java_org_1jni_11zero_1SampleForAnnotationProcessor_1foo(
+JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_1jni_11zero_1SampleForAnnotationProcessor_1foo(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jboolean Java_org_1jni_11zero_1SampleForAnnotationProcessor_1hasPhalange(
+JNI_POSSIBLE_BOUNDARY_EXPORT jboolean
+    Java_org_1jni_11zero_1SampleForAnnotationProcessor_1hasPhalange(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnClass(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject
+    Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnClass(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnClasses(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject
+    Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnClasses(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject
     Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedAppObjects(
     JNIEnv* env,
     jclass jcaller,
     jclass __arrayClazz);
-JNI_BOUNDARY_EXPORT jobject Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedInts(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject
+    Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedInts(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject
     Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedString(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject
     Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedStrings(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnObject(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject
+    Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnObject(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnObjects(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject
+    Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnObjects(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnString(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject
+    Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnString(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnStrings(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject
+    Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnStrings(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnStruct(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject
+    Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnStruct(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnStructs(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject
+    Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnStructs(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnThrowable(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject
+    Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnThrowable(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnThrowables(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject
+    Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnThrowables(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject Java_org_1jni_11zero_1SampleForAnnotationProcessor_1revString(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_1jni_11zero_1SampleForAnnotationProcessor_1revString(
     JNIEnv* env,
     jclass jcaller,
     jobject stringToReverse);
-JNI_BOUNDARY_EXPORT jobject Java_org_1jni_11zero_1SampleForAnnotationProcessor_1sendSamplesToNative(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject
+    Java_org_1jni_11zero_1SampleForAnnotationProcessor_1sendSamplesToNative(
     JNIEnv* env,
     jclass jcaller,
     jobject strs);
-JNI_BOUNDARY_EXPORT jobject Java_org_1jni_11zero_1SampleForAnnotationProcessor_1sendToNative(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject
+    Java_org_1jni_11zero_1SampleForAnnotationProcessor_1sendToNative(
     JNIEnv* env,
     jclass jcaller,
     jobject strs);
-JNI_BOUNDARY_EXPORT jobject Java_org_1jni_11zero_1SampleForAnnotationProcessor_1testAllPrimitives(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject
+    Java_org_1jni_11zero_1SampleForAnnotationProcessor_1testAllPrimitives(
     JNIEnv* env,
     jclass jcaller,
     jint zint,
@@ -101,7 +116,8 @@ JNI_BOUNDARY_EXPORT jobject Java_org_1jni_11zero_1SampleForAnnotationProcessor_1
     jobject floats,
     jboolean zbool,
     jobject bools);
-JNI_BOUNDARY_EXPORT void Java_org_1jni_11zero_1SampleForAnnotationProcessor_1testSpecialTypes(
+JNI_POSSIBLE_BOUNDARY_EXPORT void
+    Java_org_1jni_11zero_1SampleForAnnotationProcessor_1testSpecialTypes(
     JNIEnv* env,
     jclass jcaller,
     jobject clazz,
@@ -129,74 +145,103 @@ JNI_BOUNDARY_EXPORT jobject Java_J_N__1O(
     jclass jcaller,
     jint switch_num) {
 
-        using fnptr = jobject(*)(JNIEnv*, jclass);
-        static const fnptr muxing_fn_ptr_array[13] = {
-            Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnClass,
-            Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnClasses,
-            Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedInts,
-            Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedString,
-            Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedStrings,
-            Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnObject,
-            Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnObjects,
-            Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnString,
-            Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnStrings,
-            Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnStruct,
-            Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnStructs,
-            Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnThrowable,
-            Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnThrowables
-        };
-        JNI_ZERO_DCHECK(switch_num >= 0 && switch_num < 13);
-        return muxing_fn_ptr_array[switch_num](env, jcaller);
+        switch (switch_num) {
+          
+          case 0:
+             return Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnClass(env, jcaller);
+
+          case 1:
+             return Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnClasses(env, jcaller);
+
+          case 2:
+             return Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedInts(env, jcaller);
+
+          case 3:
+             return Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedString(env, jcaller);
+
+          case 4:
+             return Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedStrings(env, jcaller);
+
+          case 5:
+             return Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnObject(env, jcaller);
+
+          case 6:
+             return Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnObjects(env, jcaller);
+
+          case 7:
+             return Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnString(env, jcaller);
+
+          case 8:
+             return Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnStrings(env, jcaller);
+
+          case 9:
+             return Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnStruct(env, jcaller);
+
+          case 10:
+             return Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnStructs(env, jcaller);
+
+          case 11:
+             return Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnThrowable(env, jcaller);
+
+          case 12:
+             return Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnThrowables(env, jcaller);
+          default:
+            JNI_ZERO_DCHECK(false);
+            return {};
+        }
 }
 JNI_BOUNDARY_EXPORT jobject Java_J_N__1O_1IOJOSOCOBODOFOZO(
     JNIEnv* env,
     jclass jcaller,
-    jint switch_num, jint jint_param1, jobject jobject_param1, jlong jlong_param1, jobject jobject_param2, jshort jshort_param1, jobject jobject_param3, jchar jchar_param1, jobject jobject_param4, jbyte jbyte_param1, jobject jobject_param5, jdouble jdouble_param1, jobject jobject_param6, jfloat jfloat_param1, jobject jobject_param7, jboolean jboolean_param1, jobject jobject_param8) {
-
-        return Java_org_1jni_11zero_1SampleForAnnotationProcessor_1testAllPrimitives(env, jcaller, jint_param1, jobject_param1, jlong_param1, jobject_param2, jshort_param1, jobject_param3, jchar_param1, jobject_param4, jbyte_param1, jobject_param5, jdouble_param1, jobject_param6, jfloat_param1, jobject_param7, jboolean_param1, jobject_param8);
+    jint switch_num, jint int_param1, jobject object_param1, jlong long_param1, jobject object_param2, jshort short_param1, jobject object_param3, jchar char_param1, jobject object_param4, jbyte byte_param1, jobject object_param5, jdouble double_param1, jobject object_param6, jfloat float_param1, jobject object_param7, jboolean boolean_param1, jobject object_param8) {
+        return Java_org_1jni_11zero_1SampleForAnnotationProcessor_1testAllPrimitives(env, jcaller, int_param1, object_param1, long_param1, object_param2, short_param1, object_param3, char_param1, object_param4, byte_param1, object_param5, double_param1, object_param6, float_param1, object_param7, boolean_param1, object_param8);
 }
 JNI_BOUNDARY_EXPORT jobject Java_J_N__1O_1L(
     JNIEnv* env,
     jclass jcaller,
-    jint switch_num, jclass jclass_param1) {
-
-        return Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedAppObjects(env, jcaller, jclass_param1);
+    jint switch_num, jclass class_param1) {
+        return Java_org_1jni_11zero_1SampleForAnnotationProcessor_1returnConvertedAppObjects(env, jcaller, class_param1);
 }
 JNI_BOUNDARY_EXPORT jboolean Java_J_N__1Z(
     JNIEnv* env,
     jclass jcaller,
     jint switch_num) {
-
         return Java_org_1jni_11zero_1SampleForAnnotationProcessor_1hasPhalange(env, jcaller);
 }
 JNI_BOUNDARY_EXPORT void Java_J_N__1V(
     JNIEnv* env,
     jclass jcaller,
     jint switch_num) {
-
         return Java_org_1jni_11zero_1SampleForAnnotationProcessor_1foo(env, jcaller);
 }
 JNI_BOUNDARY_EXPORT void Java_J_N__1V_1OOOOOOOOOOOOOOOOOO(
     JNIEnv* env,
     jclass jcaller,
-    jint switch_num, jobject jobject_param1, jobject jobject_param2, jobject jobject_param3, jobject jobject_param4, jobject jobject_param5, jobject jobject_param6, jobject jobject_param7, jobject jobject_param8, jobject jobject_param9, jobject jobject_param10, jobject jobject_param11, jobject jobject_param12, jobject jobject_param13, jobject jobject_param14, jobject jobject_param15, jobject jobject_param16, jobject jobject_param17, jobject jobject_param18) {
-
-        return Java_org_1jni_11zero_1SampleForAnnotationProcessor_1testSpecialTypes(env, jcaller, jobject_param1, jobject_param2, jobject_param3, jobject_param4, jobject_param5, jobject_param6, jobject_param7, jobject_param8, jobject_param9, jobject_param10, jobject_param11, jobject_param12, jobject_param13, jobject_param14, jobject_param15, jobject_param16, jobject_param17, jobject_param18);
+    jint switch_num, jobject object_param1, jobject object_param2, jobject object_param3, jobject object_param4, jobject object_param5, jobject object_param6, jobject object_param7, jobject object_param8, jobject object_param9, jobject object_param10, jobject object_param11, jobject object_param12, jobject object_param13, jobject object_param14, jobject object_param15, jobject object_param16, jobject object_param17, jobject object_param18) {
+        return Java_org_1jni_11zero_1SampleForAnnotationProcessor_1testSpecialTypes(env, jcaller, object_param1, object_param2, object_param3, object_param4, object_param5, object_param6, object_param7, object_param8, object_param9, object_param10, object_param11, object_param12, object_param13, object_param14, object_param15, object_param16, object_param17, object_param18);
 }
 JNI_BOUNDARY_EXPORT jobject Java_J_N__1O_1O(
     JNIEnv* env,
     jclass jcaller,
-    jint switch_num, jobject jobject_param1) {
+    jint switch_num, jobject object_param1) {
 
-        using fnptr = jobject(*)(JNIEnv*, jclass, jobject);
-        static const fnptr muxing_fn_ptr_array[4] = {
-            Java_org_1jni_11zero_1SampleForAnnotationProcessor_1bar,
-            Java_org_1jni_11zero_1SampleForAnnotationProcessor_1revString,
-            Java_org_1jni_11zero_1SampleForAnnotationProcessor_1sendSamplesToNative,
-            Java_org_1jni_11zero_1SampleForAnnotationProcessor_1sendToNative
-        };
-        JNI_ZERO_DCHECK(switch_num >= 0 && switch_num < 4);
-        return muxing_fn_ptr_array[switch_num](env, jcaller, jobject_param1);
+        switch (switch_num) {
+          
+          case 0:
+             return Java_org_1jni_11zero_1SampleForAnnotationProcessor_1bar(env, jcaller, object_param1);
+
+          case 1:
+             return Java_org_1jni_11zero_1SampleForAnnotationProcessor_1revString(env, jcaller, object_param1);
+
+          case 2:
+             return Java_org_1jni_11zero_1SampleForAnnotationProcessor_1sendSamplesToNative(env, jcaller, object_param1);
+
+          case 3:
+             return Java_org_1jni_11zero_1SampleForAnnotationProcessor_1sendToNative(env, jcaller, object_param1);
+          default:
+            JNI_ZERO_DCHECK(false);
+            return {};
+        }
 }
 // Method declarations.
 

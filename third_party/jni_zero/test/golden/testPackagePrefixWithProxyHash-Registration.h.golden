@@ -14,72 +14,72 @@
 
 // Forward declarations (methods).
 
-JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_M6zE1ofi(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_M6zE1ofi(
     JNIEnv* env,
     jclass jcaller,
     jobject sample);
-JNI_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_J_N_MKW06IKB(
+JNI_POSSIBLE_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_J_N_MKW06IKB(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jboolean Java_this_is_a_package_prefix_J_N_Mh9RSlnn(
+JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Java_this_is_a_package_prefix_J_N_Mh9RSlnn(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_M5NcWmhA(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_M5NcWmhA(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_M_00024EEymCX(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_M_00024EEymCX(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_Muqa_000243wC(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_Muqa_000243wC(
     JNIEnv* env,
     jclass jcaller,
     jclass __arrayClazz);
-JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_Mfi3Z8u7(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_Mfi3Z8u7(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MtTvCTtu(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MtTvCTtu(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MJOq1186(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MJOq1186(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_McVHjA4P(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_McVHjA4P(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MJYxRKSI(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MJYxRKSI(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MQC2SQ1M(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MQC2SQ1M(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_M78FHdkG(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_M78FHdkG(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MXyTtXdi(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MXyTtXdi(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_M_000242EuNt4(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_M_000242EuNt4(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MXtSG9x7(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MXtSG9x7(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MJglTojO(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MJglTojO(
     JNIEnv* env,
     jclass jcaller);
-JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MOHBXcmk(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MOHBXcmk(
     JNIEnv* env,
     jclass jcaller,
     jobject stringToReverse);
-JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MgJ2ddya(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MgJ2ddya(
     JNIEnv* env,
     jclass jcaller,
     jobject strs);
-JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MVsHG97A(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MVsHG97A(
     JNIEnv* env,
     jclass jcaller,
     jobject strs);
-JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MtvkX0TV(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MtvkX0TV(
     JNIEnv* env,
     jclass jcaller,
     jint zint,
@@ -98,7 +98,7 @@ JNI_BOUNDARY_EXPORT jobject Java_this_is_a_package_prefix_J_N_MtvkX0TV(
     jobject floats,
     jboolean zbool,
     jobject bools);
-JNI_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_J_N_MI36SGcd(
+JNI_POSSIBLE_BOUNDARY_EXPORT void Java_this_is_a_package_prefix_J_N_MI36SGcd(
     JNIEnv* env,
     jclass jcaller,
     jobject clazz,

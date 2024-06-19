@@ -44,7 +44,7 @@ def _impl_forward_declaration(sb, native, params):
 def proxy_declaration(sb, jni_obj, native):
   stub_name = jni_obj.GetStubName(native)
   return_type_cpp = native.proxy_return_type.to_cpp()
-  sb(f'JNI_BOUNDARY_EXPORT {return_type_cpp} {stub_name}')
+  sb(f'JNI_POSSIBLE_BOUNDARY_EXPORT {return_type_cpp} {stub_name}')
   with sb.param_list() as plist:
     plist.append('JNIEnv* env')
     jtype = 'jclass' if native.static else 'jobject'

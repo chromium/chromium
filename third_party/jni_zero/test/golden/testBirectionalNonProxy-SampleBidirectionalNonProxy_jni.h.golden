@@ -26,7 +26,7 @@ static jint JNI_SampleBidirectionalNonProxy_Init(
     JNIEnv* env,
     const jni_zero::JavaParamRef<jobject>& jcaller);
 
-JNI_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleBidirectionalNonProxy_nativeInit(
+JNI_POSSIBLE_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleBidirectionalNonProxy_nativeInit(
     JNIEnv* env,
     jobject jcaller) {
   auto _ret = JNI_SampleBidirectionalNonProxy_Init(
@@ -40,7 +40,7 @@ static jint JNI_SampleBidirectionalNonProxy_Init(
     JNIEnv* env,
     const jni_zero::JavaParamRef<jobject>& jcaller);
 
-JNI_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleBidirectionalNonProxy_nativeInit(
+JNI_POSSIBLE_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleBidirectionalNonProxy_nativeInit(
     JNIEnv* env,
     jobject jcaller) {
   auto _ret = JNI_SampleBidirectionalNonProxy_Init(
@@ -49,7 +49,7 @@ JNI_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleBidirectionalNonProxy_nativeIn
   return _ret;
 }
 
-JNI_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleBidirectionalNonProxy_nativeMethod(
+JNI_POSSIBLE_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleBidirectionalNonProxy_nativeMethod(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeTest,
@@ -61,7 +61,7 @@ JNI_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleBidirectionalNonProxy_nativeMe
   return _ret;
 }
 
-JNI_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleBidirectionalNonProxy_nativeStaticMethod(
+JNI_POSSIBLE_BOUNDARY_EXPORT jint Java_org_jni_1zero_SampleBidirectionalNonProxy_nativeStaticMethod(
     JNIEnv* env,
     jclass jcaller,
     jlong nativeTest,

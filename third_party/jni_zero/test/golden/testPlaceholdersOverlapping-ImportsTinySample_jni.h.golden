@@ -14,7 +14,7 @@
 // Forward declaration. To be implemented by the including .cc file.
 static void JNI_ImportsTinySample_Asdf(JNIEnv* env);
 
-JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1extrapackage_1ImportsTinySample_1asdf(
+JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1extrapackage_1ImportsTinySample_1asdf(
     JNIEnv* env,
     jclass jcaller) {
   JNI_ImportsTinySample_Asdf(env);

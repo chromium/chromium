@@ -17,7 +17,7 @@ static jint JNI_SampleProxyEdgeCases_AddStructB(
     const jni_zero::JavaParamRef<jobject>& caller,
     const jni_zero::JavaParamRef<jobject>& b);
 
-JNI_BOUNDARY_EXPORT jint Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1addStructB(
+JNI_POSSIBLE_BOUNDARY_EXPORT jint Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1addStructB(
     JNIEnv* env,
     jclass jcaller,
     jobject caller,
@@ -35,7 +35,7 @@ static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleProxyEdgeCases_Array
     const jni_zero::JavaParamRef<jintArray>& a,
     const jni_zero::JavaParamRef<jobjectArray>& b);
 
-JNI_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1arrayTypes1(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1arrayTypes1(
     JNIEnv* env,
     jclass jcaller,
     jobject a,
@@ -53,7 +53,7 @@ static jni_zero::ScopedJavaLocalRef<jintArray> JNI_SampleProxyEdgeCases_ArrayTyp
     const jni_zero::JavaParamRef<jintArray>& a,
     const jni_zero::JavaParamRef<jobjectArray>& b);
 
-JNI_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1arrayTypes2(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1arrayTypes2(
     JNIEnv* env,
     jclass jcaller,
     jobject a,
@@ -68,7 +68,7 @@ JNI_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleP
 // Forward declaration. To be implemented by the including .cc file.
 static void JNI_SampleProxyEdgeCases_FooForTest(JNIEnv* env);
 
-JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1fooForTest(
+JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1fooForTest(
     JNIEnv* env,
     jclass jcaller) {
   JNI_SampleProxyEdgeCases_FooForTest(env);
@@ -77,7 +77,7 @@ JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProx
 // Forward declaration. To be implemented by the including .cc file.
 static void JNI_SampleProxyEdgeCases_FooForTesting(JNIEnv* env);
 
-JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1fooForTesting(
+JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1fooForTesting(
     JNIEnv* env,
     jclass jcaller) {
   JNI_SampleProxyEdgeCases_FooForTesting(env);
@@ -86,7 +86,7 @@ JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProx
 // Forward declaration. To be implemented by the including .cc file.
 static void JNI_SampleProxyEdgeCases_FooForTests(JNIEnv* env);
 
-JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1fooForTests(
+JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1fooForTests(
     JNIEnv* env,
     jclass jcaller) {
   JNI_SampleProxyEdgeCases_FooForTests(env);
@@ -95,7 +95,7 @@ JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProx
 // Forward declaration. To be implemented by the including .cc file.
 static void JNI_SampleProxyEdgeCases_Foo__weirdly__escaped_name1(JNIEnv* env);
 
-JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1foo_11_11weirdly_11_11escaped_11name1(
+JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1foo_11_11weirdly_11_11escaped_11name1(
     JNIEnv* env,
     jclass jcaller) {
   JNI_SampleProxyEdgeCases_Foo__weirdly__escaped_name1(env);
@@ -106,7 +106,7 @@ static jni_zero::ScopedJavaLocalRef<jobjectArray> JNI_SampleProxyEdgeCases_Gener
     JNIEnv* env,
     const jni_zero::JavaParamRef<jobjectArray>& arg);
 
-JNI_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1genericsWithNestedClassArray(
+JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1genericsWithNestedClassArray(
     JNIEnv* env,
     jclass jcaller,
     jobject arg) {
@@ -122,7 +122,7 @@ static void JNI_SampleProxyEdgeCases_SetBool(
     const jni_zero::JavaParamRef<jobject>& b,
     const jni_zero::JavaParamRef<jobject>& i);
 
-JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1setBool(
+JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1setBool(
     JNIEnv* env,
     jclass jcaller,
     jobject b,
@@ -138,7 +138,7 @@ static jboolean JNI_SampleProxyEdgeCases_SetStringBuilder(
     JNIEnv* env,
     const jni_zero::JavaParamRef<jobject>& sb);
 
-JNI_BOUNDARY_EXPORT jboolean Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1setStringBuilder(
+JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1setStringBuilder(
     JNIEnv* env,
     jclass jcaller,
     jobject sb) {
@@ -151,7 +151,7 @@ JNI_BOUNDARY_EXPORT jboolean Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1Sample
 // Forward declaration. To be implemented by the including .cc file.
 static jint JNI_SampleProxyEdgeCases_SetStringBuilder(JNIEnv* env, jint sb);
 
-JNI_BOUNDARY_EXPORT jint Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1setStringBuilder(
+JNI_POSSIBLE_BOUNDARY_EXPORT jint Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProxyEdgeCases_1setStringBuilder(
     JNIEnv* env,
     jclass jcaller,
     jint sb) {
@@ -159,7 +159,7 @@ JNI_BOUNDARY_EXPORT jint Java_org_jni_1zero_GEN_1JNI_org_1jni_11zero_1SampleProx
   return _ret;
 }
 
-JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeInstanceMethod(
+JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeInstanceMethod(
     JNIEnv* env,
     jobject jcaller,
     jlong nativeInstance) {
@@ -171,7 +171,7 @@ JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeInstanceM
 // Forward declaration. To be implemented by the including .cc file.
 static void JNI_SampleProxyEdgeCases_StaticMethod(JNIEnv* env);
 
-JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeStaticMethod(
+JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeStaticMethod(
     JNIEnv* env,
     jclass jcaller) {
   JNI_SampleProxyEdgeCases_StaticMethod(env);

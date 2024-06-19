@@ -8,9 +8,13 @@ config("jni_include_dir") {
   include_dirs = [ jni_headers_dir ]
 }
 
-config("toolchain_define") {
+config("jni_zero_defines") {
+  defines = []
   if (is_robolectric) {
-    defines = [ "JNI_ZERO_IS_ROBOLECTRIC" ]
+    defines += [ "JNI_ZERO_IS_ROBOLECTRIC" ]
+  }
+  if (enable_jni_multiplexing) {
+    defines += [ "JNI_ZERO_MULTIPLEXING_ENABLED" ]
   }
 }
 
@@ -46,15 +50,14 @@ component("jni_zero") {
     "logging.cc",
     "logging.h",
   ]
+  configs += [ ":jni_include_dir" ]
+  public_configs = [ ":jni_zero_defines" ]
+
   if (is_android) {
     libs = [ "log" ]
   } else if (is_robolectric) {
-    public_configs = [ "//third_party/jdk:jdk" ]
+    public_configs += [ "//third_party/jdk:jdk" ]
   }
-  configs += [
-    ":toolchain_define",
-    ":jni_include_dir",
-  ]
 
   deps = [
     ":jni_zero_jni($default_toolchain)",
