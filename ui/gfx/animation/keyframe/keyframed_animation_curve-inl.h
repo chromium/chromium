@@ -50,12 +50,14 @@ base::TimeDelta TransformedAnimationTime(
     const std::vector<std::unique_ptr<KeyframeType>>& keyframes,
     const std::unique_ptr<gfx::TimingFunction>& timing_function,
     double scaled_duration,
-    base::TimeDelta time) {
+    base::TimeDelta time,
+    gfx::TimingFunction::LimitDirection limit_direction) {
   if (timing_function) {
     const auto values = GetTimeValues(*keyframes.front(), *keyframes.back(),
                                       scaled_duration, time);
-    time = (values.duration * timing_function->GetValue(values.progress)) +
-           values.start_time;
+    double adjusted_progress =
+        timing_function->GetValue(values.progress, limit_direction);
+    time = (values.duration * adjusted_progress) + values.start_time;
   }
 
   return time;
@@ -89,6 +91,7 @@ double TransformedKeyframeProgress(
     const std::vector<std::unique_ptr<KeyframeType>>& keyframes,
     double scaled_duration,
     base::TimeDelta time,
+    gfx::TimingFunction::LimitDirection limit_direction,
     size_t i) {
   base::TimeDelta interval_start = keyframes[i]->Time() * scaled_duration;
   base::TimeDelta interval_end = keyframes[i + 1]->Time() * scaled_duration;
@@ -100,7 +103,8 @@ double TransformedKeyframeProgress(
     progress = (time - interval_start) / duration;
   }
   return keyframes[i]->timing_function()
-             ? keyframes[i]->timing_function()->GetValue(progress)
+             ? keyframes[i]->timing_function()->GetValue(progress,
+                                                         limit_direction)
              : progress;
 }
 
@@ -156,6 +160,37 @@ base::TimeDelta ComputeTickInterval(
       break;
   }
   return base::TimeDelta();
+}
+
+struct KeyframesAndProgress {
+  size_t from;
+  size_t to;
+  double progress;
+};
+
+template <typename KeyframeType>
+KeyframesAndProgress GetKeyframesAndProgress(
+    const std::vector<std::unique_ptr<KeyframeType>>& keyframes,
+    const std::unique_ptr<gfx::TimingFunction>& timing_function,
+    double scaled_duration,
+    base::TimeDelta time) {
+  if (keyframes.size() == 1) {
+    return {0, 0, 1};
+  }
+  base::TimeDelta start_time = keyframes.front()->Time() * scaled_duration;
+  base::TimeDelta end_time = keyframes.back()->Time() * scaled_duration;
+  gfx::TimingFunction::LimitDirection limit_direction =
+      time < start_time ? gfx::TimingFunction::LimitDirection::LEFT
+                        : gfx::TimingFunction::LimitDirection::RIGHT;
+  time = std::clamp(time, start_time, end_time);
+  base::TimeDelta transformed_time = TransformedAnimationTime(
+      keyframes, timing_function, scaled_duration, time, limit_direction);
+  size_t keyframe_index =
+      GetActiveKeyframe(keyframes, scaled_duration, transformed_time);
+  double progress =
+      TransformedKeyframeProgress(keyframes, scaled_duration, transformed_time,
+                                  limit_direction, keyframe_index);
+  return {keyframe_index, keyframe_index + 1, progress};
 }
 
 }  // namespace

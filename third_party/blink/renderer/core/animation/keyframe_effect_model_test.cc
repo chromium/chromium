@@ -202,7 +202,8 @@ TEST_F(AnimationKeyframeEffectModel, BasicOperation) {
       KeyframesAtZeroAndOne(CSSPropertyID::kFontFamily, "serif", "cursive");
   auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
-  effect->Sample(0, 0.6, kDuration, values);
+  effect->Sample(0, 0.6, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ASSERT_EQ(1UL, values.size());
   ExpectProperty(CSSPropertyID::kFontFamily, values.at(0));
   ExpectNonInterpolableValue("cursive", values.at(0));
@@ -215,7 +216,8 @@ TEST_F(AnimationKeyframeEffectModel, CompositeReplaceNonInterpolable) {
   keyframes[1]->SetComposite(EffectModel::kCompositeReplace);
   auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
-  effect->Sample(0, 0.6, kDuration, values);
+  effect->Sample(0, 0.6, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectNonInterpolableValue("cursive", values.at(0));
 }
 
@@ -226,7 +228,8 @@ TEST_F(AnimationKeyframeEffectModel, CompositeReplace) {
   keyframes[1]->SetComposite(EffectModel::kCompositeReplace);
   auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
-  effect->Sample(0, 0.6, kDuration, values);
+  effect->Sample(0, 0.6, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectLengthValue(3.0 * 0.4 + 5.0 * 0.6, values.at(0));
 }
 
@@ -238,7 +241,8 @@ TEST_F(AnimationKeyframeEffectModel, DISABLED_CompositeAdd) {
   keyframes[1]->SetComposite(EffectModel::kCompositeAdd);
   auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
-  effect->Sample(0, 0.6, kDuration, values);
+  effect->Sample(0, 0.6, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectLengthValue((7.0 + 3.0) * 0.4 + (7.0 + 5.0) * 0.6, values.at(0));
 }
 
@@ -252,9 +256,11 @@ TEST_F(AnimationKeyframeEffectModel, CompositeEaseIn) {
   auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
   // CubicBezier(0.42, 0, 1, 1)(0.6) = 0.4291197695757142.
-  effect->Sample(0, 0.6, kDuration, values);
+  effect->Sample(0, 0.6, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectLengthValue(3.85824, values.at(0));
-  effect->Sample(0, 0.6, kDuration * 100, values);
+  effect->Sample(0, 0.6, TimingFunction::LimitDirection::RIGHT, kDuration * 100,
+                 values);
   ExpectLengthValue(3.85824, values.at(0));
 }
 
@@ -267,9 +273,11 @@ TEST_F(AnimationKeyframeEffectModel, CompositeCubicBezier) {
   // CubicBezier(0.42, 0, 0.58, 1)(0.6) = 0.6681161300485039.
   auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
-  effect->Sample(0, 0.6, kDuration, values);
+  effect->Sample(0, 0.6, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectLengthValue(4.336232, values.at(0));
-  effect->Sample(0, 0.6, kDuration * 1000, values);
+  effect->Sample(0, 0.6, TimingFunction::LimitDirection::RIGHT,
+                 kDuration * 1000, values);
   ExpectLengthValue(4.336232, values.at(0));
 }
 
@@ -280,7 +288,8 @@ TEST_F(AnimationKeyframeEffectModel, ExtrapolateReplaceNonInterpolable) {
   keyframes[1]->SetComposite(EffectModel::kCompositeReplace);
   auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
-  effect->Sample(0, 1.6, kDuration, values);
+  effect->Sample(0, 1.6, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectNonInterpolableValue("cursive", values.at(0));
 }
 
@@ -291,7 +300,8 @@ TEST_F(AnimationKeyframeEffectModel, ExtrapolateReplace) {
   keyframes[0]->SetComposite(EffectModel::kCompositeReplace);
   keyframes[1]->SetComposite(EffectModel::kCompositeReplace);
   HeapVector<Member<Interpolation>> values;
-  effect->Sample(0, 1.6, kDuration, values);
+  effect->Sample(0, 1.6, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectLengthValue(3.0 * -0.6 + 5.0 * 1.6, values.at(0));
 }
 
@@ -303,7 +313,8 @@ TEST_F(AnimationKeyframeEffectModel, DISABLED_ExtrapolateAdd) {
   keyframes[1]->SetComposite(EffectModel::kCompositeAdd);
   auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
-  effect->Sample(0, 1.6, kDuration, values);
+  effect->Sample(0, 1.6, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectLengthValue((7.0 + 3.0) * -0.6 + (7.0 + 5.0) * 1.6, values.at(0));
 }
 
@@ -311,7 +322,8 @@ TEST_F(AnimationKeyframeEffectModel, ZeroKeyframes) {
   auto* effect =
       MakeGarbageCollected<StringKeyframeEffectModel>(StringKeyframeVector());
   HeapVector<Member<Interpolation>> values;
-  effect->Sample(0, 0.5, kDuration, values);
+  effect->Sample(0, 0.5, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   EXPECT_TRUE(values.empty());
 }
 
@@ -326,7 +338,8 @@ TEST_F(AnimationKeyframeEffectModel, DISABLED_SingleKeyframeAtOffsetZero) {
 
   auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
-  effect->Sample(0, 0.6, kDuration, values);
+  effect->Sample(0, 0.6, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectNonInterpolableValue("serif", values.at(0));
 }
 
@@ -341,7 +354,8 @@ TEST_F(AnimationKeyframeEffectModel, DISABLED_SingleKeyframeAtOffsetOne) {
 
   auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
-  effect->Sample(0, 0.6, kDuration, values);
+  effect->Sample(0, 0.6, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectLengthValue(7.0 * 0.4 + 5.0 * 0.6, values.at(0));
 }
 
@@ -365,9 +379,11 @@ TEST_F(AnimationKeyframeEffectModel, MoreThanTwoKeyframes) {
 
   auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
-  effect->Sample(0, 0.3, kDuration, values);
+  effect->Sample(0, 0.3, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectNonInterpolableValue("sans-serif", values.at(0));
-  effect->Sample(0, 0.8, kDuration, values);
+  effect->Sample(0, 0.8, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectNonInterpolableValue("cursive", values.at(0));
 }
 
@@ -389,11 +405,14 @@ TEST_F(AnimationKeyframeEffectModel, EndKeyframeOffsetsUnspecified) {
 
   auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
-  effect->Sample(0, 0.1, kDuration, values);
+  effect->Sample(0, 0.1, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectNonInterpolableValue("serif", values.at(0));
-  effect->Sample(0, 0.6, kDuration, values);
+  effect->Sample(0, 0.6, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectNonInterpolableValue("cursive", values.at(0));
-  effect->Sample(0, 0.9, kDuration, values);
+  effect->Sample(0, 0.9, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectNonInterpolableValue("serif", values.at(0));
 }
 
@@ -417,11 +436,14 @@ TEST_F(AnimationKeyframeEffectModel, SampleOnKeyframe) {
 
   auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
-  effect->Sample(0, 0.0, kDuration, values);
+  effect->Sample(0, 0.0, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectNonInterpolableValue("serif", values.at(0));
-  effect->Sample(0, 0.5, kDuration, values);
+  effect->Sample(0, 0.5, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectNonInterpolableValue("cursive", values.at(0));
-  effect->Sample(0, 1.0, kDuration, values);
+  effect->Sample(0, 1.0, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectNonInterpolableValue("serif", values.at(0));
 }
 
@@ -475,19 +497,26 @@ TEST_F(AnimationKeyframeEffectModel, MultipleKeyframesWithSameOffset) {
 
   auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
-  effect->Sample(0, 0.0, kDuration, values);
+  effect->Sample(0, 0.0, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectNonInterpolableValue("serif", values.at(0));
-  effect->Sample(0, 0.2, kDuration, values);
+  effect->Sample(0, 0.2, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectNonInterpolableValue("monospace", values.at(0));
-  effect->Sample(0, 0.4, kDuration, values);
+  effect->Sample(0, 0.4, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectNonInterpolableValue("cursive", values.at(0));
-  effect->Sample(0, 0.5, kDuration, values);
+  effect->Sample(0, 0.5, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectNonInterpolableValue("system-ui", values.at(0));
-  effect->Sample(0, 0.6, kDuration, values);
+  effect->Sample(0, 0.6, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectNonInterpolableValue("system-ui", values.at(0));
-  effect->Sample(0, 0.8, kDuration, values);
+  effect->Sample(0, 0.8, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectNonInterpolableValue("serif", values.at(0));
-  effect->Sample(0, 1.0, kDuration, values);
+  effect->Sample(0, 1.0, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectNonInterpolableValue("monospace", values.at(0));
 }
 
@@ -508,7 +537,8 @@ TEST_F(AnimationKeyframeEffectModel, DISABLED_PerKeyframeComposite) {
 
   auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
-  effect->Sample(0, 0.6, kDuration, values);
+  effect->Sample(0, 0.6, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectLengthValue(3.0 * 0.4 + (7.0 + 5.0) * 0.6, values.at(0));
 }
 
@@ -533,7 +563,8 @@ TEST_F(AnimationKeyframeEffectModel, MultipleProperties) {
 
   auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
-  effect->Sample(0, 0.6, kDuration, values);
+  effect->Sample(0, 0.6, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   EXPECT_EQ(2UL, values.size());
   Interpolation* left_value = FindValue(values, CSSPropertyID::kFontFamily);
   ASSERT_TRUE(left_value);
@@ -552,7 +583,8 @@ TEST_F(AnimationKeyframeEffectModel, DISABLED_RecompositeCompositableValue) {
   keyframes[1]->SetComposite(EffectModel::kCompositeAdd);
   auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
-  effect->Sample(0, 0.6, kDuration, values);
+  effect->Sample(0, 0.6, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectLengthValue((7.0 + 3.0) * 0.4 + (7.0 + 5.0) * 0.6, values.at(0));
   ExpectLengthValue((9.0 + 3.0) * 0.4 + (9.0 + 5.0) * 0.6, values.at(1));
 }
@@ -562,11 +594,14 @@ TEST_F(AnimationKeyframeEffectModel, MultipleIterations) {
       KeyframesAtZeroAndOne(CSSPropertyID::kLeft, "1px", "3px");
   auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
-  effect->Sample(0, 0.5, kDuration, values);
+  effect->Sample(0, 0.5, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectLengthValue(2.0, values.at(0));
-  effect->Sample(1, 0.5, kDuration, values);
+  effect->Sample(1, 0.5, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectLengthValue(2.0, values.at(0));
-  effect->Sample(2, 0.5, kDuration, values);
+  effect->Sample(2, 0.5, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   ExpectLengthValue(2.0, values.at(0));
 }
 
@@ -592,23 +627,32 @@ TEST_F(AnimationKeyframeEffectModel, DISABLED_DependsOnUnderlyingValue) {
 
   auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(keyframes);
   HeapVector<Member<Interpolation>> values;
-  effect->Sample(0, 0, kDuration, values);
+  effect->Sample(0, 0, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   EXPECT_TRUE(values.at(0));
-  effect->Sample(0, 0.1, kDuration, values);
+  effect->Sample(0, 0.1, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   EXPECT_TRUE(values.at(0));
-  effect->Sample(0, 0.25, kDuration, values);
+  effect->Sample(0, 0.25, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   EXPECT_TRUE(values.at(0));
-  effect->Sample(0, 0.4, kDuration, values);
+  effect->Sample(0, 0.4, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   EXPECT_TRUE(values.at(0));
-  effect->Sample(0, 0.5, kDuration, values);
+  effect->Sample(0, 0.5, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   EXPECT_FALSE(values.at(0));
-  effect->Sample(0, 0.6, kDuration, values);
+  effect->Sample(0, 0.6, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   EXPECT_FALSE(values.at(0));
-  effect->Sample(0, 0.75, kDuration, values);
+  effect->Sample(0, 0.75, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   EXPECT_FALSE(values.at(0));
-  effect->Sample(0, 0.8, kDuration, values);
+  effect->Sample(0, 0.8, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   EXPECT_FALSE(values.at(0));
-  effect->Sample(0, 1, kDuration, values);
+  effect->Sample(0, 1, TimingFunction::LimitDirection::RIGHT, kDuration,
+                 values);
   EXPECT_FALSE(values.at(0));
 }
 

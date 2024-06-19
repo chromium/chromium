@@ -113,9 +113,13 @@ class ClipPathPaintWorkletInput : public PaintWorkletInput {
         (progress - offsets_[result_index]) /
         (offsets_[result_index + 1] - offsets_[result_index]);
     // Adjust for that keyframe's timing function
+    // TODO(crbug.com/347958668): Correct limit direction for phase and
+    // direction in order to make the correct evaluation at the boundary of a
+    // step-timing function.
     return AnimationProgress(
         result_index,
-        timing_functions_[result_index]->GetValue(local_progress));
+        timing_functions_[result_index]->GetValue(
+            local_progress, TimingFunction::LimitDirection::RIGHT));
   }
 
   bool ValueChangeShouldCauseRepaint(const PropertyValue& val1,

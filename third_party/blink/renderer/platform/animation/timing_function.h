@@ -55,12 +55,7 @@ class PLATFORM_EXPORT TimingFunction
   // applies when evaluating a function at a discontinuous boundary and
   // indicates if the left or right limit should be applied.
   virtual double Evaluate(double fraction,
-                          LimitDirection limit_direction) const {
-    return Evaluate(fraction);
-  }
-
-  // Evaluates the timing function at the given fraction.
-  virtual double Evaluate(double fraction) const = 0;
+                          LimitDirection limit_direction) const = 0;
 
   // This function returns the minimum and maximum values obtainable when
   // calling evaluate();
@@ -100,7 +95,9 @@ class PLATFORM_EXPORT LinearTimingFunction final : public TimingFunction {
 
   // TimingFunction implementation.
   String ToString() const override;
-  double Evaluate(double fraction) const override;
+  double Evaluate(
+      double fraction,
+      LimitDirection limit_direction = LimitDirection::RIGHT) const override;
   void Range(double* min_value, double* max_value) const override;
   std::unique_ptr<gfx::TimingFunction> CloneToCC() const override;
 
@@ -140,7 +137,9 @@ class PLATFORM_EXPORT CubicBezierTimingFunction final : public TimingFunction {
 
   // TimingFunction implementation.
   String ToString() const override;
-  double Evaluate(double fraction) const override;
+  double Evaluate(
+      double fraction,
+      LimitDirection limit_direction = LimitDirection::RIGHT) const override;
   void Range(double* min_value, double* max_value) const override;
   std::unique_ptr<gfx::TimingFunction> CloneToCC() const override;
 
@@ -218,7 +217,6 @@ class PLATFORM_EXPORT StepsTimingFunction final : public TimingFunction {
   String ToString() const override;
   double Evaluate(double fraction,
                   LimitDirection limit_direction) const override;
-  double Evaluate(double fraction) const override;
 
   void Range(double* min_value, double* max_value) const override;
   std::unique_ptr<gfx::TimingFunction> CloneToCC() const override;

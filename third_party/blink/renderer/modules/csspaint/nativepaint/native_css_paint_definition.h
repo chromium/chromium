@@ -105,9 +105,14 @@ class MODULES_EXPORT NativeCssPaintDefinition : public NativePaintDefinition {
         (progress - keyframes[result_index].offset) /
         (keyframes[result_index + 1].offset - keyframes[result_index].offset);
 
+    // TODO(crbug.com/347958668): Fix limit direction to account for phase and
+    // direction. Important for making the correct decision at the boundary when
+    // using a step timing function. Currently blocked on lack of support for a
+    // start delay.
     double transformed_progress =
         keyframes[result_index].timing_function
-            ? keyframes[result_index].timing_function->GetValue(local_progress)
+            ? keyframes[result_index].timing_function->GetValue(
+                  local_progress, TimingFunction::LimitDirection::RIGHT)
             : local_progress;
 
     return {result_index, transformed_progress};

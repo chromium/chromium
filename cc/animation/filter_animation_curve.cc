@@ -95,19 +95,10 @@ std::unique_ptr<gfx::AnimationCurve> KeyframedFilterAnimationCurve::Clone()
 
 FilterOperations KeyframedFilterAnimationCurve::GetValue(
     base::TimeDelta t) const {
-  if (t <= (keyframes_.front()->Time() * scaled_duration()))
-    return keyframes_.front()->Value();
-
-  if (t >= (keyframes_.back()->Time() * scaled_duration()))
-    return keyframes_.back()->Value();
-
-  t = TransformedAnimationTime(keyframes_, timing_function_, scaled_duration(),
-                               t);
-  size_t i = GetActiveKeyframe(keyframes_, scaled_duration(), t);
-  double progress =
-      TransformedKeyframeProgress(keyframes_, scaled_duration(), t, i);
-
-  return keyframes_[i + 1]->Value().Blend(keyframes_[i]->Value(), progress);
+  KeyframesAndProgress values = GetKeyframesAndProgress(
+      keyframes_, timing_function_, scaled_duration(), t);
+  return keyframes_[values.to]->Value().Blend(keyframes_[values.from]->Value(),
+                                              values.progress);
 }
 
 std::unique_ptr<KeyframedFilterAnimationCurve>

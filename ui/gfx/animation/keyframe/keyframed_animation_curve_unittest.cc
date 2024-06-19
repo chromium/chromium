@@ -416,7 +416,7 @@ TEST(KeyframedAnimationCurveTest, CubicBezierTimingFunction) {
 }
 
 // Tests a step timing function if the change of values occur at the start.
-TEST(KeyframedAnimationCurveTest, StepsTimingFunctionStepAtStart) {
+TEST(KeyframedAnimationCurveTest, KeyframeStepsTimingFunctionStepAtStart) {
   std::unique_ptr<KeyframedFloatAnimationCurve> curve(
       KeyframedFloatAnimationCurve::Create());
   const int num_steps = 36;
@@ -429,10 +429,9 @@ TEST(KeyframedAnimationCurveTest, StepsTimingFunctionStepAtStart) {
 
   const float time_threshold = 0.0001f;
 
-  // Transform is applied when time <= 0.
-  EXPECT_FLOAT_EQ(1.f, curve->GetValue(base::Seconds(-1)));
-  EXPECT_FLOAT_EQ(1.f, curve->GetValue(base::TimeDelta()));
-  for (float i = 1.f; i < num_steps; i += 1.f) {
+  // Though the timing function is applied even in the before phase, the value
+  // is 0 in the before phase due to the limit direction at the boundary.
+  for (float i = 0.f; i < num_steps; i += 1.f) {
     const base::TimeDelta time1 = base::Seconds(i / num_steps - time_threshold);
     const base::TimeDelta time2 = base::Seconds(i / num_steps + time_threshold);
     EXPECT_FLOAT_EQ(std::ceil(i), curve->GetValue(time1));
@@ -443,6 +442,35 @@ TEST(KeyframedAnimationCurveTest, StepsTimingFunctionStepAtStart) {
   for (float i = 0.5f; i <= num_steps; i += 1.0f) {
     const base::TimeDelta time = base::Seconds(i / num_steps);
     EXPECT_FLOAT_EQ(std::ceil(i), curve->GetValue(time));
+  }
+}
+
+// Similar to KeyframeStepsTimingFunctionStepAtStart, but applying the timing
+// function to the curve rather than the first keyframe.
+TEST(KeyframedAnimationCurveTest, CurveStepsTimingFunctionStepAtStart) {
+  std::unique_ptr<KeyframedFloatAnimationCurve> curve(
+      KeyframedFloatAnimationCurve::Create());
+  const int num_steps = 36;
+  curve->SetTimingFunction(StepsTimingFunction::Create(
+      num_steps, StepsTimingFunction::StepPosition::START));
+  curve->AddKeyframe(FloatKeyframe::Create(base::TimeDelta(), 0.f, nullptr));
+  curve->AddKeyframe(
+      FloatKeyframe::Create(base::Seconds(1.0), num_steps, nullptr));
+
+  const float time_threshold = 0.0001f;
+  const float tolerance = 1e-4;
+  // Step-start is 0 in the before phase.
+  for (float i = 0.f; i < num_steps; i += 1.f) {
+    const base::TimeDelta time1 = base::Seconds(i / num_steps - time_threshold);
+    const base::TimeDelta time2 = base::Seconds(i / num_steps + time_threshold);
+    EXPECT_NEAR(std::ceil(i), curve->GetValue(time1), tolerance);
+    EXPECT_NEAR(std::ceil(i) + 1.f, curve->GetValue(time2), tolerance);
+  }
+  EXPECT_NEAR(num_steps, curve->GetValue(base::Seconds(1.0)), tolerance);
+
+  for (float i = 0.5f; i <= num_steps; i += 1.0f) {
+    const base::TimeDelta time = base::Seconds(i / num_steps);
+    EXPECT_NEAR(std::ceil(i), curve->GetValue(time), tolerance);
   }
 }
 

@@ -82,33 +82,6 @@ std::unique_ptr<AnimationCurve> RetargettedCurve(
   return curve;
 }
 
-struct KeyframesAndProgress {
-  size_t from;
-  size_t to;
-  double progress;
-};
-
-template <typename KeyframeType>
-KeyframesAndProgress GetKeyframesAndProgress(
-    const std::vector<std::unique_ptr<KeyframeType>>& keyframes,
-    const std::unique_ptr<gfx::TimingFunction>& timing_function,
-    double scaled_duration,
-    base::TimeDelta time) {
-  if (keyframes.size() == 1) {
-    return {0, 0, 1};
-  }
-  base::TimeDelta start_time = keyframes.front()->Time() * scaled_duration;
-  base::TimeDelta end_time = keyframes.back()->Time() * scaled_duration;
-  time = std::clamp(time, start_time, end_time);
-  base::TimeDelta transformed_time = TransformedAnimationTime(
-      keyframes, timing_function, scaled_duration, time);
-  size_t keyframe_index =
-      GetActiveKeyframe(keyframes, scaled_duration, transformed_time);
-  double progress = TransformedKeyframeProgress(
-      keyframes, scaled_duration, transformed_time, keyframe_index);
-  return {keyframe_index, keyframe_index + 1, progress};
-}
-
 }  // namespace
 
 Keyframe::Keyframe(base::TimeDelta time,

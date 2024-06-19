@@ -30,6 +30,7 @@ class CORE_EXPORT InterpolationEffect
   }
 
   void GetActiveInterpolations(double fraction,
+                               TimingFunction::LimitDirection limit_direction,
                                HeapVector<Member<Interpolation>>&) const;
 
   void AddInterpolation(Interpolation* interpolation,

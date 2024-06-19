@@ -303,7 +303,8 @@ gfx::PointF ScrollOffsetAnimationCurve::GetValue(base::TimeDelta t) const {
   if (t <= base::TimeDelta())
     return initial_value_;
 
-  const double progress = timing_function_->GetValue(t / duration);
+  const double progress = timing_function_->GetValue(
+      t / duration, TimingFunction::LimitDirection::RIGHT);
   return gfx::PointF(gfx::Tween::FloatValueBetween(progress, initial_value_.x(),
                                                    target_value_.x()),
                      gfx::Tween::FloatValueBetween(progress, initial_value_.y(),

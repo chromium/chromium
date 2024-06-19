@@ -30,8 +30,10 @@ String LinearTimingFunction::ToString() const {
   return builder.ReleaseString();
 }
 
-double LinearTimingFunction::Evaluate(double fraction) const {
-  return linear_->GetValue(fraction);
+double LinearTimingFunction::Evaluate(
+    double fraction,
+    TimingFunction::LimitDirection limit_direction) const {
+  return linear_->GetValue(fraction, limit_direction);
 }
 
 void LinearTimingFunction::Range(double* min_value, double* max_value) const {
@@ -127,7 +129,9 @@ String CubicBezierTimingFunction::ToString() const {
   }
 }
 
-double CubicBezierTimingFunction::Evaluate(double fraction) const {
+double CubicBezierTimingFunction::Evaluate(
+    double fraction,
+    TimingFunction::LimitDirection limit_direction) const {
   return bezier_->bezier().Solve(fraction);
 }
 
@@ -199,13 +203,7 @@ void StepsTimingFunction::Range(double* min_value, double* max_value) const {
 
 double StepsTimingFunction::Evaluate(double fraction,
                                      LimitDirection limit_direction) const {
-  return steps_->GetPreciseValue(fraction, limit_direction);
-}
-
-double StepsTimingFunction::Evaluate(double fraction) const {
-  NOTREACHED_IN_MIGRATION()
-      << "Use Evaluate(fraction, limit_direction) instead.";
-  return steps_->GetPreciseValue(fraction, LimitDirection::RIGHT);
+  return steps_->GetValue(fraction, limit_direction);
 }
 
 std::unique_ptr<gfx::TimingFunction> StepsTimingFunction::CloneToCC() const {

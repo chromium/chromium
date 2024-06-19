@@ -8,6 +8,7 @@ namespace blink {
 
 void InterpolationEffect::GetActiveInterpolations(
     double fraction,
+    TimingFunction::LimitDirection limit_direction,
     HeapVector<Member<Interpolation>>& result) const {
   wtf_size_t existing_size = result.size();
   wtf_size_t result_index = 0;
@@ -32,8 +33,8 @@ void InterpolationEffect::GetActiveInterpolations(
         double local_fraction =
             record_length ? (fraction - record->start_) / record_length : 0.0;
         if (record->easing_) {
-          local_fraction = record->easing_->Evaluate(
-              local_fraction, TimingFunction::LimitDirection::RIGHT);
+          local_fraction =
+              record->easing_->Evaluate(local_fraction, limit_direction);
         }
         interpolation->Interpolate(0, local_fraction);
       }

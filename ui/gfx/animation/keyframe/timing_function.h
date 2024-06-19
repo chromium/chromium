@@ -24,10 +24,11 @@ class GFX_KEYFRAME_ANIMATION_EXPORT TimingFunction {
   enum class Type { LINEAR, CUBIC_BEZIER, STEPS };
 
   // Which limit to apply at a discontinuous boundary.
+  // See https://drafts.csswg.org/css-easing/#step-easing-algo
   enum class LimitDirection { LEFT, RIGHT };
 
   virtual Type GetType() const = 0;
-  virtual double GetValue(double t) const = 0;
+  virtual double GetValue(double t, LimitDirection limit_direction) const = 0;
   virtual double Velocity(double time) const = 0;
   virtual std::unique_ptr<TimingFunction> Clone() const = 0;
 
@@ -53,7 +54,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT CubicBezierTimingFunction
 
   // TimingFunction implementation.
   Type GetType() const override;
-  double GetValue(double time) const override;
+  double GetValue(
+      double time,
+      LimitDirection limit_direction = LimitDirection::RIGHT) const override;
   double Velocity(double time) const override;
   std::unique_ptr<TimingFunction> Clone() const override;
 
@@ -98,13 +101,12 @@ class GFX_KEYFRAME_ANIMATION_EXPORT StepsTimingFunction
 
   // TimingFunction implementation.
   Type GetType() const override;
-  double GetValue(double t) const override;
+  double GetValue(double t, LimitDirection limit_direction) const override;
   std::unique_ptr<TimingFunction> Clone() const override;
   double Velocity(double time) const override;
 
   int steps() const { return steps_; }
   StepPosition step_position() const { return step_position_; }
-  double GetPreciseValue(double t, LimitDirection limit_direction) const;
 
  private:
   StepsTimingFunction(int steps, StepPosition step_position);
@@ -153,7 +155,9 @@ class GFX_KEYFRAME_ANIMATION_EXPORT LinearTimingFunction
 
   // TimingFunction implementation.
   Type GetType() const override;
-  double GetValue(double t) const override;
+  double GetValue(
+      double t,
+      LimitDirection limit_direction = LimitDirection::RIGHT) const override;
   std::unique_ptr<TimingFunction> Clone() const override;
   double Velocity(double time) const override;
 
