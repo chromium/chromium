@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 
+#include "ash/webui/mall/app_id.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -358,6 +359,8 @@ const std::optional<apps::DefaultAppName> SystemWebAppIdToName(
     return apps::DefaultAppName::kFirmwareUpdateApp;
   } else if (app_id == web_app::kHelpAppId) {
     return apps::DefaultAppName::kHelpApp;
+  } else if (app_id == ash::kMallSystemAppId) {
+    return apps::DefaultAppName::kMall;
   } else if (app_id == web_app::kMediaAppId) {
     return apps::DefaultAppName::kMediaApp;
     // `MockSystemApp` is for tests only.

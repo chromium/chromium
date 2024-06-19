@@ -212,6 +212,7 @@ source_set("app_service") {
       "//ash/components/arc/session",
       "//ash/components/arc/session:connection_holder",
       "//ash/public/cpp",
+      "//ash/webui/mall:app_id",
       "//ash/webui/system_apps/public:system_web_app_type",
       "//chrome/browser:browser_process",
       "//chrome/browser/apps/almanac_api_client",
