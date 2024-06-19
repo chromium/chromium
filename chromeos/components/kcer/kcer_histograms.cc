@@ -8,8 +8,7 @@
 
 namespace kcer {
 namespace {
-constexpr char kPkcs12MigrationHistogram[] =
-    "ChromeOS.Kcer.Pkcs12MigrationUmaEvent";
+constexpr char kPkcs12MigrationHistogram[] = "ChromeOS.Kcer.Pkcs12Migration";
 constexpr char kKcerErrorHistogram[] = "ChromeOS.Kcer.Error";
 }  // namespace
 
