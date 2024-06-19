@@ -6559,6 +6559,11 @@ external/wpt/https-upgrades/tentative/http-redirecting-to-http-redirecting-to-ht
 external/wpt/https-upgrades/tentative/http-redirecting-to-https.https.sub.html [ Timeout ]
 external/wpt/https-upgrades/tentative/referrer.https.sub.html [ Timeout ]
 
+# Disable test temporarily to allow DevTools change to land.
+crbug.com/330213867 http/tests/devtools/security/blocked-mixed-content.js [ Failure ]
+crbug.com/330213867 http/tests/devtools/security/mixed-content-active-and-passive-reload.js [ Failure ]
+crbug.com/330213867 http/tests/devtools/security/mixed-content-reload.js [ Failure ]
+crbug.com/330213867 http/tests/devtools/security/security-blocked-mixed-content.js [ Failure ]
 
 # Sherrif 2023-06-12
 crbug.com/1452003 [ Mac13-arm64 ] svg/W3C-SVG-1.1/text-fonts-01-t.svg [ Failure Pass ]
