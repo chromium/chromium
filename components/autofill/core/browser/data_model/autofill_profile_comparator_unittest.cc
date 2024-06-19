@@ -166,14 +166,14 @@ class AutofillProfileComparatorTest : public testing::Test {
     ASSERT_TRUE(comparator_.MergeNames(a, b, actual));
 
     // Is the "processed" data correct?
-    EXPECT_EQ(expected.GetInfo(AutofillType(NAME_FULL), kLocale),
-              actual.GetInfo(AutofillType(NAME_FULL), kLocale));
-    EXPECT_EQ(expected.GetInfo(AutofillType(NAME_FIRST), kLocale),
-              actual.GetInfo(AutofillType(NAME_FIRST), kLocale));
-    EXPECT_EQ(expected.GetInfo(AutofillType(NAME_MIDDLE), kLocale),
-              actual.GetInfo(AutofillType(NAME_MIDDLE), kLocale));
-    EXPECT_EQ(expected.GetInfo(AutofillType(NAME_LAST), kLocale),
-              actual.GetInfo(AutofillType(NAME_LAST), kLocale));
+    EXPECT_EQ(expected.GetInfo(NAME_FULL, kLocale),
+              actual.GetInfo(NAME_FULL, kLocale));
+    EXPECT_EQ(expected.GetInfo(NAME_FIRST, kLocale),
+              actual.GetInfo(NAME_FIRST, kLocale));
+    EXPECT_EQ(expected.GetInfo(NAME_MIDDLE, kLocale),
+              actual.GetInfo(NAME_MIDDLE, kLocale));
+    EXPECT_EQ(expected.GetInfo(NAME_LAST, kLocale),
+              actual.GetInfo(NAME_LAST, kLocale));
 
     // Is the raw data correct?
     EXPECT_EQ(expected.GetRawInfo(NAME_FULL), actual.GetRawInfo(NAME_FULL));
@@ -216,17 +216,16 @@ class AutofillProfileComparatorTest : public testing::Test {
     // Validate that we get what we expect.
     EXPECT_EQ(expected.GetRawInfo(PHONE_HOME_WHOLE_NUMBER),
               actual.GetRawInfo(PHONE_HOME_WHOLE_NUMBER));
-    EXPECT_EQ(expected.GetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER), kLocale),
-              actual.GetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER), kLocale));
-    EXPECT_EQ(expected.GetInfo(AutofillType(PHONE_HOME_COUNTRY_CODE), kLocale),
-              actual.GetInfo(AutofillType(PHONE_HOME_COUNTRY_CODE), kLocale));
-    EXPECT_EQ(
-        expected.GetInfo(AutofillType(PHONE_HOME_CITY_AND_NUMBER), kLocale),
-        actual.GetInfo(AutofillType(PHONE_HOME_CITY_AND_NUMBER), kLocale));
-    EXPECT_EQ(expected.GetInfo(AutofillType(PHONE_HOME_CITY_CODE), kLocale),
-              actual.GetInfo(AutofillType(PHONE_HOME_CITY_CODE), kLocale));
-    EXPECT_EQ(expected.GetInfo(AutofillType(PHONE_HOME_NUMBER), kLocale),
-              actual.GetInfo(AutofillType(PHONE_HOME_NUMBER), kLocale));
+    EXPECT_EQ(expected.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale),
+              actual.GetInfo(PHONE_HOME_WHOLE_NUMBER, kLocale));
+    EXPECT_EQ(expected.GetInfo(PHONE_HOME_COUNTRY_CODE, kLocale),
+              actual.GetInfo(PHONE_HOME_COUNTRY_CODE, kLocale));
+    EXPECT_EQ(expected.GetInfo(PHONE_HOME_CITY_AND_NUMBER, kLocale),
+              actual.GetInfo(PHONE_HOME_CITY_AND_NUMBER, kLocale));
+    EXPECT_EQ(expected.GetInfo(PHONE_HOME_CITY_CODE, kLocale),
+              actual.GetInfo(PHONE_HOME_CITY_CODE, kLocale));
+    EXPECT_EQ(expected.GetInfo(PHONE_HOME_NUMBER, kLocale),
+              actual.GetInfo(PHONE_HOME_NUMBER, kLocale));
   }
 
   void MergeAddressesAndExpect(const AutofillProfile& a,
@@ -236,46 +235,38 @@ class AutofillProfileComparatorTest : public testing::Test {
     Address actual(kLegacyHierarchyCountryCode);
     ASSERT_TRUE(comparator_.MergeAddresses(a, b, actual));
 
-    EXPECT_EQ(expected.GetInfo(AutofillType(ADDRESS_HOME_LINE1), kLocale),
-              actual.GetInfo(AutofillType(ADDRESS_HOME_LINE1), kLocale));
-    EXPECT_EQ(expected.GetInfo(AutofillType(ADDRESS_HOME_LINE2), kLocale),
-              actual.GetInfo(AutofillType(ADDRESS_HOME_LINE2), kLocale));
-    EXPECT_EQ(expected.GetInfo(AutofillType(ADDRESS_HOME_LINE3), kLocale),
-              actual.GetInfo(AutofillType(ADDRESS_HOME_LINE3), kLocale));
-    EXPECT_EQ(
-        expected.GetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), kLocale),
-        actual.GetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS), kLocale));
-    EXPECT_EQ(
-        expected.GetInfo(AutofillType(ADDRESS_HOME_DEPENDENT_LOCALITY),
-                         kLocale),
-        actual.GetInfo(AutofillType(ADDRESS_HOME_DEPENDENT_LOCALITY), kLocale));
-    EXPECT_EQ(
-        expected.GetInfo(AutofillType(ADDRESS_HOME_SORTING_CODE), kLocale),
-        actual.GetInfo(AutofillType(ADDRESS_HOME_SORTING_CODE), kLocale));
-    EXPECT_EQ(expected.GetInfo(AutofillType(ADDRESS_HOME_CITY), kLocale),
-              actual.GetInfo(AutofillType(ADDRESS_HOME_CITY), kLocale));
-    EXPECT_EQ(expected.GetInfo(AutofillType(ADDRESS_HOME_STATE), kLocale),
-              actual.GetInfo(AutofillType(ADDRESS_HOME_STATE), kLocale));
-    EXPECT_EQ(expected.GetInfo(AutofillType(ADDRESS_HOME_ZIP), kLocale),
-              actual.GetInfo(AutofillType(ADDRESS_HOME_ZIP), kLocale));
-    EXPECT_EQ(expected.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), kLocale),
-              actual.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), kLocale));
+    EXPECT_EQ(expected.GetInfo(ADDRESS_HOME_LINE1, kLocale),
+              actual.GetInfo(ADDRESS_HOME_LINE1, kLocale));
+    EXPECT_EQ(expected.GetInfo(ADDRESS_HOME_LINE2, kLocale),
+              actual.GetInfo(ADDRESS_HOME_LINE2, kLocale));
+    EXPECT_EQ(expected.GetInfo(ADDRESS_HOME_LINE3, kLocale),
+              actual.GetInfo(ADDRESS_HOME_LINE3, kLocale));
+    EXPECT_EQ(expected.GetInfo(ADDRESS_HOME_STREET_ADDRESS, kLocale),
+              actual.GetInfo(ADDRESS_HOME_STREET_ADDRESS, kLocale));
+    EXPECT_EQ(expected.GetInfo(ADDRESS_HOME_DEPENDENT_LOCALITY, kLocale),
+              actual.GetInfo(ADDRESS_HOME_DEPENDENT_LOCALITY, kLocale));
+    EXPECT_EQ(expected.GetInfo(ADDRESS_HOME_SORTING_CODE, kLocale),
+              actual.GetInfo(ADDRESS_HOME_SORTING_CODE, kLocale));
+    EXPECT_EQ(expected.GetInfo(ADDRESS_HOME_CITY, kLocale),
+              actual.GetInfo(ADDRESS_HOME_CITY, kLocale));
+    EXPECT_EQ(expected.GetInfo(ADDRESS_HOME_STATE, kLocale),
+              actual.GetInfo(ADDRESS_HOME_STATE, kLocale));
+    EXPECT_EQ(expected.GetInfo(ADDRESS_HOME_ZIP, kLocale),
+              actual.GetInfo(ADDRESS_HOME_ZIP, kLocale));
+    EXPECT_EQ(expected.GetInfo(ADDRESS_HOME_COUNTRY, kLocale),
+              actual.GetInfo(ADDRESS_HOME_COUNTRY, kLocale));
 
     if (check_structured_address_tokens) {
-      EXPECT_EQ(
-          expected.GetInfo(AutofillType(ADDRESS_HOME_STREET_NAME), kLocale),
-          actual.GetInfo(AutofillType(ADDRESS_HOME_STREET_NAME), kLocale));
-      EXPECT_EQ(
-          expected.GetInfo(AutofillType(ADDRESS_HOME_HOUSE_NUMBER), kLocale),
-          actual.GetInfo(AutofillType(ADDRESS_HOME_HOUSE_NUMBER), kLocale));
-      EXPECT_EQ(
-          expected.GetInfo(AutofillType(ADDRESS_HOME_SUBPREMISE), kLocale),
-          actual.GetInfo(AutofillType(ADDRESS_HOME_SUBPREMISE), kLocale));
-      EXPECT_EQ(expected.GetInfo(AutofillType(ADDRESS_HOME_LANDMARK), kLocale),
-                actual.GetInfo(AutofillType(ADDRESS_HOME_LANDMARK), kLocale));
-      EXPECT_EQ(
-          expected.GetInfo(AutofillType(ADDRESS_HOME_BETWEEN_STREETS), kLocale),
-          actual.GetInfo(AutofillType(ADDRESS_HOME_BETWEEN_STREETS), kLocale));
+      EXPECT_EQ(expected.GetInfo(ADDRESS_HOME_STREET_NAME, kLocale),
+                actual.GetInfo(ADDRESS_HOME_STREET_NAME, kLocale));
+      EXPECT_EQ(expected.GetInfo(ADDRESS_HOME_HOUSE_NUMBER, kLocale),
+                actual.GetInfo(ADDRESS_HOME_HOUSE_NUMBER, kLocale));
+      EXPECT_EQ(expected.GetInfo(ADDRESS_HOME_SUBPREMISE, kLocale),
+                actual.GetInfo(ADDRESS_HOME_SUBPREMISE, kLocale));
+      EXPECT_EQ(expected.GetInfo(ADDRESS_HOME_LANDMARK, kLocale),
+                actual.GetInfo(ADDRESS_HOME_LANDMARK, kLocale));
+      EXPECT_EQ(expected.GetInfo(ADDRESS_HOME_BETWEEN_STREETS, kLocale),
+                actual.GetInfo(ADDRESS_HOME_BETWEEN_STREETS, kLocale));
     }
   }
 

@@ -60,12 +60,11 @@ TEST_F(AddressTest, GetCountry) {
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
 
   // Make sure that nothing breaks when the country code is missing.
-  std::u16string country =
-      address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
+  std::u16string country = address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US");
   EXPECT_EQ(std::u16string(), country);
 
-  address.SetInfo(AutofillType(ADDRESS_HOME_COUNTRY), u"US", "en-US");
-  country = address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
+  address.SetInfo(ADDRESS_HOME_COUNTRY, u"US", "en-US");
+  country = address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US");
   EXPECT_EQ(u"United States", country);
   country = address.GetInfo(AutofillType(HtmlFieldType::kCountryName), "en-US");
   EXPECT_EQ(u"United States", country);
@@ -73,7 +72,7 @@ TEST_F(AddressTest, GetCountry) {
   EXPECT_EQ(u"US", country);
 
   address.SetRawInfo(ADDRESS_HOME_COUNTRY, u"CA");
-  country = address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
+  country = address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US");
   EXPECT_EQ(u"Canada", country);
   country = address.GetInfo(AutofillType(HtmlFieldType::kCountryName), "en-US");
   EXPECT_EQ(u"Canada", country);
@@ -94,7 +93,7 @@ TEST_F(AddressTest, SetHtmlCountryCodeTypeWithFullCountryName) {
   // a country code but a full country name.
   address.SetInfo(autofill_type, u"Germany", "en-US");
   std::u16string actual_country =
-      address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
+      address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US");
   std::u16string actual_country_code =
       address.GetInfo(AutofillType(HtmlFieldType::kCountryCode), "en-US");
   EXPECT_EQ(u"Germany", actual_country);
@@ -102,7 +101,7 @@ TEST_F(AddressTest, SetHtmlCountryCodeTypeWithFullCountryName) {
 
   // Reset the country and verify that the reset works as expected.
   address.SetInfo(autofill_type, u"", "en-US");
-  actual_country = address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
+  actual_country = address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US");
   actual_country_code =
       address.GetInfo(AutofillType(HtmlFieldType::kCountryCode), "en-US");
   EXPECT_EQ(u"", actual_country);
@@ -111,7 +110,7 @@ TEST_F(AddressTest, SetHtmlCountryCodeTypeWithFullCountryName) {
   // Test that the country value can be set and retrieved if it is not
   // a country code but a full country name with a non-standard locale.
   address.SetInfo(autofill_type, u"deutschland", "de");
-  actual_country = address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
+  actual_country = address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US");
   actual_country_code =
       address.GetInfo(AutofillType(HtmlFieldType::kCountryCode), "en-US");
   EXPECT_EQ(u"Germany", actual_country);
@@ -123,7 +122,7 @@ TEST_F(AddressTest, SetHtmlCountryCodeTypeWithFullCountryName) {
   // Test that the country is still stored correctly with a supplied
   // country code.
   address.SetInfo(autofill_type, u"DE", "en-US");
-  actual_country = address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
+  actual_country = address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US");
   actual_country_code =
       address.GetInfo(AutofillType(HtmlFieldType::kCountryCode), "en-US");
   EXPECT_EQ(u"DE", actual_country_code);
@@ -136,34 +135,32 @@ TEST_F(AddressTest, SetCountry) {
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
 
   // Test basic conversion.
-  address.SetInfo(AutofillType(ADDRESS_HOME_COUNTRY), u"United States",
-                  "en-US");
-  std::u16string country =
-      address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
+  address.SetInfo(ADDRESS_HOME_COUNTRY, u"United States", "en-US");
+  std::u16string country = address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US");
   EXPECT_EQ(u"US", address.GetRawInfo(ADDRESS_HOME_COUNTRY));
   EXPECT_EQ(u"United States", country);
 
   // Test basic synonym detection.
-  address.SetInfo(AutofillType(ADDRESS_HOME_COUNTRY), u"USA", "en-US");
-  country = address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
+  address.SetInfo(ADDRESS_HOME_COUNTRY, u"USA", "en-US");
+  country = address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US");
   EXPECT_EQ(u"US", address.GetRawInfo(ADDRESS_HOME_COUNTRY));
   EXPECT_EQ(u"United States", country);
 
   // Test case-insensitivity.
-  address.SetInfo(AutofillType(ADDRESS_HOME_COUNTRY), u"canADA", "en-US");
-  country = address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
+  address.SetInfo(ADDRESS_HOME_COUNTRY, u"canADA", "en-US");
+  country = address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US");
   EXPECT_EQ(u"CA", address.GetRawInfo(ADDRESS_HOME_COUNTRY));
   EXPECT_EQ(u"Canada", country);
 
   // Test country code detection.
-  address.SetInfo(AutofillType(ADDRESS_HOME_COUNTRY), u"JP", "en-US");
-  country = address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
+  address.SetInfo(ADDRESS_HOME_COUNTRY, u"JP", "en-US");
+  country = address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US");
   EXPECT_EQ(u"JP", address.GetRawInfo(ADDRESS_HOME_COUNTRY));
   EXPECT_EQ(u"Japan", country);
 
   // Test that we ignore unknown countries.
-  address.SetInfo(AutofillType(ADDRESS_HOME_COUNTRY), u"Unknown", "en-US");
-  country = address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
+  address.SetInfo(ADDRESS_HOME_COUNTRY, u"Unknown", "en-US");
+  country = address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US");
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
   EXPECT_EQ(std::u16string(), country);
 
@@ -171,27 +168,27 @@ TEST_F(AddressTest, SetCountry) {
   AutofillType html_type_country_code =
       AutofillType(HtmlFieldType::kCountryCode);
   address.SetInfo(html_type_country_code, u"US", "en-US");
-  country = address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
+  country = address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US");
   EXPECT_EQ(u"US", address.GetRawInfo(ADDRESS_HOME_COUNTRY));
   EXPECT_EQ(u"United States", country);
 
   // Test case-insensitivity when setting the country based on an HTML field
   // type.
   address.SetInfo(html_type_country_code, u"cA", "en-US");
-  country = address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
+  country = address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US");
   EXPECT_EQ(u"CA", address.GetRawInfo(ADDRESS_HOME_COUNTRY));
   EXPECT_EQ(u"Canada", country);
 
   // Test setting the country based on invalid data with an HTML field type.
   address.SetInfo(html_type_country_code, u"unknown", "en-US");
-  country = address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
+  country = address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US");
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_COUNTRY));
   EXPECT_EQ(std::u16string(), country);
 
   // Test incorrect use of country codes (when a country name is passed
   // as a country code).
   address.SetInfo(html_type_country_code, u"日本", "ja-JP");
-  country = address.GetInfo(AutofillType(ADDRESS_HOME_COUNTRY), "en-US");
+  country = address.GetInfo(ADDRESS_HOME_COUNTRY, "en-US");
   EXPECT_EQ(u"JP", address.GetRawInfo(ADDRESS_HOME_COUNTRY));
   EXPECT_EQ(u"Japan", country);
 }
@@ -244,21 +241,21 @@ TEST_F(AddressTest, IsCountry) {
 
 // Verifies that Address::GetInfo() correctly combines address lines.
 TEST_F(AddressTest, GetStreetAddress) {
-  const AutofillType type = AutofillType(ADDRESS_HOME_STREET_ADDRESS);
-
   // Address has no address lines.
   Address address(kLegacyHierarchyCountryCode);
   EXPECT_TRUE(address.GetRawInfo(ADDRESS_HOME_LINE1).empty());
   EXPECT_TRUE(address.GetRawInfo(ADDRESS_HOME_LINE2).empty());
   EXPECT_TRUE(address.GetRawInfo(ADDRESS_HOME_LINE3).empty());
-  EXPECT_EQ(std::u16string(), address.GetInfo(type, "en-US"));
+  EXPECT_EQ(std::u16string(),
+            address.GetInfo(ADDRESS_HOME_STREET_ADDRESS, "en-US"));
 
   // Address has only line 1.
   address.SetRawInfo(ADDRESS_HOME_LINE1, u"123 Example Ave.");
   EXPECT_FALSE(address.GetRawInfo(ADDRESS_HOME_LINE1).empty());
   EXPECT_TRUE(address.GetRawInfo(ADDRESS_HOME_LINE2).empty());
   EXPECT_TRUE(address.GetRawInfo(ADDRESS_HOME_LINE3).empty());
-  EXPECT_EQ(u"123 Example Ave.", address.GetInfo(type, "en-US"));
+  EXPECT_EQ(u"123 Example Ave.",
+            address.GetInfo(ADDRESS_HOME_STREET_ADDRESS, "en-US"));
 
   // Address has only line 2.
   address.SetRawInfo(ADDRESS_HOME_LINE1, std::u16string());
@@ -266,7 +263,8 @@ TEST_F(AddressTest, GetStreetAddress) {
   EXPECT_TRUE(address.GetRawInfo(ADDRESS_HOME_LINE1).empty());
   EXPECT_FALSE(address.GetRawInfo(ADDRESS_HOME_LINE2).empty());
   EXPECT_TRUE(address.GetRawInfo(ADDRESS_HOME_LINE3).empty());
-  EXPECT_EQ(u"\nApt 42.", address.GetInfo(type, "en-US"));
+  EXPECT_EQ(u"\nApt 42.",
+            address.GetInfo(ADDRESS_HOME_STREET_ADDRESS, "en-US"));
 
   // Address has lines 1 and 2.
   address.SetRawInfo(ADDRESS_HOME_LINE1, u"123 Example Ave.");
@@ -281,7 +279,7 @@ TEST_F(AddressTest, GetStreetAddress) {
   EXPECT_EQ(
       u"123 Example Ave.\n"
       u"Apt. 42",
-      address.GetInfo(type, "en-US"));
+      address.GetInfo(ADDRESS_HOME_STREET_ADDRESS, "en-US"));
 
   // A wild third line appears.
   address.SetRawInfo(ADDRESS_HOME_LINE3, u"Living room couch");
@@ -361,7 +359,6 @@ TEST_F(AddressTest, SetStreetAddress) {
       u"Unit 3.14\n"
       u"Box 9";
   const std::u16string single_line_street_address = u"123 Main, Apt 7";
-  const AutofillType type = AutofillType(ADDRESS_HOME_STREET_ADDRESS);
 
   // Start with a non-empty address.
   Address address(kLegacyHierarchyCountryCode);
@@ -373,24 +370,28 @@ TEST_F(AddressTest, SetStreetAddress) {
   EXPECT_FALSE(address.GetRawInfo(ADDRESS_HOME_LINE3).empty());
 
   // Attempting to set a multi-line address should succeed.
-  EXPECT_TRUE(address.SetInfo(type, multi_line_street_address, "en-US"));
+  EXPECT_TRUE(address.SetInfo(ADDRESS_HOME_STREET_ADDRESS,
+                              multi_line_street_address, "en-US"));
   EXPECT_EQ(u"789 Fancy Pkwy.", address.GetRawInfo(ADDRESS_HOME_LINE1));
   EXPECT_EQ(u"Unit 3.14", address.GetRawInfo(ADDRESS_HOME_LINE2));
   EXPECT_EQ(u"Box 9", address.GetRawInfo(ADDRESS_HOME_LINE3));
 
   // Setting a single line street address should clear out subsequent lines.
-  EXPECT_TRUE(address.SetInfo(type, single_line_street_address, "en-US"));
+  EXPECT_TRUE(address.SetInfo(ADDRESS_HOME_STREET_ADDRESS,
+                              single_line_street_address, "en-US"));
   EXPECT_EQ(single_line_street_address, address.GetRawInfo(ADDRESS_HOME_LINE1));
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE2));
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE3));
 
   // Attempting to set an empty address should also succeed, and clear out the
   // previously stored data.
-  EXPECT_TRUE(address.SetInfo(type, multi_line_street_address, "en-US"));
+  EXPECT_TRUE(address.SetInfo(ADDRESS_HOME_STREET_ADDRESS,
+                              multi_line_street_address, "en-US"));
   EXPECT_FALSE(address.GetRawInfo(ADDRESS_HOME_LINE1).empty());
   EXPECT_FALSE(address.GetRawInfo(ADDRESS_HOME_LINE2).empty());
   EXPECT_FALSE(address.GetRawInfo(ADDRESS_HOME_LINE3).empty());
-  EXPECT_TRUE(address.SetInfo(type, empty_street_address, "en-US"));
+  EXPECT_TRUE(address.SetInfo(ADDRESS_HOME_STREET_ADDRESS, empty_street_address,
+                              "en-US"));
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE1));
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE2));
   EXPECT_EQ(std::u16string(), address.GetRawInfo(ADDRESS_HOME_LINE3));
@@ -409,7 +410,7 @@ TEST_F(AddressTest, SetStreetAddressRejectsAddressesWithInteriorBlankLines) {
 
   // Attempting to set an address with interior blank lines should fail, and
   // clear out the previously stored address.
-  EXPECT_FALSE(address.SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS),
+  EXPECT_FALSE(address.SetInfo(ADDRESS_HOME_STREET_ADDRESS,
                                u"Address line 1\n"
                                u"\n"
                                u"Address line 3",
@@ -432,7 +433,7 @@ TEST_F(AddressTest, SetStreetAddressRejectsAddressesWithLeadingBlankLines) {
 
   // Attempting to set an address with leading blank lines should fail, and
   // clear out the previously stored address.
-  EXPECT_FALSE(address.SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS),
+  EXPECT_FALSE(address.SetInfo(ADDRESS_HOME_STREET_ADDRESS,
                                u"\n"
                                u"Address line 2"
                                u"Address line 3",
@@ -455,7 +456,7 @@ TEST_F(AddressTest, SetStreetAddressRejectsAddressesWithTrailingBlankLines) {
 
   // Attempting to set an address with leading blank lines should fail, and
   // clear out the previously stored address.
-  EXPECT_FALSE(address.SetInfo(AutofillType(ADDRESS_HOME_STREET_ADDRESS),
+  EXPECT_FALSE(address.SetInfo(ADDRESS_HOME_STREET_ADDRESS,
                                u"Address line 1"
                                u"Address line 2"
                                u"\n",

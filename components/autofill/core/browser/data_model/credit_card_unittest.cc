@@ -1519,15 +1519,15 @@ TEST(CreditCardTest, SetExpirationMonth) {
   EXPECT_EQ(u"07", card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
   EXPECT_EQ(7, card.expiration_month());
 
-  card.SetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), u"January", "en-US");
+  card.SetInfo(CREDIT_CARD_EXP_MONTH, u"January", "en-US");
   EXPECT_EQ(u"01", card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
   EXPECT_EQ(1, card.expiration_month());
 
-  card.SetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), u"Apr", "en-US");
+  card.SetInfo(CREDIT_CARD_EXP_MONTH, u"Apr", "en-US");
   EXPECT_EQ(u"04", card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
   EXPECT_EQ(4, card.expiration_month());
 
-  card.SetInfo(AutofillType(CREDIT_CARD_EXP_MONTH), u"FÉVRIER", "fr-FR");
+  card.SetInfo(CREDIT_CARD_EXP_MONTH, u"FÉVRIER", "fr-FR");
   EXPECT_EQ(u"02", card.GetRawInfo(CREDIT_CARD_EXP_MONTH));
   EXPECT_EQ(2, card.expiration_month());
 }

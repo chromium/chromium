@@ -544,8 +544,7 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   AddAutofillProfile(billing_profile);
   card.set_billing_address_id(billing_profile.guid());
   // Clear the name.
-  card.SetInfo(autofill::AutofillType(autofill::CREDIT_CARD_NAME_FULL),
-               std::u16string(), "en-US");
+  card.SetInfo(autofill::CREDIT_CARD_NAME_FULL, std::u16string(), "en-US");
   AddCreditCard(card);
 
   InvokePaymentRequestUI();
@@ -616,10 +615,9 @@ IN_PROC_BROWSER_TEST_F(DISABLED_PaymentRequestCreditCardEditorTest,
   PaymentRequest* request = GetPaymentRequests().front();
   EXPECT_EQ(1U, request->state()->available_apps().size());
   EXPECT_EQ(nullptr, request->state()->selected_app());
-  EXPECT_EQ(
-      card.GetInfo(autofill::AutofillType(autofill::CREDIT_CARD_NAME_FULL),
-                   request->state()->GetApplicationLocale()),
-      request->state()->available_apps()[0]->GetSublabel());
+  EXPECT_EQ(card.GetInfo(autofill::CREDIT_CARD_NAME_FULL,
+                         request->state()->GetApplicationLocale()),
+            request->state()->available_apps()[0]->GetSublabel());
 
   OpenPaymentMethodScreen();
 

@@ -89,16 +89,11 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest, HappyPath) {
       personal_data_manager->address_data_manager().GetProfiles()[0];
   DCHECK(profile);
 
-  EXPECT_EQ(kNameFull,
-            profile->GetInfo(autofill::AutofillType(autofill::NAME_FULL),
-                             GetLocale()));
+  EXPECT_EQ(kNameFull, profile->GetInfo(autofill::NAME_FULL, GetLocale()));
   EXPECT_EQ(u"16515558946",
-            profile->GetInfo(
-                autofill::AutofillType(autofill::PHONE_HOME_WHOLE_NUMBER),
-                GetLocale()));
+            profile->GetInfo(autofill::PHONE_HOME_WHOLE_NUMBER, GetLocale()));
   EXPECT_EQ(kEmailAddress,
-            profile->GetInfo(autofill::AutofillType(autofill::EMAIL_ADDRESS),
-                             GetLocale()));
+            profile->GetInfo(autofill::EMAIL_ADDRESS, GetLocale()));
 
   PaymentRequest* request = GetPaymentRequests().front();
   EXPECT_EQ(1U, request->state()->contact_profiles().size());
@@ -150,16 +145,11 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest,
       personal_data_manager->address_data_manager().GetProfiles()[0];
   DCHECK(profile);
 
-  EXPECT_EQ(kNameFull,
-            profile->GetInfo(autofill::AutofillType(autofill::NAME_FULL),
-                             GetLocale()));
+  EXPECT_EQ(kNameFull, profile->GetInfo(autofill::NAME_FULL, GetLocale()));
   EXPECT_EQ(u"16515558946",
-            profile->GetInfo(
-                autofill::AutofillType(autofill::PHONE_HOME_WHOLE_NUMBER),
-                GetLocale()));
+            profile->GetInfo(autofill::PHONE_HOME_WHOLE_NUMBER, GetLocale()));
   EXPECT_EQ(kEmailAddress,
-            profile->GetInfo(autofill::AutofillType(autofill::EMAIL_ADDRESS),
-                             GetLocale()));
+            profile->GetInfo(autofill::EMAIL_ADDRESS, GetLocale()));
 }
 
 IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest, Validation) {
@@ -218,16 +208,11 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest, Validation) {
       personal_data_manager->address_data_manager().GetProfiles()[0];
   DCHECK(profile);
 
-  EXPECT_EQ(kNameFull,
-            profile->GetInfo(autofill::AutofillType(autofill::NAME_FULL),
-                             GetLocale()));
+  EXPECT_EQ(kNameFull, profile->GetInfo(autofill::NAME_FULL, GetLocale()));
   EXPECT_EQ(u"16515558946",
-            profile->GetInfo(
-                autofill::AutofillType(autofill::PHONE_HOME_WHOLE_NUMBER),
-                GetLocale()));
+            profile->GetInfo(autofill::PHONE_HOME_WHOLE_NUMBER, GetLocale()));
   EXPECT_EQ(kEmailAddress,
-            profile->GetInfo(autofill::AutofillType(autofill::EMAIL_ADDRESS),
-                             GetLocale()));
+            profile->GetInfo(autofill::EMAIL_ADDRESS, GetLocale()));
 }
 
 IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest,
@@ -281,16 +266,11 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest,
       personal_data_manager->address_data_manager().GetProfiles()[0];
   DCHECK(profile);
 
-  EXPECT_EQ(kNameFull,
-            profile->GetInfo(autofill::AutofillType(autofill::NAME_FULL),
-                             GetLocale()));
+  EXPECT_EQ(kNameFull, profile->GetInfo(autofill::NAME_FULL, GetLocale()));
   EXPECT_EQ(u"16515558946",
-            profile->GetInfo(
-                autofill::AutofillType(autofill::PHONE_HOME_WHOLE_NUMBER),
-                GetLocale()));
+            profile->GetInfo(autofill::PHONE_HOME_WHOLE_NUMBER, GetLocale()));
   EXPECT_EQ(kEmailAddress,
-            profile->GetInfo(autofill::AutofillType(autofill::EMAIL_ADDRESS),
-                             GetLocale()));
+            profile->GetInfo(autofill::EMAIL_ADDRESS, GetLocale()));
 }
 
 IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest,
@@ -351,12 +331,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest,
   DCHECK(profile);
 
   EXPECT_EQ(u"16515558946",
-            profile->GetInfo(
-                autofill::AutofillType(autofill::PHONE_HOME_WHOLE_NUMBER),
-                GetLocale()));
+            profile->GetInfo(autofill::PHONE_HOME_WHOLE_NUMBER, GetLocale()));
   EXPECT_EQ(kEmailAddress,
-            profile->GetInfo(autofill::AutofillType(autofill::EMAIL_ADDRESS),
-                             GetLocale()));
+            profile->GetInfo(autofill::EMAIL_ADDRESS, GetLocale()));
 
   // Expect the newly-completed profile to be selected.
   EXPECT_EQ(2U, request->state()->contact_profiles().size());
@@ -408,16 +385,11 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest,
       request->state()->contact_profiles().back();
   DCHECK(profile);
 
-  EXPECT_EQ(kNameFull,
-            profile->GetInfo(autofill::AutofillType(autofill::NAME_FULL),
-                             GetLocale()));
+  EXPECT_EQ(kNameFull, profile->GetInfo(autofill::NAME_FULL, GetLocale()));
   EXPECT_EQ(u"16515558946",
-            profile->GetInfo(
-                autofill::AutofillType(autofill::PHONE_HOME_WHOLE_NUMBER),
-                GetLocale()));
+            profile->GetInfo(autofill::PHONE_HOME_WHOLE_NUMBER, GetLocale()));
   EXPECT_EQ(kEmailAddress,
-            profile->GetInfo(autofill::AutofillType(autofill::EMAIL_ADDRESS),
-                             GetLocale()));
+            profile->GetInfo(autofill::EMAIL_ADDRESS, GetLocale()));
 }
 
 IN_PROC_BROWSER_TEST_F(MAYBE_PaymentRequestContactInfoEditorTest,

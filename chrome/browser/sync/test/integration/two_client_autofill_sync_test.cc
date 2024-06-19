@@ -25,7 +25,6 @@
 namespace {
 
 using autofill::AutofillProfile;
-using autofill::AutofillType;
 using autofill::CreditCard;
 using autofill::PersonalDataManager;
 using autofill_helper::AddProfile;
@@ -78,8 +77,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
   EXPECT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
 
   // Client0 updates a profile.
-  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
-                AutofillType(autofill::NAME_FIRST), u"Bart");
+  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(), autofill::NAME_FIRST,
+                u"Bart");
   EXPECT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
 
   // Client1 removes remaining profile.
@@ -262,12 +261,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest, UpdateFields) {
   // Modify the profile on one client.
   std::string new_name = "Lisa";
   std::string new_email = "grrrl@TV.com";
-  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
-                AutofillType(autofill::NAME_FIRST),
+  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(), autofill::NAME_FIRST,
                 base::ASCIIToUTF16(new_name));
   UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
-                AutofillType(autofill::EMAIL_ADDRESS),
-                base::ASCIIToUTF16(new_email));
+                autofill::EMAIL_ADDRESS, base::ASCIIToUTF16(new_email));
 
   // Make sure the change is propagated to the other client.
   EXPECT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
@@ -290,7 +287,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
 
   const AutofillProfile* profile = GetAllAutoFillProfiles(0)[0];
   ASSERT_TRUE(profile);
-  UpdateProfile(0, profile->guid(), AutofillType(autofill::NAME_FIRST),
+  UpdateProfile(0, profile->guid(), autofill::NAME_FIRST,
                 profile->GetRawInfo(autofill::NAME_FIRST),
                 autofill::VerificationStatus::kUserVerified);
 
@@ -313,10 +310,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
   EXPECT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
 
   // Update the same field differently on the two clients at the same time.
-  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
-                AutofillType(autofill::NAME_FIRST), u"Lisa");
-  UpdateProfile(1, GetAllAutoFillProfiles(1)[0]->guid(),
-                AutofillType(autofill::NAME_FIRST), u"Bart");
+  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(), autofill::NAME_FIRST,
+                u"Lisa");
+  UpdateProfile(1, GetAllAutoFillProfiles(1)[0]->guid(), autofill::NAME_FIRST,
+                u"Bart");
 
   // Don't care which write wins the conflict, only that the two clients agree.
   EXPECT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
@@ -334,10 +331,10 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
   AddProfile(1, CreateAutofillProfile(PROFILE_HOMER));
 
   // Update the same field differently on the two clients at the same time.
-  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
-                AutofillType(autofill::NAME_FIRST), u"Lisa");
-  UpdateProfile(1, GetAllAutoFillProfiles(1)[0]->guid(),
-                AutofillType(autofill::NAME_FIRST), u"Bart");
+  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(), autofill::NAME_FIRST,
+                u"Lisa");
+  UpdateProfile(1, GetAllAutoFillProfiles(1)[0]->guid(), autofill::NAME_FIRST,
+                u"Bart");
 
   // Start sync.
   ASSERT_TRUE(SetupSync());
@@ -357,8 +354,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest, DeleteAndUpdate) {
   ASSERT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
 
   RemoveProfile(0, GetAllAutoFillProfiles(0)[0]->guid());
-  UpdateProfile(1, GetAllAutoFillProfiles(1)[0]->guid(),
-                AutofillType(autofill::NAME_FIRST), u"Bart");
+  UpdateProfile(1, GetAllAutoFillProfiles(1)[0]->guid(), autofill::NAME_FIRST,
+                u"Bart");
 
   EXPECT_TRUE(AutofillProfileChecker(0, 1, std::nullopt).Wait());
   // The exact result is non-deterministic without a strong consistency model
@@ -380,8 +377,8 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest,
   ASSERT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
 
   RemoveProfile(0, GetAllAutoFillProfiles(0)[0]->guid());
-  UpdateProfile(1, GetAllAutoFillProfiles(1)[0]->guid(),
-                AutofillType(autofill::NAME_FIRST), u"Bart");
+  UpdateProfile(1, GetAllAutoFillProfiles(1)[0]->guid(), autofill::NAME_FIRST,
+                u"Bart");
 
   // One of the two clients (the second one committing) will be requested by the
   // server to resolve the conflict and recommit. The conflict resolution should
@@ -397,12 +394,12 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest, MaxLength) {
   ASSERT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
 
   std::u16string max_length_string(autofill::kMaxDataLengthForDatabase, '.');
+  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(), autofill::NAME_FULL,
+                max_length_string);
   UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
-                AutofillType(autofill::NAME_FULL), max_length_string);
+                autofill::EMAIL_ADDRESS, max_length_string);
   UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
-                AutofillType(autofill::EMAIL_ADDRESS), max_length_string);
-  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
-                AutofillType(autofill::ADDRESS_HOME_LINE1), max_length_string);
+                autofill::ADDRESS_HOME_LINE1, max_length_string);
 
   EXPECT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1U).Wait());
 }
@@ -419,16 +416,14 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest, ExceedsMaxLength) {
 
   std::u16string exceeds_max_length_string(
       autofill::kMaxDataLengthForDatabase + 1, '.');
-  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
-                AutofillType(autofill::NAME_FIRST), exceeds_max_length_string);
-  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
-                AutofillType(autofill::NAME_LAST), exceeds_max_length_string);
-  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
-                AutofillType(autofill::EMAIL_ADDRESS),
+  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(), autofill::NAME_FIRST,
+                exceeds_max_length_string);
+  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(), autofill::NAME_LAST,
                 exceeds_max_length_string);
   UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
-                AutofillType(autofill::ADDRESS_HOME_LINE1),
-                exceeds_max_length_string);
+                autofill::EMAIL_ADDRESS, exceeds_max_length_string);
+  UpdateProfile(0, GetAllAutoFillProfiles(0)[0]->guid(),
+                autofill::ADDRESS_HOME_LINE1, exceeds_max_length_string);
   // The values stored on clients 0 are already truncated.
   const AutofillProfile* profile = GetAllAutoFillProfiles(0)[0];
   for (const auto type :
@@ -508,7 +503,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientAutofillProfileSyncTest, ProfileTokenQuality) {
 
   // Modify the NAME_FIRST on client 1, triggering a resync to client 0.
   autofill_helper::UpdateProfile(
-      1, profile.guid(), autofill::AutofillType(autofill::NAME_FIRST),
+      1, profile.guid(), autofill::NAME_FIRST,
       u"new " + profile.GetRawInfo(autofill::NAME_FIRST));
   ASSERT_TRUE(AutofillProfileChecker(0, 1, /*expected_count=*/1u).Wait());
 

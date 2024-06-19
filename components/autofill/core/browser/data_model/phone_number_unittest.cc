@@ -49,7 +49,7 @@ void MatchingTypesTest(const std::u16string& number,
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, country);
   PhoneNumber phone_number(&profile);
   // `kLocale` is irrelevant, because `profile` has country information.
-  phone_number.SetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER), number, kLocale);
+  phone_number.SetInfo(PHONE_HOME_WHOLE_NUMBER, number, kLocale);
   for (const MatchingTypesTestCase& test : tests) {
     SCOPED_TRACE(::testing::Message() << "test.input: " << test.input);
     FieldTypeSet matching_types;
@@ -460,23 +460,22 @@ TEST(PhoneNumberTest, UpdateCachedPhoneNumber) {
 
   PhoneNumber phone(&profile);
   phone.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"6502345678");
-  EXPECT_EQ(u"650", phone.GetInfo(AutofillType(PHONE_HOME_CITY_CODE), "US"));
+  EXPECT_EQ(u"650", phone.GetInfo(PHONE_HOME_CITY_CODE, "US"));
 
   // Update the area code.
   phone.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"8322345678");
-  EXPECT_EQ(u"832", phone.GetInfo(AutofillType(PHONE_HOME_CITY_CODE), "US"));
+  EXPECT_EQ(u"832", phone.GetInfo(PHONE_HOME_CITY_CODE, "US"));
 
   // Change the phone number to have a UK format, but try to parse with the
   // wrong locale.
   phone.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"07023456789");
-  EXPECT_EQ(std::u16string(),
-            phone.GetInfo(AutofillType(PHONE_HOME_CITY_CODE), "US"));
+  EXPECT_EQ(std::u16string(), phone.GetInfo(PHONE_HOME_CITY_CODE, "US"));
 
   // Now try parsing using the correct locale.  Note that the profile's country
   // code should override the app locale, which is still set to "US".
   profile.SetRawInfo(ADDRESS_HOME_COUNTRY, u"GB");
   phone.SetRawInfo(PHONE_HOME_WHOLE_NUMBER, u"07023456789");
-  EXPECT_EQ(u"70", phone.GetInfo(AutofillType(PHONE_HOME_CITY_CODE), "US"));
+  EXPECT_EQ(u"70", phone.GetInfo(PHONE_HOME_CITY_CODE, "US"));
 }
 
 TEST(PhoneNumberTest, PhoneCombineHelper) {
@@ -526,7 +525,7 @@ TEST(PhoneNumberTest, InternationalPhoneHomeCityAndNumber_US) {
   // Set phone number so country_code == 1, city_code = 650, number = 2345678.
   std::u16string phone(u"+1 (650) 234-5678");
   PhoneNumber phone_number(&profile);
-  phone_number.SetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER), phone, "en-US");
+  phone_number.SetInfo(PHONE_HOME_WHOLE_NUMBER, phone, "en-US");
   EXPECT_EQ(u"6502345678",
             phone_number.GetInfo(PHONE_HOME_CITY_AND_NUMBER, "en-US"));
 }
@@ -539,7 +538,7 @@ TEST(PhoneNumberTest, InternationalPhoneHomeCityAndNumber_DE) {
   // 567.
   std::u16string phone(u"+49 (174) 12 34 567");
   PhoneNumber phone_number(&profile);
-  phone_number.SetInfo(AutofillType(PHONE_HOME_WHOLE_NUMBER), phone, "en-US");
+  phone_number.SetInfo(PHONE_HOME_WHOLE_NUMBER, phone, "en-US");
   // Note that for German numbers (unlike US numbers), the
   // PHONE_HOME_CITY_AND_NUMBER should start with a 0.
   EXPECT_EQ(u"01741234567",

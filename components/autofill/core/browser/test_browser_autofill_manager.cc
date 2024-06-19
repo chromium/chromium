@@ -142,7 +142,7 @@ void TestBrowserAutofillManager::UploadVotesAndLogQuality(
                 possible_types.size());
       for (auto it : expected_submitted_field_types_[i]) {
         EXPECT_TRUE(possible_types.count(it))
-            << "Expected type: " << AutofillType(it).ToStringView();
+            << "Expected type: " << FieldTypeToStringView(it);
       }
     }
   }

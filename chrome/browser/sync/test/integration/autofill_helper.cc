@@ -40,7 +40,6 @@ using autofill::AutocompleteChangeList;
 using autofill::AutocompleteEntry;
 using autofill::AutocompleteKey;
 using autofill::AutofillProfile;
-using autofill::AutofillType;
 using autofill::AutofillWebDataService;
 using autofill::AutofillWebDataServiceObserverOnDBSequence;
 using autofill::CreditCard;
@@ -311,7 +310,7 @@ void RemoveProfile(int profile, const std::string& guid) {
 
 void UpdateProfile(int profile,
                    const std::string& guid,
-                   const AutofillType& type,
+                   autofill::FieldType type,
                    const std::u16string& value,
                    autofill::VerificationStatus status) {
   PersonalDataManager* pdm = GetPersonalDataManager(profile);
@@ -319,8 +318,7 @@ void UpdateProfile(int profile,
       pdm->address_data_manager().GetProfileByGUID(guid);
   ASSERT_TRUE(pdm_profile);
   AutofillProfile updated_profile = *pdm_profile;
-  updated_profile.SetRawInfoWithVerificationStatus(type.GetStorableType(),
-                                                   value, status);
+  updated_profile.SetRawInfoWithVerificationStatus(type, value, status);
   autofill::PersonalDataChangedWaiter waiter(*pdm);
   pdm->address_data_manager().UpdateProfile(updated_profile);
   std::move(waiter).Wait();

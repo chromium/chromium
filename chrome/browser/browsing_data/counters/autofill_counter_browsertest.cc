@@ -108,12 +108,10 @@ class AutofillCounterTest : public InProcessBrowserTest {
     std::string id = base::Uuid::GenerateRandomV4().AsLowercaseString();
     address_ids_.push_back(id);
     profile.set_guid(id);
-    profile.SetInfo(autofill::AutofillType(autofill::NAME_FIRST),
-                    base::ASCIIToUTF16(name), "en-US");
-    profile.SetInfo(autofill::AutofillType(autofill::NAME_LAST),
-                    base::ASCIIToUTF16(surname), "en-US");
-    profile.SetInfo(autofill::AutofillType(autofill::ADDRESS_HOME_LINE1),
-                    base::ASCIIToUTF16(address), "en-US");
+    profile.SetInfo(autofill::NAME_FIRST, base::ASCIIToUTF16(name), "en-US");
+    profile.SetInfo(autofill::NAME_LAST, base::ASCIIToUTF16(surname), "en-US");
+    profile.SetInfo(autofill::ADDRESS_HOME_LINE1, base::ASCIIToUTF16(address),
+                    "en-US");
     web_data_service_->AddAutofillProfile(profile);
   }
 

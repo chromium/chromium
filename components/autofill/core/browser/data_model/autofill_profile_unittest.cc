@@ -1112,8 +1112,7 @@ TEST(AutofillProfileTest, SetAndGetInfoWithValidationStatus) {
             VerificationStatus::kNoStatus);
 
   // Set a value with verification status and verify the results.
-  profile.SetInfoWithVerificationStatus(AutofillType(NAME_FULL), u"full name",
-                                        "en-US",
+  profile.SetInfoWithVerificationStatus(NAME_FULL, u"full name", "en-US",
                                         VerificationStatus::kFormatted);
   EXPECT_EQ(profile.GetVerificationStatus(NAME_FULL),
             VerificationStatus::kFormatted);
@@ -1123,19 +1122,16 @@ TEST(AutofillProfileTest, SetAndGetInfoWithValidationStatus) {
   EXPECT_FALSE(profile.SetInfoWithVerificationStatus(
       UNKNOWN_TYPE, u"DM", "en-US", VerificationStatus::kFormatted));
 
-  // Set a value with verification status using and AutofillType and verify the
-  // results.
+  // Set a value with verification status and verify the results.
   EXPECT_TRUE(profile.SetInfoWithVerificationStatus(
-      AutofillType(NAME_MIDDLE_INITIAL), u"MK", "en-US",
-      VerificationStatus::kFormatted));
+      NAME_MIDDLE_INITIAL, u"MK", "en-US", VerificationStatus::kFormatted));
   EXPECT_EQ(profile.GetVerificationStatus(NAME_MIDDLE_INITIAL),
             VerificationStatus::kFormatted);
   EXPECT_EQ(profile.GetRawInfo(NAME_MIDDLE_INITIAL), u"MK");
 
   // Set a value with verification status and verify the results.
   EXPECT_TRUE(profile.SetInfoWithVerificationStatus(
-      AutofillType(NAME_MIDDLE_INITIAL), u"CS", "en-US",
-      VerificationStatus::kFormatted));
+      NAME_MIDDLE_INITIAL, u"CS", "en-US", VerificationStatus::kFormatted));
   EXPECT_EQ(profile.GetVerificationStatus(NAME_MIDDLE_INITIAL),
             VerificationStatus::kFormatted);
   EXPECT_EQ(profile.GetRawInfo(NAME_MIDDLE_INITIAL), u"CS");
@@ -1440,7 +1436,7 @@ TEST(AutofillProfileTest, Compare_StructuredTypes) {
 
       SCOPED_TRACE(testing::Message()
                    << "Testing the Compare method for the type: "
-                   << AutofillType(type).ToStringView());
+                   << FieldTypeToStringView(type));
 
       SCOPED_TRACE(testing::Message()
                    << "Verify the correct result for identical values");

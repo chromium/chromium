@@ -37,17 +37,16 @@ TEST_P(SetFullNameTest, SetFullName) {
   SCOPED_TRACE(test_case.full_name_input);
 
   NameInfo name;
-  name.SetInfo(AutofillType(NAME_FULL), ASCIIToUTF16(test_case.full_name_input),
-               "en-US");
+  name.SetInfo(NAME_FULL, ASCIIToUTF16(test_case.full_name_input), "en-US");
   EXPECT_TRUE(name.FinalizeAfterImport());
   EXPECT_EQ(ASCIIToUTF16(test_case.given_name_output),
-            name.GetInfo(AutofillType(NAME_FIRST), "en-US"));
+            name.GetInfo(NAME_FIRST, "en-US"));
   EXPECT_EQ(ASCIIToUTF16(test_case.middle_name_output),
-            name.GetInfo(AutofillType(NAME_MIDDLE), "en-US"));
+            name.GetInfo(NAME_MIDDLE, "en-US"));
   EXPECT_EQ(ASCIIToUTF16(test_case.family_name_output),
-            name.GetInfo(AutofillType(NAME_LAST), "en-US"));
+            name.GetInfo(NAME_LAST, "en-US"));
   EXPECT_EQ(ASCIIToUTF16(test_case.full_name_input),
-            name.GetInfo(AutofillType(NAME_FULL), "en-US"));
+            name.GetInfo(NAME_FULL, "en-US"));
 }
 
 TEST(NameInfoTest, GetMatchingTypes) {

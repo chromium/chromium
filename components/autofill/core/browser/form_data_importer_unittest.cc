@@ -160,7 +160,7 @@ std::pair<std::string, std::string> GetLabelAndNameForType(FieldType type) {
   auto it = name_type_map.find(type);
   if (it == name_type_map.end()) {
     NOTIMPLEMENTED() << " field name and label is missing for "
-                     << AutofillType(type).ToStringView();
+                     << FieldTypeToStringView(type);
     return {std::string(), std::string()};
   }
   return it->second;
