@@ -141,12 +141,11 @@ void SavedTabGroupModel::Remove(const LocalTabGroupID tab_group_id) {
     return;
 
   const int index = GetIndexOf(tab_group_id).value();
-  base::Uuid removed_guid = Get(tab_group_id)->saved_guid();
   SavedTabGroup removed_group = RemoveImpl(index);
 
   UpdateGroupPositionsImpl();
   for (auto& observer : observers_) {
-    observer.SavedTabGroupRemovedLocally(&removed_group);
+    observer.SavedTabGroupRemovedLocally(removed_group);
   }
 
   RecordGroupDeletedMetric(removed_group);
@@ -157,12 +156,11 @@ void SavedTabGroupModel::Remove(const base::Uuid& id) {
     return;
 
   const int index = GetIndexOf(id).value();
-  base::Uuid removed_guid = Get(id)->saved_guid();
   SavedTabGroup removed_group = RemoveImpl(index);
 
   UpdateGroupPositionsImpl();
   for (auto& observer : observers_) {
-    observer.SavedTabGroupRemovedLocally(&removed_group);
+    observer.SavedTabGroupRemovedLocally(removed_group);
   }
 
   RecordGroupDeletedMetric(removed_group);
@@ -178,7 +176,8 @@ void SavedTabGroupModel::UpdateVisualData(
   UpdateVisualDataImpl(index.value(), visual_data);
   base::Uuid updated_guid = Get(tab_group_id)->saved_guid();
   for (auto& observer : observers_) {
-    observer.SavedTabGroupUpdatedLocally(updated_guid);
+    observer.SavedTabGroupUpdatedLocally(updated_guid,
+                                         /*tab_guid=*/std::nullopt);
   }
 }
 
@@ -191,7 +190,7 @@ void SavedTabGroupModel::UpdateVisualData(
   const std::optional<int> index = GetIndexOf(id);
   UpdateVisualDataImpl(index.value(), visual_data);
   for (auto& observer : observers_) {
-    observer.SavedTabGroupUpdatedLocally(id);
+    observer.SavedTabGroupUpdatedLocally(id, /*tab_guid=*/std::nullopt);
   }
 }
 
@@ -212,10 +211,9 @@ void SavedTabGroupModel::RemovedFromSync(const LocalTabGroupID tab_group_id) {
     return;
 
   const std::optional<int> index = GetIndexOf(tab_group_id);
-  base::Uuid removed_guid = Get(tab_group_id)->saved_guid();
   SavedTabGroup removed_group = RemoveImpl(index.value());
   for (auto& observer : observers_) {
-    observer.SavedTabGroupRemovedFromSync(&removed_group);
+    observer.SavedTabGroupRemovedFromSync(removed_group);
   }
 }
 
@@ -224,10 +222,9 @@ void SavedTabGroupModel::RemovedFromSync(const base::Uuid& id) {
     return;
 
   const std::optional<int> index = GetIndexOf(id);
-  base::Uuid removed_guid = Get(id)->saved_guid();
   SavedTabGroup removed_group = RemoveImpl(index.value());
   for (auto& observer : observers_) {
-    observer.SavedTabGroupRemovedFromSync(&removed_group);
+    observer.SavedTabGroupRemovedFromSync(removed_group);
   }
 }
 
@@ -241,7 +238,8 @@ void SavedTabGroupModel::UpdatedVisualDataFromSync(
   UpdateVisualDataImpl(index.value(), visual_data);
   base::Uuid updated_guid = Get(tab_group_id)->saved_guid();
   for (auto& observer : observers_) {
-    observer.SavedTabGroupUpdatedFromSync(updated_guid);
+    observer.SavedTabGroupUpdatedFromSync(updated_guid,
+                                          /*tab_guid=*/std::nullopt);
   }
 }
 
@@ -254,7 +252,7 @@ void SavedTabGroupModel::UpdatedVisualDataFromSync(
   const std::optional<int> index = GetIndexOf(id);
   UpdateVisualDataImpl(index.value(), visual_data);
   for (auto& observer : observers_) {
-    observer.SavedTabGroupUpdatedFromSync(id);
+    observer.SavedTabGroupUpdatedFromSync(id, /*tab_guid=*/std::nullopt);
   }
 }
 
@@ -492,7 +490,7 @@ const SavedTabGroup* SavedTabGroupModel::MergeRemoteGroupMetadata(
   }
 
   for (SavedTabGroupModelObserver& observer : observers_) {
-    observer.SavedTabGroupUpdatedFromSync(guid);
+    observer.SavedTabGroupUpdatedFromSync(guid, /*tab_guid=*/std::nullopt);
   }
 
   // Note that `index` can't be used anymore because groups could be re-ordered.
@@ -658,7 +656,8 @@ void SavedTabGroupModel::MigrateTabGroupSavesUIUpdate() {
        i < std::min(saved_tab_groups_.size(), kMaxNumberOfGroupToPin); ++i) {
     saved_tab_groups_[i].SetPosition(i);
     for (auto& observer : observers_) {
-      observer.SavedTabGroupUpdatedLocally(saved_tab_groups_[i].saved_guid());
+      observer.SavedTabGroupUpdatedLocally(saved_tab_groups_[i].saved_guid(),
+                                           /*tab_guid=*/std::nullopt);
     }
   }
 }
@@ -729,7 +728,7 @@ void SavedTabGroupModel::TogglePinState(base::Uuid id) {
   saved_group.SetPinned(!saved_group.is_pinned());
   InsertGroupImpl(std::move(saved_group));
   for (auto& observer : observers_) {
-    observer.SavedTabGroupUpdatedLocally(id);
+    observer.SavedTabGroupUpdatedLocally(id, /*tab_guid=*/std::nullopt);
   }
 
   if (was_pinned) {

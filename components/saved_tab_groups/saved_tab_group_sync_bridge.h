@@ -78,10 +78,10 @@ class SavedTabGroupSyncBridge : public syncer::ModelTypeSyncBridge,
 
   // SavedTabGroupModelObserver
   void SavedTabGroupAddedLocally(const base::Uuid& guid) override;
-  void SavedTabGroupRemovedLocally(const SavedTabGroup* removed_group) override;
+  void SavedTabGroupRemovedLocally(const SavedTabGroup& removed_group) override;
   void SavedTabGroupUpdatedLocally(
       const base::Uuid& group_guid,
-      const std::optional<base::Uuid>& tab_guid = std::nullopt) override;
+      const std::optional<base::Uuid>& tab_guid) override;
   void SavedTabGroupTabsReorderedLocally(const base::Uuid& group_guid) override;
   void SavedTabGroupReorderedLocally() override;
   void SavedTabGroupLocalIdChanged(const base::Uuid& group_guid) override;

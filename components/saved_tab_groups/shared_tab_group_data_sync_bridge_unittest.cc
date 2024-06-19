@@ -70,7 +70,7 @@ class MockTabGroupModelObserver : public SavedTabGroupModelObserver {
     observation_.Observe(model);
   }
 
-  MOCK_METHOD(void, SavedTabGroupRemovedFromSync, (const SavedTabGroup*));
+  MOCK_METHOD(void, SavedTabGroupRemovedFromSync, (const SavedTabGroup&));
   MOCK_METHOD(void,
               SavedTabGroupUpdatedFromSync,
               (const base::Uuid&, const std::optional<base::Uuid>&));

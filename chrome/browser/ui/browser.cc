@@ -1522,18 +1522,18 @@ void Browser::SavedTabGroupAddedLocally(const base::Uuid& guid) {
 }
 
 void Browser::SavedTabGroupRemovedLocally(
-    const tab_groups::SavedTabGroup* removed_group) {
+    const tab_groups::SavedTabGroup& removed_group) {
   // See comment in Browser::OnTabGroupChanged
   DCHECK(!IsRelevantToAppSessionService(type_));
   DCHECK(tab_strip_model_->group_model());
 
-  if (!removed_group->local_group_id().has_value()) {
+  if (!removed_group.local_group_id().has_value()) {
     return;
   }
 
   if (tab_strip_model()->group_model()->ContainsTabGroup(
-          removed_group->local_group_id().value())) {
-    UpdateTabGroupSessionMetadata(this, removed_group->local_group_id().value(),
+          removed_group.local_group_id().value())) {
+    UpdateTabGroupSessionMetadata(this, removed_group.local_group_id().value(),
                                   std::nullopt);
   }
 }

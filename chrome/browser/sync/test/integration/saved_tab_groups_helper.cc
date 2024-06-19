@@ -90,7 +90,7 @@ bool SavedTabOrGroupDoesNotExistChecker::IsExitConditionSatisfied(
 }
 
 void SavedTabOrGroupDoesNotExistChecker::SavedTabGroupRemovedFromSync(
-    const SavedTabGroup* removed_group) {
+    const SavedTabGroup& removed_group) {
   CheckExitCondition();
 }
 
@@ -226,7 +226,7 @@ void GroupOrderChecker::SavedTabGroupAddedFromSync(const base::Uuid& uuid) {
 }
 
 void GroupOrderChecker::SavedTabGroupRemovedFromSync(
-    const SavedTabGroup* removed_group) {
+    const SavedTabGroup& removed_group) {
   CheckExitCondition();
 }
 

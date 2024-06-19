@@ -767,7 +767,7 @@ class Browser : public TabStripModelObserver,
   // Overridden from tab_groups::SavedTabGroupModelObserver:
   void SavedTabGroupAddedLocally(const base::Uuid& guid) override;
   void SavedTabGroupRemovedLocally(
-      const tab_groups::SavedTabGroup* removed_group) override;
+      const tab_groups::SavedTabGroup& removed_group) override;
 
   // Overridden from content::WebContentsDelegate:
   void ActivateContents(content::WebContents* contents) override;

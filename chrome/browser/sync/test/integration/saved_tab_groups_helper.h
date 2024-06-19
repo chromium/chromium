@@ -36,7 +36,7 @@ class SavedTabOrGroupExistsChecker : public StatusChangeChecker,
   void SavedTabGroupAddedFromSync(const base::Uuid& uuid) override;
   void SavedTabGroupUpdatedFromSync(
       const base::Uuid& group_uuid,
-      const std::optional<base::Uuid>& tab_uuid = std::nullopt) override;
+      const std::optional<base::Uuid>& tab_uuid) override;
 
  private:
   const base::Uuid uuid_;
@@ -63,12 +63,12 @@ class SavedTabOrGroupDoesNotExistChecker : public StatusChangeChecker,
 
   // SavedTabGroupModelObserver
   void SavedTabGroupRemovedFromSync(
-      const SavedTabGroup* removed_group) override;
+      const SavedTabGroup& removed_group) override;
 
   // Note: Also handles the removal of tabs.
   void SavedTabGroupUpdatedFromSync(
       const base::Uuid& group_uuid,
-      const std::optional<base::Uuid>& tab_uuid = std::nullopt) override;
+      const std::optional<base::Uuid>& tab_uuid) override;
 
  private:
   const base::Uuid uuid_;
@@ -95,7 +95,7 @@ class SavedTabGroupMatchesChecker : public StatusChangeChecker,
   void SavedTabGroupAddedFromSync(const base::Uuid& uuid) override;
   void SavedTabGroupUpdatedFromSync(
       const base::Uuid& group_uuid,
-      const std::optional<base::Uuid>& tab_uuid = std::nullopt) override;
+      const std::optional<base::Uuid>& tab_uuid) override;
 
  private:
   const SavedTabGroup group_;
@@ -121,7 +121,7 @@ class SavedTabMatchesChecker : public StatusChangeChecker,
   void SavedTabGroupAddedFromSync(const base::Uuid& uuid) override;
   void SavedTabGroupUpdatedFromSync(
       const base::Uuid& group_uuid,
-      const std::optional<base::Uuid>& tab_uuid = std::nullopt) override;
+      const std::optional<base::Uuid>& tab_uuid) override;
 
  private:
   const SavedTabGroupTab tab_;
@@ -146,10 +146,10 @@ class GroupOrderChecker : public StatusChangeChecker,
   // SavedTabGroupModelObserver
   void SavedTabGroupAddedFromSync(const base::Uuid& uuid) override;
   void SavedTabGroupRemovedFromSync(
-      const SavedTabGroup* removed_group) override;
+      const SavedTabGroup& removed_group) override;
   void SavedTabGroupUpdatedFromSync(
       const base::Uuid& group_uuid,
-      const std::optional<base::Uuid>& tab_uuid = std::nullopt) override;
+      const std::optional<base::Uuid>& tab_uuid) override;
 
  private:
   const std::vector<base::Uuid> group_ids_;
@@ -176,7 +176,7 @@ class TabOrderChecker : public StatusChangeChecker,
   void SavedTabGroupAddedFromSync(const base::Uuid& uuid) override;
   void SavedTabGroupUpdatedFromSync(
       const base::Uuid& group_uuid,
-      const std::optional<base::Uuid>& tab_uuid = std::nullopt) override;
+      const std::optional<base::Uuid>& tab_uuid) override;
 
  private:
   const base::Uuid group_id_;

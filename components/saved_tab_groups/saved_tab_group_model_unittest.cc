@@ -63,13 +63,13 @@ class SavedTabGroupModelObserverTest
   }
 
   void SavedTabGroupRemovedLocally(
-      const SavedTabGroup* removed_group) override {
-    retrieved_guid_ = removed_group->saved_guid();
+      const SavedTabGroup& removed_group) override {
+    retrieved_guid_ = removed_group.saved_guid();
   }
 
   void SavedTabGroupUpdatedLocally(
       const base::Uuid& group_guid,
-      const std::optional<base::Uuid>& tab_guid = std::nullopt) override {
+      const std::optional<base::Uuid>& tab_guid) override {
     retrieved_group_.emplace_back(*saved_tab_group_model_->Get(group_guid));
     retrieved_index_ =
         saved_tab_group_model_->GetIndexOf(group_guid).value_or(-1);
@@ -81,13 +81,13 @@ class SavedTabGroupModelObserverTest
   }
 
   void SavedTabGroupRemovedFromSync(
-      const SavedTabGroup* removed_group) override {
-    retrieved_guid_ = removed_group->saved_guid();
+      const SavedTabGroup& removed_group) override {
+    retrieved_guid_ = removed_group.saved_guid();
   }
 
   void SavedTabGroupUpdatedFromSync(
       const base::Uuid& group_guid,
-      const std::optional<base::Uuid>& tab_guid = std::nullopt) override {
+      const std::optional<base::Uuid>& tab_guid) override {
     retrieved_group_.emplace_back(*saved_tab_group_model_->Get(group_guid));
     retrieved_index_ =
         saved_tab_group_model_->GetIndexOf(group_guid).value_or(-1);

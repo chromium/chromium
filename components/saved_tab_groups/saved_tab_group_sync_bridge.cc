@@ -396,7 +396,7 @@ void SavedTabGroupSyncBridge::SavedTabGroupAddedLocally(
 }
 
 void SavedTabGroupSyncBridge::SavedTabGroupRemovedLocally(
-    const SavedTabGroup* removed_group) {
+    const SavedTabGroup& removed_group) {
   std::unique_ptr<syncer::ModelTypeStore::WriteBatch> write_batch =
       store_->CreateWriteBatch();
 
@@ -404,10 +404,10 @@ void SavedTabGroupSyncBridge::SavedTabGroupRemovedLocally(
   // process), so other devices with the group open in the Tabstrip can react to
   // the deletion appropriately (i.e. We do not have to determine if a tab
   // deletion was part of a group deletion).
-  RemoveEntitySpecific(removed_group->saved_guid(), write_batch.get());
+  RemoveEntitySpecific(removed_group.saved_guid(), write_batch.get());
 
   // Keep track of the newly orphaned tabs since their group no longer exists.
-  for (const SavedTabGroupTab& tab : removed_group->saved_tabs()) {
+  for (const SavedTabGroupTab& tab : removed_group.saved_tabs()) {
     tabs_missing_groups_.emplace_back(SavedTabGroupTabToData(tab));
   }
 

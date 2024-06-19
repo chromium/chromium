@@ -390,14 +390,14 @@ void SavedTabGroupKeyedService::SavedTabGroupModelLoaded() {
 }
 
 void SavedTabGroupKeyedService::SavedTabGroupRemovedFromSync(
-    const SavedTabGroup* removed_group) {
+    const SavedTabGroup& removed_group) {
   // Do nothing if `removed_group` is not open in the tabstrip.
-  if (!removed_group->local_group_id().has_value()) {
+  if (!removed_group.local_group_id().has_value()) {
     return;
   }
 
   // Update the local group's contents to match the saved group's.
-  listener_.RemoveLocalGroupFromSync(removed_group->local_group_id().value());
+  listener_.RemoveLocalGroupFromSync(removed_group.local_group_id().value());
 }
 
 void SavedTabGroupKeyedService::SavedTabGroupUpdatedFromSync(

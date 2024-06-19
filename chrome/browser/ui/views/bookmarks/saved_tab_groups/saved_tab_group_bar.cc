@@ -448,8 +448,8 @@ void SavedTabGroupBar::SavedTabGroupAddedLocally(const base::Uuid& guid) {
 }
 
 void SavedTabGroupBar::SavedTabGroupRemovedLocally(
-    const SavedTabGroup* removed_group) {
-  SavedTabGroupRemoved(removed_group->saved_guid());
+    const SavedTabGroup& removed_group) {
+  SavedTabGroupRemoved(removed_group.saved_guid());
 }
 
 void SavedTabGroupBar::SavedTabGroupLocalIdChanged(
@@ -483,8 +483,8 @@ void SavedTabGroupBar::SavedTabGroupAddedFromSync(const base::Uuid& guid) {
 }
 
 void SavedTabGroupBar::SavedTabGroupRemovedFromSync(
-    const SavedTabGroup* removed_group) {
-  SavedTabGroupRemoved(removed_group->saved_guid());
+    const SavedTabGroup& removed_group) {
+  SavedTabGroupRemoved(removed_group.saved_guid());
 }
 
 void SavedTabGroupBar::SavedTabGroupUpdatedFromSync(
