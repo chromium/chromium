@@ -11,6 +11,7 @@
 #include "ash/ash_export.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_types.h"
+#include "ash/wm/window_positioning_utils.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -258,10 +259,15 @@ gfx::Rect CalculateSnappedWindowBoundsInScreen(
     int divider_position,
     bool is_resizing_with_divider);
 
-// Returns the opposite snap type of a snapped `window`. This will be
-// `kPrimarySnapped` if `window` is `kSecondarySnapped`, or `kSecondarySnapped`
-// if `window` is `kPrimarySnapped`.
-chromeos::WindowStateType GetOppositeSnapType(aura::Window* window);
+// Returns the snap type of the window's `state_type`, which must be snapped.
+// `snap_type` is guaranteed to be snapped already.
+SnapViewType ToSnapViewType(chromeos::WindowStateType state_type);
+chromeos::WindowStateType ToWindowStateType(SnapViewType snap_type);
+
+// Returns the opposite snap type of `window`, where `window` must be snapped.
+// `snap_type` is guaranteed to be snapped already.
+SnapViewType GetOppositeSnapType(SnapViewType snap_type);
+SnapViewType GetOppositeSnapType(aura::Window* window);
 
 // Returns true if `snap_action_source` can be start faster split screen set up.
 ASH_EXPORT bool CanSnapActionSourceStartFasterSplitView(
@@ -278,10 +284,24 @@ bool ShouldExcludeForOcclusionCheck(const aura::Window* window,
 // of the children of the active desk container of `root`.
 aura::Window::Windows GetActiveDeskAppWindowsInZOrder(aura::Window* root);
 
+// Returns the window that is fully visible (without occlusion) on the
+// `target_root` and with the given `snap_type`, excluding `window_to_ignore`.
+// Returns nullptr if no such window exists.
+aura::Window* GetTopmostVisibleWindowOfSnapType(aura::Window* window_to_ignore,
+                                                aura::Window* target_root,
+                                                SnapViewType snap_type);
+
 // Returns the window that is fully visible (without occlusion) and snapped to
-// the opposite side of the given `window`. Returns nullptr if no such window
-// exists.
+// the opposite side of the given `window` on the same root window. Returns
+// nullptr if no such window exists.
 aura::Window* GetOppositeVisibleSnappedWindow(aura::Window* window);
+
+// Given `to_be_snapped_window`, the `target_root` it is being dragged to, and
+// target `snap_type`, returns the snap ratio for `to_be_snapped_window` to be
+// used for phantom windows.
+float GetPhantomSnapRatio(aura::Window* to_be_snapped_window,
+                          aura::Window* target_root,
+                          SnapViewType snap_type);
 
 // Returns true if the given `window` can be considered as the candidate for
 // faster split screen set up. Returns false otherwise. `snap_action_source` is

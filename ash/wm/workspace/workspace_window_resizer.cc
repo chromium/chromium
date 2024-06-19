@@ -21,8 +21,6 @@
 #include "ash/wm/float/tablet_mode_float_window_resizer.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/pip/pip_window_resizer.h"
-#include "ash/wm/snap_group/snap_group.h"
-#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/splitview/split_view_utils.h"
 #include "ash/wm/tile_group/window_splitter.h"
 #include "ash/wm/toplevel_window_event_handler.h"
@@ -484,21 +482,6 @@ bool IsTransitionFromTopToMaximize(WorkspaceWindowResizer::SnapType from_type,
   const bool is_primary = chromeos::IsPrimaryOrientation(orientation);
   return is_primary ? from_type == WorkspaceWindowResizer::SnapType::kPrimary
                     : from_type == WorkspaceWindowResizer::SnapType::kSecondary;
-}
-
-// Returns the target snap ratio to be used by the snap phantom window.
-float GetTargetSnapRatio(const aura::Window* root_window,
-                         SnapViewType snap_type) {
-  if (IsSnapGroupEnabledInClamshellMode()) {
-    if (auto* snap_group =
-            SnapGroupController::Get()->GetTopmostVisibleSnapGroup(
-                root_window)) {
-      const WindowState* window_state =
-          WindowState::Get(snap_group->GetWindowOfSnapViewType(snap_type));
-      return window_state->snap_ratio().value_or(chromeos::kDefaultSnapRatio);
-    }
-  }
-  return chromeos::kDefaultSnapRatio;
 }
 
 }  // namespace
@@ -1590,18 +1573,19 @@ void WorkspaceWindowResizer::UpdateSnapPhantomWindow(
   gfx::Rect phantom_bounds;
   // Note that `target_root` is of the target display, not the currently dragged
   // window of `GetTarget()`.
-  const aura::Window* target_root =
+  aura::Window* window = GetTarget();
+  aura::Window* target_root =
       Shell::Get()->GetRootWindowForDisplayId(display.id());
   switch (snap_type_) {
     case SnapType::kPrimary:
       phantom_bounds = GetSnappedWindowBounds(
-          display.work_area(), display, GetTarget(), SnapViewType::kPrimary,
-          GetTargetSnapRatio(target_root, SnapViewType::kPrimary));
+          display.work_area(), display, window, SnapViewType::kPrimary,
+          GetPhantomSnapRatio(window, target_root, SnapViewType::kPrimary));
       break;
     case SnapType::kSecondary:
       phantom_bounds = GetSnappedWindowBounds(
-          display.work_area(), display, GetTarget(), SnapViewType::kSecondary,
-          GetTargetSnapRatio(target_root, SnapViewType::kSecondary));
+          display.work_area(), display, window, SnapViewType::kSecondary,
+          GetPhantomSnapRatio(window, target_root, SnapViewType::kSecondary));
       break;
     case SnapType::kMaximize:
       phantom_bounds = display.work_area();

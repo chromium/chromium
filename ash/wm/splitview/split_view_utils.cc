@@ -822,14 +822,38 @@ gfx::Rect CalculateSnappedWindowBoundsInScreen(
   return snapped_window_bounds_in_screen;
 }
 
-chromeos::WindowStateType GetOppositeSnapType(aura::Window* window) {
-  CHECK(window);
-  WindowState* window_state = WindowState::Get(window);
-  CHECK(window_state->IsSnapped());
-  return window_state->GetStateType() ==
-                 chromeos::WindowStateType::kPrimarySnapped
-             ? chromeos::WindowStateType::kSecondarySnapped
-             : chromeos::WindowStateType::kPrimarySnapped;
+SnapViewType ToSnapViewType(chromeos::WindowStateType state_type) {
+  switch (state_type) {
+    case chromeos::WindowStateType::kPrimarySnapped:
+      return SnapViewType::kPrimary;
+    case chromeos::WindowStateType::kSecondarySnapped:
+      return SnapViewType::kSecondary;
+    default:
+      NOTREACHED_NORETURN();
+  }
+}
+
+chromeos::WindowStateType ToWindowStateType(SnapViewType snap_type) {
+  switch (snap_type) {
+    case SnapViewType::kPrimary:
+      return chromeos::WindowStateType::kPrimarySnapped;
+    case SnapViewType::kSecondary:
+      return chromeos::WindowStateType::kSecondarySnapped;
+  }
+}
+
+SnapViewType GetOppositeSnapType(SnapViewType snap_type) {
+  switch (snap_type) {
+    case SnapViewType::kPrimary:
+      return SnapViewType::kSecondary;
+    case SnapViewType::kSecondary:
+      return SnapViewType::kPrimary;
+  }
+}
+
+SnapViewType GetOppositeSnapType(aura::Window* window) {
+  return GetOppositeSnapType(
+      ToSnapViewType(WindowState::Get(window)->GetStateType()));
 }
 
 bool CanSnapActionSourceStartFasterSplitView(
@@ -880,12 +904,14 @@ aura::Window::Windows GetActiveDeskAppWindowsInZOrder(aura::Window* root) {
   return windows;
 }
 
-aura::Window* GetOppositeVisibleSnappedWindow(aura::Window* window) {
+aura::Window* GetTopmostVisibleWindowOfSnapType(aura::Window* window_to_ignore,
+                                                aura::Window* target_root,
+                                                SnapViewType snap_type) {
   // `GetActiveDeskAppWindowsInZOrder()` will exclude transient windows like the
   // window layout menu and other bubble widgets.
-  aura::Window::Windows windows =
-      GetActiveDeskAppWindowsInZOrder(window->GetRootWindow());
-  const auto opposite_snap_type = GetOppositeSnapType(window);
+  aura::Window::Windows windows = GetActiveDeskAppWindowsInZOrder(target_root);
+  const chromeos::WindowStateType target_state_type =
+      ToWindowStateType(snap_type);
   auto* overview_session = GetOverviewSession();
 
   // Track the union bounds of the windows that are more recently used than the
@@ -894,10 +920,11 @@ aura::Window* GetOppositeVisibleSnappedWindow(aura::Window* window) {
   gfx::Rect union_bounds;
   for (aura::Window* top_window : windows) {
     // The `top_window` should be excluded for occlusion check when it is the
-    // `window` itself or if `ShouldExcludeForOcclusionCheck()` is true.
+    // `window_to_ignore` itself or if `ShouldExcludeForOcclusionCheck()` is
+    // true.
     const bool should_be_excluded_for_occlusion_check =
-        top_window == window ||
-        ShouldExcludeForOcclusionCheck(top_window, window->GetRootWindow());
+        top_window == window_to_ignore ||
+        ShouldExcludeForOcclusionCheck(top_window, target_root);
 
     if (should_be_excluded_for_occlusion_check) {
       continue;
@@ -911,7 +938,7 @@ aura::Window* GetOppositeVisibleSnappedWindow(aura::Window* window) {
 
     const auto* top_window_state = WindowState::Get(top_window);
     const gfx::Rect top_window_bounds = top_window->GetBoundsInScreen();
-    if (top_window_state->GetStateType() == opposite_snap_type) {
+    if (top_window_state->GetStateType() == target_state_type) {
       // Ensure that `top_window` is fully visible by checking:
       // 1. There is no window stacked above `top_window` with bounds
       // confined or confining `top_window`. Note that if `union_bounds` is
@@ -929,6 +956,26 @@ aura::Window* GetOppositeVisibleSnappedWindow(aura::Window* window) {
   }
 
   return nullptr;
+}
+
+aura::Window* GetOppositeVisibleSnappedWindow(aura::Window* window) {
+  return GetTopmostVisibleWindowOfSnapType(window, window->GetRootWindow(),
+                                           GetOppositeSnapType(window));
+}
+
+float GetPhantomSnapRatio(aura::Window* to_be_snapped_window,
+                          aura::Window* target_root,
+                          SnapViewType snap_type) {
+  if (IsSnapGroupEnabledInClamshellMode()) {
+    // `GetTopmostVisibleWindowOfSnapType()` will include windows in snap
+    // groups.
+    if (aura::Window* opposite =
+            GetTopmostVisibleWindowOfSnapType(to_be_snapped_window, target_root,
+                                              GetOppositeSnapType(snap_type))) {
+      return 1.f - window_util::GetSnapRatioForWindow(opposite);
+    }
+  }
+  return chromeos::kDefaultSnapRatio;
 }
 
 bool ShouldConsiderWindowForFasterSplitView(

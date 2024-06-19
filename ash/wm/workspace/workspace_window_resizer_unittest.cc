@@ -2495,14 +2495,188 @@ TEST_F(SnapGroupWorkspaceWindowResizerTest, SnapGroupPhantomBounds) {
       snap_phantom_window_controller()->GetTargetWindowBounds(),
       /*tolerance=*/kSplitviewDividerShortSideLength / 2));
 
-  // Create a new window on top of the snap group.
-  std::unique_ptr<aura::Window> w3 = CreateAppWindow();
+  // Create a new window on top of the snap group that fully occludes the snap
+  // group. See b/347768613 for why phantom bounds for a snap group when there
+  // is a partially occluding windows isn't defined.
+  std::unique_ptr<aura::Window> w3 = CreateAppWindow(work_area);
 
   // Now drag to snap `window_`. Since the snap group is not fully visible, the
   // phantom bounds are back to default.
   resizer->Drag(gfx::PointF(0, 100), 0);
   EXPECT_EQ(gfx::Rect(0, 0, work_area.width() / 2, work_area.height()),
             snap_phantom_window_controller()->GetTargetWindowBounds());
+}
+
+// Tests that the snap phantom bounds reflect the opposite snapped window.
+TEST_F(SnapGroupWorkspaceWindowResizerTest, ReflectOppositeSnappedWindow) {
+  UpdateDisplay("800x600");
+
+  // Create an app window so it can be recognized by
+  // `GetOppositeVisibleSnappedWindow()`, then snap `w1` and resize `w1` to an
+  // arbitrary size.
+  std::unique_ptr<aura::Window> w1 = CreateAppWindow();
+  const WindowSnapWMEvent snap_primary(
+      WM_EVENT_SNAP_PRIMARY, chromeos::kDefaultSnapRatio,
+      WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  WindowState::Get(w1.get())->OnWMEvent(&snap_primary);
+  auto* event_generator = GetEventGenerator();
+  const gfx::Rect work_area =
+      screen_util::GetDisplayWorkAreaBoundsInParent(w1.get());
+  event_generator->MoveMouseTo(w1->GetBoundsInScreen().right_center());
+  event_generator->DragMouseTo(250, work_area.CenterPoint().y());
+  ASSERT_EQ(250, w1->GetBoundsInScreen().width());
+
+  // Now drag to snap `w2` to the opposite side of `w1`. Test we update the
+  // phantom bounds to reflect `w1`.
+  std::unique_ptr<aura::Window> w2 = CreateAppWindow();
+  std::unique_ptr<WindowResizer> resizer(CreateResizerForTest(w2.get()));
+  gfx::Rect expected_bounds(work_area);
+  expected_bounds.Subtract(w1->GetBoundsInScreen());
+  resizer->Drag(gfx::PointF(work_area.right(), work_area.CenterPoint().y()),
+                /*event_flags=*/0);
+  EXPECT_TRUE(expected_bounds.ApproximatelyEqual(
+      snap_phantom_window_controller()->GetTargetWindowBounds(),
+      /*tolerance=*/kSplitviewDividerShortSideLength / 2));
+
+  // Test that the window snaps at the phantom bounds.
+  resizer->CompleteDrag();
+  auto* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w2.get(), w1.get()));
+  EXPECT_TRUE(expected_bounds.ApproximatelyEqual(
+      w2->GetBoundsInScreen(),
+      /*tolerance=*/kSplitviewDividerShortSideLength / 2));
+}
+
+// Tests that the snap phantom bounds work on multi-displays.
+TEST_F(SnapGroupWorkspaceWindowResizerTest, SnapPhantomBoundsMultiDisplay) {
+  UpdateDisplay("800x600,1200x900");
+
+  // Create an app window so it can be recognized by
+  // `GetOppositeVisibleSnappedWindow()`, then snap `w1` to 1/3 on display 2.
+  std::unique_ptr<aura::Window> w1 =
+      CreateAppWindow(gfx::Rect(1200, 0, 400, 400));
+  const WindowSnapWMEvent snap_secondary(
+      WM_EVENT_SNAP_SECONDARY, chromeos::kOneThirdSnapRatio,
+      WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  WindowState::Get(w1.get())->OnWMEvent(&snap_secondary);
+  const display::Display display2 = display_manager()->active_display_list()[1];
+  ASSERT_EQ(display2,
+            display::Screen::GetScreen()->GetDisplayNearestWindow(w1.get()));
+
+  // Drag to snap `window_` to display 2. `Drag()` doesn't update the display,
+  // so manually do it in the test.
+  AllowSnap(window_.get());
+  window_->SetBounds(gfx::Rect(0, 0, 400, 400));
+  std::unique_ptr<WindowResizer> resizer(CreateResizerForTest(window_.get()));
+  ASSERT_TRUE(resizer.get());
+  Shell::Get()->cursor_manager()->SetDisplay(display2);
+  const gfx::Rect work_area2 = display2.work_area();
+  resizer->Drag(CalculateDragPoint(*resizer, work_area2.x(),
+                                   work_area2.CenterPoint().y()),
+                /*event_flags=*/0);
+
+  // Test the phantom bounds are updated on display 2.
+  gfx::Rect expected_bounds(work_area2);
+  expected_bounds.Subtract(w1->GetBoundsInScreen());
+  EXPECT_TRUE(expected_bounds.ApproximatelyEqual(
+      snap_phantom_window_controller()->GetTargetWindowBounds(),
+      /*tolerance=*/kSplitviewDividerShortSideLength / 2));
+
+  // Test that the window snaps at the phantom bounds.
+  resizer->CompleteDrag();
+  auto* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(
+      snap_group_controller->AreWindowsInSnapGroup(window_.get(), w1.get()));
+  EXPECT_TRUE(expected_bounds.ApproximatelyEqual(
+      window_->GetBoundsInScreen(),
+      /*tolerance=*/kSplitviewDividerShortSideLength / 2));
+}
+
+// Tests that the phantom bounds work correctly in portrait mode.
+TEST_F(SnapGroupWorkspaceWindowResizerTest, SnapPhantomBoundsPortraitMode) {
+  UpdateDisplay("600x900");
+
+  // Create an app window so it can be recognized by
+  // `GetOppositeVisibleSnappedWindow()`, then snap to 2/3 top.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  const WindowSnapWMEvent snap_primary(
+      WM_EVENT_SNAP_PRIMARY, chromeos::kTwoThirdSnapRatio,
+      WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  WindowState::Get(w1.get())->OnWMEvent(&snap_primary);
+  const gfx::Rect work_area =
+      screen_util::GetDisplayWorkAreaBoundsInParent(w1.get());
+  ASSERT_EQ(gfx::Rect(0, 0, work_area.width(),
+                      work_area.height() * chromeos::kTwoThirdSnapRatio),
+            w1->GetBoundsInScreen());
+
+  // Drag to snap `window_` to the bottom.
+  AllowSnap(window_.get());
+  std::unique_ptr<WindowResizer> resizer(CreateResizerForTest(window_.get()));
+  ASSERT_TRUE(resizer.get());
+  resizer->Drag(CalculateDragPoint(*resizer, work_area.CenterPoint().x(),
+                                   work_area.bottom()),
+                /*event_flags=*/0);
+
+  // Test the phantom bounds are updated to reflect `w1`.
+  gfx::Rect expected_bounds(work_area);
+  expected_bounds.Subtract(w1->GetBoundsInScreen());
+  EXPECT_TRUE(expected_bounds.ApproximatelyEqual(
+      snap_phantom_window_controller()->GetTargetWindowBounds(),
+      /*tolerance=*/kSplitviewDividerShortSideLength / 2));
+
+  // Test that the window snaps at the phantom bounds.
+  resizer->CompleteDrag();
+  auto* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(
+      snap_group_controller->AreWindowsInSnapGroup(window_.get(), w1.get()));
+  EXPECT_TRUE(expected_bounds.ApproximatelyEqual(
+      window_->GetBoundsInScreen(),
+      /*tolerance=*/kSplitviewDividerShortSideLength / 2));
+}
+
+// Tests that when the snap phantom bounds window has a minimum size, the
+// minimum size is respected.
+TEST_F(SnapGroupWorkspaceWindowResizerTest, SnapPhantomBoundsMinimumSize) {
+  UpdateDisplay("800x600");
+
+  // Create an app window so it can be recognized by
+  // `GetOppositeVisibleSnappedWindow()`, then snap to 2/3 left.
+  std::unique_ptr<aura::Window> w1(CreateAppWindow());
+  const WindowSnapWMEvent snap_primary(
+      WM_EVENT_SNAP_PRIMARY, chromeos::kTwoThirdSnapRatio,
+      WindowSnapActionSource::kDragWindowToEdgeToSnap);
+  WindowState::Get(w1.get())->OnWMEvent(&snap_primary);
+  const gfx::Rect work_area =
+      screen_util::GetDisplayWorkAreaBoundsInParent(w1.get());
+  ASSERT_EQ(gfx::Rect(0, 0, work_area.width() * chromeos::kTwoThirdSnapRatio,
+                      work_area.height()),
+            w1->GetBoundsInScreen());
+
+  // Set `window_` minimum size to be > 1/3, then drag to snap `window_`.
+  const gfx::Size min_size(work_area.width() * 0.4f, work_area.height());
+  delegate_.set_minimum_size(min_size);
+  AllowSnap(window_.get());
+  std::unique_ptr<WindowResizer> resizer(CreateResizerForTest(window_.get()));
+  ASSERT_TRUE(resizer.get());
+  resizer->Drag(gfx::PointF(work_area.right(), work_area.CenterPoint().y()),
+                /*event_flags=*/0);
+
+  // Test the phantom bounds are at `window_` minimum size.
+  gfx::Rect expected_bounds(work_area);
+  expected_bounds.set_x(work_area.right() - min_size.width());
+  expected_bounds.set_width(min_size.width());
+  EXPECT_TRUE(expected_bounds.ApproximatelyEqual(
+      snap_phantom_window_controller()->GetTargetWindowBounds(),
+      /*tolerance=*/kSplitviewDividerShortSideLength / 2));
+
+  // Test that the window snaps at the phantom bounds.
+  resizer->CompleteDrag();
+  auto* snap_group_controller = SnapGroupController::Get();
+  ASSERT_TRUE(
+      snap_group_controller->AreWindowsInSnapGroup(window_.get(), w1.get()));
+  EXPECT_TRUE(expected_bounds.ApproximatelyEqual(
+      window_->GetBoundsInScreen(),
+      /*tolerance=*/kSplitviewDividerShortSideLength / 2));
 }
 
 class PortraitWorkspaceWindowResizerTest : public WorkspaceWindowResizerTest {
@@ -2523,62 +2697,6 @@ class PortraitWorkspaceWindowResizerTest : public WorkspaceWindowResizerTest {
     AllowSnap(window_.get());
   }
 };
-
-// Tests that dragging to an external portrait display updates phantom snap to
-// top/bottom phantom windows instead of left/right.
-TEST_F(PortraitWorkspaceWindowResizerTest, MultiDisplaySnapPhantom) {
-  UpdateDisplay("800x600,600x800");
-  aura::Window::Windows root_windows = Shell::GetAllRootWindows();
-  ASSERT_EQ(2U, root_windows.size());
-
-  window_->SetBoundsInScreen(gfx::Rect(0, 0, 50, 60),
-                             display::Screen::GetScreen()->GetPrimaryDisplay());
-
-  gfx::Rect work_area(
-      screen_util::GetDisplayWorkAreaBoundsInParent(window_.get()));
-  EXPECT_EQ(root_windows[0], window_->GetRootWindow());
-  EXPECT_FLOAT_EQ(1.0f, window_->layer()->opacity());
-
-  std::unique_ptr<WindowResizer> resizer = CreateResizerForTest(window_.get());
-  ASSERT_TRUE(resizer.get());
-  EXPECT_FALSE(snap_phantom_window_controller());
-
-  // Drag to snap left in landscape display should show left phantom window.
-  resizer->Drag(CalculateDragPoint(*resizer, 10, 0), 0);
-  EXPECT_TRUE(snap_phantom_window_controller());
-  EXPECT_EQ(gfx::Rect(0, 0, work_area.width() / 2, work_area.height()),
-            snap_phantom_window_controller()->GetTargetWindowBounds());
-
-  // Drag to snap right in landscape display should show right phantom window.
-  resizer->Drag(CalculateDragPoint(*resizer, 799, 0), 0);
-  EXPECT_TRUE(snap_phantom_window_controller());
-  EXPECT_EQ(gfx::Rect(work_area.width() / 2, 0, work_area.width() / 2,
-                      work_area.height()),
-            snap_phantom_window_controller()->GetTargetWindowBounds());
-
-  display::Display display =
-      display::Screen::GetScreen()->GetDisplayNearestPoint(gfx::Point(810, 0));
-  Shell::Get()->cursor_manager()->SetDisplay(display);
-  work_area = display.work_area();
-
-  // Move the window to the portrait display to snap top with vertical movement
-  // more than |kSnapTriggerVerticalMoveThreshold| to show top phantom window.
-  resizer->Drag(CalculateDragPoint(*resizer, 1100, 67), 0);
-  resizer->Drag(CalculateDragPoint(*resizer, 1100, 2), 0);
-  resizer->Drag(CalculateDragPoint(*resizer, 1100, 1), 0);
-  EXPECT_TRUE(snap_phantom_window_controller());
-  EXPECT_EQ(gfx::Rect(800, 0, work_area.width(), work_area.height() / 2),
-            snap_phantom_window_controller()->GetTargetWindowBounds());
-
-  // Move the window to the portrait display. Now the snap bottom should show
-  // bottom phantom window.
-  resizer->Drag(CalculateDragPoint(*resizer, 1100, 780), 0);
-  resizer->Drag(CalculateDragPoint(*resizer, 1100, 781), 0);
-  EXPECT_TRUE(snap_phantom_window_controller());
-  EXPECT_EQ(gfx::Rect(800, work_area.height() / 2, work_area.width(),
-                      work_area.height() / 2),
-            snap_phantom_window_controller()->GetTargetWindowBounds());
-}
 
 // Tests that dragging window to top triggers top snap.
 TEST_F(PortraitWorkspaceWindowResizerTest, SnapTop) {
