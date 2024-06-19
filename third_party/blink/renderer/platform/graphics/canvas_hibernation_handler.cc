@@ -4,11 +4,9 @@
 
 #include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 
-#include "base/feature_list.h"
 #include "base/memory/post_delayed_memory_reduction_task.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_request_args.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread.h"
@@ -121,8 +119,7 @@ void CanvasHibernationHandler::SaveForHibernation(
   HibernatedCanvasMemoryDumpProvider::GetInstance().Register(this);
 
   // Don't bother compressing very small canvases.
-  if (ImageMemorySize(*image_) < 16 * 1024 ||
-      !base::FeatureList::IsEnabled(features::kCanvasCompressHibernatedImage)) {
+  if (ImageMemorySize(*image_) < 16 * 1024) {
     return;
   }
 
@@ -154,8 +151,6 @@ void CanvasHibernationHandler::SaveForHibernation(
 
 void CanvasHibernationHandler::OnAfterHibernation(uint64_t epoch) {
   DCheckInvariant();
-  DCHECK(
-      base::FeatureList::IsEnabled(features::kCanvasCompressHibernatedImage));
   // Either we no longer have the image (because we are not hibernating), or we
   // went through another visible / not visible cycle (in which case it is too
   // early to compress).
@@ -181,8 +176,6 @@ void CanvasHibernationHandler::OnEncoded(
     std::unique_ptr<CanvasHibernationHandler::BackgroundTaskParams> params,
     sk_sp<SkData> encoded) {
   DCheckInvariant();
-  DCHECK(
-      base::FeatureList::IsEnabled(features::kCanvasCompressHibernatedImage));
   // Discard the compressed image, it is no longer current.
   if (params->epoch != epoch_ || !IsHibernating()) {
     return;
@@ -204,8 +197,6 @@ CanvasHibernationHandler::GetMainThreadTaskRunner() const {
 void CanvasHibernationHandler::Encode(
     std::unique_ptr<CanvasHibernationHandler::BackgroundTaskParams> params) {
   TRACE_EVENT0("blink", __PRETTY_FUNCTION__);
-  DCHECK(
-      base::FeatureList::IsEnabled(features::kCanvasCompressHibernatedImage));
   sk_sp<SkData> encoded =
       SkPngEncoder::Encode(nullptr, params->image.get(), {});
 
@@ -234,8 +225,6 @@ sk_sp<SkImage> CanvasHibernationHandler::GetImage() {
 
   CHECK(encoded_);
   CHECK(SkPngDecoder::IsPng(encoded_->data(), encoded_->size()));
-  DCHECK(
-      base::FeatureList::IsEnabled(features::kCanvasCompressHibernatedImage));
 
   base::TimeTicks before = base::TimeTicks::Now();
   // Note: not discarding the encoded image.

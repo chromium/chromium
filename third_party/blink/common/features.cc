@@ -490,11 +490,6 @@ BASE_FEATURE(kGetUserMediaDeferredDeviceSettingsSelection,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Whether to losslessly compress the resulting image after canvas hibernation.
-BASE_FEATURE(kCanvasCompressHibernatedImage,
-             "CanvasCompressHibernatedImage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When hibernating, make sure that the just-used transfer memory (to transfer
 // the snapshot) is freed.
 BASE_FEATURE(kCanvas2DHibernationReleaseTransferMemory,
