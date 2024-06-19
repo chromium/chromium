@@ -170,7 +170,7 @@ void CallStackProfileBuilder::OnSampleCompleted(
     // Dedup modules.
     auto module_loc = module_index_.find(frame.module);
     if (module_loc == module_index_.end()) {
-      modules_.push_back(frame.module);
+      modules_.push_back(frame.module.get());
       size_t index = modules_.size() - 1;
       module_loc = module_index_.emplace(frame.module, index).first;
     }

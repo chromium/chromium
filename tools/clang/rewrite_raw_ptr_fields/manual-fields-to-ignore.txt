@@ -23,9 +23,6 @@ cast_channel::CastTransportTest::logger_
 content::IndexedDBDispatcherHost::indexed_db_context_
 ServiceProcessState::state_
 
-# Populated manually - used with gmock Field() that expects a raw pointer.
-base::Frame::module
-
 # Populated manually - requires a rewrite in a generated file
 gpu::MockTransferBuffer::ExpectedMemoryInfo::ptr
 

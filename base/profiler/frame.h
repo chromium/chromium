@@ -6,7 +6,7 @@
 #define BASE_PROFILER_FRAME_H_
 
 #include "base/base_export.h"
-#include "base/memory/raw_ptr_exclusion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/profiler/module_cache.h"
 
 namespace base {
@@ -28,9 +28,7 @@ struct BASE_EXPORT Frame {
   uintptr_t instruction_pointer;
 
   // The module information.
-  // `module` is not a raw_ptr<...> because it is used with gmock Field() that
-  // expects a raw pointer in V8UnwinderTest.UnwindThroughV8Frames.
-  RAW_PTR_EXCLUSION const ModuleCache::Module* module;
+  raw_ptr<const ModuleCache::Module, DanglingUntriaged> module;
 
   // This serves as a temporary way to pass function names from libunwindstack
   // unwinder to tracing profiler. Not used by any other unwinder.
