@@ -4836,11 +4836,6 @@
     "expiry_milestone": 138
   },
   {
-    "name": "gainmap-hdr-images",
-    "owners": [ "ccameron@chromium.org", "chrome-color@google.com" ],
-    "expiry_milestone":120
-  },
-  {
     "name": "gallery-app-pdf-edit-notification",
     "owners": ["yawano@google.com", "assistive-eng@google.com"],
     "expiry_milestone": 120

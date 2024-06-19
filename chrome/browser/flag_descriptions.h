@@ -204,9 +204,6 @@ extern const char kForestKeyName[];
 extern const char kForestKeyDescription[];
 #endif
 
-extern const char kGainmapHdrImagesName[];
-extern const char kGainmapHdrImagesDescription[];
-
 extern const char kAvifGainmapHdrImagesName[];
 extern const char kAvifGainmapHdrImagesDescription[];
 

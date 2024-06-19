@@ -249,10 +249,6 @@ const char kFontationsFontBackendDescription[] =
     "If enabled, the Fontations font backend will be used for web fonts where "
     "otherwise FreeType would have been used.";
 
-const char kGainmapHdrImagesName[] = "Gainmap HDR image rendering";
-const char kGainmapHdrImagesDescription[] =
-    "If enabled, renders images that include an gainmap in HDR";
-
 const char kAvifGainmapHdrImagesName[] = "AVIF gainmap HDR image rendering";
 const char kAvifGainmapHdrImagesDescription[] =
     "If enabled, and the 'Gainmap HDR image rendering' flag is also enabled, "
