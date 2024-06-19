@@ -11,6 +11,7 @@
 #include "ash/bubble/bubble_utils.h"
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
+#include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_submenu_controller.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
@@ -96,11 +97,33 @@ void PickerItemWithSubmenuView::SetText(const std::u16string& primary_text) {
   SetAccessibleName(primary_text);
 }
 
+void PickerItemWithSubmenuView::AddEntry(PickerSearchResult result,
+                                         SelectItemCallback callback) {
+  entries_.emplace_back(std::move(result), std::move(callback));
+}
+
+bool PickerItemWithSubmenuView::IsEmpty() const {
+  return entries_.empty();
+}
+
 void PickerItemWithSubmenuView::OnMouseEntered(const ui::MouseEvent& event) {
   // TODO: b/343092747 - Pass the submenu list items to this class.
-  if (GetSubmenuController() != nullptr) {
-    GetSubmenuController()->Show(this, {});
+  if (GetSubmenuController() == nullptr) {
+    return;
   }
+
+  std::vector<std::unique_ptr<PickerItemView>> items;
+  items.reserve(entries_.size());
+  for (const auto& [result, callback] : entries_) {
+    items.push_back(PickerSectionView::CreateItemFromResult(
+        result, /*preview_controller=*/nullptr, /*asset_fetcher=*/nullptr,
+        callback));
+  }
+  GetSubmenuController()->Show(this, std::move(items));
+}
+
+const std::u16string& PickerItemWithSubmenuView::GetTextForTesting() const {
+  return label_->GetText();
 }
 
 BEGIN_METADATA(PickerItemWithSubmenuView)

@@ -15,12 +15,14 @@
 #include "ash/picker/picker_test_util.h"
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_item_view.h"
+#include "ash/picker/views/picker_item_with_submenu_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
 #include "ash/picker/views/picker_pseudo_focus_handler.h"
 #include "ash/picker/views/picker_section_view.h"
 #include "ash/picker/views/picker_zero_state_view_delegate.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/pill_button.h"
 #include "ash/test/view_drawn_waiter.h"
@@ -31,6 +33,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard_data.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
@@ -197,7 +200,7 @@ TEST_F(PickerZeroStateViewTest,
           Pointee(Property("GetVisible", &views::View::GetVisible, false)))));
 }
 
-TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsAsItems) {
+TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsAsItemsWithoutSubmenu) {
   MockZeroStateViewDelegate mock_delegate;
   EXPECT_CALL(mock_delegate, GetSuggestedZeroStateEditorResults)
       .WillOnce([](MockZeroStateViewDelegate::SuggestedEditorResultsCallback
@@ -235,6 +238,48 @@ TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsAsItems) {
                       AsView<PickerListItemView>(Property(
                           &PickerListItemView::GetPrimaryTextForTesting,
                           u"b")))))))));
+}
+
+TEST_F(PickerZeroStateViewTest, ShowsEditorSuggestionsBehindSubmenu) {
+  MockZeroStateViewDelegate mock_delegate;
+  EXPECT_CALL(mock_delegate, GetSuggestedZeroStateEditorResults)
+      .WillOnce([](MockZeroStateViewDelegate::SuggestedEditorResultsCallback
+                       callback) {
+        std::move(callback).Run({
+            PickerSearchResult::Editor(
+                PickerSearchResult::EditorData::Mode::kRewrite,
+                /*display_name=*/u"a",
+                /*category=*/
+                chromeos::editor_menu::PresetQueryCategory::kShorten, "shorten",
+                /*freeform_text=*/std::nullopt),
+            PickerSearchResult::Editor(
+                PickerSearchResult::EditorData::Mode::kRewrite,
+                /*display_name=*/u"b",
+                /*category=*/
+                chromeos::editor_menu::PresetQueryCategory::kEmojify, "emojify",
+                /*freeform_text=*/std::nullopt),
+        });
+      });
+  PickerZeroStateView view(&mock_delegate, {{PickerCategory::kEditorRewrite}},
+                           {}, kPickerWidth, &asset_fetcher_);
+
+  EXPECT_THAT(
+      view.category_section_views_for_testing(),
+      ElementsAre(Pair(
+          PickerCategoryType::kEditorRewrite,
+          Pointee(AllOf(
+              Property("GetVisible", &views::View::GetVisible, true),
+              Property("item_views_for_testing",
+                       &PickerSectionView::item_views_for_testing,
+                       ElementsAre(
+                           AsView<PickerItemWithSubmenuView>(Property(
+                               &PickerItemWithSubmenuView::GetTextForTesting,
+                               l10n_util::GetStringUTF16(
+                                   IDS_PICKER_CHANGE_LENGTH_MENU_LABEL))),
+                           AsView<PickerItemWithSubmenuView>(Property(
+                               &PickerItemWithSubmenuView::GetTextForTesting,
+                               l10n_util::GetStringUTF16(
+                                   IDS_PICKER_CHANGE_TONE_MENU_LABEL))))))))));
 }
 
 TEST_F(PickerZeroStateViewTest, UpdatesPseudoFocusToTopRecentItem) {

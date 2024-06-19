@@ -16,6 +16,7 @@
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/picker/views/picker_icons.h"
 #include "ash/picker/views/picker_item_view.h"
+#include "ash/picker/views/picker_item_with_submenu_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
 #include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_section_list_view.h"
@@ -29,6 +30,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chromeos/components/editor_menu/public/cpp/preset_text_query.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
@@ -48,6 +51,35 @@
 #include "ui/views/view_utils.h"
 
 namespace ash {
+namespace {
+
+enum class EditorSubmenu { kNone, kLength, kTone };
+
+EditorSubmenu GetEditorSubmenu(
+    std::optional<chromeos::editor_menu::PresetQueryCategory> category) {
+  if (!category.has_value()) {
+    return EditorSubmenu::kNone;
+  }
+
+  switch (*category) {
+    case chromeos::editor_menu::PresetQueryCategory::kUnknown:
+      return EditorSubmenu::kNone;
+    case chromeos::editor_menu::PresetQueryCategory::kShorten:
+      return EditorSubmenu::kLength;
+    case chromeos::editor_menu::PresetQueryCategory::kElaborate:
+      return EditorSubmenu::kLength;
+    case chromeos::editor_menu::PresetQueryCategory::kRephrase:
+      return EditorSubmenu::kNone;
+    case chromeos::editor_menu::PresetQueryCategory::kFormalize:
+      return EditorSubmenu::kTone;
+    case chromeos::editor_menu::PresetQueryCategory::kEmojify:
+      return EditorSubmenu::kTone;
+    case chromeos::editor_menu::PresetQueryCategory::kProofread:
+      return EditorSubmenu::kNone;
+  }
+}
+
+}  // namespace
 
 PickerZeroStateView::PickerZeroStateView(
     PickerZeroStateViewDelegate* delegate,
@@ -315,12 +347,55 @@ void PickerZeroStateView::OnFetchZeroStateEditorResults(
   }
 
   PickerSectionView* section_view = GetOrCreateSectionView(category);
+
+  // Some Editor results are shown directly in the section, some shown behind
+  // submenus. Iterate through the results and put them into the right View.
+  auto length_submenu =
+      views::Builder<PickerItemWithSubmenuView>()
+          .SetSubmenuController(&submenu_controller_)
+          .SetText(
+              l10n_util::GetStringUTF16(IDS_PICKER_CHANGE_LENGTH_MENU_LABEL))
+          .SetLeadingIcon(ui::ImageModel::FromVectorIcon(
+              chromeos::kEditorMenuShortenIcon, cros_tokens::kCrosSysOnSurface))
+          .Build();
+
+  auto tone_submenu =
+      views::Builder<PickerItemWithSubmenuView>()
+          .SetSubmenuController(&submenu_controller_)
+          .SetText(l10n_util::GetStringUTF16(IDS_PICKER_CHANGE_TONE_MENU_LABEL))
+          .SetLeadingIcon(ui::ImageModel::FromVectorIcon(
+              chromeos::kEditorMenuEmojifyIcon, cros_tokens::kCrosSysOnSurface))
+          .Build();
+
   for (const PickerSearchResult& result : results) {
-    section_view->AddResult(
-        result, &preview_controller_,
-        base::BindRepeating(&PickerZeroStateView::OnResultSelected,
-                            weak_ptr_factory_.GetWeakPtr(), result));
+    const auto* editor_data =
+        std::get_if<PickerSearchResult::EditorData>(&result.data());
+    CHECK(editor_data);
+
+    auto callback = base::BindRepeating(&PickerZeroStateView::OnResultSelected,
+                                        weak_ptr_factory_.GetWeakPtr(), result);
+    switch (GetEditorSubmenu(editor_data->category)) {
+      case EditorSubmenu::kNone:
+        section_view->AddResult(result, &preview_controller_,
+                                std::move(callback));
+        break;
+      case EditorSubmenu::kLength:
+        length_submenu->AddEntry(result, std::move(callback));
+        break;
+      case EditorSubmenu::kTone:
+        tone_submenu->AddEntry(result, std::move(callback));
+        break;
+    }
   }
+
+  if (!length_submenu->IsEmpty()) {
+    section_view->AddItemWithSubmenu(std::move(length_submenu));
+  }
+
+  if (!tone_submenu->IsEmpty()) {
+    section_view->AddItemWithSubmenu(std::move(tone_submenu));
+  }
+
   section_view->SetVisible(true);
   MovePseudoFocusToTopIfNeeded();
 }

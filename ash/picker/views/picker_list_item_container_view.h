@@ -14,6 +14,7 @@
 
 namespace ash {
 
+class PickerItemWithSubmenuView;
 class PickerListItemView;
 
 // Container view for the list items in a section. The list items are displayed
@@ -40,6 +41,8 @@ class ASH_EXPORT PickerListItemContainerView
 
   PickerListItemView* AddListItem(
       std::unique_ptr<PickerListItemView> list_item);
+  PickerItemWithSubmenuView* AddItemWithSubmenu(
+      std::unique_ptr<PickerItemWithSubmenuView> item_with_submenu);
 };
 
 }  // namespace ash

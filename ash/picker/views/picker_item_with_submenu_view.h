@@ -6,9 +6,12 @@
 #define ASH_PICKER_VIEWS_PICKER_ITEM_WITH_SUBMENU_VIEW_H_
 
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/picker/views/picker_item_view.h"
+#include "ash/public/cpp/picker/picker_search_result.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 
@@ -35,12 +38,19 @@ class ASH_EXPORT PickerItemWithSubmenuView : public PickerItemView {
 
   void SetText(const std::u16string& text);
 
+  void AddEntry(PickerSearchResult item, SelectItemCallback callback);
+
+  bool IsEmpty() const;
+
   // PickerItemView:
   void OnMouseEntered(const ui::MouseEvent& event) override;
+
+  const std::u16string& GetTextForTesting() const;
 
  private:
   raw_ptr<views::ImageView> leading_icon_view_ = nullptr;
   raw_ptr<views::Label> label_ = nullptr;
+  std::vector<std::pair<PickerSearchResult, SelectItemCallback>> entries_;
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, PickerItemWithSubmenuView, PickerItemView)

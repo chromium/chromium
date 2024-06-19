@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "ash/picker/views/picker_item_view.h"
+#include "ash/picker/views/picker_item_with_submenu_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
 #include "base/ranges/algorithm.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -62,6 +63,11 @@ views::View* PickerListItemContainerView::GetItemRightOf(views::View* item) {
 PickerListItemView* PickerListItemContainerView::AddListItem(
     std::unique_ptr<PickerListItemView> list_item) {
   return AddChildView(std::move(list_item));
+}
+
+PickerItemWithSubmenuView* PickerListItemContainerView::AddItemWithSubmenu(
+    std::unique_ptr<PickerItemWithSubmenuView> item_with_submenu) {
+  return AddChildView(std::move(item_with_submenu));
 }
 
 BEGIN_METADATA(PickerListItemContainerView)

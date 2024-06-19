@@ -15,6 +15,7 @@
 #include "ash/picker/views/picker_image_item_grid_view.h"
 #include "ash/picker/views/picker_image_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
+#include "ash/picker/views/picker_item_with_submenu_view.h"
 #include "ash/picker/views/picker_list_item_container_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
 #include "ash/picker/views/picker_strings.h"
@@ -291,6 +292,18 @@ PickerImageItemView* PickerSectionView::AddImageItem(
   return image_item_ptr;
 }
 
+PickerItemWithSubmenuView* PickerSectionView::AddItemWithSubmenu(
+    std::unique_ptr<PickerItemWithSubmenuView> item_with_submenu) {
+  if (list_item_container_ == nullptr) {
+    list_item_container_ =
+        AddChildView(std::make_unique<PickerListItemContainerView>());
+  }
+  PickerItemWithSubmenuView* item_ptr =
+      list_item_container_->AddItemWithSubmenu(std::move(item_with_submenu));
+  item_views_.push_back(item_ptr);
+  return item_ptr;
+}
+
 PickerItemView* PickerSectionView::AddItem(
     std::unique_ptr<PickerItemView> item) {
   if (views::IsViewClass<PickerListItemView>(item.get())) {
@@ -300,6 +313,10 @@ PickerItemView* PickerSectionView::AddItem(
   if (views::IsViewClass<PickerImageItemView>(item.get())) {
     return AddImageItem(std::unique_ptr<PickerImageItemView>(
         views::AsViewClass<PickerImageItemView>(item.release())));
+  }
+  if (views::IsViewClass<PickerItemWithSubmenuView>(item.get())) {
+    return AddItemWithSubmenu(std::unique_ptr<PickerItemWithSubmenuView>(
+        views::AsViewClass<PickerItemWithSubmenuView>(item.release())));
   }
   NOTREACHED_NORETURN();
 }

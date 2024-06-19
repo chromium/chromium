@@ -7287,6 +7287,12 @@ New install
       <message name="IDS_PICKER_EDITOR_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains editor categories">
         Editor
       </message>
+      <message name="IDS_PICKER_CHANGE_LENGTH_MENU_LABEL" translateable="false" desc="Label of a Picker item that lets the user change the length of the selected text.">
+        Change length
+      </message>
+      <message name="IDS_PICKER_CHANGE_TONE_MENU_LABEL" translateable="false" desc="Label of a Picker item that lets the user change the tone of the selected text.">
+        Change tone
+      </message>
       <message name="IDS_PICKER_CALCULATIONS_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains calculation categories, e.g. Dates and Maths.">
         More
       </message>
