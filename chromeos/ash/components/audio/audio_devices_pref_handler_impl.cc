@@ -416,6 +416,8 @@ double AudioDevicesPrefHandlerImpl::GetDeviceDefaultOutputVolume(
   switch (device.type) {
     case AudioDeviceType::kBluetooth:
       return kDefaultBluetoothOutputVolumePercent;
+    case AudioDeviceType::kUsb:
+      return kDefaultUsbOutputVolumePercent;
     case AudioDeviceType::kHdmi:
       return kDefaultHdmiOutputVolumePercent;
     default:

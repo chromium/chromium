@@ -23,7 +23,7 @@ const int32_t kOutputNumberOfVolumeSteps = 25;
 
 const uint64_t kHeadphoneId = 10002;
 const uint64_t kInternalMicId = 10003;
-const uint64_t kUSBMicId = 10005;
+const uint64_t kUsbMicId = 10005;
 
 struct AudioNodeInfo {
   bool is_input;
@@ -39,7 +39,7 @@ const AudioNodeInfo kInternalMic = {true, kInternalMicId, "Fake Mic",
 const AudioNodeInfo kHeadphone = {false, kHeadphoneId, "Fake Headphone",
                                   "HEADPHONE", "Headphone"};
 
-const AudioNodeInfo kUSBMic = {true, kUSBMicId, "Fake USB Mic", "USB",
+const AudioNodeInfo kUSBMic = {true, kUsbMicId, "Fake USB Mic", "USB",
                                "USB Microphone"};
 
 AudioDevice CreateAudioDevice(const AudioNodeInfo& info, int version) {

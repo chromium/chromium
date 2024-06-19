@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "audio_devices_pref_handler.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time_override.h"
@@ -30,10 +31,11 @@ const uint64_t kPresetInputId = 10001;
 const uint64_t kHeadphoneId = 10002;
 const uint64_t kInternalMicId = 10003;
 const uint64_t kPresetOutputId = 10004;
-const uint64_t kUSBMicId = 10005;
-const uint64_t kHDMIOutputId = 10006;
-const uint64_t kBluetoothOutputId = 10007;
-const uint64_t kBluetoothMicId = 10008;
+const uint64_t kUsbOutputId = 10005;
+const uint64_t kUsbMicId = 10006;
+const uint64_t kHDMIOutputId = 10007;
+const uint64_t kBluetoothOutputId = 10008;
+const uint64_t kBluetoothMicId = 10009;
 const uint64_t kOtherTypeOutputId = 90001;
 const uint64_t kOtherTypeInputId = 90002;
 
@@ -61,7 +63,10 @@ const AudioNodeInfo kPresetInput = {true, kPresetInputId, "Fake input",
 const AudioNodeInfo kInternalMic = {true, kInternalMicId, "Fake Mic",
                                     "INTERNAL_MIC", "Internal Mic"};
 
-const AudioNodeInfo kUSBMic = {true, kUSBMicId, "Fake USB Mic", "USB",
+const AudioNodeInfo kUsbOutput = {false, kUsbOutputId, "Fake USB Output", "USB",
+                                  "USB Output"};
+
+const AudioNodeInfo kUSBMic = {true, kUsbMicId, "Fake USB Mic", "USB",
                                "USB Microphone"};
 
 const AudioNodeInfo kPresetOutput = {false, kPresetOutputId, "Fake output",
@@ -197,6 +202,10 @@ class AudioDevicesPrefHandlerTest : public testing::TestWithParam<bool> {
                              version);
   }
 
+  AudioDevice GetUsbDeviceWithVersion(int version) {
+    return CreateAudioDevice(IsInputTest() ? kUSBMic : kUsbOutput, version);
+  }
+
   double GetSoundLevelValue(const AudioDevice& device) {
     return IsInputTest() ? audio_pref_handler_->GetInputGainValue(&device)
                          : audio_pref_handler_->GetOutputVolumeValue(&device);
@@ -255,6 +264,8 @@ class AudioDevicesPrefHandlerTest : public testing::TestWithParam<bool> {
     switch (device.type) {
       case AudioDeviceType::kBluetooth:
         return AudioDevicesPrefHandler::kDefaultBluetoothOutputVolumePercent;
+      case AudioDeviceType::kUsb:
+        return AudioDevicesPrefHandler::kDefaultUsbOutputVolumePercent;
       case AudioDeviceType::kHdmi:
         return AudioDevicesPrefHandler::kDefaultHdmiOutputVolumePercent;
       default:
@@ -276,6 +287,7 @@ TEST_P(AudioDevicesPrefHandlerTest, TestDefaultValuesV1) {
   AudioDevice device = GetDeviceWithVersion(1);
   AudioDevice secondary_device = GetSecondaryDeviceWithVersion(1);
   AudioDevice bt_device = GetBTDeviceWithVersion(1);
+  AudioDevice usb_device = GetUsbDeviceWithVersion(1);
 
   EXPECT_EQ(GetDeviceDefaultSoundLevelValue(device),
             GetSoundLevelValue(device));
@@ -283,6 +295,8 @@ TEST_P(AudioDevicesPrefHandlerTest, TestDefaultValuesV1) {
             GetSoundLevelValue(secondary_device));
   EXPECT_EQ(GetDeviceDefaultSoundLevelValue(bt_device),
             GetSoundLevelValue(bt_device));
+  EXPECT_EQ(GetDeviceDefaultSoundLevelValue(usb_device),
+            GetSoundLevelValue(usb_device));
 
   EXPECT_FALSE(DeviceStateExists(device));
   EXPECT_FALSE(DeviceStateExists(secondary_device));
