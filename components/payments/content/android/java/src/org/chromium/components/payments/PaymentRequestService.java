@@ -900,8 +900,10 @@ public class PaymentRequestService
         mIsFinishedQueryingPaymentApps = true;
 
         mHasEnrolledInstrument |= mCanMakePaymentEvenWithoutApps;
-        // Always return false when can make payment is disabled.
-        mHasEnrolledInstrument &= mDelegate.prefsCanMakePayment();
+        // The kCanMakePaymentEnabled pref does not apply to SPC, where hasEnrolledInstrument() is
+        // only used for feature detection and does not communicate with any applications.
+        mHasEnrolledInstrument &=
+                (mDelegate.prefsCanMakePayment() || mSpec.isSecurePaymentConfirmationRequested());
 
         mBrowserPaymentRequest.notifyPaymentUiOfPendingApps(mPendingApps);
         mPendingApps.clear();
@@ -1184,10 +1186,16 @@ public class PaymentRequestService
 
         mIsCanMakePaymentResponsePending = false;
 
-        RecordHistogram.recordBooleanHistogram(
-                "PaymentRequest.CanMakePayment.CallAllowedByPref", mDelegate.prefsCanMakePayment());
+        // The kCanMakePaymentEnabled pref does not apply to SPC, where canMakePayment() is only
+        // used for feature detection and does not communicate with any applications.
+        boolean allowedByPref = true;
+        if (!mSpec.isSecurePaymentConfirmationRequested()) {
+            allowedByPref = mDelegate.prefsCanMakePayment();
+            RecordHistogram.recordBooleanHistogram(
+                    "PaymentRequest.CanMakePayment.CallAllowedByPref", allowedByPref);
+        }
 
-        boolean response = mCanMakePayment && mDelegate.prefsCanMakePayment();
+        boolean response = mCanMakePayment && allowedByPref;
         mClient.onCanMakePayment(
                 response
                         ? CanMakePaymentQueryResult.CAN_MAKE_PAYMENT
@@ -1209,9 +1217,11 @@ public class PaymentRequestService
 
         // The pref is checked in onDoneCreatingPaymentApps, but we explicitly want to measure
         // calls to hasEnrolledInstrument() that are affected by it.
-        RecordHistogram.recordBooleanHistogram(
-                "PaymentRequest.HasEnrolledInstrument.CallAllowedByPref",
-                mDelegate.prefsCanMakePayment());
+        if (!mSpec.isSecurePaymentConfirmationRequested()) {
+            RecordHistogram.recordBooleanHistogram(
+                    "PaymentRequest.HasEnrolledInstrument.CallAllowedByPref",
+                    mDelegate.prefsCanMakePayment());
+        }
 
         boolean response = mHasEnrolledInstrument;
         mIsHasEnrolledInstrumentResponsePending = false;

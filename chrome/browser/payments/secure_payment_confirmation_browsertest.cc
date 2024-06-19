@@ -303,6 +303,27 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
                         "securePaymentConfirmationHasEnrolledInstrument()"));
 }
 
+// canMakePayment() and hasEnrolledInstrument() should return true on platforms
+// with a compatible authenticator regardless of the value of the
+// "prefs.can_make_payment_enabled" pref.
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
+                       CanMakePayment_CanMakePaymentEnabledPref) {
+  test_controller()->SetHasAuthenticator(true);
+  test_controller()->SetCanMakePaymentEnabledPref(false);
+
+  NavigateTo("a.com", "/secure_payment_confirmation.html");
+
+  EXPECT_EQ("true",
+            content::EvalJs(GetActiveWebContents(),
+                            "securePaymentConfirmationCanMakePayment()"));
+  EXPECT_EQ("true",
+            content::EvalJs(GetActiveWebContents(),
+                            "securePaymentConfirmationCanMakePaymentTwice()"));
+  EXPECT_EQ("true", content::EvalJs(
+                        GetActiveWebContents(),
+                        "securePaymentConfirmationHasEnrolledInstrument()"));
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 // Intentionally do not enable the "SecurePaymentConfirmation" Blink runtime
 // feature or the browser-side Finch flag.

@@ -552,11 +552,18 @@ void PaymentRequest::CanMakePayment() {
   if (observer_for_testing_)
     observer_for_testing_->OnCanMakePaymentCalled();
 
-  const bool can_make_payment_allowed =
-      delegate_->GetPrefService()->GetBoolean(kCanMakePaymentEnabled);
-  base::UmaHistogramBoolean("PaymentRequest.CanMakePayment.CallAllowedByPref",
-                            can_make_payment_allowed);
-  if (!can_make_payment_allowed) {
+  // The kCanMakePaymentEnabled pref does not apply to SPC, where
+  // canMakePayment() is only used for feature detection and does not
+  // communicate with any applications.
+  bool can_make_payment_allowed_by_pref = true;
+  if (!spec_->IsSecurePaymentConfirmationRequested()) {
+    can_make_payment_allowed_by_pref =
+        delegate_->GetPrefService()->GetBoolean(kCanMakePaymentEnabled);
+    base::UmaHistogramBoolean("PaymentRequest.CanMakePayment.CallAllowedByPref",
+                              can_make_payment_allowed_by_pref);
+  }
+
+  if (!can_make_payment_allowed_by_pref) {
     CanMakePaymentCallback(/*can_make_payment=*/false);
   } else {
     state_->CanMakePayment(
@@ -577,12 +584,19 @@ void PaymentRequest::HasEnrolledInstrument() {
   if (observer_for_testing_)
     observer_for_testing_->OnHasEnrolledInstrumentCalled();
 
-  const bool has_enrolled_instrument_allowed =
-      delegate_->GetPrefService()->GetBoolean(kCanMakePaymentEnabled);
-  base::UmaHistogramBoolean(
-      "PaymentRequest.HasEnrolledInstrument.CallAllowedByPref",
-      has_enrolled_instrument_allowed);
-  if (!has_enrolled_instrument_allowed) {
+  // The kCanMakePaymentEnabled pref does not apply to SPC, where
+  // hasEnrolledInstrument() is only used for feature detection and does not
+  // communicate with any applications.
+  bool has_enrolled_instrument_allowed_by_pref = true;
+  if (!spec_->IsSecurePaymentConfirmationRequested()) {
+    has_enrolled_instrument_allowed_by_pref =
+        delegate_->GetPrefService()->GetBoolean(kCanMakePaymentEnabled);
+    base::UmaHistogramBoolean(
+        "PaymentRequest.HasEnrolledInstrument.CallAllowedByPref",
+        has_enrolled_instrument_allowed_by_pref);
+  }
+
+  if (!has_enrolled_instrument_allowed_by_pref) {
     HasEnrolledInstrumentCallback(/*has_enrolled_instrument=*/false);
   } else {
     state_->HasEnrolledInstrument(
