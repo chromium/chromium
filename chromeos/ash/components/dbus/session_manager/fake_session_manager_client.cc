@@ -390,6 +390,9 @@ void FakeSessionManagerClient::StartSessionEx(
   StartSession(cryptohome_id);
 }
 
+void FakeSessionManagerClient::EmitStartedUserSession(
+    const cryptohome::AccountIdentifier& cryptohome_id) {}
+
 void FakeSessionManagerClient::StopSession(
     login_manager::SessionStopReason reason) {
   session_stopped_ = true;

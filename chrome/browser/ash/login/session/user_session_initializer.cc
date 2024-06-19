@@ -49,7 +49,9 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/privacy/peripheral_data_access_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/pciguard/pciguard_client.h"
+#include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/network/network_cert_loader.h"
 #include "chromeos/ash/components/peripheral_notification/peripheral_notification_manager.h"
@@ -330,6 +332,13 @@ void UserSessionInitializer::OnUserSessionStarted(bool is_primary_user) {
 
     CrasAudioHandler::Get()->RefreshStyleTransferState();
   }
+}
+
+void UserSessionInitializer::OnUserSessionStartUpTaskCompleted() {
+  const AccountId& account_id =
+      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId();
+  SessionManagerClient::Get()->EmitStartedUserSession(
+      cryptohome::CreateAccountIdentifierFromAccountId(account_id));
 }
 
 void UserSessionInitializer::PreStartSession(bool is_primary_session) {

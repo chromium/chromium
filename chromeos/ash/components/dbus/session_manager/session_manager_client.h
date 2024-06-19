@@ -248,6 +248,11 @@ class COMPONENT_EXPORT(SESSION_MANAGER) SessionManagerClient {
       const cryptohome::AccountIdentifier& cryptohome_id,
       bool chrome_side_key_generation) = 0;
 
+  // Emits the "started-user-session" upstart signal to notify all the critical
+  // login tasks are completed.
+  virtual void EmitStartedUserSession(
+      const cryptohome::AccountIdentifier& cryptohome_id) = 0;
+
   // Stops the current session. Don't call directly unless there's no user on
   // the device. Use SessionTerminationManager::StopSession instead.
   virtual void StopSession(login_manager::SessionStopReason reason) = 0;
