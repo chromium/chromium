@@ -72,11 +72,4 @@ BASE_FEATURE(kPlusAddressUIRedesign,
              "PlusAddressUIRedesign",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-// When enabled, refresh UI is shown in the bottom sheet on Android.
-BASE_FEATURE(kPlusAddressRefreshUiInAndroid,
-             "PlusAddressRefreshUiInAndroid",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
-
 }  // namespace plus_addresses::features

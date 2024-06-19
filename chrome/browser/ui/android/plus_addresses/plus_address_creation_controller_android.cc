@@ -9,7 +9,6 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/plus_addresses/plus_address_service_factory.h"
 #include "chrome/browser/ui/android/plus_addresses/plus_address_creation_view_android.h"
-#include "components/plus_addresses/features.h"
 #include "components/plus_addresses/metrics/plus_address_metrics.h"
 #include "components/plus_addresses/plus_address_service.h"
 #include "components/plus_addresses/plus_address_types.h"
@@ -58,9 +57,7 @@ void PlusAddressCreationControllerAndroid::OfferCreation(
                                                              &GetWebContents());
     view_->ShowInit(
         maybe_email.value(),
-        plus_address_service->IsRefreshingSupported(relevant_origin_) &&
-            base::FeatureList::IsEnabled(
-                plus_addresses::features::kPlusAddressRefreshUiInAndroid));
+        plus_address_service->IsRefreshingSupported(relevant_origin_));
   }
   plus_address_service->ReservePlusAddress(
       relevant_origin_,
