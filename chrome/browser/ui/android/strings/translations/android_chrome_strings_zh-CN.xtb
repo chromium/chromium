@@ -117,6 +117,8 @@
 <translation id="1513814250881909472">同步即可查看您在其他设备上打开的标签页</translation>
 <translation id="1513858653616922153">删除密码</translation>
 <translation id="1521774566618522728">今天曾有活动</translation>
+<translation id="1544084554881119930">付款方式和地址不会加密。Chrome 中的浏览记录不会同步。
+只有知道您口令的人能读取您的加密数据。该口令不会发送给 Google，也不会被 Google 存储。如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />清除您账号中的 Chrome 数据<ph name="END_LINK" />。</translation>
 <translation id="1544826120773021464">要管理您的 Google 账号，请点按“管理账号”按钮</translation>
 <translation id="154513667535157406">选择“我喜欢”，提交您喜欢此摘要的反馈</translation>
 <translation id="1549000191223877751">移至其他窗口</translation>
@@ -458,6 +460,7 @@
 <translation id="3264259168916048410">您的计算机希望使用此设备以登录网站</translation>
 <translation id="3265093782546847662"><ph name="DOMAIN" /> 的所有网页</translation>
 <translation id="3269093882174072735">加载图片</translation>
+<translation id="327204079441056603">我们更改了此设备上的密码保存方式</translation>
 <translation id="3280562213547448728">语音搜索</translation>
 <translation id="3282568296779691940">登录 Chrome</translation>
 <translation id="3290249595466894471">还会发送网页、下载内容、扩展程序活动和系统信息的少量样本，以帮助发现新威胁</translation>
@@ -1214,6 +1217,7 @@
 <translation id="6918398787259831832">如果此问题仍然存在，请从 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 处<ph name="BEGIN_LINK" />获取更多信息<ph name="END_LINK" />。</translation>
 <translation id="6929224077895306814">您的设备和您的 Google 账号中保存的所有安全码都将被删除</translation>
 <translation id="6937524809504266803">个性化和关联</translation>
+<translation id="6937876069006524083">昵称（可选）</translation>
 <translation id="6942665639005891494">使用“设置”菜单选项随时更改默认的下载内容保存位置</translation>
 <translation id="694267552845942083">您正在自定义您的同步设置。如需完成开启同步功能的操作，请点按屏幕底部附近的“确认”按钮。转到上一层级</translation>
 <translation id="6945221475159498467">选择</translation>
@@ -1275,6 +1279,7 @@
 <translation id="7207760545532569765">将 <ph name="TAB_COUNT" /> 个标签页恢复为新的背景标签页。</translation>
 <translation id="7217781228893594884">当您退出 Chrome 时，无痕式标签页将被锁定</translation>
 <translation id="7221869452894271364">重新加载此页</translation>
+<translation id="7224097611345298931">已合并 Chrome 和 <ph name="CHROME_CHANNEL" />中仅保存在此设备上的所有密码。您可在这两个应用内自动填充所有已保存的密码。</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{有 1 项下载尚待处理}other{有 # 项下载尚待处理}}</translation>
 <translation id="72415438529550637">已关闭密码建议。</translation>
 <translation id="7252076891734325316">将手机靠近计算机</translation>

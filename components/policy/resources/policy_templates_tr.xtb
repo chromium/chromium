@@ -814,7 +814,6 @@ Minimum eşik 1 dakikadır.
 <translation id="1635748761015837179">Harici depolama cihazlarına yazmaya izin ver</translation>
 <translation id="1639468541408865385">Genel kapsamlı HTTP kimlik doğrulama önbelleğini etkinleştir</translation>
 <translation id="1639673466479276550">Giriş ekranında ekran koruyucuyu etkinleştir.</translation>
-<translation id="1640447222731279244">ChromeOS Wallpaper "Create with AI" özelliğinin etkinleştirilmesini kontrol et</translation>
 <translation id="1640824698339859203">Kayan TOA'yı etkinleştir ve kullanıcının web hizmeti kimlik doğrulamalarını yeni cihaza taşı</translation>
 <translation id="1641117061932613266"><ph name="PRODUCT_NAME" /> V2 hizmetini etkinleştir</translation>
 <translation id="1641394008743444477">Devre dışı bırakılacak <ph name="PRODUCT_OS_NAME" /> özelliklerini belirlemenize izin verir.
@@ -868,12 +867,6 @@ Politika veya kullanıcı ayarları tarafından belirtilmeyen kaynakların bu AP
 
 Politika, Yanlış değerine ayarlanır veya ayarlanmadan bırakılırsa hiçbir etkinliği yakalanmaz.</translation>
 <translation id="1692990221685273468">Yerleşik sertifika doğrulayıcının, platform güven deposundan yüklenen güven bağlantıları için kodlanmış kısıtlamalar uygulayıp uygulamayacağını belirler.</translation>
-<translation id="1693528798631913178">Bu politika, ChromeOS için VC Background "Create with AI" özelliğini etkinleştirir veya devre dışı bırakır.
-0 = Özelliği kullanıcılar için devre dışı bırakır.
-
-1 = Özelliği kullanıcılar için etkinleştirir. Yapay zeka modellerini eğitmek veya geliştirmek için Google'a veri gönderilmediğini unutmayın.
-
-Bu politika, Ayarlanmadı olarak tanımlanırsa VC Background "Create with AI" özelliği kurumsal kullanıcılar için devre dışı bırakılır.</translation>
 <translation id="169467210981344373">Genel kapsamlı HTTP kimlik doğrulama önbelleğini devre dışı bırak</translation>
 <translation id="1696501581280568361">Profil ayırmayı önerir</translation>
 <translation id="1698810555265314018"><ph name="PRODUCT_NAME" />, pikselleştirme ile PDF yazdırdığında yazdırılan resmin çözünürlüğünü kontrol eder.
@@ -1800,7 +1793,6 @@ Kullanıcının daha önce oluşturduğu bir kısayolla çakışma olması durum
 <translation id="2326031114717677574">Ağ verilerinin örneklenme ve toplanma hızı. İzin verilen minimum sıklık 1 dakikadır.
 
       Ayarlamazsa 15 dakikalık varsayılan süre geçerli olur.</translation>
-<translation id="2331028134545182024">ChromeOS VC Background "Create with AI" özelliğinin etkinleştirilmesini kontrol et</translation>
 <translation id="2333228572393176330">Bu politika, TLS 1.3'te yer alan ve düşürme saldırılarına karşı bağlantıları koruyan bir güvenlik özelliğini kontrol eder. Geriye dönük olarak uyumludur ve uyumlu TLS 1.2 sunucuları veya proxyleri ile kurulan bağlantıları etkilemez. Ancak TLS'ye müdahale eden bazı eski proxy sürümlerinde uyumsuz olmalarına yol açan bir uygulama hatası söz konusudur.
 
       Bu politika True (Doğru) değerine ayarlanır veya ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" /> bu güvenlik korumalarını tüm bağlantılar için etkinleştirir.
@@ -3400,7 +3392,6 @@ Bu politikayı her zaman (özellikle de üretim dağıtımı zamanlarında) etki
 <translation id="3587482841069643663">Tümü</translation>
 <translation id="3587766503874071316">Erişilebilirlik kısayollarını devre dışı bırak</translation>
 <translation id="3589193811812796052">WebAssembly modüllerinin kaynaklar arasında gönderilmesini engelle</translation>
-<translation id="3591518189681300697">Yerel dosyaların buluta taşınmasını etkinleştir</translation>
 <translation id="3591527072193107424">Eski Tarayıcı Desteği özelliğini etkinleştir.</translation>
 <translation id="3591584750136265240">Giriş için kimlik doğrulama yöntemini yapılandır</translation>
 <translation id="3593905652755912452">Devre dışı bırakılan form kontrollerinde eski etkinlik gönderme davranışı kullanılacak.</translation>
@@ -5354,12 +5345,6 @@ Bu politika ayarlanmazsa veya listede geçerli bir resim referansı yoksa <ph na
       Bu politika ayarlanmazsa varsayılan süre olan 604800000 milisaniye (bir hafta) kullanılır.</translation>
 <translation id="5212810195096589189">Sanal makine KSA izinlerini belirleme</translation>
 <translation id="5213038356678567351">Hiçbir zaman başka bir tarayıcıya geçişi tetiklememesi gereken web siteleri.</translation>
-<translation id="5215621993623612880">Bu politika, ChromeOS için Wallpaper "Create with AI" özelliğini etkinleştirir veya devre dışı bırakır.
-0 = Özelliği kullanıcılar için devre dışı bırakır.
-
-1 = Özelliği kullanıcılar için etkinleştirir. Yapay zeka modellerini eğitmek veya geliştirmek için Google'a veri gönderilmediğini unutmayın.
-
-Bu politika, Ayarlanmadı olarak tanımlanırsa Wallpaper "Create with AI" özelliği kurumsal kullanıcılar için devre dışı bırakılır.</translation>
 <translation id="5216815237712190041">Henüz cihazda oturum açmış kullanıcı yoksa giriş ekranında gösterilecek cihaz düzeyinde duvar kağıdı resmini yapılandırın. Politikayı ayarlamak için ChromeOS cihazın, duvar kağıdı resmini hangi URL'den indireceği ve indirme işleminin bütünlüğünü doğrulamak için kullanılacak şifreleme karması belirtilmelidir. Resim JPEG biçiminde olmalı, dosya boyutu 16 MB'tan fazla olmamalıdır. URL'ye kimlik doğrulaması yapmadan erişilebilmelidir. Duvar kağıdı resmi indirilir ve önbelleğe alınır. URL veya karma her değiştiğinde bu tekrar indirilir.
 
       Cihaz duvar kağıdı politikası ayarlanırsa ChromeOS cihaz, duvar kağıdı resmini indirir ve cihazda henüz hiçbir kullanıcı oturum açmamışken giriş ekranında bu resmi kullanır. Kullanıcı giriş yaptıktan sonra, kullanıcının duvar kağıdı politikası devreye girer.
@@ -6445,11 +6430,6 @@ Bu politikanın desteği, M124 sürümüyle birlikte sonlandırılmıştır.</tr
       Politika, ayarlanmadan bırakılırsa (cihazda destekleniyorsa) standart pil şarj modu uygulanır ve kullanıcılar bunu değiştiremez.
 
       Not: Özel pil şarj modu seçilirse <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> ve <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> belirtilmelidir.</translation>
-<translation id="6064418365347066084">Mevcut yerel dosyaların buluta taşınmasını etkinleştirir.
-LocalUserFilesAllowed yanlış değerine ve DownloadDirectory, Google Drive
-veya OneDrive değerine ayarlandığında yalnızca SkyVault kullanıcıları için geçerlidir. Aksi takdirde yoksayılır.
-    Politika, Doğru değerine ayarlanırsa yerel dosyalar buluta taşınır ve yerel klasörler kullanıcıdan gizlenir.
-    Politika, Yanlış değerine ayarlanır veya ayarlanmazsa yerel dosyalar salt okuma modunda kalır.</translation>
 <translation id="60655674079349516">Kullanıcı tüm tarayıcı pencerelerini kapattığında silinmesi gereken tarama verisi türlerinin listesini yapılandırır.
 
 Uyarı: Bu politikanın ayarlanması, yerel kişisel verileri etkileyebilir ve kalıcı olarak silebilir. Kişisel verilerin yanlışlıkla silinmesini önlemek için dağıtmadan önce ayarlarınızı test etmeniz önerilir.
@@ -6955,7 +6935,6 @@ Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_OS_NAME" />, ekran görü
       Bu şekilde aynı GAIA hesabıyla oturum açmış diğer ChromeOS (ve Android) cihazlar otomatik olarak eşlenebilir.
       Politik ayarlanmazsa kurumsal kullanıcılar için varsayılan değer devre dışı iken yönetilmeyen
       hesapların varsayılan değeri etkin olur.</translation>
-<translation id="6400959027108936283">Özelliği etkinleştir</translation>
 <translation id="6401669939808766804">Kullanıcının oturumunu kapat</translation>
 <translation id="640244877779556713">Emoji Önerilerini Etkinleştir</translation>
 <translation id="6403114173011456561"><ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> politikasının ek politikası işlevi görerek dokunmatik sanal klavyeyi kontrol eder.
@@ -8322,7 +8301,6 @@ Bu politika, kullanımdan kaldırılan <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_UR
       Politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa kayıtlı cihazlar, türleri ve donanım adresleriyle birlikte ağ arayüzleri listesini bildirir.
 
       Politika, Devre Dışı değerine ayarlanırsa kayıtlı cihazlar ağ arayüzünü bildirmez.</translation>
-<translation id="7388618954884540850">Yerel dosyaların buluta taşınmasını devre dışı bırak</translation>
 <translation id="7389872682701720082">Bu ayarı etkinleştirirseniz eski olmayan eklentiler her zaman çalışır.
 
       Bu ayar devre dışı bırakılır veya düzenlenmezse, yetkilendirme gerektiren eklentilerin çalışması için kullanıcıdan izin istenir. Bunlar, güvenliği ihlal edebilecek eklentilerdir.</translation>
@@ -9630,7 +9608,6 @@ Bu politika ayarlanmadan bırakılırsa veya 0 değerine ayarlanırsa tanımlana
 
       Bu politika devre dışı bırakılır veya ayarlanmazsa yalnızca normal yerel profiller kullanılır.</translation>
 <translation id="8417305981081876834">Kilit ekranı PIN'inin maksimum uzunluğunu ayarla</translation>
-<translation id="8418438383184278931">Yerel kullanıcı dosyalarının bulut depolama alanına taşınmasını etkinleştir</translation>
 <translation id="841977920223099909">Şifre koruma uyarısı tetikleyicisi</translation>
 <translation id="8419965165591256432">İlişkili kullanıcılar için kayıtlı cihazlardaki cihaz etkinliği durumunun toplanma hızı. İzin verilen minimum sıklık 1 dakikadır.
 

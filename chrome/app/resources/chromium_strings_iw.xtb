@@ -250,6 +250,7 @@
 <translation id="5277894862589591112">‏כדי להחיל את השינויים שביצעת, יש להפעיל מחדש את Chromium</translation>
 <translation id="5294316920224716406">‏בגלישה במצב פרטי, Chromium יציג אזהרה לפני טעינת אתר באמצעות חיבור לא מאובטח</translation>
 <translation id="5296845517486664001">‏כשגרסאות הניסיון פעילות, ובמקרים שבהם צורפת באופן אקראי לגרסת ניסיון פעילה ב-Chromium, היסטוריית הגלישה שלך משפיעה על המודעות שמוצגות לך ועל תחומי העניין המשוערים שמופיעים בהמשך. כדי להגן על הפרטיות שלך, מתבצעת ב-Chromium מחיקה של תחומי העניין שלך על בסיס מתחלף מדי חודש.</translation>
+<translation id="5310474266708705970">‏כניסה ל-Chromium בתור <ph name="USER_EMAIL" /></translation>
 <translation id="5352264705793813212">‏יש ל-Chromium כמה המלצות לגבי בטיחות שכדאי לבדוק</translation>
 <translation id="5352361688875342522">‏פרופילים אחרים ב-Chromium</translation>
 <translation id="5358375970380395591">‏הכניסה שלך מתבצעת באמצעות חשבון מנוהל שמעניק למנהל המערכת שלו שליטה על הפרופיל שלך ב-Chromium. הנתונים שלך ב-Chromium, כגון יישומים, סימניות, היסטוריה, סיסמאות והגדרות אחרות ייקשרו באופן קבוע ל-<ph name="USER_NAME" />. ניתן למחוק את הנתונים האלה באמצעות לוח הבקרה של חשבונות Google, אבל לא ניתן לשייך את הנתונים האלה לחשבון אחר. <ph name="LEARN_MORE" /></translation>
@@ -406,6 +407,7 @@ Chromium לא יכול לשחזר את ההגדרות שלך.</translation>
 <translation id="734373864078049451">‏היסטוריית האתרים, הסימניות ונתונים נוספים מ-Chromium נמצאים כאן.</translation>
 <translation id="7349591376906416160">‏לפי הגדרת מנהל המערכת, Chromium יפתח את<ph name="ALTERNATIVE_BROWSER_NAME" /> כדי לגשת אל <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7355355292030546812">‏‫Chromium חסם את ההורדה הזו כי הקובץ יכול לפגוע בחשבונות האישיים ובחשבונות שלך ברשתות החברתיות, כולל <ph name="USER_EMAIL" /></translation>
+<translation id="7384121030444253939">‏התוסף הזה כבר לא נתמך. ההמלצה של Chromium היא להסיר אותו.</translation>
 <translation id="7398989605938454041">‏באמצעות פרופילים ב-Chromium, מפרידים את כל הפריטים ב-Chromium. באופן הזה קל יותר להפריד בין עבודה לפנאי.</translation>
 <translation id="7449453770951226939">‏<ph name="PAGE_TITLE" /> - Chromium בגרסת פיתוח</translation>
 <translation id="7451052299415159299">‏Chromium זקוק להרשאת גישה למצלמה בשביל האתר הזה</translation>

@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Purpurowy</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Rozwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_ONE" /> kartą.}few{Rozwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami.}many{Rozwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> kartami.}other{Rozwiń grupę kart <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_MANY" /> karty.}}</translation>
 <translation id="427987768447457592">Nowa grupa kart</translation>
+<translation id="4338724047016295066">Nieaktywne karty zostaną automatycznie zamknięte. Zawsze możesz je znaleźć w historii.</translation>
 <translation id="4371591986692297148">Nieaktywna</translation>
 <translation id="4460014764210899310">Rozgrupuj</translation>
 <translation id="4648718555153979859">Tutaj są zgrupowane Twoje karty</translation>
 <translation id="4686942373615810936">Utworzono przed chwilą</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Zamknij po 1 dniu}few{Zamknij po <ph name="DAY_COUNT_MANY" /> dniach}many{Zamknij po <ph name="DAY_COUNT_MANY" /> dniach}other{Zamknij po <ph name="DAY_COUNT_MANY" /> dnia}}</translation>
 <translation id="4777866634702576038">Usunąć grupę kart?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> opinia)}few{(<ph name="REVIEWS_COUNT_MANY" /> opinie)}many{(<ph name="REVIEWS_COUNT_MANY" /> opinii)}other{(<ph name="REVIEWS_COUNT_MANY" /> opinii)}}</translation>
 <translation id="4850886885716139402">Widok</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Tutaj znajdziesz grupy kart</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Rozgrupuj <ph name="TABS_COUNT_ONE" /> wybraną kartę}few{Rozgrupuj <ph name="TABS_COUNT_MANY" /> wybrane karty}many{Rozgrupuj <ph name="TABS_COUNT_MANY" /> wybranych kart}other{Rozgrupuj <ph name="TABS_COUNT_MANY" /> wybranej karty}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> karta}few{<ph name="TABS_COUNT_MANY" /> karty}many{<ph name="TABS_COUNT_MANY" /> kart}other{<ph name="TABS_COUNT_MANY" /> karty}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{Po 1 dniu}few{Po <ph name="DAY_COUNT_MANY" /> dniach}many{Po <ph name="DAY_COUNT_MANY" /> dniach}other{Po <ph name="DAY_COUNT_MANY" /> dnia}}</translation>
 <translation id="6549021453810473782">Wyświetl informacje o sklepie</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Przenieś kartę w lewo</translation>

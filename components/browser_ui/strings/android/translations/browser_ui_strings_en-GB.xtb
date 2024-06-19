@@ -457,6 +457,7 @@
 <translation id="8441146129660941386">Seek backward</translation>
 <translation id="8444433999583714703">To let <ph name="APP_NAME" /> access your location, also turn on location in <ph name="BEGIN_LINK" />Android settings<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revoke device permission</translation>
+<translation id="8473055640493819707">'<ph name="APP_NAME" />' is out of date. Please re-install the app.</translation>
 <translation id="8487700953926739672">Available offline</translation>
 <translation id="848952951823693243">Always request mobile site</translation>
 <translation id="8499083585497694743">Unmute microphone</translation>

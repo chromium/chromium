@@ -251,6 +251,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5277894862589591112">Para aplicar as alterações, reinicie o Chromium.</translation>
 <translation id="5294316920224716406">Ao navegar no Modo de navegação anónima, o Chromium envia-lhe um aviso antes de carregar um site através de uma ligação insegura</translation>
 <translation id="5296845517486664001">Quando as avaliações estão ativadas, e se o Chromium tiver colocado o utilizador aleatoriamente numa avaliação ativa, o histórico de navegação afeta os anúncios que vê e os interesses, conforme estimados abaixo. Para proteger a sua privacidade, o Chromium elimina os seus interesses todos os meses.</translation>
+<translation id="5310474266708705970">Iniciar sessão no Chromium como <ph name="USER_EMAIL" /></translation>
 <translation id="5352264705793813212">O Chromium encontrou algumas recomendações de segurança para sua revisão</translation>
 <translation id="5352361688875342522">Outros perfis do Chromium</translation>
 <translation id="5358375970380395591">Está a iniciar sessão com uma conta gerida e a permitir que o gestor controle o seu perfil do Chromium. Os seus dados do Chromium, como aplicações, marcadores, histórico, palavras-passe e outras definições, ficarão associados definitivamente a <ph name="USER_NAME" />. Poderá eliminar estes dados através do Painel de Controlo das Contas Google, mas não poderá associá-los a outra conta. <ph name="LEARN_MORE" /></translation>
@@ -407,6 +408,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="734373864078049451">A sua Web, os seus marcadores e os seus outros itens do Chromium estão aqui.</translation>
 <translation id="7349591376906416160">O administrador do sistema configurou o Chromium para abrir o <ph name="ALTERNATIVE_BROWSER_NAME" /> e aceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7355355292030546812">O Chromium bloqueou esta transferência porque o ficheiro pode prejudicar as suas contas pessoais e de redes sociais, incluindo <ph name="USER_EMAIL" /></translation>
+<translation id="7384121030444253939">Esta extensão já não é suportada. O Chromium recomenda que a remova.</translation>
 <translation id="7398989605938454041">Com os perfis do Chromium, pode separar todos os seus itens do Chromium. Desta forma, é mais fácil alternar entre o trabalho e o lazer.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7451052299415159299">O Chromium necessita de autorização de acesso à câmara para este site.</translation>

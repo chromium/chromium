@@ -158,6 +158,7 @@
 <translation id="3602290021589620013">Previzualizare</translation>
 <translation id="3628308229821498208">Căutări sugerate</translation>
 <translation id="3697164069658504920">Când opțiunea este activată, site-urile pot solicita permisiunea de a folosi dispozitive USB. Când opțiunea este dezactivată, site-urile nu pot folosi dispozitive USB.</translation>
+<translation id="3701220924999499408"><ph name="HOST_NAME" /> <ph name="SEPARATOR1" /> <ph name="FROM_DEVICE" /> <ph name="SEPARATOR2" /> <ph name="RECENCY" /></translation>
 <translation id="3707034683772193706">Un site pe care îl accesezi poate salva un mic volum de informații în Chrome, în principal pentru a valida că nu ești o aplicație bot</translation>
 <translation id="3721953990244350188">Închide și afișează următoarea acțiune disponibilă</translation>
 <translation id="3744111561329211289">Sincronizare în fundal</translation>
@@ -227,6 +228,7 @@
 <translation id="4962975101802056554">Revocă toate permisiunile pentru dispozitiv</translation>
 <translation id="497421865427891073">Înainte</translation>
 <translation id="4976702386844183910">Accesat ultima dată pe <ph name="DATE" /></translation>
+<translation id="498287755803443017"><ph name="FROM_DEVICE" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="4985206706500620449">Ai permis cookie-urile terță parte pentru acest site</translation>
 <translation id="4994033804516042629">Nu s-a găsit nicio persoană de contact</translation>
 <translation id="4996978546172906250">Trimite prin</translation>

@@ -903,6 +903,7 @@
 <translation id="4381031910344220229">با این کار، دسترسی به میکروفون برای <ph name="APP_NAME" /> و همه برنامه‌ها و وب‌سایت‌های دارای اجازه میکروفون مجاز می‌شود</translation>
 <translation id="4382340674111381977">برگشتن به صفحه قبل</translation>
 <translation id="4389184120735010762">میان‌بر صفحه‌کلید مربوط به ذره‌بین متصل را فشار دادید. می‌خواهید آن را روشن کنید؟</translation>
+<translation id="4394466652057229831">کلیک راست برای خلاصه کردن</translation>
 <translation id="439598569299422042">موقتاً متوقف شده است، <ph name="SIZE_INFO" /></translation>
 <translation id="440113666232554208">ضبط ویدیویی از صفحه ذخیره نشد</translation>
 <translation id="4405151984121254935">دستگاه جانبی متصل پشتیبانی نمی‌شود</translation>
@@ -1939,6 +1940,7 @@
 <translation id="8113423164597455979">روشن، همه برنامه‌ها</translation>
 <translation id="8113515504791187892">دکمه «انتخاب برای شنیدن»</translation>
 <translation id="8120151603115102514">‏تلفنتان صفحه قفل ندارد. برای باز کردن قفل Chromebook، گذرواژه را وارد کنید.</translation>
+<translation id="8120249852906205273">بازراه‌اندازی</translation>
 <translation id="8127095419621171197">باز کردن برنامه «ماشین‌حساب»</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> درجه سانتی‌گراد</translation>
 <translation id="8130528849632411619">رفتن به ابتدای سند</translation>
@@ -2033,6 +2035,7 @@
 <translation id="85123341071060231">‏بلوتوث Chromebook خاموش است. برای باز کردن قفل Chromebook، گذرواژه را وارد کنید.</translation>
 <translation id="8513108775083588393">چرخش خودکار</translation>
 <translation id="851458219935658693">نمایش پنجره‌ها از میزکار فعلی، دکمه رادیویی انتخاب شد</translation>
+<translation id="851660987304951246">بااستفاده از «کمک گرفتن در خواندن» محتوا را سریع خلاصه کنید یا سؤال بپرسید</translation>
 <translation id="8517041960877371778">ممکن است وقتی <ph name="DEVICE_TYPE" /> شما خاموش است، شارژ نشود.</translation>
 <translation id="852060496139946719">{NUM_APPS,plural, =1{ورودی میکروفون را <ph name="APP_NAME" /> کنترل می‌کند}one{ورودی میکروفون را # برنامه کنترل می‌کند}other{ورودی میکروفون را # برنامه کنترل می‌کند}}</translation>
 <translation id="8535393432370007982">واگرد کردن مرتب‌سازی براساس رنگ</translation>

@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">જાંબલી</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને મોટું કરો.}one{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને મોટું કરો.}other{<ph name="TABS_COUNT_MANY" /> ટૅબ ધરાવતા <ph name="TITLE_OF_GROUP" /> ટૅબ ગ્રૂપને મોટું કરો.}}</translation>
 <translation id="427987768447457592">ટૅબનું નવું ગ્રૂપ</translation>
+<translation id="4338724047016295066">નિષ્ક્રિય ટૅબ ઑટોમૅટિક રીતે બંધ થઈ જશે. તમે ગમે ત્યારે તેને ઇતિહાસમાં શોધી શકો છો.</translation>
 <translation id="4371591986692297148">નિષ્ક્રિય</translation>
 <translation id="4460014764210899310">અલગ થયેલું ગ્રૂપ</translation>
 <translation id="4648718555153979859">તમારા ટૅબ અહીં એકસાથે ગ્રૂપ કરવામાં આવ્યા છે</translation>
 <translation id="4686942373615810936">હમણાં જ બનાવ્યું</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{1 દિવસ પછી બંધ કરો}one{<ph name="DAY_COUNT_MANY" /> દિવસ પછી બંધ કરો}other{<ph name="DAY_COUNT_MANY" /> દિવસ પછી બંધ કરો}}</translation>
 <translation id="4777866634702576038">શું ટૅબનું ગ્રૂપ ડિલીટ કરીએ?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> રિવ્યૂ)}one{(<ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ)}other{(<ph name="REVIEWS_COUNT_MANY" /> રિવ્યૂ)}}</translation>
 <translation id="4850886885716139402">જુઓ</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">અહીં તમને તમારા ટૅબના ગ્રૂપ જોવા મળશે</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{પસંદ કરેલું <ph name="TABS_COUNT_ONE" /> ટૅબ અનગ્રૂપ કરો}one{પસંદ કરેલું <ph name="TABS_COUNT_MANY" /> ટૅબ અનગ્રૂપ કરો}other{પસંદ કરેલા <ph name="TABS_COUNT_MANY" /> ટૅબ અનગ્રૂપ કરો}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ટૅબ}one{<ph name="TABS_COUNT_MANY" /> ટૅબ}other{<ph name="TABS_COUNT_MANY" /> ટૅબ}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 દિવસ પછી}one{<ph name="DAY_COUNT_MANY" /> દિવસ પછી}other{<ph name="DAY_COUNT_MANY" /> દિવસ પછી}}</translation>
 <translation id="6549021453810473782">સ્ટોરની માહિતી જુઓ</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">ટૅબને ડાબે ખસેડો</translation>

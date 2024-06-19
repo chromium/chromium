@@ -122,6 +122,7 @@ Naka-encrypt ang iyong data gamit ang passphrase mo. Ilagay ito para magamit at 
 
 Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chromium sa iyong account<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">Bubuksan ang Page ng Setting ng Mga Paraan ng Pagbabayad sa Chromium.</translation>
+<translation id="458786853569524949">Magagamit mo na ngayon ang Chromium sa tuwing magta-tap ka ng mga link sa mga email, dokumento, at iba pang app.</translation>
 <translation id="459080529287102949">Maghanap ng Mga Visual sa Chromium</translation>
 <translation id="4633738821577273991">Kunin din ang Pinahusay na Ligtas na Pag-browse para sa profile sa Chromium na ito</translation>
 <translation id="4638625642619341392">I-download ang Chromium dito.</translation>
@@ -264,6 +265,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="8386869251364507178">Mga Pagkilos sa Chromium</translation>
 <translation id="8409374867500149834">Nasa iyo ang pinakamaigting na seguridad ng Chromium laban sa mga mapaminsalang website</translation>
 <translation id="8458950033462118672">Awtomatiko mong mabubuksan ang mga link sa Chromium sa pamamagitan ng pagtatakda nito bilang iyong Default na Browser App.</translation>
+<translation id="8543509361021925846">{THRESHOLD,plural, =1{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} minuto. Ang naka-save lang na data sa device na ito habang naka-sign in ka ang ide-delete. Puwedeng kabilang dito ang history at mga password.}one{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} minuto. Ang naka-save lang na data sa device na ito habang naka-sign in ka ang ide-delete. Puwedeng kabilang dito ang history at mga password.}other{Nangyayari ito kapag hindi ginamit ang Chromium nang {THRESHOLD} na minuto. Ang naka-save lang na data sa device na ito habang naka-sign in ka ang ide-delete. Puwedeng kabilang dito ang history at mga password.}}</translation>
 <translation id="858114650497379505">Puwede mong gamitin ang mga password na na-save mo sa Password Manager sa iba pang app sa iyong iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Ang Mga May-akda ng Chromium. Nakalaan ang lahat ng karapatan.</translation>
 <translation id="865600487977764604">Pinapanatili kang ligtas sa Chromium at puwedeng gamitin para paigtingin ang iyong seguridad sa iba pang Google app kapag naka-sign in ka.</translation>
@@ -288,6 +290,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 Na-encrypt ang iyong data gamit ang passphrase mo noong <ph name="TIME" />. Ilagay ito para magamit at ma-save ang data sa Chromium sa iyong Google Account.</translation>
 <translation id="9022552996538154597">Mag-sign in sa Chromium</translation>
 <translation id="9050790730841755540">Gamitin ang Chromium sa tuwing magta-tap ka ng mga link sa iba pang app.</translation>
+<translation id="9057082013386654559">Gamitin ang Chromium para sa iPad bilang Default</translation>
 <translation id="9059693977935746710">Hindi mo kailangang tandaan ang password na ito. Mase-save ito sa Password Manager para sa <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Luma na ang Chromium</translation>
 <translation id="9110075932708282655">Gamitin ang Chromium bilang Default</translation>

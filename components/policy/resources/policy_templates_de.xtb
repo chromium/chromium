@@ -802,7 +802,6 @@ Ist die Richtlinie auf "False" gesetzt, können Nutzer keine eigenen Drucker hin
 <translation id="1635748761015837179">Schreiben auf externen Speichergeräten zulassen</translation>
 <translation id="1639468541408865385">Globales HTTP-Authentication-Cache aktivieren</translation>
 <translation id="1639673466479276550">Bildschirmschoner auf dem Anmeldebildschirm aktivieren.</translation>
-<translation id="1640447222731279244">Aktivierung der Hintergrundfunktion „Mit KI erstellen“ in ChromeOS steuern</translation>
 <translation id="1640824698339859203">Floating-SSO aktivieren und die Webdienstauthentifizierungen des Nutzers auf ein neues Gerät verschieben</translation>
 <translation id="1641117061932613266">Dienst <ph name="PRODUCT_NAME" /> Version 2 aktivieren</translation>
 <translation id="1641394008743444477">Ermöglicht die Zusammenstellung einer Liste mit <ph name="PRODUCT_OS_NAME" />-Funktionen, die deaktiviert werden sollen.
@@ -856,12 +855,6 @@ Für Ursprünge, die nicht durch eine Richtlinie oder Nutzereinstellungen angege
 
 Ist die Richtlinie auf „False“ gesetzt oder nicht konfiguriert, werden keine Ereignisse erfasst.</translation>
 <translation id="1692990221685273468">Mit dieser Richtlinie kann festgelegt werden, ob die integrierte Zertifikatsprüfung die Einschränkungen der Trust-Anchors, die aus dem Trust-Shop geladen wurden, erzwingt.</translation>
-<translation id="1693528798631913178">Mit dieser Richtlinie wird die VC‑Hintergrundfunktion „Mit KI erstellen“ in ChromeOS aktiviert oder deaktiviert.
-„0“ = Die Funktion wird für Nutzer deaktiviert.
-
-1 = Die Funktion wird für Nutzer aktiviert. Es werden keine Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern.
-
-Wenn diese Richtlinie nicht konfiguriert ist, wird die VC‑Hintergrundfunktion „Mit KI erstellen“ für Unternehmensnutzer deaktiviert.</translation>
 <translation id="169467210981344373">Globales HTTP-Authentication-Cache deaktivieren</translation>
 <translation id="1696501581280568361">Dadurch wird die Profiltrennung vorgeschlagen</translation>
 <translation id="1698810555265314018">Steuert beim Drucken gerasteter PDFs in <ph name="PRODUCT_NAME" /> die Druckbildauflösung.
@@ -1774,7 +1767,6 @@ Unter <ph name="MAC_OS_NAME" /> steht diese Richtlinie nur bei Instanzen zur Ver
 <translation id="2326031114717677574">Häufigkeit, mit der Audiodaten analysiert und erhoben werden. Die geringste zulässige Häufigkeit beträgt 1 Minute.
 
       Wenn die Richtlinie nicht konfiguriert ist, beträgt die Häufigkeit standardmäßig 15 Minuten.</translation>
-<translation id="2331028134545182024">Aktivierung der VC‑Hintergrundfunktion „Mit KI erstellen“ in ChromeOS steuern</translation>
 <translation id="2333228572393176330">Mit dieser Richtlinie wird eine Sicherheitsfunktion in TLS 1.3 konfiguriert, die Verbindungen gegen Downgrade-Angriffe schützt. Sie ist abwärtskompatibel und beeinträchtigt keine Verbindungen zu konformen TLS-1.2-Servern oder -Proxys. Ältere Versionen einiger Proxys, die TLS-Verbindungen abfangen, weisen jedoch einen Implementierungsfehler auf, der eine Inkompatibilität verursacht.
 
       Wenn diese Richtlinie auf "true" gesetzt oder nicht konfiguriert ist, wird <ph name="PRODUCT_NAME" /> diese Sicherheitsmaßnahmen für alle Verbindungen aktivieren.
@@ -3349,7 +3341,6 @@ Denke daran, diese Richtlinie nicht dauerhaft aktiviert zu lassen, insbesondere 
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3587766503874071316">Kurzbefehle für Bedienungshilfen deaktivieren</translation>
 <translation id="3589193811812796052">Verhindern, dass WebAssembly-Module ursprungsübergreifend gesendet werden</translation>
-<translation id="3591518189681300697">Migration lokaler Dateien in die Cloud aktivieren</translation>
 <translation id="3591527072193107424">Funktion für die Unterstützung älterer Browser aktivieren.</translation>
 <translation id="3591584750136265240">Verhalten der Log-in-Authentifizierung konfigurieren</translation>
 <translation id="3593905652755912452">Bei deaktivierten Formularsteuerelementen wird die alte Ereignisweiterleitung verwendet.</translation>
@@ -5250,12 +5241,6 @@ Wenn diese Richtlinie nicht konfiguriert ist oder die Liste keine gültigen Bild
       Wenn die Richtlinie nicht konfiguriert ist, gilt der standardmäßige Zeitraum von 604.800.000 Millisekunden (eine Woche).</translation>
 <translation id="5212810195096589189">Berechtigung für VM-Befehlszeile festlegen</translation>
 <translation id="5213038356678567351">Websites, die unter keinen Umständen einen Browserwechsel auslösen sollten.</translation>
-<translation id="5215621993623612880">Mit dieser Richtlinie wird die Hintergrundfunktion „Mit KI erstellen“ für ChromeOS aktiviert oder deaktiviert.
-„0“ = Die Funktion wird für Nutzer deaktiviert.
-
-1 = Die Funktion wird für Nutzer aktiviert. Es werden keine Daten an Google gesendet, um KI‑Modelle zu trainieren oder zu verbessern.
-
-Wenn die Richtlinie nicht konfiguriert ist, ist die Hintergrundfunktion „Mit KI erstellen“ für Unternehmensnutzer deaktiviert.</translation>
 <translation id="5216815237712190041">Du kannst ein Hintergrundbild auf Geräteebene konfigurieren, das auf dem Anmeldebildschirm angezeigt wird, wenn sich noch kein Nutzer auf dem Gerät angemeldet hat. Zum Festlegen der Richtlinie muss die URL, über die das Chrome OS-Gerät das Hintergrundbild herunterladen kann, sowie ein kryptografischer Hash angegeben werden, um die Integrität des Downloads zu verifizieren. Das Bild muss im JPEG-Format vorliegen und darf nicht größer als 16 MB sein. Der Zugriff auf die URL muss ohne Authentifizierung möglich sein. Das Hintergrundbild wird heruntergeladen und im Cache gespeichert. Immer, wenn sich die URL oder der Hash ändert, wird es noch einmal heruntergeladen.
 
       Ist die Richtlinie für den Gerätehintergrund konfiguriert, lädt das Chrome OS-Gerät das Hintergrundbild herunter und zeigt es auf dem Anmeldebildschirm an, wenn sich noch kein Nutzer auf dem Gerät angemeldet hat. Sobald sich der Nutzer anmeldet, wird seine Hintergrundrichtlinie wirksam.
@@ -6302,10 +6287,6 @@ Diese Richtlinie wird ab M124 eingestellt.</translation>
       Wenn die Richtlinie nicht konfiguriert ist (sofern die Funktion vom Gerät unterstützt wird), wird der Standardakkulademodus verwendet und Nutzer können sie nicht ändern.
 
       Hinweis: Wenn der benutzerdefinierte Akkulademodus ausgewählt wird, müssen „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />“ und „<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />“ konfiguriert sein.</translation>
-<translation id="6064418365347066084">Löst die Migration vorhandener lokaler Dateien in die Cloud aus.
-Gilt nur für SkyVault-Nutzer, d. h. wenn „LocalUserFilesAllowed“ auf „false“ gesetzt ist und als „DownloadDirectory“ entweder Google Drive oder OneDrive ausgewählt ist. Ansonsten wird die Option ignoriert.
-    Wenn „True“ aktiviert ist, werden lokale Dateien in die Cloud verschoben und lokale Ordner sind dann für den Nutzer ausgeblendet.
-    Wenn „False“ aktiviert ist oder die Richtlinie nicht konfiguriert ist, bleiben lokale Dateien im Lesemodus.</translation>
 <translation id="60655674079349516">Konfiguriert eine Liste von Browserdatentypen, die beim Schließen aller Browserfenster gelöscht werden sollen.
 
 Warnung: Das Festlegen dieser Richtlinie kann sich auf lokale private Daten auswirken und diese dauerhaft entfernen. Wir empfehlen, die Einstellungen vor der Bereitstellung zu testen, um das versehentliche Löschen von privaten Daten zu verhindern.
@@ -6796,7 +6777,6 @@ Wenn die Richtlinie nicht konfiguriert ist, verwendet <ph name="PRODUCT_OS_NAME"
       Schnelles Pairing ist ein neuer Bluetooth-Kopplungsprozess, bei dem gekoppelte Peripheriegeräte mit einem GAIA-Konto verknüpft werden.
       Dies ermöglicht Geräten unter Chrome OS (und Android), die im selben GAIA-Konto angemeldet sind, sich automatisch zu koppeln.
       Wenn diese Richtlinie nicht konfiguriert ist, wird der Standardwert für Unternehmensnutzer deaktiviert. Für nicht verwaltete Konten wird er aktiviert.</translation>
-<translation id="6400959027108936283">Funktion aktivieren</translation>
 <translation id="6401669939808766804">Nutzer abmelden</translation>
 <translation id="640244877779556713">Emoji-Vorschläge aktivieren</translation>
 <translation id="6403114173011456561">Steuert die Touch-Bildschirmtastatur und ist eine Ergänzung zur Richtlinie <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
@@ -8130,7 +8110,6 @@ Dies ersetzt die eingestellte Richtlinie <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_
       Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird über registrierte Geräte eine Liste der Netzwerkschnittstellen mit deren Typen und Hardwareadressen gemeldet.
 
       Ist sie deaktiviert, melden registrierte Geräte keine Netzwerkschnittstellen.</translation>
-<translation id="7388618954884540850">Migration lokaler Dateien in die Cloud deaktivieren</translation>
 <translation id="7389872682701720082">Wenn du diese Einstellung aktivierst, werden nicht veraltete Plug-ins immer ausgeführt.
 
       Ist diese Einstellung deaktiviert oder nicht konfiguriert, müssen die Nutzer der Ausführung von Plug-ins zustimmen, die eine Autorisierung erfordern. Diese Plug-ins können ein Sicherheitsrisiko darstellen.</translation>
@@ -9406,7 +9385,6 @@ Ist die Richtlinie nicht konfiguriert oder auf 0 gesetzt, wird eine bestimmte au
 
 Wenn diese Richtlinie deaktiviert oder nicht konfiguriert ist, werden nur die regulären lokalen Profile verwendet.</translation>
 <translation id="8417305981081876834">Maximale Länge der Sperrbildschirm-PIN festlegen</translation>
-<translation id="8418438383184278931">Migration lokaler Nutzerdateien in den Cloud-Speicher aktivieren</translation>
 <translation id="841977920223099909">Auslöser für Passwortschutzwarnung</translation>
 <translation id="8419965165591256432">Häufigkeit, mit der der Status der Geräteaktivität auf registrierten Geräten verknüpfter Nutzer erfasst wird. Die geringste zulässige Häufigkeit beträgt 1 Minute.
 

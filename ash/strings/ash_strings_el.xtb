@@ -119,6 +119,7 @@
 <translation id="1383876407941801731">Αναζήτηση</translation>
 <translation id="1391102559483454063">Ενεργό</translation>
 <translation id="1394698770495054737">Πλήρες θάμπωμα</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{Πριν από 1 ημέρα}other{πριν από # ημέρες}}</translation>
 <translation id="1404963891829069586">Ήχοι λειτουργίας συγκέντρωσης</translation>
 <translation id="1407069428457324124">Σκούρο θέμα</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Χρησιμοποιήστε τα πλήκτρα βέλους για να πλοηγηθείτε στις ημερομηνίες.</translation>
@@ -209,6 +210,7 @@
 <translation id="174102739345480129">Ο μαρκαδόρος είναι ανενεργός.</translation>
 <translation id="1743570585616704562">Δεν αναγνωρίστηκε</translation>
 <translation id="1743927604032653654">Σύμπτυξη της ειδοποίησης <ph name="NOTIFICATION_TITLE" /></translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Μέσα σε 1 ώρα}=1{Πριν από 1 ώρα}other{Πριν από # ώρες}}</translation>
 <translation id="1746730358044914197">Οι μέθοδοι εισαγωγής έχουν διαμορφωθεί από τον διαχειριστή σας.</translation>
 <translation id="1747336645387973286">ημερομηνία λήξης: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Το πληκτρολόγιο οθόνης είναι ενεργοποιημένο</translation>
@@ -346,6 +348,7 @@
 <translation id="2359808026110333948">Συνέχεια</translation>
 <translation id="2360398059912971776">μπαταρία</translation>
 <translation id="2361210043495191221">Εναλλαγή Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Εστάλη από <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Δεν είναι δυνατή η σύνδεση στο Chromebook</translation>
 <translation id="2367972762794486313">Εμφάνιση εφαρμογών</translation>
 <translation id="2368828502825385061">Εντοπισμός</translation>
@@ -506,6 +509,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Ενεργοποίηση πρόσβασης στο μικρόφωνο;</translation>
 <translation id="296762781903199866">Δεν ήταν δυνατή η λήψη αρχείων ομιλίας στα <ph name="LANGUAGE" /></translation>
+<translation id="2968761508099987738">Η τρέχουσα τοποθεσία σας δεν υποστηρίζεται αυτή τη στιγμή.</translation>
 <translation id="2970920913501714344">Εγκαταστήσει εφαρμογές, επεκτάσεις και θέματα</translation>
 <translation id="2977598380246111477">Επόμενος αριθμός</translation>
 <translation id="2985148236010982088">Εμφάνιση όλων των εφαρμογών</translation>
@@ -979,6 +983,7 @@
 <translation id="468293128311738995">Εφαρμογές από το τηλέφωνό σας</translation>
 <translation id="4690510401873698237">Ράφι στο κάτω μέρος</translation>
 <translation id="4696813013609194136">Ξεκλείδωμα συσκευής με κωδικό γονέα</translation>
+<translation id="4697357603686181098">Δεν μπορούμε να σας βοηθήσουμε με αυτό. Υποβάλετε κάποιο άλλο αίτημα.</translation>
 <translation id="4702647871202761252">Η οθόνη απορρήτου είναι απενεργοποιημένη.</translation>
 <translation id="4706121060329443414">Θα γίνει προσπάθεια για λήψη αργότερα. Προς το παρόν, η ομιλία θα σταλεί στην Google για επεξεργασία.</translation>
 <translation id="470644585772471629">Αντιστροφή χρωμάτων</translation>
@@ -1901,6 +1906,7 @@
 <translation id="7982878511129296052">Απενεργοποίηση…</translation>
 <translation id="7984197416080286869">Πάρα πολλές προσπάθειες χρήσης δακτυλικού αποτυπώματος</translation>
 <translation id="798779949890829624">Η διαχείριση αυτής της ρύθμισης πραγματοποιείται από τον διαχειριστή σας</translation>
+<translation id="7989206653429884947">Έγινε συχνό άνοιγμά του</translation>
 <translation id="799296642788192631">Μπορείτε να καρφιτσώσετε σημαντικά αρχεία. Για να καρφιτσώσετε ένα στοιχείο, τοποθετήστε πάνω του τον δείκτη ή ανοίξτε τα Αρχεία και κάντε δεξί κλικ στο στοιχείο.</translation>
 <translation id="7994370417837006925">Σύνδεση σε πολλούς λογαριασμούς</translation>
 <translation id="7995804128062002838">Αποτυχία καταγραφής οθόνης</translation>
@@ -2085,6 +2091,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Ο χρόνος έχει τελειώσει. Μπράβο! 🎉</translation>
+<translation id="8753368202781196133">Αυτή η γλώσσα δεν υποστηρίζεται προς το παρόν.</translation>
 <translation id="8755498163081687682">Επαλήθευση της ταυτότητάς σας: Το <ph name="ORIGIN_NAME" /> θέλει να επαληθεύσει την ταυτότητά σας.</translation>
 <translation id="875593634123171288">Εμφάνιση ρυθμίσεων VPN</translation>
 <translation id="8756799553341497810">Μπορείτε να αρχίσετε να προσαρμόζετε τη διάταξη της εφαρμογής σας, μόλις εξέλθετε από αυτή την προβολή.</translation>

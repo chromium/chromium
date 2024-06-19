@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Porpra</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Desplega el grup <ph name="TITLE_OF_GROUP" /> format per <ph name="TABS_COUNT_ONE" /> pestanya.}other{Desplega el grup <ph name="TITLE_OF_GROUP" /> format per <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
 <translation id="427987768447457592">Grup de pestanyes nou</translation>
+<translation id="4338724047016295066">Les pestanyes inactives es tancaran automàticament. Sempre les pots trobar a Historial.</translation>
 <translation id="4371591986692297148">inactiu</translation>
 <translation id="4460014764210899310">Desagrupa</translation>
 <translation id="4648718555153979859">Les teves pestanyes s'agrupen aquí</translation>
 <translation id="4686942373615810936">Creat ara mateix</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Tanca al cap d'1 dia}other{Tanca al cap de <ph name="DAY_COUNT_MANY" /> dies}}</translation>
 <translation id="4777866634702576038">Vols suprimir el grup de pestanyes?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ressenya)}other{(<ph name="REVIEWS_COUNT_MANY" /> ressenyes)}}</translation>
 <translation id="4850886885716139402">Mostra</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Trobaràs els teus grups de pestanyes aquí</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Desagrupa la pestanya seleccionada (<ph name="TABS_COUNT_ONE" />)}other{Desagrupa les <ph name="TABS_COUNT_MANY" /> pestanyes seleccionades}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> pestanya}other{<ph name="TABS_COUNT_MANY" /> pestanyes}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{Al cap d'1 dia}other{Al cap de <ph name="DAY_COUNT_MANY" /> dies}}</translation>
 <translation id="6549021453810473782">Consulta la informació de la botiga</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Mou la pestanya cap a l'esquerra</translation>

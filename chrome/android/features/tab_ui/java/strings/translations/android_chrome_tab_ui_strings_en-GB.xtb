@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Purple</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Expand <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_ONE" /> tab.}other{Expand <ph name="TITLE_OF_GROUP" /> tab group with <ph name="TABS_COUNT_MANY" /> tabs.}}</translation>
 <translation id="427987768447457592">New tab group</translation>
+<translation id="4338724047016295066">Inactive tabs will automatically be closed. You can always find them in history.</translation>
 <translation id="4371591986692297148">Inactive</translation>
 <translation id="4460014764210899310">Ungroup</translation>
 <translation id="4648718555153979859">Your tabs are grouped together here</translation>
 <translation id="4686942373615810936">Created just now</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Close after 1 day}other{Close after <ph name="DAY_COUNT_MANY" /> days}}</translation>
 <translation id="4777866634702576038">Delete tab group?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> review)}other{(<ph name="REVIEWS_COUNT_MANY" /> reviews)}}</translation>
 <translation id="4850886885716139402">View</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">You'll find your tab groups here</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Ungroup <ph name="TABS_COUNT_ONE" /> selected tab}other{Ungroup <ph name="TABS_COUNT_MANY" /> selected tabs}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}other{<ph name="TABS_COUNT_MANY" /> tabs}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{After 1 day}other{After <ph name="DAY_COUNT_MANY" /> days}}</translation>
 <translation id="6549021453810473782">View shop info</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Move tab left</translation>

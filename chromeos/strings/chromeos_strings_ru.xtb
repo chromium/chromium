@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">пастельно-желтый</translation>
 <translation id="1056898198331236512">Внимание</translation>
 <translation id="1059913517121127803">Не удалось начать сканирование.</translation>
+<translation id="1061864016440983342">Не учитывать местоположение</translation>
 <translation id="1062823486781306604"><ph name="NAME" /> (<ph name="INDEX" /> из <ph name="COUNT" />).</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">обнаружен брандмауэр</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Дополнительные настройки</translation>
 <translation id="2082932131694554252">Назначенная клавиша</translation>
 <translation id="2085089206770112532">Уменьшение яркости дисплея</translation>
+<translation id="2086091080968010660">Переключение по времени может быть неточным. Разрешите доступ к геоданным на уровне системы.</translation>
 <translation id="2102231663024125441">Редактирование текста</translation>
 <translation id="2105810540595158374">Это игровой контроллер.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, версия <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Восстановить настройки по умолчанию</translation>
 <translation id="2286454467119466181">Упрощенный интерфейс</translation>
 <translation id="2287186687001756809">Изображений нет. Добавить фотографии можно на сайте <ph name="LINK" />.</translation>
+<translation id="2294577623958216786">Текущее расписание: <ph name="SUNRISE" />–<ph name="SUNSET" />. Чтобы время восхода и захода солнца обновлялось автоматически, предоставьте доступ к геоданным на уровне системы.</translation>
 <translation id="2305172810646967500">черный</translation>
 <translation id="2307344026739914387">Использовать текущую пару ключей</translation>
 <translation id="2308243864813041101">Чтобы продолжить обновление, отключите USB-кабель устройства "<ph name="DEVICE_NAME" />".</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">яркость клавиатуры</translation>
 <translation id="6412715219990689313">Встроенная клавиатура</translation>
 <translation id="6417265370957905582">Google Ассистент</translation>
+<translation id="6419454453018688975">Разрешить доступ к геоданным на уровне системы</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Слабый (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Перейти к настройкам аккаунта</translation>

@@ -170,6 +170,7 @@
 <translation id="3261565993776444564">試試用新的顏色自訂瀏覽器</translation>
 <translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3286538390144397061">立即重新啟動</translation>
+<translation id="3292333338048274092">接著，你必須重新啟動 Chrome。</translation>
 <translation id="3360895254066713204">Chrome 小幫手</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome 將立即重新啟動}=1{Chrome 將在 1 秒後重新啟動}other{Chrome 將在 # 秒後重新啟動}}</translation>
 <translation id="3396977131400919238">安裝過程中發生作業系統錯誤，請再次下載 Google Chrome。</translation>
@@ -214,6 +215,7 @@
 <translation id="4035053306113201399">Chrome OS 必須重新啟動，才能套用更新。</translation>
 <translation id="4050175100176540509">最新版本包含重要的安全性改善與新功能。</translation>
 <translation id="4053720452172726777">自訂及管理 Google Chrome</translation>
+<translation id="4084404300720192944">如要分享視窗內容，請前往「系統偏好設定」允許 Chrome 螢幕錄影。</translation>
 <translation id="4106587138345390261">Chrome 團隊正在研究新功能，設法讓網站減少存取個人資訊的情況，同時讓使用者享有相同的瀏覽體驗。</translation>
 <translation id="4110895483821904099">設定新的 Chrome 設定檔</translation>
 <translation id="4111566860456076004">Chrome 無法驗證擴充功能的來源，因此可能不安全。請從 Chrome 中移除這項擴充功能，使其無法再查看及變更你瀏覽網站時留下的資料，包括個人資訊。</translation>
@@ -244,6 +246,7 @@
 <translation id="4384570495110188418">你尚未登入帳戶，因此 Chrome 無法檢查你的密碼</translation>
 <translation id="4389991535395284064">以無痕模式瀏覽網頁時，Chrome 會在使用不安全的連線載入網站前發出警告</translation>
 <translation id="4427306783828095590">強化防護功能可進一步封鎖網路詐騙和惡意軟體</translation>
+<translation id="4434353761996769206">安裝程式錯誤：<ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome - 網路登入 - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome 正在執行另一項作業，請稍後再試。</translation>
 <translation id="4459234553906210702">廣告評估功能會允許你造訪的網站向 Chrome 要求資訊，以便協助網站評估自家廣告的成效。廣告評估功能會盡可能減少網站之間分享資訊的情況，藉此限制跨網站追蹤行為。</translation>
@@ -352,6 +355,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta 版</translation>
 <translation id="6182736845697986886">更新伺服器發生內部錯誤，因此安裝失敗。</translation>
 <translation id="6200139057479872438">由於近期沒有造訪記錄，Chrome 已移除「<ph name="PERMISSION_1" />」和「<ph name="PERMISSION_2" />」權限</translation>
+<translation id="621585339844629864">如要分享螢幕內容，請前往「系統偏好設定」允許 Chrome 螢幕錄影。</translation>
 <translation id="6235018212288296708">允許 mDNS 流量的 Google Chrome 輸入規則。</translation>
 <translation id="624230925347970731">Chrome 即將關閉</translation>
 <translation id="6247557882553405851">Google 密碼管理工具</translation>

@@ -170,6 +170,7 @@
 <translation id="3261565993776444564">Prova un color nou per personalitzar el navegador</translation>
 <translation id="3282568296779691940">Inicia la sessió a Chrome</translation>
 <translation id="3286538390144397061">Reinicia ara</translation>
+<translation id="3292333338048274092">Després hauràs de reiniciar Chrome.</translation>
 <translation id="3360895254066713204">Aplicació d'ajuda de Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome es reiniciarà ara}=1{Chrome es reiniciarà d'aquí a 1 segon}other{Chrome es reiniciarà d'aquí a # segons}}</translation>
 <translation id="3396977131400919238">S'ha produït un error en el sistema operatiu durant la instal·lació. Torna a baixar Google Chrome.</translation>
@@ -214,6 +215,7 @@
 <translation id="4035053306113201399">Cal reiniciar Chrome OS per aplicar l'actualització.</translation>
 <translation id="4050175100176540509">La versió més recent incorpora millores de seguretat i funcions noves importants.</translation>
 <translation id="4053720452172726777">Personalitza i controla Google Chrome</translation>
+<translation id="4084404300720192944">Per compartir la finestra, permet que Chrome gravi la pantalla a Preferències del sistema.</translation>
 <translation id="4106587138345390261">Chrome està explorant noves funcions que permetin als llocs web oferir la mateixa experiència de navegació utilitzant menys informació teva</translation>
 <translation id="4110895483821904099">Configura el teu perfil de Chrome nou</translation>
 <translation id="4111566860456076004">Chrome no pot verificar d'on prové aquesta extensió i és possible que no sigui segura. Suprimeix-la de Chrome perquè ja no pugui veure ni canviar les teves dades als llocs web que visitis, inclosa la informació personal.</translation>
@@ -244,6 +246,7 @@
 <translation id="4384570495110188418">Chrome no pot comprovar les teves contrasenyes perquè no tens la sessió iniciada</translation>
 <translation id="4389991535395284064">Quan naveguis en mode d'incògnit, Chrome t'avisarà abans de carregar un lloc web amb una connexió no segura</translation>
 <translation id="4427306783828095590">La protecció millorada és més efiçaç a l'hora de bloquejar la pesca de credencials i el programari maliciós</translation>
+<translation id="4434353761996769206">Error de l'instal·lador: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome - Inici de sessió a la xarxa - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Hi ha una altra operació en curs a Google Chrome. Torna-ho a provar més tard.</translation>
 <translation id="4459234553906210702">El mesurament d'anuncis permet als llocs web que visites sol·licitar informació de Chrome que els ajudi a mesurar el rendiment dels anuncis. El mesurament d'anuncis restringeix el seguiment entre llocs web transferint la quantitat mínima possible d'informació entre llocs web.</translation>
@@ -350,6 +353,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6182736845697986886">La instal·lació ha fallat a causa d'un error intern del servidor d'actualitzacions.</translation>
 <translation id="6200139057479872438">No l'has visitat recentment. Chrome ha suprimit <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" />.</translation>
+<translation id="621585339844629864">Per compartir la pantalla, permet que Chrome gravi la pantalla a Preferències del sistema.</translation>
 <translation id="6235018212288296708">Regla d'entrada de Google Chrome per permetre el trànsit de mDNS.</translation>
 <translation id="624230925347970731">Chrome es tancarà aviat</translation>
 <translation id="6247557882553405851">Gestor de contrasenyes de Google</translation>

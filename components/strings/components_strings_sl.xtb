@@ -239,7 +239,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1427192966110103169">Domači plavalni bazeni, savne in velnes</translation>
 <translation id="1428146450423315676">Zlagalnik 7</translation>
 <translation id="142858679511221695">Uporabnik v oblaku</translation>
-<translation id="1428729058023778569">To opozorilo je prikazano, ker spletno mesto ne podpira protokola HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Self-Adhesive Film</translation>
 <translation id="1430915738399379752">Natisni</translation>
 <translation id="1432187715652018471">stran želi namestiti rutino za obravnavo storitev.</translation>
@@ -527,7 +526,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1959445535228047762">Vaše besedilo in vsebina strani sta poslana Googlu in se morda uporabita za izboljšanje te funkcije.
   <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436">Zaznamki domene <ph name="DOMAIN" /></translation>
-<translation id="196752089528718902">S temi spletnimi mesti se običajno varno povežete, vendar Chrome varne povezave tokrat ni mogel uporabiti. Napadalec morda poskuša prisluškovati ali spremeniti vašo omrežno povezavo. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">Napaka pri serializaciji</translation>
 <translation id="1973785048533660168">Zaposlitev v administraciji</translation>
 <translation id="1974060860693918893">Dodatno</translation>
@@ -545,7 +543,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2003709556000175978">Ponastavite geslo</translation>
 <translation id="2003775180883135320">Četverno luknjanje zgoraj</translation>
 <translation id="2004697686368036666">Funkcije na nekaterih spletnih mestih morda ne bodo delovale.</translation>
-<translation id="2005042463110681802">To opozorilo je prikazano, ker spletno mesto ne podpira protokola HTTPS in uporabljate anonimni način. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Gumb za ustvarjanje dogodkov, aktivirajte, če želite hitro ustvariti nov dogodek v Google Koledarju</translation>
 <translation id="201174227998721785">Upravljajte dovoljenja in podatke, shranjene na spletnih mestih v Chromovih nastavitvah.</translation>
 <translation id="2012276282211112603">Trenutno ni tem, ki bi jih lahko prikazali</translation>
@@ -607,7 +604,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2108755909498034140">Znova zaženite računalnik</translation>
 <translation id="2111166930115883695">Pritisnite preslednico, če želite igrati.</translation>
 <translation id="2112529237938317174">Prikaz podrobnosti dovoljenja</translation>
-<translation id="2113232594265919362">To opozorilo je prikazano, ker spletno mesto ne podpira protokola HTTPS, vi pa uporabljate Googlov program dodatne zaščite. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">Kartica</translation>
 <translation id="2114841414352855701">Prezrto, ker je to preglasil pravilnik <ph name="POLICY_NAME" />.</translation>
 <translation id="2118132148597630479">Kuverta C5</translation>
@@ -809,7 +805,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2482878487686419369">Obvestila</translation>
 <translation id="248348093745724435">Pravilniki naprave</translation>
 <translation id="2485243023686553468">Pametni telefoni</translation>
-<translation id="2490199669743245365">Napadalci na spletnem mestu, ki ga poskušate obiskati, lahko namestijo škodljivo programsko opremo, ki ukrade ali izbriše stvari, kot so geslo, fotografije, sporočila ali številka kreditne kartice. Chrome zelo priporoča, da se vrnete na varno. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">V potrdilu strežnika so napake.</translation>
 <translation id="2491414235131909199">To stran je blokirala razširitev.</translation>
 <translation id="2495083838625180221">Razčlenjevalnik za JSON</translation>
@@ -970,7 +965,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2839501879576190149">Lažno spletno mesto</translation>
 <translation id="2843623755398178332">Ali se želite pomikati in povečati/pomanjšati deljeni zavihek?</translation>
 <translation id="2851291081585704741">Nimate vzpostavljene povezave</translation>
-<translation id="2856444702002559011">Morda poskušajo napadalci ukrasti vaše podatke s spletnega mesta <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (na primer gesla, sporočila ali podatke kreditnih kartic). <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 x 300 mm</translation>
 <translation id="2859806420264540918">To spletno mesto prikazuje vsiljive ali zavajajoče oglase.</translation>
 <translation id="28618371182701850">Električna vozila in priključna hibridna vozila</translation>
@@ -1317,7 +1311,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3507936815618196901">Ustvarjanje 3D-zemljevida vaše okolice in spremljanje položaja kamere</translation>
 <translation id="3512163584740124171">Ta pravilnik se prezre, ker ima drug pravilnik iz iste skupine pravilnikov prednost.</translation>
 <translation id="351522771072578657">Trenutno ste v meniju</translation>
-<translation id="3515972145999192222">Vaša organizacija je blokirala <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, ker krši pravilnik. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Obravnava več predmetov</translation>
 <translation id="3525130752944427905">10 x 14 palcev</translation>
 <translation id="3525435918300186947">Želite dovoliti upravljanje in reprogramiranje naprav MIDI?</translation>
@@ -1483,7 +1476,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3801265110651850478">S prometom brskanja pošlji zahtevo »Do Not Track«</translation>
 <translation id="380329542618494757">Ime</translation>
 <translation id="3803801106042434208">Ti iskalniki so priljubljeni na vašem območju</translation>
-<translation id="3806932344025766608">Napadalci na spletnem mestu, ki ga poskušate obiskati, vas lahko zavedejo, da namestite programsko opremo ali razkrijete stvari, kot so geslo, telefonska številka ali številka kreditne kartice. Chrome zelo priporoča, da se vrnete na varno. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">Zamike slike v X</translation>
 <translation id="3807709094043295184">Klasični rock in stare uspešnice</translation>
 <translation id="3807873520724684969">Škodljiva vsebina je bila blokirana.</translation>
@@ -3347,7 +3339,6 @@ Dodatne podrobnosti:
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">Potrdite, da ste to res vi, da bo Chromium lahko vnesel podatke za plačilo.</translation>
 <translation id="7437289804838430631">Dodaj podatke o stiku</translation>
-<translation id="7438338505272634288">Napadalci na spletnem mestu, ki ga poskušate obiskati, vas lahko zavedejo, da namestite škodljivo programsko opremo, ki vpliva na vaš način brskanja – na primer tako, da spremenijo vašo domačo stran ali vam na spletnih mestih, ki jih obiščete, prikazujejo dodatne oglase. Chrome zelo priporoča, da se vrnete na varno, da se izognete škodi. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">Raziskujte, ko ni povezave</translation>
 <translation id="7441627299479586546">Napačen subjekt pravilnika</translation>
 <translation id="7441864845853794192">Gurmanske in posebne jedi</translation>
@@ -3447,7 +3438,6 @@ Dodatne podrobnosti:
 <translation id="759889825892636187">Spletno mesto <ph name="HOST_NAME" /> trenutno ne more obdelati te zahteve.</translation>
 <translation id="7599089013883397081">Časovna omejitev za prenos je potekla</translation>
 <translation id="7600965453749440009">Nikoli ne prevedi iz jezika: <ph name="LANGUAGE" /></translation>
-<translation id="7601297359530599375">S tem spletnim mestom se običajno varno povežete, vendar Chrome varne povezave tokrat ni mogel uporabiti. Napadalec morda poskuša prisluškovati ali spremeniti vašo omrežno povezavo. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">Napadalci na spletnem mestu, ki ga poskušate obiskati, lahko namestijo škodljivo programsko opremo, ki ukrade ali izbriše stvari, kot so geslo, fotografije, sporočila ali številka kreditne kartice.</translation>
 <translation id="7608583484192556132">Ali je oglas, ki je prikazan, osebno prilagojen, je lahko odvisno od več dejavnikov, vključno s to nastavitvijo, <ph name="BEGIN_LINK_1" />oglasi, ki jih predlaga spletno mesto<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />nastavitvami piškotkov<ph name="END_LINK_2" /> in od tega, ali spletno mesto, ki si ga ogledujete, osebno prilagaja oglase. Preberite več o <ph name="BEGIN_LINK_3" />upravljanju zasebnosti pri oglaševanju<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Vrednost je zunaj obsega <ph name="VALUE" />.</translation>
@@ -3720,7 +3710,6 @@ Dodatne podrobnosti:
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Neveljavne kartice so odstranjene</translation>
-<translation id="8100666323495101203">Vaša organizacija je določila <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> kot spletno mesto, ki bi lahko kršilo pravilnik. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8103161714697287722">Plačilno sredstvo</translation>
 <translation id="8103643211515685474">Vseeno natisni</translation>
 <translation id="8105368624971345109">Izklop</translation>

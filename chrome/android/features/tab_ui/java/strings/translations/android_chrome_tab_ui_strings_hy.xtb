@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Մանուշակագույն</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Ծավալել <ph name="TABS_COUNT_ONE" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}one{Ծավալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}other{Ծավալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}}</translation>
 <translation id="427987768447457592">Ներդիրների նոր խումբ</translation>
+<translation id="4338724047016295066">Ոչ ակտիվ ներդիրներն ավտոմատ կփակվեն։ Դուք կարող եք գտնել դրանք պատմության մեջ։</translation>
 <translation id="4371591986692297148">Ակտիվ չէ</translation>
 <translation id="4460014764210899310">Ապախմբավորել</translation>
 <translation id="4648718555153979859">Ձեր ներդիրները խմբավորվում են այստեղ</translation>
 <translation id="4686942373615810936">Ստեղծվել է քիչ առաջ</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Փակել 1 օր հետո}one{Փակել <ph name="DAY_COUNT_MANY" /> օր հետո}other{Փակել <ph name="DAY_COUNT_MANY" /> օր հետո}}</translation>
 <translation id="4777866634702576038">Ջնջե՞լ ներդիրների խումբը</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> կարծիք)}one{(<ph name="REVIEWS_COUNT_MANY" /> կարծիք)}other{(<ph name="REVIEWS_COUNT_MANY" /> կարծիք)}}</translation>
 <translation id="4850886885716139402">Տեսք</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Այստեղ կգտնեք ձեր ներդիրների խմբերը</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Ապախմբավորել ընտրված <ph name="TABS_COUNT_ONE" /> ներդիրը}one{Ապախմբավորել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրը}other{Ապախմբավորել ընտրված <ph name="TABS_COUNT_MANY" /> ներդիրները}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ներդիր}one{<ph name="TABS_COUNT_MANY" /> ներդիր}other{<ph name="TABS_COUNT_MANY" /> ներդիր}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 օր հետո}one{<ph name="DAY_COUNT_MANY" /> օր հետո}other{<ph name="DAY_COUNT_MANY" /> օր հետո}}</translation>
 <translation id="6549021453810473782">Դիտել խանութի մասին տեղեկությունները</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Տեղափոխել ներդիրը ձախ</translation>

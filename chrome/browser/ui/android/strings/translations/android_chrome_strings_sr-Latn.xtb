@@ -117,6 +117,8 @@ Još podešavanja koja koriste podatke za poboljšanje doživljaja Chrome-a potr
 <translation id="1513814250881909472">Sinhronizujte podatke da bi vam bile dostupne kartice sa drugih uređaja</translation>
 <translation id="1513858653616922153">Izbriši lozinku</translation>
 <translation id="1521774566618522728">Aktivan je danas</translation>
+<translation id="1544084554881119930">Načini plaćanja i adrese neće biti šifrovani. Istorija pregledanja iz Chrome-a se neće sinhronizovati.
+Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fraza se ne šalje Google-u niti se čuva na Google-u. Ako zaboravite pristupnu frazu ili želite da promenite ovo podešavanje, <ph name="BEGIN_LINK" />obrišite Chrome podatke na nalogu<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Da biste upravljali Google nalogom, dodirnite dugme „Upravljajte nalogom“</translation>
 <translation id="154513667535157406">Opcija Sviđa mi se šalje povratne informacije da vam se ovaj rezime sviđa</translation>
 <translation id="1549000191223877751">Premesti u drugi prozor</translation>
@@ -458,6 +460,7 @@ Samo neko ko ima pristupnu frazu može da čita šifrovane podatke. Pristupna fr
 <translation id="3264259168916048410">Računar želi da koristi ovaj uređaj za prijavljivanje na sajt</translation>
 <translation id="3265093782546847662">Sve stranice sa <ph name="DOMAIN" /></translation>
 <translation id="3269093882174072735">Učitaj sliku</translation>
+<translation id="327204079441056603">Promenili smo način na koji se čuvaju lozinke na ovom uređaju</translation>
 <translation id="3280562213547448728">Glasovna pretraga</translation>
 <translation id="3282568296779691940">Prijavljivanje u Chrome</translation>
 <translation id="3290249595466894471">Šalje i mali uzorak stranica, preuzimanja, aktivnosti dodataka i informacija sistema da bi se otkrile nove pretnje</translation>
@@ -1214,6 +1217,7 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="6918398787259831832">Ako se ovaj problem nastavi, <ph name="BEGIN_LINK" />saznajte više<ph name="END_LINK" /> od: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6929224077895306814">Svi bezbednosni kodovi sačuvani na uređaju i Google nalogu će biti izbrisani</translation>
 <translation id="6937524809504266803">Personalizacija i povezivanje</translation>
+<translation id="6937876069006524083">Nadimak (opcionalno)</translation>
 <translation id="6942665639005891494">Promenite podrazumevanu lokaciju za preuzimanje u bilo kom trenutku pomoći opcije u meniju Podešavanja</translation>
 <translation id="694267552845942083">Trenutno prilagođavate podešavanja sinhronizacije. Da biste dovršili uključivanje sinhronizacije, dodirnite dugme Potvrdi u dnu ekrana. Idi nagore</translation>
 <translation id="6945221475159498467">Izaberi</translation>
@@ -1277,6 +1281,7 @@ Da biste promenili ovo podešavanje, <ph name="BEGIN_LINK" />izbrišite Chrome p
 <translation id="7207760545532569765">Vratite kartice (<ph name="TAB_COUNT" />) kao nove kartice u pozadini.</translation>
 <translation id="7217781228893594884">Kartice bez arhiviranja će se zaključati kada napustite Chrome</translation>
 <translation id="7221869452894271364">Ponovo učitajte ovu stranicu</translation>
+<translation id="7224097611345298931">Sve lozinke sačuvane samo na ovom uređaju za Chrome i <ph name="CHROME_CHANNEL" /> su objedinjene. Možete automatski da popunjavate sve sačuvane lozinke u obe aplikacije.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 preuzimanje na čekanju}one{# preuzimanje na čekanju}few{# preuzimanja na čekanju}other{# preuzimanja na čekanju}}</translation>
 <translation id="72415438529550637">Predlog lozinke je zatvoren.</translation>
 <translation id="7252076891734325316">Postavite telefon blizu računara</translation>

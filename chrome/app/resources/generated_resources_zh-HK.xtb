@@ -2537,7 +2537,6 @@
 <translation id="2806372837663997957">您嘗試分享檔案的目標裝置並未接受檔案分享</translation>
 <translation id="2806891468525657116">捷徑已存在</translation>
 <translation id="2807517655263062534">您下載的檔案會在這裡顯示</translation>
-<translation id="2809946454624727734">你可在「已儲存的地址」中存取地址。</translation>
 <translation id="2811205483104563968">帳戶</translation>
 <translation id="2812049959647166806">系統不支援 Thunderbolt</translation>
 <translation id="2812171980080389735">已儲存網絡和密碼，方便即時連線</translation>
@@ -2693,6 +2692,7 @@
 <translation id="292371311537977079">Chrome 設定</translation>
 <translation id="2926085873880284723">還原預設捷徑</translation>
 <translation id="2926620265753325858">不支援 <ph name="DEVICE_NAME" /></translation>
+<translation id="2926708162326352948">主題已更新為上傳的圖片</translation>
 <translation id="2927017729816812676">快取儲存空間</translation>
 <translation id="2928795416630981206">已允許追蹤攝錄機位置</translation>
 <translation id="2931157624143513983">依可列印範圍自動調整</translation>
@@ -5459,7 +5459,6 @@
 <translation id="5016491575926936899">您可從電腦發短訊、分享互聯網連線、回覆對話通知，以及使用手機解鎖 <ph name="DEVICE_TYPE" />。<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="5016983299133677671">試用新密碼</translation>
 <translation id="5017529052065664584">過去 15 分鐘</translation>
-<translation id="5017643436812738274">您可使用文字游標導覽網頁。按 Ctrl+Search+7 鍵即可關閉。</translation>
 <translation id="5018207570537526145">開啟擴充程式網站</translation>
 <translation id="5018526990965779848">傳送使用情況和診斷資料。自動將診斷、裝置及應用程式的使用情況資料傳送至 Google，協助改善您的 Android 使用體驗。這可協助改善系統及應用程式的穩定性及其他功能。部分彙整資料也會用於協助 Google 應用程式與合作夥伴 (例如 Android 開發人員)。如果已開啟其他「網絡及應用程式活動記錄」設定，系統可能會將此資料儲存至您的 Google 帳戶。</translation>
 <translation id="5020008942039547742">選擇其他視窗</translation>
@@ -5616,6 +5615,7 @@
 <translation id="5135533361271311778">無法建立書籤項目。</translation>
 <translation id="513555878193063507">新增 APN</translation>
 <translation id="5136343472380336530">請確保兩部裝置都已解鎖並放在一起，且已開啟藍牙功能。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="5136529877787728692">F7</translation>
 <translation id="5137349216872139332">即時熱點連線失敗</translation>
 <translation id="5138227688689900538">顯示較少</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />，使用 <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> 的搜查結果</translation>
@@ -7395,10 +7395,12 @@
 <translation id="6490471652906364588">USB-C 裝置 (右側連接埠)</translation>
 <translation id="6491376743066338510">授權失敗</translation>
 <translation id="649396225532207613">此檔案可能會損害你的個人和社交網絡帳戶</translation>
+<translation id="6493991254603208962">調低亮度</translation>
 <translation id="6494327278868541139">顯示進階保護功能詳情</translation>
 <translation id="6494445798847293442">不是憑證授權單位</translation>
 <translation id="6494483173119160146">裝置發生無法復原的錯誤。請重設裝置 (系統將清除所有使用者資料)，然後再試一次。</translation>
 <translation id="6495266441917713704">無法轉移 Wi-Fi</translation>
+<translation id="6495453178162183932">主題已更新為預設的 Chrome 主題</translation>
 <translation id="6497784818439587832">變更顯示大小以縮小或放大畫面上的項目</translation>
 <translation id="6497789971060331894">滑鼠反向捲動</translation>
 <translation id="6498249116389603658">所選的全部語言(&amp;A)</translation>
@@ -8189,6 +8191,7 @@
 <translation id="7082850163410901674">已在 Mac 系統設定中關閉通知</translation>
 <translation id="7083774521940805477">Chromebook 版 Steam (Beta 版本) 不適用於您的 Chromebook。</translation>
 <translation id="708550780726587276">(未設定)</translation>
+<translation id="7086377898680121060">調高亮度</translation>
 <translation id="7086672505018440886">在封存中包含 Chrome 記錄檔案。</translation>
 <translation id="7088434364990739311">無法啟動更新檢查 (錯誤代碼 <ph name="ERROR" />)。</translation>
 <translation id="7088674813905715446">管理員已將這部裝置設為取消佈建狀態。如要讓裝置符合註冊資格，請要求您的管理員將裝置設為等待處理狀態。</translation>

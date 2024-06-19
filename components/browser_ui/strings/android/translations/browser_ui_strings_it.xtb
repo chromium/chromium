@@ -457,6 +457,7 @@
 <translation id="8441146129660941386">Posiziona indietro</translation>
 <translation id="8444433999583714703">Per consentire all'app <ph name="APP_NAME" /> di accedere alla tua posizione, devi attivare la posizione anche nelle <ph name="BEGIN_LINK" />Impostazioni Android<ph name="END_LINK" />.</translation>
 <translation id="8447861592752582886">Revoca autorizzazione dispositivo</translation>
+<translation id="8473055640493819707">L'app "<ph name="APP_NAME" />" è obsoleta. Reinstalla l'app.</translation>
 <translation id="8487700953926739672">Disponibile offline</translation>
 <translation id="848952951823693243">Richiedi sempre sito mobile</translation>
 <translation id="8499083585497694743">Riattiva microfono</translation>

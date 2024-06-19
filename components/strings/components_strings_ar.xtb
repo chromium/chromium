@@ -115,6 +115,7 @@
 <translation id="1209206284964581585">إخفاء الآن</translation>
 <translation id="121201262018556460">لقد حاولت الوصول إلى <ph name="DOMAIN" />، ولكن الخادم قدّم شهادة تحتوي على مفتاح ضعيف. ربما قام أحد المهاجمين باختراق المفتاح الخاص، ولا يكون الخادم هو الخادم الذي تتوقعه (قد تكون على اتصال بأحد المهاجمين).</translation>
 <translation id="1212527389003717329">بدأت عملية التنزيل. للاطّلاع عليها، اضغط مع الاستمرار على |<ph name="ACCELERATOR" />|.</translation>
+<translation id="1214970845432250240">نطاق السعر</translation>
 <translation id="1219129156119358924">أمان النظام</translation>
 <translation id="1222060260947439312">الدُرج الأيمن</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -239,7 +240,6 @@
 <translation id="1427192966110103169">حمّامات سباحة وساونا وسبا منزلية</translation>
 <translation id="1428146450423315676">المكدِّس 7</translation>
 <translation id="142858679511221695">مستخدم السحابة الإلكترونية</translation>
-<translation id="1428729058023778569">‏يظهر هذا التحذير لأنّ هذا الموقع الإلكتروني لا يتوافق مع بروتوكول HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">شريط لاصق ذاتي</translation>
 <translation id="1430915738399379752">طباعة</translation>
 <translation id="1432187715652018471">تريد هذه الصفحة تثبيت معالج الخدمة.</translation>
@@ -527,7 +527,6 @@
 <translation id="1959445535228047762">‏يتم إرسال محتوى الصفحة والنص إلى Google وقد يتم استخدامهما لتحسين هذه الميزة.
   <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436">إشارات <ph name="DOMAIN" /></translation>
-<translation id="196752089528718902">‏يمكنك عادةً الاتصال بالمواقع الإلكترونية بشكل آمن، ولكن تعذّر على Chrome استخدام اتصال آمن في الوقت الحالي. قد يحاول أحد المهاجمين التجسس على اتصالك بالشبكة أو تعديله. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">خطأ أثناء التسلسل</translation>
 <translation id="1973785048533660168">وظائف مكتبية وإدارية</translation>
 <translation id="1974060860693918893">الإعدادات المتقدّمة</translation>
@@ -545,7 +544,6 @@
 <translation id="2003709556000175978">إعادة ضبط كلمة المرورالآن</translation>
 <translation id="2003775180883135320">عمل أربعة ثقوب بالأعلى</translation>
 <translation id="2004697686368036666">قد لا تعمل ميزات بعض المواقع الإلكترونية</translation>
-<translation id="2005042463110681802">‏يظهر هذا التحذير لأنّ هذا الموقع الإلكتروني لا يتوافق مع بروتوكول HTTPS ولأنّك تستخدم "وضع التصفّح المتخفي". <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">‏زر إنشاء حدث: انقر على هذا الزر لإنشاء حدث جديد في "تقويم Google" بسرعة.</translation>
 <translation id="201174227998721785">‏إدارة الأذونات والبيانات المُخزّنة في المواقع الإلكترونية من خلال إعدادات متصفّح Chrome</translation>
 <translation id="2012276282211112603">لا تتوفّر مواضيع لعرضها في الوقت الحالي.</translation>
@@ -607,7 +605,6 @@
 <translation id="2108755909498034140">إعادة تشغيل جهاز الكمبيوتر</translation>
 <translation id="2111166930115883695">اضغط على مفتاح المسافة لبدء اللعب.</translation>
 <translation id="2112529237938317174">إظهار تفاصيل الأذونات</translation>
-<translation id="2113232594265919362">‏يظهر هذا التحذير لأنّ هذا الموقع الإلكتروني لا يتوافق مع بروتوكول HTTPS، ولأنّك مشترك في "برنامج الحماية المتقدّمة" من Google. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">البطاقة</translation>
 <translation id="2114841414352855701">تم تجاهلها نظرًا لتجاوزها بواسطة <ph name="POLICY_NAME" />.</translation>
 <translation id="2118132148597630479">‏ظرف C5</translation>
@@ -809,7 +806,6 @@
 <translation id="2482878487686419369">الإشعارات</translation>
 <translation id="248348093745724435">سياسات الأجهزة</translation>
 <translation id="2485243023686553468">هواتف ذكية</translation>
-<translation id="2490199669743245365">‏إنّ المهاجمين على الموقع الإلكتروني الذي تحاول الانتقال إليه قد يتمكّنون من تثبيت برامج ضارة تعمل على سرقة أو حذف البيانات مثل كلمة المرور أو الصور أو الرسائل أو رقم بطاقة الائتمان. وينصح متصفِّح Chrome بشدّة بالرجوع إلى وضع الأمان. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">تحتوي شهادة الخادم على أخطاء.</translation>
 <translation id="2491414235131909199">تم حظر هذه الصفحة بواسطة إحدى الإضافات.</translation>
 <translation id="2495083838625180221">‏محلل JSON اللغوي</translation>
@@ -971,7 +967,6 @@
 <translation id="2839501879576190149">الموقع الذي تطلب الدخول إليه مزيّف</translation>
 <translation id="2843623755398178332">هل تسمح بالانتقال للأعلى أو للأسفل في محتوى علامة التبويب التي تمّت مشاركتها وتكبيره أو تصغيره؟</translation>
 <translation id="2851291081585704741">لا يتوفر اتصال بالإنترنت</translation>
-<translation id="2856444702002559011">قد يحاول المهاجمون سرقة معلوماتك من <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (مثل كلمات المرور أو الرسائل أو بطاقات الائتمان). <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 × 300 ملم</translation>
 <translation id="2859806420264540918">يعرض هذا الموقع الإلكتروني إعلانات مضلِّلة أو غير مرغوب فيها.</translation>
 <translation id="28618371182701850">مركبات كهربائية وقابلة للشحن من مصادر طاقة</translation>
@@ -1190,6 +1185,7 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">أدخِل رمز التحقّق المكوَّن من <ph name="NUMBER_OF_DIGITS" /> أرقام.</translation>
 <translation id="3272643614306383237">أقل من ميغابايت واحد. قد يتم تحميل بعض المواقع بشكل أبطأ عند زيارتها في المرة القادمة.</translation>
+<translation id="327346289570683313">نطاق السعر</translation>
 <translation id="3273738040255912340">‏يمكن للمشرف إجراء تغييرات على ملفك الشخصي والمتصفّح عن بُعد، وتحليل المعلومات عن المتصفّح من خلال إعداد التقارير وتنفيذ المهام الضرورية الأخرى. وقد تتم أيضًا إدارة النشاط على هذا الجهاز خارج Chromium. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{لا تنصح سياسة المشرف بفتح هذا الملف في <ph name="DESTINATION_NAME" />.}zero{لا تنصح سياسة المشرف بفتح هذه الملفات في <ph name="DESTINATION_NAME" />.}two{لا تنصح سياسة المشرف بفتح هذين الملفَّين في <ph name="DESTINATION_NAME" />.}few{لا تنصح سياسة المشرف بفتح هذه الملفات في <ph name="DESTINATION_NAME" />.}many{لا تنصح سياسة المشرف بفتح هذه الملفات في <ph name="DESTINATION_NAME" />.}other{لا تنصح سياسة المشرف بفتح هذه الملفات في <ph name="DESTINATION_NAME" />.}}</translation>
 <translation id="3282085321714087552">أرسلت مؤسستك التي تمتلك النطاق <ph name="ENROLLMENT_DOMAIN" /> بعض المعلومات، مثل الإعدادات أو السياسات، إلى المواقع الإلكترونية التالية.</translation>
@@ -1318,7 +1314,6 @@
 <translation id="3507936815618196901">إنشاء خريطة ثلاثية الأبعاد للبيئة المحيطة بك وتتبُّع موضع الكاميرا</translation>
 <translation id="3512163584740124171">يتم تجاهل هذه السياسة بسبب سياسة أخرى من نفس مجموعة السياسة لها أولوية أعلى.</translation>
 <translation id="351522771072578657">يتم حاليًا عرض قائمة</translation>
-<translation id="3515972145999192222">حظرت مؤسستك النطاق <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> بسبب انتهاكه إحدى السياسات. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">معالجة الأهداف المتعددة</translation>
 <translation id="3525130752944427905">10 × 14 بوصة</translation>
 <translation id="3525435918300186947">‏هل تريد السماح للموقع الإلكتروني بالتحكُّم في أجهزة MIDI وإعادة برمجتها؟</translation>
@@ -1485,7 +1480,6 @@
 </translation>
 <translation id="380329542618494757">الاسم</translation>
 <translation id="3803801106042434208">محركات البحث هذه رائجة في منطقتك</translation>
-<translation id="3806932344025766608">‏إنّ المهاجمين على الموقع الإلكتروني الذي تحاول الانتقال إليه قد يتمكّنون من خداعك لتثبيت برامج معيّنة أو الكشف عن بيانات مثل كلمة المرور أو الهاتف أو رقم بطاقة الائتمان. وينصح متصفِّح Chrome بشدّة بالرجوع إلى وضع الأمان. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">Image X shift</translation>
 <translation id="3807709094043295184">موسيقى "روك" كلاسيكية وقديمة</translation>
 <translation id="3807873520724684969">تم حظر المحتوى الضار.</translation>
@@ -3350,7 +3344,6 @@
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">‏يجب إثبات هويتك حتى يتمكّن Chromium من ملء معلومات الدفع.</translation>
 <translation id="7437289804838430631">إضافة معلومات الاتصال</translation>
-<translation id="7438338505272634288">‏إنّ المهاجمين على الموقع الإلكتروني الذي تحاول الانتقال إليه قد يتمكّنون من خداعك لتثبيت برامج ضارة تؤثر في طريقة التصفُّح من خلال تغيير الصفحة الرئيسية مثلًا أو عرض إعلانات إضافية على المواقع الإلكترونية التي تنتقل إليها. وينصح متصفِّح Chrome بشدّة بالرجوع إلى وضع الأمان لتجنُّب حدوث أي ضرر. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">الاستكشاف أثناء عدم الاتصال بالإنترنت</translation>
 <translation id="7441627299479586546">موضوع السياسة غير صحيح</translation>
 <translation id="7441864845853794192">أطعمة مميزة وجاهزة لاختبار التذوق</translation>
@@ -3450,7 +3443,6 @@
 <translation id="759889825892636187">يتعذر على <ph name="HOST_NAME" /> معالجة هذا الطلب حاليًا.</translation>
 <translation id="7599089013883397081">انتهت مهلة التنزيل</translation>
 <translation id="7600965453749440009">عدم الترجمة مطلقًا من اللغة <ph name="LANGUAGE" /></translation>
-<translation id="7601297359530599375">‏يمكنك عادةً الاتصال بهذا الموقع الإلكتروني بشكل آمن، ولكن تعذَّر على Chrome استخدام اتصال آمن في الوقت الحالي. قد يحاول أحد المهاجمين التجسس على اتصالك بالشبكة أو تعديله. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">إنّ المهاجمين على الموقع الإلكتروني الذي تحاول الانتقال إليه قد يتمكّنون من تثبيت برامج ضارة تعمل على سرقة أو حذف البيانات مثل كلمة المرور أو الصور أو الرسائل أو رقم بطاقة الائتمان.</translation>
 <translation id="7608583484192556132">إنّ ظهور إعلانات مخصّصة يعتمد على عدة عوامل، منها هذا الإعداد و<ph name="BEGIN_LINK_1" />الإعلانات المقترَحة من المواقع الإلكترونية<ph name="END_LINK_1" /> و<ph name="BEGIN_LINK_2" />إعدادات ملفات تعريف الارتباط<ph name="END_LINK_2" /> وما إذا كان الموقع الإلكتروني الذي تتصفّحه يخصِّص الإعلانات. تعرَّف على مزيد من المعلومات حول <ph name="BEGIN_LINK_3" />إدارة الخصوصية في عرض الإعلانات<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">القيمة خارج النطاق <ph name="VALUE" />.</translation>
@@ -3723,7 +3715,6 @@
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">تمت إزالة البطاقات غير الصالحة</translation>
-<translation id="8100666323495101203">حدّدت مؤسستك الموقع الإلكتروني <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> على أنّه قد ينتهك إحدى السياسات. <ph name="BEGIN_LEARN_MORE_LINK" />مزيد من المعلومات<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8103161714697287722">طريقة الدفع</translation>
 <translation id="8103643211515685474">الطباعة على أي حال</translation>
 <translation id="8105368624971345109">إيقاف</translation>

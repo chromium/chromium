@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Porffor</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Ehangu'r grŵp tabiau <ph name="TITLE_OF_GROUP" /> sydd ag <ph name="TABS_COUNT_ONE" /> tab.}zero{Ehangu'r grŵp tabiau <ph name="TITLE_OF_GROUP" /> sydd â <ph name="TABS_COUNT_MANY" /> tab.}two{Ehangu'r grŵp tabiau <ph name="TITLE_OF_GROUP" /> sydd â <ph name="TABS_COUNT_MANY" /> dab.}few{Ehangu'r grŵp tabiau <ph name="TITLE_OF_GROUP" /> sydd â <ph name="TABS_COUNT_MANY" /> tab.}many{Ehangu'r grŵp tabiau <ph name="TITLE_OF_GROUP" /> sydd â <ph name="TABS_COUNT_MANY" /> tab.}other{Ehangu'r grŵp tabiau <ph name="TITLE_OF_GROUP" /> sydd â <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="427987768447457592">Grŵp tabiau newydd</translation>
+<translation id="4338724047016295066">Bydd tabiau anweithredol yn cael eu cau'n awtomatig. Gallwch bob amser ddod o hyd iddynt yn Hanes.</translation>
 <translation id="4371591986692297148">Anweithredol</translation>
 <translation id="4460014764210899310">Dadgrwpio</translation>
 <translation id="4648718555153979859">Mae'ch tabiau wedi'u grwpio gyda'i gilydd yma</translation>
 <translation id="4686942373615810936">Newydd ei greu</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Cau ar ôl 1 diwrnod}zero{Cau ar ôl <ph name="DAY_COUNT_MANY" /> diwrnod}two{Cau ar ôl <ph name="DAY_COUNT_MANY" /> ddiwrnod}few{Cau ar ôl <ph name="DAY_COUNT_MANY" /> diwrnod}many{Cau ar ôl <ph name="DAY_COUNT_MANY" /> diwrnod}other{Cau ar ôl <ph name="DAY_COUNT_MANY" /> diwrnod}}</translation>
 <translation id="4777866634702576038">Dileu'r grŵp tabiau?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> adolygiad)}zero{(<ph name="REVIEWS_COUNT_MANY" /> adolygiad)}two{(<ph name="REVIEWS_COUNT_MANY" /> adolygiad)}few{(<ph name="REVIEWS_COUNT_MANY" /> adolygiad)}many{(<ph name="REVIEWS_COUNT_MANY" /> adolygiad)}other{(<ph name="REVIEWS_COUNT_MANY" /> adolygiad)}}</translation>
 <translation id="4850886885716139402">Gweld</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Byddwch yn gweld eich grwpiau tabiau yma</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Dadgrwpio'r <ph name="TABS_COUNT_ONE" /> tab a ddewiswyd}zero{Dadgrwpio'r <ph name="TABS_COUNT_MANY" /> tab a ddewiswyd}two{Dadgrwpio'r <ph name="TABS_COUNT_MANY" /> dab a ddewiswyd}few{Dadgrwpio'r <ph name="TABS_COUNT_MANY" /> tab a ddewiswyd}many{Dadgrwpio'r <ph name="TABS_COUNT_MANY" /> tab a ddewiswyd}other{Dadgrwpio'r <ph name="TABS_COUNT_MANY" /> tab a ddewiswyd}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> tab}zero{<ph name="TABS_COUNT_MANY" /> tab}two{<ph name="TABS_COUNT_MANY" /> dab}few{<ph name="TABS_COUNT_MANY" /> tab}many{<ph name="TABS_COUNT_MANY" /> tab}other{<ph name="TABS_COUNT_MANY" /> tab}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{Ar ôl 1 diwrnod}zero{Ar ôl <ph name="DAY_COUNT_MANY" /> diwrnod}two{Ar ôl <ph name="DAY_COUNT_MANY" /> ddiwrnod}few{Ar ôl <ph name="DAY_COUNT_MANY" /> diwrnod}many{Ar ôl <ph name="DAY_COUNT_MANY" /> diwrnod}other{Ar ôl <ph name="DAY_COUNT_MANY" /> diwrnod}}</translation>
 <translation id="6549021453810473782">Gweld gwybodaeth siop</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Symud tab i'r chwith</translation>

@@ -115,6 +115,7 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1209206284964581585">Voorlopig verbergen</translation>
 <translation id="121201262018556460">Je probeert <ph name="DOMAIN" /> te bereiken, maar de server heeft een certificaat geretourneerd met een zwakke sleutel. Een hacker kan de persoonlijke sleutel hebben aangepast en het is mogelijk dat de server zelf een imitatie is (wellicht een server die je schade probeert te berokkenen).</translation>
 <translation id="1212527389003717329">Download gestart. Houd je vinger op |<ph name="ACCELERATOR" />| om de download te bekijken.</translation>
+<translation id="1214970845432250240">Prijsbereik</translation>
 <translation id="1219129156119358924">Systeembeveiliging</translation>
 <translation id="1222060260947439312">Rechterlade</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -239,7 +240,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1427192966110103169">Zwembaden, sauna's en bubbelbaden voor thuis</translation>
 <translation id="1428146450423315676">Stapeleenheid 7</translation>
 <translation id="142858679511221695">Cloud-gebruiker</translation>
-<translation id="1428729058023778569">Je ziet deze waarschuwing omdat deze site geen HTTPS ondersteunt. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Zelfklevende folie</translation>
 <translation id="1430915738399379752">Afdrukken</translation>
 <translation id="1432187715652018471">De pagina wil een servicehandler installeren.</translation>
@@ -527,7 +527,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="1959445535228047762">Je tekst en paginacontent worden naar Google gestuurd en kunnen worden gebruikt om deze functie te verbeteren.
   <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436">Bookmarks voor <ph name="DOMAIN" /></translation>
-<translation id="196752089528718902">Meestal maak je veilig verbinding met sites, maar Chrome kan op dit moment geen beveiligde verbinding gebruiken. Een aanvaller probeert je netwerkverbinding af te luisteren of aan te passen. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">Serialisatiefout</translation>
 <translation id="1973785048533660168">Administratieve banen</translation>
 <translation id="1974060860693918893">Geavanceerd</translation>
@@ -545,7 +544,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2003709556000175978">Reset nu je wachtwoord</translation>
 <translation id="2003775180883135320">Vier perforaties boven</translation>
 <translation id="2004697686368036666">Functies op bepaalde sites werken misschien niet</translation>
-<translation id="2005042463110681802">Je ziet deze waarschuwing omdat deze site geen HTTPS ondersteunt en je in de incognitomodus zit. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Knop Afspraak maken. Activeer deze om snel een nieuwe afspraak in Google Agenda te maken</translation>
 <translation id="201174227998721785">Rechten en opgeslagen gegevens voor sites beheren in de Chrome-instellingen</translation>
 <translation id="2012276282211112603">Geen onderwerpen om nu te laten zien</translation>
@@ -607,7 +605,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2108755909498034140">Je computer opnieuw opstarten</translation>
 <translation id="2111166930115883695">Druk op de spatiebalk om te spelen</translation>
 <translation id="2112529237938317174">Informatie over rechten bekijken</translation>
-<translation id="2113232594265919362">Je ziet deze waarschuwing omdat deze site geen HTTPS ondersteunt en je deelneemt aan Geavanceerde beveiliging van Google. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">Pas</translation>
 <translation id="2114841414352855701">Genegeerd omdat het werd overschreven door <ph name="POLICY_NAME" />.</translation>
 <translation id="2118132148597630479">Envelop C5</translation>
@@ -809,7 +806,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2482878487686419369">Meldingen</translation>
 <translation id="248348093745724435">Apparaatbeleid</translation>
 <translation id="2485243023686553468">Smartphones</translation>
-<translation id="2490199669743245365">Aanvallers op de site die je wilt bezoeken, kunnen schadelijke software installeren waarmee items zoals je wachtwoord, foto's, berichten of creditcardnummers kunnen worden gestolen of verwijderd. Chrome raadt je sterk aan terug te gaan naar een beveiligde website. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">Het servercertificaat bevat fouten.</translation>
 <translation id="2491414235131909199">Deze pagina is geblokkeerd door een extensie</translation>
 <translation id="2495083838625180221">JSON Parser</translation>
@@ -970,7 +966,6 @@ Anders wordt dit geblokkeerd door je privacyinstellingen. Hierdoor werkt de cont
 <translation id="2839501879576190149">Nepsite gedetecteerd</translation>
 <translation id="2843623755398178332">Scrollen en zoomen op je gedeelde tabblad?</translation>
 <translation id="2851291081585704741">Je bent offline</translation>
-<translation id="2856444702002559011">Cybercriminelen proberen mogelijk je gegevens van <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> te stelen (bijvoorbeeld wachtwoorden, berichten of creditcardgegevens). <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 x 300 mm</translation>
 <translation id="2859806420264540918">Site toont opdringerige of misleidende advertenties.</translation>
 <translation id="28618371182701850">Elektrische en plug-in-voertuigen</translation>
@@ -1186,6 +1181,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Voer de <ph name="NUMBER_OF_DIGITS" />-cijferige verificatiecode in</translation>
 <translation id="3272643614306383237">Minder dan 1 MB. Sommige sites laden misschien langzamer bij je volgende bezoek.</translation>
+<translation id="327346289570683313">Prijsbereik</translation>
 <translation id="3273738040255912340">Je beheerder kan op afstand wijzigingen aanbrengen in je profiel en browser, informatie over de browser analyseren via rapportage en andere nodige taken uitvoeren. Activiteit op dit apparaat kan ook buiten Chromium worden beheerd. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Op basis van het beheerdersbeleid wordt afgeraden dit bestand te openen in <ph name="DESTINATION_NAME" />}other{Op basis van het beheerdersbeleid wordt afgeraden deze bestanden te openen in <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Je organisatie, <ph name="ENROLLMENT_DOMAIN" />, heeft bepaalde gegevens gestuurd naar de volgende websites, zoals instellingen of beleidsregels.</translation>
@@ -1313,7 +1309,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3507936815618196901">Een 3D-kaart van je omgeving maken en de camerapositie volgen</translation>
 <translation id="3512163584740124171">Dit beleid wordt genegeerd omdat een ander beleid in dezelfde beleidsgroep een hogere prioriteit heeft.</translation>
 <translation id="351522771072578657">Je bevindt je op dit moment in een menu</translation>
-<translation id="3515972145999192222">Je organisatie heeft <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> geblokkeerd omdat deze een beleid schendt. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Verwerking van meerdere objecten</translation>
 <translation id="3525130752944427905">10 x 14 inch</translation>
 <translation id="3525435918300186947">MIDI-apparaten bedienen en herprogrammeren?</translation>
@@ -1478,7 +1473,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="3801265110651850478">Een Do Not Track-verzoek versturen met je browseverkeer</translation>
 <translation id="380329542618494757">Naam</translation>
 <translation id="3803801106042434208">Deze zoekmachines zijn populair in je regio</translation>
-<translation id="3806932344025766608">Aanvallers op de site die je wilt bezoeken, kunnen je misleiden zodat je software installeert of gegevens zoals je wachtwoord, telefoon of creditcardnummer openbaar maakt. Chrome raadt je sterk aan terug te gaan naar een beveiligde website. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">Beeldverschuiving X</translation>
 <translation id="3807709094043295184">Classic Rock en oldies</translation>
 <translation id="3807873520724684969">Schadelijke content geblokkeerd.</translation>
@@ -3341,7 +3335,6 @@ Aanvullende informatie:
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">Laat verifiëren dat jij het bent zodat Chromium je betalingsgegevens kan invullen.</translation>
 <translation id="7437289804838430631">Contactgegevens toevoegen</translation>
-<translation id="7438338505272634288">Aanvallers op de site die je wilt bezoeken, kunnen je misleiden zodat je schadelijke software installeert die van invloed is op de manier waarop je browst, bijvoorbeeld door je homepage te wijzigen of extra advertenties te tonen op sites die je bezoekt. Chrome raadt je sterk aan terug te gaan naar een beveiligde website om schade te voorkomen. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">Content bekijken wanneer je offline bent</translation>
 <translation id="7441627299479586546">Onjuist beleidsonderwerp</translation>
 <translation id="7441864845853794192">Gastronomische specialiteiten</translation>
@@ -3441,7 +3434,6 @@ Aanvullende informatie:
 <translation id="759889825892636187"><ph name="HOST_NAME" /> kan dit verzoek momenteel niet verwerken.</translation>
 <translation id="7599089013883397081">Time-out bij downloaden</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> nooit vertalen</translation>
-<translation id="7601297359530599375">Meestal kun je beveiligd verbinding maken met deze site, maar deze keer is het Chrome niet gelukt. Een aanvaller probeert je netwerkverbinding af te luisteren of aan te passen. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">Aanvallers op de site die je wilt bezoeken, kunnen schadelijke software installeren waarmee items zoals je wachtwoord, foto's, berichten of creditcardnummers kunnen worden gestolen of verwijderd.</translation>
 <translation id="7608583484192556132">Of een getoonde advertentie wordt gepersonaliseerd, is afhankelijk van verschillende factoren, waaronder deze instelling, <ph name="BEGIN_LINK_1" />door sites voorgestelde advertenties<ph name="END_LINK_1" />, je <ph name="BEGIN_LINK_2" />cookie-instellingen<ph name="END_LINK_2" /> en of de site die je bekijkt advertenties personaliseert. Meer informatie over hoe je <ph name="BEGIN_LINK_3" />je advertentieprivacy beheert<ph name="END_LINK_3" /></translation>
 <translation id="7610193165460212391">Waarde <ph name="VALUE" /> is buiten bereik.</translation>
@@ -3714,7 +3706,6 @@ Aanvullende informatie:
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">De ongeldige passen zijn verwijderd</translation>
-<translation id="8100666323495101203">Je organisatie heeft <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> geïdentificeerd als een site die misschien een beleid schendt. <ph name="BEGIN_LEARN_MORE_LINK" />Meer informatie<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8103161714697287722">Betaalmethode</translation>
 <translation id="8103643211515685474">Toch afdrukken</translation>
 <translation id="8105368624971345109">Uitzetten</translation>

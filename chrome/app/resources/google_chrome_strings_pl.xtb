@@ -54,6 +54,7 @@
 <translation id="1734234790201236882">Chrome zapisze to hasło na Twoim koncie Google. Nie musisz go pamiętać.</translation>
 <translation id="1786003790898721085">Najpierw zaloguj się w Chrome na swoim urządzeniu <ph name="TARGET_DEVICE_NAME" />, a potem ponów próbę wysyłania.</translation>
 <translation id="1786044937610313874">Skróty otwierają się w Chrome</translation>
+<translation id="178701303897325119">To rozszerzenie nie jest już obsługiwane. Chrome zaleca jego usunięcie.</translation>
 <translation id="1812689907177901597">Jeśli wyłączysz tę opcję, możesz logować się na stronach Google takich jak Gmail bez logowania się w Chrome</translation>
 <translation id="1860536484129686729">Chrome potrzebuje uprawnień dostępu do aparatu na tej stronie</translation>
 <translation id="1873233029667955273">Google Chrome nie jest domyślną przeglądarką</translation>
@@ -243,6 +244,8 @@
 <translation id="4384570495110188418">Chrome nie może sprawdzić haseł, jeśli się nie zalogujesz</translation>
 <translation id="4389991535395284064">Podczas przeglądania w trybie incognito Chrome będzie Cię ostrzegać przed wczytaniem strony korzystającej z niezabezpieczonego połączenia</translation>
 <translation id="4427306783828095590">Silniejsza ochrona lepiej chroni przed phishingiem i złośliwym oprogramowaniem</translation>
+<translation id="4434353761996769206">Błąd instalatora: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438657683599538446">Zaloguj się w Chrome jako <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – logowanie do sieci – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome wykonuje teraz inną operację. Spróbuj ponownie później.</translation>
 <translation id="4459234553906210702">W ramach pomiaru skuteczności reklam odwiedzane przez Ciebie witryny mogą prosić Chrome o dostęp do potrzebnych w tym celu informacji. Pomiar skuteczności reklam ogranicza śledzenie w witrynach, ponieważ pomiędzy poszczególnymi stronami przenoszona jest możliwie najmniejsza ilość informacji.</translation>

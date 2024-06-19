@@ -58,6 +58,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1734234790201236882">Chrome slaat dit wachtwoord op in je Google-account. Je hoeft het niet te onthouden.</translation>
 <translation id="1786003790898721085">Zorg dat je bent ingelogd bij Chrome op je <ph name="TARGET_DEVICE_NAME" /> en probeer opnieuw te sturen.</translation>
 <translation id="1786044937610313874">Sneltoetsen worden geopend in Chrome</translation>
+<translation id="178701303897325119">Deze extensie wordt niet meer ondersteund. Chrome raadt je aan de extensie te verwijderen.</translation>
 <translation id="1812689907177901597">Als je dit uitzet, kun je inloggen bij Google-sites zoals Gmail zonder in te loggen bij Chrome</translation>
 <translation id="1860536484129686729">Chrome heeft toegangsrechten voor je camera nodig voor deze site</translation>
 <translation id="1873233029667955273">Google Chrome is niet je standaardbrowser</translation>
@@ -249,6 +250,8 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="4384570495110188418">Chrome kan je wachtwoorden niet checken omdat je niet bent ingelogd.</translation>
 <translation id="4389991535395284064">Als je browst in de incognitomodus, waarschuwt Chrome je voordat een site wordt geladen via een niet-beveiligde verbinding</translation>
 <translation id="4427306783828095590">Geoptimaliseerde beveiliging die je nog beter beschermt tegen phishing en malware</translation>
+<translation id="4434353761996769206">Fout met installatieprogramma: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438657683599538446">Inloggen bij Chrome als <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome - Inloggen op netwerk - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Er wordt een andere bewerking in Google Chrome uitgevoerd. Probeer het later opnieuw.</translation>
 <translation id="4459234553906210702">Via Advertentiemeting kunnen sites die je bezoekt Chrome om informatie vragen zodat ze de prestaties van hun advertenties kunnen meten. Advertentiemeting beperkt tracking op meerdere sites door zo min mogelijk informatie over te dragen tussen sites.</translation>

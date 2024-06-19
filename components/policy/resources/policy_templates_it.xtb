@@ -808,7 +808,6 @@ La soglia minima è di 1 minuto.
 <translation id="1635748761015837179">Consenti la scrittura su dispositivi di archiviazione esterni</translation>
 <translation id="1639468541408865385">Attiva cache di autenticazione HTTP con ambito globale</translation>
 <translation id="1639673466479276550">Attiva il salvaschermo nella schermata di accesso.</translation>
-<translation id="1640447222731279244">Controlla l'attivazione della funzionalità "Crea con l'AI" per gli sfondi di ChromeOS</translation>
 <translation id="1640824698339859203">Attiva il servizio SSO mobile e trasferisci le autenticazioni del web service dell'utente sul nuovo dispositivo</translation>
 <translation id="1641117061932613266">Attiva il servizio <ph name="PRODUCT_NAME" /> V2</translation>
 <translation id="1641394008743444477">Consente di impostare un elenco di funzionalità di <ph name="PRODUCT_OS_NAME" /> da disattivare.
@@ -870,12 +869,6 @@ attivazione dall'utente per chiamare questa API.</translation>
 
 Se il criterio viene impostato su False o se non viene configurato, non viene registrato alcun evento.</translation>
 <translation id="1692990221685273468">Consente di stabilire se lo strumento di verifica dei certificati integrato forzerà o meno l'applicazione di vincoli codificati nei trust anchor caricati dall'archivio di attendibilità della piattaforma.</translation>
-<translation id="1693528798631913178">Questo criterio attiva o disattiva la funzionalità "Crea con l'AI" per gli sfondi delle videoconferenze di ChromeOS.
-0 = disattiva la funzionalità per gli utenti.
-
-1 = attiva la funzionalità per gli utenti. Tieni presente che non vengono inviati dati a Google per l'addestramento o il miglioramento dei modelli di AI.
-
-Se questo criterio viene impostato su Unset, la funzionalità "Crea con l'AI" per gli sfondi delle videoconferenze è disattivata per gli utenti aziendali.</translation>
 <translation id="169467210981344373">Disattiva cache di autenticazione HTTP con ambito globale</translation>
 <translation id="1696501581280568361">Suggerisce la separazione dei profili</translation>
 <translation id="1698810555265314018">Consente di stabilire la risoluzione dell'immagine di stampa quando <ph name="PRODUCT_NAME" /> stampa i file PDF con la rasterizzazione.
@@ -1806,7 +1799,6 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
 <translation id="2326031114717677574">La frequenza di campionamento e raccolta dei dati audio. Il valore minimo consentito è 1 minuto.
 
       Se il criterio non viene configurato, viene applicata la frequenza predefinita di 15 minuti.</translation>
-<translation id="2331028134545182024">Controlla l'attivazione della funzionalità "Crea con l'AI" per gli sfondi delle videoconferenze di ChromeOS</translation>
 <translation id="2333228572393176330">Questo criterio consente di controllare una funzionalità di sicurezza nel protocollo TLS 1.3, che protegge le connessioni da attacchi di downgrade. È compatibile con le versioni precedenti e non interessa le connessioni a server o proxy TLS 1.2 conformi. Tuttavia, un difetto di implementazione nelle versioni precedenti di alcuni proxy che intercettano connessioni TLS li rende incompatibili.
 
       Se questo criterio viene impostato su Vero o se non viene configurato, <ph name="PRODUCT_NAME" /> attiva queste protezioni di sicurezza per tutte le connessioni.
@@ -3388,7 +3380,6 @@ Ricorda di non tenere questo criterio sempre attivo, soprattutto nelle distribuz
 <translation id="3587482841069643663">Tutti</translation>
 <translation id="3587766503874071316">Disabilita scorciatoie di accessibilità</translation>
 <translation id="3589193811812796052">Impedisci che i moduli WebAssembly vengano inviati tra origini</translation>
-<translation id="3591518189681300697">Attiva la migrazione dei file locali nel cloud</translation>
 <translation id="3591527072193107424">Attiva la funzionalità Supporto dei browser precedenti.</translation>
 <translation id="3591584750136265240">Configura il comportamento di autenticazione dell'accesso</translation>
 <translation id="3593905652755912452">Verrà utilizzato il comportamento precedente per l'esecuzione di eventi sui controlli dei moduli disattivati.</translation>
@@ -5315,12 +5306,6 @@ Se questo criterio non viene configurato o se l'elenco non contiene riferimenti 
       Se il criterio non viene impostato, viene usato il periodo predefinito di 604800000 millisecondi (una settimana).</translation>
 <translation id="5212810195096589189">Specifica l'autorizzazione per l'interfaccia a riga di comando delle macchine virtuali</translation>
 <translation id="5213038356678567351">Siti web che non devono mai attivare il cambio di browser.</translation>
-<translation id="5215621993623612880">Questo criterio attiva o disattiva la funzionalità "Crea con l'AI" per gli sfondi di ChromeOS.
-0 = disattiva la funzionalità per gli utenti.
-
-1 = attiva la funzionalità per gli utenti. Tieni presente che non vengono inviati dati a Google per l'addestramento o il miglioramento dei modelli di AI.
-
-Se questo criterio viene impostato su Unset, la funzionalità "Crea con AI" per gli sfondi è disattivata per gli utenti aziendali.</translation>
 <translation id="5216815237712190041">Configura l'immagine di sfondo a livello di dispositivo da mostrare nella schermata di accesso se ancora nessun utente ha effettuato l'accesso al dispositivo. Il criterio viene impostato specificando l'URL da cui il dispositivo ChromeOS può scaricare l'immagine di sfondo e un hash crittografico utilizzato per verificare l'integrità del download. L'immagine deve essere in formato JPEG e avere dimensioni non superiori a 16 MB. L'URL deve essere accessibile senza autenticazione. L'immagine di sfondo viene scaricata e memorizzata nella cache. Verrà scaricata nuovamente ogni volta che l'URL o l'hash cambiano.
 
       Se il criterio dello sfondo del dispositivo viene configurato, il dispositivo ChromeOS scarica e utilizza l'immagine di sfondo nella schermata di accesso se ancora nessun utente ha effettuato l'accesso al dispositivo. Quando un utente esegue l'accesso, si attiva il criterio dello sfondo dell'utente.
@@ -6379,10 +6364,6 @@ Questo criterio è stato ritirato a partire dalla versione M124.</translation>
       Se il criterio non viene configurato (se l'impostazione è supportata dal dispositivo), viene applicata la modalità di ricarica standard della batteria e gli utenti non possono modificarlo.
 
       Nota: se viene selezionata la modalità di ricarica personalizzata della batteria, vengono specificati anche i criteri <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> e <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.</translation>
-<translation id="6064418365347066084">Attiva la migrazione dei file locali esistenti sul cloud.
-Si applica solo agli utenti di SkyVault, ovvero quando LocalUserFilesAllowed è false e DownloadDirectory è Google Drive o OneDrive. In caso contrario, viene ignorato.
-    Se impostato su True, i file locali vengono spostati nel cloud e le cartelle locali vengono nascoste all'utente.
-    Se il valore è False o non viene impostato, i file locali rimangono in modalità di sola lettura.</translation>
 <translation id="60655674079349516">Consente di configurare un elenco dei tipi di dati di navigazione che dovrebbero essere eliminati alla chiusura di tutte le finestre del browser da parte dell'utente.
 
 Avviso: l'impostazione di questo criterio può influire sulla rimozione definitiva dei dati personali locali. Ti consigliamo di testare le impostazioni prima del deployment per evitare l'eliminazione accidentale di dati personali.
@@ -6894,7 +6875,6 @@ Se il criterio non viene configurato, significa che <ph name="PRODUCT_OS_NAME" /
       In questo modo possono essere accoppiati automaticamente altri dispositivi ChromeOS (e Android) su cui è stato eseguito l'accesso con lo stesso account GAIA.
       Se non viene configurato, il valore predefinito è disabled per gli utenti aziendali ed enabled per gli account
       non gestiti.</translation>
-<translation id="6400959027108936283">Attiva la funzionalità</translation>
 <translation id="6401669939808766804">Disconnetti l'utente</translation>
 <translation id="640244877779556713">Attiva suggerimento di emoji</translation>
 <translation id="6403114173011456561">Consente di controllare la tastiera virtuale touch, fungendo da criterio aggiuntivo rispetto al criterio <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
@@ -8256,7 +8236,6 @@ Questo sostituisce il criterio <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLIC
       Se il criterio viene impostato su Attivato o se non viene configurato, i dispositivi registrati segnalano l'elenco di interfacce di rete con i relativi tipi e indirizzi hardware.
 
       Se il criterio viene impostato su Disattivato, i dispositivi registrati non segnalano l'interfaccia di rete.</translation>
-<translation id="7388618954884540850">Disattiva la migrazione dei file locali nel cloud</translation>
 <translation id="7389872682701720082">Se attivi questa impostazione, i plug-in non obsoleti verranno sempre eseguiti.
 
       Se questa impostazione è disattivata o non è configurata, agli utenti verrà chiesta l'autorizzazione di eseguire i plug-in per i quali è necessaria. Questi sono plug-in che possono compromettere la sicurezza.</translation>
@@ -9534,7 +9513,6 @@ Se il criterio non viene impostato o viene impostato su 0 e si passa a un URL de
 
       Se il criterio viene disattivato o non viene impostato, saranno utilizzati solo i normali profili locali.</translation>
 <translation id="8417305981081876834">Imposta la lunghezza massima del PIN per la schermata di blocco</translation>
-<translation id="8418438383184278931">Attiva la migrazione dei file utente locali allo spazio di archiviazione sul cloud</translation>
 <translation id="841977920223099909">Attivazione dell'avviso di protezione tramite password</translation>
 <translation id="8419965165591256432">La frequenza del rilevamento dello stato dell'attività del dispositivo su dispositivi registrati di utenti affiliati. Il valore minimo consentito è 1 minuto.
 

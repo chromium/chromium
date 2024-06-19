@@ -13,6 +13,7 @@
 <translation id="1131805035311359397">若要检查您的密码是否未曾遭遇数据泄露和其他安全问题，请<ph name="BEGIN_LINK" />登录 Chromium<ph name="END_LINK" />。</translation>
 <translation id="1153368717515616349">点击 Chromium 菜单</translation>
 <translation id="1185134272377778587">关于 Chromium</translation>
+<translation id="1188705220418984327">若要共享窗口，请在“系统偏好设置”中为 Chromium 启用屏幕录制功能。</translation>
 <translation id="1203500561924088507">感谢您完成安装。您必须重启浏览器才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="1262876892872089030">当此标签页处于闲置状态时，系统会释放一些内存，以让 Chromium 保持快速运行。您可以选择始终不让此网站处于闲置状态。</translation>
 <translation id="1265577313130862557">Chromium 阻止了此项下载操作，因为该文件具有危险性</translation>
@@ -159,6 +160,7 @@
 <translation id="364817392622123556">{COUNT,plural, =0{Chromium 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。}=1{Chromium 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。您的无痕式窗口不会重新打开。}other{Chromium 有一项新的可用更新；一旦您重新启动，系统即会应用这项更新。您的 # 个无痕式窗口不会重新打开。}}</translation>
 <translation id="3651803019964686660">若要从 <ph name="ORIGIN" /> 向您的 Android 手机发送电话号码，请在这两部设备上分别登录 Chromium。</translation>
 <translation id="3667616615096815454">无法安装，服务器无法识别该应用。</translation>
+<translation id="3669334504579945026">若要共享屏幕，请在“系统偏好设置”中为 Chromium 启用屏幕录制功能。</translation>
 <translation id="3685209450716071127">Chromium 无法检查您的密码。请检查您的互联网连接。</translation>
 <translation id="3702352323269013324">在 Chromium 设置中详细了解广告个性化</translation>
 <translation id="370962675267501463">{COUNT,plural, =0{您的管理员要求您重新启动 Chromium 以应用此项更新}=1{您的管理员要求您重新启动 Chromium 以应用此项更新。您的无痕式窗口不会重新打开。}other{您的管理员要求您重新启动 Chromium 以应用此项更新。您的 # 个无痕式窗口不会重新打开。}}</translation>
@@ -459,6 +461,7 @@ Chromium 无法恢复您的设置。</translation>
 <translation id="8357820681460164151">如需在您的所有设备上访问自己的 Chromium 浏览器信息，请登录您的账号，然后开启同步功能</translation>
 <translation id="8360718212975266891">若要接收后续 Chromium 更新，您需使用 Windows 10 或更高版本。此计算机目前使用的是 Windows 8。</translation>
 <translation id="8370517070665726704">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>
+<translation id="837460953767177950">然后，您需要重启 Chromium。</translation>
 <translation id="8401454788024434101">此扩展程序已被其开发者取消发布，可能不安全。请将其从 Chromium 中移除，这样它便无法再查看和更改您在所访问的网站上的数据，包括您的个人信息。</translation>
 <translation id="8417404458978023919">{0,plural, =1{请于 1 天内重新启动 Chromium}other{请于 # 天内重新启动 Chromium}}</translation>
 <translation id="8453117565092476964">安装程序归档损坏或无效。请重新下载 Chromium。</translation>

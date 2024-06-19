@@ -2521,7 +2521,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2806372837663997957">L'appareil avec lequel vous tentez de partager le fichier n'a pas accepté cette opération</translation>
 <translation id="2806891468525657116">Le raccourci existe déjà</translation>
 <translation id="2807517655263062534">Les fichiers téléchargés s'affichent ici</translation>
-<translation id="2809946454624727734">Vous pouvez y accéder dans vos adresses enregistrées.</translation>
 <translation id="2811205483104563968">Comptes</translation>
 <translation id="2812049959647166806">Le format Thunderbolt n'est pas compatible</translation>
 <translation id="2812171980080389735">Réseaux et mots de passe enregistrés afin que vous puissiez vous connecter instantanément</translation>
@@ -5446,7 +5445,6 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5016491575926936899">Vous pouvez envoyer des SMS depuis votre ordinateur, partager votre connexion Internet, répondre à une conversation depuis une notification et déverrouiller votre <ph name="DEVICE_TYPE" /> avec votre téléphone.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="5016983299133677671">Essayez un nouveau mot de passe</translation>
 <translation id="5017529052065664584">15 dernières minutes</translation>
-<translation id="5017643436812738274">Vous pouvez parcourir les pages à l'aide d'un curseur de texte. Pour désactiver la navigation au clavier, appuyez sur Ctrl+Recherche+7.</translation>
 <translation id="5018207570537526145">Ouvrir le site Web de l'extension</translation>
 <translation id="5018526990965779848">Envoyer des données d'utilisation et de diagnostic. Contribuez à l'amélioration de votre expérience sur Android en envoyant automatiquement à Google des données liées à l'utilisation de votre appareil et des applications, ainsi que des données de diagnostic. Ces informations nous aideront à améliorer, entre autres, la stabilité du système et des applications. Certaines données globales seront également utiles aux développeurs des applications Google et à nos partenaires tels que les développeurs Android. Si vous avez activé le paramètre "Activité additionnelle sur le Web et les applications", ces données peuvent être enregistrées dans votre compte Google.</translation>
 <translation id="5020008942039547742">Choisir une autre fenêtre</translation>
@@ -5603,6 +5601,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5135533361271311778">Impossible de créer le favori.</translation>
 <translation id="513555878193063507">Ajouter un APN</translation>
 <translation id="5136343472380336530">Assurez-vous que les deux appareils sont déverrouillés, qu'ils sont proches l'un de l'autre et que le Bluetooth est activé sur les deux. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="5136529877787728692">F7</translation>
 <translation id="5137349216872139332">Échec de la connexion au point d'accès instantané</translation>
 <translation id="5138227688689900538">Afficher moins</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, recherche dans <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
@@ -7384,6 +7383,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6490471652906364588">Appareil USB de type C (port situé sur la droite de l'appareil)</translation>
 <translation id="6491376743066338510">Échec de l'autorisation</translation>
 <translation id="649396225532207613">Ce fichier peut compromettre vos comptes personnels et de réseaux sociaux</translation>
+<translation id="6493991254603208962">Baisser la luminosité</translation>
 <translation id="6494327278868541139">Afficher les détails de la protection renforcée</translation>
 <translation id="6494445798847293442">N'est pas une autorité de certification</translation>
 <translation id="6494483173119160146">Une erreur irrécupérable s'est produite. Veuillez réinitialiser votre appareil (cela effacera toutes les données utilisateur), puis réessayer.</translation>
@@ -8179,6 +8179,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7082850163410901674">Les notifications sont désactivées dans les réglages système Mac</translation>
 <translation id="7083774521940805477">Steam pour Chromebook (bêta) n'est pas disponible sur votre Chromebook.</translation>
 <translation id="708550780726587276">(non configuré)</translation>
+<translation id="7086377898680121060">Augmenter la luminosité</translation>
 <translation id="7086672505018440886">Ajouter des fichiers journaux Chrome dans l'archive.</translation>
 <translation id="7088434364990739311">Échec du lancement de la vérification des mises à jour (code d'erreur <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">L'administrateur a associé l'état "Non géré" à cet appareil. Pour permettre son enregistrement, veuillez demander à l'administrateur d'activer l'état "En attente" pour cet appareil.</translation>
@@ -9320,7 +9321,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="793531125873261495">Erreur lors du téléchargement de la machine virtuelle. Veuillez réessayer.</translation>
 <translation id="7935451262452051102">Progression : <ph name="PERCENT" /> %</translation>
 <translation id="7937809006412909895">Collecte des données de diagnostic…</translation>
-<translation id="7938881824185772026">Labos</translation>
+<translation id="7938881824185772026">Labs</translation>
 <translation id="7939062555109487992">Options avancées</translation>
 <translation id="793923212791838">Impossible d'utiliser votre appareil avec ce site</translation>
 <translation id="7939328347457537652">Gérer les certificats d'appareil</translation>

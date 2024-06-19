@@ -57,6 +57,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="1734234790201236882">Chrome toto heslo uloží do vášho účtu Google. Nebudete si ho musieť pamätať.</translation>
 <translation id="1786003790898721085">Skontrolujte, či ste sa v zariadení <ph name="TARGET_DEVICE_NAME" /> prihlásili do Chromu, a potom to skúste odoslať znova.</translation>
 <translation id="1786044937610313874">Odkazy sa otvárajú v Chrome</translation>
+<translation id="178701303897325119">Toto rozšírenie už nie je podporované. Chrome odporúča, aby ste ho odstránili.</translation>
 <translation id="1812689907177901597">Po vypnutí tejto možnosti sa budete môcť prihlásiť do webov Googlu (napríklad do Gmailu) bez prihlásenia do Chromu</translation>
 <translation id="1860536484129686729">Chrome potrebuje povolenie pre tento web na prístup k fotoaparátu</translation>
 <translation id="1873233029667955273">Google Chrome nie je váš predvolený prehliadač</translation>
@@ -172,6 +173,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="3261565993776444564">Vyskúšajte novú farbu na prispôsobenie prehliadača</translation>
 <translation id="3282568296779691940">Prihlásiť sa do Chromu</translation>
 <translation id="3286538390144397061">Reštartovať</translation>
+<translation id="3292333338048274092">Potom budete musieť reštartovať Chrome.</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome sa teraz reštartuje}=1{Chrome sa reštartuje o 1 sekundu}few{Chrome sa reštartuje o # sekundy}many{Chrome sa reštartuje o # sekundy}other{Chrome sa reštartuje o # sekúnd}}</translation>
 <translation id="3396977131400919238">V priebehu inštalácie sa vyskytla chyba operačného systému. Stiahnite prehliadač Google Chrome znova.</translation>
@@ -216,6 +218,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4035053306113201399">Aktualizácia sa použije po reštartovaní systému Chrome OS.</translation>
 <translation id="4050175100176540509">V najnovšej verzii sú k dispozícii dôležité vylepšenia zabezpečenia a nové funkcie.</translation>
 <translation id="4053720452172726777">Prispôsobiť a ovládať Google Chrome</translation>
+<translation id="4084404300720192944">Ak chcete zdieľať okno, povoľte Chromu nahrávať obrazovku v predvoľbách systému.</translation>
 <translation id="4106587138345390261">Chrome skúma nové funkcie, ktoré umožňujú webom zobraziť rovnaké prostredie prehliadania s využitím menšieho množstva vašich údajov</translation>
 <translation id="4110895483821904099">Nastavte si nový profil Chromu</translation>
 <translation id="4111566860456076004">Chrome nedokáže overiť, odkiaľ toto rozšírenie pochádza, takže môže byť nebezpečné. Odstráňte ho z Chromu, aby sa mu nezobrazovali vaše údaje na weboch, ktoré navštevujete (vrátane vašich osobných údajov), a nemohlo ich meniť.</translation>
@@ -247,6 +250,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="4389991535395284064">Pri prehliadaní v režime inkognito vás bude Chrome pred načítaním webu používajúceho nezabezpečené pripojenie upozorňovať</translation>
 <translation id="4427306783828095590">Rozšírená ochrana efektívnejšie blokuje phishing aj malvér</translation>
 <translation id="4434353761996769206">Chyba inštalátora: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438657683599538446">Prihlásiť sa do Chromu ako <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – prihlásenie do siete – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">V prehliadači Google Chrome práve prebieha ďalšia operácia. Skúste to neskôr.</translation>
 <translation id="4459234553906210702">Meranie reklám umožňuje webom, ktoré navštívite, požadovať od Chromu údaje, ktoré im pomáhajú merať výkonnosť reklám. Meranie reklám obmedzuje sledovanie na rôznych weboch presúvaním minimálneho množstva údajov medzi webmi.</translation>
@@ -357,6 +361,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6182736845697986886">Nepodarilo sa nainštalovať pre internú chybu servera aktualizácií.</translation>
 <translation id="6200139057479872438">Tento web ste v poslednom čase nenavštívili. Chrome odstránil povolenia <ph name="PERMISSION_1" /> a <ph name="PERMISSION_2" />.</translation>
+<translation id="621585339844629864">Ak chcete zdieľať obrazovku, povoľte Chromu nahrávať obrazovku v predvoľbách systému.</translation>
 <translation id="6235018212288296708">Pravidlo pre prichádzajúce prenosy pre prehliadač Google Chrome, ktoré povoľuje prenos dát mDNS.</translation>
 <translation id="624230925347970731">Chrome sa čoskoro zavrie</translation>
 <translation id="6247557882553405851">Správca hesiel Google</translation>

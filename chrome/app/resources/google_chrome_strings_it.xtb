@@ -54,6 +54,7 @@
 <translation id="1734234790201236882">Chrome salverà la password nel tuo Account Google affinché tu non debba memorizzarla.</translation>
 <translation id="1786003790898721085">Assicurati di aver effettuato l'accesso a Chrome sul tuo dispositivo <ph name="TARGET_DEVICE_NAME" /> e prova a ripetere l'invio.</translation>
 <translation id="1786044937610313874">Le scorciatoie si aprono in Chrome</translation>
+<translation id="178701303897325119">Questa estensione non è più supportata. Chrome consiglia di rimuoverla.</translation>
 <translation id="1812689907177901597">Se disattivi questa funzione, puoi accedere ai siti Google quali Gmail senza accedere a Chrome</translation>
 <translation id="1860536484129686729">Per questo sito Chrome ha bisogno dell'autorizzazione ad accedere alla fotocamera</translation>
 <translation id="1873233029667955273">Google Chrome non è il browser predefinito</translation>
@@ -244,6 +245,7 @@
 <translation id="4389991535395284064">Quando navighi in modalità di navigazione in incognito, Chrome ti avvisa prima di caricare un sito utilizzando una connessione non sicura</translation>
 <translation id="4427306783828095590">La protezione avanzata blocca malware e tentativi di phishing con maggiore efficacia</translation>
 <translation id="4434353761996769206">Errore del programma di installazione: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438657683599538446">Accedi a Chrome come <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome - Accesso rete - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">C'è un'altra operazione in corso su Google Chrome. Riprova più tardi.</translation>
 <translation id="4459234553906210702">Ad measurement consente ai siti che visiti di chiedere a Chrome informazioni che li aiutino a valutare il rendimento dei loro annunci. Ad measurement limita il tracciamento tra siti trasferendo il minor numero possibile di informazioni tra i siti.</translation>

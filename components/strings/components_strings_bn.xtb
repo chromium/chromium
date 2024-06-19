@@ -239,7 +239,6 @@
 <translation id="1427192966110103169">বাড়ির সুইমিং পুল, সনা ও স্পা</translation>
 <translation id="1428146450423315676">স্ট্যাকার ৭</translation>
 <translation id="142858679511221695">ক্লাউড ব্যবহারকারী</translation>
-<translation id="1428729058023778569">এই সাইটে HTTPS কাজ করে না, তাই আপনি এই সতর্কতা দেখছেন। <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">সেল্ফ-অ্যাডেসিভ ফিল্ম</translation>
 <translation id="1430915738399379752">প্রিন্ট</translation>
 <translation id="1432187715652018471">পৃষ্ঠাটি একটি পরিষেবা নিয়ন্ত্রক ইনস্টল করতে চায়।</translation>
@@ -528,7 +527,6 @@
 <translation id="1959445535228047762">আপনার টেক্সট ও পৃষ্ঠার কন্টেন্ট Google-এ পাঠানো হয় এবং এই ফিচার উন্নত করার জন্য তা ব্যবহার করা হতে পারে।
   <ph name="BEGIN_LINK" />আরও জানুন<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> বুকমার্ক</translation>
-<translation id="196752089528718902">সাধারণত আপনি এই সাইট নিরাপদে কানেক্ট করেন, তবে এখন Chrome কোনও নিরাপদ কানেকশন ব্যবহার করতে পারছে না। কোনও হ্যাকার হয়ত আপনার নেটওয়ার্ক কানেকশনে গোপনে আড়ি পাততে চাইছে বা সেটি পরিবর্তন করার চেষ্টা করছে। <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">ধারাবাহিকতাতে ত্রুটি</translation>
 <translation id="1973785048533660168">ক্লারিক্যাল ও অ্যাডমিনিস্ট্রেটিভ চাকরি</translation>
 <translation id="1974060860693918893">উন্নত</translation>
@@ -546,7 +544,6 @@
 <translation id="2003709556000175978">আপনার পাসওয়ার্ড রিসেট করুন</translation>
 <translation id="2003775180883135320">উপরে কোয়াড পাঞ্চ</translation>
 <translation id="2004697686368036666">কিছু সাইটের ফিচার কাজ নাও করতে পারে</translation>
-<translation id="2005042463110681802">আপনি ছদ্মবেশী মোডে রয়েছেন এবং এই সাইটে HTTPS কাজ করে না, তাই আপনি এই সতর্কতা দেখছেন। <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">'ইভেন্ট তৈরি করুন' বোতাম, Google Calendar-এ চটপট নতুন ইভেন্ট তৈরি করতে এটি চালু করুন</translation>
 <translation id="201174227998721785">Chrome সেটিংসে বিভিন্ন সাইটের স্টোর করা ডেটা ও অনুমতি ম্যানেজ করুন</translation>
 <translation id="2012276282211112603">এই মুহূর্তে, দেখানোর মতো কোনও বিষয় নেই</translation>
@@ -608,7 +605,6 @@
 <translation id="2108755909498034140">আপনার কম্পিউটার পুনরায় চালু করুন</translation>
 <translation id="2111166930115883695">গেম খেলতে, স্পেসবার প্রেস করুন</translation>
 <translation id="2112529237938317174">অনুমতি সংক্রান্ত বিবরণ দেখুন</translation>
-<translation id="2113232594265919362">এই সাইটে HTTPS কাজ করে না, তাই আপনি এই সতর্কতা দেখছেন এবং আপনি Google-এর উন্নত সুরক্ষা প্রোগ্রামের অধীনে রয়েছেন। <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">কার্ড</translation>
 <translation id="2114841414352855701">এড়িয়ে যাওয়া হয়েছে কারণ এটি <ph name="POLICY_NAME" />-দ্বারা ওভাররাইড করা হয়েছিল৷</translation>
 <translation id="2118132148597630479">এনভেলপ C5</translation>
@@ -810,7 +806,6 @@
 <translation id="2482878487686419369">বিজ্ঞপ্তিগুলি</translation>
 <translation id="248348093745724435">মেশিনের নীতি</translation>
 <translation id="2485243023686553468">স্মার্ট ফোন</translation>
-<translation id="2490199669743245365">আপনি যে সাইট ভিজিট করার চেষ্টা করছেন সেখানে হয়ত আক্রমণকারীরা আপনাকে দিয়ে প্রতারণা করে ক্ষতিকর সফ্টওয়্যার ইনস্টল করিয়ে দিতে পারে। যা আপনার পাসওয়ার্ড, ফটো, মেসেজ বা ক্রেডিট কার্ড নম্বরের মতো তথ্য চুরি করতে বা মুছে দিতে পারে। Chrome সম্পূর্ণভাবে নিরাপদ সাইটে ফিরে যাওয়ার সাজেশন দেয়। <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">সার্ভারের সার্টিফিকেটে ত্রুটি আছে৷</translation>
 <translation id="2491414235131909199">একটি এক্সটেনশন এই পৃষ্ঠা ব্লক করে দিয়েছে</translation>
 <translation id="2495083838625180221">JSON বিশ্লেষক</translation>
@@ -971,7 +966,6 @@
 <translation id="2839501879576190149">আপনি যে সাইটটি ভিজিট করতে চলেছেন সেটি ভুয়ো</translation>
 <translation id="2843623755398178332">আপনার শেয়ার করা ট্যাব স্ক্রল ও জুম করবেন?</translation>
 <translation id="2851291081585704741">আপনি অফলাইন আছেন</translation>
-<translation id="2856444702002559011">আক্রমণকারীরা হয়ত <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> থেকে আপনার তথ্য (যেমন পাসওয়ার্ড, মেসেজ বা ক্রেডিট কার্ড) চুরি করার চেষ্টা করছে। <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">২০০ x ৩০০ মিমি</translation>
 <translation id="2859806420264540918">এই সাইট ব্যাঘাত সৃষ্টিকারী বা বিভ্রান্তিকর বিজ্ঞাপন দেখায়।</translation>
 <translation id="28618371182701850">ইলেকট্রিক ও প্লাগ-ইন গাড়ি</translation>
@@ -1318,7 +1312,6 @@
 <translation id="3507936815618196901">আপনার আশেপাশের এলাকার একটি 3D ম্যাপ তৈরি করতে এবং ক্যামেরার অবস্থান ট্র্যাক করতে চায়</translation>
 <translation id="3512163584740124171">একই নীতির গ্রুপের অন্য একটি নীতি অগ্রাধিকার পেয়েছে, তাই এই নীতি অগ্রাহ্য করা হয়েছে।</translation>
 <translation id="351522771072578657">আপনি বর্তমানে মেনু ব্যবহার করছেন</translation>
-<translation id="3515972145999192222">আপনার সংস্থা <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ব্লক করেছে কারণ এটি একটি নীতি লঙ্ঘন করেছে। <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">মাল্টিপল অবজেক্ট ম্যানেজ করা</translation>
 <translation id="3525130752944427905">১০ x ১৪ ইঞ্চি</translation>
 <translation id="3525435918300186947">MIDI ডিভাইস কন্ট্রোল ও রিপ্রোগ্রাম করতে চান?</translation>
@@ -1484,7 +1477,6 @@
 <translation id="3801265110651850478">আপনার ব্রাউজিং ট্র্যাফিকের মাধ্যমে একটি “Do Not Track” অনুরোধ পাঠান</translation>
 <translation id="380329542618494757">নাম</translation>
 <translation id="3803801106042434208">এইসব সার্চ ইঞ্জিন আপনার অঞ্চলে জনপ্রিয়</translation>
-<translation id="3806932344025766608">আপনি যে সাইট ভিজিট করার চেষ্টা করছেন সেখানে হয়ত আক্রমণকারীরা আপনাকে দিয়ে প্রতারণা করে সফ্টওয়্যার ইনস্টল করিয়ে দিতে পারে। এর সাহায্যে আপনার পাসওয়ার্ড, ফোন অথবা ক্রেডিট কার্ড নম্বরের মতো তথ্য প্রকাশ হয়ে যেতে পারে। Chrome সম্পূর্ণভাবে নিরাপদ সাইটে ফিরে যাওয়ার সাজেশন দেয়। <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">ছবি X শিফ্ট</translation>
 <translation id="3807709094043295184">ক্লাসিক রক ও পুরানো দিনের</translation>
 <translation id="3807873520724684969">ক্ষতিকর কন্টেন্ট ব্লক করা হয়েছে।</translation>
@@ -3347,7 +3339,6 @@
 <translation id="7429429656042611765">এক্সিকিউটিভ</translation>
 <translation id="7432774160230062882">আপনার পরিচয় যাচাই করুন যাতে Chromium আপনার পেমেন্ট সংক্রান্ত তথ্য পূরণ করতে পারে।</translation>
 <translation id="7437289804838430631">পরিচিতির তথ্য যোগ করুন</translation>
-<translation id="7438338505272634288">আপনি যে সাইট ভিজিট করার চেষ্টা করছেন সেখানে হয়ত আক্রমণকারীরা আপনাকে দিয়ে প্রতারণা করে ক্ষতিকর সফ্টওয়্যার ইনস্টল করিয়ে দিতে পারে। এর ফলে, যেভাবে আপনি ব্রাউজ করেন তা প্রভাবিত হতে পারে। যেমন, আপনার হোমপেজ পরিবর্তন করতে পারে অথবা আপনি ভিজিট করেছেন এমন সাইটে অতিরিক্ত বিজ্ঞাপন দেখাতে পারে। ক্ষতি এড়াতে Chrome সম্পূর্ণভাবে নিরাপদ সাইটে ফিরে যাওয়ার সাজেশন দেয়। <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">অফলাইন থাকা অবস্থায় দেখুন</translation>
 <translation id="7441627299479586546">ভুল বিষয় বিশিষ্ট নীতি</translation>
 <translation id="7441864845853794192">গর্মেট ও বিশেষ খাবার</translation>
@@ -3447,7 +3438,6 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> বর্তমানে এই অনুরোধটি পরিচালনা করতে অক্ষম।</translation>
 <translation id="7599089013883397081">ডাউনলোড করার সময় শেষ হয়ে গেছে</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> কখনও অনুবাদ করবেন না</translation>
-<translation id="7601297359530599375">সাধারণত আপনি সুরক্ষিতভাবে এই সাইটে কানেক্ট করেন, তবে Chrome এখন কোনও সুরক্ষিত কানেকশন ব্যবহার করতে পারবে না। কোনও আক্রমণকারী হয়ত আপনার নেটওয়ার্ক কানেকশনে গোপনে আড়ি পাততে চাইছে বা সেটি পরিবর্তন করার চেষ্টা করছে। <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">আপনি যে সাইট ভিজিট করার চেষ্টা করছেন সেখানে হয়ত আক্রমণকারীরা আপনাকে দিয়ে কৌশলে ক্ষতিকরণ সফ্টওয়্যার ইনস্টল করিয়ে দিতে পারে। যা আপনার পাসওয়ার্ড, ফটো, মেসেজ বা ক্রেডিট কার্ড নম্বরের মতো তথ্য চুরি করতে বা মুছে দিতে পারে।</translation>
 <translation id="7608583484192556132">আপনাকে পছন্দমতো বিজ্ঞাপন দেখানো হবে কিনা তা এই সেটিংস সহ বিভিন্ন জিনিসের উপরে নির্ভর করে, যেমন <ph name="BEGIN_LINK_1" />সাইটের সাজেস্ট করা বিজ্ঞাপন<ph name="END_LINK_1" />, আপনার <ph name="BEGIN_LINK_2" />কুকি সেটিংস<ph name="END_LINK_2" />, এবং আপনি যে সাইট দেখছেন তা পছন্দমতো বিজ্ঞাপন দেখায় কিনা। <ph name="BEGIN_LINK_3" />আপনার বিজ্ঞাপন সংক্রান্ত গোপনীয়তা ম্যানেজ করা<ph name="END_LINK_3" /> সম্পর্কে আরও জানুন।</translation>
 <translation id="7610193165460212391">সীমার বাইরে মান <ph name="VALUE" />৷</translation>
@@ -3720,7 +3710,6 @@
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">সঠিক নয় এমন কার্ডগুলি মুছে ফেলা হয়েছে</translation>
-<translation id="8100666323495101203">সাইট হিসেবে  <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> নীতি লঙ্ঘন করতে পারে বলে আপনার প্রতিষ্ঠান শনাক্ত করেছে। <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8103161714697287722">পেমেন্টের পদ্ধতি</translation>
 <translation id="8103643211515685474">তবুও প্রিন্ট করুন</translation>
 <translation id="8105368624971345109">বন্ধ করুন</translation>

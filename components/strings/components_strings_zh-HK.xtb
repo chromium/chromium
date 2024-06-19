@@ -239,7 +239,6 @@
 <translation id="1427192966110103169">家居游泳池、桑拿浴和水療</translation>
 <translation id="1428146450423315676">堆疊器 7</translation>
 <translation id="142858679511221695">雲端使用者</translation>
-<translation id="1428729058023778569">此網站不支援 HTTPS，因此瀏覽器顯示此警告訊息。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">自黏薄膜</translation>
 <translation id="1430915738399379752">列印</translation>
 <translation id="1432187715652018471">網頁想要安裝服務處理常式。</translation>
@@ -527,7 +526,6 @@
 <translation id="1959445535228047762">你的文字和網頁內容會傳送給 Google，且可能會用於改善此功能。
   <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> 書籤</translation>
-<translation id="196752089528718902">你通常可經由安全連線前往網站，但 Chrome 目前無法使用安全連線。攻擊者可能會試圖監視或修改你的網絡連線。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">序列化錯誤</translation>
 <translation id="1973785048533660168">文書及行政職位空缺</translation>
 <translation id="1974060860693918893">進階選項</translation>
@@ -545,7 +543,6 @@
 <translation id="2003709556000175978">立即重設您的密碼</translation>
 <translation id="2003775180883135320">四孔 (頂端)</translation>
 <translation id="2004697686368036666">部分網站的功能可能會無法正常運作</translation>
-<translation id="2005042463110681802">此網站不支援 HTTPS，且你目前處於無痕模式，因此系統顯示此警告訊息。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">建立活動按鈕，啟動之後就可以喺 Google 日曆度快速建立新活動</translation>
 <translation id="201174227998721785">在 Chrome 設定中管理所有網站的權限和儲存的資料</translation>
 <translation id="2012276282211112603">目前沒有可顯示的主題</translation>
@@ -607,7 +604,6 @@
 <translation id="2108755909498034140">重新啟動您的電腦</translation>
 <translation id="2111166930115883695">按一下空格鍵即可開始遊戲</translation>
 <translation id="2112529237938317174">顯示權限詳情</translation>
-<translation id="2113232594265919362">此網站不支援 HTTPS，且您目前已加入 Google 的「進階保護計劃」，因此系統顯示此警告訊息。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">卡片</translation>
 <translation id="2114841414352855701">由於政策已被「<ph name="POLICY_NAME" />」覆寫，因此被略過。</translation>
 <translation id="2118132148597630479">C5 信封</translation>
@@ -809,7 +805,6 @@
 <translation id="2482878487686419369">通知</translation>
 <translation id="248348093745724435">裝置政策</translation>
 <translation id="2485243023686553468">智能手機</translation>
-<translation id="2490199669743245365">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會在你的裝置上安裝有害軟件，以竊取或刪除密碼、相片、訊息或信用卡號碼等資料。Chrome 強烈建議你不要瀏覽這個網站。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">伺服器憑證含有錯誤。</translation>
 <translation id="2491414235131909199">有擴充程式已封鎖此頁面</translation>
 <translation id="2495083838625180221">JSON 剖析器</translation>
@@ -970,7 +965,6 @@
 <translation id="2839501879576190149">您將要瀏覽假網站</translation>
 <translation id="2843623755398178332">要捲動和縮放已分享的分頁嗎？</translation>
 <translation id="2851291081585704741">您已離線</translation>
-<translation id="2856444702002559011">攻擊者可能會試圖透過 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> 竊取您的資料 (例如密碼、訊息或信用卡資料)。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 x 300 毫米</translation>
 <translation id="2859806420264540918">此網站顯示滋擾性或誤導廣告。</translation>
 <translation id="28618371182701850">電動和插電式汽車</translation>
@@ -1316,7 +1310,6 @@
 <translation id="3507936815618196901">建立您身處環境的 3D 地圖並追蹤攝錄機位置</translation>
 <translation id="3512163584740124171">由於相同政策群組中有其他政策的優先順序更高，因此系統已忽略此政策。</translation>
 <translation id="351522771072578657">宜家喺選單度</translation>
-<translation id="3515972145999192222">由於 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 違反政策，因此已被您的機構封鎖。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">多物件處理</translation>
 <translation id="3525130752944427905">10 x 14 吋</translation>
 <translation id="3525435918300186947">要控制 MIDI 裝置及將其重新編程嗎？</translation>
@@ -1482,7 +1475,6 @@
 <translation id="3801265110651850478">將「不追蹤」要求與瀏覽流量一併傳送</translation>
 <translation id="380329542618494757">名稱</translation>
 <translation id="3803801106042434208">這些搜尋引擎是你所在地區的熱門之選</translation>
-<translation id="3806932344025766608">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會誘騙你安裝軟件或提供資料，例如密碼、電話號碼或信用卡號碼等資料。Chrome 強烈建議你不要瀏覽這個網站。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">圖片 X 軸移動</translation>
 <translation id="3807709094043295184">經典搖滾和懷舊音樂</translation>
 <translation id="3807873520724684969">有害內容已被封鎖。</translation>
@@ -3346,7 +3338,6 @@
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">先驗證你的身分，Chromium 才能填入付款資料。</translation>
 <translation id="7437289804838430631">新增聯絡人資料</translation>
-<translation id="7438338505272634288">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會誘騙你安裝有害軟件，影響你的瀏覽方式，例如變更首頁，或在你瀏覽的網站上顯示額外廣告。Chrome 強烈建議你不要瀏覽這個網站，避免受攻擊。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">探索可供離線檢視的內容</translation>
 <translation id="7441627299479586546">政策主體有誤</translation>
 <translation id="7441864845853794192">美食和特色食品</translation>
@@ -3446,7 +3437,6 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> 目前無法處理這個請求。</translation>
 <translation id="7599089013883397081">下載逾時</translation>
 <translation id="7600965453749440009">永遠不要翻譯<ph name="LANGUAGE" /></translation>
-<translation id="7601297359530599375">您通常可經由安全連線前往此網站，但 Chrome 目前無法使用安全連線。攻擊者可能會試圖監視或修改您的網絡連線。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">如果你嘗試瀏覽的網站被攻擊，攻擊者可能會在你的裝置上安裝有害軟件，以竊取或刪除密碼、相片、訊息或信用卡號碼等資料。</translation>
 <translation id="7608583484192556132">上網時是否看到個人化廣告取決於多項因素，包括此設定、<ph name="BEGIN_LINK_1" />網站建議廣告<ph name="END_LINK_1" />、<ph name="BEGIN_LINK_2" />Cookie 設定<ph name="END_LINK_2" />，以及網站是否顯示個人化廣告。進一步瞭解如何<ph name="BEGIN_LINK_3" />管理廣告私隱權<ph name="END_LINK_3" />。</translation>
 <translation id="7610193165460212391">值超出 <ph name="VALUE" /> 的範圍。</translation>
@@ -3719,7 +3709,6 @@
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">無效的卡已被移除</translation>
-<translation id="8100666323495101203">您的機構已將 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> 識別為可能違反政策的網站。<ph name="BEGIN_LEARN_MORE_LINK" />瞭解詳情<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8103161714697287722">付款方法</translation>
 <translation id="8103643211515685474">仍要列印</translation>
 <translation id="8105368624971345109">關閉</translation>

@@ -115,6 +115,7 @@
 <translation id="1209206284964581585">להסתיר בינתיים</translation>
 <translation id="121201262018556460">ניסית להגיע אל <ph name="DOMAIN" />, אך השרת הציג אישור המכיל מפתח חלש. ייתכן שתוקף פרץ את המפתח הפרטי, והשרת אינו השרת שרצית (ייתכן שניסית לתקשר עם תוקף).</translation>
 <translation id="1212527389003717329">ההורדה התחילה. כדי לראות אותה, יש ללחוץ לחיצה ארוכה על |<ph name="ACCELERATOR" />|.</translation>
+<translation id="1214970845432250240">טווח מחירים</translation>
 <translation id="1219129156119358924">אבטחת מערכת</translation>
 <translation id="1222060260947439312">המגש הימני</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -239,7 +240,6 @@
 <translation id="1427192966110103169">בריכות שחייה, סאונות ומתקני ספא לבית</translation>
 <translation id="1428146450423315676">מערים 7</translation>
 <translation id="142858679511221695">משתמש בענן</translation>
-<translation id="1428729058023778569">‏האזהרה הזו מוצגת לך כי האתר הזה לא תומך ב-HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Self-Adhesive Film</translation>
 <translation id="1430915738399379752">הדפסה</translation>
 <translation id="1432187715652018471">‏התקבלה מהדף הזה בקשה להתקין handler של שירות.</translation>
@@ -527,7 +527,6 @@
 <translation id="1959445535228047762">‏הטקסט ותוכן הדפים יישלחו אל Google ועשויים לשמש לשיפור התכונה הזו.
   <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436">סימניות של <ph name="DOMAIN" /></translation>
-<translation id="196752089528718902">‏לרוב החיבור לאתרים מאובטח, אבל הפעם ל-Chrome אין אפשרות להשתמש בחיבור מאובטח. יכול להיות שתוקף מנסה לצותת לחיבור לרשת או לשנות אותו. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">שגיאה בעריכה בסידרה</translation>
 <translation id="1973785048533660168">משרות בתחום הפקידות והאדמיניסטרציה</translation>
 <translation id="1974060860693918893">מתקדם</translation>
@@ -545,7 +544,6 @@
 <translation id="2003709556000175978">צריך לאפס את הסיסמה עכשיו</translation>
 <translation id="2003775180883135320">4 ניקובים בצד שמאל</translation>
 <translation id="2004697686368036666">ייתכן שתכונות באתרים מסוימים לא יפעלו</translation>
-<translation id="2005042463110681802">‏האזהרה הזו מופיעה כי האתר הזה לא תומך ב-HTTPS ונכנסת במצב פרטי. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">‏הלחצן ליצירת אירוע, מפעילים אותו כדי ליצור במהירות אירוע חדש ביומן Google</translation>
 <translation id="201174227998721785">‏ניתן לנהל את ההרשאות והנתונים השמורים בכל האתרים בהגדרות Chrome</translation>
 <translation id="2012276282211112603">אין כרגע נושאים שאפשר להציג</translation>
@@ -607,7 +605,6 @@
 <translation id="2108755909498034140">אתחול המחשב</translation>
 <translation id="2111166930115883695">יש להקיש על המקש 'רווח' כדי לשחק</translation>
 <translation id="2112529237938317174">הצגת פרטי ההרשאה</translation>
-<translation id="2113232594265919362">‏האזהרה הזו מוצגת לך כי האתר הזה לא תומך ב-HTTPS, והחשבון שלך פועל במסגרת תוכנית ההגנה המתקדמת של Google. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">כרטיס</translation>
 <translation id="2114841414352855701">המערכת התעלמה משום שהמדיניות בוטלה על ידי <ph name="POLICY_NAME" />.</translation>
 <translation id="2118132148597630479">‏מעטפה – C5</translation>
@@ -809,7 +806,6 @@
 <translation id="2482878487686419369">התראות</translation>
 <translation id="248348093745724435">מדיניות המחשב</translation>
 <translation id="2485243023686553468">מכשירי סמארטפון</translation>
-<translation id="2490199669743245365">‏תוקפים באתר שבו ניסית לבקר עשויים לגרום לך בדרכי מרמה להתקין תוכנות מזיקות שגונבות או מוחקות פרטים כמו הסיסמה, התמונות, ההודעות או מספר כרטיס האשראי שלך. מערכת Chrome ממליצה מאוד לחזור לדף הבטוח. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">אישור השרת מכיל שגיאות.</translation>
 <translation id="2491414235131909199">הדף הזה נחסם על ידי תוסף כלשהו</translation>
 <translation id="2495083838625180221">‏מנתח JSON</translation>
@@ -970,7 +966,6 @@
 <translation id="2839501879576190149">האתר המבוקש נראה מזויף</translation>
 <translation id="2843623755398178332">לגלול את הכרטיסייה המשותפת ולשנות את מרחק התצוגה שלה?</translation>
 <translation id="2851291081585704741">אין חיבור לאינטרנט</translation>
-<translation id="2856444702002559011">ייתכן שתוקפים מנסים לגנוב את הפרטים שלך מהאתר <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (לדוגמה, סיסמאות, הודעות או כרטיסי אשראי). <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">‏200x300 מ"מ</translation>
 <translation id="2859806420264540918">באתר הזה מוצגות מודעות מפריעות או מטעות.</translation>
 <translation id="28618371182701850">רכבים חשמליים והיברידיים</translation>
@@ -1189,6 +1184,7 @@
 <translation id="3272091146646336650">‏12x19.2 אינץ' (Super B)</translation>
 <translation id="3272112314896217187">כאן מזינים את קוד האימות (<ph name="NUMBER_OF_DIGITS" /> ספרות)</translation>
 <translation id="3272643614306383237">‏פחות מ-1MB. בביקור הבא שלך, יכול להיות שאתרים מסוימים ייטענו לאט יותר.</translation>
+<translation id="327346289570683313">טווח מחירים</translation>
 <translation id="3273738040255912340">‏לאדמין יש אפשרות לבצע מרחוק שינויים בפרופיל ובדפדפן, לנתח מידע על הדפדפן באמצעות דוחות ולבצע משימות חשובות אחרות. אפשר לנהל את הפעילות במכשיר הזה גם מחוץ ל-Chromium. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{בהתאם למדיניות האדמין, לא מומלץ לפתוח את הקובץ הזה ב<ph name="DESTINATION_NAME" />}one{בהתאם למדיניות האדמין, לא מומלץ לפתוח את הקבצים האלה ב<ph name="DESTINATION_NAME" />}two{בהתאם למדיניות האדמין, לא מומלץ לפתוח את הקבצים האלה ב<ph name="DESTINATION_NAME" />}other{בהתאם למדיניות האדמין, לא מומלץ לפתוח את הקבצים האלה ב<ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">הארגון שלך, <ph name="ENROLLMENT_DOMAIN" />, שלח מספר פרטים, כמו הגדרות ומדיניות, לאתרים הבאים.</translation>
@@ -1317,7 +1313,6 @@
 <translation id="3507936815618196901">ליצור מפה בתלת ממד של הסביבה שלך ולעקוב אחר מיקום המצלמה</translation>
 <translation id="3512163584740124171">המערכת מתעלמת מהמדיניות הזו כי יש מדיניות אחרת מאותה קבוצה של הגדרות מדיניות שקיבלה עדיפות גבוהה יותר.</translation>
 <translation id="351522771072578657">נכנסת לתפריט</translation>
-<translation id="3515972145999192222">הכתובת <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> נחסמה על ידי הארגון שלך עקב הפרת מדיניות. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">טיפול באובייקטים מרובים</translation>
 <translation id="3525130752944427905">‏10x14 אינץ'</translation>
 <translation id="3525435918300186947">‏לאפשר לשלוט במכשירי ה-MIDI ולתכנת אותם מחדש?</translation>
@@ -1483,7 +1478,6 @@
 <translation id="3801265110651850478">‏שליחה של בקשת Do Not Track יחד עם תנועת הגלישה שלך</translation>
 <translation id="380329542618494757">שם</translation>
 <translation id="3803801106042434208">מנועי החיפוש האלה פופולריים באזור שלך</translation>
-<translation id="3806932344025766608">‏תוקפים באתר שבו ניסית לבקר עשויים לגרום לך בדרכי מרמה להתקין תוכנות או לחשוף פרטים כמו הסיסמה, מספר הטלפון או מספר כרטיס האשראי שלך. מערכת Chrome ממליצה מאוד לחזור לדף הבטוח. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">‏הזזת תמונה על ציר X</translation>
 <translation id="3807709094043295184">רוק קלאסי ואולדיז</translation>
 <translation id="3807873520724684969">תוכן מזיק נחסם.</translation>
@@ -3352,7 +3346,6 @@ Del</translation>
 <translation id="7429429656042611765">‏7.25x10.5 אינץ' (Executive)</translation>
 <translation id="7432774160230062882">‏כדי ש-Chromium יוכל למלא את פרטי התשלום, עליך לאמת את הזהות שלך.</translation>
 <translation id="7437289804838430631">הוספת פרטים ליצירת קשר</translation>
-<translation id="7438338505272634288">‏תוקפים באתר שבו ניסית לבקר עשויים לגרום לך בדרכי מרמה להתקין תוכנות מזיקות שמשפיעות על אופן הגלישה שלך. לדוגמה, על ידי שינוי דף הבית או הצגת מודעות נוספות באתרים שמבקרים בהם. מערכת Chrome ממליצה מאוד לחזור לדף הבטוח כדי להימנע מפגיעה. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">עיון במצב אופליין</translation>
 <translation id="7441627299479586546">נושא המדיניות שגוי</translation>
 <translation id="7441864845853794192">אוכל גורמה ומאכלים ייחודיים</translation>
@@ -3452,7 +3445,6 @@ Del</translation>
 <translation id="759889825892636187"><ph name="HOST_NAME" /> לא יכול לטפל כרגע בבקשה הזו.</translation>
 <translation id="7599089013883397081">פג הזמן הקצוב להורדה</translation>
 <translation id="7600965453749440009">איני רוצה לקבל תרגום מ<ph name="LANGUAGE" /> בכלל</translation>
-<translation id="7601297359530599375">‏לרוב החיבור לאתר הזה מאובטח, אבל הפעם ל-Chrome אין אפשרות להשתמש בחיבור מאובטח. יכול להיות שתוקף מנסה לצותת לחיבור לרשת או לשנות אותו. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">תוקפים באתר שבו ניסית לבקר עשויים להשתמש בדרכי מרמה כדי לגרום לך להתקין תוכנות מזיקות שגונבות או מוחקות פרטים כמו הסיסמה, התמונות, ההודעות או מספר כרטיס האשראי שלך.</translation>
 <translation id="7608583484192556132">‏יוצגו מודעות עם או בלי התאמה אישית בהתאם להגדרה הזו, ל<ph name="BEGIN_LINK_1" />מודעות שאתרים מציעים<ph name="END_LINK_1" />, ל<ph name="BEGIN_LINK_2" />הגדרות קובצי ה-Cookie<ph name="END_LINK_2" />, למצב ההתאמה האישית של מודעות באתר (פעילה או מושבתת) ולגורמים נוספים. <ph name="BEGIN_LINK_3" />מידע נוסף על קביעת ההגדרות לפרטיות בפרסום<ph name="END_LINK_3" /></translation>
 <translation id="7610193165460212391">הערך מחוץ לטווח <ph name="VALUE" />.</translation>
@@ -3725,7 +3717,6 @@ Del</translation>
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">הכרטיסים שאינם בתוקף הוסרו</translation>
-<translation id="8100666323495101203">לפי כללי הארגון שלך, הכתובת <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> זוהתה כאתר שעשוי להפר את המדיניות. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8103161714697287722">אמצעי תשלום</translation>
 <translation id="8103643211515685474">אני רוצה להדפיס בכל זאת</translation>
 <translation id="8105368624971345109">כיבוי</translation>

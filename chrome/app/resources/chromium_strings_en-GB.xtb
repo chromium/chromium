@@ -211,6 +211,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="4415566066719264597">Let Chromium Run in the Background</translation>
 <translation id="4423735387467980091">Customise and control Chromium</translation>
 <translation id="4427306783828095590">Enhanced protection does more to block phishing and malware</translation>
+<translation id="4434353761996769206">Installer error: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4447409407328223819">About Chrome for testing</translation>
 <translation id="4501471624619070934">Installation failed because access is restricted in this country.</translation>
 <translation id="4510853178268397146">This extension hasn't published privacy practices, such as how it collects and uses data. Chromium recommends that you remove it.</translation>
@@ -252,6 +253,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5277894862589591112">To apply your changes, relaunch Chromium</translation>
 <translation id="5294316920224716406">When browsing in Incognito mode, Chromium will warn you before loading a site using an insecure connection</translation>
 <translation id="5296845517486664001">When trials are on and if Chromium has randomly placed you in an active trial, your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chromium deletes your interests on a rolling basis each month.</translation>
+<translation id="5310474266708705970">Sign in to Chromium as <ph name="USER_EMAIL" /></translation>
 <translation id="5352264705793813212">Chromium found some safety recommendations for your review</translation>
 <translation id="5352361688875342522">Other Chromium profiles</translation>
 <translation id="5358375970380395591">You are signing in with a managed account and giving its administrator control over your Chromium profile. Your Chromium data, such as your apps, bookmarks, history, passwords and other settings will become permanently tied to <ph name="USER_NAME" />. You will be able to delete this data via the Google Accounts Dashboard, but you will not be able to associate this data with another account. <ph name="LEARN_MORE" /></translation>
@@ -407,6 +409,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="734373864078049451">Your web, bookmarks and other Chromium stuff live here.</translation>
 <translation id="7349591376906416160">Your system administrator has configured Chromium to open <ph name="ALTERNATIVE_BROWSER_NAME" /> to access <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7355355292030546812">Chromium blocked this download because the file can harm your personal and social network accounts, including <ph name="USER_EMAIL" /></translation>
+<translation id="7384121030444253939">This extension is no longer supported. Chromium recommends that you remove it instead.</translation>
 <translation id="7398989605938454041">With Chromium profiles, you can separate all of your Chromium things. This makes it easier to split between work and fun.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium needs permission to access your camera for this site</translation>

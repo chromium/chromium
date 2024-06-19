@@ -119,6 +119,7 @@
 <translation id="1383876407941801731">搜尋</translation>
 <translation id="1391102559483454063">開啟</translation>
 <translation id="1394698770495054737">完全模糊</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 天前}other{# 天前}}</translation>
 <translation id="1404963891829069586">專注模式音效</translation>
 <translation id="1407069428457324124">深色主題</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />。使用方向鍵即可瀏覽不同日期。</translation>
@@ -209,6 +210,7 @@
 <translation id="174102739345480129">標記功能已關閉。</translation>
 <translation id="1743570585616704562">無法識別</translation>
 <translation id="1743927604032653654">收合「<ph name="NOTIFICATION_TITLE" />」通知</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{1 小時內}=1{1 小時前}other{# 小時前}}</translation>
 <translation id="1746730358044914197">輸入法是由你的管理員所設定。</translation>
 <translation id="1747336645387973286">截止日為<ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">螢幕小鍵盤已啟用</translation>
@@ -346,6 +348,7 @@
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2360398059912971776">電池</translation>
 <translation id="2361210043495191221">切換 Wi-Fi。<ph name="STATE" />。</translation>
+<translation id="236574664504281623">來自 <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">無法登入 Chromebook</translation>
 <translation id="2367972762794486313">顯示應用程式</translation>
 <translation id="2368828502825385061">定位</translation>
@@ -506,6 +509,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">要允許存取麥克風嗎？</translation>
 <translation id="296762781903199866">無法下載<ph name="LANGUAGE" />語音檔案</translation>
+<translation id="2968761508099987738">目前不支援你所在的地區。</translation>
 <translation id="2970920913501714344">安裝應用程式、擴充功能和主題</translation>
 <translation id="2977598380246111477">下一個號碼</translation>
 <translation id="2985148236010982088">查看所有應用程式</translation>
@@ -976,6 +980,7 @@
 <translation id="468293128311738995">你手機上的應用程式</translation>
 <translation id="4690510401873698237">在底部顯示檔案櫃</translation>
 <translation id="4696813013609194136">使用家長存取碼將裝置解鎖</translation>
+<translation id="4697357603686181098">我們無法提供這方面的幫助。請嘗試提出其他要求。</translation>
 <translation id="4702647871202761252">已停用隱私保護畫面</translation>
 <translation id="4706121060329443414">系統稍後將再次嘗試下載，目前會暫時把語音傳送給 Google 處理。</translation>
 <translation id="470644585772471629">色彩反轉</translation>
@@ -1897,6 +1902,7 @@
 <translation id="7982878511129296052">關閉中...</translation>
 <translation id="7984197416080286869">指紋辨識失敗的次數過多</translation>
 <translation id="798779949890829624">這項設定是由系統管理員管理</translation>
+<translation id="7989206653429884947">經常開啟</translation>
 <translation id="799296642788192631">你可以固定重要檔案。如要固定項目，請將游標懸停在該項目上，或是開啟「檔案」應用程式，並在項目上按一下滑鼠右鍵。</translation>
 <translation id="7994370417837006925">多帳戶登入</translation>
 <translation id="7995804128062002838">無法擷取螢幕畫面</translation>
@@ -2080,6 +2086,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />：啟用中...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />，<ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">時間到。做得很好喔！🎉</translation>
+<translation id="8753368202781196133">目前不支援這個語言。</translation>
 <translation id="8755498163081687682">驗證身分：<ph name="ORIGIN_NAME" /> 要求確認你的身分</translation>
 <translation id="875593634123171288">顯示 VPN 設定</translation>
 <translation id="8756799553341497810">離開這個檢視畫面後，即可開始自訂應用程式版面配置。</translation>

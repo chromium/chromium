@@ -58,6 +58,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1734234790201236882">Chrome will save this password in your Google Account. You won’t have to remember it.</translation>
 <translation id="1786003790898721085">Make sure that you are signed in to Chrome on your <ph name="TARGET_DEVICE_NAME" /> and then try sending again.</translation>
 <translation id="1786044937610313874">Shortcuts open in Chrome</translation>
+<translation id="178701303897325119">This extension is no longer supported. Chrome recommends that you remove it instead.</translation>
 <translation id="1812689907177901597">By turning this off, you can sign in to Google sites such as Gmail, without signing in to Chrome</translation>
 <translation id="1860536484129686729">Chrome needs permission to access your camera for this site</translation>
 <translation id="1873233029667955273">Google Chrome isn't your default browser</translation>
@@ -247,6 +248,8 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4384570495110188418">Chrome can't check your passwords because you're not signed in</translation>
 <translation id="4389991535395284064">When browsing in Incognito mode, Chrome will warn you before loading a site using an insecure connection</translation>
 <translation id="4427306783828095590">Enhanced protection does more to block phishing and malware</translation>
+<translation id="4434353761996769206">Installer error: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438657683599538446">Sign in to Chrome as <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome – Network sign-in – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Another operation on Google Chrome is in progress. Please try again later.</translation>
 <translation id="4459234553906210702">Ad measurement allows sites that you visit to request information from Chrome that helps the site measure the performance of their ads. Ad measurement restricts cross-site tracking by transferring as little information as possible between sites.</translation>

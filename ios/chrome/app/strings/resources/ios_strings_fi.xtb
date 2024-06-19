@@ -532,6 +532,7 @@ Katso tarvittaessa hakukoneesi ohjeet hakuhistorian poistamiselle.</translation>
 <translation id="371398631992790800">Piilota "Kirjanmerkit"</translation>
 <translation id="37207012422556617">Trendaavat haut</translation>
 <translation id="3725081662140949903">Jos haluat estää muita käyttämästä salasanaasi, avaa <ph name="APP" />-sovellus, niin voit vaihtaa salasanan</translation>
+<translation id="372676576864368480">Täytä automaattisesti kortin numero, jonka loppuosa on <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Luotu <ph name="DATE" /></translation>
 <translation id="374357899112510277">Piilota "Lataukset"</translation>
 <translation id="3745190878148784130">Piilota Zoomaa tekstiä</translation>
@@ -1097,6 +1098,7 @@ Sivustot eivät näe selaustoimintaasi eri sivustoilla evästeiden kautta esim. 
 <translation id="6476800141292307438">Käännetään sivua kielelle <ph name="LANGUAGE" />. Vaihtoehdot näkyvät näytön alareunan lähellä.</translation>
 <translation id="648164694371393720">Todennusvirhe</translation>
 <translation id="6494931198667773526">Päättyy</translation>
+<translation id="6500795388871406244">Käytä salasanaehdotusta:</translation>
 <translation id="650279896687777322">Lue lisää…</translation>
 <translation id="6505334220040167806">Tiivistä välilehtiryhmä.</translation>
 <translation id="6507973708545996744">Kirjaudu sisään, niin näet lukulistan kaikilla laitteillasi.</translation>
@@ -1310,6 +1312,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7583004045319035904">Valitse <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> incognito-välilehtien lukituksen avaamiseen.</translation>
 <translation id="7598439272585186139">Lisää tietoturvaa</translation>
 <translation id="7600965453749440009">Älä koskaan käännä kieltä <ph name="LANGUAGE" /></translation>
+<translation id="7603308509262646847">Täytä kortinhaltija <ph name="NAME" /> automaattisesti</translation>
 <translation id="7603852183842204213">Ponn.ikk. estetty (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">Välilehtiryhmät</translation>
 <translation id="7607521702806708809">Poista salasana</translation>
@@ -1342,6 +1345,7 @@ Kun olet incognito-tilassa, sivustot eivät näe selaustoimintaasi eri sivustoil
 <translation id="7749790401023484470">Et valinnut tekstiä.</translation>
 <translation id="7752405526771734448">Lensin visuaalinen haku</translation>
 <translation id="7756478488453921771">Valikko → Asetukset → Maksutavat</translation>
+<translation id="775755486779745798">Täytä vanhenemiskuukausi automaattisesti: <ph name="MONTH" /></translation>
 <translation id="7760127703945531263">Incognito-tilan lukitseminen</translation>
 <translation id="7765158879357617694">Siirrä</translation>
 <translation id="7772032839648071052">Vahvista tunnuslause</translation>
@@ -1518,6 +1522,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8556590991644167667">{count,plural, =1{Olet hylännyt {count} varoituksen}other{Olet hylännyt {count} varoitusta}}</translation>
 <translation id="8560253818350321773">Näytä usein käytetyt kohdat.</translation>
 <translation id="8569721750632860947">Minkä URL-osoitteen haluat lisätä lukulistalle?</translation>
+<translation id="8577056989960190117">Täytä vanhenemisvuosi <ph name="YEAR" /> automaattisesti</translation>
 <translation id="8588404856427128947">Pois päältä</translation>
 <translation id="8591976964826315682">Estä kolmannen osapuolen evästeet incognito-tilassa</translation>
 <translation id="8593565399399144771">Voit avata uuden välilehden täällä.</translation>

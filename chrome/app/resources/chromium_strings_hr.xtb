@@ -209,6 +209,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="4415566066719264597">Neka Chromium radi u pozadini</translation>
 <translation id="4423735387467980091">Prilagodite Chromium i upravljajte njime</translation>
 <translation id="4427306783828095590">Poboljšana zaštita blokira krađu identiteta i zlonamjerni softver na više načina</translation>
+<translation id="4434353761996769206">Pogreška programa za instalaciju: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4447409407328223819">O verziji Chrome for Testing</translation>
 <translation id="4501471624619070934">Instalacija nije uspjela jer je pristup ograničen za ovu zemlju.</translation>
 <translation id="4510853178268397146">Ovo proširenje nije objavilo prakse u vezi s privatnošću, na primjer način na koji prikuplja i upotrebljava podatke. Chromium preporučuje da ga uklonite.</translation>
@@ -250,6 +251,7 @@ Dopuštenja koja ste već dali web-lokacijama i aplikacijama mogu se primijeniti
 <translation id="5277894862589591112">Da bi se vaše promjene primijenile, ponovo pokrenite Chromium</translation>
 <translation id="5294316920224716406">Kad pregledavate u anonimnom načinu, Chromium će vas upozoriti prije nego što učita web-lokaciju putem nesigurne veze</translation>
 <translation id="5296845517486664001">Tijekom eksperimenata i ako vas je Chromium nasumično rasporedio u aktivni eksperiment, vaša povijest pregledavanja utječe na oglase koji vam se prikazuju i interese procijenjene u nastavku. Da bi zaštitio vašu privatnost, Chromium kontinuirano briše vaše interese svakog mjeseca.</translation>
+<translation id="5310474266708705970">Prijavite se na Chromium kao <ph name="USER_EMAIL" /></translation>
 <translation id="5352264705793813212">Chromium je pronašao neke sigurnosne preporuke za vaš pregled</translation>
 <translation id="5352361688875342522">Ostali profili na Chromiumu</translation>
 <translation id="5358375970380395591">Prijavljujete se upravljanim računom i dajete administratoru kontrolu nad svojim profilom u sustavu Chromium. Vaši podaci u sustavu Chromium, primjerice, aplikacije, oznake, povijest, zaporke i ostale postavke, trajno će se povezati s korisnikom <ph name="USER_NAME" />. Moći ćete izbrisati te podatke putem Nadzorne ploče Google računa, ali ih nećete moći povezati s nekim drugim računom. <ph name="LEARN_MORE" /></translation>
@@ -406,6 +408,7 @@ Chromium ne može oporaviti vaše postavke.</translation>
 <translation id="734373864078049451">Ovdje se nalaze vaš web, oznake i ostali sadržaji u Chromiumu.</translation>
 <translation id="7349591376906416160">Vaš administrator sustava konfigurirao je Chromium da otvara <ph name="ALTERNATIVE_BROWSER_NAME" /> za pristup URL-u <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7355355292030546812">Chromium je blokirao ovo preuzimanje jer ta datoteka može naštetiti vašim osobnim računima i računima na društvenim mrežama, uključujući <ph name="USER_EMAIL" /></translation>
+<translation id="7384121030444253939">Ovo proširenje više nije podržano. Chromium preporučuje da ga uklonite.</translation>
 <translation id="7398989605938454041">Pomoću Chromiumovih profila možete razdvojiti sve svoje sadržaje u Chromiumu. To olakšava odvajanje posla i zabave.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7451052299415159299">Chromium treba dopuštenje za pristup kameri za ovu web-lokaciju</translation>

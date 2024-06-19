@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">παστέλ κίτρινο</translation>
 <translation id="1056898198331236512">Προειδοποίηση</translation>
 <translation id="1059913517121127803">Δεν ήταν δυνατή η έναρξη της σάρωσης</translation>
+<translation id="1061864016440983342">Χρήση χωρίς τοποθεσία</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> από <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Εντοπίστηκε τείχος προστασίας</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Περισσότερες ρυθμίσεις</translation>
 <translation id="2082932131694554252">Εκχωρημένο πλήκτρο πληκτρολογίου</translation>
 <translation id="2085089206770112532">Μείωση φωτεινότητας οθόνης</translation>
+<translation id="2086091080968010660">Οι αλλαγές βάσει χρόνου ενδέχεται να μην είναι ακριβείς. Ενεργοποιήστε την πρόσβαση τοποθεσίας του συστήματος στις ρυθμίσεις.</translation>
 <translation id="2102231663024125441">Επεξεργασία κειμένου</translation>
 <translation id="2105810540595158374">Η συσκευή είναι χειριστήριο παιχνιδιού.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, έκδοση <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Επαναφορά προεπιλογών</translation>
 <translation id="2286454467119466181">Απλή</translation>
 <translation id="2287186687001756809">Δεν υπάρχει διαθέσιμη εικόνα. Για προσθήκη φωτογραφιών, μεταβείτε στη διεύθυνση <ph name="LINK" /></translation>
+<translation id="2294577623958216786">Το τρέχον πρόγραμμα έχει οριστεί σε <ph name="SUNRISE" />-<ph name="SUNSET" />. Για αυτόματη ενημέρωση του προγράμματος δύσης και ανατολής ηλίου ενεργοποιήστε την πρόσβαση τοποθεσίας του συστήματος.</translation>
 <translation id="2305172810646967500">μαύρο</translation>
 <translation id="2307344026739914387">Χρήση τρέχοντος ζεύγους κλειδιών</translation>
 <translation id="2308243864813041101">Αποσυνδέστε το καλώδιο USB της συσκευής <ph name="DEVICE_NAME" /> για να συνεχίσετε τη διαδικασία ενημέρωσης</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">φωτεινότητα πληκτρολογίου</translation>
 <translation id="6412715219990689313">Ενσωματωμένο πληκτρολόγιο</translation>
 <translation id="6417265370957905582">Βοηθός Google</translation>
+<translation id="6419454453018688975">Ενεργοποίηση πρόσβασης τοποθεσίας συστήματος</translation>
 <translation id="6423239382391657905">Άνοιγμα VPN</translation>
 <translation id="6439505561246192797">Αδύναμο (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Μετάβαση στις ρυθμίσεις λογαριασμού</translation>

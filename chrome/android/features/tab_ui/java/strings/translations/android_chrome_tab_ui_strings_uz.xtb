@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Siyohrang</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaqli <ph name="TITLE_OF_GROUP" /> guruhini yoyish.}other{<ph name="TABS_COUNT_MANY" /> ta varaqli <ph name="TITLE_OF_GROUP" /> guruhini yoyish.}}</translation>
 <translation id="427987768447457592">Yangi varaqlar guruhi</translation>
+<translation id="4338724047016295066">Nofaol varaqlar avtomatik yopiladi Istalgan vaqt ularni Tarixdan topishingiz mumkin.</translation>
 <translation id="4371591986692297148">Nofaol</translation>
 <translation id="4460014764210899310">Guruhni bekor qilish</translation>
 <translation id="4648718555153979859">Varaqlaringiz shu guruhda jamlanadi</translation>
 <translation id="4686942373615810936">Hozirgina yaratildi</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{1 kundan keyin yopilsin}other{<ph name="DAY_COUNT_MANY" /> kundan keyin yopilsin}}</translation>
 <translation id="4777866634702576038">Varaqlar guruhi oʻchirilsinmi?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ta sharh)}other{(<ph name="REVIEWS_COUNT_MANY" /> ta sharh)}}</translation>
 <translation id="4850886885716139402">Ko‘rish</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Varaqlar guruhini shu yerdan topasiz</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Tanlangan <ph name="TABS_COUNT_ONE" /> ta varaq guruhini yechish}other{Tanlangan <ph name="TABS_COUNT_MANY" /> ta varaq guruhini yechish}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaq}other{<ph name="TABS_COUNT_MANY" /> ta varaq}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 kundan keyin}other{<ph name="DAY_COUNT_MANY" /> kundan keyin}}</translation>
 <translation id="6549021453810473782">Doʻkon axborotini ochish</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Varaqni chapga siljitish</translation>

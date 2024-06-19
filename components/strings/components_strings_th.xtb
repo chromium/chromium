@@ -115,6 +115,7 @@
 <translation id="1209206284964581585">ซ่อนไปก่อน</translation>
 <translation id="121201262018556460">คุณพยายามเข้าถึง <ph name="DOMAIN" /> แต่เซิร์ฟเวอร์แสดงใบรับรองที่มีคีย์ที่ไม่รัดกุม ผู้โจมตีอาจทำให้คีย์ส่วนตัวเสียหายไปแล้วและเซิร์ฟเวอร์นี้อาจไม่ใช่เซิร์ฟเวอร์ที่คุณคิด (คุณอาจกำลังติดต่อกับผู้โจมตี)</translation>
 <translation id="1212527389003717329">เริ่มดาวน์โหลดแล้ว หากต้องการดู ให้กด |<ph name="ACCELERATOR" />| ค้างไว้</translation>
+<translation id="1214970845432250240">ช่วงราคา</translation>
 <translation id="1219129156119358924">การรักษาความปลอดภัยของระบบ</translation>
 <translation id="1222060260947439312">ถาดขวา</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -239,7 +240,6 @@
 <translation id="1427192966110103169">สระว่ายน้ำ ซาวน่า และสปาในบ้าน</translation>
 <translation id="1428146450423315676">สแต็กเกอร์ 7</translation>
 <translation id="142858679511221695">ผู้ใช้ระบบคลาวด์</translation>
-<translation id="1428729058023778569">คุณเห็นคำเตือนนี้เพราะเว็บไซต์ไม่รองรับ HTTPS <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">ฟิล์มสติกเกอร์</translation>
 <translation id="1430915738399379752">พิมพ์</translation>
 <translation id="1432187715652018471">หน้าเว็บต้องการติดตั้งเครื่องจัดการบริการ</translation>
@@ -527,7 +527,6 @@
 <translation id="1959445535228047762">ระบบจะส่งข้อความและเนื้อหาหน้าเว็บของคุณไปยัง Google และอาจนำไปใช้เพื่อปรับปรุงฟีเจอร์นี้
   <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436">บุ๊กมาร์กของ <ph name="DOMAIN" /></translation>
-<translation id="196752089528718902">โดยปกติคุณจะเชื่อมต่อกับเว็บไซต์ต่างๆ อย่างปลอดภัย แต่ Chrome ไม่สามารถใช้การเชื่อมต่อที่ปลอดภัยได้ในขณะนี้ ผู้โจมตีอาจกำลังพยายามดักฟังหรือแก้ไขการเชื่อมต่อเครือข่ายของคุณ <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">ข้อผิดพลาดในการจัดเรียง</translation>
 <translation id="1973785048533660168">งานเสมียนและธุรการ</translation>
 <translation id="1974060860693918893">ขั้นสูง</translation>
@@ -545,7 +544,6 @@
 <translation id="2003709556000175978">รีเซ็ตรหัสผ่านเลย</translation>
 <translation id="2003775180883135320">เจาะรูด้านบน 4 รู</translation>
 <translation id="2004697686368036666">ฟีเจอร์ในบางเว็บไซต์อาจใช้งานไม่ได้</translation>
-<translation id="2005042463110681802">คุณเห็นคำเตือนนี้เพราะเว็บไซต์นี้ไม่รองรับ HTTPS และคุณกำลังใช้โหมดไม่ระบุตัวตนอยู่ <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">ปุ่มสร้างกิจกรรม เปิดใช้งานเพื่อสร้างกิจกรรมใหม่ใน Google ปฏิทินอย่างรวดเร็ว</translation>
 <translation id="201174227998721785">จัดการสิทธิ์และข้อมูลที่จัดเก็บในเว็บไซต์ต่างๆ ในการตั้งค่า Chrome</translation>
 <translation id="2012276282211112603">ไม่มีหัวข้อที่จะแสดงในขณะนี้</translation>
@@ -607,7 +605,6 @@
 <translation id="2108755909498034140">รีสตาร์ทคอมพิวเตอร์</translation>
 <translation id="2111166930115883695">กดแป้นเว้นวรรคเพื่อเล่น</translation>
 <translation id="2112529237938317174">แสดงรายละเอียดของสิทธิ์</translation>
-<translation id="2113232594265919362">คุณเห็นคำเตือนนี้เนื่องจากเว็บไซต์นี้ไม่รองรับ HTTPS และคุณอยู่ในโปรแกรมการปกป้องขั้นสูงของ Google <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">บัตร</translation>
 <translation id="2114841414352855701">ไม่สนใจเพราะถูกแทนที่โดย <ph name="POLICY_NAME" /></translation>
 <translation id="2118132148597630479">Envelope C5</translation>
@@ -809,7 +806,6 @@
 <translation id="2482878487686419369">การแจ้งเตือน</translation>
 <translation id="248348093745724435">นโยบายเครื่อง</translation>
 <translation id="2485243023686553468">สมาร์ทโฟน</translation>
-<translation id="2490199669743245365">ผู้โจมตีเว็บไซต์ที่คุณพยายามเข้าชมอาจติดตั้งซอฟต์แวร์ที่เป็นอันตรายซึ่งจะขโมยหรือลบข้อมูล เช่น รหัสผ่าน รูปภาพ ข้อความ หรือหมายเลขบัตรเครดิต Chrome ขอแนะนำเป็นอย่างยิ่งให้กลับสู่ความปลอดภัย <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">ใบรับรองของเซิร์ฟเวอร์มีข้อผิดพลาด</translation>
 <translation id="2491414235131909199">หน้านี้ถูกบล็อกโดยส่วนขยาย</translation>
 <translation id="2495083838625180221">โปรแกรมแยกวิเคราะห์ JSON</translation>
@@ -970,7 +966,6 @@
 <translation id="2839501879576190149">ระวังเว็บไซต์หลอกลวง</translation>
 <translation id="2843623755398178332">เลื่อนและซูมแท็บที่แชร์ไหม</translation>
 <translation id="2851291081585704741">คุณออฟไลน์อยู่</translation>
-<translation id="2856444702002559011">ผู้โจมตีอาจพยายามขโมยข้อมูลจาก <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (ตัวอย่างเช่น รหัสผ่าน ข้อความ หรือบัตรเครดิต) <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 x 300 มม.</translation>
 <translation id="2859806420264540918">เว็บไซต์นี้แสดงโฆษณาที่แทรกหรือทำให้เข้าใจผิด</translation>
 <translation id="28618371182701850">รถยนต์ไฟฟ้าและปลั๊กอินไฮบริด</translation>
@@ -1189,6 +1184,7 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">ป้อนรหัสยืนยัน <ph name="NUMBER_OF_DIGITS" /> หลัก</translation>
 <translation id="3272643614306383237">ไม่ถึง 1 MB บางเว็บไซต์อาจโหลดช้ากว่าเดิมเมื่อคุณเข้าชมครั้งถัดไป</translation>
+<translation id="327346289570683313">ช่วงราคา</translation>
 <translation id="3273738040255912340">ผู้ดูแลระบบสามารถเปลี่ยนแปลงโปรไฟล์และเบราว์เซอร์จากระยะไกล วิเคราะห์ข้อมูลเกี่ยวกับเบราว์เซอร์ผ่านการรายงาน รวมถึงดำเนินการอื่นๆ ที่จำเป็นได้ กิจกรรมในอุปกรณ์นี้อาจมีการจัดการภายนอก Chromium ได้ด้วย <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{นโยบายของผู้ดูแลระบบไม่แนะนำให้เปิดไฟล์นี้ใน <ph name="DESTINATION_NAME" />}other{นโยบายของผู้ดูแลระบบไม่แนะนำให้เปิดไฟล์เหล่านี้ใน <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">องค์กรของคุณ <ph name="ENROLLMENT_DOMAIN" /> ได้ส่งข้อมูลบางอย่าง เช่น การตั้งค่าหรือนโยบายไปยังเว็บไซต์ต่อไปนี้</translation>
@@ -1316,7 +1312,6 @@
 <translation id="3507936815618196901">สร้างแผนที่ 3 มิติของสิ่งที่อยู่รอบตัวคุณและติดตามตำแหน่งของกล้อง</translation>
 <translation id="3512163584740124171">ระบบจะไม่สนใจนโยบายนี้เพราะอีกนโยบายหนึ่งจากกลุ่มนโยบายเดียวกันมีลำดับความสำคัญสูงกว่า</translation>
 <translation id="351522771072578657">ขณะนี้คุณอยู่ในเมนู</translation>
-<translation id="3515972145999192222">องค์กรของคุณได้บล็อก <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> เนื่องจากละเมิดนโยบาย <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">การจัดการออบเจ็กต์หลายรายการ</translation>
 <translation id="3525130752944427905">10 x 14 นิ้ว</translation>
 <translation id="3525435918300186947">ควบคุมและตั้งโปรแกรมอุปกรณ์ MIDI ใหม่ไหม</translation>
@@ -1482,7 +1477,6 @@
 <translation id="3801265110651850478">ส่งคำขอ "Do Not Track" ไปกับการเข้าชมของคุณ</translation>
 <translation id="380329542618494757">ชื่อ</translation>
 <translation id="3803801106042434208">เครื่องมือค้นหาเหล่านี้ได้รับความนิยมในภูมิภาคของคุณ</translation>
-<translation id="3806932344025766608">ผู้โจมตีเว็บไซต์ที่คุณพยายามเข้าชมอาจหลอกล่อให้คุณติดตั้งซอฟต์แวร์หรือเปิดเผยข้อมูล เช่น รหัสผ่าน หมายเลขบัตรเครดิต หรือหมายเลขโทรศัพท์ Chrome ขอแนะนำเป็นอย่างยิ่งให้กลับสู่ความปลอดภัย <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">เปลี่ยนตำแหน่งรูปภาพตามแกน X</translation>
 <translation id="3807709094043295184">ร็อกคลาสสิกและเพลงเก่า</translation>
 <translation id="3807873520724684969">บล็อกเนื้อหาอันตรายแล้ว</translation>
@@ -3346,7 +3340,6 @@
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">ยืนยันว่าเป็นคุณเพื่อให้ Chromium กรอกข้อมูลการชำระเงินของคุณได้</translation>
 <translation id="7437289804838430631">เพิ่มข้อมูลติดต่อ</translation>
-<translation id="7438338505272634288">ผู้โจมตีเว็บไซต์ที่คุณพยายามเข้าชมอาจหลอกล่อให้คุณติดตั้งซอฟต์แวร์ที่เป็นอันตรายซึ่งส่งผลต่อการท่องเว็บ เช่น เปลี่ยนหน้าแรกหรือแสดงโฆษณาเพิ่มเติมในเว็บไซต์ที่เข้าชม Chrome ขอแนะนำเป็นอย่างยิ่งให้กลับสู่ความปลอดภัยเพื่อหลีกเลี่ยงอันตราย <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">สำรวจขณะที่ออฟไลน์</translation>
 <translation id="7441627299479586546">หัวเรื่องนโยบายไม่ถูกต้อง</translation>
 <translation id="7441864845853794192">อาหารกูร์เมต์และอาหารที่มีเอกลักษณ์เฉพาะตัว</translation>
@@ -3446,7 +3439,6 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> ไม่สามารถดำเนินการกับคำขอนี้ในขณะนี้</translation>
 <translation id="7599089013883397081">การดาวน์โหลดหมดเวลาแล้ว</translation>
 <translation id="7600965453749440009">ไม่ต้องแปลภาษา<ph name="LANGUAGE" /></translation>
-<translation id="7601297359530599375">โดยปกติคุณจะเชื่อมต่อกับเว็บไซต์นี้อย่างปลอดภัย แต่ Chrome ไม่สามารถใช้การเชื่อมต่อที่ปลอดภัยได้ในขณะนี้ ผู้โจมตีอาจกำลังพยายามดักฟังหรือแก้ไขการเชื่อมต่อเครือข่ายของคุณ <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">ผู้โจมตีเว็บไซต์ที่คุณพยายามเข้าชมอาจติดตั้งซอฟต์แวร์ที่เป็นอันตรายซึ่งจะขโมยหรือลบข้อมูล เช่น รหัสผ่าน รูปภาพ ข้อความ หรือหมายเลขบัตรเครดิต</translation>
 <translation id="7608583484192556132">โฆษณาที่คุณเห็นจะได้รับการปรับตามโปรไฟล์ของคุณหรือไม่นั้นขึ้นอยู่กับหลายอย่าง ซึ่งรวมถึงการตั้งค่านี้ <ph name="BEGIN_LINK_1" />โฆษณาที่เว็บไซต์แนะนำ<ph name="END_LINK_1" /> <ph name="BEGIN_LINK_2" />การตั้งค่าคุกกี้<ph name="END_LINK_2" /> และการปรับโฆษณาตามโปรไฟล์ผู้ใช้ของเว็บไซต์ที่คุณดู ดูข้อมูลเพิ่มเติมเกี่ยวกับ<ph name="BEGIN_LINK_3" />การจัดการความเป็นส่วนตัวเกี่ยวกับโฆษณา<ph name="END_LINK_3" /></translation>
 <translation id="7610193165460212391">ค่าอยู่นอกช่วง <ph name="VALUE" /></translation>
@@ -3719,7 +3711,6 @@
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">นำบัตรที่ใช้ไม่ได้ออกแล้ว</translation>
-<translation id="8100666323495101203">องค์กรของคุณได้ระบุไว้ว่า <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> เป็นเว็บไซต์ที่อาจละเมิดนโยบาย <ph name="BEGIN_LEARN_MORE_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8103161714697287722">วิธีการชำระเงิน</translation>
 <translation id="8103643211515685474">พิมพ์เลย</translation>
 <translation id="8105368624971345109">ปิด</translation>

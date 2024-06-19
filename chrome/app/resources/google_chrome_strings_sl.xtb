@@ -250,6 +250,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4384570495110188418">Chrome ne more preveriti gesel, ker niste prijavljeni</translation>
 <translation id="4389991535395284064">Pri brskanju v anonimnem načinu vas bo Chrome opozoril pred nalaganjem spletnega mesta prek povezave, ki ni varna</translation>
 <translation id="4427306783828095590">Izboljšana zaščita učinkoviteje blokira lažno predstavljanje in zlonamerno programsko opremo.</translation>
+<translation id="4434353761996769206">Napaka namestitvenega programa: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome – Prijava v omrežje – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Poteka druga operacija v Google Chromu. Poskusite znova pozneje.</translation>
 <translation id="4459234553906210702">Merjenje oglasov spletnim mestom omogoča, da od Chroma zahtevajo podatke, ki jim pomagajo pri merjenju učinkovitosti oglasov. Merjenje oglasov omejuje sledenje na več spletnih mestih s prenašanjem čim manj podatkov med spletnimi mesti.</translation>

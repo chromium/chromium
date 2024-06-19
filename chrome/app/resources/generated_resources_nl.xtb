@@ -2525,7 +2525,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2806372837663997957">Het apparaat waarmee je probeert te delen, accepteert dit niet</translation>
 <translation id="2806891468525657116">Snelkoppeling bestaat al</translation>
 <translation id="2807517655263062534">Gedownloade bestanden zie je hier</translation>
-<translation id="2809946454624727734">Je kunt het vinden in je opgeslagen adressen.</translation>
 <translation id="2811205483104563968">Accounts</translation>
 <translation id="2812049959647166806">Thunderbolt wordt niet ondersteund</translation>
 <translation id="2812171980080389735">Opgeslagen netwerken en wachtwoorden zodat je meteen verbinding kunt maken</translation>
@@ -2681,6 +2680,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="292371311537977079">Chrome-instellingen</translation>
 <translation id="2926085873880284723">Standaard snelkoppelingen herstellen</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> wordt niet ondersteund.</translation>
+<translation id="2926708162326352948">Thema geüpdatet naar geüploade afbeelding</translation>
 <translation id="2927017729816812676">Cache-opslag</translation>
 <translation id="2928795416630981206">Toestemming om je camerapositie bij te houden</translation>
 <translation id="2931157624143513983">Aanpassen aan afdrukgebied</translation>
@@ -5452,7 +5452,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5016491575926936899">Je kunt sms'en vanaf je computer, de internetverbinding delen, reageren op gespreksmeldingen en je <ph name="DEVICE_TYPE" /> ontgrendelen met je telefoon.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="5016983299133677671">Een nieuw wachtwoord proberen</translation>
 <translation id="5017529052065664584">Afgelopen 15 minuten</translation>
-<translation id="5017643436812738274">Je kunt navigeren op pagina's met een tekstcursor. Druk op Ctrl+Zoeken+7 om dit uit te zetten.</translation>
 <translation id="5018207570537526145">Website voor extensie openen</translation>
 <translation id="5018526990965779848">Stuur gebruiks- en diagnostische gegevens. Verbeter je Android-functionaliteit door automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google te sturen. Deze gegevens kunnen worden gebruikt om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet, kunnen deze gegevens worden opgeslagen in je Google-account.</translation>
 <translation id="5020008942039547742">Ander venster kiezen</translation>
@@ -5609,6 +5608,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5135533361271311778">Kan bookmarkitem niet maken.</translation>
 <translation id="513555878193063507">Nieuwe APN toevoegen</translation>
 <translation id="5136343472380336530">Zorg dat beide apparaten zijn ontgrendeld, bij elkaar in de buurt zijn en dat bluetooth aanstaat. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
+<translation id="5136529877787728692">F7</translation>
 <translation id="5137349216872139332">Verbinding met instant hotspot mislukt</translation>
 <translation id="5138227688689900538">Minder bekijken</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, zoeken in <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
@@ -5919,6 +5919,7 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="5372529912055771682">De geleverde inschrijvingsmodus wordt niet ondersteund door deze versie van het besturingssysteem. Zorg ervoor dat je de nieuwste versie gebruikt en probeer het opnieuw.</translation>
 <translation id="5372579129492968947">Extensie losmaken</translation>
 <translation id="5372632722660566343">Doorgaan zonder account</translation>
+<translation id="5372990315769030589"><ph name="EXTENSION_NAME" /> behouden?</translation>
 <translation id="5375318608039113175">Als je Dichtbij delen met deze contacten wilt gebruiken, voeg je het e-mailadres dat bij hun Google-account hoort aan je contacten toe.</translation>
 <translation id="5375577102295339548">Sites kunnen verifiëren dat je geen bot bent</translation>
 <translation id="5376094717770783089">Vraagt om toegang</translation>
@@ -7386,10 +7387,12 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="6490471652906364588">USB-C-apparaat (poort aan rechterkant)</translation>
 <translation id="6491376743066338510">Autorisatie mislukt</translation>
 <translation id="649396225532207613">Dit bestand kan schadelijk zijn voor je persoonlijke en socialmedia-accounts</translation>
+<translation id="6493991254603208962">helderheid omlaag</translation>
 <translation id="6494327278868541139">Details van geoptimaliseerde beveiliging bekijken</translation>
 <translation id="6494445798847293442">Geen certificeringsinstantie</translation>
 <translation id="6494483173119160146">Er is een onherstelbare fout opgetreden op het apparaat. Reset het apparaat (hiermee worden alle gebruikersgegevens gewist) en probeer het opnieuw.</translation>
 <translation id="6495266441917713704">Kan wifi niet overzetten</translation>
+<translation id="6495453178162183932">Thema geüpdatet naar Chrome-standaard</translation>
 <translation id="6497784818439587832">Wijzig de weergavegrootte om items op het scherm kleiner of groter te maken.</translation>
 <translation id="6497789971060331894">Omgekeerd scrollen muis</translation>
 <translation id="6498249116389603658">&amp;Al je talen</translation>
@@ -8179,6 +8182,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7082850163410901674">Meldingen staan uit in de Mac-systeeminstellingen</translation>
 <translation id="7083774521940805477">Steam voor Chromebook (bèta) is niet beschikbaar op je Chromebook.</translation>
 <translation id="708550780726587276">(niet ingesteld)</translation>
+<translation id="7086377898680121060">helderheid omhoog</translation>
 <translation id="7086672505018440886">Chrome-logbestanden opnemen in het archief.</translation>
 <translation id="7088434364990739311">Het starten van de updatecontrole is mislukt (foutcode <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">Dit apparaat is uit bedrijf genomen door de beheerder. Vraag je beheerder om het apparaat op 'in behandeling' in te stellen, zodat het kan worden aangemeld.</translation>
@@ -9004,6 +9008,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7708143783728142771">Cookies zorgen voor hetzelfde niveau van voorkeursaanpassingen op internet. Als je een site bezoekt, kan de site een cookie in de browseropslag van je apparaat opslaan om je sitevoorkeuren te onthouden, zoals de taal die je spreekt of items die je in een winkelwagentje wilt opslaan. Als je de site later weer bezoekt in dezelfde browser, kan die site het ingestelde cookie lezen en kun je verdergaan waar je gebleven was. Dit soort cookies wordt vaak first-party cookies genoemd, omdat ze worden ingesteld door de site die je bezoekt.</translation>
 <translation id="770831926727930011">Je lokale gegevens worden beschermd door je oude wachtwoord. Geef je oude wachtwoord op om lokale gegevens te herstellen.</translation>
 <translation id="7709152031285164251">Mislukt - <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7710443466210750493">Al je toegangssleutels beveiligen met een herstelpincode</translation>
 <translation id="7710568461918838723">&amp;Casten...</translation>
 <translation id="7711900714716399411">Sluit je telefoon met een USB-kabel aan op je computer. Als je telefoon al aangesloten is, ontkoppel je de kabel en sluit je die opnieuw aan.</translation>
 <translation id="7711968363685835633">Gepersonaliseerde conversies en suggesties en gebruikerswoordenboek uitzetten</translation>
@@ -9733,6 +9738,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8233028084277069927">Nu openen</translation>
 <translation id="8234795456569844941">Help onze engineers dit probleem op te lossen. Vertel ons wat er gebeurde vlak voordat je het bericht met de profielfout zag:</translation>
 <translation id="8235418492073272647">Pagina gedeeld vanaf <ph name="DEVICE_NAME" /></translation>
+<translation id="8236802542508794819">Dit tabblad deelt bronnen met andere tabbladen. Dit kan de foutopsporing verstoren.</translation>
 <translation id="8236911020904880539">te sluiten</translation>
 <translation id="8236917170563564587">In plaats daarvan dit tabblad delen</translation>
 <translation id="8237647586961940482">Donkerroze/rood</translation>
@@ -9937,6 +9943,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8376532149031784008"><ph name="DOMAIN" /> opnieuw laden...</translation>
 <translation id="8376610503048439696">Extensies die door je beheerder zijn geïnstalleerd, kunnen deze site nog steeds lezen en wijzigen</translation>
 <translation id="8376752431516546391">Zijvenster van Google Zoeken</translation>
+<translation id="8376812682111060348">Melding over prestatieprobleem</translation>
 <translation id="8377625247046155446">Deze toegangssleutel wordt alleen opgeslagen op dit apparaat. De sleutel blijft op dit apparaat staan nadat je alle incognitovensters hebt gesloten.</translation>
 <translation id="8378714024927312812">Beheerd door je organisatie</translation>
 <translation id="8379988659465232385">De naam mag niet leeg zijn</translation>

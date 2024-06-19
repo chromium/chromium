@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">أرجواني</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{توسيع المجموعة "<ph name="TITLE_OF_GROUP" />" التي تحتوي على علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{توسيع المجموعة "<ph name="TITLE_OF_GROUP" />" التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}two{توسيع المجموعة "<ph name="TITLE_OF_GROUP" />" التي تحتوي على علامتَي تبويب (<ph name="TABS_COUNT_MANY" />)}few{توسيع المجموعة "<ph name="TITLE_OF_GROUP" />" التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامات تبويب}many{توسيع المجموعة "<ph name="TITLE_OF_GROUP" />" التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}other{توسيع المجموعة "<ph name="TITLE_OF_GROUP" />" التي تحتوي على <ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
 <translation id="427987768447457592">مجموعة علامات تبويب جديدة</translation>
+<translation id="4338724047016295066">سيتم تلقائيًا إغلاق علامات التبويب غير النشطة. ويمكنك العثور عليها في أي وقت ضمن "السجلّ".</translation>
 <translation id="4371591986692297148">غير مفعّلة</translation>
 <translation id="4460014764210899310">إلغاء التجميع</translation>
 <translation id="4648718555153979859">يتم جمع علامات التبويب معًا هنا</translation>
 <translation id="4686942373615810936">تم إنشاء المجموعة للتو</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{الإغلاق بعد يوم واحد}zero{الإغلاق بعد <ph name="DAY_COUNT_MANY" /> يوم}two{الإغلاق بعد يومين (<ph name="DAY_COUNT_MANY" />)}few{الإغلاق بعد <ph name="DAY_COUNT_MANY" /> أيام}many{الإغلاق بعد <ph name="DAY_COUNT_MANY" /> يومًا}other{الإغلاق بعد <ph name="DAY_COUNT_MANY" /> يوم}}</translation>
 <translation id="4777866634702576038">هل تريد حذف مجموعة علامات التبويب؟</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(مراجعة واحدة (<ph name="REVIEWS_COUNT_ONE" />))}zero{(<ph name="REVIEWS_COUNT_MANY" /> مراجعة)}two{(مراجعتان (<ph name="REVIEWS_COUNT_MANY" />))}few{(<ph name="REVIEWS_COUNT_MANY" /> مراجعات)}many{(<ph name="REVIEWS_COUNT_MANY" /> مراجعة)}other{(<ph name="REVIEWS_COUNT_MANY" /> مراجعة)}}</translation>
 <translation id="4850886885716139402">عرض</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">ستظهر لك مجموعات علامات التبويب هنا</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{إلغاء تجميع علامة التبويب (<ph name="TABS_COUNT_ONE" />) المحدّدة}zero{إلغاء تجميع علامات التبويب المحدّدة البالغ عددها <ph name="TABS_COUNT_MANY" />}two{إلغاء تجميع علامتَي التبويب (<ph name="TABS_COUNT_MANY" />) المحدّدتين}few{إلغاء تجميع علامات التبويب المحدّدة البالغ عددها <ph name="TABS_COUNT_MANY" />}many{إلغاء تجميع علامات التبويب المحدّدة البالغ عددها <ph name="TABS_COUNT_MANY" />}other{إلغاء تجميع علامات التبويب المحدّدة البالغ عددها <ph name="TABS_COUNT_MANY" />}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{<ph name="TABS_COUNT_MANY" /> علامة تبويب}two{علامتا تبويب (<ph name="TABS_COUNT_MANY" />)}few{<ph name="TABS_COUNT_MANY" /> علامات تبويب}many{<ph name="TABS_COUNT_MANY" /> علامة تبويب}other{<ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{بعد يوم واحد}zero{بعد <ph name="DAY_COUNT_MANY" /> يوم}two{بعد يومين (<ph name="DAY_COUNT_MANY" />)}few{بعد <ph name="DAY_COUNT_MANY" /> أيام}many{بعد <ph name="DAY_COUNT_MANY" /> يومًا}other{بعد <ph name="DAY_COUNT_MANY" /> يوم}}</translation>
 <translation id="6549021453810473782">عرض معلومات المتجر</translation>
 <translation id="6557858706263317126">‎<ph name="HIDDEN_TABS_COUNT" />+</translation>
 <translation id="6562820390860419811">نقل علامة التبويب إلى اليمين</translation>

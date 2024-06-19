@@ -119,6 +119,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1383876407941801731">Vyhľadávanie</translation>
 <translation id="1391102559483454063">Zapnuté</translation>
 <translation id="1394698770495054737">Úplné rozmazanie</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{Pred 1 dňom}few{Pred # dňami}many{Pred # dňom}other{Pred # dňami}}</translation>
 <translation id="1404963891829069586">Zvuky zamerania</translation>
 <translation id="1407069428457324124">Tmavý motív</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Klávesmi so šípkami prechádzajte medzi dátumami.</translation>
@@ -209,6 +210,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="174102739345480129">Zvýrazňovač je vypnutý.</translation>
 <translation id="1743570585616704562">Nerozpoznané</translation>
 <translation id="1743927604032653654">Zbaliť upozornenie <ph name="NOTIFICATION_TITLE" /></translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Do 1 h}=1{Pred 1 h}few{Pred # h}many{Pred # h}other{Pred # h}}</translation>
 <translation id="1746730358044914197">Metódy vstupu sú nakonfigurované vaším správcom.</translation>
 <translation id="1747336645387973286">termín dokončenia <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Klávesnica na obrazovke je povolená</translation>
@@ -346,6 +348,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="2359808026110333948">Pokračovať</translation>
 <translation id="2360398059912971776">batéria</translation>
 <translation id="2361210043495191221">Prepnúť Wi-Fi <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Odoslané zo zariadenia <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Do Chromebooku sa nedá prihlásiť</translation>
 <translation id="2367972762794486313">Zobraziť aplikácie</translation>
 <translation id="2368828502825385061">Nájsť</translation>
@@ -506,6 +509,7 @@ Pripojených je viacero zariadení (<ph name="DEVICECOUNT" />).</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Chcete zapnúť prístup k mikrofónu?</translation>
 <translation id="296762781903199866">Súbory s balíkmi reči <ph name="LANGUAGE" /> sa nepodarilo stiahnuť</translation>
+<translation id="2968761508099987738">Vaša aktuálna poloha nie je momentálne podporovaná.</translation>
 <translation id="2970920913501714344">Inštalácia aplikácií, rozšírení a motívov</translation>
 <translation id="2977598380246111477">Ďalšie číslo</translation>
 <translation id="2985148236010982088">Zobraziť všetky aplikácie</translation>
@@ -980,6 +984,7 @@ Pripojené je jedno zariadenie.</translation>
 <translation id="468293128311738995">Aplikácie z telefónu</translation>
 <translation id="4690510401873698237">Polička dolu</translation>
 <translation id="4696813013609194136">Odomknutie zariadenia kódom rodiča</translation>
+<translation id="4697357603686181098">S týmto nedokážem pomôcť. Vyskúšajte inú požiadavku.</translation>
 <translation id="4702647871202761252">Obrazovka ochrany súkromia je vypnutá</translation>
 <translation id="4706121060329443414">K pokusu o stiahnutie dôjde neskôr. Reč bude odoslaná Googlu na spracovanie.</translation>
 <translation id="470644585772471629">Inverzia farieb</translation>
@@ -1902,6 +1907,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="7982878511129296052">Vypína sa…</translation>
 <translation id="7984197416080286869">Príliš veľa pokusov o nasnímanie odtlačku prsta</translation>
 <translation id="798779949890829624">Toto nastavenie spravuje váš správca.</translation>
+<translation id="7989206653429884947">Často otvárané</translation>
 <translation id="799296642788192631">Dôležité súbory si môžete pripnúť. Ak chcete položku pripnúť, umiestnite na ňu kurzor alebo otvorte Súbory a na príslušnú položku kliknite pravým tlačidlom.</translation>
 <translation id="7994370417837006925">Viacnásobné prihlásenie</translation>
 <translation id="7995804128062002838">Obrazovku sa nepodarilo nasnímať</translation>
@@ -2087,6 +2093,7 @@ Ak chcete zariadenie vypnúť, znova pridržte jeho vypínač.</translation>
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Aktivuje sa…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />, <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Čas vypršal. Skvelé! 🎉</translation>
+<translation id="8753368202781196133">Tento jazyk nie je momentálne podporovaný.</translation>
 <translation id="8755498163081687682">Overte svoju totožnosť: <ph name="ORIGIN_NAME" /> chce potvrdiť, že ste to vy</translation>
 <translation id="875593634123171288">Zobraziť nastavenia VPN</translation>
 <translation id="8756799553341497810">Po ukončení tohto zobrazenia môžete začať prispôsobovať rozloženie aplikácie.</translation>

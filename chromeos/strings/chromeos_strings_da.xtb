@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">pastelgul</translation>
 <translation id="1056898198331236512">Advarsel</translation>
 <translation id="1059913517121127803">Kunne ikke begynde at scanne</translation>
+<translation id="1061864016440983342">Brug uden lokation</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> af <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">En firewall blev registreret</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Flere indstillinger</translation>
 <translation id="2082932131694554252">Tildelt tast</translation>
 <translation id="2085089206770112532">Reducer skærmens lysstyrke</translation>
+<translation id="2086091080968010660">Tidsbaserede ændringer er muligvis ikke nøjagtige. Slå systemets lokationsadgang til i indstillingerne.</translation>
 <translation id="2102231663024125441">Tekstredigering</translation>
 <translation id="2105810540595158374">Enheden er en spilcontroller.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, version <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Gendan standarder</translation>
 <translation id="2286454467119466181">Simple</translation>
 <translation id="2287186687001756809">Der er ingen tilgængelige billeder. Du kan tilføje billeder ved at gå til <ph name="LINK" /></translation>
+<translation id="2294577623958216786">Den aktuelle tidsplan er indstillet til <ph name="SUNRISE" />-<ph name="SUNSET" />. Hvis du vil opdatere tidsplanen for solnedgang og solopgang automatisk, skal du aktivere systemets lokationsadgang.</translation>
 <translation id="2305172810646967500">sort</translation>
 <translation id="2307344026739914387">Brug aktuelt nøglepar</translation>
 <translation id="2308243864813041101">Tag USB-kablet ud af din <ph name="DEVICE_NAME" /> for at fortsætte opdateringsprocessen</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">lysstyrke for tastatur</translation>
 <translation id="6412715219990689313">Indbygget tastatur</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
+<translation id="6419454453018688975">Aktivér systemets lokationsadgang</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Svagt (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Gå til kontoindstillinger</translation>

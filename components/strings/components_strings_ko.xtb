@@ -239,7 +239,6 @@
 <translation id="1427192966110103169">가정용 수영장, 사우나, 스파</translation>
 <translation id="1428146450423315676">스태커 7</translation>
 <translation id="142858679511221695">Cloud 사용자</translation>
-<translation id="1428729058023778569">이 사이트에서 HTTPS를 지원하지 않기 때문에 경고가 표시되었습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">접착 필름</translation>
 <translation id="1430915738399379752">인쇄</translation>
 <translation id="1432187715652018471">페이지에서 서비스 핸들러를 설치하려고 합니다.</translation>
@@ -527,7 +526,6 @@
 <translation id="1959445535228047762">텍스트 및 페이지 콘텐츠가 Google로 전송되며, 이 기능을 개선하는 데 사용될 수 있습니다.
   <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> 북마크</translation>
-<translation id="196752089528718902">일반적으로 사이트에 안전하게 연결되지만, 이번에는 Chrome에서 보안 연결을 사용할 수 없습니다. 공격자가 네트워크 연결을 도청하거나 수정하려고 시도하는 것일 수 있습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">일련화 오류</translation>
 <translation id="1973785048533660168">사무 관리직</translation>
 <translation id="1974060860693918893">고급</translation>
@@ -545,7 +543,6 @@
 <translation id="2003709556000175978">지금 비밀번호 재설정</translation>
 <translation id="2003775180883135320">상단 4공 펀칭</translation>
 <translation id="2004697686368036666">일부 사이트에서 기능이 작동하지 않을 수 있음</translation>
-<translation id="2005042463110681802">HTTPS를 지원하지 않는 사이트이며 현재 시크릿 모드를 사용하고 있기 때문에 이 경고가 표시되었습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">일정 만들기 버튼, Google Calendar에서 새 일정을 빠르게 만들려면 활성화하세요.</translation>
 <translation id="201174227998721785">Chrome 설정에서 여러 사이트의 권한 및 저장된 데이터 관리</translation>
 <translation id="2012276282211112603">현재 표시할 주제 없음</translation>
@@ -607,7 +604,6 @@
 <translation id="2108755909498034140">컴퓨터 다시 시작</translation>
 <translation id="2111166930115883695">플레이하려면 스페이스바를 누르세요.</translation>
 <translation id="2112529237938317174">권한 세부정보 표시</translation>
-<translation id="2113232594265919362">이 사이트에서 HTTPS를 지원하지 않으며, 현재 Google의 고급 보호 프로그램을 사용하고 있으므로 경고가 표시되었습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">카드</translation>
 <translation id="2114841414352855701"><ph name="POLICY_NAME" />이(가) 우선 적용되었기 때문에 무시됩니다.</translation>
 <translation id="2118132148597630479">봉투 C5</translation>
@@ -809,7 +805,6 @@
 <translation id="2482878487686419369">알림</translation>
 <translation id="248348093745724435">컴퓨터 정책</translation>
 <translation id="2485243023686553468">스마트폰</translation>
-<translation id="2490199669743245365">방문하려는 사이트의 공격자가 비밀번호, 사진, 메시지, 신용카드 번호 등을 도용하거나 삭제하는 유해한 소프트웨어를 설치할 수도 있습니다. Chrome에서는 안전한 위치로 돌아갈 것을 적극 권장합니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">서버 인증서에 오류가 있습니다.</translation>
 <translation id="2491414235131909199">확장 프로그램에서 차단한 페이지입니다.</translation>
 <translation id="2495083838625180221">JSON 파서</translation>
@@ -970,7 +965,6 @@
 <translation id="2839501879576190149">가짜 사이트 주의</translation>
 <translation id="2843623755398178332">공유한 탭을 스크롤하고 확대/축소하시겠습니까?</translation>
 <translation id="2851291081585704741">오프라인 상태입니다</translation>
-<translation id="2856444702002559011">공격자가 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />에서 정보(예: 비밀번호, 메시지, 신용카드 등)를 도용하려고 시도 중일 수 있습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200x300mm</translation>
 <translation id="2859806420264540918">이 사이트에서는 방해가 되거나 사용자를 현혹하는 광고를 표시합니다.</translation>
 <translation id="28618371182701850">전기 및 플러그인 자동차</translation>
@@ -1317,7 +1311,6 @@
 <translation id="3507936815618196901">주변 환경의 3D 지도를 생성하고 카메라 위치를 추적</translation>
 <translation id="3512163584740124171">동일한 정책 그룹에 있는 다른 정책이 우선순위가 높기 때문에 이 정책은 무시됩니다.</translation>
 <translation id="351522771072578657">현재 메뉴 표시 중</translation>
-<translation id="3515972145999192222"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />이(가) 정책을 위반하여 조직에서 차단했습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">다중 객체 처리</translation>
 <translation id="3525130752944427905">10x14인치</translation>
 <translation id="3525435918300186947">MIDI 기기를 제어하고 다시 프로그래밍하시겠습니까?</translation>
@@ -1483,7 +1476,6 @@
 <translation id="3801265110651850478">탐색 트래픽과 함께 ‘추적 안함’ 요청 전송</translation>
 <translation id="380329542618494757">이름</translation>
 <translation id="3803801106042434208">거주 지역에서 인기 있는 검색엔진입니다.</translation>
-<translation id="3806932344025766608">방문하려는 사이트의 공격자가 속임수를 써서 소프트웨어를 설치하거나 비밀번호, 전화번호, 신용카드 번호 등을 공개하도록 유도할 수 있습니다. Chrome에서는 안전한 위치로 돌아갈 것을 적극 권장합니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">이미지 X 시프트</translation>
 <translation id="3807709094043295184">클래식 록 및 고전 록</translation>
 <translation id="3807873520724684969">유해한 콘텐츠 차단됨</translation>
@@ -3346,7 +3338,6 @@
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">Chromium에서 결제 정보를 입력할 수 있도록 본인임을 인증하세요.</translation>
 <translation id="7437289804838430631">연락처 정보 추가</translation>
-<translation id="7438338505272634288">방문하려는 사이트의 공격자가 홈페이지를 변경하거나 방문하는 사이트에서 추가 광고를 표시하는 등 탐색 방식에 영향을 주는 유해한 소프트웨어를 설치하도록 유도할 수 있습니다. Chrome에서는 피해 방지를 위해 안전한 위치로 돌아갈 것을 적극 권장합니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">오프라인 상태일 때 탐색</translation>
 <translation id="7441627299479586546">잘못된 정책 주체</translation>
 <translation id="7441864845853794192">고급 요리 및 별미 음식</translation>
@@ -3446,7 +3437,6 @@
 <translation id="759889825892636187">현재 <ph name="HOST_NAME" />에서 요청을 처리할 수 없습니다.</translation>
 <translation id="7599089013883397081">다운로드 시간 초과</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> 번역 안함</translation>
-<translation id="7601297359530599375">일반적으로 이 사이트에 안전하게 연결되지만, 이번에는 Chrome에서 보안 연결을 사용할 수 없습니다. 공격자가 네트워크 연결을 도청하거나 수정하려고 시도하는 것일 수 있습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">방문하려는 사이트의 공격자가 비밀번호, 사진, 메시지, 신용카드 번호 등을 도용하거나 삭제하는 유해한 소프트웨어를 설치할 수 있습니다.</translation>
 <translation id="7608583484192556132">이 설정, <ph name="BEGIN_LINK_1" />사이트 추천 광고<ph name="END_LINK_1" />, 내 <ph name="BEGIN_LINK_2" />쿠키 설정<ph name="END_LINK_2" />, 보고 있는 사이트의 광고 맞춤설정 여부 등 다양한 요인에 따라 나에게 표시되는 광고의 맞춤설정 여부가 달라질 수 있습니다. <ph name="BEGIN_LINK_3" />광고 개인 정보 보호 관리<ph name="END_LINK_3" />에 대해 자세히 알아보세요.</translation>
 <translation id="7610193165460212391">값(<ph name="VALUE" />)이 범위를 벗어났습니다.</translation>
@@ -3719,7 +3709,6 @@
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">유효하지 않은 카드가 삭제되었습니다.</translation>
-<translation id="8100666323495101203">조직에서 <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />을(를) 정책 위반 가능성이 있는 사이트로 식별했습니다. <ph name="BEGIN_LEARN_MORE_LINK" />자세히 알아보기<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8103161714697287722">결제 수단</translation>
 <translation id="8103643211515685474">무시하고 인쇄</translation>
 <translation id="8105368624971345109">사용 중지</translation>

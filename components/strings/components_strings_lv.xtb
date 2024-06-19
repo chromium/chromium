@@ -239,7 +239,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1427192966110103169">Mājas peldbaseini, saunas un SPA</translation>
 <translation id="1428146450423315676">7. izvades vieta</translation>
 <translation id="142858679511221695">Mākoņa lietotājs</translation>
-<translation id="1428729058023778569">Šis brīdinājums tiek rādīts, jo šajā vietnē netiek atbalstīts HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="1429080515485835353">Pašlīmējoša plēve</translation>
 <translation id="1430915738399379752">Drukāt</translation>
 <translation id="1432187715652018471">lapa vēlas instalēt pakalpojumu apdarinātāju.</translation>
@@ -527,7 +526,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="1959445535228047762">Jūsu teksts un lapas saturs tiek nosūtīts uzņēmumam Google un var tikt izmantots šīs funkcijas uzlabošanai.
   <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> grāmatzīmes</translation>
-<translation id="196752089528718902">Parasti jūs izveidojat drošu savienojumu ar vietnēm, taču šoreiz Chrome nevarēja izmantot drošu savienojumu. Iespējams, kāds uzbrucējs mēģina izsekot jūsu darbības vai mainīt jūsu tīkla savienojumu. <ph name="BEGIN_LEARN_MORE_LINK" />Uzzināt vairāk<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">Radās serializēšanas kļūda.</translation>
 <translation id="1973785048533660168">Darba piedāvājumi ierēdniecībā un administrācijā</translation>
 <translation id="1974060860693918893">Papildu</translation>
@@ -545,7 +543,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2003709556000175978">Nekavējoties atiestatiet paroli</translation>
 <translation id="2003775180883135320">Četri caurumi augšdaļā</translation>
 <translation id="2004697686368036666">Noteiktās vietnēs funkcijas var nedarboties.</translation>
-<translation id="2005042463110681802">Šis brīdinājums tiek rādīts, jo šajā vietnē netiek atbalstīts protokols HTTPS un jūs izmantojat inkognito režīmu. <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="2009942480257059311">Poga “Izveidot pasākumu”. Aktivizējiet, lai ātri izveidotu jaunu pasākumu Google kalendārā.</translation>
 <translation id="201174227998721785">Chrome iestatījumos pārvaldiet atļaujas un datus, kas tiek glabāti vietnēs.</translation>
 <translation id="2012276282211112603">Pašlaik nav parādāmu tēmu</translation>
@@ -607,7 +604,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2108755909498034140">Restartējiet datoru</translation>
 <translation id="2111166930115883695">Lai spēlētu, nospiediet atstarpes taustiņu</translation>
 <translation id="2112529237938317174">Rādīt informāciju par atļauju</translation>
-<translation id="2113232594265919362">Šis brīdinājums tiek rādīts, jo šajā vietnē netiek atbalstīts HTTPS un jūs esat iekļauts Google papildu aizsardzības programmā. <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="2113977810652731515">Karte</translation>
 <translation id="2114841414352855701">Ignorēta, jo to atcēla politika <ph name="POLICY_NAME" />.</translation>
 <translation id="2118132148597630479">Aploksne C5</translation>
@@ -809,7 +805,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2482878487686419369">Paziņojumi</translation>
 <translation id="248348093745724435">Ierīces politikas</translation>
 <translation id="2485243023686553468">Viedtālruņi</translation>
-<translation id="2490199669743245365">Vietnē, kuru mēģināt apmeklēt, uzbrucēji var instalēt kaitīgu programmatūru, kas zog vai dzēš kādu informāciju, piemēram, jūsu paroli, fotoattēlus, ziņojumus vai kredītkaršu numurus. Chrome stingri iesaka doties atpakaļ. <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="2491120439723279231">Servera sertifikātā ir kļūdas.</translation>
 <translation id="2491414235131909199">Šo lapu ir bloķējis kāds paplašinājums.</translation>
 <translation id="2495083838625180221">JSON parsētājs</translation>
@@ -970,7 +965,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="2839501879576190149">Jūs grasāties atvērt viltotu vietni</translation>
 <translation id="2843623755398178332">Vai atļaut ritināšanu un tālummaiņu kopīgotajā cilnē?</translation>
 <translation id="2851291081585704741">Jūs esat bezsaistē</translation>
-<translation id="2856444702002559011">Iespējams, uzbrucēji mēģina nozagt jūsu informāciju no vietnes <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (piemēram, paroles, ziņojumus vai kredītkaršu datus). <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="2858134430383535011">200 x 300 mm</translation>
 <translation id="2859806420264540918">Šajā vietnē tiek rādītas traucējošas vai maldinošas reklāmas.</translation>
 <translation id="28618371182701850">Elektriski, ar uzlādējamiem akumulatoriem darbināmi transportlīdzekļi</translation>
@@ -1317,7 +1311,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3507936815618196901">Izveidot jūsu apkārtnes 3D karti un izsekot kameras pozīciju</translation>
 <translation id="3512163584740124171">Šī politika tiek ignorēta, jo citai tās pašas politiku grupas politikai ir augstāka prioritāte.</translation>
 <translation id="351522771072578657">Šobrīd fokuss atrodas uz izvēlnes</translation>
-<translation id="3515972145999192222">Jūsu organizācija ir bloķējusi vietni <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, jo ar to tiek pārkāpta politika. <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3518941727116570328">Vairāku objektu apstrāde</translation>
 <translation id="3525130752944427905">10 x 14 collas</translation>
 <translation id="3525435918300186947">MIDI ierīču kontrolēšana un pārprogrammēšana?</translation>
@@ -1482,7 +1475,6 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3801265110651850478">Sūtīt pieprasījumu “Do Not Track” savā pārlūkošanas datplūsmā</translation>
 <translation id="380329542618494757">Vārds, uzvārds</translation>
 <translation id="3803801106042434208">Šīs meklētājprogrammas ir populāras jūsu reģionā.</translation>
-<translation id="3806932344025766608">Vietnē, kuru mēģināt apmeklēt, uzbrucēji var jūs maldināt un pamudināt instalēt programmatūru vai atklāt kādu informāciju, piemēram, jūsu paroli, tālruņa numuru vai kredītkartes numuru. Chrome stingri iesaka doties atpakaļ. <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="3807366285948165054">Attēla nobīde uz X ass</translation>
 <translation id="3807709094043295184">Klasiskais roks un vecās dziesmas</translation>
 <translation id="3807873520724684969">Tika bloķēts kaitīgs saturs.</translation>
@@ -3346,7 +3338,6 @@ Papildu informācija:
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">Verificējiet savu identitāti, lai Chromium varētu ievadīt maksājuma informāciju.</translation>
 <translation id="7437289804838430631">Pievienot kontaktinformāciju</translation>
-<translation id="7438338505272634288">Vietnē, kuru mēģināt apmeklēt, uzbrucēji var jūs maldināt un pamudināt instalēt kaitīgu programmatūru, kas ietekmē pārlūkošanu, piemēram, maina sākumlapu vai rāda papildu reklāmas jūsu apmeklētajās vietnēs. Chrome stingri iesaka doties atpakaļ, lai izvairītos no kaitējuma. <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="7440140511386898319">Pārlūkošana bezsaistē</translation>
 <translation id="7441627299479586546">Politikas subjekts nav pareizs.</translation>
 <translation id="7441864845853794192">Izsmalcināti un īpaši ēdieni</translation>
@@ -3446,7 +3437,6 @@ Papildu informācija:
 <translation id="759889825892636187"><ph name="HOST_NAME" /> pašlaik nevar apstrādāt šo pieprasījumu.</translation>
 <translation id="7599089013883397081">Lejupielādei iestājās noildze</translation>
 <translation id="7600965453749440009">Nekad netulkot saturu, kas rakstīts <ph name="LANGUAGE" /> valodā</translation>
-<translation id="7601297359530599375">Parasti jūs izveidojat drošu savienojumu ar šo vietni, taču šoreiz Chrome nevarēja izmantot drošu savienojumu. Iespējams, kāds uzbrucējs mēģina izsekot jūsu darbības vai mainīt jūsu tīkla savienojumu. <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="7605377493722372900">Vietnē, kuru mēģināt apmeklēt, uzbrucēji var instalēt kaitīgu programmatūru, kas zog vai dzēš kādu informāciju, piemēram, jūsu paroli, fotoattēlus, ziņojumus vai kredītkaršu numurus.</translation>
 <translation id="7608583484192556132">To, vai jums rādītā reklāma tiek personalizēta, var ietekmēt daudzi faktori, tostarp šis iestatījums, <ph name="BEGIN_LINK_1" />vietņu ieteiktās reklāmas<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />sīkfailu iestatījumi<ph name="END_LINK_2" />, kā arī tas, vai atvērtajā vietnē tiek personalizētas reklāmas. Uzziniet vairāk par <ph name="BEGIN_LINK_3" />reklāmu konfidencialitātes pārvaldību<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Vērtība pārsniedz diapazonu: <ph name="VALUE" />.</translation>
@@ -3719,7 +3709,6 @@ Papildu informācija:
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Nederīgās kartes tika noņemtas</translation>
-<translation id="8100666323495101203">Jūsu organizācija ir identificējusi vietni <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> kā vietni, kurā, iespējams, tiek pārkāpta politika. <ph name="BEGIN_LEARN_MORE_LINK" />Uzziniet vairāk<ph name="END_LEARN_MORE_LINK" />.</translation>
 <translation id="8103161714697287722">Maksājuma veids</translation>
 <translation id="8103643211515685474">Tomēr drukāt</translation>
 <translation id="8105368624971345109">Izslēgt</translation>
@@ -4285,6 +4274,7 @@ Papildu informācija:
 <translation id="920643408853370361">Ceļojuma apdrošināšana</translation>
 <translation id="9207861905230894330">Rakstu neizdevās pievienot.</translation>
 <translation id="9210825002219699214">Ceļojumi ar lidmašīnu</translation>
+<translation id="9211461151375991073">Ierakstiet @, lai meklētu vietnēs <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">Izskata pielāgošana</translation>
 <translation id="9215416866750762878">Lietojumprogrammas darbības dēļ pārlūkā Chrome nevar izveidot drošu savienojumu ar šo vietni</translation>
 <translation id="92178312226016010">Jūs izsekojat šo produktu.</translation>

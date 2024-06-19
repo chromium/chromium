@@ -115,6 +115,7 @@
 <translation id="1209206284964581585">ເຊື່ອງສຳລັບຕອນນີ້</translation>
 <translation id="121201262018556460">ທ່ານໄດ້ພະຍາຍາມທີ່ຈະເຂົ້າຫາ <ph name="DOMAIN" />, ແຕ່ເຊີບເວີໄດ້ນໍາສະເໜີໃບຢັ້ງຢືນທີ່ມີລະຫັດອ່ອນ. ຜູ້ໂຈມຕີສາມາດທໍາລາຍລະຫັດສ່ວນຕົວໄດ້, ແລະເຊີບເວີອາດຈະບໍ່ເປັນເຊີບເວີທີ່ທ່ານຄາດໄວ້ (ທ່ານອາດຈະກໍາລັງສື່ສານກັບຜູ້ໂຈມຕີຢູ່).</translation>
 <translation id="1212527389003717329">ເລີ່ມດາວໂຫຼດແລ້ວ. ເພື່ອເບິ່ງມັນ, ໃຫ້ກົດ |<ph name="ACCELERATOR" />| ຄ້າງໄວ້.</translation>
+<translation id="1214970845432250240">ຂອບ​ເຂດລາ​ຄາ</translation>
 <translation id="1219129156119358924">ຄວາມປອດໄພລະບົບ</translation>
 <translation id="1222060260947439312">ຖາດຂວາ</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -239,7 +240,6 @@
 <translation id="1427192966110103169">ສະລອຍນ້ຳຢູ່ເຮືອນ, ຫ້ອງອົບນວດ ແລະ ສະປາ</translation>
 <translation id="1428146450423315676">ສະແຕັກເກີ້ 7</translation>
 <translation id="142858679511221695">ຜູ້ໃຊ້ຄລາວ</translation>
-<translation id="1428729058023778569">ທ່ານເຫັນຄຳເຕືອນນີ້ເນື່ອງຈາກເວັບໄຊນີ້ບໍ່ຮອງຮັບ HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">ຟີມກາວ</translation>
 <translation id="1430915738399379752">ພິມ</translation>
 <translation id="1432187715652018471">ໜ້າຕ້ອງການຕິດຕັ້ງຕົວຈັດການ​ບໍ​ລິ​ການ​.</translation>
@@ -527,7 +527,6 @@
 <translation id="1959445535228047762">ຂໍ້ຄວາມ ແລະ ເນື້ອຫາໜ້າເວັບຂອງທ່ານຈະຖືກສົ່ງໄປຫາ Google ແລະ ອາດຈະຖືກໃຊ້ເພື່ອປັບປຸງຄຸນສົມບັດນີ້.
   <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436">ບຸກມາກສ໌ ່<ph name="DOMAIN" /></translation>
-<translation id="196752089528718902">ປົກກະຕິແລ້ວທ່ານຈະເຊື່ອມຕໍ່ກັບເວັບໄຊຕ່າງໆໄດ້ຢ່າງປອດໄພ, ແຕ່ Chrome ບໍ່ສາມາດໃຊ້ການເຊື່ອມຕໍ່ທີ່ປອດໄພໄດ້ໃນເທື່ອນີ້. ຜູ້ໂຈມຕີອາດຈະພະຍາຍາມລັກຟັງ ຫຼື ແກ້ໄຂການເຊື່ອມຕໍ່ເຄືອຂ່າຍຂອງທ່ານ. <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">ຄວາມ​ຜິດ​ພາດການສ້າງລໍາດັບ</translation>
 <translation id="1973785048533660168">ວຽກສະໝຽນ ແລະ ບໍລິຫານ</translation>
 <translation id="1974060860693918893">ຂັ້ນສູງ</translation>
@@ -545,7 +544,6 @@
 <translation id="2003709556000175978">ຣີເຊັດລະຫັດຜ່ານຂອງທ່ານຕອນນີ້</translation>
 <translation id="2003775180883135320">ເຈາະຮູຢູ່ເທິງສຸດສີ່ຮູ</translation>
 <translation id="2004697686368036666">ຄຸນສົມບັດຢູ່ບາງເວັບໄຊອາດບໍ່ເຮັດວຽກ</translation>
-<translation id="2005042463110681802">ທ່ານເຫັນຄຳເຕືອນນີ້ເນື່ອງຈາກເວັບໄຊນີ້ບໍ່ຮອງຮັບ HTTPS ແລະ ທ່ານກຳລັງໃຊ້ໂໝດບໍ່ເປີດເຜີຍຕົວຕົນຢູ່. <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">ປຸ່ມສ້າງກິດຈະກຳ, ເປີດນຳໃຊ້ເພື່ອສ້າງກິດຈະກຳໃໝ່ໃນ Google ປະຕິທິນຢ່າງວ່ອງໄວ</translation>
 <translation id="201174227998721785">ຈັດການການອະນຸຍາດ ແລະ ຂໍ້ມູນທີ່ຈັດເກັບໄວ້ໃນເວັບໄຊຕ່າງໆໃນການຕັ້ງຄ່າ Chrome</translation>
 <translation id="2012276282211112603">ບໍ່ມີຫົວຂໍ້ທີ່ຈະສະແດງໃນຕອນນີ້</translation>
@@ -607,7 +605,6 @@
 <translation id="2108755909498034140">ປິດເປີດຄອມພິວເຕີຂອງທ່ານຄືນໃໝ່</translation>
 <translation id="2111166930115883695">ກົດຍະຫວ່າງເພື່ອຫຼິ້ນ</translation>
 <translation id="2112529237938317174">ສະແດງລາຍລະອຽດການອະນຸຍາດ</translation>
-<translation id="2113232594265919362">ທ່ານເຫັນຄຳເຕືອນນີ້ເນື່ອງຈາກເວັບໄຊນີ້ບໍ່ຮອງຮັບ HTTPS ແລະ ທ່ານຢູ່ພາຍໃຕ້ໂປຣແກຣມການປົກປ້ອງຂັ້ນສູງຂອງ Google. <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">ບັດ</translation>
 <translation id="2114841414352855701">ຖືກລະເລີຍ ເພາະວ່າມັນຖືກລົບລ້າງໂດຍ <ph name="POLICY_NAME" />.</translation>
 <translation id="2118132148597630479">Envelope C5</translation>
@@ -809,7 +806,6 @@
 <translation id="2482878487686419369">ການແຈ້ງເຕືອນ</translation>
 <translation id="248348093745724435">ນະໂຍບາຍຂອງເຄື່ອງ</translation>
 <translation id="2485243023686553468">ສະມາດໂຟນ</translation>
-<translation id="2490199669743245365">ຜູ້ໂຈມຕີຢູ່ເວັບໄຊທີ່ທ່ານກຳລັງພະຍາຍາມເຂົ້າເບິ່ງອາດຈະຫຼອກໃຫ້ທ່ານຕິດຕັ້ງຊອບແວທີ່ເປັນອັນຕະລາຍເຊິ່ງລັກ ຫຼື ລຶບຂໍ້ມູນຕ່າງໆ ເຊັ່ນ: ລະຫັດຜ່ານ, ຮູບພາບ, ຂໍ້ຄວາມ ຫຼື ໝາຍເລກບັດເຄຣດິດຂອງທ່ານ. Chrome ຂໍແນະນຳຢ່າງຍິ່ງໃຫ້ກັບໄປຫາຄວາມປອດໄພ. <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">ໃບຢັ້ງຢືນຂອງເຊີບເວີມີຄວາມຜິດພາດ.</translation>
 <translation id="2491414235131909199">ໜ້ານີ້ຖືກບລັອກໄວ້ໂດຍສ່ວນຂະຫຍາຍ</translation>
 <translation id="2495083838625180221">ຕົວ​ກະ​ຈາຍ JSON</translation>
@@ -970,7 +966,6 @@
 <translation id="2839501879576190149">ລະວັງເວັບໄຊປອມ</translation>
 <translation id="2843623755398178332">ເລື່ອນ ແລະ ຊູມແຖບທີ່ແບ່ງປັນແລ້ວຂອງທ່ານບໍ?</translation>
 <translation id="2851291081585704741">ທ່ານອອບລາຍຢູ່</translation>
-<translation id="2856444702002559011">ຜູ້ໂຈມຕີອາດຈະກຳລັງພະຍາຍາມລັກເອົາຂໍ້ມູນຂອງທ່ານຈາກ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (ຕົວຢ່າງ: ລະຫັດຜ່ານ, ຂໍ້ຄວາມ ຫຼື ບັດເຄຣດິດ). <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 x 300 ມມ</translation>
 <translation id="2859806420264540918">ເວັບໄຊນີ້ສະແດງໂຄສະນາທີ່ລົບກວນ ຫຼື ຫຼອກລວງ.</translation>
 <translation id="28618371182701850">ລົດໄຟຟ້າ ແລະ ປລັກອິນ</translation>
@@ -1189,6 +1184,7 @@
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">ລະບຸລະຫັດການຢັ້ງຢືນ <ph name="NUMBER_OF_DIGITS" /> ຕົວເລກ</translation>
 <translation id="3272643614306383237">ໜ້ອຍກວ່າ 1 MB. ບາງເວັບໄຊອາດໂຫຼດຊ້າລົງໃນການເຂົ້າເບິ່ງເທື່ອຕໍ່ໄປຂອງທ່ານ.</translation>
+<translation id="327346289570683313">ຂອບ​ເຂດລາ​ຄາ</translation>
 <translation id="3273738040255912340">ຜູ້ເບິ່ງແຍງຂອງທ່ານສາມາດປ່ຽນແປງໂປຣໄຟລ໌ ແລະ ໂປຣແກຣມທ່ອງເວັບຂອງທ່ານຈາກທາງໄກ, ວິເຄາະຂໍ້ມູນກ່ຽວກັບໂປຣແກຣມທ່ອງເວັບຜ່ານການລາຍງານ ແລະ ເຮັດໜ້າວຽກທີ່ຈຳເປັນອື່ນໆໄດ້. ການເຄື່ອນໄຫວຢູ່ອຸປະກອນນີ້ອາດຖືກຈັດການຢູ່ນອກ Chromium ໄດ້ນຳ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{ນະໂຍບາຍຂອງຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ເປີດໄຟລ໌ນີ້ໃນ <ph name="DESTINATION_NAME" />}other{ນະໂຍບາຍຂອງຜູ້ເບິ່ງແຍງລະບົບບໍ່ແນະນຳໃຫ້ເປີດໄຟລ໌ເຫຼົ່ານີ້ໃນ <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">ອົງການຂອງທ່ານ, <ph name="ENROLLMENT_DOMAIN" />, ໄດ້ສົ່ງຂໍ້ມູນຈຳນວນໜຶ່ງໄປໃຫ້ເວັບໄຊຕໍ່ໄປນີ້ແລ້ວ ເຊັ່ນ: ການຕັ້ງຄ່າ ຫຼື ນະໂຍບາຍ.</translation>
@@ -1317,7 +1313,6 @@
 <translation id="3507936815618196901">ສ້າງແຜນທີ່ 3 ມິຕິຂອງສິ່ງທີ່ຢູ່ອ້ອມຂ້າງຕົວທ່ານ ຫຼື ຕິດຕາມຕຳແໜ່ງກ້ອງ</translation>
 <translation id="3512163584740124171">ລະບົບລະເລີຍນະໂຍບາຍນີ້ເພາະວ່ານະໂຍບາຍອື່ນຈາກກຸ່ມນະໂຍບາຍດຽວກັນມີບຸລິມະສິດສູງກວ່າ.</translation>
 <translation id="351522771072578657">ປັດຈຸບັນທ່ານຢູ່ໃນເມນູ</translation>
-<translation id="3515972145999192222">ອົງກອນຂອງທ່ານໄດ້ບລັອກ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ເນື່ອງຈາກມັນລະເມີດນະໂຍບາຍ. <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">ການຈັດການວັດຖຸຫຼາຍລາຍການ</translation>
 <translation id="3525130752944427905">10 x 14 ນິ້ວ</translation>
 <translation id="3525435918300186947">ຄວບຄຸມ ແລະ ຕັ້ງໂປຣແກຣມໃໝ່ໃນອຸປະກອນ MIDI ບໍ?</translation>
@@ -1483,7 +1478,6 @@
 <translation id="3801265110651850478">ສົ່ງຄໍາຮ້ອງຂໍ “ຢ່າຕິດຕາມ” ໄປກັບທຣາບຟິກການທ່ອງເວັບຂອງທ່ານ</translation>
 <translation id="380329542618494757">ຊື່</translation>
 <translation id="3803801106042434208">ໂປຣແກຣມຊອກຫາເຫຼົ່ານີ້ໄດ້ຮັບຄວາມນິຍົມໃນພາກພື້ນຂອງທ່ານ</translation>
-<translation id="3806932344025766608">ຜູ້ໂຈມຕີຢູ່ເວັບໄຊທີ່ທ່ານກຳລັງພະຍາຍາມເຂົ້າເບິ່ງອາດຈະຫຼອກໃຫ້ທ່ານຕິດຕັ້ງຊອບແວ ຫຼື ເປີດເຜີຍສິ່ງຕ່າງໆ ເຊັ່ນ: ລະຫັດຜ່ານ, ເບີໂທລະສັບ ຫຼື ໝາຍເລກບັດເຄຣດິດຂອງທ່ານ. Chrome ຂໍແນະນຳຢ່າງຍິ່ງໃຫ້ກັບໄປຫາຄວາມປອດໄພ. <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">ປ່ຽນຕຳແໜ່ງຮູບພາບຕາມແກນ X</translation>
 <translation id="3807709094043295184">ຣັອກຄລາດສິກ ແລະ ເພງເກົ່າ</translation>
 <translation id="3807873520724684969">ບລັອກເນື້ອຫາອັນຕະລາຍໄວ້ແລ້ວ.</translation>
@@ -3347,7 +3341,6 @@
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">ຢັ້ງຢືນວ່າແມ່ນທ່ານເພື່ອໃຫ້ Chromium ສາມາດຕື່ມຂໍ້ມູນການຈ່າຍເງິນຂອງທ່ານໄດ້.</translation>
 <translation id="7437289804838430631">ເພີ່ມຂໍ້ມູນຕິດຕໍ່</translation>
-<translation id="7438338505272634288">ຜູ້ໂຈມຕີຢູ່ເວັບໄຊທີ່ທ່ານກຳລັງພະຍາຍາມເຂົ້າເບິ່ງອາດຈະຫຼອກໃຫ້ທ່ານຕິດຕັ້ງຊອບແວທີ່ເປັນອັນຕະລາຍເຊິ່ງສົ່ງຜົນກະທົບຕໍ່ວິທີການທ່ອງເວັບຂອງທ່ານ — ຕົວຢ່າງ: ໂດຍການປ່ຽນໜ້າຫຼັກຂອງທ່ານ ຫຼື ສະແດງໂຄສະນາເພີ່ມເຕີມຢູ່ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງ. Chrome ຂໍແນະນຳຢ່າງຍິ່ງໃຫ້ກັບໄປຫາຄວາມປອດໄພເພື່ອຫຼີກເວັ້ນອັນຕະລາຍ. <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">ສຳຫຼວດໃນເວລາອອບລາຍ</translation>
 <translation id="7441627299479586546">ຫົວຂໍ້ນະະໂຍບາຍບໍ່ຖືກຕ້ອງ</translation>
 <translation id="7441864845853794192">ຫາຫານເລີດລົດ ແລະ ອາຫານພິເສດ</translation>
@@ -3447,7 +3440,6 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> ບໍ່ສາມາດຈັດການກັບຄຳຮ້ອງຂໍນີ້ໄດ້ໃນຂະນະນີ້.</translation>
 <translation id="7599089013883397081">ການດາວໂຫຼດໝົດເວລາແລ້ວ</translation>
 <translation id="7600965453749440009">ຢ່າແປ <ph name="LANGUAGE" /></translation>
-<translation id="7601297359530599375">ປົກກະຕິແລ້ວທ່ານເຊື່ອມຕໍ່ກັບເວັບໄຊນີ້ຢ່າງປອດໄພ, ແຕ່ Chrome ບໍ່ສາມາດໃຊ້ການເຊື່ອມຕໍ່ທີ່ປອດໄພໃນເວລານີ້. ຜູ້ໂຈມຕີອາດຈະພະຍາຍາມລັກຟັງ ຫຼື ແກ້ໄຂການເຊື່ອມຕໍ່ເຄືອຂ່າຍຂອງທ່ານ. <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">ຜູ້ໂຈມຕີຢູ່ເວັບໄຊທີ່ທ່ານກຳລັງພະຍາຍາມເຂົ້າເບິ່ງອາດຈະຫຼອກໃຫ້ທ່ານຕິດຕັ້ງຊອບແວອັນຕະລາຍທີ່ລັກ ຫຼື ລຶບສິ່ງຕ່າງໆ ເຊັ່ນ: ລະຫັດຜ່ານ, ຮູບພາບ, ຂໍ້ຄວາມ ຫຼື ໝາຍເລກບັດເຄຣດິດຂອງທ່ານ.</translation>
 <translation id="7608583484192556132">ໂຄສະນາທີ່ທ່ານເຫັນຈະໄດ້ຮັບການປັບແຕ່ງສ່ວນຕົວຫຼືບໍ່ນັ້ນຂຶ້ນຢູ່ກັບຫຼາຍໆຢ່າງ ເຊິ່ງຮວມທັງການຕັ້ງຄ່ານີ້, <ph name="BEGIN_LINK_1" />ໂຄສະນາທີ່ເວັບໄຊແນະນຳ<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />ການຕັ້ງຄ່າຄຸກກີ້<ph name="END_LINK_2" /> ຂອງທ່ານ ແລະ ເວັບໄຊທີ່ທ່ານກຳລັງເບິ່ງປັບແຕ່ງໂຄສະນາໃຫ້ເປັນແບບສ່ວນຕົວຫຼືບໍ່. ສຶກສາເພີ່ມເຕີມກ່ຽວກັບ <ph name="BEGIN_LINK_3" />ການຈັດການຄວາມເປັນສ່ວນຕົວກ່ຽວກັບຕົວໂຄສະນາຂອງທ່ານ<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">ຄ່າຢູ່ນອກເຂດ <ph name="VALUE" /> .</translation>
@@ -3720,7 +3712,6 @@
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">ລຶບບັດທີ່ໃຊ້ບໍ່ໄດ້ອອກແລ້ວ</translation>
-<translation id="8100666323495101203">ອົງກອນຂອງທ່ານໄດ້ລະບຸໄວ້ວ່າ  <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ເປັນເວັບໄຊທີ່ອາດລະເມີດນະໂຍບາຍ. <ph name="BEGIN_LEARN_MORE_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8103161714697287722">ວິທີການຈ່າຍເງິນ</translation>
 <translation id="8103643211515685474">ຢືນຢັນການພິມ</translation>
 <translation id="8105368624971345109">ປິດ</translation>
@@ -4286,6 +4277,7 @@
 <translation id="920643408853370361">ປະກັນໄພການເດີນທາງ</translation>
 <translation id="9207861905230894330">ເພີ່ມບົດຄວາມບໍ່ສໍາເລັດ.</translation>
 <translation id="9210825002219699214">ການເດີນທາງດ້ວຍຍົນ</translation>
+<translation id="9211461151375991073">ພິມ @ ເພື່ອຊອກຫາ <ph name="FEATURED_SEARCH_LIST" /></translation>
 <translation id="9213433120051936369">ປັບແຕ່ງຮູບຮ່າງລັກສະນະ</translation>
 <translation id="9215416866750762878">ແອັບພລິເຄຊັນໃດໜຶ່ງກຳລັງຢຸດ Chrome ຈາກການເຊື່ອມຕໍ່ກັບເວັບໄຊນີ້ຢ່າງປອດໄພ</translation>
 <translation id="92178312226016010">ທ່ານກຳລັງຕິດຕາມຜະລິດຕະພັນນີ້.</translation>

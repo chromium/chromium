@@ -247,6 +247,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4384570495110188418">Chrome ne peut pas vérifier vos mots de passe parce que vous n'êtes pas connecté.</translation>
 <translation id="4389991535395284064">Lors de la navigation en mode Navigation privée, Chrome vous avertira avant de charger un site en utilisant une connexion non sécurisée</translation>
 <translation id="4427306783828095590">La protection renforcée en fait plus pour bloquer l'hameçonnage et les logiciels nuisibles</translation>
+<translation id="4434353761996769206">Erreur du programme d'installation : <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome – Connexion au réseau – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Une autre opération est en cours sur Google Chrome. Veuillez réessayer plus tard.</translation>
 <translation id="4459234553906210702">La mesure des annonces permet aux sites que vous visitez de demander des informations à Chrome afin de leur permettre de mesurer la performance de leurs annonces. La mesure des annonces limite les suivis intersites en transférant le moins d'informations possible entre les sites.</translation>

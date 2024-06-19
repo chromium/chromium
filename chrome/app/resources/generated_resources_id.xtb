@@ -2533,7 +2533,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2806372837663997957">Perangkat yang Anda coba ajak berbagi tidak menerima</translation>
 <translation id="2806891468525657116">Pintasan sudah ada</translation>
 <translation id="2807517655263062534">File yang Anda download muncul di sini</translation>
-<translation id="2809946454624727734">Anda dapat mengaksesnya di Alamat Tersimpan.</translation>
 <translation id="2811205483104563968">Akun</translation>
 <translation id="2812049959647166806">Thunderbolt tidak didukung</translation>
 <translation id="2812171980080389735">Jaringan dan sandi disimpan agar Anda dapat langsung terhubung</translation>
@@ -2688,6 +2687,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="292371311537977079">Setelan Chrome</translation>
 <translation id="2926085873880284723">Pulihkan pintasan default</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> tidak didukung.</translation>
+<translation id="2926708162326352948">Tema diperbarui menjadi gambar yang diupload</translation>
 <translation id="2927017729816812676">Penyimpanan Cache</translation>
 <translation id="2928795416630981206">Diizinkan melacak posisi kamera Anda</translation>
 <translation id="2931157624143513983">Paskan ke area yang dapat dicetak</translation>
@@ -5460,7 +5460,6 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5016491575926936899">Anda dapat mengirim SMS dari komputer, membagikan koneksi internet, membalas notifikasi percakapan, dan membuka kunci <ph name="DEVICE_TYPE" /> dengan ponsel Anda.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="5016983299133677671">Coba Sandi Baru</translation>
 <translation id="5017529052065664584">15 menit terakhir</translation>
-<translation id="5017643436812738274">Anda dapat membuka halaman dengan kursor teks. Tekan Ctrl+Search+7 untuk menonaktifkan.</translation>
 <translation id="5018207570537526145">Buka situs ekstensi</translation>
 <translation id="5018526990965779848">Kirimkan data penggunaan dan diagnostik. Bantu tingkatkan pengalaman penggunaan Android dengan mengirimkan data diagnostik, perangkat, dan penggunaan aplikasi ke Google secara otomatis. Data ini akan membantu meningkatkan performa sistem, stabilitas aplikasi, dan lainnya. Beberapa data gabungan juga akan membantu aplikasi dan partner Google, seperti developer Android. Jika setelan Aktivitas Web &amp; Aplikasi tambahan diaktifkan, data ini dapat disimpan ke Akun Google Anda.</translation>
 <translation id="5020008942039547742">Pilih jendela lain</translation>
@@ -5617,6 +5616,7 @@ Gunakan Ctrl + Alt + Kurangi kecerahan untuk memperkecil.</translation>
 <translation id="5135533361271311778">Tidak dapat membuat item bookmark.</translation>
 <translation id="513555878193063507">Tambahkan APN baru</translation>
 <translation id="5136343472380336530">Pastikan kedua perangkat tidak terkunci, berdekatan, serta mengaktifkan Bluetooth. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
+<translation id="5136529877787728692">F7</translation>
 <translation id="5137349216872139332">Koneksi hotspot instan gagal</translation>
 <translation id="5138227688689900538">Tampilkan lebih sedikit</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, Penelusuran <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
@@ -7398,10 +7398,12 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="6490471652906364588">Perangkat USB-C (port sebelah kanan)</translation>
 <translation id="6491376743066338510">Otorisasi gagal</translation>
 <translation id="649396225532207613">File ini dapat membahayakan akun jejaring sosial dan pribadi Anda</translation>
+<translation id="6493991254603208962">Turunkan kecerahan</translation>
 <translation id="6494327278868541139">Tampilkan detail perlindungan yang ditingkatkan</translation>
 <translation id="6494445798847293442">Bukan Otoritas Sertifikasi</translation>
 <translation id="6494483173119160146">Perangkat mengalami error yang tidak dapat dipulihkan. Reset perangkat Anda (tindakan ini akan menghapus semua data pengguna) dan coba lagi.</translation>
 <translation id="6495266441917713704">Tidak dapat mentransfer Wi-Fi</translation>
+<translation id="6495453178162183932">Tema diperbarui menjadi Chrome Default</translation>
 <translation id="6497784818439587832">Ubah ukuran layar untuk membuat item di layar menjadi lebih besar atau lebih kecil</translation>
 <translation id="6497789971060331894">Scroll terbalik mouse</translation>
 <translation id="6498249116389603658">&amp;Semua bahasa Anda</translation>
@@ -8191,6 +8193,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7082850163410901674">Notifikasi dinonaktifkan di Setelan Sistem Mac</translation>
 <translation id="7083774521940805477">Steam untuk Chromebook (beta) tidak tersedia di Chromebook Anda.</translation>
 <translation id="708550780726587276">(tidak dikonfigurasi)</translation>
+<translation id="7086377898680121060">Naikkan kecerahan</translation>
 <translation id="7086672505018440886">Sertakan file log Chrome di arsip.</translation>
 <translation id="7088434364990739311">Pengecekan pembaruan gagal dilakukan (kode kesalahan <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">Perangkat ini telah dialihkan ke status dibatalkan penetapannya oleh administrator. Agar bisa dipakai untuk pendaftaran, minta administrator mengubah status perangkat menjadi menunggu keputusan.</translation>

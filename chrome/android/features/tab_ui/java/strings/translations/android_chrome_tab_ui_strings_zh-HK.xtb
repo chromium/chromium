@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">紫色</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{打開有 <ph name="TABS_COUNT_ONE" /> 個分頁嘅<ph name="TITLE_OF_GROUP" />分頁群組。}other{打開有 <ph name="TABS_COUNT_MANY" /> 個分頁嘅<ph name="TITLE_OF_GROUP" />分頁群組。}}</translation>
 <translation id="427987768447457592">新分頁群組</translation>
+<translation id="4338724047016295066">系統將自動關閉閒置分頁。你隨時可以前往歷史記錄中查看這些分頁。</translation>
 <translation id="4371591986692297148">未啟用</translation>
 <translation id="4460014764210899310">未分組</translation>
 <translation id="4648718555153979859">您的分頁在這裡分組顯示</translation>
 <translation id="4686942373615810936">剛才建立</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{1 天後關閉}other{<ph name="DAY_COUNT_MANY" /> 天後關閉}}</translation>
 <translation id="4777866634702576038">要刪除分頁群組嗎？</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> 則評論)}other{(<ph name="REVIEWS_COUNT_MANY" /> 則評論)}}</translation>
 <translation id="4850886885716139402">檢視</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">你可在這裡找到分頁群組</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{將 <ph name="TABS_COUNT_ONE" /> 個揀咗嘅分頁移出群組}other{將 <ph name="TABS_COUNT_MANY" /> 個揀咗嘅分頁移出群組}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> 個分頁}other{<ph name="TABS_COUNT_MANY" /> 個分頁}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 天後}other{<ph name="DAY_COUNT_MANY" /> 天後}}</translation>
 <translation id="6549021453810473782">查看商店資料</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">將分頁左移</translation>

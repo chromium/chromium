@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">melyn pastel</translation>
 <translation id="1056898198331236512">Rhybudd</translation>
 <translation id="1059913517121127803">Methu â dechrau sganio</translation>
+<translation id="1061864016440983342">Defnyddio heb leoliad</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> o <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">Canfuwyd wal dân</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Rhagor o osodiadau</translation>
 <translation id="2082932131694554252">Allwedd bysellfwrdd wedi'i aseinio</translation>
 <translation id="2085089206770112532">Disgleirdeb y sgrîn i lawr</translation>
+<translation id="2086091080968010660">Mae'n bosib na fydd newidiadau ar sail amser yn gywir. Trowch fynediad lleoliad system ymlaen yn y gosodiadau.</translation>
 <translation id="2102231663024125441">Golygu testun</translation>
 <translation id="2105810540595158374">Mae'r ddyfais yn rheolydd gêm.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, fersiwn <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Adfer Gosodiadau Diofyn</translation>
 <translation id="2286454467119466181">Syml</translation>
 <translation id="2287186687001756809">Nid oes unrhyw lun ar gael. I ychwanegu lluniau, ewch i <ph name="LINK" /></translation>
+<translation id="2294577623958216786">Mae'r amserlen bresennol wedi'i gosod i <ph name="SUNRISE" />-<ph name="SUNSET" />. I ddiweddaru'r amserlen machlud a chodiad haul yn awtomatig, trowch fynediad lleoliad system ymlaen.</translation>
 <translation id="2305172810646967500">du</translation>
 <translation id="2307344026739914387">Defnyddio'r pâr o allweddi presennol</translation>
 <translation id="2308243864813041101">Dadblygiwch y cebl USB <ph name="DEVICE_NAME" /> i barhau â'r broses ddiweddaru</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">disgleirdeb bysellfwrdd</translation>
 <translation id="6412715219990689313">Bysellfwrdd integredig</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
+<translation id="6419454453018688975">Trowch fynediad lleoliad system ymlaen</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Gwan (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Mynd i'r gosodiadau cyfrif</translation>

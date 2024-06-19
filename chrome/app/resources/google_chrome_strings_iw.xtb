@@ -55,6 +55,7 @@
 <translation id="1734234790201236882">‏הסיסמה הזאת תישמר על ידי Chrome בחשבון Google. אין צורך לזכור אותה.</translation>
 <translation id="1786003790898721085">‏יש לוודא שנכנסת ל-Chrome ב-<ph name="TARGET_DEVICE_NAME" /> ולשלוח שוב.</translation>
 <translation id="1786044937610313874">‏קיצורי דרך ייפתחו ב-Chrome</translation>
+<translation id="178701303897325119">‏התוסף הזה כבר לא נתמך. ההמלצה של Chrome היא להסיר אותו.</translation>
 <translation id="1812689907177901597">‏כיבוי הגדרה זו יאפשר לך להיכנס לאתרי Google, כמו Gmail, בלי להיכנס אל Chrome</translation>
 <translation id="1860536484129686729">‏Chrome זקוק להרשאת גישה למצלמה בשביל האתר הזה</translation>
 <translation id="1873233029667955273">‏Google Chrome‏ אינו דפדפן ברירת המחדל שלך</translation>
@@ -246,6 +247,7 @@
 <translation id="4384570495110188418">‏Chrome לא יכול לבדוק את הסיסמאות שלך כי לא נכנסת לחשבון</translation>
 <translation id="4389991535395284064">‏בגלישה במצב פרטי, Chrome יציג אזהרה לפני טעינת אתר באמצעות חיבור לא מאובטח</translation>
 <translation id="4427306783828095590">עם ההגנה המשופרת, החסימה של פישינג ותוכנות זדוניות מקיפה יותר</translation>
+<translation id="4438657683599538446">‏כניסה ל-Chrome בתור <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">‏Chrome – כניסה לרשת – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">‏מתבצעת כרגע פעולה אחרת ב-Google Chrome. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="4459234553906210702">‏מדידת המודעות מאפשרת לאתרים שביקרת בהם לבקש מ-Chrome מידע שיעזור לבעלי האתרים למדוד את הביצועים של המודעות שלהם. מדידת המודעות מגבילה את המעקב באתרים שונים על ידי העברת כמות קטנה ככל האפשר של מידע בין אתרים.</translation>

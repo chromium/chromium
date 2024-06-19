@@ -115,6 +115,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1209206284964581585">Na razie ukryj</translation>
 <translation id="121201262018556460">Próbujesz wejść na <ph name="DOMAIN" />, ale serwer przedstawił certyfikat ze słabym kluczem. Intruz mógł uzyskać klucz prywatny, a serwer może nie być tym, którego oczekujesz (możliwe, że komunikujesz się z intruzem).</translation>
 <translation id="1212527389003717329">Rozpoczęto pobieranie. Aby wyświetlić pobrane pliki, naciśnij i przytrzymaj |<ph name="ACCELERATOR" />|.</translation>
+<translation id="1214970845432250240">Przedział cenowy</translation>
 <translation id="1219129156119358924">Zabezpieczenia systemu</translation>
 <translation id="1222060260947439312">Taca prawa</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -239,7 +240,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1427192966110103169">Domowe baseny, sauny i spa</translation>
 <translation id="1428146450423315676">Układarka 7</translation>
 <translation id="142858679511221695">Chmura – użytkownik</translation>
-<translation id="1428729058023778569">Widzisz to ostrzeżenie, ponieważ ta witryna nie obsługuje HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Folia samoprzylepna</translation>
 <translation id="1430915738399379752">Drukuj</translation>
 <translation id="1432187715652018471">Strona chce zainstalować moduł do obsługiwania usługi.</translation>
@@ -528,7 +528,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1959445535228047762">Twój tekst i zawartość strony są wysyłane do Google i mogą zostać wykorzystane do ulepszenia tej funkcji.
   <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436">Zakładki z <ph name="DOMAIN" /></translation>
-<translation id="196752089528718902">Zazwyczaj łączysz się z witrynami w bezpieczny sposób, ale tym razem w Chrome nie udało się użyć bezpiecznego połączenia. Osoba przeprowadzająca atak może próbować podsłuchać lub zmodyfikować Twoje połączenie sieciowe. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">Podczas przekształcania do postaci szeregowej wystąpił błąd</translation>
 <translation id="1973785048533660168">Praca w biurze i administracji</translation>
 <translation id="1974060860693918893">Zaawansowane</translation>
@@ -546,7 +545,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2003709556000175978">Zresetuj teraz swoje hasło</translation>
 <translation id="2003775180883135320">Cztery otwory u góry</translation>
 <translation id="2004697686368036666">W niektórych witrynach mogą nie działać funkcje</translation>
-<translation id="2005042463110681802">Widzisz to ostrzeżenie, ponieważ korzystasz z trybu incognito, a ta witryna nie obsługuje HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Przycisk Utwórz wydarzenie; aktywuj, aby szybko utworzyć nowe wydarzenie w Kalendarzu Google</translation>
 <translation id="201174227998721785">Zarządzaj uprawnieniami i danymi zapisanymi dla różnych witryn w ustawieniach Chrome</translation>
 <translation id="2012276282211112603">Obecnie nie ma tematów do wyświetlenia</translation>
@@ -608,7 +606,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2108755909498034140">Uruchom ponownie komputer</translation>
 <translation id="2111166930115883695">Naciśnij spację, by zacząć grać</translation>
 <translation id="2112529237938317174">Wyświetl szczegóły uprawnień</translation>
-<translation id="2113232594265919362">Widzisz to ostrzeżenie, ponieważ witryna nie obsługuje protokołu HTTPS, a Twoje konto jest objęte programem ochrony zaawansowanej Google. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">Karta</translation>
 <translation id="2114841414352855701">Ignorowana, ponieważ jest zastąpiona przez <ph name="POLICY_NAME" />.</translation>
 <translation id="2118132148597630479">Koperta C5</translation>
@@ -810,7 +807,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2482878487686419369">Powiadomienia</translation>
 <translation id="248348093745724435">Zasady dotyczące komputera</translation>
 <translation id="2485243023686553468">Smartfony</translation>
-<translation id="2490199669743245365">Osoby przeprowadzające atak na stronę, którą próbujesz otworzyć, mogą zainstalować szkodliwe oprogramowanie, które kradnie lub usuwa takie dane jak hasło, zdjęcia, wiadomości czy numer karty kredytowej. Chrome zdecydowanie zaleca powrót do zabezpieczeń. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">Certyfikat serwera zawiera błędy.</translation>
 <translation id="2491414235131909199">Ta strona została zablokowana przez rozszerzenie</translation>
 <translation id="2495083838625180221">Parser JSON</translation>
@@ -974,7 +970,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2839501879576190149">Wchodzisz na fałszywą stronę</translation>
 <translation id="2843623755398178332">Przewinąć i powiększyć udostępnioną kartę?</translation>
 <translation id="2851291081585704741">Jesteś offline</translation>
-<translation id="2856444702002559011">Osoby atakujące mogą próbować wykraść Twoje informacje ze strony <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (na przykład hasła, wiadomości lub dane kart kredytowych). <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 x 300 mm</translation>
 <translation id="2859806420264540918">Na tej stronie wyświetlają się uciążliwe lub wprowadzające w błąd reklamy.</translation>
 <translation id="28618371182701850">Pojazdy elektryczne i hybrydowe typu plug-in</translation>
@@ -1195,6 +1190,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Wpisz <ph name="NUMBER_OF_DIGITS" />-cyfrowy kod weryfikacyjny</translation>
 <translation id="3272643614306383237">Mniej niż 1 MB. Podczas następnej wizyty niektóre strony mogą ładować się wolniej.</translation>
+<translation id="327346289570683313">Przedział cenowy</translation>
 <translation id="3273738040255912340">Administrator może zdalnie wprowadzać zmiany w Twoim profilu i przeglądarce, analizować informacje o przeglądarce za pomocą raportów i wykonywać inne niezbędne zadania. Aktywność na tym urządzeniu może być zarządzana również poza Chromium. <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Zgodnie z zasadą administratora nie zaleca się otwierania tego pliku, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}few{Zgodnie z zasadą administratora nie zaleca się otwierania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}many{Zgodnie z zasadą administratora nie zaleca się otwierania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}other{Zgodnie z zasadą administratora nie zaleca się otwierania tych plików, jeśli miejscem docelowym jest <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Twoja organizacja, <ph name="ENROLLMENT_DOMAIN" />, wysłała do tych witryn pewne informacje, takie jak ustawienia lub zasady.</translation>
@@ -1323,7 +1319,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3507936815618196901">Tworzyć mapę 3D Twojego otoczenia i śledzić pozycję kamery.</translation>
 <translation id="3512163584740124171">Ta zasada jest ignorowana, ponieważ inna zasada z tej samej grupy zasad ma wyższy priorytet.</translation>
 <translation id="351522771072578657">Jesteś teraz w menu</translation>
-<translation id="3515972145999192222">Twoja organizacja zablokowała domenę <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, ponieważ narusza ona zasady. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Obsługa wielu obiektów</translation>
 <translation id="3525130752944427905">10 x 14 cali</translation>
 <translation id="3525435918300186947">Sterować urządzeniami MIDI i je przeprogramowywać?</translation>
@@ -1490,7 +1485,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3801265110651850478">Wysyłaj żądanie „Do Not Track” podczas przeglądania</translation>
 <translation id="380329542618494757">Imię i nazwisko</translation>
 <translation id="3803801106042434208">Te wyszukiwarki są popularne w Twoim regionie</translation>
-<translation id="3806932344025766608">Osoby przeprowadzające atak na stronie, którą próbujesz otworzyć, mogą podstępem nakłonić Cię do zainstalowania oprogramowania lub ujawnienia takich danych jak Twoje hasło, numer telefonu czy numer karty kredytowej. Chrome zdecydowanie zaleca powrót do zabezpieczeń. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">Przesunięcie obrazu wzdłuż osi X</translation>
 <translation id="3807709094043295184">Klasyczny rock i stare przeboje</translation>
 <translation id="3807873520724684969">Zablokowano szkodliwe treści.</translation>
@@ -3363,7 +3357,6 @@ Dodatkowe informacje:
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">Potwierdź swoją tożsamość, aby przeglądarka Chromium mogła uzupełnić dane do płatności.</translation>
 <translation id="7437289804838430631">Dodaj dane kontaktowe</translation>
-<translation id="7438338505272634288">Osoby przeprowadzające atak na stronę, którą chcesz odwiedzić, mogą podstępem nakłonić Cię do zainstalowania szkodliwego oprogramowania wpływającego na sposób korzystania z internetu. Na przykład może ono zmienić stronę główną lub wyświetlać na odwiedzanych stronach dodatkowe reklamy. Chrome zdecydowanie zaleca powrót do zabezpieczeń, które pozwolą uniknąć szkód. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">Przeglądaj offline</translation>
 <translation id="7441627299479586546">Nieprawidłowy podmiot zasady</translation>
 <translation id="7441864845853794192">Żywność delikatesowa i specjalistyczna</translation>
@@ -3464,7 +3457,6 @@ Dodatkowe informacje:
 <translation id="759889825892636187">Serwer <ph name="HOST_NAME" /> nie może teraz obsłużyć tego żądania.</translation>
 <translation id="7599089013883397081">Przekroczono limit czasu pobierania</translation>
 <translation id="7600965453749440009">Nigdy nie tłumacz z języka: <ph name="LANGUAGE" /></translation>
-<translation id="7601297359530599375">Zazwyczaj łączysz się z tą witryną w bezpieczny sposób, ale tym razem w Chrome nie udało się użyć bezpiecznego połączenia. Osoba przeprowadzająca atak może próbować podsłuchać lub zmodyfikować Twoje połączenie sieciowe. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">Osoby przeprowadzające atak na stronę, którą próbujesz otworzyć, mogą zainstalować szkodliwe oprogramowanie, które kradnie lub usuwa takie dane jak hasło, zdjęcia, wiadomości czy numer karty kredytowej.</translation>
 <translation id="7608583484192556132">To, czy wyświetlana reklama jest spersonalizowana, może zależeć od wielu czynników, m.in. od tego ustawienia, od <ph name="BEGIN_LINK_1" />reklam sugerowanych przez witryny<ph name="END_LINK_1" />, od <ph name="BEGIN_LINK_2" />ustawień plików cookie<ph name="END_LINK_2" /> oraz od tego, czy witryna, którą odwiedzasz, personalizuje reklamy. Dowiedz się więcej o <ph name="BEGIN_LINK_3" />zarządzaniu prywatnością w reklamach<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Wartość spoza zakresu (<ph name="VALUE" />)</translation>
@@ -3738,7 +3730,6 @@ Dodatkowe informacje:
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Nieprawidłowe karty zostały usunięte</translation>
-<translation id="8100666323495101203">Twoja organizacja określiła witrynę <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> jako mogącą naruszać zasady. <ph name="BEGIN_LEARN_MORE_LINK" />Więcej informacji<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8103161714697287722">Forma płatności</translation>
 <translation id="8103643211515685474">Drukuj mimo to</translation>
 <translation id="8105368624971345109">Wyłącz</translation>

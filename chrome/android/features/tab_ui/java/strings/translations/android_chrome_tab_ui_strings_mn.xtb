@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Нил ягаан</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> таб бүхий <ph name="TITLE_OF_GROUP" />-н бүлгийг дэлгэх.}other{<ph name="TABS_COUNT_MANY" /> таб бүхий <ph name="TITLE_OF_GROUP" />-н бүлгийг дэлгэх.}}</translation>
 <translation id="427987768447457592">Шинэ табын бүлэг</translation>
+<translation id="4338724047016295066">Идэвхгүй табуудыг автоматаар хаана. Та хүссэн үедээ тухайн табуудыг Түүхээс олох боломжтой.</translation>
 <translation id="4371591986692297148">Идэвхгүй</translation>
 <translation id="4460014764210899310">Бүлгийг болих</translation>
 <translation id="4648718555153979859">Таны табуудыг энд бүлэглэсэн болно</translation>
 <translation id="4686942373615810936">Дөнгөж сая үүсгэсэн</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{1 хоногийн дараа хаах}other{<ph name="DAY_COUNT_MANY" /> хоногийн дараа хаах}}</translation>
 <translation id="4777866634702576038">Табын бүлгийг устгах уу?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> шүүмж)}other{(<ph name="REVIEWS_COUNT_MANY" /> шүүмж)}}</translation>
 <translation id="4850886885716139402">Харах</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Та табын бүлгээ эндээс олно</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Сонгосон <ph name="TABS_COUNT_ONE" /> табыг бүлэглэхээ болих}other{Сонгосон <ph name="TABS_COUNT_MANY" /> табыг бүлэглэхээ болих}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> таб}other{<ph name="TABS_COUNT_MANY" /> таб}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 хоногийн дараа}other{<ph name="DAY_COUNT_MANY" /> хоногийн дараа}}</translation>
 <translation id="6549021453810473782">Дэлгүүрийн мэдээллийг үзэх</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Табыг зүүн тийш зөөх</translation>

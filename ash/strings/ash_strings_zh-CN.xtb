@@ -119,6 +119,7 @@
 <translation id="1383876407941801731">搜索</translation>
 <translation id="1391102559483454063">已开启</translation>
 <translation id="1394698770495054737">完全虚化</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 天前}other{# 天前}}</translation>
 <translation id="1404963891829069586">专注模式音乐</translation>
 <translation id="1407069428457324124">深色主题</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />。使用箭头键可浏览日期。</translation>
@@ -209,6 +210,7 @@
 <translation id="174102739345480129">标记工具已关闭。</translation>
 <translation id="1743570585616704562">无法识别</translation>
 <translation id="1743927604032653654">收起“<ph name="NOTIFICATION_TITLE" />”通知</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{1 小时内}=1{1 小时前}other{# 小时前}}</translation>
 <translation id="1746730358044914197">输入法是由您的管理员配置的。</translation>
 <translation id="1747336645387973286">截止日期：<ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">屏幕键盘已启用</translation>
@@ -346,6 +348,7 @@
 <translation id="2359808026110333948">继续</translation>
 <translation id="2360398059912971776">电池</translation>
 <translation id="2361210043495191221">开启/关闭 Wi-Fi。<ph name="STATE" />。</translation>
+<translation id="236574664504281623">来自 <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">无法登录 Chromebook</translation>
 <translation id="2367972762794486313">显示应用</translation>
 <translation id="2368828502825385061">定位</translation>
@@ -506,6 +509,7 @@
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">开启麦克风使用权限？</translation>
 <translation id="296762781903199866">无法下载<ph name="LANGUAGE" />语音识别结果文件</translation>
+<translation id="2968761508099987738">您当前所在的位置目前不受支持。</translation>
 <translation id="2970920913501714344">安装应用、扩展程序和主题背景</translation>
 <translation id="2977598380246111477">下一个代码</translation>
 <translation id="2985148236010982088">查看所有应用</translation>
@@ -978,6 +982,7 @@
 <translation id="468293128311738995">您手机中的应用</translation>
 <translation id="4690510401873698237">任务栏位于屏幕底部</translation>
 <translation id="4696813013609194136">使用家长访问代码解锁设备</translation>
+<translation id="4697357603686181098">无法提供这方面的帮助。请尝试其他请求。</translation>
 <translation id="4702647871202761252">已关闭隐私保护屏</translation>
 <translation id="4706121060329443414">系统会在晚些时候尝试下载。目前，系统会将语音识别结果文件发送给 Google 进行处理。</translation>
 <translation id="470644585772471629">颜色反转</translation>
@@ -1899,6 +1904,7 @@
 <translation id="7982878511129296052">正在关闭…</translation>
 <translation id="7984197416080286869">指纹尝试次数过多</translation>
 <translation id="798779949890829624">此设置由您的管理员管理</translation>
+<translation id="7989206653429884947">经常打开</translation>
 <translation id="799296642788192631">您可以固定重要文件。如需固定某个文件，请将鼠标指针悬停在该文件上，或者打开“文件”应用并从中右键点击相应文件。</translation>
 <translation id="7994370417837006925">多账号登录</translation>
 <translation id="7995804128062002838">未能截取屏幕</translation>
@@ -2083,6 +2089,7 @@
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />，
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">时间到。太棒了！🎉</translation>
+<translation id="8753368202781196133">目前尚不支持此语言。</translation>
 <translation id="8755498163081687682">验证您的身份：<ph name="ORIGIN_NAME" /> 想确认您的身份</translation>
 <translation id="875593634123171288">显示 VPN 设置</translation>
 <translation id="8756799553341497810">退出此视图后，您就可以开始自定义应用布局。</translation>

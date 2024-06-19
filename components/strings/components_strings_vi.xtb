@@ -239,7 +239,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1427192966110103169">Bể bơi, phòng xông hơi và spa tại nhà</translation>
 <translation id="1428146450423315676">Khay xếp chồng 7</translation>
 <translation id="142858679511221695">Người dùng Google Cloud</translation>
-<translation id="1428729058023778569">Cảnh báo này xuất hiện vì trang web mà bạn đang truy cập không hỗ trợ giao thức HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Phim có keo dính sẵn</translation>
 <translation id="1430915738399379752">In</translation>
 <translation id="1432187715652018471">trang muốn cài đặt trình xử lý dịch vụ.</translation>
@@ -527,7 +526,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1959445535228047762">Nội dung trang và văn bản mà bạn viết được gửi tới Google và Google có thể dựa vào đó để cải thiện tính năng này.
   <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436">Dấu trang của <ph name="DOMAIN" /></translation>
-<translation id="196752089528718902">Bạn thường kết nối an toàn với các trang web nhưng lần này Chrome không thể sử dụng kết nối an toàn. Kẻ tấn công có thể đang tìm cách nghe trộm hoặc sửa đổi kết nối mạng của bạn. <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">Lỗi nối tiếp hóa</translation>
 <translation id="1973785048533660168">Công việc văn phòng và hành chính</translation>
 <translation id="1974060860693918893">Nâng cao</translation>
@@ -545,7 +543,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2003709556000175978">Đặt lại mật khẩu của bạn ngay bây giờ</translation>
 <translation id="2003775180883135320">Đục 4 lỗ trên cùng</translation>
 <translation id="2004697686368036666">Các tính năng trên một số trang web có thể không hoạt động</translation>
-<translation id="2005042463110681802">Cảnh báo này xuất hiện vì đây là trang web không hỗ trợ HTTPS và bạn đang ở Chế độ ẩn danh. <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Nút Tạo sự kiện, hãy nhấn nút này để tạo nhanh một sự kiện mới trong Lịch Google</translation>
 <translation id="201174227998721785">Quản lý quyền và dữ liệu lưu trữ trên các trang web trong phần Cài đặt của Chrome</translation>
 <translation id="2012276282211112603">Hiện không có chủ đề nào để hiển thị</translation>
@@ -607,7 +604,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2108755909498034140">Khởi động lại máy tính của bạn</translation>
 <translation id="2111166930115883695">Nhấn phím cách để chơi</translation>
 <translation id="2112529237938317174">Hiện thông tin chi tiết về quyền</translation>
-<translation id="2113232594265919362">Cảnh báo này xuất hiện vì trang web bạn đang truy cập không hỗ trợ HTTPS và bạn đang tham gia Chương trình Bảo vệ nâng cao của Google. <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">Thẻ</translation>
 <translation id="2114841414352855701">Bỏ qua vì đã bị <ph name="POLICY_NAME" /> ghi đè.</translation>
 <translation id="2118132148597630479">Phong bì C5</translation>
@@ -809,7 +805,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2482878487686419369">Thông báo</translation>
 <translation id="248348093745724435">Chính sách về máy</translation>
 <translation id="2485243023686553468">Điện thoại thông minh</translation>
-<translation id="2490199669743245365">Những kẻ tấn công trên trang web bạn đang cố gắng truy cập có thể cài đặt phần mềm độc hại để đánh cắp hoặc xoá các thông tin như mật khẩu, ảnh, tin nhắn hoặc số thẻ tín dụng. Bạn nên quay lại trang an toàn. <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">Chứng chỉ của máy chủ có lỗi.</translation>
 <translation id="2491414235131909199">Trang này bị một tiện ích chặn</translation>
 <translation id="2495083838625180221">Trình phân tích cú pháp JSON</translation>
@@ -970,7 +965,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="2839501879576190149">Bạn sắp truy cập vào trang web giả mạo</translation>
 <translation id="2843623755398178332">Cuộn và thu phóng thẻ được chia sẻ?</translation>
 <translation id="2851291081585704741">Bạn hiện không có kết nối mạng</translation>
-<translation id="2856444702002559011">Những kẻ tấn công có thể đang cố gắng đánh cắp thông tin của bạn từ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (ví dụ: mật khẩu, thư hoặc thẻ tín dụng). <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 x 300 mm</translation>
 <translation id="2859806420264540918">Trang web này hiển thị quảng cáo xâm nhập hoặc quảng cáo gây hiểu nhầm.</translation>
 <translation id="28618371182701850">Xe điện và xe sạc bằng điện</translation>
@@ -1317,7 +1311,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3507936815618196901">Tạo bản đồ 3D về các khu vực xung quanh bạn và theo dõi thông tin vị trí của máy ảnh</translation>
 <translation id="3512163584740124171">Chính sách này bị bỏ qua vì một chính sách khác thuộc cùng nhóm chính sách có mức ưu tiên cao hơn.</translation>
 <translation id="351522771072578657">Bạn hiện đang xem một trình đơn</translation>
-<translation id="3515972145999192222">Tổ chức của bạn đã chặn <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> do miền đó vi phạm chính sách. <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Xử lý nhiều đối tượng</translation>
 <translation id="3525130752944427905">10 x 14 inch</translation>
 <translation id="3525435918300186947">Điều khiển và lập trình lại thiết bị MIDI?</translation>
@@ -1483,7 +1476,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3801265110651850478">Gửi yêu cầu "Không theo dõi" kèm theo lưu lượng duyệt web của bạn</translation>
 <translation id="380329542618494757">Tên</translation>
 <translation id="3803801106042434208">Dưới đây là những công cụ tìm kiếm phổ biến tại khu vực của bạn</translation>
-<translation id="3806932344025766608">Những kẻ tấn công trên trang web bạn đang cố gắng truy cập có thể lừa bạn cài đặt phần mềm hoặc tiết lộ các thông tin như mật khẩu, số điện thoại hoặc số thẻ tín dụng. Bạn nên quay lại trang an toàn. <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">Trục X của hình ảnh</translation>
 <translation id="3807709094043295184">Nhạc rock cổ điển và nhạc xưa</translation>
 <translation id="3807873520724684969">Đã chặn nội dung độc hại.</translation>
@@ -3347,7 +3339,6 @@ Thông tin chi tiết bổ sung:
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">Xác minh danh tính của bạn để Chromium có thể giúp bạn điền thông tin thanh toán.</translation>
 <translation id="7437289804838430631">Thêm thông tin liên hệ</translation>
-<translation id="7438338505272634288">Những kẻ tấn công trên trang web bạn đang cố gắng truy cập có thể lừa bạn cài đặt phần mềm độc hại gây ảnh hưởng đến cách bạn duyệt web – chẳng hạn như bằng cách thay đổi trang chủ hoặc hiển thị thêm quảng cáo trên các trang web bạn truy cập. Bạn nên quay lại trang an toàn để tránh bị tổn hại. <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">Khám phá khi không có mạng</translation>
 <translation id="7441627299479586546">Chủ đề chính sách sai</translation>
 <translation id="7441864845853794192">Thực phẩm dành cho người sành ăn và đặc sản</translation>
@@ -3447,7 +3438,6 @@ Thông tin chi tiết bổ sung:
 <translation id="759889825892636187"><ph name="HOST_NAME" /> hiện không thể xử lý yêu cầu này.</translation>
 <translation id="7599089013883397081">Đã hết thời gian tải xuống</translation>
 <translation id="7600965453749440009">Không bao giờ dịch <ph name="LANGUAGE" /></translation>
-<translation id="7601297359530599375">Bạn thường kết nối an toàn với trang web này nhưng lần này Chrome không thể sử dụng kết nối an toàn. Kẻ tấn công có thể đang tìm cách nghe trộm hoặc sửa đổi kết nối mạng của bạn. <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">Những kẻ tấn công trên trang web bạn đang cố gắng truy cập có thể cài đặt phần mềm độc hại để đánh cắp hoặc xoá các thông tin như mật khẩu, ảnh, tin nhắn hoặc số thẻ tín dụng.</translation>
 <translation id="7608583484192556132">Việc một quảng cáo bạn thấy có được cá nhân hoá hay không có thể phụ thuộc vào nhiều yếu tố, chẳng hạn như chế độ cài đặt này, <ph name="BEGIN_LINK_1" />quảng cáo do trang web gợi ý<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />chế độ cài đặt cookie<ph name="END_LINK_2" /> mà bạn chọn và trang web bạn đang xem có hay không cá nhân hoá quảng cáo. Tìm hiểu thêm về việc <ph name="BEGIN_LINK_3" />quản lý quyền riêng tư trong quảng cáo<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Giá trị nằm ngoài phạm vi <ph name="VALUE" />.</translation>
@@ -3720,7 +3710,6 @@ Thông tin chi tiết bổ sung:
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Đã xóa các thẻ không hợp lệ</translation>
-<translation id="8100666323495101203">Tổ chức của bạn đã xác định <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> là trang web có thể vi phạm chính sách. <ph name="BEGIN_LEARN_MORE_LINK" />Tìm hiểu thêm<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8103161714697287722">Phương thức thanh toán</translation>
 <translation id="8103643211515685474">Vẫn in</translation>
 <translation id="8105368624971345109">Tắt</translation>

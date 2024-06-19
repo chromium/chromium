@@ -821,7 +821,6 @@ A "entrada do usuário" é definida pelas APIs do sistema operacional e inclui a
 <translation id="1635748761015837179">Permitir gravação em dispositivos de armazenamento externo</translation>
 <translation id="1639468541408865385">Ativar cache de autenticação HTTP com escopo global</translation>
 <translation id="1639673466479276550">Ativar o protetor na tela de bloqueio.</translation>
-<translation id="1640447222731279244">Controlar a ativação do recurso "Criar com IA" do plano de fundo do ChromeOS</translation>
 <translation id="1640824698339859203">Ativar o SSO flutuante e mover as autenticações do serviço da Web do usuário para um novo dispositivo</translation>
 <translation id="1641117061932613266">Ativar o serviço <ph name="PRODUCT_NAME" /> V2</translation>
 <translation id="1641394008743444477">Permite que você defina uma lista de recursos do <ph name="PRODUCT_OS_NAME" /> que serão desativados.
@@ -883,12 +882,6 @@ do usuário para chamar a API.</translation>
 
 Se a política for definida como falsa ou não for definida, nenhum evento será capturado.</translation>
 <translation id="1692990221685273468">Determina se o verificador integrado de certificados impõe restrições codificadas a âncoras de confiança carregadas pelo repositório de confiança da plataforma.</translation>
-<translation id="1693528798631913178">Esta política ativa ou desativa o recurso "Criar com IA" do plano de fundo para videoconferência no ChromeOS.
-0 = desativa o recurso para os usuários.
-
-1 = ativa o recurso para os usuários. Nenhum dado é enviado ao Google para treinar ou melhorar modelos de IA.
-
-Se a política for deixada sem definição, o recurso "Criar com IA" do plano de fundo para videoconferência ficará desativado para os usuários corporativos.</translation>
 <translation id="169467210981344373">Desativar cache de autenticação HTTP com escopo global</translation>
 <translation id="1696501581280568361">Sugere a separação do perfil</translation>
 <translation id="1698810555265314018">Controla a resolução da imagem quando o <ph name="PRODUCT_NAME" /> imprime PDFs com rasterização.
@@ -1833,7 +1826,6 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 <translation id="2326031114717677574">Frequência de amostragem e coleta de dados de áudio. O mínimo permitido é de 1 minuto.
 
       Se deixada sem definição, a frequência padrão de 15 minutos é usada.</translation>
-<translation id="2331028134545182024">Controlar a ativação do recurso "Criar com IA" do plano de fundo para videoconferência do ChromeOS</translation>
 <translation id="2333228572393176330">Esta política controla um recurso de segurança no TLS 1.3 que protege conexões contra ataques de downgrade. Ela é compatível com versões anteriores e não afetará conexões com servidores e proxies em conformidade com o TLS 1.2. No entanto, versões mais antigas de alguns proxies com interceptação de TLS apresentam uma falha de implementação que causa incompatibilidade.
 
       Se esta política for definida como "verdadeira" ou não for definida, o <ph name="PRODUCT_NAME" /> ativará essas proteções de segurança para todas as conexões.
@@ -3447,7 +3439,6 @@ Não deixe a política sempre ativada, especialmente em implantações de produ�
 <translation id="3587482841069643663">Tudo</translation>
 <translation id="3587766503874071316">Desativar atalhos de acessibilidade</translation>
 <translation id="3589193811812796052">Impedir módulos WebAssembly de serem enviados em origem cruzada</translation>
-<translation id="3591518189681300697">Ativar a migração de arquivos locais para a nuvem</translation>
 <translation id="3591527072193107424">Ativa o recurso "Suporte a navegadores legados".</translation>
 <translation id="3591584750136265240">Configura o comportamento de autenticação de login</translation>
 <translation id="3593905652755912452">O comportamento antigo para envio de eventos em controles de formulário desativados vai ser usado.</translation>
@@ -5435,12 +5426,6 @@ Se a política não for definida ou se a lista não tiver referências de imagem
       Se a política não for definida, o período padrão de 604.800.000 milissegundos (uma semana) será usado.</translation>
 <translation id="5212810195096589189">Especificar permissão para CLI de VM</translation>
 <translation id="5213038356678567351">Sites que nunca acionarão uma troca de navegador.</translation>
-<translation id="5215621993623612880">Esta política ativa ou desativa o plano de fundo de "Criar com IA" no ChromeOS.
-0 = desativa o recurso para os usuários.
-
-1 = ativa o recurso para os usuários. Nenhum dado é enviado ao Google para treinar ou melhorar modelos de IA.
-
-Se a política for deixada sem definição, o recurso "Criar com IA" do plano de fundo ficará desativado para os usuários corporativos.</translation>
 <translation id="5216815237712190041">Configure a imagem de plano de fundo que vai aparecer na tela de login do dispositivo quando nenhum usuário tiver feito login. A política é definida especificando o URL do qual o dispositivo ChromeOS pode fazer o download da imagem de plano de fundo e de uma hash criptográfica usada para verificar a integridade do download. A imagem precisa estar no formato JPEG, e o tamanho desse arquivo não pode ultrapassar 16 MB. É necessário que o URL possa ser acessado sem qualquer tipo de autenticação. A imagem do plano de fundo é baixada e armazenada em cache. O download vai ser refeito sempre que o URL ou o hash mudarem.
 
       Se esta política de plano de fundo for definida, o dispositivo ChromeOS vai fazer o download da imagem de plano de fundo, que será usada na tela de login caso nenhum usuário tenha feito login no dispositivo. Depois que o usuário faz login, a política de plano de fundo dele entra em ação.
@@ -6536,11 +6521,6 @@ Esta política foi descontinuada na versão M124.</translation>
       Se a política não for definida, e se compatível com o dispositivo, o modo padrão de carregamento da bateria será aplicado e os usuários não poderão mudá-lo.
 
       Observação: se o modo personalizado de carregamento da bateria for selecionado, <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> e <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> precisarão ser especificadas.</translation>
-<translation id="6064418365347066084">Aciona a migração de arquivos locais para a nuvem.
-Aplicável apenas a usuários do SkyVault, ou seja, quando o valor LocalUserFilesAllowed é falso
-e DownloadDirectory é o Google Drive ou o OneDrive. Caso contrário, a política é ignorada.
-    Se a política for verdadeira, os arquivos locais serão movidos para a nuvem e as pastas locais serão ocultadas do usuário.
-    Se for falsa ou deixada sem definição, os arquivos locais vão continuar no modo somente leitura.</translation>
 <translation id="60655674079349516">Configurar uma lista de tipos de dados de navegação a serem excluídos quando o usuário fechar todas as janelas do navegador.
 
 Aviso: definir essa política pode afetar e remover permanentemente os dados pessoais locais. Recomendamos testar as configurações antes da implantação para evitar a exclusão acidental de dados pessoais.
@@ -7079,7 +7059,6 @@ Se a política for deixada sem definição, o <ph name="PRODUCT_OS_NAME" /> usar
       Isso permite que outros dispositivos do ChromeOS (e Android) conectados à mesma conta do GAIA sejam pareados automaticamente.
       Se a política for deixada sem definição, o valor padrão será desativado para usuários corporativos e ativado para
       contas não gerenciadas.</translation>
-<translation id="6400959027108936283">Ativar o recurso</translation>
 <translation id="6401669939808766804">Fazer logout do usuário</translation>
 <translation id="640244877779556713">Permitir sugestão de emojis</translation>
 <translation id="6403114173011456561">Controla o teclado virtual de toque, agindo como uma política complementar à <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
@@ -8454,7 +8433,6 @@ Isso substitui a política <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_NA
       Se a política for ativada ou deixada sem configuração, a lista de interfaces de rede com os tipos e endereços de hardware delas vai ser informada pelos dispositivos registrados.
 
       Se a política for desativada, a interface de rede não vai ser informada pelos dispositivos registrados.</translation>
-<translation id="7388618954884540850">Desativar a migração de arquivos locais para a nuvem</translation>
 <translation id="7389872682701720082">Se você ativar esta configuração, plug-ins que não estiverem obsoletos sempre serão executados.
 
       Se esta configuração estiver desativada ou não for definida, os usuários precisarão dar permissão para executar plug-ins que exigem autorização. Esses são plug-ins que podem comprometer a segurança.</translation>
@@ -9768,7 +9746,6 @@ Se ela não for definida ou for definida como "0", a navegação para um URL des
 
       Se a política for desativada ou não for configurada, apenas os perfis locais normais serão usados.</translation>
 <translation id="8417305981081876834">Definir o tamanho máximo do PIN da tela de bloqueio</translation>
-<translation id="8418438383184278931">Ativar a migração de arquivos locais do usuário para armazenamento em nuvem</translation>
 <translation id="841977920223099909">Acionamento de aviso de proteção de senha</translation>
 <translation id="8419965165591256432">Taxa em que o estado da atividade do dispositivo é coletado em dispositivos registrados para usuários afiliados. O mínimo permitido é de 1 minuto.
 

@@ -459,6 +459,7 @@
 <translation id="8441146129660941386">ย้อนกลับ</translation>
 <translation id="8444433999583714703">หากต้องการอนุญาตให้ <ph name="APP_NAME" /> เข้าถึงตำแหน่งของคุณ ให้เปิดตำแหน่งใน<ph name="BEGIN_LINK" />การตั้งค่า Android<ph name="END_LINK" /> ด้วย</translation>
 <translation id="8447861592752582886">เพิกถอนสิทธิ์ของอุปกรณ์</translation>
+<translation id="8473055640493819707">"<ph name="APP_NAME" />" เป็นเวอร์ชันเก่า โปรดติดตั้งแอปอีกครั้ง</translation>
 <translation id="8487700953926739672">ใช้งานแบบออฟไลน์ได้</translation>
 <translation id="848952951823693243">ขอเว็บไซต์ในอุปกรณ์เคลื่อนที่เสมอ</translation>
 <translation id="8499083585497694743">เปิดเสียงไมโครโฟน</translation>

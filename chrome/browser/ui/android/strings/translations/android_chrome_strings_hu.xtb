@@ -117,6 +117,8 @@ Az adatokat a Chrome-élmény javítására használó további beállításoké
 <translation id="1513814250881909472">Szinkronizáljon, hogy hozzájusson a többi eszközén megnyitott lapokhoz</translation>
 <translation id="1513858653616922153">Jelszó törlése</translation>
 <translation id="1521774566618522728">Ma volt aktív</translation>
+<translation id="1544084554881119930">A fizetési módok és a címek nem lesznek titkosítva. A Chrome böngészési előzményei nem lesznek szinkronizálva.
+Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titkosított adatait. Az összetett jelszót nem kapja meg, és nem is tárolja a Google. Ha elfelejti az összetett jelszavát, vagy módosítani szeretné ezt a beállítást, <ph name="BEGIN_LINK" />törölje a fiókjában lévő Chrome-adatokat<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Google-fiókjának kezeléséhez koppintson a „Fiók kezelése” gombra</translation>
 <translation id="154513667535157406">A „Tetszik” értékeléssel azt a visszajelzést küldi, hogy ez az összefoglaló tetszik Önnek.</translation>
 <translation id="1549000191223877751">Áthelyezés másik ablakba</translation>
@@ -458,6 +460,7 @@ Csak az Ön összetett jelszava ismeretében tudja bárki is megtekinteni a titk
 <translation id="3264259168916048410">Számítógépe ezt az eszközt szeretné használni az adott webhelyre való bejelentkezéshez</translation>
 <translation id="3265093782546847662">A(z) <ph name="DOMAIN" /> összes oldala</translation>
 <translation id="3269093882174072735">Kép betöltése</translation>
+<translation id="327204079441056603">Módosítottuk a jelszavak mentésének módját ezen az eszközön</translation>
 <translation id="3280562213547448728">Hangalapú keresés</translation>
 <translation id="3282568296779691940">Bejelentkezés a Chrome-ba</translation>
 <translation id="3290249595466894471">Elküldi továbbá az oldalakkal, letöltésekkel, bővítményekkel és rendszerrel kapcsolatos adatok egy kisebb mintáját annak érdekében, hogy a jövőben könnyebben felismerhessük az új fenyegetéseket.</translation>
@@ -1214,6 +1217,7 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="6918398787259831832">Ha a probléma továbbra is fennáll, <ph name="BEGIN_LINK" />itt talál további információt<ph name="END_LINK" /> a következőről: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6929224077895306814">Az eszközére és a Google-fiókjába mentett biztonsági kódok is törlődnek</translation>
 <translation id="6937524809504266803">Személyre szabás és összekapcsolás</translation>
+<translation id="6937876069006524083">Becenév (nem kötelező)</translation>
 <translation id="6942665639005891494">Az alapértelmezett letöltési helyet bármikor módosíthatja a Beállítások menüben</translation>
 <translation id="694267552845942083">Jelenleg a szinkronizálási beállításokat szabja személyre. A szinkronizálás bekapcsolásának véglegesítéséhez koppintson a képernyő alján található Megerősítés gombra. Fel</translation>
 <translation id="6945221475159498467">Kiválasztás</translation>
@@ -1277,6 +1281,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="7207760545532569765"><ph name="TAB_COUNT" /> lap visszaállítása új háttérbeli lapokként.</translation>
 <translation id="7217781228893594884">Az inkognitó lapok a Chrome elhagyásakor zárolódnak</translation>
 <translation id="7221869452894271364">Az oldal újratöltése</translation>
+<translation id="7224097611345298931">A Chrome-hoz és a <ph name="CHROME_CHANNEL" /> verziójához a csak erre az eszközre mentett jelszavak össze lettek vonva. Az összes mentett jelszavát automatikusan kitöltheti mindkét alkalmazásban.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{1 letöltés függőben}other{# letöltés függőben}}</translation>
 <translation id="72415438529550637">A jelszójavaslat le van zárva.</translation>
 <translation id="7252076891734325316">Helyezze telefonját a számítógép közelébe</translation>

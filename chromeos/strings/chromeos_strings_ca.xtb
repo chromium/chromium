@@ -13,6 +13,7 @@
 <translation id="1049663189809099096">groc pastel</translation>
 <translation id="1056898198331236512">Advertiment</translation>
 <translation id="1059913517121127803">No s'ha pogut iniciar l'escaneig</translation>
+<translation id="1061864016440983342">Utilitza sense la ubicació</translation>
 <translation id="1062823486781306604"><ph name="INDEX" /> de <ph name="COUNT" />, <ph name="NAME" />.</translation>
 <translation id="1070066693520972135">WEP</translation>
 <translation id="1071587090247825784">S'ha detectat un tallafoc</translation>
@@ -217,6 +218,7 @@
 <translation id="2080070583977670716">Més opcions de configuració</translation>
 <translation id="2082932131694554252">Tecla del teclat assignada</translation>
 <translation id="2085089206770112532">Disminueix la brillantor de la pantalla</translation>
+<translation id="2086091080968010660">És possible que els canvis basats en l'hora no siguin precisos. Activa a la configuració l'accés a la ubicació del sistema.</translation>
 <translation id="2102231663024125441">Edició de text</translation>
 <translation id="2105810540595158374">El dispositiu és un comandament de joc.</translation>
 <translation id="2119172414412204879"><ph name="BOARD_NAME" />, versió <ph name="MILESTONE_VERSION" /></translation>
@@ -258,6 +260,7 @@
 <translation id="2279051792571591988">Restaura els valors predeterminats</translation>
 <translation id="2286454467119466181">Simple</translation>
 <translation id="2287186687001756809">No hi ha cap imatge disponible. Per afegir fotos, ves a <ph name="LINK" />.</translation>
+<translation id="2294577623958216786">La programació actual està establerta en <ph name="SUNRISE" />-<ph name="SUNSET" />. Per actualitzar automàticament l'horari de la posta i de la sortida del sol, activa l'accés a la ubicació del sistema.</translation>
 <translation id="2305172810646967500">negre</translation>
 <translation id="2307344026739914387">Utilitza el parell de claus actual</translation>
 <translation id="2308243864813041101">Desconnecta el cable USB del <ph name="DEVICE_NAME" /> per continuar amb el procés d'actualització</translation>
@@ -281,7 +284,7 @@
 <translation id="2421798028054665193">Imatge <ph name="CURRENT_PAGE" /> de <ph name="TOTAL_PAGES" /></translation>
 <translation id="2446553403094072641">Precisió de la coma flotant</translation>
 <translation id="2448312741937722512">Tipus</translation>
-<translation id="2472215337771558851">Utilitza Ajuda'm a escriure per crear un esborrany o definir millor el treball existent, amb la tecnologia de la IA de Google</translation>
+<translation id="2472215337771558851">Utilitza Ajuda'm a escriure per crear un esborrany o polir el treball existent amb la tecnologia de la IA de Google</translation>
 <translation id="2480572840229215612">crancs</translation>
 <translation id="248546197012830854">El dispositiu no té connexió. Connecta'l a la xarxa Wi-Fi per veure el contingut d'ajuda.</translation>
 <translation id="2486301288428798846">fusta</translation>
@@ -961,6 +964,7 @@
 <translation id="6411934471898487866">brillantor del teclat</translation>
 <translation id="6412715219990689313">Teclat integrat</translation>
 <translation id="6417265370957905582">Assistent de Google</translation>
+<translation id="6419454453018688975">Activa l'accés del sistema a la ubicació</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
 <translation id="6439505561246192797">Feble (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Ves a la configuració del compte</translation>

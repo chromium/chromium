@@ -2533,7 +2533,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2806372837663997957">The device that you’re trying to share with did not accept</translation>
 <translation id="2806891468525657116">Shortcut already exists</translation>
 <translation id="2807517655263062534">Files you download appear here</translation>
-<translation id="2809946454624727734">You can access it in your saved addresses.</translation>
 <translation id="2811205483104563968">Accounts</translation>
 <translation id="2812049959647166806">Thunderbolt is not supported</translation>
 <translation id="2812171980080389735">Saved networks and passwords so that you can connect instantly</translation>
@@ -2688,6 +2687,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="292371311537977079">Chrome settings</translation>
 <translation id="2926085873880284723">Restore default shortcuts</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> is not supported.</translation>
+<translation id="2926708162326352948">Theme updated to uploaded image</translation>
 <translation id="2927017729816812676">Cache Storage</translation>
 <translation id="2928795416630981206">Allowed to track your camera position</translation>
 <translation id="2931157624143513983">Fit to printable area</translation>
@@ -5460,7 +5460,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5016491575926936899">You can text from your computer, share your Internet connection, reply to conversation notifications and unlock your <ph name="DEVICE_TYPE" /> with your phone.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="5016983299133677671">Try a New Password</translation>
 <translation id="5017529052065664584">Last 15 minutes</translation>
-<translation id="5017643436812738274">You can navigate pages with a text cursor. Press Ctrl+Search+7 to turn off.</translation>
 <translation id="5018207570537526145">Open extension website</translation>
 <translation id="5018526990965779848">Send usage and diagnostic data. Help improve your Android experience by automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account.</translation>
 <translation id="5020008942039547742">Choose a different window</translation>
@@ -5617,6 +5616,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5135533361271311778">Could not create bookmark item.</translation>
 <translation id="513555878193063507">Add new APN</translation>
 <translation id="5136343472380336530">Make sure that both devices are unlocked, close together and have Bluetooth turned on. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
+<translation id="5136529877787728692">F7</translation>
 <translation id="5137349216872139332">Instant hotspot connection failed</translation>
 <translation id="5138227688689900538">Show less</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> search</translation>
@@ -5927,6 +5927,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5372529912055771682">The supplied enrolment mode is not supported by this version of the operating system. Please make sure you are running the newest version and try again.</translation>
 <translation id="5372579129492968947">Unpin extension</translation>
 <translation id="5372632722660566343">Continue without an account</translation>
+<translation id="5372990315769030589">Keep '<ph name="EXTENSION_NAME" />'?</translation>
 <translation id="5375318608039113175">To use Nearby Share with these contacts, add the email address linked with their Google Account to your contacts.</translation>
 <translation id="5375577102295339548">Sites can help to verify that you're not a bot</translation>
 <translation id="5376094717770783089">Requests access</translation>
@@ -7398,10 +7399,12 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6490471652906364588">USB-C device (right port)</translation>
 <translation id="6491376743066338510">Authorisation failed</translation>
 <translation id="649396225532207613">This file can harm your personal and social network accounts</translation>
+<translation id="6493991254603208962">Brightness down</translation>
 <translation id="6494327278868541139">Show enhanced protection details</translation>
 <translation id="6494445798847293442">Not a Certification Authority</translation>
 <translation id="6494483173119160146">The device encountered an unrecoverable error. Please reset your device (it will erase all user data) and try again.</translation>
 <translation id="6495266441917713704">Can't transfer Wi-Fi</translation>
+<translation id="6495453178162183932">Theme updated to Default Chrome</translation>
 <translation id="6497784818439587832">Change display size to make items on your screen smaller or larger</translation>
 <translation id="6497789971060331894">Mouse reverse scrolling</translation>
 <translation id="6498249116389603658">&amp;All your languages</translation>
@@ -8191,6 +8194,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7082850163410901674">Notifications are turned off in Mac System Settings</translation>
 <translation id="7083774521940805477">Steam for Chromebook (beta) is not available on your Chromebook.</translation>
 <translation id="708550780726587276">(not configured)</translation>
+<translation id="7086377898680121060">Brightness up</translation>
 <translation id="7086672505018440886">Include Chrome log files in the archive.</translation>
 <translation id="7088434364990739311">Update check failed to start (error code <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">This device has been placed into a deprovisioned state by the administrator. To enable it for enrolment, please have your administrator place the device into a pending state.</translation>
@@ -9017,6 +9021,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7708143783728142771">Cookies allow for this same level of preference customisation on the web. When you visit a site, the site can save a cookie in your device's browser storage to remember your site preferences, such as the language that you speak or items that you want saved in a shopping basket. Later, if you visit the site again using the same browser, that site can read the cookie it set and you can start up where you left off. These types of cookies are often referred to as first-party cookies, because they're set by the site that you visit.</translation>
 <translation id="770831926727930011">Your local data is protected by your old password. Enter your old password to recover local data.</translation>
 <translation id="7709152031285164251">Failed - <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7710443466210750493">Protect all your passkeys with a recovery PIN</translation>
 <translation id="7710568461918838723">&amp;Cast...</translation>
 <translation id="7711900714716399411">Use a USB cable to connect your phone to your computer. If your phone is already connected, unplug it and plug it back in.</translation>
 <translation id="7711968363685835633">Disable personalised conversions and suggestions as well as user dictionary</translation>
@@ -9745,6 +9750,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8233028084277069927">Open now</translation>
 <translation id="8234795456569844941">Please help our engineers fix this problem. Tell us what happened right before you got the profile error message:</translation>
 <translation id="8235418492073272647">Page shared from <ph name="DEVICE_NAME" /></translation>
+<translation id="8236802542508794819">This tab shares resources with other tabs, which could interfere with debugging.</translation>
 <translation id="8236911020904880539">exit</translation>
 <translation id="8236917170563564587">Share this tab instead</translation>
 <translation id="8237647586961940482">Dark pink and red</translation>
@@ -9949,6 +9955,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8376532149031784008">Reloading <ph name="DOMAIN" />...</translation>
 <translation id="8376610503048439696">Extensions installed by your administrator can still read and change this site</translation>
 <translation id="8376752431516546391">Google Search side panel</translation>
+<translation id="8376812682111060348">Performance issue alert</translation>
 <translation id="8377625247046155446">This passkey will only be saved on this device. It will remain on this device after you close all incognito windows.</translation>
 <translation id="8378714024927312812">Managed by your organisation</translation>
 <translation id="8379988659465232385">Name cannot be empty</translation>

@@ -239,7 +239,6 @@
 <translation id="1427192966110103169">Гэрийн усан сан, саун болон спанууд</translation>
 <translation id="1428146450423315676">Гарах цаасыг зэрэгцүүлэх тавцан 7</translation>
 <translation id="142858679511221695">Үүлний хэрэглэгч</translation>
-<translation id="1428729058023778569">Энэ сайт HTTPS-г дэмждэггүй тул та энэ сануулгыг харж байна. <ph name="BEGIN_LEARN_MORE_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Өөрөө наалддаг хальс</translation>
 <translation id="1430915738399379752">Хэвлэх</translation>
 <translation id="1432187715652018471">хуудас үйлчилгээ зохицуулагчийг суулгахыг хүсэж байна.</translation>
@@ -527,7 +526,6 @@
 <translation id="1959445535228047762">Таны текст болон хуудасны контентыг Google-д илгээсэн бөгөөд энэ онцлогийг сайжруулахад ашиглаж магадгүй.
   <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Хавчуургууд</translation>
-<translation id="196752089528718902">Та сайтуудад ихэвчлэн аюулгүй холбогддог ч Chrome энэ удаад аюулгүй холболт ашиглаж чадсангүй. Халдагч таны сүлжээний холболтыг чагнахаар эсвэл өөрчлөхөөр оролдож байж магадгүй. <ph name="BEGIN_LEARN_MORE_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">Цувралын алдаа</translation>
 <translation id="1973785048533660168">Бичиг хэрэг болон захиргааны ажлын байрууд</translation>
 <translation id="1974060860693918893">Боловсронгуй</translation>
@@ -545,7 +543,6 @@
 <translation id="2003709556000175978">Нууц үгээ одоо шинэчлэх</translation>
 <translation id="2003775180883135320">Дээд буланд дөрвөн нүх цоолох</translation>
 <translation id="2004697686368036666">Зарим сайтын онцлогууд ажиллахгүй байж болзошгүй</translation>
-<translation id="2005042463110681802">Энэ сайт HTTPS-г дэмждэггүй бөгөөд та Нууцлалын горимд байгаа тул энэ сануулгыг харж байна. <ph name="BEGIN_LEARN_MORE_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Үйл явдал үүсгэх товчлуур, Google Календарьт шинэ үйл явдал шуурхай үүсгэхийн тулд идэвхжүүлнэ үү</translation>
 <translation id="201174227998721785">Chrome-н тохиргоонд сайтууд дээр хадгалсан зөвшөөрөл болон өгөгдлийг удирдана уу</translation>
 <translation id="2012276282211112603">Яг одоо харуулах ямар ч сэдэв байхгүй байна</translation>
@@ -607,7 +604,6 @@
 <translation id="2108755909498034140">Компьютероо дахин эхлүүлэх</translation>
 <translation id="2111166930115883695">Тоглохын тулд space дээр дарна уу</translation>
 <translation id="2112529237938317174">Зөвшөөрлийн дэлгэрэнгүйг харуулах</translation>
-<translation id="2113232594265919362">Энэ сайт HTTPS-г дэмждэггүй бөгөөд та Google-н Дэвшилтэт хамгаалалтын хөтөлбөрт байгаа тул энэ сануулгыг харж байна. <ph name="BEGIN_LEARN_MORE_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">Карт</translation>
 <translation id="2114841414352855701"><ph name="POLICY_NAME" /> нь өөрчилсөн учир энэ журам хүчингүй.</translation>
 <translation id="2118132148597630479">Дугтуй C5</translation>
@@ -809,7 +805,6 @@
 <translation id="2482878487686419369">Мэдэгдэл</translation>
 <translation id="248348093745724435">Машины удирдамж</translation>
 <translation id="2485243023686553468">Ухаалаг утаснууд</translation>
-<translation id="2490199669743245365">Таны зочлохоор оролдож буй сайт дээрх халдагчид таны нууц үг, зураг, мессеж эсвэл кредит картын дугаар зэрэг зүйлсийг хулгайлдаг эсвэл устгадаг аюултай программ хангамжийг суулгаж магадгүй. Chrome аюулгүй байдал руу буцаж очихыг нухацтай зөвлөж байна. <ph name="BEGIN_LEARN_MORE_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">Серверийн гэрчилгээ алдаатай байна.</translation>
 <translation id="2491414235131909199">Энэ хуудсыг өргөтгөл блоклосон байна</translation>
 <translation id="2495083838625180221">JSON Задлагч</translation>
@@ -970,7 +965,6 @@
 <translation id="2839501879576190149">Хуурамч сайт байна</translation>
 <translation id="2843623755398178332">Хуваалцсан табаа гүйлгэж, томруулах уу?</translation>
 <translation id="2851291081585704741">Та офлайн байна</translation>
-<translation id="2856444702002559011">Халдагчид <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />-с таны нууц үг, мессеж, кредит карт зэрэг мэдээллийг хулгайлахаар оролдож байж болзошгүй. <ph name="BEGIN_LEARN_MORE_LINK" />Дэлгэрэнгүй үзэх<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 x 300 мм</translation>
 <translation id="2859806420264540918">Энэ сайт төвөгтэй эсвэл хуурамч зар харуулдаг.</translation>
 <translation id="28618371182701850">Цахилгаан болон залгаж цэнэглэдэг тээврийн хэрэгслүүд</translation>
@@ -1318,7 +1312,6 @@
 <translation id="3507936815618196901">Таны эргэн тойрны 3D газрын зургийг үүсгэж, камерын хөдөлгөөнийг хянах</translation>
 <translation id="3512163584740124171">Ижил удирдамжийн бүлгийн өөр удирдамж илүү өндөр ач холбогдолтой байгаа тохиолдолд энэ удирдамжийг үл хэрэгсэнэ.</translation>
 <translation id="351522771072578657">Та цэсэд байна</translation>
-<translation id="3515972145999192222"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> нь бодлогыг зөрчиж байгаа тул танай байгууллага үүнийг блоклосон. <ph name="BEGIN_LEARN_MORE_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Олон объектын удирдлага</translation>
 <translation id="3525130752944427905">10 x 14 инч</translation>
 <translation id="3525435918300186947">MIDI төхөөрөмжүүдийг хянаж, дахин программчлах уу?</translation>
@@ -1484,7 +1477,6 @@
 <translation id="3801265110651850478">Хөтчийнхөө урсгалаар “Do Not Track” хүсэлтийг илгээх</translation>
 <translation id="380329542618494757">Нэр</translation>
 <translation id="3803801106042434208">Эдгээр хайлтын систем нь танай бүс нутагт эрэлттэй байна</translation>
-<translation id="3806932344025766608">Таны зочлохоор оролдож буй сайт дээрх халдагчид таныг программ хангамжийг суулгах эсвэл нууц үг, утас эсвэл кредит картын дугаар зэрэг зүйлсээ илчлэх үйлдэл хийлгэхээр хуурч магадгүй. Chrome аюулгүй байдал руу буцаж очихыг нухацтай зөвлөж байна. <ph name="BEGIN_LEARN_MORE_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">X тэнхлэгийн дагуу зураг шилжүүлэх</translation>
 <translation id="3807709094043295184">Сонгодог рок, хуучны хөгжмүүд</translation>
 <translation id="3807873520724684969">Аюултай когтентыг хориглосон.</translation>
@@ -3347,7 +3339,6 @@
 <translation id="7429429656042611765">Захиргааны</translation>
 <translation id="7432774160230062882">Өөрийгөө мөн болохыг баталгаажуулснаар Chromium таны төлбөрийн мэдээллийг бөглөх боломжтой.</translation>
 <translation id="7437289804838430631">Харилцагчийн мэдээлэл нэмэх</translation>
-<translation id="7438338505272634288">Таны зочлохоор оролдож буй сайт дээрх халдагчид таны үзэх аргад нөлөөлөх аюултай программ хангамжийг суулгах үйлдэл хийлгэхээр хуурч магадгүй. Жишээ нь таны нүүр хуудсыг өөрчлөх эсвэл таны зочилдог сайтуудад нэмэлт зар харуулж болно. Chrome хор хөнөөлөөс зайлсхийхийн тулд аюулгүй байдал руу буцаж очихыг нухацтай зөвлөж байна. <ph name="BEGIN_LEARN_MORE_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">Офлайн үедээ судлах</translation>
 <translation id="7441627299479586546">Буруу тохиргооны зүйл</translation>
 <translation id="7441864845853794192">Нарийн болон тусгай хоолнууд</translation>
@@ -3447,7 +3438,6 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> нь одоогоор энэ хүсэлтийг зохицуулах боломжгүй байна.</translation>
 <translation id="7599089013883397081">Татах үйлдэл завсарласан</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />-ийг хэзээ ч бүү хөрвүүл</translation>
-<translation id="7601297359530599375">Та энэ сайтад ихэвчлэн аюулгүй холбогддог ч Chrome энэ удаад аюулгүй холболт ашиглаж чадсангүй. Халдагч таны сүлжээний холболтыг чагнахаар эсвэл өөрчлөхөөр оролдож байж магадгүй. <ph name="BEGIN_LEARN_MORE_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">Таны зочлохоор оролдож буй сайт дээрх халдагчид таны нууц үг, зураг, мессеж эсвэл кредит картын дугаар зэрэг зүйлсийг хулгайлдаг эсвэл устгадаг аюултай программ хангамжийг суулгаж магадгүй.</translation>
 <translation id="7608583484192556132">Таны хардаг зарыг хувийн болгосон эсэх нь энэ тохиргоо, <ph name="BEGIN_LINK_1" />сайтын санал болгосон зар<ph name="END_LINK_1" />, таны <ph name="BEGIN_LINK_2" />күүкиний тохиргоо<ph name="END_LINK_2" /> болон таны үзэж буй сайт зарыг хувийн болгодог эсэх гэх мэт олон зүйлээс хамаарч болно. <ph name="BEGIN_LINK_3" />Зарын нууцлалаа удирдах<ph name="END_LINK_3" /> талаар нэмэлт мэдээлэл авна уу.</translation>
 <translation id="7610193165460212391">Утга нь <ph name="VALUE" /> хамрах хүрээнээс гарсан байна.</translation>
@@ -3720,7 +3710,6 @@
 <translation id="8098855213644561659">A3 Нэмэлт</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Хүчингүй картыг устгалаа</translation>
-<translation id="8100666323495101203">Танай байгууллага  <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />-г бодлого зөрчиж магадгүй сайт гэж тодорхойлсон. <ph name="BEGIN_LEARN_MORE_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8103161714697287722">Төлбөрийн хэрэгсэл</translation>
 <translation id="8103643211515685474">Ямартай ч хэвлэх</translation>
 <translation id="8105368624971345109">Унтраах</translation>

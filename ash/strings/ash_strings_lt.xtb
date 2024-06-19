@@ -119,6 +119,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1383876407941801731">Ieškoti</translation>
 <translation id="1391102559483454063">Įjungta</translation>
 <translation id="1394698770495054737">Visiškas suliejimas</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{Prieš vieną dieną}one{Prieš # dieną}few{Prieš # dienas}many{Prieš # dienos}other{Prieš # dienų}}</translation>
 <translation id="1404963891829069586">„Focus“ garsai</translation>
 <translation id="1407069428457324124">Tamsioji tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Rodyklių klavišais pereikite nuo vienos datos prie kitos.</translation>
@@ -209,6 +210,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="174102739345480129">Žymeklis išjungtas.</translation>
 <translation id="1743570585616704562">Neatpažinta</translation>
 <translation id="1743927604032653654">Sutraukti pranešimą „<ph name="NOTIFICATION_TITLE" />“</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Per vieną valandą}=1{Prieš vieną valandą}one{Prieš # valandą}few{Prieš # valandas}many{Prieš # valandos}other{Prieš # valandų}}</translation>
 <translation id="1746730358044914197">Įvesties metodus konfigūruoja jūsų administratorius.</translation>
 <translation id="1747336645387973286">terminas <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Ekrano klaviatūra įgalinta</translation>
@@ -346,6 +348,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="2359808026110333948">Tęskite</translation>
 <translation id="2360398059912971776">akumuliatorius</translation>
 <translation id="2361210043495191221">Perjungti „Wi-Fi“. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Išsiųsta iš <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Nepavyksta prisijungti prie „Chromebook“</translation>
 <translation id="2367972762794486313">Rodyti programas</translation>
 <translation id="2368828502825385061">Rasti</translation>
@@ -506,6 +509,7 @@ Prijungtų įrenginių: <ph name="DEVICECOUNT" />.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Įjungti prieigą prie mikrofono?</translation>
 <translation id="296762781903199866">Nepavyko atsisiųsti <ph name="LANGUAGE" /> kalbos failų</translation>
+<translation id="2968761508099987738">Jūsų dabartinė vietovė šiuo metu nepalaikoma.</translation>
 <translation id="2970920913501714344">Įdiegti programų, plėtinių ir temų</translation>
 <translation id="2977598380246111477">Kitas skaičius</translation>
 <translation id="2985148236010982088">Žr. visas programas</translation>
@@ -979,6 +983,7 @@ Prijungtas vienas įrenginys.</translation>
 <translation id="468293128311738995">Programos iš telefono</translation>
 <translation id="4690510401873698237">Lentyna apačioje</translation>
 <translation id="4696813013609194136">Atrakinkite įrenginį naudodami tėvų kodą</translation>
+<translation id="4697357603686181098">Negalime padėti. Bandykite pateikti kitą užklausą.</translation>
 <translation id="4702647871202761252">Privatumo ekranas išjungtas</translation>
 <translation id="4706121060329443414">Atsisiųsti bus bandoma vėliau. Dabar kalba bus siunčiama į sistemą „Google“ apdoroti.</translation>
 <translation id="470644585772471629">Spalvų inversija</translation>
@@ -1901,6 +1906,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="7982878511129296052">Išjungiama...</translation>
 <translation id="7984197416080286869">Viršytas leistinas bandymų atrakinti naudojant kontrolinį kodą skaičius</translation>
 <translation id="798779949890829624">Šį nustatymą tvarko jūsų administratorius</translation>
+<translation id="7989206653429884947">Dažnai atidaroma</translation>
 <translation id="799296642788192631">Galite prisegti svarbius failus. Kad prisegtumėte, užveskite žymeklį virš elemento arba atidarykite skiltį „Failai“ ir dešiniuoju klavišu spustelėkite elementą.</translation>
 <translation id="7994370417837006925">Kelios paskyros</translation>
 <translation id="7995804128062002838">Nepavyko užfiksuoti ekrano</translation>
@@ -2085,6 +2091,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Laikas baigėsi. Puiku! 🎉</translation>
+<translation id="8753368202781196133">Ši kalba šiuo metu nepalaikoma.</translation>
 <translation id="8755498163081687682">Patvirtinkite savo tapatybę: <ph name="ORIGIN_NAME" /> norėtų patvirtinti, kad tai jūs</translation>
 <translation id="875593634123171288">Rodyti VPN nustatymus</translation>
 <translation id="8756799553341497810">Išėję iš šio rodinio galėsite pradėti tinkinti programų išdėstymą.</translation>

@@ -115,6 +115,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1209206284964581585">Ocultar para já</translation>
 <translation id="121201262018556460">Tentou aceder a <ph name="DOMAIN" />, mas o servidor apresentou um certificado que contém uma chave fraca. Um utilizador mal intencionado poderá ter quebrado a chave privada e o servidor pode não ser o servidor esperado (pode estar a comunicar com um utilizador mal intencionado).</translation>
 <translation id="1212527389003717329">Transferência iniciada. Para a ver, prima sem soltar |<ph name="ACCELERATOR" />|.</translation>
+<translation id="1214970845432250240">Intervalo de preços</translation>
 <translation id="1219129156119358924">Segurança do sistema</translation>
 <translation id="1222060260947439312">Tabuleiro direito</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -239,7 +240,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1427192966110103169">Piscinas, saunas e spas domésticos</translation>
 <translation id="1428146450423315676">Empilhador 7</translation>
 <translation id="142858679511221695">Utilizador da nuvem</translation>
-<translation id="1428729058023778569">Está a ver este aviso porque o site não suporta HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Filme autoadesivo</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1432187715652018471">A página quer instalar um controlador de serviço.</translation>
@@ -528,7 +528,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1959445535228047762">O texto e o conteúdo da página são enviados para a Google e podem ser usados para melhorar esta funcionalidade.
   <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436">Marcadores de <ph name="DOMAIN" /></translation>
-<translation id="196752089528718902">Costuma estabelecer ligação aos sites em segurança, mas o Chrome não conseguiu usar uma ligação segura desta vez. Um atacante pode estar a tentar intercetar ou modificar a sua ligação de rede. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">Erro de serialização</translation>
 <translation id="1973785048533660168">Empregos administrativos</translation>
 <translation id="1974060860693918893">Avançadas</translation>
@@ -546,7 +545,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2003709556000175978">Repor a palavra-passe agora</translation>
 <translation id="2003775180883135320">Perfuração quádrupla na parte superior</translation>
 <translation id="2004697686368036666">As funcionalidades em alguns sites podem não funcionar</translation>
-<translation id="2005042463110681802">Está a ver este aviso porque o site não suporta HTTPS e está no Modo de navegação anónima. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Botão Criar evento; ative para criar rapidamente um novo evento no Calendário Google</translation>
 <translation id="201174227998721785">Faça a gestão das autorizações e dos dados armazenados em sites nas Definições do Chrome.</translation>
 <translation id="2012276282211112603">Não existem tópicos para apresentar neste momento</translation>
@@ -608,7 +606,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2108755909498034140">Reiniciar o computador</translation>
 <translation id="2111166930115883695">Prima a barra de espaço.</translation>
 <translation id="2112529237938317174">Mostrar detalhes da autorização</translation>
-<translation id="2113232594265919362">Está a ver este aviso porque este site não suporta HTTPS e está no Programa de Proteção avançada da Google. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">Cartão</translation>
 <translation id="2114841414352855701">Ignorada porque foi substituída por <ph name="POLICY_NAME" /> .</translation>
 <translation id="2118132148597630479">Envelope C5</translation>
@@ -810,7 +807,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="248348093745724435">Políticas do computador</translation>
 <translation id="2485243023686553468">Smartphones</translation>
-<translation id="2490199669743245365">Os atacantes no site que está a tentar visitar podem instalar software prejudicial que rouba ou elimina, por exemplo, a sua palavra-passe, fotos, mensagens ou número do cartão de crédito. O Chrome recomenda vivamente voltar para um site seguro. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">O certificado do servidor contém erros.</translation>
 <translation id="2491414235131909199">Esta página foi bloqueada por uma extensão</translation>
 <translation id="2495083838625180221">Analisador JSON</translation>
@@ -974,7 +970,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2839501879576190149">O site seguinte é falso</translation>
 <translation id="2843623755398178332">Quer deslocar e fazer zoom no seu separador partilhado?</translation>
 <translation id="2851291081585704741">Está offline</translation>
-<translation id="2856444702002559011">Os atacantes poderão estar a tentar roubar as suas informações de <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (por exemplo, palavras-passe, mensagens ou cartões de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 x 300 mm</translation>
 <translation id="2859806420264540918">Este site apresenta anúncios intrusivos ou enganadores.</translation>
 <translation id="28618371182701850">Veículos elétricos e recarregáveis</translation>
@@ -1195,6 +1190,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Introduza o código de validação de <ph name="NUMBER_OF_DIGITS" /> dígitos</translation>
 <translation id="3272643614306383237">Menos de 1 MB. É possível que alguns sites sejam carregados mais lentamente na sua próxima visita.</translation>
+<translation id="327346289570683313">Intervalo de preços</translation>
 <translation id="3273738040255912340">O administrador pode fazer alterações ao perfil e navegador remotamente, analisar informações sobre o navegador através de relatórios e realizar outras tarefas necessárias. A atividade neste dispositivo também pode ser gerida fora do Chromium. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{A política do administrador não recomenda abrir este ficheiro em <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda abrir estes ficheiros em <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">A sua entidade, <ph name="ENROLLMENT_DOMAIN" />, enviou algumas informações para os seguintes Websites, como definições ou políticas.</translation>
@@ -1323,7 +1319,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3507936815618196901">Criar um mapa 3D do ambiente à sua volta e monitorizar a posição da câmara.</translation>
 <translation id="3512163584740124171">Esta política é ignorada, porque existe outra política do mesmo grupo de políticas com prioridade superior.</translation>
 <translation id="351522771072578657">Está atualmente num menu</translation>
-<translation id="3515972145999192222">A sua organização bloqueou <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> porque viola uma política. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Processamento de vários objetos</translation>
 <translation id="3525130752944427905">10 x 14 pol.</translation>
 <translation id="3525435918300186947">Controlar e reprogramar dispositivos MIDI?</translation>
@@ -1490,7 +1485,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3801265110651850478">Enviar um pedido "Não rastrear" com o seu tráfego de navegação</translation>
 <translation id="380329542618494757">Nome</translation>
 <translation id="3803801106042434208">Estes motores de pesquisa são populares na sua região</translation>
-<translation id="3806932344025766608">Os atacantes no site que está a tentar visitar podem tentar enganar o utilizador para que instale software ou revele informações como a palavra-passe, o número de telefone ou o número do cartão de crédito. O Chrome recomenda vivamente voltar para um site seguro. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">Turno X da imagem</translation>
 <translation id="3807709094043295184">Rock clássico e músicas antigas</translation>
 <translation id="3807873520724684969">Conteúdo prejudicial bloqueado.</translation>
@@ -3362,7 +3356,6 @@ Detalhes adicionais:
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">Valide a sua identidade para que o Chromium possa preencher as informações de pagamento.</translation>
 <translation id="7437289804838430631">Adicionar informações de contacto</translation>
-<translation id="7438338505272634288">Os atacantes no site que está a tentar visitar podem enganar o utilizador para que instale software prejudicial que afeta a forma como navega, por exemplo, alterando a sua página inicial ou apresentando anúncios adicionais nos sites que visita. O Chrome recomenda vivamente voltar para um site seguro de forma a evitar danos. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">Explorar offline</translation>
 <translation id="7441627299479586546">Assunto da política incorreto</translation>
 <translation id="7441864845853794192">Refeições gourmet e de especialidade</translation>
@@ -3463,7 +3456,6 @@ Detalhes adicionais:
 <translation id="759889825892636187"><ph name="HOST_NAME" /> não consegue processar este pedido de momento.</translation>
 <translation id="7599089013883397081">A transferência excedeu o tempo limite</translation>
 <translation id="7600965453749440009">Nunca traduzir do <ph name="LANGUAGE" /></translation>
-<translation id="7601297359530599375">Costuma estabelecer ligação a este site em segurança, mas o Chrome não conseguiu usar uma ligação segura desta vez. Um atacante pode estar a tentar intercetar ou modificar a sua ligação de rede. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">Os atacantes no site que está a tentar visitar podem instalar software prejudicial que rouba ou elimina, por exemplo, a sua palavra-passe, fotos, mensagens ou número do cartão de crédito.</translation>
 <translation id="7608583484192556132">A personalização de um anúncio que lhe é mostrado pode depender de vários fatores, incluindo esta definição, os <ph name="BEGIN_LINK_1" />anúncios sugeridos por sites<ph name="END_LINK_1" />, as <ph name="BEGIN_LINK_2" />definições de cookies<ph name="END_LINK_2" /> e se o site que está a ver personaliza anúncios. Saiba mais sobre a <ph name="BEGIN_LINK_3" />gestão da privacidade dos anúncios<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">O valor está fora do intervalo <ph name="VALUE" /> .</translation>
@@ -3737,7 +3729,6 @@ Detalhes adicionais:
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Os cartões inválidos foram removidos.</translation>
-<translation id="8100666323495101203">A sua organização identificou <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> como um site que pode violar uma política. <ph name="BEGIN_LEARN_MORE_LINK" />Saiba mais<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8103161714697287722">Método de pagamento</translation>
 <translation id="8103643211515685474">Imprimir mesmo assim</translation>
 <translation id="8105368624971345109">Desativar</translation>

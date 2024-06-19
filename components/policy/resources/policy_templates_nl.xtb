@@ -801,7 +801,6 @@ De minimum drempelwaarde is 1 minuut.
 <translation id="1635748761015837179">Schrijven naar externe opslagapparaten toestaan</translation>
 <translation id="1639468541408865385">HTTP-verificatiecache met wereldwijd bereik aanzetten</translation>
 <translation id="1639673466479276550">Zet de screensaver voor het inlogscherm aan.</translation>
-<translation id="1640447222731279244">Bepalen of de functie ChromeOS-achtergrond 'Maken met AI' kan worden aangezet</translation>
 <translation id="1640824698339859203">Zwevende SSO aanzetten en de webserviceverificaties van de gebruiker naar een nieuw apparaat verplaatsen</translation>
 <translation id="1641117061932613266"><ph name="PRODUCT_NAME" /> V2-service aanzetten</translation>
 <translation id="1641394008743444477">Hiermee kun je een lijst van <ph name="PRODUCT_OS_NAME" />-functies instellen die worden uitgezet.
@@ -855,12 +854,6 @@ Voor oorsprongen waarvoor geen informatie is in beleid of gebruikersinstellingen
 
 Als je het beleid instelt op False, of niet instelt, worden er geen gebeurtenissen vastgelegd.</translation>
 <translation id="1692990221685273468">Bepaalt of de ingebouwde certificaatverificatie beperkingen afdwingt die zijn gecodeerd in vertrouwensankers die worden geladen vanuit de vertrouwde opslag van het platform.</translation>
-<translation id="1693528798631913178">Met dit beleid kun je de functie VC-achtergrond 'Maken met AI' aan- of uitzetten voor ChromeOS.
-0 = De functie uitzetten voor gebruikers.
-
-1 = De functie aanzetten voor gebruikers. Er worden geen gegevens naar Google gestuurd om AI-modellen te trainen of te verbeteren.
-
-Als je dit beleid niet instelt, staat de functie VC-achtergrond 'Maken met AI' uit voor zakelijke gebruikers.</translation>
 <translation id="169467210981344373">HTTP-verificatiecache met wereldwijd bereik uitzetten</translation>
 <translation id="1696501581280568361">Stelt profielscheiding voor</translation>
 <translation id="1698810555265314018">Dit beleid beheert de afbeeldingsresolutie voor afdrukken als <ph name="PRODUCT_NAME" /> gerasterde pdf's afdrukt.
@@ -1775,7 +1768,6 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="2326031114717677574">Snelheid waarmee audiogegevens worden bemonsterd en verzameld. Het toegestane minimum is 1 minuut.
 
       Als je dit beleid niet instelt, is de standaardsnelheid van 15 minuten van toepassing.</translation>
-<translation id="2331028134545182024">Bepalen of de functie ChromeOS VC-achtergrond 'Maken met AI' kan worden aangezet</translation>
 <translation id="2333228572393176330">Met dit beleid wordt een beveiligingsfunctie in TLS 1.3 beheerd waarmee verbindingen worden beschermd tegen downgrade-aanvallen. De functie is compatibel met eerdere versies en heeft geen invloed op verbindingen met servers of proxy's die voldoen aan TLS 1.2. Oudere versies van bepaalde proxy's die TLS onderscheppen, bevatten een implementatiefout waardoor ze incompatibel zijn.
 
       Als dit beleid is ingesteld op True of niet is ingesteld, zet <ph name="PRODUCT_NAME" /> deze beveiligingsmaatregelen aan voor alle verbindingen.
@@ -3343,7 +3335,6 @@ Zorg dat je dit beleid niet altijd toepast, vooral niet tijdens productie-implem
 <translation id="3587482841069643663">Alles</translation>
 <translation id="3587766503874071316">Snelkoppelingen voor toegankelijkheid uitzetten</translation>
 <translation id="3589193811812796052">Voorkomen dat WebAssembly-modules cross-origin worden verstuurd</translation>
-<translation id="3591518189681300697">De migratie van lokale bestanden naar de cloud aanzetten</translation>
 <translation id="3591527072193107424">Zet de functie Ondersteuning voor oudere browsers aan.</translation>
 <translation id="3591584750136265240">Het verificatiegedrag voor inloggen configureren</translation>
 <translation id="3593905652755912452">Het oude gedrag voor de verzending van gebeurtenissen voor uitgezette bedieningselementen op formulieren wordt gebruikt.</translation>
@@ -5243,12 +5234,6 @@ Als dit beleid niet is ingesteld of de lijst geen geldige verwijzingen naar afbe
       Als dit beleid niet is ingesteld, wordt de standaardperiode van 604.800.000 milliseconden (één week) gebruikt.</translation>
 <translation id="5212810195096589189">Rechten voor VM-CLI specificeren</translation>
 <translation id="5213038356678567351">Websites die nooit een schakeling tussen browsers veroorzaken.</translation>
-<translation id="5215621993623612880">Met dit beleid kun je de functie Achtergrond 'Maken met AI' aan- of uitzetten voor ChromeOS.
-0 = De functie uitzetten voor gebruikers.
-
-1 = De functie aanzetten voor gebruikers. Er worden geen gegevens naar Google gestuurd om AI-modellen te trainen of te verbeteren.
-
-Als je dit beleid niet instelt, staat de functie Achtergrond 'Maken met AI' uit voor zakelijke gebruikers.</translation>
 <translation id="5216815237712190041">Configureer een achtergrondafbeelding op apparaatniveau die wordt weergegeven op het inlogscherm als er nog geen gebruiker is ingelogd op het apparaat. Je kunt het beleid instellen door de URL op te geven waar het Chrome OS-apparaat de achtergrondafbeelding kan downloaden, evenals een cryptografische hash waarmee de integriteit van de download kan worden gecheckt. De afbeelding moet een jpeg-indeling hebben en mag niet groter zijn dan 16 MB. De URL moet zonder verificatie toegankelijk zijn. De achtergrondafbeelding wordt gedownload en gecachet. Deze wordt opnieuw gedownload als de URL of de hash wordt gewijzigd.
 
       Als het achtergrondbeleid voor het apparaat is ingesteld, downloadt het Chrome OS-apparaat de achtergrondafbeelding en gebruikt deze op het inlogscherm als er nog geen gebruiker is ingelogd op het apparaat. Zodra de gebruiker inlogt, wordt het achtergrondbeleid van de gebruiker toegepast.
@@ -6294,10 +6279,6 @@ Dit beleid is beëindigd vanaf M124.</translation>
       Als je het beleid niet instelt (als dit wordt ondersteund op het apparaat), is de standaard batterijoplaadmodus van toepassing en kunnen gebruikers dit niet wijzigen.
 
       Opmerking: Als de aangepaste batterijoplaadmodus is geselecteerd, moeten <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> en <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> ook worden opgegeven.</translation>
-<translation id="6064418365347066084">Hiermee wordt de migratie van bestaande lokale bestanden naar de cloud gestart.
-Geldt alleen voor SkyVault-gebruikers, d.w.z. als LocalUserFilesAllowed is ingesteld op False en DownloadDirectory is ingesteld op Google Drive of OneDrive. Anders wordt dit genegeerd.
-    Als je dit beleid instelt op True, worden lokale bestanden verplaatst naar de cloud en worden lokale mappen daarna verborgen voor de gebruiker.
-    Als je dit beleid niet instelt of instelt op False, blijven lokale bestanden in de modus Alleen lezen staan.</translation>
 <translation id="60655674079349516">Hiermee stel je een lijst met typen browsergegevens in die moeten worden verwijderd als de gebruiker alle browservensters sluit.
 
 Waarschuwing: Als je dit beleid instelt, kan dit gevolgen hebben voor lokale persoonsgegevens en kunnen deze definitief worden verwijderd. We raden je aan de instellingen te testen voordat je ze implementeert om te voorkomen dat persoonsgegevens per ongeluk worden verwijderd.
@@ -6786,7 +6767,6 @@ Als je het beleid niet instelt, gebruikt <ph name="PRODUCT_OS_NAME" /> de standa
       Snel koppelen is een nieuw proces voor bluetooth-koppeling waarin gekoppelde randapparaten met een GAIA-account worden gekoppeld.
       Andere Chrome OS- en Android-apparaten waarop je op hetzelfde GAIA-account ingelogd bent, worden automatisch gekoppeld.
       Als je dit beleid niet instelt, wordt de standaardwaarde uitgezet voor zakelijke gebruikers en aangezet voor niet-beheerde accounts.</translation>
-<translation id="6400959027108936283">De functie aanzetten</translation>
 <translation id="6401669939808766804">De gebruiker uitloggen</translation>
 <translation id="640244877779556713">Suggestie voor emoji's aanzetten</translation>
 <translation id="6403114173011456561">Beheert het virtuele aanraaktoetsenbord en fungeert als aanvullend beleid op het beleid <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
@@ -8119,7 +8099,6 @@ Dit vervangt het beëindigde beleid <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_
       Als je het beleid toepast of niet instelt, rapporteren ingeschreven apparaten de lijst met netwerkinterfaces, met zowel het type als het hardwareadres.
 
       Als je het beleid niet toepast, rapporteren ingeschreven apparaten de netwerkinterface niet.</translation>
-<translation id="7388618954884540850">De migratie van lokale bestanden naar de cloud uitzetten</translation>
 <translation id="7389872682701720082">Als je deze instelling aanzet, worden plug-ins altijd uitgevoerd als ze niet verouderd zijn.
 
       Als deze instelling is uitgezet of niet is ingesteld, wordt gebruikers om toestemming gevraagd voordat plug-ins worden uitgevoerd waarvoor toestemming is vereist. Dit zijn de plug-ins die een beveiligingsrisico kunnen vormen.</translation>
@@ -9394,7 +9373,6 @@ Als je dit beleid niet instelt of instelt op 0, wordt de URL onmiddellijk in een
 
       Als je dit beleid niet toepast of niet instelt, worden alleen de gewone lokale profielen gebruikt.</translation>
 <translation id="8417305981081876834">De maximumlengte van de pincode voor het vergrendelscherm instellen</translation>
-<translation id="8418438383184278931">Migratie van lokale gebruikersbestanden naar de cloudopslag aanzetten</translation>
 <translation id="841977920223099909">Waarschuwingstrigger voor wachtwoordbeveiliging</translation>
 <translation id="8419965165591256432">Snelheid waarmee de apparaatactiviteitsstatus wordt verzameld op ingeschreven apparaten voor aangesloten gebruikers. Het toegestane minimum is 1 minuut.
 

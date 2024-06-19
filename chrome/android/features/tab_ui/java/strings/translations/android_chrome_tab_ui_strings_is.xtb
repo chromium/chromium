@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Purpurarauður</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Stækka <ph name="TITLE_OF_GROUP" />-flipahóp með <ph name="TABS_COUNT_ONE" /> flipa.}one{Stækka <ph name="TITLE_OF_GROUP" /> -flipahóp með <ph name="TABS_COUNT_MANY" /> flipa.}other{Stækka <ph name="TITLE_OF_GROUP" /> -flipahóp með <ph name="TABS_COUNT_MANY" /> flipum.}}</translation>
 <translation id="427987768447457592">Nýr flipahópur</translation>
+<translation id="4338724047016295066">Óvirkir flipar lokast sjálfkrafa. Þú getur alltaf fundið þá í „Ferli“.</translation>
 <translation id="4371591986692297148">Óvirkt</translation>
 <translation id="4460014764210899310">Sundra hópi</translation>
 <translation id="4648718555153979859">Fliparnir þínir eru flokkaðir saman hér</translation>
 <translation id="4686942373615810936">Búinn til rétt í þessu</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Loka eftir 1 dag}one{Loka eftir <ph name="DAY_COUNT_MANY" /> dag}other{Loka eftir <ph name="DAY_COUNT_MANY" /> daga}}</translation>
 <translation id="4777866634702576038">Eyða flipahóp?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> umsögn)}one{(<ph name="REVIEWS_COUNT_MANY" /> umsögn)}other{(<ph name="REVIEWS_COUNT_MANY" /> umsagnir)}}</translation>
 <translation id="4850886885716139402">Yfirlit</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Hér finnurðu flipahópana þína</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Taka <ph name="TABS_COUNT_ONE" /> valinn flipa úr hópi}one{Taka <ph name="TABS_COUNT_MANY" /> valinn flipa úr hópi}other{Taka <ph name="TABS_COUNT_MANY" /> valda flipa úr hópi}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> flipi}one{<ph name="TABS_COUNT_MANY" /> flipi}other{<ph name="TABS_COUNT_MANY" /> flipar}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{Eftir 1 dag}one{Eftir <ph name="DAY_COUNT_MANY" /> dag}other{Eftir <ph name="DAY_COUNT_MANY" /> daga}}</translation>
 <translation id="6549021453810473782">Skoða upplýsingar um verslun</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Færa flipa til vinstri</translation>

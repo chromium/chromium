@@ -239,7 +239,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1427192966110103169">Kolam Renang, Sauna, &amp; Spa untuk Rumah</translation>
 <translation id="1428146450423315676">Tempat kertas 7</translation>
 <translation id="142858679511221695">Pengguna cloud</translation>
-<translation id="1428729058023778569">Anda melihat peringatan ini karena situs ini tidak mendukung HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Film dengan Perekat</translation>
 <translation id="1430915738399379752">Cetak</translation>
 <translation id="1432187715652018471">Halaman ingin menginstal pengendali layanan.</translation>
@@ -528,7 +527,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="1959445535228047762">Teks dan konten halaman Anda dikirim ke Google dan dapat digunakan untuk meningkatkan fitur ini.
   <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436">Bookmark <ph name="DOMAIN" /></translation>
-<translation id="196752089528718902">Anda biasanya terhubung ke situs dengan aman, tetapi Chrome tidak dapat menggunakan koneksi yang aman untuk saat ini. Penyerang mungkin mencoba menyadap atau mengubah koneksi jaringan Anda. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">Kesalahan serialisasi</translation>
 <translation id="1973785048533660168">Pekerjaan Sekretaris &amp; Administrasi</translation>
 <translation id="1974060860693918893">Lanjutan</translation>
@@ -546,7 +544,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2003709556000175978">Reset sandi Anda sekarang</translation>
 <translation id="2003775180883135320">Empat lubang di atas</translation>
 <translation id="2004697686368036666">Fitur tertentu di beberapa situs mungkin tidak berfungsi</translation>
-<translation id="2005042463110681802">Anda melihat peringatan ini karena situs ini tidak mendukung HTTPS dan Anda sedang menggunakan mode Samaran. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Tombol Buat acara, aktifkan untuk membuat acara baru di Google Kalender dengan cepat</translation>
 <translation id="201174227998721785">Kelola izin dan data yang disimpan di seluruh situs di setelan Chrome</translation>
 <translation id="2012276282211112603">Saat ini tidak ada topik untuk ditampilkan</translation>
@@ -608,7 +605,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2108755909498034140">Mulai ulang komputer</translation>
 <translation id="2111166930115883695">Tekan spasi untuk bermain</translation>
 <translation id="2112529237938317174">Tampilkan detail izin</translation>
-<translation id="2113232594265919362">Anda melihat peringatan ini karena situs ini tidak mendukung HTTPS dan Anda termasuk dalam Program Perlindungan Lanjutan Google. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">Kartu</translation>
 <translation id="2114841414352855701">Diabaikan karena diganti dengan <ph name="POLICY_NAME" />.</translation>
 <translation id="2118132148597630479">Envelope C5</translation>
@@ -810,7 +806,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2482878487686419369">Notifikasi</translation>
 <translation id="248348093745724435">Kebijakan mesin</translation>
 <translation id="2485243023686553468">Smartphone</translation>
-<translation id="2490199669743245365">Penyerang di situs yang Anda coba kunjungi dapat menginstal software berbahaya yang mencuri atau menghapus hal-hal seperti sandi, foto, pesan, atau nomor kartu kredit Anda. Chrome sangat merekomendasikan untuk kembali agar aman. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">Sertifikat server mengandung kesalahan.</translation>
 <translation id="2491414235131909199">Halaman ini telah diblokir oleh ekstensi</translation>
 <translation id="2495083838625180221">Pengurai JSON</translation>
@@ -971,7 +966,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2839501879576190149">Situs yang akan dibuka palsu</translation>
 <translation id="2843623755398178332">Scroll dan zoom tab yang dibagikan?</translation>
 <translation id="2851291081585704741">Anda offline</translation>
-<translation id="2856444702002559011">Penyerang mungkin berusaha mencuri informasi Anda dari <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (misalnya, sandi, pesan, atau kartu kredit). <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 x 300 mm</translation>
 <translation id="2859806420264540918">Situs ini menampilkan iklan yang mengganggu atau menyesatkan.</translation>
 <translation id="28618371182701850">Kendaraan Listrik &amp; Plug-In</translation>
@@ -1317,7 +1311,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3507936815618196901">Membuat peta 3D untuk area di sekeliling Anda dan melacak posisi kamera</translation>
 <translation id="3512163584740124171">Kebijakan ini diabaikan karena kebijakan lain dari grup kebijakan yang sama memiliki prioritas lebih tinggi.</translation>
 <translation id="351522771072578657">Anda saat ini ada di menu</translation>
-<translation id="3515972145999192222">Organisasi Anda telah memblokir <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> karena melanggar kebijakan. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Penanganan beberapa objek</translation>
 <translation id="3525130752944427905">10 x 14 inci (25 x 35 cm)</translation>
 <translation id="3525435918300186947">Kontrol &amp; program ulang perangkat MIDI?</translation>
@@ -1483,7 +1476,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3801265110651850478">Kirim permintaan “Do Not Track” untuk traffic penjelajahan Anda</translation>
 <translation id="380329542618494757">Nama</translation>
 <translation id="3803801106042434208">Mesin telusur ini populer di wilayah Anda</translation>
-<translation id="3806932344025766608">Penyerang di situs yang Anda coba kunjungi dapat mengelabui Anda agar menginstal software atau mengungkapkan hal-hal seperti sandi, nomor telepon, atau nomor kartu kredit Anda. Chrome sangat merekomendasikan untuk kembali agar aman. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">Perpindahan image X</translation>
 <translation id="3807709094043295184">Rock Klasik &amp; Oldies</translation>
 <translation id="3807873520724684969">Konten yang berbahaya diblokir.</translation>
@@ -3345,7 +3337,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="7429429656042611765">Eksekutif</translation>
 <translation id="7432774160230062882">Verifikasi diri Anda agar Chromium dapat mengisi info pembayaran.</translation>
 <translation id="7437289804838430631">Tambahkan Info Kontak</translation>
-<translation id="7438338505272634288">Penyerang di situs yang Anda coba kunjungi dapat mengelabui Anda agar menginstal software berbahaya yang memengaruhi cara Anda menjelajah — misalnya, dengan mengubah halaman beranda atau menampilkan iklan tambahan di situs yang Anda kunjungi. Chrome sangat merekomendasikan untuk kembali agar aman dari bahaya. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">Jelajahi saat offline</translation>
 <translation id="7441627299479586546">Subjek kebijakan salah</translation>
 <translation id="7441864845853794192">Makanan Adiboga &amp; Khas</translation>
@@ -3445,7 +3436,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="759889825892636187"><ph name="HOST_NAME" /> saat ini tidak dapat menangani permintaan ini.</translation>
 <translation id="7599089013883397081">Waktu download habis</translation>
 <translation id="7600965453749440009">Jangan pernah terjemahkan bahasa <ph name="LANGUAGE" /></translation>
-<translation id="7601297359530599375">Anda biasanya terhubung ke situs ini dengan aman, tetapi Chrome tidak dapat menggunakan koneksi yang aman kali ini. Penyerang mungkin mencoba menyadap atau mengubah koneksi jaringan Anda. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">Penyerang di situs yang Anda coba kunjungi dapat menginstal software berbahaya yang mencuri atau menghapus hal-hal seperti sandi, foto, pesan, atau nomor kartu kredit Anda.</translation>
 <translation id="7608583484192556132">Iklan yang Anda lihat, baik dipersonalisasi atau tidak, dapat bergantung pada banyak hal, termasuk setelan ini, <ph name="BEGIN_LINK_1" />iklan yang disarankan situs<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />setelan cookie<ph name="END_LINK_2" />, dan apakah situs yang Anda lihat mempersonalisasi iklan. Pelajari lebih lanjut cara <ph name="BEGIN_LINK_3" />mengelola privasi iklan<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Nilai di luar jangkauan <ph name="VALUE" />.</translation>
@@ -3718,7 +3708,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Kartu yang tidak valid telah dihapus</translation>
-<translation id="8100666323495101203">Organisasi Anda telah mengidentifikasi <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> sebagai situs yang mungkin melanggar kebijakan. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8103161714697287722">Metode Pembayaran</translation>
 <translation id="8103643211515685474">Tetap cetak</translation>
 <translation id="8105368624971345109">Nonaktifkan</translation>

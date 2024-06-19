@@ -825,7 +825,6 @@ La "Entrada del usuario" se define con las APIs del sistema operativo y comprend
 <translation id="1635748761015837179">Permitir la escritura en los dispositivos de almacenamiento externo</translation>
 <translation id="1639468541408865385">Habilitar la caché de autenticación de HTTP con alcance global</translation>
 <translation id="1639673466479276550">Habilitar el protector de pantalla en la pantalla de acceso</translation>
-<translation id="1640447222731279244">Controlar la habilitación de la función "Crear con IA" del fondo de pantalla de ChromeOS</translation>
 <translation id="1640824698339859203">Habilitar el SSO flotante y transferir las autenticaciones del servicio web del usuario al nuevo dispositivo</translation>
 <translation id="1641117061932613266">Habilitar el servicio de <ph name="PRODUCT_NAME" /> V2</translation>
 <translation id="1641394008743444477">Permite establecer una lista de funciones de <ph name="PRODUCT_OS_NAME" /> para que se inhabiliten.
@@ -886,12 +885,6 @@ para llamar a esta API.</translation>
 
 Si la estableces como falsa o no la estableces, no se capturará ningún evento.</translation>
 <translation id="1692990221685273468">Determina si el verificador de certificados integrado aplicará de manera forzosa las restricciones codificadas en las anclas de confianza cargadas desde el almacén de confianza de la plataforma.</translation>
-<translation id="1693528798631913178">Esta política habilita o inhabilita "Crear con IA" del fondo de VC para ChromeOS.
-0 = Inhabilita la función para los usuarios.
-
-1 = Habilita la función para los usuarios. Ten en cuenta que no se envían datos a Google para entrenar o mejorar modelos de IA.
-
-Si no estableces esta política, se inhabilitará la función "Crear con IA" del fondo de VC para los usuarios empresariales.</translation>
 <translation id="169467210981344373">Inhabilitar la caché de autenticación de HTTP con alcance global</translation>
 <translation id="1696501581280568361">Sugerir separación de perfil</translation>
 <translation id="1698810555265314018">Controla la resolución de las imágenes de impresión cuando <ph name="PRODUCT_NAME" /> imprime archivos PDF con rasterización.
@@ -1835,7 +1828,6 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 <translation id="2326031114717677574">Es la tasa a la que se toman muestras de los datos del audio y se los recopila. El mínimo permitido es 1 minuto.
 
       Si no estableces la política, se aplicará la tasa predeterminada de 15 minutos.</translation>
-<translation id="2331028134545182024">Controlar la habilitación de la función "Crear con IA" del fondo de VC de ChromeOS</translation>
 <translation id="2333228572393176330">Esta política controla una función de seguridad en TLS 1.3 que protege las conexiones contra ataques de cambio a una versión inferior. La función es retrocompatible y no afecta las conexiones a proxies o servidores que admiten el protocolo TLS 1.2. Sin embargo, las versiones anteriores de algunos proxies de intercepción de TLS tienen una falla de implementación que genera la incompatibilidad.
 
       Si estableces esta política como verdadera o no la estableces, <ph name="PRODUCT_NAME" /> habilitará estas protecciones para todas las conexiones.
@@ -3451,7 +3443,6 @@ Recuerda que no debes mantener habilitada esta política todo el tiempo, especia
 <translation id="3587482841069643663">Todos</translation>
 <translation id="3587766503874071316">Inhabilitar las combinaciones de accesibilidad</translation>
 <translation id="3589193811812796052">Impedir el envío de módulos de WebAssembly entre orígenes cruzados</translation>
-<translation id="3591518189681300697">Habilitar la migración de archivos locales a la nube</translation>
 <translation id="3591527072193107424">Habilitar la función "Compatibilidad con navegadores heredados"</translation>
 <translation id="3591584750136265240">Configurar el comportamiento de autenticación en el acceso</translation>
 <translation id="3593905652755912452">Usar el comportamiento anterior de envío de eventos en los controles de formularios inhabilitados</translation>
@@ -5439,12 +5430,6 @@ Si no estableces esta política, o la lista no contiene referencias de imagen v�
       Si no se establece, se utilizará el período predeterminado de 604800000 milisegundos (una semana).</translation>
 <translation id="5212810195096589189">Especifica el permiso de la CLI de VM</translation>
 <translation id="5213038356678567351">Sitios web que nunca deben abrirse en otro navegador</translation>
-<translation id="5215621993623612880">Esta política habilita o inhabilita el fondo de pantalla "Crear con IA" para ChromeOS.
-0 = Inhabilita la función para los usuarios.
-
-1 = Habilita la función para los usuarios. Ten en cuenta que no se envían datos a Google para entrenar o mejorar modelos de IA.
-
-Si no estableces esta política, se inhabilitará la función "Crear con IA" de fondo de pantalla para los usuarios empresariales.</translation>
 <translation id="5216815237712190041">Si ningún usuario accedió todavía a su cuenta en el dispositivo, configura una imagen de fondo de pantalla en el dispositivo que se muestra en la pantalla de acceso. Para establecer la política, especifica la URL de donde el dispositivo con ChromeOS puede descargar la imagen de fondo de pantalla y un hash criptográfico para verificar la integridad de la descarga. La imagen debe estar en formato JPEG y el tamaño no debe superar los 16 MB. Se debe poder acceder a la dirección URL sin autenticación previa. La imagen del fondo de pantalla se descarga y queda almacenada en caché. Cada vez que cambie la URL o el hash, se volverá a descargar la imagen.
 
       Si estableces la política de fondo de pantalla del dispositivo, el dispositivo con ChromeOS descargará y usará la imagen de fondo de pantalla en la pantalla de acceso si aún ningún usuario accedió a su cuenta en el dispositivo. Una vez que el usuario acceda a su cuenta, se habilitará la política de fondo de pantalla del usuario.
@@ -6542,11 +6527,6 @@ Esta política dejará de estar disponible a partir de la versión M124.</transl
       Si no estableces la política (cuando lo admita el dispositivo), se aplicará el modo estándar de carga de la batería. Los usuarios no podrán cambiar esta configuración.
 
       Nota: Si seleccionas el modo personalizado de carga de la batería, también se especificará <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> y <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />.</translation>
-<translation id="6064418365347066084">Activa la migración de archivos locales existentes a la nube.
-Se aplica solo a los usuarios de SkyVault, es decir, cuando LocalUserFilesAllowed se establezca como falsa
-y DownloadDirectory sea Google Drive o OneDrive, y se ignora en otros casos.
-    Si se establece como verdadera, los archivos locales se mueven a la nube y las carpetas locales se ocultan del usuario.
-    Si se establece como falsa o no se establece, los archivos locales permanecerán en modo de solo lectura.</translation>
 <translation id="60655674079349516">Configura una lista de los tipos de datos de navegación que deben borrarse cuando el usuario cierra todas las ventanas del navegador.
 
 Advertencia: Si estableces esta política, es posible que se vean afectados los datos personales locales y que se quiten de forma permanente. Se recomienda probar la configuración antes de la implementación para evitar la eliminación accidental de datos personales.
@@ -7088,7 +7068,6 @@ Si no estableces la política, <ph name="PRODUCT_OS_NAME" /> utiliza el director
       Así, otros dispositivos con ChromeOS (y Android) que hayan accedido con la misma cuenta de GAIA se vinculan de manera automática.
       Si no la estableces, el valor predeterminado estará inhabilitado para los usuarios empresariales y habilitado para las cuentas
       no administradas.</translation>
-<translation id="6400959027108936283">Habilitar la función</translation>
 <translation id="6401669939808766804">Salir de la cuenta de usuario</translation>
 <translation id="640244877779556713">Habilita la sugerencia de emojis</translation>
 <translation id="6403114173011456561">Complementa la política <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> para controlar el teclado virtual táctil.
@@ -8467,7 +8446,6 @@ Esto reemplaza la política <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_N
       Si habilitas la política o no la estableces, los dispositivos inscritos informarán la lista de interfaces de redes con sus tipos y direcciones de hardware.
 
       Si inhabilitas la política, los dispositivos inscritos no informarán sobre las interfaces de redes.</translation>
-<translation id="7388618954884540850">Inhabilitar la migración de archivos locales a la nube</translation>
 <translation id="7389872682701720082">Si habilitas esta opción, se ejecutarán siempre los complementos actualizados.
 
       Si no se habilita o no se configura esta opción, se solicitará permiso a los usuarios para ejecutar complementos que requieran autorización (estos complementos pueden comprometer la seguridad).</translation>
@@ -9792,7 +9770,6 @@ Si no estableces la política o la estableces con el valor "0", la navegación a
 
       Si inhabilitas la política o no la estableces, solo se usarán los perfiles locales comunes.</translation>
 <translation id="8417305981081876834">Establecer la longitud máxima del PIN de pantalla bloqueada</translation>
-<translation id="8418438383184278931">Habilitar la migración de archivos locales de usuarios al almacenamiento en la nube</translation>
 <translation id="841977920223099909">Activador de advertencia de la protección de la contraseña</translation>
 <translation id="8419965165591256432">Tasa con la que se recopila el estado de la actividad del dispositivo en dispositivos inscriptos para usuarios afiliados. El mínimo permitido es 1 minuto.
 

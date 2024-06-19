@@ -115,6 +115,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1209206284964581585">Sorok sementara</translation>
 <translation id="121201262018556460">Anda cuba untuk mencapai <ph name="DOMAIN" /> , tetapi pelayan memberi sijil yang mengandungi kunci yang lemah, Penyerang mungkin telah merosakkan kunci peribadi dan pelayan tersebut mungkin bukan pelayan yang anda jangkakan (anda mungkin berkomunikasi dengan penyerang).</translation>
 <translation id="1212527389003717329">Muat turun dimulakan. Untuk melihat muat turun tersebut, tekan dan tahan |<ph name="ACCELERATOR" />|.</translation>
+<translation id="1214970845432250240">Julat harga</translation>
 <translation id="1219129156119358924">Keselamatan Sistem</translation>
 <translation id="1222060260947439312">Dulang Kanan</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -239,7 +240,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1427192966110103169">Kolam Renang, Sauna &amp; Spa di Rumah</translation>
 <translation id="1428146450423315676">Petak 7</translation>
 <translation id="142858679511221695">Pengguna awan</translation>
-<translation id="1428729058023778569">Anda melihat amaran ini kerana laman ini tidak menyokong HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Ketahui lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Saput Pelekat Sendiri</translation>
 <translation id="1430915738399379752">Cetak</translation>
 <translation id="1432187715652018471">halaman mahu memasang pengendali perkhidmatan.</translation>
@@ -528,7 +528,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="1959445535228047762">Kandungan teks dan halaman anda dihantar kepada Google dan boleh digunakan untuk meningkatkan ciri ini.
   <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Penanda halaman</translation>
-<translation id="196752089528718902">Anda biasanya menyambung kepada laman secara selamat tetapi Chrome tidak dapat menggunakan sambungan selamat pada kali ini. Penyerang mungkin cuba untuk mencuri dengar atau mengubah suai sambungan rangkaian anda. <ph name="BEGIN_LEARN_MORE_LINK" />Ketahui lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">Ralat penyirian</translation>
 <translation id="1973785048533660168">Pekerjaan Perkeranian &amp; Pentadbiran</translation>
 <translation id="1974060860693918893">Lanjutan</translation>
@@ -546,7 +545,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2003709556000175978">Tetapkan semula kata laluan anda sekarang</translation>
 <translation id="2003775180883135320">Empat tebukan atas</translation>
 <translation id="2004697686368036666">Ciri pada sesetengah laman mungkin tidak berfungsi</translation>
-<translation id="2005042463110681802">Anda melihat amaran ini kerana laman ini tidak menyokong HTTPS dan anda berada dalam mod Inkognito. <ph name="BEGIN_LEARN_MORE_LINK" />Ketahui lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Butang buat acara, aktifkan untuk membuat acara baharu dalam Google Calendar dengan pantas</translation>
 <translation id="201174227998721785">Urus kebenaran dan data yang disimpan merentas berbilang laman dalam tetapan Chrome</translation>
 <translation id="2012276282211112603">Tiada topik untuk ditunjukkan sekarang</translation>
@@ -608,7 +606,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2108755909498034140">Mulakan semula komputer anda</translation>
 <translation id="2111166930115883695">Tekan kekunci Ruang untuk bermain</translation>
 <translation id="2112529237938317174">Paparkan butiran kebenaran</translation>
-<translation id="2113232594265919362">Anda melihat amaran ini kerana laman ini tidak menyokong HTTPS dan anda mendayakan Program Perlindungan Lanjutan Google. <ph name="BEGIN_LEARN_MORE_LINK" />Ketahui lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">Kad</translation>
 <translation id="2114841414352855701">Diabaikan kerana ia telah diatasi oleh <ph name="POLICY_NAME" />.</translation>
 <translation id="2118132148597630479">Sampul C5</translation>
@@ -810,7 +807,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2482878487686419369">Pemberitahuan</translation>
 <translation id="248348093745724435">Dasar mesin</translation>
 <translation id="2485243023686553468">Telefon Pintar</translation>
-<translation id="2490199669743245365">Penyerang pada laman yang cuba anda lawati mungkin memasang perisian berbahaya yang mencuri atau memadamkan perkara seperti kata laluan, foto, mesej atau nombor kad kredit anda. Chrome amat mengesyorkan untuk kembali kepada laman selamat. <ph name="BEGIN_LEARN_MORE_LINK" />Ketahui lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">Sijil pelayan mengandungi ralat.</translation>
 <translation id="2491414235131909199">Halaman ini telah disekat oleh sambungan</translation>
 <translation id="2495083838625180221">Penghurai JSON</translation>
@@ -974,7 +970,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2839501879576190149">Tapak palsu di hadapan</translation>
 <translation id="2843623755398178332">Tatal dan zum tab kongsi anda?</translation>
 <translation id="2851291081585704741">Anda di luar talian</translation>
-<translation id="2856444702002559011">Penyerang mungkin akan cuba mencuri maklumat anda daripada <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (contohnya, kata laluan, mesej atau kad kredit). <ph name="BEGIN_LEARN_MORE_LINK" />Ketahui lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 x 300 mm</translation>
 <translation id="2859806420264540918">Tapak ini menyiarkan iklan yang mengganggu atau mengelirukan.</translation>
 <translation id="28618371182701850">Kenderaan Elektrik &amp; Pemalam</translation>
@@ -1195,6 +1190,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Masukkan kod pengesahan <ph name="NUMBER_OF_DIGITS" /> angka</translation>
 <translation id="3272643614306383237">Kurang daripada 1 MB. Sesetengah laman mungkin dimuatkan dengan lebih perlahan pada lawatan anda yang seterusnya.</translation>
+<translation id="327346289570683313">Julat Harga</translation>
 <translation id="3273738040255912340">Pentadbir anda boleh membuat perubahan pada profil dan penyemak imbas anda dari jauh, menganalisis maklumat tentang penyemak imbas melalui pelaporan dan melaksanakan tugas penting yang lain. Aktiviti pada peranti ini juga mungkin diurus di luar Chromium. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Dasar pentadbir tidak mengesyorkan anda membuka fail ini dalam <ph name="DESTINATION_NAME" />}other{Dasar pentadbir tidak mengesyorkan anda membuka fail ini dalam <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Organisasi anda, <ph name="ENROLLMENT_DOMAIN" />, telah menghantar beberapa maklumat, seperti tetapan atau dasar ke laman web berikut.</translation>
@@ -1323,7 +1319,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3507936815618196901">Buat peta 3D bagi persekitaran anda dan jejaki kedudukan kamera</translation>
 <translation id="3512163584740124171">Dasar ini diabaikan kerana dasar lain daripada kumpulan dasar yang sama mempunyai keutamaan yang lebih tinggi.</translation>
 <translation id="351522771072578657">Anda sedang dipaparkan menu</translation>
-<translation id="3515972145999192222">Organisasi anda telah menyekat <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> atas sebab pelanggaran dasar. <ph name="BEGIN_LEARN_MORE_LINK" />Ketahui lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Pengendalian berbilang objek</translation>
 <translation id="3525130752944427905">10 x 14 in</translation>
 <translation id="3525435918300186947">Kawal &amp; atur cara semula peranti MIDI?</translation>
@@ -1491,7 +1486,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3801265110651850478">Hantar permintaan “Do Not Track” dengan trafik penyemakan imbas anda</translation>
 <translation id="380329542618494757">Nama</translation>
 <translation id="3803801106042434208">Enjin carian ini popular di rantau anda</translation>
-<translation id="3806932344025766608">Penyerang pada laman yang cuba anda lawati mungkin memperdaya anda untuk memasang perisian atau mendedahkan perkara seperti kata laluan, telefon atau nombor kad kredit anda. Chrome amat mengesyorkan untuk kembali kepada laman selamat. <ph name="BEGIN_LEARN_MORE_LINK" />Ketahui lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">Anjakan X imej</translation>
 <translation id="3807709094043295184">Rock Klasik &amp; Lagu Lama</translation>
 <translation id="3807873520724684969">Kandungan berbahaya disekat.</translation>
@@ -3364,7 +3358,6 @@ Butiran tambahan:
 <translation id="7429429656042611765">Eksekutif</translation>
 <translation id="7432774160230062882">Sahkan identiti anda supaya maklumat pembayaran anda boleh diisikan oleh Chromium.</translation>
 <translation id="7437289804838430631">Tambahkan Maklumat Hubungan</translation>
-<translation id="7438338505272634288">Penyerang pada laman yang cuba anda lawati mungkin memperdaya anda untuk memasang perisian berbahaya yang menjejaskan cara anda menyemak imbas – contohnya, dengan menukar halaman utama atau menunjukkan iklan tambahan pada laman yang anda lawati. Chrome amat mengesyorkan untuk kembali kepada laman selamat untuk mengelakkan bahaya. <ph name="BEGIN_LEARN_MORE_LINK" />Ketahui lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">Teroka semasa di luar talian</translation>
 <translation id="7441627299479586546">Subjek dasar salah</translation>
 <translation id="7441864845853794192">Makanan Gourmet &amp; Istimewa</translation>
@@ -3465,7 +3458,6 @@ Butiran tambahan:
 <translation id="759889825892636187"><ph name="HOST_NAME" /> tidak dapat mengendalikan permintaan ini pada masa ini.</translation>
 <translation id="7599089013883397081">Muat turun tamat masa</translation>
 <translation id="7600965453749440009">Jangan sekali-kali terjemahkan <ph name="LANGUAGE" /></translation>
-<translation id="7601297359530599375">Anda biasanya menyambung kepada laman ini dengan selamat tetapi Chrome tidak dapat menggunakan sambungan yang selamat pada masa ini. Penyerang mungkin cuba untuk mencuri dengar atau mengubah suai sambungan rangkaian anda. <ph name="BEGIN_LEARN_MORE_LINK" />Ketahui lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">Penyerang pada laman yang cuba anda lawati mungkin memasang perisian berbahaya yang mencuri atau memadamkan perkara seperti kata laluan, foto, mesej atau nombor kad kredit anda.</translation>
 <translation id="7608583484192556132">Sama ada iklan yang anda lihat diperibadikan atau tidak boleh bergantung pada banyak perkara termasuk tetapan ini, <ph name="BEGIN_LINK_1" />iklan yang dicadangkan laman<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />tetapan kuki<ph name="END_LINK_2" /> anda dan sama ada laman yang anda lihat memeribadikan iklan atau tidak. Ketahui lebih lanjut tentang <ph name="BEGIN_LINK_3" />pengurusan privasi iklan anda<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Nilai berada di luar julat <ph name="VALUE" /></translation>
@@ -3739,7 +3731,6 @@ Butiran tambahan:
 <translation id="8098855213644561659">A3 Ekstra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Kad tidak sah telah dialih keluar</translation>
-<translation id="8100666323495101203">Organisasi anda telah mengenal pasti <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> sebagai laman yang mungkin melanggar dasar. <ph name="BEGIN_LEARN_MORE_LINK" />Ketahui lebih lanjut<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8103161714697287722">Kaedah Pembayaran</translation>
 <translation id="8103643211515685474">Cetak juga</translation>
 <translation id="8105368624971345109">Matikan</translation>

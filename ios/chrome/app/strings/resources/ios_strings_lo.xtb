@@ -532,6 +532,7 @@
 <translation id="371398631992790800">ເຊື່ອງ Bookmarks</translation>
 <translation id="37207012422556617">ການຊອກຫາມາແຮງ</translation>
 <translation id="3725081662140949903">ເພື່ອຢຸດຄົນອື່ນບໍ່ໃຫ້ໃຊ້ລະຫັດຜ່ານຂອງທ່ານ, ໃຫ້ເປີດແອັບ <ph name="APP" /> ເພື່ອປ່ຽນລະຫັດຜ່ານຂອງທ່ານ</translation>
+<translation id="372676576864368480">ຕື່ມຂໍ້ມູນໝາຍເລກບັດທີ່ລົງທ້າຍດ້ວຍ <ph name="LAST_DIGITS" /> ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="3738428049780661523">ສ້າງຂຶ້ນເມື່ອ <ph name="DATE" /></translation>
 <translation id="374357899112510277">ເຊື່ອງການດາວໂຫຼດ</translation>
 <translation id="3745190878148784130">ເຊື່ອງ ຊູມຂໍ້ຄວາມ</translation>
@@ -1097,6 +1098,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6476800141292307438">ກຳລັງແປໜ້າເວັບເປັນ <ph name="LANGUAGE" />. ມີຕົວເລືອກໃຫ້ນຳໃຊ້ຢູ່ໃກ້ລຸ່ມສຸດຂອງໜ້າຈໍ.</translation>
 <translation id="648164694371393720">ການຮອງຮັບຄວາມຖືກຕ້ອງຜິດພາດ</translation>
 <translation id="6494931198667773526">ສິ້ນສຸດ</translation>
+<translation id="6500795388871406244">ໃຊ້ລະຫັດຜ່ານທີ່ແນະນຳ:</translation>
 <translation id="650279896687777322">ສຶກສາເພີ່ມເຕີມ...</translation>
 <translation id="6505334220040167806">ຫຍໍ້ກຸ່ມແຖບລົງ.</translation>
 <translation id="6507973708545996744">ເຂົ້າສູ່ລະບົບເພື່ອຮັບລາຍຊື່ການອ່ານຂອງທ່ານຢູ່ອຸປະກອນທັງໝົດຂອງທ່ານ.</translation>
@@ -1310,6 +1312,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7583004045319035904">ໃຊ້ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ເພື່ອປົດລັອກແຖບບໍ່ເປີດເຜີຍຕົວຕົນຂອງທ່ານ.</translation>
 <translation id="7598439272585186139">ຮັບຄວາມປອດໄພເພີ່ມເຕີມ</translation>
 <translation id="7600965453749440009">ຢ່າແປ <ph name="LANGUAGE" /></translation>
+<translation id="7603308509262646847">ຕື່ມຂໍ້ມູນຜູ້ຖືບັດເປັນ <ph name="NAME" /> ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="7603852183842204213">ປັອບ​ອັບ​ຖືກບ​ລັອກ (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">ກຸ່ມແຖບ</translation>
 <translation id="7607521702806708809">ລຶບລະຫັດຜ່ານ</translation>
@@ -1342,6 +1345,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7749790401023484470">ທ່ານຍັງບໍ່ໄດ້ເລືອກຂໍ້ຄວາມໃດເທື່ອ.</translation>
 <translation id="7752405526771734448">ການຊອກຫາດ້ວຍພາບຂອງ Lens</translation>
 <translation id="7756478488453921771">ເມນູ → ການຕັ້ງຄ່າ → ວິທີການຈ່າຍເງິນ</translation>
+<translation id="775755486779745798">ຕື່ມຂໍ້ມູນເດືອນທີ່ໝົດອາຍຸເປັນ <ph name="MONTH" /> ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="7760127703945531263">ການລັອກໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="7765158879357617694">ຍ້າຍ</translation>
 <translation id="7772032839648071052">ຢືນ​ຢັນວະລີຜ່ານ</translation>
@@ -1518,6 +1522,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8556590991644167667">{count,plural, =1{ທ່ານໄດ້ປິດ {count} ຄຳເຕືອນໄວ້ແລ້ວ}other{ທ່ານໄດ້ປິດ {count} ຄຳເຕືອນໄວ້ແລ້ວ}}</translation>
 <translation id="8560253818350321773">ສະແດງລາຍການທີ່ໃຊ້ເລື້ອຍໆກ່ອນ.</translation>
 <translation id="8569721750632860947">ທ່ານຕ້ອງການເພີ່ມ URL ໃດໃສ່ລາຍຊື່ການອ່ານຂອງທ່ານ?</translation>
+<translation id="8577056989960190117">ຕື່ມຂໍ້ມູນປີທີ່ໝົດອາຍຸເປັນ <ph name="YEAR" /> ໂດຍອັດຕະໂນມັດ</translation>
 <translation id="8588404856427128947">ປິດ</translation>
 <translation id="8591976964826315682">ບລັອກຄຸກກີ້ພາກສ່ວນທີສາມໃນໂໝດບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="8593565399399144771">ທ່ານສາມາດເປີດແຖບໃໝ່ຂອງທ່ານໄດ້ບ່ອນນີ້.</translation>

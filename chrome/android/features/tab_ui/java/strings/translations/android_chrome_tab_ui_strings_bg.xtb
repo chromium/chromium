@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">лилаво</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Разгъване на групата раздели „<ph name="TITLE_OF_GROUP" />“ с <ph name="TABS_COUNT_ONE" /> раздел.}other{Разгъване на групата раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="427987768447457592">Нова група раздели</translation>
+<translation id="4338724047016295066">Неактивните раздели автоматично ще бъдат затворени. Винаги можете да ги намерите в историята.</translation>
 <translation id="4371591986692297148">Неактивно</translation>
 <translation id="4460014764210899310">Разгрупиране</translation>
 <translation id="4648718555153979859">Разделите ви са групирани заедно тук</translation>
 <translation id="4686942373615810936">Създадено току-що</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Затваряне след 1 ден}other{Затваряне след <ph name="DAY_COUNT_MANY" /> дни}}</translation>
 <translation id="4777866634702576038">Да се изтрие ли групата раздели?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> отзив)}other{(<ph name="REVIEWS_COUNT_MANY" /> отзива)}}</translation>
 <translation id="4850886885716139402">Изглед</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Тук ще намерите групите си раздели</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Разгрупиране на <ph name="TABS_COUNT_ONE" /> избран раздел}other{Разгрупиране на <ph name="TABS_COUNT_MANY" /> избрани раздела}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> раздел}other{<ph name="TABS_COUNT_MANY" /> раздела}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{След 1 ден}other{След <ph name="DAY_COUNT_MANY" /> дни}}</translation>
 <translation id="6549021453810473782">Преглед на информацията за магазина</translation>
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Преместване на раздела наляво</translation>

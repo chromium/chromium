@@ -14,6 +14,7 @@
 <translation id="1320619893013575407">Na-off mo ang pag-sign in sa Chrome.</translation>
 <translation id="1333745675627230582">Laruin ang Chrome Dino</translation>
 <translation id="1352919863522755794">Hindi masuri ng Google Password Manager ang iyong mga password. Subukang tingnan ang iyong koneksyon sa internet.</translation>
+<translation id="139623527619433858">Gamitin ang Chrome para sa iPad bilang Default</translation>
 <translation id="1407843355326180937">Mag-sign in sa site na ito at sa Chrome para makuha mo ang iyong mga bookmark at higit pa sa lahat ng device mo.</translation>
 <translation id="1436059927646026729">Buksan ang Aking Pinakabagong Tab sa Chrome</translation>
 <translation id="1449241544691504574">Magdagdag ng Mga Bookmark sa Chrome</translation>
@@ -192,6 +193,7 @@ Naka-encrypt ang iyong data gamit ang passphrase mo. Ilagay ito para magamit at 
 <translation id="6646696210740573446">Magpapadala ng na-obfuscate na bahagi ng URL sa Google sa pamamagitan ng server ng privacy na nagha-hide ng iyong IP address. Kung susubukan ng site na nakawin ang iyong password, o kapag nag-download ka ng mapaminsalang file, posible ring magpadala ang Chrome sa Google ng mga URL, kabilang ang ilang content ng page</translation>
 <translation id="6648150602980899529">Nagsa-sign in ka gamit ang isang account na pinamamahalaan ng <ph name="DOMAIN" /> at binibigyan mo ang administrator nito ng kontrol sa iyong data sa Chrome. Permanenteng mauugnay ang iyong data sa account na ito. Made-delete ang data mo sa device na ito kapag nag-sign out ka sa Chrome, ngunit mananatili itong naka-store sa iyong Google Account.</translation>
 <translation id="6683891932310469419">Bubuksan ang iyong Page ng History sa Chrome.</translation>
+<translation id="6695698548122852044">{THRESHOLD,plural, =1{Nangyayari ito kapag hindi ginamit ang Chrome nang {THRESHOLD} minuto. Ang naka-save lang na data sa device na ito habang naka-sign in ka ang ide-delete. Puwedeng kabilang dito ang history at mga password.}one{Nangyayari ito kapag hindi ginamit ang Chrome nang {THRESHOLD} minuto. Ang naka-save lang na data sa device na ito habang naka-sign in ka ang ide-delete. Puwedeng kabilang dito ang history at mga password.}other{Nangyayari ito kapag hindi ginamit ang Chrome nang {THRESHOLD} na minuto. Ang naka-save lang na data sa device na ito habang naka-sign in ka ang ide-delete. Puwedeng kabilang dito ang history at mga password.}}</translation>
 <translation id="6709398533399187136">Na-expose ang password mo sa isang paglabag sa data. Inirerekomenda ng Google Password Manager na palitan na ito ngayon.</translation>
 <translation id="6820553595690137150">Hindi kasama sa pag-encrypt ng passphrase ang mga paraan ng pagbabayad at address.
 
@@ -220,6 +222,7 @@ Para sa higit pang setting na gumagamit ng data para pahusayin ang iyong experie
 <translation id="7272930098487145294">Para makapag-save ng mga larawan, mag-tap sa Mga Setting para payagan ang Chrome na magdagdag sa iyong mga larawan</translation>
 <translation id="7275945473750112644">Pinapamahalaan ng <ph name="HOSTED_DOMAIN" /> ang iyong account, kaya maki-clear ang data mo sa Chrome sa device na ito</translation>
 <translation id="7284245284340063465">Kung nakalimutan mo ang iyong passphrase o gusto mong baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-delete ang data sa Chrome sa iyong account<ph name="END_LINK" />.</translation>
+<translation id="7299681342915173313">Magagamit mo na ngayon ang Chrome sa tuwing magta-tap ka ng mga link sa mga email, dokumento, at iba pang app.</translation>
 <translation id="7304491752269485262">Na-expand na View ng Autofill ng Chrome</translation>
 <translation id="7344094882820374540">Kunin ang pinakamaigting na seguridad ng Chrome mula sa mga mapanganib na site</translation>
 <translation id="7349129508108954623">Payagan ang Chrome na gamitin ang Google Maps para bigyan ka ng mga direksyon at lokal na impormasyon tungkol sa mga na-detect na address.</translation>

@@ -794,7 +794,6 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
 <translation id="1635748761015837179">允许写入外部存储设备</translation>
 <translation id="1639468541408865385">启用全局范围的 HTTP 身份验证缓存</translation>
 <translation id="1639673466479276550">为登录屏幕启用屏保。</translation>
-<translation id="1640447222731279244">控制是否启用“利用 AI 创作”来创建 ChromeOS 壁纸的功能</translation>
 <translation id="1640824698339859203">启用流动单点登录，并将用户的 Web 服务身份验证移至新设备</translation>
 <translation id="1641117061932613266">启用<ph name="PRODUCT_NAME" /> V2 服务</translation>
 <translation id="1641394008743444477">让您能够以列表形式设置要停用的 <ph name="PRODUCT_OS_NAME" />功能。
@@ -848,12 +847,6 @@ First-Party Set 中的所有网站都必须是采用 HTTPS 协议的可注册网
 
 如果此政策设为 False 或未设置，则不会捕获任何事件。</translation>
 <translation id="1692990221685273468">确定内置证书验证程序是否会强制执行从平台可信存储区加载的信任锚中经过编码的限制条件。</translation>
-<translation id="1693528798631913178">此政策用于启用或停用“利用 AI 创作”来创建 ChromeOS 视频会议背景的功能。
-0 表示为用户停用此功能。
-
-1 表示为用户启用此功能。请注意，系统不会向 Google 发送任何数据用以训练或改进 AI 模型。
-
-如果此政策未设置，系统会为企业用户停用“利用 AI 创作”来创建视频会议背景的功能。</translation>
 <translation id="169467210981344373">停用全局范围的 HTTP 身份验证缓存</translation>
 <translation id="1696501581280568361">建议进行资料分离</translation>
 <translation id="1698810555265314018">控制 <ph name="PRODUCT_NAME" /> 以光栅化模式打印 PDF 时的打印图片分辨率。
@@ -1769,7 +1762,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="2326031114717677574">音频数据的取样和收集时间间隔。所允许的最短时间间隔为 1 分钟。
 
       如果此政策未设置，系统会应用默认时间间隔（15 分钟）。</translation>
-<translation id="2331028134545182024">控制是否启用“利用 AI 创作”来创建 ChromeOS 视频会议背景的功能</translation>
 <translation id="2333228572393176330">此政策用于控制 TLS 1.3 中的一项安全功能，该功能可为连接提供保护，使其免受降级攻击。此政策可向后兼容，因此不会影响与合规的 TLS 1.2 服务器或代理之间的连接。但是，某些旧版 TLS 拦截代理存在一项实施漏洞，此漏洞会导致这些代理不兼容。
 
       如果此政策设为 True 或未设置，<ph name="PRODUCT_NAME" /> 会为所有连接启用此类安全保护措施。
@@ -3336,7 +3328,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 <translation id="3587482841069643663">全部</translation>
 <translation id="3587766503874071316">停用无障碍快捷方式</translation>
 <translation id="3589193811812796052">禁止跨源发送 WebAssembly 模块</translation>
-<translation id="3591518189681300697">允许将本地文件迁移到云端</translation>
 <translation id="3591527072193107424">启用“旧版浏览器支持”功能。</translation>
 <translation id="3591584750136265240">配置登录身份验证行为</translation>
 <translation id="3593905652755912452">系统将使用针对已停用的表单控件分派事件的旧行为。</translation>
@@ -5235,12 +5226,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       如果未做设置，系统会使用默认通知时间段，即 604800000 毫秒（1 周）。</translation>
 <translation id="5212810195096589189">指定虚拟机 CLI 权限</translation>
 <translation id="5213038356678567351">始终不应触发浏览器切换的网站。</translation>
-<translation id="5215621993623612880">此政策用于启用或停用“利用 AI 创作”来创建 ChromeOS 壁纸的功能。
-0 表示为用户停用此功能。
-
-1 表示为用户启用此功能。请注意，系统不会向 Google 发送任何数据用以训练或改进 AI 模型。
-
-如果此政策未设置，系统会为企业用户停用“利用 AI 创作”来创建壁纸的功能。</translation>
 <translation id="5216815237712190041">配置在无任何用户登录设备的情况下显示在登录屏幕上的设备级壁纸图片。要设置此政策，请指定可供 Chrome 操作系统设备下载相应壁纸图片的网址，并指定用于验证下载内容是否完整的加密哈希值。图片必须是 JPEG 格式，且文件大小不得超过 16MB。网址必须可直接访问，而无需进行任何身份验证。系统会下载并缓存相应的壁纸图片。只要相应网址或哈希值发生了变化，系统就会重新下载该文件。
 
       设置设备壁纸政策后，如果还没有任何用户登录 Chrome 操作系统设备，该设备将下载相应壁纸图片并在登录屏幕上使用它。一旦用户登录设备，用户的壁纸政策就会生效。
@@ -6284,10 +6269,6 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       如果您未设置此政策，系统会采用标准电池充电模式（如果相应设备支持的话），而且用户无法更改相关设置。
 
       注意：如果您选择了自定义电池充电模式，则也要指定 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> 和 <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />。</translation>
-<translation id="6064418365347066084">触发将现有本地文件迁移到云端的操作。
-仅适用于 SkyVault 用户（即当 LocalUserFilesAllowed 为 false 且 DownloadDirectory 为 Google 云端硬盘或 OneDrive 时），否则会被忽略。
-    如果此政策设为 True，系统会将本地文件移至云端，本地文件夹将对用户隐藏。
-    如果此政策设为 false 或未设置，本地文件将保持只读模式。</translation>
 <translation id="60655674079349516">以列表形式配置，系统应在用户关闭所有浏览器窗口时删除哪些类型的浏览数据。
 
 警告：设置此政策可能会影响并永久移除本地个人数据。建议您在部署之前测试设置，以免意外删除个人数据。
@@ -6778,7 +6759,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       快速配对是一种新的蓝牙配对流程，用于将已配对的外围设备与 GAIA 账号关联起来。
       这样便能让使用同一 GAIA 账号登录的其他 Chrome 操作系统（和 Android）设备自动配对。
       如果未设置此政策，则默认情况下，快速配对功能对于企业用户处于停用状态，对于不受管理的账号则处于启用状态。</translation>
-<translation id="6400959027108936283">启用此功能</translation>
 <translation id="6401669939808766804">使用户退出</translation>
 <translation id="640244877779556713">启用表情符号建议</translation>
 <translation id="6403114173011456561">作为 <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" /> 政策的补充政策，用于控制触摸虚拟键盘。
@@ -8111,7 +8091,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
       如果此政策已启用或未设置，已注册的设备将会以列表形式报告网络接口及其类型和硬件地址。
 
       如果此政策已停用，已注册的设备不会报告网络接口。</translation>
-<translation id="7388618954884540850">禁止将本地文件迁移到云端</translation>
 <translation id="7389872682701720082">如果启用了此设置，则未过期的插件会一直运行。
 
       如果停用或未配置此设置，系统会用户提供权限才能运行需要授权的插件。这些插件可能会危及安全性。</translation>
@@ -9373,7 +9352,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       如果您停用了或未设置此政策，系统将会仅使用常规的本地个人资料。</translation>
 <translation id="8417305981081876834">设置锁定屏幕 PIN 码的长度上限</translation>
-<translation id="8418438383184278931">允许将本地用户文件迁移到云端存储空间</translation>
 <translation id="841977920223099909">密码保护服务警告功能触发条件</translation>
 <translation id="8419965165591256432">针对已关联的用户，在已注册设备上收集设备活动状态的时间间隔。所允许的最短时间间隔为 1 分钟。
 

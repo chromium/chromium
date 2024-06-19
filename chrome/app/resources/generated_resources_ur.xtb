@@ -2527,7 +2527,6 @@
 <translation id="2806372837663997957">آپ جس آلے کے ساتھ اشتراک کرنے کی کوشش کر رہے ہیں اس نے قبول نہیں کیا</translation>
 <translation id="2806891468525657116">شارٹ کٹ پہلے سے موجود ہے</translation>
 <translation id="2807517655263062534">آپ کی ڈاؤن لوڈ کردہ فائلز یہاں ظاہر ہوتی ہیں</translation>
-<translation id="2809946454624727734">آپ اپنے محفوظ کردہ پتوں میں اس تک رسائی حاصل کر سکتے ہیں۔</translation>
 <translation id="2811205483104563968">اکاؤنٹس</translation>
 <translation id="2812049959647166806">‏Thunderbolt تعاون یافتہ نہیں ہے</translation>
 <translation id="2812171980080389735">محفوظ کردہ نیٹ ورکس اور پاس ورڈز تاکہ آپ فوری طور پر منسلک کر سکیں</translation>
@@ -2683,6 +2682,7 @@
 <translation id="292371311537977079">‏Chrome کی ترتیبات</translation>
 <translation id="2926085873880284723">ڈیفالٹ شارٹ کٹس بحال کریں</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> تعاون یافتہ نہیں ہے۔</translation>
+<translation id="2926708162326352948">تھیم کو اپ لوڈ کردہ تصویر میں اپ ڈیٹ کر دیا گیا</translation>
 <translation id="2927017729816812676">کیش اسٹوریج</translation>
 <translation id="2928795416630981206">آپ کے کیمرا کی پوزیشن ٹریک کرنے کی اجازت ہے</translation>
 <translation id="2931157624143513983">پرنٹ کرنے لائق جگہ پر فٹ کریں</translation>
@@ -5456,7 +5456,6 @@
 <translation id="5016491575926936899">آپ اپنے کمپیوٹر سے ٹیکسٹ بھیج، اپنے انٹرنیٹ کنکشن کا اشتراک، گفتگو کی اطلاعات کا جواب اور اپنے فون کے ساتھ اپنا <ph name="DEVICE_TYPE" /> غیر مقفل کر سکتے ہیں۔<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="5016983299133677671">نیا پاس ورڈ آزمائیں</translation>
 <translation id="5017529052065664584">آخری 15 منٹ</translation>
-<translation id="5017643436812738274">‏آپ اپنے صفحات کو ٹیکسٹ کرسر سے نیویگیٹ کر سکتے ہیں۔ آف کرنے کے لیے Ctrl+Search+7 دبائیں۔</translation>
 <translation id="5018207570537526145">ایکسٹینشن ویب سائٹ کھولیں</translation>
 <translation id="5018526990965779848">‏استعمال اور ڈائیگناسٹک کا ڈیٹا بھیجیں۔ Google کو خودکار طور پر ڈائیگناسٹک، آلے اور ایپ کے استعمال کا ڈیٹا بھیج کر اپنا Android تجربہ بہتر بنانے میں مدد کریں۔ اس سے سسٹم اور ایپ کے استحکام اور دیگر بہتریوں میں مدد ملے گی۔ کچھ مجموعی ڈیٹا Google ایپس اور پارٹنرز، جیسے Android ڈیولپرز، کی مدد بھی کرے گا۔ اگر آپ کی ویب اور ایپ کی اضافی سرگرمی کی ترتیب آن ہے تو اس ڈیٹا کو آپ کے Google اکاؤنٹ میں محفوظ کیا جا سکتا ہے۔</translation>
 <translation id="5020008942039547742">مختلف ونڈو منتخب کریں</translation>
@@ -5613,6 +5612,7 @@
 <translation id="5135533361271311778">بُک مارک آئٹم نہیں بنایا جا سکا۔</translation>
 <translation id="513555878193063507">‏نیا APN شامل کریں</translation>
 <translation id="5136343472380336530">یقینی بنائیں کہ دونوں آلات غیر مقفل ہیں، ایک دوسرے کے قریب ہیں اور بلوٹوتھ آن ہیں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
+<translation id="5136529877787728692">F7</translation>
 <translation id="5137349216872139332">فوری ہاٹ اسپاٹ کنکشن ناکام ہوا</translation>
 <translation id="5138227688689900538">کم دکھائیں</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />، <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> تلاش</translation>
@@ -7393,10 +7393,12 @@
 <translation id="6490471652906364588">‏USB-C آلہ (دایاں پورٹ)</translation>
 <translation id="6491376743066338510">اجازت دہندگی ناکام ہو گئی</translation>
 <translation id="649396225532207613">یہ فائل آپ کے ذاتی اور سوشل نیٹ ورک اکاؤنٹس کو نقصان پہنچا سکتی ہے</translation>
+<translation id="6493991254603208962">چمک کم کریں</translation>
 <translation id="6494327278868541139">بہتر کردہ تحفظ کی تفصیلات دکھائیں</translation>
 <translation id="6494445798847293442">سرٹیفیکیشن ادارہ نہیں ہے</translation>
 <translation id="6494483173119160146">آلے میں ایک ناقابل بازیابی کی خرابی پیش آگئی۔ براہ کرم اپنا آلہ ری سیٹ کریں (اس سے صارف کا تمام ڈیٹا مٹ جائے گا) اور دوبارہ کوشش کریں۔</translation>
 <translation id="6495266441917713704">‏Wi-Fi کو منتقل نہیں کیا جا سکتا</translation>
+<translation id="6495453178162183932">‏تھیم کو ڈیفالٹ Chrome میں اپ ڈیٹ کر دیا گیا</translation>
 <translation id="6497784818439587832">اپنی اسکرین پر موجود آئٹمز کو چھوٹا یا بڑا کرنے کے لیے ڈسپلے کا سائز تبدیل کریں</translation>
 <translation id="6497789971060331894">ماؤس کی معکوس اسکرولنگ</translation>
 <translation id="6498249116389603658">&amp;آپ کی سبھی زبانیں</translation>
@@ -8186,6 +8188,7 @@
 <translation id="7082850163410901674">‏Mac سسٹم کی ترتیبات میں اطلاعات آف ہے</translation>
 <translation id="7083774521940805477">‏Steam برائے Chromebook (بی ٹا) آپ کے Chromebook پر دستیاب نہیں ہے۔</translation>
 <translation id="708550780726587276">(کنفیگر نہیں ہے)</translation>
+<translation id="7086377898680121060">چمک بڑھائیں</translation>
 <translation id="7086672505018440886">‏آرکائیو میں Chrome کی لاگ فائلز کو شامل کریں۔</translation>
 <translation id="7088434364990739311">اپ ڈیٹ چیک شروع ہونے میں ناکام ہوگیا (خرابی کا کوڈ <ph name="ERROR" />)۔</translation>
 <translation id="7088674813905715446">منتظم نے اس آلہ کو ایک مسترد کردہ حالت میں رکھ دیا ہے۔ اندراج کیلئے اسے فعال کرنے کیلئے، براہ کرم اپنے منتظم کو آلہ کو ایک زیر التوا حالت میں رکھنے دیں۔</translation>

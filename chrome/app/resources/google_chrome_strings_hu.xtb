@@ -170,6 +170,7 @@
 <translation id="3261565993776444564">Próbáljon ki egy új színt a böngésző személyre szabásához</translation>
 <translation id="3282568296779691940">Bejelentkezés a Chrome-ba</translation>
 <translation id="3286538390144397061">Újraindítás most</translation>
+<translation id="3292333338048274092">Ezután újra kell indítania a Chrome-ot.</translation>
 <translation id="3360895254066713204">Chrome segéd</translation>
 <translation id="3379938682270551431">{0,plural, =0{A Chrome most újraindul}=1{A Chrome 1 másodpercen belül újraindul}other{A Chrome # másodpercen belül újraindul}}</translation>
 <translation id="3396977131400919238">Az operációs rendszer hibát jelzett a telepítés során.</translation>
@@ -214,6 +215,7 @@
 <translation id="4035053306113201399">A frissítés alkalmazásához újra kell indítani a ChromeOS-t.</translation>
 <translation id="4050175100176540509">A legújabb verzióban fontos biztonsági fejlesztések és új funkciók érhetők el.</translation>
 <translation id="4053720452172726777">A Google Chrome személyre szabása és beállításai</translation>
+<translation id="4084404300720192944">Az ablak megosztásához engedélyezze a Chrome számára a képernyőrögzítést a Rendszerbeállításokban.</translation>
 <translation id="4106587138345390261">A Chrome olyan funkciók fejlesztésén dolgozik, amelyek ugyanazt a böngészési élményt nyújtják a személyes adatok kisebb mértékű felhasználása mellett.</translation>
 <translation id="4110895483821904099">Új saját Chrome-profil beállítása</translation>
 <translation id="4111566860456076004">A Chrome nem tudja ellenőrizni, hogy honnan származik a bővítmény, amely lehet, hogy nem biztonságos. Távolítsa el a Chrome-ból, hogy a bővítmény a továbbiakban már ne láthassa és módosíthassa az Ön adatait a felkeresett webhelyeken (a személyes adatokat is beleértve).</translation>
@@ -350,6 +352,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Béta</translation>
 <translation id="6182736845697986886">A telepítés a frissítési szerver belső hibája miatt nem sikerült.</translation>
 <translation id="6200139057479872438">Nem látogatta meg mostanában. A Chrome eltávolította a következőket: <ph name="PERMISSION_1" /> és <ph name="PERMISSION_2" />.</translation>
+<translation id="621585339844629864">A képernyő megosztásához engedélyezze a Chrome számára a képernyőrögzítést a Rendszerbeállításokban.</translation>
 <translation id="6235018212288296708">Bejövő szabály a Google Chrome-hoz az mDNS forgalom engedélyezése céljából.</translation>
 <translation id="624230925347970731">A Chrome hamarosan bezáródik</translation>
 <translation id="6247557882553405851">Google Jelszókezelő</translation>

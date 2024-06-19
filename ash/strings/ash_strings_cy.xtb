@@ -119,6 +119,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1383876407941801731">Chwilio</translation>
 <translation id="1391102559483454063">Ymlaen</translation>
 <translation id="1394698770495054737">Niwlio Llawn</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{1 diwrnod yn ôl}zero{# diwrnod yn ôl}two{# ddiwrnod yn ôl}few{# diwrnod yn ôl}many{# diwrnod yn ôl}other{# diwrnod yn ôl}}</translation>
 <translation id="1404963891829069586">Synau ffocysu</translation>
 <translation id="1407069428457324124">Thema dywyll</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Defnyddiwch y bysellau saeth i lywio rhwng dyddiadau.</translation>
@@ -209,6 +210,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="174102739345480129">Mae'r marciwr wedi'i ddiffodd.</translation>
 <translation id="1743570585616704562">Heb ei adnabod</translation>
 <translation id="1743927604032653654">Crebachu'r hysbysiad <ph name="NOTIFICATION_TITLE" /></translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{O fewn 1 awr}=1{1 awr yn ôl}two{# awr yn ôl}few{# awr yn ôl}many{# awr yn ôl}other{# awr yn ôl}}</translation>
 <translation id="1746730358044914197">Mae dulliau mewnbynnu yn cael eu ffurfweddu gan eich gweinyddwr.</translation>
 <translation id="1747336645387973286">i'w gwblhau erbyn <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Mae bysellfwrdd ar y sgrîn wedi'i alluogi</translation>
@@ -346,6 +348,7 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="2359808026110333948">Parhau</translation>
 <translation id="2360398059912971776">batri</translation>
 <translation id="2361210043495191221">Toglo Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Anfonwyd o <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Methu â mewngofnodi i'ch Chromebook</translation>
 <translation id="2367972762794486313">Dangos apiau</translation>
 <translation id="2368828502825385061">Lleoli</translation>
@@ -506,6 +509,7 @@ Mae <ph name="DEVICECOUNT" /> o ddyfeisiau yn gysylltiedig.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Troi mynediad meicroffon ymlaen?</translation>
 <translation id="296762781903199866">Methu â lawrlwytho ffeiliau lleferydd <ph name="LANGUAGE" /></translation>
+<translation id="2968761508099987738">Nid yw eich lleoliad presennol yn cael ei gefnogi ar hyn o bryd.</translation>
 <translation id="2970920913501714344">Gosod apiau, estyniadau, a themâu</translation>
 <translation id="2977598380246111477">Rhif nesaf</translation>
 <translation id="2985148236010982088">Gweld pob ap</translation>
@@ -979,6 +983,7 @@ Mae 1 ddyfais yn gysylltiedig.</translation>
 <translation id="468293128311738995">Apiau o'ch ffôn</translation>
 <translation id="4690510401873698237">Silff ar y gwaelod</translation>
 <translation id="4696813013609194136">Datgloi'r ddyfais gyda chod rhiant</translation>
+<translation id="4697357603686181098">Methu â helpu gyda hyn. Rhowch gynnig ar gais arall.</translation>
 <translation id="4702647871202761252">Mae'r Sgrîn Breifatrwydd wedi'i diffodd</translation>
 <translation id="4706121060329443414">Ceisir lawrlwytho yn nes ymlaen. Anfonir lleferydd at Google i'w brosesu am y tro.</translation>
 <translation id="470644585772471629">Gwrthdroad lliw</translation>
@@ -1901,6 +1906,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="7982878511129296052">Wrthi'n diffodd...</translation>
 <translation id="7984197416080286869">Gormod o ymgeisiau olion bysedd</translation>
 <translation id="798779949890829624">Mae'r gosodiad hwn yn cael ei reoli gan eich gweinyddwr</translation>
+<translation id="7989206653429884947">Agorwyd yn aml</translation>
 <translation id="799296642788192631">Gallwch binio ffeiliau pwysig. I binio, hofran dros eitem neu agor Ffeiliau a de-glicio ar eitem.</translation>
 <translation id="7994370417837006925">Mewngofnodi o sawl cyfrif</translation>
 <translation id="7995804128062002838">Wedi methu a thynnu sgrinlun</translation>
@@ -2085,6 +2091,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Amser wedi darfod. Da iawn! 🎉</translation>
+<translation id="8753368202781196133">Nid yw'r iaith hon yn cael ei chefnogi ar hyn o bryd.</translation>
 <translation id="8755498163081687682">Cadarnhewch eich hunaniaeth: Hoffai <ph name="ORIGIN_NAME" /> gadarnhau mai chi sydd yno</translation>
 <translation id="875593634123171288">Dangos gosodiadau VPN</translation>
 <translation id="8756799553341497810">Gallwch ddechrau addasu cynllun eich ap ar ôl i chi adael y golwg hwn.</translation>

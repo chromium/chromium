@@ -115,6 +115,7 @@
 <translation id="1209206284964581585">今は表示しない</translation>
 <translation id="121201262018556460"><ph name="DOMAIN" /> にアクセスしようとしましたが、サーバーから提示された証明書には脆弱な暗号鍵が含まれています。悪意のあるユーザーによって秘密鍵が破られた可能性があり、アクセスしようとしたサーバーとは異なるサーバーであるおそれがあります（悪意のあるユーザーと通信している可能性があります）。</translation>
 <translation id="1212527389003717329">ダウンロードを開始しました。確認するには、|<ph name="ACCELERATOR" />| を長押ししてください。</translation>
+<translation id="1214970845432250240">価格帯</translation>
 <translation id="1219129156119358924">システム セキュリティ</translation>
 <translation id="1222060260947439312">右トレイ</translation>
 <translation id="1224330468394120478">A3x6</translation>
@@ -239,7 +240,6 @@
 <translation id="1427192966110103169">家庭用スイミング プール、サウナ、スパ</translation>
 <translation id="1428146450423315676">スタッカー 7</translation>
 <translation id="142858679511221695">クラウド ユーザー</translation>
-<translation id="1428729058023778569">この警告は、サイトが HTTPS に対応していない場合に表示されます。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">粘着フィルム</translation>
 <translation id="1430915738399379752">印刷</translation>
 <translation id="1432187715652018471">このページはサービス ハンドラのインストールを求めています。</translation>
@@ -527,7 +527,6 @@
 <translation id="1959445535228047762">テキストとページのコンテンツが Google に送信され、この機能の改善に使用されることがあります。
   <ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> のブックマーク</translation>
-<translation id="196752089528718902">通常はサイトに安全に接続できますが、今回は安全な接続を使用できませんでした。攻撃者がネットワーク接続を傍受するか変更しようとしている可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">シリアル化エラーです</translation>
 <translation id="1973785048533660168">事務系の求人情報</translation>
 <translation id="1974060860693918893">詳細設定</translation>
@@ -545,7 +544,6 @@
 <translation id="2003709556000175978">今すぐパスワードを再設定してください</translation>
 <translation id="2003775180883135320">4 穴パンチ（上）</translation>
 <translation id="2004697686368036666">一部のサイトで機能を使用できなくなる可能性があります</translation>
-<translation id="2005042463110681802">この警告は、サイトが HTTPS に対応しておらず、シークレット モードを使用している場合に表示されます。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">[予定を作成] ボタンです。実行すると、Google カレンダーで新しい予定をすばやく作成できます</translation>
 <translation id="201174227998721785">Chrome の設定ですべてのサイトに保存されている権限とデータを管理します</translation>
 <translation id="2012276282211112603">現在、表示できるトピックはありません</translation>
@@ -607,7 +605,6 @@
 <translation id="2108755909498034140">パソコンを再起動する</translation>
 <translation id="2111166930115883695">プレイするには Space キーを押してください</translation>
 <translation id="2112529237938317174">権限の詳細を表示</translation>
-<translation id="2113232594265919362">この警告は、サイトが HTTPS に対応しておらず、Google の高度な保護機能プログラムを使用している場合に表示されます。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">カード</translation>
 <translation id="2114841414352855701"><ph name="POLICY_NAME" /> によって上書きされるため無視されます。</translation>
 <translation id="2118132148597630479">C5 封筒</translation>
@@ -809,7 +806,6 @@
 <translation id="2482878487686419369">通知</translation>
 <translation id="248348093745724435">マシンポリシー</translation>
 <translation id="2485243023686553468">スマートフォン</translation>
-<translation id="2490199669743245365">アクセスしようとしているサイトでは、攻撃者がパスワード、写真、メッセージ、クレジット カード番号などを盗んだり削除したりする有害なソフトウェアをインストールする可能性があります。安全なページに戻ることを強くおすすめします。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">サーバーの証明書にエラーがあります。</translation>
 <translation id="2491414235131909199">このページは拡張機能によってブロックされています</translation>
 <translation id="2495083838625180221">JSON パーサー</translation>
@@ -970,7 +966,6 @@
 <translation id="2839501879576190149">偽のサイトにアクセスしようとしています</translation>
 <translation id="2843623755398178332">共有タブをスクロールしてズームしますか？</translation>
 <translation id="2851291081585704741">オフラインです</translation>
-<translation id="2856444702002559011"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> では、悪意のあるユーザーによって、パスワード、メッセージ、クレジット カードなどの情報が盗まれる可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200x300 mm</translation>
 <translation id="2859806420264540918">このサイトでは煩わしい広告または誤解を招く広告が表示されます。</translation>
 <translation id="28618371182701850">電気自動車、プラグイン ハイブリッド車</translation>
@@ -1189,6 +1184,7 @@
 <translation id="3272091146646336650">スーパー B</translation>
 <translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" /> 桁の確認コードを入力してください</translation>
 <translation id="3272643614306383237">1 MB 未満。サイトによっては、次回アクセスする際に読み込みに時間がかかる可能性があります。</translation>
+<translation id="327346289570683313">価格帯</translation>
 <translation id="3273738040255912340">管理者は、ユーザーのプロフィールやブラウザをリモートで変更したり、レポートを通じてブラウザに関する情報を分析したり、その他の必要なタスクを行ったりすることができます。このデバイス上のアクティビティは、Chromium の外部でも管理されている可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{管理者のポリシー設定では、このファイルを <ph name="DESTINATION_NAME" /> で開くことは推奨されていません}other{管理者のポリシー設定では、これらのファイルを <ph name="DESTINATION_NAME" /> で開くことは推奨されていません}}</translation>
 <translation id="3282085321714087552">あなたの組織（<ph name="ENROLLMENT_DOMAIN" />）は次のウェブサイトに設定やポリシーなどの情報を送信するよう設定しています。</translation>
@@ -1317,7 +1313,6 @@
 <translation id="3507936815618196901">周囲の 3D マップの作成とカメラ位置の追跡</translation>
 <translation id="3512163584740124171">より優先度の高いポリシーが同じポリシー グループにあるため、このポリシーは無視されます。</translation>
 <translation id="351522771072578657">現在、メニューを表示しています</translation>
-<translation id="3515972145999192222"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> はポリシーに違反しているため、組織によってブロックされています。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">複数オブジェクトの処理</translation>
 <translation id="3525130752944427905">10x14 インチ</translation>
 <translation id="3525435918300186947">MIDI デバイスの操作と再プログラムを行いますか？</translation>
@@ -1483,7 +1478,6 @@
 <translation id="3801265110651850478">閲覧トラフィックと一緒に「Do Not Track」リクエストを送信する</translation>
 <translation id="380329542618494757">名前</translation>
 <translation id="3803801106042434208">あなたの地域で一般的な検索エンジンが表示されています</translation>
-<translation id="3806932344025766608">アクセスしようとしているサイトでは、攻撃者がユーザーを騙してソフトウェアをインストールさせたり、パスワード、電話番号、クレジット カード番号などを開示させたりする可能性があります。安全なページに戻ることを強くおすすめします。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">画像の X 軸移動</translation>
 <translation id="3807709094043295184">クラシック ロック、オールディーズ</translation>
 <translation id="3807873520724684969">有害なコンテンツがブロックされました。</translation>
@@ -3347,7 +3341,6 @@
 <translation id="7429429656042611765">エグゼクティブ</translation>
 <translation id="7432774160230062882">Chromium　でお支払い情報を入力できるよう、本人確認を行ってください。</translation>
 <translation id="7437289804838430631">連絡先情報を追加</translation>
-<translation id="7438338505272634288">アクセスしようとしているサイトでは、攻撃者がユーザーを騙してブラウジングに影響を与える（ホームページを変更する、アクセス先のサイトで余計な広告を表示するなど）有害なソフトウェアをインストールさせる可能性があります。危害を避けるため安全なページに戻ることを強くおすすめします。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">オフラインで利用できるコンテンツ</translation>
 <translation id="7441627299479586546">ポリシーの対象が間違っています</translation>
 <translation id="7441864845853794192">グルメ、名物料理</translation>
@@ -3448,7 +3441,6 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> では現在このリクエストを処理できません。</translation>
 <translation id="7599089013883397081">ダウンロードがタイムアウトしました</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />を翻訳しない</translation>
-<translation id="7601297359530599375">通常はこのサイトに安全に接続できますが、今回は安全な接続を使用できませんでした。攻撃者がネットワーク接続を傍受するか変更しようとしている可能性があります。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">アクセスしようとしているサイトでは、攻撃者がパスワード、写真、メッセージ、クレジット カード番号などを盗んだり削除したりする有害なソフトウェアをインストールする可能性があります。</translation>
 <translation id="7608583484192556132">表示される広告がパーソナライズされるかどうかは、この設定、<ph name="BEGIN_LINK_1" />サイトによる広告の提案<ph name="END_LINK_1" />、<ph name="BEGIN_LINK_2" />Cookie の設定<ph name="END_LINK_2" />、アクセスしたサイトが広告をパーソナライズしているかどうかなど、さまざまな要素によって決まります。<ph name="BEGIN_LINK_3" />広告のプライバシー管理について<ph name="END_LINK_3" /></translation>
 <translation id="7610193165460212391">値（<ph name="VALUE" />）が範囲外です。</translation>
@@ -3721,7 +3713,6 @@
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">無効なカードを削除しました</translation>
-<translation id="8100666323495101203">お客様の組織では、<ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> がポリシーに違反している可能性のあるサイトとして判別されています。<ph name="BEGIN_LEARN_MORE_LINK" />詳細<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8103161714697287722">お支払い方法</translation>
 <translation id="8103643211515685474">このまま印刷</translation>
 <translation id="8105368624971345109">オフにする</translation>
@@ -4287,6 +4278,7 @@
 <translation id="920643408853370361">旅行保険</translation>
 <translation id="9207861905230894330">記事を追加できませんでした。</translation>
 <translation id="9210825002219699214">空の旅</translation>
+<translation id="9211461151375991073"><ph name="FEATURED_SEARCH_LIST" /> を検索するには @ を入力してください</translation>
 <translation id="9213433120051936369">デザインをカスタマイズする</translation>
 <translation id="9215416866750762878">アプリケーションが原因で、Chrome からこのサイトに安全に接続することができません</translation>
 <translation id="92178312226016010">この商品をトラッキングしています。</translation>

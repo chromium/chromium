@@ -55,6 +55,7 @@
 <translation id="1734234790201236882">Chrome akan menyimpan kata laluan ini dalam Google Account anda. Anda tidak perlu mengingati kata laluan tersebut.</translation>
 <translation id="1786003790898721085">Pastikan anda telah log masuk ke Chrome pada <ph name="TARGET_DEVICE_NAME" /> anda, kemudian cuba hantar lagi.</translation>
 <translation id="1786044937610313874">Pintasan dibuka dalam Chrome</translation>
+<translation id="178701303897325119">Sambungan ini tidak disokong lagi. Chrome mengesyorkan supaya anda mengalih keluar sambungan tersebut.</translation>
 <translation id="1812689907177901597">Dengan mematikan pilihan ini, anda boleh mengelog masuk ke tapak Google seperti Gmail tanpa perlu mengelog masuk ke Chrome</translation>
 <translation id="1860536484129686729">Chrome memerlukan kebenaran untuk mengakses kamera anda bagi tapak ini</translation>
 <translation id="1873233029667955273">Google Chrome bukan penyemak imbas lalai anda</translation>
@@ -246,6 +247,8 @@
 <translation id="4384570495110188418">Chrome tidak dapat menyemak kata laluan anda kerana anda tidak log masuk</translation>
 <translation id="4389991535395284064">Apabila menyemak imbas dalam Mod Inkognito, Chrome akan memberi anda amaran sebelum memuatkan laman menggunakan sambungan yang tidak selamat</translation>
 <translation id="4427306783828095590">Perlindungan yang dipertingkatkan melakukan pelbagai lagi perkara untuk menyekat pancingan data dan perisian hasad</translation>
+<translation id="4434353761996769206">Ralat pemasang: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438657683599538446">Log masuk ke Chrome sebagai <ph name="USER_EMAIL" /></translation>
 <translation id="4450664632294415862">Chrome - Log Masuk Rangkaian - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Terdapat operasi lain sedang dijalankan pada Google Chrome. Sila cuba sebentar lagi.</translation>
 <translation id="4459234553906210702">Pengukuran iklan membolehkan laman yang anda lawati meminta maklumat daripada Chrome yang membantu laman tersebut mengukur prestasi iklan mereka. Pengukuran iklan mengehadkan penjejakan rentas laman dengan memindahkan maklumat antara laman sedikit yang mungkin.</translation>

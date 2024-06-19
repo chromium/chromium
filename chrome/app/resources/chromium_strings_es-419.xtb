@@ -207,6 +207,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="4415566066719264597">Permitir que Chromium se ejecute en segundo plano</translation>
 <translation id="4423735387467980091">Personaliza y controla Chromium</translation>
 <translation id="4427306783828095590">La protección mejorada permite bloquear mejor los ataques de phishing y el software malicioso.</translation>
+<translation id="4434353761996769206">Error de instalador: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4447409407328223819">Acerca de Chrome for Testing</translation>
 <translation id="4501471624619070934">La instalación falló porque el acceso está restringido en este país.</translation>
 <translation id="4510853178268397146">Esta extensión no publicó prácticas de privacidad, como la forma en que recopila y usa datos. Chromium te recomienda quitarla.</translation>

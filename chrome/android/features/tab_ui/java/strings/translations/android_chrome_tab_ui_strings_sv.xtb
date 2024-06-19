@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Lila</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Utöka flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_ONE" /> flik.}other{Utöka flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> flikar.}}</translation>
 <translation id="427987768447457592">Ny flikgrupp</translation>
+<translation id="4338724047016295066">Inaktiva flikar stängs automatiskt. Du kan alltid hitta dem i Historik.</translation>
 <translation id="4371591986692297148">Inaktiv</translation>
 <translation id="4460014764210899310">Ta bort gruppering</translation>
 <translation id="4648718555153979859">Dina flikar samlas här</translation>
 <translation id="4686942373615810936">Skapades just nu</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Stäng efter 1 dag}other{Stäng efter <ph name="DAY_COUNT_MANY" /> dagar}}</translation>
 <translation id="4777866634702576038">Vill du radera flikgruppen?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(Recension av <ph name="REVIEWS_COUNT_ONE" />)}other{(Recensioner av <ph name="REVIEWS_COUNT_MANY" />)}}</translation>
 <translation id="4850886885716139402">Visa</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Du hittar dina flikgrupper här</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Dela upp <ph name="TABS_COUNT_ONE" /> vald flik}other{Dela upp <ph name="TABS_COUNT_MANY" /> valda flikar}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> flik}other{<ph name="TABS_COUNT_MANY" /> flikar}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{Efter 1 dag}other{Efter <ph name="DAY_COUNT_MANY" /> dagar}}</translation>
 <translation id="6549021453810473782">Visa butiksinformation</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Flytta fliken åt vänster</translation>

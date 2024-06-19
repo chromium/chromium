@@ -239,7 +239,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1427192966110103169">Piscines, saunas et spas pour particuliers</translation>
 <translation id="1428146450423315676">Empileur 7</translation>
 <translation id="142858679511221695">Utilisateur du cloud</translation>
-<translation id="1428729058023778569">Vous voyez cet avertissement, car ce site n'est pas HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Pellicule auto-adhésive</translation>
 <translation id="1430915738399379752">Imprimer</translation>
 <translation id="1432187715652018471">Cette page veut installer un gestionnaire de services.</translation>
@@ -527,7 +526,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="1959445535228047762">Votre texte et le contenu de vos pages sont envoyés à Google, et peuvent être utilisés pour améliorer cette fonctionnalité.
   <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436">Favoris du domaine <ph name="DOMAIN" /></translation>
-<translation id="196752089528718902">La connexion aux sites est généralement sécurisée, mais Chrome n'a pas pu utiliser de connexion sécurisée cette fois-ci. Il est possible qu'un pirate informatique tente d'espionner vos activités en ligne ou de modifier votre connexion réseau. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">Erreur de sérialisation.</translation>
 <translation id="1973785048533660168">Emplois de bureau et administratifs</translation>
 <translation id="1974060860693918893">Paramètres avancés</translation>
@@ -545,7 +543,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2003709556000175978">Réinitialiser votre mot de passe maintenant</translation>
 <translation id="2003775180883135320">Quadruple perforation en haut</translation>
 <translation id="2004697686368036666">Il est possible que les fonctionnalités de certains sites ne fonctionnent pas</translation>
-<translation id="2005042463110681802">Vous voyez cet avertissement, car ce site n'est pas HTTPS et que vous êtes en mode navigation privée. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Bouton "Créer un événement" à activer pour créer rapidement un événement dans Google Agenda</translation>
 <translation id="201174227998721785">Gérez les autorisations et les données stockées sur les sites dans les paramètres Chrome</translation>
 <translation id="2012276282211112603">Aucun thème à afficher pour l'instant</translation>
@@ -607,7 +604,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2108755909498034140">Redémarrez l'ordinateur</translation>
 <translation id="2111166930115883695">Appuyez sur la barre d'espace pour jouer</translation>
 <translation id="2112529237938317174">Voir les détails de l'autorisation</translation>
-<translation id="2113232594265919362">Vous voyez cet avertissement, car ce site n'est pas HTTPS alors que vous avez activé le Programme Protection Avancée de Google. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">Carte</translation>
 <translation id="2114841414352855701">Ignorée parce que remplacée par <ph name="POLICY_NAME" />.</translation>
 <translation id="2118132148597630479">Enveloppe C5</translation>
@@ -809,7 +805,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="248348093745724435">Règles associées à la machine</translation>
 <translation id="2485243023686553468">Smartphones</translation>
-<translation id="2490199669743245365">Des pirates informatiques qui se trouvent sur le site que vous essayez de consulter pourraient installer des logiciels malveillants dérobant ou supprimant des éléments tels que votre mot de passe, vos photos, vos messages ou votre numéro de carte de crédit. Chrome vous recommande vivement de revenir en lieu sûr. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">Le certificat du serveur contient des erreurs.</translation>
 <translation id="2491414235131909199">Cette page a été bloquée par une extension</translation>
 <translation id="2495083838625180221">Analyse de fichiers JSON</translation>
@@ -970,7 +965,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="2839501879576190149">Attention : faux site</translation>
 <translation id="2843623755398178332">Faire défiler l'onglet partagé et zoomer dessus ?</translation>
 <translation id="2851291081585704741">Vous êtes hors connexion</translation>
-<translation id="2856444702002559011">Des individus malveillants tentent peut-être de subtiliser vos informations personnelles sur le site <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (mots de passe, messages ou numéros de carte de crédit, par exemple). <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 x 300 mm</translation>
 <translation id="2859806420264540918">Ce site affiche des annonces intrusives ou trompeuses.</translation>
 <translation id="28618371182701850">Véhicules électriques et rechargeables</translation>
@@ -1317,7 +1311,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3507936815618196901">Créer un plan 3D de votre environnement et suivre la position de la caméra</translation>
 <translation id="3512163584740124171">Cette règle est ignorée, car une autre issue du même groupe de règles présente une priorité plus élevée.</translation>
 <translation id="351522771072578657">Vous êtes actuellement dans un menu</translation>
-<translation id="3515972145999192222">Votre organisation a bloqué <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />, car il enfreint une règle. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Gestion d'objets multiples</translation>
 <translation id="3525130752944427905">10 x 14 pouces</translation>
 <translation id="3525435918300186947">Contrôler et reprogrammer des appareils MIDI ?</translation>
@@ -1483,7 +1476,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="3801265110651850478">Envoyer une requête "Do Not Track" pendant la navigation</translation>
 <translation id="380329542618494757">Nom</translation>
 <translation id="3803801106042434208">Ces moteurs de recherche sont populaires dans votre région</translation>
-<translation id="3806932344025766608">Des pirates informatiques qui se trouvent sur le site que vous essayez de consulter peuvent vous inciter à installer des logiciels ou à divulguer des éléments tels que votre mot de passe, votre numéro de téléphone ou votre numéro de carte de crédit. Chrome vous recommande vivement de revenir en lieu sûr. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">Décalage X de l'image</translation>
 <translation id="3807709094043295184">Classiques rock</translation>
 <translation id="3807873520724684969">Contenu malveillant bloqué.</translation>
@@ -3348,7 +3340,6 @@ Informations supplémentaires :
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">Validez votre identité afin que Chromium puisse insérer vos infos de paiement.</translation>
 <translation id="7437289804838430631">Ajouter des coordonnées</translation>
-<translation id="7438338505272634288">Des pirates informatiques qui se trouvent sur le site que vous essayez de consulter peuvent vous inciter à installer des logiciels malveillants affectant votre façon de naviguer, par exemple en modifiant votre page d'accueil ou en vous montrant des annonces supplémentaires sur les sites que vous consultez. Chrome vous recommande vivement de revenir en lieu sûr pour éviter tout danger. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">Parcourir hors connexion</translation>
 <translation id="7441627299479586546">Objet de la règle incorrect.</translation>
 <translation id="7441864845853794192">Épiceries fines</translation>
@@ -3448,7 +3439,6 @@ Informations supplémentaires :
 <translation id="759889825892636187">Impossible de traiter cette demande via <ph name="HOST_NAME" /> à l'heure actuelle.</translation>
 <translation id="7599089013883397081">Délai de téléchargement dépassé</translation>
 <translation id="7600965453749440009">Ne jamais traduire les pages rédigées en <ph name="LANGUAGE" /> </translation>
-<translation id="7601297359530599375">La connexion à ce site est généralement sécurisée, mais Chrome n'a pas pu utiliser de connexion sécurisée pour le moment. Il est possible qu'un pirate informatique tente d'espionner vos activités en ligne ou de modifier votre connexion réseau. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">Des pirates informatiques qui se trouvent sur le site que vous essayez de consulter pourraient installer un logiciel malveillant dérobant ou supprimant des éléments tels que votre mot de passe, vos photos, vos messages ou votre numéro de carte de crédit.</translation>
 <translation id="7608583484192556132">La personnalisation des annonces dépend de nombreux facteurs, y compris de ce paramètre, des <ph name="BEGIN_LINK_1" />annonces suggérées par les sites<ph name="END_LINK_1" />, des <ph name="BEGIN_LINK_2" />paramètres des cookies<ph name="END_LINK_2" /> et du fait que le site que vous consultez personnalise ou non les annonces. Découvrez comment <ph name="BEGIN_LINK_3" />gérer la confidentialité des annonces<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">La valeur <ph name="VALUE" /> est hors limites.</translation>
@@ -3721,7 +3711,6 @@ Informations supplémentaires :
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Les cartes non valides ont été supprimées</translation>
-<translation id="8100666323495101203">Votre organisation a identifié <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> comme un site susceptible de ne pas respecter une règle. <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8103161714697287722">Mode de paiement</translation>
 <translation id="8103643211515685474">Imprimer quand même</translation>
 <translation id="8105368624971345109">Désactiver</translation>

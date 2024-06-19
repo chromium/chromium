@@ -239,7 +239,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1427192966110103169">Heimasundlaugar, sánur og heilsulindir</translation>
 <translation id="1428146450423315676">Staflari 7</translation>
 <translation id="142858679511221695">Notandi í skýi</translation>
-<translation id="1428729058023778569">Þessi viðvörun birtist vegna þess að þetta vefsvæði styður ekki HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Sjálflímandi filma</translation>
 <translation id="1430915738399379752">Prenta</translation>
 <translation id="1432187715652018471">síða vill setja upp þjónustuhjálparforrit.</translation>
@@ -527,7 +526,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="1959445535228047762">Textinn þinn og efni síðunnar er sent til Google og verður hugsanlega notað til að bæta þennan eiginleika.
   <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436">Bókamerki frá <ph name="DOMAIN" /></translation>
-<translation id="196752089528718902">Yfirleitt tengistu vefsvæðum á öruggan hátt en Chrome gat ekki notað örugga tengingu í þetta sinn. Árásaraðili gæti verið að reyna að hlera eða breyta nettengingunni þinni. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">Röðunarvilla</translation>
 <translation id="1973785048533660168">Skrifstofu- og stjórnunarstörf</translation>
 <translation id="1974060860693918893">Ítarlegt</translation>
@@ -545,7 +543,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2003709556000175978">Endurstilltu aðgangsorðið þitt núna</translation>
 <translation id="2003775180883135320">Fjögur göt efst</translation>
 <translation id="2004697686368036666">Óvíst er að eiginleikar á sumum vefsvæðum virki</translation>
-<translation id="2005042463110681802">Þessi viðvörun birtist vegna þess að þetta vefsvæði styður ekki HTTPS og þú ert með huliðsstillingu. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Hnappurinn „Búa til viðburð“, virkjaðu til að búa til nýjan viðburð í Google-dagatali á skjótan hátt</translation>
 <translation id="201174227998721785">Stjórnaðu heimildum og gögnum sem eru geymd á vefsvæðum í stillingum Chrome</translation>
 <translation id="2012276282211112603">Engin umfjöllunarefni til að birta eins og er</translation>
@@ -607,7 +604,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2108755909498034140">Endurræstu tölvuna</translation>
 <translation id="2111166930115883695">Ýttu á bilslána til að spila</translation>
 <translation id="2112529237938317174">Sýna frekari upplýsingar um heimild</translation>
-<translation id="2113232594265919362">Þessi viðvörun birtist vegna þess að þetta vefsvæði styður ekki HTTPS og þú heyrir undir „Áætlun um ítarlega vernd“ hjá Google. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">Kort</translation>
 <translation id="2114841414352855701">Hunsuð vegna þess að <ph name="POLICY_NAME" /> hnekkti henni.</translation>
 <translation id="2118132148597630479">Umslag: C5</translation>
@@ -809,7 +805,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2482878487686419369">Tilkynningar</translation>
 <translation id="248348093745724435">Vélareglur</translation>
 <translation id="2485243023686553468">Snjallsímar</translation>
-<translation id="2490199669743245365">Árásaraðilar á vefsvæðinu sem þú ert að reyna að opna gætu sett upp skaðlegan hugbúnað sem stelur eða eyðir atriðum á borð við aðgangsorð, myndir, skilaboð eða kreditkortanúmer. Chrome mælir eindregið með því að fara aftur í örugga höfn. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">Vottorð þjónsins inniheldur villur.</translation>
 <translation id="2491414235131909199">Viðbót setti þessa síðu á bannlista</translation>
 <translation id="2495083838625180221">JSON-þáttari</translation>
@@ -970,7 +965,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="2839501879576190149">Falskt vefsvæði</translation>
 <translation id="2843623755398178332">Fletta og stækka/minnka samnýtta flipann þinn?</translation>
 <translation id="2851291081585704741">Þú ert ekki á netinu</translation>
-<translation id="2856444702002559011">Tölvuþrjótar gætu verið að reyna að stela upplýsingum þínum frá <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (til dæmis aðgangsorðum, skilaboðum eða kreditkortum). <ph name="BEGIN_LEARN_MORE_LINK" />Frekari upplýsingar<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 x 300 mm</translation>
 <translation id="2859806420264540918">Þetta vefsvæði sýnir ágengar eða villandi auglýsingar.</translation>
 <translation id="28618371182701850">Rafbílar og tvinnbílar</translation>
@@ -1317,7 +1311,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3507936815618196901">Búa til þrívíddarkort af umhverfinu og rekja staðsetningu myndavélarinnar</translation>
 <translation id="3512163584740124171">Þessi regla er hunsuð vegna þess að önnur regla úr sama regluhópi hefur meiri forgang.</translation>
 <translation id="351522771072578657">Þú ert í valmynd eins og er</translation>
-<translation id="3515972145999192222">Fyrirtækið þitt hefur lokað á <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> vegna þess að það brýtur gegn reglum. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Meðhöndlun margra hluta</translation>
 <translation id="3525130752944427905">10 x 14 to.</translation>
 <translation id="3525435918300186947">Stjórna og endurforrita MIDI-tæki?</translation>
@@ -1483,7 +1476,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3801265110651850478">Senda beiðnina „Ekki rekja“ með vefumferð</translation>
 <translation id="380329542618494757">Nafn</translation>
 <translation id="3803801106042434208">Þessar leitarvélar eru vinsælar á þínu svæði</translation>
-<translation id="3806932344025766608">Árásaraðilar á vefsvæðinu sem þú ert að reyna að opna gætu reynt að plata þig til að setja upp hugbúnað eða afhjúpað atriði á borð við aðgangsorðið þitt, símanúmerið eða kreditkortanúmerið. Chrome mælir eindregið með því að fara aftur í örugga höfn. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">X-færsla myndar</translation>
 <translation id="3807709094043295184">Sígilt rokk og gullaldartónlist</translation>
 <translation id="3807873520724684969">Lokað á skaðlegt efni.</translation>
@@ -3347,7 +3339,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">Staðfestu hver þú ert svo Chromium geti fyllt út greiðsluupplýsingarnar þínar.</translation>
 <translation id="7437289804838430631">Bæta við samskiptaupplýsingum</translation>
-<translation id="7438338505272634288">Árásaraðilar á vefsvæðinu sem þú ert að reyna að opna gætu reynt að plata þig til að setja upp skaðlegan hugbúnað sem hefur áhrif á það hvernig þú vafrar. Til dæmis með því að breyta heimasíðunni þinni eða birta þér viðbótarauglýsingar á vefsvæðum sem þú opnar. Chrome mælir eindregið með því að fara aftur í örugga höfn til að forðast skaða. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">Skoðun án nettengingar</translation>
 <translation id="7441627299479586546">Rangt viðfang stefnu</translation>
 <translation id="7441864845853794192">Sælkeramatur</translation>
@@ -3447,7 +3438,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="759889825892636187"><ph name="HOST_NAME" /> getur ekki unnið úr þessari beiðni eins og er.</translation>
 <translation id="7599089013883397081">Niðurhal rann út á tíma</translation>
 <translation id="7600965453749440009">Þýða aldrei <ph name="LANGUAGE" /></translation>
-<translation id="7601297359530599375">Yfirleitt tengistu þessu vefsvæði á öruggan hátt en Chrome gat ekki notað örugga tengingu í þetta sinn. Árásaraðili gæti verið að reyna að hlera eða breyta nettengingunni þinni. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">Árásaraðilar á vefsvæðinu sem þú ert að reyna að opna gætu sett upp skaðlegan hugbúnað sem stelur eða eyðir atriðum á borð við aðgangsorð, myndir, skilaboð eða kreditkortanúmer.</translation>
 <translation id="7608583484192556132">Það veltur á ýmsu hvort að auglýsing sem þú sérð sé sérsniðin eða ekki, þ.m.t. þessari stillingu, <ph name="BEGIN_LINK_1" />auglýsingatillögum vefsvæðis<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />fótsporastillingunum þínum<ph name="END_LINK_2" /> og hvort að vefsvæði sem þú skoðar sérsníði auglýsingar. Kynntu þér hvernig þú <ph name="BEGIN_LINK_3" />stjórnar persónuvernd auglýsinga<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Gildið er utan sviðs <ph name="VALUE" />.</translation>
@@ -3720,7 +3710,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Ógild kort hafa verið fjarlægð</translation>
-<translation id="8100666323495101203">Fyrirtækið þitt hefur skilgreint  <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> sem vefsvæði sem kann að brjóta gegn reglum. <ph name="BEGIN_LEARN_MORE_LINK" />Nánar<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8103161714697287722">Greiðslumáti</translation>
 <translation id="8103643211515685474">Prenta samt</translation>
 <translation id="8105368624971345109">Slökkva</translation>

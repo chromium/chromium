@@ -264,6 +264,7 @@
 <translation id="8386869251364507178">Chromium 動作</translation>
 <translation id="8409374867500149834">Chromium 提供了最強大的安全防護機制，可避免你誤入有害網站</translation>
 <translation id="8458950033462118672">只要將 Chromium 設為預設瀏覽器應用程式，即可自動在 Chromium 中開啟連結。</translation>
+<translation id="8543509361021925846">{THRESHOLD,plural, =1{如果 Chromium 閒置 {THRESHOLD} 分鐘，就會執行這些動作。系統將刪除你登入時只儲存到這部裝置的資料，其中可能包含歷史記錄和密碼。}other{如果 Chromium 閒置 {THRESHOLD} 分鐘，就會執行這些動作。系統將刪除你登入時只儲存到這部裝置的資料，其中可能包含歷史記錄和密碼。}}</translation>
 <translation id="858114650497379505">你可以在 iPhone 上的其他應用程式，使用儲存至密碼管理員的密碼。</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. 保留所有權利。</translation>
 <translation id="865600487977764604">在已登入帳戶的狀態下，能確保你持續享有安全無虞的 Chromium 使用體驗，也有助於提升其他 Google 應用程式的安全機制。</translation>

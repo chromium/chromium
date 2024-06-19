@@ -169,6 +169,7 @@
 <translation id="3261565993776444564">Încearcă o culoare nouă pentru a-ți personaliza browserul</translation>
 <translation id="3282568296779691940">Conectează-te la Chrome</translation>
 <translation id="3286538390144397061">Repornește acum</translation>
+<translation id="3292333338048274092">Apoi va trebui să repornești Chrome.</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome se va relansa acum}=1{Chrome se va relansa într-o secundă}few{Chrome se va relansa în # secunde}other{Chrome se va relansa în # de secunde}}</translation>
 <translation id="3396977131400919238">S-a produs o eroare de sistem de operare în timpul instalării. Descarcă din nou Google Chrome.</translation>
@@ -213,6 +214,7 @@
 <translation id="4035053306113201399">Pentru a se aplica actualizarea, sistemul de operare Chrome trebuie să fie repornit.</translation>
 <translation id="4050175100176540509">În cea mai recentă versiune sunt disponibile îmbunătățiri de securitate și funcții noi importante.</translation>
 <translation id="4053720452172726777">Personalizați și controlați Google Chrome</translation>
+<translation id="4084404300720192944">Pentru a permite accesul la fereastră, permite înregistrarea ecranului pentru Chrome din Preferințe de sistem.</translation>
 <translation id="4106587138345390261">Chrome explorează noi funcții care le dau site-urilor posibilitatea să ofere aceeași experiență de navigare, folosind mai puține informații despre tine</translation>
 <translation id="4110895483821904099">Configurează noul profil Chrome</translation>
 <translation id="4111566860456076004">Chrome nu poate verifica de unde provine această extensie. Ar putea fi nesigură. Elimin-o din Chrome ca să nu mai poată vedea și modifica datele tale de pe site-urile pe care le accesezi, inclusiv informațiile cu caracter personal.</translation>
@@ -243,6 +245,7 @@
 <translation id="4384570495110188418">Chrome nu îți poate verifica parolele, deoarece nu te-ai conectat</translation>
 <translation id="4389991535395284064">Atunci când navighezi în modul incognito, Chrome te va avertiza înainte de a încărca un site folosind o conexiune nesecurizată</translation>
 <translation id="4427306783828095590">Protecția îmbunătățită face mai multe pentru blocarea phishingului și a programelor malware</translation>
+<translation id="4434353761996769206">Eroare în programul de instalare: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4450664632294415862">Chrome – conectare la rețea – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">O altă operație din Google Chrome este în curs de desfășurare. Încearcă din nou mai târziu.</translation>
 <translation id="4459234553906210702">Ad measurement le dă site-urilor pe care le accesezi posibilitatea de a solicita informații de la Chrome care le ajută să măsoare performanța anunțurilor asociate. Ad measurement restricționează urmărirea pe mai multe site-uri prin transferul câtor mai puține informații între site-uri.</translation>
@@ -349,6 +352,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6182736845697986886">Nu s-a instalat, din cauza unei erori interne a serverului de actualizare.</translation>
 <translation id="6200139057479872438">Nu ai accesat recent site-ul. Chrome a eliminat <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
+<translation id="621585339844629864">Pentru a permite accesul la ecran, permite înregistrarea ecranului pentru Chrome din Preferințe de sistem.</translation>
 <translation id="6235018212288296708">Regula de intrare pentru Google Chrome pentru a permite traficul mDNS.</translation>
 <translation id="624230925347970731">Chrome se va închide în curând</translation>
 <translation id="6247557882553405851">Manager de parole Google</translation>

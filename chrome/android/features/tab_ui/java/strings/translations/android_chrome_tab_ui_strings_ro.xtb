@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Mov</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Extinde grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_ONE" /> filă.}few{Extinde grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> file.}other{Extinde grupul de file <ph name="TITLE_OF_GROUP" /> cu <ph name="TABS_COUNT_MANY" /> de file.}}</translation>
 <translation id="427987768447457592">Grup de file nou</translation>
+<translation id="4338724047016295066">Filele inactive se vor închide automat. Le poți găsi oricând în Istoric.</translation>
 <translation id="4371591986692297148">Inactiv</translation>
 <translation id="4460014764210899310">Anulați gruparea</translation>
 <translation id="4648718555153979859">Filele tale sunt grupate aici</translation>
 <translation id="4686942373615810936">Creat chiar acum</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Închide după 1 zi}few{Închide după <ph name="DAY_COUNT_MANY" /> zile}other{Închide după <ph name="DAY_COUNT_MANY" /> de zile}}</translation>
 <translation id="4777866634702576038">Ștergi grupul de file?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> recenzie)}few{(<ph name="REVIEWS_COUNT_MANY" /> recenzii)}other{(<ph name="REVIEWS_COUNT_MANY" /> de recenzii)}}</translation>
 <translation id="4850886885716139402">Afișează</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Aici vei vedea grupurile de file</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Anulează <ph name="TABS_COUNT_ONE" /> filă selectată}few{Anulează <ph name="TABS_COUNT_MANY" /> file selectate}other{Anulează <ph name="TABS_COUNT_MANY" /> de file selectate}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> filă}few{<ph name="TABS_COUNT_MANY" /> file}other{<ph name="TABS_COUNT_MANY" /> de file}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{După o zi}few{După <ph name="DAY_COUNT_MANY" /> zile}other{După <ph name="DAY_COUNT_MANY" /> de zile}}</translation>
 <translation id="6549021453810473782">Vezi informații despre magazin</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Mută fila spre stânga</translation>

@@ -239,7 +239,6 @@
 <translation id="1427192966110103169">Үйдегі бассейн, сауна және спа</translation>
 <translation id="1428146450423315676">7-жинастырушы</translation>
 <translation id="142858679511221695">Бұлт пайдаланушысы</translation>
-<translation id="1428729058023778569">Бұл сайт HTTPS қолдамайды, сондықтан осы хабарландыруды көріп тұрсыз. <ph name="BEGIN_LEARN_MORE_LINK" />Толығырақ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Өздігінен жабысатын үлдір</translation>
 <translation id="1430915738399379752">Басып шығару</translation>
 <translation id="1432187715652018471">Бет қызмет өңдегішін орнатпақ.</translation>
@@ -527,7 +526,6 @@
 <translation id="1959445535228047762">Мәтін мен бет контенті Google-ға жіберіледі. Ол бұл функцияны жақсарту үшін қолданылады.
   <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> бетбелгілері</translation>
-<translation id="196752089528718902">Әдетте сайттарға қауіпсіз қосыласыз, бірақ Chrome бұл жолы қауіпсіз байланысты пайдалана алмады. Шабуылдаушы желі байланысыңызды ұстап қалуға немесе өзгертуге әрекет жасауы мүмкін. <ph name="BEGIN_LEARN_MORE_LINK" />Толық ақпарат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">Сериалау қатесі</translation>
 <translation id="1973785048533660168">Діни және әкімшілік жұмыс орындары</translation>
 <translation id="1974060860693918893">Қосымша</translation>
@@ -545,7 +543,6 @@
 <translation id="2003709556000175978">Құпия сөзді қайта орнату</translation>
 <translation id="2003775180883135320">Жоғарғы жағын төрт рет тесу</translation>
 <translation id="2004697686368036666">Кейбір сайттың функциялары жұмыс істемеуі мүмкін.</translation>
-<translation id="2005042463110681802">Бұл сайт HTTPS протоколына қолдау көретпейтіндіктен және сіз инкогнито режимінде болғандықтан, осы ескерту көрсетілді. <ph name="BEGIN_LEARN_MORE_LINK" />Толық ақпарат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">"Іс-шара жасау" түймесі, Google Calendar-да жылдам жаңа іс-шара жасау үшін белсендіріңіз</translation>
 <translation id="201174227998721785">Chrome параметрлері арқылы сайттарға қатысты сақталған рұқсаттар мен деректерді басқару</translation>
 <translation id="2012276282211112603">Дәл қазір көрсететін тақырып жоқ.</translation>
@@ -607,7 +604,6 @@
 <translation id="2108755909498034140">Компьютерді қайта іске қосу</translation>
 <translation id="2111166930115883695">Ойнау үшін бос орын пернесін басыңыз.</translation>
 <translation id="2112529237938317174">Рұқсат мәліметтерін көрсету</translation>
-<translation id="2113232594265919362">Бұл сайт HTTPS протоколын қолдамайды, сондықтан осы хабарландыруды көріп тұрсыз және сіз Google Күшейтілген қорғаныс бағдарламасындасыз. <ph name="BEGIN_LEARN_MORE_LINK" />Толығырақ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">Карта</translation>
 <translation id="2114841414352855701">Еленбейді, себебі оны <ph name="POLICY_NAME" /> қайта анықтаған.</translation>
 <translation id="2118132148597630479">C5 хатқалтасы</translation>
@@ -809,7 +805,6 @@
 <translation id="2482878487686419369">Хабарландырулар</translation>
 <translation id="248348093745724435">Құрылғы саясаттары</translation>
 <translation id="2485243023686553468">Смартфондар</translation>
-<translation id="2490199669743245365">Сіз кіргелі жатқан сайттағы шабуылдаушылар құпия сөз, фотосуреттер, хабарлар немесе несиелік карта нөмірі сияқты нәрселерді ұрлайтын не жоятын зиянды бағдарламалық құралды орнатуы мүмкін. Chrome міндетті түрде қауіпсіздікке оралуды ұсынады. <ph name="BEGIN_LEARN_MORE_LINK" />Толық ақпарат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">Сервер сертификатында қате бар.</translation>
 <translation id="2491414235131909199">Бұл бетке кеңейтім тарапынан тыйым салынған.</translation>
 <translation id="2495083838625180221">JSON Parser</translation>
@@ -970,7 +965,6 @@
 <translation id="2839501879576190149">Назар аударыңыз: жалған сайт</translation>
 <translation id="2843623755398178332">Ортақ қойындыны айналдыру және масштабтау қажет пе?</translation>
 <translation id="2851291081585704741">Офлайн режимдесіз</translation>
-<translation id="2856444702002559011"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> сайтындағы шабуылдаушылар ақпаратыңызды (мысалы, құпия сөздер, хабарлар немесе несиелік карталар) ұрлауға әрекет етуі мүмкін.<ph name="BEGIN_LEARN_MORE_LINK" />Толығырақ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 x 300 мм</translation>
 <translation id="2859806420264540918">Бұл сайтта мазалайтын немесе жалған ақпаратты жарнамалар көрсетіледі.</translation>
 <translation id="28618371182701850">Электрлік және қосылатын көліктер</translation>
@@ -1316,7 +1310,6 @@
 <translation id="3507936815618196901">Айналаңыздың 3D картасын жасау және камера орнын бақылау</translation>
 <translation id="3512163584740124171">Бұл саясат еленбейді, себебі дәл сол саясаттар тобындағы басқа бір саясаттың басымдығы жоғары болып тұр.</translation>
 <translation id="351522771072578657">Қазір мәзірдесіз</translation>
-<translation id="3515972145999192222">Ұйымыңыз <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> доменін бөгеді, себебі ол саясатқа қайшы. <ph name="BEGIN_LEARN_MORE_LINK" />Толығырақ<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Бірнеше нысанды өңдеу</translation>
 <translation id="3525130752944427905">10 x 14 дюйм</translation>
 <translation id="3525435918300186947">MIDI құрылғыларын басқару және қайта бағдарламалау керек пе?</translation>
@@ -1482,7 +1475,6 @@
 <translation id="3801265110651850478">Браузерді пайдалану трафигіңіз арқылы "Do Not Track" сұрауын жіберу</translation>
 <translation id="380329542618494757">Аты</translation>
 <translation id="3803801106042434208">Бұл іздеу жүйелері аймағыңызда танымал.</translation>
-<translation id="3806932344025766608">Сіз кіргелі жатқан сайттағы шабуылдаушылар бағдарламалық құралды алдап орнатқызуы немесе құпия сөз, телефон не несиелік карта нөмірі сияқты нәрселерді алдап ашқызуы мүмкін. Chrome міндетті түрде қауіпсіздікке оралуды ұсынады. <ph name="BEGIN_LEARN_MORE_LINK" />Толық ақпарат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">Кескіннің Х осі бойынша ығысуы</translation>
 <translation id="3807709094043295184">Классикалық рок және ескі әндер</translation>
 <translation id="3807873520724684969">Зиянды контентке тыйым салынды.</translation>
@@ -3346,7 +3338,6 @@
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">Chromium төлем туралы ақпаратыңызды толтыруы үшін, жеке басыңызды растаңыз.</translation>
 <translation id="7437289804838430631">Байланыс ақпаратын енгізу</translation>
-<translation id="7438338505272634288">Сіз кіргелі жатқан сайттағы шабуылдаушылар браузерді пайдалануға теріс әсер ететін зиянды бағдарламалық құралды алдап орнатқызуы (мысалы, негізгі бетті өзгерту немесе сіз кірген сайттарда қосымша жарнамалар көрсету арқылы) мүмкін. Chrome зиянды әрекеттерден аулақ болу үшін міндетті түрде қауіпсіздікке оралуды ұсынады. <ph name="BEGIN_LEARN_MORE_LINK" />Толық ақпарат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">Офлайн режимде ашыңыз</translation>
 <translation id="7441627299479586546">Қате саясат нысаны</translation>
 <translation id="7441864845853794192">Таңдаулы және деликатес тағамдар</translation>
@@ -3446,7 +3437,6 @@
 <translation id="759889825892636187"><ph name="HOST_NAME" /> қазір бұл сұрауды өңдей алмайды.</translation>
 <translation id="7599089013883397081">Жүктеп алу уақыты өтіп кетті</translation>
 <translation id="7600965453749440009">Ешқашан <ph name="LANGUAGE" /> тіліне аудармау</translation>
-<translation id="7601297359530599375">Әдетте бұл сайтқа қауіпсіз қосыласыз, бірақ Chrome бұл жолы қауіпсіз байланысты пайдалана алмады. Шабуылдаушы желі байланысыңызды ұстап қалуға немесе өзгертуге әрекет жасауы мүмкін. <ph name="BEGIN_LEARN_MORE_LINK" />Толық ақпарат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">Сіз кіргелі жатқан сайттағы шабуылдаушылар құпия сөз, фотосуреттер, хабарлар немесе несиелік карта нөмірі сияқты нәрселерді ұрлайтын не жоятын зиян бағдарламалық құралды орнатуы мүмкін.</translation>
 <translation id="7608583484192556132">Сізге көрсетілетін жарнаманың жекелендірілетіні осы параметр, <ph name="BEGIN_LINK_1" />сайт ұсынған жарнамалар<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />cookie файлдарының параметрлері<ph name="END_LINK_2" /> және сіз көретін сайттың жарнамаларды жекелендіруі сияқты көптеген факторға байланысты. <ph name="BEGIN_LINK_3" />Жарнамадағы құпиялықты басқару<ph name="END_LINK_3" /> туралы толық ақпарат алыңыз.</translation>
 <translation id="7610193165460212391">Мән <ph name="VALUE" /> ауқымынан тыс.</translation>
@@ -3719,7 +3709,6 @@
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Жарамсыз карталар өшірілді</translation>
-<translation id="8100666323495101203">Ұйымыңыз <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> сайтының компания саясатын бұзуы мүмкін екенін анықтады. <ph name="BEGIN_LEARN_MORE_LINK" />Толық ақпарат<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8103161714697287722">Төлеу әдісі</translation>
 <translation id="8103643211515685474">Бәрібір басып шығару</translation>
 <translation id="8105368624971345109">Өшіру</translation>

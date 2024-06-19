@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Күлгін</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> қойындысы бар "<ph name="TITLE_OF_GROUP" />" қойындылар тобын жаю.}other{<ph name="TABS_COUNT_MANY" /> қойындысы бар "<ph name="TITLE_OF_GROUP" />" қойындылар тобын жаю.}}</translation>
 <translation id="427987768447457592">Жаңа қойындылар тобы</translation>
+<translation id="4338724047016295066">Әрекетсіз қойындылар автоматты түрде жабылады. Оларды тарихтан табуға болады.</translation>
 <translation id="4371591986692297148">Өшірілген</translation>
 <translation id="4460014764210899310">Топты тарату</translation>
 <translation id="4648718555153979859">Қойындылар осы жерге топтастырылады.</translation>
 <translation id="4686942373615810936">Жаңа ғана жасалды.</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{1 күннен кейін жабу}other{<ph name="DAY_COUNT_MANY" /> күннен кейін жабу}}</translation>
 <translation id="4777866634702576038">Қойындылар тобын жою қажет пе?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> пікір)}other{(<ph name="REVIEWS_COUNT_MANY" /> пікір)}}</translation>
 <translation id="4850886885716139402">Көрініс</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Қойындылар топтарын осы жерден табуға болады</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Таңдалған <ph name="TABS_COUNT_ONE" /> қойындыны топтан шығару}other{Таңдалған <ph name="TABS_COUNT_MANY" /> қойындыны топтан шығару}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> қойынды}other{<ph name="TABS_COUNT_MANY" /> қойынды}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{1 күннен кейін}other{<ph name="DAY_COUNT_MANY" /> күннен кейін}}</translation>
 <translation id="6549021453810473782">Дүкен туралы ақпаратты көру</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Қойындыны солға жылжыту</translation>

@@ -532,6 +532,7 @@
 <translation id="371398631992790800">Скрыть закладки</translation>
 <translation id="37207012422556617">Популярные запросы</translation>
 <translation id="3725081662140949903">Чтобы другие люди не могли использовать ваш пароль, измените его в приложении "<ph name="APP" />".</translation>
+<translation id="372676576864368480">Автозаполнить поле номером карты, который оканчивается на <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Создано <ph name="DATE" /></translation>
 <translation id="374357899112510277">Скрыть загрузки</translation>
 <translation id="3745190878148784130">Скрыть действие "Изменить масштаб текста"</translation>
@@ -1097,6 +1098,7 @@
 <translation id="6476800141292307438">Перевод страницы на <ph name="LANGUAGE" />. Параметры указаны в нижней части экрана.</translation>
 <translation id="648164694371393720">Ошибка аутентификации</translation>
 <translation id="6494931198667773526">Окончание</translation>
+<translation id="6500795388871406244">Используйте предложенный пароль:</translation>
 <translation id="650279896687777322">Подробнее</translation>
 <translation id="6505334220040167806">Свернуть группу вкладок.</translation>
 <translation id="6507973708545996744">Войдите в аккаунт, чтобы синхронизировать список для чтения на всех своих устройствах.</translation>
@@ -1310,6 +1312,7 @@
 <translation id="7583004045319035904">Используйте <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> для разблокировки вкладок инкогнито.</translation>
 <translation id="7598439272585186139">Повысьте уровень безопасности</translation>
 <translation id="7600965453749440009">Никогда не переводить <ph name="LANGUAGE" /></translation>
+<translation id="7603308509262646847">Автозаполнить поле именем владельца карты: <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Заблок. вспл. окон: <ph name="NUMBER_OF_BLOCKED_POPUPS" /></translation>
 <translation id="7606639338662398635">Группы вкладок</translation>
 <translation id="7607521702806708809">Удалить пароль</translation>
@@ -1342,6 +1345,7 @@
 <translation id="7749790401023484470">Выберите текст.</translation>
 <translation id="7752405526771734448">Визуальный поиск с помощью Объектива</translation>
 <translation id="7756478488453921771">Меню → Настройки → Способы оплаты</translation>
+<translation id="775755486779745798">Автозаполнить поле месяцем окончания срока действия: <ph name="MONTH" /></translation>
 <translation id="7760127703945531263">Блокировка вкладок инкогнито</translation>
 <translation id="7765158879357617694">Перенести</translation>
 <translation id="7772032839648071052">Подтвердите кодовую фразу</translation>
@@ -1518,6 +1522,7 @@
 <translation id="8556590991644167667">{count,plural, =1{Вы закрыли {count} предупреждение}one{Вы закрыли {count} предупреждение}few{Вы закрыли {count} предупреждения}many{Вы закрыли {count} предупреждений}other{Вы закрыли {count} предупреждения}}</translation>
 <translation id="8560253818350321773">Сначала показывать самые часто используемые элементы</translation>
 <translation id="8569721750632860947">Какой URL добавить в список для чтения?</translation>
+<translation id="8577056989960190117">Автозаполнить поле годом окончания срока действия: <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Выключено</translation>
 <translation id="8591976964826315682">Блокировать файлы cookie сторонних сайтов в режиме инкогнито</translation>
 <translation id="8593565399399144771">Здесь можно открыть новую вкладку.</translation>

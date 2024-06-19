@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">जांभळा</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब असलेल्या <ph name="TITLE_OF_GROUP" /> या टॅब गटाचा विस्तार करा.}other{<ph name="TABS_COUNT_MANY" /> टॅब असलेल्या <ph name="TITLE_OF_GROUP" /> या टॅब गटाचा विस्तार करा.}}</translation>
 <translation id="427987768447457592">नवीन टॅब गट</translation>
+<translation id="4338724047016295066">इनॅक्टिव्ह टॅब आपोआप बंद होतील. तुम्ही ते इतिहास मध्ये कधीही पाहू शकता.</translation>
 <translation id="4371591986692297148">इनॅक्टिव्ह आहे</translation>
 <translation id="4460014764210899310">गटामधून काढून टाका</translation>
 <translation id="4648718555153979859">तुमचे टॅब येथे एकत्रित केले आहेत</translation>
 <translation id="4686942373615810936">आता तयार केला आहे</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{एका दिवसानंतर बंद करा}other{<ph name="DAY_COUNT_MANY" /> दिवसांनंतर बंद करा}}</translation>
 <translation id="4777866634702576038">टॅब गट हटवायचा आहे का?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> परीक्षण)}other{(<ph name="REVIEWS_COUNT_MANY" /> परीक्षणे)}}</translation>
 <translation id="4850886885716139402">पहा</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">तुम्हाला तुमचे टॅब गट इथे दिसतील</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{निवडलेला <ph name="TABS_COUNT_ONE" /> टॅब गटामधून काढून टाका}other{निवडलेले <ph name="TABS_COUNT_MANY" /> टॅब गटामधून काढून टाका}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब}other{<ph name="TABS_COUNT_MANY" /> टॅब}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{एका दिवसानंतर}other{<ph name="DAY_COUNT_MANY" /> दिवसांनंतर}}</translation>
 <translation id="6549021453810473782">स्टोअरची माहिती पहा</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">टॅब डावीकडे हलवा</translation>

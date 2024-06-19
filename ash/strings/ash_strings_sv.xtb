@@ -119,6 +119,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1383876407941801731">Sök</translation>
 <translation id="1391102559483454063">På</translation>
 <translation id="1394698770495054737">Full oskärpa</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{För 1 dag sedan}other{För # dagar sedan}}</translation>
 <translation id="1404963891829069586">Fokusljud</translation>
 <translation id="1407069428457324124">Mörkt tema</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Navigera mellan datum med piltangenterna.</translation>
@@ -209,6 +210,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="174102739345480129">Märkpennan är inaktiverad.</translation>
 <translation id="1743570585616704562">Identifierades inte</translation>
 <translation id="1743927604032653654">Komprimera <ph name="NOTIFICATION_TITLE" />-avisering</translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Inom 1 timme}=1{För 1 tim sedan}other{För # tim sedan}}</translation>
 <translation id="1746730358044914197">Inmatningsmetoderna konfigureras av administratören.</translation>
 <translation id="1747336645387973286">inlämningsdatum: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Skärmen på tangentbordet har aktiverats</translation>
@@ -346,6 +348,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2360398059912971776">batteri</translation>
 <translation id="2361210043495191221">Aktivera och inaktivera wifi. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">Skickat från <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">Det går inte att logga in på Chromebook</translation>
 <translation id="2367972762794486313">Visa appar</translation>
 <translation id="2368828502825385061">Hitta</translation>
@@ -506,6 +509,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Vill du aktivera mikrofonåtkomst?</translation>
 <translation id="296762781903199866">Det gick inte att ladda ned filer för taligenkänning på <ph name="LANGUAGE" /></translation>
+<translation id="2968761508099987738">Din nuvarande plats stöds för närvarande inte.</translation>
 <translation id="2970920913501714344">Installera appar, tillägg och teman</translation>
 <translation id="2977598380246111477">Nästa nummer</translation>
 <translation id="2985148236010982088">Visa alla appar</translation>
@@ -979,6 +983,7 @@ Vissa funktioner är begränsade för att förlänga batteritiden.</translation>
 <translation id="468293128311738995">Appar från telefonen</translation>
 <translation id="4690510401873698237">Hyllan längst ned</translation>
 <translation id="4696813013609194136">Lås upp enheten med föräldrakod</translation>
+<translation id="4697357603686181098">Jag kan inte hjälpa dig med detta. Prova en annan begäran.</translation>
 <translation id="4702647871202761252">Integritetsskärmen är inaktiverad</translation>
 <translation id="4706121060329443414">Ett nytt nedladdningsförsök görs senare. Tills vidare skickas tal till Google för bearbetning.</translation>
 <translation id="470644585772471629">Inverterade färger</translation>
@@ -1901,6 +1906,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="7982878511129296052">Inaktiverar …</translation>
 <translation id="7984197416080286869">För många försök att använda fingeravtryck</translation>
 <translation id="798779949890829624">Den här inställningen hanteras av administratören</translation>
+<translation id="7989206653429884947">Öppnas ofta</translation>
 <translation id="799296642788192631">Du kan fästa viktiga filer. Håll muspekaren över ett objekt eller öppna Filer och högerklicka på ett objekt för att fästa det.</translation>
 <translation id="7994370417837006925">Multiinloggning</translation>
 <translation id="7995804128062002838">Skärmbild/skärminspelning misslyckades</translation>
@@ -2085,6 +2091,7 @@ Stäng av enheten genom att hålla av/på-knappen nedtryckt igen.</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">Tiden är ute. Bra jobbat! 🎉</translation>
+<translation id="8753368202781196133">Det här språket stöds för närvarande inte.</translation>
 <translation id="8755498163081687682">Verifiera din identitet: <ph name="ORIGIN_NAME" /> vill kontrollera din identitet</translation>
 <translation id="875593634123171288">Visa VPN-inställningar</translation>
 <translation id="8756799553341497810">Du kan börja anpassa appens layout när du har stängt den här vyn.</translation>

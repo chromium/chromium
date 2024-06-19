@@ -192,6 +192,7 @@
 <translation id="6646696210740573446">透過隱私權伺服器隱藏你的 IP 位址，再傳送經模糊處理的部分網址傳送給 Google。如果網站試圖竊取密碼，或你下載的檔案會造成傷害，Chrome 可能也會將網址 (包括部分網頁內容) 傳送給 Google。</translation>
 <translation id="6648150602980899529">您即將使用由 <ph name="DOMAIN" /> 所管理的帳戶登入，並授權該網域的管理員控管您的 Chrome 資料。您的資料會與這個帳戶建立永久連結。登出 Chrome 後，系統會將您的資料從這個裝置上刪除，但繼續保留在您的 Google 帳戶中。</translation>
 <translation id="6683891932310469419">開啟 Chrome 歷史記錄頁面。</translation>
+<translation id="6695698548122852044">{THRESHOLD,plural, =1{如果 Chrome 閒置 {THRESHOLD} 分鐘，就會執行這些動作。系統將刪除你登入時只儲存到這部裝置的資料，其中可能包含歷史記錄和密碼。}other{如果 Chrome 閒置 {THRESHOLD} 分鐘，就會執行這些動作。系統將刪除你登入時只儲存到這部裝置的資料，其中可能包含歷史記錄和密碼。}}</translation>
 <translation id="6709398533399187136">你的密碼因為資料侵害事件遭到外洩，Google 密碼管理工具建議你立即變更這組密碼。</translation>
 <translation id="6820553595690137150">通關密語加密資料不包括付款方式和地址。
 

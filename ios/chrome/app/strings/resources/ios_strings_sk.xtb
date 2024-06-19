@@ -532,6 +532,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="371398631992790800">Skryť Záložky</translation>
 <translation id="37207012422556617">Populárne vyhľadávania</translation>
 <translation id="3725081662140949903">Ak nechcete, aby ostatní používali vaše heslo, otvorte aplikáciu <ph name="APP" /> a zmeňte si ho</translation>
+<translation id="372676576864368480">Automaticky doplniť číslo karty končiace sa na <ph name="LAST_DIGITS" /></translation>
 <translation id="3738428049780661523">Vytvorené <ph name="DATE" /></translation>
 <translation id="374357899112510277">Skryť Stiahnuté</translation>
 <translation id="3745190878148784130">Skryť položku Textová lupa</translation>
@@ -1098,6 +1099,7 @@ Weby si nemôžu na základe súborov cookie zobraziť vašu históriu prehliada
 <translation id="6476800141292307438">Stránka sa prekladá do jazyka <ph name="LANGUAGE" />. Možnosti nájdete v dolnej časti obrazovky.</translation>
 <translation id="648164694371393720">Chyba overenia</translation>
 <translation id="6494931198667773526">Končí sa</translation>
+<translation id="6500795388871406244">Použite navrhnuté heslo:</translation>
 <translation id="650279896687777322">Ďalšie informácie…</translation>
 <translation id="6505334220040167806">Zbaliť skupinu kariet</translation>
 <translation id="6507973708545996744">Ak chcete mať čitateľský zoznam k dispozícii vo všetkých zariadeniach, prihláste sa.</translation>
@@ -1311,6 +1313,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7583004045319035904">Odomknite karty inkognito funkciou <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
 <translation id="7598439272585186139">Získajte lepšie zabezpečenie</translation>
 <translation id="7600965453749440009">Nikdy neprekladať jazyk <ph name="LANGUAGE" /></translation>
+<translation id="7603308509262646847">Automaticky doplniť majiteľa karty <ph name="NAME" /></translation>
 <translation id="7603852183842204213">Blokované kontextové okná (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">Skupiny kariet</translation>
 <translation id="7607521702806708809">Odstrániť heslo</translation>
@@ -1343,6 +1346,7 @@ Weby v režime inkognito nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="7749790401023484470">Nevybrali ste žiadny text.</translation>
 <translation id="7752405526771734448">Vizuálne vyhľadávanie pomocou funkcie Lens</translation>
 <translation id="7756478488453921771">Ponuka → Nastavenia → Spôsoby platby</translation>
+<translation id="775755486779745798">Automaticky doplniť mesiac vypršania <ph name="MONTH" /></translation>
 <translation id="7760127703945531263">Zámka režimu inkognito</translation>
 <translation id="7765158879357617694">Presunúť</translation>
 <translation id="7772032839648071052">Potvrďte prístupovú frázu</translation>
@@ -1519,6 +1523,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8556590991644167667">{count,plural, =1{Zavreli ste {count} upozornenie}few{Zavreli ste {count} upozornenia}many{You dismissed {count} warnings}other{Zavreli ste {count} upozornení}}</translation>
 <translation id="8560253818350321773">Zobrazujte si často používané položky ako prvé.</translation>
 <translation id="8569721750632860947">Ktorú webovú adresu chcete pridať do svojho čitateľského zoznamu?</translation>
+<translation id="8577056989960190117">Automaticky doplniť rok vypršania <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Vypnúť</translation>
 <translation id="8591976964826315682">Blokovať súbory cookie tretích strán v režime inkognito</translation>
 <translation id="8593565399399144771">Tu môžete otvoriť novú kartu.</translation>

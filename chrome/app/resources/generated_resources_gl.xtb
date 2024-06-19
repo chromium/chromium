@@ -2519,7 +2519,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2806372837663997957">O dispositivo co que estás tentando compartir o ficheiro non o aceptou</translation>
 <translation id="2806891468525657116">O atallo xa existe</translation>
 <translation id="2807517655263062534">Os ficheiros que descargas aparecen aquí</translation>
-<translation id="2809946454624727734">Poderás acceder a el nos enderezos gardados.</translation>
 <translation id="2811205483104563968">Contas</translation>
 <translation id="2812049959647166806">A tecnoloxía Thunderbolt non é compatible</translation>
 <translation id="2812171980080389735">Redes e contrasinais gardados para que poidas conectarte ao instante</translation>
@@ -2936,7 +2935,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3117791853215125017">{COUNT,plural, =1{Produciuse un erro ao enviar <ph name="ATTACHMENTS" /> a este dispositivo: <ph name="DEVICE_NAME" />}other{Produciuse un erro ao enviar <ph name="ATTACHMENTS" /> a este dispositivo: <ph name="DEVICE_NAME" />}}</translation>
 <translation id="3118319026408854581">Axuda de <ph name="PRODUCT_NAME" /></translation>
 <translation id="3118748462829336648">Abrir o panel lateral</translation>
-<translation id="3119743309973425629">Ritmo de pestanexo do cursor de texto</translation>
+<translation id="3119743309973425629">Velocidade de intermitencia do cursor de texto</translation>
 <translation id="3119948370277171654">Que contido ou URL estabas emitindo?</translation>
 <translation id="3122464029669770682">CPU</translation>
 <translation id="3122496702278727796">Non se puido crear o directorio de datos</translation>
@@ -5449,7 +5448,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5016491575926936899">Podes enviar mensaxes de texto desde o ordenador, compartir a conexión a Internet, responder cando recibas notificacións de conversas e desbloquear o dispositivo <ph name="DEVICE_TYPE" /> co teléfono.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="5016983299133677671">Proba un contrasinal novo</translation>
 <translation id="5017529052065664584">Últimos 15 minutos</translation>
-<translation id="5017643436812738274">Podes navegar polas páxinas cun cursor de texto. Preme Control+Buscar+7 para desactivar esta función.</translation>
 <translation id="5018207570537526145">Abrir sitio web da extensión</translation>
 <translation id="5018526990965779848">Enviar datos de uso e diagnóstico. Envía automaticamente datos de diagnóstico e de uso do dispositivo e das aplicacións a Google para axudar a mellorar a túa experiencia en Android. Esta información permitirá aumentar a estabilidade do sistema e das aplicacións, e realizar outras melloras. Algúns datos agregados tamén serán útiles para as aplicacións e os socios de Google, como os programadores de Android. Se está activada a opción Actividade web e das aplicacións adicional, estes datos pódense gardar na túa Conta de Google.</translation>
 <translation id="5020008942039547742">Seleccionar ventá diferente</translation>
@@ -5606,6 +5604,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5135533361271311778">Non se puido crear o elemento do marcador.</translation>
 <translation id="513555878193063507">Engadir novo APN</translation>
 <translation id="5136343472380336530">Asegúrate de que os dous dispositivos estean desbloqueados, preto un do outro e co Bluetooth activado. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
+<translation id="5136529877787728692">F7</translation>
 <translation id="5137349216872139332">Produciuse un erro durante a conexión á zona wifi instantánea</translation>
 <translation id="5138227688689900538">Mostrar menos</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, busca con <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
@@ -7384,6 +7383,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6490471652906364588">Dispositivo USB‑C (porto dereito)</translation>
 <translation id="6491376743066338510">Produciuse un erro na autorización</translation>
 <translation id="649396225532207613">Este ficheiro pode danar as túas contas de redes sociais e persoais</translation>
+<translation id="6493991254603208962">Reduce o brillo</translation>
 <translation id="6494327278868541139">Mostrar detalles de protección mellorada</translation>
 <translation id="6494445798847293442">Non é unha autoridade de certificación</translation>
 <translation id="6494483173119160146">Produciuse un erro no dispositivo que impide a recuperación. Restabléceo (borraranse todos os datos do usuario) e téntao de novo.</translation>
@@ -8176,6 +8176,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="7082850163410901674">As notificacións están desactivadas na configuración do sistema de Mac</translation>
 <translation id="7083774521940805477">Steam para Chromebook (beta) non está dispoñible no teu Chromebook.</translation>
 <translation id="708550780726587276">(sen configurar)</translation>
+<translation id="7086377898680121060">Aumenta o brillo</translation>
 <translation id="7086672505018440886">Incluír ficheiros de rexistro de Chrome no arquivo.</translation>
 <translation id="7088434364990739311">Erro ao iniciar a comprobación da actualización (código de erro <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">O administrador cambiou o estado do dispositivo para que non se poida utilizar. Para que se poida rexistrar, o administrador debe colocar o dispositivo en estado pendente.</translation>
@@ -9955,7 +9956,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <ph name="BEGIN_PARAGRAPH2" />Para obter máis axuda, visita g.co/flex/InstallErrors.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="8386091599636877289">Non se atopou a política.</translation>
 <translation id="8387361103813440603">Permiso denegado para ver a túa localización</translation>
-<translation id="8387617938027387193">Verifica que es ti</translation>
+<translation id="8387617938027387193">Verifica a túa identidade</translation>
 <translation id="8388770971141403598">Os perfís secundarios non son compatibles</translation>
 <translation id="8389492867173948260">Permitir que esta extensión lea e cambie todos os datos dos sitios web que visites:</translation>
 <translation id="8390392581097975659">Instalando software do escáner</translation>

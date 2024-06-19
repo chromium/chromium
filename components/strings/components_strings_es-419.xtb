@@ -239,7 +239,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1427192966110103169">Spa, saunas y piscinas domésticas</translation>
 <translation id="1428146450423315676">Apilador 7</translation>
 <translation id="142858679511221695">Usuario de la nube</translation>
-<translation id="1428729058023778569">Se muestra esta advertencia porque este sitio no admite HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Película autoadhesiva</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1432187715652018471">Esta página quiere instalar un controlador de servicios.</translation>
@@ -527,7 +526,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1959445535228047762">El texto y el contenido de la página se envían a Google y se pueden usar para mejorar esta función.
   <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436">Favoritos de <ph name="DOMAIN" /></translation>
-<translation id="196752089528718902">Por lo general, te conectas a sitios de forma segura, pero Chrome no pudo usar una conexión segura esta vez. Es posible que un atacante esté intentando espiar o modificar tu conexión de red. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">Error de serialización</translation>
 <translation id="1973785048533660168">Trabajos para oficinistas y administrativos</translation>
 <translation id="1974060860693918893">Configuración avanzada</translation>
@@ -545,7 +543,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2003709556000175978">Restablecer tu contraseña ahora</translation>
 <translation id="2003775180883135320">Perforación cuádruple en la parte superior</translation>
 <translation id="2004697686368036666">Es posible que algunas funciones no puedan utilizarse en algunos sitios.</translation>
-<translation id="2005042463110681802">Se muestra esta advertencia porque este sitio no admite HTTPS y estás en modo Incógnito. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Botón Crear evento: actívalo para crear un evento nuevo en el Calendario de Google rápidamente</translation>
 <translation id="201174227998721785">En la configuración de Chrome, administra los permisos y datos almacenados en los sitios</translation>
 <translation id="2012276282211112603">No hay temas para mostrar en este momento</translation>
@@ -607,7 +604,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2108755909498034140">Reinicia la computadora.</translation>
 <translation id="2111166930115883695">Presiona la barra espaciadora para jugar</translation>
 <translation id="2112529237938317174">Mostrar los detalles del permiso</translation>
-<translation id="2113232594265919362">Se muestra esta advertencia porque este sitio no admite HTTPS y formas parte del Programa de Protección Avanzada de Google. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">Tarjeta</translation>
 <translation id="2114841414352855701">Se ignoró porque fue anulada por <ph name="POLICY_NAME" /> .</translation>
 <translation id="2118132148597630479">Sobre C5</translation>
@@ -809,7 +805,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="248348093745724435">Políticas de la máquina</translation>
 <translation id="2485243023686553468">Smartphones</translation>
-<translation id="2490199669743245365">Los atacantes del sitio que intentas visitar podrían instalar software dañino o borrar elementos como tu contraseña, fotos, mensajes o número de tarjeta de crédito. Chrome recomienda que regreses a un sitio seguro. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">El certificado del servidor contiene errores.</translation>
 <translation id="2491414235131909199">Una extensión bloqueó esta página</translation>
 <translation id="2495083838625180221">Analizador de JSON</translation>
@@ -970,7 +965,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2839501879576190149">El sitio al que quieres acceder es falso</translation>
 <translation id="2843623755398178332">¿Quieres desplazar y acercar la pestaña compartida?</translation>
 <translation id="2851291081585704741">No tienes conexión</translation>
-<translation id="2856444702002559011">Es posible que algunos atacantes intenten robar tu información de <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (p. ej., contraseñas, mensajes o tarjetas de crédito). <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 × 300 mm</translation>
 <translation id="2859806420264540918">Este sitio muestra anuncios intrusivos o engañosos.</translation>
 <translation id="28618371182701850">Vehículos eléctricos y enchufables</translation>
@@ -1318,7 +1312,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3507936815618196901">Crear un mapa 3D de tu entorno y hacer un seguimiento de la posición de la cámara</translation>
 <translation id="3512163584740124171">Se ignora esta política porque otra del mismo grupo tiene prioridad.</translation>
 <translation id="351522771072578657">En este momento, estás en un menú</translation>
-<translation id="3515972145999192222">Tu organización bloqueó <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> porque infringe una política. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Control de varios objetos</translation>
 <translation id="3525130752944427905">25.4 × 35.6 cm (10 × 14 in)</translation>
 <translation id="3525435918300186947">¿Quieres controlar y reprogramar los dispositivos MIDI?</translation>
@@ -1484,7 +1477,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3801265110651850478">Enviar una solicitud "Do Not Track" con el tráfico de navegación</translation>
 <translation id="380329542618494757">Nombre</translation>
 <translation id="3803801106042434208">Estos motores de búsqueda son populares en tu región</translation>
-<translation id="3806932344025766608">Los atacantes del sitio que intentas visitar podrían engañarte para que instales software o reveles información como tu contraseña, teléfono o número de tarjeta de crédito. Chrome recomienda que regreses a un sitio seguro. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">Cambio en el eje X de la imagen</translation>
 <translation id="3807709094043295184">Rock clásico y éxitos de ayer</translation>
 <translation id="3807873520724684969">Se bloqueó el contenido dañino</translation>
@@ -3348,7 +3340,6 @@ Detalles adicionales:
 <translation id="7429429656042611765">Ejecutivo</translation>
 <translation id="7432774160230062882">Verifica tu identidad para que Chromium pueda completar tu información de pago.</translation>
 <translation id="7437289804838430631">Agregar información de contacto</translation>
-<translation id="7438338505272634288">Los atacantes del sitio que intentas visitar podrían engañarte para que instales software dañino que afecta la manera en la que navegas. Por ejemplo, pueden cambiar la página principal o mostrarte anuncios adicionales en los sitios que visitas. Chrome recomienda que regreses a un sitio seguro para evitar daños. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">Explorar sin conexión</translation>
 <translation id="7441627299479586546">Nombre de usuario o dominio de política incorrecto</translation>
 <translation id="7441864845853794192">Alimentos gourmet y especialidades</translation>
@@ -3448,7 +3439,6 @@ Detalles adicionales:
 <translation id="759889825892636187"><ph name="HOST_NAME" /> no puede procesar esta solicitud en este momento.</translation>
 <translation id="7599089013883397081">Se agotó el tiempo de espera para descargar tus archivos</translation>
 <translation id="7600965453749440009">Nunca traducir <ph name="LANGUAGE" /></translation>
-<translation id="7601297359530599375">Por lo general, te conectas a este sitio de forma segura, pero Chrome no pudo usar una conexión segura esta vez. Es posible que un atacante esté intentando espiar o modificar tu conexión de red. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">Los atacantes del sitio que intentas visitar podrían instalar software dañino que roba o borra elementos como tu contraseña, fotos, mensajes o número de tarjeta de crédito.</translation>
 <translation id="7608583484192556132">La personalización de un anuncio que ves puede depender de muchos factores, como este parámetro de configuración, los <ph name="BEGIN_LINK_1" />anuncios sugeridos por sitios<ph name="END_LINK_1" />, tu <ph name="BEGIN_LINK_2" />configuración de cookies<ph name="END_LINK_2" /> y si el sitio que estás viendo personaliza los anuncios. Obtén más información para <ph name="BEGIN_LINK_3" />administrar tu privacidad en los anuncios<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">El valor <ph name="VALUE" /> está fuera del rango.</translation>
@@ -3721,7 +3711,6 @@ Detalles adicionales:
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">Se quitaron las tarjetas no válidas</translation>
-<translation id="8100666323495101203">Tu organización identificó <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> como un sitio que podría incumplir una política. <ph name="BEGIN_LEARN_MORE_LINK" />Más información<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8103161714697287722">Forma de pago</translation>
 <translation id="8103643211515685474">Imprimir de todos modos</translation>
 <translation id="8105368624971345109">Desactivar</translation>

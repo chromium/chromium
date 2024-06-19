@@ -2517,7 +2517,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2806372837663997957">Das Gerät, für das du Dateien freigeben möchtest, hat diese nicht angenommen</translation>
 <translation id="2806891468525657116">Verknüpfung ist bereits vorhanden</translation>
 <translation id="2807517655263062534">Hier werden heruntergeladene Dateien angezeigt</translation>
-<translation id="2809946454624727734">Du kannst unter „Gespeicherte Adressen“ darauf zugreifen.</translation>
 <translation id="2811205483104563968">Konten</translation>
 <translation id="2812049959647166806">Thunderbolt wird nicht unterstützt</translation>
 <translation id="2812171980080389735">Gespeicherte Netzwerke und Passwörter, damit du schnell eine Verbindung herstellen kannst</translation>
@@ -2672,6 +2671,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="292371311537977079">Chrome-Einstellungen</translation>
 <translation id="2926085873880284723">Standardverknüpfungen wiederherstellen</translation>
 <translation id="2926620265753325858"><ph name="DEVICE_NAME" /> wird nicht unterstützt.</translation>
+<translation id="2926708162326352948">Design wurde durch das hochgeladene Bild aktualisiert</translation>
 <translation id="2927017729816812676">Cache-Speicher</translation>
 <translation id="2928795416630981206">Dürfen meine Kameraposition erfassen</translation>
 <translation id="2931157624143513983">An Druckbereich anpassen</translation>
@@ -5442,7 +5442,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5016491575926936899">Du kannst SMS von deinem Computer senden, deine Internetverbindung teilen, auf Unterhaltungsbenachrichtigungen antworten und dein <ph name="DEVICE_TYPE" /> mit deinem Smartphone entsperren.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="5016983299133677671">Es mit einem neuen Passwort versuchen</translation>
 <translation id="5017529052065664584">Letzte 15 Minuten</translation>
-<translation id="5017643436812738274">Du kannst dich mit einem Textcursor auf den Seiten bewegen. Drücke die Tastenkombination Strg + Suchtaste + 7, um die Tastaturnavigation zu deaktivieren.</translation>
 <translation id="5018207570537526145">Erweiterungs-Website öffnen</translation>
 <translation id="5018526990965779848">Du hast die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. Du kannst uns helfen, Android zu verbessern, indem du zulässt, dass Diagnose- und Gerätedaten sowie App-Nutzungsdaten automatisch an Google gesendet werden. Die Daten helfen unter anderem dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google nützlich, beispielsweise Android-Entwickler. Wenn die Einstellung "Zusätzliche Web- &amp; App-Aktivitäten" aktiviert ist, werden diese Daten möglicherweise in deinem Google-Konto gespeichert.</translation>
 <translation id="5020008942039547742">Anderes Fenster auswählen</translation>
@@ -5599,6 +5598,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5135533361271311778">Lesezeichenelement konnte nicht erstellt werden.</translation>
 <translation id="513555878193063507">Neuen APN hinzufügen</translation>
 <translation id="5136343472380336530">Beide Geräte müssen entsperrt sein und sich nah beieinander befinden. Außerdem muss Bluetooth aktiviert sein. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
+<translation id="5136529877787728692">F7</translation>
 <translation id="5137349216872139332">Fehler bei Verbindung mit Instant-Hotspot</translation>
 <translation id="5138227688689900538">Weniger anzeigen</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, <ph name="DEFAULT_SEARCH_ENGINE_NAME" />-Suche</translation>
@@ -7376,10 +7376,12 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6490471652906364588">USB-C-Gerät (Port rechts)</translation>
 <translation id="6491376743066338510">Fehler bei Autorisierung</translation>
 <translation id="649396225532207613">Diese Datei kann deinen privaten Konten und Konten in sozialen Netzwerken schaden</translation>
+<translation id="6493991254603208962">Helligkeit verringern</translation>
 <translation id="6494327278868541139">Details zum erweiterten Schutz anzeigen</translation>
 <translation id="6494445798847293442">Keine Zertifizierungsstelle</translation>
 <translation id="6494483173119160146">Auf dem Gerät ist ein nicht behebbarer Fehler aufgetreten. Bitte setze dein Gerät zurück (dadurch werden alle Nutzerdaten gelöscht) und versuch es noch einmal.</translation>
 <translation id="6495266441917713704">WLAN-Übertragung nicht möglich</translation>
+<translation id="6495453178162183932">Design wurde auf Chrome-Standard zurückgesetzt</translation>
 <translation id="6497784818439587832">Du kannst die Bildschirmgröße ändern, um Elemente auf dem Bildschirm zu verkleinern oder zu vergrößern</translation>
 <translation id="6497789971060331894">Gegenläufiges Scrollen für Maus</translation>
 <translation id="6498249116389603658">&amp;Alle deine Sprachen</translation>
@@ -8169,6 +8171,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7082850163410901674">Benachrichtigungen sind in den Mac-Systemeinstellungen deaktiviert</translation>
 <translation id="7083774521940805477">Steam für Chromebook (Beta) ist auf deinem Chromebook nicht verfügbar.</translation>
 <translation id="708550780726587276">(nicht konfiguriert)</translation>
+<translation id="7086377898680121060">Helligkeit erhöhen</translation>
 <translation id="7086672505018440886">Chrome-Protokolldateien im Archiv einbeziehen.</translation>
 <translation id="7088434364990739311">Update-Prüfung konnte nicht gestartet werden. Fehlercode: <ph name="ERROR" /></translation>
 <translation id="7088674813905715446">Die Bereitstellung dieses Geräts wurde vom Administrator aufgehoben. Bitte deinen Administrator, es als ausstehend zu kennzeichnen, um es für die Registrierung zu aktivieren.</translation>

@@ -115,6 +115,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1209206284964581585">Hide for now</translation>
 <translation id="121201262018556460">You attempted to reach <ph name="DOMAIN" />, but the server presented a certificate containing a weak key. An attacker could have broken the private key and the server may not be the server you expected (you may be communicating with an attacker).</translation>
 <translation id="1212527389003717329">Download started. To see it, press and hold |<ph name="ACCELERATOR" />|.</translation>
+<translation id="1214970845432250240">Price range</translation>
 <translation id="1219129156119358924">System Security</translation>
 <translation id="1222060260947439312">Right tray</translation>
 <translation id="1224330468394120478">A3 x 6</translation>
@@ -239,7 +240,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1427192966110103169">Home Swimming Pools, Saunas and Spas</translation>
 <translation id="1428146450423315676">Stacker 7</translation>
 <translation id="142858679511221695">Cloud user</translation>
-<translation id="1428729058023778569">You are seeing this warning because this site does not support HTTPS. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1429080515485835353">Self-adhesive film</translation>
 <translation id="1430915738399379752">Print</translation>
 <translation id="1432187715652018471">page wants to install a service handler.</translation>
@@ -527,7 +527,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1959445535228047762">Your text and page content are sent to Google and may be used to improve this feature.
   <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="1962204205936693436"><ph name="DOMAIN" /> Bookmarks</translation>
-<translation id="196752089528718902">You usually connect to sites securely, but Chrome couldn't use a secure connection this time. An attacker might be trying to eavesdrop or modify your network connection. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="1973335181906896915">Serialisation error</translation>
 <translation id="1973785048533660168">Clerical and Administrative Jobs</translation>
 <translation id="1974060860693918893">Advanced</translation>
@@ -545,7 +544,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2003709556000175978">Reset your password now</translation>
 <translation id="2003775180883135320">Quad punch top</translation>
 <translation id="2004697686368036666">Features on some sites may not work</translation>
-<translation id="2005042463110681802">You are seeing this warning because this site does not support HTTPS and you are in Incognito mode. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2009942480257059311">Create event button, activate to quickly create a new event in Google Calendar</translation>
 <translation id="201174227998721785">Manage permissions and data stored across sites in Chrome settings</translation>
 <translation id="2012276282211112603">No topics to show right now</translation>
@@ -607,7 +605,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2108755909498034140">Restart your computer</translation>
 <translation id="2111166930115883695">Press space to play</translation>
 <translation id="2112529237938317174">Show permission details</translation>
-<translation id="2113232594265919362">You are seeing this warning because this site does not support HTTPS and you are under Google's Advanced Protection Programme. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2113977810652731515">Card</translation>
 <translation id="2114841414352855701">Ignored because it was overridden by <ph name="POLICY_NAME" />.</translation>
 <translation id="2118132148597630479">Envelope C5</translation>
@@ -809,7 +806,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="248348093745724435">Machine policies</translation>
 <translation id="2485243023686553468">Smart phones</translation>
-<translation id="2490199669743245365">Attackers on the site you're trying to visit might install harmful software that steals or deletes things like your password, photos, messages or credit card number. Chrome strongly recommends going back to safety. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2491120439723279231">Server's certificate contains errors.</translation>
 <translation id="2491414235131909199">This page has been blocked by an extension</translation>
 <translation id="2495083838625180221">JSON Parser</translation>
@@ -970,7 +966,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2839501879576190149">Fake site ahead</translation>
 <translation id="2843623755398178332">Scroll and zoom your shared tab?</translation>
 <translation id="2851291081585704741">You're offline</translation>
-<translation id="2856444702002559011">Attackers might be trying to steal your information from <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (for example, passwords, messages or credit cards). <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="2858134430383535011">200 mm x 300 mm</translation>
 <translation id="2859806420264540918">This site shows intrusive or misleading ads.</translation>
 <translation id="28618371182701850">Electric and Plug-In Vehicles</translation>
@@ -1189,6 +1184,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3272091146646336650">Super B</translation>
 <translation id="3272112314896217187">Enter <ph name="NUMBER_OF_DIGITS" />-digit verification code</translation>
 <translation id="3272643614306383237">Less than 1 MB. Some sites may load more slowly on your next visit.</translation>
+<translation id="327346289570683313">Price range</translation>
 <translation id="3273738040255912340">Your administrator can make changes to your profile and browser remotely, analyse information about the browser through reporting and perform other necessary tasks. Activity on this device may also be managed outside of Chromium. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Administrator policy doesn’t recommend opening this file in <ph name="DESTINATION_NAME" />}other{Administrator policy doesn’t recommend opening these files in <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Your organisation, <ph name="ENROLLMENT_DOMAIN" />, has sent some info to the following websites, like settings or policies.</translation>
@@ -1317,7 +1313,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3507936815618196901">Create a 3D map of your surroundings and track camera position</translation>
 <translation id="3512163584740124171">This policy is ignored because another policy from the same policy group has a higher priority.</translation>
 <translation id="351522771072578657">You are currently on a menu</translation>
-<translation id="3515972145999192222">Your organisation has blocked <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> because it violates a policy. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Multiple objects handling</translation>
 <translation id="3525130752944427905">10 in x 14 in</translation>
 <translation id="3525435918300186947">Control and reprogramme MIDI devices?</translation>
@@ -1483,7 +1478,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3801265110651850478">Send a 'Do Not Track' request with your browsing traffic</translation>
 <translation id="380329542618494757">Name</translation>
 <translation id="3803801106042434208">These search engines are popular in your region</translation>
-<translation id="3806932344025766608">Attackers on the site you're trying to visit might trick you into installing software or revealing things like your password, phone or credit card number. Chrome strongly recommends going back to safety. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3807366285948165054">Image X shift</translation>
 <translation id="3807709094043295184">Classic rock and oldies</translation>
 <translation id="3807873520724684969">Harmful content blocked.</translation>
@@ -3347,7 +3341,6 @@ Additional details:
 <translation id="7429429656042611765">Executive</translation>
 <translation id="7432774160230062882">Verify it's you so Chromium can fill in your payment info.</translation>
 <translation id="7437289804838430631">Add contact info</translation>
-<translation id="7438338505272634288">Attackers on the site you're trying to visit might trick you into installing harmful software that affects the way you browse — for example, by changing your homepage or showing you extra ads on sites you visit. Chrome strongly recommends going back to safety to avoid harm. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7440140511386898319">Explore while offline</translation>
 <translation id="7441627299479586546">Wrong policy subject</translation>
 <translation id="7441864845853794192">Gourmet and Speciality Foods</translation>
@@ -3447,7 +3440,6 @@ Additional details:
 <translation id="759889825892636187"><ph name="HOST_NAME" /> is currently unable to handle this request.</translation>
 <translation id="7599089013883397081">Downloading timed out</translation>
 <translation id="7600965453749440009">Never translate <ph name="LANGUAGE" /></translation>
-<translation id="7601297359530599375">You usually connect to this site securely, but Chrome couldn't use a secure connection this time. An attacker might be trying to eavesdrop or modify your network connection. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="7605377493722372900">Attackers on the site you're trying to visit might install harmful software that steals or deletes things like your password, photos, messages or credit card number.</translation>
 <translation id="7608583484192556132">Whether an ad that you see is personalised can depend on many things, including this setting, <ph name="BEGIN_LINK_1" />site-suggested ads<ph name="END_LINK_1" />, your <ph name="BEGIN_LINK_2" />cookie settings<ph name="END_LINK_2" /> and if the site that you're viewing personalises ads. Learn more about <ph name="BEGIN_LINK_3" />managing your ad privacy<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Value is out of range <ph name="VALUE" />.</translation>
@@ -3720,7 +3712,6 @@ Additional details:
 <translation id="8098855213644561659">A3 Extra</translation>
 <translation id="809898108652741896">A6</translation>
 <translation id="8100588592594801589">The invalid cards have been removed</translation>
-<translation id="8100666323495101203">Your organisation has identified <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> as a site that might violate a policy. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="8103161714697287722">Payment Method</translation>
 <translation id="8103643211515685474">Print anyway</translation>
 <translation id="8105368624971345109">Turn Off</translation>

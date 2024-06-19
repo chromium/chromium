@@ -13,6 +13,7 @@
 <translation id="1361748954329991663">Prehliadač Chromium je zastaraný. Ak v <ph name="BEGIN_LINK" />obchode s aplikáciami<ph name="END_LINK" /> nie je dostupná aktualizácia, je možné, že vaše zariadenie už nepodporuje nové verzie prehliadača Chromium.</translation>
 <translation id="1423007117030725713">Začnite vyhľadávanie na novej karte prehliadača Chromium.</translation>
 <translation id="1431818719585918472">Umožnite prehliadaču Chromium uzamknúť vaše karty inkognito.</translation>
+<translation id="146407871188825689">Používajte Chromium v iPade predvolene</translation>
 <translation id="1472013873724362412">Váš účet nefunguje v prehliadači Chromium. Kontaktujte správcu domény alebo sa prihláste pomocou bežného účtu Google.</translation>
 <translation id="1503199973012840174">Váš prehliadač Chromium je zastaraný. V záujme svojho bezpečia ho aktualizujte.</translation>
 <translation id="1507010443238049608">Pomoc so zlepšovaním funkcií a výkonu prehliadača Chromium</translation>
@@ -265,6 +266,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje pr
 <translation id="8386869251364507178">Akcie v prehliadači Chromium</translation>
 <translation id="8409374867500149834">Máte nasilnejšie zabezpečenie prehliadača Chromium proti škodlivým webom</translation>
 <translation id="8458950033462118672">Ak nastavíte Chromium ako predvolený prehliadač, budete v ňom môcť automaticky otvárať odkazy.</translation>
+<translation id="8543509361021925846">{THRESHOLD,plural, =1{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minútu. Údaje uložené iba do tohto zariadenia, keď ste mali prihlásený účet, sa odstránia. Môže to zahŕňať históriu a heslá.}few{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minúty. Údaje uložené iba do tohto zariadenia, keď ste mali prihlásený účet, sa odstránia. Môže to zahŕňať históriu a heslá.}many{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minúty. Údaje uložené iba do tohto zariadenia, keď ste mali prihlásený účet, sa odstránia. Môže to zahŕňať históriu a heslá.}other{Dochádza k tomu, keď Chromium nepoužívate {THRESHOLD} minút. Údaje uložené iba do tohto zariadenia, keď ste mali prihlásený účet, sa odstránia. Môže to zahŕňať históriu a heslá.}}</translation>
 <translation id="858114650497379505">Heslá, ktoré ste uložili do správcu hesiel, môžete v iPhone použiť v iných aplikáciách.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autori Chromium. Všetky práva vyhradené.</translation>
 <translation id="865600487977764604">Chráni vás v prehliadači Chromium a môže zlepšiť zabezpečenie v ďalších aplikáciách Googlu, keď sa prihlásite.</translation>

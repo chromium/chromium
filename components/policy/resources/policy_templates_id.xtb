@@ -825,7 +825,6 @@ Nilai minimumnya adalah 1 menit.
 <translation id="1635748761015837179">Izinkan penulisan ke perangkat penyimpanan eksternal</translation>
 <translation id="1639468541408865385">Aktifkan cache autentikasi HTTP yang tercakup secara global</translation>
 <translation id="1639673466479276550">Aktifkan screensaver di layar login.</translation>
-<translation id="1640447222731279244">Kontrol pengaktifan fitur "Buat dengan AI" di Wallpaper ChromeOS</translation>
 <translation id="1640824698339859203">Aktifkan SSO Mengambang dan pindahkan autentikasi layanan web pengguna ke perangkat baru</translation>
 <translation id="1641117061932613266">Mengaktifkan Layanan <ph name="PRODUCT_NAME" /> V2</translation>
 <translation id="1641394008743444477">Memungkinkan Anda menetapkan daftar fitur <ph name="PRODUCT_OS_NAME" /> untuk dinonaktifkan.
@@ -887,12 +886,6 @@ untuk memanggil API ini.</translation>
 
 Jika kebijakan disetel ke Salah (False) atau tidak disetel, tidak ada peristiwa yang akan direkam.</translation>
 <translation id="1692990221685273468">Menentukan apakah pemverifikasi sertifikat bawaan akan menerapkan batasan yang dienkode ke trust anchor yang dimuat dari penyimpanan trust platform.</translation>
-<translation id="1693528798631913178">Kebijakan ini mengaktifkan atau menonaktifkan "Buat dengan AI" di Latar Belakang VC untuk ChromeOS.
-0 = Menonaktifkan fitur untuk pengguna.
-
-1 = Mengaktifkan fitur untuk pengguna. Perhatikan bahwa tidak ada data yang dikirim ke Google untuk melatih atau meningkatkan kualitas model AI.
-
-Jika kebijakan ini disetel ke Tidak Disetel, fitur "Buat dengan AI" di Latar Belakang VC akan dinonaktifkan untuk pengguna versi bisnis.</translation>
 <translation id="169467210981344373">Nonaktifkan cache autentikasi HTTP yang tercakup secara global</translation>
 <translation id="1696501581280568361">Menyarankan pemisahan profil</translation>
 <translation id="1698810555265314018">Mengontrol resolusi gambar cetak saat <ph name="PRODUCT_NAME" /> mencetak PDF dengan rasterisasi.
@@ -1836,7 +1829,6 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 <translation id="2326031114717677574">Interval pada saat data audio diambil sampelnya dan dikumpulkan. Batas minimum yang diizinkan adalah 1 menit.
 
       Jika tidak disetel, interval default 15 menit akan berlaku.</translation>
-<translation id="2331028134545182024">Kontrol pengaktifan fitur "Buat dengan AI" di Latar Belakang VC ChromeOS</translation>
 <translation id="2333228572393176330">Kebijakan ini akan mengontrol fitur keamanan di TLS 1.3 yang melindungi koneksi terhadap serangan downgrade. Kebijakan ini kompatibel dengan versi sebelumnya dan tidak akan memengaruhi koneksi ke server atau proxy TLS 1.2 yang sudah patuh. Namun, versi lama dari beberapa proxy yang mengganggu TLS memiliki cacat dalam proses implementasi, sehingga versi tersebut menjadi tidak kompatibel.
 
       Jika kebijakan ini disetel ke Benar (True) atau tidak disetel, <ph name="PRODUCT_NAME" /> akan mengaktifkan perlindungan keamanan ini untuk semua koneksi.
@@ -3459,7 +3451,6 @@ Perlu diingat untuk tidak selalu mengaktifkan kebijakan ini, terutama dalam depl
 <translation id="3587482841069643663">Semua</translation>
 <translation id="3587766503874071316">Nonaktifkan pintasan aksesibilitas</translation>
 <translation id="3589193811812796052">Cegah modul WebAssembly dikirim lintas asal</translation>
-<translation id="3591518189681300697">Aktifkan migrasi file lokal ke cloud</translation>
 <translation id="3591527072193107424">Mengaktifkan fitur Dukungan Browser Lama.</translation>
 <translation id="3591584750136265240">Mengonfigurasi perilaku autentikasi proses masuk</translation>
 <translation id="3593905652755912452">Perilaku lama pengiriman peristiwa pada kontrol formulir yang dinonaktifkan akan digunakan.</translation>
@@ -5449,12 +5440,6 @@ Jika kebijakan ini tidak disetel atau daftar tidak berisi referensi gambar yang 
       Jika tidak ditetapkan, jangka waktu default selama 604800000 milidetik (satu minggu) akan digunakan.</translation>
 <translation id="5212810195096589189">Tentukan izin CLI VM</translation>
 <translation id="5213038356678567351">Situs yang seharusnya tidak pernah memicu pengalihan browser.</translation>
-<translation id="5215621993623612880">Kebijakan ini mengaktifkan atau menonaktifkan "Buat dengan AI" di Wallpaper untuk ChromeOS.
-0 = Menonaktifkan fitur untuk pengguna.
-
-1 = Mengaktifkan fitur untuk pengguna. Perhatikan bahwa tidak ada data yang dikirim ke Google untuk melatih atau meningkatkan kualitas model AI.
-
-Jika kebijakan ini disetel ke Tidak Disetel, fitur "Buat dengan AI" di Wallpaper akan dinonaktifkan untuk pengguna versi bisnis.</translation>
 <translation id="5216815237712190041">Mengonfigurasi gambar wallpaper tingkat perangkat yang akan ditampilkan di layar login jika belum ada pengguna yang login ke perangkat. Kebijakan ini disetel dengan menentukan URL tempat perangkat ChromeOS dapat mendownload gambar wallpaper dan hash kriptografi yang digunakan untuk memverifikasi integritas download. Gambar harus dalam format JPEG dan ukuran filenya tidak boleh lebih dari 16 MB. URL harus dapat diakses tanpa autentikasi apa pun. Gambar wallpaper didownload dan disimpan di cache. File akan didownload ulang setiap kali URL atau hash berubah.
 
       Jika kebijakan wallpaper perangkat disetel, perangkat ChromeOS akan mendownload dan menggunakan gambar wallpaper di layar login jika belum ada pengguna yang login ke perangkat. Setelah pengguna login, kebijakan wallpaper pengguna akan diterapkan.
@@ -6553,11 +6538,6 @@ Kebijakan ini tidak digunakan lagi mulai M124.</translation>
       Tidak menyetel kebijakan (jika didukung di perangkat) akan menerapkan mode pengisian daya baterai standar, dan pengguna tidak dapat mengubahnya.
 
       Catatan: Jika mode pengisian daya baterai Kustom dipilih, <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" /> dan <ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" /> juga harus ditentukan.</translation>
-<translation id="6064418365347066084">Memicu migrasi file lokal yang ada ke cloud.
-Hanya berlaku untuk pengguna SkyVault, misalnya jika LocalUserFilesAllowed disetel ke salah (false)
-dan DownloadDirectory berupa Google Drive atau OneDrive, dan jika diabaikan.
-    Jika kebijakan ini disetel ke Benar (True), file lokal akan dipindahkan ke folder cloud dan lokal, lalu disembunyikan dari pengguna.
-    Jika kebijakan ini disetel ke Salah (False) atau tidak disetel, file lokal akan tetap dalam mode hanya baca.</translation>
 <translation id="60655674079349516">Mengonfigurasi daftar jenis data penjelajahan yang harus dihapus saat pengguna menutup semua jendela browser.
 
 Peringatan: Menyetel kebijakan ini dapat memengaruhi dan menghapus data pribadi lokal secara permanen. Sebaiknya uji setelan Anda sebelum men-deploy untuk mencegah penghapusan data pribadi secara tidak sengaja.
@@ -7100,7 +7080,6 @@ Jika kebijakan ini tidak disetel, <ph name="PRODUCT_OS_NAME" /> akan menggunakan
       Penyambungan ini memungkinkan perangkat ChromeOS (dan Android) lain yang login dengan akun GAIA yang sama untuk disambungkan secara otomatis.
       Jika kebijakan ini tidak disetel, nilai default akan disetel ke nonaktif untuk pengguna versi bisnis dan disetel ke aktif untuk
       akun yang tidak terkelola.</translation>
-<translation id="6400959027108936283">Aktifkan fitur</translation>
 <translation id="6401669939808766804">Paksa pengguna logout</translation>
 <translation id="640244877779556713">Mengaktifkan Saran Emoji</translation>
 <translation id="6403114173011456561">Mengontrol keyboard virtual sentuh, yang berperan sebagai kebijakan tambahan untuk kebijakan <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
@@ -8479,7 +8458,6 @@ Perilaku ini akan menggantikan kebijakan <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_
       Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat yang terdaftar akan melaporkan daftar antarmuka jaringan beserta jenis dan alamat hardware-nya.
 
       Jika kebijakan disetel ke Nonaktif, perangkat yang terdaftar tidak akan melaporkan antarmuka jaringan.</translation>
-<translation id="7388618954884540850">Nonaktifkan migrasi file lokal ke cloud</translation>
 <translation id="7389872682701720082">Jika setelan ini diaktifkan, plugin yang masih berlaku selalu berjalan.
 
       Jika setelan ini dinonaktifkan atau tidak ditetapkan, pengguna akan dimintai izin untuk menjalankan plugin yang memerlukan otorisasi. Ini adalah plugin yang dapat membahayakan keamanan.</translation>
@@ -9791,7 +9769,6 @@ Jika kebijakan tidak disetel atau disetel ke 0, navigasi ke URL yang ditetapkan 
 
       Jika kebijakan ini dinonaktifkan atau tidak disetel, hanya profil lokal reguler yang akan digunakan.</translation>
 <translation id="8417305981081876834">Setel panjang maksimal PIN layar kunci</translation>
-<translation id="8418438383184278931">Mengaktifkan migrasi file pengguna lokal ke penyimpanan cloud</translation>
 <translation id="841977920223099909">Pemicu peringatan perlindungan sandi</translation>
 <translation id="8419965165591256432">Interval pengumpulan status aktivitas perangkat di perangkat terdaftar untuk pengguna terafiliasi. Batas minimum yang diizinkan adalah 1 menit.
 

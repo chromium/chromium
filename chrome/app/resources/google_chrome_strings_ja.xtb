@@ -54,6 +54,7 @@
 <translation id="1734234790201236882">このパスワードは Google アカウントに保存されるため、覚えておく必要はありません。</translation>
 <translation id="1786003790898721085"><ph name="TARGET_DEVICE_NAME" /> で Chrome にログインしていることを確認してから、もう一度送信してください。</translation>
 <translation id="1786044937610313874">Chrome でショートカットを開きます</translation>
+<translation id="178701303897325119">この拡張機能は現在サポートされていません。代わりに削除することをおすすめします。</translation>
 <translation id="1812689907177901597">この設定を無効にすると、Chrome にログインすることなく Gmail などの Google サイトにログインできます</translation>
 <translation id="1860536484129686729">このサイトを利用するには、Chrome でカメラの使用を許可する必要があります</translation>
 <translation id="1873233029667955273">Google Chrome はデフォルトのブラウザとして設定されていません</translation>
@@ -169,6 +170,7 @@
 <translation id="3261565993776444564">新しい色でブラウザをカスタマイズできます</translation>
 <translation id="3282568296779691940">Chrome にログイン</translation>
 <translation id="3286538390144397061">今すぐ再起動</translation>
+<translation id="3292333338048274092">その後、Chrome を再起動する必要があります。</translation>
 <translation id="3360895254066713204">Chrome Helper</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome は今すぐ再起動されます}=1{Chrome は 1 秒後に再起動されます}other{Chrome は # 秒後に再起動されます}}</translation>
 <translation id="3396977131400919238">インストール中にオペレーティング システム エラーが発生しました。Google Chrome をダウンロード直してください。</translation>
@@ -213,6 +215,7 @@
 <translation id="4035053306113201399">更新を適用するには、Chrome OS を再起動する必要があります。</translation>
 <translation id="4050175100176540509">最新バージョンに更新すると、重要なセキュリティ更新と新機能が適用されます。</translation>
 <translation id="4053720452172726777">Google Chrome の設定</translation>
+<translation id="4084404300720192944">ウィンドウを共有するには、[システム環境設定] で Chrome に画面の録画を許可してください。</translation>
 <translation id="4106587138345390261">Chrome では、使用するユーザー情報量を減らしながら、これまでと同様にブラウジングできる新機能をテストしています</translation>
 <translation id="4110895483821904099">新しい Chrome プロファイルの設定</translation>
 <translation id="4111566860456076004">Chrome では、この拡張機能の提供元を確認できないため、安全でない可能性があります。アクセスしたサイトでユーザーデータ（個人情報を含む）が参照、変更されないように、Chrome からこの拡張機能を削除してください。</translation>
@@ -244,6 +247,7 @@
 <translation id="4389991535395284064">シークレット モードでブラウジングする際、Chrome で安全でない接続を使用してサイトを読み込む前に警告を表示します</translation>
 <translation id="4427306783828095590">保護強化機能により、フィッシングを防ぎ、不正なソフトウェアをより強力にブロックします</translation>
 <translation id="4434353761996769206">インストーラー エラー: <ph name="INSTALLER_ERROR" /></translation>
+<translation id="4438657683599538446"><ph name="USER_EMAIL" /> として Chrome にログイン</translation>
 <translation id="4450664632294415862">Chrome - ネットワークにログイン - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Google Chrome で別の処理が行われています。しばらくしてからもう一度お試しください。</translation>
 <translation id="4459234553906210702">広告の測定により、アクセスしたサイトは、サイトが広告のパフォーマンスを測定する際に役立つ Chrome の情報をリクエストできます。広告の測定は、サイト間で転送する情報をできるだけ少なくすることで、クロスサイト トラッキングを制限します。</translation>
@@ -350,6 +354,7 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6182736845697986886">更新サーバーの内部エラーが発生したため、インストールできませんでした。</translation>
 <translation id="6200139057479872438">最近アクセスしていないため、Chrome で <ph name="PERMISSION_1" /> と <ph name="PERMISSION_2" /> の権限を削除しました</translation>
+<translation id="621585339844629864">画面を共有するには、[システム環境設定] で Chrome に画面の録画を許可してください。</translation>
 <translation id="6235018212288296708">mDNS トラフィックを許可する Google Chrome のインバウンド ルールです。</translation>
 <translation id="624230925347970731">Chrome はまもなく終了します</translation>
 <translation id="6247557882553405851">Google パスワード マネージャー</translation>

@@ -211,6 +211,7 @@
 <translation id="4415566066719264597">백그라운드에서 Chromium을 실행</translation>
 <translation id="4423735387467980091">Chromium 맞춤설정 및 제어</translation>
 <translation id="4427306783828095590">향상된 보호 기능이 피싱 및 멀웨어를 더욱 효과적으로 차단합니다.</translation>
+<translation id="4434353761996769206">설치 프로그램 오류: <ph name="INSTALLER_ERROR" /></translation>
 <translation id="4447409407328223819">Chrome for Testing 정보</translation>
 <translation id="4501471624619070934">이 국가에서는 액세스가 제한되므로 설치할 수 없습니다.</translation>
 <translation id="4510853178268397146">이 확장 프로그램은 데이터 수집 및 사용 방식과 같은 개인 정보 보호 관행을 게시하지 않았습니다. Chromium에서 삭제할 것을 권장합니다.</translation>

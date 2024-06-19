@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">ສີມ່ວງ</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{ຂະຫຍາຍກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ທີ່ມີ <ph name="TABS_COUNT_ONE" /> ແຖບ.}other{ຂະຫຍາຍກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ທີ່ມີ <ph name="TABS_COUNT_MANY" /> ແຖບ.}}</translation>
 <translation id="427987768447457592">ກຸ່ມແຖບໃໝ່</translation>
+<translation id="4338724047016295066">ແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້ຈະປິດໂດຍອັດຕະໂນມັດ. ທ່ານສາມາດເບິ່ງແຖບເຫຼົ່ານີ້ໄດ້ໃນປະຫວັດສະເໝີ.</translation>
 <translation id="4371591986692297148">ບໍ່ໄດ້ນຳໃຊ້</translation>
 <translation id="4460014764210899310">ຍົກເລີກການຈັດກຸ່ມ</translation>
 <translation id="4648718555153979859">ແຖບຂອງທ່ານຖືກຈັດເປັນກຸ່ມຮວມກັນຢູ່ບ່ອນນີ້</translation>
 <translation id="4686942373615810936">ຫາກໍສ້າງຕອນນີ້</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{ປິດຫຼັງຈາກ 1 ມື້}other{ປິດຫຼັງຈາກ <ph name="DAY_COUNT_MANY" /> ມື້}}</translation>
 <translation id="4777866634702576038">ລຶບກຸ່ມແຖບບໍ?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ຄຳຕິຊົມ)}other{(<ph name="REVIEWS_COUNT_MANY" /> ຄຳຕິຊົມ)}}</translation>
 <translation id="4850886885716139402">ເບິ່ງ</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">ທ່ານຈະເຫັນກຸ່ມແຖບຂອງທ່ານບ່ອນນີ້</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{ເຊົາຈັດກຸ່ມ <ph name="TABS_COUNT_ONE" /> ແຖບທີ່ເລືອກໄວ້}other{ເຊົາຈັດກຸ່ມ <ph name="TABS_COUNT_MANY" /> ແຖບທີ່ເລືອກໄວ້}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ແຖບ}other{<ph name="TABS_COUNT_MANY" /> ແຖບ}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{ຫຼັງຈາກ 1 ມື້}other{ຫຼັງຈາກ <ph name="DAY_COUNT_MANY" /> ມື້}}</translation>
 <translation id="6549021453810473782">ເບິ່ງຂໍ້ມູນຮ້ານຄ້າ</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">ຍ້າຍແຖບໄປຊ້າຍ</translation>

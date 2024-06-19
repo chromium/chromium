@@ -2531,7 +2531,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2806372837663997957">O dispositivo com o qual está a tentar efetuar a partilha não aceitou.</translation>
 <translation id="2806891468525657116">O atalho já existe.</translation>
 <translation id="2807517655263062534">Os ficheiros que transferir são apresentados aqui</translation>
-<translation id="2809946454624727734">Pode consultá-la nas suas Moradas guardadas.</translation>
 <translation id="2811205483104563968">Contas</translation>
 <translation id="2812049959647166806">O Thunderbolt não é suportado</translation>
 <translation id="2812171980080389735">Redes e palavras-passe guardadas para ligação instantânea</translation>
@@ -5468,7 +5467,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5016491575926936899">Pode enviar mensagens de texto a partir do computador, partilhar a ligação à Internet, responder a notificações de conversas e desbloquear o <ph name="DEVICE_TYPE" /> com o telemóvel.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="5016983299133677671">Experimente uma nova palavra-passe</translation>
 <translation id="5017529052065664584">Últimos 15 minutos</translation>
-<translation id="5017643436812738274">Pode navegar pelas páginas com um cursor de texto. Prima Ctrl + Pesquisa + 7 para desativar esta opção.</translation>
 <translation id="5018207570537526145">Abrir o Website da extensão</translation>
 <translation id="5018526990965779848">Envie dados de utilização e diagnóstico. Ajude a melhorar a experiência Android ao enviar automaticamente dados de diagnóstico, de utilização do dispositivo e das apps para a Google. Deste modo, ajudará a melhorar a estabilidade das apps e do sistema, entre outras melhorias. Alguns dados agregados também ajudarão as apps e os parceiros Google, como os programadores Android. Se a definição Atividade da Web e de apps adicional estiver ativada, estes dados podem ser guardados na sua Conta Google.</translation>
 <translation id="5020008942039547742">Escolher uma janela diferente</translation>
@@ -5625,6 +5623,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5135533361271311778">Não foi possível criar item de marcador.</translation>
 <translation id="513555878193063507">Adicione um novo APN</translation>
 <translation id="5136343472380336530">Certifique-se de que ambos os dispositivos estão desbloqueados, próximos um do outro e têm o Bluetooth ativado. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
+<translation id="5136529877787728692">F7</translation>
 <translation id="5137349216872139332">Falha na ligação à zona Wi-Fi instantânea</translation>
 <translation id="5138227688689900538">Mostrar menos</translation>
 <translation id="5139112070765735680"><ph name="QUERY_NAME" />, pesquisa no <ph name="DEFAULT_SEARCH_ENGINE_NAME" /></translation>
@@ -5936,6 +5935,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5372529912055771682">O modo de inscrição fornecido não é suportado por esta versão do sistema operativo. Certifique-se de que está a executar a versão mais recente e tente novamente.</translation>
 <translation id="5372579129492968947">Soltar extensão</translation>
 <translation id="5372632722660566343">Continuar sem uma conta</translation>
+<translation id="5372990315769030589">Manter a extensão "<ph name="EXTENSION_NAME" />"?</translation>
 <translation id="5375318608039113175">Para utilizar a funcionalidade Partilhar na proximidade com estes contactos, adicione o endereço de email associado às respetivas Contas Google aos contactos.</translation>
 <translation id="5375577102295339548">Os sites podem ajudar a validar que não é um bot</translation>
 <translation id="5376094717770783089">Pede acesso</translation>
@@ -7409,6 +7409,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (porta direita)</translation>
 <translation id="6491376743066338510">Falha na autorização</translation>
 <translation id="649396225532207613">Este ficheiro pode prejudicar as suas contas pessoais e de redes sociais</translation>
+<translation id="6493991254603208962">Diminuir o brilho</translation>
 <translation id="6494327278868541139">Mostrar detalhes de proteção melhorada</translation>
 <translation id="6494445798847293442">Não é uma autoridade de certificação</translation>
 <translation id="6494483173119160146">O dispositivo detetou um erro irrecuperável. Reponha o dispositivo (esta ação apaga todos os dados do utilizador) e tente novamente.</translation>
@@ -8205,6 +8206,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7082850163410901674">As notificações estão desativadas nas Definições do sistema no Mac</translation>
 <translation id="7083774521940805477">O Steam para o Chromebook (beta) não está disponível no seu Chromebook.</translation>
 <translation id="708550780726587276">(não configurada)</translation>
+<translation id="7086377898680121060">Aumentar o brilho</translation>
 <translation id="7086672505018440886">Inclua ficheiros de registo do Chrome no arquivo.</translation>
 <translation id="7088434364990739311">Falha ao iniciar a verificação de atualizações (código de erro <ph name="ERROR" />).</translation>
 <translation id="7088674813905715446">Este dispositivo foi colocado num estado descontinuado pelo gestor. Para ativá-lo para inscrição, solicite ao gestor que coloque o dispositivo num estado pendente.</translation>
@@ -9032,6 +9034,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7708143783728142771">Os cookies permitem este mesmo nível de personalização de preferências na Web. Quando visita um site, este pode guardar um cookie no armazenamento no navegador do dispositivo para memorizar as suas preferências do site, como o idioma em que fala ou os artigos que quer que fiquem guardados num carrinho de compras. Mais tarde, se visitar novamente o site através do mesmo navegador, esse site pode ler o cookie definido e pode retomar a partir do ponto em que ficou. Estes tipos de cookies são frequentemente referidos como cookies originais, uma vez que são definidos pelo site que visita.</translation>
 <translation id="770831926727930011">Os dados locais estão protegidos pela sua palavra-passe antiga. Introduza a palavra-passe antiga para recuperar os dados locais.</translation>
 <translation id="7709152031285164251">Falha - <ph name="INTERRUPT_REASON" /></translation>
+<translation id="7710443466210750493">Proteja todas as suas chaves de acesso com um PIN de recuperação</translation>
 <translation id="7710568461918838723">&amp;Transmitir…</translation>
 <translation id="7711900714716399411">Utilize um cabo USB para ligar o telemóvel ao computador. Se o telemóvel já estiver ligado, desligue-o e volte a ligá-lo.</translation>
 <translation id="7711968363685835633">Desativar as sugestões e as conversões personalizadas, bem como o dicionário do utilizador</translation>
@@ -9761,6 +9764,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8233028084277069927">Abrir agora</translation>
 <translation id="8234795456569844941">Ajude os nossos engenheiros a resolver este problema. Diga-nos o que aconteceu imediatamente antes de ter recebido a mensagem de erro do perfil:</translation>
 <translation id="8235418492073272647">Página partilhada a partir do dispositivo <ph name="DEVICE_NAME" /></translation>
+<translation id="8236802542508794819">Este separador partilha recursos com outros separadores, o que pode interferir com a depuração.</translation>
 <translation id="8236911020904880539">sair</translation>
 <translation id="8236917170563564587">Em alternativa, partilhar este separador</translation>
 <translation id="8237647586961940482">Cor-de-rosa escuro e vermelho</translation>
@@ -9965,6 +9969,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8376532149031784008">A atualizar <ph name="DOMAIN" />…</translation>
 <translation id="8376610503048439696">As extensões instaladas pelo seu administrador ainda podem ler e alterar este site</translation>
 <translation id="8376752431516546391">Painel lateral da Pesquisa Google</translation>
+<translation id="8376812682111060348">Alerta de problema de desempenho</translation>
 <translation id="8377625247046155446">Esta token de acesso só é guardada neste dispositivo. Permanece neste dispositivo após fechar todas as janelas de navegação anónima.</translation>
 <translation id="8378714024927312812">Gerido pela sua entidade</translation>
 <translation id="8379988659465232385">O nome não pode estar vazio</translation>

@@ -66,10 +66,12 @@
 <translation id="4159784952369912983">Okuphephuli</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Nweba iqembu lethebhu elithi <ph name="TITLE_OF_GROUP" /> ngethebhu eli-<ph name="TABS_COUNT_ONE" />.}one{Nweba iqembu lethebhu elithi <ph name="TITLE_OF_GROUP" /> ngamathebhu angu-<ph name="TABS_COUNT_MANY" />.}other{Nweba iqembu lethebhu elithi <ph name="TITLE_OF_GROUP" /> ngamathebhu angu-<ph name="TABS_COUNT_MANY" />.}}</translation>
 <translation id="427987768447457592">Iqembu lethebhu elisha</translation>
+<translation id="4338724047016295066">Amathebhu angasebenzi azovala ngokuzenzakalela. Ungahlala uwathola Emlandweni.</translation>
 <translation id="4371591986692297148">Akusebenzi</translation>
 <translation id="4460014764210899310">Khipha ukubuthana</translation>
 <translation id="4648718555153979859">Amathebhu akho afakwa kuqembu ndawonye lapha</translation>
 <translation id="4686942373615810936">Kusanda kusungulwa</translation>
+<translation id="47070857600201406">{DAY_COUNT,plural, =1{Vala ngemva kosuku olu-1}one{Vala ngemva kwezinsuku ezingu-<ph name="DAY_COUNT_MANY" />}other{Vala ngemva kwezinsuku ezingu-<ph name="DAY_COUNT_MANY" />}}</translation>
 <translation id="4777866634702576038">Sula iqembu lethebhu?</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(isibuyekezo esingu-<ph name="REVIEWS_COUNT_ONE" />)}one{(izibuyekezo ezingu-<ph name="REVIEWS_COUNT_MANY" />)}other{(izibuyekezo ezingu-<ph name="REVIEWS_COUNT_MANY" />)}}</translation>
 <translation id="4850886885716139402">Buka</translation>
@@ -106,6 +108,7 @@
 <translation id="6381032505162537930">Uzothola amaqembu wakho amathebhu lapha</translation>
 <translation id="639823877092900621">{TABS_COUNT,plural, =1{Hlukanisa ithebhu e-<ph name="TABS_COUNT_ONE" /> ekhethiwe}one{Hlukanisa amathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe}other{Hlukanisa amathebhu angu-<ph name="TABS_COUNT_MANY" /> akhethiwe}}</translation>
 <translation id="6422650314852876533">{TABS_COUNT,plural, =1{Ithebhu e-<ph name="TABS_COUNT_ONE" />}one{Amathebhu angu-<ph name="TABS_COUNT_MANY" />}other{Amathebhu angu-<ph name="TABS_COUNT_MANY" />}}</translation>
+<translation id="6542289363124393690">{DAY_COUNT,plural, =1{Ngemva kosuku olu-1}one{Ngemva kwezinsuku ezingu-<ph name="DAY_COUNT_MANY" />}other{Ngemva kwezinsuku ezingu-<ph name="DAY_COUNT_MANY" />}}</translation>
 <translation id="6549021453810473782">Buka ulwazi lwesitolo</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Hambisa ithebhu ngakwesokunxele</translation>

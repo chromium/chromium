@@ -532,6 +532,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="371398631992790800">Peida valik „Järjehoidjad“</translation>
 <translation id="37207012422556617">Populaarsust koguvad otsingud</translation>
 <translation id="3725081662140949903">Kui soovite, et teised ei saaks teie parooli kasutada, avage parooli muutmiseks rakendus <ph name="APP" /></translation>
+<translation id="372676576864368480">Numbritega <ph name="LAST_DIGITS" /> lõppeva kaardinumbri automaatne sisestamine</translation>
 <translation id="3738428049780661523">Loodi <ph name="DATE" /></translation>
 <translation id="374357899112510277">Peida valik „Allalaadimised“</translation>
 <translation id="3745190878148784130">Peida valik Suumi tekst</translation>
@@ -1097,6 +1098,7 @@ Saidid ei saa küpsisefailide abil eri saitidel teie sirvimistegevust jälgida (
 <translation id="6476800141292307438">Leht tõlgitakse <ph name="LANGUAGE" /> keelde. Valikud leiate ekraanikuva allosast.</translation>
 <translation id="648164694371393720">Autentimise viga</translation>
 <translation id="6494931198667773526">Lõpp</translation>
+<translation id="6500795388871406244">Kasutage soovitatud parooli</translation>
 <translation id="650279896687777322">Lisateave …</translation>
 <translation id="6505334220040167806">Vahelehegrupi ahendamine.</translation>
 <translation id="6507973708545996744">Logige sisse, et hankida lugemisloend kõigisse oma seadmetesse.</translation>
@@ -1310,6 +1312,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7583004045319035904">Kasutage oma inkognito vahelehtede avamiseks meetodit <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
 <translation id="7598439272585186139">Parandage turvalisust</translation>
 <translation id="7600965453749440009">Ära kunagi tõlgi: <ph name="LANGUAGE" /></translation>
+<translation id="7603308509262646847">Kaardiomaniku nime <ph name="NAME" /> automaatne sisestamine</translation>
 <translation id="7603852183842204213">Blokeer. hüpikuid (<ph name="NUMBER_OF_BLOCKED_POPUPS" />)</translation>
 <translation id="7606639338662398635">Vahelehegrupid</translation>
 <translation id="7607521702806708809">Kustuta parool</translation>
@@ -1342,6 +1345,7 @@ Inkognito režiimis ei saa saidid küpsisefailide abil eri saitidel teie sirvimi
 <translation id="7749790401023484470">Te ei valinud mingisugust teksti.</translation>
 <translation id="7752405526771734448">Lensi visuaalne otsing</translation>
 <translation id="7756478488453921771">Menüü → Seaded → Makseviisid</translation>
+<translation id="775755486779745798">Aegumiskuu <ph name="MONTH" /> automaatne sisestamine</translation>
 <translation id="7760127703945531263">Inkognito lukk</translation>
 <translation id="7765158879357617694">Liiguta</translation>
 <translation id="7772032839648071052">Kinnitage parool</translation>
@@ -1518,6 +1522,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8556590991644167667">{count,plural, =1{Loobusite {count} hoiatusest}other{Loobusite {count} hoiatusest}}</translation>
 <translation id="8560253818350321773">Sageli kasutatavad üksused kuvatakse eespool.</translation>
 <translation id="8569721750632860947">Millise URL-i soovite oma lugemisloendisse lisada?</translation>
+<translation id="8577056989960190117">Aegumisaasta <ph name="YEAR" /> automaatne sisestamine</translation>
 <translation id="8588404856427128947">Väljas</translation>
 <translation id="8591976964826315682">Blokeeri kolmanda osapoole küpsisefailid inkognito režiimis</translation>
 <translation id="8593565399399144771">Uue vahekaardi saate avada siin.</translation>

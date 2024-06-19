@@ -117,6 +117,8 @@
 <translation id="1513814250881909472">Zapnite synchronizáciu a získajte tak karty zo svojich ostatných zariadení</translation>
 <translation id="1513858653616922153">Odstrániť heslo</translation>
 <translation id="1521774566618522728">Aktívne dnes</translation>
+<translation id="1544084554881119930">Spôsoby platby a adresy nebudú šifrované. História prehliadania z Chromu sa nebude synchronizovať.
+Šifrované údaje môže čítať iba používateľ s prístupovou frázou. Prístupová fráza sa do Googlu neodosiela a Google ju ani neukladá. Ak prístupovú frázu zabudnete alebo budete chcieť toto nastavenie zmeniť, <ph name="BEGIN_LINK" />vymažte údaje Chromu vo svojom účte<ph name="END_LINK" />.</translation>
 <translation id="1544826120773021464">Ak chcete spravovať svoj účet Google, klepnite na tlačidlo Spravovať účet</translation>
 <translation id="154513667535157406">Označením palcom hore odošlete spätnú väzbu, že sa vám tento súhrn páčil</translation>
 <translation id="1549000191223877751">Prejsť do druhého okna</translation>
@@ -458,6 +460,7 @@
 <translation id="3264259168916048410">Počítač vyžaduje, aby sa na prihlásenie na danom webe použilo toto zariadenie</translation>
 <translation id="3265093782546847662">Všetky stránky domény <ph name="DOMAIN" /></translation>
 <translation id="3269093882174072735">Načítať obrázok</translation>
+<translation id="327204079441056603">Zmenili sme, ako sa heslá v tomto zariadení ukladajú</translation>
 <translation id="3280562213547448728">Hlasové vyhľadávanie</translation>
 <translation id="3282568296779691940">Prihlásiť sa do Chromu</translation>
 <translation id="3290249595466894471">Odosiela aj malú vzorku stránok, stiahnutých súborov, aktivity rozšírení a informácií o systéme, čím pomáha zisťovať nové hrozby</translation>
@@ -1214,6 +1217,7 @@ Niektoré weby môžu napríklad na túto žiadosť reagovať tak, že vám zobr
 <translation id="6918398787259831832">Ak sa tento problém opakuje, získajte <ph name="BEGIN_LINK" />ďalšie informácie<ph name="END_LINK" /> od poskytovateľa <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />.</translation>
 <translation id="6929224077895306814">Všetky bezpečnostné kódy uložené vo vašom zariadení a účte Google budú odstránené</translation>
 <translation id="6937524809504266803">Prispôsobenie a prepojenie</translation>
+<translation id="6937876069006524083">Prezývka (nepovinné)</translation>
 <translation id="6942665639005891494">Kedykoľvek zmeniť predvolené umiestnenie stiahnutých súborov pomocou možnosti ponuky Nastavenia</translation>
 <translation id="694267552845942083">Momentálne prispôsobujete nastavenia synchronizácie. Ak chcete dokončiť zapnutie synchronizácie, klepnite na tlačidlo Potvrdiť v dolnej časti obrazovky. Prejsť hore</translation>
 <translation id="6945221475159498467">Vybrať</translation>
@@ -1277,6 +1281,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />odstráňte údaje Ch
 <translation id="7207760545532569765">Obnovte karty (<ph name="TAB_COUNT" />) ako nové karty na pozadí.</translation>
 <translation id="7217781228893594884">Keď opustíte Chrome, karty inkognito budú uzamknuté</translation>
 <translation id="7221869452894271364">Obnoviť túto stránku</translation>
+<translation id="7224097611345298931">Všetky heslá uložené iba v tomto zariadení pre Chrome a <ph name="CHROME_CHANNEL" /> boli zlúčené. Všetky svoje uložené heslá môžete naďalej automaticky dopĺňať v oboch aplikáciách.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{Na stiahnutie čaká 1 položka}few{Na stiahnutie čakajú # položky}many{# downloads pending}other{Na stiahnutie čaká # položiek}}</translation>
 <translation id="72415438529550637">Návrh hesla je zavretý</translation>
 <translation id="7252076891734325316">Položte telefón k počítaču</translation>

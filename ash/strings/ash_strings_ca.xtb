@@ -119,6 +119,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1391102559483454063">Activada</translation>
 <translation id="1394698770495054737">Desenfocament complet</translation>
+<translation id="1395878931462960119">{DAYS,plural, =1{Fa 1 dia}other{Fa # dies}}</translation>
 <translation id="1404963891829069586">Sons de Sense distraccions</translation>
 <translation id="1407069428457324124">Tema fosc</translation>
 <translation id="1410568680128842168"><ph name="DATE_CELL_TOOL_TIP" />. Fes servir les tecles de fletxa per navegar entre dates.</translation>
@@ -209,6 +210,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="174102739345480129">El marcador està desactivat.</translation>
 <translation id="1743570585616704562">No s'ha reconegut</translation>
 <translation id="1743927604032653654">Replega la notificació <ph name="NOTIFICATION_TITLE" /></translation>
+<translation id="1744435831291625602">{HOURS,plural, =0{Fa menys d'1 h}=1{Fa 1 h}other{Fa # h}}</translation>
 <translation id="1746730358044914197">Els mètodes d'introducció estan configurats per l'administrador.</translation>
 <translation id="1747336645387973286">data de venciment: <ph name="DUE_DATE" /></translation>
 <translation id="1747827819627189109">Teclat en pantalla activat</translation>
@@ -346,6 +348,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2359808026110333948">Continua</translation>
 <translation id="2360398059912971776">bateria</translation>
 <translation id="2361210043495191221">Commuta la Wi-Fi. <ph name="STATE" />.</translation>
+<translation id="236574664504281623">S'ha enviat des del <ph name="SESSION_NAME" /></translation>
 <translation id="2367186422933365202">No es pot iniciar la sessió al Chromebook</translation>
 <translation id="2367972762794486313">Mostra les aplicacions</translation>
 <translation id="2368828502825385061">Localitza</translation>
@@ -506,6 +509,7 @@ Hi ha <ph name="DEVICECOUNT" /> dispositius connectats.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="2965227184985674128">Vols activar l'accés al micròfon?</translation>
 <translation id="296762781903199866">No s'han pogut baixar els fitxers de veu en <ph name="LANGUAGE" /></translation>
+<translation id="2968761508099987738">La teva ubicació actual no s'admet en aquest moment.</translation>
 <translation id="2970920913501714344">Instal·lar aplicacions, extensions i temes.</translation>
 <translation id="2977598380246111477">Número següent</translation>
 <translation id="2985148236010982088">Mostra totes les aplicacions</translation>
@@ -979,6 +983,7 @@ Hi ha 1 dispositiu connectat.</translation>
 <translation id="468293128311738995">Aplicacions del telèfon</translation>
 <translation id="4690510401873698237">El prestatge és a la part inferior</translation>
 <translation id="4696813013609194136">Desbloqueja el dispositiu amb el codi parental</translation>
+<translation id="4697357603686181098">No et puc ajudar amb això. Prova de fer una altra sol·licitud.</translation>
 <translation id="4702647871202761252">La pantalla de privadesa està desactivada</translation>
 <translation id="4706121060329443414">La baixada s'intentarà més tard. Per ara, la parla s'enviarà a Google perquè la processi.</translation>
 <translation id="470644585772471629">Inversió de colors</translation>
@@ -1901,6 +1906,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7982878511129296052">S'està apagant...</translation>
 <translation id="7984197416080286869">Has intentat desbloquejar el dispositiu amb empremta digital massa vegades</translation>
 <translation id="798779949890829624">El teu administrador gestiona aquesta opció de configuració</translation>
+<translation id="7989206653429884947">S'obre sovint</translation>
 <translation id="799296642788192631">Pots fixar fitxers importants. Per fixar-ne un, passa el cursor per sobre d'un element o bé obre Fitxers i fes clic amb el botó dret en un element.</translation>
 <translation id="7994370417837006925">Inici de sessió múltiple</translation>
 <translation id="7995804128062002838">No s'ha pogut capturar la pantalla</translation>
@@ -2085,6 +2091,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
 <translation id="8749787185286745219">S'ha esgotat el temps. Ben fet! 🎉</translation>
+<translation id="8753368202781196133">Aquest idioma no s'admet en aquest moment.</translation>
 <translation id="8755498163081687682">Verifica la teva identitat: <ph name="ORIGIN_NAME" /> vol confirmar que ets tu</translation>
 <translation id="875593634123171288">Mostra la configuració de la VPN</translation>
 <translation id="8756799553341497810">Pots començar a personalitzar el disseny de l'aplicació un cop surtis d'aquesta visualització.</translation>

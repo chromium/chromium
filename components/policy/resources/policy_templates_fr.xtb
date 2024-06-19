@@ -802,7 +802,6 @@ Une "entrée utilisateur" est définie par les API du système d'exploitation et
 <translation id="1635748761015837179">Autoriser l'écriture sur des périphériques de stockage externes</translation>
 <translation id="1639468541408865385">Activer le cache d'authentification HTTP à portée globale</translation>
 <translation id="1639673466479276550">Activez l'économiseur d'écran pour l'écran de connexion.</translation>
-<translation id="1640447222731279244">Contrôler l'activation de la fonctionnalité de fond d'écran "Créer avec l'IA" de ChromeOS</translation>
 <translation id="1640824698339859203">Activer le SSO flottant et déplacer les authentifications des services Web de l'utilisateur vers un nouvel appareil</translation>
 <translation id="1641117061932613266">Activer le service <ph name="PRODUCT_NAME" /> V2</translation>
 <translation id="1641394008743444477">Permet de lister les fonctionnalités <ph name="PRODUCT_OS_NAME" /> à désactiver.
@@ -856,12 +855,6 @@ Les origines non spécifiées par la règle ni par les paramètres utilisateur n
 
 Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, aucun événement n'est enregistré.</translation>
 <translation id="1692990221685273468">Détermine si l'outil de vérification des certificats intégré applique des contraintes encodées dans les ancres de confiance chargées depuis le magasin de confiance de la plate-forme.</translation>
-<translation id="1693528798631913178">Cette règle active ou désactive l'arrière-plan de visioconférence "Créer avec l'IA" de ChromeOS.
-0 = Désactiver la fonctionnalité pour les utilisateurs.
-
-1 = Activer la fonctionnalité pour les utilisateurs. Notez qu'aucune donnée n'est envoyée à Google afin d'entraîner ou d'améliorer les modèles d'IA.
-
-Si cette règle n'est pas configurée, la fonctionnalité d'arrière-plan de visioconférence "Créer avec l'IA" est désactivée pour les utilisateurs de la version Enterprise.</translation>
 <translation id="169467210981344373">Désactiver le cache d'authentification HTTP à portée globale</translation>
 <translation id="1696501581280568361">Suggère la séparation des profils</translation>
 <translation id="1698810555265314018">Contrôle la résolution des images imprimées lorsque <ph name="PRODUCT_NAME" /> imprime les PDF après rastérisation.
@@ -1778,7 +1771,6 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="2326031114717677574">Fréquence d'échantillonnage et de collecte des données audio. La valeur minimale autorisée est de 1 minute.
 
       Si la règle n'est pas configurée, la fréquence par défaut (15 minutes) est appliquée.</translation>
-<translation id="2331028134545182024">Contrôler l'activation de la fonctionnalité d'arrière-plan de visioconférence "Créer avec l'IA" de ChromeOS</translation>
 <translation id="2333228572393176330">Permet de configurer une fonctionnalité de sécurité TLS 1.3 qui protège les connexions contre les attaques par déclassement. Cette règle est rétrocompatible, et elle n'affecte pas les connexions à des serveurs ou proxys conformes à la norme TLS 1.2. Toutefois, les versions plus anciennes de certains proxys interceptant les paramètres TLS sont incompatibles en raison de défauts d'intégration.
 
       Si cette règle est définie sur "True" ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> active ces protections de sécurité pour toutes les connexions.
@@ -3350,7 +3342,6 @@ Veillez à ne pas laisser cette règle activée en permanence, en particulier po
 <translation id="3587482841069643663">Tous</translation>
 <translation id="3587766503874071316">Désactiver les raccourcis d'accessibilité</translation>
 <translation id="3589193811812796052">Empêcher l'envoi des modules WebAssembly en multi-origine</translation>
-<translation id="3591518189681300697">Activer la migration des fichiers locaux vers le cloud</translation>
 <translation id="3591527072193107424">Activer la fonctionnalité Legacy Browser Support.</translation>
 <translation id="3591584750136265240">Configurer le mode d'authentification lors de la connexion</translation>
 <translation id="3593905652755912452">L'ancien comportement d'envoi des événements sur les commandes de formulaire désactivées sera utilisé.</translation>
@@ -5261,12 +5252,6 @@ Si cette règle n'est pas configurée ou si la liste ne contient aucune référe
       Si ce paramètre n'est pas défini, la période par défaut est fixée à 604 800 000 millisecondes (une semaine).</translation>
 <translation id="5212810195096589189">Spécifier l'autorisation concernant l'interface de ligne de commande pour les machines virtuelles</translation>
 <translation id="5213038356678567351">Sites Web qui ne doivent jamais déclencher un changement de navigateur.</translation>
-<translation id="5215621993623612880">Cette règle active ou désactive le fond d'écran "Créer avec l'IA" de ChromeOS.
-0 = Désactiver la fonctionnalité pour les utilisateurs.
-
-1 = Activer la fonctionnalité pour les utilisateurs. Notez qu'aucune donnée n'est envoyée à Google afin d'entraîner ou d'améliorer les modèles d'IA.
-
-Si cette règle n'est pas configurée, la fonctionnalité de fond d'écran "Créer avec l'IA" est désactivée pour les utilisateurs de la version Enterprise.</translation>
 <translation id="5216815237712190041">Configurez le fond d'écran de l'appareil à afficher sur la page de connexion avant qu'un utilisateur ne se connecte à l'appareil. Pour configurer cette règle, vous devez indiquer l'URL depuis laquelle l'appareil Chrome OS peut télécharger l'image de fond d'écran et un hachage chiffré utilisé pour vérifier l'intégrité du téléchargement. L'image doit être au format JPEG, et sa taille ne doit pas dépasser 16 Mo. L'URL doit être accessible sans authentification. L'image de fond d'écran est téléchargée et mise en cache. Elle sera de nouveau téléchargée à chaque modification de l'URL ou du hachage.
 
       Si la règle relative au fond d'écran est configurée, l'appareil Chrome OS téléchargera et utilisera l'image de fond d'écran sur l'écran de connexion si aucun utilisateur ne s'est encore connecté à l'appareil. Lorsque l'utilisateur se connecte, la règle relative au fond d'écran pour cet utilisateur est activée.
@@ -6326,10 +6311,6 @@ Cette règle a été abandonnée dans la version M124.</translation>
       Si cette règle n'est pas configurée (et que l'appareil le permet), le mode standard de recharge de la batterie est appliqué, et les utilisateurs ne peuvent pas modifier ce paramètre.
 
       Remarque : Si le mode personnalisé de recharge de la batterie est sélectionné, les règles "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_START_CHARGING_POLICY_NAME" />" et "<ph name="DEVICE_BATTERY_CHARGE_CUSTOM_STOP_CHARGING_POLICY_NAME" />" doivent alors être spécifiées.</translation>
-<translation id="6064418365347066084">Déclenche la migration des fichiers locaux existants vers le cloud.
-S'applique uniquement aux utilisateurs de SkyVault (c'est-à-dire lorsque LocalUserFilesAllowed est défini sur "False" et que DownloadDirectory est Google Drive ou OneDrive) et est ignoré dans le cas contraire.
-    Si cette règle est définie sur "True", les fichiers locaux sont migrés vers le cloud et les dossiers locaux sont ensuite masqués pour l'utilisateur.
-    Si cette règle est définie sur "False" ou n'est pas configurée, les fichiers locaux restent en mode lecture seule.</translation>
 <translation id="60655674079349516">Configure une liste des types de données de navigation devant être supprimés lorsque l'utilisateur ferme toutes les fenêtres du navigateur.
 
 Avertissement : La définition de cette règle peut affecter les données personnelles locales et entraîner leur suppression définitive. Nous vous recommandons de tester vos paramètres avant de les déployer pour éviter toute suppression accidentelle de données personnelles.
@@ -6819,7 +6800,6 @@ Si cette règle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> stocke par 
       L'Association express est un nouveau flux d'association Bluetooth qui permet d'ajouter des appareils associés à un compte GAIA.
       Grâce à cette règle, d'autres appareils Chrome OS (et Android) connectés avec le même compte GAIA peuvent être associés automatiquement.
       Si cette règle n'est pas configurée, la valeur par défaut est désactivée pour les utilisateurs gérés par une entreprise et activée sur les comptes non gérés.</translation>
-<translation id="6400959027108936283">Activer la fonctionnalité</translation>
 <translation id="6401669939808766804">Déconnecter l'utilisateur</translation>
 <translation id="640244877779556713">Activer la suggestion d'emoji</translation>
 <translation id="6403114173011456561">Contrôle le clavier virtuel tactile en agissant comme règle complémentaire de la règle <ph name="VIRTUAL_KEYBOARD_ENABLED_POLICY_NAME" />.
@@ -8155,7 +8135,6 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
       Si cette règle est activée ou n'est pas configurée, les appareils enregistrés communiquent la liste des interfaces réseau, avec leur type et leur adresse matérielle.
 
       Si elle est désactivée, les appareils enregistrés ne communiquent pas l'interface réseau.</translation>
-<translation id="7388618954884540850">Désactiver la migration des fichiers locaux vers le cloud</translation>
 <translation id="7389872682701720082">Si vous activez ce paramètre, les plug-ins non obsolètes sont toujours exécutés.
 
       Si ce paramètre est désactivé ou n'est pas configuré, les utilisateurs doivent donner leur permission pour l'exécution des plug-ins qui nécessitent une autorisation. Ceux-ci présentent un risque de sécurité.</translation>
@@ -9431,7 +9410,6 @@ Si cette règle n'est pas configurée ou qu'elle est définie sur 0, l'URL sél
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, seuls les profils locaux standards sont utilisés.</translation>
 <translation id="8417305981081876834">Définir le nombre maximal de caractères pour le code de l'écran de verrouillage</translation>
-<translation id="8418438383184278931">Activer la migration des fichiers utilisateur locaux vers le stockage cloud</translation>
 <translation id="841977920223099909">Déclencheur d'avertissement de protection par mot de passe</translation>
 <translation id="8419965165591256432">Fréquence à laquelle l'état d'activité de l'appareil est collecté sur les appareils enregistrés pour les utilisateurs affiliés. La valeur minimale autorisée est de 1 minute.
 

@@ -122,6 +122,7 @@
 
 برای تغییر این تنظیم، <ph name="BEGIN_LINK" />داده‌های Chromium ذخیره‌شده در حسابتان را حذف کنید<ph name="END_LINK" />.</translation>
 <translation id="4576283463017113841">‏صفحه تنظیم روش‌های پرداخت Chromium را باز می‌کند.</translation>
+<translation id="458786853569524949">‏اکنون می‌توانید انتخاب کنید پیوندهای موجود در ایمیل‌ها، اسناد، و برنامه‌های دیگر همیشه در Chromium باز شوند.</translation>
 <translation id="459080529287102949">‏جستجوی تصاویر در Chromium</translation>
 <translation id="4633738821577273991">‏برای این نمایه Chromium نیز «مرور ایمن پیشرفته» را دریافت کنید</translation>
 <translation id="4638625642619341392">‏‫Chromium را از اینجا بارگیری کنید.</translation>
@@ -289,6 +290,7 @@
 داده‌هایتان بااستفاده از گذرعبارت شما در تاریخ <ph name="TIME" /> رمزگذاری شد. برای استفاده از داده‌های Chromium و ذخیره کردن این داده‌ها در «حساب Google»، این گذرعبارت را وارد کنید.</translation>
 <translation id="9022552996538154597">‏ورود به سیستم Chromium</translation>
 <translation id="9050790730841755540">‏برای باز کردن پیوندهای موجود در برنامه‌های دیگر، از Chromium استفاده کنید.</translation>
+<translation id="9057082013386654559">‏استفاده از Chromium برای iPad به‌طور پیش‌فرض</translation>
 <translation id="9059693977935746710">لازم نیست این گذرواژه را به‌خاطر بسپارید. این گذرواژه در «مدیر گذرواژه» برای <ph name="EMAIL" /> ذخیره خواهد شد</translation>
 <translation id="9089354809943900324">‏نسخه Chromium قدیمی است</translation>
 <translation id="9110075932708282655">‏استفاده از Chromium به‌طور پیش‌فرض</translation>
