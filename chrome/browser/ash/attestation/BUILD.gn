@@ -106,6 +106,7 @@ source_set("unit_tests") {
   deps = [
     ":attestation",
     ":test_support",
+    ":test_with_shadow_variables",
     "//base/test:test_support",
     "//chrome/browser/ash:attestation_proto",
     "//chrome/browser/ash:test_support",
