@@ -119,17 +119,6 @@ void ExpectModalTimeSample(
   [ChromeEarlGrey waitForWebStateContainingText:"Signup form"];
 }
 
-id<GREYMatcher> GetMatcherForSettingsLink() {
-  return grey_allOf(
-      // The link is within kPlusAddressModalDescriptionAccessibilityIdentifier.
-      grey_ancestor(grey_accessibilityID(
-          kPlusAddressSheetDescriptionAccessibilityIdentifier)),
-      // UIKit instantiates a `UIAccessibilityLinkSubelement` for the link
-      // element in the label with attributed string.
-      grey_kindOfClassName(@"UIAccessibilityLinkSubelement"),
-      grey_accessibilityTrait(UIAccessibilityTraitLink), nil);
-}
-
 id<GREYMatcher> GetMatcherForErrorReportLink() {
   return grey_allOf(
       // The link is within
@@ -142,10 +131,23 @@ id<GREYMatcher> GetMatcherForErrorReportLink() {
       grey_accessibilityTrait(UIAccessibilityTraitLink), nil);
 }
 
+// Returns a matcher for the email description.
+id<GREYMatcher> GetMatcherForEmailDescription(NSString* email) {
+  NSString* message =
+      l10n_util::GetNSStringF(IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_IOS,
+                              base::SysNSStringToUTF16(email));
+  return grey_allOf(
+      // The link is within
+      // kPlusAddressSheetDescriptionAccessibilityIdentifier.
+      grey_text(message),
+      grey_accessibilityID(kPlusAddressSheetDescriptionAccessibilityIdentifier),
+      nil);
+}
+
 #pragma mark - Tests
 
 // A basic test that simply opens and dismisses the bottom sheet.
-- (void)DISABLED_testShowPlusAddressBottomSheet {
+- (void)testShowPlusAddressBottomSheet {
   // Tap an element that is eligible for plus_address autofilling.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kEmailFieldId)];
@@ -163,8 +165,9 @@ id<GREYMatcher> GetMatcherForErrorReportLink() {
   [[EarlGrey selectElementWithMatcher:user_chip] performAction:grey_tap()];
 
   // The primary email address should be shown.
-  id<GREYMatcher> primary_email_label = grey_text(_fakeIdentity.userEmail);
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:primary_email_label];
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:GetMatcherForEmailDescription(
+                                              _fakeIdentity.userEmail)];
 
   // The request to reserve a plus address is hitting the test server, and
   // should fail immediately.
@@ -194,39 +197,6 @@ id<GREYMatcher> GetMatcherForErrorReportLink() {
       plus_addresses::metrics::PlusAddressModalCompletionStatus::
           kReservePlusAddressError,
       1);
-}
-
-- (void)DISABLED_testPlusAddressBottomSheetSettingsLink {
-  // Tap an element that is eligible for plus_address autofilling.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId(kEmailFieldId)];
-  id<GREYMatcher> user_chip =
-      grey_text(base::SysUTF8ToNSString(kFakeSuggestionLabel));
-
-  // Ensure the plus_address suggestion appears.
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:user_chip];
-
-  [[EarlGrey selectElementWithMatcher:user_chip] performAction:grey_tap()];
-
-  // The settings link should be shown.
-  // TODO(crbug.com/40276862): As the link appears inline, the selector seems a
-  // little challenging. Hiding it in a private helper for now.
-  id<GREYMatcher> link_text = GetMatcherForSettingsLink();
-
-  // Take note of how many tabs are open before clicking the link.
-  NSUInteger oldRegularTabCount = [ChromeEarlGrey mainTabCount];
-  NSUInteger oldIncognitoTabCount = [ChromeEarlGrey incognitoTabCount];
-
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:link_text];
-  [[EarlGrey selectElementWithMatcher:link_text] performAction:grey_tap()];
-
-  // A new tab should open after tapping the link.
-  [ChromeEarlGrey waitForMainTabCount:oldRegularTabCount + 1];
-  [ChromeEarlGrey waitForIncognitoTabCount:oldIncognitoTabCount];
-
-  // The bottom sheet should be dismissed.
-  [[EarlGrey selectElementWithMatcher:link_text]
-      assertWithMatcher:grey_notVisible()];
 }
 
 - (void)testPlusAddressBottomSheetErrorReportLink {
@@ -259,7 +229,7 @@ id<GREYMatcher> GetMatcherForErrorReportLink() {
       assertWithMatcher:grey_notVisible()];
 }
 
-- (void)DISABLED_testSwipeToDismiss {
+- (void)testSwipeToDismiss {
   // TODO(crbug.com/40949085): Test fails on iPad.
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Fails on iPad.");
@@ -281,15 +251,16 @@ id<GREYMatcher> GetMatcherForErrorReportLink() {
   // out.
   [[EarlGrey selectElementWithMatcher:user_chip] performAction:grey_tap()];
 
+  id<GREYMatcher> emailDescription =
+      GetMatcherForEmailDescription(_fakeIdentity.userEmail);
   // The primary email address should be shown.
-  id<GREYMatcher> primary_email_label = grey_text(_fakeIdentity.userEmail);
-  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:primary_email_label];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:emailDescription];
 
   // Then, swipe down on the bottom sheet.
-  [[EarlGrey selectElementWithMatcher:primary_email_label]
+  [[EarlGrey selectElementWithMatcher:emailDescription]
       performAction:grey_swipeSlowInDirection(kGREYDirectionDown)];
   // It should no longer be shown.
-  [[EarlGrey selectElementWithMatcher:primary_email_label]
+  [[EarlGrey selectElementWithMatcher:emailDescription]
       assertWithMatcher:grey_notVisible()];
 
   ExpectModalHistogram(
