@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/autofill/autofill_keyboard_accessory_controller.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -28,6 +29,7 @@
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/features/keyboard_accessory/internal/jni/AutofillKeyboardAccessoryViewBridge_jni.h"
+#include "url/gurl.h"
 
 using base::android::ConvertUTF16ToJavaString;
 using base::android::ConvertUTF8ToJavaString;
@@ -109,13 +111,17 @@ void AutofillKeyboardAccessoryViewImpl::Show() {
       }
     }
 
+    auto* custom_icon_url =
+        absl::get_if<Suggestion::CustomIconUrl>(&suggestion.custom_icon);
     java_suggestions.push_back(
         Java_AutofillKeyboardAccessoryViewBridge_createAutofillSuggestion(
             env, label, sublabel, android_icon_id,
             base::to_underlying(suggestion.type),
             controller_->GetRemovalConfirmationText(i, nullptr, nullptr),
             suggestion.feature_for_iph ? suggestion.feature_for_iph->name : "",
-            url::GURLAndroid::FromNativeGURL(env, suggestion.custom_icon_url),
+            custom_icon_url
+                ? url::GURLAndroid::FromNativeGURL(env, **custom_icon_url)
+                : url::GURLAndroid::EmptyGURL(env),
             suggestion.apply_deactivated_style));
   }
   Java_AutofillKeyboardAccessoryViewBridge_show(env, java_object_,

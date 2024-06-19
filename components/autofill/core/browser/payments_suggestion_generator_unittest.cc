@@ -236,13 +236,16 @@ class PaymentsSuggestionGeneratorTest : public testing::Test {
   bool VerifyCardArtImageExpectation(Suggestion& suggestion,
                                      const GURL& expected_url,
                                      const gfx::Image& expected_image) {
-#if BUILDFLAG(IS_ANDROID)
-    return suggestion.custom_icon_url == expected_url;
-#else
-    CHECK(absl::holds_alternative<gfx::Image>(suggestion.custom_icon));
-    return AreImagesEqual(absl::get<gfx::Image>(suggestion.custom_icon),
-                          expected_image);
-#endif
+    if constexpr (BUILDFLAG(IS_ANDROID)) {
+      auto* custom_icon_url =
+          absl::get_if<Suggestion::CustomIconUrl>(&suggestion.custom_icon);
+      GURL url = custom_icon_url ? **custom_icon_url : GURL();
+      return url == expected_url;
+    } else {
+      CHECK(absl::holds_alternative<gfx::Image>(suggestion.custom_icon));
+      return AreImagesEqual(absl::get<gfx::Image>(suggestion.custom_icon),
+                            expected_image);
+    }
   }
 
   TestPaymentsDataManager& payments_data() {

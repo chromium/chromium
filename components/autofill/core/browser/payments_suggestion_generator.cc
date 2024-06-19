@@ -681,14 +681,15 @@ void SetCardArtURL(Suggestion& suggestion,
   // virtual card icon.
   if (base::FeatureList::IsEnabled(features::kAutofillEnableCardArtImage) ||
       card_art_url == kCapitalOneCardArtUrl) {
-#if BUILDFLAG(IS_ANDROID)
-    suggestion.custom_icon_url = card_art_url;
-#else
-    gfx::Image* image = payments_data.GetCreditCardArtImageForUrl(card_art_url);
-    if (image) {
-      suggestion.custom_icon = *image;
+    if constexpr (BUILDFLAG(IS_ANDROID)) {
+      suggestion.custom_icon = Suggestion::CustomIconUrl(card_art_url);
+    } else {
+      gfx::Image* image =
+          payments_data.GetCreditCardArtImageForUrl(card_art_url);
+      if (image) {
+        suggestion.custom_icon = *image;
+      }
     }
-#endif
   }
 }
 

@@ -48,6 +48,10 @@ struct Suggestion {
   using Payload =
       absl::variant<BackendId, GURL, ValueToFill, PasswordSuggestionDetails>;
 
+  // This struct is used to provide password suggestions with custom icons,
+  // using the favicon of the website associated with the credentials. While
+  // the favicon loads, the icon from `Suggestion::icon` will be used as
+  // a placeholder.
   struct FaviconDetails {
     GURL domain_url;
 
@@ -59,6 +63,11 @@ struct Suggestion {
     friend bool operator==(const FaviconDetails&,
                            const FaviconDetails&) = default;
   };
+
+  // This type is used to specify custom icons by providing a URL to the icon.
+  // Used on Android only where `gfx::Image` (`custom_icon` alternative) is
+  // not supported.
+  using CustomIconUrl = base::StrongAlias<class CustomIconUrlTag, GURL>;
 
   // The text information shown on the UI layer for a Suggestion.
   struct Text {
@@ -235,22 +244,16 @@ struct Suggestion {
   // display is enabled.
   std::u16string additional_label;
 
-  // Custom image that overrides the `Suggestion::icon` on the UI. Can be
-  // defined as an image instance or as a URL to get the favicon from.
-  // The latter is used for manually triggered password suggestions only.
-  // While the favicon loads, the icon from `Suggestion::icon` will be used as
-  // a placeholder.
-  absl::variant<gfx::Image, FaviconDetails> custom_icon;
+  // This field outlines various methods for specifying the custom icon.
+  // Depending on the use case and platform, it can be a `gfx::Image` instance
+  // or imply more complex semantic of fetching the icon (see `CustomIconUrl`
+  // and `FaviconDetails` docs for details).
+  absl::variant<gfx::Image, CustomIconUrl, FaviconDetails> custom_icon;
 
   // The children of this suggestion. If present, the autofill popup will have
   // submenus.
   std::vector<Suggestion> children;
 #if BUILDFLAG(IS_ANDROID)
-  // The url for the custom icon. This is used by android to fetch the image as
-  // android does not support gfx::Image directly.
-  // TODO(crbug.com/325246516): Merge with `custom_icon`.
-  GURL custom_icon_url;
-
   // On Android, the icon can be at the start of the suggestion before the label
   // or at the end of the label.
   bool is_icon_at_start = false;
