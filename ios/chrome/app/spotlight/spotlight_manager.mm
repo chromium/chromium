@@ -60,10 +60,8 @@
       _readingListManager = [ReadingListSpotlightManager
           readingListSpotlightManagerWithBrowserState:browserState];
     }
-    if (base::FeatureList::IsEnabled(kSpotlightOpenTabsSource)) {
-      _openTabsManager = [OpenTabsSpotlightManager
-          openTabsSpotlightManagerWithBrowserState:browserState];
-    }
+    _openTabsManager = [OpenTabsSpotlightManager
+        openTabsSpotlightManagerWithBrowserState:browserState];
   }
   return self;
 }

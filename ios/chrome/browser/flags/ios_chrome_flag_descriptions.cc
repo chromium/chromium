@@ -1042,10 +1042,6 @@ const char kShowAutofillTypePredictionsDescription[] =
     "Annotates web forms with Autofill field type predictions as placeholder "
     "text.";
 
-const char kSpotlightOpenTabsSourceName[] = "Show Open local tabs in Spotlight";
-const char kSpotlightOpenTabsSourceDescription[] =
-    "Donate local open tabs items to iOS Search Engine Spotlight";
-
 const char kSpotlightReadingListSourceName[] = "Show Reading List in Spotlight";
 const char kSpotlightReadingListSourceDescription[] =
     "Donate Reading List items to iOS Search Engine Spotlight";
