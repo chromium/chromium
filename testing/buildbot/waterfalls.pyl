@@ -117,7 +117,12 @@
         ],
         'test_suites': {
           'gtest_tests': 'chromeos_device_no_gtests',
+          'skylab_tests': 'chromeos_reven_vmlab_tests',
         },
+        'os_type': 'chromeos',
+        'cros_board': 'reven-vmtest',
+        'cros_dut_pool': 'vmlab',
+        'run_cft': True,
       },
       'chromeos-volteer-chrome-skylab': {
         'additional_compile_targets': [
