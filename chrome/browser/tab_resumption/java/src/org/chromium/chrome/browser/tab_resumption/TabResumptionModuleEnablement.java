@@ -102,6 +102,9 @@ public class TabResumptionModuleEnablement {
 
         if (!SyncDerived.isAllowedByConfig()) return ModuleNotShownReason.FEATURE_DISABLED;
 
+        // V2 can serve Local Tab suggestions, so it doesn't need sign in or sync.
+        if (SyncDerived.isV2Enabled()) return null;
+
         if (!SyncDerived.isSignedIn(profile)) return ModuleNotShownReason.NOT_SIGNED_IN;
 
         if (!SyncDerived.isSyncEnabled(profile)) return ModuleNotShownReason.NOT_SYNC;

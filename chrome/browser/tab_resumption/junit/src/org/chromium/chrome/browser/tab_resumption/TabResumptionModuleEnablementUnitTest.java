@@ -56,8 +56,11 @@ public class TabResumptionModuleEnablementUnitTest extends TestSupportExtended {
 
     @Test
     @SmallTest
-    @DisableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
-    public void testEnablementWithoutForeignSessionFeature() {
+    @DisableFeatures({
+        ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
+        ChromeFeatureList.VISITED_URL_RANKING_SERVICE
+    })
+    public void testEnablementWithoutSignInOrSync() {
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
         when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
         Assert.assertEquals(ModuleNotShownReason.FEATURE_DISABLED, getNotShownReason().intValue());
@@ -76,7 +79,8 @@ public class TabResumptionModuleEnablementUnitTest extends TestSupportExtended {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID})
-    public void testEnablementWithForeignSessionFeature() {
+    @DisableFeatures({ChromeFeatureList.VISITED_URL_RANKING_SERVICE})
+    public void testEnablementWithSignInOrSync() {
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
         when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
         Assert.assertEquals(ModuleNotShownReason.NOT_SIGNED_IN, getNotShownReason().intValue());
@@ -87,6 +91,30 @@ public class TabResumptionModuleEnablementUnitTest extends TestSupportExtended {
         when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
         when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
         Assert.assertEquals(ModuleNotShownReason.NOT_SYNC, getNotShownReason().intValue());
+        when(mSyncService.getSelectedTypes())
+                .thenReturn(CollectionUtil.newHashSet(UserSelectableType.TABS));
+        Assert.assertNull(getNotShownReason());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({
+        ChromeFeatureList.TAB_RESUMPTION_MODULE_ANDROID,
+        ChromeFeatureList.VISITED_URL_RANKING_SERVICE
+    })
+    public void testEnablementWithVisitedUrlRankingFeature() {
+        TabResumptionModuleUtils.TAB_RESUMPTION_V2.setForTesting(true);
+
+        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(false);
+        when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
+        Assert.assertNull(getNotShownReason());
+        when(mSyncService.getSelectedTypes())
+                .thenReturn(CollectionUtil.newHashSet(UserSelectableType.TABS));
+        Assert.assertNull(getNotShownReason());
+
+        when(mIdentityManager.hasPrimaryAccount(anyInt())).thenReturn(true);
+        when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
+        Assert.assertNull(getNotShownReason());
         when(mSyncService.getSelectedTypes())
                 .thenReturn(CollectionUtil.newHashSet(UserSelectableType.TABS));
         Assert.assertNull(getNotShownReason());
