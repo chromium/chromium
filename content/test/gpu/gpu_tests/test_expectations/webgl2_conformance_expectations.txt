@@ -520,7 +520,6 @@ crbug.com/332745399 [ win graphite-enabled ] conformance2/extensions/webgl-shade
 ## Metal Common ##
 # Common to all GPU types (both AMD and Intel, at least)
 
-crbug.com/angleproject/7079 [ angle-metal intel-0x3e9b mac-x86_64 passthrough ventura ] deqp/functional/gles3/fboinvalidate/whole.html [ Failure ]
 
 ## SkiaGraphite on AMD/Intel ##
 
@@ -545,14 +544,6 @@ crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/
 crbug.com/angleproject/6430 [ mac passthrough angle-metal amd ] deqp/functional/gles3/texturespecification/texstorage2d_format_depth_stencil.html [ Failure ]
 crbug.com/angleproject/7425 [ mac passthrough angle-metal amd ] deqp/functional/gles3/texturespecification/texstorage3d_format_depth_stencil.html [ Failure ]
 
-crbug.com/1316389 [ amd-0x67ef angle-metal passthrough ventura ] deqp/functional/gles3/fboinvalidate/default.html [ Failure ]
-crbug.com/1316389 [ amd-0x67ef angle-metal passthrough ventura ] deqp/functional/gles3/transformfeedback/basic_types_separate_points.html [ Failure ]
-crbug.com/1316389 [ amd-0x67ef angle-metal passthrough ventura ] deqp/functional/gles3/transformfeedback/interpolation_centroid.html [ Failure ]
-crbug.com/1316389 [ amd-0x67ef angle-metal passthrough ventura ] deqp/functional/gles3/transformfeedback/interpolation_flat.html [ Failure ]
-crbug.com/1316389 [ amd-0x67ef angle-metal passthrough ventura ] deqp/functional/gles3/transformfeedback/interpolation_smooth.html [ Failure ]
-crbug.com/1316389 [ amd-0x67ef angle-metal passthrough ventura ] deqp/functional/gles3/transformfeedback/point_size.html [ Failure ]
-crbug.com/1316389 [ amd-0x67ef angle-metal passthrough ventura ] deqp/functional/gles3/transformfeedback/random_interleaved_points.html [ Failure ]
-crbug.com/1316389 [ amd-0x67ef angle-metal passthrough ventura ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
 crbug.com/1487266 [ amd-0x679e angle-metal monterey passthrough release ] deqp/functional/gles3/texturefiltering/2d_array_combinations_05.html [ Failure ]
 
 crbug.com/328100306 [ amd-0x67ef angle-metal graphite-enabled sonoma ] conformance/glsl/bugs/sampler-array-using-loop-index.html [ Failure ]
@@ -563,15 +554,6 @@ crbug.com/328100306 [ amd-0x67ef angle-metal graphite-enabled sonoma ] conforman
 ## Metal Intel ##
 
 crbug.com/angleproject/6430 [ angle-metal intel mac passthrough ] deqp/functional/gles3/readpixel.html [ Failure ]
-crbug.com/1316389 [ angle-metal intel passthrough ventura ] deqp/functional/gles3/fboinvalidate/default.html [ Failure ]
-crbug.com/1316389 [ angle-metal intel passthrough ventura ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_points.html [ Failure ]
-crbug.com/1316389 [ angle-metal intel passthrough ventura ] deqp/functional/gles3/transformfeedback/basic_types_separate_points.html [ Failure ]
-crbug.com/1316389 [ angle-metal intel passthrough ventura ] deqp/functional/gles3/transformfeedback/interpolation_centroid.html [ Failure ]
-crbug.com/1316389 [ angle-metal intel passthrough ventura ] deqp/functional/gles3/transformfeedback/interpolation_flat.html [ Failure ]
-crbug.com/1316389 [ angle-metal intel passthrough ventura ] deqp/functional/gles3/transformfeedback/interpolation_smooth.html [ Failure ]
-crbug.com/1316389 [ angle-metal intel passthrough ventura ] deqp/functional/gles3/transformfeedback/point_size.html [ Failure ]
-crbug.com/1316389 [ angle-metal intel passthrough ventura ] deqp/functional/gles3/transformfeedback/random_interleaved_points.html [ Failure ]
-crbug.com/1316389 [ angle-metal intel passthrough ventura ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
 
 crbug.com/327017906 [ angle-metal intel passthrough sonoma graphite-enabled ] deqp/functional/gles3/fboinvalidate/default.html [ Failure ]
 crbug.com/327017906 [ angle-metal intel passthrough sonoma graphite-enabled ] deqp/functional/gles3/fboinvalidate/whole.html [ Failure ]
@@ -590,14 +572,6 @@ crbug.com/327026292 [ angle-metal intel passthrough sonoma graphite-enabled ] co
 crbug.com/1298619 [ mac passthrough angle-metal apple ] deqp/functional/gles3/occlusionquery_strict.html [ Failure ]
 crbug.com/1465035 [ mac passthrough angle-metal apple ] deqp/functional/gles3/fboinvalidate/default.html [ Failure ]
 crbug.com/1465035 [ mac passthrough angle-metal apple mac-arm64 ] deqp/functional/gles3/fboinvalidate/whole.html [ Failure ]
-crbug.com/1465035 [ mac passthrough angle-metal apple ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_points.html [ Failure ]
-crbug.com/1465035 [ mac passthrough angle-metal apple ] deqp/functional/gles3/transformfeedback/basic_types_separate_points.html [ Failure ]
-crbug.com/1465035 [ mac passthrough angle-metal apple ] deqp/functional/gles3/transformfeedback/interpolation_centroid.html [ Failure ]
-crbug.com/1465035 [ mac passthrough angle-metal apple ] deqp/functional/gles3/transformfeedback/interpolation_flat.html [ Failure ]
-crbug.com/1465035 [ mac passthrough angle-metal apple ] deqp/functional/gles3/transformfeedback/interpolation_smooth.html [ Failure ]
-crbug.com/1465035 [ mac passthrough angle-metal apple ] deqp/functional/gles3/transformfeedback/point_size.html [ Failure ]
-crbug.com/1465035 [ mac passthrough angle-metal apple ] deqp/functional/gles3/transformfeedback/random_interleaved_points.html [ Failure ]
-crbug.com/1465035 [ mac passthrough angle-metal apple ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
 
 crbug.com/327026292 [ angle-metal apple passthrough sonoma graphite-enabled ] conformance2/glsl3/float-parsing.html [ Failure ]
 
@@ -861,8 +835,6 @@ crbug.com/1238075 [ chromeos chromeos-board-amd64-generic ] conformance/renderin
 crbug.com/1241179 [ chromeos chromeos-board-amd64-generic passthrough ] conformance2/extensions/ext-texture-norm16.html [ Failure ]
 crbug.com/1399117 [ chromeos chromeos-board-amd64-generic passthrough ] WebglExtension_WEBGL_provoking_vertex [ Skip ]
 
-# Must investigate ChromeOS failures with passthrough command decoder.
-crbug.com/angleproject/5038 [ chromeos display-server-x lacros-chrome passthrough ] conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 
 
 # ANGLE disallows WEBGL_clip_cull_distance if the underlying GL extension doesn't support requirements for number of distances.
@@ -998,7 +970,6 @@ crbug.com/1448570 [ android android-pixel-2 angle-disabled no-passthrough ] conf
 crbug.com/1448570 [ android android-pixel-2 angle-disabled no-passthrough ] conformance/extensions/webgl-compressed-texture-etc1.html [ Failure ]
 crbug.com/1448569 [ win angle-d3d11 ] conformance2/glsl3/texture-bias.html [ Failure ]
 
-crbug.com/332743717 conformance/uniforms/uniform-location.html [ Failure ]
 crbug.com/332743717 [ android android-pixel-4 ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ linux ] conformance2/canvas/drawingbuffer-storage-test.html [ Failure ]
 crbug.com/332743717 [ mac angle-metal ] conformance2/query/occlusion-query-scissor.html [ Failure ]
