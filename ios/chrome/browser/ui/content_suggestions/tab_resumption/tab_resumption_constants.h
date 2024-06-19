@@ -10,4 +10,8 @@
 // Accessibility identifier for the TabResumptionView.
 extern NSString* const kTabResumptionViewIdentifier;
 
+// Command line flag to show the item immediately without waiting for favicon.
+// Mainly used in tests to avoid network requests.
+extern const char kTabResumptionShowItemImmediately[];
+
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_TAB_RESUMPTION_TAB_RESUMPTION_CONSTANTS_H_

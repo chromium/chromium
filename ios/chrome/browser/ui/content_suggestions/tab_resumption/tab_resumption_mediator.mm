@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_mediator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/command_line.h"
 #import "base/memory/raw_ptr.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/page_image_service/features.h"
@@ -48,6 +49,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_commands.h"
+#import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_helper_delegate.h"
 #import "ios/chrome/browser/ui/content_suggestions/tab_resumption/tab_resumption_item.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_metrics_delegate.h"
@@ -98,6 +100,12 @@ const visited_url_ranking::URLVisitAggregate::TabData* ExtractTabData(
     }
   }
   return nullptr;
+}
+
+// Whether the item should be displayed immediately (before fetching an image).
+bool ShouldShowItemImmediately() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kTabResumptionShowItemImmediately);
 }
 
 // Salient images should come from gstatic.com.
@@ -466,6 +474,9 @@ const char kGStatic[] = ".gstatic.com";
 
 // Fetches a relevant image for the `item` to display.
 - (void)fetchImageForItem:(TabResumptionItem*)item {
+  if (ShouldShowItemImmediately()) {
+    [self showItem:item];
+  }
   if (item.itemType == kMostRecentTab) {
     [self fetchSnapshotForItem:item];
   } else {

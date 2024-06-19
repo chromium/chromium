@@ -27,6 +27,7 @@
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "net/test/embedded_test_server/embedded_test_server.h"
+#import "net/test/embedded_test_server/request_handler_util.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -113,7 +114,11 @@ NSString* HostnameFromGURL(GURL URL) {
   }
   if ([self isUsingTabResumption2]) {
     config.features_enabled.push_back(kTabResumption2);
+  } else {
+    config.features_disabled.push_back(kTabResumption2);
   }
+  config.additional_args.push_back(std::string("--") +
+                                   kTabResumptionShowItemImmediately);
   config.additional_args.push_back("--test-ios-module-ranker=tab_resumption");
   // kVisitedURLRankingHistoryVisibilityScoreFilter require the network, keep
   // it disabled for tests.
@@ -331,8 +336,7 @@ NSString* HostnameFromGURL(GURL URL) {
 
 // Tests that the context menu has the correct action and correctly hides the
 // tile.
-// TODO(crbug.com/345675681): This test timed out on some configs.
-- (void)DISABLED_testTabResumptionTileLongPressTR2 {
+- (void)testTabResumptionTileLongPressTR2 {
   [self testTabResumptionTileLongPress];
 }
 
