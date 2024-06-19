@@ -73,12 +73,14 @@ class VIZ_SERVICE_EXPORT FrameRateDecider : public SurfaceObserver {
   FrameRateDecider(SurfaceManager* surface_manager,
                    Client* client,
                    bool hw_support_for_multiple_refresh_rates,
-                   bool supports_set_frame_rate);
+                   bool output_surface_supports_set_frame_rate);
   ~FrameRateDecider() override;
 
   void SetSupportedFrameIntervals(
       std::vector<base::TimeDelta> supported_intervals);
-  bool supports_set_frame_rate() const { return supports_set_frame_rate_; }
+  bool output_surface_supports_set_frame_rate() const {
+    return output_surface_supports_set_frame_rate_;
+  }
 
   void set_min_num_of_frames_to_toggle_interval_for_testing(size_t num) {
     min_num_of_frames_to_toggle_interval_ = num;
@@ -117,8 +119,18 @@ class VIZ_SERVICE_EXPORT FrameRateDecider : public SurfaceObserver {
 
   const raw_ptr<SurfaceManager> surface_manager_;
   const raw_ptr<Client> client_;
+
+  // If true, allow to switch to the desired video frame rate without checking
+  // whether it's single or multiple videos or whether the frame rate is
+  // supported in the |supported_intervals_| list. There might not be a list at
+  // all.
   const bool hw_support_for_multiple_refresh_rates_;
-  const bool supports_set_frame_rate_;
+
+  // For SetPreferredFrameInterval(), Display calls root_compositor_frame_sink
+  // SetPreferredFrameInterval(). If |output_surface_supports_set_frame_rate_|
+  // is true, Display also calls output_surface->SetFrameRate() and the new
+  // frame rate is not limited to the list of |supported_intervals_|.
+  const bool output_surface_supports_set_frame_rate_;
 };
 
 }  // namespace viz

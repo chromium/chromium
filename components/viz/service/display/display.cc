@@ -1322,7 +1322,7 @@ void Display::SetNeedsOneBeginFrame() {
 }
 
 void Display::SetPreferredFrameInterval(base::TimeDelta interval) {
-  if (frame_rate_decider_->supports_set_frame_rate()) {
+  if (frame_rate_decider_->output_surface_supports_set_frame_rate()) {
     float interval_s = interval.InSecondsF();
     float frame_rate = interval_s == 0 ? 0 : (1 / interval_s);
     output_surface_->SetFrameRate(frame_rate);

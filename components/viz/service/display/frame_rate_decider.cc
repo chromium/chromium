@@ -48,14 +48,15 @@ FrameRateDecider::ScopedAggregate::~ScopedAggregate() {
 FrameRateDecider::FrameRateDecider(SurfaceManager* surface_manager,
                                    Client* client,
                                    bool hw_support_for_multiple_refresh_rates,
-                                   bool supports_set_frame_rate)
+                                   bool output_surface_supports_set_frame_rate)
     : supported_intervals_{BeginFrameArgs::DefaultInterval()},
       min_num_of_frames_to_toggle_interval_(kMinNumOfFramesToToggleInterval),
       surface_manager_(surface_manager),
       client_(client),
       hw_support_for_multiple_refresh_rates_(
           hw_support_for_multiple_refresh_rates),
-      supports_set_frame_rate_(supports_set_frame_rate) {
+      output_surface_supports_set_frame_rate_(
+          output_surface_supports_set_frame_rate) {
   surface_manager_->AddObserver(this);
 }
 
@@ -127,6 +128,7 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
   if (!multiple_refresh_rates_supported())
     return;
 
+  // Prepare the list of frame intervals from the frame sinks with a video(s),
   std::vector<base::TimeDelta> fixed_interval_frame_sink_intervals;
   for (const auto& frame_sink_id : frame_sinks_drawn_in_previous_frame_) {
     auto type = mojom::CompositorFrameSinkType::kUnspecified;
@@ -148,6 +150,7 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
     }
   }
 
+  // From the list above, get the video case for lowering the frame rate.
   ToggleFrameRateCase toggle_case =
       GetToggleFrameRateCase(fixed_interval_frame_sink_intervals);
   bool should_toggle = true;
@@ -183,6 +186,8 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
     UMA_HISTOGRAM_ENUMERATION(
         "Compositing.FrameRateDecider.ToggleFrameRateCase", toggle_case);
   }
+
+  // This is not the case we want to (or we can) lower the frame rate for video.
   if (!should_toggle) {
     TRACE_EVENT_INSTANT0(
         "viz",
@@ -235,8 +240,8 @@ void FrameRateDecider::UpdatePreferredFrameIntervalIfNeeded() {
   // If only one frame sink is being updated and its frame rate can be directly
   // forwarded to the system, then prefer that over choosing one of the refresh
   // rates advertised by the system.
-  can_set_preferred_frame_rate =
-      all_frame_sinks_have_same_interval && supports_set_frame_rate_;
+  can_set_preferred_frame_rate = all_frame_sinks_have_same_interval &&
+                                 output_surface_supports_set_frame_rate_;
 #endif
   if (can_set_preferred_frame_rate) {
     SetPreferredInterval(*min_frame_sink_interval);
@@ -350,7 +355,8 @@ bool FrameRateDecider::multiple_refresh_rates_supported() const {
   // to iOS.
   return true;
 #else
-  return supports_set_frame_rate_ || supported_intervals_.size() > 1u;
+  return output_surface_supports_set_frame_rate_ ||
+         supported_intervals_.size() > 1u;
 #endif
 }
 
