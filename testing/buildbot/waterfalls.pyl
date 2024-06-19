@@ -6725,7 +6725,7 @@
           'skylab_tests': 'chromeos_betty_vmlab_tests',
         },
         'os_type': 'chromeos',
-        'cros_board': 'betty-arc-t',
+        'cros_board': 'betty',
         'cros_dut_pool': 'vmlab',
         'run_cft': True,
       },

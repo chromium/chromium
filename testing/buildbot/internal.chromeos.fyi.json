@@ -11,7 +11,7 @@
           "--ozone-platform=headless"
         ],
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "aura_unittests RELEASE_LKGM",
@@ -24,7 +24,7 @@
       },
       {
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "name": "base_unittests RELEASE_LKGM",
         "run_cft": true,
@@ -36,7 +36,7 @@
       },
       {
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "base_unittests RELEASE_LKGM",
@@ -53,7 +53,7 @@
           "--gtest_filter=-*UsingRealWebcam_CaptureMjpeg*"
         ],
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "capture_unittests RELEASE_LKGM",
@@ -66,7 +66,7 @@
       },
       {
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "cc_unittests RELEASE_LKGM",
@@ -79,7 +79,7 @@
       },
       {
         "autotest_name": "tast.chrome-from-gcs",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "name": "chrome_all_tast_tests RELEASE_LKGM",
         "run_cft": true,
@@ -96,7 +96,7 @@
       {
         "autotest_name": "tast.chrome-from-gcs",
         "ci_only": true,
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "chrome_criticalstaging_tast_tests RELEASE_LKGM",
@@ -114,7 +114,7 @@
       {
         "autotest_name": "tast.chrome-from-gcs",
         "ci_only": true,
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "chrome_disabled_tast_tests RELEASE_LKGM",
@@ -131,7 +131,7 @@
       },
       {
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "name": "chromeos_integration_tests RELEASE_LKGM",
         "run_cft": true,
@@ -143,7 +143,7 @@
       },
       {
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "crypto_unittests RELEASE_LKGM",
@@ -156,7 +156,7 @@
       },
       {
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "display_unittests RELEASE_LKGM",
@@ -177,7 +177,7 @@
           "libfake"
         ],
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "fake_libva_driver_unittest RELEASE_LKGM",
@@ -190,7 +190,7 @@
       },
       {
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "google_apis_unittests RELEASE_LKGM",
@@ -203,7 +203,7 @@
       },
       {
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "ipc_tests RELEASE_LKGM",
@@ -216,7 +216,7 @@
       },
       {
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "latency_unittests RELEASE_LKGM",
@@ -229,7 +229,7 @@
       },
       {
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "libcups_unittests RELEASE_LKGM",
@@ -245,7 +245,7 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.media_unittests.filter"
         ],
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "media_unittests RELEASE_LKGM",
@@ -258,7 +258,7 @@
       },
       {
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "midi_unittests RELEASE_LKGM",
@@ -271,7 +271,7 @@
       },
       {
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "mojo_unittests RELEASE_LKGM",
@@ -288,7 +288,7 @@
           "--gtest_filter=-PythonUtils.PythonRunTime"
         ],
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "net_unittests RELEASE_LKGM",
@@ -304,7 +304,7 @@
           "--stop-ui"
         ],
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "ozone_gl_unittests RELEASE_LKGM",
@@ -317,7 +317,7 @@
       },
       {
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "ozone_unittests RELEASE_LKGM",
@@ -330,7 +330,7 @@
       },
       {
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "pdf_unittests RELEASE_LKGM",
@@ -343,7 +343,7 @@
       },
       {
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "printing_unittests RELEASE_LKGM",
@@ -360,7 +360,7 @@
           "--test-launcher-jobs=1"
         ],
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "profile_provider_unittest RELEASE_LKGM",
@@ -373,7 +373,7 @@
       },
       {
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "rust_gtest_interop_unittests RELEASE_LKGM",
@@ -386,7 +386,7 @@
       },
       {
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "sql_unittests RELEASE_LKGM",
@@ -399,7 +399,7 @@
       },
       {
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "url_unittests RELEASE_LKGM",
@@ -416,7 +416,7 @@
           "--gtest_filter=\"VaapiTest.*\""
         ],
         "autotest_name": "chromium",
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "vaapi_unittest RELEASE_LKGM",
@@ -440,7 +440,7 @@
         ],
         "autotest_name": "chromium",
         "ci_only": true,
-        "cros_board": "betty-arc-t",
+        "cros_board": "betty",
         "dut_pool": "vmlab",
         "experiment_percentage": 100,
         "name": "video_decode_accelerator_tests_fake_vaapi RELEASE_LKGM",
