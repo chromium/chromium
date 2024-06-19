@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "chrome/browser/ash/policy/external_data/handlers/cloud_external_data_policy_handler.h"
+#include "chrome/browser/ash/policy/external_data/cloud_external_data_policy_observer.h"
 
 namespace ash {
 class CrosSettings;
@@ -20,7 +20,8 @@ class DeviceLocalAccountPolicyService;
 
 // This class observes the user setting "ExternalPrintServers" and propagates
 // data loaded from this external policy to appropriate objects.
-class PrintServersExternalDataHandler : public CloudExternalDataPolicyHandler {
+class PrintServersExternalDataHandler
+    : public CloudExternalDataPolicyObserver::Delegate {
  public:
   PrintServersExternalDataHandler(
       ash::CrosSettings* cros_settings,

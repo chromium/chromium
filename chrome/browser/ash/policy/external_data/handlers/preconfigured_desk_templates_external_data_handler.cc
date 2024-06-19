@@ -32,7 +32,7 @@ void PreconfiguredDeskTemplatesExternalDataHandler::OnExternalDataCleared(
   DesksClient* dc = DesksClient::Get();
   if (dc) {
     dc->RemovePolicyPreconfiguredTemplate(
-        CloudExternalDataPolicyHandler::GetAccountId(user_id));
+        CloudExternalDataPolicyObserver::GetAccountId(user_id));
   }
 }
 
@@ -44,7 +44,8 @@ void PreconfiguredDeskTemplatesExternalDataHandler::OnExternalDataFetched(
   DesksClient* dc = DesksClient::Get();
   if (dc) {
     dc->SetPolicyPreconfiguredTemplate(
-        CloudExternalDataPolicyHandler::GetAccountId(user_id), std::move(data));
+        CloudExternalDataPolicyObserver::GetAccountId(user_id),
+        std::move(data));
   }
 }
 

@@ -19,7 +19,7 @@ namespace {
 base::WeakPtr<ash::PrintServersProvider> GetPrintServersProvider(
     const std::string& user_id) {
   return ash::PrintServersProviderFactory::Get()->GetForAccountId(
-      CloudExternalDataPolicyHandler::GetAccountId(user_id));
+      CloudExternalDataPolicyObserver::GetAccountId(user_id));
 }
 
 }  // namespace

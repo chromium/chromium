@@ -23,7 +23,7 @@ base::WeakPtr<ash::BulkPrintersCalculator> GetBulkPrintersCalculator(
     return nullptr;
   }
   return factory->GetForAccountId(
-      CloudExternalDataPolicyHandler::GetAccountId(user_id));
+      CloudExternalDataPolicyObserver::GetAccountId(user_id));
 }
 
 }  // namespace

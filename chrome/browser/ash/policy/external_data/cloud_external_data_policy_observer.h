@@ -37,6 +37,8 @@ class CloudExternalDataPolicyObserver
  public:
   class Delegate {
    public:
+    virtual ~Delegate() = default;
+
     // Invoked when an external data reference is set for |user_id|.
     virtual void OnExternalDataSet(const std::string& policy,
                                    const std::string& user_id);
@@ -55,8 +57,10 @@ class CloudExternalDataPolicyObserver
                                        std::unique_ptr<std::string> data,
                                        const base::FilePath& file_path);
 
-   protected:
-    virtual ~Delegate();
+    // Removes the data for the given `account_id`.
+    // Calls `on_removed` on its completion.
+    virtual void RemoveForAccountId(const AccountId& account_id,
+                                    base::OnceClosure on_removed) = 0;
   };
 
   // |device_local_account_policy_service| may be nullptr if unavailable (e.g.
@@ -82,6 +86,8 @@ class CloudExternalDataPolicyObserver
   // DeviceLocalAccountPolicyService::Observer:
   void OnPolicyUpdated(const std::string& user_id) override;
   void OnDeviceLocalAccountsChanged() override;
+
+  static AccountId GetAccountId(const std::string& user_id);
 
  private:
   // Helper class that observes |policy_| for a logged-in user.

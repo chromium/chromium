@@ -116,6 +116,10 @@ class CloudExternalDataPolicyObserverTest
                              const std::string& user_id,
                              std::unique_ptr<std::string> data,
                              const base::FilePath& file_path) override;
+  void RemoveForAccountId(const AccountId& account_id,
+                          base::OnceClosure on_removed) override {
+    NOTIMPLEMENTED();
+  }
 
   void CreateObserver();
   void RemoveObserver();

@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "chrome/browser/ash/policy/external_data/handlers/cloud_external_data_policy_handler.h"
+#include "chrome/browser/ash/policy/external_data/cloud_external_data_policy_observer.h"
 
 namespace ash {
 class CrosSettings;
@@ -19,7 +19,7 @@ namespace policy {
 class DeviceLocalAccountPolicyService;
 
 class UserAvatarImageExternalDataHandler
-    : public CloudExternalDataPolicyHandler {
+    : public CloudExternalDataPolicyObserver::Delegate {
  public:
   UserAvatarImageExternalDataHandler(
       ash::CrosSettings* cros_settings,

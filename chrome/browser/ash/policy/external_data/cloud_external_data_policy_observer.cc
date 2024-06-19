@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/handlers/configuration_policy_handler_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -28,6 +29,7 @@
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/policy_service.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 
 namespace policy {
@@ -115,8 +117,6 @@ void CloudExternalDataPolicyObserver::Delegate::OnExternalDataFetched(
     const std::string& user_id,
     std::unique_ptr<std::string> data,
     const base::FilePath& file_path) {}
-
-CloudExternalDataPolicyObserver::Delegate::~Delegate() {}
 
 CloudExternalDataPolicyObserver::CloudExternalDataPolicyObserver(
     ash::CrosSettings* cros_settings,
@@ -223,6 +223,14 @@ void CloudExternalDataPolicyObserver::OnPolicyUpdated(
 void CloudExternalDataPolicyObserver::OnDeviceLocalAccountsChanged() {
   // No action needed here, changes to the list of device-local accounts get
   // handled via the kAccountsPrefDeviceLocalAccounts device setting observer.
+}
+
+// static
+AccountId CloudExternalDataPolicyObserver::GetAccountId(
+    const std::string& user_id) {
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  return known_user.GetAccountId(user_id, /*id=*/std::string(),
+                                 AccountType::UNKNOWN);
 }
 
 void CloudExternalDataPolicyObserver::RetrieveDeviceLocalAccounts() {

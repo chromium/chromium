@@ -29,7 +29,7 @@ void WallpaperImageExternalDataHandler::OnExternalDataCleared(
     const std::string& policy,
     const std::string& user_id) {
   WallpaperControllerClientImpl::Get()->RemovePolicyWallpaper(
-      CloudExternalDataPolicyHandler::GetAccountId(user_id));
+      CloudExternalDataPolicyObserver::GetAccountId(user_id));
 }
 
 void WallpaperImageExternalDataHandler::OnExternalDataFetched(
@@ -38,7 +38,7 @@ void WallpaperImageExternalDataHandler::OnExternalDataFetched(
     std::unique_ptr<std::string> data,
     const base::FilePath& file_path) {
   WallpaperControllerClientImpl::Get()->SetPolicyWallpaper(
-      CloudExternalDataPolicyHandler::GetAccountId(user_id), std::move(data));
+      CloudExternalDataPolicyObserver::GetAccountId(user_id), std::move(data));
 }
 
 void WallpaperImageExternalDataHandler::RemoveForAccountId(

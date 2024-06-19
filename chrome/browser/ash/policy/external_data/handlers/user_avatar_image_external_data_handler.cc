@@ -17,7 +17,7 @@ namespace {
 
 ash::UserImageManagerImpl* GetUserImageManager(const std::string& user_id) {
   return ash::UserImageManagerRegistry::Get()->GetManager(
-      CloudExternalDataPolicyHandler::GetAccountId(user_id));
+      CloudExternalDataPolicyObserver::GetAccountId(user_id));
 }
 
 }  // namespace
