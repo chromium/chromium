@@ -830,6 +830,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.AuthenticationAsyncOpFailureReson"
+    enum="Hresult" expires_after="2025-02-27">
+  <owner>sygiet@google.com</owner>
+  <owner>vasilii@chromium.org</owner>
+  <summary>
+    HRESULTs associated with errors happened in the RequestVerificationAsync
+    API. Recorded after the authentication fails.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.AutomaticChange.AcceptanceWithoutAutoButton"
     enum="PasswordCheckResolutionAction" expires_after="2024-07-15">
   <owner>ioanap@chromium.org</owner>

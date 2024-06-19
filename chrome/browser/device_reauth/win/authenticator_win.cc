@@ -28,6 +28,7 @@
 #include "base/win/registry.h"
 #include "base/win/scoped_hstring.h"
 #include "base/win/scoped_winrt_initializer.h"
+#include "base/win/windows_types.h"
 #include "chrome/browser/password_manager/password_manager_util_win.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -93,6 +94,11 @@ void RecordWindowsHelloAuthenticationResult(
     AuthenticationResultStatusWin result) {
   base::UmaHistogramEnumeration(
       "PasswordManager.RequestVerificationAsyncResult", result);
+}
+
+void RecordAuthenticationAsyncOpFailureReson(HRESULT hr) {
+  base::UmaHistogramSparse("PasswordManager.AuthenticationAsyncOpFailureReson",
+                           hr);
 }
 
 void ReturnAvailabilityValue(AvailabilityCallback callback,
@@ -198,6 +204,7 @@ void ReturnAuthenticationValue(base::OnceCallback<void(bool)> callback,
     case AuthenticationResultStatusWin::kFailedToCallAPI:
     case AuthenticationResultStatusWin::kFailedToCreateFactory:
     case AuthenticationResultStatusWin::kFailedToPostTask:
+    case AuthenticationResultStatusWin::kAsyncOperationFailed:
       // This values are not returned by UserConsentVerifier API.
       NOTREACHED_NORETURN();
   }
@@ -210,6 +217,19 @@ void OnAuthenticationReceived(scoped_refptr<base::SequencedTaskRunner> thread,
   thread->PostTask(
       FROM_HERE, base::BindOnce(&ReturnAuthenticationValue, std::move(callback),
                                 result, message));
+}
+
+void OnAuthenticationAsyncOpFail(
+    scoped_refptr<base::SequencedTaskRunner> thread,
+    base::OnceCallback<void(bool)> callback,
+    const std::u16string& message,
+    HRESULT hr) {
+  RecordWindowsHelloAuthenticationResult(
+      AuthenticationResultStatusWin::kAsyncOperationFailed);
+  RecordAuthenticationAsyncOpFailureReson(hr);
+
+  thread->PostTask(FROM_HERE, base::BindOnce(&AuthenticateWithLegacyApi,
+                                             message, std::move(callback)));
 }
 
 void PerformWindowsHelloAuthenticationAsync(
@@ -244,8 +264,11 @@ void PerformWindowsHelloAuthenticationAsync(
       1, base::BindOnce(&WrapCallback).Then(std::move(callback)));
 
   hr = base::win::PostAsyncHandlers(
-      async_op.Get(), base::BindOnce(&OnAuthenticationReceived, thread,
-                                     barrier_callback, message));
+      async_op.Get(),
+      base::BindOnce(&OnAuthenticationReceived, thread, barrier_callback,
+                     message),
+      base::BindOnce(&OnAuthenticationAsyncOpFail, thread, barrier_callback,
+                     message));
 
   if (FAILED(hr)) {
     RecordWindowsHelloAuthenticationResult(
