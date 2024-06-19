@@ -708,4 +708,6 @@ ci.builder(
     ),
     contact_team_email = "chrome-build-team@google.com",
     notifies = ["Chromium Build Time Watcher"],
+    siso_enabled = True,
+    siso_project = siso.project.DEFAULT_UNTRUSTED,
 )
