@@ -244,6 +244,10 @@ void FormTracker::ElementDisappeared(const blink::WebElement& element) {
 void FormTracker::TrackAutofilledElement(const WebFormControlElement& element) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
   DCHECK(element.IsAutofilled());
+  if (!form_util::GetFormControlByRendererId(
+          form_util::GetFieldRendererId(element))) {
+    return;
+  }
   blink::WebFormElement form_element = form_util::GetOwningForm(element);
   if (base::FeatureList::IsEnabled(
           features::kAutofillUnifyAndFixFormTracking)) {

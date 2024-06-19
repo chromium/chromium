@@ -878,24 +878,33 @@ void AutofillAgent::ApplyFieldsAction(
     // Notify Password Manager of filled fields.
     for (const auto& [filled_field, field_autofill_state] : filled_fields) {
       if (WebInputElement input_element =
-              filled_field.GetField().DynamicTo<WebInputElement>()) {
+              form_util::GetFormControlByRendererId(filled_field.GetId())
+                  .DynamicTo<WebInputElement>()) {
         password_autofill_agent_->UpdatePasswordStateForTextChange(
             input_element);
       }
     }
 
-    if (auto it =
-            base::ranges::find_if(fields, std::not_fn(&FormRendererId::is_null),
-                                  &FormFieldData::FillData::host_form_id);
+    auto host_form_is_connected = [](const FormFieldData::FillData& fill_data) {
+      return !form_util::GetFormByRendererId(fill_data.host_form_id).IsNull();
+    };
+    if (auto it = base::ranges::find_if(fields, host_form_is_connected);
         it != fields.end()) {
       UpdateLastInteractedElement(it->host_form_id);
     } else if (!base::FeatureList::IsEnabled(
                    features::kAutofillUnifyAndFixFormTracking)) {
       UpdateLastInteractedElement(FormRendererId());
     } else {
-      for (const auto& [field_ref, state] : filled_fields) {
-        if (field_ref.GetField()) {
-          UpdateLastInteractedElement(field_ref.GetId());
+      for (const auto& [filled_field, state] : filled_fields) {
+        if (WebFormControlElement control_element =
+                form_util::GetFormControlByRendererId(filled_field.GetId())) {
+          // `filled_fields` was populated at the same time where multiple focus
+          // and blur events were dispatched. This means that many fields in the
+          // list could have been removed from the DOM. Updating inside this
+          // conditional ensures submission is always tracked with an element
+          // currently connected to the DOM.
+          UpdateLastInteractedElement(
+              form_util::GetFieldRendererId(control_element));
         }
       }
     }
