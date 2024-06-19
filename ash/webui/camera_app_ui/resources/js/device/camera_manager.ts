@@ -311,8 +311,9 @@ export class CameraManager implements EventListener {
    * Switches to the next available camera device.
    */
   switchCamera(): Promise<void>|null {
+    const perfLogger = PerfLogger.getInstance();
     const promise = this.tryReconfigure(() => {
-      state.set(PerfEvent.CAMERA_SWITCHING, true);
+      perfLogger.start(PerfEvent.CAMERA_SWITCHING);
       const deviceIds =
           this.scheduler.reconfigurer.getDeviceIdsSortedbyPreferredFacing(
               this.getCameraInfo());
@@ -331,7 +332,7 @@ export class CameraManager implements EventListener {
       return null;
     }
     return promise.then((succeed) => {
-      state.set(PerfEvent.CAMERA_SWITCHING, false, {hasError: !succeed});
+      perfLogger.stop(PerfEvent.CAMERA_SWITCHING, {hasError: !succeed});
       metrics.sendOpenCameraEvent(this.getVidPid());
     });
   }

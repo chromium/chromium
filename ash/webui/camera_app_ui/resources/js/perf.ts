@@ -88,21 +88,6 @@ export class PerfLogger {
       }
     });
 
-    state.addObserver(PerfEvent.PHOTO_CAPTURE_SHUTTER, (val) => {
-      // `photo-taking` is a sum of `photo-capture-shutter` and
-      // `photo-capture-post-processing`. As scan mode doesn't record
-      // `photo-capture-post-processing`, returns early in this case.
-      if (state.get(Mode.SCAN)) {
-        return;
-      }
-      // If we log photo-taking metrics by 'taking' state, we cannot exclude
-      // the timer duration. photo-capture-shutter is the timing that a
-      // shutter is clicked.
-      if (val) {
-        state.set(state.State.PHOTO_TAKING, true);
-      }
-    });
-
     const states = Object.values(PerfEvent);
     for (const event of states) {
       state.addObserver(event, (val, extras) => {
@@ -148,6 +133,20 @@ export class PerfLogger {
     }
     this.startTimeMap.set(event, startTime);
     ChromeHelper.getInstance().startTracing(event);
+
+    if (event === PerfEvent.PHOTO_CAPTURE_SHUTTER) {
+      // `photo-taking` starts when a shutter button is clicked and finished
+      // when a photo is saved. As scan mode has a review page in the middle,
+      // returns early in this case.
+      if (state.get(Mode.SCAN)) {
+        return;
+      }
+
+      // If we set photo-taking state by 'taking' state, we cannot exclude
+      // the timer duration. photo-capture-shutter is the timing that a
+      // shutter is clicked.
+      state.set(state.State.PHOTO_TAKING, true);
+    }
   }
 
   /**

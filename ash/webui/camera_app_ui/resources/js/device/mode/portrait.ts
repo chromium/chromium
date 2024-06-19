@@ -6,7 +6,7 @@ import {assert} from '../../assert.js';
 import {I18nString} from '../../i18n_string.js';
 import {TakePhotoResult} from '../../mojo/image_capture.js';
 import {Effect} from '../../mojo/type.js';
-import * as state from '../../state.js';
+import {PerfLogger} from '../../perf.js';
 import * as toast from '../../toast.js';
 import {
   Facing,
@@ -50,7 +50,8 @@ export class Portrait extends Photo {
 
   override async start(): Promise<[Promise<void>]> {
     const timestamp = Date.now();
-    state.set(PerfEvent.PHOTO_CAPTURE_SHUTTER, true);
+    const perfLogger = PerfLogger.getInstance();
+    perfLogger.start(PerfEvent.PHOTO_CAPTURE_SHUTTER);
     let photoSettings: PhotoSettings;
     if (this.captureResolution !== null) {
       photoSettings = {
@@ -77,9 +78,8 @@ export class Portrait extends Photo {
       toast.show(I18nString.ERROR_MSG_TAKE_PHOTO_FAILED);
       throw e;
     } finally {
-      state.set(
-          PerfEvent.PHOTO_CAPTURE_SHUTTER, false,
-          hasError ? {hasError} : {facing: this.facing});
+      perfLogger.stop(
+          PerfEvent.PHOTO_CAPTURE_SHUTTER, {hasError, facing: this.facing});
     }
 
     async function toPhotoResult(pendingResult: TakePhotoResult) {

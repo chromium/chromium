@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from '../../assert.js';
-import * as state from '../../state.js';
+import {PerfLogger} from '../../perf.js';
 import {
   CanceledError,
   Facing,
@@ -71,7 +71,8 @@ export class Photo extends ModeBase {
 
   async start(): Promise<[Promise<void>]> {
     const timestamp = Date.now();
-    state.set(PerfEvent.PHOTO_CAPTURE_SHUTTER, true);
+    const perfLogger = PerfLogger.getInstance();
+    perfLogger.start(PerfEvent.PHOTO_CAPTURE_SHUTTER);
     const {blob, metadata} = await (async () => {
       let hasError = false;
       try {
@@ -81,9 +82,8 @@ export class Photo extends ModeBase {
         this.handler.onPhotoError();
         throw e;
       } finally {
-        state.set(
-            PerfEvent.PHOTO_CAPTURE_SHUTTER, false,
-            hasError ? {hasError} : {facing: this.facing});
+        perfLogger.stop(
+            PerfEvent.PHOTO_CAPTURE_SHUTTER, {hasError, facing: this.facing});
       }
     })();
 
