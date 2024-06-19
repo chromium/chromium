@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
@@ -147,6 +148,8 @@ public class ArchivedTabsDialogCoordinator {
                 (ViewGroup)
                         LayoutInflater.from(mContext)
                                 .inflate(R.layout.archived_tabs_dialog, mRootView, false);
+        mView.findViewById(R.id.close_all_tabs_button)
+                .setOnClickListener(this::closeAllInactiveTabs);
     }
 
     public void show() {
@@ -156,10 +159,11 @@ public class ArchivedTabsDialogCoordinator {
 
         mArchivedTabModel.addObserver(mTabModelObserver);
 
+        mRootView.addView(mView);
         List<Tab> archivedTabs = TabModelUtils.convertTabListToListOfTabs(mArchivedTabModel);
         mTabListEditorCoordinator.getController().show(archivedTabs, 0, null);
-        mRootView.addView(mView);
-        // TODO(crbug.com/345789067): Also configure the menu items that are shown.
+        // View is obscured by the TabListEditorCoordinator, so it needs to be brought to the front.
+        mView.findViewById(R.id.close_all_tabs_button_container).bringToFront();
 
         mTabListEditorCoordinator.getController().setNavigationProvider(mNavigationProvider);
 
@@ -208,6 +212,12 @@ public class ArchivedTabsDialogCoordinator {
                         /* displayGroups= */ false,
                         mSnackbarManager,
                         TabProperties.TabActionState.CLOSABLE);
+    }
+
+    @VisibleForTesting
+    void closeAllInactiveTabs(View view) {
+        mArchivedTabModel.closeAllTabs(false);
+        hide();
     }
 
     // Testing-specific methods

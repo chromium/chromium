@@ -50,7 +50,7 @@ import org.chromium.url.GURL;
 
 /** End-to-end test for ArchivedTabsDialogCoordinator. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@DoNotBatch(reason = "fdsa")
+@DoNotBatch(reason = "TODO(crbug.com/348068134): Batch this test suite.")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({ChromeFeatureList.ANDROID_TAB_DECLUTTER})
 public class ArchivedTabsDialogCoordinatorTest {
@@ -160,6 +160,18 @@ public class ArchivedTabsDialogCoordinatorTest {
                         });
         mRobot.resultRobot.verifyTabListEditorIsHidden();
         ActivityTestUtils.waitForFragmentToAttach(activity, TabArchiveSettingsFragment.class);
+    }
+
+    @Test
+    @MediumTest
+    public void testCloseAllInactiveTabs() throws Exception {
+        addArchivedTab(new GURL("https://google.com"), "test 1");
+        addArchivedTab(new GURL("https://google.com"), "test 2");
+        showDialog(2);
+        onView(withText("2 inactive tabs")).check(matches(isDisplayed()));
+        onView(withText("Close all inactive tabs")).perform(click());
+        mRobot.resultRobot.verifyTabListEditorIsHidden();
+        assertEquals(0, mArchivedTabModel.getCount());
     }
 
     private void showDialog(int numTabs) {
