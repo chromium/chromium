@@ -36,7 +36,7 @@
     <div class="scrollable" id="terms-of-service-loading">
       <div class="content">
         <p class="title" id="greetingTitle" i18n-content="greetingHeader"
-            aria-hidden="true"></p>
+            aria-hidden="true" role="heading" aria-level="1"></p>
         <p class="subtitle" i18n-content="progressTermsLoading"
             aria-live="polite"></p>
         <div class="progress-container">
@@ -48,7 +48,7 @@
     <div class="scrollable" id="terms-of-service-content" hidden>
       <div class="content section-flex">
         <p class="title" id="greetingTitle" i18n-content="greetingHeader"
-            aria-live="polite"></p>
+            aria-live="polite" role="heading" aria-level="1"></p>
         <p class="subtitle" i18n-content="greetingDescription">
         </p>
         <div class ="section-flex" id="service-container">
@@ -122,7 +122,7 @@
     <div class="scrollable">
       <div class="content">
         <p class="title" id="greetingTitle"
-            i18n-content="initializingHeader"></p>
+            i18n-content="initializingHeader" role="heading" aria-level="1"></p>
         <p class="subtitle" i18n-content="progressAndroidLoading"
             aria-live="polite">
         </p>
@@ -139,7 +139,8 @@
     </div>
     <div class="scrollable">
       <div class="content section-flex">
-        <p class="title" i18n-content="greetingHeader"></p>
+        <p class="title" i18n-content="greetingHeader" role="heading"
+          aria-level="1"></p>
         <p class="subtitle" id="error-message" aria-live="polite"></p>
         <img class="error-image" src="images/error_image.png"
           aria-hidden="true">
