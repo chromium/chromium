@@ -2110,19 +2110,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="InputMethod.VirtualKeyboard.Handwriting.DWServiceCallbackFailed"
-    enum="Boolean" expires_after="2024-06-30">
-  <owner>alexmitra@chromium.org</owner>
-  <owner>peconn@chromium.org</owner>
-  <summary>
-    Logs true if an unsuccessful attempt was made to instantiate the
-    DirectWritingServiceCallback. Logs false when DirectWriting is successfully
-    enabled in Chrome. This is to gauge how often crbug/1375266 is being
-    encountered.
-  </summary>
-</histogram>
-
-<histogram
     name="InputMethod.VirtualKeyboard.Handwriting.KeyboardContainerOnCommit"
     enum="VirtualKeyboardContainerType" expires_after="2024-11-01">
   <owner>curtismcmullan@chromium.org</owner>
