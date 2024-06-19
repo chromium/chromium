@@ -90,8 +90,6 @@ class AddressFieldParser : public FormFieldParser {
   static ParseNameLabelResult ParseNameAndLabelSeparately(
       ParsingContext& context,
       AutofillScanner* scanner,
-      const std::u16string& pattern,
-      MatchParams match_type,
       base::span<const MatchPatternRef> patterns,
       raw_ptr<AutofillField>* match,
       const char* regex_name);

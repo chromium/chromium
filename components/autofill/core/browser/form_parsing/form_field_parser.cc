@@ -419,12 +419,10 @@ bool FormFieldParser::FieldMatchesMatchPatternRef(
 // static
 bool FormFieldParser::ParseField(ParsingContext& context,
                                  AutofillScanner* scanner,
-                                 std::u16string_view pattern,
                                  base::span<const MatchPatternRef> patterns,
                                  raw_ptr<AutofillField>* match,
                                  const char* regex_name) {
-  return ParseFieldSpecifics(context, scanner, pattern, kDefaultMatchParams,
-                             patterns, match, regex_name);
+  return ParseFieldSpecifics(context, scanner, patterns, match, regex_name);
 }
 
 // static
@@ -480,8 +478,6 @@ bool FormFieldParser::ParseFieldSpecificsWithNewPatterns(
 bool FormFieldParser::ParseFieldSpecifics(
     ParsingContext& context,
     AutofillScanner* scanner,
-    std::u16string_view pattern,
-    const MatchParams& match_type,
     base::span<const MatchPatternRef> patterns,
     raw_ptr<AutofillField>* match,
     const char* regex_name,

@@ -85,9 +85,6 @@ class PhoneFieldParser : public FormFieldParser {
   // Returns all the `PhoneGrammar`s used for parsing.
   static const std::vector<PhoneGrammar>& GetPhoneGrammars();
 
-  // Returns the regular expression string corresponding to |regex_id|
-  static std::u16string GetRegExp(RegexType regex_id);
-
   // Returns the constant name of the regex corresponding to |regex_id|.
   // This is useful for logging purposes.
   static const char* GetRegExpName(RegexType regex_id);
@@ -99,7 +96,6 @@ class PhoneFieldParser : public FormFieldParser {
   // Convenient wrapper for ParseFieldSpecifics().
   static bool ParsePhoneField(ParsingContext& context,
                               AutofillScanner* scanner,
-                              std::u16string_view regex,
                               raw_ptr<AutofillField>* field,
                               const char* regex_name,
                               const bool is_country_code_field,

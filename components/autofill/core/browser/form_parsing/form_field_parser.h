@@ -230,10 +230,10 @@ class FormFieldParser {
 
   // Attempts to parse a form field with the given pattern.  Returns true on
   // success and fills `match` with a pointer to the field.
-  // TODO(crbug.com/40280853): The `pattern` parameter is unused. Remove.
+  // TODO(crbug.com/40280853): This just forwards to `ParseFieldSpecifics()`.
+  // Remove.
   static bool ParseField(ParsingContext& context,
                          AutofillScanner* scanner,
-                         std::u16string_view pattern,
                          base::span<const MatchPatternRef> patterns,
                          raw_ptr<AutofillField>* match,
                          const char* regex_name = "");
@@ -241,13 +241,9 @@ class FormFieldParser {
   // If a `match_pattern_projection` is defined, it is applied to the pattern's
   // MatchParams after dereferencing the `MatchPatternRef`s. Note that this is
   // only relevant with pattern provider.
-  // TODO(crbug.com/40280853): The `pattern` and `match_type` parameters are
-  // unused. Remove them.
   static bool ParseFieldSpecifics(
       ParsingContext& context,
       AutofillScanner* scanner,
-      std::u16string_view pattern,
-      const MatchParams& match_type,
       base::span<const MatchPatternRef> patterns,
       raw_ptr<AutofillField>* match,
       const char* regex_name = "",
