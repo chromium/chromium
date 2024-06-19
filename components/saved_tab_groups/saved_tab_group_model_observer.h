@@ -8,11 +8,10 @@
 #include <optional>
 
 #include "base/uuid.h"
-#include "components/saved_tab_groups/saved_tab_group_model.h"
-#include "components/saved_tab_groups/saved_tab_group_tab.h"
-#include "components/tab_groups/tab_group_id.h"
 
 namespace tab_groups {
+
+class SavedTabGroup;
 
 // Serves to notify any SavedTabGroupModel listeners that a change has occurred
 // supply the SavedTabGroup that was changed.
