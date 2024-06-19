@@ -19,13 +19,18 @@ namespace favicon {
 class LargeIconService;
 }
 
+namespace favicon_base {
+struct LargeIconResult;
+}
+
 namespace gfx {
 class Image;
 }
 
-namespace favicon_base {
-struct LargeIconResult;
-}
+namespace image_fetcher {
+class ImageFetcher;
+struct RequestMetadata;
+}  // namespace image_fetcher
 
 class GURL;
 
@@ -46,8 +51,8 @@ class PasswordFaviconLoader {
 
 class PasswordFaviconLoaderImpl : public PasswordFaviconLoader {
  public:
-  explicit PasswordFaviconLoaderImpl(
-      favicon::LargeIconService& favicon_service);
+  PasswordFaviconLoaderImpl(favicon::LargeIconService* favicon_service,
+                            image_fetcher::ImageFetcher* image_fetcher);
   virtual ~PasswordFaviconLoaderImpl();
 
   void Load(const Suggestion::FaviconDetails& favicon_details,
@@ -60,8 +65,15 @@ class PasswordFaviconLoaderImpl : public PasswordFaviconLoader {
                          OnLoadSuccess on_success,
                          OnLoadFail on_fail,
                          const favicon_base::LargeIconResult& result);
+  void OnFaviconResponseFromImageFetcher(
+      const GURL& domain_url,
+      OnLoadSuccess on_success,
+      OnLoadFail on_fail,
+      const gfx::Image& image,
+      const image_fetcher::RequestMetadata& request_metadata);
 
   const raw_ref<favicon::LargeIconService> favicon_service_;
+  const raw_ref<image_fetcher::ImageFetcher> image_fetcher_;
 
   // The in-memory cache for icons downloaded through
   // `favicon::LargeIconService`. It allows to synchronously respond to

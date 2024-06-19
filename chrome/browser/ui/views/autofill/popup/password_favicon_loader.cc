@@ -7,16 +7,23 @@
 #include "base/functional/bind.h"
 #include "chrome/browser/favicon/large_icon_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "components/autofill/core/browser/payments_suggestion_generator.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_types.h"
+#include "components/image_fetcher/core/image_fetcher.h"
+#include "components/image_fetcher/core/image_fetcher_types.h"
+#include "components/image_fetcher/core/request_metadata.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/gfx/image/image.h"
+#include "url/gurl.h"
 
 namespace autofill {
 namespace {
 
 constexpr int kFaviconCacheSize = 50;
+constexpr std::string_view kFaviconFilename = "favicon.ico";
+constexpr char kImageFetcherClientName[] = "AutofillPasswordFavicon";
 
 constexpr net::NetworkTrafficAnnotationTag kFaviconTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("autofill_password_favicon_fetch", R"(
@@ -52,8 +59,11 @@ constexpr net::NetworkTrafficAnnotationTag kFaviconTrafficAnnotation =
 }  // namespace
 
 PasswordFaviconLoaderImpl::PasswordFaviconLoaderImpl(
-    favicon::LargeIconService& favicon_service)
-    : favicon_service_(favicon_service), cache_(kFaviconCacheSize) {}
+    favicon::LargeIconService* favicon_service,
+    image_fetcher::ImageFetcher* image_fetcher)
+    : favicon_service_(CHECK_DEREF(favicon_service)),
+      image_fetcher_(CHECK_DEREF(image_fetcher)),
+      cache_(kFaviconCacheSize) {}
 PasswordFaviconLoaderImpl::~PasswordFaviconLoaderImpl() = default;
 
 void PasswordFaviconLoaderImpl::Load(
@@ -68,8 +78,16 @@ void PasswordFaviconLoaderImpl::Load(
   }
 
   if (!favicon_details.can_be_requested_from_google) {
-    // TODO(crbug.com/325246516): Instead of fail, get favicon from website.
-    std::move(on_fail).Run();
+    GURL::Replacements domain_url_replacements;
+    domain_url_replacements.SetPathStr(kFaviconFilename);
+    image_fetcher_->FetchImage(
+        favicon_details.domain_url.ReplaceComponents(domain_url_replacements),
+        base::BindOnce(
+            &PasswordFaviconLoaderImpl::OnFaviconResponseFromImageFetcher,
+            weak_ptr_factory_.GetWeakPtr(), favicon_details.domain_url,
+            std::move(on_success), std::move(on_fail)),
+        image_fetcher::ImageFetcherParams(kFaviconTrafficAnnotation,
+                                          kImageFetcherClientName));
     return;
   }
 
@@ -97,6 +115,20 @@ void PasswordFaviconLoaderImpl::OnFaviconResponse(
         gfx::Image::CreateFrom1xPNGBytes(result.bitmap.bitmap_data);
     std::move(on_success).Run(image);
     cache_.Put(domain_url, std::move(image));
+  } else {
+    std::move(on_fail).Run();
+  }
+}
+
+void PasswordFaviconLoaderImpl::OnFaviconResponseFromImageFetcher(
+    const GURL& domain_url,
+    OnLoadSuccess on_success,
+    OnLoadFail on_fail,
+    const gfx::Image& image,
+    const image_fetcher::RequestMetadata& request_metadata) {
+  if (!image.IsEmpty()) {
+    std::move(on_success).Run(image);
+    cache_.Put(domain_url, image);
   } else {
     std::move(on_fail).Run();
   }

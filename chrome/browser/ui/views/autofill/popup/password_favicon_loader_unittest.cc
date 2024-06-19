@@ -12,6 +12,10 @@
 #include "components/autofill/core/browser/ui/suggestion.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_types.h"
+#include "components/image_fetcher/core/image_fetcher.h"
+#include "components/image_fetcher/core/image_fetcher_types.h"
+#include "components/image_fetcher/core/mock_image_fetcher.h"
+#include "components/image_fetcher/core/request_metadata.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -126,13 +130,26 @@ auto MockGetLargeIcon(
   };
 }
 
+// `ImageFetcher::FetchImageAndData_()` wrapper that simplifies its mocking by
+// ignoring all arguments except the callback.
+auto MockFetchImageAndData(
+    testing::OnceAction<void(image_fetcher::ImageFetcherCallback* callback)>
+        callback_handler) {
+  return [callback_handler = std::move(callback_handler)](
+             const GURL& image_url, image_fetcher::ImageDataFetcherCallback*,
+             image_fetcher::ImageFetcherCallback* callback,
+             image_fetcher::ImageFetcherParams) mutable {
+    std::move(callback_handler).Call(std::move(callback));
+  };
+}
+
 }  // namespace
 
 class PasswordFaviconLoaderTest : public testing::Test {
  public:
   void SetUp() override {
-    loader_ =
-        std::make_unique<PasswordFaviconLoaderImpl>(mock_large_icon_service_);
+    loader_ = std::make_unique<PasswordFaviconLoaderImpl>(&large_icon_service(),
+                                                          &image_fetcher());
   }
 
  protected:
@@ -140,14 +157,19 @@ class PasswordFaviconLoaderTest : public testing::Test {
     return mock_large_icon_service_;
   }
 
+  image_fetcher::MockImageFetcher& image_fetcher() {
+    return mock_image_fetcher_;
+  }
+
   PasswordFaviconLoader& loader() { return *loader_; }
 
  private:
   MockLargeIconService mock_large_icon_service_;
+  image_fetcher::MockImageFetcher mock_image_fetcher_;
   std::unique_ptr<PasswordFaviconLoaderImpl> loader_;
 };
 
-TEST_F(PasswordFaviconLoaderTest, LoadsImageFromFaviconService) {
+TEST_F(PasswordFaviconLoaderTest, LoadsImagesFromFaviconService) {
   EXPECT_CALL(large_icon_service(), GetLargeIconFromCacheFallbackToGoogleServer)
       .WillOnce(
           MockGetLargeIcon([](favicon_base::LargeIconCallback result_callback) {
@@ -193,8 +215,39 @@ TEST_F(PasswordFaviconLoaderTest, FailsWithInvalidResponseFromFaviconService) {
       /*task_tracker=*/nullptr, on_success.Get(), on_fail.Get());
 }
 
-TEST_F(PasswordFaviconLoaderTest,
-       GoogleServiceIsNotTriggeredForNonEligibleFavicon) {
+TEST_F(PasswordFaviconLoaderTest, LoadsImagesFromImageFetcher) {
+  EXPECT_CALL(image_fetcher(), FetchImageAndData_)
+      .WillOnce(MockFetchImageAndData(
+          [](image_fetcher::ImageFetcherCallback* callback) {
+            std::move(*callback).Run(
+                ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+                    IDR_DISABLE),
+                image_fetcher::RequestMetadata());
+          }));
+
+  base::MockOnceCallback<void(const gfx::Image&)> on_success;
+  base::MockOnceClosure on_fail;
+
+  EXPECT_CALL(
+      on_success,
+      Run(ImagesAreEqual(
+          ui::ResourceBundle::GetSharedInstance().GetImageNamed(IDR_DISABLE))));
+  EXPECT_CALL(on_fail, Run).Times(0);
+
+  loader().Load(
+      Suggestion::FaviconDetails(/*domain_url=*/GURL("https://google.com"),
+                                 /*can_be_requested_from_google=*/false),
+      /*task_tracker=*/nullptr, on_success.Get(), on_fail.Get());
+}
+
+TEST_F(PasswordFaviconLoaderTest, FailsWithInvalidResponseFromImageFetcher) {
+  EXPECT_CALL(image_fetcher(), FetchImageAndData_)
+      .WillOnce(MockFetchImageAndData(
+          [](image_fetcher::ImageFetcherCallback* callback) {
+            std::move(*callback).Run(gfx::Image(),
+                                     image_fetcher::RequestMetadata());
+          }));
+
   base::MockOnceCallback<void(const gfx::Image&)> on_success;
   base::MockOnceClosure on_fail;
 
@@ -207,7 +260,7 @@ TEST_F(PasswordFaviconLoaderTest,
       /*task_tracker=*/nullptr, on_success.Get(), on_fail.Get());
 }
 
-TEST_F(PasswordFaviconLoaderTest, ImageIsLoadedFromCache) {
+TEST_F(PasswordFaviconLoaderTest, ImagesFromFaviconServiceAreCached) {
   base::MockOnceCallback<void(const gfx::Image&)> on_success;
   base::MockOnceClosure on_fail;
 
@@ -234,6 +287,37 @@ TEST_F(PasswordFaviconLoaderTest, ImageIsLoadedFromCache) {
   loader().Load(
       Suggestion::FaviconDetails(/*domain_url=*/GURL("https://google.com"),
                                  /*can_be_requested_from_google=*/true),
+      /*task_tracker=*/nullptr, on_success.Get(), on_fail.Get());
+}
+
+TEST_F(PasswordFaviconLoaderTest, ImagesFromImageFetcherAreCached) {
+  base::MockOnceCallback<void(const gfx::Image&)> on_success;
+  base::MockOnceClosure on_fail;
+
+  // Expect one call to the image fetcher, after which the result will be
+  // provided from cache.
+  EXPECT_CALL(image_fetcher(), FetchImageAndData_)
+      .WillOnce(MockFetchImageAndData(
+          [](image_fetcher::ImageFetcherCallback* callback) {
+            std::move(*callback).Run(
+                ui::ResourceBundle::GetSharedInstance().GetImageNamed(
+                    IDR_DISABLE),
+                image_fetcher::RequestMetadata());
+          }));
+  EXPECT_CALL(
+      on_success,
+      Run(ImagesAreEqual(
+          ui::ResourceBundle::GetSharedInstance().GetImageNamed(IDR_DISABLE))))
+      .Times(2);
+  EXPECT_CALL(on_fail, Run).Times(0);
+
+  loader().Load(
+      Suggestion::FaviconDetails(/*domain_url=*/GURL("https://google.com"),
+                                 /*can_be_requested_from_google=*/false),
+      /*task_tracker=*/nullptr, on_success.Get(), on_fail.Get());
+  loader().Load(
+      Suggestion::FaviconDetails(/*domain_url=*/GURL("https://google.com"),
+                                 /*can_be_requested_from_google=*/false),
       /*task_tracker=*/nullptr, on_success.Get(), on_fail.Get());
 }
 }  // namespace autofill

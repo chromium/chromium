@@ -56,6 +56,9 @@ chromium-metrics-reviews@google.com.
                Android."/>
   <variant name=".AutofillImageFetcher"
       summary="Show customized card art image for credit card."/>
+  <variant name=".AutofillPasswordFavicon"
+      summary="Requesting favicons associated with credentials directly from
+               websites."/>
   <variant name=".ContextualSuggestions"
       summary="Showing cache patterns only for ContextualSuggestions."/>
   <variant name=".Cryptids" summary="Asset fetcher for cryptid rendering."/>

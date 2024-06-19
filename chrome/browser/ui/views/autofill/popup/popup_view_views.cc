@@ -23,9 +23,11 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/favicon/large_icon_service_factory.h"
+#include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/media/webrtc/desktop_capture_access_handler.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/autofill_suggestion_controller_utils.h"
@@ -55,6 +57,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/feature_engagement/public/feature_constants.h"
+#include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/strings/grit/components_strings.h"
@@ -858,12 +861,16 @@ void PopupViewViews::InitViews() {
                        .SetOrientation(views::BoxLayout::Orientation::kVertical)
                        .Build());
 
-  if (Browser* browser = GetBrowser()) {
+  Browser* browser = GetBrowser();
+  if (Profile* profile = browser ? browser->profile() : nullptr) {
     auto* favicon_service =
-        LargeIconServiceFactory::GetForBrowserContext(browser->profile());
-    CHECK_DEREF(favicon_service);
-    password_favicon_loader_ =
-        std::make_unique<PasswordFaviconLoaderImpl>(*favicon_service);
+        LargeIconServiceFactory::GetForBrowserContext(profile);
+    auto* image_fetcher =
+        ImageFetcherServiceFactory::GetForKey(profile->GetProfileKey())
+            ->GetImageFetcher(
+                image_fetcher::ImageFetcherConfig::kInMemoryWithDiskCache);
+    password_favicon_loader_ = std::make_unique<PasswordFaviconLoaderImpl>(
+        favicon_service, image_fetcher);
   }
 
   CreateSuggestionViews();
