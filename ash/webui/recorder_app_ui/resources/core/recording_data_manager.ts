@@ -4,12 +4,19 @@
 
 import {DataDir} from './data_dir.js';
 import {computed, ReadonlySignal, signal} from './reactive/signal.js';
-import {textTokenSchema} from './soda/soda.js';
+import {concatTextTokens, TextToken, textTokenSchema} from './soda/soda.js';
+import {assertExists} from './utils/assert.js';
 import {AsyncJobQueue} from './utils/async_job_queue.js';
 import {Infer, z} from './utils/schema.js';
 import {ulid} from './utils/ulid.js';
 
-const recordingMetadataSchema = z.object({
+/**
+ * The base recording metadata.
+ *
+ * Since metadata are all read in the main page, cached in memory, and can be
+ * edited, it should be small and takes constant memory.
+ */
+const baseRecordingMetadataSchema = z.object({
   id: z.string(),
   title: z.string(),
   durationMs: z.number(),
@@ -18,34 +25,101 @@ const recordingMetadataSchema = z.object({
   // The number here is same as the value returned by Date.now(), which is the
   // number of milliseconds elapsed since the epoch.
   recordedAt: z.number(),
+});
 
-  // TODO(pihsun): Since metadata are cached in memory and can be edited,
-  // ideally we'd want it to be small and takes constant memory. Move powers
-  // and textTokens to a separate file similar to how we handle audio data.
+type BaseRecordingMetadata = Infer<typeof baseRecordingMetadataSchema>;
 
+const MAX_POWER_AVERAGES = 512;
+
+const MAX_DESCRIPTION_LENGTH = 512;
+
+/**
+ * The recording metadata that are derived from other data.
+ *
+ * These are used in recording list.
+ */
+const derivedRecordingMetadataSchema = z.object({
+  // Average of the powers used by the recording list. This contains at most
+  // `MAX_POWER_AVERAGES` samples.
+  powerAverages: z.array(z.number()),
+
+  // Description of the recording used by the recording list. This contains a
+  // truncated version of the transcription with maximum length
+  // `MAX_DESCRIPTION_LENGTH`.
+  description: z.string(),
+});
+
+const recordingMetadataSchema = z.intersection([
+  baseRecordingMetadataSchema,
+  derivedRecordingMetadataSchema,
+] as const);
+
+export type RecordingMetadata = Infer<typeof recordingMetadataSchema>;
+
+const audioPowerSchema = z.object({
   // Array of integer in [0, 255] representing the powers. Each data point
   // corresponds to a slice passed to the audio worklets with SAMPLES_PER_SLICE
   // audio samples.
   // TODO(pihsun): Compression. Use a UInt8Array and CompressionStream?
   powers: z.array(z.number()),
+});
 
+type AudioPower = Infer<typeof audioPowerSchema>;
+
+const transcriptionSchema = z.object({
   // Transcriptions in form of text tokens.
   textTokens: z.array(textTokenSchema),
 });
 
-export type RecordingMetadata = Infer<typeof recordingMetadataSchema>;
+type Transcription = Infer<typeof transcriptionSchema>;
 
 /**
- * The recording metadata without id field, used for creation.
+ * The recording create parameters without id field, used for creating new
+ * recordings.
  */
-export type RecordingMetadataCreateParams = Omit<RecordingMetadata, 'id'>;
+export type RecordingCreateParams =
+    Omit<AudioPower&BaseRecordingMetadata&Transcription, 'id'>;
 
+// TODO(pihsun): Type-safe wrapper for reading / writing specific type of file?
 function metadataName(id: string) {
-  return `${id}.json`;
+  return `${id}.meta.json`;
+}
+
+function audioPowerName(id: string) {
+  return `${id}.powers.json`;
+}
+
+function transcriptionName(id: string) {
+  return `${id}.transcription.json`;
 }
 
 function audioName(id: string) {
   return `${id}.webm`;
+}
+
+function calculateDescription(textTokens: TextToken[]): string {
+  const transcription = concatTextTokens(textTokens);
+  if (transcription.length <= MAX_DESCRIPTION_LENGTH - 3) {
+    return transcription;
+  }
+  return transcription.substring(0, MAX_DESCRIPTION_LENGTH - 3) + '...';
+}
+
+function calculatePowerAverages(powers: number[]): number[] {
+  if (powers.length <= MAX_POWER_AVERAGES) {
+    return powers;
+  }
+  const averages: number[] = [];
+  for (let i = 0; i < MAX_POWER_AVERAGES; i++) {
+    const start = Math.floor((i * powers.length) / MAX_POWER_AVERAGES);
+    const end = Math.floor(((i + 1) * powers.length) / MAX_POWER_AVERAGES);
+    let sum = 0;
+    for (let j = start; j < end; j++) {
+      sum += assertExists(powers[j]);
+    }
+    averages.push(sum / (end - start));
+  }
+  return averages;
 }
 
 // TODO(pihsun): Use a Map when draft.ts supports it.
@@ -93,7 +167,7 @@ export class RecordingDataManager {
     const filenames = await dataDir.list();
     const metadataMap = Object.fromEntries(
         await Promise.all(
-            filenames.filter((x) => x.endsWith('.json')).map(async (x) => {
+            filenames.filter((x) => x.endsWith('.meta.json')).map(async (x) => {
               const meta = await getMetadataFromFilename(x);
               return [meta.id, meta] as const;
             }),
@@ -123,13 +197,25 @@ export class RecordingDataManager {
    * @return The created recording id.
    */
   async createRecording(
-      meta: RecordingMetadataCreateParams,
+      {textTokens, powers, ...meta}: RecordingCreateParams,
       audio: Blob,
       ): Promise<string> {
     const id = ulid();
-    const fullMeta = {id, ...meta};
+    const description = calculateDescription(textTokens);
+    const powerAverages = calculatePowerAverages(powers);
+    const fullMeta = {id, description, powerAverages, ...meta};
     this.setMetadata(id, fullMeta);
-    await this.dataDir.write(audioName(id), audio);
+    await Promise.all([
+      this.dataDir.write(
+          audioPowerName(id),
+          audioPowerSchema.stringifyJson({powers}),
+          ),
+      this.dataDir.write(
+          transcriptionName(id),
+          transcriptionSchema.stringifyJson({textTokens}),
+          ),
+      this.dataDir.write(audioName(id), audio),
+    ]);
     return id;
   }
 
@@ -149,7 +235,10 @@ export class RecordingDataManager {
       m[id] = meta;
     });
     this.getWriteQueueFor(id).push(async () => {
-      await this.dataDir.write(metadataName(id), JSON.stringify(meta));
+      await this.dataDir.write(
+          metadataName(id),
+          recordingMetadataSchema.stringifyJson(meta),
+      );
     });
   }
 
@@ -157,6 +246,20 @@ export class RecordingDataManager {
     const name = audioName(id);
     const file = await this.dataDir.read(name);
     return file;
+  }
+
+  async getTranscription(id: string): Promise<Transcription> {
+    const name = transcriptionName(id);
+    const file = await this.dataDir.read(name);
+    const text = await file.text();
+    return transcriptionSchema.parseJson(text);
+  }
+
+  async getAudioPower(id: string): Promise<AudioPower> {
+    const name = audioPowerName(id);
+    const file = await this.dataDir.read(name);
+    const text = await file.text();
+    return audioPowerSchema.parseJson(text);
   }
 
   async clear(): Promise<void> {
@@ -178,5 +281,7 @@ export class RecordingDataManager {
     // TODO(pihsun): Since all removal of audio should be independent of each
     // other, there's not much reason to put this in a queue.
     void this.dataDir.remove(audioName(id));
+    void this.dataDir.remove(transcriptionName(id));
+    void this.dataDir.remove(audioPowerName(id));
   }
 }

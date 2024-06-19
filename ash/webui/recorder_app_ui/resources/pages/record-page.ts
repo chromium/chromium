@@ -24,7 +24,7 @@ import {
 } from '../core/lit/context.js';
 import {ReactiveLitElement} from '../core/reactive/lit.js';
 import {signal} from '../core/reactive/signal.js';
-import {RecordingMetadataCreateParams} from '../core/recording_data_manager.js';
+import {RecordingCreateParams} from '../core/recording_data_manager.js';
 import {AudioSource, RecordingSession} from '../core/recording_session.js';
 import {navigateTo} from '../core/state/route.js';
 import {checkEnumVariant} from '../core/utils/assert.js';
@@ -284,7 +284,7 @@ export class RecordPage extends ReactiveLitElement {
     }
     const session = this.recordingSession.value;
     const audioData = await session.finish();
-    const metadata: RecordingMetadataCreateParams = {
+    const metadata: RecordingCreateParams = {
       title: this.recordingTitle,
       durationMs: Math.round(session.progress.value.length * 1000),
       recordedAt: Date.now(),

@@ -96,10 +96,13 @@ export class RecordingTitle extends ReactiveLitElement {
   private readonly suggestedTitles = new ScopedAsyncComputed(this, async () => {
     // TODO(pihsun): Cache title suggestion between hide/show the suggestion
     // dialog?
-    if (!this.suggestionShown.value) {
+    if (!this.suggestionShown.value || this.recordingMetadata === null) {
       return null;
     }
-    const text = concatTextTokens(this.recordingMetadata?.textTokens ?? []);
+    const {textTokens} = await this.recordingDataManager.getTranscription(
+        this.recordingMetadata.id,
+    );
+    const text = concatTextTokens(textTokens);
     const model = await this.platformHandler.loadModel(
         ModelId.GEMINI_XXS_IT_BASE,
     );

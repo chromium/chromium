@@ -27,7 +27,11 @@ import {
   AnimationFrameController,
 } from '../core/lit/animation_frame_controller.js';
 import {useRecordingDataManager} from '../core/lit/context.js';
-import {ReactiveLitElement, ScopedAsyncEffect} from '../core/reactive/lit.js';
+import {
+  ReactiveLitElement,
+  ScopedAsyncComputed,
+  ScopedAsyncEffect,
+} from '../core/reactive/lit.js';
 import {computed, signal} from '../core/reactive/signal.js';
 import {navigateTo} from '../core/state/route.js';
 import {assertInstanceof} from '../core/utils/assert.js';
@@ -280,11 +284,24 @@ export class PlaybackPage extends ReactiveLitElement {
     await this.audio.play();
   });
 
-  private readonly textTokens = computed(() => {
+  private readonly textTokens = new ScopedAsyncComputed(this, async () => {
     if (this.recordingMetadata.value === null) {
       return null;
     }
-    return this.recordingMetadata.value.textTokens;
+    const {textTokens} = await this.recordingDataManager.getTranscription(
+        this.recordingMetadata.value.id,
+    );
+    return textTokens;
+  });
+
+  private readonly powers = new ScopedAsyncComputed(this, async () => {
+    if (this.recordingMetadata.value === null) {
+      return null;
+    }
+    const {powers} = await this.recordingDataManager.getAudioPower(
+        this.recordingMetadata.value.id,
+    );
+    return powers;
   });
 
   // TODO: b/336963138 - Handle when transcription isn't available.
@@ -345,7 +362,7 @@ export class PlaybackPage extends ReactiveLitElement {
   }
 
   private renderAudioWaveform() {
-    if (this.recordingMetadata.value === null) {
+    if (this.powers.value === null) {
       return nothing;
     }
     const recordingLength = formatDuration(
@@ -357,7 +374,7 @@ export class PlaybackPage extends ReactiveLitElement {
     return html`
       <div>${recordingLength}</div>
       <audio-waveform
-        .values=${this.recordingMetadata.value.powers}
+        .values=${this.powers.value}
         .currentTime=${this.currentTime.value}
       >
       </audio-waveform>

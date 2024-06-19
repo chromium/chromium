@@ -78,6 +78,10 @@ export class Schema<T> {
     const data = JSON.parse(input);
     return this.parse(data);
   }
+
+  stringifyJson(val: T): string {
+    return JSON.stringify(val);
+  }
 }
 
 /**
@@ -163,9 +167,8 @@ function isObject<T>(spec: ObjectSpec<T>) {
     for (const [key, schema] of Object.entries(spec)) {
       ctx.pushKey(key);
       // We're deliberately casting to access arbitrary key of the object.
+      /* eslint-disable @typescript-eslint/consistent-type-assertions */
       const value = Object.hasOwn(input, key) ?
-          /* eslint-disable-next-line
-             @typescript-eslint/consistent-type-assertions */
           (input as Record<string, unknown>)[key] :
           undefined;
       /* eslint-enable @typescript-eslint/consistent-type-assertions */
@@ -205,6 +208,27 @@ function isUnion<T extends SchemaArray>(schemas: T) {
   };
 }
 
+type SchemaListToIntersection<S> =
+    S extends [Schema<infer Head>, ...infer Tail] ?
+    Head&SchemaListToIntersection<Tail>:
+    unknown;
+
+function isIntersection<T extends SchemaArray>(schemas: T) {
+  function cond(
+      input: unknown,
+      ctx: Context,
+      ): input is SchemaListToIntersection<T> {
+    // TODO(shik): Expose the issues found in alternatives.
+    const altCtx = new Context();
+    if (!schemas.every((s) => s.test(input, altCtx))) {
+      ctx.setIssue('expect intersection but some alternatives failed');
+      return false;
+    }
+    return true;
+  }
+  return cond;
+}
+
 type EnumObj = Record<string, string>;
 
 // TODO(shik): Support numerical enums with bidirection mapping.
@@ -233,6 +257,10 @@ export const z = {
       new Schema(isNullable(schema)),
   'union': <T extends SchemaArray>(schemas: T): Schema<Infer<T[number]>> =>
       new Schema(isUnion(schemas)),
+  'intersection': <T extends SchemaArray>(
+      schemas: T,
+      ): Schema<SchemaListToIntersection<T>> =>
+      new Schema(isIntersection(schemas)),
   'nativeEnum': <T extends EnumObj>(enumObj: T): Schema<T[keyof T]> =>
       new Schema(isNativeEnum(enumObj)),
 };
