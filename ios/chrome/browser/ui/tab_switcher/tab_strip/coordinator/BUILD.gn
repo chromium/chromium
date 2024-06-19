@@ -33,7 +33,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/ui/tab_switcher:items",
     "//ios/chrome/browser/ui/tab_switcher:utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_utils",
-    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups:tab_group_creation",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_groups:tab_group_creation",
     "//ios/chrome/browser/ui/tab_switcher/tab_strip/ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_strip/ui:swift",
     "//ios/chrome/browser/ui/tab_switcher/tab_strip/ui:utils",
