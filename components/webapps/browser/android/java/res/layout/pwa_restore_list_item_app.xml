@@ -30,8 +30,9 @@ found in the LICENSE file.
 
     <CheckBox
         android:id="@+id/checkbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        style="?android:attr/checkboxStyle"
         android:layout_marginEnd="19dp"
         android:layout_marginTop="18dp" />
 </LinearLayout>
