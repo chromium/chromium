@@ -15,10 +15,9 @@ buildflag_header("memory_system_buildflags") {
   # If creating a profiling build include the allocation recorder
   # unconditionally. This way we ensure that the recorder is covered by the
   # profile even if the profiling device doesn't support MTE.
-  treat_inclusion_of_allocation_recorder_as_forced_inclusion =
-      chrome_pgo_phase == 1
+  force_allocation_trace_recorder = chrome_pgo_phase == 1
 
-  flags = [ "TREAT_DYNAMIC_INCLUSION_OF_ALLOCATION_RECORDER_AS_FORCED_INCLUSION=$treat_inclusion_of_allocation_recorder_as_forced_inclusion" ]
+  flags = [ "FORCE_ALLOCATION_TRACE_RECORDER=$force_allocation_trace_recorder" ]
 }
 
 # We use a source set instead of a component. Using a component leads to

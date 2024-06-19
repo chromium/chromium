@@ -282,17 +282,16 @@ bool MemorySystem::Impl::DispatcherIncludesPoissonAllocationSampler(
 #if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
 bool MemorySystem::Impl::DispatcherIncludesAllocationTraceRecorder(
     const DispatcherParameters& dispatcher_parameters) {
+#if BUILDFLAG(FORCE_ALLOCATION_TRACE_RECORDER)
+  return true;
+#else
   switch (dispatcher_parameters.allocation_trace_recorder_inclusion) {
     case DispatcherParameters::AllocationTraceRecorderInclusion::kDynamic:
-#if BUILDFLAG( \
-    TREAT_DYNAMIC_INCLUSION_OF_ALLOCATION_RECORDER_AS_FORCED_INCLUSION)
-      return true;
-#else
       return base::CPU::GetInstanceNoAllocation().has_mte();
-#endif
     case DispatcherParameters::AllocationTraceRecorderInclusion::kIgnore:
       return false;
   }
+#endif
 }
 #endif
 
