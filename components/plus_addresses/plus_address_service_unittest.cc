@@ -525,14 +525,14 @@ TEST_F(PlusAddressHttpForbiddenResponseTest, RepeatedHttpForbiddenFromConfirm) {
                                base::DoNothing());
   ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
       kCreatePlusAddressEndpoint, "", net::HTTP_FORBIDDEN));
-  EXPECT_TRUE(service().is_enabled());
+  EXPECT_TRUE(service().IsEnabled());
 
   // A second `HTTP_FORBIDDEN` responses disables it.
   service().ConfirmPlusAddress(kNoSubdomainOrigin, kPlusAddress,
                                base::DoNothing());
   ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
       kCreatePlusAddressEndpoint, "", net::HTTP_FORBIDDEN));
-  EXPECT_FALSE(service().is_enabled());
+  EXPECT_FALSE(service().IsEnabled());
 }
 
 // Tests that two `HTTP_FORBIDDEN` responses and no successful network request
@@ -552,14 +552,14 @@ TEST_F(PlusAddressHttpForbiddenResponseTest,
                                base::DoNothing());
   ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
       kCreatePlusAddressEndpoint, "", net::HTTP_FORBIDDEN));
-  EXPECT_TRUE(service().is_enabled());
+  EXPECT_TRUE(service().IsEnabled());
 
   // A second `HTTP_FORBIDDEN` responses disables it.
   service().ConfirmPlusAddress(kNoSubdomainOrigin, kPlusAddress,
                                base::DoNothing());
   ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
       kCreatePlusAddressEndpoint, "", net::HTTP_FORBIDDEN));
-  EXPECT_TRUE(service().is_enabled());
+  EXPECT_TRUE(service().IsEnabled());
 }
 
 // Tests that two `HTTP_FORBIDDEN` responses and no successful network request
@@ -573,19 +573,19 @@ TEST_F(PlusAddressHttpForbiddenResponseTest, OtherErrorsHaveNoEffect) {
   service().ReservePlusAddress(kNoSubdomainOrigin, base::DoNothing());
   ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
       kReservePlusAddressEndpoint, "", net::HTTP_FORBIDDEN));
-  EXPECT_TRUE(service().is_enabled());
+  EXPECT_TRUE(service().IsEnabled());
 
   // A failure that is not `HTTP_FORBIDDEN` does not disable the service.
   service().ReservePlusAddress(kNoSubdomainOrigin, base::DoNothing());
   ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
       kReservePlusAddressEndpoint, "", net::HTTP_REQUEST_TIMEOUT));
-  EXPECT_TRUE(service().is_enabled());
+  EXPECT_TRUE(service().IsEnabled());
 
   // But a second `HTTP_FORBIDDEN` does.
   service().ReservePlusAddress(kNoSubdomainOrigin, base::DoNothing());
   ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
       kReservePlusAddressEndpoint, "", net::HTTP_FORBIDDEN));
-  EXPECT_FALSE(service().is_enabled());
+  EXPECT_FALSE(service().IsEnabled());
 }
 
 // Tests a single successful response prevents later `HTTP_FORBIDDEN` responses
@@ -599,7 +599,7 @@ TEST_F(PlusAddressHttpForbiddenResponseTest, NoDisablingAfterSuccess) {
                                profile1.plus_address, base::DoNothing());
   ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
       kCreatePlusAddressEndpoint, "", net::HTTP_FORBIDDEN));
-  EXPECT_TRUE(service().is_enabled());
+  EXPECT_TRUE(service().IsEnabled());
 
   // After a single successful call ...
   service().ConfirmPlusAddress(OriginFromFacet(profile1.facet),
@@ -617,7 +617,7 @@ TEST_F(PlusAddressHttpForbiddenResponseTest, NoDisablingAfterSuccess) {
                                  profile2.plus_address, base::DoNothing());
     ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
         kCreatePlusAddressEndpoint, "", net::HTTP_FORBIDDEN));
-    EXPECT_TRUE(service().is_enabled());
+    EXPECT_TRUE(service().IsEnabled());
   }
 }
 
@@ -675,12 +675,12 @@ TEST_F(PlusAddressServicePolling,
       });
   InitService();
 
-  EXPECT_TRUE(service().is_enabled());
+  EXPECT_TRUE(service().IsEnabled());
   // Unblock the initial polling request.
   ASSERT_EQ(url_loader_factory().NumPending(), 1);
   url_loader_factory().SimulateResponseForPendingRequest(
       kPlusProfilesEndpoint, "", net::HTTP_NOT_FOUND);
-  EXPECT_TRUE(service().is_enabled());
+  EXPECT_TRUE(service().IsEnabled());
 }
 
 TEST_F(PlusAddressServicePolling,
@@ -696,30 +696,30 @@ TEST_F(PlusAddressServicePolling,
       });
   InitService();
 
-  EXPECT_TRUE(service().is_enabled());
+  EXPECT_TRUE(service().IsEnabled());
   // Unblock the initial polling request.
   ASSERT_EQ(url_loader_factory().NumPending(), 1);
   url_loader_factory().SimulateResponseForPendingRequest(
       kPlusProfilesEndpoint, "", net::HTTP_FORBIDDEN);
   // Simulate failed responses for the successive retry requests
   for (int i = 0; i < PlusAddressService::kMaxHttpForbiddenResponses; i++) {
-    EXPECT_TRUE(service().is_enabled());
+    EXPECT_TRUE(service().IsEnabled());
     ASSERT_EQ(url_loader_factory().NumPending(), 1);
     url_loader_factory().SimulateResponseForPendingRequest(
         kPlusProfilesEndpoint, "", net::HTTP_FORBIDDEN);
   }
   // Service is finally disabled once retries are exhausted.
-  EXPECT_FALSE(service().is_enabled());
+  EXPECT_FALSE(service().IsEnabled());
 }
 
 TEST_F(PlusAddressServicePolling,
        DisableForForbiddenUsers_Disabled_403DoesntRetryOrDisableFeature) {
-  EXPECT_TRUE(service().is_enabled());
+  EXPECT_TRUE(service().IsEnabled());
   // Unblock the initial polling request.
   url_loader_factory().SimulateResponseForPendingRequest(
       kPlusProfilesEndpoint, "", net::HTTP_FORBIDDEN);
   EXPECT_EQ(url_loader_factory().NumPending(), 0);
-  EXPECT_TRUE(service().is_enabled());
+  EXPECT_TRUE(service().IsEnabled());
 }
 
 // Doesn't run on ChromeOS since ClearPrimaryAccount() doesn't exist for it.
@@ -1026,7 +1026,7 @@ class PlusAddressServiceSignoutTest : public PlusAddressServiceTest {
 // Doesn't run on ChromeOS since ClearPrimaryAccount() doesn't exist for it.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(PlusAddressServiceSignoutTest, PrimaryAccountCleared_TogglesIsEnabled) {
-  ASSERT_TRUE(service().is_enabled());
+  ASSERT_TRUE(service().IsEnabled());
 
   // Verify behaviors expected when service is enabled.
   const PlusProfile profile = test::CreatePlusProfile();
@@ -1040,7 +1040,7 @@ TEST_F(PlusAddressServiceSignoutTest, PrimaryAccountCleared_TogglesIsEnabled) {
   EXPECT_TRUE(service().IsPlusAddress(profile.plus_address));
 
   identity_env().ClearPrimaryAccount();
-  EXPECT_FALSE(service().is_enabled());
+  EXPECT_FALSE(service().IsEnabled());
 
   // Ensure that the local data is cleared on disabling.
   EXPECT_FALSE(service().SupportsPlusAddresses(origin,
@@ -1051,7 +1051,7 @@ TEST_F(PlusAddressServiceSignoutTest, PrimaryAccountCleared_TogglesIsEnabled) {
 
 TEST_F(PlusAddressServiceSignoutTest,
        PrimaryRefreshTokenError_TogglesIsEnabled) {
-  ASSERT_TRUE(service().is_enabled());
+  ASSERT_TRUE(service().IsEnabled());
 
   // Verify behaviors expected when service is enabled.
   const PlusProfile profile = test::CreatePlusProfile();
@@ -1068,19 +1068,19 @@ TEST_F(PlusAddressServiceSignoutTest,
   identity_env().UpdatePersistentErrorOfRefreshTokenForAccount(
       primary_account().account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::NONE));
-  EXPECT_TRUE(service().is_enabled());
+  EXPECT_TRUE(service().IsEnabled());
 
   // The PlusAddressService isn't disabled for secondary account auth errors.
   identity_env().UpdatePersistentErrorOfRefreshTokenForAccount(
       secondary_account().account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
-  EXPECT_TRUE(service().is_enabled());
+  EXPECT_TRUE(service().IsEnabled());
 
   // Being in the "sync-paused" state results in this error.
   identity_env().UpdatePersistentErrorOfRefreshTokenForAccount(
       primary_account().account_id,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
-  EXPECT_FALSE(service().is_enabled());
+  EXPECT_FALSE(service().IsEnabled());
 
   // Ensure that the local data is cleared on disabling.
   EXPECT_FALSE(

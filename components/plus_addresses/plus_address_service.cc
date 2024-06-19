@@ -114,7 +114,7 @@ PlusAddressService::PlusAddressService(
   if (IsSyncingPlusAddresses()) {
     if (webdata_service_) {
       webdata_service_observation_.Observe(webdata_service_.get());
-      if (is_enabled()) {
+      if (IsEnabled()) {
         webdata_service_->GetPlusProfiles(this);
       }
     }
@@ -136,7 +136,7 @@ PlusAddressService::~PlusAddressService() {
 bool PlusAddressService::SupportsPlusAddresses(const url::Origin& origin,
                                                bool is_off_the_record) const {
   // First, check prerequisites (the feature enabled, etc.).
-  if (!is_enabled()) {
+  if (!IsEnabled()) {
     return false;
   }
 
@@ -308,7 +308,7 @@ void PlusAddressService::OnGetAffiliatedPlusProfiles(
 void PlusAddressService::ReservePlusAddress(
     const url::Origin& origin,
     PlusAddressRequestCallback on_completed) {
-  if (!is_enabled()) {
+  if (!IsEnabled()) {
     return;
   }
   plus_address_allocator_->AllocatePlusAddress(
@@ -320,7 +320,7 @@ void PlusAddressService::ReservePlusAddress(
 void PlusAddressService::RefreshPlusAddress(
     const url::Origin& origin,
     PlusAddressRequestCallback on_completed) {
-  if (!is_enabled()) {
+  if (!IsEnabled()) {
     return;
   }
   plus_address_allocator_->AllocatePlusAddress(
@@ -337,7 +337,7 @@ void PlusAddressService::ConfirmPlusAddress(
     const url::Origin& origin,
     const std::string& plus_address,
     PlusAddressRequestCallback on_completed) {
-  if (!is_enabled()) {
+  if (!IsEnabled()) {
     return;
   }
   // Check the local mapping before attempting to confirm plus_address.
@@ -386,7 +386,7 @@ std::optional<std::string> PlusAddressService::GetPrimaryEmail() {
       .email;
 }
 
-bool PlusAddressService::is_enabled() const {
+bool PlusAddressService::IsEnabled() const {
   if (features::kDisableForForbiddenUsers.Get() &&
       account_is_forbidden_.has_value() && account_is_forbidden_.value()) {
     return false;
@@ -401,7 +401,7 @@ bool PlusAddressService::is_enabled() const {
 }
 
 void PlusAddressService::CreateAndStartTimer() {
-  if (!is_enabled() || !features::kSyncWithEnterprisePlusAddressServer.Get() ||
+  if (!IsEnabled() || !features::kSyncWithEnterprisePlusAddressServer.Get() ||
       polling_timer_.IsRunning()) {
     return;
   }
@@ -415,14 +415,14 @@ void PlusAddressService::CreateAndStartTimer() {
 }
 
 void PlusAddressService::SyncPlusAddressMapping() {
-  if (!is_enabled()) {
+  if (!IsEnabled()) {
     return;
   }
   plus_address_http_client_->GetAllPlusAddresses(base::BindOnce(
       [](PlusAddressService* service,
          const PlusAddressMapOrError& maybe_mapping) {
         if (maybe_mapping.has_value()) {
-          if (service->is_enabled()) {
+          if (service->IsEnabled()) {
             service->UpdatePlusAddressMap(maybe_mapping.value());
           }
           service->account_is_forbidden_ = false;

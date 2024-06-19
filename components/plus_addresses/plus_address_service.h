@@ -160,7 +160,7 @@ class PlusAddressService : public KeyedService,
   // virtual to allow mocking in tests that don't want to do identity setup.
   virtual std::optional<std::string> GetPrimaryEmail();
 
-  bool is_enabled() const;
+  bool IsEnabled() const;
 
  private:
   // Creates and starts a timer to keep `plus_profiles_` and
@@ -250,7 +250,7 @@ class PlusAddressService : public KeyedService,
   // supported.
   base::flat_set<std::string> excluded_sites_;
 
-  // Stores last auth error (potentially NONE) to toggle is_enabled() on/off.
+  // Stores last auth error (potentially NONE) to toggle IsEnabled() on/off.
   // Defaults to NONE to enable this service while refresh tokens (and potential
   // auth errors) are loading.
   GoogleServiceAuthError primary_account_auth_error_;
