@@ -154,11 +154,9 @@ StructTraits<viz::mojom::CopyOutputResultDataView,
     return nullptr;
   }
 
-  // Only RGBA can travel across process boundaries, in which case there will be
-  // only one plane that is relevant in the |result|:
+  // Only RGBA can travel across process boundaries.
   DCHECK_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
-  return mojo::OptionalAsPointer(
-      &result->GetTextureResult()->mailbox_holders[0].mailbox);
+  return mojo::OptionalAsPointer(&result->GetTextureResult()->mailbox);
 }
 
 // static
@@ -172,11 +170,9 @@ StructTraits<viz::mojom::CopyOutputResultDataView,
     return nullptr;
   }
 
-  // Only RGBA can travel across process boundaries, in which case there will be
-  // only one plane that is relevant in the |result|:
+  // Only RGBA can travel across process boundaries.
   DCHECK_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
-  return mojo::OptionalAsPointer(
-      &result->GetTextureResult()->mailbox_holders[0].sync_token);
+  return mojo::OptionalAsPointer(&result->GetTextureResult()->sync_token);
 }
 
 // static

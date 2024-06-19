@@ -1520,9 +1520,8 @@ TEST_F(StructTraitsTest, CopyOutputResult_Texture) {
             CopyOutputResult::Destination::kNativeTextures);
   EXPECT_EQ(output->rect(), result_rect);
   ASSERT_NE(output->GetTextureResult(), nullptr);
-  EXPECT_EQ(output->GetTextureResult()->mailbox_holders[0].mailbox, mailbox);
-  EXPECT_EQ(output->GetTextureResult()->mailbox_holders[0].sync_token,
-            sync_token);
+  EXPECT_EQ(output->GetTextureResult()->mailbox, mailbox);
+  EXPECT_EQ(output->GetTextureResult()->sync_token, sync_token);
   EXPECT_EQ(output->GetTextureResult()->color_space, result_color_space);
 
   CopyOutputResult::ReleaseCallbacks out_callbacks =

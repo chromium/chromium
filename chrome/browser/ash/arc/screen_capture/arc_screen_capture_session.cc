@@ -313,16 +313,14 @@ void ArcScreenCaptureSession::OnDesktopCaptured(
   }
   // Get the source texture - RGBA format is guaranteed to have 1 valid texture
   // if the CopyOutputRequest succeeded:
-  gpu::MailboxHolder mailbox_holder =
-      result->GetTextureResult()->mailbox_holders[0];
-  ri->WaitSyncTokenCHROMIUM(mailbox_holder.sync_token.GetConstData());
+  const auto& texture_result = *result->GetTextureResult();
 
   viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
       result->TakeTextureOwnership();
   CHECK_EQ(1u, release_callbacks.size());
 
   std::unique_ptr<DesktopTexture> desktop_texture =
-      std::make_unique<DesktopTexture>(mailbox_holder.mailbox,
+      std::make_unique<DesktopTexture>(texture_result.mailbox,
                                        std::move(release_callbacks[0]));
   if (buffer_queue_.empty()) {
     // We don't have a GPU buffer to render to, so put this in a queue to use

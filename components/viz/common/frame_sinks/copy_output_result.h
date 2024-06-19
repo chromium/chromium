@@ -62,14 +62,8 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
     kNativeTextures,
   };
 
-  // Maximum number of planes allowed when returning results in native textures.
-  // We need at most 3 planes to support the formats we're interested in (RGBA
-  // format requires 1 plane, NV12 requires 2, I420 requires 3 planes).
-  static constexpr size_t kMaxPlanes = 3;
-  static constexpr size_t kRGBAMaxPlanes = 1;
-  static constexpr size_t kNV12MultiplaneMaxPlanes = 1;
+  // Maximum number of planes allowed when returning software NV12 results.
   static constexpr size_t kNV12MaxPlanes = 2;
-  static constexpr size_t kI420MaxPlanes = 3;
 
   CopyOutputResult(Format format,
                    Destination destination,
@@ -104,8 +98,8 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
   // after ScopedSkBitmap is released.
   ScopedSkBitmap ScopedAccessSkBitmap() const;
 
-  // Returns a pointer with a set of gpu::MailboxHolders referencing a
-  // texture-backed result, or null if this is not a texture-backed result.
+  // Returns a pointer with a mailbox referencing a texture-backed result, or
+  // null if this is not a texture-backed result.
   // Clients can either:
   //   1. Let CopyOutputResult retain ownership and the texture will only be
   //      valid for use during CopyOutputResult's lifetime.
@@ -119,25 +113,13 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
   // client's POV (e.g., they cannot be written via the raster or GLES2
   // interface).
   struct VIZ_COMMON_EXPORT TextureResult {
-    // |texture_target| is guaranteed to be GL_TEXTURE_2D for each returned
-    // mailbox. The mailboxes are placed continuously from the beginning of the
-    // array
-    // - i.e. if k mailboxes are valid, indices from 0 (inclusive), to k
-    // (exclusive) will contain the data. If the result is not empty, at least
-    // one mailbox must be filled out (non-zero).
-    std::array<gpu::MailboxHolder, kMaxPlanes> mailbox_holders;
-
+    gpu::Mailbox mailbox;
+    gpu::SyncToken sync_token;
     gfx::ColorSpace color_space;
 
-    // Single plane variant:
     TextureResult(const gpu::Mailbox& mailbox,
                   const gpu::SyncToken& sync_token,
                   const gfx::ColorSpace& color_space);
-
-    // General purpose variant:
-    TextureResult(
-        const std::array<gpu::MailboxHolder, kMaxPlanes>& mailbox_holders,
-        const gfx::ColorSpace& color_space);
 
     TextureResult(const TextureResult& other);
     TextureResult& operator=(const TextureResult& other);

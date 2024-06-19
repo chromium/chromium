@@ -180,10 +180,8 @@ void EvictionHandler::SubmitPlaceholderContentForEviction(
   if (copy_result && !copy_result->IsEmpty() &&
       copy_result->GetTextureResult()) {
     auto resource = TransferableResource::MakeGpu(
-        copy_result->GetTextureResult()->mailbox_holders[0].mailbox,
-        GL_TEXTURE_2D,
-        copy_result->GetTextureResult()->mailbox_holders[0].sync_token,
-        copy_result->size(), SinglePlaneFormat::kRGBA_8888,
+        copy_result->GetTextureResult()->mailbox, GL_TEXTURE_2D,
+        gpu::SyncToken(), copy_result->size(), SinglePlaneFormat::kRGBA_8888,
         /*is_overlay_candidate=*/false,
         TransferableResource::ResourceSource::kStaleContent);
 

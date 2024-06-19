@@ -230,10 +230,9 @@ void ReadbackNV12Planes(TestGpuServiceHolder* gpu_service_holder,
             gfx::Size(texture_size.width() / 2, texture_size.height() / 2),
             kR8G8_unorm_SkColorType, out_chroma_planes);
 
-        ReadbackTexturesOnGpuThread(
-            shared_image_manager, context_state,
-            result.GetTextureResult()->mailbox_holders[0].mailbox,
-            texture_infos);
+        ReadbackTexturesOnGpuThread(shared_image_manager, context_state,
+                                    result.GetTextureResult()->mailbox,
+                                    texture_infos);
 
         wait.Signal();
       }));
@@ -247,7 +246,7 @@ void ReadbackResultRGBA(TestGpuServiceHolder* gpu_service_holder,
                         CopyOutputResult& result,
                         const gfx::Size& texture_size,
                         SkBitmap& out_plane) {
-  auto mailbox = result.GetTextureResult()->mailbox_holders[0].mailbox;
+  auto mailbox = result.GetTextureResult()->mailbox;
   CHECK(!mailbox.IsZero());
 
   if (is_software) {

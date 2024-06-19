@@ -22,13 +22,11 @@ void CopyCopyOutputResultToLayer(
   DCHECK_EQ(copy_result->destination(),
             viz::CopyOutputResult::Destination::kNativeTextures);
 
-  const gpu::MailboxHolder& mailbox_holder =
-      copy_result->GetTextureResult()->mailbox_holders[0];
+  const auto& texture_result = *copy_result->GetTextureResult();
   viz::TransferableResource transferable_resource =
       viz::TransferableResource::MakeGpu(
-          mailbox_holder.mailbox, mailbox_holder.texture_target,
-          mailbox_holder.sync_token, copy_result->size(),
-          viz::SinglePlaneFormat::kRGBA_8888,
+          texture_result.mailbox, GL_TEXTURE_2D, gpu::SyncToken(),
+          copy_result->size(), viz::SinglePlaneFormat::kRGBA_8888,
           /*is_overlay_candidate=*/false,
           viz::TransferableResource::ResourceSource::kUI);
   viz::CopyOutputResult::ReleaseCallbacks release_callbacks =
