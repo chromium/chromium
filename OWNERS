@@ -12,7 +12,6 @@ per-file .eslintrc.js=file://tools/web_dev_style/OWNERS
 per-file .gitattributes=*
 per-file .gitignore=*
 per-file .gitmodules=*
-per-file .git-blame-ignore-revs=mgiuca@chromium.org
 per-file .git-blame-ignore-revs=thakis@chromium.org
 per-file .gn=ddorwin@chromium.org  # For fuchsia_target_api_level changes.
 per-file .gn=estaab@chromium.org
