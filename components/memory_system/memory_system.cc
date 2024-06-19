@@ -7,10 +7,12 @@
 #include "base/allocator/dispatcher/dispatcher.h"
 #include "base/allocator/dispatcher/initializer.h"
 #include "base/allocator/partition_allocator/src/partition_alloc/partition_alloc_buildflags.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/debugging_buildflags.h"
 #include "build/build_config.h"
 #include "components/gwp_asan/buildflags/buildflags.h"
 #include "components/memory_system/buildflags.h"
+#include "components/memory_system/memory_system_features.h"
 #include "components/memory_system/parameters.h"
 #include "third_party/abseil-cpp/absl/base/attributes.h"
 
@@ -287,7 +289,8 @@ bool MemorySystem::Impl::DispatcherIncludesAllocationTraceRecorder(
 #else
   switch (dispatcher_parameters.allocation_trace_recorder_inclusion) {
     case DispatcherParameters::AllocationTraceRecorderInclusion::kDynamic:
-      return base::CPU::GetInstanceNoAllocation().has_mte();
+      return base::CPU::GetInstanceNoAllocation().has_mte() &&
+             base::FeatureList::IsEnabled(features::kAllocationTraceRecorder);
     case DispatcherParameters::AllocationTraceRecorderInclusion::kIgnore:
       return false;
   }
@@ -324,6 +327,11 @@ void MemorySystem::Impl::InitializeDispatcher(
 
   const bool include_allocation_recorder =
       DispatcherIncludesAllocationTraceRecorder(dispatcher_parameters);
+
+  static auto* const crash_key = base::debug::AllocateCrashKeyString(
+      "allocation_trace_recorder", base::debug::CrashKeySize::Size32);
+  base::debug::SetCrashKeyString(
+      crash_key, include_allocation_recorder ? "enabled" : "disabled");
 
   base::debug::tracer::AllocationTraceRecorder* allocation_recorder_to_include =
       nullptr;

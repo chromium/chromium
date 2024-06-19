@@ -28,6 +28,8 @@ source_set("memory_system") {
     "initializer.h",
     "memory_system.cc",
     "memory_system.h",
+    "memory_system_features.cc",
+    "memory_system_features.h",
     "parameters.cc",
     "parameters.h",
   ]
