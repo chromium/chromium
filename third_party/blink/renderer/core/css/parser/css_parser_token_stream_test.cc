@@ -205,12 +205,12 @@ TEST(CSSParserTokenStreamTest, ConsumeUntilPeekedTypeOffset) {
   EXPECT_EQ(kIdentToken, stream.Peek().GetType());
   EXPECT_EQ(0u, stream.Offset());
 
-  stream.ConsumeUntilPeekedTypeIs<kSemicolonToken>();
+  stream.SkipUntilPeekedTypeIs<kSemicolonToken>();
   EXPECT_EQ(kSemicolonToken, stream.Peek().GetType());
   EXPECT_EQ(5u, stream.Offset());
 
   // Again, when we're already at kSemicolonToken.
-  stream.ConsumeUntilPeekedTypeIs<kSemicolonToken>();
+  stream.SkipUntilPeekedTypeIs<kSemicolonToken>();
   EXPECT_EQ(kSemicolonToken, stream.Peek().GetType());
   EXPECT_EQ(5u, stream.Offset());
 }
@@ -223,12 +223,12 @@ TEST(CSSParserTokenStreamTest, ConsumeUntilPeekedTypeOffsetEndOfFile) {
   EXPECT_EQ(kIdentToken, stream.Peek().GetType());
   EXPECT_EQ(0u, stream.Offset());
 
-  stream.ConsumeUntilPeekedTypeIs<kSemicolonToken>();
+  stream.SkipUntilPeekedTypeIs<kSemicolonToken>();
   EXPECT_TRUE(stream.AtEnd());
   EXPECT_EQ(5u, stream.Offset());
 
   // Again, when we're already at EOF.
-  stream.ConsumeUntilPeekedTypeIs<kSemicolonToken>();
+  stream.SkipUntilPeekedTypeIs<kSemicolonToken>();
   EXPECT_TRUE(stream.AtEnd());
   EXPECT_EQ(5u, stream.Offset());
 }
@@ -253,13 +253,13 @@ TEST(CSSParserTokenStreamTest, ConsumeUntilPeekedTypeOffsetEndOfBlock) {
     EXPECT_EQ(kWhitespaceToken, stream.Peek().GetType());
     EXPECT_EQ(3u, stream.Offset());
 
-    stream.ConsumeUntilPeekedTypeIs<kSemicolonToken>();
+    stream.SkipUntilPeekedTypeIs<kSemicolonToken>();
     EXPECT_TRUE(stream.AtEnd());  // End of block.
     EXPECT_EQ(kRightBraceToken, stream.UncheckedPeek().GetType());
     EXPECT_EQ(10u, stream.Offset());
 
     // Again, when we're already at the end-of-block.
-    stream.ConsumeUntilPeekedTypeIs<kSemicolonToken>();
+    stream.SkipUntilPeekedTypeIs<kSemicolonToken>();
     EXPECT_TRUE(stream.AtEnd());  // End of block.
     EXPECT_EQ(kRightBraceToken, stream.UncheckedPeek().GetType());
     EXPECT_EQ(10u, stream.Offset());

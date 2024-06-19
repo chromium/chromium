@@ -930,7 +930,7 @@ StyleRuleBase* CSSParserImpl::ConsumeQualifiedRule(
     // until the at-rule or until the block may end. Compare
     // https://drafts.csswg.org/css-fonts-4/#ex-invalid-ignored
     stream.EnsureLookAhead();
-    stream.ConsumeUntilPeekedTypeIs<kAtKeywordToken>();
+    stream.SkipUntilPeekedTypeIs<kAtKeywordToken>();
     return nullptr;
   }
 
@@ -2548,7 +2548,7 @@ void CSSParserImpl::ConsumeDeclarationList(
           // As an optimization, we avoid the restart below (retrying as a
           // nested style rule) if we ended on a kSemicolonToken, as this
           // situation can't produce a valid rule.
-          stream.ConsumeUntilPeekedTypeIs<kSemicolonToken>();
+          stream.SkipUntilPeekedTypeIs<kSemicolonToken>();
           if (!stream.AtEnd()) {
             stream.UncheckedConsume();  // kSemicolonToken
           }

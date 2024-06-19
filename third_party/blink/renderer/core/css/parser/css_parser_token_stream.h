@@ -236,7 +236,7 @@ class CORE_EXPORT CSSParserTokenStream {
   // Invalidates any ranges created by previous calls to
   // ConsumeUntilPeekedTypeIs().
   template <CSSParserTokenType... Types>
-  CSSParserTokenRange ConsumeUntilPeekedTypeIs() {
+  [[nodiscard]] CSSParserTokenRange ConsumeUntilPeekedTypeIs() {
     EnsureLookAhead();
 
     // Check if the existing lookahead token already marks the end;
@@ -276,6 +276,45 @@ class CORE_EXPORT CSSParserTokenStream {
       }
     }
     return CSSParserTokenRange(buffer_);
+  }
+
+  // Like ConsumeUntilPeekedTypeIs(), but does not return anything, so that it
+  // is faster. (When we get rid of the non-streaming praser,
+  // ConsumeUntilPeekedTypeIs() and buffer_ should go away entirely.)
+  template <CSSParserTokenType... Types>
+  void SkipUntilPeekedTypeIs() {
+    EnsureLookAhead();
+
+    // Check if the existing lookahead token already marks the end;
+    // if so, try to exit as soon as possible. (This is a fairly common
+    // case, because some places call SkipUntilPeekedTypeIs() just to
+    // ignore garbage after a declaration, and there usually is no such
+    // garbage.)
+    if (next_.IsEOF() || TokenMarksEnd<Types...>(next_)) {
+      return;
+    }
+
+    // Process the lookahead token.
+    unsigned nesting_level = 0;
+    if (next_.GetBlockType() == CSSParserToken::kBlockStart) {
+      nesting_level++;
+    }
+
+    // Add tokens to our return vector until we see either EOF or we meet the
+    // return condition. (The termination condition is within the loop.)
+    while (true) {
+      CSSParserToken token = tokenizer_.TokenizeSingle();
+      if (token.IsEOF() ||
+          (nesting_level == 0 && TokenMarksEnd<Types...>(token))) {
+        next_ = token;
+        offset_ = tokenizer_.PreviousOffset();
+        return;
+      } else if (token.GetBlockType() == CSSParserToken::kBlockStart) {
+        nesting_level++;
+      } else if (token.GetBlockType() == CSSParserToken::kBlockEnd) {
+        nesting_level--;
+      }
+    }
   }
 
   // https://drafts.csswg.org/css-syntax-3/#consume-a-component-value
