@@ -334,13 +334,18 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
                                destRectInFrame:dest_rect_in_frame
                                      frameRate:requested_capture_format_->
                                                frame_rate];
+
+          __block base::OnceCallback<void()> on_update_configuration_error =
+              base::BindPostTask(
+                  device_task_runner_,
+                  base::BindOnce(
+                      &ScreenCaptureKitDeviceMac::OnUpdateConfigurationError,
+                      weak_factory_.GetWeakPtr()));
           [stream_
               updateConfiguration:config
                 completionHandler:^(NSError* _Nullable error) {
                   if (error) {
-                    client()->OnError(
-                        media::VideoCaptureError::kScreenCaptureKitStreamError,
-                        FROM_HERE, "Error on updateConfiguration");
+                    std::move(on_update_configuration_error).Run();
                   }
                 }];
         }
@@ -370,6 +375,21 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
       client()->OnError(media::VideoCaptureError::kScreenCaptureKitStreamError,
                         FROM_HERE, "Stream delegate called didStopWithError");
     }
+  }
+  void OnUpdateContentFilterCompleted(NSError* _Nullable error) {
+    DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
+    is_resetting_ = false;
+
+    if (error) {
+      client()->OnError(media::VideoCaptureError::kScreenCaptureKitStreamError,
+                        FROM_HERE,
+                        "Error on updateContentFilter (fullscreen window).");
+    }
+  }
+  void OnUpdateConfigurationError() {
+    DCHECK(device_task_runner_->RunsTasksInCurrentSequence());
+    client()->OnError(media::VideoCaptureError::kScreenCaptureKitStreamError,
+                      FROM_HERE, "Error on updateConfiguration");
   }
 
   // IOSurfaceCaptureDeviceBase:
@@ -427,15 +447,16 @@ class API_AVAILABLE(macos(12.3)) ScreenCaptureKitDeviceMac
     SCContentFilter* filter =
         [[SCContentFilter alloc] initWithDesktopIndependentWindow:window];
 
+    __block base::OnceCallback<void(NSError*)>
+        on_update_content_filter_completed = base::BindPostTask(
+            device_task_runner_,
+            base::BindOnce(
+                &ScreenCaptureKitDeviceMac::OnUpdateContentFilterCompleted,
+                weak_factory_.GetWeakPtr()));
+
     [stream_ updateContentFilter:filter
                completionHandler:^(NSError* _Nullable error) {
-                 is_resetting_ = false;
-                 if (error) {
-                   client()->OnError(
-                       media::VideoCaptureError::kScreenCaptureKitStreamError,
-                       FROM_HERE,
-                       "Error on updateContentFilter (fullscreen window).");
-                 }
+                 std::move(on_update_content_filter_completed).Run(error);
                }];
   }
 
