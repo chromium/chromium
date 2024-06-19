@@ -181,9 +181,8 @@ class D3D11VideoDecoderTest : public ::testing::Test {
       std::optional<D3D11VideoDecoder::SupportedConfigs> supported_configs =
           std::optional<D3D11VideoDecoder::SupportedConfigs>()) {
     auto get_device_cb = base::BindRepeating(
-        [](Microsoft::WRL::ComPtr<ID3D11Device> device,
-           D3D11VideoDecoder::D3DVersion version)
-            -> Microsoft::WRL::ComPtr<IUnknown> {
+        [](ComD3D11Device device,
+           D3D11VideoDecoder::D3DVersion version) -> ComUnknown {
           EXPECT_EQ(version, D3D11VideoDecoder::D3DVersion::kD3D11);
           return device;
         },

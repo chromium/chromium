@@ -14,6 +14,7 @@
 #include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_texture_wrapper.h"
 #include "media/gpu/windows/d3d11_video_processor_proxy.h"
+#include "media/gpu/windows/d3d_com_defs.h"
 
 namespace media {
 

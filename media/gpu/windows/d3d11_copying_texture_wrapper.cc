@@ -4,11 +4,7 @@
 
 #include "media/gpu/windows/d3d11_copying_texture_wrapper.h"
 
-#include <memory>
-
-#include "base/task/single_thread_task_runner.h"
 #include "media/gpu/windows/d3d11_picture_buffer.h"
-#include "media/gpu/windows/d3d_com_defs.h"
 #include "ui/gl/hdr_metadata_helper_win.h"
 
 namespace media {

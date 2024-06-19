@@ -5,9 +5,6 @@
 #ifndef MEDIA_GPU_WINDOWS_D3D11_VIDEO_PROCESSOR_PROXY_H_
 #define MEDIA_GPU_WINDOWS_D3D11_VIDEO_PROCESSOR_PROXY_H_
 
-#include <d3d11.h>
-#include <wrl/client.h>
-
 #include <cstdint>
 
 #include "base/memory/ref_counted.h"

@@ -365,7 +365,7 @@ std::unique_ptr<D3D11VideoDecoderWrapper> D3D11VideoDecoderWrapper::Create(
     return nullptr;
   }
 
-  Microsoft::WRL::ComPtr<ID3D11VideoDecoder> video_decoder;
+  ComD3D11VideoDecoder video_decoder;
   hr = video_device->CreateVideoDecoder(
       decoder_configurator->DecoderDescriptor(), &dec_config, &video_decoder);
   if (FAILED(hr)) {

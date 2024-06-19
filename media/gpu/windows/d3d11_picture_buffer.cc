@@ -6,12 +6,6 @@
 
 #include <windows.h>
 
-#include <d3d11.h>
-#include <d3d11_1.h>
-#include <wrl/client.h>
-
-#include <memory>
-
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -100,11 +94,11 @@ D3D11PictureBuffer::AcquireOutputView() const {
   return output_view_.Get();
 }
 
-D3D11Status::Or<Microsoft::WRL::ComPtr<ID3D12Resource>>
-D3D11PictureBuffer::ToD3D12Resource(ID3D12Device* device) {
+D3D11Status::Or<ComD3D12Resource> D3D11PictureBuffer::ToD3D12Resource(
+    ID3D12Device* device) {
   HRESULT hr;
   if (!d3d12_resource_) {
-    Microsoft::WRL::ComPtr<IDXGIResource1> dxgi_resource;
+    ComDXGIResource1 dxgi_resource;
     CHECK_EQ(texture_.As(&dxgi_resource), S_OK);
 
     HANDLE handle;
@@ -122,7 +116,7 @@ D3D11PictureBuffer::ToD3D12Resource(ID3D12Device* device) {
       return {D3D11StatusCode::kCreateSharedHandleFailed, hr};
     }
   }
-  Microsoft::WRL::ComPtr<ID3D12Device> used_device;
+  ComD3D12Device used_device;
   hr = d3d12_resource_->GetDevice(IID_PPV_ARGS(&used_device));
   if (FAILED(hr)) {
     LOG(ERROR) << "ID3D12Resource::GetDevice failed.";

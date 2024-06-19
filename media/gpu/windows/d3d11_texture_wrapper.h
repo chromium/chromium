@@ -5,8 +5,6 @@
 #ifndef MEDIA_GPU_WINDOWS_D3D11_TEXTURE_WRAPPER_H_
 #define MEDIA_GPU_WINDOWS_D3D11_TEXTURE_WRAPPER_H_
 
-#include <d3d11.h>
-
 #include <memory>
 #include <optional>
 #include <vector>
