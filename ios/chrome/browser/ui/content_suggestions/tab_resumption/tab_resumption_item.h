@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import <string>
+
 #import "components/segmentation_platform/public/trigger.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module.h"
 
@@ -39,7 +41,7 @@ enum TabResumptionItemType {
 @property(nonatomic, copy) NSString* tabTitle;
 
 // The URL of the tab.
-@property(nonatomic, assign) GURL tabURL;
+@property(nonatomic, assign) const GURL& tabURL;
 
 // The time when the tab was synced.
 @property(nonatomic, assign) base::Time syncedTime;
@@ -54,7 +56,7 @@ enum TabResumptionItemType {
 @property(nonatomic, weak) id<TabResumptionCommands> commandHandler;
 
 // The URL key used to log metrics when displaying or activating the item.
-@property(nonatomic, assign) std::string URLKey;
+@property(nonatomic, assign) const std::string& URLKey;
 
 // An ID used to collect metrics associated with the triggering visit for model
 // training purposes.

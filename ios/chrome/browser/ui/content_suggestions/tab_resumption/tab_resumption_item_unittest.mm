@@ -37,7 +37,7 @@ TEST_F(TabResumptionItemTest, ReconfigureItem) {
   item.faviconImage = DefaultSettingsRootSymbol(@"circle");
   item.contentImage = DefaultSettingsRootSymbol(@"flame");
   item.commandHandler = command_handler;
-  item.URLKey = "url key a";
+  item.URLKey = std::string("url key a");
   item.requestID = segmentation_platform::TrainingRequestId::FromUnsafeValue(1);
 
   TabResumptionItem* item2 = [[TabResumptionItem alloc]
@@ -49,7 +49,7 @@ TEST_F(TabResumptionItemTest, ReconfigureItem) {
   item2.faviconImage = DefaultSettingsRootSymbol(@"link");
   item2.contentImage = DefaultSettingsRootSymbol(@"trash");
   item2.commandHandler = command_handler;
-  item2.URLKey = "url key b";
+  item2.URLKey = std::string("url key b");
   item2.requestID =
       segmentation_platform::TrainingRequestId::FromUnsafeValue(2);
 
