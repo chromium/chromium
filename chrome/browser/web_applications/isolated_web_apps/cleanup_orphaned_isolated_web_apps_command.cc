@@ -20,6 +20,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/command_result.h"
+#include "chrome/browser/web_applications/isolated_web_apps/error/uma_logging.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -81,6 +82,35 @@ GetResult(int number_of_deleted_directories, bool success) {
       .type = CleanupOrphanedIsolatedWebAppsCommandError::Type::
           kCouldNotDeleteAllBundles,
       .message = "Could not delete all orphaned isolated web apps."});
+}
+
+void RecordOutcomeMetric(
+    base::expected<CleanupOrphanedIsolatedWebAppsCommandSuccess,
+                   CleanupOrphanedIsolatedWebAppsCommandError> result) {
+  base::expected<
+      void, CleanupOrphanedIsolatedWebAppsCommand::CleanupOrphanedIWAsUMAError>
+      uma_result;
+
+  if (result.has_value()) {
+    uma_result = base::ok();
+  } else {
+    switch (result.error().type) {
+      case CleanupOrphanedIsolatedWebAppsCommandError::Type::
+          kCouldNotDeleteAllBundles:
+        uma_result = base::unexpected(
+            CleanupOrphanedIsolatedWebAppsCommand::CleanupOrphanedIWAsUMAError::
+                kCantDeleteAllOrphanedApps);
+        break;
+      case CleanupOrphanedIsolatedWebAppsCommandError::Type::kSystemShutdown:
+        uma_result =
+            base::unexpected(CleanupOrphanedIsolatedWebAppsCommand::
+                                 CleanupOrphanedIWAsUMAError::kSystemShutdown);
+        break;
+    }
+  }
+
+  web_app::UmaLogExpectedStatus("WebApp.Isolated.OrphanedBundlesCleanupJob",
+                                uma_result);
 }
 
 }  // namespace
@@ -182,9 +212,12 @@ void CleanupOrphanedIsolatedWebAppsCommand::
 }
 
 void CleanupOrphanedIsolatedWebAppsCommand::CommandComplete(bool success) {
+  auto result = GetResult(number_of_deleted_directories_, success);
+
+  RecordOutcomeMetric(result);
+
   CompleteAndSelfDestruct(
-      success ? CommandResult::kSuccess : CommandResult::kFailure,
-      GetResult(number_of_deleted_directories_, success));
+      success ? CommandResult::kSuccess : CommandResult::kFailure, result);
 }
 
 }  // namespace web_app

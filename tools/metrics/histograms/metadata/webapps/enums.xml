@@ -180,6 +180,11 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Shortcut"/>
 </enum>
 
+<enum name="IsolatedWebAppCleanupOrphanedIWAsError">
+  <int value="1" label="Could not delete all orphaned isolated web apps."/>
+  <int value="2" label="Skipped execution during system shutdown."/>
+</enum>
+
 <enum name="IsolatedWebAppReadResponseHeadError">
   <int value="1" label="Response head parsing: Internal error"/>
   <int value="2" label="Response head parsing: Format error"/>

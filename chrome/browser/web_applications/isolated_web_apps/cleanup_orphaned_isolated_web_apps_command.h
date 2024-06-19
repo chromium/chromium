@@ -68,6 +68,17 @@ class CleanupOrphanedIsolatedWebAppsCommand
 
   ~CleanupOrphanedIsolatedWebAppsCommand() override;
 
+  // This enum represents every error type that can occur during the delete
+  // operation of the orphaned isolated web apps.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class CleanupOrphanedIWAsUMAError {
+    kCantDeleteAllOrphanedApps = 1,
+    kSystemShutdown = 2,
+    kMaxValue = kSystemShutdown
+  };
+
  protected:
   // WebAppCommand:
   void StartWithLock(std::unique_ptr<AllAppsLock> lock) override;

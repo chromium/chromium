@@ -906,6 +906,30 @@ chromium-metrics-reviews@google.com.
   <summary>Records the result code of Web App installs.</summary>
 </histogram>
 
+<histogram name="WebApp.Isolated.OrphanedBundlesCleanupJobError"
+    enum="IsolatedWebAppCleanupOrphanedIWAsError" expires_after="2025-05-31">
+  <owner>giovax@chromium.org</owner>
+  <owner>pwa-commercial@google.com</owner>
+  <summary>
+    Records the exact error that occurred during the execution of the
+    OrphanedBundlesCleanupCommand. This command is run on session start and
+    after a failed IWA install, to remove the folders of IWAs that are not
+    installed. The error is logged together with
+    WebApp.Isolated.OrphanedBundlesCleanupJobSuccess in case an error occurs.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Isolated.OrphanedBundlesCleanupJobSuccess"
+    enum="BooleanValid" expires_after="2025-05-31">
+  <owner>giovax@chromium.org</owner>
+  <owner>pwa-commercial@google.com</owner>
+  <summary>
+    Records whether the OrphanedBundlesCleanupCommand was successful or resulted
+    in an error. This command is run on session start and after a failed IWA
+    install, to remove the folders of IWAs that are not installed.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Isolated.ReadResponseHeadError"
     enum="IsolatedWebAppReadResponseHeadError" expires_after="2025-05-31">
   <owner>giovax@chromium.org</owner>
