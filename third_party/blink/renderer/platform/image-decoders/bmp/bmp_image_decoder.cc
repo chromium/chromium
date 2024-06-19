@@ -9,9 +9,9 @@
 
 namespace blink {
 
-// Number of bits in .BMP used to store the file header (doesn't match
-// "sizeof(BMPImageDecoder::BitmapFileHeader)" since we omit some fields and
-// don't pack).
+// Number of bytes in .BMP used to store the file header. This is effectively
+// `sizeof(BITMAPFILEHEADER)`, as defined in
+// https://learn.microsoft.com/en-us/windows/win32/api/wingdi/ns-wingdi-bitmapfileheader
 static const wtf_size_t kSizeOfFileHeader = 14;
 
 BMPImageDecoder::BMPImageDecoder(AlphaOption alpha_option,
