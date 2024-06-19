@@ -146,6 +146,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sync.AssociateWindowsTime.On{Type}" units="ms"
+    expires_after="2024-12-08">
+  <owner>skym@chromium.org</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <summary>
+    The amount of time it takes to assocate windows. The goal of this process is
+    to match tab sync data with live tabs. This process is currently run in
+    multiple situations, which this histogram is emitted separately for. Ideally
+    as little time is spent as possible doing this.
+  </summary>
+  <token key="Type">
+    <variant name="SessionRestore"
+        summary="Triggered during session restore. This should only happen on
+                 start up. Slower times here may be acceptable."/>
+    <variant name="TabModification"
+        summary="Triggered on tab modification, such as a when a new
+                 WebContents is shown. This should almost always be very
+                 fast."/>
+  </token>
+</histogram>
+
 <histogram name="Sync.BackedOffModelType" enum="SyncModelTypes"
     expires_after="2024-12-08">
   <owner>victorvianna@google.com</owner>

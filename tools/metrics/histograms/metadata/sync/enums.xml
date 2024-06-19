@@ -1052,6 +1052,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="PLACEHOLDER_TAB_FOUND"/>
   <int value="1" label="PLACEHOLDER_TAB_RESYNCED"/>
   <int value="2" label="PLACEHOLDER_TAB_NOT_SYNCED"/>
+  <int value="3" label="PLACEHOLDER_TAB_RESYNC_FAILED"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/sync_sessions/local_session_event_handler_impl.cc:SyncPlaceholderTabResyncResult) -->
