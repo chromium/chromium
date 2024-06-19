@@ -115,9 +115,10 @@ public class SysUtils {
         try {
             am.getMemoryInfo(info);
             return info.lowMemory;
-        } catch (SecurityException e) {
+        } catch (Exception e) {
             // Occurs on Redmi devices when called from isolated processes.
             // https://crbug.com/1480655
+            // And on the devices in https://crbug.com/347207010
             return false;
         }
     }
