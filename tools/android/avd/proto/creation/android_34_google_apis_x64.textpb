@@ -33,9 +33,6 @@ avd_settings {
     key: "GLESDynamicVersion"
     value: "on"
   }
-
-  # Tests can run into low memory issue with the default ram size 2048MB
-  ram_size: 4096
 }
 
 min_sdk: 34
