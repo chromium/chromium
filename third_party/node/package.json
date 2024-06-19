@@ -22,6 +22,8 @@
     "@types/wicg-file-system-access": "2020.09.05",
     "@typescript-eslint/eslint-plugin": "6.7.4",
     "@typescript-eslint/parser": "6.7.4",
+    "@typescript-eslint/types": "6.7.4",
+    "@typescript-eslint/utils": "6.7.4",
     "eslint": "8.50.0",
     "eslint-plugin-jsdoc": "46.8.2",
     "html-minifier": "4.0.0",

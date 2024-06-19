@@ -234,7 +234,7 @@ Local Modifications:
 Name: ESLint Plugin TypeScript
 Short Name: @typescript-eslint/eslint-plugin
 URL: https://www.npmjs.com/package/@typescript-eslint/eslint-plugin
-Version: 5.12.0
+Version: 6.7.4
 License: 2-Clause BSD
 Security Critical: no
 Shipped: no
@@ -252,7 +252,7 @@ Local Modifications:
 Name: TypeScript ESLint Parser
 Short Name: @typescript-eslint/parser
 URL: https://www.npmjs.com/package/@typescript-eslint/parser
-Version: 5.12.0
+Version: 6.7.4
 License: 2-Clause BSD
 Security Critical: no
 Shipped: no
@@ -260,6 +260,44 @@ Shipped: no
 Description:
 An ESLint parser which leverages TypeScript ESTree to allow for ESLint to lint
 TypeScript source code.
+
+The ESLint checks are not shipped with Chrome and code are only linted with it.
+
+Local Modifications:
+(none)
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: Types for the TypeScript-ESTree AST spec
+Short Name: @typescript-eslint/parser
+URL: https://www.npmjs.com/package/@typescript-eslint/types
+Version: 6.7.4
+License: MIT
+Security Critical: no
+Shipped: no
+
+Description:
+Types for the TypeScript-ESTree AST spec
+This package exists to help us reduce cycles and provide lighter-weight
+packages at runtime.
+
+The ESLint checks are not shipped with Chrome and code are only linted with it.
+
+Local Modifications:
+(none)
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: TypeScript ESLint Utilities
+Short Name: @typescript-eslint/utils
+URL: https://npmjs.com/package/@typescript-eslint/utils
+Version: 6.7.4
+License: MIT
+Security Critical: no
+Shipped: no
+
+Description:
+Utilities for working with TypeScript + ESLint together.
 
 The ESLint checks are not shipped with Chrome and code are only linted with it.
 

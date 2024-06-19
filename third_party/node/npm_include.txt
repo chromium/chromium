@@ -39,6 +39,8 @@
 @types/webrtc
 @types/webrtc/*.d.ts
 @types/wicg-file-system-access/index.d.ts
+@typescript-eslint/types/dist/**.d.ts
+@typescript-eslint/utils/dist/**.d.ts
 /chai/chai.js
 /chai/LICENSE
 /chai/package.json
