@@ -86,8 +86,7 @@ static std::unique_ptr<DummyPageHolder> LoadDumpedPage(
       parse_iterations_str.empty() ? 1 : stoi(parse_iterations_str);
 
   const CSSDeferPropertyParsing defer_property_parsing =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          "style-lazy-parsing") != ""
+      base::CommandLine::ForCurrentProcess()->HasSwitch("style-lazy-parsing")
           ? CSSDeferPropertyParsing::kYes
           : CSSDeferPropertyParsing::kNo;
 
