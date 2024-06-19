@@ -234,7 +234,11 @@ source_set("fake_account_details_view_controller") {
     "fake_account_details_view_controller.h",
     "fake_account_details_view_controller.mm",
   ]
-  deps = [ ":system_identity" ]
+  deps = [
+    ":system_identity",
+    "//base",
+    "//ios/chrome/browser/signin/model:test_constants",
+  ]
   frameworks = [ "UIKit.framework" ]
 }
 

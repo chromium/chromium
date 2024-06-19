@@ -184,22 +184,21 @@ void FakeSystemIdentityManager::DismissDialogs() {
 FakeSystemIdentityManager::DismissViewCallback
 FakeSystemIdentityManager::PresentAccountDetailsController(
     PresentDialogConfiguration configuration) {
-  UIViewController* account_details_view_controller =
-      [[FakeAccountDetailsViewController alloc]
-          initWithIdentity:configuration.identity];
-  [configuration.view_controller
-      presentViewController:account_details_view_controller
-                   animated:configuration.animated
-                 completion:nil];
   ProceduralBlock dismissalCompletion = nil;
   if (configuration.dismissal_completion) {
     dismissalCompletion =
         base::CallbackToBlock(std::move(configuration.dismissal_completion));
   }
+  FakeAccountDetailsViewController* account_details_view_controller =
+      [[FakeAccountDetailsViewController alloc]
+             initWithIdentity:configuration.identity
+          dismissalCompletion:dismissalCompletion];
+  [configuration.view_controller
+      presentViewController:account_details_view_controller
+                   animated:configuration.animated
+                 completion:nil];
   return base::BindOnce(^(BOOL dismiss_animated) {
-    [account_details_view_controller
-        dismissViewControllerAnimated:dismiss_animated
-                           completion:dismissalCompletion];
+    [account_details_view_controller dismissAnimated:dismiss_animated];
   });
 }
 

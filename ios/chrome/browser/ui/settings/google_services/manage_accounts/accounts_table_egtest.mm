@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
 #import "ios/chrome/browser/shared/ui/elements/elements_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
+#import "ios/chrome/browser/signin/model/test_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/authentication/signin_matchers.h"
@@ -250,6 +251,34 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
+}
+
+// Tests to open the account details twice in a row.
+- (void)testOpenTwiceAccountDetails {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+
+  // Sign In `fakeIdentity`, then open the Account Settings.
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  [self openAccountSettings];
+  // Open the account details view twice.
+  for (int i = 0; i < 2; ++i) {
+    [[EarlGrey
+        selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabel(
+                                     fakeIdentity.userEmail)]
+        performAction:grey_tap()];
+    [[EarlGrey selectElementWithMatcher:
+                   chrome_test_util::ButtonWithAccessibilityLabel(
+                       l10n_util::GetNSString(
+                           IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE))]
+        performAction:grey_tap()];
+    [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                            kFakeAccountDetailsViewIdentifier)]
+        assertWithMatcher:grey_sufficientlyVisible()];
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityID(
+                                     kFakeAccountDetailsDoneButtonIdentifier)]
+        performAction:grey_tap()];
+  }
 }
 
 // Tests that selecting sign-out from a non-managed account keeps the user's

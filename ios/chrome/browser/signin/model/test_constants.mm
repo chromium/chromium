@@ -10,3 +10,8 @@ NSString* const kFakeAuthAddAccountButtonIdentifier =
     @"kFakeAuthAddAccountButtonIdentifier";
 NSString* const kFakeAuthCancelButtonIdentifier =
     @"FakeAuthCancelButtonIdentifier";
+
+NSString* const kFakeAccountDetailsViewIdentifier =
+    @"FakeAccountDetailViewIdentifier";
+NSString* const kFakeAccountDetailsDoneButtonIdentifier =
+    @"FakeAccountDetailsDoneButtonIdentifier";

@@ -17,4 +17,9 @@ extern NSString* const kFakeAuthAddAccountButtonIdentifier;
 // FakeAuthActivityViewController.
 extern NSString* const kFakeAuthCancelButtonIdentifier;
 
+// Accessibility identifier for FakeAccountDetailsViewController.
+extern NSString* const kFakeAccountDetailsViewIdentifier;
+// Accessibility identifier for FakeAccountDetailsViewController cancel button.
+extern NSString* const kFakeAccountDetailsDoneButtonIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_SIGNIN_MODEL_TEST_CONSTANTS_H_
