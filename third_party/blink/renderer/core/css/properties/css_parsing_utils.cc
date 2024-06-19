@@ -6996,7 +6996,8 @@ bool ConsumeGridTemplateRowsAndAreasAndColumns(
     }
     template_columns = ConsumeGridTrackList(
         stream, context, TrackListType::kGridTemplateNoRepeat);
-    if (!template_columns || !stream.AtEnd()) {
+    if (!template_columns ||
+        !(stream.AtEnd() || stream.Peek().Delimiter() == '!')) {
       return false;
     }
   } else {
