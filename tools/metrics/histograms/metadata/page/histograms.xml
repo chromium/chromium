@@ -3335,7 +3335,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.Background.HttpsOrDataOrFileScheme"
-    units="ms" expires_after="2024-06-30">
+    units="ms" expires_after="2025-06-30">
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-analysis-team@google.com</owner>
@@ -3420,7 +3420,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PageLoad.PaintTiming.NavigationToLargestContentfulPaint2.{Scheme}"
-    units="ms" expires_after="2024-06-30">
+    units="ms" expires_after="2025-06-30">
   <owner>iclelland@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
