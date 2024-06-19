@@ -7578,32 +7578,6 @@
             ]
         }
     ],
-    "DevToolsConsoleInsightsDogfood": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Dogfood",
-                    "params": {
-                        "aida_api_key": "someRandomAPIKey",
-                        "aida_endpoint": "https://www.example.com/aida",
-                        "aida_model_id": "aida_model_id",
-                        "aida_scope": "https://www.example.com/auth/",
-                        "opt_in": "false"
-                    },
-                    "enable_features": [
-                        "DevToolsConsoleInsightsDogfood"
-                    ]
-                }
-            ]
-        }
-    ],
     "DevToolsTabTarget": [
         {
             "platforms": [
