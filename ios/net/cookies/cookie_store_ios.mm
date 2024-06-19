@@ -195,11 +195,6 @@ CookieStoreIOS::CookieStoreIOS(
                      std::move(system_cookie_store),
                      net_log) {}
 
-CookieStoreIOS::CookieStoreIOS(NSHTTPCookieStorage* ns_cookie_store,
-                               NetLog* net_log)
-    : CookieStoreIOS(std::make_unique<NSHTTPSystemCookieStore>(ns_cookie_store),
-                     net_log) {}
-
 CookieStoreIOS::~CookieStoreIOS() {
   NotificationTrampoline::GetInstance()->RemoveObserver(this);
 

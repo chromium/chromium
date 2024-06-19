@@ -56,11 +56,6 @@ class CookieStoreIOS : public net::CookieStore,
   CookieStoreIOS(std::unique_ptr<SystemCookieStore> system_store,
                  NetLog* net_log);
 
-  // Used by ChromeSigninCookieManager/Cronet.
-  // TODO(crbug.com/41341295): Remove once the migration to use
-  // SystemCookieStore is finished.
-  CookieStoreIOS(NSHTTPCookieStorage* ns_cookie_store, NetLog* net_log);
-
   CookieStoreIOS(const CookieStoreIOS&) = delete;
   CookieStoreIOS& operator=(const CookieStoreIOS&) = delete;
 
