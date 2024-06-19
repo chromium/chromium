@@ -1731,10 +1731,8 @@ _CONFIG = [
     },
     {
         'paths': [
-            'third_party/blink/public/platform/web_theme_engine.h',
             'third_party/blink/renderer/core/layout/layout_theme.cc',
             'third_party/blink/renderer/core/layout/layout_theme.h',
-            'third_party/blink/renderer/core/scroll/scrollbar_theme_fluent.cc',
         ],
         'allowed': ['ui::ColorProvider'],
     },

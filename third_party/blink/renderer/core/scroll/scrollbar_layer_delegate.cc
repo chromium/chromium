@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
-#include "third_party/blink/renderer/platform/web_test_support.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
@@ -74,14 +73,6 @@ SkColor4f ScrollbarLayerDelegate::GetSolidColor() const {
 
 bool ScrollbarLayerDelegate::IsOverlay() const {
   return scrollbar_->IsOverlayScrollbar();
-}
-
-bool ScrollbarLayerDelegate::IsFluent() const {
-  return scrollbar_->IsFluentScrollbar();
-}
-
-bool ScrollbarLayerDelegate::IsRunningWebTest() const {
-  return WebTestSupport::IsRunningWebTest();
 }
 
 bool ScrollbarLayerDelegate::IsFluentOverlayScrollbarMinimalMode() const {
@@ -210,14 +201,6 @@ void ScrollbarLayerDelegate::PaintPart(cc::PaintCanvas* canvas,
     default:
       NOTREACHED_IN_MIGRATION();
   }
-}
-
-void ScrollbarLayerDelegate::ClearThumbNeedsRepaint() {
-  scrollbar_->ClearThumbNeedsRepaint();
-}
-
-SkColor4f ScrollbarLayerDelegate::FluentThumbColor() const {
-  return scrollbar_->GetTheme().FluentThumbColor(*scrollbar_);
 }
 
 }  // namespace blink

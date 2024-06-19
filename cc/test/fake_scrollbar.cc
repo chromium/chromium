@@ -35,14 +35,6 @@ SkColor4f FakeScrollbar::GetSolidColor() const {
 
 bool FakeScrollbar::IsOverlay() const { return is_overlay_; }
 
-bool FakeScrollbar::IsFluent() const {
-  return is_fluent_;
-}
-
-bool FakeScrollbar::IsRunningWebTest() const {
-  return true;
-}
-
 bool FakeScrollbar::IsFluentOverlayScrollbarMinimalMode() const {
   return false;
 }
@@ -115,14 +107,6 @@ void FakeScrollbar::PaintPart(PaintCanvas* canvas,
   flags.setColor(paint_fill_color());
   flags.setStyle(PaintFlags::kFill_Style);
   canvas->drawRect(RectToSkRect(rect), flags);
-}
-
-void FakeScrollbar::ClearThumbNeedsRepaint() {
-  set_needs_repaint_thumb(false);
-}
-
-SkColor4f FakeScrollbar::FluentThumbColor() const {
-  return SkColor4f::FromColor(SK_ColorRED);
 }
 
 bool FakeScrollbar::UsesNinePatchThumbResource() const {

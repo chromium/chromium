@@ -743,10 +743,6 @@ bool Scrollbar::IsOverlayScrollbar() const {
   return theme_.UsesOverlayScrollbars();
 }
 
-bool Scrollbar::IsFluentScrollbar() const {
-  return theme_.UsesFluentScrollbars();
-}
-
 bool Scrollbar::IsFluentOverlayScrollbarMinimalMode() const {
   return theme_.UsesFluentOverlayScrollbars() && hovered_part_ == kNoPart &&
          pressed_part_ != kThumbPart;

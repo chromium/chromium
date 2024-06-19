@@ -26,7 +26,6 @@ class CORE_EXPORT ScrollbarThemeFluent : public ScrollbarThemeAura {
   int ScrollbarThickness(float scale_from_dip,
                          EScrollbarWidth scrollbar_width) const override;
   bool UsesOverlayScrollbars() const override;
-  bool UsesFluentScrollbars() const override;
   bool UsesFluentOverlayScrollbars() const override;
   // When scrollbars are main threaded the thumb size returned by ThumbRect()
   // is the expanded thumb size. This function shrinks the thumb and displaces
@@ -34,7 +33,6 @@ class CORE_EXPORT ScrollbarThemeFluent : public ScrollbarThemeAura {
   gfx::Rect ShrinkMainThreadedMinimalModeThumbRect(
       const Scrollbar&,
       const gfx::Rect& rect) const override;
-  SkColor4f FluentThumbColor(const Scrollbar&) const override;
 
  protected:
   ScrollbarThemeFluent();
@@ -50,7 +48,7 @@ class CORE_EXPORT ScrollbarThemeFluent : public ScrollbarThemeAura {
                    const gfx::Rect& rect,
                    ScrollbarPart part) override;
   WebThemeEngine::ScrollbarThumbExtraParams BuildScrollbarThumbExtraParams(
-      const Scrollbar&) const override;
+      const Scrollbar&) override;
   base::TimeDelta OverlayScrollbarFadeOutDelay() const override;
   base::TimeDelta OverlayScrollbarFadeOutDuration() const override;
 

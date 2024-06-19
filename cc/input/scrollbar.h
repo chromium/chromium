@@ -52,8 +52,6 @@ class Scrollbar : public base::RefCounted<Scrollbar> {
   // when IsSolidColor() is true.
   virtual SkColor4f GetSolidColor() const = 0;
   virtual bool IsOverlay() const = 0;
-  virtual bool IsFluent() const = 0;
-  virtual bool IsRunningWebTest() const = 0;
   virtual bool IsFluentOverlayScrollbarMinimalMode() const = 0;
   virtual bool HasThumb() const = 0;
   virtual bool SupportsDragSnapBack() const = 0;
@@ -82,8 +80,6 @@ class Scrollbar : public base::RefCounted<Scrollbar> {
   virtual void PaintPart(PaintCanvas* canvas,
                          ScrollbarPart part,
                          const gfx::Rect& rect) = 0;
-  virtual void ClearThumbNeedsRepaint() = 0;
-  virtual SkColor4f FluentThumbColor() const = 0;
 
   // The following two functions are called from blink only.
   // Returns true if either the track or the thumb needs repaint, or the thumb

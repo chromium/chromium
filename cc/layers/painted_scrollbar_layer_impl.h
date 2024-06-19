@@ -53,7 +53,6 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
   void SetThumbLength(int thumb_length);
   void SetTrackRect(gfx::Rect track_rect);
   void SetScrollbarPaintedOpacity(float opacity);
-  void SetFluentThumbColor(SkColor4f thumb_color);
 
   void set_track_ui_resource_id(UIResourceId uid) {
     track_ui_resource_id_ = uid;
@@ -93,10 +92,6 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
   bool IsThumbResizable() const override;
 
  private:
-  void AppendThumbQuads(viz::CompositorRenderPass* render_pass,
-                        AppendQuadsData* append_quads_data) const;
-  void AppendTrackQuads(viz::CompositorRenderPass* render_pass,
-                        AppendQuadsData* append_quads_data) const;
   // Expand the scrollbar thumb's hit testable rect to be able to capture the
   // thumb across the entire width of the track rect.
   gfx::Rect ExpandFluentScrollbarThumb(gfx::Rect thumb_rect) const;
@@ -120,7 +115,6 @@ class CC_EXPORT PaintedScrollbarLayerImpl : public ScrollbarLayerImplBase {
   gfx::Rect back_button_rect_;
   gfx::Rect forward_button_rect_;
   gfx::Rect track_rect_;
-  SkColor4f fluent_thumb_color_;
 };
 
 }  // namespace cc
