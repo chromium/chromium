@@ -242,4 +242,53 @@ suite('HistoryAppTest', function() {
         element.shadowRoot!.querySelector('cr-history-embeddings');
     assertTrue(!!historyEmbeddings);
   });
+
+  test('CountsCharacters', async () => {
+    // Force cr-history-embeddings to be in the DOM for testing.
+    loadTimeData.overrideValues({historyEmbeddingsSearchMinimumWordCount: 0});
+    element.dispatchEvent(new CustomEvent(
+        'change-query',
+        {bubbles: true, composed: true, detail: {search: 'some fake input'}}));
+    await flushTasks();
+
+    function dispatchNativeInput(
+        inputEvent: Partial<InputEvent>, inputValue: string) {
+      element.$.toolbar.dispatchEvent(new CustomEvent(
+          'search-term-native-before-input', {detail: {e: inputEvent}}));
+      element.$.toolbar.dispatchEvent(
+          new CustomEvent('search-term-native-input', {
+            detail: {e: inputEvent, inputValue},
+            composed: true,
+            bubbles: true,
+          }));
+    }
+
+    function getCount() {
+      const historyEmbeddingsElement =
+          element.shadowRoot!.querySelector('cr-history-embeddings')!;
+      return historyEmbeddingsElement.numCharsForQuery;
+    }
+
+    dispatchNativeInput({data: 'a'}, 'a');
+    assertEquals(1, getCount(), 'counts normal characters');
+    dispatchNativeInput({data: 'b'}, 'ab');
+    dispatchNativeInput({data: 'c'}, 'abc');
+    assertEquals(3, getCount(), 'counts additional characters');
+
+    dispatchNativeInput({data: 'pasted text'}, 'pasted text');
+    assertEquals(1, getCount(), 'insert that replaces all text counts as 1');
+
+    dispatchNativeInput({data: 'more text'}, 'pasted text more text');
+    assertEquals(
+        2, getCount(), 'insert that adds to existing input increments count');
+
+    dispatchNativeInput({data: null}, 'pasted text more tex');
+    assertEquals(3, getCount(), 'deletion increments');
+
+    dispatchNativeInput({data: null}, '');
+    assertEquals(0, getCount(), 'deletion of entire input resets counter');
+
+    element.$.toolbar.dispatchEvent(new CustomEvent('search-term-cleared'));
+    assertEquals(0, getCount(), 'resets on clear');
+  });
 });

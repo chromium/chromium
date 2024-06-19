@@ -108,7 +108,10 @@
         spinner-active="[[shouldShowSpinner_(queryState_.querying,
                                              queryState_.incremental,
                                              queryState_.searchTerm)]]"
-        selected-page="[[selectedPage_]]">
+        selected-page="[[selectedPage_]]"
+        on-search-term-native-before-input="onToolbarSearchInputNativeBeforeInput_"
+        on-search-term-native-input="onToolbarSearchInputNativeInput_"
+        on-search-term-cleared="onToolbarSearchCleared_">
     </history-toolbar>
     <div id="drop-shadow" class="cr-container-shadow"></div>
     <div id="main-container">
@@ -139,6 +142,7 @@
             </div>
           </template>
           <div id="tabsScrollContainer">
+            [[numCharsTypedInSearch_]]
             <template is="dom-if" if="[[enableHistoryEmbeddings_]]"
                 on-dom-change="onHistoryEmbeddingsContainerShown_">
               <div id="historyEmbeddingsContainer" class="history-cards">
@@ -156,6 +160,7 @@
                   <cr-history-embeddings
                       search-query="[[queryState_.searchTerm]]"
                       time-range-start="[[queryStateAfterDate_]]"
+                      num-chars-for-query="[[numCharsTypedInSearch_]]"
                       on-more-from-site-click="onHistoryEmbeddingsItemMoreFromSiteClick_"
                       on-remove-item-click="onHistoryEmbeddingsItemRemoveClick_"
                       on-is-empty-changed="onHistoryEmbeddingsIsEmptyChanged_">

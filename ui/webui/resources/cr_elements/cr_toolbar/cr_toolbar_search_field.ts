@@ -105,9 +105,18 @@ export class CrToolbarSearchFieldElement extends
     this.focus_();
   }
 
+  protected onSearchTermNativeBeforeInput(e: InputEvent) {
+    this.fire('search-term-native-before-input', {e});
+  }
+
   override onSearchTermInput() {
     super.onSearchTermInput();
     this.showingSearch = this.hasSearchText || this.isSearchFocused();
+  }
+
+  protected onSearchTermNativeInput(e: InputEvent) {
+    this.onSearchTermInput();
+    this.fire('search-term-native-input', {e, inputValue: this.getValue()});
   }
 
   protected getIconTabIndex_(): number {
@@ -163,6 +172,7 @@ export class CrToolbarSearchFieldElement extends
     this.setValue('');
     this.focus_();
     this.spinnerActive = false;
+    this.fire('search-term-cleared');
   }
 }
 

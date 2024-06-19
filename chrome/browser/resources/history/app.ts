@@ -296,6 +296,8 @@ export class HistoryAppElement extends HistoryAppElementBase {
       loadTimeData.getBoolean('productSpecificationsListsEnabled');
   private historyEmbeddingsResizeObserver_?: ResizeObserver;
   private tabContentScrollOffset_: number = 0;
+  private dataFromNativeBeforeInput_: string|null = null;
+  private numCharsTypedInSearch_: number = 0;
 
   constructor() {
     super();
@@ -811,6 +813,36 @@ export class HistoryAppElement extends HistoryAppElementBase {
       this.tabContentScrollOffset_ = entries[0].contentRect.height;
     });
     this.historyEmbeddingsResizeObserver_.observe(historyEmbeddingsContainer);
+  }
+
+  private onToolbarSearchInputNativeBeforeInput_(
+      e: CustomEvent<{e: InputEvent}>) {
+    // TODO(crbug.com/40673976): This needs to be cached on the `beforeinput`
+    //   event since there is a bug where this data is not available in the
+    //   native `input` event below.
+    this.dataFromNativeBeforeInput_ = e.detail.e.data;
+  }
+
+  private onToolbarSearchInputNativeInput_(
+      e: CustomEvent<{e: InputEvent, inputValue: string}>) {
+    const insertedText = this.dataFromNativeBeforeInput_;
+    this.dataFromNativeBeforeInput_ = null;
+    if (e.detail.inputValue.length === 0) {
+      // Input was entirely cleared (eg. backspace/delete was hit).
+      this.numCharsTypedInSearch_ = 0;
+    } else if (insertedText === e.detail.inputValue) {
+      // If the inserted text matches exactly with the current value of the
+      // input, that implies that the previous input value was cleared or
+      // was empty to begin with. So, reset the num chars typed and count this
+      // input event as 1 char typed.
+      this.numCharsTypedInSearch_ = 1;
+    } else {
+      this.numCharsTypedInSearch_++;
+    }
+  }
+
+  private onToolbarSearchCleared_() {
+    this.numCharsTypedInSearch_ = 0;
   }
 }
 

@@ -68,6 +68,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
 
   static get properties() {
     return {
+      numCharsForQuery: Number,
       feedbackState_: {
         type: String,
         value: CrFeedbackOption.UNSPECIFIED,
@@ -106,6 +107,7 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   private resultPendingMetricsTimestamp_: number|null = null;
   private eventTracker_: EventTracker = new EventTracker();
   isEmpty: boolean;
+  numCharsForQuery: number = 0;
   searchQuery: string;
   timeRangeStart?: Date;
 
