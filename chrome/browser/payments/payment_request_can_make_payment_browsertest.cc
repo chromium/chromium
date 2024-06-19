@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
 #include "content/public/test/browser_test.h"
@@ -50,13 +51,21 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
 // PaymentRequest.hasEnrolledInstrument() should return true."
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
                        AppRespondsTrueToCanMakePaymentEvent) {
+  base::HistogramTester histogram_tester;
   std::string method;
   InstallPaymentApp("a.com", "/can_make_payment_true_responder.js", &method);
 
   NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
 
   ExpectCanMakePayment(true, method);
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.CanMakePayment.CallAllowedByPref", /*sample=*/1,
+      /*expected_bucket_count=*/1);
+
   ExpectHasEnrolledInstrument(true, method);
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.HasEnrolledInstrument.CallAllowedByPref", /*sample=*/1,
+      /*expected_bucket_count=*/1);
 }
 
 // A user has installed a payment app that responds "true" to the
@@ -104,10 +113,11 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
   ExpectHasEnrolledInstrument(false, method);
 }
 
-// Test the case where canMakePayment/hasEnrolledInstrument would return true,
-// but the user has disabled those APIs in settings.
+// Test the case where canMakePayment would return true, but the user has
+// disabled the API in settings.
 IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
                        CanMakePayment_SupportedButDisabled) {
+  base::HistogramTester histogram_tester;
   test_controller()->SetCanMakePaymentEnabledPref(false);
 
   std::string method;
@@ -116,7 +126,27 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
   NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
 
   ExpectCanMakePayment(false, method);
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.CanMakePayment.CallAllowedByPref", /*sample=*/0,
+      /*expected_bucket_count=*/1);
+}
+
+// Test the case where hasEnrolledInstrument would return true, but the user has
+// disabled the API in settings.
+IN_PROC_BROWSER_TEST_F(PaymentRequestCanMakePaymentQueryTest,
+                       HasEnrolledInstrument_SupportedButDisabled) {
+  base::HistogramTester histogram_tester;
+  test_controller()->SetCanMakePaymentEnabledPref(false);
+
+  std::string method;
+  InstallPaymentApp("a.com", "/can_make_payment_true_responder.js", &method);
+
+  NavigateTo("b.com", "/payment_request_can_make_payment_query_test.html");
+
   ExpectHasEnrolledInstrument(false, method);
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.HasEnrolledInstrument.CallAllowedByPref", /*sample=*/0,
+      /*expected_bucket_count=*/1);
 }
 
 // Pages without a valid SSL certificate always get "false" from
