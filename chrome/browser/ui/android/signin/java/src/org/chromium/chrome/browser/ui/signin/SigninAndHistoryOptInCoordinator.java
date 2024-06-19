@@ -37,7 +37,6 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.sync.SyncFeatureMap;
 import org.chromium.components.sync.SyncService;
 import org.chromium.components.sync.UserSelectableType;
-import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -86,6 +85,9 @@ public class SigninAndHistoryOptInCoordinator
          * dialog mode.
          */
         boolean isHistorySyncShownFullScreen();
+
+        /** Called to change the status bar color. */
+        void setStatusBarColor(int statusBarColor);
     }
 
     /** The sign-in step that should be shown to the user when there's no account on the device. */
@@ -257,12 +259,12 @@ public class SigninAndHistoryOptInCoordinator
         // In case the history sync dialog is skipped, the activity will finish and the status bar
         // color change is not shown to the user.
         if (scrimColor != ScrimProperties.INVALID_COLOR) {
-            UiUtils.setStatusBarColor(mActivity.getWindow(), scrimColor);
+            mDelegate.setStatusBarColor(scrimColor);
             return;
         }
 
         if (mDelegate.isHistorySyncShownFullScreen()) {
-            UiUtils.setStatusBarColor(mActivity.getWindow(), getHistorySyncBackgroundColor());
+            mDelegate.setStatusBarColor(getHistorySyncBackgroundColor());
         }
     }
 

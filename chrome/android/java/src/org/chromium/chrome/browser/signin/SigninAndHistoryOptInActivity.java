@@ -9,6 +9,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,7 +34,9 @@ import org.chromium.chrome.browser.ui.signin.SigninAndHistoryOptInCoordinator.Wi
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.UpgradePromoCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
+import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.ActivityWindowAndroid;
@@ -101,6 +104,8 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
 
         Intent intent = getIntent();
         if (intent.getBooleanExtra(ARGUMENT_IS_UPGRADE_PROMO, false)) {
+            // Set the status bar color to the upgrade promo background color.
+            setStatusBarColor(SemanticColorUtils.getDefaultBgColor(this));
             mUpgradePromoCoordinator =
                     new UpgradePromoCoordinator(
                             this,
@@ -114,6 +119,7 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
             return;
         }
 
+        setStatusBarColor(Color.TRANSPARENT);
         int signinAccessPoint = intent.getIntExtra(ARGUMENT_ACCESS_POINT, SigninAccessPoint.MAX);
         assert signinAccessPoint != SigninAccessPoint.MAX : "Cannot find SigninAccessPoint!";
 
@@ -220,6 +226,12 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
     @Override
     public boolean isHistorySyncShownFullScreen() {
         return !isTablet();
+    }
+
+    /** Implements {@link SigninAndHistoryOptInCoordinator.Delegate}. */
+    @Override
+    public void setStatusBarColor(int statusBarColor) {
+        StatusBarColorController.setStatusBarColor(getWindow(), statusBarColor);
     }
 
     @Override
