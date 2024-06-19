@@ -16,8 +16,8 @@ namespace {
 // Returns the list of capabilities observed by
 // SupervisedUserCapabilitiesObserver.
 const std::vector<std::string>& GetSupervisedUserCapabilityNames() {
-  static base::NoDestructor<std::vector<std::string>> names(
-      {kIsSubjectToParentalControlsCapabilityName});
+  static base::NoDestructor<std::vector<std::string>> names{
+      {kIsSubjectToParentalControlsCapabilityName}};
   return *names;
 }
 
