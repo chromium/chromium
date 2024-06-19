@@ -35,8 +35,8 @@ class AshNotificationExpandButton : public CounterExpandButton {
 
  private:
   // CounterExpandButton:
-  std::u16string GetExpandedStateTooltipText() override;
-  std::u16string GetCollapsedStateTooltipText() override;
+  std::u16string GetExpandedStateTooltipText() const override;
+  std::u16string GetCollapsedStateTooltipText() const override;
 
   // Cache of the notification title. Used this to display in the button
   // tooltip.

@@ -98,8 +98,8 @@ class ASH_EXPORT CounterExpandButton : public views::Button {
   void UpdateTooltip();
 
   // Returns the tooltip text on the button in expanded/collapsed state.
-  virtual std::u16string GetExpandedStateTooltipText();
-  virtual std::u16string GetCollapsedStateTooltipText();
+  virtual std::u16string GetExpandedStateTooltipText() const;
+  virtual std::u16string GetCollapsedStateTooltipText() const;
 
  private:
   void UpdateBackgroundColor();

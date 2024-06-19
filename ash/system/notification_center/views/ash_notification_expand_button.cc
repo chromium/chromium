@@ -65,14 +65,16 @@ const std::string AshNotificationExpandButton::GetAnimationHistogramName(
   }
 }
 
-std::u16string AshNotificationExpandButton::GetExpandedStateTooltipText() {
+std::u16string AshNotificationExpandButton::GetExpandedStateTooltipText()
+    const {
   // The tooltip tells users that clicking on the button will collapse the
   // notification group.
   return l10n_util::GetStringFUTF16(IDS_ASH_NOTIFICATION_COLLAPSE_TOOLTIP,
                                     notification_title_);
 }
 
-std::u16string AshNotificationExpandButton::GetCollapsedStateTooltipText() {
+std::u16string AshNotificationExpandButton::GetCollapsedStateTooltipText()
+    const {
   // The tooltip tells users that clicking on the button will expand the
   // notification group.
   return l10n_util::GetStringFUTF16(IDS_ASH_NOTIFICATION_EXPAND_TOOLTIP,

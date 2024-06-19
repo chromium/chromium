@@ -122,31 +122,6 @@ std::u16string GetLastUpdateTimeMessage(base::Time time) {
   }
 }
 
-class TasksExpandButton : public CounterExpandButton {
-  METADATA_HEADER(TasksExpandButton, CounterExpandButton)
- public:
-  TasksExpandButton() = default;
-  TasksExpandButton(const TasksExpandButton&) = delete;
-  TasksExpandButton& operator=(const TasksExpandButton&) = delete;
-  ~TasksExpandButton() override = default;
-
-  std::u16string GetExpandedStateTooltipText() override {
-    // The tooltip tells users that clicking on the button will collapse the
-    // Tasks view.
-    return l10n_util::GetStringUTF16(
-        IDS_GLANCEABLES_TASKS_EXPAND_BUTTON_COLLAPSE_TOOLTIP);
-  }
-  std::u16string GetCollapsedStateTooltipText() override {
-    // The tooltip tells users that clicking on the button will expand the
-    // Tasks view.
-    return l10n_util::GetStringUTF16(
-        IDS_GLANCEABLES_TASKS_EXPAND_BUTTON_EXPAND_TOOLTIP);
-  }
-};
-
-BEGIN_METADATA(TasksExpandButton)
-END_METADATA
-
 class AddNewTaskButton : public views::LabelButton {
   METADATA_HEADER(AddNewTaskButton, views::LabelButton)
  public:
@@ -211,7 +186,9 @@ GlanceablesTasksView::GlanceablesTasksView(
           .WithWeight(1));
 
   expand_button_ = tasks_header_container->AddChildView(
-      std::make_unique<TasksExpandButton>());
+      std::make_unique<GlanceablesExpandButton>(
+          IDS_GLANCEABLES_TASKS_EXPAND_BUTTON_EXPAND_TOOLTIP,
+          IDS_GLANCEABLES_TASKS_EXPAND_BUTTON_COLLAPSE_TOOLTIP));
   expand_button_->SetID(
       base::to_underlying(GlanceablesViewId::kTasksBubbleExpandButton));
   // This is only set visible when both Tasks and Classroom exist, where the

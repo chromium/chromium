@@ -307,24 +307,39 @@ TEST_F(GlanceablesTasksAndClassroomTest, TimeManagementExpandStates) {
   ASSERT_TRUE(classroom_expand_button);
   EXPECT_TRUE(tasks_expand_button->expanded());
   EXPECT_FALSE(classroom_expand_button->expanded());
+  EXPECT_EQ(tasks_expand_button->GetTooltipText(), u"Collapse Google Tasks");
+  EXPECT_EQ(classroom_expand_button->GetTooltipText(),
+            u"Expand Google Classroom");
 
   // Expanding/Collapsing `tasks_view` will collapse/expand `classroom_view`.
   LeftClickOn(tasks_expand_button);
   EXPECT_FALSE(tasks_view->IsExpanded());
   EXPECT_TRUE(classroom_view->IsExpanded());
+  EXPECT_EQ(tasks_expand_button->GetTooltipText(), u"Expand Google Tasks");
+  EXPECT_EQ(classroom_expand_button->GetTooltipText(),
+            u"Collapse Google Classroom");
 
   LeftClickOn(tasks_expand_button);
   EXPECT_TRUE(tasks_view->IsExpanded());
   EXPECT_FALSE(classroom_view->IsExpanded());
+  EXPECT_EQ(tasks_expand_button->GetTooltipText(), u"Collapse Google Tasks");
+  EXPECT_EQ(classroom_expand_button->GetTooltipText(),
+            u"Expand Google Classroom");
 
   // Same for `classroom_view`.
   LeftClickOn(classroom_expand_button);
   EXPECT_FALSE(tasks_view->IsExpanded());
   EXPECT_TRUE(classroom_view->IsExpanded());
+  EXPECT_EQ(tasks_expand_button->GetTooltipText(), u"Expand Google Tasks");
+  EXPECT_EQ(classroom_expand_button->GetTooltipText(),
+            u"Collapse Google Classroom");
 
   LeftClickOn(classroom_expand_button);
   EXPECT_TRUE(tasks_view->IsExpanded());
   EXPECT_FALSE(classroom_view->IsExpanded());
+  EXPECT_EQ(tasks_expand_button->GetTooltipText(), u"Collapse Google Tasks");
+  EXPECT_EQ(classroom_expand_button->GetTooltipText(),
+            u"Expand Google Classroom");
 }
 
 TEST_F(GlanceablesTasksAndClassroomTest,

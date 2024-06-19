@@ -120,31 +120,6 @@ std::u16string GetAssignmentListName(size_t index) {
   return l10n_util::GetStringUTF16(iter->second);
 }
 
-class ClassroomExpandButton : public CounterExpandButton {
-  METADATA_HEADER(ClassroomExpandButton, CounterExpandButton)
- public:
-  ClassroomExpandButton() = default;
-  ClassroomExpandButton(const ClassroomExpandButton&) = delete;
-  ClassroomExpandButton& operator=(const ClassroomExpandButton&) = delete;
-  ~ClassroomExpandButton() override = default;
-
-  std::u16string GetExpandedStateTooltipText() override {
-    // The tooltip tells users that clicking on the button will collapse the
-    // Classroom view.
-    return l10n_util::GetStringUTF16(
-        IDS_GLANCEABLES_CLASSROOM_EXPAND_BUTTON_COLLAPSE_TOOLTIP);
-  }
-  std::u16string GetCollapsedStateTooltipText() override {
-    // The tooltip tells users that clicking on the button will expand the
-    // Classroom view.
-    return l10n_util::GetStringUTF16(
-        IDS_GLANCEABLES_CLASSROOM_EXPAND_BUTTON_EXPAND_TOOLTIP);
-  }
-};
-
-BEGIN_METADATA(ClassroomExpandButton)
-END_METADATA
-
 class ClassroomStudentComboboxModel : public ui::ComboboxModel {
  public:
   ClassroomStudentComboboxModel() = default;
@@ -241,7 +216,9 @@ GlanceablesClassroomStudentView::GlanceablesClassroomStudentView()
   combobox_replacement_label_->SetVisible(false);
 
   expand_button_ =
-      header_container->AddChildView(std::make_unique<ClassroomExpandButton>());
+      header_container->AddChildView(std::make_unique<GlanceablesExpandButton>(
+          IDS_GLANCEABLES_CLASSROOM_EXPAND_BUTTON_EXPAND_TOOLTIP,
+          IDS_GLANCEABLES_CLASSROOM_EXPAND_BUTTON_COLLAPSE_TOOLTIP));
   expand_button_->SetID(
       base::to_underlying(GlanceablesViewId::kClassroomBubbleExpandButton));
   // This is only set visible when both Tasks and Classroom exist, where the
