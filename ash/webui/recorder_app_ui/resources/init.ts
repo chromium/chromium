@@ -6,17 +6,14 @@ import {init} from './core/init.js';
 import {RecorderApp} from './pages/recorder-app.js';
 import {PlatformHandler} from './platforms/mojo/handler.js';
 
-document.addEventListener('DOMContentLoaded', () => {
-  // TODO(pihsun): Loading state in html before this.
-  (async () => {
-    const platformHandler = new PlatformHandler();
-    // Initialize core.
-    await init(platformHandler);
-    // Initialize platform.
-    platformHandler.init();
-    document.body.appendChild(new RecorderApp());
-  })().catch((err) => {
-    // TODO(pihsun): Handle error state.
-    console.error(err);
-  });
+// The error for the promise is handled by the global unhandledrejection
+// handler.
+// eslint-disable-next-line @typescript-eslint/no-misused-promises
+document.addEventListener('DOMContentLoaded', async () => {
+  const platformHandler = new PlatformHandler();
+  // Initialize core.
+  await init(platformHandler);
+  // Initialize platform.
+  platformHandler.init();
+  document.body.appendChild(new RecorderApp());
 });
