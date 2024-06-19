@@ -513,9 +513,11 @@ FormDataImporter::GetAddressObservedFieldValues(
     FieldType field_type = field->Type().GetStorableType();
     // Only address types are relevant in this function, other types are treated
     // in different flows.
-    if (GroupTypeOfFieldType(field_type) == FieldTypeGroup::kCreditCard) {
+    if (!IsAddressType(field_type)) {
       continue;
     }
+    has_address_related_fields = true;
+
     // There can be multiple email fields (e.g. in the case of 'confirm email'
     // fields) but they must all contain the same value, else the profile is
     // invalid.
@@ -529,7 +531,6 @@ FormDataImporter::GetAddressObservedFieldValues(
         has_multiple_distinct_email_addresses = true;
       }
     }
-
     // If the field type and |value| don't pass basic validity checks then
     // abandon the import.
     if (!IsValidFieldTypeAndValue(observed_field_values, field_type, value,
@@ -553,7 +554,6 @@ FormDataImporter::GetAddressObservedFieldValues(
         continue;
       }
     }
-
     observed_field_values.insert_or_assign(field_type, value);
     // The `autofill_source_profile_guid()` is not reset when a field is
     // manually edited or filled with non-address information later.
@@ -563,14 +563,10 @@ FormDataImporter::GetAddressObservedFieldValues(
                         ? field->autofill_source_profile_guid()
                         : std::nullopt);
 
-    if (FieldTypeGroupToFormType(GroupTypeOfFieldType(field_type)) ==
-        FormType::kAddressForm) {
-      has_address_related_fields = true;
-      if (field->parsed_autocomplete()) {
-        import_metadata.did_import_from_unrecognized_autocomplete_field |=
-            field->parsed_autocomplete()->field_type ==
-            HtmlFieldType::kUnrecognized;
-      }
+    if (field->parsed_autocomplete()) {
+      import_metadata.did_import_from_unrecognized_autocomplete_field |=
+          field->parsed_autocomplete()->field_type ==
+          HtmlFieldType::kUnrecognized;
     }
   }
   return observed_field_values;
