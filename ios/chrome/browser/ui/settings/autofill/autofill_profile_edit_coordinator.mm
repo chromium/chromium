@@ -10,6 +10,11 @@
 #import "components/autofill/core/browser/personal_data_manager.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_country_selection_table_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_mediator.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_mediator_delegate.h"
+#import "ios/chrome/browser/autofill/ui_bundled/autofill_profile_edit_table_view_controller.h"
+#import "ios/chrome/browser/autofill/ui_bundled/cells/country_item.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
@@ -18,11 +23,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
-#import "ios/chrome/browser/ui/autofill/autofill_country_selection_table_view_controller.h"
-#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator.h"
-#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator_delegate.h"
-#import "ios/chrome/browser/ui/autofill/autofill_profile_edit_table_view_controller.h"
-#import "ios/chrome/browser/ui/autofill/cells/country_item.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_settings_profile_edit_table_view_controller.h"
 
 @interface AutofillProfileEditCoordinator () <

@@ -15,7 +15,7 @@ specific_include_rules = {
 
   # TODO(crbug.com/40820398): Remove these dependencies.
   "^autofill_tab_helper.mm": [
-    "+ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h",
+    "+ios/chrome/browser/autofill/ui_bundled/chrome_autofill_client_ios.h",
   ],
   "^form_input_accessory_view_handler.mm": [
     "+ios/chrome/browser/shared/ui/util/uikit_ui_util.h",

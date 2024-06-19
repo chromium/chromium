@@ -1378,7 +1378,6 @@
                   'components/password_manager/ios|'\
                   'ios/chrome/browser/autofill|'\
                   'ios/chrome/browser/passwords|'\
-                  'ios/chrome/browser/ui/autofill|'\
                   'ios/chrome/browser/ui/passwords|'\
                   'ios/chrome/browser/ui/settings/autofill|'\
                   'ios/chrome/browser/ui/settings/password',
