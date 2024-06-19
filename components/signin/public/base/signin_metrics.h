@@ -233,6 +233,8 @@ enum class AccessPoint : int {
   // Signin button from the profile menu that is labelled as a "Signin" button,
   // but is followed by a Sync confirmation screen as a promo.
   ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO = 66,
+  // Signin using the account menu.
+  ACCESS_POINT_ACCOUNT_MENU = 67,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in

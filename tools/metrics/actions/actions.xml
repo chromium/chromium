@@ -36446,6 +36446,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Signin_FromAccountMenu">
+  <owner>arthurmilchior@chromium.org</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_ACCOUNT_MENU.
+  </description>
+</action>
+
 <action name="Signin_Signin_FromAppsPageLink">
   <obsolete>
     Deprecated as the apps page no longer has a sign-in link/promo.

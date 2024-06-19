@@ -199,6 +199,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "WebAuthnModalDialog";
       case AccessPoint::ACCESS_POINT_AVATAR_BUBBLE_SIGN_IN_WITH_SYNC_PROMO:
         return "AvatarBubbleSigninWithSyncPromo";
+      case AccessPoint::ACCESS_POINT_ACCOUNT_MENU:
+        return "AccountSwitcher";
       case AccessPoint::ACCESS_POINT_MAX:
         NOTREACHED_IN_MIGRATION();
         return "";
