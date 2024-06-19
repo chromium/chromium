@@ -415,9 +415,6 @@
     <message name="IDS_PAGE_INFO_STATE_TEXT_HID_DEVICES_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the HID permission is in the ask state and the site can prompt the user to ask if they allow the site to connect to HID devices.">
       Can ask to connect to HID devices
     </message>
-    <message name="IDS_PAGE_INFO_STATE_TEXT_KEYBOARD_LOCK_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the keyboard lock permission is in the ask state and the site can prompt the user to ask if they allow the site to lock and use the input from their keyboard.">
-      Can ask to lock and use your keyboard
-    </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_LOCATION_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the location permission is in the ask state and the site can prompt the user to ask if they allow the site to use your location.">
       Can ask for your location
     </message>
@@ -429,9 +426,6 @@
     </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_NOTIFICATIONS_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the notification permission is in the ask state and the site can prompt the user to ask if they want to receive notifications.">
       Can ask to send notifications
-    </message>
-    <message name="IDS_PAGE_INFO_STATE_TEXT_POINTER_LOCK_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the pointer lock permission is in the ask state and the site can prompt the user to ask if they allow the site to lock and use the input from their mouse pointer.">
-      Can ask to lock and use your mouse
     </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_USB_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the USB permission is in the ask state and the site can prompt the user to ask if they allow the site to connect to USB devices.">
       Can ask to connect to USB devices
