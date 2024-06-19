@@ -707,4 +707,22 @@ ResponseAction PasswordsPrivateIsConnectedToCloudAuthenticatorFunction::Run() {
   return RespondNow(Error(kNoDelegateError));
 }
 
+// PasswordsPrivateDeleteAllPasswordManagerDataFunction
+ResponseAction PasswordsPrivateDeleteAllPasswordManagerDataFunction::Run() {
+  if (auto delegate = GetDelegate(browser_context())) {
+    delegate->DeleteAllPasswordManagerData(
+        base::BindOnce(&PasswordsPrivateDeleteAllPasswordManagerDataFunction::
+                           OnDeletionCompleted,
+                       this));
+    return did_respond() ? AlreadyResponded() : RespondLater();
+  }
+
+  return RespondNow(Error(kNoDelegateError));
+}
+
+void PasswordsPrivateDeleteAllPasswordManagerDataFunction::OnDeletionCompleted(
+    bool success) {
+  Respond(WithArguments(success));
+}
+
 }  // namespace extensions

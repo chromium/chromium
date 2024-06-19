@@ -441,6 +441,12 @@ void TestPasswordsPrivateDelegate::ChangePasswordManagerPin(
   std::move(success_callback).Run(false);
 }
 
+void TestPasswordsPrivateDelegate::DeleteAllPasswordManagerData(
+    base::OnceCallback<void(bool)> success_callback) {
+  delete_all_password_manager_data_called_ = true;
+  std::move(success_callback).Run(true);
+}
+
 bool TestPasswordsPrivateDelegate::IsPasswordManagerPinAvailable(
     content::WebContents* web_contents) {
   return false;

@@ -10,10 +10,12 @@ import './shared_style.css.js';
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './full_data_reset.html.js';
+import {PasswordManagerImpl} from './password_manager_proxy.js';
 
 export interface FullDataResetElement {
   $: {
@@ -21,6 +23,7 @@ export interface FullDataResetElement {
     cancelButton: CrButtonElement,
     confirmButton: CrButtonElement,
     dialog: CrDialogElement,
+    successToast: CrToastElement,
   };
 }
 
@@ -43,9 +46,19 @@ export class FullDataResetElement extends FullDataResetElementBase {
     this.$.dialog.close();
   }
 
-  private onConfirm_(): void {
-    // TODO(b/342366264): Call the delete all API.
+  private async onConfirm_() {
     this.$.dialog.close();
+    const success =
+        await PasswordManagerImpl.getInstance().deleteAllPasswordManagerData();
+    this.showToastWithResult_(success);
+  }
+
+  private showToastWithResult_(success: boolean) {
+    if (success) {
+      this.$.successToast.show();
+    } else {
+      // TODO(crbug.com/342366264): Show error toast.
+    }
   }
 }
 

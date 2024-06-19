@@ -29,6 +29,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
     changePasswordManagerPinSuccesful: boolean|null,
     disconnectCloudAuthenticatorSuccessful: boolean|null,
     isConnectedToCloudAuthenticator: boolean|null,
+    deleteAllPasswordManagerData: boolean|null,
   };
 
   listeners: {
@@ -60,6 +61,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       'changeCredential',
       'changePasswordManagerPin',
       'continueImport',
+      'deleteAllPasswordManagerData',
       'disconnectCloudAuthenticator',
       'dismissSafetyHubPasswordMenuNotification',
       'exportPasswords',
@@ -113,6 +115,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
       changePasswordManagerPinSuccesful: null,
       disconnectCloudAuthenticatorSuccessful: null,
       isConnectedToCloudAuthenticator: null,
+      deleteAllPasswordManagerData: null,
     };
 
     // Holds listeners so they can be called when needed.
@@ -410,6 +413,14 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
         this.data.disconnectCloudAuthenticatorSuccessful !== null) {
       this.data.isConnectedToCloudAuthenticator = false;
       return Promise.resolve(this.data.disconnectCloudAuthenticatorSuccessful);
+    }
+    return Promise.reject(new Error());
+  }
+
+  deleteAllPasswordManagerData(): Promise<boolean> {
+    this.methodCalled('deleteAllPasswordManagerData');
+    if (this.data.deleteAllPasswordManagerData !== null) {
+      return Promise.resolve(this.data.deleteAllPasswordManagerData);
     }
     return Promise.reject(new Error());
   }

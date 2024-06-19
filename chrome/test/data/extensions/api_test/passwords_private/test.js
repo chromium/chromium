@@ -764,6 +764,14 @@ var availableTests = [
     });
   },
 
+  function deleteAllPasswordManagerData() {
+    chrome.passwordsPrivate.deleteAllPasswordManagerData(success => {
+      chrome.test.assertTrue(success);
+      chrome.test.assertNoLastError();
+      chrome.test.succeed();
+    });
+  },
+
   function isConnectedToCloudAuthenticator() {
     var callback = function(connected) {
       chrome.test.assertFalse(connected);

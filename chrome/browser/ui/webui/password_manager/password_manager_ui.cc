@@ -223,6 +223,8 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       {"federationLabel", IDS_PASSWORD_MANAGER_UI_FEDERATION_LABEL},
       {"fullResetDeleteAll", IDS_PASSWORD_MANAGER_UI_FULL_RESET_DELETE_ALL},
       {"fullResetConfirm", IDS_PASSWORD_MANAGER_UI_FULL_RESET_CONFIRM},
+      {"fullResetSuccessToast",
+       IDS_PASSWORD_MANAGER_UI_FULL_RESET_SUCCESS_TOAST},
       {"gotIt", IDS_SETTINGS_GOT_IT},
       {"help", IDS_PASSWORD_MANAGER_UI_HELP},
       {"hidePassword", IDS_PASSWORD_MANAGER_UI_HIDE_PASSWORD},

@@ -107,6 +107,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
       base::OnceCallback<void(bool)> success_callback) override;
   bool IsConnectedToCloudAuthenticator(
       content::WebContents* web_contents) override;
+  void DeleteAllPasswordManagerData(
+      base::OnceCallback<void(bool)> success_callback) override;
 
   base::WeakPtr<PasswordsPrivateDelegate> AsWeakPtr() override;
 
@@ -155,6 +157,10 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   bool get_disconnect_cloud_authenticator_called() const {
     return disconnect_cloud_authenticator_called_;
+  }
+
+  bool get_delete_all_password_manager_data_called() const {
+    return delete_all_password_manager_data_called_;
   }
 
  protected:
@@ -222,6 +228,9 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   // Used to track whether `DisconnectCloudAuthenticator` was called.
   bool disconnect_cloud_authenticator_called_ = false;
+
+  // Used to track whether `DeleteAllPasswordManagerData` was called.
+  bool delete_all_password_manager_data_called_ = false;
 
   base::WeakPtrFactory<TestPasswordsPrivateDelegate> weak_ptr_factory_{this};
 };

@@ -171,6 +171,10 @@ class PasswordsPrivateApiTest : public ExtensionApiTest {
     return test_delegate_->get_disconnect_cloud_authenticator_called();
   }
 
+  bool get_delete_all_password_manager_data_called() const {
+    return test_delegate_->get_delete_all_password_manager_data_called();
+  }
+
  private:
   scoped_refptr<TestPasswordsPrivateDelegate> test_delegate_;
 };
@@ -455,6 +459,10 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, DisconnectCloudAuthenticator) {
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest,
                        IsConnectedToCloudAuthenticator) {
   EXPECT_TRUE(RunPasswordsSubtest("isConnectedToCloudAuthenticator"));
+}
+
+IN_PROC_BROWSER_TEST_F(PasswordsPrivateApiTest, DeleteAllPasswordManagerData) {
+  EXPECT_TRUE(RunPasswordsSubtest("deleteAllPasswordManagerData"));
 }
 
 }  // namespace extensions

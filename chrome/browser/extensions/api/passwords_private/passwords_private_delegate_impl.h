@@ -142,6 +142,8 @@ class PasswordsPrivateDelegateImpl
       base::OnceCallback<void(bool)> success_callback) override;
   bool IsConnectedToCloudAuthenticator(
       content::WebContents* web_contents) override;
+  void DeleteAllPasswordManagerData(
+      base::OnceCallback<void(bool)> success_callback) override;
 
   base::WeakPtr<PasswordsPrivateDelegate> AsWeakPtr() override;
 

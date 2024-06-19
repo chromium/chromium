@@ -398,6 +398,11 @@ export interface PasswordManagerProxy {
    * (Passkeys Enclave).
    */
   isConnectedToCloudAuthenticator(): Promise<boolean>;
+
+  /**
+   * Deletes all password manager data (passwords, passkeys, etc.)
+   */
+  deleteAllPasswordManagerData(): Promise<boolean>;
 }
 
 /**
@@ -641,6 +646,10 @@ export class PasswordManagerImpl implements PasswordManagerProxy {
 
   isConnectedToCloudAuthenticator() {
     return chrome.passwordsPrivate.isConnectedToCloudAuthenticator();
+  }
+
+  deleteAllPasswordManagerData() {
+    return chrome.passwordsPrivate.deleteAllPasswordManagerData();
   }
 
   static getInstance(): PasswordManagerProxy {

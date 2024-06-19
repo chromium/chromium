@@ -1027,6 +1027,13 @@ bool PasswordsPrivateDelegateImpl::IsConnectedToCloudAuthenticator(
   return enclave_manager->is_registered();
 }
 
+void PasswordsPrivateDelegateImpl::DeleteAllPasswordManagerData(
+    base::OnceCallback<void(bool)> success_callback) {
+  // TODO(crbug.com/342366264): Add delete all passwords method to
+  // SavedPasswordsPresenter and call `success_callback` only on completion.
+  std::move(success_callback).Run(true);
+}
+
 base::WeakPtr<PasswordsPrivateDelegate>
 PasswordsPrivateDelegateImpl::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();

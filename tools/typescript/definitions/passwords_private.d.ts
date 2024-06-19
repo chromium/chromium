@@ -236,6 +236,7 @@ declare global {
       export function isPasswordManagerPinAvailable(): Promise<boolean>;
       export function disconnectCloudAuthenticator(): Promise<boolean>;
       export function isConnectedToCloudAuthenticator(): Promise<boolean>;
+      export function deleteAllPasswordManagerData(): Promise<boolean>;
 
       export const onSavedPasswordsListChanged:
           ChromeEvent<(entries: PasswordUiEntry[]) => void>;

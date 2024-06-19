@@ -4,13 +4,22 @@
 
 import 'chrome://password-manager/password_manager.js';
 
-import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {PasswordManagerImpl} from 'chrome://password-manager/password_manager.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 
+import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
+
 suite('FullDataResetTest', function() {
+  let passwordManager: TestPasswordManagerProxy;
+
+
   setup(function() {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    passwordManager = new TestPasswordManagerProxy();
+    PasswordManagerImpl.setInstance(passwordManager);
+    passwordManager.data.deleteAllPasswordManagerData = true;
   });
 
   test('confirmation dialog is closed by default', async function() {
@@ -49,11 +58,14 @@ suite('FullDataResetTest', function() {
     flush();
     assertTrue(dataReset.$.dialog.open);
 
-    // Should close the dialog.
+    // Should close the dialog and trigger passwordsPrivate call.
     assertTrue(isVisible(dataReset.$.confirmButton));
     dataReset.$.confirmButton.click();
+
+    await passwordManager.whenCalled('deleteAllPasswordManagerData');
     flush();
 
+    assertTrue(dataReset.$.successToast.open);
     assertFalse(dataReset.$.dialog.open);
   });
 });
