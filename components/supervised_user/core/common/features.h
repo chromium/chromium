@@ -61,6 +61,10 @@ BASE_DECLARE_FEATURE(kCustomWebSignInInterceptForSupervisedUsers);
 BASE_DECLARE_FEATURE(kHideGuestModeForSupervisedUsers);
 #endif
 
+// Force enable SafeSearch for a supervised profile with an
+// unauthenticated (e.g. signed out of the content area) account.
+BASE_DECLARE_FEATURE(kForceSafeSearchForUnauthenticatedSupervisedUsers);
+
 // Fallback to sending un-credentialed filtering requests for supervised users
 // if they do not have a valid access token.
 BASE_DECLARE_FEATURE(kUncredentialedFilteringFallbackForSupervisedUsers);

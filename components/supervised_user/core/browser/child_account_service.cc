@@ -17,6 +17,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -26,6 +27,7 @@
 #include "components/supervised_user/core/browser/permission_request_creator_impl.h"
 #include "components/supervised_user/core/browser/proto/families_common.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher.h"
+#include "components/supervised_user/core/browser/supervised_user_capabilities.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
@@ -80,6 +82,7 @@ void ChildAccountService::Init() {
 
   if (!primary_account_info.IsEmpty()) {
     OnExtendedAccountInfoUpdated(primary_account_info);
+    UpdateForceGoogleSafeSearch();
   }
 }
 
@@ -178,6 +181,27 @@ void ChildAccountService::OnPrimaryAccountChanged(
   }
 }
 
+void ChildAccountService::UpdateForceGoogleSafeSearch() {
+  if (!base::FeatureList::IsEnabled(
+          supervised_user::kForceSafeSearchForUnauthenticatedSupervisedUsers)) {
+    return;
+  }
+  bool is_subject_to_parental_controls =
+      IsPrimaryAccountSubjectToParentalControls(identity_manager_) ==
+      signin::Tribool::kTrue;
+
+  // Supervised users who are signed in to Chrome and to the content area will
+  // have account-level SafeSearch configuration applied based on their parent's
+  // choices, and this setting should not be overridden.
+  // Therefore, we only force SafeSearch on for an unauthenticated and
+  // supervised primary account as a safe default.
+  bool should_force_google_safe_search =
+      (is_subject_to_parental_controls &&
+       GetGoogleAuthState() != AuthState::AUTHENTICATED);
+  user_prefs_->SetBoolean(policy::policy_prefs::kForceGoogleSafeSearch,
+                          should_force_google_safe_search);
+}
+
 void ChildAccountService::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
   // This method may get called when the account info isn't complete yet.
@@ -209,6 +233,7 @@ void ChildAccountService::OnExtendedAccountInfoRemoved(
 void ChildAccountService::OnAccountsInCookieUpdated(
     const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
     const GoogleServiceAuthError& error) {
+  UpdateForceGoogleSafeSearch();
   google_auth_state_observers_.Notify();
 }
 

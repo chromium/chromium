@@ -859,6 +859,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterStringPref(prefs::kBrowserStateStorageIdentifier,
                                std::string());
+
+  registry->RegisterBooleanPref(policy::policy_prefs::kForceGoogleSafeSearch,
+                                false);
 }
 
 // This method should be periodically pruned of year+ old migrations.

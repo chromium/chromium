@@ -13,8 +13,11 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/list_accounts_test_utils.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
@@ -25,13 +28,19 @@
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
+#include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
+#include "components/supervised_user/test_support/supervised_user_signin_test_utils.h"
 #include "components/supervised_user/test_support/supervised_user_url_filter_test_utils.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+namespace {
+const char kEmail[] = "me@example.com";
+}  // namespace
 
 namespace supervised_user {
 
@@ -67,7 +76,10 @@ class ChildAccountServiceTest : public ::testing::Test {
             test_signin_client_.get());
 
     settings_service_.Init(syncable_pref_service_.user_prefs_store());
-    supervised_user::RegisterProfilePrefs(syncable_pref_service_.registry());
+    PrefRegistrySimple* registry = syncable_pref_service_.registry();
+    supervised_user::RegisterProfilePrefs(registry);
+    registry->RegisterBooleanPref(policy::policy_prefs::kForceGoogleSafeSearch,
+                                  false);
 
     // Set the user to be supervised.
     supervised_user::EnableParentalControls(GetUserPerferences());
@@ -120,6 +132,14 @@ class ChildAccountServiceTest : public ::testing::Test {
   }
 
   PrefService& GetUserPerferences() { return syncable_pref_service_; }
+
+  void SetListAccountsResponseAndTriggerCookieJarUpdate(
+      const signin::CookieParams& params) {
+    signin::SetListAccountsResponseOneAccountWithParams(
+        params, GetTestURLLoaderFactory());
+    GetAccountsCookieMutator()->TriggerCookieJarUpdate();
+    base::RunLoop().RunUntilIdle();
+  }
 
   base::test::TaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -208,6 +228,59 @@ TEST_F(ChildAccountServiceTest, CreatePermissionCreatorOnSetActive) {
   // Re-activate the Child Account service.
   EXPECT_CALL(permission_creator_callback_, Run()).Times(1);
   supervised_user::EnableParentalControls(GetUserPerferences());
+}
+
+// Tests that SafeSearch is correctly enforced for a supervised profile.
+TEST_F(ChildAccountServiceTest, UpdateForceGoogleSafeSearch) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      supervised_user::kForceSafeSearchForUnauthenticatedSupervisedUsers);
+
+  ASSERT_FALSE(GetUserPerferences().GetBoolean(
+      policy::policy_prefs::kForceGoogleSafeSearch));
+
+  // SafeSearch should not be forced for signed-out unsupervised users.
+  SetListAccountsResponseAndTriggerCookieJarUpdate({kEmail,
+                                                    /*gaia_id=*/"abcdef",
+                                                    /*valid=*/true,
+                                                    /*signed_out=*/true,
+                                                    /*verified=*/true});
+  EXPECT_FALSE(GetUserPerferences().GetBoolean(
+      policy::policy_prefs::kForceGoogleSafeSearch));
+
+  // Add supervised account to the identity manager.
+  AccountInfo account = identity_test_environment_->MakePrimaryAccountAvailable(
+      kEmail, signin::ConsentLevel::kSignin);
+  supervised_user::UpdateSupervisionStatusForAccount(
+      account, identity_test_environment_->identity_manager(),
+      /*is_subject_to_parental_controls=*/true);
+
+  // SafeSearch should be forced for unauthenticated supervised users.
+  SetListAccountsResponseAndTriggerCookieJarUpdate({kEmail,
+                                                    /*gaia_id=*/"abcdef",
+                                                    /*valid=*/true,
+                                                    /*signed_out=*/true,
+                                                    /*verified=*/true});
+  EXPECT_TRUE(GetUserPerferences().GetBoolean(
+      policy::policy_prefs::kForceGoogleSafeSearch));
+
+  // SafeSearch should be forced for an invalid signed-in supervised account.
+  SetListAccountsResponseAndTriggerCookieJarUpdate({kEmail,
+                                                    /*gaia_id=*/"abcdef",
+                                                    /*valid=*/false,
+                                                    /*signed_out=*/false,
+                                                    /*verified=*/true});
+  EXPECT_TRUE(GetUserPerferences().GetBoolean(
+      policy::policy_prefs::kForceGoogleSafeSearch));
+
+  // SafeSearch should not be forced for a valid signed-in supervised account.
+  SetListAccountsResponseAndTriggerCookieJarUpdate({kEmail,
+                                                    /*gaia_id=*/"abcdef",
+                                                    /*valid=*/true,
+                                                    /*signed_out=*/false,
+                                                    /*verified=*/true});
+  EXPECT_FALSE(GetUserPerferences().GetBoolean(
+      policy::policy_prefs::kForceGoogleSafeSearch));
 }
 
 }  // namespace supervised_user

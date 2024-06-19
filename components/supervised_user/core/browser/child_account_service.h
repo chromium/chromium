@@ -87,6 +87,9 @@ class ChildAccountService : public KeyedService,
   void SetSupervisionStatusAndNotifyObservers(
       bool is_subject_to_parental_controls);
 
+  // Updates whether Google SafeSearch should be forced.
+  void UpdateForceGoogleSafeSearch();
+
   // signin::IdentityManager::Observer implementation.
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;

@@ -101,6 +101,10 @@ BASE_FEATURE(kHideGuestModeForSupervisedUsers,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+BASE_FEATURE(kForceSafeSearchForUnauthenticatedSupervisedUsers,
+             "ForceSafeSearchForUnauthenticatedSupervisedUsers",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kUncredentialedFilteringFallbackForSupervisedUsers,
              "UncredentialedFilteringFallbackForSupervisedUsers",
              base::FEATURE_DISABLED_BY_DEFAULT);
