@@ -144,12 +144,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.DidDestroyProfileBeforeShutdown" enum="Boolean"
-    expires_after="2023-10-11">
+    expires_after="2024-12-30">
   <owner>nicolaso@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
     Whether any profile reached a refcount of 0 at any point, prior to exiting
     Chrome. Recorded during teardown.
+
+    Warning: this histogram was expired from 2023-10-11 to 2024-06-18; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -236,7 +239,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.KeepAliveLeakAtShutdown" enum="ProfileKeepAliveOrigin"
-    expires_after="2024-04-28">
+    expires_after="2024-12-30">
   <owner>nicolaso@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
@@ -246,6 +249,9 @@ chromium-metrics-reviews@google.com.
 
     Only regular Profiles are considered for this metric (no Incognito, Guest,
     or System Profiles).
+
+    Warning: this histogram was expired from 2024-04-28 to 2024-06-18; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -303,7 +309,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.LiveProfileCount" units="profiles"
-    expires_after="2023-10-11">
+    expires_after="2024-12-30">
   <owner>nicolaso@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
@@ -314,6 +320,9 @@ chromium-metrics-reviews@google.com.
 
     See also Profile.ZombieProfileCount, the number of Profiles with a refcount
     of 0.
+
+    Warning: this histogram was expired 2023-10-11 to 2024-06-18; data may be
+    missing.
   </summary>
 </histogram>
 
@@ -338,7 +347,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.NukeFromDisk.Result" enum="NukeProfileResult"
-    expires_after="2024-04-28">
+    expires_after="2024-12-30">
   <owner>nicolaso@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
@@ -348,6 +357,9 @@ chromium-metrics-reviews@google.com.
 
     If the operation fails, it may be retried (up to 3 times). Each try is
     tracked as a separate enum value.
+
+    Warning: this histogram was expired 2024-04-28 to 2024-06-18; data may be
+    missing.
   </summary>
 </histogram>
 
@@ -585,7 +597,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.ZombieProfileCount" units="profiles"
-    expires_after="2024-06-30">
+    expires_after="2024-12-30">
   <owner>nicolaso@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
