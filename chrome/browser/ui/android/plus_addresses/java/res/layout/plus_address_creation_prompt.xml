@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Copyright 2023 The Chromium Authors
+Copyright 2024 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
@@ -12,19 +12,32 @@ found in the LICENSE file.
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingHorizontal="@dimen/dialog_padding_sides"
-        android:paddingVertical="12dp">
+        android:paddingHorizontal="@dimen/dialog_padding_sides">
+
+  <ImageView
+        android:id="@+id/drag_handlebar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="@dimen/list_item_default_margin"
+        android:importantForAccessibility="no"
+        app:srcCompat="@drawable/drag_handlebar" />
 
   <ImageView
       android:id="@+id/plus_address_logo"
-      android:layout_width="wrap_content"
+      android:layout_width="36dp"
       android:layout_height="wrap_content"
       android:layout_gravity="center_horizontal"
       android:layout_marginBottom="@dimen/list_item_default_margin"
-      android:src="@drawable/plus_addresses_logo"
+      android:src="@drawable/ic_logo_googleg_20dp"
+      app:tint="@color/plus_address_google_logo_tint_color"
+      android:tintMode="src_atop"
       android:importantForAccessibility="no"
       android:adjustViewBounds="true"
-      android:maxWidth="75dp" />
+      android:scaleType="fitXY" />
 
   <TextView
       android:id="@+id/plus_address_notice_title"
@@ -42,14 +55,52 @@ found in the LICENSE file.
       android:layout_marginBottom="@dimen/list_item_default_margin"
       android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
 
-  <TextView
-      android:id="@+id/proposed_plus_address"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:textAlignment="center"
-      android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
-      android:background="@drawable/rounded_rectangle_surface_1"
-      android:paddingVertical="10dp" />
+  <LinearLayout
+    android:id="@+id/proposed_plus_address_container"
+    android:descendantFocusability="blocksDescendants"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:padding="16dp"
+    android:background="@drawable/proposed_plus_address_background">
+
+    <ImageView
+        android:id="@+id/proposed_plus_address_logo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:src="@drawable/ic_plus_addresses_logo_24dp"
+        app:tint="@macro/default_icon_color"
+        android:tintMode="src_in"
+        android:importantForAccessibility="no"
+        android:layout_gravity="center_vertical"
+        android:layout_marginEnd="16dp"/>
+
+    <TextView
+        android:id="@+id/proposed_plus_address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+
+    <ImageView
+        android:id="@+id/refresh_plus_address_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_weight="0"
+        android:src="@drawable/ic_refresh_white_24dp"
+        android:contentDescription="@string/plus_address_model_refresh_button_accessible_name_android"
+        app:tint="@macro/default_icon_color_accent1"
+        android:tintMode="src_in"
+        android:layout_gravity="center_vertical"
+        android:layout_marginStart="16dp"
+        android:visibility="gone"/>
+
+</LinearLayout>
 
   <org.chromium.ui.widget.TextViewWithClickableSpans
       android:id="@+id/plus_address_modal_error_report"
@@ -68,17 +119,7 @@ found in the LICENSE file.
       android:layout_height="wrap_content"
       android:textAlignment="center"
       android:layout_marginTop="@dimen/autofill_bottom_sheet_confirm_button_top_margin"
-      android:minHeight="@dimen/min_touch_target_size"
-      android:minWidth="@dimen/min_touch_target_size" />
-
-  <org.chromium.ui.widget.ButtonCompat
-      android:id="@+id/plus_address_cancel_button"
-      style="@style/TextButton"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:textAlignment="center"
-      android:layout_marginTop="@dimen/autofill_bottom_sheet_spacing_extra_small"
-      android:layout_marginBottom="@dimen/autofill_bottom_sheet_spacing_extra_small"
+      android:layout_marginBottom="@dimen/list_item_default_margin"
       android:minHeight="@dimen/min_touch_target_size"
       android:minWidth="@dimen/min_touch_target_size" />
 

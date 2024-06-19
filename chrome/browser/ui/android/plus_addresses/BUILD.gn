@@ -35,7 +35,6 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/proposed_plus_address_background.xml",
     "java/res/layout/plus_address_creation_prompt.xml",
-    "java/res/layout/plus_address_creation_prompt_v2.xml",
     "java/res/values-night/colors.xml",
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",

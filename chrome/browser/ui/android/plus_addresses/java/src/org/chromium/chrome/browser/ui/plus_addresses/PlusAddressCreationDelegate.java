@@ -14,8 +14,6 @@ public interface PlusAddressCreationDelegate {
 
     public void onConfirmFinished();
 
-    public void onCanceled();
-
     public void onPromptDismissed();
 
     public void openUrl(GURL url);

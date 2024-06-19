@@ -113,13 +113,6 @@ import org.chromium.url.GURL;
     }
 
     @Override
-    public void onCanceled() {
-        mBottomSheetController.hideContent(
-                mBottomSheetContent, /* animate= */ true, StateChangeReason.INTERACTION_COMPLETE);
-        mBridge.onCanceled();
-    }
-
-    @Override
     public void onPromptDismissed() {
         mBridge.onPromptDismissed();
     }

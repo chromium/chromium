@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.graphics.Typeface;
 import android.text.SpannableString;
 import android.text.method.LinkMovementMethod;
-import android.text.style.TextAppearanceSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +17,6 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.ui.text.NoUnderlineClickableSpan;
 import org.chromium.ui.text.SpanApplier;
@@ -48,19 +46,12 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
             String plusAddressDescription,
             String proposedPlusAddressPlaceholder,
             String plusAddressModalOkText,
-            String plusAddressModalCancelText,
             String errorReportInstruction,
-            GURL manageUrl,
             GURL errorReportUrl,
             boolean refreshSupported) {
         View layout =
                 LayoutInflater.from(activity)
-                        .inflate(
-                                ChromeFeatureList.isEnabled(
-                                                ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN)
-                                        ? R.layout.plus_address_creation_prompt_v2
-                                        : R.layout.plus_address_creation_prompt,
-                                /* root= */ null);
+                        .inflate(R.layout.plus_address_creation_prompt, /* root= */ null);
         assert (layout instanceof ViewGroup) : "layout is not a ViewGroup!";
         mContentView = (ViewGroup) layout;
         mLoadingView = new LoadingView(activity);
@@ -78,26 +69,7 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
 
         TextViewWithClickableSpans plusAddressDescriptionView =
                 mContentView.findViewById(R.id.plus_address_modal_explanation);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN)) {
-            plusAddressDescriptionView.setText(plusAddressDescription);
-        } else {
-            NoUnderlineClickableSpan settingsLink =
-                    new NoUnderlineClickableSpan(
-                            activity,
-                            v -> {
-                                mDelegate.openUrl(manageUrl);
-                            });
-            TextAppearanceSpan boldText =
-                    new TextAppearanceSpan(
-                            activity, R.style.TextAppearance_TextMediumThick_Secondary);
-            SpannableString spannableString =
-                    SpanApplier.applySpans(
-                            plusAddressDescription,
-                            new SpanApplier.SpanInfo("<link>", "</link>", settingsLink),
-                            new SpanApplier.SpanInfo("<b>", "</b>", boldText));
-            plusAddressDescriptionView.setText(spannableString);
-            plusAddressDescriptionView.setMovementMethod(LinkMovementMethod.getInstance());
-        }
+        plusAddressDescriptionView.setText(plusAddressDescription);
 
         mProposedPlusAddress.setText(proposedPlusAddressPlaceholder);
 
@@ -125,27 +97,20 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
                     mDelegate.onConfirmRequested();
                 });
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN)) {
-            mProposedPlusAddress.setTypeface(Typeface.MONOSPACE);
-            if (refreshSupported) {
-                mRefreshIcon.setVisibility(View.VISIBLE);
-                mRefreshIcon.setOnClickListener(
-                        v -> {
-                            if (mPlusAddressConfirmButton.isEnabled()) {
-                                mPlusAddressConfirmButton.setEnabled(false);
+        mProposedPlusAddress.setTypeface(Typeface.MONOSPACE);
+        if (refreshSupported) {
+            mRefreshIcon.setVisibility(View.VISIBLE);
+            mRefreshIcon.setOnClickListener(
+                    v -> {
+                        if (mPlusAddressConfirmButton.isEnabled()) {
+                            mPlusAddressConfirmButton.setEnabled(false);
 
-                                mProposedPlusAddress.setText(
-                                        R.string
-                                                .plus_address_model_refresh_temporary_label_content_android);
-                                mDelegate.onRefreshClicked();
-                            }
-                        });
-            }
-        } else {
-            Button plusAddressCancelButton =
-                    mContentView.findViewById(R.id.plus_address_cancel_button);
-            plusAddressCancelButton.setText(plusAddressModalCancelText);
-            plusAddressCancelButton.setOnClickListener((View _view) -> mDelegate.onCanceled());
+                            mProposedPlusAddress.setText(
+                                    R.string
+                                            .plus_address_model_refresh_temporary_label_content_android);
+                            mDelegate.onRefreshClicked();
+                        }
+                    });
         }
     }
 
@@ -155,13 +120,7 @@ public class PlusAddressCreationBottomSheetContent implements BottomSheetContent
     }
 
     public void showError() {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN)) {
-            mContentView
-                    .findViewById(R.id.proposed_plus_address_container)
-                    .setVisibility(View.GONE);
-        } else {
-            mProposedPlusAddress.setVisibility(View.GONE);
-        }
+        mContentView.findViewById(R.id.proposed_plus_address_container).setVisibility(View.GONE);
         TextViewWithClickableSpans plusAddressErrorReportView =
                 mContentView.findViewById(R.id.plus_address_modal_error_report);
         plusAddressErrorReportView.setVisibility(View.VISIBLE);

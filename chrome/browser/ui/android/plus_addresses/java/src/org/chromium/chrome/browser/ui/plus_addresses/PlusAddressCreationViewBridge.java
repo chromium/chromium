@@ -64,10 +64,8 @@ public class PlusAddressCreationViewBridge {
                 String plusAddressDescription,
                 String proposedPlusAddressPlaceholder,
                 String plusAddressModalOkText,
-                String plusAddressModalCancelText,
                 String errorReportInstruction,
                 boolean refreshSupported,
-                GURL manageUrl,
                 GURL errorReportUrl);
     }
 
@@ -91,9 +89,7 @@ public class PlusAddressCreationViewBridge {
             String plusAddressDescription,
             String proposedPlusAddressPlaceholder,
             String plusAddressModalOkText,
-            String plusAddressModalCancelText,
             String errorReportInstruction,
-            String manageUrl,
             String errorReportUrl,
             boolean refreshSupported) {
         if (mNativePlusAddressCreationPromptAndroid != 0) {
@@ -109,10 +105,8 @@ public class PlusAddressCreationViewBridge {
                             plusAddressDescription,
                             proposedPlusAddressPlaceholder,
                             plusAddressModalOkText,
-                            plusAddressModalCancelText,
                             errorReportInstruction,
                             refreshSupported,
-                            new GURL(manageUrl),
                             new GURL(errorReportUrl));
             mCoordinator.requestShowContent();
         }

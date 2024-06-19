@@ -21,8 +21,6 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -33,17 +31,13 @@ import org.chromium.url.GURL;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@DisableFeatures({ChromeFeatureList.PLUS_ADDRESS_UI_REDESIGN})
 public class PlusAddressCreationCoordinatorTest {
     private static final String MODAL_TITLE = "lorem ipsum title";
-    private static final String MODAL_PLUS_ADDRESS_DESCRIPTION =
-            "lorem ipsum description <link>test link</link> <b>test bold</b>";
+    private static final String MODAL_PLUS_ADDRESS_DESCRIPTION = "lorem ipsum description";
     private static final String MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER = "placeholder";
     private static final String MODAL_OK = "ok";
-    private static final String MODAL_CANCEL = "cancel";
     private static final String MODAL_PROPOSED_PLUS_ADDRESS = "plus+1@plus.plus";
     private static final String MODAL_ERROR_MESSAGE = "error! <link>test link</link>";
-    private static final GURL MANAGE_URL = new GURL("manage.com");
     private static final GURL ERROR_URL = new GURL("error.com");
     private static final boolean REFRESH_SUPPORTED = true;
 
@@ -74,10 +68,8 @@ public class PlusAddressCreationCoordinatorTest {
                         MODAL_PLUS_ADDRESS_DESCRIPTION,
                         MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER,
                         MODAL_OK,
-                        MODAL_CANCEL,
                         MODAL_ERROR_MESSAGE,
                         REFRESH_SUPPORTED,
-                        MANAGE_URL,
                         ERROR_URL);
         mCoordinator.setMediatorForTesting(mMediator);
     }

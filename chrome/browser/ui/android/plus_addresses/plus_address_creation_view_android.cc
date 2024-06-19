@@ -57,65 +57,35 @@ void PlusAddressCreationViewAndroid::ShowInit(
 
   // TODO(b/303054310): Once project exigencies allow for it, convert all of
   // these back to the android view XML.
-  ScopedJavaLocalRef<jstring> j_title;
-  ScopedJavaLocalRef<jstring> j_formatted_description;
-  ScopedJavaLocalRef<jstring> j_proposed_plus_address_placeholder;
-  ScopedJavaLocalRef<jstring> j_plus_address_modal_ok;
-  ScopedJavaLocalRef<jstring> j_plus_address_modal_cancel;
-  ScopedJavaLocalRef<jstring> j_error_report_instruction;
+  ScopedJavaLocalRef<jstring> j_title = ConvertUTF16ToJavaString(
+      env,
+      l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_ANDROID));
+  ScopedJavaLocalRef<jstring> j_formatted_description = ConvertUTF8ToJavaString(
+      env, l10n_util::GetStringFUTF8(
+               IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_ANDROID,
+               base::UTF8ToUTF16(primary_email_address)));
+  ScopedJavaLocalRef<jstring> j_proposed_plus_address_placeholder =
+      ConvertUTF16ToJavaString(
+          env,
+          l10n_util::GetStringUTF16(
+              IDS_PLUS_ADDRESS_BOTTOMSHEET_PROPOSED_PLUS_ADDRESS_PLACEHOLDER_ANDROID));
+  ScopedJavaLocalRef<jstring> j_plus_address_modal_ok =
+      ConvertUTF16ToJavaString(
+          env, l10n_util::GetStringUTF16(
+                   IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_ANDROID));
+  ScopedJavaLocalRef<jstring> j_error_report_instruction =
+      ConvertUTF16ToJavaString(
+          env,
+          l10n_util::GetStringUTF16(
+              IDS_PLUS_ADDRESS_BOTTOMSHEET_REPORT_ERROR_INSTRUCTION_ANDROID));
 
-  if (base::FeatureList::IsEnabled(features::kPlusAddressUIRedesign)) {
-    j_title = ConvertUTF16ToJavaString(
-        env,
-        l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_BOTTOMSHEET_TITLE_ANDROID));
-    j_formatted_description = ConvertUTF8ToJavaString(
-        env, l10n_util::GetStringFUTF8(
-                 IDS_PLUS_ADDRESS_BOTTOMSHEET_DESCRIPTION_ANDROID,
-                 base::UTF8ToUTF16(primary_email_address)));
-    j_proposed_plus_address_placeholder = ConvertUTF16ToJavaString(
-        env,
-        l10n_util::GetStringUTF16(
-            IDS_PLUS_ADDRESS_BOTTOMSHEET_PROPOSED_PLUS_ADDRESS_PLACEHOLDER_ANDROID));
-    j_plus_address_modal_ok = ConvertUTF16ToJavaString(
-        env, l10n_util::GetStringUTF16(
-                 IDS_PLUS_ADDRESS_BOTTOMSHEET_OK_TEXT_ANDROID));
-    j_plus_address_modal_cancel = ConvertUTF16ToJavaString(
-        env, l10n_util::GetStringUTF16(
-                 IDS_PLUS_ADDRESS_BOTTOMSHEET_CANCEL_TEXT_ANDROID));
-    j_error_report_instruction = ConvertUTF16ToJavaString(
-        env,
-        l10n_util::GetStringUTF16(
-            IDS_PLUS_ADDRESS_BOTTOMSHEET_REPORT_ERROR_INSTRUCTION_ANDROID));
-  } else {
-    j_title = ConvertUTF16ToJavaString(
-        env, l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_TITLE));
-    j_formatted_description = ConvertUTF8ToJavaString(
-        env, l10n_util::GetStringFUTF8(
-                 IDS_PLUS_ADDRESS_MODAL_PLUS_ADDRESS_DESCRIPTION_V2,
-                 base::UTF8ToUTF16(primary_email_address)));
-    j_proposed_plus_address_placeholder = ConvertUTF16ToJavaString(
-        env, l10n_util::GetStringUTF16(
-                 IDS_PLUS_ADDRESS_MODAL_PROPOSED_PLUS_ADDRESS_PLACEHOLDER));
-    j_plus_address_modal_ok = ConvertUTF16ToJavaString(
-        env, l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_OK_TEXT));
-    j_plus_address_modal_cancel = ConvertUTF16ToJavaString(
-        env, l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CANCEL_TEXT));
-    j_error_report_instruction = ConvertUTF16ToJavaString(
-        env, l10n_util::GetStringUTF16(
-                 IDS_PLUS_ADDRESS_MODAL_REPORT_ERROR_INSTRUCTION_V2));
-  }
-
-  ScopedJavaLocalRef<jstring> j_manage_url =
-      base::android::ConvertUTF8ToJavaString(
-          env, features::kPlusAddressManagementUrl.Get());
   ScopedJavaLocalRef<jstring> j_error_report_url =
       base::android::ConvertUTF8ToJavaString(
           env, features::kPlusAddressErrorReportUrl.Get());
   Java_PlusAddressCreationViewBridge_show(
       env, java_object_, j_title, j_formatted_description,
       j_proposed_plus_address_placeholder, j_plus_address_modal_ok,
-      j_plus_address_modal_cancel, j_error_report_instruction, j_manage_url,
-      j_error_report_url, refresh_supported);
+      j_error_report_instruction, j_error_report_url, refresh_supported);
 }
 
 void PlusAddressCreationViewAndroid::OnRefreshClicked(

@@ -128,18 +128,6 @@ public final class PlusAddressCreationMediatorTest {
     }
 
     @Test
-    public void testDidClickCancel_hidesBottomSheetAndCallsOnCanceled() {
-        mMediator.onCanceled();
-
-        verify(mBottomSheetController)
-                .hideContent(
-                        mBottomSheetContent,
-                        /* animate= */ true,
-                        StateChangeReason.INTERACTION_COMPLETE);
-        verify(mBridge).onCanceled();
-    }
-
-    @Test
     public void testOnSheetClosed_callsBridgeOnPrompDismissed() {
         mMediator.onSheetClosed(StateChangeReason.BACK_PRESS);
 
