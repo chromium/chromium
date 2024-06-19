@@ -18,6 +18,10 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
+namespace media {
+class VideoFrame;
+}  // namespace media
+
 namespace gpu {
 
 class ClientSharedImageInterface;
@@ -205,6 +209,7 @@ class GPU_EXPORT ClientSharedImage
   // `sii_holder` must not be null.
   friend class ClientSharedImageInterface;
   friend class TestSharedImageInterface;
+  friend class media::VideoFrame;
   ClientSharedImage(const Mailbox& mailbox,
                     const SharedImageMetadata& metadata,
                     const SyncToken& sync_token,
@@ -218,6 +223,16 @@ class GPU_EXPORT ClientSharedImage
                     const SharedImageMetadata& metadata,
                     const SyncToken& sync_token,
                     uint32_t texture_target);
+
+  // VideoFrame needs this info currently for MappableSI.
+  // TODO(crbug.com/40263579): Once MappableSI is fully launched for VideoFrame,
+  // VF can be refactored to behave like OPAQUE storage which does not need
+  // layout info and hence stride. This method will then no longer needed and
+  // can be removed.
+  size_t GetStrideForVideoFrame(uint32_t plane_index) const {
+    CHECK(gpu_memory_buffer_);
+    return gpu_memory_buffer_->stride(plane_index);
+  }
 
   const Mailbox mailbox_;
   const SharedImageMetadata metadata_;
