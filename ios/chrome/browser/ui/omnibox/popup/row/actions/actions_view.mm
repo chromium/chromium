@@ -213,7 +213,7 @@ const CGFloat kLeadingPadding = 61;
     UIBackgroundConfiguration* backgroundConfig =
         [UIBackgroundConfiguration clearConfiguration];
     backgroundConfig.backgroundColor =
-        [UIColor colorNamed:kFaviconBackgroundColor];
+        [UIColor colorNamed:kTertiaryBackgroundColor];
     configuration.background = backgroundConfig;
   }
 
