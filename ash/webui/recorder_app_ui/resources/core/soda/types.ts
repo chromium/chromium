@@ -17,6 +17,7 @@ export type TimeDelta = Infer<typeof timeDeltaSchema>;
 export const hypothesisPartSchema = z.object({
   text: z.array(z.string()),
   alignment: z.nullable(timeDeltaSchema),
+  leadingSpace: z.nullable(z.boolean()),
 });
 
 export type HypothesisPart = Infer<typeof hypothesisPartSchema>;

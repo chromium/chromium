@@ -144,6 +144,7 @@ class SodaSessionDev implements SodaSession {
               .map((w, i) => ({
                      text: [w],
                      alignment: timeDelta(i * WORD_INTERVAL_MS),
+                     leadingSpace: true,
                    }));
       this.observers.notify({
         finalResult: {

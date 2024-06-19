@@ -24,6 +24,7 @@ export const textPartSchema = z.object({
   kind: z.literal('textPart'),
   text: z.string(),
   timeRange: z.nullable(timeRangeSchema),
+  leadingSpace: z.nullable(z.boolean()),
 });
 
 export type TextPart = Infer<typeof textPartSchema>;
@@ -94,6 +95,7 @@ function flattenEvent(ev: FinalResult): TextPart[] {
       kind: 'textPart',
       text: assertExists(part.text[0]),
       timeRange,
+      leadingSpace: part.leadingSpace,
     });
   }
   return result;
@@ -119,6 +121,7 @@ export class SodaEventTransformer {
         kind: 'textPart',
         text: assertExists(this.partialResult.partialText[0]),
         timeRange: parseTimingInfo(this.partialResult.timingEvent),
+        leadingSpace: true,
       });
     }
     return ret;
@@ -166,11 +169,10 @@ export function concatTextTokens(textTokens: TextToken[]): string {
     if (token.kind === 'textSeparator') {
       continue;
     }
+    if (token.leadingSpace ?? true) {
+      ret.push(' ');
+    }
     ret.push(token.text);
   }
-  // TODO: b/336919719 - This assumes that tokens are always separated by space,
-  // which is not always true (especially for non en-US language). But the
-  // "leadingSpace" property that is returned by soda isn't included in the
-  // mojo interface for now.
-  return ret.join(' ');
+  return ret.join('');
 }

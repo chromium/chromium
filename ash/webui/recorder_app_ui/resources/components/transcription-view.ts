@@ -290,13 +290,14 @@ export class TranscriptionView extends ReactiveLitElement {
                 this.currentTime >= part.timeRange.startMs / 1000 &&
                 this.currentTime < part.timeRange.endMs / 1000);
           })();
-          // TODO: b/336919719 - Use the leadingSpace field instead of always
-          // having a space.
-          const leadingSpace = i > 0 ? ' ' : '';
+          // For the first word, the leadingSpace is already added at the
+          // sentence level. Otherwise we follows the leadingSpace for the part
+          // and treat missing field as having a space.
+          const leadingSpace = i === 0 ? false : part?.leadingSpace ?? true;
           if (!highlightWord) {
-            return `${leadingSpace}${part.text}`;
+            return `${leadingSpace ? ' ' : ''}${part.text}`;
           }
-          return html`${leadingSpace}<span class="highlight-word"
+          return html`${leadingSpace ? ' ' : ''}<span class="highlight-word"
             >${part.text}</span
           >`;
         },
@@ -312,10 +313,10 @@ export class TranscriptionView extends ReactiveLitElement {
         sentences,
         (_v, i) => i,
         (sentence, i) => {
-          // TODO: b/336919719 - Use the leadingSpace field instead of always
-          // having a space.
-          const leadingSpace = i > 0 ? ' ' : '';
-          return html`${leadingSpace}<span
+          // Use the leadingSpace field for the first word. If the leadingSpace
+          // field is missing, add space after the first sentence.
+          const leadingSpace = sentence[0]?.leadingSpace ?? i > 0;
+          return html`${leadingSpace ? ' ' : ''}<span
             class="sentence"
             data-start-ms=${ifDefined(sentence[0]?.timeRange?.startMs)}
             >${this.renderSentence(sentence)}</span
