@@ -117,8 +117,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // AccountSelectionBubbleView::Observer:
   content::WebContents* ShowModalDialog(const GURL& url) override;
   void CloseModalDialog() override;
-  void FrameSizeChanged(content::RenderFrameHost* render_frame_host,
-                        const gfx::Size& frame_size) override;
+  void PrimaryMainFrameWasResized(bool width_changed) override;
 
  protected:
   friend class FedCmAccountSelectionViewBrowserTest;

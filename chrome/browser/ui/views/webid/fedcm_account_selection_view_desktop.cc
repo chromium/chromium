@@ -1051,11 +1051,7 @@ bool FedCmAccountSelectionView::IsIdpSigninPopupOpen() {
                            state_ == State::MULTI_ACCOUNT_PICKER);
 }
 
-void FedCmAccountSelectionView::FrameSizeChanged(
-    content::RenderFrameHost* render_frame_host,
-    const gfx::Size& frame_size) {
-  // TODO(crbug.com/340368623): Figure out what to do when FrameSizeChanged is
-  // called on the button flow modal.
+void FedCmAccountSelectionView::PrimaryMainFrameWasResized(bool width_changed) {
   if (!GetDialogWidget() || GetDialogType() == DialogType::MODAL) {
     return;
   }
