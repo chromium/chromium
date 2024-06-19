@@ -22,23 +22,18 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
-<variants name="BackendOperationForMigration">
-  <variant name="AddLogin"
-      summary="Calling AddLoginAsync on the backend when migrating passwords
-               between built in and Android backends."/>
-  <variant name="RemoveLogin"
-      summary="Calling RemoveLoginAsync on the backend when migrating
-               passwords between built in and Android backends."/>
-  <variant name="UpdateLogin"
-      summary="Calling UpdateLoginAsync on the backend when migrating
-               passwords between built in and Android backends."/>
-</variants>
-
 <variants name="CustomPassphraseStatus">
   <variant name=""/>
   <variant name=".WithCustomPassphrase"
       summary="encrypted with custom passphrase"/>
   <variant name=".WithoutCustomPassphrase" summary="regularly encrypted"/>
+</variants>
+
+<variants name="MigrationOperation">
+  <variant name="AddLogin"/>
+  <variant name="GetAllLogins"/>
+  <variant name="RemoveLogin"/>
+  <variant name="UpdateLogin"/>
 </variants>
 
 <variants name="PasswordCheckupOperation">
@@ -3833,6 +3828,23 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PasswordManager.UnifiedPasswordManager.{UPMMigrationType}.AndroidBackend.{MigrationOperation}.APIError"
+    enum="PasswordStoreAndroidBackendAPIError" expires_after="2024-10-06">
+  <owner>vsemeniuk@google.com</owner>
+  <owner>ioanap@chromium.org</owner>
+  <summary>
+    Records the API error received when performing {MigrationOperation} on the
+    AndroidBacked as part of {UPMMigrationType}. Reported immediately after the
+    operation finishes, unless it's a Get operation. For GetAllLogins, the
+    result is only reported after the replies come back fom both backends. Note
+    that the BuiltInBackend doesn't return API Errors so no similar histogram is
+    recorded for it.
+  </summary>
+  <token key="UPMMigrationType" variants="UPMMigrationType"/>
+  <token key="MigrationOperation" variants="MigrationOperation"/>
+</histogram>
+
+<histogram
     name="PasswordManager.UnifiedPasswordManager.{UPMMigrationType}.Latency"
     units="ms" expires_after="2024-11-17">
   <owner>vsemeniuk@google.com</owner>
@@ -3887,20 +3899,22 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PasswordManager.UnifiedPasswordManager.{UPMMigrationType}.{BackendOperationForMigration}.Success"
+    name="PasswordManager.UnifiedPasswordManager.{UPMMigrationType}.{BackendType}.{MigrationOperation}.Success"
     enum="BooleanSuccess" expires_after="2024-12-08">
   <owner>vsemeniuk@google.com</owner>
   <owner>ioanap@chromium.org</owner>
-  <owner>atsvirchkova@google.com</owner>
   <summary>
-    Records whether {BackendOperationForMigration} finished successfully for the
-    {UPMMigrationType}. The metric is reported when the response for
-    {BackendOperationForMigration} comes back irrespective of the overall
-    migration success.
+    Records whether performing {MigrationOperation} on the {BackendType} as part
+    of {UPMMigrationType} succeeded or not. Reported immediately after the
+    operation finishes, unless it's a Get operation. For GetAllLogins, the
+    result is only reported after the replies come back fom both backends.
   </summary>
   <token key="UPMMigrationType" variants="UPMMigrationType"/>
-  <token key="BackendOperationForMigration"
-      variants="BackendOperationForMigration"/>
+  <token key="BackendType">
+    <variant name="AndroidBackend"/>
+    <variant name="BuiltInBackend"/>
+  </token>
+  <token key="MigrationOperation" variants="MigrationOperation"/>
 </histogram>
 
 <histogram name="PasswordManager.UpdateUIDismissalReason"

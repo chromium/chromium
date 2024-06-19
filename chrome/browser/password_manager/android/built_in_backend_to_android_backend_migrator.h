@@ -56,6 +56,7 @@ class BuiltInBackendToAndroidBackendMigrator {
     kAddLogin,
     kUpdateLogin,
     kRemoveLogin,
+    kGetAllLogins,
   };
 
   // |built_in_backend| and |android_backend| must not be null and must outlive
@@ -143,9 +144,11 @@ class BuiltInBackendToAndroidBackendMigrator {
 
   // If |changelist| is an empty changelist, migration is aborted by calling
   // MigrationFinished() indicating the migration is *not* successful.
-  // Otherwise, |callback| is invoked.
+  // Otherwise, |callback| is invoked. |backend| is used to know on which
+  // backend the operation was performed, for the purpose of recording metrics.
   void RunCallbackOrAbortMigration(
       base::OnceClosure callback,
+      std::string backend_infix,
       BackendOperationForMigration backend_operation,
       PasswordChangesOrError changelist);
 
@@ -160,6 +163,9 @@ class BuiltInBackendToAndroidBackendMigrator {
   void RemoveBlocklistedFormsWithValues(PasswordStoreBackend* backend,
                                         LoginsOrErrorReply result_callback,
                                         LoginsResultOrError logins_or_error);
+
+  // Returns the string to be used in recording metrics for this |backend|.
+  std::string GetMetricInfixFromBackend(PasswordStoreBackend* backend);
 
   const raw_ptr<PasswordStoreBackend> built_in_backend_;
   const raw_ptr<PasswordStoreBackend> android_backend_;

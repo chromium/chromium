@@ -5,6 +5,13 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_PASSWORD_STORE_BACKEND_ERROR_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_STORE_PASSWORD_STORE_BACKEND_ERROR_H_
 
+#include "build/build_config.h"
+#include "build/buildflag.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include <optional>
+#endif
+
 namespace password_manager {
 
 // List of constants describing the types of Android backend errors.
@@ -56,6 +63,13 @@ struct PasswordStoreBackendError {
 
   // Whether the error is considered recoverable or not.
   PasswordStoreBackendErrorRecoveryType recovery_type;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Android API Error.
+  // TODO(crbug.com/342993480) Remove this once UPM migration errors are no
+  // longer needed.
+  std::optional<int> android_backend_api_error;
+#endif
 };
 
 }  // namespace password_manager

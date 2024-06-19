@@ -695,7 +695,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTestWithMockedBackends,
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.UnifiedPasswordManager.InitialMigrationForSyncUsers."
-      "RemoveLogin.Success",
+      "BuiltInBackend.RemoveLogin.Success",
       false, 1);
 }
 
@@ -716,6 +716,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTestWithMockedBackends,
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.UnifiedPasswordManager.InitialMigrationForSyncUsers."
+      "AndroidBackend."
       "UpdateLogin.Success",
       true, 1);
 }
@@ -737,7 +738,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTestWithMockedBackends,
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.UnifiedPasswordManager.InitialMigrationForSyncUsers."
-      "UpdateLogin.Success",
+      "AndroidBackend.UpdateLogin.Success",
       false, 1);
 }
 
@@ -760,7 +761,7 @@ TEST_F(BuiltInBackendToAndroidBackendMigratorTestWithMockedBackends,
 
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.UnifiedPasswordManager.InitialMigrationForSyncUsers."
-      "RemoveLogin.Success",
+      "BuiltInBackend.RemoveLogin.Success",
       true, 1);
 }
 
@@ -960,12 +961,12 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
   migrator()->StartMigrationOfLocalPasswords();
   RunUntilIdle();
 
-  int added_to_anroid_backend_count =
+  int added_to_android_backend_count =
       p.GetMergedLogins().size() - p.GetAndroidLogins().size();
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers."
       "AddLoginCount",
-      added_to_anroid_backend_count, 1);
+      added_to_android_backend_count, 1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers."
       "UpdateLoginCount",
@@ -974,14 +975,16 @@ TEST_P(BuiltInBackendToAndroidBackendMigratorTestWithMigrationParams,
       "PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers."
       "MigratedLoginsTotalCount",
       p.updated_in_android_backend_credentials_count +
-          added_to_anroid_backend_count,
+          added_to_android_backend_count,
       1);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers."
+      "AndroidBackend."
       "AddLogin.Success",
-      true, added_to_anroid_backend_count);
+      true, added_to_android_backend_count);
   histogram_tester.ExpectUniqueSample(
       "PasswordManager.UnifiedPasswordManager.MigrationForLocalUsers."
+      "AndroidBackend."
       "UpdateLogin.Success",
       true, p.updated_in_android_backend_credentials_count);
 }
