@@ -2274,7 +2274,7 @@ TEST_F(BrowserAutofillManagerTest, TestParseFormUntilInteractionMetric) {
   GetAutofillSuggestions(form, form.fields()[0]);
 
   histogram_tester.ExpectUniqueTimeSample(
-      "Autofill.Timing.ParseFormUntilInteraction", time_delta,
+      "Autofill.Timing.ParseFormUntilInteraction2", time_delta,
       /*expected_bucket_count=*/1);
 }
 

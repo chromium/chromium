@@ -1955,7 +1955,8 @@ void AutofillMetrics::LogParseFormTiming(const base::TimeDelta& duration) {
 // static
 void AutofillMetrics::LogParsedFormUntilInteractionTiming(
     const base::TimeDelta& duration) {
-  UMA_HISTOGRAM_TIMES("Autofill.Timing.ParseFormUntilInteraction", duration);
+  base::UmaHistogramLongTimes("Autofill.Timing.ParseFormUntilInteraction2",
+                              duration);
 }
 
 // static
