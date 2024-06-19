@@ -14,13 +14,13 @@ namespace {
 /// The scroll view height.
 const CGFloat kOmniboxPopupActionsHeight = 44;
 ///  Space between buttons.
-const CGFloat kButtonSpace = 5;
+const CGFloat kButtonSpace = 8;
 /// The padding between the button's image and title.
 const CGFloat kButtonTitleImagePadding = 4;
 /// The button's image size.
 const CGFloat kIconSize = 13;
 /// The button's layer radius.
-const CGFloat kButtonLayerRadius = 12;
+const CGFloat kButtonLayerRadius = 15;
 /// Actions leading padding.
 const CGFloat kLeadingPadding = 61;
 }  // namespace
