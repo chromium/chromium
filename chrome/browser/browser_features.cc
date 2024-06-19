@@ -80,21 +80,25 @@ BASE_FEATURE(kDevToolsConsoleInsights,
              base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<std::string> kDevToolsConsoleInsightsAidaScope{
     &kDevToolsConsoleInsights, "aida_scope",
-    /*default*/ "https://www.googleapis.com/auth/aida"};
+    /*default_value=*/"https://www.googleapis.com/auth/aida"};
 const base::FeatureParam<std::string> kDevToolsConsoleInsightsAidaEndpoint{
     &kDevToolsConsoleInsights, "aida_endpoint",
-    /*default*/ "https://aida.googleapis.com/v1/aida:doConversation"};
+    /*default_value=*/"https://aida.googleapis.com/v1/aida:doConversation"};
 const base::FeatureParam<std::string> kDevToolsConsoleInsightsModelId{
-    &kDevToolsConsoleInsights, "aida_model_id", /*default*/ ""};
+    &kDevToolsConsoleInsights, "aida_model_id", /*default_value=*/""};
 const base::FeatureParam<double> kDevToolsConsoleInsightsTemperature{
-    &kDevToolsConsoleInsights, "aida_temperature", /*default*/ 0.2};
+    &kDevToolsConsoleInsights, "aida_temperature", /*default_value=*/0.2};
 const base::FeatureParam<bool> kDevToolsConsoleInsightsOptIn{
-    &kDevToolsConsoleInsights, "opt_in", /*default*/ false};
+    &kDevToolsConsoleInsights, "opt_in", /*default_value=*/false};
 
 // Whether the DevTools styling assistant dogfood is enabled.
 BASE_FEATURE(kDevToolsFreestylerDogfood,
              "DevToolsFreestylerDogfood",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<std::string> kDevToolsFreestylerDogfoodModelId{
+    &kDevToolsFreestylerDogfood, "aida_model_id", /*default_value=*/""};
+const base::FeatureParam<double> kDevToolsFreestylerDogfoodTemperature{
+    &kDevToolsFreestylerDogfood, "aida_temperature", /*default_value=*/0};
 
 // Whether an infobar is shown when the process is shared.
 BASE_FEATURE(kDevToolsSharedProcessInfobar,

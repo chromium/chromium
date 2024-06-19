@@ -1534,6 +1534,10 @@ void DevToolsUIBindings::GetHostConfig(DispatchCallback callback) {
   freestyler_dogfood_dict.Set(
       "enabled",
       base::FeatureList::IsEnabled(::features::kDevToolsFreestylerDogfood));
+  freestyler_dogfood_dict.Set(
+      "aidaModelId", features::kDevToolsFreestylerDogfoodModelId.Get());
+  freestyler_dogfood_dict.Set(
+      "aidaTemperature", features::kDevToolsFreestylerDogfoodTemperature.Get());
   response_dict.Set("devToolsFreestylerDogfood",
                     std::move(freestyler_dogfood_dict));
 
