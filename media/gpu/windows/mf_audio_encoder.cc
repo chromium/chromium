@@ -5,14 +5,11 @@
 #include "media/gpu/windows/mf_audio_encoder.h"
 
 #include <codecapi.h>
-#include <mfapi.h>
 #include <mferror.h>
 #include <mfidl.h>
-#include <mftransform.h>
 #include <stddef.h>
 #include <string.h>
 #include <wmcodecdsp.h>
-#include <wrl/client.h>
 
 #include <algorithm>
 #include <utility>
@@ -37,8 +34,7 @@
 #include "media/base/timestamp_constants.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/base/win/mf_initializer.h"
-
-using Microsoft::WRL::ComPtr;
+#include "media/gpu/windows/d3d_com_defs.h"
 
 namespace media {
 namespace {
@@ -136,9 +132,9 @@ HRESULT CreateMFEncoder(const IID& iid, void** out_encoder) {
 
 HRESULT CreateInputMediaType(const int sample_rate,
                              const int channels,
-                             ComPtr<IMFMediaType>* input_media_type) {
+                             ComMFMediaType* input_media_type) {
   // https://docs.microsoft.com/en-us/windows/win32/medfound/aac-encoder#input-types
-  ComPtr<IMFMediaType> media_type;
+  ComMFMediaType media_type;
   RETURN_IF_FAILED(MFCreateMediaType(&media_type));
   RETURN_IF_FAILED(media_type->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio));
   RETURN_IF_FAILED(media_type->SetGUID(MF_MT_SUBTYPE, MFAudioFormat_PCM));
@@ -156,9 +152,9 @@ HRESULT CreateOutputMediaType(const int sample_rate,
                               const int channels,
                               const int bitrate,
                               media::AudioEncoder::AacOutputFormat format,
-                              ComPtr<IMFMediaType>* output_media_type) {
+                              ComMFMediaType* output_media_type) {
   // https://docs.microsoft.com/en-us/windows/win32/medfound/aac-encoder#output-types
-  ComPtr<IMFMediaType> media_type;
+  ComMFMediaType media_type;
   RETURN_IF_FAILED(MFCreateMediaType(&media_type));
   RETURN_IF_FAILED(media_type->SetGUID(MF_MT_MAJOR_TYPE, MFMediaType_Audio));
   RETURN_IF_FAILED(media_type->SetGUID(MF_MT_SUBTYPE, MFAudioFormat_AAC));
@@ -187,8 +183,8 @@ HRESULT CreateOutputMediaType(const int sample_rate,
   return S_OK;
 }
 
-HRESULT GetInputBufferRequirements(const ComPtr<IMFTransform>& mf_encoder,
-                                   const ComPtr<IMFMediaType>& input_media_type,
+HRESULT GetInputBufferRequirements(const ComMFTransform& mf_encoder,
+                                   const ComMFMediaType& input_media_type,
                                    const int channels,
                                    int* input_buffer_alignment,
                                    size_t* min_input_buffer_size) {
@@ -232,11 +228,10 @@ HRESULT GetInputBufferRequirements(const ComPtr<IMFTransform>& mf_encoder,
   return S_OK;
 }
 
-HRESULT GetOutputBufferRequirements(
-    const ComPtr<IMFTransform>& mf_encoder,
-    const ComPtr<IMFMediaType>& output_media_type,
-    const int channels,
-    int* output_buffer_alignment) {
+HRESULT GetOutputBufferRequirements(const ComMFTransform& mf_encoder,
+                                    const ComMFMediaType& output_media_type,
+                                    const int channels,
+                                    int* output_buffer_alignment) {
   MFT_OUTPUT_STREAM_INFO output_stream_info = {};
   RETURN_IF_FAILED(
       mf_encoder->GetOutputStreamInfo(kStreamId, &output_stream_info));
@@ -264,13 +259,13 @@ HRESULT CreateMFSampleFromAudioBus(const AudioBus& audio_bus,
                                    const int buffer_alignment,
                                    const LONGLONG duration,
                                    const LONGLONG timestamp,
-                                   ComPtr<IMFSample>* output_sample) {
+                                   ComMFSample* output_sample) {
   DCHECK_GE(buffer_alignment, kMinimumRecommendedBlockAlignment);
   DCHECK_GT(duration, 0);
 
   // Create `dest_buffer` which we will fill with unencoded data, wrap in an
   // `IMFSample`, and return to the caller.
-  ComPtr<IMFMediaBuffer> dest_buffer;
+  ComMFMediaBuffer dest_buffer;
   size_t source_data_size =
       audio_bus.channels() * audio_bus.frames() * kBytesPerSample;
 
@@ -299,7 +294,7 @@ HRESULT CreateMFSampleFromAudioBus(const AudioBus& audio_bus,
 
   // Create the sample which holds `dest_buffer` and will be delivered to the
   // caller.
-  ComPtr<IMFSample> sample;
+  ComMFSample sample;
   RETURN_IF_FAILED(MFCreateSample(&sample));
   RETURN_IF_FAILED(sample->AddBuffer(dest_buffer.Get()));
   RETURN_IF_FAILED(sample->SetSampleDuration(duration));
@@ -311,8 +306,8 @@ HRESULT CreateMFSampleFromAudioBus(const AudioBus& audio_bus,
 
 HRESULT GetSampleBuffer(const DWORD required_size,
                         const int buffer_alignment,
-                        ComPtr<IMFSample>& sample,
-                        ComPtr<IMFMediaBuffer>& buffer) {
+                        ComMFSample& sample,
+                        ComMFMediaBuffer& buffer) {
   if (!sample)
     RETURN_IF_FAILED(MFCreateSample(&sample));
 
@@ -341,7 +336,7 @@ HRESULT GetSampleBuffer(const DWORD required_size,
 
 }  // namespace
 
-MFAudioEncoder::InputData::InputData(ComPtr<IMFSample>&& sample,
+MFAudioEncoder::InputData::InputData(ComMFSample&& sample,
                                      const int sample_count,
                                      EncoderStatusCB&& done_cb)
     : sample(std::move(sample)),
@@ -406,7 +401,7 @@ void MFAudioEncoder::Initialize(const Options& options,
   if (options_.bitrate_mode.has_value() &&
       options_.bitrate_mode.value() == AudioEncoder::BitrateMode::kVariable &&
       options.codec == AudioCodec::kAAC) {
-    Microsoft::WRL::ComPtr<ICodecAPI> codec_api;
+    ComCodecAPI codec_api;
     hr = mf_encoder_.As(&codec_api);
 
     if (SUCCEEDED(hr) &&
@@ -428,7 +423,7 @@ void MFAudioEncoder::Initialize(const Options& options,
 
   // Set the input and output media types.
   // https://docs.microsoft.com/en-us/windows/win32/medfound/basic-mft-processing-model#set-media-types
-  ComPtr<IMFMediaType> input_media_type;
+  ComMFMediaType input_media_type;
   hr = CreateInputMediaType(options_.sample_rate, options_.channels,
                             &input_media_type);
   if (FAILED(hr) || !input_media_type) {
@@ -444,7 +439,7 @@ void MFAudioEncoder::Initialize(const Options& options,
   }
 
   auto format = options_.aac.value_or(AacOptions()).format;
-  ComPtr<IMFMediaType> output_media_type;
+  ComMFMediaType output_media_type;
   hr = CreateOutputMediaType(options_.sample_rate, options_.channels, bitrate,
                              format, &output_media_type);
   if (FAILED(hr) || !output_media_type) {
@@ -635,7 +630,7 @@ void MFAudioEncoder::EnqueueInput(std::unique_ptr<AudioBus> audio_bus,
       input_timestamp_tracker_->GetTimestamp().InNanoseconds() / 100LL;
   input_timestamp_tracker_->AddFrames(audio_bus->frames());
 
-  ComPtr<IMFSample> input_sample;
+  ComMFSample input_sample;
   hr = CreateMFSampleFromAudioBus(*audio_bus, input_buffer_alignment_, duration,
                                   timestamp, &input_sample);
   if (FAILED(hr)) {
@@ -865,7 +860,7 @@ HRESULT MFAudioEncoder::ProcessOutput(EncodedAudioBuffer& encoded_audio) {
   // On the first run, `output_sample_` will be empty, but `GetSampleBuffer`
   // allocates it, if necessary, and (re)allocates the buffer if it is needed or
   // if it is too small.
-  ComPtr<IMFMediaBuffer> output_buffer;
+  ComMFMediaBuffer output_buffer;
   RETURN_IF_FAILED(GetSampleBuffer(output_stream_info.cbSize,
                                    output_buffer_alignment_, output_sample_,
                                    output_buffer));

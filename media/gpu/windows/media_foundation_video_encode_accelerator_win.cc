@@ -1879,7 +1879,7 @@ HRESULT MediaFoundationVideoEncodeAccelerator::PopulateInputSampleBufferGpu(
     // could theoretically cause issues such as the texture not being bound but
     // in practise we've been unable to reproduce issues with this path.
     std::optional<gpu::DXGIScopedReleaseKeyedMutex> release_keyed_mutex;
-    Microsoft::WRL::ComPtr<IDXGIKeyedMutex> keyed_mutex;
+    ComDXGIKeyedMutex keyed_mutex;
     hr = input_texture->QueryInterface(IID_PPV_ARGS(&keyed_mutex));
     if (SUCCEEDED(hr)) {
       constexpr int kMaxSyncTimeMs = 100;

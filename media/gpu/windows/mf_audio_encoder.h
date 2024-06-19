@@ -5,8 +5,6 @@
 #ifndef MEDIA_GPU_WINDOWS_MF_AUDIO_ENCODER_H_
 #define MEDIA_GPU_WINDOWS_MF_AUDIO_ENCODER_H_
 
-#include <wrl/client.h>
-
 #include <memory>
 
 #include "base/containers/circular_deque.h"
@@ -17,6 +15,7 @@
 #include "media/base/audio_encoder.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/gpu/windows/d3d_com_defs.h"
 
 namespace base {
 class SequencedTaskRunner;
@@ -104,12 +103,12 @@ class MEDIA_GPU_EXPORT MFAudioEncoder : public AudioEncoder {
 
   // Used for `input_queue_`.
   struct InputData {
-    InputData(Microsoft::WRL::ComPtr<IMFSample>&& sample,
+    InputData(ComMFSample&& sample,
               const int sample_count,
               EncoderStatusCB&& done_cb);
     InputData(InputData&&);
     ~InputData();
-    Microsoft::WRL::ComPtr<IMFSample> sample;
+    ComMFSample sample;
     const int sample_count;
     EncoderStatusCB done_cb;
   };
@@ -176,7 +175,7 @@ class MEDIA_GPU_EXPORT MFAudioEncoder : public AudioEncoder {
   // are thread safe.
   // The AAC encoder is a synchronous MFT, which means it does not send events
   // (e.g. when output is ready), so we must continually check.
-  Microsoft::WRL::ComPtr<IMFTransform> mf_encoder_;
+  ComMFTransform mf_encoder_;
 
   // No conversion is done, so the input and output params are the same.
   AudioParameters audio_params_;
@@ -208,8 +207,7 @@ class MEDIA_GPU_EXPORT MFAudioEncoder : public AudioEncoder {
       EncoderState::kIdle;
   base::circular_deque<InputData> input_queue_
       GUARDED_BY_CONTEXT(sequence_checker_);
-  Microsoft::WRL::ComPtr<IMFSample> output_sample_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  ComMFSample output_sample_ GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<AudioTimestampHelper> input_timestamp_tracker_
       GUARDED_BY_CONTEXT(sequence_checker_);
   std::unique_ptr<AudioTimestampHelper> output_timestamp_tracker_
