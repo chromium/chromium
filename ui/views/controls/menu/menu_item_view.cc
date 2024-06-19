@@ -722,9 +722,16 @@ void MenuItemView::ChildrenChanged() {
   removed_items_.clear();
 }
 
-void MenuItemView::Layout(PassKey) {
-  if (children().empty())
-    return;
+ProposedLayout MenuItemView::CalculateProposedLayout(
+    const SizeBounds& size_bounds) const {
+  ProposedLayout layout;
+  DCHECK(size_bounds.is_fully_bounded());
+  layout.host_size =
+      gfx::Size(size_bounds.width().value(), size_bounds.height().value());
+
+  if (children().empty()) {
+    return layout;
+  }
 
   if (IsContainer()) {
     // This MenuItemView is acting as a thin wrapper around the sole child view,
@@ -733,24 +740,32 @@ void MenuItemView::Layout(PassKey) {
     // bounds, less the margins.
     gfx::Rect bounds = GetContentsBounds();
     bounds.Inset(GetContainerMargins());
-    children().front()->SetBoundsRect(bounds);
+    layout.child_layouts.emplace_back(children().front(),
+                                      children().front()->GetVisible(), bounds);
   } else {
     // Child views are laid out right aligned and given the full height. To
     // right align start with the last view and progress to the first.
     const SubmenuView* const submenu = GetContainingSubmenu();
     int child_end =
-        width() - (children_use_full_width_ ? 0 : submenu->trailing_padding());
+        layout.host_size.width() -
+        (children_use_full_width_ ? 0 : submenu->trailing_padding());
     for (View* child : base::Reversed(children())) {
-      if (icon_view_ == child)
+      if (icon_view_ == child) {
         continue;
-      if (radio_check_image_view_ == child)
+      }
+      if (radio_check_image_view_ == child) {
         continue;
-      if (submenu_arrow_image_view_ == child)
+      }
+      if (submenu_arrow_image_view_ == child) {
         continue;
-      if (vertical_separator_ == child)
+      }
+      if (vertical_separator_ == child) {
         continue;
+      }
       int width = child->GetPreferredSize({}).width();
-      child->SetBounds(child_end - width, 0, width, height());
+      layout.child_layouts.emplace_back(
+          child, child->GetVisible(),
+          gfx::Rect(child_end - width, 0, width, layout.host_size.height()));
       child_end -= width + kChildHorizontalPadding;
     }
 
@@ -758,46 +773,53 @@ void MenuItemView::Layout(PassKey) {
     const MenuConfig& config = MenuConfig::instance();
     const int icon_x = GetContentStart();
     if (radio_check_image_view_) {
-      const int y = (height() - kMenuCheckSize) / 2;
-      radio_check_image_view_->SetBounds(icon_x, y, kMenuCheckSize,
-                                         kMenuCheckSize);
+      const int y = (layout.host_size.height() - kMenuCheckSize) / 2;
+      layout.child_layouts.emplace_back(
+          radio_check_image_view_.get(), radio_check_image_view_->GetVisible(),
+          gfx::Rect(icon_x, y, kMenuCheckSize, kMenuCheckSize));
     }
     if (icon_view_) {
-      icon_view_->SizeToPreferredSize();
-      gfx::Size size = icon_view_->GetPreferredSize({});
+      const gfx::Size preferred_size = icon_view_->GetPreferredSize({});
       int x = (config.icons_in_label ? submenu->label_start() : icon_x) +
-              ((submenu->icon_area_width() - size.width()) / 2);
+              ((submenu->icon_area_width() - preferred_size.width()) / 2);
       // If this is a checkbox or radio, then it needs space for both the
       // radio/check image and an icon, so move the icon to where the label
       // would start.
       if (type_ == Type::kCheckbox || type_ == Type::kRadio) {
         x = submenu->label_start();
       }
-      const int y = (height() - size.height()) / 2;
-      icon_view_->SetPosition(gfx::Point(x, y));
+      const int y = (layout.host_size.height() - preferred_size.height()) / 2;
+      layout.child_layouts.emplace_back(
+          icon_view_.get(), icon_view_->GetVisible(),
+          gfx::Rect(x, y, preferred_size.width(), preferred_size.height()));
     }
 
     if (submenu_arrow_image_view_) {
-      const int x = width() - GetItemHorizontalBorder() -
+      const int x = layout.host_size.width() - GetItemHorizontalBorder() -
                     (type_ == Type::kActionableSubMenu
                          ? config.actionable_submenu_arrow_to_edge_padding
                          : config.arrow_to_edge_padding) -
                     config.arrow_size;
-      const int y = (height() - config.arrow_size) / 2;
-      submenu_arrow_image_view_->SetBounds(x, y, config.arrow_size,
-                                           config.arrow_size);
+      const int y = (layout.host_size.height() - config.arrow_size) / 2;
+      layout.child_layouts.emplace_back(
+          submenu_arrow_image_view_.get(),
+          submenu_arrow_image_view_->GetVisible(),
+          gfx::Rect(x, y, config.arrow_size, config.arrow_size));
     }
 
     if (vertical_separator_) {
       const gfx::Size preferred_size =
           vertical_separator_->GetPreferredSize({});
-      int x = width() - config.actionable_submenu_width -
-              config.actionable_submenu_vertical_separator_width;
-      int y = (height() - preferred_size.height()) / 2;
-      vertical_separator_->SetBoundsRect(
-          gfx::Rect(gfx::Point(x, y), preferred_size));
+      const int x = layout.host_size.width() - config.actionable_submenu_width -
+                    config.actionable_submenu_vertical_separator_width;
+      const int y = (layout.host_size.height() - preferred_size.height()) / 2;
+      layout.child_layouts.emplace_back(
+          vertical_separator_.get(), vertical_separator_->GetVisible(),
+          gfx::Rect(x, y, preferred_size.width(), preferred_size.height()));
     }
   }
+
+  return layout;
 }
 
 void MenuItemView::SetForcedVisualSelection(bool selected) {
@@ -873,6 +895,7 @@ MenuItemView::MenuItemView(MenuItemView* parent,
   MenuDelegate* root_delegate = GetDelegate();
   if (parent && type != Type::kEmpty && root_delegate)
     SetEnabled(root_delegate->IsCommandEnabled(command));
+  SetLayoutManager(std::make_unique<DelegatingLayoutManager>(this));
 }
 
 void MenuItemView::PrepareForRun(bool has_mnemonics, bool show_mnemonics) {

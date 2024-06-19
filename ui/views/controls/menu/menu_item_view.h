@@ -27,6 +27,7 @@
 #include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_types.h"
+#include "ui/views/layout/delegating_layout_manager.h"
 #include "ui/views/view.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -73,7 +74,7 @@ class TestMenuItemView;
 // To show the menu use MenuRunner. See MenuRunner for details on how to run
 // (show) the menu as well as for details on the life time of the menu.
 
-class VIEWS_EXPORT MenuItemView : public View {
+class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   METADATA_HEADER(MenuItemView, View)
 
  public:
@@ -368,8 +369,9 @@ class VIEWS_EXPORT MenuItemView : public View {
   // recalculates the bounds.
   void ChildrenChanged();
 
-  // Sizes any child views.
-  void Layout(PassKey) override;
+  // Overridden from LayoutDelegate:
+  ProposedLayout CalculateProposedLayout(
+      const SizeBounds& size_bounds) const override;
 
   // Returns true if the menu has mnemonics. This only useful on the root menu
   // item.
