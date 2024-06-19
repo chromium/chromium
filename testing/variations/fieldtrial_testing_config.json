@@ -12259,8 +12259,9 @@
             ],
             "experiments": [
                 {
-                    "name": "UncredentialedFilteringFallbackAndHideGuestMode",
+                    "name": "AllFeatures",
                     "enable_features": [
+                        "ForceSafeSearchForUnauthenticatedSupervisedUsers",
                         "HideGuestModeForSupervisedUsers",
                         "UncredentialedFilteringFallbackForSupervisedUsers"
                     ]
