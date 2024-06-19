@@ -667,7 +667,7 @@ sk_sp<SkImage> ServiceImageTransferCacheEntry::GetImageWithToneMapApplied(
     } else {
       CHECK(graphite_recorder_);
       SkImage::RequiredProperties props{.fMipmapped = true};
-      image = SkImages::TextureFromImage(graphite_recorder_, image_, props);
+      image = SkImages::TextureFromImage(graphite_recorder_, image, props);
     }
     if (!image) {
       DLOG(ERROR) << "Failed to generate mipmaps after tone mapping";
