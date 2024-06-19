@@ -61,7 +61,7 @@ PickerSearchResultsView::PickerSearchResultsView(
   SetProperty(views::kElementIdentifierKey, kPickerSearchResultsPageElementId);
 
   section_list_view_ = AddChildView(std::make_unique<PickerSectionListView>(
-      picker_view_width, asset_fetcher));
+      picker_view_width, asset_fetcher, &submenu_controller_));
   no_results_view_ = AddChildView(
       views::Builder<views::Label>(
           bubble_utils::CreateLabel(

@@ -10,6 +10,8 @@
 
 #include "ash/bubble/bubble_utils.h"
 #include "ash/picker/views/picker_item_view.h"
+#include "ash/picker/views/picker_list_item_view.h"
+#include "ash/picker/views/picker_submenu_controller.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
 #include "components/vector_icons/vector_icons.h"
@@ -92,6 +94,13 @@ void PickerItemWithSubmenuView::SetLeadingIcon(const ui::ImageModel& icon) {
 void PickerItemWithSubmenuView::SetText(const std::u16string& primary_text) {
   label_->SetText(primary_text);
   SetAccessibleName(primary_text);
+}
+
+void PickerItemWithSubmenuView::OnMouseEntered(const ui::MouseEvent& event) {
+  // TODO: b/343092747 - Pass the submenu list items to this class.
+  if (GetSubmenuController() != nullptr) {
+    GetSubmenuController()->Show(this, {});
+  }
 }
 
 BEGIN_METADATA(PickerItemWithSubmenuView)

@@ -243,13 +243,17 @@ void PickerListItemView::SetPreview(
   }
 }
 
-void PickerListItemView::OnMouseEntered(const ui::MouseEvent&) {
+void PickerListItemView::OnMouseEntered(const ui::MouseEvent& event) {
+  PickerItemView::OnMouseEntered(event);
+
   if (preview_bubble_controller_ != nullptr) {
     preview_bubble_controller_->ShowBubble(async_preview_image_.get(), this);
   }
 }
 
-void PickerListItemView::OnMouseExited(const ui::MouseEvent&) {
+void PickerListItemView::OnMouseExited(const ui::MouseEvent& event) {
+  PickerItemView::OnMouseExited(event);
+
   if (preview_bubble_controller_ != nullptr) {
     preview_bubble_controller_->CloseBubble();
   }

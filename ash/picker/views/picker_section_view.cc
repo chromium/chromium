@@ -66,9 +66,13 @@ PickerCategory GetCategoryForEditorData(
 
 }  // namespace
 
-PickerSectionView::PickerSectionView(int section_width,
-                                     PickerAssetFetcher* asset_fetcher)
-    : section_width_(section_width), asset_fetcher_(asset_fetcher) {
+PickerSectionView::PickerSectionView(
+    int section_width,
+    PickerAssetFetcher* asset_fetcher,
+    PickerSubmenuController* submenu_controller)
+    : section_width_(section_width),
+      asset_fetcher_(asset_fetcher),
+      submenu_controller_(submenu_controller) {
   SetLayoutManager(std::make_unique<views::BoxLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
@@ -267,6 +271,7 @@ PickerListItemView* PickerSectionView::AddListItem(
     list_item_container_ =
         AddChildView(std::make_unique<PickerListItemContainerView>());
   }
+  list_item->SetSubmenuController(submenu_controller_);
   PickerListItemView* list_item_ptr =
       list_item_container_->AddListItem(std::move(list_item));
   item_views_.push_back(list_item_ptr);
@@ -279,6 +284,7 @@ PickerImageItemView* PickerSectionView::AddImageItem(
     image_item_grid_ =
         AddChildView(std::make_unique<PickerImageItemGridView>(section_width_));
   }
+  image_item->SetSubmenuController(submenu_controller_);
   PickerImageItemView* image_item_ptr =
       image_item_grid_->AddImageItem(std::move(image_item));
   item_views_.push_back(image_item_ptr);

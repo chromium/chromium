@@ -35,6 +35,9 @@ class ASH_EXPORT PickerItemWithSubmenuView : public PickerItemView {
 
   void SetText(const std::u16string& text);
 
+  // PickerItemView:
+  void OnMouseEntered(const ui::MouseEvent& event) override;
+
  private:
   raw_ptr<views::ImageView> leading_icon_view_ = nullptr;
   raw_ptr<views::Label> label_ = nullptr;

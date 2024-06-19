@@ -31,6 +31,7 @@ class PickerListItemContainerView;
 class PickerListItemView;
 class PickerPreviewBubbleController;
 class PickerSearchResult;
+class PickerSubmenuController;
 class PickerTraversableItemContainer;
 enum class PickerActionType;
 
@@ -42,7 +43,8 @@ class ASH_EXPORT PickerSectionView : public views::View {
   using SelectResultCallback = base::RepeatingClosure;
 
   explicit PickerSectionView(int section_width,
-                             PickerAssetFetcher* asset_fetcher);
+                             PickerAssetFetcher* asset_fetcher,
+                             PickerSubmenuController* submenu_controller);
   PickerSectionView(const PickerSectionView&) = delete;
   PickerSectionView& operator=(const PickerSectionView&) = delete;
   ~PickerSectionView() override;
@@ -152,6 +154,9 @@ class ASH_EXPORT PickerSectionView : public views::View {
 
   // `asset_fetcher` outlives `this`.
   raw_ptr<PickerAssetFetcher> asset_fetcher_ = nullptr;
+
+  // `submenu_controller` outlives `this`.
+  raw_ptr<PickerSubmenuController> submenu_controller_ = nullptr;
 };
 
 }  // namespace ash

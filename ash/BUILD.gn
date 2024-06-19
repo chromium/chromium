@@ -3796,6 +3796,7 @@ test("ash_unittests") {
     "picker/views/picker_gif_view_unittest.cc",
     "picker/views/picker_image_item_grid_view_unittest.cc",
     "picker/views/picker_item_view_unittest.cc",
+    "picker/views/picker_item_with_submenu_view_unittest.cc",
     "picker/views/picker_key_event_handler_unittest.cc",
     "picker/views/picker_list_item_container_view_unittest.cc",
     "picker/views/picker_list_item_view_unittest.cc",

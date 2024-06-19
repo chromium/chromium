@@ -58,8 +58,10 @@ class PickerSubmenuView : public views::WidgetDelegateView {
     SetBackground(views::CreateThemedRoundedRectBackground(
         kPickerContainerBackgroundColor, kCornerRadius));
 
+    // Don't allow submenus within submenus.
     auto* section_view = AddChildView(std::make_unique<PickerSectionView>(
-        kSubmenuWidth, /*asset_fetcher=*/nullptr));
+        kSubmenuWidth, /*asset_fetcher=*/nullptr,
+        /*submenu_controller=*/nullptr));
 
     for (std::unique_ptr<PickerItemView>& item : items) {
       section_view->AddItem(std::move(item));

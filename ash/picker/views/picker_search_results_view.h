@@ -9,6 +9,7 @@
 #include "ash/picker/model/picker_search_results_section.h"
 #include "ash/picker/views/picker_page_view.h"
 #include "ash/picker/views/picker_preview_bubble_controller.h"
+#include "ash/picker/views/picker_submenu_controller.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -125,6 +126,7 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   raw_ptr<PickerSkeletonLoaderView> skeleton_loader_view_ = nullptr;
 
   PickerPreviewBubbleController preview_controller_;
+  PickerSubmenuController submenu_controller_;
 };
 
 }  // namespace ash

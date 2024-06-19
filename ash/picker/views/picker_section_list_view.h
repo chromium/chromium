@@ -13,6 +13,7 @@ namespace ash {
 
 class PickerAssetFetcher;
 class PickerSectionView;
+class PickerSubmenuController;
 
 // View which displays Picker sections in a vertical list.
 class ASH_EXPORT PickerSectionListView : public views::View {
@@ -20,7 +21,8 @@ class ASH_EXPORT PickerSectionListView : public views::View {
 
  public:
   explicit PickerSectionListView(int section_width,
-                                 PickerAssetFetcher* asset_fetcher);
+                                 PickerAssetFetcher* asset_fetcher,
+                                 PickerSubmenuController* submenu_controller);
   PickerSectionListView(const PickerSectionListView&) = delete;
   PickerSectionListView& operator=(const PickerSectionListView&) = delete;
   ~PickerSectionListView() override;
@@ -68,6 +70,9 @@ class ASH_EXPORT PickerSectionListView : public views::View {
 
   // `asset_fetcher` outlives `this`.
   raw_ptr<PickerAssetFetcher> asset_fetcher_ = nullptr;
+
+  // `submenu_controller_` outlives `this`.
+  raw_ptr<PickerSubmenuController> submenu_controller_ = nullptr;
 };
 
 }  // namespace ash

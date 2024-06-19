@@ -15,6 +15,7 @@
 namespace ash {
 
 enum class PickerActionType;
+class PickerSubmenuController;
 
 // View for a Picker item which can be selected.
 class ASH_EXPORT PickerItemView : public views::Button {
@@ -57,10 +58,14 @@ class ASH_EXPORT PickerItemView : public views::Button {
   // views::Button:
   void PaintButtonContents(gfx::Canvas* canvas) override;
   void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
+  void OnMouseEntered(const ui::MouseEvent& event) override;
 
   void SelectItem();
 
   void SetCornerRadius(int corner_radius);
+
+  PickerSubmenuController* GetSubmenuController();
+  void SetSubmenuController(PickerSubmenuController* submenu_controller);
 
   ItemState GetItemState() const;
   void SetItemState(ItemState item_state);
@@ -76,9 +81,12 @@ class ASH_EXPORT PickerItemView : public views::Button {
 
   // Corner radius of the item background and highlight.
   int corner_radius_ = 0;
+
+  raw_ptr<PickerSubmenuController> submenu_controller_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, PickerItemView, views::Button)
+VIEW_BUILDER_PROPERTY(PickerSubmenuController*, SubmenuController)
 END_VIEW_BUILDER
 
 }  // namespace ash

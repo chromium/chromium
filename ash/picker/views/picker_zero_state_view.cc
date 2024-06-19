@@ -60,7 +60,7 @@ PickerZeroStateView::PickerZeroStateView(
       ->SetOrientation(views::LayoutOrientation::kVertical);
 
   section_list_view_ = AddChildView(std::make_unique<PickerSectionListView>(
-      picker_view_width, asset_fetcher));
+      picker_view_width, asset_fetcher, &submenu_controller_));
 
   for (PickerCategory category : recent_results_categories) {
     delegate_->GetZeroStateRecentResults(

@@ -14,6 +14,7 @@
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
 #include "ash/picker/views/picker_section_view.h"
+#include "ash/picker/views/picker_submenu_controller.h"
 #include "base/functional/callback_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,7 +44,9 @@ using PickerSectionListViewTest = views::ViewsTestBase;
 
 TEST_F(PickerSectionListViewTest, AddsSection) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
+  PickerSubmenuController submenu_controller;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                     &submenu_controller);
 
   PickerSectionView* section = section_list.AddSection();
 
@@ -52,7 +55,9 @@ TEST_F(PickerSectionListViewTest, AddsSection) {
 
 TEST_F(PickerSectionListViewTest, ClearsSectionList) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
+  PickerSubmenuController submenu_controller;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                     &submenu_controller);
 
   section_list.AddSection();
   section_list.ClearSectionList();
@@ -62,7 +67,9 @@ TEST_F(PickerSectionListViewTest, ClearsSectionList) {
 
 TEST_F(PickerSectionListViewTest, GetsTopItem) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
+  PickerSubmenuController submenu_controller;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                     &submenu_controller);
 
   PickerSectionView* section1 = section_list.AddSection();
   PickerItemView* top_item = section1->AddListItem(
@@ -78,7 +85,9 @@ TEST_F(PickerSectionListViewTest, GetsTopItem) {
 
 TEST_F(PickerSectionListViewTest, AddsSectionAtTheTop) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
+  PickerSubmenuController submenu_controller;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                     &submenu_controller);
 
   PickerSectionView* section1 = section_list.AddSection();
   section1->AddListItem(
@@ -92,14 +101,18 @@ TEST_F(PickerSectionListViewTest, AddsSectionAtTheTop) {
 
 TEST_F(PickerSectionListViewTest, EmptySectionListHasNoTopItem) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
+  PickerSubmenuController submenu_controller;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                     &submenu_controller);
 
   EXPECT_EQ(section_list.GetTopItem(), nullptr);
 }
 
 TEST_F(PickerSectionListViewTest, GetsBottomItem) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
+  PickerSubmenuController submenu_controller;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                     &submenu_controller);
 
   PickerSectionView* section1 = section_list.AddSection();
   section1->AddListItem(
@@ -115,14 +128,18 @@ TEST_F(PickerSectionListViewTest, GetsBottomItem) {
 
 TEST_F(PickerSectionListViewTest, EmptySectionListHasNoBottomItem) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
+  PickerSubmenuController submenu_controller;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                     &submenu_controller);
 
   EXPECT_EQ(section_list.GetBottomItem(), nullptr);
 }
 
 TEST_F(PickerSectionListViewTest, GetsItemAbove) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
+  PickerSubmenuController submenu_controller;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                     &submenu_controller);
 
   PickerSectionView* section1 = section_list.AddSection();
   PickerItemView* item1 = section1->AddListItem(
@@ -140,7 +157,9 @@ TEST_F(PickerSectionListViewTest, GetsItemAbove) {
 
 TEST_F(PickerSectionListViewTest, ItemNotInSectionListHasNoItemAbove) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
+  PickerSubmenuController submenu_controller;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                     &submenu_controller);
   PickerListItemView item_not_in_section_list(base::DoNothing());
 
   EXPECT_EQ(section_list.GetItemAbove(&item_not_in_section_list), nullptr);
@@ -148,7 +167,9 @@ TEST_F(PickerSectionListViewTest, ItemNotInSectionListHasNoItemAbove) {
 
 TEST_F(PickerSectionListViewTest, GetsItemBelow) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
+  PickerSubmenuController submenu_controller;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                     &submenu_controller);
 
   PickerSectionView* section1 = section_list.AddSection();
   PickerItemView* item1 = section1->AddListItem(
@@ -166,7 +187,9 @@ TEST_F(PickerSectionListViewTest, GetsItemBelow) {
 
 TEST_F(PickerSectionListViewTest, ItemNotInSectionListHasNoItemBelow) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
+  PickerSubmenuController submenu_controller;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                     &submenu_controller);
   PickerListItemView item_not_in_section_list(base::DoNothing());
 
   EXPECT_EQ(section_list.GetItemBelow(&item_not_in_section_list), nullptr);
@@ -174,7 +197,9 @@ TEST_F(PickerSectionListViewTest, ItemNotInSectionListHasNoItemBelow) {
 
 TEST_F(PickerSectionListViewTest, GetsItemLeftOf) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
+  PickerSubmenuController submenu_controller;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                     &submenu_controller);
 
   PickerSectionView* section1 = section_list.AddSection();
   PickerItemView* item1 =
@@ -192,7 +217,9 @@ TEST_F(PickerSectionListViewTest, GetsItemLeftOf) {
 
 TEST_F(PickerSectionListViewTest, ItemNotInSectionListHasNoItemLeftOf) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
+  PickerSubmenuController submenu_controller;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                     &submenu_controller);
   PickerListItemView item_not_in_section_list(base::DoNothing());
 
   EXPECT_EQ(section_list.GetItemLeftOf(&item_not_in_section_list), nullptr);
@@ -200,7 +227,9 @@ TEST_F(PickerSectionListViewTest, ItemNotInSectionListHasNoItemLeftOf) {
 
 TEST_F(PickerSectionListViewTest, GetsItemRightOf) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
+  PickerSubmenuController submenu_controller;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                     &submenu_controller);
 
   PickerSectionView* section1 = section_list.AddSection();
   PickerItemView* item1 =
@@ -218,7 +247,9 @@ TEST_F(PickerSectionListViewTest, GetsItemRightOf) {
 
 TEST_F(PickerSectionListViewTest, ItemNotInSectionListHasNoItemRightOf) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher);
+  PickerSubmenuController submenu_controller;
+  PickerSectionListView section_list(kDefaultSectionWidth, &asset_fetcher,
+                                     &submenu_controller);
   PickerListItemView item_not_in_section_list(base::DoNothing());
 
   EXPECT_EQ(section_list.GetItemRightOf(&item_not_in_section_list), nullptr);

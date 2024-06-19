@@ -20,9 +20,13 @@
 
 namespace ash {
 
-PickerSectionListView::PickerSectionListView(int section_width,
-                                             PickerAssetFetcher* asset_fetcher)
-    : section_width_(section_width), asset_fetcher_(asset_fetcher) {
+PickerSectionListView::PickerSectionListView(
+    int section_width,
+    PickerAssetFetcher* asset_fetcher,
+    PickerSubmenuController* submenu_controller)
+    : section_width_(section_width),
+      asset_fetcher_(asset_fetcher),
+      submenu_controller_(submenu_controller) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
@@ -105,13 +109,14 @@ views::View* PickerSectionListView::GetItemRightOf(views::View* item) {
 }
 
 PickerSectionView* PickerSectionListView::AddSection() {
-  return AddChildView(
-      std::make_unique<PickerSectionView>(section_width_, asset_fetcher_));
+  return AddChildView(std::make_unique<PickerSectionView>(
+      section_width_, asset_fetcher_, submenu_controller_));
 }
 
 PickerSectionView* PickerSectionListView::AddSectionAt(size_t index) {
   return AddChildViewAt(
-      std::make_unique<PickerSectionView>(section_width_, asset_fetcher_),
+      std::make_unique<PickerSectionView>(section_width_, asset_fetcher_,
+                                          submenu_controller_),
       index);
 }
 

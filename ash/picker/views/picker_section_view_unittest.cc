@@ -14,6 +14,7 @@
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
 #include "ash/picker/views/picker_preview_bubble_controller.h"
+#include "ash/picker/views/picker_submenu_controller.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
@@ -49,7 +50,9 @@ using PickerSectionViewTest = views::ViewsTestBase;
 
 TEST_F(PickerSectionViewTest, CreatesTitleLabel) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher);
+  PickerSubmenuController submenu_controller;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                 &submenu_controller);
 
   const std::u16string kSectionTitleText = u"Section";
   section_view.AddTitleLabel(kSectionTitleText);
@@ -60,7 +63,9 @@ TEST_F(PickerSectionViewTest, CreatesTitleLabel) {
 
 TEST_F(PickerSectionViewTest, AddsListItem) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher);
+  PickerSubmenuController submenu_controller;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                 &submenu_controller);
 
   section_view.AddListItem(
       std::make_unique<PickerListItemView>(base::DoNothing()));
@@ -73,7 +78,9 @@ TEST_F(PickerSectionViewTest, AddsListItem) {
 
 TEST_F(PickerSectionViewTest, AddsTwoListItems) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher);
+  PickerSubmenuController submenu_controller;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                 &submenu_controller);
 
   section_view.AddListItem(
       std::make_unique<PickerListItemView>(base::DoNothing()));
@@ -89,7 +96,9 @@ TEST_F(PickerSectionViewTest, AddsTwoListItems) {
 
 TEST_F(PickerSectionViewTest, AddsGifItem) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher);
+  PickerSubmenuController submenu_controller;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                 &submenu_controller);
 
   section_view.AddImageItem(CreateGifItem(gfx::Size(100, 100)));
 
@@ -102,7 +111,9 @@ TEST_F(PickerSectionViewTest, AddsGifItem) {
 TEST_F(PickerSectionViewTest, AddsResults) {
   MockPickerAssetFetcher asset_fetcher;
   PickerPreviewBubbleController preview_controller;
-  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher);
+  PickerSubmenuController submenu_controller;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                 &submenu_controller);
 
   section_view.AddResult(PickerSearchResult::Text(u"Result"),
                          &preview_controller, base::DoNothing());
@@ -119,7 +130,9 @@ TEST_F(PickerSectionViewTest, AddsResults) {
 
 TEST_F(PickerSectionViewTest, ClearsItems) {
   MockPickerAssetFetcher asset_fetcher;
-  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher);
+  PickerSubmenuController submenu_controller;
+  PickerSectionView section_view(kDefaultSectionWidth, &asset_fetcher,
+                                 &submenu_controller);
   section_view.AddListItem(
       std::make_unique<PickerListItemView>(base::DoNothing()));
 
