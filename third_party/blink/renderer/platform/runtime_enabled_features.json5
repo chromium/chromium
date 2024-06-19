@@ -3922,6 +3922,10 @@
       status: "stable",
     },
     {
+      name: "SvgGradientColorInterpolationLinearRgbSupport",
+      status: "stable",
+    },
+    {
       name: "SvgNoPixelSnappingScaleAdjustment",
       status: "stable",
     },
