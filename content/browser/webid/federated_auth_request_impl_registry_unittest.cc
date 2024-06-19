@@ -34,6 +34,7 @@
 
 using ApiPermissionStatus =
     content::FederatedIdentityApiPermissionContextDelegate::PermissionStatus;
+using blink::mojom::RegisterIdpStatus;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -128,11 +129,12 @@ TEST_F(FederatedAuthRequestImplRegistryTest, RegistersIdPSuccessfully) {
   EXPECT_CALL(*mock_permission_delegate_, RegisterIdP(_)).WillOnce(Return());
 
   base::RunLoop loop;
-  request_remote_->RegisterIdP(std::move(configURL),
-                               base::BindLambdaForTesting([&loop](bool result) {
-                                 EXPECT_EQ(true, result);
-                                 loop.Quit();
-                               }));
+  request_remote_->RegisterIdP(
+      std::move(configURL),
+      base::BindLambdaForTesting([&loop](RegisterIdpStatus result) {
+        EXPECT_EQ(RegisterIdpStatus::kSuccess, result);
+        loop.Quit();
+      }));
   loop.Run();
 }
 
@@ -150,11 +152,12 @@ TEST_F(FederatedAuthRequestImplRegistryTest,
   feature_list_.InitAndEnableFeature(features::kFedCmIdPRegistration);
 
   base::RunLoop loop;
-  request_remote_->RegisterIdP(std::move(configURL),
-                               base::BindLambdaForTesting([&loop](bool result) {
-                                 EXPECT_EQ(false, result);
-                                 loop.Quit();
-                               }));
+  request_remote_->RegisterIdP(
+      std::move(configURL),
+      base::BindLambdaForTesting([&loop](RegisterIdpStatus result) {
+        EXPECT_EQ(RegisterIdpStatus::kErrorNoTransientActivation, result);
+        loop.Quit();
+      }));
   loop.Run();
 }
 
@@ -165,11 +168,12 @@ TEST_F(FederatedAuthRequestImplRegistryTest, RegistersWithoutFeature) {
   static_cast<TestRenderFrameHost*>(main_test_rfh())->SimulateUserActivation();
 
   base::RunLoop loop;
-  request_remote_->RegisterIdP(std::move(configURL),
-                               base::BindLambdaForTesting([&loop](bool result) {
-                                 EXPECT_EQ(false, result);
-                                 loop.Quit();
-                               }));
+  request_remote_->RegisterIdP(
+      std::move(configURL),
+      base::BindLambdaForTesting([&loop](RegisterIdpStatus result) {
+        EXPECT_EQ(RegisterIdpStatus::kErrorFeatureDisabled, result);
+        loop.Quit();
+      }));
   loop.Run();
 }
 
@@ -182,11 +186,12 @@ TEST_F(FederatedAuthRequestImplRegistryTest, RegistersCrossOriginNotAllowed) {
   feature_list_.InitAndEnableFeature(features::kFedCmIdPRegistration);
 
   base::RunLoop loop;
-  request_remote_->RegisterIdP(std::move(configURL),
-                               base::BindLambdaForTesting([&loop](bool result) {
-                                 EXPECT_EQ(false, result);
-                                 loop.Quit();
-                               }));
+  request_remote_->RegisterIdP(
+      std::move(configURL),
+      base::BindLambdaForTesting([&loop](RegisterIdpStatus result) {
+        EXPECT_EQ(RegisterIdpStatus::kErrorCrossOriginConfig, result);
+        loop.Quit();
+      }));
   loop.Run();
 }
 

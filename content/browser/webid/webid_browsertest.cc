@@ -558,12 +558,8 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, RpCantRegisterIdP) {
         }) ()
     )";
 
-  // TODO(crbug.com/40252825): make this error message more
-  // developer friendly, since this was a call error rather
-  // than a user declining the permission error.
   std::string expected_error =
-      "NotAllowedError: User declined the permission to register the Identity "
-      "Provider.";
+      "NotAllowedError: Attempting to register a cross-origin config.";
 
   EXPECT_EQ(expected_error, ExtractJsError(EvalJs(shell(), script)));
 }
@@ -732,15 +728,11 @@ IN_PROC_BROWSER_TEST_F(WebIdIdPRegistryBrowserTest, RegistryWithTypeNoMatch) {
 
   SetTestIdentityRequestDialogController("not_real_account");
 
-  // TODO(crbug.com/340914587): show a better error here.
-  std::string expected_error =
-      "NotAllowedError: User declined the permission to register the Identity "
-      "Provider.";
-  EXPECT_EQ(expected_error, ExtractJsError(EvalJs(shell(), script)));
+  std::string expected_error = "NetworkError: Error retrieving a token.";
 
-  // If the IdP does not have type set, it should also not show up.
+  // If the IdP does not have type set, it should not show up.
   idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
-  EXPECT_EQ(expected_error, ExtractJsError(EvalJs(shell(), script)));
+  EXPECT_EQ(expected_error, ExtractJsError(EvalJs(shell(), get_script)));
 }
 
 // Verify that when the type of the registered IdP matches the requested one,

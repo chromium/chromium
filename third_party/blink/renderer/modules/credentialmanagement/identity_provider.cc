@@ -25,6 +25,7 @@ namespace blink {
 
 namespace {
 
+using mojom::blink::RegisterIdpStatus;
 using mojom::blink::RequestUserInfoStatus;
 
 void OnRequestUserInfo(
@@ -134,14 +135,39 @@ void IdentityProvider::close(ScriptState* script_state) {
   request->CloseModalDialogView();
 }
 
-void OnRegisterIdP(ScriptPromiseResolver<IDLBoolean>* resolver, bool accepted) {
-  if (!accepted) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNotAllowedError,
-        "User declined the permission to register the Identity Provider."));
-    return;
-  }
-  resolver->Resolve(true);
+void OnRegisterIdP(ScriptPromiseResolver<IDLBoolean>* resolver,
+                   RegisterIdpStatus status) {
+  switch (status) {
+    case RegisterIdpStatus::kSuccess: {
+      resolver->Resolve(true);
+      return;
+    }
+    case RegisterIdpStatus::kErrorFeatureDisabled: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError,
+          "FedCM IdP registration feature is disabled."));
+      return;
+    }
+    case RegisterIdpStatus::kErrorCrossOriginConfig: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError,
+          "Attempting to register a cross-origin config."));
+      return;
+    }
+    case RegisterIdpStatus::kErrorNoTransientActivation: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError,
+          "There is no transient user activation for identity provider "
+          "registration."));
+      return;
+    }
+    case RegisterIdpStatus::kErrorDeclined: {
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotAllowedError,
+          "User declined the permission to register the identity provider."));
+      return;
+    }
+  };
 }
 
 ScriptPromise<IDLBoolean> IdentityProvider::registerIdentityProvider(

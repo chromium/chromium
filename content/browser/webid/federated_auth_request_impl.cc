@@ -53,6 +53,7 @@ using blink::mojom::IdentityProviderConfigPtr;
 using blink::mojom::IdentityProviderGetParametersPtr;
 using blink::mojom::IdentityProviderRequestOptions;
 using blink::mojom::IdentityProviderRequestOptionsPtr;
+using blink::mojom::RegisterIdpStatus;
 using blink::mojom::RequestTokenStatus;
 using blink::mojom::RequestUserInfoStatus;
 using FederatedApiPermissionStatus =
@@ -1154,17 +1155,17 @@ void FederatedAuthRequestImpl::SetIdpSigninStatus(
 void FederatedAuthRequestImpl::RegisterIdP(const GURL& idp,
                                            RegisterIdPCallback callback) {
   if (!IsFedCmIdPRegistrationEnabled()) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(RegisterIdpStatus::kErrorFeatureDisabled);
     return;
   }
 
   if (!origin().IsSameOriginWith(url::Origin::Create(idp))) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(RegisterIdpStatus::kErrorCrossOriginConfig);
     return;
   }
 
   if (!render_frame_host().HasTransientUserActivation()) {
-    std::move(callback).Run(false);
+    std::move(callback).Run(RegisterIdpStatus::kErrorNoTransientActivation);
     return;
   }
 
@@ -1185,7 +1186,8 @@ void FederatedAuthRequestImpl::OnRegisterIdPPermissionResponse(
   if (accepted) {
     permission_delegate_->RegisterIdP(idp);
   }
-  std::move(callback).Run(accepted);
+  std::move(callback).Run(accepted ? RegisterIdpStatus::kSuccess
+                                   : RegisterIdpStatus::kErrorDeclined);
 }
 
 void FederatedAuthRequestImpl::UnregisterIdP(const GURL& idp,
