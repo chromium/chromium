@@ -6,8 +6,11 @@
 
 #include "android_webview/common/aw_switches.h"
 #include "base/base_paths_android.h"
+#include "base/check.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ref.h"
+#include "base/metrics/field_trial.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/path_service.h"
 #include "components/history/core/browser/features.h"
@@ -37,6 +40,12 @@ class AwFeatureOverrides {
   AwFeatureOverrides& operator=(const AwFeatureOverrides& other) = delete;
 
   ~AwFeatureOverrides() {
+    for (const auto& field_trial_override : field_trial_overrides_) {
+      feature_list_->RegisterFieldTrialOverride(
+          field_trial_override.feature->name,
+          field_trial_override.override_state,
+          field_trial_override.field_trial);
+    }
     feature_list_->RegisterExtraFeatureOverrides(std::move(overrides_));
   }
 
@@ -54,9 +63,29 @@ class AwFeatureOverrides {
         base::FeatureList::OverrideState::OVERRIDE_DISABLE_FEATURE);
   }
 
+  // Enable or disable a feature with a field trial. This can be used for
+  // setting feature parameters.
+  void OverrideFeatureWithFieldTrial(
+      const base::Feature& feature,
+      base::FeatureList::OverrideState override_state,
+      base::FieldTrial* field_trial) {
+    field_trial_overrides_.emplace_back(FieldTrialOverride{
+        .feature = raw_ref(feature),
+        .override_state = override_state,
+        .field_trial = field_trial,
+    });
+  }
+
  private:
+  struct FieldTrialOverride {
+    raw_ref<const base::Feature> feature;
+    base::FeatureList::OverrideState override_state;
+    raw_ptr<base::FieldTrial> field_trial;
+  };
+
   base::raw_ref<base::FeatureList> feature_list_;
   std::vector<base::FeatureList::FeatureOverrideInfo> overrides_;
+  std::vector<FieldTrialOverride> field_trial_overrides_;
 };
 
 }  // namespace
@@ -211,7 +240,20 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDebugBlindauth)) {
-    aw_feature_overrides.EnableFeature(net::features::kEnableIpProtectionProxy);
+    // Feature parameters can only be set via a field trial.
+    const char kTrialName[] = "StudyDebugBlindauth";
+    const char kGroupName[] = "GroupDebugBlindauth";
+    base::FieldTrial* field_trial =
+        base::FieldTrialList::CreateFieldTrial(kTrialName, kGroupName);
+    // If field_trial is null, there was some unexpected name conflict.
+    CHECK(field_trial);
+    base::FieldTrialParams params;
+    params.emplace(net::features::kIpPrivacyTokenServer.name,
+                   "https://staging-phosphor-pa.sandbox.googleapis.com");
+    base::AssociateFieldTrialParams(kTrialName, kGroupName, params);
+    aw_feature_overrides.OverrideFeatureWithFieldTrial(
+        net::features::kEnableIpProtectionProxy,
+        base::FeatureList::OverrideState::OVERRIDE_ENABLE_FEATURE, field_trial);
     aw_feature_overrides.EnableFeature(network::features::kMaskedDomainList);
   }
 
