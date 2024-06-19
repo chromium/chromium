@@ -439,11 +439,9 @@ scoped_refptr<VideoFrame> CreateGpuMemoryBufferVideoFrame(
     return nullptr;
   }
 
-  scoped_refptr<gpu::ClientSharedImage> dummy_shared_image;
   return media::VideoFrame::WrapExternalGpuMemoryBuffer(
       frame->visible_rect(), frame->natural_size(),
-      std::move(gpu_memory_buffer), dummy_shared_image, gpu::SyncToken(), 0,
-      base::NullCallback(), frame->timestamp());
+      std::move(gpu_memory_buffer), frame->timestamp());
 }
 
 scoped_refptr<const VideoFrame> CreateVideoFrameFromImage(const Image& image) {

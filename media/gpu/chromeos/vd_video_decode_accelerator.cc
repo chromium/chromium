@@ -573,7 +573,7 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
   scoped_refptr<FrameResource> origin_frame =
       VideoFrameResource::Create(VideoFrame::WrapExternalGpuMemoryBuffer(
           gfx::Rect(layout_->coded_size()), layout_->coded_size(),
-          std::move(gpu_memory_buffer)));
+          std::move(gpu_memory_buffer), base::TimeDelta()));
 
   // This passes because GetFrameStorageType() is hard coded to match the
   // storage type of frames produced by

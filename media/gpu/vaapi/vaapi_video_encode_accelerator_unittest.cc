@@ -669,10 +669,8 @@ class VaapiVideoEncodeAcceleratorTest
     std::unique_ptr<gfx::GpuMemoryBuffer> gmb =
         std::make_unique<FakeGpuMemoryBuffer>(
             kDefaultEncodeSize, gfx::BufferFormat::YUV_420_BIPLANAR);
-    scoped_refptr<gpu::ClientSharedImage> shared_image;
     auto frame = VideoFrame::WrapExternalGpuMemoryBuffer(
         gfx::Rect(kDefaultEncodeSize), kDefaultEncodeSize, std::move(gmb),
-        shared_image, gpu::SyncToken(), 0, base::DoNothing(),
         base::TimeDelta());
     ASSERT_TRUE(frame);
     encoder_->Encode(std::move(frame), /*force_keyframe=*/false);

@@ -507,11 +507,9 @@ scoped_refptr<VideoFrame> AlignedDataHelper::CreateVideoFrameFromVideoFrameData(
       return nullptr;
     }
 
-    scoped_refptr<gpu::ClientSharedImage> dummy_shared_image;
     return media::VideoFrame::WrapExternalGpuMemoryBuffer(
         visible_rect_, natural_size_, std::move(gpu_memory_buffer),
-        dummy_shared_image, gpu::SyncToken(), 0,
-        base::DoNothing() /* mailbox_holder_release_cb_ */, frame_timestamp);
+        frame_timestamp);
   } else {
     const auto& shmem_region = video_frame_data.shmem_region;
     auto dup_region = shmem_region.Duplicate();

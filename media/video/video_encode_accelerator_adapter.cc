@@ -207,14 +207,13 @@ class VideoEncodeAcceleratorAdapter::GpuMemoryBufferVideoFramePool
     auto gmb = std::move(available_gmbs_.back());
     available_gmbs_.pop_back();
 
-    VideoFrame::ReleaseMailboxAndGpuMemoryBufferCB reuse_cb =
-        base::BindPostTaskToCurrentDefault(
-            base::BindOnce(&GpuMemoryBufferVideoFramePool::ReuseFrame, this));
-    scoped_refptr<gpu::ClientSharedImage> empty_shared_image;
-    return VideoFrame::WrapExternalGpuMemoryBuffer(
+    auto video_frame = VideoFrame::WrapExternalGpuMemoryBuffer(
         gfx::Rect(visible_size), visible_size, std::move(gmb),
-        empty_shared_image, gpu::SyncToken(), /*texture_target=*/0,
-        std::move(reuse_cb), base::TimeDelta());
+        base::TimeDelta());
+    video_frame->SetReleaseMailboxAndGpuMemoryBufferCB(
+        base::BindPostTaskToCurrentDefault(
+            base::BindOnce(&GpuMemoryBufferVideoFramePool::ReuseFrame, this)));
+    return video_frame;
   }
 
  private:

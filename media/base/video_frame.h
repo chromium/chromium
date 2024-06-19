@@ -363,10 +363,14 @@ class MEDIA_EXPORT VideoFrame : public base::RefCountedThreadSafe<VideoFrame> {
   // |gpu_memory_buffer| to the returned VideoFrame.
   // For use in contexts where the GPUMemoryBuffer has no SharedImages
   // associated with it.
+  // NOTE: Clients who want to set a callback on the VideoFrame being destroyed
+  // should call SetReleaseMailboxAndGpuMemoryBufferCB() after creating the
+  // VideoFrame via this entrypoint.
   static scoped_refptr<VideoFrame> WrapExternalGpuMemoryBuffer(
       const gfx::Rect& visible_rect,
       const gfx::Size& natural_size,
-      std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer);
+      std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer,
+      base::TimeDelta timestamp);
 
   // Wraps |gpu_memory_buffer| along with the shared images created from
   // |gpu_memory_buffer|. This will transfer ownership of |gpu_memory_buffer|
