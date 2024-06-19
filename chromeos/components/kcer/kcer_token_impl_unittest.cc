@@ -3202,16 +3202,9 @@ TEST_F(KcerTokenImplTest, GetTokenInfoForDeviceToken) {
   EXPECT_EQ(info.module_name, "Chaps");
 }
 
-// TODO(b/347131760) Test consistently failing on
-// Linux Chromium OS ASan LSan Tests (1).
-#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
-#define MAYBE_GetKeyInfoRsaPssSuccess DISABLED_GetKeyInfoRsaPssSuccess
-#else
-#define MAYBE_GetKeyInfoRsaPssSuccess GetKeyInfoRsaPssSuccess
-#endif
 // Test that GetKeyInfo can successfully get key info for RSA keys when PSS is
 // supported.
-TEST_F(KcerTokenImplTest, MAYBE_GetKeyInfoRsaPssSuccess) {
+TEST_F(KcerTokenImplTest, GetKeyInfoRsaPssSuccess) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
   PublicKey public_key(Token::kUser, GetRsaPkcs11Id(), GetRsaSpki());
   ObjectHandle key_handle(1);
@@ -3249,16 +3242,9 @@ TEST_F(KcerTokenImplTest, MAYBE_GetKeyInfoRsaPssSuccess) {
           SigningScheme::kRsaPssRsaeSha512));
 }
 
-// TODO(b/347131760) Test consistently failing on
-// Linux Chromium OS ASan LSan Tests (1).
-#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
-#define MAYBE_GetKeyInfoRsaNoPssSuccess DISABLED_GetKeyInfoRsaNoPssSuccess
-#else
-#define MAYBE_GetKeyInfoRsaNoPssSuccess GetKeyInfoRsaNoPssSuccess
-#endif
 // Test that GetKeyInfo can successfully get key info for RSA keys when PSS is
 // not supported.
-TEST_F(KcerTokenImplTest, MAYBE_GetKeyInfoRsaNoPssSuccess) {
+TEST_F(KcerTokenImplTest, GetKeyInfoRsaNoPssSuccess) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
   PublicKey public_key(Token::kUser, GetRsaPkcs11Id(), GetRsaSpki());
   ObjectHandle key_handle(1);
@@ -3294,15 +3280,8 @@ TEST_F(KcerTokenImplTest, MAYBE_GetKeyInfoRsaNoPssSuccess) {
                                    SigningScheme::kRsaPkcs1Sha512));
 }
 
-// TODO(b/347131760) Test consistently failing on
-// Linux Chromium OS ASan LSan Tests (1).
-#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
-#define MAYBE_GetKeyInfoEcSuccess DISABLED_GetKeyInfoEcSuccess
-#else
-#define MAYBE_GetKeyInfoEcSuccess GetKeyInfoEcSuccess
-#endif
 // Test that GetKeyInfo can successfully get key info for EC keys.
-TEST_F(KcerTokenImplTest, MAYBE_GetKeyInfoEcSuccess) {
+TEST_F(KcerTokenImplTest, GetKeyInfoEcSuccess) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
   PublicKey public_key(Token::kUser, GetRsaPkcs11Id(), GetRsaSpki());
   ObjectHandle key_handle(1);
@@ -3396,16 +3375,9 @@ TEST_F(KcerTokenImplTest, GetKeyInfoFailToReadAttributes) {
   EXPECT_EQ(info_waiter.Get().error(), Error::kFailedToReadAttribute);
 }
 
-// TODO(b/347131760) Test consistently failing on
-// Linux Chromium OS ASan LSan Tests (1).
-#if defined(ADDRESS_SANITIZER) && defined(LEAK_SANITIZER)
-#define MAYBE_GetKeyInfoBadAttributes DISABLED_GetKeyInfoBadAttributes
-#else
-#define MAYBE_GetKeyInfoBadAttributes GetKeyInfoBadAttributes
-#endif
 // Test that GetKeyInfo correctly fails when retrieved attributes are
 // invalid.
-TEST_F(KcerTokenImplTest, MAYBE_GetKeyInfoBadAttributes) {
+TEST_F(KcerTokenImplTest, GetKeyInfoBadAttributes) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
   PublicKey public_key(Token::kUser, GetRsaPkcs11Id(), GetRsaSpki());
   ObjectHandle key_handle(1);

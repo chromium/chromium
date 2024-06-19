@@ -78,8 +78,7 @@ bool GetIsHardwareBacked(const chaps::Attribute* attr,
     return false;
   }
   chromeos::PKCS11_CK_BBOOL key_in_software =
-      *reinterpret_cast<const chromeos::PKCS11_CK_KEY_TYPE*>(
-          attr->value().data());
+      *reinterpret_cast<const chromeos::PKCS11_CK_BBOOL*>(attr->value().data());
   is_hardware_backed = (key_in_software == chromeos::PKCS11_CK_FALSE);
   return true;
 }
