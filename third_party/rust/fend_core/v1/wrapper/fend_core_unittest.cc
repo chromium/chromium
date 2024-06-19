@@ -58,5 +58,5 @@ TEST(FendCoreTest, CanTimeout) {
   EXPECT_EQ(result, std::nullopt);
 }
 
-}  // namespace
-}  // namespace fend_core
+} // namespace
+} // namespace fend_core

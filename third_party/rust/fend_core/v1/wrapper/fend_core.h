@@ -16,6 +16,6 @@ namespace fend_core {
 std::optional<std::string> evaluate(std::string_view query,
                                     unsigned int timeout_in_ms = 100);
 
-}  // namespace fend_core
+} // namespace fend_core
 
-#endif  // THIRD_PARTY_RUST_FEND_CORE_V1_WRAPPER_FEND_CORE_H_
+#endif // THIRD_PARTY_RUST_FEND_CORE_V1_WRAPPER_FEND_CORE_H_

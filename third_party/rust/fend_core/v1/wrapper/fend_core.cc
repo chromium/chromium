@@ -36,4 +36,4 @@ std::optional<std::string> evaluate(std::string_view query,
   return std::nullopt;
 }
 
-}  // namespace fend_core
+} // namespace fend_core
