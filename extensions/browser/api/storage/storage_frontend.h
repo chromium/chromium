@@ -85,6 +85,13 @@ class StorageFrontend : public BrowserContextKeyedAPI {
                      std::optional<std::vector<std::string>> keys,
                      base::OnceCallback<void(size_t)> callback);
 
+  // For a given `extension` and `storage_area`, sets the values specified by
+  // `values` in storage and fires `callback`.
+  void Set(scoped_refptr<const Extension> extension,
+           StorageAreaNamespace storage_area,
+           base::Value::Dict values,
+           base::OnceCallback<void(ResultStatus)> callback);
+
   // For a given `extension` and `storage_area`, removes the items specified by
   // `keys` from storage and fires `callback`.
   void Remove(scoped_refptr<const Extension> extension,

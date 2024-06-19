@@ -71,6 +71,15 @@ void GetBytesInUseWithValueStore(std::optional<std::vector<std::string>> keys,
       FROM_HERE, base::BindOnce(std::move(callback), size));
 }
 
+void SetWithValueStore(
+    const base::Value::Dict& values,
+    base::OnceCallback<void(ValueStore::WriteResult)> callback,
+    ValueStore* store) {
+  ValueStore::WriteResult result = store->Set(ValueStore::DEFAULTS, values);
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
+}
+
 void RemoveWithValueStore(
     std::vector<std::string> keys,
     base::OnceCallback<void(ValueStore::WriteResult)> callback,
@@ -199,6 +208,57 @@ void StorageFrontend::GetBytesInUse(
   RunWithStorage(extension, settings_namespace,
                  base::BindOnce(&GetBytesInUseWithValueStore, std::move(keys),
                                 std::move(callback)));
+}
+
+void StorageFrontend::Set(scoped_refptr<const Extension> extension,
+                          StorageAreaNamespace storage_area,
+                          base::Value::Dict values,
+                          base::OnceCallback<void(ResultStatus)> callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (storage_area == StorageAreaNamespace::kSession) {
+    SessionStorageManager* storage_manager =
+        SessionStorageManager::GetForBrowserContext(browser_context_);
+
+    std::map<std::string, base::Value> values_map;
+    for (auto item : values) {
+      values_map.emplace(std::move(item.first), std::move(item.second));
+    }
+
+    std::vector<SessionStorageManager::ValueChange> changes;
+    std::string error;
+    bool success = storage_manager->Set(extension->id(), std::move(values_map),
+                                        changes, &error);
+
+    if (success && !changes.empty()) {
+      OnSettingsChanged(extension->id(), storage_area,
+                        storage_utils::GetSessionAccessLevel(extension->id(),
+                                                             *browser_context_),
+                        storage_utils::ValueChangeToValue(std::move(changes)));
+    }
+
+    ResultStatus status;
+    status.success = success;
+    status.error = success ? std::nullopt : std::optional(error);
+
+    // Using a task here is important since we want to consistently fire the
+    // callback asynchronously.
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), status));
+    return;
+  }
+
+  settings_namespace::Namespace settings_namespace =
+      StorageAreaToSettingsNamespace(storage_area);
+
+  CHECK(StorageFrontend::IsStorageEnabled(settings_namespace));
+
+  RunWithStorage(
+      extension, settings_namespace,
+      base::BindOnce(&SetWithValueStore, std::move(values),
+                     base::BindOnce(&StorageFrontend::OnWriteFinished,
+                                    weak_factory_.GetWeakPtr(), extension->id(),
+                                    storage_area, std::move(callback))));
 }
 
 void StorageFrontend::Remove(scoped_refptr<const Extension> extension,

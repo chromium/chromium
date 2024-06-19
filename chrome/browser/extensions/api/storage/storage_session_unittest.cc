@@ -29,7 +29,8 @@ std::unique_ptr<KeyedService> CreateStorageFrontendForTesting(
 
 std::unique_ptr<KeyedService> BuildEventRouter(
     content::BrowserContext* profile) {
-  return std::make_unique<extensions::EventRouter>(profile, nullptr);
+  return std::make_unique<extensions::EventRouter>(
+      profile, ExtensionPrefs::Get(profile));
 }
 
 }  // namespace

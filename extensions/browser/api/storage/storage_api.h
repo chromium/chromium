@@ -93,11 +93,13 @@ class StorageStorageAreaSetFunction : public SettingsFunction {
   ~StorageStorageAreaSetFunction() override {}
 
   // SettingsFunction:
-  ResponseValue RunWithStorage(value_store::ValueStore* storage) override;
-  ResponseValue RunInSession() override;
+  ResponseAction Run() override;
 
   // ExtensionFunction:
   void GetQuotaLimitHeuristics(QuotaLimitHeuristics* heuristics) const override;
+
+  // Called after setting data in storage.
+  void OnSetOperationFinished(StorageFrontend::ResultStatus status);
 };
 
 class StorageStorageAreaRemoveFunction : public SettingsFunction {

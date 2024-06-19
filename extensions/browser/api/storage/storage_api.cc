@@ -384,40 +384,39 @@ void StorageStorageAreaGetBytesInUseFunction::OnGetBytesInUseOperationFinished(
   Respond(WithArguments(base::checked_cast<double>(bytes_in_use)));
 }
 
-ExtensionFunction::ResponseValue StorageStorageAreaSetFunction::RunWithStorage(
-    ValueStore* storage) {
-  TRACE_EVENT1("browser", "StorageStorageAreaSetFunction::RunWithStorage",
-               "extension_id", extension_id());
-  if (args().empty() || !args()[0].is_dict())
-    return BadMessage();
-  return UseWriteResult(
-      storage->Set(ValueStore::DEFAULTS, args()[0].GetDict()));
-}
+ExtensionFunction::ResponseAction StorageStorageAreaSetFunction::Run() {
+  if (args().empty() || !args()[0].is_dict()) {
+    return RespondNow(BadMessage());
+  }
 
-ExtensionFunction::ResponseValue StorageStorageAreaSetFunction::RunInSession() {
   // Retrieve and delete input from `args_` since they will be moved to storage.
-  if (args().empty() || !args()[0].is_dict())
-    return BadMessage();
   base::Value input = std::move(mutable_args()[0]);
   mutable_args().erase(args().begin());
 
-  std::map<std::string, base::Value> values;
-  for (auto item : input.GetDict()) {
-    values.emplace(std::move(item.first), std::move(item.second));
+  StorageFrontend* frontend = StorageFrontend::Get(browser_context());
+  frontend->Set(
+      extension(), storage_area(), std::move(input).TakeDict(),
+      base::BindOnce(&StorageStorageAreaSetFunction::OnSetOperationFinished,
+                     this));
+
+  return RespondLater();
+}
+
+void StorageStorageAreaSetFunction::OnSetOperationFinished(
+    StorageFrontend::ResultStatus status) {
+  // Since the storage access happens asynchronously, the browser context can
+  // be torn down in the interim. If this happens, early-out.
+  if (!browser_context()) {
+    return;
   }
 
-  std::vector<SessionStorageManager::ValueChange> changes;
-  bool result = SessionStorageManager::GetForBrowserContext(browser_context())
-                    ->Set(extension_id(), std::move(values), changes);
-
-  if (!result) {
-    // TODO(crbug.com/40171997): Add API test that triggers this behavior.
-    return Error(
-        "Session storage quota bytes exceeded. Values were not stored.");
+  if (!status.success) {
+    CHECK(status.error.has_value());
+    Respond(Error(*status.error));
+    return;
   }
 
-  OnSessionSettingsChanged(std::move(changes));
-  return NoArguments();
+  Respond(NoArguments());
 }
 
 void StorageStorageAreaSetFunction::GetQuotaLimitHeuristics(

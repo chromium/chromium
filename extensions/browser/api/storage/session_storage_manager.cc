@@ -145,12 +145,15 @@ SessionStorageManager::ExtensionStorage::GetAll() const {
 
 bool SessionStorageManager::ExtensionStorage::Set(
     std::map<std::string, base::Value> input_values,
-    std::vector<ValueChange>& changes) {
+    std::vector<ValueChange>& changes,
+    std::string* error) {
   std::map<std::string, std::unique_ptr<SessionValue>> session_values;
   size_t updated_used_total =
       CalculateUsage(std::move(input_values), session_values);
-  if (updated_used_total == quota_bytes_)
+  if (updated_used_total == quota_bytes_) {
+    *error = "Session storage quota bytes exceeded. Values were not stored.";
     return false;
+  }
 
   // Insert values in storage map and update total bytes.
   for (auto& session_value : session_values) {
@@ -282,14 +285,15 @@ std::map<std::string, const base::Value*> SessionStorageManager::GetAll(
 
 bool SessionStorageManager::Set(const ExtensionId& extension_id,
                                 std::map<std::string, base::Value> input_values,
-                                std::vector<ValueChange>& changes) {
+                                std::vector<ValueChange>& changes,
+                                std::string* error) {
   auto& storage = extensions_storage_[extension_id];
 
   // Initialize the extension storage, if it doesn't already exist.
   if (!storage)
     storage = std::make_unique<ExtensionStorage>(quota_bytes_per_extension_);
 
-  return storage->Set(std::move(input_values), changes);
+  return storage->Set(std::move(input_values), changes, error);
 }
 
 void SessionStorageManager::Remove(const ExtensionId& extension_id,
