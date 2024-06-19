@@ -130,6 +130,7 @@ export class PlaybackPage extends ReactiveLitElement {
       & > div {
         color: var(--cros-sys-on_surface_variant);
         font: 440 24px/32px var(--monospace-font-family);
+        letter-spacing: 0.03em;
         margin-bottom: 4px;
         position: absolute;
         position-anchor: --waveform;

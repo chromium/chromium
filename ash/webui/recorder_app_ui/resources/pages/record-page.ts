@@ -158,6 +158,7 @@ export class RecordPage extends ReactiveLitElement {
       font: 440 24px/32px var(--monospace-font-family);
       gap: 8px;
       height: 32px;
+      letter-spacing: 0.03em;
 
       & > svg {
         color: var(--cros-sys-on_error_container);
