@@ -1007,14 +1007,20 @@ TEST_P(WebGPUMailboxTest,
 TEST_P(WebGPUMailboxTest,
        ReadWritableUninitializedSharedImageWithUsageSupportingLazyClearing) {
   // Create the shared image.
+  auto si_usages =
+      SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+  if (IsUsingFallbackAdapter()) {
+    si_usages |=
+        SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE;
+  }
   SharedImageInterface* sii = GetSharedImageInterface();
-  scoped_refptr<gpu::ClientSharedImage> shared_image = sii->CreateSharedImage(
-      {GetParam().format,
-       {1, 1},
-       gfx::ColorSpace::CreateSRGB(),
-       SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE,
-       "TestLabel"},
-      kNullSurfaceHandle);
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      sii->CreateSharedImage({GetParam().format,
+                              {1, 1},
+                              gfx::ColorSpace::CreateSRGB(),
+                              si_usages,
+                              "TestLabel"},
+                             kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
   webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
 
@@ -1099,14 +1105,20 @@ TEST_P(
     WebGPUMailboxTest,
     ReadWritableUninitializedSharedImageWithInternalUsageSupportingLazyClearing) {
   // Create the shared image.
+  auto si_usages =
+      SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE;
+  if (IsUsingFallbackAdapter()) {
+    si_usages |=
+        SHARED_IMAGE_USAGE_RASTER_READ | SHARED_IMAGE_USAGE_RASTER_WRITE;
+  }
   SharedImageInterface* sii = GetSharedImageInterface();
-  scoped_refptr<gpu::ClientSharedImage> shared_image = sii->CreateSharedImage(
-      {GetParam().format,
-       {1, 1},
-       gfx::ColorSpace::CreateSRGB(),
-       SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE,
-       "TestLabel"},
-      kNullSurfaceHandle);
+  scoped_refptr<gpu::ClientSharedImage> shared_image =
+      sii->CreateSharedImage({GetParam().format,
+                              {1, 1},
+                              gfx::ColorSpace::CreateSRGB(),
+                              si_usages,
+                              "TestLabel"},
+                             kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
   webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
 

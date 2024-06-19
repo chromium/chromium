@@ -81,6 +81,12 @@ class WebGPUTest : public testing::Test {
     return gpu_service_holder_.get();
   }
 
+  bool IsUsingFallbackAdapter() {
+    wgpu::AdapterInfo adapter_info = {};
+    adapter_.GetInfo(&adapter_info);
+    return adapter_info.adapterType == wgpu::AdapterType::CPU;
+  }
+
   static std::map<std::pair<WGPUDevice, WGPUErrorType>, /* matched */ bool>
       s_expected_errors;
 
