@@ -12,8 +12,7 @@
 
 namespace viz {
 DelegatedInkHandler::DelegatedInkHandler(bool platform_supports_delegated_ink)
-    : use_delegated_ink_renderer_(!platform_supports_delegated_ink ||
-                                  !features::ShouldUsePlatformDelegatedInk()) {
+    : use_delegated_ink_renderer_(!platform_supports_delegated_ink) {
   if (use_delegated_ink_renderer_)
     ink_data_ = std::make_unique<DelegatedInkPointRendererSkia>();
 }

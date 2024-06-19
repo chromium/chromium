@@ -2140,9 +2140,6 @@ class DelegatedInkDisplayTest
     if (GetParam() == DelegatedInkType::kSkiaInk) {
       SetUpRenderers();
     } else {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kUsePlatformDelegatedInk);
-
       // Set up the display to use the Skia renderer.
       SetUpGpuDisplaySkiaWithPlatformInk(RendererSettings());
 
@@ -2166,9 +2163,6 @@ class DelegatedInkDisplayTest
   const gfx::DelegatedInkMetadata* GetMetadataFromTestRenderer() {
     return ink_renderer_->last_metadata();
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 struct DelegatedInkDisplayTestPassToString {

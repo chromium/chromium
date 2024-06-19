@@ -136,12 +136,6 @@ BASE_FEATURE(kUseSetPresentDuration,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
-// Enables platform supported delegated ink trails instead of Skia backed
-// delegated ink trails.
-BASE_FEATURE(kUsePlatformDelegatedInk,
-             "UsePlatformDelegatedInk",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Used to debug Android WebView Vulkan composite. Composite to an intermediate
 // buffer and draw the intermediate buffer to the secondary command buffer.
 BASE_FEATURE(kWebViewVulkanIntermediateBuffer,
@@ -480,10 +474,6 @@ std::string InkPredictor() {
     return "";
 
   return GetFieldTrialParamValueByFeature(kDrawPredictedInkPoint, "predictor");
-}
-
-bool ShouldUsePlatformDelegatedInk() {
-  return base::FeatureList::IsEnabled(kUsePlatformDelegatedInk);
 }
 
 #if BUILDFLAG(IS_ANDROID)

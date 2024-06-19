@@ -1365,8 +1365,7 @@ void Display::PreserveChildSurfaceControls() {
 void Display::InitDelegatedInkPointRendererReceiver(
     mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
         pending_receiver) {
-  if (DoesPlatformSupportDelegatedInk() &&
-      features::ShouldUsePlatformDelegatedInk() && output_surface_) {
+  if (DoesPlatformSupportDelegatedInk() && output_surface_) {
     output_surface_->InitDelegatedInkPointRendererReceiver(
         std::move(pending_receiver));
   } else if (DelegatedInkPointRendererBase* ink_renderer =
