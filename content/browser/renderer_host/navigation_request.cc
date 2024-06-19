@@ -10395,6 +10395,11 @@ void NavigationRequest::CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host) {
       bindings() != web_ui_->GetBindings()) {
     RecordAction(base::UserMetricsAction("ProcessSwapBindingsMismatch_RVHM"));
     base::WeakPtr<NavigationRequest> self = GetWeakPtr();
+    // Reset `controller` first before resetting `web_ui_`, since the controller
+    // still has a pointer to `web_ui_`, to avoid referencing to the already
+    // deleted  `web_ui_` object from `controller`'s destructor. See also
+    // https://crbug.com/345640549.
+    controller.reset();
     web_ui_.reset();
     // Resetting the WebUI may indirectly call content's embedders and delete
     // `this`. There are no known occurrences of it, so we assume this never
