@@ -8148,6 +8148,14 @@
     "expiry_milestone": 126
   },
   {
+    "name": "spotlight-never-retain-index",
+    "owners": [
+      "bling-flags@google.com",
+      "stkhapugin@chromium.org"
+    ],
+    "expiry_milestone": 130
+  },
+  {
     "name": "spotlight-open-tabs-source",
     "owners": [
       "bling-flags@google.com",

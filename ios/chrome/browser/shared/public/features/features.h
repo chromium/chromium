@@ -657,4 +657,8 @@ BASE_DECLARE_FEATURE(kDefaultBrowserPromoIPadExperimentalString);
 // Returns `YES` if the title and subtitle should be tailored for iPad.
 BOOL UseIPadTailoredStringForDefaultBrowserPromo();
 
+// Flag to not keep a strong reference to the spotlight index, as a tentative
+// memory improvement measure.
+BASE_DECLARE_FEATURE(kSpotlightNeverRetainIndex);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

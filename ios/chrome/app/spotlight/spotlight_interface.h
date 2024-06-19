@@ -21,10 +21,16 @@
 // it is available).
 + (SpotlightInterface*)defaultInterface;
 
+/// Designated initializer.
+/// - Parameters:
+///   - searchableIndex: if `nil`, defaultSearchableIndex will be used
+///   - maxAttempts: number of times this interface will try to recover from
+///   errors when writing to index.
 - (instancetype)initWithSearchableIndex:(CSSearchableIndex*)searchableIndex
                             maxAttempts:(NSUInteger)maxAttempts;
 
-// Searchable index used internally.
+/// Searchable index used internally.
+/// Defaults to [CSSearchableIndex defaultSearchableIndex] if none is set.
 @property(nonatomic, readonly) CSSearchableIndex* searchableIndex;
 
 /// Adds or updates searchable items.

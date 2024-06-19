@@ -1042,6 +1042,11 @@ const char kShowAutofillTypePredictionsDescription[] =
     "Annotates web forms with Autofill field type predictions as placeholder "
     "text.";
 
+const char kSpotlightNeverRetainIndexName[] = "Don't retain spotlight index";
+const char kSpotlightNeverRetainIndexDescription[] =
+    "Tentative spotlight memory improvement by not storing a strong pointer to "
+    "the spotlight default index";
+
 const char kSpotlightReadingListSourceName[] = "Show Reading List in Spotlight";
 const char kSpotlightReadingListSourceDescription[] =
     "Donate Reading List items to iOS Search Engine Spotlight";

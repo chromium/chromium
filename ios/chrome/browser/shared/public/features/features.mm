@@ -833,3 +833,7 @@ BOOL UseIPadTailoredStringForDefaultBrowserPromo() {
          base::FeatureList::IsEnabled(
              kDefaultBrowserPromoIPadExperimentalString);
 }
+
+BASE_FEATURE(kSpotlightNeverRetainIndex,
+             "SpotlightNeverRetainIndex",
+             base::FEATURE_DISABLED_BY_DEFAULT);
