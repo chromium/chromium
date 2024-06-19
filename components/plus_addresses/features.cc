@@ -55,11 +55,6 @@ BASE_FEATURE(kPlusAddressRefresh,
              "PlusAddressRefresh",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, refresh UI is shown in the bottom sheet on iOS.
-BASE_FEATURE(kPlusAddressRefreshUiInIOS,
-             "PlusAddressRefreshUiInIOS",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // When enabled, allows the use of affiliation data with plus addresses. This
 // includes things like prefetching affiliation data, or suggesting plus
 // addresses for affiliated domains.

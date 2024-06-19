@@ -113,9 +113,7 @@
 }
 
 - (BOOL)isRefreshEnabled {
-  return base::FeatureList::IsEnabled(
-             plus_addresses::features::kPlusAddressRefreshUiInIOS) &&
-         _plusAddressService->IsRefreshingSupported(_mainFrameOrigin);
+  return _plusAddressService->IsRefreshingSupported(_mainFrameOrigin);
 }
 
 - (void)didTapRefreshButton {
