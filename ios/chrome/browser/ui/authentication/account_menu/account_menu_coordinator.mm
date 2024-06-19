@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/authentication/account_switching/account_switcher_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_coordinator.h"
 
 #import "base/check.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
-#import "ios/chrome/browser/ui/authentication/account_switching/account_switcher_view_controller.h"
-#import "ios/chrome/browser/ui/authentication/account_switching/account_switching_constants.h"
+#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller.h"
+#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_constants.h"
 
-@implementation AccountSwitcherCoordinator {
-  AccountSwitcherViewController* _viewController;
+@implementation AccountMenuCoordinator {
+  AccountMenuViewController* _viewController;
 }
 
 - (void)start {
   [super start];
-  _viewController = [[AccountSwitcherViewController alloc]
+  _viewController = [[AccountMenuViewController alloc]
       initWithStyle:ChromeTableViewStyle()];
   UINavigationController* navController = [[UINavigationController alloc]
       initWithRootViewController:_viewController];
@@ -33,7 +33,7 @@
         initWithBarButtonSystemItem:UIBarButtonSystemItemClose
                              target:self
                              action:@selector(didTapClose)];
-    closeButton.accessibilityIdentifier = kAccountSwitchingCloseButtonId;
+    closeButton.accessibilityIdentifier = kAccountMenuCloseButtonId;
     _viewController.navigationItem.rightBarButtonItem = closeButton;
   }
 

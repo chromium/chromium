@@ -68,7 +68,7 @@
 #import "ios/chrome/browser/signin/model/system_identity_manager.h"
 #import "ios/chrome/browser/supervised_user/model/supervised_user_capabilities_observer_bridge.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
-#import "ios/chrome/browser/ui/authentication/account_switching/account_switcher_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_coordinator.h"
@@ -258,7 +258,7 @@
   // Coordinator in charge of handling sharing use cases.
   SharingCoordinator* _sharingCoordinator;
   // Coordinator in charge of fast account switching menu.
-  AccountSwitcherCoordinator* _accountSwitcherCoordinator;
+  AccountMenuCoordinator* _accountMenuCoordinator;
 }
 
 // Synthesize NewTabPageConfiguring properties.
@@ -429,8 +429,8 @@
   [_sharingCoordinator stop];
   _sharingCoordinator = nil;
 
-  [_accountSwitcherCoordinator stop];
-  _accountSwitcherCoordinator = nil;
+  [_accountMenuCoordinator stop];
+  _accountMenuCoordinator = nil;
 
   self.started = NO;
 }
@@ -843,13 +843,13 @@
     [handler showSettingsFromViewController:self.baseViewController];
   } else if (isSignedIn) {
     if (base::FeatureList::IsEnabled(kIdentityDiscAccountSwitch)) {
-      _accountSwitcherCoordinator = [[AccountSwitcherCoordinator alloc]
+      _accountMenuCoordinator = [[AccountMenuCoordinator alloc]
           initWithBaseViewController:self.baseViewController
                              browser:self.browser];
-      _accountSwitcherCoordinator.anchorView = identityDisc;
+      _accountMenuCoordinator.anchorView = identityDisc;
       // TODO(crbug.com/336719423): Record signin metrics based on the selected
       // action from the account switcher.
-      [_accountSwitcherCoordinator start];
+      [_accountMenuCoordinator start];
     } else {
       [handler showSettingsFromViewController:self.baseViewController];
     }

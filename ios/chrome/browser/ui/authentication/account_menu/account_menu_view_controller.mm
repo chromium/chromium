@@ -2,20 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/authentication/account_switching/account_switcher_view_controller.h"
+#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_view_controller.h"
 
-#import "ios/chrome/browser/ui/authentication/account_switching/account_switching_constants.h"
+#import "ios/chrome/browser/ui/authentication/account_menu/account_menu_constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {
 constexpr CGFloat kHalfSheetCornerRadius = 20.0;
 }  // namespace
 
-@implementation AccountSwitcherViewController
+@implementation AccountMenuViewController
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.tableView.accessibilityIdentifier = kAccountSwitchingTableViewId;
+  self.tableView.accessibilityIdentifier = kAccountMenuTableViewId;
   self.tableView.backgroundColor =
       [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   [self setUpBottomSheetPresentationController];
