@@ -77,19 +77,9 @@ PickerWidget::PickerWidget(PickerViewDelegate* delegate,
                            base::TimeTicks trigger_event_timestamp)
     : views::Widget(
           CreateInitParams(delegate, anchor_bounds, trigger_event_timestamp)),
-      bubble_event_filter_(
-          /*widget=*/this,
-          /*button=*/nullptr,
-          // base::Unretained is safe here because this class owns
-          // `bubble_event_filter_.
-          base::BindRepeating(&PickerWidget::OnClickOutsideWidget,
-                              base::Unretained(this))) {
+      bubble_event_filter_(/*widget=*/this) {
   SetVisibilityAnimationTransition(
       views::Widget::VisibilityTransition::ANIMATE_HIDE);
-}
-
-void PickerWidget::OnClickOutsideWidget(const ui::LocatedEvent& event) {
-  Close();
 }
 
 PickerWidget::~PickerWidget() = default;

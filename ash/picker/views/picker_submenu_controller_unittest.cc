@@ -58,6 +58,17 @@ TEST_F(PickerSubmenuControllerTest, ShowsWidgetAlignedWithAnchor) {
   EXPECT_NEAR(submenu_bounds.y(), 345, 20);
 }
 
+TEST_F(PickerSubmenuControllerTest, ShowsWidgetWithParent) {
+  PickerSubmenuController controller;
+  auto anchor_widget = CreateFramelessTestWidget();
+  anchor_widget->SetContentsView(std::make_unique<views::View>());
+  controller.Show(anchor_widget->GetContentsView(), {});
+
+  EXPECT_EQ(controller.widget_for_testing()->parent(), anchor_widget.get());
+  EXPECT_EQ(controller.widget_for_testing()->GetNativeWindow()->parent(),
+            anchor_widget->GetNativeWindow());
+}
+
 TEST_F(PickerSubmenuControllerTest, ClosesWidget) {
   PickerSubmenuController controller;
   auto anchor_widget = CreateFramelessTestWidget();

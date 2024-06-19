@@ -78,6 +78,12 @@ class PickerSubmenuView : public views::WidgetDelegateView {
     gfx::Rect bounds = bubble_frame_view->GetUpdatedWindowBounds(
         anchor_rect, bubble_frame_view->GetArrow(), GetPreferredSize({}),
         /*adjust_to_fit_available_bounds=*/true);
+
+    // Adjust the bounds to be relative to the parent's bounds.
+    const gfx::Rect parent_bounds =
+        GetWidget()->parent()->GetWindowBoundsInScreen();
+    bounds.Offset(-parent_bounds.OffsetFromOrigin());
+
     // Shift by the insets to align the first item with the anchor rect.
     bounds.Offset(0, -kInsets.top());
     return bounds;
@@ -131,6 +137,8 @@ void PickerSubmenuController::Show(
   widget_ = std::make_unique<views::Widget>(CreateInitParams(
       anchor_view, std::make_unique<PickerSubmenuView>(
                        anchor_view->GetBoundsInScreen(), std::move(items))));
+  views::Widget::ReparentNativeView(widget_->GetNativeWindow(),
+                                    anchor_view->GetWidget()->GetNativeView());
   widget_->Show();
 
   // This forces the Widget to reposition itself based on the anchor.
