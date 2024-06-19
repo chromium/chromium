@@ -34,10 +34,10 @@ DetectionObserver::DetectionObserver(DetectionProcessors processors)
 
 DetectionObserver::~DetectionObserver() = default;
 
-void DetectionObserver::OnDetection(
+void DetectionObserver::OnFrameProcessed(
     cros::mojom::KioskVisionDetectionPtr detection) {
   for (auto& processor : processors_) {
-    processor->OnDetection(*detection);
+    processor->OnFrameProcessed(*detection);
   }
 }
 
@@ -62,7 +62,7 @@ void DetectionObserver::EmitFakeDetection() {
   fake_detection_flag_ = !fake_detection_flag_;
   fake_detection_offset_ = (fake_detection_offset_ + 1) % kMaxOffset;
 
-  OnDetection(std::move(fake_detection));
+  OnFrameProcessed(std::move(fake_detection));
 }
 
 }  // namespace ash::kiosk_vision

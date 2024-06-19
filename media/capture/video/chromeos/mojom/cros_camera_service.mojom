@@ -68,7 +68,7 @@ enum CameraAutoFramingState {
 // Next method ID: 2
 interface KioskVisionObserver {
   // Notifies the observer that a new detection has happened.
-  OnDetection@0(KioskVisionDetection detection);
+  OnFrameProcessed@0(KioskVisionDetection detection);
 
   // Notifies the observer that an error has happened.
   OnError@1(KioskVisionError error);

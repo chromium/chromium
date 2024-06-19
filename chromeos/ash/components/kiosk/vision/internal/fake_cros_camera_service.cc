@@ -35,7 +35,7 @@ bool FakeCrosCameraService::HasObserver() {
 
 void FakeCrosCameraService::EmitFakeDetection(
     cros::mojom::KioskVisionDetectionPtr detection) {
-  observer_remote_->OnDetection(std::move(detection));
+  observer_remote_->OnFrameProcessed(std::move(detection));
 }
 
 void FakeCrosCameraService::EmitFakeError(cros::mojom::KioskVisionError error) {

@@ -54,7 +54,7 @@ std::vector<cros::mojom::KioskVisionError> TelemetryProcessor::TakeErrors() {
   return ToVector(std::exchange(latest_errors_, {}));
 }
 
-void TelemetryProcessor::OnDetection(
+void TelemetryProcessor::OnFrameProcessed(
     const cros::mojom::KioskVisionDetection& detection) {
   for (const auto& a : detection.appearances) {
     latest_ids_processed_.push_back(a->person_id);

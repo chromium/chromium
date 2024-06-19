@@ -29,7 +29,7 @@ class DetectionProcessor {
  public:
   virtual ~DetectionProcessor() = default;
 
-  virtual void OnDetection(
+  virtual void OnFrameProcessed(
       const cros::mojom::KioskVisionDetection& detection) = 0;
 
   virtual void OnError(cros::mojom::KioskVisionError error) = 0;

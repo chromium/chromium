@@ -36,7 +36,7 @@ TEST(TelemetryProcessorTest, StartsWithoutDetections) {
 TEST(TelemetryProcessorTest, ReceivesDetections) {
   TelemetryProcessor processor;
   DetectionProcessor& detection_processor = processor;
-  detection_processor.OnDetection(NewFakeDetectionOfPersons({123, 45}));
+  detection_processor.OnFrameProcessed(NewFakeDetectionOfPersons({123, 45}));
 
   EXPECT_THAT(processor.TakeIdsProcessed(), ElementsAreArray({123, 45}));
   EXPECT_THAT(processor.TakeErrors(), IsEmpty());

@@ -45,7 +45,7 @@ InternalsPageProcessor::InternalsPageProcessor()
 
 InternalsPageProcessor::~InternalsPageProcessor() = default;
 
-void InternalsPageProcessor::OnDetection(
+void InternalsPageProcessor::OnFrameProcessed(
     const cros::mojom::KioskVisionDetection& detection) {
   NotifyStateChange(
       NewState(mojom::Status::kRunning, DetectionToBoxes(detection)));
