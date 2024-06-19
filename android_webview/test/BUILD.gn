@@ -310,6 +310,7 @@ base_webview_instrumentation_test_apk("webview_instrumentation_test_apk") {
     "../javatests/src/org/chromium/android_webview/test/AndroidProtocolHandlerTest.java",
     "../javatests/src/org/chromium/android_webview/test/AndroidScrollIntegrationTest.java",
     "../javatests/src/org/chromium/android_webview/test/AndroidViewIntegrationTest.java",
+    "../javatests/src/org/chromium/android_webview/test/ApiImplementationLoggerTest.java",
     "../javatests/src/org/chromium/android_webview/test/ArchiveTest.java",
     "../javatests/src/org/chromium/android_webview/test/AttributionReportingTest.java",
     "../javatests/src/org/chromium/android_webview/test/AwAutofillTest.java",
