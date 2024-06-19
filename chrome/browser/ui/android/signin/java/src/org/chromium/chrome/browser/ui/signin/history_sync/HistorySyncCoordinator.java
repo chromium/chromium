@@ -29,7 +29,6 @@ public class HistorySyncCoordinator {
     }
 
     private final HistorySyncMediator mMediator;
-    private final HistorySyncDelegate mDelegate;
     private final boolean mUseLandscapeLayout;
     private HistorySyncView mView;
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
@@ -56,7 +55,6 @@ public class HistorySyncCoordinator {
             boolean showEmailInFooter,
             boolean shouldSignOutOnDecline,
             @Nullable View view) {
-        mDelegate = delegate;
         LayoutInflater inflater = LayoutInflater.from(context);
         mUseLandscapeLayout =
                 !delegate.isLargeScreen()

@@ -109,7 +109,7 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
                             PrivacyPreferencesManagerImpl.getInstance(),
                             this);
 
-            setContentView(mUpgradePromoCoordinator.getViewSwitcher());
+            setContentView(mUpgradePromoCoordinator.getView());
             onInitialLayoutInflationComplete();
             return;
         }
@@ -229,7 +229,7 @@ public class SigninAndHistoryOptInActivity extends FirstRunActivityBase
             mCoordinator.switchHistorySyncLayout();
         } else {
             mUpgradePromoCoordinator.recreateLayoutAfterConfigurationChange();
-            setContentView(mUpgradePromoCoordinator.getViewSwitcher());
+            setContentView(mUpgradePromoCoordinator.getView());
         }
     }
 

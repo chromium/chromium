@@ -262,23 +262,23 @@ public class UpgradePromoIntegrationTest {
                 mActivity, Configuration.ORIENTATION_LANDSCAPE);
 
         // Verify that the view switcher is displayed with the correct layout.
+        onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
             onView(withId(R.id.upgrade_promo_portrait)).check(matches(isDisplayed()));
         } else {
-            onView(withId(R.id.upgrade_promo_landscape)).check(matches(isDisplayed()));
+            onViewWaiting(withId(R.id.upgrade_promo_landscape)).check(matches(isDisplayed()));
         }
-        onView(withId(R.id.fullscreen_signin)).check(matches(isDisplayed()));
 
         // Sign in.
         onView(withId(R.id.signin_fre_continue_button)).perform(click());
 
-        // Verify that the view switcher is displayed with the correct layout.
+        // Verify that the view is displayed with the correct layout.
+        onView(withId(R.id.history_sync)).check(matches(isDisplayed()));
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
             onView(withId(R.id.upgrade_promo_portrait)).check(matches(isDisplayed()));
         } else {
             onView(withId(R.id.upgrade_promo_landscape)).check(matches(isDisplayed()));
         }
-        onView(withId(R.id.history_sync)).check(matches(isDisplayed()));
 
         // Rotate the screen back.
         ActivityTestUtils.rotateActivityToOrientation(
