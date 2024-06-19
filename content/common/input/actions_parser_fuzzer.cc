@@ -4,28 +4,28 @@
 
 #include "content/common/input/actions_parser.h"
 
-#include <stdint.h>
-
-#include <optional>
-#include <string_view>
-#include <tuple>
-#include <utility>
-
 #include "base/json/json_reader.h"
-#include "base/values.h"
+#include "base/test/fuzztest_support.h"
+#include "third_party/fuzztest/src/fuzztest/fuzztest.h"
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  constexpr size_t kMaxInputSize = 100 * 1000;
-  if (size > kMaxInputSize) {
-    // To avoid spurious timeout and out-of-memory fuzz reports.
-    return 0;
-  }
-
-  std::optional<base::Value> value = base::JSONReader::Read(
-      std::string_view(reinterpret_cast<const char*>(data), size));
-  if (!value)
-    return 0;
-  content::ActionsParser parser(std::move(*value));
+void ActionsParserFuzzer(base::Value value) {
+  content::ActionsParser parser(std::move(value));
   std::ignore = parser.Parse();
-  return 0;
 }
+
+FUZZ_TEST(ActionsParserFuzzTest, ActionsParserFuzzer)
+    .WithSeeds({*base::JSONReader::Read(
+                    R"JSON( [{"source": "mouse", "id": 0,
+                "actions": [{"name": "pointerDown", "x": 2, "y": 3,
+                             "button": 0},
+                            {"name": "pointerUp", "x": 2, "y": 3,
+                             "button": 0}]}] )JSON"),
+                *base::JSONReader::Read(
+                    R"JSON( [{"source": "touch", "id": 1,
+                "actions": [{"name": "pointerDown", "x": 3, "y": 5},
+                            {"name": "pointerMove", "x": 30, "y": 30},
+                            {"name": "pointerUp" } ]},
+               {"source": "touch", "id": 2,
+                "actions": [{"name": "pointerDown", "x": 10, "y": 10},
+                            {"name": "pointerMove", "x": 50, "y": 50},
+                            {"name": "pointerUp" } ]}] )JSON")});
