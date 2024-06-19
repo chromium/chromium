@@ -20,6 +20,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/field_trial.h"
@@ -2160,6 +2161,7 @@ FindFormAndFieldForFormControlElement(
   WebFormElement form_element = GetOwningForm(element);
   std::optional<FormData> form = ExtractFormData(
       document, form_element, field_data_manager, extract_options);
+  const bool extract_form_data_succeeded = form.has_value();
 
   if (!form) {
     // If we couldn't extract the form, ignore the fields other than `element`.
@@ -2187,6 +2189,38 @@ FindFormAndFieldForFormControlElement(
   if (base::FeatureList::IsEnabled(
           blink::features::
               kAutofillIncludeShadowDomInUnassociatedListedElements)) {
+    GURL url;
+    if (WebDocument doc = element.GetDocument()) {
+      url = doc.Url();
+    }
+    blink::WebFormElement assoc_form_element = element.Form();
+    SCOPED_CRASH_KEY_STRING64("Autofill", "url", url.spec());
+    SCOPED_CRASH_KEY_STRING64("Autofill", "elem_tag_name",
+                              element.TagName().Utf8());
+    SCOPED_CRASH_KEY_NUMBER("Autofill", "elem_form_control_type",
+                            base::to_underlying(element.FormControlType()));
+    SCOPED_CRASH_KEY_BOOL("Autofill", "elem_in_shadow_dom",
+                          !element.OwnerShadowHost().IsNull());
+    SCOPED_CRASH_KEY_BOOL("Autofill", "elem_assoc_form",
+                          !assoc_form_element.IsNull());
+    SCOPED_CRASH_KEY_BOOL(
+        "Autofill", "elem_assoc_form_in_shadow_dom",
+        assoc_form_element && !assoc_form_element.OwnerShadowHost().IsNull());
+    SCOPED_CRASH_KEY_BOOL(
+        "Autofill", "elem_assoc_form_in_same_dom",
+        assoc_form_element &&
+            element.OwnerShadowHost() == assoc_form_element.OwnerShadowHost());
+    SCOPED_CRASH_KEY_BOOL("Autofill", "elem_owng_form", !form_element.IsNull());
+    SCOPED_CRASH_KEY_BOOL(
+        "Autofill", "elem_owng_form_in_shadow_dom",
+        form_element && !form_element.OwnerShadowHost().IsNull());
+    SCOPED_CRASH_KEY_BOOL("Autofill", "elem_owng_form_in_same_dom",
+                          form_element && element.OwnerShadowHost() ==
+                                              form_element.OwnerShadowHost());
+    SCOPED_CRASH_KEY_BOOL("Autofill", "extract_form_data_succeeded",
+                          extract_form_data_succeeded);
+    SCOPED_CRASH_KEY_NUMBER("Autofill", "extracted_form_size",
+                            form->fields().size());
     NOTREACHED(base::NotFatalUntil::M129);
   }
   return std::nullopt;
