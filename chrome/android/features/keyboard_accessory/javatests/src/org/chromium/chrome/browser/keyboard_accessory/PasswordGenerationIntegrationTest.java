@@ -23,14 +23,20 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.IntegrationTest;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupView;
@@ -38,15 +44,17 @@ import org.chromium.chrome.browser.password_manager.PasswordManagerTestHelper;
 import org.chromium.chrome.browser.password_manager.PasswordStoreBridge;
 import org.chromium.chrome.browser.password_manager.PasswordStoreCredential;
 import org.chromium.chrome.browser.sync.SyncTestRule;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.signin.SigninTestRule;
+import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.messages.MessagesTestHelper;
+import org.chromium.components.sync.ModelType;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -56,23 +64,31 @@ import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.ui.widget.ChromeImageButton;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 /** Integration tests for password generation. */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(ParameterizedRunner.class)
+@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @DoNotBatch(
         reason =
                 "TODO(crbug.com/40232561): add resetting logic for"
                         + "FakePasswordStoreAndroidBackend to allow batching")
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "show-autofill-signatures"})
+@EnableFeatures({ChromeFeatureList.ENABLE_PASSWORDS_ACCOUNT_STORAGE_FOR_NON_SYNCING_USERS})
 public class PasswordGenerationIntegrationTest {
     /**
      * The number of buttons currently available in the keyboard accessory bar. The offered options
      * are: passwords, addresses and payments.
      */
-    public static final int KEYBOARD_ACCESSORY_BAR_ITEM_COUNT = 3;
+    private static final int KEYBOARD_ACCESSORY_BAR_ITEM_COUNT = 3;
 
-    @Rule public SyncTestRule mSyncTestRule = new SyncTestRule();
+    @ClassParameter
+    private static final List<ParameterSet> sClassParams =
+            Arrays.asList(
+                    new ParameterSet().value(true).name("WithSyncFeature"),
+                    new ParameterSet().value(false).name("WithoutSyncFeature"));
 
     private static final String PASSWORD_NODE_ID = "password_field";
     private static final String PASSWORD_NODE_ID_MANUAL = "password_field_manual";
@@ -85,6 +101,10 @@ public class PasswordGenerationIntegrationTest {
     private static final String ELIGIBLE_FOR_GENERATION = "1";
     private static final String USERNAME_TEXT = "username";
 
+    @Rule public final SyncTestRule mSyncTestRule = new SyncTestRule();
+
+    private final boolean mWithSyncFeature;
+
     private EmbeddedTestServer mTestServer;
     private ManualFillingTestHelper mHelper;
     private PasswordStoreBridge mPasswordStoreBridge;
@@ -92,11 +112,28 @@ public class PasswordGenerationIntegrationTest {
     private RecyclerView mKeyboardAccessoryBarItems;
     private BottomSheetController mBottomSheetController;
 
+    public PasswordGenerationIntegrationTest(boolean withSyncFeature) {
+        mWithSyncFeature = withSyncFeature;
+    }
+
     @Before
     public void setUp() throws InterruptedException {
         PasswordManagerTestHelper.setAccountForPasswordStore(SigninTestRule.TEST_ACCOUNT_EMAIL);
 
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        if (mWithSyncFeature) {
+            mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        } else {
+            mSyncTestRule.setUpAccountAndSignInForTesting();
+        }
+        // Surprisingly the default timeout of 3 seconds doesn't seem to be enough here.
+        CriteriaHelper.pollUiThread(
+                () ->
+                        mSyncTestRule
+                                .getSyncService()
+                                .getActiveDataTypes()
+                                .contains(ModelType.PASSWORDS),
+                SyncTestUtil.TIMEOUT_MS,
+                SyncTestUtil.INTERVAL_MS);
         ManualFillingTestHelper.disableServerPredictions();
 
         runOnUiThreadBlocking(
