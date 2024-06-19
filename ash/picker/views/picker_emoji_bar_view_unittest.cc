@@ -11,7 +11,7 @@
 #include "ash/picker/picker_test_util.h"
 #include "ash/picker/views/picker_emoji_bar_view_delegate.h"
 #include "ash/picker/views/picker_emoji_item_view.h"
-#include "ash/picker/views/picker_pseudo_focus_handler.h"
+#include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_symbol_item_view.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/style/ash_color_provider.h"
@@ -21,6 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
@@ -30,6 +31,7 @@ namespace {
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
+using ::testing::SizeIs;
 using ::testing::Truly;
 
 constexpr int kPickerWidth = 320;
@@ -41,7 +43,6 @@ class MockEmojiBarViewDelegate : public PickerEmojiBarViewDelegate {
               (const PickerSearchResult&),
               (override));
   MOCK_METHOD(void, ShowEmojiPicker, (ui::EmojiPickerCategory), (override));
-  MOCK_METHOD(void, NotifyPseudoFocusChanged, (views::View*), (override));
 };
 
 class PickerEmojiBarViewTest : public views::ViewsTestBase {
@@ -105,7 +106,7 @@ TEST_F(PickerEmojiBarViewTest, ClickingGifsButton) {
   LeftClickOn(*emoji_bar->gifs_button_for_testing());
 }
 
-TEST_F(PickerEmojiBarViewTest, GainsPseudoFocus) {
+TEST_F(PickerEmojiBarViewTest, GetsTopItem) {
   MockEmojiBarViewDelegate mock_delegate;
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -115,18 +116,14 @@ TEST_F(PickerEmojiBarViewTest, GainsPseudoFocus) {
   widget->Show();
   emoji_bar->SetSearchResults(
       {PickerSearchResult::Emoji(u"😊"), PickerSearchResult::Symbol(u"♬")});
-  ViewDrawnWaiter().Wait(emoji_bar->item_row_for_testing()->children().front());
 
-  EXPECT_CALL(mock_delegate, NotifyPseudoFocusChanged(_)).Times(1);
   EXPECT_CALL(mock_delegate,
               SelectSearchResult(PickerSearchResult::Emoji(u"😊")));
 
-  EXPECT_TRUE(emoji_bar->GainPseudoFocus(
-      PickerPseudoFocusHandler::PseudoFocusDirection::kForward));
-  EXPECT_TRUE(emoji_bar->DoPseudoFocusedAction());
+  EXPECT_TRUE(DoPickerPseudoFocusedActionOnView(emoji_bar->GetTopItem()));
 }
 
-TEST_F(PickerEmojiBarViewTest, AdvancesPseudoFocus) {
+TEST_F(PickerEmojiBarViewTest, GetsItemLeftOf) {
   MockEmojiBarViewDelegate mock_delegate;
   std::unique_ptr<views::Widget> widget =
       CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -136,17 +133,41 @@ TEST_F(PickerEmojiBarViewTest, AdvancesPseudoFocus) {
   widget->Show();
   emoji_bar->SetSearchResults(
       {PickerSearchResult::Emoji(u"😊"), PickerSearchResult::Symbol(u"♬")});
-  ViewDrawnWaiter().Wait(emoji_bar->item_row_for_testing()->children().front());
+  const views::View::Views& emoji_bar_items =
+      emoji_bar->item_row_for_testing()->children();
+  ASSERT_THAT(emoji_bar_items, SizeIs(2));
 
-  EXPECT_CALL(mock_delegate, NotifyPseudoFocusChanged(_)).Times(2);
-  EXPECT_CALL(mock_delegate,
-              SelectSearchResult(PickerSearchResult::Symbol(u"♬")));
+  EXPECT_EQ(emoji_bar->GetItemLeftOf(emoji_bar_items[0]), nullptr);
+  EXPECT_EQ(emoji_bar->GetItemLeftOf(emoji_bar_items[1]), emoji_bar_items[0]);
+  EXPECT_EQ(emoji_bar->GetItemLeftOf(emoji_bar->gifs_button_for_testing()),
+            emoji_bar_items[1]);
+  EXPECT_EQ(
+      emoji_bar->GetItemLeftOf(emoji_bar->more_emojis_button_for_testing()),
+      emoji_bar->gifs_button_for_testing());
+}
 
-  EXPECT_TRUE(emoji_bar->GainPseudoFocus(
-      PickerPseudoFocusHandler::PseudoFocusDirection::kForward));
-  EXPECT_TRUE(emoji_bar->AdvancePseudoFocus(
-      PickerPseudoFocusHandler::PseudoFocusDirection::kForward));
-  EXPECT_TRUE(emoji_bar->DoPseudoFocusedAction());
+TEST_F(PickerEmojiBarViewTest, GetsItemRightOf) {
+  MockEmojiBarViewDelegate mock_delegate;
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  widget->SetFullscreen(true);
+  auto* emoji_bar = widget->SetContentsView(
+      std::make_unique<PickerEmojiBarView>(&mock_delegate, kPickerWidth));
+  widget->Show();
+  emoji_bar->SetSearchResults(
+      {PickerSearchResult::Emoji(u"😊"), PickerSearchResult::Symbol(u"♬")});
+  const views::View::Views& emoji_bar_items =
+      emoji_bar->item_row_for_testing()->children();
+  ASSERT_THAT(emoji_bar_items, SizeIs(2));
+
+  EXPECT_EQ(emoji_bar->GetItemRightOf(emoji_bar_items[0]), emoji_bar_items[1]);
+  EXPECT_EQ(emoji_bar->GetItemRightOf(emoji_bar_items[1]),
+            emoji_bar->gifs_button_for_testing());
+  EXPECT_EQ(emoji_bar->GetItemRightOf(emoji_bar->gifs_button_for_testing()),
+            emoji_bar->more_emojis_button_for_testing());
+  EXPECT_EQ(
+      emoji_bar->GetItemRightOf(emoji_bar->more_emojis_button_for_testing()),
+      nullptr);
 }
 
 }  // namespace

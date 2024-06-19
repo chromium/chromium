@@ -49,14 +49,15 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   ~PickerZeroStateView() override;
 
   // PickerPageView:
-  bool DoPseudoFocusedAction() override;
-  bool MovePseudoFocusUp() override;
-  bool MovePseudoFocusDown() override;
-  bool MovePseudoFocusLeft() override;
-  bool MovePseudoFocusRight() override;
-  bool AdvancePseudoFocus(PseudoFocusDirection direction) override;
-  bool GainPseudoFocus(PseudoFocusDirection direction) override;
-  void LosePseudoFocus() override;
+  views::View* GetTopItem() override;
+  views::View* GetBottomItem() override;
+  views::View* GetItemAbove(views::View* item) override;
+  views::View* GetItemBelow(views::View* item) override;
+  views::View* GetItemLeftOf(views::View* item) override;
+  views::View* GetItemRightOf(views::View* item) override;
+  views::View* GetNextItem(views::View* item,
+                           TraversalDirection direction) override;
+  bool ContainsItem(views::View* item) override;
 
   std::map<PickerCategoryType, raw_ptr<PickerSectionView>>
   category_section_views_for_testing() const {
@@ -73,14 +74,6 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
 
   // Gets or creates the category type section to contain `category`.
   PickerSectionView* GetOrCreateSectionView(PickerCategory category);
-
-  void SetPseudoFocusedView(views::View* view);
-
-  void ScrollPseudoFocusedViewToVisible();
-
-  // Moves pseudo focus to the top item, or does nothing if this zero state view
-  // is not currently handling pseudo focus.
-  void MovePseudoFocusToTopIfNeeded();
 
   void OnFetchRecentResults(std::vector<PickerSearchResult> result);
 
@@ -102,10 +95,6 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
   // type.
   std::map<PickerCategoryType, raw_ptr<PickerSectionView>>
       category_section_views_;
-
-  // The currently pseudo focused view, which responds to user actions that
-  // trigger `DoPseudoFocusedAction`.
-  raw_ptr<views::View> pseudo_focused_view_ = nullptr;
 
   std::unique_ptr<PickerClipboardProvider> clipboard_provider_;
 

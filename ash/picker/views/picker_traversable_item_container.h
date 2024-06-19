@@ -16,6 +16,11 @@ namespace ash {
 // Interface implemented by Picker item containers that support item traversal.
 class ASH_EXPORT PickerTraversableItemContainer {
  public:
+  enum class TraversalDirection {
+    kForward,
+    kBackward,
+  };
+
   virtual ~PickerTraversableItemContainer() = default;
 
   // Returns the item to highlight to when navigating to this container from the
@@ -41,6 +46,13 @@ class ASH_EXPORT PickerTraversableItemContainer {
   // Returns the item directly to the right of `item`, or nullptr if there is no
   // such item in the container.
   virtual views::View* GetItemRightOf(views::View* item) = 0;
+
+  // Returns the item before/after `item`, or nullptr if there is no such item
+  // in the container.
+  virtual views::View* GetNextItem(views::View* item,
+                                   TraversalDirection direction) = 0;
+
+  virtual bool ContainsItem(views::View* item) = 0;
 };
 
 }  // namespace ash

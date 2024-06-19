@@ -24,6 +24,7 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/view.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace views {
@@ -41,6 +42,7 @@ class PickerPageView;
 class PickerSearchResult;
 class PickerSearchResultsSection;
 class PickerSearchResultsView;
+class PickerTraversableItemContainer;
 class PickerViewDelegate;
 class PickerZeroStateView;
 
@@ -49,7 +51,8 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
                               public PickerZeroStateViewDelegate,
                               public PickerSearchResultsViewDelegate,
                               public PickerEmojiBarViewDelegate,
-                              public PickerPseudoFocusHandler {
+                              public PickerPseudoFocusHandler,
+                              public views::ViewObserver {
   METADATA_HEADER(PickerView, views::WidgetDelegateView)
 
  public:
@@ -75,7 +78,7 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
                                  SearchResultsCallback callback) override;
   void GetSuggestedZeroStateEditorResults(
       SuggestedEditorResultsCallback callback) override;
-  void NotifyPseudoFocusChanged(views::View* view) override;
+  void RequestPseudoFocus(views::View* view) override;
 
   // PickerSearchResultsViewDelegate:
   void SelectSearchResult(const PickerSearchResult& result) override;
@@ -93,8 +96,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
   bool MovePseudoFocusLeft() override;
   bool MovePseudoFocusRight() override;
   bool AdvancePseudoFocus(PseudoFocusDirection direction) override;
-  bool GainPseudoFocus(PseudoFocusDirection direction) override;
-  void LosePseudoFocus() override;
+
+  // ViewObserver:
+  void OnViewIsDeleting(View* observed_view) override;
 
   // Returns the target bounds for this Picker view. The target bounds try to
   // vertically align `search_field_view_` with `anchor_bounds`. `anchor_bounds`
@@ -156,7 +160,9 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
 
   // Moves pseudo focus between different parts of the PickerView, i.e. between
   // the emoji bar and the main container.
-  void AdvanceActivePseudoFocusHandler(PseudoFocusDirection direction);
+  void AdvanceActiveItemContainer(PseudoFocusDirection direction);
+
+  void SetPseudoFocusedView(views::View* view);
 
   // Called when the search field back button is pressed.
   void OnSearchBackButtonPressed();
@@ -180,11 +186,20 @@ class ASH_EXPORT PickerView : public views::WidgetDelegateView,
 
   raw_ptr<PickerEmojiBarView> emoji_bar_view_ = nullptr;
 
-  raw_ptr<PickerPseudoFocusHandler> active_pseudo_focus_handler_ = nullptr;
+  // The item container which contains `pseudo_focused_view_` and will respond
+  // to keyboard navigation events.
+  raw_ptr<PickerTraversableItemContainer> active_item_container_ = nullptr;
+
+  // The currently pseudo focused view, which responds to user actions that
+  // trigger `DoPseudoFocusedAction`.
+  raw_ptr<views::View> pseudo_focused_view_ = nullptr;
 
   // Whether the first set of results for the current search have been published
   // yet.
   bool published_first_results_ = false;
+
+  base::ScopedObservation<views::View, views::ViewObserver>
+      pseudo_focused_view_observation_{this};
 
   base::WeakPtrFactory<PickerView> weak_ptr_factory_{this};
 };

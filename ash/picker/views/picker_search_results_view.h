@@ -47,14 +47,15 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
       base::Milliseconds(400);
 
   // PickerPageView:
-  bool DoPseudoFocusedAction() override;
-  bool MovePseudoFocusUp() override;
-  bool MovePseudoFocusDown() override;
-  bool MovePseudoFocusLeft() override;
-  bool MovePseudoFocusRight() override;
-  bool AdvancePseudoFocus(PseudoFocusDirection direction) override;
-  bool GainPseudoFocus(PseudoFocusDirection direction) override;
-  void LosePseudoFocus() override;
+  views::View* GetTopItem() override;
+  views::View* GetBottomItem() override;
+  views::View* GetItemAbove(views::View* item) override;
+  views::View* GetItemBelow(views::View* item) override;
+  views::View* GetItemLeftOf(views::View* item) override;
+  views::View* GetItemRightOf(views::View* item) override;
+  views::View* GetNextItem(views::View* item,
+                           TraversalDirection direction) override;
+  bool ContainsItem(views::View* item) override;
 
   // Clears the search results.
   void ClearSearchResults();
@@ -95,10 +96,6 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
   void AddResultToSection(const PickerSearchResult& result,
                           PickerSectionView* section_view);
 
-  void SetPseudoFocusedView(views::View* view);
-
-  void ScrollPseudoFocusedViewToVisible();
-
   void OnTrailingLinkClicked(PickerSectionType section_type,
                              const ui::Event& event);
 
@@ -114,10 +111,6 @@ class ASH_EXPORT PickerSearchResultsView : public PickerPageView {
 
   // Used to calculate the index of the inserted result.
   std::vector<PickerSearchResult> top_results_;
-
-  // The currently pseudo focused view, which responds to user actions that
-  // trigger `DoPseudoFocusedAction`.
-  raw_ptr<views::View> pseudo_focused_view_ = nullptr;
 
   // A view for when there are no results.
   raw_ptr<views::View> no_results_view_ = nullptr;

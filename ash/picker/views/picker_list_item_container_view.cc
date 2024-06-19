@@ -11,6 +11,7 @@
 #include "ash/picker/views/picker_item_view.h"
 #include "ash/picker/views/picker_item_with_submenu_view.h"
 #include "ash/picker/views/picker_list_item_view.h"
+#include "ash/picker/views/picker_traversable_item_container.h"
 #include "base/ranges/algorithm.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/box_layout.h"
@@ -58,6 +59,21 @@ views::View* PickerListItemContainerView::GetItemLeftOf(views::View* item) {
 
 views::View* PickerListItemContainerView::GetItemRightOf(views::View* item) {
   return nullptr;
+}
+
+views::View* PickerListItemContainerView::GetNextItem(
+    views::View* item,
+    TraversalDirection direction) {
+  switch (direction) {
+    case TraversalDirection::kForward:
+      return GetItemBelow(item);
+    case TraversalDirection::kBackward:
+      return GetItemAbove(item);
+  }
+}
+
+bool PickerListItemContainerView::ContainsItem(views::View* item) {
+  return Contains(item);
 }
 
 PickerListItemView* PickerListItemContainerView::AddListItem(

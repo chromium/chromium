@@ -1084,7 +1084,11 @@ TEST_F(PickerViewTest, ArrowKeysNavigateEmojiBar) {
   });
   auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
   widget->Show();
+
   PressAndReleaseKey(ui::KeyboardCode::VKEY_A, ui::EF_NONE);
+  ViewDrawnWaiter().Wait(GetPickerViewFromWidget(*widget)
+                             ->emoji_bar_view_for_testing()
+                             ->GetTopItem());
   PressAndReleaseKey(ui::KeyboardCode::VKEY_UP, ui::EF_NONE);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RIGHT, ui::EF_NONE);
   PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);

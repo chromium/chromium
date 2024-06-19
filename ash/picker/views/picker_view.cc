@@ -16,17 +16,20 @@
 #include "ash/picker/views/picker_key_event_handler.h"
 #include "ash/picker/views/picker_main_container_view.h"
 #include "ash/picker/views/picker_page_view.h"
+#include "ash/picker/views/picker_pseudo_focus.h"
 #include "ash/picker/views/picker_search_field_view.h"
 #include "ash/picker/views/picker_search_results_view.h"
 #include "ash/picker/views/picker_search_results_view_delegate.h"
 #include "ash/picker/views/picker_strings.h"
 #include "ash/picker/views/picker_style.h"
+#include "ash/picker/views/picker_traversable_item_container.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/picker/views/picker_zero_state_view.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
@@ -51,6 +54,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
@@ -247,8 +251,12 @@ void PickerView::GetSuggestedZeroStateEditorResults(
   delegate_->GetSuggestedEditorResults(std::move(callback));
 }
 
-void PickerView::NotifyPseudoFocusChanged(views::View* view) {
-  search_field_view_->SetTextfieldActiveDescendant(view);
+void PickerView::RequestPseudoFocus(views::View* view) {
+  if (active_item_container_ == nullptr ||
+      !active_item_container_->ContainsItem(view)) {
+    return;
+  }
+  SetPseudoFocusedView(view);
 }
 
 void PickerView::SelectSearchResult(const PickerSearchResult& result) {
@@ -301,62 +309,70 @@ void PickerView::ShowEmojiPicker(ui::EmojiPickerCategory category) {
 }
 
 bool PickerView::DoPseudoFocusedAction() {
-  return active_pseudo_focus_handler_ == nullptr
+  return pseudo_focused_view_ == nullptr
              ? false
-             : active_pseudo_focus_handler_->DoPseudoFocusedAction();
+             : DoPickerPseudoFocusedActionOnView(pseudo_focused_view_);
 }
 
 bool PickerView::MovePseudoFocusUp() {
-  if (active_pseudo_focus_handler_ == nullptr) {
-    return false;
-  }
-  if (!active_pseudo_focus_handler_->MovePseudoFocusUp()) {
-    AdvanceActivePseudoFocusHandler(PseudoFocusDirection::kBackward);
+  if (views::View* item_above =
+          active_item_container_->GetItemAbove(pseudo_focused_view_)) {
+    SetPseudoFocusedView(item_above);
+  } else {
+    AdvanceActiveItemContainer(PseudoFocusDirection::kBackward);
   }
   return true;
 }
 
 bool PickerView::MovePseudoFocusDown() {
-  if (active_pseudo_focus_handler_ == nullptr) {
-    return false;
-  }
-  if (!active_pseudo_focus_handler_->MovePseudoFocusDown()) {
-    AdvanceActivePseudoFocusHandler(PseudoFocusDirection::kForward);
+  if (views::View* item_below =
+          active_item_container_->GetItemBelow(pseudo_focused_view_)) {
+    SetPseudoFocusedView(item_below);
+  } else {
+    AdvanceActiveItemContainer(PseudoFocusDirection::kForward);
   }
   return true;
 }
 
 bool PickerView::MovePseudoFocusLeft() {
-  return active_pseudo_focus_handler_ == nullptr
-             ? false
-             : active_pseudo_focus_handler_->MovePseudoFocusLeft();
+  if (views::View* left_item =
+          active_item_container_->GetItemLeftOf(pseudo_focused_view_)) {
+    SetPseudoFocusedView(left_item);
+    return true;
+  }
+  return false;
 }
 
 bool PickerView::MovePseudoFocusRight() {
-  return active_pseudo_focus_handler_ == nullptr
-             ? false
-             : active_pseudo_focus_handler_->MovePseudoFocusRight();
+  if (views::View* right_item =
+          active_item_container_->GetItemRightOf(pseudo_focused_view_)) {
+    SetPseudoFocusedView(right_item);
+    return true;
+  }
+  return false;
 }
 
 bool PickerView::AdvancePseudoFocus(PseudoFocusDirection direction) {
-  if (active_pseudo_focus_handler_ == nullptr) {
+  if (pseudo_focused_view_ == nullptr) {
     return false;
   }
-  if (!active_pseudo_focus_handler_->AdvancePseudoFocus(direction)) {
-    AdvanceActivePseudoFocusHandler(direction);
+  if (views::View* next_item = active_item_container_->GetNextItem(
+          pseudo_focused_view_,
+          direction == PseudoFocusDirection::kForward
+              ? PickerTraversableItemContainer::TraversalDirection::kForward
+              : PickerTraversableItemContainer::TraversalDirection::
+                    kBackward)) {
+    SetPseudoFocusedView(next_item);
+  } else {
+    AdvanceActiveItemContainer(direction);
   }
   return true;
 }
 
-bool PickerView::GainPseudoFocus(PseudoFocusDirection direction) {
-  return main_container_view_->active_page()->GainPseudoFocus(direction);
-}
-
-void PickerView::LosePseudoFocus() {
-  // TODO: b/340692819 - Once the emoji bar is implemented, handle losing focus
-  // from there as well (or determine if the PickerView should never lose pseudo
-  // focus).
-  main_container_view_->active_page()->LosePseudoFocus();
+void PickerView::OnViewIsDeleting(View* observed_view) {
+  CHECK_EQ(observed_view, pseudo_focused_view_);
+  pseudo_focused_view_ = nullptr;
+  pseudo_focused_view_observation_.Reset();
 }
 
 gfx::Rect PickerView::GetTargetBounds(const gfx::Rect& anchor_bounds,
@@ -547,34 +563,36 @@ void PickerView::AddEmojiBarView() {
 
 void PickerView::SetActivePage(PickerPageView* page_view) {
   main_container_view_->SetActivePage(page_view);
-  if (active_pseudo_focus_handler_ != nullptr) {
-    active_pseudo_focus_handler_->LosePseudoFocus();
-  }
-  if (GetWidget() != nullptr) {
-    // If there is no widget or the page is empty, `GainPseudoFocus` does
-    // nothing here and the page will instead gain pseudo focus after it is
-    // populated with results.
-    page_view->GainPseudoFocus(PseudoFocusDirection::kForward);
-  }
-  active_pseudo_focus_handler_ = page_view;
+  SetPseudoFocusedView(nullptr);
+  active_item_container_ = page_view;
+  SetPseudoFocusedView(active_item_container_->GetTopItem());
 }
 
-void PickerView::AdvanceActivePseudoFocusHandler(
-    PseudoFocusDirection direction) {
-  if (emoji_bar_view_ == nullptr) {
-    main_container_view_->active_page()->GainPseudoFocus(direction);
-    active_pseudo_focus_handler_ = main_container_view_->active_page();
+void PickerView::AdvanceActiveItemContainer(PseudoFocusDirection direction) {
+  if (emoji_bar_view_ == nullptr || active_item_container_ == emoji_bar_view_) {
+    active_item_container_ = main_container_view_->active_page();
+  } else {
+    active_item_container_ = emoji_bar_view_;
+  }
+  SetPseudoFocusedView(direction == PseudoFocusDirection::kForward
+                           ? active_item_container_->GetTopItem()
+                           : active_item_container_->GetBottomItem());
+}
+
+void PickerView::SetPseudoFocusedView(views::View* view) {
+  if (pseudo_focused_view_ == view) {
     return;
   }
 
-  if (active_pseudo_focus_handler_ == emoji_bar_view_) {
-    emoji_bar_view_->LosePseudoFocus();
-    main_container_view_->active_page()->GainPseudoFocus(direction);
-    active_pseudo_focus_handler_ = main_container_view_->active_page();
-  } else {
-    main_container_view_->active_page()->LosePseudoFocus();
-    emoji_bar_view_->GainPseudoFocus(direction);
-    active_pseudo_focus_handler_ = emoji_bar_view_;
+  RemovePickerPseudoFocusFromView(pseudo_focused_view_);
+  pseudo_focused_view_observation_.Reset();
+  pseudo_focused_view_ = view;
+  search_field_view_->SetTextfieldActiveDescendant(view);
+
+  if (view != nullptr) {
+    pseudo_focused_view_observation_.Observe(view);
+    view->ScrollViewToVisible();
+    ApplyPickerPseudoFocusToView(view);
   }
 }
 

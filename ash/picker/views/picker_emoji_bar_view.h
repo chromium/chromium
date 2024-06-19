@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/picker/views/picker_pseudo_focus_handler.h"
+#include "ash/picker/views/picker_traversable_item_container.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -28,7 +28,7 @@ class SystemShadow;
 // container that shows expression search results (i.e. emojis, symbols and
 // emoticons).
 class ASH_EXPORT PickerEmojiBarView : public views::View,
-                                      public PickerPseudoFocusHandler {
+                                      public PickerTraversableItemContainer {
   METADATA_HEADER(PickerEmojiBarView, views::View)
 
  public:
@@ -43,15 +43,16 @@ class ASH_EXPORT PickerEmojiBarView : public views::View,
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
 
-  // PickerPseudoFocusHandler:
-  bool DoPseudoFocusedAction() override;
-  bool MovePseudoFocusUp() override;
-  bool MovePseudoFocusDown() override;
-  bool MovePseudoFocusLeft() override;
-  bool MovePseudoFocusRight() override;
-  bool AdvancePseudoFocus(PseudoFocusDirection direction) override;
-  bool GainPseudoFocus(PseudoFocusDirection direction) override;
-  void LosePseudoFocus() override;
+  // PickerTraversableItemContainer:
+  views::View* GetTopItem() override;
+  views::View* GetBottomItem() override;
+  views::View* GetItemAbove(views::View* item) override;
+  views::View* GetItemBelow(views::View* item) override;
+  views::View* GetItemLeftOf(views::View* item) override;
+  views::View* GetItemRightOf(views::View* item) override;
+  views::View* GetNextItem(views::View* item,
+                           TraversalDirection direction) override;
+  bool ContainsItem(views::View* item) override;
 
   // Clears the emoji bar's search results.
   void ClearSearchResults();
@@ -74,7 +75,9 @@ class ASH_EXPORT PickerEmojiBarView : public views::View,
 
   int CalculateAvailableWidthForItemRow();
 
-  void SetPseudoFocusedView(views::View* view);
+  // Returns the leftmost child view in the emoji bar, or nullptr if there is no
+  // such view.
+  views::View* GetLeftmostItem();
 
   std::unique_ptr<SystemShadow> shadow_;
 
@@ -92,10 +95,6 @@ class ASH_EXPORT PickerEmojiBarView : public views::View,
 
   // The button for opening more emojis.
   raw_ptr<IconButton> more_emojis_button_ = nullptr;
-
-  // The currently pseudo focused view, which responds to user actions that
-  // trigger `DoPseudoFocusedAction`.
-  raw_ptr<views::View> pseudo_focused_view_ = nullptr;
 };
 
 }  // namespace ash

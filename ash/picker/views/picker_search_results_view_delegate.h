@@ -24,8 +24,8 @@ class ASH_EXPORT PickerSearchResultsViewDelegate {
 
   virtual void SelectMoreResults(PickerSectionType type) = 0;
 
-  // `view` may be `nullptr` if there's no pseudo focused view.
-  virtual void NotifyPseudoFocusChanged(views::View* view) = 0;
+  // Requests for `view` to become the pseudo focused view.
+  virtual void RequestPseudoFocus(views::View* view) = 0;
 
   virtual PickerActionType GetActionForResult(
       const PickerSearchResult& result) = 0;

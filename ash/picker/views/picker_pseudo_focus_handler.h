@@ -37,13 +37,6 @@ class ASH_EXPORT PickerPseudoFocusHandler {
   // Moves pseudo focus to the next (or previous) pseudo focusable element, or
   // returns false if there is no such element.
   virtual bool AdvancePseudoFocus(PseudoFocusDirection direction) = 0;
-
-  // Gains pseudo focus onto the first (or last) pseudo focusable element, or
-  // returns false if there is no such element.
-  virtual bool GainPseudoFocus(PseudoFocusDirection direction) = 0;
-
-  // Removes pseudo focus.
-  virtual void LosePseudoFocus() = 0;
 };
 
 }  // namespace ash

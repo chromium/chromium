@@ -33,16 +33,17 @@ class MockPickerPageView : public PickerPageView {
   ~MockPickerPageView() override = default;
 
   // PickerPageView:
-  bool DoPseudoFocusedAction() override { return true; }
-  bool MovePseudoFocusUp() override { return true; }
-  bool MovePseudoFocusDown() override { return true; }
-  bool MovePseudoFocusLeft() override { return true; }
-  bool MovePseudoFocusRight() override { return true; }
-  bool AdvancePseudoFocus(PseudoFocusDirection direction) override {
-    return true;
+  views::View* GetTopItem() override { return nullptr; }
+  views::View* GetBottomItem() override { return nullptr; }
+  views::View* GetItemAbove(views::View* item) override { return nullptr; }
+  views::View* GetItemBelow(views::View* item) override { return nullptr; }
+  views::View* GetItemLeftOf(views::View* item) override { return nullptr; }
+  views::View* GetItemRightOf(views::View* item) override { return nullptr; }
+  views::View* GetNextItem(views::View* item,
+                           TraversalDirection direction) override {
+    return nullptr;
   }
-  bool GainPseudoFocus(PseudoFocusDirection direction) override { return true; }
-  void LosePseudoFocus() override { return; }
+  bool ContainsItem(views::View* item) override { return true; }
 };
 
 BEGIN_METADATA(MockPickerPageView)

@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/picker/views/picker_list_item_view.h"
+#include "ash/picker/views/picker_traversable_item_container.h"
 #include "base/functional/callback_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -114,6 +115,32 @@ TEST_F(PickerListItemContainerViewTest, NoItemRightOf) {
 
   EXPECT_EQ(container.GetItemRightOf(item1), nullptr);
   EXPECT_EQ(container.GetItemRightOf(item2), nullptr);
+}
+
+TEST_F(PickerListItemContainerViewTest, GetsNextItem) {
+  PickerListItemContainerView container;
+
+  PickerListItemView* item1 = container.AddListItem(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+  PickerListItemView* item2 = container.AddListItem(
+      std::make_unique<PickerListItemView>(base::DoNothing()));
+
+  EXPECT_EQ(
+      container.GetNextItem(
+          item1, PickerTraversableItemContainer::TraversalDirection::kForward),
+      item2);
+  EXPECT_EQ(
+      container.GetNextItem(
+          item1, PickerTraversableItemContainer::TraversalDirection::kBackward),
+      nullptr);
+  EXPECT_EQ(
+      container.GetNextItem(
+          item2, PickerTraversableItemContainer::TraversalDirection::kForward),
+      nullptr);
+  EXPECT_EQ(
+      container.GetNextItem(
+          item2, PickerTraversableItemContainer::TraversalDirection::kBackward),
+      item1);
 }
 
 }  // namespace

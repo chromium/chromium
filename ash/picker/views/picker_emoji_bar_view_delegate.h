@@ -11,10 +11,6 @@ namespace ui {
 enum class EmojiPickerCategory;
 }
 
-namespace views {
-class View;
-}
-
 namespace ash {
 
 class PickerSearchResult;
@@ -25,9 +21,6 @@ class ASH_EXPORT PickerEmojiBarViewDelegate {
   virtual void SelectSearchResult(const PickerSearchResult& result) = 0;
 
   virtual void ShowEmojiPicker(ui::EmojiPickerCategory category) = 0;
-
-  // `view` may be `nullptr` if there's no pseudo focused view.
-  virtual void NotifyPseudoFocusChanged(views::View* view) = 0;
 };
 
 }  // namespace ash

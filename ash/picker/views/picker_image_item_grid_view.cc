@@ -10,6 +10,8 @@
 
 #include "ash/picker/views/picker_image_item_view.h"
 #include "ash/picker/views/picker_item_view.h"
+#include "ash/picker/views/picker_traversable_item_container.h"
+#include "base/notimplemented.h"
 #include "base/ranges/algorithm.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/insets.h"
@@ -148,6 +150,17 @@ views::View* PickerImageItemGridView::GetItemRightOf(views::View* item) {
   views::View* right_column =
       std::next(base::ranges::find(children(), column))->get();
   return ItemInColumnWithIndexClosestTo(right_column, item_index);
+}
+
+views::View* PickerImageItemGridView::GetNextItem(
+    views::View* item,
+    TraversalDirection direction) {
+  NOTIMPLEMENTED_LOG_ONCE();
+  return nullptr;
+}
+
+bool PickerImageItemGridView::ContainsItem(views::View* item) {
+  return Contains(item);
 }
 
 PickerImageItemView* PickerImageItemGridView::AddImageItem(

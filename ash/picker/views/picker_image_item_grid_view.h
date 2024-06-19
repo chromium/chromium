@@ -36,6 +36,9 @@ class ASH_EXPORT PickerImageItemGridView
   views::View* GetItemBelow(views::View* item) override;
   views::View* GetItemLeftOf(views::View* item) override;
   views::View* GetItemRightOf(views::View* item) override;
+  views::View* GetNextItem(views::View* item,
+                           TraversalDirection direction) override;
+  bool ContainsItem(views::View* item) override;
 
   PickerImageItemView* AddImageItem(
       std::unique_ptr<PickerImageItemView> image_item);
