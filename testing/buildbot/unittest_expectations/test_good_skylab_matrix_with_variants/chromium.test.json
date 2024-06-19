@@ -10,6 +10,7 @@
         "dut_pool": "chromium",
         "name": "autotest_suite OCTOPUS_TOT",
         "run_cft": true,
+        "shard_level_retries_on_ctp": 1,
         "test": "autotest_suite",
         "variant_id": "OCTOPUS_TOT"
       },
@@ -22,6 +23,7 @@
         "dut_pool": "chromium",
         "name": "benchmark_suite OCTOPUS_TOT",
         "run_cft": true,
+        "shard_level_retries_on_ctp": 1,
         "test": "benchmark_suite",
         "variant_id": "OCTOPUS_TOT"
       },
@@ -33,6 +35,7 @@
         "dut_pool": "chromium",
         "name": "benchmark_suite OCTOPUS_TOT-1",
         "run_cft": true,
+        "shard_level_retries_on_ctp": 1,
         "test": "benchmark_suite",
         "variant_id": "OCTOPUS_TOT-1"
       },
@@ -44,6 +47,7 @@
         "dut_pool": "chromium",
         "name": "chrome_all_tast_tests OCTOPUS_TOT",
         "run_cft": true,
+        "shard_level_retries_on_ctp": 1,
         "tast_expr": "dummy expr",
         "test": "chrome_all_tast_tests",
         "timeout": 3600,
@@ -56,6 +60,7 @@
         "dut_pool": "chromium",
         "name": "chrome_all_tast_tests OCTOPUS_TOT-1",
         "run_cft": true,
+        "shard_level_retries_on_ctp": 1,
         "tast_expr": "dummy expr",
         "test": "chrome_all_tast_tests",
         "timeout": 3600,
@@ -69,6 +74,7 @@
         "dut_pool": "chromium",
         "name": "gtest_suite OCTOPUS_TOT",
         "run_cft": true,
+        "shard_level_retries_on_ctp": 1,
         "test": "gtest_suite",
         "variant_id": "OCTOPUS_TOT"
       },
@@ -79,6 +85,7 @@
         "dut_pool": "chromium",
         "name": "gtest_suite OCTOPUS_TOT-1",
         "run_cft": true,
+        "shard_level_retries_on_ctp": 1,
         "test": "gtest_suite",
         "variant_id": "OCTOPUS_TOT-1"
       },
@@ -90,6 +97,7 @@
         "dut_pool": "chromium",
         "name": "lacros_all_tast_tests OCTOPUS_TOT",
         "run_cft": true,
+        "shard_level_retries_on_ctp": 1,
         "tast_expr": "lacros expr",
         "test": "lacros_all_tast_tests",
         "timeout": 3600,
@@ -102,6 +110,7 @@
         "dut_pool": "chromium",
         "name": "lacros_all_tast_tests OCTOPUS_TOT-1",
         "run_cft": true,
+        "shard_level_retries_on_ctp": 1,
         "tast_expr": "lacros expr",
         "test": "lacros_all_tast_tests",
         "timeout": 3600,

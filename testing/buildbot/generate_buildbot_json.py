@@ -876,6 +876,15 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     if 'run_cft' in result or 'run_cft' in tester_config:
       result['run_cft'] = tester_config.get('run_cft') or result.get('run_cft')
 
+    # Skylab tests enable the shard-level-retry by default.
+    if ('shard_level_retries_on_ctp' in result
+        or 'shard_level_retries_on_ctp' in tester_config):
+      result['shard_level_retries_on_ctp'] = (
+          tester_config.get('shard_level_retries_on_ctp')
+          or result.get('shard_level_retries_on_ctp'))
+    else:
+      result['shard_level_retries_on_ctp'] = 1
+
     result = self.apply_common_transformations(waterfall,
                                                tester_name,
                                                tester_config,

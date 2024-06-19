@@ -15,6 +15,7 @@
         "name": "chromeos_integration_tests VOLTEER_PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
         "public_builder_bucket": "testplatform-public",
+        "shard_level_retries_on_ctp": 1,
         "test": "chromeos_integration_tests",
         "test_id_prefix": "ninja://chrome/test:chromeos_integration_tests/",
         "use_lkgm": true,
@@ -33,6 +34,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
+        "shard_level_retries_on_ctp": 1,
         "shards": 2,
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",

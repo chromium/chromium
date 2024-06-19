@@ -10,6 +10,7 @@
         "dut_pool": "chromium",
         "name": "tast.basic OCTOPUS_TOT",
         "run_cft": true,
+        "shard_level_retries_on_ctp": 2,
         "suite": "tast.basic",
         "tast_expr": "dummy expr",
         "test": "tast.basic",

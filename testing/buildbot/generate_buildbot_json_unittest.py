@@ -4399,6 +4399,7 @@ ENABLED_AND_DISABLED_MATRIX_COMPOUND_SKYLAB_REF = """\
       'tast.basic': {
         'tast_expr': 'dummy expr',
         'suite': 'tast.basic',
+        'shard_level_retries_on_ctp': 2,
         'timeout': 3600,
       },
       'tast.foo': {
