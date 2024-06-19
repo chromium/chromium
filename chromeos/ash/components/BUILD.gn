@@ -6,7 +6,7 @@ import("//build/config/chromeos/ui_mode.gni")
 
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //chromeos/ash")
 
-# To add a unit test to this target, make a "unit_test" source_set in your
+# To add a unit test to this target, make a "unit_tests" source_set in your
 # component and add a reference here.
 source_set("unit_tests") {
   testonly = true
@@ -59,6 +59,7 @@ source_set("unit_tests") {
     "//chromeos/ash/components/sync_wifi:unit_tests",
     "//chromeos/ash/components/system:unit_tests",
     "//chromeos/ash/components/system_info:unit_tests",
+    "//chromeos/ash/components/telemetry_extension:unit_tests",
     "//chromeos/ash/components/tether:unit_tests",
     "//chromeos/ash/components/timezone:unit_tests",
     "//chromeos/ash/components/tpm:unit_tests",

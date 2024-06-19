@@ -6708,7 +6708,6 @@ source_set("unit_tests") {
     "//chrome/browser/ash/tether:unit_tests",
     "//chrome/browser/ash/usb:unit_tests",
     "//chrome/browser/ash/wallpaper_handlers:unit_tests",
-    "//chromeos/ash/components/telemetry_extension:unit_tests",
   ]
 
   if (is_cfm) {
