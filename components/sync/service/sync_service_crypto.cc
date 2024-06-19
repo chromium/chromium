@@ -363,7 +363,8 @@ std::optional<PassphraseType> SyncServiceCrypto::GetPassphraseType() const {
 
 void SyncServiceCrypto::SetSyncEngine(const CoreAccountInfo& account_info,
                                       SyncEngine* engine) {
-  DCHECK(engine);
+  CHECK(engine);
+  CHECK(!state_.engine);
   state_.account_info = account_info;
   state_.engine = engine;
 

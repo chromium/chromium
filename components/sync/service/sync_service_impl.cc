@@ -2399,6 +2399,8 @@ void SyncServiceImpl::OverrideNetworkForTest(
 
     migrator_.reset();
 
+    crypto_.Reset();
+
     engine_->Shutdown(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
     engine_.reset();
 

@@ -75,7 +75,9 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
   // Returns the actual passphrase type being used for encryption.
   std::optional<PassphraseType> GetPassphraseType() const;
 
-  // Used to provide the engine when it is initialized.
+  // Used to provide the engine when it is initialized, |engine| must not be
+  // null and must outlive the |this| or the Reset() call. Should not be called
+  // second time, unless Reset() is called first.
   void SetSyncEngine(const CoreAccountInfo& account_info, SyncEngine* engine);
 
   // Creates a proxy observer object that will post calls to this thread.
@@ -175,7 +177,7 @@ class SyncServiceCrypto : public SyncEncryptionHandler::Observer,
     State& operator=(State&& other) = default;
 
     // Not-null when the engine is initialized.
-    raw_ptr<SyncEngine, DanglingUntriaged> engine = nullptr;
+    raw_ptr<SyncEngine> engine = nullptr;
 
     // Populated when the engine is initialized.
     CoreAccountInfo account_info;
