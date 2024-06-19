@@ -88,6 +88,7 @@ class IOSTabGroupSyncDelegateTest : public PlatformTest {
     other_browser_ =
         other_scene_state_.browserProviderInterface.mainBrowserProvider.browser;
     TabInsertionBrowserAgent::CreateForBrowser(other_browser_);
+    other_inactive_browser_ = other_browser_->CreateInactiveBrowser();
 
     browser_list_ =
         BrowserListFactory::GetForBrowserState(browser_state_.get());
@@ -156,6 +157,7 @@ class IOSTabGroupSyncDelegateTest : public PlatformTest {
   Browser* browser_same_browser_state_;
   std::unique_ptr<TestChromeBrowserState> other_browser_state_;
   Browser* other_browser_;
+  Browser* other_inactive_browser_;
   raw_ptr<BrowserList> browser_list_;
   std::unique_ptr<IOSTabGroupSyncDelegate> delegate_;
   raw_ptr<MockTabGroupSyncService> mock_service_;

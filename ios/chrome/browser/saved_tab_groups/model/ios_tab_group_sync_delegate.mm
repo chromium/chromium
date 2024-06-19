@@ -130,6 +130,9 @@ Browser* IOSTabGroupSyncDelegate::GetMostActiveSceneBrowser() {
 
   Browser* browser = nullptr;
   for (Browser* browser_to_check : all_browsers) {
+    if (browser_to_check->IsInactive()) {
+      continue;
+    }
     // The pointer to the scene state is weak, so it could be nil. In that case,
     // the activation level will be 0 (lowest).
     if (browser && browser->GetSceneState().activationLevel >=
