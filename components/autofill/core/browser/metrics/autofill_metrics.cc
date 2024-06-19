@@ -2045,7 +2045,7 @@ void AutofillMetrics::LogDeveloperEngagementUkm(
     ukm::SourceId source_id,
     const GURL& url,
     bool is_for_credit_card,
-    DenseSet<FormType> form_types,
+    DenseSet<FormTypeNameForLogging> form_types,
     int developer_engagement_metrics,
     FormSignature form_signature) {
   DCHECK(developer_engagement_metrics);
@@ -2711,9 +2711,9 @@ ukm::SourceId AutofillMetrics::FormInteractionsUkmLogger::GetSourceId() {
 }
 
 int64_t AutofillMetrics::FormTypesToBitVector(
-    const DenseSet<FormType>& form_types) {
+    const DenseSet<FormTypeNameForLogging>& form_types) {
   int64_t form_type_bv = 0;
-  for (FormType form_type : form_types) {
+  for (FormTypeNameForLogging form_type : form_types) {
     DCHECK_LT(static_cast<int64_t>(form_type), 63);
     form_type_bv |= 1LL << static_cast<int64_t>(form_type);
   }
@@ -2744,7 +2744,7 @@ const char* AutofillMetrics::GetMetricsSyncStateSuffix(
 }
 
 void AutofillMetrics::FormInteractionsUkmLogger::LogKeyMetrics(
-    const DenseSet<FormType>& form_types,
+    const DenseSet<FormTypeNameForLogging>& form_types,
     bool data_to_fill_available,
     bool suggestions_shown,
     bool edited_autofilled_field,
@@ -2777,7 +2777,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogKeyMetrics(
 
 void AutofillMetrics::FormInteractionsUkmLogger::LogFormEvent(
     autofill_metrics::FormEvent form_event,
-    const DenseSet<FormType>& form_types,
+    const DenseSet<FormTypeNameForLogging>& form_types,
     const base::TimeTicks& form_parsed_timestamp) {
   if (!CanLog())
     return;

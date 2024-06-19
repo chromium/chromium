@@ -21,6 +21,7 @@
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/payments/credit_card_cvc_authenticator.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/payments_data_manager.h"
@@ -230,10 +231,11 @@ void FastCheckoutClientImpl::OnRunComplete(FastCheckoutRunOutcome run_outcome,
   if (autofill_manager_) {
     for (auto [form_id, filling_state] : form_filling_states_) {
       autofill::FormSignature form_signature = form_id.first;
-      autofill::DenseSet<autofill::FormType> form_types;
+      autofill::DenseSet<autofill::FormTypeNameForLogging> form_types;
       for (auto& [_, form] : autofill_manager_->form_structures()) {
         if (form->form_signature() == form_signature) {
-          form_types = form->GetFormTypes();
+          form_types =
+              autofill::autofill_metrics::GetFormTypesForLogging(*form);
           break;
         }
       }

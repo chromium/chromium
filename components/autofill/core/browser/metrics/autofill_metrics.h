@@ -697,7 +697,7 @@ class AutofillMetrics {
         FormEventSet form_events,
         const base::TimeTicks& initial_interaction_timestamp,
         const base::TimeTicks& form_submitted_timestamp);
-    void LogKeyMetrics(const DenseSet<FormType>& form_types,
+    void LogKeyMetrics(const DenseSet<FormTypeNameForLogging>& form_types,
                        bool data_to_fill_available,
                        bool suggestions_shown,
                        bool edited_autofilled_field,
@@ -706,7 +706,7 @@ class AutofillMetrics {
                        const FormInteractionsFlowId& flow_id,
                        std::optional<int64_t> fast_checkout_run_id);
     void LogFormEvent(autofill_metrics::FormEvent form_event,
-                      const DenseSet<FormType>& form_types,
+                      const DenseSet<FormTypeNameForLogging>& form_types,
                       const base::TimeTicks& form_parsed_timestamp);
 
     // Logs whether the autofill decided to skip or to fill each
@@ -1078,16 +1078,18 @@ class AutofillMetrics {
   // true if the form is a credit card form. |form_types| is set of
   // FormType recorded for the page. This will be stored as a bit vector
   // in UKM.
-  static void LogDeveloperEngagementUkm(ukm::UkmRecorder* ukm_recorder,
-                                        ukm::SourceId source_id,
-                                        const GURL& url,
-                                        bool is_for_credit_card,
-                                        DenseSet<FormType> form_types,
-                                        int developer_engagement_metrics,
-                                        FormSignature form_signature);
+  static void LogDeveloperEngagementUkm(
+      ukm::UkmRecorder* ukm_recorder,
+      ukm::SourceId source_id,
+      const GURL& url,
+      bool is_for_credit_card,
+      DenseSet<FormTypeNameForLogging> form_types,
+      int developer_engagement_metrics,
+      FormSignature form_signature);
 
   // Converts form type to bit vector to store in UKM.
-  static int64_t FormTypesToBitVector(const DenseSet<FormType>& form_types);
+  static int64_t FormTypesToBitVector(
+      const DenseSet<FormTypeNameForLogging>& form_types);
 
   // Records the fact that the server card link was clicked with information
   // about the current sync state.

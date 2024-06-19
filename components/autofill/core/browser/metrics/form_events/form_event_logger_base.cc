@@ -213,7 +213,7 @@ void FormEventLoggerBase::OnWillSubmitForm(
   if (has_logged_will_submit_)
     return;
   has_logged_will_submit_ = true;
-  submitted_form_types_ = form.GetFormTypes();
+  submitted_form_types_ = GetFormTypesForLogging(form);
 
   // Determine whether logging of email-heuristic only metrics is required.
   is_heuristic_only_email_form_ = (is_heuristic_only_email_form_ ||
@@ -330,8 +330,8 @@ void FormEventLoggerBase::Log(FormEvent event, const FormStructure& form) {
 
   // Log UKM metrics for only autofillable form events.
   if (form.IsAutofillable()) {
-    form_interactions_ukm_logger_->LogFormEvent(event, form.GetFormTypes(),
-                                                form.form_parsed_timestamp());
+    form_interactions_ukm_logger_->LogFormEvent(
+        event, GetFormTypesForLogging(form), form.form_parsed_timestamp());
   }
 }
 

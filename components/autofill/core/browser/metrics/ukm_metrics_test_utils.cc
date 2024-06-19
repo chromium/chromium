@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
 
-#include "base/metrics/metrics_hashes.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -73,7 +72,7 @@ void VerifyDeveloperEngagementUkm(
     const ukm::TestUkmRecorder* ukm_recorder,
     const FormData& form,
     const bool is_for_credit_card,
-    const DenseSet<FormType>& form_types,
+    const DenseSet<FormTypeNameForLogging>& form_types,
     const std::vector<int64_t>& expected_metric_values) {
   int expected_metric_value = 0;
   for (const auto it : expected_metric_values) {

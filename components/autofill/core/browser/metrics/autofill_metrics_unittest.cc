@@ -969,7 +969,7 @@ TEST_F(AutofillMetricsTest,
 
     VerifyDeveloperEngagementUkm(
         &test_ukm_recorder(), form, /*is_for_credit_card=*/false,
-        {FormType::kAddressForm},
+        {FormTypeNameForLogging::kAddressForm},
         {AutofillMetrics::FILLABLE_FORM_PARSED_WITHOUT_TYPE_HINTS});
   }
 }
@@ -1001,7 +1001,7 @@ TEST_F(AutofillMetricsTest,
 
     VerifyDeveloperEngagementUkm(
         &test_ukm_recorder(), form, /*is_for_credit_card=*/false,
-        {FormType::kAddressForm},
+        {FormTypeNameForLogging::kAddressForm},
         {AutofillMetrics::FILLABLE_FORM_PARSED_WITH_TYPE_HINTS});
   }
 }
@@ -4191,7 +4191,9 @@ TEST_F(AutofillMetricsTest, AddressParsedFormEvents) {
       &test_ukm_recorder(), form, UkmFormEventType::kEntryName,
       {{{UkmFormEventType::kAutofillFormEventName, FORM_EVENT_DID_PARSE_FORM},
         {UkmFormEventType::kFormTypesName,
-         AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
+         AutofillMetrics::FormTypesToBitVector(
+             {FormTypeNameForLogging::kAddressForm,
+              FormTypeNameForLogging::kPostalAddressForm})},
         {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});
 }
 
@@ -4225,7 +4227,9 @@ TEST_F(AutofillMetricsTest, AddressInteractedFormEvents) {
         {{{UkmFormEventType::kAutofillFormEventName,
            FORM_EVENT_INTERACTED_ONCE},
           {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
+           AutofillMetrics::FormTypesToBitVector(
+               {FormTypeNameForLogging::kAddressForm,
+                FormTypeNameForLogging::kPostalAddressForm})},
           {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});
   }
 
@@ -4252,7 +4256,9 @@ TEST_F(AutofillMetricsTest, AddressInteractedFormEvents) {
         {{{UkmFormEventType::kAutofillFormEventName,
            FORM_EVENT_INTERACTED_ONCE},
           {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
+           AutofillMetrics::FormTypesToBitVector(
+               {FormTypeNameForLogging::kAddressForm,
+                FormTypeNameForLogging::kPostalAddressForm})},
           {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});
   }
 }
@@ -4287,12 +4293,16 @@ TEST_F(AutofillMetricsTest, AddressShownFormEvents) {
         {{{UkmFormEventType::kAutofillFormEventName,
            FORM_EVENT_SUGGESTIONS_SHOWN},
           {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
+           AutofillMetrics::FormTypesToBitVector(
+               {FormTypeNameForLogging::kAddressForm,
+                FormTypeNameForLogging::kPostalAddressForm})},
           {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}},
          {{UkmFormEventType::kAutofillFormEventName,
            FORM_EVENT_SUGGESTIONS_SHOWN_ONCE},
           {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
+           AutofillMetrics::FormTypesToBitVector(
+               {FormTypeNameForLogging::kAddressForm,
+                FormTypeNameForLogging::kPostalAddressForm})},
           {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});
   }
 
@@ -4318,17 +4328,23 @@ TEST_F(AutofillMetricsTest, AddressShownFormEvents) {
         {{{UkmFormEventType::kAutofillFormEventName,
            FORM_EVENT_SUGGESTIONS_SHOWN},
           {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
+           AutofillMetrics::FormTypesToBitVector(
+               {FormTypeNameForLogging::kAddressForm,
+                FormTypeNameForLogging::kPostalAddressForm})},
           {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}},
          {{UkmFormEventType::kAutofillFormEventName,
            FORM_EVENT_SUGGESTIONS_SHOWN_ONCE},
           {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
+           AutofillMetrics::FormTypesToBitVector(
+               {FormTypeNameForLogging::kAddressForm,
+                FormTypeNameForLogging::kPostalAddressForm})},
           {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}},
          {{UkmFormEventType::kAutofillFormEventName,
            FORM_EVENT_SUGGESTIONS_SHOWN},
           {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
+           AutofillMetrics::FormTypesToBitVector(
+               {FormTypeNameForLogging::kAddressForm,
+                FormTypeNameForLogging::kPostalAddressForm})},
           {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});
   }
 
@@ -4385,12 +4401,16 @@ TEST_F(AutofillMetricsTest, AddressFilledFormEvents) {
         {{{UkmFormEventType::kAutofillFormEventName,
            FORM_EVENT_LOCAL_SUGGESTION_FILLED},
           {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
+           AutofillMetrics::FormTypesToBitVector(
+               {FormTypeNameForLogging::kAddressForm,
+                FormTypeNameForLogging::kPostalAddressForm})},
           {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}},
          {{UkmFormEventType::kAutofillFormEventName,
            FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE},
           {UkmFormEventType::kFormTypesName,
-           AutofillMetrics::FormTypesToBitVector({FormType::kAddressForm})},
+           AutofillMetrics::FormTypesToBitVector(
+               {FormTypeNameForLogging::kAddressForm,
+                FormTypeNameForLogging::kPostalAddressForm})},
           {UkmSuggestionFilledType::kMillisecondsSinceFormParsedName, 0}}});
   }
 
@@ -5574,7 +5594,8 @@ TEST_F(AutofillMetricsTest, RecordDeveloperEngagementMetric) {
 
   AutofillMetrics::LogDeveloperEngagementUkm(
       &test_ukm_recorder(), autofill_client_->GetUkmSourceId(), url, true,
-      {FormType::kCreditCardForm}, form_structure_metric, form_signature);
+      {FormTypeNameForLogging::kCreditCardForm}, form_structure_metric,
+      form_signature);
   auto entries = test_ukm_recorder().GetEntriesByName(
       UkmDeveloperEngagementType::kEntryName);
   EXPECT_EQ(1u, entries.size());
@@ -5588,7 +5609,8 @@ TEST_F(AutofillMetricsTest, RecordDeveloperEngagementMetric) {
         entry, UkmDeveloperEngagementType::kIsForCreditCardName, true);
     test_ukm_recorder().ExpectEntryMetric(
         entry, UkmDeveloperEngagementType::kFormTypesName,
-        AutofillMetrics::FormTypesToBitVector({FormType::kCreditCardForm}));
+        AutofillMetrics::FormTypesToBitVector(
+            {FormTypeNameForLogging::kCreditCardForm}));
     test_ukm_recorder().ExpectEntryMetric(
         entry, UkmDeveloperEngagementType::kFormSignatureName,
         form_signature.value());

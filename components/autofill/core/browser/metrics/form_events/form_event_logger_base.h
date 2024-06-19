@@ -258,7 +258,7 @@ class FormEventLoggerBase {
   DenseSet<FormTypeNameForLogging> parsed_form_types_;
 
   // Form types of the submitted form.
-  DenseSet<FormType> submitted_form_types_;
+  DenseSet<FormTypeNameForLogging> submitted_form_types_;
 
   // Form types of field-by-field filling operations.
   DenseSet<FormTypeNameForLogging> field_by_field_filled_form_types_;

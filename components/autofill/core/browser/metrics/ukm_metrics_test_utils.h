@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/metrics/metrics_hashes.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
@@ -22,6 +23,13 @@ struct ExpectedUkmMetricsPair : public std::pair<std::string, int64_t> {
       : ExpectedUkmMetricsPair(str, static_cast<int64_t>(mode)) {}
   ExpectedUkmMetricsPair(std::string str, HtmlFieldType type)
       : ExpectedUkmMetricsPair(str, static_cast<int64_t>(type)) {}
+
+  friend std::ostream& operator<<(std::ostream& os,
+                                  const ExpectedUkmMetricsPair& ukm_pair) {
+    return os << "(metric_name=" << ukm_pair.first
+              << ", hash=" << base::HashMetricName(ukm_pair.first)
+              << ", value=" << ukm_pair.second << ")";
+  }
 };
 
 void VerifyUkm(
@@ -34,7 +42,7 @@ void VerifyDeveloperEngagementUkm(
     const ukm::TestUkmRecorder* ukm_recorder,
     const FormData& form,
     const bool is_for_credit_card,
-    const DenseSet<FormType>& form_types,
+    const DenseSet<FormTypeNameForLogging>& form_types,
     const std::vector<int64_t>& expected_metric_values);
 
 void AppendFieldFillStatusUkm(

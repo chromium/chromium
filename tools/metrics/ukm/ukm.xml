@@ -2948,8 +2948,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="FormTypes">
     <summary>
-      Type of form. Stored as bitvector. A set ith bit implies enum FormType's
-      ith type was detected. Multiple types are possible.
+      Type of form. Stored as bitvector. A set ith bit implies enum
+      FormTypeNameForLogging's ith type was detected. Multiple types are
+      possible.
     </summary>
   </metric>
   <metric name="IsForCreditCard">
@@ -3006,8 +3007,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="FormTypes">
     <summary>
-      Type of form. Stored as bitvector. A set i-th bit implies enum FormType's
-      i-th type was detected. Multiple types are possible.
+      Type of form. Stored as bitvector. A set i-th bit implies enum
+      FormTypeNameForLogging's i-th type was detected. Multiple types are
+      possible.
     </summary>
   </metric>
   <metric name="RunId">
@@ -3140,8 +3142,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="FormTypes">
     <summary>
-      Type of form. Stored as bitvector. A set ith bit implies enum FormType's
-      ith type was detected. Multiple types are possible.
+      Type of form. Stored as bitvector. A set ith bit implies enum
+      FormTypeNameForLogging's ith type was detected. Multiple types are
+      possible.
     </summary>
   </metric>
   <metric name="MillisecondsSinceFormParsed">
@@ -3407,8 +3410,9 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="FormTypes">
     <summary>
-      Type of form. Stored as bitvector. A set ith bit implies enum FormType's
-      ith type was detected. Multiple types are possible.
+      Type of form. Stored as bitvector. A set ith bit implies enum
+      FormTypeNameForLogging's ith type was detected. Multiple types are
+      possible.
     </summary>
   </metric>
 </event>

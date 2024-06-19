@@ -13,6 +13,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_test_base.h"
 #include "components/autofill/core/browser/metrics/ukm_metrics_test_utils.h"
 #include "components/autofill/core/browser/ui/suggestion_type.h"
@@ -159,7 +160,10 @@ TEST_P(FormEventLoggerBaseFunnelTest, LogFunnelMetrics) {
           {UkmAutofillKeyMetricsType::kAutofillFillsName, 1},
           {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 0},
           {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
-          {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
+          {UkmAutofillKeyMetricsType::kFormTypesName,
+           AutofillMetrics::FormTypesToBitVector(
+               {FormTypeNameForLogging::kAddressForm,
+                FormTypeNameForLogging::kPostalAddressForm})}}});
   } else {
     histogram_tester.ExpectTotalCount(
         "Autofill.KeyMetrics.FillingReadiness.Address", 0);
@@ -374,7 +378,10 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogEmptyForm) {
               {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
               {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 0},
               {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
-              {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
+              {UkmAutofillKeyMetricsType::kFormTypesName,
+               AutofillMetrics::FormTypesToBitVector(
+                   {FormTypeNameForLogging::kAddressForm,
+                    FormTypeNameForLogging::kPostalAddressForm})}}});
 }
 
 // Validate Autofill.KeyMetrics.* in case the user has no address profile on
@@ -413,7 +420,10 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogNoProfile) {
               {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
               {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 2},
               {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
-              {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
+              {UkmAutofillKeyMetricsType::kFormTypesName,
+               AutofillMetrics::FormTypesToBitVector(
+                   {FormTypeNameForLogging::kAddressForm,
+                    FormTypeNameForLogging::kPostalAddressForm})}}});
 }
 
 // Validate Autofill.KeyMetrics.* in case the user does not accept a suggestion.
@@ -452,7 +462,10 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserDoesNotAcceptSuggestion) {
               {UkmAutofillKeyMetricsType::kAutofillFillsName, 0},
               {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 2},
               {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
-              {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
+              {UkmAutofillKeyMetricsType::kFormTypesName,
+               AutofillMetrics::FormTypesToBitVector(
+                   {FormTypeNameForLogging::kAddressForm,
+                    FormTypeNameForLogging::kPostalAddressForm})}}});
 }
 
 // Validate Autofill.KeyMetrics.* in case the user has to fix the filled data.
@@ -493,7 +506,10 @@ TEST_F(FormEventLoggerBaseKeyMetricsTest, LogUserFixesFilledData) {
               {UkmAutofillKeyMetricsType::kAutofillFillsName, 1},
               {UkmAutofillKeyMetricsType::kFormElementUserModificationsName, 1},
               {UkmAutofillKeyMetricsType::kFlowIdName, flow_id.value()},
-              {UkmAutofillKeyMetricsType::kFormTypesName, 2}}});
+              {UkmAutofillKeyMetricsType::kFormTypesName,
+               AutofillMetrics::FormTypesToBitVector(
+                   {FormTypeNameForLogging::kAddressForm,
+                    FormTypeNameForLogging::kPostalAddressForm})}}});
 }
 
 // Validate Autofill.KeyMetrics.* in case the user fixes the filled data but
