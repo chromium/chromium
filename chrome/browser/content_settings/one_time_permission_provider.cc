@@ -53,7 +53,8 @@ OneTimePermissionProvider::GetRuleIterator(
     ContentSettingsType content_type,
     bool incognito,
     const content_settings::PartitionKey& partition_key) const {
-  if (!permissions::PermissionUtil::CanPermissionBeAllowedOnce(content_type)) {
+  if (!permissions::PermissionUtil::DoesStoreTemporaryGrantsInHcsm(
+          content_type)) {
     return nullptr;
   }
   return value_map_.GetRuleIterator(content_type);
@@ -65,7 +66,8 @@ std::unique_ptr<content_settings::Rule> OneTimePermissionProvider::GetRule(
     ContentSettingsType content_type,
     bool off_the_record,
     const content_settings::PartitionKey& partition_key) const {
-  if (!permissions::PermissionUtil::CanPermissionBeAllowedOnce(content_type)) {
+  if (!permissions::PermissionUtil::DoesStoreTemporaryGrantsInHcsm(
+          content_type)) {
     return nullptr;
   }
 
@@ -80,7 +82,7 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
     base::Value&& value,
     const content_settings::ContentSettingConstraints& constraints,
     const content_settings::PartitionKey& partition_key) {
-  if (!permissions::PermissionUtil::CanPermissionBeAllowedOnce(
+  if (!permissions::PermissionUtil::DoesStoreTemporaryGrantsInHcsm(
           content_settings_type)) {
     return false;
   }
@@ -207,7 +209,8 @@ std::optional<base::TimeDelta> OneTimePermissionProvider::RenewContentSetting(
 void OneTimePermissionProvider::ClearAllContentSettingsRules(
     ContentSettingsType content_type,
     const content_settings::PartitionKey& partition_key) {
-  if (permissions::PermissionUtil::CanPermissionBeAllowedOnce(content_type)) {
+  if (permissions::PermissionUtil::DoesStoreTemporaryGrantsInHcsm(
+          content_type)) {
     return;
   }
   base::AutoLock lock(value_map_.GetLock());
@@ -253,7 +256,8 @@ void OneTimePermissionProvider::OnSuspend() {
 
   for (const auto* info : *registry) {
     auto setting_type = info->website_settings_info()->type();
-    if (permissions::PermissionUtil::CanPermissionBeAllowedOnce(setting_type)) {
+    if (permissions::PermissionUtil::DoesStoreTemporaryGrantsInHcsm(
+            setting_type)) {
       std::unique_ptr<content_settings::RuleIterator> rule_iterator(
           value_map_.GetRuleIterator(setting_type));
 
@@ -275,9 +279,8 @@ void OneTimePermissionProvider::OnSuspend() {
 // from. We remove all permissions associated with the origin.
 void OneTimePermissionProvider::OnLastPageFromOriginClosed(
     const url::Origin& origin) {
-  for (auto setting_type : {ContentSettingsType::GEOLOCATION,
-                            ContentSettingsType::MEDIASTREAM_CAMERA,
-                            ContentSettingsType::MEDIASTREAM_MIC}) {
+  for (auto setting_type :
+       content_settings::GetTypesWithTemporaryGrantsInHcsm()) {
     DeleteEntriesMatchingGURL(
         setting_type, origin.GetURL(),
         permissions::OneTimePermissionEvent::ALL_TABS_CLOSED_OR_DISCARDED);

@@ -152,7 +152,7 @@ PermissionRequest::GetDialogAnnotatedMessageText(
   // prompt design on Clank)
   return GetDialogAnnotatedMessageText(
       requesting_origin_string_formatted, message_id, /*format_origin_bold=*/
-      permissions::PermissionUtil::CanPermissionBeAllowedOnce(
+      permissions::PermissionUtil::DoesSupportTemporaryGrants(
           GetContentSettingsType()));
 }
 

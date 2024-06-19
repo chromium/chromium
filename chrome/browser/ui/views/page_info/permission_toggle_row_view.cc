@@ -223,7 +223,7 @@ void PermissionToggleRowView::InitForUserSource(
           features::kFileSystemAccessPersistentPermissions) &&
       base::FeatureList::IsEnabled(
           features::kFileSystemAccessPersistentPermissionsUpdatedPageInfo);
-  if (permissions::PermissionUtil::CanPermissionBeAllowedOnce(
+  if (permissions::PermissionUtil::DoesSupportTemporaryGrants(
           permission_.type) ||
       permission_.is_one_time || show_updated_page_info_file_system) {
     auto subpage_button = views::CreateVectorImageButtonWithNativeTheme(

@@ -5,6 +5,7 @@
 #include "components/permissions/permission_util.h"
 
 #include "base/check.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
@@ -237,19 +238,13 @@ bool PermissionUtil::IsGuardContentSetting(ContentSettingsType type) {
   }
 }
 
-bool PermissionUtil::CanPermissionBeAllowedOnce(ContentSettingsType type) {
-  switch (type) {
-#if !BUILDFLAG(IS_ANDROID)
-    case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
-#endif
-    case ContentSettingsType::GEOLOCATION:
-    case ContentSettingsType::MEDIASTREAM_MIC:
-    case ContentSettingsType::MEDIASTREAM_CAMERA:
-    case ContentSettingsType::SMART_CARD_DATA:
-      return true;
-    default:
-      return false;
-  }
+bool PermissionUtil::DoesSupportTemporaryGrants(ContentSettingsType type) {
+  return base::Contains(content_settings::GetTypesWithTemporaryGrants(), type);
+}
+
+bool PermissionUtil::DoesStoreTemporaryGrantsInHcsm(ContentSettingsType type) {
+  return base::Contains(content_settings::GetTypesWithTemporaryGrantsInHcsm(),
+                        type);
 }
 
 // Due to dependency issues, this method is duplicated in

@@ -90,8 +90,20 @@ class PermissionUtil {
   // "block" instead. This is primarily used for chooser-based permissions.
   static bool IsGuardContentSetting(ContentSettingsType type);
 
-  // Checks whether the given ContentSettingsType supports one time grants.
-  static bool CanPermissionBeAllowedOnce(ContentSettingsType type);
+  // Returns true if the permission for `type` can be granted for a short period
+  // of time. This means the following:
+  // - Permission prompts will have a button that is labeled along the lines of
+  //   "Allow this time".
+  // - The `permissions.query` API will report PermissionStatus.state as
+  //   "granted" within this short time window.
+  // - Subsequent requests to the permission-gated API in this time window will
+  //   succeed without user mediation.
+  static bool DoesSupportTemporaryGrants(ContentSettingsType type);
+
+  // For a permission `type` that `DoesSupportTemporaryGrants()`, returns true
+  // if that temporary grant is stored in the `OneTimePermissionProvider` in
+  // `HostContentSettingMap`, and false elsewhere.
+  static bool DoesStoreTemporaryGrantsInHcsm(ContentSettingsType type);
 
   // Returns the authoritative `embedding origin`, as a GURL, to be used for
   // permission decisions in `render_frame_host`.

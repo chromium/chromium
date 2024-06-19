@@ -1199,7 +1199,7 @@ ContentSetting GetContentSettingForOrigin(Profile* profile,
   if (info.metadata.session_model() ==
       content_settings::mojom::SessionModel::ONE_TIME) {
     DCHECK(
-        permissions::PermissionUtil::CanPermissionBeAllowedOnce(content_type));
+        permissions::PermissionUtil::DoesSupportTemporaryGrants(content_type));
     DCHECK_EQ(result.status, PermissionStatus::GRANTED);
     return CONTENT_SETTING_DEFAULT;
   }

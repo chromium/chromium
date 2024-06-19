@@ -1561,9 +1561,9 @@ void PermissionUmaUtil::RecordPageInfoDialogAccessType(
 std::string PermissionUmaUtil::GetOneTimePermissionEventHistogram(
     ContentSettingsType type) {
   // `FILE_SYSTEM_WRITE_GUARD` is not part of `OneTimePermission`,
-  // (i.e. `CanPermissionBeAllowedOnce()`), but it uses its background expiry
+  // (i.e. `DoesSupportTemporaryGrants()`), but it uses its background expiry
   // flow. As a result, allow logging for this event.
-  DCHECK(permissions::PermissionUtil::CanPermissionBeAllowedOnce(type) ||
+  DCHECK(permissions::PermissionUtil::DoesSupportTemporaryGrants(type) ||
          type == ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
 
   std::string permission_type = GetPermissionRequestString(

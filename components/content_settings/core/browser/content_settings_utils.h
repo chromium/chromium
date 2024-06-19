@@ -97,6 +97,21 @@ bool IsChooserPermissionEligibleForAutoRevocation(ContentSettingsType type);
 bool IsGrantedByRelatedWebsiteSets(ContentSettingsType type,
                                    const RuleMetaData& metadata);
 
+// Returns the list of ContentSettingsTypes that can be granted for a short
+// period of time. This means the following:
+// - Permission prompts will have a button that is labeled along the lines of
+//   "Allow this time".
+// - The `permissions.query` API will report PermissionStatus.state as
+//   "granted" within this short time window.
+// - Subsequent requests to the permission-gated API in this time window will
+//   succeed without user mediation.
+const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrants();
+
+// Returns a subset of GetTypesWithTemporaryGrants() that are stored in
+// OneTimePermissionProvider in HostContentSettingsMap. Other types not stored
+// in the provider have their own custom grant expiry logic.
+const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrantsInHcsm();
+
 }  // namespace content_settings
 
 #endif  // COMPONENTS_CONTENT_SETTINGS_CORE_BROWSER_CONTENT_SETTINGS_UTILS_H_

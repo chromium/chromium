@@ -243,4 +243,29 @@ bool IsGrantedByRelatedWebsiteSets(ContentSettingsType type,
   }
 }
 
+const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrants() {
+  static base::NoDestructor<const std::vector<ContentSettingsType>> types({
+#if !BUILDFLAG(IS_ANDROID)
+      ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
+#endif
+      ContentSettingsType::GEOLOCATION,
+      ContentSettingsType::MEDIASTREAM_MIC,
+      ContentSettingsType::MEDIASTREAM_CAMERA,
+      ContentSettingsType::SMART_CARD_DATA,
+  });
+  return *types;
+}
+
+const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrantsInHcsm() {
+  static base::NoDestructor<const std::vector<ContentSettingsType>> types({
+#if !BUILDFLAG(IS_ANDROID)
+      ContentSettingsType::CAMERA_PAN_TILT_ZOOM,
+#endif
+      ContentSettingsType::GEOLOCATION,
+      ContentSettingsType::MEDIASTREAM_MIC,
+      ContentSettingsType::MEDIASTREAM_CAMERA,
+  });
+  return *types;
+}
+
 }  // namespace content_settings

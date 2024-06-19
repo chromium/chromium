@@ -43,7 +43,7 @@ void PermissionDialogJavaDelegate::CreateJavaDelegate(
 
   bool isOneTime =
       base::FeatureList::IsEnabled(permissions::features::kOneTimePermission) &&
-      PermissionUtil::CanPermissionBeAllowedOnce(
+      PermissionUtil::DoesSupportTemporaryGrants(
           permission_prompt_->GetContentSettingType(0));
 
   base::android::ScopedJavaLocalRef<jstring> positiveButtonText;

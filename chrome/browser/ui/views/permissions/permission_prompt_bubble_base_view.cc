@@ -269,7 +269,7 @@ bool PermissionPromptBubbleBaseView::IsOneTimePermission(
     auto content_setting_type =
         permissions::RequestTypeToContentSettingsType(request->request_type());
     if (!content_setting_type.has_value() ||
-        !permissions::PermissionUtil::CanPermissionBeAllowedOnce(
+        !permissions::PermissionUtil::DoesSupportTemporaryGrants(
             content_setting_type.value())) {
       return false;
     }

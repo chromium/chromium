@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
@@ -220,13 +221,7 @@ bool PrefProvider::SetWebsiteSetting(
   // permission has been set by the One Time Provider, therefore we reset a
   // potentially existing Allow Always setting.
   if (constraints.session_model() == mojom::SessionModel::ONE_TIME) {
-    DCHECK(
-#if !BUILDFLAG(IS_ANDROID)
-        content_type == ContentSettingsType::CAMERA_PAN_TILT_ZOOM ||
-#endif
-        content_type == ContentSettingsType::GEOLOCATION ||
-        content_type == ContentSettingsType::MEDIASTREAM_MIC ||
-        content_type == ContentSettingsType::MEDIASTREAM_CAMERA);
+    DCHECK(base::Contains(GetTypesWithTemporaryGrantsInHcsm(), content_type));
     in_value = base::Value();
   }
 

@@ -261,7 +261,7 @@ void PageInfoMainView::SetPermissionInfo(
   // permissions to align toggles.
   bool should_show_spacer = false;
   for (const auto& permission : permission_info_list) {
-    if (permissions::PermissionUtil::CanPermissionBeAllowedOnce(
+    if (permissions::PermissionUtil::DoesSupportTemporaryGrants(
             permission.type)) {
       should_show_spacer = true;
     }

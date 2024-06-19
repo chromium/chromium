@@ -241,7 +241,7 @@ void PageInfoPermissionContentView::SetPermissionInfo(
                                       CONTENT_SETTING_DEFAULT);
     remember_setting_->SetVisible(
         (permissions::PermissionUtil::IsPermission(type_) &&
-         permissions::PermissionUtil::CanPermissionBeAllowedOnce(
+         permissions::PermissionUtil::DoesSupportTemporaryGrants(
              permission_.type)) &&
         (permission_.setting != CONTENT_SETTING_BLOCK));
   }
@@ -258,7 +258,7 @@ void PageInfoPermissionContentView::OnToggleButtonPressed() {
 
   // One time permissible permissions show a remember me checkbox only for the
   // non-deny state.
-  if (permissions::PermissionUtil::CanPermissionBeAllowedOnce(
+  if (permissions::PermissionUtil::DoesSupportTemporaryGrants(
           permission_.type)) {
     PreferredSizeChanged();
   }

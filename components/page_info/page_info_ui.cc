@@ -738,7 +738,7 @@ std::u16string PageInfoUI::PermissionStateToUIString(
 #if !BUILDFLAG(IS_ANDROID)
       } else if (permission.is_one_time) {
         DCHECK_EQ(permission.source, SettingSource::kUser);
-        DCHECK(permissions::PermissionUtil::CanPermissionBeAllowedOnce(
+        DCHECK(permissions::PermissionUtil::DoesSupportTemporaryGrants(
             permission.type));
         message_id = IDS_PAGE_INFO_STATE_TEXT_ALLOWED_ONCE;
 #endif
@@ -896,7 +896,7 @@ void PageInfoUI::ToggleBetweenAllowAndBlock(
 
       // If one-time permissions are supported, permission should go from
       // default state to allow once state, not directly to allow.
-      if (permissions::PermissionUtil::CanPermissionBeAllowedOnce(
+      if (permissions::PermissionUtil::DoesSupportTemporaryGrants(
               permission.type)) {
         permission.is_one_time = true;
       }
@@ -921,7 +921,7 @@ void PageInfoUI::ToggleBetweenRememberAndForget(
     case CONTENT_SETTING_ALLOW: {
       // If one-time permissions are supported, toggle is_one_time.
       // Otherwise, go directly to default.
-      if (permissions::PermissionUtil::CanPermissionBeAllowedOnce(
+      if (permissions::PermissionUtil::DoesSupportTemporaryGrants(
               permission.type)) {
         permission.is_one_time = !permission.is_one_time;
       } else {
