@@ -283,12 +283,8 @@ class AndroidAutofillProvider : public AutofillProvider,
 
   // Properties of the last-focused field of the current session for `form_`
   // (queried input or changed select box).
-  struct CurrentFieldInfo {
-    FieldGlobalId id;
-    FieldTypeGroup group{FieldTypeGroup::kNoGroup};
-    url::Origin origin;
-  };
-  CurrentFieldInfo current_field_;
+  FieldGlobalId last_focused_field_id_;
+  FieldTypeGroup field_type_group_{FieldTypeGroup::kNoGroup};
 
   // The frame of the field for which the last OnAskForValuesToFill() happened.
   //
@@ -301,6 +297,10 @@ class AndroidAutofillProvider : public AutofillProvider,
   // ancestor frame of the queried field.
   content::GlobalRenderFrameHostId last_queried_field_rfh_id_;
 
+  // The origin of the field of the current session (cf.
+  // `last_focused_field_id_`). This is determines which fields are safe to be
+  // filled in cross-frame forms.
+  url::Origin triggered_origin_;
   base::WeakPtr<AndroidAutofillManager> manager_;
   bool check_submission_ = false;
   // Valid only if check_submission_ is true.

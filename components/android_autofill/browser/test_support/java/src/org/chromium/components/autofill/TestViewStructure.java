@@ -283,13 +283,7 @@ public class TestViewStructure extends ViewStructure {
     public void setFocusable(boolean state) {}
 
     @Override
-    public void setFocused(boolean state) {
-        mFocused = state;
-    }
-
-    public boolean getFocused() {
-        return mFocused;
-    }
+    public void setFocused(boolean state) {}
 
     @Override
     public void setClassName(String className) {
@@ -375,7 +369,6 @@ public class TestViewStructure extends ViewStructure {
     private CharSequence mHint;
     private String[] mAutofillHints;
     private int mId;
-    private boolean mFocused;
     private String mClassName;
     private String mWebDomain;
     private int mChildCount;
