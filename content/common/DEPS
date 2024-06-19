@@ -39,9 +39,6 @@ include_rules = [
   "+third_party/blink/public/web/web_drag_status.h",
   "+third_party/blink/public/web/web_frame_owner_properties.h",
   "+third_party/blink/public/web/win/web_font_rendering.h",
-
-  # Needed when writting fuzztest fuzzers.
-  "+third_party/fuzztest/src/fuzztest/fuzztest.h"
 ]
 specific_include_rules = {
   '.*_unittest.*': [
