@@ -106,7 +106,8 @@ class GraphBuilderTflite final {
   int32_t SerializeTemporaryTensor(base::span<const int32_t> dimensions,
                                    ::tflite::TensorType tensor_type);
 
-  uint32_t GetOperatorCodeIndex(::tflite::BuiltinOperator code);
+  uint32_t GetOperatorCodeIndex(::tflite::BuiltinOperator code,
+                                int32_t version = 1);
 
   // Returns the Operand corresponding to an `operand_id` from `graph_info_`.
   // Will crash if `graph_info_` does not contain `operand_id`.
@@ -226,6 +227,7 @@ class GraphBuilderTflite final {
       const mojom::ElementWiseUnary& op);
   base::expected<OperatorOffset, std::string> SerializeElu(
       const mojom::Elu& elu);
+  OperatorOffset SerializeExpand(const mojom::Expand& expand);
   base::expected<OperatorOffset, std::string> SerializeGather(
       const mojom::Gather& gather);
   base::expected<OperatorOffset, std::string> SerializeGemm(

@@ -195,6 +195,7 @@ tflite_static_library("tflite_builtin_op_resolver") {
 
   visibility = [
     ":tflite_benchmark",
+    "//services/webnn/*",
     "//third_party/mediapipe/*",
   ]
 

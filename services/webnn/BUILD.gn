@@ -152,6 +152,7 @@ component("webnn_service") {
       "//components/ml/mojom",
       "//third_party/tflite",
       "//third_party/tflite:buildflags",
+      "//third_party/tflite:tflite_builtin_op_resolver",
     ]
 
     if (is_chromeos) {

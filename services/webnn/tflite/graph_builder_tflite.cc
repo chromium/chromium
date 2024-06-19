@@ -325,6 +325,9 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
       ASSIGN_OR_RETURN(operator_offset, SerializeElu(*op.get_elu()));
       break;
     }
+    case mojom::Operation::Tag::kExpand:
+      operator_offset = SerializeExpand(*op.get_expand());
+      break;
     case mojom::Operation::Tag::kGather: {
       ASSIGN_OR_RETURN(operator_offset, SerializeGather(*op.get_gather()));
       break;
@@ -420,7 +423,6 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
     case mojom::Operation::Tag::kWhere:
       operator_offset = SerializeWhere(*op.get_where());
       break;
-    case mojom::Operation::Tag::kExpand:
     case mojom::Operation::Tag::kGelu:
     case mojom::Operation::Tag::kGru:
     case mojom::Operation::Tag::kGruCell:
@@ -524,7 +526,8 @@ int32_t GraphBuilderTflite::SerializeTemporaryTensor(
 }
 
 uint32_t GraphBuilderTflite::GetOperatorCodeIndex(
-    ::tflite::BuiltinOperator code) {
+    ::tflite::BuiltinOperator code,
+    int32_t version) {
   // New builtin operators, whose operator code is larger than 127, can not be
   // assigned to the `deprecated_code` field. In such cases, the value of the
   // `code` field should be used for the builtin operator code, the value 127
@@ -536,7 +539,7 @@ uint32_t GraphBuilderTflite::GetOperatorCodeIndex(
       base::checked_cast<uint32_t>(operator_codes_.size());
   operator_codes_.push_back(::tflite::CreateOperatorCode(
       builder_, base::checked_cast<int8_t>(deprecated_code),
-      /*custom_code=*/0, /*version=*/1, code));
+      /*custom_code=*/0, version, code));
 
   // The type of operation is determined by the index into the list of the valid
   // OperatorCodes.
@@ -1261,6 +1264,31 @@ auto GraphBuilderTflite::SerializeElu(const mojom::Elu& elu)
       ::tflite::BuiltinOperator_ELU,
       operand_to_index_map_.at(elu.input_operand_id),
       operand_to_index_map_.at(elu.output_operand_id));
+}
+
+auto GraphBuilderTflite::SerializeExpand(const mojom::Expand& expand)
+    -> OperatorOffset {
+  // Serialize the expanded shape to tflite tensor with output dimensions.
+  const mojom::Operand& output_operand = GetOperand(expand.output_operand_id);
+  // The output shape has been validated to not overflow before creating tensor.
+  const auto signed_output_dimensions =
+      ToSignedDimensions(output_operand.descriptor.shape());
+  CHECK(signed_output_dimensions.has_value());
+  const int32_t output_rank =
+      base::checked_cast<int32_t>(signed_output_dimensions->size());
+  const int32_t new_shape_tensor_index = SerializeTensorWithBuffer<int32_t>(
+      *signed_output_dimensions, std::array<int32_t, 1>{output_rank});
+
+  const uint32_t operator_code_index = GetOperatorCodeIndex(
+      ::tflite::BuiltinOperator_BROADCAST_TO, /*version=*/2);
+  const std::array<int32_t, 2> op_inputs = {
+      operand_to_index_map_.at(expand.input_operand_id),
+      new_shape_tensor_index};
+  const std::array<int32_t, 1> op_outputs = {
+      operand_to_index_map_.at(expand.output_operand_id)};
+  return ::tflite::CreateOperator(builder_, operator_code_index,
+                                  builder_.CreateVector<int32_t>(op_inputs),
+                                  builder_.CreateVector<int32_t>(op_outputs));
 }
 
 auto GraphBuilderTflite::SerializeGather(const mojom::Gather& gather)

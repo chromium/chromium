@@ -72,6 +72,10 @@ OpResolver::OpResolver(const mojom::CreateContextOptions& options) {
              /* max_version = */ 3);
   AddBuiltin(::tflite::BuiltinOperator_EXP,
              ::tflite::ops::builtin::Register_EXP());
+  AddBuiltin(::tflite::BuiltinOperator_BROADCAST_TO,
+             ::tflite::ops::builtin::Register_BROADCAST_TO(),
+             /* min_version = */ 2,
+             /* max_version = */ 3);
   AddBuiltin(::tflite::BuiltinOperator_FLOOR,
              ::tflite::ops::builtin::Register_FLOOR());
   AddBuiltin(::tflite::BuiltinOperator_FULLY_CONNECTED,
