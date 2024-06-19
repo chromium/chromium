@@ -493,6 +493,11 @@ ConnectorsManager* ConnectorsService::ConnectorsManagerForTesting() {
   return connectors_manager_.get();
 }
 
+void ConnectorsService::ObserveTelemetryReporting(
+    base::RepeatingCallback<void(bool)> callback) {
+  connectors_manager_->SetTelemetryObserverCallback(callback);
+}
+
 ConnectorsService::DmToken::DmToken(const std::string& value,
                                     policy::PolicyScope scope)
     : value(value), scope(scope) {}

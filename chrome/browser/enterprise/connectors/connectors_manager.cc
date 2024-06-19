@@ -253,6 +253,11 @@ void ConnectorsManager::MaybeCloseLocalContentAnalysisAgentConnection() {
 }
 #endif  // BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
 
+void ConnectorsManager::SetTelemetryObserverCallback(
+    base::RepeatingCallback<void(bool)> callback) {
+  telemetry_observer_callback_ = callback;
+}
+
 void ConnectorsManager::OnPrefChanged(AnalysisConnector connector) {
   CacheAnalysisConnectorPolicy(connector);
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
@@ -269,9 +274,17 @@ void ConnectorsManager::CacheReportingConnectorPolicy(
   DCHECK(pref);
 
   const base::Value::List& policy_value = prefs()->GetList(pref);
-  for (const base::Value& service_settings : policy_value)
-    reporting_connector_settings_[connector].emplace_back(
+  for (const base::Value& service_settings : policy_value) {
+    auto& settings = reporting_connector_settings_[connector].emplace_back(
         service_settings, *service_provider_config_);
+
+    if (settings.GetReportingSettings().has_value() &&
+        !telemetry_observer_callback_.is_null()) {
+      telemetry_observer_callback_.Run(
+          settings.GetReportingSettings()->enabled_event_names.count(
+              ReportingServiceSettings::kExtensionTelemetryEvent) == 1);
+    }
+  }
 }
 
 bool ConnectorsManager::DelayUntilVerdict(AnalysisConnector connector) {
@@ -448,6 +461,11 @@ ConnectorsManager::GetAnalysisConnectorsSettingsForTesting() const {
 const ConnectorsManager::ReportingConnectorsSettings&
 ConnectorsManager::GetReportingConnectorsSettingsForTesting() const {
   return reporting_connector_settings_;
+}
+
+const base::RepeatingCallback<void(bool)>
+ConnectorsManager::GetTelemetryObserverCallbackForTesting() const {
+  return telemetry_observer_callback_;
 }
 
 }  // namespace enterprise_connectors

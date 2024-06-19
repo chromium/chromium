@@ -107,11 +107,16 @@ class ConnectorsManager {
   std::vector<const AnalysisConfig*> GetAnalysisServiceConfigs(
       AnalysisConnector connector);
 
+  void SetTelemetryObserverCallback(
+      base::RepeatingCallback<void(bool)> callback);
+
   // Public testing functions.
   const AnalysisConnectorsSettings& GetAnalysisConnectorsSettingsForTesting()
       const;
   const ReportingConnectorsSettings& GetReportingConnectorsSettingsForTesting()
       const;
+  const base::RepeatingCallback<void(bool)>
+  GetTelemetryObserverCallbackForTesting() const;
 
  private:
 #if BUILDFLAG(ENTERPRISE_LOCAL_CONTENT_ANALYSIS)
@@ -180,6 +185,9 @@ class ConnectorsManager {
   // Used to track changes of connector policies and propagate them in
   // |connector_settings_|.
   PrefChangeRegistrar pref_change_registrar_;
+
+  // Used to report changes of reporting connector policy.
+  base::RepeatingCallback<void(bool)> telemetry_observer_callback_;
 
   // A router to report browser crash events via the reporting pipeline.
   std::unique_ptr<BrowserCrashEventRouter> browser_crash_event_router_;

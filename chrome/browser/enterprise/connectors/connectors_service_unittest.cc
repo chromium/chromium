@@ -9,6 +9,7 @@
 #include "base/json/json_reader.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_manager.h"
@@ -200,6 +201,8 @@ class ConnectorsServiceReportingFeatureTest
     return nullptr;
   }
 
+  PrefService* pref_service() const { return profile_->GetPrefs(); }
+
   bool reporting_enabled() const { return policy_value() == 1; }
 
   void ValidateSettings(const ReportingSettings& settings) {
@@ -270,6 +273,38 @@ TEST_P(ConnectorsServiceReportingFeatureTest,
                    ->is_chrome_os_managed_guest_session());
 }
 #endif
+
+TEST_P(ConnectorsServiceReportingFeatureTest, CheckTelemetryPolicyObserver) {
+  ConnectorsService* connectors_service =
+      ConnectorsServiceFactory::GetForBrowserContext(profile_);
+  ConnectorsManager* connectors_manager =
+      connectors_service->ConnectorsManagerForTesting();
+
+  base::test::TestFuture<bool> future;
+  connectors_service->ObserveTelemetryReporting(future.GetRepeatingCallback());
+  ASSERT_TRUE(
+      !connectors_manager->GetTelemetryObserverCallbackForTesting().is_null());
+
+  // Cache initially empty
+  ASSERT_TRUE(
+      connectors_manager->GetReportingConnectorsSettingsForTesting().empty());
+
+  // Enable browser crash event
+  test::SetOnSecurityEventReporting(
+      pref_service(), true, {ReportingServiceSettings::kBrowserCrashEvent}, {});
+  EXPECT_FALSE(future.Take());
+
+  // Clear enabled events (not cached when cleared)
+  test::SetOnSecurityEventReporting(pref_service(), false, {}, {});
+  ASSERT_TRUE(
+      connectors_manager->GetReportingConnectorsSettingsForTesting().empty());
+
+  // Enable telemetry event
+  test::SetOnSecurityEventReporting(
+      pref_service(), true,
+      {ReportingServiceSettings::kExtensionTelemetryEvent}, {});
+  EXPECT_TRUE(future.Take());
+}
 
 INSTANTIATE_TEST_SUITE_P(
     ,
