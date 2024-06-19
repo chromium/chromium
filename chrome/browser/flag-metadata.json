@@ -3822,6 +3822,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "enable-share-custom-actions-in-cct",
+    "owners": [ "haileywang@google.com", "wychen@chromium.org" ],
+    "expiry_milestone": 135
+  },
+  {
     "name": "enable-shared-zstd",
     "owners": [ "nidhijaju@chromium.org", "net-dev@chromium.org" ],
     "expiry_milestone": 130

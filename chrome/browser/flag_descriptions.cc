@@ -4595,6 +4595,10 @@ const char kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckDescription[] =
     "Use the new GMS API when performing Safe Browsing local database checks "
     "for browse URLs.";
 
+const char kShareCustomActionsInCCTName[] = "Custom Actions in CCT";
+const char kShareCustomActionsInCCTDescription[] =
+    "Display share custom actions Chrome Custom Tabs.";
+
 const char kShowNtpAtStartupAndroidName[] = "Show a NewTabPage at startup";
 const char kShowNtpAtStartupAndroidDescription[] =
     "Enable showing a NewTabPage at startup after leaving Chrome for a while.";

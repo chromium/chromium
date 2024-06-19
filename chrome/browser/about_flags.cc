@@ -6826,6 +6826,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-reader-mode-in-cct", flag_descriptions::kReaderModeInCCTName,
      flag_descriptions::kReaderModeInCCTDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kReaderModeInCCT)},
+
+    {"enable-share-custom-actions-in-cct",
+     flag_descriptions::kShareCustomActionsInCCTName,
+     flag_descriptions::kShareCustomActionsInCCTDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kShareCustomActionsInCCT)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
     {"product-specifications",

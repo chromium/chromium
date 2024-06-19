@@ -145,6 +145,7 @@ BASE_DECLARE_FEATURE(kReportParentalControlSitesChild);
 BASE_DECLARE_FEATURE(kSearchEnginesPromoV3);
 BASE_DECLARE_FEATURE(kSearchInCCT);
 BASE_DECLARE_FEATURE(kSearchResumptionModuleAndroid);
+BASE_DECLARE_FEATURE(kShareCustomActionsInCCT);
 BASE_DECLARE_FEATURE(kSharingHubLinkToggle);
 BASE_DECLARE_FEATURE(kShowNtpAtStartupAndroid);
 BASE_DECLARE_FEATURE(kSmallerTabStripTitleLimit);

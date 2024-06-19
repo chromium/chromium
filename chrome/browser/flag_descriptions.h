@@ -2729,6 +2729,9 @@ extern const char kSafeBrowsingNewGmsApiForBrowseUrlDatabaseCheckDescription[];
 extern const char kSecurePaymentConfirmationAndroidName[];
 extern const char kSecurePaymentConfirmationAndroidDescription[];
 
+extern const char kShareCustomActionsInCCTName[];
+extern const char kShareCustomActionsInCCTDescription[];
+
 extern const char kShowNtpAtStartupAndroidName[];
 extern const char kShowNtpAtStartupAndroidDescription[];
 

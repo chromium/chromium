@@ -19777,6 +19777,7 @@ from previous Chrome versions.
   <int value="-308793293" label="WebShare:disabled"/>
   <int value="-308785012"
       label="QuickIntensiveWakeUpThrottlingAfterLoading:enabled"/>
+  <int value="-308671262" label="ShareCustomActionsInCCT:disabled"/>
   <int value="-308107781" label="OmniboxCacheSuggestionResources:disabled"/>
   <int value="-307260007" label="ExtensionsCheckup:disabled"/>
   <int value="-306935714" label="lite-video-force-override-decision"/>
@@ -23348,6 +23349,7 @@ from previous Chrome versions.
   <int value="1236772382" label="BiometricAuthenticationInSettings:disabled"/>
   <int value="1237297772" label="no-pings"/>
   <int value="1237420037" label="SeedAccountsRevamp:disabled"/>
+  <int value="1237514437" label="ShareCustomActionsInCCT:enabled"/>
   <int value="1237574783" label="SyncAccessHandleAllSyncSurface:enabled"/>
   <int value="1237659269"
       label="OmniboxHistoryQuickProviderAllowButDoNotScoreMidwordTerms:enabled"/>

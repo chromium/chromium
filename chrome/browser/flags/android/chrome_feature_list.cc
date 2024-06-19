@@ -276,6 +276,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kSearchEnginesPromoV3,
     &kSearchInCCT,
     &kSearchResumptionModuleAndroid,
+    &kShareCustomActionsInCCT,
     &kShowNtpAtStartupAndroid,
     &kSmallerTabStripTitleLimit,
     &kStopAppIndexingReport,
@@ -865,6 +866,10 @@ BASE_FEATURE(kRelatedSearchesAllLanguage,
 BASE_FEATURE(kReportParentalControlSitesChild,
              "ReportParentalControlSitesChild",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kShareCustomActionsInCCT,
+             "ShareCustomActionsInCCT",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kShowNtpAtStartupAndroid,
              "ShowNtpAtStartupAndroid",
