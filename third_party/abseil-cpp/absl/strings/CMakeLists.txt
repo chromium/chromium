@@ -18,9 +18,9 @@ absl_cc_library(
   NAME
     string_view
   HDRS
-    string_view.h
+    "string_view.h"
   SRCS
-    string_view.cc
+    "string_view.cc"
   COPTS
     ${ABSL_DEFAULT_COPTS}
   DEPS

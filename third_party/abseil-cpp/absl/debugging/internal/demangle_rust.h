@@ -36,7 +36,7 @@ namespace debugging_internal {
 // The demangling logic is under development; search for "not yet implemented"
 // in the .cc file to see where the gaps are.
 bool DemangleRustSymbolEncoding(const char* mangled, char* out,
-                                std::size_t out_size);
+                                size_t out_size);
 
 }  // namespace debugging_internal
 ABSL_NAMESPACE_END

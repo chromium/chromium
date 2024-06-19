@@ -239,7 +239,7 @@ class MockingBitGenImpl {
 // since the  underlying implementation creates a type-specific pointer which
 // will be distinct across different DLL boundaries.
 //
-using MockingBitGen = random_internal::MockingBitGenImpl<false>;
+using MockingBitGen = random_internal::MockingBitGenImpl<true>;
 
 // UnvalidatedMockingBitGen
 //

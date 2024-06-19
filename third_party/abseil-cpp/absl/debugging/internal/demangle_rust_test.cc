@@ -29,7 +29,7 @@ namespace {
 // chars>, buffer_size) returns true and seems not to have overrun its output
 // buffer, returns the string written by DemangleRustSymbolEncoding; otherwise
 // returns an error message.
-std::string ResultOfDemangling(const char* mangled, std::size_t buffer_size) {
+std::string ResultOfDemangling(const char* mangled, size_t buffer_size) {
   // Fill the buffer with something other than NUL so we test whether Demangle
   // appends trailing NUL as expected.
   std::string buffer(buffer_size + 1, '~');
@@ -58,9 +58,9 @@ std::string ResultOfDemangling(const char* mangled, std::size_t buffer_size) {
 #define EXPECT_DEMANGLING(mangled, plaintext) \
   do { \
     [] { \
-      constexpr std::size_t plenty_of_space = sizeof(plaintext) + 128; \
-      constexpr std::size_t just_enough_space = sizeof(plaintext); \
-      constexpr std::size_t one_byte_too_few = sizeof(plaintext) - 1; \
+      constexpr size_t plenty_of_space = sizeof(plaintext) + 128; \
+      constexpr size_t just_enough_space = sizeof(plaintext); \
+      constexpr size_t one_byte_too_few = sizeof(plaintext) - 1; \
       const char* expected_plaintext = plaintext; \
       const char* expected_error = "Failed parse"; \
       ASSERT_EQ(ResultOfDemangling(mangled, plenty_of_space), \
@@ -76,7 +76,7 @@ std::string ResultOfDemangling(const char* mangled, std::size_t buffer_size) {
 // truncation of a real Rust symbol name).
 #define EXPECT_DEMANGLING_FAILS(mangled) \
     do { \
-      constexpr std::size_t plenty_of_space = 1024; \
+      constexpr size_t plenty_of_space = 1024; \
       const char* expected_error = "Failed parse"; \
       EXPECT_EQ(ResultOfDemangling(mangled, plenty_of_space), expected_error); \
     } while (0)

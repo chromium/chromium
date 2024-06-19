@@ -75,6 +75,7 @@ absl_cc_library(
   SRCS
     "internal/nullability_impl.h"
   DEPS
+    absl::config
     absl::core_headers
     absl::type_traits
   COPTS

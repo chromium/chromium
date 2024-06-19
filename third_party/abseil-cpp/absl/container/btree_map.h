@@ -85,7 +85,7 @@ struct map_params;
 //
 template <typename Key, typename Value, typename Compare = std::less<Key>,
           typename Alloc = std::allocator<std::pair<const Key, Value>>>
-class btree_map
+class ABSL_INTERNAL_ATTRIBUTE_OWNER btree_map
     : public container_internal::btree_map_container<
           container_internal::btree<container_internal::map_params<
               Key, Value, Compare, Alloc, /*TargetNodeSize=*/256,
@@ -523,7 +523,7 @@ typename btree_map<K, V, C, A>::size_type erase_if(
 //
 template <typename Key, typename Value, typename Compare = std::less<Key>,
           typename Alloc = std::allocator<std::pair<const Key, Value>>>
-class btree_multimap
+class ABSL_INTERNAL_ATTRIBUTE_OWNER btree_multimap
     : public container_internal::btree_multimap_container<
           container_internal::btree<container_internal::map_params<
               Key, Value, Compare, Alloc, /*TargetNodeSize=*/256,

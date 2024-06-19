@@ -608,6 +608,19 @@ TYPED_TEST(FloatingPointLogFormatTest, NegativeNaN) {
   auto comparison_stream = ComparisonStream();
   comparison_stream << value;
 
+  // On RISC-V, don't expect that formatting -NaN produces the same string as
+  // streaming it. #ifdefing out just the relevant line breaks the MSVC build,
+  // so duplicate the entire EXPECT_CALL.
+#ifdef __riscv
+  EXPECT_CALL(
+      test_sink,
+      Send(AllOf(
+          TextMessage(AnyOf(Eq("-nan"), Eq("nan"), Eq("NaN"), Eq("-nan(ind)"))),
+          ENCODED_MESSAGE(
+              AnyOf(EqualsProto(R"pb(value { str: "-nan" })pb"),
+                    EqualsProto(R"pb(value { str: "nan" })pb"),
+                    EqualsProto(R"pb(value { str: "-nan(ind)" })pb"))))));
+#else
   EXPECT_CALL(
       test_sink,
       Send(AllOf(
@@ -617,6 +630,7 @@ TYPED_TEST(FloatingPointLogFormatTest, NegativeNaN) {
               AnyOf(EqualsProto(R"pb(value { str: "-nan" })pb"),
                     EqualsProto(R"pb(value { str: "nan" })pb"),
                     EqualsProto(R"pb(value { str: "-nan(ind)" })pb"))))));
+#endif
   test_sink.StartCapturingLogs();
   LOG(INFO) << value;
 }

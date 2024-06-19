@@ -76,14 +76,14 @@ TEST(MockDistributions, Examples) {
 }
 
 TEST(MockUniform, OutOfBoundsIsAllowed) {
-  absl::MockingBitGen gen;
+  absl::UnvalidatedMockingBitGen gen;
 
   EXPECT_CALL(absl::MockUniform<int>(), Call(gen, 1, 100)).WillOnce(Return(0));
   EXPECT_EQ(absl::Uniform<int>(gen, 1, 100), 0);
 }
 
 TEST(ValidatedMockDistributions, UniformUInt128Works) {
-  absl::random_internal::MockingBitGenImpl<true> gen;
+  absl::MockingBitGen gen;
 
   EXPECT_CALL(absl::MockUniform<absl::uint128>(), Call(gen))
       .WillOnce(Return(absl::Uint128Max()));
@@ -91,7 +91,7 @@ TEST(ValidatedMockDistributions, UniformUInt128Works) {
 }
 
 TEST(ValidatedMockDistributions, UniformDoubleBoundaryCases) {
-  absl::random_internal::MockingBitGenImpl<true> gen;
+  absl::MockingBitGen gen;
 
   EXPECT_CALL(absl::MockUniform<double>(), Call(gen, 1.0, 10.0))
       .WillOnce(Return(
@@ -115,7 +115,7 @@ TEST(ValidatedMockDistributions, UniformDoubleBoundaryCases) {
 }
 
 TEST(ValidatedMockDistributions, UniformDoubleEmptyRangeCases) {
-  absl::random_internal::MockingBitGenImpl<true> gen;
+  absl::MockingBitGen gen;
 
   ON_CALL(absl::MockUniform<double>(), Call(absl::IntervalOpen, gen, 1.0, 1.0))
       .WillByDefault(Return(1.0));
@@ -135,7 +135,7 @@ TEST(ValidatedMockDistributions, UniformDoubleEmptyRangeCases) {
 }
 
 TEST(ValidatedMockDistributions, UniformIntEmptyRangeCases) {
-  absl::random_internal::MockingBitGenImpl<true> gen;
+  absl::MockingBitGen gen;
 
   ON_CALL(absl::MockUniform<int>(), Call(absl::IntervalOpen, gen, 1, 1))
       .WillByDefault(Return(1));
@@ -151,7 +151,7 @@ TEST(ValidatedMockDistributions, UniformIntEmptyRangeCases) {
 }
 
 TEST(ValidatedMockUniformDeathTest, Examples) {
-  absl::random_internal::MockingBitGenImpl<true> gen;
+  absl::MockingBitGen gen;
 
   EXPECT_DEATH_IF_SUPPORTED(
       {
@@ -253,7 +253,7 @@ TEST(ValidatedMockUniformDeathTest, Examples) {
 }
 
 TEST(ValidatedMockUniformDeathTest, DoubleBoundaryCases) {
-  absl::random_internal::MockingBitGenImpl<true> gen;
+  absl::MockingBitGen gen;
 
   EXPECT_DEATH_IF_SUPPORTED(
       {

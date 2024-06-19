@@ -222,10 +222,13 @@ cc_library(
     srcs = [
         "internal/demangle.cc",
         "internal/demangle_rust.cc",
+        "internal/utf8_for_code_point.cc",
     ],
     hdrs = [
+        "internal/bounded_utf8_length_sequence.h",
         "internal/demangle.h",
         "internal/demangle_rust.h",
+        "internal/utf8_for_code_point.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
@@ -237,6 +240,20 @@ cc_library(
         "//absl/base",
         "//absl/base:config",
         "//absl/base:core_headers",
+        "//absl/numeric:bits",
+    ],
+)
+
+cc_test(
+    name = "bounded_utf8_length_sequence_test",
+    srcs = ["internal/bounded_utf8_length_sequence_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":demangle_internal",
+        "//absl/base:config",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 
@@ -266,6 +283,19 @@ cc_test(
         "//absl/base:core_headers",
         "//absl/log",
         "//absl/memory",
+        "@com_google_googletest//:gtest",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "utf8_for_code_point_test",
+    srcs = ["internal/utf8_for_code_point_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    linkopts = ABSL_DEFAULT_LINKOPTS,
+    deps = [
+        ":demangle_internal",
+        "//absl/base:config",
         "@com_google_googletest//:gtest",
         "@com_google_googletest//:gtest_main",
     ],

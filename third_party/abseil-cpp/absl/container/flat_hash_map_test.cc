@@ -16,12 +16,16 @@
 
 #include <cstddef>
 #include <memory>
+#include <string>
 #include <type_traits>
 #include <utility>
 #include <vector>
 
+#include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include "absl/base/config.h"
 #include "absl/container/internal/hash_generator_testing.h"
+#include "absl/container/internal/hash_policy_testing.h"
 #include "absl/container/internal/test_allocator.h"
 #include "absl/container/internal/unordered_map_constructor_test.h"
 #include "absl/container/internal/unordered_map_lookup_test.h"
@@ -361,6 +365,38 @@ TEST(FlatHashMap, FlatHashMapPolicyDestroyReturnsTrue) {
           nullptr, nullptr))()));
   EXPECT_FALSE((decltype(FlatHashMapPolicy<int, std::unique_ptr<int>>::destroy<
                          std::allocator<char>>(nullptr, nullptr))()));
+}
+
+struct InconsistentHashEqType {
+  InconsistentHashEqType(int v1, int v2) : v1(v1), v2(v2) {}
+  template <typename H>
+  friend H AbslHashValue(H h, InconsistentHashEqType t) {
+    return H::combine(std::move(h), t.v1);
+  }
+  bool operator==(InconsistentHashEqType t) const { return v2 == t.v2; }
+  int v1, v2;
+};
+
+TEST(Iterator, InconsistentHashEqFunctorsValidation) {
+  if (!IsAssertEnabled()) GTEST_SKIP() << "Assertions not enabled.";
+
+  absl::flat_hash_map<InconsistentHashEqType, int> m;
+  for (int i = 0; i < 10; ++i) m[{i, i}] = 1;
+  // We need to insert multiple times to guarantee that we get the assertion
+  // because it's possible for the hash to collide with the inserted element
+  // that has v2==0. In those cases, the new element won't be inserted.
+  auto insert_conflicting_elems = [&] {
+    for (int i = 100; i < 20000; ++i) {
+      EXPECT_EQ((m[{i, 0}]), 1);
+    }
+  };
+
+  const char* crash_message = "hash/eq functors are inconsistent.";
+#if defined(__arm__) || defined(__aarch64__)
+  // On ARM, the crash message is garbled so don't expect a specific message.
+  crash_message = "";
+#endif
+  EXPECT_DEATH_IF_SUPPORTED(insert_conflicting_elems(), crash_message);
 }
 
 }  // namespace

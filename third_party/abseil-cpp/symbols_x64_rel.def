@@ -229,6 +229,7 @@ EXPORTS
     ??0StdcppWaiter@synchronization_internal@absl@@QEAA@XZ
     ??0StringifySink@detect_specialization@log_internal@absl@@QEAA@AEAV?$basic_ostream@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ??0TimeZoneLibC@cctz@time_internal@absl@@AEAA@AEBV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
+    ??0Utf8ForCodePoint@debugging_internal@absl@@QEAA@_K@Z
     ??0Win32Waiter@synchronization_internal@absl@@QEAA@XZ
     ??0int128@absl@@QEAA@M@Z
     ??0int128@absl@@QEAA@N@Z

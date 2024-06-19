@@ -503,7 +503,7 @@ class RustSymbolParser {
 
  private:
   // Enumerates resumption points for ABSL_DEMANGLER_RECURSE calls.
-  enum ReturnAddress : std::uint8_t {
+  enum ReturnAddress : uint8_t {
     kInstantiatingCrate,
     kVendorSpecificSuffix,
     kIdentifierInUppercaseNamespace,
@@ -585,9 +585,9 @@ class RustSymbolParser {
   // false if not everything fit into the output buffer.
   ABSL_MUST_USE_RESULT bool Emit(const char* token) {
     if (silence_depth_ > 0) return true;
-    const std::size_t token_length = std::strlen(token);
-    const std::size_t bytes_to_copy = token_length + 1;  // token and final NUL
-    if (static_cast<std::size_t>(out_end_ - out_) < bytes_to_copy) return false;
+    const size_t token_length = std::strlen(token);
+    const size_t bytes_to_copy = token_length + 1;  // token and final NUL
+    if (static_cast<size_t>(out_end_ - out_) < bytes_to_copy) return false;
     std::memcpy(out_, token, bytes_to_copy);
     out_ += token_length;
     return true;
@@ -604,7 +604,7 @@ class RustSymbolParser {
     // because 999 > 256.  The bound will remain correct even if future
     // maintenance changes the type of the disambiguator variable.
     char digits[3 * sizeof(disambiguator)] = {};
-    std::size_t leading_digit_index = sizeof(digits) - 1;
+    size_t leading_digit_index = sizeof(digits) - 1;
     for (; disambiguator > 0; disambiguator /= 10) {
       digits[--leading_digit_index] =
           static_cast<char>('0' + disambiguator % 10);
@@ -909,7 +909,7 @@ class RustSymbolParser {
 }  // namespace
 
 bool DemangleRustSymbolEncoding(const char* mangled, char* out,
-                                std::size_t out_size) {
+                                size_t out_size) {
   return RustSymbolParser(mangled, out, out + out_size).Parse();
 }
 
