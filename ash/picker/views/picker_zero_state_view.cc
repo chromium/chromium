@@ -116,12 +116,10 @@ PickerZeroStateView::PickerZeroStateView(
       continue;
     }
 
-    auto item_view = std::make_unique<PickerListItemView>(
+    GetOrCreateSectionView(category)->AddResult(
+        PickerSearchResult::Category(category), &preview_controller_,
         base::BindRepeating(&PickerZeroStateView::OnCategorySelected,
                             weak_ptr_factory_.GetWeakPtr(), category));
-    item_view->SetPrimaryText(GetLabelForPickerCategory(category));
-    item_view->SetLeadingIcon(GetIconForPickerCategory(category));
-    GetOrCreateSectionView(category)->AddListItem(std::move(item_view));
   }
   SetPseudoFocusedView(section_list_view_->GetTopItem());
 
