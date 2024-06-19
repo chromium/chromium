@@ -1652,6 +1652,17 @@ and mapped to the variant by `StatisticNameToMachineStatisticVariant()` -->
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Healthd.RoutineCreation"
+    enum="CrosHealthdRoutineCategory" expires_after="2024-12-31">
+  <owner>weiluanwang@google.com</owner>
+  <owner>dennyh@google.com</owner>
+  <owner>cros-tdm-tpe-eng@google.com</owner>
+  <summary>
+    Records the routine creation in healthd to analyze the usage. Emitted when
+    the specific category is requested from a client.
+  </summary>
+</histogram>
+
 <histogram name="ChromeOS.Healthd.TelemetryResult.{Category}"
     enum="CrosHealthdTelemetryResult" expires_after="2024-11-17">
   <owner>weiluanwang@google.com</owner>

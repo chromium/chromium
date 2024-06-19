@@ -830,6 +830,30 @@ chromium-metrics-reviews@google.com.
   <int value="16" label="Crash"/>
 </enum>
 
+<enum name="CrosHealthdRoutineCategory">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="PrimeSearch"/>
+  <int value="2" label="FloatingPoint"/>
+  <int value="3" label="Memory"/>
+  <int value="4" label="AudioDriver"/>
+  <int value="5" label="CpuStress"/>
+  <int value="6" label="UfsLifetime"/>
+  <int value="7" label="DiskRead"/>
+  <int value="8" label="CpuCache"/>
+  <int value="9" label="VolumeButton"/>
+  <int value="10" label="LedLitUp"/>
+  <int value="11" label="BluetoothPower"/>
+  <int value="12" label="BluetoothDiscovery"/>
+  <int value="13" label="Fan"/>
+  <int value="14" label="BluetoothScanning"/>
+  <int value="15" label="BluetoothPairing"/>
+  <int value="16" label="CameraAvailability"/>
+  <int value="17" label="Urandom"/>
+  <int value="18" label="NetworkBandwidth"/>
+  <int value="19" label="SensitiveSensor"/>
+  <int value="20" label="CameraFrameAnalysis"/>
+</enum>
+
 <enum name="CrosHealthdTelemetryResult">
   <int value="0" label="Success"/>
   <int value="1" label="Error"/>
