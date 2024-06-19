@@ -39,6 +39,7 @@ class DataControlsDialogTest : public InProcessBrowserTest,
     ++constructor_called_count_;
 
     ASSERT_TRUE(dialog);
+    ASSERT_EQ(dialog->GetDefaultDialogButton(), ui::DIALOG_BUTTON_CANCEL);
     ASSERT_FALSE(base::Contains(dialog_close_loops_, dialog));
     ASSERT_FALSE(base::Contains(dialog_close_callbacks_, dialog));
 
