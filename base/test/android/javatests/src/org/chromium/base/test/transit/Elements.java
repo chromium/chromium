@@ -27,9 +27,9 @@ import java.util.List;
 public class Elements {
     static final Elements EMPTY = new Elements();
 
-    private ArrayList<ElementInState> mElementsInState = new ArrayList<>();
-    private ArrayList<Condition> mOtherEnterConditions = new ArrayList<>();
-    private ArrayList<Condition> mOtherExitConditions = new ArrayList<>();
+    private final ArrayList<ElementInState<?>> mElementsInState = new ArrayList<>();
+    private final ArrayList<Condition> mOtherEnterConditions = new ArrayList<>();
+    private final ArrayList<Condition> mOtherExitConditions = new ArrayList<>();
 
     /** Private constructor, instantiated by {@link Builder#build()}. */
     private Elements() {}
@@ -38,7 +38,7 @@ public class Elements {
         return new Builder(new Elements());
     }
 
-    List<ElementInState> getElementsInState() {
+    List<ElementInState<?>> getElementsInState() {
         return mElementsInState;
     }
 
@@ -103,7 +103,7 @@ public class Elements {
          * LogicalElements do not generate exit Conditions when going to another ConditionalState
          * with the same LogicalElement.
          */
-        public LogicalElement declareLogicalElement(LogicalElement logicalElement) {
+        public LogicalElement<?> declareLogicalElement(LogicalElement<?> logicalElement) {
             mElements.mElementsInState.add(logicalElement);
             return logicalElement;
         }
@@ -136,7 +136,7 @@ public class Elements {
         }
 
         /** Declare a custom element, already rendered to an ElementInState. */
-        public <T extends ElementInState> T declareElementInState(T elementInState) {
+        public <T extends ElementInState<?>> T declareElementInState(T elementInState) {
             mElements.mElementsInState.add(elementInState);
             return elementInState;
         }

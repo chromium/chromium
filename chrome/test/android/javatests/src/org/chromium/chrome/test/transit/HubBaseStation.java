@@ -23,7 +23,6 @@ import androidx.test.espresso.Espresso;
 import androidx.test.espresso.NoMatchingViewException;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.base.test.transit.ActivityElement;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
 import org.chromium.base.test.transit.Elements;
@@ -65,8 +64,8 @@ public abstract class HubBaseStation extends Station {
                             withContentDescription(
                                     R.string.accessibility_tab_switcher_incognito_stack)));
 
-    protected ActivityElement<ChromeTabbedActivity> mActivityElement;
-    protected TabModelSelectorCondition mTabModelSelectorCondition;
+    protected Supplier<ChromeTabbedActivity> mActivitySupplier;
+    protected Supplier<TabModelSelector> mTabModelSelectorSupplier;
 
     public HubBaseStation() {
         super();
@@ -78,16 +77,16 @@ public abstract class HubBaseStation extends Station {
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        mActivityElement = elements.declareActivity(ChromeTabbedActivity.class);
-        mTabModelSelectorCondition =
-                elements.declareEnterCondition(new TabModelSelectorCondition(mActivityElement));
+        mActivitySupplier = elements.declareActivity(ChromeTabbedActivity.class);
+        mTabModelSelectorSupplier =
+                elements.declareEnterCondition(new TabModelSelectorCondition(mActivitySupplier));
 
         elements.declareView(HUB_TOOLBAR);
         elements.declareView(HUB_PANE_HOST);
         elements.declareView(HUB_MENU_BUTTON);
 
         Condition incognitoTabsExist =
-                TabModelConditions.anyIncognitoTabsExist(mTabModelSelectorCondition);
+                TabModelConditions.anyIncognitoTabsExist(mTabModelSelectorSupplier);
         elements.declareViewIf(REGULAR_TOGGLE_TAB_BUTTON, incognitoTabsExist);
         elements.declareViewIf(INCOGNITO_TOGGLE_TAB_BUTTON, incognitoTabsExist);
 
@@ -95,19 +94,19 @@ public abstract class HubBaseStation extends Station {
                 uiThreadLogicalElement(
                         "LayoutManager is showing TAB_SWITCHER (Hub)",
                         this::isHubLayoutShowing,
-                        mActivityElement));
+                        mActivitySupplier));
         elements.declareEnterCondition(new HubLayoutNotInTransition());
     }
 
     /** Returns the {@link Condition} that acts as {@link Supplier<TabModelSelector>}. */
     public Supplier<TabModelSelector> getTabModelSelectorSupplier() {
-        return mTabModelSelectorCondition;
+        return mTabModelSelectorSupplier;
     }
 
     /** Returns the {@link ChromeTabbedActivity} for this station. */
     public ChromeTabbedActivity getActivity() {
         assertSuppliersCanBeUsed();
-        return mActivityElement.get();
+        return mActivitySupplier.get();
     }
 
     /**
@@ -169,7 +168,7 @@ public abstract class HubBaseStation extends Station {
         // TODO(crbug.com/40287437): Content description seems reasonable for now, this might get
         // harder
         // once we use a recycler view with text based buttons.
-        String contentDescription = mActivityElement.get().getString(contentDescriptionRes);
+        String contentDescription = getActivity().getString(contentDescriptionRes);
         onView(
                         allOf(
                                 isDescendantOfA(HUB_PANE_SWITCHER.getViewMatcher()),
@@ -179,12 +178,12 @@ public abstract class HubBaseStation extends Station {
 
     private class HubLayoutNotInTransition extends UiThreadCondition {
         private HubLayoutNotInTransition() {
-            dependOnSupplier(mActivityElement, "ChromeTabbedActivity");
+            dependOnSupplier(mActivitySupplier, "ChromeTabbedActivity");
         }
 
         @Override
         protected ConditionStatus checkWithSuppliers() {
-            LayoutManager layoutManager = mActivityElement.get().getLayoutManager();
+            LayoutManager layoutManager = mActivitySupplier.get().getLayoutManager();
             boolean startingToShow = layoutManager.isLayoutStartingToShow(LayoutType.TAB_SWITCHER);
             boolean startingToHide = layoutManager.isLayoutStartingToHide(LayoutType.TAB_SWITCHER);
             return whether(

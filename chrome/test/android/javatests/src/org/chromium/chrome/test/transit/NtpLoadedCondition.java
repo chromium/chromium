@@ -17,7 +17,6 @@ class NtpLoadedCondition extends UiThreadCondition {
     private final Supplier<Tab> mLoadedTabSupplier;
 
     NtpLoadedCondition(Supplier<Tab> loadedTabSupplier) {
-        super();
         mLoadedTabSupplier = dependOnSupplier(loadedTabSupplier, "LoadedTab");
     }
 

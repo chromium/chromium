@@ -10,9 +10,9 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.chromium.base.test.transit.ViewElement.unscopedViewElement;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.base.test.transit.ConditionStatus;
+import org.chromium.base.test.transit.ConditionStatusWithResult;
+import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.InstrumentationThreadCondition;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.tab.Tab;
@@ -41,7 +41,7 @@ public class WebPageStation extends PageStation {
 
         mWebContentsSupplier =
                 elements.declareEnterCondition(
-                        new WebContentsPresentCondition(mPageLoadedCondition));
+                        new WebContentsPresentCondition(mPageLoadedSupplier));
 
         elements.declareView(URL_BAR);
     }
@@ -62,17 +62,17 @@ public class WebPageStation extends PageStation {
         return enterFacilitySync(menu, () -> MENU_BUTTON.perform(click()));
     }
 
-    private static class WebContentsPresentCondition extends InstrumentationThreadCondition
-            implements Supplier<WebContents> {
+    private static class WebContentsPresentCondition extends ConditionWithResult<WebContents> {
         private final Supplier<Tab> mLoadedTabSupplier;
 
         public WebContentsPresentCondition(Supplier<Tab> loadedTabSupplier) {
+            super(/* isRunOnUiThread= */ false);
             mLoadedTabSupplier = dependOnSupplier(loadedTabSupplier, "LoadedTab");
         }
 
         @Override
-        protected ConditionStatus checkWithSuppliers() {
-            return whether(hasValue());
+        protected ConditionStatusWithResult<WebContents> resolveWithSuppliers() {
+            return whether(hasValue()).withResult(get());
         }
 
         @Override
@@ -82,6 +82,8 @@ public class WebPageStation extends PageStation {
 
         @Override
         public WebContents get() {
+            // Do not return a WebContents that has been destroyed, so always get it from the
+            // Tab instead of letting ConditionWithResult return its |mResult|.
             Tab loadedTab = mLoadedTabSupplier.get();
             if (loadedTab == null) {
                 return null;

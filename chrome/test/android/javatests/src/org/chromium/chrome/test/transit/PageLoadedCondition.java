@@ -5,18 +5,18 @@
 package org.chromium.chrome.test.transit;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.base.test.transit.ConditionStatus;
-import org.chromium.base.test.transit.UiThreadCondition;
+import org.chromium.base.test.transit.ConditionStatusWithResult;
+import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
 
 /** Fulfilled when a page is loaded. */
-public class PageLoadedCondition extends UiThreadCondition implements Supplier<Tab> {
+public class PageLoadedCondition extends ConditionWithResult<Tab> {
     private final Supplier<Tab> mActivityTabSupplier;
     private final boolean mIncognito;
-    private Tab mLoadedTab;
 
     PageLoadedCondition(Supplier<Tab> activityTabSupplier, boolean incognito) {
+        super(/* isRunOnUiThread= */ true);
         mActivityTabSupplier = dependOnSupplier(activityTabSupplier, "ActivityTab");
         mIncognito = incognito;
     }
@@ -27,7 +27,7 @@ public class PageLoadedCondition extends UiThreadCondition implements Supplier<T
     }
 
     @Override
-    protected ConditionStatus checkWithSuppliers() {
+    protected ConditionStatusWithResult<Tab> resolveWithSuppliers() {
         Tab tab = mActivityTabSupplier.get();
 
         boolean isIncognito = tab.isIncognito();
@@ -42,20 +42,9 @@ public class PageLoadedCondition extends UiThreadCondition implements Supplier<T
                 && !isLoading
                 && webContents != null
                 && !shouldShowLoadingUi) {
-            mLoadedTab = tab;
-            return fulfilled(message);
+            return fulfilled(message).withResult(tab);
         } else {
-            return notFulfilled(message);
+            return notFulfilled(message).withoutResult();
         }
-    }
-
-    @Override
-    public Tab get() {
-        return mLoadedTab;
-    }
-
-    @Override
-    public boolean hasValue() {
-        return mLoadedTab != null;
     }
 }

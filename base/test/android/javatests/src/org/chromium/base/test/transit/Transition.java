@@ -188,7 +188,7 @@ public abstract class Transition {
             final Elements destinationElements = conditionalState.getElements();
             // Create ENTER Conditions for Views that should appear and LogicalElements that should
             // be true.
-            for (ElementInState element : destinationElements.getElementsInState()) {
+            for (ElementInState<?> element : destinationElements.getElementsInState()) {
                 destinationElementIds.add(element.getId());
                 @Nullable Condition enterCondition = element.getEnterCondition();
                 if (enterCondition != null) {
@@ -208,7 +208,7 @@ public abstract class Transition {
         // be false.
         for (ConditionalState conditionalState : mExitedStates) {
             final Elements originElements = conditionalState.getElements();
-            for (ElementInState element : originElements.getElementsInState()) {
+            for (ElementInState<?> element : originElements.getElementsInState()) {
                 Condition exitCondition = element.getExitCondition(destinationElementIds);
                 if (exitCondition != null) {
                     waits.add(

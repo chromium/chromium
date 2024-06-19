@@ -22,7 +22,7 @@ import org.chromium.base.test.transit.ConditionStatus.Status;
 public abstract class Condition {
     private String mDescription;
 
-    private boolean mIsRunOnUiThread;
+    private final boolean mIsRunOnUiThread;
     private ArrayMap<String, Supplier<?>> mDependentSuppliers;
 
     /**
@@ -94,7 +94,8 @@ public abstract class Condition {
     /**
      * Declare a Supplier this Condition's check() depends on.
      *
-     * <p>Call this from the constructor to delay check() to be called until |supplier| has a value.
+     * <p>Call this from the constructor to delay check() to be called until |supplier| supplies a
+     * value.
      */
     protected <T> Supplier<T> dependOnSupplier(Supplier<T> supplier, String inputName) {
         if (mDependentSuppliers == null) {

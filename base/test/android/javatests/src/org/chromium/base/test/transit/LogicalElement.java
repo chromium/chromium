@@ -31,18 +31,18 @@ import java.util.function.Function;
  *
  * @param <ParamT> type of parameter the |checkFunction| requires.
  */
-public class LogicalElement<ParamT> implements ElementInState {
+public class LogicalElement<ParamT> extends ElementInState<Void> {
 
-    private static final Supplier<Void> NULL_SUPPLIER =
-            new Supplier<>() {
+    private static final ConditionWithResult<Void> CONDITION_WITH_NULL_RESULT =
+            new ConditionWithResult<>(/* isRunOnUiThread= */ false) {
                 @Override
-                public Void get() {
-                    return null;
+                public String buildDescription() {
+                    return "Supplier of null";
                 }
 
                 @Override
-                public boolean hasValue() {
-                    return true;
+                protected ConditionStatusWithResult<Void> resolveWithSuppliers() {
+                    return fulfilled().withResult(null);
                 }
             };
     private final boolean mIsRunOnUiThread;
@@ -50,7 +50,7 @@ public class LogicalElement<ParamT> implements ElementInState {
     private final String mId;
     private final Function<ParamT, ConditionStatus> mCheckFunction;
     private final Supplier<ParamT> mParamSupplier;
-    private final Condition mEnterCondition;
+    private final ConditionWithResult<Void> mEnterCondition;
     private final Condition mExitCondition;
 
     /**
@@ -87,7 +87,7 @@ public class LogicalElement<ParamT> implements ElementInState {
 
     /**
      * Version of {@link #uiThreadLogicalElement(String, Function, Supplier)} when |checkFunction|
-     * has no dependencies on Suppliers.
+     * has no dependencies.
      */
     public static LogicalElement<Void> uiThreadLogicalElement(
             String description, Callable<ConditionStatus> checkCallable) {
@@ -95,7 +95,7 @@ public class LogicalElement<ParamT> implements ElementInState {
                 /* isRunOnUiThread= */ true,
                 description,
                 new CallableAsFunction(checkCallable),
-                NULL_SUPPLIER,
+                CONDITION_WITH_NULL_RESULT,
                 /* id= */ null);
     }
 
@@ -133,7 +133,7 @@ public class LogicalElement<ParamT> implements ElementInState {
 
     /**
      * Version of {@link #instrumentationThreadLogicalElement(String, Function, Supplier)} when
-     * |checkFunction| has no dependencies on Suppliers.
+     * |checkFunction| has no dependencies.
      */
     public static LogicalElement<Void> instrumentationThreadLogicalElement(
             String description, Callable<ConditionStatus> checkCallable) {
@@ -141,7 +141,7 @@ public class LogicalElement<ParamT> implements ElementInState {
                 /* isRunOnUiThread= */ false,
                 description,
                 new CallableAsFunction(checkCallable),
-                NULL_SUPPLIER,
+                CONDITION_WITH_NULL_RESULT,
                 /* id= */ null);
     }
 
@@ -167,7 +167,7 @@ public class LogicalElement<ParamT> implements ElementInState {
     }
 
     @Override
-    public Condition getEnterCondition() {
+    public ConditionWithResult<Void> getEnterCondition() {
         return mEnterCondition;
     }
 
@@ -180,15 +180,15 @@ public class LogicalElement<ParamT> implements ElementInState {
         }
     }
 
-    private class EnterCondition extends Condition {
+    private class EnterCondition extends ConditionWithResult<Void> {
         private EnterCondition(boolean isRunOnUiThread) {
             super(isRunOnUiThread);
             dependOnSupplier(mParamSupplier, "Param");
         }
 
         @Override
-        protected ConditionStatus checkWithSuppliers() {
-            return mCheckFunction.apply(mParamSupplier.get());
+        protected ConditionStatusWithResult<Void> resolveWithSuppliers() {
+            return mCheckFunction.apply(mParamSupplier.get()).withoutResult();
         }
 
         @Override

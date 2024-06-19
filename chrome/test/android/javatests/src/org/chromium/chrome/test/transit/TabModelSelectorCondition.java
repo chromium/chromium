@@ -5,40 +5,33 @@
 package org.chromium.chrome.test.transit;
 
 import org.chromium.base.supplier.Supplier;
-import org.chromium.base.test.transit.ConditionStatus;
-import org.chromium.base.test.transit.UiThreadCondition;
+import org.chromium.base.test.transit.ConditionStatusWithResult;
+import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /** Condition fulfilled when an initialized TabModel exists. */
-public class TabModelSelectorCondition extends UiThreadCondition
-        implements Supplier<TabModelSelector> {
+public class TabModelSelectorCondition extends ConditionWithResult<TabModelSelector> {
 
     private final Supplier<ChromeTabbedActivity> mActivitySupplier;
-    private TabModelSelector mSelector;
 
     public TabModelSelectorCondition(Supplier<ChromeTabbedActivity> activitySupplier) {
+        super(/* isRunOnUiThread= */ true);
         mActivitySupplier = dependOnSupplier(activitySupplier, "ChromeTabbedActivity");
     }
 
     @Override
-    protected ConditionStatus checkWithSuppliers() throws Exception {
+    protected ConditionStatusWithResult<TabModelSelector> resolveWithSuppliers() throws Exception {
         TabModelSelector selector = mActivitySupplier.get().getTabModelSelectorSupplier().get();
         if (selector != null) {
-            mSelector = selector;
-            return fulfilled();
+            return fulfilled().withResult(selector);
         } else {
-            return awaiting("Activity has no TabModelSelector");
+            return awaiting("Activity has no TabModelSelector").withoutResult();
         }
     }
 
     @Override
     public String buildDescription() {
         return "TabModelSelector is available";
-    }
-
-    @Override
-    public TabModelSelector get() {
-        return mSelector;
     }
 }

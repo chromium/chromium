@@ -12,12 +12,12 @@ import static org.chromium.base.test.transit.ViewElement.unscopedViewElement;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
-import org.chromium.base.test.transit.ActivityElement;
 import org.chromium.base.test.transit.CallbackCondition;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
+import org.chromium.base.test.transit.ConditionStatusWithResult;
+import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.Elements;
-import org.chromium.base.test.transit.InstrumentationThreadCondition;
 import org.chromium.base.test.transit.Station;
 import org.chromium.base.test.transit.Transition;
 import org.chromium.base.test.transit.ViewElement;
@@ -129,10 +129,10 @@ public class PageStation extends Station {
             unscopedViewElement(withId(R.id.tab_switcher_button));
     public static final ViewElement MENU_BUTTON = unscopedViewElement(withId(R.id.menu_button));
 
-    protected ActivityElement<ChromeTabbedActivity> mActivityElement;
+    protected Supplier<ChromeTabbedActivity> mActivitySupplier;
     protected Supplier<Tab> mActivityTabSupplier;
     protected Supplier<Tab> mSelectedTabSupplier;
-    protected PageLoadedCondition mPageLoadedCondition;
+    protected Supplier<Tab> mPageLoadedSupplier;
 
     /** Use {@link #newPageStationBuilder()} or the PageStation's subclass |newBuilder()|. */
     protected <T extends PageStation> PageStation(Builder<T> builder) {
@@ -172,27 +172,27 @@ public class PageStation extends Station {
 
     @Override
     public void declareElements(Elements.Builder elements) {
-        mActivityElement = elements.declareActivity(ChromeTabbedActivity.class);
+        mActivitySupplier = elements.declareActivity(ChromeTabbedActivity.class);
         elements.declareView(HOME_BUTTON);
         elements.declareView(TAB_SWITCHER_BUTTON);
         elements.declareView(MENU_BUTTON);
 
         if (mNumTabsBeingOpened > 0) {
             elements.declareEnterCondition(
-                    new TabAddedCondition(mNumTabsBeingOpened, mActivityElement));
+                    new TabAddedCondition(mNumTabsBeingOpened, mActivitySupplier));
         }
 
         if (mIsEntryPoint) {
             // In entry points we just match the first ActivityTab we see, instead of waiting for
             // callbacks.
             mActivityTabSupplier =
-                    elements.declareEnterCondition(new AnyActivityTabCondition(mActivityElement));
+                    elements.declareEnterCondition(new AnyActivityTabCondition(mActivitySupplier));
         } else {
             if (mNumTabsBeingSelected > 0) {
                 // The last tab of N opened is the Tab that mSelectedTabSupplier will supply.
                 mSelectedTabSupplier =
                         elements.declareEnterCondition(
-                                new TabSelectedCondition(mNumTabsBeingSelected, mActivityElement));
+                                new TabSelectedCondition(mNumTabsBeingSelected, mActivitySupplier));
             } else {
                 // The Tab already created and provided to the constructor is the one that is
                 // expected to be the activityTab.
@@ -202,20 +202,20 @@ public class PageStation extends Station {
             mActivityTabSupplier =
                     elements.declareEnterCondition(
                             new CorrectActivityTabCondition(
-                                    mActivityElement, mSelectedTabSupplier));
+                                    mActivitySupplier, mSelectedTabSupplier));
         }
-        mPageLoadedCondition =
+        mPageLoadedSupplier =
                 elements.declareEnterCondition(
                         new PageLoadedCondition(mActivityTabSupplier, mIncognito));
 
-        elements.declareEnterCondition(new PageInteractableOrHiddenCondition(mPageLoadedCondition));
+        elements.declareEnterCondition(new PageInteractableOrHiddenCondition(mPageLoadedSupplier));
 
         if (mTitle != null) {
-            elements.declareEnterCondition(new PageTitleCondition(mTitle, mPageLoadedCondition));
+            elements.declareEnterCondition(new PageTitleCondition(mTitle, mPageLoadedSupplier));
         }
         if (mPath != null) {
             elements.declareEnterCondition(
-                    new PageUrlContainsCondition(mPath, mPageLoadedCondition));
+                    new PageUrlContainsCondition(mPath, mPageLoadedSupplier));
         }
     }
 
@@ -362,22 +362,22 @@ public class PageStation extends Station {
      */
     public ChromeTabbedActivity getActivity() {
         assertSuppliersCanBeUsed();
-        return mActivityElement.get();
+        return mActivitySupplier.get();
     }
 
     public Tab getLoadedTab() {
         assertSuppliersCanBeUsed();
-        return mPageLoadedCondition.get();
+        return mPageLoadedSupplier.get();
     }
 
     private class TabAddedCondition extends CallbackCondition implements TabModelObserver {
         private TabModel mTabModel;
-        private Supplier<ChromeTabbedActivity> mActivity;
+        private Supplier<ChromeTabbedActivity> mActivitySupplier;
 
         protected TabAddedCondition(
                 int numTabsBeingOpened, Supplier<ChromeTabbedActivity> activitySupplier) {
             super("didAddTab", numTabsBeingOpened);
-            mActivity = dependOnSupplier(activitySupplier, "ChromeTabbedActivity");
+            mActivitySupplier = dependOnSupplier(activitySupplier, "ChromeTabbedActivity");
         }
 
         @Override
@@ -390,7 +390,11 @@ public class PageStation extends Station {
             super.onStartMonitoring();
             TestThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        mTabModel = mActivity.get().getTabModelSelector().getModel(isIncognito());
+                        mTabModel =
+                                mActivitySupplier
+                                        .get()
+                                        .getTabModelSelector()
+                                        .getModel(isIncognito());
                         mTabModel.addObserver(this);
                     });
         }
@@ -408,12 +412,12 @@ public class PageStation extends Station {
             implements TabModelObserver, Supplier<Tab> {
         private final List<Tab> mTabsSelected = new ArrayList<>();
         private TabModel mTabModel;
-        private Supplier<ChromeTabbedActivity> mActivity;
+        private Supplier<ChromeTabbedActivity> mActivitySupplier;
 
         private TabSelectedCondition(
                 int numTabsBeingSelected, Supplier<ChromeTabbedActivity> activitySupplier) {
             super("didSelectTab", numTabsBeingSelected);
-            mActivity = dependOnSupplier(activitySupplier, "ChromeTabbedActivity");
+            mActivitySupplier = dependOnSupplier(activitySupplier, "ChromeTabbedActivity");
         }
 
         @Override
@@ -432,7 +436,11 @@ public class PageStation extends Station {
             super.onStartMonitoring();
             TestThreadUtils.runOnUiThreadBlocking(
                     () -> {
-                        mTabModel = mActivity.get().getTabModelSelector().getModel(isIncognito());
+                        mTabModel =
+                                mActivitySupplier
+                                        .get()
+                                        .getTabModelSelector()
+                                        .getModel(isIncognito());
                         mTabModel.addObserver(this);
                     });
         }
@@ -460,34 +468,37 @@ public class PageStation extends Station {
         }
     }
 
-    private static class CorrectActivityTabCondition extends InstrumentationThreadCondition
-            implements Supplier<Tab> {
+    private static class CorrectActivityTabCondition extends ConditionWithResult<Tab> {
 
         private final Supplier<ChromeTabbedActivity> mActivitySupplier;
         private final Supplier<Tab> mExpectedTab;
-        private Tab mActivityTabMatched;
 
         private CorrectActivityTabCondition(
-                Supplier<ChromeTabbedActivity> activitySupplier, Supplier<Tab> expectedTab) {
-            super();
+                Supplier<ChromeTabbedActivity> activitySupplier,
+                Supplier<Tab> expectedTabSupplier) {
+            super(/* isRunOnUiThread= */ false);
             mActivitySupplier = dependOnSupplier(activitySupplier, "ChromeTabbedActivity");
-            mExpectedTab = dependOnSupplier(expectedTab, "ExpectedTab");
+            mExpectedTab = dependOnSupplier(expectedTabSupplier, "ExpectedTab");
         }
 
         @Override
-        protected ConditionStatus checkWithSuppliers() {
+        protected ConditionStatusWithResult<Tab> resolveWithSuppliers() {
             Tab currentActivityTab = mActivitySupplier.get().getActivityTab();
             if (currentActivityTab == null) {
-                return notFulfilled("null activityTab");
+                return notFulfilled("null activityTab").withoutResult();
             }
 
             Tab expectedTab = mExpectedTab.get();
             if (currentActivityTab == expectedTab) {
-                mActivityTabMatched = currentActivityTab;
-                return fulfilled("matched expected activityTab: " + mActivityTabMatched);
+                return fulfilled("matched expected activityTab: " + currentActivityTab)
+                        .withResult(currentActivityTab);
             } else {
                 return notFulfilled(
-                        "activityTab is " + currentActivityTab + ", expected " + expectedTab);
+                                "activityTab is "
+                                        + currentActivityTab
+                                        + ", expected "
+                                        + expectedTab)
+                        .withoutResult();
             }
         }
 
@@ -495,53 +506,31 @@ public class PageStation extends Station {
         public String buildDescription() {
             return "Activity tab is the expected one";
         }
-
-        @Override
-        public Tab get() {
-            return mActivityTabMatched;
-        }
-
-        @Override
-        public boolean hasValue() {
-            return mActivityTabMatched != null;
-        }
     }
 
-    private static class AnyActivityTabCondition extends InstrumentationThreadCondition
-            implements Supplier<Tab> {
+    private static class AnyActivityTabCondition extends ConditionWithResult<Tab> {
 
         private final Supplier<ChromeTabbedActivity> mActivitySupplier;
-        private Tab mActivityTabMatched;
 
         private AnyActivityTabCondition(Supplier<ChromeTabbedActivity> activitySupplier) {
-            super();
+            super(/* isRunOnUiThread= */ false);
             mActivitySupplier = dependOnSupplier(activitySupplier, "ChromeTabbedActivity");
         }
 
         @Override
-        public ConditionStatus checkWithSuppliers() {
+        protected ConditionStatusWithResult<Tab> resolveWithSuppliers() {
             Tab currentActivityTab = mActivitySupplier.get().getActivityTab();
             if (currentActivityTab == null) {
-                return notFulfilled("null activityTab");
+                return notFulfilled("null activityTab").withoutResult();
             } else {
-                mActivityTabMatched = currentActivityTab;
-                return fulfilled("found activityTab " + mActivityTabMatched);
+                return fulfilled("found activityTab " + currentActivityTab)
+                        .withResult(currentActivityTab);
             }
         }
 
         @Override
         public String buildDescription() {
             return "Activity has an activityTab";
-        }
-
-        @Override
-        public Tab get() {
-            return mActivityTabMatched;
-        }
-
-        @Override
-        public boolean hasValue() {
-            return mActivityTabMatched != null;
         }
     }
 }

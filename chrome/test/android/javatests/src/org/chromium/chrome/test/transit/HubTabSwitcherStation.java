@@ -32,7 +32,6 @@ public class HubTabSwitcherStation extends HubTabSwitcherBaseStation {
         super.declareElements(elements);
 
         elements.declareViewIf(
-                EMPTY_STATE_TEXT,
-                TabModelConditions.noRegularTabsExist(mTabModelSelectorCondition));
+                EMPTY_STATE_TEXT, TabModelConditions.noRegularTabsExist(mTabModelSelectorSupplier));
     }
 }

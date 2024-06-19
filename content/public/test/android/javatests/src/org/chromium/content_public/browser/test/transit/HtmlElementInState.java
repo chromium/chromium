@@ -4,10 +4,13 @@
 
 package org.chromium.content_public.browser.test.transit;
 
+import android.graphics.Rect;
+
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
+import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.ElementInState;
 import org.chromium.base.test.transit.TravelException;
 import org.chromium.content_public.browser.WebContents;
@@ -22,7 +25,7 @@ import java.util.concurrent.TimeoutException;
  * A Public Transit ElementInState representing an HTML DOM element to be searched for in the given
  * WebContentsElementInState.
  */
-public class HtmlElementInState implements ElementInState {
+public class HtmlElementInState extends ElementInState<Rect> {
     protected final HtmlElement mHtmlElement;
     protected final Supplier<WebContents> mWebContentsSupplier;
 
@@ -36,9 +39,8 @@ public class HtmlElementInState implements ElementInState {
         return mHtmlElement.getId();
     }
 
-    @Nullable
     @Override
-    public Condition getEnterCondition() {
+    public ConditionWithResult<Rect> getEnterCondition() {
         return new DisplayedCondition(mWebContentsSupplier, mHtmlElement.getHtmlId());
     }
 

@@ -27,11 +27,11 @@ import java.util.Set;
  * <p>Generates ENTER and EXIT Conditions for the ConditionalState to ensure the ViewElement is in
  * the right state.
  */
-public class ViewElementInState implements ElementInState {
+public class ViewElementInState extends ElementInState<View> {
     private final ViewElement mViewElement;
     private final @Nullable Condition mGate;
 
-    private final Condition mEnterCondition;
+    private final ConditionWithResult<View> mEnterCondition;
     private final @Nullable Condition mExitCondition;
 
     ViewElementInState(ViewElement viewElement, @Nullable Condition gate) {
@@ -75,7 +75,7 @@ public class ViewElementInState implements ElementInState {
     }
 
     @Override
-    public Condition getEnterCondition() {
+    public ConditionWithResult<View> getEnterCondition() {
         return mEnterCondition;
     }
 

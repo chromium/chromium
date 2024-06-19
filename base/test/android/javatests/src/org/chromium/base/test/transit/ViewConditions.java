@@ -33,33 +33,33 @@ public class ViewConditions {
      * Fulfilled when a single matching View exists and is displayed, but ignored if |gate| returns
      * true.
      */
-    public static class GatedDisplayedCondition extends InstrumentationThreadCondition {
+    public static class GatedDisplayedCondition extends ConditionWithResult<View> {
 
         private final DisplayedCondition mDisplayedCondition;
         private final Condition mGate;
 
         public GatedDisplayedCondition(
                 Matcher<View> matcher, Condition gate, DisplayedCondition.Options options) {
-            super();
+            super(/* isRunOnUiThread= */ false);
             mDisplayedCondition = new DisplayedCondition(matcher, options);
             mGate = gate;
         }
 
         @Override
-        protected ConditionStatus checkWithSuppliers() throws Exception {
+        protected ConditionStatusWithResult<View> resolveWithSuppliers() throws Exception {
             ConditionStatus gateStatus = mGate.check();
             String gateMessage = gateStatus.getMessageAsGate();
             if (gateStatus.isAwaiting()) {
-                return notFulfilled(gateMessage);
+                return notFulfilled(gateMessage).withoutResult();
             }
 
             if (!gateStatus.isFulfilled()) {
-                return fulfilled(gateMessage);
+                return fulfilled(gateMessage).withoutResult();
             }
 
             ConditionStatus status = mDisplayedCondition.check();
             status.amendMessage(gateMessage);
-            return status;
+            return status.withResult(mDisplayedCondition.get());
         }
 
         @Override
@@ -70,7 +70,7 @@ public class ViewConditions {
     }
 
     /** Fulfilled when a single matching View exists and is displayed. */
-    public static class DisplayedCondition extends InstrumentationThreadCondition {
+    public static class DisplayedCondition extends ConditionWithResult<View> {
         private final Matcher<View> mMatcher;
         private final Options mOptions;
         private View mViewMatched;
@@ -81,7 +81,7 @@ public class ViewConditions {
         private static final String SUCCINCT_DESCRIPTION = "(getGlobalVisibleRect() > 90%)";
 
         public DisplayedCondition(Matcher<View> matcher, Options options) {
-            super();
+            super(/* isRunOnUiThread= */ false);
             mMatcher = allOf(matcher, isDisplayingAtLeast(options.mDisplayedPercentageRequired));
             mOptions = options;
         }
@@ -93,9 +93,9 @@ public class ViewConditions {
         }
 
         @Override
-        protected ConditionStatus checkWithSuppliers() {
+        protected ConditionStatusWithResult<View> resolveWithSuppliers() {
             if (!ApplicationStatus.hasVisibleActivities()) {
-                return awaiting("No visible activities");
+                return awaiting("No visible activities").withoutResult();
             }
 
             ViewInteraction viewInteraction =
@@ -127,14 +127,14 @@ public class ViewConditions {
                         });
                 if (mOptions.mExpectEnabled) {
                     if (!mViewMatched.isEnabled()) {
-                        return notFulfilled("View displayed but disabled");
+                        return notFulfilled("View displayed but disabled").withoutResult();
                     }
                 } else { // Expected a displayed but disabled View.
                     if (mViewMatched.isEnabled()) {
-                        return notFulfilled("View displayed but enabled");
+                        return notFulfilled("View displayed but enabled").withoutResult();
                     }
                 }
-                return fulfilled(message[0]);
+                return fulfilled(message[0]).withResult(mViewMatched);
             } catch (NoMatchingViewException
                     | NoMatchingRootException
                     | AmbiguousViewMatcherException e) {
@@ -145,7 +145,7 @@ public class ViewConditions {
                                     mViewMatched, e.getClass().getSimpleName()),
                             e);
                 }
-                return notFulfilled(e.getClass().getSimpleName());
+                return notFulfilled(e.getClass().getSimpleName()).withoutResult();
             }
         }
 

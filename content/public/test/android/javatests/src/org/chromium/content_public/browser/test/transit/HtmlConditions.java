@@ -9,6 +9,8 @@ import android.graphics.Rect;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.Condition;
 import org.chromium.base.test.transit.ConditionStatus;
+import org.chromium.base.test.transit.ConditionStatusWithResult;
+import org.chromium.base.test.transit.ConditionWithResult;
 import org.chromium.base.test.transit.InstrumentationThreadCondition;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -18,27 +20,28 @@ import java.util.concurrent.TimeoutException;
 /** {@link Condition}s related to HTML DOM Elements. */
 public class HtmlConditions {
     /** Fulfilled when a single DOM Element with the given id exists and has non-zero bounds. */
-    public static class DisplayedCondition extends InstrumentationThreadCondition {
+    public static class DisplayedCondition extends ConditionWithResult<Rect> {
         private final String mHtmlId;
-        private final Supplier<WebContents> mWebContentsSupplier;
+        private final Supplier<WebContents> mWebContentsCondition;
 
         public DisplayedCondition(Supplier<WebContents> webContentsSupplier, String htmlId) {
-            super();
-            mWebContentsSupplier = dependOnSupplier(webContentsSupplier, "WebContents");
+            super(/* isRunOnUiThread= */ false);
+            mWebContentsCondition = dependOnSupplier(webContentsSupplier, "WebContents");
             mHtmlId = htmlId;
         }
 
         @Override
-        protected ConditionStatus checkWithSuppliers() throws Exception {
+        protected ConditionStatusWithResult<Rect> resolveWithSuppliers() throws Exception {
             Rect bounds;
             try {
-                bounds = DOMUtils.getNodeBounds(mWebContentsSupplier.get(), mHtmlId);
+                bounds = DOMUtils.getNodeBounds(mWebContentsCondition.get(), mHtmlId);
             } catch (AssertionError e) {
                 // HTML elements might not exist yet, but will be created.
-                return notFulfilled("getNodeBounds() threw assertion");
+                return notFulfilled("getNodeBounds() threw assertion").withoutResult();
             }
 
-            return whether(!bounds.isEmpty(), "Bounds: %s", bounds.toShortString());
+            return whether(!bounds.isEmpty(), "Bounds: %s", bounds.toShortString())
+                    .withResult(bounds);
         }
 
         @Override
@@ -54,6 +57,8 @@ public class HtmlConditions {
 
         public NotDisplayedCondition(Supplier<WebContents> webContentsSupplier, String htmlId) {
             super();
+            // Do not depend on purpose since if WebContents are not available, this Condition is
+            // considered fulfilled.
             mWebContentsSupplier = webContentsSupplier;
             mHtmlId = htmlId;
         }

@@ -33,7 +33,7 @@ public class IncognitoNewTabPageStation extends PageStation {
         super.declareElements(elements);
         elements.declareView(ICON);
         elements.declareView(GONE_INCOGNITO_TEXT);
-        elements.declareEnterCondition(new NtpLoadedCondition(mPageLoadedCondition));
+        elements.declareEnterCondition(new NtpLoadedCondition(mPageLoadedSupplier));
     }
 
     /** Opens the app menu by pressing the toolbar "..." button */

@@ -128,7 +128,7 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
      */
     public <T extends HubTabSwitcherBaseStation> T closeTabAtIndex(
             int index, Class<T> expectedDestination) {
-        TabModelSelector tabModelSelector = mActivityElement.get().getTabModelSelector();
+        TabModelSelector tabModelSelector = getActivity().getTabModelSelector();
 
         // By default stay in the same tab switcher state, unless closing the last incognito tab.
         boolean landInIncognitoSwitcher = false;

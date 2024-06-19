@@ -46,7 +46,7 @@ public class NewTabPageStation extends PageStation {
             elements.declareView(MOST_VISITED_TILES);
         }
 
-        elements.declareEnterCondition(new NtpLoadedCondition(mPageLoadedCondition));
+        elements.declareEnterCondition(new NtpLoadedCondition(mPageLoadedSupplier));
     }
 
     /** Opens the app menu by pressing the toolbar "..." button */

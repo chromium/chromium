@@ -172,9 +172,8 @@ method.
 
 Custom Conditions may require a dependency to be checked which might not exist
 before the transition's trigger is run. They should take the dependency as a
-constructor argument of type `Condition` that implements `Supplier<DependencyT>`
-and call `dependOnSupplier()`. The dependency should supply `DependencyT` when
-fulfilled. TODO(crbug.com/343244345): Create ConditionWithResult\<T\>.
+constructor argument of type `ConditionWithResult<DependencyT>` or
+`ElementInState<DependencyT>` and call `dependOnSupplier()`.
 
 An example of a custom condition:
 
@@ -182,8 +181,8 @@ An example of a custom condition:
 class PageLoadedCondition extends UiThreadCondition {
     private Supplier<Tab> mTabSupplier;
 
-    PageLoadedCondition(Supplier<Tab> tabSupplier) {
-        mTabSupplier = dependOnSupplier(tabSupplier, "Tab");
+    PageLoadedCondition(ConditionWithResult<Tab> tabCondition) {
+        mTabSupplier = dependOnCondition(tabCondition, "Tab");
     }
 
     @Override
@@ -193,7 +192,7 @@ class PageLoadedCondition extends UiThreadCondition {
 
     @Override
     public ConditionStatus checkWithSuppliers() {
-        Tab tab = mActivityTabSupplier.get();
+        Tab tab = mTabSupplier.get();
 
         boolean isLoading = tab.isLoading();
         boolean showLoadingUi = tab.getWebContents().shouldShowLoadingUI();
