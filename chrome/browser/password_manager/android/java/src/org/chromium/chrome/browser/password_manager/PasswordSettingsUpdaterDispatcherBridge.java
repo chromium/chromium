@@ -49,8 +49,7 @@ public class PasswordSettingsUpdaterDispatcherBridge {
     }
 
     @CalledByNative
-    void getSettingValue(
-            String account, @PasswordManagerSetting int setting, boolean isPartOfMigration) {
+    void getSettingValue(String account, @PasswordManagerSetting int setting) {
         assertOnBackgroundThread();
         PasswordSettingsUpdaterMetricsRecorder metricsRecorder =
                 new PasswordSettingsUpdaterMetricsRecorder(
@@ -65,30 +64,20 @@ public class PasswordSettingsUpdaterDispatcherBridge {
                                 mReceiverBridge.onSettingValueFetched(
                                         OFFER_TO_SAVE_PASSWORDS,
                                         offerToSavePasswords,
-                                        metricsRecorder,
-                                        isPartOfMigration),
+                                        metricsRecorder),
                         exception ->
                                 handleFetchingExceptionOnUiThread(
-                                        OFFER_TO_SAVE_PASSWORDS,
-                                        exception,
-                                        metricsRecorder,
-                                        isPartOfMigration));
+                                        OFFER_TO_SAVE_PASSWORDS, exception, metricsRecorder));
                 break;
             case AUTO_SIGN_IN:
                 mSettingsAccessor.getAutoSignIn(
                         getAccount(account),
                         autoSignIn ->
                                 mReceiverBridge.onSettingValueFetched(
-                                        AUTO_SIGN_IN,
-                                        autoSignIn,
-                                        metricsRecorder,
-                                        isPartOfMigration),
+                                        AUTO_SIGN_IN, autoSignIn, metricsRecorder),
                         exception ->
                                 handleFetchingExceptionOnUiThread(
-                                        AUTO_SIGN_IN,
-                                        exception,
-                                        metricsRecorder,
-                                        isPartOfMigration));
+                                        AUTO_SIGN_IN, exception, metricsRecorder));
                 break;
             default:
                 assert false : "All settings need to be handled.";
@@ -96,11 +85,7 @@ public class PasswordSettingsUpdaterDispatcherBridge {
     }
 
     @CalledByNative
-    void setSettingValue(
-            String account,
-            @PasswordManagerSetting int setting,
-            boolean value,
-            boolean isPartOfMigration) {
+    void setSettingValue(String account, @PasswordManagerSetting int setting, boolean value) {
         assertOnBackgroundThread();
         PasswordSettingsUpdaterMetricsRecorder metricsRecorder =
                 new PasswordSettingsUpdaterMetricsRecorder(
@@ -114,29 +99,19 @@ public class PasswordSettingsUpdaterDispatcherBridge {
                         getAccount(account),
                         unused ->
                                 mReceiverBridge.onSettingValueSet(
-                                        OFFER_TO_SAVE_PASSWORDS,
-                                        metricsRecorder,
-                                        isPartOfMigration),
+                                        OFFER_TO_SAVE_PASSWORDS, metricsRecorder),
                         exception ->
                                 handleSettingExceptionOnUiThread(
-                                        OFFER_TO_SAVE_PASSWORDS,
-                                        exception,
-                                        metricsRecorder,
-                                        isPartOfMigration));
+                                        OFFER_TO_SAVE_PASSWORDS, exception, metricsRecorder));
                 break;
             case AUTO_SIGN_IN:
                 mSettingsAccessor.setAutoSignIn(
                         value,
                         getAccount(account),
-                        unused ->
-                                mReceiverBridge.onSettingValueSet(
-                                        AUTO_SIGN_IN, metricsRecorder, isPartOfMigration),
+                        unused -> mReceiverBridge.onSettingValueSet(AUTO_SIGN_IN, metricsRecorder),
                         exception ->
                                 handleSettingExceptionOnUiThread(
-                                        AUTO_SIGN_IN,
-                                        exception,
-                                        metricsRecorder,
-                                        isPartOfMigration));
+                                        AUTO_SIGN_IN, exception, metricsRecorder));
                 break;
             default:
                 assert false : "All settings need to be handled.";
@@ -146,33 +121,27 @@ public class PasswordSettingsUpdaterDispatcherBridge {
     private void handleFetchingExceptionOnUiThread(
             @PasswordManagerSetting int setting,
             Exception exception,
-            PasswordSettingsUpdaterMetricsRecorder metricsRecorder,
-            boolean isPartOfMigration) {
+            PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
         // Error callback could be either triggered
         // - by the GMS Core on the UI thread
         // - by the downstream backend on the operation thread if preconditions are not met
         // |runOrPostTask| ensures callback will always be executed on the UI thread.
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
-                () ->
-                        mReceiverBridge.handleFetchingException(
-                                setting, exception, metricsRecorder, isPartOfMigration));
+                () -> mReceiverBridge.handleFetchingException(setting, exception, metricsRecorder));
     }
 
     private void handleSettingExceptionOnUiThread(
             @PasswordManagerSetting int setting,
             Exception exception,
-            PasswordSettingsUpdaterMetricsRecorder metricsRecorder,
-            boolean isPartOfMigration) {
+            PasswordSettingsUpdaterMetricsRecorder metricsRecorder) {
         // Error callback could be either triggered
         // - by the GMS Core on the UI thread
         // - by the downstream backend on the operation thread if preconditions are not met
         // |runOrPostTask| ensures callback will always be executed on the UI thread.
         PostTask.runOrPostTask(
                 TaskTraits.UI_DEFAULT,
-                () ->
-                        mReceiverBridge.handleSettingException(
-                                setting, exception, metricsRecorder, isPartOfMigration));
+                () -> mReceiverBridge.handleSettingException(setting, exception, metricsRecorder));
     }
 
     private Optional<Account> getAccount(String syncingAccount) {

@@ -31,16 +31,14 @@ class PasswordSettingsUpdaterAndroidDispatcherBridge {
   // If `account` is not present, the value will be requested from the local
   // profile (i.e. a profile not tied to any account).
   virtual void GetPasswordSettingValue(std::optional<SyncingAccount> account,
-                                       PasswordManagerSetting setting,
-                                       bool is_part_of_migration) = 0;
+                                       PasswordManagerSetting setting) = 0;
 
   // Asynchronously sets the `value` of `setting` in Google Mobile Services.
   // If `account` is not present, the value will be set in the local profile
   // (i.e. a profile not tied to any account).
   virtual void SetPasswordSettingValue(std::optional<SyncingAccount> account,
                                        PasswordManagerSetting setting,
-                                       bool value,
-                                       bool is_part_of_migration) = 0;
+                                       bool value) = 0;
 
   // Factory function for creating the bridge. Before calling create, ensure
   // that `password_manager_android_util::AreMinUpmRequirementsMet`

@@ -44,15 +44,6 @@ class MockPasswordSettingsUpdaterBridgeHelper
   MOCK_METHOD(void, SetConsumer, (base::WeakPtr<Consumer>), (override));
   MOCK_METHOD(void,
               GetPasswordSettingValue,
-              (std::optional<SyncingAccount>, PasswordManagerSetting, bool),
-              (override));
-  MOCK_METHOD(
-      void,
-      SetPasswordSettingValue,
-      (std::optional<SyncingAccount>, PasswordManagerSetting, bool, bool),
-      (override));
-  MOCK_METHOD(void,
-              GetPasswordSettingValue,
               (std::optional<SyncingAccount>, PasswordManagerSetting),
               (override));
   MOCK_METHOD(void,
@@ -535,7 +526,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTest,
   // For a syncing user, the setting stored in the account takes precedence and
   // overwrites the local setting, even if the account setting has a default
   // value.
-  EXPECT_CALL(*bridge_helper(), SetPasswordSettingValue(_, _, _)).Times(0);
+  EXPECT_CALL(*bridge_helper(), SetPasswordSettingValue).Times(0);
   updater_bridge_consumer()->OnSettingValueAbsent(
       PasswordManagerSetting::kAutoSignIn);
 
@@ -972,7 +963,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
   ASSERT_TRUE(pref_service()->GetBoolean(
       password_manager::prefs::kAutoSignInEnabledGMS));
 
-  EXPECT_CALL(*bridge_helper(), SetPasswordSettingValue(_, _, _)).Times(0);
+  EXPECT_CALL(*bridge_helper(), SetPasswordSettingValue).Times(0);
   updater_bridge_consumer()->OnSettingValueAbsent(
       PasswordManagerSetting::kAutoSignIn);
 
@@ -999,7 +990,7 @@ TEST_F(PasswordManagerSettingsServiceAndroidImplTestLocalUsers,
   ASSERT_TRUE(pref_service()->GetBoolean(
       password_manager::prefs::kAutoSignInEnabledGMS));
 
-  EXPECT_CALL(*bridge_helper(), SetPasswordSettingValue(_, _, _)).Times(0);
+  EXPECT_CALL(*bridge_helper(), SetPasswordSettingValue).Times(0);
   updater_bridge_consumer()->OnSettingValueFetched(
       PasswordManagerSetting::kOfferToSavePasswords, /*value=*/false);
 

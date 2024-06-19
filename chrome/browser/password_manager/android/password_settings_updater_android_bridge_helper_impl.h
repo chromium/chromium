@@ -40,14 +40,6 @@ class PasswordSettingsUpdaterAndroidBridgeHelperImpl
   // PasswordSettingsUpdaterAndroidBridgeHelper implementation
   void SetConsumer(base::WeakPtr<Consumer> consumer) override;
   void GetPasswordSettingValue(std::optional<SyncingAccount> account,
-                               PasswordManagerSetting setting,
-                               bool is_part_of_migration) override;
-
-  void SetPasswordSettingValue(std::optional<SyncingAccount> account,
-                               PasswordManagerSetting setting,
-                               bool value,
-                               bool is_part_of_migration) override;
-  void GetPasswordSettingValue(std::optional<SyncingAccount> account,
                                PasswordManagerSetting setting) override;
 
   void SetPasswordSettingValue(std::optional<SyncingAccount> account,

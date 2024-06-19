@@ -85,8 +85,7 @@ void PasswordSettingsUpdaterAndroidBridgeHelperImpl::SetConsumer(
 
 void PasswordSettingsUpdaterAndroidBridgeHelperImpl::GetPasswordSettingValue(
     std::optional<SyncingAccount> account,
-    PasswordManagerSetting setting,
-    bool is_part_of_migration) {
+    PasswordManagerSetting setting) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(dispatcher_bridge_);
   background_task_runner_->PostTask(
@@ -94,14 +93,13 @@ void PasswordSettingsUpdaterAndroidBridgeHelperImpl::GetPasswordSettingValue(
       base::BindOnce(&PasswordSettingsUpdaterAndroidDispatcherBridge::
                          GetPasswordSettingValue,
                      base::Unretained(dispatcher_bridge_.get()),
-                     std::move(account), setting, is_part_of_migration));
+                     std::move(account), setting));
 }
 
 void PasswordSettingsUpdaterAndroidBridgeHelperImpl::SetPasswordSettingValue(
     std::optional<SyncingAccount> account,
     PasswordManagerSetting setting,
-    bool value,
-    bool is_part_of_migration) {
+    bool value) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
   DCHECK(dispatcher_bridge_);
   background_task_runner_->PostTask(
@@ -109,20 +107,7 @@ void PasswordSettingsUpdaterAndroidBridgeHelperImpl::SetPasswordSettingValue(
       base::BindOnce(&PasswordSettingsUpdaterAndroidDispatcherBridge::
                          SetPasswordSettingValue,
                      base::Unretained(dispatcher_bridge_.get()),
-                     std::move(account), setting, value, is_part_of_migration));
-}
-
-void PasswordSettingsUpdaterAndroidBridgeHelperImpl::GetPasswordSettingValue(
-    std::optional<SyncingAccount> account,
-    PasswordManagerSetting setting) {
-  GetPasswordSettingValue(account, setting, false);
-}
-
-void PasswordSettingsUpdaterAndroidBridgeHelperImpl::SetPasswordSettingValue(
-    std::optional<SyncingAccount> account,
-    PasswordManagerSetting setting,
-    bool value) {
-  SetPasswordSettingValue(account, setting, value, false);
+                     std::move(account), setting, value));
 }
 
 }  // namespace password_manager
