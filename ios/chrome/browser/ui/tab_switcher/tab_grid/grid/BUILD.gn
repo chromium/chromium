@@ -12,6 +12,7 @@ source_set("grid") {
   deps = [
     ":grid_mediator",
     ":grid_ui",
+    ":tab_group_grid_ui",
     "//base",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
@@ -263,6 +264,20 @@ source_set("grid_toolbars_mutator") {
 
 source_set("grid_view_controller_mutator") {
   sources = [ "grid_view_controller_mutator.h" ]
+}
+
+source_set("tab_group_grid_ui") {
+  sources = [
+    "tab_group_grid_view_controller.h",
+    "tab_group_grid_view_controller.mm",
+    "tab_group_header.h",
+    "tab_group_header.mm",
+  ]
+  deps = [
+    ":grid_ui",
+    ":grid_view_delegate",
+    "//base",
+  ]
 }
 
 source_set("unit_tests") {

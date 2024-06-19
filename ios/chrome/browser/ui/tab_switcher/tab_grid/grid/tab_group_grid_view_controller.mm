@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_grid_view_controller.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_group_grid_view_controller.h"
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_view_delegate.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_header.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_group_header.h"
 
 @implementation TabGroupGridViewController {
   // Registered header.

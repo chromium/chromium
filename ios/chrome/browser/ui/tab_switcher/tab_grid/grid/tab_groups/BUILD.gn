@@ -35,6 +35,7 @@ source_set("tab_groups") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_mediator",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_utils",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:tab_group_grid_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu:",
     "//ios/chrome/common/ui/colors",
     "//ios/web/public",
@@ -75,10 +76,6 @@ source_set("tab_group_creation") {
 source_set("tab_groups_ui") {
   sources = [
     "create_or_edit_tab_group_view_controller_delegate.h",
-    "tab_group_grid_view_controller.h",
-    "tab_group_grid_view_controller.mm",
-    "tab_group_header.h",
-    "tab_group_header.mm",
     "tab_group_view_controller.h",
     "tab_group_view_controller.mm",
   ]
@@ -100,6 +97,7 @@ source_set("tab_groups_ui") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_view_delegate",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:tab_group_grid_ui",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ui/base",
