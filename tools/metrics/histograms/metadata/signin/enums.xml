@@ -780,6 +780,13 @@ chromium-metrics-reviews@google.com.
     The primary account might be signed out when a profile is being deleted, to
     avoid that deletion of data propagates via sync to other devices.
   </int>
+  <int value="35" label="Signed out while switching to another primary profile">
+    In the account menu, the user switched their primary account. As a first
+    step, they get signed-out of their previous primary account.
+  </int>
+  <int value="36" label="Signed out from the account switcher">
+    In the account menu, the user selected the sign-out button.
+  </int>
 </enum>
 
 <enum name="SigninSSOIdentityListRequestCacheState">
