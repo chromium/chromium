@@ -11,6 +11,7 @@ import org.chromium.base.Callback;
 import org.chromium.media.MediaDrmStorageBridge.PersistentInfo;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -130,6 +131,12 @@ class MediaDrmSessionManager {
 
         String toHexString() {
             return toHexString(mEmeId);
+        }
+
+        /** Convert `mEmeId` to UTF-8 string. */
+        @Override
+        public String toString() {
+            return new String(mEmeId, StandardCharsets.UTF_8);
         }
     }
 
