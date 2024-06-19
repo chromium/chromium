@@ -26,6 +26,21 @@ chromium-metrics-reviews@google.com.
 
 <enums>
 
+<enum name="ChangePinEvent">
+  <int value="0" label="A PIN change request is triggered in settings."/>
+  <int value="1" label="A PIN change request is triggered in PIN dialog."/>
+  <int value="2" label="GAIA reauth succeeded and a RAPT is retrieved."/>
+  <int value="3" label="GAIA reauth is cancelled by closing the window."/>
+  <int value="4" label="A new PIN is entered in the GPM PIN dialog."/>
+  <int value="5"
+      label="Change PIN request is cancelled by dismissing the new PIN
+             dialog."/>
+  <int value="6" label="Change PIN request succeeded in enclave."/>
+  <int value="7"
+      label="Change PIN request failed in enclave. This does not include
+             cancellations."/>
+</enum>
+
 <enum name="CredManCreateRequestEnum">
   <int value="0" label="A createCredential request was sent to the platform."/>
   <int value="1"

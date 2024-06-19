@@ -196,6 +196,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.Enclave.ChangePinEvents"
+    enum="ChangePinEvent" expires_after="2024-12-31">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records events related to the GPM PIN Change flow. Recorded after when the
+    user clicks on &quot;Change (Google) Password Manager PIN&quot; in password
+    manager settings or when the user clicks &quot;Forgot PIN&quot; in the GPM
+    PIN dialog.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.EnclaveEvent"
     enum="WebAuthenticationEnclaveEvent" expires_after="2024-12-31">
   <owner>agl@chromium.org</owner>

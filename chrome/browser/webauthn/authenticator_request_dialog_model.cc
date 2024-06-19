@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/webauthn/authenticator_request_window.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
 #include "chrome/browser/webauthn/authenticator_transport.h"
+#include "chrome/browser/webauthn/change_pin_controller_impl.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/webauthn_metrics_util.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
@@ -85,6 +86,7 @@ namespace {
 constexpr int kMaxPriorityGPMCredentialCreations = 2;
 
 using BleStatus = device::FidoRequestHandlerBase::BleStatus;
+using ChangePinEvent = ChangePinControllerImpl::ChangePinEvent;
 
 // StepUiType enumerates the different types of UI that can be displayed.
 enum class StepUIType {
@@ -976,6 +978,9 @@ void AuthenticatorRequestDialogController::OnCableConnectingTimerComplete() {
 }
 
 void AuthenticatorRequestDialogController::OnRecoverSecurityDomainClosed() {
+  if (model_->step() == Step::kGPMReauthForPinReset) {
+    ChangePinControllerImpl::RecordHistogram(ChangePinEvent::kReauthCancelled);
+  }
   CancelAuthenticatorRequest();
 }
 
@@ -1154,6 +1159,10 @@ void AuthenticatorRequestDialogController::ShowCable() {
 }
 
 void AuthenticatorRequestDialogController::CancelAuthenticatorRequest() {
+  if (model_->step() == Step::kGPMChangeArbitraryPin ||
+      model_->step() == Step::kGPMChangePin) {
+    ChangePinControllerImpl::RecordHistogram(ChangePinEvent::kNewPinCancelled);
+  }
   if (use_conditional_mediation_) {
     // Conditional UI requests are never cancelled, they restart silently.
     ResetEphemeralState();

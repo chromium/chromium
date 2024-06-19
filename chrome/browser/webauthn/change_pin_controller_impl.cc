@@ -5,7 +5,14 @@
 #include "chrome/browser/webauthn/change_pin_controller_impl.h"
 
 #include <memory>
+#include <string>
+#include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/feature_list.h"
+#include "base/functional/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -16,7 +23,6 @@
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "device/fido/features.h"
@@ -69,22 +75,26 @@ void ChangePinControllerImpl::StartChangePin(SuccessCallback callback) {
   notify_pin_change_callback_ = std::move(callback);
   // TODO(enclave): use local UV instead of GPM reauth when available.
   model_->SetStep(Step::kGPMReauthForPinReset);
+  RecordHistogram(ChangePinEvent::kFlowStartedFromSettings);
 }
 
 void ChangePinControllerImpl::CancelAuthenticatorRequest() {
   // User clicked "Cancel" in the GPM dialog.
   Reset(/*success=*/false);
+  RecordHistogram(ChangePinEvent::kNewPinCancelled);
 }
 
 void ChangePinControllerImpl::OnReauthComplete(std::string rapt) {
   CHECK_EQ(model_->step(), Step::kGPMReauthForPinReset);
   rapt_ = std::move(rapt);
   model_->SetStep(Step::kGPMChangePin);
+  RecordHistogram(ChangePinEvent::kReauthCompleted);
 }
 
 void ChangePinControllerImpl::OnRecoverSecurityDomainClosed() {
   // User closed the reauth window.
   Reset(/*success=*/false);
+  RecordHistogram(ChangePinEvent::kReauthCancelled);
 }
 
 void ChangePinControllerImpl::OnGPMPinEntered(const std::u16string& pin) {
@@ -94,6 +104,7 @@ void ChangePinControllerImpl::OnGPMPinEntered(const std::u16string& pin) {
       base::UTF16ToUTF8(pin), std::move(rapt_),
       base::BindOnce(&ChangePinControllerImpl::OnGpmPinChanged,
                      weak_ptr_factory_.GetWeakPtr()));
+  RecordHistogram(ChangePinEvent::kNewPinEntered);
 }
 
 void ChangePinControllerImpl::OnGPMPinOptionChanged(bool is_arbitrary) {
@@ -101,6 +112,12 @@ void ChangePinControllerImpl::OnGPMPinOptionChanged(bool is_arbitrary) {
         model_->step() == Step::kGPMChangeArbitraryPin);
   model_->SetStep(is_arbitrary ? Step::kGPMChangeArbitraryPin
                                : Step::kGPMChangePin);
+}
+
+// static
+void ChangePinControllerImpl::RecordHistogram(ChangePinEvent event) {
+  base::UmaHistogramEnumeration("WebAuthentication.Enclave.ChangePinEvents",
+                                event);
 }
 
 void ChangePinControllerImpl::Reset(bool success) {
@@ -115,9 +132,11 @@ void ChangePinControllerImpl::Reset(bool success) {
 void ChangePinControllerImpl::OnGpmPinChanged(bool success) {
   if (!success) {
     model_->SetStep(Step::kGPMError);
+    RecordHistogram(ChangePinEvent::kFailed);
     return;
   }
   Reset(/*success=*/true);
+  RecordHistogram(ChangePinEvent::kCompletedSuccessfully);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChangePinControllerImpl);

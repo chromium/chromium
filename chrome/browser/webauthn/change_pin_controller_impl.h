@@ -68,6 +68,18 @@ class ChangePinControllerImpl
       public content::WebContentsUserData<ChangePinControllerImpl>,
       public AuthenticatorRequestDialogModel::Observer {
  public:
+  enum class ChangePinEvent {
+    kFlowStartedFromSettings = 0,
+    kFlowStartedFromPinDialog = 1,
+    kReauthCompleted = 2,
+    kReauthCancelled = 3,
+    kNewPinEntered = 4,
+    kNewPinCancelled = 5,
+    kCompletedSuccessfully = 6,
+    kFailed = 7,
+    kMaxValue = kFailed,
+  };
+
   ChangePinControllerImpl(const ChangePinControllerImpl&) = delete;
   ChangePinControllerImpl& operator=(const ChangePinControllerImpl&) = delete;
 
@@ -86,6 +98,8 @@ class ChangePinControllerImpl
   void OnRecoverSecurityDomainClosed() override;
   void OnGPMPinEntered(const std::u16string& pin) override;
   void OnGPMPinOptionChanged(bool is_arbitrary) override;
+
+  static void RecordHistogram(ChangePinEvent event);
 
  private:
   explicit ChangePinControllerImpl(content::WebContents* web_contents);

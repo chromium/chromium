@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "chrome/browser/webauthn/change_pin_controller_impl.h"
 #include "chrome/browser/webauthn/enclave_manager_factory.h"
 #include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/proto/enclave_local_state.pb.h"
@@ -47,6 +48,7 @@
 #endif  // BUILDFLAG(IS_MAC)
 
 using Step = AuthenticatorRequestDialogModel::Step;
+using ChangePinEvent = ChangePinControllerImpl::ChangePinEvent;
 
 // These diagrams aren't exhaustive, but hopefully can help identify the control
 // flow in this code, which is very callback-heavy. The "digraph" sections are
@@ -925,6 +927,7 @@ void GPMEnclaveController::OnGpmPinChanged(bool success) {
 
   if (!success) {
     model_->SetStep(Step::kGPMError);
+    ChangePinControllerImpl::RecordHistogram(ChangePinEvent::kFailed);
     return;
   }
 
@@ -932,6 +935,8 @@ void GPMEnclaveController::OnGpmPinChanged(bool success) {
   // Changing GPM Pin required reauth, hence we can just proceed with the
   // get/create passkey transaction.
   StartTransaction();
+  ChangePinControllerImpl::RecordHistogram(
+      ChangePinEvent::kCompletedSuccessfully);
 }
 
 void GPMEnclaveController::OnTrustThisComputer() {
@@ -1034,6 +1039,7 @@ void GPMEnclaveController::OnGPMPinEntered(const std::u16string& pin) {
         base::UTF16ToUTF8(pin), std::move(rapt_),
         base::BindOnce(&GPMEnclaveController::OnGpmPinChanged,
                        weak_ptr_factory_.GetWeakPtr()));
+    ChangePinControllerImpl::RecordHistogram(ChangePinEvent::kNewPinEntered);
   } else {
     model_->SetStep(Step::kGPMConnecting);
     StartTransaction();
@@ -1051,12 +1057,15 @@ void GPMEnclaveController::OnForgotGPMPinPressed() {
   changing_gpm_pin_ = true;
   // TODO(enclave): Use biometrics instead of GAIA reauth (if available).
   model_->SetStep(Step::kGPMReauthForPinReset);
+  ChangePinControllerImpl::RecordHistogram(
+      ChangePinEvent::kFlowStartedFromPinDialog);
 }
 
 void GPMEnclaveController::OnReauthComplete(std::string rapt) {
   CHECK_EQ(model_->step(), Step::kGPMReauthForPinReset);
   rapt_ = std::move(rapt);
   model_->SetStep(Step::kGPMChangePin);
+  ChangePinControllerImpl::RecordHistogram(ChangePinEvent::kReauthCompleted);
 }
 
 void GPMEnclaveController::StartTransaction() {
