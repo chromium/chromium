@@ -327,8 +327,9 @@ class ClosureExecutorBeforeNavigationCommit
       mojom::DidCommitProvisionalLoadParamsPtr* params,
       mojom::DidCommitProvisionalLoadInterfaceParamsPtr* interface_params)
       override {
-    if (closure_)
+    if (closure_) {
       std::move(closure_).Run();
+    }
     return true;
   }
 
@@ -673,8 +674,9 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
   }
 
   void ConnectToAuthenticator() {
-    if (authenticator_remote_.is_bound())
+    if (authenticator_remote_.is_bound()) {
       authenticator_remote_.reset();
+    }
     static_cast<RenderFrameHostImpl*>(
         shell()->web_contents()->GetPrimaryMainFrame())
         ->GetWebAuthenticationService(
@@ -736,8 +738,9 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
   void WaitForConnectionError() {
     ASSERT_TRUE(authenticator_remote_);
     ASSERT_TRUE(authenticator_remote_.is_bound());
-    if (!authenticator_remote_.is_connected())
+    if (!authenticator_remote_.is_connected()) {
       return;
+    }
 
     base::RunLoop run_loop;
     authenticator_remote_.set_disconnect_handler(run_loop.QuitClosure());
@@ -1831,41 +1834,6 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
             EvalJs(shell()->web_contents(),
                    BuildCreateCallWithParameters(parameters)));
 }
-
-// No `kAndroidAccessory` on Windows.
-#if !BUILDFLAG(IS_WIN)
-IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
-                       DuplicateTransportStrings) {
-  // By setting the transport to `kAndroidAccessory`, and having explicit
-  // transports in the getInfo of ['hybrid', 'internal'], this test confirms
-  // that 'hybrid' doesn't get included twice. Since `kAndroidAccessory` and
-  // `kHybrid` are different values that both happen to get converted to the
-  // string "hybrid", this requires deduplication.
-  device::test::VirtualFidoDeviceFactory* virtual_device_factory =
-      InjectVirtualFidoDeviceFactory();
-  virtual_device_factory->SetTransport(
-      device::FidoTransportProtocol::kAndroidAccessory);
-  device::VirtualCtap2Device::Config config;
-  config.transports_in_get_info = {device::FidoTransportProtocol::kHybrid,
-                                   device::FidoTransportProtocol::kInternal};
-  config.include_transports_in_attestation_certificate = false;
-  virtual_device_factory->SetCtap2Config(config);
-
-  EXPECT_TRUE(
-      NavigateToURL(shell(), GetHttpsURL("www.acme.com", "/title1.html")));
-
-  CreateParameters parameters;
-  constexpr char kJavascript[] =
-      "navigator.credentials.create({ publicKey: {"
-      "  challenge: new TextEncoder().encode('climb a mountain'),"
-      "  rp: { id: 'www.acme.com', name: 'name' },"
-      "  user: { id: new Uint8Array([0]), name: 'name', displayName: 'dn' },"
-      "  pubKeyCredParams: [{ type: 'public-key', alg: '-7'}],"
-      "}}).then(c => String(c.response.getTransports()),"
-      "         e => e.toString());";
-  EXPECT_EQ("hybrid,internal", EvalJs(shell()->web_contents(), kJavascript));
-}
-#endif
 
 class WebAuthCrossDomainTest : public WebAuthBrowserTestBase {
  public:

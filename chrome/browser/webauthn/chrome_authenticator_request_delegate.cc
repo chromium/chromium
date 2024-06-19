@@ -1062,7 +1062,8 @@ void ChromeAuthenticatorRequestDelegate::ConfigureDiscoveries(
   }
 
   mojo::Remote<device::mojom::UsbDeviceManager> usb_device_manager;
-  if (!pass_empty_usb_device_manager_) {
+  if (!pass_empty_usb_device_manager_ &&
+      base::FeatureList::IsEnabled(device::kWebAuthnAndroidOpenAccessory)) {
     content::GetDeviceService().BindUsbDeviceManager(
         usb_device_manager.BindNewPipeAndPassReceiver());
   }

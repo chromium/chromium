@@ -270,15 +270,17 @@ base::flat_set<device::FidoTransportProtocol> GetWebAuthnTransports(
 
   transports.insert(device::FidoTransportProtocol::kHybrid);
 
-  // kAndroidAccessory doesn't work on Windows because of USB stack issues.
-  // Note: even if this value were inserted it wouldn't take effect on Windows
-  // versions with a native API because FidoRequestHandlerBase filters out
-  // non-kHybrid transports in that case.
+  if (base::FeatureList::IsEnabled(device::kWebAuthnAndroidOpenAccessory)) {
+    // kAndroidAccessory doesn't work on Windows because of USB stack issues.
+    // Note: even if this value were inserted it wouldn't take effect on Windows
+    // versions with a native API because FidoRequestHandlerBase filters out
+    // non-kHybrid transports in that case.
 #if !BUILDFLAG(IS_WIN)
-  // In order for AOA to be active the |AuthenticatorRequestClientDelegate|
-  // must still configure a |UsbDeviceManager|.
-  transports.insert(device::FidoTransportProtocol::kAndroidAccessory);
+    // In order for AOA to be active the |AuthenticatorRequestClientDelegate|
+    // must still configure a |UsbDeviceManager|.
+    transports.insert(device::FidoTransportProtocol::kAndroidAccessory);
 #endif
+  }
 
   return transports;
 }

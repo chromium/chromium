@@ -160,4 +160,12 @@ BASE_FEATURE(kWebAuthnCacheSecurityDomain,
              "WebAuthenticationCacheSecurityDomain",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Disabled in M128. Remove in or after M130.
+// (This is a turn-down feature, i.e. the final state is that it should be
+// disabled.)
+// crbug.com/348204152
+BASE_FEATURE(kWebAuthnAndroidOpenAccessory,
+             "WebAuthenticationAndroidOpenAccessory",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace device

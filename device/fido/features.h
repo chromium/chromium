@@ -136,6 +136,11 @@ BASE_DECLARE_FEATURE(kWebAuthnICloudRecoveryKey);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnCacheSecurityDomain);
 
+// Whether to enable the Android Open Accessory protocol, a.k.a
+// "caBLE-over-cable".
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnAndroidOpenAccessory);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_
