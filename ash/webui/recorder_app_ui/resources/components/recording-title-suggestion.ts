@@ -41,24 +41,16 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
     }
 
     #header {
-      align-items: center;
-      border-bottom: 1px solid var(--cros-sys-separator);
+      align-items: flex-end;
       display: flex;
       flex-flow: row;
       font: var(--cros-title-1-font);
-      gap: 8px;
-      padding: 12px 16px;
+      justify-content: space-between;
+      padding: 4px 4px 0 16px;
       position: relative;
 
-      & > cros-badge {
-        background-color: var(--cros-sys-complement);
-        color: var(--cros-sys-on_surface);
-        margin: 0;
-      }
-
       & > cra-icon-button {
-        position: absolute;
-        right: 4px;
+        margin: 0;
       }
     }
 
@@ -96,6 +88,7 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
       display: flex;
       flex-flow: row;
       gap: 8px;
+      height: 24px;
       padding: 4px 4px 0 8px;
       position: absolute;
       position-anchor: --footer;
@@ -201,8 +194,7 @@ export class RecordingTitleSuggestion extends ReactiveLitElement {
   override render(): RenderResult {
     return html`
       <div id="header">
-        <span>${i18n('Title suggestions')}</span>
-        <cros-badge>${i18n('Experiment')}</cros-badge>
+        <span>${i18n('A few options:')}</span>
         <cra-icon-button
           buttonstyle="floating"
           size="small"

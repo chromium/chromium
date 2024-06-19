@@ -41,9 +41,9 @@ class ModelDev implements Model {
     await sleep(3000);
     const words = content.split(' ');
     return [
-      `This is a very long long title that is too long for "${words[0]}"`,
-      `Longer long title for "${words[1]}"`,
       `Title for "${words[2]}"`,
+      `Longer long title for "${words[1]}"`,
+      `This is a very long long title that is too long for "${words[0]}"`,
     ];
   }
 
