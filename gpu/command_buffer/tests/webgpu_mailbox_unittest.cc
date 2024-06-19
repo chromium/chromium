@@ -118,7 +118,15 @@ class WebGPUMailboxTest
          }) {
       WebGPUMailboxTestParams o = options;
       o.format = format;
+#if BUILDFLAG(IS_LINUX)
+      // Linux does not support creation of RGBA_F16 GpuMemoryBuffers, which
+      // causes SharedImage creation in these tests to fail.
+      if (o.format != viz::SinglePlaneFormat::kRGBA_F16) {
+        params.push_back(o);
+      }
+#else
       params.push_back(o);
+#endif
 
       // Test SwiftShader fallback both with and without SkiaGraphite
       o = fallback_options;
