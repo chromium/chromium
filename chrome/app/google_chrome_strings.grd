@@ -803,9 +803,6 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_EXTENSIONS_MANIFEST_V2_DEPRECATION_KEEP_DIALOG_DESCRIPTION" desc="The description of the dialog asking the user if they want to keep the extension installed, which is affected by the Manifest V2 deprecation">
           This extension is no longer supported. Chrome recommends that you remove it instead.
         </message>
-        <message name="IDS_EXTENSIONS_MV2_DEPRECATION_MESSAGE_DISABLED_SUBTITLE" desc="Subtitle text displayed in the manifest v2 deprecation message for a specific extension during the disabled stage.">
-          Chrome recommends that you remove it. Learn more about supported extensions
-        </message>
       </if>
 
         <!-- Extension Safety Check Detail Page strings -->

@@ -247,21 +247,16 @@ this text can be found by Ctrl + F because it isn't hidden. -->
       </iron-icon>
       <div class="message-text">
         <span class="section-title" aria-level="2">
-          [[getMv2DeprecationMessageHeader_()]]
+          $i18n{mv2DeprecationMessageWarningHeader}
         </span>
         <div class="section-content">
-          [[getMv2DeprecationMessageSubtitle_()]]
+          $i18nRaw{mv2DeprecationMessageWarningSubtitle}
         </div>
       </div>
       <cr-button class="find-alternative-button"
           on-click="onFindAlternativeButtonClick_"
-          hidden$="[[!showMv2DeprecationFindAlternativeButton_]]">
+          hidden="[[!data.recommendationsUrl]]">
         $i18n{mv2DeprecationPanelFindAlternativeButton}
-      </cr-button>
-      <cr-button class="remove-button"
-          on-click="onRemoveButtonClick_"
-          hidden$="[[!showMv2DeprecationRemoveButton_]]">
-        $i18n{mv2DeprecationMessageRemoveButton}
       </cr-button>
     </div>
 
