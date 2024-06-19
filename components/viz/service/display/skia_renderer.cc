@@ -11,6 +11,7 @@
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -106,6 +107,14 @@
 namespace viz {
 
 namespace {
+
+// Feature to temporarily track all the render pass IDs we've ever seen. This
+// will help us understand the case where we try and sample from a render pass
+// that has never been drawn to. See: crbug.com/344458294, crbug.com/345673794
+// TODO(crbug.com/347909405): Remove this
+BASE_FEATURE(kTrackAllAllocatedRenderPassIds,
+             "TrackAllAllocatedRenderPassIds",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Smallest unit that impacts anti-aliasing output. We use this to determine
 // when an exterior edge (with AA) has been clipped (no AA). The specific value
@@ -3382,6 +3391,13 @@ void SkiaRenderer::DrawRenderPassQuad(
     LOG(ERROR) << "Could not find render pass id # " << quad->render_pass_id
                << " in the render pass overlay backings";
 
+    if (base::FeatureList::IsEnabled(kTrackAllAllocatedRenderPassIds)) {
+      SCOPED_CRASH_KEY_STRING32(
+          "DrawRenderPassQuad", "backing not found",
+          base::StringPrintf("seen before = %d", seen_render_pass_ids_.contains(
+                                                     quad->render_pass_id)));
+    }
+
     // Collect a dump so we can investigate the root cause, but fallback to a
     // solid color to avoid disrupting the user.
     base::debug::DumpWithoutCrashing();
@@ -3671,6 +3687,9 @@ void SkiaRenderer::AllocateRenderPassResourceIfNeeded(
                         requirements.format, mailbox, is_root,
                         requirements.is_scanout,
                         requirements.scanout_dcomp_surface));
+  if (base::FeatureList::IsEnabled(kTrackAllAllocatedRenderPassIds)) {
+    seen_render_pass_ids_.insert(render_pass_id);
+  }
 }
 
 void SkiaRenderer::FlushOutputSurface() {

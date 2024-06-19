@@ -353,6 +353,11 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
         .ToSkColorSpace();
   }
 
+  // Contains every render pass ID that this renderer has allocated. Values are
+  // never evicted-- every 1 million entries takes up about 8MB space.
+  // TODO(crbug.com/347909405): Remove this
+  base::flat_set<AggregatedRenderPassId> seen_render_pass_ids_;
+
   // Interface used for drawing. Common among different draw modes.
   raw_ptr<SkCanvas> current_canvas_ = nullptr;
 
