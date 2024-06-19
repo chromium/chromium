@@ -23,6 +23,7 @@
 
 #include "third_party/blink/renderer/core/dom/live_node_list_base.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/live_node_list.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 

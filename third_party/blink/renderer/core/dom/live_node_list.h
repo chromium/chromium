@@ -40,16 +40,7 @@ class CORE_EXPORT LiveNodeList : public NodeList, public LiveNodeListBase {
   LiveNodeList(ContainerNode& owner_node,
                CollectionType collection_type,
                NodeListInvalidationType invalidation_type,
-               NodeListSearchRoot search_root = NodeListSearchRoot::kOwnerNode)
-      : LiveNodeListBase(owner_node,
-                         search_root,
-                         invalidation_type,
-                         collection_type) {
-    // Keep this in the child class because |registerNodeList| requires wrapper
-    // tracing and potentially calls virtual methods which is not allowed in a
-    // base class constructor.
-    GetDocument().RegisterNodeList(this);
-  }
+               NodeListSearchRoot search_root = NodeListSearchRoot::kOwnerNode);
 
   unsigned length() const final;
   Element* item(unsigned offset) const final;

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/dom/container_node.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/html/html_bdi_element.h"
 
+#include "third_party/blink/renderer/core/dom/document.h"
+
 namespace blink {
 
 HTMLBDIElement::HTMLBDIElement(Document& document)

@@ -26,6 +26,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_COLLECTION_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/live_node_list_base.h"
 #include "third_party/blink/renderer/core/html/collection_items_cache.h"
 #include "third_party/blink/renderer/core/html/collection_type.h"

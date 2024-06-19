@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_element_text.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_linked_hash_set.h"
 
 namespace blink {
 
