@@ -184,38 +184,17 @@ RTCInsertableStreams* RTCRtpReceiver::createEncodedStreams(
                                       "Too late to create encoded streams");
     return nullptr;
   }
-  if (kind() == MediaKind::kAudio)
-    return CreateEncodedAudioStreams(script_state, exception_state);
-  DCHECK_EQ(kind(), MediaKind::kVideo);
-  return CreateEncodedVideoStreams(script_state, exception_state);
-}
-
-RTCInsertableStreams* RTCRtpReceiver::CreateEncodedAudioStreams(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (encoded_audio_streams_) {
+  if (encoded_streams_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Encoded audio streams already created");
+                                      "Encoded streams already created");
     return nullptr;
   }
 
-  InitializeEncodedAudioStreams(script_state);
-  return encoded_audio_streams_.Get();
-}
-
-RTCInsertableStreams* RTCRtpReceiver::CreateEncodedVideoStreams(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
-  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (encoded_video_streams_) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Encoded video streams already created");
-    return nullptr;
+  if (kind() == MediaKind::kAudio) {
+    return CreateEncodedAudioStreams(script_state);
   }
-
-  InitializeEncodedVideoStreams(script_state);
-  return encoded_video_streams_.Get();
+  CHECK_EQ(kind(), MediaKind::kVideo);
+  return CreateEncodedVideoStreams(script_state);
 }
 
 RTCRtpReceiverPlatform* RTCRtpReceiver::platform_receiver() {
@@ -276,8 +255,7 @@ void RTCRtpReceiver::Trace(Visitor* visitor) const {
   visitor->Trace(transport_);
   visitor->Trace(streams_);
   visitor->Trace(transceiver_);
-  visitor->Trace(encoded_audio_streams_);
-  visitor->Trace(encoded_video_streams_);
+  visitor->Trace(encoded_streams_);
   ScriptWrappable::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
 }
@@ -440,11 +418,12 @@ void RTCRtpReceiver::SetAudioUnderlyingSink(
   audio_to_decoder_underlying_sink_ = new_underlying_sink;
 }
 
-void RTCRtpReceiver::InitializeEncodedAudioStreams(ScriptState* script_state) {
+RTCInsertableStreams* RTCRtpReceiver::CreateEncodedAudioStreams(
+    ScriptState* script_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!encoded_audio_streams_);
+  CHECK(!encoded_streams_);
 
-  encoded_audio_streams_ = RTCInsertableStreams::Create();
+  encoded_streams_ = RTCInsertableStreams::Create();
 
   {
     base::AutoLock locker(audio_underlying_source_lock_);
@@ -473,7 +452,7 @@ void RTCRtpReceiver::InitializeEncodedAudioStreams(ScriptState* script_state) {
             std::make_unique<RtcEncodedAudioReceiverSourceOptimizer>(
                 std::move(set_underlying_source),
                 std::move(disconnect_callback)));
-    encoded_audio_streams_->setReadable(readable_stream);
+    encoded_streams_->setReadable(readable_stream);
   }
 
   WritableStream* writable_stream;
@@ -499,7 +478,8 @@ void RTCRtpReceiver::InitializeEncodedAudioStreams(ScriptState* script_state) {
             std::move(set_underlying_sink), encoded_audio_transformer_));
   }
 
-  encoded_audio_streams_->setWritable(writable_stream);
+  encoded_streams_->setWritable(writable_stream);
+  return encoded_streams_;
 }
 
 void RTCRtpReceiver::OnAudioFrameFromDepacketizer(
@@ -558,23 +538,24 @@ void RTCRtpReceiver::SetVideoUnderlyingSink(
 
 void RTCRtpReceiver::MaybeShortCircuitEncodedStreams() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  if (kind() == MediaKind::kVideo && !encoded_video_streams_) {
+  if (!encoded_streams_) {
     transform_shortcircuited_ = true;
-    LogMessage("Starting short circuiting of video transform");
-    encoded_video_transformer_->StartShortCircuiting();
-  }
-  if (kind() == MediaKind::kAudio && !encoded_audio_streams_) {
-    transform_shortcircuited_ = true;
-    LogMessage("Starting short circuiting of audio transform");
-    encoded_audio_transformer_->StartShortCircuiting();
+    LogMessage("Starting short circuiting of transform");
+    if (kind() == MediaKind::kVideo) {
+      encoded_video_transformer_->StartShortCircuiting();
+    } else {
+      CHECK_EQ(kind(), MediaKind::kAudio);
+      encoded_audio_transformer_->StartShortCircuiting();
+    }
   }
 }
 
-void RTCRtpReceiver::InitializeEncodedVideoStreams(ScriptState* script_state) {
+RTCInsertableStreams* RTCRtpReceiver::CreateEncodedVideoStreams(
+    ScriptState* script_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  DCHECK(!encoded_video_streams_);
+  CHECK(!encoded_streams_);
 
-  encoded_video_streams_ = RTCInsertableStreams::Create();
+  encoded_streams_ = RTCInsertableStreams::Create();
 
   {
     base::AutoLock locker(video_underlying_source_lock_);
@@ -603,7 +584,7 @@ void RTCRtpReceiver::InitializeEncodedVideoStreams(ScriptState* script_state) {
             std::make_unique<RtcEncodedVideoReceiverSourceOptimizer>(
                 std::move(set_underlying_source),
                 std::move(disconnect_callback)));
-    encoded_video_streams_->setReadable(readable_stream);
+    encoded_streams_->setReadable(readable_stream);
   }
 
   WritableStream* writable_stream;
@@ -629,7 +610,8 @@ void RTCRtpReceiver::InitializeEncodedVideoStreams(ScriptState* script_state) {
             std::move(set_underlying_sink), encoded_video_transformer_));
   }
 
-  encoded_video_streams_->setWritable(writable_stream);
+  encoded_streams_->setWritable(writable_stream);
+  return encoded_streams_;
 }
 
 void RTCRtpReceiver::OnVideoFrameFromDepacketizer(

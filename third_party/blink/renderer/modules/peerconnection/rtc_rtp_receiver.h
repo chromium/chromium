@@ -97,11 +97,9 @@ class RTCRtpReceiver final : public ScriptWrappable,
 
  private:
   // Insertable Streams audio support methods
-  RTCInsertableStreams* CreateEncodedAudioStreams(ScriptState*,
-                                                  ExceptionState&);
+  RTCInsertableStreams* CreateEncodedAudioStreams(ScriptState*);
   void RegisterEncodedAudioStreamCallback();
   void UnregisterEncodedAudioStreamCallback();
-  void InitializeEncodedAudioStreams(ScriptState*);
   void SetAudioUnderlyingSource(
       RTCEncodedAudioUnderlyingSource* new_underlying_source,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
@@ -112,11 +110,9 @@ class RTCRtpReceiver final : public ScriptWrappable,
           encoded_audio_frame);
 
   // Insertable Streams video support methods
-  RTCInsertableStreams* CreateEncodedVideoStreams(ScriptState*,
-                                                  ExceptionState&);
+  RTCInsertableStreams* CreateEncodedVideoStreams(ScriptState*);
   void RegisterEncodedVideoStreamCallback();
   void UnregisterEncodedVideoStreamCallback();
-  void InitializeEncodedVideoStreams(ScriptState*);
   void SetVideoUnderlyingSource(
       RTCEncodedVideoUnderlyingSource* new_underlying_source,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
@@ -150,6 +146,7 @@ class RTCRtpReceiver final : public ScriptWrappable,
   std::optional<double> jitter_buffer_target_;
 
   THREAD_CHECKER(thread_checker_);
+  Member<RTCInsertableStreams> encoded_streams_;
 
   // Insertable Streams support for audio.
   base::Lock audio_underlying_source_lock_;
@@ -159,7 +156,6 @@ class RTCRtpReceiver final : public ScriptWrappable,
   base::Lock audio_underlying_sink_lock_;
   CrossThreadPersistent<RTCEncodedAudioUnderlyingSink>
       audio_to_decoder_underlying_sink_ GUARDED_BY(audio_underlying_sink_lock_);
-  Member<RTCInsertableStreams> encoded_audio_streams_;
   const scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
       encoded_audio_transformer_;
 
@@ -171,7 +167,6 @@ class RTCRtpReceiver final : public ScriptWrappable,
   base::Lock video_underlying_sink_lock_;
   CrossThreadPersistent<RTCEncodedVideoUnderlyingSink>
       video_to_decoder_underlying_sink_ GUARDED_BY(video_underlying_sink_lock_);
-  Member<RTCInsertableStreams> encoded_video_streams_;
   const scoped_refptr<blink::RTCEncodedVideoStreamTransformer::Broker>
       encoded_video_transformer_;
   bool transform_shortcircuited_;
