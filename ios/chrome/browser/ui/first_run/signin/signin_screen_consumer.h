@@ -32,9 +32,9 @@ typedef NS_ENUM(NSUInteger, SigninScreenConsumerScreenIntent) {
 // Handles sign-in screen UI updates.
 @protocol SigninScreenConsumer <NSObject>
 
-// Shows details (an icon and a footer) that Chrome is managed.
-// This property needs to be set before the view is loaded.
-@property(nonatomic, assign) BOOL isManaged;
+// Shows details (an icon and a footer) that Chrome is managed by platform
+// policies. This property needs to be set before the view is loaded.
+@property(nonatomic, assign) BOOL hasPlatformPolicies;
 // Sets if the screen intent see SigninScreenConsumerScreenIntent.
 // This property needs to be set before the view is loaded.
 @property(nonatomic, assign) SigninScreenConsumerScreenIntent screenIntent;

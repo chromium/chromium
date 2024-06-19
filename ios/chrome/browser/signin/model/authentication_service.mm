@@ -13,7 +13,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/single_thread_task_runner.h"
 #import "components/browser_sync/sync_to_signin_migration.h"
-#import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/features.h"
@@ -61,13 +60,6 @@ CoreAccountId SystemIdentityToAccountID(
   std::string gaia_id = base::SysNSStringToUTF8([identity gaiaID]);
   std::string email = base::SysNSStringToUTF8([identity userEmail]);
   return identity_manager->PickAccountIdForAccount(gaia_id, email);
-}
-
-// Returns whether the application is managed through MDM. This
-// checks the key sets in the NSUserDefaults by iOS.
-bool IsApplicationManagedByMDM() {
-  return [[NSUserDefaults standardUserDefaults]
-             dictionaryForKey:kPolicyLoaderIOSConfigurationKey] != nil;
 }
 
 }  // namespace

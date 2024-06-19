@@ -250,7 +250,7 @@
       !_syncService->HasDisableReason(
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY) &&
       !HasManagedSyncDataType(_syncService);
-  self.consumer.isManaged = IsApplicationManagedByPlatform();
+  self.consumer.hasPlatformPolicies = HasPlatformPolicies();
   if (!_firstRun) {
     self.consumer.screenIntent = SigninScreenConsumerScreenIntentSigninOnly;
   } else {
