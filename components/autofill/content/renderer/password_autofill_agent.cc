@@ -743,12 +743,12 @@ PasswordAutofillAgent::PasswordValueGatekeeper::~PasswordValueGatekeeper() =
     default;
 
 void PasswordAutofillAgent::PasswordValueGatekeeper::RegisterElement(
-    WebInputElement* element) {
-  CHECK(*element);
+    WebInputElement element) {
+  CHECK(element);
   if (was_user_gesture_seen_) {
     ShowValue(element);
   } else {
-    elements_.push_back(FieldRef(*element));
+    elements_.emplace_back(element);
   }
 }
 
@@ -760,7 +760,7 @@ void PasswordAutofillAgent::PasswordValueGatekeeper::OnUserGesture() {
   for (FieldRef element : elements_) {
     if (WebInputElement input_element =
             element.GetField().DynamicTo<WebInputElement>()) {
-      ShowValue(&input_element);
+      ShowValue(input_element);
     }
   }
   elements_.clear();
@@ -772,9 +772,10 @@ void PasswordAutofillAgent::PasswordValueGatekeeper::Reset() {
 }
 
 void PasswordAutofillAgent::PasswordValueGatekeeper::ShowValue(
-    WebInputElement* element) {
-  if (!element->IsNull() && !element->SuggestedValue().IsEmpty())
-    element->SetAutofillValue(element->SuggestedValue());
+    WebInputElement element) {
+  if (element && !element.SuggestedValue().IsEmpty()) {
+    element.SetAutofillValue(element.SuggestedValue());
+  }
 }
 
 bool PasswordAutofillAgent::TextDidChangeInTextField(
@@ -1354,7 +1355,7 @@ void PasswordAutofillAgent::SendPasswordForms(bool only_visible) {
         form.GetFormControlElements().ReleaseVector();
     // Sometimes JS can change autofilled forms. In this case we try to restore
     // values for the changed elements.
-    TryFixAutofilledForm(&control_elements);
+    TryFixAutofilledForm(control_elements);
   }
 
   // See if there are any unassociated input elements that could be used for
@@ -2272,20 +2273,21 @@ bool PasswordAutofillAgent::WasFormStructureChanged(
 }
 
 void PasswordAutofillAgent::TryFixAutofilledForm(
-    std::vector<WebFormControlElement>* control_elements) const {
-  for (auto& element : *control_elements) {
-    auto cached_element =
-        autofilled_elements_cache_.find(form_util::GetFieldRendererId(element));
-    if (cached_element == autofilled_elements_cache_.end())
+    std::vector<WebFormControlElement>& control_elements) const {
+  for (WebFormControlElement& control_element : control_elements) {
+    auto cached_element = autofilled_elements_cache_.find(
+        form_util::GetFieldRendererId(control_element));
+    if (cached_element == autofilled_elements_cache_.end()) {
       continue;
-
+    }
     // autofilled_elements_cache_ stores values filled at page load time and
     // gets wiped when we observe a user gesture. During this time, the
     // username/password fields can be in preview state and we restore this
     // state if JavaScript modifies the field's value.
     const WebString& cached_value = cached_element->second;
-    if (cached_value != element.SuggestedValue())
-      element.SetSuggestedValue(cached_value);
+    if (cached_value != control_element.SuggestedValue()) {
+      control_element.SetSuggestedValue(cached_value);
+    }
   }
 }
 
@@ -2297,16 +2299,15 @@ void PasswordAutofillAgent::AutofillField(const std::u16string& value,
   if (field_data_manager().DidUserType(field_id)) {
     return;
   }
-
-  if (field.Value().Utf16() == value)
+  if (field.Value().Utf16() == value) {
     return;
-
+  }
   field.SetSuggestedValue(WebString::FromUTF16(value));
   field.SetAutofillState(WebAutofillState::kAutofilled);
   // Wait to fill until a user gesture occurs. This is to make sure that we do
   // not fill in the DOM with a password until we believe the user is
   // intentionally interacting with the page.
-  gatekeeper_.RegisterElement(&field);
+  gatekeeper_.RegisterElement(field);
   field_data_manager().UpdateFieldDataMap(
       field_id, value, FieldPropertiesFlags::kAutofilledOnPageLoad);
   autofilled_elements_cache_.emplace(field_id, WebString::FromUTF16(value));

@@ -339,7 +339,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
     // Call this for every autofilled username and password field, so that
     // the gatekeeper protects the value accordingly.
-    void RegisterElement(blink::WebInputElement* element);
+    void RegisterElement(blink::WebInputElement element);
 
     // Call this to notify the gatekeeper that the user interacted with the
     // page.
@@ -350,7 +350,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
    private:
     // Make the value of `element` accessible to JavaScript code.
-    void ShowValue(blink::WebInputElement* element);
+    void ShowValue(blink::WebInputElement element);
 
     bool was_user_gesture_seen_;
     std::vector<FieldRef> elements_;
@@ -485,7 +485,7 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
   bool WasFormStructureChanged(const FormStructureInfo& form_data) const;
   // Tries to restore `control_elements` values with cached values.
   void TryFixAutofilledForm(
-      std::vector<blink::WebFormControlElement>* control_elements) const;
+      std::vector<blink::WebFormControlElement>& control_elements) const;
 
   // Autofills `field` with `value` and updates `gatekeeper_`,
   // `field_data_manager_`, `autofilled_elements_cache_`. `field` should be
