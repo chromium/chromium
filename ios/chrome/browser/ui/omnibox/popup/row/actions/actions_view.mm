@@ -21,8 +21,8 @@ const CGFloat kButtonTitleImagePadding = 4;
 const CGFloat kIconSize = 13;
 /// The button's layer radius.
 const CGFloat kButtonLayerRadius = 12;
-/// Actions leading and trailing padding.
-const CGFloat kLeadingTrailingPadding = 61;
+/// Actions leading padding.
+const CGFloat kLeadingPadding = 61;
 }  // namespace
 
 @implementation ActionsView {
@@ -54,8 +54,7 @@ const CGFloat kLeadingTrailingPadding = 61;
     AddSameConstraints(self, _actionsScrollView);
     AddSameConstraintsWithInsets(
         _actionsStackView, _actionsScrollView.contentLayoutGuide,
-        NSDirectionalEdgeInsetsMake(0, kLeadingTrailingPadding, 0,
-                                    kLeadingTrailingPadding));
+        NSDirectionalEdgeInsetsMake(0, kLeadingPadding, 0, 0));
 
     [NSLayoutConstraint activateConstraints:@[
       [self.heightAnchor
@@ -65,9 +64,8 @@ const CGFloat kLeadingTrailingPadding = 61;
       // Constraint the stackview's width to be able to scroll to semantic
       // leading.
       [_actionsStackView.widthAnchor
-          constraintGreaterThanOrEqualToAnchor:_actionsScrollView
-                                                   .frameLayoutGuide.widthAnchor
-                                      constant:-2 * kLeadingTrailingPadding]
+          constraintGreaterThanOrEqualToAnchor:_actionsScrollView.widthAnchor
+                                      constant:-kLeadingPadding]
     ]];
   }
   return self;
@@ -129,8 +127,8 @@ const CGFloat kLeadingTrailingPadding = 61;
   CGRect frameInScrollViewCoordinates =
       [highlightedActionButton convertRect:highlightedActionButton.bounds
                                     toView:_actionsScrollView];
-  CGRect frameWithPadding = CGRectInset(frameInScrollViewCoordinates,
-                                        -kLeadingTrailingPadding * 2, 0);
+  CGRect frameWithPadding =
+      CGRectInset(frameInScrollViewCoordinates, -kLeadingPadding, 0);
   [_actionsScrollView scrollRectToVisible:frameWithPadding animated:NO];
 }
 
