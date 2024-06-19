@@ -30,7 +30,6 @@ using testing::Return;
 using testing::Test;
 
 namespace blink {
-
 namespace {
 
 constexpr int kMaxTextureSize = 1024;
@@ -43,8 +42,6 @@ class MockCanvasResourceDispatcherClient
   MOCK_METHOD0(BeginFrame, bool());
   MOCK_METHOD1(SetFilterQualityInResource, void(cc::PaintFlags::FilterQuality));
 };
-
-}  // anonymous namespace
 
 class CanvasResourceProviderTest : public Test {
  public:
@@ -162,7 +159,6 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnacceleratedOverlay) {
   EXPECT_FALSE(provider->IsSingleBuffered());
 }
 
-namespace {
 std::unique_ptr<CanvasResourceProvider> MakeCanvasResourceProvider(
     RasterMode raster_mode,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper>
@@ -193,8 +189,6 @@ void EnsureResourceRecycled(CanvasResourceProvider* provider,
       &transferable_resource, &release_callback, kUnverifiedSyncToken));
   std::move(release_callback).Run(std::move(resource), sync_token, false);
 }
-
-}  // namespace
 
 TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderSharedImageResourceRecycling) {
@@ -726,4 +720,5 @@ TEST_F(CanvasResourceProviderTest, FlushForImage) {
   EXPECT_FALSE(new_dst_canvas.IsCachingImage(src_content_id));
 }
 
+}  // namespace
 }  // namespace blink
