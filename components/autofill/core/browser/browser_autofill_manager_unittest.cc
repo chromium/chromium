@@ -2237,6 +2237,22 @@ TEST_F(BrowserAutofillManagerTest,
   EXPECT_FALSE(external_delegate()->on_suggestions_returned_seen());
 }
 
+TEST_F(BrowserAutofillManagerTest, TestParseFormUntilInteractionMetric) {
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+
+  // Advance time to check interaction metric.
+  base::TimeDelta time_delta = base::Seconds(42);
+  task_environment_.FastForwardBy(time_delta);
+
+  base::HistogramTester histogram_tester;
+  GetAutofillSuggestions(form, form.fields[0]);
+
+  histogram_tester.ExpectUniqueTimeSample(
+      "Autofill.Timing.ParseFormUntilInteraction", time_delta,
+      /*expected_bucket_count=*/1);
+}
+
 // Tests that `SingleFieldFormFillRouter` returns to the
 // `AutofillExternalDelegate`, if it has any.
 TEST_F(BrowserAutofillManagerTest,

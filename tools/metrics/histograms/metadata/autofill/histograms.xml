@@ -5510,6 +5510,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.Timing.ParseFormUntilInteraction" units="ms"
+    expires_after="2024-12-12">
+  <owner>schwering@chromium.org</owner>
+  <owner>brunobraga@google.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Number of milliseconds passed between a form is parsed and the user has
+    interacted with a field in it. In the case of reparses the first parsing
+    time is used.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Timing.{AutofillTimedFunction}" units="ms"
     expires_after="2024-12-12">
   <owner>schwering@chromium.org</owner>

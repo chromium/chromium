@@ -1285,6 +1285,11 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
     return;
   }
 
+  if (FormStructure* form_structure = FindCachedFormById(form.global_id())) {
+    AutofillMetrics::LogParsedFormUntilInteractionTiming(
+        base::TimeTicks::Now() - form_structure->form_parsed_timestamp());
+  }
+
   // Once the user triggers autofill from the context menu, this event is
   // recorded, because the IPH configuration limits how many times the IPH can
   // be shown.

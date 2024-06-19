@@ -1926,6 +1926,12 @@ void AutofillMetrics::LogParseFormTiming(const base::TimeDelta& duration) {
 }
 
 // static
+void AutofillMetrics::LogParsedFormUntilInteractionTiming(
+    const base::TimeDelta& duration) {
+  UMA_HISTOGRAM_TIMES("Autofill.Timing.ParseFormUntilInteraction", duration);
+}
+
+// static
 void AutofillMetrics::LogIsQueriedCreditCardFormSecure(bool is_secure) {
   UMA_HISTOGRAM_BOOLEAN("Autofill.QueriedCreditCardFormIsSecure", is_secure);
 }

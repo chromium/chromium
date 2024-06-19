@@ -1036,6 +1036,11 @@ class AutofillMetrics {
   static void LogCreditCardSeamlessnessAtSubmissionTime(
       const FieldTypeSet& autofilled_types);
 
+  // Logs the time delta between a form being parsed and the user
+  // interacting with any field in it.
+  static void LogParsedFormUntilInteractionTiming(
+      const base::TimeDelta& duration);
+
   // This should be called when parsing each form.
   static void LogParseFormTiming(const base::TimeDelta& duration);
 
