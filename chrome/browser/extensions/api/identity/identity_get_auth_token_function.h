@@ -171,24 +171,14 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
 
   enum class InteractionType { kSignin, kConsent };
 
-  // Request the primary account info.
-  // |extension_gaia_id|: The GAIA ID that was set in the parameters for this
-  // instance, or empty if this was not in the parameters.
-  void GetAuthTokenForPrimaryAccount(const std::string& extension_gaia_id);
-
-  // Wrapper to FindExtendedAccountInfoByGaiaId() to avoid a synchronous call to
-  // IdentityManager in RunAsync().
-  void FetchExtensionAccountInfo(const std::string& gaia_id);
-
-  // Called when the AccountInfo that this instance should use is available.
-  void OnReceivedExtensionAccountInfo(const CoreAccountInfo& account_info);
+  // If `gaia_id` is empty or the account is not present in Chrome, this will
+  // use the primary account if it exists. Otherwise, interactive sign in flow
+  // might be started.
+  void GetAuthTokenForAccount(const std::string& gaia_id);
 
   // signin::IdentityManager::Observer implementation:
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
-  void OnAccountsInCookieUpdated(
-      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
-      const GoogleServiceAuthError& error) override;
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
 
@@ -274,9 +264,6 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
   // extension.
   std::string selected_gaia_id_;
 
-  // Shown in the extension login prompt.
-  std::string email_for_default_web_account_;
-
   ExtensionTokenKey token_key_{/*extension_id=*/"",
                                /*account_info=*/CoreAccountInfo(),
                                /*scopes=*/{}};
@@ -296,16 +283,7 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction,
                           signin::IdentityManager::Observer>
       scoped_identity_manager_observation_{this};
 
-  // This class can be listening to account changes, but only for one type of
-  // events at a time.
-  enum class AccountListeningMode {
-    kNotListening,            // Not listening account changes
-    kListeningCookies,        // Listening cookie changes
-    kListeningTokens,         // Listening token changes
-    kListeningPrimaryAccount  // Listening primary account changes
-  };
-  AccountListeningMode account_listening_mode_ =
-      AccountListeningMode::kNotListening;
+  bool waiting_on_account_ = false;
 
   base::WeakPtrFactory<IdentityGetAuthTokenFunction> weak_ptr_factory_{this};
 };
