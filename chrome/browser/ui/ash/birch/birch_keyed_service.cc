@@ -101,6 +101,9 @@ BirchDataProvider* BirchKeyedService::GetMostVisitedProvider() {
 }
 
 BirchDataProvider* BirchKeyedService::GetReleaseNotesProvider() {
+  if (release_notes_provider_for_test_) {
+    return release_notes_provider_for_test_;
+  }
   return release_notes_provider_.get();
 }
 

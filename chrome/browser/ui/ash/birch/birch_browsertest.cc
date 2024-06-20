@@ -152,6 +152,20 @@ class TestSelfShareProvider : public BirchDataProvider {
   }
 };
 
+class TestReleaseNotesProvider : public BirchDataProvider {
+ public:
+  TestReleaseNotesProvider() = default;
+  ~TestReleaseNotesProvider() override = default;
+
+  // BirchDataProvider:
+  void RequestBirchDataFetch() override {
+    std::vector<BirchReleaseNotesItem> items;
+    items.emplace_back(u"title", u"subtitle", GURL("chrome://help-app/updates"),
+                       base::Time::Min());
+    Shell::Get()->birch_model()->SetReleaseNotesItems(std::move(items));
+  }
+};
+
 // A new window delegate that records opened files and URLs.
 class MockNewWindowDelegate : public TestNewWindowDelegate {
  public:
@@ -272,6 +286,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, WeatherChip) {
   prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
   prefs->SetBoolean(prefs::kBirchUseLastActive, false);
   prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
+  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
 
   // Ensure the item remover is initialized, otherwise data fetches won't
@@ -318,6 +333,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, CalendarChip) {
   prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
   prefs->SetBoolean(prefs::kBirchUseLastActive, false);
   prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
+  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
   prefs->SetBoolean(prefs::kBirchUseWeather, false);
 
@@ -365,6 +381,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, FileSuggestChip) {
   prefs->SetBoolean(prefs::kBirchUseLastActive, false);
   prefs->SetBoolean(prefs::kBirchUseMostVisited, false);
   prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
+  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
   prefs->SetBoolean(prefs::kBirchUseWeather, false);
 
@@ -412,6 +429,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, RecentTabsChip) {
   prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
   prefs->SetBoolean(prefs::kBirchUseLastActive, false);
   prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
+  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
   prefs->SetBoolean(prefs::kBirchUseWeather, false);
 
@@ -463,6 +481,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, LastActiveChip) {
   prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
   prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
   prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
+  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
   prefs->SetBoolean(prefs::kBirchUseWeather, false);
 
@@ -516,6 +535,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, MostVisitedChip) {
   prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
   prefs->SetBoolean(prefs::kBirchUseLastActive, false);
   prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
+  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
   prefs->SetBoolean(prefs::kBirchUseWeather, false);
 
@@ -564,6 +584,7 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, SelfShareChip) {
   prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
   prefs->SetBoolean(prefs::kBirchUseLastActive, false);
   prefs->SetBoolean(prefs::kBirchUseMostVisited, false);
+  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
   prefs->SetBoolean(prefs::kBirchUseReleaseNotes, false);
   prefs->SetBoolean(prefs::kBirchUseWeather, false);
 
@@ -594,6 +615,55 @@ IN_PROC_BROWSER_TEST_F(BirchBrowserTest, SelfShareChip) {
   // Clicking the button should attempt to open the URL.
   EXPECT_EQ(mock_new_window_delegate_->opened_url_,
             GURL("http://example.com/"));
+}
+
+IN_PROC_BROWSER_TEST_F(BirchBrowserTest, ReleaseNotesChip) {
+  // Set up a provider that provides a single chip.
+  auto* birch_keyed_service = GetBirchKeyedService();
+  TestReleaseNotesProvider provider;
+  birch_keyed_service->set_release_notes_provider_for_test(&provider);
+
+  // Disable the prefs for data providers other than release notes. This
+  // ensures the data is fresh once the release notes provider replies.
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+  ASSERT_TRUE(prefs);
+  prefs->SetBoolean(prefs::kBirchUseCalendar, false);
+  prefs->SetBoolean(prefs::kBirchUseFileSuggest, false);
+  prefs->SetBoolean(prefs::kBirchUseRecentTabs, false);
+  prefs->SetBoolean(prefs::kBirchUseLastActive, false);
+  prefs->SetBoolean(prefs::kBirchUseMostVisited, false);
+  prefs->SetBoolean(prefs::kBirchUseSelfShare, false);
+  prefs->SetBoolean(prefs::kBirchUseLostMedia, false);
+  prefs->SetBoolean(prefs::kBirchUseWeather, false);
+
+  // Ensure the item remover is initialized, otherwise data fetches won't
+  // complete.
+  EnsureItemRemoverInitialized();
+
+  // Set up a callback for a birch data fetch.
+  base::RunLoop birch_data_fetch_waiter;
+  Shell::Get()->birch_model()->SetDataFetchCallbackForTest(
+      birch_data_fetch_waiter.QuitClosure());
+
+  // Enter overview, which triggers a birch data fetch.
+  ToggleOverview();
+  WaitForOverviewEntered();
+
+  // Wait for fetch callback to complete.
+  birch_data_fetch_waiter.Run();
+
+  // The birch bar is created with a single chip.
+  BirchChipButtonBase* button = GetBirchChipButton();
+  EXPECT_EQ(button->GetItem()->GetType(), BirchItemType::kReleaseNotes);
+
+  // Clicking the button closes overview and destroys the button, so avoid a
+  // dangling pointer with std::exchange.
+  ClickOnView(std::exchange(button, nullptr));
+
+  // Clicking the button should attempt to open the URL.
+  EXPECT_EQ(mock_new_window_delegate_->opened_url_,
+            GURL("chrome://help-app/updates"));
 }
 
 }  // namespace
