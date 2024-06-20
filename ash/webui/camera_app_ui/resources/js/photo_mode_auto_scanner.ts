@@ -153,13 +153,17 @@ export class PhotoModeAutoScanner {
     const perfLogger = PerfLogger.getInstance();
     return new AsyncIntervalRunner(async (stopped) => {
       const startTime = performance.now();
-      // TODO(chuhsuan): Add other dimensions like `facing` and `resolution`.
-      perfLogger.start(PerfEvent.OCR_SCANNING);
       const result = await ocrScanner.performOcr();
-      perfLogger.stop(PerfEvent.OCR_SCANNING);
       if (stopped.isSignaled()) {
         return;
       }
+      // Use `startTime` here because if `performOcr()` takes too long, another
+      // `performOcr()` might have started before the previous call finished.
+      // For example, taking photo will stop the current OCR runner and create
+      // a new one.
+      perfLogger.start(PerfEvent.OCR_SCANNING, startTime);
+      // TODO(chuhsuan): Add other dimensions like `facing` and `resolution`.
+      perfLogger.stop(PerfEvent.OCR_SCANNING);
       this.ocrScanCount += 1;
       this.ocrScanTime += performance.now() - startTime;
       this.handleDetectedResult(
