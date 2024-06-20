@@ -14,7 +14,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
-import org.chromium.chrome.browser.hub.HubFieldTrial;
 import org.chromium.chrome.browser.hub.HubManager;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager.IncognitoReauthCallback;
@@ -166,8 +165,7 @@ public class IncognitoReauthCoordinatorFactory {
         if (mIsTabbedActivity) {
             return () -> {
                 mTabModelSelector.selectModel(/* incognito= */ false);
-                if (HubFieldTrial.isHubEnabled()
-                        && mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
+                if (mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)) {
                     mHubManagerSupplier.get().getPaneManager().focusPane(PaneId.TAB_SWITCHER);
                     return;
                 }
