@@ -7696,21 +7696,22 @@ void RenderFrameHostImpl::EnterFullscreen(
   // example, with a A-B-A-B hierarchy, if the bottom frame goes fullscreen,
   // this only needs to notify its parent, and Blink-side logic will take care
   // of applying necessary changes to the other two ancestors.
-  std::set<SiteInstance*> notified_instances;
-  notified_instances.insert(GetSiteInstance());
+  std::set<SiteInstanceGroup*> notified_groups;
+  notified_groups.insert(GetSiteInstance()->group());
   for (RenderFrameHostImpl* rfh = this; rfh->GetParent();
        rfh = rfh->GetParent()) {
-    SiteInstance* parent_site_instance = rfh->GetParent()->GetSiteInstance();
-    if (base::Contains(notified_instances, parent_site_instance))
+    SiteInstanceGroup* parent_group =
+        rfh->GetParent()->GetSiteInstance()->group();
+    if (base::Contains(notified_groups, parent_group)) {
       continue;
+    }
 
     RenderFrameProxyHost* child_proxy =
-        rfh->browsing_context_state()->GetRenderFrameProxyHost(
-            static_cast<SiteInstanceImpl*>(parent_site_instance)->group());
+        rfh->browsing_context_state()->GetRenderFrameProxyHost(parent_group);
     if (child_proxy->is_render_frame_proxy_live()) {
       child_proxy->GetAssociatedRemoteFrame()->WillEnterFullscreen(
           options.Clone());
-      notified_instances.insert(parent_site_instance);
+      notified_groups.insert(parent_group);
     }
   }
 
