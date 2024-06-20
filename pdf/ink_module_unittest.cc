@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -299,36 +300,46 @@ class InkModuleStrokeTest : public InkModuleTest {
     client().set_pages_layout({kPage});
   }
 
+  void ApplyInkStrokeWithMousePoints(
+      const gfx::PointF& mouse_down_point,
+      base::span<const gfx::PointF> mouse_move_points,
+      const gfx::PointF& mouse_up_point,
+      bool expect_mouse_events_handled) {
+    blink::WebMouseEvent mouse_down_event =
+        MouseEventBuilder().CreateLeftClickAtPosition(mouse_down_point).Build();
+    EXPECT_EQ(expect_mouse_events_handled,
+              ink_module().HandleInputEvent(mouse_down_event));
+
+    for (const gfx::PointF& mouse_move_point : mouse_move_points) {
+      blink::WebMouseEvent mouse_move_event =
+          MouseEventBuilder()
+              .SetType(blink::WebInputEvent::Type::kMouseMove)
+              .SetPosition(mouse_move_point)
+              .Build();
+      EXPECT_EQ(expect_mouse_events_handled,
+                ink_module().HandleInputEvent(mouse_move_event));
+    }
+
+    blink::WebMouseEvent mouse_up_event =
+        MouseEventBuilder()
+            .SetType(blink::WebInputEvent::Type::kMouseUp)
+            .SetPosition(mouse_up_point)
+            .SetButton(blink::WebPointerProperties::Button::kLeft)
+            .SetClickCount(1)
+            .Build();
+    EXPECT_EQ(expect_mouse_events_handled,
+              ink_module().HandleInputEvent(mouse_up_event));
+  }
+
   void RunStrokeCheckTest(bool annotation_mode_enabled) {
     EXPECT_TRUE(ink_module().OnMessage(
         CreateSetAnnotationModeMessage(annotation_mode_enabled)));
     EXPECT_EQ(annotation_mode_enabled, ink_module().enabled());
 
-    // Mouse events should only be handled when annotation mode is enabled.
-    blink::WebMouseEvent mouse_down_event =
-        MouseEventBuilder()
-            .CreateLeftClickAtPosition(kMouseDownLocation)
-            .Build();
-    EXPECT_EQ(annotation_mode_enabled,
-              ink_module().HandleInputEvent(mouse_down_event));
-
-    blink::WebMouseEvent mouse_move_event =
-        MouseEventBuilder()
-            .SetType(blink::WebInputEvent::Type::kMouseMove)
-            .SetPosition(kMouseMoveLocation)
-            .Build();
-    EXPECT_EQ(annotation_mode_enabled,
-              ink_module().HandleInputEvent(mouse_move_event));
-
-    blink::WebMouseEvent mouse_up_event =
-        MouseEventBuilder()
-            .SetType(blink::WebInputEvent::Type::kMouseUp)
-            .SetPosition(kMouseUpLocation)
-            .SetButton(blink::WebPointerProperties::Button::kLeft)
-            .SetClickCount(1)
-            .Build();
-    EXPECT_EQ(annotation_mode_enabled,
-              ink_module().HandleInputEvent(mouse_up_event));
+    ApplyInkStrokeWithMousePoints(
+        kMouseDownLocation, base::span_from_ref(kMouseMoveLocation),
+        kMouseUpLocation,
+        /*expect_mouse_events_handled=*/annotation_mode_enabled);
 
     const int expected_count = annotation_mode_enabled ? 1 : 0;
     EXPECT_EQ(expected_count, client().ink_stroke_finished_count());
