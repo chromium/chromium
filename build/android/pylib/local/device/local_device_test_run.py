@@ -25,6 +25,9 @@ from pylib.base import test_exception
 from pylib.base import test_run
 from pylib.local.device import local_device_environment
 
+# TODO(crbug.com/348470234): Fix the pylint import-error
+from lib.proto import exception_recorder  # pylint: disable=import-error
+
 
 _SIGTERM_TEST_LOG = (
   '  Suite execution terminated, probably due to swarming timeout.\n'
@@ -86,7 +89,8 @@ class LocalDeviceTestRun(test_run.TestRun):
           else:
             raise Exception(
                 'Unexpected result type: %s' % type(result).__name__)
-        except device_errors.CommandTimeoutError:
+        except device_errors.CommandTimeoutError as e:
+          exception_recorder.register(e)
           # Test timeouts don't count as device errors for the purpose
           # of bad device detection.
           consecutive_device_errors = 0
@@ -113,11 +117,13 @@ class LocalDeviceTestRun(test_run.TestRun):
                 base_test_result.BaseTestResult(
                     self._GetUniqueTestName(test),
                     base_test_result.ResultType.TIMEOUT))
-        except device_errors.DeviceUnreachableError:
+        except device_errors.DeviceUnreachableError as e:
+          exception_recorder.register(e)
           # If the device is no longer reachable then terminate this
           # run_tests_on_device call.
           raise
-        except base_error.BaseError:
+        except base_error.BaseError as e:
+          exception_recorder.register(e)
           # If we get a device error but believe the device is still
           # reachable, attempt to continue using it.
           if isinstance(tests, test_collection.TestCollection):
