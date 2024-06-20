@@ -1507,8 +1507,10 @@ void CaptionBubble::UpdateContentSize() {
   // user's caption style preference.
   if (HasMediaFoundationError()) {
     width = kMaxWidthDip;
-    content_height =
-        media_foundation_renderer_error_message_->GetPreferredSize({}).height();
+    content_height = media_foundation_renderer_error_message_
+                         ->GetPreferredSize(
+                             views::SizeBounds(width - kSidePaddingDip * 2, {}))
+                         .height();
   }
 #endif
 
