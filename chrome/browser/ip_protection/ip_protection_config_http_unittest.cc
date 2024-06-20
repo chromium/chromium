@@ -21,6 +21,10 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace {
+const char kProtobufContentType[] = "application/x-protobuf";
+}  // namespace
+
 class IpProtectionConfigHttpTest : public testing::Test {
  protected:
   void SetUp() override {
@@ -51,17 +55,33 @@ class IpProtectionConfigHttpTest : public testing::Test {
   GURL token_server_get_proxy_config_url_;
 };
 
-TEST_F(IpProtectionConfigHttpTest, DoRequestSendsCorrectRequest) {
+TEST_F(IpProtectionConfigHttpTest, DoRequestSendsCorrectRequestInitialData) {
   auto request_type = quiche::BlindSignMessageRequestType::kGetInitialData;
   std::string authorization_header = "token";
   std::string body = "body";
 
   // Set up the response to return from the mock.
-  auto head = network::mojom::URLResponseHead::New();
-  std::string response_body = "Response body";
-  test_url_loader_factory_.AddResponse(
-      token_server_get_initial_data_url_, std::move(head), response_body,
-      network::URLLoaderCompletionStatus(net::OK));
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        ASSERT_TRUE(request.url.is_valid());
+        ASSERT_EQ(request.url, token_server_get_initial_data_url_);
+
+        std::string value;
+        ASSERT_TRUE(request.headers.GetHeader(
+            net::HttpRequestHeaders::kAuthorization, &value));
+        ASSERT_EQ(value, base::StrCat({"Bearer ", authorization_header}));
+        EXPECT_FALSE(
+            request.headers.HasHeader("Ip-Protection-Debug-Experiment-Arm"));
+        ASSERT_TRUE(request.headers.GetHeader(net::HttpRequestHeaders::kAccept,
+                                              &value));
+        ASSERT_EQ(value, kProtobufContentType);
+
+        std::string response_str = "Response body";
+        auto head = network::mojom::URLResponseHead::New();
+        test_url_loader_factory_.AddResponse(
+            request.url, std::move(head), response_str,
+            network::URLLoaderCompletionStatus(net::OK));
+      }));
 
   base::test::TestFuture<absl::StatusOr<quiche::BlindSignMessageResponse>>
       result_future;
@@ -84,40 +104,61 @@ TEST_F(IpProtectionConfigHttpTest, DoRequestSendsCorrectRequest) {
   EXPECT_EQ("Response body", result->body());
 }
 
-TEST_F(IpProtectionConfigHttpTest, DoRequestSendsHeaders) {
+TEST_F(IpProtectionConfigHttpTest,
+       DoRequestSendsCorrectRequestAuthAndSignAndExperimentArm) {
   std::map<std::string, std::string> parameters;
   parameters["IpPrivacyDebugExperimentArm"] = "42";
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       net::features::kEnableIpProtectionProxy, std::move(parameters));
 
-  auto request_type = quiche::BlindSignMessageRequestType::kGetInitialData;
+  auto request_type = quiche::BlindSignMessageRequestType::kAuthAndSign;
   std::string authorization_header = "token";
   std::string body = "body";
 
-  // Queue up the request
+  // Set up the response to return from the mock.
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        ASSERT_TRUE(request.url.is_valid());
+        ASSERT_EQ(request.url, token_server_get_tokens_url_);
+
+        std::string value;
+        ASSERT_TRUE(request.headers.GetHeader(
+            net::HttpRequestHeaders::kAuthorization, &value));
+        ASSERT_EQ(value, base::StrCat({"Bearer ", authorization_header}));
+        ASSERT_TRUE(request.headers.GetHeader(
+            "Ip-Protection-Debug-Experiment-Arm", &value));
+        ASSERT_EQ(value, "42");
+        ASSERT_TRUE(request.headers.GetHeader(net::HttpRequestHeaders::kAccept,
+                                              &value));
+        ASSERT_EQ(value, kProtobufContentType);
+
+        std::string response_str = "Response body";
+        auto head = network::mojom::URLResponseHead::New();
+        test_url_loader_factory_.AddResponse(
+            request.url, std::move(head), response_str,
+            network::URLLoaderCompletionStatus(net::OK));
+      }));
+
   base::test::TestFuture<absl::StatusOr<quiche::BlindSignMessageResponse>>
       result_future;
+  // Note: We use a lambda expression and `TestFuture::SetValue()` instead of
+  // `TestFuture::GetCallback()` to avoid having to convert the
+  // `base::OnceCallback` to a `quiche::SignedTokenCallback` (an
+  // `absl::AnyInvocable` behind the scenes).
   auto callback =
       [&result_future](
           absl::StatusOr<quiche::BlindSignMessageResponse> response) {
         result_future.SetValue(std::move(response));
       };
+
   http_fetcher_->DoRequest(request_type, authorization_header, body,
                            std::move(callback));
 
-  // Verify that the headers are present in the (stilll-pending) request.
-  network::TestURLLoaderFactory::PendingRequest* pending_req =
-      test_url_loader_factory_.GetPendingRequest(0);
-  CHECK(pending_req);
+  absl::StatusOr<quiche::BlindSignMessageResponse> result = result_future.Get();
 
-  std::string value;
-  ASSERT_TRUE(pending_req->request.headers.GetHeader(
-      net::HttpRequestHeaders::kAuthorization, &value));
-  ASSERT_EQ(value, base::StrCat({"Bearer ", authorization_header}));
-  ASSERT_TRUE(pending_req->request.headers.GetHeader(
-      "Ip-Protection-Debug-Experiment-Arm", &value));
-  ASSERT_EQ(value, "42");
+  ASSERT_TRUE(result.ok());
+  EXPECT_EQ("Response body", result->body());
 }
 
 TEST_F(IpProtectionConfigHttpTest,
