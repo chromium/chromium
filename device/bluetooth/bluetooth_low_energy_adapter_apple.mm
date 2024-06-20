@@ -128,6 +128,8 @@ BluetoothLowEnergyAdapterApple::GetOsPermissionStatus() const {
 
 void BluetoothLowEnergyAdapterApple::RequestSystemPermission(
     BluetoothAdapter::RequestSystemPermissionCallback callback) {
+// TODO(crbug.com/346409873): Remove BUILDFLAG here.
+#if BUILDFLAG(IS_MAC)
   auto status = GetOsPermissionStatus();
   if (status == PermissionStatus::kUndetermined) {
     request_system_permission_callbacks_.push_back(std::move(callback));
@@ -148,6 +150,7 @@ void BluetoothLowEnergyAdapterApple::RequestSystemPermission(
     ui_task_runner_->PostTask(FROM_HERE,
                               base::BindOnce(std::move(callback), status));
   }
+#endif
 }
 
 bool BluetoothLowEnergyAdapterApple::IsPowered() const {
