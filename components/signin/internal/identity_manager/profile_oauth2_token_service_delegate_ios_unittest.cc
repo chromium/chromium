@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
@@ -49,13 +50,10 @@ class ProfileOAuth2TokenServiceIOSDelegateTest
     oauth2_delegate_.reset(new ProfileOAuth2TokenServiceIOSDelegate(
         &client_, base::WrapUnique(fake_provider_), &account_tracker_));
     oauth2_delegate_->SetOnRefreshTokenRevokedNotified(base::DoNothing());
-    oauth2_delegate_->AddObserver(this);
+    token_service_observation_.Observe(oauth2_delegate_.get());
   }
 
-  void TearDown() override {
-    oauth2_delegate_->RemoveObserver(this);
-    oauth2_delegate_->Shutdown();
-  }
+  void TearDown() override { oauth2_delegate_->Shutdown(); }
 
   // OAuth2AccessTokenConsumer implementation.
   void OnGetTokenSuccess(
@@ -116,6 +114,9 @@ class ProfileOAuth2TokenServiceIOSDelegateTest
   int access_token_failure_;
   int auth_error_changed_count_;
   GoogleServiceAuthError last_access_token_error_;
+  base::ScopedObservation<ProfileOAuth2TokenServiceIOSDelegate,
+                          ProfileOAuth2TokenServiceObserver>
+      token_service_observation_{this};
 };
 
 TEST_F(ProfileOAuth2TokenServiceIOSDelegateTest,

@@ -14,6 +14,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "base/scoped_observation.h"
 #include "build/buildflag.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -290,6 +291,9 @@ class ProfileOAuth2TokenService : public OAuth2AccessTokenManager::Delegate,
   raw_ptr<PrefService> user_prefs_;
 
   std::unique_ptr<ProfileOAuth2TokenServiceDelegate> delegate_;
+  base::ScopedObservation<ProfileOAuth2TokenServiceDelegate,
+                          ProfileOAuth2TokenServiceObserver>
+      token_service_observation_{this};
 
   // Whether all credentials have been loaded.
   bool all_credentials_loaded_;

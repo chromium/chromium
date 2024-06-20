@@ -9,6 +9,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -595,7 +596,10 @@ TEST_F(ProfileOAuth2TokenServiceTest, InvalidateTokensForMultiloginDesktop) {
       std::make_unique<FakeProfileOAuth2TokenServiceDelegateDesktop>();
   ProfileOAuth2TokenService token_service(&prefs_, std::move(delegate));
   MockOAuth2TokenServiceObserver observer;
-  token_service.GetDelegate()->AddObserver(&observer);
+  base::ScopedObservation<ProfileOAuth2TokenService,
+                          ProfileOAuth2TokenServiceObserver>
+      token_service_observation{&observer};
+  token_service_observation.Observe(&token_service);
   EXPECT_CALL(observer,
               OnAuthErrorChanged(
                   account_id_,
@@ -619,13 +623,14 @@ TEST_F(ProfileOAuth2TokenServiceTest, InvalidateTokensForMultiloginDesktop) {
             GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS);
   EXPECT_EQ(token_service.GetDelegate()->GetAuthError(account_id_2).state(),
             GoogleServiceAuthError::NONE);
-
-  token_service.GetDelegate()->RemoveObserver(&observer);
 }
 
 TEST_F(ProfileOAuth2TokenServiceTest, InvalidateTokensForMultiloginMobile) {
   MockOAuth2TokenServiceObserver observer;
-  oauth2_service_->GetDelegate()->AddObserver(&observer);
+  base::ScopedObservation<ProfileOAuth2TokenService,
+                          ProfileOAuth2TokenServiceObserver>
+      token_service_observation{&observer};
+  token_service_observation.Observe(oauth2_service_.get());
   EXPECT_CALL(
       observer,
       OnAuthErrorChanged(account_id_,
@@ -646,8 +651,6 @@ TEST_F(ProfileOAuth2TokenServiceTest, InvalidateTokensForMultiloginMobile) {
             GoogleServiceAuthError::NONE);
   EXPECT_EQ(oauth2_service_->GetDelegate()->GetAuthError(account_id_2).state(),
             GoogleServiceAuthError::NONE);
-
-  oauth2_service_->GetDelegate()->RemoveObserver(&observer);
 }
 
 TEST_F(ProfileOAuth2TokenServiceTest, InvalidateToken) {

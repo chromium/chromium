@@ -44,14 +44,13 @@ ProfileOAuth2TokenService::ProfileOAuth2TokenService(
   delegate_->SetOnRefreshTokenRevokedNotified(base::BindRepeating(
       &ProfileOAuth2TokenService::OnRefreshTokenRevokedNotified,
       base::Unretained(this)));
-  AddObserver(this);
+  token_service_observation_.Observe(delegate_.get());
   DCHECK(delegate_->HasObserver());
 }
 
 ProfileOAuth2TokenService::~ProfileOAuth2TokenService() {
   token_manager_.reset();
   GetDelegate()->Shutdown();
-  RemoveObserver(this);
 }
 
 std::unique_ptr<OAuth2AccessTokenFetcher>

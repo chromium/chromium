@@ -294,8 +294,7 @@ class ProfileOAuth2TokenServiceDelegate {
 
   // List of observers to notify when refresh token availability changes.
   // Makes sure list is empty on destruction.
-  base::ObserverList<ProfileOAuth2TokenServiceObserver, true>::Unchecked
-      observer_list_;
+  base::ObserverList<ProfileOAuth2TokenServiceObserver, true> observer_list_;
 
   // The state of the load credentials operation.
   signin::LoadCredentialsState load_credentials_state_ =

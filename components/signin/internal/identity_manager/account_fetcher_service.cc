@@ -60,7 +60,6 @@ AccountFetcherService::AccountFetcherService() = default;
 
 AccountFetcherService::~AccountFetcherService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  token_service_->RemoveObserver(this);
 #if BUILDFLAG(IS_ANDROID)
   // child_info_request_ is an invalidation handler and needs to be
   // unregistered during the lifetime of the invalidation service.
@@ -90,7 +89,8 @@ void AccountFetcherService::Initialize(
   DCHECK(token_service);
   DCHECK(!token_service_);
   token_service_ = token_service;
-  token_service_->AddObserver(this);
+  token_service_observation_.Observe(token_service_);
+
   DCHECK(image_decoder);
   DCHECK(!image_decoder_);
   image_decoder_ = std::move(image_decoder);

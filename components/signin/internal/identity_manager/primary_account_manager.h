@@ -27,6 +27,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/consent_level.h"
@@ -245,6 +246,9 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   std::optional<PrimaryAccount> primary_account_;
 
   base::ObserverList<Observer> observers_;
+  base::ScopedObservation<ProfileOAuth2TokenService,
+                          ProfileOAuth2TokenServiceObserver>
+      token_service_observation_{this};
 };
 
 // Internal feature - exposed only unit testing.

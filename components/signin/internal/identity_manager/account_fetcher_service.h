@@ -15,6 +15,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -209,6 +210,10 @@ class AccountFetcherService : public ProfileOAuth2TokenServiceObserver {
   // Used for fetching the account images.
   std::unique_ptr<image_fetcher::ImageFetcherImpl> image_fetcher_;
   std::unique_ptr<image_fetcher::ImageDecoder> image_decoder_;
+
+  base::ScopedObservation<ProfileOAuth2TokenService,
+                          ProfileOAuth2TokenServiceObserver>
+      token_service_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

@@ -42,13 +42,11 @@ TestProfileOAuth2TokenServiceDelegateChromeOS::
   // observer is this class. When `OnRefreshTokenRevoked()` is called, `This`
   // calls `FireRefreshTokenAvailable()` which has the callback set correctly.
   delegate_->SetOnRefreshTokenRevokedNotified(base::DoNothing());
-  delegate_->AddObserver(this);
+  token_service_observation_.Observe(delegate_.get());
 }
 
 TestProfileOAuth2TokenServiceDelegateChromeOS::
-    ~TestProfileOAuth2TokenServiceDelegateChromeOS() {
-  delegate_->RemoveObserver(this);
-}
+    ~TestProfileOAuth2TokenServiceDelegateChromeOS() = default;
 
 std::unique_ptr<OAuth2AccessTokenFetcher>
 TestProfileOAuth2TokenServiceDelegateChromeOS::CreateAccessTokenFetcher(

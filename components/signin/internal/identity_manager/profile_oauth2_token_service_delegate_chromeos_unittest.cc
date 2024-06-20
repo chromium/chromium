@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "components/account_manager_core/account.h"
@@ -83,12 +84,10 @@ class TestOAuth2TokenServiceObserver
   explicit TestOAuth2TokenServiceObserver(
       ProfileOAuth2TokenServiceDelegate* delegate)
       : delegate_(delegate) {
-    delegate_->AddObserver(this);
+    token_service_observation_.Observe(delegate_);
   }
 
-  ~TestOAuth2TokenServiceObserver() override {
-    delegate_->RemoveObserver(this);
-  }
+  ~TestOAuth2TokenServiceObserver() override = default;
 
   void StartBatchChanges() {
     EXPECT_FALSE(is_inside_batch_);
@@ -159,6 +158,9 @@ class TestOAuth2TokenServiceObserver
 
   // Non-owning pointer.
   const raw_ptr<ProfileOAuth2TokenServiceDelegate> delegate_;
+  base::ScopedObservation<ProfileOAuth2TokenServiceDelegate,
+                          ProfileOAuth2TokenServiceObserver>
+      token_service_observation_{this};
 };
 
 class MockProfileOAuth2TokenServiceObserver
@@ -167,11 +169,7 @@ class MockProfileOAuth2TokenServiceObserver
   explicit MockProfileOAuth2TokenServiceObserver(
       ProfileOAuth2TokenServiceDelegate* delegate)
       : delegate_(delegate) {
-    delegate_->AddObserver(this);
-  }
-
-  ~MockProfileOAuth2TokenServiceObserver() override {
-    delegate_->RemoveObserver(this);
+    token_service_observation_.Observe(delegate);
   }
 
   MockProfileOAuth2TokenServiceObserver(
@@ -188,6 +186,9 @@ class MockProfileOAuth2TokenServiceObserver
 
  private:
   const raw_ptr<ProfileOAuth2TokenServiceDelegate> delegate_;
+  base::ScopedObservation<ProfileOAuth2TokenServiceDelegate,
+                          ProfileOAuth2TokenServiceObserver>
+      token_service_observation_{this};
 };
 
 }  // namespace

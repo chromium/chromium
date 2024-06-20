@@ -225,9 +225,7 @@ PrimaryAccountManager::PrimaryAccountManager(
   }
 }
 
-PrimaryAccountManager::~PrimaryAccountManager() {
-  token_service_->RemoveObserver(this);
-}
+PrimaryAccountManager::~PrimaryAccountManager() = default;
 
 // static
 void PrimaryAccountManager::RegisterProfilePrefs(PrefRegistrySimple* registry) {
@@ -427,7 +425,7 @@ void PrimaryAccountManager::Initialize() {
 
   // It is important to only load credentials after starting to observe the
   // token service.
-  token_service_->AddObserver(this);
+  token_service_observation_.Observe(token_service_);
   token_service_->LoadCredentials(
       GetPrimaryAccountId(signin::ConsentLevel::kSignin),
       HasPrimaryAccount(signin::ConsentLevel::kSync));
@@ -788,7 +786,7 @@ void PrimaryAccountManager::FirePrimaryAccountChanged(
 }
 
 void PrimaryAccountManager::OnRefreshTokensLoaded() {
-  token_service_->RemoveObserver(this);
+  token_service_observation_.Reset();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (account_tracker_service_->GetMigrationState() ==

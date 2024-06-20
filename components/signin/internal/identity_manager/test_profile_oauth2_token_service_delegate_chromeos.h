@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_TEST_PROFILE_OAUTH2_TOKEN_SERVICE_DELEGATE_CHROMEOS_H_
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_TEST_PROFILE_OAUTH2_TOKEN_SERVICE_DELEGATE_CHROMEOS_H_
 
+#include "base/scoped_observation.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_chromeos.h"
@@ -85,6 +86,9 @@ class TestProfileOAuth2TokenServiceDelegateChromeOS
   std::unique_ptr<account_manager::AccountManagerFacade>
       account_manager_facade_;
   std::unique_ptr<ProfileOAuth2TokenServiceDelegateChromeOS> delegate_;
+  base::ScopedObservation<ProfileOAuth2TokenServiceDelegateChromeOS,
+                          ProfileOAuth2TokenServiceObserver>
+      token_service_observation_{this};
 };
 
 }  // namespace signin
