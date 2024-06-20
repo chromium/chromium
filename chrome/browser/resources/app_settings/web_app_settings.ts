@@ -12,7 +12,7 @@ export {getPermissionValueBool} from 'chrome://resources/cr_components/app_manag
 export {WebAppSettingsAppElement} from './app.js';
 export {PermissionItemElement} from './permission_item.js';
 export {RunOnOsLoginItemElement} from './run_on_os_login_item.js';
-export {AppManagementSupportedLinksItemElement} from './supported_links_item.js';
-export {AppManagementSupportedLinksOverlappingAppsDialogElement} from './supported_links_overlapping_apps_dialog.js';
+export {SupportedLinksItemElement} from './supported_links_item.js';
+export {SupportedLinksOverlappingAppsDialogElement} from './supported_links_overlapping_apps_dialog.js';
 export {ToggleRowElement} from './toggle_row.js';
 export {WindowModeItemElement} from './window_mode_item.js';

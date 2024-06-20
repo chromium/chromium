@@ -1,89 +1,48 @@
-<style include="app-management-shared-style">
-  #disabledExplanationText {
-    align-items: center;
-    display: flex;
-    flex-direction: row;
-    height: var(--info-text-row-height);
-  }
-
-  #supportedLinksOption {
-    height: 48px;
-  }
-
-  .info-icon {
-    height: var(--help-icon-size);
-    width: var(--help-icon-size);
-  }
-
-  #overlapWarning {
-    color: var(--secondary-text-color);
-    margin-block-start: -12px;
-    margin-inline-start: 36px;
-  }
-
-  .list-frame {
-    display: block;
-    padding-block-end: 0;
-    padding-block-start: 0;
-    padding-inline-end: var(--cr-section-padding);
-    padding-inline-start: var(--cr-section-indent-padding);
-  }
-
-  cr-radio-group {
-    width: 100%;
-  }
-
-  iron-icon {
-    flex-shrink: 0;  /* Prevent distortion of icons in cramped UI.*/
-  }
-</style>
 <div class="permission-section-header">
   <localized-link id="heading" class="header-text"
-      on-link-clicked="launchDialog_"
-      localized-string="[[i18nAdvanced('appManagementIntentSettingsTitle')]]">
+      @link-clicked="${this.launchDialog_}"
+      .localizedString="${this.i18nAdvanced('appManagementIntentSettingsTitle')}">
   </localized-link>
 </div>
-<template is="dom-if" if="[[disabled_]]">
+${this.disabled_ ? html`
   <span class="info-text-row" id="disabledExplanationText">
-    <iron-icon id="infoIcon" icon="app-management:info"></iron-icon>
+    <cr-icon id="infoIcon" icon="app-management:info"></cr-icon>
     <localized-link id="infoString"
-      localized-string="[[getDisabledExplanation_(app)]]">
+        .localizedString="${this.getDisabledExplanation_()}">
     </localized-link>
   </span>
-</template>
+` : ''}
 <div class="list-frame">
   <cr-radio-group id="radioGroup"
-      selected="[[getCurrentPreferredApp_(app)]]"
-      on-selected-changed="onSupportedLinkPrefChanged_"
-      disabled="[[disabled_]]">
+      .selected="${this.getCurrentPreferredApp_()}"
+      @selected-changed="${this.onSupportedLinkPrefChanged_}"
+      ?disabled="${this.disabled_}">
     <cr-radio-button
         id="preferredRadioButton"
         name="preferred"
-        label="[[getPreferredLabel_(app)]]">
+        label="${this.getPreferredLabel_()}">
     </cr-radio-button>
     <cr-radio-button
         id="browserRadioButton"
         name="browser"
-        label="[[i18n('appManagementIntentSharingOpenBrowserLabel')]]">
+        label="${this.i18n('appManagementIntentSharingOpenBrowserLabel')}">
     </cr-radio-button>
-    <template is="dom-if" if="[[showOverlappingAppsWarning_]]">
-      <div id="overlapWarning">
-        [[overlappingAppsWarning_]]
-      </div>
-    </template>
+    ${this.showOverlappingAppsWarning_ ? html`
+      <div id="overlapWarning">${this.overlappingAppsWarning_}</div>
+    ` : ''}
   </cr-radio-group>
 </div>
-<template is="dom-if" if="[[showSupportedLinksDialog_]]" restamp>
-  <app-management-supported-links-dialog id="dialog" app="[[app]]"
-      on-close="onDialogClose_">
+${this.showSupportedLinksDialog_ ? html`
+  <app-management-supported-links-dialog id="dialog" .app="${this.app}"
+      @close="${this.onDialogClose_}">
   </app-management-supported-links-dialog>
-</template>
-<template is="dom-if" if="[[showOverlappingAppsDialog_]]" restamp>
+` : ''}
+${this.showOverlappingAppsDialog_ ? html`
   <app-management-supported-links-overlapping-apps-dialog
       id="overlapDialog"
-      app="[[app]]"
-      apps="[[apps]]"
-      on-close="onOverlappingDialogClosed_"
-      overlapping-app-ids="[[overlappingAppIds_]]">
+      .app="${this.app}"
+      .apps="${this.apps}"
+      @close="${this.onOverlappingDialogClosed_}"
+      .overlappingAppIds="${this.overlappingAppIds_}">
   </app-management-supported-links-overlapping-apps-dialog>
-</template>
+` : ''}

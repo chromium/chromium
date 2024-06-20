@@ -43,6 +43,8 @@ build_webui("build") {
     "more_permissions_item.css",
     "permission_item.css",
     "shared_vars.css",
+    "supported_links_dialog.css",
+    "supported_links_item.css",
     "toggle_row.css",
     "uninstall_button.css",
   ]

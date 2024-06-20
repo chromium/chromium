@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @fileoverview Test suite for AppManagementSupportedLinksItemElement. */
+/** @fileoverview Test suite for SupportedLinksItemElement. */
 import 'chrome://app-settings/supported_links_item.js';
 
-import type {AppManagementSupportedLinksItemElement} from 'chrome://app-settings/supported_links_item.js';
+import type {SupportedLinksItemElement} from 'chrome://app-settings/supported_links_item.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {AppType, WindowMode} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import {BrowserProxy} from 'chrome://resources/cr_components/app_management/browser_proxy.js';
@@ -13,14 +13,13 @@ import type {AppMap} from 'chrome://resources/cr_components/app_management/const
 import type {CrRadioGroupElement} from 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import type {AppConfig} from './app_management_test_support.js';
 import {createTestApp, TestAppManagementBrowserProxy} from './app_management_test_support.js';
 
-suite('AppManagementSupportedLinksItemElement', function() {
-  let supportedLinksItem: AppManagementSupportedLinksItemElement;
+suite('SupportedLinksItemElement', function() {
+  let supportedLinksItem: SupportedLinksItemElement;
   let testProxy: TestAppManagementBrowserProxy;
   let apps: AppMap;
 
@@ -53,7 +52,7 @@ suite('AppManagementSupportedLinksItemElement', function() {
     supportedLinksItem.app = app;
     supportedLinksItem.apps = apps;
     document.body.appendChild(supportedLinksItem);
-    await waitAfterNextRender(supportedLinksItem);
+    await microtasksFinished();
     return app;
   }
 
@@ -105,7 +104,7 @@ suite('AppManagementSupportedLinksItemElement', function() {
     const link = heading.shadowRoot!.querySelector('a');
     assertTrue(!!link);
     link.click();
-    await flushTasks();
+    await microtasksFinished();
 
     supportedLinksDialog =
         supportedLinksItem.shadowRoot!.querySelector<HTMLElement>('#dialog');
@@ -128,10 +127,9 @@ suite('AppManagementSupportedLinksItemElement', function() {
         innerDialog.shadowRoot!.querySelector<HTMLButtonElement>('#close');
     assertTrue(!!closeButton);
     closeButton.click();
-    await flushTasks();
+    await microtasksFinished();
 
     // Wait for the stamped dialog to be destroyed.
-    await waitAfterNextRender(supportedLinksDialog);
     supportedLinksDialog =
         supportedLinksItem.shadowRoot!.querySelector('#dialog');
     assertNull(supportedLinksDialog);

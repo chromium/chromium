@@ -4,7 +4,7 @@
 
 import 'chrome://app-settings/web_app_settings.js';
 
-import type {App, AppManagementSupportedLinksItemElement, AppManagementSupportedLinksOverlappingAppsDialogElement, PermissionItemElement, PermissionTypeIndex, ToggleRowElement, WebAppSettingsAppElement} from 'chrome://app-settings/web_app_settings.js';
+import type {App, PermissionItemElement, PermissionTypeIndex, SupportedLinksItemElement, SupportedLinksOverlappingAppsDialogElement, ToggleRowElement, WebAppSettingsAppElement} from 'chrome://app-settings/web_app_settings.js';
 import {AppType, BrowserProxy, createTriStatePermission, getPermissionValueBool, InstallReason, InstallSource, PermissionType, RunOnOsLoginMode, TriState, WindowMode} from 'chrome://app-settings/web_app_settings.js';
 import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
@@ -87,11 +87,9 @@ suite('AppSettingsAppTest', () => {
     return testProxy.fakeHandler;
   }
 
-  function getSupportedLinksElement(): AppManagementSupportedLinksItemElement|
-      null {
-    return appSettingsApp.shadowRoot!
-        .querySelector<AppManagementSupportedLinksItemElement>(
-            'app-management-supported-links-item');
+  function getSupportedLinksElement(): SupportedLinksItemElement|null {
+    return appSettingsApp.shadowRoot!.querySelector<SupportedLinksItemElement>(
+        'app-management-supported-links-item');
   }
 
   async function reloadPage() {
@@ -306,9 +304,10 @@ suite('AppSettingsAppTest', () => {
 
     // Accept change
     promise = fakeHandler().whenCalled('setPreferredApp');
-    const overlapDialog = getSupportedLinksElement()!.shadowRoot!.querySelector<
-        AppManagementSupportedLinksOverlappingAppsDialogElement>(
-        '#overlapDialog');
+    const overlapDialog =
+        getSupportedLinksElement()!.shadowRoot!
+            .querySelector<SupportedLinksOverlappingAppsDialogElement>(
+                '#overlapDialog');
     assertTrue(!!overlapDialog);
     overlapDialog.$.dialog.close();
     await promise;

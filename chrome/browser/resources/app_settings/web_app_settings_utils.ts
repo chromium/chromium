@@ -4,7 +4,7 @@
 
 import {AppType} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
 import type {App} from 'chrome://resources/cr_components/app_management/app_management.mojom-webui.js';
-import {InstallReason, RunOnOsLoginMode, WindowMode} from 'chrome://resources/cr_components/app_management/constants.js';
+import {InstallReason, InstallSource, RunOnOsLoginMode, WindowMode} from 'chrome://resources/cr_components/app_management/constants.js';
 
 export function createDummyApp(): App {
   return {
@@ -29,7 +29,7 @@ export function createDummyApp(): App {
       isManaged: false,
     },
     fileHandlingState: null,
-    installSource: 0,
+    installSource: InstallSource.kUnknown,
     appSize: '',
     dataSize: '',
     publisherId: '',
