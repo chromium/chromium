@@ -60,6 +60,17 @@ ParseSummaryWindowOperator(const base::Value::Dict& dict) {
   }
 }
 
+void Serialize(SummaryWindowOperator op, base::Value::Dict& dict) {
+  switch (op) {
+    case SummaryWindowOperator::kCount:
+      dict.Set(kSummaryWindowOperator, kSummaryWindowOperatorCount);
+      break;
+    case SummaryWindowOperator::kValueSum:
+      dict.Set(kSummaryWindowOperator, kSummaryWindowOperatorValueSum);
+      break;
+  }
+}
+
 // static
 base::expected<SummaryBuckets, SourceRegistrationError> SummaryBuckets::Parse(
     const base::Value::Dict& dict,

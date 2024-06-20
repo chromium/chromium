@@ -26,6 +26,7 @@ namespace {
 using ::attribution_reporting::mojom::SourceRegistrationError;
 using ::attribution_reporting::mojom::SummaryWindowOperator;
 using ::base::test::ErrorIs;
+using ::base::test::IsJson;
 using ::base::test::ValueIs;
 using ::testing::ElementsAre;
 using ::testing::Property;
@@ -73,6 +74,21 @@ TEST(SummaryWindowOperatorTest, Parse) {
     const base::Value::Dict dict = base::test::ParseJsonDict(test_case.json);
 
     EXPECT_THAT(ParseSummaryWindowOperator(dict), test_case.matches);
+  }
+}
+
+TEST(SummaryWindowOperatorTest, Serialize) {
+  {
+    base::Value::Dict out;
+    Serialize(SummaryWindowOperator::kCount, out);
+    EXPECT_THAT(out, IsJson(R"json({"summary_window_operator": "count"})json"));
+  }
+
+  {
+    base::Value::Dict out;
+    Serialize(SummaryWindowOperator::kValueSum, out);
+    EXPECT_THAT(out,
+                IsJson(R"json({"summary_window_operator": "value_sum"})json"));
   }
 }
 
@@ -169,7 +185,7 @@ TEST(SummaryBucketsTest, Serialize) {
   base::Value::Dict dict;
   SummaryBuckets({1, 3, 4294967295}).Serialize(dict);
 
-  EXPECT_THAT(dict, base::test::IsJson(R"json({
+  EXPECT_THAT(dict, IsJson(R"json({
     "summary_buckets": [1, 3, 4294967295]
   })json"));
 }

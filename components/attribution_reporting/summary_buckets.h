@@ -58,6 +58,9 @@ COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::expected<mojom::SummaryWindowOperator, mojom::SourceRegistrationError>
 ParseSummaryWindowOperator(const base::Value::Dict&);
 
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+void Serialize(mojom::SummaryWindowOperator, base::Value::Dict&);
+
 }  // namespace attribution_reporting
 
 #endif  // COMPONENTS_ATTRIBUTION_REPORTING_SUMMARY_BUCKETS_H_
