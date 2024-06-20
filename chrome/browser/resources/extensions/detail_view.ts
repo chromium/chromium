@@ -38,6 +38,7 @@ import {getTemplate} from './detail_view.html.js';
 import type {ItemDelegate} from './item.js';
 import {ItemMixin} from './item_mixin.js';
 import {computeInspectableViewLabel, convertSafetyCheckReason, EnableControl, getEnableControl, getEnableToggleAriaLabel, getEnableToggleTooltipText, getItemSource, getItemSourceString, isEnabled, SAFETY_HUB_EXTENSION_KEPT_HISTOGRAM_NAME, SAFETY_HUB_EXTENSION_REMOVED_HISTOGRAM_NAME, SAFETY_HUB_WARNING_REASON_MAX_SIZE, sortViews, userCanChangeEnablement} from './item_util.js';
+import {getMv2ExperimentStage, Mv2ExperimentStage} from './mv2_deprecation_util.js';
 import {navigation, Page} from './navigation_helper.js';
 import type {ExtensionsToggleRowElement} from './toggle_row.js';
 
@@ -122,6 +123,15 @@ export class ExtensionsDetailViewElement extends
         computed: 'computeShowBlocklistText_(data.blacklistText)',
       },
 
+      /**
+       * Current Manifest V2 experiment stage.
+       */
+      mv2ExperimentStage_: {
+        type: Number,
+        value: () => getMv2ExperimentStage(
+            loadTimeData.getInteger('MV2ExperimentStage')),
+      },
+
       // <if expr="chromeos_ash">
       /** Whether Lacros is enabled. */
       isLacrosEnabled_: {
@@ -149,6 +159,7 @@ export class ExtensionsDetailViewElement extends
   private showBlocklistText_: boolean;
   private size_: string;
   private sortedViews_: chrome.developerPrivate.ExtensionView[];
+  private mv2ExperimentStage_: Mv2ExperimentStage;
 
   // <if expr="chromeos_ash">
   private readonly isLacrosEnabled_: boolean;
@@ -475,10 +486,10 @@ export class ExtensionsDetailViewElement extends
   }
 
   /**
-   * Returns whether the mv2 deprecation message warning should be displayed.
+   * Returns whether the mv2 deprecation message should be displayed.
    */
   private computeShowMv2DeprecationMessage_(): boolean {
-    return loadTimeData.getBoolean('MV2DeprecationPanelEnabled') &&
+    return this.mv2ExperimentStage_ === Mv2ExperimentStage.WARNING &&
         this.data.isAffectedByMV2Deprecation;
   }
 

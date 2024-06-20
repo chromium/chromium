@@ -255,23 +255,23 @@ suite('ExtensionItemListTest', function() {
     assertEquals(0, reviewPanel.extensions.length);
   });
 
-  test('ManifestV2DeprecationPanel_Disabled', async function() {
-    // Panel is hidden if panel is disabled.
-    loadTimeData.overrideValues({'MV2DeprecationPanelEnabled': false});
+  test('ManifestV2DeprecationPanel_None', async function() {
+    // Panel is hidden for experiment on stage 0 (none).
+    loadTimeData.overrideValues({MV2ExperimentStage: 0});
     setupElement();
     flush();
     boundTestVisible('extensions-mv2-deprecation-panel', false);
   });
 
-  test('ManifestV2DeprecationPanel_Enabled', async function() {
-    // Panel is hidden if panel is enabled and has no extensions affected
-    // by the MV2 deprecation.
-    loadTimeData.overrideValues({'MV2DeprecationPanelEnabled': true});
+  test('ManifestV2DeprecationPanel_Warning', async function() {
+    // Panel is hidden for experiment on stage 1 (warning) and has no extensions
+    // affected by the MV2 deprecation.
+    loadTimeData.overrideValues({MV2ExperimentStage: 1});
     setupElement();
     boundTestVisible('extensions-mv2-deprecation-panel', false);
 
-    // Panel is visible if panel is enabled and has at least one extension
-    // affected by the MV2 deprecation.
+    // Panel is visible for experiment on stage 1 (warning) and has at least one
+    // extension affected by the MV2 deprecation.
     itemList.push('extensions', createExtensionInfo({
                     name: 'Extension D',
                     id: 'd'.repeat(32),
@@ -284,8 +284,8 @@ suite('ExtensionItemListTest', function() {
     assertTrue(!!mv2DeprecationPanel);
     assertEquals(1, mv2DeprecationPanel.extensions.length);
 
-    // Panel is visible if panel is enabled and has multiple extensions affected
-    // by the MV2 deprecation.
+    // Panel is visible for experiment on stage 1 (warning) and has multiple
+    // extensions affected by the MV2 deprecation.
     itemList.push('extensions', createExtensionInfo({
                     name: 'Extension E',
                     id: 'e'.repeat(32),
@@ -314,11 +314,27 @@ suite('ExtensionItemListTest', function() {
     boundTestVisible('extensions-mv2-deprecation-panel', false);
   });
 
+  test('ManifestV2DeprecationPanel_DisableWithReEnable', async function() {
+    // Panel is hidden for experiment on stage 2 (disable with re-enable).
+    // TODO(crbug.com/339061151): verify panel is visible once functionality is
+    // added.
+    loadTimeData.overrideValues({MV2ExperimentStage: 2});
+    setupElement();
+    flush();
+    boundTestVisible('extensions-mv2-deprecation-panel', false);
+  });
+
   test('ManifestV2DeprecationPanel_TitleVisibility', function() {
-    // Enable feature for both panels. Their visibility will be determined
-    // whether they have extensions to show.
-    loadTimeData.overrideValues({'MV2DeprecationPanelEnabled': true});
-    loadTimeData.overrideValues({'safetyHubShowReviewPanel': true});
+    // Enable feature for both panels (mv2 panel is enabled for stage 1). Their
+    // visibility will be determined whether they have extensions to show.
+    loadTimeData.overrideValues(
+        {MV2ExperimentStage: 1, safetyHubShowReviewPanel: true});
+    setupElement();
+    flush();
+
+    // Both panels should be hidden since they don't have extensions to show.
+    boundTestVisible('extensions-mv2-deprecation-panel', false);
+    boundTestVisible('extensions-review-panel', false);
 
     // Show the MV2 deprecation panel by adding an extension affected by the
     // mv2 deprecation.

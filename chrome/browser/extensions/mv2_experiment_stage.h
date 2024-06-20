@@ -21,7 +21,8 @@ enum class MV2ExperimentStage {
   kDisableWithReEnable,
 
   // TODO(https://crbug.com/337191307): Continue adding more experiment stages
-  // here.
+  // here. For each new entry, update Mv2ExperimentStage in
+  // chrome/browser/resources/extensions/mv2_deprecation_util.ts.
 };
 
 }  // namespace extensions
