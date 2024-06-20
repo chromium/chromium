@@ -209,10 +209,15 @@ void InSessionAuthDialogContentsView::AddPrompt(const std::string& prompt) {
   prompt_view_->SetAutoColorReadabilityEnabled(false);
   prompt_view_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
-  prompt_view_->SetText(base::UTF8ToUTF16(prompt));
+  std::u16string prompt_text = base::UTF8ToUTF16(prompt);
+  prompt_view_->SetText(prompt_text);
   prompt_view_->SetMultiLine(true);
   prompt_view_->SetMaximumWidth(kPreferredWidth);
   prompt_view_->SetLineHeight(kPromptLineHeight);
+  prompt_view_->GetViewAccessibility().SetName(
+      prompt_text, prompt_text.empty()
+                       ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
+                       : ax::mojom::NameFrom::kAttribute);
 
   prompt_view_->SetPreferredSize(gfx::Size(
       kPreferredWidth, prompt_view_->GetHeightForWidth(kPreferredWidth)));
