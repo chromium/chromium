@@ -188,7 +188,6 @@
 
 #if BUILDFLAG(IS_LINUX)
 #include "base/nix/scoped_xdg_activation_token_injector.h"
-#include "ui/linux/display_server_utils.h"
 #endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -221,6 +220,7 @@
 #endif  // BUILDFLAG(ENABLE_PROCESS_SINGLETON)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/scoped_add_feature_flags.h"
 #include "chrome/common/chrome_paths_lacros.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"  // nogncheck
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"    // nogncheck
@@ -236,16 +236,12 @@
 #include "media/base/media_switches.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/resource/data_pack_with_resource_sharing_lacros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/switches.h"
 #endif
 
 #if BUILDFLAG(IS_OZONE)
-#include "base/scoped_add_feature_flags.h"
-#include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
-#if BUILDFLAG(IS_LINUX)
-#include "chrome/browser/chrome_browser_main_extra_parts_linux.h"
-#endif
 #endif  // BUILDFLAG(IS_OZONE)
 
 base::LazyInstance<ChromeContentGpuClient>::DestructorAtExit
@@ -956,20 +952,10 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
           ->chrome_feature_list_creator();
   chrome_feature_list_creator->CreateFeatureList();
 
+  // Initialize OzonePlatform, if not done yet.
 #if BUILDFLAG(IS_OZONE)
-  // Initialize Ozone platform and add required feature flags as per platform's
-  // properties.
-#if BUILDFLAG(IS_LINUX)
-  ui::SetOzonePlatformForLinuxIfNeeded(*base::CommandLine::ForCurrentProcess());
-#endif
-  ui::OzonePlatform::PreEarlyInitialization();
-
-  // Disable currently unsupported web features per platform properties.
-  if (!ui::OzonePlatform::GetInstance()
-           ->GetPlatformProperties()
-           .supports_color_picker_dialog) {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        features::kEyeDropperNotSupported);
+  if (!ui::OzonePlatform::IsInitialized()) {
+    ui::OzonePlatform::PreEarlyInitialization();
   }
 #endif  // BUILDFLAG(IS_OZONE)
 

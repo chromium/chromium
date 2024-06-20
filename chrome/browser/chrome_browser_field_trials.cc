@@ -48,6 +48,12 @@
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_trial.h"
 #endif
 
+#if BUILDFLAG(IS_LINUX)
+#include "ui/base/ui_base_features.h"
+#include "ui/linux/display_server_utils.h"
+#include "ui/ozone/public/ozone_platform.h"
+#endif  // BUILDFLAG(IS_LINUX)
+
 ChromeBrowserFieldTrials::ChromeBrowserFieldTrials(PrefService* local_state)
     : local_state_(local_state) {
   DCHECK(local_state_);
@@ -149,3 +155,25 @@ void ChromeBrowserFieldTrials::RegisterSyntheticTrials() {
   DefaultBrowserPromptTrial::EnsureStickToDefaultBrowserPromptCohort();
 #endif
 }
+
+#if BUILDFLAG(IS_LINUX)
+// On Linux/Desktop platform variants, such as ozone/wayland, some features
+// might need to be disabled as per OzonePlatform's runtime properties.
+// OzonePlatform selection and initialization, in turn, depend on Chrome flags
+// processing, namely 'ozone-platform-hint', so do it here.
+//
+// TODO(nickdiego): Move it back to ChromeMainDelegate::PostEarlyInitialization
+// once ozone-platform-hint flag is dropped.
+void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
+    base::FeatureList* feature_list) {
+  ui::SetOzonePlatformForLinuxIfNeeded(*base::CommandLine::ForCurrentProcess());
+  ui::OzonePlatform::PreEarlyInitialization();
+
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_color_picker_dialog) {
+    feature_list->RegisterExtraFeatureOverrides(
+        {{features::kEyeDropper, base::FeatureList::OVERRIDE_DISABLE_FEATURE}});
+  }
+}
+#endif  // BUILDFLAG(IS_LINUX)

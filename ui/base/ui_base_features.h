@@ -84,8 +84,6 @@ COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsForcedColorsEnabled();
 
 // Used to enable the eye-dropper in the refresh color-picker.
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kEyeDropper);
-// TODO(https://crbug.com/329678163): This flag should be removed.
-COMPONENT_EXPORT(UI_BASE_FEATURES) extern const char kEyeDropperNotSupported[];
 COMPONENT_EXPORT(UI_BASE_FEATURES) bool IsEyeDropperEnabled();
 
 COMPONENT_EXPORT(UI_BASE_FEATURES)

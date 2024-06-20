@@ -346,12 +346,8 @@ BASE_FEATURE(kEyeDropper,
 #endif
 );
 
-const char kEyeDropperNotSupported[] = "eye-dropper-not-supported";
-
 bool IsEyeDropperEnabled() {
-  return base::FeatureList::IsEnabled(features::kEyeDropper) &&
-         !base::CommandLine::ForCurrentProcess()->HasSwitch(
-             kEyeDropperNotSupported);
+  return base::FeatureList::IsEnabled(features::kEyeDropper);
 }
 
 // Used to enable keyboard accessible tooltips in in-page content
