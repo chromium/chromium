@@ -30,15 +30,15 @@ impl fend_core::Interrupt for TimeoutInterrupt {
 }
 
 pub fn evaluate_using_rust(query: &[u8], out_result: &mut String, timeout_in_ms: u32) -> bool {
-    let Ok(query_str) = std::str::from_utf8(query) else {
+    let Ok(query) = std::str::from_utf8(query) else {
         return false;
     };
     let mut context = fend_core::Context::new();
     let result = if timeout_in_ms > 0 {
         let interrupt = TimeoutInterrupt::new_with_timeout(timeout_in_ms.into());
-        fend_core::evaluate_with_interrupt(query_str, &mut context, &interrupt)
+        fend_core::evaluate_with_interrupt(query, &mut context, &interrupt)
     } else {
-        fend_core::evaluate(query_str, &mut context)
+        fend_core::evaluate(query, &mut context)
     };
     match result {
         Err(_) => false,
