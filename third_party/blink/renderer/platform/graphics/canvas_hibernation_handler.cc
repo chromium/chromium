@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_hibernation_handler.h"
 
 #include "base/memory/post_delayed_memory_reduction_task.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
@@ -197,12 +198,17 @@ CanvasHibernationHandler::GetMainThreadTaskRunner() const {
 void CanvasHibernationHandler::Encode(
     std::unique_ptr<CanvasHibernationHandler::BackgroundTaskParams> params) {
   TRACE_EVENT0("blink", __PRETTY_FUNCTION__);
+  // Using thread time, since this is a BEST_EFFORT task, which may be
+  // descheduled.
+  base::ElapsedThreadTimer thread_timer;
   sk_sp<SkData> encoded =
       SkPngEncoder::Encode(nullptr, params->image.get(), {});
 
   size_t original_memory_size = ImageMemorySize(*params->image);
   int compression_ratio_percentage = static_cast<int>(
       (static_cast<size_t>(100) * encoded->size()) / original_memory_size);
+  UMA_HISTOGRAM_TIMES("Blink.Canvas.2DLayerBridge.Compression.ThreadTime",
+                      thread_timer.Elapsed());
   UMA_HISTOGRAM_PERCENTAGE("Blink.Canvas.2DLayerBridge.Compression.Ratio",
                            compression_ratio_percentage);
   UMA_HISTOGRAM_CUSTOM_COUNTS(

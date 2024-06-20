@@ -195,6 +195,8 @@ TEST_F(CanvasHibernationHandlerTest, SimpleTest) {
 
   histogram_tester.ExpectTotalCount(
       "Blink.Canvas.2DLayerBridge.Compression.Ratio", 1);
+  histogram_tester.ExpectTotalCount(
+      "Blink.Canvas.2DLayerBridge.Compression.ThreadTime", 1);
   histogram_tester.ExpectUniqueSample(
       "Blink.Canvas.2DLayerBridge.Compression.SnapshotSizeKb",
       uncompressed_size / 1024, 1);
