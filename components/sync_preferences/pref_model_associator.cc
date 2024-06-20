@@ -6,6 +6,8 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -226,7 +228,7 @@ std::optional<syncer::ModelError> PrefModelAssociator::MergeDataAndStartSyncing(
   }
 
   syncer::SyncChangeList new_changes;
-  std::set<std::string> remaining_preferences = registered_preferences_;
+  auto remaining_preferences = registered_preferences_;
 
   // Go through and check for all preferences we care about that sync already
   // knows about.
@@ -236,7 +238,7 @@ std::optional<syncer::ModelError> PrefModelAssociator::MergeDataAndStartSyncing(
     const sync_pb::PreferenceSpecifics& preference = GetSpecifics(sync_data);
     std::string sync_pref_name = preference.name();
 
-    if (remaining_preferences.count(sync_pref_name) == 0) {
+    if (!remaining_preferences.contains(sync_pref_name)) {
       // We're not syncing this preference locally, ignore the sync data.
       continue;
     }
@@ -393,23 +395,22 @@ bool PrefModelAssociator::IsPrefSyncedForTesting(
   return synced_preferences_.find(name) != synced_preferences_.end();
 }
 
-void PrefModelAssociator::RegisterPref(const std::string& name) {
+void PrefModelAssociator::RegisterPref(std::string_view name) {
   DCHECK(!registered_preferences_.contains(name));
-  DCHECK(
-      !client_ ||
-      (client_->GetSyncablePrefsDatabase().IsPreferenceSyncable(name) &&
-       client_->GetSyncablePrefsDatabase()
-               .GetSyncablePrefMetadata(name)
-               ->model_type() == type_))
+  DCHECK(!client_ || (client_->GetSyncablePrefsDatabase().IsPreferenceSyncable(
+                          std::string(name)) &&
+                      client_->GetSyncablePrefsDatabase()
+                              .GetSyncablePrefMetadata(std::string(name))
+                              ->model_type() == type_))
       << "Preference " << name
       << " has not been added to syncable prefs allowlist, or has incorrect "
          "data.";
 
-  registered_preferences_.insert(name);
+  registered_preferences_.insert(std::string(name));
 }
 
-bool PrefModelAssociator::IsPrefRegistered(const std::string& name) const {
-  return registered_preferences_.count(name) > 0;
+bool PrefModelAssociator::IsPrefRegistered(std::string_view name) const {
+  return registered_preferences_.contains(name);
 }
 
 void PrefModelAssociator::OnPrefValueChanged(const std::string& name) {

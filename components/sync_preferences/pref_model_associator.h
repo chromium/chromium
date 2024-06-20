@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_SYNC_PREFERENCES_PREF_MODEL_ASSOCIATOR_H_
 #define COMPONENTS_SYNC_PREFERENCES_PREF_MODEL_ASSOCIATOR_H_
 
+#include <functional>
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 
 #include "base/memory/raw_ptr.h"
@@ -103,7 +105,7 @@ class PrefModelAssociator final : public syncer::SyncableService,
   // syncer, we check if they can be applied and if not drop them.
   // Note: This should only be called at profile startup time (before sync
   // begins).
-  void RegisterPref(const std::string& name);
+  void RegisterPref(std::string_view name);
 
   // Fills |sync_data| with a sync representation of the preference data
   // provided.
@@ -113,7 +115,7 @@ class PrefModelAssociator final : public syncer::SyncableService,
                           syncer::SyncData* sync_data) const;
 
   // Returns true if the specified preference is registered for syncing.
-  bool IsPrefRegistered(const std::string& name) const;
+  bool IsPrefRegistered(std::string_view name) const;
 
   // Adds a SyncedPrefObserver to watch for changes to a specific pref.
   void AddSyncedPrefObserver(const std::string& name,
@@ -185,7 +187,7 @@ class PrefModelAssociator final : public syncer::SyncableService,
   bool processing_syncer_changes_ = false;
 
   // All preferences that have registered as being syncable with this profile.
-  std::set<std::string> registered_preferences_;
+  std::set<std::string, std::less<>> registered_preferences_;
 
   // The preferences that are currently synced (excludes those preferences
   // that have never had sync data and currently have default values).
