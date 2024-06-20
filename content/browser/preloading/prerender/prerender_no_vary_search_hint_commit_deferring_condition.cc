@@ -112,10 +112,14 @@ PrerenderNoVarySearchHintCommitDeferringCondition::
            RenderFrameHost::kNoFrameTreeNodeId);
   FrameTreeNode* prerender_frame_tree_node =
       GetRootPrerenderFrameTreeNode(candidate_prerender_frame_tree_node_id_);
+  // The prerender frame tree node is alive. This condition was also checked in
+  // `MaybeCreate` static method.
+  CHECK(prerender_frame_tree_node);
   PrerenderHost& prerender_host =
       PrerenderHost::GetFromFrameTreeNode(*prerender_frame_tree_node);
   // We only create `this` instance if headers were not received by the
-  // associated prerender.
+  // associated prerender. This condition was also checked in `MaybeCreate`
+  // static method.
   CHECK(!prerender_host.were_headers_received());
   // Add this commit deferring condition as an observer of the associated
   // PrerenderHost.
@@ -161,7 +165,7 @@ PrerenderNoVarySearchHintCommitDeferringCondition::WillCommitNavigation(
     reason = PrerenderHost::WaitingForHeadersStartedReason::kWithTimeout;
   }
 
-  // Let the PrerenderHost know that this navigation is waiting on the
+  // Let the `prerender_host` know that this navigation is waiting on the
   // associated prerender's headers.
   waiting_on_headers_ = true;
   prerender_host.OnWaitingForHeadersStarted(GetNavigationHandle(), reason);
@@ -175,6 +179,9 @@ void PrerenderNoVarySearchHintCommitDeferringCondition::OnHeadersReceived() {
   // * the prerender_frame_tree_node is still alive.
   FrameTreeNode* prerender_frame_tree_node =
       GetRootPrerenderFrameTreeNode(candidate_prerender_frame_tree_node_id_);
+  // `OnHeadersReceived` is called by `PrerenderHost::ReadyToCommitNavigation`.
+  // Prerender frame tree node is alive, see:
+  // `PrerenderHostRegistry::ReadyToCommitNavigation`.
   CHECK(prerender_frame_tree_node);
   PrerenderHost& prerender_host =
       PrerenderHost::GetFromFrameTreeNode(*prerender_frame_tree_node);
@@ -183,7 +190,7 @@ void PrerenderNoVarySearchHintCommitDeferringCondition::OnHeadersReceived() {
   // Remove the observer from the prerender host.
   prerender_host.RemoveObserver(this);
 
-  // Let the Prerender_Host know that this navigation is done waiting on the
+  // Let the `prerender_host` know that this navigation is done waiting on the
   // associated prerender's headers.
   if (waiting_on_headers_) {
     waiting_on_headers_ = false;
@@ -208,21 +215,24 @@ void PrerenderNoVarySearchHintCommitDeferringCondition::OnHostDestroyed(
     PrerenderFinalStatus status) {
   FrameTreeNode* prerender_frame_tree_node =
       GetRootPrerenderFrameTreeNode(candidate_prerender_frame_tree_node_id_);
-  CHECK(prerender_frame_tree_node);
-  PrerenderHost& prerender_host =
-      PrerenderHost::GetFromFrameTreeNode(*prerender_frame_tree_node);
+  if (prerender_frame_tree_node) {
+    PrerenderHost& prerender_host =
+        PrerenderHost::GetFromFrameTreeNode(*prerender_frame_tree_node);
 
-  // Remove the observer from the prerender host.
-  prerender_host.RemoveObserver(this);
+    // Remove the observer from the prerender host.
+    prerender_host.RemoveObserver(this);
 
-  // We might need to hold more state to know.
-  if (waiting_on_headers_) {
-    // Let the Prerender_Host know that this navigation is done waiting on the
-    // associated prerender's headers.
+    // We might need to hold more state to know.
+    if (waiting_on_headers_) {
+      // Let the `prerender_host` know that this navigation is done waiting on
+      // the associated prerender's headers.
+      waiting_on_headers_ = false;
+      prerender_host.OnWaitingForHeadersFinished(
+          GetNavigationHandle(),
+          PrerenderHost::WaitingForHeadersFinishedReason::kHostDestroyed);
+    }
+  } else {
     waiting_on_headers_ = false;
-    prerender_host.OnWaitingForHeadersFinished(
-        GetNavigationHandle(),
-        PrerenderHost::WaitingForHeadersFinishedReason::kHostDestroyed);
   }
 
   // We don't need the timer anymore.
@@ -240,17 +250,20 @@ void PrerenderNoVarySearchHintCommitDeferringCondition::OnHostDestroyed(
 
 void PrerenderNoVarySearchHintCommitDeferringCondition::
     OnBlockUntilHeadTimerElapsed() {
+  // We should never fire the timer if we are not waiting on headers.
+  CHECK(waiting_on_headers_);
+  waiting_on_headers_ = false;
   FrameTreeNode* prerender_frame_tree_node =
       GetRootPrerenderFrameTreeNode(candidate_prerender_frame_tree_node_id_);
-  CHECK(prerender_frame_tree_node);
-  PrerenderHost& prerender_host =
-      PrerenderHost::GetFromFrameTreeNode(*prerender_frame_tree_node);
-  // Let the Prerender_Host know that this navigation is done waiting on the
-  // associated prerender's headers.
-  waiting_on_headers_ = false;
-  prerender_host.OnWaitingForHeadersFinished(
-      GetNavigationHandle(),
-      PrerenderHost::WaitingForHeadersFinishedReason::kTimeoutElapsed);
+  if (prerender_frame_tree_node) {
+    PrerenderHost& prerender_host =
+        PrerenderHost::GetFromFrameTreeNode(*prerender_frame_tree_node);
+    // Let the `prerender_host` know that this navigation is done waiting on the
+    // associated prerender's headers.
+    prerender_host.OnWaitingForHeadersFinished(
+        GetNavigationHandle(),
+        PrerenderHost::WaitingForHeadersFinishedReason::kTimeoutElapsed);
+  }
 
   if (resume_) {
     std::move(resume_).Run();
