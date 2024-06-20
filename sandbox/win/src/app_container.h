@@ -18,16 +18,6 @@ enum AppContainerType { kNone, kDerived, kProfile, kLowbox };
 
 class [[clang::lto_visibility_public]] AppContainer {
  public:
-  // Increments the reference count of this object. The reference count must
-  // be incremented if this interface is given to another component.
-  virtual void AddRef() = 0;
-
-  // Decrements the reference count of this object. When the reference count
-  // is zero the object is automatically destroyed.
-  // Indicates that the caller is done with this interface. After calling
-  // release no other method should be called.
-  virtual void Release() = 0;
-
   // Do an access check based on this profile for a named object. If method
   // returns true then access_status reflects whether access was granted and
   // granted_access gives the final access rights. The object_type can be one of

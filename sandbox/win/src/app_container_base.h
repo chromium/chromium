@@ -20,11 +20,11 @@ namespace sandbox {
 
 class AppContainerBase final : public AppContainer {
  public:
+  AppContainerBase(base::win::Sid& package_sid, AppContainerType type);
   AppContainerBase(const AppContainerBase&) = delete;
   AppContainerBase& operator=(const AppContainerBase&) = delete;
+  ~AppContainerBase();
 
-  void AddRef() override;
-  void Release() override;
   bool AccessCheck(const wchar_t* object_name,
                    base::win::SecurityObjectType object_type,
                    DWORD desired_access,
@@ -50,17 +50,18 @@ class AppContainerBase final : public AppContainer {
   // Creates a new AppContainer object. This will create a new profile
   // if it doesn't already exist. The profile must be deleted manually using
   // the Delete method if it's no longer required.
-  static AppContainerBase* CreateProfile(const wchar_t* package_name,
-                                         const wchar_t* display_name,
-                                         const wchar_t* description);
+  static std::unique_ptr<AppContainerBase> CreateProfile(
+      const wchar_t* package_name,
+      const wchar_t* display_name,
+      const wchar_t* description);
 
   // Opens a derived AppContainer object. No checks will be made on
   // whether the package exists or not.
-  static AppContainerBase* Open(const wchar_t* package_name);
+  static std::unique_ptr<AppContainerBase> Open(const wchar_t* package_name);
 
   // Creates a new Lowbox object. Need to followup with a call to build lowbox
   // token
-  static AppContainerBase* CreateLowbox(const wchar_t* sid);
+  static std::unique_ptr<AppContainerBase> CreateLowbox(const wchar_t* sid);
 
   // Delete a profile based on name. Returns true if successful, or if the
   // package doesn't already exist.
@@ -81,14 +82,9 @@ class AppContainerBase final : public AppContainer {
       const base::win::AccessToken& token);
 
  private:
-  AppContainerBase(base::win::Sid& package_sid, AppContainerType type);
-  ~AppContainerBase();
-
   bool AddCapability(const std::optional<base::win::Sid>& capability_sid,
                      bool impersonation_only);
 
-  // Standard object-lifetime reference counter.
-  volatile LONG ref_count_;
   base::win::Sid package_sid_;
   bool enable_low_privilege_app_container_;
   std::vector<base::win::Sid> capabilities_;

@@ -27,9 +27,10 @@ struct FreeSidDeleter {
 }  // namespace
 
 // static
-AppContainerBase* AppContainerBase::CreateProfile(const wchar_t* package_name,
-                                                  const wchar_t* display_name,
-                                                  const wchar_t* description) {
+std::unique_ptr<AppContainerBase> AppContainerBase::CreateProfile(
+    const wchar_t* package_name,
+    const wchar_t* display_name,
+    const wchar_t* description) {
   PSID package_sid_ptr = nullptr;
   HRESULT hr = ::CreateAppContainerProfile(
       package_name, display_name, description, nullptr, 0, &package_sid_ptr);
@@ -42,11 +43,13 @@ AppContainerBase* AppContainerBase::CreateProfile(const wchar_t* package_name,
   auto package_sid = base::win::Sid::FromPSID(package_sid_ptr);
   if (!package_sid)
     return nullptr;
-  return new AppContainerBase(*package_sid, AppContainerType::kProfile);
+  return std::make_unique<AppContainerBase>(*package_sid,
+                                            AppContainerType::kProfile);
 }
 
 // static
-AppContainerBase* AppContainerBase::Open(const wchar_t* package_name) {
+std::unique_ptr<AppContainerBase> AppContainerBase::Open(
+    const wchar_t* package_name) {
   PSID package_sid_ptr = nullptr;
   HRESULT hr = ::DeriveAppContainerSidFromAppContainerName(package_name,
                                                            &package_sid_ptr);
@@ -57,16 +60,19 @@ AppContainerBase* AppContainerBase::Open(const wchar_t* package_name) {
   auto package_sid = base::win::Sid::FromPSID(package_sid_ptr);
   if (!package_sid)
     return nullptr;
-  return new AppContainerBase(*package_sid, AppContainerType::kDerived);
+  return std::make_unique<AppContainerBase>(*package_sid,
+                                            AppContainerType::kDerived);
 }
 
 // static
-AppContainerBase* AppContainerBase::CreateLowbox(const wchar_t* sid) {
+std::unique_ptr<AppContainerBase> AppContainerBase::CreateLowbox(
+    const wchar_t* sid) {
   auto package_sid = base::win::Sid::FromSddlString(sid);
   if (!package_sid)
     return nullptr;
 
-  return new AppContainerBase(*package_sid, AppContainerType::kLowbox);
+  return std::make_unique<AppContainerBase>(*package_sid,
+                                            AppContainerType::kLowbox);
 }
 
 // static
@@ -76,25 +82,11 @@ bool AppContainerBase::Delete(const wchar_t* package_name) {
 
 AppContainerBase::AppContainerBase(base::win::Sid& package_sid,
                                    AppContainerType type)
-    : ref_count_(0),
-      package_sid_(std::move(package_sid)),
+    : package_sid_(std::move(package_sid)),
       enable_low_privilege_app_container_(false),
       type_(type) {}
 
 AppContainerBase::~AppContainerBase() {}
-
-void AppContainerBase::AddRef() {
-  // ref_count starts at 0 for this class so can increase from 0 (once).
-  CHECK(::InterlockedIncrement(&ref_count_) > 0);
-}
-
-void AppContainerBase::Release() {
-  LONG result = ::InterlockedDecrement(&ref_count_);
-  CHECK(result >= 0);
-  if (result == 0) {
-    delete this;
-  }
-}
 
 bool AppContainerBase::AccessCheck(const wchar_t* object_name,
                                    base::win::SecurityObjectType object_type,

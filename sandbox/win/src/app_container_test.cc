@@ -159,8 +159,7 @@ ResultCode AddNetworkAppContainerPolicy(TargetPolicy* policy) {
   ret = policy->GetConfig()->SetTokenLevel(USER_UNPROTECTED, USER_UNPROTECTED);
   if (SBOX_ALL_OK != ret)
     return ret;
-  scoped_refptr<AppContainer> app_container =
-      policy->GetConfig()->GetAppContainer();
+  AppContainer* app_container = policy->GetConfig()->GetAppContainer();
 
   constexpr const wchar_t* kBaseCapsSt[] = {
       L"lpacChromeInstallFiles", L"registryRead", L"lpacIdentityServices",
@@ -195,16 +194,16 @@ class AppContainerTest : public ::testing::Test {
                                MITIGATION_HEAP_TERMINATE));
     ASSERT_EQ(SBOX_ALL_OK, policy_->GetConfig()->AddAppContainerProfile(
                                package_name_.c_str(), true));
-    // For testing purposes we known the base class so cast directly.
-    container_ = static_cast<AppContainerBase*>(
-        policy_->GetConfig()->GetAppContainer().get());
+    created_profile_ = true;
   }
 
   void TearDown() override {
-    if (scoped_process_info_.IsValid())
+    if (scoped_process_info_.IsValid()) {
       ::TerminateProcess(scoped_process_info_.process_handle(), 0);
-    if (container_)
+    }
+    if (created_profile_) {
       AppContainerBase::Delete(package_name_.c_str());
+    }
   }
 
  protected:
@@ -221,9 +220,15 @@ class AppContainerTest : public ::testing::Test {
     scoped_process_info_.Set(process_info);
   }
 
+  AppContainerBase* container() {
+    // For testing purposes we known the base class so cast directly.
+    return static_cast<AppContainerBase*>(
+        policy_->GetConfig()->GetAppContainer());
+  }
+
   std::wstring package_name_;
+  bool created_profile_ = false;
   raw_ptr<BrokerServices> broker_services_;
-  scoped_refptr<AppContainerBase> container_;
   std::unique_ptr<TargetPolicy> policy_;
   base::win::ScopedProcessInformation scoped_process_info_;
 };
@@ -265,8 +270,10 @@ TEST_F(AppContainerTest, DenyOpenEventForLowBox) {
 }
 
 TEST_F(AppContainerTest, CheckIncompatibleOptions) {
-  if (!container_)
+  if (!created_profile_) {
     return;
+  }
+
   EXPECT_EQ(SBOX_ERROR_BAD_PARAMS,
             policy_->GetConfig()->SetIntegrityLevel(INTEGRITY_LEVEL_UNTRUSTED));
   EXPECT_EQ(SBOX_ERROR_BAD_PARAMS,
@@ -291,16 +298,17 @@ TEST_F(AppContainerTest, CheckIncompatibleOptions) {
 }
 
 TEST_F(AppContainerTest, NoCapabilities) {
-  if (!container_)
+  if (!created_profile_) {
     return;
+  }
 
   EXPECT_EQ(SBOX_ALL_OK, policy_->GetConfig()->SetTokenLevel(USER_UNPROTECTED,
                                                              USER_UNPROTECTED));
   EXPECT_EQ(SBOX_ALL_OK,
             policy_->GetConfig()->SetJobLevel(JobLevel::kUnprotected, 0));
 
+  auto security_capabilities = container()->GetSecurityCapabilities();
   CreateProcess();
-  auto security_capabilities = container_->GetSecurityCapabilities();
 
   CheckProcessToken(scoped_process_info_.process_handle(),
                     security_capabilities.get(), FALSE);
@@ -309,16 +317,17 @@ TEST_F(AppContainerTest, NoCapabilities) {
 }
 
 TEST_F(AppContainerTest, NoCapabilitiesRestricted) {
-  if (!container_)
+  if (!created_profile_) {
     return;
+  }
 
   EXPECT_EQ(SBOX_ALL_OK, policy_->GetConfig()->SetTokenLevel(
                              USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN));
   EXPECT_EQ(SBOX_ALL_OK,
             policy_->GetConfig()->SetJobLevel(JobLevel::kUnprotected, 0));
 
+  auto security_capabilities = container()->GetSecurityCapabilities();
   CreateProcess();
-  auto security_capabilities = container_->GetSecurityCapabilities();
 
   CheckProcessToken(scoped_process_info_.process_handle(),
                     security_capabilities.get(), TRUE);
@@ -327,19 +336,20 @@ TEST_F(AppContainerTest, NoCapabilitiesRestricted) {
 }
 
 TEST_F(AppContainerTest, WithCapabilities) {
-  if (!container_)
+  if (!created_profile_) {
     return;
+  }
 
-  container_->AddCapability(base::win::WellKnownCapability::kInternetClient);
-  container_->AddCapability(
+  container()->AddCapability(base::win::WellKnownCapability::kInternetClient);
+  container()->AddCapability(
       base::win::WellKnownCapability::kInternetClientServer);
   EXPECT_EQ(SBOX_ALL_OK, policy_->GetConfig()->SetTokenLevel(USER_UNPROTECTED,
                                                              USER_UNPROTECTED));
   EXPECT_EQ(SBOX_ALL_OK,
             policy_->GetConfig()->SetJobLevel(JobLevel::kUnprotected, 0));
 
+  auto security_capabilities = container()->GetSecurityCapabilities();
   CreateProcess();
-  auto security_capabilities = container_->GetSecurityCapabilities();
 
   CheckProcessToken(scoped_process_info_.process_handle(),
                     security_capabilities.get(), FALSE);
@@ -348,19 +358,20 @@ TEST_F(AppContainerTest, WithCapabilities) {
 }
 
 TEST_F(AppContainerTest, WithCapabilitiesRestricted) {
-  if (!container_)
+  if (!created_profile_) {
     return;
+  }
 
-  container_->AddCapability(base::win::WellKnownCapability::kInternetClient);
-  container_->AddCapability(
+  container()->AddCapability(base::win::WellKnownCapability::kInternetClient);
+  container()->AddCapability(
       base::win::WellKnownCapability::kInternetClientServer);
   EXPECT_EQ(SBOX_ALL_OK, policy_->GetConfig()->SetTokenLevel(
                              USER_RESTRICTED_SAME_ACCESS, USER_LOCKDOWN));
   EXPECT_EQ(SBOX_ALL_OK,
             policy_->GetConfig()->SetJobLevel(JobLevel::kUnprotected, 0));
 
+  auto security_capabilities = container()->GetSecurityCapabilities();
   CreateProcess();
-  auto security_capabilities = container_->GetSecurityCapabilities();
 
   CheckProcessToken(scoped_process_info_.process_handle(),
                     security_capabilities.get(), TRUE);
@@ -369,28 +380,31 @@ TEST_F(AppContainerTest, WithCapabilitiesRestricted) {
 }
 
 TEST_F(AppContainerTest, WithImpersonationCapabilities) {
-  if (!container_)
+  if (!created_profile_) {
     return;
+  }
 
-  container_->AddCapability(base::win::WellKnownCapability::kInternetClient);
-  container_->AddCapability(
+  container()->AddCapability(base::win::WellKnownCapability::kInternetClient);
+  container()->AddCapability(
       base::win::WellKnownCapability::kInternetClientServer);
-  container_->AddImpersonationCapability(
+  container()->AddImpersonationCapability(
       base::win::WellKnownCapability::kPrivateNetworkClientServer);
-  container_->AddImpersonationCapability(
+  container()->AddImpersonationCapability(
       base::win::WellKnownCapability::kPicturesLibrary);
   EXPECT_EQ(SBOX_ALL_OK, policy_->GetConfig()->SetTokenLevel(USER_UNPROTECTED,
                                                              USER_UNPROTECTED));
   EXPECT_EQ(SBOX_ALL_OK,
             policy_->GetConfig()->SetJobLevel(JobLevel::kUnprotected, 0));
 
-  CreateProcess();
-  auto security_capabilities = container_->GetSecurityCapabilities();
+  auto security_capabilities = container()->GetSecurityCapabilities();
+  SecurityCapabilities impersonation_security_capabilities(
+      container()->GetPackageSid(),
+      container()->GetImpersonationCapabilities());
 
+  CreateProcess();
   CheckProcessToken(scoped_process_info_.process_handle(),
                     security_capabilities.get(), FALSE);
-  SecurityCapabilities impersonation_security_capabilities(
-      container_->GetPackageSid(), container_->GetImpersonationCapabilities());
+
   CheckThreadToken(scoped_process_info_.thread_handle(),
                    &impersonation_security_capabilities, FALSE);
 }
@@ -399,14 +413,14 @@ TEST_F(AppContainerTest, NoCapabilitiesLPAC) {
   if (!features::IsAppContainerSandboxSupported())
     return;
 
-  container_->SetEnableLowPrivilegeAppContainer(true);
+  container()->SetEnableLowPrivilegeAppContainer(true);
   EXPECT_EQ(SBOX_ALL_OK, policy_->GetConfig()->SetTokenLevel(USER_UNPROTECTED,
                                                              USER_UNPROTECTED));
   EXPECT_EQ(SBOX_ALL_OK,
             policy_->GetConfig()->SetJobLevel(JobLevel::kUnprotected, 0));
 
+  auto security_capabilities = container()->GetSecurityCapabilities();
   CreateProcess();
-  auto security_capabilities = container_->GetSecurityCapabilities();
 
   CheckProcessToken(scoped_process_info_.process_handle(),
                     security_capabilities.get(), FALSE);

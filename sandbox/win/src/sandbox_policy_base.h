@@ -19,7 +19,6 @@
 #include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
 #include "base/synchronization/lock.h"
 #include "base/win/access_token.h"
@@ -78,7 +77,7 @@ class ConfigBase final : public TargetConfig {
   void SetLockdownDefaultDacl() override;
   ResultCode AddAppContainerProfile(const wchar_t* package_name,
                                     bool create_profile) override;
-  scoped_refptr<AppContainer> GetAppContainer() override;
+  AppContainer* GetAppContainer() override;
   void AddKernelObjectToClose(HandleToClose handle_info) override;
   void SetDisconnectCsrss() override;
   void SetDesktop(Desktop desktop) override;
@@ -161,7 +160,7 @@ class ConfigBase final : public TargetConfig {
   // The list of dlls to unload in the target process.
   std::vector<std::wstring> blocklisted_dlls_;
   // AppContainer to be applied to the target process.
-  scoped_refptr<AppContainerBase> app_container_;
+  std::unique_ptr<AppContainerBase> app_container_;
 };
 
 class PolicyBase final : public TargetPolicy {

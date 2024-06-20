@@ -6,6 +6,7 @@
 
 #include <windows.h>
 
+#include <memory>
 #include <set>
 #include <string>
 #include <vector>
@@ -15,12 +16,12 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
-#include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
 #include "base/test/scoped_amount_of_physical_memory_override.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/types/expected.h"
 #include "base/win/security_descriptor.h"
 #include "base/win/sid.h"
 #include "base/win/windows_version.h"
@@ -111,13 +112,12 @@ class TestTargetConfig : public TargetConfig {
     return SBOX_ALL_OK;
   }
 
-  scoped_refptr<AppContainer> GetAppContainer() override {
-    return app_container_;
+  AppContainer* GetAppContainer() override { return app_container_.get(); }
+
+  std::unique_ptr<AppContainerBase> TakeAppContainerBase() {
+    return std::move(app_container_);
   }
 
-  scoped_refptr<AppContainerBase> GetAppContainerBase() {
-    return app_container_;
-  }
   void SetDesktop(Desktop desktop) override {}
   void SetFilterEnvironment(bool env) override {}
   bool GetEnvironmentFiltered() override { return false; }
@@ -125,7 +125,7 @@ class TestTargetConfig : public TargetConfig {
 
  private:
   std::vector<std::wstring> blocklisted_dlls_;
-  scoped_refptr<AppContainerBase> app_container_;
+  std::unique_ptr<AppContainerBase> app_container_;
 };
 
 class TestTargetPolicy : public TargetPolicy {
@@ -199,8 +199,12 @@ struct AppContainerProfileTest {
   std::vector<std::wstring> capabilities;
   std::vector<std::wstring> impersonation_capabilities;
 
-  void Check(AppContainerBase* profile,
-             const std::vector<std::wstring>& additional_capabilities) const {
+  void Check(
+      base::expected<std::unique_ptr<AppContainerBase>, ResultCode> result,
+      const std::vector<std::wstring>& additional_capabilities) const {
+    ASSERT_TRUE(result.has_value());
+    auto profile = std::move(result.value());
+    ASSERT_NE(nullptr, profile);
     EXPECT_EQ(package_sid, profile->GetPackageSid().ToSddlString());
     EXPECT_EQ(profile->GetEnableLowPrivilegeAppContainer(), lpac_enabled);
 
@@ -232,11 +236,10 @@ class SandboxWinTest : public ::testing::Test {
     command_line->SetProgram(path);
   }
 
-  ResultCode CreateAppContainerProfile(
-      const base::CommandLine& base_command_line,
-      bool access_check_fail,
-      sandbox::mojom::Sandbox sandbox_type,
-      scoped_refptr<AppContainerBase>* profile) {
+  base::expected<std::unique_ptr<AppContainerBase>, ResultCode>
+  CreateAppContainerProfile(const base::CommandLine& base_command_line,
+                            bool access_check_fail,
+                            sandbox::mojom::Sandbox sandbox_type) {
     base::FilePath path;
     base::CommandLine command_line(base_command_line);
 
@@ -256,11 +259,11 @@ class SandboxWinTest : public ::testing::Test {
     TestTargetPolicy policy;
     ResultCode result = SandboxWin::AddAppContainerProfileToConfig(
         command_line, sandbox_type, appcontainer_id, policy.GetConfig());
-    if (result == SBOX_ALL_OK) {
-      *profile = static_cast<TestTargetConfig*>(policy.GetConfig())
-                     ->GetAppContainerBase();
+    if (result != SBOX_ALL_OK) {
+      return base::unexpected(result);
     }
-    return result;
+    return static_cast<TestTargetConfig*>(policy.GetConfig())
+        ->TakeAppContainerBase();
   }
 
   base::ScopedTempDir temp_dir_;
@@ -291,11 +294,10 @@ TEST_F(SandboxWinTest, AppContainerAccessCheckFail) {
     return;
   }
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  scoped_refptr<AppContainerBase> profile;
-  ResultCode result = CreateAppContainerProfile(
-      command_line, true, sandbox::mojom::Sandbox::kGpu, &profile);
-  EXPECT_EQ(SBOX_ERROR_CREATE_APPCONTAINER_ACCESS_CHECK, result);
-  EXPECT_EQ(nullptr, profile);
+  auto result = CreateAppContainerProfile(command_line, true,
+                                          sandbox::mojom::Sandbox::kGpu);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(SBOX_ERROR_CREATE_APPCONTAINER_ACCESS_CHECK, result.error());
 }
 
 TEST_F(SandboxWinTest, AppContainerCheckProfile) {
@@ -352,12 +354,8 @@ TEST_F(SandboxWinTest, AppContainerCheckProfile) {
        {}},
   };
   for (const AppContainerProfileTest& test : kProfileTests) {
-    scoped_refptr<AppContainerBase> profile;
-    ResultCode result = CreateAppContainerProfile(command_line, false,
-                                                  test.sandbox_type, &profile);
-    ASSERT_EQ(SBOX_ALL_OK, result);
-    ASSERT_NE(nullptr, profile);
-    test.Check(profile.get(), {});
+    test.Check(
+        CreateAppContainerProfile(command_line, false, test.sandbox_type), {});
   }
 }
 
@@ -368,12 +366,11 @@ TEST_F(SandboxWinTest, AppContainerCheckProfileDisableLpac) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(features::kGpuLPAC);
-  scoped_refptr<AppContainerBase> profile;
-  ResultCode result = CreateAppContainerProfile(
-      command_line, false, sandbox::mojom::Sandbox::kGpu, &profile);
-  ASSERT_EQ(SBOX_ALL_OK, result);
-  ASSERT_NE(nullptr, profile);
-  EXPECT_FALSE(profile->GetEnableLowPrivilegeAppContainer());
+  auto result = CreateAppContainerProfile(command_line, false,
+                                          sandbox::mojom::Sandbox::kGpu);
+  ASSERT_TRUE(result.has_value());
+  ASSERT_NE(nullptr, result.value());
+  EXPECT_FALSE(result.value()->GetEnableLowPrivilegeAppContainer());
 }
 
 TEST_F(SandboxWinTest, AppContainerCheckProfileAddCapabilities) {
@@ -383,11 +380,6 @@ TEST_F(SandboxWinTest, AppContainerCheckProfileAddCapabilities) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitchASCII(switches::kAddGpuAppContainerCaps,
                                  "  cap1   ,   cap2   ,");
-  scoped_refptr<AppContainerBase> profile;
-  ResultCode result = CreateAppContainerProfile(
-      command_line, false, sandbox::mojom::Sandbox::kGpu, &profile);
-  ASSERT_EQ(SBOX_ALL_OK, result);
-  ASSERT_NE(nullptr, profile);
   const AppContainerProfileTest test{
       sandbox::mojom::Sandbox::kGpu,
       L"S-1-15-2-342359568-3976368142-3454201986-142512210-2527158890-"
@@ -395,7 +387,9 @@ TEST_F(SandboxWinTest, AppContainerCheckProfileAddCapabilities) {
       true,
       {kLpacPnpNotifications, kLpacChromeInstallFiles, kRegistryRead},
       {kChromeInstallFiles}};
-  test.Check(profile.get(), {L"cap1", L"cap2"});
+  test.Check(CreateAppContainerProfile(command_line, false,
+                                       sandbox::mojom::Sandbox::kGpu),
+             {L"cap1", L"cap2"});
 }
 
 TEST_F(SandboxWinTest, BlocklistAddOneDllCheckInBrowser) {

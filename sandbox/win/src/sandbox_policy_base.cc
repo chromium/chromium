@@ -388,8 +388,8 @@ ResultCode ConfigBase::AddAppContainerProfile(const wchar_t* package_name,
   return SBOX_ALL_OK;
 }
 
-scoped_refptr<AppContainer> ConfigBase::GetAppContainer() {
-  return app_container_;
+AppContainer* ConfigBase::GetAppContainer() {
+  return app_container_.get();
 }
 
 ResultCode ConfigBase::SetTokenLevel(TokenLevel initial, TokenLevel lockdown) {

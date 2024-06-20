@@ -9,7 +9,6 @@
 #include <stdint.h>
 
 #include "base/containers/span.h"
-#include "base/memory/scoped_refptr.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "sandbox/win/src/security_level.h"
 
@@ -226,8 +225,9 @@ class [[clang::lto_visibility_public]] TargetConfig {
       const wchar_t* package_name,
       bool create_profile) = 0;
 
-  // Get the configured AppContainer.
-  virtual scoped_refptr<AppContainer> GetAppContainer() = 0;
+  // Get the configured AppContainer. The returned object lasts only as long as
+  // the containing TargetConfig.
+  virtual AppContainer* GetAppContainer() = 0;
 
   // Adds a handle type to close in the child. See HandleToClose for supported
   // types.

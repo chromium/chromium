@@ -84,7 +84,7 @@ bool NetworkInitializeConfig(sandbox::TargetConfig* config) {
       GetContentClient()->browser()->GetLPACCapabilityNameForNetworkService();
   if (lpac_capability.empty())
     return false;
-  auto app_container = config->GetAppContainer();
+  auto* app_container = config->GetAppContainer();
   if (!app_container)
     return false;
   app_container->AddCapability(lpac_capability.c_str());

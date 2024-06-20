@@ -452,9 +452,10 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
   for (HANDLE handle : policy_handle_list)
     startup_info->AddInheritedHandle(handle);
 
-  scoped_refptr<AppContainer> container = config_base->GetAppContainer();
-  if (container)
+  AppContainer* container = config_base->GetAppContainer();
+  if (container) {
     startup_info->SetAppContainer(container);
+  }
 
   startup_info->AddJobToAssociate(policy_base->GetJobHandle());
 

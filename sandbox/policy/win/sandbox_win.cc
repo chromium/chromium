@@ -824,19 +824,18 @@ ResultCode SandboxWin::AddAppContainerProfileToConfig(
   if (result != SBOX_ALL_OK)
     return result;
 
-  scoped_refptr<AppContainer> container = config->GetAppContainer();
-  result =
-      SetupAppContainerProfile(container.get(), command_line, sandbox_type);
+  result = SetupAppContainerProfile(config->GetAppContainer(), command_line,
+                                    sandbox_type);
   if (result != SBOX_ALL_OK)
     return result;
 
   DWORD granted_access;
   BOOL granted_access_status;
   bool access_check =
-      container->AccessCheck(command_line.GetProgram().value().c_str(),
-                             base::win::SecurityObjectType::kFile,
-                             GENERIC_READ | GENERIC_EXECUTE, &granted_access,
-                             &granted_access_status) &&
+      config->GetAppContainer()->AccessCheck(
+          command_line.GetProgram().value().c_str(),
+          base::win::SecurityObjectType::kFile, GENERIC_READ | GENERIC_EXECUTE,
+          &granted_access, &granted_access_status) &&
       granted_access_status;
   if (!access_check) {
     PLOG(ERROR) << "Sandbox cannot access executable. Check filesystem "

@@ -243,7 +243,7 @@ TEST(AppContainerTest, MAYBE_CreateAndDeleteAppContainerProfile) {
 
   std::wstring package_name = GenerateRandomPackageName();
   EXPECT_FALSE(ProfileExist(package_name));
-  scoped_refptr<AppContainerBase> profile_container =
+  std::unique_ptr<AppContainerBase> profile_container =
       AppContainerBase::CreateProfile(package_name.c_str(), L"Name",
                                       L"Description");
   ASSERT_NE(nullptr, profile_container.get());
@@ -265,19 +265,19 @@ TEST(AppContainerTest, MAYBE_CreateAndOpenAppContainer) {
 
   std::wstring package_name = GenerateRandomPackageName();
   EXPECT_FALSE(ProfileExist(package_name));
-  scoped_refptr<AppContainerBase> profile_container =
+  std::unique_ptr<AppContainerBase> profile_container =
       AppContainerBase::CreateProfile(package_name.c_str(), L"Name",
                                       L"Description");
   ASSERT_NE(nullptr, profile_container.get());
   EXPECT_TRUE(ProfileExist(package_name));
-  scoped_refptr<AppContainerBase> open_container =
+  std::unique_ptr<AppContainerBase> open_container =
       AppContainerBase::Open(package_name.c_str());
   ASSERT_NE(nullptr, open_container.get());
   EXPECT_TRUE(::EqualSid(profile_container->GetPackageSid().GetPSID(),
                          open_container->GetPackageSid().GetPSID()));
   EXPECT_TRUE(AppContainerBase::Delete(package_name.c_str()));
   EXPECT_FALSE(ProfileExist(package_name));
-  scoped_refptr<AppContainerBase> open_container2 =
+  std::unique_ptr<AppContainerBase> open_container2 =
       AppContainerBase::Open(package_name.c_str());
   EXPECT_FALSE(ProfileExist(package_name));
 }
@@ -286,7 +286,7 @@ TEST(AppContainerTest, SetLowPrivilegeAppContainer) {
   if (!features::IsAppContainerSandboxSupported())
     return;
   std::wstring package_name = GenerateRandomPackageName();
-  scoped_refptr<AppContainerBase> container =
+  std::unique_ptr<AppContainerBase> container =
       AppContainerBase::Open(package_name.c_str());
   ASSERT_NE(nullptr, container.get());
   container->SetEnableLowPrivilegeAppContainer(true);
@@ -298,7 +298,7 @@ TEST(AppContainerTest, OpenAppContainerAndGetSecurityCapabilities) {
     return;
 
   std::wstring package_name = GenerateRandomPackageName();
-  scoped_refptr<AppContainerBase> container =
+  std::unique_ptr<AppContainerBase> container =
       AppContainerBase::Open(package_name.c_str());
   ASSERT_NE(nullptr, container.get());
 
@@ -327,7 +327,7 @@ TEST(AppContainerTest, AccessCheckFile) {
 
   // We don't need a valid profile to do the access check tests.
   std::wstring package_name = GenerateRandomPackageName();
-  scoped_refptr<AppContainerBase> container =
+  std::unique_ptr<AppContainerBase> container =
       AppContainerBase::Open(package_name.c_str());
   container->AddCapability(base::win::WellKnownCapability::kInternetClient);
   base::ScopedTempDir temp_dir;
@@ -367,7 +367,7 @@ TEST(AppContainerTest, AccessCheckRegistry) {
 
   // We don't need a valid profile to do the access check tests.
   std::wstring package_name = GenerateRandomPackageName();
-  scoped_refptr<AppContainerBase> container =
+  std::unique_ptr<AppContainerBase> container =
       AppContainerBase::Open(package_name.c_str());
   // Ensure the key doesn't exist.
   RegDeleteKey(HKEY_CURRENT_USER, package_name.c_str());
@@ -397,7 +397,7 @@ TEST(AppContainerTest, ImpersonationCapabilities) {
     return;
 
   std::wstring package_name = GenerateRandomPackageName();
-  scoped_refptr<AppContainerBase> container =
+  std::unique_ptr<AppContainerBase> container =
       AppContainerBase::Open(package_name.c_str());
   ASSERT_NE(nullptr, container.get());
 
@@ -440,7 +440,7 @@ TEST(AppContainerTest, BuildImpersonationToken) {
           /*impersonation=*/false, TOKEN_DUPLICATE);
   ASSERT_TRUE(base_token);
   std::wstring package_name = GenerateRandomPackageName();
-  scoped_refptr<AppContainerBase> container =
+  std::unique_ptr<AppContainerBase> container =
       AppContainerBase::Open(package_name.c_str());
   ASSERT_NE(nullptr, container.get());
 
@@ -460,7 +460,7 @@ TEST(AppContainerTest, BuildPrimaryToken) {
           /*impersonation=*/false, TOKEN_DUPLICATE);
   ASSERT_TRUE(base_token);
   std::wstring package_name = GenerateRandomPackageName();
-  scoped_refptr<AppContainerBase> container =
+  std::unique_ptr<AppContainerBase> container =
       AppContainerBase::Open(package_name.c_str());
   ASSERT_NE(nullptr, container.get());
 
