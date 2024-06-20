@@ -7084,6 +7084,24 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="MediaPreviews.UI.Preview.{UiLocation}.Video.TotalVisibleDuration"
+    units="ms" expires_after="2025-07-01">
+  <owner>ahmedmoussa@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records the duration in which media preview dialog is actually receiving
+    camera feed. If the user switched between multiple cameras, a sum of the
+    camera feeds durations is recorded. If the dialog closes in under 50 ms,
+    this is treated the same way as if we didn't receive any frames. This would
+    help verifying whether the preview was actually seen by the user or not.
+  </summary>
+  <token key="UiLocation">
+    <variant name="PageInfo"/>
+    <variant name="Permissions"/>
+  </token>
+</histogram>
+
 <histogram name="MediaPreviews.UI.{UiLocation}.OriginTrialAllowed"
     enum="Boolean" expires_after="2025-05-08">
   <owner>mfoltz@chromium.org</owner>

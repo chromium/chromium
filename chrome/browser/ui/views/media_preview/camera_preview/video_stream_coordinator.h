@@ -70,6 +70,12 @@ class VideoStreamCoordinator
   void OnViewIsDeleting(views::View* observed_view) override;
   void OnViewBoundsChanged(views::View* observed_view) override;
 
+  // Called when the preview is about to close. This happens in:
+  // (1) Permission prompt when the user allows camera permission.
+  // (2) Page info camera subpage on destruction when there are no active
+  // devices.
+  void OnClosing();
+
  private:
   void StopInternal(mojo::Remote<video_capture::mojom::VideoSourceProvider>
                         video_source_provider = {});
@@ -84,6 +90,7 @@ class VideoStreamCoordinator
   const media_preview_metrics::Context metrics_context_;
   size_t video_stream_total_frames_;
   std::optional<base::TimeTicks> video_stream_start_time_;
+  base::TimeDelta total_visible_preview_duration_;
 
   bool has_permission_ = false;
 

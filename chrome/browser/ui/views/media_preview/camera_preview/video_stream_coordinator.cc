@@ -42,6 +42,8 @@ VideoStreamCoordinator::VideoStreamCoordinator(
 
 VideoStreamCoordinator::~VideoStreamCoordinator() {
   Stop();
+  media_preview_metrics::RecordTotalVisiblePreviewDuration(
+      metrics_context_, total_visible_preview_duration_);
 }
 
 void VideoStreamCoordinator::ConnectToDevice(
@@ -141,9 +143,9 @@ void VideoStreamCoordinator::StopInternal(
           metrics_context_, actual_params->requested_format.frame_rate);
     }
     if (video_stream_start_time_) {
-      int actual_fps =
-          video_stream_total_frames_ /
-          (base::TimeTicks::Now() - *video_stream_start_time_).InSecondsF();
+      const auto duration = base::TimeTicks::Now() - *video_stream_start_time_;
+      total_visible_preview_duration_ += duration;
+      int actual_fps = video_stream_total_frames_ / duration.InSecondsF();
       media_preview_metrics::RecordPreviewVideoActualFPS(metrics_context_,
                                                          actual_fps);
       video_stream_start_time_.reset();
@@ -184,4 +186,11 @@ void VideoStreamCoordinator::OnViewBoundsChanged(views::View* observed_view) {
 
 void VideoStreamCoordinator::OnPermissionChange(bool has_permission) {
   has_permission_ = has_permission;
+}
+
+void VideoStreamCoordinator::OnClosing() {
+  // Stop the video feed once a decision is made, as to record the correct
+  // duration of the feed. If we wait till destruction instead, the duration
+  // will not be accurate due to some async calls.
+  Stop();
 }

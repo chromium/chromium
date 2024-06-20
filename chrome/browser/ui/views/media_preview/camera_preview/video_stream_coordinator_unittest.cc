@@ -121,4 +121,9 @@ TEST_F(VideoStreamCoordinatorTest, ConnectToFrameHandlerAndReceiveFrames) {
   histogram_tester_.ExpectUniqueSample(
       "MediaPreviews.UI.Preview.Permissions.Video.RenderedPercent",
       /*bucket_min_value=*/50, 1);
+
+  coordinator_.reset();
+  histogram_tester_.ExpectUniqueSample(
+      "MediaPreviews.UI.Preview.Permissions.Video.TotalVisibleDuration",
+      /*bucket_min_value=*/750, 1);
 }
