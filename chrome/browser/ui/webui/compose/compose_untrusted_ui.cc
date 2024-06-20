@@ -97,6 +97,7 @@ webui::SetupWebUIDataSource(
       {"thumbsDown", IDS_COMPOSE_THUMBS_DOWN},
       {"thumbsUp", IDS_COMPOSE_THUMBS_UP},
       {"resultText", IDS_COMPOSE_RESULT_TEXT_LABEL},
+      {"resultUpdatedA11yMessage", IDS_COMPOSE_RESULT_UPDATED_A11Y_MESSAGE},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("enableAnimations",

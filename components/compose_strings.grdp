@@ -169,6 +169,9 @@
   <message name="IDS_COMPOSE_RESULT_TEXT_LABEL" desc="Accesibility label for the area holding the result text.">
     Result
   </message>
+  <message name="IDS_COMPOSE_RESULT_UPDATED_A11Y_MESSAGE" desc="Accessibility string read by screen readers when the text in the result dialog has changed.">
+    Result updated
+  </message>
 
   <!-- Errors -->
   <message name="IDS_COMPOSE_ERROR_TOO_SHORT" desc="Error that the input was too short.">
