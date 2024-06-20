@@ -34,6 +34,13 @@ public interface SafetyHubModuleDelegate {
     UpdateStatusProvider.UpdateStatus getUpdateStatus();
 
     /**
+     * Opens the Play Store page for the installed Chrome channel.
+     *
+     * @param context used to launch the play store intent.
+     */
+    void openGooglePlayStore(Context context);
+
+    /**
      * @return The current safe browsing state.
      */
     @SafeBrowsingState

@@ -81,6 +81,9 @@ public class SafetyHubFragment extends SafetyHubBaseFragment
                                 SafetyHubModuleProperties.UPDATE_CHECK_SAFETY_HUB_MODULE_KEYS)
                         .with(SafetyHubModuleProperties.IS_VISIBLE, true)
                         .with(SafetyHubModuleProperties.UPDATE_STATUS, mDelegate.getUpdateStatus())
+                        .with(
+                                SafetyHubModuleProperties.ON_CLICK_LISTENER,
+                                () -> mDelegate.openGooglePlayStore(getContext()))
                         .build();
 
         PropertyModelChangeProcessor.create(

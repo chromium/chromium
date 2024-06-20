@@ -5,10 +5,13 @@
 package org.chromium.chrome.browser.safety_hub;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 
 import androidx.annotation.NonNull;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.omaha.UpdateStatusProvider;
 import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
@@ -17,6 +20,7 @@ import org.chromium.chrome.browser.safe_browsing.SafeBrowsingBridge;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.sync.SyncService;
+import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /** An implementation of {@link SafetyHubModuleDelegate} */
@@ -60,6 +64,21 @@ public class SafetyHubModuleDelegateImpl implements SafetyHubModuleDelegate {
     @Override
     public UpdateStatusProvider.UpdateStatus getUpdateStatus() {
         return SafetyHubFetchServiceFactory.getForProfile(mProfile).getUpdateStatus();
+    }
+
+    @Override
+    public void openGooglePlayStore(Context context) {
+        if (!BuildConfig.IS_CHROME_BRANDED) {
+            return;
+        }
+
+        String chromeAppId = context.getPackageName();
+        Intent intent =
+                new Intent(
+                        Intent.ACTION_VIEW,
+                        Uri.parse(ContentUrlConstants.PLAY_STORE_URL_PREFIX + chromeAppId));
+
+        context.startActivity(intent);
     }
 
     @Override

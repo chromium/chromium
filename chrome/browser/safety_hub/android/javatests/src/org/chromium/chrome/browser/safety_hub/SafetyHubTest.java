@@ -8,6 +8,9 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.Intents.intending;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.anyIntent;
 import static androidx.test.espresso.matcher.ViewMatchers.hasSibling;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withChild;
@@ -19,8 +22,14 @@ import static org.hamcrest.Matchers.allOf;
 
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.app.Activity;
+import android.app.Instrumentation;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.View;
 
+import androidx.test.espresso.intent.Intents;
+import androidx.test.espresso.intent.matcher.IntentMatchers;
 import androidx.test.filters.LargeTest;
 import androidx.test.filters.MediumTest;
 
@@ -31,11 +40,13 @@ import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -47,6 +58,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.IOException;
@@ -120,6 +132,26 @@ public final class SafetyHubTest {
 
     private FakeNotificationPermissionReviewBridge mNotificationPermissionReviewBridge =
             new FakeNotificationPermissionReviewBridge();
+
+    private void executeWhileCapturingIntents(Runnable func) {
+        Intents.init();
+        try {
+            Intent intent = new Intent();
+            Instrumentation.ActivityResult result =
+                    new Instrumentation.ActivityResult(Activity.RESULT_OK, intent);
+            intending(anyIntent()).respondWith(result);
+
+            if (func != null) {
+                func.run();
+            }
+        } finally {
+            Intents.release();
+        }
+    }
+
+    private static String getPackageName() {
+        return ContextUtils.getApplicationContext().getPackageName();
+    }
 
     @Before
     public void setUp() {
@@ -331,6 +363,38 @@ public final class SafetyHubTest {
         onView(withText(safeBrowsingTitle)).perform(click());
 
         onViewWaiting(withText(R.string.prefs_safe_browsing_title)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"SafetyHubUpdateCheck"})
+    @CommandLineFlags.Add({
+        ChromeSwitches.FORCE_UPDATE_MENU_UPDATE_TYPE + "=update_available",
+    })
+    public void testUpdateCheckModule() {
+        // TODO(crbug.com/324562205): Move the initialization of the SafetyHubFetchService so that
+        // there is no dependency on ChromeTabbedActivity.
+        mSafetyHubFragmentTestRule.startSettingsActivity();
+        SafetyHubFragment safetyHubFragment = mSafetyHubFragmentTestRule.getFragment();
+
+        // Verify the update check module is displaying the "Update available" state.
+        String updateCheckTitle =
+                safetyHubFragment.getString(R.string.safety_check_updates_outdated);
+        onView(withText(updateCheckTitle)).check(matches(isDisplayed()));
+
+        if (BuildConfig.IS_CHROME_BRANDED) {
+            executeWhileCapturingIntents(
+                    () -> {
+                        // Open the Play Store.
+                        onView(withText(updateCheckTitle)).perform(click());
+
+                        intended(
+                                IntentMatchers.hasData(
+                                        Uri.parse(
+                                                ContentUrlConstants.PLAY_STORE_URL_PREFIX
+                                                        + getPackageName())));
+                    });
+        }
     }
 
     private void clickOnButtonNextToText(String text) {
