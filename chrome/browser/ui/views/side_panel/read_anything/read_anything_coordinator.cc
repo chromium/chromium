@@ -370,9 +370,11 @@ void ReadAnythingCoordinator::OnBrowserSetLastActive(Browser* browser) {
   }
   // This code is called as part of a screen2x data generation workflow, where
   // the browser is opened by a CLI and the read-anything side panel is
-  // automatically opened.
+  // automatically opened. Therefore we force the UI to show right away, as in
+  // tests.
   auto* side_panel_ui = browser->GetFeatures().side_panel_ui();
   if (side_panel_ui->GetCurrentEntryId() != SidePanelEntryId::kReadAnything) {
+    side_panel_ui->SetNoDelaysForTesting(true);  // IN-TEST
     side_panel_ui->Show(SidePanelEntryId::kReadAnything);
   }
 }

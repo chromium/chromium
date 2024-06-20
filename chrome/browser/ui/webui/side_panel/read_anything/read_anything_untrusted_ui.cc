@@ -24,6 +24,7 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "read_anything_untrusted_ui.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/resources/grit/webui_resources.h"
 #include "ui/views/style/platform_style.h"
@@ -202,6 +203,16 @@ void ReadAnythingUntrustedUI::CreateUntrustedPageHandler(
   read_anything_untrusted_page_handler_ =
       std::make_unique<ReadAnythingUntrustedPageHandler>(
           std::move(page), std::move(receiver), web_ui());
+
+  // This code is called as part of a screen2x data generation workflow, where
+  // the browser is opened by a CLI and the read-anything side panel is
+  // automatically opened. Therefore we force the UI to show right away rather
+  // than waiting for all UI artifacts to load, as in the general case.
+  if (features::IsDataCollectionModeForScreen2xEnabled()) {
+    if (embedder()) {
+      embedder()->ShowUI();
+    }
+  }
 }
 
 void ReadAnythingUntrustedUI::ShouldShowUI() {

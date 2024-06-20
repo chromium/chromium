@@ -62,6 +62,10 @@ class SidePanelUI {
   virtual content::WebContents* GetWebContentsForTest(SidePanelEntryId id) = 0;
 
   virtual void DisableAnimationsForTesting() = 0;
+
+  // Prevent content swapping delays from happening for testing.
+  // This should be called before the side panel is first shown.
+  virtual void SetNoDelaysForTesting(bool no_delays_for_testing) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UI_H_

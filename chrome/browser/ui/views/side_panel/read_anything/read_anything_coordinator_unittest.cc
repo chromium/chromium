@@ -272,9 +272,8 @@ class ReadAnythingCoordinatorScreen2xDataCollectionModeTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(40851192): Re-enable this test once the data collection script is fixed.
 TEST_F(ReadAnythingCoordinatorScreen2xDataCollectionModeTest,
-       DISABLED_OnBrowserSetLastActive_SidePanelIsVisible) {
+       OnBrowserSetLastActive_SidePanelIsVisible) {
   Browser* browser = browser_view()->browser();
   OnBrowserSetLastActive(browser);
 

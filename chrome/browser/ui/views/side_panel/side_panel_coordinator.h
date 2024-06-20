@@ -85,6 +85,7 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   bool IsSidePanelShowing() const override;
   bool IsSidePanelEntryShowing(
       const SidePanelEntry::Key& entry_key) const override;
+  void SetNoDelaysForTesting(bool no_delays_for_testing) override;
 
   // Returns the web contents in a side panel if one exists.
   content::WebContents* GetWebContentsForTest(SidePanelEntryId id) override;
@@ -99,10 +100,6 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   void UpdateNewTabButtonState();
 
   void UpdateHeaderPinButtonState();
-
-  // Prevent content swapping delays from happening for testing.
-  // This should be called before the side panel is first shown.
-  void SetNoDelaysForTesting(bool no_delays_for_testing);
 
   SidePanelEntry* GetCurrentSidePanelEntryForTesting() {
     return current_entry_.get();
