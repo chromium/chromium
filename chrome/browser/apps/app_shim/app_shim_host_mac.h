@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/threading/thread_checker.h"
+#include "chrome/browser/web_applications/os_integration/mac/app_shim_launch.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut_mac.h"
 #include "chrome/common/mac/app_shim.mojom.h"
 #include "components/metrics/histogram_child_process.h"

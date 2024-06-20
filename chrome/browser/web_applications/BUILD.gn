@@ -386,8 +386,12 @@ source_set("web_applications") {
 
   if (is_mac) {
     sources += [
+      "os_integration/mac/app_shim_launch.h",
+      "os_integration/mac/app_shim_launch.mm",
       "os_integration/mac/app_shim_registry.cc",
       "os_integration/mac/app_shim_registry.h",
+      "os_integration/mac/app_shim_termination_observer.h",
+      "os_integration/mac/app_shim_termination_observer.mm",
       "os_integration/mac/apps_folder_support.h",
       "os_integration/mac/apps_folder_support.mm",
       "os_integration/mac/bundle_info_plist.h",
