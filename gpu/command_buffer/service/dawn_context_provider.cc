@@ -353,8 +353,8 @@ bool DawnSharedState::Initialize(
   if (features::kSkiaGraphiteDawnSkipValidation.Get()) {
     enabled_toggles.push_back("skip_validation");
   }
-  enabled_toggles.push_back("disable_robustness");
 #endif
+  enabled_toggles.push_back("disable_robustness");
   enabled_toggles.push_back("disable_lazy_clear_for_mapped_at_creation_buffer");
 
 #if BUILDFLAG(IS_WIN)
