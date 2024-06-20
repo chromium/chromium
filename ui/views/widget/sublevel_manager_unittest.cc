@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(https://crbug.com/344639839): fix the unsafe buffer errors in this file,
-// then remove this pragma.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/views/widget/sublevel_manager.h"
 
 #include <algorithm>
@@ -105,7 +99,7 @@ class SublevelManagerTest : public ViewsTestBase,
 TEST_P(SublevelManagerTest, EnsureSublevel) {
   std::unique_ptr<Widget> root =
       CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
-  std::unique_ptr<Widget> children[3];
+  std::array<std::unique_ptr<Widget>, 3> children;
 
   for (int sublevel = 0; sublevel < 3; sublevel++) {
     children[sublevel] = CreateChildWidget(
@@ -115,12 +109,13 @@ TEST_P(SublevelManagerTest, EnsureSublevel) {
 
   ShowWidget(root);
 
-  int order[] = {0, 1, 2};
+  auto order = std::to_array<size_t>({0, 1, 2});
   do {
-    for (int i : order)
+    for (size_t i : order) {
       ShowWidget(children[i]);
-    for (int i = 0; i < 3; i++)
-      for (int j = 0; j < 3; j++) {
+    }
+    for (size_t i = 0; i < order.size(); i++) {
+      for (size_t j = 0; j < order.size(); j++) {
         if (i < j) {
           EXPECT_FALSE(test::WidgetTest::IsWindowStackedAbove(
               children[i].get(), children[j].get()));
@@ -129,7 +124,8 @@ TEST_P(SublevelManagerTest, EnsureSublevel) {
               children[i].get(), children[j].get()));
         }
       }
-  } while (std::next_permutation(order, order + 3));
+    }
+  } while (std::next_permutation(order.begin(), order.end()));
 }
 
 // Level should takes precedence over sublevel.
@@ -237,14 +233,16 @@ TEST_P(SublevelManagerTest, GetSublevel) {
 TEST_P(SublevelManagerTest, GrandChildren) {
   std::unique_ptr<Widget> root =
       CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
-  std::unique_ptr<Widget> children[2];
-  std::unique_ptr<Widget> grand_children[2][2];
+  std::array<std::unique_ptr<Widget>, 2> children;
+  std::array<std::array<std::unique_ptr<Widget>, 2>, 2> grand_children;
 
-  for (int i = 0; i < 2; i++) {
+  static_assert(children.size() == grand_children.size());
+
+  for (size_t i = 0; i < children.size(); i++) {
     children[i] = CreateChildWidget(
         root.get(), ui::ZOrderLevel::kNormal, i,
         std::get<Widget::InitParams::Activatable>(GetParam()));
-    for (int j = 0; j < 2; j++) {
+    for (size_t j = 0; j < grand_children[i].size(); j++) {
       grand_children[i][j] = CreateChildWidget(
           children[i].get(), ui::ZOrderLevel::kNormal, j,
           std::get<Widget::InitParams::Activatable>(GetParam()));
@@ -298,10 +296,10 @@ TEST_P(SublevelManagerTest, WidgetReparent) {
 TEST_P(SublevelManagerTest, SkipInvisibleWidget) {
   std::unique_ptr<Widget> root =
       CreateTestWidget(Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
-  std::unique_ptr<Widget> children[3];
+  std::array<std::unique_ptr<Widget>, 3> children;
 
   ShowWidget(root);
-  for (int i = 0; i < 3; i++) {
+  for (size_t i = 0; i < children.size(); i++) {
     children[i] = CreateChildWidget(
         root.get(), ui::ZOrderLevel::kNormal, i,
         std::get<Widget::InitParams::Activatable>(GetParam()));

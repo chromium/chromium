@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(https://crbug.com/344639839): fix the unsafe buffer errors in this file,
-// then remove this pragma.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/views/examples/text_example.h"
 
 #include <memory>
@@ -323,13 +317,17 @@ void TextExample::PrefixComboboxChanged() {
 }
 
 void TextExample::WeightComboboxChanged() {
-  constexpr gfx::Font::Weight kFontWeights[]{
-      gfx::Font::Weight::THIN,   gfx::Font::Weight::EXTRA_LIGHT,
-      gfx::Font::Weight::LIGHT,  gfx::Font::Weight::NORMAL,
-      gfx::Font::Weight::MEDIUM, gfx::Font::Weight::SEMIBOLD,
-      gfx::Font::Weight::BOLD,   gfx::Font::Weight::EXTRA_BOLD,
+  constexpr auto kFontWeights = std::to_array<gfx::Font::Weight>({
+      gfx::Font::Weight::THIN,
+      gfx::Font::Weight::EXTRA_LIGHT,
+      gfx::Font::Weight::LIGHT,
+      gfx::Font::Weight::NORMAL,
+      gfx::Font::Weight::MEDIUM,
+      gfx::Font::Weight::SEMIBOLD,
+      gfx::Font::Weight::BOLD,
+      gfx::Font::Weight::EXTRA_BOLD,
       gfx::Font::Weight::BLACK,
-  };
+  });
   text_view_->SetWeight(kFontWeights[weight_cb_->GetSelectedIndex().value()]);
 }
 

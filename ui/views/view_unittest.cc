@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(https://crbug.com/344639839): fix the unsafe buffer errors in this file,
-// then remove this pragma.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/views/view.h"
 
 #include <stddef.h>
@@ -6207,7 +6201,7 @@ TEST_F(ViewTest, ChildViewZOrderChanged) {
   // 2nd child should be now on top, i.e. the last element in the array returned
   // by GetChildrenInZOrder(). Its layer should also be above the others.
   // The rest of the children and layers order should be unchanged.
-  const size_t expected_order[] = {0, 1, 3, 4, 2};
+  constexpr auto expected_order = std::to_array<size_t>({0, 1, 3, 4, 2});
   children = view->GetChildrenInZOrder();
   EXPECT_EQ(kNumChildren + 1, children.size());
   EXPECT_EQ(kNumChildren + 1, layers.size());

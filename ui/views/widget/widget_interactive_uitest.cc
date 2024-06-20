@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(https://crbug.com/344639839): fix the unsafe buffer errors in this file,
-// then remove this pragma.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <stddef.h>
 
 #include <memory>
@@ -749,10 +743,13 @@ TEST_F(WidgetTestInteractive, MAYBE_ChildStackedRelativeToParent) {
 
 TEST_F(WidgetTestInteractive, ChildWidgetStackAbove) {
   WidgetAutoclosePtr toplevel(CreateTopLevelPlatformWidget());
-  Widget* children[] = {CreateChildPlatformWidget(toplevel->GetNativeView()),
-                        CreateChildPlatformWidget(toplevel->GetNativeView()),
-                        CreateChildPlatformWidget(toplevel->GetNativeView())};
-  int order[] = {0, 1, 2};
+  auto children = std::to_array<Widget*>(
+      {CreateChildPlatformWidget(toplevel->GetNativeView()),
+       CreateChildPlatformWidget(toplevel->GetNativeView()),
+       CreateChildPlatformWidget(toplevel->GetNativeView())});
+  auto order = std::to_array<size_t>({0, 1, 2});
+
+  static_assert(children.size() == order.size());
 
   children[0]->ShowInactive();
   children[1]->ShowInactive();
@@ -762,23 +759,29 @@ TEST_F(WidgetTestInteractive, ChildWidgetStackAbove) {
   do {
     children[order[1]]->StackAboveWidget(children[order[0]]);
     children[order[2]]->StackAboveWidget(children[order[1]]);
-    for (int i = 0; i < 3; i++)
-      for (int j = 0; j < 3; j++)
-        if (i < j)
+    for (size_t i = 0; i < order.size(); i++) {
+      for (size_t j = 0; j < order.size(); j++) {
+        if (i < j) {
           EXPECT_FALSE(
               IsWindowStackedAbove(children[order[i]], children[order[j]]));
-        else if (i > j)
+        } else if (i > j) {
           EXPECT_TRUE(
               IsWindowStackedAbove(children[order[i]], children[order[j]]));
-  } while (std::next_permutation(order, order + 3));
+        }
+      }
+    }
+  } while (std::next_permutation(order.begin(), order.end()));
 }
 
 TEST_F(WidgetTestInteractive, ChildWidgetStackAtTop) {
   WidgetAutoclosePtr toplevel(CreateTopLevelPlatformWidget());
-  Widget* children[] = {CreateChildPlatformWidget(toplevel->GetNativeView()),
-                        CreateChildPlatformWidget(toplevel->GetNativeView()),
-                        CreateChildPlatformWidget(toplevel->GetNativeView())};
-  int order[] = {0, 1, 2};
+  auto children = std::to_array<Widget*>(
+      {CreateChildPlatformWidget(toplevel->GetNativeView()),
+       CreateChildPlatformWidget(toplevel->GetNativeView()),
+       CreateChildPlatformWidget(toplevel->GetNativeView())});
+  auto order = std::to_array<size_t>({0, 1, 2});
+
+  static_assert(children.size() == order.size());
 
   children[0]->ShowInactive();
   children[1]->ShowInactive();
@@ -788,15 +791,18 @@ TEST_F(WidgetTestInteractive, ChildWidgetStackAtTop) {
   do {
     children[order[1]]->StackAtTop();
     children[order[2]]->StackAtTop();
-    for (int i = 0; i < 3; i++)
-      for (int j = 0; j < 3; j++)
-        if (i < j)
+    for (size_t i = 0; i < order.size(); i++) {
+      for (size_t j = 0; j < order.size(); j++) {
+        if (i < j) {
           EXPECT_FALSE(
               IsWindowStackedAbove(children[order[i]], children[order[j]]));
-        else if (i > j)
+        } else if (i > j) {
           EXPECT_TRUE(
               IsWindowStackedAbove(children[order[i]], children[order[j]]));
-  } while (std::next_permutation(order, order + 3));
+        }
+      }
+    }
+  } while (std::next_permutation(order.begin(), order.end()));
 }
 
 #if BUILDFLAG(IS_WIN)

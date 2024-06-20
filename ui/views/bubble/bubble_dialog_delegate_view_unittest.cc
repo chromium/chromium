@@ -1373,9 +1373,8 @@ TEST_F(BubbleUmaLoggerTest, LogMetricFromView) {
   base::HistogramTester histogram;
   auto label = std::make_unique<Label>();
   TestBubbleUmaLogger logger;
-  const char* allow_names[] = {"Label"};
-  logger.set_allowed_class_names_for_testing(
-      base::make_span(allow_names, std::size(allow_names)));
+  const std::array<const char*, 1> allow_names({"Label"});
+  logger.set_allowed_class_names_for_testing(allow_names);
   logger.set_bubble_view(label.get());
   histogram.ExpectTotalCount("Bubble.All.Metric1", 0);
   histogram.ExpectTotalCount("Bubble.Label.Metric1", 0);
@@ -1393,9 +1392,8 @@ TEST_F(BubbleUmaLoggerTest, LogMetricFromDelegate) {
   delegate.SetContentsView(std::make_unique<Label>());
 
   TestBubbleUmaLogger logger;
-  const char* allow_names[] = {"Label"};
-  logger.set_allowed_class_names_for_testing(
-      base::make_span(allow_names, std::size(allow_names)));
+  const std::array<const char*, 1> allow_names({"Label"});
+  logger.set_allowed_class_names_for_testing(allow_names);
   logger.set_delegate(&delegate);
 
   histogram.ExpectTotalCount("Bubble.All.Metric1", 0);

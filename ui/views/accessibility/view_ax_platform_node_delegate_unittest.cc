@@ -2,12 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(UNSAFE_BUFFERS_BUILD)
-// TODO(https://crbug.com/344639839): fix the unsafe buffer errors in this file,
-// then remove this pragma.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ui/views/accessibility/view_ax_platform_node_delegate.h"
 
 #include <memory>
@@ -106,13 +100,13 @@ class TestTableModel : public ui::TableModel {
   size_t RowCount() override { return 10; }
 
   std::u16string GetText(size_t row, int column_id) override {
-    const char* const cells[5][4] = {
-        {"Orange", "Orange", "South america", "$5"},
-        {"Apple", "Green", "Canada", "$3"},
-        {"Blue berries", "Blue", "Mexico", "$10.3"},
-        {"Strawberries", "Red", "California", "$7"},
-        {"Cantaloupe", "Orange", "South america", "$5"},
-    };
+    const std::array<std::array<const char* const, 4>, 5> cells({
+        {{"Orange", "Orange", "South america", "$5"}},
+        {{"Apple", "Green", "Canada", "$3"}},
+        {{"Blue berries", "Blue", "Mexico", "$10.3"}},
+        {{"Strawberries", "Red", "California", "$7"}},
+        {{"Cantaloupe", "Orange", "South america", "$5"}},
+    });
 
     return base::ASCIIToUTF16(cells[row % 5][column_id]);
   }
