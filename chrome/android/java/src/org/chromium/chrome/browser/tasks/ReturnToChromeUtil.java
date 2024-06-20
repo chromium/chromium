@@ -665,6 +665,11 @@ public final class ReturnToChromeUtil {
             return false;
         }
 
+        // If the current session is due to recreated, don't show a NTP homepage.
+        if (isFromRecreate(bundle)) {
+            return false;
+        }
+
         return shouldShowHomeSurfaceAtStartupImpl(
                 /* useNewReturnTime= */ true, intent, tabModelSelector, inactivityTracker);
     }
@@ -674,6 +679,13 @@ public final class ReturnToChromeUtil {
         if (bundle == null) return false;
 
         return bundle.getBoolean(FoldTransitionController.DID_CHANGE_TABLET_MODE, false);
+    }
+
+    /** Returns whether a recreate was happened. */
+    private static boolean isFromRecreate(Bundle bundle) {
+        if (bundle == null) return false;
+
+        return bundle.getBoolean(ChromeActivity.IS_FROM_RECREATING, false);
     }
 
     /**
