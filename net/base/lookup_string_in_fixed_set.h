@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_span.h"
 #include "net/base/net_export.h"
 
 namespace net {
@@ -145,6 +146,13 @@ class NET_EXPORT FixedSetIncrementalLookup {
   // Span start points to the current position in the graph indicating the
   // current state of the automaton. Is as empty span if the graph is exhausted.
   base::span<const uint8_t> bytes_;
+
+  // `original_bytes_` bytes isn't used per se, as we care only about the
+  // current state in `bytes_` (which is a subspan), but is kept here as
+  // raw_span<> because of its anti-UaF properties. `bytes_`, due to being
+  // constantly modified, isn't a good candidate for raw_span<> for performance
+  // reasons: `bytes_ = bytes_.subspan(N)` would be costly.
+  base::raw_span<const uint8_t> original_bytes_;
 
   // Contains the current decoder state. If true, `bytes_` points to a label
   // character or a return code. If false, `bytes_` points to a sequence of

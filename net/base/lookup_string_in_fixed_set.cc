@@ -82,7 +82,7 @@ bool GetReturnValue(uint8_t byte, int* return_value) {
 
 FixedSetIncrementalLookup::FixedSetIncrementalLookup(
     base::span<const uint8_t> graph)
-    : bytes_(graph) {}
+    : bytes_(graph), original_bytes_(graph) {}
 
 FixedSetIncrementalLookup::FixedSetIncrementalLookup(
     const FixedSetIncrementalLookup& other) = default;
