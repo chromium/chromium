@@ -395,9 +395,17 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   void SetPrerenderMetricSuffix(const String& suffix) {
     prerender_metric_suffix_ = suffix;
   }
+  void SetShouldWarmUpCompositorOnPrerender(
+      bool should_warm_up_compositor_on_prerender) {
+    should_warm_up_compositor_on_prerender_ =
+        should_warm_up_compositor_on_prerender;
+  }
   bool IsPrerendering() const { return is_prerendering_; }
   const String& PrerenderMetricSuffix() const {
     return prerender_metric_suffix_;
+  }
+  bool ShouldWarmUpCompositorOnPrerender() {
+    return should_warm_up_compositor_on_prerender_;
   }
 
   void SetTextAutosizerPageInfo(
@@ -667,6 +675,14 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   // prerender activation; it does not go from false to true.
   bool is_prerendering_ = false;
   String prerender_metric_suffix_;
+
+  // If true, warms up compositor on a certain loading event if the page is
+  // under prerendering. Only valid when the cc feature `kWarmUpCompositor`
+  // (controls the independent cc internal feature) and blink feature
+  // `kPrerender2WarmUpCompositor` (manages the trigger point of that cc
+  // feature for prerender case) are enabled. Please see crbug.com/41496019 for
+  // more details.
+  bool should_warm_up_compositor_on_prerender_ = false;
 
   // Whether the the Page's main document is a Fenced Frame document. This is
   // only set for the MPArch implementation and is true when the corresponding

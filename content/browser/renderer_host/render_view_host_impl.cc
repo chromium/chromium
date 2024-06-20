@@ -463,17 +463,19 @@ bool RenderViewHostImpl::CreateRenderView(
 
   if (frame_tree_->is_prerendering() ||
       frame_tree_->page_delegate()->IsPageInPreviewMode()) {
-    std::string suffix;
+    auto prerender_param = blink::mojom::PrerenderParam::New();
     if (frame_tree_->is_prerendering()) {
       auto* prerender_host =
           static_cast<PrerenderHost*>(frame_tree_->delegate());
       CHECK(prerender_host);
-      suffix = prerender_host->GetHistogramSuffix();
+      prerender_param->page_metric_suffix =
+          prerender_host->GetHistogramSuffix();
+      prerender_param->should_warm_up_compositor =
+          prerender_host->should_warm_up_compositor();
     } else {
-      suffix = ".Preview";
+      prerender_param->page_metric_suffix = ".Preview";
+      prerender_param->should_warm_up_compositor = false;
     }
-    auto prerender_param = blink::mojom::PrerenderParam::New();
-    prerender_param->page_metric_suffix = std::move(suffix);
     params->prerender_param = std::move(prerender_param);
   }
 

@@ -369,6 +369,10 @@ class CONTENT_EXPORT PrerenderHost : public FrameTree::Delegate,
     return attributes_.no_vary_search_expected;
   }
 
+  bool should_warm_up_compositor() const {
+    return attributes_.should_warm_up_compositor;
+  }
+
   bool IsInitialNavigation(const NavigationRequest& navigation_request) const;
 
   bool were_headers_received() const { return were_headers_received_; }

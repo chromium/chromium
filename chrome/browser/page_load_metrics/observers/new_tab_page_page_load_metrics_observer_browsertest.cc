@@ -6,6 +6,8 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "chrome/browser/preloading/chrome_preloading.h"
+#include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/chrome_test_utils.h"
@@ -59,14 +61,20 @@ IN_PROC_BROWSER_TEST_F(NewTabPagePageLoadMetricsBrowserTest,
   GURL prerender_url = embedded_test_server()->GetURL("/simple.html");
 
   // Start Omnibox triggered prerendering.
-  std::unique_ptr<content::PrerenderHandle> prerender_handle =
-      GetActiveWebContents()->StartPrerendering(
-          prerender_url, content::PreloadingTriggerType::kEmbedder,
-          prerender_utils::kDirectUrlInputMetricSuffix,
-          ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                    ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          content::PreloadingHoldbackStatus::kUnspecified, nullptr,
-          /*url_match_predicate,=*/{}, /*navigation_handle_callback=*/{});
+  auto* preloading_data = content::PreloadingData::GetOrCreateForWebContents(
+      GetActiveWebContents());
+  content::PreloadingURLMatchCallback same_url_matcher =
+      content::PreloadingData::GetSameURLMatcher(prerender_url);
+  content::PreloadingAttempt* preloading_attempt =
+      preloading_data->AddPreloadingAttempt(
+          chrome_preloading_predictor::kOmniboxDirectURLInput,
+          content::PreloadingType::kPrerender, same_url_matcher,
+          /*planned_max_preloading_type=*/std::nullopt,
+          GetActiveWebContents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
+  PrerenderManager::CreateForWebContents(GetActiveWebContents());
+  base::WeakPtr<content::PrerenderHandle> prerender_handle =
+      PrerenderManager::FromWebContents(GetActiveWebContents())
+          ->StartPrerenderDirectUrlInput(prerender_url, *preloading_attempt);
   EXPECT_TRUE(prerender_handle);
   content::test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(
       *GetActiveWebContents(), prerender_url);

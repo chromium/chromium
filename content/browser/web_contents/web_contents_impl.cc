@@ -10935,6 +10935,7 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
     PreloadingTriggerType trigger_type,
     const std::string& embedder_histogram_suffix,
     ui::PageTransition page_transition,
+    bool should_warm_up_compositor,
     PreloadingHoldbackStatus holdback_status_override,
     PreloadingAttempt* preloading_attempt,
     base::RepeatingCallback<bool(const GURL&)> url_match_predicate,
@@ -10949,7 +10950,8 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
       content::ChildProcessHost::kInvalidUniqueID, GetWeakPtr(),
       /*initiator_frame_token=*/std::nullopt,
       /*initiator_frame_tree_node_id=*/RenderFrameHost::kNoFrameTreeNodeId,
-      ukm::kInvalidSourceId, page_transition, std::move(url_match_predicate),
+      ukm::kInvalidSourceId, page_transition, should_warm_up_compositor,
+      std::move(url_match_predicate),
       std::move(prerender_navigation_handle_callback));
   attributes.holdback_status_override = holdback_status_override;
 

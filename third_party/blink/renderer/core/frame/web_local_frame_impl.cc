@@ -2540,6 +2540,15 @@ bool WebLocalFrameImpl::ShouldWarmUpCompositorOnPrerenderFromThisPoint(
     return false;
   }
 
+  if (!GetFrame()->IsOutermostMainFrame()) {
+    return false;
+  }
+
+  if (!GetFrame()->GetPage() || !GetFrame()->GetPage()->IsPrerendering() ||
+      !GetFrame()->GetPage()->ShouldWarmUpCompositorOnPrerender()) {
+    return false;
+  }
+
   static const bool is_prerender2_warm_up_compositor_enabled =
       base::FeatureList::IsEnabled(features::kPrerender2WarmUpCompositor);
   // TODO(crbug.com/41496019): Seek the best point to start warm-up.
@@ -2547,16 +2556,6 @@ bool WebLocalFrameImpl::ShouldWarmUpCompositorOnPrerenderFromThisPoint(
       features::kPrerender2WarmUpCompositorTriggerPoint.Get();
   if (!is_prerender2_warm_up_compositor_enabled ||
       prerender2_warm_up_compositor_trigger_point != trigger_point) {
-    return false;
-  }
-
-  if (!GetFrame()->IsOutermostMainFrame()) {
-    return false;
-  }
-
-  // TODO(crbug.com/41496019): Limit the use of this warm-up to prerender
-  // trigger types that are most affected by this.
-  if (!GetFrame()->GetPage() || !GetFrame()->GetPage()->IsPrerendering()) {
     return false;
   }
 

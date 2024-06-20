@@ -280,6 +280,10 @@ PrerenderManager::StartPrerenderBookmark(const GURL& prerendering_url) {
       prerendering_url, content::PreloadingTriggerType::kEmbedder,
       prerender_utils::kBookmarkBarMetricSuffix,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
+      // Considering the characteristics of triggers (e.g., the duration from
+      // trigger to activation), warm-up is not enabled for now on this trigger.
+      // Please see crbug and its doc for more details.
+      /*should_warm_up_compositor=*/false,
       content::PreloadingHoldbackStatus::kUnspecified, preloading_attempt,
       /*url_match_predicate=*/{},
       std::move(prerender_navigation_handle_callback));
@@ -335,6 +339,10 @@ PrerenderManager::StartPrerenderNewTabPage(
       prerendering_url, content::PreloadingTriggerType::kEmbedder,
       prerender_utils::kNewTabPageMetricSuffix,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
+      // Considering the characteristics of triggers (e.g., the duration from
+      // trigger to activation), warm-up is not enabled for now on this trigger.
+      // Please see crbug and its doc for more details.
+      /*should_warm_up_compositor=*/false,
       content::PreloadingHoldbackStatus::kUnspecified, preloading_attempt,
       /*url_match_predicate=*/{},
       std::move(prerender_navigation_handle_callback));
@@ -395,6 +403,7 @@ PrerenderManager::StartPrerenderDirectUrlInput(
       prerender_utils::kDirectUrlInputMetricSuffix,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+      /*should_warm_up_compositor=*/true,
       content::PreloadingHoldbackStatus::kUnspecified, &preloading_attempt,
       /*url_match_predicate=*/{}, /*prerender_navigation_handle_callback=*/{});
 
@@ -433,8 +442,8 @@ void PrerenderManager::StartPrerenderSearchResult(
           prerender_utils::kDefaultSearchEngineMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          holdback_status_override, preloading_attempt.get(),
-          std::move(url_match_predicate),
+          /*should_warm_up_compositor=*/true, holdback_status_override,
+          preloading_attempt.get(), std::move(url_match_predicate),
           /*prerender_navigation_handle_callback=*/{});
 
   if (prerender_handle) {

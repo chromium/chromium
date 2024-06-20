@@ -635,6 +635,8 @@ WebViewImpl::WebViewImpl(
     page_->SetIsPrerendering(true);
     page_->SetPrerenderMetricSuffix(
         String(prerender_param->page_metric_suffix));
+    page_->SetShouldWarmUpCompositorOnPrerender(
+        prerender_param->should_warm_up_compositor);
   }
 
   // TODO(crbug.com/40287334): Remove the is_inside_portal parameter.

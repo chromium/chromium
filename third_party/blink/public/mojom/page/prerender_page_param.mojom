@@ -5,8 +5,12 @@
 module blink.mojom;
 
 // The details of a prerendering window.
-// TODO(https://crbug.com/336963892): Plumb the prerendering page settings,
-// such as whether to perform early FrameSink creation, to the renderer side.
 struct PrerenderParam {
   string page_metric_suffix;
+
+  // If true, warms up compositor on a certain loading event if the page is
+  // under prerendering. Please see crbug.com/41496019 and
+  // comments on Page::should_warm_up_compositor_on_prerender_ for more
+  // details.
+  bool should_warm_up_compositor;
 };

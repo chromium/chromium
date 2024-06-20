@@ -292,6 +292,7 @@ bool PrerendererImpl::MaybePrerender(
       rfhi.GetProcess()->GetID(), web_contents->GetWeakPtr(),
       rfhi.GetFrameToken(), rfhi.GetFrameTreeNodeId(),
       rfhi.GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
+      /*should_warm_up_compositor=*/false,
       /*url_match_predicate=*/{},
       /*prerender_navigation_handle_callback=*/{},
       rfhi.GetDevToolsNavigationToken());

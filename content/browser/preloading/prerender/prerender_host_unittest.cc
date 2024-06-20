@@ -286,7 +286,7 @@ class PrerenderHostTest : public RenderViewHostImplTestHarness {
         rfh->GetProcess()->GetID(), contents()->GetWeakPtr(),
         rfh->GetFrameToken(), rfh->GetFrameTreeNodeId(),
         rfh->GetPageUkmSourceId(), ui::PAGE_TRANSITION_LINK,
-        std::move(url_match_predicate),
+        /*should_warm_up_compositor=*/false, std::move(url_match_predicate),
         /*prerender_navigation_handle_callback=*/{});
   }
 

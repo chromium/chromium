@@ -204,6 +204,7 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
             contents()->GetWeakPtr(), rfh->GetFrameToken(),
             rfh->GetFrameTreeNodeId(), rfh->GetPageUkmSourceId(),
             ui::PAGE_TRANSITION_LINK,
+            /*should_warm_up_compositor=*/false,
             /*url_match_predicate=*/{},
             /*prerender_navigation_handle_callback=*/{});
       case PreloadingTriggerType::kEmbedder:
@@ -221,6 +222,7 @@ class PrerenderHostRegistryTest : public RenderViewHostImplTestHarness {
             /*initiator_ukm_id=*/ukm::kInvalidSourceId,
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                       ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+            /*should_warm_up_compositor=*/false,
             /*url_match_predicate=*/{},
             /*prerender_navigation_handle_callback=*/{});
     }

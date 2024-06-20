@@ -30,6 +30,7 @@ PrerenderAttributes::PrerenderAttributes(
     int initiator_frame_tree_node_id,
     ukm::SourceId initiator_ukm_id,
     ui::PageTransition transition_type,
+    bool should_warm_up_compositor,
     base::RepeatingCallback<bool(const GURL&)> url_match_predicate,
     base::RepeatingCallback<void(NavigationHandle&)>
         prerender_navigation_handle_callback,
@@ -49,6 +50,7 @@ PrerenderAttributes::PrerenderAttributes(
       initiator_frame_tree_node_id(initiator_frame_tree_node_id),
       initiator_ukm_id(initiator_ukm_id),
       transition_type(transition_type),
+      should_warm_up_compositor(should_warm_up_compositor),
       url_match_predicate(std::move(url_match_predicate)),
       prerender_navigation_handle_callback(
           std::move(prerender_navigation_handle_callback)),

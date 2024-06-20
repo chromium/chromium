@@ -38,6 +38,7 @@ struct CONTENT_EXPORT PrerenderAttributes {
       int initiator_frame_tree_node_id,
       ukm::SourceId initiator_ukm_id,
       ui::PageTransition transition_type,
+      bool should_warm_up_compositor,
       base::RepeatingCallback<bool(const GURL&)> url_match_predicate,
       base::RepeatingCallback<void(NavigationHandle&)>
           prerender_navigation_handle_callback,
@@ -98,6 +99,11 @@ struct CONTENT_EXPORT PrerenderAttributes {
   ukm::SourceId initiator_ukm_id = ukm::kInvalidSourceId;
 
   ui::PageTransition transition_type;
+
+  // If true, warms up compositor on a certain loading event of prerender
+  // initial navigation. Please see crbug.com/41496019 and comments on
+  // Page::should_warm_up_compositor_on_prerender_ for more details.
+  bool should_warm_up_compositor = false;
 
   // If the caller wants to override the default holdback processing, they can
   // set this. Otherwise, it will be computed as part of

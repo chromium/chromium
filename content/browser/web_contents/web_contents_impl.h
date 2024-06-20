@@ -943,6 +943,7 @@ class CONTENT_EXPORT WebContentsImpl
       PreloadingTriggerType trigger_type,
       const std::string& embedder_histogram_suffix,
       ui::PageTransition page_transition,
+      bool should_warm_up_compositor,
       PreloadingHoldbackStatus holdback_status_override,
       PreloadingAttempt* preloading_attempt,
       base::RepeatingCallback<bool(const GURL&)>,

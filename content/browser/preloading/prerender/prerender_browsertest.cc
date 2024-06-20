@@ -459,10 +459,11 @@ class PrerenderBrowserTest : public ContentBrowserTest,
 
   std::unique_ptr<PrerenderHandle> AddEmbedderTriggeredPrerender(
       const GURL& prerendering_url,
-      PreloadingAttempt* preloading_attempt = nullptr) {
+      PreloadingAttempt* preloading_attempt = nullptr,
+      bool should_warm_up_compositor = false) {
     std::unique_ptr<PrerenderHandle> handle =
-        AddEmbedderTriggeredPrerenderAsync(prerendering_url,
-                                           preloading_attempt);
+        AddEmbedderTriggeredPrerenderAsync(prerendering_url, preloading_attempt,
+                                           should_warm_up_compositor);
     EXPECT_TRUE(handle);
     test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(*web_contents(),
                                                               prerendering_url);
@@ -471,13 +472,15 @@ class PrerenderBrowserTest : public ContentBrowserTest,
 
   std::unique_ptr<PrerenderHandle> AddEmbedderTriggeredPrerenderAsync(
       const GURL& prerendering_url,
-      PreloadingAttempt* preloading_attempt = nullptr) {
+      PreloadingAttempt* preloading_attempt = nullptr,
+      bool should_warm_up_compositor = false) {
     return web_contents_impl()->StartPrerendering(
         prerendering_url, PreloadingTriggerType::kEmbedder,
         "EmbedderSuffixForTest",
         ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                   ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-        PreloadingHoldbackStatus::kUnspecified, preloading_attempt,
+        should_warm_up_compositor, PreloadingHoldbackStatus::kUnspecified,
+        preloading_attempt,
         /*url_match_predicate=*/{},
         /*prerender_navigation_handle_callback=*/{});
   }
@@ -501,6 +504,16 @@ class PrerenderBrowserTest : public ContentBrowserTest,
 
   void NavigatePrimaryPage(const GURL& url) {
     prerender_helper_->NavigatePrimaryPage(url);
+  }
+
+  void NavigatePrimaryPageFromAddressBar(const GURL& url) {
+    web_contents()->OpenURL(
+        OpenURLParams(
+            url, Referrer(), WindowOpenDisposition::CURRENT_TAB,
+            ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                      ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+            /*is_renderer_initiated=*/false),
+        /*navigation_handle_callback=*/{});
   }
 
   int GetHostForUrl(const GURL& url) {
@@ -4051,16 +4064,6 @@ class PrerenderMainFrameNavigationBrowserTest
     kSameSiteCrossOriginWithOptIn,
     kCrossSite,
   };
-
-  void NavigatePrimaryPageFromAddressBar(const GURL& url) {
-    web_contents()->OpenURL(
-        OpenURLParams(
-            url, Referrer(), WindowOpenDisposition::CURRENT_TAB,
-            ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
-                                      ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-            /*is_renderer_initiated=*/false),
-        /*navigation_handle_callback=*/{});
-  }
 
   // Runs navigations in the `navigations_types` order and makes sure it ends
   // with `expected_status`.
@@ -11058,6 +11061,7 @@ PrerenderEmbedderTriggeredCrossOriginRedirectionPage(
           "EmbedderSuffixForTest",
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
+          /*should_warm_up_compositor=*/false,
           PreloadingHoldbackStatus::kUnspecified,
           /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
           /*prerender_navigation_handle_callback=*/{});
@@ -13703,11 +13707,17 @@ IN_PROC_BROWSER_TEST_P(PrerenderWarmUpCompositorBrowserTest,
 
   ASSERT_TRUE(NavigateToURL(shell(), initial_url));
 
-  int prerender_host_id = AddPrerender(prerendering_url);
+  auto prerender_handle = AddEmbedderTriggeredPrerender(
+      prerendering_url, /*preloading_attempt=*/nullptr,
+      /*should_warm_up_compositor=*/true);
+  int prerender_host_id =
+      static_cast<PrerenderHandleImpl*>(prerender_handle.get())
+          ->frame_tree_node_id_for_testing();
   test::PrerenderHostObserver prerender_observer(*web_contents(),
                                                  prerender_host_id);
 
-  NavigatePrimaryPage(prerendering_url);
+  NavigatePrimaryPageFromAddressBar(prerendering_url);
+  prerender_observer.WaitForActivation();
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), prerendering_url);
   EXPECT_TRUE(prerender_observer.was_activated());
 }
