@@ -12,7 +12,6 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/search_engines/choice_made_location.h"
 
 namespace search_engines {
 class SearchEngineChoiceService;
@@ -82,12 +81,6 @@ class DefaultSearchManager {
   static const char kStarterPackId[];
   static const char kEnforcedByPolicy[];
 
-  // This value is not read / written using `TemplateURLDataToDictionary` and
-  // `TemplateURLDataFromDictionary` as it's related to the default search
-  // engine state and not the template url one.
-  // It is only written when `SetUserSelectedDefaultSearchEngine` is called.
-  static const char kChoiceLocation[];
-
   enum Source {
     // Default search engine chosen either from prepopulated engines set for
     // current country or overriden from kSearchProviderOverrides preference.
@@ -147,21 +140,11 @@ class DefaultSearchManager {
   // Gets the source of the current Default Search Engine value.
   Source GetDefaultSearchEngineSource() const;
 
-  // Returns the choice made location for the case when the user selected the
-  // default search engine:
-  // * Returns choice made location if the source is of the search engine is
-  //   `Source::FROM_USER`
-  // * Returns `ChoiceMadeLocation::kOther` in all other cases.
-  search_engines::ChoiceMadeLocation
-  GetChoiceMadeLocationForUserSelectedDefaultSearchEngine() const;
-
   // Returns a pointer to the fallback engine.
   const TemplateURLData* GetFallbackSearchEngine() const;
 
   // Write default search provider data to |pref_service_|.
-  void SetUserSelectedDefaultSearchEngine(
-      const TemplateURLData& data,
-      search_engines::ChoiceMadeLocation choice_location);
+  void SetUserSelectedDefaultSearchEngine(const TemplateURLData& data);
 
   // Clear the user's default search provider choice from |pref_service_|. Does
   // not explicitly disable Default Search. The new default search

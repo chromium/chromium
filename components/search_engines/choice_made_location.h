@@ -13,14 +13,9 @@ namespace search_engines {
 // adding some new entry here, as there are some requirements that non-`kOther`
 // entries must meet.
 //
-// Its values are saved and read from prefs. Do not reorder, do not delete
-// existing values.
-//
-// Must be kept in sync with the ChoiceMadeLocation enum in
-// search_engines_browser_proxy.ts
-//
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.search_engines
+// LINT.IfChange
 enum class ChoiceMadeLocation {
   // `chrome://settings/search`
   kSearchSettings = 0,
@@ -37,6 +32,7 @@ enum class ChoiceMadeLocation {
   kOther = 3,
   kMaxValue = kOther,
 };
+// LINT.ThenChange(chrome/browser/resources/settings/search_engines_page/search_engines_browser_proxy.ts)
 
 }  // namespace search_engines
 

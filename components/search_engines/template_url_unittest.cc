@@ -1048,42 +1048,6 @@ TEST_F(TemplateURLTest, PlayAPIAttribution) {
   }
 }
 
-#if !BUILDFLAG(IS_ANDROID)
-// Tests appending attribution parameter to queries originating from search
-// engines chosen in the search engine choice screen.
-TEST_F(TemplateURLTest, ChoiceScreenAttribution) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list
-      .InitWithFeatures(/*enabled_features=*/
-                        {switches::kSearchEngineChoiceAttribution,
-                         switches::kSearchEngineChoiceTrigger},
-                        /*disabled_features=*/{});
-
-  const struct TestData {
-    const char* url;
-    std::u16string terms;
-    bool search_engine_chosen_in_choice_screen;
-    const char* output;
-  } test_data[] = {
-      {"http://foo/?q={searchTerms}", u"bar", false, "http://foo/?q=bar"},
-      {"http://foo/?q={searchTerms}", u"bar", true,
-       "http://foo/?q=bar&chrome_dse_attribution=1"}};
-  TemplateURLData data;
-  for (const auto& entry : test_data) {
-    data.SetURL(entry.url);
-    TemplateURL url(data);
-    search_terms_data_.set_search_engine_chosen_in_choice_screen(
-        entry.search_engine_chosen_in_choice_screen);
-    EXPECT_TRUE(url.url_ref().IsValid(search_terms_data_));
-    ASSERT_TRUE(url.url_ref().SupportsReplacement(search_terms_data_));
-    GURL result(url.url_ref().ReplaceSearchTerms(
-        TemplateURLRef::SearchTermsArgs(entry.terms), search_terms_data_));
-    ASSERT_TRUE(result.is_valid());
-    EXPECT_EQ(entry.output, result.spec());
-  }
-}
-#endif
-
 TEST_F(TemplateURLTest, Suggestions) {
   struct TestData {
     const int accepted_suggestion;

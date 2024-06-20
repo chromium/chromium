@@ -42,7 +42,6 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/choice_made_location.h"
-#include "components/search_engines/default_search_manager.h"
 #include "components/search_engines/enterprise_site_search_manager.h"
 #include "components/search_engines/keyword_web_data_service.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_service.h"
@@ -1160,8 +1159,7 @@ void TemplateURLService::SetUserSelectedDefaultSearchProvider(
     // We rely on the DefaultSearchManager to call ApplyDefaultSearchChange if,
     // in fact, the effective DSE changes.
     if (url) {
-      default_search_manager_.SetUserSelectedDefaultSearchEngine(
-          url->data(), choice_made_location);
+      default_search_manager_.SetUserSelectedDefaultSearchEngine(url->data());
       selection_added = true;
     } else {
       default_search_manager_.ClearUserSelectedDefaultSearchEngine();
@@ -2139,8 +2137,7 @@ void TemplateURLService::ApplyInitializersForTesting(
 
     // Set the first provided identifier to be the default.
     if (i == 0) {
-      default_search_manager_.SetUserSelectedDefaultSearchEngine(
-          data, search_engines::ChoiceMadeLocation::kOther);
+      default_search_manager_.SetUserSelectedDefaultSearchEngine(data);
     }
   }
 }
@@ -2335,7 +2332,7 @@ void TemplateURLService::MaybeUpdateDSEViaPrefs(TemplateURL* synced_turl) {
   if (prefs_ && (synced_turl->sync_guid() ==
                  GetDefaultSearchProviderGuidFromPrefs(*prefs_))) {
     default_search_manager_.SetUserSelectedDefaultSearchEngine(
-        synced_turl->data(), search_engines::ChoiceMadeLocation::kOther);
+        synced_turl->data());
   }
 }
 
@@ -2433,11 +2430,6 @@ bool TemplateURLService::ApplyDefaultSearchChangeNoMetrics(
     return false;
   base::AutoReset<bool> applying_change(&applying_default_search_engine_change_,
                                         true);
-
-  search_terms_data_->set_search_engine_chosen_in_choice_screen(
-      default_search_manager_
-          .GetChoiceMadeLocationForUserSelectedDefaultSearchEngine() ==
-      search_engines::ChoiceMadeLocation::kChoiceScreen);
 
   if (!loaded_) {
     // Set pre-loading default search provider from the preferences. This is
@@ -2921,19 +2913,7 @@ void TemplateURLService::OnDefaultSearchProviderGUIDChanged() {
 
   const TemplateURL* turl = GetTemplateURLForGUID(new_guid);
   if (turl) {
-    // The choice location should remain the same as it was before calling
-    // `OnDefaultSearchProviderGUIDChanged` if we the search engine wasn't
-    // modified.
-    search_engines::ChoiceMadeLocation choice_location =
-        GetDefaultSearchProvider() &&
-                GetDefaultSearchProvider()->prepopulate_id() ==
-                    turl->prepopulate_id()
-            ? default_search_manager_
-                  .GetChoiceMadeLocationForUserSelectedDefaultSearchEngine()
-            : search_engines::ChoiceMadeLocation::kOther;
-
-    default_search_manager_.SetUserSelectedDefaultSearchEngine(turl->data(),
-                                                               choice_location);
+    default_search_manager_.SetUserSelectedDefaultSearchEngine(turl->data());
   }
 }
 

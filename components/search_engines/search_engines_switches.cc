@@ -4,6 +4,8 @@
 
 #include "components/search_engines/search_engines_switches.h"
 
+#include "base/feature_list.h"
+
 namespace switches {
 
 // Additional query params to insert in the search and instant URLs.  Useful for

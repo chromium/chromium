@@ -78,19 +78,6 @@ class SearchTermsData {
   // Estimates dynamic memory usage.
   // See base/trace_event/memory_usage_estimator.h for more info.
   virtual size_t EstimateMemoryUsage() const;
-
-  // Returns whether the search engine was set in the search engine choice
-  // screen.
-  bool search_engine_chosen_in_choice_screen() const {
-    return search_engine_chosen_in_choice_screen_;
-  }
-
-  void set_search_engine_chosen_in_choice_screen(bool chosen_in_choice_screen) {
-    search_engine_chosen_in_choice_screen_ = chosen_in_choice_screen;
-  }
-
- private:
-  bool search_engine_chosen_in_choice_screen_ = false;
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_TERMS_DATA_H_

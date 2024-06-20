@@ -474,13 +474,6 @@ std::string TemplateURLRef::ReplaceSearchTerms(
     // engine.
     query_params.push_back("chrome_dse_attribution=1");
   }
-#if !BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(switches::kSearchEngineChoiceAttribution) &&
-      base::FeatureList::IsEnabled(switches::kSearchEngineChoiceTrigger) &&
-      search_terms_data.search_engine_chosen_in_choice_screen()) {
-    query_params.push_back("chrome_dse_attribution=1");
-  }
-#endif
 
   if (query_params.empty())
     return url;
