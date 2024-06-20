@@ -583,7 +583,8 @@ bool SafeBrowsingService::SendPhishyInteractionsReport(
     const GURL& url,
     const GURL& page_url,
     const PhishySiteInteractionMap& phishy_interaction_data) {
-  if (!profile || !IsExtendedReportingEnabled(*profile->GetPrefs())) {
+  if (!profile || !IsExtendedReportingEnabled(*profile->GetPrefs()) ||
+      profile->IsOffTheRecord()) {
     return false;
   }
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -608,8 +609,9 @@ bool SafeBrowsingService::SendPhishyInteractionsReport(
           &new_phishy_site_interaction);
     }
   }
-  return ChromePingManagerFactory::GetForBrowserContext(profile)
-             ->ReportThreatDetails(std::move(report)) ==
+  auto* ping_manager = ChromePingManagerFactory::GetForBrowserContext(profile);
+  DCHECK(ping_manager);
+  return ping_manager->ReportThreatDetails(std::move(report)) ==
          PingManager::ReportThreatDetailsResult::SUCCESS;
 }
 #endif
@@ -624,7 +626,8 @@ bool SafeBrowsingService::MaybeSendNotificationsAcceptedReport(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!profile || !IsExtendedReportingEnabled(*profile->GetPrefs()) ||
       !base::FeatureList::IsEnabled(
-          kCreateNotificationsAcceptedClientSafeBrowsingReports)) {
+          kCreateNotificationsAcceptedClientSafeBrowsingReports) ||
+      profile->IsOffTheRecord()) {
     return false;
   }
   // Only send report if the UnsafeResource was allowlisted, due to the user
