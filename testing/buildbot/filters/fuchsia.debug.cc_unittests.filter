@@ -13,6 +13,7 @@
 -OopPixelTest.ConvertNV12ToRGB
 -OopPixelTest.CopySharedImage
 -OopPixelTest.DrawGainmapImage
+-OopPixelTest.DrawGainmapImageFiltering
 -OopPixelTest.DrawHdrImageWithMetadata
 -OopPixelTest.DrawImage
 -OopPixelTest.DrawImageScaled
