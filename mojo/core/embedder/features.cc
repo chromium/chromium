@@ -43,5 +43,11 @@ BASE_FEATURE(kMojoIpczMemV2,
              "MojoIpczMemV2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kMojoUseBinder,
+             "MojoUseBinder",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 }  // namespace core
 }  // namespace mojo

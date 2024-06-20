@@ -34,8 +34,11 @@
 #include "base/win/win_util.h"
 #endif
 
-namespace mojo {
-namespace core {
+#if BUILDFLAG(IS_ANDROID)
+#include "mojo/core/channel_binder.h"
+#endif
+
+namespace mojo::core {
 
 namespace {
 
@@ -961,6 +964,13 @@ bool Channel::OnReadComplete(size_t bytes_read, size_t* next_read_size_hint) {
 Channel::DispatchResult Channel::TryDispatchMessage(
     base::span<const char> buffer,
     size_t* size_hint) {
+  return TryDispatchMessage(buffer, std::nullopt, size_hint);
+}
+
+Channel::DispatchResult Channel::TryDispatchMessage(
+    base::span<const char> buffer,
+    std::optional<std::vector<PlatformHandle>> received_handles,
+    size_t* size_hint) {
   TRACE_EVENT(TRACE_DISABLED_BY_DEFAULT("toplevel.ipc"),
               "Mojo dispatch message");
   if (is_for_ipcz_) {
@@ -983,14 +993,21 @@ Channel::DispatchResult Channel::TryDispatchMessage(
 
     std::vector<PlatformHandle> handles;
     if (num_handles > 0) {
-      if (handle_policy_ == HandlePolicy::kRejectHandles ||
-          !GetReadPlatformHandlesForIpcz(num_handles, handles)) {
+      if (handle_policy_ == HandlePolicy::kRejectHandles) {
         return DispatchResult::kError;
       }
-      if (handles.empty()) {
+
+      if (received_handles) {
+        handles = std::move(*received_handles);
+      } else if (!GetReadPlatformHandlesForIpcz(num_handles, handles)) {
+        return DispatchResult::kError;
+      }
+
+      if (handles.size() < num_handles) {
         return DispatchResult::kMissingHandles;
       }
     }
+
     auto data = buffer.first(num_bytes).subspan(header_size);
     delegate_->OnChannelMessage(data.data(), data.size(), std::move(handles));
     *size_hint = num_bytes;
@@ -1048,16 +1065,19 @@ Channel::DispatchResult Channel::TryDispatchMessage(
   std::vector<PlatformHandle> handles;
   bool deferred = false;
   if (num_handles > 0) {
-    if (handle_policy_ == HandlePolicy::kRejectHandles)
-      return DispatchResult::kError;
-
-    if (!GetReadPlatformHandles(payload, payload_size, num_handles,
-                                extra_header, extra_header_size, &handles,
-                                &deferred)) {
+    if (handle_policy_ == HandlePolicy::kRejectHandles) {
       return DispatchResult::kError;
     }
 
-    if (handles.empty()) {
+    if (received_handles) {
+      handles = std::move(*received_handles);
+    } else if (!GetReadPlatformHandles(payload, payload_size, num_handles,
+                                       extra_header, extra_header_size,
+                                       &handles, &deferred)) {
+      return DispatchResult::kError;
+    }
+
+    if (handles.size() < num_handles) {
       // Not enough handles available for this message.
       return DispatchResult::kMissingHandles;
     }
@@ -1124,5 +1144,4 @@ bool Channel::ShouldRecordSubsampledHistograms() {
   return sub_sampler_.ShouldSample(0.001);
 }
 
-}  // namespace core
-}  // namespace mojo
+}  // namespace mojo::core

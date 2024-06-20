@@ -14,6 +14,7 @@
 #include "base/numerics/clamped_math.h"
 #include "build/build_config.h"
 #include "mojo/buildflags.h"
+#include "mojo/core/embedder/features.h"
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -46,6 +47,10 @@
 #include <sys/socket.h>
 #elif BUILDFLAG(IS_NACL)
 #include "native_client/src/public/imc_syscalls.h"
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "mojo/public/cpp/platform/binder_exchange.h"
 #endif
 
 namespace mojo {
@@ -121,6 +126,15 @@ void CreateChannel(PlatformHandle* local_endpoint,
 #elif BUILDFLAG(IS_POSIX)
 void CreateChannel(PlatformHandle* local_endpoint,
                    PlatformHandle* remote_endpoint) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(core::kMojoUseBinder)) {
+    auto [exchange0, exchange1] = CreateBinderExchange();
+    *local_endpoint = PlatformHandle(std::move(exchange0));
+    *remote_endpoint = PlatformHandle(std::move(exchange1));
+    return;
+  }
+#endif  // BUILDFLAG_IS_ANDROID
+
   int fds[2];
 #if BUILDFLAG(IS_NACL)
   PCHECK(imc_socketpair(fds) == 0);
@@ -177,6 +191,11 @@ PlatformChannel::~PlatformChannel() = default;
 void PlatformChannel::PrepareToPassRemoteEndpoint(HandlePassingInfo* info,
                                                   std::string* value) {
   remote_endpoint_.PrepareToPass(*info, *value);
+}
+
+std::string PlatformChannel::PrepareToPassRemoteEndpoint(
+    base::LaunchOptions& options) {
+  return remote_endpoint_.PrepareToPass(options);
 }
 
 void PlatformChannel::PrepareToPassRemoteEndpoint(

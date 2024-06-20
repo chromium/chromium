@@ -137,27 +137,35 @@ void PlatformChannelEndpoint::PrepareToPass(HandlePassingInfo& info,
 
 void PlatformChannelEndpoint::PrepareToPass(base::LaunchOptions& options,
                                             base::CommandLine& command_line) {
+  const std::string value = PrepareToPass(options);
+  if (!value.empty()) {
+    command_line.AppendSwitchASCII(PlatformChannel::kHandleSwitch, value);
+  }
+}
+
+std::string PlatformChannelEndpoint::PrepareToPass(
+    base::LaunchOptions& options) {
+  std::string value;
 #if BUILDFLAG(IS_WIN)
-  PrepareToPass(options.handles_to_inherit, command_line);
+  PrepareToPass(options.handles_to_inherit, value);
 #elif BUILDFLAG(IS_FUCHSIA)
-  PrepareToPass(options.handles_to_transfer, command_line);
+  PrepareToPass(options.handles_to_transfer, value);
 #elif BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
-  PrepareToPass(options.mach_ports_for_rendezvous, command_line);
+  PrepareToPass(options.mach_ports_for_rendezvous, value);
 #elif BUILDFLAG(IS_POSIX)
 #if BUILDFLAG(IS_ANDROID)
   if (platform_handle().is_valid_binder()) {
-    command_line.AppendSwitchASCII(
-        PlatformChannel::kHandleSwitch,
-        base::StrCat({kBinderValuePrefix,
-                      base::NumberToString(options.binders.size())}));
+    value = base::StrCat(
+        {kBinderValuePrefix, base::NumberToString(options.binders.size())});
     options.binders.push_back(platform_handle().GetBinder());
-    return;
+    return value;
   }
 #endif
-  PrepareToPass(options.fds_to_remap, command_line);
+  PrepareToPass(options.fds_to_remap, value);
 #else
 #error "Platform not supported."
 #endif
+  return value;
 }
 
 void PlatformChannelEndpoint::ProcessLaunchAttempted() {

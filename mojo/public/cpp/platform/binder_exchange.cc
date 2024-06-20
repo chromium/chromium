@@ -7,13 +7,13 @@
 #include <array>
 #include <optional>
 #include <utility>
-#include <variant>
 
 #include "base/android/binder.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace mojo {
 
@@ -55,6 +55,9 @@ class PeerConnector
     return proxy.TransactOneWay(kConnectToPeer, std::move(parcel));
   }
 
+  // Drops this connector's callback without invocation.
+  void Cancel() { std::ignore = TakeCallback(); }
+
  private:
   ~PeerConnector() override {
     if (callback_) {
@@ -63,6 +66,12 @@ class PeerConnector
       // is required to be safe to call from any thread.
       std::move(callback_).Run(base::android::BinderRef());
     }
+  }
+
+  ExchangeBindersCallback TakeCallback() {
+    base::AutoLock lock(lock_);
+    // Note that moved-from callbacks are guaranteed to be null after the move.
+    return std::move(callback_);
   }
 
   // base::android::SupportsBinder<PeerConnectorInterface>:
@@ -76,16 +85,13 @@ class PeerConnector
 
     ASSIGN_OR_RETURN(auto peer_endpoint_binder, in.ReadBinder());
 
-    ExchangeBindersCallback callback;
-    {
-      base::AutoLock lock(lock_);
-      if (!callback_) {
-        // If the callback is null then we've already received a peer binder and
-        // invoked the callback with it.
-        return base::unexpected(STATUS_ALREADY_EXISTS);
-      }
-      callback = std::move(callback_);
+    ExchangeBindersCallback callback = TakeCallback();
+    if (!callback) {
+      // If the callback is null then we've already received a peer binder and
+      // invoked the callback with it.
+      return base::unexpected(STATUS_ALREADY_EXISTS);
     }
+
     std::move(callback).Run(std::move(peer_endpoint_binder));
     return base::ok();
   }
@@ -112,7 +118,7 @@ class Exchange : public base::RefCountedThreadSafe<Exchange> {
     {
       base::AutoLock lock(lock_);
       auto& ours = endpoints_[which];
-      if (!std::holds_alternative<NoEndpoint>(ours)) {
+      if (!absl::holds_alternative<NoEndpoint>(ours)) {
         // There's no situation where we expect to receive a binder for this
         // endpoint once its state has already changed in some way. Consider
         // this to be a validation failure.
@@ -121,14 +127,14 @@ class Exchange : public base::RefCountedThreadSafe<Exchange> {
       }
 
       auto& theirs = endpoints_[1 - which];
-      if (std::holds_alternative<DeadEndpoint>(theirs)) {
+      if (absl::holds_alternative<DeadEndpoint>(theirs)) {
         // The peer is already gone. We can silently drop this endpoint too.
         ours = DeadEndpoint{};
         return base::ok();
       }
 
       ours = std::move(ready_endpoint);
-      if (std::holds_alternative<NoEndpoint>(theirs)) {
+      if (absl::holds_alternative<NoEndpoint>(theirs)) {
         // Still waiting for the peer endpoint. The next time AcceptEndpoint()
         // is called it should be for the peer's endpoint, and at that point
         // they will discover that ours is ready too and proceed below.
@@ -136,9 +142,10 @@ class Exchange : public base::RefCountedThreadSafe<Exchange> {
       }
 
       // If we're here, both endpoints are now ready to be exchanged.
-      first = std::get<ReadyEndpoint>(std::exchange(ours, ExchangedEndpoint()));
+      first =
+          absl::get<ReadyEndpoint>(std::exchange(ours, ExchangedEndpoint()));
       second =
-          std::get<ReadyEndpoint>(std::exchange(theirs, ExchangedEndpoint()));
+          absl::get<ReadyEndpoint>(std::exchange(theirs, ExchangedEndpoint()));
     }
 
     RETURN_IF_ERROR(PeerConnector::ConnectToPeer(first->connector,
@@ -153,14 +160,14 @@ class Exchange : public base::RefCountedThreadSafe<Exchange> {
     // binder for this endpoint.
     base::AutoLock lock(lock_);
     auto& ours = endpoints_[which];
-    if (std::holds_alternative<NoEndpoint>(ours)) {
+    if (absl::holds_alternative<NoEndpoint>(ours)) {
       ours = DeadEndpoint{};
 
       // If the peer endpoint was ready, disconnect it too. Otherwise the peer's
       // state doesn't need to change: either it's already disconnected too or
       // it hasn't been received yet and will be dropped once it arrives.
       auto& theirs = endpoints_[1 - which];
-      if (std::holds_alternative<ReadyEndpoint>(theirs)) {
+      if (absl::holds_alternative<ReadyEndpoint>(theirs)) {
         theirs = DeadEndpoint{};
       }
     }
@@ -185,7 +192,7 @@ class Exchange : public base::RefCountedThreadSafe<Exchange> {
   struct ExchangedEndpoint {};
 
   using Endpoint =
-      std::variant<NoEndpoint, ReadyEndpoint, DeadEndpoint, ExchangedEndpoint>;
+      absl::variant<NoEndpoint, ReadyEndpoint, DeadEndpoint, ExchangedEndpoint>;
 
   ~Exchange() = default;
 
@@ -269,13 +276,18 @@ base::android::BinderStatusOr<void> ExchangeBinders(
     base::android::BinderRef endpoint_binder,
     ExchangeBindersCallback callback) {
   CHECK(callback);
-  auto connector = base::MakeRefCounted<PeerConnector>(std::move(callback));
   auto exchange = ExchangeReceiver::Proxy::Adopt(std::move(exchange_binder));
   if (!exchange || !endpoint_binder) {
     return base::unexpected(STATUS_BAD_TYPE);
   }
-  return ExchangeReceiver::ExchangeBinders(exchange, std::move(endpoint_binder),
-                                           connector->GetBinder());
+  auto connector = base::MakeRefCounted<PeerConnector>(std::move(callback));
+  auto result = ExchangeReceiver::ExchangeBinders(
+      exchange, std::move(endpoint_binder), connector->GetBinder());
+  if (!result.has_value()) {
+    // We're returning an error, so we must not allow the callback to be called.
+    connector->Cancel();
+  }
+  return result;
 }
 
 }  // namespace mojo

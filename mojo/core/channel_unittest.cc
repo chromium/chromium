@@ -19,6 +19,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "mojo/core/embedder/features.h"
 #include "mojo/core/platform_handle_utils.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -257,6 +258,14 @@ class ChannelTestShutdownAndWriteDelegate : public Channel::Delegate {
 };
 
 TEST(ChannelTest, PeerShutdownDuringRead) {
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(kMojoUseBinder)) {
+    GTEST_SKIP() << "The design of this test is incompatible with "
+                 << "ChannelBinder due to re-entrancy and assumptions about "
+                 << "IO thread usage which don't apply.";
+  }
+#endif
+
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::TaskEnvironment::MainThreadType::IO);
   PlatformChannel channel;
@@ -308,19 +317,14 @@ class RejectHandlesDelegate : public Channel::Delegate {
     ++num_messages_;
   }
 
-  void OnChannelError(Channel::Error error) override {
-    if (wait_for_error_loop_)
-      wait_for_error_loop_->Quit();
-  }
+  void OnChannelError(Channel::Error error) override { quit_on_error_.Run(); }
 
-  void WaitForError() {
-    wait_for_error_loop_.emplace();
-    wait_for_error_loop_->Run();
-  }
+  void WaitForError() { wait_for_error_loop_.Run(); }
 
  private:
   size_t num_messages_ = 0;
-  std::optional<base::RunLoop> wait_for_error_loop_;
+  base::RunLoop wait_for_error_loop_;
+  base::RepeatingClosure quit_on_error_ = wait_for_error_loop_.QuitClosure();
 };
 
 TEST(ChannelTest, RejectHandles) {
@@ -526,8 +530,10 @@ TEST(ChannelTest, PeerStressTest) {
   EXPECT_EQ(kLotsOfMessages * 3, delegate_a.message_count_);
   EXPECT_EQ(kLotsOfMessages * 3, delegate_b.message_count_);
 
+  // `channel_a` shuts down first, so its delegate definitely shouldn't observe
+  // an error. Note that `delegate_b` can correctly observe an error in this
+  // test for some Channel implementations, so we don't enforce expectations.
   EXPECT_EQ(0u, delegate_a.error_count_);
-  EXPECT_EQ(0u, delegate_b.error_count_);
 }
 
 class CallbackChannelDelegate : public Channel::Delegate {
@@ -585,23 +591,24 @@ TEST(ChannelTest, MessageSizeTest) {
   for (uint32_t i = 0; i < base::GetPageSize() * 4; ++i) {
     SCOPED_TRACE(base::StringPrintf("message size %d", i));
 
+    bool got_message = false, got_error = false;
+    base::RunLoop loop;
+    auto quit = loop.QuitClosure();
+    receiver_delegate.set_on_message(
+        base::BindLambdaForTesting([&got_message, &quit]() {
+          got_message = true;
+          quit.Run();
+        }));
+    receiver_delegate.set_on_error(
+        base::BindLambdaForTesting([&got_error, &quit]() {
+          got_error = true;
+          quit.Run();
+        }));
+
     auto message = Channel::Message::CreateMessage(i, 0);
     memset(message->mutable_payload(), 0xAB, i);
     sender->Write(std::move(message));
 
-    bool got_message = false, got_error = false;
-
-    base::RunLoop loop;
-    receiver_delegate.set_on_message(
-        base::BindLambdaForTesting([&got_message, &loop]() {
-          got_message = true;
-          loop.Quit();
-        }));
-    receiver_delegate.set_on_error(
-        base::BindLambdaForTesting([&got_error, &loop]() {
-          got_error = true;
-          loop.Quit();
-        }));
     loop.Run();
 
     EXPECT_TRUE(got_message);
@@ -742,10 +749,10 @@ TEST(ChannelTest, ShutDownStress) {
   base::WaitableEvent go_event;
 
   // Warm up the channel to ensure that A and B are connected, then quit.
-  channel_b->Write(Channel::Message::CreateMessage(0, 0));
   {
     base::RunLoop run_loop;
     delegate_a.set_on_message(run_loop.QuitClosure());
+    channel_b->Write(Channel::Message::CreateMessage(0, 0));
     run_loop.Run();
   }
 

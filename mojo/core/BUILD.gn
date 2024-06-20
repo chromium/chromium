@@ -198,6 +198,10 @@ template("core_impl_source_set") {
 
     deps = []
     if (is_android) {
+      sources += [
+        "channel_binder.cc",
+        "channel_binder.h",
+      ]
       deps += [ "//third_party/ashmem" ]
     }
     if (!is_nacl) {

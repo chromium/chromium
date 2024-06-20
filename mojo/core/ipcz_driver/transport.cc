@@ -296,7 +296,6 @@ bool Transport::Activate(IpczHandle transport,
     self_reference_for_channel_ = base::WrapRefCounted(this);
     channel_ = Channel::CreateForIpczDriver(this, std::move(inactive_endpoint_),
                                             io_task_runner_);
-    channel_->Start();
     if (leak_channel_on_shutdown_) {
       io_task_runner_->PostTask(
           FROM_HERE,
@@ -307,10 +306,15 @@ bool Transport::Activate(IpczHandle transport,
 
     if (!pending_transmissions_.empty()) {
       pending_transmissions_.swap(pending_transmissions);
-      channel = channel_;
     }
+
+    channel = channel_;
   }
 
+  // NOTE: Some Channel implementations could re-enter this Transport from
+  // within Start(), so it's critical that we don't call it while holding our
+  // lock.
+  channel->Start();
   for (auto& transmission : pending_transmissions) {
     channel->Write(Channel::Message::CreateIpczMessage(
         base::make_span(transmission.bytes), std::move(transmission.handles)));

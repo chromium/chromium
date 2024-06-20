@@ -106,20 +106,7 @@ void PrepareToPassRemoteEndpoint(PlatformChannel* channel,
                                  base::LaunchOptions* options,
                                  base::CommandLine* command_line,
                                  std::string_view switch_name = {}) {
-  std::string value;
-#if BUILDFLAG(IS_FUCHSIA)
-  channel->PrepareToPassRemoteEndpoint(&options->handles_to_transfer, &value);
-#elif BUILDFLAG(MOJO_USE_APPLE_CHANNEL)
-  channel->PrepareToPassRemoteEndpoint(&options->mach_ports_for_rendezvous,
-                                       &value);
-#elif BUILDFLAG(IS_POSIX)
-  channel->PrepareToPassRemoteEndpoint(&options->fds_to_remap, &value);
-#elif BUILDFLAG(IS_WIN)
-  channel->PrepareToPassRemoteEndpoint(&options->handles_to_inherit, &value);
-#else
-#error "Platform not yet supported."
-#endif
-
+  const std::string value = channel->PrepareToPassRemoteEndpoint(*options);
   if (switch_name.empty()) {
     switch_name = PlatformChannel::kHandleSwitch;
   }

@@ -71,6 +71,10 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformChannel {
   // Failing to do so can result in leaked handles.
   void PrepareToPassRemoteEndpoint(HandlePassingInfo* info, std::string* value);
 
+  // Like above but adds handle information to the appropriate field in
+  // `options` and returns the string encoding.
+  std::string PrepareToPassRemoteEndpoint(base::LaunchOptions& options);
+
   // Like above but modifies |*command_line| to include the endpoint string
   // via the |kHandleSwitch| flag.
   void PrepareToPassRemoteEndpoint(HandlePassingInfo* info,

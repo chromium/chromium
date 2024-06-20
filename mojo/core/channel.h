@@ -412,7 +412,10 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   // If the channel was created with DispatchBufferPolicy::kUnmanaged, the
   // implementation should call this directly. If it was created with kManaged,
   // OnReadComplete() will call this. |*size_hint| will be set to a recommended
-  // size for the next read done by the implementation.
+  // size for the next read done by the implementation. If `received_handles` is
+  // not null, the provided handles are taken as handles which accompanied the
+  // bytes in `buffer`. Otherwise the implementation must make handles available
+  // via GetReadPlatformHandles/ForIpcz() as needed.
   enum class DispatchResult {
     // The message was dispatched and consumed. |size_hint| contains the size
     // of the message.
@@ -428,6 +431,10 @@ class MOJO_SYSTEM_IMPL_EXPORT Channel
   };
   DispatchResult TryDispatchMessage(base::span<const char> buffer,
                                     size_t* size_hint);
+  DispatchResult TryDispatchMessage(
+      base::span<const char> buffer,
+      std::optional<std::vector<PlatformHandle>> received_handles,
+      size_t* size_hint);
 
   // Called by the implementation when something goes horribly wrong. It is NOT
   // OK to call this synchronously from any public interface methods.
