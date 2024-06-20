@@ -250,16 +250,37 @@ void PickerZeroStateView::OnFetchSuggestedResults(
   if (primary_section_view_ == nullptr) {
     primary_section_view_ = section_list_view_->AddSectionAt(0);
   }
-  for (const auto& result : results) {
-    PickerItemView* view = primary_section_view_->AddResult(
-        result, &preview_controller_,
-        base::BindRepeating(&PickerZeroStateView::OnResultSelected,
-                            weak_ptr_factory_.GetWeakPtr(), result));
 
-    if (auto* list_item_view = views::AsViewClass<PickerListItemView>(view)) {
-      list_item_view->SetBadgeAction(delegate_->GetActionForResult(result));
+  auto new_window_submenu =
+      views::Builder<PickerItemWithSubmenuView>()
+          .SetSubmenuController(&submenu_controller_)
+          .SetText(l10n_util::GetStringUTF16(IDS_PICKER_NEW_MENU_LABEL))
+          .SetLeadingIcon(ui::ImageModel::FromVectorIcon(
+              kSystemMenuPlusIcon, cros_tokens::kCrosSysOnSurface))
+          .Build();
+
+  for (const PickerSearchResult& result : results) {
+    if (std::holds_alternative<PickerSearchResult::NewWindowData>(
+            result.data())) {
+      new_window_submenu->AddEntry(
+          result, base::BindRepeating(&PickerZeroStateView::OnResultSelected,
+                                      weak_ptr_factory_.GetWeakPtr(), result));
+    } else {
+      PickerItemView* view = primary_section_view_->AddResult(
+          result, &preview_controller_,
+          base::BindRepeating(&PickerZeroStateView::OnResultSelected,
+                              weak_ptr_factory_.GetWeakPtr(), result));
+
+      if (auto* list_item_view = views::AsViewClass<PickerListItemView>(view)) {
+        list_item_view->SetBadgeAction(delegate_->GetActionForResult(result));
+      }
     }
   }
+
+  if (!new_window_submenu->IsEmpty()) {
+    primary_section_view_->AddItemWithSubmenu(std::move(new_window_submenu));
+  }
+
   delegate_->RequestPseudoFocus(section_list_view_->GetTopItem());
 }
 

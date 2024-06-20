@@ -26,6 +26,7 @@
 #include "ash/style/typography.h"
 #include "base/functional/overloaded.h"
 #include "base/notreached.h"
+#include "build/branding_buildflags.h"
 #include "chromeos/components/editor_menu/public/cpp/icon.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
@@ -63,6 +64,38 @@ PickerCategory GetCategoryForEditorData(
     case PickerSearchResult::EditorData::Mode::kRewrite:
       return PickerCategory::kEditorRewrite;
   }
+}
+
+std::u16string GetLabelForNewWindowType(
+    PickerSearchResult::NewWindowData::Type type) {
+  switch (type) {
+    case PickerSearchResult::NewWindowData::Type::kDoc:
+      return l10n_util::GetStringUTF16(IDS_PICKER_NEW_GOOGLE_DOC_MENU_LABEL);
+    case PickerSearchResult::NewWindowData::Type::kSheet:
+      return l10n_util::GetStringUTF16(IDS_PICKER_NEW_GOOGLE_SHEET_MENU_LABEL);
+    case PickerSearchResult::NewWindowData::Type::kSlide:
+      return l10n_util::GetStringUTF16(IDS_PICKER_NEW_GOOGLE_SLIDE_MENU_LABEL);
+    case PickerSearchResult::NewWindowData::Type::kChrome:
+      return l10n_util::GetStringUTF16(IDS_PICKER_NEW_GOOGLE_CHROME_MENU_LABEL);
+  }
+}
+
+const gfx::VectorIcon& GetIconForNewWindowType(
+    PickerSearchResult::NewWindowData::Type type) {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  switch (type) {
+    case PickerSearchResult::NewWindowData::Type::kDoc:
+      return vector_icons::kGoogleDocsIcon;
+    case PickerSearchResult::NewWindowData::Type::kSheet:
+      return vector_icons::kGoogleSheetsIcon;
+    case PickerSearchResult::NewWindowData::Type::kSlide:
+      return vector_icons::kGoogleSlidesIcon;
+    case PickerSearchResult::NewWindowData::Type::kChrome:
+      return vector_icons::kProductRefreshIcon;
+  }
+#else
+  return kPlaceholderAppIcon;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
 }  // namespace
@@ -228,6 +261,15 @@ std::unique_ptr<PickerItemView> PickerSectionView::CreateItemFromResult(
               item_view->SetPrimaryText(GetLabelForPickerCategory(category));
               item_view->SetLeadingIcon(GetIconForPickerCategory(category));
             }
+            return item_view;
+          },
+          [&](const PickerSearchResult::NewWindowData& data) -> ReturnType {
+            auto item_view = std::make_unique<PickerListItemView>(
+                std::move(select_result_callback));
+            item_view->SetPrimaryText(GetLabelForNewWindowType(data.type));
+            item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
+                GetIconForNewWindowType(data.type),
+                cros_tokens::kCrosSysOnSurface));
             return item_view;
           },
       },

@@ -50,13 +50,16 @@ namespace ash {
 namespace {
 
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::Contains;
+using ::testing::Each;
 using ::testing::ElementsAre;
 using ::testing::FieldsAre;
 using ::testing::IsEmpty;
 using ::testing::NiceMock;
 using ::testing::Not;
 using ::testing::Return;
+using ::testing::VariantWith;
 
 bool CopyTextToClipboard() {
   base::test::TestFuture<bool> copy_confirmed_future;
@@ -439,6 +442,18 @@ TEST_F(PickerControllerTest, OpenLocalFileResult) {
       PickerSearchResult::LocalFile(u"title", base::FilePath("abc.png")));
 }
 
+TEST_F(PickerControllerTest, OpenNewGoogleDocOpensGoogleDocs) {
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+
+  EXPECT_CALL(mock_new_window_delegate(),
+              OpenUrl(GURL("https://docs.new"), _, _))
+      .Times(1);
+
+  controller.OpenResult(PickerSearchResult::NewWindow(
+      PickerSearchResult::NewWindowData::Type::kDoc));
+}
+
 TEST_F(PickerControllerTest, ShowEmojiPickerCallsEmojiPanelCallback) {
   PickerController controller;
   NiceMock<TestPickerClient> client(&controller);
@@ -680,6 +695,42 @@ TEST_F(PickerControllerTest, AddsRecentSymbolToEmptyHistory) {
               ElementsAre("abc"));
 }
 
+TEST_F(PickerControllerTest,
+       GetZeroStateSuggestedResultsWhenUnfocusedReturnsNewWindowResults) {
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  controller.ToggleWidget();
+
+  base::test::TestFuture<std::vector<PickerSearchResult>> results_future;
+  controller.GetZeroStateSuggestedResults(
+      results_future.GetRepeatingCallback());
+
+  EXPECT_THAT(
+      results_future.Get(),
+      AllOf(Not(IsEmpty()),
+            Each(Property("data", &PickerSearchResult::data,
+                          VariantWith<PickerSearchResult::NewWindowData>(_)))));
+}
+
+TEST_F(PickerControllerTest,
+       GetZeroStateSuggestedResultsWhenFocusedDoesNotReturnNewWindowResults) {
+  auto* input_method =
+      Shell::GetPrimaryRootWindow()->GetHost()->GetInputMethod();
+  ui::FakeTextInputClient input_field(input_method,
+                                      {.type = ui::TEXT_INPUT_TYPE_TEXT});
+  input_method->SetFocusedTextInputClient(&input_field);
+  PickerController controller;
+  NiceMock<TestPickerClient> client(&controller);
+  controller.ToggleWidget();
+
+  base::test::TestFuture<std::vector<PickerSearchResult>> results_future;
+  controller.GetZeroStateSuggestedResults(
+      results_future.GetRepeatingCallback());
+
+  // No other suggestions are available, so the callback is not called.
+  EXPECT_FALSE(results_future.IsReady());
+}
+
 struct ActionTestCase {
   PickerSearchResult result;
   std::optional<PickerActionType> unfocused_action;
@@ -814,6 +865,11 @@ INSTANTIATE_TEST_SUITE_P(
             .unfocused_action = PickerActionType::kCreate,
             .no_selection_action = PickerActionType::kCreate,
             .has_selection_action = PickerActionType::kCreate,
+        },
+        {
+            .result = PickerSearchResult::NewWindow(
+                PickerSearchResult::NewWindowData::Type::kDoc),
+            .unfocused_action = PickerActionType::kDo,
         },
     }));
 

@@ -193,6 +193,19 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
     bool operator==(const EditorData&) const;
   };
 
+  struct NewWindowData {
+    enum Type {
+      kDoc,
+      kSheet,
+      kSlide,
+      kChrome,
+    };
+
+    Type type;
+
+    bool operator==(const NewWindowData&) const;
+  };
+
   using Data = std::variant<TextData,
                             SearchRequestData,
                             EmojiData,
@@ -204,7 +217,8 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
                             LocalFileData,
                             DriveFileData,
                             CategoryData,
-                            EditorData>;
+                            EditorData,
+                            NewWindowData>;
 
   PickerSearchResult(const PickerSearchResult&);
   PickerSearchResult& operator=(const PickerSearchResult&);
@@ -251,6 +265,7 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
       std::optional<chromeos::editor_menu::PresetQueryCategory> category,
       std::optional<std::string> preset_query_id,
       std::optional<std::string> freeform_text);
+  static PickerSearchResult NewWindow(NewWindowData::Type type);
 
   const Data& data() const;
 

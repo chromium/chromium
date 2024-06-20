@@ -194,6 +194,9 @@ InsertionContent GetInsertionContentForResult(
           [](const PickerSearchResult::EditorData& data) -> ReturnType {
             return std::monostate();
           },
+          [](const PickerSearchResult::NewWindowData& data) -> ReturnType {
+            return std::monostate();
+          },
       },
       result.data());
 }
@@ -303,6 +306,19 @@ std::vector<PickerSearchResult> GetMostRecentResult(
   return {search_results[0]};
 }
 
+GURL GetUrlForNewWindow(PickerSearchResult::NewWindowData::Type type) {
+  switch (type) {
+    case PickerSearchResult::NewWindowData::Type::kDoc:
+      return GURL("https://docs.new");
+    case PickerSearchResult::NewWindowData::Type::kSheet:
+      return GURL("https://sheets.new");
+    case PickerSearchResult::NewWindowData::Type::kSlide:
+      return GURL("https://slides.new");
+    case PickerSearchResult::NewWindowData::Type::kChrome:
+      return GURL("chrome://new-tab");
+  }
+}
+
 }  // namespace
 
 PickerController::PickerController()
@@ -386,6 +402,19 @@ std::vector<PickerCategory> PickerController::GetAvailableCategories() {
 
 void PickerController::GetZeroStateSuggestedResults(
     SuggestedResultsCallback callback) {
+  if (model_->GetMode() == PickerModeType::kUnfocused) {
+    std::vector<PickerSearchResult> new_window_results;
+    for (PickerSearchResult::NewWindowData::Type type : {
+             PickerSearchResult::NewWindowData::Type::kDoc,
+             PickerSearchResult::NewWindowData::Type::kSheet,
+             PickerSearchResult::NewWindowData::Type::kSlide,
+             PickerSearchResult::NewWindowData::Type::kChrome,
+         }) {
+      new_window_results.push_back(PickerSearchResult::NewWindow(type));
+    }
+    callback.Run(std::move(new_window_results));
+  }
+
   // TODO: b/344685737 - Rank and collect suggestions in a more intelligent way.
   for (PickerCategory category : model_->GetRecentResultsCategories()) {
     GetResultsForCategory(
@@ -564,6 +593,9 @@ void PickerController::OpenResult(const PickerSearchResult& result) {
           [](const PickerSearchResult::EditorData& data) {
             NOTREACHED_NORETURN();
           },
+          [](const PickerSearchResult::NewWindowData& data) {
+            OpenLink(GetUrlForNewWindow(data.type));
+          },
       },
       result.data());
 }
@@ -658,6 +690,9 @@ PickerActionType PickerController::GetActionForResult(
           },
           [](const PickerSearchResult::EditorData& data) {
             return PickerActionType::kCreate;
+          },
+          [](const PickerSearchResult::NewWindowData& data) {
+            return PickerActionType::kDo;
           },
       },
       result.data());

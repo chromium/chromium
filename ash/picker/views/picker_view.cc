@@ -267,10 +267,10 @@ void PickerView::SelectSearchResult(const PickerSearchResult& result) {
         GetWidget()->Close();
         break;
       case PickerActionType::kOpen:
+      case PickerActionType::kDo:
         delegate_->OpenResult(result);
         GetWidget()->Close();
         break;
-      case PickerActionType::kDo:
       case PickerActionType::kCreate:
         NOTREACHED_NORETURN();
     }

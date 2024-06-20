@@ -141,6 +141,9 @@ PickerSearchResult::EditorData::~EditorData() = default;
 bool PickerSearchResult::EditorData::operator==(const EditorData&) const =
     default;
 
+bool PickerSearchResult::NewWindowData::operator==(const NewWindowData&) const =
+    default;
+
 PickerSearchResult::~PickerSearchResult() = default;
 
 PickerSearchResult::PickerSearchResult(const PickerSearchResult&) = default;
@@ -240,6 +243,11 @@ PickerSearchResult PickerSearchResult::Editor(
   return PickerSearchResult(
       EditorData(mode, std::move(display_name), std::move(category),
                  std::move(text_query_id), std::move(freeform_text)));
+}
+
+PickerSearchResult PickerSearchResult::NewWindow(
+    PickerSearchResult::NewWindowData::Type type) {
+  return PickerSearchResult(NewWindowData{.type = type});
 }
 
 bool PickerSearchResult::operator==(const PickerSearchResult&) const = default;

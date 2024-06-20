@@ -182,6 +182,9 @@ cros_events::PickerResultSource GetResultSource(
           [](const PickerSearchResult::EditorData& data) -> ReturnType {
             NOTREACHED_NORETURN();
           },
+          [](const PickerSearchResult::NewWindowData& data) -> ReturnType {
+            NOTREACHED_NORETURN();
+          },
       },
       result->data());
 }
@@ -237,6 +240,9 @@ cros_events::PickerResultType GetResultType(
             NOTREACHED_NORETURN();
           },
           [](const PickerSearchResult::EditorData& data) -> ReturnType {
+            NOTREACHED_NORETURN();
+          },
+          [](const PickerSearchResult::NewWindowData& data) -> ReturnType {
             NOTREACHED_NORETURN();
           },
       },

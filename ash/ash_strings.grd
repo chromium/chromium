@@ -7296,6 +7296,21 @@ New install
       <message name="IDS_PICKER_CHANGE_CAPITALIZATION_MENU_LABEL" translateable="false" desc="Label of a Picker item that lets the user change the capitalization of the selected text.">
         Change capitalization
       </message>
+      <message name="IDS_PICKER_NEW_MENU_LABEL" translateable="false" desc="Label of a Picker item which shows a submenu of options to create something new.">
+        New
+      </message>
+      <message name="IDS_PICKER_NEW_GOOGLE_DOC_MENU_LABEL" translateable="false" desc="Label of a Picker item which creates a new Google Doc.">
+        Google Doc
+      </message>
+      <message name="IDS_PICKER_NEW_GOOGLE_SHEET_MENU_LABEL" translateable="false" desc="Label of a Picker item which creates a new Google Sheet.">
+        Google Sheet
+      </message>
+      <message name="IDS_PICKER_NEW_GOOGLE_SLIDE_MENU_LABEL" translateable="false" desc="Label of a Picker item which creates a new Google Slide.">
+        Google Slide
+      </message>
+      <message name="IDS_PICKER_NEW_GOOGLE_CHROME_MENU_LABEL" translateable="false" desc="Label of a Picker item which creates a new Chrome window.">
+        Chrome window
+      </message>
       <message name="IDS_PICKER_CALCULATIONS_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains calculation categories, e.g. Dates and Maths.">
         More
       </message>
