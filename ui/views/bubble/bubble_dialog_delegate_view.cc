@@ -1144,8 +1144,9 @@ void BubbleDialogDelegate::OnBubbleWidgetVisibilityChanged(bool visible) {
 }
 
 void BubbleDialogDelegate::OnDeactivate() {
-  if (ShouldCloseOnDeactivate() && GetWidget())
+  if (ShouldCloseOnDeactivate() && GetWidget()) {
     GetWidget()->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
+  }
 }
 
 void BubbleDialogDelegate::NotifyAnchoredBubbleIsPrimary() {

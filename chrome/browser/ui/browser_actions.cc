@@ -14,6 +14,7 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/actions/chrome_actions.h"
+#include "chrome/browser/ui/autofill/address_bubbles_icon_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/lens/lens_overlay_controller.h"
@@ -113,6 +114,7 @@ std::u16string BrowserActions::GetCleanTitleAndTooltipText(
 void BrowserActions::InitializeBrowserActions() {
   Profile* profile = browser_->profile();
   Browser* browser = &(browser_.get());
+  const bool is_guest_session = profile->IsGuestSession();
 
   actions::ActionManager::Get().AddAction(
       actions::ActionItem::Builder()
@@ -346,5 +348,26 @@ void BrowserActions::InitializeBrowserActions() {
                        kActionQrCodeGenerator, IDS_APP_MENU_CREATE_QR_CODE,
                        IDS_APP_MENU_CREATE_QR_CODE, kQrCodeChromeRefreshIcon)
           .SetEnabled(false)
+          .Build());
+
+  root_action_item_->AddChild(
+      ChromeMenuAction(
+          base::BindRepeating(
+              [](Browser* browser, actions::ActionItem* item,
+                 actions::ActionInvocationContext context) {
+                auto* controller = autofill::AddressBubblesIconController::Get(
+                    browser->tab_strip_model()->GetActiveWebContents());
+                if (controller && controller->IsBubbleActive()) {
+                  controller->OnIconClicked();
+                } else {
+                  chrome::ShowAddresses(browser);
+                }
+              },
+              base::Unretained(browser)),
+          kActionShowAddressesBubbleOrPage,
+          IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
+          IDS_ADDRESSES_AND_MORE_SUBMENU_OPTION,
+          vector_icons::kLocationOnChromeRefreshIcon)
+          .SetEnabled(!is_guest_session)
           .Build());
 }

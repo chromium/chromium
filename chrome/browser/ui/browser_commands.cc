@@ -1535,7 +1535,7 @@ void SaveAutofillAddress(Browser* browser) {
       browser->tab_strip_model()->GetActiveWebContents();
   autofill::AddressBubblesController* controller =
       autofill::AddressBubblesController::FromWebContents(web_contents);
-  controller->OnPageActionIconClicked();
+  controller->OnIconClicked();
 }
 
 void ShowVirtualCardManualFallbackBubble(Browser* browser) {

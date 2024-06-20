@@ -564,6 +564,7 @@
   E(kActionShowPasswordManager, IDC_SHOW_PASSWORD_MANAGER) \
   E(kActionShowPaymentMethods, IDC_SHOW_PAYMENT_METHODS) \
   E(kActionShowAddresses, IDC_SHOW_ADDRESSES) \
+  E(kActionShowAddressesBubbleOrPage) \
   E(kActionShowDownloads, IDC_SHOW_DOWNLOADS) \
   E(kActionClearBrowsingData, IDC_CLEAR_BROWSING_DATA) \
   E(kActionPrint, IDC_PRINT) \

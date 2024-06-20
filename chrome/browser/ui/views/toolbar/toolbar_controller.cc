@@ -267,6 +267,8 @@ std::string ToolbarController::GetActionNameFromElementIdentifier(
           {kActionPrint, "PinnedPrintButton"},
           {kActionQrCodeGenerator, "PinnedQrCodeGeneratorButton"},
           {kActionSendTabToSelf, "PinnedSendTabToSelfButton"},
+          {kActionShowAddressesBubbleOrPage,
+           "PinnedShowAddressesBubbleOrPageButton"},
           {kActionShowTranslate, "PinnedShowTranslateButton"},
           {kActionSidePanelShowBookmarks, "PinnedShowBookmarkSidePanelButton"},
           {kActionSidePanelShowReadAnything,

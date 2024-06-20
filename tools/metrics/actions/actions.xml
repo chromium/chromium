@@ -44260,6 +44260,8 @@ should be able to be added at any place in this file.
       label="Pinned QR code generator button"/>
   <suffix name="PinnedSendTabToSelfButton"
       label="Pinned send tab to self button"/>
+  <suffix name="PinnedShowAddressesBubbleOrPageButton"
+      label="Pinned show addresses button"/>
   <suffix name="PinnedShowBookmarkSidePanelButton"
       label="Pinned show bookmark side panel button"/>
   <suffix name="PinnedShowHistorySidePanelButton"

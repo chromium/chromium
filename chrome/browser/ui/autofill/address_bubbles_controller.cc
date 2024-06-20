@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/theme_resources.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
@@ -176,13 +177,24 @@ void AddressBubblesController::OnUserDecision(
 }
 
 void AddressBubblesController::OnBubbleClosed() {
+  if (::features::IsToolbarPinningEnabled() &&
+      address_profile_save_prompt_callback_) {
+    std::move(address_profile_save_prompt_callback_)
+        .Run(AutofillClient::AddressPromptUserDecision::kIgnored, std::nullopt);
+  }
   set_bubble_view(nullptr);
   UpdatePageActionIcon();
 }
 
-void AddressBubblesController::OnPageActionIconClicked() {
+void AddressBubblesController::OnIconClicked() {
   // Don't show the bubble if it's already visible.
   if (bubble_view()) {
+    if (::features::IsToolbarPinningEnabled()) {
+      std::move(address_profile_save_prompt_callback_)
+          .Run(AutofillClient::AddressPromptUserDecision::kIgnored,
+               std::nullopt);
+      HideBubble();
+    }
     return;
   }
   shown_by_user_gesture_ = true;

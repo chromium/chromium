@@ -72,6 +72,9 @@ class PageActionIconView : public IconLabelBubbleView {
     // Delegate should return true if the page action icons should be hidden.
     virtual bool ShouldHidePageActionIcons() const;
 
+    // Returns whether or not the given page action icon should be hidden.
+    virtual bool ShouldHidePageActionIcon(PageActionIconView* icon_view) const;
+
     virtual const OmniboxView* GetOmniboxView() const;
   };
 

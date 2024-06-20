@@ -2800,6 +2800,7 @@ if (!is_android) {
       "../browser/ui/blocked_content/safe_browsing_triggered_popup_blocker_browsertest.cc",
       "../browser/ui/blocked_content/tab_under_blocker_browsertest.cc",
       "../browser/ui/bookmarks/bookmark_browsertest.cc",
+      "../browser/ui/browser_actions_browsertest.cc",
       "../browser/ui/browser_browsertest.cc",
       "../browser/ui/browser_command_controller_browsertest.cc",
       "../browser/ui/browser_commands_browsertest.cc",

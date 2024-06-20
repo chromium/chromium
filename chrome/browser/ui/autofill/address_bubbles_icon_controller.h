@@ -21,7 +21,7 @@ class AddressBubblesIconController {
   // nullptr.
   static AddressBubblesIconController* Get(content::WebContents* web_contents);
 
-  virtual void OnPageActionIconClicked() = 0;
+  virtual void OnIconClicked() = 0;
 
   virtual bool IsBubbleActive() const = 0;
 

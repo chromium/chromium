@@ -13,6 +13,7 @@
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/autofill/core/browser/autofill_address_util.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -51,6 +52,17 @@ class AddressBubblesControllerTest
   const std::string& app_locale() const {
     return g_browser_process->GetApplicationLocale();
   }
+};
+
+class AddressBubblesControllerTestToolbarPinningOnly
+    : public AddressBubblesControllerTest {
+ public:
+  AddressBubblesControllerTestToolbarPinningOnly() {
+    scoped_feature_list_.InitWithFeatures({::features::kToolbarPinning}, {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(AddressBubblesControllerTest,
@@ -172,6 +184,19 @@ TEST_F(AddressBubblesControllerTest,
       web_contents(), profile, /*original_profile=*/nullptr,
       /*options=*/{},
       /*address_profile_save_prompt_callback=*/base::DoNothing());
+}
+
+TEST_F(AddressBubblesControllerTestToolbarPinningOnly,
+       ToggleBubbleOnIconClick) {
+  AutofillProfile profile = test::GetFullProfile();
+  AddressBubblesController::SetUpAndShowSaveOrUpdateAddressBubble(
+      web_contents(), profile, /*original_profile=*/nullptr,
+      /*options=*/{},
+      /*address_profile_save_prompt_callback=*/base::DoNothing());
+
+  EXPECT_TRUE(controller()->GetBubbleView());
+  controller()->OnIconClicked();
+  EXPECT_FALSE(controller()->GetBubbleView());
 }
 
 }  // namespace autofill

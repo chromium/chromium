@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/autofill/address_bubbles_icon_view.h"
 
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/autofill/address_bubbles_icon_controller.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/autofill/address_bubble_base_view.h"
@@ -24,7 +25,8 @@ AddressBubblesIconView::AddressBubblesIconView(
                          IDC_SAVE_AUTOFILL_ADDRESS,
                          icon_label_bubble_delegate,
                          page_action_icon_delegate,
-                         "SaveAutofillAddress") {
+                         "SaveAutofillAddress",
+                         kActionShowAddressesBubbleOrPage) {
   GetViewAccessibility().SetProperties(/*role*/ std::nullopt,
                                        GetTextForTooltipAndAccessibleName());
 }
@@ -44,9 +46,11 @@ views::BubbleDialogDelegate* AddressBubblesIconView::GetBubble()
 
 void AddressBubblesIconView::UpdateImpl() {
   AddressBubblesIconController* controller = GetController();
-  bool command_enabled =
+  const bool command_enabled =
       SetCommandEnabled(controller && controller->IsBubbleActive());
-  SetVisible(command_enabled);
+  const bool should_show =
+      command_enabled && !delegate()->ShouldHidePageActionIcon(this);
+  SetVisible(should_show);
   GetViewAccessibility().SetName(GetTextForTooltipAndAccessibleName());
 }
 

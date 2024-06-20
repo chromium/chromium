@@ -53,6 +53,11 @@ bool PageActionIconView::Delegate::ShouldHidePageActionIcons() const {
   return false;
 }
 
+bool PageActionIconView::Delegate::ShouldHidePageActionIcon(
+    PageActionIconView* icon_view) const {
+  return false;
+}
+
 const OmniboxView* PageActionIconView::Delegate::GetOmniboxView() const {
   // Should not reach here: should call subclass's implementation.
   NOTREACHED_NORETURN();
@@ -321,7 +326,7 @@ void PageActionIconView::InstallLoadingIndicator() {
 }
 
 void PageActionIconView::SetVisible(bool visible) {
-  bool was_visible = GetVisible();
+  const bool was_visible = GetVisible();
   IconLabelBubbleView::SetVisible(visible);
   if (!was_visible && visible) {
     for (PageActionIconViewObserver& observer : observer_list_) {

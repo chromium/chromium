@@ -51,6 +51,7 @@
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/autofill/payments/local_card_migration_icon_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -70,6 +71,8 @@
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_view.h"
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_icon_view.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/branded_strings.h"
@@ -1035,6 +1038,24 @@ bool LocationBarView::ShouldHidePageActionIcons() const {
   // Also hide them if the popup is open for any other reason, e.g. ZeroSuggest.
   // The page action icons are not relevant to the displayed suggestions.
   return omnibox_view_->model()->PopupIsOpen();
+}
+
+bool LocationBarView::ShouldHidePageActionIcon(
+    PageActionIconView* icon_view) const {
+  if (ShouldHidePageActionIcons()) {
+    return true;
+  }
+  if (features::IsToolbarPinningEnabled() && browser_) {
+    BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser_);
+    if (browser_view) {
+      auto* pinned_toolbar_actions_container =
+          browser_view->toolbar()->pinned_toolbar_actions_container();
+      return pinned_toolbar_actions_container &&
+             pinned_toolbar_actions_container->IsActionPinnedOrPoppedOut(
+                 icon_view->action_id().value());
+    }
+  }
+  return false;
 }
 
 // static

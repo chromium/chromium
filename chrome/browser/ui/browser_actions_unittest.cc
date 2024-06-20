@@ -12,19 +12,10 @@
 
 class BrowserActionsTest : public BrowserWithTestWindowTest {
  public:
-  BrowserActionsTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/std::vector<
-            base::test::FeatureRef>{features::kToolbarPinning},
-        /*disabled_features=*/{});
-  }
-
-  BrowserActionsTest(const BrowserActionsTest&) = delete;
-  BrowserActionsTest& operator=(const BrowserActionsTest&) = delete;
-  ~BrowserActionsTest() override {}
+  BrowserActionsTest() = default;
 
  private:
-  base::test::ScopedFeatureList feature_list_;
+  base::test::ScopedFeatureList feature_list_{features::kToolbarPinning};
 };
 
 TEST_F(BrowserActionsTest, DidCreateBrowserActions) {
@@ -32,9 +23,10 @@ TEST_F(BrowserActionsTest, DidCreateBrowserActions) {
   auto& action_manager = actions::ActionManager::GetForTesting();
 
   std::vector<actions::ActionId> browser_action_ids = {
-      kActionNewIncognitoWindow, kActionPrint,    kActionClearBrowsingData,
-      kActionTaskManager,        kActionDevTools, kActionSendTabToSelf,
-      kActionQrCodeGenerator};
+      kActionNewIncognitoWindow, kActionPrint,
+      kActionClearBrowsingData,  kActionTaskManager,
+      kActionDevTools,           kActionSendTabToSelf,
+      kActionQrCodeGenerator,    kActionShowAddressesBubbleOrPage};
 
   ASSERT_NE(browser_actions->root_action_item(), nullptr);
 
@@ -61,6 +53,9 @@ TEST_F(BrowserActionsTest, CheckBrowserActionsEnabledState) {
             chrome::CanSendTabToSelf(browser()));
   EXPECT_EQ(action_manager.FindAction(kActionQrCodeGenerator)->GetEnabled(),
             false);
+  EXPECT_EQ(
+      action_manager.FindAction(kActionShowAddressesBubbleOrPage)->GetEnabled(),
+      true);
 }
 
 TEST_F(BrowserActionsTest, GetCleanTitleAndTooltipText) {

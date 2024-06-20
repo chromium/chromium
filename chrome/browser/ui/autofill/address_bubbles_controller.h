@@ -68,7 +68,7 @@ class AddressBubblesController
   void OnBubbleClosed() override;
 
   // SaveAddressProfileIconController:
-  void OnPageActionIconClicked() override;
+  void OnIconClicked() override;
   bool IsBubbleActive() const override;
   std::u16string GetPageActionIconTootip() const override;
   AutofillBubbleBase* GetBubbleView() const override;
