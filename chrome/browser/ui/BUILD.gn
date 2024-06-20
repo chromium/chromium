@@ -6193,6 +6193,8 @@ static_library("ui") {
       "views/update_recommended_message_box.h",
       "views/upgrade_notification_controller.cc",
       "views/upgrade_notification_controller.h",
+      "views/user_education/autofill_help_bubble_factory.cc",
+      "views/user_education/autofill_help_bubble_factory.h",
       "views/user_education/browser_feature_promo_controller.cc",
       "views/user_education/browser_feature_promo_controller.h",
       "views/user_education/browser_help_bubble.cc",
