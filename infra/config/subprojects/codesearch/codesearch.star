@@ -55,6 +55,7 @@ try_.builder(
             "remoteexec",
             "android_builder_without_codecs",
             "static",
+            "arm",
         ],
     ),
     properties = {
@@ -76,6 +77,7 @@ try_.builder(
             "remoteexec",
             "chromeos",
             "use_cups",
+            "x64",
         ],
     ),
     properties = {
@@ -95,6 +97,7 @@ try_.builder(
             "remoteexec",
             "fuchsia",
             "cast_receiver",
+            "x64",
         ],
     ),
     properties = {
@@ -116,6 +119,7 @@ try_.builder(
             "minimal_symbols",
             "ios",
             "ios_disable_code_signing",
+            "arm64",
         ],
     ),
     cores = None,
@@ -141,6 +145,7 @@ try_.builder(
             "remoteexec",
             "lacros_on_linux",
             "use_cups",
+            "x64",
         ],
     ),
     properties = {
@@ -160,6 +165,8 @@ try_.builder(
             "debug_builder",
             "minimal_symbols",
             "remoteexec",
+            "linux",
+            "x64",
         ],
     ),
 )
@@ -174,6 +181,7 @@ try_.builder(
             "minimal_symbols",
             "remoteexec",
             "mac",
+            "arm64",
         ],
     ),
     cores = None,
@@ -197,6 +205,7 @@ try_.builder(
             "remoteexec",
             "android_builder_without_codecs",
             "static",
+            "arm",
         ],
     ),
     properties = {
@@ -216,6 +225,8 @@ try_.builder(
             "debug_builder",
             "minimal_symbols",
             "remoteexec",
+            "win",
+            "x64",
         ],
     ),
     os = os.WINDOWS_10,
