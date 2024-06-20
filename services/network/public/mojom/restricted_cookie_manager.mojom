@@ -74,9 +74,7 @@ interface RestrictedCookieManager {
   // include CookieAccessResult information of the cookie.
   // Any information contained in the CookieInclusionStatus::WarningReasons
   // as part of CookieAccessResult in the included cookies may be passed to an
-  // untrusted renderer. |source_location| is used to report the filename, line,
-  // and column of a cookie access if it was initiated from a script, null
-  // otherwise.
+  // untrusted renderer.
   GetAllForUrl(
       url.mojom.Url url, SiteForCookies site_for_cookies,
       url.mojom.Origin top_frame_origin,
@@ -89,8 +87,7 @@ interface RestrictedCookieManager {
       // be configured _per_ aw contents and the standard way of
       // configuring this per cookie settings (from each browser
       // context), is not sufficient.
-      bool force_disable_third_party_cookies,
-      SourceLocation? source_location) => (
+      bool force_disable_third_party_cookies) => (
       array<CookieWithAccessResult> cookies);
 
   // Sets a canonical cookie. |status| must be an inclusion status as defined
@@ -146,9 +143,6 @@ interface RestrictedCookieManager {
   // |get_version_shared_memory| was false or if initialization of the region
   // failed. |version| contains the cookie version at the time of returning the
   // string.
-  //
-  // |source_location| is used to report the filename, line, and column of a
-  // cookie access if it was initiated from a script, null otherwise.
   [Sync]
   GetCookiesString(url.mojom.Url url,
                    SiteForCookies site_for_cookies,
@@ -162,8 +156,7 @@ interface RestrictedCookieManager {
                    // can be configured _per_ aw contents and the standard way
                    // of configuring this per cookie settings (from each
                    // browser context), is not sufficient.
-                   bool force_disable_third_party_cookies,
-                   SourceLocation? source_location) => (
+                   bool force_disable_third_party_cookies) => (
                    uint64 version,
                    mojo_base.mojom.ReadOnlySharedMemoryRegion? version_buffer,
                    string cookies);

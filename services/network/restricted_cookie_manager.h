@@ -122,7 +122,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
                     mojom::CookieManagerGetOptionsPtr options,
                     bool is_ad_tagged,
                     bool force_disable_third_party_cookies,
-                    mojom::SourceLocationPtr source_location,
                     GetAllForUrlCallback callback) override;
 
   void SetCanonicalCookie(const net::CanonicalCookie& cookie,
@@ -157,7 +156,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
                         bool get_version_shared_memory,
                         bool is_ad_tagged,
                         bool force_disable_third_party_cookies,
-                        mojom::SourceLocationPtr source_location,
                         GetCookiesStringCallback callback) override;
   void CookiesEnabledFor(const GURL& url,
                          const net::SiteForCookies& site_for_cookies,
@@ -214,7 +212,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
       const net::CookieSettingOverrides& cookie_setting_overrides,
       const net::CookieOptions& net_options,
       mojom::CookieManagerGetOptionsPtr options,
-      mojom::SourceLocationPtr source_location,
       GetAllForUrlCallback callback,
       const net::CookieAccessResultList& cookie_list,
       const net::CookieAccessResultList& excluded_cookies);

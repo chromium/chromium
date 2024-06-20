@@ -60,7 +60,6 @@ class AwProxyingRestrictedCookieManager
                     network::mojom::CookieManagerGetOptionsPtr options,
                     bool is_ad_tagged,
                     bool force_disable_third_party_cookies,
-                    network::mojom::SourceLocationPtr source_location,
                     GetAllForUrlCallback callback) override;
   void SetCanonicalCookie(const net::CanonicalCookie& cookie,
                           const GURL& url,
@@ -93,7 +92,6 @@ class AwProxyingRestrictedCookieManager
                         bool get_version_shared_memory,
                         bool is_ad_tagged,
                         bool force_disable_third_party_cookies,
-                        network::mojom::SourceLocationPtr source_location,
                         GetCookiesStringCallback callback) override;
 
   void CookiesEnabledFor(const GURL& url,

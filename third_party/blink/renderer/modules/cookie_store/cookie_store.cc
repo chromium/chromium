@@ -463,17 +463,11 @@ void CookieStore::DoRead(ScriptState* script_state,
       is_ad_tagged = local_frame->IsAdFrame();
     }
   }
-
-  auto location = CaptureSourceLocation(context);
-  // TODO(b/346585140): Update to use SourceLocation typemap.
-  auto source_location = network::mojom::blink::SourceLocation::New(
-      location->Url() ? location->Url() : "", location->LineNumber(),
-      location->ColumnNumber());
-  backend_->GetAllForUrl(
-      cookie_url, default_site_for_cookies_, default_top_frame_origin_,
-      context->HasStorageAccess(), std::move(backend_options), is_ad_tagged,
-      /*force_disable_third_party_cookies=*/false, std::move(source_location),
-      std::move(backend_result_converter));
+  backend_->GetAllForUrl(cookie_url, default_site_for_cookies_,
+                         default_top_frame_origin_, context->HasStorageAccess(),
+                         std::move(backend_options), is_ad_tagged,
+                         /*force_disable_third_party_cookies=*/false,
+                         std::move(backend_result_converter));
 }
 
 // static

@@ -397,13 +397,11 @@ class RestrictedCookieManagerInterceptor
                         bool get_version_shared_memory,
                         bool is_ad_tagged,
                         bool force_disable_third_party_cookies,
-                        network::mojom::SourceLocationPtr source_location,
                         GetCookiesStringCallback callback) override {
     GetForwardingInterface()->GetCookiesString(
         URLToUse(url), site_for_cookies, top_frame_origin, has_storage_access,
         get_version_shared_memory, is_ad_tagged,
-        force_disable_third_party_cookies, std::move(source_location),
-        std::move(callback));
+        force_disable_third_party_cookies, std::move(callback));
   }
 
  private:

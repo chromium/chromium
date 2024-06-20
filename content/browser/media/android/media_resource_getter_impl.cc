@@ -169,7 +169,6 @@ void MediaResourceGetterImpl::GetCookies(
       url, site_for_cookies, top_frame_origin, has_storage_access,
       /*get_version_shared_memory=*/false, /*is_ad_tagged=*/false,
       /*force_disable_third_party_cookies=*/false,
-      /*source_location=*/nullptr,
       base::BindOnce(&ReturnResultOnUIThreadAndClosePipe,
                      std::move(cookie_manager), std::move(callback)));
 }

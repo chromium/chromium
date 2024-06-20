@@ -107,19 +107,13 @@ String CookieJar::Cookies() {
     bool is_ad_tagged =
         document_->GetFrame() ? document_->GetFrame()->IsAdFrame() : false;
 
-    auto location = CaptureSourceLocation(document_->GetExecutionContext());
-    // TODO(b/346585140): Update to use SourceLocation typemap.
-    auto source_location = network::mojom::blink::SourceLocation::New(
-        location->Url() ? location->Url() : "", location->LineNumber(),
-        location->ColumnNumber());
     if (!backend_->GetCookiesString(
             cookie_url, document_->SiteForCookies(),
             document_->TopFrameOrigin(),
             document_->GetExecutionContext()->HasStorageAccess(),
             get_version_shared_memory, is_ad_tagged,
-            /*force_disable_third_party_cookies=*/false,
-            std::move(source_location), &new_version, &new_mapped_region,
-            &value)) {
+            /*force_disable_third_party_cookies=*/false, &new_version,
+            &new_mapped_region, &value)) {
       // On IPC failure invalidate cached values and return empty string since
       // there is no guarantee the client can still validly access cookies in
       // the current context. See crbug.com/1468909.

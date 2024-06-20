@@ -521,7 +521,6 @@ void RestrictedCookieManager::GetAllForUrl(
     mojom::CookieManagerGetOptionsPtr options,
     bool is_ad_tagged,
     bool force_disable_third_party_cookies,
-    mojom::SourceLocationPtr source_location,
     GetAllForUrlCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -548,8 +547,7 @@ void RestrictedCookieManager::GetAllForUrl(
           is_ad_tagged,
           GetCookieSettingOverrides(has_storage_access, is_ad_tagged,
                                     force_disable_third_party_cookies),
-          net_options, std::move(options), std::move(source_location),
-          std::move(callback)));
+          net_options, std::move(options), std::move(callback)));
 }
 
 void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
@@ -561,7 +559,6 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
     const net::CookieSettingOverrides& cookie_setting_overrides,
     const net::CookieOptions& net_options,
     mojom::CookieManagerGetOptionsPtr options,
-    mojom::SourceLocationPtr source_location,
     GetAllForUrlCallback callback,
     const net::CookieAccessResultList& cookie_list,
     const net::CookieAccessResultList& excluded_list) {
@@ -614,7 +611,7 @@ void RestrictedCookieManager::CookieListToGetAllForUrlCallback(
           isolated_top_frame_origin, site_for_cookies,
           std::move(on_cookies_accessed_result),
           /*devtools_request_id=*/std::nullopt, /*count=*/1, is_ad_tagged,
-          cookie_setting_overrides, std::move(source_location)));
+          cookie_setting_overrides, /*source_location=*/nullptr));
     }
   };
 
@@ -958,7 +955,6 @@ void RestrictedCookieManager::GetCookiesString(
     bool get_version_shared_memory,
     bool is_ad_tagged,
     bool force_disable_third_party_cookies,
-    mojom::SourceLocationPtr source_location,
     GetCookiesStringCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Checks done by GetAllForUrl
@@ -1005,7 +1001,7 @@ void RestrictedCookieManager::GetCookiesString(
   match_options->match_type = mojom::CookieMatchType::STARTS_WITH;
   GetAllForUrl(url, site_for_cookies, top_frame_origin, has_storage_access,
                std::move(match_options), is_ad_tagged,
-               force_disable_third_party_cookies, std::move(source_location),
+               force_disable_third_party_cookies,
                base::BindOnce([](const std::vector<net::CookieWithAccessResult>&
                                      cookies) {
                  return net::CanonicalCookie::BuildCookieLine(cookies);
