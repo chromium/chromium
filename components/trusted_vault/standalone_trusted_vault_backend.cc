@@ -95,7 +95,7 @@ void WriteDataToDiskImpl(const trusted_vault_pb::LocalTrustedVault& data,
   file_proto.set_md5_digest_hex_string(
       base::MD5String(file_proto.serialized_local_trusted_vault()));
   bool success = base::ImportantFileWriter::WriteFileAtomically(
-      file_path, file_proto.SerializeAsString());
+      file_path, file_proto.SerializeAsString(), "TrustedVault");
   if (!success) {
     DLOG(ERROR) << "Failed to write trusted vault file.";
   }

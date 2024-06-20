@@ -137,6 +137,9 @@ chromium-metrics-reviews@google.com.
   <variant name=".FeedbackReport" summary="Feedback Report file"/>
   <variant name=".Local_State" summary="Local State file"/>
   <variant name=".LoopBackServer" summary="Sync file"/>
+  <variant name=".Nigori" summary="Nigori sync file"/>
+  <variant name=".PersistentHistogramAllocator"
+      summary="Persistent Histogram Allocator"/>
   <variant name=".Preferences" summary="Preferences file"/>
   <variant name=".SCTAuditing"
       summary="Signed Certificate Timestamp auditing report file"/>
@@ -145,6 +148,7 @@ chromium-metrics-reviews@google.com.
       summary="Structured metrics persistent proto"/>
   <variant name=".TransportSecurityPersister"
       summary="TransportSecurity state file"/>
+  <variant name=".TrustedVault" summary="Trusted Vault file"/>
 </variants>
 
 <variants name="InterestGroupRequestType">

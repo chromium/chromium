@@ -1055,8 +1055,8 @@ bool GlobalHistogramAllocator::WriteToPersistentLocation() {
   }
 
   std::string_view contents(static_cast<const char*>(data()), used());
-  if (!ImportantFileWriter::WriteFileAtomically(persistent_location_,
-                                                contents)) {
+  if (!ImportantFileWriter::WriteFileAtomically(
+          persistent_location_, contents, "PersistentHistogramAllocator")) {
     LOG(ERROR) << "Could not write \"" << Name() << "\" persistent histograms"
                << " to file: " << persistent_location_.value();
     return false;

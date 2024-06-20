@@ -35,7 +35,8 @@ void NigoriStorageImpl::StoreData(const sync_pb::NigoriLocalData& data) {
     return;
   }
 
-  if (!base::ImportantFileWriter::WriteFileAtomically(path_, encrypted_data)) {
+  if (!base::ImportantFileWriter::WriteFileAtomically(path_, encrypted_data,
+                                                      "Nigori")) {
     DLOG(ERROR) << "Failed to write NigoriLocalData into file.";
   }
 }
