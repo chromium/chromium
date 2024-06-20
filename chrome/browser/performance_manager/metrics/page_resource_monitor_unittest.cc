@@ -259,14 +259,14 @@ class PageResourceMonitorUnitTest : public GraphTestHarness {
   // CPUProbe::Create() returns nullptr.
   bool enable_system_cpu_probe_ = true;
 
+  raw_ptr<PageResourceMonitor> monitor_ = nullptr;
+
  private:
   // Advances the mock clock to `target_time`.
   void WaitUntil(base::TimeTicks target_time) {
     ASSERT_GT(target_time, base::TimeTicks::Now());
     task_env().FastForwardBy(target_time - base::TimeTicks::Now());
   }
-
-  raw_ptr<PageResourceMonitor> monitor_;
 
   std::unique_ptr<ukm::TestUkmRecorder> test_ukm_recorder_;
 
@@ -468,14 +468,7 @@ TEST_F(PageResourceMonitorUnitTest, TestResourceUsage) {
   EXPECT_THAT(ids, ::testing::UnorderedElementsAreArray(expected_ids));
 }
 
-// TODO(crbug.com/328630446): Test fails on ChromeOS MSan.
-#if defined(MEMORY_SANITIZER) && BUILDFLAG(IS_CHROMEOS_ASH)
-#define MAYBE_TestResourceUsageBackgroundState \
-  DISABLED_TestResourceUsageBackgroundState
-#else
-#define MAYBE_TestResourceUsageBackgroundState TestResourceUsageBackgroundState
-#endif
-TEST_F(PageResourceMonitorUnitTest, MAYBE_TestResourceUsageBackgroundState) {
+TEST_F(PageResourceMonitorUnitTest, TestResourceUsageBackgroundState) {
   MockMultiplePagesWithMultipleProcessesGraph mock_graph(graph());
   const ukm::SourceId mock_source_id = ukm::AssignNewSourceId();
   mock_graph.page->SetType(performance_manager::PageType::kTab);
@@ -512,7 +505,9 @@ TEST_F(PageResourceMonitorUnitTest, MAYBE_TestResourceUsageBackgroundState) {
   // Partway through next measurement period:
   // - Page 1 moves to background (still audible).
   // - Page 2 stops playing audio.
-  task_env().FastForwardBy(TestTimeouts::action_timeout());
+  const base::TimeDelta partial_delay =
+      monitor_->GetCollectionDelayForTesting() / 4;
+  task_env().FastForwardBy(partial_delay);
   mock_graph.page->SetIsVisible(false);
   mock_graph.other_page->SetIsAudible(false);
   TriggerCollectPageResourceUsage();
@@ -524,7 +519,7 @@ TEST_F(PageResourceMonitorUnitTest, MAYBE_TestResourceUsageBackgroundState) {
 
   // Partway through next measurement period, page 2 moves to foreground (still
   // inaudible).
-  task_env().FastForwardBy(TestTimeouts::action_timeout());
+  task_env().FastForwardBy(partial_delay);
   mock_graph.other_page->SetIsVisible(true);
   TriggerCollectPageResourceUsage();
   WaitForMetricsAndTestBackgroundStates(
