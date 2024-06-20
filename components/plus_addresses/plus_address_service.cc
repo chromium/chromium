@@ -165,7 +165,7 @@ std::optional<std::string> PlusAddressService::GetPlusAddress(
 
 std::vector<PlusProfile> PlusAddressService::GetPlusProfiles() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return std::vector<PlusProfile>(plus_profiles_.begin(), plus_profiles_.end());
+  return plus_address_cache_.GetPlusProfiles();
 }
 
 std::optional<PlusProfile> PlusAddressService::GetPlusProfile(
@@ -176,12 +176,8 @@ std::optional<PlusProfile> PlusAddressService::GetPlusProfile(
       return std::nullopt;
     }
   }
-  // `facet` is used as the comparator, so the other fields don't matter.
-  auto it = plus_profiles_.find(PlusProfile("", facet, "", false));
-  if (it == plus_profiles_.end()) {
-    return std::nullopt;
-  }
-  return *it;
+
+  return plus_address_cache_.FindByFacet(facet);
 }
 
 void PlusAddressService::SavePlusProfile(const PlusProfile& profile) {
@@ -195,9 +191,8 @@ void PlusAddressService::SavePlusProfile(const PlusProfile& profile) {
   if (webdata_service_ && IsSyncingPlusAddresses()) {
     webdata_service_->AddOrUpdatePlusProfile(profile);
   }
-  // Update the in-memory `plus_profiles_` cache.
-  plus_profiles_.insert(profile);
-  plus_addresses_.insert(profile.plus_address);
+  // Update the in-memory plus profiles cache.
+  plus_address_cache_.InsertProfile(profile);
   for (Observer& o : observers_) {
     o.OnPlusAddressesChanged(
         {PlusAddressDataChange(PlusAddressDataChange::Type::kAdd, profile)});
@@ -207,7 +202,7 @@ void PlusAddressService::SavePlusProfile(const PlusProfile& profile) {
 bool PlusAddressService::IsPlusAddress(
     const std::string& potential_plus_address) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return plus_addresses_.contains(potential_plus_address);
+  return plus_address_cache_.IsPlusAddress(potential_plus_address);
 }
 
 void PlusAddressService::GetSuggestions(
@@ -444,14 +439,12 @@ void PlusAddressService::SyncPlusAddressMapping() {
 
 void PlusAddressService::UpdatePlusAddressMap(const PlusAddressMap& map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  plus_profiles_.clear();
-  plus_addresses_.clear();
+  plus_address_cache_.Clear();
   for (const auto& [facet, address] : map) {
     // `UpdatePlusAddressMap()` is only called when sync support is disabled.
     // In this case, profile_ids don't matter.
-    plus_profiles_.insert(
+    plus_address_cache_.InsertProfile(
         PlusProfile(/*profile_id=*/"", facet, address, /*is_confirmed=*/true));
-    plus_addresses_.insert(address);
   }
 }
 
@@ -466,17 +459,14 @@ void PlusAddressService::OnWebDataChangedBySync(
       // (e.g., an added plus address that wasn't previously confirmed via
       // ConfirmPlusAddress).
       case PlusAddressDataChange::Type::kAdd: {
-        const auto [it, inserted] = plus_profiles_.insert(profile);
-        if (inserted) {
-          plus_addresses_.insert(profile.plus_address);
+        if (plus_address_cache_.InsertProfile(profile)) {
           applied_changes.emplace_back(PlusAddressDataChange::Type::kAdd,
                                        profile);
         }
         break;
       }
       case PlusAddressDataChange::Type::kRemove: {
-        if (plus_profiles_.erase(profile)) {
-          plus_addresses_.erase(profile.plus_address);
+        if (plus_address_cache_.EraseProfile(profile)) {
           applied_changes.emplace_back(PlusAddressDataChange::Type::kRemove,
                                        profile);
         }
@@ -495,8 +485,7 @@ void PlusAddressService::OnWebDataServiceRequestDone(
     std::unique_ptr<WDTypedResult> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(result->GetType(), PLUS_ADDRESS_RESULT);
-  CHECK(plus_profiles_.empty());
-  CHECK(plus_addresses_.empty());
+  CHECK(plus_address_cache_.IsEmpty());
 
   const std::vector<PlusProfile>& profiles =
       static_cast<WDResult<std::vector<PlusProfile>>*>(result.get())
@@ -505,8 +494,7 @@ void PlusAddressService::OnWebDataServiceRequestDone(
   std::vector<PlusAddressDataChange> applied_changes;
   applied_changes.reserve(profiles.size());
   for (const PlusProfile& plus_profile : profiles) {
-    plus_profiles_.insert(plus_profile);
-    plus_addresses_.insert(plus_profile.plus_address);
+    plus_address_cache_.InsertProfile(plus_profile);
     applied_changes.emplace_back(PlusAddressDataChange::Type::kAdd,
                                  plus_profile);
   }
@@ -561,8 +549,7 @@ void PlusAddressService::OnErrorStateOfRefreshTokenUpdatedForAccount(
 
 void PlusAddressService::HandleSignout() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  plus_profiles_.clear();
-  plus_addresses_.clear();
+  plus_address_cache_.Clear();
   polling_timer_.Stop();
   plus_address_http_client_->Reset();
 }
@@ -592,7 +579,7 @@ void PlusAddressService::OnPlusAddressSuggestionShown(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   submission_logger_.OnPlusAddressSuggestionShown(
       manager, form, field, suggestion_context, form_type, suggestion_type,
-      /*plus_address_count=*/plus_addresses_.size());
+      /*plus_address_count=*/plus_address_cache_.Size());
 }
 
 }  // namespace plus_addresses

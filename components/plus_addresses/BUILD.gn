@@ -40,6 +40,8 @@ source_set("plus_addresses") {
     "affiliations/plus_address_affiliation_source_adapter.cc",
     "affiliations/plus_address_affiliation_source_adapter.h",
     "plus_address_allocator.h",
+    "plus_address_cache.cc",
+    "plus_address_cache.h",
     "plus_address_http_client.h",
     "plus_address_http_client_impl.cc",
     "plus_address_http_client_impl.h",

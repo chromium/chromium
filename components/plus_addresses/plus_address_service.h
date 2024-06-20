@@ -9,7 +9,6 @@
 #include <optional>
 #include <string>
 
-#include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -19,6 +18,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/plus_addresses/affiliations/plus_address_affiliation_match_helper.h"
 #include "components/plus_addresses/metrics/plus_address_submission_logger.h"
+#include "components/plus_addresses/plus_address_cache.h"
 #include "components/plus_addresses/plus_address_types.h"
 #include "components/plus_addresses/webdata/plus_address_webdata_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -215,15 +215,8 @@ class PlusAddressService : public KeyedService,
       GetSuggestionsCallback callback,
       std::vector<PlusProfile> affiliated_profiles);
 
-  // The user's existing set of `PlusProfile`s, ordered by facet. Since only a
-  // single address per facet is supported, this can be used as the comparator.
-  base::flat_set<PlusProfile, PlusProfileFacetComparator> plus_profiles_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
-  // Used to drive the `IsPlusAddress` function, and derived from the values of
-  // `plus_profiles_`.
-  base::flat_set<std::string> plus_addresses_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  // Plus profiles in-memory cache.
+  PlusAddressCache plus_address_cache_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   const raw_ref<signin::IdentityManager> identity_manager_;
 
