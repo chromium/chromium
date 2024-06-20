@@ -450,11 +450,6 @@ void LoginPasswordView::Init(
   on_password_text_changed_ = on_password_text_changed;
 }
 
-void LoginPasswordView::SetEnabledOnEmptyPassword(bool enabled) {
-  enabled_on_empty_password_ = enabled;
-  UpdateUiState();
-}
-
 void LoginPasswordView::SetFocusEnabledForTextfield(bool enable) {
   auto behavior = enable ? FocusBehavior::ALWAYS : FocusBehavior::NEVER;
   textfield_->SetFocusBehavior(behavior);
@@ -631,8 +626,7 @@ void LoginPasswordView::OnImplicitAnimationsCompleted() {
 }
 
 bool LoginPasswordView::IsPasswordSubmittable() {
-  return !textfield_->GetReadOnly() &&
-         (enabled_on_empty_password_ || !textfield_->GetText().empty());
+  return !textfield_->GetReadOnly() && !textfield_->GetText().empty();
 }
 
 void LoginPasswordView::SubmitPassword() {

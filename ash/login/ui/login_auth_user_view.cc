@@ -747,7 +747,6 @@ void LoginAuthUserView::SetAuthMethods(
   pin_view_->SetVisible(current_state.has_pinpad);
 
   password_view_->SetEnabled(current_state.has_password);
-  password_view_->SetEnabledOnEmptyPassword(false);
   password_view_->SetFocusEnabledForTextfield(current_state.has_password);
   password_view_->SetVisible(current_state.has_password);
   password_view_->layer()->SetOpacity(current_state.has_password);

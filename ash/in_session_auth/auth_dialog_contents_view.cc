@@ -518,7 +518,6 @@ void AuthDialogContentsView::AddPinTextInputView() {
   pin_text_input_view_->SetPaintToLayer();
   pin_text_input_view_->layer()->SetFillsBoundsOpaquely(false);
   pin_text_input_view_->SetDisplayPasswordButtonVisible(true);
-  pin_text_input_view_->SetEnabledOnEmptyPassword(false);
   pin_text_input_view_->SetFocusEnabledForTextfield(true);
 
   pin_text_input_view_->SetPlaceholderText(
@@ -532,7 +531,6 @@ void AuthDialogContentsView::AddPasswordView() {
   password_view_->SetPaintToLayer();
   password_view_->layer()->SetFillsBoundsOpaquely(false);
   password_view_->SetDisplayPasswordButtonVisible(true);
-  password_view_->SetEnabledOnEmptyPassword(false);
   password_view_->SetFocusEnabledForTextfield(true);
 
   password_view_->SetPlaceholderText(

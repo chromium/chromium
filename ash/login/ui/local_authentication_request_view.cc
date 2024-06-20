@@ -299,7 +299,6 @@ LocalAuthenticationRequestView::LocalAuthenticationRequestView(
   login_password_view_->SetPaintToLayer();
   login_password_view_->layer()->SetFillsBoundsOpaquely(false);
   login_password_view_->SetDisplayPasswordButtonVisible(true);
-  login_password_view_->SetEnabledOnEmptyPassword(false);
   login_password_view_->SetFocusEnabledForTextfield(true);
 
   login_password_view_->SetPlaceholderText(

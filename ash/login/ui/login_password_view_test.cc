@@ -185,23 +185,13 @@ TEST_F(LoginPasswordViewTest, PasswordSubmitViaButton) {
   EXPECT_EQ(test_api.textfield()->GetReadOnly(), true);
 }
 
-// Verifies that pressing 'Return' on the password field triggers an
-// unlock attempt by calling OnSubmit with an empty password.
-TEST_F(LoginPasswordViewTest, PressingReturnTriggersUnlockWithEmptyPassword) {
+// Verifies that pressing 'Return' on an empty password has no effect.
+TEST_F(LoginPasswordViewTest, PressingReturnHasNoEffect) {
   LoginPasswordView::TestApi test_api(view_);
 
-  // Hitting enter on an empty password should not submit an empty password
-  // when not allowed to.
-  view_->SetEnabledOnEmptyPassword(false);
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->PressKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
   ASSERT_FALSE(password_.has_value());
-
-  // When allowed, hitting enter should submit an empty password.
-  view_->SetEnabledOnEmptyPassword(true);
-  generator->PressKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
-  ASSERT_TRUE(password_.has_value());
-  EXPECT_EQ(u"", *password_);
 }
 
 // Verifies that text is not cleared after submitting a password.

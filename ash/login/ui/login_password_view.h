@@ -96,9 +96,6 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   void Init(const OnPasswordSubmit& on_submit,
             const OnPasswordTextChanged& on_password_text_changed);
 
-  // Whether or not the password field is enabled when there is no text.
-  void SetEnabledOnEmptyPassword(bool enabled);
-
   // Enable or disable focus on the child elements (i.e.: password field and
   // submit button, or display password button if it is shown).
   void SetFocusEnabledForTextfield(bool enable);
@@ -186,9 +183,6 @@ class ASH_EXPORT LoginPasswordView : public views::View,
 
   OnPasswordSubmit on_submit_;
   OnPasswordTextChanged on_password_text_changed_;
-
-  // Is the password field enabled when there is no text?
-  bool enabled_on_empty_password_ = false;
 
   // Arrow keystrokes delegate.
   raw_ptr<LoginArrowNavigationDelegate, DanglingUntriaged>
