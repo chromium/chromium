@@ -300,6 +300,10 @@ ScriptPromise<IDLSequence<CookieListItem>> CookieStore::getAll(
          WTF::BindOnce(&CookieStore::GetAllForUrlToGetAllResult,
                        WrapPersistent(resolver)),
          exception_state);
+  if (exception_state.HadException()) {
+    resolver->Detach();
+    return EmptyPromise();
+  }
   return promise;
 }
 
@@ -332,6 +336,10 @@ ScriptPromise<IDLNullable<CookieListItem>> CookieStore::get(
          WTF::BindOnce(&CookieStore::GetAllForUrlToGetResult,
                        WrapPersistent(resolver)),
          exception_state);
+  if (exception_state.HadException()) {
+    resolver->Detach();
+    return EmptyPromise();
+  }
   return promise;
 }
 
