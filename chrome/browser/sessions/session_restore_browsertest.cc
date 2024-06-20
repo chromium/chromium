@@ -3040,15 +3040,24 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestoreWithTabRemovedFromGroup) {
       browser(), GURL(url::kAboutBlankURL),
       WindowOpenDisposition::NEW_BACKGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+
   auto tab_group_id = browser()->tab_strip_model()->AddToNewGroup({0, 1, 2});
+
   auto* saved_tab_group_keyed_service =
       tab_groups::SavedTabGroupServiceFactory::GetForProfile(
           browser()->profile());
+  ASSERT_NE(saved_tab_group_keyed_service, nullptr);
+
+  if (!tab_groups::IsTabGroupsSaveV2Enabled()) {
+    saved_tab_group_keyed_service->SaveGroup(tab_group_id);
+  }
+
   ASSERT_TRUE(saved_tab_group_keyed_service);
-  auto saved_tab_group_id =
-      saved_tab_group_keyed_service->SaveGroup(tab_group_id);
+
   auto* saved_tab_group =
-      saved_tab_group_keyed_service->model()->Get(saved_tab_group_id);
+      saved_tab_group_keyed_service->model()->Get(tab_group_id);
+  auto saved_tab_group_id = saved_tab_group->saved_guid();
+
   ASSERT_TRUE(saved_tab_group);
   // This ensures SessionService knows about the savedtabgroup. It shouldn't be
   // necessary.
