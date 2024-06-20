@@ -6,6 +6,7 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,41 +17,62 @@ namespace {
 using ::testing::Eq;
 using ::testing::Optional;
 
-TEST(FendCoreTest, SimpleMath) {
-  std::optional<std::string> result = evaluate("1 + 1", /*timeout_in_ms=*/0);
-  EXPECT_THAT(result, Optional(Eq("2")));
-}
+struct FendCoreTestCase {
+  std::string name;
+  std::string_view query;
+  std::optional<std::string> expected;
+};
 
-TEST(FendCoreTest, NoApproxString) {
-  std::optional<std::string> result = evaluate("1/3", /*timeout_in_ms=*/0);
-  EXPECT_THAT(result, Optional(Eq("0.33")));
-}
+class FendCoreParamTest : public testing::TestWithParam<FendCoreTestCase> {};
 
-TEST(FendCoreTest, FiltersTrivialResult) {
-  std::optional<std::string> result = evaluate("1", /*timeout_in_ms=*/0);
-  EXPECT_THAT(result, std::nullopt);
-}
-
-TEST(FendCoreTest, FiltersUnitOnlyQueries) {
-  std::optional<std::string> result = evaluate("meter", /*timeout_in_ms=*/0);
-  EXPECT_THAT(result, std::nullopt);
-}
-
-TEST(FendCoreTest, FiltersLambdaResults) {
-  std::optional<std::string> result = evaluate("sqrt", /*timeout_in_ms=*/0);
-  EXPECT_THAT(result, std::nullopt);
-}
-
-TEST(FendCoreTest, UnitConversion) {
+TEST_P(FendCoreParamTest, Test) {
   std::optional<std::string> result =
-      evaluate("2 miles in meters", /*timeout_in_ms=*/0);
-  EXPECT_THAT(result, Optional(Eq("3218.68 meters")));
+      evaluate(GetParam().query, /*timeout_in_ms=*/0);
+  EXPECT_EQ(result, GetParam().expected);
 }
 
-TEST(FendCoreTest, HandlesInvalidInput) {
-  std::optional<std::string> result = evaluate("abc", /*timeout_in_ms=*/0);
-  EXPECT_EQ(result, std::nullopt);
-}
+INSTANTIATE_TEST_SUITE_P(
+    , FendCoreParamTest,
+    testing::ValuesIn<FendCoreTestCase>({
+        {
+            .name = "SimpleMath",
+            .query = "1 + 1",
+            .expected = "2",
+        },
+        {
+            .name = "NoApproxString",
+            .query = "1/3",
+            .expected = "0.33",
+        },
+        {
+            .name = "FiltersTrivialResult",
+            .query = "1",
+            .expected = std::nullopt,
+        },
+        {
+            .name = "FiltersUnitOnlyQueries",
+            .query = "meter",
+            .expected = std::nullopt,
+        },
+        {
+            .name = "FiltersLambdaResults",
+            .query = "sqrt",
+            .expected = std::nullopt,
+        },
+        {
+            .name = "UnitConversion",
+            .query = "2 miles in meters",
+            .expected = "3218.68 meters",
+        },
+        {
+            .name = "HandlesInvalidInput",
+            .query = "abc",
+            .expected = std::nullopt,
+        },
+    }),
+    [](const testing::TestParamInfo<FendCoreTestCase> &info) {
+      return info.param.name;
+    });
 
 TEST(FendCoreTest, CanTimeout) {
   std::optional<std::string> result =
