@@ -9,7 +9,7 @@ import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-// Next MinVersion: 23
+// Next MinVersion: 24
 
 [Stable, Extensible]
 enum MediaPlaybackState {
@@ -283,7 +283,7 @@ interface MediaSessionObserver {
 
 // A MediaSession manages the media session and audio focus for a given
 // WebContents or ARC app.
-// Next Method ID: 24
+// Next Method ID: 28
 [Stable]
 interface MediaSession {
   [Stable, Extensible]
@@ -399,4 +399,12 @@ interface MediaSession {
   // Automatically enter picture-in-picture from a non-user source (e.g. in
   // reaction to content being hidden).
   [MinVersion=19] EnterAutoPictureInPicture@26();
+
+  // Returns whether or not MediaSession has any players that contain a video
+  // that is sufficiently visible.
+  //
+  // A sufficiently visible video is one that meets the visibility threshold
+  // defined by |HTMLVideoElement| (kVisibilityThreshold). |HTMLVideoElement|
+  // visibility is computed by the |MediaVideoVisibilityTracker|.
+  [MinVersion=23] GetVisibility@27() => (bool has_sufficiently_visible_video);
 };

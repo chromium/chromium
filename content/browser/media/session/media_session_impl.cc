@@ -1951,6 +1951,11 @@ void MediaSessionImpl::GetVisibility(
   // TODO(crbug.com/40275580): Finish implementation (integrate with the
   // `MediaPlayersCallbackAggregator` to ask players for their video
   // visibility).
+  for (const auto& player : normal_players_) {
+    player.first.observer->OnRequestVisibility(player.first.player_id,
+                                               base::DoNothing());
+  }
+
   std::move(get_visibility_callback).Run(false);
 }
 

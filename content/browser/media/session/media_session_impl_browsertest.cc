@@ -3185,6 +3185,17 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest, CacheFaviconImages) {
   }
 }
 
+IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
+                       GetVisibilityNotifiesObservers) {
+  auto player_observer = std::make_unique<MockMediaSessionPlayerObserver>(
+      media::MediaContentType::kPersistent);
+  EXPECT_EQ(0, player_observer->received_request_visibility_calls());
+
+  StartNewPlayer(player_observer.get());
+  UIGetVisibility(base::DoNothing());
+  EXPECT_EQ(1, player_observer->received_request_visibility_calls());
+}
+
 class MediaSessionImplPrerenderingBrowserTest
     : public MediaSessionImplBrowserTest {
  public:
@@ -3452,12 +3463,6 @@ IN_PROC_BROWSER_TEST_F(MediaSessionImplWithBackForwardCacheBrowserTest,
   // The page being removed from the back-forward cache should not affect the
   // play state of the current page.
   EXPECT_TRUE(player_observer->IsPlaying(1));
-}
-
-IN_PROC_BROWSER_TEST_F(MediaSessionImplBrowserTest,
-                       DISABLED_RequestVisibilityNotifiesObservers) {
-  // TODO(crbug.com/40275580): Implement once MediaSessionImpl::GetVisibility is
-  // implemented.
 }
 
 }  // namespace content

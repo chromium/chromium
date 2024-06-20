@@ -58,6 +58,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantMediaSession
   void ScrubTo(base::TimeDelta seek_time) override {}
   void EnterPictureInPicture() override {}
   void ExitPictureInPicture() override {}
+  void GetVisibility(GetVisibilityCallback callback) override;
   void SetAudioSinkId(const std::optional<std::string>& sink_id) override {}
   void ToggleMicrophone() override {}
   void ToggleCamera() override {}

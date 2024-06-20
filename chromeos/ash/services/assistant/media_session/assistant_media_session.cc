@@ -63,6 +63,10 @@ void AssistantMediaSession::GetDebugInfo(GetDebugInfoCallback callback) {
   std::move(callback).Run(media_session::mojom::MediaSessionDebugInfo::New());
 }
 
+void AssistantMediaSession::GetVisibility(GetVisibilityCallback callback) {
+  std::move(callback).Run(false);
+}
+
 void AssistantMediaSession::StartDucking() {
   if (!IsSessionStateActive())
     return;

@@ -483,25 +483,13 @@ class MediaSessionImpl : public MediaSession,
   // videos is sufficiently visible, false otherwise.
   CONTENT_EXPORT bool HasSufficientlyVisibleVideo() const;
 
-  // TODO(crbug.com/40275580): Replace with mojo definition once available.
-  //
-  // `GetVisibilityCallback` is used to enable media session to check if any of
-  // its `normal_player_` s has a video element with a sufficiently visible
-  // video.
-  //
-  // The boolean parameter represents whether any of the `normal_player_` s has
-  // a video element that meets a given visibility threshold, and thus is
-  // considered sufficiently visible. This threshold (`kVisibilityThreshold`) is
-  // defined by the HTMLVideoElement.
-  using GetVisibilityCallback = base::OnceCallback<void(bool)>;
-
   // Iterates over all |normal_players_| and returns true if any of the players'
   // videos is sufficiently visible, false otherwise.
   //
   // This is very similar to `HasSufficientlyVisibleVideo`, however this method
   // is used to get notifications on demand, while `HasSufficientlyVisibleVideo`
   // is constantly reporting visibility.
-  void GetVisibility(GetVisibilityCallback get_visibility_callback);
+  void GetVisibility(GetVisibilityCallback get_visibility_callback) override;
 
   // Returns the device ID for the audio output device being used by all of the
   // normal players. If the players are not all using the same audio output

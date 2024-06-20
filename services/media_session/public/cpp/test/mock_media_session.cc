@@ -428,6 +428,10 @@ void MockMediaSession::ExitPictureInPicture() {
   // TODO(crbug.com/40113959): Implement ExitPictureinpicture.
 }
 
+void MockMediaSession::GetVisibility(GetVisibilityCallback callback) {
+  std::move(callback).Run(false);
+}
+
 void MockMediaSession::SetIsControllable(bool value) {
   is_controllable_ = value;
   NotifyObservers();

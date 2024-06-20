@@ -176,6 +176,7 @@ class COMPONENT_EXPORT(MEDIA_SESSION_TEST_SUPPORT_CPP) MockMediaSession
   void ScrubTo(base::TimeDelta scrub_to) override;
   void EnterPictureInPicture() override;
   void ExitPictureInPicture() override;
+  void GetVisibility(GetVisibilityCallback callback) override;
   void SetAudioSinkId(const std::optional<std::string>& id) override {}
   void ToggleMicrophone() override {}
   void ToggleCamera() override {}
