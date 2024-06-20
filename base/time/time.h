@@ -1321,9 +1321,21 @@ BASE_EXPORT std::ostream& operator<<(std::ostream& os, LiveTicks live_ticks);
 
 // ThreadTicks ----------------------------------------------------------------
 
-// Represents a thread-specific clock that runs only while the thread is scheduled.
-// This has the effect of counting time spent actually executing code, but not
-// time spent blocked (e.g. on I/O), or ready and waiting to be run.
+// Represents a thread-specific clock that runs only while the thread is
+// scheduled. This has the effect of counting time spent actually executing
+// code, but not time spent blocked (e.g. on I/O), or ready and waiting to be
+// run.
+//
+// Note: This is typically significantly more expensive than TimeTicks. For
+// instance, on Linux-based systems, it requires a true system call, whereas
+// TimeTicks::Now() calls are usually handled through the vDSO. This does not
+// matter if a couple us of overhead is not important to you, but do not call
+// this in a tight loop, or for sub-microsecond intervals.
+//
+// For instance, in 2024 on a Linux system, in a simple loop:
+// - TimeTicks::Now() takes 27ns per loop iteration
+// - ThreadTicks::Now() takes 875ns per loop iteration. Actual cost is likely
+//   higher in Chromium due to the sandbox (seccomp-BPF).
 class BASE_EXPORT ThreadTicks : public time_internal::TimeBase<ThreadTicks> {
  public:
   constexpr ThreadTicks() : TimeBase(0) {}
