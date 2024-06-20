@@ -1179,6 +1179,7 @@ chromium-metrics-reviews@google.com.
     the time between LCP and quiescence, or 0 if quiescence came first. This
     version of the metric is recorded for navigations in {LoadedIdleVisibility}.
   </summary>
+  <token key="LoadedIdleVisibility" variants="LoadedIdleVisibility"/>
 </histogram>
 
 <histogram
@@ -1196,6 +1197,7 @@ chromium-metrics-reviews@google.com.
     instead. This version of the metric is recorded for navigations in
     {LoadedIdleVisibility}.
   </summary>
+  <token key="LoadedIdleVisibility" variants="LoadedIdleVisibility"/>
 </histogram>
 
 <histogram
@@ -1212,6 +1214,7 @@ chromium-metrics-reviews@google.com.
     recorded instead. This version of the metric is recorded for navigations in
     {LoadedIdleVisibility}.
   </summary>
+  <token key="LoadedIdleVisibility" variants="LoadedIdleVisibility"/>
 </histogram>
 
 <histogram
