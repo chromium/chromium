@@ -15,6 +15,7 @@
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/common/user_education_class_properties.h"
 #include "components/user_education/views/help_bubble_delegate.h"
+#include "components/user_education/views/help_bubble_event_relay.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "components/user_education/views/toggle_tracked_element_attention_utils.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -22,6 +23,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_utils.h"
 
@@ -200,7 +202,13 @@ std::unique_ptr<HelpBubble> HelpBubbleFactoryViews::CreateBubble(
     HelpBubbleParams params) {
   internal::HelpBubbleAnchorParams anchor;
   anchor.view = element->AsA<views::TrackedElementViews>()->view();
-  return CreateBubbleImpl(element, anchor, std::move(params));
+  std::unique_ptr<HelpBubbleEventRelay> event_relay;
+  if (auto* menu_item = views::AsViewClass<views::MenuItemView>(anchor.view)) {
+    event_relay =
+        std::make_unique<internal::MenuHelpBubbleEventProcessor>(menu_item);
+  }
+  return CreateBubbleImpl(element, anchor, std::move(params),
+                          std::move(event_relay));
 }
 
 bool HelpBubbleFactoryViews::CanBuildBubbleForTrackedElement(
@@ -211,10 +219,13 @@ bool HelpBubbleFactoryViews::CanBuildBubbleForTrackedElement(
 std::unique_ptr<HelpBubble> HelpBubbleFactoryViews::CreateBubbleImpl(
     ui::TrackedElement* element,
     const internal::HelpBubbleAnchorParams& anchor,
-    HelpBubbleParams params) {
+    HelpBubbleParams params,
+    std::unique_ptr<HelpBubbleEventRelay> event_relay) {
   anchor.view->SetProperty(kHasInProductHelpPromoKey, true);
   auto result = base::WrapUnique(new HelpBubbleViews(
-      new HelpBubbleView(delegate_, anchor, std::move(params)), element));
+      new HelpBubbleView(delegate_, anchor, std::move(params),
+                         std::move(event_relay)),
+      element));
   for (const auto& accelerator :
        delegate_->GetPaneNavigationAccelerators(element)) {
     result->bubble_view()->GetFocusManager()->RegisterAccelerator(

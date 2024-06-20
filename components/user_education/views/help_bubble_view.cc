@@ -20,6 +20,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/views/help_bubble_delegate.h"
+#include "components/user_education/views/help_bubble_event_relay.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -28,9 +29,6 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
 #include "ui/color/color_provider.h"
-#include "ui/events/event.h"
-#include "ui/events/event_constants.h"
-#include "ui/events/types/event_type.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/geometry/insets.h"
@@ -57,8 +55,6 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/controls/menu/menu_config.h"
-#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -289,164 +285,7 @@ constexpr int DotView::kStrokeWidth;
 BEGIN_METADATA(DotView)
 END_METADATA
 
-views::MenuItemView* GetAnchorAsMenuItem(
-    const views::BubbleDialogDelegate* delegate) {
-  return views::AsViewClass<views::MenuItemView>(delegate->GetAnchorView());
-}
-
 }  // namespace
-
-namespace internal {
-
-// Because menus use event capture, a help bubble anchored to a menu cannot
-// respond to events in the normal way. However, help bubbles are not
-// complicated and only have buttons. When a help bubble is anchored to a menu,
-// this object will monitor events that would be captured by the menu, and
-// ensures that the buttons on the help bubble still behavior predictably.
-class MenuEventMonitor {
- public:
-  MenuEventMonitor(HelpBubbleView* help_bubble, views::MenuItemView* menu_item)
-      : help_bubble_(help_bubble),
-        callback_handle_(menu_item->GetMenuController()->AddAnnotationCallback(
-            base::BindRepeating(&MenuEventMonitor::OnEvent,
-                                base::Unretained(this)))) {}
-
-  ~MenuEventMonitor() = default;
-
- private:
-  bool OnEvent(const ui::LocatedEvent& event) {
-    gfx::Point screen_coords;
-    screen_coords = event.root_location();
-
-    const views::Widget* const widget = help_bubble_->GetWidget();
-    if (!widget || !widget->GetWindowBoundsInScreen().Contains(screen_coords)) {
-      return false;
-    }
-
-    views::Button* const target_button = GetButtonAt(screen_coords);
-    const gfx::Point target_point =
-        target_button
-            ? views::View::ConvertPointFromScreen(target_button, screen_coords)
-            : gfx::Point();
-
-    switch (event.type()) {
-      // Pass mouse events on to the button as normal.
-      case ui::ET_MOUSE_PRESSED:
-        if (target_button) {
-          auto* const mouse_event = event.AsMouseEvent();
-          target_button->OnMousePressed(ui::MouseEvent(
-              ui::ET_MOUSE_PRESSED, gfx::PointF(target_point),
-              gfx::PointF(screen_coords), mouse_event->time_stamp(),
-              mouse_event->flags(), mouse_event->changed_button_flags()));
-        }
-        break;
-      case ui::ET_MOUSE_RELEASED:
-        if (target_button) {
-          auto* const mouse_event = event.AsMouseEvent();
-          target_button->OnMouseReleased(ui::MouseEvent(
-              ui::ET_MOUSE_RELEASED, gfx::PointF(target_point),
-              gfx::PointF(screen_coords), mouse_event->time_stamp(),
-              mouse_event->flags(), mouse_event->changed_button_flags()));
-        }
-        break;
-
-      // Touch events are not processed directly by Views; they are typically
-      // converted to something else. So, convert them to mouse clicks for the
-      // purpose of pressing buttons.
-      case ui::ET_TOUCH_PRESSED:
-        if (target_button) {
-          auto* const touch_event = event.AsTouchEvent();
-          target_button->OnMousePressed(ui::MouseEvent(
-              ui::ET_MOUSE_PRESSED, gfx::PointF(target_point),
-              gfx::PointF(screen_coords), touch_event->time_stamp(),
-              touch_event->flags() | ui::EF_LEFT_MOUSE_BUTTON |
-                  ui::EF_FROM_TOUCH,
-              ui::EF_LEFT_MOUSE_BUTTON));
-        }
-        break;
-      case ui::ET_TOUCH_RELEASED:
-        if (target_button) {
-          auto* const touch_event = event.AsTouchEvent();
-          target_button->OnMouseReleased(ui::MouseEvent(
-              ui::ET_MOUSE_RELEASED, gfx::PointF(target_point),
-              gfx::PointF(screen_coords), touch_event->time_stamp(),
-              touch_event->flags() | ui::EF_LEFT_MOUSE_BUTTON |
-                  ui::EF_FROM_TOUCH,
-              ui::EF_LEFT_MOUSE_BUTTON));
-        }
-        break;
-
-      // If a gesture is received, forward it as-is.
-      case ui::ET_GESTURE_TAP:
-        if (target_button) {
-          auto* const gesture = event.AsGestureEvent();
-          ui::GestureEvent tap(gesture->x(), gesture->y(), gesture->flags(),
-                               gesture->time_stamp(), gesture->details(),
-                               gesture->unique_touch_event_id());
-          target_button->button_controller()->OnGestureEvent(&tap);
-        }
-        break;
-
-      // Mouse moves could be routed through the inkdrop controller but it's
-      // easier to just set hovered state directly.
-      case ui::ET_MOUSE_MOVED:
-        if (target_button != hovered_button_) {
-          if (hovered_button_) {
-            views::InkDrop* const ink_drop =
-                views::InkDrop::Get(hovered_button_)->GetInkDrop();
-            if (ink_drop) {
-              ink_drop->SetHovered(false);
-            }
-          }
-          if (target_button) {
-            views::InkDrop* const ink_drop =
-                views::InkDrop::Get(target_button)->GetInkDrop();
-            if (ink_drop) {
-              ink_drop->SetHovered(true);
-            }
-          }
-          hovered_button_ = target_button;
-        }
-        break;
-      default:
-        return false;
-    }
-
-    return true;
-  }
-
-  // Gets which (if any) of the help bubble buttons are at the given
-  // `screen_coords`.
-  views::Button* GetButtonAt(const gfx::Point& screen_coords) const {
-    if (IsInButton(screen_coords, help_bubble_->close_button_)) {
-      return help_bubble_->close_button_;
-    }
-    if (IsInButton(screen_coords, help_bubble_->default_button_)) {
-      return help_bubble_->default_button_;
-    }
-    for (views::MdTextButton* const button :
-         help_bubble_->non_default_buttons_) {
-      if (IsInButton(screen_coords, button)) {
-        return button;
-      }
-    }
-    return nullptr;
-  }
-
-  // Returns whether `screen_coords` are in `button`, which may be null.
-  static bool IsInButton(const gfx::Point& screen_coords,
-                         const views::Button* button) {
-    return button && button->HitTestPoint(views::View::ConvertPointFromScreen(
-                         button, screen_coords));
-  }
-
-  const raw_ptr<HelpBubbleView> help_bubble_;
-  raw_ptr<views::Button> hovered_button_ = nullptr;
-  // std::unique_ptr<views::EventMonitor> event_monitor_;
-  base::CallbackListSubscription callback_handle_;
-};
-
-}  // namespace internal
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(HelpBubbleView,
                                       kHelpBubbleElementIdForTesting);
@@ -486,9 +325,11 @@ class HelpBubbleView::AnchorViewObserver : public views::ViewObserver {
   base::ScopedObservation<View, ViewObserver> observation_{this};
 };
 
-HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
-                               const internal::HelpBubbleAnchorParams& anchor,
-                               HelpBubbleParams params)
+HelpBubbleView::HelpBubbleView(
+    const HelpBubbleDelegate* delegate,
+    const internal::HelpBubbleAnchorParams& anchor,
+    HelpBubbleParams params,
+    std::unique_ptr<HelpBubbleEventRelay> event_relay)
     : BubbleDialogDelegateView(
           anchor.view,
           TranslateArrow(params.arrow),
@@ -504,7 +345,8 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
 #endif
           ,
           true),
-      delegate_(delegate) {
+      delegate_(delegate),
+      event_relay_(std::move(event_relay)) {
   if (anchor.rect.has_value()) {
     SetForceAnchorRect(anchor.rect.value());
     anchor_observer_ = std::make_unique<AnchorViewObserver>(anchor.view, this);
@@ -844,6 +686,16 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
   set_close_on_deactivate(false);
   set_focus_traversable_from_anchor_view(false);
 
+  const bool suppress_events =
+      event_relay_ && !event_relay_->ShouldHelpBubbleProcessEvents();
+  if (suppress_events) {
+    CHECK_LE(params.buttons.size(), 1U)
+        << "Help bubbles that cannot activate cannot have multiple interactive "
+           "buttons due to accessibility constraints.";
+    SetCanActivate(false);
+    set_accept_events(false);
+  }
+
   views::Widget* widget = views::BubbleDialogDelegateView::CreateBubble(this);
 
   // This gets reset to the platform default when we call CreateBubble(), so we
@@ -853,10 +705,9 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
   frame_view->SetDisplayVisibleArrow(anchor.show_arrow &&
                                      params.arrow != HelpBubbleArrow::kNone);
 
-  // If the anchor view is not a MenuItemView and the primary window
-  // widget is not the anchor widget, do not use the window anchor bounds.
-  if (!GetAnchorAsMenuItem(this) &&
-      anchor_widget()->GetPrimaryWindowWidget() != anchor_widget()) {
+  // If the primary window widget is not the anchor widget, do not use the
+  // window anchor bounds.
+  if (anchor_widget()->GetPrimaryWindowWidget() != anchor_widget()) {
     frame_view->set_use_anchor_window_bounds(false);
   }
 
@@ -869,25 +720,33 @@ HelpBubbleView::HelpBubbleView(const HelpBubbleDelegate* delegate,
   // invalidate itself when it changes.
   InvalidateLayout();
 
-  // Most help bubbles with buttons take focus when they show.
-  bool show_active =
-      params.focus_on_show_hint.value_or(!params.buttons.empty());
+  // Setup that should happen after the widget is constructed:
+  if (suppress_events) {
+    // This is required on Windows because of the way events are routed.
+    GetBubbleFrameView()->set_hit_test_transparent(true);
+  }
   if (auto* const anchor_bubble =
           anchor_widget()->widget_delegate()->AsBubbleDialogDelegate()) {
     // Make sure that if the help bubble is attaching to a dialog, the dialog
     // does not immediately dismiss when the help bubble is shown or focused.
     anchor_pin_ = anchor_bubble->PreventCloseOnDeactivate();
-  } else if (auto* const menu_item = GetAnchorAsMenuItem(this)) {
-    // Should not steal focus when attaching to a menu.
-    show_active = false;
-    menu_event_monitor_ =
-        std::make_unique<internal::MenuEventMonitor>(this, menu_item);
   }
+
+  // Most help bubbles with buttons take focus when they show.
+  const bool show_active =
+      params.focus_on_show_hint.value_or(!params.buttons.empty()) &&
+      !event_relay_;
   if (show_active) {
     widget->Show();
   } else {
     widget->ShowInactive();
   }
+
+  // Begin event-forwarding if appropriate.
+  if (event_relay_) {
+    event_relay_->Init(this);
+  }
+
   MaybeStartAutoCloseTimer();
 }
 

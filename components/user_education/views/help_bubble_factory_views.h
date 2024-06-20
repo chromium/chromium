@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_USER_EDUCATION_VIEWS_HELP_BUBBLE_FACTORY_VIEWS_H_
 #define COMPONENTS_USER_EDUCATION_VIEWS_HELP_BUBBLE_FACTORY_VIEWS_H_
 
+#include <memory>
+
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -24,6 +26,7 @@
 namespace user_education {
 
 class HelpBubbleDelegate;
+class HelpBubbleEventRelay;
 class HelpBubbleView;
 
 namespace internal {
@@ -118,7 +121,8 @@ class HelpBubbleFactoryViews : public HelpBubbleFactory {
   std::unique_ptr<HelpBubble> CreateBubbleImpl(
       ui::TrackedElement* element,
       const internal::HelpBubbleAnchorParams& anchor,
-      HelpBubbleParams params);
+      HelpBubbleParams params,
+      std::unique_ptr<HelpBubbleEventRelay> event_relay);
 
  private:
   raw_ptr<const HelpBubbleDelegate> delegate_;

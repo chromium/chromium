@@ -6197,6 +6197,8 @@ static_library("ui") {
       "views/user_education/browser_feature_promo_controller.h",
       "views/user_education/browser_help_bubble.cc",
       "views/user_education/browser_help_bubble.h",
+      "views/user_education/browser_help_bubble_event_relay.cc",
+      "views/user_education/browser_help_bubble_event_relay.h",
       "views/user_education/browser_user_education_service.cc",
       "views/user_education/browser_user_education_service.h",
       "views/web_apps/create_shortcut_confirmation_view.cc",
@@ -6360,6 +6362,11 @@ static_library("ui") {
     ]
 
     sources += get_target_outputs(":webui_name_variants")
+
+    if (is_mac) {
+      sources +=
+          [ "views/user_education/browser_help_bubble_event_relay_mac.mm" ]
+    }
 
     deps += [
       ":webui_name_variants",

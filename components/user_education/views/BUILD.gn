@@ -8,6 +8,8 @@ import("//build/config/ui.gni")
 source_set("views") {
   sources = [
     "help_bubble_delegate.h",
+    "help_bubble_event_relay.cc",
+    "help_bubble_event_relay.h",
     "help_bubble_factory_views.cc",
     "help_bubble_factory_views.h",
     "help_bubble_view.cc",
@@ -42,6 +44,14 @@ source_set("views") {
     "//ui/strings:ui_strings",
     "//ui/views",
   ]
+
+  if (use_aura) {
+    deps += [ "//ui/aura" ]
+  }
+
+  if (is_mac) {
+    deps += [ "//components/remote_cocoa/app_shim" ]
+  }
 }
 
 source_set("test_support") {
