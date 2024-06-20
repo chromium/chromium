@@ -957,20 +957,17 @@ void NativeWidgetMac::OnNativeViewHierarchyChanged() {
 }
 
 bool NativeWidgetMac::SetAllowScreenshots(bool allow) {
-  // TODO(crbug.com/322519161): Add code to set sharingType on NSWindow here?
-  // Probably need to add a SetAllowScreenshots() method to
-  // ns_window_host_(NativeWidgetMacNSWindowHost) instance.
-  //
-  // Nothing in the apple docs say the sharing type is restricted to top level
-  // windows.
-  // https://developer.apple.com/documentation/appkit/nswindow/1419729-sharingtype
-  NOTIMPLEMENTED();
+  if (ns_window_host_) {
+    ns_window_host_->SetAllowScreenshots(allow);
+    return true;
+  }
   return false;
 }
 
 bool NativeWidgetMac::AreScreenshotsAllowed() {
-  // TODO(crbug.com/322519161): Implement.
-  NOTIMPLEMENTED();
+  if (ns_window_host_) {
+    return ns_window_host_->AllowScreenshots();
+  }
   return true;
 }
 

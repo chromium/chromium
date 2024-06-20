@@ -257,6 +257,11 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   void CanGoBack(bool can_go_back);
   void CanGoForward(bool can_go_forward);
 
+  // Accessors to control screenshot availability of the in-process/remote
+  // window associated to this host.
+  void SetAllowScreenshots(bool allow);
+  bool AllowScreenshots() const;
+
  private:
   friend class TextInputHost;
 
@@ -530,6 +535,10 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   // Contains NativeViewHost->gfx::NativeView associations for NativeViewHosts
   // attached to |this|.
   std::map<const views::View*, NSView*> attached_native_view_host_views_;
+
+  // Indicates whether the window is allowed to be included in screenshots,
+  // based on enterprise policies.
+  bool allow_screenshots_ = true;
 
   mojo::AssociatedReceiver<remote_cocoa::mojom::NativeWidgetNSWindowHost>
       remote_ns_window_host_receiver_{this};

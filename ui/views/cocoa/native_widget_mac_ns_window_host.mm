@@ -898,6 +898,23 @@ void NativeWidgetMacNSWindowHost::CanGoBack(bool can_go_back) {
 void NativeWidgetMacNSWindowHost::CanGoForward(bool can_go_forward) {
   GetNSWindowMojo()->SetCanGoForward(can_go_forward);
 }
+
+void NativeWidgetMacNSWindowHost::SetAllowScreenshots(bool allow) {
+  GetNSWindowMojo()->SetAllowScreenshots(allow);
+  allow_screenshots_ = allow;
+}
+
+bool NativeWidgetMacNSWindowHost::AllowScreenshots() const {
+  // The `setSharingType` call in `SetAllowScreenshots()` doesn't actually
+  // change the value returned by NSWindow::sharingType. The official
+  // documentation doesn't even mention setSharingType, see
+  // https://developer.apple.com/documentation/appkit/nswindow/1419729-sharingtype
+  //
+  // Using `allow_screenshots_` is a workaround to be able to know the actual
+  // value `SetAllowScreenshots()` was called with.
+  return allow_screenshots_;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // NativeWidgetMacNSWindowHost, remote_cocoa::BridgedNativeWidgetHostHelper:
 

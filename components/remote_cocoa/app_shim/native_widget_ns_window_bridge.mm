@@ -1087,6 +1087,11 @@ void NativeWidgetNSWindowBridge::DisplayContextMenu(
   runner.ShowMenu(std::move(menu), GetWindow(), target_view);
 }
 
+void NativeWidgetNSWindowBridge::SetAllowScreenshots(bool allow) {
+  [ns_window()
+      setSharingType:allow ? NSWindowSharingReadOnly : NSWindowSharingNone];
+}
+
 void NativeWidgetNSWindowBridge::OnWindowWillClose() {
   fullscreen_controller_.OnWindowWillClose();
   // Immersive full screen needs to be disabled synchronously when the window
