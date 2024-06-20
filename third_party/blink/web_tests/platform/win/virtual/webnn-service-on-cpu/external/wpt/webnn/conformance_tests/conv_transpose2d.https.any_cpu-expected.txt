@@ -1,43 +1,11 @@
 This is a testharness.js-based test.
-[FAIL] convTranspose2d float32 4D input and filter(non-constant) tensors default options
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': convTranspose2d is not implemented."
-[FAIL] convTranspose2d float32 4D both input and filter constant tensors default options
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': convTranspose2d is not implemented."
-[FAIL] convTranspose2d float32 4D input and filter tensors default options
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': convTranspose2d is not implemented."
 [FAIL] convTranspose2d float32 4D input and filter tensors options.groups
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': convTranspose2d is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': convTranspose2d doesn't support dilations and groups."
 [FAIL] convTranspose2d float32 4D input and filter tensors options.groups=2 options.strides=[2, 2]
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': convTranspose2d is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': convTranspose2d doesn't support dilations and groups."
 [FAIL] convTranspose2d float32 4D input and filter tensors options.padding
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': convTranspose2d is not implemented."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.strides
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': convTranspose2d is not implemented."
+  assert_true: assert_array_approx_equals_ulp: test convTranspose2d float32 actual 0 should be close enough to expected 0.2787136137485504 by the acceptable 8 ULP distance, but they have 1049539469 ULP distance expected true got false
 [FAIL] convTranspose2d float32 4D input and filter tensors options.dilations
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': convTranspose2d is not implemented."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.outputPadding
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': convTranspose2d is not implemented."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.outputSizes
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': convTranspose2d is not implemented."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nchw
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': convTranspose2d is not implemented."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': convTranspose2d is not implemented."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.filterLayout=iohw
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': convTranspose2d is not implemented."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.filterLayout=hwoi
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': convTranspose2d is not implemented."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.filterLayout=ohwi
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': convTranspose2d is not implemented."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=iohw
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': convTranspose2d is not implemented."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=hwoi
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': convTranspose2d is not implemented."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.inputLayout=nhwc options.filterLayout=ohwi
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': convTranspose2d is not implemented."
-[FAIL] convTranspose2d float32 4D input and filter tensors options.bias
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': convTranspose2d is not implemented."
-[FAIL] convTranspose2d float32 4D input and filter tensors, both negative input tensor and options.bias
-  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': convTranspose2d is not implemented."
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': convTranspose2d doesn't support dilations and groups."
 Harness: the test ran to completion.
 

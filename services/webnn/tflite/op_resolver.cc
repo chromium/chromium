@@ -220,6 +220,10 @@ OpResolver::OpResolver(const mojom::CreateContextOptions& options) {
              ::tflite::ops::builtin::Register_TRANSPOSE(),
              /* min_version = */ 1,
              /* max_version = */ 4);
+  AddBuiltin(::tflite::BuiltinOperator_TRANSPOSE_CONV,
+             ::tflite::ops::builtin::Register_TRANSPOSE_CONV(),
+             /* min_version = */ 1,
+             /* max_version = */ 3);
 
 #if BUILDFLAG(BUILD_TFLITE_WITH_NNAPI)
   if (options.device == mojom::CreateContextOptions::Device::kNpu) {

@@ -160,8 +160,9 @@ struct Padding2d {
 //   `nhwc` input layout only supports `ohwi` for regular conv2d and `ihwo` (1,
 //   height, width, options.groups) filter layout for depthwise conv2d that is
 //   `options.groups = inputChannels = outputChannels`.
-// * convTranspose2d (Kind == kTransposed) only supports `iohw` (input_channels,
-//   output_channels/groups, height, width) filter layout
+// * convTranspose2d (Kind == kTransposed) `nchw` input layout only supports
+// `iohw` (input_channels, output_channels/groups, height, width) filter layout,
+//  `nhwc` input layout only supports `ohwi` filter layout.
 // Support for other layouts are being discussed in the working group
 // https://github.com/webmachinelearning/webnn/issues/324.
 struct Conv2d {

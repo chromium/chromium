@@ -1367,7 +1367,7 @@ TEST_F(WebNNGraphImplTest, ConvTranspose2dTest) {
                  .input = {.type = OperandDataType::kFloat32,
                            .dimensions = {1, 3, 3, 1}},
                  .filter = {.type = OperandDataType::kFloat32,
-                            .dimensions = {1, 1, 3, 3}},
+                            .dimensions = {1, 3, 3, 1}},
                  .attributes = {.input_layout =
                                     mojom::InputOperandLayout::kChannelsLast},
                  .output = {.type = OperandDataType::kFloat32,

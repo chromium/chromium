@@ -1030,8 +1030,15 @@ auto GraphBuilderTflite::SerializeConcat(const mojom::Concat& concat)
 
 auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
     -> base::expected<OperatorOffset, std::string> {
-  if (conv2d.kind != mojom::Conv2d::Kind::kDirect) {
-    return base::unexpected("convTranspose2d is not implemented.");
+  // TFLite schema doesn't support dilations and groups, they are being
+  // discussed in the issues
+  // https://github.com/tensorflow/tensorflow/issues/70031
+  // https://github.com/tensorflow/tensorflow/issues/69201
+  if (conv2d.kind == mojom::Conv2d::Kind::kTransposed &&
+      (conv2d.dilations->height != 1 || conv2d.dilations->width != 1 ||
+       conv2d.groups != 1)) {
+    return base::unexpected(
+        "convTranspose2d doesn't support dilations and groups.");
   }
 
   const mojom::Operand& input_operand = GetOperand(conv2d.input_operand_id);
@@ -1040,6 +1047,7 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
     return base::unexpected("The data type of input is not supported.");
   }
 
+  // Get tflite padding mode with the size2d of input, filter, dilation.
   const auto& input_shape = input_operand.descriptor.shape();
   CHECK_EQ(input_shape.size(), 4u);
   const uint32_t input_channels = input_shape[3];
@@ -1047,14 +1055,10 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
   const auto& output_shape = output_operand.descriptor.shape();
   CHECK_EQ(output_shape.size(), 4u);
   const uint32_t output_channels = output_shape[3];
-  const bool depthwise =
-      webnn::IsDepthwiseConv2d(input_channels, output_channels, conv2d.groups);
-
-  // Get tflite padding mode with the size2d of input, filter, dilation.
   const webnn::Size2d<uint32_t> input_size2d = {.height = input_shape[1],
                                                 .width = input_shape[2]};
-  // For nhwc input layout, the default filter layout is ohwi for regular conv2d
-  // and ihwo for depthwise conv2d.
+  // For nhwc input layout, the default filter layout is ohwi for
+  // regular/transpose conv2d and ihwo for depthwise conv2d.
   const mojom::Operand& filter_operand = GetOperand(conv2d.filter_operand_id);
   CHECK_EQ(filter_operand.descriptor.Rank(), 4u);
   const auto& filter_shape = filter_operand.descriptor.shape();
@@ -1074,37 +1078,6 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
                                         padding_mode.paddings.value()));
   }
 
-  // TODO(crbug.com/344633746): Consider fusing Conv2D activations when
-  // possible.
-
-  ::tflite::BuiltinOperator operator_kind;
-  ::tflite::BuiltinOptions builtin_options_type;
-  flatbuffers::Offset<void> builtin_options;
-  if (depthwise) {
-    const uint32_t depth_multiplier = 1;
-    operator_kind = ::tflite::BuiltinOperator_DEPTHWISE_CONV_2D;
-    builtin_options = ::tflite::CreateDepthwiseConv2DOptions(
-                          builder_, padding_mode.mode, conv2d.strides->width,
-                          conv2d.strides->height, depth_multiplier,
-                          ::tflite::ActivationFunctionType_NONE,
-                          conv2d.dilations->width, conv2d.dilations->height)
-                          .Union();
-    builtin_options_type = ::tflite::BuiltinOptions_DepthwiseConv2DOptions;
-  } else {
-    operator_kind = ::tflite::BuiltinOperator_CONV_2D;
-    builtin_options =
-        ::tflite::CreateConv2DOptions(
-            builder_, padding_mode.mode, conv2d.strides->width,
-            conv2d.strides->height, ::tflite::ActivationFunctionType_NONE,
-            conv2d.dilations->width, conv2d.dilations->height)
-            .Union();
-    builtin_options_type = ::tflite::BuiltinOptions_Conv2DOptions;
-  }
-
-  // Create `tflite::Operator` with the tensor index of inputs and outputs
-  // operand. The type of operation is determined by the index of the operator
-  // code.
-  const auto operator_code_index = GetOperatorCodeIndex(operator_kind);
   // If there is no bias operand, serialize a empty buffer with the size of
   // output channel.
   int32_t bias_index;
@@ -1117,9 +1090,61 @@ auto GraphBuilderTflite::SerializeConv2d(const mojom::Conv2d& conv2d)
         std::vector<float>(output_channels), std::move(bias_shape));
   }
 
-  const std::array<int32_t, 3> op_inputs = {
-      explicit_pad_index ? explicit_pad_index.value() : input_index,
-      operand_to_index_map_.at(conv2d.filter_operand_id), bias_index};
+  // TODO(crbug.com/344633746): Consider fusing Conv2D activations when
+  // possible.
+
+  std::vector<int32_t> op_inputs;
+  ::tflite::BuiltinOperator operator_kind;
+  ::tflite::BuiltinOptions builtin_options_type;
+  flatbuffers::Offset<void> builtin_options;
+  if (conv2d.kind == mojom::Conv2d::Kind::kDirect) {
+    op_inputs = {explicit_pad_index ? explicit_pad_index.value() : input_index,
+                 operand_to_index_map_.at(conv2d.filter_operand_id),
+                 bias_index};
+    if (webnn::IsDepthwiseConv2d(input_channels, output_channels,
+                                 conv2d.groups)) {
+      operator_kind = ::tflite::BuiltinOperator_DEPTHWISE_CONV_2D;
+      builtin_options = ::tflite::CreateDepthwiseConv2DOptions(
+                            builder_, padding_mode.mode, conv2d.strides->width,
+                            conv2d.strides->height, /*depth_multiplier=*/1,
+                            ::tflite::ActivationFunctionType_NONE,
+                            conv2d.dilations->width, conv2d.dilations->height)
+                            .Union();
+      builtin_options_type = ::tflite::BuiltinOptions_DepthwiseConv2DOptions;
+    } else {
+      operator_kind = ::tflite::BuiltinOperator_CONV_2D;
+      builtin_options =
+          ::tflite::CreateConv2DOptions(
+              builder_, padding_mode.mode, conv2d.strides->width,
+              conv2d.strides->height, ::tflite::ActivationFunctionType_NONE,
+              conv2d.dilations->width, conv2d.dilations->height)
+              .Union();
+      builtin_options_type = ::tflite::BuiltinOptions_Conv2DOptions;
+    }
+  } else {
+    const auto signed_output_dimensions = ToSignedDimensions(output_shape);
+    CHECK(signed_output_dimensions.has_value());
+    const std::array<int32_t, 1> output_tensor_shape = {
+        base::checked_cast<int32_t>(output_shape.size())};
+    const int32_t output_shape_tensor_index =
+        SerializeTensorWithBuffer<int32_t>(*signed_output_dimensions,
+                                           output_tensor_shape);
+    op_inputs = {output_shape_tensor_index,
+                 operand_to_index_map_.at(conv2d.filter_operand_id),
+                 explicit_pad_index ? explicit_pad_index.value() : input_index,
+                 bias_index};
+    operator_kind = ::tflite::BuiltinOperator_TRANSPOSE_CONV;
+    builtin_options =
+        ::tflite::CreateTransposeConvOptions(
+            builder_, padding_mode.mode, conv2d.strides->width,
+            conv2d.strides->height, ::tflite::ActivationFunctionType_NONE)
+            .Union();
+    builtin_options_type = ::tflite::BuiltinOptions_TransposeConvOptions;
+  }
+  // Create `tflite::Operator` with the tensor index of inputs and outputs
+  // operand. The type of operation is determined by the index of the operator
+  // code.
+  const auto operator_code_index = GetOperatorCodeIndex(operator_kind);
   const std::array<int32_t, 1> op_outputs = {
       operand_to_index_map_.at(conv2d.output_operand_id)};
   return ::tflite::CreateOperator(builder_, operator_code_index,

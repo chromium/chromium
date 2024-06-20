@@ -334,11 +334,15 @@ webnn::ConvTranspose2dAttributes ConvertToConvTranspose2dAttributes(
       // "channelsFirst": [batches, input_channels, height, width]
       output_sizes.height = output->descriptor.shape()[2];
       output_sizes.width = output->descriptor.shape()[3];
+      component_attributes.filter_layout =
+          ConvTranspose2dFilterOperandLayout::kIohw;
       break;
     case webnn::mojom::InputOperandLayout::kChannelsLast:
       // "channelsLast": [batches, height, width, input_channels]
       output_sizes.height = output->descriptor.shape()[1];
       output_sizes.width = output->descriptor.shape()[2];
+      component_attributes.filter_layout =
+          ConvTranspose2dFilterOperandLayout::kOhwi;
       break;
   }
   component_attributes.output_sizes = std::move(output_sizes);

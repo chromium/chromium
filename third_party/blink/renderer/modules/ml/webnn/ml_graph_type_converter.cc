@@ -458,15 +458,31 @@ std::optional<base::span<const uint32_t>> GetConv2DFilterPermutation(
 }
 
 std::optional<base::span<const uint32_t>> GetConvTranspose2DFilterPermutation(
+    blink_mojom::InputOperandLayout input_layout,
     blink::V8MLConvTranspose2dFilterOperandLayout filter_layout) {
-  // Mojo always expects IOHW layout.
-  switch (filter_layout.AsEnum()) {
-    case blink::V8MLConvTranspose2dFilterOperandLayout::Enum::kIohw:
-      return std::nullopt;
-    case blink::V8MLConvTranspose2dFilterOperandLayout::Enum::kHwoi:
-      return base::span({3u, 2u, 0u, 1u});
-    case blink::V8MLConvTranspose2dFilterOperandLayout::Enum::kOhwi:
-      return base::span({3u, 0u, 1u, 2u});
+  switch (input_layout) {
+    case blink_mojom::InputOperandLayout::kChannelsFirst:
+      // Mojo expects IOHW layout.
+      switch (filter_layout.AsEnum()) {
+        case blink::V8MLConvTranspose2dFilterOperandLayout::Enum::kIohw:
+          return std::nullopt;
+        case blink::V8MLConvTranspose2dFilterOperandLayout::Enum::kHwoi:
+          return base::span({3u, 2u, 0u, 1u});
+        case blink::V8MLConvTranspose2dFilterOperandLayout::Enum::kOhwi:
+          return base::span({3u, 0u, 1u, 2u});
+      }
+      break;
+    case blink_mojom::InputOperandLayout::kChannelsLast:
+      // Mojo expects OHWI layout.
+      switch (filter_layout.AsEnum()) {
+        case blink::V8MLConvTranspose2dFilterOperandLayout::Enum::kIohw:
+          return base::span({1u, 2u, 3u, 0u});
+        case blink::V8MLConvTranspose2dFilterOperandLayout::Enum::kHwoi:
+          return base::span({2u, 0u, 1u, 3u});
+        case blink::V8MLConvTranspose2dFilterOperandLayout::Enum::kOhwi:
+          return std::nullopt;
+      }
+      break;
   }
 }
 
@@ -604,7 +620,6 @@ bool IsDepthwiseConv2d(const MLOperator* conv2d) {
   return webnn::IsDepthwiseConv2d(input_channels, output_channels, groups);
 }
 
-
 template <typename MLConv2dOptionsType>
 std::optional<String> SerializeConv2dOperation(
     const OperandToIdMap& operand_to_id_map,
@@ -666,8 +681,8 @@ std::optional<String> SerializeConv2dOperation(
                                     MLConvTranspose2dOptions>::value) {
     conv2d_mojo->kind = blink_mojom::Conv2d::Kind::kTransposed;
 
-    filter_permutation =
-        GetConvTranspose2DFilterPermutation(options->filterLayout());
+    filter_permutation = GetConvTranspose2DFilterPermutation(
+        context_properties.conv2d_input_layout, options->filterLayout());
   } else {
     NOTREACHED_NORETURN();
   }
