@@ -3164,7 +3164,15 @@ class BackForwardCacheWithSubframeNavigationBrowserTest
     // We have to pause a navigation before `DidCommitNavigation`, so we don't
     // want to wait for the navigation to finish.
     ASSERT_TRUE(BeginNavigateToURLFromRenderer(ftn, subframe_navigate_url));
-    observer.Wait();
+    // Navigation without a URL loader shall always create the speculative RFH
+    // immediately or never create one.
+    // The same-site navigation to the subframe will not create a new
+    // speculative RFH if render document is not enabled for subframes.
+    if (subframe_navigate_url.SchemeIsHTTPOrHTTPS() &&
+        ShouldCreateNewRenderFrameHostOnSameSiteNavigation(
+            /*is_main_frame=*/false, /*is_local_root=*/true)) {
+      observer.Wait();
+    }
 
     // Wait until the navigation is pending commit. Note that the navigation
     // might use a speculative RenderFrameHost, so use that if necessary.
@@ -3231,11 +3239,9 @@ class BackForwardCacheWithSubframeNavigationWithParamBrowserTest
 
 // Confirm that BackForwardCache is blocked when there is only 1 navigation and
 // it's pending commit.
-#define MAYBE_SubframeNavigationWithPendingCommitShouldPreventCache \
-  DISABLED_SubframeNavigationWithPendingCommitShouldPreventCache
 IN_PROC_BROWSER_TEST_P(
     BackForwardCacheWithSubframeNavigationWithParamBrowserTest,
-    MAYBE_SubframeNavigationWithPendingCommitShouldPreventCache) {
+    SubframeNavigationWithPendingCommitShouldPreventCache) {
   const GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(b)"));
   const GURL subframe_url = embedded_test_server()->GetURL(
@@ -3278,11 +3284,9 @@ IN_PROC_BROWSER_TEST_P(
 
 // Confirm that BackForwardCache is blocked when there are 2 navigations, 1 not
 // pending commit yet, and 1 pending commit.
-#define MAYBE_MultipleSubframeNavigationWithBeforeAndPendingCommitShouldPreventCache \
-  DISABLED_MultipleSubframeNavigationWithBeforeAndPendingCommitShouldPreventCache
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheWithSubframeNavigationBrowserTest,
-    MAYBE_MultipleSubframeNavigationWithBeforeAndPendingCommitShouldPreventCache) {
+    MultipleSubframeNavigationWithBeforeAndPendingCommitShouldPreventCache) {
   // This test relies on the main frame and the iframe to live in different
   // processes. This allows one renderer process to proceed a navigation while
   // the other renderer process is busy executing its beforeunload handler.
