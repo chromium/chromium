@@ -139,19 +139,11 @@ class TestUrlCheckerClient {
   }
 
   void OnCheckUrlResult(
-      safe_browsing::SafeBrowsingUrlCheckerImpl::NativeUrlCheckNotifier*
-          slow_check_notifier,
       bool proceed,
       bool showed_interstitial,
       bool has_post_commit_interstitial_skipped,
       safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
           performed_check) {
-    if (slow_check_notifier) {
-      *slow_check_notifier =
-          base::BindOnce(&TestUrlCheckerClient::OnCheckUrlResult,
-                         base::Unretained(this), nullptr);
-      return;
-    }
     url_is_unsafe_ = !proceed;
     result_pending_ = false;
     performed_check_ = performed_check;

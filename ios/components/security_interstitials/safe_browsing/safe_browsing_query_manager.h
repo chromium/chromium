@@ -143,23 +143,8 @@ class SafeBrowsingQueryManager
    private:
     // Called by `url_checker` with the initial result of performing a url
     // check. `url_checker` must be non-null. This is an implementation of
-    // SafeBrowsingUrlCheckerImpl::NativeUrlCheckCallBack. `slow_check_notifier`
-    // is an out-parameter; when a non-null value is passed in, it is set to a
-    // callback that receives the final result of the url check.
+    // SafeBrowsingUrlCheckerImpl::NativeUrlCheckCallBack.
     void OnCheckUrlResult(
-        safe_browsing::SafeBrowsingUrlCheckerImpl* url_checker,
-        safe_browsing::SafeBrowsingUrlCheckerImpl::NativeUrlCheckNotifier*
-            slow_check_notifier,
-        bool proceed,
-        bool showed_interstitial,
-        bool has_post_commit_interstitial_skipped,
-        safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck
-            performed_check);
-
-    // Called by `url_checker` with the final result of performing a url check.
-    // `url_checker` must be non-null. This is an implementation of
-    // SafeBrowsingUrlCheckerImpl::NativeUrlCheckNotifier.
-    void OnCheckComplete(
         safe_browsing::SafeBrowsingUrlCheckerImpl* url_checker,
         bool proceed,
         bool showed_interstitial,

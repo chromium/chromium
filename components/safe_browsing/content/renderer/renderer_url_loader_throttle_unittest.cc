@@ -42,8 +42,7 @@ class FakeSafeBrowsing : public mojom::SafeBrowsing {
       pending_callback_ = std::move(callback);
       receiver_ = std::move(receiver);
     } else {
-      std::move(callback).Run(/*slow_check_notifier=*/mojo::NullReceiver(),
-                              /*proceed=*/true, /*show_interstitial=*/false);
+      std::move(callback).Run(/*proceed=*/true, /*show_interstitial=*/false);
     }
   }
 

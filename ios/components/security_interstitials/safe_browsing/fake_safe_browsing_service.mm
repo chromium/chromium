@@ -56,7 +56,6 @@ class FakeSafeBrowsingUrlCheckerImpl
           callback) override {
     if (url.host() == FakeSafeBrowsingService::kUnsafeHost) {
       std::move(callback).Run(
-          /*slow_check_notifier=*/nullptr,
           /*proceed=*/false,
           /*showed_interstitial=*/true,
           /*has_post_commit_interstitial_skipped=*/false,
@@ -65,13 +64,12 @@ class FakeSafeBrowsingUrlCheckerImpl
               kHashDatabaseCheck);
       return;
     }
-    std::move(callback).Run(
-        /*slow_check_notifier=*/nullptr, /*proceed=*/true,
-        /*showed_interstitial=*/false,
-        /*has_post_commit_interstitial_skipped=*/false,
-        /*did_perform_url_real_time_check=*/
-        safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck::
-            kHashDatabaseCheck);
+    std::move(callback).Run(/*proceed=*/true,
+                            /*showed_interstitial=*/false,
+                            /*has_post_commit_interstitial_skipped=*/false,
+                            /*did_perform_url_real_time_check=*/
+                            safe_browsing::SafeBrowsingUrlCheckerImpl::
+                                PerformedCheck::kHashDatabaseCheck);
   }
 };
 }  // namespace

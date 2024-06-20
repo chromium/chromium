@@ -34,15 +34,6 @@ interface SafeBrowsing {
   // ran with |proceed == true| and |showed_interstitial == false| as if the URL
   // is safe.
   //
-  // If |slow_check_notifier| is a valid interface receiver, it indicates that
-  // the URL may be unsafe and a more time-consuming process is required to get
-  // the final result. In that case, the rest of the callback arguments should
-  // be ignored. The result will be reported using the UrlCheckNotifier
-  // interface. Receiving a valid |slow_check_notifier| could be considered as
-  // a singal that the resource should be handled with more caution until the
-  // final result is obtained. For example, the network service may want to
-  // pause reading the response body for MIME sniffing.
-  //
   // |proceed| indicates whether it is okay to proceed with loading the URL.
   // |showed_interstitial| indicates whether the SafeBrowsing interstitial page
   // has been shown to the user.
@@ -55,8 +46,7 @@ interface SafeBrowsing {
       int32 load_flags,
       bool has_user_gesture,
       bool originated_from_service_worker)
-          => (pending_receiver<UrlCheckNotifier>? slow_check_notifier,
-              bool proceed,
+          => (bool proceed,
               bool showed_interstitial);
 
   // Bind an additional pipe to this instance of the SafeBrowsing interface.

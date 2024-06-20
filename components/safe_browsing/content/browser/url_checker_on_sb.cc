@@ -149,21 +149,11 @@ void UrlCheckerOnSB::AddUrlInRedirectChainForTesting(const GURL& url) {
 }
 
 void UrlCheckerOnSB::OnCheckUrlResult(
-    NativeUrlCheckNotifier* slow_check_notifier,
     bool proceed,
     bool showed_interstitial,
     bool has_post_commit_interstitial_skipped,
     SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
   pending_checks_--;
-  OnCompleteCheck(proceed, showed_interstitial,
-                  has_post_commit_interstitial_skipped, performed_check);
-}
-
-void UrlCheckerOnSB::OnCompleteCheck(
-    bool proceed,
-    bool showed_interstitial,
-    bool has_post_commit_interstitial_skipped,
-    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
   bool all_checks_completed = pending_checks_ == 0;
   OnCompleteCheckResult result(proceed, showed_interstitial,
                                has_post_commit_interstitial_skipped,

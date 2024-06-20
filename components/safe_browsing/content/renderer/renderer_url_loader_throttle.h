@@ -30,8 +30,7 @@ namespace safe_browsing {
 // SafeBrowsing and determine whether a URL and its redirect URLs are safe to
 // load. It defers response processing until all URL checks are completed;
 // cancels the load if any URLs turn out to be bad.
-class RendererURLLoaderThrottle : public blink::URLLoaderThrottle,
-                                  public mojom::UrlCheckNotifier {
+class RendererURLLoaderThrottle : public blink::URLLoaderThrottle {
  public:
   // |safe_browsing| must stay alive until WillStartRequest() (if it is called)
   // or the end of this object.
@@ -92,16 +91,9 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle,
                            bool* defer) override;
   const char* NameForLoggingWillProcessResponse() override;
 
-  // mojom::UrlCheckNotifier implementation.
-  void OnCompleteCheck(bool proceed, bool showed_interstitial) override;
-
   void OnCheckUrlResult(
-      mojo::PendingReceiver<mojom::UrlCheckNotifier> slow_check_notifier,
       bool proceed,
       bool showed_interstitial);
-
-  // Called by the two methods above.
-  void OnCompleteCheckInternal(bool proceed, bool showed_interstitial);
 
   void OnMojoDisconnect();
 
@@ -132,9 +124,6 @@ class RendererURLLoaderThrottle : public blink::URLLoaderThrottle,
 
   // The total delay caused by SafeBrowsing deferring the resource load.
   base::TimeDelta total_delay_;
-
-  std::unique_ptr<mojo::ReceiverSet<mojom::UrlCheckNotifier>>
-      notifier_receivers_;
 
   GURL original_url_;
 

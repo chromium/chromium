@@ -139,27 +139,16 @@ void SafeBrowsingUrlCheckerImpl::Notifier::OnCompleteCheck(
     PerformedCheck performed_check) {
   DCHECK(performed_check != PerformedCheck::kUnknown);
   if (callback_) {
-    std::move(callback_).Run(mojo::NullReceiver(), proceed,
-                             showed_interstitial);
+    std::move(callback_).Run(proceed, showed_interstitial);
     return;
   }
 
   if (native_callback_) {
     std::move(native_callback_)
-        .Run(nullptr, proceed, showed_interstitial,
-             has_post_commit_interstitial_skipped, performed_check);
+        .Run(proceed, showed_interstitial, has_post_commit_interstitial_skipped,
+             performed_check);
     return;
   }
-
-  if (slow_check_notifier_) {
-    slow_check_notifier_->OnCompleteCheck(proceed, showed_interstitial);
-    slow_check_notifier_.reset();
-    return;
-  }
-
-  std::move(native_slow_check_notifier_)
-      .Run(proceed, showed_interstitial, has_post_commit_interstitial_skipped,
-           performed_check);
 }
 
 SafeBrowsingUrlCheckerImpl::UrlInfo::UrlInfo(const GURL& in_url,

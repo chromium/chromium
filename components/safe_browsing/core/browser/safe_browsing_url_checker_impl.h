@@ -71,19 +71,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
     kHashRealTimeCheck = 4,
   };
 
-  using NativeUrlCheckNotifier =
-      base::OnceCallback<void(bool /* proceed */,
-                              bool /* showed_interstitial */,
-                              bool /* has_post_commit_interstitial_skipped */,
-                              PerformedCheck /* performed_check */)>;
-
-  // If |slow_check_notifier| is not null, the callback is supposed to update
-  // this output parameter with a callback to receive complete notification. In
-  // that case, |proceed|, |showed_interstitial| and
-  // |has_post_commit_interstitial_skipped| should be ignored.
   using NativeCheckUrlCallback =
-      base::OnceCallback<void(NativeUrlCheckNotifier* /* slow_check_notifier */,
-                              bool /* proceed */,
+      base::OnceCallback<void(bool /* proceed */,
                               bool /* showed_interstitial */,
                               bool /* has_post_commit_interstitial_skipped */,
                               PerformedCheck /* performed_check */)>;
@@ -167,11 +156,9 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
    private:
     // Used in the mojo interface case.
     CheckUrlCallback callback_;
-    mojo::Remote<mojom::UrlCheckNotifier> slow_check_notifier_;
 
     // Used in the native call case.
     NativeCheckUrlCallback native_callback_;
-    NativeUrlCheckNotifier native_slow_check_notifier_;
   };
 
   struct KickOffLookupMechanismResult {

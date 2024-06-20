@@ -117,7 +117,7 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
           sb_frame_token, originated_from_service_worker)) {
     // Ensure that we don't destroy an uncalled CreateCheckerAndCheckCallback
     if (callback) {
-      std::move(callback).Run(mojo::NullReceiver(), true /* proceed */,
+      std::move(callback).Run(true /* proceed */,
                               false /* showed_interstitial */);
     }
 
@@ -150,11 +150,10 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
       /*is_async_check=*/false, SessionID::InvalidValue());
   auto weak_impl = checker_impl->WeakPtr();
 
-  checker_impl->CheckUrl(
-      url, method,
-      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
-          std::move(callback), /*slow_check_notifier=*/mojo::NullReceiver(),
-          /*proceed=*/true, /*showed_interstitial=*/false));
+  checker_impl->CheckUrl(url, method,
+                         mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+                             std::move(callback),
+                             /*proceed=*/true, /*showed_interstitial=*/false));
   CHECK(weak_impl);  // This is to ensure calling CheckUrl doesn't delete itself
   mojo::MakeSelfOwnedReceiver(std::move(checker_impl), std::move(receiver));
 }

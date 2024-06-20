@@ -69,12 +69,6 @@ class UrlCheckerOnSB final {
   using GetDelegateCallback =
       base::RepeatingCallback<scoped_refptr<UrlCheckerDelegate>()>;
 
-  using NativeUrlCheckNotifier = base::OnceCallback<void(
-      bool /* proceed */,
-      bool /* showed_interstitial */,
-      bool /* has_post_commit_interstitial_skipped */,
-      SafeBrowsingUrlCheckerImpl::PerformedCheck /* performed_check */)>;
-
   UrlCheckerOnSB(
       GetDelegateCallback delegate_getter,
       int frame_tree_node_id,
@@ -121,19 +115,9 @@ class UrlCheckerOnSB final {
   }
 
  private:
-  // If |slow_check_notifier| is non-null, it indicates that a "slow check" is
-  // ongoing, i.e., the URL may be unsafe and a more time-consuming process is
-  // required to get the final result. In that case, the rest of the callback
-  // arguments should be ignored. This method sets the |slow_check_notifier|
-  // output parameter to a callback to receive the final result.
+  // This is the callback invoked by |url_checker_|. See the UrlCheckResult
+  // struct in |UnsafeResource| for the meaning of each parameter.
   void OnCheckUrlResult(
-      NativeUrlCheckNotifier* slow_check_notifier,
-      bool proceed,
-      bool showed_interstitial,
-      bool has_post_commit_interstitial_skipped,
-      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check);
-
-  void OnCompleteCheck(
       bool proceed,
       bool showed_interstitial,
       bool has_post_commit_interstitial_skipped,

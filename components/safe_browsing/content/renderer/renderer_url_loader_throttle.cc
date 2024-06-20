@@ -208,13 +208,7 @@ const char* RendererURLLoaderThrottle::NameForLoggingWillProcessResponse() {
   return "SafeBrowsingRendererThrottle";
 }
 
-void RendererURLLoaderThrottle::OnCompleteCheck(bool proceed,
-                                                bool showed_interstitial) {
-  OnCompleteCheckInternal(proceed, showed_interstitial);
-}
-
 void RendererURLLoaderThrottle::OnCheckUrlResult(
-    mojo::PendingReceiver<mojom::UrlCheckNotifier> slow_check_notifier,
     bool proceed,
     bool showed_interstitial) {
   // When this is the callback of safe_browsing_->CreateCheckerAndCheck(), it is
@@ -222,24 +216,6 @@ void RendererURLLoaderThrottle::OnCheckUrlResult(
   // and blocked the request.
   if (blocked_ || !url_checker_)
     return;
-
-  if (!slow_check_notifier.is_valid()) {
-    OnCompleteCheckInternal(proceed, showed_interstitial);
-    return;
-  }
-
-  if (!notifier_receivers_) {
-    notifier_receivers_ =
-        std::make_unique<mojo::ReceiverSet<mojom::UrlCheckNotifier>>();
-  }
-  notifier_receivers_->Add(this, std::move(slow_check_notifier));
-}
-
-void RendererURLLoaderThrottle::OnCompleteCheckInternal(
-    bool proceed,
-    bool showed_interstitial) {
-  DCHECK(!blocked_);
-  DCHECK(url_checker_);
 
   DCHECK_LT(0u, pending_checks_);
   pending_checks_--;
@@ -269,7 +245,6 @@ void RendererURLLoaderThrottle::OnCompleteCheckInternal(
     blocked_ = true;
 
     url_checker_.reset();
-    notifier_receivers_.reset();
     pending_checks_ = 0;
     // If we didn't show an interstitial, we cancel with ERR_ABORTED to not show
     // an error page either.
@@ -284,7 +259,6 @@ void RendererURLLoaderThrottle::OnMojoDisconnect() {
 
   // If a service-side disconnect happens, treat all URLs as if they are safe.
   url_checker_.reset();
-  notifier_receivers_.reset();
 
   pending_checks_ = 0;
 
