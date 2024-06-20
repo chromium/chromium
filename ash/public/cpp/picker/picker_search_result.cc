@@ -96,10 +96,12 @@ bool PickerSearchResult::LocalFileData::operator==(const LocalFileData&) const =
 
 PickerSearchResult::DriveFileData::DriveFileData(std::u16string title,
                                                  GURL url,
-                                                 base::FilePath file_path)
+                                                 base::FilePath file_path,
+                                                 bool best_match)
     : title(std::move(title)),
       url(std::move(url)),
-      file_path(std::move(file_path)) {}
+      file_path(std::move(file_path)),
+      best_match(best_match) {}
 
 PickerSearchResult::DriveFileData::DriveFileData(const DriveFileData&) =
     default;
@@ -111,6 +113,25 @@ PickerSearchResult::DriveFileData::~DriveFileData() = default;
 
 bool PickerSearchResult::DriveFileData::operator==(const DriveFileData&) const =
     default;
+
+PickerSearchResult::BrowsingHistoryData::BrowsingHistoryData(
+    GURL url,
+    std::u16string title,
+    ui::ImageModel icon,
+    bool best_match)
+    : url(std::move(url)),
+      title(std::move(title)),
+      icon(std::move(icon)),
+      best_match(best_match) {}
+
+PickerSearchResult::BrowsingHistoryData::BrowsingHistoryData(
+    const BrowsingHistoryData&) = default;
+
+PickerSearchResult::BrowsingHistoryData&
+PickerSearchResult::BrowsingHistoryData::operator=(const BrowsingHistoryData&) =
+    default;
+
+PickerSearchResult::BrowsingHistoryData::~BrowsingHistoryData() = default;
 
 bool PickerSearchResult::BrowsingHistoryData::operator==(
     const PickerSearchResult::BrowsingHistoryData&) const = default;
@@ -212,22 +233,26 @@ PickerSearchResult PickerSearchResult::Gif(const GURL& preview_url,
 
 PickerSearchResult PickerSearchResult::BrowsingHistory(const GURL& url,
                                                        std::u16string title,
-                                                       ui::ImageModel icon) {
-  return PickerSearchResult(BrowsingHistoryData{
-      .url = url, .title = std::move(title), .icon = std::move(icon)});
+                                                       ui::ImageModel icon,
+                                                       bool best_match) {
+  return PickerSearchResult(
+      BrowsingHistoryData(url, std::move(title), std::move(icon), best_match));
 }
 
 PickerSearchResult PickerSearchResult::LocalFile(std::u16string title,
-                                                 base::FilePath file_path) {
+                                                 base::FilePath file_path,
+                                                 bool best_match) {
   return PickerSearchResult(LocalFileData{.file_path = std::move(file_path),
-                                          .title = std::move(title)});
+                                          .title = std::move(title),
+                                          .best_match = best_match});
 }
 
 PickerSearchResult PickerSearchResult::DriveFile(std::u16string title,
                                                  const GURL& url,
-                                                 base::FilePath file_path) {
+                                                 base::FilePath file_path,
+                                                 bool best_match) {
   return PickerSearchResult(
-      DriveFileData(std::move(title), url, std::move(file_path)));
+      DriveFileData(std::move(title), url, std::move(file_path), best_match));
 }
 
 PickerSearchResult PickerSearchResult::Category(PickerCategory category) {

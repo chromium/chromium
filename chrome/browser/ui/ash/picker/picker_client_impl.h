@@ -16,6 +16,7 @@
 #include "ash/public/cpp/picker/picker_client.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/app_list/app_list_controller_delegate.h"
+#include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-shared.h"
@@ -34,6 +35,7 @@ class PickerThumbnailLoader;
 namespace app_list {
 class SearchEngine;
 class SearchProvider;
+struct CategoryMetadata;
 }
 
 namespace ash {
@@ -88,6 +90,11 @@ class PickerClientImpl
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;
+
+  void set_ranker_manager_for_test(
+      std::unique_ptr<app_list::RankerManager> ranker_manager) {
+    ranker_manager_ = std::move(ranker_manager);
+  }
 
  private:
   // Implements `AppListControllerDelegate` with empty methods. Used only for
@@ -146,6 +153,9 @@ class PickerClientImpl
   // A dedicated cros search engine for filtered searches.
   std::unique_ptr<app_list::SearchEngine> filtered_search_engine_;
   std::optional<ash::PickerCategory> current_filter_category_;
+
+  std::unique_ptr<app_list::RankerManager> ranker_manager_;
+  std::vector<app_list::CategoryMetadata> ranker_categories_;
 
   std::unique_ptr<PickerFileSuggester> file_suggester_;
 

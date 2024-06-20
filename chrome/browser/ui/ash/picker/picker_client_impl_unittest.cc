@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ash/app_list/search/test/test_ranker_manager.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/drivefs_test_support.h"
 #include "chrome/browser/ash/fileapi/recent_model.h"
@@ -254,6 +255,11 @@ TEST_F(PickerClientImplTest, StartCrosSearch) {
   AddTab(browser(), GURL("http://foo.com/tab"));
   base::test::TestFuture<void> test_done;
 
+  auto ranker_manager =
+      std::make_unique<app_list::TestRankerManager>(profile());
+  ranker_manager->SetBestMatchString(u"tab");
+  client.set_ranker_manager_for_test(std::move(ranker_manager));
+
   NiceMock<MockSearchResultsCallback> mock_search_callback;
   EXPECT_CALL(mock_search_callback, Call(_, _)).Times(AnyNumber());
   EXPECT_CALL(
@@ -262,16 +268,26 @@ TEST_F(PickerClientImplTest, StartCrosSearch) {
            IsSupersetOf({
                Property(
                    "data", &ash::PickerSearchResult::data,
-                   VariantWith<ash::PickerSearchResult::BrowsingHistoryData>(
+                   VariantWith<
+                       ash::PickerSearchResult::BrowsingHistoryData>(AllOf(
                        Field("url",
                              &ash::PickerSearchResult::BrowsingHistoryData::url,
-                             GURL("http://foo.com/history")))),
+                             GURL("http://foo.com/history")),
+                       Field("best_match",
+                             &ash::PickerSearchResult::BrowsingHistoryData::
+                                 best_match,
+                             false)))),
                Property(
                    "data", &ash::PickerSearchResult::data,
-                   VariantWith<ash::PickerSearchResult::BrowsingHistoryData>(
+                   VariantWith<
+                       ash::PickerSearchResult::BrowsingHistoryData>(AllOf(
                        Field("url",
                              &ash::PickerSearchResult::BrowsingHistoryData::url,
-                             GURL("http://foo.com/tab")))),
+                             GURL("http://foo.com/tab")),
+                       Field("best_match",
+                             &ash::PickerSearchResult::BrowsingHistoryData::
+                                 best_match,
+                             true)))),
                Property(
                    "data", &ash::PickerSearchResult::data,
                    VariantWith<
@@ -282,7 +298,11 @@ TEST_F(PickerClientImplTest, StartCrosSearch) {
                            u"Foobaz"),
                        Field("url",
                              &ash::PickerSearchResult::BrowsingHistoryData::url,
-                             GURL("http://foo.com/bookmarks"))))),
+                             GURL("http://foo.com/bookmarks")),
+                       Field("best_match",
+                             &ash::PickerSearchResult::BrowsingHistoryData::
+                                 best_match,
+                             false)))),
            })))
       .WillOnce([&]() { test_done.SetValue(); });
 

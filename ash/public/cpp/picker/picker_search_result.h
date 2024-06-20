@@ -141,6 +141,15 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
     GURL url;
     std::u16string title;
     ui::ImageModel icon;
+    bool best_match;
+
+    BrowsingHistoryData(GURL url,
+                        std::u16string title,
+                        ui::ImageModel icon,
+                        bool best_match);
+    BrowsingHistoryData(const BrowsingHistoryData&);
+    BrowsingHistoryData& operator=(const BrowsingHistoryData&);
+    ~BrowsingHistoryData();
 
     bool operator==(const BrowsingHistoryData&) const;
   };
@@ -148,6 +157,7 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
   struct LocalFileData {
     base::FilePath file_path;
     std::u16string title;
+    bool best_match;
 
     bool operator==(const LocalFileData&) const;
   };
@@ -156,8 +166,12 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
     std::u16string title;
     GURL url;
     base::FilePath file_path;
+    bool best_match;
 
-    DriveFileData(std::u16string title, GURL url, base::FilePath file_path);
+    DriveFileData(std::u16string title,
+                  GURL url,
+                  base::FilePath file_path,
+                  bool best_match);
     DriveFileData(const DriveFileData&);
     DriveFileData& operator=(const DriveFileData&);
     ~DriveFileData();
@@ -228,7 +242,8 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
 
   static PickerSearchResult BrowsingHistory(const GURL& url,
                                             std::u16string title,
-                                            ui::ImageModel icon);
+                                            ui::ImageModel icon,
+                                            bool best_match = false);
   static PickerSearchResult Text(
       std::u16string_view text,
       TextData::Source source = TextData::Source::kUnknown);
@@ -254,10 +269,12 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
                                 const gfx::Size& full_dimensions,
                                 std::u16string content_description);
   static PickerSearchResult LocalFile(std::u16string title,
-                                      base::FilePath file_path);
+                                      base::FilePath file_path,
+                                      bool best_match = false);
   static PickerSearchResult DriveFile(std::u16string title,
                                       const GURL& url,
-                                      base::FilePath file_path);
+                                      base::FilePath file_path,
+                                      bool best_match = false);
   static PickerSearchResult Category(PickerCategory category);
   static PickerSearchResult Editor(
       EditorData::Mode mode,

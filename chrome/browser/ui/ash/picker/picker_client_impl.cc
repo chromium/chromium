@@ -33,7 +33,9 @@
 #include "chrome/browser/ash/app_list/search/files/file_search_provider.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_lacros_provider.h"
 #include "chrome/browser/ash/app_list/search/omnibox/omnibox_provider.h"
+#include "chrome/browser/ash/app_list/search/ranking/ranker_manager.h"
 #include "chrome/browser/ash/app_list/search/search_engine.h"
+#include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
@@ -138,7 +140,8 @@ std::vector<ash::PickerSearchResult> ConvertSearchResults(
         if (std::optional<GURL> result_url = result->url();
             result_url.has_value()) {
           picker_results.push_back(ash::PickerSearchResult::BrowsingHistory(
-              *result_url, result->title(), result->icon().icon));
+              *result_url, result->title(), result->icon().icon,
+              result->best_match()));
         } else {
           picker_results.push_back(ash::PickerSearchResult::Text(
               result->title(),
@@ -150,13 +153,14 @@ std::vector<ash::PickerSearchResult> ConvertSearchResults(
         // TODO: b/322926411 - Move this filtering to the search provider.
         if (IsSupportedLocalFileFormat(result->filePath())) {
           picker_results.push_back(ash::PickerSearchResult::LocalFile(
-              result->title(), result->filePath()));
+              result->title(), result->filePath(), result->best_match()));
         }
         break;
       }
       case ash::AppListSearchResultType::kDriveSearch:
         picker_results.push_back(ash::PickerSearchResult::DriveFile(
-            result->title(), *result->url(), result->filePath()));
+            result->title(), *result->url(), result->filePath(),
+            result->best_match()));
         break;
       default:
         LOG(DFATAL) << "Got unexpected search result type "
@@ -214,6 +218,12 @@ std::vector<ash::PickerSearchResult> GetEditorResultsFromPanelContext(
         /*freeform_text=*/""));
   }
   return results;
+}
+
+app_list::CategoriesList CreateRankerCategories() {
+  app_list::CategoriesList res({{.category = app_list::Category::kWeb},
+                                {.category = app_list::Category::kFiles}});
+  return res;
 }
 
 }  // namespace
@@ -297,6 +307,8 @@ void PickerClientImpl::StartCrosSearch(
     const std::u16string& query,
     std::optional<ash::PickerCategory> category,
     CrosSearchResultsCallback callback) {
+  ranker_categories_ = CreateRankerCategories();
+  ranker_manager_->Start(query, ranker_categories_);
   if (!category.has_value()) {
     CHECK(search_engine_);
     search_engine_->StartSearch(
@@ -346,7 +358,13 @@ void PickerClientImpl::OnCrosSearchResultsUpdated(
     PickerClientImpl::CrosSearchResultsCallback callback,
     ash::AppListSearchResultType result_type,
     std::vector<std::unique_ptr<ChromeSearchResult>> results) {
-  callback.Run(result_type, ConvertSearchResults(std::move(results)));
+  app_list::ResultsMap results_map;
+  results_map[result_type] = std::move(results);
+  if (ranker_manager_ != nullptr) {
+    ranker_manager_->UpdateResultRanks(results_map, result_type);
+  }
+  callback.Run(result_type,
+               ConvertSearchResults(std::move(results_map[result_type])));
 }
 
 void PickerClientImpl::OnZeroStateLinksSearchResultsUpdated(
@@ -468,6 +486,8 @@ void PickerClientImpl::SetProfile(Profile* profile) {
       /*bookmarks=*/true, /*history=*/true, /*open_tabs=*/true));
   search_engine_->AddProvider(CreateFileSearchProvider(profile_));
   search_engine_->AddProvider(CreateDriveSearchProvider(profile_));
+
+  ranker_manager_ = std::make_unique<app_list::RankerManager>(profile_);
 
   zero_state_links_search_engine_.reset();
 
