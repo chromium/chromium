@@ -238,9 +238,6 @@ extern const base::FeatureParam<int>
 // Flag to enable push notification settings menu item.
 BASE_DECLARE_FEATURE(kNotificationSettingsMenuItem);
 
-// Enables indexing Reading List items in Spotlight.
-BASE_DECLARE_FEATURE(kSpotlightReadingListSource);
-
 // Enables intent donation for new intent types.
 BASE_DECLARE_FEATURE(kSpotlightDonateNewIntents);
 

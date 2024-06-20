@@ -1047,10 +1047,6 @@ const char kSpotlightNeverRetainIndexDescription[] =
     "Tentative spotlight memory improvement by not storing a strong pointer to "
     "the spotlight default index";
 
-const char kSpotlightReadingListSourceName[] = "Show Reading List in Spotlight";
-const char kSpotlightReadingListSourceDescription[] =
-    "Donate Reading List items to iOS Search Engine Spotlight";
-
 const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";

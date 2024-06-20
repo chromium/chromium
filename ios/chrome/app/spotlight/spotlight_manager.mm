@@ -56,10 +56,8 @@
     _bookmarkManager = [BookmarksSpotlightManager
         bookmarksSpotlightManagerWithBrowserState:browserState];
     _actionsManager = [ActionsSpotlightManager actionsSpotlightManager];
-    if (base::FeatureList::IsEnabled(kSpotlightReadingListSource)) {
-      _readingListManager = [ReadingListSpotlightManager
-          readingListSpotlightManagerWithBrowserState:browserState];
-    }
+    _readingListManager = [ReadingListSpotlightManager
+        readingListSpotlightManagerWithBrowserState:browserState];
     _openTabsManager = [OpenTabsSpotlightManager
         openTabsSpotlightManagerWithBrowserState:browserState];
   }

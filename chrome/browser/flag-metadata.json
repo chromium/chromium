@@ -8161,22 +8161,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "spotlight-open-tabs-source",
-    "owners": [
-      "bling-flags@google.com",
-      "stkhapugin@chromium.org"
-    ],
-    "expiry_milestone": 125
-  },
-  {
-    "name": "spotlight-reading-list-source",
-    "owners": [
-      "bling-flags@google.com",
-      "stkhapugin@chromium.org"
-    ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "start-surface",
     "owners": [ "gogerald@chromium.org", "bling-flags@google.com" ],
     "expiry_milestone": 94

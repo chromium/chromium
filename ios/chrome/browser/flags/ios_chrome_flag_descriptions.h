@@ -936,10 +936,6 @@ extern const char kShowAutofillTypePredictionsDescription[];
 extern const char kSpotlightNeverRetainIndexName[];
 extern const char kSpotlightNeverRetainIndexDescription[];
 
-// Title and description for th eflag to index Reading List items in Spotlight.
-extern const char kSpotlightReadingListSourceName[];
-extern const char kSpotlightReadingListSourceDescription[];
-
 // Title and description for the flag to enable the Start Surface.
 extern const char kStartSurfaceName[];
 extern const char kStartSurfaceDescription[];
