@@ -176,11 +176,10 @@ void FileReaderLoader::OnCalculatedSize(uint64_t total_size,
 }
 
 void FileReaderLoader::OnComplete(int32_t status, uint64_t data_length) {
-  base::UmaHistogramSparse("Storage.Blob.FileReaderLoader.ReadError2",
-                           std::max(0, -net_error_));
-
   if (status != net::OK) {
     net_error_ = status;
+    base::UmaHistogramSparse("Storage.Blob.FileReaderLoader.ReadError2",
+                             std::max(0, -net_error_));
     Failed(status == net::ERR_FILE_NOT_FOUND ? FileErrorCode::kNotFoundErr
                                              : FileErrorCode::kNotReadableErr,
            FailureType::kBackendReadError);
