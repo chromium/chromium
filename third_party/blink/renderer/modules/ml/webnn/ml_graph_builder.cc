@@ -1598,9 +1598,7 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::lstm(
       input->Descriptor(), weight->Descriptor(), recurrent_weight->Descriptor(),
       steps, hidden_size, ConvertToLstmAttributes(options));
   if (!validated_outputs.has_value()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        String::FromUTF8(validated_outputs.error()));
+    exception_state.ThrowTypeError(String::FromUTF8(validated_outputs.error()));
     return {};
   }
 
