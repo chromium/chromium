@@ -169,7 +169,6 @@ source_set("test_helpers") {
   ]
   deps = [
     "//media/gpu",
-    "//media/parsers",
     "//mojo/public/cpp/system",
     "//testing/gtest",
     "//third_party/libyuv",
@@ -253,7 +252,6 @@ static_library("video_encoder") {
   deps = [
     ":test_helpers",
     "//media/gpu",
-    "//media/parsers",
     "//testing/gtest:gtest",
     "//third_party/libgav1:libgav1_parser",
   ]

@@ -354,6 +354,7 @@ media_subcomponent_deps = [
   "//media/filters",
   "//media/formats",
   "//media/muxers",
+  "//media/parsers",
   "//media/renderers",
   "//media/video",
 ]

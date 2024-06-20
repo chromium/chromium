@@ -12,6 +12,7 @@
 #include "base/bits.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/memory/ptr_util.h"
 #include "media/filters/ivf_parser.h"
 #include "media/filters/vp9_parser.h"

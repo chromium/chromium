@@ -1755,7 +1755,6 @@ component("platform") {
     "//media/capture:capture_switches",
     "//media/capture/mojom:video_capture",
     "//media/mojo/clients:clients",
-    "//media/parsers",
     "//media/webrtc:webrtc",
     "//mojo/public/cpp/bindings:wtf_support",
     "//services/metrics/public/cpp:ukm_builders",

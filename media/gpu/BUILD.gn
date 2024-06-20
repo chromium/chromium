@@ -279,7 +279,6 @@ component("gpu") {
     deps += [
       "//gpu/ipc/common:common",
       "//media/base/win:color_space_util_win",
-      "//media/parsers",
       "//third_party/angle:includes",
       "//third_party/libvpx:libvpxrc",
       "//ui/display",
@@ -374,7 +373,6 @@ source_set("common") {
     "//base",
     "//build:chromeos_buildflags",
     "//media",
-    "//media/parsers",
     "//ui/gfx:buffer_types",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",

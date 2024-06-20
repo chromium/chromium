@@ -4,7 +4,6 @@
 
 #include <stdint.h>
 
-#include "base/at_exit.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/path_service.h"
 #include "media/base/test_data_util.h"

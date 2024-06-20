@@ -125,7 +125,6 @@ source_set("v4l2") {
     "//media/gpu:common",
     "//media/gpu:video_frame_mapper_common",
     "//media/gpu/chromeos:common",
-    "//media/parsers",
     "//third_party/libgav1:libgav1_parser",
     "//third_party/libyuv",
     "//ui/gfx/geometry",
@@ -219,7 +218,6 @@ executable("v4l2_stateless_decoder") {
     "//media",
     "//media:test_support",
     "//media/gpu:common",
-    "//media/parsers",
     "//third_party/libgav1:libgav1_parser",
     "//third_party/libyuv",
   ]

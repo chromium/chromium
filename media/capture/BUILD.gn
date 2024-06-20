@@ -111,7 +111,6 @@ source_set("capture_device_specific") {
     "//media/capture/mojom:image_capture_types",
     "//media/capture/mojom:video_capture",
     "//media/mojo/mojom",
-    "//media/parsers",
     "//skia",
     "//third_party/libyuv",
     "//third_party/webrtc_overrides:webrtc_component",

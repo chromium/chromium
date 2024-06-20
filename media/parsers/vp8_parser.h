@@ -12,7 +12,7 @@
 #include <stdint.h>
 
 #include "base/memory/raw_ptr.h"
-#include "media/parsers/media_parsers_export.h"
+#include "media/base/media_export.h"
 #include "media/parsers/vp8_bool_decoder.h"
 
 namespace media {
@@ -96,7 +96,7 @@ enum Vp8RefType : size_t {
   VP8_FRAME_ALTREF = 2,
 };
 
-struct MEDIA_PARSERS_EXPORT Vp8FrameHeader {
+struct MEDIA_EXPORT Vp8FrameHeader {
   Vp8FrameHeader();
   ~Vp8FrameHeader();
   Vp8FrameHeader& operator=(const Vp8FrameHeader&);
@@ -171,7 +171,7 @@ struct MEDIA_PARSERS_EXPORT Vp8FrameHeader {
 };
 
 // A parser for raw VP8 streams as specified in RFC 6386.
-class MEDIA_PARSERS_EXPORT Vp8Parser {
+class MEDIA_EXPORT Vp8Parser {
  public:
   Vp8Parser();
 

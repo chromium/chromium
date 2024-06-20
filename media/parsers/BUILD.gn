@@ -4,11 +4,10 @@
 
 import("//media/media_options.gni")
 
-component("parsers") {
+source_set("parsers") {
   sources = [
     "jpeg_parser.cc",
     "jpeg_parser.h",
-    "media_parsers_export.h",
     "vp8_bool_decoder.cc",
     "vp8_bool_decoder.h",
     "vp8_parser.cc",
@@ -16,13 +15,11 @@ component("parsers") {
     "webp_parser.cc",
     "webp_parser.h",
   ]
-  defines = [ "IS_MEDIA_PARSER_IMPL" ]
-  deps = [ "//base" ]
+  configs += [ "//media:subcomponent_config" ]
 
-  # This target is used in GPU IPC code and cannot depend on any //media code.
-  assert_no_deps = [
-    "//media",
-    "//media:shared_memory_support",
+  deps = [
+    "//base",
+    "//media/base",
   ]
 }
 
@@ -35,8 +32,7 @@ source_set("unit_tests") {
     "webp_parser_unittest.cc",
   ]
   deps = [
-    ":parsers",
-    "//base",
+    "//base/test:test_support",
     "//media:test_support",
     "//testing/gtest",
   ]

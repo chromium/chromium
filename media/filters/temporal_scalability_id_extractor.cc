@@ -6,6 +6,8 @@
 
 #include <bitset>
 
+#include "base/notimplemented.h"
+
 namespace media {
 
 TemporalScalabilityIdExtractor::TemporalScalabilityIdExtractor(VideoCodec codec,

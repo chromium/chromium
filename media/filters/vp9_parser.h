@@ -19,9 +19,7 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
-#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/media_export.h"
 #include "media/base/video_color_space.h"
