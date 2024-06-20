@@ -318,10 +318,10 @@ void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance) {
   for (dawn::native::Adapter& adapter :
        instance->EnumerateAdapters(&adapter_options)) {
     adapter.SetUseTieredLimits(false);
-    wgpu::AdapterProperties props;
-    adapter.GetProperties(&props);
-    if (props.adapterType != wgpu::AdapterType::DiscreteGPU &&
-        props.adapterType != wgpu::AdapterType::IntegratedGPU) {
+    wgpu::AdapterInfo info;
+    adapter.GetInfo(&info);
+    if (info.adapterType != wgpu::AdapterType::DiscreteGPU &&
+        info.adapterType != wgpu::AdapterType::IntegratedGPU) {
       // We only care about GPU adapters and not CPU adapters.
       continue;
     }
@@ -336,7 +336,7 @@ void ReportWebGPUAdapterMetrics(dawn::native::Instance* instance) {
     if (limits.limits.maxStorageBufferBindingSize >
         max_limits.maxStorageBufferBindingSize) {
       max_limits = limits.limits;
-      adapter_type = props.adapterType;
+      adapter_type = info.adapterType;
     }
 
     supports_shader_f16 |=
@@ -403,10 +403,10 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
   for (const dawn::native::Adapter& native_adapter :
        instance->EnumerateAdapters(&adapter_options)) {
     wgpu::Adapter adapter(native_adapter.Get());
-    wgpu::AdapterProperties properties = {};
-    adapter.GetProperties(&properties);
+    wgpu::AdapterInfo info = {};
+    adapter.GetInfo(&info);
 
-    switch (properties.adapterType) {
+    switch (info.adapterType) {
       case wgpu::AdapterType::CPU:
         // Skip CPU adapters.
         break;
@@ -434,10 +434,10 @@ void ReportWebGPUSupportMetrics(dawn::native::Instance* instance) {
   for (const dawn::native::Adapter& native_adapter :
        instance->EnumerateAdapters(&adapter_options)) {
     wgpu::Adapter adapter(native_adapter.Get());
-    wgpu::AdapterProperties properties = {};
-    adapter.GetProperties(&properties);
+    wgpu::AdapterInfo info = {};
+    adapter.GetInfo(&info);
 
-    switch (properties.adapterType) {
+    switch (info.adapterType) {
       case wgpu::AdapterType::CPU:
         // Skip CPU adapters.
         break;
@@ -927,19 +927,19 @@ void CollectDawnInfo(const gpu::GpuPreferences& gpu_preferences,
         reinterpret_cast<const WGPURequestAdapterOptions*>(&adapter_options));
     for (dawn::native::Adapter& native_adapter : adapters) {
       wgpu::Adapter adapter(native_adapter.Get());
-      wgpu::AdapterProperties properties = {};
-      adapter.GetProperties(&properties);
+      wgpu::AdapterInfo info = {};
+      adapter.GetInfo(&info);
       if (compatibilityMode &&
-          properties.backendType != wgpu::BackendType::OpenGLES) {
+          info.backendType != wgpu::BackendType::OpenGLES) {
         continue;
       }
 
       // Both Integrated-GPU and Discrete-GPU backend types will be displayed.
-      if (properties.backendType != wgpu::BackendType::Null) {
+      if (info.backendType != wgpu::BackendType::Null) {
         // Get the adapter and the device name.
-        std::string gpu_str = GetDawnAdapterTypeString(properties.adapterType);
-        gpu_str += " " + GetDawnBackendTypeString(properties.backendType);
-        gpu_str += " - " + std::string(properties.name);
+        std::string gpu_str = GetDawnAdapterTypeString(info.adapterType);
+        gpu_str += " " + GetDawnBackendTypeString(info.backendType);
+        gpu_str += " - " + std::string(info.device);
         if (compatibilityMode) {
           gpu_str += " (Compatibility Mode)";
         }

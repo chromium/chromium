@@ -92,10 +92,10 @@ bool OnDeviceModelService::PreSandboxInit() {
   std::vector<dawn::native::Adapter> adapters =
       instance->EnumerateAdapters(&adapter_options);
   for (auto& adapter : adapters) {
-    wgpu::AdapterProperties props;
-    adapter.GetProperties(&props);
-    if (props.adapterType == wgpu::AdapterType::IntegratedGPU ||
-        props.adapterType == wgpu::AdapterType::DiscreteGPU) {
+    wgpu::AdapterInfo info;
+    adapter.GetInfo(&info);
+    if (info.adapterType == wgpu::AdapterType::IntegratedGPU ||
+        info.adapterType == wgpu::AdapterType::DiscreteGPU) {
       const wgpu::DeviceDescriptor descriptor;
       wgpu::Device device{adapter.CreateDevice(&descriptor)};
       if (device) {

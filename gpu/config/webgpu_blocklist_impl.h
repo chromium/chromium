@@ -10,7 +10,7 @@
 
 namespace wgpu {
 class Adapter;
-struct AdapterProperties;
+struct AdapterInfo;
 }
 
 // Bitmask of blocklist reasons.
@@ -69,7 +69,7 @@ struct WebGPUBlocklistOptions {
 };
 
 namespace detail {
-bool IsWebGPUAdapterBlocklisted(const wgpu::AdapterProperties& properties,
+bool IsWebGPUAdapterBlocklisted(const wgpu::AdapterInfo& info,
                                 const WebGPUBlocklistOptions& options);
 }  // namespace detail
 

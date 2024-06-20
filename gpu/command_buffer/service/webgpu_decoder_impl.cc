@@ -1512,11 +1512,11 @@ WGPUFuture WebGPUDecoderImpl::RequestDeviceImpl(
         if (device_copy) {
           // Intercept the response so we can add a device ref to the list of
           // known devices on.
-          wgpu::AdapterProperties properties;
-          adapter_obj.GetProperties(&properties);
+          wgpu::AdapterInfo info;
+          adapter_obj.GetInfo(&info);
           known_device_metadata_.emplace(
               std::move(device_copy),
-              DeviceMetadata{properties.adapterType, properties.backendType});
+              DeviceMetadata{info.adapterType, info.backendType});
         }
       });
   // The callback must have been called synchronously. We could allow async
@@ -1747,17 +1747,16 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
   auto CanUseAdapter = [&](const dawn::native::Adapter& native_adapter) {
     wgpu::Adapter adapter(native_adapter.Get());
 
-    wgpu::AdapterProperties adapter_properties = {};
-    adapter.GetProperties(&adapter_properties);
+    wgpu::AdapterInfo adapter_info = {};
+    adapter.GetInfo(&adapter_info);
 
     if (use_blocklist() && IsWebGPUAdapterBlocklisted(adapter)) {
       return false;
     }
 
     const bool is_swiftshader =
-        adapter_properties.adapterType == wgpu::AdapterType::CPU &&
-        adapter_properties.vendorID == 0x1AE0 &&
-        adapter_properties.deviceID == 0xC0DE;
+        adapter_info.adapterType == wgpu::AdapterType::CPU &&
+        adapter_info.vendorID == 0x1AE0 && adapter_info.deviceID == 0xC0DE;
 
     // The adapter must be able to import external textures, or it must be a
     // SwiftShader adapter. For SwiftShader, we will perform a manual
@@ -1767,7 +1766,7 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
     supports_external_textures =
         adapter.HasFeature(wgpu::FeatureName::SharedTextureMemoryIOSurface);
 #elif BUILDFLAG(IS_ANDROID)
-    if (adapter_properties.backendType == wgpu::BackendType::OpenGLES) {
+    if (adapter_info.backendType == wgpu::BackendType::OpenGLES) {
       supports_external_textures = native_adapter.SupportsExternalImages();
     } else {
       supports_external_textures = adapter.HasFeature(
@@ -1789,12 +1788,12 @@ wgpu::Adapter WebGPUDecoderImpl::CreatePreferredAdapter(
     // If the power preference is forced, only accept specific adapter
     // types.
     if (use_webgpu_power_preference_ == WebGPUPowerPreference::kForceLowPower &&
-        adapter_properties.adapterType != wgpu::AdapterType::IntegratedGPU) {
+        adapter_info.adapterType != wgpu::AdapterType::IntegratedGPU) {
       return false;
     }
     if (use_webgpu_power_preference_ ==
             WebGPUPowerPreference::kForceHighPerformance &&
-        adapter_properties.adapterType != wgpu::AdapterType::DiscreteGPU) {
+        adapter_info.adapterType != wgpu::AdapterType::DiscreteGPU) {
       return false;
     }
 

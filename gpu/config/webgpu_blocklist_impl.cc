@@ -24,22 +24,21 @@ namespace gpu {
 
 namespace detail {
 
-bool IsWebGPUAdapterBlocklisted(const wgpu::AdapterProperties& properties,
+bool IsWebGPUAdapterBlocklisted(const wgpu::AdapterInfo& info,
                                 const WebGPUBlocklistOptions& options) {
   WebGPUBlocklistReason reason = WebGPUBlocklistReason::None;
 #if BUILDFLAG(IS_MAC)
   constexpr uint32_t kAMDVendorID = 0x1002;
-  if (base::mac::MacOSMajorVersion() < 13 &&
-      properties.vendorID == kAMDVendorID &&
-      properties.backendType == wgpu::BackendType::Metal) {
+  if (base::mac::MacOSMajorVersion() < 13 && info.vendorID == kAMDVendorID &&
+      info.backendType == wgpu::BackendType::Metal) {
     reason = reason | WebGPUBlocklistReason::DynamicArrayIndexInStruct;
   }
 #endif
 
-  if (properties.backendType == wgpu::BackendType::D3D12) {
+  if (info.backendType == wgpu::BackendType::D3D12) {
 #if defined(ARCH_CPU_X86)
     constexpr uint32_t kNVIDIAVendorID = 0x10de;
-    if (properties.vendorID == kNVIDIAVendorID) {
+    if (info.vendorID == kNVIDIAVendorID) {
       reason = reason | WebGPUBlocklistReason::IndirectComputeRootConstants;
     }
 #endif  // defined(ARCH_CPU_X86)
@@ -49,7 +48,7 @@ bool IsWebGPUAdapterBlocklisted(const wgpu::AdapterProperties& properties,
   }
 
 #if BUILDFLAG(IS_ANDROID)
-  if (properties.backendType == wgpu::BackendType::OpenGLES) {
+  if (info.backendType == wgpu::BackendType::OpenGLES) {
     reason = reason | WebGPUBlocklistReason::AndroidGLES;
   }
 
@@ -60,8 +59,7 @@ bool IsWebGPUAdapterBlocklisted(const wgpu::AdapterProperties& properties,
   // Other OS versions and GPU vendors may be fine, but have not had
   // sufficient testing yet.
   if (build_info->sdk_int() < base::android::SDK_VERSION_S ||
-      (properties.vendorID != kARMVendorID &&
-       properties.vendorID != kQualcommVendorID)) {
+      (info.vendorID != kARMVendorID && info.vendorID != kQualcommVendorID)) {
     reason = reason | WebGPUBlocklistReason::AndroidLimitedSupport;
   }
 
@@ -69,20 +67,20 @@ bool IsWebGPUAdapterBlocklisted(const wgpu::AdapterProperties& properties,
 
 #if BUILDFLAG(IS_CHROMEOS)
   constexpr uint32_t kAMDVendorID = 0x1002;
-  if (properties.vendorID == kAMDVendorID && properties.deviceID == 0x98e4) {
+  if (info.vendorID == kAMDVendorID && info.deviceID == 0x98e4) {
     reason = reason | WebGPUBlocklistReason::AMDMissingDrmFormatModifier;
   }
 #endif
 
-  if (properties.adapterType == wgpu::AdapterType::CPU) {
+  if (info.adapterType == wgpu::AdapterType::CPU) {
     reason = reason | WebGPUBlocklistReason::CPUAdapter;
   }
 
-  if (properties.backendType == wgpu::BackendType::D3D11) {
+  if (info.backendType == wgpu::BackendType::D3D11) {
     reason = reason | WebGPUBlocklistReason::D3D11;
   }
 
-  for (auto* chain = properties.nextInChain; chain != nullptr;
+  for (auto* chain = info.nextInChain; chain != nullptr;
        chain = chain->nextInChain) {
     switch (chain->sType) {
       case wgpu::SType::AdapterPropertiesD3D:
@@ -114,24 +112,22 @@ bool IsWebGPUAdapterBlocklisted(const wgpu::AdapterProperties& properties,
 
     // Check if the vendorID matches the first segment.
     if (segments.size() >= 1) {
-      if (!base::MatchPattern(U32ToHexString(properties.vendorID),
-                              segments[0])) {
+      if (!base::MatchPattern(U32ToHexString(info.vendorID), segments[0])) {
         continue;
       }
     }
 
     // Check if the deviceID or architecture matches the second segment.
     if (segments.size() >= 2) {
-      if (!base::MatchPattern(U32ToHexString(properties.deviceID),
-                              segments[1]) &&
-          !base::MatchPattern(properties.architecture, segments[1])) {
+      if (!base::MatchPattern(U32ToHexString(info.deviceID), segments[1]) &&
+          !base::MatchPattern(info.architecture, segments[1])) {
         continue;
       }
     }
 
     // Check if the driver description matches the third segment.
     if (segments.size() >= 3) {
-      if (!base::MatchPattern(properties.driverDescription, segments[2])) {
+      if (!base::MatchPattern(info.description, segments[2])) {
         continue;
       }
     }
@@ -146,14 +142,14 @@ bool IsWebGPUAdapterBlocklisted(const wgpu::AdapterProperties& properties,
 
 bool IsWebGPUAdapterBlocklisted(const wgpu::Adapter& adapter,
                                 WebGPUBlocklistOptions options) {
-  wgpu::AdapterProperties properties;
+  wgpu::AdapterInfo info;
   wgpu::AdapterPropertiesD3D d3dProperties;
   if (adapter.HasFeature(wgpu::FeatureName::AdapterPropertiesD3D)) {
-    properties.nextInChain = &d3dProperties;
+    info.nextInChain = &d3dProperties;
   }
-  adapter.GetProperties(&properties);
+  adapter.GetInfo(&info);
 
-  return detail::IsWebGPUAdapterBlocklisted(properties, options);
+  return detail::IsWebGPUAdapterBlocklisted(info, options);
 }
 
 }  // namespace gpu

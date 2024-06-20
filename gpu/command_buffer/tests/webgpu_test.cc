@@ -445,10 +445,10 @@ TEST_F(WebGPUTest, ImplicitFallbackAdapterIsDisallowed) {
   Initialize(options);
 
   if (adapter_) {
-    wgpu::AdapterProperties properties;
-    adapter_.GetProperties(&properties);
+    wgpu::AdapterInfo info;
+    adapter_.GetInfo(&info);
     // If we got an Adapter, it must not be a CPU adapter.
-    EXPECT_NE(properties.adapterType, wgpu::AdapterType::CPU);
+    EXPECT_NE(info.adapterType, wgpu::AdapterType::CPU);
   }
 }
 
@@ -462,10 +462,10 @@ TEST_F(WebGPUTest, CompatibilityMode) {
   // Compatibility adapter should be available.
   EXPECT_NE(adapter_, nullptr);
 
-  wgpu::AdapterProperties properties;
-  adapter_.GetProperties(&properties);
+  wgpu::AdapterInfo info;
+  adapter_.GetInfo(&info);
 
-  EXPECT_TRUE(properties.compatibilityMode);
+  EXPECT_TRUE(info.compatibilityMode);
 }
 
 TEST_F(WebGPUTest, NonCompatibilityMode) {
@@ -478,10 +478,10 @@ TEST_F(WebGPUTest, NonCompatibilityMode) {
   // Non-compatibility adapter should be available.
   EXPECT_NE(adapter_, nullptr);
 
-  wgpu::AdapterProperties properties;
-  adapter_.GetProperties(&properties);
+  wgpu::AdapterInfo info;
+  adapter_.GetInfo(&info);
 
-  EXPECT_FALSE(properties.compatibilityMode);
+  EXPECT_FALSE(info.compatibilityMode);
 }
 
 }  // namespace gpu

@@ -1168,15 +1168,15 @@ bool GpuInit::InitializeDawn() {
 #if BUILDFLAG(ENABLE_VULKAN)
       // Even though Dawn successfully initialized Vulkan we still have to check
       // if the Vulkan driver is problematic and shouldn't be used.
-      wgpu::AdapterProperties adapter_properties;
+      wgpu::AdapterInfo adapter_info;
       wgpu::AdapterPropertiesVk adapter_properties_vk;
-      adapter_properties.nextInChain = &adapter_properties_vk;
-      dawn_context_provider_->GetAdapter().GetProperties(&adapter_properties);
+      adapter_info.nextInChain = &adapter_properties_vk;
+      dawn_context_provider_->GetAdapter().GetInfo(&adapter_info);
 
       VulkanPhysicalDeviceProperties device_properties;
-      device_properties.device_name = adapter_properties.name;
-      device_properties.vendor_id = adapter_properties.vendorID;
-      device_properties.device_id = adapter_properties.deviceID;
+      device_properties.device_name = adapter_info.device;
+      device_properties.vendor_id = adapter_info.vendorID;
+      device_properties.device_id = adapter_info.deviceID;
       device_properties.driver_version = adapter_properties_vk.driverVersion;
 
 #if BUILDFLAG(IS_ANDROID)

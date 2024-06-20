@@ -215,10 +215,10 @@ bool ChromeML::IsGpuBlocked() const {
                         WebGPUBlocklistReason::WindowsARM,
                 });
             if (query_data->blocklisted) {
-              wgpu::AdapterProperties properties;
-              adapter.GetProperties(&properties);
+              wgpu::AdapterInfo info;
+              adapter.GetInfo(&info);
               query_data->is_blocklisted_cpu_adapter =
-                  properties.adapterType == wgpu::AdapterType::CPU;
+                  info.adapterType == wgpu::AdapterType::CPU;
             }
           },
           &query_data)) {

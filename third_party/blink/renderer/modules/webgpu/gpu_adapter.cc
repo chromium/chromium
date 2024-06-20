@@ -98,8 +98,8 @@ GPUAdapter::GPUAdapter(
     wgpu::Adapter handle,
     scoped_refptr<DawnControlClientHolder> dawn_control_client)
     : DawnObject(dawn_control_client, std::move(handle), String()), gpu_(gpu) {
-  wgpu::AdapterProperties properties = {};
-  wgpu::ChainedStructOut** propertiesChain = &properties.nextInChain;
+  wgpu::AdapterInfo info = {};
+  wgpu::ChainedStructOut** propertiesChain = &info.nextInChain;
   wgpu::AdapterPropertiesMemoryHeaps memoryHeapProperties = {};
   if (GetHandle().HasFeature(wgpu::FeatureName::AdapterPropertiesMemoryHeaps)) {
     *propertiesChain = &memoryHeapProperties;
@@ -119,21 +119,21 @@ GPUAdapter::GPUAdapter(
     *propertiesChain = &vkProperties;
     propertiesChain = &(*propertiesChain)->nextInChain;
   }
-  GetHandle().GetProperties(&properties);
-  is_fallback_adapter_ = properties.adapterType == wgpu::AdapterType::CPU;
-  adapter_type_ = properties.adapterType;
-  backend_type_ = properties.backendType;
-  is_compatibility_mode_ = properties.compatibilityMode;
+  GetHandle().GetInfo(&info);
+  is_fallback_adapter_ = info.adapterType == wgpu::AdapterType::CPU;
+  adapter_type_ = info.adapterType;
+  backend_type_ = info.backendType;
+  is_compatibility_mode_ = info.compatibilityMode;
 
-  vendor_ = properties.vendorName;
-  architecture_ = properties.architecture;
-  if (properties.deviceID <= 0xffff) {
-    device_ = String::Format("0x%04x", properties.deviceID);
+  vendor_ = info.vendor;
+  architecture_ = info.architecture;
+  if (info.deviceID <= 0xffff) {
+    device_ = String::Format("0x%04x", info.deviceID);
   } else {
-    device_ = String::Format("0x%08x", properties.deviceID);
+    device_ = String::Format("0x%08x", info.deviceID);
   }
-  description_ = properties.name;
-  driver_ = properties.driverDescription;
+  description_ = info.device;
+  driver_ = info.description;
   for (size_t i = 0; i < memoryHeapProperties.heapCount; ++i) {
     memory_heaps_.push_back(MakeGarbageCollected<GPUMemoryHeapInfo>(
         memoryHeapProperties.heapInfo[i]));

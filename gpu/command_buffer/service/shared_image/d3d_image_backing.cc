@@ -1027,11 +1027,11 @@ D3DImageBacking::ProduceSkiaGraphite(
     MemoryTypeTracker* tracker,
     scoped_refptr<SharedContextState> context_state) {
   auto device = context_state->dawn_context_provider()->GetDevice();
-  wgpu::AdapterProperties adapter_properties;
-  device.GetAdapter().GetProperties(&adapter_properties);
+  wgpu::AdapterInfo adapter_info;
+  device.GetAdapter().GetInfo(&adapter_info);
   auto dawn_representation =
-      ProduceDawn(manager, tracker, device.Get(),
-                  adapter_properties.backendType, {}, context_state);
+      ProduceDawn(manager, tracker, device.Get(), adapter_info.backendType, {},
+                  context_state);
   if (!dawn_representation) {
     LOG(ERROR) << "Could not create Dawn Representation";
     return nullptr;
