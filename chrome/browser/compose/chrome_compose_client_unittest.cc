@@ -22,10 +22,12 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/compose/compose_enabling.h"
+#include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/common/compose/compose.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -53,6 +55,7 @@
 #include "components/optimization_guide/proto/features/compose.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/optimization_guide/proto/model_quality_service.pb.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -181,18 +184,27 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
       : BrowserWithTestWindowTest(
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    return {
+        {segmentation_platform::SegmentationPlatformServiceFactory::
+             GetInstance(),
+         base::BindRepeating([](content::BrowserContext* context)
+                                 -> std::unique_ptr<KeyedService> {
+           return std::make_unique<MockSegmentationPlatformService>();
+         })},
+        {OptimizationGuideKeyedServiceFactory::GetInstance(),
+         base::BindRepeating([](content::BrowserContext* context)
+                                 -> std::unique_ptr<KeyedService> {
+           return std::make_unique<
+               testing::NiceMock<MockOptimizationGuideKeyedService>>();
+         })},
+    };
+  }
+
   void SetUp() override {
     scoped_compose_enabled_ = ComposeEnabling::ScopedEnableComposeForTesting();
     BrowserWithTestWindowTest::SetUp();
-
-    segmentation_platform::SegmentationPlatformServiceFactory::GetInstance()
-        ->SetTestingFactory(
-            GetProfile(),
-            base::BindLambdaForTesting([](content::BrowserContext* context) {
-              std::unique_ptr<KeyedService> result =
-                  std::make_unique<MockSegmentationPlatformService>();
-              return result;
-            }));
+    MockOptimizationGuideKeyedService::InitializeWithExistingTestLocalState();
 
     scoped_feature_list_.InitWithFeatures(
         {compose::features::kEnableCompose,
@@ -206,6 +218,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
                                          true);
     SetPrefsForComposeMSBBState(true);
     AddTab(browser(), GetPageUrl());
+
     client_ = ChromeComposeClient::FromWebContents(web_contents());
     client_->SetModelExecutorForTest(&model_executor_);
     client_->SetInnerTextProviderForTest(&model_inner_text_);
@@ -258,6 +271,23 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
                   FROM_HERE, base::BindOnce(std::move(callback), result));
             })));
 
+    ON_CALL(GetOptimizationGuide(),
+            CanApplyOptimization(
+                _, optimization_guide::proto::OptimizationType::COMPOSE,
+                testing::An<optimization_guide::OptimizationMetadata*>()))
+        .WillByDefault(
+            [](const GURL& url,
+               optimization_guide::proto::OptimizationType optimization_type,
+               optimization_guide::OptimizationMetadata* metadata)
+                -> optimization_guide::OptimizationGuideDecision {
+              *metadata = {};
+              compose::ComposeHintMetadata compose_hint_metadata;
+              compose_hint_metadata.set_decision(
+                  compose::ComposeHintDecision::COMPOSE_HINT_DECISION_ENABLED);
+              metadata->SetAnyMetadataForTesting(compose_hint_metadata);
+              return optimization_guide::OptimizationGuideDecision::kTrue;
+            });
+
     test_timer_ = std::make_unique<base::ScopedMockElapsedTimersForTest>();
   }
 
@@ -269,6 +299,7 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     ukm_recorder_.reset();
     // Needed for feature params to reset.
     compose::ResetConfigForTesting();
+    MockOptimizationGuideKeyedService::ResetForTesting();
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -380,6 +411,11 @@ class ChromeComposeClientTest : public BrowserWithTestWindowTest {
     return *static_cast<MockSegmentationPlatformService*>(
         segmentation_platform::SegmentationPlatformServiceFactory::
             GetForProfile(GetProfile()));
+  }
+
+  MockOptimizationGuideKeyedService& GetOptimizationGuide() {
+    return *static_cast<MockOptimizationGuideKeyedService*>(
+        OptimizationGuideKeyedServiceFactory::GetForProfile(GetProfile()));
   }
 
  protected:

@@ -148,6 +148,23 @@ class ComposeEnablingTest : public BrowserWithTestWindowTest {
     opt_guide_ = static_cast<
         testing::NiceMock<CustomMockOptimizationGuideKeyedService>*>(
         OptimizationGuideKeyedServiceFactory::GetForProfile(GetProfile()));
+    ON_CALL(*opt_guide_,
+            CanApplyOptimization(
+                _, optimization_guide::proto::OptimizationType::COMPOSE,
+                testing::An<optimization_guide::OptimizationMetadata*>()))
+        .WillByDefault(
+            [](const GURL& url,
+               optimization_guide::proto::OptimizationType optimization_type,
+               optimization_guide::OptimizationMetadata* metadata)
+                -> optimization_guide::OptimizationGuideDecision {
+              *metadata = {};
+              compose::ComposeHintMetadata compose_hint_metadata;
+              compose_hint_metadata.set_decision(
+                  compose::ComposeHintDecision::COMPOSE_HINT_DECISION_ENABLED);
+              metadata->SetAnyMetadataForTesting(compose_hint_metadata);
+              return optimization_guide::OptimizationGuideDecision::kTrue;
+            });
+
     ASSERT_TRUE(opt_guide_);
 
     // Build the ComposeEnabling object the tests will use, providing it with

@@ -78,7 +78,7 @@ BASE_FEATURE(kComposeUiRefinement,
 
 BASE_FEATURE(kEnableNudgeForUnspecifiedHint,
              "ComposeEnableNudgeForUnspecifiedHint",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kEnableAdditionalTextMetrics,
              "EnableAdditionalTextMetrics",
