@@ -97,13 +97,12 @@ found in the LICENSE file.
 
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/deselect_button"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintEnd_toStartOf="@id/restore_button"
         android:layout_marginBottom="18dp"
-        android:layout_marginStart="32dp"
+        android:layout_marginEnd="24dp"
         android:layout_marginTop="34dp"
         android:enabled="false"
         android:singleLine="true"
@@ -112,13 +111,12 @@ found in the LICENSE file.
 
     <org.chromium.ui.widget.ButtonCompat
         android:id="@+id/restore_button"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_weight="1"
         android:layout_marginBottom="18dp"
-        android:layout_marginEnd="32dp"
+        android:layout_marginEnd="24dp"
         android:layout_marginTop="34dp"
         android:enabled="false"
         android:singleLine="true"
