@@ -45,9 +45,22 @@ class MEDIA_EXPORT VideoEncoderFallback : public VideoEncoder {
   void Flush(EncoderStatusCB done_cb) override;
 
  private:
-  void FallbackInitialize();
+  enum class State {
+    // Initial state. The main encoder is ready or being used.
+    kMainEncoder,
+    // Initialize() or Encode() on the main encoder fails and
+    // the fallback encoder is being initialized.
+    kInitializingFallbackEncoder,
+    // The fallback encoder is being used.
+    kFallbackEncoder,
+    // Error state. Transition from kMainEncoder when no
+    // fallback encoder is available or fallback encoder fails.
+    kError
+  };
+
+  void FallbackInitialize(EncoderStatusCB init_done_cb);
   void FallbackEncode(PendingEncode args, EncoderStatus main_encoder_status);
-  void FallbackInitCompleted(EncoderStatus status);
+  void FallbackInitCompleted(PendingEncode args, EncoderStatus status);
   PendingEncode MakePendingEncode(scoped_refptr<VideoFrame> frame,
                                   const EncodeOptions& encode_options,
                                   EncoderStatusCB done_cb);
@@ -57,19 +70,14 @@ class MEDIA_EXPORT VideoEncoderFallback : public VideoEncoder {
 
   std::unique_ptr<VideoEncoder> encoder_;
 
-  // True when |main_encoder| provided to ctor() failed and we initiated
-  // transition to a fallback encoder (created by |create_fallback_cb_|).
-  bool use_fallback_ = false;
-
-  // True when the fallback encoder was successfully initialized.
-  bool fallback_initialized_ = false;
+  // Current state of VideoEncoderFallback.
+  State state_ = State::kMainEncoder;
 
   // Pending encodes that need to be retried once the fallback encoder is
   // initialized.
   std::vector<std::unique_ptr<PendingEncode>> encodes_to_retry_;
 
   CreateFallbackCB create_fallback_cb_;
-  EncoderStatusCB init_done_cb_;
   EncoderInfoCB info_cb_;
   OutputCB output_cb_;
   VideoCodecProfile profile_;
