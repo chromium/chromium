@@ -4,7 +4,7 @@
 
 #include "media/filters/temporal_scalability_id_extractor.h"
 
-#include "media/filters/vp9_parser.h"
+#include "media/parsers/vp9_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {

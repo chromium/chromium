@@ -10,8 +10,8 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"
-#include "media/filters/vp9_parser.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
+#include "media/parsers/vp9_parser.h"
 
 namespace media {
 DecoderBufferTranscryptor::TranscryptTask::TranscryptTask(

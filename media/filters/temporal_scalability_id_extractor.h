@@ -12,8 +12,8 @@
 #include "build/build_config.h"
 #include "media/base/media_export.h"
 #include "media/base/video_codecs.h"
-#include "media/filters/vp9_parser.h"
 #include "media/media_buildflags.h"
+#include "media/parsers/vp9_parser.h"
 #include "media/video/h264_parser.h"
 
 #if BUILDFLAG(ENABLE_PLATFORM_HEVC)

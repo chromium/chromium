@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FILTERS_VP9_UNCOMPRESSED_HEADER_PARSER_H_
-#define MEDIA_FILTERS_VP9_UNCOMPRESSED_HEADER_PARSER_H_
+#ifndef MEDIA_PARSERS_VP9_UNCOMPRESSED_HEADER_PARSER_H_
+#define MEDIA_PARSERS_VP9_UNCOMPRESSED_HEADER_PARSER_H_
 
 #include "base/memory/raw_ptr.h"
-#include "media/filters/vp9_parser.h"
-#include "media/filters/vp9_raw_bits_reader.h"
+#include "media/parsers/vp9_parser.h"
+#include "media/parsers/vp9_raw_bits_reader.h"
 
 #include "media/base/media_export.h"
 
@@ -54,4 +54,4 @@ class MEDIA_EXPORT Vp9UncompressedHeaderParser {
 
 }  // namespace media
 
-#endif  // MEDIA_FILTERS_VP9_UNCOMPRESSED_HEADER_PARSER_H_
+#endif  // MEDIA_PARSERS_VP9_UNCOMPRESSED_HEADER_PARSER_H_

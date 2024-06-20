@@ -65,16 +65,6 @@ source_set("filters") {
     "video_cadence_estimator.h",
     "video_renderer_algorithm.cc",
     "video_renderer_algorithm.h",
-    "vp9_bool_decoder.cc",
-    "vp9_bool_decoder.h",
-    "vp9_compressed_header_parser.cc",
-    "vp9_compressed_header_parser.h",
-    "vp9_parser.cc",
-    "vp9_parser.h",
-    "vp9_raw_bits_reader.cc",
-    "vp9_raw_bits_reader.h",
-    "vp9_uncompressed_header_parser.cc",
-    "vp9_uncompressed_header_parser.h",
     "wsola_internals.cc",
     "wsola_internals.h",
   ]
@@ -89,6 +79,7 @@ source_set("filters") {
     "//media/base",
     "//media/cdm",
     "//media/formats",
+    "//media/parsers",
     "//media/video",
     "//third_party/libyuv",
     "//ui/gfx/geometry:geometry",
@@ -325,9 +316,6 @@ source_set("unit_tests") {
     "video_cadence_estimator_unittest.cc",
     "video_decoder_stream_unittest.cc",
     "video_renderer_algorithm_unittest.cc",
-    "vp9_parser_unittest.cc",
-    "vp9_raw_bits_reader_unittest.cc",
-    "vp9_uncompressed_header_parser_unittest.cc",
   ]
 
   deps = [

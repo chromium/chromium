@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_FILTERS_VP9_BOOL_DECODER_H_
-#define MEDIA_FILTERS_VP9_BOOL_DECODER_H_
+#ifndef MEDIA_PARSERS_VP9_BOOL_DECODER_H_
+#define MEDIA_PARSERS_VP9_BOOL_DECODER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -71,4 +71,4 @@ class MEDIA_EXPORT Vp9BoolDecoder {
 
 }  // namespace media
 
-#endif  // MEDIA_FILTERS_VP9_BOOL_DECODER_H_
+#endif  // MEDIA_PARSERS_VP9_BOOL_DECODER_H_

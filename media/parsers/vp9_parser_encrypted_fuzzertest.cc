@@ -13,7 +13,7 @@
 #include "media/base/decrypt_config.h"
 #include "media/base/subsample_entry.h"
 #include "media/filters/ivf_parser.h"
-#include "media/filters/vp9_parser.h"
+#include "media/parsers/vp9_parser.h"
 
 struct Environment {
   Environment() {

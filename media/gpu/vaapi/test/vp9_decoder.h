@@ -5,8 +5,8 @@
 #ifndef MEDIA_GPU_VAAPI_TEST_VP9_DECODER_H_
 #define MEDIA_GPU_VAAPI_TEST_VP9_DECODER_H_
 
-#include "media/filters/vp9_parser.h"
 #include "media/gpu/vaapi/test/video_decoder.h"
+#include "media/parsers/vp9_parser.h"
 
 namespace media {
 

@@ -9,8 +9,8 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
-#include "media/filters/vp9_parser.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/parsers/vp9_parser.h"
 
 namespace media {
 

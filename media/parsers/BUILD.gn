@@ -12,6 +12,16 @@ source_set("parsers") {
     "vp8_bool_decoder.h",
     "vp8_parser.cc",
     "vp8_parser.h",
+    "vp9_bool_decoder.cc",
+    "vp9_bool_decoder.h",
+    "vp9_compressed_header_parser.cc",
+    "vp9_compressed_header_parser.h",
+    "vp9_parser.cc",
+    "vp9_parser.h",
+    "vp9_raw_bits_reader.cc",
+    "vp9_raw_bits_reader.h",
+    "vp9_uncompressed_header_parser.cc",
+    "vp9_uncompressed_header_parser.h",
     "webp_parser.cc",
     "webp_parser.h",
   ]
@@ -29,6 +39,9 @@ source_set("unit_tests") {
     "jpeg_parser_unittest.cc",
     "vp8_bool_decoder_unittest.cc",
     "vp8_parser_unittest.cc",
+    "vp9_parser_unittest.cc",
+    "vp9_raw_bits_reader_unittest.cc",
+    "vp9_uncompressed_header_parser_unittest.cc",
     "webp_parser_unittest.cc",
   ]
   deps = [
@@ -57,6 +70,25 @@ fuzzer_test("media_vp8_parser_fuzzer") {
   ]
   libfuzzer_options = [ "max_len = 400000" ]
   dict = "//media/test/vp8.dict"
+}
+
+fuzzer_test("media_vp9_parser_fuzzer") {
+  sources = [ "vp9_parser_fuzzertest.cc" ]
+  deps = [
+    "//base",
+    "//media:test_support",
+  ]
+  libfuzzer_options = [ "max_len = 400000" ]
+}
+
+fuzzer_test("media_vp9_parser_encrypted_fuzzer") {
+  sources = [ "vp9_parser_encrypted_fuzzertest.cc" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//media:test_support",
+  ]
+  seed_corpus = "//media/test/data"
 }
 
 fuzzer_test("media_webp_parser_fuzzer") {

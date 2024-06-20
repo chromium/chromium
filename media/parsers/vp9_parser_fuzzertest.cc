@@ -8,7 +8,7 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "media/filters/ivf_parser.h"
-#include "media/filters/vp9_parser.h"
+#include "media/parsers/vp9_parser.h"
 
 struct Environment {
   Environment() {

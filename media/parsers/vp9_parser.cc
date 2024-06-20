@@ -9,7 +9,7 @@
 //  2 parsing steps
 //  3 parsed values (selected)
 
-#include "media/filters/vp9_parser.h"
+#include "media/parsers/vp9_parser.h"
 
 #include <algorithm>
 
@@ -19,8 +19,8 @@
 #include "base/logging.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
-#include "media/filters/vp9_compressed_header_parser.h"
-#include "media/filters/vp9_uncompressed_header_parser.h"
+#include "media/parsers/vp9_compressed_header_parser.h"
+#include "media/parsers/vp9_uncompressed_header_parser.h"
 
 namespace media {
 

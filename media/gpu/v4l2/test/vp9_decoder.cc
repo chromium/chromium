@@ -6,17 +6,16 @@
 
 #include <linux/v4l2-controls.h>
 #include <linux/videodev2.h>
-
 #include <sys/ioctl.h>
 
 #include "base/bits.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
-#include "base/notreached.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "media/filters/ivf_parser.h"
-#include "media/filters/vp9_parser.h"
 #include "media/gpu/macros.h"
+#include "media/parsers/vp9_parser.h"
 
 namespace media {
 

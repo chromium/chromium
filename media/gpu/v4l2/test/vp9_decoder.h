@@ -5,8 +5,6 @@
 #ifndef MEDIA_GPU_V4L2_TEST_VP9_DECODER_H_
 #define MEDIA_GPU_V4L2_TEST_VP9_DECODER_H_
 
-#include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
-
 #include <linux/v4l2-controls.h>
 
 #include <set>
@@ -14,8 +12,9 @@
 #include "base/files/memory_mapped_file.h"
 #include "media/base/video_types.h"
 #include "media/filters/ivf_parser.h"
-#include "media/filters/vp9_parser.h"
+#include "media/gpu/v4l2/test/v4l2_ioctl_shim.h"
 #include "media/gpu/v4l2/test/video_decoder.h"
+#include "media/parsers/vp9_parser.h"
 
 namespace media {
 namespace v4l2_test {

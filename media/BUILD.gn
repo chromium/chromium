@@ -373,25 +373,6 @@ if (proprietary_codecs) {
   }
 }
 
-fuzzer_test("media_vp9_parser_fuzzer") {
-  sources = [ "filters/vp9_parser_fuzzertest.cc" ]
-  deps = [
-    ":test_support",
-    "//base",
-  ]
-  libfuzzer_options = [ "max_len = 400000" ]
-}
-
-fuzzer_test("media_vp9_parser_encrypted_fuzzer") {
-  sources = [ "filters/vp9_parser_encrypted_fuzzertest.cc" ]
-  deps = [
-    ":test_support",
-    "//base",
-    "//base/test:test_support",
-  ]
-  seed_corpus = "//media/test/data"
-}
-
 fuzzer_test("media_vpx_video_decoder_fuzzer") {
   sources = [ "filters/vpx_video_decoder_fuzzertest.cc" ]
   deps = [

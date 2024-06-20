@@ -12,9 +12,9 @@
 
 #include "base/containers/contains.h"
 #include "base/logging.h"
-#include "media/filters/vp9_parser.h"
 #include "media/gpu/vp9_picture.h"
 #include "media/gpu/vp9_reference_frame_vector.h"
+#include "media/parsers/vp9_parser.h"
 #include "media/video/video_encode_accelerator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

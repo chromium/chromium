@@ -9,8 +9,8 @@
 //
 // See media::VP9Decoder for example usage.
 //
-#ifndef MEDIA_FILTERS_VP9_PARSER_H_
-#define MEDIA_FILTERS_VP9_PARSER_H_
+#ifndef MEDIA_PARSERS_VP9_PARSER_H_
+#define MEDIA_PARSERS_VP9_PARSER_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -458,4 +458,4 @@ class MEDIA_EXPORT Vp9Parser {
 
 }  // namespace media
 
-#endif  // MEDIA_FILTERS_VP9_PARSER_H_
+#endif  // MEDIA_PARSERS_VP9_PARSER_H_
