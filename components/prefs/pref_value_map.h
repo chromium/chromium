@@ -27,24 +27,24 @@ class COMPONENTS_PREFS_EXPORT PrefValueMap {
 
   virtual ~PrefValueMap();
 
-  // Gets the value for |key| and stores it in |value|. Ownership remains with
-  // the map. Returns true if a value is present. If not, |value| is not
+  // Gets the value for `key` and stores it in `value`. Ownership remains with
+  // the map. Returns true if a value is present. If not, `value` is not
   // touched.
   bool GetValue(std::string_view key, const base::Value** value) const;
   bool GetValue(std::string_view key, base::Value** value);
 
-  // Sets a new |value| for |key|. Returns true if the value changed.
-  bool SetValue(const std::string& key, base::Value value);
+  // Sets a new `value` for `key`. Returns true if the value changed.
+  bool SetValue(std::string_view key, base::Value value);
 
-  // Removes the value for |key| from the map. Returns true if a value was
+  // Removes the value for `key` from the map. Returns true if a value was
   // removed.
-  bool RemoveValue(const std::string& key);
+  bool RemoveValue(std::string_view key);
 
   // Clears the map.
   void Clear();
 
-  // Clear the preferences which start with |prefix|.
-  void ClearWithPrefix(const std::string& prefix);
+  // Clear the preferences which start with `prefix`.
+  void ClearWithPrefix(std::string_view prefix);
 
   // Swaps the contents of two maps.
   void Swap(PrefValueMap* other);
@@ -55,32 +55,32 @@ class COMPONENTS_PREFS_EXPORT PrefValueMap {
   const_iterator end() const;
   bool empty() const;
 
-  // Gets a boolean value for |key| and stores it in |value|. Returns true if
+  // Gets a boolean value for `key` and stores it in `value`. Returns true if
   // the value was found and of the proper type.
-  bool GetBoolean(const std::string& key, bool* value) const;
+  bool GetBoolean(std::string_view key, bool* value) const;
 
-  // Sets the value for |key| to the boolean |value|.
-  void SetBoolean(const std::string& key, bool value);
+  // Sets the value for `key` to the boolean `value`.
+  void SetBoolean(std::string_view key, bool value);
 
-  // Gets a string value for |key| and stores it in |value|. Returns true if
+  // Gets a string value for `key` and stores it in `value`. Returns true if
   // the value was found and of the proper type.
-  bool GetString(const std::string& key, std::string* value) const;
+  bool GetString(std::string_view key, std::string* value) const;
 
-  // Sets the value for |key| to the string |value|.
-  void SetString(const std::string& key, const std::string& value);
+  // Sets the value for `key` to the string `value`.
+  void SetString(std::string_view key, std::string_view value);
 
-  // Gets an int value for |key| and stores it in |value|. Returns true if
+  // Gets an int value for `key` and stores it in `value`. Returns true if
   // the value was found and of the proper type.
-  bool GetInteger(const std::string& key, int* value) const;
+  bool GetInteger(std::string_view key, int* value) const;
 
-  // Sets the value for |key| to the int |value|.
-  void SetInteger(const std::string& key, const int value);
+  // Sets the value for `key` to the int `value`.
+  void SetInteger(std::string_view key, const int value);
 
-  // Sets the value for |key| to the double |value|.
-  void SetDouble(const std::string& key, const double value);
+  // Sets the value for `key` to the double `value`.
+  void SetDouble(std::string_view key, const double value);
 
-  // Compares this value map against |other| and stores all key names that have
-  // different values in |differing_keys|. This includes keys that are present
+  // Compares this value map against `other` and stores all key names that have
+  // different values in `differing_keys`. This includes keys that are present
   // only in one of the maps.
   void GetDifferingKeys(const PrefValueMap* other,
                         std::vector<std::string>* differing_keys) const;
