@@ -4,6 +4,7 @@
 
 #include "components/prefs/pref_registry_simple.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/files/file_path.h"
@@ -14,81 +15,81 @@
 PrefRegistrySimple::PrefRegistrySimple() = default;
 PrefRegistrySimple::~PrefRegistrySimple() = default;
 
-void PrefRegistrySimple::RegisterBooleanPref(const std::string& path,
+void PrefRegistrySimple::RegisterBooleanPref(std::string_view path,
                                              bool default_value,
                                              uint32_t flags) {
   RegisterPreference(path, base::Value(default_value), flags);
 }
 
-void PrefRegistrySimple::RegisterIntegerPref(const std::string& path,
+void PrefRegistrySimple::RegisterIntegerPref(std::string_view path,
                                              int default_value,
                                              uint32_t flags) {
   RegisterPreference(path, base::Value(default_value), flags);
 }
 
-void PrefRegistrySimple::RegisterDoublePref(const std::string& path,
+void PrefRegistrySimple::RegisterDoublePref(std::string_view path,
                                             double default_value,
                                             uint32_t flags) {
   RegisterPreference(path, base::Value(default_value), flags);
 }
 
-void PrefRegistrySimple::RegisterStringPref(const std::string& path,
-                                            const std::string& default_value,
+void PrefRegistrySimple::RegisterStringPref(std::string_view path,
+                                            std::string_view default_value,
                                             uint32_t flags) {
   RegisterPreference(path, base::Value(default_value), flags);
 }
 
 void PrefRegistrySimple::RegisterFilePathPref(
-    const std::string& path,
+    std::string_view path,
     const base::FilePath& default_value,
     uint32_t flags) {
   RegisterPreference(path, base::Value(default_value.AsUTF8Unsafe()), flags);
 }
 
-void PrefRegistrySimple::RegisterListPref(const std::string& path,
+void PrefRegistrySimple::RegisterListPref(std::string_view path,
                                           uint32_t flags) {
   RegisterPreference(path, base::Value(base::Value::Type::LIST), flags);
 }
 
-void PrefRegistrySimple::RegisterListPref(const std::string& path,
+void PrefRegistrySimple::RegisterListPref(std::string_view path,
                                           base::Value::List default_value,
                                           uint32_t flags) {
   RegisterPreference(path, base::Value(std::move(default_value)), flags);
 }
 
-void PrefRegistrySimple::RegisterDictionaryPref(const std::string& path,
+void PrefRegistrySimple::RegisterDictionaryPref(std::string_view path,
                                                 uint32_t flags) {
   RegisterPreference(path, base::Value(base::Value::Type::DICT), flags);
 }
 
-void PrefRegistrySimple::RegisterDictionaryPref(const std::string& path,
+void PrefRegistrySimple::RegisterDictionaryPref(std::string_view path,
                                                 base::Value::Dict default_value,
                                                 uint32_t flags) {
   RegisterPreference(path, base::Value(std::move(default_value)), flags);
 }
 
-void PrefRegistrySimple::RegisterInt64Pref(const std::string& path,
+void PrefRegistrySimple::RegisterInt64Pref(std::string_view path,
                                            int64_t default_value,
                                            uint32_t flags) {
   RegisterPreference(path, base::Value(base::NumberToString(default_value)),
                      flags);
 }
 
-void PrefRegistrySimple::RegisterUint64Pref(const std::string& path,
+void PrefRegistrySimple::RegisterUint64Pref(std::string_view path,
                                             uint64_t default_value,
                                             uint32_t flags) {
   RegisterPreference(path, base::Value(base::NumberToString(default_value)),
                      flags);
 }
 
-void PrefRegistrySimple::RegisterTimePref(const std::string& path,
+void PrefRegistrySimple::RegisterTimePref(std::string_view path,
                                           base::Time default_value,
                                           uint32_t flags) {
   RegisterInt64Pref(
       path, default_value.ToDeltaSinceWindowsEpoch().InMicroseconds(), flags);
 }
 
-void PrefRegistrySimple::RegisterTimeDeltaPref(const std::string& path,
+void PrefRegistrySimple::RegisterTimeDeltaPref(std::string_view path,
                                                base::TimeDelta default_value,
                                                uint32_t flags) {
   RegisterInt64Pref(path, default_value.InMicroseconds(), flags);

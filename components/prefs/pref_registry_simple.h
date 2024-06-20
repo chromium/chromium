@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
+#include <string_view>
 
 #include "base/time/time.h"
 #include "base/values.h"
@@ -29,53 +29,53 @@ class COMPONENTS_PREFS_EXPORT PrefRegistrySimple : public PrefRegistry {
 
   // For each of these registration methods, |flags| is an optional bitmask of
   // PrefRegistrationFlags.
-  void RegisterBooleanPref(const std::string& path,
+  void RegisterBooleanPref(std::string_view path,
                            bool default_value,
                            uint32_t flags = NO_REGISTRATION_FLAGS);
 
-  void RegisterIntegerPref(const std::string& path,
+  void RegisterIntegerPref(std::string_view path,
                            int default_value,
                            uint32_t flags = NO_REGISTRATION_FLAGS);
 
-  void RegisterDoublePref(const std::string& path,
+  void RegisterDoublePref(std::string_view path,
                           double default_value,
                           uint32_t flags = NO_REGISTRATION_FLAGS);
 
-  void RegisterStringPref(const std::string& path,
-                          const std::string& default_value,
+  void RegisterStringPref(std::string_view path,
+                          std::string_view default_value,
                           uint32_t flags = NO_REGISTRATION_FLAGS);
 
-  void RegisterFilePathPref(const std::string& path,
+  void RegisterFilePathPref(std::string_view path,
                             const base::FilePath& default_value,
                             uint32_t flags = NO_REGISTRATION_FLAGS);
 
-  void RegisterListPref(const std::string& path,
+  void RegisterListPref(std::string_view path,
                         uint32_t flags = NO_REGISTRATION_FLAGS);
 
-  void RegisterListPref(const std::string& path,
+  void RegisterListPref(std::string_view path,
                         base::Value::List default_value,
                         uint32_t flags = NO_REGISTRATION_FLAGS);
 
-  void RegisterDictionaryPref(const std::string& path,
+  void RegisterDictionaryPref(std::string_view path,
                               uint32_t flags = NO_REGISTRATION_FLAGS);
 
-  void RegisterDictionaryPref(const std::string& path,
+  void RegisterDictionaryPref(std::string_view path,
                               base::Value::Dict default_value,
                               uint32_t flags = NO_REGISTRATION_FLAGS);
 
-  void RegisterInt64Pref(const std::string& path,
+  void RegisterInt64Pref(std::string_view path,
                          int64_t default_value,
                          uint32_t flags = NO_REGISTRATION_FLAGS);
 
-  void RegisterUint64Pref(const std::string& path,
+  void RegisterUint64Pref(std::string_view path,
                           uint64_t default_value,
                           uint32_t flags = NO_REGISTRATION_FLAGS);
 
-  void RegisterTimePref(const std::string& path,
+  void RegisterTimePref(std::string_view path,
                         base::Time default_value,
                         uint32_t flags = NO_REGISTRATION_FLAGS);
 
-  void RegisterTimeDeltaPref(const std::string& path,
+  void RegisterTimeDeltaPref(std::string_view path,
                              base::TimeDelta default_value,
                              uint32_t flags = NO_REGISTRATION_FLAGS);
 

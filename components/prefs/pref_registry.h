@@ -74,11 +74,11 @@ class COMPONENTS_PREFS_EXPORT PrefRegistry
 
   // Changes the default value for a preference.
   //
-  // |pref_name| must be a previously registered preference.
+  // `pref_name` must be a previously registered preference.
   void SetDefaultPrefValue(const std::string& pref_name, base::Value value);
 
   // Registers a pref owned by another service for use with the current service.
-  // The owning service must register that pref with the |PUBLIC| flag.
+  // The owning service must register that pref with the `PUBLIC` flag.
   void RegisterForeignPref(const std::string& path);
 
   // Sets the default value and flags of a previously-registered foreign pref
@@ -96,8 +96,8 @@ class COMPONENTS_PREFS_EXPORT PrefRegistry
   virtual ~PrefRegistry();
 
   // Used by subclasses to register a default value and registration flags for
-  // a preference. |flags| is a bitmask of |PrefRegistrationFlags|.
-  void RegisterPreference(const std::string& path,
+  // a preference. `flags` is a bitmask of `PrefRegistrationFlags`.
+  void RegisterPreference(std::string_view path,
                           base::Value default_value,
                           uint32_t flags);
 

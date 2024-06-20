@@ -13,7 +13,7 @@
 
 using base::Value;
 
-DefaultPrefStore::DefaultPrefStore() {}
+DefaultPrefStore::DefaultPrefStore() = default;
 
 bool DefaultPrefStore::GetValue(std::string_view key,
                                 const Value** result) const {
@@ -36,7 +36,7 @@ bool DefaultPrefStore::HasObservers() const {
   return !observers_.empty();
 }
 
-void DefaultPrefStore::SetDefaultValue(const std::string& key, Value value) {
+void DefaultPrefStore::SetDefaultValue(std::string_view key, Value value) {
   DCHECK(!GetValue(key, nullptr));
   prefs_.SetValue(key, std::move(value));
 }
@@ -59,4 +59,4 @@ DefaultPrefStore::const_iterator DefaultPrefStore::end() const {
   return prefs_.end();
 }
 
-DefaultPrefStore::~DefaultPrefStore() {}
+DefaultPrefStore::~DefaultPrefStore() = default;

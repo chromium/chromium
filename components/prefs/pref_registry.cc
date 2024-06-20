@@ -58,7 +58,7 @@ void PrefRegistry::SetDefaultForeignPrefValue(const std::string& path,
   RegisterPreference(path, std::move(default_value), flags);
 }
 
-void PrefRegistry::RegisterPreference(const std::string& path,
+void PrefRegistry::RegisterPreference(std::string_view path,
                                       base::Value default_value,
                                       uint32_t flags) {
   base::Value::Type orig_type = default_value.type();
@@ -67,12 +67,13 @@ void PrefRegistry::RegisterPreference(const std::string& path,
          "invalid preference type: " << orig_type;
   DCHECK(!defaults_->GetValue(path, nullptr))
       << "Trying to register a previously registered pref: " << path;
-  DCHECK(!base::Contains(registration_flags_, path))
+  DCHECK(!base::Contains(registration_flags_, std::string(path)))
       << "Trying to register a previously registered pref: " << path;
 
   defaults_->SetDefaultValue(path, std::move(default_value));
-  if (flags != NO_REGISTRATION_FLAGS)
-    registration_flags_[path] = flags;
+  if (flags != NO_REGISTRATION_FLAGS) {
+    registration_flags_.insert_or_assign(std::string(path), flags);
+  }
 
   OnPrefRegistered(path, flags);
 }
