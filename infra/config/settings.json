@@ -8,30 +8,6 @@
         "android": {
             "description": "beta/stable",
             "sheriff_rotation": "chrome_browser_release"
-        },
-        "cros": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
-        "fuchsia": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
-        "ios": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
-        "linux": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
-        "mac": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
-        },
-        "windows": {
-            "description": "beta/stable",
-            "sheriff_rotation": "chrome_browser_release"
         }
     }
 }

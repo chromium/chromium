@@ -1,4 +1,0 @@
-ci/fuchsia-arm64-cast-receiver-rel
-ci/fuchsia-x64-cast-receiver-dbg
-ci/fuchsia-x64-cast-receiver-rel
-try/fuchsia-x64-cast-receiver-dbg
