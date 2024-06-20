@@ -308,7 +308,7 @@ ${FN_BODY}
 
   forwarding_function_definitons = []
   for signature, cases in sorted(signature_to_cpp_calls.items()):
-    params_in_stub = _GetJavaToNativeParamsList(signature.param_types)
+    param_strings, _ = _GetMultiplexingParamsList(signature.param_types)
     java_class_name = common.escape_class_name(
         short_gen_jni_class.full_name_with_slashes)
     java_function_name = common.escape_class_name(
@@ -330,7 +330,7 @@ ${FN_BODY}
         fn_def_template.substitute({
             'RETURN': signature.return_type.to_cpp(),
             'PROXY_FN_NAME': proxy_function_name,
-            'PARAMS_IN_STUB': params_in_stub,
+            'PARAMS_IN_STUB': ', '.join(param_strings),
             'FN_BODY': fn_body,
         }))
 
@@ -504,20 +504,22 @@ ${EPILOGUE}
   return template.substitute(registration_dict)
 
 
-def _GetJavaToNativeParamsList(param_types):
-  if not param_types:
-    return 'jint switch_num'
-
+def _GetMultiplexingParamsList(param_types, java_types=False):
+  switch_type = 'int' if java_types else 'jint'
   # Parameters are named after their type, with a unique number per parameter
   # type to make sure the names are unique, even within the same types.
   params_type_count = collections.defaultdict(int)
-  params_in_stub = []
+  params_with_type = [f'{switch_type} switch_num']
+  param_names = ['switch_num']
   for t in param_types:
-    params_type_count[t] += 1
-    params_in_stub.append('%s %s_param%d' % (t.to_cpp(), t.to_java().replace(
-        '[]', '_array').lower(), params_type_count[t]))
+    typename = t.java_type.to_java() if java_types else t.to_cpp()
+    params_type_count[typename] += 1
+    typename_cleaned = typename.replace('[]', '_array').lower()
+    param_name = f'{typename_cleaned}_param{params_type_count[typename]}'
+    param_names.append(param_name)
+    params_with_type.append(f'{typename} {param_name}')
 
-  return 'jint switch_num, ' + ', '.join(params_in_stub)
+  return params_with_type, param_names
 
 
 def _GetRegistrationFunctionName(fully_qualified_class):
@@ -527,10 +529,10 @@ def _GetRegistrationFunctionName(fully_qualified_class):
 
 def _CreateMultiplexedSignature(proxy_signature):
   """Inserts an int parameter as the first parameter."""
-  new_param = java_types.JavaParam(java_types.INT, '_method_idx')
+  switch_param = java_types.JavaParam(java_types.INT, '_method_idx')
   return java_types.JavaSignature.from_params(
       proxy_signature.return_type,
-      java_types.JavaParamList((new_param, ) + proxy_signature.param_list))
+      java_types.JavaParamList((switch_param, ) + proxy_signature.param_list))
 
 
 class DictionaryGenerator(object):
@@ -751,34 +753,19 @@ ${NATIVES}\
     signature_to_cpp_calls = collections.defaultdict(list)
     for native in self.proxy_natives:
       signature = native.proxy_signature
-      params = _GetParamsListForMultiplex(native.proxy_params, with_types=False)
+      _, param_names = _GetMultiplexingParamsList(native.proxy_param_types)
+      param_string = ', '.join(param_names[1:])
+      if param_string:
+        param_string = ', ' + param_string
       values = {
           # We are forced to call the generated stub instead of the impl because
           # the impl is not guaranteed to have a globally unique name.
           'STUB_NAME': self.jni_obj.GetStubName(native),
-          'PARAMS': params,
+          'PARAMS': param_string,
       }
       signature_to_cpp_calls[signature].append(template.substitute(values))
 
     self.registration_dict['SIGNATURE_TO_CPP_CALLS'] = signature_to_cpp_calls
-
-
-def _GetParamsListForMultiplex(params, *, with_types):
-  if not params:
-    return ''
-
-  # Parameters are named after their type, with a unique number per parameter
-  # type to make sure the names are unique, even within the same types.
-  params_type_count = collections.defaultdict(int)
-  sb = []
-  for p in params:
-    type_str = p.java_type.to_java()
-    params_type_count[type_str] += 1
-    param_type = f'{type_str} ' if with_types else ''
-    sb.append('%s%s_param%d' % (param_type, type_str.replace(
-        '[]', '_array').lower(), params_type_count[type_str]))
-
-  return ', ' + ', '.join(sb)
 
 
 _MULTIPLEXED_CHAR_BY_TYPE = {
@@ -870,8 +857,9 @@ def _MakeProxySignature(options, proxy_native):
 
     alt_name = None
     proxy_name = _GetMultiplexProxyName(proxy_native.proxy_signature)
-    params_with_types = 'int switch_num' + _GetParamsListForMultiplex(
-        proxy_native.proxy_params, with_types=True)
+    params_with_types_list, _ = _GetMultiplexingParamsList(
+        proxy_native.proxy_params, java_types=True)
+    params_with_types = ', '.join(params_with_types_list)
   elif options.use_proxy_hash:
     signature_template = string.Template("""
       // Original name: ${ALT_NAME}""" + native_method_line)

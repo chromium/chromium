@@ -39,15 +39,6 @@ JNI_POSSIBLE_BOUNDARY_EXPORT jobject Java_J_N_MV9JEAYF(
     jclass jcaller,
     jobject a,
     jobject b);
-JNI_POSSIBLE_BOUNDARY_EXPORT void Java_J_N_M3noEmrf_1ForTesting(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT void Java_J_N_M1XMhKEd_1ForTesting(
-    JNIEnv* env,
-    jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT void Java_J_N_M0ykt7m_1_1ForTesting(
-    JNIEnv* env,
-    jclass jcaller);
 JNI_POSSIBLE_BOUNDARY_EXPORT void Java_J_N_MKWEYRlq(
     JNIEnv* env,
     jclass jcaller);

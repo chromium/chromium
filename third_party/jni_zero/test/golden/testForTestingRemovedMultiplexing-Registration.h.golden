@@ -24,9 +24,6 @@ inline jclass org_jni_1zero_SampleProxyEdgeCases_clazz(JNIEnv* env) {
 
 // Forward declarations (methods).
 
-JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_1jni_11zero_1TinySample2_1test(
-    JNIEnv* env,
-    jclass jcaller);
 JNI_POSSIBLE_BOUNDARY_EXPORT jint Java_org_1jni_11zero_1SampleProxyEdgeCases_1addStructB(
     JNIEnv* env,
     jclass jcaller,
@@ -71,21 +68,8 @@ JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_native
 JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeStaticMethod(
     JNIEnv* env,
     jclass jcaller);
-JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Java_org_1jni_11zero_1TinySample_1bar(
-    JNIEnv* env,
-    jclass jcaller,
-    jint a);
-JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_1jni_11zero_1TinySample_1foo(
-    JNIEnv* env,
-    jclass jcaller);
 
 
-JNI_BOUNDARY_EXPORT jboolean Java_J_N__1Z_1I(
-    JNIEnv* env,
-    jclass jcaller,
-    jint switch_num, jint jint_param1) {
-        return Java_org_1jni_11zero_1TinySample_1bar(env, jcaller, jint_param1);
-}
 JNI_BOUNDARY_EXPORT jboolean Java_J_N__1Z_1O(
     JNIEnv* env,
     jclass jcaller,
@@ -110,6 +94,12 @@ JNI_BOUNDARY_EXPORT jobject Java_J_N__1O_1O(
     jint switch_num, jobject jobject_param1) {
         return Java_org_1jni_11zero_1SampleProxyEdgeCases_1genericsWithNestedClassArray(env, jcaller, jobject_param1);
 }
+JNI_BOUNDARY_EXPORT void Java_J_N__1V(
+    JNIEnv* env,
+    jclass jcaller,
+    jint switch_num) {
+        return Java_org_1jni_11zero_1SampleProxyEdgeCases_1foo_11_11weirdly_11_11escaped_11name1(env, jcaller);
+}
 JNI_BOUNDARY_EXPORT jobject Java_J_N__1O_1OO(
     JNIEnv* env,
     jclass jcaller,
@@ -132,26 +122,6 @@ JNI_BOUNDARY_EXPORT jint Java_J_N__1I_1OO(
     jclass jcaller,
     jint switch_num, jobject jobject_param1, jobject jobject_param2) {
         return Java_org_1jni_11zero_1SampleProxyEdgeCases_1addStructB(env, jcaller, jobject_param1, jobject_param2);
-}
-JNI_BOUNDARY_EXPORT void Java_J_N__1V(
-    JNIEnv* env,
-    jclass jcaller,
-    jint switch_num) {
-
-        switch (switch_num) {
-          
-          case 0:
-             return Java_org_1jni_11zero_1TinySample2_1test(env, jcaller);
-
-          case 1:
-             return Java_org_1jni_11zero_1SampleProxyEdgeCases_1foo_11_11weirdly_11_11escaped_11name1(env, jcaller);
-
-          case 2:
-             return Java_org_1jni_11zero_1TinySample_1foo(env, jcaller);
-          default:
-            JNI_ZERO_DCHECK(false);
-            return;
-        }
 }
 
 

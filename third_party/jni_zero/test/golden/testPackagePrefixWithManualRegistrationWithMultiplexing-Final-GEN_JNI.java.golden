@@ -14,90 +14,90 @@ public class GEN_JNI {
 
 
     public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_bar(Object sample) {
-        return this.is.a.package.prefix.J.N.M6zE1ofi(sample);
+        return this.is.a.package.prefix.J.N._O_O(0, sample);
     }
 
     public static void this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_foo() {
-        this.is.a.package.prefix.J.N.MKW06IKB();
+        this.is.a.package.prefix.J.N._V(0);
     }
 
     public static boolean this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_hasPhalange() {
-        return this.is.a.package.prefix.J.N.Mh9RSlnn();
+        return this.is.a.package.prefix.J.N._Z(0);
     }
 
     public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnClass() {
-        return this.is.a.package.prefix.J.N.M5NcWmhA();
+        return this.is.a.package.prefix.J.N._O(0);
     }
 
     public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnClasses() {
-        return this.is.a.package.prefix.J.N.M$EEymCX();
+        return this.is.a.package.prefix.J.N._O(1);
     }
 
     public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedAppObjects(Class __arrayClazz) {
-        return this.is.a.package.prefix.J.N.Muqa$3wC(__arrayClazz);
+        return this.is.a.package.prefix.J.N._O_L(0, __arrayClazz);
     }
 
     public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedInts() {
-        return this.is.a.package.prefix.J.N.Mfi3Z8u7();
+        return this.is.a.package.prefix.J.N._O(2);
     }
 
     public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedString() {
-        return this.is.a.package.prefix.J.N.MtTvCTtu();
+        return this.is.a.package.prefix.J.N._O(3);
     }
 
     public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnConvertedStrings() {
-        return this.is.a.package.prefix.J.N.MJOq1186();
+        return this.is.a.package.prefix.J.N._O(4);
     }
 
     public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnObject() {
-        return this.is.a.package.prefix.J.N.McVHjA4P();
+        return this.is.a.package.prefix.J.N._O(5);
     }
 
     public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnObjects() {
-        return this.is.a.package.prefix.J.N.MJYxRKSI();
+        return this.is.a.package.prefix.J.N._O(6);
     }
 
     public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnString() {
-        return this.is.a.package.prefix.J.N.MQC2SQ1M();
+        return this.is.a.package.prefix.J.N._O(7);
     }
 
     public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnStrings() {
-        return this.is.a.package.prefix.J.N.M78FHdkG();
+        return this.is.a.package.prefix.J.N._O(8);
     }
 
     public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnStruct() {
-        return this.is.a.package.prefix.J.N.MXyTtXdi();
+        return this.is.a.package.prefix.J.N._O(9);
     }
 
     public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnStructs() {
-        return this.is.a.package.prefix.J.N.M$2EuNt4();
+        return this.is.a.package.prefix.J.N._O(10);
     }
 
     public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnThrowable() {
-        return this.is.a.package.prefix.J.N.MXtSG9x7();
+        return this.is.a.package.prefix.J.N._O(11);
     }
 
     public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_returnThrowables() {
-        return this.is.a.package.prefix.J.N.MJglTojO();
+        return this.is.a.package.prefix.J.N._O(12);
     }
 
     public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_revString(Object stringToReverse) {
-        return this.is.a.package.prefix.J.N.MOHBXcmk(stringToReverse);
+        return this.is.a.package.prefix.J.N._O_O(1, stringToReverse);
     }
 
     public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_sendSamplesToNative(Object strs) {
-        return this.is.a.package.prefix.J.N.MgJ2ddya(strs);
+        return this.is.a.package.prefix.J.N._O_O(2, strs);
     }
 
     public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_sendToNative(Object strs) {
-        return this.is.a.package.prefix.J.N.MVsHG97A(strs);
+        return this.is.a.package.prefix.J.N._O_O(3, strs);
     }
 
     public static Object this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_testAllPrimitives(int zint, Object ints, long zlong, Object longs, short zshort, Object shorts, char zchar, Object chars, byte zbyte, Object bytes, double zdouble, Object doubles, float zfloat, Object floats, boolean zbool, Object bools) {
-        return this.is.a.package.prefix.J.N.MtvkX0TV(zint, ints, zlong, longs, zshort, shorts, zchar, chars, zbyte, bytes, zdouble, doubles, zfloat, floats, zbool, bools);
+        return this.is.a.package.prefix.J.N._O_IOJOSOCOBODOFOZO(0, zint, ints, zlong, longs, zshort, shorts, zchar, chars, zbyte, bytes, zdouble, doubles, zfloat, floats, zbool, bools);
     }
 
     public static void this_is_a_package_prefix_org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(Object clazz, Object classes, Object throwable, Object throwables, Object string, Object strings, Object convertedString, Object convertedStrings, Object optionalString, Object tStruct, Object structs, Object obj, Object convertedObj, Object objects, Object nestedInterface, Object view, Object context, Object convertedObjects) {
-        this.is.a.package.prefix.J.N.MI36SGcd(clazz, classes, throwable, throwables, string, strings, convertedString, convertedStrings, optionalString, tStruct, structs, obj, convertedObj, objects, nestedInterface, view, context, convertedObjects);
+        this.is.a.package.prefix.J.N._V_OOOOOOOOOOOOOOOOOO(0, clazz, classes, throwable, throwables, string, strings, convertedString, convertedStrings, optionalString, tStruct, structs, obj, convertedObj, objects, nestedInterface, view, context, convertedObjects);
     }
 }

@@ -25,18 +25,6 @@ public class GEN_JNI {
         return J.N.MV9JEAYF(a, b);
     }
 
-    public static void org_jni_1zero_SampleProxyEdgeCases_fooForTest() {
-        J.N.M3noEmrf_ForTesting();
-    }
-
-    public static void org_jni_1zero_SampleProxyEdgeCases_fooForTesting() {
-        J.N.M1XMhKEd_ForTesting();
-    }
-
-    public static void org_jni_1zero_SampleProxyEdgeCases_fooForTests() {
-        J.N.M0ykt7m__ForTesting();
-    }
-
     public static void org_jni_1zero_SampleProxyEdgeCases_foo_1_1weirdly_1_1escaped_1name1() {
         J.N.MKWEYRlq();
     }

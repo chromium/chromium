@@ -25,7 +25,7 @@ class SampleModuleJni implements SampleModule.Natives {
   };
 
   @Override
-  public boolean bar(int a) {
+  public boolean bar(boolean a) {
     return (boolean) module_GEN_JNI.org_jni_1zero_SampleModule_bar(a);
   }
 

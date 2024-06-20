@@ -14,22 +14,33 @@
 
 // Forward declarations (methods).
 
-JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Java_J_module_1N_MejItBT4(
+JNI_POSSIBLE_BOUNDARY_EXPORT jboolean Java_org_1jni_11zero_1SampleModule_1bar(
     JNIEnv* env,
     jclass jcaller,
     jboolean a);
-JNI_POSSIBLE_BOUNDARY_EXPORT void Java_J_module_1N_MqDgXQiH(
+JNI_POSSIBLE_BOUNDARY_EXPORT void Java_org_1jni_11zero_1SampleModule_1foo(
     JNIEnv* env,
     jclass jcaller);
 
 
+JNI_BOUNDARY_EXPORT jboolean Java_J_module_1N__1Z_1Z(
+    JNIEnv* env,
+    jclass jcaller,
+    jint switch_num, jboolean jboolean_param1) {
+        return Java_org_1jni_11zero_1SampleModule_1bar(env, jcaller, jboolean_param1);
+}
+JNI_BOUNDARY_EXPORT void Java_J_module_1N__1V(
+    JNIEnv* env,
+    jclass jcaller,
+    jint switch_num) {
+        return Java_org_1jni_11zero_1SampleModule_1foo(env, jcaller);
+}
 // Method declarations.
 
 
 static const JNINativeMethod kMethods_J_module_1N[] = {
-    { "MejItBT4", "(Z)Z", reinterpret_cast<void*>(Java_J_module_1N_MejItBT4) },
-    { "MqDgXQiH", "()V", reinterpret_cast<void*>(Java_J_module_1N_MqDgXQiH) },
-
+    { "_V", "(I)V", reinterpret_cast<void*>(Java_J_module_1N__1V) },
+    { "_Z_Z", "(IZ)Z", reinterpret_cast<void*>(Java_J_module_1N__1Z_1Z) }
 };
 
 namespace {

@@ -4,11 +4,10 @@
 
 package org.jni_zero;
 
-import org.jni_zero.NativeMethods;
 
 class SampleModule {
     void test() {
-        if (SampleForAnnotationProcessorJni.get().bar(1)) {
+        if (SampleForAnnotationProcessorJni.get().bar(true)) {
             SampleForAnnotationProcessorJni.get().foo();
         }
     }
@@ -16,6 +15,7 @@ class SampleModule {
     @NativeMethods("module")
     interface Natives {
         void foo();
-        boolean bar(int a);
+
+        boolean bar(boolean a);
     }
 }
