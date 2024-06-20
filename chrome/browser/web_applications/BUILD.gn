@@ -1,5 +1,5 @@
-# Copyright 2018 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
+# Copyright 2018 The Chromium Authors
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
@@ -88,8 +88,6 @@ source_set("web_applications") {
     "generated_icon_fix_util.h",
     "install_bounce_metric.cc",
     "install_bounce_metric.h",
-    "install_state.cc",
-    "install_state.h",
     "isolated_web_apps/check_isolated_web_app_bundle_installability_command.cc",
     "isolated_web_apps/check_isolated_web_app_bundle_installability_command.h",
     "isolated_web_apps/chrome_content_browser_client_isolated_web_apps_part.cc",
@@ -579,6 +577,7 @@ source_set("web_applications") {
   public_deps = [
     "//chrome/browser/web_applications/mojom:mojom_web_apps_enum",
     "//chrome/browser/web_applications/proto",
+    "//chrome/browser/web_applications/proto:proto_helpers",
     "//components/permissions:permissions",
     "//components/services/app_service",
   ]

@@ -8,6 +8,7 @@ proto_library("proto") {
   proto_in_dir = "//"
   sources = [
     "web_app.proto",
+    "web_app_install_state.proto",
     "web_app_isolation_data.proto",
     "web_app_launch_handler.proto",
     "web_app_os_integration_state.proto",
@@ -22,4 +23,12 @@ proto_library("proto") {
     "//components/sync/protocol",
     "//content/browser/background_fetch:background_fetch_proto",
   ]
+}
+
+source_set("proto_helpers") {
+  sources = [
+    "proto_helpers.cc",
+    "proto_helpers.h",
+  ]
+  public_deps = [ ":proto" ]
 }

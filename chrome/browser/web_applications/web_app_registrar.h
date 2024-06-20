@@ -50,8 +50,10 @@ enum class WebappInstallSource;
 }
 
 namespace web_app {
+namespace proto {
+enum InstallState : int;
+}
 
-enum class InstallState;
 class IsolatedWebAppUrlInfo;
 class WebAppRegistrarObserver;
 class WebApp;
@@ -111,13 +113,14 @@ class WebAppRegistrar {
 
   // Returns the install state of the given `app_id`, or std::nullopt if it is
   // not in the registrar.
-  std::optional<InstallState> GetInstallState(
+  std::optional<proto::InstallState> GetInstallState(
       const webapps::AppId& app_id) const;
 
   // Returns if the install state of the given `app_id` is one of the given
   // `allowed_states`. Will CHECK-fail if `allowed_states` is empty.
-  bool IsInstallState(const webapps::AppId& app_id,
-                      std::initializer_list<InstallState> allowed_states) const;
+  bool IsInstallState(
+      const webapps::AppId& app_id,
+      std::initializer_list<proto::InstallState> allowed_states) const;
 
   // This struct can be used `FindBestAppWithUrlInScope` and possible future
   // methods to filter apps.
@@ -139,32 +142,32 @@ class WebAppRegistrar {
   // TODO(crbug.com/341316725): Remove shortcut apps.
   std::optional<webapps::AppId> FindBestAppWithUrlInScope(
       const GURL& url,
-      std::initializer_list<InstallState> allowed_states) const;
+      std::initializer_list<proto::InstallState> allowed_states) const;
   // Same as above but with more filtering options.
   std::optional<webapps::AppId> FindBestAppWithUrlInScope(
       const GURL& url,
-      std::initializer_list<InstallState> allowed_states,
+      std::initializer_list<proto::InstallState> allowed_states,
       AppFilterOptions options) const;
 
   // Finds all apps that have the given `url` in scope and are in one of the
   // given `allowed_states`. Will CHECK-fail if `allowed_states` is empty.
   std::vector<webapps::AppId> FindAllAppsWithUrlInScope(
       const GURL& url,
-      std::initializer_list<InstallState> allowed_states) const;
+      std::initializer_list<proto::InstallState> allowed_states) const;
 
   // Finds all apps that have scopes that are nested within the given
   // `outer_scope`, and are in one of the given `allowed_states`. Will
   // CHECK-fail if `allowed_states` is empty.
   std::vector<webapps::AppId> FindAllAppsNestedInUrl(
       const GURL& outer_scope,
-      std::initializer_list<InstallState> allowed_states) const;
+      std::initializer_list<proto::InstallState> allowed_states) const;
 
   // Returns true if there exists at least one app installed under `scope` that
   // is in the given `allowed_states`.
   // TODO(crbug.com/341337420): Support scope extensions.
   bool DoesScopeContainAnyApp(
       const GURL& scope,
-      std::initializer_list<InstallState> allowed_states) const;
+      std::initializer_list<proto::InstallState> allowed_states) const;
 
   // Returns whether the app with |app_id| is currently listed in the registry.
   // ie. we have data for web app manifest and icons, and this |app_id| can be
