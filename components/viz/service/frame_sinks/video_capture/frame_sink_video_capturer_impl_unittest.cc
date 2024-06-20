@@ -321,7 +321,6 @@ class FakeGpuCopyResult : public CopyOutputResult {
         format_(format),
         result_(TextureResult(
             gpu::Mailbox{},
-            gpu::SyncToken{},
             GetColorSpaceForPixelFormat(
                 CopyOutputRequestFormatToVideoPixelFormat(format)))) {}
 

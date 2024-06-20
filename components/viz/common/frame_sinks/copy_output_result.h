@@ -114,11 +114,9 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
   // interface).
   struct VIZ_COMMON_EXPORT TextureResult {
     gpu::Mailbox mailbox;
-    gpu::SyncToken sync_token;
     gfx::ColorSpace color_space;
 
     TextureResult(const gpu::Mailbox& mailbox,
-                  const gpu::SyncToken& sync_token,
                   const gfx::ColorSpace& color_space);
 
     TextureResult(const TextureResult& other);

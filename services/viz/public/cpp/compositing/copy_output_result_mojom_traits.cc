@@ -160,22 +160,6 @@ StructTraits<viz::mojom::CopyOutputResultDataView,
 }
 
 // static
-mojo::OptionalAsPointer<const gpu::SyncToken>
-StructTraits<viz::mojom::CopyOutputResultDataView,
-             std::unique_ptr<viz::CopyOutputResult>>::
-    sync_token(const std::unique_ptr<viz::CopyOutputResult>& result) {
-  if (result->destination() !=
-          viz::CopyOutputResult::Destination::kNativeTextures ||
-      result->IsEmpty()) {
-    return nullptr;
-  }
-
-  // Only RGBA can travel across process boundaries.
-  DCHECK_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
-  return mojo::OptionalAsPointer(&result->GetTextureResult()->sync_token);
-}
-
-// static
 mojo::OptionalAsPointer<const gfx::ColorSpace>
 StructTraits<viz::mojom::CopyOutputResultDataView,
              std::unique_ptr<viz::CopyOutputResult>>::
@@ -266,9 +250,6 @@ bool StructTraits<viz::mojom::CopyOutputResultDataView,
           std::optional<gpu::Mailbox> mailbox;
           if (!data.ReadMailbox(&mailbox) || !mailbox)
             return false;
-          std::optional<gpu::SyncToken> sync_token;
-          if (!data.ReadSyncToken(&sync_token) || !sync_token)
-            return false;
           std::optional<gfx::ColorSpace> color_space;
           if (!data.ReadColorSpace(&color_space) || !color_space)
             return false;
@@ -294,8 +275,7 @@ bool StructTraits<viz::mojom::CopyOutputResultDataView,
 
           *out_p = std::make_unique<viz::CopyOutputTextureResult>(
               viz::CopyOutputResult::Format::RGBA, rect,
-              viz::CopyOutputResult::TextureResult(*mailbox, *sync_token,
-                                                   *color_space),
+              viz::CopyOutputResult::TextureResult(*mailbox, *color_space),
               std::move(release_callbacks));
           return true;
         }

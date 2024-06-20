@@ -5,7 +5,6 @@
 module viz.mojom;
 
 import "gpu/ipc/common/mailbox.mojom";
-import "gpu/ipc/common/sync_token.mojom";
 import "services/viz/public/mojom/compositing/bitmap_in_shared_memory.mojom";
 import "services/viz/public/mojom/compositing/texture_releaser.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -36,7 +35,6 @@ struct CopyOutputResult {
   // Present when the destination is kNativeTextures.
   // If the result is empty, then the |mailbox| will be present but empty.
   gpu.mojom.Mailbox? mailbox;
-  gpu.mojom.SyncToken? sync_token;
   gfx.mojom.ColorSpace? color_space;
   // Present when the destination is kNativeTextures and |mailbox| is non-empty.
   pending_remote<TextureReleaser>? releaser;

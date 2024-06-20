@@ -368,8 +368,7 @@ TEST_F(StructTraitsTest, CopyOutputRequest_TextureRequest) {
 
   output->SendResult(std::make_unique<CopyOutputTextureResult>(
       result_format, result_rect,
-      CopyOutputResult::TextureResult(mailbox, sync_token,
-                                      gfx::ColorSpace::CreateSRGB()),
+      CopyOutputResult::TextureResult(mailbox, gfx::ColorSpace::CreateSRGB()),
       std::move(release_callbacks)));
 
   // Wait for the result to be delivered to the other side: The
@@ -1507,8 +1506,7 @@ TEST_F(StructTraitsTest, CopyOutputResult_Texture) {
   std::unique_ptr<CopyOutputResult> input =
       std::make_unique<CopyOutputTextureResult>(
           CopyOutputResult::Format::RGBA, result_rect,
-          CopyOutputResult::TextureResult(mailbox, sync_token,
-                                          result_color_space),
+          CopyOutputResult::TextureResult(mailbox, result_color_space),
           std::move(release_callbacks));
 
   std::unique_ptr<CopyOutputResult> output;
@@ -1521,7 +1519,6 @@ TEST_F(StructTraitsTest, CopyOutputResult_Texture) {
   EXPECT_EQ(output->rect(), result_rect);
   ASSERT_NE(output->GetTextureResult(), nullptr);
   EXPECT_EQ(output->GetTextureResult()->mailbox, mailbox);
-  EXPECT_EQ(output->GetTextureResult()->sync_token, sync_token);
   EXPECT_EQ(output->GetTextureResult()->color_space, result_color_space);
 
   CopyOutputResult::ReleaseCallbacks out_callbacks =

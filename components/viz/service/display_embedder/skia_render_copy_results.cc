@@ -185,7 +185,7 @@ void ReadbackContextTexture::OnMailboxReadyInternal() {
 
   request_->SendResult(std::make_unique<CopyOutputTextureResult>(
       request_->result_format(), result_rect_,
-      CopyOutputResult::TextureResult(mailbox_, gpu::SyncToken(), color_space_),
+      CopyOutputResult::TextureResult(mailbox_, color_space_),
       CopyOutputResult::ReleaseCallbacks()));
 }
 

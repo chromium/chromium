@@ -23,9 +23,8 @@ CopyOutputResult::TextureResult& CopyOutputResult::TextureResult::operator=(
 
 CopyOutputResult::TextureResult::TextureResult(
     const gpu::Mailbox& mailbox,
-    const gpu::SyncToken& sync_token,
     const gfx::ColorSpace& color_space)
-    : mailbox(mailbox), sync_token(sync_token), color_space(color_space) {}
+    : mailbox(mailbox), color_space(color_space) {}
 
 CopyOutputResult::CopyOutputResult(Format format,
                                    Destination destination,
@@ -243,7 +242,6 @@ CopyOutputTextureResult::GetTextureResult() const {
 CopyOutputResult::ReleaseCallbacks
 CopyOutputTextureResult::TakeTextureOwnership() {
   texture_result_.mailbox = {};
-  texture_result_.sync_token = {};
   texture_result_.color_space = {};
 
   CopyOutputResult::ReleaseCallbacks result = std::move(release_callbacks_);

@@ -311,8 +311,7 @@ void FakeSkiaOutputSurface::CopyOutput(
 
     request->SendResult(std::make_unique<CopyOutputTextureResult>(
         CopyOutputResult::Format::RGBA, geometry.result_bounds,
-        CopyOutputResult::TextureResult(local_mailbox, GenerateSyncToken(),
-                                        color_space),
+        CopyOutputResult::TextureResult(local_mailbox, color_space),
         std::move(release_callbacks)));
     return;
   }

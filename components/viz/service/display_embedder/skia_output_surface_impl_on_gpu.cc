@@ -1136,7 +1136,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
 
   request->SendResult(std::make_unique<CopyOutputTextureResult>(
       CopyOutputResult::Format::RGBA, geometry.result_selection,
-      CopyOutputResult::TextureResult(mailbox, gpu::SyncToken(), color_space),
+      CopyOutputResult::TextureResult(mailbox, color_space),
       std::move(release_callbacks)));
 }
 
@@ -1549,7 +1549,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
       }
       request->SendResult(std::make_unique<CopyOutputTextureResult>(
           CopyOutputResult::Format::NV12, geometry.result_selection,
-          CopyOutputResult::TextureResult(mailbox_access_data.mailbox, {},
+          CopyOutputResult::TextureResult(mailbox_access_data.mailbox,
                                           color_space),
           std::move(release_callbacks)));
       break;
