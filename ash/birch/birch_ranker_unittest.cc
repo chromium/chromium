@@ -236,6 +236,72 @@ TEST(BirchRankerTest, RankCalendarItems_AllDayEvent) {
   EXPECT_FLOAT_EQ(items[2].ranking(), std::numeric_limits<float>::max());
 }
 
+TEST(BirchRankerTest, RankCalendarItems_SameStartTimes) {
+  base::test::ScopedRestoreDefaultTimezone timezone("Etc/GMT");
+
+  // Simulate 3 PM.
+  base::Time now = TimeFromString("22 Feb 2024 15:00 UTC");
+  BirchRanker ranker(now);
+
+  // Create four events which all start at the same time.
+  BirchCalendarItem item(
+      u"Ongoing",
+      /*start_time=*/TimeFromString("22 Feb 2024 16:00 UTC"),
+      /*end_time=*/TimeFromString("22 Feb 2024 17:00 UTC"),
+      /*calendar_url=*/GURL(),
+      /*conference_url=*/GURL(),
+      /*event_id=*/"",
+      /*all_day_event=*/false,
+      /*response_status=*/BirchCalendarItem::ResponseStatus::kAccepted);
+  BirchCalendarItem item2(
+      u"Ongoing",
+      /*start_time=*/TimeFromString("22 Feb 2024 16:00 UTC"),
+      /*end_time=*/TimeFromString("22 Feb 2024 17:00 UTC"),
+      /*calendar_url=*/GURL(),
+      /*conference_url=*/GURL(),
+      /*event_id=*/"",
+      /*all_day_event=*/false,
+      /*response_status=*/BirchCalendarItem::ResponseStatus::kTentative);
+  BirchCalendarItem item3(
+      u"Ongoing",
+      /*start_time=*/TimeFromString("22 Feb 2024 16:00 UTC"),
+      /*end_time=*/TimeFromString("22 Feb 2024 17:00 UTC"),
+      /*calendar_url=*/GURL(),
+      /*conference_url=*/GURL(),
+      /*event_id=*/"",
+      /*all_day_event=*/false,
+      /*response_status=*/BirchCalendarItem::ResponseStatus::kNeedsAction);
+  BirchCalendarItem item4(
+      u"Ongoing",
+      /*start_time=*/TimeFromString("22 Feb 2024 16:00 UTC"),
+      /*end_time=*/TimeFromString("22 Feb 2024 17:00 UTC"),
+      /*calendar_url=*/GURL(),
+      /*conference_url=*/GURL(),
+      /*event_id=*/"",
+      /*all_day_event=*/false,
+      /*response_status=*/BirchCalendarItem::ResponseStatus::kDeclined);
+
+  // Put the items in the vector in reverse order to validate that they are
+  // still handled in the correct order (by response status) inside the ranker.
+  std::vector<BirchCalendarItem> items = {item4, item3, item2, item};
+
+  ranker.RankCalendarItems(&items);
+
+  ASSERT_EQ(4u, items.size());
+
+  // Items with the same start times should be ordered by the response status.
+  EXPECT_EQ(items[0].response_status(),
+            BirchCalendarItem::ResponseStatus::kAccepted);
+  EXPECT_EQ(items[1].response_status(),
+            BirchCalendarItem::ResponseStatus::kTentative);
+  EXPECT_EQ(items[2].response_status(),
+            BirchCalendarItem::ResponseStatus::kNeedsAction);
+  EXPECT_EQ(items[3].response_status(),
+            BirchCalendarItem::ResponseStatus::kDeclined);
+  // Declined event should remain unranked.
+  EXPECT_FLOAT_EQ(items[3].ranking(), std::numeric_limits<float>::max());
+}
+
 TEST(BirchRankerTest, RankAttachmentItems_Morning) {
   base::test::ScopedRestoreDefaultTimezone timezone("Etc/GMT");
 

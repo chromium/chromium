@@ -16,12 +16,34 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/ash/birch/birch_calendar_fetcher.h"
 #include "google_apis/calendar/calendar_api_requests.h"
+#include "google_apis/calendar/calendar_api_response_types.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/auth_service.h"
 #include "google_apis/common/request_sender.h"
 #include "google_apis/gaia/gaia_constants.h"
 
 namespace ash {
+
+namespace {
+
+BirchCalendarItem::ResponseStatus GetItemResponseStatus(
+    const google_apis::calendar::CalendarEvent::ResponseStatus&
+        response_status) {
+  switch (response_status) {
+    case google_apis::calendar::CalendarEvent::ResponseStatus::kUnknown:
+    case google_apis::calendar::CalendarEvent::ResponseStatus::kDeclined:
+      // Treat an unknown response as a declined birch calendar item.
+      return BirchCalendarItem::ResponseStatus::kDeclined;
+    case google_apis::calendar::CalendarEvent::ResponseStatus::kAccepted:
+      return BirchCalendarItem::ResponseStatus::kAccepted;
+    case google_apis::calendar::CalendarEvent::ResponseStatus::kTentative:
+      return BirchCalendarItem::ResponseStatus::kTentative;
+    case google_apis::calendar::CalendarEvent::ResponseStatus::kNeedsAction:
+      return BirchCalendarItem::ResponseStatus::kNeedsAction;
+  }
+}
+
+}  // namespace
 
 BirchCalendarProvider::BirchCalendarProvider(Profile* profile)
     : profile_(profile) {}
@@ -92,7 +114,8 @@ void BirchCalendarProvider::OnEventsFetched(
     BirchCalendarItem birch_item(
         base::UTF8ToUTF16(item->summary()), item->start_time().date_time(),
         item->end_time().date_time(), GURL(item->html_link()),
-        item->conference_data_uri(), item->id(), item->all_day_event());
+        item->conference_data_uri(), item->id(), item->all_day_event(),
+        GetItemResponseStatus(item->self_response_status()));
     calendar_items.push_back(std::move(birch_item));
 
     // Attachments are stored as separate items.

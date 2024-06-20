@@ -11,6 +11,7 @@
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/time/time.h"
+#include "base/types/cxx23_to_underlying.h"
 
 namespace {
 // How long release notes remain top ranked.
@@ -27,9 +28,15 @@ BirchRanker::~BirchRanker() = default;
 void BirchRanker::RankCalendarItems(std::vector<BirchCalendarItem>* items) {
   CHECK(items);
   // Sort the events by start time so that we can search forward in the vector
-  // to find upcoming events.
+  // to find upcoming events. Events with the same start time will be ranked
+  // according so the response status, with the `kAccepted` response being the
+  // highest priority.
   std::sort(items->begin(), items->end(),
             [](const BirchCalendarItem& a, const BirchCalendarItem& b) {
+              if (a.start_time() == b.start_time()) {
+                return base::to_underlying(a.response_status()) <
+                       base::to_underlying(b.response_status());
+              }
               return a.start_time() < b.start_time();
             });
 
@@ -39,6 +46,12 @@ void BirchRanker::RankCalendarItems(std::vector<BirchCalendarItem>* items) {
   bool found_tomorrow_event = false;
 
   for (BirchCalendarItem& item : *items) {
+    // Declined events should not be ranked.
+    if (item.response_status() ==
+        BirchCalendarItem::ResponseStatus::kDeclined) {
+      continue;
+    }
+
     // All-day events have low priority. We only show all-day events from today
     // (e.g. ongoing all-day events).
     if (item.all_day_event() && IsOngoingEvent(item)) {

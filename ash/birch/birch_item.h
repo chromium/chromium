@@ -109,13 +109,22 @@ class ASH_EXPORT BirchItem {
 // A birch item which contains calendar event information.
 class ASH_EXPORT BirchCalendarItem : public BirchItem {
  public:
+  // Used for ranking calendar items, `kAccepted` has the highest priority.
+  enum class ResponseStatus {
+    kAccepted = 0,
+    kTentative = 1,
+    kNeedsAction = 2,
+    kDeclined = 3
+  };
+
   BirchCalendarItem(const std::u16string& title,
                     const base::Time& start_time,
                     const base::Time& end_time,
                     const GURL& calendar_url,
                     const GURL& conference_url,
                     const std::string& event_id,
-                    const bool all_day_event);
+                    const bool all_day_event,
+                    ResponseStatus response_status = ResponseStatus::kAccepted);
   BirchCalendarItem(BirchCalendarItem&&);
   BirchCalendarItem(const BirchCalendarItem&);
   BirchCalendarItem& operator=(const BirchCalendarItem&);
@@ -134,6 +143,7 @@ class ASH_EXPORT BirchCalendarItem : public BirchItem {
   const GURL& calendar_url() const { return calendar_url_; }
   const GURL& conference_url() const { return conference_url_; }
   const std::string& event_id() const { return event_id_; }
+  const ResponseStatus& response_status() const { return response_status_; }
 
  private:
   static std::u16string GetSubtitle(base::Time start_time,
@@ -156,6 +166,8 @@ class ASH_EXPORT BirchCalendarItem : public BirchItem {
   // Video conferencing URL (e.g. Google Meet).
   GURL conference_url_;
   std::string event_id_;
+  // The user's current response to this calendar event.
+  ResponseStatus response_status_;
 };
 
 // An attachment (e.g. a file attached to a calendar event). Represented as a

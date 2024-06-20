@@ -181,14 +181,16 @@ BirchCalendarItem::BirchCalendarItem(const std::u16string& title,
                                      const GURL& calendar_url,
                                      const GURL& conference_url,
                                      const std::string& event_id,
-                                     const bool all_day_event)
+                                     const bool all_day_event,
+                                     ResponseStatus response_status)
     : BirchItem(title, GetSubtitle(start_time, end_time, all_day_event)),
       start_time_(start_time),
       end_time_(end_time),
       all_day_event_(all_day_event),
       calendar_url_(calendar_url),
       conference_url_(conference_url),
-      event_id_(event_id) {
+      event_id_(event_id),
+      response_status_(response_status) {
   if (ShouldShowJoinButton()) {
     set_secondary_action(
         l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CALENDAR_JOIN_BUTTON));
