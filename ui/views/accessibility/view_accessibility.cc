@@ -556,6 +556,10 @@ void ViewAccessibility::ClearActiveDescendant() {
   data_.RemoveIntAttribute(ax::mojom::IntAttribute::kActivedescendantId);
 }
 
+void ViewAccessibility::SetIsInvisible(bool is_invisible) {
+  SetState(ax::mojom::State::kInvisible, is_invisible);
+}
+
 void ViewAccessibility::SetIsEnabled(bool is_enabled) {
   RETURN_IF_UNAVAILABLE();
   if (is_enabled == GetIsEnabled()) {

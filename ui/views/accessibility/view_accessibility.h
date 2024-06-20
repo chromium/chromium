@@ -250,6 +250,8 @@ class VIEWS_EXPORT ViewAccessibility : public WidgetObserver {
   void SetActiveDescendant(views::View& view);
   void ClearActiveDescendant();
 
+  void SetIsInvisible(bool is_invisible);
+
   // Sets/gets whether or not this view should be marked as "enabled" for the
   // purpose exposing this state in the accessibility tree. As a general rule,
   // it is not advisable to mark a View as enabled in the accessibility tree,
