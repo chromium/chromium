@@ -24,6 +24,12 @@
 #include "components/variations/service/variations_service_utils.h"
 #include "net/base/load_flags.h"
 
+constexpr auto kLoggingDisallowedCountries =
+    base::MakeFixedFlatSet<std::string_view>(
+        {"at", "be", "bg", "ch", "cy", "cz", "de", "dk", "ee", "es", "fi",
+         "fr", "gb", "gr", "hr", "hu", "ie", "is", "it", "li", "lt", "lu",
+         "lv", "mt", "nl", "no", "pl", "pt", "ro", "se", "si", "sk"});
+
 constexpr auto kAidaSupportedCountries =
     base::MakeFixedFlatSet<std::string_view>(
         {"ae", "ag", "ai", "am", "ao", "ar", "as", "at", "au", "aw", "az", "bb",
@@ -74,6 +80,13 @@ bool IsAidaBlockedByAge(std::optional<AccountInfo> account_info) {
          signin::Tribool::kTrue;
 }
 
+bool IsLoggingDisabledByGeo() {
+  std::string country_code =
+      base::ToLowerASCII(variations::GetCurrentCountryCode(
+          g_browser_process->variations_service()));
+  return kLoggingDisallowedCountries.contains(country_code);
+}
+
 bool IsAidaBlockedByGeo() {
   std::string country_code =
       base::ToLowerASCII(variations::GetCurrentCountryCode(
@@ -105,8 +118,9 @@ AidaClient::BlockedReason AidaClient::CanUseAida(Profile* profile) {
   result.blocked_by_geo = IsAidaBlockedByGeo();
   result.disallow_logging =
       profile->GetPrefs()->GetInteger(prefs::kDevToolsGenAiSettings) ==
-      static_cast<int>(
-          DevToolsGenAiEnterprisePolicyValue::kAllowWithoutLogging);
+          static_cast<int>(
+              DevToolsGenAiEnterprisePolicyValue::kAllowWithoutLogging) ||
+      IsLoggingDisabledByGeo();
   result.blocked = result.blocked_by_age ||
                    result.blocked_by_enterprise_policy || result.blocked_by_geo;
   return result;
