@@ -5250,21 +5250,19 @@ No devices connected.
       </message>
 
       <!-- Mahi -->
-      <!-- TODO(b/331127382): Finalize internal Mahi strings, move them here and mark them translateable. -->
-      <!-- TODO(b/331127382): Mark the strings below translateable if they are final strings -->
-      <message name="IDS_ASH_MAHI_PANEL_TITLE" translateable="false" desc="Title text shown on the header of the Mahi panel.">
-        Mahi Panel
+      <message name="IDS_ASH_MAHI_PANEL_TITLE" desc="Title text shown on the header of the Mahi panel.">
+        Help me read
       </message>
-      <message name="IDS_ASH_MAHI_PANEL_DISCLAIMER" translateable="false" desc="Text for the disclaimer label in the Mahi panel">
-        Disclaimer: this is only used for experimental.
+      <message name="IDS_ASH_MAHI_PANEL_DISCLAIMER" desc="Text for the disclaimer label in the Mahi panel">
+        Quality may vary when using generative AI.
       </message>
       <message name="IDS_ASH_MAHI_LEARN_MORE_LINK_LABEL_TEXT" desc="Text for the learn more link that user can navigate to learn more about the project information">
         Learn more
       </message>
-      <message name="IDS_ASH_MAHI_THUMBS_UP_FEEDBACK_BUTTON_ACCESSIBLE_NAME" translateable="false" desc="The tooltip of the thumbs up feedback button in the mahi panel">
+      <message name="IDS_ASH_MAHI_THUMBS_UP_FEEDBACK_BUTTON_ACCESSIBLE_NAME" desc="The tooltip of the thumbs up feedback button in the mahi panel">
         Good output
       </message>
-      <message name="IDS_ASH_MAHI_THUMBS_DOWN_FEEDBACK_BUTTON_ACCESSIBLE_NAME" translateable="false" desc="The accessible name of the thumbs down feedback button in the mahi panel">
+      <message name="IDS_ASH_MAHI_THUMBS_DOWN_FEEDBACK_BUTTON_ACCESSIBLE_NAME" desc="The accessible name of the thumbs down feedback button in the mahi panel">
         Bad output
       </message>
       <message name="IDS_ASH_MAHI_REFRESH_BANNER_LABEL_TEXT" desc="Text for the refresh banner shown above the mahi panel.">
