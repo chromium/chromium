@@ -4,7 +4,6 @@
 
 import {assert, assertNotReached} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
@@ -29,7 +28,6 @@ export interface PostSelectionBoundingBox {
 // The target currently being dragged on by the user.
 enum DragTarget {
   NONE,
-  WHOLE_BOX,
   TOP_LEFT,
   TOP_RIGHT,
   BOTTOM_RIGHT,
@@ -77,10 +75,6 @@ export class PostSelectionRendererElement extends PolymerElement {
       screenshotDataUri: String,
       currentDragTarget: Number,
       cornerIds: Array,
-      enableSelectionDragging: {
-        type: Boolean,
-        reflectToAttribute: true,
-      },
     };
   }
 
@@ -102,8 +96,6 @@ export class PostSelectionRendererElement extends PolymerElement {
   // The original bounds from the start of a drag.
   private originalBounds:
       PostSelectionBoundingBox = {left: 0, top: 0, width: 0, height: 0};
-  private enableSelectionDragging: boolean =
-      loadTimeData.getBoolean('enableSelectionDragging');
 
   override connectedCallback() {
     super.connectedCallback();
@@ -164,10 +156,6 @@ export class PostSelectionRendererElement extends PolymerElement {
     const imageBounds = this.getBoundingClientRect();
     const normalizedX = (event.clientX - imageBounds.left) / imageBounds.width;
     const normalizedY = (event.clientY - imageBounds.top) / imageBounds.height;
-    const normalizedStartX =
-        (event.startX - imageBounds.left) / imageBounds.width;
-    const normalizedStartY =
-        (event.startY - imageBounds.top) / imageBounds.height;
     const normalizedMinBoxWidth = this.getMinBoxSize() / imageBounds.width;
     const normalizedMinBoxHeight = this.getMinBoxSize() / imageBounds.height;
     const normalizedPerimeterPaddingWidth =
@@ -212,64 +200,6 @@ export class PostSelectionRendererElement extends PolymerElement {
         newTop = currentTop;
         newRight = currentRight;
         newBottom = Math.max(normalizedY, currentTop + normalizedMinBoxHeight);
-        break;
-      case DragTarget.WHOLE_BOX:
-        // Only adjust if the drag will keep the image in bounds horizontally.
-        const dragDeltaX = normalizedX - normalizedStartX;
-        const originalRight =
-            this.originalBounds.left + this.originalBounds.width;
-
-        if (dragDeltaX >= 0) {
-          // Drag is left to right
-          if (dragDeltaX + originalRight <= maxXValue) {
-            // Drag is in bounds
-            newLeft = this.originalBounds.left + dragDeltaX;
-            newRight = originalRight + dragDeltaX;
-          } else {
-            // Drag is out of bounds. Set the box as far right as possible.
-            newLeft = maxXValue - this.width;
-            newRight = maxXValue;
-          }
-        } else {
-          // Drag is right to left
-          if (dragDeltaX + this.originalBounds.left >= minXValue) {
-            // Drag is in bounds
-            newLeft = this.originalBounds.left + dragDeltaX;
-            newRight = originalRight + dragDeltaX;
-          } else {
-            // Drag is out of bounds. Set the box as far left as possible.
-            newLeft = minXValue;
-            newRight = minXValue + this.width;
-          }
-        }
-
-        // Only adjust if the drag will keep the image in bounds vertically.
-        const dragDeltaY = normalizedY - normalizedStartY;
-        const originalBottom =
-            this.originalBounds.top + this.originalBounds.height;
-        if (dragDeltaY >= 0) {
-          // Drag is top to bottom
-          if (dragDeltaY + originalBottom <= maxYValue) {
-            // Drag is in bounds
-            newTop = this.originalBounds.top + dragDeltaY;
-            newBottom = originalBottom + dragDeltaY;
-          } else {
-            // Drag is out of bounds. Set the box as far down as possible.
-            newTop = maxYValue - this.height;
-            newBottom = maxYValue;
-          }
-        } else {
-          // Drag is bottom to top
-          if (dragDeltaY + this.originalBounds.top >= minYValue) {
-            // Drag is in bounds
-            newTop = this.originalBounds.top + dragDeltaY;
-            newBottom = originalBottom + dragDeltaY;
-          } else {
-            // Drag is out of bounds. Set the box as far up as possible.
-            newTop = minYValue;
-            newBottom = minYValue + this.height;
-          }
-        }
         break;
       default:
         assertNotReached();
@@ -318,10 +248,6 @@ export class PostSelectionRendererElement extends PolymerElement {
   cancelGesture() {
     this.originalBounds = {left: 0, top: 0, width: 0, height: 0};
     this.currentDragTarget = DragTarget.NONE;
-  }
-
-  enableSelectionDraggingForTesting() {
-    this.enableSelectionDragging = true;
   }
 
   private setSelection(region: CenterRotatedBox) {
@@ -398,7 +324,8 @@ export class PostSelectionRendererElement extends PolymerElement {
   private dragTargetFromPoint(x: number, y: number): DragTarget {
     const topMostElements = this.shadowRoot!.elementsFromPoint(x, y);
     const topMostDraggableElement = topMostElements.find(el => {
-      return (el instanceof HTMLElement) && el.classList.contains('draggable');
+      return (el instanceof HTMLElement) &&
+          el.classList.contains('corner-hit-box');
     });
     if (!topMostDraggableElement) {
       return DragTarget.NONE;
@@ -412,8 +339,6 @@ export class PostSelectionRendererElement extends PolymerElement {
         return DragTarget.BOTTOM_RIGHT;
       case 'bottomLeft':
         return DragTarget.BOTTOM_LEFT;
-      case 'selectionCorners':
-        return DragTarget.WHOLE_BOX;
       default:
         // Did not click on a target we care about.
         break;
@@ -422,11 +347,7 @@ export class PostSelectionRendererElement extends PolymerElement {
   }
 
   private shouldHandleDownGesture(): boolean {
-    if (this.enableSelectionDragging) {
-      return this.currentDragTarget !== DragTarget.NONE;
-    }
-    return this.currentDragTarget !== DragTarget.NONE &&
-        this.currentDragTarget !== DragTarget.WHOLE_BOX;
+    return this.currentDragTarget !== DragTarget.NONE;
   }
 
   // Converts the current region to a CenterRotatedBox
