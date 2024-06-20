@@ -26,7 +26,7 @@ class AutofillSnackbarControllerImpl : public AutofillSnackbarController {
       const AutofillSnackbarControllerImpl&) = delete;
 
   // Show the snackbar.
-  void Show(AutofillSnackbarType autofill_snackbar_type);
+  virtual void Show(AutofillSnackbarType autofill_snackbar_type);
 
   // AutofillSnackbarController:
   void OnActionClicked() override;

@@ -1163,7 +1163,7 @@
     Your bank can't offer virtual cards for this payment method right now, but you can still use your <ph name="CARD_LABEL">$1<ex>Visa **4444</ex></ph> to pay online.
   </message>
 
-  <message name="IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_FAILURE_OK_BUTTON_TEXT" desc="Text shown on the ok button of the confirmation prompt after card upload or vcn enrollment failure.">
+  <message name="IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUTTON_TEXT" desc="Text shown on the ok button of the confirmation prompt after a card upload or vcn enrollment.">
     Got it
   </message>
   <message name="IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_FAILURE_OK_BUTTON_ACCESSIBLE_NAME" desc="Accessible name announced by the screenreader for save card failure confirmation prompt's ok button.">

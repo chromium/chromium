@@ -39,7 +39,7 @@ SaveCardAndVirtualCardEnrollConfirmationUiParams::
           is_success
               ? std::u16string()
               : l10n_util::GetStringUTF16(
-                    IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_FAILURE_OK_BUTTON_TEXT)) {
+                    IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUTTON_TEXT)) {
   if (!is_success) {
     this->failure_ok_button_accessible_name =
         std::move(failure_ok_button_accessible_name);

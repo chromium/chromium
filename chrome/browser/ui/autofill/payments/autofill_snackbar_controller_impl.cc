@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 
 #include <string>
+
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "build/build_config.h"
 #include "chrome/browser/android/preferences/autofill/settings_launcher_helper.h"
 #include "chrome/browser/keyboard_accessory/android/manual_filling_controller.h"
@@ -36,10 +38,17 @@ void AutofillSnackbarControllerImpl::Show(
   autofill_snackbar_view_ = AutofillSnackbarView::Create(this);
   autofill_snackbar_view_->Show();
   base::UmaHistogramBoolean(
-      "Autofill.Snackbar." + GetSnackbarTypeForLogging() + ".Shown", true);
+      base::StrCat(
+          {"Autofill.Snackbar.", GetSnackbarTypeForLogging(), ".Shown"}),
+      true);
 }
 
 void AutofillSnackbarControllerImpl::OnActionClicked() {
+  base::UmaHistogramBoolean(
+      base::StrCat({"Autofill.Snackbar.", GetSnackbarTypeForLogging(),
+                    ".ActionClicked"}),
+      true);
+
   switch (autofill_snackbar_type_) {
     case AutofillSnackbarType::kVirtualCard:
       ManualFillingControllerImpl::GetOrCreate(GetWebContents())
@@ -50,12 +59,13 @@ void AutofillSnackbarControllerImpl::OnActionClicked() {
       // settings page.
       ShowAutofillCreditCardSettings(GetWebContents());
       break;
+    case AutofillSnackbarType::kSaveCardSuccess:
+    case AutofillSnackbarType::kVirtualCardEnrollSuccess:
+      // SnackbarManager.java will dismiss the snackbar after the click.
+      break;
     case AutofillSnackbarType::kUnspecified:
       NOTREACHED_NORETURN();
   }
-  base::UmaHistogramBoolean(
-      "Autofill.Snackbar." + GetSnackbarTypeForLogging() + ".ActionClicked",
-      true);
 }
 
 void AutofillSnackbarControllerImpl::OnDismissed() {
@@ -71,6 +81,12 @@ std::u16string AutofillSnackbarControllerImpl::GetMessageText() const {
     case AutofillSnackbarType::kMandatoryReauth:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_MANDATORY_REAUTH_SNACKBAR_MESSAGE_TEXT);
+    case AutofillSnackbarType::kSaveCardSuccess:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT);
+    case AutofillSnackbarType::kVirtualCardEnrollSuccess:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT);
     case AutofillSnackbarType::kUnspecified:
       NOTREACHED_NORETURN();
   }
@@ -84,6 +100,10 @@ std::u16string AutofillSnackbarControllerImpl::GetActionButtonText() const {
     case AutofillSnackbarType::kMandatoryReauth:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_MANDATORY_REAUTH_SNACKBAR_ACTION_TEXT);
+    case AutofillSnackbarType::kSaveCardSuccess:
+    case AutofillSnackbarType::kVirtualCardEnrollSuccess:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUTTON_TEXT);
     case AutofillSnackbarType::kUnspecified:
       NOTREACHED_NORETURN();
   }
@@ -107,6 +127,10 @@ std::string AutofillSnackbarControllerImpl::GetSnackbarTypeForLogging() {
       return "VirtualCard";
     case AutofillSnackbarType::kMandatoryReauth:
       return "MandatoryReauth";
+    case AutofillSnackbarType::kSaveCardSuccess:
+      return "SaveCardSuccess";
+    case AutofillSnackbarType::kVirtualCardEnrollSuccess:
+      return "VirtualCardEnrollSuccess";
     case AutofillSnackbarType::kUnspecified:
       return "Unspecified";
   }

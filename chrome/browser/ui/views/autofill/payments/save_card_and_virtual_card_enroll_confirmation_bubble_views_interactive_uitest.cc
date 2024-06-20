@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardConfirmationBubbleViewsInteractiveUiTest,
   EXPECT_EQ(
       BubbleView()->GetDialogButtonLabel(ui::DIALOG_BUTTON_OK),
       l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_FAILURE_OK_BUTTON_TEXT));
+          IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUTTON_TEXT));
   EXPECT_EQ(
       BubbleView()->GetOkButton()->GetViewAccessibility().GetCachedName(),
       l10n_util::GetStringUTF16(
@@ -326,7 +326,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(
       BubbleView()->GetDialogButtonLabel(ui::DIALOG_BUTTON_OK),
       l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_FAILURE_OK_BUTTON_TEXT));
+          IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUTTON_TEXT));
   EXPECT_EQ(
       BubbleView()->GetOkButton()->GetViewAccessibility().GetCachedName(),
       l10n_util::GetStringUTF16(

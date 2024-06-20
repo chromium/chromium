@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/android/autofill/autofill_save_card_bottom_sheet_bridge.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_test_helper.h"
+#include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "ui/android/window_android.h"
 #else  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
@@ -36,6 +37,16 @@ class MockAutofillSaveCardBottomSheetBridge
             base::android::ScopedJavaGlobalRef<jobject>(nullptr)) {}
 
   MOCK_METHOD(void, Hide, (), (override));
+};
+
+class MockAutofillSnackbarControllerImpl
+    : public AutofillSnackbarControllerImpl {
+ public:
+  explicit MockAutofillSnackbarControllerImpl(
+      content::WebContents* web_contents)
+      : AutofillSnackbarControllerImpl(web_contents) {}
+
+  MOCK_METHOD(void, Show, (AutofillSnackbarType), (override));
 };
 #else  //! BUILDFLAG(IS_ANDROID)
 class MockSaveCardBubbleController : public SaveCardBubbleControllerImpl {
@@ -115,6 +126,16 @@ class ChromePaymentsAutofillClientTest
         std::move(mock));
     return pointer;
   }
+
+  MockAutofillSnackbarControllerImpl*
+  InjectMockAutofillSnackbarControllerImpl() {
+    std::unique_ptr<MockAutofillSnackbarControllerImpl> mock =
+        std::make_unique<MockAutofillSnackbarControllerImpl>(web_contents());
+    MockAutofillSnackbarControllerImpl* pointer = mock.get();
+    chrome_payments_client()->SetAutofillSnackbarControllerImplForTesting(
+        std::move(mock));
+    return pointer;
+  }
 #else  // !BUILDFLAG(IS_ANDROID)
   MockSaveCardBubbleController& save_card_bubble_controller() {
     return static_cast<MockSaveCardBubbleController&>(
@@ -141,12 +162,53 @@ TEST_F(ChromePaymentsAutofillClientTest,
       nullptr);
 }
 
-TEST_F(ChromePaymentsAutofillClientTest,
-       CreditCardUploadCompleted_CallsAutofillSaveCardBottomSheetBridge) {
+TEST_F(
+    ChromePaymentsAutofillClientTest,
+    CreditCardUploadCompletedSuccessful_CallsSaveCardBottomSheetBridgeAndSnackbarController) {
   MockAutofillSaveCardBottomSheetBridge* save_card_bridge =
       InjectMockAutofillSaveCardBottomSheetBridge();
-  EXPECT_CALL(*save_card_bridge, Hide());
+  MockAutofillSnackbarControllerImpl* snackbar_controller =
+      InjectMockAutofillSnackbarControllerImpl();
+
+  EXPECT_CALL(*save_card_bridge, Hide);
+  EXPECT_CALL(*snackbar_controller,
+              Show(AutofillSnackbarType::kSaveCardSuccess));
+
   chrome_payments_client()->CreditCardUploadCompleted(true, std::nullopt);
+}
+
+TEST_F(ChromePaymentsAutofillClientTest,
+       CreditCardUploadCompletedFailure_CallsSaveCardBottomSheetBridge) {
+  MockAutofillSaveCardBottomSheetBridge* save_card_bridge =
+      InjectMockAutofillSaveCardBottomSheetBridge();
+  MockAutofillSnackbarControllerImpl* snackbar_controller =
+      InjectMockAutofillSnackbarControllerImpl();
+
+  EXPECT_CALL(*save_card_bridge, Hide);
+  EXPECT_CALL(*snackbar_controller, Show).Times(0);
+
+  chrome_payments_client()->CreditCardUploadCompleted(false, std::nullopt);
+}
+
+TEST_F(ChromePaymentsAutofillClientTest,
+       VirtualCardEnrollSuccessful_CallsSnackbarController) {
+  MockAutofillSnackbarControllerImpl* snackbar_controller =
+      InjectMockAutofillSnackbarControllerImpl();
+
+  EXPECT_CALL(*snackbar_controller,
+              Show(AutofillSnackbarType::kVirtualCardEnrollSuccess));
+
+  chrome_payments_client()->VirtualCardEnrollCompleted(true);
+}
+
+TEST_F(ChromePaymentsAutofillClientTest,
+       VirtualCardEnrollFailure_DoesNotCallSnackbarController) {
+  MockAutofillSnackbarControllerImpl* snackbar_controller =
+      InjectMockAutofillSnackbarControllerImpl();
+
+  EXPECT_CALL(*snackbar_controller, Show).Times(0);
+
+  chrome_payments_client()->VirtualCardEnrollCompleted(false);
 }
 
 TEST_F(ChromePaymentsAutofillClientTest,

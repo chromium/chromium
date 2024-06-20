@@ -58,6 +58,7 @@
 #include "chrome/browser/ui/android/autofill/card_expiration_date_fix_flow_view_android.h"
 #include "chrome/browser/ui/android/autofill/card_name_fix_flow_view_android.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
+#include "chrome/browser/ui/autofill/payments/autofill_snackbar_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_controller_android.h"
 #include "components/autofill/core/browser/ui/payments/card_expiration_date_fix_flow_view.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_view.h"
@@ -262,6 +263,11 @@ void ChromePaymentsAutofillClient::CreditCardUploadCompleted(
   if (auto* bridge = GetOrCreateAutofillSaveCardBottomSheetBridge()) {
     bridge->Hide();
   }
+
+  if (card_saved) {
+    GetAutofillSnackbarController()->Show(
+        AutofillSnackbarType::kSaveCardSuccess);
+  }
 #else  // !BUILDFLAG(IS_ANDROID)
   if (SaveCardBubbleControllerImpl* controller =
           SaveCardBubbleControllerImpl::FromWebContents(web_contents())) {
@@ -304,6 +310,13 @@ void ChromePaymentsAutofillClient::VirtualCardEnrollCompleted(
                 web_contents())) {
       controller->ShowConfirmationBubbleView(is_vcn_enrolled);
     }
+
+#if BUILDFLAG(IS_ANDROID)
+    if (is_vcn_enrolled) {
+      GetAutofillSnackbarController()->Show(
+          AutofillSnackbarType::kVirtualCardEnrollSuccess);
+    }
+#endif
   }
 }
 
@@ -652,6 +665,13 @@ void ChromePaymentsAutofillClient::
             autofill_save_card_bottom_sheet_bridge) {
   autofill_save_card_bottom_sheet_bridge_ =
       std::move(autofill_save_card_bottom_sheet_bridge);
+}
+
+void ChromePaymentsAutofillClient::SetAutofillSnackbarControllerImplForTesting(
+    std::unique_ptr<AutofillSnackbarControllerImpl>
+        autofill_snackbar_controller_impl) {
+  autofill_snackbar_controller_impl_ =
+      std::move(autofill_snackbar_controller_impl);
 }
 #endif
 

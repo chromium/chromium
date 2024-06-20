@@ -16,7 +16,13 @@ enum class AutofillSnackbarType {
   kVirtualCard = 1,
 
   // Used when mandatory reauth opt-in is confirmed.
-  kMandatoryReauth = 2
+  kMandatoryReauth = 2,
+
+  // Used when a card has been successfully saved to the server.
+  kSaveCardSuccess = 3,
+
+  // Used when a virtual card has been successfully enrolled.
+  kVirtualCardEnrollSuccess = 4,
 };
 
 }  // namespace autofill

@@ -13,8 +13,10 @@
 #include "chrome/browser/keyboard_accessory/test_utils/android/mock_payment_method_accessory_controller.h"
 #include "chrome/browser/ui/autofill/payments/autofill_snackbar_view.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/l10n/l10n_util.h"
 
 using testing::NiceMock;
 
@@ -48,7 +50,7 @@ class AutofillSnackbarControllerImplTest
       mock_payment_method_controller_;
 };
 
-TEST_F(AutofillSnackbarControllerImplTest, VirtualCardTypeMetricsTest) {
+TEST_F(AutofillSnackbarControllerImplTest, Metrics_VirtualCard) {
   base::HistogramTester histogram_tester;
   controller()->Show(AutofillSnackbarType::kVirtualCard);
   // Verify that the count for Shown is incremented and ActionClicked hasn't
@@ -69,7 +71,7 @@ TEST_F(AutofillSnackbarControllerImplTest, VirtualCardTypeMetricsTest) {
 }
 
 TEST_F(AutofillSnackbarControllerImplTest,
-       AttemptToShowDialogWhileAlreadyShowing) {
+       Metrics_ShowVirtualCardWhenAlreadyShowing) {
   base::HistogramTester histogram_tester;
   controller()->Show(AutofillSnackbarType::kVirtualCard);
   // Verify that the count for Shown is incremented and ActionClicked hasn't
@@ -87,7 +89,7 @@ TEST_F(AutofillSnackbarControllerImplTest,
                                       1);
 }
 
-TEST_F(AutofillSnackbarControllerImplTest, MandatoryReauthTypeMetricsTest) {
+TEST_F(AutofillSnackbarControllerImplTest, Metrics_ShowMandatoryReauth) {
   base::HistogramTester histogram_tester;
   controller()->Show(AutofillSnackbarType::kMandatoryReauth);
   // Verify that the count for Shown is incremented and ActionClicked hasn't
@@ -100,6 +102,65 @@ TEST_F(AutofillSnackbarControllerImplTest, MandatoryReauthTypeMetricsTest) {
 
   // TODO(crbug.com/40570965): Figure out how to mock
   // ShowAutofillCreditCardSettings to test ActionClicked metric.
+}
+
+TEST_F(AutofillSnackbarControllerImplTest, Metrics_SaveCardSuccess) {
+  base::HistogramTester histogram_tester;
+
+  controller()->Show(AutofillSnackbarType::kSaveCardSuccess);
+
+  histogram_tester.ExpectUniqueSample("Autofill.Snackbar.SaveCardSuccess.Shown",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Snackbar.SaveCardSuccess.ActionClicked", true, 0);
+
+  controller()->OnActionClicked();
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Snackbar.SaveCardSuccess.ActionClicked", true, 1);
+}
+
+TEST_F(AutofillSnackbarControllerImplTest, Metrics_VirtualCardEnrollSuccess) {
+  base::HistogramTester histogram_tester;
+
+  controller()->Show(AutofillSnackbarType::kVirtualCardEnrollSuccess);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Snackbar.VirtualCardEnrollSuccess.Shown", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Snackbar.VirtualCardEnrollSuccess.ActionClicked", true, 0);
+
+  controller()->OnActionClicked();
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Snackbar.VirtualCardEnrollSuccess.ActionClicked", true, 1);
+}
+
+TEST_F(AutofillSnackbarControllerImplTest,
+       SaveCardSuccessMessageAndActionButtonText) {
+  controller()->Show(AutofillSnackbarType::kSaveCardSuccess);
+
+  EXPECT_EQ(controller()->GetMessageText(),
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
+  EXPECT_EQ(
+      controller()->GetActionButtonText(),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUTTON_TEXT));
+}
+
+TEST_F(AutofillSnackbarControllerImplTest,
+       VirtualCardEnrollSuccessMessageAndActionButtonText) {
+  controller()->Show(AutofillSnackbarType::kVirtualCardEnrollSuccess);
+
+  EXPECT_EQ(
+      controller()->GetMessageText(),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_VIRTUAL_CARD_ENROLL_CONFIRMATION_SUCCESS_DESCRIPTION_TEXT));
+  EXPECT_EQ(
+      controller()->GetActionButtonText(),
+      l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUTTON_TEXT));
 }
 
 }  // namespace autofill

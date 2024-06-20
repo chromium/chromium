@@ -70,7 +70,7 @@ TEST(SaveCardAndVirtualCardEnrollConfirmationUiParamsTest,
   EXPECT_EQ(
       ui_params.failure_ok_button_text,
       l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_FAILURE_OK_BUTTON_TEXT));
+          IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUTTON_TEXT));
   EXPECT_EQ(
       ui_params.failure_ok_button_accessible_name,
       l10n_util::GetStringUTF16(
@@ -99,7 +99,7 @@ TEST(SaveCardAndVirtualCardEnrollConfirmationUiParamsTest,
   EXPECT_EQ(
       ui_params.failure_ok_button_text,
       l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_FAILURE_OK_BUTTON_TEXT));
+          IDS_AUTOFILL_SAVE_CARD_AND_VIRTUAL_CARD_ENROLL_CONFIRMATION_BUTTON_TEXT));
   EXPECT_EQ(
       ui_params.failure_ok_button_accessible_name,
       l10n_util::GetStringUTF16(

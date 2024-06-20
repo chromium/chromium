@@ -186,6 +186,10 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   void SetAutofillSaveCardBottomSheetBridgeForTesting(
       std::unique_ptr<AutofillSaveCardBottomSheetBridge>
           autofill_save_card_bottom_sheet_bridge);
+
+  void SetAutofillSnackbarControllerImplForTesting(
+      std::unique_ptr<AutofillSnackbarControllerImpl>
+          autofill_snackbar_controller_impl);
 #endif
 
  private:
