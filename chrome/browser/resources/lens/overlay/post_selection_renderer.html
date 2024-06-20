@@ -58,6 +58,7 @@
     top: calc(var(--selection-top) - var(--post-selection-corner-width));
     width: calc(var(--selection-width) +
                    (2 * var(--post-selection-corner-width)));
+    z-index: 5; /* Position above words. */
   }
 
   .corner-hit-box {
@@ -69,7 +70,6 @@
     pointer-events: all;
     position: absolute;
     width: 50%;
-    z-index: 5; /* Position above words. */
   }
 
   #topLeft {

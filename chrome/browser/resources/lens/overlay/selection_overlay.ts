@@ -29,7 +29,8 @@ import type {OverlayShimmerCanvasElement} from './overlay_shimmer_canvas.js';
 import type {PostSelectionRendererElement} from './post_selection_renderer.js';
 import type {RegionSelectionElement} from './region_selection.js';
 import {getTemplate} from './selection_overlay.html.js';
-import {CursorType, DRAG_THRESHOLD, DragFeature, emptyGestureEvent, focusShimmerOnRegion, type GestureEvent, GestureState, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
+import {CursorType, DRAG_THRESHOLD, DragFeature, emptyGestureEvent, focusShimmerOnRegion, GestureState, ShimmerControlRequester, unfocusShimmer} from './selection_utils.js';
+import type {GestureEvent, OverlayShimmerFocusedRegion} from './selection_utils.js';
 import type {TextLayerElement} from './text_layer.js';
 import {toPercent} from './values_converter.js';
 
@@ -153,6 +154,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
         type: Boolean,
         reflectToAttribute: true,
       },
+      shimmerOnSegmentation: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
       darkenExtraScrim: {
         type: Boolean,
         reflectToAttribute: true,
@@ -191,6 +196,8 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private isClosing: boolean = false;
   // Whether the default background scrim is currently being darkened.
   private darkenExtraScrim: boolean = false;
+  // Whether the shimmer is currently focused on a segmentation mask.
+  private shimmerOnSegmentation: boolean = false;
 
   private eventTracker_: EventTracker = new EventTracker();
   // Listener ids for events from the browser side.
@@ -286,6 +293,16 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
 
           this.onInitialFlashAnimationEnd();
         });
+    this.eventTracker_.add(
+        document, 'focus-region',
+        (e: CustomEvent<OverlayShimmerFocusedRegion>) => {
+          if (e.detail.requester === ShimmerControlRequester.SEGMENTATION) {
+            this.shimmerOnSegmentation = true;
+          }
+        });
+    this.eventTracker_.add(document, 'unfocus-region', () => {
+      this.shimmerOnSegmentation = false;
+    });
   }
 
   override disconnectedCallback() {
