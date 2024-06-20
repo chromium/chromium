@@ -1,3 +1,7 @@
+# The canonical "Mac Chromium Team" list of owners. Refer to this list with
+# file://ui/base/cocoa/OWNERS in OWNERS files that require "Mac" owners without
+# other stricter requirements.
+
 avi@chromium.org
 bur@google.com
 lgrey@chromium.org

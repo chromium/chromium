@@ -1,5 +1,4 @@
-mark@chromium.org
-thakis@chromium.org
+file://ui/base/cocoa/OWNERS
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS

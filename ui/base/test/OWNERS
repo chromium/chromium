@@ -1,8 +1,7 @@
 sky@chromium.org
 
 # Mac stuff
-avi@chromium.org
-thakis@chromium.org
+file://ui/base/cocoa/OWNERS
 
 # Clipboard
 per-file test_clipboard*=dcheng@chromium.org
