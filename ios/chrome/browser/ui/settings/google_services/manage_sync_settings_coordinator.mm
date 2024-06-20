@@ -106,7 +106,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   // Dismiss callback for Web and app setting details view.
   DismissViewCallback _dismissWebAndAppSettingDetailsController;
   // Dismiss callback for account details view.
-  DismissViewCallback _dismissAccountDetailsController;
+  DismissViewCallback _accountDetailsControllerDismissCallback;
   // The account sync state.
   SyncSettingsAccountState _accountState;
   // The navigation controller to use only when presenting the
@@ -251,6 +251,10 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
 #pragma mark - Private
 
+- (void)resetDismissAccountDetailsController {
+  _accountDetailsControllerDismissCallback.Reset();
+}
+
 - (void)stopBulkUpload {
   [_bulkUploadCoordinator stop];
   _bulkUploadCoordinator.delegate = nil;
@@ -272,8 +276,9 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
       std::move(_dismissWebAndAppSettingDetailsController)
           .Run(/*animated*/ false);
     }
-    if (!_dismissAccountDetailsController.is_null()) {
-      std::move(_dismissAccountDetailsController).Run(/*animated=*/false);
+    if (!_accountDetailsControllerDismissCallback.is_null()) {
+      std::move(_accountDetailsControllerDismissCallback)
+          .Run(/*animated=*/false);
     }
 
     NSEnumerator<UIViewController*>* inversedViewControllers =
@@ -458,14 +463,20 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 }
 
 - (void)showManageYourGoogleAccount {
-  _dismissAccountDetailsController =
+  __weak __typeof(self) weakself = self;
+  _accountDetailsControllerDismissCallback =
       GetApplicationContext()
           ->GetSystemIdentityManager()
           ->PresentAccountDetailsController(
               self.authService->GetPrimaryIdentity(
                   signin::ConsentLevel::kSignin),
               self.viewController,
-              /*animated=*/YES, base::DoNothing());
+              /*animated=*/YES,
+              base::BindOnce(
+                  [](__typeof(self) weakSelf) {
+                    [weakSelf resetDismissAccountDetailsController];
+                  },
+                  weakself));
 }
 
 #pragma mark - SignoutActionSheetCoordinatorDelegate
