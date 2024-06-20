@@ -140,12 +140,6 @@ struct WavyParams {
   DISALLOW_NEW();
 };
 
-float WavyDecorationSizing(const WavyParams& params) {
-  // Minimum unit we use to compute control point distance and step to define
-  // the path of the Bezier curve.
-  return std::max<float>(2, params.resolved_thickness);
-}
-
 float WavyControlPointDistance(const WavyParams& params) {
   // Distance between decoration's axis and Bezier curve's control points. The
   // height of the curve is based on this distance. Increases the curve's height
@@ -153,7 +147,9 @@ float WavyControlPointDistance(const WavyParams& params) {
   if (params.spelling_grammar)
     return 5 * params.effective_zoom;
 
-  return 3.5 * WavyDecorationSizing(params);
+  // Setting the distance to half-pixel values gives better antialiasing
+  // results, particularly for small values.
+  return 0.5 + roundf(3 * std::max<float>(1, params.resolved_thickness) + 0.5);
 }
 
 float WavyStep(const WavyParams& params) {
@@ -163,7 +159,9 @@ float WavyStep(const WavyParams& params) {
   if (params.spelling_grammar)
     return 3 * params.effective_zoom;
 
-  return 2.5 * WavyDecorationSizing(params);
+  // Setting the step to half-pixel values gives better antialiasing
+  // results, particularly for small values.
+  return 0.5 + roundf(2 * std::max<float>(1, params.resolved_thickness) + 0.5);
 }
 
 // Computes the wavy pattern rect, which is where the desired wavy pattern would
@@ -217,7 +215,7 @@ Path PrepareWavyStrokePath(const WavyParams& params) {
   // We paint the wave before and after the text line (to cover the whole length
   // of the line) and then we clip it at
   // AppliedDecorationPainter::StrokeWavyTextDecoration().
-  // Offset the start point, so the beizer curve starts before the current line,
+  // Offset the start point, so the bezier curve starts before the current line,
   // that way we can clip it exactly the same way in both ends.
   // For spelling and grammar errors we offset by half a step less, to get a
   // result closer to Microsoft Word circa 2021.
@@ -225,7 +223,7 @@ Path PrepareWavyStrokePath(const WavyParams& params) {
 
   // Midpoints at y=0.5, to reduce vertical antialiasing.
   gfx::PointF start{phase_shift, 0.5f};
-  gfx::PointF end{start + gfx::Vector2dF(2.f * step, 0.f)};
+  gfx::PointF end{start + gfx::Vector2dF(2.f * step, 0.0f)};
   gfx::PointF cp1{start + gfx::Vector2dF(step, +control_point_distance)};
   gfx::PointF cp2{start + gfx::Vector2dF(step, -control_point_distance)};
 
