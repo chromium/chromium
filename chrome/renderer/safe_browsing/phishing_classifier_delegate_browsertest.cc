@@ -445,6 +445,12 @@ TEST_F(PhishingClassifierDelegateTest, NoScorer_Ref_WithRetry) {
 }
 
 TEST_F(PhishingClassifierDelegateTest, NoScorer) {
+  std::map<std::string, std::string> feature_params;
+  feature_params["RetryTimeMax"] = "0";
+  auto scoped_list = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_list->InitWithFeaturesAndParameters(
+      {{safe_browsing::kClientSideDetectionRetryLimit, feature_params}}, {});
+
   // For this test, we'll create the delegate with no scorer available yet.
   ASSERT_FALSE(classifier_->is_ready());
   const auto page_text = MakeRefPtrString(u"dummy");
@@ -460,8 +466,10 @@ TEST_F(PhishingClassifierDelegateTest, NoScorer) {
   OnStartPhishingDetection(url2);
   delegate_->PageCaptured(page_text, false);
 
+  task_environment_.RunUntilIdle();
+
   // Now set a scorer, which should cause a classifier to be created, but no
-  // classification will start.
+  // classification will start, because the retry timeout is 0.
   SetScorer(/*model_version=*/1);
   Mock::VerifyAndClearExpectations(classifier_);
 
@@ -482,6 +490,12 @@ TEST_F(PhishingClassifierDelegateTest, NoScorer) {
 }
 
 TEST_F(PhishingClassifierDelegateTest, NoScorer_Ref) {
+  std::map<std::string, std::string> feature_params;
+  feature_params["RetryTimeMax"] = "0";
+  auto scoped_list = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_list->InitWithFeaturesAndParameters(
+      {{safe_browsing::kClientSideDetectionRetryLimit, feature_params}}, {});
+
   // Similar to the last test, but navigates within the page before
   // setting the scorer.
   ASSERT_FALSE(classifier_->is_ready());
@@ -496,8 +510,10 @@ TEST_F(PhishingClassifierDelegateTest, NoScorer_Ref) {
   OnStartPhishingDetection(url);
   delegate_->PageCaptured(page_text, false);
 
+  task_environment_.RunUntilIdle();
+
   // Now set a scorer, which should cause a classifier to be created, but no
-  // classification will start.
+  // classification will start, because the timeout delay is 0 seconds.
   SetScorer(/*model_version=*/1);
   Mock::VerifyAndClearExpectations(classifier_);
 

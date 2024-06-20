@@ -47,7 +47,7 @@ BASE_FEATURE(kConditionalImageResize,
 
 BASE_FEATURE(kClientSideDetectionRetryLimit,
              "ClientSideDetectionRetryLimit",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<int> kClientSideDetectionRetryLimitTime{
     &kClientSideDetectionRetryLimit, /*name=*/"RetryTimeMax",
