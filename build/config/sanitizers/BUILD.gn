@@ -25,7 +25,6 @@ use_dlcloseshim = use_libfuzzer && is_linux
 # shared_libraries.
 group("deps") {
   deps = []
-  data = []
   if (using_sanitizer) {
     public_configs = [
       # Even when a target removes default_sanitizer_flags, it may be depending
@@ -39,7 +38,7 @@ group("deps") {
       } else {
         exe = ""
       }
-      data += [
+      data = [
         "//tools/valgrind/asan/",
         "$clang_base_path/bin/llvm-symbolizer${exe}",
       ]
