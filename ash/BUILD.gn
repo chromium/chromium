@@ -342,6 +342,8 @@ component("ash") {
     "auth/views/auth_textfield.h",
     "auth/views/auth_textfield_timer.cc",
     "auth/views/auth_textfield_timer.h",
+    "auth/views/pin_keyboard_input_bridge.cc",
+    "auth/views/pin_keyboard_input_bridge.h",
     "auth/views/pin_keyboard_view.cc",
     "auth/views/pin_keyboard_view.h",
     "autotest_private_api_utils.cc",

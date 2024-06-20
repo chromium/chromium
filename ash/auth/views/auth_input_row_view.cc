@@ -385,6 +385,16 @@ void AuthInputRowView::SetAccessibleNameOnTextfield(
   textfield_->SetAccessibleName(new_name);
 }
 
+void AuthInputRowView::InsertDigit(int digit) {
+  CHECK_EQ(auth_type_, AuthType::kPin);
+  textfield_->InsertDigit(digit);
+}
+
+void AuthInputRowView::Backspace() {
+  CHECK_EQ(auth_type_, AuthType::kPin);
+  textfield_->Backspace();
+}
+
 void AuthInputRowView::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }

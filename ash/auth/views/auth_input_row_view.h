@@ -107,6 +107,9 @@ class ASH_EXPORT AuthInputRowView : public views::View,
 
   void HandleLeftIconsVisibilities(bool handling_capslock);
 
+  void InsertDigit(int digit);
+  void Backspace();
+
   // Notify the observers about the submit purpose.
   void Submit();
 
