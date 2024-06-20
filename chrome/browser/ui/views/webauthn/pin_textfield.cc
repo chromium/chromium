@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/webauthn/pin_textfield.h"
 
+#include "base/i18n/rtl.h"
 #include "base/strings/strcat.h"
 #include "ui/base/ime/text_input_type.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -139,8 +140,11 @@ void PinTextfield::OnPaint(gfx::Canvas* canvas) {
     float stroke_width = HasCellFocus(i) ? 2.f : 1.f;
     paint_flags.setStrokeWidth(stroke_width);
 
-    gfx::Rect cell_rect(i * (kCellWidth + kCellSpacing), 0, kCellWidth,
-                        kCellHeight);
+    // Drawing is adjusted in RTL so that the first cell is drawn rightmost.
+    int index_rtl_adjusted =
+        base::i18n::IsRTL() ? pin_digits_count_ - i - 1 : i;
+    gfx::Rect cell_rect(index_rtl_adjusted * (kCellWidth + kCellSpacing), 0,
+                        kCellWidth, kCellHeight);
     // Draw cell background.
     canvas->FillRect(cell_rect, background_color);
     // Draw cell border.
