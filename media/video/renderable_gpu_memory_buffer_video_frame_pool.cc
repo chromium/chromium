@@ -47,7 +47,8 @@ class FrameResources {
   FrameResources(const FrameResources& other) = delete;
   FrameResources& operator=(const FrameResources& other) = delete;
 
-  // Allocate GpuMemoryBuffer and create SharedImages. Returns false on failure.
+  // Allocate GpuMemoryBuffer and create SharedImage. Returns false on failure
+  // to do so.
   bool Initialize();
 
   // Return true if these resources can be reused for a frame with the specified
@@ -267,10 +268,11 @@ scoped_refptr<VideoFrame>
 FrameResources::CreateVideoFrameAndTakeGpuMemoryBuffer() {
   const gfx::Rect visible_rect(coded_size_);
   const gfx::Size natural_size = coded_size_;
+
+  CHECK(shared_image_);
   auto video_frame = VideoFrame::WrapExternalGpuMemoryBuffer(
       visible_rect, natural_size, std::move(gpu_memory_buffer_), shared_image_,
-      sync_token_,
-      shared_image_ ? shared_image_->GetTextureTarget() : GL_TEXTURE_2D,
+      sync_token_, shared_image_->GetTextureTarget(),
       VideoFrame::ReleaseMailboxAndGpuMemoryBufferCB(), base::TimeDelta());
   if (!video_frame) {
     return nullptr;
