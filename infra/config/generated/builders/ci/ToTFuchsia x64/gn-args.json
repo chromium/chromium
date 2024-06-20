@@ -6,6 +6,7 @@
     "is_component_build": false,
     "is_debug": false,
     "llvm_force_head_revision": true,
+    "target_cpu": "x64",
     "target_os": "fuchsia",
     "use_siso": true
   }
