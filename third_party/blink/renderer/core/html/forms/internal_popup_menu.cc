@@ -361,6 +361,7 @@ void InternalPopupMenu::WriteDocument(SegmentedBuffer& data) {
                          "align-content: center;"
                          "min-inline-size: %dpx;"
                          "min-block-size: %dpx;"
+                         "box-sizing: border-box;"
                          "}\n",
                          min_height, std::max(24, min_height)),
           data);
