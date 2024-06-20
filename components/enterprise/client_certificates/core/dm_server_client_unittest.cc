@@ -36,17 +36,16 @@ class DMServerClientUnitTest : public testing::Test {
         DMServerClient::Create(&service_, shared_url_loader_factory_);
   }
 
-  void SetSuccessfulJobReply() {
+  void SetSuccessfulJobReply(unsigned number_of_calls = 1) {
     // Return a response with a pem certificate.
     enterprise_management::DeviceManagementResponse response;
     response.mutable_browser_public_key_upload_response()
         ->set_pem_encoded_certificate("pem encoded certificate!");
-
     EXPECT_CALL(job_creation_handler_, OnJobCreation)
-        .WillOnce(DoAll(service_.SendJobOKAsync(response),
-                        service_.CaptureJobType(&captured_job_type_),
-                        service_.CaptureRequest(&captured_request_)))
-        .RetiresOnSaturation();
+        .Times(number_of_calls)
+        .WillRepeatedly(DoAll(service_.SendJobOKAsync(response),
+                              service_.CaptureJobType(&captured_job_type_),
+                              service_.CaptureRequest(&captured_request_)));
   }
 
   void SetFailedJobReply(int net_error, int response_code) {
@@ -56,9 +55,10 @@ class DMServerClientUnitTest : public testing::Test {
         .RetiresOnSaturation();
   }
 
-  void OnUploadJobCompleted(base::OnceClosure finish_callback,
+  void OnUploadJobCompleted(const std::string& key,
+                            base::OnceClosure finish_callback,
                             policy::DMServerJobResult result) {
-    upload_result_ = result;
+    upload_results_[key] = result;
     histogram_tester_.ExpectUniqueSample(dm_server_client_->kNetErrorHistogram,
                                          result.net_error,
                                          result.net_error == net::OK ? 0 : 1);
@@ -70,32 +70,31 @@ class DMServerClientUnitTest : public testing::Test {
       const std::string& client_id,
       const std::string& dm_token,
       const std::optional<std::string>& profile_id,
-      const enterprise_management::DeviceManagementRequest& request) {
+      const enterprise_management::DeviceManagementRequest& request,
+      const std::string& key = default_key) {
     base::RunLoop run_loop;
-    base::OnceClosure callback = run_loop.QuitClosure();
 
     dm_server_client_->UploadBrowserPublicKey(
         client_id, dm_token, profile_id, request,
         base::BindOnce(&DMServerClientUnitTest::OnUploadJobCompleted,
-                       base::Unretained(this), std::move(callback)));
+                       base::Unretained(this), key, run_loop.QuitClosure()));
 
     run_loop.Run();
   }
 
-  std::unique_ptr<DMServerClient> dm_server_client_;
-
  protected:
-  policy::DMServerJobResult upload_result_;
+  static constexpr char default_key[] = "default key";
 
+  std::unique_ptr<DMServerClient> dm_server_client_;
+  base::flat_map<std::string, policy::DMServerJobResult> upload_results_;
   enterprise_management::DeviceManagementRequest captured_request_;
   policy::DeviceManagementService::JobConfiguration::JobType captured_job_type_;
 
-  testing::StrictMock<policy::MockJobCreationHandler> job_creation_handler_;
-  base::HistogramTester histogram_tester_;
-
  private:
+  base::HistogramTester histogram_tester_;
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<network::TestSharedURLLoaderFactory> shared_url_loader_factory_;
+  testing::StrictMock<policy::MockJobCreationHandler> job_creation_handler_;
   policy::FakeDeviceManagementService service_{&job_creation_handler_};
 };
 
@@ -116,22 +115,82 @@ TEST_F(DMServerClientUnitTest, UploadBrowserPublicKey_HappyPath) {
             captured_request_.mutable_browser_public_key_upload_request()
                 ->signature());
 
-  EXPECT_EQ(upload_result_.dm_status, policy::DM_STATUS_SUCCESS);
-  EXPECT_EQ(upload_result_.net_error, net::OK);
-  EXPECT_TRUE(upload_result_.response.has_browser_public_key_upload_response());
+  EXPECT_EQ(upload_results_[default_key].dm_status, policy::DM_STATUS_SUCCESS);
+  EXPECT_EQ(upload_results_[default_key].net_error, net::OK);
+  EXPECT_TRUE(upload_results_[default_key]
+                  .response.has_browser_public_key_upload_response());
+}
+
+TEST_F(DMServerClientUnitTest, UploadBrowserPublicKey_SequentialCalls) {
+  InitializeUploader();
+  SetSuccessfulJobReply(2);
+
+  // Second job starts when the first is finished:
+  SyncUploadBrowserPublicKey("client id", "dm token", "profile id",
+                             enterprise_management::DeviceManagementRequest(),
+                             "nice key");
+  SyncUploadBrowserPublicKey("client id", "dm token", "profile id",
+                             enterprise_management::DeviceManagementRequest(),
+                             "nasty key");
+
+  EXPECT_EQ(upload_results_["nice key"].dm_status, policy::DM_STATUS_SUCCESS);
+  EXPECT_EQ(upload_results_["nice key"].net_error, net::OK);
+  EXPECT_TRUE(upload_results_["nice key"]
+                  .response.has_browser_public_key_upload_response());
+
+  EXPECT_EQ(upload_results_["nasty key"].dm_status, policy::DM_STATUS_SUCCESS);
+  EXPECT_EQ(upload_results_["nasty key"].net_error, net::OK);
+  EXPECT_TRUE(upload_results_["nasty key"]
+                  .response.has_browser_public_key_upload_response());
+}
+
+TEST_F(DMServerClientUnitTest, UploadBrowserPublicKey_ParallelCalls) {
+  InitializeUploader();
+  SetSuccessfulJobReply(2);
+
+  // The first job is still active when we create the second job:
+  base::RunLoop nasty_run_loop;
+  base::RunLoop nice_run_loop;
+
+  dm_server_client_->UploadBrowserPublicKey(
+      "client id", "dm token", "profile id",
+      enterprise_management::DeviceManagementRequest(),
+      base::BindOnce(&DMServerClientUnitTest::OnUploadJobCompleted,
+                     base::Unretained(this), "nasty key",
+                     nasty_run_loop.QuitClosure()));
+  dm_server_client_->UploadBrowserPublicKey(
+      "client id", "dm token", "profile id",
+      enterprise_management::DeviceManagementRequest(),
+      base::BindOnce(&DMServerClientUnitTest::OnUploadJobCompleted,
+                     base::Unretained(this), "nice key",
+                     nice_run_loop.QuitClosure()));
+
+  nasty_run_loop.Run();
+  nice_run_loop.Run();
+
+  EXPECT_EQ(upload_results_["nice key"].dm_status, policy::DM_STATUS_SUCCESS);
+  EXPECT_EQ(upload_results_["nice key"].net_error, net::OK);
+  EXPECT_TRUE(upload_results_["nice key"]
+                  .response.has_browser_public_key_upload_response());
+
+  EXPECT_EQ(upload_results_["nasty key"].dm_status, policy::DM_STATUS_SUCCESS);
+  EXPECT_EQ(upload_results_["nasty key"].net_error, net::OK);
+  EXPECT_TRUE(upload_results_["nasty key"]
+                  .response.has_browser_public_key_upload_response());
 }
 
 TEST_F(DMServerClientUnitTest, UploadBrowserPublicKey_NetFailed_Logged) {
   InitializeUploader();
   SetFailedJobReply(net::ERR_FAILED, policy::DeviceManagementService::kSuccess);
 
-  enterprise_management::DeviceManagementRequest request;
-  request.mutable_browser_public_key_upload_request()->set_signature("Signed!");
-  SyncUploadBrowserPublicKey("client id", "dm token", "profile_id", request);
+  SyncUploadBrowserPublicKey("client id", "dm token", "profile id",
+                             enterprise_management::DeviceManagementRequest());
 
-  EXPECT_EQ(upload_result_.net_error, net::ERR_FAILED);
-  EXPECT_EQ(upload_result_.dm_status,
+  EXPECT_EQ(upload_results_[default_key].net_error, net::ERR_FAILED);
+  EXPECT_EQ(upload_results_[default_key].dm_status,
             /* HTTP failed. */ policy::DM_STATUS_REQUEST_FAILED);
+  EXPECT_FALSE(upload_results_[default_key]
+                   .response.has_browser_public_key_upload_response());
 }
 
 TEST_F(DMServerClientUnitTest, UploadBrowserPublicKey_ServerFailed) {
@@ -139,27 +198,28 @@ TEST_F(DMServerClientUnitTest, UploadBrowserPublicKey_ServerFailed) {
   SetFailedJobReply(net::OK,
                     policy::DeviceManagementService::kDeviceIdConflict);
 
-  enterprise_management::DeviceManagementRequest request;
-  request.mutable_browser_public_key_upload_request()->set_signature("Signed!");
-  SyncUploadBrowserPublicKey("client id", "dm token", "profile_id", request);
+  SyncUploadBrowserPublicKey("client id", "dm token", "profile id",
+                             enterprise_management::DeviceManagementRequest());
 
-  EXPECT_EQ(upload_result_.net_error, net::OK);
-  EXPECT_EQ(upload_result_.dm_status,
+  EXPECT_EQ(upload_results_[default_key].net_error, net::OK);
+  EXPECT_EQ(upload_results_[default_key].dm_status,
             policy::DM_STATUS_SERVICE_DEVICE_ID_CONFLICT);
+  EXPECT_FALSE(upload_results_[default_key]
+                   .response.has_browser_public_key_upload_response());
 }
 
 TEST_F(DMServerClientUnitTest, UploadBrowserPublicKey_NoClientId) {
   InitializeUploader();
 
   std::optional<std::string> client_id = std::nullopt;
-  enterprise_management::DeviceManagementRequest request;
-  SyncUploadBrowserPublicKey(client_id.value_or(""), "dm token", "profile_id",
-                             request);
+  SyncUploadBrowserPublicKey(client_id.value_or(""), "dm token", "profile id",
+                             enterprise_management::DeviceManagementRequest());
 
-  EXPECT_EQ(upload_result_.dm_status, policy::DM_STATUS_REQUEST_INVALID);
-  EXPECT_EQ(upload_result_.net_error, net::OK);
-  EXPECT_FALSE(
-      upload_result_.response.has_browser_public_key_upload_response());
+  EXPECT_EQ(upload_results_[default_key].dm_status,
+            policy::DM_STATUS_REQUEST_INVALID);
+  EXPECT_EQ(upload_results_[default_key].net_error, net::OK);
+  EXPECT_FALSE(upload_results_[default_key]
+                   .response.has_browser_public_key_upload_response());
 }
 
 TEST_F(DMServerClientUnitTest, UploadBrowserPublicKey_NoDmToken) {
@@ -169,11 +229,11 @@ TEST_F(DMServerClientUnitTest, UploadBrowserPublicKey_NoDmToken) {
   SyncUploadBrowserPublicKey("client id", /* DM token*/ "", "profile_id",
                              request);
 
-  EXPECT_EQ(upload_result_.dm_status,
+  EXPECT_EQ(upload_results_[default_key].dm_status,
             policy::DM_STATUS_SERVICE_MANAGEMENT_TOKEN_INVALID);
-  EXPECT_EQ(upload_result_.net_error, net::OK);
-  EXPECT_FALSE(
-      upload_result_.response.has_browser_public_key_upload_response());
+  EXPECT_EQ(upload_results_[default_key].net_error, net::OK);
+  EXPECT_FALSE(upload_results_[default_key]
+                   .response.has_browser_public_key_upload_response());
 }
 
 TEST_F(DMServerClientUnitTest, UploadBrowserPublicKey_NullProfileId_Succeeds) {
@@ -191,9 +251,10 @@ TEST_F(DMServerClientUnitTest, UploadBrowserPublicKey_NullProfileId_Succeeds) {
             captured_request_.mutable_browser_public_key_upload_request()
                 ->signature());
 
-  EXPECT_EQ(upload_result_.dm_status, policy::DM_STATUS_SUCCESS);
-  EXPECT_EQ(upload_result_.net_error, net::OK);
-  EXPECT_TRUE(upload_result_.response.has_browser_public_key_upload_response());
+  EXPECT_EQ(upload_results_[default_key].dm_status, policy::DM_STATUS_SUCCESS);
+  EXPECT_EQ(upload_results_[default_key].net_error, net::OK);
+  EXPECT_TRUE(upload_results_[default_key]
+                  .response.has_browser_public_key_upload_response());
 }
 
 }  // namespace client_certificates
