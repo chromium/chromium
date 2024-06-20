@@ -2174,6 +2174,7 @@ public class StripLayoutHelper implements StripLayoutTabDelegate, StripLayoutGro
                             resizeStripOnTabClose(getTabById(tab.getId()));
                         } else {
                             mMultiStepTabCloseAnimRunning = false;
+                            mNewTabButtonAnimRunning = false;
                             // Resize the tabs appropriately.
                             resizeTabStrip(true, false, false);
                         }
