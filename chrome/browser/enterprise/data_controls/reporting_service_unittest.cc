@@ -36,6 +36,7 @@ class DataControlsReportingServiceTest : public testing::Test {
     EXPECT_TRUE(profile_manager_->SetUp());
     managed_profile_ = profile_manager_->CreateTestingProfile("managed");
     unmanaged_profile_ = profile_manager_->CreateTestingProfile("unmanaged");
+    guest_profile_ = profile_manager_->CreateGuestProfile();
 
     helper_ = std::make_unique<
         enterprise_connectors::test::EventReportValidatorHelper>(
@@ -72,6 +73,9 @@ class DataControlsReportingServiceTest : public testing::Test {
   content::WebContents* incognito_unmanaged_contents() {
     return CreateContentsIfNull(incognito_unmanaged_contents_,
                                 incognito_unmanaged_profile());
+  }
+  content::WebContents* guest_contents() {
+    return CreateContentsIfNull(guest_contents_, guest_profile_);
   }
 
   content::ClipboardEndpoint managed_endpoint(GURL url) {
@@ -112,15 +116,26 @@ class DataControlsReportingServiceTest : public testing::Test {
         *incognito_unmanaged_contents()->GetPrimaryMainFrame());
   }
 
+  content::ClipboardEndpoint guest_endpoint(GURL url) {
+    return content::ClipboardEndpoint(
+        ui::DataTransferEndpoint(url),
+        base::BindLambdaForTesting([this]() -> content::BrowserContext* {
+          return static_cast<content::BrowserContext*>(guest_profile_);
+        }),
+        *guest_contents()->GetPrimaryMainFrame());
+  }
+
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   raw_ptr<TestingProfile> managed_profile_ = nullptr;
   raw_ptr<TestingProfile> unmanaged_profile_ = nullptr;
+  raw_ptr<TestingProfile> guest_profile_ = nullptr;
   std::unique_ptr<content::WebContents> managed_contents_;
   std::unique_ptr<content::WebContents> unmanaged_contents_;
   std::unique_ptr<content::WebContents> incognito_managed_contents_;
   std::unique_ptr<content::WebContents> incognito_unmanaged_contents_;
+  std::unique_ptr<content::WebContents> guest_contents_;
   std::unique_ptr<enterprise_connectors::test::EventReportValidatorHelper>
       helper_;
 };
@@ -514,10 +529,21 @@ TEST_F(DataControlsReportingServiceTest, GetClipboardSourceString) {
                 /*destination=*/managed_endpoint(GURL(kChromiumUrl)),
                 kDataControlsRulesScopePref),
             "https://google.com/");
+  ASSERT_EQ(ReportingService::GetClipboardSourceString(
+                /*source=*/guest_endpoint(GURL(kGoogleUrl)),
+                /*destination=*/managed_endpoint(GURL(kChromiumUrl)),
+                kDataControlsRulesScopePref),
+            "https://google.com/");
+
   managed_profile_->GetPrefs()->SetInteger(kDataControlsRulesScopePref,
                                            policy::POLICY_SCOPE_USER);
   ASSERT_EQ(ReportingService::GetClipboardSourceString(
                 /*source=*/unmanaged_endpoint(GURL(kGoogleUrl)),
+                /*destination=*/managed_endpoint(GURL(kChromiumUrl)),
+                kDataControlsRulesScopePref),
+            "OTHER_PROFILE");
+  ASSERT_EQ(ReportingService::GetClipboardSourceString(
+                /*source=*/guest_endpoint(GURL(kGoogleUrl)),
                 /*destination=*/managed_endpoint(GURL(kChromiumUrl)),
                 kDataControlsRulesScopePref),
             "OTHER_PROFILE");

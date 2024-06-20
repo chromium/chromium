@@ -87,7 +87,9 @@ std::string ReportingService::GetClipboardSourceString(
     return "CLIPBOARD";
   }
 
-  if (source.browser_context() && source.browser_context()->IsOffTheRecord()) {
+  if (source.browser_context() &&
+      Profile::FromBrowserContext(source.browser_context())
+          ->IsIncognitoProfile()) {
     return "INCOGNITO";
   }
 
