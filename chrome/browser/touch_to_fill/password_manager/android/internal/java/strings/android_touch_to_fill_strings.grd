@@ -240,9 +240,6 @@ found in the LICENSE file.
       <message name="IDS_TOUCH_TO_FILL_SHEET_TITLE_PASSWORD_OR_PASSKEY" desc="Header for Touch To Fill sheet where users can pick a password or Passkey credential to sign in to a website.">
         Use saved password or passkey?
       </message>
-      <message name="IDS_TOUCH_TO_FILL_SHEET_WEBAUTHN_CREDENTIAL_CONTEXT" desc="Context string for second line of a Passkey on the Touch To Fill sheet, beneath the username.">
-        Use your screen lock
-      </message>
       <message name="IDS_TOUCH_TO_FILL_SHEET_PASSKEY_CREDENTIAL_CONTEXT" desc="Context string for second line of a Passkey on the Touch To Fill sheet, beneath the username.">
         Passkey
       </message>

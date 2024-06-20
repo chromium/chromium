@@ -57,7 +57,6 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -81,7 +80,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.webauthn.cred_man.CredManSupportProvider;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
-import org.chromium.device.DeviceFeatureList;
 import org.chromium.ui.accessibility.AccessibilityState;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -873,14 +871,7 @@ public class TouchToFillViewTest {
 
     @Test
     @MediumTest
-    public void testPasskeyCredentialSubheaderWhenGpmNotInCredManEnabled() {
-        CredManSupportProvider.setupForTesting(/*override*/ true);
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN, true);
-        testValues.addFieldTrialParamOverride(
-                DeviceFeatureList.WEBAUTHN_ANDROID_CRED_MAN, "gpm_in_cred_man", "false");
-        FeatureList.setTestValues(testValues);
-
+    public void testPasskeyCredentialSubheader() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mModel.get(SHEET_ITEMS)
