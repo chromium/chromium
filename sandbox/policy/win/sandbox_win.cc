@@ -800,11 +800,12 @@ ResultCode SandboxWin::AddWin32kLockdownPolicy(TargetConfig* config) {
   if (result != SBOX_ALL_OK)
     return result;
 
-  if (base::FeatureList::IsEnabled(features::kWinSboxNoFakeGdiInit)) {
-    return SBOX_ALL_OK;
-  } else {
+  // winmm.dll, used by timeGetTime, depends on user32 and gdi32 until RS1.
+  if (base::win::GetVersion() <= base::win::Version::WIN10_TH2 ||
+      !base::FeatureList::IsEnabled(features::kWinSboxNoFakeGdiInit)) {
     return config->SetFakeGdiInit();
   }
+  return SBOX_ALL_OK;
 }
 
 // static
