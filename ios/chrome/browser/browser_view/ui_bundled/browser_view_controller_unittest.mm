@@ -329,6 +329,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     [NTPCoordinator_ stop];
     [side_swipe_mediator_ disconnect];
     [bubble_presenter_ stop];
+    ClipboardRecentContent::SetInstance(nullptr);
 
     BlockCleanupTest::TearDown();
   }
