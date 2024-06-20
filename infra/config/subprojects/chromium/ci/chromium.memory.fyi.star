@@ -30,47 +30,6 @@ consoles.console_view(
     name = "chromium.memory.fyi",
 )
 
-# TODO(crbug.com/40267022): Remove this builder after burning down failures
-# found when we now post-process stdout.
-ci.builder(
-    name = "linux-exp-msan-fyi-rel",
-    schedule = "with 6h interval",
-    triggered_by = [],
-    builder_spec = builder_config.builder_spec(
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-            apply_configs = [
-            ],
-        ),
-        chromium_config = builder_config.chromium_config(
-            config = "chromium_msan",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-            target_platform = builder_config.target_platform.LINUX,
-        ),
-    ),
-    gn_args = gn_args.config(
-        configs = [
-            "msan",
-            "fail_on_san_warnings",
-            "release_builder",
-            "remoteexec",
-        ],
-    ),
-    builderless = 1,
-    ssd = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "experimental|linux",
-        short_name = "msan",
-    ),
-    execution_timeout = 6 * time.hour,
-    health_spec = modified_default({
-        "Low Value": blank_low_value_thresholds,
-    }),
-    siso_remote_jobs = siso.remote_jobs.DEFAULT,
-)
-
 # TODO(crbug.com/40248746): Remove this builder after burning down failures
 # and measuring performance to see if we can roll UBSan into ASan.
 ci.builder(

@@ -84,7 +84,6 @@ ci/linux-chromeos-annotator-rel
 ci/linux-chromeos-archive-rel
 ci/linux-chromeos-code-coverage
 ci/linux-code-coverage
-ci/linux-exp-msan-fyi-rel
 ci/linux-fieldtrial-rel
 ci/linux-fuzz-coverage
 ci/linux-headless-shell-rel
@@ -329,7 +328,6 @@ try/linux-chromeos-rel-compilator
 try/linux-clang-tidy-rel
 try/linux-code-coverage
 try/linux-dcheck-off-rel
-try/linux-exp-msan-fyi-rel
 try/linux-extended-tracing-rel
 try/linux-fieldtrial-rel
 try/linux-gcc-rel

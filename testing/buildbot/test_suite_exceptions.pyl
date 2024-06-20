@@ -1121,11 +1121,6 @@
           'shards': 50,
         },
       },
-      'linux-exp-msan-fyi-rel': {
-        'swarming': {
-          'shards': 23,
-        },
-      },
       # asan tests is slower.
       'linux-lacros-asan-lsan-rel': {
         'swarming': {
@@ -2837,7 +2832,6 @@
       # Can't run on MSAN because gl_tests uses the hardware driver,
       # which isn't instrumented.
       'Linux MSan Tests',
-      'linux-exp-msan-fyi-rel',
     ],
     'modifications': {
       'Dawn Linux x64 Experimental Release (Intel UHD 630)': {
@@ -3022,7 +3016,6 @@
       # Can't run on MSAN because gl_unittests uses the hardware driver,
       # which isn't instrumented.
       'Linux MSan Tests',
-      'linux-exp-msan-fyi-rel',
     ],
     'modifications': {
       'Win10 FYI x64 Release (AMD RX 5500 XT)': {
@@ -3328,11 +3321,6 @@
       'linux-code-coverage': {
         'swarming': {
           'shards': 10,
-        },
-      },
-      'linux-exp-msan-fyi-rel': {
-        'swarming': {
-          'shards': 4,
         },
       },
       'linux-lacros-asan-lsan-rel': {
@@ -4235,7 +4223,6 @@
       'Mac Pro FYI Release (AMD)',
       'Linux ChromiumOS MSan Tests',  # https://crbug.com/831676
       'Linux MSan Tests',  # https://crbug.com/831676
-      'linux-exp-msan-fyi-rel',  # https://crbug.com/831676
     ],
     'modifications': {
       'android-11-x86-rel': {
