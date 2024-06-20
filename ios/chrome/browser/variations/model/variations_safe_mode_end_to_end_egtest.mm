@@ -128,6 +128,14 @@ std::unique_ptr<ScopedAllowCrashOnStartup> gAllowCrashOnStartup;
 // Corresponds to VariationsSafeModeEndToEndBrowserTest.ExtendedSafeSeedEndToEnd
 // in variations_safe_mode_browsertest.cc.
 - (void)testVariationsSafeModeEndToEnd {
+// TODO(crbug.com/40215027): Test fails on iOS 17.5+ iPad devices.
+#if !TARGET_IPHONE_SIMULATOR
+  if (@available(iOS 17.5, *)) {
+    if ([ChromeEarlGrey isIPadIdiom]) {
+      EARL_GREY_TEST_DISABLED(@"This test fails on iOS 17.5+ iPad device.");
+    }
+  }
+#endif
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
 
   // Set the safe seed value. Validate that the seed is set but not active.
