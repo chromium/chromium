@@ -280,6 +280,11 @@ LiveTicks LiveTicksNowIgnoringOverride() {
 
 #endif
 
+std::ostream& operator<<(std::ostream& os, LiveTicks live_ticks) {
+  const TimeDelta as_time_delta = live_ticks - LiveTicks();
+  return os << as_time_delta.InMicroseconds() << " bogo-live-microseconds";
+}
+
 // ThreadTicks ----------------------------------------------------------------
 
 // static
