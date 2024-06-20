@@ -3,7 +3,7 @@ import importlib
 keys = importlib.import_module("credential-management.support.fedcm.keys")
 
 def main(request, response):
-  client_metadata_url = "/credential-management/support/fedcm/client_metadata.py"
+  client_metadata_url = "/fedcm/support/client_metadata.py"
   counter = request.server.stash.take(keys.CLIENT_METADATA_COUNTER_KEY,
                                       client_metadata_url)
 

@@ -25,8 +25,8 @@ def main(request, response):
 
     return """
 {
-  "accounts_endpoint": "/credential-management/support/fedcm/accounts.py",
-  "id_assertion_endpoint": "/credential-management/support/fedcm/token.py",
-  "login_url": "/credential-management/support/fedcm/login.html"
+  "accounts_endpoint": "/fedcm/support/accounts.py",
+  "id_assertion_endpoint": "/fedcm/support/token.py",
+  "login_url": "/fedcm/support/login.html"
 }
 """
