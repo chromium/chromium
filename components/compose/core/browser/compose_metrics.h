@@ -66,34 +66,25 @@ enum class ComposeRequestReason {
   kMaxValue = kToneFormalRequest,
 };
 
-// Keep in sync with ComposeMSBBSessionCloseReasonType in
+// Close reasons for sessions that start with FRE or MSBB dialogs.
+// Keep in sync with ComposeFreOrMsbbSessionCloseReasonType in
 // src/tools/metrics/histograms/metadata/compose/enums.xml.
-enum class ComposeMSBBSessionCloseReason {
-  kMSBBEndedImplicitly = 0,
-  kMSBBCloseButtonPressed = 1,
-  kMSBBAcceptedWithoutInsert = 2,
-  kMSBBAcceptedWithInsert = 3,
-  kMaxValue = kMSBBAcceptedWithInsert,
-};
-
-// Keep in sync with ComposeFirstRunSessionCloseReasonType in
-// src/tools/metrics/histograms/metadata/compose/enums.xml.
-enum class ComposeFirstRunSessionCloseReason {
-  kEndedImplicitly = 0,
+enum class ComposeFreOrMsbbSessionCloseReason {
+  kAbandoned = 0,
   kCloseButtonPressed = 1,
-  kFirstRunDisclaimerAcknowledgedWithoutInsert = 2,
-  kFirstRunDisclaimerAcknowledgedWithInsert = 3,
-  kNewSessionWithSelectedText = 4,
-  kMaxValue = kNewSessionWithSelectedText,
+  kAckedOrAcceptedWithoutInsert = 2,
+  kAckedOrAcceptedWithInsert = 3,
+  kReplacedWithNewSession = 4,
+  kMaxValue = kReplacedWithNewSession,
 };
 
 // Keep in sync with ComposeSessionCloseReasonType in
 // src/tools/metrics/histograms/metadata/compose/enums.xml.
 enum class ComposeSessionCloseReason {
-  kAcceptedSuggestion = 0,
+  kInsertedResponse = 0,
   kCloseButtonPressed = 1,
-  kEndedImplicitly = 2,
-  kNewSessionWithSelectedText = 3,
+  kAbandoned = 2,
+  kReplacedWithNewSession = 3,
   kCanceledBeforeResponseReceived = 4,
   kMaxValue = kCanceledBeforeResponseReceived,
 };
@@ -423,18 +414,20 @@ void LogComposeRequestDuration(base::TimeDelta duration,
                                bool is_ok);
 
 void LogComposeFirstRunSessionCloseReason(
-    ComposeFirstRunSessionCloseReason reason);
+    ComposeFreOrMsbbSessionCloseReason reason);
 
 // Log session based metrics when a FRE session ends.
 void LogComposeFirstRunSessionDialogShownCount(
-    ComposeFirstRunSessionCloseReason reason,
+    ComposeFreOrMsbbSessionCloseReason reason,
     int dialog_shown_count);
 
-void LogComposeMSBBSessionCloseReason(ComposeMSBBSessionCloseReason reason);
+void LogComposeMSBBSessionCloseReason(
+    ComposeFreOrMsbbSessionCloseReason reason);
 
 // Log session based metrics when a consent session ends.
-void LogComposeMSBBSessionDialogShownCount(ComposeMSBBSessionCloseReason reason,
-                                           int dialog_shown_count);
+void LogComposeMSBBSessionDialogShownCount(
+    ComposeFreOrMsbbSessionCloseReason reason,
+    int dialog_shown_count);
 
 SessionEvalLocation GetSessionEvalLocationFromEvents(
     const ComposeSessionEvents& session_events);

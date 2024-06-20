@@ -189,6 +189,18 @@ void LogComposeSessionEventCounts(std::optional<EvalLocation> eval_location,
   }
 }
 
+bool HasAckedFreOrAcceptedMsbb(ComposeFreOrMsbbSessionCloseReason reason) {
+  switch (reason) {
+    case ComposeFreOrMsbbSessionCloseReason::kAckedOrAcceptedWithoutInsert:
+    case ComposeFreOrMsbbSessionCloseReason::kAckedOrAcceptedWithInsert:
+      return true;
+    case ComposeFreOrMsbbSessionCloseReason::kCloseButtonPressed:
+    case ComposeFreOrMsbbSessionCloseReason::kAbandoned:
+    case ComposeFreOrMsbbSessionCloseReason::kReplacedWithNewSession:
+      return false;
+  }
+}
+
 }  // namespace
 
 PageUkmTracker::PageUkmTracker(ukm::SourceId source_id)
@@ -346,48 +358,31 @@ void LogComposeRequestDuration(base::TimeDelta duration,
 }
 
 void LogComposeFirstRunSessionCloseReason(
-    ComposeFirstRunSessionCloseReason reason) {
+    ComposeFreOrMsbbSessionCloseReason reason) {
   base::UmaHistogramEnumeration(kComposeFirstRunSessionCloseReason, reason);
 }
 
 void LogComposeFirstRunSessionDialogShownCount(
-    ComposeFirstRunSessionCloseReason reason,
+    ComposeFreOrMsbbSessionCloseReason reason,
     int dialog_shown_count) {
-  std::string status;
-  switch (reason) {
-    case ComposeFirstRunSessionCloseReason::
-        kFirstRunDisclaimerAcknowledgedWithoutInsert:
-    case ComposeFirstRunSessionCloseReason::
-        kFirstRunDisclaimerAcknowledgedWithInsert:
-      status = ".Acknowledged";
-      break;
-    case ComposeFirstRunSessionCloseReason::kCloseButtonPressed:
-    case ComposeFirstRunSessionCloseReason::kEndedImplicitly:
-    case ComposeFirstRunSessionCloseReason::kNewSessionWithSelectedText:
-      status = ".Ignored";
-  }
-  base::UmaHistogramCounts1000(kComposeFirstRunSessionDialogShownCount + status,
-                               dialog_shown_count);
+  std::string histogram_name = base::StrCat(
+      {kComposeFirstRunSessionDialogShownCount,
+       HasAckedFreOrAcceptedMsbb(reason) ? ".Acknowledged" : ".Ignored"});
+  base::UmaHistogramCounts1000(histogram_name, dialog_shown_count);
 }
 
-void LogComposeMSBBSessionCloseReason(ComposeMSBBSessionCloseReason reason) {
+void LogComposeMSBBSessionCloseReason(
+    ComposeFreOrMsbbSessionCloseReason reason) {
   base::UmaHistogramEnumeration(kComposeMSBBSessionCloseReason, reason);
 }
 
-void LogComposeMSBBSessionDialogShownCount(ComposeMSBBSessionCloseReason reason,
-                                           int dialog_shown_count) {
-  std::string status;
-  switch (reason) {
-    case ComposeMSBBSessionCloseReason::kMSBBAcceptedWithoutInsert:
-    case ComposeMSBBSessionCloseReason::kMSBBAcceptedWithInsert:
-      status = ".Accepted";
-      break;
-    case ComposeMSBBSessionCloseReason::kMSBBEndedImplicitly:
-    case ComposeMSBBSessionCloseReason::kMSBBCloseButtonPressed:
-      status = ".Ignored";
-  }
-  base::UmaHistogramCounts1000(kComposeMSBBSessionDialogShownCount + status,
-                               dialog_shown_count);
+void LogComposeMSBBSessionDialogShownCount(
+    ComposeFreOrMsbbSessionCloseReason reason,
+    int dialog_shown_count) {
+  std::string histogram_name = base::StrCat(
+      {kComposeMSBBSessionDialogShownCount,
+       HasAckedFreOrAcceptedMsbb(reason) ? ".Accepted" : ".Ignored"});
+  base::UmaHistogramCounts1000(histogram_name, dialog_shown_count);
 }
 
 SessionEvalLocation GetSessionEvalLocationFromEvents(
@@ -422,12 +417,12 @@ void LogComposeSessionCloseMetrics(ComposeSessionCloseReason reason,
                                    const ComposeSessionEvents& session_events) {
   std::string status;
   switch (reason) {
-    case ComposeSessionCloseReason::kAcceptedSuggestion:
+    case ComposeSessionCloseReason::kInsertedResponse:
       status = ".Accepted";
       break;
     case ComposeSessionCloseReason::kCloseButtonPressed:
-    case ComposeSessionCloseReason::kEndedImplicitly:
-    case ComposeSessionCloseReason::kNewSessionWithSelectedText:
+    case ComposeSessionCloseReason::kAbandoned:
+    case ComposeSessionCloseReason::kReplacedWithNewSession:
     case ComposeSessionCloseReason::kCanceledBeforeResponseReceived:
       status = ".Ignored";
   }

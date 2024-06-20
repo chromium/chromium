@@ -207,14 +207,6 @@ ComposeSession::ComposeSession(
     ComposeCallback callback)
     : executor_(executor),
       handler_receiver_(this),
-      current_msbb_state_(false),
-      msbb_initially_off_(false),
-      msbb_close_reason_(
-          compose::ComposeMSBBSessionCloseReason::kMSBBEndedImplicitly),
-      fre_close_reason_(
-          compose::ComposeFirstRunSessionCloseReason::kEndedImplicitly),
-      close_reason_(compose::ComposeSessionCloseReason::kEndedImplicitly),
-      final_status_(optimization_guide::proto::FinalStatus::STATUS_UNSPECIFIED),
       web_contents_(web_contents),
       observer_(observer),
       collect_inner_text_(
@@ -304,7 +296,7 @@ ComposeSession::~ComposeSession() {
     compose::LogComposeSessionDuration(session_duration_->Elapsed(), ".Ignored",
                                        eval_location);
   }
-  if (close_reason_ == compose::ComposeSessionCloseReason::kEndedImplicitly) {
+  if (close_reason_ == compose::ComposeSessionCloseReason::kAbandoned) {
     base::RecordAction(
         base::UserMetricsAction("Compose.EndedSession.EndedImplicitly"));
 
@@ -1115,11 +1107,11 @@ void ComposeSession::RefreshInnerText() {
 }
 
 void ComposeSession::SetFirstRunCloseReason(
-    compose::ComposeFirstRunSessionCloseReason close_reason) {
+    compose::ComposeFreOrMsbbSessionCloseReason close_reason) {
   fre_close_reason_ = close_reason;
 
-  if (close_reason == compose::ComposeFirstRunSessionCloseReason::
-                          kFirstRunDisclaimerAcknowledgedWithoutInsert) {
+  if (close_reason == compose::ComposeFreOrMsbbSessionCloseReason::
+                          kAckedOrAcceptedWithoutInsert) {
     if (current_msbb_state_) {
       // The FRE dialog progresses directly to the main dialog.
       session_events_.dialog_shown_count = 1;
@@ -1141,7 +1133,7 @@ void ComposeSession::SetFirstRunCompleted() {
 }
 
 void ComposeSession::SetMSBBCloseReason(
-    compose::ComposeMSBBSessionCloseReason close_reason) {
+    compose::ComposeFreOrMsbbSessionCloseReason close_reason) {
   msbb_close_reason_ = close_reason;
 }
 
@@ -1157,16 +1149,16 @@ void ComposeSession::SetCloseReason(
 
   switch (close_reason) {
     case compose::ComposeSessionCloseReason::kCloseButtonPressed:
-    case compose::ComposeSessionCloseReason::kNewSessionWithSelectedText:
+    case compose::ComposeSessionCloseReason::kReplacedWithNewSession:
     case compose::ComposeSessionCloseReason::kCanceledBeforeResponseReceived:
       final_status_ = optimization_guide::proto::FinalStatus::STATUS_ABANDONED;
       session_events_.close_clicked = true;
       break;
-    case compose::ComposeSessionCloseReason::kEndedImplicitly:
+    case compose::ComposeSessionCloseReason::kAbandoned:
       final_status_ = optimization_guide::proto::FinalStatus::
           STATUS_FINISHED_WITHOUT_INSERT;
       break;
-    case compose::ComposeSessionCloseReason::kAcceptedSuggestion:
+    case compose::ComposeSessionCloseReason::kInsertedResponse:
       final_status_ = optimization_guide::proto::FinalStatus::STATUS_INSERTED;
       session_events_.inserted_results = true;
       if (CurrentState().has_value() && CurrentState()->is_user_edited()) {
@@ -1209,8 +1201,8 @@ void ComposeSession::set_current_msbb_state(bool msbb_enabled) {
     msbb_initially_off_ = true;
   } else if (msbb_initially_off_) {
     session_events_.msbb_enabled_in_session = true;
-    SetMSBBCloseReason(
-        compose::ComposeMSBBSessionCloseReason::kMSBBAcceptedWithoutInsert);
+    SetMSBBCloseReason(compose::ComposeFreOrMsbbSessionCloseReason::
+                           kAckedOrAcceptedWithoutInsert);
     base::RecordAction(
         base::UserMetricsAction("Compose.DialogSeen.MainDialog"));
 

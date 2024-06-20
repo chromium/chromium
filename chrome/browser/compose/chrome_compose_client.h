@@ -238,12 +238,12 @@ class ChromeComposeClient
 
   // Set the exit reason for a session that does not progress past the FRE.
   void SetFirstRunSessionCloseReason(
-      compose::ComposeFirstRunSessionCloseReason close_reason);
+      compose::ComposeFreOrMsbbSessionCloseReason close_reason);
 
   // Set the exit reason for a session that does not progress past the
   // MSBB UI.
   void SetMSBBSessionCloseReason(
-      compose::ComposeMSBBSessionCloseReason close_reason);
+      compose::ComposeFreOrMsbbSessionCloseReason close_reason);
 
   // Set the exit reason for a session.
   void SetSessionCloseReason(compose::ComposeSessionCloseReason close_reason);

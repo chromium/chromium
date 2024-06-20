@@ -714,8 +714,8 @@ TEST_F(ProactiveNudgeTrackerDerivedEngagementTest, AcceptedSuggestion) {
   events.compose_count = 1;
   events.inserted_results = true;
   nudge_tracker().ComposeSessionCompleted(
-      form_field_data.global_id(),
-      ComposeSessionCloseReason::kAcceptedSuggestion, events);
+      form_field_data.global_id(), ComposeSessionCloseReason::kInsertedResponse,
+      events);
 
   EXPECT_EQ(
       training_labels.Get().output_metric,
@@ -734,15 +734,15 @@ TEST_F(ProactiveNudgeTrackerDerivedEngagementTest,
       TriggerNudgeForField(0, form_field_data);
   compose::ComposeSessionEvents events;
   // This one is ignored because it has the wrong field id.
-  nudge_tracker().ComposeSessionCompleted(
-      form_field_data_2.global_id(),
-      ComposeSessionCloseReason::kEndedImplicitly, events);
+  nudge_tracker().ComposeSessionCompleted(form_field_data_2.global_id(),
+                                          ComposeSessionCloseReason::kAbandoned,
+                                          events);
 
   events.compose_count = 1;
   events.inserted_results = true;
   nudge_tracker().ComposeSessionCompleted(
-      form_field_data.global_id(),
-      ComposeSessionCloseReason::kAcceptedSuggestion, events);
+      form_field_data.global_id(), ComposeSessionCloseReason::kInsertedResponse,
+      events);
 
   EXPECT_EQ(
       training_labels.Get().output_metric,
@@ -762,8 +762,8 @@ TEST_F(ProactiveNudgeTrackerDerivedEngagementTest, TwoSessions) {
   events.compose_count = 1;
   events.inserted_results = true;
   nudge_tracker().ComposeSessionCompleted(
-      form_field_data.global_id(),
-      ComposeSessionCloseReason::kAcceptedSuggestion, events);
+      form_field_data.global_id(), ComposeSessionCloseReason::kInsertedResponse,
+      events);
   Reset();
 
   EXPECT_EQ(

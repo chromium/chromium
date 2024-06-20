@@ -218,9 +218,10 @@ class ComposeSession
   void RefreshInnerText();
 
   void SetFirstRunCloseReason(
-      compose::ComposeFirstRunSessionCloseReason close_reason);
+      compose::ComposeFreOrMsbbSessionCloseReason close_reason);
 
-  void SetMSBBCloseReason(compose::ComposeMSBBSessionCloseReason close_reason);
+  void SetMSBBCloseReason(
+      compose::ComposeFreOrMsbbSessionCloseReason close_reason);
 
   void SetCloseReason(compose::ComposeSessionCloseReason close_reason);
 
@@ -319,7 +320,8 @@ class ComposeSession
   bool msbb_initially_off_ = false;
 
   // Reason that a compose msbb session was exited, used for metrics.
-  compose::ComposeMSBBSessionCloseReason msbb_close_reason_;
+  compose::ComposeFreOrMsbbSessionCloseReason msbb_close_reason_{
+      compose::ComposeFreOrMsbbSessionCloseReason::kAbandoned};
   // State tracking whether the FRE has been completed
   bool fre_complete_ = false;
 
@@ -327,12 +329,15 @@ class ComposeSession
   bool has_checked_autocompose_ = false;
 
   // Reason that a FRE session was exited, used for metrics.
-  compose::ComposeFirstRunSessionCloseReason fre_close_reason_;
+  compose::ComposeFreOrMsbbSessionCloseReason fre_close_reason_{
+      compose::ComposeFreOrMsbbSessionCloseReason::kAbandoned};
 
   // Reason that a compose session was exited, used for metrics.
-  compose::ComposeSessionCloseReason close_reason_;
+  compose::ComposeSessionCloseReason close_reason_{
+      compose::ComposeSessionCloseReason::kAbandoned};
   // Reason that a compose session was exited, used for quality logging.
-  optimization_guide::proto::FinalStatus final_status_;
+  optimization_guide::proto::FinalStatus final_status_{
+      optimization_guide::proto::FinalStatus::STATUS_UNSPECIFIED};
 
   // Tracks how long a session has been open.
   std::unique_ptr<base::ElapsedTimer> session_duration_;

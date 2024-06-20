@@ -191,7 +191,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.Session.FRE.Disclaimer.CloseReason"
-    enum="ComposeFirstRunSessionCloseReasonType" expires_after="2024-11-01">
+    enum="ComposeFreOrMsbbSessionCloseReasonType" expires_after="2024-11-01">
   <owner>cuianthony@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>
@@ -216,7 +216,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Compose.Session.FRE.MSBB.CloseReason"
-    enum="ComposeMSBBSessionCloseReasonType" expires_after="2024-11-01">
+    enum="ComposeFreOrMsbbSessionCloseReasonType" expires_after="2024-11-01">
   <owner>jeffreycohen@chromium.org</owner>
   <owner>chrome-compose-frontend@google.com</owner>
   <summary>

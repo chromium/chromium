@@ -259,11 +259,11 @@ void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
   switch (reason) {
     case compose::mojom::CloseReason::kFirstRunCloseButton:
       SetFirstRunSessionCloseReason(
-          compose::ComposeFirstRunSessionCloseReason::kCloseButtonPressed);
+          compose::ComposeFreOrMsbbSessionCloseReason::kCloseButtonPressed);
       break;
     case compose::mojom::CloseReason::kMSBBCloseButton:
       SetMSBBSessionCloseReason(
-          compose::ComposeMSBBSessionCloseReason::kMSBBCloseButtonPressed);
+          compose::ComposeFreOrMsbbSessionCloseReason::kCloseButtonPressed);
       break;
     case compose::mojom::CloseReason::kCloseButton:
       base::RecordAction(
@@ -275,12 +275,12 @@ void ChromeComposeClient::CloseUI(compose::mojom::CloseReason reason) {
       base::RecordAction(
           base::UserMetricsAction("Compose.EndedSession.InsertButtonClicked"));
       SetSessionCloseReason(
-          compose::ComposeSessionCloseReason::kAcceptedSuggestion);
-      SetMSBBSessionCloseReason(
-          compose::ComposeMSBBSessionCloseReason::kMSBBAcceptedWithInsert);
+          compose::ComposeSessionCloseReason::kInsertedResponse);
+      SetMSBBSessionCloseReason(compose::ComposeFreOrMsbbSessionCloseReason::
+                                    kAckedOrAcceptedWithInsert);
       SetFirstRunSessionCloseReason(
-          compose::ComposeFirstRunSessionCloseReason::
-              kFirstRunDisclaimerAcknowledgedWithInsert);
+          compose::ComposeFreOrMsbbSessionCloseReason::
+              kAckedOrAcceptedWithInsert);
       page_ukm_tracker_->ComposeTextInserted();
       break;
   }
@@ -299,14 +299,9 @@ void ChromeComposeClient::CompleteFirstRun() {
   // state. Mark all existing sessions as having completed the FRE and log
   // relevant metrics.
   UpdateAllSessionsWithFirstRunComplete();
-  ComposeSession* active_session = GetSessionForActiveComposeField();
   open_settings_requested_ = false;
-
-  if (active_session) {
-    active_session->SetFirstRunCloseReason(
-        compose::ComposeFirstRunSessionCloseReason::
-            kFirstRunDisclaimerAcknowledgedWithoutInsert);
-  }
+  SetFirstRunSessionCloseReason(compose::ComposeFreOrMsbbSessionCloseReason::
+                                    kAckedOrAcceptedWithoutInsert);
 }
 
 void ChromeComposeClient::OpenComposeSettings() {
@@ -390,15 +385,19 @@ void ChromeComposeClient::CreateOrUpdateSession(
       base::RecordAction(base::UserMetricsAction(
           "Compose.EndedSession.NewSessionWithSelectedText"));
       SetSessionCloseReason(
-          compose::ComposeSessionCloseReason::kNewSessionWithSelectedText);
+          compose::ComposeSessionCloseReason::kReplacedWithNewSession);
       // Set the equivalent close reason if the existing session was in a
       // consent state.
       auto it = sessions_.find(active_compose_ids_.value().first);
       current_session = it->second.get();
       if (!current_session->get_fre_complete()) {
         SetFirstRunSessionCloseReason(
-            compose::ComposeFirstRunSessionCloseReason::
-                kNewSessionWithSelectedText);
+            compose::ComposeFreOrMsbbSessionCloseReason::
+                kReplacedWithNewSession);
+      }
+      if (!current_session->get_current_msbb_state()) {
+        SetMSBBSessionCloseReason(compose::ComposeFreOrMsbbSessionCloseReason::
+                                      kReplacedWithNewSession);
       }
     }
     // Now create and set up a new session.
@@ -468,7 +467,7 @@ void ChromeComposeClient::RemoveActiveSession() {
 }
 
 void ChromeComposeClient::SetMSBBSessionCloseReason(
-    compose::ComposeMSBBSessionCloseReason close_reason) {
+    compose::ComposeFreOrMsbbSessionCloseReason close_reason) {
   if (debug_session_) {
     return;
   }
@@ -481,7 +480,7 @@ void ChromeComposeClient::SetMSBBSessionCloseReason(
 }
 
 void ChromeComposeClient::SetFirstRunSessionCloseReason(
-    compose::ComposeFirstRunSessionCloseReason close_reason) {
+    compose::ComposeFreOrMsbbSessionCloseReason close_reason) {
   if (debug_session_) {
     return;
   }

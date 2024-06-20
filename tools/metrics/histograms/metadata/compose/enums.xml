@@ -31,39 +31,32 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Menu item clicked"/>
 </enum>
 
-<enum name="ComposeFirstRunSessionCloseReasonType">
-  <int value="0" label="Session implicitly closed">
-    Session implicitly closed, often by web contents destruction
+<enum name="ComposeFreOrMsbbSessionCloseReasonType">
+  <int value="0" label="Abandoned">
+    The FRE/MSBB wasn't acknowledged/accepted and was abandoned, often by web
+    contents destruction.
   </int>
-  <int value="1" label="FRE Close button">Close button on the FRE dialog</int>
-  <int value="2" label="FRE acknowledged; no insertion">
-    FRE disclaimer was acknowledged and no insertion resulted
+  <int value="1" label="Dialog close button">
+    The FRE/MSBB wasn't acknowledged/accepted and the user clicked on the close
+    button of the dialog.
   </int>
-  <int value="3" label="FRE acknowledged; inserted suggestion">
-    FRE disclaimer was acknowledged and followed by an inserted suggestion
+  <int value="2" label="Acked/Accepted but abandoned">
+    FRE acknowledged or MSBB accepted, but the session was abandoned, often by
+    web contents destruction, with no response inserted.
+  </int>
+  <int value="3" label="Acked/Accepted and inserted response">
+    FRE acknowledged or MSBB accepted, followed by a model response being
+    inserted.
   </int>
   <int value="4" label="New session on same field">
     A new session was created for the same text field before the previous one
-    was inserted
+    was inserted. The FRE/MSBB wasn't acknowledged/accepted.
   </int>
 </enum>
 
 <enum name="ComposeInnerTextNodeOffset">
   <int value="0" label="Inner Text Node Offset not found"/>
   <int value="1" label="Inner Text Node Offset found"/>
-</enum>
-
-<enum name="ComposeMSBBSessionCloseReasonType">
-  <int value="0" label="Session implicitly closed">
-    Session implicitly closed, often by web contents destruction
-  </int>
-  <int value="1" label="MSBB close button"/>
-  <int value="2" label="MSBB accepted; no insertion">
-    MSBB was accepted during the session but no insertion resulted
-  </int>
-  <int value="3" label="MSBB accepted; inserted suggestion">
-    MSBB was accepted during the session and followed by an inserted suggestion
-  </int>
 </enum>
 
 <enum name="ComposeProactiveNudgeCtrEvent">
@@ -129,17 +122,18 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="ComposeSessionCloseReasonType">
-  <int value="0" label="Accepted suggestion"/>
-  <int value="1" label="Close button"/>
-  <int value="2" label="Session implicitly closed">
-    Session implicitly closed, often by web contents destruction
+  <int value="0" label="Inserted model response"/>
+  <int value="1" label="Dialog close button"/>
+  <int value="2" label="Abandoned">
+    Session was abandoned, often by web contents destruction, with no response
+    inserted.
   </int>
   <int value="3" label="New session on same field">
     A new session was created for the same text field before the previous one
-    was inserted
+    could be inserted.
   </int>
   <int value="4" label="Closed while waiting response">
-    Session was closed while waiting for a response
+    Session was closed while waiting for a model response.
   </int>
 </enum>
 
