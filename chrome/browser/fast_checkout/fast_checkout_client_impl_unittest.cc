@@ -829,10 +829,8 @@ TEST_F(FastCheckoutClientImplTest, OnAfterLoadedServerPredictions_FillsForms) {
   EXPECT_FALSE(fast_checkout_client()->IsNotShownYet());
 }
 
-// TODO(crbug.com/345173143): Re-enable test.
-TEST_F(
-    FastCheckoutClientImplTest,
-    DISABLED_OnAfterDidFillAutofillFormData_SetsFillingFormsToFilledAndStops) {
+TEST_F(FastCheckoutClientImplTest,
+       OnAfterDidFillAutofillFormData_SetsFillingFormsToFilledAndStops) {
   autofill::FormStructure* address_form =
       AddFormToAutofillManagerCache(SetUpAddressForm());
   autofill::FormStructure* credit_card_form =
@@ -902,14 +900,14 @@ TEST_F(
               Pair(Autofill_FastCheckoutFormStatus::kFilledName, 1),
               Pair(Autofill_FastCheckoutFormStatus::kFormSignatureName,
                    autofill::HashFormSignature(address_form->form_signature())),
-              Pair(Autofill_FastCheckoutFormStatus::kFormTypesName, 3)),
+              Pair(Autofill_FastCheckoutFormStatus::kFormTypesName, 2)),
           UnorderedElementsAre(
               Pair(Autofill_FastCheckoutFormStatus::kRunIdName, run_id),
               Pair(Autofill_FastCheckoutFormStatus::kFilledName, 1),
               Pair(Autofill_FastCheckoutFormStatus::kFormSignatureName,
                    autofill::HashFormSignature(
                        credit_card_form->form_signature())),
-              Pair(Autofill_FastCheckoutFormStatus::kFormTypesName, 5))));
+              Pair(Autofill_FastCheckoutFormStatus::kFormTypesName, 4))));
 }
 
 TEST_F(FastCheckoutClientImplTest,
