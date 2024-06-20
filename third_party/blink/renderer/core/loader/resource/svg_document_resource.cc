@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_resource_document_content.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
+#include "third_party/blink/renderer/platform/scheduler/public/agent_group_scheduler.h"
 
 namespace blink {
 
@@ -54,7 +55,7 @@ SVGDocumentResource* SVGDocumentResource::Fetch(
   return To<SVGDocumentResource>(fetcher->RequestResource(
       params,
       SVGDocumentResourceFactory(agent_group_scheduler,
-                                 fetcher->GetTaskRunner()),
+                                 agent_group_scheduler.DefaultTaskRunner()),
       nullptr));
 }
 
