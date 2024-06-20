@@ -56,10 +56,6 @@ void AiIntroScreenHandler::Show() {
   ShowInWebUI();
 }
 
-void AiIntroScreenHandler::SetAutoTransition(bool value) {
-  CallExternalAPI("setAutoTransition", value);
-}
-
 base::WeakPtr<AiIntroScreenView> AiIntroScreenHandler::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

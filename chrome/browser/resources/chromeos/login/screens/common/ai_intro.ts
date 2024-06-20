@@ -10,7 +10,6 @@ import '../../components/oobe_slide.js';
 import '../../components/buttons/oobe_next_button.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
-import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 
 import {assertInstanceof} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
@@ -18,7 +17,10 @@ import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/p
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
+import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
+import {AiIntroPageCallbackRouter, AiIntroPageHandlerRemote} from '../../mojom-webui/screens_common.mojom-webui.js';
+import {OobeScreensFactoryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
 
 import {getTemplate} from './ai_intro.html.js';
 
@@ -29,10 +31,6 @@ export const AiIntroScreenElementBase =
           new (): PolymerElement & OobeI18nMixinInterface &
             OobeDialogHostBehaviorInterface & LoginScreenBehaviorInterface,
     };
-
-enum UserAction {
-  NEXT = 'next',
-}
 
 export class AiIntroScreen extends AiIntroScreenElementBase {
   static get is() {
@@ -56,14 +54,22 @@ export class AiIntroScreen extends AiIntroScreenElementBase {
   }
 
   private autoTransition: boolean;
-
-  override get EXTERNAL_API(): string[] {
-    return ['setAutoTransition'];
-  }
+  private callbackRouter: AiIntroPageCallbackRouter;
+  private handler: AiIntroPageHandlerRemote;
 
   override ready(): void {
     super.ready();
-    this.initializeLoginScreen('AiIntroScreen');
+    this.callbackRouter = new AiIntroPageCallbackRouter();
+    this.handler = new AiIntroPageHandlerRemote();
+    OobeScreensFactoryBrowserProxy.getInstance()
+        .screenFactory
+        .establishAiIntroScreenPipe(this.handler.$.bindNewPipeAndPassReceiver())
+        .then((response: any) => {
+          this.callbackRouter.$.bindHandle(response.pending.handle);
+        });
+
+    this.callbackRouter.setAutoTransition.addListener(
+        this.setAutoTransition.bind(this));
   }
 
   override get defaultControl(): HTMLElement {
@@ -80,7 +86,7 @@ export class AiIntroScreen extends AiIntroScreenElementBase {
   }
 
   private onNextClicked(): void {
-    this.userActed(UserAction.NEXT);
+    this.handler.onNextClicked();
   }
 }
 

@@ -14,6 +14,12 @@ import "chrome/browser/ui/webui/ash/login/mojom/screens_osauth.mojom";
 interface ScreensFactory {
   // ash.screens_common.mojom
 
+  // Establish a AiIntroScreen pipe for handling the communication for
+  // the AiIntroPageHandler component.
+  EstablishAiIntroScreenPipe(
+      pending_receiver<ash.screens_common.mojom.AiIntroPageHandler> handler)
+      => (pending_receiver<ash.screens_common.mojom.AiIntroPage> pending);
+
   // Establish a AppDownloadingScreen pipe for handling the communication for
   // the AppDownloadingPageHandler component.
   EstablishAppDownloadingScreenPipe(
@@ -26,17 +32,22 @@ interface ScreensFactory {
       pending_receiver<ash.screens_common.mojom.DrivePinningPageHandler> handler)
       => (pending_receiver<ash.screens_common.mojom.DrivePinningPage> pending);
 
+  // Establish a GaiaInfoScreen pipe for handling the communication for the
+  // GaiaInfoPageHandler and the GaiaInfoPage component.
+  EstablishGaiaInfoScreenPipe(
+      pending_receiver<ash.screens_common.mojom.GaiaInfoPageHandler> handler)
+      => (pending_receiver<ash.screens_common.mojom.GaiaInfoPage> pending);
+
   // Establish a GestureNavigationScreen pipe for handling the communication for
   // the GestureNavigationPageHandler component.
   EstablishGestureNavigationScreenPipe(
       pending_receiver<ash.screens_common.mojom.GestureNavigationPageHandler>
           handler);
 
-  // Establish a GaiaInfoScreen pipe for handling the communication for the
-  // GaiaInfoPageHandler and the GaiaInfoPage component.
-  EstablishGaiaInfoScreenPipe(
-      pending_receiver<ash.screens_common.mojom.GaiaInfoPageHandler> handler)
-      => (pending_receiver<ash.screens_common.mojom.GaiaInfoPage> pending);
+  // Establish a TunaScreen pipe for handling the communication for the
+  // TunaPageHandler and the TunaPage component.
+  EstablishTunaScreenPipe(
+      pending_receiver<ash.screens_common.mojom.TunaPageHandler> handler);
 
   // ash.screens_oobe.mojom
 

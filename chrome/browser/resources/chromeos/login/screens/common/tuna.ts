@@ -9,7 +9,6 @@ import '../../components/buttons/oobe_back_button.js';
 import '../../components/buttons/oobe_next_button.js';
 import '../../components/common_styles/oobe_common_styles.css.js';
 import '../../components/common_styles/oobe_dialog_host_styles.css.js';
-import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 
 import {assertInstanceof} from '//resources/js/assert.js';
 import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfaces.js';
@@ -17,7 +16,10 @@ import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/p
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
+import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
+import {TunaPageHandlerRemote} from '../../mojom-webui/screens_common.mojom-webui.js';
+import {OobeScreensFactoryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
 
 import {getTemplate} from './tuna.html.js';
 
@@ -28,11 +30,6 @@ export const TunaScreenElementBase =
       new (): PolymerElement & OobeI18nMixinInterface &
         OobeDialogHostBehaviorInterface & LoginScreenBehaviorInterface,
     };
-
-enum UserAction {
-  BACK = 'back',
-  NEXT = 'next',
-}
 
 /**
  * Data that is passed to the screen during onBeforeShow.
@@ -60,10 +57,14 @@ export class TunaScreen extends TunaScreenElementBase {
   }
 
   private backButtonVisible: boolean;
+  private handler: TunaPageHandlerRemote;
 
   override ready(): void {
     super.ready();
-    this.initializeLoginScreen('TunaScreen');
+    this.handler = new TunaPageHandlerRemote();
+    OobeScreensFactoryBrowserProxy.getInstance()
+        .screenFactory.establishTunaScreenPipe(
+            this.handler.$.bindNewPipeAndPassReceiver());
   }
 
   override get defaultControl(): HTMLElement {
@@ -77,11 +78,11 @@ export class TunaScreen extends TunaScreenElementBase {
   }
 
   private onBackClicked(): void {
-    this.userActed(UserAction.BACK);
+    this.handler.onBackClicked();
   }
 
   private onNextClicked(): void {
-    this.userActed(UserAction.NEXT);
+    this.handler.onNextClicked();
   }
 }
 

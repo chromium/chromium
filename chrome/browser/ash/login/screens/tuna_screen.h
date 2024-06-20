@@ -12,13 +12,18 @@
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/oobe_mojo_binder.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_common.mojom.h"
 
 namespace ash {
 
 class TunaScreenView;
 
-class TunaScreen : public BaseScreen {
+class TunaScreen
+    : public BaseScreen,
+      public screens_common::mojom::TunaPageHandler,
+      public OobeMojoBinder<screens_common::mojom::TunaPageHandler> {
  public:
   using TView = TunaScreenView;
 
@@ -54,7 +59,9 @@ class TunaScreen : public BaseScreen {
   bool MaybeSkip(WizardContext& context) override;
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
+  // screens_common::mojom::TunaPageHandler
+  void OnBackClicked() override;
+  void OnNextClicked() override;
 
   base::WeakPtr<TunaScreenView> view_;
   ScreenExitCallback exit_callback_;

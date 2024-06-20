@@ -19,12 +19,6 @@
 #include "components/user_manager/user_manager.h"
 
 namespace ash {
-namespace {
-
-constexpr char kUserActionBackButtonClicked[] = "back";
-constexpr char kUserActionNextButtonClicked[] = "next";
-
-}  // namespace
 
 // static
 std::string TunaScreen::GetResultString(Result result) {
@@ -64,8 +58,9 @@ bool TunaScreen::ShouldBeSkipped() {
 }
 
 TunaScreen::TunaScreen(base::WeakPtr<TunaScreenView> view,
-                               const ScreenExitCallback& exit_callback)
+                       const ScreenExitCallback& exit_callback)
     : BaseScreen(TunaScreenView::kScreenId, OobeScreenPriority::DEFAULT),
+      OobeMojoBinder(this),
       view_(std::move(view)),
       exit_callback_(exit_callback) {}
 
@@ -97,15 +92,20 @@ void TunaScreen::ShowImpl() {
 
 void TunaScreen::HideImpl() {}
 
-void TunaScreen::OnUserAction(const base::Value::List& args) {
-  const std::string& action_id = args[0].GetString();
-  if (action_id == kUserActionNextButtonClicked) {
-    exit_callback_.Run(Result::kNext);
-  } else if (action_id == kUserActionBackButtonClicked) {
-    exit_callback_.Run(Result::kBack);
-  } else {
-    BaseScreen::OnUserAction(args);
+void TunaScreen::OnBackClicked() {
+  if (is_hidden()) {
+    return;
   }
+
+  exit_callback_.Run(Result::kBack);
+}
+
+void TunaScreen::OnNextClicked() {
+  if (is_hidden()) {
+    return;
+  }
+
+  exit_callback_.Run(Result::kNext);
 }
 
 }  // namespace ash

@@ -13,13 +13,19 @@
 #include "base/values.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ash/login/screens/oobe_mojo_binder.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_common.mojom.h"
 
 namespace ash {
 
 class AiIntroScreenView;
 
-class AiIntroScreen : public BaseScreen {
+class AiIntroScreen
+    : public BaseScreen,
+      public screens_common::mojom::AiIntroPageHandler,
+      public OobeMojoBinder<screens_common::mojom::AiIntroPageHandler,
+                            screens_common::mojom::AiIntroPage> {
  public:
   using TView = AiIntroScreenView;
 
@@ -59,7 +65,9 @@ class AiIntroScreen : public BaseScreen {
   // Pause autoscroll in oobe_carousel if cvox is active.
   void OnAccessibilityStatusChanged(
       const AccessibilityStatusEventDetails& details);
-  void OnUserAction(const base::Value::List& args) override;
+
+  // screens_common::mojom::AiIntroPageHandler:
+  void OnNextClicked() override;
 
   base::CallbackListSubscription accessibility_subscription_;
   base::WeakPtr<AiIntroScreenView> view_;

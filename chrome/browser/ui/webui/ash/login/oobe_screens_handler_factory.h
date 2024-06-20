@@ -34,6 +34,10 @@ class OobeScreensHandlerFactory
 
  private:
   // screens_factory::mojom::ScreensFactory:
+  void EstablishAiIntroScreenPipe(
+      mojo::PendingReceiver<screens_common::mojom::AiIntroPageHandler> receiver,
+      EstablishAiIntroScreenPipeCallback callback) override;
+
   void EstablishAppDownloadingScreenPipe(
       mojo::PendingReceiver<screens_common::mojom::AppDownloadingPageHandler>
           receiver) override;
@@ -43,14 +47,18 @@ class OobeScreensHandlerFactory
           receiver,
       EstablishDrivePinningScreenPipeCallback callback) override;
 
-  void EstablishGestureNavigationScreenPipe(
-      mojo::PendingReceiver<screens_common::mojom::GestureNavigationPageHandler>
-          receiver) override;
-
   void EstablishGaiaInfoScreenPipe(
       mojo::PendingReceiver<screens_common::mojom::GaiaInfoPageHandler>
           receiver,
       EstablishGaiaInfoScreenPipeCallback callback) override;
+
+  void EstablishGestureNavigationScreenPipe(
+      mojo::PendingReceiver<screens_common::mojom::GestureNavigationPageHandler>
+          receiver) override;
+
+  void EstablishTunaScreenPipe(
+      mojo::PendingReceiver<screens_common::mojom::TunaPageHandler> receiver)
+      override;
 
   void EstablishConsumerUpdateScreenPipe(
       mojo::PendingReceiver<screens_oobe::mojom::ConsumerUpdatePageHandler>

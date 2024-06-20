@@ -18,11 +18,6 @@
 #include "components/user_manager/user_manager.h"
 
 namespace ash {
-namespace {
-
-constexpr char kUserActionNextButtonClicked[] = "next";
-
-}  // namespace
 
 // static
 std::string AiIntroScreen::GetResultString(Result result) {
@@ -60,8 +55,9 @@ bool AiIntroScreen::ShouldBeSkipped() {
 }
 
 AiIntroScreen::AiIntroScreen(base::WeakPtr<AiIntroScreenView> view,
-                               const ScreenExitCallback& exit_callback)
+                             const ScreenExitCallback& exit_callback)
     : BaseScreen(AiIntroScreenView::kScreenId, OobeScreenPriority::DEFAULT),
+      OobeMojoBinder(this),
       view_(std::move(view)),
       exit_callback_(exit_callback) {}
 
@@ -92,8 +88,12 @@ void AiIntroScreen::ShowImpl() {
     accessibility_subscription_ = accessibility_manager->RegisterCallback(
         base::BindRepeating(&AiIntroScreen::OnAccessibilityStatusChanged,
                             weak_ptr_factory_.GetWeakPtr()));
-    view_->SetAutoTransition(
-        !AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
+    // Remote/frontend is missing during some tests.
+    if (GetRemote()->is_bound()) {
+      (*GetRemote())
+          ->SetAutoTransition(
+              !AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
+    }
   }
 
   view_->Show();
@@ -101,7 +101,10 @@ void AiIntroScreen::ShowImpl() {
 
 void AiIntroScreen::HideImpl() {
   accessibility_subscription_ = {};
-  view_->SetAutoTransition(false);
+  // Remote/frontend is missing during some tests.
+  if (GetRemote()->is_bound()) {
+    (*GetRemote())->SetAutoTransition(false);
+  }
 }
 
 void AiIntroScreen::OnAccessibilityStatusChanged(
@@ -111,20 +114,21 @@ void AiIntroScreen::OnAccessibilityStatusChanged(
     accessibility_subscription_ = {};
     return;
   }
+  // Remote/frontend is missing during some tests.
   // AccessibilityManager::Get() can be nullptr in unittests.
-  if (view_ && AccessibilityManager::Get()) {
-    view_->SetAutoTransition(
-        !AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
+  if (GetRemote()->is_bound() && AccessibilityManager::Get()) {
+    (*GetRemote())
+        ->SetAutoTransition(
+            !AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
   }
 }
 
-void AiIntroScreen::OnUserAction(const base::Value::List& args) {
-  const std::string& action_id = args[0].GetString();
-  if (action_id == kUserActionNextButtonClicked) {
-    exit_callback_.Run(Result::kNext);
-  } else {
-    BaseScreen::OnUserAction(args);
+void AiIntroScreen::OnNextClicked() {
+  if (is_hidden()) {
+    return;
   }
+
+  exit_callback_.Run(Result::kNext);
 }
 
 }  // namespace ash
