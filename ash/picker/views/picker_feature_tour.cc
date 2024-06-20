@@ -13,6 +13,7 @@
 #include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
 #include "base/functional/callback.h"
+#include "build/branding_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -29,22 +30,25 @@
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/flex_layout.h"
-#include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chromeos/ash/resources/internal/strings/grit/ash_internal_strings.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 namespace ash {
 namespace {
 
 constexpr int kDialogBorderRadius = 20;
-// The insets from the border to the contents inside.
-constexpr auto kContentsInsets = gfx::Insets::TLBR(32, 32, 28, 32);
-constexpr auto kIllustrationSize = gfx::Size(512, 236);
-// Margin between the illustration and the heading text.
-constexpr int kHeadingTextTopMargin = 32;
+constexpr int kDialogWidth = 512;
+constexpr auto kIllustrationSize = gfx::Size(kDialogWidth, 236);
+// The insets of the main contents.
+constexpr auto kMainContentInsets = gfx::Insets::TLBR(32, 32, 28, 32);
 // Margin between the heading text and the body text.
 constexpr int kBodyTextTopMargin = 16;
 // Margin between the body text and the buttons.
@@ -57,62 +61,88 @@ constexpr char kFeatureTourCompletedPref[] =
 
 bool g_feature_tour_enabled = true;
 
+std::u16string GetHeadingText() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return l10n_util::GetStringUTF16(IDS_PICKER_FEATURE_TOUR_HEADING_TEXT);
+#else
+  return u"";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
+std::u16string GetBodyText() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return l10n_util::GetStringUTF16(IDS_PICKER_FEATURE_TOUR_BODY_TEXT);
+#else
+  return u"";
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
 class FeatureTourBubbleView : public views::WidgetDelegate,
-                              public views::FlexLayoutView {
-  METADATA_HEADER(FeatureTourBubbleView, views::FlexLayoutView)
+                              public views::BoxLayoutView {
+  METADATA_HEADER(FeatureTourBubbleView, views::BoxLayoutView)
 
  public:
   FeatureTourBubbleView(base::RepeatingClosure completion_callback) {
-    // TODO: b/343599950 - Replace placeholder strings.
-    views::Builder<views::FlexLayoutView>(this)
+    auto button_row_view =
+        views::Builder<views::BoxLayoutView>()
+            .SetProperty(views::kMarginsKey,
+                         gfx::Insets::TLBR(kButtonRowTopMargin, 0, 0, 0))
+            .SetOrientation(views::LayoutOrientation::kHorizontal)
+            .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
+            .SetCrossAxisAlignment(views::LayoutAlignment::kStart)
+            .SetBetweenChildSpacing(kBetweenButtonMargin)
+            .AddChildren(
+                views::Builder<PillButton>(std::make_unique<PillButton>(
+                    PillButton::PressedCallback(),
+                    l10n_util::GetStringUTF16(
+                        IDS_PICKER_FEATURE_TOUR_LEARN_MORE_BUTTON_LABEL),
+                    PillButton::Type::kSecondaryWithoutIcon)),
+                views::Builder<PillButton>(
+                    std::make_unique<PillButton>(
+                        // base::Unretained is safe here since the
+                        // Widget owns the View.
+                        base::BindRepeating(&FeatureTourBubbleView::CloseWidget,
+                                            base::Unretained(this))
+                            .Then(std::move(completion_callback)),
+                        l10n_util::GetStringUTF16(
+                            IDS_PICKER_FEATURE_TOUR_START_BUTTON_LABEL),
+                        PillButton::Type::kPrimaryWithoutIcon))
+                    .CopyAddressTo(&complete_button_));
+
+    auto main_contents_view =
+        views::Builder<views::BoxLayoutView>()
+            .SetOrientation(views::LayoutOrientation::kVertical)
+            .SetInsideBorderInsets(kMainContentInsets)
+            .AddChildren(
+                views::Builder<views::Label>(
+                    bubble_utils::CreateLabel(TypographyToken::kCrosDisplay7,
+                                              GetHeadingText(),
+                                              cros_tokens::kCrosSysOnSurface))
+                    .SetMultiLine(true)
+                    .SetMaximumWidth(kDialogWidth - kMainContentInsets.width())
+                    .SetHorizontalAlignment(
+                        gfx::HorizontalAlignment::ALIGN_LEFT),
+                views::Builder<views::Label>(
+                    bubble_utils::CreateLabel(
+                        TypographyToken::kCrosBody1, GetBodyText(),
+                        cros_tokens::kCrosSysOnSurfaceVariant))
+                    .SetMultiLine(true)
+                    .SetMaximumWidth(kDialogWidth - kMainContentInsets.width())
+                    .SetHorizontalAlignment(
+                        gfx::HorizontalAlignment::ALIGN_LEFT)
+                    .SetProperty(
+                        views::kMarginsKey,
+                        gfx::Insets::TLBR(kBodyTextTopMargin, 0, 0, 0)),
+                std::move(button_row_view));
+
+    // TODO: b/343599950 - Add final banner image.
+    views::Builder<views::BoxLayoutView>(this)
         .SetOrientation(views::LayoutOrientation::kVertical)
-        .SetInteriorMargin(kContentsInsets)
         .SetBackground(views::CreateThemedRoundedRectBackground(
             cros_tokens::kCrosSysDialogContainer, kDialogBorderRadius))
         .AddChildren(
             views::Builder<views::ImageView>().SetImageSize(kIllustrationSize),
-            views::Builder<views::Label>(
-                bubble_utils::CreateLabel(TypographyToken::kCrosDisplay7,
-                                          u"Placeholder",
-                                          cros_tokens::kCrosSysOnSurface))
-                .SetMultiLine(true)
-                .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-                .SetProperty(views::kMarginsKey,
-                             gfx::Insets::TLBR(kHeadingTextTopMargin, 0, 0, 0)),
-            views::Builder<views::Label>(
-                bubble_utils::CreateLabel(
-                    TypographyToken::kCrosBody1, u"Placeholder",
-                    cros_tokens::kCrosSysOnSurfaceVariant))
-                .SetMultiLine(true)
-                .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
-                .SetProperty(views::kMarginsKey,
-                             gfx::Insets::TLBR(kBodyTextTopMargin, 0, 0, 0)),
-            views::Builder<views::FlexLayoutView>()
-                .SetProperty(views::kMarginsKey,
-                             gfx::Insets::TLBR(kButtonRowTopMargin, 0, 0, 0))
-                .SetOrientation(views::LayoutOrientation::kHorizontal)
-                .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
-                .AddChildren(
-                    views::Builder<PillButton>(std::make_unique<PillButton>(
-                        PillButton::PressedCallback(),
-                        l10n_util::GetStringUTF16(
-                            IDS_PICKER_FEATURE_TOUR_LEARN_MORE_BUTTON_LABEL),
-                        PillButton::Type::kSecondaryWithoutIcon)),
-                    views::Builder<PillButton>(
-                        std::make_unique<PillButton>(
-                            // base::Unretained is safe here since the Widget
-                            // owns the View.
-                            base::BindRepeating(
-                                &FeatureTourBubbleView::CloseWidget,
-                                base::Unretained(this))
-                                .Then(std::move(completion_callback)),
-                            l10n_util::GetStringUTF16(
-                                IDS_PICKER_FEATURE_TOUR_START_BUTTON_LABEL),
-                            PillButton::Type::kPrimaryWithoutIcon))
-                        .CopyAddressTo(&complete_button_)
-                        .SetProperty(
-                            views::kMarginsKey,
-                            gfx::Insets::TLBR(0, kBetweenButtonMargin, 0, 0))))
+            std::move(main_contents_view))
         .BuildChildren();
   }
 
@@ -149,7 +179,7 @@ class FeatureTourBubbleView : public views::WidgetDelegate,
 BEGIN_METADATA(FeatureTourBubbleView)
 END_METADATA
 
-BEGIN_VIEW_BUILDER(/*no export*/, FeatureTourBubbleView, views::FlexLayoutView)
+BEGIN_VIEW_BUILDER(/*no export*/, FeatureTourBubbleView, views::BoxLayoutView)
 END_VIEW_BUILDER
 
 }  // namespace
