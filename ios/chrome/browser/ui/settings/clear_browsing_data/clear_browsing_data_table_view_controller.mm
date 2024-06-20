@@ -216,12 +216,18 @@
     [self.actionSheetCoordinator stop];
     self.actionSheetCoordinator = nil;
   }
+
   [self dismissAlertCoordinator];
+
   if (self.overlayCoordinator.started) {
     [self.overlayCoordinator stop];
     self.navigationController.interactivePopGestureRecognizer.delegate = nil;
     self.overlayCoordinator = nil;
   }
+
+  [_signoutCoordinator stop];
+  _signoutCoordinator = nil;
+
   _identityManagerObserverBridge.reset();
   [self.dataManager disconnect];
 }
