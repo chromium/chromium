@@ -136,8 +136,18 @@ class Generator(generator.Generator):
       )
     return self._GetRustDataFieldType(kind)
 
+  def _GetRustReferentDataType(self, kind):
+    if mojom.IsStructKind(kind):
+      return self._GetNameForKind(kind, is_data=True)
+    else:
+      print(kind.Repr())
+      raise Exception("Not implemented")
+
   def _ToUpperSnakeCase(self, ident):
     return generator.ToUpperSnakeCase(ident)
+
+  def _ToLowerSnakeCase(self, ident):
+    return generator.ToLowerSnakeCase(ident)
 
   def _GetRustDataFields(self, packed_struct):
     ''' Map pack.PackedStruct to a list of Rust fields.
@@ -205,9 +215,13 @@ class Generator(generator.Generator):
     rust_filters = {
         "get_pad": pack.GetPad,
         "get_rust_data_fields": self._GetRustDataFields,
+        "is_nullable_kind": mojom.IsNullableKind,
+        "is_struct_kind": mojom.IsStructKind,
         "rust_field_type": self._GetRustFieldType,
         "rust_union_field_type": self._GetRustUnionFieldType,
+        "rust_referent_data_type": self._GetRustReferentDataType,
         "to_upper_snake_case": self._ToUpperSnakeCase,
+        "to_lower_snake_case": self._ToLowerSnakeCase,
     }
     return rust_filters
 

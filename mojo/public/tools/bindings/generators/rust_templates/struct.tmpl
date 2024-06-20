@@ -26,6 +26,72 @@ static_assertions::assert_eq_size!(
     {{name}}_Data,
 );
 
+impl {{name}}_Data {
+    const KNOWN_VERSION_SIZES: &'static [(u32, u32)] =
+        &[
+{%- for version in struct.versions -%}
+            ({{version.version}}, {{version.num_bytes}}),
+{%- endfor -%}
+        ];
+
+    pub fn validate(
+        #[allow(unused_variables)]
+        ctx: &'_ mut bindings::ValidationContext<'_, '_>,
+        chunk: &'_ bindings::MessageViewChunk<'_, '_, Self>,
+    ) -> bindings::Result<()> {
+        let data: Self = chunk.read();
+        assert_eq!(chunk.len(), data._header.size as usize);
+
+        // Ensure that the size and version match, or:
+        // * if the version is newer than any known version, the size is not
+        //   less than the last known version, or
+        // * if the version is between known versions, the size is between their
+        //   sizes (inclusive)
+        for (version, size) in Self::KNOWN_VERSION_SIZES.iter().copied() {
+            if data._header.version == version  {
+                if data._header.size != size {
+                    return Err(bindings::ValidationError::UnexpectedStructHeader);
+                }
+                break;
+            }
+
+            if data._header.version > version && data._header.size < size {
+                return Err(bindings::ValidationError::UnexpectedStructHeader);
+            }
+
+            if data._header.version < version && data._header.size > size {
+                return Err(bindings::ValidationError::UnexpectedStructHeader);
+            } else if data._header.version < version {
+                break;
+            }
+        }
+
+{%- for packed_field in struct.packed.packed_fields %}
+{%-   if packed_field.field.kind|is_struct_kind %}
+{%-     if not packed_field.field.kind|is_nullable_kind %}
+        if data.r#{{packed_field.field.name}}.offset == 0 {
+            return Err(bindings::ValidationError::UnexpectedNullPointer);
+        }
+{%-     endif %}
+
+        if data.r#{{packed_field.field.name}}.offset != 0 {
+            let abs_ptr = bindings::AbsolutePointer::resolve_from(
+                &data.r#{{packed_field.field.name}},
+                &data,
+                chunk,
+            )?;
+
+            let child_chunk = ctx.claim_struct(abs_ptr)?;
+            {{packed_field.field.kind|rust_referent_data_type}}
+                ::validate(ctx, &child_chunk)?;
+        }
+{%-   endif %}
+{%- endfor %}
+
+        Ok(())
+    }
+}
+
 {%- for enum in struct.enums %}
 {{declare_enum(name + "_" + enum.name, enum)}}
 {%- endfor %}

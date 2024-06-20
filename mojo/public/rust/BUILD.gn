@@ -101,6 +101,7 @@ rust_static_library("mojo_bindings") {
   sources = [
     "bindings/data.rs",
     "bindings/lib.rs",
+    "bindings/mojom.rs",
   ]
 
   deps = [

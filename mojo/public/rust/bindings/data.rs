@@ -12,6 +12,8 @@
 
 use bytemuck::{Pod, Zeroable};
 
+pub trait DataType {}
+
 /// The mojo message header. Messages contain this before their payload.
 ///
 /// This matches the representation of a version 2 header. Note that, depending
@@ -148,6 +150,9 @@ pub struct ArrayHeader {
     pub size: u32,
     pub num_elems: u32,
 }
+
+/// The required alignment of mojom objects (structs and arrays).
+pub const OBJECT_ALIGNMENT: usize = 8;
 
 pub const UNION_DATA_SIZE: usize = 16;
 pub const UNION_INNER_SIZE: usize = 8;

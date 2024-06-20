@@ -1,0 +1,70 @@
+{%- from "enum.tmpl" import declare_enum -%}
+{%- from "struct.tmpl" import declare_struct -%}
+
+{%- macro declare_interface(interface) -%}
+
+{%- set internal_module = "internal__%s"|format(interface.name|to_lower_snake_case) -%}
+
+/// Mojo interface {{interface.name}}
+///
+/// This does not have any functionality itself. It serves as a marker type to
+/// uniquely identify the interface in other mojo code.
+#[derive(Debug)]
+pub struct {{interface.name}};
+
+impl bindings::mojom::Interface for {{interface.name}} {
+    fn get_method_info(name: u32) -> Option<&'static bindings::mojom::MethodInfo> {
+        match name {
+{%- for method in interface.methods %}
+            {{method.ordinal}} =>
+                Some(&{{internal_module}}::METHOD_INFO__{{method.name|to_upper_snake_case}}),
+{%- endfor %}
+            _ => None,
+        }
+    }
+}
+
+{%- for method in interface.methods %}
+{{declare_struct("%s_%s_Req"|format(interface.name, method.name), method.param_struct)}}
+{%- if method.response_parameters %}
+{{declare_struct("%s_%s_Resp"|format(interface.name, method.name), method.response_param_struct)}}
+{%- endif %}
+{%- endfor %}
+
+{%- for enum in interface.enums %}
+{{declare_enum("%s_%s"|format(interface.name, enum.name), enum)}}
+{%- endfor %}
+
+pub mod {{internal_module}} {
+{%- for method in interface.methods %}
+    fn validate_request_{{method.name|to_lower_snake_case}}(
+        ctx: &'_ mut bindings::ValidationContext<'_, '_>,
+    ) -> bindings::Result<()> {
+        let chunk = ctx.claim_payload_root()?;
+        super::{{"%s_%s_Req_Data"|format(interface.name, method.name)}}
+            ::validate(ctx, &chunk)
+    }
+
+{%-   if method.response_parameters %}
+    fn validate_response_{{method.name|to_lower_snake_case}}(
+        ctx: &'_ mut bindings::ValidationContext<'_, '_>,
+    ) -> bindings::Result<()> {
+        let chunk = ctx.claim_payload_root()?;
+        super::{{"%s_%s_Resp_Data"|format(interface.name, method.name)}}
+            ::validate(ctx, &chunk)
+    }
+{%-   endif %}
+
+    pub static METHOD_INFO__{{method.name|to_upper_snake_case}}
+        : bindings::mojom::MethodInfo = bindings::mojom::MethodInfo {
+        validate_request: validate_request_{{method.name|to_lower_snake_case}},
+{%-   if method.response_parameters %}
+        validate_response: Some(validate_response_{{method.name|to_lower_snake_case}}),
+{%-   else %}
+        validate_response: None,
+{%-   endif %}
+    };
+{%- endfor %}
+}
+
+{%- endmacro -%}
