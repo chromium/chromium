@@ -90,7 +90,7 @@ class USBDevice : public ScriptWrappable,
   ScriptPromise<USBInTransferResult> controlTransferIn(
       ScriptState*,
       const USBControlTransferParameters* setup,
-      unsigned length,
+      uint16_t length,
       ExceptionState&);
   ScriptPromise<USBOutTransferResult> controlTransferOut(
       ScriptState*,

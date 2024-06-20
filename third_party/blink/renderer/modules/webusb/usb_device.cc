@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -44,7 +45,6 @@ namespace blink {
 namespace {
 
 const char kAccessDeniedError[] = "Access denied.";
-const char kBufferTooBig[] = "The data buffer exceeded its maximum size.";
 const char kPacketLengthsTooBig[] =
     "The total packet length exceeded the maximum size.";
 const char kBufferSizeMismatch[] =
@@ -62,6 +62,8 @@ const char kOpenRequired[] = "The device must be opened first.";
 const char kProtectedInterfaceClassError[] =
     "The requested interface implements a protected class.";
 const char kTransferPermissionDeniedError[] = "The transfer was not allowed.";
+
+const int kUsbTransferLengthLimit = 32 * 1024 * 1024;
 
 bool CheckFatalTransferStatus(ScriptPromiseResolverBase* resolver,
                               const UsbTransferStatus& status) {
@@ -124,6 +126,24 @@ std::optional<uint32_t> TotalPacketLength(
     total_bytes += packet_length;
   }
   return total_bytes;
+}
+
+bool ShouldRejectUsbTransferLength(size_t length,
+                                   ExceptionState& exception_state) {
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kWebUSBTransferSizeLimit)) {
+    return false;
+  }
+
+  if (length <= kUsbTransferLengthLimit) {
+    return false;
+  }
+  exception_state.ThrowDOMException(
+      DOMExceptionCode::kDataError,
+      String::Format(
+          "The data buffer exceeded supported maximum size of %d bytes",
+          kUsbTransferLengthLimit));
+  return true;
 }
 
 }  // namespace
@@ -405,7 +425,7 @@ ScriptPromise<IDLUndefined> USBDevice::selectAlternateInterface(
 ScriptPromise<USBInTransferResult> USBDevice::controlTransferIn(
     ScriptState* script_state,
     const USBControlTransferParameters* setup,
-    unsigned length,
+    uint16_t length,
     ExceptionState& exception_state) {
   EnsureNoDeviceOrInterfaceChangeInProgress(exception_state);
   if (exception_state.HadException())
@@ -469,9 +489,8 @@ ScriptPromise<USBOutTransferResult> USBDevice::controlTransferOut(
       return EmptyPromise();
     }
 
-    if (optional_data.ByteLength() > std::numeric_limits<uint32_t>::max()) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                        kBufferTooBig);
+    if (ShouldRejectUsbTransferLength(optional_data.ByteLength(),
+                                      exception_state)) {
       return EmptyPromise();
     }
 
@@ -520,6 +539,9 @@ ScriptPromise<USBInTransferResult> USBDevice::transferIn(
     uint8_t endpoint_number,
     unsigned length,
     ExceptionState& exception_state) {
+  if (ShouldRejectUsbTransferLength(length, exception_state)) {
+    return EmptyPromise();
+  }
   EnsureEndpointAvailable(/*in_transfer=*/true, endpoint_number,
                           exception_state);
   if (exception_state.HadException())
@@ -556,9 +578,7 @@ ScriptPromise<USBOutTransferResult> USBDevice::transferOut(
     return EmptyPromise();
   }
 
-  if (data.ByteLength() > std::numeric_limits<uint32_t>::max()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      kBufferTooBig);
+  if (ShouldRejectUsbTransferLength(data.ByteLength(), exception_state)) {
     return EmptyPromise();
   }
 
@@ -590,6 +610,9 @@ ScriptPromise<USBIsochronousInTransferResult> USBDevice::isochronousTransferIn(
   if (!total_bytes.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       kPacketLengthsTooBig);
+    return EmptyPromise();
+  }
+  if (ShouldRejectUsbTransferLength(total_bytes.value(), exception_state)) {
     return EmptyPromise();
   }
 
@@ -629,6 +652,9 @@ USBDevice::isochronousTransferOut(ScriptState* script_state,
   if (!total_bytes.has_value()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
                                       kPacketLengthsTooBig);
+    return EmptyPromise();
+  }
+  if (ShouldRejectUsbTransferLength(total_bytes.value(), exception_state)) {
     return EmptyPromise();
   }
   if (total_bytes.value() != data.ByteLength()) {
