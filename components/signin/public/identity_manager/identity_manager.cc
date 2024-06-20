@@ -663,7 +663,7 @@ void IdentityManager::OnFetchAccessTokenComplete(
     const CoreAccountId& account_id,
     const std::string& consumer_id,
     const ScopeSet& scopes,
-    GoogleServiceAuthError error,
+    const GoogleServiceAuthError& error,
     base::Time expiration_time) {
   for (auto& observer : diagnostics_observation_list_)
     observer.OnAccessTokenRequestCompleted(account_id, consumer_id, scopes,

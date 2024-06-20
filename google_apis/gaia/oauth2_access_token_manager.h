@@ -166,7 +166,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2AccessTokenManager {
     virtual void OnFetchAccessTokenComplete(const CoreAccountId& account_id,
                                             const std::string& consumer_id,
                                             const ScopeSet& scopes,
-                                            GoogleServiceAuthError error,
+                                            const GoogleServiceAuthError& error,
                                             base::Time expiration_time) {}
 
     // Called when an access token was removed.

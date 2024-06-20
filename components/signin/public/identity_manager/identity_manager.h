@@ -317,11 +317,12 @@ class IdentityManager : public KeyedService,
 
     // Called when an access token request is completed. Contains diagnostic
     // information about the access token request.
-    virtual void OnAccessTokenRequestCompleted(const CoreAccountId& account_id,
-                                               const std::string& consumer_id,
-                                               const ScopeSet& scopes,
-                                               GoogleServiceAuthError error,
-                                               base::Time expiration_time) {}
+    virtual void OnAccessTokenRequestCompleted(
+        const CoreAccountId& account_id,
+        const std::string& consumer_id,
+        const ScopeSet& scopes,
+        const GoogleServiceAuthError& error,
+        base::Time expiration_time) {}
 
     // Called when an access token was removed.
     virtual void OnAccessTokenRemovedFromCache(const CoreAccountId& account_id,
@@ -650,7 +651,7 @@ class IdentityManager : public KeyedService,
   void OnFetchAccessTokenComplete(const CoreAccountId& account_id,
                                   const std::string& consumer_id,
                                   const ScopeSet& scopes,
-                                  GoogleServiceAuthError error,
+                                  const GoogleServiceAuthError& error,
                                   base::Time expiration_time) override;
   void OnAccessTokenRemoved(const CoreAccountId& account_id,
                             const ScopeSet& scopes) override;

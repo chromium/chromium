@@ -190,7 +190,7 @@ class DiagnosticsObserverForTesting
       const CoreAccountId& account_id,
       const std::string& consumer_id,
       const OAuth2AccessTokenManager::ScopeSet& scopes,
-      GoogleServiceAuthError error,
+      const GoogleServiceAuthError& error,
       base::Time expiration_time) override {
     if (!fetch_access_token_completed_callback_)
       return;

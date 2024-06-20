@@ -240,7 +240,7 @@ class TestIdentityManagerDiagnosticsObserver
   void OnAccessTokenRequestCompleted(const CoreAccountId& account_id,
                                      const std::string& consumer_id,
                                      const ScopeSet& scopes,
-                                     GoogleServiceAuthError error,
+                                     const GoogleServiceAuthError& error,
                                      base::Time expiration_time) override {
     access_token_request_completed_account_id_ = account_id;
     access_token_request_completed_consumer_id_ = consumer_id;
